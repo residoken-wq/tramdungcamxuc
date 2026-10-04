@@ -68,6 +68,8 @@ Chi tiết và lý do: `docs/tasks/reviews/T0-01.md`.
 4. Script `pnpm test`, `pnpm test:e2e`.
 5. Chuyển từ nghiệm thu T0-01 (`docs/tasks/reviews/T0-01.md`): sửa `vitest.config.mts` để tìm test ở `tests/unit/**/*.test.ts` (bỏ `tests/int`); thêm `baseURL` và 2 project viewport 375/1440 vào `playwright.config.ts`; script `test` không được rỗng.
 6. CI không được dùng secret thật: tạo `PAYLOAD_SECRET` ngẫu nhiên trong workflow, DB là service container.
+7. Service Postgres trong CI dùng image `postgres:18` (khớp máy dev: PostgreSQL 18.6). CI chạy trên `pull_request` và `push` vào `main`.
+8. Máy dev không có `gh` CLI: push branch rồi báo link "Compare & pull request" trên GitHub để Planning mở PR; không tự merge.
 
 **Tiêu chí nghiệm thu**
 
