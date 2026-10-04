@@ -48,9 +48,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 
 | Mã    | Task                                                  | Nhãn     | Phụ thuộc           | Trạng thái |
 | ----- | ----------------------------------------------------- | -------- | ------------------- | ---------- |
-| T0-01 | Khởi tạo repo Next.js + Payload + Postgres + Tailwind |          | –                   | Đạt có điều kiện ([review](reviews/T0-01.md)) |
-| T0-01b | Sửa sau nghiệm thu T0-01 (gitignore, DECISIONS, PR) | | T0-01 | Sẵn sàng |
-| T0-02 | CI, lint, Vitest, Playwright                          |          | T0-01b (đã merge)   | Chưa mở    |
+| T0-01 | Khởi tạo repo Next.js + Payload + Postgres + Tailwind |          | –                   | Xong ([review](reviews/T0-01.md)) |
+| T0-01b | Sửa sau nghiệm thu T0-01 (gitignore, DECISIONS, PR) | | T0-01 | Xong |
+| T0-02 | CI, lint, Vitest, Playwright                          |          | T0-01b   | Sẵn sàng    |
 | T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-01               | Chưa mở    |
 | T0-04 | UI primitives                                         |          | T0-03               | Chưa mở    |
 | T0-05 | UI composites                                         |          | T0-04               | Chưa mở    |
