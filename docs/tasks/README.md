@@ -50,8 +50,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | ----- | ----------------------------------------------------- | -------- | ------------------- | ---------- |
 | T0-01 | Khởi tạo repo Next.js + Payload + Postgres + Tailwind |          | –                   | Xong ([review](reviews/T0-01.md)) |
 | T0-01b | Sửa sau nghiệm thu T0-01 (gitignore, DECISIONS, PR) | | T0-01 | Xong |
-| T0-02 | CI, lint, Vitest, Playwright                          |          | T0-01b   | Sẵn sàng    |
-| T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-01               | Chưa mở    |
+| T0-02 | CI, lint, Vitest, Playwright|| T0-01b| Chưa đạt ([review](reviews/T0-02.md)) |
+| T0-02b | Migration đầu tiên, smoke test thật, CI chạy trên `main` | | T0-02 | Sẵn sàng |
+| T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-02b              | Chưa mở    |
 | T0-04 | UI primitives                                         |          | T0-03               | Chưa mở    |
 | T0-05 | UI composites                                         |          | T0-04               | Chưa mở    |
 | T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Chưa mở    |

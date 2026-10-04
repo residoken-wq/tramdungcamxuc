@@ -78,6 +78,41 @@ Chi tiết và lý do: `docs/tasks/reviews/T0-01.md`.
 
 ---
 
+## T0-02b – Migration đầu tiên + smoke test thật + CI chạy trên `main`
+
+**Phụ thuộc**: T0-02 · Lý do: `docs/tasks/reviews/T0-02.md` (CI chưa từng chạy, smoke test xanh giả vì repo chưa có migration).
+Branch mới `task/T0-02b-migrations-ci` từ `main` (đã có T0-02).
+
+**Quyết định Planning (ghi vào `docs/DECISIONS.md`)**: dự án dùng **migration ở mọi môi trường, kể cả dev**. Đặt `push: false` trong `postgresAdapter` để không lẫn schema "push" ở dev với migration. Mỗi lần đổi collection/global: `pnpm payload migrate:create <ten>` rồi `pnpm payload migrate`.
+
+**Phạm vi**
+
+1. `src/payload.config.ts`: `postgresAdapter({ push: false, migrationDir: <src/migrations>, ... })`. Đọc docs Payload 3.90 về `push`, `migrationDir`, `prodMigrations` (Context7) trước khi sửa.
+2. Tạo migration đầu tiên `pnpm payload migrate:create initial` cho schema hiện có (`users`, `media`, bảng hệ thống), commit thư mục `src/migrations/`.
+3. Script trong `package.json`: `migrate` (`payload migrate`), `migrate:create`. Cập nhật `README.md` và `docs/RUNBOOK.md`: bước chạy local thêm `pnpm migrate` trước `pnpm dev`.
+4. **DB local**: database `tramdungcamxuc` hiện đã bị dev push. Xóa và tạo lại nó (chưa có dữ liệu thật, Planning cho phép), rồi `pnpm migrate`. Thông tin DB trong `.env`.
+5. `ci.yml`:
+   - thêm bước `pnpm migrate` **trước** `pnpm build`;
+   - thêm trigger `workflow_dispatch`;
+   - giữ `pull_request`/`push` cho `main`.
+6. Smoke test thật (`tests/e2e/smoke.test.ts`), giữ 2 viewport:
+   - `GET /api/users/init` trả 200 (DB có bảng);
+   - mở `/admin` trên DB chưa có user → thấy form tạo user đầu tiên (chờ ô Email hiện ra, không chỉ kiểm tra HTTP 200);
+   - trong lúc tải `/admin` không có response 5xx nào từ `/api/*`.
+7. Chứng minh test bắt được lỗi: chạy smoke trên một DB trống **chưa migrate** → phải **đỏ**; ghi lệnh và kết quả vào báo cáo.
+
+**Không làm**: thêm collection mới (T0-06), sửa giao diện (T0-03).
+
+**Tiêu chí nghiệm thu**
+
+- [ ] `pnpm migrate && pnpm build && CI=true pnpm test:e2e` xanh trên DB mới tạo.
+- [ ] Cùng lệnh nhưng bỏ `pnpm migrate` → e2e đỏ (có log trong báo cáo).
+- [ ] Mở PR **vào `main`** → CI chạy và xanh (gửi link run).
+- [ ] Đẩy 1 commit tạm làm hỏng `tests/unit/i18n.test.ts` lên PR → CI đỏ; sau đó revert commit đó → CI xanh lại.
+- [ ] `docs/DECISIONS.md` ghi quyết định "migration ở mọi môi trường, `push: false`".
+
+---
+
 ## T0-03 – Design tokens, font, brand SVG, `/styleguide`
 
 **Phụ thuộc**: T0-01 · **Song song được với**: T0-02, T0-06
