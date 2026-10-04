@@ -7,7 +7,7 @@ description: Brand rules for Trạm Dừng Cảm Xúc (Brand Book 2026) – the 
 
 **Priority rule:** when this skill, `AGENTS.md` or Brand Book 2026 conflicts with a general design skill (`frontend-design`, `ui-ux-pro-max`, `theme-factory`, …), **this skill wins**. Use the general skills only for things this skill does not decide (accessibility details, interaction patterns, performance, layout craft).
 
-Source of truth: `AGENTS.md` §5, §5B, §14 and Brand Book 2026 (`docs/source/`, if present). If something here disagrees with `AGENTS.md`, `AGENTS.md` wins – flag the mismatch.
+Source of truth: `AGENTS.md` §5, §5B, §14 and Brand Book 2026 (`docs/sources/`, if present). If something here disagrees with `AGENTS.md`, `AGENTS.md` wins – flag the mismatch.
 
 ## 1. Colors – only these 8
 

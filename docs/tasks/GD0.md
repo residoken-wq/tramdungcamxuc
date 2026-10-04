@@ -34,6 +34,28 @@
 
 ---
 
+## T0-01b – Sửa sau nghiệm thu T0-01
+
+**Phụ thuộc**: T0-01 · **Làm trên chính branch** `task/T0-01-khoi-tao-repo`, không tạo branch mới.
+Chi tiết và lý do: `docs/tasks/reviews/T0-01.md`.
+
+**Phạm vi**
+
+1. `.gitignore`: thay dòng `.claude/` bằng `.claude/*` + `!.claude/skills/`; commit thư mục `.claude/skills/` (giữ `.mcp.json`, `.gemini/` ngoài git).
+2. `docs/DECISIONS.md`: ghi lý do `legacy-peer-deps=true` trong `.npmrc` (gói nào xung đột với gói nào); bỏ nếu không còn cần.
+3. Tạo `.prettierignore` bỏ qua file sinh tự động (`src/payload-types.ts`, `src/app/(payload)/admin/importMap.js`) để `pnpm format` và dev server không sửa qua sửa lại; thêm `.playwright-mcp/` vào `.gitignore`; commit ảnh nghiệm thu `docs/tasks/reviews/T0-01-admin-create-first-user.png`. (Kiểm chứng `/admin` với Postgres thật: Planning đã làm.)
+4. Push branch, mở PR vào `main`, ghi link PR trong báo cáo.
+
+**Không làm**: sửa vitest/playwright (T0-02), sửa layout/CSS trang chủ (T0-03).
+
+**Tiêu chí nghiệm thu**
+
+- [ ] `git ls-files .claude/skills` liệt kê đủ 6 skill, có `tdcx-brand`.
+- [ ] `git status` sạch; `pnpm lint && pnpm typecheck && pnpm build` qua.
+- [ ] PR đã mở.
+
+---
+
 ## T0-02 – CI và bộ khung test
 
 **Phụ thuộc**: T0-01 · **Song song được với**: T0-03
@@ -44,6 +66,8 @@
 2. Playwright cho e2e (`tests/e2e`), 1 test smoke: mở `/admin` trả 200. Cấu hình viewport 375 và 1440.
 3. GitHub Actions `ci.yml`: trên mỗi PR chạy install (cache pnpm) → lint → typecheck → vitest → build → playwright (dùng service Postgres trong CI).
 4. Script `pnpm test`, `pnpm test:e2e`.
+5. Chuyển từ nghiệm thu T0-01 (`docs/tasks/reviews/T0-01.md`): sửa `vitest.config.mts` để tìm test ở `tests/unit/**/*.test.ts` (bỏ `tests/int`); thêm `baseURL` và 2 project viewport 375/1440 vào `playwright.config.ts`; script `test` không được rỗng.
+6. CI không được dùng secret thật: tạo `PAYLOAD_SECRET` ngẫu nhiên trong workflow, DB là service container.
 
 **Tiêu chí nghiệm thu**
 
@@ -67,6 +91,8 @@
 
 **Tiêu chí nghiệm thu**
 
+- [ ] Layout `(site)` sạch template Payload: `lang="vi"`, không còn title "Payload Blank Template", nền đen, CSS template hay chữ "Welcome to your new project" (trang chủ tạm chỉ cần logo + tên **Trạm Dừng Cảm Xúc**, T0-09 thay bằng trang Puck).
+- [ ] Dùng skill `tdcx-brand`; không dùng màu/font ngoài skill.
 - [ ] `/styleguide` hiển thị Anton có dấu tiếng Việt đúng (chụp ảnh "Ữ, Ộ, Ặ, Ỷ" trong PR).
 - [ ] Dùng class `bg-red-500` → không có hiệu lực / lint báo.
 - [ ] Đẹp ở 375px và 1440px.
@@ -167,7 +193,7 @@ Yêu cầu chung: điều hướng bàn phím, focus ring rõ, tương phản WC
    - 3 gói CLEAR / BUILD / SHINE với `components[]` đúng bảng, `grantsProduct` trỏ tới Habit Tracker số và EQ Buddy số.
    - Habit Tracker số và EQ Buddy số: `price` 250000, `salePrice` 178000, `trialDays` 21.
    - Bộ thẻ vật lý: `type = physical_external`, `externalUrl` = placeholder Shopee.
-   - 16 `diagnosticQuestions`, 11 `techniques`, 20 `lessons` trong 4 module: lấy từ file Excel Habit Hack ở `docs/source/` nếu có; **nếu không có, tạo placeholder ghi rõ "[MẪU] Tình huống 1"…** và báo trong báo cáo.
+   - 16 `diagnosticQuestions`, 11 `techniques`, 20 `lessons` trong 4 module: lấy từ file Excel Habit Hack ở `docs/sources/` nếu có; **nếu không có, tạo placeholder ghi rõ "[MẪU] Tình huống 1"…** và báo trong báo cáo.
    - 6 `legalPages` có tiêu đề + slug đúng AGENTS.md 8.1, nội dung rỗng.
    - 3 `eqCards` mẫu, 3 `testimonials` mẫu (`consent=false`, tên "[MẪU]").
    - `siteSettings` mặc định, `navigation` với menu đúng mục 8.1.

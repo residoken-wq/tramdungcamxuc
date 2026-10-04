@@ -43,7 +43,7 @@ Quy tắc chuyển giai đoạn: chỉ mở task GĐ sau khi cổng GĐ trước
 
 1. **Đưa `AGENTS.md` ra thư mục gốc repo.** Hiện file nằm ở `agent/AGENTS.md`, trong khi chính file ghi "Đặt ở thư mục gốc repo". Antigravity đọc `AGENTS.md` ở gốc. Task T0-01 làm việc này.
 2. Đọc `docs/tasks/README.md`: quy trình, mẫu prompt, bảng trạng thái.
-3. Đưa file nguồn còn thiếu vào `docs/source/` (xem mục 6 – nếu thiếu, T0-07 sẽ seed dữ liệu giả có đánh dấu MẪU).
+3. Đưa file nguồn còn thiếu vào `docs/sources/` (xem mục 6 – nếu thiếu, T0-08 sẽ seed dữ liệu giả có đánh dấu MẪU).
 
 ### 3.2 Nhịp làm việc
 
@@ -137,9 +137,9 @@ E4-1 Thanh toán gói tự động qua webhook + cấp quyền cộng đồng/l�
 | Đầu vào                                                                                           | Người lo  | Chặn task                                              |
 | ------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------ |
 | Tài khoản GitHub repo, Vercel, Neon/Supabase, Cloudflare (R2 + Turnstile), Resend                 | IT        | T0-10 (deploy); T0-01..09 chạy local được              |
-| `Growth_Mirror_Pricing_Calculator.xlsx` → `docs/source/`                                          | Hana      | T0-08 (seed). Thiếu thì seed theo bảng trong AGENTS.md |
-| File Excel Habit Hack (16 tình huống, 11 kỹ thuật, 20 video) → `docs/source/`                     | Hana      | T0-08 (seed), T1-14 (quiz)                             |
-| Brand Book 2026 (PDF) → `docs/source/`                                                            | Hana      | T0-03 (tham chiếu; token đã có trong AGENTS.md)        |
+| `Growth_Mirror_Pricing_Calculator.xlsx` → `docs/sources/`                                          | Hana      | T0-08 (seed). Thiếu thì seed theo bảng trong AGENTS.md |
+| File Excel Habit Hack (16 tình huống, 11 kỹ thuật, 20 video) → `docs/sources/`                     | Hana      | T0-08 (seed), T1-14 (quiz)                             |
+| Brand Book 2026 (PDF) → `docs/sources/`                                                            | Hana      | T0-03 (tham chiếu; token đã có trong AGENTS.md)        |
 | Logo PNG nền trong (sáng/tối/đơn sắc), ảnh chân dung → `public/brand/`                            | Hana      | T0-03 dùng placeholder; T1-16 cần bản thật             |
 | Copy trang chủ 2 lối vào, mô tả Growth Mirror / Thinking Mirror / B2B, 3–6 testimonial có consent | Hana      | T1-16 (dựng trang thật); GĐ 1 cổng                     |
 | PDF ebook, toolkit EQ                                                                             | Hana      | T1-07 nghiệm thu thật                                  |

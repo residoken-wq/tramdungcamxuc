@@ -19,7 +19,8 @@ Trước khi code, đọc theo thứ tự:
 Quy trình:
 - Tạo branch `task/T0-03-<mo-ta-ngan>` từ main.
 - Lập implementation plan ngắn (artifact) và chờ tôi duyệt trước khi sửa code nếu task có nhãn [REVIEW] hoặc [SPIKE]. Task khác: làm luôn.
-- Đọc docs chính thức của Payload / Next.js / Puck cho đúng phiên bản đang cài trước khi dùng API.
+- Đọc docs chính thức của Payload / Next.js / Puck cho đúng phiên bản đang cài trước khi dùng API (dùng MCP Context7; với Next.js đọc thêm node_modules/next/dist/docs/).
+- Task có giao diện: dùng skill `tdcx-brand` trước, sau đó mới đến frontend-design / ui-ux-pro-max / vercel-react-best-practices. Khi xung đột, `tdcx-brand` thắng.
 - Chỉ làm trong phạm vi task. Ý tưởng ngoài phạm vi → docs/BACKLOG.md.
 - Spec thiếu hoặc mâu thuẫn → dừng và hỏi, không đoán.
 - Chạy `pnpm lint && pnpm typecheck && pnpm test` trước khi báo xong.
@@ -47,8 +48,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 
 | Mã    | Task                                                  | Nhãn     | Phụ thuộc           | Trạng thái |
 | ----- | ----------------------------------------------------- | -------- | ------------------- | ---------- |
-| T0-01 | Khởi tạo repo Next.js + Payload + Postgres + Tailwind |          | –                   | Xong       |
-| T0-02 | CI, lint, Vitest, Playwright                          |          | T0-01               | Sẵn sàng   |
+| T0-01 | Khởi tạo repo Next.js + Payload + Postgres + Tailwind |          | –                   | Đạt có điều kiện ([review](reviews/T0-01.md)) |
+| T0-01b | Sửa sau nghiệm thu T0-01 (gitignore, DECISIONS, PR) | | T0-01 | Sẵn sàng |
+| T0-02 | CI, lint, Vitest, Playwright                          |          | T0-01b (đã merge)   | Chưa mở    |
 | T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-01               | Chưa mở    |
 | T0-04 | UI primitives                                         |          | T0-03               | Chưa mở    |
 | T0-05 | UI composites                                         |          | T0-04               | Chưa mở    |
