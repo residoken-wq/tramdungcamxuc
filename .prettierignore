@@ -1,0 +1,10 @@
+# Auto-generated Payload files
+src/payload-types.ts
+src/app/(payload)/admin/importMap.js
+
+# Dependencies and build outputs
+node_modules/
+.next/
+dist/
+build/
+coverage/

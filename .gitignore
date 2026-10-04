@@ -39,7 +39,9 @@ next-env.d.ts
 /playwright/.cache/
 
 # IDE & local agent config
-.claude/
+.claude/*
+!.claude/skills/
 .gemini/
 .mcp.json
+.playwright-mcp/
 
