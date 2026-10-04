@@ -54,15 +54,3 @@
     color: var(--color-deep-navy);
   }
 }
-
-@layer utilities {
-  .bg-brand-gradient {
-    background: linear-gradient(
-      135deg,
-      #E9DDF9 0%,
-      #FDE6F6 35%,
-      #F6E9B8 70%,
-      #FAF7F4 100%
-    );
-  }
-}

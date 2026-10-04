@@ -1,6 +1,8 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import tailwindConfig from '../../tailwind.config'
-import { BRAND_COLORS_HEX, BrandColorToken } from '../../src/lib/brand/tokens'
+import { BRAND_COLORS_HEX, BRAND_COLORS_RGB, BrandColorToken } from '../../src/lib/brand/tokens'
 import postcss from 'postcss'
 import tailwindcss from 'tailwindcss'
 
@@ -120,5 +122,26 @@ describe('Brand Design Tokens & Tailwind Palette Lock (T0-03)', () => {
     expect(extend?.borderRadius?.card).toBe('20px')
     expect(extend?.boxShadow?.soft).toBeDefined()
     expect(extend?.backgroundImage?.['brand-gradient']).toBeDefined()
+  })
+
+  // 6. Kiểm tra đồng bộ CSS variables trong styles.css với tokens.ts (T0-03b / S2)
+  it('styles.css phải khai báo chính xác tất cả biến --color-<token> và --color-<token>-rgb khớp với tokens.ts', () => {
+    const cssPath = path.resolve(__dirname, '../../src/app/(site)/styles.css')
+    const cssContent = fs.readFileSync(cssPath, 'utf-8')
+
+    for (const [token, hex] of Object.entries(BRAND_COLORS_HEX)) {
+      const hexRegex = new RegExp(`--color-${token}:\\s*${hex};`, 'i')
+      expect(
+        hexRegex.test(cssContent),
+        `styles.css phải chứa biến --color-${token}: ${hex}; khớp với tokens.ts`
+      ).toBe(true)
+
+      const rgb = BRAND_COLORS_RGB[token as BrandColorToken]
+      const rgbRegex = new RegExp(`--color-${token}-rgb:\\s*${rgb};`, 'i')
+      expect(
+        rgbRegex.test(cssContent),
+        `styles.css phải chứa biến --color-${token}-rgb: ${rgb}; khớp với tokens.ts`
+      ).toBe(true)
+    }
   })
 })

@@ -60,12 +60,5 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
     await expect(page.getByText('Butterfly')).toBeVisible()
     await expect(page.getByText('Leaf')).toBeVisible()
     await expect(page.getByText('ThinLine')).toBeVisible()
-
-    // 6. Chụp ảnh styleguide ở 375px và 1440px phục vụ nghiệm thu PR
-    const width = page.viewportSize()?.width || 1440
-    await page.screenshot({
-      path: `docs/tasks/screenshots/styleguide-${width}px.png`,
-      fullPage: true,
-    })
   })
 })

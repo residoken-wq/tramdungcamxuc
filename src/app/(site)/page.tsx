@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link'
 import { Logo, HeartLine } from '@/components/brand'
 
 export default function HomePage() {
@@ -17,21 +16,6 @@ export default function HomePage() {
         <p className="font-quote text-lg italic text-deep-navy/85">
           Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.
         </p>
-
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href="/styleguide"
-            className="rounded-lg bg-deep-navy px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            Xem Brand Styleguide
-          </Link>
-          <Link
-            href="/admin"
-            className="rounded-lg border border-deep-navy/25 bg-transparent px-4 py-2 text-sm font-semibold text-deep-navy transition-colors hover:bg-deep-navy/5"
-          >
-            Quản trị CMS
-          </Link>
-        </div>
       </div>
     </main>
   )

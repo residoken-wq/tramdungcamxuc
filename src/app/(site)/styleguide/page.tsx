@@ -18,6 +18,8 @@ import {
   Leaf,
 } from '@/components/brand'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Brand Styleguide',
   description: 'Bảng quy chuẩn thương hiệu Trạm Dừng Cảm Xúc (Brand Book 2026)',
@@ -28,11 +30,12 @@ export const metadata: Metadata = {
 }
 
 export default async function StyleguidePage() {
-  const isDevOrTest =
-    process.env.NODE_ENV !== 'production' || Boolean(process.env.CI)
+  const isPublic =
+    process.env.NODE_ENV !== 'production' ||
+    process.env.STYLEGUIDE_PUBLIC === 'true'
 
   // Trong môi trường production thật, chỉ người dùng đã đăng nhập admin Payload mới có quyền xem
-  if (!isDevOrTest) {
+  if (!isPublic) {
     const headers = await getHeaders()
     const payloadConfig = await config
     const payload = await getPayload({ config: payloadConfig })
@@ -71,7 +74,7 @@ export default async function StyleguidePage() {
         <section aria-labelledby="heading-signature">
           <h2
             id="heading-signature"
-            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-accent-pink"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
           >
             1. Tiêu đề 2 tầng màu đặc trưng (Signature Two-Tone Heading)
           </h2>
@@ -104,7 +107,7 @@ export default async function StyleguidePage() {
           <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
             <h2
               id="heading-colors"
-              className="font-ui text-xs font-bold tracking-widest uppercase text-accent-pink"
+              className="font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
             >
               2. Bảng 8 màu chuẩn thương hiệu (Chỉ dùng các token này)
             </h2>
@@ -154,7 +157,7 @@ export default async function StyleguidePage() {
         <section aria-labelledby="heading-typography">
           <h2
             id="heading-typography"
-            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-accent-pink"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
           >
             3. Typography & Kiểm tra dấu tiếng Việt (Font Check)
           </h2>
@@ -204,7 +207,7 @@ export default async function StyleguidePage() {
                 </p>
                 <p className="font-bold text-base">
                   <span className="font-semibold text-xs uppercase text-deep-navy/50 mr-2">Bold 700:</span>
-                  Đặt phiên trải nghiệm 149.000đ · Dùng thử 21 ngày miễn phí · Khám phá cách Hana đồng hành.
+                  Đặt phiên trải nghiệm · Dùng thử 21 ngày miễn phí · Khám phá cách Hana đồng hành.
                 </p>
               </div>
             </div>
@@ -228,7 +231,7 @@ export default async function StyleguidePage() {
         <section aria-labelledby="heading-tokens">
           <h2
             id="heading-tokens"
-            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-accent-pink"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
           >
             4. Spacing (&ldquo;Khoảng thở&rdquo;), Bo góc, Bóng &amp; Nền Gradient
           </h2>
@@ -291,7 +294,7 @@ export default async function StyleguidePage() {
         <section aria-labelledby="heading-assets">
           <h2
             id="heading-assets"
-            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-accent-pink"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
           >
             5. Visual Assets – Bộ SVG nhận diện thương hiệu
           </h2>
