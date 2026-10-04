@@ -61,4 +61,84 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
     await expect(page.getByText('Leaf')).toBeVisible()
     await expect(page.getByText('ThinLine')).toBeVisible()
   })
+
+  test('UI Primitives (T0-04) hiển thị đầy đủ trên /styleguide và kiểm tra trạng thái tương tác', async ({
+    page,
+  }) => {
+    await page.goto('/styleguide')
+
+    // 1. Kiểm tra Section 6 UI Primitives
+    await expect(page.getByText('6. Bộ UI Primitives nền tảng')).toBeVisible()
+
+    // 2. Button variants & states
+    await expect(page.getByRole('button', { name: 'Nút Primary (CTA)' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Nút Secondary' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Nút Ghost' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Đang xử lý' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Bị vô hiệu hóa' })).toBeDisabled()
+    await expect(page.getByRole('link', { name: 'Nút dạng Link (Next.js)' })).toBeVisible()
+
+    // 3. Card variants
+    await expect(page.getByText('Variant White')).toBeVisible()
+    await expect(page.getByText('Variant Soft Pink')).toBeVisible()
+    await expect(page.getByText('Variant Lavender Mist')).toBeVisible()
+
+    // 4. SectionHeader
+    await expect(page.getByText('CHUỖI BÀI HỌC CẢM XÚC')).toBeVisible()
+    await expect(page.getByText('Nhận diện cơn bão.')).toBeVisible()
+    await expect(page.getByText('Tìm về điểm tựa.')).toBeVisible()
+
+    // 5. QuoteBlock
+    await expect(page.getByText(/Cảm xúc không phải là kẻ thù cần chế ngự/)).toBeVisible()
+    await expect(page.getByText('Hana Lương').first()).toBeVisible()
+
+    // 6. PriceTag & StatusBadge
+    await expect(page.getByText('250.000đ', { exact: true })).toBeVisible()
+    await expect(page.getByText('178.000đ', { exact: true })).toBeVisible()
+    await expect(page.getByText('Sắp ra mắt', { exact: true })).toBeVisible()
+    await expect(page.getByText('Đang mở bán', { exact: true })).toBeVisible()
+    await expect(page.getByText('Miễn phí', { exact: true })).toBeVisible()
+    await expect(page.getByText('Tư vấn', { exact: true })).toBeVisible()
+    await expect(page.getByText('Ẩn', { exact: true })).toBeVisible()
+  })
+
+  test('Kiểm tra A11y & Phím tắt (T0-04): mở Modal bằng bàn phím → Esc đóng → focus về nút mở; Tab thấy focus ring', async ({
+    page,
+  }) => {
+    await page.goto('/styleguide')
+
+    const modalTrigger = page.locator('#open-modal-demo-btn')
+    await expect(modalTrigger).toBeVisible()
+
+    // 1. Focus vào nút mở Modal bằng bàn phím và kiểm tra focus ring
+    await modalTrigger.focus()
+    await expect(modalTrigger).toBeFocused()
+
+    // 2. Mở Modal bằng phím Enter
+    await page.keyboard.press('Enter')
+
+    const dialog = page.locator('div[role="dialog"]')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByText('Trạm Dừng Nhận Diện Cảm Xúc')).toBeVisible()
+
+    // 3. Đóng Modal bằng phím Escape
+    await page.keyboard.press('Escape')
+
+    // 4. Modal phải ẩn hoàn toàn
+    await expect(dialog).not.toBeVisible()
+
+    // 5. Focus phải tự động quay trở về nút mở Modal
+    await expect(modalTrigger).toBeFocused()
+
+    // 6. Tab qua các nút để xác minh trạng thái focus-visible
+    await page.keyboard.press('Tab')
+    const toastSuccessBtn = page.getByRole('button', { name: 'Bật Toast Thành công' })
+    await expect(toastSuccessBtn).toBeFocused()
+
+    // Kích hoạt Toast và kiểm tra vai trò role="status"
+    await page.keyboard.press('Enter')
+    const toast = page.locator('div[role="status"]')
+    await expect(toast).toBeVisible()
+    await expect(toast.getByText('Đã lưu thói quen thành công!')).toBeVisible()
+  })
 })
