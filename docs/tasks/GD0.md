@@ -205,17 +205,50 @@ Hiện trạng: `public/brand/` **trống**, Brand Book PDF **chưa có** trong 
 
 ---
 
-## T0-05 – UI composites
+## T0-04b – Sửa sau nghiệm thu T0-04
 
-**Phụ thuộc**: T0-04
+**Phụ thuộc**: T0-04 · **Làm trên chính branch** `task/T0-04-ui-primitives`, cùng PR. Chi tiết và lý do: `docs/tasks/reviews/T0-04.md`.
 
-**Phạm vi**: `ProductCard` (nhận object product, chưa gắn logic CTA – T1-08 làm) · `TestimonialCard` (không hiện `role` nếu `consent` false – logic ở component, có test) · `LeadForm` (UI thuần: tên, email, checkbox consent, nút gửi; nhận `onSubmit`, chưa gọi API) · `EmotionPicker` (bộ cảm xúc cố định khai báo trong `src/lib/emotions.ts`) · `ProgressGrid` (21 ô, trạng thái done / missed / today / future / locked) · `Navbar`, `Footer` (khung tĩnh, dữ liệu truyền qua props; T1-05 nối CMS).
+**Phạm vi**: sửa B1–B3 và S1–S3 trong file review; thêm 3 test ở mục "Test phải thêm".
 
 **Tiêu chí nghiệm thu**
 
-- [ ] Tất cả hiện trên `/styleguide` với dữ liệu giả.
-- [ ] `ProgressGrid` không cho bấm ô `future`.
-- [ ] Navbar mobile có menu mở/đóng, dùng được bằng bàn phím.
+- [ ] Tải `/styleguide`: focus ở `body`, `scrollY` = 0 (có test e2e).
+- [ ] Modal chứa input do cha giữ state: gõ liên tục, focus không nhảy (có test).
+- [ ] Bẫy focus vẫn đúng: Tab vòng trong modal, Shift+Tab ngược, Esc đóng và trả focus.
+- [ ] Giá gốc PriceTag ≥ 4.5:1; bảng DECISIONS có các cặp chữ có độ mờ.
+- [ ] Lint, typecheck, test, e2e xanh; `git status` sạch; CI xanh trên PR.
+
+---
+
+## T0-05 – UI composites
+
+**Phụ thuộc**: T0-04b (đã merge) · Dùng skill **`tdcx-brand`**; ghép từ primitives T0-04, không tạo lại Button/Card/PriceTag…
+Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navbar, Footer) và `src/components/habit/` (EmotionPicker, ProgressGrid). Tất cả nhận dữ liệu qua props (CMS nối ở GĐ 1), hiển thị trên `/styleguide` với dữ liệu `[MẪU]`.
+
+**Phạm vi**
+
+1. **`ProductCard`** – props theo field `products` (AGENTS.md mục 7): `name`, `shortDescription`, `coverImage` (`src` + `alt` bắt buộc), `price`, `salePrice`, `saleStatus`, `trialDays`, `journeyStep`. Dùng `Card`, `PriceTag`, `StatusBadge`; ảnh qua `next/image`. Vùng nút CTA nhận qua prop `cta` (ReactNode) – **chưa** tự quyết nút theo `saleStatus` (T1-08). `saleStatus = hidden` → không render.
+2. **`TestimonialCard`** – `consent = false` → **không render gì cả** (AGENTS.md mục 7: testimonial chỉ hiển thị khi có consent); có consent → quote (Playfair Italic), tên, `role`, ảnh tùy chọn. Unit test cả hai nhánh.
+3. **`LeadForm`** – UI thuần, chưa gọi API: tên, email, checkbox đồng ý nhận tin (bắt buộc, nhãn có link tới trang chính sách bảo mật qua prop `privacyHref`), ô honeypot ẩn (ẩn với người dùng và trình đọc màn hình, `tabIndex=-1`, `autocomplete="off"`); nhãn hiển thị luôn (không dùng placeholder thay nhãn); lỗi tiếng Việt hiện ngay dưới ô; trạng thái đang gửi / thành công / lỗi; nhận `onSubmit(values)` trả Promise. Chữ trong `vi.ts`.
+4. **`EmotionPicker`** – chọn **một** cảm xúc từ bộ cố định trong `src/lib/emotions.ts` (`key`, nhãn tiếng Việt, icon SVG nét mảnh – **không dùng emoji**, theo `tdcx-brand` / `ui-ux-pro-max`). Bộ mặc định đánh dấu `// PENDING Q14` – chờ Hana chốt. Dạng radio group: phím mũi tên di chuyển, `aria-checked`, vùng chạm ≥ 44px.
+5. **`ProgressGrid`** – 21 ô, trạng thái `done` / `missed` / `today` / `future` / `locked`; ô `done` có thể hiện icon cảm xúc đã chọn; ô `future` và `locked` **không bấm được**; mỗi ô có nhãn cho trình đọc màn hình ("Ngày 5: đã hoàn thành"); màu dùng `mint-haze` cho done (theo mục 5), không chỉ dựa vào màu để phân biệt trạng thái (thêm icon/chữ). Lưới đọc được ở 375px.
+6. **`Navbar`** – props `items[]` (`label`, `href`) + `cta` (`label`, `href`). Thứ tự mẫu theo AGENTS.md 8.1: Về Hana · Thư viện · Test thói quen 5 phút · Growth Mirror · Doanh nghiệp · nút nổi bật "Đặt phiên trải nghiệm" (`Button` primary). Mobile: nút mở menu (`aria-expanded`, `aria-controls`), Esc đóng, focus về nút mở; mục **"Test thói quen 5 phút" và nút CTA phải nhìn thấy trên mobile** (lead magnet chính – không giấu hoàn toàn trong menu đóng, ít nhất CTA hoặc quiz hiện ngoài thanh). Logo dùng `Logo`.
+7. **`Footer`** – props `legalLinks[]` (6 trang pháp lý theo `order`), `sellerInfo` (tên, MST?, địa chỉ, điện thoại, email – trường nào rỗng thì ẩn), liên hệ/mạng xã hội. Năm bản quyền tự tính.
+
+**Không làm**: gọi API/CMS, logic CTA theo `saleStatus` (T1-08), FloatingChat (T1-05), tracker thật (GĐ 2).
+
+**Test**
+
+- Unit: TestimonialCard (consent false → rỗng); ProductCard (`hidden` → rỗng; giá qua `PriceTag`); LeadForm (thiếu email / sai định dạng / chưa tick consent → lỗi tiếng Việt, honeypot có giá trị → không gọi `onSubmit`); ProgressGrid (ô future/locked không gọi `onSelect`); EmotionPicker (mũi tên đổi lựa chọn).
+- E2E (375 + 1440) trên `/styleguide`: Navbar mobile mở/đóng bằng bàn phím; Tab qua LeadForm theo thứ tự hợp lý; tải trang không bị cuộn/cướp focus.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] 7 component trên `/styleguide` ở 375 / 768 / 1440, đủ trạng thái (rỗng, lỗi, đang gửi, thành công).
+- [ ] Mọi cặp chữ/nền ≥ 4.5:1 (chữ thường); bổ sung bảng DECISIONS nếu có cặp mới.
+- [ ] Không emoji, không màu/font ngoài `tdcx-brand`; mọi nhãn cố định trong `vi.ts`; dữ liệu mẫu ghi `[MẪU]`, không dùng tên/ảnh/trích dẫn thật của Hana.
+- [ ] Unit + e2e xanh trong CI; `git status` sạch sau khi chạy test.
 
 ---
 
