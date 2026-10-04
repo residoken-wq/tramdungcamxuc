@@ -5,6 +5,7 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   ci:
@@ -65,6 +66,9 @@ jobs:
 
       - name: Run Unit Tests (Vitest)
         run: pnpm test
+
+      - name: Run Database Migrations
+        run: pnpm migrate
 
       - name: Build Next.js and Payload
         run: pnpm build
