@@ -143,20 +143,65 @@ Hiện trạng: `public/brand/` **trống**, Brand Book PDF **chưa có** trong 
 
 ---
 
-## T0-04 – UI primitives
+## T0-03b – Sửa sau nghiệm thu T0-03
 
-**Phụ thuộc**: T0-03
+**Phụ thuộc**: T0-03 · **Làm trên chính branch** `task/T0-03-design-tokens`, cùng PR. Chi tiết và lý do: `docs/tasks/reviews/T0-03.md`.
 
-**Phạm vi** (`src/components/ui/`, mỗi component có variant hiển thị trên `/styleguide`):
-`Button` (primary accent-pink / secondary / ghost; size S/M/L; trạng thái loading, disabled; render được dạng link) · `Card` · `SectionHeader` (seriesLabel + title dòng 1 navy + title dòng 2 magenta + emotionLine Playfair) · `QuoteBlock` · `PriceTag` (giá gốc gạch ngang + giá ưu đãi, định dạng `250.000đ` bằng một hàm `formatVnd` dùng chung, có unit test) · `StatusBadge` (5 `saleStatus`) · `Modal` · `Toast`.
+**Phạm vi** (đúng các mục B1–B3, S1–S4 trong file review)
 
-Yêu cầu chung: điều hướng bàn phím, focus ring rõ, tương phản WCAG AA (ghi cặp màu nào đạt/không đạt vào DECISIONS.md), không nhận prop màu tự do — chỉ nhận token brand.
+1. **B1** `/styleguide`: bỏ điều kiện `process.env.CI`; dùng `STYLEGUIDE_PUBLIC=true` (khai báo trong `ci.yml` cho bước e2e và trong `.env.example` để trống); thêm `export const dynamic = 'force-dynamic'`.
+2. **B2** `tests/e2e/styleguide.test.ts`: bỏ việc chụp ảnh vào `docs/`. Chuyển 2 ảnh hiện có sang `docs/tasks/reviews/T0-03-styleguide-375px.png` và `...-1440px.png`, xóa thư mục `docs/tasks/screenshots/`.
+3. **B3** thêm `.gitattributes` (`* text=auto eol=lf`, `*.png binary`, `*.jpg binary`, `*.ico binary`); commit riêng `chore: normalize line endings` với `git add --renormalize .`.
+4. **S1** trang chủ tạm: bỏ nút "Xem Brand Styleguide" và "Quản trị CMS".
+5. **S2** xóa `.bg-brand-gradient` trong `@layer utilities` của `styles.css` (giữ bản trong `tailwind.config.ts`); thêm unit test đọc `src/app/(site)/styles.css`, so `--color-<token>` và `--color-<token>-rgb` với `tokens.ts`.
+6. **S3** nhãn section chữ nhỏ trong styleguide: `accent-pink` → `bright-magenta`.
+7. **S4** câu mẫu styleguide: bỏ giá tiền.
+8. Ghi vào `docs/BACKLOG.md`: favicon chờ logo thật.
 
 **Tiêu chí nghiệm thu**
 
-- [ ] Tất cả hiện trên `/styleguide` ở 375 và 1440.
-- [ ] Unit test `formatVnd` (0, 149000, 1750000, null).
-- [ ] Modal đóng bằng Esc và trả focus về nút mở.
+- [ ] `CI=1 pnpm build` cho ra `ƒ /styleguide` (dán dòng log vào báo cáo).
+- [ ] `pnpm start` không có `STYLEGUIDE_PUBLIC`, chưa đăng nhập → `/styleguide` 404.
+- [ ] Chạy `pnpm dev` rồi `pnpm test:e2e` → `git status` sạch.
+- [ ] CI xanh trên PR vào `main` (link run).
+
+---
+
+## T0-04 – UI primitives
+
+**Phụ thuộc**: T0-03b (đã merge) · Dùng skill **`tdcx-brand`**, sau đó `ui-ux-pro-max` / `vercel-react-best-practices`.
+
+**Phạm vi** (`src/components/ui/`, mỗi component có variant hiển thị trên `/styleguide`):
+
+- `Button`: variant `primary` (nền `accent-pink`), `secondary` (nền `deep-navy`, chữ trắng), `ghost` (viền mảnh, chữ `deep-navy`); size S / M / L; trạng thái loading (có `aria-busy`, giữ nguyên độ rộng), disabled; render được dạng link (`href` → `next/link`) mà không lồng `<a>` trong `<button>`; vùng chạm ≥ 44px.
+- `Card` (bo góc `rounded-card`, viền mảnh, `shadow-soft`; biến thể nền `white` / `soft-pink` / `lavender-mist`).
+- `SectionHeader`: `seriesLabel` (Montserrat) + `title` dòng 1 `deep-navy` + dòng 2 `bright-magenta` (Anton) + `emotionLine` (Playfair Italic); khoảng thở đúng mục 5; cấp heading chọn được (`h1`/`h2`/`h3`).
+- `QuoteBlock` (Playfair Italic, có `cite` tùy chọn).
+- `PriceTag`: giá gốc gạch ngang + giá ưu đãi; hàm dùng chung `formatVnd()` trong `src/lib/format.ts` → `250.000đ`; `null`/không có giá → không hiện gì. Có phần đọc cho trình đọc màn hình ("Giá gốc …, giá ưu đãi …").
+- `StatusBadge` cho 5 `saleStatus` (`coming_soon`, `on_sale`, `free`, `consult`, `hidden`); nhãn tiếng Việt trong `src/lib/i18n/vi.ts`.
+- `Modal` (đóng bằng Esc / nút đóng / click nền; khóa focus bên trong; trả focus về nút mở; khóa cuộn nền).
+- `Toast` (thành công / lỗi / thông tin; `role="status"` / `role="alert"`; tự ẩn, dừng khi hover; tôn trọng `prefers-reduced-motion`).
+
+**Quy tắc tương phản (bắt buộc – số đo trong `docs/tasks/reviews/T0-03.md`)**
+
+- Chữ trắng trên `accent-pink` chỉ đạt 3.73:1 → nút `primary` phải dùng **chữ lớn**: ≥ 18.66px **đậm** (Montserrat 700) ở mọi size; nếu size S không đạt được thì size S không có variant `primary` (dùng `secondary`). Chờ Hana chốt Q13; trước đó làm theo quy tắc này.
+- Không dùng `accent-pink` cho chữ thường < 18.66px trên nền sáng (3.50:1). Link chữ nhỏ dùng `bright-magenta` hoặc `deep-navy` + gạch chân.
+- Focus ring: 2px `deep-navy` (hoặc `white` trên nền tối), có `outline-offset`, luôn nhìn thấy khi điều hướng bàn phím.
+- Ghi bảng cặp màu đạt / không đạt vào `docs/DECISIONS.md`.
+
+**Không nhận prop màu tự do** – chỉ nhận variant hoặc tên token brand. Mọi nhãn UI cố định lấy từ `vi.ts`.
+
+**Test**
+
+- Unit: `formatVnd` (0 → `0đ`, 149000 → `149.000đ`, 1750000 → `1.750.000đ`, null/undefined → chuỗi rỗng, số âm → báo lỗi hoặc rỗng – ghi rõ); `StatusBadge` đủ 5 trạng thái; `Button` dạng link không lồng `<a>` trong `<button>`.
+- E2E (375 + 1440) trên `/styleguide`: mở Modal bằng bàn phím → Esc đóng → focus về nút mở; Tab qua các Button thấy focus ring.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Tất cả component hiện trên `/styleguide` ở 375 và 1440, có trạng thái hover / focus / disabled / loading.
+- [ ] Unit + e2e ở trên xanh trong CI; `git status` sạch sau khi chạy test.
+- [ ] Bảng tương phản trong `DECISIONS.md`; không cặp chữ thường nào < 4.5:1.
+- [ ] Không có hex thô hay màu ngoài 8 token trong `src/components/ui/`.
 
 ---
 
