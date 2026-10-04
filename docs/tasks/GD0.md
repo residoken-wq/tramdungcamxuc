@@ -115,24 +115,31 @@ Branch mới `task/T0-02b-migrations-ci` từ `main` (đã có T0-02).
 
 ## T0-03 – Design tokens, font, brand SVG, `/styleguide`
 
-**Phụ thuộc**: T0-01 · **Song song được với**: T0-02, T0-06
+**Phụ thuộc**: T0-02b · Dùng skill **`tdcx-brand`** (thắng mọi skill thiết kế khác).
+Hiện trạng: `public/brand/` **trống**, Brand Book PDF **chưa có** trong `docs/sources/` → dùng token trong `AGENTS.md` mục 5 / skill `tdcx-brand`, logo dùng placeholder. Không tự vẽ logo, không lấy ảnh từ nơi khác.
 
 **Phạm vi**
 
-1. 8 màu brand (AGENTS.md mục 5) thành CSS variables + Tailwind theme. **Không** để màu mặc định Tailwind (red, blue…) dùng được trong class — cấu hình thay thế palette, chỉ giữ `white`, `transparent`, `current` và 8 màu brand (+ biến thể opacity).
-2. Font qua `next/font/google`, subset `vietnamese` + `latin`: Anton (H1/H2), Montserrat 400/600/700 (UI, đoạn văn), Playfair Display Italic (quote). Biến font: `--font-display`, `--font-ui`, `--font-quote`.
-3. Thang spacing theo mục 5 "Khoảng thở"; bo góc `card` 16–24px; bóng nhẹ một mức.
-4. Gradient nền pastel (tím – hồng – be – trắng) làm utility `bg-brand-gradient`.
-5. SVG brand placeholder trong `src/components/brand/`: `HeartLine`, `ThinLine`, `Valve`, `Butterfly`, `Leaf`, `Logo` (đọc PNG từ `public/brand/`, nếu chưa có thì hiện khung chữ "LOGO – chờ file từ Hana"; min width 120px).
-6. Trang `/styleguide` (chỉ hiện ở môi trường không phải production hoặc khi đăng nhập admin): bảng màu, mọi cỡ chữ với câu mẫu tiếng Việt có dấu đầy đủ ("Trạm Dừng Cảm Xúc – Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng."), tiêu đề 2 tầng màu, icon brand.
+1. **Màu**: 8 màu brand thành CSS variables (`--color-deep-navy`…) + Tailwind theme. Tailwind 3.4: đặt `theme.colors` (thay thế, **không** `extend`) gồm `white`, `transparent`, `current` và 8 token (dùng biến CSS để có biến thể opacity). Màu mặc định Tailwind (red, blue, gray…) không còn sinh class.
+2. **Font** qua `next/font/google`, subset `vietnamese` + `latin`, `display: swap`: Anton 400 (H1/H2), Montserrat 400/600/700 (UI, đoạn văn), Playfair Display Italic (quote). Biến `--font-display`, `--font-ui`, `--font-quote`; map vào `theme.fontFamily`. Chỉ nạp font trong layout `(site)` – không đụng giao diện `/admin` của Payload.
+3. **Spacing / bo góc / bóng** theo mục 5 "Khoảng thở": token tên rõ nghĩa (vd. `space-breath-sm/md/lg`), `rounded-card` 16–24px, một mức bóng nhẹ.
+4. **Gradient** nền pastel tím – hồng – be – trắng: utility `bg-brand-gradient`.
+5. **Brand SVG** trong `src/components/brand/`: `HeartLine`, `ThinLine`, `Valve`, `Butterfly`, `Leaf` (nét mảnh, `currentColor`, `aria-hidden` khi trang trí) và `Logo` (đọc PNG từ `public/brand/`; chưa có file → khung chữ "LOGO – chờ file từ Hana", min width 120px).
+6. **Dọn template Payload** khỏi layout `(site)`: `lang="vi"`, metadata tạm "Trạm Dừng Cảm Xúc", bỏ `styles.css` template (nền đen, font system), trang chủ tạm chỉ có `Logo` + tên **Trạm Dừng Cảm Xúc** trên nền `warm-ivory`/gradient (T0-09 thay bằng trang Puck).
+7. **`/styleguide`**: bảng 8 màu (tên token + hex), thang chữ với câu mẫu "Trạm Dừng Cảm Xúc – Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng." và dòng kiểm tra dấu "Ữ Ộ Ặ Ỷ Ẫ Ỡ ữ ộ ặ ỷ", tiêu đề 2 tầng màu (dòng 1 `deep-navy`, dòng 2 `bright-magenta`, dòng cảm xúc Playfair Italic), các token spacing/bo góc/gradient, 6 icon brand. Chỉ hiện khi `NODE_ENV !== 'production'` hoặc người xem đã đăng nhập admin Payload; luôn `noindex`.
+8. **Test**:
+   - unit (`tests/unit/brand-tokens.test.ts`): khóa màu trong Tailwind config đúng **bằng** tập cho phép (`white`, `transparent`, `current` + 8 token), hex khớp `AGENTS.md`;
+   - e2e (`tests/e2e/styleguide.test.ts`, 375 + 1440): `/styleguide` hiện đủ 8 tên token và câu mẫu tiếng Việt; trang chủ có `lang="vi"`, không còn chữ "Payload".
+
+**Không làm**: component `ui/` (T0-04), Navbar/Footer (T0-05), Puck.
 
 **Tiêu chí nghiệm thu**
 
-- [ ] Layout `(site)` sạch template Payload: `lang="vi"`, không còn title "Payload Blank Template", nền đen, CSS template hay chữ "Welcome to your new project" (trang chủ tạm chỉ cần logo + tên **Trạm Dừng Cảm Xúc**, T0-09 thay bằng trang Puck).
-- [ ] Dùng skill `tdcx-brand`; không dùng màu/font ngoài skill.
-- [ ] `/styleguide` hiển thị Anton có dấu tiếng Việt đúng (chụp ảnh "Ữ, Ộ, Ặ, Ỷ" trong PR).
-- [ ] Dùng class `bg-red-500` → không có hiệu lực / lint báo.
-- [ ] Đẹp ở 375px và 1440px.
+- [ ] Layout `(site)` sạch template Payload (`lang="vi"`, không còn "Payload Blank Template", nền đen, "Welcome to your new project"); `/admin` vẫn hiển thị bình thường.
+- [ ] Class `bg-red-500` / `text-gray-700` không sinh CSS (unit test chứng minh).
+- [ ] Ảnh chụp `/styleguide` ở 375 và 1440 trong PR, thấy rõ "Ữ Ộ Ặ Ỷ" bằng Anton không lỗi dấu.
+- [ ] Unit + e2e mới chạy trong CI, CI xanh trên PR vào `main`.
+- [ ] Không có màu / font ngoài skill `tdcx-brand`; không hex thô trong component (chỉ trong file token).
 
 ---
 

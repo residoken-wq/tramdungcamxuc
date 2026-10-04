@@ -36,6 +36,7 @@ Quy trình:
 | **[HANA]**             | Cần Hana thao tác hoặc cung cấp nội dung để nghiệm thu.                                                                               |
 | **Song song được với** | Có thể giao cho một agent khác cùng lúc mà ít rủi ro xung đột.                                                                        |
 
+- **Chỉ merge PR khi Planning đã ghi "ĐẠT" trong `docs/tasks/reviews/<mã>.md`.** PR luôn có base = `main`.
 - Branch: `task/<mã>-<slug>`. Commit kiểu `feat(scope): ...` tiếng Anh, nhỏ.
 - Mỗi task phải để repo ở trạng thái build được và test xanh.
 - Thay đổi schema Payload phải kèm migration (`payload migrate:create`), không dùng `push` trên DB preview/production.
@@ -50,9 +51,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | ----- | ----------------------------------------------------- | -------- | ------------------- | ---------- |
 | T0-01 | Khởi tạo repo Next.js + Payload + Postgres + Tailwind |          | –                   | Xong ([review](reviews/T0-01.md)) |
 | T0-01b | Sửa sau nghiệm thu T0-01 (gitignore, DECISIONS, PR) | | T0-01 | Xong |
-| T0-02 | CI, lint, Vitest, Playwright|| T0-01b| Chưa đạt ([review](reviews/T0-02.md)) |
-| T0-02b | Migration đầu tiên, smoke test thật, CI chạy trên `main` | | T0-02 | Sẵn sàng |
-| T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-02b              | Chưa mở    |
+| T0-02 | CI, lint, Vitest, Playwright|| T0-01b| Xong ([review](reviews/T0-02.md)) |
+| T0-02b | Migration đầu tiên, smoke test thật, CI chạy trên `main` | | T0-02 | Xong |
+| T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-02b              | Sẵn sàng    |
 | T0-04 | UI primitives                                         |          | T0-03               | Chưa mở    |
 | T0-05 | UI composites                                         |          | T0-04               | Chưa mở    |
 | T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Chưa mở    |
