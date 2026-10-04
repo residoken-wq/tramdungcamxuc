@@ -60,9 +60,14 @@
 | `white` (#FFFFFF) / `deep-navy` (#280A60) | **16.52:1** | ✅ Đạt | ✅ Đạt | Nút `secondary` (nền deep-navy chữ trắng), nền tối. |
 | `white` (#FFFFFF) / `accent-pink` (#EF3B83) | **3.73:1** | ❌ Không đạt | ✅ Đạt (chữ lớn) | Nút CTA chính `primary`: Bắt buộc dùng **chữ lớn ≥ 18.66px đậm** (Montserrat 700) ở size MD/LG. Size SM tự động fallback sang `secondary`. (Chờ Hana chốt Q13). |
 | `accent-pink` (#EF3B83) / `warm-ivory` (#FAF7F4) | **3.50:1** | ❌ Không đạt | ✅ Đạt (chữ lớn) | Tuyệt đối **không** dùng `accent-pink` cho chữ thường < 18.66px trên nền sáng. Chỉ dùng cho icon SVG (HeartLine), viền, hoặc link chữ lớn. Link chữ nhỏ dùng `bright-magenta` (5.40:1) hoặc `deep-navy` có gạch chân. |
+| `deep-navy/85` / `white` (#FFFFFF) | **10.75:1** | ✅ Đạt | ✅ Đạt | Chữ mô tả nội dung trong card, modal. |
+| `deep-navy/75` / `mint-haze` (#D9F1EA) | **7.01:1** | ✅ Đạt | ✅ Đạt | Chữ phụ trợ trên thông báo Toast thành công. |
+| `deep-navy/70` / `white` (#FFFFFF) | **6.43:1** | ✅ Đạt | ✅ Đạt | Giá gốc gạch ngang trong `PriceTag` trên nền trắng (T0-04b). |
+| `deep-navy/70` / `warm-ivory` (#FAF7F4) | **6.00:1** | ✅ Đạt | ✅ Đạt | Giá gốc gạch ngang trong `PriceTag` trên nền trang (T0-04b). |
+| `deep-navy/60` / `warm-ivory` (#FAF7F4) | **4.52:1** | ✅ Đạt | ✅ Đạt | Chữ phụ trợ cấp 3 (sát ngưỡng tối thiểu 4.5:1). |
 
 ### Quy tắc bất di bất dịch cho UI components:
-1. **Không có bất kỳ cặp chữ thường nào hiển thị với tỉ lệ tương phản < 4.5:1.**
+1. **Không có bất kỳ cặp chữ thường nào hiển thị với tỉ lệ tương phản < 4.5:1.** (Giá gốc gạch ngang trong `PriceTag` sử dụng tối thiểu `deep-navy/70` đạt 6.43:1, không dùng các mức mờ dưới `/70`).
 2. **Nút bấm CTA `primary` luôn có chữ lớn ≥ 18.66px đậm hoặc fallback sang `secondary` (ở size S).**
 3. **Toàn bộ logic màu nút được tập trung tại `BUTTON_STYLES` trong `src/components/ui/Button.tsx` để dễ dàng chuyển đổi khi Q13 được Hana phê duyệt.**
 4. **Trạng thái focus (`focus-visible`) luôn có viền nét 2px `deep-navy` với `offset 2px`, đảm bảo nhận diện rõ ràng cho người dùng điều hướng bằng bàn phím.**

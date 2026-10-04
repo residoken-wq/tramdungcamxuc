@@ -15,7 +15,7 @@ export function QuoteBlock({
 }: QuoteBlockProps) {
   return (
     <figure
-      className={`relative my-6 rounded-card border-l-4 border-accent-pink bg-warm-ivory/60 p-6 sm:p-8 backdrop-blur-xs ${className}`}
+      className={`relative my-6 rounded-card border-l-4 border-accent-pink bg-warm-ivory/60 p-6 sm:p-8 backdrop-blur-sm ${className}`}
     >
       <blockquote className="font-quote text-xl sm:text-2xl italic leading-relaxed text-deep-navy">
         &ldquo;{quote}&rdquo;

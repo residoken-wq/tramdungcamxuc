@@ -53,7 +53,7 @@ export function PriceTag({
         {/* Hiển thị trực quan */}
         <span
           aria-hidden="true"
-          className={`line-through text-deep-navy/45 ${sizeClasses.original}`}
+          className={`line-through text-deep-navy/70 ${sizeClasses.original}`}
         >
           {formattedOriginal}
         </span>

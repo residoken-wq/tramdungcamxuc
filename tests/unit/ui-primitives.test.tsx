@@ -2,7 +2,7 @@ import React from 'react'
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import {
   Button,
   Card,
@@ -10,6 +10,7 @@ import {
   QuoteBlock,
   PriceTag,
   StatusBadge,
+  Modal,
   SaleStatus,
   resolveButtonClasses,
 } from '@/components/ui'
@@ -155,14 +156,14 @@ describe('UI Primitives (T0-04)', () => {
     it('render câu quote bằng font-quote italic và thông tin cite tác giả', () => {
       render(
         <QuoteBlock
-          quote="Lỡ nhịp một ngày là không sao cả."
-          cite="Hana Lương"
+          quote="[MẪU] Lỡ nhịp một ngày là không sao cả."
+          cite="[MẪU] Tác giả"
           roleOrContext="Chuyên gia Khai vấn Cảm xúc"
         />
       )
 
       expect(screen.getByText(/Lỡ nhịp một ngày là không sao cả\./)).toBeDefined()
-      expect(screen.getByText('Hana Lương')).toBeDefined()
+      expect(screen.getByText('[MẪU] Tác giả')).toBeDefined()
       expect(screen.getByText(/Chuyên gia Khai vấn Cảm xúc/)).toBeDefined()
     })
   })
@@ -218,6 +219,52 @@ describe('UI Primitives (T0-04)', () => {
           ).toBe(false)
         }
       }
+    })
+
+    it('B3 Guardrail: màu giá gốc trong PriceTag không dùng mức mờ dưới /70', () => {
+      const priceTagPath = path.resolve(__dirname, '../../src/components/ui/PriceTag.tsx')
+      const content = fs.readFileSync(priceTagPath, 'utf-8')
+      const below70Regex = /text-deep-navy\/(?:[1-6][0-9]|45)\b/
+      expect(
+        below70Regex.test(content),
+        'PriceTag không được dùng độ mờ dưới /70 cho text-deep-navy để đảm bảo tương phản ≥ 4.5:1'
+      ).toBe(false)
+    })
+  })
+
+  describe('Modal Component (B2 Guardrail)', () => {
+    it('Modal chứa một input do component cha giữ state không làm giật focus về nút đóng khi cha render lại', () => {
+      function ControlledModal() {
+        const [value, setValue] = React.useState('')
+        return (
+          <Modal isOpen={true} onClose={() => {}} title="Test Modal">
+            <input
+              data-testid="modal-input"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+            />
+          </Modal>
+        )
+      }
+
+      render(<ControlledModal />)
+      const input = screen.getByTestId('modal-input') as HTMLInputElement
+      input.focus()
+      expect(document.activeElement).toBe(input)
+
+      // Gõ 5 ký tự lần lượt; mỗi lần gõ component cha ControlledModal re-render
+      const chars = ['h', 'e', 'l', 'l', 'o']
+      let currentVal = ''
+      for (const char of chars) {
+        currentVal += char
+        fireEvent.change(input, { target: { value: currentVal } })
+        expect(
+          document.activeElement,
+          'Focus phải ở lại trên input sau khi gõ ký tự, không được giật về nút đóng'
+        ).toBe(input)
+      }
+
+      expect(input.value).toBe('hello')
     })
   })
 })

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useId, useRef } from 'react'
 import { vi } from '@/lib/i18n/vi'
 
 export interface ModalProps {
@@ -9,6 +9,7 @@ export interface ModalProps {
   title: string
   children: React.ReactNode
   triggerRef?: React.RefObject<HTMLElement | null>
+  id?: string
   className?: string
 }
 
@@ -18,32 +19,38 @@ export function Modal({
   title,
   children,
   triggerRef,
+  id,
   className = '',
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const previousActiveElementRef = useRef<HTMLElement | null>(null)
+  const wasOpenRef = useRef(false)
+  const onCloseRef = useRef(onClose)
 
-  // Lưu phần tử active trước khi mở modal để trả lại focus khi đóng
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
+
+  const generatedId = useId()
+  const titleId = id ? `${id}-title` : generatedId
+
+  // B1 Guardrail: Quản lý cuộn màn hình và chỉ trả focus khi modal chuyển từ mở sang đóng (không chạy lần mount đầu)
   useEffect(() => {
     if (isOpen) {
+      wasOpenRef.current = true
       previousActiveElementRef.current = document.activeElement as HTMLElement | null
 
-      // Khóa cuộn màn hình nền
       const originalOverflow = document.body.style.overflow
       document.body.style.overflow = 'hidden'
 
       return () => {
         document.body.style.overflow = originalOverflow
       }
-    }
-  }, [isOpen])
-
-  // Trả focus về nút kích hoạt khi modal đóng
-  useEffect(() => {
-    if (!isOpen) {
+    } else if (wasOpenRef.current) {
+      // Chỉ khi modal thực sự chuyển từ MỞ sang ĐÓNG mới trả lại focus
+      wasOpenRef.current = false
       const returnTarget = triggerRef?.current || previousActiveElementRef.current
       if (returnTarget && typeof returnTarget.focus === 'function') {
-        // Đặt timeout nhẹ để đảm bảo modal đã đóng khỏi DOM hoàn toàn trước khi focus
         setTimeout(() => {
           returnTarget.focus()
         }, 10)
@@ -51,35 +58,47 @@ export function Modal({
     }
   }, [isOpen, triggerRef])
 
-  // Focus trap và xử lý phím Esc
+  // B2 Guardrail: Focus vào phần tử đầu tiên DUY NHẤT một lần khi mở modal (không chạy lại khi component cha re-render)
   useEffect(() => {
     if (!isOpen) return
 
     const modalElement = modalRef.current
     if (!modalElement) return
 
-    // Tìm tất cả các phần tử có thể nhận focus
     const focusableSelectors =
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     const focusableElements = Array.from(
       modalElement.querySelectorAll<HTMLElement>(focusableSelectors)
     ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null)
 
-    // Focus vào phần tử đầu tiên (thường là nút đóng hoặc nội dung đầu)
     if (focusableElements.length > 0) {
       focusableElements[0].focus()
     }
+  }, [isOpen])
+
+  // B2 Guardrail: Focus trap tính toán danh sách phần tử focus tại thời điểm bấm Tab và bẫy Esc không phụ thuộc onClose
+  useEffect(() => {
+    if (!isOpen) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // 1. Phím Escape đóng modal
       if (e.key === 'Escape') {
         e.preventDefault()
-        onClose()
+        onCloseRef.current()
         return
       }
 
-      // 2. Phím Tab điều hướng tuần hoàn trong modal (Focus Trap)
+      // 2. Phím Tab điều hướng tuần hoàn trong modal (tính danh sách focus động tại thời điểm bấm)
       if (e.key === 'Tab') {
+        const modalElement = modalRef.current
+        if (!modalElement) return
+
+        const focusableSelectors =
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        const focusableElements = Array.from(
+          modalElement.querySelectorAll<HTMLElement>(focusableSelectors)
+        ).filter((el) => !el.hasAttribute('disabled') && el.offsetParent !== null)
+
         if (focusableElements.length === 0) {
           e.preventDefault()
           return
@@ -108,7 +127,7 @@ export function Modal({
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen, onClose])
+  }, [isOpen])
 
   if (!isOpen) return null
 
@@ -116,12 +135,12 @@ export function Modal({
     <div
       role="dialog"
       aria-modal="true"
-      aria-labelledby="modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-navy/55 backdrop-blur-xs animate-fadeIn"
+      aria-labelledby={titleId}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-navy/55 backdrop-blur-sm transition-opacity duration-200 motion-reduce:transition-none"
       onClick={(e) => {
-        // Đóng khi click vào vùng nền (outside modal card)
+        // Đóng khi click vào vùng nền ngoài modal card
         if (e.target === e.currentTarget) {
-          onClose()
+          onCloseRef.current()
         }
       }}
     >
@@ -132,14 +151,14 @@ export function Modal({
         {/* Header với tiêu đề và nút Đóng */}
         <div className="flex items-start justify-between gap-4 border-b border-deep-navy/10 pb-4">
           <h2
-            id="modal-title"
+            id={titleId}
             className="font-display text-2xl uppercase tracking-tight text-deep-navy sm:text-3xl"
           >
             {title}
           </h2>
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => onCloseRef.current()}
             aria-label={vi.common.close}
             className="rounded-lg p-2 text-deep-navy/60 hover:text-deep-navy hover:bg-deep-navy/5 transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
           >

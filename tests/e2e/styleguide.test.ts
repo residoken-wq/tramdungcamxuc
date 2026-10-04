@@ -90,11 +90,11 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
 
     // 5. QuoteBlock
     await expect(page.getByText(/Cảm xúc không phải là kẻ thù cần chế ngự/)).toBeVisible()
-    await expect(page.getByText('Hana Lương').first()).toBeVisible()
+    await expect(page.getByText('[MẪU] Tên tác giả').first()).toBeVisible()
 
     // 6. PriceTag & StatusBadge
-    await expect(page.getByText('250.000đ', { exact: true })).toBeVisible()
-    await expect(page.getByText('178.000đ', { exact: true })).toBeVisible()
+    await expect(page.getByText('120.000đ', { exact: true })).toBeVisible()
+    await expect(page.getByText('90.000đ', { exact: true })).toBeVisible()
     await expect(page.getByText('Sắp ra mắt', { exact: true })).toBeVisible()
     await expect(page.getByText('Đang mở bán', { exact: true })).toBeVisible()
     await expect(page.getByText('Miễn phí', { exact: true })).toBeVisible()
@@ -140,5 +140,44 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
     const toast = page.locator('div[role="status"]')
     await expect(toast).toBeVisible()
     await expect(toast.getByText('Đã lưu thói quen thành công!')).toBeVisible()
+  })
+
+  test('B1 Guardrail: Tải /styleguide không bị cướp focus và không bị cuộn trang xuống nút mở Modal', async ({
+    page,
+  }) => {
+    await page.goto('/styleguide')
+    await page.waitForTimeout(200)
+
+    const scrollY = await page.evaluate(() => window.scrollY)
+    const activeId = await page.evaluate(() => document.activeElement?.id)
+
+    expect(activeId, 'Nút mở modal không được cướp focus khi trang vừa tải').not.toBe('open-modal-demo-btn')
+    expect(scrollY, 'Trang không được tự động cuộn khi vừa tải').toBe(0)
+  })
+
+  test('B2 Guardrail: Modal chứa input do cha giữ state cho phép gõ liên tục mà không làm giật focus về nút đóng', async ({
+    page,
+  }) => {
+    await page.goto('/styleguide')
+
+    const modalTrigger = page.locator('#open-modal-demo-btn')
+    await modalTrigger.click()
+
+    const dialog = page.locator('div[role="dialog"]')
+    await expect(dialog).toBeVisible()
+
+    const input = page.locator('#modal-feedback-input')
+    await expect(input).toBeVisible()
+
+    // Click vào input để bắt đầu gõ
+    await input.click()
+    await expect(input).toBeFocused()
+
+    // Gõ liên tiếp 5 ký tự "hello"
+    await page.keyboard.type('hello')
+
+    // Kiểm tra focus vẫn nằm ở ô input và giá trị đủ 5 ký tự
+    await expect(input).toBeFocused()
+    await expect(input).toHaveValue('hello')
   })
 })

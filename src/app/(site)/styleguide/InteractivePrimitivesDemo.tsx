@@ -16,6 +16,7 @@ import {
 
 export function InteractivePrimitivesDemo() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalInputValue, setModalInputValue] = useState('')
   const [toastConfig, setToastConfig] = useState<{
     isOpen: boolean
     type: ToastType
@@ -156,9 +157,9 @@ export function InteractivePrimitivesDemo() {
           6.4 QuoteBlock (Trích dẫn phong cách cảm xúc)
         </h3>
         <QuoteBlock
-          quote="Cảm xúc không phải là kẻ thù cần chế ngự, mà là người đưa tin cần được lắng nghe với lòng trắc ẩn."
-          cite="Hana Lương"
-          roleOrContext="Chuyên gia Khai vấn Cảm xúc & Thói quen"
+          quote="[MẪU] Cảm xúc không phải là kẻ thù cần chế ngự, mà là người đưa tin cần được lắng nghe với lòng trắc ẩn."
+          cite="[MẪU] Tên tác giả"
+          roleOrContext="[MẪU] Chuyên gia Khai vấn Cảm xúc & Thói quen"
         />
       </div>
 
@@ -174,19 +175,19 @@ export function InteractivePrimitivesDemo() {
               <p className="font-ui text-xs text-deep-navy/60 uppercase font-semibold mb-1">
                 Giá ưu đãi kèm giá gốc (Size LG)
               </p>
-              <PriceTag originalPrice={250000} salePrice={178000} size="lg" />
+              <PriceTag originalPrice={120000} salePrice={90000} size="lg" />
             </div>
             <div>
               <p className="font-ui text-xs text-deep-navy/60 uppercase font-semibold mb-1">
-                Gói Growth Mirror (Size MD)
+                Gói minh họa (Size MD)
               </p>
-              <PriceTag originalPrice={2500000} salePrice={1750000} size="md" />
+              <PriceTag originalPrice={2000000} salePrice={1500000} size="md" />
             </div>
             <div>
               <p className="font-ui text-xs text-deep-navy/60 uppercase font-semibold mb-1">
                 Một mức giá duy nhất (Size SM)
               </p>
-              <PriceTag originalPrice={149000} size="sm" />
+              <PriceTag originalPrice={80000} size="sm" />
             </div>
           </div>
         </div>
@@ -285,6 +286,21 @@ export function InteractivePrimitivesDemo() {
           <p className="text-sm text-deep-navy/85 leading-relaxed">
             Đây là hộp thoại tương tác chuẩn theo Brand Book 2026. Hộp thoại có cơ chế khóa cuộn màn hình nền, khóa tiêu điểm bàn phím (focus trap) và tự động trả lại focus cho nút kích hoạt khi đóng.
           </p>
+
+          <div className="space-y-1.5">
+            <label htmlFor="modal-feedback-input" className="block text-xs font-semibold text-deep-navy/70">
+              Thử nghiệm gõ phím liên tục (Kiểm tra focus trap):
+            </label>
+            <input
+              id="modal-feedback-input"
+              type="text"
+              value={modalInputValue}
+              onChange={(e) => setModalInputValue(e.target.value)}
+              placeholder="Nhập 5 ký tự..."
+              className="w-full rounded-lg border border-deep-navy/20 bg-warm-ivory/50 px-3 py-2 text-sm text-deep-navy focus-visible:outline-2 focus-visible:outline-deep-navy"
+            />
+          </div>
+
           <div className="flex flex-wrap justify-end gap-3 pt-4 border-t border-deep-navy/10">
             <Button
               variant="ghost"
