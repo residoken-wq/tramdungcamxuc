@@ -16,6 +16,7 @@
 
 ## 2. Kỹ thuật & Hạ tầng
 
+- [ ] **Favicon chính thức**: Hiện thiếu `favicon.ico` (404 trên browser console). Chờ file logo chính thức từ Hana để tạo trọn bộ icon/favicon chuẩn.
 - [ ] **Tối ưu build cache trên CI**: Tăng tốc độ pipeline GitHub Actions với Turborepo / pnpm cache.
 - [ ] **Automated Performance Testing**: Tự động test điểm Lighthouse trên mỗi PR preview.
 - [ ] **Database Read Replicas**: Dự phòng khi lượng truy cập tăng vọt trong các đợt chiến dịch.

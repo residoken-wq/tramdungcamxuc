@@ -1,59 +1,22 @@
-import { headers as getHeaders } from 'next/headers.js'
-import Image from 'next/image'
-import { getPayload } from 'payload'
 import React from 'react'
-import { fileURLToPath } from 'url'
+import { Logo, HeartLine } from '@/components/brand'
 
-import config from '@/payload.config'
-import './styles.css'
-
-export default async function HomePage() {
-  const headers = await getHeaders()
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
-  const { user } = await payload.auth({ headers })
-
-  const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`
-
+export default function HomePage() {
   return (
-    <div className="home">
-      <div className="content">
-        <picture>
-          <source srcSet="https://raw.githubusercontent.com/payloadcms/payload/3.x/packages/ui/src/assets/payload-favicon.svg" />
-          <Image
-            alt="Payload Logo"
-            height={65}
-            src="https://raw.githubusercontent.com/payloadcms/payload/3.x/packages/ui/src/assets/payload-favicon.svg"
-            width={65}
-          />
-        </picture>
-        {!user && <h1>Welcome to your new project.</h1>}
-        {user && <h1>Welcome back, {user.email}</h1>}
-        <div className="links">
-          <a
-            className="admin"
-            href={payloadConfig.routes.admin}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Go to admin panel
-          </a>
-          <a
-            className="docs"
-            href="https://payloadcms.com/docs"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Documentation
-          </a>
-        </div>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-brand-gradient p-6 text-center">
+      <div className="flex max-w-md flex-col items-center rounded-card border border-deep-navy/10 bg-warm-ivory/85 p-8 shadow-soft backdrop-blur-sm">
+        <Logo width={160} />
+
+        <h1 className="mt-6 font-display text-3xl uppercase tracking-tight text-deep-navy sm:text-4xl">
+          Trạm Dừng Cảm Xúc
+        </h1>
+
+        <HeartLine className="my-4 text-accent-pink" width={72} height={28} />
+
+        <p className="font-quote text-lg italic text-deep-navy/85">
+          Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.
+        </p>
       </div>
-      <div className="footer">
-        <p>Update this page by editing</p>
-        <a className="codeLink" href={fileURL}>
-          <code>app/(frontend)/page.tsx</code>
-        </a>
-      </div>
-    </div>
+    </main>
   )
 }
