@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Lint, Typecheck, Test, Build & E2E
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres_ci_password
+          POSTGRES_DB: tramdungcamxuc
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URI: postgres://postgres:postgres_ci_password@localhost:5432/tramdungcamxuc
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      CI: 'true'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate random PAYLOAD_SECRET
+        run: |
+          SECRET=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+          echo "PAYLOAD_SECRET=$SECRET" >> $GITHUB_ENV
+
+      - name: Install Playwright browsers and dependencies
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run TypeScript typecheck
+        run: pnpm typecheck
+
+      - name: Run Unit Tests (Vitest)
+        run: pnpm test
+
+      - name: Build Next.js and Payload
+        run: pnpm build
+
+      - name: Run E2E Smoke Tests (Playwright)
+        run: pnpm test:e2e
+
+      - name: Upload Playwright Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
