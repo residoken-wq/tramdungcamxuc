@@ -53,9 +53,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-01b | Sửa sau nghiệm thu T0-01 (gitignore, DECISIONS, PR) | | T0-01 | Xong |
 | T0-02 | CI, lint, Vitest, Playwright|| T0-01b| Xong ([review](reviews/T0-02.md)) |
 | T0-02b | Migration đầu tiên, smoke test thật, CI chạy trên `main` | | T0-02 | Xong |
-| T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-02b              | Chưa đạt ([review](reviews/T0-03.md))    |
-| T0-03b | Sửa sau nghiệm thu T0-03 (styleguide production, test bẩn repo, CRLF) | | T0-03 | Sẵn sàng |
-| T0-04 | UI primitives                                         |          | T0-03b               | Chưa mở    |
+| T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-02b              | Xong ([review](reviews/T0-03.md))    |
+| T0-03b | Sửa sau nghiệm thu T0-03 (styleguide production, test bẩn repo, CRLF) | | T0-03 | Xong |
+| T0-04 | UI primitives                                         |          | T0-03b               | Sẵn sàng (sau khi PR T0-03 merge)    |
 | T0-05 | UI composites                                         |          | T0-04               | Chưa mở    |
 | T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Chưa mở    |
 | T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Chưa mở    |
