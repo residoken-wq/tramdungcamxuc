@@ -37,13 +37,19 @@ docker compose up -d
 
 _(Hoặc điền chuỗi kết nối PostgreSQL có sẵn / Neon vào biến `DATABASE_URI` trong file `.env`)_
 
-### 4. Khởi chạy máy chủ phát triển
+### 4. Chạy migration cơ sở dữ liệu
+
+```bash
+pnpm migrate
+```
+
+### 5. Khởi chạy máy chủ phát triển
 
 ```bash
 pnpm dev
 ```
 
-### 5. Truy cập ứng dụng
+### 6. Truy cập ứng dụng
 
 - **Trang chủ**: [http://localhost:3000](http://localhost:3000)
 - **Bảng quản trị CMS**: [http://localhost:3000/admin](http://localhost:3000/admin) _(tạo tài khoản quản trị đầu tiên)_

@@ -29,11 +29,16 @@
      docker compose up -d
      ```
    - Hoặc kết nối tới cơ sở dữ liệu PostgreSQL cục bộ / Neon qua chuỗi kết nối `DATABASE_URI` trong `.env`.
-4. **Khởi động máy chủ phát triển:**
+4. **Chạy Migration Cơ sở dữ liệu:**
+   Cấu hình hệ thống sử dụng `push: false`, do đó bắt buộc phải chạy migrations trước khi chạy server:
+   ```bash
+   pnpm migrate
+   ```
+5. **Khởi động máy chủ phát triển:**
    ```bash
    pnpm dev
    ```
-5. **Truy cập ứng dụng:**
+6. **Truy cập ứng dụng:**
    - Trang người dùng: `http://localhost:3000`
    - Bảng quản trị CMS: `http://localhost:3000/admin` (tạo tài khoản quản trị đầu tiên trong lần đăng nhập đầu)
 
@@ -49,6 +54,14 @@
   ```bash
   pnpm typecheck
   ```
+- Kiểm tra unit tests:
+  ```bash
+  pnpm test
+  ```
+- Kiểm tra E2E smoke tests:
+  ```bash
+  pnpm test:e2e
+  ```
 - Định dạng code tự động:
   ```bash
   pnpm format
@@ -58,13 +71,14 @@
 
 ## 3. Quản lý Cơ sở dữ liệu & Migrations (Payload CMS)
 
+- Toàn bộ schema thay đổi được quản lý qua migrations, không dùng `push: true`:
 - Tạo migration mới khi thay đổi schema collection/global:
   ```bash
-  pnpm payload migrate:create
+  pnpm migrate:create ten_migration
   ```
 - Chạy migrations đang chờ:
   ```bash
-  pnpm payload migrate
+  pnpm migrate
   ```
 - Sinh types TypeScript cho các collection:
   ```bash
