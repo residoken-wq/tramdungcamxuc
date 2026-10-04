@@ -12,6 +12,7 @@
 Xây **một codebase Next.js + Payload CMS 3** chứa 3 web (`/`, `/habit`, `/eq-buddy`) + CMS (`/admin`) + trình kéo thả Puck, để Hana tự sửa mọi nội dung thay đổi thường xuyên mà không cần code.
 
 Thước đo thành công của dự án (không phải của từng web):
+
 1. Hana vượt qua bài kiểm tra cổng của từng giai đoạn **mà không cần hỗ trợ**.
 2. Không có đơn hàng nào được mở khóa sai (thiếu tiền, trùng webhook, chưa xác nhận).
 3. Không có giá, copy, testimonial nào bị hardcode.
@@ -22,13 +23,13 @@ Ngoài phạm vi (ghi vào `docs/BACKLOG.md` nếu có ai đề xuất): giỏ h
 
 ## 2. Lộ trình tổng thể
 
-| GĐ | Tên | Kết quả dùng được | Số task | Ước lượng tạm* | Cổng |
-| --- | --- | --- | --- | --- | --- |
-| 0 | Nền móng | Admin chạy trên preview, đủ collections, kéo thả 5 khối | 11 | 2–3 tuần | Hana tạo 1 sản phẩm + dựng 1 trang thử |
-| 1 | Web 1 Landing + CMS | Trang chủ, thư viện, form lead, quiz chẩn đoán, bán phiên trải nghiệm 149k (xác nhận tay) | 17 | 4–5 tuần | Hana tự dựng landing chiến dịch, lead thật về |
-| 2 | Web 2 Habit MVP | Dùng thử 21 ngày, tracker, video bảo vệ, thanh toán tự động, chứng nhận | ~12 | 4–5 tuần | 1 đơn thật thanh toán & mở khóa tự động; IT duyệt REVIEW-REQUIRED |
-| 3 | Web 3 EQ Buddy | Rút thẻ 5 bước, trang QR, ảnh chia sẻ, dùng thử | ~7 | 2–3 tuần | Người thật rút thẻ & quét QR ổn định |
-| 4 | Mở rộng | Gói Growth Mirror tự động, email nuôi dưỡng, mã giảm giá | ~5 | 2 tuần | Theo backlog |
+| GĐ  | Tên                 | Kết quả dùng được                                                                         | Số task | Ước lượng tạm* | Cổng                                                              |
+| --- | ------------------- | ----------------------------------------------------------------------------------------- | ------- | -------------- | ----------------------------------------------------------------- |
+| 0   | Nền móng            | Admin chạy trên preview, đủ collections, kéo thả 5 khối                                   | 11      | 2–3 tuần       | Hana tạo 1 sản phẩm + dựng 1 trang thử                            |
+| 1   | Web 1 Landing + CMS | Trang chủ, thư viện, form lead, quiz chẩn đoán, bán phiên trải nghiệm 149k (xác nhận tay) | 17      | 4–5 tuần       | Hana tự dựng landing chiến dịch, lead thật về                     |
+| 2   | Web 2 Habit MVP     | Dùng thử 21 ngày, tracker, video bảo vệ, thanh toán tự động, chứng nhận                   | ~12     | 4–5 tuần       | 1 đơn thật thanh toán & mở khóa tự động; IT duyệt REVIEW-REQUIRED |
+| 3   | Web 3 EQ Buddy      | Rút thẻ 5 bước, trang QR, ảnh chia sẻ, dùng thử                                           | ~7      | 2–3 tuần       | Người thật rút thẻ & quét QR ổn định                              |
+| 4   | Mở rộng             | Gói Growth Mirror tự động, email nuôi dưỡng, mã giảm giá                                  | ~5      | 2 tuần         | Theo backlog                                                      |
 
 \* Ước lượng tạm của Planning. **Task T0-11 yêu cầu Antigravity ước lượng lại** sau khi nền móng xong; con số của T0-11 sẽ thay bảng này.
 
@@ -99,63 +100,66 @@ Cuối:      T1-17 QA + E2E + HUONG_DAN_CMS bản 1
 Tách task chi tiết sau khi cổng GĐ 1 đạt và có ước lượng T0-11. Ghi sẵn để không quên phụ thuộc.
 
 ### GĐ 2 – Habit MVP
-| Epic | Ghi chú phụ thuộc / rủi ro |
-| --- | --- |
-| E2-1 Customer OTP login (`/tai-khoan`) | REVIEW-REQUIRED. Cần collection `otpCodes` (xem GAPS). Rate limit. |
-| E2-2 Entitlement service: trial 21 ngày, hết hạn, trial→active, một lần/khách | REVIEW-REQUIRED. Dùng lại hàm cấp quyền viết ở T1-13. |
-| E2-3 Chốt cổng thanh toán (payOS / SePay) + `WebhookProvider` | **Chặn bởi quyết định Hana**: hình thức kinh doanh, tài khoản nhận tiền. |
-| E2-4 Checkout công cụ số + webhook idempotent + đổi CTA quiz sang dùng thử | REVIEW-REQUIRED. |
-| E2-5 Habit Loop 5 phút (wizard 4 bước) + trang offer `/habit/1-percent-better` | Cần nội dung `techniques` thật. |
+
+| Epic                                                                                            | Ghi chú phụ thuộc / rủi ro                                                    |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| E2-1 Customer OTP login (`/tai-khoan`)                                                          | REVIEW-REQUIRED. Cần collection `otpCodes` (xem GAPS). Rate limit.            |
+| E2-2 Entitlement service: trial 21 ngày, hết hạn, trial→active, một lần/khách                   | REVIEW-REQUIRED. Dùng lại hàm cấp quyền viết ở T1-13.                         |
+| E2-3 Chốt cổng thanh toán (payOS / SePay) + `WebhookProvider`                                   | **Chặn bởi quyết định Hana**: hình thức kinh doanh, tài khoản nhận tiền.      |
+| E2-4 Checkout công cụ số + webhook idempotent + đổi CTA quiz sang dùng thử                      | REVIEW-REQUIRED.                                                              |
+| E2-5 Habit Loop 5 phút (wizard 4 bước) + trang offer `/habit/1-percent-better`                  | Cần nội dung `techniques` thật.                                               |
 | E2-6 Video bảo vệ (Bunny/Cloudflare Stream, signed URL) + dashboard `/habit/hoc` + tiến độ ≥80% | **Chặn bởi quyết định**: chọn dịch vụ video. Cần collection `lessonProgress`. |
-| E2-7 Tracker 21 ngày + quy tắc lỡ nhịp + email nhắc (ngày 18, 21, lỡ 2 ngày) | Cần cron (Vercel Cron). Dữ liệu cảm xúc không vào analytics. |
-| E2-8 Tổng kết ngày 21 + chứng nhận (`next/og` 4:5, 9:16) + `/chung-nhan/[code]` | Kiểm tra font Anton có dấu trong `next/og`. |
-| E2-9 Lịch workshop + email nhắc 24h | Cần collection `workshops` (xem GAPS). |
-| E2-10 Playwright: mua → học → tick tracker | |
+| E2-7 Tracker 21 ngày + quy tắc lỡ nhịp + email nhắc (ngày 18, 21, lỡ 2 ngày)                    | Cần cron (Vercel Cron). Dữ liệu cảm xúc không vào analytics.                  |
+| E2-8 Tổng kết ngày 21 + chứng nhận (`next/og` 4:5, 9:16) + `/chung-nhan/[code]`                 | Kiểm tra font Anton có dấu trong `next/og`.                                   |
+| E2-9 Lịch workshop + email nhắc 24h                                                             | Cần collection `workshops` (xem GAPS).                                        |
+| E2-10 Playwright: mua → học → tick tracker                                                      |                                                                               |
 
 ### GĐ 3 – EQ Buddy
-| Epic | Ghi chú |
-| --- | --- |
-| E3-1 Luồng rút thẻ 5 bước (lọc theo cảm xúc / chủ đề / ngẫu nhiên, lật thẻ, reduced-motion) | |
+
+| Epic                                                                                             | Ghi chú                                         |
+| ------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
+| E3-1 Luồng rút thẻ 5 bước (lọc theo cảm xúc / chủ đề / ngẫu nhiên, lật thẻ, reduced-motion)      |                                                 |
 | E3-2 Trang thẻ QR `/eq-buddy/the/[qrSlug]` luôn xem được; khóa `qrSlug` sau khi đánh dấu "đã in" | Cần cờ `printedAt` để khóa sửa slug (xem GAPS). |
-| E3-3 Gating: thẻ đầu miễn phí, sau đó trial 21 ngày (dùng lại E2-2) | |
-| E3-4 Lưu thẻ + reflection (chỉ khi đăng nhập) | Dữ liệu nhạy cảm. |
-| E3-5 Ảnh chia sẻ `next/og` 4:5 / 9:16 + offer liên quan | |
-| E3-6 Nút Shopee + UTM + `external_clicked` | Đã có component từ T1-08. |
-| E3-7 Xuất QR (CSV + PNG) cho file in | |
+| E3-3 Gating: thẻ đầu miễn phí, sau đó trial 21 ngày (dùng lại E2-2)                              |                                                 |
+| E3-4 Lưu thẻ + reflection (chỉ khi đăng nhập)                                                    | Dữ liệu nhạy cảm.                               |
+| E3-5 Ảnh chia sẻ `next/og` 4:5 / 9:16 + offer liên quan                                          |                                                 |
+| E3-6 Nút Shopee + UTM + `external_clicked`                                                       | Đã có component từ T1-08.                       |
+| E3-7 Xuất QR (CSV + PNG) cho file in                                                             |                                                 |
 
 ### GĐ 4 – Mở rộng
+
 E4-1 Thanh toán gói tự động qua webhook + cấp quyền cộng đồng/lịch · E4-2 Chuỗi email nuôi dưỡng · E4-3 Mã giảm giá · E4-4 Đề xuất (tài liệu, không code) B2B tracker · E4-5 Hardening & tối ưu theo số liệu 4 tuần đầu.
 
 ---
 
 ## 6. Đầu vào phải có – ai chuẩn bị, chặn task nào
 
-| Đầu vào | Người lo | Chặn task |
-| --- | --- | --- |
-| Tài khoản GitHub repo, Vercel, Neon/Supabase, Cloudflare (R2 + Turnstile), Resend | IT | T0-10 (deploy); T0-01..09 chạy local được |
-| `Growth_Mirror_Pricing_Calculator.xlsx` → `docs/source/` | Hana | T0-08 (seed). Thiếu thì seed theo bảng trong AGENTS.md |
-| File Excel Habit Hack (16 tình huống, 11 kỹ thuật, 20 video) → `docs/source/` | Hana | T0-08 (seed), T1-14 (quiz) |
-| Brand Book 2026 (PDF) → `docs/source/` | Hana | T0-03 (tham chiếu; token đã có trong AGENTS.md) |
-| Logo PNG nền trong (sáng/tối/đơn sắc), ảnh chân dung → `public/brand/` | Hana | T0-03 dùng placeholder; T1-16 cần bản thật |
-| Copy trang chủ 2 lối vào, mô tả Growth Mirror / Thinking Mirror / B2B, 3–6 testimonial có consent | Hana | T1-16 (dựng trang thật); GĐ 1 cổng |
-| PDF ebook, toolkit EQ | Hana | T1-07 nghiệm thu thật |
-| Thông tin người bán + nội dung 6 trang pháp lý (nên có luật sư xem) | Hana | Cổng GĐ 1 |
-| Tên miền DNS, email gửi đi (domain verify Resend), link Zalo, link đặt lịch (Cal.com/Google) | Hana + IT | T1-15, T1-06, T1-12 |
-| Tài khoản ngân hàng nhận VietQR | Hana | T1-12 (hiển thị QR) |
+| Đầu vào                                                                                           | Người lo  | Chặn task                                              |
+| ------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------ |
+| Tài khoản GitHub repo, Vercel, Neon/Supabase, Cloudflare (R2 + Turnstile), Resend                 | IT        | T0-10 (deploy); T0-01..09 chạy local được              |
+| `Growth_Mirror_Pricing_Calculator.xlsx` → `docs/source/`                                          | Hana      | T0-08 (seed). Thiếu thì seed theo bảng trong AGENTS.md |
+| File Excel Habit Hack (16 tình huống, 11 kỹ thuật, 20 video) → `docs/source/`                     | Hana      | T0-08 (seed), T1-14 (quiz)                             |
+| Brand Book 2026 (PDF) → `docs/source/`                                                            | Hana      | T0-03 (tham chiếu; token đã có trong AGENTS.md)        |
+| Logo PNG nền trong (sáng/tối/đơn sắc), ảnh chân dung → `public/brand/`                            | Hana      | T0-03 dùng placeholder; T1-16 cần bản thật             |
+| Copy trang chủ 2 lối vào, mô tả Growth Mirror / Thinking Mirror / B2B, 3–6 testimonial có consent | Hana      | T1-16 (dựng trang thật); GĐ 1 cổng                     |
+| PDF ebook, toolkit EQ                                                                             | Hana      | T1-07 nghiệm thu thật                                  |
+| Thông tin người bán + nội dung 6 trang pháp lý (nên có luật sư xem)                               | Hana      | Cổng GĐ 1                                              |
+| Tên miền DNS, email gửi đi (domain verify Resend), link Zalo, link đặt lịch (Cal.com/Google)      | Hana + IT | T1-15, T1-06, T1-12                                    |
+| Tài khoản ngân hàng nhận VietQR                                                                   | Hana      | T1-12 (hiển thị QR)                                    |
 
 ---
 
 ## 7. Rủi ro chính và cách xử lý trong kế hoạch
 
-| Rủi ro | Xử lý |
-| --- | --- |
-| Code AI có lỗ hổng ở auth, phân quyền, webhook, mở khóa nội dung | Mọi task chạm vào đây gắn nhãn **[REVIEW]**; không merge khi IT chưa duyệt. Có test bắt buộc cho access control (T0-07). |
+| Rủi ro                                                                                      | Xử lý                                                                                                                                                |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Code AI có lỗ hổng ở auth, phân quyền, webhook, mở khóa nội dung                            | Mọi task chạm vào đây gắn nhãn **[REVIEW]**; không merge khi IT chưa duyệt. Có test bắt buộc cho access control (T0-07).                             |
 | Puck route `/admin/builder/...` xung đột với catch-all `/admin/[[...segments]]` của Payload | T0-09 bắt đầu bằng spike 2 giờ; phương án dự phòng: route `/builder/[pageId]` ngoài admin, guard bằng session Payload. Ghi kết quả vào DECISIONS.md. |
-| API Payload 3 / Puck đổi nhanh, AI nhớ sai | Mỗi task yêu cầu đọc docs chính thức và ghi phiên bản package vào DECISIONS.md. |
-| Phạm vi phình to | Antigravity chỉ làm đúng task; ý tưởng mới → BACKLOG.md. Planning từ chối thay đổi giữa giai đoạn trừ khi Hana chốt. |
-| Dữ liệu cá nhân nhạy cảm (NĐ 13/2023) | Consent + `consentAt` ở mọi form; cảm xúc/reflection không vào analytics; xóa tài khoản ở GĐ 2. |
-| Chờ nội dung thật của Hana | Antigravity seed dữ liệu MẪU có cờ `isSample`; cổng mỗi GĐ yêu cầu nội dung thật, không phải code. |
-| Cổng thanh toán chưa chốt | GĐ 1 dùng `ManualPaymentProvider`; interface `PaymentProvider` thiết kế từ T1-12 để GĐ 2 chỉ thêm provider. |
+| API Payload 3 / Puck đổi nhanh, AI nhớ sai                                                  | Mỗi task yêu cầu đọc docs chính thức và ghi phiên bản package vào DECISIONS.md.                                                                      |
+| Phạm vi phình to                                                                            | Antigravity chỉ làm đúng task; ý tưởng mới → BACKLOG.md. Planning từ chối thay đổi giữa giai đoạn trừ khi Hana chốt.                                 |
+| Dữ liệu cá nhân nhạy cảm (NĐ 13/2023)                                                       | Consent + `consentAt` ở mọi form; cảm xúc/reflection không vào analytics; xóa tài khoản ở GĐ 2.                                                      |
+| Chờ nội dung thật của Hana                                                                  | Antigravity seed dữ liệu MẪU có cờ `isSample`; cổng mỗi GĐ yêu cầu nội dung thật, không phải code.                                                   |
+| Cổng thanh toán chưa chốt                                                                   | GĐ 1 dùng `ManualPaymentProvider`; interface `PaymentProvider` thiết kế từ T1-12 để GĐ 2 chỉ thêm provider.                                          |
 
 ---
 

@@ -2,6 +2,8 @@
 
 > File hướng dẫn cho Codex. Đặt ở thư mục gốc repo. Codex đọc toàn bộ file này trước mỗi task.
 > Chủ dự án: Hana Lương (không biết code). Người review kỹ thuật: anh IT hỗ trợ.
+>
+> **Khi có xung đột giữa các skill thiết kế, `tdcx-brand` và Brand Book 2026 luôn thắng.** Mọi việc UI phải dùng skill `tdcx-brand` (`.agents/skills/tdcx-brand/`, `.claude/skills/tdcx-brand/`).
 
 ---
 
@@ -9,40 +11,40 @@
 
 Bạn là kỹ sư full-stack duy nhất của dự án. Bạn code **tất cả sản phẩm số** của Trạm Dừng Cảm Xúc trên **một codebase duy nhất**:
 
-| Web | Đường dẫn | Mục đích |
-| --- | --- | --- |
-| Web 1 – Landing Page | `/` | Cửa vào, điều hướng, thu lead, phiên trải nghiệm + 3 gói Growth Mirror, B2B |
-| Web 2 – Habit Formation | `/habit` | Chẩn đoán, Habit Loop 5 phút, Habit Tracker số (dùng thử 21 ngày, sau đó 250.000đ / ưu đãi 178.000đ) |
-| Web 3 – EQ Buddy | `/eq-buddy` | EQ Buddy số 26 thẻ (dùng thử 21 ngày, sau đó 250.000đ / ưu đãi 178.000đ), link Shopee cho bộ thẻ vật lý |
-| CMS | `/admin` | Hana tự quản toàn bộ nội dung, sản phẩm, lead, đơn hàng; dựng trang bằng kéo thả (mục 5B) |
+| Web                     | Đường dẫn   | Mục đích                                                                                                |
+| ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
+| Web 1 – Landing Page    | `/`         | Cửa vào, điều hướng, thu lead, phiên trải nghiệm + 3 gói Growth Mirror, B2B                             |
+| Web 2 – Habit Formation | `/habit`    | Chẩn đoán, Habit Loop 5 phút, Habit Tracker số (dùng thử 21 ngày, sau đó 250.000đ / ưu đãi 178.000đ)    |
+| Web 3 – EQ Buddy        | `/eq-buddy` | EQ Buddy số 26 thẻ (dùng thử 21 ngày, sau đó 250.000đ / ưu đãi 178.000đ), link Shopee cho bộ thẻ vật lý |
+| CMS                     | `/admin`    | Hana tự quản toàn bộ nội dung, sản phẩm, lead, đơn hàng; dựng trang bằng kéo thả (mục 5B)               |
 
 Mục tiêu tối thượng: **Hana tự sửa được mọi nội dung thay đổi thường xuyên mà không cần đụng vào code.**
 
 ### Thông tin đã chốt (cập nhật 03/10)
 
-| Mục | Quyết định |
-| --- | --- |
-| Tên miền | `tramdungcamxuc.com` – một domain, ba đường dẫn `/`, `/habit`, `/eq-buddy` |
-| Tên thương hiệu | `TRAM DUNG CAM XUC` (không dấu) cho domain, nội dung chuyển khoản, sender email, mã đơn. Giao diện luôn hiển thị **Trạm Dừng Cảm Xúc** có dấu |
-| Giá | Tất cả là giá tạm, chưa final → **mọi giá phải sửa được trong CMS**, không hardcode ở đâu |
-| Công cụ số | Habit Tracker số và EQ Buddy số: mở tự do 21 ngày dùng thử, sau đó bán 250.000đ, giá ưu đãi 178.000đ |
-| Bộ thẻ vật lý | Bán trên gian hàng Shopee của Hana. Web **chỉ đặt nút dẫn link** (có UTM), không xây giỏ hàng, không xử lý giao vận |
-| Hoàn tiền | **Không có chính sách hoàn tiền.** Thay vào đó là phiên trải nghiệm Growth Mirror 149.000đ; sau phiên này khách chọn 1 trong 3 gói |
-| Danh mục sản phẩm | Nguồn chuẩn là file `Growth_Mirror_Pricing_Calculator.xlsx` (seed vào CMS) |
-| Chỉnh trang | Kéo thả trực quan kiểu Elementor bằng Puck, nhúng trong admin (mục 5B) |
+| Mục               | Quyết định                                                                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tên miền          | `tramdungcamxuc.com` – một domain, ba đường dẫn `/`, `/habit`, `/eq-buddy`                                                                    |
+| Tên thương hiệu   | `TRAM DUNG CAM XUC` (không dấu) cho domain, nội dung chuyển khoản, sender email, mã đơn. Giao diện luôn hiển thị **Trạm Dừng Cảm Xúc** có dấu |
+| Giá               | Tất cả là giá tạm, chưa final → **mọi giá phải sửa được trong CMS**, không hardcode ở đâu                                                     |
+| Công cụ số        | Habit Tracker số và EQ Buddy số: mở tự do 21 ngày dùng thử, sau đó bán 250.000đ, giá ưu đãi 178.000đ                                          |
+| Bộ thẻ vật lý     | Bán trên gian hàng Shopee của Hana. Web **chỉ đặt nút dẫn link** (có UTM), không xây giỏ hàng, không xử lý giao vận                           |
+| Hoàn tiền         | **Không có chính sách hoàn tiền.** Thay vào đó là phiên trải nghiệm Growth Mirror 149.000đ; sau phiên này khách chọn 1 trong 3 gói            |
+| Danh mục sản phẩm | Nguồn chuẩn là file `Growth_Mirror_Pricing_Calculator.xlsx` (seed vào CMS)                                                                    |
+| Chỉnh trang       | Kéo thả trực quan kiểu Elementor bằng Puck, nhúng trong admin (mục 5B)                                                                        |
 
 ### Ba gói Growth Mirror (seed, giá tạm)
 
-| Cấu phần | Giá trị đơn vị | CLEAR | BUILD | SHINE |
-| --- | --- | --- | --- | --- |
-| Bộ công cụ số Habit Tracker + EQ Buddy | 250.000đ × 2 | Có | Có | Có |
-| Workshop "Tập thương cảm xúc" | 500.000đ/buổi | 2 buổi | 2 buổi | 2 buổi |
-| Coaching 1:1 "Vững vàng chuyển mình" | 1.000.000đ/phiên (giá lẻ 2.200.000đ) | 1 | 3 | 6 |
-| Tư vấn hướng nghiệp | 1.000.000đ/phiên (giá lẻ 1.500.000đ) | Không | 1 | 3 |
-| Cộng đồng private "Tập thương cảm xúc" + webinar quý | 300.000đ | Không | Có | Có |
-| Tổng giá trị | | 2.500.000đ | 5.800.000đ | 10.800.000đ |
-| Giá bán | | 1.750.000đ | 2.900.000đ | 4.320.000đ |
-| % ưu đãi | | 30% | 50% | 60% |
+| Cấu phần                                             | Giá trị đơn vị                       | CLEAR      | BUILD      | SHINE       |
+| ---------------------------------------------------- | ------------------------------------ | ---------- | ---------- | ----------- |
+| Bộ công cụ số Habit Tracker + EQ Buddy               | 250.000đ × 2                         | Có         | Có         | Có          |
+| Workshop "Tập thương cảm xúc"                        | 500.000đ/buổi                        | 2 buổi     | 2 buổi     | 2 buổi      |
+| Coaching 1:1 "Vững vàng chuyển mình"                 | 1.000.000đ/phiên (giá lẻ 2.200.000đ) | 1          | 3          | 6           |
+| Tư vấn hướng nghiệp                                  | 1.000.000đ/phiên (giá lẻ 1.500.000đ) | Không      | 1          | 3           |
+| Cộng đồng private "Tập thương cảm xúc" + webinar quý | 300.000đ                             | Không      | Có         | Có          |
+| Tổng giá trị                                         |                                      | 2.500.000đ | 5.800.000đ | 10.800.000đ |
+| Giá bán                                              |                                      | 1.750.000đ | 2.900.000đ | 4.320.000đ  |
+| % ưu đãi                                             |                                      | 30%        | 50%        | 60%         |
 
 Tổng giá trị và % ưu đãi được **tính tự động** từ cấu phần và giá bán, không nhập tay.
 
@@ -70,16 +72,16 @@ Tổng giá trị và % ưu đãi được **tính tự động** từ cấu ph�
 
 ## 3. Tài liệu tham chiếu
 
-| Tài liệu | Dùng để |
-| --- | --- |
-| Brand Book 2026 (7 trang) | Màu, font, layout, khoảng thở, UI principles, mẫu website |
-| Who & What (website brief) | Nhóm khách hàng, rổ sản phẩm, 5 luồng người dùng, mô hình dữ liệu |
-| Web Description (slide) | Cấu trúc 3 web, thứ tự build |
-| Bio & How to work with me | Copy chuyên môn, dịch vụ, testimonial mẫu |
-| File Excel Habit Hack | Nội dung 20 video, 11 kỹ thuật, 4 bước Habit Loop, tracker 21 ngày, 16 tình huống trì hoãn |
-| Planning chuyển đổi sản phẩm số (mục 2) | Danh mục sản phẩm, spec, lộ trình, cổng giai đoạn |
-| Cập nhật thông tin từ Hana 03/10 | Domain, trial 21 ngày, Shopee, không hoàn tiền |
-| Growth_Mirror_Pricing_Calculator.xlsx | 3 gói Growth Mirror, cấu phần, giá trị, giá bán |
+| Tài liệu                                | Dùng để                                                                                    |
+| --------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Brand Book 2026 (7 trang)               | Màu, font, layout, khoảng thở, UI principles, mẫu website                                  |
+| Who & What (website brief)              | Nhóm khách hàng, rổ sản phẩm, 5 luồng người dùng, mô hình dữ liệu                          |
+| Web Description (slide)                 | Cấu trúc 3 web, thứ tự build                                                               |
+| Bio & How to work with me               | Copy chuyên môn, dịch vụ, testimonial mẫu                                                  |
+| File Excel Habit Hack                   | Nội dung 20 video, 11 kỹ thuật, 4 bước Habit Loop, tracker 21 ngày, 16 tình huống trì hoãn |
+| Planning chuyển đổi sản phẩm số (mục 2) | Danh mục sản phẩm, spec, lộ trình, cổng giai đoạn                                          |
+| Cập nhật thông tin từ Hana 03/10        | Domain, trial 21 ngày, Shopee, không hoàn tiền                                             |
+| Growth_Mirror_Pricing_Calculator.xlsx   | 3 gói Growth Mirror, cấu phần, giá trị, giá bán                                            |
 
 Asset gốc (logo PNG nền trong, ảnh chân dung) do Hana cung cấp trong `public/brand/`. **Không cắt ảnh từ infographic.**
 
@@ -87,21 +89,21 @@ Asset gốc (logo PNG nền trong, ảnh chân dung) do Hana cung cấp trong `p
 
 ## 4. Tech stack
 
-| Lớp | Lựa chọn | Lý do |
-| --- | --- | --- |
-| Framework | Next.js (App Router) + TypeScript strict | Một app cho cả 3 web + CMS |
-| CMS | Payload CMS 3 (chạy trong cùng app Next.js, admin tại `/admin`) + Live Preview | Giao diện quản trị sẵn có, collection tùy biến, phân quyền, upload media, xem trước trực tiếp |
-| Trình dựng trang | Puck (`@puckeditor/core`, MIT) nhúng trong admin | Kéo thả kiểu Elementor bằng chính component brand, dữ liệu thuộc về dự án |
-| Database | PostgreSQL (Neon hoặc Supabase) qua adapter Postgres của Payload | Một DB cho nội dung, user, đơn hàng |
-| Styling | Tailwind CSS + design tokens ở mục 5 | Nhất quán brand |
-| Media | S3-compatible storage (Cloudflare R2) qua plugin storage của Payload | Ảnh, PDF ebook |
-| Video trả phí | Bunny Stream hoặc Cloudflare Stream, link ký có thời hạn | Không lộ video cho người chưa mua. Không dùng YouTube unlisted |
-| Email | Resend + React Email | Giao sản phẩm, xác nhận, nhắc lịch |
-| Thanh toán | Chuyển khoản VietQR có webhook xác nhận (payOS hoặc SePay – chốt ở GĐ 2) | Phù hợp khách Việt Nam |
-| Đặt lịch coaching | Nhúng link đặt lịch (Cal.com hoặc Google Calendar booking) | Không tự build lịch |
-| Analytics | GA4 hoặc Plausible + sự kiện tùy chỉnh | Đo chuyển đổi |
-| Deploy | Vercel (app) + DB managed | Preview mỗi PR, rollback 1 click |
-| Test | Vitest (logic) + Playwright (luồng chính) | |
+| Lớp               | Lựa chọn                                                                       | Lý do                                                                                         |
+| ----------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Framework         | Next.js (App Router) + TypeScript strict                                       | Một app cho cả 3 web + CMS                                                                    |
+| CMS               | Payload CMS 3 (chạy trong cùng app Next.js, admin tại `/admin`) + Live Preview | Giao diện quản trị sẵn có, collection tùy biến, phân quyền, upload media, xem trước trực tiếp |
+| Trình dựng trang  | Puck (`@puckeditor/core`, MIT) nhúng trong admin                               | Kéo thả kiểu Elementor bằng chính component brand, dữ liệu thuộc về dự án                     |
+| Database          | PostgreSQL (Neon hoặc Supabase) qua adapter Postgres của Payload               | Một DB cho nội dung, user, đơn hàng                                                           |
+| Styling           | Tailwind CSS + design tokens ở mục 5                                           | Nhất quán brand                                                                               |
+| Media             | S3-compatible storage (Cloudflare R2) qua plugin storage của Payload           | Ảnh, PDF ebook                                                                                |
+| Video trả phí     | Bunny Stream hoặc Cloudflare Stream, link ký có thời hạn                       | Không lộ video cho người chưa mua. Không dùng YouTube unlisted                                |
+| Email             | Resend + React Email                                                           | Giao sản phẩm, xác nhận, nhắc lịch                                                            |
+| Thanh toán        | Chuyển khoản VietQR có webhook xác nhận (payOS hoặc SePay – chốt ở GĐ 2)       | Phù hợp khách Việt Nam                                                                        |
+| Đặt lịch coaching | Nhúng link đặt lịch (Cal.com hoặc Google Calendar booking)                     | Không tự build lịch                                                                           |
+| Analytics         | GA4 hoặc Plausible + sự kiện tùy chỉnh                                         | Đo chuyển đổi                                                                                 |
+| Deploy            | Vercel (app) + DB managed                                                      | Preview mỗi PR, rollback 1 click                                                              |
+| Test              | Vitest (logic) + Playwright (luồng chính)                                      |                                                                                               |
 
 Luôn dùng bản stable mới nhất và **đọc docs chính thức trước khi dùng API** của Payload, Next.js, cổng thanh toán. Không dựa vào trí nhớ về API.
 
@@ -111,27 +113,27 @@ Luôn dùng bản stable mới nhất và **đọc docs chính thức trước k
 
 ### Màu (khai báo trong `tailwind.config.ts` và CSS variables)
 
-| Token | Hex | Dùng cho |
-| --- | --- | --- |
-| `deep-navy` | `#280A60` | Tiêu đề chính, text đậm, nền tối |
-| `bright-magenta` | `#BC039E` | Tiêu đề tầng 2, điểm nhấn |
-| `accent-pink` | `#EF3B83` | Nút CTA chính, trái tim, link |
-| `soft-pink` | `#FDE6F6` | Nền card, badge |
-| `lavender-mist` | `#E9DDF9` | Nền section, card phụ |
-| `mint-haze` | `#D9F1EA` | Trạng thái thành công, tracker |
-| `butter-cream` | `#F6E9B8` | Highlight, nhắc nhở |
-| `warm-ivory` | `#FAF7F4` | Nền trang |
+| Token            | Hex       | Dùng cho                         |
+| ---------------- | --------- | -------------------------------- |
+| `deep-navy`      | `#280A60` | Tiêu đề chính, text đậm, nền tối |
+| `bright-magenta` | `#BC039E` | Tiêu đề tầng 2, điểm nhấn        |
+| `accent-pink`    | `#EF3B83` | Nút CTA chính, trái tim, link    |
+| `soft-pink`      | `#FDE6F6` | Nền card, badge                  |
+| `lavender-mist`  | `#E9DDF9` | Nền section, card phụ            |
+| `mint-haze`      | `#D9F1EA` | Trạng thái thành công, tracker   |
+| `butter-cream`   | `#F6E9B8` | Highlight, nhắc nhở              |
+| `warm-ivory`     | `#FAF7F4` | Nền trang                        |
 
 Nền gradient pastel tím – hồng – be – trắng, nhẹ. Không dùng màu ngoài bảng.
 
 ### Font (Google Fonts)
 
-| Vai trò | Font |
-| --- | --- |
-| Tiêu đề lớn (H1, H2) | Anton |
-| Nhãn series, tiêu đề phụ, nút, UI | Montserrat SemiBold / Bold |
-| Câu quote, dòng cảm xúc | Playfair Display Italic |
-| Đoạn văn | Montserrat Regular hoặc Inter Regular |
+| Vai trò                           | Font                                  |
+| --------------------------------- | ------------------------------------- |
+| Tiêu đề lớn (H1, H2)              | Anton                                 |
+| Nhãn series, tiêu đề phụ, nút, UI | Montserrat SemiBold / Bold            |
+| Câu quote, dòng cảm xúc           | Playfair Display Italic               |
+| Đoạn văn                          | Montserrat Regular hoặc Inter Regular |
 
 Tất cả phải có subset `vietnamese`. Kiểm tra dấu tiếng Việt hiển thị đúng với Anton.
 
@@ -160,23 +162,23 @@ Package hiện tại: `@puckeditor/core` (tên cũ `@measured/puck`). Đọc doc
 
 ### Phân vai: cái gì kéo thả, cái gì nhập form
 
-| Loại nội dung | Cách sửa | Lý do |
-| --- | --- | --- |
-| Trang chủ, Về Hana, Coaching, Growth Mirror, Doanh nghiệp, Thư viện (phần giới thiệu), landing chiến dịch mới | **Kéo thả bằng Puck** | Bố cục thay đổi theo chiến dịch, cần trực quan |
+| Loại nội dung                                                                                                   | Cách sửa                              | Lý do                                                                                         |
+| --------------------------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Trang chủ, Về Hana, Coaching, Growth Mirror, Doanh nghiệp, Thư viện (phần giới thiệu), landing chiến dịch mới   | **Kéo thả bằng Puck**                 | Bố cục thay đổi theo chiến dịch, cần trực quan                                                |
 | Sản phẩm, gói, dịch vụ, 26 thẻ EQ, bài học, video, kỹ thuật, câu hỏi quiz, testimonial, bài viết, trang pháp lý | **Form trong Payload** + Live Preview | Dữ liệu có cấu trúc, dùng lại ở nhiều nơi; kéo thả sẽ làm hỏng logic bán hàng, quyền truy cập |
-| Trang học, tracker, luồng rút thẻ, checkout, tài khoản | **Không chỉnh được** | Là ứng dụng, chỉ Codex sửa |
+| Trang học, tracker, luồng rút thẻ, checkout, tài khoản                                                          | **Không chỉnh được**                  | Là ứng dụng, chỉ Codex sửa                                                                    |
 
 Khối kéo thả **lấy dữ liệu từ Payload** chứ không chép lại: khối "Lưới sản phẩm" chọn sản phẩm từ collection `products`; sửa giá ở sản phẩm thì mọi trang tự cập nhật.
 
 ### Thư viện khối (`src/puck/blocks/`, nhóm theo danh mục trong sidebar)
 
-| Danh mục | Khối |
-| --- | --- |
-| Mở đầu | `HeroTwoEntries` (2 lối vào Cá nhân / Doanh nghiệp), `HeroImage`, `SectionHeader` (series label + tiêu đề 2 tầng + dòng cảm xúc) |
-| Nội dung | `RichText`, `ImageText` (ảnh trái/phải), `QuoteBlock`, `StatsBar` (10+ năm, ICF ACC, 500+ giờ…), `JourneySteps` (Pause → Feel → Name → Choose → Practice), `FAQ`, `VideoEmbed` |
-| Bố cục | `Columns` (2/3 cột, có vùng thả lồng nhau), `Spacer` (chỉ các mức 16/24/32/48/64), `Divider` (đường kẻ mảnh / nét trái tim) |
-| Bán hàng | `ProductGrid`, `ProductFeature`, `PackageComparison` (3 gói Growth Mirror), `PriceTag`, `TrialCTA` (dùng thử 21 ngày) |
-| Niềm tin | `TestimonialSlider`, `TestimonialGrid`, `LogoStrip`, `HanaStory` |
+| Danh mục   | Khối                                                                                                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Mở đầu     | `HeroTwoEntries` (2 lối vào Cá nhân / Doanh nghiệp), `HeroImage`, `SectionHeader` (series label + tiêu đề 2 tầng + dòng cảm xúc)                                               |
+| Nội dung   | `RichText`, `ImageText` (ảnh trái/phải), `QuoteBlock`, `StatsBar` (10+ năm, ICF ACC, 500+ giờ…), `JourneySteps` (Pause → Feel → Name → Choose → Practice), `FAQ`, `VideoEmbed` |
+| Bố cục     | `Columns` (2/3 cột, có vùng thả lồng nhau), `Spacer` (chỉ các mức 16/24/32/48/64), `Divider` (đường kẻ mảnh / nét trái tim)                                                    |
+| Bán hàng   | `ProductGrid`, `ProductFeature`, `PackageComparison` (3 gói Growth Mirror), `PriceTag`, `TrialCTA` (dùng thử 21 ngày)                                                          |
+| Niềm tin   | `TestimonialSlider`, `TestimonialGrid`, `LogoStrip`, `HanaStory`                                                                                                               |
 | Chuyển đổi | `CTAButton`, `LeadForm` (chọn tài nguyên giao qua email), `BookingCTA` (phiên trải nghiệm 149.000đ), `B2BBriefForm`, `QuizCTA`, `ShopeeButton`, `ZaloButton`, `LibraryPreview` |
 
 ### Giữ brand an toàn (bắt buộc)
@@ -316,6 +318,7 @@ Mọi collection có `createdAt`, `updatedAt`. Collection nội dung có `status
 ### 8.1 Web 1 – Landing (`/`)
 
 Trang chủ dựng bằng Puck (mục 5B). Bản seed ban đầu gồm 4 khối theo thứ tự dưới đây; sau đó Hana tự kéo thả thay đổi:
+
 1. **Hero**: thông điệp "Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng." + 2 lối vào:
    - Cá nhân: "Tôi đang ở một bước chuyển trong sự nghiệp" → "Khám phá cách Hana đồng hành"
    - Doanh nghiệp: "Tôi muốn việc học tạo ra hành vi thực tế" → "Trao đổi về chương trình cho đội ngũ"
@@ -328,20 +331,22 @@ Trang con: `/ve-hana`, `/coaching`, `/coaching/[slug]`, `/doanh-nghiep`, `/doanh
 **Menu chính** (sửa được trong CMS qua global `navigation`): Về Hana · Thư viện · Test thói quen 5 phút (→ `/habit/chan-doan`) · Growth Mirror · Doanh nghiệp · nút nổi bật "Đặt phiên trải nghiệm". Quiz chẩn đoán là lead magnet chính, phải nằm trên menu cả desktop lẫn mobile.
 
 **Thư viện** (`/thu-vien`): 2 tab.
-- *Khóa học*: Habit Tracker số, EQ Buddy số, 3 gói Growth Mirror (lấy từ `products`).
-- *Nội dung*: ebook, toolkit, bài "Đọc sách cùng bạn", video ngắn (lấy từ `products` loại ebook/toolkit và `posts`).
+
+- _Khóa học_: Habit Tracker số, EQ Buddy số, 3 gói Growth Mirror (lấy từ `products`).
+- _Nội dung_: ebook, toolkit, bài "Đọc sách cùng bạn", video ngắn (lấy từ `products` loại ebook/toolkit và `posts`).
 - Bộ lọc chủ đề EQ / Habit / Career, tìm kiếm theo tên. Tab đang chọn và bộ lọc nằm trên URL (`?tab=noi-dung&topic=habit`) để chia sẻ được.
 
 **Nút chat Zalo nổi**: component `FloatingChat`, góc phải dưới, mở `zaloChatUrl` ở tab mới, ghi sự kiện `zalo_chat_clicked`. Tự ẩn trong `/habit/hoc`, tracker và luồng rút thẻ để không che nội dung; không đè lên vùng an toàn của iOS (dùng `env(safe-area-inset-bottom)`).
 
 **6 trang pháp lý** (footer mọi trang, nội dung từ `legalPages`):
+
 1. `/thong-tin-phap-ly` – thông tin người bán (lấy từ `sellerInfo`)
 2. `/dieu-khoan-su-dung`
 3. `/chinh-sach-bao-mat` – theo Nghị định 13/2023
 4. `/chinh-sach-cung-cap-dich-vu` – coaching, workshop, công cụ số, dùng thử 21 ngày
 5. `/gia-thanh-toan` – giá, hình thức thanh toán, **không hoàn tiền**, vai trò phiên trải nghiệm 149.000đ
 6. `/phan-anh-khieu-nai` – kênh và thời hạn phản hồi
-Checkout phải có ô tick "Tôi đã đọc và đồng ý với Điều khoản và Chính sách giá – thanh toán" (link tới trang 2 và 5); lưu thời điểm đồng ý vào order.
+   Checkout phải có ô tick "Tôi đã đọc và đồng ý với Điều khoản và Chính sách giá – thanh toán" (link tới trang 2 và 5); lưu thời điểm đồng ý vào order.
 
 Sản phẩm hiển thị theo `saleStatus`: coming_soon → nút "Nhận thông báo"; on_sale → "Mua ngay" (hoặc "Dùng thử 21 ngày miễn phí" nếu `trialDays` > 0); free → "Nhận miễn phí"; consult → "Đăng ký tư vấn"; hidden → không hiện. Có `externalUrl` → nút mở link ngoài, ghi sự kiện `external_clicked`.
 
@@ -350,16 +355,18 @@ Sản phẩm hiển thị theo `saleStatus`: coming_soon → nút "Nhận thông
 ### 8.2 Web 2 – Habit Formation (`/habit`)
 
 **Miễn phí**
+
 1. **Chẩn đoán** (`/habit/chan-doan`): hiển thị các câu từ `diagnosticQuestions`, người dùng chọn mức độ đúng với mình (thang 1–4). Kết quả = giai đoạn có điểm cao nhất + gợi ý tương ứng + CTA sang Habit Loop và trang offer.
 2. **Habit Loop 5 phút** (`/habit/5-phut`): wizard 4 bước theo file Excel:
    - Bước 1 – Bảng điểm thói quen: liệt kê thói quen trong ngày, đánh dấu tốt / bình thường / xấu.
    - Bước 2 – Gọi tên thói quen: "Tôi sẽ [hành động] để trở thành [con người]".
    - Bước 3 – Chọn 1–2 kỹ thuật cho mỗi giai đoạn (Cue, Craving, Response, Reward) từ `techniques`, ghi hành động cụ thể.
    - Bước 4 – Xem tracker 21 ngày.
-   Lưu nháp trong trình duyệt; để lại email để lưu kết quả và nhận link mời group Zalo.
+     Lưu nháp trong trình duyệt; để lại email để lưu kết quả và nhận link mời group Zalo.
 3. **Trang offer** (`/habit/1-percent-better`): 20 video, 11 kỹ thuật, tracker 21 ngày, giá từ CMS. CTA: "Dùng thử 21 ngày miễn phí" (đăng nhập OTP, không cần thanh toán).
 
 **Habit Tracker số (Habit Hack 1% Better) – dùng thử 21 ngày, sau đó 250.000đ / ưu đãi 178.000đ**
+
 - Đăng ký → tạo entitlement `trial` hết hạn sau `trialDays`. Trong thời gian dùng thử mở toàn bộ nội dung.
 - Banner đếm ngày còn lại; email nhắc ngày 18 và ngày 21. Hết hạn: dữ liệu tracker vẫn giữ, chỉ xem được, nút "Mua để dùng tiếp".
 - Mua → entitlement `active`.
@@ -374,6 +381,7 @@ Sản phẩm hiển thị theo `saleStatus`: coming_soon → nút "Nhận thông
 ### 8.3 Web 3 – EQ Buddy (`/eq-buddy`)
 
 Luồng 5 bước:
+
 1. Chọn trạng thái: theo cảm xúc (tag), theo chủ đề, hoặc rút ngẫu nhiên.
 2. Hiện thông điệp (Playfair Display Italic, hiệu ứng lật thẻ nhẹ, tôn trọng `prefers-reduced-motion`).
 3. Mở câu chuyện.
@@ -393,16 +401,16 @@ Luồng 5 bước:
 
 ## 9. Năm luồng người dùng phải chạy end-to-end
 
-| Luồng | Các bước |
-| --- | --- |
-| Nhận tài nguyên miễn phí | Trang tài nguyên → nhập tên, email, tick consent → tạo lead → email gửi link tải (link ký 7 ngày) → chuỗi email tiếp nối |
-| Dùng thử công cụ số | Trang offer → nhập email → OTP → tạo customer + entitlement `trial` 21 ngày → vào thẳng công cụ → email chào mừng |
-| Mua công cụ số sau dùng thử | Banner / email nhắc → checkout → order `pending` + mã chuyển khoản → VietQR → xác nhận → entitlement `active` → email xác nhận |
-| Mua bộ thẻ vật lý | Nút Shopee → mở gian hàng Shopee (tab mới, có UTM) → ghi sự kiện `external_clicked` |
-| Mua Habit Hack có video | Trang offer → checkout → tạo/đăng nhập customer bằng OTP → thanh toán → webhook → tạo entitlement → chuyển vào dashboard |
-| Đặt phiên trải nghiệm Growth Mirror | Trang Growth Mirror → form ngắn → order 149.000đ → VietQR → xác nhận → link đặt lịch → email hướng dẫn |
-| Mua gói Growth Mirror | Sau phiên trải nghiệm, Hana tạo link thanh toán gói trong CMS → khách thanh toán → xác nhận → tự cấp entitlement công cụ số + email lịch workshop, coaching, link cộng đồng |
-| Gửi brief doanh nghiệp | Trang B2B → form chi tiết (công ty, quy mô, hành vi mục tiêu, thời gian) → lead → email xác nhận cho khách + thông báo cho Hana |
+| Luồng                               | Các bước                                                                                                                                                                    |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Nhận tài nguyên miễn phí            | Trang tài nguyên → nhập tên, email, tick consent → tạo lead → email gửi link tải (link ký 7 ngày) → chuỗi email tiếp nối                                                    |
+| Dùng thử công cụ số                 | Trang offer → nhập email → OTP → tạo customer + entitlement `trial` 21 ngày → vào thẳng công cụ → email chào mừng                                                           |
+| Mua công cụ số sau dùng thử         | Banner / email nhắc → checkout → order `pending` + mã chuyển khoản → VietQR → xác nhận → entitlement `active` → email xác nhận                                              |
+| Mua bộ thẻ vật lý                   | Nút Shopee → mở gian hàng Shopee (tab mới, có UTM) → ghi sự kiện `external_clicked`                                                                                         |
+| Mua Habit Hack có video             | Trang offer → checkout → tạo/đăng nhập customer bằng OTP → thanh toán → webhook → tạo entitlement → chuyển vào dashboard                                                    |
+| Đặt phiên trải nghiệm Growth Mirror | Trang Growth Mirror → form ngắn → order 149.000đ → VietQR → xác nhận → link đặt lịch → email hướng dẫn                                                                      |
+| Mua gói Growth Mirror               | Sau phiên trải nghiệm, Hana tạo link thanh toán gói trong CMS → khách thanh toán → xác nhận → tự cấp entitlement công cụ số + email lịch workshop, coaching, link cộng đồng |
+| Gửi brief doanh nghiệp              | Trang B2B → form chi tiết (công ty, quy mô, hành vi mục tiêu, thời gian) → lead → email xác nhận cho khách + thông báo cho Hana                                             |
 
 Mỗi form: chống spam (honeypot + rate limit + Cloudflare Turnstile), validate server-side bằng Zod, thông báo lỗi tiếng Việt dễ hiểu.
 
@@ -438,6 +446,7 @@ Mỗi form: chống spam (honeypot + rate limit + Cloudflare Turnstile), validat
 Chỉ bắt đầu giai đoạn sau khi cổng của giai đoạn trước đạt và Hana xác nhận.
 
 ### GĐ 0 – Nền móng
+
 - [ ] Khởi tạo repo, Next.js + Payload + Postgres + Tailwind, lint, format, CI chạy test
 - [ ] Design tokens, font, component `ui/` cơ bản, trang `/styleguide` hiển thị toàn bộ
 - [ ] Toàn bộ collections ở mục 7 (chưa cần UI public), phân quyền, seed dữ liệu MẪU
@@ -448,6 +457,7 @@ Chỉ bắt đầu giai đoạn sau khi cổng của giai đoạn trước đạ
 **Cổng**: Hana đăng nhập `/admin`, thấy đủ collection, tạo thử 1 sản phẩm, và tự kéo thả dựng 1 trang thử từ 5 khối đầu tiên rồi xuất bản.
 
 ### GĐ 1 – Web 1 Landing + CMS
+
 - [ ] Đủ thư viện khối mục 5B, 4 mẫu trang, lịch sử phiên bản, khóa khối bắt buộc
 - [ ] Trang chủ và các trang con mục 8.1 dựng bằng Puck từ mẫu; trang dữ liệu đọc 100% từ CMS
 - [ ] Form lead, form coaching, form brief B2B; email xác nhận; thông báo cho Hana
@@ -462,6 +472,7 @@ Chỉ bắt đầu giai đoạn sau khi cổng của giai đoạn trước đạ
 **Cổng**: Hana tự kéo thả tạo 1 landing chiến dịch mới từ mẫu và xuất bản, tự sửa tiêu đề hero, thêm 1 testimonial, đổi trạng thái 1 sản phẩm, sửa 1 trang pháp lý mà không cần hỗ trợ; lead thật về đủ và xuất được CSV; 6 trang pháp lý đã có nội dung thật.
 
 ### GĐ 2 – Web 2 Habit MVP
+
 - [ ] Habit Loop 5 phút, trang offer; đổi CTA kết quả quiz sang dùng thử Habit Tracker
 - [ ] Customer OTP, entitlement dùng thử 21 ngày, email nhắc hết hạn
 - [ ] Checkout công cụ số, VietQR, webhook tự động, chuyển entitlement trial → active
@@ -472,6 +483,7 @@ Chỉ bắt đầu giai đoạn sau khi cổng của giai đoạn trước đạ
 **Cổng**: một đơn thật được thanh toán và mở khóa tự động; người review kỹ thuật đã duyệt các chỗ `REVIEW-REQUIRED`.
 
 ### GĐ 3 – Web 3 EQ Buddy
+
 - [ ] Collection `eqCards` đầy đủ, luồng rút thẻ 5 bước, trang thẻ theo QR
 - [ ] Lưu thẻ, ảnh chia sẻ 4:5 và 9:16, offer liên quan
 - [ ] Dùng thử 21 ngày cho EQ Buddy số (tái dùng entitlement của GĐ 2), nút Shopee cho bộ thẻ vật lý
@@ -480,12 +492,14 @@ Chỉ bắt đầu giai đoạn sau khi cổng của giai đoạn trước đạ
 **Cổng**: người dùng thật rút thẻ và quét QR ổn định trên điện thoại.
 
 ### GĐ 4 – Mở rộng
+
 - [ ] Thanh toán gói Growth Mirror tự động qua webhook, cấp quyền cộng đồng và lịch workshop
 - [ ] Chuỗi email nuôi dưỡng sau tài nguyên miễn phí
 - [ ] Mã giảm giá
 - [ ] Đề xuất (chưa code) bản B2B dùng tracker cho đội ngũ
 
 ### Definition of Done cho mọi task
+
 - Chạy được trên preview, không lỗi console, không lỗi TypeScript
 - Đẹp ở 375px và 1440px, đúng brand book
 - Nội dung đến từ CMS, có trạng thái loading / rỗng / lỗi
@@ -531,3 +545,13 @@ Chỉ bắt đầu giai đoạn sau khi cổng của giai đoạn trước đạ
 - Không thêm color picker, chọn font hay ô nhập CSS tự do vào trình kéo thả.
 - Không dùng Puck cho dữ liệu có cấu trúc (sản phẩm, thẻ EQ, bài học, giá) – các thứ này là form Payload.
 - Không đổi props của khối mà không viết migration cho dữ liệu trang đã có.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
