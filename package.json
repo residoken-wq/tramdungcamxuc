@@ -4,6 +4,7 @@
   "description": "Hệ sinh thái số Trạm Dừng Cảm Xúc",
   "license": "MIT",
   "type": "module",
+  "packageManager": "pnpm@12.8.1",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
