@@ -55,6 +55,7 @@ Antigravity **không tự quyết**; trong lúc chờ, làm theo cột "Mặc đ
 | Q10 | Analytics: GA4 hay Plausible?                                                                | Planning đề xuất **Plausible** (không cookie, gọn hơn với NĐ 13) hoặc GA4 nếu Hana đã chạy quảng cáo Google/Meta | Trước T1-15 |
 | Q11 | Link đặt lịch: Cal.com hay Google Calendar booking?                                          | Field `bookingUrl` nhận bất kỳ link nào                                                                          | Trước T1-12 |
 | Q12 | Nút chat nổi mở Zalo OA hay Zalo cá nhân?                                                    | Field `zaloChatUrl` nhận bất kỳ link nào                                                                         | Trước T1-05 |
+| Q13 | Nút CTA chính nền hồng `accent-pink` + chữ trắng chỉ đạt chuẩn dễ đọc (WCAG AA) khi chữ to và đậm (≥ 18.66px). Chấp nhận nút CTA luôn chữ to, hay đổi nền nút sang `bright-magenta` (đạt 5.78:1 với mọi cỡ chữ)? | Giữ `accent-pink`, chữ nút CTA ≥ 18.66px đậm; nút nhỏ dùng nền `deep-navy` | Trước T0-04 merge |
 
 ## D. Câu hỏi cho IT
 
