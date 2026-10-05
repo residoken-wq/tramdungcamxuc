@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <linearGradient id="sampleCoverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E9DDF9" />
+      <stop offset="50%" stop-color="#FDE6F6" />
+      <stop offset="100%" stop-color="#FAF7F4" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#sampleCoverGrad)" rx="16" />
+  <g transform="translate(300, 180)" text-anchor="middle">
+    <!-- Stylized Leaf Motif -->
+    <path d="M 0 -50 C 40 -30 50 20 0 50 C -50 20 -40 -30 0 -50 Z" fill="none" stroke="#280A60" stroke-width="2" stroke-linecap="round" />
+    <path d="M 0 -40 L 0 45" stroke="#280A60" stroke-width="1.5" />
+    <text y="90" font-family="sans-serif" font-size="20" font-weight="bold" fill="#280A60">[MẪU] Ảnh Bìa Sản Phẩm</text>
+    <text y="115" font-family="sans-serif" font-size="14" fill="#BC039E">Trạm Dừng Cảm Xúc</text>
+  </g>
+</svg>

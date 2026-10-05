@@ -8,6 +8,7 @@ export const vi = {
     submit: 'Xác nhận',
     loading: 'Đang tải...',
     close: 'Đóng',
+    retry: 'Thử lại',
   },
   status: {
     coming_soon: 'Sắp ra mắt',
@@ -22,6 +23,77 @@ export const vi = {
   },
   toast: {
     close: 'Đóng thông báo',
+  },
+  product: {
+    trialBadge: 'ngày dùng thử miễn phí',
+    journeySteps: {
+      pause: 'Bước 1 · Dừng lại',
+      feel: 'Bước 2 · Cảm nhận',
+      name: 'Bước 3 · Gọi tên',
+      choose: 'Bước 4 · Lựa chọn',
+      practice: 'Bước 5 · Thực hành',
+    } as Record<string, string>,
+  },
+  leadForm: {
+    title: 'Nhận tài nguyên miễn phí',
+    description: 'Để lại thông tin để nhận tài liệu hướng dẫn và bài học mới nhất.',
+    nameLabel: 'Họ và tên',
+    namePlaceholder: 'Nhập họ và tên của bạn',
+    emailLabel: 'Địa chỉ email',
+    emailPlaceholder: 'email@example.com',
+    consentText: 'Tôi đồng ý nhận thông tin và tài nguyên từ Trạm Dừng Cảm Xúc theo',
+    privacyLink: 'Chính sách bảo mật',
+    submit: 'Gửi thông tin',
+    submitting: 'Đang gửi thông tin...',
+    successTitle: 'Gửi thông tin thành công!',
+    successMessage: 'Cảm ơn bạn. Chúng tôi đã nhận được thông tin và sẽ gửi tài nguyên sớm nhất.',
+    errorMessage: 'Đã có lỗi xảy ra khi gửi thông tin. Vui lòng thử lại.',
+    reset: 'Gửi phản hồi khác',
+    errors: {
+      nameRequired: 'Vui lòng nhập họ và tên của bạn',
+      emailRequired: 'Vui lòng nhập địa chỉ email',
+      emailInvalid: 'Địa chỉ email không hợp lệ (ví dụ: ban@example.com)',
+      consentRequired: 'Vui lòng đồng ý với chính sách bảo mật để tiếp tục',
+    },
+  },
+  emotionPicker: {
+    label: 'Chọn cảm xúc hôm nay',
+    helpText: 'Dùng các phím mũi tên để di chuyển và chọn cảm xúc phù hợp.',
+  },
+  habit: {
+    progressGridLabel: 'Lưới tiến trình 21 ngày',
+    dayPrefix: 'Ngày',
+    statuses: {
+      done: 'Đã hoàn thành',
+      missed: 'Đã lỡ nhịp',
+      today: 'Hôm nay',
+      future: 'Chưa tới',
+      locked: 'Đã khóa',
+    },
+    ariaDay: (day: number, statusText: string, emotionText?: string) =>
+      emotionText
+        ? `Ngày ${day}: ${statusText}, cảm xúc ${emotionText}`
+        : `Ngày ${day}: ${statusText}`,
+  },
+  navbar: {
+    menu: 'Menu',
+    openMenu: 'Mở menu điều hướng',
+    closeMenu: 'Đóng menu điều hướng',
+    quickQuiz: 'Test thói quen 5 phút',
+    defaultCta: 'Đặt phiên trải nghiệm',
+  },
+  footer: {
+    brandTagline: 'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
+    legalHeading: 'Chính sách & Quy định',
+    contactHeading: 'Kết nối cùng Trạm',
+    sellerHeading: 'Thông tin đơn vị',
+    copyright: 'Trạm Dừng Cảm Xúc. Bản quyền được bảo lưu.',
+    seller: {
+      taxCode: 'Mã số thuế',
+      address: 'Địa chỉ',
+      phone: 'Điện thoại',
+      email: 'Email',
+    },
   },
 } as const
 
