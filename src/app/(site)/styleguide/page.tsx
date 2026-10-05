@@ -18,6 +18,7 @@ import {
   Leaf,
 } from '@/components/brand'
 import { InteractivePrimitivesDemo } from './InteractivePrimitivesDemo'
+import { InteractiveCompositesDemo } from './InteractiveCompositesDemo'
 
 export const dynamic = 'force-dynamic'
 
@@ -394,6 +395,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <InteractivePrimitivesDemo />
+        </section>
+
+        {/* Section 7: UI Composites (T0-05) */}
+        <section aria-labelledby="heading-composites">
+          <h2
+            id="heading-composites"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            7. Bộ UI Composites (T0-05 – Ghép từ Primitives theo Brand Book 2026)
+          </h2>
+
+          <InteractiveCompositesDemo />
         </section>
       </main>
 

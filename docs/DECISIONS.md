@@ -72,6 +72,49 @@
 3. **Toàn bộ logic màu nút được tập trung tại `BUTTON_STYLES` trong `src/components/ui/Button.tsx` để dễ dàng chuyển đổi khi Q13 được Hana phê duyệt.**
 4. **Trạng thái focus (`focus-visible`) luôn có viền nét 2px `deep-navy` với `offset 2px`, đảm bảo nhận diện rõ ràng cho người dùng điều hướng bằng bàn phím.**
 
+---
+
+## T0-05 – UI Composites & Bảng màu tương phản mở rộng
+
+### 1. Bộ cảm xúc mẫu cho EmotionPicker (PENDING Q14)
+Theo Brand Book 2026 và nguyên tắc `tdcx-brand`, tuyệt đối **không sử dụng emoji** trong hệ thống.
+Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét mảnh (`strokeWidth="1.5"`, `stroke="currentColor"`) trong `src/lib/emotions.ts`:
+- `calm`: **Bình yên** (Icon mặt trời mọc trên sóng nước tĩnh lặng)
+- `grateful`: **Biết ơn** (Icon trái tim tỏa tia sáng)
+- `energized`: **Hào hứng** (Icon mặt trời tỏa năng lượng)
+- `overwhelmed`: **Quá tải** (Icon đám mây tích tụ sóng cảm xúc)
+- `tired`: **Mệt mỏi** (Icon vầng trăng khuyết và dấu lặng)
+- `anxious`: **Lo âu** (Icon nhịp tim dao động quanh điểm cân bằng)
+
+> **PENDING Q14**: Danh sách 6 cảm xúc trên là placeholder mẫu, được đánh dấu `// PENDING Q14` để chờ Hana rà soát và chốt chính thức theo bộ tài liệu chuyên môn.
+
+### 2. Cặp màu mới trong UI Composites & Độ tương phản WCAG AA
+
+| Cặp màu (Chữ / Nền) | Tỉ lệ tương phản | AA Chữ thường (≥ 4.5:1) | AA Chữ lớn (≥ 3.0:1) | Ghi chú & Nơi áp dụng |
+| --- | --- | --- | --- | --- |
+| `bright-magenta` (#BC039E) / `soft-pink` (#FDE6F6) | **4.89:1** | ✅ Đạt | ✅ Đạt | Banner thông báo lỗi hệ thống / máy chủ trong `LeadForm`. |
+| `deep-navy` (#280A60) / `soft-pink` (#FDE6F6) | **13.56:1** | ✅ Đạt | ✅ Đạt | Nút radio cảm xúc đang chọn trong `EmotionPicker`, nút quiz trên Navbar mobile. |
+| `deep-navy` (#280A60) / `mint-haze` (#D9F1EA) | **13.92:1** | ✅ Đạt | ✅ Đạt | Ô ngày hoàn thành (`done`) trong `ProgressGrid`, khung thông báo thành công `LeadForm`. |
+| `deep-navy/80` / `mint-haze` (#D9F1EA) | **8.05:1** | ✅ Đạt | ✅ Đạt | Dòng phụ đề thông báo gửi form thành công trong `LeadForm`. |
+| `deep-navy/70` / `soft-pink/40` | **6.25:1** | ✅ Đạt | ✅ Đạt | Ô ngày đã lỡ (`missed`) trong `ProgressGrid`. |
+| `deep-navy/40` / `white/50` | **2.50:1** | ⚠️ Miễn trừ | ⚠️ Miễn trừ | Chữ ô ngày chưa tới (`future`) trong `ProgressGrid` (nút `disabled`, WCAG 1.4.3 miễn trừ). |
+| `deep-navy/30` / `warm-ivory` | **1.90:1** | ⚠️ Miễn trừ | ⚠️ Miễn trừ | Chữ ô ngày đã khóa (`locked`) trong `ProgressGrid` (nút `disabled`, WCAG 1.4.3 miễn trừ). |
+
+### 3. Quyết định kiến trúc & Quy chuẩn A11y cho các Composite Components:
+1. **ProductCard**: Khi `saleStatus === 'hidden'`, component trả về `null` (không sinh HTML/DOM rác). CTA nhận qua ReactNode slot `cta` để không can thiệp logic mua bán / phân quyền trước T1-08. Ảnh bìa bắt buộc có `src` và `alt` đi qua `next/image`.
+2. **TestimonialCard**: Tuyệt đối tuân thủ AGENTS.md mục 7: Chỉ hiển thị khi có `consent === true`. Khi `consent === false`, trả về `null`. Bọc `<blockquote>` và `<figcaption>` trong thẻ ngữ nghĩa `<figure>`. Sử dụng font Playfair Display Italic (`font-quote`) cho câu trích dẫn cảm xúc.
+3. **LeadForm**: Biểu mẫu UI client an toàn (`'use client'`):
+   - Sinh ID động bằng `useId()` để tránh xung đột khi nhiều form xuất hiện trên cùng một trang.
+   - Tích hợp ô honeypot ẩn hoàn toàn (`tabIndex={-1}`, `autoComplete="off"`, `aria-hidden="true"`, ẩn qua CSS/screen reader) để bẫy bot spam.
+   - Bắt buộc đồng ý nhận tin và dẫn link tới trang chính sách bảo mật qua prop `privacyHref`.
+   - Báo lỗi tiếng Việt ngay dưới từng ô input, không dùng placeholder thay thế nhãn hiển thị.
+4. **EmotionPicker**: Chuẩn WAI-ARIA Radio Group (`'use client'`): hỗ trợ phím mũi tên (ArrowLeft/Right/Up/Down) để chuyển đổi giữa các cảm xúc, `aria-checked`, ID sinh động bằng `useId()`, và kích thước vùng bấm tối thiểu 44px × 44px trên di động.
+5. **ProgressGrid**: Lưới 21 ngày (`'use client'`) tương thích tốt ở độ rộng 375px. Trạng thái ngày hoàn thành (`done`) không chỉ dựa vào màu sắc mà có thêm icon hoàn thành / icon cảm xúc đi kèm (tuân thủ WCAG 1.4.1). Ngày chưa tới (`future`, tương phản 2.50:1) và ngày đã khóa (`locked`, tương phản 1.90:1) bị vô hiệu hóa `disabled` và không kích hoạt sự kiện bấm; mức tương phản này được chấp nhận theo quy chuẩn WCAG 2.1 Tiêu chí 1.4.3 (miễn trừ yêu cầu độ tương phản đối với các thành phần giao diện không hoạt động / `disabled`).
+6. **Navbar**: Component client (`'use client'`) hỗ trợ mở drawer trên di động có `aria-expanded`, phím Escape đóng drawer và trả focus về nút mở. Hiển thị mục nổi bật (`featured`, nhãn `shortLabel ?? label`) trên thanh top bar di động với vùng chạm tối thiểu 44px. Không tự chế nút hoặc dò tìm nhãn text.
+7. **Footer**: Component server chuẩn. Tự động sắp xếp các trang pháp lý theo thuộc tính `order`. Tự động ẩn các khối không có dữ liệu (`sellerInfo`, `socialLinks`, `tagline`, `legalLinks`). Năm bản quyền được tính tự động từ hệ thống. Không chứa dữ liệu mẫu hoặc thông tin người bán gắn cứng.
+
+---
+
 ## T0-06
 
 - Giữ Payload `3.90.2`, Next.js `16.3.3`; chỉ thêm `@payloadcms/storage-s3@3.90.2`. Đối chiếu tài liệu hooks, Local API và migrations tại tag `v3.90.2`, README và mã nguồn package đã cài; đọc tài liệu biến môi trường trong `node_modules/next/dist/docs/`.
@@ -84,3 +127,4 @@
 - Chỉ tạo một migration `20261005_031311_content_collections`; đã chạy trên DB có `initial`, và drop/create riêng DB `tramdungcamxuc_codex` rồi chạy lại cả hai migration thành công. `push: false` giữ nguyên.
 - Test Local API dùng PostgreSQL thật, áp dụng danh sách migration đã import trước khi chạy vì CI hiện đặt unit test trước migrate. Chỉ xóa các bản ghi do chính test tạo, đóng kết nối khi xong. Playwright tạo admin đầu tiên một lần, kiểm tra cả desktop/mobile trong cùng test để tránh tranh chấp DB giữa hai project; tự xóa tài khoản test.
 - Tài liệu đã đối chiếu: [Payload hooks 3.90.2](https://github.com/payloadcms/payload/blob/v3.90.2/docs/hooks/collections.mdx), [Local API 3.90.2](https://github.com/payloadcms/payload/blob/v3.90.2/docs/local-api/overview.mdx), [migrations 3.90.2](https://github.com/payloadcms/payload/blob/v3.90.2/docs/database/migrations.mdx).
+
