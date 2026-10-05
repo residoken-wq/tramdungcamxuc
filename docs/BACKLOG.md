@@ -19,7 +19,8 @@
 - [ ] **Favicon chính thức**: Hiện thiếu `favicon.ico` (404 trên browser console). Chờ file logo chính thức từ Hana để tạo trọn bộ icon/favicon chuẩn.
 - [ ] **Tối ưu build cache trên CI**: Tăng tốc độ pipeline GitHub Actions với Turborepo / pnpm cache.
 - [ ] **Automated Performance Testing**: Tự động test điểm Lighthouse trên mỗi PR preview.
-- [ ] **CI build image → GHCR, server chỉ pull** (đề xuất 05/10, → task **T0-10c** trong `docs/tasks/GD0.md`): GitHub Actions build image sau khi CI xanh trên `main`, đẩy lên `ghcr.io/residoken-wq/tramdungcamxuc` (tag `latest` + `sha-<commit>`, kèm image `tools-*` cho seed). Server demo bỏ bước build, chỉ `docker compose pull && up -d`; rollback bằng `APP_TAG`. Lợi ích: server không cần RAM để build, cập nhật nhanh, chạy đúng image CI đã test.
+- [x] **CI build image → GHCR, server chỉ pull** (đề xuất 05/10, → task **T0-10c** trong `docs/tasks/GD0.md`): GitHub Actions build image sau khi CI xanh trên `main`, đẩy lên `ghcr.io/residoken-wq/tramdungcamxuc` (tag `latest` + `sha-<commit>`, kèm image `tools-*` cho seed). Server demo bỏ bước build, chỉ `docker compose pull && up -d`; rollback bằng `APP_TAG`. Lợi ích: server không cần RAM để build, cập nhật nhanh, chạy đúng image CI đã test.
+- [ ] **Hỗ trợ multi-architecture Docker image (linux/arm64)**: Hiện CI chỉ build `linux/amd64` để tối ưu thời gian build và cache. Khi có nhu cầu chạy trên server ARM64 (Graviton, Oracle Ampere, Apple Silicon), thêm QEMU / multi-platform matrix vào workflow Docker.
 - [ ] **Database Read Replicas**: Dự phòng khi lượng truy cập tăng vọt trong các đợt chiến dịch.
 
 - [ ] **T0-07 / giao tài liệu trả phí**: `media` hiện là thư viện công khai của T0-06. Trước khi đưa tài liệu trả phí thật lên, cần kiểm soát cả API media và URL file trực tiếp, lưu trữ riêng tư và link ký có hạn; chỉ ẩn `products.files` không đủ bảo vệ file gốc.

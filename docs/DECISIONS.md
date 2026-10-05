@@ -251,3 +251,50 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
 - `orders`: `paymentRef` (`TDCX` + 5 ký tự bỏ 0/O/1/I, kiểm trùng) và `payToken` (24 byte ngẫu nhiên khi `createdByAdmin`) do server sinh, không đổi được. Editor không đặt/đổi `paymentStatus`, `paidAt`, `createdByAdmin`; owner hoặc code server không có user (webhook GĐ 2) mới được. Bảo vệ trong **một hook** thay vì field access vì field access xóa giá trị sau hook. Editor không xóa đơn.
 - Dữ liệu cảm xúc (`habitCheckins.emotion/note`, `savedCards.reflection`) ẩn với editor (field read access). `paymentEvents`, `auditLogs`: chỉ owner đọc, không ai tạo/sửa/xóa qua API (server ghi bằng overrideAccess). `otpCodes`: ẩn khỏi admin, đóng với mọi API.
 - Tab "Thanh toán" của `siteSettings`: đọc và sửa chỉ owner; trang thanh toán công khai (T1-12) đọc qua Local API overrideAccess.
+
+---
+
+## T0-10c – Image trên GHCR
+
+- **Registry & Image Name**:
+  - Registry: GitHub Container Registry (`ghcr.io`).
+  - Repository/Image name: `ghcr.io/residoken-wq/tramdungcamxuc` (luôn viết thường theo quy định của GHCR).
+  - Không thêm secret mới vào repo; job CI dùng token sẵn có `${{ secrets.GITHUB_TOKEN }}` với quyền `packages: write`, xác thực qua `docker/login-action@v3`. PR từ bên ngoài hoặc nhánh khác không push và không đăng nhập registry để đảm bảo an toàn.
+
+- **Quy ước Tagging (chuẩn OCI qua `docker/metadata-action@v5`)**:
+  - **Runtime image** (target `runner`, phục vụ chạy ứng dụng Next.js + Payload):
+    - Tag `latest`: trỏ vào bản build mới nhất của nhánh `main`.
+    - Tag `sha-<7 ký tự commit>` (ví dụ `sha-1a2b3c4`): cố định theo từng commit cụ thể, phục vụ ghim phiên bản hoặc rollback.
+  - **Tools image** (target `builder`, phục vụ chạy các lệnh CLI như `pnpm seed`):
+    - Tag `tools-latest`: trỏ vào bản công cụ tương ứng với `main`.
+    - Tag `tools-sha-<7 ký tự commit>`: khớp chính xác với mẫu `tools-${APP_TAG}` khi ghim `APP_TAG`.
+  - Mẫu tag trong `docker-compose.prod.yml`:
+    - `app`: `${APP_IMAGE:-ghcr.io/residoken-wq/tramdungcamxuc}:${APP_TAG:-latest}`
+    - `seed`: `${APP_IMAGE:-ghcr.io/residoken-wq/tramdungcamxuc}:tools-${APP_TAG:-latest}`
+
+- **Vì sao có image tools riêng?**:
+  - Image runtime (`runner`) được tối ưu dạng Next.js standalone chỉ chứa mã đã build, node_modules rút gọn, không có mã nguồn TypeScript (`seed/index.ts`) hay Payload config gốc (`payload.config.ts`), nên không thể chạy `payload run seed/index.ts`.
+  - Image `tools` giữ lại toàn bộ source code và `devDependencies` tại stage `builder`, cho phép chạy các tác vụ quản trị và seed dữ liệu mà không làm phình to image runtime phục vụ người dùng.
+
+- **Vì sao chỉ build `linux/amd64`?**:
+  - Môi trường server demo hiện tại là Linux x86_64 chuẩn.
+  - Build đơn nền tảng `linux/amd64` giúp thời gian build trên GitHub Actions nhanh nhất (không tốn overhead giả lập QEMU đa kiến trúc) và tối ưu dung lượng GitHub Actions cache (`type=gha`).
+  - Nhu cầu `arm64` đã được đưa vào `docs/BACKLOG.md` và sẽ bổ sung khi dự án chuyển sang máy chủ ARM/Apple Silicon.
+
+- **Chính sách Private / Public Package trên GHCR**:
+  - GHCR mặc định gán visibility của package theo quyền của repo (private nếu repo private).
+  - Khi package ở chế độ **Private**, server cần đăng nhập bằng Personal Access Token (classic) chỉ có quyền `read:packages`.
+  - Khi chủ dự án chuyển package sang **Public** trong cài đặt GitHub Package, server demo có thể pull trực tiếp mà không cần lưu token xác thực.
+
+- **Docker Compose `pull_policy` và cơ chế gộp file `-f`**:
+  - `docker-compose.prod.yml` không đặt `pull_policy: always` mà để mặc định (`missing`). Thay vào đó, quy trình vận hành trong `RUNBOOK.md` chỉ định rõ bước `docker compose pull` trước `docker compose up -d`. Điều này đảm bảo tính tất định, chủ động kiểm soát thời điểm cập nhật và tránh lỗi nếu server bị gián đoạn mạng đột xuất lúc khởi động lại container.
+  - File override `docker-compose.build.yml` khai báo lại `build: context: .` và `build: target: builder` cho hai service `app` và `seed`. Theo quy tắc hợp nhất của Docker Compose (`-f base.yml -f override.yml`), cấu hình trong file sau sẽ bổ sung định nghĩa build cho image đã khai báo ở file trước; khi chạy kèm cờ `--build`, Docker Compose sẽ ưu tiên build tại chỗ và gắn tag trùng với biến `APP_TAG` thay vì kéo từ registry.
+
+- **Tài liệu chính thức đã đối chiếu**:
+  - [docker/login-action](https://github.com/docker/login-action) (v3)
+  - [docker/metadata-action](https://github.com/docker/metadata-action) (v5 / v6)
+  - [docker/build-push-action](https://github.com/docker/build-push-action) (v6)
+  - [GitHub Docs – Working with the Container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+  - [GitHub Docs – Publishing Docker images](https://docs.github.com/en/actions/publishing-packages/publishing-docker-images)
+  - [Docker Compose pull_policy specification](https://docs.docker.com/reference/compose-file/services/#pull_policy)
+  - [Docker Compose multiple compose files merge (-f)](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/)
