@@ -1,4 +1,9 @@
-import { ValidationError, type CollectionBeforeValidateHook } from 'payload'
+import { revalidatePath } from 'next/cache'
+import {
+  ValidationError,
+  type CollectionAfterChangeHook,
+  type CollectionBeforeValidateHook,
+} from 'payload'
 import { contentCollection, image, select, slug, text, textarea } from '../fields/content'
 
 export function normalizePageSlug(value: string): string {
@@ -17,15 +22,37 @@ const normalizeSlug: CollectionBeforeValidateHook = ({ data }) => {
   return data
 }
 
+const revalidatePage: CollectionAfterChangeHook = ({ doc, previousDoc }) => {
+  if (doc._status === 'published' || previousDoc?._status === 'published') {
+    try {
+      const targetPath = doc.slug === '/' ? '/' : `/${doc.slug}`
+      revalidatePath(targetPath)
+    } catch {
+      // Ignore when running outside Next.js request context (e.g. CLI migrations, seeds)
+    }
+  }
+  return doc
+}
+
 export const Pages = {
   ...contentCollection('pages', 'Trang nội dung', 'Nội dung', 'title', [
     text('title', 'Tên trang', true),
     slug(true),
     {
+      name: 'visualEditor',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/VisualBuilderButton#VisualBuilderButton',
+        },
+      },
+    },
+    {
       name: 'puckData',
       label: 'Bố cục trang',
       type: 'json',
-      admin: { description: 'Dữ liệu bố cục. Trình chỉnh sửa kéo thả sẽ được bổ sung ở bước sau.' },
+      admin: { description: 'Dữ liệu bố cục lưu từ trình dựng trang Puck.' },
     },
     select('template', 'Mẫu trang', [
       ['campaign', 'Landing chiến dịch'],
@@ -44,6 +71,9 @@ export const Pages = {
       ],
     },
   ]),
-  hooks: { beforeValidate: [normalizeSlug] },
+  hooks: {
+    beforeValidate: [normalizeSlug],
+    afterChange: [revalidatePage],
+  },
   versions: { drafts: { autosave: { interval: 30000 } } },
 }

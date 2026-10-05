@@ -1092,7 +1092,7 @@ export interface Page {
    */
   slug: string;
   /**
-   * Dữ liệu bố cục. Trình chỉnh sửa kéo thả sẽ được bổ sung ở bước sau.
+   * Dữ liệu bố cục lưu từ trình dựng trang Puck.
    */
   puckData?:
     | {

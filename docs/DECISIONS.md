@@ -198,3 +198,28 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
 2. **Xử lý revalidation khi xuất bản:** Hook `afterChange` trong `Pages.ts` cần gọi `revalidatePath` cho đúng đường dẫn slug (đặc biệt slug `/` cho trang chủ và `/slug` cho trang con) để người dùng bên ngoài nhìn thấy ngay nội dung mới nhất.
 3. **Nút "Chỉnh sửa trực quan" trong Payload:** Cần khai báo một custom field `type: 'ui'` trong `src/collections/Pages.ts`. Field này chỉ hiển thị nút bấm điều hướng sang editor, không sinh cột database nên không gây thay đổi migration.
 
+---
+
+### 3. Quyết định chính thức sau duyệt Spike (Planning approved 05/10/2026)
+
+1. **Lệch AGENTS.md 5B: Editor đặt tại `/builder/[pageId]` thay vì `/admin/builder/[pageId]`:**
+   - **Lý do:** Hai root layout `(payload)` và `(builder)` cùng chia sẻ tiền tố `/admin` dễ gây xung đột tiềm tàng hoặc vỡ router khi Payload đăng ký thêm route nội bộ; việc tách hẳn sang route group `(builder)` tại `/builder/[pageId]` giúp cô lập CSS hoàn toàn (không bị CSS admin Payload đè), đồng thời guard xác thực phía server và cơ chế render độc lập, rõ ràng và ổn định tuyệt đối (theo GAPS B5).
+   - Xóa bỏ toàn bộ mã nguồn và test liên quan đến Route A (`getSortedRoutes`).
+2. **Đăng nhập và điều hướng bảo mật:**
+   - Server Component `src/app/(builder)/builder/[pageId]/page.tsx` kiểm tra phiên đăng nhập bằng `payload.auth({ headers })`.
+   - Nếu chưa đăng nhập: Chuyển hướng sang `/admin/login?redirect=/builder/[pageId]`. Sau khi đăng nhập thành công trên Payload admin, hệ thống tự động đưa người dùng trở lại đúng URL editor đang thao tác (đã kiểm chứng `getSafeRedirect` của Payload cho phép redirect nội bộ ngoài `/admin`).
+   - Nếu `pageId` không hợp lệ hoặc không tìm thấy trang: Trả về mã lỗi 404 (`notFound()`), không rò rỉ chi tiết lỗi máy chủ.
+3. **Khối RichText an toàn:**
+   - Chọn Phương án 1: Dùng `textarea`, phân đoạn qua hai lần xuống dòng (`\n\n`), render thành các thẻ ngữ nghĩa `<p>` (Montserrat Regular, `deep-navy`, khoảng cách brand chuẩn), tuyệt đối không dùng `dangerouslySetInnerHTML`.
+   - Phương án RichText formatting được đưa vào `docs/BACKLOG.md` để đánh giá lại ở T1-01.
+4. **Font và màu thương hiệu trong Canvas iframe:**
+   - Layout `(builder)` nạp đầy đủ các font chuẩn Brand Book 2026: Anton (tiêu đề), Montserrat (nhãn, UI, body), Playfair Display Italic (cảm xúc) với subset `vietnamese`.
+   - Puck cấu hình `syncHostStyles` đồng bộ tự động stylesheet và biến CSS vào iframe của canvas, đảm bảo các ký tự tiếng Việt có dấu (như "Ữ", "Ộ", "Ặ") và font Anton hiển thị chuẩn xác trong chế độ soạn thảo.
+5. **Thao tác lưu nháp & xuất bản độc lập:**
+   - Thanh công cụ editor có 2 nút riêng biệt: **"Lưu nháp"** và **"Xuất bản"** với nhãn tiếng Việt và phản hồi trạng thái rõ ràng (đang lưu, đã lưu thành công kèm thời gian, báo lỗi).
+   - Server actions `saveDraftAction` và `publishPageAction` kiểm tra quyền người dùng phía server bằng `payload.auth({ headers })` với `overrideAccess: false`, có đánh dấu `// REVIEW-REQUIRED:`.
+6. **Bảo toàn Schema và Tối ưu SEO:**
+   - Nút "Chỉnh sửa trực quan" trong `Pages.ts` sử dụng field `type: 'ui'` liên kết component `VisualBuilderButton`, cam kết zero schema changes (đã kiểm chứng qua `payload migrate:create`).
+   - Đường dẫn `/builder/**` được đặt metadata `robots: { index: false, follow: false }`.
+   - Trang công khai `/` và `[...slug]` chỉ hiển thị phiên bản đã xuất bản (`draft: false`), tự động lấy metadata từ trường `seo` của trang.
+

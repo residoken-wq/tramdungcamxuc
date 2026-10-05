@@ -88,6 +88,20 @@ export const vi = {
       email: 'Email',
     },
   },
+  builder: {
+    title: 'Trình dựng trang trực quan',
+    saveDraft: 'Lưu nháp',
+    publish: 'Xuất bản',
+    saving: 'Đang lưu bản nháp...',
+    publishing: 'Đang xuất bản trang...',
+    savedDraft: 'Đã lưu bản nháp',
+    published: 'Đã xuất bản thành công',
+    error: 'Lỗi xử lý, vui lòng thử lại',
+    viewPage: 'Xem trang',
+    backToAdmin: 'Quay lại quản trị',
+    draftStatus: 'Bản nháp',
+    publishedStatus: 'Đã xuất bản',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

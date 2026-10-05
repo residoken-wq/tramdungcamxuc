@@ -23,7 +23,7 @@ export default async function BuilderPage({ params }: BuilderPageProps) {
   // REVIEW-REQUIRED: Server-side authentication guard for visual page builder
   const { user } = await payload.auth({ headers })
   if (!user) {
-    redirect(`/admin/login?redirect=${encodeURIComponent(`/admin/builder/${pageId}`)}`)
+    redirect(`/admin/login?redirect=${encodeURIComponent(`/builder/${pageId}`)}`)
   }
 
   // Load page document using Local API with draft: true
@@ -49,5 +49,13 @@ export default async function BuilderPage({ params }: BuilderPageProps) {
     root: { props: { title: pageDoc.title || '' } },
   }
 
-  return <PuckEditorClient initialData={initialData} pageTitle={pageDoc.title || pageId} />
+  return (
+    <PuckEditorClient
+      initialData={initialData}
+      pageId={pageId}
+      pageTitle={pageDoc.title || pageId}
+      pageSlug={pageDoc.slug || '/'}
+      initialStatus={pageDoc._status || 'draft'}
+    />
+  )
 }

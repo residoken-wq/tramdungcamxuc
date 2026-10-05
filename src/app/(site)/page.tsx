@@ -1,7 +1,81 @@
 import React from 'react'
+import type { Metadata } from 'next'
+import { getPayload } from 'payload'
+import config from '@/payload.config'
+import { Render, resolveAllData, type Data } from '@puckeditor/core'
+import { puckConfig } from '@/puck/config'
 import { Logo, HeartLine } from '@/components/brand'
 
-export default function HomePage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const payloadConfig = await config
+  const payload = await getPayload({ config: payloadConfig })
+
+  try {
+    const result = await payload.find({
+      collection: 'pages',
+      where: {
+        and: [
+          { slug: { equals: '/' } },
+          { _status: { equals: 'published' } },
+        ],
+      },
+      limit: 1,
+      draft: false,
+    })
+
+    const doc = result.docs[0]
+    if (doc?.seo?.title || doc?.seo?.description) {
+      const ogMedia =
+        typeof doc.seo.ogImage === 'object' && doc.seo.ogImage !== null
+          ? (doc.seo.ogImage as { url?: string })
+          : null
+
+      return {
+        title: doc.seo.title || 'Trạm Dừng Cảm Xúc',
+        description:
+          doc.seo.description ||
+          'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
+        openGraph: ogMedia?.url ? { images: [ogMedia.url] } : undefined,
+      }
+    }
+  } catch {
+    // Fallback to default
+  }
+
+  return {
+    title: 'Trạm Dừng Cảm Xúc',
+    description: 'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
+  }
+}
+
+export default async function HomePage() {
+  const payloadConfig = await config
+  const payload = await getPayload({ config: payloadConfig })
+
+  let pageDoc = null
+  try {
+    const result = await payload.find({
+      collection: 'pages',
+      where: {
+        and: [
+          { slug: { equals: '/' } },
+          { _status: { equals: 'published' } },
+        ],
+      },
+      limit: 1,
+      draft: false,
+    })
+    pageDoc = result.docs[0] || null
+  } catch {
+    pageDoc = null
+  }
+
+  if (pageDoc?.puckData && (pageDoc.puckData as Data).content?.length > 0) {
+    const resolvedData = await resolveAllData(pageDoc.puckData as Data, puckConfig)
+    return <Render config={puckConfig} data={resolvedData} />
+  }
+
+  // Temporary brand homepage fallback (from T0-03)
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-brand-gradient p-6 text-center">
       <div className="flex max-w-md flex-col items-center rounded-card border border-deep-navy/10 bg-warm-ivory/85 p-8 shadow-soft backdrop-blur-sm">
