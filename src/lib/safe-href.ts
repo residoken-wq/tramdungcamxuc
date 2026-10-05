@@ -21,8 +21,8 @@ export function safeHref(href?: string | null): string | null {
     return null
   }
 
-  // Reject protocol-relative URLs like "//evil.com"
-  if (trimmed.startsWith('//')) {
+  // Reject protocol-relative URLs like "//evil.com" and "/\evil.com" (browsers treat "/\" as "//")
+  if (trimmed.startsWith('//') || trimmed.startsWith('/\\')) {
     return null
   }
 
