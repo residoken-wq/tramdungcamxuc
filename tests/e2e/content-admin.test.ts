@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test } from '@playwright/test'
+import { expect, test, type Response } from '@playwright/test'
 
 test('first administrator sees all five content groups', async ({ page }, testInfo) => {
   // Bootstrap once: projects share the same database. Mobile is verified below.
@@ -28,17 +28,22 @@ test('first administrator sees all five content groups', async ({ page }, testIn
     expect(initData, 'Run this bootstrap test on a migrated DB without admin users.').toMatchObject(
       { initialized: false },
     )
-    await page.goto('/admin/create-first-user')
+    // Wait for the admin bundle to hydrate; a click before hydration is silently dropped.
+    await page.goto('/admin/create-first-user', { waitUntil: 'networkidle' })
     await page.locator('#field-email').fill(email)
     await page.locator('#field-password').fill(password)
     await page.locator('#field-confirm-password').fill(password)
-    const registration = page.waitForResponse(
-      (response) =>
-        response.url().includes('/api/users/first-register') &&
-        response.request().method() === 'POST',
-    )
-    await page.locator('button[type="submit"]').click()
-    const response = await registration
+    let response: Response | undefined
+    await expect(async () => {
+      const registration = page.waitForResponse(
+        (res) =>
+          res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
+        { timeout: 5000 },
+      )
+      await page.locator('button[type="submit"]').click()
+      response = await registration
+    }).toPass({ timeout: 60000 })
+    if (!response) throw new Error('First-user registration request was never sent.')
     expect(response.ok()).toBe(true)
     const registered = await response.json()
     userId = registered.user?.id || registered.doc?.id
