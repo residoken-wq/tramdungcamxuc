@@ -29,6 +29,8 @@ Quy trình:
 
 ### 1b. Prompt mẫu cho Codex (agent thứ hai, chạy song song)
 
+> **Trên máy dev: đọc `docs/tasks/PARALLEL_AGENTS.md` trước** – mỗi agent một thư mục (git worktree), một database, một cổng.
+
 Từ 05/10 dự án có 2 agent code: **Antigravity** (giao diện, Puck) và **Codex** (CMS, dữ liệu, backend). Cột "Trạng thái" ghi tên agent nhận task. Hai agent không bao giờ nhận 2 task cùng sửa một file (xem mục "Ranh giới file" trong task card).
 
 ```
