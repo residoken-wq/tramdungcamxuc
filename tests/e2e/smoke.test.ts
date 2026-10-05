@@ -10,6 +10,13 @@ test.describe('Admin Smoke Test (Real DB Check)', () => {
   })
 
   test('mở /admin thấy form tạo user đầu tiên và không có lỗi 5xx từ /api/*', async ({ page }) => {
+    const init = await page.request.get('/api/users/init')
+    expect(init.ok()).toBe(true)
+    const { initialized } = await init.json()
+    test.skip(
+      !process.env.CI && initialized === true,
+      'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
+    )
     const serverErrors: { url: string; status: number }[] = []
 
     page.on('response', (response) => {
@@ -29,6 +36,8 @@ test.describe('Admin Smoke Test (Real DB Check)', () => {
     await expect(emailInput).toBeVisible({ timeout: 20000 })
 
     // Đảm bảo không có bất kỳ endpoint API nào bị lỗi 5xx
-    expect(serverErrors, `Unexpected 5xx errors from API: ${JSON.stringify(serverErrors)}`).toEqual([])
+    expect(serverErrors, `Unexpected 5xx errors from API: ${JSON.stringify(serverErrors)}`).toEqual(
+      [],
+    )
   })
 })

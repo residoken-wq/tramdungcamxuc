@@ -319,7 +319,7 @@ export interface Product {
   files?:
     | {
         /**
-         * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+         * Chọn tài liệu (PDF…)
          */
         file?: (number | null) | Media;
         id?: string | null;
@@ -868,7 +868,7 @@ export interface Lesson {
   downloadables?:
     | {
         /**
-         * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+         * Chọn tài liệu (PDF…)
          */
         file?: (number | null) | Media;
         id?: string | null;

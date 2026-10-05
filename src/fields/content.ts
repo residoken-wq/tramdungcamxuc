@@ -92,6 +92,13 @@ export const image = (name: string, label: string): Field => ({
   relationTo: 'media',
   admin: { description: 'Chọn ảnh có mô tả để người dùng dễ tiếp cận.' },
 })
+export const file = (name: string, label: string): Field => ({
+  name,
+  label,
+  type: 'upload',
+  relationTo: 'media',
+  admin: { description: 'Chọn tài liệu (PDF…)' },
+})
 export const lines = (name: string, label: string): Field => ({
   name,
   label,

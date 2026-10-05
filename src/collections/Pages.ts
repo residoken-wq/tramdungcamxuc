@@ -1,4 +1,21 @@
+import { ValidationError, type CollectionBeforeValidateHook } from 'payload'
 import { contentCollection, image, select, slug, text, textarea } from '../fields/content'
+
+export function normalizePageSlug(value: string): string {
+  const trimmed = value.trim()
+  const normalized = trimmed === '/' ? '/' : trimmed.replace(/^\/+|\/+$/g, '')
+  if (normalized.includes('//')) {
+    throw new ValidationError({
+      errors: [{ path: 'slug', message: 'Đường dẫn không được chứa hai dấu / liên tiếp.' }],
+    })
+  }
+  return normalized
+}
+
+const normalizeSlug: CollectionBeforeValidateHook = ({ data }) => {
+  if (typeof data?.slug === 'string') data.slug = normalizePageSlug(data.slug)
+  return data
+}
 
 export const Pages = {
   ...contentCollection('pages', 'Trang nội dung', 'Nội dung', 'title', [
@@ -27,5 +44,6 @@ export const Pages = {
       ],
     },
   ]),
+  hooks: { beforeValidate: [normalizeSlug] },
   versions: { drafts: { autosave: { interval: 30000 } } },
 }
