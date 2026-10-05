@@ -572,6 +572,65 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
+## T0-10c – CI build image và đẩy lên GHCR, server chỉ pull về chạy
+
+**Phụ thuộc**: T0-10 (đã merge) + bản sửa healthcheck Postgres trong `docker-compose.prod.yml` đã có trên `main` · **Giao cho: Antigravity** · Không cần tài khoản IT (dùng `GITHUB_TOKEN` có sẵn của repo).
+**Quyết định 05/10**: build image trên server demo tốn RAM và thời gian, lại dễ lỗi. Chuyển sang: GitHub Actions build image sau khi CI xanh trên `main`, đẩy lên GitHub Container Registry (GHCR); server chỉ `docker compose pull` rồi `up -d`. Không đổi Dockerfile, không đổi cách app chạy.
+
+**Hiện trạng**: job `docker` trong `.github/workflows/ci.yml` build với `push: false`, tag `tdcx-demo:ci`. `docker-compose.prod.yml` có `build:` cho `app` và `seed` (seed dùng stage `builder` vì image runtime standalone không có mã nguồn). Code không đọc biến `NEXT_PUBLIC_*` nào lúc build, nên một image dùng được cho mọi server; mọi cấu hình đọc lúc chạy.
+
+**Phạm vi**
+
+1. **Đọc docs chính thức trước khi viết** (đúng bản major đang dùng): `docker/login-action`, `docker/metadata-action`, `docker/build-push-action@v6`, GitHub Docs "Working with the Container registry" và "Publishing Docker images", Docker Compose `pull_policy` và cách gộp nhiều file `-f`. Ghi link đã đọc vào DECISIONS.
+2. **`ci.yml` – job `docker`**:
+   - `needs: ci`: chỉ build/push khi job lint/test/e2e đã xanh.
+   - `permissions` tối thiểu cho job: `contents: read`, `packages: write`. Không thêm secret mới; đăng nhập GHCR bằng `${{ secrets.GITHUB_TOKEN }}`, user `${{ github.actor }}`.
+   - **Pull request**: build như hiện nay, **không push**, không đăng nhập registry (PR từ fork không có quyền ghi).
+   - **Push vào `main`** và `workflow_dispatch` trên `main`: đẩy lên `ghcr.io/residoken-wq/tramdungcamxuc` (tên image viết thường). Hai image:
+     - runtime (target mặc định `runner`): tag `latest` và `sha-<7 ký tự>`;
+     - tools (target `builder`, cho lệnh seed): tag `tools-latest` và `tools-sha-<7 ký tự>`.
+   - Dùng `docker/metadata-action` để sinh tag + nhãn OCI (`org.opencontainers.image.source` trỏ về repo để package gắn vào repo trên GitHub, `revision` = commit).
+   - Nền tảng: chỉ `linux/amd64` (arm64 → BACKLOG). Giữ cache `type=gha`; runtime và tools dùng chung cache (cùng các stage đầu).
+   - In digest của image runtime vào job summary (`$GITHUB_STEP_SUMMARY`) để có thể rollback tuyệt đối.
+3. **`docker-compose.prod.yml`**:
+   - `app`: bỏ `build:`, dùng `image: ${APP_IMAGE:-ghcr.io/residoken-wq/tramdungcamxuc}:${APP_TAG:-latest}`.
+   - `seed`: bỏ `build:`, dùng `image: ${APP_IMAGE:-ghcr.io/residoken-wq/tramdungcamxuc}:tools-${APP_TAG:-latest}`. Kiểm tra lại: `tools-latest` và `tools-sha-xxxxxxx` đều khớp mẫu này.
+   - Giữ nguyên service `postgres`, healthcheck, volume, `restart`, các biến môi trường và ràng buộc `:?`.
+4. **File mới `docker-compose.build.yml`** (override, chỉ dùng khi không pull được image): thêm lại `build:` cho `app` (context `.`) và `seed` (target `builder`). Lệnh dự phòng: `docker compose -p tdcx-demo -f docker-compose.prod.yml -f docker-compose.build.yml up -d --build`. Ghi chú trong file: image build tại chỗ sẽ ghi đè tag local của `APP_TAG`.
+5. **`.env.example`**: thêm `APP_IMAGE=` và `APP_TAG=` (để trống = dùng mặc định), chú thích tiếng Việt: `APP_TAG` = `latest` hoặc `sha-xxxxxxx` để ghim/rollback. (Ngoại lệ có chủ đích: trong task này Antigravity được sửa `.env.example`, Codex không đụng file này cùng lúc.)
+6. **`docs/RUNBOOK.md` – mục "Deploy bản demo trên server riêng"**, viết lại cho kiểu pull image, từng lệnh copy được:
+   - Lần đầu: vẫn `git clone` để có file compose + `.env` (không build). Nếu package GHCR là **private**: tạo Personal Access Token (classic) chỉ có quyền `read:packages`, chạy `docker login ghcr.io -u <user> --password-stdin`, không dán token vào chat hay lưu vào repo. Nếu package **public** thì bỏ bước này. Ghi cách xem/đổi chế độ hiển thị package trên GitHub.
+   - Chạy: `docker compose -p tdcx-demo -f docker-compose.prod.yml pull` → `up -d` (không còn `--build`). Giữ các lệnh kiểm tra `ps`, `logs`, `curl` hiện có.
+   - Cập nhật: `git pull --ff-only` (lấy file compose mới) → backup như cũ → ghi tag đang chạy vào `previous-release.txt` → `pull` → `up -d`. Chỉ cập nhật sau khi CI của commit đó xanh và image `sha-…` đã có trên GHCR.
+   - Rollback: đặt `APP_TAG=sha-<commit cũ>` trong `.env` → `pull` → `up -d`; giữ quy tắc cũ: bản có migration thì phải khôi phục backup DB đi kèm. Rollback tuyệt đối bằng digest (`image@sha256:…`) lấy từ job summary.
+   - Backup: ghi thêm digest image đang chạy (`docker inspect --format '{{index .RepoDigests 0}}'`) vào thư mục backup.
+   - Seed: `docker compose ... --profile tools pull seed` rồi `run --rm seed` như cũ.
+   - Mục dự phòng "Không pull được image": dùng `docker-compose.build.yml` (mục 4). Ghi yêu cầu RAM mới: chỉ chạy (không build) thì mức dự trù thấp hơn – ghi là dự trù, chưa benchmark.
+   - Giữ nguyên mục troubleshooting Postgres unhealthy và mục "Không dùng Docker".
+7. **`docs/DECISIONS.md`**: mục `## T0-10c – Image trên GHCR` ở **cuối file**: registry, tên image, quy ước tag, vì sao chỉ amd64, vì sao có image tools, chính sách private/public, link docs đã đọc.
+8. `docs/BACKLOG.md`: tick/đổi trạng thái mục đề xuất GHCR thành "→ T0-10c"; thêm mục arm64 nếu thấy cần.
+
+**Không làm**: deploy tự động vào server (SSH từ Actions, Watchtower…) – server vẫn do anh Nhân bấm `pull`. Không đổi `Dockerfile` (trừ khi build tools image bắt buộc phải sửa – khi đó dừng và hỏi). Không đẩy lên Docker Hub hay registry khác. Không thêm secret mới vào repo. Không đụng Vercel/Neon/R2 (T0-10b).
+
+**Ranh giới file**: `.github/workflows/ci.yml`, `docker-compose.prod.yml`, `docker-compose.build.yml` (mới), `.env.example` (chỉ 2 biến trên), `docs/RUNBOOK.md`, `docs/BACKLOG.md`, mục `## T0-10c` cuối `docs/DECISIONS.md`, `README.md` (chỉ khi dòng trỏ RUNBOOK cần sửa). Sửa file khác → dừng và hỏi.
+
+**Tự kiểm trước khi báo xong** (máy Antigravity có thể không có Docker/Playwright – ghi rõ bước nào không chạy được):
+- `pnpm lint && pnpm typecheck && pnpm test` xanh; `git status` sạch.
+- Nếu có Docker: `POSTGRES_PASSWORD=x PAYLOAD_SECRET=x docker compose -f docker-compose.prod.yml config` và bản gộp với `docker-compose.build.yml` không lỗi; dán phần `image:` đã nội suy cho `app` và `seed`.
+- YAML workflow hợp lệ (chạy `actionlint` nếu có; không có thì ghi lại).
+
+**Tiêu chí nghiệm thu** (Planning / anh Nhân kiểm)
+
+- [ ] PR vào `main`: job `docker` chạy sau `ci`, build thành công, **không** đăng nhập/push registry (xem log).
+- [ ] Sau khi merge: tab Packages của repo có `tramdungcamxuc` với tag `latest`, `sha-<commit>`, `tools-latest`, `tools-sha-<commit>`; package gắn với repo; job summary có digest.
+- [ ] Server demo (đã có `.env` cũ): `git pull` → `docker compose -p tdcx-demo -f docker-compose.prod.yml pull` → `up -d` → app + postgres `healthy`, **không có bước build nào** trên server; dữ liệu và ảnh cũ còn nguyên.
+- [ ] Seed chạy bằng image tools kéo về, không build.
+- [ ] Rollback: đặt `APP_TAG=sha-<commit trước>` → `pull` → `up -d` → app chạy bản cũ (ghi lệnh và kết quả vào báo cáo).
+- [ ] Dự phòng: lệnh có `-f docker-compose.build.yml ... --build` vẫn build và chạy được.
+- [ ] RUNBOOK đủ: login GHCR (private), pull, cập nhật, rollback theo tag/digest, seed, dự phòng build.
+
+---
+
 ## T0-10b – Hạ tầng production (Vercel + Neon + R2)
 
 **Phụ thuộc**: IT trả lời GAPS D1, D2 và cấp tài khoản · **Không chặn cổng GĐ 0.** Phải xong trước T1-15 (kết nối domain thật). Nếu Hana quyết định chạy production luôn trên server riêng thì task này đổi thành "nâng bản demo lên production" (thêm R2, backup tự động, giám sát); Planning viết lại khi có quyết định.

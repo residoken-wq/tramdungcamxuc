@@ -100,6 +100,7 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-09c | Viết lại e2e editor (b)(c) cho chạy được thật + sửa mất thông báo | | T0-09b | Đạt (Codex) |
 | T0-09d | Việc nhỏ: `safeHref` chặn `/\`, nhãn Puck tiếng Việt, tương phản nút Xuất bản | | T0-09 (đã merge) | Xong – PR #10 |
 | T0-10 | Đóng gói Docker + RUNBOOK để tự deploy bản demo       |          | T0-06b (đã merge)   | Xong – PR #11 ([review](reviews/T0-10.md)) |
+| T0-10c | CI build image → GHCR, server demo chỉ pull về chạy |          | T0-10 (đã merge)    | Sẵn sàng – **Antigravity** |
 | T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0) | | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15 |
 | T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)          |          | dữ liệu GĐ 0        | Sẵn sàng – **Antigravity** |
 | T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0     | [HANA]   | T0-07, T0-08, T0-10 | Sẵn sàng (phụ thuộc đã xong) |
