@@ -2,9 +2,15 @@
 
 import React, { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { Puck, type Data, usePuck } from '@puckeditor/core'
+import { Puck, type Data, type Viewports, usePuck } from '@puckeditor/core'
 import { puckConfig } from '@/puck/config'
 import { saveDraftAction, publishPageAction } from '@/puck/actions'
+
+export const brandViewports: Viewports = [
+  { width: 375, height: 'auto', label: 'Điện thoại (375px)', icon: 'Smartphone' },
+  { width: 768, height: 'auto', label: 'Máy tính bảng (768px)', icon: 'Tablet' },
+  { width: 1440, height: 'auto', label: 'Máy tính (1440px)', icon: 'Monitor' },
+]
 
 type PuckEditorClientProps = {
   initialData: Data
@@ -179,6 +185,11 @@ export function PuckEditorClient({
           data={data}
           onChange={(newData) => {
             setData(newData)
+          }}
+          viewports={brandViewports}
+          iframe={{
+            enabled: true,
+            waitForStyles: true,
           }}
           overrides={{
             headerActions: () => (

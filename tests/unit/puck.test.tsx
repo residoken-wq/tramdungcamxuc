@@ -11,6 +11,7 @@ import { RichText } from '@/components/site/RichText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
 import { saveDraftAction, publishPageAction } from '@/puck/actions'
+import { brandViewports } from '@/app/(builder)/builder/[pageId]/PuckEditorClient'
 import packageJson from '../../package.json' with { type: 'json' }
 
 describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
@@ -183,6 +184,15 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
         success: false,
         code: 'UNAUTHORIZED',
       })
+    })
+  })
+
+  describe('Viewport Preview Guardrails', () => {
+    it('configures exactly the 3 required responsive viewports: 375, 768, 1440', () => {
+      expect(brandViewports).toHaveLength(3)
+      expect(brandViewports[0].width).toBe(375)
+      expect(brandViewports[1].width).toBe(768)
+      expect(brandViewports[2].width).toBe(1440)
     })
   })
 })
