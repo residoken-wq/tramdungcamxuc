@@ -17,6 +17,7 @@ import {
   Butterfly,
   Leaf,
 } from '@/components/brand'
+import { InteractivePrimitivesDemo } from './InteractivePrimitivesDemo'
 
 export const dynamic = 'force-dynamic'
 
@@ -381,6 +382,18 @@ export default async function StyleguidePage() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Section 6: UI Primitives (T0-04) */}
+        <section aria-labelledby="heading-primitives">
+          <h2
+            id="heading-primitives"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            6. Bộ UI Primitives nền tảng (8 Components theo Brand Book 2026 &amp; WCAG AA)
+          </h2>
+
+          <InteractivePrimitivesDemo />
         </section>
       </main>
 
