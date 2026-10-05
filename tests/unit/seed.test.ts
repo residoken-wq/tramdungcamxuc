@@ -7,6 +7,7 @@ import { migrations } from '../../src/migrations'
 import type { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
 import { seed } from '../../seed/seed'
 import { canSeed } from '../../seed/guard'
+import type { Navigation, SiteSetting } from '../../src/payload-types'
 
 const counted: CollectionSlug[] = [
   'products',
@@ -16,10 +17,29 @@ const counted: CollectionSlug[] = [
   'techniques',
   'legalPages',
 ]
+// Every collection the seed writes. afterAll removes what this test created so later
+// suites (CI runs e2e on the same database) still see an unseeded site.
+const seeded: CollectionSlug[] = [
+  'products',
+  'services',
+  'programs',
+  'posts',
+  'testimonials',
+  'eqCards',
+  'diagnosticQuestions',
+  'techniques',
+  'lessons',
+  'courseModules',
+  'legalPages',
+  'pages',
+]
 
 describe('sample seed', () => {
   let payload: Payload
   let realProductId: number | undefined
+  const preExisting = new Map<CollectionSlug, Set<number>>()
+  let navigationBefore: Navigation | undefined
+  let settingsBefore: SiteSetting | undefined
 
   beforeAll(async () => {
     payload = await getPayload({ config })
@@ -30,12 +50,50 @@ describe('sample seed', () => {
         down: (args: unknown) => migration.down(args as MigrateDownArgs),
       })),
     })
+    for (const collection of seeded) {
+      const docs = await payload.find({
+        collection,
+        limit: 0,
+        depth: 0,
+        draft: true,
+        pagination: false,
+      })
+      preExisting.set(collection, new Set(docs.docs.map((d) => d.id as number)))
+    }
+    navigationBefore = await payload.findGlobal({ slug: 'navigation', depth: 0 })
+    settingsBefore = await payload.findGlobal({ slug: 'siteSettings', depth: 0 })
   }, 60000)
 
   afterAll(async () => {
     if (!payload) return
     try {
       if (realProductId) await payload.delete({ collection: 'products', id: realProductId })
+      // Delete in reverse dependency order: documents created by this test only.
+      for (const collection of [...seeded].reverse()) {
+        const keep = preExisting.get(collection) ?? new Set<number>()
+        const docs = await payload.find({
+          collection,
+          limit: 0,
+          depth: 0,
+          draft: true,
+          pagination: false,
+        })
+        for (const doc of docs.docs)
+          if (!keep.has(doc.id as number)) await payload.delete({ collection, id: doc.id })
+      }
+      if (navigationBefore)
+        await payload.updateGlobal({
+          slug: 'navigation',
+          data: {
+            mainMenu: navigationBefore.mainMenu ?? [],
+            footerMenu: navigationBefore.footerMenu ?? [],
+          },
+        })
+      if (settingsBefore)
+        await payload.updateGlobal({
+          slug: 'siteSettings',
+          data: { shopeeStoreUrl: settingsBefore.shopeeStoreUrl ?? null },
+        })
     } finally {
       await payload.destroy()
     }
