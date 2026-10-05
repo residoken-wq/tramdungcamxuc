@@ -83,3 +83,20 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  docker:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build image without registry push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: tdcx-demo:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

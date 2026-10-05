@@ -7,6 +7,9 @@ import { Render, type Data } from '@puckeditor/core'
 import { puckConfig } from '@/puck/config'
 import { resolveServerData } from '@/puck/resolve.server'
 
+// Pages read published CMS content on each request; never prerender at build (Docker builds have no DB or secret).
+export const dynamic = 'force-dynamic'
+
 type CatchAllPageProps = {
   params: Promise<{
     slug: string[]

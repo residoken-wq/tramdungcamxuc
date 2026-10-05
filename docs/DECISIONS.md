@@ -223,3 +223,12 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
    - Đường dẫn `/builder/**` được đặt metadata `robots: { index: false, follow: false }`.
    - Trang công khai `/` và `[...slug]` chỉ hiển thị phiên bản đã xuất bản (`draft: false`), tự động lấy metadata từ trường `seo` của trang.
 
+## T0-10
+
+- Docker dùng `node:22-bookworm-slim` (Node 22 cùng major với CI; Debian/glibc để dùng binary sharp) và `postgres:18` (cùng major DB dev/CI). Tag theo major nhận bản vá; khi cần rollback tuyệt đối phải lưu image digest cùng backup. Postgres 18 mount `/var/lib/postgresql`, không dùng đường dẫn `/data` của bản cũ.
+- Build multi-stage qua Corepack đọc đúng `pnpm@12.8.1` từ `packageManager`, `--frozen-lockfile`; không đưa `.env`, DB hay secret vận hành vào build context. Runner chạy user `node` không phải root; `/app/media` có volume riêng. Demo compose chỉ cấu hình storage local.
+- `NEXT_OUTPUT=standalone` chỉ đặt trong Docker build; local/CI `pnpm build` + `pnpm start` không đổi. App healthcheck gọi `/api/users/init`, kích hoạt Payload và `prodMigrations` đã có trước khi healthy; không thêm lệnh migration thủ công.
+- `src/proxy.ts` là convention Next 16, đọc `SITE_NOINDEX` ở runtime và gắn header trên mọi đường dẫn. `robots.ts` dùng `force-dynamic` để không đóng băng cờ ở build. Mặc định cờ trống; server demo bật `true`.
+- Branch T0-10 tạo từ `d2d4309` (trước khi PR #9 merge), sau đó gộp `main` có Puck 0.23.0 + route `/builder`; ảnh Docker được build và kiểm lại sau khi gộp.
+- Sau khi gộp PR #9, `pnpm build` trong Docker lỗi khi prerender `/` ("missing secret key") vì trang chủ đọc CMS mà build Docker cố ý không có DB/secret. Trang `/` và `[...slug]` đặt `export const dynamic = 'force-dynamic'` (cùng cách `/styleguide`), có unit test chặn tái phạm. Khi bật Cache Components sau này phải chuyển sang `await connection()`.
+- Tài liệu đã đối chiếu: [Payload deployment tại tag v3.90.2](https://github.com/payloadcms/payload/blob/v3.90.2/docs/production/deployment.mdx), [prodMigrations](https://payloadcms.com/docs/database/migrations#running-migrations-in-production), docs Next 16.3.3 cài trong `node_modules/next/dist/docs/` (`output`, `proxy`, `robots`, `self-hosting`), [Postgres official image](https://hub.docker.com/_/postgres).
