@@ -72,3 +72,41 @@
 3. **Toàn bộ logic màu nút được tập trung tại `BUTTON_STYLES` trong `src/components/ui/Button.tsx` để dễ dàng chuyển đổi khi Q13 được Hana phê duyệt.**
 4. **Trạng thái focus (`focus-visible`) luôn có viền nét 2px `deep-navy` với `offset 2px`, đảm bảo nhận diện rõ ràng cho người dùng điều hướng bằng bàn phím.**
 
+---
+
+## T0-05 – UI Composites & Bảng màu tương phản mở rộng
+
+### 1. Bộ cảm xúc mẫu cho EmotionPicker (PENDING Q14)
+Theo Brand Book 2026 và nguyên tắc `tdcx-brand`, tuyệt đối **không sử dụng emoji** trong hệ thống.
+Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét mảnh (`strokeWidth="1.5"`, `stroke="currentColor"`) trong `src/lib/emotions.ts`:
+- `calm`: **Bình yên** (Icon mặt trời mọc trên sóng nước tĩnh lặng)
+- `grateful`: **Biết ơn** (Icon trái tim tỏa tia sáng)
+- `energized`: **Hào hứng** (Icon mặt trời tỏa năng lượng)
+- `overwhelmed`: **Quá tải** (Icon đám mây tích tụ sóng cảm xúc)
+- `tired`: **Mệt mỏi** (Icon vầng trăng khuyết và dấu lặng)
+- `anxious`: **Lo âu** (Icon nhịp tim dao động quanh điểm cân bằng)
+
+> **PENDING Q14**: Danh sách 6 cảm xúc trên là placeholder mẫu, được đánh dấu `// PENDING Q14` để chờ Hana rà soát và chốt chính thức theo bộ tài liệu chuyên môn.
+
+### 2. Cặp màu mới trong UI Composites & Độ tương phản WCAG AA
+
+| Cặp màu (Chữ / Nền) | Tỉ lệ tương phản | AA Chữ thường (≥ 4.5:1) | AA Chữ lớn (≥ 3.0:1) | Ghi chú & Nơi áp dụng |
+| --- | --- | --- | --- | --- |
+| `bright-magenta` (#BC039E) / `soft-pink` (#FDE6F6) | **4.89:1** | ✅ Đạt | ✅ Đạt | Banner thông báo lỗi hệ thống / máy chủ trong `LeadForm`. |
+| `deep-navy` (#280A60) / `soft-pink` (#FDE6F6) | **13.56:1** | ✅ Đạt | ✅ Đạt | Nút radio cảm xúc đang chọn trong `EmotionPicker`, nút quiz trên Navbar mobile. |
+| `deep-navy` (#280A60) / `mint-haze` (#D9F1EA) | **13.92:1** | ✅ Đạt | ✅ Đạt | Ô ngày hoàn thành (`done`) trong `ProgressGrid`, khung thông báo thành công `LeadForm`. |
+| `deep-navy/80` / `mint-haze` (#D9F1EA) | **8.05:1** | ✅ Đạt | ✅ Đạt | Dòng phụ đề thông báo gửi form thành công trong `LeadForm`. |
+| `deep-navy/70` / `soft-pink/40` | **~7.50:1** | ✅ Đạt | ✅ Đạt | Ô ngày đã lỡ (`missed`) trong `ProgressGrid`. |
+
+### 3. Quyết định kiến trúc & Quy chuẩn A11y cho các Composite Components:
+1. **ProductCard**: Khi `saleStatus === 'hidden'`, component trả về `null` (không sinh HTML/DOM rác). CTA nhận qua ReactNode slot `cta` để không can thiệp logic mua bán / phân quyền trước T1-08. Ảnh bìa bắt buộc có `src` và `alt` đi qua `next/image`.
+2. **TestimonialCard**: Tuyệt đối tuân thủ AGENTS.md mục 7: Chỉ hiển thị khi có `consent === true`. Khi `consent === false`, trả về `null`. Sử dụng font Playfair Display Italic cho câu trích dẫn cảm xúc.
+3. **LeadForm**: Biểu mẫu UI client an toàn:
+   - Tích hợp ô honeypot ẩn hoàn toàn (`tabIndex={-1}`, `autoComplete="off"`, `aria-hidden="true"`, ẩn qua CSS/screen reader) để bẫy bot spam.
+   - Bắt buộc đồng ý nhận tin và dẫn link tới trang chính sách bảo mật qua prop `privacyHref`.
+   - Báo lỗi tiếng Việt ngay dưới từng ô input, không dùng placeholder thay thế nhãn hiển thị.
+4. **EmotionPicker**: Chuẩn WAI-ARIA Radio Group: hỗ trợ phím mũi tên (ArrowLeft/Right/Up/Down) để chuyển đổi giữa các cảm xúc, `aria-checked`, và kích thước vùng bấm tối thiểu 44px × 44px trên di động.
+5. **ProgressGrid**: Lưới 21 ngày tương thích tốt ở độ rộng 375px. Trạng thái ngày hoàn thành (`done`) không chỉ dựa vào màu sắc mà có thêm icon hoàn thành / icon cảm xúc đi kèm (tuân thủ WCAG 1.4.1). Ngày chưa tới (`future`) và ngày đã khóa (`locked`) bị vô hiệu hóa `disabled` và không kích hoạt sự kiện bấm.
+6. **Navbar**: Hỗ trợ mở drawer trên di động có `aria-expanded`, phím Escape đóng drawer và trả focus về nút mở. Giữ nút `Test thói quen 5 phút` và nút CTA hiển thị nổi bật trên thanh top bar di động (lead magnet chính) theo AGENTS.md 8.1.
+7. **Footer**: Tự động sắp xếp các trang pháp lý theo thuộc tính `order`. Tự động ẩn các trường rỗng trong thông tin đơn vị `sellerInfo`. Năm bản quyền được tính tự động từ hệ thống.
+
