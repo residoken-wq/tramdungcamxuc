@@ -14,14 +14,19 @@ import {
 } from '../fields/content'
 
 const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
-  if (
-    originalDoc?.printedAt &&
-    ((data.qrSlug !== undefined && data.qrSlug !== originalDoc.qrSlug) ||
-      (data.printedAt !== undefined && data.printedAt !== originalDoc.printedAt))
-  ) {
-    throw new ValidationError({
-      errors: [{ path: 'qrSlug', message: 'Thẻ đã in, không được đổi mã QR' }],
-    })
+  if (originalDoc?.printedAt) {
+    const errors: { path: string; message: string }[] = []
+    if (data.qrSlug !== undefined && data.qrSlug !== originalDoc.qrSlug) {
+      errors.push({ path: 'qrSlug', message: 'Thẻ đã in, không được đổi mã QR' })
+    }
+    if (
+      data.printedAt !== undefined &&
+      (!data.printedAt ||
+        new Date(data.printedAt).getTime() !== new Date(originalDoc.printedAt).getTime())
+    ) {
+      errors.push({ path: 'printedAt', message: 'Thẻ đã in, không được đổi hoặc xóa ngày in.' })
+    }
+    if (errors.length) throw new ValidationError({ errors })
   }
   return data
 }

@@ -91,16 +91,41 @@ describe('content collections with PostgreSQL', () => {
       id: card.id,
       data: { printedAt: '2026-10-05T00:00:00.000Z' },
     })
-    for (const data of [
-      { qrSlug: unique() },
-      { printedAt: null },
-      { printedAt: null, qrSlug: unique() },
-    ]) {
+    await expect(
+      payload.update({ collection: 'eqCards', id: card.id, data: { qrSlug: unique() } }),
+    ).rejects.toMatchObject({
+      data: { errors: [{ path: 'qrSlug', message: 'Thẻ đã in, không được đổi mã QR' }] },
+    })
+    for (const printedAt of [null, '2026-10-06T00:00:00.000Z']) {
       await expect(
-        payload.update({ collection: 'eqCards', id: card.id, data }),
+        payload.update({ collection: 'eqCards', id: card.id, data: { printedAt } }),
       ).rejects.toMatchObject({
-        data: { errors: [{ message: 'Thẻ đã in, không được đổi mã QR' }] },
+        data: {
+          errors: [{ path: 'printedAt', message: 'Thẻ đã in, không được đổi hoặc xóa ngày in.' }],
+        },
       })
+    }
+    await expect(
+      payload.update({
+        collection: 'eqCards',
+        id: card.id,
+        data: { printedAt: null, qrSlug: unique() },
+      }),
+    ).rejects.toMatchObject({
+      data: {
+        errors: expect.arrayContaining([
+          expect.objectContaining({ path: 'printedAt' }),
+          expect.objectContaining({ path: 'qrSlug' }),
+        ]),
+      },
+    })
+    for (const printedAt of ['2026-10-05', '2026-10-05T07:00:00+07:00']) {
+      const saved = await payload.update({
+        collection: 'eqCards',
+        id: card.id,
+        data: { printedAt, message: '[MẪU] Cùng thời điểm in' },
+      })
+      expect(new Date(saved.printedAt!).getTime()).toBe(Date.parse('2026-10-05T00:00:00.000Z'))
     }
     const updated = await payload.update({
       collection: 'eqCards',
@@ -156,6 +181,49 @@ describe('content collections with PostgreSQL', () => {
         data: { errors: [{ path: 'alt', message: 'Vui lòng nhập mô tả ảnh hoặc tài liệu.' }] },
       })
     }
+  })
+
+  it('normalizes page slugs before uniqueness validation on create and update', async () => {
+    const slug = `ve-hana-${unique()}`
+    const page = await payload.create({
+      collection: 'pages',
+      data: {
+        title: '[MẪU] Đường dẫn chuẩn',
+        slug: ` /${slug}/ `,
+        isSample: true,
+        _status: 'published',
+      },
+    })
+    track('pages', page)
+    expect(page.slug).toBe(slug)
+    for (const input of [slug, `/${slug}`, `${slug}/`]) {
+      await expect(
+        payload.create({
+          collection: 'pages',
+          data: {
+            title: '[MẪU] Đường dẫn trùng',
+            slug: input,
+            isSample: true,
+            _status: 'published',
+          },
+        }),
+      ).rejects.toBeInstanceOf(ValidationError)
+    }
+    const result = await payload.find({ collection: 'pages', where: { slug: { equals: slug } } })
+    expect(result.totalDocs).toBe(1)
+    const updated = await payload.update({
+      collection: 'pages',
+      id: page.id,
+      data: { slug: ` /${slug}/ ` },
+    })
+    expect(updated.slug).toBe(slug)
+    await expect(
+      payload.update({ collection: 'pages', id: page.id, data: { slug: 'a//b' } }),
+    ).rejects.toMatchObject({
+      data: {
+        errors: [{ path: 'slug', message: 'Đường dẫn không được chứa hai dấu / liên tiếp.' }],
+      },
+    })
   })
 
   it('keeps page drafts private and preserves the published revision', async () => {
