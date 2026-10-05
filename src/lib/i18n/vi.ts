@@ -90,6 +90,8 @@ export const vi = {
   },
   builder: {
     title: 'Trình dựng trang trực quan',
+    pageLabel: 'Trang',
+    pageTitle: 'Tiêu đề trang',
     saveDraft: 'Lưu nháp',
     publish: 'Xuất bản',
     saving: 'Đang lưu bản nháp...',
