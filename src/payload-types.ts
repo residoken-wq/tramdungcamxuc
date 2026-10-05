@@ -69,6 +69,19 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    products: Product;
+    services: Service;
+    programs: Program;
+    posts: Post;
+    testimonials: Testimonial;
+    eqCards: EqCard;
+    courseModules: CourseModule;
+    lessons: Lesson;
+    diagnosticQuestions: DiagnosticQuestion;
+    techniques: Technique;
+    legalPages: LegalPage;
+    workshops: Workshop;
+    pages: Page;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +91,19 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    programs: ProgramsSelect<false> | ProgramsSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    eqCards: EqCardsSelect<false> | EqCardsSelect<true>;
+    courseModules: CourseModulesSelect<false> | CourseModulesSelect<true>;
+    lessons: LessonsSelect<false> | LessonsSelect<true>;
+    diagnosticQuestions: DiagnosticQuestionsSelect<false> | DiagnosticQuestionsSelect<true>;
+    techniques: TechniquesSelect<false> | TechniquesSelect<true>;
+    legalPages: LegalPagesSelect<false> | LegalPagesSelect<true>;
+    workshops: WorkshopsSelect<false> | WorkshopsSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +113,14 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    siteSettings: SiteSetting;
+    navigation: Navigation;
+  };
+  globalsSelect: {
+    siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -144,12 +176,20 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Tải ảnh và tài liệu lên. Luôn thêm mô tả dễ hiểu.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
   id: number;
+  /**
+   * Mô tả nội dung để người dùng trình đọc màn hình hiểu được.
+   */
   alt: string;
+  isSample?: boolean | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -161,6 +201,930 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * Quản lý sản phẩm. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  /**
+   * Nhập tên sản phẩm.
+   */
+  name: string;
+  /**
+   * Dùng chữ thường không dấu, số và dấu -.
+   */
+  slug: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  web: 'site' | 'habit' | 'eq';
+  /**
+   * Chọn một mục phù hợp.
+   */
+  type:
+    | 'ebook'
+    | 'toolkit'
+    | 'digital_tool'
+    | 'physical_external'
+    | 'workshop'
+    | 'community'
+    | 'coaching_trial'
+    | 'package'
+    | 'b2b';
+  /**
+   * Chọn một mục phù hợp.
+   */
+  journeyStep?: ('pause' | 'feel' | 'name' | 'choose' | 'practice') | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  audience?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập khó khăn.
+   */
+  painPoint?: string | null;
+  /**
+   * Nhập kết quả mong đợi.
+   */
+  outcome?: string | null;
+  /**
+   * Nhập giới thiệu ngắn.
+   */
+  shortDescription?: string | null;
+  /**
+   * Soạn giới thiệu chi tiết.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  includes?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  preview?: (number | null) | Media;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  price?: number | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  salePrice?: number | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  saleEndsAt?: string | null;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  coverImage?: (number | null) | Media;
+  /**
+   * Chỉ quản trị viên xem được. Quyền giao tài liệu sẽ bổ sung sau.
+   */
+  files?:
+    | {
+        /**
+         * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+         */
+        file?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập nhãn nút.
+   */
+  ctaLabel?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  ctaType?: ('buy' | 'download' | 'book' | 'contact' | 'external') | null;
+  faq?:
+    | {
+        /**
+         * Nhập câu hỏi.
+         */
+        question: string;
+        /**
+         * Nhập trả lời.
+         */
+        answer?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  saleStatus: 'coming_soon' | 'on_sale' | 'free' | 'consult' | 'hidden';
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  relatedProducts?: (number | Product)[] | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  /**
+   * Nhập 0 nếu không dùng thử. Công cụ số thường dùng 21 ngày.
+   */
+  trialDays?: number | null;
+  /**
+   * Để trống nếu sử dụng vĩnh viễn.
+   */
+  accessDurationDays?: number | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  externalUrl?: string | null;
+  /**
+   * Nhập nhãn liên kết ngoài.
+   */
+  externalLabel?: string | null;
+  /**
+   * Tổng giá trị được tính từ số lượng nhân giá trị mỗi cấu phần.
+   */
+  components?:
+    | {
+        /**
+         * Nhập tên cấu phần.
+         */
+        label: string;
+        /**
+         * Nhập số không âm. Giá tiền tính bằng đồng.
+         */
+        quantity: number;
+        /**
+         * Nhập số không âm. Giá tiền tính bằng đồng.
+         */
+        unitValue: number;
+        /**
+         * Chỉ để tham khảo, không dùng để tính tổng giá trị gói.
+         */
+        retailPrice?: number | null;
+        /**
+         * Chọn nội dung đã tạo trong hệ thống.
+         */
+        grantsProduct?: (number | null) | Product;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tự tính từ các cấu phần, không nhập tay.
+   */
+  totalValue?: number | null;
+  /**
+   * Tự tính theo giá ưu đãi, hoặc giá bán nếu chưa có giá ưu đãi.
+   */
+  discountPercent?: number | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý dịch vụ đồng hành. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  /**
+   * Nhập tên dịch vụ.
+   */
+  name: string;
+  /**
+   * Dùng chữ thường không dấu, số và dấu -.
+   */
+  slug: string;
+  /**
+   * Nhập dành cho ai.
+   */
+  audience?: string | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  situations?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  outcomes?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  process?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập thời lượng.
+   */
+  duration?: string | null;
+  /**
+   * Nhập hình thức.
+   */
+  format?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  priceMode?: ('fixed' | 'quote') | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  price?: number | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  bookingUrl?: string | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  testimonials?: (number | Testimonial)[] | null;
+  /**
+   * Nhập nhãn nút.
+   */
+  ctaLabel?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  saleStatus: 'coming_soon' | 'on_sale' | 'free' | 'consult' | 'hidden';
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý lời chia sẻ. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  /**
+   * Nhập tên người chia sẻ.
+   */
+  name: string;
+  /**
+   * Nhập vai trò.
+   */
+  role?: string | null;
+  /**
+   * Nhập lời chia sẻ.
+   */
+  quote?: string | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  relatedOffer?:
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'programs';
+        value: number | Program;
+      } | null);
+  /**
+   * Chọn một mục phù hợp.
+   */
+  language?: ('vi' | 'en') | null;
+  /**
+   * Chỉ xuất bản khi người chia sẻ đã đồng ý.
+   */
+  consent?: boolean | null;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  photo?: (number | null) | Media;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý chương trình doanh nghiệp. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "programs".
+ */
+export interface Program {
+  id: number;
+  /**
+   * Nhập tên chương trình.
+   */
+  name: string;
+  /**
+   * Dùng chữ thường không dấu, số và dấu -.
+   */
+  slug: string;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  targetBehaviors?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập nhóm người học.
+   */
+  learnerGroup?: string | null;
+  /**
+   * Nhập hình thức.
+   */
+  format?: string | null;
+  /**
+   * Nhập thời lượng.
+   */
+  duration?: string | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  deliverables?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập đồng hành sau chương trình.
+   */
+  followUp?: string | null;
+  /**
+   * Nhập cách đo lường.
+   */
+  measurement?: string | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  caseStudies?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập nhãn nút.
+   */
+  ctaLabel?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  saleStatus: 'coming_soon' | 'on_sale' | 'free' | 'consult' | 'hidden';
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý bài viết và video. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  /**
+   * Nhập tiêu đề.
+   */
+  title: string;
+  /**
+   * Dùng chữ thường không dấu, số và dấu -.
+   */
+  slug: string;
+  /**
+   * Nhập chuỗi nội dung.
+   */
+  series?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  topic?: ('eq' | 'habit' | 'career') | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  format?: ('article' | 'video') | null;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  thumbnail?: (number | null) | Media;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  videoUrl?: string | null;
+  /**
+   * Soạn nội dung.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  ctaProduct?: (number | null) | Product;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  leadMagnet?: (number | null) | Product;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý thẻ eq buddy. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eqCards".
+ */
+export interface EqCard {
+  id: number;
+  /**
+   * Nhập mã thẻ.
+   */
+  code: string;
+  /**
+   * Nhập thông điệp.
+   */
+  message?: string | null;
+  /**
+   * Soạn câu chuyện.
+   */
+  story?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Nhập câu hỏi suy ngẫm.
+   */
+  reflectionPrompt?: string | null;
+  /**
+   * Nhập hành động nhỏ.
+   */
+  smallAction?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  topic?: ('eq' | 'habit' | 'career') | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  emotionTags?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  relatedProduct?: (number | null) | Product;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  shareImage45?: (number | null) | Media;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  shareImage916?: (number | null) | Media;
+  /**
+   * Không thể đổi sau khi đánh dấu đã in.
+   */
+  qrSlug?: string | null;
+  /**
+   * Mã đã in được giữ cố định.
+   */
+  printedQrSlug?: string | null;
+  /**
+   * Sau khi lưu ngày này, mã QR và ngày in được khóa.
+   */
+  printedAt?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý nhóm bài học. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "courseModules".
+ */
+export interface CourseModule {
+  id: number;
+  /**
+   * Nhập tên nhóm bài học.
+   */
+  title: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  group?: ('insight' | 'principle' | 'technique') | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý bài học. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lessons".
+ */
+export interface Lesson {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  module?: (number | null) | CourseModule;
+  /**
+   * Nhập tiêu đề.
+   */
+  title: string;
+  /**
+   * Nhập tóm tắt.
+   */
+  summary?: string | null;
+  /**
+   * Mã video trên dịch vụ lưu trữ. Chỉ quản trị viên xem được.
+   */
+  videoId?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  durationSec?: number | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  stage?: ('cue' | 'craving' | 'response' | 'reward' | 'none') | null;
+  downloadables?:
+    | {
+        /**
+         * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+         */
+        file?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  /**
+   * Bật để áp dụng: cho phép xem thử.
+   */
+  isFreePreview?: boolean | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý câu hỏi chẩn đoán. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "diagnosticQuestions".
+ */
+export interface DiagnosticQuestion {
+  id: number;
+  /**
+   * Nhập nội dung câu hỏi.
+   */
+  statement: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  stage?: ('cue' | 'craving' | 'response' | 'reward') | null;
+  /**
+   * Soạn gợi ý.
+   */
+  suggestion?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý kỹ thuật thực hành. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "techniques".
+ */
+export interface Technique {
+  id: number;
+  /**
+   * Nhập tên kỹ thuật.
+   */
+  name: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  stage?: ('cue' | 'craving' | 'response' | 'reward') | null;
+  /**
+   * Soạn cách thực hiện.
+   */
+  howTo?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Soạn ví dụ.
+   */
+  example?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  lesson?: (number | null) | Lesson;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý trang pháp lý. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legalPages".
+ */
+export interface LegalPage {
+  id: number;
+  /**
+   * Nhập tiêu đề.
+   */
+  title: string;
+  /**
+   * Dùng chữ thường không dấu, số và dấu -.
+   */
+  slug: string;
+  /**
+   * Soạn nội dung.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  lastUpdated?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý lịch workshop. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshops".
+ */
+export interface Workshop {
+  id: number;
+  /**
+   * Nhập tên workshop.
+   */
+  title: string;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  product?: (number | null) | Product;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  startsAt?: string | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  endsAt?: string | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  joinUrl?: string | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  audienceProducts?: (number | Product)[] | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Quản lý trang nội dung. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  /**
+   * Nhập tên trang.
+   */
+  title: string;
+  /**
+   * Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.
+   */
+  slug: string;
+  /**
+   * Dữ liệu bố cục. Trình chỉnh sửa kéo thả sẽ được bổ sung ở bước sau.
+   */
+  puckData?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  template?: ('campaign' | 'service' | 'workshop' | 'event') | null;
+  seo?: {
+    /**
+     * Nhập tiêu đề tìm kiếm.
+     */
+    title?: string | null;
+    /**
+     * Nhập mô tả tìm kiếm.
+     */
+    description?: string | null;
+    /**
+     * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+     */
+    ogImage?: (number | null) | Media;
+  };
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -193,6 +1157,58 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'programs';
+        value: number | Program;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'eqCards';
+        value: number | EqCard;
+      } | null)
+    | ({
+        relationTo: 'courseModules';
+        value: number | CourseModule;
+      } | null)
+    | ({
+        relationTo: 'lessons';
+        value: number | Lesson;
+      } | null)
+    | ({
+        relationTo: 'diagnosticQuestions';
+        value: number | DiagnosticQuestion;
+      } | null)
+    | ({
+        relationTo: 'techniques';
+        value: number | Technique;
+      } | null)
+    | ({
+        relationTo: 'legalPages';
+        value: number | LegalPage;
+      } | null)
+    | ({
+        relationTo: 'workshops';
+        value: number | Workshop;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -265,6 +1281,9 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  isSample?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -276,6 +1295,337 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  web?: T;
+  type?: T;
+  journeyStep?: T;
+  audience?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  painPoint?: T;
+  outcome?: T;
+  shortDescription?: T;
+  description?: T;
+  includes?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  preview?: T;
+  price?: T;
+  salePrice?: T;
+  saleEndsAt?: T;
+  coverImage?: T;
+  files?:
+    | T
+    | {
+        file?: T;
+        id?: T;
+      };
+  ctaLabel?: T;
+  ctaType?: T;
+  faq?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  saleStatus?: T;
+  relatedProducts?: T;
+  order?: T;
+  trialDays?: T;
+  accessDurationDays?: T;
+  externalUrl?: T;
+  externalLabel?: T;
+  components?:
+    | T
+    | {
+        label?: T;
+        quantity?: T;
+        unitValue?: T;
+        retailPrice?: T;
+        grantsProduct?: T;
+        id?: T;
+      };
+  totalValue?: T;
+  discountPercent?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  audience?: T;
+  situations?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  outcomes?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  process?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  duration?: T;
+  format?: T;
+  priceMode?: T;
+  price?: T;
+  bookingUrl?: T;
+  testimonials?: T;
+  ctaLabel?: T;
+  saleStatus?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "programs_select".
+ */
+export interface ProgramsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  targetBehaviors?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  learnerGroup?: T;
+  format?: T;
+  duration?: T;
+  deliverables?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  followUp?: T;
+  measurement?: T;
+  caseStudies?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  ctaLabel?: T;
+  saleStatus?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  series?: T;
+  topic?: T;
+  format?: T;
+  thumbnail?: T;
+  videoUrl?: T;
+  content?: T;
+  ctaProduct?: T;
+  leadMagnet?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  quote?: T;
+  relatedOffer?: T;
+  language?: T;
+  consent?: T;
+  photo?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eqCards_select".
+ */
+export interface EqCardsSelect<T extends boolean = true> {
+  code?: T;
+  message?: T;
+  story?: T;
+  reflectionPrompt?: T;
+  smallAction?: T;
+  topic?: T;
+  emotionTags?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  relatedProduct?: T;
+  image?: T;
+  shareImage45?: T;
+  shareImage916?: T;
+  qrSlug?: T;
+  printedQrSlug?: T;
+  printedAt?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "courseModules_select".
+ */
+export interface CourseModulesSelect<T extends boolean = true> {
+  title?: T;
+  group?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lessons_select".
+ */
+export interface LessonsSelect<T extends boolean = true> {
+  module?: T;
+  title?: T;
+  summary?: T;
+  videoId?: T;
+  durationSec?: T;
+  stage?: T;
+  downloadables?:
+    | T
+    | {
+        file?: T;
+        id?: T;
+      };
+  order?: T;
+  isFreePreview?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "diagnosticQuestions_select".
+ */
+export interface DiagnosticQuestionsSelect<T extends boolean = true> {
+  statement?: T;
+  stage?: T;
+  suggestion?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "techniques_select".
+ */
+export interface TechniquesSelect<T extends boolean = true> {
+  name?: T;
+  stage?: T;
+  howTo?: T;
+  example?: T;
+  lesson?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legalPages_select".
+ */
+export interface LegalPagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  content?: T;
+  lastUpdated?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshops_select".
+ */
+export interface WorkshopsSelect<T extends boolean = true> {
+  title?: T;
+  product?: T;
+  startsAt?: T;
+  endsAt?: T;
+  joinUrl?: T;
+  audienceProducts?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  puckData?: T;
+  template?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -316,6 +1666,249 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "siteSettings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Nhập thông điệp thương hiệu.
+   */
+  tagline?: string | null;
+  /**
+   * Dùng trong chuyển khoản, email và mã đơn.
+   */
+  brandAscii?: string | null;
+  /**
+   * Nhập tên miền.
+   */
+  domain?: string | null;
+  analytics?: {
+    /**
+     * Chọn một mục phù hợp.
+     */
+    provider?: ('none' | 'ga4' | 'plausible') | null;
+    /**
+     * Nhập mã đo lường ga4.
+     */
+    measurementId?: string | null;
+    /**
+     * Nhập tên miền plausible.
+     */
+    plausibleDomain?: string | null;
+  };
+  /**
+   * Nhập mã ngân hàng vietqr.
+   */
+  bankBin?: string | null;
+  /**
+   * Nhập tên ngân hàng.
+   */
+  bankName?: string | null;
+  /**
+   * Nhập số tài khoản.
+   */
+  accountNumber?: string | null;
+  /**
+   * Nhập tên chủ tài khoản.
+   */
+  accountName?: string | null;
+  /**
+   * Nhập đầu mã chuyển khoản.
+   */
+  transferPrefix?: string | null;
+  /**
+   * Bật để áp dụng: trừ phí trải nghiệm vào giá gói.
+   */
+  trialCreditApplies?: boolean | null;
+  /**
+   * Email nhận liên hệ từ khách hàng.
+   */
+  email?: string | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  linkedInUrl?: string | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  zaloGroupUrl?: string | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  zaloChatUrl?: string | null;
+  /**
+   * Bật để áp dụng: hiện nút trò chuyện zalo.
+   */
+  showFloatingChat?: boolean | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  shopeeStoreUrl?: string | null;
+  sellerInfo?: {
+    /**
+     * Nhập tên người bán hoặc hộ kinh doanh.
+     */
+    name?: string | null;
+    /**
+     * Nhập mã số thuế.
+     */
+    taxCode?: string | null;
+    /**
+     * Nhập địa chỉ.
+     */
+    address?: string | null;
+    /**
+     * Nhập điện thoại.
+     */
+    phone?: string | null;
+    /**
+     * Email dùng cho thông tin pháp lý.
+     */
+    email?: string | null;
+  };
+  /**
+   * Số ngày hoàn thành trong hành trình 21 ngày.
+   */
+  certificateMinDays?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  /**
+   * Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.
+   */
+  mainMenu?:
+    | {
+        /**
+         * Nhập tên mục.
+         */
+        label: string;
+        /**
+         * Chọn một mục phù hợp.
+         */
+        linkType: 'page' | 'url';
+        page?: (number | null) | Page;
+        /**
+         * Nhập đường dẫn /habit/chan-doan hoặc liên kết https://.
+         */
+        url?: string | null;
+        /**
+         * Bật để áp dụng: hiển thị nổi bật.
+         */
+        highlight?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.
+   */
+  footerMenu?:
+    | {
+        /**
+         * Nhập tên mục.
+         */
+        label: string;
+        /**
+         * Chọn một mục phù hợp.
+         */
+        linkType: 'page' | 'url';
+        page?: (number | null) | Page;
+        /**
+         * Nhập đường dẫn /habit/chan-doan hoặc liên kết https://.
+         */
+        url?: string | null;
+        /**
+         * Bật để áp dụng: hiển thị nổi bật.
+         */
+        highlight?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "siteSettings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  logo?: T;
+  tagline?: T;
+  brandAscii?: T;
+  domain?: T;
+  analytics?:
+    | T
+    | {
+        provider?: T;
+        measurementId?: T;
+        plausibleDomain?: T;
+      };
+  bankBin?: T;
+  bankName?: T;
+  accountNumber?: T;
+  accountName?: T;
+  transferPrefix?: T;
+  trialCreditApplies?: T;
+  email?: T;
+  linkedInUrl?: T;
+  zaloGroupUrl?: T;
+  zaloChatUrl?: T;
+  showFloatingChat?: T;
+  shopeeStoreUrl?: T;
+  sellerInfo?:
+    | T
+    | {
+        name?: T;
+        taxCode?: T;
+        address?: T;
+        phone?: T;
+        email?: T;
+      };
+  certificateMinDays?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  mainMenu?:
+    | T
+    | {
+        label?: T;
+        linkType?: T;
+        page?: T;
+        url?: T;
+        highlight?: T;
+        id?: T;
+      };
+  footerMenu?:
+    | T
+    | {
+        label?: T;
+        linkType?: T;
+        page?: T;
+        url?: T;
+        highlight?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
