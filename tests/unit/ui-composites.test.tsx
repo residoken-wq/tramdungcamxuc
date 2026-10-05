@@ -183,7 +183,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
         })
       })
 
-      expect(screen.getByText(vi.leadForm.successTitle)).toBeDefined()
+      expect(await screen.findByText(vi.leadForm.successTitle)).toBeDefined()
     })
   })
 
