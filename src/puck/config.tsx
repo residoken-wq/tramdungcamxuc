@@ -6,6 +6,7 @@ import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
 import { Button, type ButtonVariant, type ButtonSize } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
+import { vi } from '@/lib/i18n/vi'
 
 export const SECTION_BG_COLOR_OPTIONS = [
   { label: 'Ngà ấm (Warm Ivory)', value: 'warm-ivory' },
@@ -57,6 +58,13 @@ export const puckConfig: Config<PageComponentsProps> = {
     },
   },
   root: {
+    label: vi.builder.pageLabel,
+    fields: {
+      title: {
+        type: 'text',
+        label: vi.builder.pageTitle,
+      },
+    },
     render: ({ children }) => (
       <div className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased">
         {children}

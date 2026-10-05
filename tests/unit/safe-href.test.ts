@@ -8,6 +8,9 @@ describe('safeHref link sanitizer (B4)', () => {
     expect(safeHref(' JavaScript:x')).toBeNull()
     expect(safeHref('data:x')).toBeNull()
     expect(safeHref('//evil.com')).toBeNull()
+    expect(safeHref('/\\evil.com')).toBeNull()
+    expect(safeHref('  /\\evil.com  ')).toBeNull()
+    expect(safeHref('/\\')).toBeNull()
 
     // Additional malicious and invalid schemes
     expect(safeHref('vbscript:msgbox(1)')).toBeNull()

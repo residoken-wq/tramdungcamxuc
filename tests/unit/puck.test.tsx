@@ -68,6 +68,13 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       expect(components.CTAButton.label).toContain('Nút Kêu gọi hành động')
     })
 
+    it('localizes root label ("Trang") and root title field ("Tiêu đề trang")', () => {
+      expect(puckConfig.root).toBeDefined()
+      expect(puckConfig.root?.label).toBe('Trang')
+      expect(puckConfig.root?.fields?.title).toBeDefined()
+      expect(puckConfig.root?.fields?.title?.label).toBe('Tiêu đề trang')
+    })
+
     it('restricts background colors strictly to the 6 section brand tokens', () => {
       const expectedTokens = [
         'warm-ivory',
