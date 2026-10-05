@@ -96,17 +96,20 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
 | `deep-navy` (#280A60) / `soft-pink` (#FDE6F6) | **13.56:1** | ✅ Đạt | ✅ Đạt | Nút radio cảm xúc đang chọn trong `EmotionPicker`, nút quiz trên Navbar mobile. |
 | `deep-navy` (#280A60) / `mint-haze` (#D9F1EA) | **13.92:1** | ✅ Đạt | ✅ Đạt | Ô ngày hoàn thành (`done`) trong `ProgressGrid`, khung thông báo thành công `LeadForm`. |
 | `deep-navy/80` / `mint-haze` (#D9F1EA) | **8.05:1** | ✅ Đạt | ✅ Đạt | Dòng phụ đề thông báo gửi form thành công trong `LeadForm`. |
-| `deep-navy/70` / `soft-pink/40` | **~7.50:1** | ✅ Đạt | ✅ Đạt | Ô ngày đã lỡ (`missed`) trong `ProgressGrid`. |
+| `deep-navy/70` / `soft-pink/40` | **6.25:1** | ✅ Đạt | ✅ Đạt | Ô ngày đã lỡ (`missed`) trong `ProgressGrid`. |
+| `deep-navy/40` / `white/50` | **2.50:1** | ⚠️ Miễn trừ | ⚠️ Miễn trừ | Chữ ô ngày chưa tới (`future`) trong `ProgressGrid` (nút `disabled`, WCAG 1.4.3 miễn trừ). |
+| `deep-navy/30` / `warm-ivory` | **1.90:1** | ⚠️ Miễn trừ | ⚠️ Miễn trừ | Chữ ô ngày đã khóa (`locked`) trong `ProgressGrid` (nút `disabled`, WCAG 1.4.3 miễn trừ). |
 
 ### 3. Quyết định kiến trúc & Quy chuẩn A11y cho các Composite Components:
 1. **ProductCard**: Khi `saleStatus === 'hidden'`, component trả về `null` (không sinh HTML/DOM rác). CTA nhận qua ReactNode slot `cta` để không can thiệp logic mua bán / phân quyền trước T1-08. Ảnh bìa bắt buộc có `src` và `alt` đi qua `next/image`.
-2. **TestimonialCard**: Tuyệt đối tuân thủ AGENTS.md mục 7: Chỉ hiển thị khi có `consent === true`. Khi `consent === false`, trả về `null`. Sử dụng font Playfair Display Italic cho câu trích dẫn cảm xúc.
-3. **LeadForm**: Biểu mẫu UI client an toàn:
+2. **TestimonialCard**: Tuyệt đối tuân thủ AGENTS.md mục 7: Chỉ hiển thị khi có `consent === true`. Khi `consent === false`, trả về `null`. Bọc `<blockquote>` và `<figcaption>` trong thẻ ngữ nghĩa `<figure>`. Sử dụng font Playfair Display Italic (`font-quote`) cho câu trích dẫn cảm xúc.
+3. **LeadForm**: Biểu mẫu UI client an toàn (`'use client'`):
+   - Sinh ID động bằng `useId()` để tránh xung đột khi nhiều form xuất hiện trên cùng một trang.
    - Tích hợp ô honeypot ẩn hoàn toàn (`tabIndex={-1}`, `autoComplete="off"`, `aria-hidden="true"`, ẩn qua CSS/screen reader) để bẫy bot spam.
    - Bắt buộc đồng ý nhận tin và dẫn link tới trang chính sách bảo mật qua prop `privacyHref`.
    - Báo lỗi tiếng Việt ngay dưới từng ô input, không dùng placeholder thay thế nhãn hiển thị.
-4. **EmotionPicker**: Chuẩn WAI-ARIA Radio Group: hỗ trợ phím mũi tên (ArrowLeft/Right/Up/Down) để chuyển đổi giữa các cảm xúc, `aria-checked`, và kích thước vùng bấm tối thiểu 44px × 44px trên di động.
-5. **ProgressGrid**: Lưới 21 ngày tương thích tốt ở độ rộng 375px. Trạng thái ngày hoàn thành (`done`) không chỉ dựa vào màu sắc mà có thêm icon hoàn thành / icon cảm xúc đi kèm (tuân thủ WCAG 1.4.1). Ngày chưa tới (`future`) và ngày đã khóa (`locked`) bị vô hiệu hóa `disabled` và không kích hoạt sự kiện bấm.
-6. **Navbar**: Hỗ trợ mở drawer trên di động có `aria-expanded`, phím Escape đóng drawer và trả focus về nút mở. Giữ nút `Test thói quen 5 phút` và nút CTA hiển thị nổi bật trên thanh top bar di động (lead magnet chính) theo AGENTS.md 8.1.
-7. **Footer**: Tự động sắp xếp các trang pháp lý theo thuộc tính `order`. Tự động ẩn các trường rỗng trong thông tin đơn vị `sellerInfo`. Năm bản quyền được tính tự động từ hệ thống.
+4. **EmotionPicker**: Chuẩn WAI-ARIA Radio Group (`'use client'`): hỗ trợ phím mũi tên (ArrowLeft/Right/Up/Down) để chuyển đổi giữa các cảm xúc, `aria-checked`, ID sinh động bằng `useId()`, và kích thước vùng bấm tối thiểu 44px × 44px trên di động.
+5. **ProgressGrid**: Lưới 21 ngày (`'use client'`) tương thích tốt ở độ rộng 375px. Trạng thái ngày hoàn thành (`done`) không chỉ dựa vào màu sắc mà có thêm icon hoàn thành / icon cảm xúc đi kèm (tuân thủ WCAG 1.4.1). Ngày chưa tới (`future`, tương phản 2.50:1) và ngày đã khóa (`locked`, tương phản 1.90:1) bị vô hiệu hóa `disabled` và không kích hoạt sự kiện bấm; mức tương phản này được chấp nhận theo quy chuẩn WCAG 2.1 Tiêu chí 1.4.3 (miễn trừ yêu cầu độ tương phản đối với các thành phần giao diện không hoạt động / `disabled`).
+6. **Navbar**: Component client (`'use client'`) hỗ trợ mở drawer trên di động có `aria-expanded`, phím Escape đóng drawer và trả focus về nút mở. Hiển thị mục nổi bật (`featured`, nhãn `shortLabel ?? label`) trên thanh top bar di động với vùng chạm tối thiểu 44px. Không tự chế nút hoặc dò tìm nhãn text.
+7. **Footer**: Component server chuẩn. Tự động sắp xếp các trang pháp lý theo thuộc tính `order`. Tự động ẩn các khối không có dữ liệu (`sellerInfo`, `socialLinks`, `tagline`, `legalLinks`). Năm bản quyền được tính tự động từ hệ thống. Không chứa dữ liệu mẫu hoặc thông tin người bán gắn cứng.
 

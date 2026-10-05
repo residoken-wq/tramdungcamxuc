@@ -8,7 +8,6 @@ export const vi = {
     submit: 'Xác nhận',
     loading: 'Đang tải...',
     close: 'Đóng',
-    retry: 'Thử lại',
   },
   status: {
     coming_soon: 'Sắp ra mắt',
@@ -35,8 +34,6 @@ export const vi = {
     } as Record<string, string>,
   },
   leadForm: {
-    title: 'Nhận tài nguyên miễn phí',
-    description: 'Để lại thông tin để nhận tài liệu hướng dẫn và bài học mới nhất.',
     nameLabel: 'Họ và tên',
     namePlaceholder: 'Nhập họ và tên của bạn',
     emailLabel: 'Địa chỉ email',
@@ -58,7 +55,6 @@ export const vi = {
   },
   emotionPicker: {
     label: 'Chọn cảm xúc hôm nay',
-    helpText: 'Dùng các phím mũi tên để di chuyển và chọn cảm xúc phù hợp.',
   },
   habit: {
     progressGridLabel: 'Lưới tiến trình 21 ngày',
@@ -76,17 +72,14 @@ export const vi = {
         : `Ngày ${day}: ${statusText}`,
   },
   navbar: {
-    menu: 'Menu',
+    mainNav: 'Điều hướng chính',
+    mobileNav: 'Điều hướng di động',
     openMenu: 'Mở menu điều hướng',
     closeMenu: 'Đóng menu điều hướng',
-    quickQuiz: 'Test thói quen 5 phút',
-    defaultCta: 'Đặt phiên trải nghiệm',
   },
   footer: {
-    brandTagline: 'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
     legalHeading: 'Chính sách & Quy định',
     contactHeading: 'Kết nối cùng Trạm',
-    sellerHeading: 'Thông tin đơn vị',
     copyright: 'Trạm Dừng Cảm Xúc. Bản quyền được bảo lưu.',
     seller: {
       taxCode: 'Mã số thuế',
