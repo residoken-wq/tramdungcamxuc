@@ -115,7 +115,7 @@ export function Navbar({
             {/* AGENTS.md 8.1: Test thói quen 5 phút must be visible on mobile bar */}
             <Link
               href={quizItem.href}
-              className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/25 font-ui text-xs font-bold hover:bg-bright-magenta hover:text-white transition-all shadow-xs focus-visible:outline-2 focus-visible:outline-deep-navy"
+              className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/25 font-ui text-xs font-bold hover:bg-bright-magenta hover:text-white transition-all shadow-sm focus-visible:outline-2 focus-visible:outline-deep-navy"
             >
               <span className="hidden xs:inline">{quizItem.label}</span>
               <span className="xs:hidden">Test 5p</span>

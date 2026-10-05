@@ -132,7 +132,7 @@ export function ProgressGrid({
           switch (status) {
             case 'done':
               stateStyle =
-                'bg-mint-haze border-deep-navy/20 text-deep-navy font-bold hover:border-deep-navy shadow-xs cursor-pointer'
+                'bg-mint-haze border-deep-navy/20 text-deep-navy font-bold hover:border-deep-navy shadow-sm cursor-pointer'
               indicatorIcon = EmotionIcon ? (
                 <EmotionIcon className="w-3.5 h-3.5 text-deep-navy" />
               ) : (

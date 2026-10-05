@@ -77,7 +77,7 @@ export function InteractiveCompositesDemo() {
           <p className="text-xs font-ui text-deep-navy/60 mb-3">
             [MẪU] Khung xem trước Navbar (Tương tác thu nhỏ màn hình hoặc click nút mở menu):
           </p>
-          <div className="border border-deep-navy/15 rounded-xl overflow-hidden bg-white shadow-xs">
+          <div className="border border-deep-navy/15 rounded-xl overflow-hidden bg-white shadow-sm">
             <Navbar />
           </div>
         </div>

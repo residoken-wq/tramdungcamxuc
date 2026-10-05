@@ -65,7 +65,7 @@ export function ProductCard({
         <div className="absolute top-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
           <StatusBadge status={saleStatus} />
           {trialDays && trialDays > 0 ? (
-            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-ui text-xs font-semibold bg-white/95 text-deep-navy border border-deep-navy/15 shadow-xs backdrop-blur-xs">
+            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 font-ui text-xs font-semibold bg-white/95 text-deep-navy border border-deep-navy/15 shadow-sm backdrop-blur-sm">
               {trialDays} {vi.product.trialBadge}
             </span>
           ) : null}

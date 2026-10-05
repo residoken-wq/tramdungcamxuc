@@ -130,7 +130,7 @@ export function LeadForm({
           aria-live="polite"
           className="rounded-xl bg-mint-haze border border-deep-navy/15 p-6 text-center space-y-4"
         >
-          <div className="w-12 h-12 rounded-full bg-white text-deep-navy flex items-center justify-center mx-auto shadow-xs">
+          <div className="w-12 h-12 rounded-full bg-white text-deep-navy flex items-center justify-center mx-auto shadow-sm">
             <svg
               className="w-6 h-6 text-deep-navy"
               fill="none"

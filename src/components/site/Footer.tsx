@@ -93,7 +93,7 @@ export function Footer({
                 <li key={item.slug}>
                   <Link
                     href={item.slug}
-                    className="font-sans text-sm text-deep-navy/80 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy rounded-xs"
+                    className="font-sans text-sm text-deep-navy/80 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm"
                   >
                     {item.title}
                   </Link>
