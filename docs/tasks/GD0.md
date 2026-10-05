@@ -489,6 +489,21 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
+## T0-09c – Viết lại e2e editor cho chạy được thật
+
+**Giao cho: Codex** (chạy được Playwright; Antigravity thì không) · Làm trên branch `task/T0-09-puck-editor` (PR #9). Chi tiết: `docs/tasks/reviews/T0-09.md` phần "Nghiệm thu T0-09b".
+
+**Phạm vi**: chỉ `tests/e2e/puck-builder.spec.ts` (+ helper test mới nếu cần). Không sửa code ứng dụng; nếu luồng thật có lỗi → dừng, báo Planning, không tự sửa app.
+- Tự tạo admin: dùng cách bootstrap như `tests/e2e/content-admin.test.ts` (tài khoản ngẫu nhiên `randomUUID()`, không mật khẩu gắn cứng; DB local đã có admin và không phải CI → `test.skip` có lý do). Tạo trang nháp bằng REST, lấy `id`. Dọn trang + user ở `finally`.
+- (b) mở `/builder/<id>` → **kéo** khối "Hero 2 Lối vào" từ sidebar vào canvas (iframe) → sửa "Tiêu đề dòng 1" ở panel phải → bấm **Xuất bản** → thấy thông báo thành công → trang công khai `/<slug>` hiện tiêu đề mới.
+- (c) sửa tiếp tiêu đề → bấm **Lưu nháp** → trang công khai **vẫn** tiêu đề cũ; mở lại editor → thấy bản nháp mới.
+- Nếu kéo thả vào iframe bằng Playwright không làm được ổn định: ghi lý do vào DECISIONS mục T0-09, dùng cách chèn khối khác mà Puck hỗ trợ trên giao diện; **không** nạp sẵn khối bằng API cho bước (b).
+- Gộp (b)(c) trong một test (cùng user, cùng trang) để không phụ thuộc thứ tự.
+
+**Tiêu chí**: `CI=true pnpm build && CI=true PORT=3200 pnpm test:e2e` xanh 3 lần liên tiếp; CI PR #9 xanh; `git grep -n "TdcxAdmin2026" ` rỗng.
+
+---
+
 ## T0-10 – Đóng gói Docker để tự deploy bản demo
 
 **Phụ thuộc**: T0-06b (đã merge) · **Giao cho: Codex, ngay sau T0-06b** (cùng sửa `.env.example`, nên để một agent làm liên tiếp) · Không cần tài khoản IT.
