@@ -7,6 +7,11 @@ import {
   LeadForm,
   Navbar,
   Footer,
+  type NavItem,
+  type NavbarCta,
+  type LegalLink,
+  type SellerInfo,
+  type SocialLink,
 } from '@/components/site'
 import { EmotionPicker, ProgressGrid, type ProgressDayItem } from '@/components/habit'
 import { Button } from '@/components/ui/Button'
@@ -25,6 +30,48 @@ export function InteractiveCompositesDemo() {
 
   // State for ProgressGrid demo
   const [selectedDayInfo, setSelectedDayInfo] = useState<string | null>(null)
+
+  // Sample data marked with [MẪU] for styleguide demonstration
+  const sampleNavItems: NavItem[] = [
+    { label: '[MẪU] Về Hana', href: '/ve-hana' },
+    { label: '[MẪU] Thư viện', href: '/thu-vien' },
+    {
+      label: '[MẪU] Test thói quen 5 phút',
+      shortLabel: '[MẪU] Test 5p',
+      href: '/habit/chan-doan',
+      featured: true,
+    },
+    { label: '[MẪU] Growth Mirror', href: '/coaching/growth-mirror' },
+    { label: '[MẪU] Doanh nghiệp', href: '/doanh-nghiep' },
+  ]
+
+  const sampleNavbarCta: NavbarCta = {
+    label: '[MẪU] Đặt phiên trải nghiệm',
+    href: '/coaching/growth-mirror#dat-phien',
+  }
+
+  const sampleLegalLinks: LegalLink[] = [
+    { title: '[MẪU] Thông tin pháp lý', slug: '/thong-tin-phap-ly', order: 1 },
+    { title: '[MẪU] Điều khoản sử dụng', slug: '/dieu-khoan-su-dung', order: 2 },
+    { title: '[MẪU] Chính sách bảo mật', slug: '/chinh-sach-bao-mat', order: 3 },
+    { title: '[MẪU] Chính sách cung cấp dịch vụ', slug: '/chinh-sach-cung-cap-dich-vu', order: 4 },
+    { title: '[MẪU] Giá & Thanh toán', slug: '/gia-thanh-toan', order: 5 },
+    { title: '[MẪU] Phản ánh & Khiếu nại', slug: '/phan-anh-khieu-nai', order: 6 },
+  ]
+
+  const sampleSellerInfo: SellerInfo = {
+    name: '[MẪU] Trạm Dừng Cảm Xúc',
+    address: '[MẪU] TP. Hồ Chí Minh, Việt Nam',
+    email: '[MẪU] contact@vi-du.vn',
+    phone: '[MẪU] 0901 234 567',
+    taxCode: '[MẪU] 0123456789',
+  }
+
+  const sampleSocialLinks: SocialLink[] = [
+    { label: '[MẪU] LinkedIn', href: 'https://linkedin.com' },
+    { label: '[MẪU] Facebook', href: 'https://facebook.com' },
+    { label: '[MẪU] Zalo Community', href: 'https://zalo.me' },
+  ]
 
   const sampleProgressDays: ProgressDayItem[] = [
     { day: 1, status: 'done', emotionKey: 'calm' },
@@ -78,7 +125,7 @@ export function InteractiveCompositesDemo() {
             [MẪU] Khung xem trước Navbar (Tương tác thu nhỏ màn hình hoặc click nút mở menu):
           </p>
           <div className="border border-deep-navy/15 rounded-xl overflow-hidden bg-white shadow-sm">
-            <Navbar />
+            <Navbar items={sampleNavItems} cta={sampleNavbarCta} />
           </div>
         </div>
       </div>
@@ -388,7 +435,12 @@ export function InteractiveCompositesDemo() {
         </div>
 
         <div className="rounded-card border border-deep-navy/10 overflow-hidden shadow-soft">
-          <Footer />
+          <Footer
+            legalLinks={sampleLegalLinks}
+            sellerInfo={sampleSellerInfo}
+            socialLinks={sampleSocialLinks}
+            tagline="[MẪU] Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng."
+          />
         </div>
       </div>
     </div>

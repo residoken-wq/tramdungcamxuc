@@ -196,10 +196,10 @@ test.describe('UI Composites (T0-05)', () => {
     // 2. Navbar component
     if (isMobile) {
       await expect(page.locator('#mobile-nav-toggle')).toBeVisible()
-      await expect(page.getByRole('link', { name: /Test 5p|Test thói quen/i }).first()).toBeVisible()
+      await expect(page.getByRole('link', { name: /\[MẪU\] Test 5p|Test thói quen/i }).first()).toBeVisible()
     } else {
-      await expect(page.getByRole('link', { name: 'Về Hana' }).first()).toBeVisible()
-      await expect(page.getByRole('link', { name: 'Đặt phiên trải nghiệm' }).first()).toBeVisible()
+      await expect(page.getByRole('link', { name: /\[MẪU\] Về Hana/i }).first()).toBeVisible()
+      await expect(page.getByRole('link', { name: /\[MẪU\] Đặt phiên trải nghiệm/i }).first()).toBeVisible()
     }
 
     // 3. ProductCard component
@@ -213,9 +213,9 @@ test.describe('UI Composites (T0-05)', () => {
 
     // 5. LeadForm component
     await expect(page.getByText('[MẪU] Đăng ký nhận cẩm nang cảm xúc')).toBeVisible()
-    await expect(page.locator('#lead-name-input')).toBeVisible()
-    await expect(page.locator('#lead-email-input')).toBeVisible()
-    await expect(page.locator('#lead-submit-btn')).toBeVisible()
+    await expect(page.getByLabel(/Họ và tên/i)).toBeVisible()
+    await expect(page.getByLabel(/Địa chỉ email/i)).toBeVisible()
+    await expect(page.getByRole('button', { name: /Gửi thông tin/i })).toBeVisible()
 
     // 6. EmotionPicker component
     await expect(page.getByText('Chọn cảm xúc hôm nay').first()).toBeVisible()
@@ -226,9 +226,9 @@ test.describe('UI Composites (T0-05)', () => {
 
     // 8. Footer component
     await expect(page.getByText('Chính sách & Quy định').first()).toBeVisible()
-    await expect(page.getByText('Thông tin pháp lý').first()).toBeVisible()
-    await expect(page.getByText('Chính sách bảo mật').first()).toBeVisible()
-    await expect(page.getByText('contact@tramdungcamxuc.com').first()).toBeVisible()
+    await expect(page.getByText(/\[MẪU\] Thông tin pháp lý/).first()).toBeVisible()
+    await expect(page.getByText(/\[MẪU\] Chính sách bảo mật/).first()).toBeVisible()
+    await expect(page.getByText('[MẪU] contact@vi-du.vn').first()).toBeVisible()
   })
 
   test('Navbar mobile mở/đóng bằng bàn phím và giữ nút quiz nổi bật trên thanh', async ({ page, isMobile }) => {
@@ -237,7 +237,7 @@ test.describe('UI Composites (T0-05)', () => {
     const mobileToggle = page.locator('#mobile-nav-toggle')
     if (isMobile || (await mobileToggle.isVisible())) {
       // Quiz link phải nhìn thấy trên mobile bar bên ngoài drawer
-      const quizLink = page.getByRole('link', { name: /Test 5p|Test thói quen/i }).first()
+      const quizLink = page.getByRole('link', { name: /\[MẪU\] Test 5p|Test thói quen/i }).first()
       await expect(quizLink).toBeVisible()
 
       // Focus và bấm Enter để mở drawer
@@ -260,29 +260,29 @@ test.describe('UI Composites (T0-05)', () => {
   test('Tab qua LeadForm theo thứ tự hợp lý và bỏ qua honeypot ẩn', async ({ page }) => {
     await page.goto('/styleguide')
 
-    const nameInput = page.locator('#lead-name-input')
+    const nameInput = page.getByLabel(/Họ và tên/i)
     await nameInput.scrollIntoViewIfNeeded()
     await nameInput.focus()
     await expect(nameInput).toBeFocused()
 
     // Tab tới Email
     await page.keyboard.press('Tab')
-    const emailInput = page.locator('#lead-email-input')
+    const emailInput = page.getByLabel(/Địa chỉ email/i)
     await expect(emailInput).toBeFocused()
 
     // Tab bỏ qua Honeypot và tới checkbox đồng ý nhận tin
     await page.keyboard.press('Tab')
-    const consentCheckbox = page.locator('#lead-consent-checkbox')
+    const consentCheckbox = page.getByRole('checkbox')
     await expect(consentCheckbox).toBeFocused()
 
     // Tab tới link Chính sách bảo mật
     await page.keyboard.press('Tab')
-    const privacyLink = page.getByRole('link', { name: 'Chính sách bảo mật' }).first()
+    const privacyLink = page.getByRole('link', { name: /Chính sách bảo mật/i }).first()
     await expect(privacyLink).toBeFocused()
 
     // Tab tới nút Submit
     await page.keyboard.press('Tab')
-    const submitBtn = page.locator('#lead-submit-btn')
+    const submitBtn = page.getByRole('button', { name: /Gửi thông tin/i })
     await expect(submitBtn).toBeFocused()
   })
 })

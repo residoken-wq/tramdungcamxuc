@@ -1,4 +1,6 @@
 import React from 'react'
+import fs from 'node:fs'
+import path from 'node:path'
 import { describe, expect, it, vi as vitestVi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import {
@@ -12,7 +14,21 @@ import { EmotionPicker, ProgressGrid } from '@/components/habit'
 import { EMOTIONS } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 
-describe('UI Composites (T0-05)', () => {
+function getComponentFilesRecursively(dir: string): string[] {
+  let results: string[] = []
+  const list = fs.readdirSync(dir, { withFileTypes: true })
+  for (const entry of list) {
+    const fullPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      results = results.concat(getComponentFilesRecursively(fullPath))
+    } else if (/\.(tsx|ts)$/.test(entry.name) && !entry.name.endsWith('.d.ts')) {
+      results.push(fullPath)
+    }
+  }
+  return results
+}
+
+describe('UI Composites (T0-05 & T0-05b)', () => {
   describe('TestimonialCard Component', () => {
     it('returns null and does not render when consent is false', () => {
       const { container } = render(
@@ -90,7 +106,7 @@ describe('UI Composites (T0-05)', () => {
 
   describe('LeadForm Component', () => {
     it('displays Vietnamese errors on empty submit or invalid email', async () => {
-      render(<LeadForm />)
+      render(<LeadForm title="[MẪU] Đăng ký nhận tài nguyên" />)
 
       const submitButton = screen.getByRole('button', { name: vi.leadForm.submit })
       fireEvent.click(submitButton)
@@ -113,7 +129,12 @@ describe('UI Composites (T0-05)', () => {
 
     it('does NOT call onSubmit when honeypot field has a value', async () => {
       const mockSubmit = vitestVi.fn().mockResolvedValue(undefined)
-      render(<LeadForm onSubmit={mockSubmit} />)
+      render(
+        <LeadForm
+          title="[MẪU] Đăng ký nhận tài nguyên"
+          onSubmit={mockSubmit}
+        />
+      )
 
       const nameInput = screen.getByLabelText(new RegExp(vi.leadForm.nameLabel, 'i'))
       const emailInput = screen.getByLabelText(new RegExp(vi.leadForm.emailLabel, 'i'))
@@ -135,7 +156,12 @@ describe('UI Composites (T0-05)', () => {
 
     it('calls onSubmit with valid payload and displays success message', async () => {
       const mockSubmit = vitestVi.fn().mockResolvedValue(undefined)
-      render(<LeadForm onSubmit={mockSubmit} />)
+      render(
+        <LeadForm
+          title="[MẪU] Đăng ký nhận tài nguyên"
+          onSubmit={mockSubmit}
+        />
+      )
 
       const nameInput = screen.getByLabelText(new RegExp(vi.leadForm.nameLabel, 'i'))
       const emailInput = screen.getByLabelText(new RegExp(vi.leadForm.emailLabel, 'i'))
@@ -227,7 +253,11 @@ describe('UI Composites (T0-05)', () => {
           items={[
             { label: 'Về Hana', href: '/ve-hana' },
             { label: 'Thư viện', href: '/thu-vien' },
-            { label: 'Test thói quen 5 phút', href: '/habit/chan-doan' },
+            {
+              label: 'Test thói quen 5 phút',
+              href: '/habit/chan-doan',
+              featured: true,
+            },
           ]}
           cta={{ label: 'Đặt phiên trải nghiệm', href: '/dat-phien' }}
         />
@@ -235,7 +265,7 @@ describe('UI Composites (T0-05)', () => {
 
       expect(screen.getByRole('link', { name: 'Về Hana' })).toBeDefined()
       expect(screen.getByRole('link', { name: 'Thư viện' })).toBeDefined()
-      // Desktop + mobile quiz link
+      // Desktop + mobile featured link
       const quizLinks = screen.getAllByRole('link', { name: /Test thói quen 5 phút/i })
       expect(quizLinks.length).toBeGreaterThan(0)
 
@@ -262,7 +292,7 @@ describe('UI Composites (T0-05)', () => {
           legalLinks={testLegalLinks}
           sellerInfo={{
             name: 'Trạm Dừng Cảm Xúc',
-            email: 'contact@tramdungcamxuc.com',
+            email: 'sample-seller@example.com',
             // address and taxCode intentionally omitted
           }}
         />
@@ -271,11 +301,104 @@ describe('UI Composites (T0-05)', () => {
       expect(screen.getByRole('link', { name: 'Thông tin pháp lý' })).toBeDefined()
       expect(screen.getByRole('link', { name: 'Chính sách bảo mật' })).toBeDefined()
       expect(screen.getByText('Trạm Dừng Cảm Xúc')).toBeDefined()
-      expect(screen.getByText('contact@tramdungcamxuc.com')).toBeDefined()
+      expect(screen.getByText('sample-seller@example.com')).toBeDefined()
       expect(screen.queryByText(vi.footer.seller.taxCode)).toBeNull()
 
       const currentYear = new Date().getFullYear().toString()
       expect(screen.getByText(new RegExp(currentYear))).toBeDefined()
+    })
+  })
+
+  // ==================== T0-05b Required Regression & A11y Tests ====================
+
+  describe('T0-05b Required Tests', () => {
+    it('B1: all component files using client hooks or event handlers start with "use client"', () => {
+      const componentsDir = path.resolve(process.cwd(), 'src/components')
+      const files = getComponentFilesRecursively(componentsDir)
+
+      const interactivePattern = /useState|useEffect|useRef|useId|onClick=|onChange=|onKeyDown=/
+      const violations: string[] = []
+
+      for (const filePath of files) {
+        const content = fs.readFileSync(filePath, 'utf8')
+        if (interactivePattern.test(content)) {
+          const trimmed = content.trim()
+          if (!trimmed.startsWith("'use client'") && !trimmed.startsWith('"use client"')) {
+            violations.push(path.relative(process.cwd(), filePath))
+          }
+        }
+      }
+
+      expect(
+        violations,
+        `Files using hooks or handlers must begin with 'use client': ${violations.join(', ')}`
+      ).toEqual([])
+    })
+
+    it('B3: no component in src/components uses font-serif', () => {
+      const componentsDir = path.resolve(process.cwd(), 'src/components')
+      const files = getComponentFilesRecursively(componentsDir)
+      const violations: string[] = []
+
+      for (const filePath of files) {
+        const content = fs.readFileSync(filePath, 'utf8')
+        if (content.includes('font-serif')) {
+          violations.push(path.relative(process.cwd(), filePath))
+        }
+      }
+
+      expect(
+        violations,
+        `Components must use font-quote or font-ui/font-sans instead of font-serif: ${violations.join(', ')}`
+      ).toEqual([])
+    })
+
+    it('B2 & B4: Footer hides empty sections; Navbar without featured item has no mobile quiz button', () => {
+      // 1. Footer with no sellerInfo, socialLinks, or tagline
+      const { container: footerContainer } = render(<Footer />)
+      expect(screen.queryByText(vi.footer.contactHeading)).toBeNull()
+      expect(screen.queryByText(vi.footer.legalHeading)).toBeNull()
+      expect(footerContainer.querySelector('p.font-quote')).toBeNull()
+
+      // 2. Navbar with no featured item -> no mobile button rendered in top bar
+      const testItems = [
+        { label: 'Về Hana', href: '/ve-hana' },
+        { label: 'Thư viện', href: '/thu-vien' },
+      ]
+      const { container: navContainer } = render(
+        <Navbar
+          items={testItems}
+          cta={{ label: 'Đặt hẹn', href: '/dat-hen' }}
+        />
+      )
+
+      // Mobile controls container (has lg:hidden) should only contain the toggle button
+      const mobileControls = navContainer.querySelector('.flex.lg\\:hidden')
+      expect(mobileControls).not.toBeNull()
+      // There should not be any <a> link inside the mobile bar controls
+      const mobileBarLink = mobileControls?.querySelector('a')
+      expect(mobileBarLink).toBeNull()
+    })
+
+    it('S1: rendering multiple LeadForm components generates distinct input IDs via useId', () => {
+      render(
+        <div>
+          <LeadForm title="[MẪU] Form Một" />
+          <LeadForm title="[MẪU] Form Hai" />
+        </div>
+      )
+
+      const nameInputs = screen.getAllByLabelText(new RegExp(vi.leadForm.nameLabel, 'i'))
+      expect(nameInputs).toHaveLength(2)
+      expect(nameInputs[0].id).toBeTruthy()
+      expect(nameInputs[1].id).toBeTruthy()
+      expect(nameInputs[0].id).not.toBe(nameInputs[1].id)
+
+      const emailInputs = screen.getAllByLabelText(new RegExp(vi.leadForm.emailLabel, 'i'))
+      expect(emailInputs).toHaveLength(2)
+      expect(emailInputs[0].id).toBeTruthy()
+      expect(emailInputs[1].id).toBeTruthy()
+      expect(emailInputs[0].id).not.toBe(emailInputs[1].id)
     })
   })
 })
