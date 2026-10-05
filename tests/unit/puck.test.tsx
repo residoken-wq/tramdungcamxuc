@@ -236,6 +236,52 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       expect(buttonLink).toBeDefined()
       expect(buttonLink.getAttribute('href')).toBe('#')
     })
+
+    it('refuses to render buttons with malicious or unsafe links across blocks (B4)', () => {
+      // 1. CTAButton
+      const ctaRender = puckConfig.components.CTAButton.render as unknown as (props: {
+        label: string
+        href: string
+        variant?: 'primary' | 'secondary' | 'ghost'
+        size?: 'sm' | 'md' | 'lg'
+        align?: 'left' | 'center' | 'right'
+      }) => React.ReactElement
+      const { container: ctaContainer } = render(
+        ctaRender({
+          label: 'Bấm ngay',
+          href: 'javascript:alert(1)',
+          variant: 'primary',
+          size: 'md',
+          align: 'center',
+        }),
+      )
+      expect(ctaContainer.querySelector('a')).toBeNull()
+      expect(ctaContainer.querySelector('button')).toBeNull()
+
+      // 2. ImageText
+      const itProps = puckConfig.components.ImageText.defaultProps!
+      const { container: itContainer } = render(
+        <ImageText
+          {...itProps}
+          buttonText="Độc hại"
+          buttonLink="//evil.com/phishing"
+        />,
+      )
+      expect(itContainer.querySelector('a')).toBeNull()
+      expect(itContainer.querySelector('button')).toBeNull()
+
+      // 3. HeroTwoEntries
+      const heroProps = puckConfig.components.HeroTwoEntries.defaultProps!
+      const { container: heroContainer } = render(
+        <HeroTwoEntries
+          {...heroProps}
+          entry1={{ ...heroProps.entry1, buttonLink: 'javascript:void(0)' }}
+          entry2={{ ...heroProps.entry2, buttonLink: 'data:text/html,<script>alert(1)</script>' }}
+        />,
+      )
+      expect(heroContainer.querySelector('a')).toBeNull()
+      expect(heroContainer.querySelector('button')).toBeNull()
+    })
   })
 
   describe('Server Action Security Guardrails', () => {

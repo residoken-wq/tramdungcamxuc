@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
+import { safeHref } from '@/lib/safe-href'
 
 export interface ImageTextProps {
   layout?: 'image-left' | 'image-right'
@@ -139,9 +140,9 @@ export function ImageText({
               ))}
             </div>
 
-            {buttonText && buttonLink && (
+            {Boolean(buttonText && safeHref(buttonLink)) && (
               <div className="pt-2">
-                <Button href={buttonLink} variant={isDeepNavy ? 'secondary' : 'primary'} size="md">
+                <Button href={safeHref(buttonLink)!} variant={isDeepNavy ? 'secondary' : 'primary'} size="md">
                   {buttonText}
                 </Button>
               </div>

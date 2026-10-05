@@ -5,6 +5,7 @@ import { ImageText, type ImageTextProps } from '@/components/site/ImageText'
 import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
 import { Button, type ButtonVariant, type ButtonSize } from '@/components/ui/Button'
+import { safeHref } from '@/lib/safe-href'
 
 export const SECTION_BG_COLOR_OPTIONS = [
   { label: 'Ngà ấm (Warm Ivory)', value: 'warm-ivory' },
@@ -356,6 +357,11 @@ export const puckConfig: Config<PageComponentsProps> = {
         align: 'center',
       },
       render: ({ label, href, variant = 'primary', size = 'md', align = 'center' }) => {
+        const safeLink = safeHref(href)
+        if (!safeLink || !label) {
+          return <></>
+        }
+
         const alignClasses = {
           left: 'justify-start',
           center: 'justify-center',
@@ -365,7 +371,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         return (
           <div className="py-4 px-4">
             <div className={`mx-auto max-w-5xl flex ${alignClasses}`}>
-              <Button href={href} variant={variant} size={size}>
+              <Button href={safeLink} variant={variant} size={size}>
                 {label}
               </Button>
             </div>

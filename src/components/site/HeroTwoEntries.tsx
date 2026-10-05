@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button } from '@/components/ui/Button'
+import { safeHref } from '@/lib/safe-href'
 
 export interface HeroEntry {
   label: string
@@ -56,6 +57,9 @@ export function HeroTwoEntries({
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
 
+  const entry1SafeHref = safeHref(entry1?.buttonLink)
+  const entry2SafeHref = safeHref(entry2?.buttonLink)
+
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-5xl">
@@ -93,11 +97,13 @@ export function HeroTwoEntries({
                 {entry1.description}
               </p>
             </div>
-            <div>
-              <Button href={entry1.buttonLink || '#'} variant="primary" size="md" className="w-full">
-                {entry1.buttonText}
-              </Button>
-            </div>
+            {entry1SafeHref && entry1?.buttonText && (
+              <div>
+                <Button href={entry1SafeHref} variant="primary" size="md" className="w-full">
+                  {entry1.buttonText}
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Entry 2 */}
@@ -110,11 +116,13 @@ export function HeroTwoEntries({
                 {entry2.description}
               </p>
             </div>
-            <div>
-              <Button href={entry2.buttonLink || '#'} variant="secondary" size="md" className="w-full">
-                {entry2.buttonText}
-              </Button>
-            </div>
+            {entry2SafeHref && entry2?.buttonText && (
+              <div>
+                <Button href={entry2SafeHref} variant="secondary" size="md" className="w-full">
+                  {entry2.buttonText}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

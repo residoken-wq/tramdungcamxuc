@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { safeHref } from '@/lib/safe-href'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -134,9 +135,13 @@ export const Button = React.forwardRef<
   // Nếu có href: render dạng thẻ Link của Next.js (không lồng button vào trong a hoặc ngược lại)
   if ('href' in rest && typeof rest.href === 'string') {
     const { href, ...anchorProps } = rest as ButtonAsLink
+    const validatedHref = safeHref(href)
+    if (!validatedHref) {
+      return null
+    }
     return (
       <Link
-        href={href}
+        href={validatedHref}
         ref={ref as React.Ref<HTMLAnchorElement>}
         className={classes}
         aria-disabled={disabled || isLoading ? 'true' : undefined}
