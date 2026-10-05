@@ -3,6 +3,7 @@ import {
   contentCollection,
   date,
   image,
+  file,
   lines,
   number,
   relation,
@@ -77,7 +78,7 @@ export const Products: CollectionConfig = {
       type: 'array',
       access: { read: authenticated },
       admin: { description: 'Chỉ quản trị viên xem được. Quyền giao tài liệu sẽ bổ sung sau.' },
-      fields: [image('file', 'Tài liệu')],
+      fields: [file('file', 'Tài liệu')],
     },
     text('ctaLabel', 'Nhãn nút'),
     select('ctaType', 'Hành động của nút', [
