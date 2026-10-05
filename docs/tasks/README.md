@@ -87,14 +87,14 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-03b | Sửa sau nghiệm thu T0-03 (styleguide production, test bẩn repo, CRLF) | | T0-03 | Xong |
 | T0-04 | UI primitives                                         |          | T0-03b               | Xong – PR #5 ([review](reviews/T0-04.md)) |
 | T0-04b | Sửa sau nghiệm thu T0-04 (Modal cướp focus, PriceTag tương phản) | | T0-04 | Đạt (05/10) |
-| T0-05 | UI composites                                         |          | T0-04b (đã merge)    | Chưa đạt – PR #6 ([review](reviews/T0-05.md)) |
-| T0-05b | Sửa sau nghiệm thu T0-05 ('use client', dữ liệu bịa, font, nút quiz mobile) | | T0-05 | Đạt phần lớn, còn B5 |
-| T0-05c | Thanh menu tràn ngang 375px + giải xung đột DECISIONS | | T0-05b | Sẵn sàng – **Antigravity** |
+| T0-05 | UI composites                                         |          | T0-04b (đã merge)    | Đạt (gồm 05b, 05c) – PR #6 ([review](reviews/T0-05.md)) |
+| T0-05b | Sửa sau nghiệm thu T0-05 ('use client', dữ liệu bịa, font, nút quiz mobile) | | T0-05 | Đạt |
+| T0-05c | Thanh menu tràn ngang 375px + giải xung đột DECISIONS | | T0-05b | Đạt |
 | T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Đã merge (PR #7, **trước khi có T0-06b**) ([review](reviews/T0-06.md)) |
 | T0-06b | Sửa sau nghiệm thu T0-06 (chuẩn hóa slug trang, so ngày in, vị trí ảnh, skip e2e trên DB dev) | | T0-06 | Đạt – PR #8 ([review](reviews/T0-06.md)) |
 | T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Chưa mở    |
 | T0-08 | Seed dữ liệu MẪU                                      |          | T0-07               | Chưa mở    |
-| T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06        | Chưa mở    |
+| T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06b       | Sẵn sàng sau khi PR #6, #8 merge – **Antigravity** (spike trước, chờ duyệt) |
 | T0-10 | Đóng gói Docker + RUNBOOK để tự deploy bản demo       |          | T0-06b (đã merge)   | Sẵn sàng – **Codex** (khi hết quota chờ) |
 | T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0) | | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15 |
 | T0-11 | Ước lượng GĐ 1–4 + hướng dẫn CMS nháp cho cổng GĐ 0   | [HANA]   | tất cả              | Chưa mở    |
