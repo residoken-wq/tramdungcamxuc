@@ -1,6 +1,6 @@
 # GĐ 0 – Nền móng: task card cho Antigravity
 
-> Mục tiêu GĐ 0: admin chạy trên preview, đủ collections, phân quyền đúng, kéo thả được 5 khối đầu tiên.
+> Mục tiêu GĐ 0: admin chạy trên bản demo (server riêng của anh Nhân – T0-10), đủ collections, phân quyền đúng, kéo thả được 5 khối đầu tiên.
 > **Cổng GĐ 0**: Hana đăng nhập `/admin`, thấy đủ collection, tự tạo 1 sản phẩm, tự kéo thả dựng 1 trang thử từ 5 khối rồi xuất bản, trang công khai hiện đúng.
 > Tham chiếu chung: `AGENTS.md`, `docs/plan/GAPS_AND_QUESTIONS.md`.
 
@@ -394,14 +394,56 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
-## T0-10 – Deploy preview
+## T0-10 – Đóng gói Docker để tự deploy bản demo
 
-**Phụ thuộc**: T0-01, tài khoản do IT cấp (GAPS D1, D2) · **Song song được với**: mọi task sau T0-01
+**Phụ thuộc**: T0-01 · **Giao cho: Codex, ngay sau T0-06** (cùng sửa `.env.example`, nên để một agent làm liên tiếp) · Không cần tài khoản IT.
+**Quyết định 05/10**: anh Nhân tự pull repo từ GitHub và deploy lên cloud hosting riêng để **demo cho khách hàng**. Bản demo này thay thế "preview" trong cổng GĐ 0. Hạ tầng production (Vercel + Neon + R2) chuyển sang **T0-10b**, không chặn GĐ 0.
+
+**Hiện trạng**: `Dockerfile` là bản mẫu của Next.js nhưng **chưa chạy được**: `next.config.ts` chưa có `output: 'standalone'`, không có volume cho media, không có hướng dẫn migrate, dùng `node:22.17.0-alpine` chưa được ghi trong DECISIONS.
+
+**Phạm vi**
+
+1. `next.config.ts`: bật `output: 'standalone'` **chỉ khi** biến build `NEXT_OUTPUT=standalone` (đặt trong Dockerfile). `pnpm start` ở local và CI giữ nguyên hành vi.
+2. `Dockerfile` multi-stage, pnpm qua corepack đúng phiên bản trong `package.json`, chạy user không phải root. Ảnh chạy được `sharp` (Payload). Đọc hướng dẫn Docker chính thức của Payload 3.90 và Next.js 16 trước khi sửa.
+3. **Migration lúc khởi động**: dùng `prodMigrations` đã có trong `payload.config.ts` (Payload tự chạy migration khi khởi tạo ở production). Kiểm chứng điều này; nếu không chạy thì thêm bước migrate trước `node server.js`. Container khởi động trên DB trống → `/admin` hiện form tạo user đầu tiên.
+4. `docker-compose.prod.yml`: service `app` + `postgres` (image `postgres:18`, khớp CI), volume tên riêng cho DB và cho thư mục media, `restart: unless-stopped`, healthcheck cho cả hai. App chỉ mở 1 cổng (mặc định 3000, đổi qua `APP_PORT`). Postgres **không** mở cổng ra ngoài. `docker-compose.yml` (dev) giữ nguyên.
+5. Media: lưu đĩa local trong volume khi không có biến S3 (khớp cơ chế T0-06). Xóa container rồi tạo lại → ảnh đã upload vẫn còn.
+6. **Bản demo không được Google index**: biến `SITE_NOINDEX=true` → mọi response có header `X-Robots-Tag: noindex, nofollow`, `robots.txt` chặn toàn bộ. Mặc định trong `.env.example` để trống (production sau này sẽ index).
+7. `.env.example`: thêm `APP_PORT`, `SITE_NOINDEX`, `POSTGRES_PASSWORD` (dùng cho compose). Ghi chú rõ `PAYLOAD_SECRET` phải sinh mới (`openssl rand -hex 32`) và `STYLEGUIDE_PUBLIC=true` nếu muốn khách xem `/styleguide`.
+8. `docs/RUNBOOK.md` mục mới **"Deploy bản demo trên server riêng"**, viết cho anh Nhân làm theo từng lệnh:
+   - yêu cầu server (Docker + Compose, RAM tối thiểu, cổng);
+   - lần đầu: clone → tạo `.env` → `docker compose -f docker-compose.prod.yml up -d --build` → mở `/admin` tạo tài khoản `owner`;
+   - cập nhật bản mới: `git pull` → build lại → kiểm tra;
+   - quay về bản trước (rollback): checkout tag/commit cũ rồi build lại; nếu bản mới có migration thì backup DB trước khi cập nhật;
+   - backup / khôi phục DB bằng `pg_dump` / `pg_restore` (có lệnh cụ thể) và backup volume media;
+   - gợi ý đặt reverse proxy có HTTPS (Caddy hoặc Nginx + Let's Encrypt), chỉ hướng dẫn, không bắt buộc trong compose;
+   - phương án không dùng Docker: Node 22 + `pnpm build` + `pnpm start` + process manager (pm2/systemd), mô tả ngắn.
+9. CI: thêm job build Docker image (không push lên registry) để Dockerfile không bị hỏng âm thầm.
+10. Ghi phiên bản image Node/Postgres và lý do vào mục `## T0-10` cuối `docs/DECISIONS.md`.
+
+**Không làm**: Vercel, Neon, R2, domain thật, email (T0-10b / GĐ 1). Không đưa dữ liệu khách thật lên bản demo.
+
+**Ranh giới file**: `Dockerfile`, `.dockerignore`, `docker-compose.prod.yml`, `next.config.ts`, `src/middleware.ts` hoặc cơ chế header tương đương, `src/app/robots.ts`, `.env.example`, `.github/workflows/ci.yml`, `docs/RUNBOOK.md`, `README.md` (1 dòng trỏ tới RUNBOOK), mục `## T0-10` trong `docs/DECISIONS.md`, `tests/**` (file mới).
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Trên máy sạch: clone → tạo `.env` theo RUNBOOK → `docker compose -f docker-compose.prod.yml up -d --build` → `/admin` hiện form tạo user đầu tiên, không chạy tay lệnh migrate nào (Planning tự làm theo RUNBOOK).
+- [ ] Upload 1 ảnh → `docker compose down` → `up -d` → ảnh và dữ liệu vẫn còn.
+- [ ] `SITE_NOINDEX=true` → `curl -I` thấy `X-Robots-Tag: noindex`; `/robots.txt` chặn toàn bộ.
+- [ ] Postgres không truy cập được từ bên ngoài server (không có `ports:` cho service DB).
+- [ ] `pnpm build && pnpm start` ở local vẫn chạy như cũ; CI xanh, có job build Docker.
+- [ ] Làm thử backup → xóa DB → restore theo RUNBOOK thành công (ghi lệnh và kết quả vào báo cáo).
+
+---
+
+## T0-10b – Hạ tầng production (Vercel + Neon + R2)
+
+**Phụ thuộc**: IT trả lời GAPS D1, D2 và cấp tài khoản · **Không chặn cổng GĐ 0.** Phải xong trước T1-15 (kết nối domain thật). Nếu Hana quyết định chạy production luôn trên server riêng thì task này đổi thành "nâng bản demo lên production" (thêm R2, backup tự động, giám sát); Planning viết lại khi có quyết định.
 
 **Phạm vi**
 
 1. Kết nối repo với Vercel; preview cho mỗi PR, production từ `main`.
-2. Neon Postgres: DB production + branch cho preview (nếu dùng tích hợp Neon–Vercel). Chạy migration tự động lúc build (`payload migrate`).
+2. Neon Postgres: DB production + branch cho preview (nếu dùng tích hợp Neon–Vercel). Migration chạy tự động khi deploy.
 3. Cloudflare R2 bucket cho media; biến môi trường trên Vercel.
 4. Cập nhật `docs/RUNBOOK.md`: deploy, rollback (Vercel instant rollback), backup DB (Neon PITR / snapshot hằng ngày giữ 14 ngày), khôi phục, nơi đặt secret.
 5. `.env.example` cập nhật đủ biến.
@@ -422,7 +464,7 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 1. Ước lượng từng task GĐ 1 (`docs/tasks/GD1.md`) và từng epic GĐ 2–4 (`docs/plan/MASTER_PLAN.md` mục 5) theo ngày công, ghi rủi ro kỹ thuật. Đề xuất tách / gộp task nếu cần. Ghi vào `docs/plan/ESTIMATES.md`.
 2. `docs/HUONG_DAN_CMS.md` bản nháp cho đúng phạm vi cổng GĐ 0: đăng nhập, tạo sản phẩm, dựng trang bằng kéo thả, xuất bản. Tiếng Việt, câu ngắn, có ảnh chụp màn hình.
-3. Chuẩn bị tài khoản `owner` cho Hana trên preview (gửi lời mời qua email, không gửi mật khẩu qua chat).
+3. Chuẩn bị tài khoản `owner` cho Hana trên bản demo (T0-10) (gửi lời mời qua email, không gửi mật khẩu qua chat).
 
 **Tiêu chí nghiệm thu (= cổng GĐ 0)**
 

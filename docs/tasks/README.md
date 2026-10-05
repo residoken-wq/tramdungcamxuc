@@ -89,7 +89,8 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Chưa mở    |
 | T0-08 | Seed dữ liệu MẪU                                      |          | T0-07               | Chưa mở    |
 | T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06        | Chưa mở    |
-| T0-10 | Deploy preview Vercel + Neon + R2                     |          | T0-01, tài khoản IT | Bị chặn (chờ IT trả lời D1, D2 và cấp tài khoản) |
+| T0-10 | Đóng gói Docker + RUNBOOK để tự deploy bản demo       |          | T0-01               | Sẵn sàng – **Codex**, làm ngay sau T0-06 |
+| T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0) | | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15 |
 | T0-11 | Ước lượng GĐ 1–4 + hướng dẫn CMS nháp cho cổng GĐ 0   | [HANA]   | tất cả              | Chưa mở    |
 
 ### GĐ 1 – Web 1 Landing + CMS (`docs/tasks/GD1.md`)

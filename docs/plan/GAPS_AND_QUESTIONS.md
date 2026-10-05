@@ -62,7 +62,7 @@ Antigravity **không tự quyết**; trong lúc chờ, làm theo cột "Mặc đ
 
 | #   | Câu hỏi                                                                                                                      | Hạn chót    |
 | --- | ---------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| D1  | Ai tạo và giữ quyền owner các tài khoản Vercel / Neon / Cloudflare / Resend? Đề xuất: tài khoản đứng tên Hana, IT là member. | Trước T0-10 |
-| D2  | Neon hay Supabase? Planning đề xuất **Neon** (branch DB cho mỗi preview, khớp Vercel).                                       | Trước T0-10 |
+| D1  | Ai tạo và giữ quyền owner các tài khoản Vercel / Neon / Cloudflare / Resend? Đề xuất: tài khoản đứng tên Hana, IT là member. | Trước T0-10b (trước T1-15) – bản demo GĐ 0 tự host, không cần |
+| D2  | Neon hay Supabase? Planning đề xuất **Neon** (branch DB cho mỗi preview, khớp Vercel).                                       | Trước T0-10b (trước T1-15) |
 | D3  | Package manager: pnpm (đề xuất)                                                                                              | T0-01       |
 | D4  | Lịch review REVIEW-REQUIRED: IT review trong bao lâu sau khi PR mở? Đề xuất ≤ 2 ngày làm việc.                               | Trước T0-07 |

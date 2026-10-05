@@ -25,7 +25,7 @@ Ngoài phạm vi (ghi vào `docs/BACKLOG.md` nếu có ai đề xuất): giỏ h
 
 | GĐ  | Tên                 | Kết quả dùng được                                                                         | Số task | Ước lượng tạm* | Cổng                                                              |
 | --- | ------------------- | ----------------------------------------------------------------------------------------- | ------- | -------------- | ----------------------------------------------------------------- |
-| 0   | Nền móng            | Admin chạy trên preview, đủ collections, kéo thả 5 khối                                   | 11      | 2–3 tuần       | Hana tạo 1 sản phẩm + dựng 1 trang thử                            |
+| 0   | Nền móng            | Admin chạy trên bản demo (server riêng), đủ collections, kéo thả 5 khối                                   | 11      | 2–3 tuần       | Hana tạo 1 sản phẩm + dựng 1 trang thử                            |
 | 1   | Web 1 Landing + CMS | Trang chủ, thư viện, form lead, quiz chẩn đoán, bán phiên trải nghiệm 149k (xác nhận tay) | 17      | 4–5 tuần       | Hana tự dựng landing chiến dịch, lead thật về                     |
 | 2   | Web 2 Habit MVP     | Dùng thử 21 ngày, tracker, video bảo vệ, thanh toán tự động, chứng nhận                   | ~12     | 4–5 tuần       | 1 đơn thật thanh toán & mở khóa tự động; IT duyệt REVIEW-REQUIRED |
 | 3   | Web 3 EQ Buddy      | Rút thẻ 5 bước, trang QR, ảnh chia sẻ, dùng thử                                           | ~7      | 2–3 tuần       | Người thật rút thẻ & quét QR ổn định                              |
@@ -72,7 +72,7 @@ T0-01 Scaffold ──┬─> T0-02 CI & test
                  ├─> T0-03 Tokens & font ──> T0-04 UI primitives ──> T0-05 UI composites
                  ├─> T0-06 Collections nội dung ──┬─> T0-07 Collections giao dịch + quyền ──> T0-08 Seed MẪU
                  │                                 └─> T0-09 Puck editor + 5 khối (cần T0-05)
-                 └─> T0-10 Deploy preview (cần tài khoản từ IT)
+                 └─> T0-10 Docker + deploy demo trên server riêng (T0-10b production: chờ IT)
                                         tất cả ──> T0-11 Ước lượng GĐ1–4 + hướng dẫn CMS nháp
 ```
 
@@ -136,7 +136,7 @@ E4-1 Thanh toán gói tự động qua webhook + cấp quyền cộng đồng/l�
 
 | Đầu vào                                                                                           | Người lo  | Chặn task                                              |
 | ------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------ |
-| Tài khoản GitHub repo, Vercel, Neon/Supabase, Cloudflare (R2 + Turnstile), Resend                 | IT        | T0-10 (deploy); T0-01..09 chạy local được              |
+| Tài khoản GitHub repo, Vercel, Neon/Supabase, Cloudflare (R2 + Turnstile), Resend                 | IT        | T0-10b (production), T1-15. Bản demo GĐ 0 chạy trên server riêng của anh Nhân (T0-10), không cần |
 | `Growth_Mirror_Pricing_Calculator.xlsx` → `docs/sources/`                                          | Hana      | T0-08 (seed). Thiếu thì seed theo bảng trong AGENTS.md |
 | File Excel Habit Hack (16 tình huống, 11 kỹ thuật, 20 video) → `docs/sources/`                     | Hana      | T0-08 (seed), T1-14 (quiz)                             |
 | Brand Book 2026 (PDF) → `docs/sources/`                                                            | Hana      | T0-03 (tham chiếu; token đã có trong AGENTS.md)        |
