@@ -250,6 +250,14 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 - [ ] Không emoji, không màu/font ngoài `tdcx-brand`; mọi nhãn cố định trong `vi.ts`; dữ liệu mẫu ghi `[MẪU]`, không dùng tên/ảnh/trích dẫn thật của Hana.
 - [ ] Unit + e2e xanh trong CI; `git status` sạch sau khi chạy test.
 
+**Giao cho: Antigravity** (05/10) · chạy song song với T0-06 (Codex).
+
+**Ranh giới file** – chỉ được sửa:
+`src/components/site/**`, `src/components/habit/**`, `src/components/ui/index.ts` (chỉ khi cần export thêm), `src/lib/emotions.ts`, `src/lib/i18n/vi.ts`, `src/app/(site)/styleguide/**`, `tests/unit/**` (file mới cho composites), `tests/e2e/styleguide.test.ts`, mục `## T0-05` ở cuối `docs/DECISIONS.md`, `docs/BACKLOG.md`.
+**Không** sửa `src/payload.config.ts`, `src/collections/**`, `src/globals/**`, `src/migrations/**`, `package.json` / `pnpm-lock.yaml` (cần thêm package → hỏi trước).
+
+**Ghi chú từ nghiệm thu T0-04**: comment code tiếng Anh; siết test B1 thành `document.activeElement === document.body`; ảnh mẫu trong `ProductCard` dùng file trong `public/` hoặc SVG brand, không dùng ảnh từ internet.
+
 ---
 
 ## T0-06 – Collections nội dung, globals, media
@@ -275,6 +283,33 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 - [ ] Tạo gói thử với 3 cấu phần → `totalValue`, `discountPercent` tự tính, không sửa tay được.
 - [ ] Unit test pricing + khóa qrSlug xanh.
 - [ ] Upload ảnh không có alt → bị chặn.
+
+**Giao cho: Codex** (05/10) · chạy song song với T0-05 (Antigravity).
+
+**Ranh giới file** – chỉ được sửa:
+`src/collections/**`, `src/globals/**`, `src/payload.config.ts`, `src/migrations/**`, `src/payload-types.ts` (sinh tự động), `src/app/(payload)/admin/importMap.js` (sinh tự động), `src/lib/pricing.ts`, `src/lib/auth/access.ts`, `src/fields/**` (field dùng chung, nếu cần), `tests/unit/**` và `tests/e2e/**` (file mới), `.env.example`, `package.json` / `pnpm-lock.yaml` (chỉ để thêm `@payloadcms/storage-s3` cùng phiên bản 3.90.2), mục `## T0-06` ở cuối `docs/DECISIONS.md`, `docs/BACKLOG.md`.
+**Không** sửa `src/components/**`, `src/app/(site)/**`, `src/lib/i18n/vi.ts`, `tailwind.config.ts`.
+
+**Làm rõ spec (Planning chốt 05/10)**
+
+1. **Công thức giá gói** (`computePackageValue()` thuần, không phụ thuộc Payload):
+   - `totalValue = Σ (quantity × unitValue)` của `components[]`.
+   - Giá bán dùng để so = `salePrice` nếu có, ngược lại `price`.
+   - `discountPercent = round((totalValue − giá bán) / totalValue × 100)`; `totalValue = 0` hoặc thiếu giá bán → `null`; giá bán > tổng giá trị → `0` (không âm).
+   - Test khớp bảng AGENTS.md: CLEAR 2.500.000 / 1.750.000 → 30; BUILD 5.800.000 / 2.900.000 → 50; SHINE 10.800.000 / 4.320.000 → 60. Bộ công cụ số ghi 1 dòng `quantity 2 × 250.000` hoặc 2 dòng – cả hai phải ra đúng tổng.
+   - `retailPrice` chỉ để hiển thị, **không** dùng trong công thức (Q5 chưa chốt).
+2. **Chỉ đọc thật sự**: `totalValue`, `discountPercent` tính trong hook `beforeChange`; giá trị gửi lên qua REST/Local API bị bỏ qua. Có test: tạo gói với `totalValue: 1` trong body → giá trị lưu vẫn là số tính đúng.
+3. **Access tạm**: tạo `src/lib/auth/access.ts` chỉ với `authenticated` và `publishedOrAuthenticated` (public đọc bản `published`, admin đăng nhập đọc tất cả). Đánh dấu `// REVIEW-REQUIRED:`. T0-07 mở rộng file này – không viết `isOwner` / `isEditor` ở T0-06.
+4. **Media R2**: chỉ bật `@payloadcms/storage-s3` khi đủ biến `S3_BUCKET`, `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_REGION` (mặc định `auto`); thiếu → lưu disk local. Thêm các biến này (để trống) vào `.env.example`. `alt` bắt buộc.
+5. **`pages`**: collection (GAPS B1); `slug` duy nhất, `/` = trang chủ, chỉ cho chữ thường không dấu, số, `-`, `/`; `versions.drafts.autosave` bật; `puckData` là field JSON (chưa có editor – T0-09).
+6. **`navigation`**: `mainMenu[]` {`label`, `linkType` (page / url), `page` (rel `pages`), `url`, `highlight` (bool, cho nút "Đặt phiên trải nghiệm")}; `footerMenu[]` cùng cấu trúc. Một cấp, chưa có menu con.
+7. **`siteSettings`** tab "Thanh toán" gồm: `bankBin`, `bankName`, `accountNumber`, `accountName`, `transferPrefix` (mặc định `TDCX`). Không lưu khóa API cổng thanh toán trong CMS.
+8. **`eqCards.qrSlug`**: duy nhất; khi `printedAt` có giá trị thì đổi `qrSlug` qua API → lỗi tiếng Việt "Thẻ đã in, không được đổi mã QR". Test bằng Local API.
+9. **`testimonials`**: `_status = published` khi `consent = false` → lỗi validate tiếng Việt.
+10. Không seed dữ liệu (T0-08). Không làm `users` role (T0-07).
+11. Một migration cho toàn bộ schema T0-06 (`pnpm migrate:create content_collections`); chạy được trên DB mới và trên DB đang có migration `initial`.
+
+**Test bổ sung**: `tests/unit/pricing.test.ts` (thuần); test Local API cho chỉ đọc giá trị gói, khóa `qrSlug`, testimonial thiếu consent, media thiếu alt (chạy với Postgres như CI); e2e: tạo user đầu tiên → sidebar admin có đủ 5 nhóm (Nội dung / Bán hàng / Khóa học / EQ Buddy / Hệ thống).
 
 ---
 

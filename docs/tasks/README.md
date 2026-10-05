@@ -27,6 +27,33 @@ Quy trình:
 - Kết thúc bằng báo cáo theo mẫu mục 13 AGENTS.md, kèm checklist "Tiêu chí nghiệm thu" của task đã tick.
 ```
 
+### 1b. Prompt mẫu cho Codex (agent thứ hai, chạy song song)
+
+Từ 05/10 dự án có 2 agent code: **Antigravity** (giao diện, Puck) và **Codex** (CMS, dữ liệu, backend). Cột "Trạng thái" ghi tên agent nhận task. Hai agent không bao giờ nhận 2 task cùng sửa một file (xem mục "Ranh giới file" trong task card).
+
+```
+Bạn là kỹ sư full-stack của dự án Trạm Dừng Cảm Xúc. AGENTS.md ở gốc repo là hướng dẫn chính của bạn.
+
+Trước khi code, đọc theo thứ tự:
+1. AGENTS.md (toàn bộ)
+2. docs/plan/GAPS_AND_QUESTIONS.md (quyết định mặc định ghi đè/bổ sung AGENTS.md)
+3. docs/DECISIONS.md
+4. Task <MÃ> trong docs/tasks/GD0.md (đọc cả mục "Ranh giới file")
+
+Quy trình:
+- `git pull` main, tạo branch `task/<MÃ>-<slug>` từ main.
+- Task có nhãn [REVIEW] hoặc [SPIKE]: viết plan ngắn và chờ duyệt trước khi sửa code.
+- Đọc docs chính thức đúng phiên bản đang cài (Payload 3.90.2, Next.js 16.3.3 – đọc node_modules/next/dist/docs/; Payload đọc node_modules/payload và payloadcms.com/docs). Không dựa vào trí nhớ.
+- Chỉ sửa file trong "Ranh giới file" của task. Cần sửa file ngoài ranh giới → dừng và hỏi.
+- Spec thiếu hoặc mâu thuẫn → dừng và hỏi, không đoán. Ý tưởng ngoài phạm vi → docs/BACKLOG.md.
+- Comment code bằng tiếng Anh; nhãn admin / giao diện bằng tiếng Việt có dấu.
+- Đổi schema → `pnpm migrate:create <ten>` rồi `pnpm migrate`. Không dùng push.
+- Ghi vào docs/DECISIONS.md trong một mục riêng `## <MÃ> – ...` ở CUỐI file (tránh xung đột với agent kia).
+- Chạy `pnpm lint && pnpm typecheck && pnpm test` và `pnpm test:e2e` trên DB đã migrate trước khi báo xong; `git status` phải sạch sau khi chạy test.
+- Commit nhỏ, message tiếng Anh, push branch, mở PR vào main (hoặc gửi link "Compare & pull request"). Không tự merge.
+- Kết thúc bằng báo cáo theo mẫu mục 13 AGENTS.md, kèm checklist "Tiêu chí nghiệm thu" đã tick.
+```
+
 ## 2. Quy ước
 
 | Nhãn                   | Nghĩa                                                                                                                                 |
@@ -55,14 +82,14 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-02b | Migration đầu tiên, smoke test thật, CI chạy trên `main` | | T0-02 | Xong |
 | T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-02b              | Xong ([review](reviews/T0-03.md))    |
 | T0-03b | Sửa sau nghiệm thu T0-03 (styleguide production, test bẩn repo, CRLF) | | T0-03 | Xong |
-| T0-04 | UI primitives                                         |          | T0-03b               | Chưa đạt ([review](reviews/T0-04.md))    |
-| T0-04b | Sửa sau nghiệm thu T0-04 (Modal cướp focus, PriceTag tương phản) | | T0-04 | Sẵn sàng |
-| T0-05 | UI composites                                         |          | T0-04b               | Chưa mở    |
-| T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Chưa mở    |
+| T0-04 | UI primitives                                         |          | T0-03b               | Đạt – chờ PR + CI xanh rồi merge ([review](reviews/T0-04.md)) |
+| T0-04b | Sửa sau nghiệm thu T0-04 (Modal cướp focus, PriceTag tương phản) | | T0-04 | Đạt (05/10) |
+| T0-05 | UI composites                                         |          | T0-04b (đã merge)    | Sẵn sàng sau khi T0-04 merge – **Antigravity** |
+| T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Sẵn sàng – **Codex** (song song T0-05) |
 | T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Chưa mở    |
 | T0-08 | Seed dữ liệu MẪU                                      |          | T0-07               | Chưa mở    |
 | T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06        | Chưa mở    |
-| T0-10 | Deploy preview Vercel + Neon + R2                     |          | T0-01, tài khoản IT | Chưa mở    |
+| T0-10 | Deploy preview Vercel + Neon + R2                     |          | T0-01, tài khoản IT | Bị chặn (chờ IT trả lời D1, D2 và cấp tài khoản) |
 | T0-11 | Ước lượng GĐ 1–4 + hướng dẫn CMS nháp cho cổng GĐ 0   | [HANA]   | tất cả              | Chưa mở    |
 
 ### GĐ 1 – Web 1 Landing + CMS (`docs/tasks/GD1.md`)
