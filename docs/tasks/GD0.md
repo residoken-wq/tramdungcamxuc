@@ -579,6 +579,15 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 2. `docs/HUONG_DAN_CMS.md` bản nháp cho đúng phạm vi cổng GĐ 0: đăng nhập, tạo sản phẩm, dựng trang bằng kéo thả, xuất bản. Tiếng Việt, câu ngắn, có ảnh chụp màn hình.
 3. Chuẩn bị tài khoản `owner` cho Hana trên bản demo (T0-10) (gửi lời mời qua email, không gửi mật khẩu qua chat).
 
+**Tách 05/10**: **T0-11a** = mục 1 (ước lượng, chỉ viết tài liệu – giao Antigravity ngay). **T0-11b** = mục 2–3 (hướng dẫn CMS có ảnh + tài khoản Hana) – làm sau khi T0-07, T0-08, T0-10 merge và bản demo đã chạy.
+
+**T0-11a – yêu cầu cụ thể**
+- Nguồn tốc độ thật: `git log` (thời gian commit / merge từng task GĐ 0) và `docs/tasks/reviews/*.md` (số vòng sửa b/c/d, loại lỗi hay gặp). Không đoán con số tốc độ.
+- Mỗi task GĐ 1 (T1-01…T1-17) và mỗi epic GĐ 2–4: độ phức tạp (S/M/L/XL), số giờ làm của agent, số vòng sửa dự kiến, giờ QA của Planning, agent đề xuất (Antigravity: UI/Puck – không chạy được e2e; Codex: CMS/backend/e2e – hay hết quota), phụ thuộc, việc chờ bên ngoài (đầu vào của Hana, IT review [REVIEW], quyết định GAPS Q1–Q14, D1–D4), rủi ro kỹ thuật.
+- Sơ đồ song song 2 agent cho GĐ 1, đường găng, lịch dự kiến theo tuần (ghi rõ giả định: số giờ agent/ngày, thời gian chờ quota, IT duyệt trong ≤ 2 ngày làm việc).
+- Đề xuất tách/gộp task GĐ 1 nếu task quá lớn cho một lượt agent (bài học GĐ 0: lượt dài dễ treo / hết quota).
+- Không sửa `MASTER_PLAN.md` và `GD1.md` – Planning cập nhật sau khi duyệt.
+
 **Tiêu chí nghiệm thu (= cổng GĐ 0)**
 
 - [ ] Hana tự đăng nhập, tạo 1 sản phẩm, dựng 1 trang từ 5 khối và xuất bản theo hướng dẫn, không cần hỗ trợ.
