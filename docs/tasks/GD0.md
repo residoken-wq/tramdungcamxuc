@@ -260,6 +260,38 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
+## T0-05b – Sửa sau nghiệm thu T0-05
+
+**Phụ thuộc**: T0-05 · **Giao cho: Antigravity** · **Làm trên chính branch** `task/T0-05-ui-composites`, cùng PR #6. Chi tiết và lý do: `docs/tasks/reviews/T0-05.md`.
+
+**Phạm vi**: sửa B1–B4 và S1–S5 trong file review; thêm 4 test ở mục "Test phải thêm". Ranh giới file giữ như T0-05.
+
+**Không chạy e2e** – Planning chạy khi nghiệm thu. Chỉ chạy `pnpm lint`, `pnpm typecheck`, `pnpm test`.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Trang server component chỉ chứa `<Navbar …/>`, `<LeadForm …/>`, `<EmotionPicker/>`, `<ProgressGrid/>`, `<Footer/>` render 200 (Planning kiểm).
+- [ ] `grep -rn "DEFAULT_\|tramdungcamxuc.com\|font-serif\|xs:\|h-18" src/components` không còn kết quả.
+- [ ] Footer không truyền dữ liệu → không hiện thông tin người bán / mạng xã hội / tagline.
+- [ ] Mobile 375 và 768: nút quiz hiện đủ nhãn (hoặc `shortLabel` do props truyền), cao ≥ 44px, không rớt dòng.
+- [ ] Unit mới xanh; lint, typecheck xanh; `git status` sạch; CI xanh trên PR #6.
+
+---
+
+## T0-05c – Sửa sau nghiệm thu lại T0-05b
+
+**Giao cho: Antigravity** · Cùng branch `task/T0-05-ui-composites`, PR #6. Chi tiết: `docs/tasks/reviews/T0-05.md` phần "Nghiệm thu lại T0-05b".
+
+**Phạm vi**: B5 (thanh menu tràn ngang 375px) + giải xung đột `docs/DECISIONS.md` với `main`. Được sửa thêm `src/components/brand/Logo.tsx` cho B5. Không chạy e2e (Planning chạy).
+
+**Tiêu chí nghiệm thu**
+
+- [ ] 375px, nhãn đầy đủ, không `shortLabel`: không tràn ngang, nút ☰ trong màn hình, nút quiz cao ≥ 44px (Planning đo).
+- [ ] PR #6 hết xung đột; DECISIONS giữ cả mục T0-05 và T0-06.
+- [ ] Lint, typecheck, unit xanh; CI xanh trên PR #6.
+
+---
+
 ## T0-06 – Collections nội dung, globals, media
 
 **Phụ thuộc**: T0-01 · **Song song được với**: T0-03..05 (khác thư mục)
@@ -310,6 +342,21 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 11. Một migration cho toàn bộ schema T0-06 (`pnpm migrate:create content_collections`); chạy được trên DB mới và trên DB đang có migration `initial`.
 
 **Test bổ sung**: `tests/unit/pricing.test.ts` (thuần); test Local API cho chỉ đọc giá trị gói, khóa `qrSlug`, testimonial thiếu consent, media thiếu alt (chạy với Postgres như CI); e2e: tạo user đầu tiên → sidebar admin có đủ 5 nhóm (Nội dung / Bán hàng / Khóa học / EQ Buddy / Hệ thống).
+
+---
+
+## T0-06b – Sửa sau nghiệm thu T0-06
+
+**Phụ thuộc**: T0-06 · **Giao cho: Codex** · Làm trên branch `task/T0-06-content-collections`. **PR #7 đã bị merge trước khi có T0-06b (05/10 12:50)** → mở **PR mới** từ cùng branch sau khi `git merge origin/main`. Chi tiết: `docs/tasks/reviews/T0-06.md`.
+
+**Phạm vi**: sửa B1 (chuẩn hóa slug trang) và S1–S4. Không đổi schema (không cần migration); nếu buộc phải đổi schema thì dừng và hỏi. Ranh giới file như T0-06.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Tạo trang với `ve-hana`, `/ve-hana`, `ve-hana/` → chỉ một bản ghi `ve-hana` tồn tại (các lần sau báo trùng); `a//b` bị chặn với lỗi tiếng Việt; `/` vẫn là trang chủ.
+- [ ] Gửi lại cùng `printedAt` khác định dạng → lưu được; đổi/xóa ngày in → lỗi gắn đúng trường `printedAt`.
+- [ ] E2E trên DB dev đã có admin → skip có lý do (không đỏ); trên CI vẫn chạy.
+- [ ] Lint, typecheck, unit, e2e xanh; `git status` sạch; CI xanh trên PR #7.
 
 ---
 
@@ -394,9 +441,39 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
+### T0-09 – Giao việc và làm rõ spec (Planning chốt 05/10)
+
+**Giao cho: Antigravity** · Phụ thuộc T0-05 (PR #6) và T0-06b (PR #8) đã merge · Chạy song song với T0-10 (Codex).
+
+**Quy trình [SPIKE]**: làm spike trước (≤ 2 giờ), ghi kết quả vào mục `## T0-09` cuối `docs/DECISIONS.md`, **dừng và báo Planning duyệt phương án** rồi mới làm phần còn lại. Spike trả lời 4 câu:
+1. Editor đặt ở `/admin/builder/[pageId]` cùng route catch-all `/admin/[[...segments]]` của Payload có chạy không (layout riêng, không dính CSS admin)? Không ổn → `/builder/[pageId]`.
+2. Kiểm tra đăng nhập phía server: lấy user Payload từ cookie bằng `payload.auth({ headers })` trong server component; chưa đăng nhập → chuyển `/admin/login?redirect=…`.
+3. Phiên bản `@puckeditor/core` stable mới nhất chạy được với React / Next.js 16.3.3 đang cài (ghi phiên bản chính xác, ghim cứng trong `package.json`).
+4. Puck có field rich text sẵn ở phiên bản đó không; nếu không → khối `RichText` dùng `textarea` nhiều đoạn (không nhận HTML).
+
+**Kiến trúc dữ liệu**
+- Editor nạp trang bằng Local API phía server (`draft: true`), truyền `puckData` vào `<Puck>`.
+- "Lưu nháp" và "Xuất bản" gọi **server action** dùng Local API với `user` đã xác thực và `overrideAccess: false`: lưu nháp `draft: true`; xuất bản ghi `_status: 'published'`. Không tin dữ liệu `pageId`/user từ trình duyệt – kiểm lại quyền trong action. Đánh dấu `// REVIEW-REQUIRED:` ở guard route và server action.
+- Trang công khai: `src/app/(site)/page.tsx` (slug `/`) và `src/app/(site)/[...slug]/page.tsx` (slug nối bằng `/`, khớp quy ước T0-06b) đọc bản **published** (`draft: false`), không có → `notFound()`; `generateMetadata` từ `seo`. Render bằng `<Render>` của Puck. Bỏ trang chủ tạm của T0-03 khi đã có trang `/` published; chưa có → giữ trang tạm (không 404 trang chủ).
+- Revalidate: hook `afterChange` trong `Pages.ts` gọi `revalidatePath` cho slug khi xuất bản (đọc docs Next 16 về cache/revalidate trước).
+- Nút **"Chỉnh sửa trực quan"**: field `type: 'ui'` trong `Pages.ts` (không tạo cột DB → không cần migration; nếu `migrate:create` báo có thay đổi schema thì dừng và hỏi).
+
+**5 khối** (`src/puck/blocks/`, mỗi khối có `version: 1`, nhãn tiếng Việt, render bằng component trong `src/components/`):
+- `HeroTwoEntries` → component mới `src/components/site/HeroTwoEntries.tsx`: tiêu đề 2 tầng + dòng cảm xúc + đúng 2 lối vào {nhãn, mô tả, nút, link}. **Không có chữ mặc định trong code** – giá trị mặc định khi kéo khối vào chỉ là `[MẪU] …`.
+- `SectionHeader` → `ui/SectionHeader`.
+- `RichText` → theo kết quả spike câu 4; render an toàn (không `dangerouslySetInnerHTML` với dữ liệu thô).
+- `ImageText` → component mới `src/components/site/ImageText.tsx`: ảnh trái/phải, ảnh chọn từ collection `media` (field tùy biến liệt kê media qua API, **chỉ lưu `id`**; lúc render lấy `url` + `alt` phía server). Ảnh không có `alt` thì không chọn được.
+- `CTAButton` → `ui/Button` (variant `primary` / `secondary` / `ghost`, size S/M/L).
+- Field brand-safe: màu nền là dropdown 8 token; khoảng cách / cỡ chữ là S/M/L; **không** color picker, không ô CSS, không chọn font.
+
+**Ranh giới file**: `src/puck/**`, `src/app/(builder)/**` (hoặc route theo spike), `src/app/(site)/page.tsx`, `src/app/(site)/[...slug]/**`, `src/components/site/HeroTwoEntries.tsx`, `src/components/site/ImageText.tsx`, `src/components/site/index.ts`, `src/collections/Pages.ts` (chỉ field `ui` + hook revalidate), `src/app/(payload)/admin/importMap.js` (sinh tự động), `src/lib/i18n/vi.ts`, `package.json` / `pnpm-lock.yaml` (chỉ thêm `@puckeditor/core`), `tests/**` (file mới), mục `## T0-09` cuối `docs/DECISIONS.md`.
+**Không** sửa: `next.config.ts`, middleware/proxy, `Dockerfile`, `docker-compose*.yml`, `.github/workflows/**`, `.env.example` (Codex đang làm T0-10), collection khác ngoài `Pages.ts`.
+
+**Test**: unit render từng khối với props `[MẪU]` (snapshot hoặc assert nội dung); unit server action từ chối khi không có user. E2E **viết nhưng không chạy** (Planning chạy): (a) chưa đăng nhập vào URL editor → chuyển trang login; (b) kéo Hero vào trang trống → sửa tiêu đề → Xuất bản → trang công khai hiện tiêu đề mới; (c) sửa tiếp → Lưu nháp → trang công khai vẫn tiêu đề cũ.
+
 ## T0-10 – Đóng gói Docker để tự deploy bản demo
 
-**Phụ thuộc**: T0-01 · **Giao cho: Codex, ngay sau T0-06** (cùng sửa `.env.example`, nên để một agent làm liên tiếp) · Không cần tài khoản IT.
+**Phụ thuộc**: T0-06b (đã merge) · **Giao cho: Codex, ngay sau T0-06b** (cùng sửa `.env.example`, nên để một agent làm liên tiếp) · Không cần tài khoản IT.
 **Quyết định 05/10**: anh Nhân tự pull repo từ GitHub và deploy lên cloud hosting riêng để **demo cho khách hàng**. Bản demo này thay thế "preview" trong cổng GĐ 0. Hạ tầng production (Vercel + Neon + R2) chuyển sang **T0-10b**, không chặn GĐ 0.
 
 **Hiện trạng**: `Dockerfile` là bản mẫu của Next.js nhưng **chưa chạy được**: `next.config.ts` chưa có `output: 'standalone'`, không có volume cho media, không có hướng dẫn migrate, dùng `node:22.17.0-alpine` chưa được ghi trong DECISIONS.
@@ -419,6 +496,8 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
    - backup / khôi phục DB bằng `pg_dump` / `pg_restore` (có lệnh cụ thể) và backup volume media;
    - gợi ý đặt reverse proxy có HTTPS (Caddy hoặc Nginx + Let's Encrypt), chỉ hướng dẫn, không bắt buộc trong compose;
    - phương án không dùng Docker: Node 22 + `pnpm build` + `pnpm start` + process manager (pm2/systemd), mô tả ngắn.
+8b. RUNBOOK ghi rõ `pnpm test` cần Postgres đang chạy (test Local API của T0-06 tự áp migration).
+8c. CI: sửa test chập chờn `content-admin` (xem ghi chú cuối `docs/tasks/reviews/T0-06.md`) – làm nóng server trước e2e hoặc tăng timeout `first-register`.
 9. CI: thêm job build Docker image (không push lên registry) để Dockerfile không bị hỏng âm thầm.
 10. Ghi phiên bản image Node/Postgres và lý do vào mục `## T0-10` cuối `docs/DECISIONS.md`.
 
