@@ -93,13 +93,14 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
     await expect(page.getByText('[MẪU] Tên tác giả').first()).toBeVisible()
 
     // 6. PriceTag & StatusBadge
-    await expect(page.getByText('120.000đ', { exact: true })).toBeVisible()
-    await expect(page.getByText('90.000đ', { exact: true })).toBeVisible()
-    await expect(page.getByText('Sắp ra mắt', { exact: true })).toBeVisible()
-    await expect(page.getByText('Đang mở bán', { exact: true })).toBeVisible()
-    await expect(page.getByText('Miễn phí', { exact: true })).toBeVisible()
-    await expect(page.getByText('Tư vấn', { exact: true })).toBeVisible()
-    await expect(page.getByText('Ẩn', { exact: true })).toBeVisible()
+    const primitivesSection = page.locator('section[aria-labelledby="heading-primitives"]')
+    await expect(primitivesSection.getByText('120.000đ', { exact: true })).toBeVisible()
+    await expect(primitivesSection.getByText('90.000đ', { exact: true })).toBeVisible()
+    await expect(primitivesSection.getByText('Sắp ra mắt', { exact: true })).toBeVisible()
+    await expect(primitivesSection.getByText('Đang mở bán', { exact: true })).toBeVisible()
+    await expect(primitivesSection.getByText('Miễn phí', { exact: true })).toBeVisible()
+    await expect(primitivesSection.getByText('Tư vấn', { exact: true })).toBeVisible()
+    await expect(primitivesSection.getByText('Ẩn', { exact: true })).toBeVisible()
   })
 
   test('Kiểm tra A11y & Phím tắt (T0-04): mở Modal bằng bàn phím → Esc đóng → focus về nút mở; Tab thấy focus ring', async ({
@@ -149,9 +150,9 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
     await page.waitForTimeout(200)
 
     const scrollY = await page.evaluate(() => window.scrollY)
-    const activeId = await page.evaluate(() => document.activeElement?.id)
+    const activeTagName = await page.evaluate(() => document.activeElement?.tagName)
 
-    expect(activeId, 'Nút mở modal không được cướp focus khi trang vừa tải').not.toBe('open-modal-demo-btn')
+    expect(activeTagName, 'Phần tử active khi vừa tải trang phải là BODY').toBe('BODY')
     expect(scrollY, 'Trang không được tự động cuộn khi vừa tải').toBe(0)
   })
 
@@ -179,5 +180,109 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
     // Kiểm tra focus vẫn nằm ở ô input và giá trị đủ 5 ký tự
     await expect(input).toBeFocused()
     await expect(input).toHaveValue('hello')
+  })
+})
+
+test.describe('UI Composites (T0-05)', () => {
+  test('Hiển thị đầy đủ 7 composite components trên /styleguide với dữ liệu mẫu', async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto('/styleguide')
+
+    // 1. Kiểm tra Section 7 UI Composites
+    await expect(page.getByText('7. Bộ UI Composites')).toBeVisible()
+
+    // 2. Navbar component
+    if (isMobile) {
+      await expect(page.locator('#mobile-nav-toggle')).toBeVisible()
+      await expect(page.getByRole('link', { name: /Test 5p|Test thói quen/i }).first()).toBeVisible()
+    } else {
+      await expect(page.getByRole('link', { name: 'Về Hana' }).first()).toBeVisible()
+      await expect(page.getByRole('link', { name: 'Đặt phiên trải nghiệm' }).first()).toBeVisible()
+    }
+
+    // 3. ProductCard component
+    await expect(page.getByText('[MẪU] Sổ tay Thói quen 21 Ngày')).toBeVisible()
+    await expect(page.getByText('[MẪU] Bộ Thẻ Cảm Xúc EQ Buddy')).toBeVisible()
+    await expect(page.getByText('[MẪU] Chương trình Coaching 1:1')).toBeVisible()
+
+    // 4. TestimonialCard component
+    await expect(page.getByText(/Sau phiên đồng hành, tôi nhận diện được những nút thắt/)).toBeVisible()
+    await expect(page.getByText('[MẪU] Chị Phương Mai')).toBeVisible()
+
+    // 5. LeadForm component
+    await expect(page.getByText('[MẪU] Đăng ký nhận cẩm nang cảm xúc')).toBeVisible()
+    await expect(page.locator('#lead-name-input')).toBeVisible()
+    await expect(page.locator('#lead-email-input')).toBeVisible()
+    await expect(page.locator('#lead-submit-btn')).toBeVisible()
+
+    // 6. EmotionPicker component
+    await expect(page.getByText('Chọn cảm xúc hôm nay').first()).toBeVisible()
+    await expect(page.getByRole('radiogroup').first()).toBeVisible()
+
+    // 7. ProgressGrid component
+    await expect(page.getByRole('region', { name: 'Lưới tiến trình 21 ngày' })).toBeVisible()
+
+    // 8. Footer component
+    await expect(page.getByText('Chính sách & Quy định').first()).toBeVisible()
+    await expect(page.getByText('Thông tin pháp lý').first()).toBeVisible()
+    await expect(page.getByText('Chính sách bảo mật').first()).toBeVisible()
+    await expect(page.getByText('contact@tramdungcamxuc.com').first()).toBeVisible()
+  })
+
+  test('Navbar mobile mở/đóng bằng bàn phím và giữ nút quiz nổi bật trên thanh', async ({ page, isMobile }) => {
+    await page.goto('/styleguide')
+
+    const mobileToggle = page.locator('#mobile-nav-toggle')
+    if (isMobile || (await mobileToggle.isVisible())) {
+      // Quiz link phải nhìn thấy trên mobile bar bên ngoài drawer
+      const quizLink = page.getByRole('link', { name: /Test 5p|Test thói quen/i }).first()
+      await expect(quizLink).toBeVisible()
+
+      // Focus và bấm Enter để mở drawer
+      await mobileToggle.focus()
+      await expect(mobileToggle).toBeFocused()
+      await page.keyboard.press('Enter')
+
+      const drawer = page.locator('#mobile-nav-drawer')
+      await expect(drawer).toBeVisible()
+      await expect(mobileToggle).toHaveAttribute('aria-expanded', 'true')
+
+      // Bấm Escape để đóng drawer và trả focus về nút mở
+      await page.keyboard.press('Escape')
+      await expect(drawer).not.toBeVisible()
+      await expect(mobileToggle).toHaveAttribute('aria-expanded', 'false')
+      await expect(mobileToggle).toBeFocused()
+    }
+  })
+
+  test('Tab qua LeadForm theo thứ tự hợp lý và bỏ qua honeypot ẩn', async ({ page }) => {
+    await page.goto('/styleguide')
+
+    const nameInput = page.locator('#lead-name-input')
+    await nameInput.scrollIntoViewIfNeeded()
+    await nameInput.focus()
+    await expect(nameInput).toBeFocused()
+
+    // Tab tới Email
+    await page.keyboard.press('Tab')
+    const emailInput = page.locator('#lead-email-input')
+    await expect(emailInput).toBeFocused()
+
+    // Tab bỏ qua Honeypot và tới checkbox đồng ý nhận tin
+    await page.keyboard.press('Tab')
+    const consentCheckbox = page.locator('#lead-consent-checkbox')
+    await expect(consentCheckbox).toBeFocused()
+
+    // Tab tới link Chính sách bảo mật
+    await page.keyboard.press('Tab')
+    const privacyLink = page.getByRole('link', { name: 'Chính sách bảo mật' }).first()
+    await expect(privacyLink).toBeFocused()
+
+    // Tab tới nút Submit
+    await page.keyboard.press('Tab')
+    const submitBtn = page.locator('#lead-submit-btn')
+    await expect(submitBtn).toBeFocused()
   })
 })
