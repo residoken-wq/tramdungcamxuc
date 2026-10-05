@@ -256,39 +256,21 @@ export const puckConfig: Config<PageComponentsProps> = {
         }
 
         try {
-          let mediaDoc: { url?: string; alt?: string } | null = null
-
-          if (typeof window === 'undefined') {
-            const { getPayload } = await import('payload')
-            const payloadConfig = (await import('@/payload.config')).default
-            const payload = await getPayload({ config: await payloadConfig })
-            const doc = await payload.findByID({
-              collection: 'media',
-              id: mediaId,
+          if (typeof window !== 'undefined') {
+            const res = await fetch(`/api/media/${encodeURIComponent(mediaId)}`, {
+              credentials: 'include',
             })
-            if (doc && doc.alt && (doc.alt as string).trim().length > 0) {
-              mediaDoc = {
-                url: (doc.url as string) || undefined,
-                alt: doc.alt as string,
-              }
-            }
-          } else {
-            const res = await fetch(`/api/media/${encodeURIComponent(mediaId)}`)
             if (res.ok) {
               const json = await res.json()
-              if (json && json.alt && json.alt.trim().length > 0) {
-                mediaDoc = { url: json.url, alt: json.alt }
+              if (json && json.alt && typeof json.alt === 'string' && json.alt.trim().length > 0) {
+                return {
+                  props: {
+                    ...data.props,
+                    imageUrl: json.url || '',
+                    imageAlt: json.alt.trim(),
+                  },
+                }
               }
-            }
-          }
-
-          if (mediaDoc?.url && mediaDoc?.alt) {
-            return {
-              props: {
-                ...data.props,
-                imageUrl: mediaDoc.url,
-                imageAlt: mediaDoc.alt,
-              },
             }
           }
         } catch {

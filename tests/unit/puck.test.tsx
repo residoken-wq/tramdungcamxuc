@@ -1,4 +1,6 @@
 import React from 'react'
+import fs from 'node:fs'
+import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import * as puckExports from '@puckeditor/core'
@@ -15,10 +17,24 @@ import { brandViewports } from '@/app/(builder)/builder/[pageId]/PuckEditorClien
 import packageJson from '../../package.json' with { type: 'json' }
 
 describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
-  describe('Package dependencies & Version Pinning', () => {
+  describe('Package dependencies & Client Bundle Purity', () => {
     it('pins @puckeditor/core strictly to version 0.23.0 in package.json', () => {
       const dependencies = packageJson.dependencies as Record<string, string>
       expect(dependencies['@puckeditor/core']).toBe('0.23.0')
+    })
+
+    it('prohibits server-only modules and payload in client-facing src/puck/config.tsx', () => {
+      const configPath = path.resolve(process.cwd(), 'src/puck/config.tsx')
+      const source = fs.readFileSync(configPath, 'utf-8')
+
+      expect(source).not.toMatch(/from\s+['"]payload['"]/)
+      expect(source).not.toMatch(/from\s+['"]@\/payload\.config['"]/)
+      expect(source).not.toMatch(/from\s+['"]next\/cache['"]/)
+      expect(source).not.toMatch(/from\s+['"]next\/headers['"]/)
+      expect(source).not.toMatch(/import\(['"]payload['"]\)/)
+      expect(source).not.toMatch(/import\(['"]@\/payload\.config['"]\)/)
+      expect(source).not.toMatch(/import\(['"]next\/cache['"]\)/)
+      expect(source).not.toMatch(/import\(['"]next\/headers['"]\)/)
     })
 
     it('exports essential editor and render components from @puckeditor/core', () => {

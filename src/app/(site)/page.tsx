@@ -2,8 +2,9 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import { Render, resolveAllData, type Data } from '@puckeditor/core'
+import { Render, type Data } from '@puckeditor/core'
 import { puckConfig } from '@/puck/config'
+import { resolveServerData } from '@/puck/resolve.server'
 import { Logo, HeartLine } from '@/components/brand'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -71,7 +72,7 @@ export default async function HomePage() {
   }
 
   if (pageDoc?.puckData && (pageDoc.puckData as Data).content?.length > 0) {
-    const resolvedData = await resolveAllData(pageDoc.puckData as Data, puckConfig)
+    const resolvedData = await resolveServerData(pageDoc.puckData as Data)
     return <Render config={puckConfig} data={resolvedData} />
   }
 

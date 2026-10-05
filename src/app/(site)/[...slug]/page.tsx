@@ -3,8 +3,9 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import { Render, resolveAllData, type Data } from '@puckeditor/core'
+import { Render, type Data } from '@puckeditor/core'
 import { puckConfig } from '@/puck/config'
+import { resolveServerData } from '@/puck/resolve.server'
 
 type CatchAllPageProps = {
   params: Promise<{
@@ -88,7 +89,7 @@ export default async function CatchAllPage({ params }: CatchAllPageProps) {
     root: { props: { title: pageDoc.title || '' } },
   }
 
-  const resolvedData = await resolveAllData(initialData, puckConfig)
+  const resolvedData = await resolveServerData(initialData)
 
   return <Render config={puckConfig} data={resolvedData} />
 }
