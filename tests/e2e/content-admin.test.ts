@@ -46,6 +46,8 @@ test('first administrator sees all five content groups', async ({ page }, testIn
     if (!response) throw new Error('First-user registration request was never sent.')
     expect(response.ok()).toBe(true)
     const registered = await response.json()
+    // T0-07: the very first admin becomes owner.
+    expect(registered.user?.role ?? registered.doc?.role).toBe('owner')
     userId = registered.user?.id || registered.doc?.id
     await expect(page).toHaveURL(/\/admin\/?$/)
     if (!userId) userId = (await (await page.request.get('/api/users/me')).json()).user.id

@@ -82,6 +82,20 @@ export interface Config {
     legalPages: LegalPage;
     workshops: Workshop;
     pages: Page;
+    customers: Customer;
+    entitlements: Entitlement;
+    orders: Order;
+    discountCodes: DiscountCode;
+    leads: Lead;
+    habitPlans: HabitPlan;
+    habitCheckins: HabitCheckin;
+    savedCards: SavedCard;
+    diagnosticResults: DiagnosticResult;
+    certificates: Certificate;
+    lessonProgress: LessonProgress;
+    otpCodes: OtpCode;
+    paymentEvents: PaymentEvent;
+    auditLogs: AuditLog;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -104,6 +118,20 @@ export interface Config {
     legalPages: LegalPagesSelect<false> | LegalPagesSelect<true>;
     workshops: WorkshopsSelect<false> | WorkshopsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
+    entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    discountCodes: DiscountCodesSelect<false> | DiscountCodesSelect<true>;
+    leads: LeadsSelect<false> | LeadsSelect<true>;
+    habitPlans: HabitPlansSelect<false> | HabitPlansSelect<true>;
+    habitCheckins: HabitCheckinsSelect<false> | HabitCheckinsSelect<true>;
+    savedCards: SavedCardsSelect<false> | SavedCardsSelect<true>;
+    diagnosticResults: DiagnosticResultsSelect<false> | DiagnosticResultsSelect<true>;
+    certificates: CertificatesSelect<false> | CertificatesSelect<true>;
+    lessonProgress: LessonProgressSelect<false> | LessonProgressSelect<true>;
+    otpCodes: OtpCodesSelect<false> | OtpCodesSelect<true>;
+    paymentEvents: PaymentEventsSelect<false> | PaymentEventsSelect<true>;
+    auditLogs: AuditLogsSelect<false> | AuditLogsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -155,6 +183,10 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  /**
+   * Chủ sở hữu: toàn quyền, gồm thanh toán và đơn hàng. Biên tập: chỉ sửa nội dung. Người tạo đầu tiên tự là chủ sở hữu.
+   */
+  role: 'owner' | 'editor';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1128,6 +1160,530 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  email: string;
+  /**
+   * Nhập họ tên.
+   */
+  name?: string | null;
+  /**
+   * Nhập điện thoại.
+   */
+  phone?: string | null;
+  /**
+   * Bật để áp dụng: đồng ý nhận tin.
+   */
+  consentMarketing?: boolean | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  consentAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "entitlements".
+ */
+export interface Entitlement {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  product: number | Product;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  grantedAt?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  source: 'trial' | 'order' | 'package' | 'manual' | 'gift';
+  /**
+   * Chọn một mục phù hợp.
+   */
+  status: 'trial' | 'active' | 'expired';
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  expiresAt?: string | null;
+  trialKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  items: {
+    /**
+     * Chọn nội dung đã tạo trong hệ thống.
+     */
+    product: number | Product;
+    /**
+     * Nhập số không âm. Giá tiền tính bằng đồng.
+     */
+    price: number;
+    id?: string | null;
+  }[];
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  subtotal?: number | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  discountCode?: (number | null) | DiscountCode;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  total: number;
+  /**
+   * Tự sinh khi tạo đơn. Khách ghi mã này ở nội dung chuyển khoản.
+   */
+  paymentRef?: string | null;
+  /**
+   * Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn.
+   */
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'cancelled';
+  /**
+   * Chọn một mục phù hợp.
+   */
+  deliveryStatus?: ('none' | 'access_granted' | 'email_sent' | 'scheduled') | null;
+  /**
+   * Chỉ chủ sở hữu được đặt.
+   */
+  paidAt?: string | null;
+  /**
+   * Thời điểm khách tick đồng ý Điều khoản và Chính sách giá – thanh toán.
+   */
+  termsAcceptedAt: string;
+  /**
+   * Bật để áp dụng: hana tạo link thanh toán.
+   */
+  createdByAdmin?: boolean | null;
+  /**
+   * Tự sinh cho link /thanh-toan/… khi Hana tạo đơn.
+   */
+  payToken?: string | null;
+  /**
+   * Nhập ghi chú.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discountCodes".
+ */
+export interface DiscountCode {
+  id: number;
+  /**
+   * Nhập mã.
+   */
+  code: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  type: 'percent' | 'fixed';
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  value: number;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  validUntil?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  maxUses?: number | null;
+  usedCount?: number | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  products?: (number | Product)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads".
+ */
+export interface Lead {
+  id: number;
+  source?: {
+    /**
+     * Nhập form.
+     */
+    form?: string | null;
+    /**
+     * Nhập trang.
+     */
+    page?: string | null;
+    /**
+     * Nhập utm.
+     */
+    utm?: string | null;
+  };
+  /**
+   * Chọn một mục phù hợp.
+   */
+  need?: ('personal' | 'business' | 'resource') | null;
+  /**
+   * Nhập họ tên.
+   */
+  name?: string | null;
+  email: string;
+  /**
+   * Nhập điện thoại.
+   */
+  phone?: string | null;
+  /**
+   * Nhập lời nhắn.
+   */
+  message?: string | null;
+  /**
+   * Bật để áp dụng: đã đồng ý.
+   */
+  consent?: boolean | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  followUpStatus?: ('new' | 'contacted' | 'converted' | 'closed') | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  interestTags?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitPlans".
+ */
+export interface HabitPlan {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer?: (number | null) | Customer;
+  leadEmail?: string | null;
+  scorecard?:
+    | {
+        /**
+         * Nhập thói quen.
+         */
+        habit: string;
+        /**
+         * Chọn một mục phù hợp.
+         */
+        rating?: ('good' | 'neutral' | 'bad') | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập câu định danh "tôi sẽ … để trở thành …".
+   */
+  identityStatement?: string | null;
+  chosenTechniques?:
+    | {
+        /**
+         * Chọn nội dung đã tạo trong hệ thống.
+         */
+        technique?: (number | null) | Technique;
+        /**
+         * Nhập hành động cụ thể.
+         */
+        action?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  startDate?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitCheckins".
+ */
+export interface HabitCheckin {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  plan: number | HabitPlan;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  day: number;
+  /**
+   * Bật để áp dụng: đã hoàn thành.
+   */
+  done?: boolean | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  emotion?: ('calm' | 'grateful' | 'energized' | 'overwhelmed' | 'tired' | 'anxious') | null;
+  /**
+   * Nhập ghi chú.
+   */
+  note?: string | null;
+  planDay?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "savedCards".
+ */
+export interface SavedCard {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  card: number | EqCard;
+  /**
+   * Nhập suy ngẫm.
+   */
+  reflection?: string | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  savedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "diagnosticResults".
+ */
+export interface DiagnosticResult {
+  id: number;
+  email?: string | null;
+  answers?:
+    | {
+        /**
+         * Chọn nội dung đã tạo trong hệ thống.
+         */
+        question?: (number | null) | DiagnosticQuestion;
+        /**
+         * Nhập số không âm. Giá tiền tính bằng đồng.
+         */
+        score?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  topStage?: ('cue' | 'craving' | 'response' | 'reward') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates".
+ */
+export interface Certificate {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  plan?: (number | null) | HabitPlan;
+  /**
+   * Nhập câu định danh.
+   */
+  identityStatement?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  daysCompleted?: number | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  issuedAt?: string | null;
+  code?: string | null;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  image45?: (number | null) | Media;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  image916?: (number | null) | Media;
+  /**
+   * Bật để áp dụng: cho phép xem công khai.
+   */
+  isPublic?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lessonProgress".
+ */
+export interface LessonProgress {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  lesson: number | Lesson;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  watchedPercent?: number | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  completedAt?: string | null;
+  customerLesson?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "otpCodes".
+ */
+export interface OtpCode {
+  id: number;
+  email: string;
+  codeHash: string;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  expiresAt: string;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  attempts?: number | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  usedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "paymentEvents".
+ */
+export interface PaymentEvent {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  order?: (number | null) | Order;
+  /**
+   * Nhập cổng thanh toán.
+   */
+  provider: string;
+  rawPayload?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Bật để áp dụng: chữ ký hợp lệ.
+   */
+  signatureValid?: boolean | null;
+  /**
+   * Nhập kết quả xử lý.
+   */
+  result?: string | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  receivedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "auditLogs".
+ */
+export interface AuditLog {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  actor?: (number | null) | User;
+  /**
+   * Nhập hành động.
+   */
+  action: string;
+  /**
+   * Nhập đối tượng.
+   */
+  target?: string | null;
+  before?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  after?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  at?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1209,6 +1765,62 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'customers';
+        value: number | Customer;
+      } | null)
+    | ({
+        relationTo: 'entitlements';
+        value: number | Entitlement;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'discountCodes';
+        value: number | DiscountCode;
+      } | null)
+    | ({
+        relationTo: 'leads';
+        value: number | Lead;
+      } | null)
+    | ({
+        relationTo: 'habitPlans';
+        value: number | HabitPlan;
+      } | null)
+    | ({
+        relationTo: 'habitCheckins';
+        value: number | HabitCheckin;
+      } | null)
+    | ({
+        relationTo: 'savedCards';
+        value: number | SavedCard;
+      } | null)
+    | ({
+        relationTo: 'diagnosticResults';
+        value: number | DiagnosticResult;
+      } | null)
+    | ({
+        relationTo: 'certificates';
+        value: number | Certificate;
+      } | null)
+    | ({
+        relationTo: 'lessonProgress';
+        value: number | LessonProgress;
+      } | null)
+    | ({
+        relationTo: 'otpCodes';
+        value: number | OtpCode;
+      } | null)
+    | ({
+        relationTo: 'paymentEvents';
+        value: number | PaymentEvent;
+      } | null)
+    | ({
+        relationTo: 'auditLogs';
+        value: number | AuditLog;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1257,6 +1869,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1626,6 +2239,244 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  email?: T;
+  name?: T;
+  phone?: T;
+  consentMarketing?: T;
+  consentAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "entitlements_select".
+ */
+export interface EntitlementsSelect<T extends boolean = true> {
+  customer?: T;
+  product?: T;
+  grantedAt?: T;
+  source?: T;
+  status?: T;
+  expiresAt?: T;
+  trialKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  customer?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        price?: T;
+        id?: T;
+      };
+  subtotal?: T;
+  discountCode?: T;
+  total?: T;
+  paymentRef?: T;
+  paymentStatus?: T;
+  deliveryStatus?: T;
+  paidAt?: T;
+  termsAcceptedAt?: T;
+  createdByAdmin?: T;
+  payToken?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discountCodes_select".
+ */
+export interface DiscountCodesSelect<T extends boolean = true> {
+  code?: T;
+  type?: T;
+  value?: T;
+  validUntil?: T;
+  maxUses?: T;
+  usedCount?: T;
+  products?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads_select".
+ */
+export interface LeadsSelect<T extends boolean = true> {
+  source?:
+    | T
+    | {
+        form?: T;
+        page?: T;
+        utm?: T;
+      };
+  need?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  message?: T;
+  consent?: T;
+  followUpStatus?: T;
+  interestTags?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitPlans_select".
+ */
+export interface HabitPlansSelect<T extends boolean = true> {
+  customer?: T;
+  leadEmail?: T;
+  scorecard?:
+    | T
+    | {
+        habit?: T;
+        rating?: T;
+        id?: T;
+      };
+  identityStatement?: T;
+  chosenTechniques?:
+    | T
+    | {
+        technique?: T;
+        action?: T;
+        id?: T;
+      };
+  startDate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitCheckins_select".
+ */
+export interface HabitCheckinsSelect<T extends boolean = true> {
+  plan?: T;
+  day?: T;
+  done?: T;
+  emotion?: T;
+  note?: T;
+  planDay?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "savedCards_select".
+ */
+export interface SavedCardsSelect<T extends boolean = true> {
+  customer?: T;
+  card?: T;
+  reflection?: T;
+  savedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "diagnosticResults_select".
+ */
+export interface DiagnosticResultsSelect<T extends boolean = true> {
+  email?: T;
+  answers?:
+    | T
+    | {
+        question?: T;
+        score?: T;
+        id?: T;
+      };
+  topStage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates_select".
+ */
+export interface CertificatesSelect<T extends boolean = true> {
+  customer?: T;
+  plan?: T;
+  identityStatement?: T;
+  daysCompleted?: T;
+  issuedAt?: T;
+  code?: T;
+  image45?: T;
+  image916?: T;
+  isPublic?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lessonProgress_select".
+ */
+export interface LessonProgressSelect<T extends boolean = true> {
+  customer?: T;
+  lesson?: T;
+  watchedPercent?: T;
+  completedAt?: T;
+  customerLesson?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "otpCodes_select".
+ */
+export interface OtpCodesSelect<T extends boolean = true> {
+  email?: T;
+  codeHash?: T;
+  expiresAt?: T;
+  attempts?: T;
+  usedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "paymentEvents_select".
+ */
+export interface PaymentEventsSelect<T extends boolean = true> {
+  order?: T;
+  provider?: T;
+  rawPayload?: T;
+  signatureValid?: T;
+  result?: T;
+  receivedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "auditLogs_select".
+ */
+export interface AuditLogsSelect<T extends boolean = true> {
+  actor?: T;
+  action?: T;
+  target?: T;
+  before?: T;
+  after?: T;
+  at?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
