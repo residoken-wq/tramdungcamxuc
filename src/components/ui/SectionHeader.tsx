@@ -3,6 +3,7 @@ import React from 'react'
 export type SectionHeadingLevel = 'h1' | 'h2' | 'h3'
 
 export interface SectionHeaderProps {
+  version?: number
   seriesLabel?: string
   titleLine1: string
   titleLine2?: string

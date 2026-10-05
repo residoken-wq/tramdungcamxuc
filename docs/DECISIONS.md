@@ -15,7 +15,7 @@
 | **CMS**              | Payload CMS `3.90.2`                                    | Tích hợp native vào Next.js App Router, cung cấp `/admin`, Live Preview, Local API, hook và typesafe schema.                                                                                                       |
 | **Database Adapter** | `@payloadcms/db-postgres` `3.90.2` (PostgreSQL 16)      | Một cơ sở dữ liệu quan hệ chuẩn cho toàn bộ sản phẩm, nội dung, đơn hàng và phân quyền. Tương thích môi trường local Docker và Neon serverless trên cloud.                                                         |
 | **CSS / Styling**    | Tailwind CSS `3.4.17` + PostCSS + Autoprefixer          | Bản Tailwind CSS 3.x ổn định với Next.js App Router. Cho phép cấu hình thay thế hoàn toàn bảng màu mặc định (`theme.colors`) bằng 8 màu Brand Book ở task T0-03 mà không rò rỉ các màu mặc định như `red`, `blue`. |
-| **Page Builder**     | `@puckeditor/core` (MIT)                                | Kéo thả trực quan kiểu visual builder nhúng trong admin cho Hana (sẽ cài đặt ở task T0-09).                                                                                                                        |
+| **Page Builder**     | `@puckeditor/core` `0.23.0` (MIT)                       | Trình dựng trang trực quan mã nguồn mở, ghim phiên bản stable 0.23.0 tương thích React 19 / Next.js 16 (Task T0-09).                                                                                             |
 
 ---
 
@@ -129,3 +129,97 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
 - Tài liệu đã đối chiếu: [Payload hooks 3.90.2](https://github.com/payloadcms/payload/blob/v3.90.2/docs/hooks/collections.mdx), [Local API 3.90.2](https://github.com/payloadcms/payload/blob/v3.90.2/docs/local-api/overview.mdx), [migrations 3.90.2](https://github.com/payloadcms/payload/blob/v3.90.2/docs/database/migrations.mdx).
 
 - **T0-06b (sau nghiệm thu)**: chuẩn hóa slug trang trong `beforeValidate`: giữ `/` cho trang chủ, bỏ khoảng trắng và dấu `/` ở hai đầu trang khác, chặn `//` bên trong bằng lỗi tiếng Việt. Không đổi schema hay tạo migration. `printedAt` so theo thời điểm (`getTime`); lỗi đổi/xóa ngày in thuộc trường `printedAt`. Tài liệu dùng helper `file()` với mô tả PDF. Ảnh nghiệm thu chuyển sang `docs/tasks/reviews/T0-06-admin-sidebar.png`. Test tạo admin đầu tiên và smoke form bỏ qua có lý do trên DB local đã có admin; CI không áp dụng điều kiện bỏ qua này.
+
+---
+
+## T0-09 – Kết quả Spike Puck Editor & Kiến trúc tích hợp (05/10/2026)
+
+### 1. Kết quả trả lời 4 câu hỏi Spike
+
+#### Câu 1: Route editor và quan hệ với catch-all của Payload
+- **Khảo sát:**
+  - Route Payload Admin nằm tại `src/app/(payload)/admin/[[...segments]]/page.tsx` và chịu sự chi phối của layout cha `src/app/(payload)/layout.tsx`. Layout này bắt buộc nạp `@payloadcms/next/css`, `custom.scss` và bọc toàn bộ bằng `<RootLayout>`.
+  - Nếu đặt editor trực tiếp bên trong `(payload)`, Puck sẽ bị áp đặt toàn bộ CSS admin và thanh điều hướng của Payload, làm hỏng giao diện visual builder full-screen.
+  - Do đó, editor **bắt buộc** phải nằm trong một route group riêng: `src/app/(builder)` với `layout.tsx` độc lập (chỉ nạp stylesheet của Puck `@puckeditor/core/dist/index.css` và font/base styles).
+- **So sánh 2 phương án:**
+  - **Phương án A (`/admin/builder/[pageId]` - đặt tại `src/app/(builder)/admin/builder/[pageId]/page.tsx`):**
+    - Nhờ cơ chế route specificity của Next.js App Router, `/admin/builder/[pageId]` (chứa segment tĩnh `builder` và segment động `[pageId]`) có độ ưu tiên cao hơn optional catch-all `/admin/[[...segments]]`. Đã kiểm chứng qua thuật toán sắp xếp `getSortedRoutes` của Next.js: `/admin/builder/[pageId]` luôn được xếp trước `/admin/[[...segments]]`.
+    - Ưu điểm: URL mang tiền tố `/admin/` thống nhất cho khu vực quản trị viên.
+    - Nhược điểm / Rủi ro: Cả hai route group `(payload)` và `(builder)` cùng chia sẻ URL prefix `/admin/`. Mặc dù Next.js phân giải đúng, việc chia sẻ namespace này có thể phát sinh cảnh báo build hoặc xung đột tiềm ẩn nếu Payload trong tương lai đăng ký thêm route con.
+  - **Phương án B (Khuyến nghị: `/builder/[pageId]` - đặt tại `src/app/(builder)/builder/[pageId]/page.tsx`):**
+    - Hoàn toàn tách biệt khỏi prefix `/admin/`.
+    - Ưu điểm: Độc lập 100%, triệt tiêu hoàn toàn rủi ro xung đột với catch-all của Payload.
+    - Bảo mật: Hoàn toàn tương đương Phương án A vì việc bảo vệ route thực hiện qua cookie session của Payload bằng `payload.auth({ headers })` trên server component. Nếu chưa đăng nhập, tự động chuyển hướng về `/admin/login?redirect=${encodeURIComponent('/builder/' + pageId)}`.
+    - Nút trong CMS: Nút "Chỉnh sửa trực quan" (field UI) trong collection `pages` chỉ cần mở `/builder/${pageId}` trong tab mới (`target="_blank"`).
+- **Đề xuất trình Planning:** Ưu tiên **Phương án B (`/builder/[pageId]`)** để an toàn tuyệt đối và đơn giản hóa kiến trúc; nếu Planning muốn giữ URL dưới `/admin/`, **Phương án A (`/admin/builder/[pageId]`)** đã được kiểm chứng hoạt động tốt trong spike.
+
+#### Câu 2: Guard đăng nhập phía server
+- **Cách thức thực hiện:**
+  - Thực hiện trực tiếp trong Server Component của trang builder (`page.tsx`):
+    ```ts
+    const headers = await getHeaders()
+    const payloadConfig = await config
+    const payload = await getPayload({ config: payloadConfig })
+    const { user } = await payload.auth({ headers })
+    if (!user) {
+      redirect(`/admin/login?redirect=${encodeURIComponent(`/admin/builder/${pageId}`)}`)
+    }
+    ```
+  - Khi chưa đăng nhập hoặc cookie JWT `payload-token` không hợp lệ/hết hạn, server ném lệnh chuyển hướng `redirect()` về `/admin/login`. Sau khi đăng nhập thành công tại Payload admin, Payload tự động đưa người dùng trở lại URL trong tham số `redirect`.
+  - Toàn bộ thao tác nạp dữ liệu trang (`findByID`) được thực hiện với `draft: true`, truyền đối tượng `user` đã xác thực và đặt `overrideAccess: false`.
+  - Các thao tác "Lưu nháp" và "Xuất bản" gọi Server Action trên server, tự động xác thực lại `payload.auth({ headers })` trước khi ghi xuống database để chống giả mạo quyền từ client.
+  - Tất cả các vị trí guard route và server action đều được đánh dấu `// REVIEW-REQUIRED:`.
+
+#### Câu 3: Phiên bản `@puckeditor/core`
+- **Phiên bản được chọn:** `@puckeditor/core@0.23.0` (ghim cứng trong `package.json`, không dùng ký tự `^` hay `~`).
+- **Khảo sát:**
+  - `0.23.0` là bản release stable mới nhất trên npm registry (phát hành tháng 08/2026; các bản 0.24.x hiện tại đều là canary chưa ổn định).
+  - Khai báo peerDependencies `react: "^18.0.0 || ^19.0.0"`, tương thích hoàn toàn với React `19.2.6` và Next.js `16.3.3` trong dự án.
+  - Thử nghiệm thực tế: Cài đặt sạch qua pnpm, `tsc --noEmit` và `eslint` đều vượt qua không có lỗi.
+
+#### Câu 4: Khả năng RichText của Puck và phương án thực hiện
+- **Khảo sát tính năng:**
+  - `@puckeditor/core@0.23.0` **có sẵn** field type `type: "richtext"` (`RichtextField`), tích hợp Tiptap / ProseMirror.
+  - Khi render, Puck sử dụng `RichTextRender` tự động chuyển AST sang HTML bằng `generateHTML` và đưa vào DOM qua `dangerouslySetInnerHTML`.
+- **Đánh giá Brand Safety & Bảo mật:**
+  - Tiptap mặc định cho phép người dùng tự do format (headings, alignment, màu sắc), dễ dẫn tới việc vi phạm quy chuẩn typography của Brand Book 2026 (tiêu đề Anton cố định, 8 màu token, không dùng font/size tùy tiện).
+  - Sử dụng `dangerouslySetInnerHTML` với HTML thô có nguy cơ bảo mật nếu nội dung copy-paste từ nguồn ngoài chứa mã độc.
+- **Phương án đề xuất:**
+  - **Phương án 1 (Khuyến nghị theo spec GD0.md): Khối `RichText` dùng `type: "textarea"` phân đoạn.**
+    - Nội dung chia nhiều đoạn bằng dấu xuống dòng đôi (`\n\n`).
+    - Render an toàn: Tách mảng đoạn văn bản và render thành các thẻ `<p>` ngữ nghĩa với font Montserrat Regular, khoảng cách chuẩn brand, 100% không dùng `dangerouslySetInnerHTML` và zero XSS surface.
+  - **Phương án 2: Dùng `type: "richtext"` built-in của Puck với cấu hình hạn chế (restricted options):**
+    - Tắt hoàn toàn việc tạo heading, chỉ cho phép `bold`, `italic`, `bulletList`, `orderedList` và `link`.
+    - Phải viết CSS giới hạn typography cho container `.rich-text`.
+- **Đề xuất trình Planning:** Áp dụng **Phương án 1** (`textarea` phân đoạn) cho khối `RichText` trong GĐ 0 để đảm bảo tính an toàn và chuẩn nhận diện thương hiệu cao nhất.
+
+### 2. Rủi ro kỹ thuật còn lại & Kế hoạch xử lý
+1. **Tránh xung đột giao diện / font:** Route Puck editor chạy dưới layout `(builder)` không dùng chung global CSS với `(payload)` hay `(site)`. Cần đảm bảo các font Google (`Montserrat`, `Anton`, `Playfair Display`) được nạp chuẩn trong `BuilderLayout` để component hiển thị trực quan trong canvas editor giống hệt trang thật.
+2. **Xử lý revalidation khi xuất bản:** Hook `afterChange` trong `Pages.ts` cần gọi `revalidatePath` cho đúng đường dẫn slug (đặc biệt slug `/` cho trang chủ và `/slug` cho trang con) để người dùng bên ngoài nhìn thấy ngay nội dung mới nhất.
+3. **Nút "Chỉnh sửa trực quan" trong Payload:** Cần khai báo một custom field `type: 'ui'` trong `src/collections/Pages.ts`. Field này chỉ hiển thị nút bấm điều hướng sang editor, không sinh cột database nên không gây thay đổi migration.
+
+---
+
+### 3. Quyết định chính thức sau duyệt Spike (Planning approved 05/10/2026)
+
+1. **Lệch AGENTS.md 5B: Editor đặt tại `/builder/[pageId]` thay vì `/admin/builder/[pageId]`:**
+   - **Lý do:** Hai root layout `(payload)` và `(builder)` cùng chia sẻ tiền tố `/admin` dễ gây xung đột tiềm tàng hoặc vỡ router khi Payload đăng ký thêm route nội bộ; việc tách hẳn sang route group `(builder)` tại `/builder/[pageId]` giúp cô lập CSS hoàn toàn (không bị CSS admin Payload đè), đồng thời guard xác thực phía server và cơ chế render độc lập, rõ ràng và ổn định tuyệt đối (theo GAPS B5).
+   - Xóa bỏ toàn bộ mã nguồn và test liên quan đến Route A (`getSortedRoutes`).
+2. **Đăng nhập và điều hướng bảo mật:**
+   - Server Component `src/app/(builder)/builder/[pageId]/page.tsx` kiểm tra phiên đăng nhập bằng `payload.auth({ headers })`.
+   - Nếu chưa đăng nhập: Chuyển hướng sang `/admin/login?redirect=/builder/[pageId]`. Sau khi đăng nhập thành công trên Payload admin, hệ thống tự động đưa người dùng trở lại đúng URL editor đang thao tác (đã kiểm chứng `getSafeRedirect` của Payload cho phép redirect nội bộ ngoài `/admin`).
+   - Nếu `pageId` không hợp lệ hoặc không tìm thấy trang: Trả về mã lỗi 404 (`notFound()`), không rò rỉ chi tiết lỗi máy chủ.
+3. **Khối RichText an toàn:**
+   - Chọn Phương án 1: Dùng `textarea`, phân đoạn qua hai lần xuống dòng (`\n\n`), render thành các thẻ ngữ nghĩa `<p>` (Montserrat Regular, `deep-navy`, khoảng cách brand chuẩn), tuyệt đối không dùng `dangerouslySetInnerHTML`.
+   - Phương án RichText formatting được đưa vào `docs/BACKLOG.md` để đánh giá lại ở T1-01.
+4. **Font và màu thương hiệu trong Canvas iframe:**
+   - Layout `(builder)` nạp đầy đủ các font chuẩn Brand Book 2026: Anton (tiêu đề), Montserrat (nhãn, UI, body), Playfair Display Italic (cảm xúc) với subset `vietnamese`.
+   - Puck cấu hình `syncHostStyles` đồng bộ tự động stylesheet và biến CSS vào iframe của canvas, đảm bảo các ký tự tiếng Việt có dấu (như "Ữ", "Ộ", "Ặ") và font Anton hiển thị chuẩn xác trong chế độ soạn thảo.
+5. **Thao tác lưu nháp & xuất bản độc lập:**
+   - Thanh công cụ editor có 2 nút riêng biệt: **"Lưu nháp"** và **"Xuất bản"** với nhãn tiếng Việt và phản hồi trạng thái rõ ràng (đang lưu, đã lưu thành công kèm thời gian, báo lỗi).
+   - Server actions `saveDraftAction` và `publishPageAction` kiểm tra quyền người dùng phía server bằng `payload.auth({ headers })` với `overrideAccess: false`, có đánh dấu `// REVIEW-REQUIRED:`.
+6. **Bảo toàn Schema và Tối ưu SEO:**
+   - Nút "Chỉnh sửa trực quan" trong `Pages.ts` sử dụng field `type: 'ui'` liên kết component `VisualBuilderButton`, cam kết zero schema changes (đã kiểm chứng qua `payload migrate:create`).
+   - Đường dẫn `/builder/**` được đặt metadata `robots: { index: false, follow: false }`.
+   - Trang công khai `/` và `[...slug]` chỉ hiển thị phiên bản đã xuất bản (`draft: false`), tự động lấy metadata từ trường `seo` của trang.
+
