@@ -406,7 +406,8 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 1. `next.config.ts`: bật `output: 'standalone'` **chỉ khi** biến build `NEXT_OUTPUT=standalone` (đặt trong Dockerfile). `pnpm start` ở local và CI giữ nguyên hành vi.
 2. `Dockerfile` multi-stage, pnpm qua corepack đúng phiên bản trong `package.json`, chạy user không phải root. Ảnh chạy được `sharp` (Payload). Đọc hướng dẫn Docker chính thức của Payload 3.90 và Next.js 16 trước khi sửa.
 3. **Migration lúc khởi động**: dùng `prodMigrations` đã có trong `payload.config.ts` (Payload tự chạy migration khi khởi tạo ở production). Kiểm chứng điều này; nếu không chạy thì thêm bước migrate trước `node server.js`. Container khởi động trên DB trống → `/admin` hiện form tạo user đầu tiên.
-4. `docker-compose.prod.yml`: service `app` + `postgres` (image `postgres:18`, khớp CI), volume tên riêng cho DB và cho thư mục media, `restart: unless-stopped`, healthcheck cho cả hai. App chỉ mở 1 cổng (mặc định 3000, đổi qua `APP_PORT`). Postgres **không** mở cổng ra ngoài. `docker-compose.yml` (dev) giữ nguyên.
+4. `docker-compose.yml` (dev): cổng Postgres đọc từ `${POSTGRES_PORT:-5432}` (máy dev đang có dự án khác chiếm 5432 – xem `docs/tasks/PARALLEL_AGENTS.md`); ghi biến vào `.env.example` và README.
+4b. `docker-compose.prod.yml`: service `app` + `postgres` (image `postgres:18`, khớp CI), volume tên riêng cho DB và cho thư mục media, `restart: unless-stopped`, healthcheck cho cả hai. App chỉ mở 1 cổng (mặc định 3000, đổi qua `APP_PORT`). Postgres **không** mở cổng ra ngoài. 
 5. Media: lưu đĩa local trong volume khi không có biến S3 (khớp cơ chế T0-06). Xóa container rồi tạo lại → ảnh đã upload vẫn còn.
 6. **Bản demo không được Google index**: biến `SITE_NOINDEX=true` → mọi response có header `X-Robots-Tag: noindex, nofollow`, `robots.txt` chặn toàn bộ. Mặc định trong `.env.example` để trống (production sau này sẽ index).
 7. `.env.example`: thêm `APP_PORT`, `SITE_NOINDEX`, `POSTGRES_PASSWORD` (dùng cho compose). Ghi chú rõ `PAYLOAD_SECRET` phải sinh mới (`openssl rand -hex 32`) và `STYLEGUIDE_PUBLIC=true` nếu muốn khách xem `/styleguide`.
@@ -423,7 +424,7 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 **Không làm**: Vercel, Neon, R2, domain thật, email (T0-10b / GĐ 1). Không đưa dữ liệu khách thật lên bản demo.
 
-**Ranh giới file**: `Dockerfile`, `.dockerignore`, `docker-compose.prod.yml`, `next.config.ts`, `src/middleware.ts` hoặc cơ chế header tương đương, `src/app/robots.ts`, `.env.example`, `.github/workflows/ci.yml`, `docs/RUNBOOK.md`, `README.md` (1 dòng trỏ tới RUNBOOK), mục `## T0-10` trong `docs/DECISIONS.md`, `tests/**` (file mới).
+**Ranh giới file**: `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `docker-compose.prod.yml`, `next.config.ts`, `src/middleware.ts` hoặc cơ chế header tương đương, `src/app/robots.ts`, `.env.example`, `.github/workflows/ci.yml`, `docs/RUNBOOK.md`, `README.md` (1 dòng trỏ tới RUNBOOK), mục `## T0-10` trong `docs/DECISIONS.md`, `tests/**` (file mới).
 
 **Tiêu chí nghiệm thu**
 
