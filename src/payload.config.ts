@@ -22,6 +22,20 @@ import { Techniques } from './collections/Techniques'
 import { LegalPages } from './collections/LegalPages'
 import { Workshops } from './collections/Workshops'
 import { Pages } from './collections/Pages'
+import { Customers } from './collections/Customers'
+import { Entitlements } from './collections/Entitlements'
+import { Orders } from './collections/Orders'
+import { DiscountCodes } from './collections/DiscountCodes'
+import { Leads } from './collections/Leads'
+import { HabitPlans } from './collections/HabitPlans'
+import { HabitCheckins } from './collections/HabitCheckins'
+import { SavedCards } from './collections/SavedCards'
+import { DiagnosticResults } from './collections/DiagnosticResults'
+import { Certificates } from './collections/Certificates'
+import { LessonProgress } from './collections/LessonProgress'
+import { OtpCodes } from './collections/OtpCodes'
+import { PaymentEvents } from './collections/PaymentEvents'
+import { AuditLogs } from './collections/AuditLogs'
 import { SiteSettings } from './globals/SiteSettings'
 import { Navigation } from './globals/Navigation'
 
@@ -53,6 +67,20 @@ export default buildConfig({
     LegalPages,
     Workshops,
     Pages,
+    Customers,
+    Entitlements,
+    Orders,
+    DiscountCodes,
+    Leads,
+    HabitPlans,
+    HabitCheckins,
+    SavedCards,
+    DiagnosticResults,
+    Certificates,
+    LessonProgress,
+    OtpCodes,
+    PaymentEvents,
+    AuditLogs,
   ],
   globals: [SiteSettings, Navigation],
   editor: lexicalEditor(),

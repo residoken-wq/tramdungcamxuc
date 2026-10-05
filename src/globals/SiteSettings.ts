@@ -1,6 +1,6 @@
-import type { GlobalConfig } from 'payload'
+import type { Field, GlobalConfig } from 'payload'
 import { checkbox, image, number, select, text, url } from '../fields/content'
-import { authenticated } from '../lib/auth/access'
+import { authenticated, isOwner } from '../lib/auth/access'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'siteSettings',
@@ -45,6 +45,8 @@ export const SiteSettings: GlobalConfig = {
         },
         {
           label: 'Thanh toán',
+          // REVIEW-REQUIRED: Payment settings are owner-only (read and update). Public payment
+          // pages read them through server code with overrideAccess.
           fields: [
             text('bankBin', 'Mã ngân hàng VietQR'),
             text('bankName', 'Tên ngân hàng'),
@@ -52,7 +54,7 @@ export const SiteSettings: GlobalConfig = {
             text('accountName', 'Tên chủ tài khoản'),
             { ...text('transferPrefix', 'Đầu mã chuyển khoản'), defaultValue: 'TDCX' },
             checkbox('trialCreditApplies', 'Trừ phí trải nghiệm vào giá gói'),
-          ],
+          ].map((field) => ({ ...field, access: { read: isOwner, update: isOwner } }) as Field),
         },
         {
           label: 'Liên hệ & Zalo',

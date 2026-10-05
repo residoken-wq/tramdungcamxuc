@@ -241,3 +241,13 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
 - **Placeholder do thiếu file nguồn** (file Excel Habit Hack chưa có trong `docs/sources/`): 16 câu chẩn đoán, 11 kỹ thuật, 20 bài học / 4 module, 3 thẻ EQ, 3 testimonial (`consent = false`, giữ nháp), nội dung 6 trang pháp lý để trống. Hero trang chủ dùng nguyên văn copy trong AGENTS.md 8.1; mọi chữ khác bắt đầu `[MẪU]`.
 - 5 trang Puck seed: `/`, `ve-hana`, `coaching`, `coaching/growth-mirror`, `doanh-nghiep` (đúng danh sách AGENTS.md mục 7), khối `version: 1`.
 
+
+## T0-07
+
+- `users.role` (`owner` / `editor`, lưu vào JWT). Người tạo đầu tiên tự là `owner` (hook đếm users); sau đó chỉ owner tạo/xóa admin và đổi role (field access) – editor không tự nâng quyền. Migration `access_control` đặt mọi admin có sẵn thành `owner`.
+- Hàm access tập trung ở `src/lib/auth/access.ts`: `isAdminUser` / `isOwnerUser`, `authenticated` (= `isEditorOrOwner`), `isOwner`, `publishedOrAuthenticated`, `adminOrSelfCustomer(field)`, `ownerOrSelfCustomerField`, `nobody`. Nhánh `customers` sẵn cho GĐ 2 (OTP); hiện `customers` chưa là collection đăng nhập.
+- 14 collection mới (AGENTS.md mục 7 + GAPS A2–A6, A8). Không có trường hoàn tiền / địa chỉ giao hàng.
+- Ràng buộc "duy nhất có điều kiện" dùng **cột khóa ẩn có unique index** + hook báo lỗi tiếng Việt (`src/fields/unique-key.ts`): `entitlements.trialKey` = `customer:product` chỉ khi `source = trial` (NULL không bị ràng buộc), `habitCheckins.planDay`, `lessonProgress.customerLesson`.
+- `orders`: `paymentRef` (`TDCX` + 5 ký tự bỏ 0/O/1/I, kiểm trùng) và `payToken` (24 byte ngẫu nhiên khi `createdByAdmin`) do server sinh, không đổi được. Editor không đặt/đổi `paymentStatus`, `paidAt`, `createdByAdmin`; owner hoặc code server không có user (webhook GĐ 2) mới được. Bảo vệ trong **một hook** thay vì field access vì field access xóa giá trị sau hook. Editor không xóa đơn.
+- Dữ liệu cảm xúc (`habitCheckins.emotion/note`, `savedCards.reflection`) ẩn với editor (field read access). `paymentEvents`, `auditLogs`: chỉ owner đọc, không ai tạo/sửa/xóa qua API (server ghi bằng overrideAccess). `otpCodes`: ẩn khỏi admin, đóng với mọi API.
+- Tab "Thanh toán" của `siteSettings`: đọc và sửa chỉ owner; trang thanh toán công khai (T1-12) đọc qua Local API overrideAccess.
