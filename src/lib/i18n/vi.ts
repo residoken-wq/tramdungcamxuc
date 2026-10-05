@@ -97,6 +97,8 @@ export const vi = {
     savedDraft: 'Đã lưu bản nháp',
     published: 'Đã xuất bản thành công',
     error: 'Lỗi xử lý, vui lòng thử lại',
+    unauthorized: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+    saveFailed: 'Không lưu được trang. Vui lòng thử lại.',
     viewPage: 'Xem trang',
     backToAdmin: 'Quay lại quản trị',
     draftStatus: 'Bản nháp',

@@ -1,10 +1,13 @@
 import React from 'react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import * as puckExports from '@puckeditor/core'
+
+vi.mock('next/headers', () => ({ headers: async () => new Headers() }))
 import { puckConfig, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '@/puck/config'
 import { HeroTwoEntries } from '@/components/site/HeroTwoEntries'
 import { ImageText } from '@/components/site/ImageText'
+import { RichText } from '@/components/site/RichText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
 import { saveDraftAction, publishPageAction } from '@/puck/actions'
@@ -168,12 +171,18 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
   describe('Server Action Security Guardrails', () => {
     it('rejects saveDraftAction when user is unauthenticated', async () => {
       const emptyData = { content: [], root: { props: { title: 'Test' } } }
-      await expect(saveDraftAction('test-page-id', emptyData)).rejects.toThrow('UNAUTHORIZED')
+      await expect(saveDraftAction('test-page-id', emptyData)).resolves.toMatchObject({
+        success: false,
+        code: 'UNAUTHORIZED',
+      })
     })
 
     it('rejects publishPageAction when user is unauthenticated', async () => {
       const emptyData = { content: [], root: { props: { title: 'Test' } } }
-      await expect(publishPageAction('test-page-id', emptyData)).rejects.toThrow('UNAUTHORIZED')
+      await expect(publishPageAction('test-page-id', emptyData)).resolves.toMatchObject({
+        success: false,
+        code: 'UNAUTHORIZED',
+      })
     })
   })
 })

@@ -42,15 +42,15 @@ export type PageComponentsProps = {
 export const puckConfig: Config<PageComponentsProps> = {
   categories: {
     intro: {
-      label: 'Mở đầu',
+      title: 'Mở đầu',
       components: ['HeroTwoEntries', 'SectionHeader'],
     },
     content: {
-      label: 'Nội dung',
+      title: 'Nội dung',
       components: ['RichText', 'ImageText'],
     },
     conversion: {
-      label: 'Chuyển đổi',
+      title: 'Chuyển đổi',
       components: ['CTAButton'],
     },
   },
