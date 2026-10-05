@@ -139,6 +139,20 @@ Kết quả mong đợi: cả app và postgres thành `healthy` (lần đầu ch
 
 Mở `http://IP-SERVER:3400/admin`, tạo tài khoản quản trị đầu tiên cho chủ dự án. Schema hiện tại chưa có dropdown vai trò `owner` (phân quyền chi tiết thuộc T0-07); tài khoản đầu tiên hiện là admin quản trị. Sau đó thử tải một ảnh có mô tả ở **Thư viện ảnh và tài liệu**. Không để form tạo admin đầu tiên mở công khai lâu; có thể dùng SSH tunnel hoặc giới hạn IP trong lúc thiết lập.
 
+### Nạp dữ liệu MẪU cho buổi demo
+
+Chạy **sau** khi app đã `healthy`. Lệnh chỉ tạo/cập nhật bản ghi đánh dấu MẪU (`isSample`), không đụng dữ liệu thật, chạy nhiều lần không nhân đôi:
+
+```bash
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm seed < /dev/null
+```
+
+Lần đầu mất vài phút để build image công cụ. Mong đợi: bảng kết quả có `products 12`, `pages 5`, `lessons 20`… và dòng "Seed dữ liệu MẪU xong". Sau đó:
+
+- `http://IP-SERVER:3400/` hiện trang chủ dựng bằng Puck (Hero 2 lối vào); `/ve-hana`, `/coaching`, `/coaching/growth-mirror`, `/doanh-nghiep` hiện trang mẫu.
+- Trong `/admin`: Sản phẩm (9 sản phẩm + 3 gói CLEAR / BUILD / SHINE, tổng giá trị và % ưu đãi tự tính), Dịch vụ, Chương trình, Thẻ EQ, Bài học, Câu hỏi chẩn đoán, Kỹ thuật, 6 Trang pháp lý (chưa có nội dung), Menu điều hướng.
+- Mọi chữ mẫu bắt đầu bằng `[MẪU]`; testimonial mẫu để **nháp** vì chưa có đồng ý của khách.
+
 ### Cập nhật
 
 Làm bản sao lưu theo phần bên dưới **trước mỗi lần cập nhật**, nhất là bản có migration. Giữ lại mã commit cũ:

@@ -9,17 +9,18 @@
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "format": "prettier --write .",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
-    "typecheck": "tsc --noEmit",
-    "format": "prettier --write .",
-    "test": "vitest run",
-    "test:e2e": "playwright test",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
+    "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run seed/index.ts",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.90.2",
