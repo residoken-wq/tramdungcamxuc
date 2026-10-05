@@ -1,4 +1,6 @@
-import React, { useRef } from 'react'
+'use client'
+
+import React, { useRef, useId } from 'react'
 import { EMOTIONS, type EmotionKey } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 
@@ -19,6 +21,8 @@ export function EmotionPicker({
   label,
   className = '',
 }: EmotionPickerProps) {
+  const id = useId()
+  const labelId = `${id}-label`
   const containerRef = useRef<HTMLDivElement>(null)
   const groupLabel = label || vi.emotionPicker.label
 
@@ -57,7 +61,7 @@ export function EmotionPicker({
   return (
     <div className={`w-full ${className}`}>
       {groupLabel && (
-        <span id="emotion-picker-label" className="block text-sm font-bold text-deep-navy mb-2.5 font-ui">
+        <span id={labelId} className="block text-sm font-bold text-deep-navy mb-2.5 font-ui">
           {groupLabel}
         </span>
       )}
@@ -65,7 +69,7 @@ export function EmotionPicker({
       <div
         ref={containerRef}
         role="radiogroup"
-        aria-labelledby={groupLabel ? 'emotion-picker-label' : undefined}
+        aria-labelledby={groupLabel ? labelId : undefined}
         aria-label={groupLabel ? undefined : vi.emotionPicker.label}
         className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3"
       >
@@ -79,7 +83,7 @@ export function EmotionPicker({
               key={emotion.key}
               role="radio"
               type="button"
-              id={`emotion-radio-${emotion.key}`}
+              id={`${id}-radio-${emotion.key}`}
               aria-checked={isSelected}
               disabled={disabled}
               tabIndex={tabIndex}

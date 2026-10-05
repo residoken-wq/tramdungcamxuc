@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Logo } from '@/components/brand/Logo'
@@ -7,6 +9,8 @@ import { vi } from '@/lib/i18n/vi'
 export interface NavItem {
   label: string
   href: string
+  featured?: boolean
+  shortLabel?: string
 }
 
 export interface NavbarCta {
@@ -15,39 +19,23 @@ export interface NavbarCta {
 }
 
 export interface NavbarProps {
-  items?: NavItem[]
-  cta?: NavbarCta
+  items: NavItem[]
+  cta: NavbarCta
   className?: string
 }
 
-export const DEFAULT_NAV_ITEMS: NavItem[] = [
-  { label: 'Về Hana', href: '/ve-hana' },
-  { label: 'Thư viện', href: '/thu-vien' },
-  { label: 'Test thói quen 5 phút', href: '/habit/chan-doan' },
-  { label: 'Growth Mirror', href: '/coaching/growth-mirror' },
-  { label: 'Doanh nghiệp', href: '/doanh-nghiep' },
-]
-
-export const DEFAULT_CTA: NavbarCta = {
-  label: 'Đặt phiên trải nghiệm',
-  href: '/coaching/growth-mirror#dat-phien',
-}
-
 export function Navbar({
-  items = DEFAULT_NAV_ITEMS,
-  cta = DEFAULT_CTA,
+  items,
+  cta,
   className = '',
 }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const toggleButtonRef = useRef<HTMLButtonElement>(null)
-  const drawerRef = useRef<HTMLDivElement>(null)
 
-  // Find the quiz item (primary lead magnet) to prominently display on mobile
-  const quizItem = items.find((item) =>
-    item.label.toLowerCase().includes('test thói quen') || item.href.includes('chan-doan')
-  ) || { label: vi.navbar.quickQuiz, href: '/habit/chan-doan' }
+  // Find the featured item (e.g. 5-min habit test lead magnet) to highlight
+  const featuredItem = items.find((item) => item.featured)
 
-  // Handle Escape key to close drawer and restore focus to toggle button
+  // Handle Escape key to close mobile drawer and return focus to toggle button
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -69,7 +57,7 @@ export function Navbar({
       className={`sticky top-0 z-40 w-full bg-warm-ivory/95 backdrop-blur-md border-b border-deep-navy/10 ${className}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-18 sm:h-20">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Brand Logo */}
           <Link
             href="/"
@@ -80,18 +68,18 @@ export function Navbar({
 
           {/* Desktop Navigation Links */}
           <nav
-            aria-label="Chính"
+            aria-label={vi.navbar.mainNav}
             className="hidden lg:flex items-center space-x-6 xl:space-x-8"
           >
             {items.map((item) => {
-              const isQuiz = item.href === quizItem.href
+              const isFeatured = Boolean(item.featured)
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={[
                     'font-ui text-sm font-semibold transition-colors duration-150 py-1 border-b-2 border-transparent',
-                    isQuiz
+                    isFeatured
                       ? 'text-bright-magenta hover:text-deep-navy font-bold'
                       : 'text-deep-navy hover:text-bright-magenta hover:border-bright-magenta/40',
                     'focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm',
@@ -110,16 +98,16 @@ export function Navbar({
             </Button>
           </div>
 
-          {/* Mobile Right Controls: Prominent Quiz/CTA + Hamburger button */}
+          {/* Mobile Right Controls: Featured action + Hamburger button */}
           <div className="flex lg:hidden items-center gap-2 sm:gap-3">
-            {/* AGENTS.md 8.1: Test thói quen 5 phút must be visible on mobile bar */}
-            <Link
-              href={quizItem.href}
-              className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/25 font-ui text-xs font-bold hover:bg-bright-magenta hover:text-white transition-all shadow-sm focus-visible:outline-2 focus-visible:outline-deep-navy"
-            >
-              <span className="hidden xs:inline">{quizItem.label}</span>
-              <span className="xs:hidden">Test 5p</span>
-            </Link>
+            {featuredItem && (
+              <Link
+                href={featuredItem.href}
+                className="inline-flex items-center justify-center min-h-[44px] px-3.5 py-2 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/25 font-ui text-xs sm:text-sm font-bold hover:bg-bright-magenta hover:text-white transition-all shadow-sm focus-visible:outline-2 focus-visible:outline-deep-navy whitespace-nowrap"
+              >
+                {featuredItem.shortLabel ?? featuredItem.label}
+              </Link>
+            )}
 
             {/* Mobile Menu Toggle Button */}
             <button
@@ -164,10 +152,9 @@ export function Navbar({
       {isOpen && (
         <div
           id="mobile-nav-drawer"
-          ref={drawerRef}
           className="lg:hidden border-t border-deep-navy/10 bg-warm-ivory/98 backdrop-blur-md px-4 pt-4 pb-6 space-y-3 shadow-lg"
         >
-          <nav aria-label="Di động" className="space-y-1">
+          <nav aria-label={vi.navbar.mobileNav} className="space-y-1">
             {items.map((item) => (
               <Link
                 key={item.href}

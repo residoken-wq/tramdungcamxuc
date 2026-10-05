@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { getEmotion } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
@@ -18,9 +20,9 @@ export interface ProgressGridProps {
 }
 
 /**
- * Default generator for 21 days if not fully provided.
+ * Generator for 21 days if not fully provided.
  */
-function default21Days(provided?: ProgressDayItem[]): ProgressDayItem[] {
+function build21Days(provided?: ProgressDayItem[]): ProgressDayItem[] {
   const map = new Map<number, ProgressDayItem>()
   if (provided) {
     for (const item of provided) {
@@ -107,7 +109,7 @@ export function ProgressGrid({
   onSelectDay,
   className = '',
 }: ProgressGridProps) {
-  const allDays = default21Days(days)
+  const allDays = build21Days(days)
 
   return (
     <div
@@ -144,7 +146,7 @@ export function ProgressGrid({
               stateStyle =
                 'bg-white border-2 border-accent-pink text-deep-navy font-bold shadow-sm ring-2 ring-accent-pink/30 hover:bg-soft-pink/30 cursor-pointer'
               indicatorIcon = (
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-pink animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-pink animate-pulse motion-reduce:animate-none" />
               )
               break
 

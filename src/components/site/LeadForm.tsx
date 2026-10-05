@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+'use client'
+
+import React, { useState, useId } from 'react'
 import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -19,22 +21,31 @@ export interface LeadFormErrors {
 export type LeadFormStatus = 'idle' | 'submitting' | 'success' | 'error'
 
 export interface LeadFormProps {
+  title: string
+  description?: string
   privacyHref?: string
   onSubmit?: (values: LeadFormValues) => Promise<void>
-  title?: string
-  description?: string
   submitLabel?: string
   className?: string
 }
 
 export function LeadForm({
-  privacyHref = '/chinh-sach-bao-mat',
-  onSubmit,
   title,
   description,
+  privacyHref = '/chinh-sach-bao-mat',
+  onSubmit,
   submitLabel,
   className = '',
 }: LeadFormProps) {
+  const id = useId()
+  const nameInputId = `${id}-name`
+  const emailInputId = `${id}-email`
+  const consentInputId = `${id}-consent`
+  const honeypotInputId = `${id}-org-hp`
+  const nameErrorId = `${id}-name-error`
+  const emailErrorId = `${id}-email-error`
+  const consentErrorId = `${id}-consent-error`
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [consent, setConsent] = useState(false)
@@ -75,7 +86,7 @@ export function LeadForm({
     e.preventDefault()
     setServerError(null)
 
-    // Honeypot defense: if filled, silently succeed without calling onSubmit
+    // Honeypot defense: silently succeed without invoking onSubmit
     if (honeypot.trim() !== '') {
       setStatus('success')
       return
@@ -117,11 +128,13 @@ export function LeadForm({
       {/* Form Header */}
       <div className="mb-6">
         <h3 className="font-ui font-bold text-2xl text-deep-navy mb-2 tracking-tight">
-          {title || vi.leadForm.title}
+          {title}
         </h3>
-        <p className="font-sans text-sm text-deep-navy/80 leading-relaxed">
-          {description || vi.leadForm.description}
-        </p>
+        {description && (
+          <p className="font-sans text-sm text-deep-navy/80 leading-relaxed">
+            {description}
+          </p>
+        )}
       </div>
 
       {status === 'success' ? (
@@ -162,7 +175,7 @@ export function LeadForm({
         </div>
       ) : (
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
-          {/* Top error banner */}
+          {/* Top server error banner */}
           {serverError && (
             <div
               role="alert"
@@ -175,13 +188,13 @@ export function LeadForm({
           {/* Name Field */}
           <div>
             <label
-              htmlFor="lead-name-input"
+              htmlFor={nameInputId}
               className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
             >
               {vi.leadForm.nameLabel} <span className="text-bright-magenta">*</span>
             </label>
             <input
-              id="lead-name-input"
+              id={nameInputId}
               type="text"
               name="name"
               disabled={status === 'submitting'}
@@ -194,7 +207,7 @@ export function LeadForm({
               }}
               placeholder={vi.leadForm.namePlaceholder}
               aria-invalid={Boolean(errors.name)}
-              aria-describedby={errors.name ? 'lead-name-error' : undefined}
+              aria-describedby={errors.name ? nameErrorId : undefined}
               className={[
                 'w-full px-4 py-2.5 rounded-xl border font-sans text-base text-deep-navy bg-white transition-colors duration-200',
                 'placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
@@ -206,7 +219,7 @@ export function LeadForm({
             />
             {errors.name && (
               <p
-                id="lead-name-error"
+                id={nameErrorId}
                 role="alert"
                 className="mt-1.5 text-xs font-semibold text-bright-magenta font-ui"
               >
@@ -218,13 +231,13 @@ export function LeadForm({
           {/* Email Field */}
           <div>
             <label
-              htmlFor="lead-email-input"
+              htmlFor={emailInputId}
               className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
             >
               {vi.leadForm.emailLabel} <span className="text-bright-magenta">*</span>
             </label>
             <input
-              id="lead-email-input"
+              id={emailInputId}
               type="email"
               name="email"
               disabled={status === 'submitting'}
@@ -237,7 +250,7 @@ export function LeadForm({
               }}
               placeholder={vi.leadForm.emailPlaceholder}
               aria-invalid={Boolean(errors.email)}
-              aria-describedby={errors.email ? 'lead-email-error' : undefined}
+              aria-describedby={errors.email ? emailErrorId : undefined}
               className={[
                 'w-full px-4 py-2.5 rounded-xl border font-sans text-base text-deep-navy bg-white transition-colors duration-200',
                 'placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
@@ -249,7 +262,7 @@ export function LeadForm({
             />
             {errors.email && (
               <p
-                id="lead-email-error"
+                id={emailErrorId}
                 role="alert"
                 className="mt-1.5 text-xs font-semibold text-bright-magenta font-ui"
               >
@@ -263,9 +276,9 @@ export function LeadForm({
             className="absolute opacity-0 pointer-events-none -z-10 h-0 w-0 overflow-hidden"
             aria-hidden="true"
           >
-            <label htmlFor="lead-organization-hp">Company Name</label>
+            <label htmlFor={honeypotInputId}>Company Name</label>
             <input
-              id="lead-organization-hp"
+              id={honeypotInputId}
               type="text"
               name="organization_hp"
               tabIndex={-1}
@@ -279,7 +292,7 @@ export function LeadForm({
           <div className="pt-1">
             <div className="flex items-start gap-3">
               <input
-                id="lead-consent-checkbox"
+                id={consentInputId}
                 type="checkbox"
                 name="consent"
                 disabled={status === 'submitting'}
@@ -291,11 +304,11 @@ export function LeadForm({
                   }
                 }}
                 aria-invalid={Boolean(errors.consent)}
-                aria-describedby={errors.consent ? 'lead-consent-error' : undefined}
+                aria-describedby={errors.consent ? consentErrorId : undefined}
                 className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-accent-pink accent-accent-pink focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
               />
               <label
-                htmlFor="lead-consent-checkbox"
+                htmlFor={consentInputId}
                 className="text-xs font-sans text-deep-navy/80 leading-normal select-none cursor-pointer"
               >
                 {vi.leadForm.consentText}{' '}
@@ -310,7 +323,7 @@ export function LeadForm({
             </div>
             {errors.consent && (
               <p
-                id="lead-consent-error"
+                id={consentErrorId}
                 role="alert"
                 className="mt-1.5 text-xs font-semibold text-bright-magenta font-ui ml-7"
               >
@@ -322,7 +335,6 @@ export function LeadForm({
           {/* Submit Button */}
           <div className="pt-2">
             <Button
-              id="lead-submit-btn"
               type="submit"
               variant="primary"
               size="md"
