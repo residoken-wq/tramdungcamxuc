@@ -7,6 +7,9 @@ import { puckConfig } from '@/puck/config'
 import { resolveServerData } from '@/puck/resolve.server'
 import { Logo, HeartLine } from '@/components/brand'
 
+// Pages read published CMS content on each request; never prerender at build (Docker builds have no DB or secret).
+export const dynamic = 'force-dynamic'
+
 export async function generateMetadata(): Promise<Metadata> {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
