@@ -451,6 +451,8 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 3. Phiên bản `@puckeditor/core` stable mới nhất chạy được với React / Next.js 16.3.3 đang cài (ghi phiên bản chính xác, ghim cứng trong `package.json`).
 4. Puck có field rich text sẵn ở phiên bản đó không; nếu không → khối `RichText` dùng `textarea` nhiều đoạn (không nhận HTML).
 
+**Spike đã duyệt (05/10)** – xem `docs/tasks/reviews/T0-09.md`: route `/builder/[pageId]`, RichText dạng `textarea`, Puck `0.23.0`, kèm 6 yêu cầu bổ sung.
+
 **Kiến trúc dữ liệu**
 - Editor nạp trang bằng Local API phía server (`draft: true`), truyền `puckData` vào `<Puck>`.
 - "Lưu nháp" và "Xuất bản" gọi **server action** dùng Local API với `user` đã xác thực và `overrideAccess: false`: lưu nháp `draft: true`; xuất bản ghi `_status: 'published'`. Không tin dữ liệu `pageId`/user từ trình duyệt – kiểm lại quyền trong action. Đánh dấu `// REVIEW-REQUIRED:` ở guard route và server action.
@@ -466,7 +468,7 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 - `CTAButton` → `ui/Button` (variant `primary` / `secondary` / `ghost`, size S/M/L).
 - Field brand-safe: màu nền là dropdown 8 token; khoảng cách / cỡ chữ là S/M/L; **không** color picker, không ô CSS, không chọn font.
 
-**Ranh giới file**: `src/puck/**`, `src/app/(builder)/**` (hoặc route theo spike), `src/app/(site)/page.tsx`, `src/app/(site)/[...slug]/**`, `src/components/site/HeroTwoEntries.tsx`, `src/components/site/ImageText.tsx`, `src/components/site/index.ts`, `src/collections/Pages.ts` (chỉ field `ui` + hook revalidate), `src/app/(payload)/admin/importMap.js` (sinh tự động), `src/lib/i18n/vi.ts`, `package.json` / `pnpm-lock.yaml` (chỉ thêm `@puckeditor/core`), `tests/**` (file mới), mục `## T0-09` cuối `docs/DECISIONS.md`.
+**Ranh giới file**: `src/puck/**`, `src/app/(builder)/**` (route `/builder/[pageId]`), `.prettierignore` (thêm `pnpm-lock.yaml`), `src/app/(site)/page.tsx`, `src/app/(site)/[...slug]/**`, `src/components/site/HeroTwoEntries.tsx`, `src/components/site/ImageText.tsx`, `src/components/site/index.ts`, `src/collections/Pages.ts` (chỉ field `ui` + hook revalidate), `src/app/(payload)/admin/importMap.js` (sinh tự động), `src/lib/i18n/vi.ts`, `package.json` / `pnpm-lock.yaml` (chỉ thêm `@puckeditor/core`), `tests/**` (file mới), mục `## T0-09` cuối `docs/DECISIONS.md`.
 **Không** sửa: `next.config.ts`, middleware/proxy, `Dockerfile`, `docker-compose*.yml`, `.github/workflows/**`, `.env.example` (Codex đang làm T0-10), collection khác ngoài `Pages.ts`.
 
 **Test**: unit render từng khối với props `[MẪU]` (snapshot hoặc assert nội dung); unit server action từ chối khi không có user. E2E **viết nhưng không chạy** (Planning chạy): (a) chưa đăng nhập vào URL editor → chuyển trang login; (b) kéo Hero vào trang trống → sửa tiêu đề → Xuất bản → trang công khai hiện tiêu đề mới; (c) sửa tiếp → Lưu nháp → trang công khai vẫn tiêu đề cũ.
@@ -497,7 +499,7 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
    - gợi ý đặt reverse proxy có HTTPS (Caddy hoặc Nginx + Let's Encrypt), chỉ hướng dẫn, không bắt buộc trong compose;
    - phương án không dùng Docker: Node 22 + `pnpm build` + `pnpm start` + process manager (pm2/systemd), mô tả ngắn.
 8b. RUNBOOK ghi rõ `pnpm test` cần Postgres đang chạy (test Local API của T0-06 tự áp migration).
-8c. CI: sửa test chập chờn `content-admin` (xem ghi chú cuối `docs/tasks/reviews/T0-06.md`) – làm nóng server trước e2e hoặc tăng timeout `first-register`.
+8c. ~~CI: sửa test chập chờn `content-admin`~~ – **đã xong** (Planning, commit `2b08c1f`: lỗi click trước khi admin hydrate). Bỏ qua mục này. Nguyên gốc: (xem ghi chú cuối `docs/tasks/reviews/T0-06.md`) – làm nóng server trước e2e hoặc tăng timeout `first-register`.
 9. CI: thêm job build Docker image (không push lên registry) để Dockerfile không bị hỏng âm thầm.
 10. Ghi phiên bản image Node/Postgres và lý do vào mục `## T0-10` cuối `docs/DECISIONS.md`.
 
