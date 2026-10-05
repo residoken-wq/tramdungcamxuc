@@ -285,4 +285,31 @@ test.describe('UI Composites (T0-05)', () => {
     const submitBtn = page.getByRole('button', { name: /Gửi thông tin/i })
     await expect(submitBtn).toBeFocused()
   })
+
+  test('B5: Navbar ở màn hình 375px với nhãn đầy đủ không tràn ngang và nút #mobile-nav-toggle nằm trọn trong màn hình', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 })
+    await page.goto('/styleguide')
+
+    const mobileToggle = page.locator('#mobile-nav-toggle')
+    await expect(mobileToggle).toBeVisible()
+
+    // 1. Nhãn đầy đủ không dùng shortLabel vẫn hiển thị trọn vẹn
+    const quizLink = page.getByRole('link', { name: /Test thói quen 5 phút/i }).first()
+    await expect(quizLink).toBeVisible()
+
+    // 2. Toàn bộ document không bị tràn ngang ở 375px
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
+    expect(scrollWidth).toBeLessThanOrEqual(375)
+
+    // 3. Nút #mobile-nav-toggle nằm trọn trong màn hình 375px (x >= 0 và x + width <= 375)
+    const toggleBox = await mobileToggle.boundingBox()
+    expect(toggleBox).not.toBeNull()
+    if (toggleBox) {
+      expect(toggleBox.x).toBeGreaterThanOrEqual(0)
+      expect(toggleBox.x + toggleBox.width).toBeLessThanOrEqual(375)
+    }
+  })
 })
+

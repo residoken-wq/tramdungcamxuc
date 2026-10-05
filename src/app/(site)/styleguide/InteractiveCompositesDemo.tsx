@@ -36,8 +36,7 @@ export function InteractiveCompositesDemo() {
     { label: '[MẪU] Về Hana', href: '/ve-hana' },
     { label: '[MẪU] Thư viện', href: '/thu-vien' },
     {
-      label: '[MẪU] Test thói quen 5 phút',
-      shortLabel: '[MẪU] Test 5p',
+      label: 'Test thói quen 5 phút',
       href: '/habit/chan-doan',
       featured: true,
     },

@@ -54,12 +54,12 @@ export function Logo({
 
   return (
     <div
-      className={`inline-flex items-center justify-center rounded border border-dashed px-4 py-2 text-xs font-semibold tracking-wider uppercase transition-colors ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center justify-center rounded border border-dashed px-2 py-1 text-xs font-semibold tracking-wider uppercase transition-colors overflow-hidden flex-shrink-0 ${variantStyles[variant]} ${className}`}
       role="img"
       aria-label="Logo Trạm Dừng Cảm Xúc"
-      style={{ minWidth: `${minWidth}px`, height: height ? `${height}px` : 'auto' }}
+      style={{ width: `${minWidth}px`, height: height ? `${height}px` : 'auto' }}
     >
-      LOGO – chờ file từ Hana
+      <span className="truncate">LOGO – chờ file từ Hana</span>
     </div>
   )
 }

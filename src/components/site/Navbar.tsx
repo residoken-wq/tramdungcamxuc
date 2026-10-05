@@ -99,13 +99,15 @@ export function Navbar({
           </div>
 
           {/* Mobile Right Controls: Featured action + Hamburger button */}
-          <div className="flex lg:hidden items-center gap-2 sm:gap-3">
+          <div className="flex lg:hidden items-center gap-2 sm:gap-3 min-w-0">
             {featuredItem && (
               <Link
                 href={featuredItem.href}
-                className="inline-flex items-center justify-center min-h-[44px] px-3.5 py-2 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/25 font-ui text-xs sm:text-sm font-bold hover:bg-bright-magenta hover:text-white transition-all shadow-sm focus-visible:outline-2 focus-visible:outline-deep-navy whitespace-nowrap"
+                className="inline-flex items-center justify-center min-h-[44px] min-w-0 max-w-[130px] sm:max-w-xs px-2.5 py-1 sm:px-3.5 sm:py-2 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/25 font-ui text-xs sm:text-sm font-bold hover:bg-bright-magenta hover:text-white transition-all shadow-sm focus-visible:outline-2 focus-visible:outline-deep-navy text-center leading-tight"
               >
-                {featuredItem.shortLabel ?? featuredItem.label}
+                <span className="line-clamp-2">
+                  {featuredItem.shortLabel ?? featuredItem.label}
+                </span>
               </Link>
             )}
 
@@ -118,7 +120,7 @@ export function Navbar({
               aria-controls="mobile-nav-drawer"
               aria-label={isOpen ? vi.navbar.closeMenu : vi.navbar.openMenu}
               onClick={() => setIsOpen((prev) => !prev)}
-              className="min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-deep-navy/15 text-deep-navy hover:bg-lavender-mist/40 transition-colors flex items-center justify-center focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
+              className="flex-shrink-0 min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-deep-navy/15 text-deep-navy hover:bg-lavender-mist/40 transition-colors flex items-center justify-center focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
             >
               {isOpen ? (
                 <svg

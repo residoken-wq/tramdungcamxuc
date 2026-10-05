@@ -11,6 +11,7 @@ import {
   Footer,
 } from '@/components/site'
 import { EmotionPicker, ProgressGrid } from '@/components/habit'
+import { Logo } from '@/components/brand/Logo'
 import { EMOTIONS } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 
@@ -277,6 +278,49 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
       // Open drawer
       fireEvent.click(toggle)
       expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    })
+
+    it('B5: mobile featured button wraps without whitespace-nowrap, keeps min-h-44, and toggle has flex-shrink-0', () => {
+      render(
+        <Navbar
+          items={[
+            {
+              label: 'Test thói quen 5 phút',
+              href: '/habit/chan-doan',
+              featured: true,
+            },
+          ]}
+          cta={{ label: 'CTA', href: '/cta' }}
+        />
+      )
+
+      // Mobile toggle button has flex-shrink-0
+      const toggle = screen.getByRole('button', { name: vi.navbar.openMenu })
+      expect(toggle.className).toContain('flex-shrink-0')
+
+      // Featured link on mobile does not have whitespace-nowrap, has min-h-[44px], min-w-0, leading-tight, text-center
+      const links = screen.getAllByRole('link', { name: /Test thói quen 5 phút/i })
+      const mobileLink = links.find((l) => l.className.includes('rounded-full'))
+      expect(mobileLink).toBeDefined()
+      expect(mobileLink?.className).not.toContain('whitespace-nowrap')
+      expect(mobileLink?.className).toContain('min-h-[44px]')
+      expect(mobileLink?.className).toContain('min-w-0')
+      expect(mobileLink?.className).toContain('leading-tight')
+      expect(mobileLink?.className).toContain('text-center')
+    })
+  })
+
+  describe('Logo Component (T0-05c B5)', () => {
+    it('maintains exact width on placeholder and uses truncate', () => {
+      const { container } = render(<Logo width={130} />)
+      const logoEl = container.firstChild as HTMLElement
+      expect(logoEl).toBeDefined()
+      expect(logoEl.style.width).toBe('130px')
+      expect(logoEl.className).toContain('flex-shrink-0')
+      expect(logoEl.className).toContain('overflow-hidden')
+      const truncateSpan = logoEl.querySelector('.truncate')
+      expect(truncateSpan).toBeDefined()
+      expect(truncateSpan?.textContent).toBe('LOGO – chờ file từ Hana')
     })
   })
 
