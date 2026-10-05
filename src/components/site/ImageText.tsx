@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 
 export interface ImageTextProps {
+  version?: number
   layout?: 'image-left' | 'image-right'
   seriesLabel?: string
   titleLine1: string

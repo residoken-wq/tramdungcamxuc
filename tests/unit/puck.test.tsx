@@ -13,6 +13,7 @@ import { RichText } from '@/components/site/RichText'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
 import { saveDraftAction, publishPageAction } from '@/puck/actions'
+import { puckMigrations, applyPuckMigrations } from '@/puck/migrations'
 import { brandViewports } from '@/app/(builder)/builder/[pageId]/PuckEditorClient'
 import packageJson from '../../package.json' with { type: 'json' }
 
@@ -140,6 +141,22 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       expect(ImageText.defaultProps?.content).toContain('[MẪU]')
 
       expect(CTAButton.defaultProps?.label).toContain('[MẪU]')
+    })
+
+    it('sets version: 1 in defaultProps of all 5 blocks and exposes puckMigrations array (B5)', () => {
+      const { HeroTwoEntries, SectionHeader, RichText, ImageText, CTAButton } = puckConfig.components
+
+      expect(HeroTwoEntries.defaultProps?.version).toBe(1)
+      expect(SectionHeader.defaultProps?.version).toBe(1)
+      expect(RichText.defaultProps?.version).toBe(1)
+      expect(ImageText.defaultProps?.version).toBe(1)
+      expect(CTAButton.defaultProps?.version).toBe(1)
+
+      expect(Array.isArray(puckMigrations)).toBe(true)
+      expect(puckMigrations).toHaveLength(0)
+
+      const testData = { content: [], root: { props: { title: 'Test' } } }
+      expect(applyPuckMigrations(testData)).toEqual(testData)
     })
   })
 

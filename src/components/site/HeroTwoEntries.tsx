@@ -10,6 +10,7 @@ export interface HeroEntry {
 }
 
 export interface HeroTwoEntriesProps {
+  version?: number
   seriesLabel?: string
   titleLine1: string
   titleLine2: string

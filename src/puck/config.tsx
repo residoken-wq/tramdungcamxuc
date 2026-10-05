@@ -25,6 +25,7 @@ export const PADDING_OPTIONS = [
 ] as const
 
 export type CTAButtonBlockProps = {
+  version?: number
   label: string
   href: string
   variant?: ButtonVariant
@@ -102,6 +103,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         },
       },
       defaultProps: {
+        version: 1,
         seriesLabel: '[MẪU] Series nhãn',
         titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
         titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
@@ -150,6 +152,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         },
       },
       defaultProps: {
+        version: 1,
         seriesLabel: '[MẪU] Series',
         titleLine1: '[MẪU] TIÊU ĐỀ DÒNG 1',
         titleLine2: '[MẪU] TIÊU ĐỀ DÒNG 2',
@@ -192,6 +195,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         },
       },
       defaultProps: {
+        version: 1,
         content:
           '[MẪU] Đoạn văn bản thứ nhất chia sẻ những chiêm nghiệm sâu sắc.\n\n[MẪU] Đoạn văn bản thứ hai tiếp nối câu chuyện một cách tự nhiên và ấm áp.',
         bgColor: 'warm-ivory',
@@ -269,6 +273,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         },
       },
       defaultProps: {
+        version: 1,
         layout: 'image-left',
         seriesLabel: '[MẪU] Câu chuyện',
         titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
@@ -350,6 +355,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         },
       },
       defaultProps: {
+        version: 1,
         label: '[MẪU] Kêu gọi hành động',
         href: '#',
         variant: 'primary',

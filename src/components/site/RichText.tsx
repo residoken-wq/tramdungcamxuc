@@ -1,6 +1,7 @@
 import React from 'react'
 
 export interface RichTextProps {
+  version?: number
   content: string
   bgColor?:
     | 'warm-ivory'
