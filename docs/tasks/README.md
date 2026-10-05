@@ -94,10 +94,10 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-06b | Sửa sau nghiệm thu T0-06 (chuẩn hóa slug trang, so ngày in, vị trí ảnh, skip e2e trên DB dev) | | T0-06 | Xong – PR #8 ([review](reviews/T0-06.md)); Planning sửa thêm test hydrate `2b08c1f` |
 | T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Chưa mở    |
 | T0-08 | Seed dữ liệu MẪU                                      |          | T0-07               | Chưa mở    |
-| T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06b       | Đạt (gồm 09b, 09c) – PR #9 ([review](reviews/T0-09.md)) |
+| T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06b       | Xong – PR #9 ([review](reviews/T0-09.md)) |
 | T0-09b | Sửa sau nghiệm thu T0-09 (config kéo Payload vào client, chọn ảnh, nền tối, link an toàn, version khối) | | T0-09 | Đạt |
 | T0-09c | Viết lại e2e editor (b)(c) cho chạy được thật + sửa mất thông báo | | T0-09b | Đạt (Codex) |
-| T0-09d | Việc nhỏ: `safeHref` chặn `/\`, nhãn Puck tiếng Việt, tương phản nút Xuất bản | | T0-09 (đã merge) | Sẵn sàng – **Antigravity** |
+| T0-09d | Việc nhỏ: `safeHref` chặn `/\`, nhãn Puck tiếng Việt, tương phản nút Xuất bản | | T0-09 (đã merge) | Đạt – PR #10 |
 | T0-10 | Đóng gói Docker + RUNBOOK để tự deploy bản demo       |          | T0-06b (đã merge)   | Sẵn sàng – **Codex**, sau T0-09c |
 | T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0) | | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15 |
 | T0-11 | Ước lượng GĐ 1–4 + hướng dẫn CMS nháp cho cổng GĐ 0   | [HANA]   | tất cả              | Chưa mở    |
