@@ -45,3 +45,19 @@ test('success feedback survives publication status changes and parent rerenders'
   expect(screen.getByText('Bản nháp')).toBeTruthy()
   expect(mocks.save).toHaveBeenCalledWith('123', mocks.currentData)
 })
+
+test('publish button meets WCAG AA contrast for small text per Q13 (deep-navy background with white text)', () => {
+  const props = {
+    initialData: { content: [], root: {} },
+    pageId: '123',
+    pageTitle: 'Test page',
+    pageSlug: 'test-page',
+    initialStatus: 'draft',
+  }
+  render(<PuckEditorClient {...props} />)
+  const publishButton = screen.getByRole('button', { name: 'Xuất bản' })
+  expect(publishButton.className).toContain('bg-deep-navy')
+  expect(publishButton.className).toContain('text-white')
+  expect(publishButton.className).not.toContain('bg-accent-pink')
+})
+

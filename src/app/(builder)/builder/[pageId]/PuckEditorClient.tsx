@@ -135,7 +135,7 @@ function EditorHeaderActions() {
         type="button"
         onClick={handlePublish}
         disabled={isSaving}
-        className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg font-ui text-xs font-bold bg-accent-pink text-white hover:opacity-90 disabled:opacity-50 transition shadow-sm cursor-pointer"
+        className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg font-ui text-xs font-bold bg-deep-navy text-white hover:opacity-90 disabled:opacity-50 transition shadow-sm cursor-pointer"
       >
         {isSaving ? vi.builder.processing : vi.builder.publish}
       </button>
