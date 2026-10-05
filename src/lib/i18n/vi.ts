@@ -88,6 +88,26 @@ export const vi = {
       email: 'Email',
     },
   },
+  builder: {
+    title: 'Trình dựng trang trực quan',
+    saveDraft: 'Lưu nháp',
+    publish: 'Xuất bản',
+    saving: 'Đang lưu bản nháp...',
+    publishing: 'Đang xuất bản trang...',
+    processing: 'Đang xử lý...',
+    publishFailed: 'Lỗi khi xuất bản',
+    saveConnectionFailed: 'Lỗi kết nối máy chủ khi lưu bản nháp',
+    publishConnectionFailed: 'Lỗi kết nối máy chủ khi xuất bản',
+    savedDraft: 'Đã lưu bản nháp',
+    published: 'Đã xuất bản thành công',
+    error: 'Lỗi xử lý, vui lòng thử lại',
+    unauthorized: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+    saveFailed: 'Không lưu được trang. Vui lòng thử lại.',
+    viewPage: 'Xem trang',
+    backToAdmin: 'Quay lại quản trị',
+    draftStatus: 'Bản nháp',
+    publishedStatus: 'Đã xuất bản',
+  },
 } as const
 
 export type LocaleStrings = typeof vi
