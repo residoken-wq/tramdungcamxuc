@@ -1,6 +1,10 @@
-// @vitest-environment node
-import { describe, expect, it } from 'vitest'
-import { normalizePageSlug } from '../../src/collections/Pages'
+import { describe, expect, it, vi } from 'vitest'
+import { revalidatePath } from 'next/cache'
+import { normalizePageSlug, revalidatePage } from '../../src/collections/Pages'
+
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+}))
 
 describe('page slug normalization', () => {
   it.each([
@@ -25,3 +29,30 @@ describe('page slug normalization', () => {
     )
   })
 })
+
+describe('revalidatePage hook (S)', () => {
+  it('revalidates both current path and previous path when slug changes on published page', () => {
+    vi.clearAllMocks()
+    type HookArgs = Parameters<typeof revalidatePage>[0]
+    revalidatePage({
+      doc: { slug: 'gioi-thieu', _status: 'published' } as unknown as HookArgs['doc'],
+      previousDoc: { slug: 've-hana', _status: 'published' } as unknown as HookArgs['previousDoc'],
+    } as HookArgs)
+
+    expect(revalidatePath).toHaveBeenCalledWith('/gioi-thieu')
+    expect(revalidatePath).toHaveBeenCalledWith('/ve-hana')
+  })
+
+  it('revalidates root path correctly when slug is /', () => {
+    vi.clearAllMocks()
+    type HookArgs = Parameters<typeof revalidatePage>[0]
+    revalidatePage({
+      doc: { slug: '/', _status: 'published' } as unknown as HookArgs['doc'],
+      previousDoc: { slug: 'trang-chu', _status: 'published' } as unknown as HookArgs['previousDoc'],
+    } as HookArgs)
+
+    expect(revalidatePath).toHaveBeenCalledWith('/')
+    expect(revalidatePath).toHaveBeenCalledWith('/trang-chu')
+  })
+})
+

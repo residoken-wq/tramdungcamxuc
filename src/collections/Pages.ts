@@ -22,11 +22,16 @@ const normalizeSlug: CollectionBeforeValidateHook = ({ data }) => {
   return data
 }
 
-const revalidatePage: CollectionAfterChangeHook = ({ doc, previousDoc }) => {
+export const revalidatePage: CollectionAfterChangeHook = ({ doc, previousDoc }) => {
   if (doc._status === 'published' || previousDoc?._status === 'published') {
     try {
       const targetPath = doc.slug === '/' ? '/' : `/${doc.slug}`
       revalidatePath(targetPath)
+
+      if (previousDoc?.slug && previousDoc.slug !== doc.slug) {
+        const prevPath = previousDoc.slug === '/' ? '/' : `/${previousDoc.slug}`
+        revalidatePath(prevPath)
+      }
     } catch {
       // Ignore when running outside Next.js request context (e.g. CLI migrations, seeds)
     }
