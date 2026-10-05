@@ -1,4 +1,7 @@
-import React from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 
 export interface ImageTextProps {
@@ -19,8 +22,6 @@ export interface ImageTextProps {
     | 'mint-haze'
     | 'butter-cream'
     | 'deep-navy'
-    | 'bright-magenta'
-    | 'accent-pink'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -31,8 +32,6 @@ const BG_COLORS = {
   'mint-haze': 'bg-mint-haze',
   'butter-cream': 'bg-butter-cream',
   'deep-navy': 'bg-deep-navy text-white',
-  'bright-magenta': 'bg-bright-magenta text-white',
-  'accent-pink': 'bg-accent-pink text-white',
 } as const
 
 const PADDINGS = {
@@ -47,6 +46,7 @@ export function ImageText({
   titleLine1,
   titleLine2,
   content,
+  mediaId,
   imageUrl,
   imageAlt,
   buttonText,
@@ -54,9 +54,41 @@ export function ImageText({
   bgColor = 'warm-ivory',
   padding = 'md',
 }: ImageTextProps) {
-  const isDarkBg = bgColor === 'deep-navy' || bgColor === 'bright-magenta' || bgColor === 'accent-pink'
-  const textColorClass = isDarkBg ? 'text-white' : 'text-deep-navy'
-  const descColorClass = isDarkBg ? 'text-white/85' : 'text-deep-navy/80'
+  const isDeepNavy = bgColor === 'deep-navy'
+  const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
+  const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+  const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+  const descColorClass = isDeepNavy ? 'text-white/90' : 'text-deep-navy/80'
+
+  // Client-side preview in visual editor when imageUrl is not pre-rendered from server
+  const [clientImage, setClientImage] = useState<{ url: string; alt: string } | null>(null)
+
+  useEffect(() => {
+    if (!imageUrl && mediaId) {
+      let isMounted = true
+      fetch(`/api/media/${encodeURIComponent(mediaId)}`, { credentials: 'include' })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((doc) => {
+          if (
+            isMounted &&
+            doc?.url &&
+            doc?.alt &&
+            typeof doc.alt === 'string' &&
+            doc.alt.trim().length > 0
+          ) {
+            setClientImage({ url: doc.url, alt: doc.alt.trim() })
+          }
+        })
+        .catch(() => {})
+      return () => {
+        isMounted = false
+      }
+    }
+  }, [imageUrl, mediaId])
+
+  const activeUrl = imageUrl || clientImage?.url
+  const activeAlt = (imageAlt || clientImage?.alt || '').trim()
+  const hasValidImage = Boolean(activeUrl && activeAlt)
 
   const paragraphs = (content || '')
     .split(/\n\s*\n/)
@@ -66,57 +98,37 @@ export function ImageText({
   const isImageLeft = layout === 'image-left'
 
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-5xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Image Column */}
-          <div className={`${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full`}>
-            {imageUrl ? (
+        <div className={`grid grid-cols-1 ${hasValidImage ? 'md:grid-cols-2' : ''} gap-8 lg:gap-12 items-center`}>
+          {/* Image Column - only rendered if activeUrl and activeAlt are present */}
+          {hasValidImage && (
+            <div className={`${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full`}>
               <div className="overflow-hidden rounded-card border border-deep-navy/10 shadow-soft bg-white">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageUrl}
-                  alt={imageAlt || 'Hình ảnh minh họa'}
+                <Image
+                  src={activeUrl!}
+                  alt={activeAlt}
+                  width={800}
+                  height={600}
                   className="w-full h-auto object-cover max-h-[460px]"
                   loading="lazy"
+                  unoptimized={activeUrl?.startsWith('data:') || activeUrl?.startsWith('blob:')}
                 />
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center min-h-[280px] p-8 rounded-card border-2 border-dashed border-deep-navy/20 bg-soft-pink/40 text-center">
-                <svg
-                  className="w-12 h-12 text-bright-magenta/60 mb-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <p className="font-ui text-sm font-semibold text-deep-navy">
-                  [MẪU] Chưa chọn ảnh minh họa
-                </p>
-                <p className="font-ui text-xs text-deep-navy/60 mt-1 max-w-xs">
-                  Nhập mã Media ID trong bảng cài đặt bên phải (ảnh cần có mô tả alt).
-                </p>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Text Column */}
-          <div className={`${isImageLeft ? 'md:order-2' : 'md:order-1'} flex flex-col justify-center`}>
+          <div className={`${hasValidImage ? (isImageLeft ? 'md:order-2' : 'md:order-1') : 'max-w-3xl mx-auto'} flex flex-col justify-center`}>
             {seriesLabel && (
-              <span className="mb-3 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta">
+              <span className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}>
                 {seriesLabel}
               </span>
             )}
 
             <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-tight mb-4">
               <span className={textColorClass}>{titleLine1}</span>{' '}
-              {titleLine2 && <span className="text-bright-magenta">{titleLine2}</span>}
+              {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
             </h2>
 
             <div className="space-y-3 mb-6">
@@ -129,7 +141,7 @@ export function ImageText({
 
             {buttonText && buttonLink && (
               <div className="pt-2">
-                <Button href={buttonLink} variant={isDarkBg ? 'secondary' : 'primary'} size="md">
+                <Button href={buttonLink} variant={isDeepNavy ? 'secondary' : 'primary'} size="md">
                   {buttonText}
                 </Button>
               </div>
@@ -140,3 +152,4 @@ export function ImageText({
     </section>
   )
 }
+

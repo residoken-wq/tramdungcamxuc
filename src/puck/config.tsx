@@ -218,8 +218,41 @@ export const puckConfig: Config<PageComponentsProps> = {
           label: 'Nội dung văn bản (các đoạn phân tách bằng 2 lần xuống dòng)',
         },
         mediaId: {
-          type: 'text',
-          label: 'Mã định danh ảnh (Media ID - chỉ ảnh có alt hợp lệ)',
+          type: 'external',
+          label: 'Ảnh minh họa (Thư viện media)',
+          placeholder: 'Chọn ảnh từ thư viện media...',
+          showSearch: true,
+          fetchList: async ({ query }) => {
+            try {
+              const searchParam = query ? `&where[alt][like]=${encodeURIComponent(query)}` : ''
+              const res = await fetch(`/api/media?limit=50&depth=0${searchParam}`, {
+                credentials: 'include',
+              })
+              if (!res.ok) return []
+              const data = await res.json()
+              const docs = (data.docs || []).filter(
+                (doc: { alt?: string }) =>
+                  doc.alt && typeof doc.alt === 'string' && doc.alt.trim().length > 0,
+              )
+              return docs
+            } catch {
+              return []
+            }
+          },
+          mapProp: (item: { id?: string }) => item?.id || '',
+          mapRow: (item: { url?: string; thumbnailURL?: string; alt?: string; filename?: string }) => ({
+            'Hình ảnh': (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={item.url || item.thumbnailURL || ''}
+                alt={item.alt || ''}
+                style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 4 }}
+              />
+            ),
+            'Mô tả (alt)': item.alt || '',
+            'Tên file': item.filename || '',
+          }),
+          getItemSummary: (id: string) => (id ? `Media ID: ${id}` : 'Chưa chọn ảnh'),
         },
         buttonText: { type: 'text', label: 'Chữ trên nút (tùy chọn)' },
         buttonLink: { type: 'text', label: 'Đường dẫn liên kết (tùy chọn)' },

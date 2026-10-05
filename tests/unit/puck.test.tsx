@@ -161,14 +161,32 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       expect(safeContainer.textContent).toContain('<b>Đậm</b><script>alert(1)</script>')
     })
 
-    it('renders ImageText with layout, content, and image placeholder when image is absent', () => {
+    it('renders ImageText with layout, content, and omits image when image or alt is absent', () => {
       const props = puckConfig.components.ImageText.defaultProps!
-      render(<ImageText {...props} />)
+      const { container } = render(<ImageText {...props} />)
 
       expect(screen.getByText('[MẪU] DÒNG TIÊU ĐỀ 1')).toBeDefined()
       expect(screen.getByText(/Nội dung đoạn thứ nhất/)).toBeDefined()
-      expect(screen.getByText('[MẪU] Chưa chọn ảnh minh họa')).toBeDefined()
       expect(screen.getByText('[MẪU] Đọc tiếp câu chuyện')).toBeDefined()
+      // B2: Does not render image or fallback placeholder when alt/image is absent
+      expect(container.querySelector('img')).toBeNull()
+      expect(screen.queryByAltText('Hình ảnh minh họa')).toBeNull()
+      expect(screen.queryByText(/Nhập mã Media ID/)).toBeNull()
+    })
+
+    it('renders ImageText with next/image and strict alt description when provided', () => {
+      const props = puckConfig.components.ImageText.defaultProps!
+      const { container } = render(
+        <ImageText
+          {...props}
+          imageUrl="https://example.com/photo.jpg"
+          imageAlt="Hana Lương đang chia sẻ tại workshop"
+        />,
+      )
+
+      const img = container.querySelector('img')
+      expect(img).not.toBeNull()
+      expect(img?.getAttribute('alt')).toBe('Hana Lương đang chia sẻ tại workshop')
     })
 
     it('renders CTAButton with brand style, size and link', () => {
