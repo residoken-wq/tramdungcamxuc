@@ -95,3 +95,151 @@
   - Kiểm tra chuỗi kết nối `DATABASE_URI` trong `.env`.
 - **Lỗi cache Next.js / build cũ**:
   - Chạy `pnpm devsafe` để xóa thư mục `.next` và khởi động lại sạch sẽ.
+
+## Deploy bản demo trên server riêng
+
+### Chuẩn bị
+
+Dùng server Linux có Docker Engine + Docker Compose v2, Git và OpenSSL. Dự trù tối thiểu **2 CPU, 4 GB RAM, 20 GB đĩa trống** cho demo; nếu build bị hết RAM, dùng 8 GB RAM hoặc build image ở máy khác. Đây là mức dự trù, chưa phải kết quả benchmark tải. Mở cổng app đã chọn (ví dụ 3400); khi có HTTPS, chỉ cần mở 80/443 qua reverse proxy. Postgres không mở cổng ra host.
+
+Chỉ dùng dữ liệu MẪU. Các lệnh dưới đây dành cho **server demo riêng**, luôn dùng project `tdcx-demo`. Máy dev dùng chung của anh Nhân đã có Postgres tại 55432: không chạy lại compose dev và không đụng container `sop-os-mvp-*` hay `tramdungcamxuc-postgres-dev`.
+
+### Lần đầu
+
+```bash
+git clone https://github.com/residoken-wq/tramdungcamxuc.git
+cd tramdungcamxuc
+cp .env.example .env
+chmod 600 .env
+openssl rand -hex 32
+openssl rand -hex 32
+nano .env
+```
+
+Trong `.env`, điền hai chuỗi vừa sinh vào **PAYLOAD_SECRET** và **POSTGRES_PASSWORD** (mỗi biến một chuỗi khác nhau). Không dùng lại secret mẫu hay gửi chúng vào chat. Mật khẩu Postgres dùng chuỗi hex để an toàn khi ghép URL. Đặt:
+
+```dotenv
+APP_PORT=3400
+SITE_NOINDEX=true
+STYLEGUIDE_PUBLIC=true
+```
+
+`STYLEGUIDE_PUBLIC=true` cho khách xem `/styleguide`; để trống nếu không cần. Compose tự đặt `DATABASE_URI` tới Postgres nội bộ, không dùng URL DB local trong `.env`. Bản compose demo lưu media trên volume local, không chuyển tiếp cấu hình S3. `SITE_NOINDEX` và `STYLEGUIDE_PUBLIC` được đọc lúc chạy; đổi chúng rồi chạy `up -d` để tạo lại app, không chỉ `restart`.
+
+```bash
+docker compose -p tdcx-demo -f docker-compose.prod.yml up -d --build < /dev/null
+docker compose -p tdcx-demo -f docker-compose.prod.yml ps
+docker compose -p tdcx-demo -f docker-compose.prod.yml logs --tail=80 app
+curl -fsS http://127.0.0.1:3400/api/users/init
+curl -sI http://127.0.0.1:3400/admin
+curl -fsS http://127.0.0.1:3400/robots.txt
+```
+
+Kết quả mong đợi: cả app và postgres thành `healthy` (lần đầu chờ khoảng 1–2 phút sau build); API trả `initialized: false`; header có `X-Robots-Tag: noindex, nofollow`; robots có `User-Agent: *` và `Disallow: /`. Healthcheck app gọi Payload, tự kích hoạt `prodMigrations` trên DB trống. **Không chạy migrate bằng tay trong container.**
+
+Mở `http://IP-SERVER:3400/admin`, tạo tài khoản quản trị đầu tiên cho chủ dự án. Schema hiện tại chưa có dropdown vai trò `owner` (phân quyền chi tiết thuộc T0-07); tài khoản đầu tiên hiện là admin quản trị. Sau đó thử tải một ảnh có mô tả ở **Thư viện ảnh và tài liệu**. Không để form tạo admin đầu tiên mở công khai lâu; có thể dùng SSH tunnel hoặc giới hạn IP trong lúc thiết lập.
+
+### Cập nhật
+
+Làm bản sao lưu theo phần bên dưới **trước mỗi lần cập nhật**, nhất là bản có migration. Giữ lại mã commit cũ:
+
+```bash
+git rev-parse HEAD > previous-release.txt
+git pull --ff-only < /dev/null
+docker compose -p tdcx-demo -f docker-compose.prod.yml up -d --build < /dev/null
+docker compose -p tdcx-demo -f docker-compose.prod.yml ps
+curl -fsS http://127.0.0.1:3400/api/users/init
+```
+
+Mong đợi: hai service healthy; `initialized: true` khi đã có admin. Đăng nhập lại, mở ảnh đã upload và kiểm tra trang đã xuất bản. `up` không xóa volume. Muốn dừng toàn bộ rồi khởi động lại: dùng `down` **không có `-v`**, sau đó `up -d`.
+
+### Backup DB và media cùng thời điểm
+
+Tạm dừng app để không có upload/ghi DB chen giữa hai bản sao. Lưu `.env` ở nơi bảo mật riêng; bản DB chứa tài khoản nhưng không thay thế secret cấu hình. Thư mục backup phải nằm ngoài Git và được chép sang máy/lưu trữ khác sau khi hoàn tất.
+
+```bash
+mkdir -p ../tdcx-backups
+chmod 700 ../tdcx-backups
+export TDCX_BACKUP_DIR="$(cd ../tdcx-backups && pwd)/$(date +%Y%m%d-%H%M%S)"
+mkdir -m 700 "$TDCX_BACKUP_DIR"
+git rev-parse HEAD > "$TDCX_BACKUP_DIR/commit.txt"
+docker compose -p tdcx-demo -f docker-compose.prod.yml stop app
+docker compose -p tdcx-demo -f docker-compose.prod.yml exec -T postgres pg_dump -U postgres -d tramdungcamxuc -Fc > "$TDCX_BACKUP_DIR/database.dump"
+docker compose -p tdcx-demo -f docker-compose.prod.yml run --rm --no-deps -T --entrypoint tar app -C /app/media -czf - . > "$TDCX_BACKUP_DIR/media.tar.gz"
+docker compose -p tdcx-demo -f docker-compose.prod.yml exec -T postgres pg_restore --list < "$TDCX_BACKUP_DIR/database.dump" > "$TDCX_BACKUP_DIR/database-list.txt"
+tar -tzf "$TDCX_BACKUP_DIR/media.tar.gz"
+sha256sum "$TDCX_BACKUP_DIR/database.dump" "$TDCX_BACKUP_DIR/media.tar.gz" > "$TDCX_BACKUP_DIR/SHA256SUMS"
+docker compose -p tdcx-demo -f docker-compose.prod.yml start app
+```
+
+Mong đợi: `database-list.txt` có bảng `users`, `media`, `payload_migrations`; archive media có các ảnh đã tải. Nếu một lệnh backup lỗi, giữ app dừng, xử lý lỗi và làm lại trước khi cập nhật. Mỗi ngày giữ một bản, tối thiểu 14 ngày; diễn tập restore định kỳ.
+
+### Khôi phục backup / rollback
+
+**Các lệnh restore dưới đây xóa dữ liệu demo hiện tại.** Chỉ chạy trên đúng project demo cần phục hồi. Đặt `TDCX_BACKUP_DIR` về thư mục backup muốn dùng, kiểm checksum trước. Nếu rollback do bản mới có migration, phải phục hồi **cả DB, media và commit cũ** cùng đợt; chỉ checkout code cũ không đảo migration.
+
+```bash
+export TDCX_BACKUP_DIR=/duong-dan-tuyet-doi/tdcx-backups/THOI-DIEM-BACKUP
+sha256sum -c "$TDCX_BACKUP_DIR/SHA256SUMS"
+docker compose -p tdcx-demo -f docker-compose.prod.yml stop app
+git switch --detach "$(cat "$TDCX_BACKUP_DIR/commit.txt")"
+docker compose -p tdcx-demo -f docker-compose.prod.yml build app < /dev/null
+docker compose -p tdcx-demo -f docker-compose.prod.yml exec -T postgres psql -U postgres -d postgres -P pager=off -v ON_ERROR_STOP=1 -c 'DROP DATABASE tramdungcamxuc WITH (FORCE)' -c 'CREATE DATABASE tramdungcamxuc'
+docker compose -p tdcx-demo -f docker-compose.prod.yml exec -T postgres pg_restore -U postgres -d tramdungcamxuc --no-owner --no-privileges --exit-on-error < "$TDCX_BACKUP_DIR/database.dump"
+docker compose -p tdcx-demo -f docker-compose.prod.yml run --rm --no-deps -T --entrypoint sh app -c 'find /app/media -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +'
+docker compose -p tdcx-demo -f docker-compose.prod.yml run --rm --no-deps -T --entrypoint tar app -C /app/media -xzf - < "$TDCX_BACKUP_DIR/media.tar.gz"
+docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
+curl -fsS http://127.0.0.1:3400/api/users/init
+```
+
+Mong đợi: `initialized: true`; đăng nhập bằng tài khoản trước backup, thấy nội dung và ảnh cũ. Chờ app healthy trước khi mở lại cho khách. Nếu bản cập nhật **không thay schema hay dữ liệu**, có thể rollback chỉ code bằng `git switch --detach "$(cat previous-release.txt)"`, rồi `up -d --build`; vẫn giữ backup trước khi thao tác. Muốn trở lại bản mới: `git switch main`, `git pull --ff-only`, rồi làm quy trình cập nhật.
+
+### HTTPS
+
+Có thể đặt Caddy trên host (hoặc Nginx + Let's Encrypt), trỏ DNS tên miền demo về server. Với Caddy, thay tên miền thật vào cấu hình:
+
+```caddyfile
+demo.example.com {
+    reverse_proxy 127.0.0.1:3400
+}
+```
+
+Mở 80/443 và đặt `APP_PORT=127.0.0.1:3400` trong `.env` để cổng app chỉ lắng nghe localhost, rồi `up -d`. Khi dùng Nginx, chuyển tiếp đúng Host/X-Forwarded-Proto và cấu hình giới hạn upload phù hợp. Dùng HTTPS trước khi cho khách đăng nhập. Noindex không phải cơ chế bảo vệ truy cập.
+
+### Không dùng Docker
+
+Cài Node 22, Corepack/pnpm đúng `packageManager` trong `package.json`, và Postgres 18 độc lập. `.env` cần `DATABASE_URI` thật, `PAYLOAD_SECRET` riêng, `SITE_NOINDEX=true`; **không đặt `NEXT_OUTPUT=standalone`**. `NEXT_OUTPUT` chỉ dành cho build Docker; chạy local/CI vẫn dùng `next start` bình thường.
+
+```bash
+corepack enable
+pnpm install --frozen-lockfile < /dev/null
+pnpm migrate < /dev/null
+pnpm build < /dev/null
+```
+
+Chạy lâu dài bằng systemd, ví dụ `/etc/systemd/system/tdcx-demo.service` (sửa `User`, thư mục và đường dẫn pnpm theo máy):
+
+```ini
+[Unit]
+Description=Tram Dung Cam Xuc demo
+After=network.target
+
+[Service]
+Type=simple
+User=tdcx
+WorkingDirectory=/srv/tramdungcamxuc
+EnvironmentFile=/srv/tramdungcamxuc/.env
+Environment=NODE_ENV=production
+Environment=PORT=3400
+ExecStart=/usr/local/bin/pnpm start
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Sau khi lưu: `sudo systemctl daemon-reload`, `sudo systemctl enable --now tdcx-demo`, kiểm tra `sudo systemctl status tdcx-demo --no-pager`. Có thể dùng PM2 tương đương. Backup DB bằng pg_dump và thư mục `media/`, giữ thư mục này khi cập nhật code.
+
+### Kiểm thử local
+
+`pnpm test` **cần Postgres đang chạy**: test Local API T0-06 tự áp migration trên DB test đã cấu hình. Trên máy Codex giữ nguyên `.env` (DB `tramdungcamxuc_codex`, Postgres 55432), chạy e2e với `PORT=3200`; không dùng DB demo để chạy test bootstrap. Compose dev đọc `${POSTGRES_PORT:-5432}`; máy mới nếu đổi cổng phải sửa cùng cổng trong `DATABASE_URI`.

@@ -1,0 +1,50 @@
+services:
+  app:
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Generate PAYLOAD_SECRET with openssl rand -hex 32}
+      DATABASE_URI: postgres://postgres:${POSTGRES_PASSWORD:?Set a hex POSTGRES_PASSWORD}@postgres:5432/tramdungcamxuc
+      SITE_NOINDEX: ${SITE_NOINDEX:-}
+      STYLEGUIDE_PUBLIC: ${STYLEGUIDE_PUBLIC:-}
+    ports:
+      - '${APP_PORT:-3000}:3000'
+    volumes:
+      - media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/users/init').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a hex POSTGRES_PASSWORD}
+      POSTGRES_DB: tramdungcamxuc
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d tramdungcamxuc']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  pgdata:
+  media:

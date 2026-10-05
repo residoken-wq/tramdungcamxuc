@@ -63,3 +63,5 @@ pnpm dev
 - Bảng giao việc & trạng thái task: `docs/tasks/README.md`
 - Quyết định kiến trúc & phiên bản: `docs/DECISIONS.md`
 - Hướng dẫn vận hành chi tiết: `docs/RUNBOOK.md`
+
+Deploy demo, backup/restore và cấu hình cổng Postgres dev (`POSTGRES_PORT`, mặc định 5432): xem [RUNBOOK – Deploy bản demo trên server riêng](docs/RUNBOOK.md#deploy-bản-demo-trên-server-riêng).
