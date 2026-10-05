@@ -260,6 +260,24 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
+## T0-05b – Sửa sau nghiệm thu T0-05
+
+**Phụ thuộc**: T0-05 · **Giao cho: Antigravity** · **Làm trên chính branch** `task/T0-05-ui-composites`, cùng PR #6. Chi tiết và lý do: `docs/tasks/reviews/T0-05.md`.
+
+**Phạm vi**: sửa B1–B4 và S1–S5 trong file review; thêm 4 test ở mục "Test phải thêm". Ranh giới file giữ như T0-05.
+
+**Không chạy e2e** – Planning chạy khi nghiệm thu. Chỉ chạy `pnpm lint`, `pnpm typecheck`, `pnpm test`.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Trang server component chỉ chứa `<Navbar …/>`, `<LeadForm …/>`, `<EmotionPicker/>`, `<ProgressGrid/>`, `<Footer/>` render 200 (Planning kiểm).
+- [ ] `grep -rn "DEFAULT_\|tramdungcamxuc.com\|font-serif\|xs:\|h-18" src/components` không còn kết quả.
+- [ ] Footer không truyền dữ liệu → không hiện thông tin người bán / mạng xã hội / tagline.
+- [ ] Mobile 375 và 768: nút quiz hiện đủ nhãn (hoặc `shortLabel` do props truyền), cao ≥ 44px, không rớt dòng.
+- [ ] Unit mới xanh; lint, typecheck xanh; `git status` sạch; CI xanh trên PR #6.
+
+---
+
 ## T0-06 – Collections nội dung, globals, media
 
 **Phụ thuộc**: T0-01 · **Song song được với**: T0-03..05 (khác thư mục)
