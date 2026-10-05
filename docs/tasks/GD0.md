@@ -467,6 +467,7 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
    - gợi ý đặt reverse proxy có HTTPS (Caddy hoặc Nginx + Let's Encrypt), chỉ hướng dẫn, không bắt buộc trong compose;
    - phương án không dùng Docker: Node 22 + `pnpm build` + `pnpm start` + process manager (pm2/systemd), mô tả ngắn.
 8b. RUNBOOK ghi rõ `pnpm test` cần Postgres đang chạy (test Local API của T0-06 tự áp migration).
+8c. CI: sửa test chập chờn `content-admin` (xem ghi chú cuối `docs/tasks/reviews/T0-06.md`) – làm nóng server trước e2e hoặc tăng timeout `first-register`.
 9. CI: thêm job build Docker image (không push lên registry) để Dockerfile không bị hỏng âm thầm.
 10. Ghi phiên bản image Node/Postgres và lý do vào mục `## T0-10` cuối `docs/DECISIONS.md`.
 
