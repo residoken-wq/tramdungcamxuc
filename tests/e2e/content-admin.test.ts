@@ -19,10 +19,15 @@ test('first administrator sees all five content groups', async ({ page }, testIn
 
   try {
     const init = await page.request.get('/api/users/init')
-    expect(
-      await init.json(),
-      'Run this bootstrap test on a migrated DB without admin users.',
-    ).toMatchObject({ initialized: false })
+    expect(init.ok()).toBe(true)
+    const initData = await init.json()
+    test.skip(
+      !process.env.CI && initData.initialized === true,
+      'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
+    )
+    expect(initData, 'Run this bootstrap test on a migrated DB without admin users.').toMatchObject(
+      { initialized: false },
+    )
     await page.goto('/admin/create-first-user')
     await page.locator('#field-email').fill(email)
     await page.locator('#field-password').fill(password)
