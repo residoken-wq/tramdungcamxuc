@@ -139,6 +139,27 @@ Kết quả mong đợi: cả app và postgres thành `healthy` (lần đầu ch
 
 Mở `http://IP-SERVER:3400/admin`, tạo tài khoản quản trị đầu tiên cho chủ dự án. Schema hiện tại chưa có dropdown vai trò `owner` (phân quyền chi tiết thuộc T0-07); tài khoản đầu tiên hiện là admin quản trị. Sau đó thử tải một ảnh có mô tả ở **Thư viện ảnh và tài liệu**. Không để form tạo admin đầu tiên mở công khai lâu; có thể dùng SSH tunnel hoặc giới hạn IP trong lúc thiết lập.
 
+#### Lỗi `container tdcx-demo-postgres-1 is unhealthy`
+
+Healthcheck Postgres cho tối đa khoảng 3 phút (`start_period` 60s + 30 lần × 5s) và kiểm tra qua TCP `127.0.0.1`, nên chỉ báo healthy khi server thật đã chạy, không phải server tạm của initdb. Nếu vẫn unhealthy, xem log trước khi sửa gì:
+
+```bash
+docker compose -p tdcx-demo -f docker-compose.prod.yml ps -a
+docker compose -p tdcx-demo -f docker-compose.prod.yml logs --tail=100 postgres
+docker inspect --format '{{json .State.Health}}' tdcx-demo-postgres-1
+docker version --format '{{.Server.Version}}'
+```
+
+| Log thấy                                                                                   | Nguyên nhân và cách xử lý                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `database system is ready to accept connections`, rồi container chuyển healthy sau ít phút | Máy chậm, lần đầu khởi tạo lâu. Chạy lại `up -d` là app lên.                                                                                                                                       |
+| `Operation not permitted`, `clone3`, `faccessat2`, initdb dừng ngay                        | Docker/libseccomp trên host quá cũ cho image Postgres 18 (Debian trixie). Nâng Docker Engine lên bản mới (≥ 24) theo docs chính thức, rồi chạy lại.                                                |
+| `could not create shared memory segment` / `No space left on device`                       | Hết đĩa hoặc `/dev/shm` quá nhỏ (VPS OpenVZ/LXC). Kiểm tra `df -h`; giải phóng đĩa hoặc đổi sang VPS KVM.                                                                                          |
+| `in 18+, these Docker images are configured to store database data in a format...`         | Volume `pgdata` còn dữ liệu cũ của Postgres 16/17 hoặc mount sai chỗ. Nếu là server demo chỉ có dữ liệu MẪU: `docker compose -p tdcx-demo -f docker-compose.prod.yml down -v` rồi `up -d --build`. |
+| `password authentication failed` / container restart liên tục sau khi đổi mật khẩu         | Volume đã khởi tạo với `POSTGRES_PASSWORD` cũ; đổi `.env` không đổi mật khẩu trong DB. Demo chỉ có MẪU thì `down -v` như trên, nếu không thì đặt lại `.env` về mật khẩu cũ.                        |
+
+`down -v` **xóa sạch DB và media của project `tdcx-demo`**: chỉ dùng trên server demo chưa có dữ liệu thật, và backup trước nếu không chắc. Không chạy trên máy dev dùng chung.
+
 ### Nạp dữ liệu MẪU cho buổi demo
 
 Chạy **sau** khi app đã `healthy`. Lệnh chỉ tạo/cập nhật bản ghi đánh dấu MẪU (`isSample`), không đụng dữ liệu thật, chạy nhiều lần không nhân đôi:
