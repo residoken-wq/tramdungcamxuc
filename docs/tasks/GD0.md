@@ -278,6 +278,20 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
+## T0-05c – Sửa sau nghiệm thu lại T0-05b
+
+**Giao cho: Antigravity** · Cùng branch `task/T0-05-ui-composites`, PR #6. Chi tiết: `docs/tasks/reviews/T0-05.md` phần "Nghiệm thu lại T0-05b".
+
+**Phạm vi**: B5 (thanh menu tràn ngang 375px) + giải xung đột `docs/DECISIONS.md` với `main`. Được sửa thêm `src/components/brand/Logo.tsx` cho B5. Không chạy e2e (Planning chạy).
+
+**Tiêu chí nghiệm thu**
+
+- [ ] 375px, nhãn đầy đủ, không `shortLabel`: không tràn ngang, nút ☰ trong màn hình, nút quiz cao ≥ 44px (Planning đo).
+- [ ] PR #6 hết xung đột; DECISIONS giữ cả mục T0-05 và T0-06.
+- [ ] Lint, typecheck, unit xanh; CI xanh trên PR #6.
+
+---
+
 ## T0-06 – Collections nội dung, globals, media
 
 **Phụ thuộc**: T0-01 · **Song song được với**: T0-03..05 (khác thư mục)
@@ -333,7 +347,7 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ## T0-06b – Sửa sau nghiệm thu T0-06
 
-**Phụ thuộc**: T0-06 · **Giao cho: Codex** · **Làm trên chính branch** `task/T0-06-content-collections`, cùng PR #7. Chi tiết: `docs/tasks/reviews/T0-06.md`.
+**Phụ thuộc**: T0-06 · **Giao cho: Codex** · Làm trên branch `task/T0-06-content-collections`. **PR #7 đã bị merge trước khi có T0-06b (05/10 12:50)** → mở **PR mới** từ cùng branch sau khi `git merge origin/main`. Chi tiết: `docs/tasks/reviews/T0-06.md`.
 
 **Phạm vi**: sửa B1 (chuẩn hóa slug trang) và S1–S4. Không đổi schema (không cần migration); nếu buộc phải đổi schema thì dừng và hỏi. Ranh giới file như T0-06.
 

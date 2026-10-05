@@ -66,6 +66,7 @@ Quy trình:
 | **Song song được với** | Có thể giao cho một agent khác cùng lúc mà ít rủi ro xung đột.                                                                        |
 
 - **Chỉ merge PR khi Planning đã ghi "ĐẠT" trong `docs/tasks/reviews/<mã>.md`.** PR luôn có base = `main`.
+- **Agent không bao giờ chạy `gh pr merge`** hay bấm merge, kể cả khi CI xanh. Chỉ Planning (hoặc anh Nhân) merge sau khi có ĐẠT.
 - Branch: `task/<mã>-<slug>`. Commit kiểu `feat(scope): ...` tiếng Anh, nhỏ.
 - Mỗi task phải để repo ở trạng thái build được và test xanh.
 - Thay đổi schema Payload phải kèm migration (`payload migrate:create`), không dùng `push` trên DB preview/production.
@@ -87,9 +88,10 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-04 | UI primitives                                         |          | T0-03b               | Xong – PR #5 ([review](reviews/T0-04.md)) |
 | T0-04b | Sửa sau nghiệm thu T0-04 (Modal cướp focus, PriceTag tương phản) | | T0-04 | Đạt (05/10) |
 | T0-05 | UI composites                                         |          | T0-04b (đã merge)    | Chưa đạt – PR #6 ([review](reviews/T0-05.md)) |
-| T0-05b | Sửa sau nghiệm thu T0-05 ('use client', dữ liệu bịa, font, nút quiz mobile) | | T0-05 | Sẵn sàng – **Antigravity** |
-| T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Chưa đạt (nhẹ) – PR #7 ([review](reviews/T0-06.md)) |
-| T0-06b | Sửa sau nghiệm thu T0-06 (chuẩn hóa slug trang, so ngày in, vị trí ảnh, skip e2e trên DB dev) | | T0-06 | Sẵn sàng – **Codex** |
+| T0-05b | Sửa sau nghiệm thu T0-05 ('use client', dữ liệu bịa, font, nút quiz mobile) | | T0-05 | Đạt phần lớn, còn B5 |
+| T0-05c | Thanh menu tràn ngang 375px + giải xung đột DECISIONS | | T0-05b | Sẵn sàng – **Antigravity** |
+| T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Đã merge (PR #7, **trước khi có T0-06b**) ([review](reviews/T0-06.md)) |
+| T0-06b | Sửa sau nghiệm thu T0-06 (chuẩn hóa slug trang, so ngày in, vị trí ảnh, skip e2e trên DB dev) | | T0-06 | Đang làm – **Codex**, mở PR mới |
 | T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Chưa mở    |
 | T0-08 | Seed dữ liệu MẪU                                      |          | T0-07               | Chưa mở    |
 | T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06        | Chưa mở    |
