@@ -360,6 +360,29 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
+## T0-06c – Test ngày in thẻ EQ phụ thuộc múi giờ máy
+
+**Phụ thuộc**: T0-06b · Branch mới `task/T0-06c-timezone-tests` từ `main`. Phát hiện 05/10 khi Planning chạy test trên máy dev thứ hai (múi giờ `Asia/Bangkok`, UTC+7).
+
+**Hiện trạng**: `tests/unit/content-collections.test.ts` › "locks printed QR slugs…" fail trên máy UTC+7, qua trên CI (UTC). Với input chỉ có ngày `'2026-10-05'`, field `printedAt` (`pickerAppearance: 'dayAndTime'`) lưu nửa đêm **theo giờ máy chủ**: máy UTC+7 lưu `2026-10-04T17:00:00Z`, test chờ `2026-10-05T00:00:00Z` → lệch đúng 7 giờ. Production (Vercel) chạy UTC nên dev và production đang cho kết quả khác nhau.
+
+**Phạm vi**
+
+1. Cố định múi giờ khi chạy test bằng UTC (khớp Vercel/CI): đặt trong cấu hình Vitest (`globalSetup` / `env`) và Playwright `webServer` – không phụ thuộc biến môi trường của từng máy.
+2. Ghi vào `docs/DECISIONS.md`: máy chủ chạy UTC; mọi tính toán "ngày" nghiệp vụ (trial 21 ngày, tracker, nhắc email, ngày in) phải quy đổi tường minh theo `Asia/Ho_Chi_Minh` (GAPS B9), không dựa vào múi giờ máy.
+3. Thêm 1 unit test chứng minh test không còn phụ thuộc máy: chạy logic so sánh `printedAt` với `process.env.TZ` = `Asia/Ho_Chi_Minh` và `UTC` cho cùng kết quả (hoặc test con chạy trong process có TZ khác).
+4. Cập nhật `README.md` / `RUNBOOK.md`: ghi chú múi giờ khi chạy test local.
+
+**Không làm**: đổi kiểu field `printedAt`, đổi dữ liệu đã lưu.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] `pnpm test` xanh trên máy đặt múi giờ UTC+7 (Planning chạy lại trên máy dev này) và trên CI.
+- [ ] DECISIONS có quyết định múi giờ.
+- [ ] `git status` sạch sau khi chạy test.
+
+---
+
 ## T0-07 – Collections người dùng, giao dịch và phân quyền **[REVIEW]**
 
 **Phụ thuộc**: T0-06

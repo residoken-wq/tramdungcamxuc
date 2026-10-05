@@ -92,6 +92,7 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-05c | Thanh menu tràn ngang 375px + giải xung đột DECISIONS | | T0-05b | Đạt |
 | T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Đã merge (PR #7, **trước khi có T0-06b**) ([review](reviews/T0-06.md)) |
 | T0-06b | Sửa sau nghiệm thu T0-06 (chuẩn hóa slug trang, so ngày in, vị trí ảnh, skip e2e trên DB dev) | | T0-06 | Xong – PR #8 ([review](reviews/T0-06.md)); Planning sửa thêm test hydrate `2b08c1f` |
+| T0-06c | Test ngày in thẻ EQ phụ thuộc múi giờ máy (fail trên máy UTC+7) | | T0-06b | Sẵn sàng |
 | T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Xong – PR #13 ([review](reviews/T0-07.md)); chờ IT đọc lại REVIEW-REQUIRED |
 | T0-08 | Seed dữ liệu MẪU                                      |          | T0-07               | Xong – PR #12 ([review](reviews/T0-08.md)) |
 | T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06b       | Xong – PR #9 ([review](reviews/T0-09.md)) |
