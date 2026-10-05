@@ -232,3 +232,12 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
 - Branch T0-10 tạo từ `d2d4309` (trước khi PR #9 merge), sau đó gộp `main` có Puck 0.23.0 + route `/builder`; ảnh Docker được build và kiểm lại sau khi gộp.
 - Sau khi gộp PR #9, `pnpm build` trong Docker lỗi khi prerender `/` ("missing secret key") vì trang chủ đọc CMS mà build Docker cố ý không có DB/secret. Trang `/` và `[...slug]` đặt `export const dynamic = 'force-dynamic'` (cùng cách `/styleguide`), có unit test chặn tái phạm. Khi bật Cache Components sau này phải chuyển sang `await connection()`.
 - Tài liệu đã đối chiếu: [Payload deployment tại tag v3.90.2](https://github.com/payloadcms/payload/blob/v3.90.2/docs/production/deployment.mdx), [prodMigrations](https://payloadcms.com/docs/database/migrations#running-migrations-in-production), docs Next 16.3.3 cài trong `node_modules/next/dist/docs/` (`output`, `proxy`, `robots`, `self-hosting`), [Postgres official image](https://hub.docker.com/_/postgres).
+
+## T0-08
+
+- `pnpm seed` = `payload run seed/index.ts`. Upsert theo khóa tự nhiên (slug / code / statement / name / title); chỉ tạo hoặc cập nhật bản ghi `isSample = true`, gặp bản ghi thật cùng khóa thì bỏ qua và đếm `skippedReal`. Không xóa gì. Global `navigation` / `siteSettings` chỉ điền khi đang trống.
+- Từ chối khi `NODE_ENV=production` nếu thiếu `SEED_ALLOW_PROD=true` (`seed/guard.ts`; `payload run` không chuyển tham số dòng lệnh vào script nên không dùng được `--allow-prod`). Docker demo chạy seed qua service `seed` (profile `tools`, stage `builder` có mã nguồn) vì image runtime standalone không có mã nguồn.
+- Dữ liệu: 9 sản phẩm + 3 gói Growth Mirror theo danh mục 13 offer (file Planning) và `Growth_Mirror_Pricing_Calculator.xlsx` / AGENTS.md; Growth Mirror + Thinking Mirror là `services`, 2 chương trình B2B là `programs` (`consult`); "Đọc sách cùng bạn" là 2 `posts`. Habit Tracker / EQ Buddy số `coming_soon` (GĐ 2–3 chưa có app). Gói và phiên trải nghiệm không có nút mua trực tiếp (gói `consult`).
+- **Placeholder do thiếu file nguồn** (file Excel Habit Hack chưa có trong `docs/sources/`): 16 câu chẩn đoán, 11 kỹ thuật, 20 bài học / 4 module, 3 thẻ EQ, 3 testimonial (`consent = false`, giữ nháp), nội dung 6 trang pháp lý để trống. Hero trang chủ dùng nguyên văn copy trong AGENTS.md 8.1; mọi chữ khác bắt đầu `[MẪU]`.
+- 5 trang Puck seed: `/`, `ve-hana`, `coaching`, `coaching/growth-mirror`, `doanh-nghiep` (đúng danh sách AGENTS.md mục 7), khối `version: 1`.
+
