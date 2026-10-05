@@ -260,6 +260,24 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ---
 
+## T0-05b – Sửa sau nghiệm thu T0-05
+
+**Phụ thuộc**: T0-05 · **Giao cho: Antigravity** · **Làm trên chính branch** `task/T0-05-ui-composites`, cùng PR #6. Chi tiết và lý do: `docs/tasks/reviews/T0-05.md`.
+
+**Phạm vi**: sửa B1–B4 và S1–S5 trong file review; thêm 4 test ở mục "Test phải thêm". Ranh giới file giữ như T0-05.
+
+**Không chạy e2e** – Planning chạy khi nghiệm thu. Chỉ chạy `pnpm lint`, `pnpm typecheck`, `pnpm test`.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Trang server component chỉ chứa `<Navbar …/>`, `<LeadForm …/>`, `<EmotionPicker/>`, `<ProgressGrid/>`, `<Footer/>` render 200 (Planning kiểm).
+- [ ] `grep -rn "DEFAULT_\|tramdungcamxuc.com\|font-serif\|xs:\|h-18" src/components` không còn kết quả.
+- [ ] Footer không truyền dữ liệu → không hiện thông tin người bán / mạng xã hội / tagline.
+- [ ] Mobile 375 và 768: nút quiz hiện đủ nhãn (hoặc `shortLabel` do props truyền), cao ≥ 44px, không rớt dòng.
+- [ ] Unit mới xanh; lint, typecheck xanh; `git status` sạch; CI xanh trên PR #6.
+
+---
+
 ## T0-06 – Collections nội dung, globals, media
 
 **Phụ thuộc**: T0-01 · **Song song được với**: T0-03..05 (khác thư mục)
@@ -310,6 +328,21 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 11. Một migration cho toàn bộ schema T0-06 (`pnpm migrate:create content_collections`); chạy được trên DB mới và trên DB đang có migration `initial`.
 
 **Test bổ sung**: `tests/unit/pricing.test.ts` (thuần); test Local API cho chỉ đọc giá trị gói, khóa `qrSlug`, testimonial thiếu consent, media thiếu alt (chạy với Postgres như CI); e2e: tạo user đầu tiên → sidebar admin có đủ 5 nhóm (Nội dung / Bán hàng / Khóa học / EQ Buddy / Hệ thống).
+
+---
+
+## T0-06b – Sửa sau nghiệm thu T0-06
+
+**Phụ thuộc**: T0-06 · **Giao cho: Codex** · **Làm trên chính branch** `task/T0-06-content-collections`, cùng PR #7. Chi tiết: `docs/tasks/reviews/T0-06.md`.
+
+**Phạm vi**: sửa B1 (chuẩn hóa slug trang) và S1–S4. Không đổi schema (không cần migration); nếu buộc phải đổi schema thì dừng và hỏi. Ranh giới file như T0-06.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Tạo trang với `ve-hana`, `/ve-hana`, `ve-hana/` → chỉ một bản ghi `ve-hana` tồn tại (các lần sau báo trùng); `a//b` bị chặn với lỗi tiếng Việt; `/` vẫn là trang chủ.
+- [ ] Gửi lại cùng `printedAt` khác định dạng → lưu được; đổi/xóa ngày in → lỗi gắn đúng trường `printedAt`.
+- [ ] E2E trên DB dev đã có admin → skip có lý do (không đỏ); trên CI vẫn chạy.
+- [ ] Lint, typecheck, unit, e2e xanh; `git status` sạch; CI xanh trên PR #7.
 
 ---
 
@@ -396,7 +429,7 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 ## T0-10 – Đóng gói Docker để tự deploy bản demo
 
-**Phụ thuộc**: T0-01 · **Giao cho: Codex, ngay sau T0-06** (cùng sửa `.env.example`, nên để một agent làm liên tiếp) · Không cần tài khoản IT.
+**Phụ thuộc**: T0-06b (đã merge) · **Giao cho: Codex, ngay sau T0-06b** (cùng sửa `.env.example`, nên để một agent làm liên tiếp) · Không cần tài khoản IT.
 **Quyết định 05/10**: anh Nhân tự pull repo từ GitHub và deploy lên cloud hosting riêng để **demo cho khách hàng**. Bản demo này thay thế "preview" trong cổng GĐ 0. Hạ tầng production (Vercel + Neon + R2) chuyển sang **T0-10b**, không chặn GĐ 0.
 
 **Hiện trạng**: `Dockerfile` là bản mẫu của Next.js nhưng **chưa chạy được**: `next.config.ts` chưa có `output: 'standalone'`, không có volume cho media, không có hướng dẫn migrate, dùng `node:22.17.0-alpine` chưa được ghi trong DECISIONS.
@@ -419,6 +452,7 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
    - backup / khôi phục DB bằng `pg_dump` / `pg_restore` (có lệnh cụ thể) và backup volume media;
    - gợi ý đặt reverse proxy có HTTPS (Caddy hoặc Nginx + Let's Encrypt), chỉ hướng dẫn, không bắt buộc trong compose;
    - phương án không dùng Docker: Node 22 + `pnpm build` + `pnpm start` + process manager (pm2/systemd), mô tả ngắn.
+8b. RUNBOOK ghi rõ `pnpm test` cần Postgres đang chạy (test Local API của T0-06 tự áp migration).
 9. CI: thêm job build Docker image (không push lên registry) để Dockerfile không bị hỏng âm thầm.
 10. Ghi phiên bản image Node/Postgres và lý do vào mục `## T0-10` cuối `docs/DECISIONS.md`.
 
