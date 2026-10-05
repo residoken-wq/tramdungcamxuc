@@ -473,6 +473,22 @@ Thư mục: `src/components/site/` (ProductCard, TestimonialCard, LeadForm, Navb
 
 **Test**: unit render từng khối với props `[MẪU]` (snapshot hoặc assert nội dung); unit server action từ chối khi không có user. E2E **viết nhưng không chạy** (Planning chạy): (a) chưa đăng nhập vào URL editor → chuyển trang login; (b) kéo Hero vào trang trống → sửa tiêu đề → Xuất bản → trang công khai hiện tiêu đề mới; (c) sửa tiếp → Lưu nháp → trang công khai vẫn tiêu đề cũ.
 
+## T0-09b – Sửa sau nghiệm thu T0-09
+
+**Giao cho: Antigravity** · Cùng branch `task/T0-09-puck-editor`. Chi tiết: `docs/tasks/reviews/T0-09.md` phần "Nghiệm thu T0-09 (phần chính)". Ranh giới file như T0-09, thêm `src/puck/resolve.server.ts`, `src/puck/migrations/**`, `src/lib/safe-href.ts`, `src/components/site/HeroTwoEntries.tsx` / `ImageText.tsx` / `RichText.tsx`.
+
+**Tiêu chí nghiệm thu** (Planning chạy e2e)
+
+- [ ] `src/puck/config.tsx` không import `payload` / `@/payload.config` / `next/cache` / `next/headers` (có unit test).
+- [ ] Chưa đăng nhập vào `/builder/<id>` → trang login, đăng nhập xong về đúng editor; slug không tồn tại → 404.
+- [ ] Chèn ảnh bằng danh sách chọn (không gõ ID); `puckData` chỉ chứa `id` media.
+- [ ] Không còn nền `bright-magenta` / `accent-pink`; nền `deep-navy` đọc rõ mọi dòng chữ.
+- [ ] `safeHref` chặn `javascript:` / `data:` / `//…` (có unit test).
+- [ ] 5 khối có `version: 1`; có `src/puck/migrations/`.
+- [ ] Toàn bộ e2e xanh (Planning chạy); PR đã mở; CI xanh.
+
+---
+
 ## T0-10 – Đóng gói Docker để tự deploy bản demo
 
 **Phụ thuộc**: T0-06b (đã merge) · **Giao cho: Codex, ngay sau T0-06b** (cùng sửa `.env.example`, nên để một agent làm liên tiếp) · Không cần tài khoản IT.
