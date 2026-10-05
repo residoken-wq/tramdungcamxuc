@@ -22,8 +22,6 @@ export interface HeroTwoEntriesProps {
     | 'mint-haze'
     | 'butter-cream'
     | 'deep-navy'
-    | 'bright-magenta'
-    | 'accent-pink'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -34,8 +32,6 @@ const BG_COLORS = {
   'mint-haze': 'bg-mint-haze',
   'butter-cream': 'bg-butter-cream',
   'deep-navy': 'bg-deep-navy text-white',
-  'bright-magenta': 'bg-bright-magenta text-white',
-  'accent-pink': 'bg-accent-pink text-white',
 } as const
 
 const PADDINGS = {
@@ -54,9 +50,11 @@ export function HeroTwoEntries({
   bgColor = 'warm-ivory',
   padding = 'md',
 }: HeroTwoEntriesProps) {
-  const isDarkBg = bgColor === 'deep-navy' || bgColor === 'bright-magenta' || bgColor === 'accent-pink'
-  const cardBgClass = isDarkBg ? 'bg-white/10 text-white border-white/20' : 'bg-white text-deep-navy border-deep-navy/10'
-  const descColorClass = isDarkBg ? 'text-white/85' : 'text-deep-navy/80'
+  const isDeepNavy = bgColor === 'deep-navy'
+  const cardBgClass = isDeepNavy ? 'bg-white/10 text-white border-white/20' : 'bg-white text-deep-navy border-deep-navy/10'
+  const descColorClass = isDeepNavy ? 'text-white/90' : 'text-deep-navy/80'
+  const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+  const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
 
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
@@ -64,20 +62,20 @@ export function HeroTwoEntries({
         {/* Header Section */}
         <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
           {seriesLabel && (
-            <span className="mb-3 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta">
+            <span className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}>
               {seriesLabel}
             </span>
           )}
 
           {/* Signature Two-Tone Heading (Anton) */}
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-tight">
-            <span className={isDarkBg ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-            <span className="text-bright-magenta">{titleLine2}</span>
+            <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
+            <span className={titleLine2ColorClass}>{titleLine2}</span>
           </h1>
 
           {/* Emotional Quote (Playfair Display Italic) */}
           {emotionLine && (
-            <p className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${isDarkBg ? 'text-white/90' : 'text-deep-navy/85'}`}>
+            <p className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}>
               {emotionLine}
             </p>
           )}

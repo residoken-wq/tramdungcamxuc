@@ -6,16 +6,16 @@ import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
 import { Button, type ButtonVariant, type ButtonSize } from '@/components/ui/Button'
 
-export const BRAND_COLOR_OPTIONS = [
+export const SECTION_BG_COLOR_OPTIONS = [
   { label: 'Ngà ấm (Warm Ivory)', value: 'warm-ivory' },
   { label: 'Hồng phấn (Soft Pink)', value: 'soft-pink' },
   { label: 'Tím sương (Lavender Mist)', value: 'lavender-mist' },
   { label: 'Bạc hà (Mint Haze)', value: 'mint-haze' },
   { label: 'Kem bơ (Butter Cream)', value: 'butter-cream' },
   { label: 'Xanh thẫm (Deep Navy)', value: 'deep-navy' },
-  { label: 'Hồng sen (Bright Magenta)', value: 'bright-magenta' },
-  { label: 'Hồng nhấn (Accent Pink)', value: 'accent-pink' },
 ] as const
+
+export const BRAND_COLOR_OPTIONS = SECTION_BG_COLOR_OPTIONS
 
 export const PADDING_OPTIONS = [
   { label: 'Nhỏ (S - 24px)', value: 'sm' },

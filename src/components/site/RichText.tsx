@@ -9,8 +9,6 @@ export interface RichTextProps {
     | 'mint-haze'
     | 'butter-cream'
     | 'deep-navy'
-    | 'bright-magenta'
-    | 'accent-pink'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -21,8 +19,6 @@ const BG_COLOR_CLASSES = {
   'mint-haze': 'bg-mint-haze',
   'butter-cream': 'bg-butter-cream',
   'deep-navy': 'bg-deep-navy text-white',
-  'bright-magenta': 'bg-bright-magenta text-white',
-  'accent-pink': 'bg-accent-pink text-white',
 } as const
 
 const PADDING_CLASSES = {
@@ -41,8 +37,8 @@ export function RichText({
     .map((p) => p.trim())
     .filter(Boolean)
 
-  const isDarkBg = bgColor === 'deep-navy' || bgColor === 'bright-magenta' || bgColor === 'accent-pink'
-  const textColorClass = isDarkBg ? 'text-white/90' : 'text-deep-navy'
+  const isDeepNavy = bgColor === 'deep-navy'
+  const textColorClass = isDeepNavy ? 'text-white/90' : 'text-deep-navy'
 
   return (
     <section className={`w-full ${BG_COLOR_CLASSES[bgColor]} ${PADDING_CLASSES[padding]} transition-colors`}>

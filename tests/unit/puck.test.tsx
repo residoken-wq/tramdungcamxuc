@@ -67,7 +67,7 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       expect(components.CTAButton.label).toContain('Nút Kêu gọi hành động')
     })
 
-    it('restricts background colors strictly to the 8 brand tokens', () => {
+    it('restricts background colors strictly to the 6 section brand tokens', () => {
       const expectedTokens = [
         'warm-ivory',
         'soft-pink',
@@ -75,11 +75,46 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
         'mint-haze',
         'butter-cream',
         'deep-navy',
-        'bright-magenta',
-        'accent-pink',
       ]
       const actualValues = BRAND_COLOR_OPTIONS.map((opt) => opt.value)
       expect(actualValues).toEqual(expectedTokens)
+    })
+
+    it('applies deep-navy contrast styles: white line 1, soft-pink line 2 and series label, >=85% white descriptions', () => {
+      // 1. HeroTwoEntries
+      const heroProps = puckConfig.components.HeroTwoEntries.defaultProps!
+      const { container: heroContainer } = render(
+        <HeroTwoEntries {...heroProps} bgColor="deep-navy" seriesLabel="Series Đêm" />,
+      )
+      const heroSeries = heroContainer.querySelector('span.uppercase.tracking-widest')
+      expect(heroSeries?.className).toContain('text-soft-pink')
+      const heroH1 = heroContainer.querySelector('h1')
+      const heroSpans = heroH1?.querySelectorAll('span')
+      expect(heroSpans?.[0].className).toContain('text-white')
+      expect(heroSpans?.[1].className).toContain('text-soft-pink')
+      const heroDesc = heroContainer.querySelector('p.font-ui')
+      expect(heroDesc?.className).toContain('text-white/90')
+
+      // 2. ImageText
+      const imageTextProps = puckConfig.components.ImageText.defaultProps!
+      const { container: itContainer } = render(
+        <ImageText {...imageTextProps} bgColor="deep-navy" seriesLabel="Series Đêm" titleLine2="DÒNG 2" />,
+      )
+      const itSeries = itContainer.querySelector('span.uppercase.tracking-widest')
+      expect(itSeries?.className).toContain('text-soft-pink')
+      const itH2 = itContainer.querySelector('h2')
+      const itSpans = itH2?.querySelectorAll('span')
+      expect(itSpans?.[0].className).toContain('text-white')
+      expect(itSpans?.[1].className).toContain('text-soft-pink')
+      const itDesc = itContainer.querySelector('p.font-ui')
+      expect(itDesc?.className).toContain('text-white/90')
+
+      // 3. RichText
+      const { container: rtContainer } = render(
+        <RichText content="Đoạn văn đêm thẫm." bgColor="deep-navy" />,
+      )
+      const rtDesc = rtContainer.querySelector('p.font-ui')
+      expect(rtDesc?.className).toContain('text-white/90')
     })
 
     it('restricts spacing to S/M/L presets', () => {
