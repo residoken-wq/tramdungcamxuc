@@ -99,11 +99,27 @@ describe('site-shell.server & Footer empty states', () => {
     // Mục highlight được bỏ khỏi items của navbar
     expect(result.navbar.items).toHaveLength(3)
 
-    // Mục quiz chẩn đoán được đánh dấu featured
+    // Mục quiz chẩn đoán được đánh dấu featured với shortLabel từ vi.site.quizShortLabel
     const quizItem = result.navbar.items.find((item) => item.href === '/habit/chan-doan')
     expect(quizItem).toBeDefined()
     expect(quizItem?.featured).toBe(true)
-    expect(quizItem?.shortLabel).toBe('Quiz 5 phút')
+    expect(quizItem?.shortLabel).toBe(vi.site.quizShortLabel)
+
+    // Mục có chữ "thói quen" nhưng href khác không được nhận diện là quiz
+    const nonQuizResult = buildSiteShellFromPayloadData({
+      navigation: {
+        id: 2,
+        mainMenu: [
+          {
+            label: 'Xây dựng thói quen',
+            linkType: 'url',
+            url: '/habit/1-percent-better',
+          },
+        ],
+      } as unknown as Navigation,
+    })
+    expect(nonQuizResult.navbar.items[0].featured).toBeUndefined()
+    expect(nonQuizResult.navbar.items[0].shortLabel).toBeUndefined()
 
     // Trang chủ có slug '/' được ánh xạ thành '/'
     const homeItem = result.navbar.items.find((item) => item.label === 'Trang chủ')

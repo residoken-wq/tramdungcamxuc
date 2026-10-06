@@ -118,6 +118,7 @@ export const vi = {
     notFound: 'Trang pháp lý không tồn tại.',
   },
   site: {
+    quizShortLabel: 'Quiz 5 phút',
     floatingChat: {
       ariaLabel: 'Trò chuyện qua Zalo',
       tooltip: 'Chat qua Zalo',

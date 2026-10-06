@@ -1,8 +1,10 @@
 import 'server-only'
+import { cache } from 'react'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Navigation, SiteSetting, LegalPage, Page } from '@/payload-types'
 import { safeHref } from '@/lib/safe-href'
+import { vi } from '@/lib/i18n/vi'
 import type { NavItem, NavbarCta } from '@/components/site/Navbar'
 import type { LegalLink, SellerInfo, SocialLink } from '@/components/site/Footer'
 
@@ -98,16 +100,13 @@ export function buildSiteShellFromPayloadData(args: {
 
   const items: NavItem[] = itemsToProcess.map((item) => {
     const href = resolveMenuHref(item)
-    // Tự động nhận diện Quiz chẩn đoán (lead magnet chính) để nổi bật cả desktop và mobile 375px
-    const isQuiz =
-      href === '/habit/chan-doan' ||
-      href.includes('chan-doan') ||
-      item.label.toLowerCase().includes('thói quen')
+    // Tự động nhận diện Quiz chẩn đoán (lead magnet chính) chỉ khi href === '/habit/chan-doan'
+    const isQuiz = href === '/habit/chan-doan'
 
     return {
       label: item.label,
       href,
-      ...(isQuiz ? { featured: true, shortLabel: 'Quiz 5 phút' } : {}),
+      ...(isQuiz ? { featured: true, shortLabel: vi.site.quizShortLabel } : {}),
     }
   })
 
@@ -199,59 +198,63 @@ export async function getSiteShellData(): Promise<SiteShellData> {
 }
 
 /**
- * Lấy nội dung chi tiết của một trang pháp lý theo slug.
+ * Lấy nội dung chi tiết của một trang pháp lý theo slug (bọc cache React để tái dùng truy vấn trong cùng request).
  */
-export async function getLegalPageData(slug: string): Promise<{
-  page: LegalPage
-  sellerInfo?: SellerInfo | null
-} | null> {
-  try {
-    const payloadConfig = await config
-    const payload = await getPayload({ config: payloadConfig })
+export const getLegalPageData = cache(
+  async (
+    slug: string,
+  ): Promise<{
+    page: LegalPage
+    sellerInfo?: SellerInfo | null
+  } | null> => {
+    try {
+      const payloadConfig = await config
+      const payload = await getPayload({ config: payloadConfig })
 
-    const result = await payload.find({
-      collection: 'legalPages',
-      where: {
-        and: [{ slug: { equals: slug } }, { _status: { equals: 'published' } }],
-      },
-      limit: 1,
-      draft: false,
-    })
+      const result = await payload.find({
+        collection: 'legalPages',
+        where: {
+          and: [{ slug: { equals: slug } }, { _status: { equals: 'published' } }],
+        },
+        limit: 1,
+        draft: false,
+      })
 
-    const page = result.docs[0] as LegalPage | undefined
-    if (!page) return null
+      const page = result.docs[0] as LegalPage | undefined
+      if (!page) return null
 
-    let sellerInfo: SellerInfo | null = null
-    if (slug === 'thong-tin-phap-ly') {
-      const settings = (await payload
-        .findGlobal({ slug: 'siteSettings', depth: 0 })
-        .catch(() => null)) as SiteSetting | null
+      let sellerInfo: SellerInfo | null = null
+      if (slug === 'thong-tin-phap-ly') {
+        const settings = (await payload
+          .findGlobal({ slug: 'siteSettings', depth: 0 })
+          .catch(() => null)) as SiteSetting | null
 
-      if (settings?.sellerInfo) {
-        const s = settings.sellerInfo
-        if (
-          s.name?.trim() ||
-          s.taxCode?.trim() ||
-          s.address?.trim() ||
-          s.phone?.trim() ||
-          s.email?.trim()
-        ) {
-          sellerInfo = {
-            name: s.name?.trim() || undefined,
-            taxCode: s.taxCode?.trim() || undefined,
-            address: s.address?.trim() || undefined,
-            phone: s.phone?.trim() || undefined,
-            email: s.email?.trim() || undefined,
+        if (settings?.sellerInfo) {
+          const s = settings.sellerInfo
+          if (
+            s.name?.trim() ||
+            s.taxCode?.trim() ||
+            s.address?.trim() ||
+            s.phone?.trim() ||
+            s.email?.trim()
+          ) {
+            sellerInfo = {
+              name: s.name?.trim() || undefined,
+              taxCode: s.taxCode?.trim() || undefined,
+              address: s.address?.trim() || undefined,
+              phone: s.phone?.trim() || undefined,
+              email: s.email?.trim() || undefined,
+            }
           }
         }
       }
-    }
 
-    return { page, sellerInfo }
-  } catch {
-    return null
-  }
-}
+      return { page, sellerInfo }
+    } catch {
+      return null
+    }
+  },
+)
 
 /**
  * Metadata cho trang pháp lý từ CMS.

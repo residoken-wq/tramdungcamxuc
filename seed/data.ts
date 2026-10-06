@@ -288,7 +288,6 @@ export const legalPages = [
   slug,
   title,
   order: i + 1,
-  lastUpdated: '2026-10-06T00:00:00.000Z',
 }))
 
 type Block = { type: string; props: Record<string, unknown> }
