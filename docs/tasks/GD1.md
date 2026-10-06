@@ -1,6 +1,6 @@
 # GĐ 1 – Web 1 Landing + CMS: task card cho Antigravity
 
-> **Chỉ mở khi cổng GĐ 0 đạt.** Ước lượng ngày công sẽ điền từ `docs/plan/ESTIMATES.md` (T0-11).
+> **Mở 06/10/2026** (cổng GĐ 0 đạt). Ước lượng giờ và lịch 3 máy: `docs/plan/ESTIMATES.md` (đã duyệt). T1-02, T1-12, T1-17 tách a/b theo ESTIMATES mục 3; task card dưới đây vẫn là phạm vi gốc.
 > **Cổng GĐ 1**: Hana tự kéo thả tạo 1 landing chiến dịch mới từ mẫu và xuất bản; tự sửa tiêu đề hero, thêm 1 testimonial, đổi trạng thái 1 sản phẩm, sửa 1 trang pháp lý mà không cần hỗ trợ; lead thật về đủ và xuất được CSV; 6 trang pháp lý đã có nội dung thật.
 > Tham chiếu: AGENTS.md mục 5B, 8.1, 9, 10, 11; `docs/plan/GAPS_AND_QUESTIONS.md`.
 

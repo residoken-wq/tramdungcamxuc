@@ -16,3 +16,11 @@ Vì sao làm vậy:
 Lệnh trong các prompt là **bash**. Máy Windows: mở agent với terminal **Git Bash** (hoặc WSL); PowerShell không hiểu `< /dev/null` và `BIẾN=giá_trị lệnh`.
 
 Chỉ ghế Planning tạo / sửa file prompt. Agent không sửa thư mục này.
+
+## GĐ 1 – đợt 1 (06/10/2026)
+
+| Máy | Mã | File |
+| --- | --- | --- |
+| Local | T1-01 | `docs/tasks/prompts/T1-01.md` |
+| PC ở nhà | T1-06 | `docs/tasks/prompts/T1-06.md` |
+| Laptop | T1-05 | `docs/tasks/prompts/T1-05.md` |

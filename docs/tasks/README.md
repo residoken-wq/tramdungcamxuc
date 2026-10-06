@@ -104,33 +104,40 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-10 | Đóng gói Docker + RUNBOOK để tự deploy bản demo       |          | T0-06b (đã merge)   | Xong – PR #11 ([review](reviews/T0-10.md)) |
 | T0-10c | CI build image → GHCR, server demo chỉ pull về chạy |          | T0-10 (đã merge)    | Đã merge – PR #14 ([review](reviews/T0-10.md)); chờ anh chọn private + PAT hay public để kiểm pull trên server |
 | T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0) | | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15 |
-| T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)          |          | dữ liệu GĐ 0        | Xong – PR #17 + PR #19 ([review](reviews/T0-11.md)); chờ Hana/IT duyệt ESTIMATES |
-| T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0     | [HANA]   | T0-07, T0-08, T0-10c | Đạt – PR #16 ([review](reviews/T0-11.md)); còn ảnh chụp (Planning) |
+| T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)          |          | dữ liệu GĐ 0        | Xong – PR #17 + PR #19 ([review](reviews/T0-11.md)); **đã duyệt 06/10** |
+| T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0     | [HANA]   | T0-07, T0-08, T0-10c | Đạt – PR #16 ([review](reviews/T0-11.md)); ảnh chụp dời sang T1-17a |
 | T0-12 | Bật tiếng Việt cho admin Payload (i18n `vi`)          |          | T0-11b              | Xong – PR #18 ([review](reviews/T0-12.md)) |
+
+**✅ Cổng GĐ 0 đạt 06/10/2026** (Hana tự làm checklist mục 7 `HUONG_DAN_CMS.md` trên bản demo; ESTIMATES đã duyệt). Mốc **N = 06/10/2026**.
 
 ### GĐ 1 – Web 1 Landing + CMS (`docs/tasks/GD1.md`)
 
-Chỉ mở khi cổng GĐ 0 đạt.
+Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.md` mục 3. Prompt: `docs/tasks/prompts/<MÃ>.md`.
 
-| Mã    | Task                                                        | Nhãn     | Phụ thuộc           |
-| ----- | ----------------------------------------------------------- | -------- | ------------------- |
-| T1-01 | Khối Puck: Mở đầu, Nội dung, Bố cục                         |          | GĐ 0                |
-| T1-02 | Khối Puck: Bán hàng, Niềm tin (lấy dữ liệu Payload)         |          | T1-01, T1-08        |
-| T1-03 | Khối Puck: Chuyển đổi                                       |          | T1-02, T1-06        |
-| T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               |
-| T1-05 | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý          |          | GĐ 0                |
-| T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                |
-| T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               |
-| T1-08 | Logic hiển thị sản phẩm theo `saleStatus`                   |          | GĐ 0                |
-| T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               |
-| T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               |
-| T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               |
-| T1-12 | Thanh toán thủ công phiên trải nghiệm 149k                  | [REVIEW] | T1-06               |
-| T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12               |
-| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               |
-| T1-15 | Analytics, SEO, security headers, domain                    |          | T1-05               |
-| T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 |
-| T1-17 | QA tổng, E2E, Lighthouse, `HUONG_DAN_CMS.md` bản 1          | [HANA]   | tất cả              |
+**🔒 Migration: T1-06 · 🔒 Package: T1-06**
+
+| Mã    | Task                                                        | Nhãn     | Phụ thuộc           | Máy | Trạng thái |
+| ----- | ----------------------------------------------------------- | -------- | ------------------- | --- | ---------- |
+| T1-01 | Khối Puck: Mở đầu, Nội dung, Bố cục                         |          | GĐ 0                | Local | Sẵn sàng – Antigravity@Local (prompt `prompts/T1-01.md`) |
+| T1-02a | Khối Puck: Bán hàng (`resolveData` chỉ lưu ID)             |          | T1-01, T1-08        | Local | Chưa mở |
+| T1-02b | Khối Puck: Niềm tin + revalidate                           |          | T1-02a              | Local | Chưa mở |
+| T1-03 | Khối Puck: Chuyển đổi                                       |          | T1-02b, T1-06       | Local | Chưa mở |
+| T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               | Local | Chưa mở |
+| T1-05 | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý          |          | GĐ 0                | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-05.md`) |
+| T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Sẵn sàng – Antigravity@PC nhà (prompt `prompts/T1-06.md`) · 🔒 Migration + Package |
+| T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               | PC nhà | Chưa mở |
+| T1-08 | Logic hiển thị sản phẩm theo `saleStatus`                   |          | GĐ 0                | Laptop | Chưa mở (sau T1-05) |
+| T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Chưa mở |
+| T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               | Laptop | Chưa mở |
+| T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               | Laptop | Chưa mở |
+| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Chưa mở |
+| T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Chưa mở |
+| T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
+| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | Laptop | Chưa mở |
+| T1-15 | Analytics, SEO, security headers, domain                    |          | T1-05               | Laptop | Chưa mở |
+| T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 | Local | Chưa mở |
+| T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Chưa mở |
+| T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                   | [HANA]   | tất cả              | Planning | Chưa mở |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 
