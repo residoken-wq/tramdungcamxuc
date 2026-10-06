@@ -284,7 +284,11 @@ export const legalPages = [
   ['chinh-sach-cung-cap-dich-vu', 'Chính sách cung cấp dịch vụ'],
   ['gia-thanh-toan', 'Giá và thanh toán'],
   ['phan-anh-khieu-nai', 'Phản ánh và khiếu nại'],
-].map(([slug, title], i) => ({ slug, title, order: i + 1 }))
+].map(([slug, title], i) => ({
+  slug,
+  title,
+  order: i + 1,
+}))
 
 type Block = { type: string; props: Record<string, unknown> }
 let blockId = 0
