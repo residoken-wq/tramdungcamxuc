@@ -22,8 +22,8 @@ export const StatsBarBlock: ComponentConfig<StatsBarProps> = {
         },
       },
       defaultItemProps: {
-        value: '[MẪU] 100+',
-        label: '[MẪU] Khách hàng đồng hành',
+        value: '[MẪU] Số liệu',
+        label: '[MẪU] Nhãn mô tả số liệu',
       },
     },
     bgColor: {
@@ -40,9 +40,9 @@ export const StatsBarBlock: ComponentConfig<StatsBarProps> = {
   defaultProps: {
     version: 1,
     stats: [
-      { value: '[MẪU] 500+', label: '[MẪU] Giờ khai vấn chuyên sâu' },
-      { value: '[MẪU] 1.000+', label: '[MẪU] Học viên tham gia rèn luyện' },
-      { value: '[MẪU] 21', label: '[MẪU] Ngày đồng hành chuyển hóa cảm xúc' },
+      { value: '[MẪU] Số liệu 1', label: '[MẪU] Nhãn mô tả 1' },
+      { value: '[MẪU] Số liệu 2', label: '[MẪU] Nhãn mô tả 2' },
+      { value: '[MẪU] Số liệu 3', label: '[MẪU] Nhãn mô tả 3' },
     ],
     bgColor: 'warm-ivory',
     padding: 'md',

@@ -47,19 +47,19 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     titleLine2: '[MẪU] GIẢI ĐÁP BĂN KHOĂN',
     items: [
       {
-        question: '[MẪU] Tôi có cần kiến thức tâm lý trước khi tham gia không?',
+        question: '[MẪU] Câu hỏi thường gặp 1',
         answer:
-          '[MẪU] Không cần bất kỳ nền tảng nào trước đó. Các phương pháp đều được thiết kế đơn giản, gần gũi và đi từ chính trải nghiệm đời sống của bạn.',
+          '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
       },
       {
-        question: '[MẪU] Phiên trải nghiệm Growth Mirror diễn ra như thế nào?',
+        question: '[MẪU] Câu hỏi thường gặp 2',
         answer:
-          '[MẪU] Phiên trải nghiệm 1:1 diễn ra trong 60 phút qua không gian trực tuyến ấm áp, bảo mật tuyệt đối, giúp bạn nhìn nhận rõ bức tranh cảm xúc hiện tại.',
+          '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
       },
       {
-        question: '[MẪU] Nếu tôi lỡ nhịp thực hành 1 ngày thì có sao không?',
+        question: '[MẪU] Câu hỏi thường gặp 3',
         answer:
-          '[MẪU] Lỡ nhịp một ngày là hoàn toàn bình thường. Điều quan trọng không phải là sự hoàn hảo liên tục, mà là sự kiên nhẫn dịu dàng quay trở lại vào ngày hôm sau.',
+          '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
       },
     ],
     bgColor: 'warm-ivory',

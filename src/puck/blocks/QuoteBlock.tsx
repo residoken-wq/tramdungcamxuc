@@ -57,9 +57,9 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
   defaultProps: {
     version: 1,
     quote:
-      '[MẪU] Cảm xúc không phải là trở ngại cần vượt qua, mà là người bạn nhắc ta dừng lại và lắng nghe chính mình.',
-    cite: '[MẪU] Hana Lương',
-    roleOrContext: '[MẪU] Chuyên gia Khai vấn Cảm xúc ICF',
+      '[MẪU] Câu trích dẫn cảm xúc ấm áp và sâu sắc chạm đến người đọc.',
+    cite: '[MẪU] Tên người nói',
+    roleOrContext: '[MẪU] Vai trò / bối cảnh',
     bgColor: 'warm-ivory',
     padding: 'md',
   },

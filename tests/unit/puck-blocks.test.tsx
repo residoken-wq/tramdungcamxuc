@@ -163,6 +163,15 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       expect(screen.getByText(/Liên kết video không hợp lệ/)).toBeDefined()
     })
 
+    it('displays guide message in editor when URL is blank and renders nothing on public page', () => {
+      const { container: editorContainer } = render(<VideoEmbed url="" isEditing={true} />)
+      expect(editorContainer.querySelector('iframe')).toBeNull()
+      expect(screen.getByText(/Chưa có liên kết video/)).toBeDefined()
+
+      const { container: publicContainer } = render(<VideoEmbed url="" isEditing={false} />)
+      expect(publicContainer.firstChild).toBeNull()
+    })
+
     it('renders iframe with title, loading="lazy", and 16:9 aspect ratio when URL is valid', () => {
       const { container } = render(
         <VideoEmbed

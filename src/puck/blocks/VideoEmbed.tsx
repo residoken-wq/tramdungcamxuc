@@ -33,9 +33,9 @@ export const VideoEmbedBlock: ComponentConfig<VideoEmbedProps> = {
   },
   defaultProps: {
     version: 1,
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    title: '[MẪU] Video chia sẻ cảm xúc',
-    caption: '[MẪU] Video ngắn đồng hành cùng bạn nhận diện cảm xúc mỗi ngày.',
+    url: '',
+    title: '[MẪU] Video chia sẻ',
+    caption: '[MẪU] Video ngắn chia sẻ nội dung hữu ích.',
     bgColor: 'warm-ivory',
     padding: 'md',
   },

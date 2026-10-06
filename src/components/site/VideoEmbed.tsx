@@ -121,16 +121,18 @@ export function VideoEmbed({
 
   if (!isValid || !embedUrl) {
     if (isEditing) {
+      const isBlank = !url || url.trim().length === 0
       return (
         <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
           <div className="mx-auto max-w-4xl">
             <div className="rounded-card border border-bright-magenta/30 bg-soft-pink/80 p-6 text-center text-deep-navy">
               <p className="font-ui text-sm font-bold text-bright-magenta">
-                Liên kết video không hợp lệ
+                {isBlank ? 'Chưa có liên kết video' : 'Liên kết video không hợp lệ'}
               </p>
               <p className="mt-1 font-ui text-xs text-deep-navy/80">
-                Chỉ chấp nhận URL công khai từ YouTube (ví dụ: https://www.youtube.com/watch?v=...)
-                hoặc Vimeo (ví dụ: https://vimeo.com/...).
+                {isBlank
+                  ? 'Vui lòng dán liên kết công khai từ YouTube (ví dụ: https://www.youtube.com/watch?v=...) hoặc Vimeo (ví dụ: https://vimeo.com/...).'
+                  : 'Chỉ chấp nhận URL công khai từ YouTube (ví dụ: https://www.youtube.com/watch?v=...) hoặc Vimeo (ví dụ: https://vimeo.com/...).'}
               </p>
             </div>
           </div>
