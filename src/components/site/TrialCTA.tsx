@@ -1,10 +1,9 @@
 'use client'
 
 import React from 'react'
-import type { Product } from '@/payload-types'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
-import { resolveProductCta } from '@/lib/products'
+import { resolveProductCta, type PublicProduct } from '@/lib/products'
 import { useClientProduct } from '@/puck/client-preview'
 
 export interface TrialCTAProps {
@@ -18,7 +17,7 @@ export interface TrialCTAProps {
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
-    product?: Product | null
+    product?: PublicProduct | null
   }
   puck?: {
     isEditing?: boolean

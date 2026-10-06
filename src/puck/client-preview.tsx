@@ -1,54 +1,140 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { Product } from '@/payload-types'
+import { toPublicProduct, type PublicProduct } from '@/lib/products'
+
+// In-memory client caches (persists across renders in the browser / test environment)
+const singleProductCache = new Map<string, PublicProduct | null>()
+const multiProductsCache = new Map<string, PublicProduct[]>()
+const inFlightSingleProduct = new Map<string, Promise<PublicProduct | null>>()
+const inFlightMultiProducts = new Map<string, Promise<PublicProduct[]>>()
+
+/**
+ * Xóa cache client preview (dùng cho unit test hoặc reset khi cần)
+ */
+export function clearClientPreviewCache() {
+  singleProductCache.clear()
+  multiProductsCache.clear()
+  inFlightSingleProduct.clear()
+  inFlightMultiProducts.clear()
+}
+
+/**
+ * Xây dựng queryKey dạng chuỗi nguyên thủy từ các tham số truy vấn sản phẩm.
+ * Chuỗi nguyên thủy này đảm bảo React useEffect so sánh bằng giá trị, tránh re-render lặp vô tận.
+ */
+export function buildProductsQueryKey(options: {
+  productIds?: Array<string | number>
+  mode?: 'manual' | 'filter'
+  filterWeb?: string
+  filterType?: string
+  limit?: number
+}): string {
+  const mode = options.mode || 'manual'
+  if (mode === 'manual') {
+    const cleanIds = (options.productIds || [])
+      .filter((id): id is string | number => id != null && String(id).trim() !== '')
+      .map(String)
+    return `manual:${cleanIds.join(',')}`
+  }
+  const fw = options.filterWeb || 'all'
+  const ft = options.filterType || 'all'
+  const lim = options.limit || 6
+  return `filter:${fw}:${ft}:${lim}`
+}
 
 export function useClientProduct(
   productId: string | number | undefined | null,
-  initialProduct?: Product | null,
-): { product: Product | null; loading: boolean } {
+  initialProduct?: PublicProduct | null,
+): { product: PublicProduct | null; loading: boolean } {
   const isResolved = initialProduct !== undefined
-  const [fetched, setFetched] = useState<{ id: string; product: Product | null } | null>(null)
+  const pid = productId != null && String(productId).trim() !== '' ? String(productId).trim() : ''
 
-  const pid = productId ? String(productId) : ''
-  const isFetching = !isResolved && Boolean(pid) && fetched?.id !== pid
+  // Single product queryKey is primitive string pid
+  const queryKey = pid
+
+  // Check cache immediately for synchronous initial render
+  const cached = queryKey ? singleProductCache.get(queryKey) : undefined
+
+  const [state, setState] = useState<{ key: string; product: PublicProduct | null } | null>(() => {
+    if (queryKey && singleProductCache.has(queryKey)) {
+      return { key: queryKey, product: singleProductCache.get(queryKey) ?? null }
+    }
+    return null
+  })
 
   useEffect(() => {
-    if (isResolved || !pid) return
+    if (isResolved || !queryKey) return
+
+    // If already in cache, no need to fetch again
+    if (singleProductCache.has(queryKey)) {
+      return
+    }
 
     let isMounted = true
     const controller = new AbortController()
 
-    fetch(`/api/products/${encodeURIComponent(pid)}?depth=1`, {
-      credentials: 'include',
-      signal: controller.signal,
+    let promise = inFlightSingleProduct.get(queryKey)
+    if (!promise) {
+      promise = fetch(`/api/products/${encodeURIComponent(queryKey)}?depth=1`, {
+        credentials: 'include',
+        signal: controller.signal,
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!data || data.saleStatus === 'hidden') {
+            singleProductCache.set(queryKey, null)
+            return null
+          }
+          const pub = toPublicProduct(data)
+          singleProductCache.set(queryKey, pub)
+          return pub
+        })
+        .catch((err: unknown) => {
+          const isAbort =
+            typeof err === 'object' &&
+            err !== null &&
+            'name' in err &&
+            (err as { name: string }).name === 'AbortError'
+          if (!isAbort) {
+            singleProductCache.set(queryKey, null)
+          }
+          return null
+        })
+        .finally(() => {
+          inFlightSingleProduct.delete(queryKey)
+        })
+
+      inFlightSingleProduct.set(queryKey, promise)
+    }
+
+    promise.then((pub) => {
+      if (isMounted) {
+        setState({ key: queryKey, product: pub })
+      }
     })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (isMounted) {
-          setFetched({ id: pid, product: data })
-        }
-      })
-      .catch((err: unknown) => {
-        const isAbort =
-          typeof err === 'object' &&
-          err !== null &&
-          'name' in err &&
-          (err as { name: string }).name === 'AbortError'
-        if (!isAbort && isMounted) {
-          setFetched({ id: pid, product: null })
-        }
-      })
 
     return () => {
       isMounted = false
       controller.abort()
     }
-  }, [pid, isResolved])
+  }, [queryKey, isResolved])
 
-  const product = isResolved ? initialProduct : fetched?.id === pid ? fetched.product : null
+  if (isResolved) {
+    return { product: initialProduct ?? null, loading: false }
+  }
 
-  return { product, loading: isFetching }
+  if (!queryKey) {
+    return { product: null, loading: false }
+  }
+
+  const currentProduct = state?.key === queryKey ? state.product : (cached ?? null)
+  const isLoaded = singleProductCache.has(queryKey) || state?.key === queryKey
+
+  return {
+    product: currentProduct,
+    loading: !isLoaded,
+  }
 }
 
 export function useClientProducts(options: {
@@ -57,81 +143,111 @@ export function useClientProducts(options: {
   filterWeb?: string
   filterType?: string
   limit?: number
-  initialProducts?: Product[]
-}): { products: Product[]; loading: boolean } {
-  const { productIds, mode = 'manual', filterWeb, filterType, limit = 6, initialProducts } = options
+  initialProducts?: PublicProduct[]
+}): { products: PublicProduct[]; loading: boolean } {
+  const isResolved = options.initialProducts !== undefined
+  const queryKey = buildProductsQueryKey(options)
 
-  const isResolved = initialProducts !== undefined
-  const queryKey =
-    mode === 'manual'
-      ? `manual:${(productIds || []).filter(Boolean).join(',')}`
-      : `filter:${filterWeb || 'all'}:${filterType || 'all'}:${limit}`
+  const isManualEmpty = queryKey === 'manual:'
 
-  const shouldFetch =
-    !isResolved &&
-    ((mode === 'manual' && Boolean(productIds && productIds.length > 0)) || mode === 'filter')
-
-  const [fetched, setFetched] = useState<{ key: string; products: Product[] } | null>(null)
-  const isFetching = shouldFetch && fetched?.key !== queryKey
+  const [state, setState] = useState<{ key: string; products: PublicProduct[] } | null>(() => {
+    if (!isManualEmpty && multiProductsCache.has(queryKey)) {
+      return { key: queryKey, products: multiProductsCache.get(queryKey) || [] }
+    }
+    return null
+  })
 
   useEffect(() => {
-    if (!shouldFetch) return
+    if (isResolved || isManualEmpty) return
+
+    // If already in cache, no need to fetch again
+    if (multiProductsCache.has(queryKey)) {
+      return
+    }
 
     let isMounted = true
     const controller = new AbortController()
 
-    let url = '/api/products?depth=1'
-    if (mode === 'manual') {
-      const validIds = (productIds || []).filter(Boolean)
-      if (validIds.length === 0) {
-        return
+    let promise = inFlightMultiProducts.get(queryKey)
+    if (!promise) {
+      let url = '/api/products?depth=1'
+      if (queryKey.startsWith('manual:')) {
+        const ids = queryKey.slice('manual:'.length).split(',').filter(Boolean)
+        const params = ids.map((id) => `where[id][in][]=${encodeURIComponent(id)}`).join('&')
+        url += `&limit=${ids.length}&${params}`
+      } else {
+        const [, filterWeb, filterType, limit] = queryKey.split(':')
+        url += `&limit=${limit}&sort=order`
+        if (filterWeb && filterWeb !== 'all') {
+          url += `&where[web][equals]=${encodeURIComponent(filterWeb)}`
+        }
+        if (filterType && filterType !== 'all') {
+          url += `&where[type][equals]=${encodeURIComponent(filterType)}`
+        }
       }
-      const params = validIds.map((id) => `where[id][in][]=${encodeURIComponent(id)}`).join('&')
-      url += `&limit=${validIds.length}&${params}`
-    } else {
-      url += `&limit=${limit}&sort=order`
-      if (filterWeb && filterWeb !== 'all') {
-        url += `&where[web][equals]=${encodeURIComponent(filterWeb)}`
-      }
-      if (filterType && filterType !== 'all') {
-        url += `&where[type][equals]=${encodeURIComponent(filterType)}`
-      }
+
+      promise = fetch(url, { credentials: 'include', signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const rawDocs = (data?.docs || []).filter(
+            (doc: { saleStatus?: string }) => doc.saleStatus !== 'hidden',
+          )
+          const publicDocs = rawDocs.map(toPublicProduct)
+
+          let finalDocs: PublicProduct[] = publicDocs
+          if (queryKey.startsWith('manual:')) {
+            const ids = queryKey.slice('manual:'.length).split(',').filter(Boolean)
+            const idMap = new Map(publicDocs.map((d: PublicProduct) => [String(d.id), d]))
+            finalDocs = ids.map((id) => idMap.get(id)).filter(Boolean) as PublicProduct[]
+          }
+
+          multiProductsCache.set(queryKey, finalDocs)
+          return finalDocs
+        })
+        .catch((err: unknown) => {
+          const isAbort =
+            typeof err === 'object' &&
+            err !== null &&
+            'name' in err &&
+            (err as { name: string }).name === 'AbortError'
+          if (!isAbort) {
+            multiProductsCache.set(queryKey, [])
+          }
+          return []
+        })
+        .finally(() => {
+          inFlightMultiProducts.delete(queryKey)
+        })
+
+      inFlightMultiProducts.set(queryKey, promise)
     }
 
-    fetch(url, { credentials: 'include', signal: controller.signal })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (isMounted) {
-          const docs = (data?.docs || []).filter((doc: Product) => doc.saleStatus !== 'hidden')
-          if (mode === 'manual' && productIds) {
-            const idMap = new Map(docs.map((d: Product) => [String(d.id), d]))
-            const ordered = productIds
-              .map((id) => idMap.get(String(id)))
-              .filter(Boolean) as Product[]
-            setFetched({ key: queryKey, products: ordered })
-          } else {
-            setFetched({ key: queryKey, products: docs })
-          }
-        }
-      })
-      .catch((err: unknown) => {
-        const isAbort =
-          typeof err === 'object' &&
-          err !== null &&
-          'name' in err &&
-          (err as { name: string }).name === 'AbortError'
-        if (!isAbort && isMounted) {
-          setFetched({ key: queryKey, products: [] })
-        }
-      })
+    promise.then((docs) => {
+      if (isMounted) {
+        setState({ key: queryKey, products: docs })
+      }
+    })
 
     return () => {
       isMounted = false
       controller.abort()
     }
-  }, [shouldFetch, queryKey, mode, filterWeb, filterType, limit, productIds])
+  }, [queryKey, isResolved, isManualEmpty])
 
-  const products = isResolved ? initialProducts : fetched?.key === queryKey ? fetched.products : []
+  if (isResolved) {
+    return { products: options.initialProducts ?? [], loading: false }
+  }
 
-  return { products, loading: isFetching }
+  if (isManualEmpty) {
+    return { products: [], loading: false }
+  }
+
+  const cached = multiProductsCache.get(queryKey)
+  const currentProducts = state?.key === queryKey ? state.products : (cached ?? [])
+  const isLoaded = multiProductsCache.has(queryKey) || state?.key === queryKey
+
+  return {
+    products: currentProducts,
+    loading: !isLoaded,
+  }
 }

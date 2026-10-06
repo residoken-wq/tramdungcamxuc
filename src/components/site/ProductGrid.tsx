@@ -1,9 +1,8 @@
 'use client'
 
 import React from 'react'
-import type { Product } from '@/payload-types'
 import { ProductCard } from './ProductCard'
-import { getEffectivePrice, resolveProductCta } from '@/lib/products'
+import { getEffectivePrice, resolveProductCta, type PublicProduct } from '@/lib/products'
 import { useClientProducts } from '@/puck/client-preview'
 
 export interface ProductGridProps {
@@ -29,7 +28,7 @@ export interface ProductGridProps {
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
-    products?: Product[]
+    products?: PublicProduct[]
   }
   puck?: {
     isEditing?: boolean

@@ -2,9 +2,30 @@ import 'server-only'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
-import type { Product } from '@/payload-types'
+import { toPublicProduct, type PublicProduct } from '@/lib/products'
 
 import { walkPuckItems } from './walk'
+
+const PUBLIC_PRODUCT_SELECT = {
+  id: true,
+  name: true,
+  slug: true,
+  web: true,
+  type: true,
+  journeyStep: true,
+  shortDescription: true,
+  includes: true,
+  price: true,
+  salePrice: true,
+  saleEndsAt: true,
+  saleStatus: true,
+  trialDays: true,
+  externalUrl: true,
+  externalLabel: true,
+  ctaLabel: true,
+  components: true,
+  coverImage: true,
+} as const
 
 /**
  * Server-only helper to resolve server-side data (media URL/alt from Local API
@@ -99,7 +120,7 @@ export async function resolveServerData(data: Data): Promise<Data> {
   })
 
   // Phase 2: Fetch products in one single query from Payload Local API
-  const productMap = new Map<string, Product>()
+  const productMap = new Map<string, PublicProduct>()
 
   if (productIdsToFetch.size > 0) {
     const rawIds = Array.from(productIdsToFetch)
@@ -111,14 +132,18 @@ export async function resolveServerData(data: Data): Promise<Data> {
         where: {
           and: [{ id: { in: numericOrStrIds } }, { _status: { equals: 'published' } }],
         },
+        select: PUBLIC_PRODUCT_SELECT as never,
         depth: 1,
         limit: numericOrStrIds.length + 20,
       })
 
-      for (const doc of productDocs.docs) {
+      for (const doc of productDocs.docs as unknown as Array<{
+        id: string | number
+        saleStatus: string
+      }>) {
         // Discard hidden products (spec requirement)
         if (doc.saleStatus !== 'hidden') {
-          productMap.set(String(doc.id), doc as unknown as Product)
+          productMap.set(String(doc.id), toPublicProduct(doc))
         }
       }
     } catch {
@@ -147,13 +172,14 @@ export async function resolveServerData(data: Data): Promise<Data> {
                 ...(filterType && filterType !== 'all' ? [{ type: { equals: filterType } }] : []),
               ],
             },
+            select: PUBLIC_PRODUCT_SELECT as never,
             depth: 1,
             limit,
             sort: 'order',
           })
-          const publishedNonHidden = (filterDocs.docs as unknown as Product[]).filter(
-            (p) => p.saleStatus !== 'hidden',
-          )
+          const publishedNonHidden = (filterDocs.docs as unknown[])
+            .filter((p: unknown) => (p as { saleStatus?: string })?.saleStatus !== 'hidden')
+            .map(toPublicProduct)
           item.props._resolved = { products: publishedNonHidden }
         } catch {
           item.props._resolved = { products: [] }
@@ -175,7 +201,7 @@ export async function resolveServerData(data: Data): Promise<Data> {
         }
         const resolvedList = ids
           .map((id) => productMap.get(String(id)))
-          .filter(Boolean) as Product[]
+          .filter(Boolean) as PublicProduct[]
         item.props._resolved = { products: resolvedList }
       }
     } else if (
@@ -202,7 +228,9 @@ export async function resolveServerData(data: Data): Promise<Data> {
           if (id) ids.push(id)
         }
       }
-      const resolvedList = ids.map((id) => productMap.get(String(id))).filter(Boolean) as Product[]
+      const resolvedList = ids
+        .map((id) => productMap.get(String(id)))
+        .filter(Boolean) as PublicProduct[]
       item.props._resolved = { packages: resolvedList }
     }
   })

@@ -1,9 +1,8 @@
 'use client'
 
 import React from 'react'
-import type { Product } from '@/payload-types'
 import { PriceTag } from '@/components/ui/PriceTag'
-import { getEffectivePrice } from '@/lib/products'
+import { getEffectivePrice, type PublicProduct } from '@/lib/products'
 import { useClientProduct } from '@/puck/client-preview'
 
 export interface ProductPriceTagProps {
@@ -12,7 +11,7 @@ export interface ProductPriceTagProps {
   size?: 'sm' | 'md' | 'lg'
   align?: 'left' | 'center' | 'right'
   _resolved?: {
-    product?: Product | null
+    product?: PublicProduct | null
   }
   puck?: {
     isEditing?: boolean

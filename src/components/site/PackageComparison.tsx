@@ -1,8 +1,11 @@
 'use client'
 
 import React from 'react'
-import type { Product } from '@/payload-types'
-import { buildPackageComparison, type ProductPackageInput } from '@/lib/products'
+import {
+  buildPackageComparison,
+  type ProductPackageInput,
+  type PublicProduct,
+} from '@/lib/products'
 import { formatVnd } from '@/lib/format'
 import { useClientProducts } from '@/puck/client-preview'
 
@@ -16,7 +19,7 @@ export interface PackageComparisonProps {
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
-    packages?: Product[]
+    packages?: PublicProduct[]
   }
   puck?: {
     isEditing?: boolean

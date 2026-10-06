@@ -1,5 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it, vi } from 'vitest'
+import { renderToStaticMarkup, renderToString } from 'react-dom/server'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { renderHook } from '@testing-library/react'
 
 vi.mock('server-only', () => ({}))
 
@@ -7,6 +8,9 @@ import type { Data } from '@puckeditor/core'
 import type { Product } from '@/payload-types'
 import { puckConfig } from '@/puck/config'
 import { resolveServerData } from '@/puck/resolve.server'
+import { useClientProducts, useClientProduct, clearClientPreviewCache } from '@/puck/client-preview'
+import { ProductGrid } from '@/components/site/ProductGrid'
+import type { PublicProduct } from '@/lib/products'
 
 // Mock payload for resolveServerData unit testing
 const mockProducts: Product[] = [
@@ -23,6 +27,16 @@ const mockProducts: Product[] = [
     trialDays: 21,
     saleStatus: 'on_sale',
     includes: [{ item: 'Tracker 21 ngày' }, { item: '20 Video hướng dẫn' }],
+    files: [
+      {
+        id: 1,
+        file: {
+          id: 99,
+          filename: 'secret-paid-tracker.pdf',
+          url: '/media/secret-paid-tracker.pdf',
+        },
+      },
+    ],
     coverImage: {
       id: 1,
       alt: 'Habit Tracker',
@@ -333,6 +347,111 @@ describe('T1-02a: Puck Sales Blocks – Bán hàng', () => {
       const col2Item = rootItem.props.col2[0]
       expect(col2Item.props._resolved).toBeDefined()
       expect(col2Item.props._resolved?.product).toBeNull()
+
+      // Security Anti-data-leak: resolvedData stringified must NOT contain paid files or filenames
+      const serialized = JSON.stringify(resolved)
+      expect(serialized).not.toContain('secret-paid-tracker.pdf')
+      expect(serialized).not.toContain('"files"')
+    })
+  })
+
+  describe('Client preview fetch deduplication (single fetch per key, no infinite loop)', () => {
+    beforeEach(() => {
+      clearClientPreviewCache()
+      vi.restoreAllMocks()
+    })
+
+    it('invokes fetch exactly once when useClientProducts is rendered 5 times with fresh array references of the same ID', async () => {
+      const mockFetch = vi.fn().mockImplementation(() =>
+        Promise.resolve({
+          ok: true,
+          json: async () => ({
+            docs: [
+              {
+                id: 101,
+                name: '[MẪU] Habit Tracker Số 21 Ngày',
+                slug: 'habit-tracker-so',
+                price: 250000,
+                salePrice: 178000,
+                saleStatus: 'on_sale',
+              },
+            ],
+          }),
+        }),
+      )
+      globalThis.fetch = mockFetch
+
+      // Initial render with fresh array instance [101]
+      const { rerender } = renderHook(
+        ({ ids }) => useClientProducts({ productIds: ids, mode: 'manual' }),
+        { initialProps: { ids: [101] } },
+      )
+
+      // Re-render 4 more times with brand new array references containing the same ID
+      rerender({ ids: [101] })
+      rerender({ ids: [101] })
+      rerender({ ids: [101] })
+      rerender({ ids: [101] })
+
+      // Must be called exactly 1 time across all 5 renders!
+      expect(mockFetch).toHaveBeenCalledTimes(1)
+    })
+
+    it('invokes fetch exactly once when useClientProduct is rendered 5 times with the same productId', async () => {
+      const mockFetch = vi.fn().mockImplementation(() =>
+        Promise.resolve({
+          ok: true,
+          json: async () => ({
+            id: 101,
+            name: '[MẪU] Habit Tracker Số 21 Ngày',
+            slug: 'habit-tracker-so',
+            price: 250000,
+            salePrice: 178000,
+            saleStatus: 'on_sale',
+          }),
+        }),
+      )
+      globalThis.fetch = mockFetch
+
+      const { rerender } = renderHook(({ id }) => useClientProduct(id), {
+        initialProps: { id: 101 },
+      })
+
+      rerender({ id: 101 })
+      rerender({ id: 101 })
+      rerender({ id: 101 })
+      rerender({ id: 101 })
+
+      expect(mockFetch).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Server-side rendering (SSR) with _resolved data', () => {
+    it('renders ProductGrid with sample _resolved via renderToString containing product name and price without loading text', () => {
+      const sampleProduct: PublicProduct = {
+        id: 101,
+        name: 'Khóa học EQ Chữa Lành Mẫu',
+        slug: 'khoa-hoc-eq-chua-lanh',
+        price: 250000,
+        salePrice: 178000,
+        saleStatus: 'on_sale',
+      }
+
+      const html = renderToString(
+        <ProductGrid
+          _resolved={{
+            products: [sampleProduct],
+          }}
+        />,
+      )
+
+      // HTML on server must directly contain product name and price
+      expect(html).toContain('Khóa học EQ Chữa Lành Mẫu')
+      expect(html).toContain('178.000')
+      expect(html).toContain('250.000')
+
+      // Must not render loading text on initial server render
+      expect(html).not.toContain('Đang tải dữ liệu sản phẩm...')
     })
   })
 })

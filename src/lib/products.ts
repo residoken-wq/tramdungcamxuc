@@ -19,10 +19,133 @@ export interface ProductCta {
   event?: string
 }
 
-export type ProductCtaInput = Pick<Product, 'slug' | 'saleStatus'> &
-  Partial<Pick<Product, 'type' | 'trialDays' | 'externalUrl' | 'externalLabel' | 'ctaLabel'>>
+export type ProductCtaInput = {
+  slug: string
+  saleStatus: Product['saleStatus']
+  type?: Product['type'] | null
+  trialDays?: number | null
+  externalUrl?: string | null
+  externalLabel?: string | null
+  ctaLabel?: string | null
+}
 
 export const GROWTH_MIRROR_PATH = '/coaching/growth-mirror'
+
+export interface PublicProductCoverImage {
+  url?: string | null
+  alt?: string | null
+}
+
+export interface PublicProductComponent {
+  label?: string | null
+  quantity?: number | null
+  unitValue?: number | null
+}
+
+export interface PublicProduct {
+  id: number | string
+  name: string
+  slug: string
+  web?: Product['web'] | null
+  type?: Product['type'] | null
+  journeyStep?: Product['journeyStep'] | null
+  shortDescription?: string | null
+  includes?: readonly (string | { item?: string | null })[] | null
+  price: number | null
+  salePrice: number | null
+  saleEndsAt?: string | null
+  saleStatus: Product['saleStatus']
+  trialDays?: number | null
+  externalUrl?: string | null
+  externalLabel?: string | null
+  ctaLabel?: string | null
+  components?: readonly PublicProductComponent[] | null
+  coverImage?: PublicProductCoverImage | null
+}
+
+/**
+ * Hàm thuần (pure function) chuyển đổi tài liệu Product (từ Payload Local API hoặc REST API)
+ * thành PublicProduct DTO chứa ĐÚNG các trường công khai cần hiển thị.
+ *
+ * Triệt tiêu hoàn toàn rò rỉ dữ liệu bảo mật (Anti-data-leak):
+ * - Tuyệt đối KHÔNG chứa trường `files` (tài liệu/ebook trả phí chỉ mở khi có entitlement).
+ * - Tuyệt đối KHÔNG chứa `description`, `faq`, `relatedProducts`, trường hệ thống (`createdAt`, `updatedAt`, `_status`).
+ * - Chuẩn hóa `coverImage` chỉ còn `{ url, alt }`.
+ * - Chuẩn hóa `components` chỉ còn `{ label, quantity, unitValue }`.
+ */
+export function toPublicProduct(doc: unknown): PublicProduct {
+  if (!doc || typeof doc !== 'object') {
+    throw new Error('toPublicProduct: doc must be an object')
+  }
+
+  const p = doc as Record<string, unknown>
+
+  const id = (p.id as string | number) ?? ''
+  const name = typeof p.name === 'string' ? p.name : ''
+  const slug = typeof p.slug === 'string' ? p.slug : ''
+  const web = (p.web as 'site' | 'habit' | 'eq') ?? null
+  const type = (p.type as Product['type']) ?? null
+  const journeyStep = (p.journeyStep as PublicProduct['journeyStep']) ?? null
+  const shortDescription = typeof p.shortDescription === 'string' ? p.shortDescription : null
+  const price = typeof p.price === 'number' ? p.price : null
+  const salePrice = typeof p.salePrice === 'number' ? p.salePrice : null
+  const saleEndsAt = typeof p.saleEndsAt === 'string' ? p.saleEndsAt : null
+  const saleStatus = (p.saleStatus as Product['saleStatus']) || 'on_sale'
+  const trialDays = typeof p.trialDays === 'number' ? p.trialDays : null
+  const externalUrl = typeof p.externalUrl === 'string' ? p.externalUrl : null
+  const externalLabel = typeof p.externalLabel === 'string' ? p.externalLabel : null
+  const ctaLabel = typeof p.ctaLabel === 'string' ? p.ctaLabel : null
+
+  let includes: readonly (string | { item?: string | null })[] | null = null
+  if (Array.isArray(p.includes)) {
+    includes = p.includes.map((item) => {
+      if (typeof item === 'string') return item
+      if (item && typeof item === 'object') {
+        return { item: typeof item.item === 'string' ? item.item : null }
+      }
+      return { item: null }
+    })
+  }
+
+  let components: readonly PublicProductComponent[] | null = null
+  if (Array.isArray(p.components)) {
+    components = p.components.map((c) => ({
+      label: typeof c?.label === 'string' ? c.label : null,
+      quantity: typeof c?.quantity === 'number' ? c.quantity : null,
+      unitValue: typeof c?.unitValue === 'number' ? c.unitValue : null,
+    }))
+  }
+
+  let coverImage: PublicProductCoverImage | null = null
+  if (p.coverImage && typeof p.coverImage === 'object') {
+    const img = p.coverImage as Record<string, unknown>
+    coverImage = {
+      url: typeof img.url === 'string' ? img.url : null,
+      alt: typeof img.alt === 'string' ? img.alt : name || null,
+    }
+  }
+
+  return {
+    id,
+    name,
+    slug,
+    web,
+    type,
+    journeyStep,
+    shortDescription,
+    includes,
+    price,
+    salePrice,
+    saleEndsAt,
+    saleStatus,
+    trialDays,
+    externalUrl,
+    externalLabel,
+    ctaLabel,
+    components,
+    coverImage,
+  }
+}
 
 /**
  * Tính giá hiển thị hiệu lực theo thời điểm hiện tại (`now`).

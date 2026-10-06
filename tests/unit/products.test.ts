@@ -8,6 +8,7 @@ import {
   GROWTH_MIRROR_PATH,
   buildPackageComparison,
   type ProductPackageInput,
+  toPublicProduct,
 } from '../../src/lib/products'
 import { ProductCard } from '../../src/components/site/ProductCard'
 import { vi } from '../../src/lib/i18n/vi'
@@ -533,5 +534,118 @@ describe('buildPackageComparison - Pure table builder', () => {
     expect(buildPackageComparison(null, fixedNow)).toEqual({ packages: [], rows: [] })
     expect(buildPackageComparison(undefined, fixedNow)).toEqual({ packages: [], rows: [] })
     expect(buildPackageComparison([], fixedNow)).toEqual({ packages: [], rows: [] })
+  })
+})
+
+describe('toPublicProduct (Anti-data-leak DTO)', () => {
+  it('strips files property completely from product document', () => {
+    const rawDocWithFiles = {
+      id: 999,
+      name: 'Ebook Tuyệt Mật',
+      slug: 'ebook-tuyet-mat',
+      web: 'site',
+      type: 'ebook',
+      price: 250000,
+      salePrice: null,
+      saleStatus: 'on_sale',
+      description: 'Mô tả chi tiết nội bộ',
+      faq: [{ question: 'Q?', answer: 'A' }],
+      relatedProducts: [1, 2],
+      files: [
+        {
+          id: 'file-1',
+          file: {
+            filename: 'private-secret-guide.pdf',
+            url: '/media/private-secret-guide.pdf',
+          },
+        },
+      ],
+      createdAt: '2026-10-06T00:00:00.000Z',
+      updatedAt: '2026-10-06T00:00:00.000Z',
+      _status: 'published',
+    }
+
+    const publicProduct = toPublicProduct(rawDocWithFiles)
+
+    // Key 'files' must not exist
+    expect('files' in publicProduct).toBe(false)
+    expect((publicProduct as unknown as Record<string, unknown>).files).toBeUndefined()
+
+    // Key 'description', 'faq', 'relatedProducts', system fields must not exist
+    expect('description' in publicProduct).toBe(false)
+    expect('faq' in publicProduct).toBe(false)
+    expect('relatedProducts' in publicProduct).toBe(false)
+    expect('_status' in publicProduct).toBe(false)
+    expect('createdAt' in publicProduct).toBe(false)
+    expect('updatedAt' in publicProduct).toBe(false)
+
+    // JSON serialization must not contain private filename
+    const jsonString = JSON.stringify(publicProduct)
+    expect(jsonString).not.toContain('private-secret-guide.pdf')
+    expect(jsonString).not.toContain('files')
+    expect(jsonString).not.toContain('Mô tả chi tiết nội bộ')
+
+    // Essential public fields are preserved
+    expect(publicProduct.id).toBe(999)
+    expect(publicProduct.name).toBe('Ebook Tuyệt Mật')
+    expect(publicProduct.slug).toBe('ebook-tuyet-mat')
+    expect(publicProduct.price).toBe(250000)
+    expect(publicProduct.saleStatus).toBe('on_sale')
+  })
+
+  it('normalizes coverImage to { url, alt } without internal media fields', () => {
+    const rawDoc = {
+      id: 123,
+      name: 'Khóa học EQ',
+      slug: 'khoa-hoc-eq',
+      price: 100000,
+      saleStatus: 'on_sale',
+      coverImage: {
+        id: 'img-1',
+        url: '/brand/cover.jpg',
+        alt: 'Ảnh bìa khóa học',
+        filename: 'cover.jpg',
+        filesize: 10240,
+        createdAt: '2026-10-06T00:00:00.000Z',
+      },
+    }
+
+    const publicProduct = toPublicProduct(rawDoc)
+    expect(publicProduct.coverImage).toEqual({
+      url: '/brand/cover.jpg',
+      alt: 'Ảnh bìa khóa học',
+    })
+    expect((publicProduct.coverImage as Record<string, unknown>).filesize).toBeUndefined()
+  })
+
+  it('normalizes components to only { label, quantity, unitValue }', () => {
+    const rawPackage = {
+      id: 456,
+      name: 'Gói CLEAR',
+      slug: 'growth-mirror-clear',
+      price: 1750000,
+      saleStatus: 'consult',
+      components: [
+        {
+          label: 'Bộ công cụ số Habit Tracker + EQ Buddy',
+          quantity: 1,
+          unitValue: 500000,
+          retailPrice: 500000,
+          grantsProduct: 101,
+          internalNote: 'Tự động mở entitlement',
+        },
+      ],
+    }
+
+    const publicProduct = toPublicProduct(rawPackage)
+    expect(publicProduct.components).toEqual([
+      {
+        label: 'Bộ công cụ số Habit Tracker + EQ Buddy',
+        quantity: 1,
+        unitValue: 500000,
+      },
+    ])
+    expect((publicProduct.components![0] as Record<string, unknown>).retailPrice).toBeUndefined()
+    expect((publicProduct.components![0] as Record<string, unknown>).internalNote).toBeUndefined()
   })
 })

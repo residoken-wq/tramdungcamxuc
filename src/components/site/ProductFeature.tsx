@@ -2,11 +2,10 @@
 
 import React from 'react'
 import Image from 'next/image'
-import type { Product } from '@/payload-types'
 import { PriceTag } from '@/components/ui/PriceTag'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { getEffectivePrice, resolveProductCta } from '@/lib/products'
+import { getEffectivePrice, resolveProductCta, type PublicProduct } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import { useClientProduct } from '@/puck/client-preview'
 
@@ -18,7 +17,7 @@ export interface ProductFeatureProps {
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
-    product?: Product | null
+    product?: PublicProduct | null
   }
   puck?: {
     isEditing?: boolean
