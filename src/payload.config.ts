@@ -5,6 +5,7 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { s3Storage } from '@payloadcms/storage-s3'
+import { vi } from '@payloadcms/translations/languages/vi'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -50,6 +51,12 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+  },
+  // Lock admin interface to Vietnamese only: matches non-technical owner's workflow (HUONG_DAN_CMS.md)
+  // and eliminates language-switching confusion.
+  i18n: {
+    supportedLanguages: { vi },
+    fallbackLanguage: 'vi',
   },
   collections: [
     Users,
