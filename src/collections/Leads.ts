@@ -11,6 +11,9 @@ export const Leads: CollectionConfig = {
     group: 'Khách hàng',
     useAsTitle: 'email',
     defaultColumns: ['email', 'name', 'need', 'followUpStatus', 'createdAt'],
+    components: {
+      beforeListTable: ['@/components/admin/ExportLeadsButton#ExportLeadsButton'],
+    },
   },
   access: {
     read: isEditorOrOwner,
