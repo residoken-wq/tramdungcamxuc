@@ -1,0 +1,14 @@
+# Override dùng khi cần build image tại chỗ thay vì pull từ GHCR.
+# Sử dụng:
+#   docker compose -p tdcx-demo -f docker-compose.prod.yml -f docker-compose.build.yml up -d --build < /dev/null
+#
+# Lưu ý: Image build tại chỗ sẽ ghi đè tag local của APP_TAG (${APP_TAG:-latest}).
+services:
+  app:
+    build:
+      context: .
+
+  seed:
+    build:
+      context: .
+      target: builder

@@ -1,7 +1,6 @@
 services:
   app:
-    build:
-      context: .
+    image: ${APP_IMAGE:-ghcr.io/residoken-wq/tramdungcamxuc}:${APP_TAG:-latest}
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -31,9 +30,7 @@ services:
 
   # One-off sample data loader: docker compose ... --profile tools run --rm seed
   seed:
-    build:
-      context: .
-      target: builder
+    image: ${APP_IMAGE:-ghcr.io/residoken-wq/tramdungcamxuc}:tools-${APP_TAG:-latest}
     profiles: ['tools']
     restart: 'no'
     environment:
