@@ -104,9 +104,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-10 | Đóng gói Docker + RUNBOOK để tự deploy bản demo       |          | T0-06b (đã merge)   | Xong – PR #11 ([review](reviews/T0-10.md)) |
 | T0-10c | CI build image → GHCR, server demo chỉ pull về chạy |          | T0-10 (đã merge)    | Đã merge – PR #14 ([review](reviews/T0-10.md)); chờ anh chọn private + PAT hay public để kiểm pull trên server |
 | T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0) | | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15 |
-| T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)          |          | dữ liệu GĐ 0        | Chưa đạt nhẹ – PR #17 ([review](reviews/T0-11.md)) → sửa **T0-11a-b** (prompt `prompts/T0-11a-b.md`) |
-| T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0     | [HANA]   | T0-07, T0-08, T0-10c | Đạt có điều kiện – PR #16 ([review](reviews/T0-11.md)); cần T0-12 + ảnh chụp (Claude) |
-| T0-12 | Bật tiếng Việt cho admin Payload (i18n `vi`)          |          | T0-11b              | Sẵn sàng – **Antigravity** (prompt `prompts/T0-12.md`) · 🔒 Package |
+| T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)          |          | dữ liệu GĐ 0        | Xong – PR #17 + PR #19 ([review](reviews/T0-11.md)); chờ Hana/IT duyệt ESTIMATES |
+| T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0     | [HANA]   | T0-07, T0-08, T0-10c | Đạt – PR #16 ([review](reviews/T0-11.md)); còn ảnh chụp (Planning) |
+| T0-12 | Bật tiếng Việt cho admin Payload (i18n `vi`)          |          | T0-11b              | Xong – PR #18 ([review](reviews/T0-12.md)) |
 
 ### GĐ 1 – Web 1 Landing + CMS (`docs/tasks/GD1.md`)
 
