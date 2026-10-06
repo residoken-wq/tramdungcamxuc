@@ -12,12 +12,7 @@ export interface JourneyStepsProps {
   step4Description?: string
   step5Description?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -42,35 +37,40 @@ export const FIXED_JOURNEY_STEPS = [
     key: 'pause',
     name: 'Pause',
     subname: 'Dừng lại',
-    defaultDesc: '[MẪU] Tạo khoảng dừng cần thiết giữa kích hoạt và phản ứng, hít thở sâu để lấy lại sự hiện diện.',
+    defaultDesc:
+      '[MẪU] Tạo khoảng dừng cần thiết giữa kích hoạt và phản ứng, hít thở sâu để lấy lại sự hiện diện.',
   },
   {
     step: '02',
     key: 'feel',
     name: 'Feel',
     subname: 'Cảm nhận',
-    defaultDesc: '[MẪU] Nhận biết tín hiệu trên cơ thể và cho phép cảm xúc được hiện diện mà không phán xét.',
+    defaultDesc:
+      '[MẪU] Nhận biết tín hiệu trên cơ thể và cho phép cảm xúc được hiện diện mà không phán xét.',
   },
   {
     step: '03',
     key: 'name',
     name: 'Name',
     subname: 'Gọi tên',
-    defaultDesc: '[MẪU] Định danh chính xác cảm xúc bạn đang trải qua để làm rõ thông điệp ẩn giấu bên dưới.',
+    defaultDesc:
+      '[MẪU] Định danh chính xác cảm xúc bạn đang trải qua để làm rõ thông điệp ẩn giấu bên dưới.',
   },
   {
     step: '04',
     key: 'choose',
     name: 'Choose',
     subname: 'Lựa chọn',
-    defaultDesc: '[MẪU] Chọn phản hồi mang tính xây dựng thay vì phản ứng theo thói quen hay xung lực bản năng.',
+    defaultDesc:
+      '[MẪU] Chọn phản hồi mang tính xây dựng thay vì phản ứng theo thói quen hay xung lực bản năng.',
   },
   {
     step: '05',
     key: 'practice',
     name: 'Practice',
     subname: 'Thực hành',
-    defaultDesc: '[MẪU] Đưa hành vi mới vào thực tế hàng ngày, biến thói quen thấu hiểu cảm xúc thành phản xạ tự nhiên.',
+    defaultDesc:
+      '[MẪU] Đưa hành vi mới vào thực tế hàng ngày, biến thói quen thấu hiểu cảm xúc thành phản xạ tự nhiên.',
   },
 ] as const
 
@@ -110,7 +110,9 @@ export function JourneySteps({
         {/* Header Section */}
         <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
           {seriesLabel && (
-            <span className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}>
+            <span
+              className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+            >
               {seriesLabel}
             </span>
           )}
@@ -121,7 +123,9 @@ export function JourneySteps({
           </h2>
 
           {emotionLine && (
-            <p className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}>
+            <p
+              className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}
+            >
               {emotionLine}
             </p>
           )}
@@ -136,18 +140,24 @@ export function JourneySteps({
             >
               {/* Step indicator */}
               <div className="flex items-baseline justify-between mb-3">
-                <span className={`font-display text-2xl sm:text-3xl tracking-tight ${stepNumberColorClass}`}>
+                <span
+                  className={`font-display text-2xl sm:text-3xl tracking-tight ${stepNumberColorClass}`}
+                >
                   {step.step}
                 </span>
-                <span className={`font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                  isDeepNavy ? 'bg-white/15 text-soft-pink' : 'bg-soft-pink text-deep-navy'
-                }`}>
+                <span
+                  className={`font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                    isDeepNavy ? 'bg-white/15 text-soft-pink' : 'bg-soft-pink text-deep-navy'
+                  }`}
+                >
                   {step.subname}
                 </span>
               </div>
 
               {/* Step Name */}
-              <h3 className={`font-ui text-lg font-bold mb-2 ${isDeepNavy ? 'text-white' : 'text-deep-navy'}`}>
+              <h3
+                className={`font-ui text-lg font-bold mb-2 ${isDeepNavy ? 'text-white' : 'text-deep-navy'}`}
+              >
                 {step.name}
               </h3>
 

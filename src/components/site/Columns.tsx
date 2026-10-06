@@ -8,12 +8,7 @@ export interface ColumnsProps {
   col3?: ReactNode | React.ComponentType
   gap?: 'sm' | 'md' | 'lg'
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -65,9 +60,7 @@ export function Columns({
         <div className={`grid ${gridColsClass} ${GAPS[gap]} items-start`}>
           <div className="min-w-0 w-full flex flex-col">{renderSlotContent(col1)}</div>
           <div className="min-w-0 w-full flex flex-col">{renderSlotContent(col2)}</div>
-          {is3Cols && (
-            <div className="min-w-0 w-full flex flex-col">{renderSlotContent(col3)}</div>
-          )}
+          {is3Cols && <div className="min-w-0 w-full flex flex-col">{renderSlotContent(col3)}</div>}
         </div>
       </div>
     </section>

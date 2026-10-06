@@ -15,12 +15,7 @@ export interface HeroImageProps {
   buttonText?: string
   buttonLink?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -61,7 +56,9 @@ export function HeroImage({
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-5xl flex flex-col items-center text-center">
         {seriesLabel && (
-          <span className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}>
+          <span
+            className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+          >
             {seriesLabel}
           </span>
         )}
@@ -74,7 +71,9 @@ export function HeroImage({
 
         {/* Emotional Quote (Playfair Display Italic) */}
         {emotionLine && (
-          <p className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}>
+          <p
+            className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}
+          >
             {emotionLine}
           </p>
         )}

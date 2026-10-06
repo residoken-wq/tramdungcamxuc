@@ -25,24 +25,22 @@ export function QuoteBlock({
   const borderClass = isDark ? 'border-white/15' : 'border-deep-navy/10'
 
   return (
-    <figure
-      className={`relative my-6 rounded-card ${bgClass} ${className}`}
-    >
-      <blockquote className={`font-quote text-xl sm:text-2xl italic leading-relaxed ${quoteTextClass}`}>
+    <figure className={`relative my-6 rounded-card ${bgClass} ${className}`}>
+      <blockquote
+        className={`font-quote text-xl sm:text-2xl italic leading-relaxed ${quoteTextClass}`}
+      >
         &ldquo;{quote}&rdquo;
       </blockquote>
 
       {(cite || roleOrContext) && (
-        <figcaption className={`mt-4 flex flex-wrap items-baseline gap-2 border-t ${borderClass} pt-3`}>
+        <figcaption
+          className={`mt-4 flex flex-wrap items-baseline gap-2 border-t ${borderClass} pt-3`}
+        >
           {cite && (
-            <cite className={`font-ui text-sm font-bold not-italic ${citeClass}`}>
-              {cite}
-            </cite>
+            <cite className={`font-ui text-sm font-bold not-italic ${citeClass}`}>{cite}</cite>
           )}
           {roleOrContext && (
-            <span className={`font-ui text-xs ${roleClass}`}>
-              · {roleOrContext}
-            </span>
+            <span className={`font-ui text-xs ${roleClass}`}>· {roleOrContext}</span>
           )}
         </figcaption>
       )}

@@ -20,15 +20,9 @@ export async function resolveServerData(data: Data): Promise<Data> {
   // Deep clone data to avoid mutating original
   const resolvedData: Data = JSON.parse(JSON.stringify(data))
 
-  const resolveItems = async (
-    items: Array<{ type: string; props: Record<string, unknown> }>,
-  ) => {
+  const resolveItems = async (items: Array<{ type: string; props: Record<string, unknown> }>) => {
     for (const item of items) {
-      if (
-        item &&
-        (item.type === 'ImageText' || item.type === 'HeroImage') &&
-        item.props?.mediaId
-      ) {
+      if (item && (item.type === 'ImageText' || item.type === 'HeroImage') && item.props?.mediaId) {
         try {
           const mediaDoc = await payload.findByID({
             collection: 'media',

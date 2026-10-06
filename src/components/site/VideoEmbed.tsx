@@ -6,12 +6,7 @@ export interface VideoEmbedProps {
   title?: string
   caption?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   isEditing?: boolean
 }
@@ -49,7 +44,10 @@ export function parseVideoUrl(rawUrl?: string): ParsedVideo {
 
   try {
     const parsed = new URL(trimmed)
-    const hostname = parsed.hostname.toLowerCase().replace(/^www\./, '').replace(/^m\./, '')
+    const hostname = parsed.hostname
+      .toLowerCase()
+      .replace(/^www\./, '')
+      .replace(/^m\./, '')
 
     // YouTube matches
     if (hostname === 'youtube.com' || hostname === 'youtube-nocookie.com') {
@@ -131,7 +129,8 @@ export function VideoEmbed({
                 Liên kết video không hợp lệ
               </p>
               <p className="mt-1 font-ui text-xs text-deep-navy/80">
-                Chỉ chấp nhận URL công khai từ YouTube (ví dụ: https://www.youtube.com/watch?v=...) hoặc Vimeo (ví dụ: https://vimeo.com/...).
+                Chỉ chấp nhận URL công khai từ YouTube (ví dụ: https://www.youtube.com/watch?v=...)
+                hoặc Vimeo (ví dụ: https://vimeo.com/...).
               </p>
             </div>
           </div>
@@ -146,9 +145,11 @@ export function VideoEmbed({
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-4xl">
-        <div className={`relative aspect-video w-full overflow-hidden rounded-card border shadow-soft ${
-          isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
-        }`}>
+        <div
+          className={`relative aspect-video w-full overflow-hidden rounded-card border shadow-soft ${
+            isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
+          }`}
+        >
           <iframe
             src={embedUrl}
             title={title || 'Video nhúng'}
@@ -160,7 +161,9 @@ export function VideoEmbed({
         </div>
 
         {caption && (
-          <p className={`mt-3 text-center font-quote text-sm sm:text-base italic ${captionColorClass}`}>
+          <p
+            className={`mt-3 text-center font-quote text-sm sm:text-base italic ${captionColorClass}`}
+          >
             {caption}
           </p>
         )}

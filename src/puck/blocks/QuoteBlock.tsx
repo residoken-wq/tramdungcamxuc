@@ -1,7 +1,7 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { QuoteBlock as UiQuoteBlock } from '@/components/ui/QuoteBlock'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '@/puck/config'
+import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 
 export interface QuoteBlockProps {
   version?: number
@@ -9,12 +9,7 @@ export interface QuoteBlockProps {
   cite?: string
   roleOrContext?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -68,13 +63,7 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({
-    quote,
-    cite,
-    roleOrContext,
-    bgColor = 'warm-ivory',
-    padding = 'md',
-  }) => {
+  render: ({ quote, cite, roleOrContext, bgColor = 'warm-ivory', padding = 'md' }) => {
     const isDeepNavy = bgColor === 'deep-navy'
 
     return (

@@ -12,12 +12,7 @@ export interface FAQProps {
   titleLine2?: string
   items?: FAQItem[]
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -64,7 +59,9 @@ export function FAQ({
         {/* Heading */}
         <div className="text-center mb-10 sm:mb-12 flex flex-col items-center">
           {seriesLabel && (
-            <span className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}>
+            <span
+              className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+            >
               {seriesLabel}
             </span>
           )}
@@ -84,7 +81,9 @@ export function FAQ({
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-ui text-base sm:text-lg font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-md">
                 <span className={questionColorClass}>{item.question}</span>
-                <span className={`shrink-0 transition-transform duration-200 group-open:rotate-180 ${iconColorClass}`}>
+                <span
+                  className={`shrink-0 transition-transform duration-200 group-open:rotate-180 ${iconColorClass}`}
+                >
                   <svg
                     width="20"
                     height="20"
@@ -103,7 +102,9 @@ export function FAQ({
                   </svg>
                 </span>
               </summary>
-              <div className={`mt-4 pt-3 border-t ${isDeepNavy ? 'border-white/10' : 'border-deep-navy/10'} font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}`}>
+              <div
+                className={`mt-4 pt-3 border-t ${isDeepNavy ? 'border-white/10' : 'border-deep-navy/10'} font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}`}
+              >
                 {item.answer}
               </div>
             </details>

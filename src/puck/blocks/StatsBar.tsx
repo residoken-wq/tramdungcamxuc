@@ -1,7 +1,7 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { StatsBar, type StatsBarProps } from '@/components/site/StatsBar'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '@/puck/config'
+import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 
 export type { StatsBarProps }
 

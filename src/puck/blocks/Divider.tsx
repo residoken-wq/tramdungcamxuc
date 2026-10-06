@@ -1,7 +1,7 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { Divider, type DividerProps, type DividerVariant } from '@/components/site/Divider'
-import { BRAND_COLOR_OPTIONS } from '@/puck/config'
+import { BRAND_COLOR_OPTIONS } from '../constants'
 
 export type { DividerProps, DividerVariant }
 

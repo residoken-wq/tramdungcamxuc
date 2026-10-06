@@ -9,12 +9,7 @@ export interface StatsBarProps {
   version?: number
   stats?: StatItem[]
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -33,11 +28,7 @@ const PADDINGS = {
   lg: 'py-16 px-6 sm:px-12',
 } as const
 
-export function StatsBar({
-  stats = [],
-  bgColor = 'warm-ivory',
-  padding = 'md',
-}: StatsBarProps) {
+export function StatsBar({ stats = [], bgColor = 'warm-ivory', padding = 'md' }: StatsBarProps) {
   const isDeepNavy = bgColor === 'deep-navy'
   const validStats = Array.isArray(stats) ? stats.filter((s) => s && (s.value || s.label)) : []
 
@@ -67,10 +58,14 @@ export function StatsBar({
               key={index}
               className={`flex flex-col items-center text-center p-6 sm:p-8 rounded-card border ${cardBgClass} transition-transform hover:-translate-y-0.5`}
             >
-              <div className={`font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none ${valueColorClass}`}>
+              <div
+                className={`font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none ${valueColorClass}`}
+              >
                 {item.value}
               </div>
-              <p className={`mt-3 font-ui text-sm sm:text-base font-semibold leading-relaxed ${labelColorClass}`}>
+              <p
+                className={`mt-3 font-ui text-sm sm:text-base font-semibold leading-relaxed ${labelColorClass}`}
+              >
                 {item.label}
               </p>
             </div>

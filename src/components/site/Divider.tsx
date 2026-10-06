@@ -10,12 +10,7 @@ export interface DividerProps {
   spacing?: 'sm' | 'md' | 'lg'
   align?: 'left' | 'center' | 'right'
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
 }
 
 const BG_COLORS = {
@@ -52,7 +47,9 @@ export function Divider({
   const heartLineColor = isDeepNavy ? 'text-soft-pink' : 'text-accent-pink'
 
   return (
-    <div className={`w-full ${containerBgClass} ${SPACING_CLASSES[spacing]} flex ${ALIGN_CLASSES[align]}`}>
+    <div
+      className={`w-full ${containerBgClass} ${SPACING_CLASSES[spacing]} flex ${ALIGN_CLASSES[align]}`}
+    >
       {variant === 'heart-line' ? (
         <HeartLine className={heartLineColor} width={160} height={24} />
       ) : (

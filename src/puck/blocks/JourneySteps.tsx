@@ -5,7 +5,7 @@ import {
   type JourneyStepsProps,
   FIXED_JOURNEY_STEPS,
 } from '@/components/site/JourneySteps'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '@/puck/config'
+import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 
 export type { JourneyStepsProps }
 
