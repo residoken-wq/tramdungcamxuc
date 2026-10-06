@@ -73,7 +73,7 @@ export function HeroTwoEntries({
           )}
 
           {/* Signature Two-Tone Heading (Anton) */}
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-tight">
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-[1.15]">
             <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
             <span className={titleLine2ColorClass}>{titleLine2}</span>
           </h1>

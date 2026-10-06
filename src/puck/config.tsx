@@ -8,6 +8,16 @@ import { Button, type ButtonVariant, type ButtonSize } from '@/components/ui/But
 import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
 
+import { HeroImageBlock, type HeroImageProps } from './blocks/HeroImage'
+import { QuoteBlockConfig, type QuoteBlockProps } from './blocks/QuoteBlock'
+import { StatsBarBlock, type StatsBarProps } from './blocks/StatsBar'
+import { JourneyStepsBlock, type JourneyStepsProps } from './blocks/JourneySteps'
+import { FAQBlock, type FAQProps } from './blocks/FAQ'
+import { VideoEmbedBlock, type VideoEmbedProps } from './blocks/VideoEmbed'
+import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
+import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
+import { DividerBlock, type DividerProps } from './blocks/Divider'
+
 export const SECTION_BG_COLOR_OPTIONS = [
   { label: 'Ngà ấm (Warm Ivory)', value: 'warm-ivory' },
   { label: 'Hồng phấn (Soft Pink)', value: 'soft-pink' },
@@ -35,10 +45,23 @@ export type CTAButtonBlockProps = {
 }
 
 export type PageComponentsProps = {
+  // Mở đầu
   HeroTwoEntries: HeroTwoEntriesProps
+  HeroImage: HeroImageProps
   SectionHeader: SectionHeaderProps
+  // Nội dung
   RichText: RichTextProps
   ImageText: ImageTextProps
+  QuoteBlock: QuoteBlockProps
+  StatsBar: StatsBarProps
+  JourneySteps: JourneyStepsProps
+  FAQ: FAQProps
+  VideoEmbed: VideoEmbedProps
+  // Bố cục
+  Columns: ColumnsProps
+  Spacer: SpacerProps
+  Divider: DividerProps
+  // Chuyển đổi
   CTAButton: CTAButtonBlockProps
 }
 
@@ -46,11 +69,23 @@ export const puckConfig: Config<PageComponentsProps> = {
   categories: {
     intro: {
       title: 'Mở đầu',
-      components: ['HeroTwoEntries', 'SectionHeader'],
+      components: ['HeroTwoEntries', 'HeroImage', 'SectionHeader'],
     },
     content: {
       title: 'Nội dung',
-      components: ['RichText', 'ImageText'],
+      components: [
+        'RichText',
+        'ImageText',
+        'QuoteBlock',
+        'StatsBar',
+        'JourneySteps',
+        'FAQ',
+        'VideoEmbed',
+      ],
+    },
+    layout: {
+      title: 'Bố cục',
+      components: ['Columns', 'Spacer', 'Divider'],
     },
     conversion: {
       title: 'Chuyển đổi',
@@ -393,6 +428,16 @@ export const puckConfig: Config<PageComponentsProps> = {
         )
       },
     },
+
+    HeroImage: HeroImageBlock,
+    QuoteBlock: QuoteBlockConfig,
+    StatsBar: StatsBarBlock,
+    JourneySteps: JourneyStepsBlock,
+    FAQ: FAQBlock,
+    VideoEmbed: VideoEmbedBlock,
+    Columns: ColumnsBlock,
+    Spacer: SpacerBlock,
+    Divider: DividerBlock,
   },
 }
 

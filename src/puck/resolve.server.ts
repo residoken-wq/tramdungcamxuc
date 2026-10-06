@@ -24,7 +24,11 @@ export async function resolveServerData(data: Data): Promise<Data> {
     items: Array<{ type: string; props: Record<string, unknown> }>,
   ) => {
     for (const item of items) {
-      if (item && item.type === 'ImageText' && item.props?.mediaId) {
+      if (
+        item &&
+        (item.type === 'ImageText' || item.type === 'HeroImage') &&
+        item.props?.mediaId
+      ) {
         try {
           const mediaDoc = await payload.findByID({
             collection: 'media',
