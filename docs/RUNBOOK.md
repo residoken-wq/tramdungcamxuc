@@ -107,6 +107,10 @@ Dùng server Linux có Docker Engine + Docker Compose v2, Git và OpenSSL. Dự 
 
 Chỉ dùng dữ liệu MẪU. Các lệnh dưới đây dành cho **server demo riêng**, luôn dùng project `tdcx-demo`. Máy dev dùng chung của anh Nhân đã có Postgres tại 55432: không chạy lại compose dev và không đụng container `sop-os-mvp-*` hay `tramdungcamxuc-postgres-dev`.
 
+**Quy tắc gõ lệnh:** mọi lệnh `docker compose` trên server demo đều phải có đủ `-p tdcx-demo -f docker-compose.prod.yml`. Thiếu hai cờ này (vd. chỉ gõ `docker compose down`), Compose sẽ dùng `docker-compose.yml` của môi trường dev và project tên theo thư mục, không phải bản demo. Không bao giờ thêm `-v` vào `down` trừ khi cố ý xóa DB + media.
+
+**Cách deploy hiện tại (từ T0-10c):** GitHub Actions build image sau khi CI xanh trên `main` và đẩy lên GHCR: `ghcr.io/residoken-wq/tramdungcamxuc`, tag `latest`, `sha-<7 ký tự commit>`, kèm `tools-latest` / `tools-sha-…` cho lệnh seed. Server **không build**, chỉ `git pull` (lấy file compose mới) → `docker compose pull` → `up -d`. Package hiện để **public** nên không cần `docker login`.
+
 ### Lần đầu
 
 ```bash
@@ -134,14 +138,16 @@ APP_TAG=
 
 #### Xác thực GitHub Container Registry (GHCR)
 
-- **Nếu package GHCR là Private**: Cần đăng nhập để Docker có quyền pull image.
+- **Package đang Public (hiện tại)**: bỏ qua bước đăng nhập, server pull trực tiếp không cần token.
+- **Nếu sau này đổi sang Private**: cần đăng nhập để Docker có quyền pull image.
   Tạo một GitHub Personal Access Token (classic) tại: `GitHub -> Settings -> Developer settings -> Personal access tokens -> Tokens (classic)`. Chỉ chọn duy nhất một quyền: `read:packages`.
-  Chạy lệnh đăng nhập (thay `<GITHUB_USERNAME>` bằng tài khoản GitHub):
+  Chạy lệnh đăng nhập (thay `<GITHUB_USERNAME>` bằng tài khoản GitHub). Lệnh `read` hỏi token và không hiện ra màn hình, không lưu vào lịch sử shell:
   ```bash
-  docker login ghcr.io -u <GITHUB_USERNAME> --password-stdin < /dev/null
+  read -rsp 'GHCR token: ' GHCR_TOKEN; echo
+  printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u <GITHUB_USERNAME> --password-stdin
+  unset GHCR_TOKEN
   ```
-  Dán token khi được yêu cầu. Tuyệt đối không dán token vào chat hay commit vào repo.
-- **Nếu package GHCR là Public**: Bỏ qua bước đăng nhập, server có thể pull trực tiếp mà không cần token.
+  Mong đợi: `Login Succeeded`. Tuyệt đối không dán token vào chat, không ghi vào `.env` hay commit vào repo.
 - **Cách xem và đổi chế độ hiển thị Package trên GitHub**:
   Vào repo GitHub `https://github.com/residoken-wq/tramdungcamxuc` -> thẻ **Packages** (hoặc danh sách Packages ở cột phải trang chủ repo) -> chọn package `tramdungcamxuc` -> vào **Package settings** -> cuộn xuống mục **Danger Zone** -> **Change package visibility** -> chọn **Public** hoặc **Private**.
 
@@ -159,7 +165,7 @@ curl -fsS http://127.0.0.1:3400/robots.txt
 
 Kết quả mong đợi: cả app và postgres thành `healthy` (lần đầu chờ khoảng 30s–1 phút để Postgres khởi tạo và app chạy migration); API trả `initialized: false`; header có `X-Robots-Tag: noindex, nofollow`; robots có `User-Agent: *` và `Disallow: /`. Healthcheck app gọi Payload, tự kích hoạt `prodMigrations` trên DB trống. **Không chạy migrate bằng tay trong container.**
 
-Mở `http://IP-SERVER:3400/admin`, tạo tài khoản quản trị đầu tiên cho chủ dự án. Schema hiện tại chưa có dropdown vai trò `owner` (phân quyền chi tiết thuộc T0-07); tài khoản đầu tiên hiện là admin quản trị. Sau đó thử tải một ảnh có mô tả ở **Thư viện ảnh và tài liệu**. Không để form tạo admin đầu tiên mở công khai lâu; có thể dùng SSH tunnel hoặc giới hạn IP trong lúc thiết lập.
+Mở `http://IP-SERVER:3400/admin`, tạo tài khoản quản trị đầu tiên cho chủ dự án: tài khoản đầu tiên tự nhận vai trò `owner`, các tài khoản tạo sau mặc định là `editor` và chỉ `owner` đổi được vai trò. Sau đó thử tải một ảnh có mô tả ở **Thư viện ảnh và tài liệu**. Không để form tạo admin đầu tiên mở công khai lâu; có thể dùng SSH tunnel hoặc giới hạn IP trong lúc thiết lập.
 
 #### Lỗi `container tdcx-demo-postgres-1 is unhealthy`
 
@@ -172,15 +178,54 @@ docker inspect --format '{{json .State.Health}}' tdcx-demo-postgres-1
 docker version --format '{{.Server.Version}}'
 ```
 
-| Log thấy                                                                                   | Nguyên nhân và cách xử lý                                                                                                                                                                          |
-| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `database system is ready to accept connections`, rồi container chuyển healthy sau ít phút | Máy chậm, lần đầu khởi tạo lâu. Chạy lại `up -d` là app lên.                                                                                                                                       |
-| `Operation not permitted`, `clone3`, `faccessat2`, initdb dừng ngay                        | Docker/libseccomp trên host quá cũ cho image Postgres 18 (Debian trixie). Nâng Docker Engine lên bản mới (≥ 24) theo docs chính thức, rồi chạy lại.                                                |
-| `could not create shared memory segment` / `No space left on device`                       | Hết đĩa hoặc `/dev/shm` quá nhỏ (VPS OpenVZ/LXC). Kiểm tra `df -h`; giải phóng đĩa hoặc đổi sang VPS KVM.                                                                                          |
+| Log thấy                                                                                   | Nguyên nhân và cách xử lý                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `database system is ready to accept connections`, rồi container chuyển healthy sau ít phút | Máy chậm, lần đầu khởi tạo lâu. Chạy lại `up -d` là app lên.                                                                                                                                                                                                                                                                                         |
+| `Operation not permitted`, `clone3`, `faccessat2`, initdb dừng ngay                        | Docker/libseccomp trên host quá cũ cho image Postgres 18 (Debian trixie). Nâng Docker Engine lên bản mới (≥ 24) theo docs chính thức, rồi chạy lại.                                                                                                                                                                                                  |
+| `could not create shared memory segment` / `No space left on device`                       | Hết đĩa hoặc `/dev/shm` quá nhỏ (VPS OpenVZ/LXC). Kiểm tra `df -h`; giải phóng đĩa hoặc đổi sang VPS KVM.                                                                                                                                                                                                                                            |
 | `in 18+, these Docker images are configured to store database data in a format...`         | Volume `pgdata` còn dữ liệu cũ của Postgres 16/17 hoặc mount sai chỗ. Nếu là server demo chỉ có dữ liệu MẪU: `docker compose -p tdcx-demo -f docker-compose.prod.yml down -v < /dev/null` rồi `docker compose -p tdcx-demo -f docker-compose.prod.yml pull < /dev/null && docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null`. |
-| `password authentication failed` / container restart liên tục sau khi đổi mật khẩu         | Volume đã khởi tạo với `POSTGRES_PASSWORD` cũ; đổi `.env` không đổi mật khẩu trong DB. Demo chỉ có MẪU thì `down -v` như trên, nếu không thì đặt lại `.env` về mật khẩu cũ.                        |
+| `password authentication failed` / container restart liên tục sau khi đổi mật khẩu         | Volume đã khởi tạo với `POSTGRES_PASSWORD` cũ; đổi `.env` không đổi mật khẩu trong DB. Demo chỉ có MẪU thì `down -v` như trên, nếu không thì đặt lại `.env` về mật khẩu cũ.                                                                                                                                                                          |
 
 `down -v` **xóa sạch DB và media của project `tdcx-demo`**: chỉ dùng trên server demo chưa có dữ liệu thật, và backup trước nếu không chắc. Không chạy trên máy dev dùng chung.
+
+#### Lỗi `app  Skipped  No image to be pulled` khi chạy `pull`
+
+Nghĩa là file `docker-compose.prod.yml` trên server vẫn là bản cũ (service `app` chỉ có `build:`, chưa có `image:`), nên Compose không có gì để kéo và `up` sẽ build tại chỗ. Làm theo mục **"Chuyển server đang build tại chỗ sang pull image"** bên dưới. Kiểm tra nhanh:
+
+```bash
+grep -n "image:" docker-compose.prod.yml
+```
+
+Phải thấy dòng `image: ${APP_IMAGE:-ghcr.io/residoken-wq/tramdungcamxuc}:${APP_TAG:-latest}`. Không thấy → server chưa `git pull` bản mới.
+
+### Chuyển server đang build tại chỗ sang pull image
+
+Dành cho server đã cài theo cách cũ (`up -d --build`). Làm **một lần**; dữ liệu và ảnh trong volume giữ nguyên.
+
+```bash
+cd /opt/tramdungcamxuc            # thư mục repo trên server
+git status --short
+```
+
+Nếu `git status` liệt kê file đã sửa tay (thường là `docker-compose.prod.yml`), lưu lại phần sửa rồi trả file về bản gốc trước khi pull. `.env` không nằm trong Git nên không bị ảnh hưởng:
+
+```bash
+git diff > ../tdcx-local-changes.patch
+git checkout -- docker-compose.prod.yml
+```
+
+Sau đó backup (mục **"Backup DB và media cùng thời điểm"**), rồi:
+
+```bash
+git switch main
+git pull --ff-only < /dev/null
+grep -n "image:" docker-compose.prod.yml
+docker compose -p tdcx-demo -f docker-compose.prod.yml pull < /dev/null
+docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
+docker compose -p tdcx-demo -f docker-compose.prod.yml ps < /dev/null
+```
+
+Mong đợi: lệnh `pull` báo `app  Pulled` (không còn `Skipped`); `up -d` không có dòng `Building`; `ps` thấy image `ghcr.io/residoken-wq/tramdungcamxuc:latest` và cả hai service `healthy` sau 1–2 phút (app tự chạy migration mới nếu có). Image cũ build tại chỗ (`tdcx-demo-app`) không còn dùng, có thể xóa sau khi bản mới chạy ổn: `docker image rm tdcx-demo-app`.
 
 ### Nạp dữ liệu MẪU cho buổi demo
 
@@ -201,9 +246,10 @@ Mong đợi: bảng kết quả có `products 12`, `pages 5`, `lessons 20`… v�
 
 Làm bản sao lưu theo phần bên dưới **trước mỗi lần cập nhật**, nhất là bản có migration. Chỉ cập nhật sau khi commit trên `main` đã chạy CI xanh và image `sha-…` đã có trên GHCR. Giữ lại mã commit cũ và tag đang chạy:
 
+Kiểm tra image của commit mới đã có: vào GitHub repo → **Actions**, run CI của commit đó xanh cả job "Build and Push Docker image"; hoặc tab **Packages** → `tramdungcamxuc` thấy tag `sha-<7 ký tự commit>`.
+
 ```bash
-git rev-parse HEAD > previous-release.txt
-docker inspect --format '{{.Config.Image}}' tdcx-demo-app-1 >> previous-release.txt 2>/dev/null || true
+git rev-parse --short=7 HEAD > previous-release.txt   # commit đang chạy → rollback bằng APP_TAG=sha-<nội dung file>
 git pull --ff-only < /dev/null
 docker compose -p tdcx-demo -f docker-compose.prod.yml pull < /dev/null
 docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
@@ -244,15 +290,19 @@ Mong đợi: `database-list.txt` có bảng `users`, `media`, `payload_migration
 Nếu bản mới không thay đổi database hay media, chỉ cần rollback image app về phiên bản cũ:
 
 - **Cách 1: Rollback theo tag commit trong `.env`**:
-  Sửa `.env`, đặt `APP_TAG=sha-<commit-cũ>` (ví dụ `APP_TAG=sha-1a2b3c4` lấy từ file `previous-release.txt` hoặc git log). Sau đó pull và khởi động lại:
+  Sửa `.env`, đặt `APP_TAG=sha-<commit-cũ>` (ví dụ `APP_TAG=sha-1a2b3c4`, lấy 7 ký tự trong `previous-release.txt` hoặc `git log --oneline`). Sau đó pull và khởi động lại:
   ```bash
   docker compose -p tdcx-demo -f docker-compose.prod.yml pull < /dev/null
   docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
   ```
+  Khi muốn quay lại bản mới nhất: để trống `APP_TAG=` (hoặc `APP_TAG=latest`) rồi `pull` + `up -d`.
 - **Cách 2: Rollback tuyệt đối theo Image Digest**:
-  Lấy digest từ job summary của GitHub Actions hoặc file `$TDCX_BACKUP_DIR/image-digest.txt` (dạng `ghcr.io/residoken-wq/tramdungcamxuc@sha256:...`). Đặt vào `.env`:
-  `APP_IMAGE=ghcr.io/residoken-wq/tramdungcamxuc@sha256:<digest-cũ>`
-  (khi đã dùng digest ở `APP_IMAGE`, để `APP_TAG=` rỗng và kéo image trực tiếp bằng lệnh pull/up).
+  Lấy digest từ job summary của GitHub Actions hoặc file `$TDCX_BACKUP_DIR/image-digest.txt` (dạng `ghcr.io/residoken-wq/tramdungcamxuc@sha256:...`). **Không** đặt digest vào `APP_IMAGE`: compose luôn ghép thêm `:<tag>` nên tên image sẽ sai. Thay vào đó kéo digest về và gắn một tag local:
+  ```bash
+  docker pull ghcr.io/residoken-wq/tramdungcamxuc@sha256:<digest-cũ>
+  docker tag ghcr.io/residoken-wq/tramdungcamxuc@sha256:<digest-cũ> ghcr.io/residoken-wq/tramdungcamxuc:rollback
+  ```
+  Đặt `APP_TAG=rollback` trong `.env`, rồi chạy **chỉ** `docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null` (không chạy `pull`, vì tag `rollback` chỉ có ở máy này).
 
 #### 2. Phục hồi toàn diện cả code, database và media (khi có migration)
 
@@ -263,6 +313,8 @@ export TDCX_BACKUP_DIR=/duong-dan-tuyet-doi/tdcx-backups/THOI-DIEM-BACKUP
 sha256sum -c "$TDCX_BACKUP_DIR/SHA256SUMS"
 docker compose -p tdcx-demo -f docker-compose.prod.yml stop app < /dev/null
 git switch --detach "$(cat "$TDCX_BACKUP_DIR/commit.txt")"
+echo "APP_TAG=sha-$(git rev-parse --short=7 HEAD)"   # ghi giá trị này vào .env (thay dòng APP_TAG cũ)
+nano .env
 docker compose -p tdcx-demo -f docker-compose.prod.yml pull < /dev/null
 docker compose -p tdcx-demo -f docker-compose.prod.yml exec -T postgres psql -U postgres -d postgres -P pager=off -v ON_ERROR_STOP=1 -c 'DROP DATABASE tramdungcamxuc WITH (FORCE)' -c 'CREATE DATABASE tramdungcamxuc' < /dev/null
 docker compose -p tdcx-demo -f docker-compose.prod.yml exec -T postgres pg_restore -U postgres -d tramdungcamxuc --no-owner --no-privileges --exit-on-error < "$TDCX_BACKUP_DIR/database.dump"
@@ -272,7 +324,7 @@ docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
 curl -fsS http://127.0.0.1:3400/api/users/init
 ```
 
-Mong đợi: `initialized: true`; đăng nhập bằng tài khoản trước backup, thấy nội dung và ảnh cũ. Chờ app healthy trước khi mở lại cho khách. Muốn trở lại bản mới: `git switch main`, `git pull --ff-only < /dev/null`, rồi làm quy trình cập nhật.
+Mong đợi: `initialized: true`; đăng nhập bằng tài khoản trước backup, thấy nội dung và ảnh cũ. Chờ app healthy trước khi mở lại cho khách. Muốn trở lại bản mới: `git switch main`, `git pull --ff-only < /dev/null`, để trống `APP_TAG=` trong `.env`, rồi làm quy trình cập nhật.
 
 ### Dự phòng: Không pull được image (Tự build tại chỗ)
 
@@ -289,6 +341,7 @@ docker compose -p tdcx-demo -f docker-compose.prod.yml -f docker-compose.build.y
 ```
 
 Lưu ý:
+
 - Quá trình build Next.js standalone tại chỗ cần tối thiểu **4 GB RAM** (khuyến nghị 8 GB RAM) và mất từ 3–5 phút.
 - Image build tại chỗ sẽ ghi đè lên tag local của `APP_TAG` (${APP_TAG:-latest}).
 
