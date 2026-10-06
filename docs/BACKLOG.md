@@ -11,6 +11,7 @@
 - [ ] **Đa ngôn ngữ (Song ngữ Anh - Việt)**: Tùy chọn mở rộng cho khách hàng nước ngoài.
 - [ ] **Mobile App PWA / Native**: Nghiên cứu sau khi bản web đạt traction ổn định.
 - [ ] **Tự động đối soát ngân hàng**: Kết nối API ngân hàng sâu hơn khi khối lượng giao dịch lớn.
+- [ ] **Thêm trường `topic` cho collection `products`** (T1-09): Hiện tại `products` chưa có trường chủ đề riêng; trang Thư viện `/thu-vien` đang suy luận chủ đề theo `web` (`habit` / `eq`) và `type` (`package` → `career`). Cần migration thêm select `topic` (eq / habit / career) vào `Products` để Hana tự gắn trong admin CMS.
 
 ---
 
