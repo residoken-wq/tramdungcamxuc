@@ -118,7 +118,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 | Mã    | Task                                                        | Nhãn     | Phụ thuộc           | Máy | Trạng thái |
 | ----- | ----------------------------------------------------------- | -------- | ------------------- | --- | ---------- |
-| T1-01 | Khối Puck: Mở đầu, Nội dung, Bố cục                         |          | GĐ 0                | Local | Sẵn sàng – Antigravity@Local (prompt `prompts/T1-01.md`) |
+| T1-01 | Khối Puck: Mở đầu, Nội dung, Bố cục                         |          | GĐ 0                | Local | Sửa T1-01b – PR #20 ([review](reviews/T1-01.md), prompt `prompts/T1-01b.md`) |
 | T1-02a | Khối Puck: Bán hàng (`resolveData` chỉ lưu ID)             |          | T1-01, T1-08        | Local | Chưa mở |
 | T1-02b | Khối Puck: Niềm tin + revalidate                           |          | T1-02a              | Local | Chưa mở |
 | T1-03 | Khối Puck: Chuyển đổi                                       |          | T1-02b, T1-06       | Local | Chưa mở |
