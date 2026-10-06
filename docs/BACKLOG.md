@@ -26,3 +26,5 @@
 - [ ] **T0-07 / giao tài liệu trả phí**: `media` hiện là thư viện công khai của T0-06. Trước khi đưa tài liệu trả phí thật lên, cần kiểm soát cả API media và URL file trực tiếp, lưu trữ riêng tư và link ký có hạn; chỉ ẩn `products.files` không đủ bảo vệ file gốc.
 - [x] **Admin Payload tiếng Việt** (→ T0-12): bật i18n `vi` cho giao diện admin để lỗi mặc định (vd. "Value must be unique") hiện tiếng Việt cho Hana.
 - [ ] **Khối RichText định dạng giới hạn** (đậm, nghiêng, link, danh sách – Puck `richtext` đã tắt heading/màu/căn lề): đánh giá ở T1-01 khi có nội dung thật. GĐ 0 dùng `textarea` (quyết định spike T0-09).
+- [ ] **Tính % ưu đãi gói trong computePackageValue chưa xét saleEndsAt** (`src/lib/pricing.ts`): Hiện tại `computePackageValue` chỉ lấy `salePrice ?? price` mà chưa xét thời hạn khuyến mãi `saleEndsAt`. Sẽ quyết định ở T1-02a / T1-11 về việc xử lý ưu đãi có thời hạn cho cấu phần gói.
+- [ ] **Font tự host (`next/font/local`)**: build Docker trên CI 2 lần lỗi vì không tải được Google Fonts lúc build (06/10). Chuyển Anton/Montserrat/Playfair (subset vietnamese) vào repo – làm cùng T1-15 (hiệu năng). AGENTS mục 11 đã yêu cầu "font tự host".

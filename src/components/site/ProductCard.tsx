@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { Card } from '@/components/ui/Card'
 import { PriceTag } from '@/components/ui/PriceTag'
 import { StatusBadge, type SaleStatus } from '@/components/ui/StatusBadge'
+import { Button } from '@/components/ui/Button'
+import type { ProductCta } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 
 export interface ProductCoverImage {
@@ -17,9 +19,10 @@ export interface ProductCardProps {
   price?: number | null
   salePrice?: number | null
   saleStatus: SaleStatus
-  trialDays?: number
+  trialDays?: number | null
   journeyStep?: 'pause' | 'feel' | 'name' | 'choose' | 'practice' | string
   cta?: React.ReactNode
+  ctaInfo?: ProductCta | null
   className?: string
 }
 
@@ -33,6 +36,7 @@ export function ProductCard({
   trialDays,
   journeyStep,
   cta,
+  ctaInfo,
   className = '',
 }: ProductCardProps) {
   // If saleStatus is hidden, do not render anything
@@ -99,7 +103,22 @@ export function ProductCard({
         </div>
 
         {/* CTA Slot */}
-        {cta && <div className="mt-4 pt-1">{cta}</div>}
+        {ctaInfo ? (
+          <div className="mt-4 pt-1">
+            <Button
+              href={ctaInfo.href}
+              variant="primary"
+              size="md"
+              target={ctaInfo.external ? '_blank' : undefined}
+              rel={ctaInfo.external ? 'noopener noreferrer' : undefined}
+              className="w-full"
+            >
+              {ctaInfo.label}
+            </Button>
+          </div>
+        ) : cta ? (
+          <div className="mt-4 pt-1">{cta}</div>
+        ) : null}
       </div>
     </Card>
   )

@@ -30,12 +30,20 @@ Ba máy chạy Antigravity song song được nếu mỗi máy giữ **một vù
 | | Máy Local (công ty) | PC ở nhà | Laptop |
 | --- | --- | --- | --- |
 | Agent | Antigravity + Claude + Codex | Antigravity + Claude | Antigravity + Claude |
-| **Vùng code mặc định (GĐ 1)** | **Puck & trang**: T1-01 → T1-04, T1-16 | **Form, email, thanh toán**: T1-06, T1-07, T1-12, T1-13 (`[REVIEW]` → Codex review thứ hai) | **Khung site & dữ liệu**: T1-05, T1-08 → T1-11, T1-14, T1-15 |
+| **Tài khoản Antigravity** | **Chung** với Laptop (1 quota) | **Riêng, nhiều token nhất** | **Chung** với Local (1 quota) |
+| **Vùng code mặc định (GĐ 1)** | **Puck & trang** (đường găng): T1-01, T1-08, T1-02a → T1-04, T1-16 | **Form, email, thanh toán, quiz**: T1-06, T1-07, T1-12a/b, T1-13 (`[REVIEW]` → Codex review thứ hai), T1-14 | **Khung site & dữ liệu** (việc nhẹ): T1-05, T1-09 → T1-11, T1-15 |
 | Ghế Planning | Chính (có Docker để QA image) | Khi anh ở nhà | Khi anh đi ngoài |
 | Hệ điều hành / múi giờ | Linux · Asia/Ho_Chi_Minh (+07) | *(anh bổ sung)* · +07 | *(anh bổ sung)* |
 | Docker | Có (29.x) | *(anh bổ sung)* | *(anh bổ sung)* |
 | Postgres dev | `tramdungcamxuc-postgres-dev` `127.0.0.1:55432` (5432/3000 là của sop-os-mvp) | *(cổng / tên DB)* | *(cổng / tên DB)* |
 | Thư mục & cổng app | Antigravity `tramdungcamxuc` :3100 · Codex `tramdungcamxuc-codex` :3200 · Claude QA `tramdungcamxuc-planning` :3300/:3500 | *(thư mục, cổng)* | *(thư mục, cổng)* |
+
+**Quota Antigravity (anh Nhân chốt 06/10/2026)** – thực chất có 2 nguồn token, không phải 3:
+
+- **PC ở nhà** (tài khoản riêng) gánh chuỗi dài và nặng nhất; khi rảnh nhận thêm task của máy khác.
+- **Local + Laptop** dùng chung một quota. Khi quota sắp cạn: task **đường găng trên Local** được ưu tiên, Laptop tạm dừng (push WIP). Không giao cho Laptop task XL.
+- **Codex** chỉ có ở Local, quota riêng nhưng ít → chỉ review `[REVIEW]` của PC ở nhà và e2e khó (mục 8).
+- Hết quota giữa task: push WIP, ghi vào mô tả PR "hết quota – chờ reset HH:MM", báo Planning để chuyển task sang PC ở nhà nếu gấp.
 
 Vùng code là mặc định: Planning có thể đổi theo ước lượng T0-11a. Task chạm vùng của máy khác (vd. form trong khối Puck) → làm sau khi task vùng kia merge, hoặc Planning tách task.
 

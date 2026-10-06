@@ -118,22 +118,22 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 | Mã    | Task                                                        | Nhãn     | Phụ thuộc           | Máy | Trạng thái |
 | ----- | ----------------------------------------------------------- | -------- | ------------------- | --- | ---------- |
-| T1-01 | Khối Puck: Mở đầu, Nội dung, Bố cục                         |          | GĐ 0                | Local | Sẵn sàng – Antigravity@Local (prompt `prompts/T1-01.md`) |
-| T1-02a | Khối Puck: Bán hàng (`resolveData` chỉ lưu ID)             |          | T1-01, T1-08        | Local | Chưa mở |
+| T1-01 | Khối Puck: Mở đầu, Nội dung, Bố cục                         |          | GĐ 0                | Local | Xong – PR #20 ([review](reviews/T1-01.md)) |
+| T1-02a | Khối Puck: Bán hàng (puckData chỉ lưu ID sản phẩm)         |          | T1-01, T1-08        | Local | Sửa T1-02a-b – PR #25 ([review](reviews/T1-02a.md), prompt `prompts/T1-02a-b.md`) – lỗi nghiêm trọng |
 | T1-02b | Khối Puck: Niềm tin + revalidate                           |          | T1-02a              | Local | Chưa mở |
 | T1-03 | Khối Puck: Chuyển đổi                                       |          | T1-02b, T1-06       | Local | Chưa mở |
 | T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               | Local | Chưa mở |
-| T1-05 | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý          |          | GĐ 0                | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-05.md`) |
-| T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Sẵn sàng – Antigravity@PC nhà (prompt `prompts/T1-06.md`) · 🔒 Migration + Package |
+| T1-05 | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý          |          | GĐ 0                | Laptop | Xong – PR #21 ([review](reviews/T1-05.md)) |
+| T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Sửa T1-06b – PR #22 ([review](reviews/T1-06.md), prompt `prompts/T1-06b.md`) · 🔒 Migration + Package |
 | T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               | PC nhà | Chưa mở |
-| T1-08 | Logic hiển thị sản phẩm theo `saleStatus`                   |          | GĐ 0                | Laptop | Chưa mở (sau T1-05) |
-| T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Chưa mở |
+| T1-08 | Logic hiển thị sản phẩm theo `saleStatus`                   |          | GĐ 0                | Local | Xong – PR #23 ([review](reviews/T1-08.md)) |
+| T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-09.md`) |
 | T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               | Laptop | Chưa mở |
 | T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               | Laptop | Chưa mở |
 | T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Chưa mở |
 | T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Chưa mở |
 | T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
-| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | Laptop | Chưa mở |
+| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | PC nhà | Chưa mở (sau T1-07; chuyển từ Laptop vì quota) |
 | T1-15 | Analytics, SEO, security headers, domain                    |          | T1-05               | Laptop | Chưa mở |
 | T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 | Local | Chưa mở |
 | T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Chưa mở |

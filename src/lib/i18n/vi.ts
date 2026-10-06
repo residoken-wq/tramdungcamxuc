@@ -25,6 +25,14 @@ export const vi = {
   },
   product: {
     trialBadge: 'ngày dùng thử miễn phí',
+    cta: {
+      notify: 'Nhận thông báo',
+      trial: (days: number) => `Dùng thử ${days} ngày miễn phí`,
+      buy: 'Mua ngay',
+      free: 'Nhận miễn phí',
+      consult: 'Đăng ký tư vấn',
+      external: 'Xem chi tiết',
+    },
     journeySteps: {
       pause: 'Bước 1 · Dừng lại',
       feel: 'Bước 2 · Cảm nhận',
@@ -133,6 +141,20 @@ export const vi = {
     backToAdmin: 'Quay lại quản trị',
     draftStatus: 'Bản nháp',
     publishedStatus: 'Đã xuất bản',
+  },
+  legal: {
+    lastUpdated: 'Cập nhật ngày',
+    updatingContent: 'Nội dung đang được cập nhật.',
+    sellerInfoHeading: 'Thông tin người bán',
+    sellerName: 'Đơn vị / Người bán',
+    notFound: 'Trang pháp lý không tồn tại.',
+  },
+  site: {
+    quizShortLabel: 'Quiz 5 phút',
+    floatingChat: {
+      ariaLabel: 'Trò chuyện qua Zalo',
+      tooltip: 'Chat qua Zalo',
+    },
   },
 } as const
 

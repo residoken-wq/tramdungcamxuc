@@ -1,12 +1,13 @@
 // @vitest-environment node
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { getPayload, type CollectionSlug, type Payload } from 'payload'
+import { getPayload, type CollectionSlug, type Payload, type Where } from 'payload'
 import config from '../../src/payload.config'
 import { migrations } from '../../src/migrations'
 import type { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
 import { seed } from '../../seed/seed'
 import { canSeed } from '../../seed/guard'
+import * as seedData from '../../seed/data'
 import type { Navigation, SiteSetting } from '../../src/payload-types'
 
 const counted: CollectionSlug[] = [
@@ -99,12 +100,25 @@ describe('sample seed', () => {
     }
   }, 30000)
 
+  // Other test files run in parallel and also create isSample products/pages; count only the
+  // seed's own slugs so their records cannot change the totals between the two reads.
+  const seedSlugs: Partial<Record<CollectionSlug, string[]>> = {
+    products: seedData.products.map((p) => p.slug),
+    pages: seedData.pages.map((p) => p.slug),
+  }
+  const sampleWhere = (collection: CollectionSlug): Where => {
+    const slugs = seedSlugs[collection]
+    return slugs
+      ? { and: [{ isSample: { equals: true } }, { slug: { in: slugs } }] }
+      : { isSample: { equals: true } }
+  }
+
   const counts = async () =>
     Object.fromEntries(
       await Promise.all(
         counted.map(async (collection) => [
           collection,
-          (await payload.count({ collection, where: { isSample: { equals: true } } })).totalDocs,
+          (await payload.count({ collection, where: sampleWhere(collection) })).totalDocs,
         ]),
       ),
     )
