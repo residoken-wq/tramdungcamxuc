@@ -1,4 +1,6 @@
 // Any setup scripts you might need go here
+process.env.TZ = 'UTC'
+process.env.PGTZ = 'UTC'
 
 // Load .env files
 import 'dotenv/config'

@@ -1,3 +1,7 @@
+// Enforce UTC timezone before anything else loads, matching CI and Vercel environments.
+process.env.TZ = 'UTC'
+process.env.PGTZ = 'UTC'
+
 // Load .env before payload.config reads PAYLOAD_SECRET (globalSetup runs before setupFiles).
 import 'dotenv/config'
 import { getPayload } from 'payload'

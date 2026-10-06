@@ -54,6 +54,15 @@ pnpm dev
 - **Trang chủ**: [http://localhost:3000](http://localhost:3000)
 - **Bảng quản trị CMS**: [http://localhost:3000/admin](http://localhost:3000/admin) _(tạo tài khoản quản trị đầu tiên)_
 
+### 7. Chạy kiểm thử (Unit & E2E Tests)
+
+```bash
+pnpm test        # Unit tests (tự động cố định TZ=UTC và PGTZ=UTC)
+pnpm test:e2e    # E2E Playwright tests (webServer chạy với TZ=UTC)
+```
+
+> **Lưu ý về múi giờ:** Toàn bộ test và máy chủ phát triển được cấu hình cố định múi giờ **UTC** (thông qua `TZ=UTC`, `PGTZ=UTC` và `options: '-c timezone=UTC'`) để đảm bảo kết quả kiểm thử trên máy trạm dev (kể cả máy cài múi giờ `Asia/Bangkok` UTC+7) luôn đồng nhất 100% với môi trường CI và Production (Vercel).
+
 ---
 
 ## Tài liệu tham khảo

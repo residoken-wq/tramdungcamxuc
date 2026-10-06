@@ -67,6 +67,9 @@
   pnpm format
   ```
 
+> **Ghi chú về múi giờ kiểm thử (T0-06c):**
+> Máy chủ và toàn bộ quy trình kiểm thử (Vitest, Playwright webServer) luôn được cố định chạy theo múi giờ **UTC** (`TZ=UTC`, `PGTZ=UTC`, Postgres connection `options: '-c timezone=UTC'`). Việc này đảm bảo các bài test chứa dữ liệu ngày giờ (như `printedAt` trong thẻ EQ) không bị lệch múi giờ trên các máy trạm dev ở múi giờ địa phương (ví dụ `Asia/Bangkok` UTC+7) so với môi trường CI và Vercel. Mọi logic tính toán "ngày" nghiệp vụ thực tế phải quy đổi tường minh theo `Asia/Ho_Chi_Minh` (GAPS B9).
+
 ---
 
 ## 3. Quản lý Cơ sở dữ liệu & Migrations (Payload CMS)
