@@ -5,6 +5,7 @@ import {
   buildProductsWhere,
   buildPostsWhere,
   buildLibraryUrl,
+  getLibraryEmptyKind,
 } from '@/lib/library'
 
 describe('Library Unit Tests (T1-09)', () => {
@@ -151,6 +152,28 @@ describe('Library Unit Tests (T1-09)', () => {
       expect(buildLibraryUrl({ tab: 'noi-dung', topic: 'habit', q: 'sách' })).toBe(
         '/thu-vien?tab=noi-dung&topic=habit&q=s%C3%A1ch',
       )
+    })
+  })
+
+  describe('getLibraryEmptyKind', () => {
+    it('returns "updating" when no topic and no q are provided', () => {
+      expect(getLibraryEmptyKind({})).toBe('updating')
+      expect(getLibraryEmptyKind({ topic: undefined, q: undefined })).toBe('updating')
+      expect(getLibraryEmptyKind({ topic: undefined, q: '   ' })).toBe('updating')
+    })
+
+    it('returns "filtered" when a topic is selected', () => {
+      expect(getLibraryEmptyKind({ topic: 'eq' })).toBe('filtered')
+      expect(getLibraryEmptyKind({ topic: 'habit' })).toBe('filtered')
+      expect(getLibraryEmptyKind({ topic: 'career' })).toBe('filtered')
+    })
+
+    it('returns "filtered" when a search query q is provided', () => {
+      expect(getLibraryEmptyKind({ q: 'thói quen' })).toBe('filtered')
+    })
+
+    it('returns "filtered" when both topic and q are provided', () => {
+      expect(getLibraryEmptyKind({ topic: 'eq', q: 'cảm xúc' })).toBe('filtered')
     })
   })
 })

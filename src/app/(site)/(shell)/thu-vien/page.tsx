@@ -3,14 +3,19 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Render } from '@puckeditor/core'
 import { puckConfig } from '@/puck/config'
-import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { ProductCard } from '@/components/site/ProductCard'
 import { PostCard } from '@/components/site/PostCard'
 import { LibraryFilterLink } from '@/components/site/LibraryFilterLink'
 import { getEffectivePrice, resolveProductCta } from '@/lib/products'
-import { parseLibraryParams, buildLibraryUrl, VALID_TOPICS, type LibraryTopic } from '@/lib/library'
+import {
+  parseLibraryParams,
+  buildLibraryUrl,
+  getLibraryEmptyKind,
+  VALID_TOPICS,
+  type LibraryTopic,
+} from '@/lib/library'
 import { getLibraryData } from '@/lib/library.server'
 import { vi } from '@/lib/i18n/vi'
 
@@ -18,7 +23,6 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: vi.library.pageTitle,
-  description: vi.library.emotionalLine,
 }
 
 type LibraryPageProps = {
@@ -47,14 +51,9 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
           </div>
         ) : (
           <header className="mb-8 sm:mb-12 text-center max-w-3xl mx-auto">
-            <SectionHeader
-              as="h1"
-              align="center"
-              seriesLabel={vi.library.seriesLabel}
-              titleLine1={vi.library.titleLine1}
-              titleLine2={vi.library.titleLine2}
-              emotionLine={vi.library.emotionalLine}
-            />
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-[1.15] text-deep-navy">
+              {vi.library.heading}
+            </h1>
           </header>
         )}
 
@@ -215,15 +214,21 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
           </Card>
         ) : totalItems === 0 ? (
           <Card variant="white" className="p-8 sm:p-12 text-center max-w-lg mx-auto">
-            <h2 className="font-ui font-bold text-xl text-deep-navy mb-2">
-              {vi.library.empty.title}
-            </h2>
-            <p className="font-sans text-sm text-deep-navy/80 mb-6">
-              {vi.library.empty.description}
-            </p>
-            <Button href={buildLibraryUrl({ tab: params.tab })} variant="ghost" size="md">
-              {vi.library.empty.resetFilters}
-            </Button>
+            {getLibraryEmptyKind(params) === 'updating' ? (
+              <p className="font-ui text-base text-deep-navy/80">{vi.library.empty.updating}</p>
+            ) : (
+              <>
+                <h2 className="font-ui font-bold text-xl text-deep-navy mb-2">
+                  {vi.library.empty.title}
+                </h2>
+                <p className="font-sans text-sm text-deep-navy/80 mb-6">
+                  {vi.library.empty.description}
+                </p>
+                <Button href={buildLibraryUrl({ tab: params.tab })} variant="ghost" size="md">
+                  {vi.library.empty.resetFilters}
+                </Button>
+              </>
+            )}
           </Card>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

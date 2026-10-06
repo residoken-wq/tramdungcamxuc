@@ -130,3 +130,18 @@ export function buildLibraryUrl(params: {
   const queryString = searchParams.toString()
   return queryString ? `/thu-vien?${queryString}` : '/thu-vien'
 }
+
+export type LibraryEmptyKind = 'updating' | 'filtered'
+
+/**
+ * Xác định kiểu trạng thái rỗng trong thư viện:
+ * - Khi không có bộ lọc topic hoặc q: thư viện chưa có nội dung ('updating' -> "Thư viện đang được cập nhật.", không có nút xóa bộ lọc).
+ * - Khi người dùng có chọn topic hoặc nhập q: lọc không ra kết quả ('filtered' -> hiện thông điệp lọc và nút "Xóa bộ lọc").
+ */
+export function getLibraryEmptyKind(params: {
+  topic?: string | undefined
+  q?: string | undefined
+}): LibraryEmptyKind {
+  const hasFilter = Boolean(params.topic || (params.q && params.q.trim().length > 0))
+  return hasFilter ? 'filtered' : 'updating'
+}

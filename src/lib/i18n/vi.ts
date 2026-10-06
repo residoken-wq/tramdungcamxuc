@@ -134,11 +134,7 @@ export const vi = {
   },
   library: {
     pageTitle: 'Thư viện | Trạm Dừng Cảm Xúc',
-    seriesLabel: 'Tài nguyên & Khóa học',
-    titleLine1: 'Thư Viện Trạm Dừng',
-    titleLine2: 'Học hỏi & Nuôi dưỡng',
-    emotionalLine:
-      'Nơi bạn tìm thấy các công cụ số, khóa học và tri thức đồng hành trên hành trình hiểu mình và chuyển mình.',
+    heading: 'Thư viện',
     tabs: {
       courses: 'Khóa học',
       content: 'Nội dung',
@@ -156,6 +152,7 @@ export const vi = {
       clear: 'Xóa tìm kiếm',
     },
     empty: {
+      updating: 'Thư viện đang được cập nhật.',
       title: 'Chưa có nội dung phù hợp',
       description: 'Không tìm thấy khóa học hay nội dung nào khớp với tiêu chí bạn đã chọn.',
       resetFilters: 'Xóa bộ lọc',
