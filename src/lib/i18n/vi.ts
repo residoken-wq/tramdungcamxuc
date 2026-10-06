@@ -110,6 +110,19 @@ export const vi = {
     draftStatus: 'Bản nháp',
     publishedStatus: 'Đã xuất bản',
   },
+  legal: {
+    lastUpdated: 'Cập nhật ngày',
+    updatingContent: 'Nội dung đang được cập nhật.',
+    sellerInfoHeading: 'Thông tin người bán',
+    sellerName: 'Đơn vị / Người bán',
+    notFound: 'Trang pháp lý không tồn tại.',
+  },
+  site: {
+    floatingChat: {
+      ariaLabel: 'Trò chuyện qua Zalo',
+      tooltip: 'Chat qua Zalo',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

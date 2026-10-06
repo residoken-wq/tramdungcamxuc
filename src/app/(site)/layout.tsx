@@ -1,6 +1,8 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { Anton, Montserrat, Playfair_Display } from 'next/font/google'
+import { getSiteShellData } from '@/lib/site-shell.server'
+import { Navbar, Footer, FloatingChat } from '@/components/site'
 import './styles.css'
 
 const anton = Anton({
@@ -32,18 +34,24 @@ export const metadata: Metadata = {
   description: 'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
 }
 
-export default function SiteLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const shellData = await getSiteShellData()
+
   return (
-    <html
-      lang="vi"
-      className={`${anton.variable} ${montserrat.variable} ${playfair.variable}`}
-    >
-      <body className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased">
-        {children}
+    <html lang="vi" className={`${anton.variable} ${montserrat.variable} ${playfair.variable}`}>
+      <body className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased flex flex-col">
+        <Navbar items={shellData.navbar.items} cta={shellData.navbar.cta} />
+        <div className="flex-1">{children}</div>
+        <Footer
+          legalLinks={shellData.footer.legalLinks}
+          sellerInfo={shellData.footer.sellerInfo}
+          socialLinks={shellData.footer.socialLinks}
+          tagline={shellData.footer.tagline}
+        />
+        <FloatingChat
+          showFloatingChat={shellData.floatingChat.showFloatingChat}
+          zaloChatUrl={shellData.floatingChat.zaloChatUrl}
+        />
       </body>
     </html>
   )

@@ -48,11 +48,11 @@ export function Footer({
   const hasLegalLinks = sortedLegalLinks.length > 0
   const hasSellerDetails = Boolean(
     sellerInfo &&
-      (sellerInfo.name ||
-        sellerInfo.taxCode ||
-        sellerInfo.address ||
-        sellerInfo.phone ||
-        sellerInfo.email)
+    (sellerInfo.name?.trim() ||
+      sellerInfo.taxCode?.trim() ||
+      sellerInfo.address?.trim() ||
+      sellerInfo.phone?.trim() ||
+      sellerInfo.email?.trim()),
   )
   const hasSocialLinks = Boolean(socialLinks && socialLinks.length > 0)
   const hasContactSection = hasSellerDetails || hasSocialLinks
@@ -94,7 +94,7 @@ export function Footer({
                 {sortedLegalLinks.map((item) => (
                   <li key={item.slug}>
                     <Link
-                      href={item.slug}
+                      href={item.slug.startsWith('/') ? item.slug : `/${item.slug}`}
                       className="font-sans text-sm text-deep-navy/80 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm"
                     >
                       {item.title}
@@ -115,50 +115,48 @@ export function Footer({
               {/* Seller Information (only show non-empty fields) */}
               {hasSellerDetails && sellerInfo && (
                 <div className="space-y-1.5 text-sm font-sans text-deep-navy/80">
-                  {sellerInfo.name && (
-                    <p className="font-ui font-semibold text-deep-navy">
-                      {sellerInfo.name}
-                    </p>
+                  {sellerInfo.name?.trim() && (
+                    <p className="font-ui font-semibold text-deep-navy">{sellerInfo.name.trim()}</p>
                   )}
-                  {sellerInfo.taxCode && (
+                  {sellerInfo.taxCode?.trim() && (
                     <p>
                       <span className="font-medium text-deep-navy/60">
                         {vi.footer.seller.taxCode}:
                       </span>{' '}
-                      {sellerInfo.taxCode}
+                      {sellerInfo.taxCode.trim()}
                     </p>
                   )}
-                  {sellerInfo.address && (
+                  {sellerInfo.address?.trim() && (
                     <p>
                       <span className="font-medium text-deep-navy/60">
                         {vi.footer.seller.address}:
                       </span>{' '}
-                      {sellerInfo.address}
+                      {sellerInfo.address.trim()}
                     </p>
                   )}
-                  {sellerInfo.phone && (
+                  {sellerInfo.phone?.trim() && (
                     <p>
                       <span className="font-medium text-deep-navy/60">
                         {vi.footer.seller.phone}:
                       </span>{' '}
                       <a
-                        href={`tel:${sellerInfo.phone}`}
+                        href={`tel:${sellerInfo.phone.trim()}`}
                         className="hover:text-bright-magenta underline transition-colors"
                       >
-                        {sellerInfo.phone}
+                        {sellerInfo.phone.trim()}
                       </a>
                     </p>
                   )}
-                  {sellerInfo.email && (
+                  {sellerInfo.email?.trim() && (
                     <p>
                       <span className="font-medium text-deep-navy/60">
                         {vi.footer.seller.email}:
                       </span>{' '}
                       <a
-                        href={`mailto:${sellerInfo.email}`}
+                        href={`mailto:${sellerInfo.email.trim()}`}
                         className="hover:text-bright-magenta underline transition-colors"
                       >
-                        {sellerInfo.email}
+                        {sellerInfo.email.trim()}
                       </a>
                     </p>
                   )}
