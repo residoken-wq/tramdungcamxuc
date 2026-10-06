@@ -119,7 +119,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | Mã    | Task                                                        | Nhãn     | Phụ thuộc           | Máy | Trạng thái |
 | ----- | ----------------------------------------------------------- | -------- | ------------------- | --- | ---------- |
 | T1-01 | Khối Puck: Mở đầu, Nội dung, Bố cục                         |          | GĐ 0                | Local | Xong – PR #20 ([review](reviews/T1-01.md)) |
-| T1-02a | Khối Puck: Bán hàng (puckData chỉ lưu ID sản phẩm)         |          | T1-01, T1-08        | Local | Sẵn sàng – Antigravity@Local (prompt `prompts/T1-02a.md`) |
+| T1-02a | Khối Puck: Bán hàng (puckData chỉ lưu ID sản phẩm)         |          | T1-01, T1-08        | Local | Sửa T1-02a-b – PR #25 ([review](reviews/T1-02a.md), prompt `prompts/T1-02a-b.md`) – lỗi nghiêm trọng |
 | T1-02b | Khối Puck: Niềm tin + revalidate                           |          | T1-02a              | Local | Chưa mở |
 | T1-03 | Khối Puck: Chuyển đổi                                       |          | T1-02b, T1-06       | Local | Chưa mở |
 | T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               | Local | Chưa mở |
