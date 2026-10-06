@@ -1,7 +1,14 @@
 import React from 'react'
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { getEffectivePrice, resolveProductCta, type ProductCtaInput } from '../../src/lib/products'
+import {
+  getEffectivePrice,
+  resolveProductCta,
+  type ProductCtaInput,
+  GROWTH_MIRROR_PATH,
+  buildPackageComparison,
+  type ProductPackageInput,
+} from '../../src/lib/products'
 import { ProductCard } from '../../src/components/site/ProductCard'
 import { vi } from '../../src/lib/i18n/vi'
 
@@ -296,7 +303,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
       })
     })
 
-    it('routes to /coaching/<slug> when type is package', () => {
+    it('routes to GROWTH_MIRROR_PATH when type is package', () => {
       const product: ProductCtaInput = {
         slug: 'growth-mirror-clear',
         saleStatus: 'consult',
@@ -305,7 +312,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
       expect(resolveProductCta(product, fixedNow)).toEqual({
         kind: 'consult',
         label: vi.product.cta.consult,
-        href: '/coaching/growth-mirror-clear',
+        href: GROWTH_MIRROR_PATH,
       })
     })
 
@@ -396,5 +403,135 @@ describe('ProductCard with ctaInfo & backward compatibility', () => {
 
     expect(screen.getByTestId('custom-legacy-cta')).toBeDefined()
     expect(screen.getByText('Nút cũ')).toBeDefined()
+  })
+})
+
+describe('buildPackageComparison - Pure table builder', () => {
+  const fixedNow = new Date('2026-10-06T12:00:00.000Z')
+
+  const samplePackages: ProductPackageInput[] = [
+    {
+      id: 1,
+      name: 'CLEAR',
+      slug: 'growth-mirror-clear',
+      price: 1750000,
+      salePrice: null,
+      components: [
+        { label: 'Bộ công cụ số Habit Tracker + EQ Buddy', quantity: 1, unitValue: 500000 },
+        { label: 'Workshop "Tập thương cảm xúc"', quantity: 2, unitValue: 500000 },
+        { label: 'Coaching 1:1 "Vững vàng chuyển mình"', quantity: 1, unitValue: 1000000 },
+      ],
+    },
+    {
+      id: 2,
+      name: 'BUILD',
+      slug: 'growth-mirror-build',
+      price: 2900000,
+      salePrice: null,
+      components: [
+        { label: 'Bộ công cụ số Habit Tracker + EQ Buddy', quantity: 1, unitValue: 500000 },
+        { label: 'Workshop "Tập thương cảm xúc"', quantity: 2, unitValue: 500000 },
+        { label: 'Coaching 1:1 "Vững vàng chuyển mình"', quantity: 3, unitValue: 1000000 },
+        { label: 'Tư vấn hướng nghiệp', quantity: 1, unitValue: 1000000 },
+        { label: 'Cộng đồng private', quantity: 1, unitValue: 300000 },
+      ],
+    },
+    {
+      id: 3,
+      name: 'SHINE',
+      slug: 'growth-mirror-shine',
+      price: 4320000,
+      salePrice: null,
+      components: [
+        { label: 'Bộ công cụ số Habit Tracker + EQ Buddy', quantity: 1, unitValue: 500000 },
+        { label: 'Workshop "Tập thương cảm xúc"', quantity: 2, unitValue: 500000 },
+        { label: 'Coaching 1:1 "Vững vàng chuyển mình"', quantity: 6, unitValue: 1000000 },
+        { label: 'Tư vấn hướng nghiệp', quantity: 3, unitValue: 1000000 },
+        { label: 'Cộng đồng private', quantity: 1, unitValue: 300000 },
+      ],
+    },
+  ]
+
+  it('gathers all unique component labels and preserves first-seen order', () => {
+    const result = buildPackageComparison(samplePackages, fixedNow)
+    expect(result.rows.map((r) => r.label)).toEqual([
+      'Bộ công cụ số Habit Tracker + EQ Buddy',
+      'Workshop "Tập thương cảm xúc"',
+      'Coaching 1:1 "Vững vàng chuyển mình"',
+      'Tư vấn hướng nghiệp',
+      'Cộng đồng private',
+    ])
+  })
+
+  it('marks missing components as "Không" and binary presence as "Có" or numeric', () => {
+    const result = buildPackageComparison(samplePackages, fixedNow)
+
+    // First component: all 3 packages have quantity 1 (maxQty = 1) -> all "Có"
+    const toolRow = result.rows[0]
+    expect(toolRow.cells.map((c) => c.text)).toEqual(['Có', 'Có', 'Có'])
+    expect(toolRow.cells.map((c) => c.has)).toEqual([true, true, true])
+
+    // Coaching row: quantities are 1, 3, 6 (maxQty = 6 > 1) -> '1', '3', '6'
+    const coachingRow = result.rows[2]
+    expect(coachingRow.cells.map((c) => c.text)).toEqual(['1', '3', '6'])
+
+    // Career row: CLEAR doesn't have it -> 'Không', BUILD has 1, SHINE has 3 (maxQty = 3 > 1) -> 'Không', '1', '3'
+    const careerRow = result.rows[3]
+    expect(careerRow.cells.map((c) => c.text)).toEqual(['Không', '1', '3'])
+    expect(careerRow.cells[0].has).toBe(false)
+    expect(careerRow.cells[1].has).toBe(true)
+    expect(careerRow.cells[2].has).toBe(true)
+
+    // Community row: CLEAR doesn't have it -> 'Không', BUILD and SHINE have quantity 1 (maxQty = 1) -> 'Không', 'Có', 'Có'
+    const communityRow = result.rows[4]
+    expect(communityRow.cells.map((c) => c.text)).toEqual(['Không', 'Có', 'Có'])
+  })
+
+  it('computes totalValue, sellingPrice, and discountPercent accurately', () => {
+    const result = buildPackageComparison(samplePackages, fixedNow)
+    // CLEAR: totalValue = 500k + 2*500k + 1*1000k = 2.500.000, price = 1.750.000 -> (2.5M - 1.75M)/2.5M = 30%
+    expect(result.packages[0].totalValue).toBe(2500000)
+    expect(result.packages[0].sellingPrice).toBe(1750000)
+    expect(result.packages[0].discountPercent).toBe(30)
+
+    // BUILD: totalValue = 500k + 1000k + 3000k + 1000k + 300k = 5.800.000, price = 2.900.000 -> 50%
+    expect(result.packages[1].totalValue).toBe(5800000)
+    expect(result.packages[1].sellingPrice).toBe(2900000)
+    expect(result.packages[1].discountPercent).toBe(50)
+
+    // SHINE: totalValue = 500k + 1000k + 6000k + 3000k + 300k = 10.800.000, price = 4.320.000 -> 60%
+    expect(result.packages[2].totalValue).toBe(10800000)
+    expect(result.packages[2].sellingPrice).toBe(4320000)
+    expect(result.packages[2].discountPercent).toBe(60)
+  })
+
+  it('respects saleEndsAt when active vs expired', () => {
+    const promoPackage: ProductPackageInput = {
+      id: 10,
+      name: 'PROMO PACKAGE',
+      price: 2000000,
+      salePrice: 1500000,
+      saleEndsAt: '2026-10-10T00:00:00.000Z',
+      components: [{ label: 'Quyền lợi A', quantity: 1, unitValue: 2500000 }],
+    }
+
+    // Active promo (fixedNow < 2026-10-10)
+    const activeResult = buildPackageComparison([promoPackage], fixedNow)
+    expect(activeResult.packages[0].sellingPrice).toBe(1500000)
+    // Discount: (2.5M - 1.5M)/2.5M = 40%
+    expect(activeResult.packages[0].discountPercent).toBe(40)
+
+    // Expired promo
+    const afterExpiry = new Date('2026-10-11T00:00:00.000Z')
+    const expiredResult = buildPackageComparison([promoPackage], afterExpiry)
+    expect(expiredResult.packages[0].sellingPrice).toBe(2000000)
+    // Discount: (2.5M - 2.0M)/2.5M = 20%
+    expect(expiredResult.packages[0].discountPercent).toBe(20)
+  })
+
+  it('returns empty packages and rows when input is null, undefined, or empty', () => {
+    expect(buildPackageComparison(null, fixedNow)).toEqual({ packages: [], rows: [] })
+    expect(buildPackageComparison(undefined, fixedNow)).toEqual({ packages: [], rows: [] })
+    expect(buildPackageComparison([], fixedNow)).toEqual({ packages: [], rows: [] })
   })
 })

@@ -22,6 +22,8 @@ export interface ProductCta {
 export type ProductCtaInput = Pick<Product, 'slug' | 'saleStatus'> &
   Partial<Pick<Product, 'type' | 'trialDays' | 'externalUrl' | 'externalLabel' | 'ctaLabel'>>
 
+export const GROWTH_MIRROR_PATH = '/coaching/growth-mirror'
+
 /**
  * Tính giá hiển thị hiệu lực theo thời điểm hiện tại (`now`).
  *
@@ -139,14 +141,187 @@ export function resolveProductCta(product: ProductCtaInput, _now?: Date): Produc
 
   // 7. consult
   if (saleStatus === 'consult') {
-    const isCoachingOrPackage = type === 'coaching_trial' || type === 'package'
+    if (type === 'package') {
+      return {
+        kind: 'consult',
+        label: customLabel || vi.product.cta.consult,
+        href: GROWTH_MIRROR_PATH,
+      }
+    }
+
+    if (type === 'coaching_trial') {
+      return {
+        kind: 'consult',
+        label: customLabel || vi.product.cta.consult,
+        href: `/coaching/${encodedSlug}`,
+      }
+    }
 
     return {
       kind: 'consult',
       label: customLabel || vi.product.cta.consult,
-      href: isCoachingOrPackage ? `/coaching/${encodedSlug}` : '/doanh-nghiep',
+      href: '/doanh-nghiep',
     }
   }
 
   return null
+}
+
+export interface PackageComparisonItem {
+  id: number | string
+  name: string
+  slug: string
+  price: number | null
+  salePrice: number | null
+  effectivePrice: EffectivePrice
+  totalValue: number
+  sellingPrice: number | null
+  discountPercent: number | null
+}
+
+export interface PackageComparisonCell {
+  has: boolean
+  quantity: number | null
+  text: string
+}
+
+export interface PackageComparisonRow {
+  label: string
+  cells: PackageComparisonCell[]
+}
+
+export interface PackageComparisonResult {
+  packages: PackageComparisonItem[]
+  rows: PackageComparisonRow[]
+}
+
+export type ProductPackageInput = {
+  id: number | string
+  name: string
+  slug?: string | null
+  price?: number | null
+  salePrice?: number | null
+  saleEndsAt?: string | null
+  components?:
+    | readonly {
+        label?: string | null
+        quantity?: number | null
+        unitValue?: number | null
+        retailPrice?: number | null
+      }[]
+    | null
+}
+
+/**
+ * Hàm thuần (pure function) dựng cấu trúc so sánh các gói Growth Mirror.
+ * - Nhận `now: Date` làm tham số để tính giá hiệu lực không phụ thuộc hệ thống.
+ * - Gộp cấu phần theo label xuất hiện lần đầu.
+ * - Tính tổng giá trị và % ưu đãi từ giá đã qua getEffectivePrice.
+ * - Ô không có cấu phần ghi 'Không'.
+ * - Ô có cấu phần: ghi số lượng nếu có gói có số lượng > 1, ghi 'Có' nếu mọi gói đều có số lượng <= 1.
+ */
+export function buildPackageComparison(
+  packages: readonly ProductPackageInput[] | null | undefined,
+  now: Date,
+): PackageComparisonResult {
+  if (!packages || !Array.isArray(packages) || packages.length === 0) {
+    return { packages: [], rows: [] }
+  }
+
+  // Import computePackageValue dynamically or at top level if needed
+  type CompType = {
+    label?: string | null
+    quantity?: number | null
+    unitValue?: number | null
+    retailPrice?: number | null
+  }
+
+  // Process each package
+  const processedPackages: PackageComparisonItem[] = packages.map((pkg) => {
+    const effectivePrice = getEffectivePrice(pkg, now)
+    const sellingPrice = effectivePrice.salePrice ?? effectivePrice.price
+    const comps = (pkg.components || []) as readonly CompType[]
+    const totalValue = comps.reduce(
+      (sum: number, comp: CompType) => sum + (comp.quantity ?? 0) * (comp.unitValue ?? 0),
+      0,
+    )
+    const discountPercent =
+      totalValue === 0 || sellingPrice == null
+        ? null
+        : Math.max(0, Math.round(((totalValue - sellingPrice) / totalValue) * 100))
+
+    return {
+      id: pkg.id,
+      name: pkg.name,
+      slug: pkg.slug || '',
+      price: typeof pkg.price === 'number' ? pkg.price : null,
+      salePrice: typeof pkg.salePrice === 'number' ? pkg.salePrice : null,
+      effectivePrice,
+      totalValue,
+      sellingPrice,
+      discountPercent,
+    }
+  })
+
+  // Collect unique component labels preserving order
+  const labelOrder: string[] = []
+  const labelSet = new Set<string>()
+
+  for (const pkg of packages) {
+    const comps = (pkg.components || []) as readonly CompType[]
+    for (const comp of comps) {
+      const label = comp.label?.trim()
+      if (label && !labelSet.has(label)) {
+        labelSet.add(label)
+        labelOrder.push(label)
+      }
+    }
+  }
+
+  // Find max quantity for each label
+  const labelMaxQuantity = new Map<string, number>()
+  for (const label of labelOrder) {
+    let max = 0
+    for (const pkg of packages) {
+      const comps = (pkg.components || []) as readonly CompType[]
+      const comp = comps.find((c: CompType) => c.label?.trim() === label)
+      if (comp && typeof comp.quantity === 'number' && comp.quantity > max) {
+        max = comp.quantity
+      }
+    }
+    labelMaxQuantity.set(label, max)
+  }
+
+  // Build rows
+  const rows: PackageComparisonRow[] = labelOrder.map((label) => {
+    const maxQty = labelMaxQuantity.get(label) ?? 0
+
+    const cells: PackageComparisonCell[] = packages.map((pkg) => {
+      const comps = (pkg.components || []) as readonly CompType[]
+      const comp = comps.find((c: CompType) => c.label?.trim() === label)
+      if (!comp || comp.quantity == null || comp.quantity <= 0) {
+        return {
+          has: false,
+          quantity: null,
+          text: 'Không',
+        }
+      }
+
+      const qty = comp.quantity
+      const text = maxQty > 1 ? String(qty) : 'Có'
+
+      return {
+        has: true,
+        quantity: qty,
+        text,
+      }
+    })
+
+    return { label, cells }
+  })
+
+  return {
+    packages: processedPackages,
+    rows,
+  }
 }
