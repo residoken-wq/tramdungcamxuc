@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { checkbox, lines, select, text, textarea } from '../fields/content'
+import { checkbox, lines, relation, select, text, textarea } from '../fields/content'
 import { isEditorOrOwner, isOwner } from '../lib/auth/access'
 
 // REVIEW-REQUIRED: Personal data (NĐ 13/2023). Public forms create leads through server code
@@ -11,6 +11,9 @@ export const Leads: CollectionConfig = {
     group: 'Khách hàng',
     useAsTitle: 'email',
     defaultColumns: ['email', 'name', 'need', 'followUpStatus', 'createdAt'],
+    components: {
+      beforeListTable: ['@/components/admin/ExportLeadsButton#ExportLeadsButton'],
+    },
   },
   access: {
     read: isEditorOrOwner,
@@ -35,6 +38,30 @@ export const Leads: CollectionConfig = {
     text('phone', 'Điện thoại'),
     textarea('message', 'Lời nhắn'),
     checkbox('consent', 'Đã đồng ý'),
+    {
+      name: 'consentAt',
+      label: 'Thời điểm đồng ý',
+      type: 'date',
+      admin: {
+        readOnly: true,
+        description: 'Thời điểm khách hàng đồng ý chính sách bảo mật (NĐ 13/2023).',
+      },
+    },
+    relation('service', 'Dịch vụ quan tâm', 'services'),
+    {
+      name: 'brief',
+      label: 'Thông tin doanh nghiệp',
+      type: 'group',
+      admin: {
+        condition: (data) => data?.need === 'business',
+      },
+      fields: [
+        text('company', 'Công ty / Tổ chức'),
+        text('teamSize', 'Quy mô đội ngũ'),
+        textarea('targetBehaviors', 'Hành vi mục tiêu'),
+        text('timeline', 'Thời gian dự kiến'),
+      ],
+    },
     select(
       'followUpStatus',
       'Tình trạng chăm sóc',

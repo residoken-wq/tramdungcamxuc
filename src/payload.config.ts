@@ -37,6 +37,7 @@ import { LessonProgress } from './collections/LessonProgress'
 import { OtpCodes } from './collections/OtpCodes'
 import { PaymentEvents } from './collections/PaymentEvents'
 import { AuditLogs } from './collections/AuditLogs'
+import { RateLimitHits } from './collections/RateLimitHits'
 import { SiteSettings } from './globals/SiteSettings'
 import { Navigation } from './globals/Navigation'
 
@@ -88,6 +89,7 @@ export default buildConfig({
     OtpCodes,
     PaymentEvents,
     AuditLogs,
+    RateLimitHits,
   ],
   globals: [SiteSettings, Navigation],
   editor: lexicalEditor(),
