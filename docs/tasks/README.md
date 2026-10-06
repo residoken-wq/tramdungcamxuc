@@ -133,7 +133,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Chưa mở |
 | T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Chưa mở |
 | T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
-| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | Laptop | Chưa mở |
+| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | PC nhà | Chưa mở (sau T1-07; chuyển từ Laptop vì quota) |
 | T1-15 | Analytics, SEO, security headers, domain                    |          | T1-05               | Laptop | Chưa mở |
 | T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 | Local | Chưa mở |
 | T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Chưa mở |
