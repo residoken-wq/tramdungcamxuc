@@ -96,6 +96,7 @@ export interface Config {
     otpCodes: OtpCode;
     paymentEvents: PaymentEvent;
     auditLogs: AuditLog;
+    rateLimitHits: RateLimitHit;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -132,6 +133,7 @@ export interface Config {
     otpCodes: OtpCodesSelect<false> | OtpCodesSelect<true>;
     paymentEvents: PaymentEventsSelect<false> | PaymentEventsSelect<true>;
     auditLogs: AuditLogsSelect<false> | AuditLogsSelect<true>;
+    rateLimitHits: RateLimitHitsSelect<false> | RateLimitHitsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -1362,6 +1364,32 @@ export interface Lead {
    */
   consent?: boolean | null;
   /**
+   * Thời điểm khách hàng đồng ý chính sách bảo mật (NĐ 13/2023).
+   */
+  consentAt?: string | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  service?: (number | null) | Service;
+  brief?: {
+    /**
+     * Nhập công ty / tổ chức.
+     */
+    company?: string | null;
+    /**
+     * Nhập quy mô đội ngũ.
+     */
+    teamSize?: string | null;
+    /**
+     * Nhập hành vi mục tiêu.
+     */
+    targetBehaviors?: string | null;
+    /**
+     * Nhập thời gian dự kiến.
+     */
+    timeline?: string | null;
+  };
+  /**
    * Chọn một mục phù hợp.
    */
   followUpStatus?: ('new' | 'contacted' | 'converted' | 'closed') | null;
@@ -1684,6 +1712,16 @@ export interface AuditLog {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rateLimitHits".
+ */
+export interface RateLimitHit {
+  id: number;
+  key: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1821,6 +1859,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'auditLogs';
         value: number | AuditLog;
+      } | null)
+    | ({
+        relationTo: 'rateLimitHits';
+        value: number | RateLimitHit;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -2328,6 +2370,16 @@ export interface LeadsSelect<T extends boolean = true> {
   phone?: T;
   message?: T;
   consent?: T;
+  consentAt?: T;
+  service?: T;
+  brief?:
+    | T
+    | {
+        company?: T;
+        teamSize?: T;
+        targetBehaviors?: T;
+        timeline?: T;
+      };
   followUpStatus?: T;
   interestTags?:
     | T
@@ -2475,6 +2527,15 @@ export interface AuditLogsSelect<T extends boolean = true> {
   before?: T;
   after?: T;
   at?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rateLimitHits_select".
+ */
+export interface RateLimitHitsSelect<T extends boolean = true> {
+  key?: T;
   updatedAt?: T;
   createdAt?: T;
 }

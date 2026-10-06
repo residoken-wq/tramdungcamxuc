@@ -30,6 +30,8 @@
     "@payloadcms/translations": "3.90.2",
     "@payloadcms/ui": "3.90.2",
     "@puckeditor/core": "0.23.0",
+    "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.1.0",
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
     "graphql": "^16.8.1",
@@ -37,8 +39,10 @@
     "payload": "3.90.2",
     "react": "19.2.6",
     "react-dom": "19.2.6",
+    "resend": "^6.32.0",
     "server-only": "^0.0.1",
-    "sharp": "0.35.4"
+    "sharp": "0.35.4",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
