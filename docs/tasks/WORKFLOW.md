@@ -11,30 +11,35 @@
 4. **Mở PR nháp ngay lần push đầu tiên** (`gh pr create --draft`). Danh sách PR trên GitHub chính là bảng "ai đang làm gì" luôn đúng, kể cả khi bảng README chưa kịp cập nhật. Xong việc → chuyển PR sang "Ready for review".
 5. **Mỗi lúc chỉ một task đổi schema DB** (migration Payload) và **một task thêm package** (`package.json` / lockfile). Planning đánh dấu khóa trên bảng (mục 5).
 
-## 2. Ai làm gì – theo công cụ, không theo máy
+## 2. Ai làm gì
 
-| Công cụ | Vai trò | Được làm | Không làm |
+**Antigravity là lực lượng code chính (cả lane UI lẫn backend). Codex là "đặc nhiệm" dùng tiết kiệm. Claude giữ ghế Planning và lo mọi việc nặng về chạy kiểm tra.**
+
+| Công cụ | Vai trò | Làm | Không làm |
 | --- | --- | --- | --- |
-| **Claude extension** (cả 3 máy) | Planning / QA (ghế Planning) – code khi cần gấp | Giao task, nghiệm thu, chạy e2e + Docker để kiểm, merge, sửa bảng, viết `docs/tasks/reviews/*` | Merge khi CI đỏ hoặc chưa có biên bản ĐẠT |
-| **Codex** (chỉ máy Local, VS Code) | **Lane B – Backend/CMS/hạ tầng** | Collections, migration, access, API, email, thanh toán, Docker/CI, e2e (chạy được Playwright) | Giao diện lớn; hết quota thì push WIP trước |
-| **Antigravity** (cả 3 máy) | **Lane A – Giao diện / Puck / tài liệu** | Component, khối Puck, trang, nội dung `vi.ts`, tài liệu, sửa sau review | Chạy e2e/Playwright, `pnpm dev` ở foreground (hay treo) – Planning chạy e2e thay |
+| **Antigravity** (cả 3 máy) | **Code chính** – mọi task GĐ 1 trở đi (UI, Puck, collections, form, email, thanh toán…) | Code + unit test (`pnpm test` chạy được), **viết** e2e nhưng không chạy; commit sau mỗi phần nhỏ | Chạy Playwright / `pnpm dev` foreground / Docker build (hay treo) |
+| **Claude** (ghế Planning, máy anh đang ngồi) | Planning + QA + "người chạy máy" | Giao task, chạy e2e / build / Docker để nghiệm thu, **sửa e2e hỏng nhỏ**, merge; code gấp khi cần | Merge khi CI đỏ hoặc chưa có biên bản ĐẠT |
+| **Codex** (chỉ máy Local) | **Đặc nhiệm ngắn** – 1 việc / 1 lượt quota | (1) review thứ hai cho code `[REVIEW]` (auth, thanh toán, webhook, mở khóa nội dung); (2) viết/sửa e2e khó; (3) gỡ lỗi khó mà Antigravity bí sau 2 vòng | Task dài, nhiều file; đọc cả bộ tài liệu dự án |
 
-Mỗi task trên bảng có cột **Lane** (A / B / Docs). Máy nào rảnh thì nhận task **Sẵn sàng** đúng lane của agent trên máy đó.
+Vì sao: Antigravity có ở cả 3 máy và ít bị giới hạn quota; Codex hết token rất nhanh (mỗi lần đọc AGENTS.md + GAPS + DECISIONS ≈ 100KB ≈ 30k token trước khi code). Claude đã chạy QA ổn định (e2e, Docker, build) nên gánh phần chạy kiểm tra thay Antigravity.
 
-## 3. Hồ sơ từng máy
+## 3. Hồ sơ từng máy và vùng code mặc định
+
+Ba máy chạy Antigravity song song được nếu mỗi máy giữ **một vùng code** riêng – ít đụng file của nhau (`vi.ts`, collections, migration).
 
 | | Máy Local (công ty) | PC ở nhà | Laptop |
 | --- | --- | --- | --- |
-| Agent | Antigravity + Claude + **Codex** | Antigravity + Claude | Antigravity + Claude |
-| Lane mặc định | A (Antigravity), **B (Codex)**, Planning chính | A + Planning khi anh ở nhà | A (task nhỏ, sửa sau review, tài liệu) |
+| Agent | Antigravity + Claude + Codex | Antigravity + Claude | Antigravity + Claude |
+| **Vùng code mặc định (GĐ 1)** | **Puck & trang**: T1-01 → T1-04, T1-16 | **Form, email, thanh toán**: T1-06, T1-07, T1-12, T1-13 (`[REVIEW]` → Codex review thứ hai) | **Khung site & dữ liệu**: T1-05, T1-08 → T1-11, T1-14, T1-15 |
+| Ghế Planning | Chính (có Docker để QA image) | Khi anh ở nhà | Khi anh đi ngoài |
 | Hệ điều hành / múi giờ | Linux · Asia/Ho_Chi_Minh (+07) | *(anh bổ sung)* · +07 | *(anh bổ sung)* |
 | Docker | Có (29.x) | *(anh bổ sung)* | *(anh bổ sung)* |
-| Postgres dev | container `tramdungcamxuc-postgres-dev` `127.0.0.1:55432` (5432/3000 là của sop-os-mvp) | *(cổng / tên DB)* | *(cổng / tên DB)* |
+| Postgres dev | `tramdungcamxuc-postgres-dev` `127.0.0.1:55432` (5432/3000 là của sop-os-mvp) | *(cổng / tên DB)* | *(cổng / tên DB)* |
 | Thư mục & cổng app | Antigravity `tramdungcamxuc` :3100 · Codex `tramdungcamxuc-codex` :3200 · Claude QA `tramdungcamxuc-planning` :3300/:3500 | *(thư mục, cổng)* | *(thư mục, cổng)* |
 
-Mỗi máy có `.env` và DB **riêng** (không dùng chung DB qua mạng). Test luôn chạy theo UTC (T0-06c), nên múi giờ máy không còn ảnh hưởng kết quả.
+Vùng code là mặc định: Planning có thể đổi theo ước lượng T0-11a. Task chạm vùng của máy khác (vd. form trong khối Puck) → làm sau khi task vùng kia merge, hoặc Planning tách task.
 
-Trên máy có 2 agent (Local): mỗi agent **một git worktree, một DB, một cổng** – chi tiết trong `PARALLEL_AGENTS.md`.
+Mỗi máy có `.env` và DB **riêng**. Test luôn chạy theo UTC (T0-06c), nên múi giờ máy không ảnh hưởng kết quả. Máy Local có nhiều agent: mỗi agent một git worktree, một DB, một cổng (`PARALLEL_AGENTS.md`).
 
 ## 4. Vòng đời một task
 
@@ -89,3 +94,13 @@ Chạy Prettier **chỉ trên file mình sửa** (`pnpm exec prettier --write <f
 - **Đầu buổi (máy anh đang ngồi):** mở Claude → "Planning: đọc `docs/tasks/WORKFLOW.md`, `gh pr list`, nghiệm thu PR đang Chờ QA, giao task tiếp theo cho các agent trên máy này".
 - **Trong buổi:** các agent trên máy đó làm task đúng lane; Planning QA và merge khi có PR sẵn sàng.
 - **Cuối buổi:** mọi agent push WIP; Planning cập nhật bảng và push. Sang máy khác chỉ cần `git pull`.
+
+## 8. Dùng Codex tiết kiệm token
+
+- Prompt Codex **không** bảo đọc AGENTS.md / GAPS / DECISIONS. Chỉ đọc [`CODEX_BRIEF.md`](CODEX_BRIEF.md) (1 trang) + đúng file liên quan Planning liệt kê trong prompt.
+- Một lượt = **một việc có đầu ra rõ** (một biên bản review, một file e2e, một bản sửa lỗi), ≤ ~5 file.
+- Mọi lệnh in output đều cắt ngắn: `… 2>&1 | tail -20`. Không đọc lại log dài, không chạy lại cả bộ test nếu chỉ sửa một file – chạy đúng file đó.
+- Build production, Docker, e2e toàn bộ: **để Claude chạy** khi nghiệm thu, Codex chỉ chạy đúng spec mình viết (`pnpm exec playwright test <file> --project=desktop-1440`).
+- Commit + push sau mỗi bước (quota hết giữa chừng thì việc vẫn còn trên GitHub).
+- Review `[REVIEW]`: Codex chỉ đọc diff (`git --no-pager diff origin/main...origin/<branch> -- <files>`), trả lời bằng danh sách lỗi có file:dòng + mức độ; **không sửa code** trong lượt review.
+
