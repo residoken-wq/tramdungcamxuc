@@ -7,17 +7,9 @@ export interface EffectivePrice {
   salePrice: number | null
 }
 
-export type ProductPricingInput = Partial<
-  Pick<Product, 'price' | 'salePrice' | 'saleEndsAt'>
->
+export type ProductPricingInput = Partial<Pick<Product, 'price' | 'salePrice' | 'saleEndsAt'>>
 
-export type ProductCtaKind =
-  | 'external'
-  | 'notify'
-  | 'trial'
-  | 'buy'
-  | 'free'
-  | 'consult'
+export type ProductCtaKind = 'external' | 'notify' | 'trial' | 'buy' | 'free' | 'consult'
 
 export interface ProductCta {
   kind: ProductCtaKind
@@ -28,16 +20,7 @@ export interface ProductCta {
 }
 
 export type ProductCtaInput = Pick<Product, 'slug' | 'saleStatus'> &
-  Partial<
-    Pick<
-      Product,
-      | 'type'
-      | 'trialDays'
-      | 'externalUrl'
-      | 'externalLabel'
-      | 'ctaLabel'
-    >
-  >
+  Partial<Pick<Product, 'type' | 'trialDays' | 'externalUrl' | 'externalLabel' | 'ctaLabel'>>
 
 /**
  * Tính giá hiển thị hiệu lực theo thời điểm hiện tại (`now`).
@@ -48,13 +31,9 @@ export type ProductCtaInput = Pick<Product, 'slug' | 'saleStatus'> &
  * - `salePrice` chỉ còn hiệu lực khi có giá trị VÀ (`saleEndsAt` trống HOẶC `now < saleEndsAt`).
  * - Ranh giới `now >= saleEndsAt` coi như đã hết hạn khuyến mãi (chỉ còn giá gốc).
  */
-export function getEffectivePrice(
-  product: ProductPricingInput,
-  now: Date,
-): EffectivePrice {
+export function getEffectivePrice(product: ProductPricingInput, now: Date): EffectivePrice {
   const price = typeof product.price === 'number' ? product.price : null
-  const rawSalePrice =
-    typeof product.salePrice === 'number' ? product.salePrice : null
+  const rawSalePrice = typeof product.salePrice === 'number' ? product.salePrice : null
 
   if (rawSalePrice == null) {
     return { price, salePrice: null }
@@ -92,19 +71,8 @@ export function getEffectivePrice(
  * - `ctaLabel` của sản phẩm (nếu có) luôn ghi đè nhãn mặc định.
  * - Mọi nhãn mặc định lấy từ từ điển `vi.product.cta` (`src/lib/i18n/vi.ts`).
  */
-export function resolveProductCta(
-  product: ProductCtaInput,
-  _now?: Date,
-): ProductCta | null {
-  const {
-    saleStatus,
-    slug,
-    type,
-    trialDays,
-    externalUrl,
-    externalLabel,
-    ctaLabel,
-  } = product
+export function resolveProductCta(product: ProductCtaInput, _now?: Date): ProductCta | null {
+  const { saleStatus, slug, type, trialDays, externalUrl, externalLabel, ctaLabel } = product
 
   // 1. saleStatus = hidden -> không hiển thị nút
   if (saleStatus === 'hidden') {
@@ -114,21 +82,14 @@ export function resolveProductCta(
   const customLabel = ctaLabel?.trim() || null
 
   // 2. Có externalUrl (và không hidden)
-  if (
-    externalUrl &&
-    typeof externalUrl === 'string' &&
-    externalUrl.trim().length > 0
-  ) {
+  if (externalUrl && typeof externalUrl === 'string' && externalUrl.trim().length > 0) {
     const safeExternalHref = safeHref(externalUrl)
     // externalUrl không hợp lệ hoặc chứa mã độc (javascript:) sẽ bị chặn an toàn
     if (!safeExternalHref) {
       return null
     }
 
-    const label =
-      customLabel ||
-      externalLabel?.trim() ||
-      vi.product.cta.external
+    const label = customLabel || externalLabel?.trim() || vi.product.cta.external
 
     return {
       kind: 'external',
@@ -178,15 +139,12 @@ export function resolveProductCta(
 
   // 7. consult
   if (saleStatus === 'consult') {
-    const isCoachingOrPackage =
-      type === 'coaching_trial' || type === 'package'
+    const isCoachingOrPackage = type === 'coaching_trial' || type === 'package'
 
     return {
       kind: 'consult',
       label: customLabel || vi.product.cta.consult,
-      href: isCoachingOrPackage
-        ? `/coaching/${encodedSlug}`
-        : '/doanh-nghiep',
+      href: isCoachingOrPackage ? `/coaching/${encodedSlug}` : '/doanh-nghiep',
     }
   }
 

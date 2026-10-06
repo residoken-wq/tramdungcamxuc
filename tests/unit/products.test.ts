@@ -1,11 +1,7 @@
 import React from 'react'
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import {
-  getEffectivePrice,
-  resolveProductCta,
-  type ProductCtaInput,
-} from '../../src/lib/products'
+import { getEffectivePrice, resolveProductCta, type ProductCtaInput } from '../../src/lib/products'
 import { ProductCard } from '../../src/components/site/ProductCard'
 import { vi } from '../../src/lib/i18n/vi'
 
@@ -14,28 +10,20 @@ describe('getEffectivePrice', () => {
 
   it('retains salePrice when saleEndsAt is empty or null', () => {
     expect(
-      getEffectivePrice(
-        { price: 250000, salePrice: 178000, saleEndsAt: null },
-        fixedNow,
-      ),
+      getEffectivePrice({ price: 250000, salePrice: 178000, saleEndsAt: null }, fixedNow),
     ).toEqual({
       price: 250000,
       salePrice: 178000,
     })
 
     expect(
-      getEffectivePrice(
-        { price: 250000, salePrice: 178000, saleEndsAt: '' },
-        fixedNow,
-      ),
+      getEffectivePrice({ price: 250000, salePrice: 178000, saleEndsAt: '' }, fixedNow),
     ).toEqual({
       price: 250000,
       salePrice: 178000,
     })
 
-    expect(
-      getEffectivePrice({ price: 250000, salePrice: 178000 }, fixedNow),
-    ).toEqual({
+    expect(getEffectivePrice({ price: 250000, salePrice: 178000 }, fixedNow)).toEqual({
       price: 250000,
       salePrice: 178000,
     })
@@ -44,10 +32,7 @@ describe('getEffectivePrice', () => {
   it('retains salePrice when saleEndsAt is in the future (now < saleEndsAt)', () => {
     const futureEndsAt = '2026-10-10T00:00:00.000Z'
     expect(
-      getEffectivePrice(
-        { price: 250000, salePrice: 178000, saleEndsAt: futureEndsAt },
-        fixedNow,
-      ),
+      getEffectivePrice({ price: 250000, salePrice: 178000, saleEndsAt: futureEndsAt }, fixedNow),
     ).toEqual({
       price: 250000,
       salePrice: 178000,
@@ -57,10 +42,7 @@ describe('getEffectivePrice', () => {
   it('expires salePrice when saleEndsAt is in the past (now > saleEndsAt)', () => {
     const pastEndsAt = '2026-10-05T00:00:00.000Z'
     expect(
-      getEffectivePrice(
-        { price: 250000, salePrice: 178000, saleEndsAt: pastEndsAt },
-        fixedNow,
-      ),
+      getEffectivePrice({ price: 250000, salePrice: 178000, saleEndsAt: pastEndsAt }, fixedNow),
     ).toEqual({
       price: 250000,
       salePrice: null,
@@ -70,10 +52,7 @@ describe('getEffectivePrice', () => {
   it('expires salePrice on exact boundary when now === saleEndsAt', () => {
     const exactBoundary = '2026-10-06T12:00:00.000Z'
     expect(
-      getEffectivePrice(
-        { price: 250000, salePrice: 178000, saleEndsAt: exactBoundary },
-        fixedNow,
-      ),
+      getEffectivePrice({ price: 250000, salePrice: 178000, saleEndsAt: exactBoundary }, fixedNow),
     ).toEqual({
       price: 250000,
       salePrice: null,
@@ -98,9 +77,7 @@ describe('getEffectivePrice', () => {
       salePrice: null,
     })
 
-    expect(
-      getEffectivePrice({ price: 250000, salePrice: null }, fixedNow),
-    ).toEqual({
+    expect(getEffectivePrice({ price: 250000, salePrice: null }, fixedNow)).toEqual({
       price: 250000,
       salePrice: null,
     })
@@ -178,9 +155,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
         externalLabel: 'Shopee',
         ctaLabel: 'Ghé thăm Shopee của Hana',
       }
-      expect(resolveProductCta(product, fixedNow)?.label).toBe(
-        'Ghé thăm Shopee của Hana',
-      )
+      expect(resolveProductCta(product, fixedNow)?.label).toBe('Ghé thăm Shopee của Hana')
     })
   })
 
@@ -204,9 +179,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
         saleStatus: 'coming_soon',
         ctaLabel: 'Để lại email chờ thông báo',
       }
-      expect(resolveProductCta(product, fixedNow)?.label).toBe(
-        'Để lại email chờ thông báo',
-      )
+      expect(resolveProductCta(product, fixedNow)?.label).toBe('Để lại email chờ thông báo')
     })
   })
 
@@ -231,9 +204,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
         saleStatus: 'on_sale',
         trialDays: 14,
       }
-      expect(resolveProductCta(product, fixedNow)?.label).toBe(
-        'Dùng thử 14 ngày miễn phí',
-      )
+      expect(resolveProductCta(product, fixedNow)?.label).toBe('Dùng thử 14 ngày miễn phí')
     })
 
     it('overrides trial label with ctaLabel', () => {
@@ -243,9 +214,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
         trialDays: 21,
         ctaLabel: 'Trải nghiệm 21 ngày ngay',
       }
-      expect(resolveProductCta(product, fixedNow)?.label).toBe(
-        'Trải nghiệm 21 ngày ngay',
-      )
+      expect(resolveProductCta(product, fixedNow)?.label).toBe('Trải nghiệm 21 ngày ngay')
     })
   })
 
@@ -284,9 +253,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
         trialDays: 0,
         ctaLabel: 'Sở hữu ngay hôm nay',
       }
-      expect(resolveProductCta(product, fixedNow)?.label).toBe(
-        'Sở hữu ngay hôm nay',
-      )
+      expect(resolveProductCta(product, fixedNow)?.label).toBe('Sở hữu ngay hôm nay')
     })
   })
 
@@ -310,9 +277,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
         saleStatus: 'free',
         ctaLabel: 'Tải ebook miễn phí',
       }
-      expect(resolveProductCta(product, fixedNow)?.label).toBe(
-        'Tải ebook miễn phí',
-      )
+      expect(resolveProductCta(product, fixedNow)?.label).toBe('Tải ebook miễn phí')
     })
   })
 
@@ -360,9 +325,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
         slug: 'tu-van-chung',
         saleStatus: 'consult',
       }
-      expect(resolveProductCta(productWithoutType, fixedNow)?.href).toBe(
-        '/doanh-nghiep',
-      )
+      expect(resolveProductCta(productWithoutType, fixedNow)?.href).toBe('/doanh-nghiep')
     })
 
     it('overrides consult label with ctaLabel', () => {
@@ -372,9 +335,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
         type: 'package',
         ctaLabel: 'Đặt lịch tư vấn cùng Hana',
       }
-      expect(resolveProductCta(product, fixedNow)?.label).toBe(
-        'Đặt lịch tư vấn cùng Hana',
-      )
+      expect(resolveProductCta(product, fixedNow)?.label).toBe('Đặt lịch tư vấn cùng Hana')
     })
   })
 })
@@ -396,9 +357,7 @@ describe('ProductCard with ctaInfo & backward compatibility', () => {
 
     const link = screen.getByRole('link', { name: 'Dùng thử 21 ngày miễn phí' })
     expect(link).toBeDefined()
-    expect(link.getAttribute('href')).toBe(
-      '/sap-ra-mat?san-pham=habit-tracker&loai=dung-thu',
-    )
+    expect(link.getAttribute('href')).toBe('/sap-ra-mat?san-pham=habit-tracker&loai=dung-thu')
     expect(link.getAttribute('target')).toBeNull()
   })
 
@@ -431,11 +390,7 @@ describe('ProductCard with ctaInfo & backward compatibility', () => {
         name: '[MẪU] Sổ tay giấy',
         coverImage: { src: '/brand/sample-cover.svg', alt: 'Cover' },
         saleStatus: 'on_sale',
-        cta: React.createElement(
-          'button',
-          { 'data-testid': 'custom-legacy-cta' },
-          'Nút cũ',
-        ),
+        cta: React.createElement('button', { 'data-testid': 'custom-legacy-cta' }, 'Nút cũ'),
       }),
     )
 
