@@ -6,17 +6,11 @@ import { randomUUID } from 'node:crypto'
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import { vi as viStrings } from '../../src/lib/i18n/vi'
-import {
-  b2bBriefSchema,
-  coachingFormSchema,
-  leadFormSchema,
-} from '../../src/lib/forms/schemas'
-import {
-  submitB2BBrief,
-  submitCoachingForm,
-  submitLead,
-} from '../../src/lib/forms/submit.server'
+import { b2bBriefSchema, coachingFormSchema, leadFormSchema } from '../../src/lib/forms/schemas'
+import { submitB2BBrief, submitCoachingForm, submitLead } from '../../src/lib/forms/submit.server'
 import { RateLimitError } from '../../src/lib/forms/ratelimit.server'
+import { TurnstileError } from '../../src/lib/forms/turnstile.server'
+import { handleActionError } from '../../src/lib/forms/actions'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
 
 class MockEmailSender implements EmailSender {
@@ -32,10 +26,11 @@ class MockEmailSender implements EmailSender {
   }
 }
 
-describe('Forms & Email Infrastructure (T1-06)', () => {
+describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
   let payload: Payload
   const createdLeads: number[] = []
   const createdHits: number[] = []
+  const createdServices: number[] = []
 
   beforeAll(async () => {
     payload = await getPayload({ config })
@@ -58,6 +53,9 @@ describe('Forms & Email Infrastructure (T1-06)', () => {
       for (const id of createdHits) {
         await payload.delete({ collection: 'rateLimitHits', id, overrideAccess: true })
       }
+      for (const id of createdServices) {
+        await payload.delete({ collection: 'services', id, overrideAccess: true })
+      }
     } catch {
       // Ignore cleanup errors
     } finally {
@@ -65,7 +63,7 @@ describe('Forms & Email Infrastructure (T1-06)', () => {
     }
   }, 30000)
 
-  describe('Zod Validation with Vietnamese Messages', () => {
+  describe('Zod Validation with Vietnamese Messages & Length Limits (T1-06b)', () => {
     it('requires consent and returns Vietnamese error message', () => {
       const result = leadFormSchema.safeParse({
         name: 'Nguyễn Văn A',
@@ -135,6 +133,126 @@ describe('Forms & Email Infrastructure (T1-06)', () => {
       if (!result.success) {
         const msgError = result.error.issues.find((i) => i.path.includes('message'))
         expect(msgError?.message).toBe(viStrings.forms.validation.messageRequired)
+      }
+    })
+
+    it('rejects message exceeding 2000 characters with Vietnamese error message', () => {
+      const longMessage = 'A'.repeat(2001)
+      const result = coachingFormSchema.safeParse({
+        name: 'Lê Học Viên',
+        email: 'hocvien@example.com',
+        message: longMessage,
+        consent: true,
+      })
+
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        const msgError = result.error.issues.find((i) => i.path.includes('message'))
+        expect(msgError?.message).toBe(viStrings.forms.validation.messageMax)
+      }
+    })
+
+    it('rejects field lengths exceeding bounds (name > 100, company > 200, tags > 10)', () => {
+      // Name > 100
+      const nameRes = leadFormSchema.safeParse({
+        name: 'N'.repeat(101),
+        email: 'user@example.com',
+        consent: true,
+      })
+      expect(nameRes.success).toBe(false)
+      if (!nameRes.success) {
+        expect(
+          nameRes.error.issues.some((i) => i.message === viStrings.forms.validation.nameMax),
+        ).toBe(true)
+      }
+
+      // Company > 200
+      const compRes = b2bBriefSchema.safeParse({
+        name: 'Nguyễn Văn B',
+        email: 'b@corp.com',
+        company: 'C'.repeat(201),
+        consent: true,
+      })
+      expect(compRes.success).toBe(false)
+      if (!compRes.success) {
+        expect(
+          compRes.error.issues.some((i) => i.message === viStrings.forms.validation.companyMax),
+        ).toBe(true)
+      }
+
+      // Tags count > 10
+      const tagsRes = leadFormSchema.safeParse({
+        name: 'Nguyễn Văn C',
+        email: 'c@example.com',
+        consent: true,
+        interestTags: Array.from({ length: 11 }, (_, i) => `tag-${i}`),
+      })
+      expect(tagsRes.success).toBe(false)
+      if (!tagsRes.success) {
+        expect(
+          tagsRes.error.issues.some(
+            (i) => i.message === viStrings.forms.validation.interestTagsMaxCount,
+          ),
+        ).toBe(true)
+      }
+    })
+  })
+
+  describe('Safe Error Masking (actions.ts, T1-06b)', () => {
+    it('masks internal server/database errors and never leaks raw message or lead id', () => {
+      const sensitiveError = new Error(
+        'FATAL: Connection to PostgreSQL failed at 127.0.0.1:5432 with password=secret123',
+      )
+      const actionRes = handleActionError(sensitiveError)
+
+      expect(actionRes.success).toBe(false)
+      expect(actionRes.error).toBe(viStrings.forms.serverError)
+      expect(actionRes.error).not.toContain('PostgreSQL')
+      expect(actionRes.error).not.toContain('password')
+      expect(actionRes.error).not.toContain('5432')
+      expect('id' in actionRes).toBe(false)
+    })
+  })
+
+  describe('Check Order: Honeypot -> Zod -> Turnstile -> Rate Limit (T1-06b)', () => {
+    it('does NOT create rateLimitHits when Turnstile verification fails', async () => {
+      const originalEnv = process.env.TURNSTILE_SECRET_KEY
+      process.env.TURNSTILE_SECRET_KEY = 'dummy-secret-key-for-test'
+      const testEmail = `turnstile-fail-${randomUUID()}@example.test`
+
+      try {
+        // Missing turnstileToken while TURNSTILE_SECRET_KEY is configured
+        await expect(
+          submitLead(
+            {
+              name: 'Bot User',
+              email: testEmail,
+              consent: true,
+              turnstileToken: '',
+            },
+            { ip: '10.50.60.70' },
+            { payload },
+          ),
+        ).rejects.toThrow(TurnstileError)
+
+        // Verify that rateLimitHits was NOT created because Turnstile failed before rate limit step
+        const hits = await payload.find({
+          collection: 'rateLimitHits',
+          limit: 10,
+          sort: '-createdAt',
+          overrideAccess: true,
+        })
+
+        // There should be no hit recorded for this attempt
+        const emailHashPrefix = testEmail.toLowerCase()
+        const foundLeak = hits.docs.some((doc) => doc.key.includes(emailHashPrefix))
+        expect(foundLeak).toBe(false)
+      } finally {
+        if (originalEnv === undefined) {
+          delete process.env.TURNSTILE_SECRET_KEY
+        } else {
+          process.env.TURNSTILE_SECRET_KEY = originalEnv
+        }
       }
     })
   })
@@ -318,15 +436,28 @@ describe('Forms & Email Infrastructure (T1-06)', () => {
     })
   })
 
-  describe('Coaching Form Submission', () => {
-    it('creates coaching lead with need=personal, service relation, and sends emails', async () => {
+  describe('Coaching Form Submission with Service Name (T1-06b)', () => {
+    it('creates coaching lead with service.name relation and delivers emails containing service name', async () => {
       const sender = new MockEmailSender()
       const email = `coaching-${randomUUID()}@example.test`
+
+      // Create a service in services collection
+      const service = await payload.create({
+        collection: 'services',
+        data: {
+          name: 'Khai vấn Thấu cảm 1:1',
+          slug: `service-${randomUUID()}`,
+          saleStatus: 'on_sale',
+        },
+        overrideAccess: true,
+      })
+      createdServices.push(service.id)
 
       const res = await submitCoachingForm(
         {
           name: 'Trần Khách Hàng',
           email,
+          service: service.id,
           message: 'Em muốn tư vấn giải tỏa stress công việc',
           consent: true,
         },
@@ -347,6 +478,16 @@ describe('Forms & Email Infrastructure (T1-06)', () => {
       expect(lead.message).toBe('Em muốn tư vấn giải tỏa stress công việc')
       expect(lead.source?.form).toBe('coaching')
       expect(sender.sent).toHaveLength(2)
+
+      // Verify customer confirmation email contains the exact service name
+      const customerEmail = sender.sent.find((e) => e.to === email)
+      expect(customerEmail).toBeDefined()
+      expect(customerEmail?.html).toContain('Khai vấn Thấu cảm 1:1')
+
+      // Verify admin notification email contains the exact service name
+      const adminEmail = sender.sent.find((e) => e.to === 'hana@tramdungcamxuc.com')
+      expect(adminEmail).toBeDefined()
+      expect(adminEmail?.html).toContain('Khai vấn Thấu cảm 1:1')
     })
   })
 })

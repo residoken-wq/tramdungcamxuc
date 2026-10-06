@@ -10,7 +10,7 @@ export function escapeCsvCell(value: unknown): string {
   if (value === null || value === undefined) return ''
   let str = String(value)
   // Anti-CSV injection: disable dynamic formulas in spreadsheet apps (Excel, Sheets)
-  if (str.length > 0 && ['=', '+', '-', '@'].includes(str.charAt(0))) {
+  if (str.length > 0 && ['=', '+', '-', '@', '\t', '\r'].includes(str.charAt(0))) {
     str = `'${str}`
   }
   if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
@@ -106,8 +106,12 @@ export async function GET(request: Request): Promise<Response> {
 
   const dataRows = result.docs.map((lead) => {
     let serviceTitle = ''
-    if (typeof lead.service === 'object' && lead.service !== null && 'title' in lead.service) {
-      serviceTitle = String(lead.service.title)
+    if (typeof lead.service === 'object' && lead.service !== null) {
+      if ('name' in lead.service && lead.service.name) {
+        serviceTitle = String(lead.service.name)
+      } else if ('title' in lead.service && lead.service.title) {
+        serviceTitle = String(lead.service.title)
+      }
     } else if (lead.service) {
       serviceTitle = String(lead.service)
     }

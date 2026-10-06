@@ -12,11 +12,7 @@ import {
 } from './schemas'
 import { checkAndRecordRateLimit } from './ratelimit.server'
 import { verifyTurnstile } from './turnstile.server'
-import {
-  sendB2BBriefEmails,
-  sendCoachingEmails,
-  sendLeadEmails,
-} from '../email/service.server'
+import { sendB2BBriefEmails, sendCoachingEmails, sendLeadEmails } from '../email/service.server'
 import type { EmailSender } from '../email/types'
 
 export interface SubmissionContext {
@@ -44,15 +40,28 @@ async function resolvePayload(injected?: Payload): Promise<Payload> {
 
 /**
  * Handles Lead generation form submission (Resource downloads, general leads).
+ * Order of checks: honeypot -> Zod -> Turnstile -> rate limit -> create lead -> email.
  */
 export async function submitLead(
   input: LeadFormInput | Record<string, unknown>,
   ctx: SubmissionContext = {},
   options: SubmissionOptions = {},
 ): Promise<SubmissionResult> {
+  // 1. Honeypot check (raw input check before validation)
+  if (typeof input === 'object' && input !== null && 'honeypot' in input) {
+    const rawHp = String(input.honeypot || '').trim()
+    if (rawHp.length > 0) {
+      return {
+        success: true,
+        message: vi.forms.success.lead,
+        fake: true,
+      }
+    }
+  }
+
+  // 2. Zod validation
   const validated = leadFormSchema.parse(input)
 
-  // Honeypot check: silently accept without creating lead or sending emails
   if (validated.honeypot && validated.honeypot.trim().length > 0) {
     return {
       success: true,
@@ -61,24 +70,23 @@ export async function submitLead(
     }
   }
 
-  const payload = await resolvePayload(options.payload)
+  // 3. Turnstile verification (must precede rate limit so invalid tokens do not exhaust rate limits)
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
 
-  // Rate limiting check
+  // 4. Rate limiting check & record
+  const payload = await resolvePayload(options.payload)
   await checkAndRecordRateLimit(payload, {
     form: 'lead',
     ip: ctx.ip,
     email: validated.email,
   })
 
-  // Turnstile verification
-  await verifyTurnstile(validated.turnstileToken, ctx.ip)
-
   const rawTags =
     validated.interestTags && validated.interestTags.length > 0
       ? validated.interestTags
       : ['resource']
 
-  // REVIEW-REQUIRED: Personal data (NĐ 13/2023). Public forms create leads through server code
+  // 5. REVIEW-REQUIRED: Personal data (NĐ 13/2023). Public forms create leads through server code
   // with overrideAccess after server validation.
   const lead = await payload.create({
     collection: 'leads',
@@ -101,7 +109,7 @@ export async function submitLead(
     overrideAccess: true,
   })
 
-  // Send transactional emails (non-blocking errors)
+  // 6. Send transactional emails (non-blocking errors)
   await sendLeadEmails(
     payload,
     {
@@ -125,15 +133,28 @@ export async function submitLead(
 
 /**
  * Handles 1:1 Coaching form submission.
+ * Order of checks: honeypot -> Zod -> Turnstile -> rate limit -> create lead -> email.
  */
 export async function submitCoachingForm(
   input: CoachingFormInput | Record<string, unknown>,
   ctx: SubmissionContext = {},
   options: SubmissionOptions = {},
 ): Promise<SubmissionResult> {
+  // 1. Honeypot check
+  if (typeof input === 'object' && input !== null && 'honeypot' in input) {
+    const rawHp = String(input.honeypot || '').trim()
+    if (rawHp.length > 0) {
+      return {
+        success: true,
+        message: vi.forms.success.coaching,
+        fake: true,
+      }
+    }
+  }
+
+  // 2. Zod validation
   const validated = coachingFormSchema.parse(input)
 
-  // Honeypot check
   if (validated.honeypot && validated.honeypot.trim().length > 0) {
     return {
       success: true,
@@ -142,19 +163,18 @@ export async function submitCoachingForm(
     }
   }
 
-  const payload = await resolvePayload(options.payload)
+  // 3. Turnstile verification
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
 
-  // Rate limiting check
+  // 4. Rate limiting check & record
+  const payload = await resolvePayload(options.payload)
   await checkAndRecordRateLimit(payload, {
     form: 'coaching',
     ip: ctx.ip,
     email: validated.email,
   })
 
-  // Turnstile verification
-  await verifyTurnstile(validated.turnstileToken, ctx.ip)
-
-  // Resolve service title if service relation is provided
+  // Resolve service name from services collection (using field 'name')
   let serviceName: string | undefined
   if (validated.service) {
     try {
@@ -163,8 +183,12 @@ export async function submitCoachingForm(
         id: validated.service,
         overrideAccess: true,
       })
-      if (sDoc && typeof sDoc === 'object' && 'title' in sDoc) {
-        serviceName = String(sDoc.title)
+      if (sDoc && typeof sDoc === 'object') {
+        if ('name' in sDoc && sDoc.name) {
+          serviceName = String(sDoc.name)
+        } else if ('title' in sDoc && sDoc.title) {
+          serviceName = String(sDoc.title)
+        }
       }
     } catch {
       // Ignore if service not found
@@ -178,7 +202,7 @@ export async function submitCoachingForm(
         ? Number(validated.service)
         : undefined
 
-  // REVIEW-REQUIRED: Personal data (NĐ 13/2023). Coaching form creates lead with overrideAccess after validation.
+  // 5. REVIEW-REQUIRED: Personal data (NĐ 13/2023). Coaching form creates lead with overrideAccess after validation.
   const lead = await payload.create({
     collection: 'leads',
     data: {
@@ -201,7 +225,7 @@ export async function submitCoachingForm(
     overrideAccess: true,
   })
 
-  // Send emails
+  // 6. Send emails
   await sendCoachingEmails(
     payload,
     {
@@ -224,15 +248,28 @@ export async function submitCoachingForm(
 
 /**
  * Handles B2B corporate brief form submission.
+ * Order of checks: honeypot -> Zod -> Turnstile -> rate limit -> create lead -> email.
  */
 export async function submitB2BBrief(
   input: B2BBriefInput | Record<string, unknown>,
   ctx: SubmissionContext = {},
   options: SubmissionOptions = {},
 ): Promise<SubmissionResult> {
+  // 1. Honeypot check
+  if (typeof input === 'object' && input !== null && 'honeypot' in input) {
+    const rawHp = String(input.honeypot || '').trim()
+    if (rawHp.length > 0) {
+      return {
+        success: true,
+        message: vi.forms.success.b2b,
+        fake: true,
+      }
+    }
+  }
+
+  // 2. Zod validation
   const validated = b2bBriefSchema.parse(input)
 
-  // Honeypot check
   if (validated.honeypot && validated.honeypot.trim().length > 0) {
     return {
       success: true,
@@ -241,19 +278,18 @@ export async function submitB2BBrief(
     }
   }
 
-  const payload = await resolvePayload(options.payload)
+  // 3. Turnstile verification
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
 
-  // Rate limiting check
+  // 4. Rate limiting check & record
+  const payload = await resolvePayload(options.payload)
   await checkAndRecordRateLimit(payload, {
     form: 'b2b',
     ip: ctx.ip,
     email: validated.email,
   })
 
-  // Turnstile verification
-  await verifyTurnstile(validated.turnstileToken, ctx.ip)
-
-  // REVIEW-REQUIRED: Personal data (NĐ 13/2023). B2B brief creates lead with overrideAccess after validation.
+  // 5. REVIEW-REQUIRED: Personal data (NĐ 13/2023). B2B brief creates lead with overrideAccess after validation.
   const lead = await payload.create({
     collection: 'leads',
     data: {
@@ -281,7 +317,7 @@ export async function submitB2BBrief(
     overrideAccess: true,
   })
 
-  // Send emails
+  // 6. Send emails
   await sendB2BBriefEmails(
     payload,
     {

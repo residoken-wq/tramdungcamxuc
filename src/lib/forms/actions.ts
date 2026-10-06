@@ -14,7 +14,6 @@ import { vi } from '../i18n/vi'
 
 export interface ActionResponse {
   success: boolean
-  id?: number | string
   message?: string
   error?: string
   fieldErrors?: Record<string, string>
@@ -25,7 +24,7 @@ async function getClientContext(): Promise<{ ip?: string; page?: string }> {
     const headerList = await headers()
     const forwardedFor = headerList.get('x-forwarded-for')
     const realIp = headerList.get('x-real-ip')
-    const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : (realIp || undefined)
+    const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : realIp || undefined
     const page = headerList.get('referer') || undefined
     return { ip, page }
   } catch {
@@ -33,7 +32,7 @@ async function getClientContext(): Promise<{ ip?: string; page?: string }> {
   }
 }
 
-function handleActionError(err: unknown): ActionResponse {
+export function handleActionError(err: unknown): ActionResponse {
   if (err instanceof ZodError) {
     const fieldErrors: Record<string, string> = {}
     for (const issue of err.issues) {
@@ -63,10 +62,11 @@ function handleActionError(err: unknown): ActionResponse {
     }
   }
 
-  const message = err instanceof Error ? err.message : vi.forms.serverError
+  // REVIEW-REQUIRED: Never leak internal database, server, or unhandled errors to browser client.
+  console.error('[Forms] Unhandled server action error:', err)
   return {
     success: false,
-    error: message,
+    error: vi.forms.serverError,
   }
 }
 
@@ -82,7 +82,6 @@ export async function submitLeadAction(
     })
     return {
       success: res.success,
-      id: res.id,
       message: res.message,
     }
   } catch (err) {
@@ -102,7 +101,6 @@ export async function submitCoachingAction(
     })
     return {
       success: res.success,
-      id: res.id,
       message: res.message,
     }
   } catch (err) {
@@ -122,7 +120,6 @@ export async function submitB2BBriefAction(
     })
     return {
       success: res.success,
-      id: res.id,
       message: res.message,
     }
   } catch (err) {
