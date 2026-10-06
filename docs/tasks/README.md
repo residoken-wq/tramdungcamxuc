@@ -127,7 +127,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Sửa T1-06b – PR #22 ([review](reviews/T1-06.md), prompt `prompts/T1-06b.md`) · 🔒 Migration + Package |
 | T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               | PC nhà | Chưa mở |
 | T1-08 | Logic hiển thị sản phẩm theo `saleStatus`                   |          | GĐ 0                | Local | Xong – PR #23 ([review](reviews/T1-08.md)) |
-| T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-09.md`) |
+| T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Sửa T1-09b – PR #26 ([review](reviews/T1-09.md), prompt `prompts/T1-09b.md`) |
 | T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               | Laptop | Chưa mở |
 | T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               | Laptop | Chưa mở |
 | T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Chưa mở |
