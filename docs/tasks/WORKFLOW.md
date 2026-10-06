@@ -70,6 +70,8 @@ GIT_TERMINAL_PROMPT=0 timeout 60 git push -u origin HEAD < /dev/null
 
 **Đổi máy giữa chừng**: push WIP → ghi vào mô tả PR "chuyển sang máy X" → máy X `git fetch && git switch task/<MÃ>-…`.
 
+**Prompt giao việc** nằm trong repo: `docs/tasks/prompts/<MÃ>.md`. Trên máy bất kỳ chỉ dán câu ngắn trong [`prompts/README.md`](prompts/README.md).
+
 ## 5. Bảng trạng thái (`docs/tasks/README.md`)
 
 - Chỉ ghế Planning sửa. Cột **Trạng thái** ghi: `Sẵn sàng` · `Đang làm – Antigravity@Laptop (PR #n)` · `Chờ QA (PR #n)` · `Sửa <MÃ>b` · `Xong (PR #n)`.
