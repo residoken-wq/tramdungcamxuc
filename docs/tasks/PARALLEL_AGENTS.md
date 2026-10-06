@@ -1,5 +1,7 @@
 # Chạy 2 agent song song trên máy dev
 
+> **Từ 06/10:** luật chung cho cả 3 máy nằm ở [`WORKFLOW.md`](WORKFLOW.md). File này chỉ còn là hồ sơ riêng của **máy Local** (thư mục, DB, cổng của từng agent).
+
 > Planning · 05/10/2026 · Áp dụng cho máy dev của anh Nhân (Linux), nơi Antigravity và Codex cùng code.
 > Lý do: hai agent dùng chung một thư mục thì đè branch của nhau (commit `88a129e` từng rơi nhầm sang nhánh T0-05), và một agent từng lục DB của dự án khác (`sop-os-mvp`) rồi treo 20 phút.
 

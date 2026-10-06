@@ -1,4 +1,6 @@
-# Bảng giao việc cho Antigravity
+# Bảng giao việc
+
+> **Quy trình 3 máy – đọc trước: [`WORKFLOW.md`](WORKFLOW.md)** (luật vàng, lane A/B, hồ sơ máy, vòng đời task, chống xung đột file). Chỉ ghế Planning sửa bảng này; khi lệch, danh sách PR trên GitHub là đúng.
 
 > Planning Manager giao từng task theo thứ tự trong bảng. Antigravity chỉ nhận task có trạng thái **Sẵn sàng**.
 > Kế hoạch tổng: `docs/plan/MASTER_PLAN.md` · Lỗ hổng & mặc định: `docs/plan/GAPS_AND_QUESTIONS.md`
@@ -92,7 +94,7 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-05c | Thanh menu tràn ngang 375px + giải xung đột DECISIONS | | T0-05b | Đạt |
 | T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Đã merge (PR #7, **trước khi có T0-06b**) ([review](reviews/T0-06.md)) |
 | T0-06b | Sửa sau nghiệm thu T0-06 (chuẩn hóa slug trang, so ngày in, vị trí ảnh, skip e2e trên DB dev) | | T0-06 | Xong – PR #8 ([review](reviews/T0-06.md)); Planning sửa thêm test hydrate `2b08c1f` |
-| T0-06c | Test ngày in thẻ EQ phụ thuộc múi giờ máy (fail trên máy UTC+7) | | T0-06b | Sẵn sàng |
+| T0-06c | Test ngày in thẻ EQ phụ thuộc múi giờ máy (fail trên máy UTC+7) | | T0-06b | Chờ QA – nhánh `task/T0-06c-timezone-tests` có code (06/10 07:26), **chưa mở PR** · Lane B |
 | T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Xong – PR #13 ([review](reviews/T0-07.md)); chờ IT đọc lại REVIEW-REQUIRED |
 | T0-08 | Seed dữ liệu MẪU                                      |          | T0-07               | Xong – PR #12 ([review](reviews/T0-08.md)) |
 | T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06b       | Xong – PR #9 ([review](reviews/T0-09.md)) |
@@ -100,10 +102,10 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 | T0-09c | Viết lại e2e editor (b)(c) cho chạy được thật + sửa mất thông báo | | T0-09b | Đạt (Codex) |
 | T0-09d | Việc nhỏ: `safeHref` chặn `/\`, nhãn Puck tiếng Việt, tương phản nút Xuất bản | | T0-09 (đã merge) | Xong – PR #10 |
 | T0-10 | Đóng gói Docker + RUNBOOK để tự deploy bản demo       |          | T0-06b (đã merge)   | Xong – PR #11 ([review](reviews/T0-10.md)) |
-| T0-10c | CI build image → GHCR, server demo chỉ pull về chạy |          | T0-10 (đã merge)    | Sẵn sàng – **Antigravity** |
+| T0-10c | CI build image → GHCR, server demo chỉ pull về chạy |          | T0-10 (đã merge)    | Chờ QA – nhánh `task/T0-10c-ghcr-image` có code (05/10 22:13), **chưa mở PR** · Lane B |
 | T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0) | | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15 |
-| T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)          |          | dữ liệu GĐ 0        | Sẵn sàng – **Antigravity** |
-| T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0     | [HANA]   | T0-07, T0-08, T0-10 | Sẵn sàng (phụ thuộc đã xong) |
+| T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)          |          | dữ liệu GĐ 0        | Sẵn sàng – Antigravity (Lane Docs, máy bất kỳ) – chưa ai nhận |
+| T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0     | [HANA]   | T0-07, T0-08, T0-10c | Sẵn sàng sau T0-10c – **Codex@Local** (cần Playwright chụp ảnh demo) |
 
 ### GĐ 1 – Web 1 Landing + CMS (`docs/tasks/GD1.md`)
 
