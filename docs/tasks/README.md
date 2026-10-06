@@ -124,7 +124,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-03 | Khối Puck: Chuyển đổi                                       |          | T1-02b, T1-06       | Local | Chưa mở |
 | T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               | Local | Chưa mở |
 | T1-05 | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý          |          | GĐ 0                | Laptop | Xong – PR #21 ([review](reviews/T1-05.md)) |
-| T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Sẵn sàng – Antigravity@PC nhà (prompt `prompts/T1-06.md`) · 🔒 Migration + Package |
+| T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Sửa T1-06b – PR #22 ([review](reviews/T1-06.md), prompt `prompts/T1-06b.md`) · 🔒 Migration + Package |
 | T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               | PC nhà | Chưa mở |
 | T1-08 | Logic hiển thị sản phẩm theo `saleStatus`                   |          | GĐ 0                | Local | Xong – PR #23 ([review](reviews/T1-08.md)) |
 | T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-09.md`) |
