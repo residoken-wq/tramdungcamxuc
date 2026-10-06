@@ -25,6 +25,14 @@ export const vi = {
   },
   product: {
     trialBadge: 'ngày dùng thử miễn phí',
+    cta: {
+      notify: 'Nhận thông báo',
+      trial: (days: number) => `Dùng thử ${days} ngày miễn phí`,
+      buy: 'Mua ngay',
+      free: 'Nhận miễn phí',
+      consult: 'Đăng ký tư vấn',
+      external: 'Xem chi tiết',
+    },
     journeySteps: {
       pause: 'Bước 1 · Dừng lại',
       feel: 'Bước 2 · Cảm nhận',
