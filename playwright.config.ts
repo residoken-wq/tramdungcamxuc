@@ -51,5 +51,9 @@ export default defineConfig({
     url: `${baseURL}/admin`,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      TZ: 'UTC',
+      PGTZ: 'UTC',
+    },
   },
 })

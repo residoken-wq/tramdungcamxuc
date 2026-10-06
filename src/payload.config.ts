@@ -91,6 +91,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || '',
+      options: '-c timezone=UTC',
     },
     push: false,
     migrationDir: path.resolve(dirname, 'migrations'),
