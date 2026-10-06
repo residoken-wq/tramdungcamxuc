@@ -20,8 +20,7 @@ async function bootstrapAdmin(page: Page): Promise<number> {
   let response: Response | undefined
   await expect(async () => {
     const registration = page.waitForResponse(
-      (res) =>
-        res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
+      (res) => res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
       { timeout: 5000 },
     )
     await page.locator('button[type="submit"]').click()
