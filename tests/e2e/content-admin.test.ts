@@ -54,7 +54,7 @@ test('first administrator sees all five content groups', async ({ page }, testIn
 
     const groups = ['Nội dung', 'Bán hàng', 'Khóa học', 'EQ Buddy', 'Hệ thống']
     await page.setViewportSize({ width: 1440, height: 1200 })
-    const openMenu = page.locator('button.nav-toggler[aria-label="Open Menu"]:visible').first()
+    const openMenu = page.locator('button.nav-toggler:visible').first()
     if (await openMenu.count()) await openMenu.click()
     const nav = page.locator('.nav')
     for (const group of groups) await expect(nav.getByText(group, { exact: true })).toBeInViewport()
