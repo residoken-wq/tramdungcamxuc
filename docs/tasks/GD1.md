@@ -28,8 +28,8 @@ Sidebar Puck nhóm khối theo danh mục 5B, nhãn tiếng Việt. Mỗi khối
 
 **Tiêu chí nghiệm thu**
 
-- [x] Đổi giá 1 sản phẩm trong admin → trang có `ProductGrid` hiện giá mới mà không phải sửa trang.
-- [x] Mở JSON `puckData` → không chứa giá hay tên sản phẩm.
+- [ ] Đổi giá 1 sản phẩm trong admin → trang có `ProductGrid` hiện giá mới mà không phải sửa trang.
+- [ ] Mở JSON `puckData` → không chứa giá hay tên sản phẩm.
 - [ ] Testimonial `consent = false` không bao giờ hiện.
 
 ---

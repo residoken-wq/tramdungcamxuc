@@ -32,16 +32,9 @@ export const metadata: Metadata = {
   description: 'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
 }
 
-export default function SiteLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="vi"
-      className={`${anton.variable} ${montserrat.variable} ${playfair.variable}`}
-    >
+    <html lang="vi" className={`${anton.variable} ${montserrat.variable} ${playfair.variable}`}>
       <body className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased">
         {children}
       </body>

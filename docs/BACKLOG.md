@@ -27,3 +27,4 @@
 - [x] **Admin Payload tiếng Việt** (→ T0-12): bật i18n `vi` cho giao diện admin để lỗi mặc định (vd. "Value must be unique") hiện tiếng Việt cho Hana.
 - [ ] **Khối RichText định dạng giới hạn** (đậm, nghiêng, link, danh sách – Puck `richtext` đã tắt heading/màu/căn lề): đánh giá ở T1-01 khi có nội dung thật. GĐ 0 dùng `textarea` (quyết định spike T0-09).
 - [x] **Tính % ưu đãi gói trong computePackageValue chưa xét saleEndsAt** (`src/lib/pricing.ts`): Đã xử lý ở T1-02a bằng việc tính lúc render qua `getEffectivePrice` và `buildPackageComparison`, tôn trọng thời hạn khuyến mãi `saleEndsAt` mà không lưu dữ liệu tính sẵn vào `puckData`.
+- [ ] **Font tự host (`next/font/local`)**: build Docker trên CI 2 lần lỗi vì không tải được Google Fonts lúc build (06/10). Chuyển Anton/Montserrat/Playfair (subset vietnamese) vào repo – làm cùng T1-15 (hiệu năng). AGENTS mục 11 đã yêu cầu "font tự host".
