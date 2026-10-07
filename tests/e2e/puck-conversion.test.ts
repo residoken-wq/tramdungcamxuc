@@ -143,7 +143,7 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
       await briefForm.locator('input[name="email"]').fill(customerEmail)
       await briefForm.locator('input[name="company"]').fill(companyName)
       await briefForm.locator('input[name="phone"]').fill(contactPhone)
-      await briefForm.locator('select[name="teamSize"]').selectOption('20-50')
+      await briefForm.locator('input[name="teamSize"]').fill('20-50 người')
       await briefForm
         .locator('textarea[name="message"]')
         .fill('Quan tâm giải pháp văn hóa cảm xúc cho bộ phận nhân sự.')
