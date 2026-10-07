@@ -36,5 +36,8 @@ export const ProductFeatureBlock: ComponentConfig<ProductFeatureProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <ProductFeature {...props} />,
+  // Pass only serialisable props: Puck's `puck` object holds functions that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <ProductFeature {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

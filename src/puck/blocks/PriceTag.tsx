@@ -34,5 +34,8 @@ export const PriceTagBlock: ComponentConfig<ProductPriceTagProps> = {
     size: 'md',
     align: 'center',
   },
-  render: (props) => <ProductPriceTag {...props} />,
+  // Pass only serialisable props: Puck's `puck` object holds functions that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <ProductPriceTag {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

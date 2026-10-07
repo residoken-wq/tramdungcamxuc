@@ -37,5 +37,8 @@ export const TrialCTABlock: ComponentConfig<TrialCTAProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <TrialCTA {...props} />,
+  // Pass only serialisable props: Puck's `puck` object holds functions that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <TrialCTA {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

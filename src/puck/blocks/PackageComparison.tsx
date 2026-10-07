@@ -56,5 +56,8 @@ export const PackageComparisonBlock: ComponentConfig<PackageComparisonProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <PackageComparison {...props} />,
+  // Pass only serialisable props: Puck's `puck` object holds functions that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <PackageComparison {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

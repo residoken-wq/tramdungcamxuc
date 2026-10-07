@@ -90,5 +90,8 @@ export const ProductGridBlock: ComponentConfig<ProductGridProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <ProductGrid {...props} />,
+  // Pass only serialisable props: Puck's `puck` object holds functions that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <ProductGrid {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }
