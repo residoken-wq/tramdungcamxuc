@@ -1,0 +1,81 @@
+/**
+ * Public Testimonial DTO & pure transformation functions.
+ * Enforces strict consent-only policy (AGENTS.md §7, T1-02b).
+ */
+
+export interface PublicTestimonialPhoto {
+  url: string
+  alt: string
+}
+
+export interface PublicTestimonial {
+  id: number | string
+  name: string
+  quote: string
+  role?: string
+  language?: 'vi' | 'en'
+  photo?: PublicTestimonialPhoto
+}
+
+/**
+ * Pure function to transform a Testimonial document (from Local API or REST API)
+ * into a safe, consent-verified PublicTestimonial DTO.
+ *
+ * Anti-data-leak & Consent-only rules:
+ * 1. If `consent !== true`, returns `null`. Unconsented testimonials MUST NEVER reach the browser.
+ * 2. If `_status` is present and `_status !== 'published'`, returns `null`.
+ * 3. Strips all internal / sensitive fields (`relatedOffer`, system fields `createdAt`, `updatedAt`, `_status`, etc.).
+ * 4. Normalizes photo to `{ url, alt }`.
+ * 5. Returns `role` only when present on a consented document.
+ */
+export function toPublicTestimonial(doc: unknown): PublicTestimonial | null {
+  if (!doc || typeof doc !== 'object') {
+    return null
+  }
+
+  const t = doc as Record<string, unknown>
+
+  // Strict consent check: Must be explicitly true
+  if (t.consent !== true) {
+    return null
+  }
+
+  // Publication status check: Must not be unpublished draft
+  if (t._status !== undefined && t._status !== 'published') {
+    return null
+  }
+
+  const id = (t.id as string | number) ?? ''
+  const name = typeof t.name === 'string' ? t.name : ''
+  const quote = typeof t.quote === 'string' ? t.quote : ''
+  const language = (t.language as 'vi' | 'en') || 'vi'
+
+  const role = typeof t.role === 'string' && t.role.trim().length > 0 ? t.role.trim() : undefined
+
+  let photo: PublicTestimonialPhoto | undefined = undefined
+  if (t.photo && typeof t.photo === 'object') {
+    const rawPhoto = t.photo as Record<string, unknown>
+    const url = typeof rawPhoto.url === 'string' ? rawPhoto.url : ''
+    const alt = typeof rawPhoto.alt === 'string' ? rawPhoto.alt : ''
+    if (url) {
+      photo = { url, alt }
+    }
+  }
+
+  const result: PublicTestimonial = {
+    id,
+    name,
+    quote,
+    language,
+  }
+
+  if (role !== undefined) {
+    result.role = role
+  }
+
+  if (photo !== undefined) {
+    result.photo = photo
+  }
+
+  return result
+}

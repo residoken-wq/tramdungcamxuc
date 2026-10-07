@@ -22,6 +22,10 @@ import { ProductFeatureBlock, type ProductFeatureProps } from './blocks/ProductF
 import { PackageComparisonBlock, type PackageComparisonProps } from './blocks/PackageComparison'
 import { PriceTagBlock, type ProductPriceTagProps } from './blocks/PriceTag'
 import { TrialCTABlock, type TrialCTAProps } from './blocks/TrialCTA'
+import { TestimonialGridBlock, type TestimonialGridProps } from './blocks/TestimonialGrid'
+import { TestimonialSliderBlock, type TestimonialSliderProps } from './blocks/TestimonialSlider'
+import { LogoStripBlock, type LogoStripProps } from './blocks/LogoStrip'
+import { HanaStoryBlock, type HanaStoryProps } from './blocks/HanaStory'
 
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
 
@@ -59,6 +63,11 @@ export type PageComponentsProps = {
   PackageComparison: PackageComparisonProps
   PriceTag: ProductPriceTagProps
   TrialCTA: TrialCTAProps
+  // Niềm tin
+  TestimonialSlider: TestimonialSliderProps
+  TestimonialGrid: TestimonialGridProps
+  LogoStrip: LogoStripProps
+  HanaStory: HanaStoryProps
   // Chuyển đổi
   CTAButton: CTAButtonBlockProps
 }
@@ -88,6 +97,10 @@ export const puckConfig: Config<PageComponentsProps> = {
     sales: {
       title: 'Bán hàng',
       components: ['ProductGrid', 'ProductFeature', 'PackageComparison', 'PriceTag', 'TrialCTA'],
+    },
+    trust: {
+      title: 'Niềm tin',
+      components: ['TestimonialSlider', 'TestimonialGrid', 'LogoStrip', 'HanaStory'],
     },
     conversion: {
       title: 'Chuyển đổi',
@@ -451,6 +464,11 @@ export const puckConfig: Config<PageComponentsProps> = {
     PackageComparison: PackageComparisonBlock,
     PriceTag: PriceTagBlock,
     TrialCTA: TrialCTABlock,
+
+    TestimonialSlider: TestimonialSliderBlock,
+    TestimonialGrid: TestimonialGridBlock,
+    LogoStrip: LogoStripBlock,
+    HanaStory: HanaStoryBlock,
   },
 }
 
