@@ -6,6 +6,7 @@ import { LeadConfirmationEmail } from '@/emails/LeadConfirmationEmail'
 import { CoachingConfirmationEmail } from '@/emails/CoachingConfirmationEmail'
 import { B2BBriefConfirmationEmail } from '@/emails/B2BBriefConfirmationEmail'
 import { AdminNotificationEmail } from '@/emails/AdminNotificationEmail'
+import { ResourceDeliveryEmail } from '@/emails/ResourceDeliveryEmail'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
 
@@ -193,6 +194,49 @@ export async function sendB2BBriefEmails(
     },
     sender,
   )
+}
+
+export async function sendResourceDeliveryEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    productName: string
+    files: { filename: string; downloadUrl: string }[]
+    expiresAtFormatted?: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(ResourceDeliveryEmail, {
+        name: data.name,
+        productName: data.productName,
+        files: data.files,
+        expiresAtFormatted: data.expiresAtFormatted,
+      }),
+    )
+    const userText = await render(
+      React.createElement(ResourceDeliveryEmail, {
+        name: data.name,
+        productName: data.productName,
+        files: data.files,
+        expiresAtFormatted: data.expiresAtFormatted,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: `Trạm Dừng Cảm Xúc – Tài liệu miễn phí: ${data.productName}`,
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send resource delivery email:', err)
+  }
 }
 
 async function notifyAdmin(

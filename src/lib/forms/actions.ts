@@ -10,9 +10,9 @@ import {
   submitB2BBrief,
   submitCoachingForm,
   submitLead,
+  submitResourceRequest,
   type SubmissionResult,
 } from './submit.server'
-import { vi } from '../i18n/vi'
 
 async function getClientContext(): Promise<{ ip?: string; page?: string }> {
   try {
@@ -72,6 +72,25 @@ export async function submitB2BBriefAction(
   try {
     const ctx = await getClientContext()
     const res: SubmissionResult = await submitB2BBrief(data, {
+      ...ctx,
+      utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
+    })
+    return {
+      success: res.success,
+      message: res.message,
+    }
+  } catch (err) {
+    return handleActionError(err)
+  }
+}
+
+export async function submitResourceRequestAction(
+  data: Record<string, unknown>,
+  extra?: { utm?: string },
+): Promise<ActionResponse> {
+  try {
+    const ctx = await getClientContext()
+    const res: SubmissionResult = await submitResourceRequest(data, {
       ...ctx,
       utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
     })

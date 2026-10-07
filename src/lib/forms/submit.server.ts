@@ -6,13 +6,21 @@ import {
   b2bBriefSchema,
   coachingFormSchema,
   leadFormSchema,
+  resourceRequestSchema,
   type B2BBriefInput,
   type CoachingFormInput,
   type LeadFormInput,
+  type ResourceRequestInput,
 } from './schemas'
 import { checkAndRecordRateLimit } from './ratelimit.server'
 import { verifyTurnstile } from './turnstile.server'
-import { sendB2BBriefEmails, sendCoachingEmails, sendLeadEmails } from '../email/service.server'
+import {
+  sendB2BBriefEmails,
+  sendCoachingEmails,
+  sendLeadEmails,
+  sendResourceDeliveryEmail,
+} from '../email/service.server'
+import { signDownloadToken } from '../downloads/token'
 import type { EmailSender } from '../email/types'
 
 export interface SubmissionContext {
@@ -338,5 +346,142 @@ export async function submitB2BBrief(
     success: true,
     id: lead.id,
     message: vi.forms.success.b2b,
+  }
+}
+
+/**
+ * Handles free resource download request from /tai-nguyen/[slug].
+ * Order of checks: honeypot -> Zod -> Turnstile -> rate limit -> lead need=resource, tag=resource:<slug>, source.form='resource' -> send email.
+ */
+export async function submitResourceRequest(
+  input: ResourceRequestInput | Record<string, unknown>,
+  ctx: SubmissionContext = {},
+  options: SubmissionOptions = {},
+): Promise<SubmissionResult> {
+  // 1. Honeypot check (raw check)
+  if (typeof input === 'object' && input !== null && 'honeypot' in input) {
+    const rawHp = String(input.honeypot || '').trim()
+    if (rawHp.length > 0) {
+      return {
+        success: true,
+        message: vi.forms.success.resource,
+        fake: true,
+      }
+    }
+  }
+
+  // 2. Zod validation
+  const validated = resourceRequestSchema.parse(input)
+
+  if (validated.honeypot && validated.honeypot.trim().length > 0) {
+    return {
+      success: true,
+      message: vi.forms.success.resource,
+      fake: true,
+    }
+  }
+
+  // 3. Turnstile verification
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
+
+  // 4. Rate limiting check & record
+  const payload = await resolvePayload(options.payload)
+  await checkAndRecordRateLimit(payload, {
+    form: 'resource',
+    ip: ctx.ip,
+    email: validated.email,
+  })
+
+  // 5. Query product to verify availability and retrieve files
+  const productRes = await payload.find({
+    collection: 'products',
+    where: {
+      and: [
+        { slug: { equals: validated.slug } },
+        { _status: { equals: 'published' } },
+        { or: [{ type: { equals: 'ebook' } }, { type: { equals: 'toolkit' } }] },
+        { saleStatus: { equals: 'free' } },
+      ],
+    },
+    limit: 1,
+    depth: 2,
+    overrideAccess: true,
+  })
+
+  const product = productRes.docs[0]
+  if (!product) {
+    throw new Error('Tài nguyên không tồn tại hoặc không khả dụng.')
+  }
+
+  // 6. Create lead (NĐ 13/2023)
+  // REVIEW-REQUIRED: Personal data (NĐ 13/2023). Public forms create leads through server code
+  // with overrideAccess after server validation.
+  const lead = await payload.create({
+    collection: 'leads',
+    data: {
+      name: validated.name,
+      email: validated.email.toLowerCase().trim(),
+      need: 'resource',
+      interestTags: [{ text: `resource:${product.slug}` }],
+      consent: true,
+      consentAt: new Date().toISOString(),
+      source: {
+        form: 'resource',
+        page: ctx.page || `/tai-nguyen/${product.slug}`,
+        utm: ctx.utm || undefined,
+      },
+      followUpStatus: 'new',
+    },
+    overrideAccess: true,
+  })
+
+  // 7. Generate signed download tokens (7 days expiry)
+  const productFiles = Array.isArray(product.files) ? product.files : []
+  const filesToDeliver: { filename: string; downloadUrl: string }[] = []
+  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000
+
+  const expDate = new Date(expiresAt)
+  const expiresAtFormatted = `${expDate.getDate().toString().padStart(2, '0')}/${(expDate.getMonth() + 1).toString().padStart(2, '0')}/${expDate.getFullYear()}`
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tramdungcamxuc.com'
+
+  for (const item of productFiles) {
+    const fileDoc = item.file
+    const fileId = typeof fileDoc === 'object' && fileDoc !== null ? fileDoc.id : fileDoc
+    const filename =
+      typeof fileDoc === 'object' && fileDoc !== null
+        ? (fileDoc as { filename?: string })?.filename || 'tai-lieu.pdf'
+        : 'tai-lieu.pdf'
+
+    if (fileId) {
+      const token = signDownloadToken({
+        productId: product.id,
+        fileId,
+        expiresAt,
+      })
+      const downloadUrl = `${baseUrl}/api/download/${token}`
+      filesToDeliver.push({
+        filename: filename || 'Tài liệu',
+        downloadUrl,
+      })
+    }
+  }
+
+  // 8. Send transactional email (non-blocking errors)
+  await sendResourceDeliveryEmail(
+    payload,
+    {
+      name: validated.name,
+      email: validated.email.toLowerCase().trim(),
+      productName: product.name,
+      files: filesToDeliver,
+      expiresAtFormatted,
+    },
+    options.emailSender,
+  )
+
+  return {
+    success: true,
+    id: lead.id,
+    message: vi.forms.success.resource,
   }
 }
