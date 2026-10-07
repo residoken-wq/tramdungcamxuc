@@ -136,7 +136,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
 | T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | PC nhà | Chưa mở (sau T1-07; chuyển từ Laptop vì quota) |
 | T1-15a | SEO, security headers (CSP report-only), font tự host     |          | T1-05               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-15a.md`) |
-| T1-15b | Analytics provider (chờ Q10), CSP chặn thật, domain      |          | T1-15a, Q10         | Laptop | Chưa mở |
+| T1-15b | Analytics Plausible (Q10 đã chốt), CSP chặn thật, domain |          | T1-15a              | Laptop | Chưa mở |
 | T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 | Local | Chưa mở |
 | T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Chưa mở |
 | T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                   | [HANA]   | tất cả              | Planning | Chưa mở |
