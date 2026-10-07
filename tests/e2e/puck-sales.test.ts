@@ -124,7 +124,7 @@ test.describe('T1-02a: Puck Sales Blocks – ProductGrid publication & price rea
       await publicPage.goto(`/${pageSlug}`)
       await expect(publicPage.getByText(productName)).toBeVisible()
       // Initial sale price 180.000 đ
-      await expect(publicPage.getByText('180.000')).toBeVisible()
+      await expect(publicPage.getByText('180.000').filter({ visible: true }).first()).toBeVisible()
 
       // 7. Update product price in admin via REST without touching the page
       const updateProductRes = await page.request.patch(`/api/products/${productId}`, {
@@ -138,7 +138,7 @@ test.describe('T1-02a: Puck Sales Blocks – ProductGrid publication & price rea
       await publicPage.reload()
       await expect(publicPage.getByText(productName)).toBeVisible()
       // New sale price 150.000 đ should appear
-      await expect(publicPage.getByText('150.000')).toBeVisible()
+      await expect(publicPage.getByText('150.000').filter({ visible: true }).first()).toBeVisible()
 
       // 9. Inspect puckData stored in DB via REST -> MUST NOT contain product name or price
       const getPageRes = await page.request.get(`/api/pages/${pageId}?depth=0`)
