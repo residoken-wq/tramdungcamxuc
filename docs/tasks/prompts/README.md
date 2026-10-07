@@ -32,3 +32,4 @@ Chỉ ghế Planning tạo / sửa file prompt. Agent không sửa thư mục n�
 | Laptop | T1-10 (sau T1-09) | `docs/tasks/prompts/T1-10.md` |
 | Local | T1-03 (sau T1-02b) | `docs/tasks/prompts/T1-03.md` |
 | Laptop | T1-15a (sau T1-10) | `docs/tasks/prompts/T1-15a.md` |
+| PC ở nhà | T1-12a (sau T1-07) | `docs/tasks/prompts/T1-12a.md` |
