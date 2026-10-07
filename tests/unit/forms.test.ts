@@ -10,7 +10,7 @@ import { b2bBriefSchema, coachingFormSchema, leadFormSchema } from '../../src/li
 import { submitB2BBrief, submitCoachingForm, submitLead } from '../../src/lib/forms/submit.server'
 import { RateLimitError } from '../../src/lib/forms/ratelimit.server'
 import { TurnstileError } from '../../src/lib/forms/turnstile.server'
-import { handleActionError } from '../../src/lib/forms/actions'
+import { handleActionError } from '../../src/lib/forms/action-errors'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
 
 class MockEmailSender implements EmailSender {
