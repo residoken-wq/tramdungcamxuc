@@ -17,6 +17,11 @@ import { VideoEmbedBlock, type VideoEmbedProps } from './blocks/VideoEmbed'
 import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
 import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
 import { DividerBlock, type DividerProps } from './blocks/Divider'
+import { ProductGridBlock, type ProductGridProps } from './blocks/ProductGrid'
+import { ProductFeatureBlock, type ProductFeatureProps } from './blocks/ProductFeature'
+import { PackageComparisonBlock, type PackageComparisonProps } from './blocks/PackageComparison'
+import { PriceTagBlock, type ProductPriceTagProps } from './blocks/PriceTag'
+import { TrialCTABlock, type TrialCTAProps } from './blocks/TrialCTA'
 
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
 
@@ -48,6 +53,12 @@ export type PageComponentsProps = {
   Columns: ColumnsProps
   Spacer: SpacerProps
   Divider: DividerProps
+  // Bán hàng
+  ProductGrid: ProductGridProps
+  ProductFeature: ProductFeatureProps
+  PackageComparison: PackageComparisonProps
+  PriceTag: ProductPriceTagProps
+  TrialCTA: TrialCTAProps
   // Chuyển đổi
   CTAButton: CTAButtonBlockProps
 }
@@ -73,6 +84,10 @@ export const puckConfig: Config<PageComponentsProps> = {
     layout: {
       title: 'Bố cục',
       components: ['Columns', 'Spacer', 'Divider'],
+    },
+    sales: {
+      title: 'Bán hàng',
+      components: ['ProductGrid', 'ProductFeature', 'PackageComparison', 'PriceTag', 'TrialCTA'],
     },
     conversion: {
       title: 'Chuyển đổi',
@@ -430,6 +445,12 @@ export const puckConfig: Config<PageComponentsProps> = {
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,
     Divider: DividerBlock,
+
+    ProductGrid: ProductGridBlock,
+    ProductFeature: ProductFeatureBlock,
+    PackageComparison: PackageComparisonBlock,
+    PriceTag: PriceTagBlock,
+    TrialCTA: TrialCTABlock,
   },
 }
 
