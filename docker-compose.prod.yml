@@ -12,6 +12,7 @@ services:
       - '${APP_PORT:-3000}:3000'
     volumes:
       - media:/app/media
+      - private:/app/private
     depends_on:
       postgres:
         condition: service_healthy
@@ -64,3 +65,4 @@ services:
 volumes:
   pgdata:
   media:
+  private:

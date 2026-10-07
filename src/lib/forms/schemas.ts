@@ -94,3 +94,25 @@ export const b2bBriefSchema = z.object({
 })
 
 export type B2BBriefInput = z.infer<typeof b2bBriefSchema>
+
+export const resourceRequestSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, vi.forms.validation.nameRequired)
+    .max(100, vi.forms.validation.nameMax),
+  email: z
+    .string()
+    .trim()
+    .min(1, vi.forms.validation.emailRequired)
+    .max(254, vi.forms.validation.emailMax)
+    .email(vi.forms.validation.emailInvalid),
+  slug: z.string().trim().min(1, vi.forms.validation.resourceSlugRequired),
+  consent: z.boolean().refine((val) => val === true, {
+    message: vi.forms.validation.consentRequired,
+  }),
+  honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+  turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+})
+
+export type ResourceRequestInput = z.infer<typeof resourceRequestSchema>
