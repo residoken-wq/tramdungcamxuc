@@ -42,7 +42,9 @@ export type PuckMigration = (data: Data) => Data
  * 4. Luôn viết unit test xác nhận dữ liệu cũ của khách/Hana sau khi qua `applyPuckMigrations()`
  *    sẽ tương thích hoàn hảo với schema mới mà không làm mất bất kỳ nội dung nào.
  */
-export const puckMigrations: PuckMigration[] = []
+import { migrateCTAButtonV1ToV2 } from './v2-cta-button'
+
+export const puckMigrations: PuckMigration[] = [migrateCTAButtonV1ToV2]
 
 /**
  * Thực thi lần lượt tất cả migrations trên dữ liệu trang Puck.

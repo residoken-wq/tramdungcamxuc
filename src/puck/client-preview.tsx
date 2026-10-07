@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { toPublicProduct, type PublicProduct } from '@/lib/products'
 import { toPublicTestimonial, type PublicTestimonial } from '@/lib/testimonials'
+import { toPublicSiteSettings, type PublicSiteSettings } from '@/lib/site-public'
 
 // In-memory client caches (persists across renders in the browser / test environment)
 const singleProductCache = new Map<string, PublicProduct | null>()
@@ -14,6 +15,12 @@ const singleTestimonialCache = new Map<string, PublicTestimonial | null>()
 const multiTestimonialsCache = new Map<string, PublicTestimonial[]>()
 const inFlightSingleTestimonial = new Map<string, Promise<PublicTestimonial | null>>()
 const inFlightMultiTestimonials = new Map<string, Promise<PublicTestimonial[]>>()
+
+const pageSlugCache = new Map<string, string | null>()
+const inFlightPageSlug = new Map<string, Promise<string | null>>()
+
+let siteSettingsCache: PublicSiteSettings | null = null
+let inFlightSiteSettings: Promise<PublicSiteSettings> | null = null
 
 /**
  * Xóa cache client preview (dùng cho unit test hoặc reset khi cần)
@@ -28,6 +35,12 @@ export function clearClientPreviewCache() {
   multiTestimonialsCache.clear()
   inFlightSingleTestimonial.clear()
   inFlightMultiTestimonials.clear()
+
+  pageSlugCache.clear()
+  inFlightPageSlug.clear()
+
+  siteSettingsCache = null
+  inFlightSiteSettings = null
 }
 
 /**
@@ -485,5 +498,139 @@ export function useClientTestimonials(options: {
   return {
     testimonials: currentTestimonials,
     loading: !isLoaded,
+  }
+}
+
+export function useClientSiteSettings(initialSettings?: PublicSiteSettings | null): {
+  settings: PublicSiteSettings | null
+  loading: boolean
+} {
+  const isResolved = initialSettings !== undefined
+
+  const [settings, setSettings] = useState<PublicSiteSettings | null>(() => {
+    if (siteSettingsCache) return siteSettingsCache
+    return null
+  })
+
+  useEffect(() => {
+    if (isResolved) return
+    if (siteSettingsCache) return
+
+    let isMounted = true
+    const controller = new AbortController()
+
+    if (!inFlightSiteSettings) {
+      inFlightSiteSettings = fetch('/api/globals/siteSettings?depth=0', {
+        credentials: 'include',
+        signal: controller.signal,
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const pub = toPublicSiteSettings(data)
+          siteSettingsCache = pub
+          return pub
+        })
+        .catch(() => {
+          const empty = { shopeeStoreUrl: null, zaloChatUrl: null, zaloGroupUrl: null }
+          siteSettingsCache = empty
+          return empty
+        })
+        .finally(() => {
+          inFlightSiteSettings = null
+        })
+    }
+
+    inFlightSiteSettings.then((data) => {
+      if (isMounted) {
+        setSettings(data)
+      }
+    })
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [isResolved])
+
+  if (isResolved) {
+    return { settings: initialSettings ?? null, loading: false }
+  }
+
+  const current = settings || siteSettingsCache
+  return {
+    settings: current,
+    loading: !current,
+  }
+}
+
+export function useClientPageSlug(
+  pageId: string | number | undefined | null,
+  initialSlug?: string | null,
+): { slug: string | null; loading: boolean } {
+  const isResolved = initialSlug !== undefined
+  const pid = pageId != null && String(pageId).trim() !== '' ? String(pageId).trim() : ''
+
+  const [slug, setSlug] = useState<string | null>(() => {
+    if (pid && pageSlugCache.has(pid)) {
+      return pageSlugCache.get(pid) ?? null
+    }
+    return null
+  })
+
+  useEffect(() => {
+    if (isResolved || !pid) return
+    if (pageSlugCache.has(pid)) return
+
+    let isMounted = true
+    const controller = new AbortController()
+
+    let promise = inFlightPageSlug.get(pid)
+    if (!promise) {
+      promise = fetch(`/api/pages/${encodeURIComponent(pid)}?depth=0`, {
+        credentials: 'include',
+        signal: controller.signal,
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const resolvedSlug = typeof data?.slug === 'string' ? data.slug : null
+          pageSlugCache.set(pid, resolvedSlug)
+          return resolvedSlug
+        })
+        .catch(() => {
+          pageSlugCache.set(pid, null)
+          return null
+        })
+        .finally(() => {
+          inFlightPageSlug.delete(pid)
+        })
+
+      inFlightPageSlug.set(pid, promise)
+    }
+
+    promise.then((resSlug) => {
+      if (isMounted) {
+        setSlug(resSlug)
+      }
+    })
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [pid, isResolved])
+
+  if (isResolved) {
+    return { slug: initialSlug ?? null, loading: false }
+  }
+
+  if (!pid) {
+    return { slug: null, loading: false }
+  }
+
+  const cached = pageSlugCache.get(pid)
+  const current = slug ?? cached ?? null
+  return {
+    slug: current,
+    loading: !pageSlugCache.has(pid) && slug === null,
   }
 }

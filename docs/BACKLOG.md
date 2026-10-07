@@ -12,6 +12,7 @@
 - [ ] **Mobile App PWA / Native**: Nghiên cứu sau khi bản web đạt traction ổn định.
 - [ ] **Tự động đối soát ngân hàng**: Kết nối API ngân hàng sâu hơn khi khối lượng giao dịch lớn.
 - [ ] **Thêm trường `topic` cho collection `products`** (T1-09): Hiện tại `products` chưa có trường chủ đề riêng; trang Thư viện `/thu-vien` đang suy luận chủ đề theo `web` (`habit` / `eq`) và `type` (`package` → `career`). Cần migration thêm select `topic` (eq / habit / career) vào `Products` để Hana tự gắn trong admin CMS.
+- [ ] **Tự động gửi link tải tài nguyên qua email sau khi submit LeadForm** (T1-03 / T1-07): Hiện tại khối Puck `LeadForm` chọn sản phẩm tài nguyên miễn phí chỉ lưu ID và tạo lead kèm tag `resource:<slug>`. Logic tự động gửi email đính kèm link tải file có hạn sẽ được kết nối sau khi task T1-07 (giao tài liệu có ký hạn và queue email) được merge vào main.
 
 ---
 

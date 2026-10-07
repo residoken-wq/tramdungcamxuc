@@ -4,6 +4,7 @@ import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
 import { toPublicProduct, type PublicProduct } from '@/lib/products'
 import { toPublicTestimonial, type PublicTestimonial } from '@/lib/testimonials'
+import { toPublicSiteSettings, type PublicSiteSettings } from '@/lib/site-public'
 
 import { walkPuckItems } from './walk'
 
@@ -56,10 +57,12 @@ export async function resolveServerData(data: Data): Promise<Data> {
   // Deep clone data to avoid mutating original
   const resolvedData: Data = JSON.parse(JSON.stringify(data))
 
-  // Phase 1: Collect media IDs, product IDs, and testimonial IDs across all items (including nested inside Columns slots)
+  // Phase 1: Collect media IDs, product IDs, testimonial IDs, and page IDs across all items (including nested inside Columns slots)
   const productIdsToFetch = new Set<string | number>()
   const testimonialIdsToFetch = new Set<string | number>()
   const logoMediaIdsToFetch = new Set<string | number>()
+  const pageIdsToFetch = new Set<string | number>()
+  let needsSiteSettings = false
 
   await walkPuckItems(resolvedData, async (item) => {
     if (!item || !item.props) return
@@ -177,6 +180,28 @@ export async function resolveServerData(data: Data): Promise<Data> {
         }
       }
     }
+
+    // Collect page IDs for CTAButton (linkType = page)
+    if (item.type === 'CTAButton' && item.props.linkType === 'page' && item.props.pageId) {
+      pageIdsToFetch.add(item.props.pageId as string | number)
+    }
+
+    // Collect product IDs for conversion blocks
+    if (item.type === 'LeadForm' && item.props.resourceProductId) {
+      productIdsToFetch.add(item.props.resourceProductId as string | number)
+    } else if (item.type === 'BookingCTA' && item.props.productId) {
+      productIdsToFetch.add(item.props.productId as string | number)
+    } else if (
+      item.type === 'ShopeeButton' &&
+      item.props.mode !== 'store' &&
+      item.props.productId
+    ) {
+      productIdsToFetch.add(item.props.productId as string | number)
+    }
+
+    if (item.type === 'ShopeeButton' || item.type === 'ZaloButton') {
+      needsSiteSettings = true
+    }
   })
 
   // Phase 2: Batch fetch products, testimonials, and logo media
@@ -261,6 +286,48 @@ export async function resolveServerData(data: Data): Promise<Data> {
       } catch {
         // Gracefully continue
       }
+    }
+  }
+
+  const pageMap = new Map<string, string>()
+
+  if (pageIdsToFetch.size > 0) {
+    const rawPids = Array.from(pageIdsToFetch)
+    const numericOrStrPids = rawPids.map((id) => (isNaN(Number(id)) ? id : Number(id)))
+
+    try {
+      const pageDocs = await payload.find({
+        collection: 'pages',
+        where: { id: { in: numericOrStrPids } },
+        depth: 0,
+        limit: numericOrStrPids.length + 10,
+      })
+
+      for (const p of pageDocs.docs) {
+        if (p?.id != null && typeof p.slug === 'string') {
+          pageMap.set(String(p.id), p.slug)
+        }
+      }
+    } catch {
+      // Gracefully continue
+    }
+  }
+
+  let publicSiteSettings: PublicSiteSettings = {
+    shopeeStoreUrl: null,
+    zaloChatUrl: null,
+    zaloGroupUrl: null,
+  }
+
+  if (needsSiteSettings) {
+    try {
+      const siteDoc = await payload.findGlobal({
+        slug: 'siteSettings',
+        depth: 0,
+      })
+      publicSiteSettings = toPublicSiteSettings(siteDoc)
+    } catch {
+      // Gracefully continue
     }
   }
 
@@ -421,6 +488,90 @@ export async function resolveServerData(data: Data): Promise<Data> {
           }
         })
         item.props._resolved = { logos: resolvedLogos }
+      }
+    } else if (item.type === 'CTAButton') {
+      const pId = item.props.pageId ? String(item.props.pageId) : ''
+      item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+    } else if (item.type === 'LeadForm') {
+      const rId = item.props.resourceProductId ? String(item.props.resourceProductId) : ''
+      const rProd = rId ? productMap.get(rId) : null
+      item.props._resolved = {
+        resource: rProd ? { id: rProd.id, name: rProd.name, slug: rProd.slug } : null,
+      }
+    } else if (item.type === 'BookingCTA') {
+      const bId = item.props.productId ? String(item.props.productId) : ''
+      const bProd = bId ? productMap.get(bId) || null : null
+      item.props._resolved = { product: bProd }
+    } else if (item.type === 'ShopeeButton') {
+      const pId = item.props.productId ? String(item.props.productId) : ''
+      const sProd = pId ? productMap.get(pId) : null
+      item.props._resolved = {
+        externalUrl: sProd?.externalUrl || null,
+        shopeeStoreUrl: publicSiteSettings.shopeeStoreUrl,
+      }
+    } else if (item.type === 'ZaloButton') {
+      item.props._resolved = {
+        zaloChatUrl: publicSiteSettings.zaloChatUrl,
+        zaloGroupUrl: publicSiteSettings.zaloGroupUrl,
+      }
+    } else if (item.type === 'LibraryPreview') {
+      const tab = item.props.tab || 'khoa-hoc'
+      const limit = Number(item.props.limit) || 3
+      if (tab === 'noi-dung') {
+        try {
+          const postsResult = await payload.find({
+            collection: 'posts',
+            where: { _status: { equals: 'published' } },
+            sort: '-createdAt',
+            depth: 1,
+            limit,
+          })
+          const items = postsResult.docs.map((p) => {
+            const thumb =
+              p.thumbnail && typeof p.thumbnail === 'object' && 'url' in p.thumbnail
+                ? {
+                    src: (p.thumbnail as { url?: string }).url || null,
+                    alt: (p.thumbnail as { alt?: string }).alt || p.title,
+                  }
+                : null
+            return {
+              id: p.id,
+              title: p.title,
+              slug: p.slug,
+              format: p.format,
+              series: p.series,
+              topic: p.topic,
+              thumbnail: thumb,
+              isPost: true as const,
+            }
+          })
+          item.props._resolved = { items }
+        } catch {
+          item.props._resolved = { items: [] }
+        }
+      } else {
+        try {
+          const prodsResult = await payload.find({
+            collection: 'products',
+            where: {
+              and: [
+                { _status: { equals: 'published' } },
+                { saleStatus: { not_equals: 'hidden' } },
+                { type: { in: ['digital_tool', 'package'] } },
+              ],
+            },
+            select: PUBLIC_PRODUCT_SELECT as never,
+            sort: 'order',
+            depth: 1,
+            limit,
+          })
+          const items = prodsResult.docs
+            .filter((p: unknown) => (p as { saleStatus?: string })?.saleStatus !== 'hidden')
+            .map(toPublicProduct)
+          item.props._resolved = { items }
+        } catch {
+          item.props._resolved = { items: [] }
+        }
       }
     }
   })

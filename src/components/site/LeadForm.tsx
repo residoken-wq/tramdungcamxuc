@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
+import { track } from '@/lib/analytics/track'
+import { TurnstileWidget } from './forms/TurnstileWidget'
 
 export interface LeadFormValues {
   name: string
@@ -16,6 +18,7 @@ export interface LeadFormErrors {
   name?: string
   email?: string
   consent?: string
+  [key: string]: string | undefined
 }
 
 export type LeadFormStatus = 'idle' | 'submitting' | 'success' | 'error'
@@ -27,6 +30,11 @@ export interface LeadFormProps {
   onSubmit?: (values: LeadFormValues) => Promise<void>
   submitLabel?: string
   className?: string
+  pageSlug?: string
+  need?: 'personal' | 'business' | 'resource'
+  interestTags?: string[]
+  resourceSlug?: string
+  puck?: { isEditing?: boolean }
 }
 
 export function LeadForm({
@@ -36,6 +44,10 @@ export function LeadForm({
   onSubmit,
   submitLabel,
   className = '',
+  pageSlug,
+  need = 'resource',
+  interestTags,
+  resourceSlug,
 }: LeadFormProps) {
   const id = useId()
   const nameInputId = `${id}-name`
@@ -50,6 +62,7 @@ export function LeadForm({
   const [email, setEmail] = useState('')
   const [consent, setConsent] = useState(false)
   const [honeypot, setHoneypot] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState<string | undefined>(undefined)
 
   const [errors, setErrors] = useState<LeadFormErrors>({})
   const [status, setStatus] = useState<LeadFormStatus>('idle')
@@ -105,8 +118,35 @@ export function LeadForm({
           email: email.trim(),
           consent,
         })
+        setStatus('success')
+        track('lead_submitted', { need: need || 'resource', resource: resourceSlug })
+      } else {
+        const tags: string[] = Array.isArray(interestTags) ? [...interestTags] : []
+        if (resourceSlug && !tags.includes(`resource:${resourceSlug}`)) {
+          tags.push(`resource:${resourceSlug}`)
+        }
+        const { submitLeadAction } = await import('@/lib/forms/actions')
+        const res = await submitLeadAction({
+          name: name.trim(),
+          email: email.trim(),
+          consent,
+          need: need || 'resource',
+          interestTags: tags.length > 0 ? tags : ['resource'],
+          honeypot: honeypot.trim(),
+          turnstileToken,
+          page: pageSlug,
+        })
+        if (res.success) {
+          setStatus('success')
+          track('lead_submitted', { need: need || 'resource', resource: resourceSlug })
+        } else {
+          setStatus('error')
+          setServerError(res.error || vi.leadForm.errorMessage)
+          if (res.fieldErrors) {
+            setErrors(res.fieldErrors)
+          }
+        }
       }
-      setStatus('success')
     } catch {
       setStatus('error')
       setServerError(vi.leadForm.errorMessage)
@@ -127,13 +167,9 @@ export function LeadForm({
     <Card variant="white" className={`p-6 sm:p-8 max-w-lg mx-auto ${className}`}>
       {/* Form Header */}
       <div className="mb-6">
-        <h3 className="font-ui font-bold text-2xl text-deep-navy mb-2 tracking-tight">
-          {title}
-        </h3>
+        <h3 className="font-ui font-bold text-2xl text-deep-navy mb-2 tracking-tight">{title}</h3>
         {description && (
-          <p className="font-sans text-sm text-deep-navy/80 leading-relaxed">
-            {description}
-          </p>
+          <p className="font-sans text-sm text-deep-navy/80 leading-relaxed">{description}</p>
         )}
       </div>
 
@@ -156,20 +192,10 @@ export function LeadForm({
             </svg>
           </div>
           <div>
-            <h4 className="font-ui font-bold text-lg text-deep-navy">
-              {vi.leadForm.successTitle}
-            </h4>
-            <p className="text-sm font-sans text-deep-navy/80 mt-1">
-              {vi.leadForm.successMessage}
-            </p>
+            <h4 className="font-ui font-bold text-lg text-deep-navy">{vi.leadForm.successTitle}</h4>
+            <p className="text-sm font-sans text-deep-navy/80 mt-1">{vi.leadForm.successMessage}</p>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleReset}
-            className="mt-2"
-          >
+          <Button type="button" variant="ghost" size="sm" onClick={handleReset} className="mt-2">
             {vi.leadForm.reset}
           </Button>
         </div>
@@ -332,6 +358,8 @@ export function LeadForm({
             )}
           </div>
 
+          <TurnstileWidget onVerify={(token) => setTurnstileToken(token)} />
+
           {/* Submit Button */}
           <div className="pt-2">
             <Button
@@ -342,9 +370,7 @@ export function LeadForm({
               disabled={status === 'submitting'}
               className="w-full"
             >
-              {status === 'submitting'
-                ? vi.leadForm.submitting
-                : submitLabel || vi.leadForm.submit}
+              {status === 'submitting' ? vi.leadForm.submitting : submitLabel || vi.leadForm.submit}
             </Button>
           </div>
         </form>

@@ -30,6 +30,7 @@ export type ProductCtaInput = {
 }
 
 export const GROWTH_MIRROR_PATH = '/coaching/growth-mirror'
+export const BOOKING_PATH = GROWTH_MIRROR_PATH
 
 export interface PublicProductCoverImage {
   url?: string | null
