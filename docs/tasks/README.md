@@ -125,7 +125,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               | Local | Chưa mở |
 | T1-05 | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý          |          | GĐ 0                | Laptop | Xong – PR #21 ([review](reviews/T1-05.md)) |
 | T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Xong – PR #22 ([review](reviews/T1-06.md)) |
-| T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               | PC nhà | Đang làm – Antigravity@PC nhà (PR #29 nháp) · 🔒 Migration + Package |
+| T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               | PC nhà | Sửa T1-07b – PR #29 ([review](reviews/T1-07.md), prompt `prompts/T1-07b.md`) · 🔒 Migration + Package |
 | T1-08 | Logic hiển thị sản phẩm theo `saleStatus`                   |          | GĐ 0                | Local | Xong – PR #23 ([review](reviews/T1-08.md)) |
 | T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Xong – PR #26 ([review](reviews/T1-09.md)) |
 | T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               | Laptop | Xong – PR #28 ([review](reviews/T1-10.md)) |
@@ -136,7 +136,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
 | T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | PC nhà | Chưa mở (sau T1-07; chuyển từ Laptop vì quota) |
 | T1-15a | SEO, security headers (CSP report-only), font tự host     |          | T1-05               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-15a.md`) |
-| T1-15b | Analytics provider (chờ Q10), CSP chặn thật, domain      |          | T1-15a, Q10         | Laptop | Chưa mở |
+| T1-15b | Analytics Plausible (Q10 đã chốt), CSP chặn thật, domain |          | T1-15a              | Laptop | Chưa mở |
 | T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 | Local | Chưa mở |
 | T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Chưa mở |
 | T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                   | [HANA]   | tất cả              | Planning | Chưa mở |
