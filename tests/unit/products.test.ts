@@ -538,6 +538,18 @@ describe('buildPackageComparison - Pure table builder', () => {
 })
 
 describe('toPublicProduct (Anti-data-leak DTO)', () => {
+  it('keeps "includes" items stored by the lines() field under the "text" key', () => {
+    const result = toPublicProduct({
+      id: 1,
+      name: 'Bộ công cụ',
+      includes: [
+        { id: 'a', text: 'Tracker 21 ngày' },
+        { id: 'b', text: '20 video' },
+      ],
+    })
+    expect(result.includes).toEqual([{ text: 'Tracker 21 ngày' }, { text: '20 video' }])
+  })
+
   it('strips files property completely from product document', () => {
     const rawDocWithFiles = {
       id: 999,

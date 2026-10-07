@@ -50,7 +50,7 @@ export interface PublicProduct {
   type?: Product['type'] | null
   journeyStep?: Product['journeyStep'] | null
   shortDescription?: string | null
-  includes?: readonly (string | { item?: string | null })[] | null
+  includes?: readonly (string | { text?: string | null })[] | null
   price: number | null
   salePrice: number | null
   saleEndsAt?: string | null
@@ -96,14 +96,14 @@ export function toPublicProduct(doc: unknown): PublicProduct {
   const externalLabel = typeof p.externalLabel === 'string' ? p.externalLabel : null
   const ctaLabel = typeof p.ctaLabel === 'string' ? p.ctaLabel : null
 
-  let includes: readonly (string | { item?: string | null })[] | null = null
+  let includes: readonly (string | { text?: string | null })[] | null = null
   if (Array.isArray(p.includes)) {
     includes = p.includes.map((item) => {
       if (typeof item === 'string') return item
       if (item && typeof item === 'object') {
-        return { item: typeof item.item === 'string' ? item.item : null }
+        return { text: typeof item.text === 'string' ? item.text : null }
       }
-      return { item: null }
+      return { text: null }
     })
   }
 

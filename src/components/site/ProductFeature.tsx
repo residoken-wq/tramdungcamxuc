@@ -162,7 +162,8 @@ export function ProductFeature({
                 </span>
                 <ul className="space-y-1.5 font-ui text-sm">
                   {product.includes.map((item, index) => {
-                    const text = typeof item === 'string' ? item : (item as { item?: string })?.item
+                    const text =
+                      typeof item === 'string' ? item : (item as { text?: string | null })?.text
                     if (!text) return null
                     return (
                       <li key={index} className="flex items-start gap-2">

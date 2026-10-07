@@ -26,7 +26,7 @@ const mockProducts: Product[] = [
     salePrice: 178000,
     trialDays: 21,
     saleStatus: 'on_sale',
-    includes: [{ item: 'Tracker 21 ngày' }, { item: '20 Video hướng dẫn' }],
+    includes: [{ text: 'Tracker 21 ngày' }, { text: '20 Video hướng dẫn' }],
     files: [
       {
         id: 1,
@@ -60,7 +60,7 @@ const mockProducts: Product[] = [
     salePrice: 178000,
     trialDays: 21,
     saleStatus: 'on_sale',
-    includes: [{ item: '26 Thẻ cảm xúc' }],
+    includes: [{ text: '26 Thẻ cảm xúc' }],
     coverImage: {
       id: 2,
       alt: 'EQ Buddy',
