@@ -168,6 +168,43 @@ export const vi = {
       tooltip: 'Chat qua Zalo',
     },
   },
+  library: {
+    pageTitle: 'Thư viện | Trạm Dừng Cảm Xúc',
+    heading: 'Thư viện',
+    tabs: {
+      courses: 'Khóa học',
+      content: 'Nội dung',
+    },
+    topics: {
+      all: 'Tất cả',
+      eq: 'Cảm xúc',
+      habit: 'Thói quen',
+      career: 'Sự nghiệp',
+    },
+    search: {
+      label: 'Tìm kiếm',
+      placeholder: 'Tìm kiếm theo tên...',
+      button: 'Tìm',
+      clear: 'Xóa tìm kiếm',
+    },
+    empty: {
+      updating: 'Thư viện đang được cập nhật.',
+      title: 'Chưa có nội dung phù hợp',
+      description: 'Không tìm thấy khóa học hay nội dung nào khớp với tiêu chí bạn đã chọn.',
+      resetFilters: 'Xóa bộ lọc',
+    },
+    error: {
+      title: 'Không thể tải thư viện',
+      description: 'Đã có lỗi xảy ra khi kết nối máy chủ. Vui lòng tải lại trang sau giây lát.',
+      retry: 'Thử lại',
+    },
+    badges: {
+      article: 'Bài viết',
+      video: 'Video',
+    },
+    readArticle: 'Đọc bài viết',
+    watchVideo: 'Xem video',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

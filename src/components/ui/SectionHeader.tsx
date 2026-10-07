@@ -40,7 +40,9 @@ export function SectionHeader({
       )}
 
       {/* Signature Two-Tone Heading (Anton: line 1 deep-navy, line 2 bright-magenta) */}
-      <HeadingTag className={`font-display uppercase tracking-tight leading-tight ${headingSizeClasses}`}>
+      <HeadingTag
+        className={`font-display uppercase tracking-tight leading-[1.15] ${headingSizeClasses}`}
+      >
         <span className="block text-deep-navy">{titleLine1}</span>
         {titleLine2 && <span className="block text-bright-magenta">{titleLine2}</span>}
       </HeadingTag>
