@@ -133,7 +133,8 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
       expect(publishRes.ok()).toBe(true)
 
       // 5. Navigate to public page
-      await publicPage.goto(`/${pageSlug}`, { waitUntil: 'networkidle' })
+      // Turnstile keeps a long-poll open, so pages with a form never reach 'networkidle'.
+      await publicPage.goto(`/${pageSlug}`)
 
       // 6. Luồng 2: Fill and submit B2BBriefForm as public visitor
       const briefForm = publicPage.locator('#gui-brief')
@@ -148,6 +149,10 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
         .locator('textarea[name="message"]')
         .fill('Quan tâm giải pháp văn hóa cảm xúc cho bộ phận nhân sự.')
       await briefForm.locator('input[name="consent"]').check()
+      // Wait for the Turnstile token (CI uses Cloudflare's always-pass test keys).
+      await expect(briefForm.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
 
       await briefForm.locator('button[type="submit"]').click()
 
