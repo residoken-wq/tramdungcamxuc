@@ -13,7 +13,6 @@ import {
   submitResourceRequest,
   type SubmissionResult,
 } from './submit.server'
-import { vi } from '../i18n/vi'
 
 async function getClientContext(): Promise<{ ip?: string; page?: string }> {
   try {

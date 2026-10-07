@@ -5,7 +5,7 @@ vi.mock('server-only', () => ({}))
 import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
-import { randomUUID } from 'node:crypto'
+import crypto, { randomUUID } from 'node:crypto'
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import { signDownloadToken, verifyDownloadToken } from '../../src/lib/downloads/token'
@@ -218,6 +218,23 @@ describe('Download Token & Delivery Route (T1-07)', () => {
         expect(result.reason).toBe('expired')
       }
     })
+
+    it('verifies domain separation: rejects token signed without download:v1 domain prefix', () => {
+      const payloadObj = { productId: 101, fileId: 202, expiresAt: Date.now() + 60000 }
+      const dataBase64 = Buffer.from(JSON.stringify(payloadObj), 'utf8').toString('base64url')
+      // Naked signature without download:v1: prefix
+      const nakedSignature = crypto
+        .createHmac('sha256', testSecret)
+        .update(dataBase64)
+        .digest('base64url')
+      const nakedToken = `${dataBase64}.${nakedSignature}`
+
+      const result = verifyDownloadToken(nakedToken, Date.now(), testSecret)
+      expect(result.valid).toBe(false)
+      if (!result.valid) {
+        expect(result.reason).toBe('invalid')
+      }
+    })
   })
 
   describe('Download Route GET /api/download/[token]', () => {
@@ -288,6 +305,43 @@ describe('Download Token & Delivery Route (T1-07)', () => {
 
       const bodyText = await response.text()
       expect(bodyText).toContain('%PDF-1.4')
+    })
+
+    it('returns 410 when token is valid but product is no longer free (e.g. on_sale)', async () => {
+      // Temporarily change product to on_sale
+      await payload.update({
+        collection: 'products',
+        id: productId,
+        data: {
+          saleStatus: 'on_sale',
+        },
+        overrideAccess: true,
+      })
+
+      const token = signDownloadToken({
+        productId,
+        fileId: privateFileId,
+        secret: testSecret,
+      })
+
+      const req = new Request(`http://localhost:3000/api/download/${token}`)
+      const response = await GET(req, {
+        params: Promise.resolve({ token }),
+      })
+
+      expect(response.status).toBe(410)
+      const text = await response.text()
+      expect(text).toContain('không còn được tặng miễn phí')
+
+      // Restore product to free
+      await payload.update({
+        collection: 'products',
+        id: productId,
+        data: {
+          saleStatus: 'free',
+        },
+        overrideAccess: true,
+      })
     })
   })
 })

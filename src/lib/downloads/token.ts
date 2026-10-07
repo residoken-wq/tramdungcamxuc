@@ -43,7 +43,8 @@ export function signDownloadToken({
 
   const payloadString = JSON.stringify(payload)
   const dataBase64 = Buffer.from(payloadString, 'utf8').toString('base64url')
-  const signature = crypto.createHmac('sha256', secretKey).update(dataBase64).digest('base64url')
+  const messageToSign = `download:v1:${dataBase64}`
+  const signature = crypto.createHmac('sha256', secretKey).update(messageToSign).digest('base64url')
 
   return `${dataBase64}.${signature}`
 }
@@ -76,9 +77,10 @@ export function verifyDownloadToken(
     throw new Error('Missing PAYLOAD_SECRET for verifying download token')
   }
 
+  const messageToSign = `download:v1:${dataBase64}`
   const expectedSignature = crypto
     .createHmac('sha256', secretKey)
-    .update(dataBase64)
+    .update(messageToSign)
     .digest('base64url')
 
   const sigBuf = Buffer.from(signature, 'utf8')

@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import config from '@/payload.config'
 import { verifyDownloadToken } from '@/lib/downloads/token'
+import { vi } from '@/lib/i18n/vi'
 import type { Product, PrivateFile } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
@@ -38,15 +39,12 @@ export async function GET(
   const result = verifyDownloadToken(token)
   if (!result.valid) {
     if (result.reason === 'expired') {
-      return new Response(
-        'Liên kết tải tài nguyên đã hết hạn (quá 7 ngày). Vui lòng đăng ký lại để nhận liên kết mới.',
-        {
-          status: 410,
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-        },
-      )
+      return new Response(vi.resource.downloadExpired, {
+        status: 410,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      })
     }
-    return new Response('Liên kết tải tài nguyên không hợp lệ hoặc đã bị thay đổi.', {
+    return new Response(vi.resource.downloadInvalid, {
       status: 404,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
@@ -55,7 +53,7 @@ export async function GET(
   const { productId, fileId } = result.payload
   const payload = await getPayload({ config })
 
-  // 1. Verify that product exists and is published
+  // 1. Verify that product exists
   let product: Product | null = null
   try {
     product = await payload.findByID({
@@ -65,15 +63,28 @@ export async function GET(
       overrideAccess: true,
     })
   } catch {
-    return new Response('Sản phẩm hoặc tài nguyên không tồn tại.', {
+    return new Response(vi.resource.downloadNotFound, {
       status: 404,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
   }
 
   if (!product) {
-    return new Response('Sản phẩm hoặc tài nguyên không tồn tại.', {
+    return new Response(vi.resource.downloadNotFound, {
       status: 404,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    })
+  }
+
+  // Check product is published, saleStatus = free, and type in ['ebook', 'toolkit']
+  const isEligibleFreeResource =
+    product._status === 'published' &&
+    product.saleStatus === 'free' &&
+    (product.type === 'ebook' || product.type === 'toolkit')
+
+  if (!isEligibleFreeResource) {
+    return new Response(vi.resource.noLongerFree, {
+      status: 410,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
   }

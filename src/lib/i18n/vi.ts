@@ -232,6 +232,7 @@ export const vi = {
       'Liên kết tải tài nguyên đã hết hạn (quá 7 ngày). Vui lòng đăng ký lại để nhận liên kết mới.',
     downloadInvalid: 'Liên kết tải tài nguyên không hợp lệ hoặc đã bị thay đổi.',
     downloadNotFound: 'Tài liệu không còn khả dụng trên hệ thống.',
+    noLongerFree: 'Tài nguyên này không còn được tặng miễn phí.',
   },
   notFound: {
     title: 'Không tìm thấy trang',
