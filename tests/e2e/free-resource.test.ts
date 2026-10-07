@@ -1,135 +1,143 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page, type Response } from '@playwright/test'
 import { signDownloadToken } from '../../src/lib/downloads/token'
 
-test.describe('Free Resource Delivery Flow (T1-07)', () => {
-  test('guest submits free resource form, receives signed download link, and direct file URL is blocked', async ({
+// Builds its own data (admin, private PDF, free product) so it runs on an empty CI database.
+// Every setup request is asserted: a failed setup must fail the test, never skip it silently.
+
+async function bootstrapAdmin(page: Page): Promise<number> {
+  await page.goto('/admin/create-first-user', { waitUntil: 'networkidle' })
+  const password = randomUUID()
+  await page.locator('#field-email').fill(`t1-07-${randomUUID()}@example.test`)
+  await page.locator('#field-password').fill(password)
+  await page.locator('#field-confirm-password').fill(password)
+
+  let response: Response | undefined
+  await expect(async () => {
+    const registration = page.waitForResponse(
+      (res) => res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
+      { timeout: 5000 },
+    )
+    await page.locator('button[type="submit"]').click()
+    response = await registration
+  }).toPass({ timeout: 60000 })
+
+  if (!response) throw new Error('First-user registration request was never sent.')
+  expect(response.ok()).toBe(true)
+  await expect(page).toHaveURL(/\/admin\/?$/)
+  return (await (await page.request.get('/api/users/me')).json()).user.id
+}
+
+test.describe('Free resource delivery (T1-07)', () => {
+  test('free PDF is delivered only through a signed, expiring link', async ({
     page,
-    request,
+    browser,
   }, testInfo) => {
-    test.skip(testInfo.project.name !== 'desktop-1440', 'Runs once per database.')
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Bootstrap runs once per database.')
     test.setTimeout(180000)
 
-    // 1. Authenticate as admin or use existing admin session to set up test fixture
-    const adminEmail = `admin-e2e-${randomUUID()}@example.test`
-    const adminPassword = randomUUID()
+    const init = await (await page.request.get('/api/users/init')).json()
+    test.skip(
+      !process.env.CI && init.initialized === true,
+      'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
+    )
+    expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
 
-    // Login or create admin session
-    let authToken = ''
-    try {
-      const loginRes = await request.post('/api/users/login', {
-        data: {
-          email: adminEmail,
-          password: adminPassword,
-        },
-      })
-      if (loginRes.ok()) {
-        const loginData = await loginRes.json()
-        authToken = loginData.token || ''
-      }
-    } catch {
-      // Proceed if first register is needed in clean DB
-    }
+    let userId: number | undefined
+    let fileId: number | undefined
+    let productId: number | undefined
+    const slug = `e2e-tai-nguyen-${randomUUID().slice(0, 8)}`
+    const productName = `E2E Sách miễn phí ${randomUUID().slice(0, 6)}`
 
-    // Prepare test resource and product IDs for cleanup
-    let createdFileId: number | undefined
-    let createdProductId: number | undefined
-    const slug = `e2e-tai-nguyen-${randomUUID()}`
+    const visitor = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+    const guest = await visitor.newPage()
 
     try {
-      // 2. Admin creates privateFiles document and free product via API or Payload
-      // Upload private file
-      const samplePdfContent =
-        '%PDF-1.4\n1 0 obj\n<<>>\nendobj\nxref\n0 1\n0000000000 65535 f\ntrailer\n<<>>\nstartxref\n9\n%%EOF\n'
+      userId = await bootstrapAdmin(page)
 
-      const fileRes = await request.post('/api/privateFiles', {
-        headers: {
-          ...(authToken ? { Authorization: `JWT ${authToken}` } : {}),
-        },
+      // 1. A real PDF (Payload rejects files whose content is not recognised as PDF).
+      const pdfPage = await browser.newPage()
+      await pdfPage.setContent('<h1>Tài liệu kiểm thử</h1>')
+      const pdf = await pdfPage.pdf()
+      await pdfPage.close()
+
+      const upload = await page.request.post('/api/privateFiles', {
         multipart: {
-          file: {
-            name: `e2e-resource-${randomUUID()}.pdf`,
-            mimeType: 'application/pdf',
-            buffer: Buffer.from(samplePdfContent),
-          },
-          description: 'E2E Tài liệu mẫu',
+          file: { name: `${slug}.pdf`, mimeType: 'application/pdf', buffer: pdf },
+          _payload: JSON.stringify({}),
         },
       })
+      expect(upload.status(), await upload.text()).toBe(201)
+      const fileDoc = (await upload.json()).doc
+      fileId = fileDoc.id
 
-      if (fileRes.ok()) {
-        const fileDoc = await fileRes.json()
-        createdFileId = fileDoc.doc?.id || fileDoc.id
+      const product = await page.request.post('/api/products', {
+        data: {
+          name: productName,
+          slug,
+          web: 'site',
+          type: 'ebook',
+          saleStatus: 'free',
+          files: [{ file: fileId }],
+          _status: 'published',
+        },
+      })
+      expect(product.status(), await product.text()).toBe(201)
+      productId = (await product.json()).doc.id
 
-        // Create free ebook product
-        const productRes = await request.post('/api/products', {
-          headers: {
-            ...(authToken ? { Authorization: `JWT ${authToken}` } : {}),
-          },
-          data: {
-            name: 'E2E Sách Điện Tử Miễn Phí',
-            slug,
-            web: 'site',
-            type: 'ebook',
-            saleStatus: 'free',
-            files: [{ file: createdFileId }],
-            shortDescription: 'Cẩm nang E2E hướng dẫn phát triển cảm xúc',
-            includes: [{ text: 'File PDF tài liệu miễn phí' }],
-            _status: 'published',
-          },
-        })
+      // 2. Private files are never reachable directly.
+      expect((await guest.request.get('/api/privateFiles')).status()).toBe(403)
+      expect((await guest.request.get(`/api/privateFiles/file/${fileDoc.filename}`)).status()).toBe(
+        403,
+      )
 
-        if (productRes.ok()) {
-          const productDoc = await productRes.json()
-          createdProductId = productDoc.doc?.id || productDoc.id
-        }
-      }
+      // 3. Guest requests the resource. Turnstile keeps a long-poll open: no 'networkidle'.
+      await guest.goto(`/tai-nguyen/${slug}`)
+      await expect(guest.getByRole('heading', { level: 1, name: productName })).toBeVisible()
+      await guest.getByLabel(/Họ và tên/).fill('Nguyễn Thị Mai')
+      await guest.getByLabel(/Địa chỉ email/).fill(`mai-${randomUUID().slice(0, 6)}@example.test`)
+      await guest.locator('input[type="checkbox"]').first().check()
+      await expect(guest.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
+      await guest.getByRole('button', { name: /Nhận tài liệu/ }).click()
+      await expect(guest.getByText('Kiểm tra email của bạn!')).toBeVisible({ timeout: 15000 })
 
-      // 3. Guest opens the public resource landing page
-      await page.goto(`/tai-nguyen/${slug}`)
-      await expect(page.locator('h1')).toContainText('E2E Sách Điện Tử Miễn Phí')
+      const leads = await page.request.get('/api/leads?where[source.form][equals]=resource&limit=5')
+      expect(leads.ok()).toBe(true)
+      const leadDocs: { interestTags?: { text: string }[] }[] = (await leads.json()).docs
+      expect(leadDocs.some((d) => d.interestTags?.some((t) => t.text === `resource:${slug}`))).toBe(
+        true,
+      )
 
-      // Fill and submit the resource form
-      await page.locator('input[type="text"]').first().fill('Nguyễn Thị Mai')
-      await page.locator('input[type="email"]').fill(`mai-${randomUUID()}@example.test`)
-      await page.locator('input[type="checkbox"]').check()
+      // 4. Signed link: valid → PDF attachment; tampered → 404; expired → 410.
+      const token = signDownloadToken({ productId: productId!, fileId: fileId! })
+      const ok = await guest.request.get(`/api/download/${token}`)
+      expect(ok.status()).toBe(200)
+      expect(ok.headers()['content-type']).toContain('application/pdf')
+      expect(ok.headers()['content-disposition']).toContain('attachment')
+      expect((await guest.request.get(`/api/download/${token.slice(0, -2)}xx`)).status()).toBe(404)
+      const expired = signDownloadToken({
+        productId: productId!,
+        fileId: fileId!,
+        expiresAt: Date.now() - 1000,
+      })
+      expect((await guest.request.get(`/api/download/${expired}`)).status()).toBe(410)
 
-      // Submit form
-      await page.locator('button[type="submit"]').click()
-
-      // 4. Verify confirmation notice is displayed
-      await expect(page.getByText('Kiểm tra email của bạn!')).toBeVisible({ timeout: 15000 })
-
-      // 5. Verify signed download link returns 200 with attachment header
-      if (createdProductId && createdFileId) {
-        const secret = process.env.PAYLOAD_SECRET || 'test-secret'
-        const signedToken = signDownloadToken({
-          productId: createdProductId,
-          fileId: createdFileId,
-          secret,
-        })
-
-        const downloadResponse = await request.get(`/api/download/${signedToken}`)
-        expect(downloadResponse.status()).toBe(200)
-        expect(downloadResponse.headers()['content-type']).toContain('application/pdf')
-        expect(downloadResponse.headers()['content-disposition']).toContain('attachment')
-
-        // 6. Verify direct access to privateFiles is blocked for unauthenticated visitors
-        const directFileRes = await request.get(`/api/privateFiles/${createdFileId}`)
-        expect([401, 403, 404]).toContain(directFileRes.status())
-      }
+      // 5. Product no longer free → the old link stops working.
+      const paid = await page.request.patch(`/api/products/${productId}`, {
+        data: { saleStatus: 'on_sale', price: 99000 },
+      })
+      expect(paid.ok()).toBe(true)
+      expect((await guest.request.get(`/api/download/${token}`)).status()).toBe(410)
     } finally {
-      // 7. Cleanup test data
-      if (authToken) {
-        if (createdProductId) {
-          await request.delete(`/api/products/${createdProductId}`, {
-            headers: { Authorization: `JWT ${authToken}` },
-          })
-        }
-        if (createdFileId) {
-          await request.delete(`/api/privateFiles/${createdFileId}`, {
-            headers: { Authorization: `JWT ${authToken}` },
-          })
-        }
+      test.setTimeout(testInfo.timeout + 30000)
+      await visitor.close()
+      if (productId) await page.request.delete(`/api/products/${productId}`)
+      if (fileId) await page.request.delete(`/api/privateFiles/${fileId}`)
+      if (userId) {
+        const deleted = await page.request.delete(`/api/users/${userId}`)
+        expect(deleted.ok(), 'Temporary user must be deleted.').toBe(true)
       }
     }
   })
