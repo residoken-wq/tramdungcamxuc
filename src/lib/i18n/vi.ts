@@ -205,6 +205,48 @@ export const vi = {
     readArticle: 'Đọc bài viết',
     watchVideo: 'Xem video',
   },
+  notFound: {
+    title: 'Không tìm thấy trang',
+    description: 'Trang bạn đang tìm kiếm không tồn tại hoặc đã được thay đổi.',
+    homeButton: 'Về trang chủ',
+    libraryButton: 'Đến Thư viện',
+  },
+  detail: {
+    backToLibrary: 'Quay lại Thư viện',
+    service: {
+      quotePrice: 'Liên hệ báo giá',
+      defaultBookingLabel: 'Đặt lịch đồng hành',
+      sections: {
+        audience: 'Dành cho ai',
+        situations: 'Tình huống phù hợp',
+        outcomes: 'Kết quả mong đợi',
+        process: 'Quy trình đồng hành',
+        info: 'Thông tin dịch vụ',
+        duration: 'Thời lượng',
+        format: 'Hình thức',
+        price: 'Chi phí',
+        testimonials: 'Lời chia sẻ từ người đồng hành',
+      },
+    },
+    program: {
+      sendBrief: 'Gửi brief cho chương trình này',
+      sections: {
+        targetBehaviors: 'Hành vi mục tiêu',
+        learnerGroup: 'Đối tượng tham gia',
+        info: 'Thông tin chương trình',
+        format: 'Hình thức tổ chức',
+        duration: 'Thời lượng',
+        deliverables: 'Sản phẩm bàn giao',
+        followUp: 'Đồng hành sau chương trình',
+        measurement: 'Phương pháp đo lường',
+        caseStudies: 'Câu chuyện thực tế',
+      },
+    },
+    post: {
+      relatedProductHeading: 'Sản phẩm gợi ý cho bạn',
+      videoHeading: 'Video chia sẻ',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
