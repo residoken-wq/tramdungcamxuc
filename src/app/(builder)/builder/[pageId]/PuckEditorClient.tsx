@@ -53,32 +53,44 @@ type EditorContextValue = {
   feedback: Feedback
   setFeedback: (feedback: Feedback) => void
   autosaveController: AutosaveController
-  setIsTemplateModalOpen: (open: boolean) => void
-  setIsHistoryModalOpen: (open: boolean) => void
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
 
 function EditorHeaderActions() {
   const context = useContext(EditorContext)
-  const { appState } = usePuck()
+  const { appState, dispatch } = usePuck()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState<boolean>(false)
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false)
 
   if (!context) throw new Error('EditorHeaderActions requires EditorContext')
   const {
     pageId,
+    pageTitle,
     pageSlug,
     currentStatus,
     onStatusChange,
     feedback,
     setFeedback,
     autosaveController,
-    setIsTemplateModalOpen,
-    setIsHistoryModalOpen,
   } = context
 
   const previewHref = pageSlug === '/' ? '/' : `/${pageSlug}`
+
+  const handleApplyTemplate = (templateData: Data) => {
+    dispatch({ type: 'setData', data: templateData })
+    autosaveController.setData(templateData)
+    setFeedback({ type: 'saved', message: vi.builder.templateApplied })
+  }
+
+  const handleRestoreVersion = (restoredData: Data, newStatus: string) => {
+    dispatch({ type: 'setData', data: restoredData })
+    autosaveController.markSaved(restoredData)
+    onStatusChange(newStatus)
+    setFeedback({ type: 'saved', message: vi.builder.restoredVersion })
+  }
 
   const handleSaveDraft = () => {
     setFeedback({ type: 'saving', message: vi.builder.saving })
@@ -149,118 +161,136 @@ function EditorHeaderActions() {
   const isSaving = isPending || feedback.type === 'saving'
 
   return (
-    <div className="flex items-center gap-2 sm:gap-2.5">
-      {/* Status & Feedback message */}
-      {feedback.message && (
-        <span
-          role="status"
-          className={`text-xs font-ui px-2.5 py-1 rounded-full transition-all ${
-            feedback.type === 'error'
-              ? 'bg-soft-pink text-bright-magenta font-semibold'
-              : feedback.type === 'saved'
-                ? 'bg-mint-haze text-deep-navy font-semibold'
-                : 'bg-butter-cream text-deep-navy'
-          }`}
+    <>
+      <div className="flex items-center gap-2 sm:gap-2.5">
+        {/* Status & Feedback message */}
+        {feedback.message && (
+          <span
+            role="status"
+            className={`text-xs font-ui px-2.5 py-1 rounded-full transition-all ${
+              feedback.type === 'error'
+                ? 'bg-soft-pink text-bright-magenta font-semibold'
+                : feedback.type === 'saved'
+                  ? 'bg-mint-haze text-deep-navy font-semibold'
+                  : 'bg-butter-cream text-deep-navy'
+            }`}
+          >
+            {feedback.message}
+          </span>
+        )}
+
+        {/* Button: Dùng mẫu... */}
+        <button
+          type="button"
+          onClick={() => setIsTemplateModalOpen(true)}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 transition cursor-pointer"
+          title="Áp dụng một trong 4 mẫu trang dựng sẵn"
         >
-          {feedback.message}
-        </span>
-      )}
-
-      {/* Button: Dùng mẫu... */}
-      <button
-        type="button"
-        onClick={() => setIsTemplateModalOpen(true)}
-        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 transition cursor-pointer"
-        title="Áp dụng một trong 4 mẫu trang dựng sẵn"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-          />
-        </svg>
-        <span>{vi.builder.useTemplate}</span>
-      </button>
-
-      {/* Button: Lịch sử */}
-      <button
-        type="button"
-        onClick={() => setIsHistoryModalOpen(true)}
-        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 transition cursor-pointer"
-        title="Xem và khôi phục các phiên bản trước"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span>{vi.builder.history}</span>
-      </button>
-
-      {/* Button: Nhân bản trang */}
-      <button
-        type="button"
-        onClick={handleDuplicatePage}
-        disabled={isSaving}
-        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
-        title="Tạo bản sao mới của trang này"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
-          />
-        </svg>
-        <span>{vi.builder.duplicatePage}</span>
-      </button>
-
-      {/* View public page link */}
-      {currentStatus === 'published' && (
-        <a
-          href={previewHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs font-ui font-semibold text-deep-navy/80 hover:text-deep-navy px-2.5 py-1.5 rounded-lg border border-deep-navy/20 bg-white hover:bg-warm-ivory transition"
-        >
-          <span>{vi.builder.viewPage}</span>
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
             />
           </svg>
-        </a>
-      )}
+          <span>{vi.builder.useTemplate}</span>
+        </button>
 
-      {/* Button: Lưu nháp */}
-      <button
-        type="button"
-        onClick={handleSaveDraft}
-        disabled={isSaving}
-        className="inline-flex items-center justify-center px-3.5 py-1.5 rounded-lg font-ui text-xs font-bold bg-white text-deep-navy border border-deep-navy/30 hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
-      >
-        {isSaving ? vi.builder.processing : vi.builder.saveDraft}
-      </button>
+        {/* Button: Lịch sử */}
+        <button
+          type="button"
+          onClick={() => setIsHistoryModalOpen(true)}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 transition cursor-pointer"
+          title="Xem và khôi phục các phiên bản trước"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>{vi.builder.history}</span>
+        </button>
 
-      {/* Button: Xuất bản */}
-      <button
-        type="button"
-        onClick={handlePublish}
-        disabled={isSaving}
-        className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg font-ui text-xs font-bold bg-deep-navy text-white hover:opacity-90 disabled:opacity-50 transition shadow-sm cursor-pointer"
-      >
-        {isSaving ? vi.builder.processing : vi.builder.publish}
-      </button>
-    </div>
+        {/* Button: Nhân bản trang */}
+        <button
+          type="button"
+          onClick={handleDuplicatePage}
+          disabled={isSaving}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
+          title="Tạo bản sao mới của trang này"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+            />
+          </svg>
+          <span>{vi.builder.duplicatePage}</span>
+        </button>
+
+        {/* View public page link */}
+        {currentStatus === 'published' && (
+          <a
+            href={previewHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs font-ui font-semibold text-deep-navy/80 hover:text-deep-navy px-2.5 py-1.5 rounded-lg border border-deep-navy/20 bg-white hover:bg-warm-ivory transition"
+          >
+            <span>{vi.builder.viewPage}</span>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+          </a>
+        )}
+
+        {/* Button: Lưu nháp */}
+        <button
+          type="button"
+          onClick={handleSaveDraft}
+          disabled={isSaving}
+          className="inline-flex items-center justify-center px-3.5 py-1.5 rounded-lg font-ui text-xs font-bold bg-white text-deep-navy border border-deep-navy/30 hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
+        >
+          {isSaving ? vi.builder.processing : vi.builder.saveDraft}
+        </button>
+
+        {/* Button: Xuất bản */}
+        <button
+          type="button"
+          onClick={handlePublish}
+          disabled={isSaving}
+          className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg font-ui text-xs font-bold bg-deep-navy text-white hover:opacity-90 disabled:opacity-50 transition shadow-sm cursor-pointer"
+        >
+          {isSaving ? vi.builder.processing : vi.builder.publish}
+        </button>
+      </div>
+
+      {/* Template Modal */}
+      <TemplateModal
+        isOpen={isTemplateModalOpen}
+        onClose={() => setIsTemplateModalOpen(false)}
+        pageTitle={pageTitle}
+        onApplyTemplate={handleApplyTemplate}
+      />
+
+      {/* Version History Modal */}
+      <HistoryModal
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
+        pageId={pageId}
+        onRestore={handleRestoreVersion}
+      />
+    </>
   )
 }
 
@@ -541,8 +571,6 @@ export function PuckEditorClient({
 }: PuckEditorClientProps) {
   const [feedback, setFeedback] = useState<Feedback>({ type: 'idle', message: '' })
   const [docStatus, setDocStatus] = useState<string>(initialStatus)
-  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState<boolean>(false)
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false)
 
   // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage)
   const config = useMemo(() => {
@@ -588,25 +616,6 @@ export function PuckEditorClient({
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [autosaveController])
 
-  const [puckDispatch, setPuckDispatch] = useState<((action: unknown) => void) | null>(null)
-
-  const handleApplyTemplate = (templateData: Data) => {
-    if (puckDispatch) {
-      puckDispatch({ type: 'setData', data: templateData })
-      autosaveController.setData(templateData)
-      setFeedback({ type: 'saved', message: vi.builder.templateApplied })
-    }
-  }
-
-  const handleRestoreVersion = (restoredData: Data, newStatus: string) => {
-    if (puckDispatch) {
-      puckDispatch({ type: 'setData', data: restoredData })
-      autosaveController.markSaved(restoredData)
-      setDocStatus(newStatus)
-      setFeedback({ type: 'saved', message: vi.builder.restoredVersion })
-    }
-  }
-
   return (
     <EditorContext.Provider
       value={{
@@ -618,8 +627,6 @@ export function PuckEditorClient({
         feedback,
         setFeedback,
         autosaveController,
-        setIsTemplateModalOpen,
-        setIsHistoryModalOpen,
       }}
     >
       <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
@@ -679,40 +686,9 @@ export function PuckEditorClient({
             onAction={(_action) => {
               // Action handler hook if needed
             }}
-          >
-            {/* Child component to capture usePuck dispatch */}
-            <PuckDispatcherHook onReady={setPuckDispatch} />
-          </Puck>
+          />
         </div>
-
-        {/* Template Modal */}
-        <TemplateModal
-          isOpen={isTemplateModalOpen}
-          onClose={() => setIsTemplateModalOpen(false)}
-          pageTitle={pageTitle}
-          onApplyTemplate={handleApplyTemplate}
-        />
-
-        {/* Version History Modal */}
-        <HistoryModal
-          isOpen={isHistoryModalOpen}
-          onClose={() => setIsHistoryModalOpen(false)}
-          pageId={pageId}
-          onRestore={handleRestoreVersion}
-        />
       </div>
     </EditorContext.Provider>
   )
-}
-
-function PuckDispatcherHook({
-  onReady,
-}: {
-  onReady: (dispatch: (action: unknown) => void) => void
-}) {
-  const { dispatch } = usePuck()
-  useEffect(() => {
-    onReady(dispatch as (action: unknown) => void)
-  }, [dispatch, onReady])
-  return null
 }

@@ -8,6 +8,7 @@ import { vi } from '@/lib/i18n/vi'
 import { validatePageLockedBlocks } from '@/puck/locks'
 import { generateDuplicateSlug } from '@/puck/duplicate'
 import { applyPuckMigrations } from '@/puck/migrations'
+import { isAdminUser } from '@/lib/auth/access'
 
 export type SaveActionResult = {
   success: boolean
@@ -57,7 +58,7 @@ export async function saveDraftAction(pageId: string, puckData: Data): Promise<S
 
     // Always re-authenticate user on server
     const { user } = await payload.auth({ headers })
-    if (!user) {
+    if (!user || !isAdminUser(user)) {
       return {
         success: false,
         code: 'UNAUTHORIZED',
@@ -121,7 +122,7 @@ export async function publishPageAction(pageId: string, puckData: Data): Promise
 
     // Always re-authenticate user on server
     const { user } = await payload.auth({ headers })
-    if (!user) {
+    if (!user || !isAdminUser(user)) {
       return {
         success: false,
         code: 'UNAUTHORIZED',
@@ -185,7 +186,7 @@ export async function getVersionsAction(pageId: string): Promise<GetVersionsActi
     const payload = await getPayload({ config: payloadConfig })
 
     const { user } = await payload.auth({ headers })
-    if (!user) {
+    if (!user || !isAdminUser(user)) {
       return {
         success: false,
         code: 'UNAUTHORIZED',
@@ -243,7 +244,7 @@ export async function restoreVersionAction(versionId: string): Promise<RestoreVe
     const payload = await getPayload({ config: payloadConfig })
 
     const { user } = await payload.auth({ headers })
-    if (!user) {
+    if (!user || !isAdminUser(user)) {
       return {
         success: false,
         code: 'UNAUTHORIZED',
@@ -282,7 +283,7 @@ export async function duplicatePageAction(pageId: string): Promise<DuplicatePage
     const payload = await getPayload({ config: payloadConfig })
 
     const { user } = await payload.auth({ headers })
-    if (!user) {
+    if (!user || !isAdminUser(user)) {
       return {
         success: false,
         code: 'UNAUTHORIZED',
