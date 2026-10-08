@@ -134,7 +134,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Planning QA đạt – PR #34 · **chờ Codex review + IT duyệt** ([review](reviews/T1-12a.md)) · 🔒 Migration + Package |
 | T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Sẵn sàng – Antigravity@PC nhà (prompt `prompts/T1-12b.md`; chồng trên nhánh T1-12a) |
 | T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
-| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-14.md`; chuyển từ PC nhà) |
+| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | Laptop | Xong – PR #42 ([review](reviews/T1-14.md)) |
 | T1-15a | SEO, security headers (CSP report-only), font tự host     |          | T1-05               | Laptop | Xong – PR #33 ([review](reviews/T1-15a.md)) |
 | T1-15b | Analytics Plausible (Q10 đã chốt), CSP chặn thật, domain |          | T1-15a              | Laptop | Xong – PR #39 ([review](reviews/T1-15b.md)) |
 | T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 | Local | Xong – PR #41 ([review](reviews/T1-16.md)) |
