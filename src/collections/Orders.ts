@@ -20,6 +20,8 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
   req,
 }) => {
   const editor = isAdminUser(req.user) && !isOwnerUser(req.user)
+  const isPaymentAction = req.context?.paymentAction === true
+
   if (operation === 'create') {
     const paymentRef = await generateUniquePaymentRef(async (ref) => {
       const { totalDocs } = await req.payload.count({
@@ -30,11 +32,25 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
       })
       return totalDocs > 0
     })
+
+    // REVIEW-REQUIRED: Khóa tạo đơn qua REST (không có context.paymentAction === true):
+    // - Bỏ payToken người gọi gửi và luôn sinh ngẫu nhiên phía server
+    // - Ép deliveryStatus = 'none' (chống leo thang gán email_sent/access_granted)
+    // - Ép paymentStatus = 'pending', paidAt = null nếu không có paymentAction hoặc là editor
+    const enforcedPayToken = isPaymentAction
+      ? (data.payToken ?? generatePayToken())
+      : data.payToken || data.createdByAdmin
+        ? generatePayToken()
+        : null
+
+    const enforcedDeliveryStatus = isPaymentAction ? (data.deliveryStatus ?? 'none') : 'none'
+
     return {
       ...data,
       paymentRef,
-      payToken: data.payToken ?? (data.createdByAdmin ? generatePayToken() : null),
-      ...(editor ? { paymentStatus: 'pending', paidAt: null } : {}),
+      payToken: enforcedPayToken,
+      deliveryStatus: enforcedDeliveryStatus,
+      ...(!isPaymentAction || editor ? { paymentStatus: 'pending', paidAt: null } : {}),
     }
   }
   const locked = {
@@ -46,7 +62,6 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
   // REVIEW-REQUIRED: Chặn sửa thẳng trạng thái đơn hàng (paymentStatus, paidAt, deliveryStatus).
   // Chỉ các hàm nghiệp vụ được ủy quyền (confirmManualPayment, cancelOrder, expirePendingOrders)
   // truyền context.paymentAction === true mới được phép cập nhật.
-  const isPaymentAction = req.context?.paymentAction === true
   if (editor || !isPaymentAction) {
     return {
       ...data,
