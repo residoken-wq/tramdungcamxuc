@@ -53,10 +53,22 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
       ...(!isPaymentAction || editor ? { paymentStatus: 'pending', paidAt: null } : {}),
     }
   }
+  // REVIEW-REQUIRED: Amounts and buyer are frozen once created, except an owner editing a
+  // still-pending order. Otherwise the customer's QR amount or a paid order's history could change.
+  const amountsEditable = !editor && originalDoc?.paymentStatus === 'pending'
   const locked = {
     paymentRef: originalDoc?.paymentRef,
     payToken: originalDoc?.payToken,
     createdByAdmin: originalDoc?.createdByAdmin,
+    ...(amountsEditable
+      ? {}
+      : {
+          customer: originalDoc?.customer,
+          items: originalDoc?.items,
+          subtotal: originalDoc?.subtotal,
+          discountCode: originalDoc?.discountCode,
+          total: originalDoc?.total,
+        }),
   }
 
   // REVIEW-REQUIRED: Chặn sửa thẳng trạng thái đơn hàng (paymentStatus, paidAt, deliveryStatus).

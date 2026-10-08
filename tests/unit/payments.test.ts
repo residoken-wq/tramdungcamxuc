@@ -755,6 +755,59 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       expect(createdOrder.payToken!.length).toBeGreaterThan(10)
     })
 
+    it('editor không sửa được số tiền đơn; owner chỉ sửa được khi đơn còn pending', async () => {
+      const createdRes = await createExperienceOrder(
+        {
+          productId: experienceProductId,
+          name: 'Khách Khóa Số Tiền',
+          email: `lock-amount-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
+      const originalTotal = order!.total
+
+      // REVIEW-REQUIRED: editor đổi total / items -> bị giữ nguyên
+      const byEditor = await payload.update({
+        collection: 'orders',
+        id: order!.id,
+        data: {
+          total: 1000,
+          subtotal: 1000,
+          items: [{ product: experienceProductId, price: 1000 }],
+        },
+        user: editor,
+        overrideAccess: false,
+      })
+      expect(byEditor.total).toBe(originalTotal)
+      expect(byEditor.items?.[0]?.price).toBe(originalTotal)
+
+      // Owner sửa khi đơn còn pending -> được
+      const byOwner = await payload.update({
+        collection: 'orders',
+        id: order!.id,
+        data: { total: 99000 },
+        user: owner,
+        overrideAccess: false,
+      })
+      expect(byOwner.total).toBe(99000)
+
+      // Sau khi paid -> owner cũng không sửa được nữa
+      await confirmManualPayment(order!.id, owner, { payload, emailSender: mockEmailSender })
+      const afterPaid = await payload.update({
+        collection: 'orders',
+        id: order!.id,
+        data: { total: 5000 },
+        user: owner,
+        overrideAccess: false,
+      })
+      expect(afterPaid.total).toBe(99000)
+      expect(afterPaid.paymentStatus).toBe('paid')
+    })
+
     it('không thể hủy đơn hàng đã thanh toán (tuân thủ chính sách không hoàn tiền AGENTS 14)', async () => {
       const createdRes = await createExperienceOrder(
         {
