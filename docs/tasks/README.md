@@ -131,7 +131,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               | Laptop | Xong – PR #28 ([review](reviews/T1-10.md)) |
 | T1-10b | Live Preview Payload cho services / programs / posts       |          | T1-10, T1-07 (khóa Package) | Laptop | Chưa mở |
 | T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               | Laptop | Xong – PR #36 ([review](reviews/T1-11.md)) |
-| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Planning QA đạt – PR #34 · **chờ Codex review + IT duyệt** ([review](reviews/T1-12a.md)) · 🔒 Migration + Package |
+| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Planning QA đạt – PR #34 · **chờ Codex@Local review (`prompts/T1-12a-codex.md`) + IT duyệt** ([review](reviews/T1-12a.md)) · 🔒 Migration + Package |
 | T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Sẵn sàng – Antigravity@PC nhà (prompt `prompts/T1-12b.md`; chồng trên nhánh T1-12a) |
 | T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
 | T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | Laptop | Xong – PR #42 ([review](reviews/T1-14.md)) |
@@ -141,6 +141,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Xong – PR #43 ([review](reviews/T1-17a.md)); 25 ảnh do Planning chụp; nội dung Hana: để chỗ trống trong CMS, nhập tay hoặc Planning import |
 | T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                   | [HANA]   | tất cả              | Planning | Chưa mở |
 | T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria) |          | T1-16               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-17c.md`; thêm việc 4: lỗi admin tiếng Việt) |
+| T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo) |          | PR #45              | Local | Sẵn sàng – Antigravity@Local (prompt `prompts/T1-17d.md`) |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 
