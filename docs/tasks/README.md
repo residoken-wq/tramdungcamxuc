@@ -79,34 +79,34 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 
 ### GĐ 0 – Nền móng (`docs/tasks/GD0.md`)
 
-| Mã    | Task                                                  | Nhãn     | Phụ thuộc           | Trạng thái |
-| ----- | ----------------------------------------------------- | -------- | ------------------- | ---------- |
-| T0-01 | Khởi tạo repo Next.js + Payload + Postgres + Tailwind |          | –                   | Xong ([review](reviews/T0-01.md)) |
-| T0-01b | Sửa sau nghiệm thu T0-01 (gitignore, DECISIONS, PR) | | T0-01 | Xong |
-| T0-02 | CI, lint, Vitest, Playwright|| T0-01b| Xong ([review](reviews/T0-02.md)) |
-| T0-02b | Migration đầu tiên, smoke test thật, CI chạy trên `main` | | T0-02 | Xong |
-| T0-03 | Design tokens, font, brand SVG, trang `/styleguide`   |          | T0-02b              | Xong ([review](reviews/T0-03.md))    |
-| T0-03b | Sửa sau nghiệm thu T0-03 (styleguide production, test bẩn repo, CRLF) | | T0-03 | Xong |
-| T0-04 | UI primitives                                         |          | T0-03b               | Xong – PR #5 ([review](reviews/T0-04.md)) |
-| T0-04b | Sửa sau nghiệm thu T0-04 (Modal cướp focus, PriceTag tương phản) | | T0-04 | Đạt (05/10) |
-| T0-05 | UI composites                                         |          | T0-04b (đã merge)    | Xong – PR #6 ([review](reviews/T0-05.md)) |
-| T0-05b | Sửa sau nghiệm thu T0-05 ('use client', dữ liệu bịa, font, nút quiz mobile) | | T0-05 | Đạt |
-| T0-05c | Thanh menu tràn ngang 375px + giải xung đột DECISIONS | | T0-05b | Đạt |
-| T0-06 | Collections nội dung + globals + media R2             |          | T0-01               | Đã merge (PR #7, **trước khi có T0-06b**) ([review](reviews/T0-06.md)) |
-| T0-06b | Sửa sau nghiệm thu T0-06 (chuẩn hóa slug trang, so ngày in, vị trí ảnh, skip e2e trên DB dev) | | T0-06 | Xong – PR #8 ([review](reviews/T0-06.md)); Planning sửa thêm test hydrate `2b08c1f` |
-| T0-06c | Test ngày in thẻ EQ phụ thuộc múi giờ máy (fail trên máy UTC+7) | | T0-06b | Xong – PR #15 ([review](reviews/T0-06.md)); anh Nhân chạy lại `pnpm test` trên máy UTC+7 |
-| T0-07 | Collections người dùng, giao dịch + phân quyền        | [REVIEW] | T0-06               | Xong – PR #13 ([review](reviews/T0-07.md)); chờ IT đọc lại REVIEW-REQUIRED |
-| T0-08 | Seed dữ liệu MẪU                                      |          | T0-07               | Xong – PR #12 ([review](reviews/T0-08.md)) |
-| T0-09 | Puck editor + 5 khối đầu + nháp/xuất bản              | [SPIKE]  | T0-05, T0-06b       | Xong – PR #9 ([review](reviews/T0-09.md)) |
-| T0-09b | Sửa sau nghiệm thu T0-09 (config kéo Payload vào client, chọn ảnh, nền tối, link an toàn, version khối) | | T0-09 | Đạt |
-| T0-09c | Viết lại e2e editor (b)(c) cho chạy được thật + sửa mất thông báo | | T0-09b | Đạt (Codex) |
-| T0-09d | Việc nhỏ: `safeHref` chặn `/\`, nhãn Puck tiếng Việt, tương phản nút Xuất bản | | T0-09 (đã merge) | Xong – PR #10 |
-| T0-10 | Đóng gói Docker + RUNBOOK để tự deploy bản demo       |          | T0-06b (đã merge)   | Xong – PR #11 ([review](reviews/T0-10.md)) |
-| T0-10c | CI build image → GHCR, server demo chỉ pull về chạy |          | T0-10 (đã merge)    | Đã merge – PR #14 ([review](reviews/T0-10.md)); chờ anh chọn private + PAT hay public để kiểm pull trên server |
-| T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0) | | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15 |
-| T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)          |          | dữ liệu GĐ 0        | Xong – PR #17 + PR #19 ([review](reviews/T0-11.md)); **đã duyệt 06/10** |
-| T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0     | [HANA]   | T0-07, T0-08, T0-10c | Đạt – PR #16 ([review](reviews/T0-11.md)); ảnh chụp dời sang T1-17a |
-| T0-12 | Bật tiếng Việt cho admin Payload (i18n `vi`)          |          | T0-11b              | Xong – PR #18 ([review](reviews/T0-12.md)) |
+| Mã     | Task                                                                                                    | Nhãn     | Phụ thuộc             | Trạng thái                                                                                                     |
+| ------ | ------------------------------------------------------------------------------------------------------- | -------- | --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| T0-01  | Khởi tạo repo Next.js + Payload + Postgres + Tailwind                                                   |          | –                     | Xong ([review](reviews/T0-01.md))                                                                              |
+| T0-01b | Sửa sau nghiệm thu T0-01 (gitignore, DECISIONS, PR)                                                     |          | T0-01                 | Xong                                                                                                           |
+| T0-02  | CI, lint, Vitest, Playwright                                                                            |          | T0-01b                | Xong ([review](reviews/T0-02.md))                                                                              |
+| T0-02b | Migration đầu tiên, smoke test thật, CI chạy trên `main`                                                |          | T0-02                 | Xong                                                                                                           |
+| T0-03  | Design tokens, font, brand SVG, trang `/styleguide`                                                     |          | T0-02b                | Xong ([review](reviews/T0-03.md))                                                                              |
+| T0-03b | Sửa sau nghiệm thu T0-03 (styleguide production, test bẩn repo, CRLF)                                   |          | T0-03                 | Xong                                                                                                           |
+| T0-04  | UI primitives                                                                                           |          | T0-03b                | Xong – PR #5 ([review](reviews/T0-04.md))                                                                      |
+| T0-04b | Sửa sau nghiệm thu T0-04 (Modal cướp focus, PriceTag tương phản)                                        |          | T0-04                 | Đạt (05/10)                                                                                                    |
+| T0-05  | UI composites                                                                                           |          | T0-04b (đã merge)     | Xong – PR #6 ([review](reviews/T0-05.md))                                                                      |
+| T0-05b | Sửa sau nghiệm thu T0-05 ('use client', dữ liệu bịa, font, nút quiz mobile)                             |          | T0-05                 | Đạt                                                                                                            |
+| T0-05c | Thanh menu tràn ngang 375px + giải xung đột DECISIONS                                                   |          | T0-05b                | Đạt                                                                                                            |
+| T0-06  | Collections nội dung + globals + media R2                                                               |          | T0-01                 | Đã merge (PR #7, **trước khi có T0-06b**) ([review](reviews/T0-06.md))                                         |
+| T0-06b | Sửa sau nghiệm thu T0-06 (chuẩn hóa slug trang, so ngày in, vị trí ảnh, skip e2e trên DB dev)           |          | T0-06                 | Xong – PR #8 ([review](reviews/T0-06.md)); Planning sửa thêm test hydrate `2b08c1f`                            |
+| T0-06c | Test ngày in thẻ EQ phụ thuộc múi giờ máy (fail trên máy UTC+7)                                         |          | T0-06b                | Xong – PR #15 ([review](reviews/T0-06.md)); anh Nhân chạy lại `pnpm test` trên máy UTC+7                       |
+| T0-07  | Collections người dùng, giao dịch + phân quyền                                                          | [REVIEW] | T0-06                 | Xong – PR #13 ([review](reviews/T0-07.md)); chờ IT đọc lại REVIEW-REQUIRED                                     |
+| T0-08  | Seed dữ liệu MẪU                                                                                        |          | T0-07                 | Xong – PR #12 ([review](reviews/T0-08.md))                                                                     |
+| T0-09  | Puck editor + 5 khối đầu + nháp/xuất bản                                                                | [SPIKE]  | T0-05, T0-06b         | Xong – PR #9 ([review](reviews/T0-09.md))                                                                      |
+| T0-09b | Sửa sau nghiệm thu T0-09 (config kéo Payload vào client, chọn ảnh, nền tối, link an toàn, version khối) |          | T0-09                 | Đạt                                                                                                            |
+| T0-09c | Viết lại e2e editor (b)(c) cho chạy được thật + sửa mất thông báo                                       |          | T0-09b                | Đạt (Codex)                                                                                                    |
+| T0-09d | Việc nhỏ: `safeHref` chặn `/\`, nhãn Puck tiếng Việt, tương phản nút Xuất bản                           |          | T0-09 (đã merge)      | Xong – PR #10                                                                                                  |
+| T0-10  | Đóng gói Docker + RUNBOOK để tự deploy bản demo                                                         |          | T0-06b (đã merge)     | Xong – PR #11 ([review](reviews/T0-10.md))                                                                     |
+| T0-10c | CI build image → GHCR, server demo chỉ pull về chạy                                                     |          | T0-10 (đã merge)      | Đã merge – PR #14 ([review](reviews/T0-10.md)); chờ anh chọn private + PAT hay public để kiểm pull trên server |
+| T0-10b | Hạ tầng production Vercel + Neon + R2 (không chặn GĐ 0)                                                 |          | tài khoản IT (D1, D2) | Bị chặn (chờ IT) – hạn: trước T1-15                                                                            |
+| T0-11a | Ước lượng GĐ 1–4 (`docs/plan/ESTIMATES.md`)                                                             |          | dữ liệu GĐ 0          | Xong – PR #17 + PR #19 ([review](reviews/T0-11.md)); **đã duyệt 06/10**                                        |
+| T0-11b | Hướng dẫn CMS nháp + tài khoản Hana cho cổng GĐ 0                                                       | [HANA]   | T0-07, T0-08, T0-10c  | Đạt – PR #16 ([review](reviews/T0-11.md)); ảnh chụp dời sang T1-17a                                            |
+| T0-12  | Bật tiếng Việt cho admin Payload (i18n `vi`)                                                            |          | T0-11b                | Xong – PR #18 ([review](reviews/T0-12.md))                                                                     |
 
 **✅ Cổng GĐ 0 đạt 06/10/2026** (Hana tự làm checklist mục 7 `HUONG_DAN_CMS.md` trên bản demo; ESTIMATES đã duyệt). Mốc **N = 06/10/2026**.
 
@@ -116,33 +116,33 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **🔒 Migration: T1-12a · 🔒 Package: T1-12a**
 
-| Mã    | Task                                                        | Nhãn     | Phụ thuộc           | Máy | Trạng thái |
-| ----- | ----------------------------------------------------------- | -------- | ------------------- | --- | ---------- |
-| T1-01 | Khối Puck: Mở đầu, Nội dung, Bố cục                         |          | GĐ 0                | Local | Xong – PR #20 ([review](reviews/T1-01.md)) |
-| T1-02a | Khối Puck: Bán hàng (puckData chỉ lưu ID sản phẩm)         |          | T1-01, T1-08        | Local | Xong – PR #25 ([review](reviews/T1-02a.md)) |
-| T1-02b | Khối Puck: Niềm tin + revalidate                           |          | T1-02a              | Local | Xong – PR #27 ([review](reviews/T1-02b.md)) |
-| T1-03 | Khối Puck: Chuyển đổi                                       |          | T1-02b, T1-06       | Local | Xong – PR #31 ([review](reviews/T1-03.md)) |
-| T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               | Local | Xong – PR #35 ([review](reviews/T1-04.md)) |
-| T1-05 | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý          |          | GĐ 0                | Laptop | Xong – PR #21 ([review](reviews/T1-05.md)) |
-| T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Xong – PR #22 ([review](reviews/T1-06.md)) |
-| T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               | PC nhà | Xong – PR #29 ([review](reviews/T1-07.md)) |
-| T1-08 | Logic hiển thị sản phẩm theo `saleStatus`                   |          | GĐ 0                | Local | Xong – PR #23 ([review](reviews/T1-08.md)) |
-| T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Xong – PR #26 ([review](reviews/T1-09.md)) |
-| T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               | Laptop | Xong – PR #28 ([review](reviews/T1-10.md)) |
-| T1-10b | Live Preview Payload cho services / programs / posts       |          | T1-10, T1-07 (khóa Package) | Laptop | Chưa mở |
-| T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               | Laptop | Xong – PR #36 ([review](reviews/T1-11.md)) |
-| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Planning QA đạt – PR #34 · Codex xong 08/10 (5 lỗi → T1-12c) · **chờ IT duyệt** ([review](reviews/T1-12a.md)) · 🔒 Migration + Package |
-| T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Chưa đạt ([review](reviews/T1-12b.md)) → T1-12c đạt |
-| T1-12c | Sửa 149k: chuyển trạng thái nguyên tử, khóa REST, chữ vào vi.ts, e2e | [REVIEW] | T1-12b | PC nhà | Planning QA đạt 08/10 (3 sửa nhỏ) · **chờ IT duyệt** · chờ dòng THỜI GIAN THỰC ([review](reviews/T1-12c.md)) |
-| T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
-| T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | Laptop | Xong – PR #42 ([review](reviews/T1-14.md)) |
-| T1-15a | SEO, security headers (CSP report-only), font tự host     |          | T1-05               | Laptop | Xong – PR #33 ([review](reviews/T1-15a.md)) |
-| T1-15b | Analytics Plausible (Q10 đã chốt), CSP chặn thật, domain |          | T1-15a              | Laptop | Xong – PR #39 ([review](reviews/T1-15b.md)) |
-| T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 | Local | Xong – PR #41 ([review](reviews/T1-16.md)) |
-| T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Xong – PR #43 ([review](reviews/T1-17a.md)); 25 ảnh do Planning chụp; nội dung Hana: để chỗ trống trong CMS, nhập tay hoặc Planning import |
-| T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                   | [HANA]   | tất cả              | Planning | Chưa mở |
-| T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria, lỗi admin tiếng Việt) |          | T1-16               | Laptop | Xong – PR #48 ([review](reviews/T1-17c.md)) |
-| T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo) |          | PR #45              | Local | Xong – PR #47 ([review](reviews/T1-17d.md)) |
+| Mã     | Task                                                                            | Nhãn     | Phụ thuộc                   | Máy      | Trạng thái                                                                                                                                 |
+| ------ | ------------------------------------------------------------------------------- | -------- | --------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| T1-01  | Khối Puck: Mở đầu, Nội dung, Bố cục                                             |          | GĐ 0                        | Local    | Xong – PR #20 ([review](reviews/T1-01.md))                                                                                                 |
+| T1-02a | Khối Puck: Bán hàng (puckData chỉ lưu ID sản phẩm)                              |          | T1-01, T1-08                | Local    | Xong – PR #25 ([review](reviews/T1-02a.md))                                                                                                |
+| T1-02b | Khối Puck: Niềm tin + revalidate                                                |          | T1-02a                      | Local    | Xong – PR #27 ([review](reviews/T1-02b.md))                                                                                                |
+| T1-03  | Khối Puck: Chuyển đổi                                                           |          | T1-02b, T1-06               | Local    | Xong – PR #31 ([review](reviews/T1-03.md))                                                                                                 |
+| T1-04  | Puck: 4 mẫu trang, versions, khóa khối, autosave                                |          | T1-03                       | Local    | Xong – PR #35 ([review](reviews/T1-04.md))                                                                                                 |
+| T1-05  | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý                              |          | GĐ 0                        | Laptop   | Xong – PR #21 ([review](reviews/T1-05.md))                                                                                                 |
+| T1-06  | Hạ tầng form + email: lead, coaching, B2B                                       |          | GĐ 0                        | PC nhà   | Xong – PR #22 ([review](reviews/T1-06.md))                                                                                                 |
+| T1-07  | Giao tài nguyên miễn phí qua email                                              |          | T1-06                       | PC nhà   | Xong – PR #29 ([review](reviews/T1-07.md))                                                                                                 |
+| T1-08  | Logic hiển thị sản phẩm theo `saleStatus`                                       |          | GĐ 0                        | Local    | Xong – PR #23 ([review](reviews/T1-08.md))                                                                                                 |
+| T1-09  | Thư viện `/thu-vien` 2 tab + bộ lọc                                             |          | T1-08                       | Laptop   | Xong – PR #26 ([review](reviews/T1-09.md))                                                                                                 |
+| T1-10  | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên                     |          | T1-08                       | Laptop   | Xong – PR #28 ([review](reviews/T1-10.md))                                                                                                 |
+| T1-10b | Live Preview Payload cho services / programs / posts                            |          | T1-10, T1-07 (khóa Package) | Laptop   | Chưa mở                                                                                                                                    |
+| T1-11  | Trang Growth Mirror + bảng 3 gói                                                |          | T1-10                       | Laptop   | Xong – PR #36 ([review](reviews/T1-11.md))                                                                                                 |
+| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron                       | [REVIEW] | T1-06                       | PC nhà   | Planning QA đạt – PR #34 · Codex xong 08/10 (5 lỗi → T1-12c) · **chờ IT duyệt** ([review](reviews/T1-12a.md)) · 🔒 Migration + Package     |
+| T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn                      | [REVIEW] | T1-12a                      | PC nhà   | Chưa đạt ([review](reviews/T1-12b.md)) → T1-12c đạt                                                                                        |
+| T1-12c | Sửa 149k: chuyển trạng thái nguyên tử, khóa REST, chữ vào vi.ts, e2e            | [REVIEW] | T1-12b                      | PC nhà   | Planning QA đạt 08/10 (3 sửa nhỏ) · **chờ IT duyệt** · chờ dòng THỜI GIAN THỰC ([review](reviews/T1-12c.md))                               |
+| T1-13  | Link thanh toán gói do Hana tạo + cấp quyền                                     | [REVIEW] | T1-12b                      | PC nhà   | Chưa mở                                                                                                                                    |
+| T1-14  | Quiz chẩn đoán `/habit/chan-doan`                                               |          | T1-06                       | Laptop   | Xong – PR #42 ([review](reviews/T1-14.md))                                                                                                 |
+| T1-15a | SEO, security headers (CSP report-only), font tự host                           |          | T1-05                       | Laptop   | Xong – PR #33 ([review](reviews/T1-15a.md))                                                                                                |
+| T1-15b | Analytics Plausible (Q10 đã chốt), CSP chặn thật, domain                        |          | T1-15a                      | Laptop   | Xong – PR #39 ([review](reviews/T1-15b.md))                                                                                                |
+| T1-16  | Dựng các trang seed từ mẫu theo mục 8.1                                         | [HANA]   | T1-04, T1-10, T1-11         | Local    | Xong – PR #41 ([review](reviews/T1-16.md))                                                                                                 |
+| T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0)                | [HANA]   | T1-16                       | Local    | Xong – PR #43 ([review](reviews/T1-17a.md)); 25 ảnh do Planning chụp; nội dung Hana: để chỗ trống trong CMS, nhập tay hoặc Planning import |
+| T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                                        | [HANA]   | tất cả                      | Planning | Chưa mở                                                                                                                                    |
+| T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria, lỗi admin tiếng Việt) |          | T1-16                       | Laptop   | Xong – PR #48 ([review](reviews/T1-17c.md))                                                                                                |
+| T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo)                           |          | PR #45                      | Local    | Xong – PR #47 ([review](reviews/T1-17d.md))                                                                                                |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 
