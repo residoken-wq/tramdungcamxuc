@@ -148,7 +148,7 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
 
       // 5. Owner vào trang chi tiết đơn hàng trong admin CMS
       await page.goto(`/admin/collections/orders/${createdOrderId}`)
-      await expect(page.getByText(paymentRef)).toBeVisible()
+      await expect(page.getByRole('heading', { name: paymentRef })).toBeVisible()
 
       // Bấm nút "Xác nhận thanh toán" của component OrderActions
       const confirmButton = page.getByRole('button', { name: /Xác nhận thanh toán/i })
