@@ -39,6 +39,12 @@ export function TurnstileWidget({
   const containerRef = useRef<HTMLDivElement>(null)
   const widgetIdRef = useRef<string | null>(null)
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+  // Forms pass new inline callbacks on every render (every keystroke). Keep the latest ones in a
+  // ref so the widget is rendered once per mount instead of being torn down and re-challenged.
+  const callbacksRef = useRef({ onVerify, onError, onExpire })
+  useEffect(() => {
+    callbacksRef.current = { onVerify, onError, onExpire }
+  })
 
   useEffect(() => {
     if (!siteKey || typeof window === 'undefined' || !containerRef.current) {
@@ -55,13 +61,13 @@ export function TurnstileWidget({
         const id = window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
           callback: (token) => {
-            if (isMounted) onVerify(token)
+            if (isMounted) callbacksRef.current.onVerify(token)
           },
           'error-callback': () => {
-            if (isMounted && onError) onError()
+            if (isMounted) callbacksRef.current.onError?.()
           },
           'expired-callback': () => {
-            if (isMounted && onExpire) onExpire()
+            if (isMounted) callbacksRef.current.onExpire?.()
           },
         })
         widgetIdRef.current = id
@@ -98,7 +104,7 @@ export function TurnstileWidget({
         widgetIdRef.current = null
       }
     }
-  }, [siteKey, onVerify, onError, onExpire])
+  }, [siteKey])
 
   if (!siteKey) {
     return null
