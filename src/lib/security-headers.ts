@@ -66,6 +66,7 @@ export function buildCspDirective(options: CspOptions = {}): string {
   const scriptSources = [
     "'self'",
     'https://challenges.cloudflare.com',
+    'https://plausible.io',
     "'unsafe-inline'",
     ...((options.isDev ?? process.env.NODE_ENV !== 'production') ? ["'unsafe-eval'"] : []),
   ].join(' ')
@@ -78,7 +79,7 @@ export function buildCspDirective(options: CspOptions = {}): string {
     `script-src ${scriptSources}`,
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data:",
-    "connect-src 'self' https://challenges.cloudflare.com",
+    "connect-src 'self' https://challenges.cloudflare.com https://plausible.io",
     "frame-ancestors 'self'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -89,6 +90,7 @@ export function buildCspDirective(options: CspOptions = {}): string {
 
 export interface SecurityHeaderOptions {
   isProduction?: boolean
+  isEnforce?: boolean
   s3PublicUrl?: string
   s3Endpoint?: string
 }
@@ -106,11 +108,16 @@ export function getSecurityHeaders(
   }
 
   const isProd = options.isProduction ?? process.env.NODE_ENV === 'production'
+  const isEnforce = options.isEnforce ?? process.env.CSP_ENFORCE === 'true'
+  const cspHeaderName = isEnforce
+    ? 'Content-Security-Policy'
+    : 'Content-Security-Policy-Report-Only'
+
   const headers: Record<string, string> = {
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    'Content-Security-Policy-Report-Only': buildCspDirective({
+    [cspHeaderName]: buildCspDirective({
       s3PublicUrl: options.s3PublicUrl,
       s3Endpoint: options.s3Endpoint,
       isDev: !isProd,
