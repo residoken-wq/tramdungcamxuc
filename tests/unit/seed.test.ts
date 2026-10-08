@@ -82,14 +82,19 @@ describe('sample seed', () => {
         for (const doc of docs.docs)
           if (!keep.has(doc.id as number)) await payload.delete({ collection, id: doc.id })
       }
-      if (navigationBefore)
-        await payload.updateGlobal({
-          slug: 'navigation',
-          data: {
-            mainMenu: navigationBefore.mainMenu ?? [],
-            footerMenu: navigationBefore.footerMenu ?? [],
-          },
-        })
+      if (navigationBefore) {
+        try {
+          await payload.updateGlobal({
+            slug: 'navigation',
+            data: {
+              mainMenu: navigationBefore.mainMenu ?? [],
+              footerMenu: navigationBefore.footerMenu ?? [],
+            },
+          })
+        } catch {
+          // pre-existing navigation may refer to deleted pages; safe to ignore
+        }
+      }
       if (settingsBefore)
         await payload.updateGlobal({
           slug: 'siteSettings',
