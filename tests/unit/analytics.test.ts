@@ -148,3 +148,8 @@ describe('Analytics (Plausible & track)', () => {
     })
   })
 })
+
+it('never sends transfer references or company names to Plausible', () => {
+  expect(EVENT_ALLOWED_PROPS.order_paid).not.toContain('paymentRef')
+  expect(EVENT_ALLOWED_PROPS.b2b_brief_submitted).not.toContain('company')
+})

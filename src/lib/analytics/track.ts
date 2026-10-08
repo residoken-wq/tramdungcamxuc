@@ -37,7 +37,7 @@ export const EVENT_ALLOWED_PROPS: Record<AnalyticsEvent, readonly string[]> = {
   diagnostic_completed: ['stage', 'result', 'totalQuestions'],
   habit_loop_completed: ['step', 'duration'],
   checkout_started: ['productSlug', 'productId', 'price', 'kind'],
-  order_paid: ['productSlug', 'productId', 'amount', 'paymentRef'],
+  order_paid: ['productSlug', 'productId', 'amount'],
   certificate_issued: ['courseSlug', 'module'],
   certificate_shared: ['courseSlug', 'platform'],
   zalo_chat_clicked: ['target', 'context', 'pageSlug'],
@@ -54,7 +54,7 @@ export const EVENT_ALLOWED_PROPS: Record<AnalyticsEvent, readonly string[]> = {
   package_viewed: ['packageIds', 'packages', 'pageSlug'],
   experience_session_booked: ['productSlug', 'productId', 'pageSlug'],
   booking_clicked: ['productId', 'slug', 'pageSlug'],
-  b2b_brief_submitted: ['company', 'pageSlug'],
+  b2b_brief_submitted: ['pageSlug'],
 }
 
 /**

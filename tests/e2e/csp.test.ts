@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { expect, test, type Page } from '@playwright/test'
 
 /**
@@ -112,45 +113,71 @@ test.describe('Content Security Policy Enforced Tests (CSP_ENFORCE=true)', () =>
     expect(consoleErrors, 'Không có console error CSP refused to').toEqual([])
   })
 
-  test('Trang có form Turnstile (/doanh-nghiep hoặc popup lead) không vi phạm CSP và gửi được', async ({
+  test('Trang có form Turnstile và video YouTube không vi phạm CSP', async ({
     page,
-  }) => {
-    const watcher = await setupCspViolationWatcher(page)
-
-    const res = await page.goto('/doanh-nghiep', { waitUntil: 'domcontentloaded' })
-    expect(res?.status()).toBe(200)
-
-    // Kiểm tra Turnstile iframe hoặc form xuất hiện mà không bị CSP frame-src / script-src chặn
-    const form = page.locator('form').first()
-    if (await form.isVisible()) {
-      const violations = await watcher.getViolations()
-      expect(
-        violations.filter((v: { violatedDirective?: string }) =>
-          v.violatedDirective?.includes('frame-src'),
-        ),
-        'Cloudflare Turnstile frame không được vi phạm frame-src',
-      ).toEqual([])
-    }
-
-    const consoleErrors = watcher.getConsoleErrors()
-    expect(consoleErrors).toEqual([])
-  })
-
-  test('Trang chứa VideoEmbed tải iframe YouTube/Vimeo hợp lệ theo CSP frame-src', async ({
-    page,
-  }) => {
-    const watcher = await setupCspViolationWatcher(page)
-
-    // Mở trang giới thiệu hoặc trang có thể chứa VideoEmbed
-    const res = await page.goto('/ve-hana', { waitUntil: 'domcontentloaded' })
-    expect(res?.status()).toBe(200)
-
-    const violations = await watcher.getViolations()
-    const frameViolations = violations.filter(
-      (v: { violatedDirective?: string }) =>
-        v.violatedDirective?.includes('frame-src') || v.violatedDirective?.includes('media-src'),
+    browser,
+  }, testInfo) => {
+    // Builds its own page so it runs on an empty CI database. Violations fire for both
+    // Content-Security-Policy and Content-Security-Policy-Report-Only.
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Bootstrap runs once per database.')
+    test.setTimeout(120000)
+    const init = await (await page.request.get('/api/users/init')).json()
+    test.skip(
+      !process.env.CI && init.initialized === true,
+      'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
     )
 
-    expect(frameViolations, 'Video embed không được gây vi phạm frame-src').toEqual([])
+    const password = randomUUID()
+    const reg = await page.request.post('/api/users/first-register', {
+      data: { email: `csp-${randomUUID()}@example.test`, password, confirmPassword: password },
+    })
+    expect(reg.ok(), await reg.text()).toBe(true)
+    const userId: number = (await reg.json()).user.id
+    let pageId: number | undefined
+    const visitor = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+    try {
+      const slug = `csp-${randomUUID().slice(0, 8)}`
+      const created = await page.request.post('/api/pages', {
+        data: {
+          title: 'CSP',
+          slug,
+          _status: 'published',
+          puckData: {
+            root: { props: {} },
+            content: [
+              { type: 'B2BBriefForm', props: { id: 'csp-form', version: 1, title: 'Brief' } },
+              {
+                type: 'VideoEmbed',
+                props: {
+                  id: 'csp-video',
+                  version: 1,
+                  url: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+                },
+              },
+            ],
+          },
+        },
+      })
+      expect(created.status(), await created.text()).toBe(201)
+      pageId = (await created.json()).doc.id
+
+      const guest = await visitor.newPage()
+      const watcher = await setupCspViolationWatcher(guest)
+      const res = await guest.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
+      expect(res?.status()).toBe(200)
+      await expect(guest.locator('#gui-brief')).toBeVisible()
+      await expect(guest.locator('iframe[src*="youtube-nocookie.com"]')).toHaveCount(1)
+      // Turnstile token proves the Cloudflare script and iframe were allowed.
+      await expect(guest.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
+      await guest.waitForTimeout(1500)
+      expect(await watcher.getViolations(), 'Không được có vi phạm CSP').toEqual([])
+      expect(watcher.getConsoleErrors()).toEqual([])
+    } finally {
+      await visitor.close()
+      if (pageId) await page.request.delete(`/api/pages/${pageId}`)
+      await page.request.delete(`/api/users/${userId}`)
+    }
   })
 })
