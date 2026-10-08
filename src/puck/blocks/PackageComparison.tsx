@@ -37,6 +37,18 @@ export const PackageComparisonBlock: ComponentConfig<PackageComparisonProps> = {
         { label: 'Tắt (Ẩn)', value: false },
       ],
     },
+    note: {
+      type: 'textarea',
+      label: 'Ghi chú dưới bảng gói',
+    },
+    showPaymentPolicyLink: {
+      type: 'select',
+      label: 'Hiện liên kết Chính sách giá – thanh toán',
+      options: [
+        { label: 'Bật (Hiển thị)', value: true },
+        { label: 'Tắt (Ẩn)', value: false },
+      ],
+    },
     bgColor: {
       type: 'select',
       label: 'Màu nền',
@@ -49,13 +61,16 @@ export const PackageComparisonBlock: ComponentConfig<PackageComparisonProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
     packages: [],
     showTotalValue: true,
     showDiscountPercent: true,
+    note: '[MẪU] Các gói đồng hành được thiết kế theo lộ trình cá nhân hóa.',
+    showPaymentPolicyLink: true,
     bgColor: 'warm-ivory',
     padding: 'md',
   },
+
   // Pass only serialisable props: Puck's `puck` object holds functions that cannot cross into a client component.
   render: ({ puck, ...props }) => (
     <PackageComparison {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
