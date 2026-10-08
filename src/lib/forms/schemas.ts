@@ -116,3 +116,26 @@ export const resourceRequestSchema = z.object({
 })
 
 export type ResourceRequestInput = z.infer<typeof resourceRequestSchema>
+
+export const experienceOrderSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, vi.payment.validation.nameRequired)
+    .max(100, vi.forms.validation.nameMax),
+  email: z
+    .string()
+    .trim()
+    .min(1, vi.payment.validation.emailRequired)
+    .max(254, vi.forms.validation.emailMax)
+    .email(vi.forms.validation.emailInvalid),
+  phone: z.string().trim().max(20, vi.forms.validation.phoneMax).optional(),
+  need: z.string().trim().max(1000, vi.payment.validation.needMax).optional(),
+  termsAccepted: z.boolean().refine((val) => val === true, {
+    message: vi.payment.validation.termsAcceptedRequired,
+  }),
+  honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+  turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+})
+
+export type ExperienceOrderInput = z.infer<typeof experienceOrderSchema>

@@ -13,6 +13,7 @@ import {
   submitResourceRequest,
   type SubmissionResult,
 } from './submit.server'
+import { createExperienceOrder } from '../payments/orders.server'
 
 async function getClientContext(): Promise<{ ip?: string; page?: string }> {
   try {
@@ -96,6 +97,26 @@ export async function submitResourceRequestAction(
     })
     return {
       success: res.success,
+      message: res.message,
+    }
+  } catch (err) {
+    return handleActionError(err)
+  }
+}
+
+export async function createExperienceOrderAction(
+  data: Record<string, unknown>,
+  extra?: { utm?: string },
+): Promise<ActionResponse & { payToken?: string }> {
+  try {
+    const ctx = await getClientContext()
+    const res = await createExperienceOrder(data, {
+      ...ctx,
+      utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
+    })
+    return {
+      success: res.success,
+      payToken: res.payToken,
       message: res.message,
     }
   } catch (err) {

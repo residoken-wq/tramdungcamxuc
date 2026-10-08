@@ -1,0 +1,602 @@
+// @vitest-environment node
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+vi.mock('server-only', () => ({}))
+
+import { randomUUID } from 'node:crypto'
+import { getPayload, type CollectionSlug, type Payload, type PayloadRequest } from 'payload'
+import config from '../../src/payload.config'
+import { vi as viStrings } from '../../src/lib/i18n/vi'
+import {
+  cancelOrder,
+  confirmManualPayment,
+  createExperienceOrder,
+  expirePendingOrders,
+  getPublicOrderView,
+} from '../../src/lib/payments/orders.server'
+import { POST as expireOrdersCronRoute } from '../../src/app/(site)/api/cron/expire-orders/route'
+import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
+
+type AdminUser = NonNullable<PayloadRequest['user']>
+
+class MockEmailSender implements EmailSender {
+  public sent: SendEmailParams[] = []
+
+  async send(params: SendEmailParams): Promise<SendEmailResult> {
+    this.sent.push(params)
+    return { success: true, id: `mock-${randomUUID()}` }
+  }
+}
+
+describe('Payment Backend & Order Flow (T1-12a)', () => {
+  let payload: Payload
+  let owner: AdminUser
+  let editor: AdminUser
+  let experienceProductId: number
+  let mockEmailSender: MockEmailSender
+  let ipCounter = 1
+  const nextIp = () => `192.168.1.${ipCounter++}`
+
+  const created: { collection: CollectionSlug; id: number }[] = []
+  const track = <T extends { id: number }>(collection: CollectionSlug, doc: T): T => {
+    created.push({ collection, id: doc.id })
+    return doc
+  }
+  const asUser = (doc: { id: number; role?: string; email?: string }) =>
+    ({ ...doc, collection: 'users' }) as unknown as AdminUser
+
+  const originalCronSecret = process.env.CRON_SECRET
+  const originalSandbox = process.env.PAYMENT_SANDBOX
+  const testCronSecret = 'test-secret-t1-12a-32bytes-padding-ok'
+
+  beforeAll(async () => {
+    payload = await getPayload({ config })
+    mockEmailSender = new MockEmailSender()
+
+    process.env.CRON_SECRET = testCronSecret
+    process.env.PAYMENT_SANDBOX = 'true'
+
+    // 1. Tạo owner và editor
+    const makeUser = async (role: 'owner' | 'editor') =>
+      asUser(
+        track(
+          'users',
+          await payload.create({
+            collection: 'users',
+            data: {
+              email: `t1-12a-${role}-${randomUUID()}@example.test`,
+              password: randomUUID(),
+              role,
+            },
+          }),
+        ),
+      )
+
+    owner = await makeUser('owner')
+    editor = await makeUser('editor')
+
+    // 2. Tạo sản phẩm coaching_trial (Phiên trải nghiệm Growth Mirror 149.000đ)
+    const productDoc = track(
+      'products',
+      await payload.create({
+        collection: 'products',
+        data: {
+          name: 'Phiên trải nghiệm Growth Mirror',
+          slug: `growth-mirror-trial-${randomUUID()}`,
+          web: 'site',
+          type: 'coaching_trial',
+          _status: 'published',
+          price: 149000,
+          saleStatus: 'on_sale',
+        },
+      }),
+    )
+    experienceProductId = productDoc.id
+
+    // 3. Cấu hình siteSettings với thông tin ngân hàng đầy đủ
+    await payload.updateGlobal({
+      slug: 'siteSettings',
+      data: {
+        bankBin: '970422',
+        bankName: 'Ngân hàng Quân Đội (MB)',
+        accountNumber: '0123456789',
+        accountName: 'LUONG THI THU HUYEN',
+        transferPrefix: 'TDCX',
+        experienceBookingUrl: 'https://cal.com/hana-luong/growth-mirror-149k',
+      },
+    })
+  }, 60000)
+
+  afterAll(async () => {
+    process.env.CRON_SECRET = originalCronSecret
+    if (originalSandbox !== undefined) {
+      process.env.PAYMENT_SANDBOX = originalSandbox
+    } else {
+      delete process.env.PAYMENT_SANDBOX
+    }
+
+    if (!payload) return
+    // Dọn dẹp dữ liệu kiểm thử
+    for (const item of created.reverse()) {
+      try {
+        await payload.delete({ collection: item.collection, id: item.id, overrideAccess: true })
+      } catch {
+        // bỏ qua lỗi dọn dẹp
+      }
+    }
+  })
+
+  describe('Tạo đơn hàng (createExperienceOrder)', () => {
+    it('client gửi price: 1 thì đơn hàng vẫn lấy giá DB (149.000đ)', async () => {
+      const email = `client-price-test-${randomUUID()}@example.test`
+      const result = await createExperienceOrder(
+        {
+          name: 'Nguyễn Văn Test',
+          email,
+          phone: '0901234567',
+          need: 'Cần định hướng bước chuyển sự nghiệp',
+          termsAccepted: true,
+          // CLIENT CỐ TÌNH GỬI GIÁ 1 ĐỒNG
+          price: 1,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+
+      expect(result.success).toBe(true)
+      expect(result.payToken).toBeDefined()
+
+      // Truy vấn DB kiểm tra giá thực tế lưu trong bảng orders
+      const orderQuery = await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: result.payToken } },
+        overrideAccess: true,
+      })
+
+      expect(orderQuery.totalDocs).toBe(1)
+      const order = orderQuery.docs[0]
+      track('orders', order)
+
+      // REVIEW-REQUIRED: Giá đơn hàng lấy từ DB qua getEffectivePrice (149.000đ), không lấy giá client gửi
+      expect(order.total).toBe(149000)
+      expect(order.subtotal).toBe(149000)
+      expect(order.paymentStatus).toBe('pending')
+      expect(order.termsAcceptedAt).toBeDefined()
+      expect(order.customerNeed).toBe('Cần định hướng bước chuyển sự nghiệp')
+    })
+
+    it('thiếu ô đồng ý điều khoản -> lỗi tiếng Việt, không tạo đơn', async () => {
+      const email = `no-terms-${randomUUID()}@example.test`
+
+      // Thử gửi mà không đồng ý điều khoản
+      await expect(
+        createExperienceOrder(
+          {
+            name: 'Trần Thị Thiếu',
+            email,
+            termsAccepted: false,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        ),
+      ).rejects.toThrow(viStrings.payment.validation.termsAcceptedRequired)
+
+      // Kiểm tra không có order nào được tạo cho email này
+      const customerQuery = await payload.find({
+        collection: 'customers',
+        where: { email: { equals: email } },
+        overrideAccess: true,
+      })
+      expect(customerQuery.totalDocs).toBe(0)
+    })
+
+    it('thiếu thông tin ngân hàng trong SiteSettings -> lỗi cấu hình tiếng Việt, không tạo đơn', async () => {
+      // Tạm xóa cấu hình ngân hàng
+      await payload.updateGlobal({
+        slug: 'siteSettings',
+        data: {
+          bankBin: '',
+        },
+      })
+
+      try {
+        await expect(
+          createExperienceOrder(
+            {
+              name: 'Lê Văn Ngân Hàng',
+              email: `no-bank-${randomUUID()}@example.test`,
+              termsAccepted: true,
+            },
+            { ip: nextIp() },
+            { payload, emailSender: mockEmailSender },
+          ),
+        ).rejects.toThrow(viStrings.payment.errors.bankConfigMissing)
+      } finally {
+        // Phục hồi lại cấu hình ngân hàng
+        await payload.updateGlobal({
+          slug: 'siteSettings',
+          data: {
+            bankBin: '970422',
+          },
+        })
+      }
+    })
+
+    it('trường ẩn honeypot có giá trị -> trả về thành công giả lập, không tạo đơn trong DB', async () => {
+      const email = `bot-honeypot-${randomUUID()}@example.test`
+      const result = await createExperienceOrder(
+        {
+          name: 'Spam Bot',
+          email,
+          termsAccepted: true,
+          honeypot: 'i-am-a-bot',
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+
+      expect(result.success).toBe(true)
+      expect(result.fake).toBe(true)
+
+      // Kiểm tra không có customer hay order nào trong DB
+      const orderQuery = await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: result.payToken } },
+        overrideAccess: true,
+      })
+      expect(orderQuery.totalDocs).toBe(0)
+    })
+  })
+
+  describe('Xem đơn công khai (getPublicOrderView)', () => {
+    it('payToken sai hoặc không tồn tại -> trả về null', async () => {
+      const invalidView = await getPublicOrderView('non-existent-token-12345', { payload })
+      expect(invalidView).toBeNull()
+
+      const emptyView = await getPublicOrderView('', { payload })
+      expect(emptyView).toBeNull()
+    })
+
+    it('payToken đúng -> trả về DTO an toàn, tuyệt đối không lộ email hay SĐT khách hàng', async () => {
+      const email = `privacy-test-${randomUUID()}@example.test`
+      const phone = '0988776655'
+
+      const createdRes = await createExperienceOrder(
+        {
+          name: 'Nguyễn Bảo Mật',
+          email,
+          phone,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+
+      const view = await getPublicOrderView(createdRes.payToken, { payload })
+      expect(view).not.toBeNull()
+      expect(view?.amount).toBe(149000)
+      expect(view?.status).toBe('pending')
+      expect(view?.bankInfo.bankBin).toBe('970422')
+      expect(view?.bankInfo.accountNumber).toBe('0123456789')
+      expect(view?.bankInfo.accountName).toBe('LUONG THI THU HUYEN')
+      expect(view?.qrPayload).toContain('5406149000')
+      expect(view?.qrSvg).toContain('<svg')
+      expect(view?.sandbox).toBe(true)
+      expect(view?.sandboxNotice).toBe(viStrings.payment.sandboxNotice)
+
+      // REVIEW-REQUIRED: DTO công khai không được chứa email hoặc số điện thoại của khách hàng
+      const viewAny = view as unknown as Record<string, unknown>
+      expect(viewAny.email).toBeUndefined()
+      expect(viewAny.phone).toBeUndefined()
+      expect(viewAny.customer).toBeUndefined()
+      expect(viewAny.id).toBeUndefined()
+    })
+  })
+
+  describe('Xác nhận thủ công & Hủy đơn (confirmManualPayment & cancelOrder)', () => {
+    it('tài khoản editor gọi confirmManualPayment -> bị từ chối với lỗi quyền', async () => {
+      const createdRes = await createExperienceOrder(
+        {
+          name: 'Khách Chờ Duyệt',
+          email: `editor-reject-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+
+      const orderQuery = await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: createdRes.payToken } },
+        overrideAccess: true,
+      })
+      const order = orderQuery.docs[0]
+      track('orders', order)
+
+      // Editor gọi xác nhận
+      await expect(
+        confirmManualPayment(order.id, editor, { payload, emailSender: mockEmailSender }),
+      ).rejects.toThrow(viStrings.payment.errors.unauthorized)
+    })
+
+    it('tài khoản editor gọi cancelOrder -> bị từ chối với lỗi quyền', async () => {
+      const createdRes = await createExperienceOrder(
+        {
+          name: 'Khách Hủy Editor',
+          email: `editor-cancel-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+
+      const orderQuery = await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: createdRes.payToken } },
+        overrideAccess: true,
+      })
+      const order = orderQuery.docs[0]
+      track('orders', order)
+
+      await expect(cancelOrder(order.id, editor, 'Lý do hủy', { payload })).rejects.toThrow(
+        viStrings.payment.errors.unauthorized,
+      )
+    })
+
+    it('owner xác nhận 2 lần -> idempotent: 1 email gửi, paidAt không đổi, 2 dòng audit log', async () => {
+      mockEmailSender.sent = []
+      const customerEmail = `owner-confirm-${randomUUID()}@example.test`
+
+      const createdRes = await createExperienceOrder(
+        {
+          name: 'Khách Hàng Thật',
+          email: customerEmail,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+
+      const orderQuery = await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: createdRes.payToken } },
+        overrideAccess: true,
+      })
+      const order = orderQuery.docs[0]
+      track('orders', order)
+
+      // Lần 1: Owner xác nhận
+      const confirmed1 = (await confirmManualPayment(order.id, owner, {
+        payload,
+        emailSender: mockEmailSender,
+      })) as { id: number; paymentStatus: string; paidAt: string; deliveryStatus: string }
+
+      expect(confirmed1.paymentStatus).toBe('paid')
+      expect(confirmed1.paidAt).toBeDefined()
+      const firstPaidAt = confirmed1.paidAt
+
+      // Email đã gửi 1 lần chứa link đặt lịch
+      expect(mockEmailSender.sent.length).toBe(1)
+      expect(mockEmailSender.sent[0].to).toBe(customerEmail)
+      expect(mockEmailSender.sent[0].subject).toContain('Xác nhận thanh toán')
+
+      // Kiểm tra order sau lần 1
+      const orderAfter1 = await payload.findByID({
+        collection: 'orders',
+        id: order.id,
+        overrideAccess: true,
+      })
+      expect(orderAfter1.deliveryStatus).toBe('email_sent')
+
+      // Lần 2: Owner xác nhận lại (trùng lặp)
+      const confirmed2 = (await confirmManualPayment(order.id, owner, {
+        payload,
+        emailSender: mockEmailSender,
+      })) as { id: number; paymentStatus: string; paidAt: string }
+
+      expect(confirmed2.paymentStatus).toBe('paid')
+      // REVIEW-REQUIRED: paidAt không đổi và không gửi email lần 2
+      expect(confirmed2.paidAt).toBe(firstPaidAt)
+      expect(mockEmailSender.sent.length).toBe(1)
+
+      // Kiểm tra auditLogs: 2 dòng log (dòng 2 ghi "đã xác nhận trước đó")
+      const auditQuery = await payload.find({
+        collection: 'auditLogs',
+        where: { target: { equals: `orders:${order.id}` } },
+        sort: 'createdAt',
+        overrideAccess: true,
+      })
+
+      expect(auditQuery.totalDocs).toBe(2)
+      expect(auditQuery.docs[0].action).toBe('confirm_manual_payment')
+      expect(auditQuery.docs[1].action).toBe('confirm_manual_payment_duplicate')
+      const afterJson = auditQuery.docs[1].after as Record<string, unknown>
+      expect(afterJson.note).toBe('đã xác nhận trước đó')
+
+      for (const log of auditQuery.docs) track('auditLogs', log)
+    })
+
+    it('không thể hủy đơn hàng đã thanh toán (tuân thủ chính sách không hoàn tiền AGENTS 14)', async () => {
+      const createdRes = await createExperienceOrder(
+        {
+          name: 'Khách Đã Trả Tiền',
+          email: `no-refund-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+
+      const orderQuery = await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: createdRes.payToken } },
+        overrideAccess: true,
+      })
+      const order = orderQuery.docs[0]
+      track('orders', order)
+
+      await confirmManualPayment(order.id, owner, { payload, emailSender: mockEmailSender })
+
+      // REVIEW-REQUIRED: Chặn không cho hủy đơn đã paid (không có hoàn tiền)
+      await expect(cancelOrder(order.id, owner, 'Khách đòi hủy', { payload })).rejects.toThrow(
+        viStrings.payment.errors.cannotCancelPaidOrder,
+      )
+    })
+
+    it('owner hủy đơn pending hợp lệ -> trạng thái chuyển sang cancelled và ghi audit log', async () => {
+      const createdRes = await createExperienceOrder(
+        {
+          name: 'Khách Muốn Hủy',
+          email: `cancel-pending-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+
+      const orderQuery = await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: createdRes.payToken } },
+        overrideAccess: true,
+      })
+      const order = orderQuery.docs[0]
+      track('orders', order)
+
+      const cancelled = (await cancelOrder(order.id, owner, 'Khách đổi ý', {
+        payload,
+      })) as { paymentStatus: string; notes?: string }
+
+      expect(cancelled.paymentStatus).toBe('cancelled')
+      expect(cancelled.notes).toContain('Lý do hủy: Khách đổi ý')
+
+      // Kiểm tra audit log
+      const auditQuery = await payload.find({
+        collection: 'auditLogs',
+        where: {
+          and: [
+            { target: { equals: `orders:${order.id}` } },
+            { action: { equals: 'cancel_order' } },
+          ],
+        },
+        overrideAccess: true,
+      })
+      expect(auditQuery.totalDocs).toBe(1)
+      track('auditLogs', auditQuery.docs[0])
+    })
+  })
+
+  describe('Đóng đơn quá hạn 24 giờ & Cron Route', () => {
+    it('expirePendingOrders chỉ đóng đơn quá 24h và gửi email nếu bật consentMarketing', async () => {
+      mockEmailSender.sent = []
+      const customerEmailMarketing = `marketing-consent-${randomUUID()}@example.test`
+
+      // 1. Tạo customer có consentMarketing = true
+      const customerDoc = track(
+        'customers',
+        await payload.create({
+          collection: 'customers',
+          data: {
+            email: customerEmailMarketing,
+            name: 'Khách Đồng Ý Nhận Tin',
+            consentMarketing: true,
+          },
+        }),
+      )
+
+      // 2. Tạo đơn A: mới tạo (1 giờ trước) -> không bị expire
+      const orderA = track(
+        'orders',
+        await payload.create({
+          collection: 'orders',
+          data: {
+            customer: customerDoc.id,
+            items: [{ product: experienceProductId, price: 149000 }],
+            subtotal: 149000,
+            total: 149000,
+            paymentStatus: 'pending',
+            termsAcceptedAt: new Date().toISOString(),
+          },
+        }),
+      )
+
+      // 3. Tạo đơn B: tạo cách đây 25 giờ (bằng raw SQL hoặc cập nhật createdAt trong DB)
+      // Trong Payload postgres adapter, cập nhật createdAt qua db query
+      const twentyFiveHoursAgo = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString()
+      const orderB = track(
+        'orders',
+        await payload.create({
+          collection: 'orders',
+          data: {
+            customer: customerDoc.id,
+            items: [{ product: experienceProductId, price: 149000 }],
+            subtotal: 149000,
+            total: 149000,
+            paymentStatus: 'pending',
+            termsAcceptedAt: twentyFiveHoursAgo,
+            createdAt: twentyFiveHoursAgo,
+          },
+        }),
+      )
+
+      // Chạy expirePendingOrders
+      const result = await expirePendingOrders(new Date(), {
+        payload,
+        emailSender: mockEmailSender,
+      })
+
+      expect(result.expiredCount).toBeGreaterThanOrEqual(1)
+
+      // Kiểm tra đơn A: vẫn pending
+      const checkA = await payload.findByID({
+        collection: 'orders',
+        id: orderA.id,
+        overrideAccess: true,
+      })
+      expect(checkA.paymentStatus).toBe('pending')
+
+      // Kiểm tra đơn B: đã thành failed
+      const checkB = await payload.findByID({
+        collection: 'orders',
+        id: orderB.id,
+        overrideAccess: true,
+      })
+      expect(checkB.paymentStatus).toBe('failed')
+
+      // Đã gửi email nhắc hẹn vì khách có consentMarketing
+      const reminderEmail = mockEmailSender.sent.find(
+        (m) => m.to === customerEmailMarketing && m.subject.includes('Nhắc hẹn phiên trải nghiệm'),
+      )
+      expect(reminderEmail).toBeDefined()
+    })
+
+    it('route cron: thiếu hoặc sai Authorization header -> 401; đúng header -> 200', async () => {
+      // 1. Không có header
+      const reqNoAuth = new Request('http://localhost:3000/api/cron/expire-orders', {
+        method: 'POST',
+      })
+      const resNoAuth = await expireOrdersCronRoute(reqNoAuth)
+      expect(resNoAuth.status).toBe(401)
+
+      // 2. Sai Bearer token
+      const reqWrongAuth = new Request('http://localhost:3000/api/cron/expire-orders', {
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer wrong-secret',
+        },
+      })
+      const resWrongAuth = await expireOrdersCronRoute(reqWrongAuth)
+      expect(resWrongAuth.status).toBe(401)
+
+      // 3. Đúng Bearer token
+      const reqValidAuth = new Request('http://localhost:3000/api/cron/expire-orders', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${testCronSecret}`,
+        },
+      })
+      const resValidAuth = await expireOrdersCronRoute(reqValidAuth)
+      expect(resValidAuth.status).toBe(200)
+      const data = (await resValidAuth.json()) as { success: boolean; expiredCount: number }
+      expect(data.success).toBe(true)
+    })
+  })
+})

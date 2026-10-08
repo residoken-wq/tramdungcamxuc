@@ -394,3 +394,21 @@ Sau khi lưu: `sudo systemctl daemon-reload`, `sudo systemctl enable --now tdcx-
 ### Kiểm thử local
 
 `pnpm test` **cần Postgres đang chạy**: test Local API T0-06 tự áp migration trên DB test đã cấu hình. Trên máy Codex giữ nguyên `.env` (DB `tramdungcamxuc_codex`, Postgres 55432), chạy e2e với `PORT=3200`; không dùng DB demo để chạy test bootstrap. Compose dev đọc `${POSTGRES_PORT:-5432}`; máy mới nếu đổi cổng phải sửa cùng cổng trong `DATABASE_URI`.
+
+---
+
+### Lịch Cron hủy đơn quá hạn 24 giờ (T1-12a)
+
+Endpoint `/api/cron/expire-orders` tự động tìm các đơn hàng ở trạng thái `pending` quá 24 giờ để chuyển sang `failed`, đồng thời gửi email nhắc hẹn nếu khách hàng đã bật `consentMarketing = true`.
+
+Route này được bảo vệ nghiêm ngặt bằng header `Authorization: Bearer <CRON_SECRET>` (so khớp hằng thời gian `timingSafeEqual` với biến môi trường `CRON_SECRET` trong `.env`).
+
+**Cấu hình crontab mẫu trên server Linux / Docker:**
+Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 0 của mỗi giờ):
+
+```bash
+# Mở crontab: crontab -e
+0 * * * * curl -s -X POST -H "Authorization: Bearer <CRON_SECRET>" http://127.0.0.1:3400/api/cron/expire-orders >> /var/log/tdcx-cron-expire.log 2>&1
+```
+
+_(Lưu ý: Thay thế `<CRON_SECRET>` bằng chuỗi bí mật thật cấu hình trong `.env`, và thay cổng `3400` theo cấu hình cổng chạy thực tế của ứng dụng trên server)._
