@@ -6,19 +6,40 @@ import config from '@/payload.config'
 import { getEffectivePrice } from '@/lib/products'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { ExperienceBookingForm } from '@/components/site/ExperienceBookingForm'
+import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
-
-export const metadata: Metadata = {
-  title: 'Đặt phiên trải nghiệm | Trạm Dừng Cảm Xúc',
-  description:
-    'Đăng ký phiên trải nghiệm Growth Mirror 1:1 cùng Coach Hana Lương để thấu hiểu và chuyển hóa cảm xúc.',
-}
 
 interface PageProps {
   searchParams: Promise<{
     'san-pham'?: string
   }>
+}
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { 'san-pham': sanPhamParam } = await searchParams
+  const productId = sanPhamParam ? parseInt(sanPhamParam, 10) : NaN
+
+  let description: string | undefined
+  if (!isNaN(productId) && productId > 0) {
+    try {
+      const payload = await getPayload({ config: await config })
+      const product = await payload.findByID({
+        collection: 'products',
+        id: productId,
+      })
+      if (product?.shortDescription) {
+        description = product.shortDescription
+      }
+    } catch {
+      // fallback
+    }
+  }
+
+  return {
+    title: 'Đặt phiên trải nghiệm | Trạm Dừng Cảm Xúc',
+    description,
+  }
 }
 
 export default async function ExperienceBookingPage({ searchParams }: PageProps) {
@@ -45,8 +66,13 @@ export default async function ExperienceBookingPage({ searchParams }: PageProps)
     notFound()
   }
 
-  // Bắt buộc sản phẩm phải tồn tại, thuộc loại coaching_trial và đang ở trạng thái published
-  if (!product || product.type !== 'coaching_trial' || product._status !== 'published') {
+  // REVIEW-REQUIRED: Bắt buộc sản phẩm phải tồn tại, thuộc loại coaching_trial, published và saleStatus === on_sale
+  if (
+    !product ||
+    product.type !== 'coaching_trial' ||
+    product._status !== 'published' ||
+    product.saleStatus !== 'on_sale'
+  ) {
     notFound()
   }
 
@@ -67,19 +93,19 @@ export default async function ExperienceBookingPage({ searchParams }: PageProps)
   }
 
   return (
-    <main className="min-h-screen bg-warm-ivory py-10 sm:py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-warm-ivory py-10 sm:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-10 sm:space-y-12">
         <SectionHeader
-          seriesLabel="Đồng hành 1:1 · Trạm Dừng Cảm Xúc"
-          titleLine1="ĐẶT PHIÊN TRẢI NGHIỆM"
-          titleLine2="KHỞI ĐẦU HÀNH TRÌNH HIỂU MÌNH"
-          emotionLine="Một khoảng dừng an toàn để lắng nghe, gọi tên và thấu suốt cảm xúc cùng Coach."
+          seriesLabel={vi.payment.ui.booking.seriesLabel}
+          titleLine1={vi.payment.ui.booking.titleLine1}
+          titleLine2={vi.payment.ui.booking.titleLine2}
+          emotionLine={vi.payment.ui.booking.emotionLine}
           as="h1"
           align="center"
         />
 
         <ExperienceBookingForm product={productInfo} />
       </div>
-    </main>
+    </div>
   )
 }
