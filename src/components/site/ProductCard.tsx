@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { PriceTag } from '@/components/ui/PriceTag'
 import { StatusBadge, type SaleStatus } from '@/components/ui/StatusBadge'
 import { Button } from '@/components/ui/Button'
+import { Butterfly } from '@/components/brand/Butterfly'
 import type { ProductCta } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 
@@ -15,7 +16,7 @@ export interface ProductCoverImage {
 export interface ProductCardProps {
   name: string
   shortDescription?: string
-  coverImage: ProductCoverImage
+  coverImage?: ProductCoverImage | null
   price?: number | null
   salePrice?: number | null
   saleStatus: SaleStatus
@@ -49,6 +50,8 @@ export function ProductCard({
       ? vi.product.journeySteps[journeyStep]
       : journeyStep
 
+  const hasValidCover = Boolean(coverImage?.src && coverImage.src.trim() !== '')
+
   return (
     <Card
       as="article"
@@ -56,14 +59,24 @@ export function ProductCard({
       className={`flex flex-col h-full overflow-hidden p-0 transition-all duration-300 hover:shadow-md ${className}`}
     >
       {/* Cover Image Container */}
-      <div className="relative w-full aspect-[16/10] bg-lavender-mist/30 overflow-hidden border-b border-deep-navy/10">
-        <Image
-          src={coverImage.src}
-          alt={coverImage.alt}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-300 hover:scale-105 motion-reduce:hover:scale-100"
-        />
+      <div className="relative w-full aspect-[16/10] bg-lavender-mist overflow-hidden border-b border-deep-navy/10 flex items-center justify-center">
+        {hasValidCover && coverImage?.src ? (
+          <Image
+            src={coverImage.src}
+            alt={coverImage.alt || name}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 hover:scale-105 motion-reduce:hover:scale-100"
+          />
+        ) : (
+          <div
+            data-testid="product-card-placeholder"
+            className="w-full h-full bg-lavender-mist flex items-center justify-center"
+            aria-hidden="true"
+          >
+            <Butterfly className="w-16 h-16 text-deep-navy/35" aria-hidden={true} />
+          </div>
+        )}
 
         {/* Status Badges Overlay */}
         <div className="absolute top-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none">

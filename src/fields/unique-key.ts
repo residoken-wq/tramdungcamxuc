@@ -42,9 +42,13 @@ export function uniqueKeyHook(options: {
       })
       const other = clash.docs[0] as { id?: unknown } | undefined
       if (other && other.id !== (originalDoc as { id?: unknown } | undefined)?.id) {
-        throw new ValidationError({
-          errors: [{ path: options.parts[0], message: options.message }],
-        })
+        throw new ValidationError(
+          {
+            errors: [{ path: options.parts[0], message: options.message }],
+            req,
+          },
+          req?.t,
+        )
       }
     }
     return { ...data, [options.keyField]: key }
