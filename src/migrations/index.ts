@@ -1,8 +1,9 @@
-import * as migration_20261004_050321_initial from './20261004_050321_initial'
-import * as migration_20261005_031311_content_collections from './20261005_031311_content_collections'
-import * as migration_20261005_123719_access_control from './20261005_123719_access_control'
-import * as migration_20261006_090527_leads_forms from './20261006_090527_leads_forms'
-import * as migration_20261007_025629_private_files from './20261007_025629_private_files'
+import * as migration_20261004_050321_initial from './20261004_050321_initial';
+import * as migration_20261005_031311_content_collections from './20261005_031311_content_collections';
+import * as migration_20261005_123719_access_control from './20261005_123719_access_control';
+import * as migration_20261006_090527_leads_forms from './20261006_090527_leads_forms';
+import * as migration_20261007_025629_private_files from './20261007_025629_private_files';
+import * as migration_20261008_022007_payment_backend from './20261008_022007_payment_backend';
 
 export const migrations = [
   {
@@ -30,4 +31,9 @@ export const migrations = [
     down: migration_20261007_025629_private_files.down,
     name: '20261007_025629_private_files',
   },
-]
+  {
+    up: migration_20261008_022007_payment_backend.up,
+    down: migration_20261008_022007_payment_backend.down,
+    name: '20261008_022007_payment_backend'
+  },
+];

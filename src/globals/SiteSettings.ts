@@ -53,6 +53,13 @@ export const SiteSettings: GlobalConfig = {
             text('accountNumber', 'Số tài khoản'),
             text('accountName', 'Tên chủ tài khoản'),
             { ...text('transferPrefix', 'Đầu mã chuyển khoản'), defaultValue: 'TDCX' },
+            {
+              ...url('experienceBookingUrl', 'Liên kết đặt lịch phiên trải nghiệm'),
+              admin: {
+                description:
+                  'Liên kết đặt lịch (Cal.com, Google Calendar...) gửi qua email cho khách sau khi xác nhận thanh toán.',
+              },
+            },
             checkbox('trialCreditApplies', 'Trừ phí trải nghiệm vào giá gói'),
           ].map((field) => ({ ...field, access: { read: isOwner, update: isOwner } }) as Field),
         },

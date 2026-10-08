@@ -1311,6 +1311,10 @@ export interface Order {
    */
   payToken?: string | null;
   /**
+   * Nhu cầu hoặc mục tiêu khi đặt phiên trải nghiệm.
+   */
+  customerNeed?: string | null;
+  /**
    * Nhập ghi chú.
    */
   notes?: string | null;
@@ -2387,6 +2391,7 @@ export interface OrdersSelect<T extends boolean = true> {
   termsAcceptedAt?: T;
   createdByAdmin?: T;
   payToken?: T;
+  customerNeed?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2690,6 +2695,10 @@ export interface SiteSetting {
    */
   transferPrefix?: string | null;
   /**
+   * Liên kết đặt lịch (Cal.com, Google Calendar...) gửi qua email cho khách sau khi xác nhận thanh toán.
+   */
+  experienceBookingUrl?: string | null;
+  /**
    * Bật để áp dụng: trừ phí trải nghiệm vào giá gói.
    */
   trialCreditApplies?: boolean | null;
@@ -2826,6 +2835,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   accountNumber?: T;
   accountName?: T;
   transferPrefix?: T;
+  experienceBookingUrl?: T;
   trialCreditApplies?: T;
   email?: T;
   linkedInUrl?: T;

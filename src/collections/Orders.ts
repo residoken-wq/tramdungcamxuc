@@ -33,7 +33,7 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
     return {
       ...data,
       paymentRef,
-      payToken: data.createdByAdmin ? generatePayToken() : null,
+      payToken: data.payToken ?? (data.createdByAdmin ? generatePayToken() : null),
       ...(editor ? { paymentStatus: 'pending', paidAt: null } : {}),
     }
   }
@@ -139,6 +139,12 @@ export const Orders: CollectionConfig = {
       index: true,
       access: { read: isEditorOrOwner },
       admin: { readOnly: true, description: 'Tự sinh cho link /thanh-toan/… khi Hana tạo đơn.' },
+    },
+    {
+      name: 'customerNeed',
+      label: 'Nhu cầu của khách',
+      type: 'textarea',
+      admin: { description: 'Nhu cầu hoặc mục tiêu khi đặt phiên trải nghiệm.' },
     },
     textarea('notes', 'Ghi chú'),
   ],

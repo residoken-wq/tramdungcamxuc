@@ -276,6 +276,36 @@ export const vi = {
       videoHeading: 'Video chia sẻ',
     },
   },
+  payment: {
+    validation: {
+      nameRequired: 'Vui lòng nhập họ và tên của bạn',
+      emailRequired: 'Vui lòng nhập địa chỉ email',
+      termsAcceptedRequired:
+        'Vui lòng đọc và đồng ý với Điều khoản sử dụng và Chính sách giá – thanh toán để tiếp tục.',
+      needMax: 'Nhu cầu không được vượt quá 1000 ký tự',
+    },
+    errors: {
+      bankConfigMissing:
+        'Hệ thống chưa cấu hình đầy đủ thông tin tài khoản ngân hàng. Vui lòng liên hệ quản trị viên.',
+      productNotFound:
+        'Không tìm thấy sản phẩm phiên trải nghiệm đang mở bán. Vui lòng liên hệ quản trị viên.',
+      productPriceInvalid: 'Giá sản phẩm không hợp lệ. Vui lòng liên hệ quản trị viên.',
+      orderNotFound: 'Không tìm thấy đơn hàng.',
+      unauthorized:
+        'Chỉ chủ sở hữu (owner) mới có quyền xác nhận thanh toán thủ công hoặc hủy đơn.',
+      onlyPendingCanBeConfirmed:
+        'Chỉ có thể xác nhận đơn hàng đang ở trạng thái chờ thanh toán.',
+      cannotCancelPaidOrder:
+        'Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
+      orderExpired: 'Đơn hàng đã hết hạn thanh toán.',
+    },
+    success: {
+      orderCreated: 'Tạo đơn đặt phiên trải nghiệm thành công.',
+      confirmed: 'Xác nhận thanh toán thành công.',
+      cancelled: 'Hủy đơn hàng thành công.',
+    },
+    sandboxNotice: 'THỬ NGHIỆM – không chuyển tiền thật',
+  },
 } as const
 
 export type LocaleStrings = typeof vi
