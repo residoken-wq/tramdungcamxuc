@@ -572,7 +572,7 @@ Dưới đây là các tình huống bạn có thể gặp và cách giải quy�
 
 ### 10.3. Lỗi xuất bản lời chia sẻ chưa có sự đồng ý
 
-- **Hiện tượng**: Góc phải dưới hiện khung đỏ _"The following field is invalid: consent"_ (thông báo này hiện còn bằng tiếng Anh, sẽ được dịch sau).
+- **Hiện tượng**: Góc phải dưới hiện khung đỏ _"Lỗi - Field sau không hợp lệ: consent"_ (`consent` là ô _Đã đồng ý cho phép hiển thị_).
 - **Nguyên nhân**: Bạn bấm Xuất bản testimonial mà chưa tick vào ô _Đã đồng ý cho phép hiển thị_.
 - **Cách sửa**: Tick vào ô đồng ý nếu khách hàng đã cho phép, hoặc lưu ở dạng _Bản nháp_ nếu đang chờ khách phản hồi.
 
