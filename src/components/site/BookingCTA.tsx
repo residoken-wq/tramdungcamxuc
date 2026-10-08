@@ -4,7 +4,7 @@ import React from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatVnd } from '@/lib/format'
-import { getEffectivePrice, BOOKING_PATH, type PublicProduct } from '@/lib/products'
+import { getEffectivePrice, getBookingPath, type PublicProduct } from '@/lib/products'
 import { track } from '@/lib/analytics/track'
 
 export interface BookingCTAProps {
@@ -92,7 +92,7 @@ export function BookingCTA({
 
           <div className="pt-2">
             <Button
-              href={BOOKING_PATH}
+              href={getBookingPath(product?.id)}
               variant={variant}
               size="lg"
               onClick={handleBookingClick}

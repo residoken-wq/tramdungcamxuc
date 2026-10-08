@@ -117,6 +117,57 @@ export const resourceRequestSchema = z.object({
 
 export type ResourceRequestInput = z.infer<typeof resourceRequestSchema>
 
+export const experienceOrderSchema = z.object({
+  productId: z
+    .union(
+      [
+        z.number({ required_error: vi.payment.errors.productNotFound }),
+        z
+          .string({ required_error: vi.payment.errors.productNotFound })
+          .trim()
+          .min(1, vi.payment.errors.productNotFound),
+      ],
+      {
+        errorMap: () => ({ message: vi.payment.errors.productNotFound }),
+      },
+    )
+    .transform((val, ctx) => {
+      const num = typeof val === 'number' ? val : Number(val)
+      if (isNaN(num) || num <= 0 || !Number.isInteger(num)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: vi.payment.errors.productNotFound,
+        })
+        return z.NEVER
+      }
+      return num
+    }),
+  name: z
+    .string()
+    .trim()
+    .min(1, vi.payment.validation.nameRequired)
+    .max(100, vi.forms.validation.nameMax),
+  email: z
+    .string()
+    .trim()
+    .min(1, vi.payment.validation.emailRequired)
+    .max(254, vi.forms.validation.emailMax)
+    .email(vi.forms.validation.emailInvalid),
+  phone: z.string().trim().max(20, vi.forms.validation.phoneMax).optional(),
+  need: z.string().trim().max(1000, vi.payment.validation.needMax).optional(),
+  termsAccepted: z
+    .boolean({
+      required_error: vi.payment.validation.termsAcceptedRequired,
+      invalid_type_error: vi.payment.validation.termsAcceptedRequired,
+    })
+    .refine((val) => val === true, {
+      message: vi.payment.validation.termsAcceptedRequired,
+    }),
+  honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+  turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+})
+
+export type ExperienceOrderInput = z.infer<typeof experienceOrderSchema>
 export const diagnosticAnswerSchema = z.object({
   questionId: z.number().int().positive(),
   score: z.number().int().min(1).max(4),

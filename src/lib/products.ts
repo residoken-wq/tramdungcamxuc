@@ -30,7 +30,12 @@ export type ProductCtaInput = {
 }
 
 export const GROWTH_MIRROR_PATH = '/coaching/growth-mirror'
-export const BOOKING_PATH = GROWTH_MIRROR_PATH
+export const BOOKING_PATH = '/dat-phien-trai-nghiem'
+
+export function getBookingPath(productId?: string | number | null): string {
+  if (!productId) return BOOKING_PATH
+  return `${BOOKING_PATH}?san-pham=${encodeURIComponent(String(productId))}`
+}
 
 export interface PublicProductCoverImage {
   url?: string | null
