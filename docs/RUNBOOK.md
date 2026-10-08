@@ -99,6 +99,50 @@
 - **Lỗi cache Next.js / build cũ**:
   - Chạy `pnpm devsafe` để xóa thư mục `.next` và khởi động lại sạch sẽ.
 
+---
+
+## 5. Chuẩn bị đưa lên Production (Tên miền chính thức, SEO, CSP & Plausible)
+
+Khi chuyển từ môi trường thử nghiệm sang môi trường production chính thức:
+
+### 1. Cấu hình tên miền chính thức (`NEXT_PUBLIC_SITE_URL`)
+
+- Trong file `.env` production, đặt biến:
+  ```dotenv
+  NEXT_PUBLIC_SITE_URL=https://tramdungcamxuc.com
+  ```
+- Biến này được dùng để sinh URL tuyệt đối cho `metadataBase`, thẻ OpenGraph, canonical URL, file `sitemap.xml` và `robots.txt`.
+- Lưu ý: DNS và chứng chỉ SSL do anh IT / người quản trị server cấu hình tại reverse proxy (Caddy / Nginx). Code Next.js không can thiệp DNS.
+
+### 2. Cho phép máy tìm kiếm lập chỉ mục (`SITE_NOINDEX`)
+
+- Ở bản demo hoặc staging: giữ `SITE_NOINDEX=true` (hệ thống gửi header `X-Robots-Tag: noindex, nofollow` và chặn tải script phân tích truy cập).
+- Khi chính thức phát hành website ra công chúng: **xóa bỏ** hoặc đổi thành `SITE_NOINDEX=false` trong `.env`.
+- Khi `SITE_NOINDEX` không phải là `true`, website sẽ cho phép Google/Bing index và tự động kích hoạt nạp script Plausible (nếu đã cấu hình domain).
+
+### 3. Kích hoạt CSP chặn thật (`CSP_ENFORCE=true`)
+
+- Mặc định hệ thống sử dụng header `Content-Security-Policy-Report-Only` để giám sát các tài nguyên bên ngoài mà không làm gián đoạn trải nghiệm người dùng.
+- Trước khi bật chặn thật:
+  1. Chạy bộ kiểm thử E2E: `pnpm test:e2e tests/e2e/csp.test.ts`.
+  2. Xác nhận 0 vi phạm `securitypolicyviolation` và không có lỗi "Refused to load" trong console trình duyệt.
+  3. Kiểm tra các chức năng: Cloudflare Turnstile, video YouTube/Vimeo, hình ảnh S3/R2 và script Plausible.
+- Sau khi kiểm thử thành công, thêm vào `.env`:
+  ```dotenv
+  CSP_ENFORCE=true
+  ```
+- Khi đó, hệ thống sẽ chuyển sang header `Content-Security-Policy` chặn thật. Các đường dẫn `/admin`, `/builder`, `/api` vẫn luôn được miễn trừ.
+
+### 4. Cấu hình Plausible Analytics trong CMS
+
+- Quản trị viên đăng nhập vào `/admin`.
+- Truy cập **Cài đặt website** (`siteSettings`) -> tab **Chung** -> mục **Đo lường truy cập**.
+- Tại trường **Dịch vụ**, chọn `Plausible`.
+- Tại trường **Tên miền Plausible** (`plausibleDomain`), nhập tên miền đã đăng ký với Plausible (ví dụ: `tramdungcamxuc.com`).
+- Hệ thống sẽ nạp script Plausible (`https://plausible.io/js/script.js`) không dùng cookie, không yêu cầu banner cookie và tuân thủ bảo mật thông tin người dùng (không gửi email, họ tên, số điện thoại hay dữ liệu cảm xúc).
+
+---
+
 ## Deploy bản demo trên server riêng
 
 ### Chuẩn bị
