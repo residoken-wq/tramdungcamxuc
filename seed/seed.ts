@@ -90,13 +90,28 @@ export async function seed(payload: Payload): Promise<SeedReport> {
   for (const { code, ...card } of data.eqCards)
     await upsert('eqCards', 'code', code, { ...card, relatedProduct: eqBuddy })
 
-  for (const { statement, ...question } of data.diagnosticQuestions)
+  // Once Hana's real Habit Hack content is imported (pnpm import:habit), samples would
+  // mix into the quiz and the course, so these collections are left alone.
+  const hasReal = async (collection: CollectionSlug) =>
+    (
+      await payload.count({
+        collection,
+        where: { isSample: { not_equals: true } },
+      })
+    ).totalDocs > 0
+  const habitHasReal = (
+    await Promise.all(
+      (['diagnosticQuestions', 'techniques', 'courseModules', 'lessons'] as const).map(hasReal),
+    )
+  ).some(Boolean)
+
+  for (const { statement, ...question } of habitHasReal ? [] : data.diagnosticQuestions)
     await upsert('diagnosticQuestions', 'statement', statement, question)
-  for (const { name, ...technique } of data.techniques)
+  for (const { name, ...technique } of habitHasReal ? [] : data.techniques)
     await upsert('techniques', 'name', name, technique)
 
   let lessonOrder = 0
-  for (const { title, lessons, ...module } of data.courseModules) {
+  for (const { title, lessons, ...module } of habitHasReal ? [] : data.courseModules) {
     const moduleId = await upsert('courseModules', 'title', title, module)
     for (let i = 1; i <= lessons; i++) {
       lessonOrder++
