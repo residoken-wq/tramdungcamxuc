@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatVnd } from '@/lib/format'
+import { vi } from '@/lib/i18n/vi'
 import type { PublicOrderViewDto } from '@/lib/payments/orders.server'
 
 export interface OrderPaymentViewProps {
@@ -40,7 +41,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
           className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-900 text-center font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm"
         >
           <span aria-hidden="true">⚠️</span>
-          <span>{order.sandboxNotice || 'THỬ NGHIỆM – không chuyển tiền thật'}</span>
+          <span>{order.sandboxNotice || vi.payment.sandboxNotice}</span>
         </div>
       )}
 
@@ -52,49 +53,50 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
           {isPending && (
             <span className="bg-butter-cream text-deep-navy px-3 py-1 rounded-full border border-deep-navy/10">
-              ⏳ Chờ chuyển khoản
+              {vi.payment.ui.orderView.statusPendingBadge}
             </span>
           )}
           {isPaid && (
             <span className="bg-mint-haze text-emerald-900 px-3 py-1 rounded-full border border-emerald-300">
-              ✓ Đã thanh toán thành công
+              {vi.payment.ui.orderView.statusPaidBadge}
             </span>
           )}
           {isCancelled && (
             <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full border border-red-200">
-              ✕ Đơn hàng đã hủy
+              {vi.payment.ui.orderView.statusCancelledBadge}
             </span>
           )}
           {isFailed && (
             <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full border border-gray-300">
-              ⏱ Đơn hàng đã quá hạn
+              {vi.payment.ui.orderView.statusFailedBadge}
             </span>
           )}
         </div>
 
         <h1 className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy tracking-tight">
           {isPaid
-            ? 'Cảm ơn bạn! Đơn hàng đã được xác nhận'
+            ? vi.payment.ui.orderView.titlePaid
             : isCancelled
-              ? 'Đơn hàng đã được hủy'
+              ? vi.payment.ui.orderView.titleCancelled
               : isFailed
-                ? 'Đơn hàng đã hết hạn thanh toán'
-                : 'Thông tin chuyển khoản thanh toán'}
+                ? vi.payment.ui.orderView.titleFailed
+                : vi.payment.ui.orderView.titlePending}
         </h1>
 
         <p className="font-sans text-sm sm:text-base text-deep-navy/80 max-w-xl mx-auto leading-relaxed">
           {isPaid
-            ? 'Hệ thống đã ghi nhận thanh toán thành công. Email hướng dẫn kèm link đặt lịch hẹn với Coach đã được gửi tới hộp thư của bạn.'
+            ? vi.payment.ui.orderView.descPaid
             : isCancelled
-              ? 'Đơn hàng này đã bị hủy theo yêu cầu. Nếu cần hỗ trợ thêm, bạn vui lòng liên hệ với Trạm Dừng Cảm Xúc.'
+              ? vi.payment.ui.orderView.descCancelled
               : isFailed
-                ? 'Đơn hàng đã quá thời hạn 24 giờ để thanh toán. Bạn vui lòng quay lại trang chủ hoặc đặt phiên mới để tiếp tục.'
-                : 'Vui lòng quét mã VietQR hoặc chuyển khoản chính xác thông tin bên dưới để đơn hàng được xác nhận tự động nhanh nhất.'}
+                ? vi.payment.ui.orderView.descFailed
+                : vi.payment.ui.orderView.descPending}
         </p>
 
         {order.productName && (
           <div className="pt-2 text-xs text-deep-navy/60 font-medium">
-            Sản phẩm: <span className="font-semibold text-deep-navy">{order.productName}</span>
+            {vi.payment.ui.orderView.productPrefix}{' '}
+            <span className="font-semibold text-deep-navy">{order.productName}</span>
           </div>
         )}
       </Card>
@@ -110,13 +112,14 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
             >
               <div className="text-center space-y-1">
                 <span className="text-xs font-bold text-deep-navy uppercase tracking-wider">
-                  Mã QR VietQR
+                  {vi.payment.ui.orderView.qrTitle}
                 </span>
-                <p className="text-xs text-deep-navy/60">Mở app ngân hàng bất kỳ để quét mã</p>
+                <p className="text-xs text-deep-navy/60">{vi.payment.ui.orderView.qrInstruction}</p>
               </div>
 
               {/* QR SVG */}
               <div
+                data-testid="vietqr"
                 className="w-56 h-56 max-w-full p-2 bg-white rounded-xl border border-lavender-mist/40 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full"
                 dangerouslySetInnerHTML={{ __html: order.qrSvg }}
               />
@@ -136,13 +139,13 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
               className="p-6 sm:p-7 bg-white border border-lavender-mist/60 shadow-sm rounded-2xl space-y-5"
             >
               <h2 className="font-ui font-bold text-lg text-deep-navy pb-2 border-b border-lavender-mist/40">
-                Chi tiết chuyển khoản thủ công
+                {vi.payment.ui.orderView.transferCardTitle}
               </h2>
 
               <div className="space-y-4 text-sm">
                 {/* Ngân hàng */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-lavender-mist/20">
-                  <span className="text-deep-navy/70">Ngân hàng thụ hưởng:</span>
+                  <span className="text-deep-navy/70">{vi.payment.ui.orderView.bankNameLabel}</span>
                   <span className="font-semibold text-deep-navy text-right">
                     {order.bankInfo.bankName || `Mã BIN: ${order.bankInfo.bankBin}`}
                   </span>
@@ -150,7 +153,9 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
 
                 {/* Số tài khoản */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-lavender-mist/20">
-                  <span className="text-deep-navy/70">Số tài khoản:</span>
+                  <span className="text-deep-navy/70">
+                    {vi.payment.ui.orderView.accountNumberLabel}
+                  </span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-base text-deep-navy">
                       {order.bankInfo.accountNumber}
@@ -161,14 +166,18 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                       className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-lavender-mist/40 text-deep-navy hover:bg-lavender-mist transition-colors"
                       title="Sao chép số tài khoản"
                     >
-                      {copiedField === 'accountNumber' ? '✓ Đã chép' : 'Sao chép'}
+                      {copiedField === 'accountNumber'
+                        ? vi.payment.ui.orderView.copiedShort
+                        : vi.payment.ui.orderView.copyButton}
                     </button>
                   </div>
                 </div>
 
                 {/* Chủ tài khoản */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-lavender-mist/20">
-                  <span className="text-deep-navy/70">Chủ tài khoản:</span>
+                  <span className="text-deep-navy/70">
+                    {vi.payment.ui.orderView.accountNameLabel}
+                  </span>
                   <span className="font-bold text-deep-navy uppercase text-right">
                     {order.bankInfo.accountName}
                   </span>
@@ -176,7 +185,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
 
                 {/* Số tiền */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-lavender-mist/20">
-                  <span className="text-deep-navy/70">Số tiền chuyển:</span>
+                  <span className="text-deep-navy/70">{vi.payment.ui.orderView.amountLabel}</span>
                   <div className="flex items-center gap-2">
                     <span className="font-ui font-bold text-lg text-bright-magenta">
                       {formatVnd(order.amount)}
@@ -187,7 +196,9 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                       className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-lavender-mist/40 text-deep-navy hover:bg-lavender-mist transition-colors"
                       title="Sao chép số tiền"
                     >
-                      {copiedField === 'amount' ? '✓ Đã chép' : 'Sao chép'}
+                      {copiedField === 'amount'
+                        ? vi.payment.ui.orderView.copiedShort
+                        : vi.payment.ui.orderView.copyButton}
                     </button>
                   </div>
                 </div>
@@ -196,7 +207,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                 <div className="p-4 rounded-xl bg-soft-pink/50 border border-accent-pink/30 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-deep-navy">
-                      Nội dung chuyển khoản (Bắt buộc)
+                      {vi.payment.ui.orderView.paymentRefLabel}
                     </span>
                     <button
                       type="button"
@@ -204,7 +215,9 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                       className="px-3 py-1 text-xs font-bold rounded-lg bg-accent-pink text-white hover:bg-bright-magenta shadow-sm transition-colors"
                       title="Sao chép mã nội dung chuyển khoản"
                     >
-                      {copiedField === 'paymentRef' ? '✓ Đã sao chép' : 'Sao chép mã'}
+                      {copiedField === 'paymentRef'
+                        ? vi.payment.ui.orderView.copiedButton
+                        : vi.payment.ui.orderView.copyRefButton}
                     </button>
                   </div>
 
@@ -213,9 +226,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                   </div>
 
                   <p className="text-xs text-deep-navy/70 leading-relaxed">
-                    ⚠️ <strong>Lưu ý:</strong> Vui lòng giữ nguyên chính xác nội dung{' '}
-                    <strong>{order.paymentRef}</strong> khi chuyển khoản để hệ thống đối soát chính
-                    xác.
+                    ⚠️ <strong>Lưu ý:</strong> {vi.payment.ui.orderView.refNotice}
                   </p>
                 </div>
               </div>
@@ -223,15 +234,11 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
 
             {isPending && (
               <div className="p-4 rounded-xl bg-warm-ivory border border-lavender-mist/60 text-xs text-deep-navy/75 space-y-1.5 leading-relaxed">
-                <p className="font-semibold text-deep-navy">Thời gian xử lý & Hỗ trợ:</p>
-                <p>
-                  • Sau khi nhận được chuyển khoản, Coach Hana Lương sẽ xác nhận đơn và gửi link đặt
-                  lịch qua email của bạn trong thời gian sớm nhất.
+                <p className="font-semibold text-deep-navy">
+                  {vi.payment.ui.orderView.timingNoticeTitle}
                 </p>
-                <p>
-                  • Nếu cần hỗ trợ khẩn cấp, bạn có thể nhắn tin qua nút chat Zalo ở góc dưới màn
-                  hình.
-                </p>
+                <p>{vi.payment.ui.orderView.timingNoticeLine1}</p>
+                <p>{vi.payment.ui.orderView.timingNoticeLine2}</p>
               </div>
             )}
           </div>
@@ -242,7 +249,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
       <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
         <Link href="/">
           <Button variant="ghost" size="md">
-            ← Quay về trang chủ
+            {vi.payment.ui.orderView.backHomeButton}
           </Button>
         </Link>
       </div>

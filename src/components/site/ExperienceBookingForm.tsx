@@ -142,7 +142,7 @@ export function ExperienceBookingForm({
           >
             <div className="space-y-2">
               <span className="inline-block text-xs font-semibold tracking-wider uppercase text-bright-magenta">
-                Phiên trải nghiệm 1:1
+                {vi.payment.ui.booking.cardBadge}
               </span>
               <h2 className="font-ui font-bold text-2xl text-deep-navy leading-tight">
                 {product.name}
@@ -156,7 +156,9 @@ export function ExperienceBookingForm({
             )}
 
             <div className="pt-4 border-t border-lavender-mist/60 space-y-2">
-              <span className="text-xs font-medium text-deep-navy/70">Chi phí đầu tư</span>
+              <span className="text-xs font-medium text-deep-navy/70">
+                {vi.payment.ui.booking.feeLabel}
+              </span>
               <div className="flex items-baseline gap-3">
                 <span className="font-ui font-bold text-3xl text-bright-magenta">
                   {formatVnd(product.currentPrice)}
@@ -172,15 +174,15 @@ export function ExperienceBookingForm({
             <div className="space-y-3 pt-2 text-xs text-deep-navy/75">
               <div className="flex items-start gap-2">
                 <span className="text-accent-pink font-bold">✓</span>
-                <span>Thời lượng 60–90 phút đồng hành cá nhân hóa</span>
+                <span>{vi.payment.ui.booking.featureDuration}</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-accent-pink font-bold">✓</span>
-                <span>Thanh toán chuyển khoản quét mã VietQR tự động tiện lợi</span>
+                <span>{vi.payment.ui.booking.featureVietQr}</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-accent-pink font-bold">✓</span>
-                <span>Chủ động chọn khung giờ sau khi xác nhận thanh toán</span>
+                <span>{vi.payment.ui.booking.featureSchedule}</span>
               </div>
             </div>
           </Card>
@@ -195,10 +197,10 @@ export function ExperienceBookingForm({
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               <div className="space-y-1">
                 <h3 className="font-ui font-bold text-xl text-deep-navy">
-                  Thông tin đăng ký phiên
+                  {vi.payment.ui.booking.formTitle}
                 </h3>
                 <p className="font-sans text-xs text-deep-navy/70">
-                  Vui lòng cung cấp thông tin chính xác để Trạm gửi xác nhận và link đặt lịch.
+                  {vi.payment.ui.booking.formDesc}
                 </p>
               </div>
 
@@ -228,7 +230,7 @@ export function ExperienceBookingForm({
               {/* Họ và tên */}
               <div className="space-y-1.5">
                 <label htmlFor={nameId} className="block text-sm font-semibold text-deep-navy">
-                  Họ và tên <span className="text-accent-pink">*</span>
+                  {vi.payment.ui.booking.nameLabel} <span className="text-accent-pink">*</span>
                 </label>
                 <input
                   id={nameId}
@@ -239,7 +241,7 @@ export function ExperienceBookingForm({
                     setName(e.target.value)
                     if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }))
                   }}
-                  placeholder="Ví dụ: Nguyễn Minh Thư"
+                  placeholder={vi.payment.ui.booking.namePlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 transition-all ${
                     errors.name
                       ? 'border-red-400 focus:ring-red-200'
@@ -252,7 +254,7 @@ export function ExperienceBookingForm({
               {/* Email */}
               <div className="space-y-1.5">
                 <label htmlFor={emailId} className="block text-sm font-semibold text-deep-navy">
-                  Địa chỉ email <span className="text-accent-pink">*</span>
+                  {vi.payment.ui.booking.emailLabel} <span className="text-accent-pink">*</span>
                 </label>
                 <input
                   id={emailId}
@@ -263,7 +265,7 @@ export function ExperienceBookingForm({
                     setEmail(e.target.value)
                     if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
                   }}
-                  placeholder="name@example.com"
+                  placeholder={vi.payment.ui.booking.emailPlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 transition-all ${
                     errors.email
                       ? 'border-red-400 focus:ring-red-200'
@@ -276,15 +278,17 @@ export function ExperienceBookingForm({
               {/* Số điện thoại */}
               <div className="space-y-1.5">
                 <label htmlFor={phoneId} className="block text-sm font-semibold text-deep-navy">
-                  Số điện thoại{' '}
-                  <span className="text-xs font-normal text-deep-navy/60">(tùy chọn)</span>
+                  {vi.payment.ui.booking.phoneLabel}{' '}
+                  <span className="text-xs font-normal text-deep-navy/60">
+                    {vi.payment.ui.booking.phoneOptional}
+                  </span>
                 </label>
                 <input
                   id={phoneId}
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="0912 345 678"
+                  placeholder={vi.payment.ui.booking.phonePlaceholder}
                   className="w-full px-4 py-2.5 rounded-xl border border-lavender-mist text-sm text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:border-bright-magenta focus:ring-2 focus:ring-accent-pink/20 transition-all"
                 />
               </div>
@@ -292,9 +296,9 @@ export function ExperienceBookingForm({
               {/* Nhu cầu ngắn */}
               <div className="space-y-1.5">
                 <label htmlFor={needId} className="block text-sm font-semibold text-deep-navy">
-                  Nhu cầu hoặc mục tiêu khi đặt phiên{' '}
+                  {vi.payment.ui.booking.needLabel}{' '}
                   <span className="text-xs font-normal text-deep-navy/60">
-                    (tối đa 1.000 ký tự)
+                    {vi.payment.ui.booking.needMaxHint}
                   </span>
                 </label>
                 <textarea
@@ -306,7 +310,7 @@ export function ExperienceBookingForm({
                     setNeed(e.target.value)
                     if (errors.need) setErrors((prev) => ({ ...prev, need: undefined }))
                   }}
-                  placeholder="Bạn đang gặp khó khăn gì hoặc mong muốn đạt được điều gì sau phiên trải nghiệm này?..."
+                  placeholder={vi.payment.ui.booking.needPlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 transition-all resize-y ${
                     errors.need
                       ? 'border-red-400 focus:ring-red-200'
@@ -335,25 +339,25 @@ export function ExperienceBookingForm({
                     htmlFor={termsId}
                     className="text-xs sm:text-sm text-deep-navy/85 leading-relaxed cursor-pointer"
                   >
-                    Tôi đã đọc và đồng ý với{' '}
+                    {vi.payment.ui.booking.termsPrefix}{' '}
                     <Link
                       href="/dieu-khoan-su-dung"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-accent-pink font-semibold underline hover:text-bright-magenta"
                     >
-                      Điều khoản sử dụng
+                      {vi.payment.ui.booking.termsLink}
                     </Link>{' '}
-                    và{' '}
+                    {vi.payment.ui.booking.andText}{' '}
                     <Link
                       href="/gia-thanh-toan"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-accent-pink font-semibold underline hover:text-bright-magenta"
                     >
-                      Chính sách giá – thanh toán
+                      {vi.payment.ui.booking.pricingPolicyLink}
                     </Link>{' '}
-                    của Trạm Dừng Cảm Xúc. <span className="text-accent-pink">*</span>
+                    {vi.payment.ui.booking.termsSuffix} <span className="text-accent-pink">*</span>
                   </label>
                 </div>
                 {errors.termsAccepted && (
@@ -377,14 +381,13 @@ export function ExperienceBookingForm({
                   className="w-full py-3.5 text-base font-bold shadow-md hover:shadow-lg transition-all"
                 >
                   {status === 'submitting'
-                    ? 'Đang tạo đơn thanh toán...'
-                    : 'Tiếp tục thanh toán VietQR'}
+                    ? vi.payment.ui.booking.submittingButton
+                    : vi.payment.ui.booking.submitButton}
                 </Button>
               </div>
 
               <p className="text-center text-xs text-deep-navy/60 italic">
-                Sau khi gửi thông tin, bạn sẽ được chuyển tới trang hiển thị mã QR và nội dung
-                chuyển khoản.
+                {vi.payment.ui.booking.redirectNotice}
               </p>
             </form>
           </Card>

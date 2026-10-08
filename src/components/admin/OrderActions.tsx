@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useAuth, useDocumentInfo } from '@payloadcms/ui'
 import { confirmManualPaymentAdminAction, cancelOrderAdminAction } from '@/lib/payments/actions'
+import { vi } from '@/lib/i18n/vi'
 
 export const OrderActions: React.FC = () => {
   const { user } = useAuth()
@@ -23,7 +24,7 @@ export const OrderActions: React.FC = () => {
   if (!id) {
     return (
       <div style={{ padding: '8px 0', fontSize: '13px', color: '#666', fontStyle: 'italic' }}>
-        Vui lòng lưu đơn hàng trước khi thực hiện thao tác duyệt hoặc hủy.
+        {vi.payment.ui.adminActions.saveFirstNotice}
       </div>
     )
   }
@@ -48,7 +49,8 @@ export const OrderActions: React.FC = () => {
     } catch (err) {
       setFeedback({
         type: 'error',
-        message: err instanceof Error ? err.message : 'Có lỗi xảy ra khi xác nhận thanh toán',
+        message:
+          err instanceof Error ? err.message : vi.payment.ui.adminActions.defaultConfirmError,
       })
       setConfirmModal(null)
     } finally {
@@ -74,7 +76,7 @@ export const OrderActions: React.FC = () => {
     } catch (err) {
       setFeedback({
         type: 'error',
-        message: err instanceof Error ? err.message : 'Có lỗi xảy ra khi hủy đơn hàng',
+        message: err instanceof Error ? err.message : vi.payment.ui.adminActions.defaultCancelError,
       })
       setConfirmModal(null)
     } finally {
@@ -98,13 +100,12 @@ export const OrderActions: React.FC = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
         <span style={{ fontSize: '14px' }}>🛡️</span>
         <span style={{ fontSize: '13px', fontWeight: 600, color: '#280A60' }}>
-          Thao tác đơn hàng (Chủ sở hữu)
+          {vi.payment.ui.adminActions.panelTitle}
         </span>
       </div>
 
       <p style={{ margin: 0, fontSize: '12px', color: '#555', lineHeight: '1.4' }}>
-        Trạng thái thanh toán được bảo vệ và chỉ có thể thay đổi an toàn qua các nút chức năng bên
-        dưới.
+        {vi.payment.ui.adminActions.panelDesc}
       </p>
 
       {feedback && (
@@ -152,7 +153,11 @@ export const OrderActions: React.FC = () => {
           }}
         >
           <span>✓</span>
-          <span>{loading === 'confirm' ? 'Đang xử lý...' : 'Xác nhận thanh toán'}</span>
+          <span>
+            {loading === 'confirm'
+              ? vi.payment.ui.adminActions.processing
+              : vi.payment.ui.adminActions.confirmButton}
+          </span>
         </button>
 
         <button
@@ -183,7 +188,11 @@ export const OrderActions: React.FC = () => {
           }}
         >
           <span>✕</span>
-          <span>{loading === 'cancel' ? 'Đang xử lý...' : 'Hủy đơn hàng'}</span>
+          <span>
+            {loading === 'cancel'
+              ? vi.payment.ui.adminActions.processing
+              : vi.payment.ui.adminActions.cancelButton}
+          </span>
         </button>
       </div>
 
@@ -219,26 +228,26 @@ export const OrderActions: React.FC = () => {
           >
             <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#280A60' }}>
               {confirmModal === 'confirm'
-                ? 'Xác nhận thanh toán đơn hàng'
-                : 'Xác nhận hủy đơn hàng'}
+                ? vi.payment.ui.adminActions.confirmModalTitle
+                : vi.payment.ui.adminActions.cancelModalTitle}
             </h4>
 
             <p style={{ margin: 0, fontSize: '13px', color: '#444', lineHeight: '1.5' }}>
               {confirmModal === 'confirm'
-                ? 'Bạn có chắc chắn muốn xác nhận thanh toán cho đơn hàng này? Hệ thống sẽ chuyển trạng thái sang "Đã thanh toán", lưu nhật ký audit log và gửi email đặt lịch hẹn tới khách hàng.'
-                : 'Bạn có chắc chắn muốn hủy đơn hàng này? Lưu ý: Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).'}
+                ? vi.payment.ui.adminActions.confirmModalDesc
+                : vi.payment.ui.adminActions.cancelModalDesc}
             </p>
 
             {confirmModal === 'cancel' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={{ fontSize: '12px', fontWeight: 600, color: '#333' }}>
-                  Lý do hủy (tùy chọn):
+                  {vi.payment.ui.adminActions.cancelReasonLabel}
                 </label>
                 <input
                   type="text"
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  placeholder="Nhập lý do hủy đơn..."
+                  placeholder={vi.payment.ui.adminActions.cancelReasonPlaceholder}
                   style={{
                     padding: '8px 12px',
                     fontSize: '13px',
@@ -252,7 +261,12 @@ export const OrderActions: React.FC = () => {
             )}
 
             <div
-              style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: '10px',
+                marginTop: '8px',
+              }}
             >
               <button
                 type="button"
@@ -269,7 +283,7 @@ export const OrderActions: React.FC = () => {
                   cursor: 'pointer',
                 }}
               >
-                Đóng
+                {vi.payment.ui.adminActions.closeButton}
               </button>
 
               <button
@@ -289,10 +303,10 @@ export const OrderActions: React.FC = () => {
                 }}
               >
                 {loading !== null
-                  ? 'Đang xử lý...'
+                  ? vi.payment.ui.adminActions.processing
                   : confirmModal === 'confirm'
-                    ? 'Đồng ý xác nhận'
-                    : 'Đồng ý hủy đơn'}
+                    ? vi.payment.ui.adminActions.agreeConfirmButton
+                    : vi.payment.ui.adminActions.agreeCancelButton}
               </button>
             </div>
           </div>
