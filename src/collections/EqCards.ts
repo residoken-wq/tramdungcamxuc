@@ -13,7 +13,7 @@ import {
   topicOptions,
 } from '../fields/content'
 
-const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
+const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   if (originalDoc?.printedAt) {
     const errors: { path: string; message: string }[] = []
     if (data.qrSlug !== undefined && data.qrSlug !== originalDoc.qrSlug) {
@@ -26,7 +26,7 @@ const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
     ) {
       errors.push({ path: 'printedAt', message: 'Thẻ đã in, không được đổi hoặc xóa ngày in.' })
     }
-    if (errors.length) throw new ValidationError({ errors })
+    if (errors.length) throw new ValidationError({ errors, req }, req?.t)
   }
   return data
 }

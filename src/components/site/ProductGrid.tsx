@@ -110,16 +110,17 @@ export function ProductGrid({
               const effective = getEffectivePrice(product, now)
               const ctaInfo = resolveProductCta(product, now)
 
-              const coverImage =
+              const coverUrl =
                 product.coverImage && typeof product.coverImage === 'object'
-                  ? {
-                      src: (product.coverImage as { url?: string }).url || '/brand/placeholder.png',
-                      alt: (product.coverImage as { alt?: string }).alt || product.name,
-                    }
-                  : {
-                      src: '/brand/placeholder.png',
-                      alt: product.name,
-                    }
+                  ? (product.coverImage as { url?: string }).url
+                  : undefined
+
+              const coverImage = coverUrl
+                ? {
+                    src: coverUrl,
+                    alt: (product.coverImage as { alt?: string }).alt || product.name,
+                  }
+                : undefined
 
               return (
                 <div key={product.id} className="h-full">

@@ -3,13 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi as vitestVi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import {
-  ProductCard,
-  TestimonialCard,
-  LeadForm,
-  Navbar,
-  Footer,
-} from '@/components/site'
+import { ProductCard, TestimonialCard, LeadForm, Navbar, Footer } from '@/components/site'
 import { EmotionPicker, ProgressGrid } from '@/components/habit'
 import { Logo } from '@/components/brand/Logo'
 import { EMOTIONS } from '@/lib/emotions'
@@ -37,7 +31,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
           quote="[MẪU] Trải nghiệm tuyệt vời"
           name="[MẪU] Người học A"
           consent={false}
-        />
+        />,
       )
       expect(container.firstChild).toBeNull()
       expect(screen.queryByText(/Trải nghiệm tuyệt vời/)).toBeNull()
@@ -51,12 +45,10 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
           role="[MẪU] Quản lý đội ngũ"
           photo={{ src: '/brand/sample-avatar.svg', alt: '[MẪU] Ảnh đại diện' }}
           consent={true}
-        />
+        />,
       )
 
-      expect(
-        screen.getByText('[MẪU] Khóa học đã giúp tôi hiểu mình rõ hơn.')
-      ).toBeDefined()
+      expect(screen.getByText('[MẪU] Khóa học đã giúp tôi hiểu mình rõ hơn.')).toBeDefined()
       expect(screen.getByText('[MẪU] Người học B')).toBeDefined()
       expect(screen.getByText('[MẪU] Quản lý đội ngũ')).toBeDefined()
       const img = screen.getByAltText('[MẪU] Ảnh đại diện')
@@ -71,7 +63,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
           name="[MẪU] Sản phẩm bí mật"
           saleStatus="hidden"
           coverImage={{ src: '/brand/sample-cover.svg', alt: '[MẪU] Bìa' }}
-        />
+        />,
       )
       expect(container.firstChild).toBeNull()
       expect(screen.queryByText('[MẪU] Sản phẩm bí mật')).toBeNull()
@@ -89,12 +81,12 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
           trialDays={21}
           journeyStep="pause"
           cta={<button id="test-cta-btn">Đăng ký ngay</button>}
-        />
+        />,
       )
 
       expect(screen.getByText('[MẪU] Sổ tay Thói quen 21 Ngày')).toBeDefined()
       expect(
-        screen.getByText('[MẪU] Rèn luyện bền bỉ mỗi ngày qua phương pháp khoa học.')
+        screen.getByText('[MẪU] Rèn luyện bền bỉ mỗi ngày qua phương pháp khoa học.'),
       ).toBeDefined()
       expect(screen.getByText('250.000đ')).toBeDefined()
       expect(screen.getByText('178.000đ')).toBeDefined()
@@ -102,6 +94,20 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
       expect(screen.getByText(/21 ngày dùng thử miễn phí/)).toBeDefined()
       expect(screen.getByText(vi.product.journeySteps.pause)).toBeDefined()
       expect(screen.getByRole('button', { name: 'Đăng ký ngay' })).toBeDefined()
+    })
+
+    it('renders brand placeholder without img tag when coverImage is missing or empty', () => {
+      const { container } = render(
+        <ProductCard name="[MẪU] Sản phẩm không có ảnh bìa" saleStatus="on_sale" price={250000} />,
+      )
+
+      expect(screen.getByText('[MẪU] Sản phẩm không có ảnh bìa')).toBeDefined()
+      // Không có thẻ img nào được sinh ra
+      expect(container.querySelector('img')).toBeNull()
+      // Có khối placeholder với biểu tượng SVG và aria-hidden
+      const placeholder = container.querySelector('[data-testid="product-card-placeholder"]')
+      expect(placeholder).not.toBeNull()
+      expect(placeholder?.getAttribute('aria-hidden')).toBe('true')
     })
   })
 
@@ -130,12 +136,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
 
     it('does NOT call onSubmit when honeypot field has a value', async () => {
       const mockSubmit = vitestVi.fn().mockResolvedValue(undefined)
-      render(
-        <LeadForm
-          title="[MẪU] Đăng ký nhận tài nguyên"
-          onSubmit={mockSubmit}
-        />
-      )
+      render(<LeadForm title="[MẪU] Đăng ký nhận tài nguyên" onSubmit={mockSubmit} />)
 
       const nameInput = screen.getByLabelText(new RegExp(vi.leadForm.nameLabel, 'i'))
       const emailInput = screen.getByLabelText(new RegExp(vi.leadForm.emailLabel, 'i'))
@@ -157,12 +158,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
 
     it('calls onSubmit with valid payload and displays success message', async () => {
       const mockSubmit = vitestVi.fn().mockResolvedValue(undefined)
-      render(
-        <LeadForm
-          title="[MẪU] Đăng ký nhận tài nguyên"
-          onSubmit={mockSubmit}
-        />
-      )
+      render(<LeadForm title="[MẪU] Đăng ký nhận tài nguyên" onSubmit={mockSubmit} />)
 
       const nameInput = screen.getByLabelText(new RegExp(vi.leadForm.nameLabel, 'i'))
       const emailInput = screen.getByLabelText(new RegExp(vi.leadForm.emailLabel, 'i'))
@@ -261,7 +257,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
             },
           ]}
           cta={{ label: 'Đặt phiên trải nghiệm', href: '/dat-phien' }}
-        />
+        />,
       )
 
       expect(screen.getByRole('link', { name: 'Về Hana' })).toBeDefined()
@@ -291,7 +287,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
             },
           ]}
           cta={{ label: 'CTA', href: '/cta' }}
-        />
+        />,
       )
 
       // Mobile toggle button has flex-shrink-0
@@ -339,7 +335,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
             email: 'sample-seller@example.com',
             // address and taxCode intentionally omitted
           }}
-        />
+        />,
       )
 
       expect(screen.getByRole('link', { name: 'Thông tin pháp lý' })).toBeDefined()
@@ -375,7 +371,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
 
       expect(
         violations,
-        `Files using hooks or handlers must begin with 'use client': ${violations.join(', ')}`
+        `Files using hooks or handlers must begin with 'use client': ${violations.join(', ')}`,
       ).toEqual([])
     })
 
@@ -393,7 +389,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
 
       expect(
         violations,
-        `Components must use font-quote or font-ui/font-sans instead of font-serif: ${violations.join(', ')}`
+        `Components must use font-quote or font-ui/font-sans instead of font-serif: ${violations.join(', ')}`,
       ).toEqual([])
     })
 
@@ -410,10 +406,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
         { label: 'Thư viện', href: '/thu-vien' },
       ]
       const { container: navContainer } = render(
-        <Navbar
-          items={testItems}
-          cta={{ label: 'Đặt hẹn', href: '/dat-hen' }}
-        />
+        <Navbar items={testItems} cta={{ label: 'Đặt hẹn', href: '/dat-hen' }} />,
       )
 
       // Mobile controls container (has lg:hidden) should only contain the toggle button
@@ -429,7 +422,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
         <div>
           <LeadForm title="[MẪU] Form Một" />
           <LeadForm title="[MẪU] Form Hai" />
-        </div>
+        </div>,
       )
 
       const nameInputs = screen.getAllByLabelText(new RegExp(vi.leadForm.nameLabel, 'i'))

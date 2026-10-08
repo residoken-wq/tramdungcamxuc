@@ -103,14 +103,12 @@ export function ResourceRequestForm({
           ✓
         </div>
         <h3 className="font-display uppercase tracking-tight text-2xl sm:text-3xl text-deep-navy mb-3">
-          Kiểm tra email của bạn!
+          {vi.resource.successTitle}
         </h3>
         <p className="font-body text-base text-deep-navy/85 leading-relaxed mb-6">
           {vi.forms.success.resource}
         </p>
-        <p className="font-body text-xs text-deep-navy/60 italic">
-          Liên kết tải tài nguyên có hiệu lực trong 7 ngày.
-        </p>
+        <p className="font-body text-xs text-deep-navy/60 italic">{vi.resource.successNote}</p>
       </Card>
     )
   }
