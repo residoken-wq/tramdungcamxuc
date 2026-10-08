@@ -4,7 +4,7 @@ import { headers as getHeaders } from 'next/headers'
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import { isAdminUser, isOwnerUser } from '@/lib/auth/access'
-import { confirmManualPayment, cancelOrder } from './orders.server'
+import { confirmManualPayment, cancelOrder, PaymentError } from './orders.server'
 import { vi } from '@/lib/i18n/vi'
 
 export interface AdminPaymentActionResult {
@@ -51,10 +51,16 @@ export async function confirmManualPaymentAdminAction(
       message: vi.payment.success.confirmed,
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : vi.payment.errors.unauthorized
+    if (err instanceof PaymentError) {
+      return {
+        success: false,
+        message: err.message,
+      }
+    }
+    console.error('[AdminPaymentAction] Unexpected error in confirmManualPaymentAdminAction:', err)
     return {
       success: false,
-      message,
+      message: vi.payment.errors.serverError,
     }
   }
 }
@@ -100,10 +106,16 @@ export async function cancelOrderAdminAction(
       message: vi.payment.success.cancelled,
     }
   } catch (err) {
-    const message = err instanceof Error ? err.message : vi.payment.errors.unauthorized
+    if (err instanceof PaymentError) {
+      return {
+        success: false,
+        message: err.message,
+      }
+    }
+    console.error('[AdminPaymentAction] Unexpected error in cancelOrderAdminAction:', err)
     return {
       success: false,
-      message,
+      message: vi.payment.errors.serverError,
     }
   }
 }
