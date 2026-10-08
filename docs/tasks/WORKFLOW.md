@@ -123,6 +123,6 @@ Mọi task code phải đo thời gian để tính chi phí (dashboard "Bảng g
 2. **Nối vào cuối mọi lệnh** chạy trong terminal: `<lệnh> ; node scripts/task-time.mjs lap`
 3. **Cuối task**: `node scripts/task-time.mjs report` → dán nguyên dòng `THỜI GIAN THỰC …` vào báo cáo (mục "Đã làm") **và** mô tả PR (`gh pr edit --body …` hoặc thêm khi tạo PR).
 
-Quy tắc tính: thời gian trong lệnh tính đủ; khoảng trống giữa hai lệnh ≤ 60 giây tính đủ (agent suy nghĩ/viết code); khoảng trống > 60 giây coi là **chờ approve hoặc kẹt → chỉ tính 5 giây/lần**. Log nằm ở `.task-time/` (không commit). Đổi máy giữa task: chạy `report` trên máy cũ, dán vào PR, máy mới chạy lại `start <MÃ>`; Planning cộng hai phần.
+Quy tắc tính: thời gian trong lệnh tính đủ; khoảng trống giữa hai lệnh ≤ **10 phút** tính đủ (agent suy nghĩ / sửa file – sửa file không chạy lệnh nên không có mốc); khoảng trống > 10 phút coi là **chờ approve hoặc kẹt → chỉ tính 5 giây/lần**. (08/10: ngưỡng 60 giây cho kết quả quá thấp – T1-15b đo ra 0,12 h – nên nâng lên 10 phút.) Dán **nguyên dòng** `THỜI GIAN THỰC …` (gồm tổng thời gian trôi và khoảng trống dài nhất) để Planning đối chiếu. Log nằm ở `.task-time/` (không commit). Đổi máy giữa task: chạy `report` trên máy cũ, dán vào PR, máy mới chạy lại `start <MÃ>`; Planning cộng hai phần.
 
 Planning ghi con số vào cột "giờ thực tế" của task trên dashboard khi nghiệm thu. Task không có dòng `THỜI GIAN THỰC` → ghi "không đo" (không đoán).
