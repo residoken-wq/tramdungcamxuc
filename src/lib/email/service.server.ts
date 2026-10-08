@@ -7,6 +7,8 @@ import { CoachingConfirmationEmail } from '@/emails/CoachingConfirmationEmail'
 import { B2BBriefConfirmationEmail } from '@/emails/B2BBriefConfirmationEmail'
 import { AdminNotificationEmail } from '@/emails/AdminNotificationEmail'
 import { ResourceDeliveryEmail } from '@/emails/ResourceDeliveryEmail'
+import { ExperienceOrderPaidEmail } from '@/emails/ExperienceOrderPaidEmail'
+import { ExperienceOrderExpiredEmail } from '@/emails/ExperienceOrderExpiredEmail'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
 
@@ -289,5 +291,83 @@ async function notifyAdmin(
     })
   } catch (err) {
     console.error('[Email] Failed to notify admin:', err)
+  }
+}
+
+export async function sendExperienceOrderPaidEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    paymentRef: string
+    amount: number
+    bookingUrl?: string | null
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(ExperienceOrderPaidEmail, {
+        name: data.name,
+        paymentRef: data.paymentRef,
+        amount: data.amount,
+        bookingUrl: data.bookingUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(ExperienceOrderPaidEmail, {
+        name: data.name,
+        paymentRef: data.paymentRef,
+        amount: data.amount,
+        bookingUrl: data.bookingUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: 'Trạm Dừng Cảm Xúc – Xác nhận thanh toán & Link đặt lịch phiên trải nghiệm',
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send experience order paid email:', err)
+    throw err
+  }
+}
+
+export async function sendOrderExpiredReminderEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(ExperienceOrderExpiredEmail, {
+        name: data.name,
+      }),
+    )
+    const userText = await render(
+      React.createElement(ExperienceOrderExpiredEmail, {
+        name: data.name,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: 'Trạm Dừng Cảm Xúc – Nhắc hẹn phiên trải nghiệm Growth Mirror',
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send order expired reminder email:', err)
   }
 }

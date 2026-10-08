@@ -1287,15 +1287,12 @@ export interface Order {
    */
   paymentRef?: string | null;
   /**
-   * Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn.
+   * Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn qua nút thao tác.
    */
   paymentStatus: 'pending' | 'paid' | 'failed' | 'cancelled';
-  /**
-   * Chọn một mục phù hợp.
-   */
   deliveryStatus?: ('none' | 'access_granted' | 'email_sent' | 'scheduled') | null;
   /**
-   * Chỉ chủ sở hữu được đặt.
+   * Chỉ cập nhật khi chủ sở hữu xác nhận thanh toán thành công.
    */
   paidAt?: string | null;
   /**
@@ -1310,6 +1307,10 @@ export interface Order {
    * Tự sinh cho link /thanh-toan/… khi Hana tạo đơn.
    */
   payToken?: string | null;
+  /**
+   * Nhu cầu hoặc mục tiêu khi đặt phiên trải nghiệm.
+   */
+  customerNeed?: string | null;
   /**
    * Nhập ghi chú.
    */
@@ -2387,6 +2388,7 @@ export interface OrdersSelect<T extends boolean = true> {
   termsAcceptedAt?: T;
   createdByAdmin?: T;
   payToken?: T;
+  customerNeed?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2690,6 +2692,10 @@ export interface SiteSetting {
    */
   transferPrefix?: string | null;
   /**
+   * Liên kết đặt lịch (Cal.com, Google Calendar...) gửi qua email cho khách sau khi xác nhận thanh toán.
+   */
+  experienceBookingUrl?: string | null;
+  /**
    * Bật để áp dụng: trừ phí trải nghiệm vào giá gói.
    */
   trialCreditApplies?: boolean | null;
@@ -2826,6 +2832,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   accountNumber?: T;
   accountName?: T;
   transferPrefix?: T;
+  experienceBookingUrl?: T;
   trialCreditApplies?: T;
   email?: T;
   linkedInUrl?: T;

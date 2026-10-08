@@ -15,6 +15,9 @@ services:
       # Without RESEND_API_KEY emails are only written to the app log.
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       EMAIL_FROM: ${EMAIL_FROM:-}
+      # Without CRON_SECRET /api/cron/expire-orders always answers 401 and pending orders never expire.
+      CRON_SECRET: ${CRON_SECRET:-}
+      PAYMENT_SANDBOX: ${PAYMENT_SANDBOX:-}
     ports:
       - '${APP_PORT:-3000}:3000'
     volumes:

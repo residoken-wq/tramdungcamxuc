@@ -188,6 +188,15 @@ RESEND_API_KEY=
 EMAIL_FROM=
 ```
 
+**Thanh toán 149.000đ trên bản demo (T1-12).** Thêm vào `.env`, rồi đặt crontab theo mục "Lịch Cron hủy đơn quá hạn 24 giờ" bên dưới:
+
+```dotenv
+# Tạo một lần: openssl rand -hex 32. Thiếu thì cron luôn trả 401, đơn chờ thanh toán không bao giờ hết hạn.
+CRON_SECRET=
+# true: trang đơn hiện dòng "môi trường thử nghiệm" để không ai chuyển tiền thật vào bản demo.
+PAYMENT_SANDBOX=true
+```
+
 Biến `SITE_URL` được server đọc lúc chạy (runtime): các link tải tài nguyên trong email, sitemap, robots và thẻ metadata sẽ dùng địa chỉ này (thay vì cố định tên miền chính thức). Thiếu `TURNSTILE_SECRET_KEY` thì mọi form (nhận tài nguyên, brief doanh nghiệp, quiz) báo lỗi cấu hình. Khi có tài khoản Cloudflare thật: đặt biến repo `TURNSTILE_SITE_KEY` (GitHub → Settings → Secrets and variables → Actions → Variables), chờ CI build image mới, rồi thay `TURNSTILE_SECRET_KEY` bằng secret thật.
 
 `STYLEGUIDE_PUBLIC=true` cho khách xem `/styleguide`; để trống nếu không cần. Compose tự đặt `DATABASE_URI` tới Postgres nội bộ, không dùng URL DB local trong `.env`. Bản compose demo lưu media và tài liệu riêng tư trên volume local (`media:/app/media` và `private:/app/private`), không chuyển tiếp cấu hình S3. Volume `private` bảo vệ các tập tin PDF/ZIP/EPUB giao qua email khỏi bị mất khi cập nhật image app mới. `SITE_NOINDEX` và `STYLEGUIDE_PUBLIC` được đọc lúc chạy; đổi chúng rồi chạy `up -d` để tạo lại app, không chỉ `restart`.
@@ -450,3 +459,21 @@ Sau khi lưu: `sudo systemctl daemon-reload`, `sudo systemctl enable --now tdcx-
 ### Kiểm thử local
 
 `pnpm test` **cần Postgres đang chạy**: test Local API T0-06 tự áp migration trên DB test đã cấu hình. Trên máy Codex giữ nguyên `.env` (DB `tramdungcamxuc_codex`, Postgres 55432), chạy e2e với `PORT=3200`; không dùng DB demo để chạy test bootstrap. Compose dev đọc `${POSTGRES_PORT:-5432}`; máy mới nếu đổi cổng phải sửa cùng cổng trong `DATABASE_URI`.
+
+---
+
+### Lịch Cron hủy đơn quá hạn 24 giờ (T1-12a)
+
+Endpoint `/api/cron/expire-orders` tự động tìm các đơn hàng ở trạng thái `pending` quá 24 giờ để chuyển sang `failed`, đồng thời gửi email nhắc hẹn nếu khách hàng đã bật `consentMarketing = true`.
+
+Route này được bảo vệ nghiêm ngặt bằng header `Authorization: Bearer <CRON_SECRET>` (so khớp hằng thời gian `timingSafeEqual` với biến môi trường `CRON_SECRET` trong `.env`).
+
+**Cấu hình crontab mẫu trên server Linux / Docker:**
+Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 0 của mỗi giờ):
+
+```bash
+# Mở crontab: crontab -e
+0 * * * * curl -s -X POST -H "Authorization: Bearer <CRON_SECRET>" http://127.0.0.1:3400/api/cron/expire-orders >> /var/log/tdcx-cron-expire.log 2>&1
+```
+
+_(Lưu ý: Thay thế `<CRON_SECRET>` bằng chuỗi bí mật thật cấu hình trong `.env`, và thay cổng `3400` theo cấu hình cổng chạy thực tế của ứng dụng trên server)._
