@@ -1,0 +1,122 @@
+import type { Data } from '@puckeditor/core'
+
+export const eventTemplate: Data = {
+  root: {
+    props: {
+      title: 'Trang sự kiện',
+    },
+  },
+  content: [
+    {
+      type: 'HeroImage',
+      props: {
+        id: 'event-hero',
+        version: 1,
+        seriesLabel: '[MẪU] Sự kiện đặc biệt',
+        titleLine1: '[MẪU] NGÀY HỘI KẾT NỐI',
+        titleLine2: '[MẪU] LAN TỎA YÊU THƯƠNG',
+        emotionLine: '[MẪU] Cùng nhau tạo nên những khoảnh khắc ý nghĩa và kết nối cộng đồng.',
+        mediaId: '',
+        imageUrl: '',
+        imageAlt: '',
+        buttonText: '[MẪU] Khám phá sự kiện',
+        buttonLink: '#booking',
+        bgColor: 'warm-ivory',
+        padding: 'lg',
+      },
+    },
+    {
+      type: 'SectionHeader',
+      props: {
+        id: 'event-overview-header',
+        version: 1,
+        seriesLabel: '[MẪU] Tổng quan sự kiện',
+        titleLine1: '[MẪU] CHƯƠNG TRÌNH',
+        titleLine2: '[MẪU] DÀNH CHO CỘNG ĐỒNG',
+        emotionLine: '[MẪU] Gặp gỡ những người bạn đồng hành cùng tần số cảm xúc.',
+        align: 'center',
+        as: 'h2',
+      },
+    },
+    {
+      type: 'RichText',
+      props: {
+        id: 'event-rich-text',
+        version: 1,
+        content:
+          '[MẪU] Sự kiện kết nối cộng đồng là dịp để chúng ta tạm rời xa những ồn ào công việc và tìm về sự tĩnh lặng nội tâm.\n\n[MẪU] Các hoạt động tương tác nhẹ nhàng giúp mọi người cởi mở và gắn kết chân thành.',
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      },
+    },
+    {
+      type: 'JourneySteps',
+      props: {
+        id: 'event-agenda',
+        version: 1,
+        seriesLabel: '[MẪU] Lịch trình chương trình',
+        titleLine1: '[MẪU] CÁC HOẠT ĐỘNG',
+        titleLine2: '[MẪU] TRONG NGÀY',
+        emotionLine: '[MẪU] Hành trình trải nghiệm xuyên suốt các cung bậc cảm xúc.',
+        step1Description: '[MẪU] Đón tiếp và cùng nhau thưởng trà tĩnh tâm.',
+        step2Description: '[MẪU] Vòng tròn kết nối và chia sẻ chân thành.',
+        step3Description: '[MẪU] Hoạt động trải nghiệm thấu cảm và sáng tạo.',
+        step4Description: '[MẪU] Thực hành chuyển hóa và đúc kết chiêm nghiệm.',
+        step5Description: '[MẪU] Ôm trọn cảm xúc và gửi lời tri ân trước khi khép lại.',
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      },
+    },
+    {
+      type: 'TestimonialGrid',
+      props: {
+        id: 'event-testimonials',
+        version: 1,
+        mode: 'manual',
+        manualTestimonials: [
+          {
+            id: 'ev-test-1',
+            name: '[MẪU] Người tham dự sự kiện',
+            role: '[MẪU] Thành viên cộng đồng',
+            content: '[MẪU] Không khí rất ấm áp và nhiều năng lượng tích cực.',
+          },
+        ],
+        limit: 3,
+        columns: 3,
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      },
+    },
+    {
+      type: 'FAQ',
+      props: {
+        id: 'event-faq',
+        version: 1,
+        seriesLabel: '[MẪU] Giải đáp',
+        titleLine1: '[MẪU] THẮC MẮC VỀ SỰ KIỆN',
+        titleLine2: '[MẪU] HƯỚNG DẪN THAM GIA',
+        items: [
+          {
+            question: '[MẪU] Tôi có thể mời thêm bạn bè cùng tham gia không?',
+            answer: '[MẪU] Hoàn toàn có thể, bạn chỉ cần chia sẻ đường dẫn để bạn bè cùng đăng ký.',
+          },
+        ],
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      },
+    },
+    {
+      type: 'BookingCTA',
+      props: {
+        id: 'event-booking',
+        version: 1,
+        productId: '',
+        title: '[MẪU] Đăng ký vé tham dự sự kiện',
+        description: '[MẪU] Số lượng chỗ ngồi có hạn, vui lòng đăng ký sớm để được giữ chỗ.',
+        buttonLabel: 'Đăng ký tham dự',
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      },
+    },
+  ],
+}
