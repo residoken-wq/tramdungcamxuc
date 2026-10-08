@@ -114,3 +114,15 @@ Chạy Prettier **chỉ trên file mình sửa** (`pnpm exec prettier --write <f
 - Commit + push sau mỗi bước (quota hết giữa chừng thì việc vẫn còn trên GitHub).
 - Review `[REVIEW]`: Codex chỉ đọc diff (`git --no-pager diff origin/main...origin/<branch> -- <files>`), trả lời bằng danh sách lỗi có file:dòng + mức độ; **không sửa code** trong lượt review.
 
+
+## 9. Đo thời gian thực của agent (từ 08/10/2026)
+
+Mọi task code phải đo thời gian để tính chi phí (dashboard "Bảng giá dự án"). Script: `scripts/task-time.mjs`.
+
+1. **Bước đầu tiên** của task (trước mọi lệnh khác): `node scripts/task-time.mjs start <MÃ>`
+2. **Nối vào cuối mọi lệnh** chạy trong terminal: `<lệnh> ; node scripts/task-time.mjs lap`
+3. **Cuối task**: `node scripts/task-time.mjs report` → dán nguyên dòng `THỜI GIAN THỰC …` vào báo cáo (mục "Đã làm") **và** mô tả PR (`gh pr edit --body …` hoặc thêm khi tạo PR).
+
+Quy tắc tính: thời gian trong lệnh tính đủ; khoảng trống giữa hai lệnh ≤ **10 phút** tính đủ (agent suy nghĩ / sửa file – sửa file không chạy lệnh nên không có mốc); khoảng trống > 10 phút coi là **chờ approve hoặc kẹt → chỉ tính 5 giây/lần**. (08/10: ngưỡng 60 giây cho kết quả quá thấp – T1-15b đo ra 0,12 h – nên nâng lên 10 phút.) Dán **nguyên dòng** `THỜI GIAN THỰC …` (gồm tổng thời gian trôi và khoảng trống dài nhất) để Planning đối chiếu. Log nằm ở `.task-time/` (không commit). Đổi máy giữa task: chạy `report` trên máy cũ, dán vào PR, máy mới chạy lại `start <MÃ>`; Planning cộng hai phần.
+
+Planning ghi con số vào cột "giờ thực tế" của task trên dashboard khi nghiệm thu. Task không có dòng `THỜI GIAN THỰC` → ghi "không đo" (không đoán).

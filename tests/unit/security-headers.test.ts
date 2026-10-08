@@ -62,12 +62,44 @@ describe('Security Headers', () => {
       expect(headers['Content-Security-Policy-Report-Only']).toContain(
         'https://challenges.cloudflare.com',
       )
+      expect(headers['Content-Security-Policy-Report-Only']).toContain('https://plausible.io')
 
       // In development / non-production, HSTS is omitted
       expect(headers['Strict-Transport-Security']).toBeUndefined()
 
       // Public site route embeddable by Puck omits X-Frame-Options: DENY
       expect(headers['X-Frame-Options']).toBeUndefined()
+    })
+
+    it('enforces CSP when isEnforce option is true', () => {
+      const headers = getSecurityHeaders('/', { isEnforce: true, isProduction: false })
+      expect(headers['Content-Security-Policy']).toBeDefined()
+      expect(headers['Content-Security-Policy-Report-Only']).toBeUndefined()
+      expect(headers['Content-Security-Policy']).toContain('https://plausible.io')
+    })
+
+    it('enforces CSP when CSP_ENFORCE env is "true"', () => {
+      const originalEnv = process.env.CSP_ENFORCE
+      try {
+        process.env.CSP_ENFORCE = 'true'
+        const headers = getSecurityHeaders('/', { isProduction: false })
+        expect(headers['Content-Security-Policy']).toBeDefined()
+        expect(headers['Content-Security-Policy-Report-Only']).toBeUndefined()
+      } finally {
+        process.env.CSP_ENFORCE = originalEnv
+      }
+    })
+
+    it('uses report-only CSP when CSP_ENFORCE is false or unset', () => {
+      const originalEnv = process.env.CSP_ENFORCE
+      try {
+        delete process.env.CSP_ENFORCE
+        const headers = getSecurityHeaders('/', { isProduction: false })
+        expect(headers['Content-Security-Policy-Report-Only']).toBeDefined()
+        expect(headers['Content-Security-Policy']).toBeUndefined()
+      } finally {
+        process.env.CSP_ENFORCE = originalEnv
+      }
     })
 
     it('includes Strict-Transport-Security in production', () => {
@@ -85,6 +117,7 @@ describe('Security Headers', () => {
         s3PublicUrl: 'https://assets.tramdungcamxuc.com',
       })
       expect(csp).toContain('https://assets.tramdungcamxuc.com')
+      expect(csp).toContain('https://plausible.io')
     })
   })
 
@@ -94,6 +127,13 @@ describe('Security Headers', () => {
       applySecurityHeaders(headers, '/thu-vien')
       expect(headers.get('X-Content-Type-Options')).toBe('nosniff')
       expect(headers.has('Content-Security-Policy-Report-Only')).toBe(true)
+    })
+
+    it('applies enforced CSP header when isEnforce is true', () => {
+      const headers = new Headers()
+      applySecurityHeaders(headers, '/thu-vien', { isEnforce: true })
+      expect(headers.has('Content-Security-Policy')).toBe(true)
+      expect(headers.has('Content-Security-Policy-Report-Only')).toBe(false)
     })
   })
 
@@ -107,4 +147,3 @@ describe('Security Headers', () => {
     })
   })
 })
-

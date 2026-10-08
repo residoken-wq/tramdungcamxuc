@@ -9,9 +9,13 @@ import { track } from '@/lib/analytics/track'
 
 export interface BookingCTAProps {
   version?: number
-  title: string
+  title?: string
+  heading?: string
   description?: string
+  subtitle?: string
   buttonLabel?: string
+  buttonText?: string
+  variant?: 'primary' | 'secondary' | 'ghost'
   bgColor?: string
   padding?: 'sm' | 'md' | 'lg'
   product?: PublicProduct | null
@@ -21,13 +25,21 @@ export interface BookingCTAProps {
 
 export function BookingCTA({
   title,
+  heading,
   description,
-  buttonLabel = 'Đặt phiên trải nghiệm',
+  subtitle,
+  buttonLabel,
+  buttonText,
+  variant = 'primary',
   bgColor = 'warm-ivory',
   padding = 'md',
   product,
   pageSlug,
 }: BookingCTAProps) {
+  const displayTitle = title || heading || ''
+  const displayDesc = description || subtitle
+  const displayButtonLabel = buttonLabel || buttonText || 'Đặt phiên trải nghiệm'
+
   const paddingClasses = {
     sm: 'py-6 px-4',
     md: 'py-12 px-4 sm:px-6',
@@ -55,11 +67,13 @@ export function BookingCTA({
           className="p-8 sm:p-10 text-center flex flex-col items-center justify-center space-y-6 shadow-sm"
         >
           <div className="max-w-2xl space-y-3">
-            <h3 className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy tracking-tight">
-              {title}
-            </h3>
-            {description && (
-              <p className="font-sans text-base text-deep-navy/80 leading-relaxed">{description}</p>
+            {displayTitle && (
+              <h3 className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy tracking-tight">
+                {displayTitle}
+              </h3>
+            )}
+            {displayDesc && (
+              <p className="font-sans text-base text-deep-navy/80 leading-relaxed">{displayDesc}</p>
             )}
           </div>
 
@@ -79,12 +93,12 @@ export function BookingCTA({
           <div className="pt-2">
             <Button
               href={BOOKING_PATH}
-              variant="primary"
+              variant={variant}
               size="lg"
               onClick={handleBookingClick}
               className="px-8 py-3.5 text-base shadow-md hover:shadow-lg transition-all"
             >
-              {buttonLabel}
+              {displayButtonLabel}
             </Button>
           </div>
         </Card>

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import {
   buildPackageComparison,
   type ProductPackageInput,
@@ -8,6 +9,8 @@ import {
 } from '@/lib/products'
 import { formatVnd } from '@/lib/format'
 import { useClientProducts } from '@/puck/client-preview'
+import { track } from '@/lib/analytics/track'
+import { vi } from '@/lib/i18n/vi'
 
 export interface PackageComparisonProps {
   version?: number
@@ -15,6 +18,8 @@ export interface PackageComparisonProps {
   packageIds?: Array<string | number>
   showTotalValue?: boolean
   showDiscountPercent?: boolean
+  note?: string
+  showPaymentPolicyLink?: boolean
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -46,22 +51,61 @@ export function PackageComparison({
   packageIds,
   showTotalValue = true,
   showDiscountPercent = true,
+  note,
+  showPaymentPolicyLink = false,
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
   puck,
 }: PackageComparisonProps) {
   const isEditing = puck?.isEditing ?? false
+  const sectionRef = React.useRef<HTMLElement | null>(null)
+  const hasTrackedView = React.useRef(false)
 
-  const resolvedIds = (rawPackages?.map((p) => p?.packageId).filter(Boolean) ??
-    packageIds ??
-    []) as Array<string | number>
+  const resolvedIds = React.useMemo(() => {
+    return (rawPackages?.map((p) => p?.packageId).filter(Boolean) ?? packageIds ?? []) as Array<
+      string | number
+    >
+  }, [rawPackages, packageIds])
 
   const { products: loadedPackages, loading } = useClientProducts({
     productIds: resolvedIds.slice(0, 3),
     mode: 'manual',
     initialProducts: _resolved?.packages,
   })
+
+  React.useEffect(() => {
+    if (isEditing || hasTrackedView.current || !loadedPackages || loadedPackages.length === 0) {
+      return
+    }
+
+    const node = sectionRef.current
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry?.isIntersecting && !hasTrackedView.current) {
+          hasTrackedView.current = true
+          const slugs = loadedPackages.map((p) => p.slug).filter(Boolean)
+          track('package_viewed', {
+            packageIds: resolvedIds,
+            ...(slugs.length > 0 ? { packages: slugs } : {}),
+          })
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 },
+    )
+
+    observer.observe(node)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [isEditing, loadedPackages, resolvedIds])
 
   if (!isEditing && (!loadedPackages || loadedPackages.length === 0)) {
     return null
@@ -97,7 +141,10 @@ export function PackageComparison({
   const rows = comparison.rows
 
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section
+      ref={sectionRef}
+      className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
+    >
       <div className="mx-auto max-w-5xl">
         {/* Desktop Comparison Table (Hidden on small screens) */}
         <div className="hidden md:block overflow-hidden rounded-card border border-deep-navy/15 bg-white shadow-soft">
@@ -245,6 +292,25 @@ export function PackageComparison({
             </div>
           ))}
         </div>
+
+        {/* Optional note and payment policy link */}
+        {(Boolean(note?.trim()) || showPaymentPolicyLink) && (
+          <div className="mt-8 sm:mt-10 rounded-card border border-deep-navy/10 bg-warm-ivory/60 p-4 sm:p-5 text-center text-sm font-ui text-deep-navy/80 space-y-2 shadow-xs">
+            {note?.trim() && <p className="whitespace-pre-line leading-relaxed">{note.trim()}</p>}
+            {showPaymentPolicyLink && (
+              <div>
+                <Link
+                  href="/gia-thanh-toan"
+                  className="inline-flex items-center gap-1 font-semibold text-bright-magenta hover:text-accent-pink hover:underline transition-colors"
+                >
+                  {vi.builder.packageComparison?.paymentPolicyLabel ||
+                    'Xem Chính sách giá & thanh toán'}
+                  <span aria-hidden="true">&rarr;</span>
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   )

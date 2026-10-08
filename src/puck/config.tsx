@@ -36,6 +36,7 @@ import { ZaloButtonBlock, type ZaloButtonBlockProps } from './blocks/ZaloButton'
 import { LibraryPreviewBlock, type LibraryPreviewBlockProps } from './blocks/LibraryPreview'
 
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
+import { getLockedComponentPermissions } from './locks'
 
 export { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS }
 export type {
@@ -406,7 +407,9 @@ export const puckConfig: Config<PageComponentsProps> = {
 
         return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
       },
-      render: (props) => <ImageText {...props} />,
+      // ImageText is a client component: never forward Puck's `puck` object (it holds functions,
+      // which cannot be serialised into a client component on the public page).
+      render: ({ puck: _puck, ...props }) => <ImageText {...props} />,
     },
 
     // Chuyển đổi
@@ -440,6 +443,29 @@ export const puckConfig: Config<PageComponentsProps> = {
     LogoStrip: LogoStripBlock,
     HanaStory: HanaStoryBlock,
   },
+}
+
+/**
+ * Lấy cấu hình Puck phù hợp với từng trang, gắn các quyền khóa khối tự động (VD: HeroTwoEntries trên trang chủ).
+ */
+export function getPuckConfig(options?: { pageSlug?: string }): Config<PageComponentsProps> {
+  const pageSlug = options?.pageSlug || '/'
+  const heroPermissions = getLockedComponentPermissions('HeroTwoEntries', pageSlug)
+
+  if (!heroPermissions) {
+    return puckConfig
+  }
+
+  return {
+    ...puckConfig,
+    components: {
+      ...puckConfig.components,
+      HeroTwoEntries: {
+        ...puckConfig.components.HeroTwoEntries,
+        permissions: heroPermissions,
+      },
+    },
+  }
 }
 
 export default puckConfig
