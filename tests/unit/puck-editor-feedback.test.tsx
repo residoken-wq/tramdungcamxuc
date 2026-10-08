@@ -8,8 +8,15 @@ const mocks = vi.hoisted(() => ({
   save: vi.fn(),
   currentData: { content: [], root: { props: { title: 'Current editor data' } } },
 }))
-vi.mock('@/puck/actions', () => ({ publishPageAction: mocks.publish, saveDraftAction: mocks.save }))
-vi.mock('@/puck/config', () => ({ puckConfig: {} }))
+vi.mock('@/puck/actions', () => ({
+  publishPageAction: mocks.publish,
+  saveDraftAction: mocks.save,
+  getVersionsAction: vi.fn().mockResolvedValue({ success: true, versions: [] }),
+  restoreVersionAction: vi.fn().mockResolvedValue({ success: true }),
+  duplicatePageAction: vi.fn().mockResolvedValue({ success: true }),
+}))
+vi.mock('@/puck/config', () => ({ puckConfig: {}, getPuckConfig: () => ({}) }))
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 vi.mock('@puckeditor/core', () => ({
   usePuck: () => ({ appState: { data: mocks.currentData } }),
   Puck: ({ overrides }: { overrides: { headerActions: React.ComponentType } }) => {
@@ -60,4 +67,3 @@ test('publish button meets WCAG AA contrast for small text per Q13 (deep-navy ba
   expect(publishButton.className).toContain('text-white')
   expect(publishButton.className).not.toContain('bg-accent-pink')
 })
-
