@@ -572,13 +572,13 @@ Dưới đây là các tình huống bạn có thể gặp và cách giải quy�
 
 ### 10.3. Lỗi xuất bản lời chia sẻ chưa có sự đồng ý
 
-- **Hiện tượng**: Báo lỗi _"Cần có sự đồng ý trước khi xuất bản lời chia sẻ"_.
+- **Hiện tượng**: Góc phải dưới hiện khung đỏ _"The following field is invalid: consent"_ (thông báo này hiện còn bằng tiếng Anh, sẽ được dịch sau).
 - **Nguyên nhân**: Bạn bấm Xuất bản testimonial mà chưa tick vào ô _Đã đồng ý cho phép hiển thị_.
 - **Cách sửa**: Tick vào ô đồng ý nếu khách hàng đã cho phép, hoặc lưu ở dạng _Bản nháp_ nếu đang chờ khách phản hồi.
 
 ### 10.4. Phiên đăng nhập hết hạn
 
-- **Hiện tượng**: Báo lỗi _"Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại"_.
+- **Hiện tượng**: Bấm Lưu thì báo lỗi, hoặc màn hình tự quay về trang đăng nhập (câu chữ chính xác của thông báo: cần kiểm lại).
 - **Nguyên nhân**: Bạn mở màn hình làm việc quá lâu mà không thao tác.
 - **Cách sửa**: Mở một tab mới, vào lại `<ĐỊA CHỈ DEMO>/admin` đăng nhập lại, sau đó quay lại tab cũ bấm **Lưu nháp** hoặc **Xuất bản**.
 
@@ -611,18 +611,23 @@ Dưới đây là các tình huống bạn có thể gặp và cách giải quy�
 
 Để website hoàn thiện 100% trước khi ra mắt công chúng, dưới đây là bảng tổng hợp các nội dung và tài sản còn thiếu đang chờ Hana cung cấp:
 
-|  STT   | Hạng mục                      | Vị trí áp dụng                         | Nội dung cụ thể cần cung cấp                                                                                     | Trạng thái hiện tại |
-| :----: | :---------------------------- | :------------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :-----------------: |
-| **01** | **Câu cảm xúc Hero**          | Trang chủ (`/`)                        | 1 câu cảm xúc in nghiêng đặt dưới tiêu đề 2 tầng màu của khối Hero.                                              |      _Chưa có_      |
-| **02** | **Câu chuyện Hana**           | Trang chủ (`/`) & Về Hana (`/ve-hana`) | Đoạn văn bản kể về hành trình cá nhân, triết lý đồng hành và câu trích dẫn tâm đắc.                              |      _Chưa có_      |
-| **03** | **Ảnh chân dung gốc**         | Toàn bộ website & Media                | Ảnh chân dung chất lượng cao, ấm áp của Hana (nền trong hoặc chụp ngoại cảnh).                                   |      _Chưa có_      |
-| **04** | **Số liệu ấn tượng**          | Trang chủ (`/`)                        | Các chỉ số thực tế để điền vào StatsBar (số năm kinh nghiệm, số giờ khai vấn, học viên).                         |      _Chưa có_      |
-| **05** | **6 Trang pháp lý**           | Chân trang website                     | Nội dung chính thức cho 6 trang: Thông tin người bán, Điều khoản, Bảo mật, Dịch vụ, Giá - thanh toán, Khiếu nại. |      _Chưa có_      |
-| **06** | **Thông tin người bán**       | Cài đặt website                        | Tên đăng ký kinh doanh, Mã số thuế, Địa chỉ, Số điện thoại và Email chính thức.                                  |      _Chưa có_      |
-| **07** | **Tài khoản VietQR**          | Cài đặt website                        | Tên ngân hàng, Số tài khoản, Tên chủ tài khoản để tạo mã QR thanh toán.                                          |      _Chưa có_      |
-| **08** | **Link Zalo & Đặt lịch**      | Cài đặt website & Services             | Đường dẫn liên kết Zalo cá nhân (`https://zalo.me/...`) và link đặt lịch Cal.com/Google Calendar.                |      _Chưa có_      |
-| **09** | **Logo đối tác / Khách hàng** | Doanh nghiệp (`/doanh-nghiep`)         | Tệp logo các doanh nghiệp hoặc tổ chức đã đồng hành (đã có sự đồng ý hiển thị).                                  |      _Chưa có_      |
-| **10** | **16 Câu hỏi Quiz chẩn đoán** | Thói quen (`/habit/chan-doan`)         | Rà soát và hoàn thiện câu chữ 16 tình huống trì hoãn cùng gợi ý giải pháp của từng giai đoạn.                    |      _Chưa có_      |
+|  STT   | Hạng mục                        | Vị trí áp dụng                         | Nội dung cụ thể cần cung cấp                                                                                     | Trạng thái hiện tại |
+| :----: | :------------------------------ | :------------------------------------- | :--------------------------------------------------------------------------------------------------------------- | :-----------------: |
+| **01** | **Câu cảm xúc Hero**            | Trang chủ (`/`)                        | 1 câu cảm xúc in nghiêng đặt dưới tiêu đề 2 tầng màu của khối Hero.                                              |      _Chưa có_      |
+| **02** | **Câu chuyện Hana**             | Trang chủ (`/`) & Về Hana (`/ve-hana`) | Đoạn văn bản kể về hành trình cá nhân, triết lý đồng hành và câu trích dẫn tâm đắc.                              |      _Chưa có_      |
+| **03** | **Ảnh chân dung gốc**           | Toàn bộ website & Media                | Ảnh chân dung chất lượng cao, ấm áp của Hana (nền trong hoặc chụp ngoại cảnh).                                   |      _Chưa có_      |
+| **04** | **Số liệu ấn tượng**            | Trang chủ (`/`)                        | Các chỉ số thực tế để điền vào StatsBar (số năm kinh nghiệm, số giờ khai vấn, học viên).                         |      _Chưa có_      |
+| **05** | **6 Trang pháp lý**             | Chân trang website                     | Nội dung chính thức cho 6 trang: Thông tin người bán, Điều khoản, Bảo mật, Dịch vụ, Giá - thanh toán, Khiếu nại. |      _Chưa có_      |
+| **06** | **Thông tin người bán**         | Cài đặt website                        | Tên đăng ký kinh doanh, Mã số thuế, Địa chỉ, Số điện thoại và Email chính thức.                                  |      _Chưa có_      |
+| **07** | **Tài khoản VietQR**            | Cài đặt website                        | Tên ngân hàng, Số tài khoản, Tên chủ tài khoản để tạo mã QR thanh toán.                                          |      _Chưa có_      |
+| **08** | **Link Zalo & Đặt lịch**        | Cài đặt website & Services             | Đường dẫn liên kết Zalo cá nhân (`https://zalo.me/...`) và link đặt lịch Cal.com/Google Calendar.                |      _Chưa có_      |
+| **09** | **Logo đối tác / Khách hàng**   | Doanh nghiệp (`/doanh-nghiep`)         | Tệp logo các doanh nghiệp hoặc tổ chức đã đồng hành (đã có sự đồng ý hiển thị).                                  |      _Chưa có_      |
+| **10** | **16 Câu hỏi Quiz chẩn đoán**   | Thói quen (`/habit/chan-doan`)         | Rà soát và hoàn thiện câu chữ 16 tình huống trì hoãn cùng gợi ý giải pháp của từng giai đoạn.                    |      _Chưa có_      |
+| **11** | **Chữ trang quiz**              | Thói quen (`/habit/chan-doan`)         | Lời mở đầu trang quiz, nhãn thang điểm 1–4 và lời dẫn trang kết quả (hiện là chữ tạm).                           |      _Chưa có_      |
+| **12** | **Tài liệu PDF quà tặng**       | Tài liệu riêng tư + sản phẩm miễn phí  | Tệp PDF tài nguyên miễn phí gửi qua email cho người để lại thông tin.                                            |      _Chưa có_      |
+| **13** | **Nội dung Habit và 26 thẻ EQ** | Giai đoạn 2 và 3                       | Bài học, video, 11 kỹ thuật; thông điệp, câu chuyện, câu hỏi của 26 thẻ EQ Buddy.                                |      _Chưa có_      |
+
+Các mục trên (trừ mục 11) **đã có sẵn chỗ trống trong CMS**. Khi có nội dung, Hana chọn một trong hai cách: (1) tự nhập vào đúng ô theo hướng dẫn ở các mục trên, hoặc (2) gửi tệp (Word, Excel, ảnh, PDF) cho anh Nhân để nhập thẳng vào hệ thống. Riêng mục 11 hiện chưa có ô trong CMS: Hana gửi câu chữ cho anh Nhân để thay.
 
 ---
 
@@ -633,7 +638,7 @@ Dưới đây là bảng đối chiếu toàn bộ 25 ảnh màn hình được 
 | Mã ảnh | Tệp hình ảnh                                         | Vị trí màn hình                               | Nội dung và điểm nhấn                                          |
 | :----: | :--------------------------------------------------- | :-------------------------------------------- | :------------------------------------------------------------- |
 | **01** | `images/huong-dan/01-dang-nhap.png`                  | `/admin/login`                                | Màn hình đăng nhập quản trị với Email, Mật khẩu                |
-| **02** | `images/huong-dan/02-doi-mat-khau.png`               | `/admin/collections/users/[id]`               | Hồ sơ cá nhân sau khi bấm nút Đổi mật khẩu                     |
+| **02** | `images/huong-dan/02-doi-mat-khau.png`               | `/admin/account`                              | Hồ sơ cá nhân sau khi bấm nút Đổi mật khẩu                     |
 | **03** | `images/huong-dan/03-du-lieu-mau.png`                | `/admin/collections/products`                 | Danh sách sản phẩm với tiền tố `[MẪU]` nhận diện               |
 | **04** | `images/huong-dan/04-sua-gia-va-uu-dai.png`          | `/admin/collections/products/[id]`            | Khu vực Giá bán, Giá ưu đãi và Hạn ưu đãi                      |
 | **05** | `images/huong-dan/05-doi-trang-thai-san-pham.png`    | `/admin/collections/products/[id]`            | Danh sách thả xuống 5 trạng thái bán sản phẩm                  |
@@ -642,13 +647,13 @@ Dưới đây là bảng đối chiếu toàn bộ 25 ảnh màn hình được 
 | **08** | `images/huong-dan/08-them-testimonial-dong-y.png`    | `/admin/collections/testimonials/create`      | Biểu mẫu Lời chia sẻ với ô tick bắt buộc Đã đồng ý             |
 | **09** | `images/huong-dan/09-tao-trang-tu-mau.png`           | `/admin/collections/pages/create`             | Biểu mẫu tạo trang mới và chọn Mẫu trang có sẵn                |
 | **10** | `images/huong-dan/10-nut-chinh-sua-truc-quan.png`    | `/admin/collections/pages/[id]`               | Cột bên phải với nút màu tím Chỉnh sửa trực quan (Puck Editor) |
-| **11** | `images/huong-dan/11-toan-canh-puck-editor.png`      | `/admin/builder/[id]`                         | Toàn cảnh 3 cột của trình dựng trực quan Puck                  |
-| **12** | `images/huong-dan/12-keo-khoi-sua-chu.png`           | `/admin/builder/[id]`                         | Chọn khối trên canvas và sửa thuộc tính ở cột bên phải         |
-| **13** | `images/huong-dan/13-khoa-khoi-hero-trang-chu.png`   | `/admin/builder/[homeId]`                     | Khối Hero 2 Lối vào được bảo vệ, khóa xóa trên Trang chủ       |
-| **14** | `images/huong-dan/14-xem-thu-3-man-hinh.png`         | `/admin/builder/[id]`                         | Thanh trên cùng chọn xem Điện thoại, Tablet, Máy tính          |
-| **15** | `images/huong-dan/15-lich-su-khoi-phuc.png`          | `/admin/builder/[id]`                         | Cửa sổ Lịch sử phiên bản và nút Khôi phục bản trước            |
-| **16** | `images/huong-dan/16-nhan-ban-trang.png`             | `/admin/builder/[id]`                         | Nút Nhân bản trang trên thanh công cụ trên cùng                |
-| **17** | `images/huong-dan/17-luu-nhap-va-xuat-ban.png`       | `/admin/builder/[id]`                         | Các nút Lưu nháp, Xuất bản và nút Xem trang công khai          |
+| **11** | `images/huong-dan/11-toan-canh-puck-editor.png`      | `/builder/[id]`                               | Toàn cảnh 3 cột của trình dựng trực quan Puck                  |
+| **12** | `images/huong-dan/12-keo-khoi-sua-chu.png`           | `/builder/[id]`                               | Chọn khối trên canvas và sửa thuộc tính ở cột bên phải         |
+| **13** | `images/huong-dan/13-khoa-khoi-hero-trang-chu.png`   | `/builder/[homeId]`                           | Khối Hero 2 Lối vào được bảo vệ, khóa xóa trên Trang chủ       |
+| **14** | `images/huong-dan/14-xem-thu-3-man-hinh.png`         | `/builder/[id]`                               | Thanh trên cùng chọn xem Điện thoại, Tablet, Máy tính          |
+| **15** | `images/huong-dan/15-lich-su-khoi-phuc.png`          | `/builder/[id]`                               | Cửa sổ Lịch sử phiên bản và nút Khôi phục bản trước            |
+| **16** | `images/huong-dan/16-nhan-ban-trang.png`             | `/builder/[id]`                               | Nút Nhân bản trang trên thanh công cụ trên cùng                |
+| **17** | `images/huong-dan/17-luu-nhap-va-xuat-ban.png`       | `/builder/[id]`                               | Các nút Lưu nháp, Xuất bản và nút Xem trang công khai          |
 | **18** | `images/huong-dan/18-sua-trang-phap-ly.png`          | `/admin/collections/legalPages/[id]`          | Trình soạn thảo văn bản của trang pháp lý                      |
 | **19** | `images/huong-dan/19-thong-tin-nguoi-ban.png`        | `/admin/globals/siteSettings`                 | Tab Người bán với các trường thông tin hộ kinh doanh/MST       |
 | **20** | `images/huong-dan/20-cai-dat-zalo-chat.png`          | `/admin/globals/siteSettings`                 | Tab Liên hệ & Zalo với liên kết Zalo và nút chat nổi           |
