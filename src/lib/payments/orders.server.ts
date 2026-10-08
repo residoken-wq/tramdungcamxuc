@@ -444,7 +444,8 @@ export async function confirmManualPayment(
       })
       return refreshed
     }
-    return refreshed ?? order
+    // Thua race với hủy đơn / cron hết hạn: đơn không còn pending -> báo lỗi, không báo "đã xác nhận"
+    throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
   }
 
   // Ghi nhật ký thao tác

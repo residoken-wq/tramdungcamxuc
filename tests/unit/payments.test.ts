@@ -777,6 +777,37 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       )
     })
 
+    it('xác nhận và hủy chạy đồng thời -> đúng một thao tác thành công, thao tác kia báo lỗi', async () => {
+      const createdRes = await createExperienceOrder(
+        {
+          productId: experienceProductId,
+          name: 'Khách Race',
+          email: `race-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
+
+      const [confirmRes, cancelRes] = await Promise.allSettled([
+        confirmManualPayment(order!.id, owner, { payload, emailSender: mockEmailSender }),
+        cancelOrder(order!.id, owner, 'Race', { payload }),
+      ])
+
+      // REVIEW-REQUIRED: không bao giờ cả hai cùng "thành công"
+      expect([confirmRes.status, cancelRes.status].sort()).toEqual(['fulfilled', 'rejected'])
+      const finalOrder = await payload.findByID({
+        collection: 'orders',
+        id: order!.id,
+        overrideAccess: true,
+      })
+      expect(finalOrder.paymentStatus).toBe(
+        confirmRes.status === 'fulfilled' ? 'paid' : 'cancelled',
+      )
+    })
+
     it('owner hủy đơn pending hợp lệ -> trạng thái chuyển sang cancelled và ghi audit log', async () => {
       const createdRes = await createExperienceOrder(
         {
