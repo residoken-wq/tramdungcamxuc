@@ -19,94 +19,78 @@ declare global {
       reset: (widgetId?: string) => void
       remove: (widgetId?: string) => void
     }
+    onloadTurnstileCallback?: () => void
   }
 }
 
 export interface TurnstileWidgetProps {
   onVerify: (token: string) => void
-  onExpire?: () => void
   onError?: () => void
+  onExpire?: () => void
   className?: string
 }
 
-const TURNSTILE_SCRIPT_ID = 'cf-turnstile-script'
-
-/**
- * TurnstileWidget client component.
- * Only loads challenges.cloudflare.com script when NEXT_PUBLIC_TURNSTILE_SITE_KEY is provided.
- * When absent, renders nothing (bypassed in local/dev environments).
- */
 export function TurnstileWidget({
   onVerify,
-  onExpire,
   onError,
+  onExpire,
   className = '',
 }: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const widgetIdRef = useRef<string | null>(null)
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+  // Forms pass new inline callbacks on every render (every keystroke). Keep the latest ones in a
+  // ref so the widget is rendered once per mount instead of being torn down and re-challenged.
+  const callbacksRef = useRef({ onVerify, onError, onExpire })
+  useEffect(() => {
+    callbacksRef.current = { onVerify, onError, onExpire }
+  })
 
   useEffect(() => {
-    if (!siteKey || !containerRef.current) {
+    if (!siteKey || typeof window === 'undefined' || !containerRef.current) {
       return
     }
 
     let isMounted = true
 
-    const renderWidget = () => {
-      if (!isMounted || !containerRef.current || !window.turnstile) return
-
-      // Clean up previous widget instance if any
-      if (widgetIdRef.current) {
-        try {
-          window.turnstile.remove(widgetIdRef.current)
-        } catch {
-          // ignore
-        }
-        widgetIdRef.current = null
-      }
+    function renderWidget() {
+      if (!isMounted || !containerRef.current || !window.turnstile || !siteKey) return
+      if (widgetIdRef.current) return
 
       try {
         const id = window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
-          callback: (token: string) => {
-            if (isMounted) onVerify(token)
-          },
-          'expired-callback': () => {
-            if (isMounted) onExpire?.()
+          callback: (token) => {
+            if (isMounted) callbacksRef.current.onVerify(token)
           },
           'error-callback': () => {
-            if (isMounted) onError?.()
+            if (isMounted) callbacksRef.current.onError?.()
           },
-          theme: 'light',
+          'expired-callback': () => {
+            if (isMounted) callbacksRef.current.onExpire?.()
+          },
         })
         widgetIdRef.current = id
-      } catch (err) {
-        console.error('[Turnstile] Render error:', err)
+      } catch {
+        // Silently continue if rendering fails
       }
     }
 
-    // Load Turnstile script if not already present
-    if (!document.getElementById(TURNSTILE_SCRIPT_ID)) {
+    const scriptId = 'cloudflare-turnstile-script'
+    const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null
+
+    if (window.turnstile) {
+      renderWidget()
+    } else if (existingScript) {
+      existingScript.addEventListener('load', renderWidget)
+    } else {
       const script = document.createElement('script')
-      script.id = TURNSTILE_SCRIPT_ID
+      script.id = scriptId
       script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
       script.async = true
       script.defer = true
-      script.onload = () => {
-        if (window.turnstile) renderWidget()
-      }
+      script.onload = renderWidget
       document.head.appendChild(script)
-    } else if (window.turnstile) {
-      renderWidget()
-    } else {
-      const interval = setInterval(() => {
-        if (window.turnstile) {
-          clearInterval(interval)
-          renderWidget()
-        }
-      }, 100)
-      return () => clearInterval(interval)
     }
 
     return () => {
@@ -120,17 +104,11 @@ export function TurnstileWidget({
         widgetIdRef.current = null
       }
     }
-  }, [siteKey, onVerify, onExpire, onError])
+  }, [siteKey])
 
   if (!siteKey) {
     return null
   }
 
-  return (
-    <div
-      ref={containerRef}
-      className={`min-h-[65px] flex justify-center items-center my-3 ${className}`}
-      data-testid="turnstile-widget"
-    />
-  )
+  return <div ref={containerRef} className={`my-2 flex justify-center ${className}`} />
 }

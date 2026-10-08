@@ -80,7 +80,7 @@ export const getPuckPageBySlug = cache(async (pageSlug: string): Promise<PuckPag
       root: { props: { title: doc.title || '' } },
     }
 
-    const resolvedData = await resolveServerData(initialData)
+    const resolvedData = await resolveServerData(initialData, { pageSlug })
 
     return {
       title: doc.title || '',
@@ -122,7 +122,9 @@ export const getServiceDetail = cache(async (slug: string): Promise<PublicServic
       .map((t: unknown) =>
         typeof t === 'object' && t !== null && 'id' in t ? (t as { id: string | number }).id : t,
       )
-      .filter((id: unknown): id is string | number => typeof id === 'number' || typeof id === 'string')
+      .filter(
+        (id: unknown): id is string | number => typeof id === 'number' || typeof id === 'string',
+      )
 
     let verifiedTestimonials: unknown[] = []
     if (testimonialIds.length > 0) {

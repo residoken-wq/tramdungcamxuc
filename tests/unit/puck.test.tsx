@@ -106,7 +106,12 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       // 2. ImageText
       const imageTextProps = puckConfig.components.ImageText.defaultProps!
       const { container: itContainer } = render(
-        <ImageText {...imageTextProps} bgColor="deep-navy" seriesLabel="Series Đêm" titleLine2="DÒNG 2" />,
+        <ImageText
+          {...imageTextProps}
+          bgColor="deep-navy"
+          seriesLabel="Series Đêm"
+          titleLine2="DÒNG 2"
+        />,
       )
       const itSeries = itContainer.querySelector('span.uppercase.tracking-widest')
       expect(itSeries?.className).toContain('text-soft-pink')
@@ -132,7 +137,8 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
     })
 
     it('ensures all default block props are prefixed with [MẪU] without hardcoded copy', () => {
-      const { HeroTwoEntries, SectionHeader, RichText, ImageText, CTAButton } = puckConfig.components
+      const { HeroTwoEntries, SectionHeader, RichText, ImageText, CTAButton } =
+        puckConfig.components
 
       expect(HeroTwoEntries.defaultProps?.titleLine1).toContain('[MẪU]')
       expect(HeroTwoEntries.defaultProps?.titleLine2).toContain('[MẪU]')
@@ -151,16 +157,17 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
     })
 
     it('sets version: 1 in defaultProps of all 5 blocks and exposes puckMigrations array (B5)', () => {
-      const { HeroTwoEntries, SectionHeader, RichText, ImageText, CTAButton } = puckConfig.components
+      const { HeroTwoEntries, SectionHeader, RichText, ImageText, CTAButton } =
+        puckConfig.components
 
       expect(HeroTwoEntries.defaultProps?.version).toBe(1)
       expect(SectionHeader.defaultProps?.version).toBe(1)
       expect(RichText.defaultProps?.version).toBe(1)
       expect(ImageText.defaultProps?.version).toBe(1)
-      expect(CTAButton.defaultProps?.version).toBe(1)
+      expect(CTAButton.defaultProps?.version).toBe(2)
 
       expect(Array.isArray(puckMigrations)).toBe(true)
-      expect(puckMigrations).toHaveLength(0)
+      expect(puckMigrations).toHaveLength(1)
 
       const testData = { content: [], root: { props: { title: 'Test' } } }
       expect(applyPuckMigrations(testData)).toEqual(testData)
@@ -202,9 +209,7 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
 
     it('renders RichText by splitting double newlines into semantic <p> tags without HTML injection', () => {
       const rawText = '[MẪU] Đoạn văn bản thứ nhất.\n\n[MẪU] Đoạn văn bản thứ hai.'
-      const { container } = render(
-        <RichText content={rawText} bgColor="warm-ivory" padding="md" />,
-      )
+      const { container } = render(<RichText content={rawText} bgColor="warm-ivory" padding="md" />)
 
       const paragraphs = container.querySelectorAll('p')
       expect(paragraphs).toHaveLength(2)
@@ -285,11 +290,7 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       // 2. ImageText
       const itProps = puckConfig.components.ImageText.defaultProps!
       const { container: itContainer } = render(
-        <ImageText
-          {...itProps}
-          buttonText="Độc hại"
-          buttonLink="//evil.com/phishing"
-        />,
+        <ImageText {...itProps} buttonText="Độc hại" buttonLink="//evil.com/phishing" />,
       )
       expect(itContainer.querySelector('a')).toBeNull()
       expect(itContainer.querySelector('button')).toBeNull()

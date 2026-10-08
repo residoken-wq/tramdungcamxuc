@@ -16,9 +16,7 @@ type CatchAllPageProps = {
   }>
 }
 
-export async function generateMetadata({
-  params,
-}: CatchAllPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: CatchAllPageProps): Promise<Metadata> {
   const { slug } = await params
   const pageSlug = slug.join('/')
   const payloadConfig = await config
@@ -28,10 +26,7 @@ export async function generateMetadata({
     const result = await payload.find({
       collection: 'pages',
       where: {
-        and: [
-          { slug: { equals: pageSlug } },
-          { _status: { equals: 'published' } },
-        ],
+        and: [{ slug: { equals: pageSlug } }, { _status: { equals: 'published' } }],
       },
       limit: 1,
       draft: false,
@@ -70,10 +65,7 @@ export default async function CatchAllPage({ params }: CatchAllPageProps) {
     const result = await payload.find({
       collection: 'pages',
       where: {
-        and: [
-          { slug: { equals: pageSlug } },
-          { _status: { equals: 'published' } },
-        ],
+        and: [{ slug: { equals: pageSlug } }, { _status: { equals: 'published' } }],
       },
       limit: 1,
       draft: false,
@@ -92,7 +84,7 @@ export default async function CatchAllPage({ params }: CatchAllPageProps) {
     root: { props: { title: pageDoc.title || '' } },
   }
 
-  const resolvedData = await resolveServerData(initialData)
+  const resolvedData = await resolveServerData(initialData, { pageSlug })
 
   return <Render config={puckConfig} data={resolvedData} />
 }

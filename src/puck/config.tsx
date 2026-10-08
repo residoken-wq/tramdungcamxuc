@@ -4,8 +4,6 @@ import { HeroTwoEntries, type HeroTwoEntriesProps } from '@/components/site/Hero
 import { ImageText, type ImageTextProps } from '@/components/site/ImageText'
 import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
-import { Button, type ButtonVariant, type ButtonSize } from '@/components/ui/Button'
-import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
 
 import { HeroImageBlock, type HeroImageProps } from './blocks/HeroImage'
@@ -27,17 +25,28 @@ import { TestimonialSliderBlock, type TestimonialSliderProps } from './blocks/Te
 import { LogoStripBlock, type LogoStripProps } from './blocks/LogoStrip'
 import { HanaStoryBlock, type HanaStoryProps } from './blocks/HanaStory'
 
+// Khối Chuyển đổi (Conversion Blocks)
+import { CTAButtonBlock, type CTAButtonBlockProps } from './blocks/CTAButton'
+import { LeadFormBlock, type LeadFormBlockProps } from './blocks/LeadForm'
+import { BookingCTABlock, type BookingCTAProps } from './blocks/BookingCTA'
+import { B2BBriefFormBlock, type B2BBriefFormProps } from './blocks/B2BBriefForm'
+import { QuizCTABlock, type QuizCTAProps } from './blocks/QuizCTA'
+import { ShopeeButtonBlock, type ShopeeButtonBlockProps } from './blocks/ShopeeButton'
+import { ZaloButtonBlock, type ZaloButtonBlockProps } from './blocks/ZaloButton'
+import { LibraryPreviewBlock, type LibraryPreviewBlockProps } from './blocks/LibraryPreview'
+
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
 
 export { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS }
-
-export type CTAButtonBlockProps = {
-  version?: number
-  label: string
-  href: string
-  variant?: ButtonVariant
-  size?: ButtonSize
-  align?: 'left' | 'center' | 'right'
+export type {
+  CTAButtonBlockProps,
+  LeadFormBlockProps,
+  BookingCTAProps,
+  B2BBriefFormProps,
+  QuizCTAProps,
+  ShopeeButtonBlockProps,
+  ZaloButtonBlockProps,
+  LibraryPreviewBlockProps,
 }
 
 export type PageComponentsProps = {
@@ -70,6 +79,13 @@ export type PageComponentsProps = {
   HanaStory: HanaStoryProps
   // Chuyển đổi
   CTAButton: CTAButtonBlockProps
+  LeadForm: LeadFormBlockProps
+  BookingCTA: BookingCTAProps & { productId?: string | number }
+  B2BBriefForm: B2BBriefFormProps
+  QuizCTA: QuizCTAProps
+  ShopeeButton: ShopeeButtonBlockProps
+  ZaloButton: ZaloButtonBlockProps
+  LibraryPreview: LibraryPreviewBlockProps
 }
 
 export const puckConfig: Config<PageComponentsProps> = {
@@ -104,7 +120,16 @@ export const puckConfig: Config<PageComponentsProps> = {
     },
     conversion: {
       title: 'Chuyển đổi',
-      components: ['CTAButton'],
+      components: [
+        'CTAButton',
+        'LeadForm',
+        'BookingCTA',
+        'B2BBriefForm',
+        'QuizCTA',
+        'ShopeeButton',
+        'ZaloButton',
+        'LibraryPreview',
+      ],
     },
   },
   root: {
@@ -384,70 +409,15 @@ export const puckConfig: Config<PageComponentsProps> = {
       render: (props) => <ImageText {...props} />,
     },
 
-    CTAButton: {
-      label: 'Nút Kêu gọi hành động (CTA Button)',
-      fields: {
-        label: { type: 'text', label: 'Chữ hiển thị trên nút' },
-        href: { type: 'text', label: 'Đường dẫn liên kết' },
-        variant: {
-          type: 'select',
-          label: 'Kiểu dáng nút',
-          options: [
-            { label: 'Chính (Hồng nhấn - Primary)', value: 'primary' },
-            { label: 'Phụ (Xanh thẫm - Secondary)', value: 'secondary' },
-            { label: 'Viền mảnh (Ghost)', value: 'ghost' },
-          ],
-        },
-        size: {
-          type: 'select',
-          label: 'Kích thước',
-          options: [
-            { label: 'Nhỏ (S - 44px)', value: 'sm' },
-            { label: 'Vừa (M - 48px)', value: 'md' },
-            { label: 'Lớn (L - 56px)', value: 'lg' },
-          ],
-        },
-        align: {
-          type: 'select',
-          label: 'Căn lề',
-          options: [
-            { label: 'Căn giữa', value: 'center' },
-            { label: 'Căn trái', value: 'left' },
-            { label: 'Căn phải', value: 'right' },
-          ],
-        },
-      },
-      defaultProps: {
-        version: 1,
-        label: '[MẪU] Kêu gọi hành động',
-        href: '#',
-        variant: 'primary',
-        size: 'md',
-        align: 'center',
-      },
-      render: ({ label, href, variant = 'primary', size = 'md', align = 'center' }) => {
-        const safeLink = safeHref(href)
-        if (!safeLink || !label) {
-          return <></>
-        }
-
-        const alignClasses = {
-          left: 'justify-start',
-          center: 'justify-center',
-          right: 'justify-end',
-        }[align]
-
-        return (
-          <div className="py-4 px-4">
-            <div className={`mx-auto max-w-5xl flex ${alignClasses}`}>
-              <Button href={safeLink} variant={variant} size={size}>
-                {label}
-              </Button>
-            </div>
-          </div>
-        )
-      },
-    },
+    // Chuyển đổi
+    CTAButton: CTAButtonBlock,
+    LeadForm: LeadFormBlock,
+    BookingCTA: BookingCTABlock,
+    B2BBriefForm: B2BBriefFormBlock,
+    QuizCTA: QuizCTABlock,
+    ShopeeButton: ShopeeButtonBlock,
+    ZaloButton: ZaloButtonBlock,
+    LibraryPreview: LibraryPreviewBlock,
 
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
