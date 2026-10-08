@@ -251,8 +251,15 @@ test.describe('T1-11: Growth Mirror page – 3 packages comparison & coaching tr
       expect(await tableButtons.count()).toBe(0)
 
       // Verify BookingCTA block: exactly 1 booking button with price 149.000đ
-      await expect(publicPage.getByText('149.000đ')).toBeVisible()
-      const bookingButton = publicPage.getByRole('link', { name: 'Đặt phiên trải nghiệm' })
+      await expect(
+        publicPage
+          .getByText(/149\.000/)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible()
+      const bookingButton = publicPage
+        .locator('section')
+        .getByRole('link', { name: 'Đặt phiên trải nghiệm' }) // page content only, not the navbar CTA
       await expect(bookingButton).toBeVisible()
       await expect(bookingButton).toHaveCount(1)
 
@@ -268,14 +275,32 @@ test.describe('T1-11: Growth Mirror page – 3 packages comparison & coaching tr
         publicPage
           .getByText(/Gói CLEAR/i)
           .or(publicPage.getByText(/CLEAR/i))
+          .filter({ visible: true })
           .first(),
       ).toBeVisible()
-      await expect(publicPage.getByText(/1.750.000đ/i).first()).toBeVisible()
-      await expect(publicPage.getByText(/2.900.000đ/i).first()).toBeVisible()
-      await expect(publicPage.getByText(/4.320.000đ/i).first()).toBeVisible()
+      await expect(
+        publicPage
+          .getByText(/1.750.000đ/i)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible()
+      await expect(
+        publicPage
+          .getByText(/2.900.000đ/i)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible()
+      await expect(
+        publicPage
+          .getByText(/4.320.000đ/i)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible()
 
       // Verify still only 1 booking button on mobile
-      const mobileBookingBtn = publicPage.getByRole('link', { name: 'Đặt phiên trải nghiệm' })
+      const mobileBookingBtn = publicPage
+        .locator('section')
+        .getByRole('link', { name: 'Đặt phiên trải nghiệm' }) // page content only, not the navbar CTA
       await expect(mobileBookingBtn).toBeVisible()
       await expect(mobileBookingBtn).toHaveCount(1)
 
@@ -292,7 +317,12 @@ test.describe('T1-11: Growth Mirror page – 3 packages comparison & coaching tr
       await publicPage.reload({ waitUntil: 'networkidle' })
 
       // Verify updated price is reflected immediately without page edit
-      await expect(publicPage.getByText('2.610.000đ')).toBeVisible()
+      await expect(
+        publicPage
+          .getByText(/2\.610\.000/)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible()
     } finally {
       // 8. Clean up test records
       if (pageId) {
