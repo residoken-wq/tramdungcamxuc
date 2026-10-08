@@ -37,3 +37,4 @@ Chỉ ghế Planning tạo / sửa file prompt. Agent không sửa thư mục n�
 | Laptop | T1-11 (sau T1-15a) | `docs/tasks/prompts/T1-11.md` |
 
 > Từ 08/10/2026 mọi prompt có bước **đo thời gian thực** (`scripts/task-time.mjs`, WORKFLOW.md mục 9). Agent phải dán dòng `THỜI GIAN THỰC …` vào báo cáo và mô tả PR.
+| Laptop | T1-15b (sau T1-11) | `docs/tasks/prompts/T1-15b.md` |
