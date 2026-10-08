@@ -12,6 +12,7 @@
 - [ ] **Mobile App PWA / Native**: Nghiên cứu sau khi bản web đạt traction ổn định.
 - [ ] **Tự động đối soát ngân hàng**: Kết nối API ngân hàng sâu hơn khi khối lượng giao dịch lớn.
 - [ ] **Thêm trường `topic` cho collection `products`** (T1-09): Hiện tại `products` chưa có trường chủ đề riêng; trang Thư viện `/thu-vien` đang suy luận chủ đề theo `web` (`habit` / `eq`) và `type` (`package` → `career`). Cần migration thêm select `topic` (eq / habit / career) vào `Products` để Hana tự gắn trong admin CMS.
+- [ ] **Tự động gửi link tải tài nguyên qua email sau khi submit LeadForm** (T1-03 / T1-07): Hiện tại khối Puck `LeadForm` chọn sản phẩm tài nguyên miễn phí chỉ lưu ID và tạo lead kèm tag `resource:<slug>`. Logic tự động gửi email đính kèm link tải file có hạn sẽ được kết nối sau khi task T1-07 (giao tài liệu có ký hạn và queue email) được merge vào main.
 
 ---
 
@@ -28,5 +29,5 @@
 - [x] **Admin Payload tiếng Việt** (→ T0-12): bật i18n `vi` cho giao diện admin để lỗi mặc định (vd. "Value must be unique") hiện tiếng Việt cho Hana.
 - [ ] **Khối RichText định dạng giới hạn** (đậm, nghiêng, link, danh sách – Puck `richtext` đã tắt heading/màu/căn lề): đánh giá ở T1-01 khi có nội dung thật. GĐ 0 dùng `textarea` (quyết định spike T0-09).
 - [x] **Tính % ưu đãi gói trong computePackageValue chưa xét saleEndsAt** (`src/lib/pricing.ts`): Đã xử lý ở T1-02a bằng việc tính lúc render qua `getEffectivePrice` và `buildPackageComparison`, tôn trọng thời hạn khuyến mãi `saleEndsAt` mà không lưu dữ liệu tính sẵn vào `puckData`.
-- [ ] **Font tự host (`next/font/local`)**: build Docker trên CI 2 lần lỗi vì không tải được Google Fonts lúc build (06/10). Chuyển Anton/Montserrat/Playfair (subset vietnamese) vào repo – làm cùng T1-15 (hiệu năng). AGENTS mục 11 đã yêu cầu "font tự host".
+- [x] **Font tự host (`next/font/local`)** (xong ở T1-15a): Đã chuyển Anton/Montserrat/Playfair (subset vietnamese + latin) vào repo dạng WOFF2 tĩnh tại `src/fonts/`, cấu hình qua `next/font/local` trong `src/lib/fonts.ts`.
 - [ ] **Ghi nhận sự kiện `resource_downloaded` phía server (T1-15)**: Bổ sung track sự kiện phân tích chuyển đổi khi khách hàng tải tập tin thành công tại route `/api/download/[token]`, kết nối GA4 / Plausible trong task tối ưu hiệu năng và đo lường T1-15.

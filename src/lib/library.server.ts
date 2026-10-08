@@ -44,7 +44,7 @@ export async function getLibraryData(params: LibraryQueryParams): Promise<Librar
       const pageDoc = pageResult.docs[0]
       if (pageDoc?.puckData) {
         const initialData = pageDoc.puckData as Data
-        introData = await resolveServerData(initialData)
+        introData = await resolveServerData(initialData, { pageSlug: 'thu-vien' })
       }
     } catch {
       // Nếu lỗi đọc trang giới thiệu, bỏ qua để phần còn lại hoạt động bình thường
