@@ -142,7 +142,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Xong – PR #43 ([review](reviews/T1-17a.md)); 25 ảnh do Planning chụp; nội dung Hana: để chỗ trống trong CMS, nhập tay hoặc Planning import |
 | T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                   | [HANA]   | tất cả              | Planning | Chưa mở |
 | T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria, lỗi admin tiếng Việt) |          | T1-16               | Laptop | Xong – PR #48 ([review](reviews/T1-17c.md)) |
-| T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo) |          | PR #45              | Local | Sẵn sàng – Antigravity@Local (prompt `prompts/T1-17d.md`) |
+| T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo) |          | PR #45              | Local | Xong – PR #47 ([review](reviews/T1-17d.md)) |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 
