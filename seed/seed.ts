@@ -140,6 +140,30 @@ export async function seed(payload: Payload): Promise<SeedReport> {
       delete props.productSlug
     }
 
+    if (typeof props.resourceProductId === 'string' && productIds.has(props.resourceProductId)) {
+      props.resourceProductId = productIds.get(props.resourceProductId)
+    }
+    if (
+      typeof props.resourceProductSlug === 'string' &&
+      productIds.has(props.resourceProductSlug)
+    ) {
+      props.resourceProductId = productIds.get(props.resourceProductSlug)
+      delete props.resourceProductSlug
+    }
+
+    if (Array.isArray(props.manualProducts)) {
+      props.manualProducts = props.manualProducts.map((mp: Record<string, unknown>) => {
+        const rawSlug = (mp.productSlug || mp.productId) as string | number | undefined
+        if (typeof rawSlug === 'string' && productIds.has(rawSlug)) {
+          return {
+            ...mp,
+            productId: productIds.get(rawSlug),
+          }
+        }
+        return mp
+      })
+    }
+
     for (const [key, val] of Object.entries(props)) {
       if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0]?.type) {
         props[key] = val.map((child) => resolveBlockProductIds(child as Record<string, unknown>))

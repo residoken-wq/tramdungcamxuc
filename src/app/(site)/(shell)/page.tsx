@@ -74,7 +74,7 @@ export default async function HomePage() {
 
   // Temporary brand homepage fallback (from T0-03)
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-brand-gradient p-6 text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-brand-gradient p-6 text-center">
       <div className="flex max-w-md flex-col items-center rounded-card border border-deep-navy/10 bg-warm-ivory/85 p-8 shadow-soft backdrop-blur-sm">
         <Logo width={160} />
 
@@ -88,6 +88,6 @@ export default async function HomePage() {
           Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.
         </p>
       </div>
-    </main>
+    </div>
   )
 }

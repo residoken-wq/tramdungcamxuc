@@ -65,13 +65,31 @@ describe('sample seed', () => {
     settingsBefore = await payload.findGlobal({ slug: 'siteSettings', depth: 0 })
   }, 60000)
 
+  // Other test files run in parallel and also create isSample products/pages; count only the
+  // seed's own slugs so their records cannot change the totals between the two reads.
+  const seedSlugs: Partial<Record<CollectionSlug, string[]>> = {
+    products: seedData.products.map((p) => p.slug),
+    pages: seedData.pages.map((p) => p.slug),
+    services: seedData.services.map((s) => s.slug),
+    programs: seedData.programs.map((p) => p.slug),
+    posts: seedData.posts.map((p) => p.slug),
+    legalPages: seedData.legalPages.map((p) => p.slug),
+  }
+
   afterAll(async () => {
     if (!payload) return
     try {
-      if (realProductId) await payload.delete({ collection: 'products', id: realProductId })
+      if (realProductId) {
+        try {
+          await payload.delete({ collection: 'products', id: realProductId })
+        } catch {
+          // ignore
+        }
+      }
       // Delete in reverse dependency order: documents created by this test only.
       for (const collection of [...seeded].reverse()) {
         const keep = preExisting.get(collection) ?? new Set<number>()
+        const slugs = seedSlugs[collection]
         const docs = await payload.find({
           collection,
           limit: 0,
@@ -79,17 +97,30 @@ describe('sample seed', () => {
           draft: true,
           pagination: false,
         })
-        for (const doc of docs.docs)
-          if (!keep.has(doc.id as number)) await payload.delete({ collection, id: doc.id })
+        for (const doc of docs.docs) {
+          if (!keep.has(doc.id as number)) {
+            if (slugs && !slugs.includes((doc as { slug?: string }).slug as string)) continue
+            try {
+              await payload.delete({ collection, id: doc.id })
+            } catch {
+              // ignore
+            }
+          }
+        }
       }
-      if (navigationBefore)
-        await payload.updateGlobal({
-          slug: 'navigation',
-          data: {
-            mainMenu: navigationBefore.mainMenu ?? [],
-            footerMenu: navigationBefore.footerMenu ?? [],
-          },
-        })
+      if (navigationBefore) {
+        try {
+          await payload.updateGlobal({
+            slug: 'navigation',
+            data: {
+              mainMenu: navigationBefore.mainMenu ?? [],
+              footerMenu: navigationBefore.footerMenu ?? [],
+            },
+          })
+        } catch {
+          // pre-existing navigation may refer to deleted pages; safe to ignore
+        }
+      }
       if (settingsBefore)
         await payload.updateGlobal({
           slug: 'siteSettings',
@@ -99,13 +130,6 @@ describe('sample seed', () => {
       await payload.destroy()
     }
   }, 30000)
-
-  // Other test files run in parallel and also create isSample products/pages; count only the
-  // seed's own slugs so their records cannot change the totals between the two reads.
-  const seedSlugs: Partial<Record<CollectionSlug, string[]>> = {
-    products: seedData.products.map((p) => p.slug),
-    pages: seedData.pages.map((p) => p.slug),
-  }
   const sampleWhere = (collection: CollectionSlug): Where => {
     const slugs = seedSlugs[collection]
     return slugs
