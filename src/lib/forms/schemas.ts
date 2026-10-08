@@ -116,3 +116,50 @@ export const resourceRequestSchema = z.object({
 })
 
 export type ResourceRequestInput = z.infer<typeof resourceRequestSchema>
+
+export const diagnosticAnswerSchema = z.object({
+  questionId: z.number().int().positive(),
+  score: z.number().int().min(1).max(4),
+})
+
+export type DiagnosticAnswerInput = z.infer<typeof diagnosticAnswerSchema>
+
+export const diagnosticSubmissionSchema = z
+  .object({
+    answers: z.array(diagnosticAnswerSchema).min(1, vi.diagnostic.errors.emptyAnswers),
+    email: z
+      .string()
+      .trim()
+      .max(254, vi.forms.validation.emailMax)
+      .optional()
+      .nullable()
+      .refine(
+        (val) => {
+          if (!val || val.length === 0) return true
+          return z.string().email().safeParse(val).success
+        },
+        {
+          message: vi.forms.validation.emailInvalid,
+        },
+      ),
+    consent: z.boolean().optional().nullable(),
+    honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+    turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+    utm: z.string().max(500).optional(),
+  })
+  .refine(
+    (data) => {
+      // Nếu có nhập email (không rỗng), BẮT BUỘC consent phải là true (Nghị định 13/2023)
+      const hasEmail = Boolean(data.email && data.email.trim().length > 0)
+      if (hasEmail) {
+        return data.consent === true
+      }
+      return true
+    },
+    {
+      message: vi.forms.validation.consentRequired,
+      path: ['consent'],
+    },
+  )
+
+export type DiagnosticSubmissionInput = z.infer<typeof diagnosticSubmissionSchema>
