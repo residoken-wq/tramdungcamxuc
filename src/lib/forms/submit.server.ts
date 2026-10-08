@@ -21,6 +21,7 @@ import {
   sendResourceDeliveryEmail,
 } from '../email/service.server'
 import { signDownloadToken } from '../downloads/token'
+import { getSiteUrl } from '../site-url'
 import type { EmailSender } from '../email/types'
 
 export interface SubmissionContext {
@@ -442,7 +443,7 @@ export async function submitResourceRequest(
 
   const expDate = new Date(expiresAt)
   const expiresAtFormatted = `${expDate.getDate().toString().padStart(2, '0')}/${(expDate.getMonth() + 1).toString().padStart(2, '0')}/${expDate.getFullYear()}`
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tramdungcamxuc.com'
+  const baseUrl = getSiteUrl()
 
   for (const item of productFiles) {
     const fileDoc = item.file

@@ -32,9 +32,9 @@ export interface B2BBriefFormErrors {
 }
 
 export function B2BBriefForm({
-  title = '[MẪU] Gửi brief đào tạo & đồng hành doanh nghiệp',
-  description = '[MẪU] Chia sẻ bối cảnh và mục tiêu của tổ chức để Trạm Dừng Cảm Xúc đồng hành thiết kế giải pháp phù hợp nhất.',
-  submitLabel = 'Gửi brief yêu cầu',
+  title = vi.forms.b2b.defaultTitle,
+  description = vi.forms.b2b.defaultDescription,
+  submitLabel = vi.forms.b2b.defaultSubmitLabel,
   className = '',
   pageSlug,
 }: B2BBriefFormProps) {
@@ -188,13 +188,15 @@ export function B2BBriefForm({
               </svg>
             </div>
             <div>
-              <h4 className="font-ui font-bold text-xl text-deep-navy">Gửi brief thành công!</h4>
+              <h4 className="font-ui font-bold text-xl text-deep-navy">
+                {vi.forms.b2b.successTitle}
+              </h4>
               <p className="text-sm font-sans text-deep-navy/80 mt-2 max-w-md mx-auto">
                 {vi.forms.success.b2b}
               </p>
             </div>
             <Button type="button" variant="ghost" size="sm" onClick={handleReset} className="mt-4">
-              Gửi yêu cầu khác
+              {vi.forms.b2b.resetButton}
             </Button>
           </div>
         ) : (
@@ -227,7 +229,7 @@ export function B2BBriefForm({
                     setName(e.target.value)
                     if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }))
                   }}
-                  placeholder="Người phụ trách dự án"
+                  placeholder={vi.forms.b2b.namePlaceholder}
                   aria-invalid={Boolean(errors.name)}
                   className={`w-full px-4 py-2.5 rounded-xl border font-sans text-base text-deep-navy bg-white transition-colors duration-200 placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
                     errors.name
@@ -263,7 +265,7 @@ export function B2BBriefForm({
                     setEmail(e.target.value)
                     if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
                   }}
-                  placeholder="email@company.com"
+                  placeholder={vi.forms.b2b.emailPlaceholder}
                   aria-invalid={Boolean(errors.email)}
                   className={`w-full px-4 py-2.5 rounded-xl border font-sans text-base text-deep-navy bg-white transition-colors duration-200 placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
                     errors.email
@@ -289,7 +291,7 @@ export function B2BBriefForm({
                   htmlFor={companyId}
                   className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
                 >
-                  Tên công ty / Tổ chức <span className="text-bright-magenta">*</span>
+                  {vi.forms.b2b.companyLabel} <span className="text-bright-magenta">*</span>
                 </label>
                 <input
                   id={companyId}
@@ -301,7 +303,7 @@ export function B2BBriefForm({
                     setCompany(e.target.value)
                     if (errors.company) setErrors((prev) => ({ ...prev, company: undefined }))
                   }}
-                  placeholder="Tên doanh nghiệp của bạn"
+                  placeholder={vi.forms.b2b.companyPlaceholder}
                   aria-invalid={Boolean(errors.company)}
                   className={`w-full px-4 py-2.5 rounded-xl border font-sans text-base text-deep-navy bg-white transition-colors duration-200 placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
                     errors.company
@@ -325,7 +327,7 @@ export function B2BBriefForm({
                   htmlFor={phoneId}
                   className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
                 >
-                  Số điện thoại liên hệ
+                  {vi.forms.b2b.phoneLabel}
                 </label>
                 <input
                   id={phoneId}
@@ -334,7 +336,7 @@ export function B2BBriefForm({
                   disabled={status === 'submitting'}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="0901234567"
+                  placeholder={vi.forms.b2b.phonePlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border border-deep-navy/20 hover:border-deep-navy/40 font-sans text-base text-deep-navy bg-white transition-colors duration-200 placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
                     status === 'submitting' ? 'opacity-60 cursor-not-allowed' : ''
                   }`}
@@ -349,7 +351,7 @@ export function B2BBriefForm({
                   htmlFor={teamSizeId}
                   className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
                 >
-                  Quy mô đội ngũ dự kiến
+                  {vi.forms.b2b.teamSizeLabel}
                 </label>
                 <input
                   id={teamSizeId}
@@ -358,7 +360,7 @@ export function B2BBriefForm({
                   disabled={status === 'submitting'}
                   value={teamSize}
                   onChange={(e) => setTeamSize(e.target.value)}
-                  placeholder="VD: 15-30 người"
+                  placeholder={vi.forms.b2b.teamSizePlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border border-deep-navy/20 hover:border-deep-navy/40 font-sans text-base text-deep-navy bg-white transition-colors duration-200 placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
                     status === 'submitting' ? 'opacity-60 cursor-not-allowed' : ''
                   }`}
@@ -371,7 +373,7 @@ export function B2BBriefForm({
                   htmlFor={timelineId}
                   className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
                 >
-                  Thời gian dự kiến
+                  {vi.forms.b2b.timelineLabel}
                 </label>
                 <input
                   id={timelineId}
@@ -380,7 +382,7 @@ export function B2BBriefForm({
                   disabled={status === 'submitting'}
                   value={timeline}
                   onChange={(e) => setTimeline(e.target.value)}
-                  placeholder="VD: Quý 4 / 2026"
+                  placeholder={vi.forms.b2b.timelinePlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border border-deep-navy/20 hover:border-deep-navy/40 font-sans text-base text-deep-navy bg-white transition-colors duration-200 placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
                     status === 'submitting' ? 'opacity-60 cursor-not-allowed' : ''
                   }`}
@@ -394,7 +396,7 @@ export function B2BBriefForm({
                 htmlFor={behaviorsId}
                 className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
               >
-                Hành vi mục tiêu / Vấn đề cần giải quyết
+                {vi.forms.b2b.targetBehaviorsLabel}
               </label>
               <textarea
                 id={behaviorsId}
@@ -403,7 +405,7 @@ export function B2BBriefForm({
                 disabled={status === 'submitting'}
                 value={targetBehaviors}
                 onChange={(e) => setTargetBehaviors(e.target.value)}
-                placeholder="VD: Nâng cao trí tuệ cảm xúc lãnh đạo, xây dựng thói quen phản hồi tích cực..."
+                placeholder={vi.forms.b2b.targetBehaviorsPlaceholder}
                 className={`w-full px-4 py-2.5 rounded-xl border border-deep-navy/20 hover:border-deep-navy/40 font-sans text-base text-deep-navy bg-white transition-colors duration-200 placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
                   status === 'submitting' ? 'opacity-60 cursor-not-allowed' : ''
                 }`}
@@ -416,7 +418,7 @@ export function B2BBriefForm({
                 htmlFor={messageId}
                 className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
               >
-                Lời nhắn thêm
+                {vi.forms.b2b.messageLabel}
               </label>
               <textarea
                 id={messageId}
@@ -425,7 +427,7 @@ export function B2BBriefForm({
                 disabled={status === 'submitting'}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Bối cảnh cụ thể hoặc yêu cầu riêng của tổ chức..."
+                placeholder={vi.forms.b2b.messagePlaceholder}
                 className={`w-full px-4 py-2.5 rounded-xl border border-deep-navy/20 hover:border-deep-navy/40 font-sans text-base text-deep-navy bg-white transition-colors duration-200 placeholder:text-deep-navy/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
                   status === 'submitting' ? 'opacity-60 cursor-not-allowed' : ''
                 }`}
@@ -469,12 +471,12 @@ export function B2BBriefForm({
                   htmlFor={consentId}
                   className="text-xs font-sans text-deep-navy/80 leading-normal select-none cursor-pointer"
                 >
-                  Tôi đồng ý để Trạm Dừng Cảm Xúc liên hệ tư vấn giải pháp đào tạo theo{' '}
+                  {vi.forms.b2b.consentText}{' '}
                   <Link
                     href="/chinh-sach-bao-mat"
                     className="font-bold underline text-deep-navy hover:text-bright-magenta transition-colors"
                   >
-                    Chính sách bảo mật
+                    {vi.forms.b2b.privacyLink}
                   </Link>
                   . <span className="text-bright-magenta">*</span>
                 </label>
@@ -501,7 +503,7 @@ export function B2BBriefForm({
                 disabled={status === 'submitting'}
                 className="w-full text-base py-3"
               >
-                {status === 'submitting' ? 'Đang gửi brief...' : submitLabel}
+                {status === 'submitting' ? vi.forms.b2b.submitting : submitLabel}
               </Button>
             </div>
           </form>

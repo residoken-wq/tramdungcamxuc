@@ -6,8 +6,18 @@ services:
       NODE_ENV: production
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Generate PAYLOAD_SECRET with openssl rand -hex 32}
       DATABASE_URI: postgres://postgres:${POSTGRES_PASSWORD:?Set a hex POSTGRES_PASSWORD}@postgres:5432/tramdungcamxuc
+      SITE_URL: ${SITE_URL:-}
       SITE_NOINDEX: ${SITE_NOINDEX:-}
       STYLEGUIDE_PUBLIC: ${STYLEGUIDE_PUBLIC:-}
+      CSP_ENFORCE: ${CSP_ENFORCE:-}
+      # Forms reject every submission in production without the Turnstile secret.
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      # Without RESEND_API_KEY emails are only written to the app log.
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      # Without CRON_SECRET /api/cron/expire-orders always answers 401 and pending orders never expire.
+      CRON_SECRET: ${CRON_SECRET:-}
+      PAYMENT_SANDBOX: ${PAYMENT_SANDBOX:-}
     ports:
       - '${APP_PORT:-3000}:3000'
     volumes:

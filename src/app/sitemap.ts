@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 
+import { getSiteUrl } from '@/lib/site-url'
+
 export const dynamic = 'force-dynamic'
 
 export const STATIC_SITEMAP_ROUTES = [
@@ -31,12 +33,7 @@ export function isExcludedFromSitemap(pathname: string): boolean {
 }
 
 export function getBaseSiteUrl(): string {
-  const rawBaseUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://tramdungcamxuc.com'
-  const withProtocol =
-    rawBaseUrl.startsWith('http://') || rawBaseUrl.startsWith('https://')
-      ? rawBaseUrl
-      : `https://${rawBaseUrl}`
-  return withProtocol.replace(/\/+$/, '')
+  return getSiteUrl()
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

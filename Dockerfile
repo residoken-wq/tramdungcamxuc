@@ -10,7 +10,10 @@ RUN pnpm install --frozen-lockfile < /dev/null
 
 FROM deps AS builder
 COPY . .
-ENV NEXT_OUTPUT=standalone
+# Public (browser) Turnstile site key is inlined into the client bundle at build time.
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY \
+    NEXT_OUTPUT=standalone
 RUN pnpm build < /dev/null
 
 FROM base AS runner

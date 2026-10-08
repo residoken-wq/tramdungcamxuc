@@ -8,7 +8,9 @@ export default async function SiteShellLayout({ children }: { children: React.Re
   return (
     <div className="min-h-screen flex flex-col bg-warm-ivory text-deep-navy">
       <Navbar items={shellData.navbar.items} cta={shellData.navbar.cta} />
-      <div className="flex-1">{children}</div>
+      <main id="noi-dung" className="flex-1">
+        {children}
+      </main>
       <Footer
         legalLinks={shellData.footer.legalLinks}
         sellerInfo={shellData.footer.sellerInfo}

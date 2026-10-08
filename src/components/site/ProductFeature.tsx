@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { PriceTag } from '@/components/ui/PriceTag'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { Butterfly } from '@/components/brand/Butterfly'
 import { getEffectivePrice, resolveProductCta, type PublicProduct } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import { useClientProduct } from '@/puck/client-preview'
@@ -84,10 +85,10 @@ export function ProductFeature({
   const effective = getEffectivePrice(product, now)
   const ctaInfo = resolveProductCta(product, now)
 
-  const coverImageSrc =
+  const coverUrl =
     product.coverImage && typeof product.coverImage === 'object'
-      ? (product.coverImage as { url?: string }).url || '/brand/placeholder.png'
-      : '/brand/placeholder.png'
+      ? (product.coverImage as { url?: string }).url
+      : undefined
 
   const coverImageAlt =
     product.coverImage && typeof product.coverImage === 'object'
@@ -108,17 +109,27 @@ export function ProductFeature({
           {/* Image Column */}
           <div className={`w-full ${isImageRight ? 'md:order-2' : 'md:order-1'}`}>
             <div
-              className={`relative aspect-[16/10] w-full overflow-hidden rounded-card border shadow-soft bg-lavender-mist/20 ${
+              className={`relative aspect-[16/10] w-full overflow-hidden rounded-card border shadow-soft bg-lavender-mist flex items-center justify-center ${
                 isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
               }`}
             >
-              <Image
-                src={coverImageSrc}
-                alt={coverImageAlt}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-              />
+              {coverUrl ? (
+                <Image
+                  src={coverUrl}
+                  alt={coverImageAlt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div
+                  data-testid="product-feature-placeholder"
+                  className="w-full h-full bg-lavender-mist flex items-center justify-center"
+                  aria-hidden="true"
+                >
+                  <Butterfly className="w-20 h-20 text-deep-navy/35" aria-hidden={true} />
+                </div>
+              )}
               <div className="absolute top-3 left-3 flex flex-wrap gap-2 pointer-events-none">
                 <StatusBadge status={product.saleStatus} />
                 {product.trialDays && product.trialDays > 0 ? (

@@ -13,6 +13,7 @@
 - [ ] **Tự động đối soát ngân hàng**: Kết nối API ngân hàng sâu hơn khi khối lượng giao dịch lớn.
 - [ ] **Thêm trường `topic` cho collection `products`** (T1-09): Hiện tại `products` chưa có trường chủ đề riêng; trang Thư viện `/thu-vien` đang suy luận chủ đề theo `web` (`habit` / `eq`) và `type` (`package` → `career`). Cần migration thêm select `topic` (eq / habit / career) vào `Products` để Hana tự gắn trong admin CMS.
 - [ ] **Tự động gửi link tải tài nguyên qua email sau khi submit LeadForm** (T1-03 / T1-07): Hiện tại khối Puck `LeadForm` chọn sản phẩm tài nguyên miễn phí chỉ lưu ID và tạo lead kèm tag `resource:<slug>`. Logic tự động gửi email đính kèm link tải file có hạn sẽ được kết nối sau khi task T1-07 (giao tài liệu có ký hạn và queue email) được merge vào main.
+- [ ] **Cấu hình CTA kết quả quiz trong CMS** (T1-14): Cho phép Hana tự cấu hình CTA kết quả quiz trong CMS (cần trường trong `siteSettings`, triển khai sau khi nhả khóa Migration). Tạm thời CTA đang trỏ cố định tới `GROWTH_MIRROR_PATH` ('/coaching/growth-mirror').
 
 ---
 
@@ -31,3 +32,5 @@
 - [x] **Tính % ưu đãi gói trong computePackageValue chưa xét saleEndsAt** (`src/lib/pricing.ts`): Đã xử lý ở T1-02a bằng việc tính lúc render qua `getEffectivePrice` và `buildPackageComparison`, tôn trọng thời hạn khuyến mãi `saleEndsAt` mà không lưu dữ liệu tính sẵn vào `puckData`.
 - [x] **Font tự host (`next/font/local`)** (xong ở T1-15a): Đã chuyển Anton/Montserrat/Playfair (subset vietnamese + latin) vào repo dạng WOFF2 tĩnh tại `src/fonts/`, cấu hình qua `next/font/local` trong `src/lib/fonts.ts`.
 - [ ] **Ghi nhận sự kiện `resource_downloaded` phía server (T1-15)**: Bổ sung track sự kiện phân tích chuyển đổi khi khách hàng tải tập tin thành công tại route `/api/download/[token]`, kết nối GA4 / Plausible trong task tối ưu hiệu năng và đo lường T1-15.
+- [ ] **Nút Xác nhận / Hủy đơn chỉ hiện khi đơn `pending`** (QA T1-12c): `src/components/admin/OrderActions.tsx` hiện cả khi đơn đã `paid`/`cancelled` (server vẫn chặn đúng). Làm cùng T1-13.
+- [ ] **Cron hết hạn đơn chạy trên Vercel** (IT duyệt T1-12, 08/10): Vercel Cron gọi bằng `GET`, route `/api/cron/expire-orders` hiện chỉ có `POST` (crontab Docker dùng `curl -X POST`). Thêm `GET` dùng chung kiểm `CRON_SECRET` khi chốt deploy Vercel (D1/D2).

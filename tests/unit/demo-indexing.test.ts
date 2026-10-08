@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { afterEach, expect, test, vi } from 'vitest'
+vi.mock('server-only', () => ({}))
 import { proxy } from '@/proxy'
 import robots from '@/app/robots'
 

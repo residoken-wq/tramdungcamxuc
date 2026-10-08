@@ -4,36 +4,45 @@ import {
   type CollectionAfterChangeHook,
   type CollectionBeforeChangeHook,
   type CollectionBeforeValidateHook,
+  type PayloadRequest,
 } from 'payload'
 import { contentCollection, image, select, slug, text, textarea } from '../fields/content'
 import { getTemplateData } from '@/puck/templates'
 import { validatePageLockedBlocks } from '@/puck/locks'
 
-export function normalizePageSlug(value: string): string {
+export function normalizePageSlug(value: string, req?: Partial<PayloadRequest>): string {
   const trimmed = value.trim()
   const normalized = trimmed === '/' ? '/' : trimmed.replace(/^\/+|\/+$/g, '')
   if (normalized.includes('//')) {
-    throw new ValidationError({
-      errors: [{ path: 'slug', message: 'Đường dẫn không được chứa hai dấu / liên tiếp.' }],
-    })
+    throw new ValidationError(
+      {
+        errors: [{ path: 'slug', message: 'Đường dẫn không được chứa hai dấu / liên tiếp.' }],
+        req,
+      },
+      req?.t,
+    )
   }
   return normalized
 }
 
-const normalizeSlug: CollectionBeforeValidateHook = ({ data }) => {
-  if (typeof data?.slug === 'string') data.slug = normalizePageSlug(data.slug)
+const normalizeSlug: CollectionBeforeValidateHook = ({ data, req }) => {
+  if (typeof data?.slug === 'string') data.slug = normalizePageSlug(data.slug, req)
   return data
 }
 
-const validateLockedBlocksHook: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
+const validateLockedBlocksHook: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
   const effectiveSlug = data?.slug ?? originalDoc?.slug
   const effectivePuckData = data?.puckData ?? originalDoc?.puckData
   if (effectiveSlug && effectivePuckData) {
     const result = validatePageLockedBlocks(effectiveSlug, effectivePuckData)
     if (!result.valid) {
-      throw new ValidationError({
-        errors: [{ path: 'puckData', message: result.error || 'Dữ liệu trang không hợp lệ.' }],
-      })
+      throw new ValidationError(
+        {
+          errors: [{ path: 'puckData', message: result.error || 'Dữ liệu trang không hợp lệ.' }],
+          req,
+        },
+        req?.t,
+      )
     }
   }
   return data

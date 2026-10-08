@@ -1,5 +1,7 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from 'vitest'
+vi.mock('server-only', () => ({}))
+
 import sitemap, {
   isExcludedFromSitemap,
   getBaseSiteUrl,
@@ -32,11 +34,13 @@ describe('SEO - Sitemap and Robots', () => {
 
   describe('getBaseSiteUrl', () => {
     it('defaults to https://tramdungcamxuc.com when env is empty', () => {
+      vi.stubEnv('SITE_URL', '')
       vi.stubEnv('NEXT_PUBLIC_SITE_URL', '')
       expect(getBaseSiteUrl()).toBe('https://tramdungcamxuc.com')
     })
 
     it('respects NEXT_PUBLIC_SITE_URL with or without protocol and trailing slashes', () => {
+      vi.stubEnv('SITE_URL', '')
       vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://example.com/')
       expect(getBaseSiteUrl()).toBe('https://example.com')
 

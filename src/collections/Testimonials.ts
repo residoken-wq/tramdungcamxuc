@@ -9,12 +9,16 @@ import {
   textarea,
 } from '../fields/content'
 
-const requireConsent: CollectionBeforeChangeHook = ({ data, originalDoc }) => {
+export const requireConsent: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   const next = { ...originalDoc, ...data }
   if (next._status === 'published' && next.consent !== true) {
-    throw new ValidationError({
-      errors: [{ path: 'consent', message: 'Cần có sự đồng ý trước khi xuất bản lời chia sẻ.' }],
-    })
+    throw new ValidationError(
+      {
+        errors: [{ path: 'consent', message: 'Cần có sự đồng ý trước khi xuất bản lời chia sẻ.' }],
+        req,
+      },
+      req?.t,
+    )
   }
   return data
 }
