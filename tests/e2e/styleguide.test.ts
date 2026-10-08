@@ -44,7 +44,11 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
 
     // 2. Kiểm tra câu mẫu tiếng Việt
     await expect(
-      page.getByText('Trạm Dừng Cảm Xúc – Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.').first()
+      page
+        .getByText(
+          'Trạm Dừng Cảm Xúc – Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
+        )
+        .first(),
     ).toBeVisible()
 
     // 3. Kiểm tra dòng kiểm tra dấu tiếng Việt đặc thù (Anton diacritics check)
@@ -196,10 +200,14 @@ test.describe('UI Composites (T0-05)', () => {
     // 2. Navbar component
     if (isMobile) {
       await expect(page.locator('#mobile-nav-toggle')).toBeVisible()
-      await expect(page.getByRole('link', { name: /\[MẪU\] Test 5p|Test thói quen/i }).first()).toBeVisible()
+      await expect(
+        page.getByRole('link', { name: /\[MẪU\] Test 5p|Test thói quen/i }).first(),
+      ).toBeVisible()
     } else {
       await expect(page.getByRole('link', { name: /\[MẪU\] Về Hana/i }).first()).toBeVisible()
-      await expect(page.getByRole('link', { name: /\[MẪU\] Đặt phiên trải nghiệm/i }).first()).toBeVisible()
+      await expect(
+        page.getByRole('link', { name: /\[MẪU\] Đặt phiên trải nghiệm/i }).first(),
+      ).toBeVisible()
     }
 
     // 3. ProductCard component
@@ -208,7 +216,9 @@ test.describe('UI Composites (T0-05)', () => {
     await expect(page.getByText('[MẪU] Chương trình Coaching 1:1')).toBeVisible()
 
     // 4. TestimonialCard component
-    await expect(page.getByText(/Sau phiên đồng hành, tôi nhận diện được những nút thắt/)).toBeVisible()
+    await expect(
+      page.getByText(/Sau phiên đồng hành, tôi nhận diện được những nút thắt/),
+    ).toBeVisible()
     await expect(page.getByText('[MẪU] Chị Phương Mai')).toBeVisible()
 
     // 5. LeadForm component
@@ -231,7 +241,10 @@ test.describe('UI Composites (T0-05)', () => {
     await expect(page.getByText('[MẪU] contact@vi-du.vn').first()).toBeVisible()
   })
 
-  test('Navbar mobile mở/đóng bằng bàn phím và giữ nút quiz nổi bật trên thanh', async ({ page, isMobile }) => {
+  test('Navbar mobile mở/đóng bằng bàn phím và giữ nút quiz nổi bật trên thanh', async ({
+    page,
+    isMobile,
+  }) => {
     await page.goto('/styleguide')
 
     const mobileToggle = page.locator('#mobile-nav-toggle')
@@ -280,9 +293,20 @@ test.describe('UI Composites (T0-05)', () => {
     const privacyLink = page.getByRole('link', { name: /Chính sách bảo mật/i }).first()
     await expect(privacyLink).toBeFocused()
 
-    // Tab tới nút Submit
-    await page.keyboard.press('Tab')
+    // Tab tới nút Submit. Widget Turnstile (iframe Cloudflare) là điểm dừng Tab hợp lệ nằm giữa;
+    // nó chỉ có khi trình duyệt tải được script Cloudflare, nên cho phép tối đa 3 điểm dừng
+    // trung gian, với điều kiện focus không rời khỏi form.
     const submitBtn = page.getByRole('button', { name: /Gửi thông tin/i })
+    const submitHasFocus = () => submitBtn.evaluate((el) => el === document.activeElement)
+    for (let stops = 0; stops < 4; stops++) {
+      await page.keyboard.press('Tab')
+      if (await submitHasFocus()) break
+      const stillInForm = await submitBtn.evaluate((el) => {
+        const active = document.activeElement
+        return !!active && active !== document.body && el.closest('form')?.contains(active) === true
+      })
+      expect(stillInForm, 'Focus rời khỏi form trước khi tới nút Gửi').toBe(true)
+    }
     await expect(submitBtn).toBeFocused()
   })
 
@@ -312,4 +336,3 @@ test.describe('UI Composites (T0-05)', () => {
     }
   })
 })
-

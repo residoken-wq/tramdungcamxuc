@@ -178,6 +178,17 @@ APP_IMAGE=
 APP_TAG=
 ```
 
+**Form (Turnstile) và email trên bản demo.** Image build sẵn khóa site Turnstile _thử nghiệm_ của Cloudflare (trừ khi repo có biến `TURNSTILE_SITE_KEY`). Thêm vào `.env` khóa secret thử nghiệm đi kèm – đây là khóa công khai trong tài liệu Cloudflare, luôn cho qua, không phải bí mật:
+
+```dotenv
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# Tùy chọn: gửi email thật qua Resend. Bỏ trống thì email chỉ ghi vào log app.
+RESEND_API_KEY=
+EMAIL_FROM=
+```
+
+Thiếu `TURNSTILE_SECRET_KEY` thì mọi form (nhận tài nguyên, brief doanh nghiệp, quiz) báo lỗi cấu hình. Khi có tài khoản Cloudflare thật: đặt biến repo `TURNSTILE_SITE_KEY` (GitHub → Settings → Secrets and variables → Actions → Variables), chờ CI build image mới, rồi thay `TURNSTILE_SECRET_KEY` bằng secret thật.
+
 `STYLEGUIDE_PUBLIC=true` cho khách xem `/styleguide`; để trống nếu không cần. Compose tự đặt `DATABASE_URI` tới Postgres nội bộ, không dùng URL DB local trong `.env`. Bản compose demo lưu media và tài liệu riêng tư trên volume local (`media:/app/media` và `private:/app/private`), không chuyển tiếp cấu hình S3. Volume `private` bảo vệ các tập tin PDF/ZIP/EPUB giao qua email khỏi bị mất khi cập nhật image app mới. `SITE_NOINDEX` và `STYLEGUIDE_PUBLIC` được đọc lúc chạy; đổi chúng rồi chạy `up -d` để tạo lại app, không chỉ `restart`.
 
 #### Xác thực GitHub Container Registry (GHCR)

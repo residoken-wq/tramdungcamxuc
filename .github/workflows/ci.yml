@@ -129,6 +129,10 @@ jobs:
         with:
           context: .
           target: runner
+          # Demo image: repo variable TURNSTILE_SITE_KEY when set, else Cloudflare's always-pass
+          # test key so forms work on the noindex demo (server pairs it with the test secret).
+          build-args: |
+            NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.TURNSTILE_SITE_KEY || '1x00000000000000000000AA' }}
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta-runtime.outputs.tags }}
@@ -153,6 +157,10 @@ jobs:
         with:
           context: .
           target: builder
+          # Demo image: repo variable TURNSTILE_SITE_KEY when set, else Cloudflare's always-pass
+          # test key so forms work on the noindex demo (server pairs it with the test secret).
+          build-args: |
+            NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.TURNSTILE_SITE_KEY || '1x00000000000000000000AA' }}
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta-tools.outputs.tags }}
