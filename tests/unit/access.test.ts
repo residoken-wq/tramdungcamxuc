@@ -147,6 +147,7 @@ describe('access control (T0-07)', () => {
       collection: 'orders',
       id: byEditor.id,
       data: { paymentStatus: 'paid' },
+      context: { paymentAction: true },
       user: owner,
       overrideAccess: false,
     })

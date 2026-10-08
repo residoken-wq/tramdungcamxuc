@@ -42,13 +42,21 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
     payToken: originalDoc?.payToken,
     createdByAdmin: originalDoc?.createdByAdmin,
   }
-  if (editor)
+
+  // REVIEW-REQUIRED: Chặn sửa thẳng trạng thái đơn hàng (paymentStatus, paidAt, deliveryStatus).
+  // Chỉ các hàm nghiệp vụ được ủy quyền (confirmManualPayment, cancelOrder, expirePendingOrders)
+  // truyền context.paymentAction === true mới được phép cập nhật.
+  const isPaymentAction = req.context?.paymentAction === true
+  if (editor || !isPaymentAction) {
     return {
       ...data,
       ...locked,
       paymentStatus: originalDoc?.paymentStatus,
       paidAt: originalDoc?.paidAt,
+      deliveryStatus: originalDoc?.deliveryStatus,
     }
+  }
+
   return { ...data, ...locked }
 }
 

@@ -138,12 +138,13 @@ export async function createExperienceOrder(
     customerId = createdCustomer.id
   }
 
-  // 7. Lấy sản phẩm phiên trải nghiệm đang published
+  // 7. Lấy sản phẩm phiên trải nghiệm theo productId đang published
+  // REVIEW-REQUIRED: Tìm sản phẩm theo đúng productId, kiểm tra type = coaching_trial và _status = published
   const now = options.now ?? new Date()
   const products = await payload.find({
     collection: 'products',
     where: {
-      and: [{ type: { equals: 'coaching_trial' } }, { _status: { equals: 'published' } }],
+      id: { equals: validated.productId },
     },
     overrideAccess: true,
     limit: 1,
@@ -154,6 +155,9 @@ export async function createExperienceOrder(
   }
 
   const product = products.docs[0]
+  if (product.type !== 'coaching_trial' || product._status !== 'published') {
+    throw new Error(vi.payment.errors.productNotFound)
+  }
 
   // REVIEW-REQUIRED: Giá được đọc trực tiếp từ DB qua getEffectivePrice, bỏ qua mọi giá client gửi
   const effective = getEffectivePrice(product, now)
@@ -345,17 +349,52 @@ export async function confirmManualPayment(
     throw new Error(vi.payment.errors.onlyPendingCanBeConfirmed)
   }
 
-  // REVIEW-REQUIRED: Chuyển trạng thái pending -> paid và lưu thời điểm paidAt
+  // REVIEW-REQUIRED: Cập nhật có điều kiện chống race condition (chỉ đổi khi paymentStatus = pending)
   const paidAt = now.toISOString()
-  const updatedOrder = await payload.update({
+  const updateResult = await payload.update({
     collection: 'orders',
-    id: orderId,
+    where: {
+      and: [{ id: { equals: orderId } }, { paymentStatus: { equals: 'pending' } }],
+    },
     data: {
       paymentStatus: 'paid',
       paidAt,
     },
+    context: { paymentAction: true },
     overrideAccess: true,
   })
+
+  // Chỉ khi đổi được đúng 1 bản ghi mới ghi audit "paid" và gửi email; không đổi được -> coi như "đã xác nhận trước đó"
+  if (updateResult.docs.length === 0) {
+    const refreshed = await payload.findByID({
+      collection: 'orders',
+      id: orderId,
+      depth: 1,
+      overrideAccess: true,
+    })
+    if (refreshed && refreshed.paymentStatus === 'paid') {
+      await payload.create({
+        collection: 'auditLogs',
+        data: {
+          actor: Number(user.id),
+          action: 'confirm_manual_payment_duplicate',
+          target: `orders:${orderId}`,
+          before: { paymentStatus: refreshed.paymentStatus, paidAt: refreshed.paidAt },
+          after: {
+            paymentStatus: refreshed.paymentStatus,
+            paidAt: refreshed.paidAt,
+            note: 'đã xác nhận trước đó',
+          },
+          at: now.toISOString(),
+        },
+        overrideAccess: true,
+      })
+      return refreshed
+    }
+    throw new Error(vi.payment.errors.onlyPendingCanBeConfirmed)
+  }
+
+  const updatedOrder = updateResult.docs[0]
 
   // Ghi nhật ký thao tác
   await payload.create({
@@ -404,6 +443,7 @@ export async function confirmManualPayment(
         collection: 'orders',
         id: orderId,
         data: { deliveryStatus: 'email_sent' },
+        context: { paymentAction: true },
         overrideAccess: true,
       })
     } catch (emailErr) {
@@ -453,15 +493,36 @@ export async function cancelOrder(
   }
 
   const now = options.now ?? new Date()
-  const updatedOrder = await payload.update({
+  // REVIEW-REQUIRED: Cập nhật có điều kiện chống race condition (chỉ hủy khi paymentStatus = pending)
+  const updateResult = await payload.update({
     collection: 'orders',
-    id: orderId,
+    where: {
+      and: [{ id: { equals: orderId } }, { paymentStatus: { equals: 'pending' } }],
+    },
     data: {
       paymentStatus: 'cancelled',
       notes: reason ? `${order.notes || ''}\nLý do hủy: ${reason}`.trim() : order.notes,
     },
+    context: { paymentAction: true },
     overrideAccess: true,
   })
+
+  if (updateResult.docs.length === 0) {
+    const refreshed = await payload.findByID({
+      collection: 'orders',
+      id: orderId,
+      overrideAccess: true,
+    })
+    if (refreshed?.paymentStatus === 'paid') {
+      throw new Error(vi.payment.errors.cannotCancelPaidOrder)
+    }
+    if (refreshed?.paymentStatus === 'cancelled') {
+      return refreshed
+    }
+    throw new Error(vi.payment.errors.orderNotFound)
+  }
+
+  const updatedOrder = updateResult.docs[0]
 
   await payload.create({
     collection: 'auditLogs',
@@ -512,14 +573,23 @@ export async function expirePendingOrders(
   let reminderSentCount = 0
 
   for (const order of pendingOrders.docs) {
-    await payload.update({
+    // REVIEW-REQUIRED: Cập nhật có điều kiện chống race condition (chỉ đổi nếu paymentStatus vẫn là pending)
+    const updateResult = await payload.update({
       collection: 'orders',
-      id: order.id,
+      where: {
+        and: [{ id: { equals: order.id } }, { paymentStatus: { equals: 'pending' } }],
+      },
       data: {
         paymentStatus: 'failed',
       },
+      context: { paymentAction: true },
       overrideAccess: true,
     })
+
+    if (updateResult.docs.length === 0) {
+      continue
+    }
+
     expiredCount++
 
     // Kiểm tra nếu khách đồng ý nhận tin quảng bá -> gửi email nhắc hẹn

@@ -118,6 +118,30 @@ export const resourceRequestSchema = z.object({
 export type ResourceRequestInput = z.infer<typeof resourceRequestSchema>
 
 export const experienceOrderSchema = z.object({
+  productId: z
+    .union(
+      [
+        z.number({ required_error: vi.payment.errors.productNotFound }),
+        z
+          .string({ required_error: vi.payment.errors.productNotFound })
+          .trim()
+          .min(1, vi.payment.errors.productNotFound),
+      ],
+      {
+        errorMap: () => ({ message: vi.payment.errors.productNotFound }),
+      },
+    )
+    .transform((val, ctx) => {
+      const num = typeof val === 'number' ? val : Number(val)
+      if (isNaN(num) || num <= 0 || !Number.isInteger(num)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: vi.payment.errors.productNotFound,
+        })
+        return z.NEVER
+      }
+      return num
+    }),
   name: z
     .string()
     .trim()

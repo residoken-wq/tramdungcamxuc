@@ -3,8 +3,9 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import { randomUUID } from 'node:crypto'
-import { getPayload, type CollectionSlug, type Payload, type PayloadRequest } from 'payload'
+import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import config from '../../src/payload.config'
+import type { SiteSetting } from '../../src/payload-types'
 import { vi as viStrings } from '../../src/lib/i18n/vi'
 import {
   cancelOrder,
@@ -36,13 +37,40 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
   let ipCounter = 1
   const nextIp = () => `192.168.1.${ipCounter++}`
 
-  const created: { collection: CollectionSlug; id: number }[] = []
-  const track = <T extends { id: number }>(collection: CollectionSlug, doc: T): T => {
-    created.push({ collection, id: doc.id })
-    return doc
-  }
+  // Quản lý bản ghi do kiểm thử tạo để dọn dẹp triệt để trong afterAll theo thứ tự FK:
+  // orders -> auditLogs -> customers -> products -> users
+  const createdOrders: number[] = []
+  const createdCustomers: number[] = []
+  const createdProducts: number[] = []
+  const createdUsers: number[] = []
+  let settingsBefore: SiteSetting | null = null
+
   const asUser = (doc: { id: number; role?: string; email?: string }) =>
     ({ ...doc, collection: 'users' }) as unknown as AdminUser
+
+  const trackOrderAndCustomer = async (payToken?: string) => {
+    if (!payToken) return null
+    const res = await payload.find({
+      collection: 'orders',
+      where: { payToken: { equals: payToken } },
+      overrideAccess: true,
+    })
+    if (res.totalDocs > 0) {
+      const order = res.docs[0]
+      if (!createdOrders.includes(order.id)) {
+        createdOrders.push(order.id)
+      }
+      const custId =
+        typeof order.customer === 'object' && order.customer !== null
+          ? order.customer.id
+          : Number(order.customer)
+      if (custId && !createdCustomers.includes(custId)) {
+        createdCustomers.push(custId)
+      }
+      return order
+    }
+    return null
+  }
 
   const originalCronSecret = process.env.CRON_SECRET
   const originalSandbox = process.env.PAYMENT_SANDBOX
@@ -55,42 +83,54 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
     process.env.CRON_SECRET = testCronSecret
     process.env.PAYMENT_SANDBOX = 'true'
 
+    settingsBefore = await payload.findGlobal({
+      slug: 'siteSettings',
+      depth: 0,
+    })
+
     // 1. Tạo owner và editor
-    const makeUser = async (role: 'owner' | 'editor') =>
-      asUser(
-        track(
-          'users',
-          await payload.create({
-            collection: 'users',
-            data: {
-              email: `t1-12a-${role}-${randomUUID()}@example.test`,
-              password: randomUUID(),
-              role,
-            },
-          }),
-        ),
-      )
+    const makeUser = async (role: 'owner' | 'editor') => {
+      const u = await payload.create({
+        collection: 'users',
+        data: {
+          email: `t1-12a-${role}-${randomUUID()}@example.test`,
+          password: randomUUID(),
+          role,
+        },
+        overrideAccess: true,
+      })
+      createdUsers.push(u.id)
+      if (role === 'owner' && u.role !== 'owner') {
+        const updated = await payload.update({
+          collection: 'users',
+          id: u.id,
+          data: { role: 'owner' },
+          overrideAccess: true,
+        })
+        return asUser(updated)
+      }
+      return asUser(u)
+    }
 
     owner = await makeUser('owner')
     editor = await makeUser('editor')
 
-    // 2. Tạo sản phẩm coaching_trial (Phiên trải nghiệm Growth Mirror 149.000đ)
-    const productDoc = track(
-      'products',
-      await payload.create({
-        collection: 'products',
-        data: {
-          name: 'Phiên trải nghiệm Growth Mirror',
-          slug: `growth-mirror-trial-${randomUUID()}`,
-          web: 'site',
-          type: 'coaching_trial',
-          _status: 'published',
-          price: 149000,
-          saleStatus: 'on_sale',
-        },
-      }),
-    )
+    // 2. Tạo sản phẩm coaching_trial riêng của test (isSample: false)
+    const productDoc = await payload.create({
+      collection: 'products',
+      data: {
+        name: 'Phiên trải nghiệm Growth Mirror (Test T1-12a)',
+        slug: `growth-mirror-trial-test-${randomUUID()}`,
+        web: 'site',
+        type: 'coaching_trial',
+        _status: 'published',
+        price: 149000,
+        saleStatus: 'on_sale',
+        isSample: false,
+      },
+    })
     experienceProductId = productDoc.id
+    createdProducts.push(productDoc.id)
 
     // 3. Cấu hình siteSettings với thông tin ngân hàng đầy đủ
     await payload.updateGlobal({
@@ -115,13 +155,71 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
     }
 
     if (!payload) return
-    // Dọn dẹp dữ liệu kiểm thử
-    for (const item of created.reverse()) {
+
+    // Dọn dẹp theo thứ tự khóa ngoại an toàn:
+    // 1. Xóa đơn hàng do test tạo
+    for (const orderId of createdOrders) {
       try {
-        await payload.delete({ collection: item.collection, id: item.id, overrideAccess: true })
-      } catch {
-        // bỏ qua lỗi dọn dẹp
-      }
+        await payload.delete({ collection: 'orders', id: orderId, overrideAccess: true })
+      } catch {}
+    }
+    for (const productId of createdProducts) {
+      try {
+        await payload.delete({
+          collection: 'orders',
+          where: { 'items.product': { equals: productId } },
+          overrideAccess: true,
+        })
+      } catch {}
+    }
+
+    // 2. Xóa auditLogs do test tạo
+    for (const orderId of createdOrders) {
+      try {
+        await payload.delete({
+          collection: 'auditLogs',
+          where: { target: { equals: `orders:${orderId}` } },
+          overrideAccess: true,
+        })
+      } catch {}
+    }
+
+    // 3. Xóa customers do test tạo
+    for (const custId of createdCustomers) {
+      try {
+        await payload.delete({ collection: 'customers', id: custId, overrideAccess: true })
+      } catch {}
+    }
+
+    // 4. Xóa products do test tạo
+    for (const prodId of createdProducts) {
+      try {
+        await payload.delete({ collection: 'products', id: prodId, overrideAccess: true })
+      } catch {}
+    }
+
+    // 5. Xóa users do test tạo
+    for (const userId of createdUsers) {
+      try {
+        await payload.delete({ collection: 'users', id: userId, overrideAccess: true })
+      } catch {}
+    }
+
+    // 6. Khôi phục siteSettings
+    if (settingsBefore) {
+      try {
+        await payload.updateGlobal({
+          slug: 'siteSettings',
+          data: {
+            bankBin: settingsBefore.bankBin ?? null,
+            bankName: settingsBefore.bankName ?? null,
+            accountNumber: settingsBefore.accountNumber ?? null,
+            accountName: settingsBefore.accountName ?? null,
+            transferPrefix: settingsBefore.transferPrefix ?? null,
+            experienceBookingUrl: settingsBefore.experienceBookingUrl ?? null,
+          },
+        })
+      } catch {}
     }
   })
 
@@ -130,6 +228,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       const email = `client-price-test-${randomUUID()}@example.test`
       const result = await createExperienceOrder(
         {
+          productId: experienceProductId,
           name: 'Nguyễn Văn Test',
           email,
           phone: '0901234567',
@@ -145,32 +244,120 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       expect(result.success).toBe(true)
       expect(result.payToken).toBeDefined()
 
-      // Truy vấn DB kiểm tra giá thực tế lưu trong bảng orders
-      const orderQuery = await payload.find({
-        collection: 'orders',
-        where: { payToken: { equals: result.payToken } },
-        overrideAccess: true,
-      })
-
-      expect(orderQuery.totalDocs).toBe(1)
-      const order = orderQuery.docs[0]
-      track('orders', order)
+      const order = await trackOrderAndCustomer(result.payToken)
+      expect(order).not.toBeNull()
 
       // REVIEW-REQUIRED: Giá đơn hàng lấy từ DB qua getEffectivePrice (149.000đ), không lấy giá client gửi
-      expect(order.total).toBe(149000)
-      expect(order.subtotal).toBe(149000)
-      expect(order.paymentStatus).toBe('pending')
-      expect(order.termsAcceptedAt).toBeDefined()
-      expect(order.customerNeed).toBe('Cần định hướng bước chuyển sự nghiệp')
+      expect(order!.total).toBe(149000)
+      expect(order!.subtotal).toBe(149000)
+      expect(order!.paymentStatus).toBe('pending')
+      expect(order!.termsAcceptedAt).toBeDefined()
+      expect(order!.customerNeed).toBe('Cần định hướng bước chuyển sự nghiệp')
+    })
+
+    it('có 2 sản phẩm coaching_trial giá khác nhau -> đơn lấy đúng giá của productId; productId của loại khác -> lỗi', async () => {
+      // 1. Tạo sản phẩm coaching_trial thứ 2 với giá 199.000đ
+      const product2 = await payload.create({
+        collection: 'products',
+        data: {
+          name: 'Phiên trải nghiệm Growth Mirror VIP',
+          slug: `trial-vip-${randomUUID()}`,
+          web: 'site',
+          type: 'coaching_trial',
+          _status: 'published',
+          price: 199000,
+          saleStatus: 'on_sale',
+          isSample: false,
+        },
+      })
+      createdProducts.push(product2.id)
+
+      // 2. Tạo sản phẩm loại khác (ebook)
+      const ebookProduct = await payload.create({
+        collection: 'products',
+        data: {
+          name: 'Sách điện tử cảm xúc',
+          slug: `ebook-test-${randomUUID()}`,
+          web: 'site',
+          type: 'ebook',
+          _status: 'published',
+          price: 50000,
+          saleStatus: 'on_sale',
+          isSample: false,
+        },
+      })
+      createdProducts.push(ebookProduct.id)
+
+      // Đơn 1: chọn experienceProductId (149.000đ)
+      const res1 = await createExperienceOrder(
+        {
+          productId: experienceProductId,
+          name: 'Khách Gói 1',
+          email: `choose-p1-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order1 = await trackOrderAndCustomer(res1.payToken)
+      expect(order1?.total).toBe(149000)
+      const item1 = order1?.items?.[0]
+      const item1ProdId = typeof item1?.product === 'object' ? item1.product.id : item1?.product
+      expect(item1ProdId).toBe(experienceProductId)
+
+      // Đơn 2: chọn product2.id (199.000đ)
+      const res2 = await createExperienceOrder(
+        {
+          productId: product2.id,
+          name: 'Khách Gói 2',
+          email: `choose-p2-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order2 = await trackOrderAndCustomer(res2.payToken)
+      expect(order2?.total).toBe(199000)
+      const item2 = order2?.items?.[0]
+      const item2ProdId = typeof item2?.product === 'object' ? item2.product.id : item2?.product
+      expect(item2ProdId).toBe(product2.id)
+
+      // Đặt đơn với productId là ebook (loại khác) -> báo lỗi productNotFound
+      await expect(
+        createExperienceOrder(
+          {
+            productId: ebookProduct.id,
+            name: 'Khách Chọn Ebook',
+            email: `wrong-type-${randomUUID()}@example.test`,
+            termsAccepted: true,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        ),
+      ).rejects.toThrow(viStrings.payment.errors.productNotFound)
+
+      // Đặt đơn với productId không tồn tại -> báo lỗi productNotFound
+      await expect(
+        createExperienceOrder(
+          {
+            productId: 99999999,
+            name: 'Khách Sai ID',
+            email: `not-exist-${randomUUID()}@example.test`,
+            termsAccepted: true,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        ),
+      ).rejects.toThrow(viStrings.payment.errors.productNotFound)
     })
 
     it('thiếu ô đồng ý điều khoản -> lỗi tiếng Việt, không tạo đơn', async () => {
       const email = `no-terms-${randomUUID()}@example.test`
 
-      // Thử gửi mà không đồng ý điều khoản
       await expect(
         createExperienceOrder(
           {
+            productId: experienceProductId,
             name: 'Trần Thị Thiếu',
             email,
             termsAccepted: false,
@@ -180,7 +367,6 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         ),
       ).rejects.toThrow(viStrings.payment.validation.termsAcceptedRequired)
 
-      // Kiểm tra không có order nào được tạo cho email này
       const customerQuery = await payload.find({
         collection: 'customers',
         where: { email: { equals: email } },
@@ -190,7 +376,6 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
     })
 
     it('thiếu thông tin ngân hàng trong SiteSettings -> lỗi cấu hình tiếng Việt, không tạo đơn', async () => {
-      // Tạm xóa cấu hình ngân hàng
       await payload.updateGlobal({
         slug: 'siteSettings',
         data: {
@@ -202,6 +387,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         await expect(
           createExperienceOrder(
             {
+              productId: experienceProductId,
               name: 'Lê Văn Ngân Hàng',
               email: `no-bank-${randomUUID()}@example.test`,
               termsAccepted: true,
@@ -211,7 +397,6 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
           ),
         ).rejects.toThrow(viStrings.payment.errors.bankConfigMissing)
       } finally {
-        // Phục hồi lại cấu hình ngân hàng
         await payload.updateGlobal({
           slug: 'siteSettings',
           data: {
@@ -225,6 +410,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       const email = `bot-honeypot-${randomUUID()}@example.test`
       const result = await createExperienceOrder(
         {
+          productId: experienceProductId,
           name: 'Spam Bot',
           email,
           termsAccepted: true,
@@ -237,7 +423,6 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       expect(result.success).toBe(true)
       expect(result.fake).toBe(true)
 
-      // Kiểm tra không có customer hay order nào trong DB
       const orderQuery = await payload.find({
         collection: 'orders',
         where: { payToken: { equals: result.payToken } },
@@ -262,6 +447,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
 
       const createdRes = await createExperienceOrder(
         {
+          productId: experienceProductId,
           name: 'Nguyễn Bảo Mật',
           email,
           phone,
@@ -270,6 +456,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         { ip: nextIp() },
         { payload, emailSender: mockEmailSender },
       )
+      await trackOrderAndCustomer(createdRes.payToken)
 
       const view = await getPublicOrderView(createdRes.payToken, { payload })
       expect(view).not.toBeNull()
@@ -296,6 +483,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
     it('tài khoản editor gọi confirmManualPayment -> bị từ chối với lỗi quyền', async () => {
       const createdRes = await createExperienceOrder(
         {
+          productId: experienceProductId,
           name: 'Khách Chờ Duyệt',
           email: `editor-reject-${randomUUID()}@example.test`,
           termsAccepted: true,
@@ -303,24 +491,18 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         { ip: nextIp() },
         { payload, emailSender: mockEmailSender },
       )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
 
-      const orderQuery = await payload.find({
-        collection: 'orders',
-        where: { payToken: { equals: createdRes.payToken } },
-        overrideAccess: true,
-      })
-      const order = orderQuery.docs[0]
-      track('orders', order)
-
-      // Editor gọi xác nhận
       await expect(
-        confirmManualPayment(order.id, editor, { payload, emailSender: mockEmailSender }),
+        confirmManualPayment(order!.id, editor, { payload, emailSender: mockEmailSender }),
       ).rejects.toThrow(viStrings.payment.errors.unauthorized)
     })
 
     it('tài khoản editor gọi cancelOrder -> bị từ chối với lỗi quyền', async () => {
       const createdRes = await createExperienceOrder(
         {
+          productId: experienceProductId,
           name: 'Khách Hủy Editor',
           email: `editor-cancel-${randomUUID()}@example.test`,
           termsAccepted: true,
@@ -328,26 +510,21 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         { ip: nextIp() },
         { payload, emailSender: mockEmailSender },
       )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
 
-      const orderQuery = await payload.find({
-        collection: 'orders',
-        where: { payToken: { equals: createdRes.payToken } },
-        overrideAccess: true,
-      })
-      const order = orderQuery.docs[0]
-      track('orders', order)
-
-      await expect(cancelOrder(order.id, editor, 'Lý do hủy', { payload })).rejects.toThrow(
+      await expect(cancelOrder(order!.id, editor, 'Lý do hủy', { payload })).rejects.toThrow(
         viStrings.payment.errors.unauthorized,
       )
     })
 
-    it('owner xác nhận 2 lần -> idempotent: 1 email gửi, paidAt không đổi, 2 dòng audit log', async () => {
+    it('owner xác nhận 2 lần tuần tự -> idempotent: 1 email gửi, paidAt không đổi, 2 dòng audit log', async () => {
       mockEmailSender.sent = []
       const customerEmail = `owner-confirm-${randomUUID()}@example.test`
 
       const createdRes = await createExperienceOrder(
         {
+          productId: experienceProductId,
           name: 'Khách Hàng Thật',
           email: customerEmail,
           termsAccepted: true,
@@ -355,17 +532,11 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         { ip: nextIp() },
         { payload, emailSender: mockEmailSender },
       )
-
-      const orderQuery = await payload.find({
-        collection: 'orders',
-        where: { payToken: { equals: createdRes.payToken } },
-        overrideAccess: true,
-      })
-      const order = orderQuery.docs[0]
-      track('orders', order)
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
 
       // Lần 1: Owner xác nhận
-      const confirmed1 = (await confirmManualPayment(order.id, owner, {
+      const confirmed1 = (await confirmManualPayment(order!.id, owner, {
         payload,
         emailSender: mockEmailSender,
       })) as { id: number; paymentStatus: string; paidAt: string; deliveryStatus: string }
@@ -374,21 +545,19 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       expect(confirmed1.paidAt).toBeDefined()
       const firstPaidAt = confirmed1.paidAt
 
-      // Email đã gửi 1 lần chứa link đặt lịch
       expect(mockEmailSender.sent.length).toBe(1)
       expect(mockEmailSender.sent[0].to).toBe(customerEmail)
       expect(mockEmailSender.sent[0].subject).toContain('Xác nhận thanh toán')
 
-      // Kiểm tra order sau lần 1
       const orderAfter1 = await payload.findByID({
         collection: 'orders',
-        id: order.id,
+        id: order!.id,
         overrideAccess: true,
       })
       expect(orderAfter1.deliveryStatus).toBe('email_sent')
 
       // Lần 2: Owner xác nhận lại (trùng lặp)
-      const confirmed2 = (await confirmManualPayment(order.id, owner, {
+      const confirmed2 = (await confirmManualPayment(order!.id, owner, {
         payload,
         emailSender: mockEmailSender,
       })) as { id: number; paymentStatus: string; paidAt: string }
@@ -401,7 +570,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       // Kiểm tra auditLogs: 2 dòng log (dòng 2 ghi "đã xác nhận trước đó")
       const auditQuery = await payload.find({
         collection: 'auditLogs',
-        where: { target: { equals: `orders:${order.id}` } },
+        where: { target: { equals: `orders:${order!.id}` } },
         sort: 'createdAt',
         overrideAccess: true,
       })
@@ -411,13 +580,114 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       expect(auditQuery.docs[1].action).toBe('confirm_manual_payment_duplicate')
       const afterJson = auditQuery.docs[1].after as Record<string, unknown>
       expect(afterJson.note).toBe('đã xác nhận trước đó')
+    })
 
-      for (const log of auditQuery.docs) track('auditLogs', log)
+    it('gọi confirmManualPayment 2 lần đồng thời (Promise.all) -> đúng 1 email được gửi (chống race condition)', async () => {
+      mockEmailSender.sent = []
+      const customerEmail = `race-confirm-${randomUUID()}@example.test`
+
+      const createdRes = await createExperienceOrder(
+        {
+          productId: experienceProductId,
+          name: 'Khách Race Condition',
+          email: customerEmail,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
+
+      // Gọi 2 lần đồng thời bằng Promise.all
+      const [res1, res2] = await Promise.all([
+        confirmManualPayment(order!.id, owner, { payload, emailSender: mockEmailSender }),
+        confirmManualPayment(order!.id, owner, { payload, emailSender: mockEmailSender }),
+      ])
+
+      expect(res1).toBeDefined()
+      expect(res2).toBeDefined()
+
+      // REVIEW-REQUIRED: Race-safe conditional update bảo đảm đúng 1 email được gửi đi
+      expect(mockEmailSender.sent.length).toBe(1)
+      expect(mockEmailSender.sent[0].to).toBe(customerEmail)
+
+      const orderAfter = await payload.findByID({
+        collection: 'orders',
+        id: order!.id,
+        overrideAccess: true,
+      })
+      expect(orderAfter.paymentStatus).toBe('paid')
+
+      // Kiểm tra auditLogs: 1 confirm_manual_payment và 1 duplicate
+      const auditQuery = await payload.find({
+        collection: 'auditLogs',
+        where: { target: { equals: `orders:${order!.id}` } },
+        sort: 'createdAt',
+        overrideAccess: true,
+      })
+      expect(auditQuery.totalDocs).toBe(2)
+      expect(auditQuery.docs[0].action).toBe('confirm_manual_payment')
+      expect(auditQuery.docs[1].action).toBe('confirm_manual_payment_duplicate')
+    })
+
+    it('owner PATCH qua Local API không có context -> trạng thái không đổi; qua confirmManualPayment -> đổi', async () => {
+      const customerEmail = `lock-status-${randomUUID()}@example.test`
+      const createdRes = await createExperienceOrder(
+        {
+          productId: experienceProductId,
+          name: 'Khách Thử Đổi Trạng Thái',
+          email: customerEmail,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
+      expect(order!.paymentStatus).toBe('pending')
+
+      // Owner cố tình sửa trực tiếp paymentStatus thành 'paid' qua Local API (không truyền context paymentAction)
+      const updatedWithoutContext = await payload.update({
+        collection: 'orders',
+        id: order!.id,
+        data: {
+          paymentStatus: 'paid',
+        },
+        user: owner,
+        overrideAccess: false,
+      })
+
+      // REVIEW-REQUIRED: Trạng thái không đổi vì thiếu context.paymentAction
+      expect(updatedWithoutContext.paymentStatus).toBe('pending')
+
+      const orderInDb = await payload.findByID({
+        collection: 'orders',
+        id: order!.id,
+        overrideAccess: true,
+      })
+      expect(orderInDb.paymentStatus).toBe('pending')
+
+      // Gọi qua hàm nghiệp vụ confirmManualPayment (có context paymentAction = true)
+      const confirmed = (await confirmManualPayment(order!.id, owner, {
+        payload,
+        emailSender: mockEmailSender,
+      })) as { paymentStatus: string }
+
+      expect(confirmed.paymentStatus).toBe('paid')
+
+      const finalOrderInDb = await payload.findByID({
+        collection: 'orders',
+        id: order!.id,
+        overrideAccess: true,
+      })
+      expect(finalOrderInDb.paymentStatus).toBe('paid')
     })
 
     it('không thể hủy đơn hàng đã thanh toán (tuân thủ chính sách không hoàn tiền AGENTS 14)', async () => {
       const createdRes = await createExperienceOrder(
         {
+          productId: experienceProductId,
           name: 'Khách Đã Trả Tiền',
           email: `no-refund-${randomUUID()}@example.test`,
           termsAccepted: true,
@@ -425,19 +695,13 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         { ip: nextIp() },
         { payload, emailSender: mockEmailSender },
       )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
 
-      const orderQuery = await payload.find({
-        collection: 'orders',
-        where: { payToken: { equals: createdRes.payToken } },
-        overrideAccess: true,
-      })
-      const order = orderQuery.docs[0]
-      track('orders', order)
-
-      await confirmManualPayment(order.id, owner, { payload, emailSender: mockEmailSender })
+      await confirmManualPayment(order!.id, owner, { payload, emailSender: mockEmailSender })
 
       // REVIEW-REQUIRED: Chặn không cho hủy đơn đã paid (không có hoàn tiền)
-      await expect(cancelOrder(order.id, owner, 'Khách đòi hủy', { payload })).rejects.toThrow(
+      await expect(cancelOrder(order!.id, owner, 'Khách đòi hủy', { payload })).rejects.toThrow(
         viStrings.payment.errors.cannotCancelPaidOrder,
       )
     })
@@ -445,6 +709,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
     it('owner hủy đơn pending hợp lệ -> trạng thái chuyển sang cancelled và ghi audit log', async () => {
       const createdRes = await createExperienceOrder(
         {
+          productId: experienceProductId,
           name: 'Khách Muốn Hủy',
           email: `cancel-pending-${randomUUID()}@example.test`,
           termsAccepted: true,
@@ -452,35 +717,27 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         { ip: nextIp() },
         { payload, emailSender: mockEmailSender },
       )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
 
-      const orderQuery = await payload.find({
-        collection: 'orders',
-        where: { payToken: { equals: createdRes.payToken } },
-        overrideAccess: true,
-      })
-      const order = orderQuery.docs[0]
-      track('orders', order)
-
-      const cancelled = (await cancelOrder(order.id, owner, 'Khách đổi ý', {
+      const cancelled = (await cancelOrder(order!.id, owner, 'Khách đổi ý', {
         payload,
       })) as { paymentStatus: string; notes?: string }
 
       expect(cancelled.paymentStatus).toBe('cancelled')
       expect(cancelled.notes).toContain('Lý do hủy: Khách đổi ý')
 
-      // Kiểm tra audit log
       const auditQuery = await payload.find({
         collection: 'auditLogs',
         where: {
           and: [
-            { target: { equals: `orders:${order.id}` } },
+            { target: { equals: `orders:${order!.id}` } },
             { action: { equals: 'cancel_order' } },
           ],
         },
         overrideAccess: true,
       })
       expect(auditQuery.totalDocs).toBe(1)
-      track('auditLogs', auditQuery.docs[0])
     })
   })
 
@@ -490,52 +747,45 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       const customerEmailMarketing = `marketing-consent-${randomUUID()}@example.test`
 
       // 1. Tạo customer có consentMarketing = true
-      const customerDoc = track(
-        'customers',
-        await payload.create({
-          collection: 'customers',
-          data: {
-            email: customerEmailMarketing,
-            name: 'Khách Đồng Ý Nhận Tin',
-            consentMarketing: true,
-          },
-        }),
-      )
+      const customerDoc = await payload.create({
+        collection: 'customers',
+        data: {
+          email: customerEmailMarketing,
+          name: 'Khách Đồng Ý Nhận Tin',
+          consentMarketing: true,
+        },
+      })
+      createdCustomers.push(customerDoc.id)
 
-      // 2. Tạo đơn A: mới tạo (1 giờ trước) -> không bị expire
-      const orderA = track(
-        'orders',
-        await payload.create({
-          collection: 'orders',
-          data: {
-            customer: customerDoc.id,
-            items: [{ product: experienceProductId, price: 149000 }],
-            subtotal: 149000,
-            total: 149000,
-            paymentStatus: 'pending',
-            termsAcceptedAt: new Date().toISOString(),
-          },
-        }),
-      )
+      // 2. Tạo đơn A: mới tạo -> không bị expire
+      const orderA = await payload.create({
+        collection: 'orders',
+        data: {
+          customer: customerDoc.id,
+          items: [{ product: experienceProductId, price: 149000 }],
+          subtotal: 149000,
+          total: 149000,
+          paymentStatus: 'pending',
+          termsAcceptedAt: new Date().toISOString(),
+        },
+      })
+      createdOrders.push(orderA.id)
 
-      // 3. Tạo đơn B: tạo cách đây 25 giờ (bằng raw SQL hoặc cập nhật createdAt trong DB)
-      // Trong Payload postgres adapter, cập nhật createdAt qua db query
+      // 3. Tạo đơn B: tạo cách đây 25 giờ -> bị expire
       const twentyFiveHoursAgo = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString()
-      const orderB = track(
-        'orders',
-        await payload.create({
-          collection: 'orders',
-          data: {
-            customer: customerDoc.id,
-            items: [{ product: experienceProductId, price: 149000 }],
-            subtotal: 149000,
-            total: 149000,
-            paymentStatus: 'pending',
-            termsAcceptedAt: twentyFiveHoursAgo,
-            createdAt: twentyFiveHoursAgo,
-          },
-        }),
-      )
+      const orderB = await payload.create({
+        collection: 'orders',
+        data: {
+          customer: customerDoc.id,
+          items: [{ product: experienceProductId, price: 149000 }],
+          subtotal: 149000,
+          total: 149000,
+          paymentStatus: 'pending',
+          termsAcceptedAt: twentyFiveHoursAgo,
+          createdAt: twentyFiveHoursAgo,
+        },
+      })
+      createdOrders.push(orderB.id)
 
       // Chạy expirePendingOrders
       const result = await expirePendingOrders(new Date(), {
