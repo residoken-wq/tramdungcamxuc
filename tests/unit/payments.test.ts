@@ -351,6 +351,36 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       ).rejects.toThrow(viStrings.payment.errors.productNotFound)
     })
 
+    it('sản phẩm có saleStatus = consult / hidden / coming_soon -> từ chối với lỗi tiếng Việt', async () => {
+      const consultProduct = await payload.create({
+        collection: 'products',
+        data: {
+          name: 'Phiên tư vấn chuyên sâu',
+          slug: `trial-consult-${randomUUID()}`,
+          web: 'site',
+          type: 'coaching_trial',
+          _status: 'published',
+          price: 250000,
+          saleStatus: 'consult',
+          isSample: false,
+        },
+      })
+      createdProducts.push(consultProduct.id)
+
+      await expect(
+        createExperienceOrder(
+          {
+            productId: consultProduct.id,
+            name: 'Khách Consult',
+            email: `consult-${randomUUID()}@example.test`,
+            termsAccepted: true,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        ),
+      ).rejects.toThrow(viStrings.payment.errors.productNotForSale)
+    })
+
     it('thiếu ô đồng ý điều khoản -> lỗi tiếng Việt, không tạo đơn', async () => {
       const email = `no-terms-${randomUUID()}@example.test`
 
@@ -607,6 +637,11 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
 
       expect(res1).toBeDefined()
       expect(res2).toBeDefined()
+      const paidOrder1 = res1 as { paidAt?: string }
+      const paidOrder2 = res2 as { paidAt?: string }
+      expect(paidOrder1.paidAt).toBeTruthy()
+      expect(paidOrder2.paidAt).toBeTruthy()
+      expect(paidOrder1.paidAt).toBe(paidOrder2.paidAt)
 
       // REVIEW-REQUIRED: Race-safe conditional update bảo đảm đúng 1 email được gửi đi
       expect(mockEmailSender.sent.length).toBe(1)
@@ -682,6 +717,42 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         overrideAccess: true,
       })
       expect(finalOrderInDb.paymentStatus).toBe('paid')
+    })
+
+    it('tạo đơn qua REST/API không có context paymentAction -> deliveryStatus bị ép về none và payToken luôn sinh ngẫu nhiên', async () => {
+      const customerDoc = await payload.create({
+        collection: 'customers',
+        data: {
+          email: `rest-lock-${randomUUID()}@example.test`,
+          name: 'Khách REST Lock',
+        },
+      })
+      createdCustomers.push(customerDoc.id)
+
+      // Cố tình gửi deliveryStatus = 'access_granted' và payToken tự đặt
+      const customPayToken = 'predictable-client-pay-token-123'
+      const createdOrder = await payload.create({
+        collection: 'orders',
+        data: {
+          customer: customerDoc.id,
+          items: [{ product: experienceProductId, price: 149000 }],
+          subtotal: 149000,
+          total: 149000,
+          paymentStatus: 'pending',
+          deliveryStatus: 'access_granted',
+          payToken: customPayToken,
+          termsAcceptedAt: new Date().toISOString(),
+        },
+        user: editor,
+        overrideAccess: false,
+      })
+      createdOrders.push(createdOrder.id)
+
+      // REVIEW-REQUIRED: deliveryStatus bị ép về 'none', payToken bị ghi đè thành token ngẫu nhiên
+      expect(createdOrder.deliveryStatus).toBe('none')
+      expect(createdOrder.payToken).not.toBe(customPayToken)
+      expect(createdOrder.payToken).toBeDefined()
+      expect(createdOrder.payToken!.length).toBeGreaterThan(10)
     })
 
     it('không thể hủy đơn hàng đã thanh toán (tuân thủ chính sách không hoàn tiền AGENTS 14)', async () => {
@@ -787,6 +858,23 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       })
       createdOrders.push(orderB.id)
 
+      // 4. Tạo đơn C: đã thanh toán (paid) cách đây 25 giờ -> KHÔNG bị expire
+      const orderC = await payload.create({
+        collection: 'orders',
+        data: {
+          customer: customerDoc.id,
+          items: [{ product: experienceProductId, price: 149000 }],
+          subtotal: 149000,
+          total: 149000,
+          paymentStatus: 'paid',
+          paidAt: twentyFiveHoursAgo,
+          termsAcceptedAt: twentyFiveHoursAgo,
+          createdAt: twentyFiveHoursAgo,
+        },
+        context: { paymentAction: true },
+      })
+      createdOrders.push(orderC.id)
+
       // Chạy expirePendingOrders
       const result = await expirePendingOrders(new Date(), {
         payload,
@@ -795,7 +883,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
 
       expect(result.expiredCount).toBeGreaterThanOrEqual(1)
 
-      // Kiểm tra đơn A: vẫn pending
+      // Kiểm tra đơn A: vẫn pending (chưa đủ 24h)
       const checkA = await payload.findByID({
         collection: 'orders',
         id: orderA.id,
@@ -803,13 +891,21 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       })
       expect(checkA.paymentStatus).toBe('pending')
 
-      // Kiểm tra đơn B: đã thành failed
+      // Kiểm tra đơn B: đã thành failed (pending và > 24h)
       const checkB = await payload.findByID({
         collection: 'orders',
         id: orderB.id,
         overrideAccess: true,
       })
       expect(checkB.paymentStatus).toBe('failed')
+
+      // Kiểm tra đơn C: vẫn giữ nguyên trạng thái paid (dù > 24h)
+      const checkC = await payload.findByID({
+        collection: 'orders',
+        id: orderC.id,
+        overrideAccess: true,
+      })
+      expect(checkC.paymentStatus).toBe('paid')
 
       // Đã gửi email nhắc hẹn vì khách có consentMarketing
       const reminderEmail = mockEmailSender.sent.find(

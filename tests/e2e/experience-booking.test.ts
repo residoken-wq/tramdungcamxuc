@@ -87,8 +87,8 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
 
       // 3. Khách mở trang đặt phiên
       await guest.goto(`/dat-phien-trai-nghiem?san-pham=${productId}`)
-      await expect(guest.getByText(productName)).toBeVisible()
-      await expect(guest.getByText('149.000đ')).toBeVisible()
+      await expect(guest.getByRole('heading', { name: productName })).toBeVisible()
+      await expect(guest.locator('span.text-bright-magenta', { hasText: '149.000đ' })).toBeVisible()
 
       // Điền thông tin đăng ký
       await guest.getByLabel(/Họ và tên/).fill('Trần Hoàng An')
@@ -112,14 +112,21 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
       // Chờ chuyển hướng tới trang đơn hàng công khai /thanh-toan/don/[token]
       await expect(guest).toHaveURL(/\/thanh-toan\/don\/[a-zA-Z0-9_-]+/, { timeout: 30000 })
 
-      // Kiểm tra các thành phần trên trang đơn
-      await expect(guest.getByText('Thông tin chuyển khoản thanh toán')).toBeVisible()
-      await expect(guest.getByText('149.000đ')).toBeVisible()
-      await expect(guest.getByText('0023457923442')).toBeVisible()
-      await expect(guest.getByText('LUONG THI MAI HOA')).toBeVisible()
+      // Kiểm tra các thành phần trên trang đơn bằng heading và scoped transfer card
+      await expect(
+        guest.getByRole('heading', { name: /Thông tin chuyển khoản thanh toán/i }),
+      ).toBeVisible()
+      const transferCard = guest
+        .getByRole('heading', { name: /Chi tiết chuyển khoản thủ công/i })
+        .locator('..')
+      await expect(transferCard.getByText('149.000đ')).toBeVisible()
+      await expect(transferCard.getByText('0023457923442')).toBeVisible()
+      await expect(transferCard.getByText('LUONG THI MAI HOA')).toBeVisible()
 
-      // Kiểm tra có mã SVG VietQR
-      await expect(guest.locator('svg').first()).toBeVisible()
+      // Kiểm tra có mã SVG VietQR qua data-testid="vietqr"
+      const vietQrEl = guest.getByTestId('vietqr')
+      await expect(vietQrEl).toBeVisible()
+      await expect(vietQrEl.locator('svg')).toBeVisible()
 
       // Lấy mã paymentRef từ trang
       const paymentRefEl = guest.locator('.font-mono.text-bright-magenta')
@@ -159,6 +166,9 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
       // 6. Khách tải lại trang đơn công khai: trạng thái chuyển sang "Đã thanh toán thành công"
       await guest.reload()
       await expect(guest.getByText(/Đã thanh toán thành công/i)).toBeVisible({ timeout: 15000 })
+      await expect(
+        guest.getByRole('heading', { name: /Cảm ơn bạn! Đơn hàng đã được xác nhận/i }),
+      ).toBeVisible()
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
       await visitor.close()
