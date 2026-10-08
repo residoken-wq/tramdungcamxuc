@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    privateFiles: PrivateFile;
     products: Product;
     services: Service;
     programs: Program;
@@ -106,6 +107,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    privateFiles: PrivateFilesSelect<false> | PrivateFilesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     programs: ProgramsSelect<false> | ProgramsSelect<true>;
@@ -221,6 +223,33 @@ export interface Media {
    * Mô tả nội dung để người dùng trình đọc màn hình hiểu được.
    */
   alt: string;
+  isSample?: boolean | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Tải tài liệu riêng tư (PDF, ZIP, EPUB). Chỉ giao qua liên kết ký có hạn.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privateFiles".
+ */
+export interface PrivateFile {
+  id: number;
+  /**
+   * Mô tả ngắn gọn nội dung tài liệu.
+   */
+  description?: string | null;
   isSample?: boolean | null;
   prefix?: string | null;
   _objectKey?: string | null;
@@ -355,7 +384,7 @@ export interface Product {
         /**
          * Chọn tài liệu (PDF…)
          */
-        file?: (number | null) | Media;
+        file?: (number | null) | PrivateFile;
         id?: string | null;
       }[]
     | null;
@@ -1753,6 +1782,10 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'privateFiles';
+        value: number | PrivateFile;
+      } | null)
+    | ({
         relationTo: 'products';
         value: number | Product;
       } | null)
@@ -1936,6 +1969,27 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  isSample?: T;
+  prefix?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privateFiles_select".
+ */
+export interface PrivateFilesSelect<T extends boolean = true> {
+  description?: T;
   isSample?: T;
   prefix?: T;
   _objectKey?: T;

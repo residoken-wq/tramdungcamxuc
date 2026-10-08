@@ -89,12 +89,15 @@ export const vi = {
       interestTagsMaxCount: 'Tối đa 10 thẻ quan tâm',
       interestTagMaxLength: 'Mỗi thẻ quan tâm không được vượt quá 50 ký tự',
       tokenMax: 'Mã xác thực vượt quá độ dài cho phép',
+      resourceSlugRequired: 'Thiếu thông tin tài nguyên cần tải',
     },
     success: {
       lead: 'Cảm ơn bạn. Chúng tôi đã nhận được thông tin và sẽ gửi tài nguyên sớm nhất.',
       coaching:
         'Cảm ơn bạn đã gửi thông tin. Trạm Dừng Cảm Xúc sẽ liên hệ với bạn trong vòng 24–48 giờ làm việc.',
       b2b: 'Cảm ơn quý doanh nghiệp đã gửi yêu cầu. Đội ngũ Trạm Dừng Cảm Xúc sẽ liên hệ tư vấn sớm nhất.',
+      resource:
+        'Cảm ơn bạn. Chúng tôi đã gửi liên kết tải tài nguyên vào email của bạn. Vui lòng kiểm tra hộp thư (kể cả mục thư rác).',
     },
   },
   emotionPicker: {
@@ -204,6 +207,32 @@ export const vi = {
     },
     readArticle: 'Đọc bài viết',
     watchVideo: 'Xem video',
+  },
+  resource: {
+    formTitle: 'Nhận tài liệu miễn phí qua email',
+    formSubtitle:
+      'Điền thông tin bên dưới để nhận liên kết tải tài liệu trực tiếp vào hòm thư của bạn.',
+    nameLabel: 'Họ và tên của bạn',
+    namePlaceholder: 'Ví dụ: Nguyễn Minh Anh',
+    emailLabel: 'Địa chỉ email nhận tài liệu',
+    emailPlaceholder: 'email@example.com',
+    submit: 'Nhận tài liệu qua email',
+    submitting: 'Đang gửi tài liệu...',
+    preparing: 'Tài liệu đang được chuẩn bị',
+    preparingDesc:
+      'Nội dung này hiện đang được hoàn thiện. Vui lòng quay lại sau hoặc theo dõi các kênh thông tin của Trạm.',
+    includesTitle: 'Tài liệu bao gồm:',
+    privacyConsent: 'Tôi đồng ý nhận thông tin và tài nguyên từ Trạm Dừng Cảm Xúc theo',
+    privacyPolicy: 'Chính sách bảo mật',
+    privacyConsentEnd: '.',
+    backToLibrary: 'Quay lại Thư viện',
+    notFoundTitle: 'Tài nguyên không tìm thấy',
+    notFoundDesc: 'Tài nguyên bạn đang tìm kiếm không tồn tại hoặc đã ngừng cung cấp.',
+    downloadExpired:
+      'Liên kết tải tài nguyên đã hết hạn (quá 7 ngày). Vui lòng đăng ký lại để nhận liên kết mới.',
+    downloadInvalid: 'Liên kết tải tài nguyên không hợp lệ hoặc đã bị thay đổi.',
+    downloadNotFound: 'Tài liệu không còn khả dụng trên hệ thống.',
+    noLongerFree: 'Tài nguyên này không còn được tặng miễn phí.',
   },
   notFound: {
     title: 'Không tìm thấy trang',

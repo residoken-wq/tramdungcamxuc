@@ -134,7 +134,7 @@ APP_IMAGE=
 APP_TAG=
 ```
 
-`STYLEGUIDE_PUBLIC=true` cho khách xem `/styleguide`; để trống nếu không cần. Compose tự đặt `DATABASE_URI` tới Postgres nội bộ, không dùng URL DB local trong `.env`. Bản compose demo lưu media trên volume local, không chuyển tiếp cấu hình S3. `SITE_NOINDEX` và `STYLEGUIDE_PUBLIC` được đọc lúc chạy; đổi chúng rồi chạy `up -d` để tạo lại app, không chỉ `restart`.
+`STYLEGUIDE_PUBLIC=true` cho khách xem `/styleguide`; để trống nếu không cần. Compose tự đặt `DATABASE_URI` tới Postgres nội bộ, không dùng URL DB local trong `.env`. Bản compose demo lưu media và tài liệu riêng tư trên volume local (`media:/app/media` và `private:/app/private`), không chuyển tiếp cấu hình S3. Volume `private` bảo vệ các tập tin PDF/ZIP/EPUB giao qua email khỏi bị mất khi cập nhật image app mới. `SITE_NOINDEX` và `STYLEGUIDE_PUBLIC` được đọc lúc chạy; đổi chúng rồi chạy `up -d` để tạo lại app, không chỉ `restart`.
 
 #### Xác thực GitHub Container Registry (GHCR)
 

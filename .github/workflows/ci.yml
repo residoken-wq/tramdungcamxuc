@@ -68,12 +68,18 @@ jobs:
       - name: Run Database Migrations
         run: pnpm migrate
 
+      # Cloudflare Turnstile official test keys (always pass). Build + e2e only: unit tests
+      # rely on the "no key outside production" bypass and must not call Cloudflare.
       - name: Build Next.js and Payload
+        env:
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
         run: pnpm build
 
       - name: Run E2E Smoke Tests (Playwright)
         env:
           STYLEGUIDE_PUBLIC: 'true'
+          TURNSTILE_SECRET_KEY: 1x0000000000000000000000000000000AA
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
         run: pnpm test:e2e
 
       - name: Upload Playwright Report

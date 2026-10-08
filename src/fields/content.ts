@@ -92,13 +92,18 @@ export const image = (name: string, label: string): Field => ({
   relationTo: 'media',
   admin: { description: 'Chọn ảnh có mô tả để người dùng dễ tiếp cận.' },
 })
-export const file = (name: string, label: string): Field => ({
+export const file = (
+  name: string,
+  label: string,
+  relationTo: 'media' | 'privateFiles' = 'media',
+): Field => ({
   name,
   label,
   type: 'upload',
-  relationTo: 'media',
+  relationTo,
   admin: { description: 'Chọn tài liệu (PDF…)' },
 })
+export const privateFile = (name: string, label: string): Field => file(name, label, 'privateFiles')
 export const lines = (name: string, label: string): Field => ({
   name,
   label,

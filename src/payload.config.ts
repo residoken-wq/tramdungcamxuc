@@ -9,6 +9,7 @@ import { vi } from '@payloadcms/translations/languages/vi'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { PrivateFiles } from './collections/PrivateFiles'
 import { migrations } from './migrations'
 import { Products } from './collections/Products'
 import { Services } from './collections/Services'
@@ -62,6 +63,7 @@ export default buildConfig({
   collections: [
     Users,
     Media,
+    PrivateFiles,
     Products,
     Services,
     Programs,
@@ -112,7 +114,12 @@ export default buildConfig({
     s3Storage({
       enabled: storageEnabled,
       alwaysInsertFields: true,
-      collections: { media: true },
+      collections: {
+        media: true,
+        privateFiles: {
+          prefix: 'private',
+        },
+      },
       bucket: S3_BUCKET || '',
       config: {
         endpoint: S3_ENDPOINT,
