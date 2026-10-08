@@ -305,8 +305,6 @@ const header = (line1: string, line2: string, emotion: string, as = 'h2') =>
     align: 'center',
     as,
   })
-const text = (content: string, bgColor = 'warm-ivory') =>
-  block('RichText', { content, bgColor, padding: 'md' })
 const cta = (label: string, href: string, variant = 'primary', size = 'md') =>
   block('CTAButton', {
     version: 2,
