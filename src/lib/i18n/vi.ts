@@ -187,7 +187,12 @@ export const vi = {
     redo: 'Làm lại',
     duplicateBlock: 'Nhân bản',
     deleteBlock: 'Xóa',
+    packageComparison: {
+      defaultNote: '[MẪU] Các gói đồng hành được thiết kế theo lộ trình cá nhân hóa.',
+      paymentPolicyLabel: 'Xem Chính sách giá & thanh toán',
+    },
   },
+
   legal: {
     lastUpdated: 'Cập nhật ngày',
     updatingContent: 'Nội dung đang được cập nhật.',

@@ -45,3 +45,6 @@ next-env.d.ts
 .mcp.json
 .playwright-mcp/
 
+
+# Agent working-time logs (scripts/task-time.mjs)
+.task-time/

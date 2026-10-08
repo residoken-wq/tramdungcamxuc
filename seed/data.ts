@@ -376,11 +376,30 @@ export const pages = [
         `${S} Thử trước bằng một phiên trải nghiệm`,
         'h1',
       ),
-      text(
-        `${S} Bảng so sánh 3 gói sẽ có ở T1-11 (khối PackageComparison). Giá lấy từ CMS.`,
-        'soft-pink',
-      ),
-      cta('Đặt phiên trải nghiệm', '/coaching/growth-mirror'),
+      block('PackageComparison', {
+        version: 2,
+        packages: [
+          { packageSlug: 'growth-mirror-clear' },
+          { packageSlug: 'growth-mirror-build' },
+          { packageSlug: 'growth-mirror-shine' },
+        ],
+        showTotalValue: true,
+        showDiscountPercent: true,
+        note: `${S} Chi tiết chính sách thanh toán và quyền lợi xem bên dưới.`,
+        showPaymentPolicyLink: true,
+        bgColor: 'warm-ivory',
+        padding: 'lg',
+      }),
+      block('BookingCTA', {
+        version: 1,
+        productId: 'growth-mirror-phien-trai-nghiem',
+        title: `${S} Bắt đầu bằng một phiên trải nghiệm`,
+        // Price is rendered from the product by the block; never write it into sample copy.
+        description: `${S} Phiên trải nghiệm giúp bạn hiểu cách thức đồng hành trước khi chọn gói.`,
+        buttonLabel: 'Đặt phiên trải nghiệm',
+        bgColor: 'soft-pink',
+        padding: 'lg',
+      }),
     ],
   },
   {

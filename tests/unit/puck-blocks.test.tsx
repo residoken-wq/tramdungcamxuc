@@ -19,7 +19,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       expect(blockConfig).toBeDefined()
       expect(blockConfig.defaultProps).toBeDefined()
       expect((blockConfig.defaultProps as { version?: number })?.version).toBe(
-        blockKey === 'CTAButton' ? 2 : 1,
+        blockKey === 'CTAButton' || blockKey === 'PackageComparison' ? 2 : 1,
       )
 
       const markup = renderToStaticMarkup(
