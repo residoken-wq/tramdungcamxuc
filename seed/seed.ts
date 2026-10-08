@@ -112,9 +112,49 @@ export async function seed(payload: Payload): Promise<SeedReport> {
 
   for (const { slug, ...page } of data.legalPages) await upsert('legalPages', 'slug', slug, page)
 
+  function resolveBlockProductIds(blockItem: Record<string, unknown>): Record<string, unknown> {
+    const item = JSON.parse(JSON.stringify(blockItem))
+    const props = item.props as Record<string, unknown> | undefined
+    if (!props) return item
+
+    if (item.type === 'PackageComparison' && Array.isArray(props.packages)) {
+      props.packages = props.packages.map((pkg: Record<string, unknown>) => {
+        const rawSlug = (pkg.packageSlug || pkg.packageId) as string | number | undefined
+        if (typeof rawSlug === 'string' && productIds.has(rawSlug)) {
+          const mappedId = productIds.get(rawSlug)
+          const { packageSlug: _slug, ...rest } = pkg
+          return {
+            ...rest,
+            packageId: mappedId,
+          }
+        }
+        return pkg
+      })
+    }
+
+    if (typeof props.productId === 'string' && productIds.has(props.productId)) {
+      props.productId = productIds.get(props.productId)
+    }
+    if (typeof props.productSlug === 'string' && productIds.has(props.productSlug)) {
+      props.productId = productIds.get(props.productSlug)
+      delete props.productSlug
+    }
+
+    for (const [key, val] of Object.entries(props)) {
+      if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object' && val[0]?.type) {
+        props[key] = val.map((child) => resolveBlockProductIds(child as Record<string, unknown>))
+      }
+    }
+
+    return item
+  }
+
   const pageIds = new Map<string, number>()
   for (const { slug, title, blocks } of data.pages) {
-    const puckData = { content: blocks, root: { props: { title } }, zones: {} }
+    const resolvedBlocks = blocks.map((b) =>
+      resolveBlockProductIds(b as unknown as Record<string, unknown>),
+    )
+    const puckData = { content: resolvedBlocks, root: { props: { title } }, zones: {} }
     pageIds.set(slug, (await upsert('pages', 'slug', slug, { title, puckData }))!)
   }
 
