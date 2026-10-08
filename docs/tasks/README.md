@@ -138,9 +138,9 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-15a | SEO, security headers (CSP report-only), font tự host     |          | T1-05               | Laptop | Xong – PR #33 ([review](reviews/T1-15a.md)) |
 | T1-15b | Analytics Plausible (Q10 đã chốt), CSP chặn thật, domain |          | T1-15a              | Laptop | Xong – PR #39 ([review](reviews/T1-15b.md)) |
 | T1-16 | Dựng các trang seed từ mẫu theo mục 8.1                     | [HANA]   | T1-04, T1-10, T1-11 | Local | Xong – PR #41 ([review](reviews/T1-16.md)) |
-| T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Sẵn sàng – Antigravity@Local (prompt `prompts/T1-17a.md`; Planning chạy script chụp ảnh) |
+| T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0) | [HANA] | T1-16          | Local | Xong – PR #43 ([review](reviews/T1-17a.md)); 25 ảnh do Planning chụp; nội dung Hana: để chỗ trống trong CMS, nhập tay hoặc Planning import |
 | T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                   | [HANA]   | tất cả              | Planning | Chưa mở |
-| T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria) |          | T1-16               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-17c.md`) |
+| T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria) |          | T1-16               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-17c.md`; thêm việc 4: lỗi admin tiếng Việt) |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 
