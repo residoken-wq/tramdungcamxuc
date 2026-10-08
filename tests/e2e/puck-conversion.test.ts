@@ -111,7 +111,6 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
                   label: 'Mua Bộ Thẻ Trên Shopee',
                   source: 'product',
                   productId: String(productId),
-                  campaign: 'e2e_shopee_conversion',
                 },
               },
             ],
@@ -191,7 +190,7 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
       expect(shopeeHref).toBeTruthy()
       expect(shopeeHref).toContain('shopee.vn/bo-the-eq-buddy-tram-dung-cam-xuc-test')
       expect(shopeeHref).toContain('utm_source=tramdungcamxuc')
-      expect(shopeeHref).toContain('utm_campaign=e2e_shopee_conversion')
+      expect(shopeeHref).toContain(`utm_campaign=${pageSlug}`)
     } finally {
       if (leadId) {
         await page.request.delete(`/api/leads/${leadId}`).catch(() => {})

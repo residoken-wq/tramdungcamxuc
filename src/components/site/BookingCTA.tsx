@@ -15,6 +15,7 @@ export interface BookingCTAProps {
   bgColor?: string
   padding?: 'sm' | 'md' | 'lg'
   product?: PublicProduct | null
+  pageSlug?: string
   puck?: { isEditing?: boolean }
 }
 
@@ -25,6 +26,7 @@ export function BookingCTA({
   bgColor = 'warm-ivory',
   padding = 'md',
   product,
+  pageSlug,
 }: BookingCTAProps) {
   const paddingClasses = {
     sm: 'py-6 px-4',
@@ -41,6 +43,7 @@ export function BookingCTA({
     track('booking_clicked', {
       productId: product?.id,
       slug: product?.slug,
+      pageSlug,
     })
   }
 

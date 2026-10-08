@@ -18,10 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const result = await payload.find({
       collection: 'pages',
       where: {
-        and: [
-          { slug: { equals: '/' } },
-          { _status: { equals: 'published' } },
-        ],
+        and: [{ slug: { equals: '/' } }, { _status: { equals: 'published' } }],
       },
       limit: 1,
       draft: false,
@@ -37,8 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
       return {
         title: doc.seo.title || 'Trạm Dừng Cảm Xúc',
         description:
-          doc.seo.description ||
-          'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
+          doc.seo.description || 'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
         openGraph: ogMedia?.url ? { images: [ogMedia.url] } : undefined,
       }
     }
@@ -61,10 +57,7 @@ export default async function HomePage() {
     const result = await payload.find({
       collection: 'pages',
       where: {
-        and: [
-          { slug: { equals: '/' } },
-          { _status: { equals: 'published' } },
-        ],
+        and: [{ slug: { equals: '/' } }, { _status: { equals: 'published' } }],
       },
       limit: 1,
       draft: false,
@@ -75,7 +68,7 @@ export default async function HomePage() {
   }
 
   if (pageDoc?.puckData && (pageDoc.puckData as Data).content?.length > 0) {
-    const resolvedData = await resolveServerData(pageDoc.puckData as Data)
+    const resolvedData = await resolveServerData(pageDoc.puckData as Data, { pageSlug: '/' })
     return <Render config={puckConfig} data={resolvedData} />
   }
 

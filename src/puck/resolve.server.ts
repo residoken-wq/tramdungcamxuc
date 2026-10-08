@@ -39,6 +39,23 @@ const PUBLIC_TESTIMONIAL_SELECT = {
   photo: true,
 } as const
 
+export interface ResolveServerDataOptions {
+  pageSlug?: string
+}
+
+/**
+ * Chuẩn hóa slug trang cho UTM campaign và nguồn lead:
+ * - '/' hoặc rỗng -> 'trang-chu'
+ * - Cắt bỏ dấu '/' ở đầu/cuối
+ * - Thay thế '/' bên trong bằng '-' (ví dụ: 'coaching/growth-mirror' -> 'coaching-growth-mirror')
+ */
+export function normalizePageSlug(slug?: string): string {
+  if (!slug) return 'trang-chu'
+  const trimmed = slug.trim().replace(/^\/+|\/+$/g, '')
+  if (!trimmed) return 'trang-chu'
+  return trimmed.replace(/\//g, '-')
+}
+
 /**
  * Server-only helper to resolve server-side data (media URL/alt from Local API,
  * published products and consent-approved published testimonials by ID without storing in DB)
@@ -46,7 +63,10 @@ const PUBLIC_TESTIMONIAL_SELECT = {
  * This ensures src/puck/config.tsx remains 100% pure isomorphic and prevents
  * Next.js server-only modules from leaking into client bundles.
  */
-export async function resolveServerData(data: Data): Promise<Data> {
+export async function resolveServerData(
+  data: Data,
+  options?: ResolveServerDataOptions,
+): Promise<Data> {
   if (!data || !Array.isArray(data.content)) {
     return data
   }
@@ -56,6 +76,8 @@ export async function resolveServerData(data: Data): Promise<Data> {
 
   // Deep clone data to avoid mutating original
   const resolvedData: Data = JSON.parse(JSON.stringify(data))
+  const normalizedSlug =
+    options?.pageSlug !== undefined ? normalizePageSlug(options.pageSlug) : undefined
 
   // Phase 1: Collect media IDs, product IDs, testimonial IDs, and page IDs across all items (including nested inside Columns slots)
   const productIdsToFetch = new Set<string | number>()
@@ -572,6 +594,18 @@ export async function resolveServerData(data: Data): Promise<Data> {
         } catch {
           item.props._resolved = { items: [] }
         }
+      }
+    }
+
+    // Gắn slug trang đã chuẩn hóa vào props của các khối chuyển đổi (khóa tạm, không lưu DB)
+    if (normalizedSlug) {
+      if (
+        item.type === 'ShopeeButton' ||
+        item.type === 'B2BBriefForm' ||
+        item.type === 'LeadForm' ||
+        item.type === 'BookingCTA'
+      ) {
+        item.props.pageSlug = normalizedSlug
       }
     }
   })

@@ -8,7 +8,7 @@ vi.mock('server-only', () => ({}))
 import type { Data } from '@puckeditor/core'
 import type { Product, Page, Post } from '@/payload-types'
 import { puckConfig } from '@/puck/config'
-import { resolveServerData } from '@/puck/resolve.server'
+import { resolveServerData, normalizePageSlug } from '@/puck/resolve.server'
 import { BookingCTA } from '@/components/site/BookingCTA'
 import { ShopeeButton } from '@/components/site/ShopeeButton'
 import { ZaloButton } from '@/components/site/ZaloButton'
@@ -203,6 +203,17 @@ describe('Conversion Blocks Unit Tests (T1-03)', () => {
       expect(markup).toContain('utm_campaign=bo-the-eq')
       expect(markup).toContain('target="_blank"')
       expect(markup).toContain('rel="noopener noreferrer"')
+    })
+
+    it('defaults utm_campaign to "website" (never "shopee") when pageSlug is missing', () => {
+      const markup = renderToStaticMarkup(
+        <ShopeeButton mode="product" externalUrl="https://shopee.vn/product/123" />,
+      )
+
+      expect(markup).toContain('utm_source=tramdungcamxuc')
+      expect(markup).toContain('utm_medium=website')
+      expect(markup).toContain('utm_campaign=website')
+      expect(markup).not.toContain('utm_campaign=shopee')
     })
 
     it('hides cleanly on public page when URL is not configured', () => {
@@ -435,6 +446,89 @@ describe('Conversion Blocks Unit Tests (T1-03)', () => {
         } as never),
       )
       expect(markup).toContain('Mua ngay Shopee')
+    })
+  })
+
+  describe('normalizePageSlug (T1-03b)', () => {
+    it('normalizes "/" and empty string to "trang-chu"', () => {
+      expect(normalizePageSlug('/')).toBe('trang-chu')
+      expect(normalizePageSlug('')).toBe('trang-chu')
+      expect(normalizePageSlug('   ')).toBe('trang-chu')
+      expect(normalizePageSlug('///')).toBe('trang-chu')
+      expect(normalizePageSlug(undefined)).toBe('trang-chu')
+    })
+
+    it('replaces slashes with dashes and trims outer slashes', () => {
+      expect(normalizePageSlug('a/b')).toBe('a-b')
+      expect(normalizePageSlug('coaching/growth-mirror')).toBe('coaching-growth-mirror')
+      expect(normalizePageSlug('/coaching/growth-mirror/')).toBe('coaching-growth-mirror')
+      expect(normalizePageSlug('thu-vien')).toBe('thu-vien')
+      expect(normalizePageSlug('trang-chu')).toBe('trang-chu')
+    })
+  })
+
+  describe('resolveServerData with pageSlug options (T1-03b)', () => {
+    it('attaches normalized pageSlug to root conversion blocks', async () => {
+      const data: Data = {
+        content: [
+          { type: 'ShopeeButton', props: { id: 'shopee-root' } },
+          { type: 'B2BBriefForm', props: { id: 'brief-root' } },
+          { type: 'LeadForm', props: { id: 'lead-root' } },
+          { type: 'BookingCTA', props: { id: 'booking-root', title: 'Booking' } },
+        ],
+        root: { props: { title: 'Test Root' } },
+      }
+
+      const resolved = await resolveServerData(data, { pageSlug: '/coaching/growth-mirror' })
+
+      expect((resolved.content[0] as { props: { pageSlug?: string } }).props.pageSlug).toBe(
+        'coaching-growth-mirror',
+      )
+      expect((resolved.content[1] as { props: { pageSlug?: string } }).props.pageSlug).toBe(
+        'coaching-growth-mirror',
+      )
+      expect((resolved.content[2] as { props: { pageSlug?: string } }).props.pageSlug).toBe(
+        'coaching-growth-mirror',
+      )
+      expect((resolved.content[3] as { props: { pageSlug?: string } }).props.pageSlug).toBe(
+        'coaching-growth-mirror',
+      )
+    })
+
+    it('attaches normalized pageSlug to conversion blocks nested inside Columns slot props', async () => {
+      const data: Data = {
+        content: [
+          {
+            type: 'Columns',
+            props: {
+              id: 'col-1',
+              col1: [
+                { type: 'ShopeeButton', props: { id: 'shopee-col' } },
+                { type: 'BookingCTA', props: { id: 'booking-col', title: 'Booking' } },
+              ],
+              col2: [
+                { type: 'LeadForm', props: { id: 'lead-col' } },
+                { type: 'B2BBriefForm', props: { id: 'brief-col' } },
+              ],
+            },
+          },
+        ],
+        root: { props: { title: 'Test Root' } },
+      }
+
+      const resolved = await resolveServerData(data, { pageSlug: '/' })
+
+      const colBlock = resolved.content[0] as {
+        props: {
+          col1?: Array<{ props: { pageSlug?: string } }>
+          col2?: Array<{ props: { pageSlug?: string } }>
+        }
+      }
+
+      expect(colBlock.props.col1?.[0]?.props.pageSlug).toBe('trang-chu')
+      expect(colBlock.props.col1?.[1]?.props.pageSlug).toBe('trang-chu')
+      expect(colBlock.props.col2?.[0]?.props.pageSlug).toBe('trang-chu')
+      expect(colBlock.props.col2?.[1]?.props.pageSlug).toBe('trang-chu')
     })
   })
 })

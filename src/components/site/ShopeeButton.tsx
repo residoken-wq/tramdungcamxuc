@@ -48,7 +48,7 @@ export function ShopeeButton({
     return null
   }
 
-  const campaign = pageSlug && pageSlug.trim() !== '' ? pageSlug.trim() : 'shopee'
+  const campaign = pageSlug && pageSlug.trim() !== '' ? pageSlug.trim() : 'website'
   const urlWithUtm = appendUtmParams(rawUrl, {
     source: 'tramdungcamxuc',
     medium: 'website',

@@ -7,16 +7,17 @@ declare global {
     turnstile?: {
       render: (
         container: HTMLElement | string,
-        params: {
+        options: {
           sitekey: string
           callback?: (token: string) => void
-          'error-callback'?: () => void
           'expired-callback'?: () => void
+          'error-callback'?: () => void
           theme?: 'light' | 'dark' | 'auto'
+          size?: 'normal' | 'flexible' | 'compact'
         },
       ) => string
-      remove: (widgetId: string) => void
-      reset: (widgetId: string) => void
+      reset: (widgetId?: string) => void
+      remove: (widgetId?: string) => void
     }
     onloadTurnstileCallback?: () => void
   }

@@ -11,6 +11,7 @@ export interface LeadFormBlockProps {
   need?: 'resource' | 'personal' | 'business'
   interestTags?: string
   submitLabel?: string
+  pageSlug?: string
   _resolved?: {
     resource?: {
       id: string | number
@@ -59,6 +60,7 @@ export const LeadFormBlock: ComponentConfig<LeadFormBlockProps> = {
     need = 'resource',
     interestTags = 'resource',
     submitLabel,
+    pageSlug,
     _resolved,
     puck,
   }) => {
@@ -79,6 +81,7 @@ export const LeadFormBlock: ComponentConfig<LeadFormBlockProps> = {
           interestTags={parsedTags}
           resourceSlug={_resolved?.resource?.slug}
           submitLabel={submitLabel}
+          pageSlug={pageSlug}
           puck={{ isEditing: puck?.isEditing ?? false }}
         />
       </div>
