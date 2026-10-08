@@ -43,7 +43,8 @@ beforeAll(() => {
   }
 })
 
-describe('PuckEditorClient mounting stability (T1-04b)', () => {
+// Mounting the full Puck editor in jsdom is slow when the whole suite runs in parallel.
+describe('PuckEditorClient mounting stability (T1-04b)', { timeout: 30000 }, () => {
   it('mounts cleanly with empty initialData without throwing and renders publish button', () => {
     const emptyData: Data = { content: [], root: { props: {} } }
     expect(() => {
