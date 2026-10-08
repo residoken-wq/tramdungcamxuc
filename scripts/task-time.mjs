@@ -6,7 +6,7 @@
 //   node scripts/task-time.mjs report        # at the end: prints the summary for the report/PR
 //
 // Rule: time spent inside commands counts fully; a gap between two commands counts fully when it
-// is ≤ IDLE_LIMIT_S (agent thinking/editing), otherwise it is treated as waiting for an approval
+// is ≤ IDLE_LIMIT_S (agent thinking/editing files), otherwise it is treated as waiting for an approval
 // or a stuck session and counts APPROVAL_CREDIT_S only.
 import {
   appendFileSync,
@@ -19,7 +19,8 @@ import {
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const IDLE_LIMIT_S = 60
+// Agents edit files without running commands, so gaps of several minutes are normal work.
+const IDLE_LIMIT_S = 600
 const APPROVAL_CREDIT_S = 5
 const DIR = '.task-time'
 const CURRENT = join(DIR, 'current')
@@ -43,8 +44,10 @@ export function summarize(events, idleLimitS = IDLE_LIMIT_S, creditS = APPROVAL_
   const times = events.map((e) => e.t).sort((a, b) => a - b)
   let activeMs = 0
   let stalls = 0
+  let longestGapMs = 0
   for (let i = 1; i < times.length; i++) {
     const gap = times[i] - times[i - 1]
+    longestGapMs = Math.max(longestGapMs, gap)
     if (gap <= idleLimitS * 1000) activeMs += gap
     else {
       activeMs += creditS * 1000
@@ -52,7 +55,7 @@ export function summarize(events, idleLimitS = IDLE_LIMIT_S, creditS = APPROVAL_
     }
   }
   const wallMs = times.length > 1 ? times[times.length - 1] - times[0] : 0
-  return { activeMs, wallMs, stalls, laps: Math.max(0, times.length - 1) }
+  return { activeMs, wallMs, stalls, laps: Math.max(0, times.length - 1), longestGapMs }
 }
 
 const fmt = (ms) => {
@@ -92,7 +95,7 @@ if (!isCli) {
   console.log(
     `THỜI GIAN THỰC ${task}: ${fmt(s.activeMs)} (${(s.activeMs / 3600000).toFixed(2)} h) · ` +
       `tổng thời gian trôi ${fmt(s.wallMs)} · ${s.stalls} lần chờ approve/kẹt (> ${IDLE_LIMIT_S}s, tính ${APPROVAL_CREDIT_S}s/lần) · ` +
-      `${s.laps} lệnh · bắt đầu ${started}`,
+      `${s.laps} lệnh · khoảng trống dài nhất ${Math.round(s.longestGapMs / 60000)} phút · bắt đầu ${started}`,
   )
 } else if (cmd === 'list') {
   if (existsSync(DIR))
