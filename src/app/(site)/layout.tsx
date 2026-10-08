@@ -4,7 +4,11 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { SiteSetting } from '@/payload-types'
 import { anton, montserrat, playfair } from '@/lib/fonts'
+import { getSiteUrl } from '@/lib/site-url'
 import './styles.css'
+
+// Đọc SITE_URL lúc chạy ở server để metadataBase trỏ đúng domain demo / production
+export const dynamic = 'force-dynamic'
 
 const getSiteSettings = cache(async (): Promise<SiteSetting | null> => {
   try {
@@ -22,11 +26,7 @@ const getSiteSettings = cache(async (): Promise<SiteSetting | null> => {
 })
 
 export async function generateMetadata(): Promise<Metadata> {
-  const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://tramdungcamxuc.com'
-  const siteUrl =
-    rawSiteUrl.startsWith('http://') || rawSiteUrl.startsWith('https://')
-      ? rawSiteUrl
-      : `https://${rawSiteUrl}`
+  const siteUrl = getSiteUrl()
 
   let ogImageUrl: string | undefined = undefined
 

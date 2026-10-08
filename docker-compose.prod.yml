@@ -6,6 +6,7 @@ services:
       NODE_ENV: production
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Generate PAYLOAD_SECRET with openssl rand -hex 32}
       DATABASE_URI: postgres://postgres:${POSTGRES_PASSWORD:?Set a hex POSTGRES_PASSWORD}@postgres:5432/tramdungcamxuc
+      SITE_URL: ${SITE_URL:-}
       SITE_NOINDEX: ${SITE_NOINDEX:-}
       STYLEGUIDE_PUBLIC: ${STYLEGUIDE_PUBLIC:-}
       CSP_ENFORCE: ${CSP_ENFORCE:-}
