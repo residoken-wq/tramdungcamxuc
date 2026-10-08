@@ -1287,15 +1287,12 @@ export interface Order {
    */
   paymentRef?: string | null;
   /**
-   * Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn.
+   * Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn qua nút thao tác.
    */
   paymentStatus: 'pending' | 'paid' | 'failed' | 'cancelled';
-  /**
-   * Chọn một mục phù hợp.
-   */
   deliveryStatus?: ('none' | 'access_granted' | 'email_sent' | 'scheduled') | null;
   /**
-   * Chỉ chủ sở hữu được đặt.
+   * Chỉ cập nhật khi chủ sở hữu xác nhận thanh toán thành công.
    */
   paidAt?: string | null;
   /**

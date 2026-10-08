@@ -106,6 +106,16 @@ export const Orders: CollectionConfig = {
       },
     },
     {
+      name: 'orderActions',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/OrderActions#OrderActions',
+        },
+      },
+    },
+    {
       ...select(
         'paymentStatus',
         'Trạng thái thanh toán',
@@ -117,20 +127,34 @@ export const Orders: CollectionConfig = {
         ],
         { required: true, defaultValue: 'pending' },
       ),
-      admin: { description: 'Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn.' },
+      admin: {
+        readOnly: true,
+        description: 'Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn qua nút thao tác.',
+      },
     },
-    select(
-      'deliveryStatus',
-      'Trạng thái giao',
-      [
-        ['none', 'Chưa giao'],
-        ['access_granted', 'Đã mở quyền'],
-        ['email_sent', 'Đã gửi email'],
-        ['scheduled', 'Đã đặt lịch'],
-      ],
-      { defaultValue: 'none' },
-    ),
-    { ...date('paidAt', 'Thanh toán lúc'), admin: { description: 'Chỉ chủ sở hữu được đặt.' } },
+    {
+      ...select(
+        'deliveryStatus',
+        'Trạng thái giao',
+        [
+          ['none', 'Chưa giao'],
+          ['access_granted', 'Đã mở quyền'],
+          ['email_sent', 'Đã gửi email'],
+          ['scheduled', 'Đã đặt lịch'],
+        ],
+        { defaultValue: 'none' },
+      ),
+      admin: {
+        readOnly: true,
+      },
+    },
+    {
+      ...date('paidAt', 'Thanh toán lúc'),
+      admin: {
+        readOnly: true,
+        description: 'Chỉ cập nhật khi chủ sở hữu xác nhận thanh toán thành công.',
+      },
+    },
     {
       ...date('termsAcceptedAt', 'Đồng ý điều khoản lúc'),
       required: true,

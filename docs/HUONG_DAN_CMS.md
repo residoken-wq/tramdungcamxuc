@@ -303,7 +303,46 @@ Dưới đây là các tình huống thường gặp và cách xử lý đơn gi
 
 ---
 
-## 7. Bài thử nghiệm cổng Giai đoạn 0 (Checklist cho Hana)
+## 7. Xác nhận chuyển khoản & Quản lý đơn hàng (Giai đoạn 1)
+
+Mỗi khi khách hàng đăng ký phiên trải nghiệm Growth Mirror 149.000đ trên website, đơn hàng sẽ được tạo tự động ở trạng thái **Chờ thanh toán** kèm theo một **Mã chuyển khoản** duy nhất (ví dụ: `TDCX8F3K2`). Khách sẽ quét mã VietQR hoặc chuyển khoản vào tài khoản ngân hàng của Hana với nội dung này.
+
+Dưới đây là quy trình đối chiếu và duyệt đơn chuẩn dành cho Hana:
+
+### 7.1. Các bước đối chiếu sao kê và duyệt đơn
+
+1. **Kiểm tra thông báo ngân hàng / sao kê:**
+   - Mở ứng dụng ngân hàng (MB Bank) trên điện thoại của bạn.
+   - Tìm giao dịch chuyển tiền mới nhất nhận được 149.000đ.
+   - Nhìn vào phần **Nội dung giao dịch**: tìm mã bắt đầu bằng `TDCX...` (ví dụ `TDCX8F3K2`).
+
+2. **Tìm đơn hàng trong trang quản trị CMS:**
+   - Đăng nhập vào trang quản trị `<ĐỊA CHỈ DEMO>/admin` bằng tài khoản Chủ sở hữu (Owner).
+   - Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào mục **Đơn hàng**.
+   - Tìm đơn hàng có cột **Mã chuyển khoản** khớp với mã trên thông báo ngân hàng.
+   - Bấm vào dòng đơn hàng đó để mở trang chi tiết.
+
+3. **Bấm nút duyệt thanh toán an toàn:**
+   - Tại cột bên phải (Sidebar), Hana sẽ thấy khung **🛡️ Thao tác đơn hàng (Chủ sở hữu)**.
+   - Bấm nút xanh tím **✓ Xác nhận thanh toán**.
+   - Một hộp thoại xác nhận sẽ hiện lên: Hana đọc lại thông tin và bấm **Đồng ý xác nhận**.
+
+4. **Hệ thống tự động xử lý tiếp theo:**
+   - Đơn hàng chuyển sang trạng thái **Đã thanh toán**.
+   - Thời điểm duyệt được lưu chính xác vào ô **Thanh toán lúc**.
+   - Hệ thống tự động gửi email xác nhận cho khách hàng, trong đó đính kèm liên kết đặt lịch hẹn (Cal.com / Google Calendar) để khách chọn giờ gặp Hana.
+   - Trạng thái giao đổi sang **Đã gửi email**.
+
+### 7.2. Các lưu ý quan trọng về an toàn thanh toán
+
+- **Trường thông tin được khóa an toàn (Chỉ đọc):** Các ô **Trạng thái thanh toán**, **Thanh toán lúc**, **Trạng thái giao** được thiết kế ở chế độ chỉ đọc. Hana không thể và không nên gõ tay sửa chữ ở đây; việc thay đổi trạng thái bắt buộc phải qua nút **Xác nhận thanh toán** để đảm bảo email đặt lịch và nhật ký kiểm toán không bị bỏ sót.
+- **Tính năng chống bấm nhầm (Idempotent):** Nếu Hana vô tình bấm nút xác nhận hai lần liên tiếp cho cùng một đơn, hệ thống sẽ tự động nhận biết đơn đã được duyệt và không bao giờ gửi 2 email cho khách hàng.
+- **Chính sách không hoàn tiền:** Theo chính sách của Trạm, các đơn hàng đã chuyển sang trạng thái "Đã thanh toán" sẽ không thể bấm hủy. Nút **Hủy đơn hàng** chỉ có hiệu lực với các đơn đang ở trạng thái chờ thanh toán mà khách thông báo không muốn tham gia nữa.
+- **Tự động hết hạn sau 24 giờ:** Nếu sau 24 giờ kể từ khi tạo đơn mà khách không chuyển khoản, hệ thống sẽ tự động chuyển đơn sang trạng thái hết hạn và gửi email nhắc hẹn nhẹ nhàng cho khách.
+
+---
+
+## 8. Bài thử nghiệm cổng Giai đoạn 0 (Checklist cho Hana)
 
 Đây là bảng các bước Hana tự làm từ đầu đến cuối mà không cần ai trợ giúp kỹ thuật để nghiệm thu cổng Giai đoạn 0:
 

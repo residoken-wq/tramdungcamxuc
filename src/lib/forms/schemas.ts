@@ -155,9 +155,14 @@ export const experienceOrderSchema = z.object({
     .email(vi.forms.validation.emailInvalid),
   phone: z.string().trim().max(20, vi.forms.validation.phoneMax).optional(),
   need: z.string().trim().max(1000, vi.payment.validation.needMax).optional(),
-  termsAccepted: z.boolean().refine((val) => val === true, {
-    message: vi.payment.validation.termsAcceptedRequired,
-  }),
+  termsAccepted: z
+    .boolean({
+      required_error: vi.payment.validation.termsAcceptedRequired,
+      invalid_type_error: vi.payment.validation.termsAcceptedRequired,
+    })
+    .refine((val) => val === true, {
+      message: vi.payment.validation.termsAcceptedRequired,
+    }),
   honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
   turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
 })
