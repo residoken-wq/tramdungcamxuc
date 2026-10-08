@@ -122,7 +122,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-02a | Khối Puck: Bán hàng (puckData chỉ lưu ID sản phẩm)         |          | T1-01, T1-08        | Local | Xong – PR #25 ([review](reviews/T1-02a.md)) |
 | T1-02b | Khối Puck: Niềm tin + revalidate                           |          | T1-02a              | Local | Xong – PR #27 ([review](reviews/T1-02b.md)) |
 | T1-03 | Khối Puck: Chuyển đổi                                       |          | T1-02b, T1-06       | Local | Xong – PR #31 ([review](reviews/T1-03.md)) |
-| T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               | Local | Sẵn sàng – Antigravity@Local (prompt `prompts/T1-04.md`) |
+| T1-04 | Puck: 4 mẫu trang, versions, khóa khối, autosave            |          | T1-03               | Local | Sửa T1-04b – PR #35 ([review](reviews/T1-04.md), prompt `prompts/T1-04b.md`) – editor crash |
 | T1-05 | Navbar, Footer, FloatingChat Zalo, 6 trang pháp lý          |          | GĐ 0                | Laptop | Xong – PR #21 ([review](reviews/T1-05.md)) |
 | T1-06 | Hạ tầng form + email: lead, coaching, B2B                   |          | GĐ 0                | PC nhà | Xong – PR #22 ([review](reviews/T1-06.md)) |
 | T1-07 | Giao tài nguyên miễn phí qua email                          |          | T1-06               | PC nhà | Xong – PR #29 ([review](reviews/T1-07.md)) |
@@ -130,8 +130,8 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-09 | Thư viện `/thu-vien` 2 tab + bộ lọc                         |          | T1-08               | Laptop | Xong – PR #26 ([review](reviews/T1-09.md)) |
 | T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               | Laptop | Xong – PR #28 ([review](reviews/T1-10.md)) |
 | T1-10b | Live Preview Payload cho services / programs / posts       |          | T1-10, T1-07 (khóa Package) | Laptop | Chưa mở |
-| T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               | Laptop | Sẵn sàng – Antigravity@Laptop (prompt `prompts/T1-11.md`) |
-| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Đang làm – Antigravity@PC nhà (PR #34 nháp) · 🔒 Migration + Package · cần Codex + IT review |
+| T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               | Laptop | Chờ QA – PR #36 (Planning mở PR, sửa seed `5104c61`) |
+| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Sửa T1-12a-b – PR #34 ([review](reviews/T1-12a.md), prompt `prompts/T1-12a-b.md`) · 🔒 Migration + Package · sau đó Codex + IT |
 | T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Chưa mở |
 | T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
 | T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | PC nhà | Chưa mở (sau T1-07; chuyển từ Laptop vì quota) |
