@@ -389,9 +389,9 @@ export const pages = [
       block('StatsBar', {
         version: 1,
         stats: [
-          { value: `${S} 10+ năm`, label: `${S} Kinh nghiệm đồng hành & khai vấn` },
-          { value: `${S} 500+ giờ`, label: `${S} Giờ khai vấn chuyên sâu` },
-          { value: `${S} 1000+ người`, label: `${S} Học viên tham gia chuyển hóa cảm xúc` },
+          { value: `${S} Số liệu 1`, label: `${S} Nhãn mô tả 1` },
+          { value: `${S} Số liệu 2`, label: `${S} Nhãn mô tả 2` },
+          { value: `${S} Số liệu 3`, label: `${S} Nhãn mô tả 3` },
         ],
         bgColor: 'lavender-mist',
         padding: 'md',

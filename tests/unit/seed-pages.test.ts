@@ -144,4 +144,10 @@ describe('five seed pages from real blocks (T1-16)', () => {
       }
     }
   })
+
+  it('sample copy invents no figures about the coach (e.g. "10+ năm", "500+ giờ")', () => {
+    // AGENTS.md mục 2.2 / 14: stats are entered by Hana; samples stay neutral placeholders.
+    const text = JSON.stringify(seedData.pages)
+    expect(text).not.toMatch(/\d+\s*\+/)
+  })
 })
