@@ -312,6 +312,87 @@ export const vi = {
       videoHeading: 'Video chia sẻ',
     },
   },
+  diagnostic: {
+    badge: 'Chẩn đoán thói quen 5 phút',
+    titleLine1: 'Khám phá giai đoạn',
+    titleLine2: 'bạn đang gặp trở ngại',
+    emotionalLine: 'Hiểu rõ điểm nghẽn để tạo đòn bẩy thay đổi bền bỉ',
+    intro:
+      'Bài trắc nghiệm ngắn gồm 16 câu hỏi giúp bạn chẩn đoán chính xác giai đoạn mình hay vấp ngã nhất trong vòng lặp thói quen: Gợi ý (Cue), Khao khát (Craving), Phản hồi (Response) hay Phần thưởng (Reward).',
+    durationNotice: 'Thời gian hoàn thành: dưới 3 phút',
+    startQuiz: 'Bắt đầu làm bài test',
+    questionCounter: (current: number, total: number) => `Câu hỏi ${current} / ${total}`,
+    scale: {
+      1: 'Hiếm khi / Không đúng với tôi',
+      2: 'Thỉnh thoảng đúng',
+      3: 'Thường xuyên đúng',
+      4: 'Rất đúng với tôi',
+    },
+    scaleShort: {
+      1: 'Rất hiếm khi',
+      2: 'Thỉnh thoảng',
+      3: 'Thường xuyên',
+      4: 'Rất thường xuyên',
+    },
+    prevButton: 'Quay lại',
+    nextButton: 'Câu tiếp theo',
+    finishButton: 'Hoàn thành bài test',
+    stages: {
+      cue: {
+        name: 'Gợi ý (Cue)',
+        short: 'Cue',
+        title: 'Điểm nghẽn ở Gợi ý (Cue)',
+        desc: 'Bạn thường quên bắt đầu, môi trường xung quanh chưa có những tín hiệu rõ ràng nhắc nhở bạn hành động.',
+      },
+      craving: {
+        name: 'Khao khát (Craving)',
+        short: 'Craving',
+        title: 'Điểm nghẽn ở Khao khát (Craving)',
+        desc: 'Bạn chưa đủ động lực nội tại hoặc hành vi mới chưa đủ hấp dẫn để bạn muốn bắt tay vào làm.',
+      },
+      response: {
+        name: 'Phản hồi (Response)',
+        short: 'Response',
+        title: 'Điểm nghẽn ở Phản hồi (Response)',
+        desc: 'Hành động còn quá khó, tốn quá nhiều sức lực ban đầu hoặc rào cản thực hiện quá cao khiến bạn dễ trì hoãn.',
+      },
+      reward: {
+        name: 'Phần thưởng (Reward)',
+        short: 'Reward',
+        title: 'Điểm nghẽn ở Phần thưởng (Reward)',
+        desc: 'Bạn chưa cảm nhận được sự thỏa mãn hay niềm vui tức thì sau khi hoàn thành hành động, dẫn đến khó duy trì lâu dài.',
+      },
+    },
+    secondaryNotice: (stageName: string) =>
+      `Lưu ý: Bạn cũng có xu hướng gặp trở ngại ở giai đoạn ${stageName} (điểm số sát nút giai đoạn chính).`,
+    emailGate: {
+      heading: 'Lưu kết quả & Nhận phân tích chi tiết',
+      subheading:
+        'Nhập email để lưu lại kết quả chẩn đoán này và nhận hướng dẫn thói quen cá nhân hóa từ Hana Lương.',
+      emailLabel: 'Địa chỉ email của bạn (tùy chọn)',
+      emailPlaceholder: 'email@example.com',
+      consentLabel: 'Tôi đồng ý nhận thông tin và hướng dẫn từ Trạm Dừng Cảm Xúc theo',
+      privacyPolicy: 'Chính sách bảo mật',
+      submitButton: 'Lưu & Xem kết quả phân tích',
+      skipButton: 'Bỏ qua & Xem kết quả ngay',
+    },
+    result: {
+      primaryHeading: 'Giai đoạn bạn cần gỡ rối nhất',
+      suggestionsHeading: 'Gợi ý thực hành dành riêng cho bạn',
+      noSuggestions: 'Hãy bắt đầu với những bước nhỏ nhất để tạo đà thay đổi.',
+      ctaHeading: 'Sẵn sàng chuyển mình bền vững cùng Hana?',
+      ctaSubheading:
+        'Khám phá phiên trải nghiệm 1:1 và lộ trình Growth Mirror được thiết kế riêng cho bạn.',
+      ctaButton: 'Tìm hiểu phiên trải nghiệm 149.000đ',
+      retakeButton: 'Làm lại bài test',
+    },
+    errors: {
+      emptyAnswers: 'Vui lòng trả lời các câu hỏi chẩn đoán',
+      consentRequired: 'Vui lòng đồng ý với chính sách bảo mật để tiếp tục',
+      emailInvalid: 'Địa chỉ email không hợp lệ (ví dụ: ban@example.com)',
+      submitFailed: 'Không thể xử lý kết quả chẩn đoán. Vui lòng thử lại.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

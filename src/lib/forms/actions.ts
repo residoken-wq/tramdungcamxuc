@@ -102,3 +102,27 @@ export async function submitResourceRequestAction(
     return handleActionError(err)
   }
 }
+
+export type DiagnosticActionResponse = ActionResponse & {
+  data?: import('../diagnostic.server').DiagnosticResultData
+}
+
+export async function submitDiagnosticAction(
+  data: Record<string, unknown>,
+  extra?: { utm?: string },
+): Promise<DiagnosticActionResponse> {
+  try {
+    const ctx = await getClientContext()
+    const { submitDiagnostic } = await import('../diagnostic.server')
+    const res = await submitDiagnostic(data, {
+      ...ctx,
+      utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
+    })
+    return {
+      success: res.success,
+      data: res.data,
+    }
+  } catch (err) {
+    return handleActionError(err)
+  }
+}
