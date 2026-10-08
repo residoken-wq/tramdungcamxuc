@@ -1,0 +1,110 @@
+import { describe, expect, it } from 'vitest'
+import {
+  isSecurityHeadersExempt,
+  isPuckEmbeddable,
+  getSecurityHeaders,
+  buildCspDirective,
+  applySecurityHeaders,
+} from '@/lib/security-headers'
+import { proxy } from '@/proxy'
+
+describe('Security Headers', () => {
+  describe('isSecurityHeadersExempt', () => {
+    it('exempts /admin, /builder, /api and their subpaths', () => {
+      expect(isSecurityHeadersExempt('/admin')).toBe(true)
+      expect(isSecurityHeadersExempt('/admin/collections/pages')).toBe(true)
+      expect(isSecurityHeadersExempt('/builder')).toBe(true)
+      expect(isSecurityHeadersExempt('/builder/123')).toBe(true)
+      expect(isSecurityHeadersExempt('/api')).toBe(true)
+      expect(isSecurityHeadersExempt('/api/leads')).toBe(true)
+    })
+
+    it('does not exempt public routes', () => {
+      expect(isSecurityHeadersExempt('/')).toBe(false)
+      expect(isSecurityHeadersExempt('/thu-vien')).toBe(false)
+      expect(isSecurityHeadersExempt('/coaching/growth-mirror')).toBe(false)
+      expect(isSecurityHeadersExempt('/tai-khoan')).toBe(false)
+    })
+  })
+
+  describe('isPuckEmbeddable', () => {
+    it('returns true for public marketing and content routes', () => {
+      expect(isPuckEmbeddable('/')).toBe(true)
+      expect(isPuckEmbeddable('/thu-vien')).toBe(true)
+      expect(isPuckEmbeddable('/coaching/growth-mirror')).toBe(true)
+    })
+
+    it('returns false for exempt routes and account routes', () => {
+      expect(isPuckEmbeddable('/admin')).toBe(false)
+      expect(isPuckEmbeddable('/builder')).toBe(false)
+      expect(isPuckEmbeddable('/api')).toBe(false)
+      expect(isPuckEmbeddable('/tai-khoan')).toBe(false)
+    })
+  })
+
+  describe('getSecurityHeaders', () => {
+    it('returns no headers for exempt routes', () => {
+      expect(getSecurityHeaders('/admin')).toEqual({})
+      expect(getSecurityHeaders('/admin/login')).toEqual({})
+      expect(getSecurityHeaders('/builder/page-1')).toEqual({})
+      expect(getSecurityHeaders('/api/graphql')).toEqual({})
+    })
+
+    it('returns expected security headers for public routes in non-production', () => {
+      const headers = getSecurityHeaders('/', { isProduction: false })
+
+      expect(headers['X-Content-Type-Options']).toBe('nosniff')
+      expect(headers['Referrer-Policy']).toBe('strict-origin-when-cross-origin')
+      expect(headers['Permissions-Policy']).toBe('camera=(), microphone=(), geolocation=()')
+      expect(headers['Content-Security-Policy-Report-Only']).toBeDefined()
+      expect(headers['Content-Security-Policy-Report-Only']).toContain("default-src 'self'")
+      expect(headers['Content-Security-Policy-Report-Only']).toContain("frame-ancestors 'self'")
+      expect(headers['Content-Security-Policy-Report-Only']).toContain(
+        'https://challenges.cloudflare.com',
+      )
+
+      // In development / non-production, HSTS is omitted
+      expect(headers['Strict-Transport-Security']).toBeUndefined()
+
+      // Public site route embeddable by Puck omits X-Frame-Options: DENY
+      expect(headers['X-Frame-Options']).toBeUndefined()
+    })
+
+    it('includes Strict-Transport-Security in production', () => {
+      const headers = getSecurityHeaders('/', { isProduction: true })
+      expect(headers['Strict-Transport-Security']).toBe('max-age=31536000; includeSubDomains')
+    })
+
+    it('applies X-Frame-Options: DENY for non-embeddable public routes', () => {
+      const headers = getSecurityHeaders('/tai-khoan', { isProduction: false })
+      expect(headers['X-Frame-Options']).toBe('DENY')
+    })
+
+    it('incorporates S3 public storage origin into CSP directives', () => {
+      const csp = buildCspDirective({
+        s3PublicUrl: 'https://assets.tramdungcamxuc.com',
+      })
+      expect(csp).toContain('https://assets.tramdungcamxuc.com')
+    })
+  })
+
+  describe('applySecurityHeaders', () => {
+    it('mutates Headers object directly for public routes', () => {
+      const headers = new Headers()
+      applySecurityHeaders(headers, '/thu-vien')
+      expect(headers.get('X-Content-Type-Options')).toBe('nosniff')
+      expect(headers.has('Content-Security-Policy-Report-Only')).toBe(true)
+    })
+  })
+
+  describe('proxy integration', () => {
+    it('applies security headers when proxy() is called', () => {
+      const res = proxy()
+      expect(res.headers.get('X-Content-Type-Options')).toBe('nosniff')
+      expect(res.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+      expect(res.headers.get('Permissions-Policy')).toBe('camera=(), microphone=(), geolocation=()')
+      expect(res.headers.has('Content-Security-Policy-Report-Only')).toBe(true)
+    })
+  })
+})
+
