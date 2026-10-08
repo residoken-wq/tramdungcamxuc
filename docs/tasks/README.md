@@ -131,8 +131,9 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-10 | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên |          | T1-08               | Laptop | Xong – PR #28 ([review](reviews/T1-10.md)) |
 | T1-10b | Live Preview Payload cho services / programs / posts       |          | T1-10, T1-07 (khóa Package) | Laptop | Chưa mở |
 | T1-11 | Trang Growth Mirror + bảng 3 gói                            |          | T1-10               | Laptop | Xong – PR #36 ([review](reviews/T1-11.md)) |
-| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Planning QA đạt – PR #34 · **chờ Codex@Local review (`prompts/T1-12a-codex.md`) + IT duyệt** ([review](reviews/T1-12a.md)) · 🔒 Migration + Package |
-| T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Sẵn sàng – Antigravity@PC nhà (prompt `prompts/T1-12b.md`; chồng trên nhánh T1-12a) |
+| T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron | [REVIEW] | T1-06               | PC nhà | Planning QA đạt – PR #34 · Codex xong 08/10 (5 lỗi → T1-12c) · **chờ IT duyệt** ([review](reviews/T1-12a.md)) · 🔒 Migration + Package |
+| T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn | [REVIEW] | T1-12a              | PC nhà | Chưa đạt ([review](reviews/T1-12b.md)) → T1-12c |
+| T1-12c | Sửa 149k: chuyển trạng thái nguyên tử, khóa REST, chữ vào vi.ts, e2e | [REVIEW] | T1-12b | PC nhà | Sẵn sàng – Antigravity@PC nhà (prompt `prompts/T1-12c.md`; cùng nhánh T1-12b) |
 | T1-13 | Link thanh toán gói do Hana tạo + cấp quyền                 | [REVIEW] | T1-12b              | PC nhà | Chưa mở |
 | T1-14 | Quiz chẩn đoán `/habit/chan-doan`                           |          | T1-06               | Laptop | Xong – PR #42 ([review](reviews/T1-14.md)) |
 | T1-15a | SEO, security headers (CSP report-only), font tự host     |          | T1-05               | Laptop | Xong – PR #33 ([review](reviews/T1-15a.md)) |
