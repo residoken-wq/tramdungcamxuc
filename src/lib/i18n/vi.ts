@@ -156,6 +156,37 @@ export const vi = {
     backToAdmin: 'Quay lại quản trị',
     draftStatus: 'Bản nháp',
     publishedStatus: 'Đã xuất bản',
+    // Mẫu trang
+    useTemplate: 'Dùng mẫu...',
+    selectTemplateTitle: 'Chọn mẫu trang có sẵn',
+    confirmApplyTemplate:
+      'Áp dụng mẫu sẽ thay thế toàn bộ nội dung hiện tại trên trang. Bạn có chắc chắn muốn tiếp tục?',
+    templateApplied: 'Đã áp dụng mẫu thành công',
+    // Lịch sử phiên bản
+    history: 'Lịch sử',
+    historyTitle: 'Lịch sử phiên bản',
+    noVersions: 'Chưa có phiên bản nào được lưu',
+    restoreVersion: 'Khôi phục',
+    confirmRestoreVersion:
+      'Bạn có chắc chắn muốn khôi phục về phiên bản này? Nội dung chưa lưu sẽ bị ghi đè.',
+    restoringVersion: 'Đang khôi phục...',
+    restoredVersion: 'Đã khôi phục phiên bản',
+    restoreFailed: 'Lỗi khi khôi phục phiên bản',
+    // Nhân bản trang
+    duplicatePage: 'Nhân bản trang',
+    duplicatingPage: 'Đang nhân bản...',
+    duplicatePageFailed: 'Lỗi khi nhân bản trang',
+    // Khóa khối
+    errorHeroRequired:
+      'Trang chủ (slug "/") bắt buộc phải có khối Hero 2 lối vào (HeroTwoEntries).',
+    // Tự lưu & Rời trang
+    autoSavedAt: (time: string) => `Đã tự lưu lúc ${time}`,
+    unsavedChangesPrompt: 'Bạn có thay đổi chưa lưu trên trang. Bạn có chắc chắn muốn rời khỏi?',
+    // Từ điển Puck
+    undo: 'Hoàn tác',
+    redo: 'Làm lại',
+    duplicateBlock: 'Nhân bản',
+    deleteBlock: 'Xóa',
   },
   legal: {
     lastUpdated: 'Cập nhật ngày',

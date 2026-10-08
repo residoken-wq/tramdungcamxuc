@@ -2,9 +2,12 @@ import { revalidatePath } from 'next/cache'
 import {
   ValidationError,
   type CollectionAfterChangeHook,
+  type CollectionBeforeChangeHook,
   type CollectionBeforeValidateHook,
 } from 'payload'
 import { contentCollection, image, select, slug, text, textarea } from '../fields/content'
+import { getTemplateData } from '@/puck/templates'
+import { validatePageLockedBlocks } from '@/puck/locks'
 
 export function normalizePageSlug(value: string): string {
   const trimmed = value.trim()
@@ -19,6 +22,37 @@ export function normalizePageSlug(value: string): string {
 
 const normalizeSlug: CollectionBeforeValidateHook = ({ data }) => {
   if (typeof data?.slug === 'string') data.slug = normalizePageSlug(data.slug)
+  return data
+}
+
+const validateLockedBlocksHook: CollectionBeforeValidateHook = ({ data, originalDoc }) => {
+  const effectiveSlug = data?.slug ?? originalDoc?.slug
+  const effectivePuckData = data?.puckData ?? originalDoc?.puckData
+  if (effectiveSlug && effectivePuckData) {
+    const result = validatePageLockedBlocks(effectiveSlug, effectivePuckData)
+    if (!result.valid) {
+      throw new ValidationError({
+        errors: [{ path: 'puckData', message: result.error || 'Dữ liệu trang không hợp lệ.' }],
+      })
+    }
+  }
+  return data
+}
+
+// REVIEW-REQUIRED: Initialize page puckData from selected template on create
+const applyTemplateOnCreate: CollectionBeforeChangeHook = ({ data, operation }) => {
+  if (operation === 'create' && data) {
+    const isPuckDataEmpty =
+      !data.puckData ||
+      !data.puckData.content ||
+      (Array.isArray(data.puckData.content) && data.puckData.content.length === 0)
+    if (isPuckDataEmpty && typeof data.template === 'string') {
+      const templateData = getTemplateData(data.template, data.title)
+      if (templateData) {
+        data.puckData = templateData
+      }
+    }
+  }
   return data
 }
 
@@ -77,7 +111,8 @@ export const Pages = {
     },
   ]),
   hooks: {
-    beforeValidate: [normalizeSlug],
+    beforeValidate: [normalizeSlug, validateLockedBlocksHook],
+    beforeChange: [applyTemplateOnCreate],
     afterChange: [revalidatePage],
   },
   versions: { drafts: { autosave: { interval: 30000 } } },
