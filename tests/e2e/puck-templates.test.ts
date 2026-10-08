@@ -18,6 +18,7 @@ test.describe('T1-04: Puck Templates, Versions, Locked Blocks and Autosave', () 
     let userId: number | undefined
     let pageId: number | undefined
     let homepageId: number | undefined
+    let homepageIsOurs = false
 
     const publicContext = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
     const publicPage = await publicContext.newPage()
@@ -83,106 +84,124 @@ test.describe('T1-04: Puck Templates, Versions, Locked Blocks and Autosave', () 
 
       // Wait for Puck iframe canvas to load and show template blocks
       const canvas = page.frameLocator('iframe')
-      const heroBlock = canvas.locator('[data-puck-component="HeroImage"]').first()
+      const heroBlock = canvas.locator('[data-puck-component="campaign-hero"]').first()
       await expect(heroBlock).toBeVisible({ timeout: 15000 })
 
       // Verify template components are present in canvas
-      await expect(canvas.locator('[data-puck-component="SectionHeader"]').first()).toBeVisible()
-      await expect(canvas.locator('[data-puck-component="LeadForm"]').first()).toBeVisible()
+      await expect(canvas.locator('[data-puck-component="campaign-header"]').first()).toBeVisible()
+      await expect(
+        canvas.locator('[data-puck-component="campaign-lead-form"]').first(),
+      ).toBeVisible()
 
-      // 4. Edit title and publish page
-      // Click on SectionHeader to select it and edit titleLine1
-      const sectionHeader = canvas.locator('[data-puck-component="SectionHeader"]').first()
+      // 4. Edit the section title (mandatory) and publish.
+      const sectionHeader = canvas.locator('[data-puck-component="campaign-header"]').first()
       await sectionHeader.click()
-
-      // Edit field in Puck right sidebar
-      const titleLine1Field = page
-        .locator('input[name="titleLine1"], #titleLine1, input[id*="titleLine1"]')
-        .first()
-      if (await titleLine1Field.isVisible()) {
-        await titleLine1Field.fill(updatedTitle)
-      }
-
-      // Click "Xuất bản" button in header
-      const publishBtn = page.getByRole('button', { name: 'Xuất bản', exact: true })
-      await expect(publishBtn).toBeVisible()
-      await publishBtn.click()
-
-      // Wait for published status feedback badge
-      await expect(page.getByRole('status')).toContainText('Đã xuất bản', { timeout: 15000 })
-
-      // 5. Verify public page reflects published content (do NOT use networkidle because of Turnstile)
-      await publicPage.goto(`/${pageSlug}`, { waitUntil: 'domcontentloaded' })
-      await expect(publicPage.locator('body')).toContainText('ĐỒNG HÀNH CHUYỂN HÓA', {
+      const titleField = page.getByRole('textbox', {
+        name: 'Tiêu đề dòng 1 (Xanh thẫm)',
+        exact: true,
+      })
+      await expect(titleField).toBeVisible()
+      await titleField.fill(updatedTitle)
+      await expect(canvas.locator('[data-puck-component="campaign-header"]')).toContainText(
+        updatedTitle.toUpperCase(),
+        { ignoreCase: true },
+      )
+      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
+      await expect(
+        page
+          .getByText(/Đã xuất bản/)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible({
         timeout: 15000,
       })
 
-      // 6. Test History and Restore Version
-      // Make a draft change and save draft to create a new version
-      const saveDraftBtn = page.getByRole('button', { name: 'Lưu nháp', exact: true })
-      await saveDraftBtn.click()
-      await expect(page.getByRole('status')).toContainText('Đã lưu bản nháp', { timeout: 15000 })
+      // 5. Public page shows the new title (no networkidle: the template has a form with Turnstile).
+      await publicPage.goto(`/${pageSlug}`, { waitUntil: 'domcontentloaded' })
+      await expect(publicPage.locator('body')).toContainText(updatedTitle, {
+        ignoreCase: true,
+        timeout: 15000,
+      })
 
-      // Open version history modal
-      const historyBtn = page.getByRole('button', { name: 'Lịch sử', exact: true })
-      await historyBtn.click()
-
+      // 6. History: restore the version before the edit → the template title comes back.
+      await page.getByRole('button', { name: 'Lịch sử', exact: true }).click()
       const historyModal = page.getByRole('dialog', { name: 'Lịch sử phiên bản' })
       await expect(historyModal).toBeVisible({ timeout: 10000 })
-
-      // Expect at least one restore button in the list
       const restoreButtons = historyModal.getByRole('button', { name: 'Khôi phục' })
       await expect(restoreButtons.first()).toBeVisible()
+      page.once('dialog', (dialog) => dialog.accept())
+      // The oldest version is the page as created from the template.
+      await restoreButtons.last().click()
+      await expect(
+        page
+          .getByText(/Đã khôi phục phiên bản/)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible({ timeout: 15000 })
+      await expect(canvas.locator('[data-puck-component="campaign-header"]')).toContainText(
+        'ĐỒNG HÀNH CHUYỂN HÓA',
+        { ignoreCase: true, timeout: 15000 },
+      )
 
-      // Auto-accept confirmation dialog when restoring
-      page.once('dialog', async (dialog) => {
-        await dialog.accept()
-      })
-
-      // Click restore on the first available version
-      await restoreButtons.first().click()
-
-      // Verify restore feedback
-      await expect(page.getByRole('status')).toContainText('Đã khôi phục phiên bản', {
-        timeout: 15000,
-      })
-
-      // 7. Verify Locked Block on Homepage slug '/'
-      // Create or locate a homepage document
-      const homeRes = await page.request.post('/api/pages?draft=true', {
-        data: {
-          title: 'Trang Chủ Kiểm Thử E2E',
-          slug: `home-e2e-${randomUUID()}`,
-          _status: 'draft',
-          puckData: {
-            content: [
-              {
-                type: 'HeroTwoEntries',
-                props: {
-                  id: 'hero-locked-e2e',
-                  titleLine1: 'TIÊU ĐỀ KHÓA',
-                  titleLine2: 'KHÔNG THỂ XÓA',
+      // 7. Locked Hero on the homepage (slug '/'). Data-puck-component holds the block id.
+      // Reuse an existing homepage, or create one on an empty CI database.
+      const existingHome = await (
+        await page.request.get('/api/pages?where[slug][equals]=/&depth=0&draft=true')
+      ).json()
+      let homeHeroId: string
+      if (existingHome.docs.length > 0) {
+        homepageIsOurs = false
+        homepageId = existingHome.docs[0].id
+        const heroItem = (existingHome.docs[0].puckData?.content || []).find(
+          (c: { type: string }) => c.type === 'HeroTwoEntries',
+        )
+        expect(heroItem, 'Existing homepage must contain HeroTwoEntries').toBeTruthy()
+        homeHeroId = heroItem.props.id
+      } else {
+        homeHeroId = 'hero-locked-e2e'
+        const homeRes = await page.request.post('/api/pages', {
+          data: {
+            title: 'Trang Chủ Kiểm Thử E2E',
+            slug: '/',
+            _status: 'draft',
+            puckData: {
+              content: [
+                {
+                  type: 'HeroTwoEntries',
+                  props: {
+                    id: homeHeroId,
+                    titleLine1: 'TIÊU ĐỀ KHÓA',
+                    titleLine2: 'KHÔNG THỂ XÓA',
+                  },
                 },
-              },
-            ],
-            root: { props: { title: 'Trang Chủ' } },
+              ],
+              root: { props: { title: 'Trang Chủ' } },
+            },
           },
-        },
+        })
+        expect(homeRes.status(), await homeRes.text()).toBe(201)
+        homepageIsOurs = true
+        homepageId = (await homeRes.json()).doc.id
+      }
+
+      // Server: saving '/' without the Hero is rejected.
+      const stripped = await page.request.patch(`/api/pages/${homepageId}?draft=true`, {
+        data: { puckData: { content: [], root: { props: {} } } },
       })
-      expect(homeRes.ok()).toBe(true)
-      const homeJson = await homeRes.json()
-      homepageId = homeJson.doc.id
+      expect(stripped.status()).toBe(400)
 
-      // Open builder for homepage
+      // Editor: the Hero cannot be deleted. Leaving the previous editor may raise the
+      // 'unsaved changes' prompt – accept it.
+      page.on('dialog', (dialog) => dialog.accept().catch(() => {}))
       await page.goto(`/builder/${homepageId}`, { waitUntil: 'load' })
-      const homeCanvas = page.frameLocator('iframe')
-      const lockedHero = homeCanvas.locator('[data-puck-component="HeroTwoEntries"]').first()
+      const lockedHero = page
+        .frameLocator('iframe')
+        .locator(`[data-puck-component="${homeHeroId}"]`)
+        .first()
       await expect(lockedHero).toBeVisible({ timeout: 15000 })
-
-      // Click on Hero to reveal action bar / outline
-      await lockedHero.click()
-
-      // On locked components, delete and duplicate actions are disabled or absent
+      // Measured separately: the block is static; Playwright still reports it unstable inside the
+      // editor iframe after the previous steps. Selecting it is all we need here.
+      await lockedHero.click({ force: true })
       const deleteAction = page.locator(
         'button[title*="Xóa"], button[aria-label*="Xóa"], [data-puck-action="delete"]',
       )
@@ -194,7 +213,7 @@ test.describe('T1-04: Puck Templates, Versions, Locked Blocks and Autosave', () 
       if (pageId) {
         await page.request.delete(`/api/pages/${pageId}`)
       }
-      if (homepageId) {
+      if (homepageId && homepageIsOurs) {
         await page.request.delete(`/api/pages/${homepageId}`)
       }
       if (userId) {
