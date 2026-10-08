@@ -153,18 +153,17 @@ export async function submitDiagnostic(
 
   const cleanEmail = validated.email?.trim().toLowerCase() || null
 
-  // 6. Xử lý lưu Email & Tạo Lead (nếu người dùng cung cấp email)
+  // 6. Every submission writes a diagnosticResults row, so Turnstile and the per-IP rate limit
+  // apply with or without an email (otherwise bots could fill the table anonymously).
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
+  await checkAndRecordRateLimit(payload, {
+    form: 'diagnostic',
+    ip: ctx.ip,
+    email: cleanEmail ?? undefined,
+  })
+
+  // 6b. Lưu Email & Tạo Lead (nếu người dùng cung cấp email)
   if (cleanEmail) {
-    // 6a. Turnstile verification (trước rate limit để tránh hao hụt giới hạn)
-    await verifyTurnstile(validated.turnstileToken, ctx.ip)
-
-    // 6b. Rate limiting check & record
-    await checkAndRecordRateLimit(payload, {
-      form: 'diagnostic',
-      ip: ctx.ip,
-      email: cleanEmail,
-    })
-
     // 6c. REVIEW-REQUIRED: Tạo lead trong collection leads với overrideAccess
     await payload.create({
       collection: 'leads',

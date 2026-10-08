@@ -389,6 +389,23 @@ describe('Diagnostic Submission & Validation (submitDiagnostic)', () => {
     expect(resultsCreated[0]?.topStage).toBe('response')
   })
 
+  it('Không nhập email vẫn bị giới hạn tần suất theo IP (chống spam bảng diagnosticResults)', async () => {
+    const { mockPayload, resultsCreated } = createMockPayload()
+    // The IP already has 5 hits in the window.
+    ;(mockPayload.count as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ totalDocs: 5 })
+
+    const input: DiagnosticSubmissionInput = {
+      answers: [{ questionId: 2, score: 4 }],
+      email: '',
+      consent: false,
+    }
+
+    await expect(
+      submitDiagnostic(input, { ip: '203.0.113.9' }, { payload: mockPayload }),
+    ).rejects.toThrow()
+    expect(resultsCreated).toHaveLength(0)
+  })
+
   it('Chấm lại hoàn toàn phía SERVER: không tin điểm hay topStage giả mạo từ client', async () => {
     const { mockPayload, resultsCreated } = createMockPayload()
 
