@@ -147,7 +147,8 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-lavender-mist/20">
                   <span className="text-deep-navy/70">{vi.payment.ui.orderView.bankNameLabel}</span>
                   <span className="font-semibold text-deep-navy text-right">
-                    {order.bankInfo.bankName || `Mã BIN: ${order.bankInfo.bankBin}`}
+                    {order.bankInfo.bankName ||
+                      `${vi.payment.ui.orderView.bankBinPrefix} ${order.bankInfo.bankBin}`}
                   </span>
                 </div>
 
@@ -164,7 +165,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                       type="button"
                       onClick={() => copyToClipboard(order.bankInfo.accountNumber, 'accountNumber')}
                       className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-lavender-mist/40 text-deep-navy hover:bg-lavender-mist transition-colors"
-                      title="Sao chép số tài khoản"
+                      title={vi.payment.ui.orderView.copyAccountTitle}
                     >
                       {copiedField === 'accountNumber'
                         ? vi.payment.ui.orderView.copiedShort
@@ -194,7 +195,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                       type="button"
                       onClick={() => copyToClipboard(String(order.amount), 'amount')}
                       className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-lavender-mist/40 text-deep-navy hover:bg-lavender-mist transition-colors"
-                      title="Sao chép số tiền"
+                      title={vi.payment.ui.orderView.copyAmountTitle}
                     >
                       {copiedField === 'amount'
                         ? vi.payment.ui.orderView.copiedShort
@@ -213,7 +214,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                       type="button"
                       onClick={() => copyToClipboard(order.paymentRef, 'paymentRef')}
                       className="px-3 py-1 text-xs font-bold rounded-lg bg-accent-pink text-white hover:bg-bright-magenta shadow-sm transition-colors"
-                      title="Sao chép mã nội dung chuyển khoản"
+                      title={vi.payment.ui.orderView.copyRefTitle}
                     >
                       {copiedField === 'paymentRef'
                         ? vi.payment.ui.orderView.copiedButton
@@ -226,7 +227,8 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                   </div>
 
                   <p className="text-xs text-deep-navy/70 leading-relaxed">
-                    ⚠️ <strong>Lưu ý:</strong> {vi.payment.ui.orderView.refNotice}
+                    ⚠️ <strong>{vi.payment.ui.orderView.noticeLabel}</strong>{' '}
+                    {vi.payment.ui.orderView.refNotice}
                   </p>
                 </div>
               </div>

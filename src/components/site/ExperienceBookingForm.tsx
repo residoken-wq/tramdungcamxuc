@@ -120,14 +120,14 @@ export function ExperienceBookingForm({
         router.push(`/thanh-toan/don/${res.payToken}`)
       } else {
         setStatus('error')
-        setServerError(res.error || res.message || 'Không thể tạo đơn hàng. Vui lòng thử lại.')
+        setServerError(res.error || res.message || vi.payment.ui.booking.createOrderFailed)
         if (res.fieldErrors) {
           setErrors(res.fieldErrors as ExperienceBookingFormErrors)
         }
       }
     } catch (err) {
       setStatus('error')
-      setServerError(err instanceof Error ? err.message : 'Có lỗi không mong muốn xảy ra.')
+      setServerError(vi.payment.errors.serverError)
     }
   }
 
@@ -174,10 +174,6 @@ export function ExperienceBookingForm({
             <div className="space-y-3 pt-2 text-xs text-deep-navy/75">
               <div className="flex items-start gap-2">
                 <span className="text-accent-pink font-bold">✓</span>
-                <span>{vi.payment.ui.booking.featureDuration}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-accent-pink font-bold">✓</span>
                 <span>{vi.payment.ui.booking.featureVietQr}</span>
               </div>
               <div className="flex items-start gap-2">
@@ -215,7 +211,7 @@ export function ExperienceBookingForm({
 
               {/* Honeypot field for bot protection */}
               <div className="hidden" aria-hidden="true">
-                <label htmlFor={honeypotId}>Không điền ô này nếu bạn là người thật</label>
+                <label htmlFor={honeypotId}>{vi.payment.ui.booking.honeypotLabel}</label>
                 <input
                   id={honeypotId}
                   name="honeypot"

@@ -350,8 +350,7 @@ export const vi = {
           'Một khoảng dừng an toàn để lắng nghe, gọi tên và thấu suốt cảm xúc cùng Coach.',
         cardBadge: 'Phiên trải nghiệm 1:1',
         feeLabel: 'Chi phí đầu tư',
-        featureDuration: 'Thời lượng 60–90 phút đồng hành cá nhân hóa',
-        featureVietQr: 'Thanh toán chuyển khoản quét mã VietQR tự động tiện lợi',
+        featureVietQr: 'Thanh toán chuyển khoản bằng mã VietQR',
         featureSchedule: 'Chủ động chọn khung giờ sau khi xác nhận thanh toán',
         formTitle: 'Thông tin đăng ký phiên',
         formDesc: 'Vui lòng cung cấp thông tin chính xác để Trạm gửi xác nhận và link đặt lịch.',
@@ -375,6 +374,8 @@ export const vi = {
         submittingButton: 'Đang tạo đơn thanh toán...',
         redirectNotice:
           'Sau khi gửi thông tin, bạn sẽ được chuyển tới trang hiển thị mã QR và nội dung chuyển khoản.',
+        createOrderFailed: 'Không thể tạo đơn hàng. Vui lòng thử lại.',
+        honeypotLabel: 'Không điền ô này nếu bạn là người thật',
       },
       orderView: {
         title: 'Thông tin thanh toán đơn hàng | Trạm Dừng Cảm Xúc',
@@ -393,7 +394,7 @@ export const vi = {
         descFailed:
           'Đơn hàng đã quá thời hạn 24 giờ để thanh toán. Bạn vui lòng quay lại trang chủ hoặc đặt phiên mới để tiếp tục.',
         descPending:
-          'Vui lòng quét mã VietQR hoặc chuyển khoản chính xác thông tin bên dưới để đơn hàng được xác nhận tự động nhanh nhất.',
+          'Vui lòng quét mã VietQR hoặc chuyển khoản chính xác thông tin bên dưới để Trạm Dừng Cảm Xúc xác nhận đơn hàng.',
         productPrefix: 'Sản phẩm:',
         qrTitle: 'Mã QR VietQR',
         qrInstruction: 'Mở app ngân hàng bất kỳ để quét mã',
@@ -403,6 +404,11 @@ export const vi = {
         accountNameLabel: 'Chủ tài khoản:',
         amountLabel: 'Số tiền chuyển:',
         paymentRefLabel: 'Nội dung chuyển khoản (Bắt buộc)',
+        bankBinPrefix: 'Mã BIN:',
+        copyAccountTitle: 'Sao chép số tài khoản',
+        copyAmountTitle: 'Sao chép số tiền',
+        copyRefTitle: 'Sao chép mã nội dung chuyển khoản',
+        noticeLabel: 'Lưu ý:',
         copyButton: 'Sao chép',
         copyRefButton: 'Sao chép mã',
         copiedButton: '✓ Đã sao chép',
