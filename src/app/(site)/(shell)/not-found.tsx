@@ -4,7 +4,7 @@ import { vi } from '@/lib/i18n/vi'
 
 export default function ShellNotFound() {
   return (
-    <main className="w-full bg-warm-ivory py-16 sm:py-24 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center min-h-[60vh] text-center">
+    <div className="w-full bg-warm-ivory py-16 sm:py-24 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center min-h-[60vh] text-center">
       <div className="max-w-xl mx-auto">
         <span className="font-ui font-bold text-xs uppercase tracking-widest text-bright-magenta mb-3 block">
           404
@@ -27,6 +27,6 @@ export default function ShellNotFound() {
           </Button>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

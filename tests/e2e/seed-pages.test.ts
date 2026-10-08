@@ -22,6 +22,11 @@ const VIEWPORTS = [
   { name: 'desktop-1440', width: 1440, height: 900 },
 ] as const
 
+// Needs `pnpm seed` first. The regular CI e2e run uses an empty database (other specs create
+// their own pages, some with the same slugs as the seed), so this spec runs only on request:
+//   pnpm seed && E2E_SEEDED=1 pnpm exec playwright test tests/e2e/seed-pages.test.ts
+test.skip(!process.env.E2E_SEEDED, 'Chạy sau `pnpm seed` với E2E_SEEDED=1.')
+
 for (const viewport of VIEWPORTS) {
   test.describe(`5 seed pages – viewport: ${viewport.name} (${viewport.width}x${viewport.height})`, () => {
     test.beforeEach(async ({ page }) => {
