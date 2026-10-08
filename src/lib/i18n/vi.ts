@@ -325,15 +325,15 @@ export const vi = {
         'Hệ thống chưa cấu hình đầy đủ thông tin tài khoản ngân hàng. Vui lòng liên hệ quản trị viên.',
       productNotFound:
         'Không tìm thấy sản phẩm phiên trải nghiệm đang mở bán. Vui lòng liên hệ quản trị viên.',
+      productNotForSale: 'Sản phẩm phiên trải nghiệm hiện không mở bán.',
       productPriceInvalid: 'Giá sản phẩm không hợp lệ. Vui lòng liên hệ quản trị viên.',
       orderNotFound: 'Không tìm thấy đơn hàng.',
       unauthorized:
         'Chỉ chủ sở hữu (owner) mới có quyền xác nhận thanh toán thủ công hoặc hủy đơn.',
-      onlyPendingCanBeConfirmed:
-        'Chỉ có thể xác nhận đơn hàng đang ở trạng thái chờ thanh toán.',
-      cannotCancelPaidOrder:
-        'Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
+      onlyPendingCanBeConfirmed: 'Chỉ có thể xác nhận đơn hàng đang ở trạng thái chờ thanh toán.',
+      cannotCancelPaidOrder: 'Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
       orderExpired: 'Đơn hàng đã hết hạn thanh toán.',
+      serverError: 'Đã có lỗi xảy ra trong quá trình xử lý. Vui lòng thử lại sau.',
     },
     success: {
       orderCreated: 'Tạo đơn đặt phiên trải nghiệm thành công.',
@@ -341,6 +341,104 @@ export const vi = {
       cancelled: 'Hủy đơn hàng thành công.',
     },
     sandboxNotice: 'THỬ NGHIỆM – không chuyển tiền thật',
+    ui: {
+      booking: {
+        seriesLabel: 'Đồng hành 1:1 · Trạm Dừng Cảm Xúc',
+        titleLine1: 'ĐẶT PHIÊN TRẢI NGHIỆM',
+        titleLine2: 'KHỞI ĐẦU HÀNH TRÌNH HIỂU MÌNH',
+        emotionLine:
+          'Một khoảng dừng an toàn để lắng nghe, gọi tên và thấu suốt cảm xúc cùng Coach.',
+        cardBadge: 'Phiên trải nghiệm 1:1',
+        feeLabel: 'Chi phí đầu tư',
+        featureDuration: 'Thời lượng 60–90 phút đồng hành cá nhân hóa',
+        featureVietQr: 'Thanh toán chuyển khoản quét mã VietQR tự động tiện lợi',
+        featureSchedule: 'Chủ động chọn khung giờ sau khi xác nhận thanh toán',
+        formTitle: 'Thông tin đăng ký phiên',
+        formDesc: 'Vui lòng cung cấp thông tin chính xác để Trạm gửi xác nhận và link đặt lịch.',
+        nameLabel: 'Họ và tên',
+        namePlaceholder: 'Ví dụ: Nguyễn Minh Thư',
+        emailLabel: 'Địa chỉ email',
+        emailPlaceholder: 'name@example.com',
+        phoneLabel: 'Số điện thoại',
+        phoneOptional: '(tùy chọn)',
+        phonePlaceholder: '0912 345 678',
+        needLabel: 'Nhu cầu hoặc mục tiêu khi đặt phiên',
+        needMaxHint: '(tối đa 1.000 ký tự)',
+        needPlaceholder:
+          'Bạn đang gặp khó khăn gì hoặc mong muốn đạt được điều gì sau phiên trải nghiệm này?...',
+        termsPrefix: 'Tôi đã đọc và đồng ý với',
+        termsLink: 'Điều khoản sử dụng',
+        andText: 'và',
+        pricingPolicyLink: 'Chính sách giá – thanh toán',
+        termsSuffix: 'của Trạm Dừng Cảm Xúc.',
+        submitButton: 'Tiếp tục thanh toán VietQR',
+        submittingButton: 'Đang tạo đơn thanh toán...',
+        redirectNotice:
+          'Sau khi gửi thông tin, bạn sẽ được chuyển tới trang hiển thị mã QR và nội dung chuyển khoản.',
+      },
+      orderView: {
+        title: 'Thông tin thanh toán đơn hàng | Trạm Dừng Cảm Xúc',
+        statusPendingBadge: '⏳ Chờ chuyển khoản',
+        statusPaidBadge: '✓ Đã thanh toán thành công',
+        statusCancelledBadge: '✕ Đơn hàng đã hủy',
+        statusFailedBadge: '⏱ Đơn hàng đã quá hạn',
+        titlePaid: 'Cảm ơn bạn! Đơn hàng đã được xác nhận',
+        titleCancelled: 'Đơn hàng đã được hủy',
+        titleFailed: 'Đơn hàng đã hết hạn thanh toán',
+        titlePending: 'Thông tin chuyển khoản thanh toán',
+        descPaid:
+          'Hệ thống đã ghi nhận thanh toán thành công. Email hướng dẫn kèm link đặt lịch hẹn với Coach đã được gửi tới hộp thư của bạn.',
+        descCancelled:
+          'Đơn hàng này đã bị hủy theo yêu cầu. Nếu cần hỗ trợ thêm, bạn vui lòng liên hệ với Trạm Dừng Cảm Xúc.',
+        descFailed:
+          'Đơn hàng đã quá thời hạn 24 giờ để thanh toán. Bạn vui lòng quay lại trang chủ hoặc đặt phiên mới để tiếp tục.',
+        descPending:
+          'Vui lòng quét mã VietQR hoặc chuyển khoản chính xác thông tin bên dưới để đơn hàng được xác nhận tự động nhanh nhất.',
+        productPrefix: 'Sản phẩm:',
+        qrTitle: 'Mã QR VietQR',
+        qrInstruction: 'Mở app ngân hàng bất kỳ để quét mã',
+        transferCardTitle: 'Chi tiết chuyển khoản thủ công',
+        bankNameLabel: 'Ngân hàng thụ hưởng:',
+        accountNumberLabel: 'Số tài khoản:',
+        accountNameLabel: 'Chủ tài khoản:',
+        amountLabel: 'Số tiền chuyển:',
+        paymentRefLabel: 'Nội dung chuyển khoản (Bắt buộc)',
+        copyButton: 'Sao chép',
+        copyRefButton: 'Sao chép mã',
+        copiedButton: '✓ Đã sao chép',
+        copiedShort: '✓ Đã chép',
+        refNotice:
+          'Vui lòng giữ nguyên chính xác nội dung khi chuyển khoản để hệ thống đối soát chính xác.',
+        timingNoticeTitle: 'Thời gian xử lý & Hỗ trợ:',
+        timingNoticeLine1:
+          '• Sau khi nhận được chuyển khoản, Coach Hana Lương sẽ xác nhận đơn và gửi link đặt lịch qua email của bạn trong thời gian sớm nhất.',
+        timingNoticeLine2:
+          '• Nếu cần hỗ trợ khẩn cấp, bạn có thể nhắn tin qua nút chat Zalo ở góc dưới màn hình.',
+        backHomeButton: '← Quay về trang chủ',
+      },
+      adminActions: {
+        panelTitle: 'Thao tác đơn hàng (Chủ sở hữu)',
+        panelDesc:
+          'Trạng thái thanh toán được bảo vệ và chỉ có thể thay đổi an toàn qua các nút chức năng bên dưới.',
+        saveFirstNotice: 'Vui lòng lưu đơn hàng trước khi thực hiện thao tác duyệt hoặc hủy.',
+        confirmButton: 'Xác nhận thanh toán',
+        cancelButton: 'Hủy đơn hàng',
+        processing: 'Đang xử lý...',
+        confirmModalTitle: 'Xác nhận thanh toán đơn hàng',
+        cancelModalTitle: 'Xác nhận hủy đơn hàng',
+        confirmModalDesc:
+          'Bạn có chắc chắn muốn xác nhận thanh toán cho đơn hàng này? Hệ thống sẽ chuyển trạng thái sang "Đã thanh toán", lưu nhật ký audit log và gửi email đặt lịch hẹn tới khách hàng.',
+        cancelModalDesc:
+          'Bạn có chắc chắn muốn hủy đơn hàng này? Lưu ý: Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
+        cancelReasonLabel: 'Lý do hủy (tùy chọn):',
+        cancelReasonPlaceholder: 'Nhập lý do hủy đơn...',
+        closeButton: 'Đóng',
+        agreeConfirmButton: 'Đồng ý xác nhận',
+        agreeCancelButton: 'Đồng ý hủy đơn',
+        defaultConfirmError: 'Có lỗi xảy ra khi xác nhận thanh toán',
+        defaultCancelError: 'Có lỗi xảy ra khi hủy đơn hàng',
+      },
+    },
   },
 } as const
 

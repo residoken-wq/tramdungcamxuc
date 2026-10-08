@@ -1,5 +1,6 @@
 import 'server-only'
 import { getPayload, type Payload } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
 import config from '@/payload.config'
 import { vi } from '../i18n/vi'
 import { experienceOrderSchema, type ExperienceOrderInput } from '../forms/schemas'
@@ -13,6 +14,48 @@ import {
   sendOrderExpiredReminderEmail,
 } from '../email/service.server'
 import type { EmailSender } from '../email/types'
+
+export class PaymentError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'PaymentError'
+  }
+}
+
+export class OrderNotFoundError extends PaymentError {
+  constructor(message: string = vi.payment.errors.orderNotFound) {
+    super(message)
+    this.name = 'OrderNotFoundError'
+  }
+}
+
+export class UnauthorizedPaymentError extends PaymentError {
+  constructor(message: string = vi.payment.errors.unauthorized) {
+    super(message)
+    this.name = 'UnauthorizedPaymentError'
+  }
+}
+
+export class CannotCancelPaidOrderError extends PaymentError {
+  constructor(message: string = vi.payment.errors.cannotCancelPaidOrder) {
+    super(message)
+    this.name = 'CannotCancelPaidOrderError'
+  }
+}
+
+export class InvalidOrderStatusError extends PaymentError {
+  constructor(message: string = vi.payment.errors.onlyPendingCanBeConfirmed) {
+    super(message)
+    this.name = 'InvalidOrderStatusError'
+  }
+}
+
+export class ProductNotForSaleError extends PaymentError {
+  constructor(message: string = vi.payment.errors.productNotForSale) {
+    super(message)
+    this.name = 'ProductNotForSaleError'
+  }
+}
 
 export interface ExperienceOrderContext {
   ip?: string
@@ -151,19 +194,24 @@ export async function createExperienceOrder(
   })
 
   if (products.totalDocs === 0) {
-    throw new Error(vi.payment.errors.productNotFound)
+    throw new OrderNotFoundError(vi.payment.errors.productNotFound)
   }
 
   const product = products.docs[0]
   if (product.type !== 'coaching_trial' || product._status !== 'published') {
-    throw new Error(vi.payment.errors.productNotFound)
+    throw new OrderNotFoundError(vi.payment.errors.productNotFound)
+  }
+
+  // REVIEW-REQUIRED: Chỉ bán sản phẩm đang mở bán (saleStatus === 'on_sale')
+  if (product.saleStatus !== 'on_sale') {
+    throw new ProductNotForSaleError(vi.payment.errors.productNotForSale)
   }
 
   // REVIEW-REQUIRED: Giá được đọc trực tiếp từ DB qua getEffectivePrice, bỏ qua mọi giá client gửi
   const effective = getEffectivePrice(product, now)
   const effectivePrice = effective.salePrice ?? effective.price
   if (effectivePrice == null || effectivePrice <= 0) {
-    throw new Error(vi.payment.errors.productPriceInvalid)
+    throw new PaymentError(vi.payment.errors.productPriceInvalid)
   }
 
   // 8. Sinh paymentRef duy nhất và payToken không đoán được
@@ -201,6 +249,7 @@ export async function createExperienceOrder(
       notes: validated.need?.trim() ? `Nhu cầu: ${validated.need.trim()}` : undefined,
       createdByAdmin: false,
     },
+    context: { paymentAction: true },
     overrideAccess: true,
   })
 
@@ -299,6 +348,14 @@ export interface AdminActor {
  * Idempotent: chỉ chuyển pending -> paid; gọi lần 2 không đổi paidAt, không gửi lại email.
  * Ghi nhận nhật ký auditLogs. Sau khi paid: gửi email chứa experienceBookingUrl.
  */
+interface DrizzleDbExecutor {
+  execute: (query: unknown) => Promise<unknown>
+}
+
+function getDrizzleDb(payload: Payload): DrizzleDbExecutor {
+  return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
+}
+
 export async function confirmManualPayment(
   orderId: number,
   user: AdminActor,
@@ -306,7 +363,7 @@ export async function confirmManualPayment(
 ): Promise<unknown> {
   // REVIEW-REQUIRED: Chỉ tài khoản có vai trò 'owner' mới được quyền xác nhận thanh toán thủ công
   if (!user || user.role !== 'owner') {
-    throw new Error(vi.payment.errors.unauthorized)
+    throw new UnauthorizedPaymentError(vi.payment.errors.unauthorized)
   }
 
   const payload = await resolvePayload(options.payload)
@@ -319,7 +376,7 @@ export async function confirmManualPayment(
   })
 
   if (!order) {
-    throw new Error(vi.payment.errors.orderNotFound)
+    throw new OrderNotFoundError(vi.payment.errors.orderNotFound)
   }
 
   const now = options.now ?? new Date()
@@ -346,26 +403,22 @@ export async function confirmManualPayment(
   }
 
   if (order.paymentStatus !== 'pending') {
-    throw new Error(vi.payment.errors.onlyPendingCanBeConfirmed)
+    throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
   }
 
-  // REVIEW-REQUIRED: Cập nhật có điều kiện chống race condition (chỉ đổi khi paymentStatus = pending)
+  // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB
+  // UPDATE orders SET payment_status = 'paid', paid_at = ${paidAt}, updated_at = ${paidAt} WHERE id = ${orderId} AND payment_status = 'pending' RETURNING id
+  // Bảng orders không cấu hình versions (không có _orders_v) nên câu UPDATE trực tiếp an toàn tuyệt đối.
   const paidAt = now.toISOString()
-  const updateResult = await payload.update({
-    collection: 'orders',
-    where: {
-      and: [{ id: { equals: orderId } }, { paymentStatus: { equals: 'pending' } }],
-    },
-    data: {
-      paymentStatus: 'paid',
-      paidAt,
-    },
-    context: { paymentAction: true },
-    overrideAccess: true,
-  })
+  const db = getDrizzleDb(payload)
+  const updateResult = await db.execute(
+    sql`UPDATE "orders" SET "payment_status" = 'paid', "paid_at" = ${paidAt}::timestamptz, "updated_at" = ${paidAt}::timestamptz WHERE "id" = ${orderId} AND "payment_status" = 'pending' RETURNING "id"`,
+  )
+  const rows = (updateResult as { rows?: Array<{ id: number }> }).rows ?? []
 
-  // Chỉ khi đổi được đúng 1 bản ghi mới ghi audit "paid" và gửi email; không đổi được -> coi như "đã xác nhận trước đó"
-  if (updateResult.docs.length === 0) {
+  // Chỉ khi RETURNING có dòng mới gửi email / cấp quyền / ghi auditLogs;
+  // Không có dòng -> trả kết quả "đã xử lý trước đó" (idempotent), không ném lỗi.
+  if (rows.length === 0) {
     const refreshed = await payload.findByID({
       collection: 'orders',
       id: orderId,
@@ -391,10 +444,8 @@ export async function confirmManualPayment(
       })
       return refreshed
     }
-    throw new Error(vi.payment.errors.onlyPendingCanBeConfirmed)
+    return refreshed ?? order
   }
-
-  const updatedOrder = updateResult.docs[0]
 
   // Ghi nhật ký thao tác
   await payload.create({
@@ -452,7 +503,14 @@ export async function confirmManualPayment(
     }
   }
 
-  return updatedOrder
+  const updatedOrder = await payload.findByID({
+    collection: 'orders',
+    id: orderId,
+    depth: 1,
+    overrideAccess: true,
+  })
+
+  return updatedOrder ?? order
 }
 
 /**
@@ -468,7 +526,7 @@ export async function cancelOrder(
 ): Promise<unknown> {
   // REVIEW-REQUIRED: Chỉ tài khoản 'owner' mới được hủy đơn hàng
   if (!user || user.role !== 'owner') {
-    throw new Error(vi.payment.errors.unauthorized)
+    throw new UnauthorizedPaymentError(vi.payment.errors.unauthorized)
   }
 
   const payload = await resolvePayload(options.payload)
@@ -480,12 +538,12 @@ export async function cancelOrder(
   })
 
   if (!order) {
-    throw new Error(vi.payment.errors.orderNotFound)
+    throw new OrderNotFoundError(vi.payment.errors.orderNotFound)
   }
 
   // REVIEW-REQUIRED: Không cho phép hủy đơn đã thanh toán (tuân thủ chính sách không hoàn tiền AGENTS.md mục 14)
   if (order.paymentStatus === 'paid') {
-    throw new Error(vi.payment.errors.cannotCancelPaidOrder)
+    throw new CannotCancelPaidOrderError(vi.payment.errors.cannotCancelPaidOrder)
   }
 
   if (order.paymentStatus === 'cancelled') {
@@ -493,36 +551,31 @@ export async function cancelOrder(
   }
 
   const now = options.now ?? new Date()
-  // REVIEW-REQUIRED: Cập nhật có điều kiện chống race condition (chỉ hủy khi paymentStatus = pending)
-  const updateResult = await payload.update({
-    collection: 'orders',
-    where: {
-      and: [{ id: { equals: orderId } }, { paymentStatus: { equals: 'pending' } }],
-    },
-    data: {
-      paymentStatus: 'cancelled',
-      notes: reason ? `${order.notes || ''}\nLý do hủy: ${reason}`.trim() : order.notes,
-    },
-    context: { paymentAction: true },
-    overrideAccess: true,
-  })
+  const nowIso = now.toISOString()
+  const nextNotes = reason ? `${order.notes || ''}\nLý do hủy: ${reason}`.trim() : order.notes
 
-  if (updateResult.docs.length === 0) {
+  // REVIEW-REQUIRED: Hủy đơn hàng nguyên tử bằng câu lệnh UPDATE có điều kiện tại DB
+  // Bảng orders không cấu hình versions (không có _orders_v). UPDATE chỉ đổi khi payment_status = 'pending'.
+  const db = getDrizzleDb(payload)
+  const updateResult = await db.execute(
+    sql`UPDATE "orders" SET "payment_status" = 'cancelled', "notes" = ${nextNotes ?? null}, "updated_at" = ${nowIso}::timestamptz WHERE "id" = ${orderId} AND "payment_status" = 'pending' RETURNING "id"`,
+  )
+  const rows = (updateResult as { rows?: Array<{ id: number }> }).rows ?? []
+
+  if (rows.length === 0) {
     const refreshed = await payload.findByID({
       collection: 'orders',
       id: orderId,
       overrideAccess: true,
     })
     if (refreshed?.paymentStatus === 'paid') {
-      throw new Error(vi.payment.errors.cannotCancelPaidOrder)
+      throw new CannotCancelPaidOrderError(vi.payment.errors.cannotCancelPaidOrder)
     }
     if (refreshed?.paymentStatus === 'cancelled') {
       return refreshed
     }
-    throw new Error(vi.payment.errors.orderNotFound)
+    throw new InvalidOrderStatusError(vi.payment.errors.orderNotFound)
   }
-
-  const updatedOrder = updateResult.docs[0]
 
   await payload.create({
     collection: 'auditLogs',
@@ -532,12 +585,18 @@ export async function cancelOrder(
       target: `orders:${orderId}`,
       before: { paymentStatus: order.paymentStatus },
       after: { paymentStatus: 'cancelled', reason: reason || null },
-      at: now.toISOString(),
+      at: nowIso,
     },
     overrideAccess: true,
   })
 
-  return updatedOrder
+  const updatedOrder = await payload.findByID({
+    collection: 'orders',
+    id: orderId,
+    overrideAccess: true,
+  })
+
+  return updatedOrder ?? order
 }
 
 export interface ExpireOrdersResult {
@@ -557,50 +616,38 @@ export async function expirePendingOrders(
 
   // 24 giờ trước thời điểm now
   const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
+  const nowIso = now.toISOString()
 
-  // REVIEW-REQUIRED: Chỉ tìm và đóng các đơn pending tạo trước mốc 24 giờ
-  const pendingOrders = await payload.find({
-    collection: 'orders',
-    where: {
-      and: [{ paymentStatus: { equals: 'pending' } }, { createdAt: { less_than: cutoff } }],
-    },
-    overrideAccess: true,
-    depth: 1,
-    limit: 200,
-  })
+  // REVIEW-REQUIRED: Cron đóng đơn hết hạn nguyên tử bằng một câu UPDATE có điều kiện tại DB
+  // Bảng orders không cấu hình versions (không có _orders_v). Chỉ đổi đơn pending tạo trước cutoff sang failed.
+  const db = getDrizzleDb(payload)
+  const updateResult = await db.execute(
+    sql`UPDATE "orders" SET "payment_status" = 'failed', "updated_at" = ${nowIso}::timestamptz WHERE "payment_status" = 'pending' AND "created_at" < ${cutoff}::timestamptz RETURNING "id", "customer_id", "payment_ref", "total"`,
+  )
+  const rows =
+    (
+      updateResult as {
+        rows?: Array<{
+          id: number
+          customer_id: number
+          payment_ref: string | null
+          total: number | string
+        }>
+      }
+    ).rows ?? []
 
   let expiredCount = 0
   let reminderSentCount = 0
 
-  for (const order of pendingOrders.docs) {
-    // REVIEW-REQUIRED: Cập nhật có điều kiện chống race condition (chỉ đổi nếu paymentStatus vẫn là pending)
-    const updateResult = await payload.update({
-      collection: 'orders',
-      where: {
-        and: [{ id: { equals: order.id } }, { paymentStatus: { equals: 'pending' } }],
-      },
-      data: {
-        paymentStatus: 'failed',
-      },
-      context: { paymentAction: true },
-      overrideAccess: true,
-    })
-
-    if (updateResult.docs.length === 0) {
-      continue
-    }
-
+  for (const row of rows) {
     expiredCount++
 
     // Kiểm tra nếu khách đồng ý nhận tin quảng bá -> gửi email nhắc hẹn
-    const customerDoc =
-      typeof order.customer === 'object' && order.customer !== null
-        ? order.customer
-        : await payload.findByID({
-            collection: 'customers',
-            id: Number(order.customer),
-            overrideAccess: true,
-          })
+    const customerDoc = await payload.findByID({
+      collection: 'customers',
+      id: Number(row.customer_id),
+      overrideAccess: true,
+    })
 
     if (customerDoc?.consentMarketing && customerDoc?.email) {
       try {
