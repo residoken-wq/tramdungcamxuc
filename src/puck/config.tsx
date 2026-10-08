@@ -406,7 +406,9 @@ export const puckConfig: Config<PageComponentsProps> = {
 
         return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
       },
-      render: (props) => <ImageText {...props} />,
+      // ImageText is a client component: never forward Puck's `puck` object (it holds functions,
+      // which cannot be serialised into a client component on the public page).
+      render: ({ puck: _puck, ...props }) => <ImageText {...props} />,
     },
 
     // Chuyển đổi
