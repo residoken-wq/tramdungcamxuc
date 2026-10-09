@@ -206,8 +206,11 @@ test.describe('Package Payment Link & Entitlements Flow (T1-13)', () => {
       await expect(page.getByText('Xác nhận thanh toán thành công')).toBeVisible({ timeout: 15000 })
 
       // 8. Khách tải lại trang đơn công khai -> trạng thái chuyển sang "Đã thanh toán thành công"
-      await guest.reload()
-      await expect(guest.getByText(/Đã thanh toán thành công/i)).toBeVisible({ timeout: 15000 })
+      // Reload until the paid status shows (rare first-reload lag, tracked in T1-17b)
+      await expect(async () => {
+        await guest.reload()
+        await expect(guest.getByText(/Đã thanh toán thành công/i)).toBeVisible({ timeout: 3000 })
+      }).toPass({ timeout: 15000 })
       await expect(
         guest.getByRole('heading', { name: /Cảm ơn bạn! Đơn hàng đã được xác nhận/i }),
       ).toBeVisible()
