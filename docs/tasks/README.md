@@ -114,9 +114,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 
 Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.md` mục 3. Prompt: `docs/tasks/prompts/<MÃ>.md`.
 
-**🔒 Migration: (trống) · 🔒 Package: T1-17e**
+**🔒 Migration: (trống) · 🔒 Package: (trống)**
 
-**Lịch máy 09–10/10**: PC nhà = ~~T1-13~~ (xong), T1-17e · Codex (Local) = ~~T1-10b~~ (xong), review thứ hai T1-13 khi PR sẵn sàng · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
+**Lịch máy 09–10/10**: PC nhà = ~~T1-13~~, ~~T1-17e~~ (xong) · Codex (Local) = ~~T1-10b~~ (xong), review thứ hai T1-13 khi PR sẵn sàng · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
 
 | Mã     | Task                                                                             | Nhãn     | Phụ thuộc                   | Máy         | Trạng thái                                                                                                                                 |
 | ------ | -------------------------------------------------------------------------------- | -------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -142,8 +142,8 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-15b | Analytics Plausible (Q10 đã chốt), CSP chặn thật, domain                         |          | T1-15a                      | Laptop      | Xong – PR #39 ([review](reviews/T1-15b.md))                                                                                                |
 | T1-16  | Dựng các trang seed từ mẫu theo mục 8.1                                          | [HANA]   | T1-04, T1-10, T1-11         | Local       | Xong – PR #41 ([review](reviews/T1-16.md))                                                                                                 |
 | T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0)                 | [HANA]   | T1-16                       | Local       | Xong – PR #43 ([review](reviews/T1-17a.md)); 25 ảnh do Planning chụp; nội dung Hana: để chỗ trống trong CMS, nhập tay hoặc Planning import |
-| T1-17e | Chuẩn bị cổng GĐ 1 phía code: spec axe, ảnh LCP, test bền, tìm gốc lỗi trang đơn |          | T1-13                       | PC nhà      | Planning QA đạt 09/10 (2 sửa tương phản) – PR #59 · chờ CI · 0,44 h ([review](reviews/T1-17e.md)) · 🔒 Package                             |
-| T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                                         | [HANA]   | tất cả, T1-17e              | Planning    | Chưa mở – chạy sau T1-17e (Planning đo Lighthouse, axe, e2e, chốt cổng)                                                                    |
+| T1-17e | Chuẩn bị cổng GĐ 1 phía code: spec axe, ảnh LCP, test bền, tìm gốc lỗi trang đơn |          | T1-13                       | PC nhà      | ✅ Merge 09/10 – PR #59 · 0,44 h ([review](reviews/T1-17e.md))                                                                             |
+| T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                                         | [HANA]   | tất cả, T1-17e              | Planning    | Sẵn sàng – Planning (T1-17e xong)                                                                                                          |
 | T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria, lỗi admin tiếng Việt)  |          | T1-16                       | Laptop      | Xong – PR #48 ([review](reviews/T1-17c.md))                                                                                                |
 | T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo)                            |          | PR #45                      | Local       | Xong – PR #47 ([review](reviews/T1-17d.md))                                                                                                |
 
