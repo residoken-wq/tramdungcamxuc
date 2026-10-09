@@ -17,6 +17,7 @@ describe('access control (T0-07)', () => {
   let editor: AdminUser
   let customerId: number
   let productId: number
+  let packageId: number
   const created: { collection: CollectionSlug; id: number }[] = []
   const track = <T extends { id: number }>(collection: CollectionSlug, doc: T): T => {
     created.push({ collection, id: doc.id })
@@ -61,6 +62,22 @@ describe('access control (T0-07)', () => {
           web: 'habit',
           type: 'digital_tool',
           saleStatus: 'on_sale',
+        },
+      }),
+    ).id
+    // Admin-created payment links are for published packages only (T1-13)
+    packageId = track(
+      'products',
+      await payload.create({
+        collection: 'products',
+        data: {
+          name: 'T0-07 package',
+          slug: `t0-07-pkg-${randomUUID()}`,
+          web: 'site',
+          type: 'package',
+          saleStatus: 'consult',
+          price: 1750000,
+          _status: 'published',
         },
       }),
     ).id
@@ -153,7 +170,13 @@ describe('access control (T0-07)', () => {
     })
     expect(paid.paymentStatus).toBe('paid')
 
-    const link = track('orders', await order(owner, { createdByAdmin: true }))
+    const link = track(
+      'orders',
+      await order(owner, {
+        createdByAdmin: true,
+        items: [{ product: packageId, price: 1 }],
+      }),
+    )
     expect(typeof link.payToken).toBe('string')
     expect((link.payToken as string).length).toBeGreaterThanOrEqual(32)
     expect(link.paymentRef).not.toBe(byEditor.paymentRef)

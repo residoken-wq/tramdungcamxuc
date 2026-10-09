@@ -27,11 +27,18 @@ export const Entitlements: CollectionConfig = {
         message:
           'Khách hàng này đã dùng thử sản phẩm này rồi. Mỗi người chỉ được dùng thử một lần.',
       }),
+      uniqueKeyHook({
+        keyField: 'grantKey',
+        parts: ['order', 'product'],
+        when: (data) => Boolean(data.order && data.product),
+        message: 'Quyền truy cập cho sản phẩm này trong đơn hàng đã tồn tại.',
+      }),
     ],
   },
   fields: [
     { ...relation('customer', 'Khách hàng', 'customers'), required: true },
     { ...relation('product', 'Sản phẩm', 'products'), required: true },
+    relation('order', 'Đơn hàng', 'orders'),
     { ...date('grantedAt', 'Ngày cấp'), defaultValue: () => new Date().toISOString() },
     select(
       'source',
@@ -57,5 +64,6 @@ export const Entitlements: CollectionConfig = {
     ),
     date('expiresAt', 'Hết hạn lúc'),
     uniqueKeyField('trialKey'),
+    uniqueKeyField('grantKey'),
   ],
 }

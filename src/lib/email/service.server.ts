@@ -9,6 +9,8 @@ import { AdminNotificationEmail } from '@/emails/AdminNotificationEmail'
 import { ResourceDeliveryEmail } from '@/emails/ResourceDeliveryEmail'
 import { ExperienceOrderPaidEmail } from '@/emails/ExperienceOrderPaidEmail'
 import { ExperienceOrderExpiredEmail } from '@/emails/ExperienceOrderExpiredEmail'
+import { PackageOrderPaidEmail } from '@/emails/PackageOrderPaidEmail'
+import { vi } from '@/lib/i18n/vi'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
 
@@ -369,5 +371,67 @@ export async function sendOrderExpiredReminderEmail(
     })
   } catch (err) {
     console.error('[Email] Failed to send order expired reminder email:', err)
+  }
+}
+
+export async function sendPackageOrderPaidEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    paymentRef: string
+    amount: number
+    packageName: string
+    components?: Array<{ label: string; quantity?: number | null }>
+    hasDigitalTools?: boolean
+    toolsUrl?: string
+    coachingBookingUrl?: string | null
+    upcomingWorkshops?: Array<{ title: string; timeString: string }>
+    communityZaloUrl?: string | null
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(PackageOrderPaidEmail, {
+        name: data.name,
+        paymentRef: data.paymentRef,
+        amount: data.amount,
+        packageName: data.packageName,
+        components: data.components,
+        hasDigitalTools: data.hasDigitalTools,
+        toolsUrl: data.toolsUrl,
+        coachingBookingUrl: data.coachingBookingUrl,
+        upcomingWorkshops: data.upcomingWorkshops,
+        communityZaloUrl: data.communityZaloUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(PackageOrderPaidEmail, {
+        name: data.name,
+        paymentRef: data.paymentRef,
+        amount: data.amount,
+        packageName: data.packageName,
+        components: data.components,
+        hasDigitalTools: data.hasDigitalTools,
+        toolsUrl: data.toolsUrl,
+        coachingBookingUrl: data.coachingBookingUrl,
+        upcomingWorkshops: data.upcomingWorkshops,
+        communityZaloUrl: data.communityZaloUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.payment.email.packagePaid.subject(data.packageName),
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send package order paid email:', err)
+    throw err
   }
 }

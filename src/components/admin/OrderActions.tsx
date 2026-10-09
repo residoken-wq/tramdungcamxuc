@@ -1,13 +1,17 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth, useDocumentInfo } from '@payloadcms/ui'
-import { confirmManualPaymentAdminAction, cancelOrderAdminAction } from '@/lib/payments/actions'
+import {
+  confirmManualPaymentAdminAction,
+  cancelOrderAdminAction,
+  getOrderPaymentLinkAction,
+} from '@/lib/payments/actions'
 import { vi } from '@/lib/i18n/vi'
 
 export const OrderActions: React.FC = () => {
   const { user } = useAuth()
-  const { id } = useDocumentInfo()
+  const { id, data } = useDocumentInfo()
 
   const [loading, setLoading] = useState<'confirm' | 'cancel' | null>(null)
   const [confirmModal, setConfirmModal] = useState<'confirm' | 'cancel' | null>(null)
@@ -15,6 +19,29 @@ export const OrderActions: React.FC = () => {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
     null,
   )
+  const [orderInfo, setOrderInfo] = useState<{
+    url: string | null
+    isPending: boolean
+    createdByAdmin: boolean
+  } | null>(null)
+  const [copiedLink, setCopiedLink] = useState(false)
+
+  const orderId = id ? Number(id) : null
+
+  useEffect(() => {
+    let active = true
+    if (orderId) {
+      getOrderPaymentLinkAction(orderId).then((res) => {
+        if (active) {
+          setOrderInfo(res)
+        }
+      })
+    }
+    return () => {
+      active = false
+      setOrderInfo(null)
+    }
+  }, [orderId])
 
   // Chỉ hiển thị thao tác duyệt/hủy đơn cho tài khoản có vai trò 'owner'
   if (!user || (user as { role?: string }).role !== 'owner') {
@@ -29,9 +56,21 @@ export const OrderActions: React.FC = () => {
     )
   }
 
-  const orderId = Number(id)
+  const handleCopyLink = async () => {
+    if (!orderInfo?.url) return
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(orderInfo.url)
+        setCopiedLink(true)
+        setTimeout(() => setCopiedLink(false), 2000)
+      }
+    } catch {
+      // Bỏ qua lỗi clipboard
+    }
+  }
 
   const handleConfirmPayment = async () => {
+    if (!orderId) return
     setLoading('confirm')
     setFeedback(null)
     try {
@@ -59,6 +98,7 @@ export const OrderActions: React.FC = () => {
   }
 
   const handleCancelOrder = async () => {
+    if (!orderId) return
     setLoading('cancel')
     setFeedback(null)
     try {
@@ -84,6 +124,13 @@ export const OrderActions: React.FC = () => {
     }
   }
 
+  const docStatus = (data as { paymentStatus?: string } | undefined)?.paymentStatus
+  const isPending = orderInfo ? orderInfo.isPending : docStatus === 'pending'
+  const isPaid =
+    docStatus === 'paid' || (!isPending && docStatus !== 'cancelled' && docStatus !== 'failed')
+  const isCancelled = docStatus === 'cancelled'
+  const isFailed = docStatus === 'failed'
+
   return (
     <div
       style={{
@@ -108,6 +155,61 @@ export const OrderActions: React.FC = () => {
         {vi.payment.ui.adminActions.panelDesc}
       </p>
 
+      {/* Sidebar đơn: Link thanh toán cho đơn createdByAdmin còn pending */}
+      {orderInfo?.url && orderInfo.isPending && (
+        <div
+          style={{
+            padding: '10px',
+            backgroundColor: '#FDE6F6',
+            border: '1px solid #EF3B83',
+            borderRadius: '8px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+          }}
+        >
+          <div style={{ fontSize: '12px', fontWeight: 600, color: '#280A60' }}>
+            🔗 {vi.payment.ui.adminActions.paymentLinkTitle}
+          </div>
+          <div
+            style={{
+              fontSize: '11px',
+              color: '#333',
+              wordBreak: 'break-all',
+              backgroundColor: '#FFFFFF',
+              padding: '6px 8px',
+              borderRadius: '4px',
+              border: '1px solid #E9DDF9',
+            }}
+          >
+            {orderInfo.url}
+          </div>
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            style={{
+              padding: '6px 10px',
+              backgroundColor: copiedLink ? '#D9F1EA' : '#EF3B83',
+              color: copiedLink ? '#0F5132' : '#FFFFFF',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              transition: 'background-color 0.2s',
+            }}
+          >
+            {copiedLink
+              ? vi.payment.ui.adminActions.copiedLinkButton
+              : vi.payment.ui.adminActions.copyLinkButton}
+          </button>
+        </div>
+      )}
+
       {feedback && (
         <div
           style={{
@@ -124,77 +226,104 @@ export const OrderActions: React.FC = () => {
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <button
-          type="button"
-          onClick={() => setConfirmModal('confirm')}
-          disabled={loading !== null}
+      {/* Trạng thái không pending: hiển thị thông báo thay vì nút thao tác */}
+      {!isPending && (
+        <div
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px',
-            padding: '10px 14px',
-            backgroundColor: '#280A60',
-            color: '#FFFFFF',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '13px',
-            fontWeight: 600,
-            cursor: loading !== null ? 'not-allowed' : 'pointer',
-            opacity: loading !== null ? 0.7 : 1,
-            transition: 'background-color 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            if (loading === null) e.currentTarget.style.backgroundColor = '#3B1287'
-          }}
-          onMouseLeave={(e) => {
-            if (loading === null) e.currentTarget.style.backgroundColor = '#280A60'
-          }}
-        >
-          <span>✓</span>
-          <span>
-            {loading === 'confirm'
-              ? vi.payment.ui.adminActions.processing
-              : vi.payment.ui.adminActions.confirmButton}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setConfirmModal('cancel')}
-          disabled={loading !== null}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px',
-            padding: '8px 14px',
-            backgroundColor: '#FFFFFF',
-            color: '#842029',
-            border: '1px solid #DC3545',
-            borderRadius: '8px',
+            padding: '8px 12px',
+            borderRadius: '6px',
             fontSize: '12px',
             fontWeight: 600,
-            cursor: loading !== null ? 'not-allowed' : 'pointer',
-            opacity: loading !== null ? 0.7 : 1,
-            transition: 'background-color 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            if (loading === null) e.currentTarget.style.backgroundColor = '#FDF2F2'
-          }}
-          onMouseLeave={(e) => {
-            if (loading === null) e.currentTarget.style.backgroundColor = '#FFFFFF'
+            textAlign: 'center',
+            backgroundColor: isPaid ? '#D9F1EA' : isCancelled ? '#FDE6F6' : '#EAEAEA',
+            color: isPaid ? '#0F5132' : isCancelled ? '#842029' : '#555555',
+            border: `1px solid ${isPaid ? '#A3E2D1' : isCancelled ? '#F8D7DA' : '#DDDDDD'}`,
           }}
         >
-          <span>✕</span>
-          <span>
-            {loading === 'cancel'
-              ? vi.payment.ui.adminActions.processing
-              : vi.payment.ui.adminActions.cancelButton}
-          </span>
-        </button>
-      </div>
+          {isPaid
+            ? vi.payment.ui.adminActions.statusPaidNotice
+            : isCancelled
+              ? vi.payment.ui.adminActions.statusCancelledNotice
+              : isFailed
+                ? vi.payment.ui.adminActions.statusFailedNotice
+                : ''}
+        </div>
+      )}
+
+      {/* Chỉ hiển thị nút Xác nhận / Hủy khi đơn pending */}
+      {isPending && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <button
+            type="button"
+            onClick={() => setConfirmModal('confirm')}
+            disabled={loading !== null}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '10px 14px',
+              backgroundColor: '#280A60',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: loading !== null ? 'not-allowed' : 'pointer',
+              opacity: loading !== null ? 0.7 : 1,
+              transition: 'background-color 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (loading === null) e.currentTarget.style.backgroundColor = '#3B1287'
+            }}
+            onMouseLeave={(e) => {
+              if (loading === null) e.currentTarget.style.backgroundColor = '#280A60'
+            }}
+          >
+            <span>✓</span>
+            <span>
+              {loading === 'confirm'
+                ? vi.payment.ui.adminActions.processing
+                : vi.payment.ui.adminActions.confirmButton}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setConfirmModal('cancel')}
+            disabled={loading !== null}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              backgroundColor: '#FFFFFF',
+              color: '#842029',
+              border: '1px solid #DC3545',
+              borderRadius: '8px',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: loading !== null ? 'not-allowed' : 'pointer',
+              opacity: loading !== null ? 0.7 : 1,
+              transition: 'background-color 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (loading === null) e.currentTarget.style.backgroundColor = '#FDF2F2'
+            }}
+            onMouseLeave={(e) => {
+              if (loading === null) e.currentTarget.style.backgroundColor = '#FFFFFF'
+            }}
+          >
+            <span>✕</span>
+            <span>
+              {loading === 'cancel'
+                ? vi.payment.ui.adminActions.processing
+                : vi.payment.ui.adminActions.cancelButton}
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Confirmation Modal */}
       {confirmModal && (
