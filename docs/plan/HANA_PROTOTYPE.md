@@ -1,6 +1,6 @@
 # Prototype giao diện EQ Buddy + Habit Loop của Hana (nhận 09/10/2026)
 
-Nguồn: `docs/sources/HANA EQ - HABIT.rar` (186 MB, **không commit** – chỉ có trên máy Local của anh Nhân). Bên trong là app Next.js 15 + Tailwind 3 riêng, thư mục `DIGITAL PRODUCT/`, 42 file mã nguồn (`src/app`, `src/components/{eq-buddy,habit-tracker}`, `src/data`, `src/context`).
+Nguồn: `docs/sources/HANA EQ - HABIT.rar` (186 MB, **không commit**; đã xóa khỏi máy Local 09/10 – cần xem lại thì xin Hana gửi lại). Bên trong là app Next.js 15 + Tailwind 3 riêng, thư mục `DIGITAL PRODUCT/`, 42 file mã nguồn (`src/app`, `src/components/{eq-buddy,habit-tracker}`, `src/data`, `src/context`).
 
 **Cách dùng:** làm **mẫu giao diện tham khảo** cho GĐ 2 (Habit) và GĐ 3 (EQ Buddy). **Không chép code** vào repo: khác phiên bản Next/Tailwind, dữ liệu lưu `localStorage`, nội dung và giá viết cứng trong code (trái AGENTS.md mục 2.3). Khi mở GĐ 2/3, task dựng lại từng màn bằng component brand + dữ liệu Payload, bám bố cục và câu chữ giao diện của prototype khi không trái spec.
 
