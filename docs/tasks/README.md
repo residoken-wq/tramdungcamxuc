@@ -114,9 +114,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 
 Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.md` mục 3. Prompt: `docs/tasks/prompts/<MÃ>.md`.
 
-**🔒 Migration: T1-13 · 🔒 Package: T1-10b**
+**🔒 Migration: T1-13 · 🔒 Package: (trống)**
 
-**Lịch máy 09–10/10**: PC nhà = T1-13 · Codex (Local) = T1-10b, sau đó review thứ hai T1-13 · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
+**Lịch máy 09–10/10**: PC nhà = T1-13 · Codex (Local) = ~~T1-10b~~ (xong), review thứ hai T1-13 khi PR sẵn sàng · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
 
 | Mã     | Task                                                                            | Nhãn     | Phụ thuộc                   | Máy         | Trạng thái                                                                                                                                 |
 | ------ | ------------------------------------------------------------------------------- | -------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -131,7 +131,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-08  | Logic hiển thị sản phẩm theo `saleStatus`                                       |          | GĐ 0                        | Local       | Xong – PR #23 ([review](reviews/T1-08.md))                                                                                                 |
 | T1-09  | Thư viện `/thu-vien` 2 tab + bộ lọc                                             |          | T1-08                       | Laptop      | Xong – PR #26 ([review](reviews/T1-09.md))                                                                                                 |
 | T1-10  | Trang con dữ liệu: coaching, doanh nghiệp, blog, tài nguyên                     |          | T1-08                       | Laptop      | Xong – PR #28 ([review](reviews/T1-10.md))                                                                                                 |
-| T1-10b | Live Preview Payload cho services / programs / posts                            |          | T1-10, T1-07 (khóa Package) | Codex@Local | Planning QA đạt 09/10 – PR #53 · chờ CI + IT duyệt 1 REVIEW-REQUIRED ([review](reviews/T1-10b.md)) · 🔒 Package                            |
+| T1-10b | Live Preview Payload cho services / programs / posts                            |          | T1-10, T1-07 (khóa Package) | Codex@Local | ✅ Merge 09/10 – PR #53 · IT duyệt ([review](reviews/T1-10b.md))                                                                           |
 | T1-11  | Trang Growth Mirror + bảng 3 gói                                                |          | T1-10                       | Laptop      | Xong – PR #36 ([review](reviews/T1-11.md))                                                                                                 |
 | T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron                       | [REVIEW] | T1-06                       | PC nhà      | ✅ Merge 08/10 (PR #46, gộp #34) · IT duyệt ([review](reviews/T1-12a.md))                                                                  |
 | T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn                      | [REVIEW] | T1-12a                      | PC nhà      | ✅ Merge 08/10 (PR #46) ([review](reviews/T1-12b.md))                                                                                      |
