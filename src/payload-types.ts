@@ -1230,6 +1230,10 @@ export interface Entitlement {
    */
   product: number | Product;
   /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  order?: (number | null) | Order;
+  /**
    * Chọn ngày và giờ áp dụng.
    */
   grantedAt?: string | null;
@@ -1246,6 +1250,7 @@ export interface Entitlement {
    */
   expiresAt?: string | null;
   trialKey?: string | null;
+  grantKey?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1298,11 +1303,15 @@ export interface Order {
   /**
    * Thời điểm khách tick đồng ý Điều khoản và Chính sách giá – thanh toán.
    */
-  termsAcceptedAt: string;
+  termsAcceptedAt?: string | null;
   /**
    * Bật để áp dụng: hana tạo link thanh toán.
    */
   createdByAdmin?: boolean | null;
+  /**
+   * Đơn trải nghiệm đã dùng để trừ phí vào gói (chỉ trừ 1 lần).
+   */
+  trialCreditOrder?: (number | null) | Order;
   /**
    * Tự sinh cho link /thanh-toan/… khi Hana tạo đơn.
    */
@@ -2357,11 +2366,13 @@ export interface CustomersSelect<T extends boolean = true> {
 export interface EntitlementsSelect<T extends boolean = true> {
   customer?: T;
   product?: T;
+  order?: T;
   grantedAt?: T;
   source?: T;
   status?: T;
   expiresAt?: T;
   trialKey?: T;
+  grantKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2387,6 +2398,7 @@ export interface OrdersSelect<T extends boolean = true> {
   paidAt?: T;
   termsAcceptedAt?: T;
   createdByAdmin?: T;
+  trialCreditOrder?: T;
   payToken?: T;
   customerNeed?: T;
   notes?: T;

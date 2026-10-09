@@ -4,6 +4,7 @@ import * as migration_20261005_123719_access_control from './20261005_123719_acc
 import * as migration_20261006_090527_leads_forms from './20261006_090527_leads_forms';
 import * as migration_20261007_025629_private_files from './20261007_025629_private_files';
 import * as migration_20261008_022007_payment_backend from './20261008_022007_payment_backend';
+import * as migration_20261009_030050_package_payment_entitlements from './20261009_030050_package_payment_entitlements';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20261008_022007_payment_backend.up,
     down: migration_20261008_022007_payment_backend.down,
-    name: '20261008_022007_payment_backend'
+    name: '20261008_022007_payment_backend',
+  },
+  {
+    up: migration_20261009_030050_package_payment_entitlements.up,
+    down: migration_20261009_030050_package_payment_entitlements.down,
+    name: '20261009_030050_package_payment_entitlements'
   },
 ];

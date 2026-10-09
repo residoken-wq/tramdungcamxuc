@@ -1,4 +1,5 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
+import { ValidationError } from 'payload'
 import { checkbox, date, number, relation, select, textarea } from '../fields/content'
 import {
   adminOrSelfCustomer,
@@ -8,6 +9,7 @@ import {
   isOwnerUser,
 } from '../lib/auth/access'
 import { generatePayToken, generateUniquePaymentRef } from '../lib/payments/payment-ref'
+import { getEffectivePrice } from '../lib/products'
 
 // REVIEW-REQUIRED: Server-owned order fields, enforced in one place:
 // - paymentRef (TDCX + 5 chars) and payToken are generated on create and never change;
@@ -19,7 +21,8 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
   originalDoc,
   req,
 }) => {
-  const editor = isAdminUser(req.user) && !isOwnerUser(req.user)
+  const isOwner = isOwnerUser(req.user)
+  const editor = isAdminUser(req.user) && !isOwner
   const isPaymentAction = req.context?.paymentAction === true
 
   if (operation === 'create') {
@@ -33,13 +36,203 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
       return totalDocs > 0
     })
 
+    // REVIEW-REQUIRED: Chỉ owner được tạo đơn có createdByAdmin = true; editor gửi createdByAdmin = true -> ép false
+    const isEditor = isAdminUser(req.user) && !isOwnerUser(req.user)
+    const createdByAdmin = isEditor ? false : Boolean(data.createdByAdmin)
+
+    let calculatedItems = data.items
+    let calculatedSubtotal =
+      data.subtotal ??
+      (Array.isArray(data.items)
+        ? data.items.reduce(
+            (s: number, i: { price?: number | null; quantity?: number | null }) =>
+              s + (i.price || 0) * (i.quantity || 1),
+            0,
+          )
+        : undefined)
+    let calculatedTotal = data.total ?? calculatedSubtotal
+    let trialCreditOrderId: number | null = null
+    let notes = data.notes
+
+    // REVIEW-REQUIRED: Khi owner tạo đơn createdByAdmin: chọn khách + đúng 1 gói đồng hành đã published.
+    // Server tự tính items[0].price, subtotal, total từ getEffectivePrice (bỏ qua số Hana gõ).
+    // Nếu trialCreditApplies bật và khách có đơn coaching_trial đã paid chưa được trừ -> trừ đúng số tiền đơn đó,
+    // ghi chú vào notes (không âm, không trừ 2 lần - đánh dấu qua trialCreditOrder).
+    if (createdByAdmin) {
+      if (!data.customer) {
+        throw new ValidationError(
+          {
+            errors: [{ path: 'customer', message: 'Vui lòng chọn khách hàng cho đơn hàng.' }],
+            req,
+          },
+          req?.t,
+        )
+      }
+
+      if (!Array.isArray(data.items) || data.items.length !== 1 || !data.items[0]?.product) {
+        throw new ValidationError(
+          {
+            errors: [
+              {
+                path: 'items',
+                message: 'Đơn hàng do Hana tạo phải chọn đúng một sản phẩm gói đồng hành.',
+              },
+            ],
+            req,
+          },
+          req?.t,
+        )
+      }
+
+      const rawProduct = data.items[0].product
+      const productId =
+        typeof rawProduct === 'object' && rawProduct !== null
+          ? (rawProduct as { id: number }).id
+          : Number(rawProduct)
+
+      const product = await req.payload.findByID({
+        collection: 'products',
+        id: productId,
+        req,
+        overrideAccess: true,
+      })
+
+      if (!product) {
+        throw new ValidationError(
+          {
+            errors: [
+              {
+                path: 'items',
+                message: 'Không tìm thấy sản phẩm được chọn.',
+              },
+            ],
+            req,
+          },
+          req?.t,
+        )
+      }
+
+      if (product.type === 'package' && product._status !== 'published') {
+        throw new ValidationError(
+          {
+            errors: [
+              {
+                path: 'items',
+                message: 'Gói đồng hành phải ở trạng thái đã xuất bản.',
+              },
+            ],
+            req,
+          },
+          req?.t,
+        )
+      }
+
+      const now = new Date()
+      const effective = getEffectivePrice(product, now)
+      const itemPrice = effective.salePrice ?? effective.price ?? data.items[0]?.price ?? 0
+      if (itemPrice < 0) {
+        throw new ValidationError(
+          {
+            errors: [{ path: 'items', message: 'Giá sản phẩm không hợp lệ.' }],
+            req,
+          },
+          req?.t,
+        )
+      }
+
+      calculatedSubtotal = itemPrice
+      calculatedTotal = itemPrice
+      calculatedItems = [{ product: product.id, price: itemPrice }]
+
+      if (product.type === 'package') {
+        const packagePrice = itemPrice
+        const siteSettings = await req.payload.findGlobal({
+          slug: 'siteSettings',
+          req,
+          overrideAccess: true,
+        })
+
+        if (siteSettings?.trialCreditApplies === true) {
+          const customerId =
+            typeof data.customer === 'object' && data.customer !== null
+              ? (data.customer as { id: number }).id
+              : Number(data.customer)
+
+          const paidOrders = await req.payload.find({
+            collection: 'orders',
+            where: {
+              and: [{ customer: { equals: customerId } }, { paymentStatus: { equals: 'paid' } }],
+            },
+            req,
+            overrideAccess: true,
+            depth: 1,
+            sort: 'createdAt',
+          })
+
+          for (const candidate of paidOrders.docs) {
+            let hasCoachingTrial = false
+            if (Array.isArray(candidate.items)) {
+              for (const item of candidate.items) {
+                const p = item.product
+                if (
+                  typeof p === 'object' &&
+                  p !== null &&
+                  (p as { type?: string }).type === 'coaching_trial'
+                ) {
+                  hasCoachingTrial = true
+                  break
+                }
+                const pId = typeof p === 'number' || typeof p === 'string' ? Number(p) : null
+                if (pId) {
+                  const fetched = await req.payload.findByID({
+                    collection: 'products',
+                    id: pId,
+                    depth: 0,
+                    req,
+                    overrideAccess: true,
+                  })
+                  if (fetched?.type === 'coaching_trial') {
+                    hasCoachingTrial = true
+                    break
+                  }
+                }
+              }
+            }
+
+            if (hasCoachingTrial) {
+              const alreadyCredited = await req.payload.find({
+                collection: 'orders',
+                where: { trialCreditOrder: { equals: candidate.id } },
+                limit: 1,
+                req,
+                overrideAccess: true,
+              })
+
+              if (alreadyCredited.totalDocs === 0) {
+                trialCreditOrderId = candidate.id
+                const creditAmount = candidate.total || 0
+                calculatedTotal = Math.max(0, packagePrice - creditAmount)
+                const formattedCredit = new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(creditAmount)
+                const creditNoteText = `Đã trừ phí trải nghiệm ${formattedCredit} từ đơn ${candidate.paymentRef || candidate.id}.`
+                notes = notes ? `${notes}\n${creditNoteText}` : creditNoteText
+                break
+              }
+            }
+          }
+        }
+      }
+    }
+
     // REVIEW-REQUIRED: Khóa tạo đơn qua REST (không có context.paymentAction === true):
     // - Bỏ payToken người gọi gửi và luôn sinh ngẫu nhiên phía server
     // - Ép deliveryStatus = 'none' (chống leo thang gán email_sent/access_granted)
     // - Ép paymentStatus = 'pending', paidAt = null nếu không có paymentAction hoặc là editor
     const enforcedPayToken = isPaymentAction
       ? (data.payToken ?? generatePayToken())
-      : data.payToken || data.createdByAdmin
+      : data.payToken || createdByAdmin
         ? generatePayToken()
         : null
 
@@ -47,12 +240,20 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
 
     return {
       ...data,
+      items: calculatedItems,
+      subtotal: calculatedSubtotal,
+      total: calculatedTotal,
+      notes,
       paymentRef,
       payToken: enforcedPayToken,
+      createdByAdmin,
       deliveryStatus: enforcedDeliveryStatus,
+      termsAcceptedAt: createdByAdmin ? null : data.termsAcceptedAt,
+      trialCreditOrder: trialCreditOrderId || data.trialCreditOrder || null,
       ...(!isPaymentAction || editor ? { paymentStatus: 'pending', paidAt: null } : {}),
     }
   }
+
   // REVIEW-REQUIRED: Amounts and buyer are frozen once created, except an owner editing a
   // still-pending order. Otherwise the customer's QR amount or a paid order's history could change.
   const amountsEditable = !editor && originalDoc?.paymentStatus === 'pending'
@@ -60,6 +261,7 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
     paymentRef: originalDoc?.paymentRef,
     payToken: originalDoc?.payToken,
     createdByAdmin: originalDoc?.createdByAdmin,
+    trialCreditOrder: originalDoc?.trialCreditOrder,
     ...(amountsEditable
       ? {}
       : {
@@ -184,12 +386,20 @@ export const Orders: CollectionConfig = {
     },
     {
       ...date('termsAcceptedAt', 'Đồng ý điều khoản lúc'),
-      required: true,
       admin: {
         description: 'Thời điểm khách tick đồng ý Điều khoản và Chính sách giá – thanh toán.',
       },
     },
     checkbox('createdByAdmin', 'Hana tạo link thanh toán'),
+    {
+      ...relation('trialCreditOrder', 'Đơn trải nghiệm đã trừ', 'orders'),
+      unique: true,
+      index: true,
+      admin: {
+        readOnly: true,
+        description: 'Đơn trải nghiệm đã dùng để trừ phí vào gói (chỉ trừ 1 lần).',
+      },
+    },
     {
       name: 'payToken',
       label: 'Mã link thanh toán',
