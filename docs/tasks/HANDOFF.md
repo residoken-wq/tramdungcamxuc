@@ -41,7 +41,7 @@ Antigravity **không** chạy app/Playwright/Docker; Planning chạy e2e/build. 
 
 ## Lịch máy 09–10/10
 
-PC nhà: T1-13. Codex (Local): T1-10b, rồi review thứ hai T1-13. **Antigravity Local + Laptop tạm nghỉ đến hết thứ Bảy 10/10.** File `docs/sources/HANA EQ - HABIT.rar` chỉ để trên máy Local (đã ignore) – commit cục bộ `8a688a4` thêm file này trên nhánh `task/T1-17d-runtime-site-url` **không được push** (186 MB > giới hạn 100 MB của GitHub).
+PC nhà: T1-13. Codex (Local): T1-10b, rồi review thứ hai T1-13. **Antigravity Local + Laptop tạm nghỉ đến hết thứ Bảy 10/10.** File `docs/sources/HANA EQ - HABIT.rar` đã xóa khỏi máy Local 09/10 (ghi chú nội dung còn ở `docs/plan/HANA_PROTOTYPE.md`). Commit cục bộ `8a688a4` trên nhánh `task/T1-17d-runtime-site-url` vẫn chứa file – **không được push** (186 MB > giới hạn 100 MB của GitHub).
 
 ## Prototype UI của Hana (09/10)
 
