@@ -39,6 +39,10 @@ Antigravity **không** chạy app/Playwright/Docker; Planning chạy e2e/build. 
 - Đã nhập file Habit Hack (`docs/sources/CÔNG CỤ XÂY THÓI QUEN…xlsx`): 16 câu quiz, 11 kỹ thuật, 20 bài học / 7 nhóm (`docs/decisions/import-habit-hack.md`).
 - Bảng giá: Cách 3 tính AI theo **phí thuê bao** ($60/tháng × số tháng × % dùng), giờ QA của anh = **6 h/ngày × ngày làm việc**; Cách 2 anh Nhân tự chỉnh.
 
+## Prototype UI của Hana (09/10)
+
+`docs/plan/HANA_PROTOTYPE.md` – mẫu giao diện EQ Buddy + Habit Loop, dùng làm tham khảo cho GĐ 2/3, không chép code. Câu hỏi mới: Q15–Q18 trong `docs/plan/GAPS_AND_QUESTIONS.md`.
+
 ## Câu hỏi đang chờ Hana (họp tối 08/10)
 
 Trang họp: https://claude.ai/artifact/GBxJ4tX2MW9tLtG4HtKCWr (ô ghi quyết định lưu trên trình duyệt anh Nhân; anh sẽ dán lại kết quả). Nhóm "chốt ngay": Q4, Q11, Q12, Q13, xác nhận Q5/Q7. Quiz: H1 thang 1–4 hay 1–5, **H2 chấm theo điểm trung bình** (16 câu chia lệch Cue 6/Craving 3/Response 5/Reward 2), H3–H5. Trước GĐ 2: Q1–Q3, Q6, Q8, Q9, Q14, bài xem thử. IT: D1, D2, lịch duyệt T1-12a. Khi có kết quả: cập nhật `docs/plan/GAPS_AND_QUESTIONS.md` + giao task sửa chấm quiz (Local/Laptop).

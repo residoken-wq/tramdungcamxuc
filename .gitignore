@@ -48,3 +48,6 @@ next-env.d.ts
 
 # Agent working-time logs (scripts/task-time.mjs)
 .task-time/
+
+# Large source archives from Hana (reference only, kept on the Local machine)
+docs/sources/*.rar
