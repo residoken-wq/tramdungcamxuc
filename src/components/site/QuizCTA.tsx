@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
