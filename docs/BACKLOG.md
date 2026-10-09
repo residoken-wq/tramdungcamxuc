@@ -33,4 +33,3 @@
 - [x] **Font tự host (`next/font/local`)** (xong ở T1-15a): Đã chuyển Anton/Montserrat/Playfair (subset vietnamese + latin) vào repo dạng WOFF2 tĩnh tại `src/fonts/`, cấu hình qua `next/font/local` trong `src/lib/fonts.ts`.
 - [ ] **Ghi nhận sự kiện `resource_downloaded` phía server (T1-15)**: Bổ sung track sự kiện phân tích chuyển đổi khi khách hàng tải tập tin thành công tại route `/api/download/[token]`, kết nối GA4 / Plausible trong task tối ưu hiệu năng và đo lường T1-15.
 - [ ] **Cron hết hạn đơn chạy trên Vercel** (IT duyệt T1-12, 08/10): Vercel Cron gọi bằng `GET`, route `/api/cron/expire-orders` hiện chỉ có `POST` (crontab Docker dùng `curl -X POST`). Thêm `GET` dùng chung kiểm `CRON_SECRET` khi chốt deploy Vercel (D1/D2).
-- [ ] **`access.test.ts` không phụ thuộc DB rỗng** (QA T1-10b): owner chỉ tạo được khi DB chưa có user → đỏ trên máy dev có dữ liệu cũ. Nâng role sau khi tạo như `makeUser` trong `payments.test.ts`.

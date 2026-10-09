@@ -173,7 +173,7 @@ export function TestimonialSlider({
                 <button
                   type="button"
                   onClick={goToPrev}
-                  className="w-10 h-10 rounded-full flex items-center justify-center border border-deep-navy/20 bg-white text-deep-navy hover:bg-soft-pink/50 hover:border-accent-pink/40 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center border border-deep-navy/20 bg-white text-deep-navy hover:bg-soft-pink/50 hover:border-accent-pink/40 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink"
                   aria-label="Lời chia sẻ trước"
                 >
                   <svg
@@ -219,7 +219,7 @@ export function TestimonialSlider({
                 <button
                   type="button"
                   onClick={goToNext}
-                  className="w-10 h-10 rounded-full flex items-center justify-center border border-deep-navy/20 bg-white text-deep-navy hover:bg-soft-pink/50 hover:border-accent-pink/40 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center border border-deep-navy/20 bg-white text-deep-navy hover:bg-soft-pink/50 hover:border-accent-pink/40 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink"
                   aria-label="Lời chia sẻ tiếp theo"
                 >
                   <svg

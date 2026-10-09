@@ -512,6 +512,7 @@ export function DiagnosticQuizClient({ questions }: DiagnosticQuizClientProps) {
           </div>
           <div
             role="progressbar"
+            aria-label={vi.diagnostic.questionCounter(currentIndex + 1, questions.length)}
             aria-valuenow={progressPercent}
             aria-valuemin={0}
             aria-valuemax={100}

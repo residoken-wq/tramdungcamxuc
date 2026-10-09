@@ -184,6 +184,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                       onClick={() => copyToClipboard(order.bankInfo.accountNumber, 'accountNumber')}
                       className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-lavender-mist/40 text-deep-navy hover:bg-lavender-mist transition-colors"
                       title={vi.payment.ui.orderView.copyAccountTitle}
+                      aria-label={vi.payment.ui.orderView.copyAccountTitle}
                     >
                       {copiedField === 'accountNumber'
                         ? vi.payment.ui.orderView.copiedShort
@@ -214,6 +215,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                       onClick={() => copyToClipboard(String(order.amount), 'amount')}
                       className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-lavender-mist/40 text-deep-navy hover:bg-lavender-mist transition-colors"
                       title={vi.payment.ui.orderView.copyAmountTitle}
+                      aria-label={vi.payment.ui.orderView.copyAmountTitle}
                     >
                       {copiedField === 'amount'
                         ? vi.payment.ui.orderView.copiedShort
@@ -231,8 +233,9 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                     <button
                       type="button"
                       onClick={() => copyToClipboard(order.paymentRef, 'paymentRef')}
-                      className="px-3 py-1 text-xs font-bold rounded-lg bg-accent-pink text-white hover:bg-bright-magenta shadow-sm transition-colors"
+                      className="px-3 py-1 text-xs font-bold rounded-lg bg-bright-magenta text-white hover:bg-deep-navy shadow-sm transition-colors"
                       title={vi.payment.ui.orderView.copyRefTitle}
+                      aria-label={vi.payment.ui.orderView.copyRefTitle}
                     >
                       {copiedField === 'paymentRef'
                         ? vi.payment.ui.orderView.copiedButton

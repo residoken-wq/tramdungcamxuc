@@ -231,72 +231,81 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
             )}
           </Card>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Sản phẩm */}
-            {products.map((product) => {
-              const effectivePrice = getEffectivePrice(product, now)
-              const ctaInfo = resolveProductCta(product, now)
-              const coverSrc =
-                typeof product.coverImage === 'object' &&
-                product.coverImage !== null &&
-                'url' in product.coverImage &&
-                (product.coverImage as { url?: string }).url
-                  ? (product.coverImage as { url: string }).url
-                  : '/brand/sample-cover.svg'
-              const coverAlt =
-                typeof product.coverImage === 'object' &&
-                product.coverImage !== null &&
-                'alt' in product.coverImage &&
-                (product.coverImage as { alt?: string }).alt
-                  ? (product.coverImage as { alt: string }).alt
-                  : product.name
+          <section
+            aria-label={
+              params.tab === 'khoa-hoc' ? vi.library.tabs.courses : vi.library.tabs.content
+            }
+          >
+            <h2 className="sr-only">
+              {params.tab === 'khoa-hoc' ? vi.library.tabs.courses : vi.library.tabs.content}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Sản phẩm */}
+              {products.map((product) => {
+                const effectivePrice = getEffectivePrice(product, now)
+                const ctaInfo = resolveProductCta(product, now)
+                const coverSrc =
+                  typeof product.coverImage === 'object' &&
+                  product.coverImage !== null &&
+                  'url' in product.coverImage &&
+                  (product.coverImage as { url?: string }).url
+                    ? (product.coverImage as { url: string }).url
+                    : '/brand/sample-cover.svg'
+                const coverAlt =
+                  typeof product.coverImage === 'object' &&
+                  product.coverImage !== null &&
+                  'alt' in product.coverImage &&
+                  (product.coverImage as { alt?: string }).alt
+                    ? (product.coverImage as { alt: string }).alt
+                    : product.name
 
-              return (
-                <ProductCard
-                  key={product.id}
-                  name={product.name}
-                  shortDescription={product.shortDescription || undefined}
-                  coverImage={{ src: coverSrc, alt: coverAlt }}
-                  price={effectivePrice.price}
-                  salePrice={effectivePrice.salePrice}
-                  saleStatus={product.saleStatus}
-                  trialDays={product.trialDays}
-                  journeyStep={product.journeyStep || undefined}
-                  ctaInfo={ctaInfo}
-                />
-              )
-            })}
+                return (
+                  <ProductCard
+                    key={product.id}
+                    name={product.name}
+                    shortDescription={product.shortDescription || undefined}
+                    coverImage={{ src: coverSrc, alt: coverAlt }}
+                    price={effectivePrice.price}
+                    salePrice={effectivePrice.salePrice}
+                    saleStatus={product.saleStatus}
+                    trialDays={product.trialDays}
+                    journeyStep={product.journeyStep || undefined}
+                    ctaInfo={ctaInfo}
+                  />
+                )
+              })}
 
-            {/* Bài viết / Video */}
-            {posts.map((post) => {
-              const thumbnailSrc =
-                typeof post.thumbnail === 'object' &&
-                post.thumbnail !== null &&
-                'url' in post.thumbnail &&
-                (post.thumbnail as { url?: string }).url
-                  ? (post.thumbnail as { url: string }).url
-                  : null
-              const thumbnailAlt =
-                typeof post.thumbnail === 'object' &&
-                post.thumbnail !== null &&
-                'alt' in post.thumbnail &&
-                (post.thumbnail as { alt?: string }).alt
-                  ? (post.thumbnail as { alt: string }).alt
-                  : post.title
+              {/* Bài viết / Video */}
+              {posts.map((post) => {
+                const thumbnailSrc =
+                  typeof post.thumbnail === 'object' &&
+                  post.thumbnail !== null &&
+                  'url' in post.thumbnail &&
+                  (post.thumbnail as { url?: string }).url
+                    ? (post.thumbnail as { url: string }).url
+                    : null
+                const thumbnailAlt =
+                  typeof post.thumbnail === 'object' &&
+                  post.thumbnail !== null &&
+                  'alt' in post.thumbnail &&
+                  (post.thumbnail as { alt?: string }).alt
+                    ? (post.thumbnail as { alt: string }).alt
+                    : post.title
 
-              return (
-                <PostCard
-                  key={post.id}
-                  title={post.title}
-                  slug={post.slug}
-                  format={post.format || 'article'}
-                  series={post.series || null}
-                  topic={post.topic || null}
-                  thumbnail={thumbnailSrc ? { src: thumbnailSrc, alt: thumbnailAlt } : null}
-                />
-              )
-            })}
-          </div>
+                return (
+                  <PostCard
+                    key={post.id}
+                    title={post.title}
+                    slug={post.slug}
+                    format={post.format || 'article'}
+                    series={post.series || null}
+                    topic={post.topic || null}
+                    thumbnail={thumbnailSrc ? { src: thumbnailSrc, alt: thumbnailAlt } : null}
+                  />
+                )
+              })}
+            </div>
+          </section>
         )}
       </div>
     </div>

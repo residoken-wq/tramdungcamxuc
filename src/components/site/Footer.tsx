@@ -87,9 +87,9 @@ export function Footer({
           {/* Legal Pages Links (rendered only if provided) */}
           {hasLegalLinks && (
             <div className="md:col-span-4 space-y-3">
-              <h4 className="font-ui font-bold text-sm text-deep-navy uppercase tracking-wider">
+              <h2 className="font-ui font-bold text-sm text-deep-navy uppercase tracking-wider">
                 {vi.footer.legalHeading}
-              </h4>
+              </h2>
               <ul className="space-y-2">
                 {sortedLegalLinks.map((item) => (
                   <li key={item.slug}>
@@ -108,9 +108,9 @@ export function Footer({
           {/* Seller / Contact Info & Socials (rendered only if provided) */}
           {hasContactSection && (
             <div className="md:col-span-3 space-y-3">
-              <h4 className="font-ui font-bold text-sm text-deep-navy uppercase tracking-wider">
+              <h2 className="font-ui font-bold text-sm text-deep-navy uppercase tracking-wider">
                 {vi.footer.contactHeading}
-              </h4>
+              </h2>
 
               {/* Seller Information (only show non-empty fields) */}
               {hasSellerDetails && sellerInfo && (

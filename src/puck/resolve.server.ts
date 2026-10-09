@@ -85,9 +85,20 @@ export async function resolveServerData(
   const logoMediaIdsToFetch = new Set<string | number>()
   const pageIdsToFetch = new Set<string | number>()
   let needsSiteSettings = false
+  let hasSetHeroPriority = false
 
   await walkPuckItems(resolvedData, async (item) => {
     if (!item || !item.props) return
+
+    // Priority flag for HeroImage (only first hero image on page gets priority=true for LCP)
+    if (item.type === 'HeroImage') {
+      if (!hasSetHeroPriority) {
+        item.props.priority = true
+        hasSetHeroPriority = true
+      } else {
+        item.props.priority = false
+      }
+    }
 
     // Media resolution for ImageText, HeroImage, & HanaStory
     if (

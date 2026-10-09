@@ -151,12 +151,16 @@ export function PackageComparison({
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="border-b border-deep-navy/10 bg-lavender-mist/30">
-                <th className="py-5 px-6 font-ui text-sm font-bold uppercase tracking-wider text-deep-navy w-1/3">
+                <th
+                  scope="col"
+                  className="py-5 px-6 font-ui text-sm font-bold uppercase tracking-wider text-deep-navy w-1/3 text-left"
+                >
                   Cấu phần & Quyền lợi
                 </th>
                 {pkgs.map((pkg) => (
                   <th
                     key={pkg.id}
+                    scope="col"
                     className="py-5 px-6 font-display text-2xl uppercase tracking-tight text-deep-navy text-center"
                   >
                     {pkg.name}
@@ -167,13 +171,18 @@ export function PackageComparison({
             <tbody className="divide-y divide-deep-navy/10 font-ui text-sm">
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex} className="hover:bg-warm-ivory/50 transition-colors">
-                  <td className="py-4 px-6 font-medium text-deep-navy">{row.label}</td>
+                  <th
+                    scope="row"
+                    className="py-4 px-6 font-medium text-deep-navy text-left font-normal"
+                  >
+                    {row.label}
+                  </th>
                   {row.cells.map((cell, cellIndex) => (
                     <td key={cellIndex} className="py-4 px-6 text-center">
                       {cell.text === 'Có' ? (
-                        <span className="font-bold text-accent-pink text-base">Có</span>
+                        <span className="font-bold text-bright-magenta text-base">Có</span>
                       ) : cell.text === 'Không' ? (
-                        <span className="text-deep-navy/40 font-medium">Không</span>
+                        <span className="text-deep-navy/70 font-medium">Không</span>
                       ) : (
                         <span className="font-bold text-deep-navy text-base">{cell.text}</span>
                       )}
@@ -185,9 +194,12 @@ export function PackageComparison({
               {/* Total Value Row */}
               {showTotalValue && (
                 <tr className="bg-lavender-mist/10 border-t-2 border-deep-navy/15">
-                  <td className="py-4 px-6 font-ui font-semibold text-deep-navy/75">
+                  <th
+                    scope="row"
+                    className="py-4 px-6 font-ui font-semibold text-deep-navy/75 text-left"
+                  >
                     Tổng giá trị thực tế
-                  </td>
+                  </th>
                   {pkgs.map((pkg) => (
                     <td key={pkg.id} className="py-4 px-6 text-center">
                       <span className="line-through font-ui font-medium text-deep-navy/60 text-sm">
@@ -200,7 +212,12 @@ export function PackageComparison({
 
               {/* Selling Price Row */}
               <tr className="bg-lavender-mist/20 font-bold">
-                <td className="py-5 px-6 font-ui text-base text-deep-navy">Giá gói đồng hành</td>
+                <th
+                  scope="row"
+                  className="py-5 px-6 font-ui text-base text-deep-navy text-left font-bold"
+                >
+                  Giá gói đồng hành
+                </th>
                 {pkgs.map((pkg) => (
                   <td key={pkg.id} className="py-5 px-6 text-center">
                     <span className="font-ui text-xl font-bold text-deep-navy">
@@ -213,17 +230,20 @@ export function PackageComparison({
               {/* Discount Percent Row */}
               {showDiscountPercent && (
                 <tr className="bg-soft-pink/30">
-                  <td className="py-4 px-6 font-ui font-semibold text-bright-magenta">
+                  <th
+                    scope="row"
+                    className="py-4 px-6 font-ui font-semibold text-bright-magenta text-left"
+                  >
                     Mức ưu đãi
-                  </td>
+                  </th>
                   {pkgs.map((pkg) => (
                     <td key={pkg.id} className="py-4 px-6 text-center">
                       {pkg.discountPercent != null && pkg.discountPercent > 0 ? (
-                        <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider bg-accent-pink text-white shadow-sm">
+                        <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider bg-bright-magenta text-white shadow-sm">
                           Ưu đãi {pkg.discountPercent}%
                         </span>
                       ) : (
-                        <span className="text-deep-navy/40 text-xs">—</span>
+                        <span className="text-deep-navy/70 text-xs">—</span>
                       )}
                     </td>
                   ))}
@@ -246,7 +266,7 @@ export function PackageComparison({
                   {pkg.name}
                 </h3>
                 {showDiscountPercent && pkg.discountPercent != null && pkg.discountPercent > 0 && (
-                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-accent-pink text-white">
+                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-bright-magenta text-white">
                     Ưu đãi {pkg.discountPercent}%
                   </span>
                 )}
@@ -260,7 +280,7 @@ export function PackageComparison({
                     return (
                       <div
                         key={rIdx}
-                        className="flex items-center justify-between text-deep-navy/40 line-through"
+                        className="flex items-center justify-between text-deep-navy/70 line-through"
                       >
                         <span>{row.label}</span>
                         <span className="text-xs font-semibold no-underline">Không</span>
@@ -270,7 +290,7 @@ export function PackageComparison({
                   return (
                     <div key={rIdx} className="flex items-center justify-between text-deep-navy">
                       <span className="font-medium">{row.label}</span>
-                      <span className="font-bold text-accent-pink">{cell.text}</span>
+                      <span className="font-bold text-bright-magenta">{cell.text}</span>
                     </div>
                   )
                 })}

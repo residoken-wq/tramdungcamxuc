@@ -27,20 +27,28 @@ describe('access control (T0-07)', () => {
 
   beforeAll(async () => {
     payload = await getPayload({ config })
-    const make = async (role: 'owner' | 'editor') =>
-      asUser(
-        track(
-          'users',
-          await payload.create({
-            collection: 'users',
-            data: {
-              email: `t0-07-${role}-${randomUUID()}@example.test`,
-              password: randomUUID(),
-              role,
-            },
-          }),
-        ),
-      )
+    const make = async (role: 'owner' | 'editor') => {
+      const u = await payload.create({
+        collection: 'users',
+        data: {
+          email: `t0-07-${role}-${randomUUID()}@example.test`,
+          password: randomUUID(),
+          role,
+        },
+        overrideAccess: true,
+      })
+      track('users', u)
+      if (role === 'owner' && u.role !== 'owner') {
+        const updated = await payload.update({
+          collection: 'users',
+          id: u.id,
+          data: { role: 'owner' },
+          overrideAccess: true,
+        })
+        return asUser(updated)
+      }
+      return asUser(u)
+    }
     owner = await make('owner')
     editor = await make('editor')
     owner = asUser(await payload.findByID({ collection: 'users', id: owner.id }))

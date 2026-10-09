@@ -6,6 +6,7 @@ import { OrderPaymentView } from '@/components/site/OrderPaymentView'
 import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export const metadata: Metadata = {
   title: vi.payment.ui.orderView.title,
