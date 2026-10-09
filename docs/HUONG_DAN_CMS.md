@@ -522,6 +522,26 @@ Dưới đây là quy trình đối chiếu và duyệt đơn chuẩn dành cho 
 - **Tự động hết hạn sau 24 giờ:** Nếu sau 24 giờ kể từ khi tạo đơn mà khách không chuyển khoản, hệ thống sẽ tự động chuyển đơn sang trạng thái hết hạn; khách đã đồng ý nhận tin sẽ nhận email nhắc nhẹ. Đơn đã hết hạn không xác nhận được nữa (xem câu hỏi Q19).
 - **Số tiền bị khóa:** Sau khi đơn được tạo, Biên tập viên không sửa được sản phẩm, số tiền hay khách hàng của đơn. Chủ sở hữu chỉ sửa được khi đơn còn chờ thanh toán.
 
+#### Tạo link thanh toán gói Growth Mirror
+
+**Mục đích**: Hana tạo đơn hàng thanh toán riêng cho khách sau khi đã tư vấn hoặc hoàn thành phiên trải nghiệm Growth Mirror 149.000đ. Khách nhận được link cá nhân hóa để xem tóm tắt cấu phần gói, đồng ý điều khoản và thanh toán chuyển khoản VietQR.
+
+**Các bước Hana làm**:
+
+1. Đăng nhập vào trang quản trị CMS bằng tài khoản Chủ sở hữu (Owner).
+2. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào **Đơn hàng** -> bấm nút **Tạo mới**.
+3. Đánh dấu tick vào ô **Đơn do admin tạo** (`createdByAdmin`).
+4. Tại ô **Khách hàng**: chọn khách hàng trong danh sách (hoặc tạo hồ sơ khách hàng mới nếu chưa có).
+5. Tại mục **Sản phẩm trong đơn**: chọn đúng **một** gói đồng hành Growth Mirror đã xuất bản (`type = package`, ví dụ: _Gói CLEAR_, _Gói BUILD_, hoặc _Gói SHINE_).
+6. **Không cần gõ giá:** Hệ thống máy chủ tự động tính toán giá chính xác theo giá bán/giá ưu đãi trong cơ sở dữ liệu (bỏ qua mọi số gõ tay).
+   - Nếu công tắc **Trừ phí trải nghiệm** (`trialCreditApplies`) đang bật trong Cài đặt website và khách đã từng thanh toán phiên trải nghiệm 149.000đ, hệ thống sẽ tự động trừ đúng 149.000đ vào tổng thanh toán và ghi chú rõ ràng vào ô Ghi chú. Mỗi đơn trải nghiệm chỉ được dùng để giảm trừ đúng 1 lần duy nhất.
+7. Bấm nút **Lưu** để tạo đơn.
+8. Ở cột bên phải (Sidebar), mục **Link thanh toán cho khách**, bấm nút **Sao chép link** để gửi đường dẫn cho khách hàng qua Zalo hoặc Email.
+9. **Trải nghiệm phía khách hàng:** Khách mở liên kết sẽ thấy tóm tắt gói (tên gói, danh sách cấu phần, giá trị thực tế gạch ngang, giá thanh toán, % ưu đãi). Khách bắt buộc phải tích chọn ô đồng ý Điều khoản sử dụng và Chính sách giá – thanh toán thì hệ thống mới hiển thị mã VietQR và nội dung chuyển khoản `paymentRef`.
+
+![Tạo link thanh toán gói trong admin](images/huong-dan/26-link-thanh-toan-goi.png)
+<!-- ẢNH 26: trang chi tiết đơn hàng do admin tạo, cột sidebar hiển thị link thanh toán /thanh-toan/don/[token] kèm nút Sao chép link -->
+
 ---
 
 ## 8. Quản lý Khách tiềm năng (Leads) và Xuất file CSV
@@ -669,33 +689,34 @@ Các mục trên (trừ mục 11) **đã có sẵn chỗ trống trong CMS**. Kh
 
 Dưới đây là bảng đối chiếu toàn bộ 25 ảnh màn hình được tích hợp trong tài liệu và kịch bản tự động chụp (`scripts/cms-screenshots.mjs`):
 
-| Mã ảnh | Tệp hình ảnh                                         | Vị trí màn hình                               | Nội dung và điểm nhấn                                          |
-| :----: | :--------------------------------------------------- | :-------------------------------------------- | :------------------------------------------------------------- |
-| **01** | `images/huong-dan/01-dang-nhap.png`                  | `/admin/login`                                | Màn hình đăng nhập quản trị với Email, Mật khẩu                |
-| **02** | `images/huong-dan/02-doi-mat-khau.png`               | `/admin/account`                              | Hồ sơ cá nhân sau khi bấm nút Đổi mật khẩu                     |
-| **03** | `images/huong-dan/03-du-lieu-mau.png`                | `/admin/collections/products`                 | Danh sách sản phẩm với tiền tố `[MẪU]` nhận diện               |
-| **04** | `images/huong-dan/04-sua-gia-va-uu-dai.png`          | `/admin/collections/products/[id]`            | Khu vực Giá bán, Giá ưu đãi và Hạn ưu đãi                      |
-| **05** | `images/huong-dan/05-doi-trang-thai-san-pham.png`    | `/admin/collections/products/[id]`            | Danh sách thả xuống 5 trạng thái bán sản phẩm                  |
-| **06** | `images/huong-dan/06-cau-phan-goi-growth-mirror.png` | `/admin/collections/products/[growth-mirror]` | Bảng cấu phần gói tự động tính Tổng giá trị & Ưu đãi (%)       |
-| **07** | `images/huong-dan/07-tai-lieu-rieng-tu.png`          | `/admin/collections/privateFiles`             | Danh sách và biểu mẫu tải lên Tài liệu riêng tư (PDF/ZIP)      |
-| **08** | `images/huong-dan/08-them-testimonial-dong-y.png`    | `/admin/collections/testimonials/create`      | Biểu mẫu Lời chia sẻ với ô tick bắt buộc Đã đồng ý             |
-| **09** | `images/huong-dan/09-tao-trang-tu-mau.png`           | `/admin/collections/pages/create`             | Biểu mẫu tạo trang mới và chọn Mẫu trang có sẵn                |
-| **10** | `images/huong-dan/10-nut-chinh-sua-truc-quan.png`    | `/admin/collections/pages/[id]`               | Cột bên phải với nút màu tím Chỉnh sửa trực quan (Puck Editor) |
-| **11** | `images/huong-dan/11-toan-canh-puck-editor.png`      | `/builder/[id]`                               | Toàn cảnh 3 cột của trình dựng trực quan Puck                  |
-| **12** | `images/huong-dan/12-keo-khoi-sua-chu.png`           | `/builder/[id]`                               | Chọn khối trên canvas và sửa thuộc tính ở cột bên phải         |
-| **13** | `images/huong-dan/13-khoa-khoi-hero-trang-chu.png`   | `/builder/[homeId]`                           | Khối Hero 2 Lối vào được bảo vệ, khóa xóa trên Trang chủ       |
-| **14** | `images/huong-dan/14-xem-thu-3-man-hinh.png`         | `/builder/[id]`                               | Thanh trên cùng chọn xem Điện thoại, Tablet, Máy tính          |
-| **15** | `images/huong-dan/15-lich-su-khoi-phuc.png`          | `/builder/[id]`                               | Cửa sổ Lịch sử phiên bản và nút Khôi phục bản trước            |
-| **16** | `images/huong-dan/16-nhan-ban-trang.png`             | `/builder/[id]`                               | Nút Nhân bản trang trên thanh công cụ trên cùng                |
-| **17** | `images/huong-dan/17-luu-nhap-va-xuat-ban.png`       | `/builder/[id]`                               | Các nút Lưu nháp, Xuất bản và nút Xem trang công khai          |
-| **18** | `images/huong-dan/18-sua-trang-phap-ly.png`          | `/admin/collections/legalPages/[id]`          | Trình soạn thảo văn bản của trang pháp lý                      |
-| **19** | `images/huong-dan/19-thong-tin-nguoi-ban.png`        | `/admin/globals/siteSettings`                 | Tab Người bán với các trường thông tin hộ kinh doanh/MST       |
-| **20** | `images/huong-dan/20-cai-dat-zalo-chat.png`          | `/admin/globals/siteSettings`                 | Tab Liên hệ & Zalo với liên kết Zalo và nút chat nổi           |
-| **21** | `images/huong-dan/21-cai-dat-ngan-hang-vietqr.png`   | `/admin/globals/siteSettings`                 | Tab Thanh toán với thông tin số tài khoản VietQR               |
-| **22** | `images/huong-dan/22-lien-ket-dat-lich-coaching.png` | `/admin/collections/services/[id]`            | Trường Liên kết đặt lịch trong dịch vụ coaching                |
-| **23** | `images/huong-dan/23-quan-ly-leads-xuat-csv.png`     | `/admin/collections/leads`                    | Danh sách Khách tiềm năng, bộ lọc và nút Xuất CSV              |
-| **24** | `images/huong-dan/24-cau-hoi-quiz-chan-doan.png`     | `/admin/collections/diagnosticQuestions/[id]` | Biểu mẫu sửa câu hỏi chẩn đoán và gợi ý rich text              |
-| **25** | `images/huong-dan/25-thong-bao-loi-thuong-gap.png`   | `/admin/collections/testimonials/create`      | Thông báo lỗi khi xuất bản testimonial chưa có đồng ý          |
+| Mã ảnh | Tệp hình ảnh                                         | Vị trí màn hình                               | Nội dung và điểm nhấn                                                    |
+| :----: | :--------------------------------------------------- | :-------------------------------------------- | :----------------------------------------------------------------------- |
+| **01** | `images/huong-dan/01-dang-nhap.png`                  | `/admin/login`                                | Màn hình đăng nhập quản trị với Email, Mật khẩu                          |
+| **02** | `images/huong-dan/02-doi-mat-khau.png`               | `/admin/account`                              | Hồ sơ cá nhân sau khi bấm nút Đổi mật khẩu                               |
+| **03** | `images/huong-dan/03-du-lieu-mau.png`                | `/admin/collections/products`                 | Danh sách sản phẩm với tiền tố `[MẪU]` nhận diện                         |
+| **04** | `images/huong-dan/04-sua-gia-va-uu-dai.png`          | `/admin/collections/products/[id]`            | Khu vực Giá bán, Giá ưu đãi và Hạn ưu đãi                                |
+| **05** | `images/huong-dan/05-doi-trang-thai-san-pham.png`    | `/admin/collections/products/[id]`            | Danh sách thả xuống 5 trạng thái bán sản phẩm                            |
+| **06** | `images/huong-dan/06-cau-phan-goi-growth-mirror.png` | `/admin/collections/products/[growth-mirror]` | Bảng cấu phần gói tự động tính Tổng giá trị & Ưu đãi (%)                 |
+| **07** | `images/huong-dan/07-tai-lieu-rieng-tu.png`          | `/admin/collections/privateFiles`             | Danh sách và biểu mẫu tải lên Tài liệu riêng tư (PDF/ZIP)                |
+| **08** | `images/huong-dan/08-them-testimonial-dong-y.png`    | `/admin/collections/testimonials/create`      | Biểu mẫu Lời chia sẻ với ô tick bắt buộc Đã đồng ý                       |
+| **09** | `images/huong-dan/09-tao-trang-tu-mau.png`           | `/admin/collections/pages/create`             | Biểu mẫu tạo trang mới và chọn Mẫu trang có sẵn                          |
+| **10** | `images/huong-dan/10-nut-chinh-sua-truc-quan.png`    | `/admin/collections/pages/[id]`               | Cột bên phải với nút màu tím Chỉnh sửa trực quan (Puck Editor)           |
+| **11** | `images/huong-dan/11-toan-canh-puck-editor.png`      | `/builder/[id]`                               | Toàn cảnh 3 cột của trình dựng trực quan Puck                            |
+| **12** | `images/huong-dan/12-keo-khoi-sua-chu.png`           | `/builder/[id]`                               | Chọn khối trên canvas và sửa thuộc tính ở cột bên phải                   |
+| **13** | `images/huong-dan/13-khoa-khoi-hero-trang-chu.png`   | `/builder/[homeId]`                           | Khối Hero 2 Lối vào được bảo vệ, khóa xóa trên Trang chủ                 |
+| **14** | `images/huong-dan/14-xem-thu-3-man-hinh.png`         | `/builder/[id]`                               | Thanh trên cùng chọn xem Điện thoại, Tablet, Máy tính                    |
+| **15** | `images/huong-dan/15-lich-su-khoi-phuc.png`          | `/builder/[id]`                               | Cửa sổ Lịch sử phiên bản và nút Khôi phục bản trước                      |
+| **16** | `images/huong-dan/16-nhan-ban-trang.png`             | `/builder/[id]`                               | Nút Nhân bản trang trên thanh công cụ trên cùng                          |
+| **17** | `images/huong-dan/17-luu-nhap-va-xuat-ban.png`       | `/builder/[id]`                               | Các nút Lưu nháp, Xuất bản và nút Xem trang công khai                    |
+| **18** | `images/huong-dan/18-sua-trang-phap-ly.png`          | `/admin/collections/legalPages/[id]`          | Trình soạn thảo văn bản của trang pháp lý                                |
+| **19** | `images/huong-dan/19-thong-tin-nguoi-ban.png`        | `/admin/globals/siteSettings`                 | Tab Người bán với các trường thông tin hộ kinh doanh/MST                 |
+| **20** | `images/huong-dan/20-cai-dat-zalo-chat.png`          | `/admin/globals/siteSettings`                 | Tab Liên hệ & Zalo với liên kết Zalo và nút chat nổi                     |
+| **21** | `images/huong-dan/21-cai-dat-ngan-hang-vietqr.png`   | `/admin/globals/siteSettings`                 | Tab Thanh toán với thông tin số tài khoản VietQR                         |
+| **22** | `images/huong-dan/22-lien-ket-dat-lich-coaching.png` | `/admin/collections/services/[id]`            | Trường Liên kết đặt lịch trong dịch vụ coaching                          |
+| **23** | `images/huong-dan/23-quan-ly-leads-xuat-csv.png`     | `/admin/collections/leads`                    | Danh sách Khách tiềm năng, bộ lọc và nút Xuất CSV                        |
+| **24** | `images/huong-dan/24-cau-hoi-quiz-chan-doan.png`     | `/admin/collections/diagnosticQuestions/[id]` | Biểu mẫu sửa câu hỏi chẩn đoán và gợi ý rich text                        |
+| **25** | `images/huong-dan/25-thong-bao-loi-thuong-gap.png`   | `/admin/collections/testimonials/create`      | Thông báo lỗi khi xuất bản testimonial chưa có đồng ý                    |
+| **26** | `images/huong-dan/26-link-thanh-toan-goi.png`        | `/admin/collections/orders/[id]`              | Sidebar đơn hàng hiển thị link thanh toán cho khách và nút Sao chép link |
 
 ## Xem trước khi sửa dịch vụ / chương trình / bài viết
 

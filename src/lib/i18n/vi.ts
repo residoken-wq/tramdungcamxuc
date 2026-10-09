@@ -363,14 +363,70 @@ export const vi = {
       cannotCancelPaidOrder: 'Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
       orderExpired: 'Đơn hàng đã hết hạn thanh toán.',
       serverError: 'Đã có lỗi xảy ra trong quá trình xử lý. Vui lòng thử lại sau.',
+      termsNotAccepted:
+        'Khách chưa đồng ý Điều khoản và Chính sách giá – thanh toán trên link thanh toán. Chưa thể xác nhận đơn này.',
     },
     success: {
       orderCreated: 'Tạo đơn đặt phiên trải nghiệm thành công.',
       confirmed: 'Xác nhận thanh toán thành công.',
       cancelled: 'Hủy đơn hàng thành công.',
+      termsAccepted: 'Đã xác nhận đồng ý điều khoản thanh toán.',
     },
     sandboxNotice: 'THỬ NGHIỆM – không chuyển tiền thật',
+    email: {
+      packagePaid: {
+        subject: (packageName: string) =>
+          `Trạm Dừng Cảm Xúc – Xác nhận gói ${packageName} & Hướng dẫn bắt đầu`,
+        brandLabel: 'TRẠM DỪNG CẢM XÚC · GROWTH MIRROR',
+        title: 'Thanh toán thành công & Bắt đầu đồng hành!',
+        greeting: (name: string) => `Chào ${name || 'bạn'},`,
+        welcomeText: (packageName: string) =>
+          `Trạm Dừng Cảm Xúc đã nhận được chuyển khoản cho gói đồng hành ${packageName}. Dưới đây là thông tin chi tiết và các bước để bạn bắt đầu hành trình.`,
+        orderInfoHeading: 'Thông tin đơn hàng:',
+        orderRefLabel: 'Mã đơn hàng:',
+        packageLabel: 'Gói đồng hành:',
+        amountLabel: 'Số tiền đã thanh toán:',
+        statusLabel: 'Trạng thái:',
+        statusPaid: 'Đã xác nhận thanh toán',
+        componentsHeading: 'Các cấu phần trong gói của bạn:',
+        digitalToolsHeading: 'Công cụ số đã được kích hoạt:',
+        digitalToolsDesc:
+          'Bạn đã có thể sử dụng các công cụ số đi kèm (Habit Tracker / EQ Buddy) trên website Trạm Dừng Cảm Xúc.',
+        digitalToolsButton: 'Truy cập công cụ số',
+        digitalToolsNote:
+          '(*) Hệ thống trang cá nhân quản lý công cụ đang được hoàn thiện (Giai đoạn 2). Hiện bạn có thể trải nghiệm trực tiếp trên website.',
+        coachingHeading: 'Đặt lịch phiên Coaching 1:1:',
+        coachingDesc:
+          'Vui lòng chọn thời gian thuận tiện nhất cho bạn để bắt đầu phiên coaching cùng Hana Lương (ICF ACC).',
+        coachingButton: 'Đặt lịch Coaching 1:1 ngay',
+        workshopsHeading: 'Lịch workshop sắp diễn ra:',
+        workshopsDesc:
+          'Bạn được tham gia các buổi workshop trong lộ trình. Trạm sẽ gửi link phòng trước giờ học:',
+        communityHeading: 'Cộng đồng riêng "Tập thương cảm xúc":',
+        communityDesc:
+          'Tham gia nhóm Zalo cộng đồng riêng để nhận thông báo webinar quý và kết nối cùng các thành viên.',
+        communityButton: 'Tham gia nhóm Zalo cộng đồng',
+        footerSignOff: 'Trân trọng và ấm áp,',
+        footerAuthor: 'Hana Lương (ICF ACC) & Trạm Dừng Cảm Xúc',
+        footerAutoNotice:
+          'Email xác nhận tự động từ tramdungcamxuc.com. Nếu có câu hỏi cần hỗ trợ, bạn có thể trả lời trực tiếp email này.',
+      },
+    },
     ui: {
+      packageSummary: {
+        title: 'Tóm tắt gói đồng hành Growth Mirror',
+        componentsHeading: 'Các cấu phần bao gồm trong gói:',
+        totalValueLabel: 'Tổng giá trị thực tế:',
+        sellingPriceLabel: 'Mức đầu tư / Giá thanh toán:',
+        discountBadge: 'Ưu đãi',
+        termsCheckboxText: 'Tôi đã đọc và đồng ý với',
+        termsLink: 'Điều khoản sử dụng',
+        andText: 'và',
+        pricingPolicyLink: 'Chính sách giá – thanh toán',
+        termsSuffix: 'của Trạm Dừng Cảm Xúc.',
+        acceptButton: 'Đồng ý điều khoản & Hiển thị mã VietQR',
+        accepting: 'Đang xử lý...',
+      },
       booking: {
         seriesLabel: 'Đồng hành 1:1 · Trạm Dừng Cảm Xúc',
         titleLine1: 'ĐẶT PHIÊN TRẢI NGHIỆM',
@@ -456,6 +512,13 @@ export const vi = {
         panelDesc:
           'Trạng thái thanh toán được bảo vệ và chỉ có thể thay đổi an toàn qua các nút chức năng bên dưới.',
         saveFirstNotice: 'Vui lòng lưu đơn hàng trước khi thực hiện thao tác duyệt hoặc hủy.',
+        paymentLinkTitle: 'Link thanh toán cho khách',
+        paymentLinkDesc: 'Gửi link này cho khách để xem tóm tắt gói và thanh toán VietQR.',
+        copyLinkButton: 'Sao chép link',
+        copiedLinkButton: '✓ Đã sao chép link',
+        statusPaidNotice: '✓ Đơn hàng này đã được xác nhận thanh toán.',
+        statusCancelledNotice: '✕ Đơn hàng này đã bị hủy.',
+        statusFailedNotice: '⏱ Đơn hàng này đã hết hạn thanh toán.',
         confirmButton: 'Xác nhận thanh toán',
         cancelButton: 'Hủy đơn hàng',
         processing: 'Đang xử lý...',

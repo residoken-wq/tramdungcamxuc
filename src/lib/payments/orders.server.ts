@@ -1,19 +1,25 @@
 import 'server-only'
+import { notFound } from 'next/navigation'
 import { getPayload, type Payload } from 'payload'
 import { sql } from '@payloadcms/db-postgres'
+import type { Product } from '@/payload-types'
 import config from '@/payload.config'
 import { vi } from '../i18n/vi'
 import { experienceOrderSchema, type ExperienceOrderInput } from '../forms/schemas'
 import { checkAndRecordRateLimit } from '../forms/ratelimit.server'
 import { verifyTurnstile } from '../forms/turnstile.server'
 import { getEffectivePrice } from '../products'
+import { computePackageValue } from '../pricing'
 import { generatePayToken, generateUniquePaymentRef } from './payment-ref'
 import { assertValidBankConfig, buildVietQrPayload, generateVietQrSvg } from './vietqr'
 import {
   sendExperienceOrderPaidEmail,
   sendOrderExpiredReminderEmail,
+  sendPackageOrderPaidEmail,
 } from '../email/service.server'
 import type { EmailSender } from '../email/types'
+import { grantEntitlementsForOrder } from './entitlements.server'
+import { getSiteUrl } from '../site-url'
 
 export class PaymentError extends Error {
   constructor(message: string) {
@@ -92,6 +98,17 @@ export interface PublicOrderViewDto {
   sandboxNotice?: string
   productName?: string
   createdAt?: string | null
+  createdByAdmin?: boolean
+  termsAcceptedAt?: string | null
+  payToken?: string
+  packageSummary?: {
+    name: string
+    components: Array<{ label: string; quantity: number | null; unitValue: number | null }>
+    totalValue: number
+    sellingPrice: number
+    discountPercent: number | null
+    notes?: string | null
+  } | null
 }
 
 async function resolvePayload(injected?: Payload): Promise<Payload> {
@@ -304,27 +321,88 @@ export async function getPublicOrderView(
 
   const isSandbox = process.env.PAYMENT_SANDBOX === 'true'
 
-  const qrPayload = buildVietQrPayload({
-    bin: bankInfo.bankBin,
-    accountNumber: bankInfo.accountNumber,
-    amount: order.total,
-    addInfo: order.paymentRef || undefined,
-  })
+  // REVIEW-REQUIRED: Đơn do Hana tạo chưa đồng ý điều khoản -> không gửi QR, tài khoản, mã chuyển khoản
+  // xuống trình duyệt (che giao diện thôi là chưa đủ).
+  const awaitingTerms = Boolean(order.createdByAdmin) && !order.termsAcceptedAt
+  if (awaitingTerms) {
+    bankInfo.bankBin = ''
+    bankInfo.bankName = undefined
+    bankInfo.accountNumber = ''
+    bankInfo.accountName = ''
+  }
 
-  const qrSvg = await generateVietQrSvg(qrPayload)
+  const qrPayload = awaitingTerms
+    ? ''
+    : buildVietQrPayload({
+        bin: bankInfo.bankBin,
+        accountNumber: bankInfo.accountNumber,
+        amount: order.total,
+        addInfo: order.paymentRef || undefined,
+      })
 
-  // Lấy tên sản phẩm nếu có
+  const qrSvg = awaitingTerms ? '' : await generateVietQrSvg(qrPayload)
+
+  // Lấy tên sản phẩm và tóm tắt gói nếu có
   let productName: string | undefined
+  let packageSummary = null
+
   if (Array.isArray(order.items) && order.items.length > 0) {
     const firstItem = order.items[0]
     if (typeof firstItem.product === 'object' && firstItem.product !== null) {
-      productName = firstItem.product.name
+      const p = firstItem.product as {
+        name?: string
+        type?: string
+        price?: number | null
+        salePrice?: number | null
+        saleEndsAt?: string | null
+        components?: Array<{
+          label?: string | null
+          quantity?: number | null
+          unitValue?: number | null
+        }>
+      }
+      productName = p.name
+
+      if (p.type === 'package') {
+        const comps = Array.isArray(p.components)
+          ? p.components.map((c) => ({
+              label: c.label || '',
+              quantity: typeof c.quantity === 'number' ? c.quantity : 1,
+              unitValue: typeof c.unitValue === 'number' ? c.unitValue : 0,
+            }))
+          : []
+
+        const effective = getEffectivePrice(p, new Date())
+        const sellingPrice = order.total
+        const { totalValue } = computePackageValue({
+          components: comps,
+          price: effective.price,
+          salePrice: effective.salePrice,
+        })
+
+        const discountPercent =
+          totalValue > 0 && sellingPrice < totalValue
+            ? Math.round(((totalValue - sellingPrice) / totalValue) * 100)
+            : null
+
+        packageSummary = {
+          name: p.name || '',
+          components: comps,
+          totalValue,
+          sellingPrice,
+          discountPercent,
+          notes: order.notes || null,
+        }
+      }
     }
   }
 
+  const createdByAdmin = Boolean(order.createdByAdmin)
+  const termsAcceptedAt = order.termsAcceptedAt ? String(order.termsAcceptedAt) : null
+
   // REVIEW-REQUIRED: DTO công khai không chứa email, số điện thoại hay ID nội bộ của khách hàng
   return {
-    paymentRef: order.paymentRef || '',
+    paymentRef: awaitingTerms ? '' : order.paymentRef || '',
     amount: order.total,
     status: order.paymentStatus,
     bankInfo,
@@ -334,6 +412,10 @@ export async function getPublicOrderView(
     sandboxNotice: isSandbox ? vi.payment.sandboxNotice : undefined,
     productName,
     createdAt: order.createdAt,
+    createdByAdmin,
+    termsAcceptedAt,
+    payToken: order.payToken || payToken,
+    packageSummary,
   }
 }
 
@@ -406,6 +488,11 @@ export async function confirmManualPayment(
     throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
   }
 
+  // REVIEW-REQUIRED: Đơn Hana tạo phải có thời điểm khách đồng ý điều khoản (AGENTS 8.1) mới xác nhận được
+  if (order.createdByAdmin && !order.termsAcceptedAt) {
+    throw new InvalidOrderStatusError(vi.payment.errors.termsNotAccepted)
+  }
+
   // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB
   // UPDATE orders SET payment_status = 'paid', paid_at = ${paidAt}, updated_at = ${paidAt} WHERE id = ${orderId} AND payment_status = 'pending' RETURNING id
   // Bảng orders không cấu hình versions (không có _orders_v) nên câu UPDATE trực tiếp an toàn tuyệt đối.
@@ -462,7 +549,57 @@ export async function confirmManualPayment(
     overrideAccess: true,
   })
 
-  // Gửi email xác nhận kèm link đặt lịch
+  // Kiểm tra đơn hàng có chứa sản phẩm dạng package hay không
+  const items = Array.isArray(order.items) ? order.items : []
+  let packageProduct: Product | null = null
+
+  for (const item of items) {
+    let p: Product | number | string | null = item.product as Product | number | string | null
+    if (typeof p === 'number' || typeof p === 'string') {
+      p = (await payload.findByID({
+        collection: 'products',
+        id: Number(p),
+        depth: 1,
+        overrideAccess: true,
+      })) as Product
+    }
+    if (p && typeof p === 'object' && p.type === 'package') {
+      packageProduct = p
+      break
+    }
+  }
+
+  const isPackageOrder = Boolean(packageProduct)
+
+  // REVIEW-REQUIRED: Cấp quyền truy cập cho đơn gói Growth Mirror
+  if (isPackageOrder) {
+    try {
+      await grantEntitlementsForOrder(orderId, { payload, now })
+      await payload.update({
+        collection: 'orders',
+        id: orderId,
+        data: { deliveryStatus: 'access_granted' },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+    } catch (grantErr) {
+      console.error('[Payment] Grant entitlements failed for order', orderId, grantErr)
+      await payload.create({
+        collection: 'auditLogs',
+        data: {
+          actor: Number(user.id),
+          action: 'grant_entitlements_failed',
+          target: `orders:${orderId}`,
+          before: { error: String(grantErr) },
+          after: null,
+          at: now.toISOString(),
+        },
+        overrideAccess: true,
+      })
+    }
+  }
+
+  // Gửi email xác nhận kèm link đặt lịch / hướng dẫn
   const siteSettings = await payload.findGlobal({
     slug: 'siteSettings',
     overrideAccess: true,
@@ -479,17 +616,79 @@ export async function confirmManualPayment(
 
   if (customerDoc?.email) {
     try {
-      await sendExperienceOrderPaidEmail(
-        payload,
-        {
-          name: customerDoc.name || 'bạn',
-          email: customerDoc.email,
-          paymentRef: order.paymentRef || '',
-          amount: order.total,
-          bookingUrl: siteSettings?.experienceBookingUrl,
-        },
-        options.emailSender,
-      )
+      if (isPackageOrder && packageProduct) {
+        // Tìm các workshop sắp diễn ra có audienceProducts chứa gói này
+        let upcomingWorkshops: Array<{ title: string; timeString: string }> = []
+        try {
+          const workshopsRes = await payload.find({
+            collection: 'workshops',
+            where: {
+              audienceProducts: { contains: packageProduct.id },
+              startsAt: { greater_than_equal: now.toISOString() },
+            },
+            sort: 'startsAt',
+            limit: 5,
+            overrideAccess: true,
+          })
+          upcomingWorkshops = workshopsRes.docs.map(
+            (w: { startsAt?: string | null; title?: string | null }) => {
+              const timeStr = w.startsAt
+                ? new Intl.DateTimeFormat('vi-VN', {
+                    timeZone: 'Asia/Bangkok',
+                    dateStyle: 'full',
+                    timeStyle: 'short',
+                  }).format(new Date(w.startsAt))
+                : ''
+              return {
+                title: w.title || '',
+                timeString: timeStr,
+              }
+            },
+          )
+        } catch {
+          // Bỏ qua nếu lỗi truy vấn workshop
+        }
+
+        const comps = Array.isArray(packageProduct.components) ? packageProduct.components : []
+        const hasDigitalTools = comps.some((c) => Boolean(c.grantsProduct))
+        const hasCommunity = comps.some((c) => (c.label || '').toLowerCase().includes('cộng đồng'))
+        const communityZaloUrl =
+          hasCommunity && siteSettings?.zaloGroupUrl ? siteSettings.zaloGroupUrl : null
+
+        await sendPackageOrderPaidEmail(
+          payload,
+          {
+            name: customerDoc.name || 'bạn',
+            email: customerDoc.email,
+            paymentRef: order.paymentRef || '',
+            amount: order.total,
+            packageName: packageProduct.name || 'Gói Growth Mirror',
+            components: comps.map((c) => ({
+              label: c.label || '',
+              quantity: c.quantity,
+            })),
+            hasDigitalTools,
+            toolsUrl: getSiteUrl(),
+            coachingBookingUrl: siteSettings?.experienceBookingUrl || null,
+            upcomingWorkshops,
+            communityZaloUrl,
+          },
+          options.emailSender,
+        )
+      } else {
+        // Đơn trải nghiệm 149k giữ nguyên hành vi
+        await sendExperienceOrderPaidEmail(
+          payload,
+          {
+            name: customerDoc.name || 'bạn',
+            email: customerDoc.email,
+            paymentRef: order.paymentRef || '',
+            amount: order.total,
+            bookingUrl: siteSettings?.experienceBookingUrl,
+          },
+          options.emailSender,
+        )
+      }
 
       await payload.update({
         collection: 'orders',
@@ -670,5 +869,62 @@ export async function expirePendingOrders(
   return {
     expiredCount,
     reminderSentCount,
+  }
+}
+
+// REVIEW-REQUIRED: Khách đồng ý điều khoản đơn do admin tạo (gọi qua action acceptOrderTerms).
+// UPDATE nguyên tử: SET terms_accepted_at = now() WHERE pay_token = $1 AND terms_accepted_at IS NULL AND payment_status = 'pending'
+// Rate limit theo IP, token sai -> notFound() (404).
+export async function acceptOrderTermsForToken(
+  token: string,
+  options: { payload?: Payload; now?: Date; ip?: string } = {},
+): Promise<{ success: boolean; message: string }> {
+  if (!token || typeof token !== 'string' || token.trim().length === 0) {
+    notFound()
+  }
+
+  const cleanToken = token.trim()
+
+  const ip = options.ip || '127.0.0.1'
+
+  const payload = await resolvePayload(options.payload)
+
+  // Rate limit theo IP: 10 lần / 10 phút
+  await checkAndRecordRateLimit(payload, {
+    form: 'accept_order_terms',
+    ip,
+    maxHits: 10,
+    windowMinutes: 10,
+  })
+
+  // Kiểm tra đơn hàng có tồn tại với token này không
+  const orders = await payload.find({
+    collection: 'orders',
+    where: { payToken: { equals: cleanToken } },
+    overrideAccess: true,
+    limit: 1,
+  })
+
+  if (orders.totalDocs === 0) {
+    notFound()
+  }
+
+  const order = orders.docs[0]
+  if (order.paymentStatus !== 'pending') {
+    throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
+  }
+
+  const now = options.now ?? new Date()
+  const nowIso = now.toISOString()
+  const db = getDrizzleDb(payload)
+
+  // Cập nhật nguyên tử chỉ khi terms_accepted_at IS NULL và payment_status = 'pending'
+  await db.execute(
+    sql`UPDATE "orders" SET "terms_accepted_at" = ${nowIso}::timestamptz, "updated_at" = ${nowIso}::timestamptz WHERE "pay_token" = ${cleanToken} AND "terms_accepted_at" IS NULL AND "payment_status" = 'pending' RETURNING "id"`,
+  )
+
+  return {
+    success: true,
+    message: vi.payment.success.termsAccepted,
   }
 }
