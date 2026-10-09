@@ -247,7 +247,10 @@ export function ExperienceBookingForm({
                   }`}
                 />
                 {errors.name && (
-                  <p id={`${nameId}-error`} className="text-xs text-accent-pink font-medium mt-1">
+                  <p
+                    id={`${nameId}-error`}
+                    className="text-xs text-bright-magenta font-medium mt-1"
+                  >
                     {errors.name}
                   </p>
                 )}
@@ -277,7 +280,10 @@ export function ExperienceBookingForm({
                   }`}
                 />
                 {errors.email && (
-                  <p id={`${emailId}-error`} className="text-xs text-accent-pink font-medium mt-1">
+                  <p
+                    id={`${emailId}-error`}
+                    className="text-xs text-bright-magenta font-medium mt-1"
+                  >
                     {errors.email}
                   </p>
                 )}
@@ -328,7 +334,10 @@ export function ExperienceBookingForm({
                   }`}
                 />
                 {errors.need && (
-                  <p id={`${needId}-error`} className="text-xs text-accent-pink font-medium mt-1">
+                  <p
+                    id={`${needId}-error`}
+                    className="text-xs text-bright-magenta font-medium mt-1"
+                  >
                     {errors.need}
                   </p>
                 )}
@@ -379,7 +388,7 @@ export function ExperienceBookingForm({
                 {errors.termsAccepted && (
                   <p
                     id={`${termsId}-error`}
-                    className="text-xs text-accent-pink font-medium mt-1 pl-7"
+                    className="text-xs text-bright-magenta font-medium mt-1 pl-7"
                   >
                     {errors.termsAccepted}
                   </p>
