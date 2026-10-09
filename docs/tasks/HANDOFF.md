@@ -39,6 +39,10 @@ Antigravity **không** chạy app/Playwright/Docker; Planning chạy e2e/build. 
 - Đã nhập file Habit Hack (`docs/sources/CÔNG CỤ XÂY THÓI QUEN…xlsx`): 16 câu quiz, 11 kỹ thuật, 20 bài học / 7 nhóm (`docs/decisions/import-habit-hack.md`).
 - Bảng giá: Cách 3 tính AI theo **phí thuê bao** ($60/tháng × số tháng × % dùng), giờ QA của anh = **6 h/ngày × ngày làm việc**; Cách 2 anh Nhân tự chỉnh.
 
+## Lịch máy 09–10/10
+
+PC nhà: T1-13. Codex (Local): T1-10b, rồi review thứ hai T1-13. **Antigravity Local + Laptop tạm nghỉ đến hết thứ Bảy 10/10.** File `docs/sources/HANA EQ - HABIT.rar` chỉ để trên máy Local (đã ignore) – commit cục bộ `8a688a4` thêm file này trên nhánh `task/T1-17d-runtime-site-url` **không được push** (186 MB > giới hạn 100 MB của GitHub).
+
 ## Prototype UI của Hana (09/10)
 
 `docs/plan/HANA_PROTOTYPE.md` – mẫu giao diện EQ Buddy + Habit Loop, dùng làm tham khảo cho GĐ 2/3, không chép code. Câu hỏi mới: Q15–Q18 trong `docs/plan/GAPS_AND_QUESTIONS.md`.
