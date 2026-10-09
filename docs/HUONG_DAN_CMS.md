@@ -717,3 +717,14 @@ Dưới đây là bảng đối chiếu toàn bộ 25 ảnh màn hình được 
 | **24** | `images/huong-dan/24-cau-hoi-quiz-chan-doan.png`     | `/admin/collections/diagnosticQuestions/[id]` | Biểu mẫu sửa câu hỏi chẩn đoán và gợi ý rich text                        |
 | **25** | `images/huong-dan/25-thong-bao-loi-thuong-gap.png`   | `/admin/collections/testimonials/create`      | Thông báo lỗi khi xuất bản testimonial chưa có đồng ý                    |
 | **26** | `images/huong-dan/26-link-thanh-toan-goi.png`        | `/admin/collections/orders/[id]`              | Sidebar đơn hàng hiển thị link thanh toán cho khách và nút Sao chép link |
+
+## Xem trước khi sửa dịch vụ / chương trình / bài viết
+
+1. Vào **Dịch vụ đồng hành**, **Chương trình doanh nghiệp** hoặc **Bài viết và video**, mở bản ghi muốn sửa.
+2. Bấm **Xem trước** ở phía trên form. Nếu là bản ghi mới, nhập tên/tiêu đề và slug rồi lưu nháp lần đầu.
+3. Sửa chữ trong form: khung bên cạnh cập nhật ngay cả khi chưa lưu. Có thể chọn **Điện thoại**, **Máy tính bảng** hoặc **Máy tính** để đổi kích thước.
+4. Lưu nháp để giữ lại thay đổi; chỉ xuất bản khi muốn khách nhìn thấy nội dung mới. Khách vẫn thấy bản đã xuất bản trong lúc Hana đang sửa.
+
+Khung xem trước chỉ đọc bản nháp khi Hana đã đăng nhập admin. Gửi đường dẫn xem trước cho người chưa đăng nhập không cho họ quyền xem nháp. Với trang dựng bằng Puck, tiếp tục dùng **Chỉnh sửa trực quan** như trước.
+
+<!-- ẢNH 27: Form sửa dịch vụ với Xem trước đang mở, tiêu đề chưa lưu hiện trong iframe và bộ chọn ba kích thước. -->
