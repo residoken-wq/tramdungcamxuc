@@ -1,13 +1,10 @@
 'use server'
 
 import { headers as getHeaders } from 'next/headers'
-import { notFound } from 'next/navigation'
 import { getPayload, type Payload } from 'payload'
-import { sql } from '@payloadcms/db-postgres'
 import config from '@/payload.config'
 import { isAdminUser, isOwnerUser } from '@/lib/auth/access'
 import { getSiteUrl } from '@/lib/site-url'
-import { checkAndRecordRateLimit } from '@/lib/forms/ratelimit.server'
 import {
   confirmManualPayment,
   cancelOrder,
