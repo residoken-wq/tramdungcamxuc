@@ -1,3 +1,4 @@
+import 'server-only'
 import { getPayload, type Payload } from 'payload'
 import type { Product } from '@/payload-types'
 import config from '@/payload.config'
@@ -64,10 +65,7 @@ export async function grantEntitlementsForOrder(
 
   for (const item of items) {
     let productDoc: Product | number | string | null = item.product as
-      | Product
-      | number
-      | string
-      | null
+      Product | number | string | null
 
     // Nếu product chưa được populating đủ depth
     if (typeof productDoc === 'number' || typeof productDoc === 'string') {

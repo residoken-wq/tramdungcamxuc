@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import config from '../../src/payload.config'
 import type { SiteSetting } from '../../src/payload-types'
-import { acceptOrderTerms } from '../../src/lib/payments/actions'
+import { acceptOrderTermsForToken as acceptOrderTerms } from '../../src/lib/payments/orders.server'
 import { grantEntitlementsForOrder } from '../../src/lib/payments/entitlements.server'
 import { InvalidOrderStatusError } from '../../src/lib/payments/orders.server'
 

@@ -1,4 +1,5 @@
 import 'server-only'
+import { notFound } from 'next/navigation'
 import { getPayload, type Payload } from 'payload'
 import { sql } from '@payloadcms/db-postgres'
 import type { Product } from '@/payload-types'
@@ -320,14 +321,26 @@ export async function getPublicOrderView(
 
   const isSandbox = process.env.PAYMENT_SANDBOX === 'true'
 
-  const qrPayload = buildVietQrPayload({
-    bin: bankInfo.bankBin,
-    accountNumber: bankInfo.accountNumber,
-    amount: order.total,
-    addInfo: order.paymentRef || undefined,
-  })
+  // REVIEW-REQUIRED: Đơn do Hana tạo chưa đồng ý điều khoản -> không gửi QR, tài khoản, mã chuyển khoản
+  // xuống trình duyệt (che giao diện thôi là chưa đủ).
+  const awaitingTerms = Boolean(order.createdByAdmin) && !order.termsAcceptedAt
+  if (awaitingTerms) {
+    bankInfo.bankBin = ''
+    bankInfo.bankName = undefined
+    bankInfo.accountNumber = ''
+    bankInfo.accountName = ''
+  }
 
-  const qrSvg = await generateVietQrSvg(qrPayload)
+  const qrPayload = awaitingTerms
+    ? ''
+    : buildVietQrPayload({
+        bin: bankInfo.bankBin,
+        accountNumber: bankInfo.accountNumber,
+        amount: order.total,
+        addInfo: order.paymentRef || undefined,
+      })
+
+  const qrSvg = awaitingTerms ? '' : await generateVietQrSvg(qrPayload)
 
   // Lấy tên sản phẩm và tóm tắt gói nếu có
   let productName: string | undefined
@@ -389,7 +402,7 @@ export async function getPublicOrderView(
 
   // REVIEW-REQUIRED: DTO công khai không chứa email, số điện thoại hay ID nội bộ của khách hàng
   return {
-    paymentRef: order.paymentRef || '',
+    paymentRef: awaitingTerms ? '' : order.paymentRef || '',
     amount: order.total,
     status: order.paymentStatus,
     bankInfo,
@@ -473,6 +486,11 @@ export async function confirmManualPayment(
 
   if (order.paymentStatus !== 'pending') {
     throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
+  }
+
+  // REVIEW-REQUIRED: Đơn Hana tạo phải có thời điểm khách đồng ý điều khoản (AGENTS 8.1) mới xác nhận được
+  if (order.createdByAdmin && !order.termsAcceptedAt) {
+    throw new InvalidOrderStatusError(vi.payment.errors.termsNotAccepted)
   }
 
   // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB
@@ -851,5 +869,62 @@ export async function expirePendingOrders(
   return {
     expiredCount,
     reminderSentCount,
+  }
+}
+
+// REVIEW-REQUIRED: Khách đồng ý điều khoản đơn do admin tạo (gọi qua action acceptOrderTerms).
+// UPDATE nguyên tử: SET terms_accepted_at = now() WHERE pay_token = $1 AND terms_accepted_at IS NULL AND payment_status = 'pending'
+// Rate limit theo IP, token sai -> notFound() (404).
+export async function acceptOrderTermsForToken(
+  token: string,
+  options: { payload?: Payload; now?: Date; ip?: string } = {},
+): Promise<{ success: boolean; message: string }> {
+  if (!token || typeof token !== 'string' || token.trim().length === 0) {
+    notFound()
+  }
+
+  const cleanToken = token.trim()
+
+  const ip = options.ip || '127.0.0.1'
+
+  const payload = await resolvePayload(options.payload)
+
+  // Rate limit theo IP: 10 lần / 10 phút
+  await checkAndRecordRateLimit(payload, {
+    form: 'accept_order_terms',
+    ip,
+    maxHits: 10,
+    windowMinutes: 10,
+  })
+
+  // Kiểm tra đơn hàng có tồn tại với token này không
+  const orders = await payload.find({
+    collection: 'orders',
+    where: { payToken: { equals: cleanToken } },
+    overrideAccess: true,
+    limit: 1,
+  })
+
+  if (orders.totalDocs === 0) {
+    notFound()
+  }
+
+  const order = orders.docs[0]
+  if (order.paymentStatus !== 'pending') {
+    throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
+  }
+
+  const now = options.now ?? new Date()
+  const nowIso = now.toISOString()
+  const db = getDrizzleDb(payload)
+
+  // Cập nhật nguyên tử chỉ khi terms_accepted_at IS NULL và payment_status = 'pending'
+  await db.execute(
+    sql`UPDATE "orders" SET "terms_accepted_at" = ${nowIso}::timestamptz, "updated_at" = ${nowIso}::timestamptz WHERE "pay_token" = ${cleanToken} AND "terms_accepted_at" IS NULL AND "payment_status" = 'pending' RETURNING "id"`,
+  )
+
+  return {
+    success: true,
+    message: vi.payment.success.termsAccepted,
   }
 }

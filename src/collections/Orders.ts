@@ -112,13 +112,17 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
         )
       }
 
-      if (product.type === 'package' && product._status !== 'published') {
+      if (
+        product.type !== 'package' ||
+        product._status !== 'published' ||
+        product.saleStatus === 'hidden'
+      ) {
         throw new ValidationError(
           {
             errors: [
               {
                 path: 'items',
-                message: 'Gói đồng hành phải ở trạng thái đã xuất bản.',
+                message: 'Đơn do Hana tạo phải chọn một gói đồng hành đã xuất bản và không ẩn.',
               },
             ],
             req,
@@ -129,8 +133,8 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
 
       const now = new Date()
       const effective = getEffectivePrice(product, now)
-      const itemPrice = effective.salePrice ?? effective.price ?? data.items[0]?.price ?? 0
-      if (itemPrice < 0) {
+      const itemPrice = effective.salePrice ?? effective.price
+      if (itemPrice == null || itemPrice <= 0) {
         throw new ValidationError(
           {
             errors: [{ path: 'items', message: 'Giá sản phẩm không hợp lệ.' }],
@@ -249,7 +253,7 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
       createdByAdmin,
       deliveryStatus: enforcedDeliveryStatus,
       termsAcceptedAt: createdByAdmin ? null : data.termsAcceptedAt,
-      trialCreditOrder: trialCreditOrderId || data.trialCreditOrder || null,
+      trialCreditOrder: trialCreditOrderId,
       ...(!isPaymentAction || editor ? { paymentStatus: 'pending', paidAt: null } : {}),
     }
   }

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatVnd } from '@/lib/format'
@@ -15,9 +16,9 @@ export interface OrderPaymentViewProps {
 
 export function OrderPaymentView({ order }: OrderPaymentViewProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null)
-  const [termsAccepted, setTermsAccepted] = useState<boolean>(
-    Boolean(order.termsAcceptedAt) || !order.createdByAdmin,
-  )
+  const router = useRouter()
+  // QR and bank details only arrive from the server after terms are accepted
+  const termsAccepted = Boolean(order.termsAcceptedAt) || !order.createdByAdmin
 
   const copyToClipboard = async (text: string, fieldName: string) => {
     try {
@@ -114,7 +115,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
           productName={order.productName}
           amount={order.amount}
           payToken={order.payToken || ''}
-          onTermsAccepted={() => setTermsAccepted(true)}
+          onTermsAccepted={() => router.refresh()}
         />
       )}
 

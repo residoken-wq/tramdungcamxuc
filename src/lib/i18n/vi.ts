@@ -362,6 +362,8 @@ export const vi = {
       cannotCancelPaidOrder: 'Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
       orderExpired: 'Đơn hàng đã hết hạn thanh toán.',
       serverError: 'Đã có lỗi xảy ra trong quá trình xử lý. Vui lòng thử lại sau.',
+      termsNotAccepted:
+        'Khách chưa đồng ý Điều khoản và Chính sách giá – thanh toán trên link thanh toán. Chưa thể xác nhận đơn này.',
     },
     success: {
       orderCreated: 'Tạo đơn đặt phiên trải nghiệm thành công.',

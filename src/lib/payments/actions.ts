@@ -12,7 +12,7 @@ import {
   confirmManualPayment,
   cancelOrder,
   PaymentError,
-  InvalidOrderStatusError,
+  acceptOrderTermsForToken,
 } from './orders.server'
 import { vi } from '@/lib/i18n/vi'
 
@@ -178,69 +178,19 @@ export async function getOrderPaymentLinkAction(
 }
 
 // REVIEW-REQUIRED: Server action cho khách xác nhận đồng ý điều khoản đơn hàng do admin tạo.
-// UPDATE nguyên tử: SET terms_accepted_at = now() WHERE pay_token = $1 AND terms_accepted_at IS NULL AND payment_status = 'pending'
-// Rate limit theo IP, token sai -> notFound() (404).
+// Chỉ nhận token từ trình duyệt; IP và thời điểm do server tự lấy (không tin tham số client).
 export async function acceptOrderTerms(
   token: string,
-  options: { payload?: Payload; now?: Date; ip?: string } = {},
 ): Promise<{ success: boolean; message: string }> {
-  if (!token || typeof token !== 'string' || token.trim().length === 0) {
-    notFound()
+  let ip: string | undefined
+  try {
+    const headerStore = await getHeaders()
+    const forwarded = headerStore.get('x-forwarded-for')
+    ip =
+      (forwarded ? forwarded.split(',')[0].trim() : headerStore.get('x-real-ip')?.trim()) ||
+      undefined
+  } catch {
+    // Ngoài request scope
   }
-
-  const cleanToken = token.trim()
-
-  let ip = options.ip || '127.0.0.1'
-  if (!options.ip) {
-    try {
-      const headerStore = await getHeaders()
-      const forwarded = headerStore.get('x-forwarded-for')
-      const realIp = headerStore.get('x-real-ip')
-      ip = (forwarded ? forwarded.split(',')[0].trim() : realIp?.trim()) || '127.0.0.1'
-    } catch {
-      // Ngoài request scope
-    }
-  }
-
-  const payload = options.payload ?? (await getPayload({ config: await config }))
-
-  // Rate limit theo IP: 10 lần / 10 phút
-  await checkAndRecordRateLimit(payload, {
-    form: 'accept_order_terms',
-    ip,
-    maxHits: 10,
-    windowMinutes: 10,
-  })
-
-  // Kiểm tra đơn hàng có tồn tại với token này không
-  const orders = await payload.find({
-    collection: 'orders',
-    where: { payToken: { equals: cleanToken } },
-    overrideAccess: true,
-    limit: 1,
-  })
-
-  if (orders.totalDocs === 0) {
-    notFound()
-  }
-
-  const order = orders.docs[0]
-  if (order.paymentStatus !== 'pending') {
-    throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
-  }
-
-  const now = options.now ?? new Date()
-  const nowIso = now.toISOString()
-  const db = (payload.db as unknown as { drizzle: { execute: (q: unknown) => Promise<unknown> } })
-    .drizzle
-
-  // Cập nhật nguyên tử chỉ khi terms_accepted_at IS NULL và payment_status = 'pending'
-  await db.execute(
-    sql`UPDATE "orders" SET "terms_accepted_at" = ${nowIso}::timestamptz, "updated_at" = ${nowIso}::timestamptz WHERE "pay_token" = ${cleanToken} AND "terms_accepted_at" IS NULL AND "payment_status" = 'pending' RETURNING "id"`,
-  )
-
-  return {
-    success: true,
-    message: vi.payment.success.termsAccepted,
-  }
+  return acceptOrderTermsForToken(token, { ip })
 }
