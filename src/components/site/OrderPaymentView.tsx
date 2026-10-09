@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { formatVnd } from '@/lib/format'
 import { vi } from '@/lib/i18n/vi'
 import type { PublicOrderViewDto } from '@/lib/payments/orders.server'
+import { PackageSummaryTerms } from './PackageSummaryTerms'
 
 export interface OrderPaymentViewProps {
   order: PublicOrderViewDto
@@ -14,6 +15,9 @@ export interface OrderPaymentViewProps {
 
 export function OrderPaymentView({ order }: OrderPaymentViewProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [termsAccepted, setTermsAccepted] = useState<boolean>(
+    Boolean(order.termsAcceptedAt) || !order.createdByAdmin,
+  )
 
   const copyToClipboard = async (text: string, fieldName: string) => {
     try {
@@ -31,6 +35,8 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
   const isPaid = order.status === 'paid'
   const isCancelled = order.status === 'cancelled'
   const isFailed = order.status === 'failed'
+
+  const showPackageTerms = Boolean(order.createdByAdmin && !termsAccepted && isPending)
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-8">
@@ -101,8 +107,19 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
         )}
       </Card>
 
-      {/* Main Payment Section (Shown when Pending or Paid) */}
-      {(isPending || isPaid) && (
+      {/* Tóm tắt gói & Điều khoản (Khi đơn do admin tạo chưa đồng ý điều khoản) */}
+      {showPackageTerms && (
+        <PackageSummaryTerms
+          summary={order.packageSummary}
+          productName={order.productName}
+          amount={order.amount}
+          payToken={order.payToken || ''}
+          onTermsAccepted={() => setTermsAccepted(true)}
+        />
+      )}
+
+      {/* Main Payment Section (Shown when Pending or Paid, chỉ hiển thị sau khi đã đồng ý điều khoản) */}
+      {!showPackageTerms && (isPending || isPaid) && (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           {/* QR Code Container */}
           <div className="md:col-span-5 flex flex-col items-center">
