@@ -114,9 +114,9 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 
 Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.md` mục 3. Prompt: `docs/tasks/prompts/<MÃ>.md`.
 
-**🔒 Migration: T1-13 · 🔒 Package: (trống)**
+**🔒 Migration: (trống) · 🔒 Package: (trống)**
 
-**Lịch máy 09–10/10**: PC nhà = T1-13 · Codex (Local) = ~~T1-10b~~ (xong), review thứ hai T1-13 khi PR sẵn sàng · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
+**Lịch máy 09–10/10**: PC nhà = ~~T1-13~~ (xong) · Codex (Local) = ~~T1-10b~~ (xong), review thứ hai T1-13 khi PR sẵn sàng · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
 
 | Mã     | Task                                                                            | Nhãn     | Phụ thuộc                   | Máy         | Trạng thái                                                                                                                                 |
 | ------ | ------------------------------------------------------------------------------- | -------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -136,7 +136,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-12a | Thanh toán 149k: backend, `PaymentProvider`, VietQR, cron                       | [REVIEW] | T1-06                       | PC nhà      | ✅ Merge 08/10 (PR #46, gộp #34) · IT duyệt ([review](reviews/T1-12a.md))                                                                  |
 | T1-12b | Thanh toán 149k: form đặt phiên, trang QR, admin duyệt đơn                      | [REVIEW] | T1-12a                      | PC nhà      | ✅ Merge 08/10 (PR #46) ([review](reviews/T1-12b.md))                                                                                      |
 | T1-12c | Sửa 149k: chuyển trạng thái nguyên tử, khóa REST, chữ vào vi.ts, e2e            | [REVIEW] | T1-12b                      | PC nhà      | ✅ Merge 08/10 (PR #46) · IT duyệt · chờ dòng THỜI GIAN THỰC ([review](reviews/T1-12c.md))                                                 |
-| T1-13  | Link thanh toán gói do Hana tạo + cấp quyền                                     | [REVIEW] | T1-12b                      | PC nhà      | Giao 09/10 – Antigravity@PC nhà (prompt `prompts/T1-13.md`) · 🔒 Migration · Codex review thứ hai khi PR sẵn sàng                          |
+| T1-13  | Link thanh toán gói do Hana tạo + cấp quyền                                     | [REVIEW] | T1-12b                      | PC nhà      | ✅ Merge 09/10 – PR #55 · IT duyệt · chờ dòng THỜI GIAN THỰC ([review](reviews/T1-13.md))                                                  |
 | T1-14  | Quiz chẩn đoán `/habit/chan-doan`                                               |          | T1-06                       | Laptop      | Xong – PR #42 ([review](reviews/T1-14.md))                                                                                                 |
 | T1-15a | SEO, security headers (CSP report-only), font tự host                           |          | T1-05                       | Laptop      | Xong – PR #33 ([review](reviews/T1-15a.md))                                                                                                |
 | T1-15b | Analytics Plausible (Q10 đã chốt), CSP chặn thật, domain                        |          | T1-15a                      | Laptop      | Xong – PR #39 ([review](reviews/T1-15b.md))                                                                                                |
