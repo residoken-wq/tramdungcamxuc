@@ -1,3 +1,4 @@
+import { detailLivePreview } from '@/lib/live-preview'
 import { contentCollection, lines, saleStatus, slug, text, textarea } from '../fields/content'
 
 export const Programs = contentCollection(
@@ -20,3 +21,5 @@ export const Programs = contentCollection(
     saleStatus(),
   ],
 )
+
+Programs.admin = { ...Programs.admin, livePreview: detailLivePreview('programs') }

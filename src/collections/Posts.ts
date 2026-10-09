@@ -1,3 +1,4 @@
+import { detailLivePreview } from '@/lib/live-preview'
 import {
   contentCollection,
   image,
@@ -30,3 +31,5 @@ export const Posts = contentCollection('posts', 'Bài viết và video', 'Nội 
   relation('ctaProduct', 'Sản phẩm giới thiệu', 'products'),
   relation('leadMagnet', 'Tài nguyên tặng', 'products'),
 ])
+
+Posts.admin = { ...Posts.admin, livePreview: detailLivePreview('posts') }
