@@ -14,6 +14,7 @@ export interface HeroImageProps {
   imageAlt?: string
   buttonText?: string
   buttonLink?: string
+  priority?: boolean
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -43,6 +44,7 @@ export function HeroImage({
   imageAlt,
   buttonText,
   buttonLink,
+  priority,
   bgColor = 'warm-ivory',
   padding = 'md',
 }: HeroImageProps) {
@@ -90,7 +92,7 @@ export function HeroImage({
         {/* Main Image Banner (Only if alt is present, no fallback without alt) */}
         {hasValidImage && (
           <div
-            className={`mt-10 sm:mt-12 w-full overflow-hidden rounded-card border shadow-soft ${
+            className={`mt-10 sm:mt-12 w-full overflow-hidden rounded-card border shadow-soft aspect-[16/9] max-h-[520px] relative ${
               isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
             }`}
           >
@@ -99,6 +101,8 @@ export function HeroImage({
               alt={imageAlt!.trim()}
               width={1200}
               height={675}
+              priority={priority}
+              sizes="(max-width: 768px) 100vw, 1200px"
               className="w-full h-auto object-cover max-h-[520px]"
             />
           </div>

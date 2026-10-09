@@ -96,7 +96,7 @@ export function BookingCTA({
               variant={variant}
               size="lg"
               onClick={handleBookingClick}
-              className="px-8 py-3.5 text-base shadow-md hover:shadow-lg transition-all"
+              className="px-8 py-3.5 shadow-md hover:shadow-lg transition-all"
             >
               {displayButtonLabel}
             </Button>
