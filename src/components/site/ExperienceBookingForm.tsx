@@ -203,7 +203,7 @@ export function ExperienceBookingForm({
               {serverError && (
                 <div
                   role="alert"
-                  className="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 leading-relaxed"
+                  className="p-4 rounded-xl bg-soft-pink border border-accent-pink/40 text-sm text-deep-navy font-medium leading-relaxed"
                 >
                   {serverError}
                 </div>
@@ -232,6 +232,8 @@ export function ExperienceBookingForm({
                   id={nameId}
                   type="text"
                   required
+                  aria-invalid={Boolean(errors.name)}
+                  aria-describedby={errors.name ? `${nameId}-error` : undefined}
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value)
@@ -240,11 +242,15 @@ export function ExperienceBookingForm({
                   placeholder={vi.payment.ui.booking.namePlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 transition-all ${
                     errors.name
-                      ? 'border-red-400 focus:ring-red-200'
+                      ? 'border-accent-pink focus:border-accent-pink focus:ring-accent-pink/30'
                       : 'border-lavender-mist focus:border-bright-magenta focus:ring-accent-pink/20'
                   }`}
                 />
-                {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
+                {errors.name && (
+                  <p id={`${nameId}-error`} className="text-xs text-accent-pink font-medium mt-1">
+                    {errors.name}
+                  </p>
+                )}
               </div>
 
               {/* Email */}
@@ -256,6 +262,8 @@ export function ExperienceBookingForm({
                   id={emailId}
                   type="email"
                   required
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? `${emailId}-error` : undefined}
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value)
@@ -264,11 +272,15 @@ export function ExperienceBookingForm({
                   placeholder={vi.payment.ui.booking.emailPlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 transition-all ${
                     errors.email
-                      ? 'border-red-400 focus:ring-red-200'
+                      ? 'border-accent-pink focus:border-accent-pink focus:ring-accent-pink/30'
                       : 'border-lavender-mist focus:border-bright-magenta focus:ring-accent-pink/20'
                   }`}
                 />
-                {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
+                {errors.email && (
+                  <p id={`${emailId}-error`} className="text-xs text-accent-pink font-medium mt-1">
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
               {/* Số điện thoại */}
@@ -301,6 +313,8 @@ export function ExperienceBookingForm({
                   id={needId}
                   rows={3}
                   maxLength={1000}
+                  aria-invalid={Boolean(errors.need)}
+                  aria-describedby={errors.need ? `${needId}-error` : undefined}
                   value={need}
                   onChange={(e) => {
                     setNeed(e.target.value)
@@ -309,11 +323,15 @@ export function ExperienceBookingForm({
                   placeholder={vi.payment.ui.booking.needPlaceholder}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 transition-all resize-y ${
                     errors.need
-                      ? 'border-red-400 focus:ring-red-200'
+                      ? 'border-accent-pink focus:border-accent-pink focus:ring-accent-pink/30'
                       : 'border-lavender-mist focus:border-bright-magenta focus:ring-accent-pink/20'
                   }`}
                 />
-                {errors.need && <p className="text-xs text-red-600 mt-1">{errors.need}</p>}
+                {errors.need && (
+                  <p id={`${needId}-error`} className="text-xs text-accent-pink font-medium mt-1">
+                    {errors.need}
+                  </p>
+                )}
               </div>
 
               {/* Ô tick bắt buộc: Điều khoản & Chính sách giá thanh toán */}
@@ -322,6 +340,8 @@ export function ExperienceBookingForm({
                   <input
                     id={termsId}
                     type="checkbox"
+                    aria-invalid={Boolean(errors.termsAccepted)}
+                    aria-describedby={errors.termsAccepted ? `${termsId}-error` : undefined}
                     checked={termsAccepted}
                     onChange={(e) => {
                       setTermsAccepted(e.target.checked)
@@ -329,7 +349,7 @@ export function ExperienceBookingForm({
                         setErrors((prev) => ({ ...prev, termsAccepted: undefined }))
                       }
                     }}
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-accent-pink focus:ring-accent-pink cursor-pointer"
+                    className="mt-1 h-4 w-4 rounded border-lavender-mist text-accent-pink focus:ring-accent-pink cursor-pointer"
                   />
                   <label
                     htmlFor={termsId}
@@ -357,7 +377,12 @@ export function ExperienceBookingForm({
                   </label>
                 </div>
                 {errors.termsAccepted && (
-                  <p className="text-xs text-red-600 mt-1 pl-7">{errors.termsAccepted}</p>
+                  <p
+                    id={`${termsId}-error`}
+                    className="text-xs text-accent-pink font-medium mt-1 pl-7"
+                  >
+                    {errors.termsAccepted}
+                  </p>
                 )}
               </div>
 
