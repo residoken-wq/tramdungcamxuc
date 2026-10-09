@@ -1,4 +1,5 @@
 export const vi = {
+  livePreview: { mobile: 'Điện thoại', tablet: 'Máy tính bảng', desktop: 'Máy tính' },
   common: {
     send: 'Gửi',
     login: 'Đăng nhập',

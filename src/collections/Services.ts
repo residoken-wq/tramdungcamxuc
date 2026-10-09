@@ -1,3 +1,4 @@
+import { detailLivePreview } from '@/lib/live-preview'
 import {
   contentCollection,
   lines,
@@ -34,3 +35,5 @@ export const Services = contentCollection('services', 'Dịch vụ đồng hành
   text('ctaLabel', 'Nhãn nút'),
   saleStatus(),
 ])
+
+Services.admin = { ...Services.admin, livePreview: detailLivePreview('services') }
