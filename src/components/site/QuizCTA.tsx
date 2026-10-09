@@ -47,7 +47,7 @@ export function QuizCTA({
             href={HABIT_QUIZ_PATH}
             variant="primary"
             size="lg"
-            className="px-8 py-3.5 text-base shadow-md hover:shadow-lg transition-all"
+            className="px-8 py-3.5 shadow-md hover:shadow-lg transition-all"
           >
             {buttonText}
           </Button>

@@ -233,7 +233,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                     <button
                       type="button"
                       onClick={() => copyToClipboard(order.paymentRef, 'paymentRef')}
-                      className="px-3 py-1 text-xs font-bold rounded-lg bg-accent-pink text-white hover:bg-bright-magenta shadow-sm transition-colors"
+                      className="px-3 py-1 text-xs font-bold rounded-lg bg-bright-magenta text-white hover:bg-deep-navy shadow-sm transition-colors"
                       title={vi.payment.ui.orderView.copyRefTitle}
                       aria-label={vi.payment.ui.orderView.copyRefTitle}
                     >

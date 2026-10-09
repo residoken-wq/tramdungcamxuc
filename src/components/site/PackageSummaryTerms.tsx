@@ -80,7 +80,7 @@ export function PackageSummaryTerms({
     >
       {/* Tiêu đề tóm tắt gói */}
       <div className="space-y-2 border-b border-lavender-mist/40 pb-4">
-        <span className="text-xs font-bold text-accent-pink uppercase tracking-wider">
+        <span className="text-xs font-bold text-bright-magenta uppercase tracking-wider">
           {vi.payment.ui.packageSummary.title}
         </span>
         <h2 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">{packageName}</h2>
@@ -129,7 +129,7 @@ export function PackageSummaryTerms({
           </span>
           <div className="flex items-center gap-2">
             {discountPercent != null && discountPercent > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-accent-pink text-white text-xs font-bold">
+              <span className="px-2 py-0.5 rounded-full bg-bright-magenta text-white text-xs font-bold">
                 -{discountPercent}%
               </span>
             )}

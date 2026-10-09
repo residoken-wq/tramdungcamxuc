@@ -180,9 +180,9 @@ export function PackageComparison({
                   {row.cells.map((cell, cellIndex) => (
                     <td key={cellIndex} className="py-4 px-6 text-center">
                       {cell.text === 'Có' ? (
-                        <span className="font-bold text-accent-pink text-base">Có</span>
+                        <span className="font-bold text-bright-magenta text-base">Có</span>
                       ) : cell.text === 'Không' ? (
-                        <span className="text-deep-navy/40 font-medium">Không</span>
+                        <span className="text-deep-navy/70 font-medium">Không</span>
                       ) : (
                         <span className="font-bold text-deep-navy text-base">{cell.text}</span>
                       )}
@@ -239,11 +239,11 @@ export function PackageComparison({
                   {pkgs.map((pkg) => (
                     <td key={pkg.id} className="py-4 px-6 text-center">
                       {pkg.discountPercent != null && pkg.discountPercent > 0 ? (
-                        <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider bg-accent-pink text-white shadow-sm">
+                        <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider bg-bright-magenta text-white shadow-sm">
                           Ưu đãi {pkg.discountPercent}%
                         </span>
                       ) : (
-                        <span className="text-deep-navy/40 text-xs">—</span>
+                        <span className="text-deep-navy/70 text-xs">—</span>
                       )}
                     </td>
                   ))}
@@ -266,7 +266,7 @@ export function PackageComparison({
                   {pkg.name}
                 </h3>
                 {showDiscountPercent && pkg.discountPercent != null && pkg.discountPercent > 0 && (
-                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-accent-pink text-white">
+                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-bright-magenta text-white">
                     Ưu đãi {pkg.discountPercent}%
                   </span>
                 )}
@@ -280,7 +280,7 @@ export function PackageComparison({
                     return (
                       <div
                         key={rIdx}
-                        className="flex items-center justify-between text-deep-navy/40 line-through"
+                        className="flex items-center justify-between text-deep-navy/70 line-through"
                       >
                         <span>{row.label}</span>
                         <span className="text-xs font-semibold no-underline">Không</span>
@@ -290,7 +290,7 @@ export function PackageComparison({
                   return (
                     <div key={rIdx} className="flex items-center justify-between text-deep-navy">
                       <span className="font-medium">{row.label}</span>
-                      <span className="font-bold text-accent-pink">{cell.text}</span>
+                      <span className="font-bold text-bright-magenta">{cell.text}</span>
                     </div>
                   )
                 })}
