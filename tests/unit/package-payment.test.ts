@@ -8,7 +8,12 @@ import config from '../../src/payload.config'
 import type { SiteSetting } from '../../src/payload-types'
 import { acceptOrderTermsForToken as acceptOrderTerms } from '../../src/lib/payments/orders.server'
 import { grantEntitlementsForOrder } from '../../src/lib/payments/entitlements.server'
-import { InvalidOrderStatusError } from '../../src/lib/payments/orders.server'
+import {
+  InvalidOrderStatusError,
+  confirmManualPayment,
+  getPublicOrderView,
+} from '../../src/lib/payments/orders.server'
+import { vi as viStrings } from '../../src/lib/i18n/vi'
 
 type AdminUser = NonNullable<PayloadRequest['user']>
 
@@ -321,6 +326,37 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
       expect(order.paymentStatus).toBe('pending')
       expect(order.payToken).toBeTruthy()
     })
+
+    it('owner tạo đơn createdByAdmin với sản phẩm không phải gói -> từ chối; trialCreditOrder gửi lên bị bỏ', async () => {
+      await expect(
+        payload.create({
+          collection: 'orders',
+          data: {
+            customer: customerId,
+            items: [{ product: toolProduct1Id, price: 1000 }],
+            createdByAdmin: true,
+          } as never,
+          user: owner,
+          overrideAccess: false,
+        }),
+      ).rejects.toThrow()
+
+      const order = await payload.create({
+        collection: 'orders',
+        data: {
+          customer: customerId,
+          items: [{ product: packageProductId, price: 2900000 }],
+          createdByAdmin: true,
+          trialCreditOrder: trialOrderId,
+        } as never,
+        user: owner,
+        overrideAccess: false,
+      })
+      createdOrders.push(order.id)
+      // REVIEW-REQUIRED: trialCreditOrder chỉ do server tính (trialCreditApplies đang tắt)
+      expect(order.trialCreditOrder).toBeFalsy()
+      expect(order.total).toBe(2900000)
+    })
   })
 
   describe('2. Khấu trừ phí trải nghiệm (trialCreditApplies)', () => {
@@ -397,6 +433,20 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
       testOrderToken = ord.payToken!
     })
 
+    it('trước khi đồng ý: trang đơn không gửi QR, tài khoản, mã chuyển khoản; owner chưa xác nhận được', async () => {
+      const view = await getPublicOrderView(testOrderToken, { payload })
+      expect(view).not.toBeNull()
+      expect(view!.qrSvg).toBe('')
+      expect(view!.qrPayload).toBe('')
+      expect(view!.paymentRef).toBe('')
+      expect(view!.bankInfo.accountNumber).toBe('')
+      expect(view!.packageSummary).toBeTruthy()
+
+      await expect(
+        confirmManualPayment(testOrderId, { id: owner.id, role: 'owner' }, { payload }),
+      ).rejects.toThrow(viStrings.payment.errors.termsNotAccepted)
+    })
+
     it('token sai hoặc không tồn tại -> ném 404 (NEXT_NOT_FOUND)', async () => {
       await expect(
         acceptOrderTerms('fake-invalid-token-123456', { payload, ip: '127.0.0.10' }),
@@ -437,6 +487,12 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
     it('gọi lần 2 trên cùng đơn hàng -> idempotent, không ném lỗi', async () => {
       const res = await acceptOrderTerms(testOrderToken, { payload, ip: '127.0.0.13' })
       expect(res.success).toBe(true)
+    })
+
+    it('sau khi đồng ý: trang đơn có QR và mã chuyển khoản', async () => {
+      const view = await getPublicOrderView(testOrderToken, { payload })
+      expect(view!.qrSvg).toContain('<svg')
+      expect(view!.paymentRef.startsWith('TDCX')).toBe(true)
     })
   })
 
