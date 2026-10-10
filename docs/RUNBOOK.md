@@ -473,7 +473,9 @@ Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 0 của
 
 ```bash
 # Mở crontab: crontab -e
-0 * * * * curl -s -X POST -H "Authorization: Bearer <CRON_SECRET>" http://127.0.0.1:3400/api/cron/expire-orders >> /var/log/tdcx-cron-expire.log 2>&1
+0 * * * * cd /opt/tramdungcamxuc && curl -s -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= .env | cut -d= -f2)" http://127.0.0.1:3400/api/cron/expire-orders >> /var/log/tdcx-cron-expire.log 2>&1 && echo >> /var/log/tdcx-cron-expire.log
 ```
 
-_(Lưu ý: Thay thế `<CRON_SECRET>` bằng chuỗi bí mật thật cấu hình trong `.env`, và thay cổng `3400` theo cấu hình cổng chạy thực tế của ứng dụng trên server)._
+_(Khóa được đọc từ `.env` mỗi lần chạy – **không dán khóa vào crontab**. Đổi `/opt/tramdungcamxuc` và cổng `3400` nếu server khác.)_
+
+Kiểm (demo đã chạy đúng 10/10): gọi có khóa → `200`, không khóa → `401`; sau phút 0 kế tiếp `tail -3 /var/log/tdcx-cron-expire.log` có JSON `"success":true`. Thêm biến mà chưa tạo lại container thì cron trả `401` → chạy `docker compose -p tdcx-demo -f docker-compose.prod.yml up -d`.
