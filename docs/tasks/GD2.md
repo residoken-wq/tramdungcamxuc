@@ -152,7 +152,7 @@
 
 **Tiêu chí nghiệm thu**
 
-- [ ] Trả lời 5 cho mọi câu Khao khát, 1 cho các câu khác → kết quả "Khao khát".
+- [ ] Tín hiệu trả 3 cho cả 6 câu, Khao khát trả 5 cho cả 3 câu, còn lại 1 → kết quả "Khao khát" (cộng tổng sẽ ra "Tín hiệu").
 - [ ] Kết quả cũ trong `diagnosticResults` (thang 1–4) vẫn hiển thị được, không lỗi.
 
 ---
