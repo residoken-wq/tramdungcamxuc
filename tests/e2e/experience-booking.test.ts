@@ -160,15 +160,16 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
       await expect(modalConfirmButton).toBeVisible()
       await modalConfirmButton.click()
 
-      // Chờ thông báo thành công
-      await expect(page.getByText('Xác nhận thanh toán thành công')).toBeVisible({ timeout: 15000 })
+      // Chờ thông báo thành công. Exact match: the order form's field description also contains
+      // "xác nhận thanh toán thành công", which made a substring wait pass before the action
+      // finished and the guest reload below race the DB update (T1-17b root cause).
+      await expect(page.getByText('Xác nhận thanh toán thành công.', { exact: true })).toBeVisible({
+        timeout: 15000,
+      })
 
       // 6. Khách tải lại trang đơn công khai: trạng thái chuyển sang "Đã thanh toán thành công"
-      // Reload until the paid status shows (rare first-reload lag, tracked in T1-17b)
-      await expect(async () => {
-        await guest.reload()
-        await expect(guest.getByText(/Đã thanh toán thành công/i)).toBeVisible({ timeout: 3000 })
-      }).toPass({ timeout: 15000 })
+      await guest.reload()
+      await expect(guest.getByText(/Đã thanh toán thành công/i)).toBeVisible({ timeout: 15000 })
       await expect(
         guest.getByRole('heading', { name: /Cảm ơn bạn! Đơn hàng đã được xác nhận/i }),
       ).toBeVisible()
