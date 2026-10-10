@@ -93,7 +93,7 @@ export function PostCard({
         <div className="mt-auto pt-3 border-t border-deep-navy/10 flex items-center justify-between">
           <Link
             href={`/blog/${encodeURIComponent(slug)}`}
-            className="inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-accent-pink hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy rounded-sm min-h-[44px]"
+            className="inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-bright-magenta hover:text-deep-navy transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy rounded-sm min-h-[44px]"
           >
             <span>{isVideo ? vi.library.watchVideo : vi.library.readArticle}</span>
             <svg

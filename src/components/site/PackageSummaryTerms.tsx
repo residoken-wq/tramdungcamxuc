@@ -156,14 +156,14 @@ export function PackageSummaryTerms({
             checked={isChecked}
             disabled={isSubmitting}
             onChange={handleCheckboxChange}
-            className="mt-1 h-4 w-4 rounded border-lavender-mist text-bright-magenta focus:ring-accent-pink"
+            className="mt-1 h-4 w-4 rounded border-lavender-mist text-bright-magenta focus:ring-bright-magenta"
           />
           <span className="leading-relaxed">
             {vi.payment.ui.packageSummary.termsCheckboxText}{' '}
             <Link
               href="/dieu-khoan-su-dung"
               target="_blank"
-              className="text-bright-magenta underline font-semibold hover:text-accent-pink"
+              className="text-bright-magenta underline font-semibold hover:text-deep-navy"
             >
               {vi.payment.ui.packageSummary.termsLink}
             </Link>{' '}
@@ -171,7 +171,7 @@ export function PackageSummaryTerms({
             <Link
               href="/gia-thanh-toan"
               target="_blank"
-              className="text-bright-magenta underline font-semibold hover:text-accent-pink"
+              className="text-bright-magenta underline font-semibold hover:text-deep-navy"
             >
               {vi.payment.ui.packageSummary.pricingPolicyLink}
             </Link>{' '}

@@ -465,7 +465,7 @@ export function B2BBriefForm({
                     if (errors.consent) setErrors((prev) => ({ ...prev, consent: undefined }))
                   }}
                   aria-invalid={Boolean(errors.consent)}
-                  className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-accent-pink accent-accent-pink focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
+                  className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-bright-magenta accent-bright-magenta focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
                 />
                 <label
                   htmlFor={consentId}

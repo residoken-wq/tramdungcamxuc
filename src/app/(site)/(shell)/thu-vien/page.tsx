@@ -187,7 +187,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
               <Link
                 href={buildLibraryUrl({ tab: params.tab, topic: params.topic })}
                 aria-label={vi.library.search.clear}
-                className="ml-2 text-xs font-semibold text-accent-pink hover:text-bright-magenta whitespace-nowrap min-h-[44px] flex items-center"
+                className="ml-2 text-xs font-semibold text-bright-magenta hover:text-deep-navy whitespace-nowrap min-h-[44px] flex items-center"
               >
                 {vi.library.search.clear}
               </Link>
