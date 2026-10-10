@@ -58,6 +58,20 @@ describe('UI Primitives (T0-04)', () => {
       const mdPrimaryClass = resolveButtonClasses({ variant: 'primary', size: 'md' })
       expect(mdPrimaryClass).toContain('bg-accent-pink')
     })
+
+    it('Q13 Guardrail: nút primary bỏ qua cỡ chữ nhỏ truyền qua className (giữ chữ ≥ 18,66px đậm)', () => {
+      const primary = resolveButtonClasses({
+        variant: 'primary',
+        size: 'lg',
+        className: 'w-full text-base py-3',
+      })
+      expect(primary).not.toMatch(/(^|\s)text-base(\s|$)/)
+      expect(primary).toContain('text-[20px]')
+      expect(primary).toContain('w-full')
+
+      const ghost = resolveButtonClasses({ variant: 'ghost', size: 'md', className: 'text-sm' })
+      expect(ghost).toMatch(/(^|\s)text-sm(\s|$)/)
+    })
   })
 
   describe('StatusBadge Component', () => {
@@ -116,7 +130,7 @@ describe('UI Primitives (T0-04)', () => {
       const { container } = render(
         <Card variant="soft-pink" className="test-card">
           Nội dung thẻ
-        </Card>
+        </Card>,
       )
       const el = container.firstElementChild as HTMLElement
       expect(el.className).toContain('rounded-card')
@@ -126,9 +140,7 @@ describe('UI Primitives (T0-04)', () => {
     })
 
     it('cho phép đổi thẻ HTML qua prop "as"', () => {
-      const { container } = render(
-        <Card as="article">Nội dung bài viết</Card>
-      )
+      const { container } = render(<Card as="article">Nội dung bài viết</Card>)
       expect(container.querySelector('article')).toBeDefined()
     })
   })
@@ -142,7 +154,7 @@ describe('UI Primitives (T0-04)', () => {
           titleLine2="Hành động bền bỉ."
           emotionLine="Dòng cảm xúc nhẹ nhàng."
           as="h2"
-        />
+        />,
       )
 
       expect(screen.getByText('TẬP THƯƠNG CẢM XÚC')).toBeDefined()
@@ -159,7 +171,7 @@ describe('UI Primitives (T0-04)', () => {
           quote="[MẪU] Lỡ nhịp một ngày là không sao cả."
           cite="[MẪU] Tác giả"
           roleOrContext="Chuyên gia Khai vấn Cảm xúc"
-        />
+        />,
       )
 
       expect(screen.getByText(/Lỡ nhịp một ngày là không sao cả\./)).toBeDefined()
@@ -206,7 +218,7 @@ describe('UI Primitives (T0-04)', () => {
         // 1. Không chứa hex thô
         expect(
           rawHexRegex.test(content),
-          `File ${file} không được chứa mã hex thô, chỉ dùng CSS variable / Tailwind token`
+          `File ${file} không được chứa mã hex thô, chỉ dùng CSS variable / Tailwind token`,
         ).toBe(false)
 
         // 2. Không chứa class màu Tailwind ngoài bảng
@@ -215,7 +227,7 @@ describe('UI Primitives (T0-04)', () => {
           const colorClassRegex = new RegExp(`\\b(bg|text|border|outline)-${forbidden}`, 'i')
           expect(
             colorClassRegex.test(content),
-            `File ${file} không được dùng màu Tailwind ngoài 8 token: ${forbidden}`
+            `File ${file} không được dùng màu Tailwind ngoài 8 token: ${forbidden}`,
           ).toBe(false)
         }
       }
@@ -227,7 +239,7 @@ describe('UI Primitives (T0-04)', () => {
       const below70Regex = /text-deep-navy\/(?:[1-6][0-9]|45)\b/
       expect(
         below70Regex.test(content),
-        'PriceTag không được dùng độ mờ dưới /70 cho text-deep-navy để đảm bảo tương phản ≥ 4.5:1'
+        'PriceTag không được dùng độ mờ dưới /70 cho text-deep-navy để đảm bảo tương phản ≥ 4.5:1',
       ).toBe(false)
     })
   })
@@ -260,7 +272,7 @@ describe('UI Primitives (T0-04)', () => {
         fireEvent.change(input, { target: { value: currentVal } })
         expect(
           document.activeElement,
-          'Focus phải ở lại trên input sau khi gõ ký tự, không được giật về nút đóng'
+          'Focus phải ở lại trên input sau khi gõ ký tự, không được giật về nút đóng',
         ).toBe(input)
       }
 
