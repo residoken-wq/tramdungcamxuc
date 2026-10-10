@@ -549,7 +549,7 @@ Dưới đây là quy trình đối chiếu và duyệt đơn chuẩn dành cho 
 
 1. Đăng nhập vào trang quản trị CMS bằng tài khoản Chủ sở hữu (Owner).
 2. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào **Đơn hàng** -> bấm nút **Tạo mới**.
-3. Đánh dấu tick vào ô **Đơn do admin tạo** (`createdByAdmin`).
+3. Đánh dấu tick vào ô **Hana tạo link thanh toán** (`createdByAdmin`).
 4. Tại ô **Khách hàng**: chọn khách hàng trong danh sách (hoặc tạo hồ sơ khách hàng mới nếu chưa có).
 5. Tại mục **Sản phẩm trong đơn**: chọn đúng **một** gói đồng hành Growth Mirror đã xuất bản (`type = package`, ví dụ: _Gói CLEAR_, _Gói BUILD_, hoặc _Gói SHINE_).
 6. **Không cần gõ giá:** Hệ thống máy chủ tự động tính toán giá chính xác theo giá bán/giá ưu đãi trong cơ sở dữ liệu (bỏ qua mọi số gõ tay).
@@ -681,7 +681,7 @@ Dưới đây là các tình huống bạn có thể gặp và cách giải quy�
   - Kiểm tra thông báo ngân hàng / sao kê -> đối chiếu số tiền 149.000đ và mã chuyển khoản `TDCX...`. _(Xem mục 7.5)_
   - Vào **Đơn hàng** -> mở đơn có mã khớp -> bấm nút **✓ Xác nhận thanh toán** -> hệ thống tự chuyển trạng thái _Đã thanh toán_ và gửi email xác nhận kèm link đặt lịch cho khách. _(Xem mục 7.5)_
 - [ ] **8. Tạo 1 link thanh toán gói và gửi cho khách**:
-  - Vào **Đơn hàng** -> bấm **Tạo mới** -> tick ô **Đơn do admin tạo** -> chọn khách hàng và gói Growth Mirror (CLEAR / BUILD / SHINE) -> bấm **Lưu**. _(Xem mục 7.5, phần "Tạo link thanh toán gói Growth Mirror")_
+  - Vào **Đơn hàng** -> bấm **Tạo mới** -> tick ô **Hana tạo link thanh toán** -> chọn khách hàng và gói Growth Mirror (CLEAR / BUILD / SHINE) -> bấm **Lưu**. _(Xem mục 7.5, phần "Tạo link thanh toán gói Growth Mirror")_
   - Tại cột bên phải (Sidebar), mục _Link thanh toán cho khách_, bấm nút **Sao chép link** -> gửi link cho khách qua Zalo hoặc Email để khách xem tóm tắt gói và thanh toán VietQR. _(Xem mục 7.5, phần "Tạo link thanh toán gói Growth Mirror")_
 
 ---
