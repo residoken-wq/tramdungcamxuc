@@ -4,9 +4,9 @@
 
 ## Kết luận
 
-**Phần kỹ thuật: ĐẠT.** 26/26 việc nhỏ của GĐ 1 (17 hạng mục báo giá) đã merge vào `main`, CI xanh, các chỗ `REVIEW-REQUIRED` đã được IT duyệt.
+**ĐẠT – 10/10/2026.** Phần kỹ thuật đạt (26/26 việc nhỏ, CI xanh, IT duyệt `REVIEW-REQUIRED`). **Anh Nhân xác nhận cổng thay Hana** (Hana ủy quyền) và mở GĐ 2 ngay.
 
-**Cổng chính thức: CHỜ HANA.** AGENTS.md mục 12: _"Chỉ bắt đầu giai đoạn sau khi cổng của giai đoạn trước đạt và Hana xác nhận."_ Còn 3 việc chỉ Hana làm được (mục B). Trong lúc chờ, GĐ 2 chỉ **chuẩn bị** (task card, việc không phụ thuộc quyết định) – xem `docs/tasks/GD2.md`.
+Các việc của Hana ở mục B **không chặn GĐ 2** nhưng **phải xong trước khi web chạy thật** (go-live): 8 bài kiểm tra trên demo, nội dung 6 trang pháp lý, lead thật xuất CSV.
 
 ## A. Hạng mục GĐ 1 (AGENTS.md mục 12)
 
@@ -34,7 +34,7 @@
 
 Chi tiết: `docs/tasks/reviews/T1-17b.md`.
 
-## B. Bài kiểm tra cổng – Hana tự làm (chưa làm)
+## B. Việc của Hana – trước go-live (không chặn GĐ 2)
 
 Theo `docs/HUONG_DAN_CMS.md` mục 11 (8 bài), trên bản demo:
 
@@ -47,9 +47,9 @@ Theo `docs/HUONG_DAN_CMS.md` mục 11 (8 bài), trên bản demo:
 
 1. Cập nhật demo lên `main` mới nhất (RUNBOOK "Deploy bản demo"): thêm `CRON_SECRET`, `PAYMENT_SANDBOX=true` vào `.env`, đặt crontab hết hạn đơn.
 2. Chạy **PageSpeed Insights** (mobile) cho trang chủ demo, gửi điểm cho Planning.
-3. D1 (ai đứng tên Vercel / Neon / Cloudflare / Resend) và D2 (Neon hay Supabase) – chặn việc kết nối domain `tramdungcamxuc.com` và gửi email thật.
+3. ✅ D1 (anh Nhân đứng tên các tài khoản) và D2 (bản chính thức chạy server riêng, Docker) đã chốt 10/10. Còn: trỏ domain `tramdungcamxuc.com` về server + HTTPS (RUNBOOK), tạo tài khoản Resend để gửi email thật.
 
 ## D. Còn tồn, không chặn cổng
 
-- Q13 (màu nút hồng), H1/H2 (thang điểm, cách chấm quiz), Q19 (đơn quá 24 giờ) – đang chạy theo mặc định, sửa được trong CMS hoặc bằng task nhỏ.
+- Đã chốt 10/10: Q13 giữ nút hồng; H1/H2 → T2-12 (thang 1–5, điểm trung bình); Q19 → T2-13 (owner xác nhận đơn hết hạn).
 - Unit test chập chờn khi chạy song song (`siteSettings`) → T2-00.

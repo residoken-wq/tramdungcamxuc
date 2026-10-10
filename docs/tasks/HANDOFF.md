@@ -2,9 +2,11 @@
 
 ## Cập nhật 10/10/2026 (phiên cloud) – đọc mục này trước
 
-- **GĐ 1 xong phần kỹ thuật**: 26/26 việc đã merge, CI xanh. Cổng chính thức **chờ Hana** làm bài kiểm tra (8 bài trong `HUONG_DAN_CMS.md` mục 11) + nội dung 6 trang pháp lý + lead thật → `docs/tasks/GATE_GD1.md`.
-- **GĐ 2 đang chuẩn bị**: task card `docs/tasks/GD2.md` (T2-00 → T2-11), bảng ở `README.md`. Chỉ **T2-00** (cô lập unit test DB, Laptop) giao ngay; còn lại chờ Hana xác nhận cổng. Chặn: **Q8** (cổng thanh toán → chặn cổng GĐ 2), **Q9** (video), Q14.
-- **Việc của anh Nhân**: cập nhật demo lên `main` (thêm `CRON_SECRET`, `PAYMENT_SANDBOX=true`, crontab); đo PageSpeed Insights mobile trang chủ demo; D1/D2. Kết quả họp Hana 08/10 **chưa được ghi** vào `GAPS_AND_QUESTIONS.md` – xin anh dán lại.
+- **Cổng GĐ 1 ĐẠT 10/10** (anh Nhân xác nhận thay Hana) → `docs/tasks/GATE_GD1.md`. Việc của Hana (8 bài kiểm tra, nội dung 6 trang pháp lý, lead thật) làm trước go-live, không chặn GĐ 2.
+- **GĐ 2 MỞ 10/10**: `docs/tasks/GD2.md`, bảng `README.md`. Quyết định chốt 10/10 (Q2, Q8 SePay, Q9 Bunny, Q14 10 cảm xúc emoji, H1/H2, Q19, D1/D2 server riêng): `docs/plan/GAPS_AND_QUESTIONS.md` mục "Kết quả chốt 10/10/2026"; AGENTS.md đã cập nhật. Còn mở: Q15 (giá).
+- **Giao**: PC nhà = T2-01 (OTP); Laptop = T2-00 → T2-12; Local = T2-03 (viết prompt khi giao). Prompt sẵn: T2-00, T2-01, T2-12.
+- **Repo public 10/10** (Hana đồng ý) – quy tắc trong `docs/DECISIONS.md`; Actions miễn phí.
+- **Việc của anh Nhân**: cập nhật demo lên `main` (`CRON_SECRET`, `PAYMENT_SANDBOX=true`, crontab); PageSpeed Insights trang chủ demo; tạo tài khoản SePay + Bunny Stream (khóa chỉ trong `.env` server); domain + HTTPS + Resend.
 - **QA trên máy cloud**: có Postgres 16 (`service postgresql start`; xác thực `trust` cho 127.0.0.1 – không cần mật khẩu, **không tạo/đọc `.env`**, truyền biến qua lệnh); Chromium cài sẵn bản 1194 → Playwright dùng `executablePath`; proxy chặn `challenges.cloudflare.com` → Turnstile giả cục bộ (hosts + HTTPS tự ký + `--no-proxy-server`) – cách làm trong `reviews/T1-17b.md`, `reviews/T1-12c.md`. Unit test **không** đặt `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (đổi snapshot).
 - **Chính sách PACE (managed settings)**: cấm đọc `.env`/credential; dữ liệu giả `@example.test`; hành động ra ngoài cần anh xác nhận.
 

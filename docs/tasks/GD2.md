@@ -1,26 +1,30 @@
 # GĐ 2 – Web 2 Habit MVP: task card cho Antigravity
 
-> **Trạng thái 10/10/2026: CHUẨN BỊ.** Chỉ mở task tính năng khi Hana xác nhận cổng GĐ 1 (`docs/tasks/GATE_GD1.md`). Riêng **T2-00** (dọn test) giao được ngay.
+> **MỞ 10/10/2026** – cổng GĐ 1 đạt (anh Nhân xác nhận thay Hana). Quyết định đã chốt: `docs/plan/GAPS_AND_QUESTIONS.md` mục "Kết quả chốt 10/10/2026".
 > **Cổng GĐ 2** (AGENTS.md mục 12): một đơn thật được thanh toán và **mở khóa tự động**; người review kỹ thuật đã duyệt các chỗ `REVIEW-REQUIRED`.
 > Tham chiếu: AGENTS.md mục 7, 8.2, 9 (luồng 2, 3, 5), 10, 11; `docs/plan/ESTIMATES.md` mục GĐ 2 (E2-1 → E2-10); `docs/plan/GAPS_AND_QUESTIONS.md`.
 > Khung dữ liệu đã có từ GĐ 0: `customers`, `otpCodes`, `entitlements` (khóa trial một lần), `habitPlans`, `habitCheckins`, `lessonProgress`, `certificates`, `workshops`, `lessons.videoId`. Nội dung đã nhập: 16 câu quiz, 11 kỹ thuật, 20 bài học / 7 nhóm.
 
-## Quyết định đang chặn
+## Quyết định (chốt 10/10)
 
-| Mã      | Câu hỏi                                                        | Chặn                   | Mặc định nếu chưa chốt                                       |
-| ------- | -------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------ |
-| **Q8**  | Pháp nhân đăng ký payOS / SePay (cá nhân hay hộ kinh doanh)    | T2-09 → **cổng GĐ 2**  | Không có – webhook không làm được khi chưa có tài khoản cổng |
-| **Q9**  | Video: Bunny Stream hay Cloudflare Stream                      | T2-05                  | Không có – cần tài khoản, khóa ký link                       |
-| **Q14** | Bộ cảm xúc cố định (tên, số lượng, icon hay emoji)             | T2-06 (phần cảm xúc)   | 6 cảm xúc **[MẪU]**, đổi được không cần migration            |
-| **Q15** | Giá Habit Tracker: 250.000/178.000 (spec) hay 499.000/199.000? | Không chặn code        | Giá lấy từ CMS – Hana tự sửa                                 |
-| Q2, Q3  | Mua là vĩnh viễn hay theo kỳ; 178.000đ có hạn không            | Không chặn             | `accessDurationDays` rỗng, `saleEndsAt` rỗng                 |
-| D1, D2  | Ai đứng tên Vercel / Neon / Resend; Neon hay Supabase          | Email OTP thật, domain | Demo tự host, email ghi log                                  |
+| Mã     | Chốt                                                                  | Task          |
+| ------ | --------------------------------------------------------------------- | ------------- |
+| Q8     | SePay, tài khoản cá nhân                                              | T2-09         |
+| Q9     | Bunny Stream cho video trả phí (video gốc Hana giữ trên YouTube)      | T2-05         |
+| Q14    | 10 cảm xúc theo prototype, emoji                                      | T2-06         |
+| Q2     | Mua lẻ từng công cụ số, dùng vĩnh viễn                                | T2-02, T2-08  |
+| H1, H2 | Quiz thang 1–5, điểm trung bình mỗi giai đoạn                         | T2-12         |
+| Q19    | Owner xác nhận được đơn đã hết hạn                                    | T2-13         |
+| D1, D2 | Anh Nhân đứng tên tài khoản; chạy server riêng (Docker), cron crontab | mọi task cron |
+| Q15    | **Còn mở** – giá Habit Tracker để trong CMS                           | không chặn    |
+
+**Việc ngoài code cần có trước khi task tương ứng nghiệm thu**: tài khoản **SePay** (T2-09) và **Bunny Stream** + 20 video tải lên (T2-05) – anh Nhân tạo, khóa API chỉ đặt trong `.env` server, không gửi vào chat/repo.
 
 ## Lịch máy đề xuất
 
-- **PC nhà** (chuỗi đăng nhập – thanh toán, `[REVIEW]`): T2-01 → T2-02 → T2-04 → T2-08 → T2-09.
+- **PC nhà** (chuỗi đăng nhập – thanh toán, `[REVIEW]`): T2-01 → T2-02 → T2-04 → T2-08 → T2-09 → T2-13.
 - **Local** (Habit): T2-03 → T2-06 → T2-07.
-- **Laptop**: T2-00 (ngay) → T2-10 → T2-05 (khi có Q9).
+- **Laptop**: T2-00 → T2-12 → T2-10 → T2-05.
 - **Codex** (Local): review thứ hai mọi task `[REVIEW]`.
 - **Planning**: QA từng PR, T2-11 (e2e luồng Habit + cổng).
 - 🔒 Migration: T2-01, T2-02, T2-06, T2-07 đều có thể cần migration → nối tiếp nhau, không chạy song song.
@@ -92,11 +96,11 @@
 
 ---
 
-## T2-05 – Video bảo vệ + dashboard học **[REVIEW]** – ⛔ chờ Q9
+## T2-05 – Video bảo vệ + dashboard học **[REVIEW]**
 
 **Máy**: Laptop · **Ước lượng**: 14 h (E2-6)
 
-**Phạm vi**: provider video sau interface `VideoProvider` (`src/lib/video/`), link ký có hạn, chỉ trả khi `hasAccess`. `/habit/hoc`: module theo nhóm (Insight → Habit Loop → Nguyên tắc → Kỹ thuật), tiến độ, ghi `lessonProgress` khi xem ≥ 80%, `isFreePreview` xem không cần đăng nhập. Sự kiện `lesson_completed`. Không YouTube unlisted.
+**Phạm vi**: Bunny Stream (Q9) sau interface `VideoProvider` (`src/lib/video/`), link ký có hạn, chỉ trả khi `hasAccess`. `/habit/hoc`: module theo nhóm (Insight → Habit Loop → Nguyên tắc → Kỹ thuật), tiến độ, ghi `lessonProgress` khi xem ≥ 80%, `isFreePreview` xem không cần đăng nhập. Sự kiện `lesson_completed`. Không YouTube unlisted.
 
 ---
 
@@ -104,7 +108,7 @@
 
 **Phụ thuộc**: T2-02 · **Máy**: Local · **Ước lượng**: 14 h (E2-7) · Q14 cho bộ cảm xúc
 
-**Phạm vi**: lưới 21 ô, tick + chọn cảm xúc (bộ cố định – Q14; tạm 6 cảm xúc **[MẪU]**), ghi chú tùy chọn; không tick ngày tương lai; duy nhất (plan, day); "Lỡ nhịp 1 ngày là không sao cả"; lỡ 2 ngày liên tiếp → email nhắc nhẹ (cron, idempotent); câu "Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?"; ngày 21: trang tổng kết + mời mua + mời phiên trải nghiệm. Dữ liệu cảm xúc/ghi chú **không** vào analytics, **không** hiện cho editor. Sự kiện `tracker_day_checked` (không kèm cảm xúc).
+**Phạm vi**: lưới 21 ô, tick + chọn cảm xúc (bộ cố định Q14: **10 cảm xúc emoji** – Vui vẻ, Bình an, Tươi mới, An yên, Biết ơn, Thư thái, Tự tin, Hơi mệt, Chùn bước, Căng thẳng; thay bộ 6 cảm xúc MẪU trong `src/lib/emotions.ts`), ghi chú tùy chọn; không tick ngày tương lai; duy nhất (plan, day); "Lỡ nhịp 1 ngày là không sao cả"; lỡ 2 ngày liên tiếp → email nhắc nhẹ (cron, idempotent); câu "Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?"; ngày 21: trang tổng kết + mời mua + mời phiên trải nghiệm. Dữ liệu cảm xúc/ghi chú **không** vào analytics, **không** hiện cho editor. Sự kiện `tracker_day_checked` (không kèm cảm xúc).
 
 ---
 
@@ -120,15 +124,15 @@
 
 **Phụ thuộc**: T2-02 · **Máy**: PC nhà · **Ước lượng**: 6 h
 
-**Phạm vi**: khách đã đăng nhập bấm "Mua để dùng tiếp" → đơn `pending` + VietQR (tái dùng T1-12) → Hana xác nhận → `activateFromOrder` → email xác nhận. Ô đồng ý điều khoản. Luồng 3 mục 9 AGENTS chạy được bằng xác nhận thủ công – **chưa đạt cổng** (cổng cần tự động, T2-09).
+**Phạm vi** (Q2: mua lẻ, vĩnh viễn): khách đã đăng nhập bấm "Mua để dùng tiếp" → đơn `pending` + VietQR (tái dùng T1-12) → Hana xác nhận → `activateFromOrder` → email xác nhận. Ô đồng ý điều khoản. Luồng 3 mục 9 AGENTS chạy được bằng xác nhận thủ công – **chưa đạt cổng** (cổng cần tự động, T2-09).
 
 ---
 
-## T2-09 – Webhook thanh toán tự động **[REVIEW]** – ⛔ chờ Q8
+## T2-09 – Webhook SePay tự động **[REVIEW]**
 
 **Phụ thuộc**: T2-08 · **Máy**: PC nhà · **Ước lượng**: 14 h (E2-3)
 
-**Phạm vi**: `PaymentProvider` thứ hai (payOS hoặc SePay) sau interface có sẵn; webhook xác thực chữ ký, khớp `paymentRef` + **số tiền chính xác**, idempotent (nhận trùng không cấp 2 lần), ghi `paymentEvents` mọi lần gọi; sandbox cho preview. Không tin dữ liệu trình duyệt. AGENTS mục 10.
+**Phạm vi**: `PaymentProvider` thứ hai – **SePay** (Q8) – sau interface có sẵn; webhook xác thực chữ ký, khớp `paymentRef` + **số tiền chính xác**, idempotent (nhận trùng không cấp 2 lần), ghi `paymentEvents` mọi lần gọi; sandbox cho preview. Không tin dữ liệu trình duyệt. AGENTS mục 10.
 
 ---
 
@@ -137,6 +141,32 @@
 **Máy**: Laptop · **Ước lượng**: 6 h (E2-9)
 
 **Phạm vi**: lịch workshop "Tập thương cảm xúc" từ `workshops` cho khách mua gói (lọc `audienceProducts`), hiện trong `/tai-khoan`; email nhắc trước 24 giờ (cron, idempotent, giờ Việt Nam).
+
+---
+
+## T2-12 – Quiz: thang 1–5, chấm điểm trung bình
+
+**Máy**: Laptop · **Ước lượng**: 2 h · Không migration (điểm lưu dạng số trong `diagnosticResults.answers`).
+
+**Phạm vi** (H1, H2): thang mỗi câu **1–5** với 5 nhãn theo file Excel (Không bao giờ / Hiếm khi / Thỉnh thoảng / Thường xuyên / Rất thường xuyên – nhãn vào `vi.ts`); `scoreDiagnostic` tính **điểm trung bình** mỗi giai đoạn (giai đoạn không có câu nào thì bỏ qua), hòa theo B8; giai đoạn phụ khi chênh ≤ một ngưỡng tính trên thang trung bình (ghi lý do). Sửa Zod `max(5)`, giao diện 5 nút, unit test (gồm trường hợp 6/3/5/2 câu – kết quả không còn luôn ra "Tín hiệu").
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Trả lời 5 cho mọi câu Khao khát, 1 cho các câu khác → kết quả "Khao khát".
+- [ ] Kết quả cũ trong `diagnosticResults` (thang 1–4) vẫn hiển thị được, không lỗi.
+
+---
+
+## T2-13 – Owner xác nhận đơn đã hết hạn **[REVIEW]**
+
+**Phụ thuộc**: – · **Máy**: PC nhà · **Ước lượng**: 2 h
+
+**Phạm vi** (Q19): `confirmManualPayment` nhận cả đơn `failed` (hết hạn 24 giờ) – chỉ owner, UPDATE có điều kiện `payment_status IN ('pending','failed')`, ghi audit `confirm_expired_order`; đơn `cancelled` vẫn **không** xác nhận được. Nút "Xác nhận thanh toán" hiện cho đơn `pending` và `failed` (kèm cảnh báo "Đơn đã quá hạn – chỉ xác nhận khi đã thấy tiền về"). Hướng dẫn CMS mục 7.5 cập nhật.
+
+**Tiêu chí nghiệm thu**
+
+- [ ] Đơn hết hạn → owner xác nhận → paid, email gửi 1 lần; editor không làm được; đơn đã hủy vẫn bị từ chối.
+- [ ] IT duyệt.
 
 ---
 
