@@ -28,7 +28,11 @@ import { HanaStoryBlock, type HanaStoryProps } from './blocks/HanaStory'
 // Khối Chuyển đổi (Conversion Blocks)
 import { CTAButtonBlock, type CTAButtonBlockProps } from './blocks/CTAButton'
 import { LeadFormBlock, type LeadFormBlockProps } from './blocks/LeadForm'
-import { BookingCTABlock, type BookingCTAProps } from './blocks/BookingCTA'
+import {
+  BookingCTABlock,
+  type BookingCTAProps,
+  type BookingCTABlockProps,
+} from './blocks/BookingCTA'
 import { B2BBriefFormBlock, type B2BBriefFormProps } from './blocks/B2BBriefForm'
 import { QuizCTABlock, type QuizCTAProps } from './blocks/QuizCTA'
 import { ShopeeButtonBlock, type ShopeeButtonBlockProps } from './blocks/ShopeeButton'
@@ -81,7 +85,7 @@ export type PageComponentsProps = {
   // Chuyển đổi
   CTAButton: CTAButtonBlockProps
   LeadForm: LeadFormBlockProps
-  BookingCTA: BookingCTAProps & { productId?: string | number }
+  BookingCTA: BookingCTABlockProps
   B2BBriefForm: B2BBriefFormProps
   QuizCTA: QuizCTAProps
   ShopeeButton: ShopeeButtonBlockProps
