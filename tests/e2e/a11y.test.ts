@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
 /**
- * T1-17e: Automated Accessibility Spec using Axe Core Playwright
+ * T1-17e & T1-17b: Automated Accessibility Spec using Axe Core Playwright
  *
  * Scans key public routes against WCAG 2.0 / 2.1 Level A and AA tags.
  * Runs on both desktop-1440 and mobile-375 projects defined in playwright.config.ts.
@@ -10,11 +10,24 @@ import AxeBuilder from '@axe-core/playwright'
  *
  * NOTE: Does NOT use networkidle because pages load Turnstile / live scripts.
  * No rules are excluded by default. If any rule must be excluded, record rationale here and in report.
+ *
+ * ROUTE AUDIT FOR UNSEEDED CI DB:
+ * - Added: `/thu-vien?tab=noi-dung` (renders 200 OK on unseeded DB with fallback header, tab switcher, topic filters, search bar, and empty state card).
+ * - Retained from T1-17e:
+ *   - `/` (Home): has fallback brand UI when DB is unseeded (200 OK).
+ *   - `/thu-vien` (Library): has fallback header and empty state when unseeded (200 OK).
+ *   - `/habit/chan-doan` (Diagnostic Quiz): renders quiz shell with empty question notification (200 OK).
+ *   - `/coaching/growth-mirror` & `/gia-thanh-toan`: scanned in T1-17e; renders full Puck/Legal layout when seeded, shell 404 when unseeded.
+ * - Evaluated & Skipped:
+ *   - `/ve-hana`, `/doanh-nghiep`, `/coaching`: Dynamic Puck catch-all pages (`[...slug]` or `[slug]`) requiring published records in `pages` collection; return 404 when DB is empty.
+ *   - Other legal routes (`/dieu-khoan-su-dung`, `/chinh-sach-bao-mat`, `/chinh-sach-cung-cap-dich-vu`, `/phan-anh-khieu-nai`, `/thong-tin-phap-ly`): `getLegalPageData(slug)` queries `legalPages` collection; returns 404 when unseeded.
+ *   - Transactional / dynamic detail routes (`/dat-phien-trai-nghiem`, `/thanh-toan/don/[token]`, `/thanh-toan/goi/[slug]`, `/blog/[slug]`, `/tai-nguyen/[slug]`): Require existing DB entities / tokens; return 404 when unseeded.
  */
 
 const SCAN_ROUTES = [
   '/',
   '/thu-vien',
+  '/thu-vien?tab=noi-dung',
   '/habit/chan-doan',
   '/coaching/growth-mirror',
   '/gia-thanh-toan',
