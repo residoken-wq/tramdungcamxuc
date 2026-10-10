@@ -48,12 +48,15 @@ Mục tiêu tối thượng: **Hana tự sửa được mọi nội dung thay đ
 
 Tổng giá trị và % ưu đãi được **tính tự động** từ cấu phần và giá bán, không nhập tay.
 
-### Câu hỏi còn mở – không tự quyết, giữ cấu hình được trong CMS
+### Đã chốt 10/10/2026 (chi tiết: `docs/plan/GAPS_AND_QUESTIONS.md` mục "Kết quả chốt 10/10/2026")
 
-- Mua sau 21 ngày dùng thử là vĩnh viễn hay theo kỳ → làm `accessDurationDays` (rỗng = vĩnh viễn).
-- 178.000đ là giá cố định hay có hạn → `salePrice` + `saleEndsAt` tùy chọn.
-- Phí trải nghiệm 149.000đ có trừ vào giá gói không → cờ `trialCreditApplies` trong siteSettings, mặc định tắt.
-- Thinking Mirror và chương trình B2B chưa có trong file pricing → vẫn dựng, mặc định `saleStatus = consult`, Hana có thể ẩn.
+- Hết 21 ngày dùng thử → mua lẻ từng công cụ số, **dùng vĩnh viễn** (`accessDurationDays` rỗng; vẫn giữ field để đổi sau).
+- 178.000đ là giá ưu đãi **cố định** (`saleEndsAt` rỗng). Phí 149.000đ **không trừ** vào gói (`trialCreditApplies = false`, vẫn có công tắc).
+- Thinking Mirror và chương trình B2B hiện với `saleStatus = consult`.
+- Thanh toán tự động: **SePay** (tài khoản cá nhân). Video trả phí: **Bunny Stream**. Hosting: **server riêng (Docker)**.
+- Bộ cảm xúc cố định: **10 cảm xúc, emoji** (Vui vẻ, Bình an, Tươi mới, An yên, Biết ơn, Thư thái, Tự tin, Hơi mệt, Chùn bước, Căng thẳng).
+- Quiz chẩn đoán: thang **1–5**, chấm **điểm trung bình** mỗi giai đoạn.
+- Còn mở: giá Habit Tracker (250.000/178.000 hay 499.000/199.000) – giữ trong CMS, Hana tự sửa.
 
 ---
 
@@ -89,21 +92,21 @@ Asset gốc (logo PNG nền trong, ảnh chân dung) do Hana cung cấp trong `p
 
 ## 4. Tech stack
 
-| Lớp               | Lựa chọn                                                                       | Lý do                                                                                         |
-| ----------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| Framework         | Next.js (App Router) + TypeScript strict                                       | Một app cho cả 3 web + CMS                                                                    |
-| CMS               | Payload CMS 3 (chạy trong cùng app Next.js, admin tại `/admin`) + Live Preview | Giao diện quản trị sẵn có, collection tùy biến, phân quyền, upload media, xem trước trực tiếp |
-| Trình dựng trang  | Puck (`@puckeditor/core`, MIT) nhúng trong admin                               | Kéo thả kiểu Elementor bằng chính component brand, dữ liệu thuộc về dự án                     |
-| Database          | PostgreSQL (Neon hoặc Supabase) qua adapter Postgres của Payload               | Một DB cho nội dung, user, đơn hàng                                                           |
-| Styling           | Tailwind CSS + design tokens ở mục 5                                           | Nhất quán brand                                                                               |
-| Media             | S3-compatible storage (Cloudflare R2) qua plugin storage của Payload           | Ảnh, PDF ebook                                                                                |
-| Video trả phí     | Bunny Stream hoặc Cloudflare Stream, link ký có thời hạn                       | Không lộ video cho người chưa mua. Không dùng YouTube unlisted                                |
-| Email             | Resend + React Email                                                           | Giao sản phẩm, xác nhận, nhắc lịch                                                            |
-| Thanh toán        | Chuyển khoản VietQR có webhook xác nhận (payOS hoặc SePay – chốt ở GĐ 2)       | Phù hợp khách Việt Nam                                                                        |
-| Đặt lịch coaching | Nhúng link đặt lịch (Cal.com hoặc Google Calendar booking)                     | Không tự build lịch                                                                           |
-| Analytics         | GA4 hoặc Plausible + sự kiện tùy chỉnh                                         | Đo chuyển đổi                                                                                 |
-| Deploy            | Vercel (app) + DB managed                                                      | Preview mỗi PR, rollback 1 click                                                              |
-| Test              | Vitest (logic) + Playwright (luồng chính)                                      |                                                                                               |
+| Lớp               | Lựa chọn                                                                             | Lý do                                                                                         |
+| ----------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Framework         | Next.js (App Router) + TypeScript strict                                             | Một app cho cả 3 web + CMS                                                                    |
+| CMS               | Payload CMS 3 (chạy trong cùng app Next.js, admin tại `/admin`) + Live Preview       | Giao diện quản trị sẵn có, collection tùy biến, phân quyền, upload media, xem trước trực tiếp |
+| Trình dựng trang  | Puck (`@puckeditor/core`, MIT) nhúng trong admin                                     | Kéo thả kiểu Elementor bằng chính component brand, dữ liệu thuộc về dự án                     |
+| Database          | PostgreSQL tự host (Docker) qua adapter Postgres của Payload – chốt 10/10 (D2)       | Một DB cho nội dung, user, đơn hàng                                                           |
+| Styling           | Tailwind CSS + design tokens ở mục 5                                                 | Nhất quán brand                                                                               |
+| Media             | S3-compatible storage (Cloudflare R2) qua plugin storage của Payload                 | Ảnh, PDF ebook                                                                                |
+| Video trả phí     | Bunny Stream, link ký có thời hạn – chốt 10/10 (Q9; video gốc Hana giữ trên YouTube) | Không lộ video cho người chưa mua. Không dùng YouTube unlisted                                |
+| Email             | Resend + React Email                                                                 | Giao sản phẩm, xác nhận, nhắc lịch                                                            |
+| Thanh toán        | Chuyển khoản VietQR; webhook tự động qua SePay (tài khoản cá nhân) – chốt 10/10 (Q8) | Phù hợp khách Việt Nam                                                                        |
+| Đặt lịch coaching | Nhúng link đặt lịch (Cal.com hoặc Google Calendar booking)                           | Không tự build lịch                                                                           |
+| Analytics         | GA4 hoặc Plausible + sự kiện tùy chỉnh                                               | Đo chuyển đổi                                                                                 |
+| Deploy            | Server riêng, Docker Compose + image GHCR (như bản demo) – chốt 10/10 (D2)           | Preview mỗi PR, rollback 1 click                                                              |
+| Test              | Vitest (logic) + Playwright (luồng chính)                                            |                                                                                               |
 
 Luôn dùng bản stable mới nhất và **đọc docs chính thức trước khi dùng API** của Payload, Next.js, cổng thanh toán. Không dựa vào trí nhớ về API.
 
@@ -356,7 +359,7 @@ Sản phẩm hiển thị theo `saleStatus`: coming_soon → nút "Nhận thông
 
 **Miễn phí**
 
-1. **Chẩn đoán** (`/habit/chan-doan`): hiển thị các câu từ `diagnosticQuestions`, người dùng chọn mức độ đúng với mình (thang 1–4). Kết quả = giai đoạn có điểm cao nhất + gợi ý tương ứng + CTA sang Habit Loop và trang offer.
+1. **Chẩn đoán** (`/habit/chan-doan`): hiển thị các câu từ `diagnosticQuestions`, người dùng chọn mức độ đúng với mình (thang 1–5, chốt 10/10). Kết quả = giai đoạn có **điểm trung bình** cao nhất + gợi ý tương ứng + CTA sang Habit Loop và trang offer.
 2. **Habit Loop 5 phút** (`/habit/5-phut`): wizard 4 bước theo file Excel:
    - Bước 1 – Bảng điểm thói quen: liệt kê thói quen trong ngày, đánh dấu tốt / bình thường / xấu.
    - Bước 2 – Gọi tên thói quen: "Tôi sẽ [hành động] để trở thành [con người]".
