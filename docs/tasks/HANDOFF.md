@@ -1,5 +1,15 @@
 # Bàn giao ghế Planning (Claude) – 08/10/2026, 16:45
 
+## Cập nhật 10/10/2026 (phiên cloud) – đọc mục này trước
+
+- **GĐ 1 xong phần kỹ thuật**: 26/26 việc đã merge, CI xanh. Cổng chính thức **chờ Hana** làm bài kiểm tra (8 bài trong `HUONG_DAN_CMS.md` mục 11) + nội dung 6 trang pháp lý + lead thật → `docs/tasks/GATE_GD1.md`.
+- **GĐ 2 đang chuẩn bị**: task card `docs/tasks/GD2.md` (T2-00 → T2-11), bảng ở `README.md`. Chỉ **T2-00** (cô lập unit test DB, Laptop) giao ngay; còn lại chờ Hana xác nhận cổng. Chặn: **Q8** (cổng thanh toán → chặn cổng GĐ 2), **Q9** (video), Q14.
+- **Việc của anh Nhân**: cập nhật demo lên `main` (thêm `CRON_SECRET`, `PAYMENT_SANDBOX=true`, crontab); đo PageSpeed Insights mobile trang chủ demo; D1/D2. Kết quả họp Hana 08/10 **chưa được ghi** vào `GAPS_AND_QUESTIONS.md` – xin anh dán lại.
+- **QA trên máy cloud**: có Postgres 16 (`service postgresql start`; xác thực `trust` cho 127.0.0.1 – không cần mật khẩu, **không tạo/đọc `.env`**, truyền biến qua lệnh); Chromium cài sẵn bản 1194 → Playwright dùng `executablePath`; proxy chặn `challenges.cloudflare.com` → Turnstile giả cục bộ (hosts + HTTPS tự ký + `--no-proxy-server`) – cách làm trong `reviews/T1-17b.md`, `reviews/T1-12c.md`. Unit test **không** đặt `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (đổi snapshot).
+- **Chính sách PACE (managed settings)**: cấm đọc `.env`/credential; dữ liệu giả `@example.test`; hành động ra ngoài cần anh xác nhận.
+
+---
+
 Đọc file này trước khi làm gì. Phiên Planning trước chạy trên máy Local; phiên mới (cloud) **không có** lịch sử hội thoại, DB Docker cổng 55432, worktree QA hay memory cũ – mọi thứ cần biết nằm ở đây và trong `docs/tasks/`.
 
 ## Vai trò
