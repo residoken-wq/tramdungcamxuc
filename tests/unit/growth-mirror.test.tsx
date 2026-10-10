@@ -3,6 +3,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { PackageComparison } from '@/components/site/PackageComparison'
 import { BookingCTA } from '@/components/site/BookingCTA'
+import { BookingCTABlock } from '@/puck/blocks/BookingCTA'
 import type { PublicProduct } from '@/lib/products'
 import * as trackModule from '@/lib/analytics/track'
 
@@ -280,6 +281,25 @@ describe('Growth Mirror Page Components (T1-11)', () => {
   })
 
   describe('BookingCTA component integration', () => {
+    it('Puck block passes the resolved product so the button carries ?san-pham=<id> and the price', () => {
+      const Rendered = BookingCTABlock.render as unknown as (
+        p: Record<string, unknown>,
+      ) => React.ReactElement
+      render(
+        Rendered({
+          productId: mockTrialProduct.id,
+          buttonLabel: 'Đặt phiên trải nghiệm',
+          _resolved: { product: mockTrialProduct },
+          puck: { isEditing: false },
+        }),
+      )
+      const link = screen.getByRole('link', { name: 'Đặt phiên trải nghiệm' })
+      expect(link.getAttribute('href')).toBe(
+        `/dat-phien-trai-nghiem?san-pham=${mockTrialProduct.id}`,
+      )
+      expect(screen.getByText('149.000đ')).toBeDefined()
+    })
+
     it('renders single booking button with trial price 149.000đ and tracks booking_clicked on click', () => {
       const trackSpy = vi.spyOn(trackModule, 'track')
 
