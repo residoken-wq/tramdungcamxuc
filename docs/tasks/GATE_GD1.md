@@ -25,12 +25,12 @@ Các việc của Hana ở mục B **không chặn GĐ 2** nhưng **phải xong 
 
 ### Đo chất lượng (T1-17b, 10/10)
 
-| Tiêu chí                             | Kết quả                                                                                                                           |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| E2E toàn bộ trên CI                  | ✅ xanh (`main`, sau PR #61, #62)                                                                                                 |
-| axe – 18 trang × 375/1440 có dữ liệu | ✅ 0 lỗi serious/critical (sau khi sửa 2 nút)                                                                                     |
-| Lighthouse mobile trang chủ ≥ 90     | ✅ có điều kiện: 94–96 ở lần đo sạch; A11y 100, SEO 100. **Xác nhận lại bằng PageSpeed Insights trên demo** (máy cloud gây nhiễu) |
-| Lỗi chập chờn trang đơn              | ✅ tìm ra gốc (lỗi của test), đã sửa                                                                                              |
+| Tiêu chí                             | Kết quả                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E2E toàn bộ trên CI                  | ✅ xanh (`main`, sau PR #61, #62)                                                                                                                                                                                                                                                                                                 |
+| axe – 18 trang × 375/1440 có dữ liệu | ✅ 0 lỗi serious/critical (sau khi sửa 2 nút)                                                                                                                                                                                                                                                                                     |
+| Lighthouse mobile trang chủ ≥ 90     | ✅ **PageSpeed Insights trên demo `https://tdcx.skoolmate.vn` (10/10, image `main` mới): Performance 98, Accessibility 100, Best Practices 100**, LCP 2,3 s, FCP 1,1 s, TBT 30 ms, CLS 0. SEO 66 là do demo đặt `SITE_NOINDEX=true` (đúng thiết kế, bản chính thức bỏ thì về 100). Trước khi cập nhật (bản 08/10): 71 / LCP 6,3 s |
+| Lỗi chập chờn trang đơn              | ✅ tìm ra gốc (lỗi của test), đã sửa                                                                                                                                                                                                                                                                                              |
 
 Chi tiết: `docs/tasks/reviews/T1-17b.md`.
 
@@ -46,7 +46,7 @@ Theo `docs/HUONG_DAN_CMS.md` mục 11 (8 bài), trên bản demo:
 ## C. Việc của anh Nhân trước khi Hana làm bài kiểm tra
 
 1. Cập nhật demo lên `main` mới nhất (RUNBOOK "Deploy bản demo"): thêm `CRON_SECRET`, `PAYMENT_SANDBOX=true` vào `.env`, đặt crontab hết hạn đơn.
-2. Chạy **PageSpeed Insights** (mobile) cho trang chủ demo, gửi điểm cho Planning.
+2. ✅ PageSpeed Insights mobile trên demo: 98 (10/10).
 3. ✅ D1 (anh Nhân đứng tên các tài khoản) và D2 (bản chính thức chạy server riêng, Docker) đã chốt 10/10. Còn: trỏ domain `tramdungcamxuc.com` về server + HTTPS (RUNBOOK), tạo tài khoản Resend để gửi email thật.
 
 ## D. Còn tồn, không chặn cổng
