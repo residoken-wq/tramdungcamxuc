@@ -312,3 +312,14 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
   - [GitHub Docs – Publishing Docker images](https://docs.github.com/en/actions/publishing-packages/publishing-docker-images)
   - [Docker Compose pull_policy specification](https://docs.docker.com/reference/compose-file/services/#pull_policy)
   - [Docker Compose multiple compose files merge (-f)](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/)
+
+## Repo GitHub chuyển sang public (10/10/2026)
+
+- **Bối cảnh**: CI dừng vì tài khoản `residoken-wq` hết hạn mức GitHub Actions (repo private). Anh Nhân chuyển repo sang **public** để Actions chạy miễn phí.
+- **Phê duyệt**: Hana đồng ý công khai repo, gồm cả `docs/sources/` (file Habit Hack, bảng giá Growth Mirror), `seed/import/` (nội dung khóa học), `docs/plan/` và `AGENTS.md`. Anh Nhân xác nhận trong phiên Planning 10/10.
+- **Đã kiểm trước khi tiếp tục**: quét toàn bộ lịch sử git – không có khóa bí mật thật (chỉ mật khẩu mẫu Postgres cục bộ trong `.env.example`/CI và khóa Turnstile thử nghiệm công khai); không có dữ liệu khách thật (số tài khoản trong test là mẫu tham chiếu VietQR công khai).
+- **Quy tắc từ nay** (repo công khai):
+  - Tuyệt đối không commit `.env`, khóa, token, mật khẩu thật (AGENTS mục 2.5) – mọi bí mật chỉ ở `.env` trên server / GitHub Secrets.
+  - Dữ liệu mẫu và test chỉ dùng tên, email, số điện thoại **rõ ràng là giả** (`@example.test`, `Học viên Test 01`); không dùng tên người thật.
+  - Không đưa dữ liệu khách hàng thật, lead thật, ảnh chụp có thông tin khách vào repo.
+  - Nội dung mới của Hana chưa muốn công khai (video, 26 thẻ EQ, tài liệu chiến lược mới) gửi qua kênh riêng và nhập thẳng vào DB, không commit file gốc.
