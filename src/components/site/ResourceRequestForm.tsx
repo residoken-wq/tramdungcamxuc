@@ -128,7 +128,7 @@ export function ResourceRequestForm({
       {errorMessage && (
         <div
           role="alert"
-          className="mb-6 p-4 rounded-xl bg-accent-pink/10 border border-accent-pink/30 text-accent-pink font-ui text-sm font-semibold text-center"
+          className="mb-6 p-4 rounded-xl bg-soft-pink border border-bright-magenta/30 text-bright-magenta font-ui text-sm font-semibold text-center"
         >
           {errorMessage}
         </div>
@@ -155,7 +155,7 @@ export function ResourceRequestForm({
             htmlFor={nameInputId}
             className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
           >
-            {vi.resource.nameLabel} <span className="text-accent-pink">*</span>
+            {vi.resource.nameLabel} <span className="text-bright-magenta">*</span>
           </label>
           <input
             id={nameInputId}
@@ -170,7 +170,7 @@ export function ResourceRequestForm({
               }
             }}
             className={`w-full px-4 py-3 rounded-xl border bg-warm-ivory/50 font-body text-base text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 focus:ring-bright-magenta focus:bg-white transition-all ${
-              fieldErrors.name ? 'border-accent-pink' : 'border-lavender-mist'
+              fieldErrors.name ? 'border-bright-magenta' : 'border-lavender-mist'
             }`}
             aria-invalid={Boolean(fieldErrors.name)}
             aria-describedby={fieldErrors.name ? `${nameInputId}-err` : undefined}
@@ -178,7 +178,7 @@ export function ResourceRequestForm({
           {fieldErrors.name && (
             <p
               id={`${nameInputId}-err`}
-              className="mt-1 font-ui text-xs text-accent-pink font-medium"
+              className="mt-1 font-ui text-xs text-bright-magenta font-medium"
             >
               {fieldErrors.name}
             </p>
@@ -191,7 +191,7 @@ export function ResourceRequestForm({
             htmlFor={emailInputId}
             className="block font-ui text-sm font-bold text-deep-navy mb-1.5"
           >
-            {vi.resource.emailLabel} <span className="text-accent-pink">*</span>
+            {vi.resource.emailLabel} <span className="text-bright-magenta">*</span>
           </label>
           <input
             id={emailInputId}
@@ -206,7 +206,7 @@ export function ResourceRequestForm({
               }
             }}
             className={`w-full px-4 py-3 rounded-xl border bg-warm-ivory/50 font-body text-base text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 focus:ring-bright-magenta focus:bg-white transition-all ${
-              fieldErrors.email ? 'border-accent-pink' : 'border-lavender-mist'
+              fieldErrors.email ? 'border-bright-magenta' : 'border-lavender-mist'
             }`}
             aria-invalid={Boolean(fieldErrors.email)}
             aria-describedby={fieldErrors.email ? `${emailInputId}-err` : undefined}
@@ -214,7 +214,7 @@ export function ResourceRequestForm({
           {fieldErrors.email && (
             <p
               id={`${emailInputId}-err`}
-              className="mt-1 font-ui text-xs text-accent-pink font-medium"
+              className="mt-1 font-ui text-xs text-bright-magenta font-medium"
             >
               {fieldErrors.email}
             </p>
@@ -242,7 +242,7 @@ export function ResourceRequestForm({
                 href="/chinh-sach-bao-mat"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent-pink font-semibold underline underline-offset-2 hover:opacity-85"
+                className="text-bright-magenta font-semibold underline underline-offset-2 hover:text-deep-navy"
               >
                 {vi.resource.privacyPolicy}
               </Link>
@@ -250,7 +250,7 @@ export function ResourceRequestForm({
             </span>
           </label>
           {fieldErrors.consent && (
-            <p className="mt-1 font-ui text-xs text-accent-pink font-medium">
+            <p className="mt-1 font-ui text-xs text-bright-magenta font-medium">
               {fieldErrors.consent}
             </p>
           )}

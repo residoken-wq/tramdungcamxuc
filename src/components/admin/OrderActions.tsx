@@ -186,10 +186,11 @@ export const OrderActions: React.FC = () => {
           </div>
           <button
             type="button"
+            data-testid="order-payment-link-copy"
             onClick={handleCopyLink}
             style={{
               padding: '6px 10px',
-              backgroundColor: copiedLink ? '#D9F1EA' : '#EF3B83',
+              backgroundColor: copiedLink ? '#D9F1EA' : '#BC039E',
               color: copiedLink ? '#0F5132' : '#FFFFFF',
               border: 'none',
               borderRadius: '6px',
