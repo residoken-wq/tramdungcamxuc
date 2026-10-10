@@ -114,9 +114,11 @@ Trạng thái: `Sẵn sàng` · `Đang làm` · `Chờ review` · `Xong` · `B�
 
 Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.md` mục 3. Prompt: `docs/tasks/prompts/<MÃ>.md`.
 
+**Cổng GĐ 1 (10/10): kỹ thuật ĐẠT – chờ Hana làm bài kiểm tra** → [`GATE_GD1.md`](GATE_GD1.md).
+
 **🔒 Migration: (trống) · 🔒 Package: (trống)**
 
-**Lịch máy 10/10**: PC nhà = T1-17b (phần code) · trước đó ~~T1-13~~, ~~T1-17e~~ (xong) · Codex (Local) = ~~T1-10b~~ (xong), review thứ hai T1-13 khi PR sẵn sàng · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
+**Lịch máy 10/10**: PC nhà = ~~T1-17b~~ (xong) · trước đó ~~T1-13~~, ~~T1-17e~~ (xong) · Codex (Local) = ~~T1-10b~~ (xong), review thứ hai T1-13 khi PR sẵn sàng · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
 
 | Mã     | Task                                                                             | Nhãn     | Phụ thuộc                   | Máy               | Trạng thái                                                                                                                                 |
 | ------ | -------------------------------------------------------------------------------- | -------- | --------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -143,9 +145,28 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-16  | Dựng các trang seed từ mẫu theo mục 8.1                                          | [HANA]   | T1-04, T1-10, T1-11         | Local             | Xong – PR #41 ([review](reviews/T1-16.md))                                                                                                 |
 | T1-17a | `HUONG_DAN_CMS.md` bản 1 + ảnh chụp (gồm 14 ảnh còn nợ của GĐ 0)                 | [HANA]   | T1-16                       | Local             | Xong – PR #43 ([review](reviews/T1-17a.md)); 25 ảnh do Planning chụp; nội dung Hana: để chỗ trống trong CMS, nhập tay hoặc Planning import |
 | T1-17e | Chuẩn bị cổng GĐ 1 phía code: spec axe, ảnh LCP, test bền, tìm gốc lỗi trang đơn |          | T1-13                       | PC nhà            | ✅ Merge 09/10 – PR #59 · 0,44 h ([review](reviews/T1-17e.md))                                                                             |
-| T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                                         | [HANA]   | tất cả, T1-17e              | PC nhà + Planning | Phần code: đạt (PR #61, 0,52 h, [review](reviews/T1-17b.md)) → Planning đo Lighthouse, axe có seed, e2e, chụp ảnh 26–27, chốt cổng         |
+| T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                                         | [HANA]   | tất cả, T1-17e              | PC nhà + Planning | ✅ Code: PR #61 (0,52 h) · Đo: Planning 10/10 – axe 0 lỗi, Lighthouse 94–96, gốc lỗi trang đơn ([review](reviews/T1-17b.md))               |
 | T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria, lỗi admin tiếng Việt)  |          | T1-16                       | Laptop            | Xong – PR #48 ([review](reviews/T1-17c.md))                                                                                                |
 | T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo)                            |          | PR #45                      | Local             | Xong – PR #47 ([review](reviews/T1-17d.md))                                                                                                |
+
+### GĐ 2 – Web 2 Habit MVP (`docs/tasks/GD2.md`)
+
+**Chuẩn bị** – chỉ mở task tính năng khi Hana xác nhận cổng GĐ 1. Chặn: **Q8** (cổng thanh toán → cổng GĐ 2), **Q9** (video), Q14 (bộ cảm xúc).
+
+| Mã    | Task                                           | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                       |
+| ----- | ---------------------------------------------- | -------- | ------------ | -------- | ------------------------------------------------ |
+| T2-00 | Cô lập unit test dùng chung DB                 |          | –            | Laptop   | Sẵn sàng – giao ngay (prompt `prompts/T2-00.md`) |
+| T2-01 | Đăng nhập khách bằng OTP email                 | [REVIEW] | cổng GĐ 1    | PC nhà   | Chờ cổng                                         |
+| T2-02 | Dịch vụ quyền truy cập (trial 21 ngày, active) | [REVIEW] | T2-01        | PC nhà   | Chờ cổng                                         |
+| T2-03 | Habit Loop 5 phút + trang offer                |          | cổng GĐ 1    | Local    | Chờ cổng                                         |
+| T2-04 | Luồng dùng thử 21 ngày, đổi CTA quiz           |          | T2-02, T2-03 | PC nhà   | Chờ cổng                                         |
+| T2-05 | Video bảo vệ + dashboard học                   | [REVIEW] | T2-02, Q9    | Laptop   | ⛔ Q9                                            |
+| T2-06 | Tracker 21 ngày + nhắc nhở                     |          | T2-02        | Local    | Chờ cổng (Q14 dùng mặc định)                     |
+| T2-07 | Chứng nhận 21 ngày                             |          | T2-06        | Local    | Chờ cổng                                         |
+| T2-08 | Mua công cụ số (xác nhận thủ công)             | [REVIEW] | T2-02        | PC nhà   | Chờ cổng                                         |
+| T2-09 | Webhook thanh toán tự động                     | [REVIEW] | T2-08, Q8    | PC nhà   | ⛔ Q8                                            |
+| T2-10 | Lịch workshop + nhắc 24 giờ                    |          | T2-01        | Laptop   | Chờ cổng                                         |
+| T2-11 | E2E luồng Habit + cổng GĐ 2                    | [HANA]   | tất cả       | Planning | –                                                |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 

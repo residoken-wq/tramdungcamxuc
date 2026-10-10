@@ -409,7 +409,7 @@ export function ExperienceBookingForm({
                   variant="primary"
                   size="lg"
                   disabled={status === 'submitting'}
-                  className="w-full py-3.5 text-base font-bold shadow-md hover:shadow-lg transition-all"
+                  className="w-full py-3.5 shadow-md hover:shadow-lg transition-all"
                 >
                   {status === 'submitting'
                     ? vi.payment.ui.booking.submittingButton

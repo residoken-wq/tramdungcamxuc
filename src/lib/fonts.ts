@@ -27,6 +27,8 @@ export const montserrat = localFont({
     },
   ],
   display: 'swap',
+  // Body/UI text is never the LCP; size-adjusted fallback avoids layout shift while it swaps in.
+  preload: false,
   variable: '--font-ui',
 })
 
@@ -35,5 +37,7 @@ export const playfair = localFont({
   weight: '400',
   style: 'italic',
   display: 'swap',
+  // Quote lines are never the LCP; skip preload so Anton (hero H1) gets the bandwidth first.
+  preload: false,
   variable: '--font-quote',
 })

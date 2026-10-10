@@ -75,11 +75,19 @@ export function resolveButtonClasses({
     'select-none cursor-pointer'
 
   const stateClasses =
-    disabled || isLoading
-      ? 'opacity-60 cursor-not-allowed pointer-events-none'
-      : ''
+    disabled || isLoading ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''
 
-  return [baseClasses, variantClass, sizeClass, stateClasses, className]
+  // Q13 Guardrail: white text on accent-pink only passes WCAG AA as large bold text, so a primary
+  // button ignores caller font sizes below the size class (text-xs / text-sm / text-base).
+  const safeClassName =
+    effectiveVariant === 'primary'
+      ? className
+          .split(/\s+/)
+          .filter((c) => !/^text-(xs|sm|base)$/.test(c))
+          .join(' ')
+      : className
+
+  return [baseClasses, variantClass, sizeClass, stateClasses, safeClassName]
     .filter(Boolean)
     .join(' ')
 }
@@ -93,80 +101,68 @@ function LoadingSpinner() {
       viewBox="0 0 24 24"
       aria-hidden="true"
     >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-      />
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
     </svg>
   )
 }
 
-export const Button = React.forwardRef<
-  HTMLButtonElement | HTMLAnchorElement,
-  ButtonProps
->(function Button(props, ref) {
-  const {
-    variant = 'primary',
-    size = 'md',
-    isLoading = false,
-    disabled = false,
-    className = '',
-    children,
-    ...rest
-  } = props
+export const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
+  function Button(props, ref) {
+    const {
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      disabled = false,
+      className = '',
+      children,
+      ...rest
+    } = props
 
-  const classes = resolveButtonClasses({
-    variant,
-    size,
-    isLoading,
-    disabled,
-    className,
-  })
+    const classes = resolveButtonClasses({
+      variant,
+      size,
+      isLoading,
+      disabled,
+      className,
+    })
 
-  // Nếu có href: render dạng thẻ Link của Next.js (không lồng button vào trong a hoặc ngược lại)
-  if ('href' in rest && typeof rest.href === 'string') {
-    const { href, ...anchorProps } = rest as ButtonAsLink
-    const validatedHref = safeHref(href)
-    if (!validatedHref) {
-      return null
+    // Nếu có href: render dạng thẻ Link của Next.js (không lồng button vào trong a hoặc ngược lại)
+    if ('href' in rest && typeof rest.href === 'string') {
+      const { href, ...anchorProps } = rest as ButtonAsLink
+      const validatedHref = safeHref(href)
+      if (!validatedHref) {
+        return null
+      }
+      return (
+        <Link
+          href={validatedHref}
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          className={classes}
+          aria-disabled={disabled || isLoading ? 'true' : undefined}
+          tabIndex={disabled || isLoading ? -1 : undefined}
+          {...anchorProps}
+        >
+          {isLoading && <LoadingSpinner />}
+          <span>{children}</span>
+        </Link>
+      )
     }
+
+    // Mặc định: render dạng thẻ <button>
+    const buttonProps = rest as ButtonAsButton
     return (
-      <Link
-        href={validatedHref}
-        ref={ref as React.Ref<HTMLAnchorElement>}
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type={buttonProps.type || 'button'}
         className={classes}
-        aria-disabled={disabled || isLoading ? 'true' : undefined}
-        tabIndex={disabled || isLoading ? -1 : undefined}
-        {...anchorProps}
+        disabled={disabled || isLoading}
+        aria-busy={isLoading ? 'true' : undefined}
+        {...buttonProps}
       >
         {isLoading && <LoadingSpinner />}
         <span>{children}</span>
-      </Link>
+      </button>
     )
-  }
-
-  // Mặc định: render dạng thẻ <button>
-  const buttonProps = rest as ButtonAsButton
-  return (
-    <button
-      ref={ref as React.Ref<HTMLButtonElement>}
-      type={buttonProps.type || 'button'}
-      className={classes}
-      disabled={disabled || isLoading}
-      aria-busy={isLoading ? 'true' : undefined}
-      {...buttonProps}
-    >
-      {isLoading && <LoadingSpinner />}
-      <span>{children}</span>
-    </button>
-  )
-})
+  },
+)

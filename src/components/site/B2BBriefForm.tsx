@@ -501,7 +501,7 @@ export function B2BBriefForm({
                 size="md"
                 isLoading={status === 'submitting'}
                 disabled={status === 'submitting'}
-                className="w-full text-base py-3"
+                className="w-full py-3"
               >
                 {status === 'submitting' ? vi.forms.b2b.submitting : submitLabel}
               </Button>
