@@ -331,7 +331,7 @@ export function LeadForm({
                 }}
                 aria-invalid={Boolean(errors.consent)}
                 aria-describedby={errors.consent ? consentErrorId : undefined}
-                className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-accent-pink accent-accent-pink focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
+                className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-bright-magenta accent-bright-magenta focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
               />
               <label
                 htmlFor={consentInputId}

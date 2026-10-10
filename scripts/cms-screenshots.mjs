@@ -243,4 +243,24 @@ await soft(
 await page.waitForTimeout(1500)
 await shot('25-thong-bao-loi-thuong-gap.png')
 
+// 26 – order detail: payment link in sidebar for admin-created orders
+const adminOrderId = await firstId('orders', '&where[createdByAdmin][equals]=true')
+const orderId = adminOrderId || (await firstId('orders'))
+if (orderId) {
+  await go(`/admin/collections/orders/${orderId}`)
+  await scrollTo('[data-testid="order-payment-link-copy"]', 'nút Sao chép link thanh toán')
+  await shot('26-link-thanh-toan-goi.png')
+}
+
+// 27 – service live preview: open preview pane on a service
+if (serviceId) {
+  await go(`/admin/collections/services/${serviceId}`)
+  await soft(
+    () => page.getByRole('button', { name: /Xem trước/i }).click({ timeout: 5000 }),
+    'nút Xem trước',
+  )
+  await page.waitForTimeout(2000)
+  await shot('27-xem-truoc-dich-vu.png')
+}
+
 await browser.close()

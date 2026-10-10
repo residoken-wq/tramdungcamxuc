@@ -173,11 +173,11 @@ export function ExperienceBookingForm({
 
             <div className="space-y-3 pt-2 text-xs text-deep-navy/75">
               <div className="flex items-start gap-2">
-                <span className="text-accent-pink font-bold">✓</span>
+                <span className="text-bright-magenta font-bold">✓</span>
                 <span>{vi.payment.ui.booking.featureVietQr}</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-accent-pink font-bold">✓</span>
+                <span className="text-bright-magenta font-bold">✓</span>
                 <span>{vi.payment.ui.booking.featureSchedule}</span>
               </div>
             </div>
@@ -226,7 +226,7 @@ export function ExperienceBookingForm({
               {/* Họ và tên */}
               <div className="space-y-1.5">
                 <label htmlFor={nameId} className="block text-sm font-semibold text-deep-navy">
-                  {vi.payment.ui.booking.nameLabel} <span className="text-accent-pink">*</span>
+                  {vi.payment.ui.booking.nameLabel} <span className="text-bright-magenta">*</span>
                 </label>
                 <input
                   id={nameId}
@@ -259,7 +259,7 @@ export function ExperienceBookingForm({
               {/* Email */}
               <div className="space-y-1.5">
                 <label htmlFor={emailId} className="block text-sm font-semibold text-deep-navy">
-                  {vi.payment.ui.booking.emailLabel} <span className="text-accent-pink">*</span>
+                  {vi.payment.ui.booking.emailLabel} <span className="text-bright-magenta">*</span>
                 </label>
                 <input
                   id={emailId}
@@ -358,7 +358,7 @@ export function ExperienceBookingForm({
                         setErrors((prev) => ({ ...prev, termsAccepted: undefined }))
                       }
                     }}
-                    className="mt-1 h-4 w-4 rounded border-lavender-mist text-accent-pink focus:ring-accent-pink cursor-pointer"
+                    className="mt-1 h-4 w-4 rounded border-lavender-mist text-bright-magenta focus:ring-bright-magenta cursor-pointer"
                   />
                   <label
                     htmlFor={termsId}
@@ -369,7 +369,7 @@ export function ExperienceBookingForm({
                       href="/dieu-khoan-su-dung"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-accent-pink font-semibold underline hover:text-bright-magenta"
+                      className="text-bright-magenta font-semibold underline hover:text-deep-navy"
                     >
                       {vi.payment.ui.booking.termsLink}
                     </Link>{' '}
@@ -378,11 +378,12 @@ export function ExperienceBookingForm({
                       href="/gia-thanh-toan"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-accent-pink font-semibold underline hover:text-bright-magenta"
+                      className="text-bright-magenta font-semibold underline hover:text-deep-navy"
                     >
                       {vi.payment.ui.booking.pricingPolicyLink}
                     </Link>{' '}
-                    {vi.payment.ui.booking.termsSuffix} <span className="text-accent-pink">*</span>
+                    {vi.payment.ui.booking.termsSuffix}{' '}
+                    <span className="text-bright-magenta">*</span>
                   </label>
                 </div>
                 {errors.termsAccepted && (

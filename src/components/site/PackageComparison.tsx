@@ -321,7 +321,7 @@ export function PackageComparison({
               <div>
                 <Link
                   href="/gia-thanh-toan"
-                  className="inline-flex items-center gap-1 font-semibold text-bright-magenta hover:text-accent-pink hover:underline transition-colors"
+                  className="inline-flex items-center gap-1 font-semibold text-bright-magenta hover:text-deep-navy hover:underline transition-colors"
                 >
                   {vi.builder.packageComparison?.paymentPolicyLabel ||
                     'Xem Chính sách giá & thanh toán'}

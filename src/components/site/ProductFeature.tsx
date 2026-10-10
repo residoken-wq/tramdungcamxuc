@@ -178,7 +178,10 @@ export function ProductFeature({
                     if (!text) return null
                     return (
                       <li key={index} className="flex items-start gap-2">
-                        <span className="text-accent-pink font-bold mt-0.5" aria-hidden="true">
+                        <span
+                          className={`${isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'} font-bold mt-0.5`}
+                          aria-hidden="true"
+                        >
                           ✓
                         </span>
                         <span className={isDeepNavy ? 'text-white/90' : 'text-deep-navy/90'}>
