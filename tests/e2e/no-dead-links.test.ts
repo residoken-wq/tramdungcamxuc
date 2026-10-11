@@ -84,7 +84,7 @@ test.describe('No dead links & Coming soon lead form (T1-18)', () => {
     )
     expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
 
-    const slug = `sap-ra-mat-test-${randomUUID()}`
+    const slug = `sap-ra-mat-test-${randomUUID().slice(0, 8)}`
     const productName = `Công cụ thử ${randomUUID().slice(0, 8)}`
     const leadEmail = `lead-${randomUUID().slice(0, 8)}@example.test`
     let userId: number | undefined

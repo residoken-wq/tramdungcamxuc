@@ -88,7 +88,7 @@ export const vi = {
       timelineMax: 'Thời gian dự kiến không được vượt quá 100 ký tự',
       targetBehaviorsMax: 'Hành vi mục tiêu không được vượt quá 1000 ký tự',
       interestTagsMaxCount: 'Tối đa 10 thẻ quan tâm',
-      interestTagMaxLength: 'Mỗi thẻ quan tâm không được vượt quá 50 ký tự',
+      interestTagMaxLength: 'Mỗi thẻ quan tâm không được vượt quá 120 ký tự',
       tokenMax: 'Mã xác thực vượt quá độ dài cho phép',
       resourceSlugRequired: 'Thiếu thông tin tài nguyên cần tải',
     },
