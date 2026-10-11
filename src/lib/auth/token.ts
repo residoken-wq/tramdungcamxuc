@@ -12,12 +12,24 @@ export interface CustomerTokenPayload {
 }
 
 /**
+ * REVIEW-REQUIRED: Resolves PAYLOAD_SECRET for customer authentication and hashing.
+ * Strictly throws if unset or empty to prevent fallback to insecure hardcoded defaults.
+ */
+export function getAuthSecret(): string {
+  const secret = process.env.PAYLOAD_SECRET
+  if (!secret || !secret.trim()) {
+    throw new Error('PAYLOAD_SECRET environment variable is missing or empty')
+  }
+  return secret
+}
+
+/**
  * Signs a JWT-compatible session token for a customer using HMAC-SHA256 and PAYLOAD_SECRET.
  * Implemented with node:crypto without external dependencies.
  */
 export function signCustomerToken(
   customer: { id: number; email: string },
-  secret: string,
+  secret: string = getAuthSecret(),
   expiresInSeconds: number = DEFAULT_CUSTOMER_SESSION_EXPIRATION,
 ): string {
   if (!secret) {
@@ -48,7 +60,7 @@ export function signCustomerToken(
  */
 export function verifyCustomerToken(
   token: string | null | undefined,
-  secret: string,
+  secret: string = getAuthSecret(),
 ): CustomerTokenPayload | null {
   if (!token || typeof token !== 'string' || !secret) {
     return null

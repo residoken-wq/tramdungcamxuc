@@ -1,9 +1,9 @@
 import type { AuthStrategy } from 'payload'
 import { parseCookies } from 'payload'
-import { CUSTOMER_TOKEN_COOKIE, verifyCustomerToken } from './token'
+import { CUSTOMER_TOKEN_COOKIE, getAuthSecret, verifyCustomerToken } from './token'
 
 // REVIEW-REQUIRED: Custom auth strategy cho collection `customers` trong Payload 3.
-// Khách xác thực qua cookie riêng `tdcx_customer_token` ký bằng PAYLOAD_SECRET.
+// Khách xác thực qua cookie riêng `tdcx_customer_token` ký bằng PAYLOAD_SECRET (qua getAuthSecret).
 // Khi hợp lệ, gắn req.user với collection: 'customers', tách bạch tuyệt đối khỏi admin ('users').
 export const customerAuthStrategy: AuthStrategy = {
   name: 'customer-auth',
@@ -15,7 +15,7 @@ export const customerAuthStrategy: AuthStrategy = {
         return { user: null }
       }
 
-      const secret = payload.secret || process.env.PAYLOAD_SECRET || ''
+      const secret = getAuthSecret()
       const verified = verifyCustomerToken(token, secret)
       if (!verified) {
         return { user: null }

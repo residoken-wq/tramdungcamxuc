@@ -7,6 +7,7 @@ import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import type { Customer, Order } from '../../src/payload-types'
 import { isAdminUser } from '../../src/lib/auth/access'
+import { getAuthSecret, signCustomerToken } from '../../src/lib/auth/token'
 
 describe('Customer Access Control & Permissions (T2-01)', () => {
   let payload: Payload
@@ -117,8 +118,37 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
     }
   })
 
+  const getRealCustomerSession = async (customer: Customer) => {
+    const token = signCustomerToken({ id: customer.id, email: customer.email })
+    const headers = new Headers({ cookie: `tdcx_customer_token=${token}` })
+    const authResult = await payload.auth({ headers })
+    if (!authResult.user) throw new Error('Failed to authenticate customer session')
+    return authResult.user
+  }
+
+  it('authenticates customer via real session cookie and resolves customer identity (A1)', async () => {
+    const rawSecret = process.env.PAYLOAD_SECRET || ''
+    const tokenA = signCustomerToken({ id: customerA.id, email: customerA.email }, rawSecret)
+    const headers = new Headers({ cookie: `tdcx_customer_token=${tokenA}` })
+    const authResult = await payload.auth({ headers })
+
+    expect(authResult.user).not.toBeNull()
+    expect(authResult.user?.id).toBe(customerA.id)
+    expect(authResult.user?.collection).toBe('customers')
+  })
+
+  it('throws an error if PAYLOAD_SECRET is unset or empty instead of using a fallback (B5)', () => {
+    const originalSecret = process.env.PAYLOAD_SECRET
+    try {
+      delete process.env.PAYLOAD_SECRET
+      expect(() => getAuthSecret()).toThrow(/PAYLOAD_SECRET/)
+    } finally {
+      process.env.PAYLOAD_SECRET = originalSecret
+    }
+  })
+
   it('customer A can read their own order but cannot read customer B order', async () => {
-    const userA = { ...customerA, collection: 'customers' as const }
+    const userA = await getRealCustomerSession(customerA)
 
     // Query orders as Customer A
     const resA = await payload.find({
@@ -133,7 +163,7 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
   })
 
   it('customer A can read their own profile but cannot read customer B profile', async () => {
-    const userA = { ...customerA, collection: 'customers' as const }
+    const userA = await getRealCustomerSession(customerA)
 
     // Query customers as Customer A
     const resCustomers = await payload.find({
@@ -148,7 +178,7 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
   })
 
   it('customer cannot update order paymentStatus', async () => {
-    const userA = { ...customerA, collection: 'customers' as const }
+    const userA = await getRealCustomerSession(customerA)
 
     // Customer attempting to update an order fails access control
     await expect(
@@ -171,7 +201,7 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
   })
 
   it('customer cannot create or update entitlements', async () => {
-    const userA = { ...customerA, collection: 'customers' as const }
+    const userA = await getRealCustomerSession(customerA)
 
     // Attempting to create entitlement as customer fails
     await expect(
@@ -190,7 +220,7 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
   })
 
   it('customer cannot update their own email or consentAt timestamp', async () => {
-    const userA = { ...customerA, collection: 'customers' as const }
+    const userA = await getRealCustomerSession(customerA)
     const originalEmail = customerA.email
     const originalConsentAt = customerA.consentAt
 
@@ -217,8 +247,8 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
     expect(refreshed.consentAt).toBe(originalConsentAt)
   })
 
-  it('customer is strictly rejected from admin access (/admin is users-only)', () => {
-    const userA = { ...customerA, collection: 'customers' as const }
+  it('customer is strictly rejected from admin access (/admin is users-only)', async () => {
+    const userA = await getRealCustomerSession(customerA)
 
     // 1. Check isAdminUser helper
     expect(isAdminUser(userA)).toBe(false)

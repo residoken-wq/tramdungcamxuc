@@ -6,6 +6,7 @@ import type { Customer } from '@/payload-types'
 import {
   CUSTOMER_TOKEN_COOKIE,
   DEFAULT_CUSTOMER_SESSION_EXPIRATION,
+  getAuthSecret,
   verifyCustomerToken,
 } from './token'
 
@@ -48,7 +49,7 @@ export async function getCurrentCustomer(injectedPayload?: Payload): Promise<Cus
   const token = await getCurrentCustomerToken()
   if (!token) return null
 
-  const secret = process.env.PAYLOAD_SECRET || 'tramdungcamxuc-default-secret'
+  const secret = getAuthSecret()
   const verified = verifyCustomerToken(token, secret)
   if (!verified) return null
 

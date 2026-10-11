@@ -10,7 +10,7 @@ import { checkAndRecordRateLimit } from '../forms/ratelimit.server'
 import { verifyTurnstile } from '../forms/turnstile.server'
 import { sendCustomerOtpEmail } from '../email/service.server'
 import type { EmailSender } from '../email/types'
-import { signCustomerToken } from './token'
+import { getAuthSecret, signCustomerToken } from './token'
 
 export interface OtpContext {
   ip?: string
@@ -95,7 +95,7 @@ function getDrizzleDb(payload: Payload): DrizzleDbExecutor | null {
 }
 
 export function computeOtpHash(email: string, code: string): string {
-  const secret = process.env.PAYLOAD_SECRET || 'tramdungcamxuc-default-secret'
+  const secret = getAuthSecret()
   return createHmac('sha256', secret)
     .update(`${email.trim().toLowerCase()}:${code.trim()}`)
     .digest('hex')
@@ -359,7 +359,7 @@ export async function verifyOtp(
   }
 
   // Sign session token
-  const secret = process.env.PAYLOAD_SECRET || 'tramdungcamxuc-default-secret'
+  const secret = getAuthSecret()
   const token = signCustomerToken(
     {
       id: Number(customer.id),
