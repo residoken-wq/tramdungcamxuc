@@ -1,7 +1,7 @@
 import type { CollectionConfig, Field } from 'payload'
 import { checkbox, number, relation, select, textarea } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
-import { isEditorOrOwner, isOwner, ownerOrSelfCustomerField } from '../lib/auth/access'
+import { adminOrSelfCustomerPlan, isOwner, ownerOrSelfCustomerField } from '../lib/auth/access'
 import { EMOTIONS } from '../lib/emotions'
 
 // REVIEW-REQUIRED: One check-in per plan and day (DB unique index on planDay + hook).
@@ -11,9 +11,9 @@ export const HabitCheckins: CollectionConfig = {
   labels: { singular: 'Check-in 21 ngày', plural: 'Check-in 21 ngày' },
   admin: { group: 'Khóa học', defaultColumns: ['plan', 'day', 'done'] },
   access: {
-    read: isEditorOrOwner,
-    create: isEditorOrOwner,
-    update: isEditorOrOwner,
+    read: adminOrSelfCustomerPlan,
+    create: adminOrSelfCustomerPlan,
+    update: adminOrSelfCustomerPlan,
     delete: isOwner,
   },
   hooks: {

@@ -4,10 +4,12 @@ export type AdminRole = 'owner' | 'editor'
 
 type MaybeUser = PayloadRequest['user']
 
-// Customers become an auth collection in GĐ 2 (OTP); until then the type of req.user only knows
-// `users`, so the customer branch below compares the slug as a plain string.
-const isCustomer = (user: MaybeUser): boolean =>
-  (user as { collection?: string } | null | undefined)?.collection === 'customers'
+// REVIEW-REQUIRED: Only documents of the `customers` collection are customers (GĐ 2 OTP).
+export function isCustomerUser(user: MaybeUser): boolean {
+  return Boolean(user && user.collection === 'customers')
+}
+
+export const isCustomer: Access & FieldAccess = ({ req }) => isCustomerUser(req.user)
 
 // REVIEW-REQUIRED: Only documents of the `users` collection are admins; customers (GĐ 2 OTP)
 // authenticate through a different collection and must never pass these checks.
@@ -38,18 +40,37 @@ export const adminOrSelfCustomer =
   (field = 'customer'): Access =>
   ({ req }) => {
     if (isAdminUser(req.user)) return true
-    if (isCustomer(req.user)) return { [field]: { equals: req.user!.id } } as Where
+    if (isCustomerUser(req.user)) return { [field]: { equals: req.user!.id } } as Where
     return false
   }
+
+// REVIEW-REQUIRED: Admins see everything; a signed-in customer only rows whose
+// relation 'plan' points to a plan owned by themselves.
+export const adminOrSelfCustomerPlan: Access = ({ req }) => {
+  if (isAdminUser(req.user)) return true
+  if (isCustomerUser(req.user)) return { 'plan.customer': { equals: req.user!.id } } as Where
+  return false
+}
 
 // REVIEW-REQUIRED: Sensitive emotional data (check-in emotion/note, card reflections) is hidden
 // from editors; owners and the customer who wrote it can read it.
 export const ownerOrSelfCustomerField: FieldAccess = ({ req, doc }) => {
   if (isOwnerUser(req.user)) return true
-  if (isCustomer(req.user)) {
+  if (isCustomerUser(req.user)) {
     const owner = (doc as { customer?: unknown } | undefined)?.customer
-    const ownerId = typeof owner === 'object' && owner ? (owner as { id?: unknown }).id : owner
-    return ownerId === req.user!.id
+    if (owner !== undefined) {
+      const ownerId = typeof owner === 'object' && owner ? (owner as { id?: unknown }).id : owner
+      return ownerId === req.user!.id
+    }
+    const plan = (doc as { plan?: unknown } | undefined)?.plan
+    if (plan && typeof plan === 'object' && 'customer' in plan) {
+      const planCustomer = (plan as { customer?: unknown }).customer
+      const planCustomerId =
+        typeof planCustomer === 'object' && planCustomer
+          ? (planCustomer as { id?: unknown }).id
+          : planCustomer
+      return planCustomerId === req.user!.id
+    }
   }
   return false
 }
