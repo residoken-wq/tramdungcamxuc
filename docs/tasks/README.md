@@ -148,7 +148,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                                         | [HANA]   | tất cả, T1-17e              | PC nhà + Planning | ✅ Code: PR #61 (0,52 h) · Đo: Planning 10/10 – axe 0 lỗi, Lighthouse 94–96, gốc lỗi trang đơn ([review](reviews/T1-17b.md))               |
 | T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria, lỗi admin tiếng Việt)  |          | T1-16                       | Laptop            | Xong – PR #48 ([review](reviews/T1-17c.md))                                                                                                |
 | T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo)                            |          | PR #45                      | Local             | Xong – PR #47 ([review](reviews/T1-17d.md))                                                                                                |
-| T1-18  | Hết link chết từ nút sản phẩm (`/sap-ra-mat`, công cụ số miễn phí)               |          | –                           | Laptop            | Sẵn sàng – sau T2-12 (prompt `prompts/T1-18.md`). Nút đặt phiên 149k đã sửa: PR #68                                                        |
+| T1-18  | Hết link chết từ nút sản phẩm (`/sap-ra-mat`, công cụ số miễn phí)               |          | –                           | Laptop            | ✅ Merge 11/10 – PR #74, Planning sửa e2e tự tạo dữ liệu + giới hạn thẻ lead 120 ký tự ([review](reviews/T1-18.md))                        |
 
 ### GĐ 2 – Web 2 Habit MVP (`docs/tasks/GD2.md`)
 
