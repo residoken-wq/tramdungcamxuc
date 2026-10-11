@@ -9,7 +9,7 @@ export interface EffectivePrice {
 
 export type ProductPricingInput = Partial<Pick<Product, 'price' | 'salePrice' | 'saleEndsAt'>>
 
-export type ProductCtaKind = 'external' | 'notify' | 'trial' | 'buy' | 'free' | 'consult'
+export type ProductCtaKind = 'external' | 'internal' | 'notify' | 'trial' | 'buy' | 'free' | 'consult'
 
 export interface ProductCta {
   kind: ProductCtaKind
@@ -188,14 +188,19 @@ export function getEffectivePrice(product: ProductPricingInput, now: Date): Effe
 }
 
 /**
- * Xác định cấu hình nút kêu gọi hành động (CTA) cho sản phẩm theo thứ tự ưu tiên (bảng AGENTS.md 8.1):
+ * Xác định cấu hình nút kêu gọi hành động (CTA) cho sản phẩm theo thứ tự ưu tiên (bảng AGENTS.md 8.1 & T1-18):
  *
  * 1. `saleStatus === 'hidden'` -> null (không hiển thị).
- * 2. Có `externalUrl` (và không hidden) -> loại `external`, mở link ngoài an toàn (`safeHref`), ghi sự kiện `external_clicked`.
+ * 2. Có `externalUrl` (và không hidden):
+ *    - Bắt đầu bằng `/` -> loại `internal`, mở cùng tab, không ghi `external_clicked`, không gắn UTM.
+ *      Nhãn: `ctaLabel` -> `externalLabel` -> nhãn mặc định theo `saleStatus`.
+ *    - Bắt đầu bằng link ngoài (`https://`, `http://`...) -> loại `external`, mở tab mới an toàn (`safeHref`), ghi sự kiện `external_clicked`.
  * 3. `saleStatus === 'coming_soon'` -> loại `notify`, dẫn tới `/sap-ra-mat?san-pham=<slug>`.
  * 4. `saleStatus === 'on_sale'` + `trialDays > 0` -> loại `trial`, dẫn tới `/sap-ra-mat?san-pham=<slug>&loai=dung-thu`.
  * 5. `saleStatus === 'on_sale'` (trialDays <= 0 hoặc không có) -> loại `buy`, dẫn tới `/thanh-toan?san-pham=<slug>`.
- * 6. `saleStatus === 'free'` -> loại `free`, dẫn tới `/tai-nguyen/<slug>`.
+ * 6. `saleStatus === 'free'`:
+ *    - Nếu `type === 'ebook'` hoặc `type === 'toolkit'` -> loại `free`, dẫn tới `/tai-nguyen/<slug>`.
+ *    - Các loại khác (công cụ số `digital_tool`...) không có `externalUrl` -> null (ẩn nút, tránh link 404 chết).
  * 7. `saleStatus === 'consult'` -> loại `consult`, dẫn tới `/coaching/<slug>` nếu là coaching/package, ngược lại `/doanh-nghiep`.
  *
  * Nhãn nút:
@@ -215,9 +220,33 @@ export function resolveProductCta(product: ProductCtaInput, _now?: Date): Produc
   // 2. Có externalUrl (và không hidden)
   if (externalUrl && typeof externalUrl === 'string' && externalUrl.trim().length > 0) {
     const safeExternalHref = safeHref(externalUrl)
-    // externalUrl không hợp lệ hoặc chứa mã độc (javascript:) sẽ bị chặn an toàn
+    // externalUrl không hợp lệ hoặc chứa mã độc (javascript:, //, /\) sẽ bị chặn an toàn
     if (!safeExternalHref) {
       return null
+    }
+
+    // Nếu bắt đầu bằng '/' -> đường dẫn nội bộ trong web (internal)
+    if (safeExternalHref.startsWith('/')) {
+      const defaultInternalLabel = (() => {
+        if (saleStatus === 'free') return vi.product.cta.free
+        if (saleStatus === 'coming_soon') return vi.product.cta.notify
+        if (saleStatus === 'on_sale') {
+          return typeof trialDays === 'number' && trialDays > 0
+            ? vi.product.cta.trial(trialDays)
+            : vi.product.cta.buy
+        }
+        if (saleStatus === 'consult') return vi.product.cta.consult
+        return vi.product.cta.free
+      })()
+
+      const label = customLabel || externalLabel?.trim() || defaultInternalLabel
+
+      return {
+        kind: 'internal',
+        label,
+        href: safeExternalHref,
+        external: false,
+      }
     }
 
     const label = customLabel || externalLabel?.trim() || vi.product.cta.external

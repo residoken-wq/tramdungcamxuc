@@ -14,6 +14,7 @@ import {
   text,
   textarea,
   url,
+  internalOrExternalUrl,
 } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
 import { computePackageValue } from '../lib/pricing'
@@ -105,7 +106,7 @@ export const Products: CollectionConfig = {
       ...number('accessDurationDays', 'Số ngày sử dụng'),
       admin: { description: 'Để trống nếu sử dụng vĩnh viễn.' },
     },
-    url('externalUrl', 'Liên kết bán bên ngoài'),
+    internalOrExternalUrl('externalUrl', 'Liên kết của nút (ngoài web hoặc trong web)'),
     text('externalLabel', 'Nhãn liên kết ngoài'),
     {
       name: 'components',

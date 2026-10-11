@@ -126,6 +126,35 @@ export const url = (name: string, label: string): SingleTextField => ({
     }
   },
 })
+export const internalOrExternalUrl = (name: string, label: string): SingleTextField => ({
+  ...text(name, label),
+  admin: {
+    description:
+      'Link Shopee… bắt đầu bằng https://, hoặc trang trong web bắt đầu bằng / (VD: /habit/chan-doan).',
+  },
+  validate: (value: string | null | undefined) => {
+    if (!value || typeof value !== 'string' || value.trim().length === 0) return true
+    const trimmed = value.trim()
+    // Chặn protocol-relative URL
+    if (trimmed.startsWith('//') || trimmed.startsWith('/\\')) {
+      return 'Liên kết nội bộ không được bắt đầu bằng // hoặc /\\.'
+    }
+    // Đường dẫn nội bộ bắt đầu bằng một dấu /
+    if (trimmed.startsWith('/')) {
+      return true
+    }
+    // Link ngoài phải bắt đầu bằng https:// hoặc http://
+    try {
+      const urlObj = new URL(trimmed)
+      return (
+        ['https:', 'http:'].includes(urlObj.protocol) ||
+        'Liên kết phải bắt đầu bằng https:// hoặc đường dẫn trong web bắt đầu bằng /.'
+      )
+    } catch {
+      return 'Vui lòng nhập liên kết hợp lệ (bắt đầu bằng https:// hoặc /).'
+    }
+  },
+})
 export const slug = (allowSlash = false): SingleTextField => ({
   ...text('slug', 'Đường dẫn', true),
   unique: true,
