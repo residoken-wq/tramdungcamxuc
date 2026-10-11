@@ -365,5 +365,22 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
       expect(getSafeRedirectUrl(null)).toBe('/tai-khoan')
       expect(getSafeRedirectUrl(undefined)).toBe('/tai-khoan')
     })
+
+    it('disallows control character and encoded bypasses in getSafeRedirectUrl (A2)', () => {
+      // Direct and URL-encoded control characters (tab, newline, carriage return)
+      expect(getSafeRedirectUrl('/%09/evil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/\t/evil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/%0a/evil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/\n/evil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/%0d/evil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/\r/evil.com')).toBe('/tai-khoan')
+
+      // Encoded backslash / slash traversal
+      expect(getSafeRedirectUrl('/%5c/evil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/%2f/evil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/%2f%2fevil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/%5c%5cevil.com')).toBe('/tai-khoan')
+      expect(getSafeRedirectUrl('/%00')).toBe('/tai-khoan')
+    })
   })
 })
