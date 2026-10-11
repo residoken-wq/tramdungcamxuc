@@ -16,11 +16,15 @@ test.describe('No dead links & Coming soon lead form (T1-18)', () => {
       await page.goto(url, { waitUntil: 'domcontentloaded' })
 
       // Gom toàn bộ liên kết bắt đầu bằng '/'
-      const links = await page.locator('a[href^="/"]').evaluateAll((anchors: HTMLAnchorElement[]) =>
-        anchors
-          .map((a) => a.getAttribute('href') || '')
-          .filter((href) => href.startsWith('/') && !href.startsWith('//') && !href.startsWith('/\\')),
-      )
+      const links = await page
+        .locator('a[href^="/"]')
+        .evaluateAll((anchors: HTMLAnchorElement[]) =>
+          anchors
+            .map((a) => a.getAttribute('href') || '')
+            .filter(
+              (href) => href.startsWith('/') && !href.startsWith('//') && !href.startsWith('/\\'),
+            ),
+        )
 
       for (const href of links) {
         // Loại trừ luồng checkout /thanh-toan? (T2-08 chưa làm)

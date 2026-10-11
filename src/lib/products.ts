@@ -9,7 +9,8 @@ export interface EffectivePrice {
 
 export type ProductPricingInput = Partial<Pick<Product, 'price' | 'salePrice' | 'saleEndsAt'>>
 
-export type ProductCtaKind = 'external' | 'internal' | 'notify' | 'trial' | 'buy' | 'free' | 'consult'
+export type ProductCtaKind =
+  'external' | 'internal' | 'notify' | 'trial' | 'buy' | 'free' | 'consult'
 
 export interface ProductCta {
   kind: ProductCtaKind
