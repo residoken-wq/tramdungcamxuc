@@ -26,6 +26,7 @@ export interface DiagnosticResultData {
   topStage: HabitStage
   secondaryStage: HabitStage | null
   scores: Record<HabitStage, number>
+  averageScores: Record<HabitStage, number>
   suggestions: DiagnosticSuggestionItem[]
   secondarySuggestions: DiagnosticSuggestionItem[]
   ctaHref: string
@@ -143,7 +144,7 @@ export async function submitDiagnostic(
 
   // 4. CHẤM LẠI ĐIỂM PHÍA SERVER (Không tin điểm client gửi)
   const scoreResult: DiagnosticScoreResult = scoreDiagnostic(validated.answers, allQuestions)
-  const { topStage, secondaryStage, scores } = scoreResult
+  const { topStage, secondaryStage, scores, averageScores } = scoreResult
 
   // 5. Trích xuất gợi ý (suggestion) cho topStage (và secondaryStage nếu có)
   const suggestions = selectDiagnosticSuggestions(topStage, allQuestions, validated.answers)
@@ -208,6 +209,7 @@ export async function submitDiagnostic(
       topStage,
       secondaryStage,
       scores,
+      averageScores,
       suggestions,
       secondarySuggestions,
       ctaHref: GROWTH_MIRROR_PATH,
