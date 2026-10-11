@@ -449,7 +449,7 @@ export interface Product {
    */
   accessDurationDays?: number | null;
   /**
-   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   * Link Shopee… bắt đầu bằng https://, hoặc trang trong web bắt đầu bằng / (VD: /habit/chan-doan).
    */
   externalUrl?: string | null;
   /**

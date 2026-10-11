@@ -155,6 +155,54 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
       expect(resolveProductCta(maliciousProduct, fixedNow)).toBeNull()
     })
 
+    it('blocks dangerous protocol-relative URLs (//evil.com and /\\evil.com) and returns null', () => {
+      const product1: ProductCtaInput = {
+        slug: 'doc-hai-1',
+        saleStatus: 'on_sale',
+        externalUrl: '//evil.com',
+      }
+      expect(resolveProductCta(product1, fixedNow)).toBeNull()
+
+      const product2: ProductCtaInput = {
+        slug: 'doc-hai-2',
+        saleStatus: 'on_sale',
+        externalUrl: '/\\evil.com',
+      }
+      expect(resolveProductCta(product2, fixedNow)).toBeNull()
+    })
+
+    it('returns internal CTA for internal paths starting with /', () => {
+      const product: ProductCtaInput = {
+        slug: 'chan-doan-diem-ket-thoi-quen',
+        saleStatus: 'free',
+        externalUrl: '/habit/chan-doan',
+      }
+      expect(resolveProductCta(product, fixedNow)).toEqual({
+        kind: 'internal',
+        label: vi.product.cta.free,
+        href: '/habit/chan-doan',
+        external: false,
+      })
+    })
+
+    it('opens in same tab without external_clicked event for internal path', () => {
+      const product: ProductCtaInput = {
+        slug: 'chan-doan-diem-ket-thoi-quen',
+        saleStatus: 'free',
+        externalUrl: '/habit/chan-doan',
+        externalLabel: 'Làm bài chẩn đoán',
+      }
+      const cta = resolveProductCta(product, fixedNow)
+      expect(cta).toEqual({
+        kind: 'internal',
+        label: 'Làm bài chẩn đoán',
+        href: '/habit/chan-doan',
+        external: false,
+      })
+      expect(cta?.external).toBe(false)
+      expect(cta?.event).toBeUndefined()
+    })
+
     it('overrides label with ctaLabel when provided', () => {
       const product: ProductCtaInput = {
         slug: 'the-eq-vat-ly',
@@ -267,15 +315,51 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
 
   // Branch 6: free
   describe('Branch 6: free', () => {
-    it('returns free CTA with /tai-nguyen URL', () => {
-      const product: ProductCtaInput = {
+    it('returns free CTA with /tai-nguyen URL for ebook and toolkit', () => {
+      const ebookProduct: ProductCtaInput = {
         slug: 'ebook-tu-nhan-thuc',
         saleStatus: 'free',
+        type: 'ebook',
       }
-      expect(resolveProductCta(product, fixedNow)).toEqual({
+      expect(resolveProductCta(ebookProduct, fixedNow)).toEqual({
         kind: 'free',
         label: vi.product.cta.free,
         href: '/tai-nguyen/ebook-tu-nhan-thuc',
+      })
+
+      const toolkitProduct: ProductCtaInput = {
+        slug: 'bo-cong-cu-eq',
+        saleStatus: 'free',
+        type: 'toolkit',
+      }
+      expect(resolveProductCta(toolkitProduct, fixedNow)).toEqual({
+        kind: 'free',
+        label: vi.product.cta.free,
+        href: '/tai-nguyen/bo-cong-cu-eq',
+      })
+    })
+
+    it('returns null (hides button) for free digital_tool without externalUrl', () => {
+      const digitalToolProduct: ProductCtaInput = {
+        slug: 'habit-loop-5-phut',
+        saleStatus: 'free',
+        type: 'digital_tool',
+      }
+      expect(resolveProductCta(digitalToolProduct, fixedNow)).toBeNull()
+    })
+
+    it('returns internal CTA for free digital_tool WITH externalUrl', () => {
+      const productWithLink: ProductCtaInput = {
+        slug: 'chan-doan-diem-ket-thoi-quen',
+        saleStatus: 'free',
+        type: 'digital_tool',
+        externalUrl: '/habit/chan-doan',
+      }
+      expect(resolveProductCta(productWithLink, fixedNow)).toEqual({
+        kind: 'internal',
+        label: vi.product.cta.free,
+        href: '/habit/chan-doan',
+        external: false,
       })
     })
 
@@ -283,6 +367,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
       const product: ProductCtaInput = {
         slug: 'ebook-tu-nhan-thuc',
         saleStatus: 'free',
+        type: 'ebook',
         ctaLabel: 'Tải ebook miễn phí',
       }
       expect(resolveProductCta(product, fixedNow)?.label).toBe('Tải ebook miễn phí')

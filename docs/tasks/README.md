@@ -148,7 +148,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T1-17b | QA tổng: E2E, Lighthouse, axe, cổng GĐ 1                                         | [HANA]   | tất cả, T1-17e              | PC nhà + Planning | ✅ Code: PR #61 (0,52 h) · Đo: Planning 10/10 – axe 0 lỗi, Lighthouse 94–96, gốc lỗi trang đơn ([review](reviews/T1-17b.md))               |
 | T1-17c | Sửa giao diện còn tồn (ảnh bìa trống, chữ cứng, alt/aria, lỗi admin tiếng Việt)  |          | T1-16                       | Laptop            | Xong – PR #48 ([review](reviews/T1-17c.md))                                                                                                |
 | T1-17d | Địa chỉ site đọc lúc chạy (link email đúng trên demo)                            |          | PR #45                      | Local             | Xong – PR #47 ([review](reviews/T1-17d.md))                                                                                                |
-| T1-18  | Hết link chết từ nút sản phẩm (`/sap-ra-mat`, công cụ số miễn phí)               |          | –                           | Laptop            | Sẵn sàng – sau T2-12 (prompt `prompts/T1-18.md`). Nút đặt phiên 149k đã sửa: PR #68                                                        |
+| T1-18  | Hết link chết từ nút sản phẩm (`/sap-ra-mat`, công cụ số miễn phí)               |          | –                           | Laptop            | ✅ Merge 11/10 – PR #74, Planning sửa e2e tự tạo dữ liệu + giới hạn thẻ lead 120 ký tự ([review](reviews/T1-18.md))                        |
 
 ### GĐ 2 – Web 2 Habit MVP (`docs/tasks/GD2.md`)
 
@@ -158,22 +158,22 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **Thứ tự máy (từ 11/10)**: Laptop = T2-00 → T2-12 → T1-18 → T2-10 · PC nhà = T2-01 → T2-13 (chen khi T2-01 chờ IT duyệt) → T2-02 (sau khi T2-01 merge) · Local = T2-03.
 
-| Mã    | Task                                           | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                                         |
-| ----- | ---------------------------------------------- | -------- | ------------ | -------- | ------------------------------------------------------------------ |
-| T2-00 | Cô lập unit test dùng chung DB                 |          | –            | Laptop   | Sẵn sàng – giao ngay (prompt `prompts/T2-00.md`)                   |
-| T2-01 | Đăng nhập khách bằng OTP email                 | [REVIEW] | cổng GĐ 1    | PC nhà   | Sẵn sàng – Antigravity@PC nhà (prompt `prompts/T2-01.md`)          |
-| T2-02 | Dịch vụ quyền truy cập (trial 21 ngày, active) | [REVIEW] | T2-01        | PC nhà   | Chờ T2-01 merge (prompt `prompts/T2-02.md`)                        |
-| T2-03 | Habit Loop 5 phút + trang offer                |          | cổng GĐ 1    | Local    | Sẵn sàng – Local (từ 11/10; prompt khi giao)                       |
-| T2-04 | Luồng dùng thử 21 ngày, đổi CTA quiz           |          | T2-02, T2-03 | PC nhà   | Chờ T2-02, T2-03                                                   |
-| T2-05 | Video bảo vệ + dashboard học                   | [REVIEW] | T2-02        | Laptop   | Chờ T2-02 + tài khoản Bunny                                        |
-| T2-06 | Tracker 21 ngày + nhắc nhở                     |          | T2-02        | Local    | Chờ T2-02                                                          |
-| T2-07 | Chứng nhận 21 ngày                             |          | T2-06        | Local    | Chờ T2-06                                                          |
-| T2-08 | Mua công cụ số (xác nhận thủ công)             | [REVIEW] | T2-02        | PC nhà   | Chờ T2-02                                                          |
-| T2-09 | Webhook thanh toán tự động                     | [REVIEW] | T2-08        | PC nhà   | Chờ T2-08 + tài khoản SePay                                        |
-| T2-10 | Lịch workshop + nhắc 24 giờ                    |          | T2-01        | Laptop   | Chờ T2-01                                                          |
-| T2-12 | Quiz: thang 1–5, chấm điểm trung bình (H1, H2) |          | –            | Laptop   | Sẵn sàng – sau T2-00 (prompt `prompts/T2-12.md`)                   |
-| T2-13 | Owner xác nhận đơn đã hết hạn (Q19)            | [REVIEW] | –            | PC nhà   | Sẵn sàng – chen khi T2-01 chờ IT duyệt (prompt `prompts/T2-13.md`) |
-| T2-11 | E2E luồng Habit + cổng GĐ 2                    | [HANA]   | tất cả       | Planning | –                                                                  |
+| Mã    | Task                                           | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                                                                                         |
+| ----- | ---------------------------------------------- | -------- | ------------ | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| T2-00 | Cô lập unit test dùng chung DB                 |          | –            | Laptop   | ✅ Merge 11/10 – PR #70, Planning sửa tự nhận diện file DB ([review](reviews/T2-00.md))                            |
+| T2-01 | Đăng nhập khách bằng OTP email                 | [REVIEW] | cổng GĐ 1    | PC nhà   | **CHƯA ĐẠT** 11/10 – PR #72: 4 lỗi bảo mật nặng ([review](reviews/T2-01.md)) → PC nhà sửa theo `prompts/T2-01b.md` |
+| T2-02 | Dịch vụ quyền truy cập (trial 21 ngày, active) | [REVIEW] | T2-01        | PC nhà   | Chờ T2-01 merge (prompt `prompts/T2-02.md`)                                                                        |
+| T2-03 | Habit Loop 5 phút + trang offer                |          | cổng GĐ 1    | Local    | Sẵn sàng – Local (từ 11/10; prompt khi giao)                                                                       |
+| T2-04 | Luồng dùng thử 21 ngày, đổi CTA quiz           |          | T2-02, T2-03 | PC nhà   | Chờ T2-02, T2-03                                                                                                   |
+| T2-05 | Video bảo vệ + dashboard học                   | [REVIEW] | T2-02        | Laptop   | Chờ T2-02 + tài khoản Bunny                                                                                        |
+| T2-06 | Tracker 21 ngày + nhắc nhở                     |          | T2-02        | Local    | Chờ T2-02                                                                                                          |
+| T2-07 | Chứng nhận 21 ngày                             |          | T2-06        | Local    | Chờ T2-06                                                                                                          |
+| T2-08 | Mua công cụ số (xác nhận thủ công)             | [REVIEW] | T2-02        | PC nhà   | Chờ T2-02                                                                                                          |
+| T2-09 | Webhook thanh toán tự động                     | [REVIEW] | T2-08        | PC nhà   | Chờ T2-08 + tài khoản SePay                                                                                        |
+| T2-10 | Lịch workshop + nhắc 24 giờ                    |          | T2-01        | Laptop   | Chờ T2-01                                                                                                          |
+| T2-12 | Quiz: thang 1–5, chấm điểm trung bình (H1, H2) |          | –            | Laptop   | ✅ Merge 11/10 – PR #71, Planning sửa giới hạn điểm lưu kết quả ([review](reviews/T2-12.md))                       |
+| T2-13 | Owner xác nhận đơn đã hết hạn (Q19)            | [REVIEW] | –            | PC nhà   | Sẵn sàng – PC nhà làm sau T2-01b (prompt `prompts/T2-13.md`)                                                       |
+| T2-11 | E2E luồng Habit + cổng GĐ 2                    | [HANA]   | tất cả       | Planning | –                                                                                                                  |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 

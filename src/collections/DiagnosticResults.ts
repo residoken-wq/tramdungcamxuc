@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { number, relation, select, stageOptions } from '../fields/content'
 import { isEditorOrOwner, isOwner } from '../lib/auth/access'
+import { DIAGNOSTIC_SCALE_MAX, DIAGNOSTIC_SCALE_MIN } from '../lib/diagnostic'
 
 // REVIEW-REQUIRED: Quiz results; the public quiz writes them through server code (T1-14).
 export const DiagnosticResults: CollectionConfig = {
@@ -16,7 +17,11 @@ export const DiagnosticResults: CollectionConfig = {
       type: 'array',
       fields: [
         relation('question', 'Câu hỏi', 'diagnosticQuestions'),
-        { ...number('score', 'Mức độ (1–4)'), min: 1, max: 4 },
+        {
+          ...number('score', `Mức độ (${DIAGNOSTIC_SCALE_MIN}–${DIAGNOSTIC_SCALE_MAX})`),
+          min: DIAGNOSTIC_SCALE_MIN,
+          max: DIAGNOSTIC_SCALE_MAX,
+        },
       ],
     },
     select('topStage', 'Giai đoạn nổi bật', stageOptions),
