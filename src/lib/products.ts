@@ -290,6 +290,12 @@ export function resolveProductCta(product: ProductCtaInput, _now?: Date): Produc
 
   // 6. free
   if (saleStatus === 'free') {
+    // Chỉ các loại sản phẩm tài nguyên 'ebook' hoặc 'toolkit' mới có trang tải tài nguyên công khai /tai-nguyen/[slug]
+    // Các công cụ số (digital_tool) hoặc loại khác chưa có link/externalUrl -> ẩn nút (tránh link 404 chết)
+    if (type !== 'ebook' && type !== 'toolkit') {
+      return null
+    }
+
     return {
       kind: 'free',
       label: customLabel || vi.product.cta.free,
