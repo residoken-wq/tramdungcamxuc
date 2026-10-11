@@ -147,11 +147,11 @@ test.describe('Quiz chẩn đoán thói quen 5 phút (/habit/chan-doan) (T1-14)'
         await expect(guest.getByText(currentStatement)).toBeVisible({ timeout: 15000 })
 
         if (stages[i].stage === 'response') {
-          // Chọn mức 4: Rất đúng với tôi
-          await guest.getByRole('radio', { name: /Rất đúng với tôi/ }).check()
+          // Chọn mức 5: Rất thường xuyên
+          await guest.getByRole('radio', { name: /Rất thường xuyên/ }).check()
         } else {
-          // Chọn mức 1: Hiếm khi
-          await guest.getByRole('radio', { name: /Hiếm khi/ }).check()
+          // Chọn mức 1: Không bao giờ
+          await guest.getByRole('radio', { name: /Không bao giờ/ }).check()
         }
 
         // Bấm nút chuyển tiếp

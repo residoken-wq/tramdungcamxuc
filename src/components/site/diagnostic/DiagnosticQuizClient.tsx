@@ -9,9 +9,11 @@ import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
 import { submitDiagnosticAction } from '@/lib/forms/actions'
+import { DIAGNOSTIC_SCALE_MAX } from '@/lib/diagnostic'
 import type { PublicDiagnosticQuestion, DiagnosticResultData } from '@/lib/diagnostic.server'
 
 const STORAGE_KEY = 'tdcx_diagnostic_answers'
+const SCALE_OPTIONS = Array.from({ length: DIAGNOSTIC_SCALE_MAX }, (_, i) => i + 1)
 
 export interface DiagnosticQuizClientProps {
   questions: PublicDiagnosticQuestion[]
@@ -244,13 +246,13 @@ export function DiagnosticQuizClient({ questions }: DiagnosticQuizClientProps) {
             {/* Bảng điểm tổng quan 4 giai đoạn */}
             <div className="pt-4 border-t border-deep-navy/10">
               <h3 className="font-ui text-xs sm:text-sm font-bold text-deep-navy/60 uppercase tracking-wider mb-3">
-                Tổng điểm 4 giai đoạn (Thang tối đa 16 điểm)
+                {vi.diagnostic.result.scoreSummaryHeading}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {(['cue', 'craving', 'response', 'reward'] as const).map((stg) => {
                   const isTop = stg === result.topStage
                   const isSec = stg === result.secondaryStage
-                  const score = result.scores[stg] ?? 0
+                  const avgScore = result.averageScores?.[stg] ?? result.scores[stg] ?? 0
                   return (
                     <div
                       key={stg}
@@ -265,7 +267,11 @@ export function DiagnosticQuizClient({ questions }: DiagnosticQuizClientProps) {
                       <div className="font-ui text-xs font-semibold text-deep-navy/70">
                         {vi.diagnostic.stages[stg].short}
                       </div>
-                      <div className="font-display text-2xl text-deep-navy mt-1">{score}</div>
+                      <div className="font-display text-2xl text-deep-navy mt-1">
+                        {typeof result.averageScores?.[stg] === 'number'
+                          ? result.averageScores[stg].toFixed(1)
+                          : avgScore}
+                      </div>
                     </div>
                   )
                 })}
@@ -539,11 +545,12 @@ export function DiagnosticQuizClient({ questions }: DiagnosticQuizClientProps) {
               </h2>
             </div>
 
-            {/* Thang đo 1–4 (Radio Group) */}
+            {/* Thang đo 1–5 (Radio Group) */}
             <div className="space-y-3" role="radiogroup" aria-label="Mức độ đúng với bạn">
-              {[1, 2, 3, 4].map((score) => {
+              {SCALE_OPTIONS.map((score) => {
                 const isSelected = currentScore === score
-                const labelText = vi.diagnostic.scale[score as keyof typeof vi.diagnostic.scale]
+                const labelText =
+                  vi.diagnostic.scale[score as keyof typeof vi.diagnostic.scale] || `${score}`
                 return (
                   <label
                     key={score}

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { vi } from '../i18n/vi'
+import { DIAGNOSTIC_SCALE_MIN, DIAGNOSTIC_SCALE_MAX } from '../diagnostic'
 
 export const leadFormSchema = z.object({
   name: z
@@ -170,7 +171,7 @@ export const experienceOrderSchema = z.object({
 export type ExperienceOrderInput = z.infer<typeof experienceOrderSchema>
 export const diagnosticAnswerSchema = z.object({
   questionId: z.number().int().positive(),
-  score: z.number().int().min(1).max(4),
+  score: z.number().int().min(DIAGNOSTIC_SCALE_MIN).max(DIAGNOSTIC_SCALE_MAX),
 })
 
 export type DiagnosticAnswerInput = z.infer<typeof diagnosticAnswerSchema>
