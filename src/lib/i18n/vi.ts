@@ -299,6 +299,26 @@ export const vi = {
     downloadNotFound: 'Tài liệu không còn khả dụng trên hệ thống.',
     noLongerFree: 'Tài nguyên này không còn được tặng miễn phí.',
   },
+  comingSoon: {
+    backToLibrary: 'Quay lại Thư viện',
+    seriesLabel: 'Sắp ra mắt',
+    trialSeriesLabel: 'Trải nghiệm miễn phí',
+    saleSubtitle: 'Sắp chính thức mở bán',
+    trialSubtitle: 'Dùng thử 21 ngày',
+    saleEmotion: 'Trạm đang hoàn thiện những chi tiết cuối cùng để gửi trao đến bạn.',
+    trialEmotion: 'Hãy là một trong những người đầu tiên nhận 21 ngày trải nghiệm trọn vẹn.',
+    saleLeadTitle: 'Báo cho tôi khi mở bán',
+    saleLeadDesc:
+      'Để lại email để nhận thông báo ưu đãi và là người đầu tiên trải nghiệm ngay khi sản phẩm chính thức mở bán.',
+    trialLeadTitle: 'Báo cho tôi khi mở dùng thử 21 ngày',
+    trialLeadDesc:
+      'Để lại email để nhận quyền kích hoạt phiên bản dùng thử 21 ngày hoàn toàn miễn phí ngay khi ra mắt.',
+    submitSale: 'Nhận thông báo mở bán',
+    submitTrial: 'Đăng ký nhận dùng thử',
+    metaTitle: (name: string) => `${name} (Sắp ra mắt) – Trạm Dừng Cảm Xúc`,
+    defaultMetaTitle: 'Sắp ra mắt – Trạm Dừng Cảm Xúc',
+    defaultMetaDesc: 'Sản phẩm sắp ra mắt từ Trạm Dừng Cảm Xúc',
+  },
   notFound: {
     title: 'Không tìm thấy trang',
     description: 'Trang bạn đang tìm kiếm không tồn tại hoặc đã được thay đổi.',
