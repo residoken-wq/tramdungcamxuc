@@ -126,10 +126,9 @@ export const OrderActions: React.FC = () => {
 
   const docStatus = (data as { paymentStatus?: string } | undefined)?.paymentStatus
   const isPending = orderInfo ? orderInfo.isPending : docStatus === 'pending'
-  const isPaid =
-    docStatus === 'paid' || (!isPending && docStatus !== 'cancelled' && docStatus !== 'failed')
-  const isCancelled = docStatus === 'cancelled'
   const isFailed = docStatus === 'failed'
+  const isCancelled = docStatus === 'cancelled'
+  const isPaid = docStatus === 'paid' || (!isPending && !isFailed && !isCancelled)
 
   return (
     <div
@@ -154,6 +153,29 @@ export const OrderActions: React.FC = () => {
       <p style={{ margin: 0, fontSize: '12px', color: '#555', lineHeight: '1.4' }}>
         {vi.payment.ui.adminActions.panelDesc}
       </p>
+
+      {/* Cảnh báo đơn hết hạn (T2-13) */}
+      {isFailed && (
+        <div
+          data-testid="order-expired-warning"
+          style={{
+            padding: '10px 12px',
+            backgroundColor: '#F6E9B8',
+            border: '1px solid #E5D598',
+            borderRadius: '8px',
+            fontSize: '12px',
+            fontWeight: 600,
+            color: '#280A60',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '8px',
+            lineHeight: '1.4',
+          }}
+        >
+          <span style={{ fontSize: '14px' }}>⚠️</span>
+          <span>{vi.payment.ui.adminActions.expiredOrderWarning}</span>
+        </div>
+      )}
 
       {/* Sidebar đơn: Link thanh toán cho đơn createdByAdmin còn pending */}
       {orderInfo?.url && orderInfo.isPending && (
@@ -227,8 +249,8 @@ export const OrderActions: React.FC = () => {
         </div>
       )}
 
-      {/* Trạng thái không pending: hiển thị thông báo thay vì nút thao tác */}
-      {!isPending && (
+      {/* Trạng thái không pending và không failed (đã thanh toán hoặc đã hủy) */}
+      {!isPending && !isFailed && (
         <div
           style={{
             padding: '8px 12px',
@@ -236,26 +258,23 @@ export const OrderActions: React.FC = () => {
             fontSize: '12px',
             fontWeight: 600,
             textAlign: 'center',
-            backgroundColor: isPaid ? '#D9F1EA' : isCancelled ? '#FDE6F6' : '#EAEAEA',
-            color: isPaid ? '#0F5132' : isCancelled ? '#842029' : '#555555',
-            border: `1px solid ${isPaid ? '#A3E2D1' : isCancelled ? '#F8D7DA' : '#DDDDDD'}`,
+            backgroundColor: isPaid ? '#D9F1EA' : '#FDE6F6',
+            color: isPaid ? '#0F5132' : '#842029',
+            border: `1px solid ${isPaid ? '#A3E2D1' : '#F8D7DA'}`,
           }}
         >
           {isPaid
             ? vi.payment.ui.adminActions.statusPaidNotice
-            : isCancelled
-              ? vi.payment.ui.adminActions.statusCancelledNotice
-              : isFailed
-                ? vi.payment.ui.adminActions.statusFailedNotice
-                : ''}
+            : vi.payment.ui.adminActions.statusCancelledNotice}
         </div>
       )}
 
-      {/* Chỉ hiển thị nút Xác nhận / Hủy khi đơn pending */}
-      {isPending && (
+      {/* Hiển thị nút Xác nhận khi đơn pending hoặc failed; nút Hủy chỉ khi pending */}
+      {(isPending || isFailed) && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button
             type="button"
+            data-testid="order-confirm-button"
             onClick={() => setConfirmModal('confirm')}
             disabled={loading !== null}
             style={{
@@ -289,40 +308,43 @@ export const OrderActions: React.FC = () => {
             </span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setConfirmModal('cancel')}
-            disabled={loading !== null}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-              padding: '8px 14px',
-              backgroundColor: '#FFFFFF',
-              color: '#842029',
-              border: '1px solid #DC3545',
-              borderRadius: '8px',
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: loading !== null ? 'not-allowed' : 'pointer',
-              opacity: loading !== null ? 0.7 : 1,
-              transition: 'background-color 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              if (loading === null) e.currentTarget.style.backgroundColor = '#FDF2F2'
-            }}
-            onMouseLeave={(e) => {
-              if (loading === null) e.currentTarget.style.backgroundColor = '#FFFFFF'
-            }}
-          >
-            <span>✕</span>
-            <span>
-              {loading === 'cancel'
-                ? vi.payment.ui.adminActions.processing
-                : vi.payment.ui.adminActions.cancelButton}
-            </span>
-          </button>
+          {isPending && (
+            <button
+              type="button"
+              data-testid="order-cancel-button"
+              onClick={() => setConfirmModal('cancel')}
+              disabled={loading !== null}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                backgroundColor: '#FFFFFF',
+                color: '#842029',
+                border: '1px solid #DC3545',
+                borderRadius: '8px',
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: loading !== null ? 'not-allowed' : 'pointer',
+                opacity: loading !== null ? 0.7 : 1,
+                transition: 'background-color 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                if (loading === null) e.currentTarget.style.backgroundColor = '#FDF2F2'
+              }}
+              onMouseLeave={(e) => {
+                if (loading === null) e.currentTarget.style.backgroundColor = '#FFFFFF'
+              }}
+            >
+              <span>✕</span>
+              <span>
+                {loading === 'cancel'
+                  ? vi.payment.ui.adminActions.processing
+                  : vi.payment.ui.adminActions.cancelButton}
+              </span>
+            </button>
+          )}
         </div>
       )}
 
@@ -364,7 +386,9 @@ export const OrderActions: React.FC = () => {
 
             <p style={{ margin: 0, fontSize: '13px', color: '#444', lineHeight: '1.5' }}>
               {confirmModal === 'confirm'
-                ? vi.payment.ui.adminActions.confirmModalDesc
+                ? isFailed
+                  ? vi.payment.ui.adminActions.confirmExpiredModalDesc
+                  : vi.payment.ui.adminActions.confirmModalDesc
                 : vi.payment.ui.adminActions.cancelModalDesc}
             </p>
 

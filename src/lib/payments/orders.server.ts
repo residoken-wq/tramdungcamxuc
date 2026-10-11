@@ -484,7 +484,7 @@ export async function confirmManualPayment(
     return order
   }
 
-  if (order.paymentStatus !== 'pending') {
+  if (order.paymentStatus !== 'pending' && order.paymentStatus !== 'failed') {
     throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
   }
 
@@ -493,15 +493,25 @@ export async function confirmManualPayment(
     throw new InvalidOrderStatusError(vi.payment.errors.termsNotAccepted)
   }
 
-  // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB
-  // UPDATE orders SET payment_status = 'paid', paid_at = ${paidAt}, updated_at = ${paidAt} WHERE id = ${orderId} AND payment_status = 'pending' RETURNING id
+  // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB (T2-13 / Q19)
+  // Hỗ trợ cả đơn 'pending' và 'failed' (quá hạn 24h). Lấy trạng thái cũ ngay trong cùng câu truy vấn CTE.
   // Bảng orders không cấu hình versions (không có _orders_v) nên câu UPDATE trực tiếp an toàn tuyệt đối.
   const paidAt = now.toISOString()
   const db = getDrizzleDb(payload)
   const updateResult = await db.execute(
-    sql`UPDATE "orders" SET "payment_status" = 'paid', "paid_at" = ${paidAt}::timestamptz, "updated_at" = ${paidAt}::timestamptz WHERE "id" = ${orderId} AND "payment_status" = 'pending' RETURNING "id"`,
+    sql`WITH prev AS (
+      SELECT "id", "payment_status"
+      FROM "orders"
+      WHERE "id" = ${orderId} AND "payment_status" IN ('pending', 'failed')
+      FOR UPDATE
+    )
+    UPDATE "orders" AS o
+    SET "payment_status" = 'paid', "paid_at" = ${paidAt}::timestamptz, "updated_at" = ${paidAt}::timestamptz
+    FROM prev
+    WHERE o."id" = prev."id"
+    RETURNING o."id", prev."payment_status" AS "old_status"`,
   )
-  const rows = (updateResult as { rows?: Array<{ id: number }> }).rows ?? []
+  const rows = (updateResult as { rows?: Array<{ id: number; old_status: string }> }).rows ?? []
 
   // Chỉ khi RETURNING có dòng mới gửi email / cấp quyền / ghi auditLogs;
   // Không có dòng -> trả kết quả "đã xử lý trước đó" (idempotent), không ném lỗi.
@@ -531,18 +541,21 @@ export async function confirmManualPayment(
       })
       return refreshed
     }
-    // Thua race với hủy đơn / cron hết hạn: đơn không còn pending -> báo lỗi, không báo "đã xác nhận"
+    // Thua race với hủy đơn: đơn không còn pending/failed -> báo lỗi, không báo "đã xác nhận"
     throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
   }
 
-  // Ghi nhật ký thao tác
+  // REVIEW-REQUIRED: Ghi nhật ký thao tác: đơn failed ghi 'confirm_expired_order', đơn pending ghi 'confirm_manual_payment'
+  const oldStatus = rows[0].old_status
+  const auditAction = oldStatus === 'failed' ? 'confirm_expired_order' : 'confirm_manual_payment'
+
   await payload.create({
     collection: 'auditLogs',
     data: {
       actor: Number(user.id),
-      action: 'confirm_manual_payment',
+      action: auditAction,
       target: `orders:${orderId}`,
-      before: { paymentStatus: 'pending', paidAt: null },
+      before: { paymentStatus: oldStatus, paidAt: null },
       after: { paymentStatus: 'paid', paidAt },
       at: paidAt,
     },

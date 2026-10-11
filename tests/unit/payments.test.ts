@@ -894,6 +894,215 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       })
       expect(auditQuery.totalDocs).toBe(1)
     })
+
+    it('đơn hết hạn -> owner xác nhận -> paid, đúng 1 email, audit confirm_expired_order', async () => {
+      mockEmailSender.sent = []
+      const customerEmail = `expired-confirm-${randomUUID()}@example.test`
+
+      const createdRes = await createExperienceOrder(
+        {
+          productId: experienceProductId,
+          name: 'Khách Chuyển Khoản Muộn',
+          email: customerEmail,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
+
+      // Chuyển đơn sang failed (mô phỏng hết hạn 24 giờ)
+      await payload.update({
+        collection: 'orders',
+        id: order!.id,
+        data: { paymentStatus: 'failed' },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
+      // Owner xác nhận đơn đã hết hạn
+      const confirmed = (await confirmManualPayment(order!.id, owner, {
+        payload,
+        emailSender: mockEmailSender,
+      })) as { id: number; paymentStatus: string; paidAt: string; deliveryStatus: string }
+
+      expect(confirmed.paymentStatus).toBe('paid')
+      expect(confirmed.paidAt).toBeDefined()
+
+      // Gửi đúng 1 email xác nhận kèm link đặt lịch
+      expect(mockEmailSender.sent.length).toBe(1)
+      expect(mockEmailSender.sent[0].to).toBe(customerEmail)
+      expect(mockEmailSender.sent[0].subject).toContain('Xác nhận thanh toán')
+
+      // Audit log phải ghi nhận action confirm_expired_order
+      const auditQuery = await payload.find({
+        collection: 'auditLogs',
+        where: {
+          and: [
+            { target: { equals: `orders:${order!.id}` } },
+            { action: { equals: 'confirm_expired_order' } },
+          ],
+        },
+        overrideAccess: true,
+      })
+      expect(auditQuery.totalDocs).toBe(1)
+      const beforeJson = auditQuery.docs[0].before as Record<string, unknown>
+      expect(beforeJson.paymentStatus).toBe('failed')
+    })
+
+    it('editor xác nhận đơn failed -> bị từ chối với lỗi quyền; owner xác nhận đơn cancelled -> từ chối', async () => {
+      const createdRes = await createExperienceOrder(
+        {
+          productId: experienceProductId,
+          name: 'Khách Editor Failed',
+          email: `editor-failed-${randomUUID()}@example.test`,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
+
+      // Đưa đơn sang failed
+      await payload.update({
+        collection: 'orders',
+        id: order!.id,
+        data: { paymentStatus: 'failed' },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
+      // Editor không được quyền xác nhận đơn failed
+      await expect(
+        confirmManualPayment(order!.id, editor, { payload, emailSender: mockEmailSender }),
+      ).rejects.toThrow(viStrings.payment.errors.unauthorized)
+
+      // Hủy đơn (đưa về cancelled)
+      await payload.update({
+        collection: 'orders',
+        id: order!.id,
+        data: { paymentStatus: 'cancelled' },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
+      // Đơn cancelled vẫn bị từ chối dù là owner gọi
+      await expect(
+        confirmManualPayment(order!.id, owner, { payload, emailSender: mockEmailSender }),
+      ).rejects.toThrow(viStrings.payment.errors.onlyPendingCanBeConfirmed)
+    })
+
+    it('xác nhận 2 lần đồng thời một đơn failed -> đúng 1 email (chống race condition)', async () => {
+      mockEmailSender.sent = []
+      const customerEmail = `race-failed-${randomUUID()}@example.test`
+
+      const createdRes = await createExperienceOrder(
+        {
+          productId: experienceProductId,
+          name: 'Khách Race Failed',
+          email: customerEmail,
+          termsAccepted: true,
+        },
+        { ip: nextIp() },
+        { payload, emailSender: mockEmailSender },
+      )
+      const order = await trackOrderAndCustomer(createdRes.payToken)
+      expect(order).not.toBeNull()
+
+      // Đưa đơn sang failed
+      await payload.update({
+        collection: 'orders',
+        id: order!.id,
+        data: { paymentStatus: 'failed' },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
+      // Gọi 2 lần đồng thời bằng Promise.all
+      const [res1, res2] = await Promise.all([
+        confirmManualPayment(order!.id, owner, { payload, emailSender: mockEmailSender }),
+        confirmManualPayment(order!.id, owner, { payload, emailSender: mockEmailSender }),
+      ])
+
+      expect(res1).toBeDefined()
+      expect(res2).toBeDefined()
+      const paidOrder1 = res1 as { paidAt?: string }
+      const paidOrder2 = res2 as { paidAt?: string }
+      expect(paidOrder1.paidAt).toBeTruthy()
+      expect(paidOrder2.paidAt).toBe(paidOrder1.paidAt)
+
+      // Đúng 1 email duy nhất được gửi đi
+      expect(mockEmailSender.sent.length).toBe(1)
+      expect(mockEmailSender.sent[0].to).toBe(customerEmail)
+
+      // Audit logs: 1 confirm_expired_order và 1 duplicate
+      const auditQuery = await payload.find({
+        collection: 'auditLogs',
+        where: { target: { equals: `orders:${order!.id}` } },
+        sort: 'createdAt',
+        overrideAccess: true,
+      })
+      expect(auditQuery.totalDocs).toBe(2)
+      expect(auditQuery.docs[0].action).toBe('confirm_expired_order')
+      expect(auditQuery.docs[1].action).toBe('confirm_manual_payment_duplicate')
+    })
+
+    it('expirePendingOrders chạy cùng lúc với confirmManualPayment trên một đơn pending -> kết quả cuối luôn là paid, không lỗi, đúng 1 email', async () => {
+      mockEmailSender.sent = []
+      const customerEmail = `race-expire-confirm-${randomUUID()}@example.test`
+      const pastTime = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString()
+
+      const customerDoc = await payload.create({
+        collection: 'customers',
+        data: {
+          email: customerEmail,
+          name: 'Khách Đua Lệnh Hết Hạn',
+        },
+      })
+      createdCustomers.push(customerDoc.id)
+
+      const order = await payload.create({
+        collection: 'orders',
+        data: {
+          customer: customerDoc.id,
+          items: [{ product: experienceProductId, price: 149000 }],
+          subtotal: 149000,
+          total: 149000,
+          paymentStatus: 'pending',
+          termsAcceptedAt: pastTime,
+          createdAt: pastTime,
+        },
+      })
+      createdOrders.push(order.id)
+
+      // Chạy đồng thời expirePendingOrders và confirmManualPayment
+      const now = new Date()
+      const [expireRes, confirmRes] = await Promise.all([
+        expirePendingOrders(now, { payload, emailSender: mockEmailSender }),
+        confirmManualPayment(order.id, owner, { payload, emailSender: mockEmailSender, now }),
+      ])
+
+      expect(expireRes).toBeDefined()
+      expect(confirmRes).toBeDefined()
+
+      // Trạng thái cuối cùng của đơn trong cơ sở dữ liệu LUÔN là 'paid'
+      const finalOrder = await payload.findByID({
+        collection: 'orders',
+        id: order.id,
+        overrideAccess: true,
+      })
+      expect(finalOrder.paymentStatus).toBe('paid')
+      expect(finalOrder.paidAt).toBeTruthy()
+
+      // Email xác nhận thanh toán chỉ gửi đúng 1 lần
+      const paidEmails = mockEmailSender.sent.filter((e) =>
+        e.subject.includes('Xác nhận thanh toán'),
+      )
+      expect(paidEmails.length).toBe(1)
+      expect(paidEmails[0].to).toBe(customerEmail)
+    })
   })
 
   describe('Đóng đơn quá hạn 24 giờ & Cron Route', () => {
