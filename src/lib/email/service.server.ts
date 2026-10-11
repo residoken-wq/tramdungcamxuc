@@ -10,6 +10,7 @@ import { ResourceDeliveryEmail } from '@/emails/ResourceDeliveryEmail'
 import { ExperienceOrderPaidEmail } from '@/emails/ExperienceOrderPaidEmail'
 import { ExperienceOrderExpiredEmail } from '@/emails/ExperienceOrderExpiredEmail'
 import { PackageOrderPaidEmail } from '@/emails/PackageOrderPaidEmail'
+import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
 import { vi } from '@/lib/i18n/vi'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
@@ -433,5 +434,42 @@ export async function sendPackageOrderPaidEmail(
   } catch (err) {
     console.error('[Email] Failed to send package order paid email:', err)
     throw err
+  }
+}
+
+export async function sendCustomerOtpEmail(
+  payload: Payload,
+  data: {
+    email: string
+    code: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(CustomerOtpEmail, {
+        email: data.email,
+        code: data.code,
+      }),
+    )
+    const userText = await render(
+      React.createElement(CustomerOtpEmail, {
+        email: data.email,
+        code: data.code,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.auth.otpEmailSubject,
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send customer OTP email:', err)
+    // Non-fatal error logging, let caller proceed or handle
   }
 }
