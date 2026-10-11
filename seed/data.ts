@@ -56,7 +56,7 @@ export const products: ProductSeed[] = [
     type: 'digital_tool',
     journeyStep: 'name',
     shortDescription: `${S} Gọi tên cue, craving, response, reward của một thói quen trong 5 phút.`,
-    saleStatus: 'free',
+    saleStatus: 'coming_soon',
     order: 2,
   },
   {
@@ -67,6 +67,7 @@ export const products: ProductSeed[] = [
     journeyStep: 'name',
     shortDescription: `${S} Quiz 16 tình huống trì hoãn, kết quả hiện ngay.`,
     saleStatus: 'free',
+    externalUrl: '/habit/chan-doan',
     order: 3,
   },
   {
