@@ -2,7 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
-import { getSafeRedirectUrl } from '@/lib/auth/actions'
+import { getSafeRedirectUrl } from '@/lib/auth/redirect'
 import { LoginForm } from '@/components/site/account/LoginForm'
 
 export const metadata: Metadata = {

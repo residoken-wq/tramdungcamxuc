@@ -11,7 +11,7 @@ import {
   computeOtpHash,
   OtpVerificationError,
 } from '../../src/lib/auth/otp.server'
-import { getSafeRedirectUrl } from '../../src/lib/auth/actions'
+import { getSafeRedirectUrl } from '../../src/lib/auth/redirect'
 import { vi as viDict } from '../../src/lib/i18n/vi'
 import { RateLimitError } from '../../src/lib/forms/ratelimit.server'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'

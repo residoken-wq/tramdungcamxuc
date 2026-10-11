@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { vi } from '@/lib/i18n/vi'
-import { requestOtpAction, verifyOtpAction, getSafeRedirectUrl } from '@/lib/auth/actions'
+import { requestOtpAction, verifyOtpAction } from '@/lib/auth/actions'
+import { getSafeRedirectUrl } from '@/lib/auth/redirect'
 import { Button } from '@/components/ui/Button'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 
