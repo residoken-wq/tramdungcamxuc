@@ -604,5 +604,62 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
       const res = await grantEntitlementsForOrder(trialOrderId, { payload })
       expect(res.grantedCount).toBe(0)
     })
+
+    it('đơn gói hết hạn (failed) được owner xác nhận -> cấp entitlement cho grantsProduct đúng 1 lần (T2-13)', async () => {
+      const now = new Date()
+      // Tạo đơn gói do admin tạo
+      const expiredOrd = await payload.create({
+        collection: 'orders',
+        data: {
+          customer: customerId,
+          items: [{ product: packageProductId, price: 2900000 }],
+          createdByAdmin: true,
+          paymentStatus: 'pending',
+        } as never,
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+      createdOrders.push(expiredOrd.id)
+
+      // Khách hàng đã đồng ý điều khoản trên link thanh toán, sau đó đơn chuyển sang failed (hết hạn sau 24h)
+      await payload.update({
+        collection: 'orders',
+        id: expiredOrd.id,
+        data: {
+          termsAcceptedAt: now.toISOString(),
+          paymentStatus: 'failed',
+        },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
+      // Owner xác nhận đơn gói đã hết hạn
+      const confirmed = (await confirmManualPayment(expiredOrd.id, owner, {
+        payload,
+        now,
+      })) as { paymentStatus: string; paidAt: string }
+
+      expect(confirmed.paymentStatus).toBe('paid')
+      expect(confirmed.paidAt).toBeDefined()
+
+      // Kiểm tra entitlements được cấp đúng 1 lần (2 công cụ số tool1 và tool2)
+      const ents = await payload.find({
+        collection: 'entitlements',
+        where: { order: { equals: expiredOrd.id } },
+        overrideAccess: true,
+      })
+
+      expect(ents.totalDocs).toBe(2)
+      ents.docs.forEach((doc) => createdEntitlements.push(doc.id))
+
+      // Kiểm tra audit log ghi confirm_expired_order
+      const auditQuery = await payload.find({
+        collection: 'auditLogs',
+        where: { target: { equals: `orders:${expiredOrd.id}` } },
+        overrideAccess: true,
+      })
+      expect(auditQuery.totalDocs).toBe(1)
+      expect(auditQuery.docs[0].action).toBe('confirm_expired_order')
+    })
   })
 })

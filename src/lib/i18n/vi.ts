@@ -539,6 +539,7 @@ export const vi = {
         statusPaidNotice: '✓ Đơn hàng này đã được xác nhận thanh toán.',
         statusCancelledNotice: '✕ Đơn hàng này đã bị hủy.',
         statusFailedNotice: '⏱ Đơn hàng này đã hết hạn thanh toán.',
+        expiredOrderWarning: 'Đơn đã quá hạn – chỉ xác nhận khi đã thấy tiền về',
         confirmButton: 'Xác nhận thanh toán',
         cancelButton: 'Hủy đơn hàng',
         processing: 'Đang xử lý...',
@@ -546,6 +547,8 @@ export const vi = {
         cancelModalTitle: 'Xác nhận hủy đơn hàng',
         confirmModalDesc:
           'Bạn có chắc chắn muốn xác nhận thanh toán cho đơn hàng này? Hệ thống sẽ chuyển trạng thái sang "Đã thanh toán", lưu nhật ký audit log và gửi email đặt lịch hẹn tới khách hàng.',
+        confirmExpiredModalDesc:
+          'Đơn đã quá hạn – chỉ xác nhận khi đã thấy tiền về. Bạn có chắc chắn muốn xác nhận thanh toán cho đơn hàng này? Hệ thống sẽ chuyển trạng thái sang "Đã thanh toán", lưu nhật ký audit log và gửi email tới khách hàng.',
         cancelModalDesc:
           'Bạn có chắc chắn muốn hủy đơn hàng này? Lưu ý: Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
         cancelReasonLabel: 'Lý do hủy (tùy chọn):',
