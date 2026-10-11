@@ -33,7 +33,7 @@ export default async function AccountPage() {
           <h1 className="font-heading text-3xl sm:text-4xl text-deep-navy">
             {vi.auth.welcomeCustomer(displayName)}
           </h1>
-          <p className="font-serif italic text-sm text-deep-navy/70 mt-1">{customer.email}</p>
+          <p className="font-quote italic text-sm text-deep-navy/70 mt-1">{customer.email}</p>
         </div>
 
         <form action={logoutAction}>
