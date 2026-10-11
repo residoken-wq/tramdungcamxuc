@@ -148,7 +148,16 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 ---
 
-### 3.4. Điểm đặc biệt của Gói đồng hành (Growth Mirror)
+### 3.4. Cài đặt "Liên kết của nút" và trang Sắp ra mắt
+
+Ô **Liên kết của nút (ngoài web hoặc trong web)** (`externalUrl`) cho phép bạn chỉ định nơi dẫn khách đến khi bấm nút trên thẻ sản phẩm:
+- **Liên kết ngoài**: Dán đường link đầy đủ bắt đầu bằng `https://` (ví dụ: Shopee dán `https://shopee.vn/bo-the-eq-buddy` để mở gian hàng Shopee ở tab mới an toàn).
+- **Công cụ trong web**: Gõ đường dẫn bắt đầu bằng một dấu `/` (ví dụ: công cụ trong web gõ `/habit/chan-doan` để dẫn thẳng vào bài test).
+- **Sản phẩm "Sắp ra mắt"**: Khi chọn trạng thái *Sắp ra mắt*, website tự động chuyển hướng khách đến trang `/sap-ra-mat` để khách để lại email. Mọi thông tin khách đăng ký được lưu tại mục **Khách tiềm năng** với thẻ `sap-ra-mat:<slug>` (hoặc có thêm `dung-thu:<slug>` nếu có ngày dùng thử).
+
+---
+
+### 3.5. Điểm đặc biệt của Gói đồng hành (Growth Mirror)
 
 **Mục đích**: Xây dựng gói đồng hành có nhiều thành phần đi kèm (phiên coaching, workshop, cộng đồng, công cụ số).
 
@@ -167,7 +176,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 ---
 
-### 3.5. Tải tài liệu PDF vào "Tài liệu riêng tư" và gắn vào sản phẩm miễn phí
+### 3.6. Tải tài liệu PDF vào "Tài liệu riêng tư" và gắn vào sản phẩm miễn phí
 
 **Mục đích**: Đăng tải các tệp quà tặng (Ebook PDF, tài liệu hướng dẫn) được bảo vệ an toàn để giao tự động qua email khi khách đăng ký.
 
@@ -191,7 +200,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 ---
 
-### 3.6. Xem trước khi sửa dịch vụ, chương trình và bài viết (Live Preview)
+### 3.7. Xem trước khi sửa dịch vụ, chương trình và bài viết (Live Preview)
 
 **Mục đích**: Nhìn thấy ngay trang hiển thị thực tế khi đang soạn thảo dịch vụ coaching, chương trình đào tạo doanh nghiệp hoặc bài viết trước khi xuất bản mà không cần chuyển qua lại giữa nhiều tab.
 
