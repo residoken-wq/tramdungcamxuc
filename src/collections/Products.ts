@@ -13,7 +13,6 @@ import {
   slug,
   text,
   textarea,
-  url,
   internalOrExternalUrl,
 } from '../fields/content'
 import { authenticated } from '../lib/auth/access'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { internalOrExternalUrl, url } from '@/fields/content'
+import { internalOrExternalUrl } from '@/fields/content'
 
 describe('internalOrExternalUrl field validator (T1-18)', () => {
   const field = internalOrExternalUrl('externalUrl', 'Liên kết của nút')
