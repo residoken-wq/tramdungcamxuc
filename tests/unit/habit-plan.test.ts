@@ -310,6 +310,29 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     expect(planDoc.leadEmail).toBe(existingCustEmail)
   })
 
+  it('A3: không lưu habitPlans vào DB khi không để lại email, luôn áp dụng rate limit và turnstile', async () => {
+    const countBefore = await payload.count({ collection: 'habitPlans' })
+
+    const result = await submitHabitPlan(
+      {
+        scorecard: [{ habit: 'Đi ngủ sớm', rating: 'good' }],
+        identityStatement: 'Tôi sẽ đi ngủ sớm để có nhiều năng lượng',
+        chosenTechniques: [
+          { techniqueId: validCueTechId, stage: 'cue', action: 'Tắt đèn lúc 10h' },
+        ],
+        email: '',
+        consent: false,
+      },
+      { ip: `192.168.3.${Math.floor(Math.random() * 200) + 10}` },
+      { payload, emailSender },
+    )
+
+    const countAfter = await payload.count({ collection: 'habitPlans' })
+    expect(countAfter.totalDocs).toBe(countBefore.totalDocs)
+    expect(result.planId).toBeUndefined()
+    expect(result.success).toBe(true)
+  })
+
   it('từ chối khi có email nhưng thiếu consent (Nghị định 13/2023)', async () => {
     await expect(
       submitHabitPlan(

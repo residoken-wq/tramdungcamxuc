@@ -281,41 +281,42 @@ export async function submitHabitPlan(
 
   const cleanEmail = validated.email?.trim().toLowerCase() || null
 
-  // 4. Nếu có email, xử lý Turnstile, rate limit, lead
-  if (cleanEmail) {
-    await verifyTurnstile(validated.turnstileToken, ctx.ip)
-    await checkAndRecordRateLimit(payload, {
-      form: 'habit-loop',
-      ip: ctx.ip,
-      email: cleanEmail,
-    })
+  // 4. Luôn xác minh Turnstile và kiểm tra Rate limit (ngay cả khi không có email)
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
+  await checkAndRecordRateLimit(payload, {
+    form: 'habit-loop',
+    ip: ctx.ip,
+    email: cleanEmail || undefined,
+  })
 
-    // REVIEW-REQUIRED: Tạo lead trong collection leads với need 'resource' và tag 'habit-loop'
-    await payload.create({
-      collection: 'leads',
-      data: {
-        email: cleanEmail,
-        need: 'resource',
-        consent: true,
-        consentAt: new Date().toISOString(),
-        source: {
-          form: 'habit-loop',
-          page: ctx.page || HABIT_LOOP_PATH,
-          utm: ctx.utm,
-        },
-        interestTags: [{ text: 'habit-loop' }],
-        followUpStatus: 'new',
-      },
-      overrideAccess: true, // overrideAccess cho phép server action ghi nhận khách tiềm năng mà không yêu cầu user login
-    })
+  // Đọc link nhóm Zalo từ siteSettings
+  let zaloGroupUrl = ''
+  try {
+    const siteSettings = (await payload.findGlobal({
+      slug: 'siteSettings',
+      depth: 0,
+    })) as SiteSetting | null
+    if (siteSettings?.zaloGroupUrl) {
+      zaloGroupUrl = siteSettings.zaloGroupUrl
+    }
+  } catch (err) {
+    console.error('[Habit] Error reading siteSettings zaloGroupUrl:', err)
   }
 
-  // 5. Lưu bản ghi habitPlans
+  // Nếu người dùng không nhập email: không lưu gì vào DB (kế hoạch chỉ nằm trong trình duyệt)
+  if (!cleanEmail) {
+    return {
+      success: true,
+      zaloGroupUrl,
+    }
+  }
+
+  // 5. Lưu bản ghi habitPlans trước (tránh tạo lead mồ côi nếu kế hoạch lưu lỗi - B12)
   // REVIEW-REQUIRED: Lưu kế hoạch thói quen của người dùng (chỉ lưu leadEmail, không tự ý gán customer)
   const habitPlanDoc = await payload.create({
     collection: 'habitPlans',
     data: {
-      leadEmail: cleanEmail ?? undefined,
+      leadEmail: cleanEmail,
       scorecard: validated.scorecard.map((item) => ({
         habit: item.habit,
         rating: item.rating,
@@ -330,19 +331,25 @@ export async function submitHabitPlan(
     overrideAccess: true, // overrideAccess cho phép server action lưu kế hoạch của học viên chưa đăng nhập
   })
 
-  // 6. Đọc link nhóm Zalo từ siteSettings
-  let zaloGroupUrl = ''
-  try {
-    const siteSettings = (await payload.findGlobal({
-      slug: 'siteSettings',
-      depth: 0,
-    })) as SiteSetting | null
-    if (siteSettings?.zaloGroupUrl) {
-      zaloGroupUrl = siteSettings.zaloGroupUrl
-    }
-  } catch (err) {
-    console.error('[Habit] Error reading siteSettings zaloGroupUrl:', err)
-  }
+  // 6. Tạo lead trong collection leads với need 'resource' và tag 'habit-loop'
+  // REVIEW-REQUIRED: Tạo lead trong collection leads sau khi đã lưu xong kế hoạch
+  await payload.create({
+    collection: 'leads',
+    data: {
+      email: cleanEmail,
+      need: 'resource',
+      consent: true,
+      consentAt: new Date().toISOString(),
+      source: {
+        form: 'habit-loop',
+        page: ctx.page || HABIT_LOOP_PATH,
+        utm: ctx.utm,
+      },
+      interestTags: [{ text: 'habit-loop' }],
+      followUpStatus: 'new',
+    },
+    overrideAccess: true, // overrideAccess cho phép server action ghi nhận khách tiềm năng mà không yêu cầu user login
+  })
 
   // 7. Gửi email xác nhận kế hoạch nếu người dùng có email
   if (cleanEmail) {
