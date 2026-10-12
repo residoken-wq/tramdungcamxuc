@@ -6,6 +6,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { PriceTag } from '@/components/ui/PriceTag'
 import { vi } from '@/lib/i18n/vi'
 import { HABIT_LOOP_PATH } from '@/lib/habit'
+import { getEffectivePrice } from '@/lib/products'
 import type { HabitProductData } from '@/lib/habit.server'
 
 export interface HabitOfferClientProps {
@@ -13,16 +14,24 @@ export interface HabitOfferClientProps {
 }
 
 export function HabitOfferClient({ product }: HabitOfferClientProps) {
-  const originalPrice = product?.price ?? 250000
-  const salePrice = product?.salePrice ?? 178000
-  const trialDays = product?.trialDays ?? 21
-  const cta = product?.cta
-  const ctaHref = cta?.href || '/tai-khoan/dang-nhap?redirect=/habit/hoc'
-  const ctaLabel = cta?.label || vi.habit.offer.trialCta
-  const isCtaExternal = Boolean(cta?.external)
+  const effectivePricing = product
+    ? getEffectivePrice(
+        {
+          price: product.price ?? null,
+          salePrice: product.salePrice ?? null,
+          saleEndsAt: product.saleEndsAt ?? null,
+        },
+        new Date(),
+      )
+    : { price: null, salePrice: null }
 
-  const videoCount = product?.videoCount ?? 20
-  const techniqueCount = product?.techniqueCount ?? 11
+  const hasPrice = effectivePricing.price != null || effectivePricing.salePrice != null
+  const trialDays =
+    typeof product?.trialDays === 'number' && product.trialDays > 0 ? product.trialDays : null
+  const cta = product?.cta || null
+
+  const videoCount = typeof product?.videoCount === 'number' ? product.videoCount : 0
+  const techniqueCount = typeof product?.techniqueCount === 'number' ? product.techniqueCount : 0
 
   const includesList = product?.includes && product.includes.length > 0 ? product.includes : []
   const faqList = product?.faq && product.faq.length > 0 ? product.faq : []
@@ -42,23 +51,29 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
 
           {/* Pricing & CTA Card */}
           <div className="bg-white rounded-card shadow-soft border border-lavender-mist/80 p-6 sm:p-10 max-w-2xl mx-auto text-center">
-            {/* Trial Badge */}
-            <div className="inline-block px-4 py-1.5 rounded-full bg-soft-pink text-deep-navy text-xs sm:text-sm font-semibold mb-4">
-              ✨ {trialDays} {vi.product.trialBadge}
-            </div>
+            {/* Trial Badge - chỉ hiển thị khi có trialDays từ CMS */}
+            {trialDays !== null && (
+              <div className="inline-block px-4 py-1.5 rounded-full bg-soft-pink text-deep-navy text-xs sm:text-sm font-semibold mb-4">
+                ✨ {trialDays} {vi.product.trialBadge}
+              </div>
+            )}
 
-            {/* Price Tag qua PriceTag component theo Brand Book */}
-            <div className="flex items-center justify-center mb-3">
-              <PriceTag
-                originalPrice={originalPrice}
-                salePrice={salePrice}
-                size="lg"
-              />
-            </div>
+            {/* Price Tag qua PriceTag component theo Brand Book và getEffectivePrice */}
+            {hasPrice && (
+              <div className="flex items-center justify-center mb-3">
+                <PriceTag
+                  originalPrice={effectivePricing.price}
+                  salePrice={effectivePricing.salePrice}
+                  size="lg"
+                />
+              </div>
+            )}
 
-            <p className="text-xs sm:text-sm text-deep-navy/70 mb-6 font-medium">
-              {vi.habit.offer.permanentAccess} • {vi.habit.offer.noCreditCard}
-            </p>
+            {hasPrice && (
+              <p className="text-xs sm:text-sm text-deep-navy/70 mb-6 font-medium">
+                {vi.habit.offer.permanentAccess} • {vi.habit.offer.noCreditCard}
+              </p>
+            )}
 
             {/* Includes list from CMS if present */}
             {includesList.length > 0 && (
@@ -79,23 +94,24 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              {isCtaExternal ? (
-                <a
-                  href={ctaHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
-                >
-                  {ctaLabel} →
-                </a>
-              ) : (
-                <Link
-                  href={ctaHref}
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
-                >
-                  {ctaLabel} →
-                </Link>
-              )}
+              {cta &&
+                (cta.external ? (
+                  <a
+                    href={cta.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+                  >
+                    {cta.label} →
+                  </a>
+                ) : (
+                  <Link
+                    href={cta.href}
+                    className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+                  >
+                    {cta.label} →
+                  </Link>
+                ))}
               <Link
                 href={HABIT_LOOP_PATH}
                 className="inline-flex items-center justify-center px-6 py-4 rounded-full bg-lavender-mist/60 text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors"
@@ -201,9 +217,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
                 <span className="w-8 h-8 rounded-full bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-sm mb-4">
                   ✓
                 </span>
-                <h3 className="font-semibold text-deep-navy text-base mb-2">
-                  {feat.title}
-                </h3>
+                <h3 className="font-semibold text-deep-navy text-base mb-2">{feat.title}</h3>
                 <p className="text-sm text-deep-navy/70 leading-relaxed">{feat.desc}</p>
               </div>
             ))}
@@ -219,33 +233,27 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
           </h2>
 
           <div className="space-y-4">
-            {faqList.length > 0 ? (
-              faqList.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
-                >
-                  <h3 className="font-semibold text-deep-navy text-base mb-2">
-                    {item.question}
-                  </h3>
-                  {item.answer && (
-                    <p className="text-sm text-deep-navy/80 leading-relaxed">{item.answer}</p>
-                  )}
-                </div>
-              ))
-            ) : (
-              vi.habit.offer.faq.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
-                >
-                  <h3 className="font-semibold text-deep-navy text-base mb-2">
-                    {item.q}
-                  </h3>
-                  <p className="text-sm text-deep-navy/80 leading-relaxed">{item.a}</p>
-                </div>
-              ))
-            )}
+            {faqList.length > 0
+              ? faqList.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
+                  >
+                    <h3 className="font-semibold text-deep-navy text-base mb-2">{item.question}</h3>
+                    {item.answer && (
+                      <p className="text-sm text-deep-navy/80 leading-relaxed">{item.answer}</p>
+                    )}
+                  </div>
+                ))
+              : vi.habit.offer.faq.items.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
+                  >
+                    <h3 className="font-semibold text-deep-navy text-base mb-2">{item.q}</h3>
+                    <p className="text-sm text-deep-navy/80 leading-relaxed">{item.a}</p>
+                  </div>
+                ))}
           </div>
         </div>
       </section>
@@ -257,26 +265,29 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
             Bắt đầu hành trình 21 ngày của bạn
           </h2>
           <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">
-            Khám phá {videoCount} video bài giảng, {techniqueCount} kỹ thuật thực chiến và bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.
+            Khám phá {videoCount > 0 ? `${videoCount} video bài giảng, ` : ''}
+            {techniqueCount > 0 ? `${techniqueCount} kỹ thuật thực chiến và ` : ''}
+            bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            {isCtaExternal ? (
-              <a
-                href={ctaHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
-              >
-                {ctaLabel} →
-              </a>
-            ) : (
-              <Link
-                href={ctaHref}
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
-              >
-                {ctaLabel} →
-              </Link>
-            )}
+            {cta &&
+              (cta.external ? (
+                <a
+                  href={cta.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+                >
+                  {cta.label} →
+                </a>
+              ) : (
+                <Link
+                  href={cta.href}
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+                >
+                  {cta.label} →
+                </Link>
+              ))}
             <Link
               href={HABIT_LOOP_PATH}
               className="inline-flex items-center justify-center px-6 py-4 rounded-full bg-white text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors border border-lavender-mist"
