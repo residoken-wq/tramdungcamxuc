@@ -80,6 +80,18 @@ export async function startTrial(
     }
   }
 
+  // Đang trong thời gian dùng thử -> báo đúng trạng thái và số ngày còn lại (không phải "đã dùng hết")
+  if (currentAccess.status === 'trial' && currentAccess.hasAccess) {
+    return {
+      success: true,
+      message: vi.entitlement.trialAlreadyActive,
+      code: 'TRIAL_ACTIVE',
+      status: 'trial',
+      expiresAt: currentAccess.expiresAt,
+      daysLeft: currentAccess.daysLeft,
+    }
+  }
+
   // 2. Đọc thông tin sản phẩm
   const product = (await payload.findByID({
     collection: 'products',
@@ -100,7 +112,10 @@ export async function startTrial(
   const isOnSale = product.saleStatus === 'on_sale'
   const trialDays = typeof product.trialDays === 'number' ? product.trialDays : 0
 
-  if (!isPublished || !isOnSale || trialDays <= 0) {
+  // Chỉ công cụ số mới có dùng thử (gói, ebook… có trialDays cũng không mở).
+  const isDigitalTool = product.type === 'digital_tool'
+
+  if (!isPublished || !isOnSale || !isDigitalTool || trialDays <= 0) {
     return {
       success: false,
       message: vi.entitlement.productNotAvailableForTrial,
@@ -156,6 +171,8 @@ export async function startTrial(
     })
 
     // Ghi nhận sự kiện phân tích (chỉ productSlug, productId, days - không chứa PII)
+    // TODO(T2-04): track() chỉ gửi được từ trình duyệt; gọi ở server hiện không ghi nhận gì.
+    // T2-04 gửi `trial_started` từ phía client sau khi startTrial thành công.
     track('trial_started', {
       productSlug: product.slug,
       productId: product.id,
@@ -173,11 +190,24 @@ export async function startTrial(
     }
   } catch (err: unknown) {
     if (isDuplicateTrialKeyError(err)) {
+      // Một yêu cầu song song vừa tạo trial: đọc lại để trả đúng trạng thái hiện tại.
+      const access = await getAccess(customerId, productId, { payload, now })
+      if (access.status === 'trial' && access.hasAccess) {
+        return {
+          success: true,
+          message: vi.entitlement.trialAlreadyActive,
+          code: 'TRIAL_ACTIVE',
+          status: 'trial',
+          expiresAt: access.expiresAt,
+          daysLeft: access.daysLeft,
+        }
+      }
       return {
         success: false,
         message: vi.entitlement.trialAlreadyUsed,
         code: 'TRIAL_ALREADY_USED',
-        status: 'expired',
+        status: access.status,
+        expiresAt: access.expiresAt,
         daysLeft: 0,
       }
     }
@@ -253,12 +283,10 @@ export async function getAccess(
       }
     }
 
-    if (doc.status === 'trial') {
-      let daysLeft: number | null = null
-      if (expiresAt !== null) {
-        const diffMs = expiresAt.getTime() - now.getTime()
-        daysLeft = Math.max(1, Math.ceil(diffMs / (24 * 60 * 60 * 1000)))
-      }
+    // Dùng thử luôn phải có ngày hết hạn; thiếu (VD nhập tay trong admin) -> coi như hết hạn.
+    if (doc.status === 'trial' && expiresAt !== null) {
+      const diffMs = expiresAt.getTime() - now.getTime()
+      const daysLeft = Math.max(1, Math.ceil(diffMs / (24 * 60 * 60 * 1000)))
       return {
         status: 'trial',
         hasAccess: true,
@@ -373,6 +401,7 @@ export async function markExpiredEntitlements(
 
       if (doc.status === 'trial') {
         const prod = typeof doc.product === 'object' && doc.product !== null ? doc.product : null
+        // TODO(T2-04): track() không ghi nhận gì ở server; cần kênh gửi sự kiện từ server.
         track('trial_expired', {
           productSlug: prod?.slug,
           productId: prod?.id ?? (typeof doc.product === 'number' ? doc.product : undefined),

@@ -188,8 +188,9 @@ describe('Entitlement Service – 21-day trial, lifetime purchase & access contr
       expect(access.daysLeft).toBe(21)
     })
 
-    it('dùng thử lần 2 bị từ chối với thông báo tiếng Việt rõ ràng, không ném 500', async () => {
-      const now = new Date('2026-10-15T12:00:00.000Z')
+    it('dùng thử lần 2 (sau khi hết hạn) bị từ chối với thông báo tiếng Việt rõ ràng, không ném 500', async () => {
+      // Còn trong 21 ngày thì là TRIAL_ACTIVE (mục 6); hết hạn rồi mới là "đã dùng thử".
+      const now = new Date('2026-11-30T12:00:00.000Z')
       const result2 = await startTrial(customerA.id, tool21Days.id, { payload, now })
 
       expect(result2.success).toBe(false)
@@ -218,12 +219,10 @@ describe('Entitlement Service – 21-day trial, lifetime purchase & access contr
         startTrial(custRace.id, tool365Days.id, { payload, now }),
       ])
 
-      const successCount = [res1, res2].filter((r) => r.success).length
-      const failureCount = [res1, res2].filter((r) => !r.success).length
-      expect(successCount).toBe(1)
-      expect(failureCount).toBe(1)
+      // Một lượt tạo trial, lượt còn lại thấy trial đang chạy (không tạo bản ghi thứ 2).
+      expect([res1.code, res2.code].sort()).toEqual(['TRIAL_ACTIVE', 'TRIAL_STARTED'])
 
-      const successfulRes = res1.success ? res1 : res2
+      const successfulRes = res1.code === 'TRIAL_STARTED' ? res1 : res2
       if (successfulRes.entitlementId) {
         created.push({ collection: 'entitlements', id: successfulRes.entitlementId })
       }
@@ -571,7 +570,86 @@ describe('Entitlement Service – 21-day trial, lifetime purchase & access contr
           user: userA,
           overrideAccess: false,
         }),
-      ).rejects.toThrow()
+      ).rejects.toThrow(/không có quyền/i)
+    })
+  })
+
+  describe('6. Sau QA (T2-02c)', () => {
+    const makeTool = async (overrides: Partial<Product> = {}) =>
+      track(
+        'products',
+        (await payload.create({
+          collection: 'products',
+          data: {
+            name: 'Công cụ QA T2-02c',
+            slug: `qa-t202c-${randomUUID()}`,
+            web: 'habit',
+            type: 'digital_tool',
+            saleStatus: 'on_sale',
+            _status: 'published',
+            trialDays: 21,
+            price: 250000,
+            ...overrides,
+          },
+          overrideAccess: true,
+        })) as Product,
+      )
+    const makeCustomer = async () =>
+      track(
+        'customers',
+        await payload.create({
+          collection: 'customers',
+          data: {
+            email: `qa-t202c-${randomUUID()}@example.test`,
+            name: 'Học viên Test 02c',
+            consentAt: new Date().toISOString(),
+          },
+          overrideAccess: true,
+        }),
+      )
+
+    it('bấm dùng thử lần nữa khi đang trong 21 ngày -> báo đang dùng thử, đúng số ngày còn lại', async () => {
+      const tool = await makeTool()
+      const customer = await makeCustomer()
+      const start = new Date('2026-11-01T00:00:00.000Z')
+      const first = await startTrial(customer.id, tool.id, { payload, now: start })
+      expect(first.success).toBe(true)
+      if (first.entitlementId) created.push({ collection: 'entitlements', id: first.entitlementId })
+
+      const day5 = new Date(start.getTime() + 4 * 24 * 60 * 60 * 1000)
+      const again = await startTrial(customer.id, tool.id, { payload, now: day5 })
+      expect(again.code).toBe('TRIAL_ACTIVE')
+      expect(again.status).toBe('trial')
+      expect(again.daysLeft).toBe(17)
+    })
+
+    it('chỉ công cụ số mới dùng thử được (gói / ebook có trialDays vẫn bị từ chối)', async () => {
+      const pkg = await makeTool({ type: 'package' })
+      const customer = await makeCustomer()
+      const res = await startTrial(customer.id, pkg.id, { payload })
+      expect(res.code).toBe('NOT_ELIGIBLE')
+    })
+
+    it('bản ghi dùng thử thiếu ngày hết hạn -> không có quyền', async () => {
+      const tool = await makeTool()
+      const customer = await makeCustomer()
+      track(
+        'entitlements',
+        await payload.create({
+          collection: 'entitlements',
+          data: {
+            customer: customer.id,
+            product: tool.id,
+            source: 'manual',
+            status: 'trial',
+            grantedAt: new Date().toISOString(),
+          },
+          overrideAccess: true,
+        }),
+      )
+      const access = await getAccess(customer.id, tool.id, { payload })
+      expect(access.hasAccess).toBe(false)
+      expect(access.status).toBe('expired')
     })
   })
 

@@ -10,6 +10,7 @@ export interface AccessResult {
 export type StartTrialErrorCode =
   | 'TRIAL_STARTED'
   | 'ALREADY_HAVE_ACTIVE'
+  | 'TRIAL_ACTIVE'
   | 'TRIAL_ALREADY_USED'
   | 'NOT_ELIGIBLE'
   | 'PRODUCT_NOT_FOUND'

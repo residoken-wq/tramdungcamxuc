@@ -59,6 +59,7 @@ async function checkAndEmitTrialConverted(
       overrideAccess: true,
     })
     if (existingTrial.totalDocs > 0) {
+      // TODO(T2-04): track() không ghi nhận gì ở server; cần kênh gửi sự kiện từ server.
       track('trial_converted', {
         productSlug: 'slug' in productDoc ? (productDoc.slug ?? undefined) : undefined,
         productId: productDoc.id,
@@ -150,8 +151,6 @@ export async function grantEntitlementsForOrder(
         expiresAt = new Date(paidAt.getTime() + durationDays * 24 * 60 * 60 * 1000).toISOString()
       }
 
-      await checkAndEmitTrialConverted(payload, customerId, productDoc)
-
       const grantKey = `${orderId}:${productDoc.id}`
 
       // REVIEW-REQUIRED: Tạo entitlement cho digital_tool với grantKey duy nhất
@@ -171,6 +170,8 @@ export async function grantEntitlementsForOrder(
           overrideAccess: true,
         })
         grantedCount++
+        // Chỉ sau khi cấp thành công: webhook trùng / xác nhận 2 lần không đếm chuyển đổi 2 lần.
+        await checkAndEmitTrialConverted(payload, customerId, productDoc)
       } catch (err: unknown) {
         if (isDuplicateGrantKeyError(err)) {
           // Idempotent: Đã được cấp trước đó, bỏ qua không báo lỗi
@@ -224,10 +225,6 @@ export async function grantEntitlementsForOrder(
           expiresAt = new Date(paidAt.getTime() + durationDays * 24 * 60 * 60 * 1000).toISOString()
         }
 
-        if (grantedProductDoc) {
-          await checkAndEmitTrialConverted(payload, customerId, grantedProductDoc)
-        }
-
         const grantKey = `${orderId}:${grantedProductId}`
 
         // REVIEW-REQUIRED: Tạo entitlement cho package component với grantKey duy nhất
@@ -247,6 +244,9 @@ export async function grantEntitlementsForOrder(
             overrideAccess: true,
           })
           grantedCount++
+          if (grantedProductDoc) {
+            await checkAndEmitTrialConverted(payload, customerId, grantedProductDoc)
+          }
         } catch (err: unknown) {
           if (isDuplicateGrantKeyError(err)) {
             // Idempotent: Đã được cấp trước đó, bỏ qua không báo lỗi

@@ -700,6 +700,7 @@ export const vi = {
     productNotAvailableForTrial:
       'Sản phẩm này hiện không có chương trình dùng thử hoặc chưa mở bán.',
     trialStartedSuccess: 'Bắt đầu dùng thử thành công.',
+    trialAlreadyActive: 'Bạn đang trong thời gian dùng thử công cụ này.',
     productNotFound: 'Không tìm thấy sản phẩm.',
     status: {
       trial: 'Đang dùng thử',
