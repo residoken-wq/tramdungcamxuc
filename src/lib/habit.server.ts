@@ -280,9 +280,8 @@ export async function submitHabitPlan(
   }
 
   const cleanEmail = validated.email?.trim().toLowerCase() || null
-  let customerId: number | undefined = undefined
 
-  // 4. Nếu có email, xử lý Turnstile, rate limit, lead và customer
+  // 4. Nếu có email, xử lý Turnstile, rate limit, lead
   if (cleanEmail) {
     await verifyTurnstile(validated.turnstileToken, ctx.ip)
     await checkAndRecordRateLimit(payload, {
@@ -309,25 +308,13 @@ export async function submitHabitPlan(
       },
       overrideAccess: true, // overrideAccess cho phép server action ghi nhận khách tiềm năng mà không yêu cầu user login
     })
-
-    // Kiểm tra khách hàng hiện có
-    const existingCustomer = await payload.find({
-      collection: 'customers',
-      where: { email: { equals: cleanEmail } },
-      limit: 1,
-      depth: 0,
-    })
-    if (existingCustomer.docs.length > 0) {
-      customerId = existingCustomer.docs[0].id
-    }
   }
 
   // 5. Lưu bản ghi habitPlans
-  // REVIEW-REQUIRED: Lưu kế hoạch thói quen của người dùng (có thể ẩn danh hoặc kèm leadEmail)
+  // REVIEW-REQUIRED: Lưu kế hoạch thói quen của người dùng (chỉ lưu leadEmail, không tự ý gán customer)
   const habitPlanDoc = await payload.create({
     collection: 'habitPlans',
     data: {
-      customer: customerId,
       leadEmail: cleanEmail ?? undefined,
       scorecard: validated.scorecard.map((item) => ({
         habit: item.habit,

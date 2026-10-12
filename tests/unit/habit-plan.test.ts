@@ -27,6 +27,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
   const createdTechniques: number[] = []
   const createdPlans: number[] = []
   const createdLeads: number[] = []
+  const createdCustomers: number[] = []
 
   let validCueTechId: number
   let validCravingTechId: number
@@ -82,6 +83,9 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
       }
       for (const id of createdLeads) {
         await payload.delete({ collection: 'leads', id, overrideAccess: true })
+      }
+      for (const id of createdCustomers) {
+        await payload.delete({ collection: 'customers', id, overrideAccess: true })
       }
       for (const id of createdTechniques) {
         await payload.delete({ collection: 'techniques', id, overrideAccess: true })
@@ -266,6 +270,44 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
         { payload, emailSender },
       ),
     ).rejects.toThrow()
+  })
+
+  it('A2: không tự ý gán customer khi nhập email của khách hàng đã có trong DB', async () => {
+    const existingCustEmail = `cust-existing-${randomUUID().slice(0, 8)}@example.test`
+    const cust = await payload.create({
+      collection: 'customers',
+      data: {
+        email: existingCustEmail,
+        fullName: 'Nguyễn Văn A',
+      },
+      overrideAccess: true,
+    })
+    createdCustomers.push(cust.id)
+
+    const result = await submitHabitPlan(
+      {
+        scorecard: [{ habit: 'Tập yoga', rating: 'good' }],
+        identityStatement: 'Tôi sẽ tập yoga để cơ thể dẻo dai',
+        chosenTechniques: [{ techniqueId: validCueTechId, stage: 'cue', action: 'Trải thảm tập' }],
+        email: existingCustEmail,
+        consent: true,
+      },
+      { ip: `192.168.2.${Math.floor(Math.random() * 200) + 10}` },
+      { payload, emailSender },
+    )
+
+    expect(result.success).toBe(true)
+    expect(result.planId).toBeDefined()
+    if (result.planId) createdPlans.push(result.planId)
+
+    const planDoc = await payload.findByID({
+      collection: 'habitPlans',
+      id: result.planId!,
+      overrideAccess: true,
+    })
+    expect(planDoc).toBeDefined()
+    expect(planDoc.customer).toBeFalsy()
+    expect(planDoc.leadEmail).toBe(existingCustEmail)
   })
 
   it('từ chối khi có email nhưng thiếu consent (Nghị định 13/2023)', async () => {

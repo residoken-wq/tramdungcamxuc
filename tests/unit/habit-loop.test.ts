@@ -319,11 +319,11 @@ describe('submitHabitPlan() Server Logic (T2-03)', () => {
     // Kiểm tra bản ghi habitPlans
     expect(createdPlans).toHaveLength(1)
     expect(createdPlans[0]).toMatchObject({
-      customer: 55,
       leadEmail: 'hocvien@example.com',
       identityStatement: 'Tôi sẽ tập thể dục 15 phút để trở thành người tràn đầy năng lượng',
       chosenTechniques: [{ technique: 3, action: 'Mang giày chạy bộ' }],
     })
+    expect(createdPlans[0].customer).toBeUndefined()
   })
 })
 
