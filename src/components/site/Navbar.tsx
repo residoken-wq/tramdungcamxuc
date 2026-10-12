@@ -18,17 +18,19 @@ export interface NavbarCta {
   href: string
 }
 
+export interface NavbarCustomer {
+  name?: string | null
+  email: string
+}
+
 export interface NavbarProps {
   items: NavItem[]
   cta: NavbarCta
+  customer?: NavbarCustomer | null
   className?: string
 }
 
-export function Navbar({
-  items,
-  cta,
-  className = '',
-}: NavbarProps) {
+export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const toggleButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -89,6 +91,31 @@ export function Navbar({
                 </Link>
               )
             })}
+
+            {/* Account Link */}
+            <Link
+              href={customer ? '/tai-khoan' : '/tai-khoan/dang-nhap'}
+              className="font-ui text-sm font-semibold transition-colors duration-150 py-1 border-b-2 border-transparent text-deep-navy hover:text-bright-magenta hover:border-bright-magenta/40 focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm flex items-center gap-1.5"
+            >
+              <svg
+                className="w-4 h-4 text-bright-magenta flex-shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span className="max-w-[140px] truncate">
+                {customer?.name?.trim() ||
+                  (customer ? customer.email.split('@')[0] : vi.auth.accountNavLabel)}
+              </span>
+            </Link>
           </nav>
 
           {/* Desktop CTA */}
@@ -169,7 +196,35 @@ export function Navbar({
             ))}
           </nav>
 
-          <div className="pt-3 border-t border-deep-navy/10">
+          {/* Mobile Account Link */}
+          <div className="pt-2 border-t border-deep-navy/10">
+            <Link
+              href={customer ? '/tai-khoan' : '/tai-khoan/dang-nhap'}
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg font-ui text-base font-semibold text-deep-navy hover:bg-lavender-mist/40 hover:text-bright-magenta transition-colors"
+            >
+              <svg
+                className="w-5 h-5 text-bright-magenta flex-shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span className="truncate">
+                {customer?.name?.trim() ||
+                  (customer ? customer.email.split('@')[0] : vi.auth.accountNavLabel)}
+              </span>
+            </Link>
+          </div>
+
+          <div className="pt-2 border-t border-deep-navy/10">
             <Button
               href={cta.href}
               variant="primary"

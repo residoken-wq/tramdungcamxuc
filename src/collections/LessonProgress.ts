@@ -1,7 +1,17 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { date, number, relation } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
-import { adminOrSelfCustomer, isOwner } from '../lib/auth/access'
+import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
+
+const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
+  if (operation === 'create' && req.user && req.user.collection === 'customers') {
+    return {
+      ...data,
+      customer: req.user.id,
+    }
+  }
+  return data
+}
 
 // REVIEW-REQUIRED: One progress row per customer and lesson (DB unique index + hook).
 export const LessonProgress: CollectionConfig = {
@@ -16,6 +26,7 @@ export const LessonProgress: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
+      bindCustomerOnCreate,
       uniqueKeyHook({
         keyField: 'customerLesson',
         parts: ['customer', 'lesson'],
@@ -24,7 +35,11 @@ export const LessonProgress: CollectionConfig = {
     ],
   },
   fields: [
-    { ...relation('customer', 'Khách hàng', 'customers'), required: true },
+    {
+      ...relation('customer', 'Khách hàng', 'customers'),
+      required: true,
+      access: { update: isEditorOrOwner },
+    },
     { ...relation('lesson', 'Bài học', 'lessons'), required: true },
     { ...number('watchedPercent', 'Đã xem (%)', 0), max: 100 },
     date('completedAt', 'Hoàn thành lúc'),

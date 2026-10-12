@@ -197,6 +197,8 @@ CRON_SECRET=
 PAYMENT_SANDBOX=true
 ```
 
+**⚠️ Không bao giờ đặt `E2E_TEST_HOOKS` trên server** (demo hay chính thức). Biến này chỉ dùng trong bước e2e của CI: khi bằng `1`, đường `/api/test-otp` trả mã đăng nhập OTP của bất kỳ email nào → ai cũng chiếm được tài khoản khách. Kiểm tra nhanh trên server: `grep -c '^E2E_TEST_HOOKS' .env` phải ra `0`.
+
 Biến `SITE_URL` được server đọc lúc chạy (runtime): các link tải tài nguyên trong email, sitemap, robots và thẻ metadata sẽ dùng địa chỉ này (thay vì cố định tên miền chính thức). Thiếu `TURNSTILE_SECRET_KEY` thì mọi form (nhận tài nguyên, brief doanh nghiệp, quiz) báo lỗi cấu hình. Khi có tài khoản Cloudflare thật: đặt biến repo `TURNSTILE_SITE_KEY` (GitHub → Settings → Secrets and variables → Actions → Variables), chờ CI build image mới, rồi thay `TURNSTILE_SECRET_KEY` bằng secret thật.
 
 `STYLEGUIDE_PUBLIC=true` cho khách xem `/styleguide`; để trống nếu không cần. Compose tự đặt `DATABASE_URI` tới Postgres nội bộ, không dùng URL DB local trong `.env`. Bản compose demo lưu media và tài liệu riêng tư trên volume local (`media:/app/media` và `private:/app/private`), không chuyển tiếp cấu hình S3. Volume `private` bảo vệ các tập tin PDF/ZIP/EPUB giao qua email khỏi bị mất khi cập nhật image app mới. `SITE_NOINDEX` và `STYLEGUIDE_PUBLIC` được đọc lúc chạy; đổi chúng rồi chạy `up -d` để tạo lại app, không chỉ `restart`.
@@ -479,3 +481,35 @@ Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 0 của
 _(Khóa được đọc từ `.env` mỗi lần chạy – **không dán khóa vào crontab**. Đổi `/opt/tramdungcamxuc` và cổng `3400` nếu server khác.)_
 
 Kiểm (demo đã chạy đúng 10/10): gọi có khóa → `200`, không khóa → `401`; sau phút 0 kế tiếp `tail -3 /var/log/tdcx-cron-expire.log` có JSON `"success":true`. Thêm biến mà chưa tạo lại container thì cron trả `401` → chạy `docker compose -p tdcx-demo -f docker-compose.prod.yml up -d`.
+
+---
+
+### Lịch Cron nhắc workshop trước 24 giờ (T2-10)
+
+Endpoint `/api/cron/workshop-reminders` tự động tìm các workshop đã xuất bản có thời gian bắt đầu `startsAt` trong khoảng `(now + 23h, now + 25h]`, xác định các khách hàng có đơn hàng đã thanh toán (`paymentStatus = 'paid'`) chứa sản phẩm trong danh sách `audienceProducts`, và gửi email nhắc lịch.
+
+Route này được bảo vệ nghiêm ngặt bằng header `Authorization: Bearer <CRON_SECRET>` (so khớp hằng thời gian `timingSafeEqual`). Hệ thống bảo đảm tính lũy đẳng (idempotency) thông qua khóa duy nhất `workshop:customer` trong collection `workshopReminders` – không gửi trùng email kể cả khi cron chạy lại hoặc chạy song song.
+
+**Cấu hình crontab mẫu trên server Linux / Docker:**
+Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 15 của mỗi giờ):
+
+```bash
+# Mở crontab: crontab -e
+15 * * * * cd /opt/tramdungcamxuc && curl -s -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= .env | cut -d= -f2)" http://127.0.0.1:3400/api/cron/workshop-reminders >> /var/log/tdcx-cron-workshop.log 2>&1 && echo >> /var/log/tdcx-cron-workshop.log
+```
+
+---
+
+### Lịch Cron cập nhật quyền truy cập hết hạn (T2-02)
+
+Endpoint `/api/cron/expire-entitlements` tự động tìm các bản ghi quyền truy cập (`entitlements`) ở trạng thái `trial` hoặc `active` đã quá thời hạn `expiresAt` để chuyển trạng thái sang `expired`, đồng thời phát sự kiện phân tích `trial_expired`.
+
+Route này được bảo vệ bằng header `Authorization: Bearer <CRON_SECRET>` (so khớp hằng thời gian `timingSafeEqual` với biến môi trường `CRON_SECRET` trong `.env`).
+
+**Cấu hình crontab mẫu trên server Linux / Docker:**
+Chạy kiểm tra định kỳ mỗi giờ một lần:
+
+```bash
+# Mở crontab: crontab -e
+0 * * * * cd /opt/tramdungcamxuc && curl -s -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= .env | cut -d= -f2)" http://127.0.0.1:3400/api/cron/expire-entitlements >> /var/log/tdcx-cron-entitlements.log 2>&1 && echo >> /var/log/tdcx-cron-entitlements.log
+```

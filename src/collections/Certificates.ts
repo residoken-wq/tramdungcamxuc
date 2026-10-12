@@ -21,12 +21,16 @@ export const Certificates: CollectionConfig = {
   access: {
     read: adminOrSelfCustomer(),
     create: isEditorOrOwner,
-    update: adminOrSelfCustomer(),
+    update: isEditorOrOwner,
     delete: isOwner,
   },
   hooks: { beforeChange: [assignCode] },
   fields: [
-    { ...relation('customer', 'Khách hàng', 'customers'), required: true },
+    {
+      ...relation('customer', 'Khách hàng', 'customers'),
+      required: true,
+      access: { update: isEditorOrOwner },
+    },
     relation('plan', 'Kế hoạch', 'habitPlans'),
     textarea('identityStatement', 'Câu định danh'),
     { ...number('daysCompleted', 'Số ngày hoàn thành'), max: 21 },

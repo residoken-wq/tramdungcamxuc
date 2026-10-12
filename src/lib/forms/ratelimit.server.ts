@@ -2,6 +2,7 @@ import 'server-only'
 import { createHash } from 'node:crypto'
 import type { Payload } from 'payload'
 import { vi } from '../i18n/vi'
+import { getAuthSecret } from '../auth/token'
 
 export class RateLimitError extends Error {
   constructor(message = vi.forms.rateLimited) {
@@ -11,7 +12,7 @@ export class RateLimitError extends Error {
 }
 
 export function hashRateLimitKey(prefix: string, form: string, rawValue: string): string {
-  const secret = process.env.PAYLOAD_SECRET || 'tramdungcamxuc-default-secret'
+  const secret = getAuthSecret()
   return createHash('sha256')
     .update(`${form}:${prefix}:${rawValue.trim().toLowerCase()}:${secret}`)
     .digest('hex')
@@ -47,10 +48,7 @@ export async function checkAndRecordRateLimit(
     const result = await payload.count({
       collection: 'rateLimitHits',
       where: {
-        and: [
-          { key: { equals: key } },
-          { createdAt: { greater_than_equal: cutoff } },
-        ],
+        and: [{ key: { equals: key } }, { createdAt: { greater_than_equal: cutoff } }],
       },
       overrideAccess: true,
     })

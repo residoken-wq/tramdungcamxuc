@@ -11,6 +11,8 @@ import { ExperienceOrderPaidEmail } from '@/emails/ExperienceOrderPaidEmail'
 import { ExperienceOrderExpiredEmail } from '@/emails/ExperienceOrderExpiredEmail'
 import { PackageOrderPaidEmail } from '@/emails/PackageOrderPaidEmail'
 import { HabitPlanEmail, type HabitPlanEmailTechniqueItem } from '@/emails/HabitPlanEmail'
+import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
+import { WorkshopReminderEmail } from '@/emails/WorkshopReminderEmail'
 import { vi } from '@/lib/i18n/vi'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
@@ -433,6 +435,87 @@ export async function sendPackageOrderPaidEmail(
     })
   } catch (err) {
     console.error('[Email] Failed to send package order paid email:', err)
+    throw err
+  }
+}
+
+export async function sendCustomerOtpEmail(
+  payload: Payload,
+  data: {
+    email: string
+    code: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(CustomerOtpEmail, {
+        email: data.email,
+        code: data.code,
+      }),
+    )
+    const userText = await render(
+      React.createElement(CustomerOtpEmail, {
+        email: data.email,
+        code: data.code,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.auth.otpEmailSubject,
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send customer OTP email:', err)
+    // Non-fatal error logging, let caller proceed or handle
+  }
+}
+
+export async function sendWorkshopReminderEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    workshopTitle: string
+    workshopTimeFormatted: string
+    accountUrl?: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(WorkshopReminderEmail, {
+        name: data.name,
+        workshopTitle: data.workshopTitle,
+        workshopTimeFormatted: data.workshopTimeFormatted,
+        accountUrl: data.accountUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(WorkshopReminderEmail, {
+        name: data.name,
+        workshopTitle: data.workshopTitle,
+        workshopTimeFormatted: data.workshopTimeFormatted,
+        accountUrl: data.accountUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.workshop.reminderEmail.subject(data.workshopTitle),
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send workshop reminder email:', err)
     throw err
   }
 }

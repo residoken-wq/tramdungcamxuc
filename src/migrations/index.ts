@@ -1,10 +1,12 @@
-import * as migration_20261004_050321_initial from './20261004_050321_initial';
-import * as migration_20261005_031311_content_collections from './20261005_031311_content_collections';
-import * as migration_20261005_123719_access_control from './20261005_123719_access_control';
-import * as migration_20261006_090527_leads_forms from './20261006_090527_leads_forms';
-import * as migration_20261007_025629_private_files from './20261007_025629_private_files';
-import * as migration_20261008_022007_payment_backend from './20261008_022007_payment_backend';
-import * as migration_20261009_030050_package_payment_entitlements from './20261009_030050_package_payment_entitlements';
+import * as migration_20261004_050321_initial from './20261004_050321_initial'
+import * as migration_20261005_031311_content_collections from './20261005_031311_content_collections'
+import * as migration_20261005_123719_access_control from './20261005_123719_access_control'
+import * as migration_20261006_090527_leads_forms from './20261006_090527_leads_forms'
+import * as migration_20261007_025629_private_files from './20261007_025629_private_files'
+import * as migration_20261008_022007_payment_backend from './20261008_022007_payment_backend'
+import * as migration_20261009_030050_package_payment_entitlements from './20261009_030050_package_payment_entitlements'
+import * as migration_20261010_124840_customer_auth from './20261010_124840_customer_auth'
+import * as migration_20261012_122924_workshop_reminders from './20261012_122924_workshop_reminders'
 
 export const migrations = [
   {
@@ -40,6 +42,16 @@ export const migrations = [
   {
     up: migration_20261009_030050_package_payment_entitlements.up,
     down: migration_20261009_030050_package_payment_entitlements.down,
-    name: '20261009_030050_package_payment_entitlements'
+    name: '20261009_030050_package_payment_entitlements',
   },
-];
+  {
+    up: migration_20261010_124840_customer_auth.up,
+    down: migration_20261010_124840_customer_auth.down,
+    name: '20261010_124840_customer_auth',
+  },
+  {
+    up: migration_20261012_122924_workshop_reminders.up,
+    down: migration_20261012_122924_workshop_reminders.down,
+    name: '20261012_122924_workshop_reminders',
+  },
+]
