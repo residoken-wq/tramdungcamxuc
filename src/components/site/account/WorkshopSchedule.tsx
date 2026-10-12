@@ -38,7 +38,7 @@ export function WorkshopSchedule({ workshops }: WorkshopScheduleProps) {
                   </h3>
                   {ws.canJoinNow ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-mint-haze text-deep-navy">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-pink motion-safe:animate-pulse" />
                       {vi.workshop.openBadge}
                     </span>
                   ) : (
