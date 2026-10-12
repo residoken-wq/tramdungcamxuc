@@ -35,3 +35,6 @@
 - [x] ~~**Cron hết hạn đơn chạy trên Vercel**~~ (bỏ – D2 chốt 10/10 chạy server riêng, crontab dùng `POST`) (IT duyệt T1-12, 08/10): Vercel Cron gọi bằng `GET`, route `/api/cron/expire-orders` hiện chỉ có `POST` (crontab Docker dùng `curl -X POST`). Thêm `GET` dùng chung kiểm `CRON_SECRET` khi chốt deploy Vercel (D1/D2).
 
 - [ ] E2E `live-preview.test.ts` (375px) thỉnh thoảng lỗi lần đầu, qua khi chạy lại (thấy ở CI PR #74, 11/10) – tìm gốc, không tăng timeout.
+
+- [ ] Phiên khách (T2-01): thu hồi phiên phía server khi đăng xuất / đổi email (hiện chỉ xóa cookie, hạn 30 ngày).
+- [ ] T2-01: server chặn đăng nhập khi khách cũ chưa có `consentAt` (form đã chặn).
