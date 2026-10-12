@@ -56,7 +56,8 @@ export const products: ProductSeed[] = [
     type: 'digital_tool',
     journeyStep: 'name',
     shortDescription: `${S} Gọi tên cue, craving, response, reward của một thói quen trong 5 phút.`,
-    saleStatus: 'coming_soon',
+    saleStatus: 'free',
+    externalUrl: '/habit/5-phut',
     order: 2,
   },
   {
@@ -82,6 +83,22 @@ export const products: ProductSeed[] = [
     trialDays: 21,
     saleStatus: 'coming_soon',
     order: 4,
+    includes: [
+      { text: `${S} 20 video bài giảng ngắn (5–7 phút) chia theo 4 chặng Habit Loop` },
+      { text: `${S} 11 kỹ thuật thực chiến can thiệp hành vi cá nhân hóa` },
+      { text: `${S} Tracker 21 ngày tương tác với 10 trạng thái cảm xúc` },
+      { text: `${S} Tài liệu hướng dẫn và bài tập phản chiếu tự nhận thức` },
+    ],
+    faq: [
+      {
+        question: `${S} Khóa học và công cụ này phù hợp với ai?`,
+        answer: `${S} Dành cho người đi làm thường xuyên trì hoãn, muốn xây dựng thói quen kiên định nhưng không muốn tạo thêm áp lực căng thẳng cho bản thân.`,
+      },
+      {
+        question: `${S} Sau 21 ngày dùng thử miễn phí, tôi có bị tự động trừ tiền không?`,
+        answer: `${S} Không. Trạm Dừng Cảm Xúc không yêu cầu nhập thông tin thẻ ngân hàng khi dùng thử. Hết 21 ngày, bạn hoàn toàn tự quyết định có nâng cấp hay không.`,
+      },
+    ],
   },
   {
     slug: 'eq-buddy-so',

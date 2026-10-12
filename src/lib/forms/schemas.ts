@@ -215,3 +215,77 @@ export const diagnosticSubmissionSchema = z
   )
 
 export type DiagnosticSubmissionInput = z.infer<typeof diagnosticSubmissionSchema>
+
+export const habitScorecardItemSchema = z.object({
+  habit: z
+    .string()
+    .trim()
+    .min(1, vi.habit.wizard.errors.habitRequired)
+    .max(200, vi.habit.wizard.errors.habitMax),
+  rating: z.enum(['good', 'neutral', 'bad']),
+})
+
+export type HabitScorecardItemInput = z.infer<typeof habitScorecardItemSchema>
+
+export const habitChosenTechniqueSchema = z.object({
+  techniqueId: z.number().int().positive(),
+  stage: z.enum(['cue', 'craving', 'response', 'reward']),
+  action: z
+    .string()
+    .trim()
+    .min(1, vi.habit.wizard.errors.actionRequired)
+    .max(300, vi.habit.wizard.errors.actionMax),
+})
+
+export type HabitChosenTechniqueInput = z.infer<typeof habitChosenTechniqueSchema>
+
+export const habitPlanSubmissionSchema = z
+  .object({
+    scorecard: z
+      .array(habitScorecardItemSchema)
+      .min(1, vi.habit.wizard.errors.scorecardEmpty)
+      .max(20, vi.habit.wizard.errors.scorecardMax),
+    identityStatement: z
+      .string()
+      .trim()
+      .min(1, vi.habit.wizard.errors.identityRequired)
+      .max(500, vi.habit.wizard.errors.identityMax),
+    chosenTechniques: z
+      .array(habitChosenTechniqueSchema)
+      .max(8, vi.habit.wizard.errors.techniquesTooMany),
+    name: z.string().trim().max(100, vi.forms.validation.nameMax).optional().nullable(),
+    email: z
+      .string()
+      .trim()
+      .max(254, vi.forms.validation.emailMax)
+      .optional()
+      .nullable()
+      .refine(
+        (val) => {
+          if (!val || val.length === 0) return true
+          return z.string().email().safeParse(val).success
+        },
+        {
+          message: vi.forms.validation.emailInvalid,
+        },
+      ),
+    consent: z.boolean().optional().nullable(),
+    honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+    turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+    utm: z.string().max(500).optional(),
+  })
+  .refine(
+    (data) => {
+      const hasEmail = Boolean(data.email && data.email.trim().length > 0)
+      if (hasEmail) {
+        return data.consent === true
+      }
+      return true
+    },
+    {
+      message: vi.forms.validation.consentRequired,
+      path: ['consent'],
+    },
+  )
+
+export type HabitPlanSubmissionInput = z.infer<typeof habitPlanSubmissionSchema>
