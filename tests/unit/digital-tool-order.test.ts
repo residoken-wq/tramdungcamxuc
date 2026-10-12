@@ -6,7 +6,6 @@ import { randomUUID } from 'node:crypto'
 import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import config from '../../src/payload.config'
 import type { SiteSetting } from '../../src/payload-types'
-import { vi as viStrings } from '../../src/lib/i18n/vi'
 import {
   confirmManualPayment,
   createDigitalToolOrder,
