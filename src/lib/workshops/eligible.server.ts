@@ -41,10 +41,7 @@ export async function getEligibleWorkshops(
   const paidOrders = await payload.find({
     collection: 'orders',
     where: {
-      and: [
-        { customer: { equals: customerId } },
-        { paymentStatus: { equals: 'paid' } },
-      ],
+      and: [{ customer: { equals: customerId } }, { paymentStatus: { equals: 'paid' } }],
     },
     depth: 0,
     limit: 100,
@@ -107,9 +104,7 @@ export async function getEligibleWorkshops(
     const audience = Array.isArray(ws.audienceProducts) ? ws.audienceProducts : []
     const isEligible = audience.some((item) => {
       const pid =
-        typeof item === 'object' && item !== null
-          ? (item as { id: number }).id
-          : Number(item)
+        typeof item === 'object' && item !== null ? (item as { id: number }).id : Number(item)
       return purchasedProductIds.has(pid)
     })
 

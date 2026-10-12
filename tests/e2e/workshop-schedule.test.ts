@@ -191,9 +191,7 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
       await expect(workshopCard).toBeVisible()
 
       // Thông báo link mở trước 60 phút
-      await expect(
-        guestPage.locator('text=Link sẽ mở 60 phút trước giờ học'),
-      ).toBeVisible()
+      await expect(guestPage.locator('text=Link sẽ mở 60 phút trước giờ học')).toBeVisible()
     } finally {
       // Dọn dẹp dữ liệu
       await guestPage.close()

@@ -110,8 +110,7 @@ export async function sendWorkshopReminders(
 
       if (matchesAudience && order.customer) {
         const c = order.customer
-        const custId =
-          typeof c === 'object' && c !== null ? (c as { id: number }).id : Number(c)
+        const custId = typeof c === 'object' && c !== null ? (c as { id: number }).id : Number(c)
         if (Number.isFinite(custId) && custId > 0 && !eligibleCustomers.has(custId)) {
           if (typeof c === 'object' && c !== null && (c as { email?: string }).email) {
             eligibleCustomers.set(custId, {

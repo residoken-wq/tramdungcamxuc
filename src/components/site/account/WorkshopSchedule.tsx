@@ -11,9 +11,7 @@ export function WorkshopSchedule({ workshops }: WorkshopScheduleProps) {
   return (
     <div className="bg-white/95 rounded-2xl p-6 border border-lavender-mist shadow-sm space-y-4">
       <div className="flex items-center justify-between border-b border-deep-navy/10 pb-3">
-        <h2 className="font-ui text-base font-bold text-deep-navy">
-          {vi.workshop.heading}
-        </h2>
+        <h2 className="font-ui text-base font-bold text-deep-navy">{vi.workshop.heading}</h2>
         {workshops.length > 0 && (
           <span className="text-xs font-medium text-bright-magenta font-mono">
             ({workshops.length})

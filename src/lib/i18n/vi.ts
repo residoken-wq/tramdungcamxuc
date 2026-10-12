@@ -708,7 +708,8 @@ export const vi = {
       subject: (title: string) => `Trạm Dừng Cảm Xúc – Nhắc hẹn workshop: ${title}`,
       title: 'Nhắc hẹn workshop sắp diễn ra',
       greeting: (name: string) => `Xin chào ${name},`,
-      intro: (title: string) => `Chỉ còn 24 giờ nữa là buổi workshop "${title}" sẽ chính thức bắt đầu.`,
+      intro: (title: string) =>
+        `Chỉ còn 24 giờ nữa là buổi workshop "${title}" sẽ chính thức bắt đầu.`,
       workshopTimeLabel: 'Thời gian diễn ra:',
       accountNotice:
         'Để bảo mật thông tin phòng học, liên kết tham gia sẽ tự động mở tại Trang tài khoản của bạn trước giờ bắt đầu 60 phút.',
