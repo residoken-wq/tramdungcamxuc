@@ -363,7 +363,6 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
       await payload.create({
         collection: 'eqCards',
         data: {
-          title: 'Thẻ EQ Test A4',
           code: `c-${randomUUID().slice(0, 6)}`,
           qrSlug: `qr-${randomUUID().slice(0, 6)}`,
         },
