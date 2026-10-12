@@ -56,7 +56,8 @@ export const products: ProductSeed[] = [
     type: 'digital_tool',
     journeyStep: 'name',
     shortDescription: `${S} Gọi tên cue, craving, response, reward của một thói quen trong 5 phút.`,
-    saleStatus: 'coming_soon',
+    saleStatus: 'free',
+    externalUrl: '/habit/5-phut',
     order: 2,
   },
   {
