@@ -13,6 +13,7 @@ import { PackageOrderPaidEmail } from '@/emails/PackageOrderPaidEmail'
 import { DigitalToolOrderPaidEmail } from '@/emails/DigitalToolOrderPaidEmail'
 import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
 import { WorkshopReminderEmail } from '@/emails/WorkshopReminderEmail'
+import { TrialWelcomeEmail } from '@/emails/TrialWelcomeEmail'
 import { vi } from '@/lib/i18n/vi'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
@@ -566,6 +567,53 @@ export async function sendWorkshopReminderEmail(
     })
   } catch (err) {
     console.error('[Email] Failed to send workshop reminder email:', err)
+    throw err
+  }
+}
+
+export async function sendTrialWelcomeEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    toolName: string
+    expiresAtFormatted: string
+    trialDays: number
+    toolUrl: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(TrialWelcomeEmail, {
+        name: data.name,
+        toolName: data.toolName,
+        expiresAtFormatted: data.expiresAtFormatted,
+        trialDays: data.trialDays,
+        toolUrl: data.toolUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(TrialWelcomeEmail, {
+        name: data.name,
+        toolName: data.toolName,
+        expiresAtFormatted: data.expiresAtFormatted,
+        trialDays: data.trialDays,
+        toolUrl: data.toolUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.trial.email.welcomeSubject(data.toolName),
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send trial welcome email:', err)
     throw err
   }
 }

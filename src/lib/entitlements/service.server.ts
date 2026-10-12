@@ -194,8 +194,7 @@ export async function startTrial(
     })
 
     // Ghi nhận sự kiện phân tích (chỉ productSlug, productId, days - không chứa PII)
-    // TODO(T2-04): track() chỉ gửi được từ trình duyệt; gọi ở server hiện không ghi nhận gì.
-    // T2-04 gửi `trial_started` từ phía client sau khi startTrial thành công.
+    // Sự kiện `trial_started` được gửi từ phía client sau khi startTrial thành công (track() chỉ gửi từ trình duyệt).
     track('trial_started', {
       productSlug: product.slug,
       productId: product.id,

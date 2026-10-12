@@ -8,6 +8,8 @@ import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { startTrial } from '@/lib/entitlements/service.server'
 import { checkAndRecordRateLimit, RateLimitError } from '@/lib/forms/ratelimit.server'
 import { getToolUrl } from '@/lib/products'
+import { getSiteUrl } from '@/lib/site-url'
+import { sendTrialWelcomeEmail } from '@/lib/email/service.server'
 import { vi } from '@/lib/i18n/vi'
 
 export interface StartTrialActionResult {
@@ -27,10 +29,27 @@ export interface StartTrialActionResult {
   days?: number
 }
 
+function formatTrialExpiryTime(expiresAt: Date): string {
+  const timeFormatter = new Intl.DateTimeFormat('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+  const dateFormatter = new Intl.DateTimeFormat('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+  return `${timeFormatter.format(expiresAt)}, ${dateFormatter.format(expiresAt)}`
+}
+
 // REVIEW-REQUIRED: Server action bắt đầu dùng thử công cụ số cho khách hàng.
 // - Khách hàng xác thực từ phiên server (getCurrentCustomer), không nhận customer ID từ client.
 // - Kiểm tra giới hạn tần suất (rate limit) chống lạm dụng kích hoạt tự động.
 // - Kích hoạt trial thông qua startTrial (bảo toàn ràng buộc unique trialKey).
+// - Gửi email chào mừng kích hoạt dùng thử (lỗi gửi email không chặn khách vào công cụ).
 export async function startTrialAction(productSlug: string): Promise<StartTrialActionResult> {
   try {
     const customer = await getCurrentCustomer()
@@ -113,6 +132,29 @@ export async function startTrialAction(productSlug: string): Promise<StartTrialA
     const toolUrl = getToolUrl(product)
 
     if (result.code === 'TRIAL_STARTED') {
+      // Gửi email chào mừng kích hoạt dùng thử (lỗi email không chặn chuyển trang vào công cụ)
+      const siteUrl = getSiteUrl()
+      const absoluteToolUrl = `${siteUrl}${toolUrl}`
+      const expiresAtFormatted = result.expiresAt ? formatTrialExpiryTime(result.expiresAt) : ''
+
+      try {
+        await sendTrialWelcomeEmail(payload, {
+          name: customer.name || '',
+          email: customer.email,
+          toolName: product.name,
+          expiresAtFormatted,
+          trialDays: product.trialDays,
+          toolUrl: absoluteToolUrl,
+        })
+      } catch (emailErr) {
+        // Chỉ log lỗi kèm customer ID (không ghi nhận địa chỉ email PII vào log)
+        console.error(
+          '[TrialAction] Failed to send trial welcome email for customer:',
+          customer.id,
+          emailErr,
+        )
+      }
+
       return {
         success: true,
         code: 'TRIAL_STARTED',
