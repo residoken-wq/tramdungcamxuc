@@ -431,6 +431,9 @@ export const vi = {
         footerAutoNotice:
           'Email xác nhận tự động từ tramdungcamxuc.com. Nếu có câu hỏi cần hỗ trợ, bạn có thể trả lời trực tiếp email này.',
       },
+      digitalToolPaid: {
+        subject: (toolName: string) => `Trạm Dừng Cảm Xúc – Kích hoạt công cụ số ${toolName}`,
+      },
     },
     ui: {
       packageSummary: {

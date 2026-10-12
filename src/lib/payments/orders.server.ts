@@ -13,6 +13,7 @@ import { computePackageValue } from '../pricing'
 import { generatePayToken, generateUniquePaymentRef } from './payment-ref'
 import { assertValidBankConfig, buildVietQrPayload, generateVietQrSvg } from './vietqr'
 import {
+  sendDigitalToolOrderPaidEmail,
   sendExperienceOrderPaidEmail,
   sendOrderExpiredReminderEmail,
   sendPackageOrderPaidEmail,
@@ -801,9 +802,10 @@ export async function confirmManualPayment(
     overrideAccess: true,
   })
 
-  // Kiểm tra đơn hàng có chứa sản phẩm dạng package hay không
+  // Kiểm tra đơn hàng có chứa sản phẩm dạng package hoặc digital_tool hay không
   const items = Array.isArray(order.items) ? order.items : []
   let packageProduct: Product | null = null
+  let digitalToolProduct: Product | null = null
 
   for (const item of items) {
     let p: Product | number | string | null = item.product as Product | number | string | null
@@ -815,16 +817,21 @@ export async function confirmManualPayment(
         overrideAccess: true,
       })) as Product
     }
-    if (p && typeof p === 'object' && p.type === 'package') {
-      packageProduct = p
-      break
+    if (p && typeof p === 'object') {
+      if (p.type === 'package') {
+        packageProduct = p
+        break
+      } else if (p.type === 'digital_tool' && !digitalToolProduct) {
+        digitalToolProduct = p
+      }
     }
   }
 
   const isPackageOrder = Boolean(packageProduct)
+  const isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
 
-  // REVIEW-REQUIRED: Cấp quyền truy cập cho đơn gói Growth Mirror
-  if (isPackageOrder) {
+  // REVIEW-REQUIRED: Cấp quyền truy cập cho đơn gói Growth Mirror hoặc đơn công cụ số
+  if (isPackageOrder || isDigitalToolOrder) {
     try {
       await grantEntitlementsForOrder(orderId, { payload, now })
       await payload.update({
@@ -927,6 +934,38 @@ export async function confirmManualPayment(
           },
           options.emailSender,
         )
+
+        await payload.update({
+          collection: 'orders',
+          id: orderId,
+          data: { deliveryStatus: 'email_sent' },
+          context: { paymentAction: true },
+          overrideAccess: true,
+        })
+      } else if (isDigitalToolOrder && digitalToolProduct) {
+        // REVIEW-REQUIRED: Gửi email kích hoạt đơn mua lẻ công cụ số
+        const siteUrl = getSiteUrl()
+        const toolUrl = `${siteUrl}${
+          digitalToolProduct.web === 'habit'
+            ? '/habit'
+            : digitalToolProduct.web === 'eq'
+              ? '/eq-buddy'
+              : `/${digitalToolProduct.slug}`
+        }`
+        await sendDigitalToolOrderPaidEmail(
+          payload,
+          {
+            name: customerDoc.name || 'bạn',
+            email: customerDoc.email,
+            paymentRef: order.paymentRef || '',
+            amount: order.total,
+            toolName: digitalToolProduct.name || 'Công cụ số',
+            accessDurationDays: digitalToolProduct.accessDurationDays,
+            toolUrl,
+          },
+          options.emailSender,
+        )
+        // Lưu ý: với đơn công cụ số, deliveryStatus vẫn giữ là 'access_granted' đã cập nhật ở trên
       } else {
         // Đơn trải nghiệm 149k giữ nguyên hành vi
         await sendExperienceOrderPaidEmail(
@@ -940,15 +979,15 @@ export async function confirmManualPayment(
           },
           options.emailSender,
         )
-      }
 
-      await payload.update({
-        collection: 'orders',
-        id: orderId,
-        data: { deliveryStatus: 'email_sent' },
-        context: { paymentAction: true },
-        overrideAccess: true,
-      })
+        await payload.update({
+          collection: 'orders',
+          id: orderId,
+          data: { deliveryStatus: 'email_sent' },
+          context: { paymentAction: true },
+          overrideAccess: true,
+        })
+      }
     } catch (emailErr) {
       console.error('[Payment] Confirmation email delivery failed for order', orderId, emailErr)
       // Đơn hàng vẫn giữ nguyên trạng thái paid (không revert)
