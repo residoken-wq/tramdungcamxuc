@@ -116,7 +116,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **Cổng GĐ 1 (10/10): kỹ thuật ĐẠT – chờ Hana làm bài kiểm tra** → [`GATE_GD1.md`](GATE_GD1.md).
 
-**🔒 Migration: T2-04 (PC nhà) · 🔒 Package: (trống)**
+**🔒 Migration: (trống) · 🔒 Package: (trống)**
 
 **Lịch máy 10/10**: PC nhà = T2-01 · ~~T1-17b~~ (xong) · trước đó ~~T1-13~~, ~~T1-17e~~ (xong) · Codex (Local) = ~~T1-10b~~ (xong), review thứ hai T1-13 khi PR sẵn sàng · **Antigravity máy Local và Laptop tạm nghỉ đến hết thứ Bảy 10/10** (không giao task mới).
 
