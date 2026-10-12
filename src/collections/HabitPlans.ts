@@ -1,6 +1,6 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { date, relation, select, text, textarea } from '../fields/content'
-import { adminOrSelfCustomer, isOwner } from '../lib/auth/access'
+import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
 
 const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
   if (operation === 'create' && req.user && req.user.collection === 'customers') {
@@ -27,7 +27,7 @@ export const HabitPlans: CollectionConfig = {
     beforeChange: [bindCustomerOnCreate],
   },
   fields: [
-    relation('customer', 'Khách hàng', 'customers'),
+    { ...relation('customer', 'Khách hàng', 'customers'), access: { update: isEditorOrOwner } },
     { name: 'leadEmail', label: 'Email (chưa có tài khoản)', type: 'email' },
     {
       name: 'scorecard',

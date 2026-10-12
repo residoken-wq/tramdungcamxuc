@@ -1,7 +1,7 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { date, number, relation } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
-import { adminOrSelfCustomer, isOwner } from '../lib/auth/access'
+import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
 
 const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
   if (operation === 'create' && req.user && req.user.collection === 'customers') {
@@ -35,7 +35,11 @@ export const LessonProgress: CollectionConfig = {
     ],
   },
   fields: [
-    { ...relation('customer', 'Khách hàng', 'customers'), required: true },
+    {
+      ...relation('customer', 'Khách hàng', 'customers'),
+      required: true,
+      access: { update: isEditorOrOwner },
+    },
     { ...relation('lesson', 'Bài học', 'lessons'), required: true },
     { ...number('watchedPercent', 'Đã xem (%)', 0), max: 100 },
     date('completedAt', 'Hoàn thành lúc'),

@@ -257,4 +257,152 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
     expect(payload.config.admin.user).toBe('users')
     expect(userA.collection).not.toBe(payload.config.admin.user)
   })
+
+  it('customer cannot update certificate fields (A4)', async () => {
+    const userA = await getRealCustomerSession(customerA)
+    const certA = track(
+      'certificates',
+      await payload.create({
+        collection: 'certificates',
+        data: {
+          customer: customerA.id,
+          identityStatement: 'Ban đầu',
+          daysCompleted: 5,
+        },
+        overrideAccess: true,
+      }),
+    )
+
+    await expect(
+      payload.update({
+        collection: 'certificates',
+        id: certA.id,
+        data: {
+          daysCompleted: 21,
+          identityStatement: 'Giả mạo hoàn thành',
+        },
+        user: userA,
+        overrideAccess: false,
+      }),
+    ).rejects.toThrow()
+  })
+
+  it('customer cannot create checkin on another customer habit plan (A4)', async () => {
+    const userA = await getRealCustomerSession(customerA)
+
+    // Plan owned by Customer B
+    const planB = track(
+      'habitPlans',
+      await payload.create({
+        collection: 'habitPlans',
+        data: {
+          customer: customerB.id,
+          startDate: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      }),
+    )
+
+    // Customer A attempts to create a check-in for Customer B's plan
+    await expect(
+      payload.create({
+        collection: 'habitCheckins',
+        data: {
+          plan: planB.id,
+          day: 1,
+          done: true,
+        },
+        user: userA,
+        overrideAccess: false,
+      }),
+    ).rejects.toThrow()
+  })
+
+  it('customer cannot change customer field on habit plan (A4)', async () => {
+    const userA = await getRealCustomerSession(customerA)
+    const planA = track(
+      'habitPlans',
+      await payload.create({
+        collection: 'habitPlans',
+        data: {
+          customer: customerA.id,
+          startDate: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      }),
+    )
+
+    await payload.update({
+      collection: 'habitPlans',
+      id: planA.id,
+      data: {
+        customer: customerB.id,
+      },
+      user: userA,
+      overrideAccess: false,
+    })
+
+    const freshPlan = await payload.findByID({
+      collection: 'habitPlans',
+      id: planA.id,
+      overrideAccess: true,
+    })
+    const planCustId =
+      typeof freshPlan.customer === 'object' && freshPlan.customer
+        ? freshPlan.customer.id
+        : freshPlan.customer
+    expect(planCustId).toBe(customerA.id)
+  })
+
+  it('customer cannot change customer field on savedCards (A4)', async () => {
+    const userA = await getRealCustomerSession(customerA)
+
+    // Create an eq card to relate to
+    const eqCard = track(
+      'eqCards',
+      await payload.create({
+        collection: 'eqCards',
+        data: {
+          title: 'Thẻ EQ Test A4',
+          code: `c-${randomUUID().slice(0, 6)}`,
+          qrSlug: `qr-${randomUUID().slice(0, 6)}`,
+        },
+        overrideAccess: true,
+      }),
+    )
+
+    const savedCard = track(
+      'savedCards',
+      await payload.create({
+        collection: 'savedCards',
+        data: {
+          customer: customerA.id,
+          card: eqCard.id,
+          reflection: 'Suy ngẫm của A',
+        },
+        overrideAccess: true,
+      }),
+    )
+
+    await payload.update({
+      collection: 'savedCards',
+      id: savedCard.id,
+      data: {
+        customer: customerB.id,
+      },
+      user: userA,
+      overrideAccess: false,
+    })
+
+    const freshSavedCard = await payload.findByID({
+      collection: 'savedCards',
+      id: savedCard.id,
+      overrideAccess: true,
+    })
+    const cardCustId =
+      typeof freshSavedCard.customer === 'object' && freshSavedCard.customer
+        ? freshSavedCard.customer.id
+        : freshSavedCard.customer
+    expect(cardCustId).toBe(customerA.id)
+  })
 })
