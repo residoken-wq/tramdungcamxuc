@@ -199,10 +199,12 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
       }
       setDraft((prev) => ({ ...prev, step: 3 }))
     } else if (draft.step === 3) {
-      // Phải chọn ít nhất 1 kỹ thuật cho mỗi giai đoạn
+      // Chỉ bắt buộc chọn kỹ thuật cho những giai đoạn CÓ kỹ thuật trong DB; không chặn nếu giai đoạn trống
       for (const stg of HABIT_STAGES) {
+        const stageTechs = techniques.filter((t) => t.stage === stg)
         const list = draft.chosenTechniques[stg] || []
-        if (list.length === 0) {
+
+        if (stageTechs.length > 0 && list.length === 0) {
           setStepError(
             `${vi.habit.wizard.errors.techniquesEmpty} (${vi.habit.wizard.step3.stages[stg].title})`,
           )
@@ -248,7 +250,8 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
 
       const payload = {
         scorecard: draft.scorecard,
-        identityStatement: draft.identityStatement || formatIdentityStatement(draft.actionText, draft.personText),
+        identityStatement:
+          draft.identityStatement || formatIdentityStatement(draft.actionText, draft.personText),
         chosenTechniques: flattenedTechniques,
         email: cleanEmail,
         consent: true,
@@ -643,61 +646,61 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
 
                     {/* Danh sách kỹ thuật thuộc giai đoạn */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                      {stageTechniques.map((tech) => {
-                        const isSelected = currentChosen.some(
-                          (item) => item.techniqueId === tech.id,
-                        )
-                        const chosenItem = currentChosen.find(
-                          (item) => item.techniqueId === tech.id,
-                        )
+                      {stageTechniques.length === 0 ? (
+                        <p className="col-span-full py-4 text-center text-xs text-deep-navy/60 italic">
+                          {vi.habit.wizard.step3.emptyTechniquesList}
+                        </p>
+                      ) : (
+                        stageTechniques.map((tech) => {
+                          const isSelected = currentChosen.some(
+                            (item) => item.techniqueId === tech.id,
+                          )
+                          const chosenItem = currentChosen.find(
+                            (item) => item.techniqueId === tech.id,
+                          )
 
-                        return (
-                          <div
-                            key={tech.id}
-                            className={`p-3.5 rounded-xl border transition-all ${
-                              isSelected
-                                ? 'bg-white border-bright-magenta ring-1 ring-bright-magenta shadow-soft'
-                                : 'bg-white/80 border-lavender-mist hover:border-accent-pink/50'
-                            }`}
-                          >
-                            <label className="flex items-start gap-2.5 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() =>
-                                  handleToggleTechnique(stage, tech.id, tech.name)
-                                }
-                                className="mt-1 w-4 h-4 rounded text-bright-magenta focus:ring-bright-magenta"
-                              />
-                              <span className="text-sm font-medium text-deep-navy">
-                                {tech.name}
-                              </span>
-                            </label>
-
-                            {/* Ô nhập hành động cụ thể nếu được chọn */}
-                            {isSelected && chosenItem && (
-                              <div className="mt-3 pt-2.5 border-t border-lavender-mist/50">
-                                <label className="block text-xs font-semibold text-deep-navy mb-1">
-                                  {vi.habit.wizard.step3.actionPrompt}
-                                </label>
+                          return (
+                            <div
+                              key={tech.id}
+                              className={`p-3.5 rounded-xl border transition-all ${
+                                isSelected
+                                  ? 'bg-white border-bright-magenta ring-1 ring-bright-magenta shadow-soft'
+                                  : 'bg-white/80 border-lavender-mist hover:border-accent-pink/50'
+                              }`}
+                            >
+                              <label className="flex items-start gap-2.5 cursor-pointer">
                                 <input
-                                  type="text"
-                                  value={chosenItem.action}
-                                  onChange={(e) =>
-                                    handleUpdateTechniqueAction(
-                                      stage,
-                                      tech.id,
-                                      e.target.value,
-                                    )
-                                  }
-                                  placeholder={vi.habit.wizard.step3.actionPlaceholder}
-                                  className="w-full px-3 py-1.5 text-xs rounded border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-1 focus:ring-bright-magenta"
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => handleToggleTechnique(stage, tech.id, tech.name)}
+                                  className="mt-1 w-4 h-4 rounded text-bright-magenta focus:ring-bright-magenta"
                                 />
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })}
+                                <span className="text-sm font-medium text-deep-navy">
+                                  {tech.name}
+                                </span>
+                              </label>
+
+                              {/* Ô nhập hành động cụ thể nếu được chọn */}
+                              {isSelected && chosenItem && (
+                                <div className="mt-3 pt-2.5 border-t border-lavender-mist/50">
+                                  <label className="block text-xs font-semibold text-deep-navy mb-1">
+                                    {vi.habit.wizard.step3.actionPrompt}
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={chosenItem.action}
+                                    onChange={(e) =>
+                                      handleUpdateTechniqueAction(stage, tech.id, e.target.value)
+                                    }
+                                    placeholder={vi.habit.wizard.step3.actionPlaceholder}
+                                    className="w-full px-3 py-1.5 text-xs rounded border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-1 focus:ring-bright-magenta"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })
+                      )}
                     </div>
                   </div>
                 )
@@ -736,9 +739,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   <h4 className="font-semibold text-deep-navy text-sm">
                     {vi.habit.wizard.step4.trackerPreviewHeading}
                   </h4>
-                  <span className="text-xs text-bright-magenta font-medium">
-                    21 Ngày liên tục
-                  </span>
+                  <span className="text-xs text-bright-magenta font-medium">21 Ngày liên tục</span>
                 </div>
                 <ProgressGrid />
                 <p className="text-xs text-deep-navy/60 text-center mt-3 italic">
@@ -775,7 +776,10 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               </div>
 
               {/* Form lưu kế hoạch & Nhận link Zalo */}
-              <form onSubmit={handleSubmitPlan} className="p-6 rounded-card bg-soft-pink/40 border border-soft-pink space-y-4">
+              <form
+                onSubmit={handleSubmitPlan}
+                className="p-6 rounded-card bg-soft-pink/40 border border-soft-pink space-y-4"
+              >
                 <div>
                   <h4 className="font-display text-lg text-deep-navy mb-1">
                     {vi.habit.wizard.step4.emailHeading}
@@ -797,9 +801,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                     type="email"
                     required
                     value={draft.email || ''}
-                    onChange={(e) =>
-                      setDraft((prev) => ({ ...prev, email: e.target.value }))
-                    }
+                    onChange={(e) => setDraft((prev) => ({ ...prev, email: e.target.value }))}
                     placeholder={vi.habit.wizard.step4.emailPlaceholder}
                     className="w-full px-4 py-2.5 rounded-lg border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-2 focus:ring-bright-magenta"
                   />
@@ -824,9 +826,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                     type="checkbox"
                     required
                     checked={Boolean(draft.consent)}
-                    onChange={(e) =>
-                      setDraft((prev) => ({ ...prev, consent: e.target.checked }))
-                    }
+                    onChange={(e) => setDraft((prev) => ({ ...prev, consent: e.target.checked }))}
                     className="mt-1 w-4 h-4 rounded text-bright-magenta focus:ring-bright-magenta"
                   />
                   <label
@@ -866,11 +866,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {/* Điều khiển chuyển bước */}
           <div className="mt-8 pt-6 border-t border-lavender-mist/60 flex items-center justify-between">
             {draft.step > 1 ? (
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handlePrevStep}
-              >
+              <Button type="button" variant="secondary" onClick={handlePrevStep}>
                 ← {vi.habit.wizard.controls.prev}
               </Button>
             ) : (
@@ -878,11 +874,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
             )}
 
             {draft.step < 4 ? (
-              <Button
-                type="button"
-                variant="primary"
-                onClick={handleNextStep}
-              >
+              <Button type="button" variant="primary" onClick={handleNextStep}>
                 {vi.habit.wizard.controls.next} →
               </Button>
             ) : null}

@@ -155,7 +155,8 @@ export const vi = {
         title: 'Bảng điểm thói quen',
         subtitle:
           'Liệt kê các thói quen thường nhật trong ngày và đánh giá xem chúng đang nâng đỡ hay kéo lùi bạn.',
-        addPlaceholder: 'Nhập thói quen hàng ngày (ví dụ: Uống một cốc nước ấm, Lướt điện thoại 30 phút...)',
+        addPlaceholder:
+          'Nhập thói quen hàng ngày (ví dụ: Uống một cốc nước ấm, Lướt điện thoại 30 phút...)',
         addButton: 'Thêm thói quen',
         goodLabel: 'Tốt (+)',
         neutralLabel: 'Bình thường (=)',
@@ -218,11 +219,11 @@ export const vi = {
         actionPlaceholder: 'Ví dụ: Đặt sách ngay cạnh gối ngủ; Bật timer 5 phút rồi mới bắt đầu...',
         emptyStageWarning: 'Vui lòng chọn ít nhất 1 kỹ thuật cho giai đoạn này.',
         noTechniquesFound: 'Đang tải danh sách kỹ thuật từ hệ thống...',
+        emptyTechniquesList: 'Chưa có kỹ thuật nào cho giai đoạn này.',
       },
       step4: {
         title: 'Kế hoạch Tracker 21 ngày',
-        subtitle:
-          'Xem trước hành trình 21 ngày và lưu lại để bắt đầu thực hành ngay hôm nay.',
+        subtitle: 'Xem trước hành trình 21 ngày và lưu lại để bắt đầu thực hành ngay hôm nay.',
         encouragement: 'Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?',
         reassurance:
           'Lỡ nhịp 1 ngày là không sao cả. Điều quan trọng là quay lại nhịp điệu vào ngày hôm sau.',
