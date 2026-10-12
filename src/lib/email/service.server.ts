@@ -15,6 +15,7 @@ import { DigitalToolOrderPaidEmail } from '@/emails/DigitalToolOrderPaidEmail'
 import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
 import { WorkshopReminderEmail } from '@/emails/WorkshopReminderEmail'
 import { vi } from '@/lib/i18n/vi'
+import { getSiteUrl } from '@/lib/site-url'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
 
