@@ -62,7 +62,7 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
   test('khách mua gói đăng nhập OTP -> thấy lịch workshop trong trang /tai-khoan', async ({
     page,
     browser,
-  }) => {
+  }, testInfo) => {
     test.setTimeout(180000)
 
     const init = await (await page.request.get('/api/users/init')).json()
@@ -78,7 +78,11 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
     const workshopTitle = `Workshop E2E Tập thương cảm xúc ${randomUUID().slice(0, 6)}`
     const customerEmail = `khach-workshop-${randomUUID().slice(0, 6)}@example.test`
 
-    const visitor = await browser.newContext()
+    // Mỗi lượt chạy một IP giả riêng (dải tài liệu 203.0.113.0/24): giới hạn 5 lần xin OTP / IP / 10 phút
+    // được chia cho mọi test trên CI (cùng 127.0.0.1). Server lấy IP từ x-forwarded-for (sau proxy).
+    const visitor = await browser.newContext({
+      extraHTTPHeaders: { 'x-forwarded-for': `203.0.113.${Math.floor(Math.random() * 254) + 1}` },
+    })
     const guestPage = await visitor.newPage()
 
     try {
@@ -158,8 +162,16 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
       await expect(guestPage.getByTestId('vietqr')).toBeVisible({ timeout: 15000 })
 
       await page.goto(`/admin/collections/orders/${createdOrderId}`)
-      await page.getByRole('button', { name: /Xác nhận thanh toán/i }).click()
-      await page.getByRole('button', { name: /Đồng ý xác nhận/i }).click()
+      await expect(page.getByRole('heading', { name: orderDoc.paymentRef })).toBeVisible({
+        timeout: 15000,
+      })
+      // Bấm lại nếu lần đầu rơi vào lúc trang admin chưa hydrate (hộp xác nhận không mở).
+      const modalConfirm = page.getByRole('button', { name: /Đồng ý xác nhận/i })
+      await expect(async () => {
+        await page.getByRole('button', { name: /Xác nhận thanh toán/i }).click({ timeout: 5000 })
+        await expect(modalConfirm).toBeVisible({ timeout: 3000 })
+      }).toPass({ timeout: 30000 })
+      await modalConfirm.click()
       await expect(page.getByText('Xác nhận thanh toán thành công.', { exact: true })).toBeVisible({
         timeout: 15000,
       })
@@ -211,6 +223,8 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
       // Thông báo link mở trước 60 phút
       await expect(guestPage.locator('text=Link sẽ mở 60 phút trước giờ học')).toBeVisible()
     } finally {
+      // Đủ thời gian dọn dẹp kể cả khi phần thân đã dùng hết thời gian test
+      test.setTimeout(testInfo.timeout + 30000)
       // Dọn dẹp dữ liệu
       await guestPage.close()
       await visitor.close()
