@@ -10,6 +10,7 @@ import { ResourceDeliveryEmail } from '@/emails/ResourceDeliveryEmail'
 import { ExperienceOrderPaidEmail } from '@/emails/ExperienceOrderPaidEmail'
 import { ExperienceOrderExpiredEmail } from '@/emails/ExperienceOrderExpiredEmail'
 import { PackageOrderPaidEmail } from '@/emails/PackageOrderPaidEmail'
+import { DigitalToolOrderPaidEmail } from '@/emails/DigitalToolOrderPaidEmail'
 import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
 import { WorkshopReminderEmail } from '@/emails/WorkshopReminderEmail'
 import { vi } from '@/lib/i18n/vi'
@@ -434,6 +435,56 @@ export async function sendPackageOrderPaidEmail(
     })
   } catch (err) {
     console.error('[Email] Failed to send package order paid email:', err)
+    throw err
+  }
+}
+
+export async function sendDigitalToolOrderPaidEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    paymentRef: string
+    amount: number
+    toolName: string
+    accessDurationDays?: number | null
+    toolUrl: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(DigitalToolOrderPaidEmail, {
+        name: data.name,
+        paymentRef: data.paymentRef,
+        amount: data.amount,
+        toolName: data.toolName,
+        accessDurationDays: data.accessDurationDays,
+        toolUrl: data.toolUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(DigitalToolOrderPaidEmail, {
+        name: data.name,
+        paymentRef: data.paymentRef,
+        amount: data.amount,
+        toolName: data.toolName,
+        accessDurationDays: data.accessDurationDays,
+        toolUrl: data.toolUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.payment.email.digitalToolPaid.subject(data.toolName),
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send digital tool order paid email:', err)
     throw err
   }
 }
