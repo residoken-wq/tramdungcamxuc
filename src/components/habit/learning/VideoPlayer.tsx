@@ -42,9 +42,9 @@ export function VideoPlayer({
           if (res.newlyCompleted && res.meta) {
             track('lesson_completed', {
               courseSlug: res.meta.courseSlug,
-              moduleId: res.meta.moduleId,
+              moduleId: res.meta.moduleId ?? moduleId,
               lessonId: res.meta.lessonId,
-              lessonOrder: res.meta.lessonOrder,
+              lessonOrder: res.meta.lessonOrder ?? lessonOrder,
             })
           }
         } else {

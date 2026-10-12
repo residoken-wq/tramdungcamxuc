@@ -345,6 +345,11 @@ describe('Lesson Progress Recording & Validation Rules (T2-05a)', () => {
       const res = await recordLessonProgress(authorizedLesson.id, 50)
       expect(res.success).toBe(false)
       expect(res.error).toBe('forbidden')
+
+      // Bài học nháp (draft) cũng bị từ chối
+      const resDraft = await recordLessonProgress(unauthorizedLesson.id, 50)
+      expect(resDraft.success).toBe(false)
+      expect(resDraft.error).toBe('forbidden')
     } finally {
       spy.mockRestore()
     }
