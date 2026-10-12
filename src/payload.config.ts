@@ -23,6 +23,7 @@ import { DiagnosticQuestions } from './collections/DiagnosticQuestions'
 import { Techniques } from './collections/Techniques'
 import { LegalPages } from './collections/LegalPages'
 import { Workshops } from './collections/Workshops'
+import { WorkshopReminders } from './collections/WorkshopReminders'
 import { Pages } from './collections/Pages'
 import { Customers } from './collections/Customers'
 import { Entitlements } from './collections/Entitlements'
@@ -76,6 +77,7 @@ export default buildConfig({
     Techniques,
     LegalPages,
     Workshops,
+    WorkshopReminders,
     Pages,
     Customers,
     Entitlements,

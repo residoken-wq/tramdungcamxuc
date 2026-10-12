@@ -83,6 +83,7 @@ export interface Config {
     techniques: Technique;
     legalPages: LegalPage;
     workshops: Workshop;
+    workshopReminders: WorkshopReminder;
     pages: Page;
     customers: Customer;
     entitlements: Entitlement;
@@ -121,6 +122,7 @@ export interface Config {
     techniques: TechniquesSelect<false> | TechniquesSelect<true>;
     legalPages: LegalPagesSelect<false> | LegalPagesSelect<true>;
     workshops: WorkshopsSelect<false> | WorkshopsSelect<true>;
+    workshopReminders: WorkshopRemindersSelect<false> | WorkshopRemindersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
@@ -1149,13 +1151,62 @@ export interface Workshop {
    */
   joinUrl?: string | null;
   /**
-   * Chọn nội dung đã tạo trong hệ thống.
+   * Khách đã mua các sản phẩm này sẽ thấy lịch và nhận email nhắc trước 24 giờ.
    */
   audienceProducts?: (number | Product)[] | null;
   isSample?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshopReminders".
+ */
+export interface WorkshopReminder {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  workshop: number | Workshop;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  sentAt: string;
+  workshopCustomer?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  email: string;
+  /**
+   * Nhập họ tên.
+   */
+  name?: string | null;
+  /**
+   * Nhập điện thoại.
+   */
+  phone?: string | null;
+  /**
+   * Bật để áp dụng: đồng ý nhận tin.
+   */
+  consentMarketing?: boolean | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  consentAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  collection: 'customers';
 }
 /**
  * Quản lý trang nội dung. Lưu nháp trước khi xuất bản.
@@ -1207,33 +1258,6 @@ export interface Page {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers".
- */
-export interface Customer {
-  id: number;
-  email: string;
-  /**
-   * Nhập họ tên.
-   */
-  name?: string | null;
-  /**
-   * Nhập điện thoại.
-   */
-  phone?: string | null;
-  /**
-   * Bật để áp dụng: đồng ý nhận tin.
-   */
-  consentMarketing?: boolean | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  consentAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  collection: 'customers';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1864,6 +1888,10 @@ export interface PayloadLockedDocument {
         value: number | Workshop;
       } | null)
     | ({
+        relationTo: 'workshopReminders';
+        value: number | WorkshopReminder;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: number | Page;
       } | null)
@@ -2354,6 +2382,18 @@ export interface WorkshopsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshopReminders_select".
+ */
+export interface WorkshopRemindersSelect<T extends boolean = true> {
+  workshop?: T;
+  customer?: T;
+  sentAt?: T;
+  workshopCustomer?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
