@@ -1,0 +1,291 @@
+'use client'
+
+import React from 'react'
+import { getEmotion } from '@/lib/emotions'
+import { vi } from '@/lib/i18n/vi'
+
+export type DayStatus = 'done' | 'missed' | 'today' | 'future' | 'locked'
+
+export interface ProgressDayItem {
+  day: number
+  status: DayStatus
+  emotionKey?: string
+  note?: string
+}
+
+export interface ProgressGridProps {
+  /**
+   * Mảng trạng thái chi tiết cho từng ngày (1–21).
+   */
+  days?: ProgressDayItem[]
+  /**
+   * Danh sách ngày đã hoàn thành (số lượng ngày đã xong, ví dụ 5 -> ngày 1..5 done; hoặc mảng [1, 2, 5]).
+   * T2-06 sẽ mở rộng thành tracker có tick + chọn cảm xúc.
+   */
+  doneDays?: number | number[]
+  /**
+   * Callback khi người dùng chọn ngày (nếu ở chế độ tương tác).
+   */
+  onSelectDay?: (day: number) => void
+  /**
+   * ClassName bổ sung cho container.
+   */
+  className?: string
+  /**
+   * Chế độ chỉ xem (view-only), không cho phép click. Mặc định là true nếu không truyền onSelectDay.
+   */
+  readOnly?: boolean
+}
+
+/**
+ * Generator for 21 days if not fully provided.
+ * Hỗ trợ linh hoạt prop `days` hoặc `doneDays`.
+ */
+function build21Days(
+  provided?: ProgressDayItem[],
+  doneDays?: number | number[],
+): ProgressDayItem[] {
+  const map = new Map<number, ProgressDayItem>()
+  if (provided) {
+    for (const item of provided) {
+      map.set(item.day, item)
+    }
+  }
+
+  // Nếu truyền doneDays (number hoặc number[])
+  const doneSet = new Set<number>()
+  if (typeof doneDays === 'number') {
+    for (let i = 1; i <= Math.min(21, Math.max(0, doneDays)); i++) {
+      doneSet.add(i)
+    }
+  } else if (Array.isArray(doneDays)) {
+    for (const d of doneDays) {
+      if (d >= 1 && d <= 21) doneSet.add(d)
+    }
+  }
+
+  const result: ProgressDayItem[] = []
+  for (let d = 1; d <= 21; d++) {
+    if (map.has(d)) {
+      result.push(map.get(d)!)
+    } else if (doneSet.has(d)) {
+      result.push({
+        day: d,
+        status: 'done',
+      })
+    } else {
+      result.push({
+        day: d,
+        status: d === 1 && doneSet.size === 0 ? 'today' : 'future',
+      })
+    }
+  }
+  return result
+}
+
+/**
+ * Checkmark icon cho trạng thái hoàn thành.
+ */
+function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <polyline points="3.5 8.5 6.5 11.5 12.5 4.5" />
+    </svg>
+  )
+}
+
+/**
+ * Lock icon cho trạng thái đã khóa.
+ */
+function LockIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <rect x="3" y="7" width="10" height="7" rx="1.5" />
+      <path d="M5.5 7V4.5a2.5 2.5 0 015 0V7" />
+    </svg>
+  )
+}
+
+/**
+ * Missed icon cho trạng thái bỏ lỡ.
+ */
+function MissedIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <line x1="4" y1="8" x2="12" y2="8" />
+    </svg>
+  )
+}
+
+/**
+ * ProgressGrid: Lưới 21 ô hiển thị tiến trình thói quen 21 ngày.
+ * Chuẩn Brand Book 2026: ô hoàn thành màu mint-haze, tương thích tốt trên mobile 375px.
+ * Lưu ý: T2-06 sẽ mở rộng thành tracker có tick tương tác thật và chọn cảm xúc.
+ */
+export function ProgressGrid({
+  days,
+  doneDays,
+  onSelectDay,
+  className = '',
+  readOnly = false,
+}: ProgressGridProps) {
+  const allDays = build21Days(days, doneDays)
+  const isInteractive = Boolean(onSelectDay) && !readOnly
+
+  return (
+    <div
+      role="region"
+      aria-label={vi.habit.progressGridLabel}
+      className={`w-full max-w-xl mx-auto ${className}`}
+    >
+      <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5">
+        {allDays.map((item) => {
+          const { day, status, emotionKey } = item
+          const isNonInteractive = !isInteractive || status === 'future' || status === 'locked'
+          const emotion = emotionKey ? getEmotion(emotionKey) : undefined
+          const EmotionIcon = emotion?.icon
+
+          const statusText = vi.habit.statuses[status]
+          const ariaLabel = vi.habit.ariaDay(day, statusText, emotion?.label)
+
+          let stateStyle = ''
+          let indicatorIcon = null
+
+          switch (status) {
+            case 'done':
+              stateStyle =
+                'bg-mint-haze border-deep-navy/20 text-deep-navy font-bold shadow-sm'
+              if (isInteractive) {
+                stateStyle += ' hover:border-deep-navy cursor-pointer'
+              }
+              indicatorIcon = EmotionIcon ? (
+                <EmotionIcon className="w-3.5 h-3.5 text-deep-navy" />
+              ) : (
+                <CheckIcon className="w-3.5 h-3.5 text-deep-navy" />
+              )
+              break
+
+            case 'today':
+              stateStyle =
+                'bg-white border-2 border-accent-pink text-deep-navy font-bold shadow-sm ring-2 ring-accent-pink/30'
+              if (isInteractive) {
+                stateStyle += ' hover:bg-soft-pink/30 cursor-pointer'
+              }
+              indicatorIcon = (
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-pink animate-pulse motion-reduce:animate-none" />
+              )
+              break
+
+            case 'missed':
+              stateStyle =
+                'bg-butter-cream/40 border-deep-navy/20 text-deep-navy/80 font-medium'
+              if (isInteractive) {
+                stateStyle += ' hover:bg-butter-cream/70 cursor-pointer'
+              }
+              indicatorIcon = <MissedIcon className="w-3.5 h-3.5 text-deep-navy/60" />
+              break
+
+            case 'locked':
+              stateStyle =
+                'bg-deep-navy/5 border-dashed border-deep-navy/15 text-deep-navy/40 cursor-not-allowed opacity-60'
+              indicatorIcon = <LockIcon className="w-3 h-3 text-deep-navy/40" />
+              break
+
+            case 'future':
+            default:
+              stateStyle =
+                'bg-deep-navy/[0.02] border-deep-navy/15 text-deep-navy/50 cursor-not-allowed opacity-75'
+              break
+          }
+
+          return (
+            <button
+              key={day}
+              type="button"
+              disabled={isNonInteractive}
+              onClick={() => {
+                if (!isNonInteractive && onSelectDay) {
+                  onSelectDay(day)
+                }
+              }}
+              aria-label={ariaLabel}
+              className={[
+                'relative flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl border transition-all duration-150',
+                'min-w-0 min-h-[46px] sm:min-h-[58px]',
+                'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
+                stateStyle,
+              ].join(' ')}
+            >
+              {/* Day Number */}
+              <span className="font-ui text-xs sm:text-sm leading-none font-bold">
+                {day}
+              </span>
+
+              {/* Status Indicator Slot */}
+              <div
+                className="flex items-center justify-center h-4 w-4 mt-1"
+                aria-hidden="true"
+              >
+                {indicatorIcon}
+              </div>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Legend / Chú thích trực quan */}
+      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-4 text-[11px] sm:text-xs font-sans text-deep-navy/70">
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-md bg-mint-haze border border-deep-navy/20 flex items-center justify-center">
+            <CheckIcon className="w-2 h-2 text-deep-navy" />
+          </span>
+          <span>{vi.habit.statuses.done}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-md bg-white border-2 border-accent-pink flex items-center justify-center">
+            <span className="w-1 h-1 rounded-full bg-accent-pink" />
+          </span>
+          <span>{vi.habit.statuses.today}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-md bg-butter-cream/40 border border-deep-navy/20 flex items-center justify-center">
+            <MissedIcon className="w-2 h-2 text-deep-navy/60" />
+          </span>
+          <span>{vi.habit.statuses.missed}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-md bg-deep-navy/5 border border-dashed border-deep-navy/15 flex items-center justify-center">
+            <LockIcon className="w-2 h-2 text-deep-navy/40" />
+          </span>
+          <span>{vi.habit.statuses.locked} / Chưa tới</span>
+        </div>
+      </div>
+    </div>
+  )
+}

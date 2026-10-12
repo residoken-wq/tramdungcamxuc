@@ -10,6 +10,7 @@ import { ResourceDeliveryEmail } from '@/emails/ResourceDeliveryEmail'
 import { ExperienceOrderPaidEmail } from '@/emails/ExperienceOrderPaidEmail'
 import { ExperienceOrderExpiredEmail } from '@/emails/ExperienceOrderExpiredEmail'
 import { PackageOrderPaidEmail } from '@/emails/PackageOrderPaidEmail'
+import { HabitPlanEmail, type HabitPlanEmailTechniqueItem } from '@/emails/HabitPlanEmail'
 import { vi } from '@/lib/i18n/vi'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
@@ -433,5 +434,51 @@ export async function sendPackageOrderPaidEmail(
   } catch (err) {
     console.error('[Email] Failed to send package order paid email:', err)
     throw err
+  }
+}
+
+export async function sendHabitPlanEmail(
+  data: {
+    email: string
+    name?: string
+    identityStatement: string
+    techniques: HabitPlanEmailTechniqueItem[]
+    zaloGroupUrl?: string
+    revisitUrl?: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(HabitPlanEmail, {
+        name: data.name,
+        identityStatement: data.identityStatement,
+        techniques: data.techniques,
+        zaloGroupUrl: data.zaloGroupUrl,
+        revisitUrl: data.revisitUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(HabitPlanEmail, {
+        name: data.name,
+        identityStatement: data.identityStatement,
+        techniques: data.techniques,
+        zaloGroupUrl: data.zaloGroupUrl,
+        revisitUrl: data.revisitUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: 'Trạm Dừng Cảm Xúc – Kế hoạch Habit Loop 5 phút của bạn',
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send habit plan email:', err)
+    // Lỗi gửi email không làm hỏng việc lưu kế hoạch của học viên
   }
 }

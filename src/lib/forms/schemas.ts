@@ -229,6 +229,7 @@ export type HabitScorecardItemInput = z.infer<typeof habitScorecardItemSchema>
 
 export const habitChosenTechniqueSchema = z.object({
   techniqueId: z.number().int().positive(),
+  stage: z.enum(['cue', 'craving', 'response', 'reward']).optional(),
   action: z
     .string()
     .trim()
@@ -240,7 +241,10 @@ export type HabitChosenTechniqueInput = z.infer<typeof habitChosenTechniqueSchem
 
 export const habitPlanSubmissionSchema = z
   .object({
-    scorecard: z.array(habitScorecardItemSchema).min(1, vi.habit.wizard.errors.scorecardEmpty),
+    scorecard: z
+      .array(habitScorecardItemSchema)
+      .min(1, vi.habit.wizard.errors.scorecardEmpty)
+      .max(20, 'Tối đa 20 thói quen'),
     identityStatement: z
       .string()
       .trim()

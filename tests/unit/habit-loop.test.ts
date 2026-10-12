@@ -263,6 +263,12 @@ describe('submitHabitPlan() Server Logic (T2-03)', () => {
         if (collection === 'customers') {
           return Promise.resolve({ docs: [{ id: 55 }], totalDocs: 1 })
         }
+        if (collection === 'techniques') {
+          return Promise.resolve({
+            docs: [{ id: 3, name: 'Kỹ thuật 3', stage: 'cue' }],
+            totalDocs: 1,
+          })
+        }
         return Promise.resolve({ docs: [], totalDocs: 0 })
       }),
       findGlobal: vi.fn().mockResolvedValue({
@@ -290,7 +296,7 @@ describe('submitHabitPlan() Server Logic (T2-03)', () => {
     expect(createdLead).toHaveLength(1)
     expect(createdLead[0]).toMatchObject({
       email: 'hocvien@example.com',
-      need: 'personal',
+      need: 'resource',
       consent: true,
       source: {
         form: 'habit-loop',
@@ -348,6 +354,7 @@ describe('getTechniques() and getHabitProduct() (T2-03)', () => {
 
     const mockPayload = {
       find: vi.fn().mockResolvedValue({ docs: [mockProduct] }),
+      count: vi.fn().mockResolvedValue({ totalDocs: 10 }),
     } as unknown as Payload
 
     const product = await getHabitProduct(mockPayload)

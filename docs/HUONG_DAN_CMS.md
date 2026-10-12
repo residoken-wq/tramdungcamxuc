@@ -669,6 +669,26 @@ _(ảnh: Planning chụp)_
 
 ---
 
+### 9.2. Habit Loop 5 phút và trang Habit Tracker (Giai đoạn 2)
+
+**Mục đích**: Quản lý nội dung cho công cụ thiết kế thói quen `/habit/5-phut` và trang giới thiệu khóa học Habit Tracker số `/habit/1-percent-better`.
+
+**Cách thực hiện**:
+
+1. **Quản lý danh sách kỹ thuật thực chiến (`techniques`)**:
+   - Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm vào **Kỹ thuật thực hành**.
+   - Hana có thể thêm mới hoặc sửa tên, cách thực hiện, ví dụ và gán vào 1 trong 4 giai đoạn (_Cue - Gợi ý_, _Craving - Khao khát_, _Response - Phản hồi_, _Reward - Phần thưởng_). Các kỹ thuật đã xuất bản sẽ tự động hiển thị trong Bước 3 của công cụ Habit Loop 5 phút.
+
+2. **Cập nhật giá và câu hỏi thường gặp (FAQ) cho Habit Tracker số**:
+   - Vào **Bán hàng** -> **Sản phẩm**, tìm sản phẩm có tên **Habit Tracker số (Habit Hack 1% Better)** (slug cố định là `habit-tracker-so` – xin lưu ý **không thay đổi ô slug** này vì mã nguồn dùng để nhận diện).
+   - Hana có thể tự do điều chỉnh: **Giá bán**, **Giá ưu đãi**, **Số ngày dùng thử** (mặc định 21 ngày), danh sách **Bao gồm** (`includes`) và các câu hỏi thường gặp (**FAQ**). Trang ngoài website `/habit/1-percent-better` sẽ tự động cập nhật ngay lập tức. Số lượng video và số kỹ thuật hiển thị trên trang được hệ thống đếm tự động theo các bài giảng và kỹ thuật đã xuất bản.
+
+3. **Xem kết quả độc giả gửi về**:
+   - **Kế hoạch thói quen**: Vào **Khóa học** -> **Kế hoạch thói quen** (`habitPlans`) để xem bảng điểm thói quen, câu định danh và các kỹ thuật mà độc giả đã tự thiết kế.
+   - **Khách tiềm năng**: Với những độc giả để lại email để nhận link Zalo đồng hành, hệ thống sẽ tự động lưu vào **Khách hàng** -> **Khách tiềm năng** (`leads`) với thẻ gắn nhãn `habit-loop` để Hana tiện theo dõi và chăm sóc.
+
+---
+
 ## 10. Xử lý sự cố và Nhận biết thông báo lỗi thường gặp
 
 Dưới đây là các tình huống bạn có thể gặp và cách giải quyết cực kỳ nhanh gọn:

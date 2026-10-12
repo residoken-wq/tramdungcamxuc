@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import { PriceTag } from '@/components/ui/PriceTag'
 import { vi } from '@/lib/i18n/vi'
 import { HABIT_LOOP_PATH } from '@/lib/habit'
 import type { HabitProductData } from '@/lib/habit.server'
@@ -15,7 +16,16 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
   const originalPrice = product?.price ?? 250000
   const salePrice = product?.salePrice ?? 178000
   const trialDays = product?.trialDays ?? 21
-  const loginUrl = '/tai-khoan/dang-nhap?redirect=/habit/hoc'
+  const cta = product?.cta
+  const ctaHref = cta?.href || '/tai-khoan/dang-nhap?redirect=/habit/hoc'
+  const ctaLabel = cta?.label || vi.habit.offer.trialCta
+  const isCtaExternal = Boolean(cta?.external)
+
+  const videoCount = product?.videoCount ?? 20
+  const techniqueCount = product?.techniqueCount ?? 11
+
+  const includesList = product?.includes && product.includes.length > 0 ? product.includes : []
+  const faqList = product?.faq && product.faq.length > 0 ? product.faq : []
 
   return (
     <div className="w-full">
@@ -37,33 +47,55 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
               ✨ {trialDays} {vi.product.trialBadge}
             </div>
 
-            {/* Price Tag */}
-            <div className="flex items-baseline justify-center gap-3 mb-2">
-              <span className="text-sm sm:text-base text-deep-navy/60">
-                {vi.habit.offer.pricePrefix}
-              </span>
-              <span className="font-display text-4xl sm:text-5xl text-bright-magenta">
-                {salePrice.toLocaleString('vi-VN')}đ
-              </span>
-              {originalPrice > salePrice && (
-                <span className="text-base sm:text-lg text-deep-navy/40 line-through">
-                  {originalPrice.toLocaleString('vi-VN')}đ
-                </span>
-              )}
+            {/* Price Tag qua PriceTag component theo Brand Book */}
+            <div className="flex items-center justify-center mb-3">
+              <PriceTag
+                originalPrice={originalPrice}
+                salePrice={salePrice}
+                size="lg"
+              />
             </div>
 
             <p className="text-xs sm:text-sm text-deep-navy/70 mb-6 font-medium">
               {vi.habit.offer.permanentAccess} • {vi.habit.offer.noCreditCard}
             </p>
 
+            {/* Includes list from CMS if present */}
+            {includesList.length > 0 && (
+              <div className="mb-6 text-left border-t border-b border-lavender-mist/40 py-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-2 font-ui">
+                  Bao gồm trong bộ công cụ:
+                </p>
+                <ul className="space-y-2">
+                  {includesList.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-deep-navy/90">
+                      <span className="text-accent-pink font-bold">✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href={loginUrl}
-                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
-              >
-                {vi.habit.offer.trialCta} →
-              </Link>
+              {isCtaExternal ? (
+                <a
+                  href={ctaHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+                >
+                  {ctaLabel} →
+                </a>
+              ) : (
+                <Link
+                  href={ctaHref}
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+                >
+                  {ctaLabel} →
+                </Link>
+              )}
               <Link
                 href={HABIT_LOOP_PATH}
                 className="inline-flex items-center justify-center px-6 py-4 rounded-full bg-lavender-mist/60 text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors"
@@ -75,13 +107,13 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
         </div>
       </section>
 
-      {/* 2. STATS BAR */}
+      {/* 2. STATS BAR (Đếm động từ DB: số lessons và techniques) */}
       <section className="py-8 bg-white border-b border-lavender-mist/40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div className="p-4 rounded-xl bg-warm-ivory">
               <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                20
+                {videoCount}
               </span>
               <span className="text-xs sm:text-sm font-semibold text-deep-navy">
                 {vi.habit.offer.stats.videos}
@@ -89,7 +121,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
             </div>
             <div className="p-4 rounded-xl bg-warm-ivory">
               <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                11
+                {techniqueCount}
               </span>
               <span className="text-xs sm:text-sm font-semibold text-deep-navy">
                 {vi.habit.offer.stats.techniques}
@@ -179,7 +211,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
         </div>
       </section>
 
-      {/* 5. FAQ */}
+      {/* 5. FAQ (Từ CMS hoặc fallback mẫu) */}
       <section className="py-12 sm:py-16 bg-warm-ivory">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <h2 className="font-display text-2xl sm:text-3xl text-deep-navy text-center mb-8">
@@ -187,17 +219,33 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
           </h2>
 
           <div className="space-y-4">
-            {vi.habit.offer.faq.items.map((item, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
-              >
-                <h3 className="font-semibold text-deep-navy text-base mb-2">
-                  {item.q}
-                </h3>
-                <p className="text-sm text-deep-navy/80 leading-relaxed">{item.a}</p>
-              </div>
-            ))}
+            {faqList.length > 0 ? (
+              faqList.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
+                >
+                  <h3 className="font-semibold text-deep-navy text-base mb-2">
+                    {item.question}
+                  </h3>
+                  {item.answer && (
+                    <p className="text-sm text-deep-navy/80 leading-relaxed">{item.answer}</p>
+                  )}
+                </div>
+              ))
+            ) : (
+              vi.habit.offer.faq.items.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
+                >
+                  <h3 className="font-semibold text-deep-navy text-base mb-2">
+                    {item.q}
+                  </h3>
+                  <p className="text-sm text-deep-navy/80 leading-relaxed">{item.a}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -209,15 +257,26 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
             Bắt đầu hành trình 21 ngày của bạn
           </h2>
           <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">
-            Khám phá 20 video, 11 kỹ thuật và bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.
+            Khám phá {videoCount} video bài giảng, {techniqueCount} kỹ thuật thực chiến và bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href={loginUrl}
-              className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
-            >
-              {vi.habit.offer.trialCta} →
-            </Link>
+            {isCtaExternal ? (
+              <a
+                href={ctaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+              >
+                {ctaLabel} →
+              </a>
+            ) : (
+              <Link
+                href={ctaHref}
+                className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+              >
+                {ctaLabel} →
+              </Link>
+            )}
             <Link
               href={HABIT_LOOP_PATH}
               className="inline-flex items-center justify-center px-6 py-4 rounded-full bg-white text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors border border-lavender-mist"
