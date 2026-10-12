@@ -325,7 +325,7 @@ export async function submitHabitPlan(
         technique: item.techniqueId,
         action: item.action,
       })),
-      startDate: validated.startDate || new Date().toISOString(),
+      startDate: new Date().toISOString(),
     },
     overrideAccess: true, // overrideAccess cho phép server action lưu kế hoạch của học viên chưa đăng nhập
   })

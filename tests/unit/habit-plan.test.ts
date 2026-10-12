@@ -500,4 +500,39 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
 
     await expect(getHabitProduct(brokenPayload)).rejects.toThrow('PostgreSQL connection terminated')
   })
+
+  it('B9: server luôn tự đặt startDate là ngày hôm nay, không nhận startDate từ client', async () => {
+    const email = `test-b9-${randomUUID().slice(0, 8)}@example.com`
+    const fakeClientStartDate = '2020-01-01T00:00:00.000Z'
+
+    const result = await submitHabitPlan(
+      {
+        scorecard: [{ habit: 'Đi bộ', rating: 'good' }],
+        identityStatement: 'Tôi sẽ đi bộ để trở thành người năng động',
+        chosenTechniques: [{ techniqueId: validCueTechId, stage: 'cue', action: 'Chuẩn bị giày' }],
+        email,
+        consent: true,
+        // @ts-expect-error kiểm tra client cố tình gửi startDate trong payload
+        startDate: fakeClientStartDate,
+      },
+      { ip: `192.168.2.${Math.floor(Math.random() * 200) + 10}` },
+      { payload, emailSender },
+    )
+
+    expect(result.success).toBe(true)
+    expect(result.planId).toBeDefined()
+    if (result.planId) createdPlans.push(result.planId)
+
+    const doc = await payload.findByID({
+      collection: 'habitPlans',
+      id: result.planId!,
+      overrideAccess: true,
+    })
+    expect(doc).toBeDefined()
+    expect(doc.startDate).toBeDefined()
+
+    const savedDate = new Date(doc.startDate!)
+    const today = new Date()
+    expect(savedDate.toISOString().slice(0, 10)).toBe(today.toISOString().slice(0, 10))
+  })
 })
