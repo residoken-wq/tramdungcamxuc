@@ -512,4 +512,153 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
       }
     }
   })
+
+  it('9. giá đổi -> không dùng lại đơn pending cũ, hủy đơn cũ và tạo đơn mới với giá mới', async () => {
+    const customer = await createTestCustomer('price-change')
+    const product = await createTestProduct({ price: 250000, salePrice: null }) // Giá ban đầu 250k
+
+    // 1. Tạo đơn lần 1 với giá 250k
+    const res1 = await createDigitalToolOrder(
+      customer.id,
+      product.slug,
+      { termsAccepted: true, ip: nextIp() },
+      { payload },
+    )
+    expect(res1.success).toBe(true)
+    const order1 = (
+      await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: res1.payToken } },
+        overrideAccess: true,
+      })
+    ).docs[0]!
+    createdOrders.push(order1.id)
+    expect(order1.total).toBe(250000)
+
+    // 2. Hana đổi giá sang ưu đãi 178k
+    await payload.update({
+      collection: 'products',
+      id: product.id,
+      data: { salePrice: 178000 },
+      overrideAccess: true,
+    })
+
+    // 3. Khách đặt lại -> không dùng lại đơn cũ vì giá đã đổi
+    const res2 = await createDigitalToolOrder(
+      customer.id,
+      product.slug,
+      { termsAccepted: true, ip: nextIp() },
+      { payload },
+    )
+    expect(res2.success).toBe(true)
+    expect(res2.reused).toBeFalsy()
+    expect(res2.payToken).not.toBe(res1.payToken)
+
+    const order2 = (
+      await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: res2.payToken } },
+        overrideAccess: true,
+      })
+    ).docs[0]!
+    createdOrders.push(order2.id)
+    expect(order2.total).toBe(178000)
+
+    // Đơn cũ đã bị hủy
+    const refreshedOrder1 = await payload.findByID({
+      collection: 'orders',
+      id: order1.id,
+      overrideAccess: true,
+    })
+    expect(refreshedOrder1.paymentStatus).toBe('cancelled')
+  })
+
+  it('10. hai yêu cầu tạo đơn song song (Promise.all) -> chỉ tạo đúng 1 đơn duy nhất', async () => {
+    const customer = await createTestCustomer('concurrent-order')
+    const product = await createTestProduct({ price: 250000, salePrice: 178000 })
+
+    const [res1, res2] = await Promise.all([
+      createDigitalToolOrder(
+        customer.id,
+        product.slug,
+        { termsAccepted: true, ip: nextIp() },
+        { payload },
+      ),
+      createDigitalToolOrder(
+        customer.id,
+        product.slug,
+        { termsAccepted: true, ip: nextIp() },
+        { payload },
+      ),
+    ])
+
+    expect(res1.success).toBe(true)
+    expect(res2.success).toBe(true)
+    expect(res1.payToken).toBe(res2.payToken) // Cùng 1 payToken
+
+    // Chỉ có đúng 1 đơn hàng trong database
+    const ordersRes = await payload.find({
+      collection: 'orders',
+      where: {
+        and: [{ customer: { equals: customer.id } }, { paymentStatus: { equals: 'pending' } }],
+      },
+      overrideAccess: true,
+    })
+    expect(ordersRes.totalDocs).toBe(1)
+    createdOrders.push(ordersRes.docs[0]!.id)
+  })
+
+  it('11. cấp quyền lỗi (grantEntitlementsForOrder throw) -> ghi auditLog và KHÔNG gửi email', async () => {
+    const customer = await createTestCustomer('grant-error')
+    const product = await createTestProduct()
+
+    const orderRes = await createDigitalToolOrder(
+      customer.id,
+      product.slug,
+      { termsAccepted: true, ip: nextIp() },
+      { payload },
+    )
+
+    const orderDoc = (
+      await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: orderRes.payToken } },
+        overrideAccess: true,
+      })
+    ).docs[0]!
+    createdOrders.push(orderDoc.id)
+
+    mockEmailSender.sent = []
+
+    // Giả lập grantEntitlementsForOrder ném lỗi bằng cách mock spy
+    const entitlementsServer = await import('../../src/lib/payments/entitlements.server')
+    const grantSpy = vi
+      .spyOn(entitlementsServer, 'grantEntitlementsForOrder')
+      .mockRejectedValueOnce(new Error('Simulated grant entitlements DB connection error'))
+
+    try {
+      await confirmManualPayment(orderDoc.id, owner, {
+        payload,
+        emailSender: mockEmailSender,
+      })
+
+      // KHÔNG gửi email kích hoạt khi cấp quyền lỗi
+      expect(mockEmailSender.sent.length).toBe(0)
+
+      // Ghi nhận audit log grant_entitlements_failed
+      const auditRes = await payload.find({
+        collection: 'auditLogs',
+        where: {
+          and: [
+            { target: { equals: `orders:${orderDoc.id}` } },
+            { action: { equals: 'grant_entitlements_failed' } },
+          ],
+        },
+        overrideAccess: true,
+      })
+      expect(auditRes.totalDocs).toBe(1)
+    } finally {
+      grantSpy.mockRestore()
+    }
+  })
 })

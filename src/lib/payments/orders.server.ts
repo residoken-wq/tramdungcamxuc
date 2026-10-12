@@ -8,7 +8,7 @@ import { vi } from '../i18n/vi'
 import { experienceOrderSchema, type ExperienceOrderInput } from '../forms/schemas'
 import { checkAndRecordRateLimit } from '../forms/ratelimit.server'
 import { verifyTurnstile } from '../forms/turnstile.server'
-import { getEffectivePrice } from '../products'
+import { getEffectivePrice, getToolUrl } from '../products'
 import { computePackageValue } from '../pricing'
 import { generatePayToken, generateUniquePaymentRef } from './payment-ref'
 import { assertValidBankConfig, buildVietQrPayload, generateVietQrSvg } from './vietqr'
@@ -66,14 +66,14 @@ export class ProductNotForSaleError extends PaymentError {
 }
 
 export class InvalidProductTypeError extends PaymentError {
-  constructor(message = 'Sản phẩm không phải là công cụ số.') {
+  constructor(message = vi.payment.errors.invalidProductType) {
     super(message)
     this.name = 'InvalidProductTypeError'
   }
 }
 
 export class ProductExternalError extends PaymentError {
-  constructor(message = 'Sản phẩm này được phân phối qua kênh liên kết ngoài.') {
+  constructor(message = vi.payment.errors.productExternal) {
     super(message)
     this.name = 'ProductExternalError'
   }
@@ -320,6 +320,29 @@ export async function createExperienceOrder(
   }
 }
 
+const orderCreationLocks = new Map<string, Promise<unknown>>()
+
+export async function withOrderLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  while (orderCreationLocks.has(key)) {
+    try {
+      await orderCreationLocks.get(key)
+    } catch {
+      // Bỏ qua lỗi từ luồng trước
+    }
+  }
+  let resolveLock!: () => void
+  const lockPromise = new Promise<void>((resolve) => {
+    resolveLock = resolve
+  })
+  orderCreationLocks.set(key, lockPromise)
+  try {
+    return await fn()
+  } finally {
+    orderCreationLocks.delete(key)
+    resolveLock()
+  }
+}
+
 /**
  * REVIEW-REQUIRED: Tạo hoặc dùng lại đơn hàng mua lẻ công cụ số (digital_tool).
  *
@@ -330,8 +353,9 @@ export async function createExperienceOrder(
  * 4. Sản phẩm: type = 'digital_tool', _status = 'published', saleStatus = 'on_sale', không có externalUrl.
  * 5. Giá đọc trực tiếp từ DB bằng getEffectivePrice, bỏ qua mọi giá gửi từ client.
  * 6. Khách đã có quyền 'active' còn hiệu lực -> ném AlreadyHasActiveAccessError (không tạo đơn).
- * 7. Tái sử dụng đơn hàng: Nếu khách đã có đơn 'pending' chứa sản phẩm này chưa quá 24 giờ -> dùng lại payToken, không tạo đơn mới.
- * 8. Tạo paymentRef và payToken duy nhất -> trả về CHỈ payToken (không lộ ID đơn hay thông tin khách).
+ * 7. Tái sử dụng đơn hàng: Nếu khách đã có đơn 'pending' chứa sản phẩm này chưa quá 24 giờ và GIÁ KHỚP -> dùng lại payToken; nếu lệch giá -> hủy đơn cũ bằng cancelOrder và tạo đơn mới.
+ * 8. Khóa luồng song song theo (customerId, productId) để tránh tạo 2 đơn pending trùng lặp.
+ * 9. Tạo paymentRef và payToken duy nhất -> trả về CHỈ payToken (không lộ ID đơn hay thông tin khách).
  */
 export async function createDigitalToolOrder(
   customerId: number,
@@ -394,7 +418,7 @@ export async function createDigitalToolOrder(
   }
 
   if (product.type !== 'digital_tool') {
-    throw new InvalidProductTypeError('Sản phẩm không phải là công cụ số.')
+    throw new InvalidProductTypeError(vi.payment.errors.invalidProductType)
   }
 
   if (product.saleStatus !== 'on_sale') {
@@ -402,7 +426,7 @@ export async function createDigitalToolOrder(
   }
 
   if (product.externalUrl && product.externalUrl.trim().length > 0) {
-    throw new ProductExternalError('Sản phẩm này được phân phối qua kênh liên kết ngoài.')
+    throw new ProductExternalError(vi.payment.errors.productExternal)
   }
 
   // 5. Kiểm tra cấu hình ngân hàng
@@ -412,47 +436,110 @@ export async function createDigitalToolOrder(
   })
   assertValidBankConfig(siteSettings)
 
-  // 6. Kiểm tra xem khách đã có quyền active còn hiệu lực hay chưa
-  const access = await getAccess(customerId, product.id, { payload, now })
-  if (access.hasAccess && access.status === 'active') {
-    const toolUrl =
-      product.web === 'habit' ? '/habit' : product.web === 'eq' ? '/eq-buddy' : `/${product.slug}`
-    throw new AlreadyHasActiveAccessError(vi.entitlement.alreadyHasActiveAccess, toolUrl)
-  }
+  // Khóa theo cặp (customerId, productId) quanh bước tìm + tạo đơn
+  const lockKey = `${customerId}:${product.id}`
+  return await withOrderLock(lockKey, async () => {
+    // 6. Kiểm tra xem khách đã có quyền active còn hiệu lực hay chưa
+    const access = await getAccess(customerId, product.id, { payload, now })
+    if (access.hasAccess && access.status === 'active') {
+      const toolUrl = getToolUrl(product)
+      throw new AlreadyHasActiveAccessError(vi.entitlement.alreadyHasActiveAccess, toolUrl)
+    }
 
-  // 7. Kiểm tra đơn pending chưa quá 24 giờ để dùng lại
-  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
-  const recentPendingOrders = await payload.find({
-    collection: 'orders',
-    where: {
-      and: [
-        { customer: { equals: customerId } },
-        { paymentStatus: { equals: 'pending' } },
-        { createdAt: { greater_than_equal: twentyFourHoursAgo } },
-      ],
-    },
-    sort: '-createdAt',
-    limit: 20,
-    overrideAccess: true,
-  })
+    // 7. Đọc giá hiệu lực từ DB trước
+    const effective = getEffectivePrice(product, now)
+    const effectivePrice = effective.salePrice ?? effective.price
+    if (effectivePrice == null || effectivePrice <= 0) {
+      throw new PaymentError(vi.payment.errors.productPriceInvalid)
+    }
 
-  const reusableOrder = recentPendingOrders.docs.find((ord) => {
-    if (!Array.isArray(ord.items)) return false
-    return ord.items.some((item) => {
-      const pId =
-        typeof item.product === 'object' && item.product !== null
-          ? item.product.id
-          : Number(item.product)
-      return pId === product.id
-    })
-  })
-
-  if (reusableOrder && reusableOrder.payToken) {
-    await payload.update({
+    // 8. Kiểm tra đơn pending chưa quá 24 giờ để dùng lại
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
+    const recentPendingOrders = await payload.find({
       collection: 'orders',
-      id: reusableOrder.id,
+      where: {
+        and: [
+          { customer: { equals: customerId } },
+          { paymentStatus: { equals: 'pending' } },
+          { createdAt: { greater_than_equal: twentyFourHoursAgo } },
+        ],
+      },
+      sort: '-createdAt',
+      limit: 20,
+      overrideAccess: true,
+    })
+
+    const reusableOrder = recentPendingOrders.docs.find((ord) => {
+      if (!Array.isArray(ord.items)) return false
+      return ord.items.some((item) => {
+        const pId =
+          typeof item.product === 'object' && item.product !== null
+            ? item.product.id
+            : Number(item.product)
+        return pId === product.id
+      })
+    })
+
+    if (reusableOrder && reusableOrder.payToken) {
+      if (reusableOrder.total === effectivePrice) {
+        await payload.update({
+          collection: 'orders',
+          id: reusableOrder.id,
+          data: {
+            termsAcceptedAt: now.toISOString(),
+          },
+          context: { paymentAction: true },
+          overrideAccess: true,
+        })
+
+        return {
+          success: true,
+          payToken: reusableOrder.payToken,
+          reused: true,
+          message: vi.payment.success.orderCreated,
+        }
+      } else {
+        // Giá sản phẩm đã thay đổi -> hủy đơn cũ bằng cancelOrder và tạo đơn mới
+        await cancelOrder(reusableOrder.id, { id: 0, role: 'system' }, 'Giá sản phẩm đã thay đổi', {
+          payload,
+          now,
+        })
+      }
+    }
+
+    // 9. Sinh paymentRef và payToken duy nhất
+    const paymentRef = await generateUniquePaymentRef(async (ref) => {
+      const { totalDocs } = await payload.count({
+        collection: 'orders',
+        where: { paymentRef: { equals: ref } },
+        overrideAccess: true,
+      })
+      return totalDocs > 0
+    })
+
+    const payToken = generatePayToken()
+    const termsAcceptedAt = now.toISOString()
+
+    // 10. Tạo đơn hàng mới
+    await payload.create({
+      collection: 'orders',
       data: {
-        termsAcceptedAt: now.toISOString(),
+        customer: customerId,
+        items: [
+          {
+            product: product.id,
+            price: effectivePrice,
+          },
+        ],
+        subtotal: effectivePrice,
+        total: effectivePrice,
+        paymentRef,
+        payToken,
+        paymentStatus: 'pending',
+        deliveryStatus: 'none',
+        termsAcceptedAt,
+        notes: `Mua công cụ số: ${product.name}`,
+        createdByAdmin: false,
       },
       context: { paymentAction: true },
       overrideAccess: true,
@@ -460,62 +547,10 @@ export async function createDigitalToolOrder(
 
     return {
       success: true,
-      payToken: reusableOrder.payToken,
-      reused: true,
+      payToken,
       message: vi.payment.success.orderCreated,
     }
-  }
-
-  // 8. Đọc giá hiệu lực từ DB
-  const effective = getEffectivePrice(product, now)
-  const effectivePrice = effective.salePrice ?? effective.price
-  if (effectivePrice == null || effectivePrice <= 0) {
-    throw new PaymentError(vi.payment.errors.productPriceInvalid)
-  }
-
-  // 9. Sinh paymentRef và payToken duy nhất
-  const paymentRef = await generateUniquePaymentRef(async (ref) => {
-    const { totalDocs } = await payload.count({
-      collection: 'orders',
-      where: { paymentRef: { equals: ref } },
-      overrideAccess: true,
-    })
-    return totalDocs > 0
   })
-
-  const payToken = generatePayToken()
-  const termsAcceptedAt = now.toISOString()
-
-  // 10. Tạo đơn hàng mới
-  await payload.create({
-    collection: 'orders',
-    data: {
-      customer: customerId,
-      items: [
-        {
-          product: product.id,
-          price: effectivePrice,
-        },
-      ],
-      subtotal: effectivePrice,
-      total: effectivePrice,
-      paymentRef,
-      payToken,
-      paymentStatus: 'pending',
-      deliveryStatus: 'none',
-      termsAcceptedAt,
-      notes: `Mua công cụ số: ${product.name}`,
-      createdByAdmin: false,
-    },
-    context: { paymentAction: true },
-    overrideAccess: true,
-  })
-
-  return {
-    success: true,
-    payToken,
-    message: vi.payment.success.orderCreated,
-  }
 }
 
 /**
@@ -831,6 +866,7 @@ export async function confirmManualPayment(
   const isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
 
   // REVIEW-REQUIRED: Cấp quyền truy cập cho đơn gói Growth Mirror hoặc đơn công cụ số
+  let grantFailed = false
   if (isPackageOrder || isDigitalToolOrder) {
     try {
       await grantEntitlementsForOrder(orderId, { payload, now })
@@ -842,6 +878,7 @@ export async function confirmManualPayment(
         overrideAccess: true,
       })
     } catch (grantErr) {
+      grantFailed = true
       console.error('[Payment] Grant entitlements failed for order', orderId, grantErr)
       await payload.create({
         collection: 'auditLogs',
@@ -858,7 +895,7 @@ export async function confirmManualPayment(
     }
   }
 
-  // Gửi email xác nhận kèm link đặt lịch / hướng dẫn
+  // Gửi email xác nhận kèm link đặt lịch / hướng dẫn (chỉ gửi khi cấp quyền không bị lỗi)
   const siteSettings = await payload.findGlobal({
     slug: 'siteSettings',
     overrideAccess: true,
@@ -873,7 +910,7 @@ export async function confirmManualPayment(
           overrideAccess: true,
         })
 
-  if (customerDoc?.email) {
+  if (customerDoc?.email && !grantFailed) {
     try {
       if (isPackageOrder && packageProduct) {
         // Tìm các workshop sắp diễn ra có audienceProducts chứa gói này
@@ -945,13 +982,7 @@ export async function confirmManualPayment(
       } else if (isDigitalToolOrder && digitalToolProduct) {
         // REVIEW-REQUIRED: Gửi email kích hoạt đơn mua lẻ công cụ số
         const siteUrl = getSiteUrl()
-        const toolUrl = `${siteUrl}${
-          digitalToolProduct.web === 'habit'
-            ? '/habit'
-            : digitalToolProduct.web === 'eq'
-              ? '/eq-buddy'
-              : `/${digitalToolProduct.slug}`
-        }`
+        const toolUrl = `${siteUrl}${getToolUrl(digitalToolProduct)}`
         await sendDigitalToolOrderPaidEmail(
           payload,
           {
@@ -1015,8 +1046,8 @@ export async function cancelOrder(
   reason?: string,
   options: { payload?: Payload; now?: Date } = {},
 ): Promise<unknown> {
-  // REVIEW-REQUIRED: Chỉ tài khoản 'owner' mới được hủy đơn hàng
-  if (!user || user.role !== 'owner') {
+  // REVIEW-REQUIRED: Chỉ tài khoản 'owner' hoặc 'system' mới được hủy đơn hàng
+  if (!user || (user.role !== 'owner' && user.role !== 'system')) {
     throw new UnauthorizedPaymentError(vi.payment.errors.unauthorized)
   }
 
@@ -1068,10 +1099,11 @@ export async function cancelOrder(
     throw new InvalidOrderStatusError(vi.payment.errors.orderNotFound)
   }
 
+  const actorId = user.id ? Number(user.id) : 0
   await payload.create({
     collection: 'auditLogs',
     data: {
-      actor: Number(user.id),
+      ...(actorId > 0 ? { actor: actorId } : {}),
       action: 'cancel_order',
       target: `orders:${orderId}`,
       before: { paymentStatus: order.paymentStatus },
