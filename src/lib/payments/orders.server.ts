@@ -19,6 +19,7 @@ import {
 } from '../email/service.server'
 import type { EmailSender } from '../email/types'
 import { grantEntitlementsForOrder } from './entitlements.server'
+import { getAccess } from '../entitlements'
 import { getSiteUrl } from '../site-url'
 
 export class PaymentError extends Error {
@@ -61,6 +62,46 @@ export class ProductNotForSaleError extends PaymentError {
     super(message)
     this.name = 'ProductNotForSaleError'
   }
+}
+
+export class InvalidProductTypeError extends PaymentError {
+  constructor(message = 'Sản phẩm không phải là công cụ số.') {
+    super(message)
+    this.name = 'InvalidProductTypeError'
+  }
+}
+
+export class ProductExternalError extends PaymentError {
+  constructor(message = 'Sản phẩm này được phân phối qua kênh liên kết ngoài.') {
+    super(message)
+    this.name = 'ProductExternalError'
+  }
+}
+
+export class TermsNotAcceptedError extends PaymentError {
+  constructor(
+    message = vi.checkout?.termsRequired ??
+      'Vui lòng đồng ý với Điều khoản và Chính sách giá – thanh toán để tiếp tục.',
+  ) {
+    super(message)
+    this.name = 'TermsNotAcceptedError'
+  }
+}
+
+export class AlreadyHasActiveAccessError extends PaymentError {
+  toolUrl?: string
+  constructor(message = vi.entitlement.alreadyHasActiveAccess, toolUrl?: string) {
+    super(message)
+    this.name = 'AlreadyHasActiveAccessError'
+    this.toolUrl = toolUrl
+  }
+}
+
+export interface DigitalToolOrderResult {
+  success: boolean
+  payToken: string
+  reused?: boolean
+  message: string
 }
 
 export interface ExperienceOrderContext {
@@ -271,6 +312,204 @@ export async function createExperienceOrder(
   })
 
   // Trả về CHỈ payToken (không lộ ID đơn, không lộ thông tin khách)
+  return {
+    success: true,
+    payToken,
+    message: vi.payment.success.orderCreated,
+  }
+}
+
+/**
+ * REVIEW-REQUIRED: Tạo hoặc dùng lại đơn hàng mua lẻ công cụ số (digital_tool).
+ *
+ * Quy tắc:
+ * 1. Chỉ khách hàng đã đăng nhập (customerId hợp lệ > 0).
+ * 2. Bắt buộc đồng ý điều khoản thanh toán ({ termsAccepted: true }).
+ * 3. Giới hạn tần suất tạo đơn (checkAndRecordRateLimit) theo khách.
+ * 4. Sản phẩm: type = 'digital_tool', _status = 'published', saleStatus = 'on_sale', không có externalUrl.
+ * 5. Giá đọc trực tiếp từ DB bằng getEffectivePrice, bỏ qua mọi giá gửi từ client.
+ * 6. Khách đã có quyền 'active' còn hiệu lực -> ném AlreadyHasActiveAccessError (không tạo đơn).
+ * 7. Tái sử dụng đơn hàng: Nếu khách đã có đơn 'pending' chứa sản phẩm này chưa quá 24 giờ -> dùng lại payToken, không tạo đơn mới.
+ * 8. Tạo paymentRef và payToken duy nhất -> trả về CHỈ payToken (không lộ ID đơn hay thông tin khách).
+ */
+export async function createDigitalToolOrder(
+  customerId: number,
+  productSlug: string,
+  input: { termsAccepted?: boolean; ip?: string } = {},
+  options: { payload?: Payload; now?: Date } = {},
+): Promise<DigitalToolOrderResult> {
+  const now = options.now ?? new Date()
+  const payload = await resolvePayload(options.payload)
+
+  // 1. Kiểm tra khách hàng đã đăng nhập
+  if (!customerId || typeof customerId !== 'number' || customerId <= 0) {
+    throw new UnauthorizedPaymentError(vi.auth.unauthorizedNotice)
+  }
+
+  const customer = await payload.findByID({
+    collection: 'customers',
+    id: customerId,
+    overrideAccess: true,
+  })
+
+  if (!customer) {
+    throw new UnauthorizedPaymentError(vi.auth.unauthorizedNotice)
+  }
+
+  // 2. Bắt buộc đồng ý điều khoản
+  if (!input.termsAccepted) {
+    throw new TermsNotAcceptedError(
+      vi.checkout?.termsRequired ??
+        'Vui lòng đồng ý với Điều khoản và Chính sách giá – thanh toán để tiếp tục.',
+    )
+  }
+
+  // 3. Giới hạn tần suất tạo đơn
+  await checkAndRecordRateLimit(payload, {
+    form: 'digital_tool_order',
+    email: customer.email,
+    ip: input.ip,
+    maxHits: 10,
+    windowMinutes: 10,
+  })
+
+  // 4. Tìm sản phẩm theo slug
+  const cleanSlug = (productSlug || '').trim()
+  const products = await payload.find({
+    collection: 'products',
+    where: { slug: { equals: cleanSlug } },
+    overrideAccess: true,
+    limit: 1,
+  })
+
+  if (products.totalDocs === 0) {
+    throw new OrderNotFoundError(vi.payment.errors.productNotFound)
+  }
+
+  const product = products.docs[0]!
+
+  if (product._status !== 'published') {
+    throw new OrderNotFoundError(vi.payment.errors.productNotFound)
+  }
+
+  if (product.type !== 'digital_tool') {
+    throw new InvalidProductTypeError('Sản phẩm không phải là công cụ số.')
+  }
+
+  if (product.saleStatus !== 'on_sale') {
+    throw new ProductNotForSaleError(vi.payment.errors.productNotForSale)
+  }
+
+  if (product.externalUrl && product.externalUrl.trim().length > 0) {
+    throw new ProductExternalError('Sản phẩm này được phân phối qua kênh liên kết ngoài.')
+  }
+
+  // 5. Kiểm tra cấu hình ngân hàng
+  const siteSettings = await payload.findGlobal({
+    slug: 'siteSettings',
+    overrideAccess: true,
+  })
+  assertValidBankConfig(siteSettings)
+
+  // 6. Kiểm tra xem khách đã có quyền active còn hiệu lực hay chưa
+  const access = await getAccess(customerId, product.id, { payload, now })
+  if (access.hasAccess && access.status === 'active') {
+    const toolUrl =
+      product.web === 'habit' ? '/habit' : product.web === 'eq' ? '/eq-buddy' : `/${product.slug}`
+    throw new AlreadyHasActiveAccessError(vi.entitlement.alreadyHasActiveAccess, toolUrl)
+  }
+
+  // 7. Kiểm tra đơn pending chưa quá 24 giờ để dùng lại
+  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
+  const recentPendingOrders = await payload.find({
+    collection: 'orders',
+    where: {
+      and: [
+        { customer: { equals: customerId } },
+        { paymentStatus: { equals: 'pending' } },
+        { createdAt: { greater_than_equal: twentyFourHoursAgo } },
+      ],
+    },
+    sort: '-createdAt',
+    limit: 20,
+    overrideAccess: true,
+  })
+
+  const reusableOrder = recentPendingOrders.docs.find((ord) => {
+    if (!Array.isArray(ord.items)) return false
+    return ord.items.some((item) => {
+      const pId =
+        typeof item.product === 'object' && item.product !== null
+          ? item.product.id
+          : Number(item.product)
+      return pId === product.id
+    })
+  })
+
+  if (reusableOrder && reusableOrder.payToken) {
+    await payload.update({
+      collection: 'orders',
+      id: reusableOrder.id,
+      data: {
+        termsAcceptedAt: now.toISOString(),
+      },
+      context: { paymentAction: true },
+      overrideAccess: true,
+    })
+
+    return {
+      success: true,
+      payToken: reusableOrder.payToken,
+      reused: true,
+      message: vi.payment.success.orderCreated,
+    }
+  }
+
+  // 8. Đọc giá hiệu lực từ DB
+  const effective = getEffectivePrice(product, now)
+  const effectivePrice = effective.salePrice ?? effective.price
+  if (effectivePrice == null || effectivePrice <= 0) {
+    throw new PaymentError(vi.payment.errors.productPriceInvalid)
+  }
+
+  // 9. Sinh paymentRef và payToken duy nhất
+  const paymentRef = await generateUniquePaymentRef(async (ref) => {
+    const { totalDocs } = await payload.count({
+      collection: 'orders',
+      where: { paymentRef: { equals: ref } },
+      overrideAccess: true,
+    })
+    return totalDocs > 0
+  })
+
+  const payToken = generatePayToken()
+  const termsAcceptedAt = now.toISOString()
+
+  // 10. Tạo đơn hàng mới
+  await payload.create({
+    collection: 'orders',
+    data: {
+      customer: customerId,
+      items: [
+        {
+          product: product.id,
+          price: effectivePrice,
+        },
+      ],
+      subtotal: effectivePrice,
+      total: effectivePrice,
+      paymentRef,
+      payToken,
+      paymentStatus: 'pending',
+      deliveryStatus: 'none',
+      termsAcceptedAt,
+      notes: `Mua công cụ số: ${product.name}`,
+      createdByAdmin: false,
+    },
+    context: { paymentAction: true },
+    overrideAccess: true,
+  })
+
   return {
     success: true,
     payToken,

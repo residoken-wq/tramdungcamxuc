@@ -693,6 +693,8 @@ export const vi = {
     myOrdersEmpty: 'Bạn chưa có đơn hàng nào.',
     unauthorizedNotice: 'Vui lòng đăng nhập để truy cập trang này.',
     loginSuccess: 'Đăng nhập thành công.',
+    buyToContinue: 'Mua để dùng tiếp',
+    openTool: 'Vào học / Mở công cụ',
   },
   entitlement: {
     trialAlreadyUsed: 'Bạn đã dùng thử công cụ này rồi. Mỗi người chỉ được dùng thử một lần.',
@@ -709,6 +711,23 @@ export const vi = {
       none: 'Chưa có quyền',
     },
     daysLeft: (days: number) => `Còn ${days} ngày`,
+  },
+  checkout: {
+    title: 'Thanh toán công cụ số',
+    lifetimeAccess: 'Dùng vĩnh viễn',
+    durationDays: (days: number) => `Thời hạn ${days} ngày`,
+    termsPrefix: 'Tôi đã đọc và đồng ý với',
+    termsLink: 'Điều khoản sử dụng',
+    termsAnd: 'và',
+    pricingPolicyLink: 'Chính sách giá – thanh toán',
+    termsRequired: 'Vui lòng đồng ý với Điều khoản và Chính sách giá – thanh toán để tiếp tục.',
+    payButton: 'Thanh toán',
+    processing: 'Đang xử lý...',
+    productNotFound: 'Không tìm thấy công cụ số yêu cầu hoặc sản phẩm chưa mở bán.',
+    loginPrompt: 'Vui lòng đăng nhập để tiến hành mua công cụ.',
+    alreadyActiveMessage: 'Bạn đã có quyền sử dụng công cụ này.',
+    openToolButton: 'Mở công cụ ngay',
+    secureNotice: 'Thanh toán chuyển khoản VietQR an toàn, tự động kích hoạt sau khi xác nhận',
   },
 } as const
 
