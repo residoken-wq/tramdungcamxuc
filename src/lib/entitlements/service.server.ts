@@ -52,6 +52,37 @@ function isDuplicateTrialKeyError(err: unknown): boolean {
 }
 
 /**
+ * Kết quả khi khách đã có bản ghi trial: còn hạn -> TRIAL_ACTIVE (kèm số ngày còn lại thật),
+ * hết hạn -> TRIAL_ALREADY_USED.
+ */
+async function existingTrialResult(
+  customerId: number,
+  productId: number,
+  payload: Payload,
+  now: Date,
+): Promise<StartTrialResult> {
+  const access = await getAccess(customerId, productId, { payload, now })
+  if (access.status === 'trial' && access.hasAccess) {
+    return {
+      success: true,
+      message: vi.entitlement.trialAlreadyActive,
+      code: 'TRIAL_ACTIVE',
+      status: 'trial',
+      expiresAt: access.expiresAt,
+      daysLeft: access.daysLeft,
+    }
+  }
+  return {
+    success: false,
+    message: vi.entitlement.trialAlreadyUsed,
+    code: 'TRIAL_ALREADY_USED',
+    status: access.status,
+    expiresAt: access.expiresAt,
+    daysLeft: 0,
+  }
+}
+
+/**
  * REVIEW-REQUIRED: Khởi tạo dùng thử cho khách hàng.
  * - Chỉ cho phép khi sản phẩm đã xuất bản, saleStatus = on_sale, trialDays > 0.
  * - Thời gian hết hạn = now + trialDays ngày.
@@ -139,16 +170,8 @@ export async function startTrial(
   })
 
   if (existingTrial.totalDocs > 0) {
-    return {
-      success: false,
-      message: vi.entitlement.trialAlreadyUsed,
-      code: 'TRIAL_ALREADY_USED',
-      status: 'expired',
-      expiresAt: existingTrial.docs[0]?.expiresAt
-        ? new Date(existingTrial.docs[0].expiresAt)
-        : null,
-      daysLeft: 0,
-    }
+    // Có thể là trial vừa được một yêu cầu song song tạo ra -> đọc lại trạng thái thật.
+    return await existingTrialResult(customerId, productId, payload, now)
   }
 
   // 4. Tạo bản ghi trial với trialKey duy nhất
@@ -191,25 +214,7 @@ export async function startTrial(
   } catch (err: unknown) {
     if (isDuplicateTrialKeyError(err)) {
       // Một yêu cầu song song vừa tạo trial: đọc lại để trả đúng trạng thái hiện tại.
-      const access = await getAccess(customerId, productId, { payload, now })
-      if (access.status === 'trial' && access.hasAccess) {
-        return {
-          success: true,
-          message: vi.entitlement.trialAlreadyActive,
-          code: 'TRIAL_ACTIVE',
-          status: 'trial',
-          expiresAt: access.expiresAt,
-          daysLeft: access.daysLeft,
-        }
-      }
-      return {
-        success: false,
-        message: vi.entitlement.trialAlreadyUsed,
-        code: 'TRIAL_ALREADY_USED',
-        status: access.status,
-        expiresAt: access.expiresAt,
-        daysLeft: 0,
-      }
+      return await existingTrialResult(customerId, productId, payload, now)
     }
     throw err
   }
