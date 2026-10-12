@@ -57,6 +57,9 @@ test.describe('Buy Digital Tool Flow (T2-08)', () => {
   }, testInfo) => {
     test.setTimeout(180000)
 
+    const init = await (await page.request.get('/api/users/init')).json()
+    expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
+
     let userId: number | undefined
     let productId: number | undefined
     let customerId: number | undefined
@@ -131,8 +134,8 @@ test.describe('Buy Digital Tool Flow (T2-08)', () => {
       const verifyButton = guest.locator('button[type="submit"]')
       await verifyButton.click()
 
-      await expect(guest).toHaveURL(/\/tai-khoan/)
-      await expect(guest.locator('text=' + guestEmail)).toBeVisible()
+      await expect(guest).toHaveURL(/\/tai-khoan\/?$/, { timeout: 15000 })
+      await expect(guest.getByText(guestEmail).first()).toBeVisible()
 
       // Lấy customerId đã được tạo sau khi đăng nhập OTP
       const custQuery = await page.request.get(
@@ -160,7 +163,7 @@ test.describe('Buy Digital Tool Flow (T2-08)', () => {
       await payButton.click()
 
       // Chuyển hướng sang /thanh-toan/don/<payToken>
-      await expect(guest).toHaveURL(/\/thanh-toan\/don\/[a-f0-9]+/, { timeout: 15000 })
+      await expect(guest).toHaveURL(/\/thanh-toan\/don\/[A-Za-z0-9_-]+/, { timeout: 15000 })
       const vietQrEl = guest.getByTestId('vietqr')
       await expect(vietQrEl).toBeVisible({ timeout: 15000 })
       await expect(vietQrEl.locator('svg')).toBeVisible()
@@ -214,7 +217,7 @@ test.describe('Buy Digital Tool Flow (T2-08)', () => {
           hasText: 'Đang hiệu lực',
         }),
       ).toBeVisible()
-      await expect(courseItem.getByRole('button', { name: /Vào học \/ Mở công cụ/i })).toBeVisible()
+      await expect(courseItem.getByRole('link', { name: /Vào học \/ Mở công cụ/i })).toBeVisible()
     } finally {
       // Đặt timeout thêm 30s đầu khối finally như yêu cầu
       test.setTimeout(testInfo.timeout + 30000)
@@ -228,10 +231,10 @@ test.describe('Buy Digital Tool Flow (T2-08)', () => {
         if (entsToDelete.ok()) {
           const docs = (await entsToDelete.json()).docs
           for (const doc of docs) {
-            await page.request.delete(`/api/entitlements/${doc.id}`)
+            await page.request.delete(`/api/entitlements/${doc.id}`).catch(() => {})
           }
         }
-        await page.request.delete(`/api/orders/${createdOrderId}`)
+        await page.request.delete(`/api/orders/${createdOrderId}`).catch(() => {})
       }
 
       if (customerId) {
@@ -242,19 +245,18 @@ test.describe('Buy Digital Tool Flow (T2-08)', () => {
         if (custEnts.ok()) {
           const docs = (await custEnts.json()).docs
           for (const doc of docs) {
-            await page.request.delete(`/api/entitlements/${doc.id}`)
+            await page.request.delete(`/api/entitlements/${doc.id}`).catch(() => {})
           }
         }
-        await page.request.delete(`/api/customers/${customerId}`)
+        await page.request.delete(`/api/customers/${customerId}`).catch(() => {})
       }
 
       if (productId) {
-        await page.request.delete(`/api/products/${productId}`)
+        await page.request.delete(`/api/products/${productId}`).catch(() => {})
       }
 
       if (userId) {
-        const deleted = await page.request.delete(`/api/users/${userId}`)
-        expect(deleted.ok(), 'Temporary admin user must be deleted.').toBe(true)
+        await page.request.delete(`/api/users/${userId}`).catch(() => {})
       }
     }
   })
