@@ -694,6 +694,21 @@ export const vi = {
     unauthorizedNotice: 'Vui lòng đăng nhập để truy cập trang này.',
     loginSuccess: 'Đăng nhập thành công.',
   },
+  entitlement: {
+    trialAlreadyUsed: 'Bạn đã dùng thử công cụ này rồi. Mỗi người chỉ được dùng thử một lần.',
+    alreadyHasActiveAccess: 'Bạn đã có quyền truy cập sản phẩm này.',
+    productNotAvailableForTrial:
+      'Sản phẩm này hiện không có chương trình dùng thử hoặc chưa mở bán.',
+    trialStartedSuccess: 'Bắt đầu dùng thử thành công.',
+    productNotFound: 'Không tìm thấy sản phẩm.',
+    status: {
+      trial: 'Đang dùng thử',
+      active: 'Đang hiệu lực',
+      expired: 'Hết hạn',
+      none: 'Chưa có quyền',
+    },
+    daysLeft: (days: number) => `Còn ${days} ngày`,
+  },
 } as const
 
 export type LocaleStrings = typeof vi
