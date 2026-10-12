@@ -8,5 +8,10 @@ export const Workshops = contentCollection('workshops', 'Lịch workshop', 'Khó
   date('endsAt', 'Kết thúc'),
   // REVIEW-REQUIRED: Meeting URLs must remain private until audience entitlement checks exist.
   { ...url('joinUrl', 'Liên kết tham gia'), access: { read: authenticated } },
-  relation('audienceProducts', 'Sản phẩm được tham gia', 'products', true),
+  {
+    ...relation('audienceProducts', 'Sản phẩm được tham gia', 'products', true),
+    admin: {
+      description: 'Khách đã mua các sản phẩm này sẽ thấy lịch và nhận email nhắc trước 24 giờ.',
+    },
+  },
 ])

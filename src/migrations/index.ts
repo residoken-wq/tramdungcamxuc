@@ -6,6 +6,7 @@ import * as migration_20261007_025629_private_files from './20261007_025629_priv
 import * as migration_20261008_022007_payment_backend from './20261008_022007_payment_backend'
 import * as migration_20261009_030050_package_payment_entitlements from './20261009_030050_package_payment_entitlements'
 import * as migration_20261010_124840_customer_auth from './20261010_124840_customer_auth'
+import * as migration_20261012_122924_workshop_reminders from './20261012_122924_workshop_reminders'
 
 export const migrations = [
   {
@@ -47,5 +48,10 @@ export const migrations = [
     up: migration_20261010_124840_customer_auth.up,
     down: migration_20261010_124840_customer_auth.down,
     name: '20261010_124840_customer_auth',
+  },
+  {
+    up: migration_20261012_122924_workshop_reminders.up,
+    down: migration_20261012_122924_workshop_reminders.down,
+    name: '20261012_122924_workshop_reminders',
   },
 ]
