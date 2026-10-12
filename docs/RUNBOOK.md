@@ -481,3 +481,19 @@ Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 0 của
 _(Khóa được đọc từ `.env` mỗi lần chạy – **không dán khóa vào crontab**. Đổi `/opt/tramdungcamxuc` và cổng `3400` nếu server khác.)_
 
 Kiểm (demo đã chạy đúng 10/10): gọi có khóa → `200`, không khóa → `401`; sau phút 0 kế tiếp `tail -3 /var/log/tdcx-cron-expire.log` có JSON `"success":true`. Thêm biến mà chưa tạo lại container thì cron trả `401` → chạy `docker compose -p tdcx-demo -f docker-compose.prod.yml up -d`.
+
+---
+
+### Lịch Cron cập nhật quyền truy cập hết hạn (T2-02)
+
+Endpoint `/api/cron/expire-entitlements` tự động tìm các bản ghi quyền truy cập (`entitlements`) ở trạng thái `trial` hoặc `active` đã quá thời hạn `expiresAt` để chuyển trạng thái sang `expired`, đồng thời phát sự kiện phân tích `trial_expired`.
+
+Route này được bảo vệ bằng header `Authorization: Bearer <CRON_SECRET>` (so khớp hằng thời gian `timingSafeEqual` với biến môi trường `CRON_SECRET` trong `.env`).
+
+**Cấu hình crontab mẫu trên server Linux / Docker:**
+Chạy kiểm tra định kỳ mỗi giờ một lần:
+
+```bash
+# Mở crontab: crontab -e
+0 * * * * cd /opt/tramdungcamxuc && curl -s -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= .env | cut -d= -f2)" http://127.0.0.1:3400/api/cron/expire-entitlements >> /var/log/tdcx-cron-entitlements.log 2>&1 && echo >> /var/log/tdcx-cron-entitlements.log
+```
