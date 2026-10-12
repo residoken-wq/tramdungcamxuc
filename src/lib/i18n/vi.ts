@@ -720,6 +720,22 @@ export const vi = {
         'Email này được gửi tự động nhắc lịch buổi học trong gói đồng hành của bạn.',
     },
   },
+  entitlement: {
+    trialAlreadyUsed: 'Bạn đã dùng thử công cụ này rồi. Mỗi người chỉ được dùng thử một lần.',
+    alreadyHasActiveAccess: 'Bạn đã có quyền truy cập sản phẩm này.',
+    productNotAvailableForTrial:
+      'Sản phẩm này hiện không có chương trình dùng thử hoặc chưa mở bán.',
+    trialStartedSuccess: 'Bắt đầu dùng thử thành công.',
+    trialAlreadyActive: 'Bạn đang trong thời gian dùng thử công cụ này.',
+    productNotFound: 'Không tìm thấy sản phẩm.',
+    status: {
+      trial: 'Đang dùng thử',
+      active: 'Đang hiệu lực',
+      expired: 'Hết hạn',
+      none: 'Chưa có quyền',
+    },
+    daysLeft: (days: number) => `Còn ${days} ngày`,
+  },
 } as const
 
 export type LocaleStrings = typeof vi
