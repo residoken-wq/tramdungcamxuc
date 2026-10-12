@@ -37,14 +37,9 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
     page,
     browser,
   }, testInfo) => {
-    test.skip(testInfo.project.name !== 'desktop-1440', 'Bootstrap runs once per database.')
     test.setTimeout(180000)
 
     const init = await (await page.request.get('/api/users/init')).json()
-    test.skip(
-      !process.env.CI && init.initialized === true,
-      'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
-    )
     expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
 
     let userId: number | undefined
@@ -88,9 +83,11 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
       createdProductId = (await productRes.json()).doc.id
 
       // Khởi tạo ngữ cảnh khách vãng lai (không đăng nhập) với màn hình mobile 375px
+      // IP giả riêng (dải tài liệu 203.0.113.0/24): giới hạn tần suất form dùng chung 127.0.0.1 trên CI
       const visitor = await browser.newContext({
         baseURL: testInfo.project.use.baseURL,
         viewport: { width: 375, height: 667 },
+        extraHTTPHeaders: { 'x-forwarded-for': `203.0.113.${Math.floor(Math.random() * 254) + 1}` },
       })
 
       try {
@@ -102,16 +99,8 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
 
         // BƯỚC 1: Bảng điểm thói quen
         await expect(guest.getByText('Bước 1 / 4')).toBeVisible()
-        const habitInput = guest.getByPlaceholder(/Nhập thói quen hàng ngày/i)
-        if (await habitInput.isVisible()) {
-          await habitInput.fill('Uống 1 cốc nước ấm')
-          await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
-        } else {
-          const sampleBtn = guest.getByRole('button', { name: /Uống một cốc nước ấm/i })
-          if (await sampleBtn.isVisible()) {
-            await sampleBtn.click()
-          }
-        }
+        await guest.getByPlaceholder(/Nhập thói quen hàng ngày/i).fill('Uống 1 cốc nước ấm')
+        await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
         // BƯỚC 2: Gọi tên thói quen & kiểm tra khôi phục nháp sau khi tải lại trang
@@ -145,7 +134,7 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
 
         // BƯỚC 4: Xem trước kế hoạch, nhập email, consent và chờ Turnstile
         await expect(guest.getByText('Bước 4 / 4')).toBeVisible()
-        await expect(guest.getByRole('region')).toBeVisible() // ProgressGrid
+        await expect(guest.getByRole('region').first()).toBeVisible() // ProgressGrid
 
         await guest.getByPlaceholder('email@example.com').fill(leadEmail)
         const consentBox = guest.locator('input[type="checkbox"]').last()
@@ -159,14 +148,14 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         const submitBtn = guest.getByRole('button', { name: /Lưu kế hoạch/i })
         await submitBtn.click()
 
-        await expect(guest.getByText(/Kế hoạch đã sẵn sàng|thành công/i)).toBeVisible({
+        await expect(guest.getByText('Kế hoạch đã sẵn sàng!')).toBeVisible({
           timeout: 20000,
         })
 
         // ===== 2. Trang Offer (/habit/1-percent-better) =====
         await guest.goto('/habit/1-percent-better')
         await expect(guest.getByRole('heading', { level: 1 })).toBeVisible()
-        await expect(guest.getByText(/178\.000/)).toBeVisible()
+        await expect(guest.getByText(/^178\.000/).first()).toBeVisible()
 
         const ctaBtn = guest.getByRole('link', { name: /Dùng thử 21 ngày/i })
         await expect(ctaBtn.first()).toBeVisible()
@@ -177,12 +166,14 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
       } finally {
         await visitor.close()
       }
-
-      // Kiểm tra lead đã được ghi nhận trong DB
-      const leadsRes = await page.request.get(
-        `/api/leads?where[email][equals]=${encodeURIComponent(leadEmail)}&limit=1`,
-      )
-      if (leadsRes.ok()) {
+    } finally {
+      // Đủ thời gian dọn dẹp kể cả khi phần thân đã dùng hết thời gian test
+      test.setTimeout(testInfo.timeout + 30000)
+      // Xóa lead đã tạo bởi email test
+      const leadsRes = await page.request
+        .get(`/api/leads?where[email][equals]=${encodeURIComponent(leadEmail)}&limit=1`)
+        .catch(() => null)
+      if (leadsRes?.ok()) {
         const leadDocs = (await leadsRes.json()).docs
         if (leadDocs && leadDocs[0]) {
           await page.request.delete(`/api/leads/${leadDocs[0].id}`).catch(() => {})
@@ -190,10 +181,10 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
       }
 
       // Xóa kế hoạch habitPlans đã tạo bởi email test
-      const plansRes = await page.request.get(
-        `/api/habitPlans?where[leadEmail][equals]=${encodeURIComponent(leadEmail)}&limit=5`,
-      )
-      if (plansRes.ok()) {
+      const plansRes = await page.request
+        .get(`/api/habitPlans?where[leadEmail][equals]=${encodeURIComponent(leadEmail)}&limit=5`)
+        .catch(() => null)
+      if (plansRes?.ok()) {
         const planDocs = (await plansRes.json()).docs
         if (planDocs && Array.isArray(planDocs)) {
           for (const plan of planDocs) {
@@ -201,8 +192,7 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
           }
         }
       }
-    } finally {
-      // Dọn dẹp toàn bộ dữ liệu đã tạo
+      // Dọn dẹp toàn bộ dữ liệu đã tạo (admin xóa cuối cùng)
       for (const id of createdTechniqueIds) {
         await page.request.delete(`/api/techniques/${id}`).catch(() => {})
       }

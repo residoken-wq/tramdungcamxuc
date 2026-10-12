@@ -200,13 +200,13 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
         ).toThrow()
       })
 
-      it('từ chối khi chosenTechniques rỗng', () => {
+      it('cho phép chosenTechniques rỗng (CMS chưa có kỹ thuật cho giai đoạn nào thì không chặn)', () => {
         expect(() =>
           habitPlanSubmissionSchema.parse({
             ...validPlan,
             chosenTechniques: [],
           }),
-        ).toThrow()
+        ).not.toThrow()
       })
 
       it('từ chối khi chosenTechniques vượt quá 8 kỹ thuật', () => {

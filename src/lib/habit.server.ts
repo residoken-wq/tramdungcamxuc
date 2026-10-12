@@ -1,4 +1,6 @@
 import 'server-only'
+import { ZodError } from 'zod'
+import { vi } from './i18n/vi'
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { Product, SiteSetting, Technique } from '@/payload-types'
@@ -27,6 +29,7 @@ export interface HabitProductData {
   salePrice: number | null
   saleEndsAt?: string | null
   trialDays: number | null
+  accessDurationDays?: number | null
   shortDescription?: string | null
   saleStatus: Product['saleStatus']
   includes: string[]
@@ -35,6 +38,22 @@ export interface HabitProductData {
   cta: ProductCta | null
   videoCount: number
   techniqueCount: number
+}
+
+/** Lỗi kỹ thuật dạng ZodError để action trả câu tiếng Việt cho người dùng (không thành lỗi máy chủ). */
+function techniqueError(message: string): ZodError {
+  return new ZodError([{ code: 'custom', path: ['chosenTechniques'], message }])
+}
+
+/** Ngày hôm nay theo giờ Việt Nam (00:00 +07:00): lưu lúc 0h–7h sáng không bị lùi về hôm qua. */
+function vietnamTodayIso(now: Date = new Date()): string {
+  const ymd = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now)
+  return new Date(`${ymd}T00:00:00+07:00`).toISOString()
 }
 
 async function resolvePayload(injected?: Payload): Promise<Payload> {
@@ -179,7 +198,8 @@ export async function getHabitProduct(payloadInstance?: Payload): Promise<HabitP
     price: doc.price ?? null,
     salePrice: doc.salePrice ?? null,
     saleEndsAt: doc.saleEndsAt,
-    trialDays: doc.trialDays ?? 21,
+    trialDays: doc.trialDays ?? null,
+    accessDurationDays: doc.accessDurationDays ?? null,
     shortDescription: doc.shortDescription,
     saleStatus: doc.saleStatus,
     includes,
@@ -231,20 +251,30 @@ export async function submitHabitPlan(
 
   const payload = await resolvePayload(options.payload)
 
+  const cleanEmail = validated.email?.trim().toLowerCase() || null
+
+  // 4. Luôn xác minh Turnstile và kiểm tra Rate limit (ngay cả khi không có email)
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
+  await checkAndRecordRateLimit(payload, {
+    form: 'habit-loop',
+    ip: ctx.ip,
+    email: cleanEmail || undefined,
+  })
+
   // 3. Kiểm tra technique: không trùng lặp, tối đa 2 kỹ thuật mỗi stage, có thật và đúng stage đã xuất bản
   const techniqueIds = validated.chosenTechniques.map((t) => t.techniqueId)
   const uniqueIds = new Set(techniqueIds)
   if (uniqueIds.size !== techniqueIds.length) {
-    throw new Error('Không được chọn trùng kỹ thuật.')
+    throw techniqueError(vi.habit.wizard.errors.techniqueDuplicate)
   }
 
   const stageCounts: Record<string, number> = {}
   for (const item of validated.chosenTechniques) {
     stageCounts[item.stage] = (stageCounts[item.stage] || 0) + 1
   }
-  for (const [stg, count] of Object.entries(stageCounts)) {
+  for (const count of Object.values(stageCounts)) {
     if (count > 2) {
-      throw new Error(`Giai đoạn ${stg} chỉ được chọn tối đa 2 kỹ thuật.`)
+      throw techniqueError(vi.habit.wizard.errors.techniquesTooMany)
     }
   }
 
@@ -268,25 +298,13 @@ export async function submitHabitPlan(
     for (const item of validated.chosenTechniques) {
       const tech = techMap.get(item.techniqueId)
       if (!tech) {
-        throw new Error(`Kỹ thuật #${item.techniqueId} không tồn tại hoặc chưa xuất bản.`)
+        throw techniqueError(vi.habit.wizard.errors.techniqueInvalid)
       }
       if (tech.stage !== item.stage) {
-        throw new Error(
-          `Kỹ thuật "${tech.name}" thuộc giai đoạn ${tech.stage}, không phải ${item.stage}.`,
-        )
+        throw techniqueError(vi.habit.wizard.errors.techniqueInvalid)
       }
     }
   }
-
-  const cleanEmail = validated.email?.trim().toLowerCase() || null
-
-  // 4. Luôn xác minh Turnstile và kiểm tra Rate limit (ngay cả khi không có email)
-  await verifyTurnstile(validated.turnstileToken, ctx.ip)
-  await checkAndRecordRateLimit(payload, {
-    form: 'habit-loop',
-    ip: ctx.ip,
-    email: cleanEmail || undefined,
-  })
 
   // Đọc link nhóm Zalo từ siteSettings
   let zaloGroupUrl = ''
@@ -325,7 +343,7 @@ export async function submitHabitPlan(
         technique: item.techniqueId,
         action: item.action,
       })),
-      startDate: new Date().toISOString(),
+      startDate: vietnamTodayIso(),
     },
     overrideAccess: true, // overrideAccess cho phép server action lưu kế hoạch của học viên chưa đăng nhập
   })

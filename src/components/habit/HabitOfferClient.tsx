@@ -35,6 +35,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
 
   const includesList = product?.includes && product.includes.length > 0 ? product.includes : []
   const faqList = product?.faq && product.faq.length > 0 ? product.faq : []
+  const isLifetime = !product?.accessDurationDays || product.accessDurationDays <= 0
 
   return (
     <div className="w-full">
@@ -46,6 +47,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
             titleLine1={vi.habit.offer.titleLine1}
             titleLine2={vi.habit.offer.titleLine2}
             emotionLine={vi.habit.offer.emotionalLine}
+            as="h1"
             className="mb-8"
           />
 
@@ -69,9 +71,15 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
               </div>
             )}
 
-            {hasPrice && (
+            {/* Chỉ hiện cam kết khi đúng với cấu hình CMS: vĩnh viễn khi không giới hạn ngày, không cần thẻ khi có dùng thử */}
+            {hasPrice && (isLifetime || trialDays !== null) && (
               <p className="text-xs sm:text-sm text-deep-navy/70 mb-6 font-medium">
-                {vi.habit.offer.permanentAccess} • {vi.habit.offer.noCreditCard}
+                {[
+                  isLifetime ? vi.habit.offer.permanentAccess : null,
+                  trialDays !== null ? vi.habit.offer.noCreditCard : null,
+                ]
+                  .filter(Boolean)
+                  .join(' • ')}
               </p>
             )}
 
@@ -79,7 +87,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
             {includesList.length > 0 && (
               <div className="mb-6 text-left border-t border-b border-lavender-mist/40 py-4">
                 <p className="text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-2 font-ui">
-                  Bao gồm trong bộ công cụ:
+                  {vi.habit.offer.includesHeading}
                 </p>
                 <ul className="space-y-2">
                   {includesList.map((item, idx) => (
@@ -127,25 +135,30 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
       <section className="py-8 bg-white border-b border-lavender-mist/40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            {/* Số đếm từ DB: chưa có bài học / kỹ thuật nào thì ẩn ô đó */}
+            {videoCount > 0 && (
+              <div className="p-4 rounded-xl bg-warm-ivory">
+                <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
+                  {videoCount}
+                </span>
+                <span className="text-xs sm:text-sm font-semibold text-deep-navy">
+                  {vi.habit.offer.stats.videos}
+                </span>
+              </div>
+            )}
+            {techniqueCount > 0 && (
+              <div className="p-4 rounded-xl bg-warm-ivory">
+                <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
+                  {techniqueCount}
+                </span>
+                <span className="text-xs sm:text-sm font-semibold text-deep-navy">
+                  {vi.habit.offer.stats.techniques}
+                </span>
+              </div>
+            )}
             <div className="p-4 rounded-xl bg-warm-ivory">
               <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                {videoCount}
-              </span>
-              <span className="text-xs sm:text-sm font-semibold text-deep-navy">
-                {vi.habit.offer.stats.videos}
-              </span>
-            </div>
-            <div className="p-4 rounded-xl bg-warm-ivory">
-              <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                {techniqueCount}
-              </span>
-              <span className="text-xs sm:text-sm font-semibold text-deep-navy">
-                {vi.habit.offer.stats.techniques}
-              </span>
-            </div>
-            <div className="p-4 rounded-xl bg-warm-ivory">
-              <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                21
+                {vi.habit.offer.stats.trackerValue}
               </span>
               <span className="text-xs sm:text-sm font-semibold text-deep-navy">
                 {vi.habit.offer.stats.tracker}
@@ -153,7 +166,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
             </div>
             <div className="p-4 rounded-xl bg-warm-ivory">
               <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                4
+                {vi.habit.offer.stats.modulesValue}
               </span>
               <span className="text-xs sm:text-sm font-semibold text-deep-navy">
                 {vi.habit.offer.stats.modules}
@@ -225,49 +238,39 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
         </div>
       </section>
 
-      {/* 5. FAQ (Từ CMS hoặc fallback mẫu) */}
-      <section className="py-12 sm:py-16 bg-warm-ivory">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <h2 className="font-display text-2xl sm:text-3xl text-deep-navy text-center mb-8">
-            {vi.habit.offer.faq.heading}
-          </h2>
+      {/* 5. FAQ – chỉ hiện khi CMS có câu hỏi (không hiện FAQ mẫu ra trang công khai) */}
+      {faqList.length > 0 && (
+        <section className="py-12 sm:py-16 bg-warm-ivory">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6">
+            <h2 className="font-display text-2xl sm:text-3xl text-deep-navy text-center mb-8">
+              {vi.habit.offer.faq.heading}
+            </h2>
 
-          <div className="space-y-4">
-            {faqList.length > 0
-              ? faqList.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
-                  >
-                    <h3 className="font-semibold text-deep-navy text-base mb-2">{item.question}</h3>
-                    {item.answer && (
-                      <p className="text-sm text-deep-navy/80 leading-relaxed">{item.answer}</p>
-                    )}
-                  </div>
-                ))
-              : vi.habit.offer.faq.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
-                  >
-                    <h3 className="font-semibold text-deep-navy text-base mb-2">{item.q}</h3>
-                    <p className="text-sm text-deep-navy/80 leading-relaxed">{item.a}</p>
-                  </div>
-                ))}
+            <div className="space-y-4">
+              {faqList.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
+                >
+                  <h3 className="font-semibold text-deep-navy text-base mb-2">{item.question}</h3>
+                  {item.answer && (
+                    <p className="text-sm text-deep-navy/80 leading-relaxed">{item.answer}</p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 6. BOTTOM CTA */}
       <section className="py-16 bg-brand-gradient border-t border-lavender-mist">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h2 className="font-display text-3xl sm:text-4xl text-deep-navy mb-4">
-            Bắt đầu hành trình 21 ngày của bạn
+            {vi.habit.offer.bottomTitle}
           </h2>
           <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">
-            Khám phá {videoCount > 0 ? `${videoCount} video bài giảng, ` : ''}
-            {techniqueCount > 0 ? `${techniqueCount} kỹ thuật thực chiến và ` : ''}
-            bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.
+            {vi.habit.offer.bottomDesc(videoCount, techniqueCount)}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             {cta &&

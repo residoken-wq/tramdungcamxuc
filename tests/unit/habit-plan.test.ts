@@ -160,13 +160,13 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
           chosenTechniques: [
             { techniqueId: invalidTechId, stage: 'cue', action: 'Chạy bộ 15 phút' },
           ],
-          email: 'test@example.com',
+          email: `habit-${randomUUID().slice(0, 8)}@example.test`,
           consent: true,
         },
         {},
         { payload, emailSender },
       ),
-    ).rejects.toThrow(/không tồn tại/)
+    ).rejects.toThrow(/không còn trong danh sách/)
   })
 
   it('từ chối khi technique sai stage (không đúng giai đoạn)', async () => {
@@ -179,13 +179,13 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
           chosenTechniques: [
             { techniqueId: validCueTechId, stage: 'reward', action: 'Ăn một que kem' },
           ],
-          email: 'test@example.com',
+          email: `habit-${randomUUID().slice(0, 8)}@example.test`,
           consent: true,
         },
         {},
         { payload, emailSender },
       ),
-    ).rejects.toThrow(/thuộc giai đoạn/)
+    ).rejects.toThrow(/không còn trong danh sách/)
   })
 
   it('A1: từ chối khi trùng techniqueId trong chosenTechniques', async () => {
@@ -198,7 +198,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
             { techniqueId: validCueTechId, stage: 'cue', action: 'Để cốc nước gần máy tính' },
             { techniqueId: validCueTechId, stage: 'cue', action: 'Rót nước đầy bình' },
           ],
-          email: 'test@example.com',
+          email: `habit-${randomUUID().slice(0, 8)}@example.test`,
           consent: true,
         },
         {},
@@ -216,13 +216,13 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
           chosenTechniques: [
             { techniqueId: draftTechId, stage: 'cue', action: 'Hành động với kỹ thuật nháp' },
           ],
-          email: 'test@example.com',
+          email: `habit-${randomUUID().slice(0, 8)}@example.test`,
           consent: true,
         },
         {},
         { payload, emailSender },
       ),
-    ).rejects.toThrow(/không tồn tại|chưa xuất bản/i)
+    ).rejects.toThrow(/không còn trong danh sách/)
   })
 
   it('A1: từ chối khi một giai đoạn có nhiều hơn 2 kỹ thuật', async () => {
@@ -249,7 +249,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
             { techniqueId: cue2.id, stage: 'cue', action: 'Hành động 2' },
             { techniqueId: cue3.id, stage: 'cue', action: 'Hành động 3' },
           ],
-          email: 'test@example.com',
+          email: `habit-${randomUUID().slice(0, 8)}@example.test`,
           consent: true,
         },
         {},
@@ -265,7 +265,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
           scorecard: [{ habit: 'Uống nước', rating: 'good' }],
           identityStatement: 'Tôi sẽ uống nước để khỏe mạnh',
           chosenTechniques: [{ techniqueId: validCueTechId, action: 'Hành động thiếu stage' }],
-          email: 'test@example.com',
+          email: `habit-${randomUUID().slice(0, 8)}@example.test`,
           consent: true,
         },
         {},
@@ -534,7 +534,15 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
 
     const savedDate = new Date(doc.startDate!)
     const today = new Date()
-    expect(savedDate.toISOString().slice(0, 10)).toBe(today.toISOString().slice(0, 10))
+    // Ngày bắt đầu tính theo giờ Việt Nam
+    const vnDay = (d: Date) =>
+      new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(d)
+    expect(vnDay(savedDate)).toBe(vnDay(today))
   })
 
   it('B10: cho phép gửi họ và tên tùy chọn và lưu chính xác vào lead', async () => {

@@ -27,6 +27,8 @@ export interface HabitLoopWizardProps {
 
 export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
   const startTimeRef = useRef<number | null>(null)
+  // Ghi habit_loop_completed đúng 1 lần mỗi lần mở trang (Quay lại → Tiếp tục không ghi lại)
+  const completedTrackedRef = useRef(false)
   const [draft, setDraft] = useState<HabitPlanDraft>(getDefaultHabitDraft())
   const [isLoaded, setIsLoaded] = useState(false)
   const [newHabitText, setNewHabitText] = useState('')
@@ -48,6 +50,17 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     if (startTimeRef.current === null) {
       startTimeRef.current = Date.now()
     }
+    const knownIds = new Set(techniques.map((t) => t.id))
+    const keepKnown = (items: unknown) =>
+      Array.isArray(items)
+        ? items.filter(
+            (item): item is { techniqueId: number; action: string } =>
+              typeof item === 'object' &&
+              item !== null &&
+              knownIds.has((item as { techniqueId: number }).techniqueId) &&
+              typeof (item as { action: unknown }).action === 'string',
+          )
+        : []
     const timer = setTimeout(() => {
       try {
         const stored = localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
@@ -57,26 +70,21 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
             setDraft((prev) => ({
               ...prev,
               ...parsed,
+              name: typeof parsed.name === 'string' ? parsed.name : '',
+              email: typeof parsed.email === 'string' ? parsed.email : '',
               consent: false, // B11: Nghị định 13/2023 - không bao giờ tự động tick sẵn ô đồng ý từ nháp
               scorecard: Array.isArray(parsed.scorecard) ? parsed.scorecard : [],
               actionText: typeof parsed.actionText === 'string' ? parsed.actionText : '',
               personText: typeof parsed.personText === 'string' ? parsed.personText : '',
               identityStatement:
                 typeof parsed.identityStatement === 'string' ? parsed.identityStatement : '',
+              // Bỏ kỹ thuật không còn trong danh sách (Hana đã ẩn / xóa) để nháp cũ không kẹt ở bước 3
               chosenTechniques: parsed.chosenTechniques
                 ? {
-                    cue: Array.isArray(parsed.chosenTechniques.cue)
-                      ? parsed.chosenTechniques.cue
-                      : [],
-                    craving: Array.isArray(parsed.chosenTechniques.craving)
-                      ? parsed.chosenTechniques.craving
-                      : [],
-                    response: Array.isArray(parsed.chosenTechniques.response)
-                      ? parsed.chosenTechniques.response
-                      : [],
-                    reward: Array.isArray(parsed.chosenTechniques.reward)
-                      ? parsed.chosenTechniques.reward
-                      : [],
+                    cue: keepKnown(parsed.chosenTechniques.cue),
+                    craving: keepKnown(parsed.chosenTechniques.craving),
+                    response: keepKnown(parsed.chosenTechniques.response),
+                    reward: keepKnown(parsed.chosenTechniques.reward),
                   }
                 : prev.chosenTechniques,
               step:
@@ -94,7 +102,8 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     }, 0)
 
     return () => clearTimeout(timer)
-  }, [])
+    // techniques là props từ server, không đổi trong vòng đời trang
+  }, [techniques])
 
   // 2. Tự động lưu nháp vào localStorage mỗi khi thay đổi (không lưu consent)
   useEffect(() => {
@@ -241,7 +250,10 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
       const duration = startTimeRef.current
         ? Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
         : 0
-      track('habit_loop_completed', { step: 4, duration })
+      if (!completedTrackedRef.current) {
+        completedTrackedRef.current = true
+        track('habit_loop_completed', { step: 4, duration })
+      }
       setDraft((prev) => ({ ...prev, step: 4 }))
     }
   }
@@ -329,13 +341,14 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
         seriesLabel={vi.habit.wizard.badge}
         titleLine1={vi.habit.wizard.titleLine1}
         titleLine2={vi.habit.wizard.titleLine2}
+        as="h1"
         emotionLine={vi.habit.wizard.emotionalLine}
         className="mb-8 text-center"
       />
 
       {/* Thanh tiến độ 4 bước */}
       {!submitSuccess && (
-        <div className="mb-8" aria-label="Tiến độ bài thực hành">
+        <div className="mb-8" aria-label={vi.habit.wizard.errors.progressAria}>
           <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-deep-navy mb-2">
             <span>{vi.habit.wizard.stepIndicator(draft.step, 4)}</span>
             <span className="text-bright-magenta">
@@ -455,7 +468,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                         handleAddHabit()
                       }
                     }}
-                    placeholder="Ví dụ: Đọc sách 10 phút, Uống cà phê sáng..."
+                    placeholder={vi.habit.wizard.step1.addPlaceholder}
                     className="flex-1 px-4 py-2.5 rounded-lg border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-2 focus:ring-bright-magenta"
                   />
                   <div className="flex gap-2">
@@ -463,7 +476,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                       value={newHabitRating}
                       onChange={(e) => setNewHabitRating(e.target.value as HabitScorecardRating)}
                       className="px-3 py-2.5 rounded-lg border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-2 focus:ring-bright-magenta text-sm"
-                      aria-label="Đánh giá thói quen"
+                      aria-label={vi.habit.wizard.errors.ratingAria}
                     >
                       <option value="good">{vi.habit.wizard.step1.goodLabel}</option>
                       <option value="neutral">{vi.habit.wizard.step1.neutralLabel}</option>
@@ -613,7 +626,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                 <p className="font-quote italic text-deep-navy text-lg sm:text-xl">
                   {draft.identityStatement || (
                     <span className="text-deep-navy/40">
-                      &ldquo;Tôi sẽ [hành động] để trở thành [con người]&rdquo;
+                      {vi.habit.wizard.errors.identityExample}
                     </span>
                   )}
                 </p>
