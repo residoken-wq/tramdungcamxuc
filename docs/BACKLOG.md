@@ -40,3 +40,4 @@
 - [ ] T2-01: server chặn đăng nhập khi khách cũ chưa có `consentAt` (form đã chặn).
 - [ ] Xóa tài khoản khách (AGENTS 8.4): `orders`, `entitlements`, `savedCards`, `certificates`, `lessonProgress` có `customer` NOT NULL + `ON DELETE SET NULL` → xóa khách có dữ liệu sẽ lỗi DB. Phải xóa / ẩn danh dữ liệu con trước (thấy khi QA T2-10).
 - [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
+- [ ] T2-08: khóa chống tạo 2 đơn song song đang ở bộ nhớ tiến trình (`withOrderLock`). Khi chạy nhiều bản Next.js → đổi sang `pg_advisory_xact_lock(customerId, productId)`.

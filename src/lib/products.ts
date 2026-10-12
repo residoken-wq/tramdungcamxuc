@@ -38,6 +38,19 @@ export function getBookingPath(productId?: string | number | null): string {
   return `${BOOKING_PATH}?san-pham=${encodeURIComponent(String(productId))}`
 }
 
+/**
+ * Đường dẫn vào công cụ theo sản phẩm:
+ * - Habit -> /habit/hoc
+ * - EQ -> /eq-buddy
+ * - Mặc định / còn lại -> /tai-khoan
+ */
+export function getToolUrl(product?: { web?: string | null } | null): string {
+  if (!product) return '/tai-khoan'
+  if (product.web === 'habit') return '/habit/hoc'
+  if (product.web === 'eq') return '/eq-buddy'
+  return '/tai-khoan'
+}
+
 export interface PublicProductCoverImage {
   url?: string | null
   alt?: string | null
