@@ -72,7 +72,7 @@ describe('Trial Actions & Quiz CTA (T2-04)', () => {
     name: string
     slug?: string
     trialDays?: number
-    saleStatus?: 'on_sale' | 'not_for_sale' | 'consult'
+    saleStatus?: 'on_sale' | 'consult' | 'coming_soon' | 'free' | 'hidden'
     status?: 'published' | 'draft'
   }): Promise<Product> {
     const prod = await payload.create({
