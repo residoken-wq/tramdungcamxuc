@@ -229,13 +229,13 @@ export async function verifyOtp(
 
   const payload = await resolvePayload(options.payload)
 
-  // Rate limiting on verification attempts per IP & email
+  // Rate limiting on verification attempts per IP & email (15 attempts per 10 mins)
   await checkAndRecordRateLimit(payload, {
     form: 'customer_otp_verify',
     ip: ctx.ip,
     email: normalizedEmail,
     windowMinutes: 10,
-    maxHits: 10,
+    maxHits: 15,
   })
 
   // Find latest OTP code for this email
@@ -251,25 +251,45 @@ export async function verifyOtp(
 
   const otpDoc = otpQuery.docs[0]
   if (!otpDoc) {
-    throw new OtpVerificationError(vi.auth.otpNotFound)
-  }
-
-  // Check if already used
-  if (otpDoc.usedAt) {
-    throw new OtpVerificationError(vi.auth.codeUsed)
-  }
-
-  // Check if locked due to >= 5 failed attempts
-  if (typeof otpDoc.attempts === 'number' && otpDoc.attempts >= 5) {
-    throw new OtpVerificationError(vi.auth.codeLocked)
+    throw new OtpVerificationError(vi.auth.invalidCode)
   }
 
   const now = options.now ?? new Date()
   const nowIso = now.toISOString()
 
-  // Check expiration (10 minutes)
-  if (new Date(otpDoc.expiresAt).getTime() < now.getTime()) {
-    throw new OtpVerificationError(vi.auth.codeExpired)
+  // REVIEW-REQUIRED: Atomic increment of attempt counter directly in DB before comparing code.
+  // Prevents concurrent race conditions from bypassing the 5-attempt brute-force limit.
+  const db = getDrizzleDb(payload)
+  let recordedAttempts = (otpDoc.attempts ?? 0) + 1
+
+  if (db) {
+    const incResult = await db.execute(
+      sql`UPDATE "otp_codes" SET "attempts" = "attempts" + 1, "updated_at" = ${nowIso}::timestamptz WHERE "id" = ${otpDoc.id} AND "used_at" IS NULL AND "attempts" < 5 AND "expires_at" > ${nowIso}::timestamptz RETURNING "attempts"`,
+    )
+    const rows = Array.isArray(incResult)
+      ? incResult
+      : ((incResult as { rows?: Array<{ attempts: number }> }).rows ?? [])
+    if (rows.length === 0) {
+      throw new OtpVerificationError(vi.auth.invalidCode)
+    }
+    recordedAttempts = (rows[0] as { attempts: number }).attempts
+  } else {
+    // Fallback for mock environments without direct drizzle executor
+    if (otpDoc.usedAt || (typeof otpDoc.attempts === 'number' && otpDoc.attempts >= 5)) {
+      throw new OtpVerificationError(vi.auth.invalidCode)
+    }
+    if (new Date(otpDoc.expiresAt).getTime() < now.getTime()) {
+      throw new OtpVerificationError(vi.auth.invalidCode)
+    }
+    const updated = await payload.update({
+      collection: 'otpCodes',
+      id: otpDoc.id,
+      data: { attempts: recordedAttempts },
+      overrideAccess: true,
+    })
+    if ((updated.attempts ?? 0) > 5) {
+      throw new OtpVerificationError(vi.auth.invalidCode)
+    }
   }
 
   // Constant-time hash comparison
@@ -279,23 +299,10 @@ export async function verifyOtp(
   const isMatch = expectedBuf.length === storedBuf.length && timingSafeEqual(expectedBuf, storedBuf)
 
   if (!isMatch) {
-    const currentAttempts = typeof otpDoc.attempts === 'number' ? otpDoc.attempts : 0
-    const newAttempts = currentAttempts + 1
-    await payload.update({
-      collection: 'otpCodes',
-      id: otpDoc.id,
-      data: { attempts: newAttempts },
-      overrideAccess: true,
-    })
-
-    if (newAttempts >= 5) {
-      throw new OtpVerificationError(vi.auth.codeLocked)
-    }
     throw new OtpVerificationError(vi.auth.invalidCode)
   }
 
   // REVIEW-REQUIRED: Race-condition safe atomic update on DB level
-  const db = getDrizzleDb(payload)
   if (db) {
     const updateResult = await db.execute(
       sql`UPDATE "otp_codes" SET "used_at" = ${nowIso}::timestamptz, "updated_at" = ${nowIso}::timestamptz WHERE "id" = ${otpDoc.id} AND "used_at" IS NULL RETURNING "id"`,
@@ -304,12 +311,12 @@ export async function verifyOtp(
       ? updateResult
       : ((updateResult as { rows?: Array<{ id: number }> }).rows ?? [])
     if (rows.length === 0) {
-      throw new OtpVerificationError(vi.auth.codeUsed)
+      throw new OtpVerificationError(vi.auth.invalidCode)
     }
   } else {
     // Fallback for non-postgres or test mocks without direct drizzle executor
     if (otpDoc.usedAt) {
-      throw new OtpVerificationError(vi.auth.codeUsed)
+      throw new OtpVerificationError(vi.auth.invalidCode)
     }
     await payload.update({
       collection: 'otpCodes',

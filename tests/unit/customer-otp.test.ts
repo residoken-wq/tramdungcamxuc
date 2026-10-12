@@ -343,7 +343,55 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
       expect(rejected).toHaveLength(1)
 
       const err = (rejected[0] as PromiseRejectedResult).reason as Error
-      expect(err.message).toBe(viDict.auth.codeUsed)
+      expect(err.message).toBe(viDict.auth.invalidCode)
+    })
+
+    it('atomically increments attempts up to 5 on 10 concurrent invalid attempts and locks code (A3 & C)', async () => {
+      const email = `atomic-concurrent-${randomUUID()}@example.test`
+      const code = '123987'
+      const codeHash = computeOtpHash(email, code)
+      const now = new Date()
+      const expiresAt = new Date(now.getTime() + 10 * 60 * 1000).toISOString()
+
+      const otp = await payload.create({
+        collection: 'otpCodes',
+        data: {
+          email,
+          codeHash,
+          expiresAt,
+          attempts: 0,
+        },
+        overrideAccess: true,
+      })
+      track('otpCodes', otp)
+
+      // 10 concurrent invalid attempts
+      const promises = Array.from({ length: 10 }).map(() =>
+        verifyOtp({ email, code: '000000' }, { ip: uniqueIp() }, { payload, now }),
+      )
+      const results = await Promise.allSettled(promises)
+      // All 10 failed with unified error message
+      expect(results.every((r) => r.status === 'rejected')).toBe(true)
+      for (const res of results) {
+        if (res.status === 'rejected') {
+          expect((res.reason as Error).message).toBe(viDict.auth.invalidCode)
+        }
+      }
+
+      const freshOtp = await payload.findByID({
+        collection: 'otpCodes',
+        id: otp.id,
+        overrideAccess: true,
+      })
+
+      // Final attempts must be <= 5 (atomic limit capped at 5)
+      expect(freshOtp.attempts).toBeLessThanOrEqual(5)
+      expect(freshOtp.attempts).toBe(5)
+
+      // Afterwards, entering the CORRECT code is strictly rejected with unified error message
+      await expect(
+        verifyOtp({ email, code }, { ip: uniqueIp() }, { payload, now }),
+      ).rejects.toThrow(viDict.auth.invalidCode)
     })
   })
 
