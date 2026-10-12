@@ -1,18 +1,17 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import { vi } from '@/lib/i18n/vi'
 import { getTechniques } from '@/lib/habit.server'
 import { HabitLoopWizard } from '@/components/habit/HabitLoopWizard'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Habit Loop 5 phút – Thiết kế vòng lặp thói quen',
-  description:
-    'Chỉ 5 phút để gọi tên, gỡ rối và thiết kế vòng lặp thói quen bền vững với 11 kỹ thuật Atomic Habits cá nhân hóa.',
+  title: vi.habit.metadata.loop5min.title,
+  description: vi.habit.metadata.loop5min.description,
   openGraph: {
-    title: 'Habit Loop 5 phút | Trạm Dừng Cảm Xúc',
-    description:
-      'Chỉ 5 phút để gọi tên, gỡ rối và thiết kế vòng lặp thói quen bền vững cùng Hana Lương.',
+    title: vi.habit.metadata.loop5min.ogTitle,
+    description: vi.habit.metadata.loop5min.ogDescription,
   },
 }
 

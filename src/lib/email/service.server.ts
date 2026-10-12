@@ -14,6 +14,7 @@ import { HabitPlanEmail, type HabitPlanEmailTechniqueItem } from '@/emails/Habit
 import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
 import { WorkshopReminderEmail } from '@/emails/WorkshopReminderEmail'
 import { vi } from '@/lib/i18n/vi'
+import { getSiteUrl } from '@/lib/site-url'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
 
@@ -534,13 +535,18 @@ export async function sendHabitPlanEmail(
   const sender = customSender || getDefaultEmailSender()
 
   try {
+    const baseUrl = getSiteUrl()
+    const siteDomain = baseUrl.replace(/^https?:\/\//, '')
+    const revisitUrl = data.revisitUrl || `${baseUrl}/habit/5-phut`
+
     const userHtml = await render(
       React.createElement(HabitPlanEmail, {
         name: data.name,
         identityStatement: data.identityStatement,
         techniques: data.techniques,
         zaloGroupUrl: data.zaloGroupUrl,
-        revisitUrl: data.revisitUrl,
+        revisitUrl,
+        siteUrl: siteDomain,
       }),
     )
     const userText = await render(
@@ -549,14 +555,15 @@ export async function sendHabitPlanEmail(
         identityStatement: data.identityStatement,
         techniques: data.techniques,
         zaloGroupUrl: data.zaloGroupUrl,
-        revisitUrl: data.revisitUrl,
+        revisitUrl,
+        siteUrl: siteDomain,
       }),
       { plainText: true },
     )
 
     await sender.send({
       to: data.email,
-      subject: 'Trạm Dừng Cảm Xúc – Kế hoạch Habit Loop 5 phút của bạn',
+      subject: vi.habit.emailSubject,
       html: userHtml,
       text: userText,
     })

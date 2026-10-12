@@ -7,6 +7,7 @@ import {
   flattenChosenTechniques,
   getDefaultHabitDraft,
   HABIT_LOOP_PATH,
+  HABIT_LOOP_STORAGE_KEY,
   type HabitChosenTechnique,
 } from '@/lib/habit'
 import {
@@ -73,12 +74,15 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
   })
 
   describe('getDefaultHabitDraft()', () => {
-    it('khởi tạo bản nháp mặc định với 4 giai đoạn rỗng', () => {
+    it('khởi tạo bản nháp mặc định với 4 giai đoạn rỗng và key v1', () => {
+      expect(HABIT_LOOP_STORAGE_KEY).toBe('tdcx_habit_loop_v1')
       const draft = getDefaultHabitDraft()
       expect(draft.step).toBe(1)
       expect(draft.scorecard).toEqual([])
       expect(draft.actionText).toBe('')
       expect(draft.personText).toBe('')
+      expect(draft.name).toBe('')
+      expect(draft.consent).toBe(false)
       expect(draft.chosenTechniques.cue).toEqual([])
       expect(draft.chosenTechniques.craving).toEqual([])
       expect(draft.chosenTechniques.response).toEqual([])

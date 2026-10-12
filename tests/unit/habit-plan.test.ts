@@ -7,6 +7,7 @@ import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import { submitHabitPlan, getHabitProduct } from '../../src/lib/habit.server'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '../../src/lib/habit/config'
+import { vi as viStrings } from '../../src/lib/i18n/vi'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
 
 class MockEmailSender implements EmailSender {
@@ -146,6 +147,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     // Kiểm tra email gửi đi
     expect(emailSender.sent.length).toBeGreaterThan(0)
     expect(emailSender.sent[emailSender.sent.length - 1].to).toBe(testEmail)
+    expect(emailSender.sent[emailSender.sent.length - 1].subject).toBe(viStrings.habit.emailSubject)
   })
 
   it('từ chối khi technique không tồn tại', async () => {
@@ -262,7 +264,6 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
         {
           scorecard: [{ habit: 'Uống nước', rating: 'good' }],
           identityStatement: 'Tôi sẽ uống nước để khỏe mạnh',
-          // @ts-expect-error test thiếu stage từ client
           chosenTechniques: [{ techniqueId: validCueTechId, action: 'Hành động thiếu stage' }],
           email: 'test@example.com',
           consent: true,
@@ -279,7 +280,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
       collection: 'customers',
       data: {
         email: existingCustEmail,
-        fullName: 'Nguyễn Văn A',
+        name: 'Nguyễn Văn A',
       },
       overrideAccess: true,
     })
@@ -456,6 +457,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     } else {
       const created = await payload.create({
         collection: 'products',
+        draft: true,
         data: {
           name: 'Habit Tracker Số Test',
           slug: HABIT_TRACKER_PRODUCT_SLUG,
@@ -512,7 +514,6 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
         chosenTechniques: [{ techniqueId: validCueTechId, stage: 'cue', action: 'Chuẩn bị giày' }],
         email,
         consent: true,
-        // @ts-expect-error kiểm tra client cố tình gửi startDate trong payload
         startDate: fakeClientStartDate,
       },
       { ip: `192.168.2.${Math.floor(Math.random() * 200) + 10}` },
@@ -574,11 +575,11 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
       create: vi
         .fn()
         .mockImplementation(
-          ({ collection, data }: { collection: string; data: Record<string, unknown> }) => {
+          ({ collection, data }: { collection: any; data: Record<string, unknown> }) => {
             if (collection === 'habitPlans') {
               return Promise.reject(new Error('Simulated habitPlans DB error'))
             }
-            return payload.create({ collection, data, overrideAccess: true })
+            return (payload.create as any)({ collection, data, overrideAccess: true })
           },
         ),
     }) as Payload

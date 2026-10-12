@@ -24,6 +24,7 @@ export interface HabitPlanEmailProps {
   techniques: HabitPlanEmailTechniqueItem[]
   zaloGroupUrl?: string
   revisitUrl?: string
+  siteUrl?: string
 }
 
 export const HabitPlanEmail: React.FC<HabitPlanEmailProps> = ({
@@ -31,8 +32,13 @@ export const HabitPlanEmail: React.FC<HabitPlanEmailProps> = ({
   identityStatement,
   techniques = [],
   zaloGroupUrl,
-  revisitUrl = 'https://tramdungcamxuc.com/habit/5-phut',
+  revisitUrl,
+  siteUrl,
 }) => {
+  const displayUrl = revisitUrl || 'https://tramdungcamxuc.com/habit/5-phut'
+  const displayUrlText = displayUrl.replace(/^https?:\/\//, '')
+  const displayDomain = siteUrl || 'tramdungcamxuc.com'
+
   return (
     <Html lang="vi">
       <Head />
@@ -65,7 +71,8 @@ export const HabitPlanEmail: React.FC<HabitPlanEmailProps> = ({
                   {techniques.map((item, idx) => (
                     <div key={idx} style={techniqueCardStyle}>
                       <Text style={techniqueHeaderStyle}>
-                        <strong>{item.name}</strong> · <span style={{ color: '#BC039E' }}>{item.stage}</span>
+                        <strong>{item.name}</strong> ·{' '}
+                        <span style={{ color: '#BC039E' }}>{item.stage}</span>
                       </Text>
                       <Text style={techniqueActionStyle}>
                         👉 <em>Hành động cụ thể:</em> {item.action}
@@ -92,8 +99,8 @@ export const HabitPlanEmail: React.FC<HabitPlanEmailProps> = ({
             <Section style={{ textAlign: 'center', margin: '16px 0' }}>
               <Text style={{ fontSize: '14px', color: '#554271' }}>
                 Bạn có thể xem lại hoặc tạo kế hoạch mới bất cứ lúc nào tại:{' '}
-                <a href={revisitUrl} style={{ color: '#BC039E', fontWeight: 600 }}>
-                  tramdungcamxuc.com/habit/5-phut
+                <a href={displayUrl} style={{ color: '#BC039E', fontWeight: 600 }}>
+                  {displayUrlText}
                 </a>
               </Text>
             </Section>
@@ -109,7 +116,7 @@ export const HabitPlanEmail: React.FC<HabitPlanEmailProps> = ({
               <strong>Hana Lương &amp; Đội ngũ Trạm Dừng Cảm Xúc</strong>
             </Text>
             <Text style={footerSubtextStyle}>
-              Email này được gửi tự động từ tramdungcamxuc.com theo đăng ký của bạn.
+              Email này được gửi tự động từ {displayDomain} theo đăng ký của bạn.
             </Text>
           </Section>
         </Container>

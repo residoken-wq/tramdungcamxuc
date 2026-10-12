@@ -220,6 +220,7 @@ export const vi = {
         emptyStageWarning: 'Vui lòng chọn ít nhất 1 kỹ thuật cho giai đoạn này.',
         noTechniquesFound: 'Đang tải danh sách kỹ thuật từ hệ thống...',
         emptyTechniquesList: 'Chưa có kỹ thuật nào cho giai đoạn này.',
+        selectedCount: (count: number, max: number = 2) => `Đã chọn: ${count} / ${max}`,
       },
       step4: {
         title: 'Kế hoạch Tracker 21 ngày',
@@ -230,6 +231,8 @@ export const vi = {
         identityHeading: 'Cam kết định danh:',
         techniquesHeading: 'Bộ kỹ thuật đã chọn:',
         trackerPreviewHeading: 'Lưới hành động 21 ngày:',
+        continuousDays: '21 Ngày liên tục',
+        notSelected: 'Chưa chọn',
         emailHeading: 'Lưu kế hoạch & Nhận link nhóm Zalo',
         emailSubheading:
           'Nhập email để lưu lại kế hoạch thói quen của bạn và nhận lời mời tham gia nhóm Zalo đồng hành cùng Hana Lương.',
@@ -255,6 +258,7 @@ export const vi = {
       },
       errors: {
         scorecardEmpty: 'Vui lòng thêm ít nhất một thói quen vào bảng điểm',
+        scorecardMax: 'Tối đa 20 thói quen',
         habitRequired: 'Tên thói quen không được để trống',
         habitMax: 'Tên thói quen không quá 200 ký tự',
         identityRequired: 'Vui lòng điền cả hành động và con người bạn muốn trở thành',
@@ -267,6 +271,25 @@ export const vi = {
         emailRequired: 'Vui lòng nhập địa chỉ email của bạn',
         emailInvalid: 'Địa chỉ email không hợp lệ (ví dụ: ban@example.com)',
         submitFailed: 'Không thể lưu kế hoạch thói quen. Vui lòng thử lại.',
+      },
+    },
+    emailSubject: 'Trạm Dừng Cảm Xúc – Kế hoạch Habit Loop 5 phút của bạn',
+    metadata: {
+      loop5min: {
+        title: 'Habit Loop 5 phút – Thiết kế vòng lặp thói quen',
+        description:
+          'Chỉ 5 phút để gọi tên, gỡ rối và thiết kế vòng lặp thói quen bền vững với các kỹ thuật Atomic Habits cá nhân hóa.',
+        ogTitle: 'Habit Loop 5 phút | Trạm Dừng Cảm Xúc',
+        ogDescription:
+          'Chỉ 5 phút để gọi tên, gỡ rối và thiết kế vòng lặp thói quen bền vững cùng Hana Lương.',
+      },
+      offerPage: {
+        title: 'Habit Hack – 1% Better Mỗi Ngày | Habit Tracker số',
+        description:
+          'Bộ công cụ và khóa học Habit Hack 1% Better: bài giảng video, kỹ thuật thực chiến, tracker 21 ngày với 10 cảm xúc. Dùng thử miễn phí 21 ngày.',
+        ogTitle: 'Habit Hack – 1% Better Mỗi Ngày | Trạm Dừng Cảm Xúc',
+        ogDescription:
+          'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng. Trải nghiệm 21 ngày dùng thử miễn phí cùng Hana Lương.',
       },
     },
     offer: {
@@ -330,16 +353,16 @@ export const vi = {
         heading: 'Câu hỏi thường gặp',
         items: [
           {
-            q: 'Sau 21 ngày dùng thử thì sao?',
-            a: 'Dữ liệu hành trình 21 ngày của bạn vẫn được lưu giữ an toàn. Bạn có thể mở khóa sử dụng vĩnh viễn bất kỳ lúc nào với mức giá ưu đãi từ CMS.',
+            q: '[MẪU] Sau 21 ngày dùng thử thì sao?',
+            a: '[MẪU] Dữ liệu hành trình 21 ngày của bạn vẫn được lưu giữ an toàn. Bạn có thể mở khóa sử dụng vĩnh viễn bất kỳ lúc nào với mức giá ưu đãi từ CMS.',
           },
           {
-            q: 'Tôi có cần nhập thẻ ngân hàng khi bắt đầu dùng thử không?',
-            a: 'Hoàn toàn không. Bạn chỉ cần nhập email và nhận mã OTP để trải nghiệm ngay lập tức.',
+            q: '[MẪU] Tôi có cần nhập thẻ ngân hàng khi bắt đầu dùng thử không?',
+            a: '[MẪU] Hoàn toàn không. Bạn chỉ cần nhập email và nhận mã OTP để trải nghiệm ngay lập tức. (Hana sẽ soạn chính sách chính thức).',
           },
           {
-            q: 'Mỗi ngày tôi cần dành bao nhiêu thời gian?',
-            a: 'Mỗi video chỉ kéo dài từ 3 đến 5 phút, và việc cập nhật tracker chỉ tốn chưa đầy 1 phút mỗi ngày.',
+            q: '[MẪU] Mỗi ngày tôi cần dành bao nhiêu thời gian?',
+            a: '[MẪU] Mỗi video chỉ kéo dài từ 3 đến 5 phút, và việc cập nhật tracker chỉ tốn chưa đầy 1 phút mỗi ngày.',
           },
         ],
       },

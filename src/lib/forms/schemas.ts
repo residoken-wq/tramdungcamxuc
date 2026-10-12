@@ -244,7 +244,7 @@ export const habitPlanSubmissionSchema = z
     scorecard: z
       .array(habitScorecardItemSchema)
       .min(1, vi.habit.wizard.errors.scorecardEmpty)
-      .max(20, 'Tối đa 20 thói quen'),
+      .max(20, vi.habit.wizard.errors.scorecardMax),
     identityStatement: z
       .string()
       .trim()

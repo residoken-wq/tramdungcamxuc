@@ -1,7 +1,7 @@
 import type { HabitStage } from './diagnostic'
 import type { HabitChosenTechniqueInput } from './forms/schemas'
 
-export const HABIT_LOOP_STORAGE_KEY = 'tdcx_habit_loop_draft'
+export const HABIT_LOOP_STORAGE_KEY = 'tdcx_habit_loop_v1'
 export const HABIT_LOOP_PATH = '/habit/5-phut'
 export const HABIT_OFFER_PATH = '/habit/1-percent-better'
 export const HABIT_STAGES: readonly HabitStage[] = ['cue', 'craving', 'response', 'reward'] as const

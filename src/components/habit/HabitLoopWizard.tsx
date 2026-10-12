@@ -26,7 +26,7 @@ export interface HabitLoopWizardProps {
 }
 
 export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
-  const startTimeRef = useRef<number>(Date.now())
+  const startTimeRef = useRef<number | null>(null)
   const [draft, setDraft] = useState<HabitPlanDraft>(getDefaultHabitDraft())
   const [isLoaded, setIsLoaded] = useState(false)
   const [newHabitText, setNewHabitText] = useState('')
@@ -45,29 +45,46 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
 
   // 1. Khôi phục dữ liệu từ localStorage
   useEffect(() => {
+    if (startTimeRef.current === null) {
+      startTimeRef.current = Date.now()
+    }
     const timer = setTimeout(() => {
       try {
         const stored = localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
         if (stored) {
           const parsed = JSON.parse(stored) as Partial<HabitPlanDraft>
-          setDraft((prev) => ({
-            ...prev,
-            ...parsed,
-            consent: false, // B11: Nghị định 13/2023 - không bao giờ tự động tick sẵn ô đồng ý từ nháp
-            scorecard: Array.isArray(parsed.scorecard) ? parsed.scorecard : [],
-            chosenTechniques: parsed.chosenTechniques
-              ? {
-                  cue: parsed.chosenTechniques.cue || [],
-                  craving: parsed.chosenTechniques.craving || [],
-                  response: parsed.chosenTechniques.response || [],
-                  reward: parsed.chosenTechniques.reward || [],
-                }
-              : prev.chosenTechniques,
-            step:
-              typeof parsed.step === 'number' && parsed.step >= 1 && parsed.step <= 4
-                ? parsed.step
-                : 1,
-          }))
+          if (parsed && typeof parsed === 'object') {
+            setDraft((prev) => ({
+              ...prev,
+              ...parsed,
+              consent: false, // B11: Nghị định 13/2023 - không bao giờ tự động tick sẵn ô đồng ý từ nháp
+              scorecard: Array.isArray(parsed.scorecard) ? parsed.scorecard : [],
+              actionText: typeof parsed.actionText === 'string' ? parsed.actionText : '',
+              personText: typeof parsed.personText === 'string' ? parsed.personText : '',
+              identityStatement:
+                typeof parsed.identityStatement === 'string' ? parsed.identityStatement : '',
+              chosenTechniques: parsed.chosenTechniques
+                ? {
+                    cue: Array.isArray(parsed.chosenTechniques.cue)
+                      ? parsed.chosenTechniques.cue
+                      : [],
+                    craving: Array.isArray(parsed.chosenTechniques.craving)
+                      ? parsed.chosenTechniques.craving
+                      : [],
+                    response: Array.isArray(parsed.chosenTechniques.response)
+                      ? parsed.chosenTechniques.response
+                      : [],
+                    reward: Array.isArray(parsed.chosenTechniques.reward)
+                      ? parsed.chosenTechniques.reward
+                      : [],
+                  }
+                : prev.chosenTechniques,
+              step:
+                typeof parsed.step === 'number' && parsed.step >= 1 && parsed.step <= 4
+                  ? parsed.step
+                  : 1,
+            }))
+          }
         }
       } catch {
         // Bỏ qua nếu localStorage bị tắt hoặc lỗi parse
@@ -221,7 +238,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           }
         }
       }
-      const duration = Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
+      const duration = startTimeRef.current
+        ? Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
+        : 0
       track('habit_loop_completed', { step: 4, duration })
       setDraft((prev) => ({ ...prev, step: 4 }))
     }
@@ -644,7 +663,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                         </span>
                       </div>
                       <span className="text-xs font-semibold text-deep-navy/70">
-                        Đã chọn: {currentChosen.length} / 2
+                        {vi.habit.wizard.step3.selectedCount(currentChosen.length)}
                       </span>
                     </div>
                     <p className="text-xs text-deep-navy/70">{stageInfo.desc}</p>
@@ -744,7 +763,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   <h4 className="font-semibold text-deep-navy text-sm">
                     {vi.habit.wizard.step4.trackerPreviewHeading}
                   </h4>
-                  <span className="text-xs text-bright-magenta font-medium">21 Ngày liên tục</span>
+                  <span className="text-xs text-bright-magenta font-medium">
+                    {vi.habit.wizard.step4.continuousDays}
+                  </span>
                 </div>
                 <ProgressGrid />
                 <p className="text-xs text-deep-navy/60 text-center mt-3 italic">
@@ -766,7 +787,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                           {vi.habit.wizard.step3.stages[stage].title}:
                         </span>
                         {list.length === 0 ? (
-                          <span className="text-deep-navy/50 italic">Chưa chọn</span>
+                          <span className="text-deep-navy/50 italic">
+                            {vi.habit.wizard.step4.notSelected}
+                          </span>
                         ) : (
                           list.map((item) => (
                             <div key={item.techniqueId} className="text-deep-navy/80 mb-1">
