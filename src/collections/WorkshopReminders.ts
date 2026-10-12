@@ -26,14 +26,10 @@ export const WorkshopReminders: CollectionConfig = {
     ],
   },
   fields: [
-    {
-      ...relation('workshop', 'Workshop', 'workshops'),
-      required: true,
-    },
-    {
-      ...relation('customer', 'Khách hàng', 'customers'),
-      required: true,
-    },
+    // Not `required`: the FK is ON DELETE SET NULL, so a NOT NULL column would block deleting
+    // a workshop or a customer (account deletion) that already got a reminder.
+    relation('workshop', 'Workshop', 'workshops'),
+    relation('customer', 'Khách hàng', 'customers'),
     {
       ...date('sentAt', 'Thời điểm gửi'),
       required: true,

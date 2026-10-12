@@ -9843,13 +9843,13 @@
           "name": "workshop_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "customer_id": {
           "name": "customer_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "sent_at": {
           "name": "sent_at",
@@ -16284,6 +16284,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "33eef8ea-dc1e-4d6a-96ea-05fcff119e4b",
+  "id": "f2e76d3e-1e1b-43b5-bd28-e9629c5e1152",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

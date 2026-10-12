@@ -1,11 +1,11 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
-export async function up({ db }: MigrateUpArgs): Promise<void> {
+export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TABLE "workshop_reminders" (
   	"id" serial PRIMARY KEY NOT NULL,
-  	"workshop_id" integer NOT NULL,
-  	"customer_id" integer NOT NULL,
+  	"workshop_id" integer,
+  	"customer_id" integer,
   	"sent_at" timestamp(3) with time zone NOT NULL,
   	"workshop_customer" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -25,11 +25,11 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
+  // Drop the locked-documents reference before the table: DROP TABLE … CASCADE already
+  // removes that FK, so the generated order failed with "constraint does not exist".
   await db.execute(sql`
-   ALTER TABLE "workshop_reminders" DISABLE ROW LEVEL SECURITY;
-  DROP TABLE "workshop_reminders" CASCADE;
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_workshop_reminders_fk";
-  
-  DROP INDEX "payload_locked_documents_rels_workshop_reminders_id_idx";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "workshop_reminders_id";`)
+   ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_workshop_reminders_fk";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_workshop_reminders_id_idx";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "workshop_reminders_id";
+  DROP TABLE IF EXISTS "workshop_reminders" CASCADE;`)
 }

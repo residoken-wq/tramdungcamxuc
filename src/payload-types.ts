@@ -1168,11 +1168,11 @@ export interface WorkshopReminder {
   /**
    * Chọn nội dung đã tạo trong hệ thống.
    */
-  workshop: number | Workshop;
+  workshop?: (number | null) | Workshop;
   /**
    * Chọn nội dung đã tạo trong hệ thống.
    */
-  customer: number | Customer;
+  customer?: (number | null) | Customer;
   /**
    * Chọn ngày và giờ áp dụng.
    */

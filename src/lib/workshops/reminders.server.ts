@@ -5,6 +5,7 @@ import type { Workshop } from '@/payload-types'
 import { formatWorkshopTime } from './format'
 import { sendWorkshopReminderEmail } from '@/lib/email/service.server'
 import type { EmailSender } from '@/lib/email/types'
+import { getSiteUrl } from '@/lib/site-url'
 
 export interface WorkshopReminderResult {
   processedWorkshops: number
@@ -27,6 +28,7 @@ export interface WorkshopReminderResult {
  *    - Ngay cả khi 2 cron chạy song song (concurrent Promise.all) hoặc chạy lại nhiều lần,
  *      mỗi khách hàng chỉ nhận đúng 1 email duy nhất.
  * 4. Lỗi gửi của một email đơn lẻ không làm dừng cả lượt cron (ghi log và tiếp tục).
+ *    Gửi lỗi -> xóa bản ghi nhắc vừa tạo để lượt cron kế tiếp (vẫn trong khoảng 23–25h) gửi lại.
  */
 export async function sendWorkshopReminders(
   now: Date = new Date(),
@@ -37,6 +39,7 @@ export async function sendWorkshopReminders(
   },
 ): Promise<WorkshopReminderResult> {
   const payload = options?.payload ?? (await getPayload({ config }))
+  const accountUrl = options?.accountUrl ?? `${getSiteUrl()}/tai-khoan`
 
   // Khoảng thời gian (now + 23h, now + 25h]
   const windowStart = new Date(now.getTime() + 23 * 60 * 60 * 1000)
@@ -86,14 +89,14 @@ export async function sendWorkshopReminders(
       continue
     }
 
-    // Tìm các đơn hàng đã thanh toán chứa sản phẩm trong audienceProducts
+    // Tìm các đơn hàng đã thanh toán chứa sản phẩm trong audienceProducts (lọc ở DB, không giới hạn số đơn)
     const paidOrders = await payload.find({
       collection: 'orders',
       where: {
-        paymentStatus: { equals: 'paid' },
+        and: [{ paymentStatus: { equals: 'paid' } }, { 'items.product': { in: [...audienceIds] } }],
       },
       depth: 1,
-      limit: 1000,
+      pagination: false,
       overrideAccess: true,
     })
 
@@ -139,9 +142,9 @@ export async function sendWorkshopReminders(
 
     // Với mỗi khách hàng đủ điều kiện: tạo bản ghi nhắc trước, tạo thành công mới gửi email
     for (const customer of eligibleCustomers.values()) {
-      let created = false
+      let reminderId: number | null = null
       try {
-        await payload.create({
+        const reminder = await payload.create({
           collection: 'workshopReminders',
           data: {
             workshop: ws.id,
@@ -150,13 +153,13 @@ export async function sendWorkshopReminders(
           },
           overrideAccess: true,
         })
-        created = true
+        reminderId = reminder.id
       } catch (_err) {
         // Trùng khóa duy nhất (đã nhắc hoặc lượt chạy song song đã nhận việc)
         skippedDuplicate++
       }
 
-      if (created) {
+      if (reminderId !== null) {
         try {
           const formattedTime = formatWorkshopTime(ws.startsAt, ws.endsAt)
           await sendWorkshopReminderEmail(
@@ -166,17 +169,27 @@ export async function sendWorkshopReminders(
               email: customer.email,
               workshopTitle: ws.title,
               workshopTimeFormatted: formattedTime,
-              accountUrl: options?.accountUrl,
+              accountUrl,
             },
             options?.emailSender,
           )
           remindersSent++
         } catch (err) {
+          // Log by id only: no customer email in server logs.
           console.error(
-            `[Workshop Reminder] Lỗi gửi email nhắc cho khách hàng ${customer.email} (workshop ${ws.id}):`,
+            `[Workshop Reminder] Lỗi gửi email nhắc (customer ${customer.id}, workshop ${ws.id}):`,
             err,
           )
           errors++
+          // Release the claim so the next hourly run (still inside the 23–25h window) retries.
+          await payload
+            .delete({ collection: 'workshopReminders', id: reminderId, overrideAccess: true })
+            .catch((deleteErr) =>
+              console.error(
+                `[Workshop Reminder] Không xóa được bản ghi nhắc ${reminderId}:`,
+                deleteErr,
+              ),
+            )
         }
       }
     }

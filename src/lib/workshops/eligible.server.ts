@@ -44,7 +44,7 @@ export async function getEligibleWorkshops(
       and: [{ customer: { equals: customerId } }, { paymentStatus: { equals: 'paid' } }],
     },
     depth: 0,
-    limit: 100,
+    pagination: false,
     overrideAccess: true,
   })
 
@@ -73,7 +73,21 @@ export async function getEligibleWorkshops(
   const workshopsRes = await payload.find({
     collection: 'workshops',
     where: {
-      _status: { equals: 'published' },
+      and: [
+        { _status: { equals: 'published' } },
+        // Skip past workshops in the query so old ones never crowd out upcoming ones in `limit`.
+        // Without endsAt a workshop lasts 2 hours (see below), so startsAt > now - 2h covers it.
+        {
+          or: [
+            { endsAt: { greater_than_equal: now.toISOString() } },
+            {
+              startsAt: {
+                greater_than_equal: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+              },
+            },
+          ],
+        },
+      ],
     },
     sort: 'startsAt',
     limit: 100,

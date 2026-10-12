@@ -361,6 +361,93 @@ describe('Workshop Schedule & 24h Reminder (T2-10)', () => {
     })
   })
 
+  describe('5. Sau QA (T2-10c)', () => {
+    class FailingOnceSender implements EmailSender {
+      public sent: SendEmailParams[] = []
+      private failed = false
+      async send(params: SendEmailParams): Promise<SendEmailResult> {
+        if (!this.failed) {
+          this.failed = true
+          throw new Error('SMTP tạm lỗi')
+        }
+        this.sent.push(params)
+        return { success: true, id: `mock-${randomUUID()}` }
+      }
+    }
+
+    it('gửi lỗi -> lượt sau gửi lại (không mất email nhắc)', async () => {
+      const pkg = await createProduct('Gói Gửi Lại')
+      const customer = await createCustomer('Khách Gửi Lại')
+      await createOrder(customer.id, pkg.id, 'paid')
+      const now = new Date('2026-11-03T10:00:00Z')
+      await createWorkshop({
+        title: 'Workshop Gửi Lại',
+        audienceProducts: [pkg.id],
+        startsAt: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
+      })
+      const sender = new FailingOnceSender()
+
+      const first = await sendWorkshopReminders(now, { payload, emailSender: sender })
+      expect(first.errors).toBe(1)
+      expect(sender.sent).toHaveLength(0)
+
+      // Next run 30 minutes later: workshop still inside the (23h, 25h] window.
+      const second = await sendWorkshopReminders(new Date(now.getTime() + 30 * 60 * 1000), {
+        payload,
+        emailSender: sender,
+      })
+      expect(second.remindersSent).toBe(1)
+      expect(sender.sent).toHaveLength(1)
+    })
+
+    it('email dẫn về /tai-khoan của đúng site đang chạy (getSiteUrl)', async () => {
+      const pkg = await createProduct('Gói Link Email')
+      const customer = await createCustomer('Khách Link Email')
+      await createOrder(customer.id, pkg.id, 'paid')
+      const now = new Date('2026-11-04T10:00:00Z')
+      await createWorkshop({
+        title: 'Workshop Link Email',
+        audienceProducts: [pkg.id],
+        startsAt: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
+      })
+      const sender = new MockEmailSender()
+      const previous = process.env.SITE_URL
+      process.env.SITE_URL = 'http://demo.example.test:3400'
+      try {
+        await sendWorkshopReminders(now, { payload, emailSender: sender })
+      } finally {
+        if (previous === undefined) delete process.env.SITE_URL
+        else process.env.SITE_URL = previous
+      }
+      expect(sender.sent).toHaveLength(1)
+      expect(sender.sent[0].html).toContain('http://demo.example.test:3400/tai-khoan')
+    })
+
+    it('xóa workshop hoặc khách đã được nhắc -> xóa được, không lỗi DB', async () => {
+      const pkg = await createProduct('Gói Xóa')
+      const customer = await createCustomer('Khách Xóa')
+      const order = await createOrder(customer.id, pkg.id, 'paid')
+      const now = new Date('2026-11-05T10:00:00Z')
+      const ws = await createWorkshop({
+        title: 'Workshop Xóa',
+        audienceProducts: [pkg.id],
+        startsAt: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
+      })
+      const sender = new MockEmailSender()
+      await sendWorkshopReminders(now, { payload, emailSender: sender })
+      expect(sender.sent).toHaveLength(1)
+
+      await expect(
+        payload.delete({ collection: 'workshops', id: ws.id, overrideAccess: true }),
+      ).resolves.toBeTruthy()
+      // Orders keep a required customer (outside T2-10); remove it so only the reminder FK is tested.
+      await payload.delete({ collection: 'orders', id: order.id, overrideAccess: true })
+      await expect(
+        payload.delete({ collection: 'customers', id: customer.id, overrideAccess: true }),
+      ).resolves.toBeTruthy()
+    })
+  })
+
   describe('4. Route Cron POST /api/cron/workshop-reminders (Xác thực)', () => {
     it('route cron: thiếu hoặc sai Authorization header -> 401; đúng header -> 200', async () => {
       // 1. Không có header
