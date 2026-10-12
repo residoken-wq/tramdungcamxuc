@@ -26,7 +26,9 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
         'đọc sách 10 phút mỗi ngày',
         'người ham học hỏi và kỷ luật',
       )
-      expect(result).toBe('Tôi sẽ đọc sách 10 phút mỗi ngày để trở thành người ham học hỏi và kỷ luật')
+      expect(result).toBe(
+        'Tôi sẽ đọc sách 10 phút mỗi ngày để trở thành người ham học hỏi và kỷ luật',
+      )
     })
 
     it('loại bỏ khoảng trắng thừa ở hai đầu', () => {
@@ -62,10 +64,10 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
       const flattened = flattenChosenTechniques(byStage)
       expect(flattened).toHaveLength(4)
       expect(flattened).toEqual([
-        { techniqueId: 1, action: 'Đặt sách cạnh gối' },
-        { techniqueId: 2, action: 'Pha trà thảo mộc' },
-        { techniqueId: 4, action: 'Quy tắc 2 phút' },
-        { techniqueId: 5, action: 'Tick vào ô hoàn thành' },
+        { techniqueId: 1, stage: 'cue', action: 'Đặt sách cạnh gối' },
+        { techniqueId: 2, stage: 'craving', action: 'Pha trà thảo mộc' },
+        { techniqueId: 4, stage: 'response', action: 'Quy tắc 2 phút' },
+        { techniqueId: 5, stage: 'reward', action: 'Tick vào ô hoàn thành' },
       ])
     })
   })
@@ -87,21 +89,22 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
   describe('Zod Schema Validation', () => {
     describe('habitScorecardItemSchema', () => {
       it('hợp lệ với rating good / neutral / bad', () => {
-        expect(
-          habitScorecardItemSchema.parse({ habit: 'Uống nước', rating: 'good' }),
-        ).toEqual({ habit: 'Uống nước', rating: 'good' })
-        expect(
-          habitScorecardItemSchema.parse({ habit: 'Ngồi thiền', rating: 'neutral' }),
-        ).toEqual({ habit: 'Ngồi thiền', rating: 'neutral' })
-        expect(
-          habitScorecardItemSchema.parse({ habit: 'Thức khuya', rating: 'bad' }),
-        ).toEqual({ habit: 'Thức khuya', rating: 'bad' })
+        expect(habitScorecardItemSchema.parse({ habit: 'Uống nước', rating: 'good' })).toEqual({
+          habit: 'Uống nước',
+          rating: 'good',
+        })
+        expect(habitScorecardItemSchema.parse({ habit: 'Ngồi thiền', rating: 'neutral' })).toEqual({
+          habit: 'Ngồi thiền',
+          rating: 'neutral',
+        })
+        expect(habitScorecardItemSchema.parse({ habit: 'Thức khuya', rating: 'bad' })).toEqual({
+          habit: 'Thức khuya',
+          rating: 'bad',
+        })
       })
 
       it('từ chối khi thói quen để trống', () => {
-        expect(() =>
-          habitScorecardItemSchema.parse({ habit: '   ', rating: 'good' }),
-        ).toThrow()
+        expect(() => habitScorecardItemSchema.parse({ habit: '   ', rating: 'good' })).toThrow()
       })
 
       it('từ chối khi rating không hợp lệ', () => {
@@ -115,24 +118,31 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
     })
 
     describe('habitChosenTechniqueSchema', () => {
-      it('hợp lệ với techniqueId dương và hành động cụ thể', () => {
+      it('hợp lệ với techniqueId dương, stage hợp lệ và hành động cụ thể', () => {
         expect(
           habitChosenTechniqueSchema.parse({
             techniqueId: 10,
+            stage: 'cue',
             action: 'Đặt chuông nhắc nhở',
           }),
-        ).toEqual({ techniqueId: 10, action: 'Đặt chuông nhắc nhở' })
+        ).toEqual({ techniqueId: 10, stage: 'cue', action: 'Đặt chuông nhắc nhở' })
+      })
+
+      it('từ chối khi thiếu stage', () => {
+        expect(() =>
+          habitChosenTechniqueSchema.parse({ techniqueId: 10, action: 'Hành động' }),
+        ).toThrow()
       })
 
       it('từ chối khi techniqueId <= 0', () => {
         expect(() =>
-          habitChosenTechniqueSchema.parse({ techniqueId: 0, action: 'Hành động' }),
+          habitChosenTechniqueSchema.parse({ techniqueId: 0, stage: 'cue', action: 'Hành động' }),
         ).toThrow()
       })
 
       it('từ chối khi action trống', () => {
         expect(() =>
-          habitChosenTechniqueSchema.parse({ techniqueId: 1, action: '   ' }),
+          habitChosenTechniqueSchema.parse({ techniqueId: 1, stage: 'cue', action: '   ' }),
         ).toThrow()
       })
     })
@@ -145,8 +155,8 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
         ],
         identityStatement: 'Tôi sẽ đọc sách 10 phút để trở thành người kỷ luật',
         chosenTechniques: [
-          { techniqueId: 1, action: 'Đặt sách cạnh giường' },
-          { techniqueId: 2, action: 'Pha trà ấm' },
+          { techniqueId: 1, stage: 'cue', action: 'Đặt sách cạnh giường' },
+          { techniqueId: 2, stage: 'craving', action: 'Pha trà ấm' },
         ],
         email: 'hocvien@example.com',
         consent: true,
@@ -198,6 +208,7 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
       it('từ chối khi chosenTechniques vượt quá 8 kỹ thuật', () => {
         const tooMany = Array.from({ length: 9 }, (_, i) => ({
           techniqueId: i + 1,
+          stage: 'cue' as const,
           action: `Kỹ thuật ${i + 1}`,
         }))
         expect(() =>
@@ -223,7 +234,7 @@ describe('submitHabitPlan() Server Logic (T2-03)', () => {
       {
         scorecard: [{ habit: 'Ăn sáng', rating: 'good' }],
         identityStatement: 'Tôi sẽ ăn sáng để trở thành người khỏe mạnh',
-        chosenTechniques: [{ techniqueId: 1, action: 'Nấu ăn' }],
+        chosenTechniques: [{ techniqueId: 1, stage: 'cue', action: 'Nấu ăn' }],
         email: 'bot@spam.com',
         consent: true,
         honeypot: 'spam-bot-value',
@@ -281,7 +292,7 @@ describe('submitHabitPlan() Server Logic (T2-03)', () => {
     const input: HabitPlanSubmissionInput = {
       scorecard: [{ habit: 'Tập thể dục', rating: 'good' }],
       identityStatement: 'Tôi sẽ tập thể dục 15 phút để trở thành người tràn đầy năng lượng',
-      chosenTechniques: [{ techniqueId: 3, action: 'Mang giày chạy bộ' }],
+      chosenTechniques: [{ techniqueId: 3, stage: 'cue', action: 'Mang giày chạy bộ' }],
       email: 'HOCVIEN@example.com',
       consent: true,
     }

@@ -88,9 +88,7 @@ export async function getTechniques(payloadInstance?: Payload): Promise<PublicTe
  * Đọc thông tin sản phẩm Habit Tracker số (Habit Hack 1% Better) từ CMS.
  * Nếu sản phẩm không tồn tại hoặc có trạng thái hidden -> trả về null (trang offer gọi notFound()).
  */
-export async function getHabitProduct(
-  payloadInstance?: Payload,
-): Promise<HabitProductData | null> {
+export async function getHabitProduct(payloadInstance?: Payload): Promise<HabitProductData | null> {
   try {
     const payload = await resolvePayload(payloadInstance)
 
@@ -134,7 +132,12 @@ export async function getHabitProduct(
       for (const item of doc.includes) {
         if (typeof item === 'string') {
           includes.push(item)
-        } else if (item && typeof item === 'object' && 'text' in item && typeof item.text === 'string') {
+        } else if (
+          item &&
+          typeof item === 'object' &&
+          'text' in item &&
+          typeof item.text === 'string'
+        ) {
           includes.push(item.text)
         }
       }
@@ -229,17 +232,34 @@ export async function submitHabitPlan(
 
   const payload = await resolvePayload(options.payload)
 
-  // 3. Kiểm tra technique ID có thật và đúng stage trong database (không tin client)
+  // 3. Kiểm tra technique: không trùng lặp, tối đa 2 kỹ thuật mỗi stage, có thật và đúng stage đã xuất bản
   const techniqueIds = validated.chosenTechniques.map((t) => t.techniqueId)
+  const uniqueIds = new Set(techniqueIds)
+  if (uniqueIds.size !== techniqueIds.length) {
+    throw new Error('Không được chọn trùng kỹ thuật.')
+  }
+
+  const stageCounts: Record<string, number> = {}
+  for (const item of validated.chosenTechniques) {
+    stageCounts[item.stage] = (stageCounts[item.stage] || 0) + 1
+  }
+  for (const [stg, count] of Object.entries(stageCounts)) {
+    if (count > 2) {
+      throw new Error(`Giai đoạn ${stg} chỉ được chọn tối đa 2 kỹ thuật.`)
+    }
+  }
+
   const techMap = new Map<number, Technique>()
   if (techniqueIds.length > 0) {
     const foundTechniques = await payload.find({
       collection: 'techniques',
       where: {
         id: { in: techniqueIds },
+        _status: { equals: 'published' },
       },
       limit: 100,
       depth: 0,
+      draft: false,
     })
 
     for (const doc of foundTechniques.docs) {
@@ -249,9 +269,9 @@ export async function submitHabitPlan(
     for (const item of validated.chosenTechniques) {
       const tech = techMap.get(item.techniqueId)
       if (!tech) {
-        throw new Error(`Kỹ thuật #${item.techniqueId} không tồn tại hoặc đã bị gỡ.`)
+        throw new Error(`Kỹ thuật #${item.techniqueId} không tồn tại hoặc chưa xuất bản.`)
       }
-      if (item.stage && tech.stage !== item.stage) {
+      if (tech.stage !== item.stage) {
         throw new Error(
           `Kỹ thuật "${tech.name}" thuộc giai đoạn ${tech.stage}, không phải ${item.stage}.`,
         )

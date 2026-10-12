@@ -30,6 +30,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
 
   let validCueTechId: number
   let validCravingTechId: number
+  let draftTechId: number
 
   beforeAll(async () => {
     payload = await getPayload({ config })
@@ -59,6 +60,18 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     })
     validCravingTechId = cravingTech.id
     createdTechniques.push(cravingTech.id)
+
+    const draftTech = await payload.create({
+      collection: 'techniques',
+      data: {
+        name: `[TEST] Kỹ thuật Nháp ${randomUUID().slice(0, 8)}`,
+        stage: 'cue',
+        _status: 'draft',
+      },
+      overrideAccess: true,
+    })
+    draftTechId = draftTech.id
+    createdTechniques.push(draftTech.id)
   }, 60000)
 
   afterAll(async () => {
@@ -94,7 +107,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
         email: testEmail,
         consent: true,
       },
-      { ip: '127.0.0.1' },
+      { ip: `192.168.1.${Math.floor(Math.random() * 200) + 10}` },
       { payload, emailSender },
     )
 
@@ -138,7 +151,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
           scorecard: [{ habit: 'Tập thể dục', rating: 'good' }],
           identityStatement: 'Tôi sẽ tập thể dục để trở thành người năng động',
           chosenTechniques: [
-            { techniqueId: invalidTechId, action: 'Chạy bộ 15 phút' },
+            { techniqueId: invalidTechId, stage: 'cue', action: 'Chạy bộ 15 phút' },
           ],
           email: 'test@example.com',
           consent: true,
@@ -168,6 +181,93 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     ).rejects.toThrow(/thuộc giai đoạn/)
   })
 
+  it('A1: từ chối khi trùng techniqueId trong chosenTechniques', async () => {
+    await expect(
+      submitHabitPlan(
+        {
+          scorecard: [{ habit: 'Uống nước', rating: 'good' }],
+          identityStatement: 'Tôi sẽ uống nước để khỏe mạnh',
+          chosenTechniques: [
+            { techniqueId: validCueTechId, stage: 'cue', action: 'Để cốc nước gần máy tính' },
+            { techniqueId: validCueTechId, stage: 'cue', action: 'Rót nước đầy bình' },
+          ],
+          email: 'test@example.com',
+          consent: true,
+        },
+        {},
+        { payload, emailSender },
+      ),
+    ).rejects.toThrow(/trùng/i)
+  })
+
+  it('A1: từ chối khi kỹ thuật chưa xuất bản (_status là draft)', async () => {
+    await expect(
+      submitHabitPlan(
+        {
+          scorecard: [{ habit: 'Uống nước', rating: 'good' }],
+          identityStatement: 'Tôi sẽ uống nước để khỏe mạnh',
+          chosenTechniques: [
+            { techniqueId: draftTechId, stage: 'cue', action: 'Hành động với kỹ thuật nháp' },
+          ],
+          email: 'test@example.com',
+          consent: true,
+        },
+        {},
+        { payload, emailSender },
+      ),
+    ).rejects.toThrow(/không tồn tại|chưa xuất bản/i)
+  })
+
+  it('A1: từ chối khi một giai đoạn có nhiều hơn 2 kỹ thuật', async () => {
+    // Tạo thêm 2 kỹ thuật cue nữa để có tổng cộng 3 kỹ thuật cue
+    const cue2 = await payload.create({
+      collection: 'techniques',
+      data: { name: `Cue 2 ${randomUUID().slice(0, 6)}`, stage: 'cue', _status: 'published' },
+      overrideAccess: true,
+    })
+    const cue3 = await payload.create({
+      collection: 'techniques',
+      data: { name: `Cue 3 ${randomUUID().slice(0, 6)}`, stage: 'cue', _status: 'published' },
+      overrideAccess: true,
+    })
+    createdTechniques.push(cue2.id, cue3.id)
+
+    await expect(
+      submitHabitPlan(
+        {
+          scorecard: [{ habit: 'Uống nước', rating: 'good' }],
+          identityStatement: 'Tôi sẽ uống nước để khỏe mạnh',
+          chosenTechniques: [
+            { techniqueId: validCueTechId, stage: 'cue', action: 'Hành động 1' },
+            { techniqueId: cue2.id, stage: 'cue', action: 'Hành động 2' },
+            { techniqueId: cue3.id, stage: 'cue', action: 'Hành động 3' },
+          ],
+          email: 'test@example.com',
+          consent: true,
+        },
+        {},
+        { payload, emailSender },
+      ),
+    ).rejects.toThrow(/tối đa 2/i)
+  })
+
+  it('A1: từ chối khi thiếu stage trong chosenTechniques', async () => {
+    await expect(
+      submitHabitPlan(
+        {
+          scorecard: [{ habit: 'Uống nước', rating: 'good' }],
+          identityStatement: 'Tôi sẽ uống nước để khỏe mạnh',
+          // @ts-expect-error test thiếu stage từ client
+          chosenTechniques: [{ techniqueId: validCueTechId, action: 'Hành động thiếu stage' }],
+          email: 'test@example.com',
+          consent: true,
+        },
+        {},
+        { payload, emailSender },
+      ),
+    ).rejects.toThrow()
+  })
+
   it('từ chối khi có email nhưng thiếu consent (Nghị định 13/2023)', async () => {
     await expect(
       submitHabitPlan(
@@ -175,7 +275,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
           scorecard: [{ habit: 'Đọc sách', rating: 'good' }],
           identityStatement: 'Tôi sẽ đọc sách để trở thành người hiểu biết',
           chosenTechniques: [
-            { techniqueId: validCueTechId, action: 'Để sách cạnh gối' },
+            { techniqueId: validCueTechId, stage: 'cue', action: 'Để sách cạnh gối' },
           ],
           email: 'no-consent@example.com',
           consent: false,
@@ -192,7 +292,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
       {
         scorecard: [{ habit: 'Spam habit', rating: 'bad' }],
         identityStatement: 'Spam identity',
-        chosenTechniques: [{ techniqueId: validCueTechId, action: 'Spam action' }],
+        chosenTechniques: [{ techniqueId: validCueTechId, stage: 'cue', action: 'Spam action' }],
         email: spamEmail,
         consent: true,
         honeypot: 'Bot Corp Spam Field',
@@ -220,7 +320,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
         {
           scorecard: [{ habit: 'Đọc sách', rating: 'good' }],
           identityStatement: longStatement,
-          chosenTechniques: [{ techniqueId: validCueTechId, action: 'Đọc 5 trang' }],
+          chosenTechniques: [{ techniqueId: validCueTechId, stage: 'cue', action: 'Đọc 5 trang' }],
         },
         {},
         { payload, emailSender },
@@ -243,7 +343,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
         email,
         consent: true,
       },
-      { ip: '127.0.0.1' },
+      { ip: `192.168.1.${Math.floor(Math.random() * 200) + 10}` },
       { payload, emailSender: failingSender },
     )
 

@@ -83,6 +83,7 @@ export function flattenChosenTechniques(
       if (item.techniqueId && item.action.trim()) {
         result.push({
           techniqueId: item.techniqueId,
+          stage,
           action: item.action.trim(),
         })
       }
