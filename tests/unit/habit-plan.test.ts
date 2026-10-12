@@ -535,4 +535,35 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     const today = new Date()
     expect(savedDate.toISOString().slice(0, 10)).toBe(today.toISOString().slice(0, 10))
   })
+
+  it('B10: cho phép gửi họ và tên tùy chọn và lưu chính xác vào lead', async () => {
+    const email = `test-b10-${randomUUID().slice(0, 8)}@example.com`
+    const fullName = 'Nguyễn Thị Minh An'
+
+    const result = await submitHabitPlan(
+      {
+        scorecard: [{ habit: 'Tập yoga', rating: 'good' }],
+        identityStatement: 'Tôi sẽ tập yoga để cơ thể dẻo dai',
+        chosenTechniques: [{ techniqueId: validCueTechId, stage: 'cue', action: 'Trải thảm yoga' }],
+        name: fullName,
+        email,
+        consent: true,
+      },
+      { ip: `192.168.3.${Math.floor(Math.random() * 200) + 10}` },
+      { payload, emailSender },
+    )
+
+    expect(result.success).toBe(true)
+    if (result.planId) createdPlans.push(result.planId)
+
+    const leads = await payload.find({
+      collection: 'leads',
+      where: { email: { equals: email } },
+      overrideAccess: true,
+    })
+    expect(leads.docs.length).toBe(1)
+    const lead = leads.docs[0]
+    createdLeads.push(lead.id)
+    expect(lead.name).toBe(fullName)
+  })
 })

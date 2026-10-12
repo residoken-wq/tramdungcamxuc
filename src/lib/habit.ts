@@ -33,6 +33,7 @@ export interface HabitPlanDraft {
   personText: string
   identityStatement: string
   chosenTechniques: Record<HabitStage, HabitChosenTechnique[]>
+  name?: string
   email?: string
   consent?: boolean
 }
@@ -65,6 +66,7 @@ export function getDefaultHabitDraft(): HabitPlanDraft {
       response: [],
       reward: [],
     },
+    name: '',
     email: '',
     consent: false,
   }

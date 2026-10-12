@@ -254,6 +254,7 @@ export const habitPlanSubmissionSchema = z
       .array(habitChosenTechniqueSchema)
       .min(1, vi.habit.wizard.errors.techniquesEmpty)
       .max(8, vi.habit.wizard.errors.techniquesTooMany),
+    name: z.string().trim().max(100, vi.forms.validation.nameMax).optional().nullable(),
     email: z
       .string()
       .trim()

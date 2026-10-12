@@ -332,9 +332,11 @@ export async function submitHabitPlan(
 
   // 6. Tạo lead trong collection leads với need 'resource' và tag 'habit-loop'
   // REVIEW-REQUIRED: Tạo lead trong collection leads sau khi đã lưu xong kế hoạch
+  const cleanName = validated.name?.trim() || undefined
   await payload.create({
     collection: 'leads',
     data: {
+      name: cleanName,
       email: cleanEmail,
       need: 'resource',
       consent: true,
@@ -365,6 +367,7 @@ export async function submitHabitPlan(
       await sendHabitPlanEmail(
         {
           email: cleanEmail,
+          name: cleanName,
           identityStatement: validated.identityStatement,
           techniques: emailTechniques,
           zaloGroupUrl: zaloGroupUrl || undefined,

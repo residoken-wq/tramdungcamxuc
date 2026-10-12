@@ -39,6 +39,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
   const [honeypot, setHoneypot] = useState('')
 
   const habitInputId = useId()
+  const nameInputId = useId()
   const emailInputId = useId()
   const consentInputId = useId()
 
@@ -256,6 +257,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
         identityStatement:
           draft.identityStatement || formatIdentityStatement(draft.actionText, draft.personText),
         chosenTechniques: flattenedTechniques,
+        name: draft.name?.trim() || undefined,
         email: cleanEmail,
         consent: true,
         turnstileToken: turnstileToken || undefined,
@@ -788,6 +790,23 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   <p className="text-xs sm:text-sm text-deep-navy/80">
                     {vi.habit.wizard.step4.emailSubheading}
                   </p>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor={nameInputId}
+                    className="block text-xs font-semibold text-deep-navy uppercase tracking-wider mb-1.5"
+                  >
+                    {vi.habit.wizard.step4.nameLabel}
+                  </label>
+                  <input
+                    id={nameInputId}
+                    type="text"
+                    value={draft.name || ''}
+                    onChange={(e) => setDraft((prev) => ({ ...prev, name: e.target.value }))}
+                    placeholder={vi.habit.wizard.step4.namePlaceholder}
+                    className="w-full px-4 py-2.5 rounded-lg border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-2 focus:ring-bright-magenta"
+                  />
                 </div>
 
                 <div>

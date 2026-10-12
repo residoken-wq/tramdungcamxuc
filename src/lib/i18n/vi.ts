@@ -233,6 +233,8 @@ export const vi = {
         emailHeading: 'Lưu kế hoạch & Nhận link nhóm Zalo',
         emailSubheading:
           'Nhập email để lưu lại kế hoạch thói quen của bạn và nhận lời mời tham gia nhóm Zalo đồng hành cùng Hana Lương.',
+        nameLabel: 'Họ và tên của bạn',
+        namePlaceholder: 'Ví dụ: Nguyễn Văn An',
         emailLabel: 'Địa chỉ email của bạn',
         emailPlaceholder: 'email@example.com',
         consentLabel: 'Tôi đồng ý lưu kế hoạch và nhận thông tin từ Trạm Dừng Cảm Xúc theo',
