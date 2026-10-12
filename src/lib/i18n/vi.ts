@@ -641,6 +641,7 @@ export const vi = {
       ctaSubheading:
         'Khám phá phiên trải nghiệm 1:1 và lộ trình Growth Mirror được thiết kế riêng cho bạn.',
       ctaButton: 'Tìm hiểu phiên trải nghiệm 149.000đ',
+      trialCtaButton: (days: number) => `Bắt đầu dùng thử Habit Tracker (${days} ngày)`,
       retakeButton: 'Làm lại bài test',
     },
     errors: {
