@@ -197,6 +197,8 @@ CRON_SECRET=
 PAYMENT_SANDBOX=true
 ```
 
+**⚠️ Không bao giờ đặt `E2E_TEST_HOOKS` trên server** (demo hay chính thức). Biến này chỉ dùng trong bước e2e của CI: khi bằng `1`, đường `/api/test-otp` trả mã đăng nhập OTP của bất kỳ email nào → ai cũng chiếm được tài khoản khách. Kiểm tra nhanh trên server: `grep -c '^E2E_TEST_HOOKS' .env` phải ra `0`.
+
 Biến `SITE_URL` được server đọc lúc chạy (runtime): các link tải tài nguyên trong email, sitemap, robots và thẻ metadata sẽ dùng địa chỉ này (thay vì cố định tên miền chính thức). Thiếu `TURNSTILE_SECRET_KEY` thì mọi form (nhận tài nguyên, brief doanh nghiệp, quiz) báo lỗi cấu hình. Khi có tài khoản Cloudflare thật: đặt biến repo `TURNSTILE_SITE_KEY` (GitHub → Settings → Secrets and variables → Actions → Variables), chờ CI build image mới, rồi thay `TURNSTILE_SECRET_KEY` bằng secret thật.
 
 `STYLEGUIDE_PUBLIC=true` cho khách xem `/styleguide`; để trống nếu không cần. Compose tự đặt `DATABASE_URI` tới Postgres nội bộ, không dùng URL DB local trong `.env`. Bản compose demo lưu media và tài liệu riêng tư trên volume local (`media:/app/media` và `private:/app/private`), không chuyển tiếp cấu hình S3. Volume `private` bảo vệ các tập tin PDF/ZIP/EPUB giao qua email khỏi bị mất khi cập nhật image app mới. `SITE_NOINDEX` và `STYLEGUIDE_PUBLIC` được đọc lúc chạy; đổi chúng rồi chạy `up -d` để tạo lại app, không chỉ `restart`.

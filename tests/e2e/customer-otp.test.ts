@@ -6,7 +6,7 @@ import { expect, test, type Page } from '@playwright/test'
  * and is NOT executed during development pairs.
  *
  * Test mechanism for retrieving OTP:
- * When NODE_ENV === 'test', the server logs:
+ * When E2E_TEST_HOOKS=1 (set only in the CI e2e step), the server logs:
  * `[TEST-OTP] email="<email>" code="<6-digit-code>"`
  * and exposes the test-only endpoint `/api/test-otp?email=<email>`
  * which returns `{ email, code }`.
@@ -14,11 +14,10 @@ import { expect, test, type Page } from '@playwright/test'
 
 async function getTestOtpCode(page: Page, email: string): Promise<string> {
   const res = await page.request.get(`/api/test-otp?email=${encodeURIComponent(email)}`)
-  if (res.ok()) {
-    const data = (await res.json()) as { code?: string }
-    if (data.code) return data.code
-  }
-  return '123456'
+  expect(res.status(), 'CI must run e2e with E2E_TEST_HOOKS=1').toBe(200)
+  const data = (await res.json()) as { code?: string | null }
+  if (!data.code) throw new Error(`No OTP recorded for ${email}`)
+  return data.code
 }
 
 test.describe('Customer Email OTP Authentication E2E Flow', () => {
@@ -40,6 +39,10 @@ test.describe('Customer Email OTP Authentication E2E Flow', () => {
     await consentCheckbox.check()
 
     // Submit OTP request
+    // Turnstile keeps a long-poll open: wait for the token instead of 'networkidle'.
+    await expect(page.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+      timeout: 20000,
+    })
     const sendOtpButton = page.locator('button[type="submit"]')
     await sendOtpButton.click()
 
@@ -91,6 +94,9 @@ test.describe('Customer Email OTP Authentication E2E Flow', () => {
     await page.locator('input[name="email"]').fill(email)
     const consentCheckbox = page.locator('input[name="consentPolicy"]')
     await consentCheckbox.check()
+    await expect(page.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+      timeout: 20000,
+    })
     await page.locator('button[type="submit"]').click()
 
     const codeInput = page.locator('input[name="code"]')

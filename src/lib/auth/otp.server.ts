@@ -11,6 +11,7 @@ import { verifyTurnstile } from '../forms/turnstile.server'
 import { sendCustomerOtpEmail } from '../email/service.server'
 import type { EmailSender } from '../email/types'
 import { getAuthSecret, signCustomerToken } from './token'
+import { e2eTestHooksEnabled } from './test-hooks'
 
 export interface OtpContext {
   ip?: string
@@ -188,8 +189,8 @@ export async function requestOtp(
     overrideAccess: true,
   })
 
-  // 8. Log test code ONLY when NODE_ENV === 'test'
-  if (process.env.NODE_ENV === 'test') {
+  // 8. Keep the code for the CI e2e readout ONLY when E2E_TEST_HOOKS=1 (see test-hooks.ts)
+  if (e2eTestHooksEnabled()) {
     __testLatestOtpCodes.set(normalizedEmail, code)
     console.info(`[TEST-OTP] email="${normalizedEmail}" code="${code}"`)
   }

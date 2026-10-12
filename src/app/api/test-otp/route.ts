@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
 import { __testLatestOtpCodes } from '@/lib/auth/otp.server'
+import { e2eTestHooksEnabled } from '@/lib/auth/test-hooks'
 
 /**
  * Test-only endpoint for E2E tests to retrieve OTP code.
- * Exclusively active when NODE_ENV === 'test'. Returns 404 in all other environments.
+ * Active ONLY when E2E_TEST_HOOKS=1 (CI e2e job). Returns 404 otherwise. See test-hooks.ts.
  */
 export async function GET(request: Request) {
-  if (process.env.NODE_ENV !== 'test') {
+  if (!e2eTestHooksEnabled()) {
     return new NextResponse('Not found', { status: 404 })
   }
 
