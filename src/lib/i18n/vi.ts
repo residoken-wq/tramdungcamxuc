@@ -776,6 +776,35 @@ export const vi = {
       digital_tool: 'Công cụ số',
     },
   },
+  trial: {
+    title: 'Dùng thử công cụ số',
+    pageBadge: 'Trạm Dừng Cảm Xúc · Trải nghiệm 21 ngày',
+    daysLabel: (days: number) => `Dùng thử ${days} ngày miễn phí`,
+    startButton: (days: number) => `Bắt đầu dùng thử ${days} ngày`,
+    starting: 'Đang kích hoạt...',
+    openToolButton: 'Vào công cụ',
+    buyToContinueButton: 'Mua để dùng tiếp',
+    benefitsHeading: 'Bạn sẽ nhận được trong phiên dùng thử:',
+    loginPrompt: 'Vui lòng đăng nhập để bắt đầu dùng thử.',
+    productNotFound: 'Không tìm thấy sản phẩm hoặc sản phẩm chưa mở chương trình dùng thử.',
+    alreadyActiveNotice: 'Bạn đã có quyền sử dụng không giới hạn công cụ này.',
+    alreadyActiveTrialNotice: (daysLeft: number) =>
+      `Bạn đang trong thời gian dùng thử (còn ${daysLeft} ngày).`,
+    expiredNotice: 'Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ.',
+    generalError: 'Có lỗi xảy ra khi bắt đầu dùng thử. Vui lòng thử lại sau.',
+    banner: {
+      daysLeft: (days: number) => `Còn ${days} ngày dùng thử`,
+      expired: 'Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ',
+      buyButton: 'Mua để dùng tiếp',
+    },
+    email: {
+      welcomeSubject: (toolName: string) => `Trạm Dừng Cảm Xúc – Kích hoạt dùng thử ${toolName}`,
+      reminder18Subject: (toolName: string) =>
+        `Trạm Dừng Cảm Xúc – Chỉ còn 3 ngày dùng thử ${toolName}`,
+      reminder21Subject: (toolName: string) =>
+        `Trạm Dừng Cảm Xúc – Ngày dùng thử cuối cùng: ${toolName}`,
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
