@@ -5,7 +5,8 @@ vi.mock('server-only', () => ({}))
 import { randomUUID } from 'node:crypto'
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
-import { submitHabitPlan } from '../../src/lib/habit.server'
+import { submitHabitPlan, getHabitProduct } from '../../src/lib/habit.server'
+import { HABIT_TRACKER_PRODUCT_SLUG } from '../../src/lib/habit/config'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
 
 class MockEmailSender implements EmailSender {
@@ -431,5 +432,72 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
       overrideAccess: true,
     })
     if (leads.docs[0]) createdLeads.push(leads.docs[0].id)
+  })
+
+  it('A6: getHabitProduct không trả về sản phẩm khi ở trạng thái draft', async () => {
+    const existing = await payload.find({
+      collection: 'products',
+      where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+      limit: 1,
+    })
+
+    let prodId: number
+    let origStatus: 'draft' | 'published' = 'published'
+
+    if (existing.docs.length > 0) {
+      prodId = existing.docs[0].id as number
+      origStatus = (existing.docs[0]._status as 'draft' | 'published') || 'published'
+      await payload.update({
+        collection: 'products',
+        id: prodId,
+        data: { _status: 'draft' },
+        overrideAccess: true,
+      })
+    } else {
+      const created = await payload.create({
+        collection: 'products',
+        data: {
+          name: 'Habit Tracker Số Test',
+          slug: HABIT_TRACKER_PRODUCT_SLUG,
+          web: 'habit',
+          journeyStep: 'practice',
+          _status: 'draft',
+          type: 'digital_tool',
+          price: 250000,
+        },
+        overrideAccess: true,
+      })
+      prodId = created.id as number
+    }
+
+    try {
+      const res = await getHabitProduct(payload)
+      expect(res).toBeNull()
+    } finally {
+      if (existing.docs.length > 0) {
+        await payload.update({
+          collection: 'products',
+          id: prodId,
+          data: { _status: origStatus },
+          overrideAccess: true,
+        })
+      } else {
+        await payload.delete({
+          collection: 'products',
+          id: prodId,
+          overrideAccess: true,
+        })
+      }
+    }
+  })
+
+  it('A6: getHabitProduct rethrow lỗi khi DB gặp sự cố (không nuốt thành null)', async () => {
+    const brokenPayload = {
+      ...payload,
+      find: vi.fn().mockRejectedValue(new Error('PostgreSQL connection terminated')),
+      count: vi.fn().mockResolvedValue({ totalDocs: 0 }),
+    } as unknown as Payload
+
+    await expect(getHabitProduct(brokenPayload)).rejects.toThrow('PostgreSQL connection terminated')
   })
 })

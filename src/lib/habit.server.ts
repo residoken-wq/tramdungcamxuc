@@ -89,106 +89,105 @@ export async function getTechniques(payloadInstance?: Payload): Promise<PublicTe
  * Nếu sản phẩm không tồn tại hoặc có trạng thái hidden -> trả về null (trang offer gọi notFound()).
  */
 export async function getHabitProduct(payloadInstance?: Payload): Promise<HabitProductData | null> {
-  try {
-    const payload = await resolvePayload(payloadInstance)
+  const payload = await resolvePayload(payloadInstance)
 
-    const [productRes, lessonCountRes, techniqueCountRes] = await Promise.all([
-      payload.find({
-        collection: 'products',
-        where: {
-          slug: { equals: HABIT_TRACKER_PRODUCT_SLUG },
-        },
-        limit: 1,
-        depth: 1,
-      }),
-      payload.count({
-        collection: 'lessons',
-        where: {
-          _status: { equals: 'published' },
-        },
-      }),
-      payload.count({
-        collection: 'techniques',
-        where: {
-          _status: { equals: 'published' },
-        },
-      }),
-    ])
+  const [productRes, lessonCountRes, techniqueCountRes] = await Promise.all([
+    payload.find({
+      collection: 'products',
+      where: {
+        and: [
+          { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+          { _status: { equals: 'published' } },
+        ],
+      },
+      limit: 1,
+      depth: 1,
+      draft: false,
+    }),
+    payload.count({
+      collection: 'lessons',
+      where: {
+        _status: { equals: 'published' },
+      },
+    }),
+    payload.count({
+      collection: 'techniques',
+      where: {
+        _status: { equals: 'published' },
+      },
+    }),
+  ])
 
-    if (productRes.docs.length === 0) {
-      return null
-    }
-
-    const doc = productRes.docs[0] as Product
-
-    // Sản phẩm ở trạng thái hidden -> ẩn khỏi trang công khai (theo AGENTS.md)
-    if (doc.saleStatus === 'hidden') {
-      return null
-    }
-
-    // Trích xuất includes
-    const includes: string[] = []
-    if (Array.isArray(doc.includes)) {
-      for (const item of doc.includes) {
-        if (typeof item === 'string') {
-          includes.push(item)
-        } else if (
-          item &&
-          typeof item === 'object' &&
-          'text' in item &&
-          typeof item.text === 'string'
-        ) {
-          includes.push(item.text)
-        }
-      }
-    }
-
-    // Trích xuất FAQ
-    const faq: Array<{ question: string; answer?: string | null }> = []
-    if (Array.isArray(doc.faq)) {
-      for (const f of doc.faq) {
-        if (f && typeof f.question === 'string') {
-          faq.push({
-            question: f.question,
-            answer: f.answer,
-          })
-        }
-      }
-    }
-
-    // Trích xuất coverImage
-    let coverImage: { url?: string | null; alt?: string | null } | null = null
-    if (doc.coverImage && typeof doc.coverImage === 'object') {
-      const img = doc.coverImage as unknown as Record<string, unknown>
-      coverImage = {
-        url: typeof img.url === 'string' ? img.url : null,
-        alt: typeof img.alt === 'string' ? img.alt : doc.name,
-      }
-    }
-
-    // Nút CTA động
-    const cta = resolveProductCta(doc)
-
-    return {
-      id: doc.id,
-      name: doc.name,
-      slug: doc.slug,
-      price: doc.price ?? null,
-      salePrice: doc.salePrice ?? null,
-      saleEndsAt: doc.saleEndsAt,
-      trialDays: doc.trialDays ?? 21,
-      shortDescription: doc.shortDescription,
-      saleStatus: doc.saleStatus,
-      includes,
-      faq,
-      coverImage,
-      cta,
-      videoCount: lessonCountRes.totalDocs,
-      techniqueCount: techniqueCountRes.totalDocs,
-    }
-  } catch (err) {
-    console.error('[Habit] Error reading habit product:', err)
+  if (productRes.docs.length === 0) {
     return null
+  }
+
+  const doc = productRes.docs[0] as Product
+
+  // Sản phẩm ở trạng thái hidden -> ẩn khỏi trang công khai (theo AGENTS.md)
+  if (doc.saleStatus === 'hidden') {
+    return null
+  }
+
+  // Trích xuất includes
+  const includes: string[] = []
+  if (Array.isArray(doc.includes)) {
+    for (const item of doc.includes) {
+      if (typeof item === 'string') {
+        includes.push(item)
+      } else if (
+        item &&
+        typeof item === 'object' &&
+        'text' in item &&
+        typeof item.text === 'string'
+      ) {
+        includes.push(item.text)
+      }
+    }
+  }
+
+  // Trích xuất FAQ
+  const faq: Array<{ question: string; answer?: string | null }> = []
+  if (Array.isArray(doc.faq)) {
+    for (const f of doc.faq) {
+      if (f && typeof f.question === 'string') {
+        faq.push({
+          question: f.question,
+          answer: f.answer,
+        })
+      }
+    }
+  }
+
+  // Trích xuất coverImage
+  let coverImage: { url?: string | null; alt?: string | null } | null = null
+  if (doc.coverImage && typeof doc.coverImage === 'object') {
+    const img = doc.coverImage as unknown as Record<string, unknown>
+    coverImage = {
+      url: typeof img.url === 'string' ? img.url : null,
+      alt: typeof img.alt === 'string' ? img.alt : doc.name,
+    }
+  }
+
+  // Nút CTA động
+  const cta = resolveProductCta(doc)
+
+  return {
+    id: doc.id,
+    name: doc.name,
+    slug: doc.slug,
+    price: doc.price ?? null,
+    salePrice: doc.salePrice ?? null,
+    saleEndsAt: doc.saleEndsAt,
+    trialDays: doc.trialDays ?? 21,
+    shortDescription: doc.shortDescription,
+    saleStatus: doc.saleStatus,
+    includes,
+    faq,
+    coverImage,
+    cta,
+    videoCount: lessonCountRes.totalDocs,
+    techniqueCount: techniqueCountRes.totalDocs,
   }
 }
 
