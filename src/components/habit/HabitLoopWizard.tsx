@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useId } from 'react'
+import React, { useState, useEffect, useId, useRef } from 'react'
 import Link from 'next/link'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
@@ -26,6 +26,7 @@ export interface HabitLoopWizardProps {
 }
 
 export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
+  const startTimeRef = useRef<number>(Date.now())
   const [draft, setDraft] = useState<HabitPlanDraft>(getDefaultHabitDraft())
   const [isLoaded, setIsLoaded] = useState(false)
   const [newHabitText, setNewHabitText] = useState('')
@@ -217,6 +218,8 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           }
         }
       }
+      const duration = Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
+      track('habit_loop_completed', { step: 4, duration })
       setDraft((prev) => ({ ...prev, step: 4 }))
     }
   }
@@ -268,9 +271,6 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
         return
       }
 
-      // BẢO VỆ DỮ LIỆU RIÊNG TƯ: Tuyệt đối không gửi câu định danh hay thói quen vào analytics
-      track('habit_loop_completed')
-
       // Xóa nháp sau khi lưu thành công
       try {
         localStorage.removeItem(HABIT_LOOP_STORAGE_KEY)
@@ -293,6 +293,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     } catch {
       // noop
     }
+    startTimeRef.current = Date.now()
     setDraft(getDefaultHabitDraft())
     setSubmitSuccess(false)
     setStepError(null)
