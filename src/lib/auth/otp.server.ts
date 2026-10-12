@@ -338,18 +338,21 @@ export async function verifyOtp(
 
   let customer = customerQuery.docs[0]
   if (!customer) {
+    if (validated.consentPolicy !== true) {
+      throw new OtpVerificationError(vi.auth.consentRequired)
+    }
     customer = await payload.create({
       collection: 'customers',
       data: {
         email: normalizedEmail,
-        consentAt: validated.consentPolicy !== false ? nowIso : undefined,
+        consentAt: nowIso,
         consentMarketing: Boolean(validated.consentMarketing),
       },
       overrideAccess: true,
     })
   } else {
     const updateData: Record<string, unknown> = {}
-    if (!customer.consentAt && validated.consentPolicy !== false) {
+    if (!customer.consentAt && validated.consentPolicy === true) {
       updateData.consentAt = nowIso
     }
     if (validated.consentMarketing && !customer.consentMarketing) {

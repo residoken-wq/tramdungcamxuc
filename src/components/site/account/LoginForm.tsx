@@ -18,7 +18,7 @@ export function LoginForm({ initialNext }: LoginFormProps) {
   const [step, setStep] = useState<'email' | 'code'>('email')
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
-  const [consentPolicy, setConsentPolicy] = useState(true)
+  const [consentPolicy, setConsentPolicy] = useState(false)
   const [consentMarketing, setConsentMarketing] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string>('')
   const [honeypot, setHoneypot] = useState('')

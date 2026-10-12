@@ -200,6 +200,39 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
       expect(updatedOtp.usedAt).toBeDefined()
     })
 
+    it('requires explicit privacy consent for new customers (B6)', async () => {
+      const email = `no-consent-${randomUUID()}@example.test`
+      const code = '789123'
+      const codeHash = computeOtpHash(email, code)
+      const now = new Date()
+      const expiresAt = new Date(now.getTime() + 10 * 60 * 1000).toISOString()
+
+      const otp = await payload.create({
+        collection: 'otpCodes',
+        data: {
+          email,
+          codeHash,
+          expiresAt,
+          attempts: 0,
+        },
+        overrideAccess: true,
+      })
+      track('otpCodes', otp)
+
+      // Verification without explicit consentPolicy = true is rejected
+      await expect(
+        verifyOtp({ email, code, consentPolicy: false }, { ip: uniqueIp() }, { payload, now }),
+      ).rejects.toThrow(viDict.auth.consentRequired)
+
+      // Ensure customer was NOT created
+      const search = await payload.find({
+        collection: 'customers',
+        where: { email: { equals: email } },
+        overrideAccess: true,
+      })
+      expect(search.docs).toHaveLength(0)
+    })
+
     it('rejects invalid code and increments attempts', async () => {
       const email = `invalid-code-${randomUUID()}@example.test`
       const code = '654321'
@@ -332,8 +365,8 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
       track('otpCodes', otp)
 
       const results = await Promise.allSettled([
-        verifyOtp({ email, code }, { ip: uniqueIp() }, { payload, now }),
-        verifyOtp({ email, code }, { ip: uniqueIp() }, { payload, now }),
+        verifyOtp({ email, code, consentPolicy: true }, { ip: uniqueIp() }, { payload, now }),
+        verifyOtp({ email, code, consentPolicy: true }, { ip: uniqueIp() }, { payload, now }),
       ])
 
       const fulfilled = results.filter((r) => r.status === 'fulfilled')
