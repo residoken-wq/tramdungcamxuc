@@ -259,7 +259,7 @@ describe('Entitlement Service – 21-day trial, lifetime purchase & access contr
 
     it('từ chối tạo trial nếu khách hàng đã có quyền active còn hiệu lực', async () => {
       // Cấp quyền active thủ công cho Customer B với toolNoTrial
-      const activeEnt = track(
+      track(
         'entitlements',
         await payload.create({
           collection: 'entitlements',
