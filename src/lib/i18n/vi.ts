@@ -694,6 +694,31 @@ export const vi = {
     unauthorizedNotice: 'Vui lòng đăng nhập để truy cập trang này.',
     loginSuccess: 'Đăng nhập thành công.',
   },
+  workshop: {
+    heading: 'Lịch workshop của tôi',
+    empty: 'Bạn chưa có lịch workshop nào.',
+    joinButton: 'Vào phòng',
+    linkOpeningNotice: 'Link sẽ mở 60 phút trước giờ học',
+    endedNotice: 'Buổi học đã kết thúc',
+    timeLabel: 'Thời gian',
+    openBadge: 'Đang mở phòng',
+    upcomingBadge: 'Sắp diễn ra',
+    reminderEmail: {
+      brandLabel: 'TRẠM DỪNG CẢM XÚC',
+      subject: (title: string) => `Trạm Dừng Cảm Xúc – Nhắc hẹn workshop: ${title}`,
+      title: 'Nhắc hẹn workshop sắp diễn ra',
+      greeting: (name: string) => `Xin chào ${name},`,
+      intro: (title: string) => `Chỉ còn 24 giờ nữa là buổi workshop "${title}" sẽ chính thức bắt đầu.`,
+      workshopTimeLabel: 'Thời gian diễn ra:',
+      accountNotice:
+        'Để bảo mật thông tin phòng học, liên kết tham gia sẽ tự động mở tại Trang tài khoản của bạn trước giờ bắt đầu 60 phút.',
+      accountButton: 'Vào trang tài khoản',
+      footerSignOff: 'Thương mến,',
+      footerAuthor: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
+      footerAutoNotice:
+        'Email này được gửi tự động nhắc lịch buổi học trong gói đồng hành của bạn.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

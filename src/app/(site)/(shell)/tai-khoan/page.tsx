@@ -3,8 +3,10 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { logoutAction } from '@/lib/auth/actions'
+import { getEligibleWorkshops } from '@/lib/workshops/eligible.server'
 import { vi } from '@/lib/i18n/vi'
 import { Button } from '@/components/ui/Button'
+import { WorkshopSchedule } from '@/components/site/account/WorkshopSchedule'
 
 export const metadata: Metadata = {
   title: 'Tài khoản của tôi | Trạm Dừng Cảm Xúc',
@@ -21,6 +23,7 @@ export default async function AccountPage() {
   }
 
   const displayName = customer.name?.trim() || customer.email
+  const eligibleWorkshops = await getEligibleWorkshops(customer.id)
 
   return (
     <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-8">
@@ -72,8 +75,11 @@ export default async function AccountPage() {
           </div>
         </div>
 
-        {/* Courses & Orders Sections (T2-02 & T2-08 fill) */}
+        {/* Courses, Workshops & Orders Sections */}
         <div className="md:col-span-2 space-y-6">
+          {/* Lịch workshop của tôi */}
+          <WorkshopSchedule workshops={eligibleWorkshops} />
+
           {/* Khóa học của tôi */}
           <div className="bg-white/95 rounded-2xl p-6 border border-lavender-mist shadow-sm space-y-4">
             <h2 className="font-ui text-base font-bold text-deep-navy">{vi.auth.myCourses}</h2>
