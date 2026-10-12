@@ -8,6 +8,7 @@ import { PriceTag } from '@/components/ui/PriceTag'
 import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
+import { getToolUrl } from '@/lib/products'
 import { createDigitalToolOrderAction } from '@/lib/payments/actions'
 
 export interface DigitalToolCheckoutProduct {
@@ -44,8 +45,10 @@ export function DigitalToolCheckoutForm({
   const [activeToolUrl, setActiveToolUrl] = useState(toolUrl)
 
   useEffect(() => {
-    track('checkout_started', { productSlug: product.slug })
-  }, [product.slug])
+    if (!alreadyActive) {
+      track('checkout_started', { productSlug: product.slug })
+    }
+  }, [product.slug, alreadyActive])
 
   const isLifetime = !product.accessDurationDays || product.accessDurationDays <= 0
 
@@ -74,27 +77,27 @@ export function DigitalToolCheckoutForm({
         setIsActiveAccess(true)
         setActiveToolUrl(res.toolUrl)
         setErrorMessage(res.error || vi.checkout.alreadyActiveMessage)
+        setIsSubmitting(false)
         return
       }
 
       if (!res.success || !res.payToken) {
-        setErrorMessage(res.error || 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.')
+        setErrorMessage(res.error || vi.checkout.createOrderError)
+        setIsSubmitting(false)
         return
       }
 
       router.push(`/thanh-toan/don/${res.payToken}`)
+      // Không bật lại nút submit sau khi chuyển trang thành công
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
-      setErrorMessage(msg || 'Có lỗi xảy ra khi tạo đơn hàng.')
-    } finally {
+      setErrorMessage(msg || vi.checkout.createOrderError)
       setIsSubmitting(false)
     }
   }
 
   if (isActiveAccess) {
-    const directToolUrl =
-      activeToolUrl ||
-      (product.web === 'habit' ? '/habit' : product.web === 'eq' ? '/eq-buddy' : '/tai-khoan')
+    const directToolUrl = activeToolUrl || getToolUrl(product)
 
     return (
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-mint-haze shadow-sm text-center space-y-4">
@@ -141,10 +144,10 @@ export function DigitalToolCheckoutForm({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold uppercase tracking-wider text-bright-magenta">
               {product.web === 'habit'
-                ? 'Habit Formation'
+                ? vi.checkout.categories.habit
                 : product.web === 'eq'
-                  ? 'EQ Buddy'
-                  : 'Công cụ số'}
+                  ? vi.checkout.categories.eq
+                  : vi.checkout.categories.digital_tool}
             </span>
             <span
               className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
@@ -157,9 +160,9 @@ export function DigitalToolCheckoutForm({
             </span>
           </div>
 
-          <h1 className="font-heading text-xl sm:text-2xl text-deep-navy break-words">
+          <h2 className="font-heading text-xl sm:text-2xl text-deep-navy break-words">
             {product.name}
-          </h1>
+          </h2>
 
           {product.shortDescription && (
             <p className="font-sans text-xs sm:text-sm text-deep-navy/70 line-clamp-2">
@@ -171,7 +174,9 @@ export function DigitalToolCheckoutForm({
 
       {/* Price Section */}
       <div className="flex items-baseline justify-between py-2 border-b border-deep-navy/10">
-        <span className="font-ui text-sm font-semibold text-deep-navy">Số tiền thanh toán:</span>
+        <span className="font-ui text-sm font-semibold text-deep-navy">
+          {vi.checkout.amountToPay}
+        </span>
         <PriceTag originalPrice={product.price} salePrice={product.salePrice} size="lg" />
       </div>
 
@@ -193,6 +198,7 @@ export function DigitalToolCheckoutForm({
               type="checkbox"
               id="terms-checkbox"
               name="termsAccepted"
+              data-testid="checkout-terms-checkbox"
               checked={termsAccepted}
               onChange={(e) => {
                 setTermsAccepted(e.target.checked)
@@ -226,6 +232,7 @@ export function DigitalToolCheckoutForm({
           type="submit"
           variant="primary"
           size="lg"
+          data-testid="checkout-submit-button"
           disabled={isSubmitting}
           className="w-full justify-center shadow-md shadow-accent-pink/20"
         >

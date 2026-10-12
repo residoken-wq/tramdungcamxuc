@@ -8,7 +8,7 @@ import type { Product } from '@/payload-types'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getSafeRedirectUrl } from '@/lib/auth/redirect'
 import { getAccess } from '@/lib/entitlements'
-import { getEffectivePrice } from '@/lib/products'
+import { getEffectivePrice, getToolUrl } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import {
   DigitalToolCheckoutForm,
@@ -49,16 +49,14 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   if (!productSlug) {
     return (
       <div className="py-12 sm:py-20 px-4 max-w-xl mx-auto text-center space-y-4">
-        <h1 className="font-heading text-3xl text-deep-navy">Không tìm thấy sản phẩm</h1>
-        <p className="font-sans text-sm text-deep-navy/70">
-          Vui lòng chọn một công cụ số từ thư viện hoặc trang chủ để tiếp tục thanh toán.
-        </p>
+        <h1 className="font-heading text-3xl text-deep-navy">{vi.checkout.productMissingTitle}</h1>
+        <p className="font-sans text-sm text-deep-navy/70">{vi.checkout.productMissingDesc}</p>
         <div className="pt-4">
           <Link
             href="/thu-vien"
             className="inline-flex items-center px-5 py-2.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-sm hover:bg-bright-magenta/90 transition-colors"
           >
-            Khám phá thư viện
+            {vi.checkout.exploreLibrary}
           </Link>
         </div>
       </div>
@@ -86,14 +84,16 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   if (!isEligible) {
     return (
       <div className="py-12 sm:py-20 px-4 max-w-xl mx-auto text-center space-y-4">
-        <h1 className="font-heading text-3xl text-deep-navy">Sản phẩm không khả dụng</h1>
+        <h1 className="font-heading text-3xl text-deep-navy">
+          {vi.checkout.productUnavailableTitle}
+        </h1>
         <p className="font-sans text-sm text-deep-navy/70">{vi.checkout.productNotFound}</p>
         <div className="pt-4">
           <Link
             href="/thu-vien"
             className="inline-flex items-center px-5 py-2.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-sm hover:bg-bright-magenta/90 transition-colors"
           >
-            Quay lại thư viện
+            {vi.checkout.backToLibrary}
           </Link>
         </div>
       </div>
@@ -104,8 +104,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const now = new Date()
   const access = await getAccess(customer.id, product.id, { payload, now })
   const alreadyActive = access.hasAccess && access.status === 'active'
-  const directToolUrl =
-    product.web === 'habit' ? '/habit' : product.web === 'eq' ? '/eq-buddy' : `/${product.slug}`
+  const directToolUrl = getToolUrl(product)
 
   // 5. Chuẩn bị DTO hiển thị
   const effective = getEffectivePrice(product, now)
@@ -138,12 +137,12 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
       {/* Page Header */}
       <div className="text-center mb-8 space-y-2">
         <p className="text-xs font-bold uppercase tracking-wider text-bright-magenta">
-          Trạm Dừng Cảm Xúc · Bán lẻ công cụ số
+          {vi.checkout.pageBadge}
         </p>
-        <h1 className="font-heading text-3xl sm:text-4xl text-deep-navy">Xác nhận đơn hàng</h1>
-        <p className="font-quote italic text-sm text-deep-navy/70">
-          Bước cuối cùng để sở hữu công cụ đồng hành cùng cảm xúc của bạn
-        </p>
+        <h1 className="font-heading text-3xl sm:text-4xl text-deep-navy">
+          {vi.checkout.pageHeading}
+        </h1>
+        <p className="font-quote italic text-sm text-deep-navy/70">{vi.checkout.pageSubheading}</p>
       </div>
 
       <DigitalToolCheckoutForm

@@ -9,6 +9,7 @@ import { logoutAction } from '@/lib/auth/actions'
 import { getAccess } from '@/lib/entitlements'
 import { getEligibleWorkshops } from '@/lib/workshops/eligible.server'
 import { vi } from '@/lib/i18n/vi'
+import { getToolUrl } from '@/lib/products'
 import { Button } from '@/components/ui/Button'
 import { WorkshopSchedule } from '@/components/site/account/WorkshopSchedule'
 
@@ -66,9 +67,8 @@ export default async function AccountPage() {
   const coursesWithAccess = await Promise.all(
     Array.from(productMap.values()).map(async (product) => {
       const access = await getAccess(customer.id, product.id, { payload })
-      const toolUrl =
-        product.web === 'habit' ? '/habit' : product.web === 'eq' ? '/eq-buddy' : `/${product.slug}`
-      const buyUrl = `/thanh-toan?san-pham=${product.slug}`
+      const toolUrl = getToolUrl(product)
+      const buyUrl = `/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`
 
       return {
         product,
@@ -193,11 +193,12 @@ export default async function AccountPage() {
                             {vi.auth.openTool}
                           </Button>
                         )}
-                        {(access.status === 'trial' || access.status === 'expired') && (
-                          <Button href={buyUrl} variant="primary" size="sm">
-                            {vi.auth.buyToContinue}
-                          </Button>
-                        )}
+                        {(access.status === 'trial' || access.status === 'expired') &&
+                          product.saleStatus === 'on_sale' && (
+                            <Button href={buyUrl} variant="primary" size="sm">
+                              {vi.auth.buyToContinue}
+                            </Button>
+                          )}
                       </div>
                     </div>
                   )

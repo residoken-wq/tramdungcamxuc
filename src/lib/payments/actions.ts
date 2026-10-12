@@ -15,6 +15,7 @@ import {
   AlreadyHasActiveAccessError,
 } from './orders.server'
 import { vi } from '@/lib/i18n/vi'
+import { RateLimitError } from '@/lib/forms/ratelimit.server'
 
 export interface AdminPaymentActionResult {
   success: boolean
@@ -247,15 +248,16 @@ export async function createDigitalToolOrderAction(
         error: err.message,
       }
     }
-    if (err instanceof PaymentError || err instanceof Error) {
+    if (err instanceof PaymentError || err instanceof RateLimitError) {
       return {
         success: false,
         error: err.message,
       }
     }
+    console.error('[PaymentAction] Unexpected error in createDigitalToolOrderAction:', err)
     return {
       success: false,
-      error: 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại sau.',
+      error: vi.payment.errors.serverError,
     }
   }
 }

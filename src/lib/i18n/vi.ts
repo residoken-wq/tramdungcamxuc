@@ -382,6 +382,8 @@ export const vi = {
       onlyPendingCanBeConfirmed: 'Chỉ có thể xác nhận đơn hàng đang ở trạng thái chờ thanh toán.',
       cannotCancelPaidOrder: 'Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
       orderExpired: 'Đơn hàng đã hết hạn thanh toán.',
+      invalidProductType: 'Sản phẩm không phải là công cụ số.',
+      productExternal: 'Sản phẩm này được phân phối qua kênh liên kết ngoài.',
       serverError: 'Đã có lỗi xảy ra trong quá trình xử lý. Vui lòng thử lại sau.',
       termsNotAccepted:
         'Khách chưa đồng ý Điều khoản và Chính sách giá – thanh toán trên link thanh toán. Chưa thể xác nhận đơn này.',
@@ -757,6 +759,22 @@ export const vi = {
     alreadyActiveMessage: 'Bạn đã có quyền sử dụng công cụ này.',
     openToolButton: 'Mở công cụ ngay',
     secureNotice: 'Thanh toán chuyển khoản VietQR an toàn, tự động kích hoạt sau khi xác nhận',
+    pageBadge: 'Trạm Dừng Cảm Xúc · Bán lẻ công cụ số',
+    pageHeading: 'Xác nhận đơn hàng',
+    pageSubheading: 'Bước cuối cùng để sở hữu công cụ đồng hành cùng cảm xúc của bạn',
+    productMissingTitle: 'Không tìm thấy sản phẩm',
+    productMissingDesc:
+      'Vui lòng chọn một công cụ số từ thư viện hoặc trang chủ để tiếp tục thanh toán.',
+    exploreLibrary: 'Khám phá thư viện',
+    productUnavailableTitle: 'Sản phẩm không khả dụng',
+    backToLibrary: 'Quay lại thư viện',
+    amountToPay: 'Số tiền thanh toán:',
+    createOrderError: 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.',
+    categories: {
+      habit: 'Habit Formation',
+      eq: 'EQ Buddy',
+      digital_tool: 'Công cụ số',
+    },
   },
 } as const
 
