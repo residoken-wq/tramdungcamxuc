@@ -20,6 +20,18 @@ async function getTestOtpCode(page: Page, email: string): Promise<string> {
   return data.code
 }
 
+/** After "Gửi mã": wait for the code step, or fail with the on-page error text. */
+async function expectCodeStep(page: Page) {
+  const codeInput = page.locator('input[name="code"]')
+  // Non-empty only: Next's route announcer is an always-present, empty role=alert
+  const alert = page.locator('div[role="alert"]').filter({ hasText: /\S/ })
+  await expect(codeInput.or(alert).first()).toBeVisible({ timeout: 15000 })
+  if (await alert.isVisible()) {
+    throw new Error(`OTP request failed on page: ${await alert.innerText()}`)
+  }
+  return codeInput
+}
+
 test.describe('Customer Email OTP Authentication E2E Flow', () => {
   const testEmail = `e2e-user-${Date.now()}@tramdungcamxuc.test`
 
@@ -47,8 +59,7 @@ test.describe('Customer Email OTP Authentication E2E Flow', () => {
     await sendOtpButton.click()
 
     // 3. Verify transition to 6-digit code step
-    const codeInput = page.locator('input[name="code"]')
-    await expect(codeInput).toBeVisible({ timeout: 15000 })
+    const codeInput = await expectCodeStep(page)
 
     // Check 60s countdown indicator exists
     const countdownOrResend = page.locator('text=/Gửi lại mã/i')
@@ -99,14 +110,14 @@ test.describe('Customer Email OTP Authentication E2E Flow', () => {
     })
     await page.locator('button[type="submit"]').click()
 
-    const codeInput = page.locator('input[name="code"]')
-    await expect(codeInput).toBeVisible({ timeout: 15000 })
+    const codeInput = await expectCodeStep(page)
     const otpCode = await getTestOtpCode(page, email)
     await codeInput.fill(otpCode)
     await page.locator('button[type="submit"]').click()
 
     // After login, redirected to default /tai-khoan, never external evil.com
-    await expect(page).toHaveURL(/\/tai-khoan/)
+    // Wait for the real post-login page (the login page URL also contains /tai-khoan).
+    await expect(page).toHaveURL(/\/tai-khoan\/?$/, { timeout: 15000 })
     expect(page.url()).not.toContain('evil.com')
   })
 })

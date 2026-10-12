@@ -46,8 +46,13 @@ export interface VerifyOtpResult {
   token: string
 }
 
-// In-memory test store for test runner verification in test environment
-export const __testLatestOtpCodes = new Map<string, string>()
+// In-memory store for the CI e2e OTP readout (only written when E2E_TEST_HOOKS=1).
+// Kept on globalThis: Next bundles server actions and route handlers separately, so a
+// plain module-level Map is NOT shared between requestOtp and /api/test-otp.
+const otpStoreKey = '__tdcxE2eLatestOtpCodes'
+const otpStoreHost = globalThis as unknown as Record<string, Map<string, string> | undefined>
+export const __testLatestOtpCodes: Map<string, string> =
+  otpStoreHost[otpStoreKey] ?? (otpStoreHost[otpStoreKey] = new Map<string, string>())
 
 export class OtpVerificationError extends Error {
   constructor(message: string) {
