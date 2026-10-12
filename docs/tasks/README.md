@@ -154,15 +154,15 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **MỞ 10/10/2026** (cổng GĐ 1 đạt). Quyết định đã chốt: Q8 SePay, Q9 Bunny, Q14 10 cảm xúc emoji, H1/H2 quiz 1–5 trung bình, Q19, D1/D2 server riêng. Còn mở: Q15 (giá, trong CMS).
 
-**🔒 Migration: T2-01 (PC nhà) · 🔒 Package: (trống)** · Local và Laptop nghỉ đến hết 10/10.
+**🔒 Migration: T2-10 (Laptop) · 🔒 Package: (trống)** · Local và Laptop nghỉ đến hết 10/10.
 
 **Thứ tự máy (từ 11/10)**: Laptop = T2-00 → T2-12 → T1-18 → T2-10 · PC nhà = T2-01 → T2-13 (chen khi T2-01 chờ IT duyệt) → T2-02 (sau khi T2-01 merge) · Local = T2-03.
 
 | Mã    | Task                                           | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                                                                                                     |
 | ----- | ---------------------------------------------- | -------- | ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | T2-00 | Cô lập unit test dùng chung DB                 |          | –            | Laptop   | ✅ Merge 11/10 – PR #70, Planning sửa tự nhận diện file DB ([review](reviews/T2-00.md))                                        |
-| T2-01 | Đăng nhập khách bằng OTP email                 | [REVIEW] | cổng GĐ 1    | PC nhà   | **CHƯA ĐẠT** 11/10 – PR #72: 4 lỗi bảo mật nặng ([review](reviews/T2-01.md)) → PC nhà sửa theo `prompts/T2-01b.md`             |
-| T2-02 | Dịch vụ quyền truy cập (trial 21 ngày, active) | [REVIEW] | T2-01        | PC nhà   | Chờ T2-01 merge (prompt `prompts/T2-02.md`)                                                                                    |
+| T2-01 | Đăng nhập khách bằng OTP email                 | [REVIEW] | cổng GĐ 1    | PC nhà   | ✅ Merge 12/10 – PR #72 (vòng 2 + T2-01c Planning, IT duyệt) ([review](reviews/T2-01.md))                                      |
+| T2-02 | Dịch vụ quyền truy cập (trial 21 ngày, active) | [REVIEW] | T2-01        | PC nhà   | Sẵn sàng – PC nhà (prompt `prompts/T2-02.md`)                                                                                  |
 | T2-03 | Habit Loop 5 phút + trang offer                |          | cổng GĐ 1    | Local    | Sẵn sàng – Local (prompt `prompts/T2-03.md`, 12/10)                                                                            |
 | T2-04 | Luồng dùng thử 21 ngày, đổi CTA quiz           |          | T2-02, T2-03 | PC nhà   | Chờ T2-02, T2-03                                                                                                               |
 | T2-05 | Video bảo vệ + dashboard học                   | [REVIEW] | T2-02        | Laptop   | Chờ T2-02 + tài khoản Bunny                                                                                                    |
@@ -170,7 +170,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T2-07 | Chứng nhận 21 ngày                             |          | T2-06        | Local    | Chờ T2-06                                                                                                                      |
 | T2-08 | Mua công cụ số (xác nhận thủ công)             | [REVIEW] | T2-02        | PC nhà   | Chờ T2-02                                                                                                                      |
 | T2-09 | Webhook thanh toán tự động                     | [REVIEW] | T2-08        | PC nhà   | Chờ T2-08 + tài khoản SePay                                                                                                    |
-| T2-10 | Lịch workshop + nhắc 24 giờ                    |          | T2-01        | Laptop   | Chờ T2-01                                                                                                                      |
+| T2-10 | Lịch workshop + nhắc 24 giờ                    |          | T2-01        | Laptop   | Sẵn sàng – Laptop (prompt `prompts/T2-10.md`), giữ 🔒 Migration                                                                |
 | T2-12 | Quiz: thang 1–5, chấm điểm trung bình (H1, H2) |          | –            | Laptop   | ✅ Merge 11/10 – PR #71, Planning sửa giới hạn điểm lưu kết quả ([review](reviews/T2-12.md))                                   |
 | T2-13 | Owner xác nhận đơn đã hết hạn (Q19)            | [REVIEW] | –            | PC nhà   | QA ĐẠT 11/10 – PR #76, Planning thay e2e rỗng bằng unit test giao diện ([review](reviews/T2-13.md)) · IT duyệt, ✅ merge 11/10 |
 | T2-11 | E2E luồng Habit + cổng GĐ 2                    | [HANA]   | tất cả       | Planning | –                                                                                                                              |
