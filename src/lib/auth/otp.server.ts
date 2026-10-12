@@ -45,6 +45,9 @@ export interface VerifyOtpResult {
   token: string
 }
 
+// In-memory test store for test runner verification in test environment
+export const __testLatestOtpCodes = new Map<string, string>()
+
 export class OtpVerificationError extends Error {
   constructor(message: string) {
     super(message)
@@ -187,6 +190,7 @@ export async function requestOtp(
 
   // 8. Log test code ONLY when NODE_ENV === 'test'
   if (process.env.NODE_ENV === 'test') {
+    __testLatestOtpCodes.set(normalizedEmail, code)
     console.info(`[TEST-OTP] email="${normalizedEmail}" code="${code}"`)
   }
 
