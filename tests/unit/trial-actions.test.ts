@@ -157,7 +157,7 @@ describe('Trial Actions & Quiz CTA (T2-04)', () => {
   describe('3. CTA kết quả quiz (submitDiagnostic)', () => {
     it('có sản phẩm Habit Tracker số mở dùng thử -> ctaHref là link dùng thử, ctaLabel theo dùng thử', async () => {
       // Đảm bảo có sản phẩm HABIT_TRACKER_PRODUCT_SLUG
-      const habitProduct = await createDigitalProduct({
+      await createDigitalProduct({
         name: 'Habit Tracker Số Quiz Test',
         slug: HABIT_TRACKER_PRODUCT_SLUG,
         trialDays: 21,
