@@ -566,4 +566,45 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     createdLeads.push(lead.id)
     expect(lead.name).toBe(fullName)
   })
+
+  it('B12: nếu lưu habitPlans gặp lỗi thì không tạo lead mồ côi', async () => {
+    const email = `test-b12-${randomUUID().slice(0, 8)}@example.com`
+
+    const failingPayload = Object.assign(Object.create(payload), {
+      create: vi
+        .fn()
+        .mockImplementation(
+          ({ collection, data }: { collection: string; data: Record<string, unknown> }) => {
+            if (collection === 'habitPlans') {
+              return Promise.reject(new Error('Simulated habitPlans DB error'))
+            }
+            return payload.create({ collection, data, overrideAccess: true })
+          },
+        ),
+    }) as Payload
+
+    await expect(
+      submitHabitPlan(
+        {
+          scorecard: [{ habit: 'Tập thở', rating: 'good' }],
+          identityStatement: 'Tôi sẽ tập thở để giải tỏa căng thẳng',
+          chosenTechniques: [
+            { techniqueId: validCueTechId, stage: 'cue', action: 'Hít sâu 4 giây' },
+          ],
+          email,
+          consent: true,
+        },
+        { ip: `192.168.4.${Math.floor(Math.random() * 200) + 10}` },
+        { payload: failingPayload, emailSender },
+      ),
+    ).rejects.toThrow('Simulated habitPlans DB error')
+
+    // Kiểm tra trong DB thật không có lead nào được tạo cho email này
+    const leads = await payload.find({
+      collection: 'leads',
+      where: { email: { equals: email } },
+      overrideAccess: true,
+    })
+    expect(leads.docs.length).toBe(0)
+  })
 })
