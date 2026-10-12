@@ -1,6 +1,16 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { date, relation, select, text, textarea } from '../fields/content'
-import { adminOrSelfCustomer, isOwner } from '../lib/auth/access'
+import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
+
+const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
+  if (operation === 'create' && req.user && req.user.collection === 'customers') {
+    return {
+      ...data,
+      customer: req.user.id,
+    }
+  }
+  return data
+}
 
 // REVIEW-REQUIRED: Learner plans are personal data; created by the Habit Loop flow (GĐ 2).
 export const HabitPlans: CollectionConfig = {
@@ -13,8 +23,11 @@ export const HabitPlans: CollectionConfig = {
     update: adminOrSelfCustomer(),
     delete: isOwner,
   },
+  hooks: {
+    beforeChange: [bindCustomerOnCreate],
+  },
   fields: [
-    relation('customer', 'Khách hàng', 'customers'),
+    { ...relation('customer', 'Khách hàng', 'customers'), access: { update: isEditorOrOwner } },
     { name: 'leadEmail', label: 'Email (chưa có tài khoản)', type: 'email' },
     {
       name: 'scorecard',

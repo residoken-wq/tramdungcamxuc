@@ -33,7 +33,7 @@ export async function GET(request: Request): Promise<Response> {
 
   // REVIEW-REQUIRED: Personal data (NĐ 13/2023). Only owner and editor are permitted to export leads.
   const { user } = await payload.auth({ headers: requestHeaders })
-  if (!user) {
+  if (!user || user.collection !== 'users') {
     return new Response('Chưa đăng nhập', { status: 401 })
   }
 
