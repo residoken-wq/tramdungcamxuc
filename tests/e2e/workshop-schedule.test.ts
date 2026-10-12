@@ -8,24 +8,16 @@ import { expect, test, type Page, type Response } from '@playwright/test'
  * 1. Bootstrap admin trên database CI độc lập (không có seed).
  * 2. Admin tạo sản phẩm gói Growth Mirror và tạo workshop "Tập thương cảm xúc"
  *    với audienceProducts liên kết tới gói đó.
- * 3. Tạo khách hàng và đơn hàng ở trạng thái 'paid' qua API quản trị.
+ * 3. Tạo khách hàng và đơn gói do owner tạo (REST luôn ép `pending`), khách đồng ý điều khoản
+ *    trên link thanh toán, owner bấm "Xác nhận thanh toán" trong CMS -> đơn `paid`.
  * 4. Khách hàng truy cập /tai-khoan/dang-nhap, yêu cầu mã OTP, nhận OTP qua /api/test-otp
  *    (với E2E_TEST_HOOKS=1 đã kích hoạt trên CI), và đăng nhập thành công.
  * 5. Tại /tai-khoan, kiểm tra khối "Lịch workshop của tôi" hiển thị đúng tên workshop,
  *    thời gian và huy hiệu trạng thái.
- * 6. Dọn dẹp dữ liệu đã tạo trong khối finally để cơ sở dữ liệu luôn sạch.
+ * 6. Dọn dẹp dữ liệu (kể cả admin đầu tiên) trong khối finally: các test khác cần DB chưa có admin.
  */
 
 async function bootstrapAdmin(page: Page): Promise<number> {
-  const init = await (await page.request.get('/api/users/init')).json()
-  if (init.initialized === true) {
-    // Nếu đã khởi tạo người dùng trong test trước
-    const meRes = await page.request.get('/api/users/me')
-    if (meRes.ok()) {
-      return (await meRes.json()).user.id
-    }
-  }
-
   await page.goto('/admin/create-first-user', { waitUntil: 'domcontentloaded' })
   const password = `AdminPass-${randomUUID()}`
   await page.locator('#field-email').fill(`admin-t2-10-${randomUUID()}@example.test`)
@@ -73,6 +65,10 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
   }) => {
     test.setTimeout(180000)
 
+    const init = await (await page.request.get('/api/users/init')).json()
+    expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
+
+    let adminId: number | undefined
     let createdPackageId: number | undefined
     let createdWorkshopId: number | undefined
     let createdCustomerId: number | undefined
@@ -87,7 +83,19 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
 
     try {
       // 1. Bootstrap admin
-      await bootstrapAdmin(page)
+      adminId = await bootstrapAdmin(page)
+
+      // Thông tin chuyển khoản GIẢ để trang thanh toán hiện QR
+      const settingsRes = await page.request.post('/api/globals/siteSettings', {
+        data: {
+          bankBin: '970422',
+          bankName: 'Ngân hàng Test',
+          accountNumber: '0000000000',
+          accountName: 'TAI KHOAN TEST',
+          transferPrefix: 'TDCX',
+        },
+      })
+      expect(settingsRes.ok()).toBe(true)
 
       // 2. Tạo sản phẩm gói Growth Mirror qua REST API
       const pkgRes = await page.request.post('/api/products', {
@@ -132,19 +140,29 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
       expect(custRes.status(), 'Tạo khách hàng phải thành công').toBe(201)
       createdCustomerId = (await custRes.json()).doc.id
 
-      // 5. Tạo đơn hàng đã thanh toán (paid) cho khách hàng
+      // 5. Đơn gói do owner tạo (REST luôn ép `pending`), khách đồng ý điều khoản, owner xác nhận
       const orderRes = await page.request.post('/api/orders', {
         data: {
           customer: createdCustomerId,
           items: [{ product: createdPackageId, price: 2900000 }],
-          total: 2900000,
-          paymentStatus: 'paid',
-          paidAt: new Date().toISOString(),
           createdByAdmin: true,
         },
       })
       expect(orderRes.status(), 'Tạo đơn hàng phải thành công').toBe(201)
-      createdOrderId = (await orderRes.json()).doc.id
+      const orderDoc = (await orderRes.json()).doc
+      createdOrderId = orderDoc.id
+      expect(orderDoc.paymentStatus).toBe('pending')
+
+      await guestPage.goto(`/thanh-toan/don/${orderDoc.payToken}`)
+      await guestPage.getByTestId('terms-checkbox').check()
+      await expect(guestPage.getByTestId('vietqr')).toBeVisible({ timeout: 15000 })
+
+      await page.goto(`/admin/collections/orders/${createdOrderId}`)
+      await page.getByRole('button', { name: /Xác nhận thanh toán/i }).click()
+      await page.getByRole('button', { name: /Đồng ý xác nhận/i }).click()
+      await expect(page.getByText('Xác nhận thanh toán thành công.', { exact: true })).toBeVisible({
+        timeout: 15000,
+      })
 
       // 6. Khách hàng truy cập trang đăng nhập /tai-khoan/dang-nhap
       await guestPage.goto('/tai-khoan/dang-nhap')
@@ -179,8 +197,8 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
       await verifyButton.click()
 
       // 7. Chuyển hướng thành công tới /tai-khoan
-      await expect(guestPage).toHaveURL(/\/tai-khoan/)
-      await expect(guestPage.locator(`text=${customerEmail}`)).toBeVisible()
+      await expect(guestPage).toHaveURL(/\/tai-khoan\/?$/, { timeout: 15000 })
+      await expect(guestPage.getByText(customerEmail).first()).toBeVisible()
 
       // 8. Kiểm tra khối "Lịch workshop của tôi" hiển thị workshop
       const workshopSection = guestPage.locator('text=Lịch workshop của tôi')
@@ -198,6 +216,14 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
       await visitor.close()
 
       if (createdOrderId) {
+        const ents = await page.request.get(
+          `/api/entitlements?where[order][equals]=${createdOrderId}`,
+        )
+        if (ents.ok()) {
+          for (const doc of (await ents.json()).docs as { id: number }[]) {
+            await page.request.delete(`/api/entitlements/${doc.id}`).catch(() => {})
+          }
+        }
         await page.request.delete(`/api/orders/${createdOrderId}`).catch(() => {})
       }
       if (createdCustomerId) {
@@ -208,6 +234,9 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
       }
       if (createdPackageId) {
         await page.request.delete(`/api/products/${createdPackageId}`).catch(() => {})
+      }
+      if (adminId) {
+        await page.request.delete(`/api/users/${adminId}`).catch(() => {})
       }
     }
   })
