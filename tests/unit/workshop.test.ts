@@ -273,7 +273,7 @@ describe('Workshop Schedule & 24h Reminder (T2-10)', () => {
       const emailSender = new MockEmailSender()
 
       // W1: Trong khoảng 23-25h (startsAt = now + 24h)
-      const wsInWindow = await createWorkshop({
+      await createWorkshop({
         title: 'Workshop Trong Khoảng 24h',
         audienceProducts: [pkg.id],
         startsAt: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString(),
