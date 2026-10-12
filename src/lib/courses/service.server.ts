@@ -65,12 +65,22 @@ export async function getLessonPlayback(
   }
 
   // 1. Tìm bài học trong database
-  const lesson = (await payload.findByID({
-    collection: 'lessons',
-    id: lessonId,
-    depth: 1,
-    overrideAccess: true,
-  })) as (Lesson & { videoId?: string | null }) | null
+  let lesson: (Lesson & { videoId?: string | null }) | null = null
+  try {
+    lesson = (await payload.findByID({
+      collection: 'lessons',
+      id: lessonId,
+      depth: 1,
+      overrideAccess: true,
+    })) as (Lesson & { videoId?: string | null }) | null
+  } catch {
+    return {
+      allowed: false,
+      reason: 'not_found',
+      lesson: null,
+      playback: null,
+    }
+  }
 
   if (!lesson) {
     return {
