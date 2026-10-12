@@ -53,6 +53,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           setDraft((prev) => ({
             ...prev,
             ...parsed,
+            consent: false, // B11: Nghị định 13/2023 - không bao giờ tự động tick sẵn ô đồng ý từ nháp
             scorecard: Array.isArray(parsed.scorecard) ? parsed.scorecard : [],
             chosenTechniques: parsed.chosenTechniques
               ? {
@@ -78,11 +79,12 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     return () => clearTimeout(timer)
   }, [])
 
-  // 2. Tự động lưu nháp vào localStorage mỗi khi thay đổi
+  // 2. Tự động lưu nháp vào localStorage mỗi khi thay đổi (không lưu consent)
   useEffect(() => {
     if (!isLoaded || submitSuccess) return
     try {
-      localStorage.setItem(HABIT_LOOP_STORAGE_KEY, JSON.stringify(draft))
+      const { consent: _ignoredConsent, ...draftToPersist } = draft
+      localStorage.setItem(HABIT_LOOP_STORAGE_KEY, JSON.stringify(draftToPersist))
     } catch {
       // QuotaExceeded hoặc Private mode
     }
