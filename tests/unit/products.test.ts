@@ -241,7 +241,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
 
   // Branch 4: on_sale with trialDays > 0
   describe('Branch 4: on_sale + trialDays > 0', () => {
-    it('returns trial CTA with 21 days trial label and /sap-ra-mat trial URL', () => {
+    it('returns trial CTA with 21 days trial label and /dung-thu trial URL', () => {
       const product: ProductCtaInput = {
         slug: 'habit-tracker',
         saleStatus: 'on_sale',
@@ -250,7 +250,7 @@ describe('resolveProductCta - 7 Branches & Priorities', () => {
       expect(resolveProductCta(product, fixedNow)).toEqual({
         kind: 'trial',
         label: 'Dùng thử 21 ngày miễn phí',
-        href: '/sap-ra-mat?san-pham=habit-tracker&loai=dung-thu',
+        href: '/dung-thu?san-pham=habit-tracker',
       })
     })
 
@@ -443,14 +443,14 @@ describe('ProductCard with ctaInfo & backward compatibility', () => {
         ctaInfo: {
           kind: 'trial',
           label: 'Dùng thử 21 ngày miễn phí',
-          href: '/sap-ra-mat?san-pham=habit-tracker&loai=dung-thu',
+          href: '/dung-thu?san-pham=habit-tracker',
         },
       }),
     )
 
     const link = screen.getByRole('link', { name: 'Dùng thử 21 ngày miễn phí' })
     expect(link).toBeDefined()
-    expect(link.getAttribute('href')).toBe('/sap-ra-mat?san-pham=habit-tracker&loai=dung-thu')
+    expect(link.getAttribute('href')).toBe('/dung-thu?san-pham=habit-tracker')
     expect(link.getAttribute('target')).toBeNull()
   })
 

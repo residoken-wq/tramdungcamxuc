@@ -291,7 +291,7 @@ export function resolveProductCta(product: ProductCtaInput, _now?: Date): Produc
       return {
         kind: 'trial',
         label: customLabel || vi.product.cta.trial(trialDays),
-        href: `/sap-ra-mat?san-pham=${encodedSlug}&loai=dung-thu`,
+        href: `/dung-thu?san-pham=${encodedSlug}`,
       }
     }
 
