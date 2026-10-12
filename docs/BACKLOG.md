@@ -38,3 +38,5 @@
 
 - [ ] Phiên khách (T2-01): thu hồi phiên phía server khi đăng xuất / đổi email (hiện chỉ xóa cookie, hạn 30 ngày).
 - [ ] T2-01: server chặn đăng nhập khi khách cũ chưa có `consentAt` (form đã chặn).
+- [ ] Xóa tài khoản khách (AGENTS 8.4): `orders`, `entitlements`, `savedCards`, `certificates`, `lessonProgress` có `customer` NOT NULL + `ON DELETE SET NULL` → xóa khách có dữ liệu sẽ lỗi DB. Phải xóa / ẩn danh dữ liệu con trước (thấy khi QA T2-10).
+- [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
