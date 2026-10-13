@@ -1134,6 +1134,73 @@ export const vi = {
         autoNotice: 'Email thông báo tự động dành cho tài khoản đang dùng thử công cụ số.',
       },
     },
+    tracker: {
+      pageTitle: 'Tracker 21 ngày',
+      subtitle: 'Đồng hành xây dựng thói quen bền vững cùng Trạm Dừng Cảm Xúc',
+      votingQuestion: 'Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?',
+      missedOneDayEncouragement:
+        'Lỡ nhịp 1 ngày là không sao cả. Quan trọng là bạn vẫn ở đây hôm nay.',
+      readOnlyBanner: 'Gói dùng thử đã kết thúc. Bạn đang ở chế độ xem lại tiến trình đã ghi nhận.',
+      currentDayBadge: (day: number) => `Hôm nay là Ngày ${day} / 21`,
+      dayStatusMissed: 'Hôm qua chưa ghi nhận',
+      planSetup: {
+        title: 'Khởi tạo kế hoạch 21 ngày',
+        subtitle: 'Xác định cam kết danh tính cho hành trình của bạn',
+        label: 'Câu định danh của bạn',
+        placeholder: 'Tôi sẽ [hành động cụ thể] để trở thành [con người tôi muốn hướng tới]...',
+        submit: 'Bắt đầu hành trình 21 ngày',
+        submitting: 'Đang khởi tạo...',
+        errorEmpty: 'Vui lòng nhập câu định danh trước khi bắt đầu.',
+      },
+      dialog: {
+        title: (day: number) => `Check-in Ngày ${day}`,
+        doneLabel: 'Đã hoàn thành hành động hôm nay',
+        emotionLabel: 'Cảm xúc của bạn hôm nay',
+        noteLabel: 'Ghi chú suy ngẫm (tùy chọn, tối đa 500 ký tự)',
+        notePlaceholder: 'Hôm nay bạn nhận ra điều gì về bản thân?...',
+        submit: 'Lưu check-in',
+        saving: 'Đang lưu...',
+        cancel: 'Đóng',
+        futureDayError: 'Chưa tới ngày này, bạn chưa thể tick trước.',
+        expiredError: 'Thời gian dùng thử đã hết hạn. Vui lòng mua công cụ để tiếp tục ghi nhận.',
+        cannotCheckinFuture: 'Không thể check-in cho ngày trong tương lai.',
+      },
+      summary: {
+        badge: 'Tổng kết 21 ngày',
+        title: 'Hành trình 21 ngày của bạn',
+        congrats: 'Chúc mừng bạn đã hoàn thành chặng đường rèn luyện và thấu hiểu cảm xúc.',
+        completedCount: (completed: number, total: number = 21) =>
+          `Đã hoàn thành: ${completed}/${total} ngày`,
+        mostFrequentEmotion: (emotion: string, count: number) =>
+          `Cảm xúc gặp nhiều nhất: ${emotion} (${count} ngày)`,
+        noEmotion: 'Chưa có ghi nhận cảm xúc',
+        buyButton: 'Mua để dùng tiếp',
+        bookingButton: 'Đặt phiên trải nghiệm Growth Mirror',
+      },
+      paywall: {
+        title: 'Habit Tracker Số 21 Ngày',
+        description: 'Bạn chưa kích hoạt quyền sử dụng công cụ Habit Tracker số.',
+        trialButton: 'Bắt đầu dùng thử 21 ngày',
+        buyButton: 'Mua công cụ số',
+      },
+      expiredNotice: {
+        message:
+          'Thời hạn dùng thử 21 ngày đã kết thúc. Mua công cụ để tiếp tục ghi nhận và đồng hành bền vững.',
+        buyButton: 'Mua để dùng tiếp',
+      },
+      nudgeEmail: {
+        subject: (name: string) => `Trạm Dừng Cảm Xúc – Lỡ nhịp một chút là không sao cả, ${name}`,
+        preview: 'Lỡ nhịp một chút là không sao cả, quan trọng là bạn quay lại hôm nay.',
+        heading: 'Lỡ nhịp một chút là không sao cả',
+        body1: 'Chúng mình nhận thấy bạn đã tạm dừng việc check-in thói quen trong 2 ngày vừa qua.',
+        body2:
+          'Hành trình xây dựng thói quen không đòi hỏi sự hoàn hảo tuyệt đối. Một khoảng dừng nhỏ là điều hoàn toàn tự nhiên của cuộc sống. Điều ý nghĩa nhất là bạn luôn có thể quay lại bất kỳ lúc nào.',
+        actionButton: 'Trở lại với nhịp quen hôm nay',
+        signOff: 'Thương mến,',
+        author: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
+        footerNote: 'Email nhắc nhở nhẹ nhàng từ công cụ Habit Tracker 21 ngày.',
+      },
+    },
   },
 } as const
 
