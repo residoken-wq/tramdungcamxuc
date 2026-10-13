@@ -211,7 +211,9 @@ export async function checkInDay(
     track('tracker_day_checked', { day: validation.data.day })
   } catch (_e) {}
 
-  revalidatePath('/habit/tracker')
+  try {
+    revalidatePath('/habit/tracker')
+  } catch (_e) {}
 
   return {
     success: true,
@@ -261,7 +263,9 @@ export async function createTrackerPlanAction(identityStatement: string): Promis
     }
   }
 
-  revalidatePath('/habit/tracker')
+  try {
+    revalidatePath('/habit/tracker')
+  } catch (_e) {}
   return {
     success: true,
     planId: plan.id,
