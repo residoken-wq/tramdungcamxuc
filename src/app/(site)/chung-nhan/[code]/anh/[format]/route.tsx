@@ -75,7 +75,13 @@ export async function GET(
   const width = 1080
   const height = is45 ? 1350 : 1920
 
-  const customer = await getCurrentCustomer()
+  let customer = null
+  try {
+    customer = await getCurrentCustomer()
+  } catch {
+    customer = null
+  }
+
   const cert = await getCertificateByCode(code, {
     currentCustomerId: customer?.id ?? null,
   })
