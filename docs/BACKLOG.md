@@ -41,3 +41,4 @@
 - [ ] Xóa tài khoản khách (AGENTS 8.4): `orders`, `entitlements`, `savedCards`, `certificates`, `lessonProgress` có `customer` NOT NULL + `ON DELETE SET NULL` → xóa khách có dữ liệu sẽ lỗi DB. Phải xóa / ẩn danh dữ liệu con trước (thấy khi QA T2-10).
 - [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
 - [ ] T2-08: khóa chống tạo 2 đơn song song đang ở bộ nhớ tiến trình (`withOrderLock`). Khi chạy nhiều bản Next.js → đổi sang `pg_advisory_xact_lock(customerId, productId)`.
+- [ ] T2-03: bọc lưu kế hoạch + tạo lead trong 1 transaction (lead lỗi → kế hoạch trùng khi gửi lại); cân nhắc không lưu tên/email vào nháp `localStorage`.
