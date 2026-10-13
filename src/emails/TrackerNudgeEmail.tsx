@@ -21,7 +21,6 @@ export interface TrackerNudgeEmailProps {
 export const TrackerNudgeEmail: React.FC<TrackerNudgeEmailProps> = ({ name, trackerUrl }) => {
   const t = vi.tracker.nudgeEmail
   const displayName = name ? name.trim() : 'bạn'
-  const subjectText = t.subject(displayName)
 
   return (
     <Html lang="vi">

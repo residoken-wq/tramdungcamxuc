@@ -351,7 +351,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
             id: customerB.id,
             collection: 'customers',
             email: customerB.email,
-          } as any,
+          } as unknown as Parameters<typeof payload.create>[0]['user'],
           overrideAccess: false,
         }),
       ).rejects.toThrow()
