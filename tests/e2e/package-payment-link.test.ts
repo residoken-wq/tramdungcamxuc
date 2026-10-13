@@ -67,8 +67,8 @@ test.describe('Package Payment Link & Entitlements Flow (T1-13)', () => {
         data: {
           bankBin: '970422',
           bankName: 'Ngân hàng Quân Đội (MB)',
-          accountNumber: '0023457923442',
-          accountName: 'LUONG THI THU HUYEN',
+          accountNumber: '0000000000',
+          accountName: 'TAI KHOAN TEST',
           transferPrefix: 'TDCX',
           experienceBookingUrl: 'https://cal.com/hana-luong/trai-nghiem',
         },
@@ -138,7 +138,7 @@ test.describe('Package Payment Link & Entitlements Flow (T1-13)', () => {
       // 4. Tạo khách hàng qua REST
       const resCustomer = await page.request.post('/api/customers', {
         data: {
-          name: 'Nguyễn Văn Khách',
+          name: 'Học viên Test 01',
           email: guestEmail,
         },
       })

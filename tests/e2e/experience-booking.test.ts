@@ -61,8 +61,8 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
         data: {
           bankBin: '970422',
           bankName: 'Ngân hàng Quân Đội (MB)',
-          accountNumber: '0023457923442',
-          accountName: 'LUONG THI MAI HOA',
+          accountNumber: '0000000000',
+          accountName: 'TAI KHOAN TEST',
           experienceBookingUrl: 'https://cal.com/hana-luong/trai-nghiem',
         },
       })
@@ -120,8 +120,8 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
         .getByRole('heading', { name: /Chi tiết chuyển khoản thủ công/i })
         .locator('..')
       await expect(transferCard.getByText('149.000đ')).toBeVisible()
-      await expect(transferCard.getByText('0023457923442')).toBeVisible()
-      await expect(transferCard.getByText('LUONG THI MAI HOA')).toBeVisible()
+      await expect(transferCard.getByText('0000000000')).toBeVisible()
+      await expect(transferCard.getByText('TAI KHOAN TEST')).toBeVisible()
 
       // Kiểm tra có mã SVG VietQR qua data-testid="vietqr"
       const vietQrEl = guest.getByTestId('vietqr')

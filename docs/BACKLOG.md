@@ -34,10 +34,10 @@
 - [ ] **Ghi nhận sự kiện `resource_downloaded` phía server (T1-15)**: Bổ sung track sự kiện phân tích chuyển đổi khi khách hàng tải tập tin thành công tại route `/api/download/[token]`, kết nối GA4 / Plausible trong task tối ưu hiệu năng và đo lường T1-15.
 - [x] ~~**Cron hết hạn đơn chạy trên Vercel**~~ (bỏ – D2 chốt 10/10 chạy server riêng, crontab dùng `POST`) (IT duyệt T1-12, 08/10): Vercel Cron gọi bằng `GET`, route `/api/cron/expire-orders` hiện chỉ có `POST` (crontab Docker dùng `curl -X POST`). Thêm `GET` dùng chung kiểm `CRON_SECRET` khi chốt deploy Vercel (D1/D2).
 
-- [ ] E2E `live-preview.test.ts` (375px) thỉnh thoảng lỗi lần đầu, qua khi chạy lại (thấy ở CI PR #74, 11/10) – tìm gốc, không tăng timeout.
+- [x] E2E `live-preview.test.ts` (375px) thỉnh thoảng lỗi lần đầu, qua khi chạy lại (thấy ở CI PR #74, 11/10) – tìm gốc, không tăng timeout (xong T2-14).
 
 - [ ] Phiên khách (T2-01): thu hồi phiên phía server khi đăng xuất / đổi email (hiện chỉ xóa cookie, hạn 30 ngày).
-- [ ] T2-01: server chặn đăng nhập khi khách cũ chưa có `consentAt` (form đã chặn).
+- [x] T2-01: server chặn đăng nhập khi khách cũ chưa có `consentAt` (form đã chặn) (xong T2-14).
 - [ ] Xóa tài khoản khách (AGENTS 8.4): `orders`, `entitlements`, `savedCards`, `certificates`, `lessonProgress` có `customer` NOT NULL + `ON DELETE SET NULL` → xóa khách có dữ liệu sẽ lỗi DB. Phải xóa / ẩn danh dữ liệu con trước (thấy khi QA T2-10).
 - [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
 - [ ] T2-08: khóa chống tạo 2 đơn song song đang ở bộ nhớ tiến trình (`withOrderLock`). Khi chạy nhiều bản Next.js → đổi sang `pg_advisory_xact_lock(customerId, productId)`.

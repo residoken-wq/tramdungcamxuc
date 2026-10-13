@@ -66,7 +66,7 @@ describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
   describe('Zod Validation with Vietnamese Messages & Length Limits (T1-06b)', () => {
     it('requires consent and returns Vietnamese error message', () => {
       const result = leadFormSchema.safeParse({
-        name: 'Nguyễn Văn A',
+        name: 'Học viên Test 01',
         email: 'vana@example.com',
         consent: false,
       })
@@ -80,7 +80,7 @@ describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
 
     it('requires valid email format and returns Vietnamese error message', () => {
       const result = leadFormSchema.safeParse({
-        name: 'Nguyễn Văn A',
+        name: 'Học viên Test 01',
         email: 'invalid-email-address',
         consent: true,
       })
@@ -168,7 +168,7 @@ describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
 
       // Company > 200
       const compRes = b2bBriefSchema.safeParse({
-        name: 'Nguyễn Văn B',
+        name: 'Học viên Test 02',
         email: 'b@corp.com',
         company: 'C'.repeat(201),
         consent: true,
@@ -182,7 +182,7 @@ describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
 
       // Tags count > 10
       const tagsRes = leadFormSchema.safeParse({
-        name: 'Nguyễn Văn C',
+        name: 'Học viên Test 03',
         email: 'c@example.com',
         consent: true,
         interestTags: Array.from({ length: 11 }, (_, i) => `tag-${i}`),
