@@ -2,7 +2,7 @@ import 'server-only'
 
 import { getPayload, ValidationError, type Payload } from 'payload'
 import config from '@/payload.config'
-import type { Certificate, Customer, HabitCheckin, HabitPlan, SiteSetting } from '@/payload-types'
+import type { Certificate, Customer, SiteSetting } from '@/payload-types'
 import { vi } from '@/lib/i18n/vi'
 import { findOwnTrackerPlan } from './tracker.server'
 import { getCurrentDayOfPlan } from './tracker-stats'

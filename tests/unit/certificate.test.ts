@@ -5,7 +5,7 @@ vi.mock('server-only', () => ({}))
 import { randomUUID } from 'node:crypto'
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
-import type { Customer, HabitPlan, Product, Certificate } from '../../src/payload-types'
+import type { Customer, HabitPlan, Product } from '../../src/payload-types'
 import {
   issueCertificate,
   getCertificateEligibility,
