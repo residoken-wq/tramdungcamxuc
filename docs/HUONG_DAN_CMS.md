@@ -17,6 +17,7 @@
    - [3.10. Quản lý Bài học và Video khóa học (Habit Hack)](#310-quản-lý-bài-học-và-video-khóa-học-habit-hack)
      - [3.10.1. Cách nhập video Bunny Stream cho bài học](#3101-cách-nhập-video-bunny-stream-cho-bài-học)
    - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
+   - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
@@ -365,6 +366,48 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
   - Tài khoản chủ dự án (`owner`) có quyền xem cảm xúc và ghi chú để đồng hành, thấu hiểu học viên khi cần thiết.
   - Tài khoản biên tập viên (`editor`) **hoàn toàn không được phân quyền đọc hoặc can thiệp** vào các trường cảm xúc và ghi chú riêng tư này trong hệ thống.
   - Hệ thống tự động xử lý và chỉ hiển thị đầy đủ cho chính người học khi họ đăng nhập vào tài khoản cá nhân.
+
+---
+
+### 3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)
+
+**Mục đích**: Theo dõi danh sách chứng nhận tốt nghiệp 21 ngày đã được cấp cho học viên, kiểm tra thông tin xác minh, hoặc thu hồi / tạm ẩn link công khai khi cần thiết.
+
+**Các bước xem và quản lý trong trang quản trị**:
+
+1. Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm chọn **Chứng nhận 21 ngày** (`certificates`).
+2. Màn hình danh sách hiển thị các cột:
+   - **Mã xác minh (`code`)**: Chuỗi mã duy nhất được hệ thống sinh ngẫu nhiên tự động (ví dụ: `wF9d_a`).
+   - **Khách hàng (`customer`)**: Tên học viên được trao chứng nhận.
+   - **Ngày cấp (`issuedAt`)**: Thời điểm chứng nhận được tạo.
+3. Bấm vào một dòng chứng nhận để xem chi tiết:
+   - **Khách hàng (`customer`)**: Tên và tài khoản của học viên.
+   - **Kế hoạch (`plan`)**: Kế hoạch thói quen 21 ngày tương ứng.
+   - **Câu định danh (`identityStatement`)**: Cam kết danh tính của học viên lúc cấp chứng nhận.
+   - **Số ngày hoàn thành (`daysCompleted`)**: Tổng số ngày học viên đã tick hoàn thành trong hành trình (tối đa 21 ngày).
+   - **Mã xác minh (`code`)**: Mã tra cứu công khai (chế độ chỉ đọc, không sửa).
+   - **Cho phép xem công khai (`isPublic`)**: Trạng thái hiển thị ra bên ngoài.
+
+**Cách thu hồi hoặc tạm ẩn chứng nhận**:
+
+- Khi học viên yêu cầu không công khai thông tin, hoặc bạn phát hiện hành vi gian lận cần tạm dừng xác minh:
+  1. Mở chứng nhận đó trong CMS.
+  2. **Bỏ dấu tick** ở ô **Cho phép xem công khai** (`isPublic`).
+  3. Bấm nút **Lưu thay đổi**.
+  4. Ngay lập tức:
+     - Đường dẫn tra cứu công khai `https://tramdungcamxuc.com/chung-nhan/[mã]` sẽ trả về thông báo lỗi 404 (Không tìm thấy trang) với người ngoài.
+     - Đường dẫn tải ảnh động `.../anh/4x5` và `.../anh/9x16` cũng sẽ bị chặn lại và trả về 404.
+     - Chỉ duy nhất học viên sở hữu (khi đã đăng nhập đúng tài khoản) mới có thể xem lại chứng nhận của mình kèm thông báo nhắc nhở: _"Link công khai đang tắt"_.
+- Nếu cần xóa hoàn toàn: Chỉ tài khoản `owner` mới có nút xóa chứng nhận khỏi hệ thống.
+
+**Cài đặt số ngày tối thiểu để nhận chứng nhận**:
+
+- Theo mặc định, học viên phải đạt tối thiểu **15/21 ngày** check-in (và đã bước sang Ngày 21) mới đủ điều kiện nhận chứng nhận.
+- Nếu Hana muốn điều chỉnh số ngày yêu cầu (ví dụ: nâng lên 18 ngày hoặc 21 ngày):
+  1. Vào menu bên trái -> nhóm **Cài đặt** -> chọn **Cài đặt Website** (`siteSettings`).
+  2. Tìm trường **Số ngày hoàn thành tối thiểu để nhận chứng nhận** (`certificateMinDays`).
+  3. Nhập con số mong muốn (ví dụ: `18`) và bấm **Lưu thay đổi**.
+  4. Hệ thống sẽ tự động áp dụng ngưỡng mới cho toàn bộ học viên mà không cần can thiệp kỹ thuật!
 
 ---
 
