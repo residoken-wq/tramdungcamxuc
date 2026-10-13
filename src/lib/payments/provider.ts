@@ -5,6 +5,8 @@ import {
   type BankConfig,
 } from './vietqr'
 
+export type { BankConfig }
+
 export interface PaymentOrderInput {
   id?: number | string
   paymentRef: string
@@ -107,6 +109,8 @@ export class ManualPaymentProvider implements PaymentProvider {
   }
 }
 
+import { SepayPaymentProvider } from './sepay'
+
 /**
  * Trả về provider thanh toán tương ứng dựa theo biến môi trường PAYMENT_PROVIDER (mặc định là 'manual').
  * Đảm bảo luồng thanh toán không bị phụ thuộc cứng vào bất kỳ cổng cụ thể nào.
@@ -116,5 +120,9 @@ export function getPaymentProvider(name?: string): PaymentProvider {
   if (providerName === 'manual') {
     return new ManualPaymentProvider()
   }
+  if (providerName === 'sepay') {
+    return new SepayPaymentProvider()
+  }
   throw new Error(`Cổng thanh toán "${providerName}" chưa được hỗ trợ trong hệ thống.`)
 }
+
