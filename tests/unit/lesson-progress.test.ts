@@ -309,19 +309,18 @@ describe('Lesson Progress Recording & Validation Rules (T2-05a)', () => {
       }),
     )
 
-    // Kích hoạt đồng thời 6 yêu cầu ghi nhận tiến độ
-    const promises = Array.from({ length: 6 }).map((_, idx) =>
-      recordLessonProgressInternal(
-        customerA.id,
-        testLesson.id,
-        (idx + 1) * 15,
-        new Date(),
-        payload,
-      ),
+    // Kích hoạt đồng thời 6 yêu cầu ghi nhận tiến độ với các giá trị khác nhau
+    const testPercents = [15, 82, 35, 90, 85, 50]
+    const promises = testPercents.map((val) =>
+      recordLessonProgressInternal(customerA.id, testLesson.id, val, new Date(), payload),
     )
 
     const results = await Promise.all(promises)
     expect(results.every((r) => r.success)).toBe(true)
+
+    // newlyCompleted phải xảy ra đúng 1 lần duy nhất trong toàn bộ các yêu cầu song song
+    const newlyCompletedCount = results.filter((r) => r.newlyCompleted).length
+    expect(newlyCompletedCount).toBe(1)
 
     // Kiểm tra DB có chính xác 1 bản ghi cho customerA và testLesson
     const dbDocs = await payload.find({
@@ -333,7 +332,7 @@ describe('Lesson Progress Recording & Validation Rules (T2-05a)', () => {
     })
 
     expect(dbDocs.totalDocs).toBe(1)
-    expect(dbDocs.docs[0].watchedPercent).toBe(90) // giá trị cao nhất 6 * 15 = 90
+    expect(dbDocs.docs[0].watchedPercent).toBe(90) // giá trị cao nhất là 90
     expect(dbDocs.docs[0].completedAt).not.toBeNull() // vì 90 >= 80
   })
 

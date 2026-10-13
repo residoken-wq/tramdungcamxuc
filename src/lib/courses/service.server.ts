@@ -1,5 +1,6 @@
 import 'server-only'
-import { getPayload, type Payload } from 'payload'
+import { ValidationError, getPayload, type Payload } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
 import config from '@/payload.config'
 import type { CourseModule, Lesson, LessonProgress } from '@/payload-types'
 import { hasAccess } from '@/lib/entitlements'
@@ -35,18 +36,21 @@ const GROUP_ORDER: Record<string, number> = {
   technique: 3, // Kỹ thuật
 }
 
+import { cache } from 'react'
+
 /**
  * REVIEW-REQUIRED: Kiểm quyền xem bài học và lấy thông tin phát video.
  *
  * Nguyên tắc bảo mật (AGENTS.md & prompt T2-05a):
- * 1. Bài học phải đã xuất bản (_status === 'published').
+ * 1. Bài học phải đã xuất bản (_status === 'published') và nhóm bài học (module) cũng phải đã xuất bản (mục 8).
  * 2. isFreePreview -> cho phép xem, kể cả khi chưa đăng nhập (customerId === null).
  * 3. Bài thường -> bắt buộc kiểm tra quyền qua hasAccess(customerId, HABIT_TRACKER_PRODUCT_SLUG).
  *    Nếu chưa đăng nhập, hết hạn hoặc chưa có quyền -> không trả gì về video (playback = null).
  * 4. Đọc videoId bằng overrideAccess CHỈ SAU KHI đã xác minh quyền xem bài.
  * 5. Trình duyệt KHÔNG BAO GIỜ nhận videoId trong kết quả trả về, chỉ nhận kết quả từ getPlayback().
+ * 6. Bọc bằng React cache() để tránh chạy trùng 2 lần mỗi request giữa generateMetadata và Page component (mục 10).
  */
-export async function getLessonPlayback(
+async function getLessonPlaybackInternal(
   lessonId: number,
   customerId: number | null,
   nowOrCtx?: Date | { payload?: Payload; now?: Date },
@@ -93,6 +97,33 @@ export async function getLessonPlayback(
 
   // Bài học phải đã xuất bản
   if (lesson._status !== 'published') {
+    return {
+      allowed: false,
+      reason: 'not_published',
+      lesson: null,
+      playback: null,
+    }
+  }
+
+  // REVIEW-REQUIRED: Nhóm bài học (module) phải tồn tại và đã xuất bản (mục 8)
+  let isModulePublished = false
+  if (typeof lesson.module === 'object' && lesson.module !== null) {
+    isModulePublished = (lesson.module as CourseModule)._status === 'published'
+  } else if (typeof lesson.module === 'number') {
+    try {
+      const mod = await payload.findByID({
+        collection: 'courseModules',
+        id: lesson.module,
+        depth: 0,
+        overrideAccess: true,
+      })
+      isModulePublished = mod?._status === 'published'
+    } catch {
+      isModulePublished = false
+    }
+  }
+
+  if (!isModulePublished) {
     return {
       allowed: false,
       reason: 'not_published',
@@ -180,6 +211,8 @@ export async function getLessonPlayback(
   }
 }
 
+export const getLessonPlayback = cache(getLessonPlaybackInternal)
+
 /**
  * Lấy dữ liệu tổng quan cho trang Dashboard /habit/hoc.
  */
@@ -222,6 +255,8 @@ export async function getCourseDashboardData(
     return (a.order ?? 0) - (b.order ?? 0)
   })
 
+  const publishedModuleIds = new Set(sortedModules.map((m) => m.id))
+
   // 4. Lấy toàn bộ bài học đã xuất bản
   const lessonsRes = await payload.find({
     collection: 'lessons',
@@ -254,8 +289,15 @@ export async function getCourseDashboardData(
     }
   }
 
-  // 6. Gom bài học vào từng module
-  const publishedLessons = lessonsRes.docs as Lesson[]
+  // 6. REVIEW-REQUIRED: Chỉ đếm bài học đã xuất bản VÀ thuộc module đã xuất bản (mục 9)
+  const publishedLessons = (lessonsRes.docs as Lesson[]).filter((lesson) => {
+    const modId =
+      typeof lesson.module === 'object' && lesson.module !== null
+        ? lesson.module.id
+        : (lesson.module as number | undefined)
+    return modId !== undefined && publishedModuleIds.has(modId)
+  })
+
   const totalLessons = publishedLessons.length
   let completedLessonsCount = 0
 
@@ -351,17 +393,24 @@ export async function getAdjacentLessons(
   const moduleOrderMap = new Map<number, number>()
   sortedModules.forEach((m, idx) => moduleOrderMap.set(m.id, idx))
 
-  const sortedLessons = (lessonsRes.docs as Lesson[]).sort((a, b) => {
-    const modA =
-      typeof a.module === 'object' && a.module !== null ? a.module.id : (a.module as number)
-    const modB =
-      typeof b.module === 'object' && b.module !== null ? b.module.id : (b.module as number)
+  // Chỉ lấy bài học đã xuất bản và nằm trong nhóm đã xuất bản
+  const sortedLessons = (lessonsRes.docs as Lesson[])
+    .filter((l) => {
+      const modId =
+        typeof l.module === 'object' && l.module !== null ? l.module.id : (l.module as number)
+      return moduleOrderMap.has(modId)
+    })
+    .sort((a, b) => {
+      const modA =
+        typeof a.module === 'object' && a.module !== null ? a.module.id : (a.module as number)
+      const modB =
+        typeof b.module === 'object' && b.module !== null ? b.module.id : (b.module as number)
 
-    const orderA = moduleOrderMap.get(modA) ?? 999
-    const orderB = moduleOrderMap.get(modB) ?? 999
-    if (orderA !== orderB) return orderA - orderB
-    return (a.order ?? 0) - (b.order ?? 0)
-  })
+      const orderA = moduleOrderMap.get(modA) ?? 999
+      const orderB = moduleOrderMap.get(modB) ?? 999
+      if (orderA !== orderB) return orderA - orderB
+      return (a.order ?? 0) - (b.order ?? 0)
+    })
 
   const currentIndex = sortedLessons.findIndex((l) => l.id === currentLessonId)
   if (currentIndex === -1) {
@@ -378,12 +427,20 @@ export async function getAdjacentLessons(
   }
 }
 
+interface DrizzleDbExecutor {
+  execute: (query: unknown) => Promise<unknown>
+}
+
+function getDrizzleDb(payload: Payload): DrizzleDbExecutor {
+  return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
+}
+
 /**
  * REVIEW-REQUIRED: Ghi tiến độ bài học vào cơ sở dữ liệu.
- * - watchedPercent kẹp trong [0, 100].
- * - CHỈ TĂNG, không giảm.
- * - >= 80% -> hoàn thành (completedAt).
- * - Khóa duy nhất (customerLesson) ngăn chặn bản ghi trùng lặp khi chạy song song.
+ * - watchedPercent kẹp trong [0, 100], xử lý an toàn nếu NaN.
+ * - CHỈ TĂNG, không giảm (GREATEST).
+ * - >= 80% -> hoàn thành (completedAt, COALESCE).
+ * - UPDATE nguyên tử tại DB chống xung đột tương tranh, newlyCompleted đúng 1 lần.
  */
 export async function recordLessonProgressInternal(
   customerId: number,
@@ -400,8 +457,9 @@ export async function recordLessonProgressInternal(
   const { now, payload: rawPayload } = parseCtx(nowOrCtx, injectedPayload)
   const payload = rawPayload ?? (await getPayload({ config: await config }))
 
-  // Kẹp giá trị trong [0, 100]
-  const clampedPercent = Math.min(100, Math.max(0, Math.round(watchedPercent)))
+  // Kẹp giá trị trong [0, 100], an toàn nếu là NaN (mục 7)
+  const safePercent = Number.isFinite(watchedPercent) ? watchedPercent : 0
+  const clampedPercent = Math.min(100, Math.max(0, Math.round(safePercent)))
 
   // Tìm tiến độ hiện tại
   const existingRes = await payload.find({
@@ -417,44 +475,67 @@ export async function recordLessonProgressInternal(
   const existing = existingRes.docs[0] as LessonProgress | undefined
 
   if (existing) {
-    // Chỉ tăng, không giảm
-    const currentPercent = existing.watchedPercent ?? 0
-    const targetPercent = Math.max(currentPercent, clampedPercent)
+    const isCompleted = clampedPercent >= 80
+    const nowIso = now.toISOString()
+    const db = getDrizzleDb(payload)
 
-    let completedAt = existing.completedAt ? new Date(existing.completedAt) : null
-    let newlyCompleted = false
+    // REVIEW-REQUIRED: Một câu UPDATE nguyên tử với GREATEST(watched_percent, $1) và COALESCE(completed_at, $now)
+    // RETURNING để biết chính xác lần này có vừa hoàn thành hay không (chống xung đột tương tranh)
+    const updateResult = await db.execute(
+      sql`WITH prev AS (
+        SELECT "id", "watched_percent", "completed_at"
+        FROM "lesson_progress"
+        WHERE "id" = ${existing.id}
+        FOR UPDATE
+      )
+      UPDATE "lesson_progress" AS lp
+      SET
+        "watched_percent" = GREATEST(lp."watched_percent", ${clampedPercent}),
+        "completed_at" = COALESCE(lp."completed_at", ${isCompleted ? nowIso : null}::timestamptz),
+        "updated_at" = ${nowIso}::timestamptz
+      FROM prev
+      WHERE lp."id" = prev."id"
+      RETURNING
+        lp."id",
+        lp."watched_percent" AS "new_watched_percent",
+        lp."completed_at" AS "new_completed_at",
+        prev."watched_percent" AS "old_watched_percent",
+        prev."completed_at" AS "old_completed_at"`,
+    )
 
-    // Đạt >= 80% lần đầu -> ghi nhận hoàn thành
-    if (targetPercent >= 80 && !completedAt) {
-      completedAt = now
-      newlyCompleted = true
-    }
+    const rows =
+      (
+        updateResult as {
+          rows?: Array<{
+            id: number
+            new_watched_percent: string | number
+            new_completed_at: string | Date | null
+            old_watched_percent: string | number
+            old_completed_at: string | Date | null
+          }>
+        }
+      ).rows ?? []
 
-    // Nếu không có gì thay đổi thì trả về luôn
-    if (targetPercent === currentPercent && !newlyCompleted) {
+    if (rows.length > 0) {
+      const row = rows[0]
+      const newWatched = Number(row.new_watched_percent)
+      const newCompleted = row.new_completed_at ? new Date(row.new_completed_at) : null
+      const oldCompleted = row.old_completed_at ? new Date(row.old_completed_at) : null
+      const newlyCompleted = !oldCompleted && Boolean(newCompleted)
+
       return {
         success: true,
-        watchedPercent: currentPercent,
-        completedAt,
-        newlyCompleted: false,
+        watchedPercent: newWatched,
+        completedAt: newCompleted,
+        newlyCompleted,
       }
     }
 
-    await payload.update({
-      collection: 'lessonProgress',
-      id: existing.id,
-      data: {
-        watchedPercent: targetPercent,
-        ...(completedAt && !existing.completedAt ? { completedAt: completedAt.toISOString() } : {}),
-      },
-      overrideAccess: true,
-    })
-
     return {
       success: true,
-      watchedPercent: targetPercent,
-      completedAt,
-      newlyCompleted,
+      watchedPercent: existing.watchedPercent ?? 0,
+      completedAt: existing.completedAt ? new Date(existing.completedAt) : null,
+      newlyCompleted: false,
     }
   }
 
@@ -483,16 +564,19 @@ export async function recordLessonProgressInternal(
       newlyCompleted: isCompleted,
     }
   } catch (err: unknown) {
-    // Xử lý xung đột tương tranh nếu một request khác vừa tạo cùng lúc
+    // Xử lý xung đột tương tranh nếu một request khác vừa tạo cùng lúc (ValidationError hoặc Postgres unique constraint)
+    const isValidationErr =
+      err instanceof ValidationError || (err as { name?: string })?.name === 'ValidationError'
     const msg = err instanceof Error ? err.message : String(err)
     if (
+      isValidationErr ||
       msg.includes('unique') ||
       msg.includes('duplicate') ||
       msg.includes('Đã có tiến độ') ||
       (err as { code?: string })?.code === '23505'
     ) {
-      // Đọc lại và cập nhật
-      return recordLessonProgressInternal(customerId, lessonId, watchedPercent, now, payload)
+      // Đọc lại và cập nhật nguyên tử
+      return recordLessonProgressInternal(customerId, lessonId, safePercent, now, payload)
     }
     throw err
   }
