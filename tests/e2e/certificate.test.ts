@@ -7,16 +7,16 @@ import { expect, test, type Page, type Response } from '@playwright/test'
  * Kịch bản:
  * 1. Bootstrap admin trên database CI độc lập (không có seed).
  * 2. Admin tạo sản phẩm digital_tool `habit-tracker-so`.
- * 3. Admin tạo khách hàng và cấp quyền dùng thử.
+ * 3. Admin tạo khách hàng (chưa có tên, mô phỏng đăng ký qua OTP) và cấp quyền dùng thử.
  * 4. Admin tạo kế hoạch habitPlans với startDate 22 ngày trước (đạt ngày 22 >= 21) và tạo 16 check-in hoàn thành.
  * 5. Khách đăng nhập qua mã OTP tại /tai-khoan/dang-nhap?next=/habit/tracker.
- * 6. Khách mở /habit/tracker, thấy khối tổng kết và nút "Nhận chứng nhận".
- * 7. Bấm "Nhận chứng nhận" -> tạo chứng nhận thành công, xuất hiện ảnh xem trước và nút chia sẻ.
+ * 6. Khách mở /habit/tracker, thấy khối tổng kết và form nhập "Họ và tên".
+ * 7. Nhập "Học viên Test 01" rồi bấm "Nhận chứng nhận" -> tạo chứng nhận thành công, xuất hiện ảnh xem trước và nút chia sẻ.
  * 8. Trích xuất mã chứng nhận (code) hoặc bấm link "Xem trang chứng nhận" -> mở /chung-nhan/[code].
- * 9. Trang công khai hiển thị đúng tên học viên và câu cam kết định danh.
+ * 9. Trang công khai hiển thị đúng tên học viên và câu cam kết định danh trong vùng #noi-dung.
  * 10. Chủ sở hữu bấm nút "Tắt link công khai".
- * 11. Khách vãng lai (context trình duyệt khác, IP khác) mở /chung-nhan/[code] -> nhận thông báo 404 (Không tìm thấy trang).
- * 12. Dọn dẹp toàn bộ dữ liệu trong khối finally (certificates, checkins, plans, entitlements, customer, product, admin).
+ * 11. Khách vãng lai (context trình duyệt khác, IP khác) mở /chung-nhan/[code] -> nhận mã phản hồi 404 (Không tìm thấy trang).
+ * 12. Dọn dẹp toàn bộ dữ liệu trong khối finally (checkins -> habitPlans -> certificates -> entitlements -> customer -> product -> admin) và đóng browser context.
  */
 
 async function bootstrapAdmin(page: Page): Promise<number> {
@@ -76,7 +76,7 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
     let createdPlanId: number | undefined
     let issuedCertCode: string | undefined
 
-    const customerName = 'Lê Thị Thu Thảo'
+    const customerName = 'Học viên Test 01'
     const identityStatement = 'Tôi sẽ dành 5 phút mỗi sáng để thấu hiểu cảm xúc của chính mình.'
     const customerEmail = `khach-cert-${randomUUID().slice(0, 6)}@example.test`
 
@@ -118,11 +118,10 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
       const createdProd = await prodRes.json()
       createdProductId = createdProd.doc.id
 
-      // 3. Admin tạo customer
+      // 3. Admin tạo customer KHÔNG CÓ NAME (mô phỏng đăng ký dùng thử qua OTP)
       const custRes = await page.request.post('/api/customers', {
         data: {
           email: customerEmail,
-          name: customerName,
         },
       })
       expect(custRes.ok()).toBe(true)
@@ -191,9 +190,13 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
       // 9. Chuyển hướng về /habit/tracker
       await expect(ownerPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 15000 })
 
-      // 10. Tìm nút "Nhận chứng nhận" trong khối tổng kết
+      // 10. Tìm ô nhập họ và tên và nút "Nhận chứng nhận" trong khối tổng kết
+      const nameInput = ownerPage.locator('input[name="name"]')
+      await expect(nameInput).toBeVisible({ timeout: 15000 })
+      await nameInput.fill(customerName)
+
       const claimCertBtn = ownerPage.getByRole('button', { name: /Nhận chứng nhận/i })
-      await expect(claimCertBtn).toBeVisible({ timeout: 15000 })
+      await expect(claimCertBtn).toBeVisible()
 
       // 11. Bấm nhận chứng nhận -> xuất hiện ảnh xem trước & các nút thao tác
       await expect(async () => {
@@ -213,9 +216,9 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
       await viewPublicLink.click()
       await expect(ownerPage).toHaveURL(new RegExp(`/chung-nhan/${issuedCertCode}$`))
 
-      // 13. Xác minh trang chứng nhận hiển thị tên học viên và câu định danh
-      await expect(ownerPage.getByText(customerName)).toBeVisible()
-      await expect(ownerPage.getByText(identityStatement)).toBeVisible()
+      // 13. Xác minh trang chứng nhận hiển thị tên học viên và câu định danh trong vùng #noi-dung
+      await expect(ownerPage.locator('#noi-dung').getByText(customerName)).toBeVisible()
+      await expect(ownerPage.locator('#noi-dung').getByText(identityStatement)).toBeVisible()
 
       // 14. Chủ sở hữu bấm nút "Tắt link công khai"
       const togglePrivateBtn = ownerPage.getByRole('button', { name: /Tắt link công khai/i })
@@ -227,17 +230,48 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
         timeout: 10000,
       })
 
-      // 15. Khách vãng lai truy cập cùng link /chung-nhan/[code] -> 404 (Không tìm thấy trang)
+      // 15. Khách vãng lai truy cập cùng link /chung-nhan/[code] -> đúng 404 (Không tìm thấy trang)
       const strangerRes = await strangerPage.goto(`/chung-nhan/${issuedCertCode}`)
-      expect([404, 200]).toContain(strangerRes?.status()) // Next.js render 404 page
-      await expect(strangerPage.getByText(/Không tìm thấy/i)).toBeVisible()
+      expect(strangerRes?.status()).toBe(404)
+      await expect(strangerPage.locator('#noi-dung').getByText(/Không tìm thấy/i)).toBeVisible()
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
 
+      // Đóng contexts của browser
+      if (ownerContext) await ownerContext.close().catch(() => {})
+      if (strangerContext) await strangerContext.close().catch(() => {})
+
       if (createdCustomerId) {
-        // Xóa certificates của customer
+        // 1. Xóa habitCheckins
+        if (createdPlanId) {
+          const checkinsRes = await page.request
+            .get(`/api/habitCheckins?where[plan][equals]=${createdPlanId}&limit=100`)
+            .catch(() => null)
+          if (checkinsRes && checkinsRes.ok()) {
+            const checkinsData = await checkinsRes.json().catch(() => ({ docs: [] }))
+            for (const ch of checkinsData.docs || []) {
+              await page.request.delete(`/api/habitCheckins/${ch.id}`).catch(() => {})
+            }
+          }
+        }
+
+        // 2. Xóa habitPlans
+        if (createdPlanId) {
+          await page.request.delete(`/api/habitPlans/${createdPlanId}`).catch(() => {})
+        }
+        const extraPlansRes = await page.request
+          .get(`/api/habitPlans?where[customer][equals]=${createdCustomerId}&limit=100`)
+          .catch(() => null)
+        if (extraPlansRes && extraPlansRes.ok()) {
+          const extraPlansData = await extraPlansRes.json().catch(() => ({ docs: [] }))
+          for (const p of extraPlansData.docs || []) {
+            await page.request.delete(`/api/habitPlans/${p.id}`).catch(() => {})
+          }
+        }
+
+        // 3. Xóa certificates
         const certsRes = await page.request
-          .get(`/api/certificates?where[customer][equals]=${createdCustomerId}`)
+          .get(`/api/certificates?where[customer][equals]=${createdCustomerId}&limit=100`)
           .catch(() => null)
         if (certsRes && certsRes.ok()) {
           const certsData = await certsRes.json().catch(() => ({ docs: [] }))
@@ -246,23 +280,9 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
           }
         }
 
-        // Xóa checkins và habitPlans của customer
-        if (createdPlanId) {
-          const checkinsRes = await page.request
-            .get(`/api/habitCheckins?where[plan][equals]=${createdPlanId}`)
-            .catch(() => null)
-          if (checkinsRes && checkinsRes.ok()) {
-            const checkinsData = await checkinsRes.json().catch(() => ({ docs: [] }))
-            for (const ch of checkinsData.docs || []) {
-              await page.request.delete(`/api/habitCheckins/${ch.id}`).catch(() => {})
-            }
-          }
-          await page.request.delete(`/api/habitPlans/${createdPlanId}`).catch(() => {})
-        }
-
-        // Xóa entitlements
+        // 4. Xóa entitlements
         const entRes = await page.request
-          .get(`/api/entitlements?where[customer][equals]=${createdCustomerId}`)
+          .get(`/api/entitlements?where[customer][equals]=${createdCustomerId}&limit=100`)
           .catch(() => null)
         if (entRes && entRes.ok()) {
           const entData = await entRes.json().catch(() => ({ docs: [] }))
@@ -271,6 +291,7 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
           }
         }
 
+        // 5. Xóa customer
         await page.request.delete(`/api/customers/${createdCustomerId}`).catch(() => {})
       }
 
