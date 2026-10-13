@@ -713,16 +713,22 @@ function getDrizzleDb(payload: Payload): DrizzleDbExecutor {
   return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
 }
 
-export async function confirmManualPayment(
-  orderId: number,
-  user: AdminActor,
-  options: { payload?: Payload; emailSender?: EmailSender; now?: Date } = {},
-): Promise<unknown> {
-  // REVIEW-REQUIRED: Chỉ tài khoản có vai trò 'owner' mới được quyền xác nhận thanh toán thủ công
-  if (!user || user.role !== 'owner') {
-    throw new UnauthorizedPaymentError(vi.payment.errors.unauthorized)
-  }
+export interface MarkOrderPaidOptions {
+  source: 'manual' | 'webhook'
+  actorId?: number | string | null
+  now?: Date
+  payload?: Payload
+  emailSender?: EmailSender
+}
 
+/**
+ * REVIEW-REQUIRED: Lõi đánh dấu đơn hàng đã thanh toán (dùng chung cho xác nhận thủ công và webhook SePay).
+ * Thực hiện atomic UPDATE, cấp quyền (nếu là gói/công cụ số), gửi transactional email và ghi audit log.
+ */
+export async function markOrderPaid(
+  orderId: number,
+  options: MarkOrderPaidOptions,
+): Promise<unknown> {
   const payload = await resolvePayload(options.payload)
 
   const order = await payload.findByID({
@@ -740,11 +746,17 @@ export async function confirmManualPayment(
 
   // REVIEW-REQUIRED: Idempotency - nếu đơn đã thanh toán, không đổi paidAt, không gửi lại email
   if (order.paymentStatus === 'paid') {
+    const actor = options.actorId ? Number(options.actorId) : undefined
+    const action =
+      options.source === 'webhook'
+        ? 'webhook_payment_duplicate'
+        : 'confirm_manual_payment_duplicate'
+
     await payload.create({
       collection: 'auditLogs',
       data: {
-        actor: Number(user.id),
-        action: 'confirm_manual_payment_duplicate',
+        actor,
+        action,
         target: `orders:${orderId}`,
         before: { paymentStatus: order.paymentStatus, paidAt: order.paidAt },
         after: {
@@ -798,11 +810,17 @@ export async function confirmManualPayment(
       overrideAccess: true,
     })
     if (refreshed && refreshed.paymentStatus === 'paid') {
+      const actor = options.actorId ? Number(options.actorId) : undefined
+      const action =
+        options.source === 'webhook'
+          ? 'webhook_payment_duplicate'
+          : 'confirm_manual_payment_duplicate'
+
       await payload.create({
         collection: 'auditLogs',
         data: {
-          actor: Number(user.id),
-          action: 'confirm_manual_payment_duplicate',
+          actor,
+          action,
           target: `orders:${orderId}`,
           before: { paymentStatus: refreshed.paymentStatus, paidAt: refreshed.paidAt },
           after: {
@@ -820,14 +838,19 @@ export async function confirmManualPayment(
     throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
   }
 
-  // REVIEW-REQUIRED: Ghi nhật ký thao tác: đơn failed ghi 'confirm_expired_order', đơn pending ghi 'confirm_manual_payment'
+  // REVIEW-REQUIRED: Ghi nhật ký thao tác: webhook ghi 'webhook_payment' (actor rỗng); manual: đơn failed ghi 'confirm_expired_order', đơn pending ghi 'confirm_manual_payment'
   const oldStatus = rows[0].old_status
-  const auditAction = oldStatus === 'failed' ? 'confirm_expired_order' : 'confirm_manual_payment'
+  const auditAction =
+    options.source === 'webhook'
+      ? 'webhook_payment'
+      : oldStatus === 'failed'
+        ? 'confirm_expired_order'
+        : 'confirm_manual_payment'
 
   await payload.create({
     collection: 'auditLogs',
     data: {
-      actor: Number(user.id),
+      actor: options.actorId ? Number(options.actorId) : undefined,
       action: auditAction,
       target: `orders:${orderId}`,
       before: { paymentStatus: oldStatus, paidAt: null },
@@ -880,10 +903,11 @@ export async function confirmManualPayment(
     } catch (grantErr) {
       grantFailed = true
       console.error('[Payment] Grant entitlements failed for order', orderId, grantErr)
+      const actor = options.actorId ? Number(options.actorId) : undefined
       await payload.create({
         collection: 'auditLogs',
         data: {
-          actor: Number(user.id),
+          actor,
           action: 'grant_entitlements_failed',
           target: `orders:${orderId}`,
           before: { error: String(grantErr) },
@@ -1033,6 +1057,30 @@ export async function confirmManualPayment(
   })
 
   return updatedOrder ?? order
+}
+
+/**
+ * Xác nhận thanh toán thủ công cho đơn hàng (CHỈ role 'owner').
+ * Idempotent: chỉ chuyển pending -> paid; gọi lần 2 không đổi paidAt, không gửi lại email.
+ * Ghi nhận nhật ký auditLogs. Sau khi paid: gửi email chứa experienceBookingUrl.
+ */
+export async function confirmManualPayment(
+  orderId: number,
+  user: AdminActor,
+  options: { payload?: Payload; emailSender?: EmailSender; now?: Date } = {},
+): Promise<unknown> {
+  // REVIEW-REQUIRED: Chỉ tài khoản có vai trò 'owner' mới được quyền xác nhận thanh toán thủ công
+  if (!user || user.role !== 'owner') {
+    throw new UnauthorizedPaymentError(vi.payment.errors.unauthorized)
+  }
+
+  return await markOrderPaid(orderId, {
+    source: 'manual',
+    actorId: user.id,
+    now: options.now,
+    payload: options.payload,
+    emailSender: options.emailSender,
+  })
 }
 
 /**
