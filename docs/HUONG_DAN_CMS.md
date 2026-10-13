@@ -804,7 +804,7 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
    - **Cách hệ thống xử lý**: Đơn hàng vẫn giữ nguyên trạng thái **Chờ thanh toán** (`pending`), chưa cấp quyền công cụ số. Một sự kiện `amount_mismatch` màu đỏ được ghi lại trong sidebar đơn hàng.
    - **Việc Hana cần làm**:
      - Xem số tiền thực chuyển hiển thị trong khung Sự kiện thanh toán.
-     - Liên hệ với khách hàng (qua Zalo/Email) để thông báo. Nếu khách chuyển thiếu, hướng dẫn khách chuyển nốt phần còn lại. Nếu khách chuyển thừa, đối soát để chuyển trả lại phần tiền thừa.
+     - Liên hệ với khách hàng (qua Zalo/Email) để thông báo. Nếu khách chuyển thiếu, hướng dẫn khách chuyển nốt phần còn lại. Nếu khách chuyển thừa, liên hệ khách để xử lý.
      - Sau khi khách đã hoàn tất đủ tiền vào tài khoản ngân hàng, Hana bấm nút **✓ Xác nhận thanh toán** ở sidebar để kích hoạt đơn thủ công.
 
 2. **Đơn hàng đã bị hủy mà khách vẫn chuyển tiền (`order_cancelled`) – Cảnh báo màu đỏ**:
@@ -812,14 +812,21 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
    - **Cách hệ thống xử lý**: Đơn hàng giữ nguyên trạng thái **Đã hủy** (`cancelled`), tuyệt đối không tự động mở quyền. Một sự kiện `order_cancelled` màu đỏ hiển thị trong sidebar.
    - **Việc Hana cần làm**:
      - Kiểm tra tiền đã vào tài khoản ngân hàng.
-     - Liên hệ khách hàng: nếu khách vẫn muốn mua, Hana tạo một đơn hàng mới cho khách rồi bấm duyệt; nếu khách không muốn mua nữa, Hana đối soát chuyển khoản trả lại tiền cho khách.
+     - Liên hệ khách hàng: nếu khách vẫn muốn mua, Hana tạo một đơn hàng mới cho khách rồi bấm duyệt; nếu khách không muốn mua nữa, liên hệ khách để xử lý.
 
-3. **Khách chuyển tiền cho đơn đã quá hạn 24 giờ (`failed`)**:
+3. **Chưa đồng ý điều khoản (`terms_missing`) – Cảnh báo màu đỏ**:
+   - **Hiện tượng**: Đơn do Hana tạo (`createdByAdmin`), khách đã chuyển khoản nhưng trước đó chưa mở link để tick chọn đồng ý Điều khoản sử dụng và Chính sách giá – thanh toán.
+   - **Cách hệ thống xử lý**: Đơn hàng giữ nguyên trạng thái **Chờ thanh toán**, hệ thống KHÔNG tự động duyệt để đảm bảo tuân thủ pháp lý. Một sự kiện `terms_missing` màu đỏ được ghi lại trong sidebar.
+   - **Việc Hana cần làm**:
+     - Gửi lại link thanh toán cho khách để khách mở trang và tích chọn đồng ý điều khoản.
+     - Hoặc nếu khách đã xác nhận đồng ý điều khoản qua tin nhắn/email, Hana có thể bấm nút **✓ Xác nhận thanh toán** thủ công ở sidebar.
+
+4. **Khách chuyển tiền cho đơn đã quá hạn 24 giờ (`failed`)**:
    - Khác với đơn đã hủy, nếu đơn hàng chỉ bị quá hạn 24 giờ (`failed`) và khách chuyển **đúng số tiền + đúng mã chuyển khoản**, hệ thống SePay vẫn **tự động duyệt thanh toán và kích hoạt đơn bình thường**, giúp khách nhận ngay sản phẩm mà không phải chờ đợi.
 
-4. **Khách chuyển tiền 2 lần cho cùng một đơn (`already_paid` hoặc `duplicate`)**:
+5. **Khách chuyển tiền 2 lần cho cùng một đơn (`already_paid` hoặc `duplicate`)**:
    - Nếu khách vô tình chuyển tiền 2 lần cho cùng một mã đơn, hệ thống ghi nhận sự kiện `already_paid` và **không bao giờ cấp quyền hay gửi email trùng lặp lần 2**.
-   - Hana kiểm tra khung Sự kiện thanh toán để thấy 2 giao dịch, sau đó liên hệ khách hoàn trả lại số tiền chuyển thừa lần 2.
+   - Hana kiểm tra khung Sự kiện thanh toán để thấy 2 giao dịch, sau đó liên hệ khách để xử lý.
 
 ---
 

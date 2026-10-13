@@ -636,15 +636,13 @@ Hệ thống hỗ trợ 2 chế độ xử lý thanh toán, chuyển đổi linh
      ```
    - _Lưu ý_: Tuyệt đối không commit giá trị khóa thật vào Git, log hay gửi qua kênh chat công khai.
 5. **Khởi động lại ứng dụng:**
-   - Chạy lệnh khởi động lại container trên máy chủ:
+   - Chạy lệnh cập nhật container trên máy chủ (Lưu ý: lệnh `restart` không nhận các biến môi trường mới khai báo trong `.env`, bắt buộc dùng lệnh `up -d`):
      ```bash
-     docker compose restart app
-     # Hoặc với cấu hình docker-compose.prod.yml:
-     docker compose -p tdcx-demo -f docker-compose.prod.yml restart app
+     docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
      ```
-6. **Kiểm tra nghiệm thu (Chuyển thử 2.000đ):**
-   - Vào trang web `https://tramdungcamxuc.com` tạo một đơn hàng thử nghiệm (ví dụ mua công cụ số hoặc đặt phiên trải nghiệm).
-   - Quét mã VietQR trên trang đơn hàng và chuyển thử 2.000đ (hoặc đúng số tiền của đơn thử nghiệm).
+6. **Kiểm tra nghiệm thu:**
+   - Vào CMS tạo một sản phẩm thử nghiệm với giá 2.000đ (đặt trạng thái `saleStatus = hidden` để không lộ ngoài trang web, xóa sau khi nghiệm thu xong) HOẶC tạo một đơn hàng thông thường trên web và chuyển đúng tổng số tiền của đơn đó (không chuyển 2.000đ cho đơn 178.000đ vì hệ thống sẽ phát hiện lệch tiền `amount_mismatch`).
+   - Quét mã VietQR trên trang thanh toán đơn hàng.
    - Kiểm tra:
      - Trong vòng vài giây sau khi ngân hàng báo biến động số dư, SePay gọi webhook.
      - Trang đơn hàng của khách tự động phát hiện trạng thái đã chuyển sang "Đã thanh toán" (polling 5s).
@@ -659,11 +657,11 @@ Nếu SePay gặp sự cố bảo trì, gián đoạn mạng hoặc ngân hàng 
    ```env
    PAYMENT_PROVIDER=manual
    ```
-2. Khởi động lại container:
+2. Khởi động lại container bằng `up -d` để nhận biến mới:
    ```bash
-   docker compose restart app
+   docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
    ```
 3. Hệ thống sẽ ngay lập tức quay về chế độ VietQR miễn phí:
    - Các đơn hàng đang chờ hoặc đơn mới tạo vẫn giữ nguyên mã VietQR hợp lệ.
    - Hana mở danh sách đơn hàng trong CMS Admin và bấm nút **"Xác nhận thanh toán"** thủ công như bình thường.
-   - Khi SePay hoạt động ổn định trở lại, chỉ cần đổi lại `PAYMENT_PROVIDER=sepay` và khởi động lại mà không làm mất bất kỳ dữ liệu nào.
+   - Khi SePay hoạt động ổn định trở lại, chỉ cần đổi lại `PAYMENT_PROVIDER=sepay` và chạy lại lệnh `up -d` mà không làm mất bất kỳ dữ liệu nào.
