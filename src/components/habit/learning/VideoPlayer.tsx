@@ -6,6 +6,8 @@ import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
 import { recordLessonProgress } from '@/lib/courses/actions'
 
+const BUNNY_PLAYER_ORIGIN = 'https://iframe.mediadelivery.net'
+
 export interface VideoPlayerProps {
   lessonId: number
   playback: VideoPlayback
@@ -70,7 +72,11 @@ export function VideoPlayer({
 
     const handleMessage = (event: MessageEvent) => {
       // BẢO MẬT: Chỉ chấp nhận message từ iframe Bunny Stream
-      if (event.origin !== 'https://iframe.mediadelivery.net') {
+      if (event.origin !== BUNNY_PLAYER_ORIGIN) {
+        return
+      }
+      // Only the lesson's own player iframe, not any other frame served from the same origin.
+      if (!iframeRef.current || event.source !== iframeRef.current.contentWindow) {
         return
       }
 
@@ -170,7 +176,10 @@ export function VideoPlayer({
       if (!target) return
       const events = ['timeupdate', 'pause', 'ended']
       for (const ev of events) {
-        target.postMessage({ context: 'player.js', method: 'addEventListener', value: ev }, '*')
+        target.postMessage(
+          { context: 'player.js', method: 'addEventListener', value: ev },
+          BUNNY_PLAYER_ORIGIN,
+        )
       }
     } catch {
       // Bỏ qua lỗi gửi postMessage tới iframe

@@ -147,6 +147,33 @@ describe('VideoPlayer Component (T2-05b)', () => {
       expect(mockRecordProgress).not.toHaveBeenCalled()
     })
 
+    it('ignores player.js messages from the right origin but another frame', async () => {
+      render(
+        <VideoPlayer
+          lessonId={fakeLessonId}
+          playback={{
+            kind: 'iframe',
+            url: iframeUrl,
+            expiresAt: new Date(),
+            allowSimulate: false,
+          }}
+          isAuthenticated={true}
+        />,
+      )
+
+      act(() => {
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            origin: 'https://iframe.mediadelivery.net',
+            source: window,
+            data: { context: 'player.js', event: 'ended' },
+          }),
+        )
+      })
+
+      expect(mockRecordProgress).not.toHaveBeenCalled()
+    })
+
     it('ignores postMessage without player.js context', async () => {
       render(
         <VideoPlayer
@@ -165,6 +192,7 @@ describe('VideoPlayer Component (T2-05b)', () => {
         window.dispatchEvent(
           new MessageEvent('message', {
             origin: 'https://iframe.mediadelivery.net',
+            source: document.querySelector('iframe')?.contentWindow ?? null,
             data: {
               context: 'some-other-plugin',
               event: 'ended',
@@ -195,6 +223,7 @@ describe('VideoPlayer Component (T2-05b)', () => {
         window.dispatchEvent(
           new MessageEvent('message', {
             origin: 'https://iframe.mediadelivery.net',
+            source: document.querySelector('iframe')?.contentWindow ?? null,
             data: {
               context: 'player.js',
               event: 'timeupdate',
@@ -230,6 +259,7 @@ describe('VideoPlayer Component (T2-05b)', () => {
         window.dispatchEvent(
           new MessageEvent('message', {
             origin: 'https://iframe.mediadelivery.net',
+            source: document.querySelector('iframe')?.contentWindow ?? null,
             data: JSON.stringify({
               context: 'player.js',
               event: 'ended',
@@ -261,6 +291,7 @@ describe('VideoPlayer Component (T2-05b)', () => {
         window.dispatchEvent(
           new MessageEvent('message', {
             origin: 'https://iframe.mediadelivery.net',
+            source: document.querySelector('iframe')?.contentWindow ?? null,
             data: {
               context: 'player.js',
               event: 'ended',
