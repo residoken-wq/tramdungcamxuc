@@ -15,6 +15,8 @@ export interface CertificateEligibility {
   minDays: number
   certificateMinDays?: number
   planId?: number
+  customerName?: string | null
+  hasCustomerName?: boolean
   hasCertificate?: boolean
   certificate?: PublicCertificateData | null
   existingCertificate?: PublicCertificateData | null

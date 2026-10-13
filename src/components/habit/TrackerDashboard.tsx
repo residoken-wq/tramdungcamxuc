@@ -27,6 +27,7 @@ export interface TrackerDashboardProps {
   buyUrl: string
   initialCertificate?: PublicCertificateData | null
   eligibility?: CertificateEligibility | null
+  customerName?: string | null
 }
 
 export function TrackerDashboard({
@@ -38,6 +39,7 @@ export function TrackerDashboard({
   buyUrl,
   initialCertificate,
   eligibility,
+  customerName,
 }: TrackerDashboardProps) {
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
   const [activeModalDay, setActiveModalDay] = useState<number | null>(null)
@@ -181,6 +183,7 @@ export function TrackerDashboard({
             buyUrl={buyUrl}
             initialCertificate={initialCertificate}
             eligibility={eligibility}
+            customerName={customerName}
           />
         </div>
       )}

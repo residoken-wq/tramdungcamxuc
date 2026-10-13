@@ -32,10 +32,10 @@ export function CertificatePublicToggle({ code, initialIsPublic }: CertificatePu
       if (res.success) {
         setIsPublic(nextState)
       } else {
-        setError(res.error || 'Có lỗi xảy ra khi cập nhật trạng thái.')
+        setError(res.message || vi.certificate.errors.updateStatusFailed)
       }
     } catch {
-      setError('Có lỗi xảy ra khi cập nhật trạng thái.')
+      setError(vi.certificate.errors.updateStatusFailed)
     } finally {
       setIsLoading(false)
     }
@@ -46,7 +46,9 @@ export function CertificatePublicToggle({ code, initialIsPublic }: CertificatePu
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
-            className={`w-2.5 h-2.5 rounded-full ${isPublic ? 'bg-emerald-500' : 'bg-amber-500'}`}
+            className={`w-2.5 h-2.5 rounded-full border border-deep-navy/30 ${
+              isPublic ? 'bg-mint-haze' : 'bg-butter-cream'
+            }`}
           />
           <span className="text-xs font-ui font-semibold text-deep-navy">
             {isPublic
@@ -59,7 +61,7 @@ export function CertificatePublicToggle({ code, initialIsPublic }: CertificatePu
           type="button"
           disabled={!isHydrated || isLoading}
           onClick={handleToggle}
-          className={`px-3.5 py-1.5 rounded-full font-ui font-semibold text-xs transition-all shadow-xs disabled:opacity-50 disabled:cursor-not-allowed ${
+          className={`px-3.5 py-1.5 rounded-full font-ui font-semibold text-xs transition-all motion-reduce:transition-none shadow-xs disabled:opacity-50 disabled:cursor-not-allowed ${
             isPublic
               ? 'border border-deep-navy/20 bg-warm-ivory hover:bg-soft-pink text-deep-navy'
               : 'bg-bright-magenta text-warm-ivory hover:bg-bright-magenta/90'

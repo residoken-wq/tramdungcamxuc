@@ -146,6 +146,7 @@ export default async function HabitTrackerPage() {
         buyUrl={buyUrl}
         initialCertificate={eligibility.existingCertificate ?? null}
         eligibility={eligibility}
+        customerName={customer.name ?? null}
       />
     </div>
   )

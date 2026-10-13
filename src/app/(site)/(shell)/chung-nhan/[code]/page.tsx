@@ -35,12 +35,12 @@ export async function generateMetadata({ params }: CertificatePageProps): Promis
 
   if (!cert) {
     return {
-      title: `${vi.certificate.notFound.title} | Trạm Dừng Cảm Xúc`,
+      title: `${vi.certificate.notFound.title} | ${vi.certificate.og.brand}`,
       robots: { index: false, follow: false },
     }
   }
 
-  const title = `${vi.certificate.metaTitle(cert.customerName)}`
+  const title = vi.certificate.metaTitle(cert.customerName)
   const description = vi.certificate.metaDescription
 
   const metadata: Metadata = {
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: CertificatePageProps): Promis
           url: `/chung-nhan/${cert.code}/anh/4x5`,
           width: 1080,
           height: 1350,
-          alt: `Chứng nhận 21 ngày – ${cert.customerName}`,
+          alt: vi.certificate.imageAlt(cert.customerName),
         },
       ],
     }
@@ -102,9 +102,9 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
               {vi.certificate.badge}
             </span>
 
-            <h1 className="font-ui font-bold text-2xl sm:text-4xl text-deep-navy tracking-wide">
+            <h1 className="font-display text-3xl sm:text-5xl text-deep-navy tracking-wide">
               {vi.certificate.titleLine1}
-              <span className="block text-bright-magenta text-lg sm:text-2xl mt-1">
+              <span className="block text-bright-magenta text-xl sm:text-3xl mt-1">
                 {vi.certificate.titleLine2}
               </span>
             </h1>
@@ -119,7 +119,7 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
 
           {/* Câu định danh */}
           {cert.identityStatement && (
-            <div className="max-w-xl mx-auto p-4 sm:p-6 rounded-2xl bg-white/80 border border-deep-navy/10 shadow-xs">
+            <div className="max-w-xl mx-auto p-4 sm:p-6 rounded-2xl bg-warm-ivory/80 border border-deep-navy/10 shadow-xs">
               <p className="text-xs font-ui uppercase font-semibold text-bright-magenta mb-2">
                 {vi.certificate.identityCommitmentTitle}
               </p>
@@ -148,14 +148,18 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`/chung-nhan/${cert.code}/anh/4x5`}
-              alt={`Chứng nhận 21 ngày – ${cert.customerName}`}
+              alt={vi.certificate.imageAlt(cert.customerName)}
               className="w-full h-full object-cover"
             />
           </div>
 
           {/* Các nút tải & chia sẻ */}
           <div className="pt-2">
-            <CertificateShareButtons code={cert.code} customerName={cert.customerName} />
+            <CertificateShareButtons
+              code={cert.code}
+              customerName={cert.customerName}
+              isPublic={cert.isPublic}
+            />
           </div>
 
           {/* Điều hướng về tracker nếu là chủ sở hữu */}
@@ -165,7 +169,7 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
                 href="/habit/tracker"
                 className="text-xs font-ui font-semibold text-deep-navy/70 hover:text-bright-magenta underline transition-colors"
               >
-                &larr; Quay lại trang Habit Tracker 21 ngày
+                {vi.certificate.backToTracker}
               </Link>
             </div>
           )}

@@ -51,11 +51,11 @@ export async function getSiteCertificateMinDays(payload: Payload): Promise<numbe
   return 15
 }
 
-function sanitizeCertificate(cert: Certificate, defaultName = 'Học viên'): PublicCertificateData {
+function sanitizeCertificate(cert: Certificate): PublicCertificateData {
   const customerName =
     typeof cert.customer === 'object' && cert.customer !== null
-      ? (cert.customer as Customer).name || defaultName
-      : defaultName
+      ? (cert.customer as Customer).name || ''
+      : ''
 
   return {
     code: cert.code || '',
@@ -67,16 +67,21 @@ function sanitizeCertificate(cert: Certificate, defaultName = 'Học viên'): Pu
   }
 }
 
+export type IssuedCertificate = Certificate & { isNew?: boolean }
+
 /**
  * REVIEW-REQUIRED: Kiểm tra điều kiện tốt nghiệp và cấp chứng nhận 21 ngày cho học viên.
  *
  * Tiêu chí kiểm soát:
  * 1. Chỉ cấp cho kế hoạch của chính khách hàng (findOwnTrackerPlan), không gắn hay tạo kế hoạch mới.
- * 2. Chỉ cấp khi đã tới Ngày 21 trở đi (currentDay >= 21 tính theo giờ Việt Nam).
- * 3. Số ngày hoàn thành (check-in done = true) phải đạt tối thiểu certificateMinDays từ SiteSettings (mặc định 15).
- * 4. Không cần còn quyền dùng thử: khách hết hạn vẫn nhận được chứng nhận cho 21 ngày đã làm.
- * 5. Tính duy nhất: mỗi kế hoạch chỉ có 1 chứng nhận; nếu đã có thì trả lại bản ghi cũ; gọi song song bắt ValidationError.
- * 6. Sao chép snapshot identityStatement và daysCompleted từ kế hoạch tại thời điểm cấp.
+ * 2. Khách hàng bắt buộc phải có tên trong hồ sơ customers (không dùng tên dự phòng).
+ * 3. Chỉ cấp khi đã tới Ngày 21 trở đi (currentDay >= 21 tính theo giờ Việt Nam).
+ * 4. Số ngày hoàn thành (check-in done = true) phải đạt tối thiểu certificateMinDays từ SiteSettings (mặc định 15).
+ * 5. Không cần còn quyền dùng thử: khách hết hạn vẫn nhận được chứng nhận cho 21 ngày đã làm.
+ * 6. Tính duy nhất & chống trùng lặp: khóa trong bộ nhớ (withCertLock) theo ID khách hàng, giới hạn một tiến trình Node.js.
+ *    Nếu đã có chứng nhận cho kế hoạch thì trả lại bản ghi cũ với isNew = false.
+ *    (Ghi chú BACKLOG: thêm unique index trên trường plan trong migration tương lai khi được phép thêm migration).
+ * 7. Sao chép snapshot identityStatement và daysCompleted từ kế hoạch tại thời điểm cấp.
  */
 export async function issueCertificate(
   customerId: number,
@@ -84,11 +89,23 @@ export async function issueCertificate(
     payload?: Payload
     now?: Date
   },
-): Promise<Certificate> {
+): Promise<IssuedCertificate> {
   const payload = options?.payload ?? (await getPayload({ config: await config }))
   const now = options?.now ?? new Date()
 
   return withCertLock(String(customerId), async () => {
+    // 0. Kiểm tra thông tin khách hàng: khách hàng phải có tên trước khi được cấp chứng nhận
+    const customer = (await payload.findByID({
+      collection: 'customers',
+      id: customerId,
+      depth: 0,
+      overrideAccess: true,
+    })) as Customer | null
+
+    if (!customer?.name?.trim()) {
+      throw new Error(vi.certificate.errors.nameRequired)
+    }
+
     // 1. Lấy kế hoạch của chính khách hàng
     const ownPlan = await findOwnTrackerPlan(customerId, payload)
     if (!ownPlan) {
@@ -107,7 +124,7 @@ export async function issueCertificate(
     })
 
     if (existingCerts.docs.length > 0) {
-      return existingCerts.docs[0] as Certificate
+      return Object.assign(existingCerts.docs[0] as Certificate, { isNew: false })
     }
 
     // 3. Kiểm tra ngày của kế hoạch (phải từ ngày 21 trở đi theo giờ VN)
@@ -150,9 +167,9 @@ export async function issueCertificate(
         overrideAccess: true,
       })
 
-      return created as Certificate
+      return Object.assign(created as Certificate, { isNew: true })
     } catch (err) {
-      // Concurrency: nếu 2 request cùng gọi song song, bắt ValidationError từ unique index
+      // Concurrency fallback: nếu race condition xảy ra, tìm lại bản ghi vừa tạo
       const isValidationErr =
         err instanceof ValidationError || (err as { name?: string })?.name === 'ValidationError'
 
@@ -168,7 +185,7 @@ export async function issueCertificate(
         })
 
         if (raceExisting.docs.length > 0) {
-          return raceExisting.docs[0] as Certificate
+          return Object.assign(raceExisting.docs[0] as Certificate, { isNew: false })
         }
       }
 
@@ -190,6 +207,15 @@ export async function getCertificateEligibility(
   const payload = options?.payload ?? (await getPayload({ config: await config }))
   const now = options?.now ?? new Date()
 
+  const customer = (await payload.findByID({
+    collection: 'customers',
+    id: customerId,
+    depth: 0,
+    overrideAccess: true,
+  })) as Customer | null
+  const customerName = customer?.name?.trim() || null
+  const hasCustomerName = Boolean(customerName && customerName.length > 0)
+
   const ownPlan = await findOwnTrackerPlan(customerId, payload)
   if (!ownPlan) {
     return {
@@ -197,6 +223,8 @@ export async function getCertificateEligibility(
       currentDay: 0,
       completedDays: 0,
       minDays: 15,
+      customerName,
+      hasCustomerName,
       hasCertificate: false,
       reason: 'NO_PLAN',
       message: vi.certificate.errors.noPlan,
@@ -257,6 +285,8 @@ export async function getCertificateEligibility(
     minDays,
     certificateMinDays: minDays,
     planId: ownPlan.id,
+    customerName,
+    hasCustomerName,
     hasCertificate,
     certificate: sanitizedCert,
     existingCertificate: sanitizedCert,

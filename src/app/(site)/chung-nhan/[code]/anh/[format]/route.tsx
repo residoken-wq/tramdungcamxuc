@@ -5,6 +5,7 @@ import path from 'node:path'
 import React from 'react'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getCertificateByCode } from '@/lib/habit/certificate.server'
+import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
 
@@ -117,7 +118,7 @@ export async function GET(
           justifyContent: 'space-between',
           backgroundColor: '#FAF7F4',
           backgroundImage:
-            'linear-gradient(150deg, #FFFFFF 0%, #FAF7F4 35%, #FDE6F6 75%, #E9DDF9 100%)',
+            'linear-gradient(150deg, #FAF7F4 0%, #FAF7F4 35%, #FDE6F6 75%, #E9DDF9 100%)',
           border: '4px solid #280A60',
           borderRadius: 28,
           padding: is45 ? '48px 44px' : '80px 48px',
@@ -152,7 +153,7 @@ export async function GET(
                 letterSpacing: 2,
               }}
             >
-              TRẠM DỪNG CẢM XÚC
+              {vi.certificate.og.brand.toUpperCase()}
             </span>
           </div>
 
@@ -165,7 +166,7 @@ export async function GET(
               lineHeight: 1.1,
             }}
           >
-            CHỨNG NHẬN
+            {vi.certificate.og.certifyThat}
           </div>
 
           <div
@@ -178,7 +179,7 @@ export async function GET(
               textAlign: 'center',
             }}
           >
-            HÀNH TRÌNH 21 NGÀY RÈN LUYỆN THÓI QUEN
+            {vi.certificate.og.journeyTitle}
           </div>
         </div>
 
@@ -200,7 +201,7 @@ export async function GET(
               marginBottom: 8,
             }}
           >
-            Được trân trọng trao cho
+            {vi.certificate.og.recipientSubtitle}
           </div>
 
           <div
@@ -229,32 +230,34 @@ export async function GET(
           />
         </div>
 
-        {/* 3. Câu định danh (Quote Block) */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            backgroundColor: '#FFFFFF',
-            border: '1.5px solid #E9DDF9',
-            borderRadius: 20,
-            padding: is45 ? '22px 36px' : '32px 48px',
-            maxWidth: 880,
-          }}
-        >
+        {/* 3. Câu định danh (Quote Block) - Ẩn khi không có câu định danh */}
+        {cert.identityStatement ? (
           <div
             style={{
-              fontFamily: 'Playfair Display',
-              fontStyle: 'italic',
-              fontSize: is45 ? 24 : 28,
-              color: '#280A60',
-              textAlign: 'center',
-              lineHeight: 1.45,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              backgroundColor: '#FAF7F4',
+              border: '1.5px solid #E9DDF9',
+              borderRadius: 20,
+              padding: is45 ? '22px 36px' : '32px 48px',
+              maxWidth: 880,
             }}
           >
-            {`“${cert.identityStatement || 'Tôi chọn đồng hành và thấu hiểu cảm xúc mỗi ngày.'}”`}
+            <div
+              style={{
+                fontFamily: 'Playfair Display',
+                fontStyle: 'italic',
+                fontSize: is45 ? 24 : 28,
+                color: '#280A60',
+                textAlign: 'center',
+                lineHeight: 1.45,
+              }}
+            >
+              {`“${cert.identityStatement}”`}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         {/* 4. Thống kê hoàn thành */}
         <div
@@ -276,7 +279,7 @@ export async function GET(
               letterSpacing: 1,
             }}
           >
-            {`ĐÃ HOÀN THÀNH ${cert.daysCompleted}/21 NGÀY`}
+            {vi.certificate.og.daysCompleted(cert.daysCompleted)}
           </span>
         </div>
 
@@ -301,7 +304,7 @@ export async function GET(
               color: '#280A60',
             }}
           >
-            {`NGÀY CẤP: ${formattedDate}`}
+            {vi.certificate.og.issuedOn(formattedDate)}
           </span>
 
           <span
@@ -313,7 +316,7 @@ export async function GET(
               letterSpacing: 1,
             }}
           >
-            {`MÃ XÁC MINH: ${cert.code}`}
+            {vi.certificate.og.verifyCode(cert.code)}
           </span>
 
           <span
@@ -324,7 +327,7 @@ export async function GET(
               color: '#BC039E',
             }}
           >
-            tramdungcamxuc.com
+            {vi.certificate.og.verifyUrl}
           </span>
         </div>
       </div>
@@ -332,7 +335,7 @@ export async function GET(
   )
 
   const cacheHeader = cert.isPublic
-    ? 'public, max-age=86400, stale-while-revalidate=604800'
+    ? 'public, max-age=0, must-revalidate'
     : 'private, no-cache, no-store, must-revalidate'
 
   return new ImageResponse(element, {
