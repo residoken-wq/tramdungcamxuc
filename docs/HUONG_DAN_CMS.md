@@ -15,6 +15,7 @@
    - [3.8. Quản lý Lịch workshop và quyền tham gia (Workshops)](#38-quản-lý-lịch-workshop-và-quyền-tham-gia-workshops)
    - [3.9. Chương trình dùng thử 21 ngày cho công cụ số](#39-chương-trình-dùng-thử-21-ngày-cho-công-cụ-số)
    - [3.10. Quản lý Bài học và Video khóa học (Habit Hack)](#310-quản-lý-bài-học-và-video-khóa-học-habit-hack)
+   - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
@@ -311,6 +312,29 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
      - **Cho phép xem thử**: Tích chọn ô này nếu bạn muốn bài học mở tự do cho mọi người xem trước (kể cả khách chưa đăng nhập hoặc chưa mua gói). Nếu bỏ tích, bài học sẽ yêu cầu khách hàng đăng nhập và kích hoạt dùng thử 21 ngày hoặc mua sản phẩm Habit Tracker số mới xem được.
      - **Mã video**: Điền mã định danh video từ dịch vụ lưu trữ Bunny Stream. Ô này được bảo mật tuyệt đối, chỉ quản trị viên nhìn thấy trong admin. Khi hệ thống ở chế độ thử nghiệm nội bộ (sandbox), bài học sẽ hiển thị khung phát thử nghiệm; khi kết nối dịch vụ Bunny chính thức, video sẽ được phát an toàn chống tải lậu cho học viên.
    - Bấm **Xuất bản** để đưa bài học lên Góc học tập.
+
+---
+
+### 3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày
+
+**Mục đích**: Xem danh sách các kế hoạch thiết lập thói quen (`habitPlans`) và tiến độ check-in 21 ngày của khách hàng/học viên.
+
+**Các bước xem trong trang quản trị**:
+
+1. Ở cột menu bên trái, tìm nhóm **Khách hàng** (hoặc danh mục **Kế hoạch thói quen** – `habitPlans`).
+2. Bấm vào một kế hoạch để xem chi tiết:
+   - **Khách hàng sở hữu**: Tên và email của khách hàng gắn với kế hoạch.
+   - **4 bước vòng lặp thói quen**: Tín hiệu gợi nhớ (`cue`), Hành động nhỏ 2 phút (`routine`), Cảm giác hài lòng (`reward`), Niềm tin nội tại (`identity`).
+   - **Ngày bắt đầu**: Thời điểm khách hàng kích hoạt kế hoạch 21 ngày.
+   - **Danh sách ngày check-in (`habitCheckins`)**: Bấm vào danh mục check-in để xem ngày nào khách đã hoàn thành (`done = true`).
+
+**Quy tắc bảo vệ quyền riêng tư người học (Quan trọng)**:
+
+- **Cảm xúc và ghi chú riêng tư**: Khi khách hàng check-in mỗi ngày trên trang `/habit/tracker`, họ có thể chọn 1 trong 10 cảm xúc và viết suy nghĩ, tâm sự cá nhân (tối đa 500 ký tự).
+- **Phân quyền bảo mật**:
+  - Dữ liệu cảm xúc (`emotion`) và ghi chú tâm sự (`note`) là không gian an toàn riêng tư của từng người học.
+  - Các tài khoản quản trị viên thông thường hoặc vai trò biên tập viên (`editor`) **hoàn toàn không được phân quyền đọc hoặc can thiệp** vào các ghi chú cảm xúc riêng tư này trong hệ thống.
+  - Chỉ hệ thống tự động xử lý để hiển thị lại cho chính người học đó khi họ đăng nhập vào tài khoản cá nhân của mình.
 
 ---
 
