@@ -246,6 +246,33 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
       expect(attachedCustId).toBe(customer.id)
     })
 
+    it('findOwnTrackerPlan chỉ đọc: không gắn kế hoạch Habit Loop cho khách chưa có quyền', async () => {
+      const customer = await createCustomer('Khách Chưa Có Quyền')
+      const plan = track(
+        'habitPlans',
+        await payload.create({
+          collection: 'habitPlans',
+          data: {
+            leadEmail: customer.email,
+            identityStatement: 'Tôi sẽ thiền 5 phút mỗi sáng để bình tĩnh hơn',
+            startDate: '2026-01-01',
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      expect(await trackerServer.findOwnTrackerPlan(customer.id, payload)).toBeNull()
+
+      const unchanged = await payload.findByID({
+        collection: 'habitPlans',
+        id: plan.id,
+        depth: 0,
+        overrideAccess: true,
+      })
+      expect(unchanged.customer).toBeNull()
+      expect(String(unchanged.startDate)).toContain('2026-01-01')
+    })
+
     it('không gắn khi kế hoạch đã có customer khác sở hữu', async () => {
       const ownerCust = await createCustomer('Chủ Kế Hoạch Cũ')
       const newCust = await createCustomer('Khách Mới Cùng Email')
@@ -561,7 +588,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
       expect(results[0].success).toBe(true)
       expect(results[1].success).toBe(true)
       expect(results[0].planId).toBe(results[1].planId)
-      if (results[0].planId) testPlanIds.add(results[0].planId)
+      if (results[0].planId) track('habitPlans', { id: results[0].planId })
 
       const dbPlans = await payload.find({
         collection: 'habitPlans',
@@ -795,7 +822,9 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
         emailSender: failingSender,
       })
       expect(failRes.errors).toBeGreaterThanOrEqual(1)
-      const sentForErrorCustomer = failingSender.sent.filter((s) => isSentTo(s, customerError.email))
+      const sentForErrorCustomer = failingSender.sent.filter((s) =>
+        isSentTo(s, customerError.email),
+      )
       expect(sentForErrorCustomer.length).toBe(0)
 
       // Bản ghi giữ chỗ của planError phải bị xóa để cho phép thử lại

@@ -8,7 +8,11 @@ import type { Product, HabitCheckin } from '@/payload-types'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
-import { getCurrentDayOfPlan, getOrCreateTrackerPlan } from '@/lib/habit/tracker.server'
+import {
+  findOwnTrackerPlan,
+  getCurrentDayOfPlan,
+  getOrCreateTrackerPlan,
+} from '@/lib/habit/tracker.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
@@ -54,8 +58,12 @@ export default async function HabitTrackerPage() {
   const buyUrl = `/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`
   const trialUrl = `/dung-thu?san-pham=${encodeURIComponent(product.slug)}`
 
-  // 3. Lấy kế hoạch của khách hàng (nếu có)
-  const plan = await getOrCreateTrackerPlan(customer.id, { payload })
+  // 3. Lấy kế hoạch của khách hàng (nếu có).
+  // REVIEW-REQUIRED: Chỉ khách còn quyền mới được gắn kế hoạch Habit Loop; khách không có quyền
+  // chỉ xem kế hoạch đã là của mình (chỉ đọc), không gắn, không tạo.
+  const plan = access.hasAccess
+    ? await getOrCreateTrackerPlan(customer.id, { payload })
+    : await findOwnTrackerPlan(customer.id, payload)
 
   // 4. Nếu khách hàng không có quyền truy cập (chưa dùng thử hoặc đã hết hạn) và chưa có kế hoạch
   // -> Hiển thị khối mời dùng thử / mua sản phẩm (không hiển thị form tạo kế hoạch)
@@ -74,13 +82,13 @@ export default async function HabitTrackerPage() {
           <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href={trialUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 transition-all shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 transition-all motion-reduce:transition-none shadow-sm"
             >
               {vi.tracker.paywall.trialButton}
             </Link>
             <Link
               href={buyUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-deep-navy/20 text-deep-navy bg-warm-ivory hover:bg-lavender-mist/40 font-ui font-semibold text-sm transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-deep-navy/20 text-deep-navy bg-warm-ivory hover:bg-lavender-mist/40 font-ui font-semibold text-sm transition-all motion-reduce:transition-none"
             >
               {vi.tracker.paywall.buyButton}
             </Link>
@@ -119,7 +127,7 @@ export default async function HabitTrackerPage() {
   }))
 
   const currentDay = getCurrentDayOfPlan(plan.startDate, now)
-  const isReadOnly = access.status === 'expired'
+  const isReadOnly = !access.hasAccess
   const isTrialOrExpired = access.status === 'trial' || access.status === 'expired'
 
   return (

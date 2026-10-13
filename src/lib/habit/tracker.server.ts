@@ -12,6 +12,27 @@ import { getCurrentDayOfPlan, getVietnamYmd, vietnamTodayIso } from './tracker-s
 export * from './tracker-stats'
 
 /**
+ * Latest plan already owned by the customer. Read-only: never attaches or creates a plan,
+ * so it is safe to call for customers without access.
+ */
+export async function findOwnTrackerPlan(
+  customerId: number,
+  payload: Payload,
+): Promise<HabitPlan | null> {
+  const userPlans = await payload.find({
+    collection: 'habitPlans',
+    where: {
+      customer: { equals: customerId },
+    },
+    sort: '-createdAt',
+    limit: 1,
+    depth: 1,
+    overrideAccess: true,
+  })
+  return (userPlans.docs[0] as HabitPlan | undefined) ?? null
+}
+
+/**
  * REVIEW-REQUIRED: Lấy kế hoạch thói quen hiện có của khách hàng, hoặc liên kết kế hoạch Habit Loop mồ côi
  * (trùng leadEmail và chưa gán customer) cho khách hàng đã xác minh qua OTP.
  * Nếu chưa có, tạo kế hoạch mới khi được cung cấp identityStatement với startDate là hôm nay theo giờ VN.
@@ -27,19 +48,9 @@ export async function getOrCreateTrackerPlan(
   const payload = options?.payload ?? (await getPayload({ config: await config }))
 
   // 1. Khách đã có habitPlans gắn với mình -> lấy kế hoạch mới nhất
-  const userPlans = await payload.find({
-    collection: 'habitPlans',
-    where: {
-      customer: { equals: customerId },
-    },
-    sort: '-createdAt',
-    limit: 1,
-    depth: 1,
-    overrideAccess: true,
-  })
-
-  if (userPlans.docs.length > 0) {
-    return userPlans.docs[0] as HabitPlan
+  const ownPlan = await findOwnTrackerPlan(customerId, payload)
+  if (ownPlan) {
+    return ownPlan
   }
 
   // 2. Chưa có kế hoạch gắn với customer, tìm kế hoạch Habit Loop cùng leadEmail

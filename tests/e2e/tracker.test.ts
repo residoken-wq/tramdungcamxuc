@@ -127,7 +127,7 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
 
       // 5. Khách truy cập /habit/tracker -> chuyển hướng đăng nhập
       await guestPage.goto('/habit/tracker')
-      await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap\?next=%2Fhabit%2Ftracker$/)
+      await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap\?next=\/habit\/tracker$/)
 
       // 6. Nhập email, tick đồng ý, chờ Turnstile rồi xin OTP
       await guestPage.locator('input[name="email"]').fill(customerEmail)

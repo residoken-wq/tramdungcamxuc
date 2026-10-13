@@ -103,7 +103,7 @@ export function CheckInModal({
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* 1. Tick done */}
-          <label className="flex items-center gap-3 p-3 rounded-xl border border-deep-navy/15 bg-warm-ivory/50 cursor-pointer hover:bg-soft-pink/20 transition-colors">
+          <label className="flex items-center gap-3 p-3 rounded-xl border border-deep-navy/15 bg-warm-ivory/50 cursor-pointer hover:bg-soft-pink/20 transition-colors motion-reduce:transition-none">
             <input
               type="checkbox"
               checked={done}

@@ -81,14 +81,14 @@ export function TrackerSummaryCard({ stats, isTrialOrExpired, buyUrl }: TrackerS
         {isTrialOrExpired && (
           <Link
             href={buyUrl}
-            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-bright-magenta text-warm-ivory font-ui font-bold text-sm hover:bg-bright-magenta/90 shadow-sm transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-bright-magenta text-warm-ivory font-ui font-bold text-sm hover:bg-bright-magenta/90 shadow-sm transition-all motion-reduce:transition-none"
           >
             {vi.tracker.summary.buyButton}
           </Link>
         )}
         <Link
           href={GROWTH_MIRROR_PATH}
-          className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border-2 border-accent-pink text-deep-navy bg-warm-ivory hover:bg-soft-pink font-ui font-bold text-sm transition-all shadow-xs"
+          className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border-2 border-accent-pink text-deep-navy bg-warm-ivory hover:bg-soft-pink font-ui font-bold text-sm transition-all motion-reduce:transition-none shadow-xs"
         >
           {vi.tracker.summary.bookingButton}
         </Link>

@@ -135,7 +135,7 @@ export function TrackerDashboard({
           </p>
           <Link
             href={buyUrl}
-            className="shrink-0 px-4 py-1.5 rounded-full bg-bright-magenta text-warm-ivory font-ui font-semibold text-xs hover:bg-bright-magenta/90 transition-colors shadow-xs"
+            className="shrink-0 px-4 py-1.5 rounded-full bg-bright-magenta text-warm-ivory font-ui font-semibold text-xs hover:bg-bright-magenta/90 transition-colors motion-reduce:transition-none shadow-xs"
           >
             {vi.tracker.expiredNotice.buyButton}
           </Link>

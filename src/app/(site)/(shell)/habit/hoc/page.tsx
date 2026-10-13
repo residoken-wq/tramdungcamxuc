@@ -52,7 +52,7 @@ export default async function HabitLearningDashboardPage() {
           />
           <Link
             href="/habit/tracker"
-            className="inline-flex items-center gap-1.5 self-start sm:self-end px-4 py-2 rounded-full border border-deep-navy/20 bg-warm-ivory hover:bg-lavender-mist/40 text-deep-navy font-ui font-semibold text-xs transition-all shadow-xs"
+            className="inline-flex items-center gap-1.5 self-start sm:self-end px-4 py-2 rounded-full border border-deep-navy/20 bg-warm-ivory hover:bg-lavender-mist/40 text-deep-navy font-ui font-semibold text-xs transition-all motion-reduce:transition-none shadow-xs"
           >
             <span>{vi.tracker.navLink}</span>
             <span aria-hidden="true">→</span>

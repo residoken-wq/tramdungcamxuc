@@ -98,11 +98,11 @@ export function EmotionPicker({
               }}
               onKeyDown={(e) => handleKeyDown(e, index)}
               className={[
-                'min-h-[44px] min-w-[44px] p-1.5 sm:p-2.5 rounded-xl border flex flex-col items-center justify-center transition-all duration-200 select-none cursor-pointer',
+                'min-h-[44px] min-w-[44px] p-1.5 sm:p-2.5 rounded-xl border flex flex-col items-center justify-center transition-all motion-reduce:transition-none duration-200 select-none cursor-pointer',
                 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
                 isSelected
                   ? 'border-accent-pink bg-soft-pink text-deep-navy font-bold shadow-sm ring-1 ring-accent-pink/50'
-                  : 'border-deep-navy/15 bg-white text-deep-navy/80 hover:bg-lavender-mist/30 hover:border-deep-navy/30',
+                  : 'border-deep-navy/15 bg-warm-ivory text-deep-navy/80 hover:bg-lavender-mist/30 hover:border-deep-navy/30',
                 disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : '',
               ]
                 .filter(Boolean)

@@ -13,22 +13,23 @@ import { revalidatePath } from 'next/cache'
 
 const emotionKeys = EMOTIONS.map((e) => e.key) as [EmotionKey, ...EmotionKey[]]
 
-export const checkInDaySchema = z.object({
+const checkInDaySchema = z.object({
   day: z.number().int().min(1).max(21),
   done: z.boolean(),
   emotion: z.enum(emotionKeys).nullable().optional(),
   note: z.string().max(500).nullable().optional(),
 })
 
-export const trackerPlanStatementSchema = z
+const trackerPlanStatementSchema = z
   .string()
   .trim()
   .min(1, vi.tracker.actions.emptyStatement)
   .max(300, vi.tracker.actions.tooLongStatement)
 
+// Only async functions may be exported from a 'use server' module; helpers stay private.
 const planCreationLocks = new Map<string, Promise<unknown>>()
 
-export async function withPlanLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
+async function withPlanLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
   while (planCreationLocks.has(key)) {
     try {
       await planCreationLocks.get(key)

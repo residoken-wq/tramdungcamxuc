@@ -197,7 +197,7 @@ export function ProgressGrid({
 
             case 'today':
               stateStyle =
-                'bg-white border-2 border-accent-pink text-deep-navy font-bold shadow-sm ring-2 ring-accent-pink/30'
+                'bg-warm-ivory border-2 border-accent-pink text-deep-navy font-bold shadow-sm ring-2 ring-accent-pink/30'
               if (isInteractive) {
                 stateStyle += ' hover:bg-soft-pink/30 cursor-pointer'
               }
@@ -239,7 +239,7 @@ export function ProgressGrid({
               }}
               aria-label={ariaLabel}
               className={[
-                'relative flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl border transition-all duration-150',
+                'relative flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl border transition-all motion-reduce:transition-none duration-150',
                 'min-w-0 min-h-[46px] sm:min-h-[58px]',
                 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
                 stateStyle,
@@ -266,7 +266,7 @@ export function ProgressGrid({
           <span>{vi.habit.statuses.done}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-md bg-white border-2 border-accent-pink flex items-center justify-center">
+          <span className="w-3 h-3 rounded-md bg-warm-ivory border-2 border-accent-pink flex items-center justify-center">
             <span className="w-1 h-1 rounded-full bg-accent-pink" />
           </span>
           <span>{vi.habit.statuses.today}</span>

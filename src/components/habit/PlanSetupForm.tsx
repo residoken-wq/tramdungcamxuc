@@ -69,7 +69,7 @@ export function PlanSetupForm() {
             onChange={(e) => setStatement(e.target.value)}
             placeholder={vi.tracker.planSetup.placeholder}
             disabled={!isHydrated || isLoading}
-            className="w-full rounded-xl border border-deep-navy/20 p-3.5 text-sm font-sans text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 focus:ring-accent-pink/50 focus:border-accent-pink transition-all resize-none"
+            className="w-full rounded-xl border border-deep-navy/20 p-3.5 text-sm font-sans text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 focus:ring-accent-pink/50 focus:border-accent-pink transition-all motion-reduce:transition-none resize-none"
           />
         </div>
 
