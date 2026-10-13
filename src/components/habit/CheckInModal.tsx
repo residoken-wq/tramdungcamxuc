@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useSyncExternalStore } from 'react'
 import { vi } from '@/lib/i18n/vi'
 import { EmotionPicker } from '@/components/habit/EmotionPicker'
 import type { EmotionKey } from '@/lib/emotions'
 import { Button } from '@/components/ui/Button'
 import { checkInDay } from '@/lib/habit/tracker-actions'
+import { track } from '@/lib/analytics/track'
 
 export interface CheckInModalProps {
   day: number
@@ -34,6 +35,13 @@ export function CheckInModal({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Khóa nút submit tới khi trang chạy JavaScript
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
+
   if (!isOpen) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,13 +54,17 @@ export function CheckInModal({
     try {
       const res = await checkInDay(day, done, emotion, note)
       if (res.success) {
+        // Ghi nhận sự kiện phân tích chỉ từ client: chỉ chứa { day }
+        try {
+          track('tracker_day_checked', { day })
+        } catch (_e) {}
         onSuccess(day, done, emotion, note)
         onClose()
       } else {
-        setError(res.message || 'Không thể lưu check-in. Vui lòng thử lại.')
+        setError(res.message || vi.tracker.dialog.errorSave)
       }
     } catch (_err) {
-      setError('Đã có lỗi xảy ra trong quá trình lưu check-in.')
+      setError(vi.tracker.dialog.errorGeneral)
     } finally {
       setIsSubmitting(false)
     }
@@ -66,7 +78,7 @@ export function CheckInModal({
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-deep-navy/40 backdrop-blur-xs"
     >
       <div
-        className="w-full max-w-lg bg-white rounded-card border border-deep-navy/15 p-6 sm:p-7 shadow-xl max-h-[90vh] overflow-y-auto space-y-5"
+        className="w-full max-w-lg bg-warm-ivory rounded-card border border-deep-navy/15 p-6 sm:p-7 shadow-xl max-h-[90vh] overflow-y-auto space-y-5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-deep-navy/10 pb-3">
@@ -77,7 +89,7 @@ export function CheckInModal({
             type="button"
             onClick={onClose}
             className="text-deep-navy/60 hover:text-deep-navy text-xl font-bold p-1 rounded-lg focus-visible:outline-2 focus-visible:outline-deep-navy"
-            aria-label="Đóng"
+            aria-label={vi.tracker.dialog.closeAria}
           >
             ✕
           </button>
@@ -136,7 +148,7 @@ export function CheckInModal({
           </div>
 
           {error && (
-            <p className="text-xs font-ui text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200">
+            <p className="text-xs font-ui text-accent-pink bg-soft-pink p-2.5 rounded-lg border border-accent-pink/30">
               {error}
             </p>
           )}
@@ -152,7 +164,12 @@ export function CheckInModal({
               {vi.tracker.dialog.cancel}
             </Button>
             {!readOnly && (
-              <Button type="submit" variant="primary" size="sm" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                disabled={!isHydrated || isSubmitting}
+              >
                 {isSubmitting ? vi.tracker.dialog.saving : vi.tracker.dialog.submit}
               </Button>
             )}
