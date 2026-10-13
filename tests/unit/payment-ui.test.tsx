@@ -59,8 +59,8 @@ describe('Payment UI & Admin Action Guardrails (T1-12b)', () => {
   describe('Form Validation: Terms Acceptance Checkbox', () => {
     const validBaseInput = {
       productId: 10,
-      name: 'Nguyễn Văn A',
-      email: 'nguyenvana@example.com',
+      name: 'Học viên Test 01',
+      email: 'hocvientest01@example.test',
       phone: '0901234567',
       need: 'Cần hiểu rõ về cảm xúc trì hoãn',
       turnstileToken: 'test-turnstile-token',

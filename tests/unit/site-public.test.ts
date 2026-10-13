@@ -27,7 +27,7 @@ describe('toPublicSiteSettings DTO extraction & Anti-data-leak', () => {
       bankBin: '970422',
       bankName: 'MB Bank',
       accountNumber: '0987654321',
-      accountName: 'LUONG THI HUYEN TRANG',
+      accountName: 'TAI KHOAN TEST',
       transferPrefix: 'TDCX',
       trialCreditApplies: true,
       // SENSITIVE INTERNAL CONTACTS & ADMIN EMAILS
