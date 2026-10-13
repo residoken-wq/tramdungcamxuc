@@ -1,4 +1,31 @@
-# Bàn giao ghế Planning (Claude) – 08/10/2026, 16:45
+# Bàn giao ghế Planning (Claude) – cập nhật 13/10/2026
+
+## Cập nhật 13/10/2026 (bàn giao sang acc Claude mới) – đọc mục này TRƯỚC TIÊN
+
+**Trạng thái GĐ 2** (bảng đầy đủ: `README.md`):
+
+- **Đã merge**: T2-00, T2-01, T2-02, T2-03, T2-04, T2-05a, T2-05b, T2-06, T2-08, T2-10, T2-12, T2-13, T2-14. Biên bản ở `reviews/`.
+- **Chờ QA (báo "done" 13/10, chưa mở PR)**:
+  - **T2-07** chứng nhận 21 ngày – Laptop – nhánh `task/T2-07-certificate`, prompt `prompts/T2-07.md`.
+  - **T2-09** SePay + chế độ `manual` (VietQR miễn phí) – PC nhà – nhánh `task/T2-09-sepay`, prompt `prompts/T2-09.md`. **Có migration** (`paymentEvents.transactionId` unique), giữ 🔒 Migration tới khi merge.
+- **Máy rảnh**: Local (và Laptop / PC nhà sau khi QA xong).
+- **Nghiệm thu thật còn chờ tài khoản**: Bunny (T2-05b, RUNBOOK "Cấu hình Bunny Stream"), SePay (T2-09).
+- **Lên demo** cần crontab mỗi giờ: `/api/cron/workshop-reminders`, `/api/cron/trial-reminders`, `/api/cron/expire-entitlements`, `/api/cron/tracker-nudges` (mẫu trong `docs/RUNBOOK.md`).
+
+**Quy trình QA mỗi task** (đã dùng cho mọi task GĐ 2):
+
+1. Mở PR **draft** cho nhánh của máy (máy không tự mở được PR), body ghi "Planning mở PR…".
+2. Đọc prompt + diff; cho 1 agent review độc lập chạy song song (đối chiếu từng mục prompt, tìm lỗi mới).
+3. Worktree QA riêng (vd `git worktree add /home/user/qa`), checkout nhánh, `git merge origin/main` (xung đột thường chỉ ở `docs/RUNBOOK.md`, `docs/HUONG_DAN_CMS.md`, `src/lib/i18n/vi.ts` → giữ cả 2 bên).
+4. `service postgresql start`; truyền biến qua lệnh, **không** tạo / đọc `.env*`:
+   `DATABASE_URI=postgres://postgres@127.0.0.1:5432/tdcx_unit PAYLOAD_SECRET=qa-unit-throwaway-secret-0000000000 NEXT_PUBLIC_SITE_URL=http://localhost:3000` → `pnpm migrate`, `pnpm lint`, `pnpm typecheck`, `pnpm test`.
+   Migration mới: thử lên → xuống → lên trên DB sạch (đặt `batch` của migration mới lên số lớn rồi `pnpm payload migrate:down` để chỉ lùi 1 file).
+5. E2E trên máy cloud: DB `tdcx_e2e` (phải **không** có user admin), thêm `E2E_TEST_HOOKS=1`; chép test thành `tests/e2e/zz-qa-*.test.ts`, thay bước chờ `cf-turnstile-response` bằng `Promise.resolve({` (proxy chặn Cloudflare); file cấu hình `playwright.qa.config.ts` (chỉ ở worktree QA, không commit) trỏ `QA_CHROME=/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; chạy `env -u CI pnpm exec playwright test -c playwright.qa.config.ts <file> --workers=1 --repeat-each=2`; xóa `rate_limit_hits` giữa các lần; xóa file `zz-qa-*` sau đó; tắt server bằng `pkill -f '[n]ext dev'; pkill -f '[n]ext-server'`.
+6. Lỗi nhỏ / vừa: Planning tự sửa trên nhánh (commit `fix(...): … (T2-xxc)`), push; lỗi lớn: viết biên bản CHƯA ĐẠT + prompt `<MÃ>b.md` trả máy.
+7. Biên bản `reviews/<MÃ>.md` (mẫu: `reviews/T2-06.md`), hỏi anh Nhân duyệt từng nhóm `REVIEW-REQUIRED` (AskUserQuestion), ghi "IT duyệt" vào biên bản.
+8. PR task: bỏ draft → merge khi CI xanh. Docs (biên bản, prompt, README) đi PR riêng từ nhánh Planning, merge khi CI xanh.
+
+**Lỗi hay gặp ở các máy** (soát kỹ): e2e không tick đồng ý / không chờ Turnstile / URL không neo `$` / bấm trước khi trang sẵn sàng (phải `toPass`); form bấm được trước khi hydrate (khóa bằng `useSyncExternalStore`); dò chữ "unique" thay vì bắt `ValidationError`; thử lại không giới hạn; file `'use server'` export object; tạo / gắn dữ liệu trước khi kiểm quyền; chữ tiếng Việt ngoài `vi.ts`; màu ngoài 8 màu brand (`bg-white`, `red-*`); thiếu `motion-reduce`; test để rác trong DB.
 
 ## Cập nhật 10/10/2026 (phiên cloud) – đọc mục này trước
 
