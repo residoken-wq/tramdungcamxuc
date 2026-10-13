@@ -762,10 +762,20 @@ export const vi = {
           '• Sau khi nhận được chuyển khoản, Coach Hana Lương sẽ xác nhận đơn và gửi link đặt lịch qua email của bạn trong thời gian sớm nhất.',
         timingNoticeLine2:
           '• Nếu cần hỗ trợ khẩn cấp, bạn có thể nhắn tin qua nút chat Zalo ở góc dưới màn hình.',
+        timingNoticeSepay: 'Hệ thống tự xác nhận trong vài phút sau khi nhận tiền',
+        timingNoticeSepaySub:
+          'Trang sẽ tự động cập nhật ngay khi giao dịch hoàn tất (đang tự động kiểm tra).',
+        goToToolButton: 'Vào sử dụng công cụ ngay →',
+        goToAccountButton: 'Vào tài khoản của tôi →',
         backHomeButton: '← Quay về trang chủ',
       },
       adminActions: {
+        paymentEventsTitle: 'Sự kiện thanh toán (Webhook / Đối soát)',
+        noPaymentEvents: 'Chưa có sự kiện thanh toán nào được ghi nhận cho đơn này.',
+        amountMismatchWarning: 'Lệch số tiền – Cần xử lý tay',
+        orderCancelledWarning: 'Đơn đã hủy – Khách vẫn chuyển tiền',
         panelTitle: 'Thao tác đơn hàng (Chủ sở hữu)',
+
         panelDesc:
           'Trạng thái thanh toán được bảo vệ và chỉ có thể thay đổi an toàn qua các nút chức năng bên dưới.',
         saveFirstNotice: 'Vui lòng lưu đơn hàng trước khi thực hiện thao tác duyệt hoặc hủy.',

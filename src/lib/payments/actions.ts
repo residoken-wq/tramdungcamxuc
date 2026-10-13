@@ -261,3 +261,75 @@ export async function createDigitalToolOrderAction(
     }
   }
 }
+
+export interface OrderPaymentEventItem {
+  id: number
+  receivedAt: string
+  provider: string
+  transactionId?: string | null
+  result?: string | null
+  signatureValid?: boolean | null
+  amount?: number | null
+  isMismatch?: boolean
+  isCancelled?: boolean
+}
+
+// REVIEW-REQUIRED: Server action lấy danh sách sự kiện thanh toán của đơn hàng cho chủ sở hữu (owner).
+// Dữ liệu chỉ đọc, dùng để hiển thị trên trang chi tiết đơn hàng trong CMS Admin.
+export async function getOrderPaymentEventsAction(
+  orderId: number,
+  options: { payload?: Payload } = {},
+): Promise<OrderPaymentEventItem[]> {
+  try {
+    let headers: Headers | undefined
+    try {
+      headers = await getHeaders()
+    } catch {
+      // Ngoài request scope
+    }
+
+    const payload = options.payload ?? (await getPayload({ config: await config }))
+    const { user } = await payload.auth({ headers: headers || new Headers() })
+
+    if (!user || !isAdminUser(user) || !isOwnerUser(user)) {
+      return []
+    }
+
+    const events = await payload.find({
+      collection: 'paymentEvents',
+      where: {
+        order: { equals: orderId },
+      },
+      sort: '-receivedAt',
+      limit: 20,
+      overrideAccess: true,
+    })
+
+    return events.docs.map((ev) => {
+      const raw = ev.rawPayload as Record<string, unknown> | null
+      const transferAmount =
+        typeof raw?.transferAmount === 'number'
+          ? raw.transferAmount
+          : typeof raw?.amount === 'number'
+            ? raw.amount
+            : null
+
+      return {
+        id: ev.id,
+        receivedAt: ev.receivedAt || '',
+        provider: ev.provider,
+        transactionId: ev.transactionId ?? null,
+        result: ev.result ?? null,
+        signatureValid: ev.signatureValid ?? null,
+        amount: transferAmount,
+        isMismatch: ev.result === 'amount_mismatch',
+        isCancelled: ev.result === 'order_cancelled',
+      }
+
+    })
+  } catch (err) {
+    console.error('[AdminPaymentAction] Error fetching order payment events:', err)
+    return []
+  }
+}
+

@@ -151,7 +151,10 @@ export interface PublicOrderViewDto {
     discountPercent: number | null
     notes?: string | null
   } | null
+  paymentProvider?: 'manual' | 'sepay'
+  toolUrl?: string | null
 }
+
 
 async function resolvePayload(injected?: Payload): Promise<Payload> {
   if (injected) return injected
@@ -675,6 +678,16 @@ export async function getPublicOrderView(
   const createdByAdmin = Boolean(order.createdByAdmin)
   const termsAcceptedAt = order.termsAcceptedAt ? String(order.termsAcceptedAt) : null
 
+  let toolUrl: string | null = null
+  if (Array.isArray(order.items) && order.items.length > 0) {
+    const firstItem = order.items[0]
+    if (typeof firstItem.product === 'object' && firstItem.product !== null) {
+      toolUrl = getToolUrl(firstItem.product as { web?: string | null })
+    }
+  }
+
+  const paymentProvider = process.env.PAYMENT_PROVIDER === 'sepay' ? 'sepay' : 'manual'
+
   // REVIEW-REQUIRED: DTO công khai không chứa email, số điện thoại hay ID nội bộ của khách hàng
   return {
     paymentRef: awaitingTerms ? '' : order.paymentRef || '',
@@ -691,8 +704,11 @@ export async function getPublicOrderView(
     termsAcceptedAt,
     payToken: order.payToken || payToken,
     packageSummary,
+    paymentProvider,
+    toolUrl,
   }
 }
+
 
 export interface AdminActor {
   id: number | string

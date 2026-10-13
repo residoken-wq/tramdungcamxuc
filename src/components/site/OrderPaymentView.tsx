@@ -16,9 +16,52 @@ export interface OrderPaymentViewProps {
 
 export function OrderPaymentView({ order }: OrderPaymentViewProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [status, setStatus] = useState<string>(order.status)
   const router = useRouter()
   // QR and bank details only arrive from the server after terms are accepted
   const termsAccepted = Boolean(order.termsAcceptedAt) || !order.createdByAdmin
+
+  const isSepayMode = order.paymentProvider === 'sepay'
+  const payToken = order.payToken
+
+  // REVIEW-REQUIRED: Ở chế độ SePay, polling tự động mỗi 5 giây (tối đa 15 phút) qua GET /api/payments/status/[token]
+  // Ngừng kiểm tra khi rời trang (unmount) hoặc khi đơn hàng đã chuyển trạng thái (paid/failed/cancelled).
+  React.useEffect(() => {
+    if (!isSepayMode || status !== 'pending' || !payToken) {
+      return
+    }
+
+    let active = true
+    const maxDurationMs = 15 * 60 * 1000 // 15 phút
+    const startTime = Date.now()
+
+    const intervalId = setInterval(async () => {
+      if (Date.now() - startTime > maxDurationMs) {
+        clearInterval(intervalId)
+        return
+      }
+
+      try {
+        const res = await fetch(`/api/payments/status/${encodeURIComponent(payToken)}`)
+        if (!res.ok) return
+        const data = await res.json()
+        if (active && data?.paymentStatus) {
+          if (data.paymentStatus !== 'pending') {
+            setStatus(data.paymentStatus)
+            clearInterval(intervalId)
+            router.refresh()
+          }
+        }
+      } catch {
+        // Bỏ qua lỗi mạng tạm thời trong quá trình polling
+      }
+    }, 5000)
+
+    return () => {
+      active = false
+      clearInterval(intervalId)
+    }
+  }, [isSepayMode, status, payToken, router])
 
   const copyToClipboard = async (text: string, fieldName: string) => {
     try {
@@ -32,12 +75,13 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
     }
   }
 
-  const isPending = order.status === 'pending'
-  const isPaid = order.status === 'paid'
-  const isCancelled = order.status === 'cancelled'
-  const isFailed = order.status === 'failed'
+  const isPending = status === 'pending'
+  const isPaid = status === 'paid'
+  const isCancelled = status === 'cancelled'
+  const isFailed = status === 'failed'
 
   const showPackageTerms = Boolean(order.createdByAdmin && !termsAccepted && isPending)
+
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-8">
@@ -260,16 +304,49 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                 <p className="font-semibold text-deep-navy">
                   {vi.payment.ui.orderView.timingNoticeTitle}
                 </p>
-                <p>{vi.payment.ui.orderView.timingNoticeLine1}</p>
-                <p>{vi.payment.ui.orderView.timingNoticeLine2}</p>
+                {isSepayMode ? (
+                  <>
+                    <p className="font-medium text-bright-magenta">
+                      ⚡ {vi.payment.ui.orderView.timingNoticeSepay}
+                    </p>
+                    <p>{vi.payment.ui.orderView.timingNoticeSepaySub}</p>
+                  </>
+                ) : (
+                  <>
+                    <p>{vi.payment.ui.orderView.timingNoticeLine1}</p>
+                    <p>{vi.payment.ui.orderView.timingNoticeLine2}</p>
+                  </>
+                )}
               </div>
             )}
           </div>
         </div>
       )}
 
+      {/* Access Tool CTA when Paid */}
+      {isPaid && (
+        <div className="text-center pt-2 pb-2">
+          <Link href={order.toolUrl || '/tai-khoan'}>
+            <Button variant="primary" size="lg" className="shadow-md">
+              {order.toolUrl
+                ? vi.payment.ui.orderView.goToToolButton
+                : vi.payment.ui.orderView.goToAccountButton}
+            </Button>
+          </Link>
+        </div>
+      )}
+
       {/* Navigation Footer */}
       <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        {isPaid && (
+          <Link href={order.toolUrl || '/tai-khoan'}>
+            <Button variant="primary" size="md">
+              {order.toolUrl
+                ? vi.payment.ui.orderView.goToToolButton
+                : vi.payment.ui.orderView.goToAccountButton}
+            </Button>
+          </Link>
+        )}
         <Link href="/">
           <Button variant="ghost" size="md">
             {vi.payment.ui.orderView.backHomeButton}
@@ -279,5 +356,6 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
     </div>
   )
 }
+
 
 export default OrderPaymentView
