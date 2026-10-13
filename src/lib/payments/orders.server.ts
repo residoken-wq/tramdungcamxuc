@@ -8,17 +8,19 @@ import { vi } from '../i18n/vi'
 import { experienceOrderSchema, type ExperienceOrderInput } from '../forms/schemas'
 import { checkAndRecordRateLimit } from '../forms/ratelimit.server'
 import { verifyTurnstile } from '../forms/turnstile.server'
-import { getEffectivePrice } from '../products'
+import { getEffectivePrice, getToolUrl } from '../products'
 import { computePackageValue } from '../pricing'
 import { generatePayToken, generateUniquePaymentRef } from './payment-ref'
 import { assertValidBankConfig, buildVietQrPayload, generateVietQrSvg } from './vietqr'
 import {
+  sendDigitalToolOrderPaidEmail,
   sendExperienceOrderPaidEmail,
   sendOrderExpiredReminderEmail,
   sendPackageOrderPaidEmail,
 } from '../email/service.server'
 import type { EmailSender } from '../email/types'
 import { grantEntitlementsForOrder } from './entitlements.server'
+import { getAccess } from '../entitlements'
 import { getSiteUrl } from '../site-url'
 
 export class PaymentError extends Error {
@@ -61,6 +63,46 @@ export class ProductNotForSaleError extends PaymentError {
     super(message)
     this.name = 'ProductNotForSaleError'
   }
+}
+
+export class InvalidProductTypeError extends PaymentError {
+  constructor(message = vi.payment.errors.invalidProductType) {
+    super(message)
+    this.name = 'InvalidProductTypeError'
+  }
+}
+
+export class ProductExternalError extends PaymentError {
+  constructor(message = vi.payment.errors.productExternal) {
+    super(message)
+    this.name = 'ProductExternalError'
+  }
+}
+
+export class TermsNotAcceptedError extends PaymentError {
+  constructor(
+    message = vi.checkout?.termsRequired ??
+      'Vui lòng đồng ý với Điều khoản và Chính sách giá – thanh toán để tiếp tục.',
+  ) {
+    super(message)
+    this.name = 'TermsNotAcceptedError'
+  }
+}
+
+export class AlreadyHasActiveAccessError extends PaymentError {
+  toolUrl?: string
+  constructor(message = vi.entitlement.alreadyHasActiveAccess, toolUrl?: string) {
+    super(message)
+    this.name = 'AlreadyHasActiveAccessError'
+    this.toolUrl = toolUrl
+  }
+}
+
+export interface DigitalToolOrderResult {
+  success: boolean
+  payToken: string
+  reused?: boolean
+  message: string
 }
 
 export interface ExperienceOrderContext {
@@ -276,6 +318,239 @@ export async function createExperienceOrder(
     payToken,
     message: vi.payment.success.orderCreated,
   }
+}
+
+const orderCreationLocks = new Map<string, Promise<unknown>>()
+
+export async function withOrderLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  while (orderCreationLocks.has(key)) {
+    try {
+      await orderCreationLocks.get(key)
+    } catch {
+      // Bỏ qua lỗi từ luồng trước
+    }
+  }
+  let resolveLock!: () => void
+  const lockPromise = new Promise<void>((resolve) => {
+    resolveLock = resolve
+  })
+  orderCreationLocks.set(key, lockPromise)
+  try {
+    return await fn()
+  } finally {
+    orderCreationLocks.delete(key)
+    resolveLock()
+  }
+}
+
+/**
+ * REVIEW-REQUIRED: Tạo hoặc dùng lại đơn hàng mua lẻ công cụ số (digital_tool).
+ *
+ * Quy tắc:
+ * 1. Chỉ khách hàng đã đăng nhập (customerId hợp lệ > 0).
+ * 2. Bắt buộc đồng ý điều khoản thanh toán ({ termsAccepted: true }).
+ * 3. Giới hạn tần suất tạo đơn (checkAndRecordRateLimit) theo khách.
+ * 4. Sản phẩm: type = 'digital_tool', _status = 'published', saleStatus = 'on_sale', không có externalUrl.
+ * 5. Giá đọc trực tiếp từ DB bằng getEffectivePrice, bỏ qua mọi giá gửi từ client.
+ * 6. Khách đã có quyền 'active' còn hiệu lực -> ném AlreadyHasActiveAccessError (không tạo đơn).
+ * 7. Tái sử dụng đơn hàng: Nếu khách đã có đơn 'pending' chứa sản phẩm này chưa quá 24 giờ và GIÁ KHỚP -> dùng lại payToken; nếu lệch giá -> hủy đơn cũ bằng cancelOrder và tạo đơn mới.
+ * 8. Khóa luồng song song theo (customerId, productId) để tránh tạo 2 đơn pending trùng lặp.
+ * 9. Tạo paymentRef và payToken duy nhất -> trả về CHỈ payToken (không lộ ID đơn hay thông tin khách).
+ */
+export async function createDigitalToolOrder(
+  customerId: number,
+  productSlug: string,
+  input: { termsAccepted?: boolean; ip?: string } = {},
+  options: { payload?: Payload; now?: Date } = {},
+): Promise<DigitalToolOrderResult> {
+  const now = options.now ?? new Date()
+  const payload = await resolvePayload(options.payload)
+
+  // 1. Kiểm tra khách hàng đã đăng nhập
+  if (!customerId || typeof customerId !== 'number' || customerId <= 0) {
+    throw new UnauthorizedPaymentError(vi.auth.unauthorizedNotice)
+  }
+
+  const customer = await payload.findByID({
+    collection: 'customers',
+    id: customerId,
+    overrideAccess: true,
+  })
+
+  if (!customer) {
+    throw new UnauthorizedPaymentError(vi.auth.unauthorizedNotice)
+  }
+
+  // 2. Bắt buộc đồng ý điều khoản
+  if (!input.termsAccepted) {
+    throw new TermsNotAcceptedError(
+      vi.checkout?.termsRequired ??
+        'Vui lòng đồng ý với Điều khoản và Chính sách giá – thanh toán để tiếp tục.',
+    )
+  }
+
+  // 3. Giới hạn tần suất tạo đơn
+  await checkAndRecordRateLimit(payload, {
+    form: 'digital_tool_order',
+    email: customer.email,
+    ip: input.ip,
+    maxHits: 10,
+    windowMinutes: 10,
+  })
+
+  // 4. Tìm sản phẩm theo slug
+  const cleanSlug = (productSlug || '').trim()
+  const products = await payload.find({
+    collection: 'products',
+    where: { slug: { equals: cleanSlug } },
+    overrideAccess: true,
+    limit: 1,
+  })
+
+  if (products.totalDocs === 0) {
+    throw new OrderNotFoundError(vi.payment.errors.productNotFound)
+  }
+
+  const product = products.docs[0]!
+
+  if (product._status !== 'published') {
+    throw new OrderNotFoundError(vi.payment.errors.productNotFound)
+  }
+
+  if (product.type !== 'digital_tool') {
+    throw new InvalidProductTypeError(vi.payment.errors.invalidProductType)
+  }
+
+  if (product.saleStatus !== 'on_sale') {
+    throw new ProductNotForSaleError(vi.payment.errors.productNotForSale)
+  }
+
+  if (product.externalUrl && product.externalUrl.trim().length > 0) {
+    throw new ProductExternalError(vi.payment.errors.productExternal)
+  }
+
+  // 5. Kiểm tra cấu hình ngân hàng
+  const siteSettings = await payload.findGlobal({
+    slug: 'siteSettings',
+    overrideAccess: true,
+  })
+  assertValidBankConfig(siteSettings)
+
+  // Khóa theo cặp (customerId, productId) quanh bước tìm + tạo đơn
+  const lockKey = `${customerId}:${product.id}`
+  return await withOrderLock(lockKey, async () => {
+    // 6. Kiểm tra xem khách đã có quyền active còn hiệu lực hay chưa
+    const access = await getAccess(customerId, product.id, { payload, now })
+    if (access.hasAccess && access.status === 'active') {
+      const toolUrl = getToolUrl(product)
+      throw new AlreadyHasActiveAccessError(vi.entitlement.alreadyHasActiveAccess, toolUrl)
+    }
+
+    // 7. Đọc giá hiệu lực từ DB trước
+    const effective = getEffectivePrice(product, now)
+    const effectivePrice = effective.salePrice ?? effective.price
+    if (effectivePrice == null || effectivePrice <= 0) {
+      throw new PaymentError(vi.payment.errors.productPriceInvalid)
+    }
+
+    // 8. Kiểm tra đơn pending chưa quá 24 giờ để dùng lại
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
+    const recentPendingOrders = await payload.find({
+      collection: 'orders',
+      where: {
+        and: [
+          { customer: { equals: customerId } },
+          { paymentStatus: { equals: 'pending' } },
+          { createdAt: { greater_than_equal: twentyFourHoursAgo } },
+        ],
+      },
+      sort: '-createdAt',
+      limit: 20,
+      overrideAccess: true,
+    })
+
+    const reusableOrder = recentPendingOrders.docs.find((ord) => {
+      if (!Array.isArray(ord.items)) return false
+      return ord.items.some((item) => {
+        const pId =
+          typeof item.product === 'object' && item.product !== null
+            ? item.product.id
+            : Number(item.product)
+        return pId === product.id
+      })
+    })
+
+    if (reusableOrder && reusableOrder.payToken) {
+      if (reusableOrder.total === effectivePrice) {
+        await payload.update({
+          collection: 'orders',
+          id: reusableOrder.id,
+          data: {
+            termsAcceptedAt: now.toISOString(),
+          },
+          context: { paymentAction: true },
+          overrideAccess: true,
+        })
+
+        return {
+          success: true,
+          payToken: reusableOrder.payToken,
+          reused: true,
+          message: vi.payment.success.orderCreated,
+        }
+      } else {
+        // Giá sản phẩm đã thay đổi -> hủy đơn cũ bằng cancelOrder và tạo đơn mới
+        await cancelOrder(reusableOrder.id, { id: 0, role: 'system' }, 'Giá sản phẩm đã thay đổi', {
+          payload,
+          now,
+        })
+      }
+    }
+
+    // 9. Sinh paymentRef và payToken duy nhất
+    const paymentRef = await generateUniquePaymentRef(async (ref) => {
+      const { totalDocs } = await payload.count({
+        collection: 'orders',
+        where: { paymentRef: { equals: ref } },
+        overrideAccess: true,
+      })
+      return totalDocs > 0
+    })
+
+    const payToken = generatePayToken()
+    const termsAcceptedAt = now.toISOString()
+
+    // 10. Tạo đơn hàng mới
+    await payload.create({
+      collection: 'orders',
+      data: {
+        customer: customerId,
+        items: [
+          {
+            product: product.id,
+            price: effectivePrice,
+          },
+        ],
+        subtotal: effectivePrice,
+        total: effectivePrice,
+        paymentRef,
+        payToken,
+        paymentStatus: 'pending',
+        deliveryStatus: 'none',
+        termsAcceptedAt,
+        notes: `Mua công cụ số: ${product.name}`,
+        createdByAdmin: false,
+      },
+      context: { paymentAction: true },
+      overrideAccess: true,
+    })
+
+    return {
+      success: true,
+      payToken,
+      message: vi.payment.success.orderCreated,
+    }
+  })
 }
 
 /**
@@ -562,9 +837,10 @@ export async function confirmManualPayment(
     overrideAccess: true,
   })
 
-  // Kiểm tra đơn hàng có chứa sản phẩm dạng package hay không
+  // Kiểm tra đơn hàng có chứa sản phẩm dạng package hoặc digital_tool hay không
   const items = Array.isArray(order.items) ? order.items : []
   let packageProduct: Product | null = null
+  let digitalToolProduct: Product | null = null
 
   for (const item of items) {
     let p: Product | number | string | null = item.product as Product | number | string | null
@@ -576,16 +852,22 @@ export async function confirmManualPayment(
         overrideAccess: true,
       })) as Product
     }
-    if (p && typeof p === 'object' && p.type === 'package') {
-      packageProduct = p
-      break
+    if (p && typeof p === 'object') {
+      if (p.type === 'package') {
+        packageProduct = p
+        break
+      } else if (p.type === 'digital_tool' && !digitalToolProduct) {
+        digitalToolProduct = p
+      }
     }
   }
 
   const isPackageOrder = Boolean(packageProduct)
+  const isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
 
-  // REVIEW-REQUIRED: Cấp quyền truy cập cho đơn gói Growth Mirror
-  if (isPackageOrder) {
+  // REVIEW-REQUIRED: Cấp quyền truy cập cho đơn gói Growth Mirror hoặc đơn công cụ số
+  let grantFailed = false
+  if (isPackageOrder || isDigitalToolOrder) {
     try {
       await grantEntitlementsForOrder(orderId, { payload, now })
       await payload.update({
@@ -596,6 +878,7 @@ export async function confirmManualPayment(
         overrideAccess: true,
       })
     } catch (grantErr) {
+      grantFailed = true
       console.error('[Payment] Grant entitlements failed for order', orderId, grantErr)
       await payload.create({
         collection: 'auditLogs',
@@ -612,7 +895,7 @@ export async function confirmManualPayment(
     }
   }
 
-  // Gửi email xác nhận kèm link đặt lịch / hướng dẫn
+  // Gửi email xác nhận kèm link đặt lịch / hướng dẫn (chỉ gửi khi cấp quyền không bị lỗi)
   const siteSettings = await payload.findGlobal({
     slug: 'siteSettings',
     overrideAccess: true,
@@ -627,7 +910,7 @@ export async function confirmManualPayment(
           overrideAccess: true,
         })
 
-  if (customerDoc?.email) {
+  if (customerDoc?.email && !grantFailed) {
     try {
       if (isPackageOrder && packageProduct) {
         // Tìm các workshop sắp diễn ra có audienceProducts chứa gói này
@@ -688,6 +971,32 @@ export async function confirmManualPayment(
           },
           options.emailSender,
         )
+
+        await payload.update({
+          collection: 'orders',
+          id: orderId,
+          data: { deliveryStatus: 'email_sent' },
+          context: { paymentAction: true },
+          overrideAccess: true,
+        })
+      } else if (isDigitalToolOrder && digitalToolProduct) {
+        // REVIEW-REQUIRED: Gửi email kích hoạt đơn mua lẻ công cụ số
+        const siteUrl = getSiteUrl()
+        const toolUrl = `${siteUrl}${getToolUrl(digitalToolProduct)}`
+        await sendDigitalToolOrderPaidEmail(
+          payload,
+          {
+            name: customerDoc.name || 'bạn',
+            email: customerDoc.email,
+            paymentRef: order.paymentRef || '',
+            amount: order.total,
+            toolName: digitalToolProduct.name || 'Công cụ số',
+            accessDurationDays: digitalToolProduct.accessDurationDays,
+            toolUrl,
+          },
+          options.emailSender,
+        )
+        // Lưu ý: với đơn công cụ số, deliveryStatus vẫn giữ là 'access_granted' đã cập nhật ở trên
       } else {
         // Đơn trải nghiệm 149k giữ nguyên hành vi
         await sendExperienceOrderPaidEmail(
@@ -701,15 +1010,15 @@ export async function confirmManualPayment(
           },
           options.emailSender,
         )
-      }
 
-      await payload.update({
-        collection: 'orders',
-        id: orderId,
-        data: { deliveryStatus: 'email_sent' },
-        context: { paymentAction: true },
-        overrideAccess: true,
-      })
+        await payload.update({
+          collection: 'orders',
+          id: orderId,
+          data: { deliveryStatus: 'email_sent' },
+          context: { paymentAction: true },
+          overrideAccess: true,
+        })
+      }
     } catch (emailErr) {
       console.error('[Payment] Confirmation email delivery failed for order', orderId, emailErr)
       // Đơn hàng vẫn giữ nguyên trạng thái paid (không revert)
@@ -737,8 +1046,8 @@ export async function cancelOrder(
   reason?: string,
   options: { payload?: Payload; now?: Date } = {},
 ): Promise<unknown> {
-  // REVIEW-REQUIRED: Chỉ tài khoản 'owner' mới được hủy đơn hàng
-  if (!user || user.role !== 'owner') {
+  // REVIEW-REQUIRED: Chỉ tài khoản 'owner' hoặc 'system' mới được hủy đơn hàng
+  if (!user || (user.role !== 'owner' && user.role !== 'system')) {
     throw new UnauthorizedPaymentError(vi.payment.errors.unauthorized)
   }
 
@@ -790,10 +1099,11 @@ export async function cancelOrder(
     throw new InvalidOrderStatusError(vi.payment.errors.orderNotFound)
   }
 
+  const actorId = user.id ? Number(user.id) : 0
   await payload.create({
     collection: 'auditLogs',
     data: {
-      actor: Number(user.id),
+      ...(actorId > 0 ? { actor: actorId } : {}),
       action: 'cancel_order',
       target: `orders:${orderId}`,
       before: { paymentStatus: order.paymentStatus },

@@ -10,8 +10,12 @@ import { ResourceDeliveryEmail } from '@/emails/ResourceDeliveryEmail'
 import { ExperienceOrderPaidEmail } from '@/emails/ExperienceOrderPaidEmail'
 import { ExperienceOrderExpiredEmail } from '@/emails/ExperienceOrderExpiredEmail'
 import { PackageOrderPaidEmail } from '@/emails/PackageOrderPaidEmail'
+import { HabitPlanEmail, type HabitPlanEmailTechniqueItem } from '@/emails/HabitPlanEmail'
+import { DigitalToolOrderPaidEmail } from '@/emails/DigitalToolOrderPaidEmail'
 import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
+import { WorkshopReminderEmail } from '@/emails/WorkshopReminderEmail'
 import { vi } from '@/lib/i18n/vi'
+import { getSiteUrl } from '@/lib/site-url'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
 
@@ -437,6 +441,56 @@ export async function sendPackageOrderPaidEmail(
   }
 }
 
+export async function sendDigitalToolOrderPaidEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    paymentRef: string
+    amount: number
+    toolName: string
+    accessDurationDays?: number | null
+    toolUrl: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(DigitalToolOrderPaidEmail, {
+        name: data.name,
+        paymentRef: data.paymentRef,
+        amount: data.amount,
+        toolName: data.toolName,
+        accessDurationDays: data.accessDurationDays,
+        toolUrl: data.toolUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(DigitalToolOrderPaidEmail, {
+        name: data.name,
+        paymentRef: data.paymentRef,
+        amount: data.amount,
+        toolName: data.toolName,
+        accessDurationDays: data.accessDurationDays,
+        toolUrl: data.toolUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.payment.email.digitalToolPaid.subject(data.toolName),
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send digital tool order paid email:', err)
+    throw err
+  }
+}
+
 export async function sendCustomerOtpEmail(
   payload: Payload,
   data: {
@@ -471,5 +525,101 @@ export async function sendCustomerOtpEmail(
   } catch (err) {
     console.error('[Email] Failed to send customer OTP email:', err)
     // Non-fatal error logging, let caller proceed or handle
+  }
+}
+
+export async function sendWorkshopReminderEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    workshopTitle: string
+    workshopTimeFormatted: string
+    accountUrl?: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(WorkshopReminderEmail, {
+        name: data.name,
+        workshopTitle: data.workshopTitle,
+        workshopTimeFormatted: data.workshopTimeFormatted,
+        accountUrl: data.accountUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(WorkshopReminderEmail, {
+        name: data.name,
+        workshopTitle: data.workshopTitle,
+        workshopTimeFormatted: data.workshopTimeFormatted,
+        accountUrl: data.accountUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.workshop.reminderEmail.subject(data.workshopTitle),
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send workshop reminder email:', err)
+    throw err
+  }
+}
+
+export async function sendHabitPlanEmail(
+  data: {
+    email: string
+    name?: string
+    identityStatement: string
+    techniques: HabitPlanEmailTechniqueItem[]
+    zaloGroupUrl?: string
+    revisitUrl?: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const baseUrl = getSiteUrl()
+    const siteDomain = baseUrl.replace(/^https?:\/\//, '')
+    const revisitUrl = data.revisitUrl || `${baseUrl}/habit/5-phut`
+
+    const userHtml = await render(
+      React.createElement(HabitPlanEmail, {
+        name: data.name,
+        identityStatement: data.identityStatement,
+        techniques: data.techniques,
+        zaloGroupUrl: data.zaloGroupUrl,
+        revisitUrl,
+        siteUrl: siteDomain,
+      }),
+    )
+    const userText = await render(
+      React.createElement(HabitPlanEmail, {
+        name: data.name,
+        identityStatement: data.identityStatement,
+        techniques: data.techniques,
+        zaloGroupUrl: data.zaloGroupUrl,
+        revisitUrl,
+        siteUrl: siteDomain,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.habit.emailSubject,
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send habit plan email:', err)
+    // Lỗi gửi email không làm hỏng việc lưu kế hoạch của học viên
   }
 }

@@ -144,6 +144,238 @@ export const vi = {
       emotionText
         ? `Ngày ${day}: ${statusText}, cảm xúc ${emotionText}`
         : `Ngày ${day}: ${statusText}`,
+    wizard: {
+      badge: 'Habit Loop 5 phút',
+      titleLine1: 'Thiết kế vòng lặp',
+      titleLine2: 'Thói quen bền vững',
+      emotionalLine:
+        'Chỉ 5 phút để gọi tên, gỡ rối và đặt nền móng cho con người bạn muốn trở thành',
+      stepIndicator: (current: number, total: number) => `Bước ${current} / ${total}`,
+      step1: {
+        title: 'Bảng điểm thói quen',
+        subtitle:
+          'Liệt kê các thói quen thường nhật trong ngày và đánh giá xem chúng đang nâng đỡ hay kéo lùi bạn.',
+        addPlaceholder:
+          'Nhập thói quen hàng ngày (ví dụ: Uống một cốc nước ấm, Lướt điện thoại 30 phút...)',
+        addButton: 'Thêm thói quen',
+        goodLabel: 'Tốt (+)',
+        neutralLabel: 'Bình thường (=)',
+        badLabel: 'Xấu (-)',
+        emptyPrompt: 'Hãy thêm ít nhất một thói quen để bắt đầu lập bảng điểm.',
+        samplesPrompt: 'Hoặc chọn nhanh gợi ý mẫu:',
+        sampleHabits: [
+          'Thức dậy đúng giờ',
+          'Uống một cốc nước ấm',
+          'Lướt mạng xã hội khi vừa mở mắt',
+          'Đọc sách 10 phút',
+          'Ăn vặt khi căng thẳng',
+          'Đi bộ nhẹ nhàng',
+        ],
+        deleteButton: 'Xóa thói quen',
+      },
+      step2: {
+        title: 'Gọi tên thói quen',
+        subtitle:
+          'Định danh hành vi: biến thói quen thành lá phiếu bầu cho con người bạn muốn trở thành.',
+        actionLabel: 'Tôi sẽ (hành động cụ thể):',
+        actionPlaceholder: 'Ví dụ: đọc sách 10 phút mỗi sáng, tập hít thở 3 phút...',
+        identityLabel: 'Để trở thành (con người bạn hướng tới):',
+        identityPlaceholder: 'Ví dụ: người điềm tĩnh, người kỷ luật và thấu hiểu bản thân...',
+        previewLabel: 'Câu định danh của bạn:',
+        formulaPrefix: 'Tôi sẽ',
+        formulaMiddle: 'để trở thành',
+        tipTitle: 'Mẹo định danh nhỏ:',
+        tipContent:
+          'Mỗi hành động bạn thực hiện là một lá phiếu bầu cho con người bạn muốn trở thành. Đừng bắt đầu quá lớn, hãy bắt đầu thật rõ ràng.',
+      },
+      step3: {
+        title: 'Chọn kỹ thuật thực hành',
+        subtitle:
+          'Chọn 1–2 kỹ thuật thực chiến cho mỗi giai đoạn vòng lặp và ghi rõ hành động cụ thể của bạn.',
+        stages: {
+          cue: {
+            title: '1. Gợi ý / Tín hiệu (Cue)',
+            rule: 'Make It Obvious – Làm cho rõ ràng',
+            desc: 'Thiết kế môi trường để tín hiệu kích hoạt thói quen xuất hiện tự nhiên và dễ thấy nhất.',
+          },
+          craving: {
+            title: '2. Khao khát (Craving)',
+            rule: 'Make It Attractive – Làm cho hấp dẫn',
+            desc: 'Biến thói quen thành điều bạn háo hức mong chờ bằng nghi thức và sự kết hợp thú vị.',
+          },
+          response: {
+            title: '3. Phản hồi (Response)',
+            rule: 'Make It Easy – Làm cho dễ dàng',
+            desc: 'Hạ thấp rào cản tối đa để hành động nhỏ đến mức bạn không thể nói lời từ chối.',
+          },
+          reward: {
+            title: '4. Phần thưởng (Reward)',
+            rule: 'Make It Satisfying – Làm cho thỏa mãn',
+            desc: 'Ghi nhận và tự thưởng ngay sau khi làm xong để não bộ ghi nhớ cảm giác chiến thắng.',
+          },
+        },
+        maxSelectionNotice: 'Tối đa 2 kỹ thuật cho mỗi giai đoạn để tránh quá tải.',
+        actionPrompt: 'Hành động cụ thể của bạn với kỹ thuật này:',
+        actionPlaceholder: 'Ví dụ: Đặt sách ngay cạnh gối ngủ; Bật timer 5 phút rồi mới bắt đầu...',
+        emptyStageWarning: 'Vui lòng chọn ít nhất 1 kỹ thuật cho giai đoạn này.',
+        noTechniquesFound: 'Đang tải danh sách kỹ thuật từ hệ thống...',
+        emptyTechniquesList: 'Chưa có kỹ thuật nào cho giai đoạn này.',
+        selectedCount: (count: number, max: number = 2) => `Đã chọn: ${count} / ${max}`,
+      },
+      step4: {
+        title: 'Kế hoạch Tracker 21 ngày',
+        subtitle: 'Xem trước hành trình 21 ngày và lưu lại để bắt đầu thực hành ngay hôm nay.',
+        encouragement: 'Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?',
+        reassurance:
+          'Lỡ nhịp 1 ngày là không sao cả. Điều quan trọng là quay lại nhịp điệu vào ngày hôm sau.',
+        identityHeading: 'Cam kết định danh:',
+        techniquesHeading: 'Bộ kỹ thuật đã chọn:',
+        trackerPreviewHeading: 'Lưới hành động 21 ngày:',
+        continuousDays: '21 Ngày liên tục',
+        notSelected: 'Chưa chọn',
+        emailHeading: 'Lưu kế hoạch & Nhận link nhóm Zalo',
+        emailSubheading:
+          'Nhập email để lưu lại kế hoạch thói quen của bạn và nhận lời mời tham gia nhóm Zalo đồng hành cùng Hana Lương.',
+        nameLabel: 'Họ và tên của bạn',
+        namePlaceholder: 'Ví dụ: Nguyễn Văn An',
+        emailLabel: 'Địa chỉ email của bạn',
+        emailPlaceholder: 'email@example.com',
+        consentLabel: 'Tôi đồng ý lưu kế hoạch và nhận thông tin từ Trạm Dừng Cảm Xúc theo',
+        privacyPolicy: 'Chính sách bảo mật',
+        saveButton: 'Lưu kế hoạch & Nhận link Zalo',
+        savingButton: 'Đang lưu kế hoạch...',
+        savedSuccessTitle: 'Kế hoạch đã sẵn sàng!',
+        savedSuccessMessage:
+          'Chúc mừng bạn đã hoàn thành thiết kế vòng lặp thói quen. Kế hoạch đã được lưu an toàn.',
+        joinZaloButton: 'Tham gia nhóm Zalo đồng hành',
+        viewOfferButton: 'Khám phá Habit Tracker 21 ngày số',
+        retakeButton: 'Chỉnh sửa / Làm lại vòng lặp',
+      },
+      controls: {
+        prev: 'Quay lại',
+        next: 'Tiếp tục',
+        finish: 'Xem kế hoạch 21 ngày',
+      },
+      errors: {
+        scorecardEmpty: 'Vui lòng thêm ít nhất một thói quen vào bảng điểm',
+        scorecardMax: 'Tối đa 20 thói quen',
+        habitRequired: 'Tên thói quen không được để trống',
+        habitMax: 'Tên thói quen không quá 200 ký tự',
+        identityRequired: 'Vui lòng điền cả hành động và con người bạn muốn trở thành',
+        identityMax: 'Câu định danh không quá 500 ký tự',
+        techniquesEmpty: 'Vui lòng chọn ít nhất 1 kỹ thuật cho mỗi giai đoạn',
+        techniqueDuplicate: 'Không được chọn trùng kỹ thuật.',
+        techniqueInvalid: 'Kỹ thuật đã chọn không còn trong danh sách. Vui lòng chọn lại ở bước 3.',
+        progressAria: 'Tiến độ bài thực hành',
+        ratingAria: 'Đánh giá thói quen',
+        identityExample: '“Tôi sẽ [hành động] để trở thành [con người]”',
+        techniquesTooMany: 'Mỗi giai đoạn chỉ chọn tối đa 2 kỹ thuật',
+        actionRequired: 'Vui lòng nhập hành động cụ thể cho kỹ thuật đã chọn',
+        actionMax: 'Hành động cụ thể không quá 300 ký tự',
+        consentRequired: 'Vui lòng đồng ý với chính sách bảo mật để tiếp tục',
+        emailRequired: 'Vui lòng nhập địa chỉ email của bạn',
+        emailInvalid: 'Địa chỉ email không hợp lệ (ví dụ: ban@example.com)',
+        submitFailed: 'Không thể lưu kế hoạch thói quen. Vui lòng thử lại.',
+      },
+    },
+    emailSubject: 'Trạm Dừng Cảm Xúc – Kế hoạch Habit Loop 5 phút của bạn',
+    metadata: {
+      loop5min: {
+        title: 'Habit Loop 5 phút – Thiết kế vòng lặp thói quen',
+        description:
+          'Chỉ 5 phút để gọi tên, gỡ rối và thiết kế vòng lặp thói quen bền vững với các kỹ thuật Atomic Habits cá nhân hóa.',
+        ogTitle: 'Habit Loop 5 phút | Trạm Dừng Cảm Xúc',
+        ogDescription:
+          'Chỉ 5 phút để gọi tên, gỡ rối và thiết kế vòng lặp thói quen bền vững cùng Hana Lương.',
+      },
+      offerPage: {
+        title: 'Habit Hack – 1% Better Mỗi Ngày | Habit Tracker số',
+        description:
+          'Bộ công cụ và khóa học Habit Hack 1% Better: bài giảng video, kỹ thuật thực chiến, tracker 21 ngày với 10 cảm xúc. Dùng thử miễn phí 21 ngày.',
+        ogTitle: 'Habit Hack – 1% Better Mỗi Ngày | Trạm Dừng Cảm Xúc',
+        ogDescription:
+          'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng. Trải nghiệm 21 ngày dùng thử miễn phí cùng Hana Lương.',
+      },
+    },
+    offer: {
+      badge: 'Khóa học & Công cụ số',
+      titleLine1: 'Habit Hack',
+      titleLine2: '1% Better Mỗi Ngày',
+      emotionalLine: 'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.',
+      pricePrefix: 'Chỉ',
+      permanentAccess: 'Mua 1 lần · Sở hữu vĩnh viễn',
+      noCreditCard: 'Không cần thẻ tín dụng · Trải nghiệm trọn vẹn',
+      habitLoopCta: 'Trải nghiệm Habit Loop 5 phút miễn phí',
+      stats: {
+        videos: 'Video thực chiến',
+        techniques: 'Kỹ thuật Atomic Habits',
+        tracker: 'Tracker 21 ngày & 10 Cảm xúc',
+        trackerValue: '21',
+        modules: 'Module lộ trình tinh gọn',
+        modulesValue: '4',
+      },
+      curriculum: {
+        heading: 'Lộ trình 4 Module chuyển hóa',
+        subheading: 'Được thiết kế tinh gọn, thực tế, học đến đâu ứng dụng ngay đến đó.',
+        modules: [
+          {
+            title: 'Module 1: Insight – Hiểu đúng về trì hoãn',
+            desc: 'Giải mã tâm lý trì hoãn, nhận diện tiếng nói tự phán xét và cách đối thoại nhân ái với bản thân.',
+          },
+          {
+            title: 'Module 2: Habit Loop – 4 Mắt xích hành vi',
+            desc: 'Đi sâu vào cơ chế Gợi ý, Khao khát, Phản hồi, Phần thưởng để tái cấu trúc thói quen.',
+          },
+          {
+            title: 'Module 3: Nguyên tắc – 4 Định luật Atomic Habits',
+            desc: 'Làm cho rõ ràng, hấp dẫn, dễ dàng và thỏa mãn. Biến hành động khó thành bản năng.',
+          },
+          {
+            title: 'Module 4: Kỹ thuật – Công cụ thực chiến',
+            desc: 'Soi nhịp sinh học, Ghép thói quen, Quy tắc 2 phút, Đôi bạn cùng tiến và hệ thống tự ghi nhận.',
+          },
+        ],
+      },
+      features: {
+        heading: 'Tại sao Habit Tracker số khác biệt?',
+        subheading: 'Xây dựng thói quen từ sự tử tế với chính mình, không phải kỷ luật trừng phạt.',
+        items: [
+          {
+            title: 'Không gò ép kỷ luật thép',
+            desc: 'Tiếp cận thói quen dưới lăng kính EQ và thấu hiểu cảm xúc. Lỡ nhịp một ngày là hoàn toàn bình thường.',
+          },
+          {
+            title: 'Theo dõi cả hành động lẫn cảm xúc',
+            desc: 'Ghi nhận 10 trạng thái cảm xúc mỗi ngày để nhận biết mối liên hệ sâu sắc giữa tâm trạng và thói quen.',
+          },
+          {
+            title: 'Dùng thử tự do',
+            desc: 'Trải nghiệm trọn vẹn toàn bộ tính năng và bài học trước khi quyết định đồng hành lâu dài.',
+          },
+        ],
+      },
+      includesHeading: 'Bao gồm trong bộ công cụ:',
+      bottomTitle: 'Bắt đầu hành trình 21 ngày của bạn',
+      bottomDesc: (videos: number, techniques: number) =>
+        `Khám phá ${videos > 0 ? `${videos} video bài giảng, ` : ''}${techniques > 0 ? `${techniques} kỹ thuật thực chiến và ` : ''}bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.`,
+      faq: {
+        heading: 'Câu hỏi thường gặp',
+        items: [
+          {
+            q: '[MẪU] Sau 21 ngày dùng thử thì sao?',
+            a: '[MẪU] Dữ liệu hành trình 21 ngày của bạn vẫn được lưu giữ an toàn. Bạn có thể mở khóa sử dụng vĩnh viễn bất kỳ lúc nào với mức giá ưu đãi từ CMS.',
+          },
+          {
+            q: '[MẪU] Tôi có cần nhập thẻ ngân hàng khi bắt đầu dùng thử không?',
+            a: '[MẪU] Hoàn toàn không. Bạn chỉ cần nhập email và nhận mã OTP để trải nghiệm ngay lập tức. (Hana sẽ soạn chính sách chính thức).',
+          },
+          {
+            q: '[MẪU] Mỗi ngày tôi cần dành bao nhiêu thời gian?',
+            a: '[MẪU] Mỗi video chỉ kéo dài từ 3 đến 5 phút, và việc cập nhật tracker chỉ tốn chưa đầy 1 phút mỗi ngày.',
+          },
+        ],
+      },
+    },
   },
   navbar: {
     mainNav: 'Điều hướng chính',
@@ -382,6 +614,8 @@ export const vi = {
       onlyPendingCanBeConfirmed: 'Chỉ có thể xác nhận đơn hàng đang ở trạng thái chờ thanh toán.',
       cannotCancelPaidOrder: 'Không thể hủy đơn hàng đã thanh toán (chính sách không hoàn tiền).',
       orderExpired: 'Đơn hàng đã hết hạn thanh toán.',
+      invalidProductType: 'Sản phẩm không phải là công cụ số.',
+      productExternal: 'Sản phẩm này được phân phối qua kênh liên kết ngoài.',
       serverError: 'Đã có lỗi xảy ra trong quá trình xử lý. Vui lòng thử lại sau.',
       termsNotAccepted:
         'Khách chưa đồng ý Điều khoản và Chính sách giá – thanh toán trên link thanh toán. Chưa thể xác nhận đơn này.',
@@ -430,6 +664,9 @@ export const vi = {
         footerAuthor: 'Hana Lương (ICF ACC) & Trạm Dừng Cảm Xúc',
         footerAutoNotice:
           'Email xác nhận tự động từ tramdungcamxuc.com. Nếu có câu hỏi cần hỗ trợ, bạn có thể trả lời trực tiếp email này.',
+      },
+      digitalToolPaid: {
+        subject: (toolName: string) => `Trạm Dừng Cảm Xúc – Kích hoạt công cụ số ${toolName}`,
       },
     },
     ui: {
@@ -693,6 +930,34 @@ export const vi = {
     myOrdersEmpty: 'Bạn chưa có đơn hàng nào.',
     unauthorizedNotice: 'Vui lòng đăng nhập để truy cập trang này.',
     loginSuccess: 'Đăng nhập thành công.',
+    buyToContinue: 'Mua để dùng tiếp',
+    openTool: 'Vào học / Mở công cụ',
+  },
+  workshop: {
+    heading: 'Lịch workshop của tôi',
+    empty: 'Bạn chưa có lịch workshop nào.',
+    joinButton: 'Vào phòng',
+    linkOpeningNotice: 'Link sẽ mở 60 phút trước giờ học',
+    endedNotice: 'Buổi học đã kết thúc',
+    timeLabel: 'Thời gian',
+    openBadge: 'Đang mở phòng',
+    upcomingBadge: 'Sắp diễn ra',
+    reminderEmail: {
+      brandLabel: 'TRẠM DỪNG CẢM XÚC',
+      subject: (title: string) => `Trạm Dừng Cảm Xúc – Nhắc hẹn workshop: ${title}`,
+      title: 'Nhắc hẹn workshop sắp diễn ra',
+      greeting: (name: string) => `Xin chào ${name},`,
+      intro: (title: string) =>
+        `Chỉ còn 24 giờ nữa là buổi workshop "${title}" sẽ chính thức bắt đầu.`,
+      workshopTimeLabel: 'Thời gian diễn ra:',
+      accountNotice:
+        'Để bảo mật thông tin phòng học, liên kết tham gia sẽ tự động mở tại Trang tài khoản của bạn trước giờ bắt đầu 60 phút.',
+      accountButton: 'Vào trang tài khoản',
+      footerSignOff: 'Thương mến,',
+      footerAuthor: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
+      footerAutoNotice:
+        'Email này được gửi tự động nhắc lịch buổi học trong gói đồng hành của bạn.',
+    },
   },
   entitlement: {
     trialAlreadyUsed: 'Bạn đã dùng thử công cụ này rồi. Mỗi người chỉ được dùng thử một lần.',
@@ -767,6 +1032,39 @@ export const vi = {
       notPublishedTitle: 'Bài học chưa xuất bản',
       notPublishedDesc: 'Nội dung bài học này đang được chuẩn bị và sẽ sớm ra mắt.',
       summaryHeading: 'Tóm tắt bài học',
+    },
+  },
+  checkout: {
+    title: 'Thanh toán công cụ số',
+    lifetimeAccess: 'Dùng vĩnh viễn',
+    durationDays: (days: number) => `Thời hạn ${days} ngày`,
+    termsPrefix: 'Tôi đã đọc và đồng ý với',
+    termsLink: 'Điều khoản sử dụng',
+    termsAnd: 'và',
+    pricingPolicyLink: 'Chính sách giá – thanh toán',
+    termsRequired: 'Vui lòng đồng ý với Điều khoản và Chính sách giá – thanh toán để tiếp tục.',
+    payButton: 'Thanh toán',
+    processing: 'Đang xử lý...',
+    productNotFound: 'Không tìm thấy công cụ số yêu cầu hoặc sản phẩm chưa mở bán.',
+    loginPrompt: 'Vui lòng đăng nhập để tiến hành mua công cụ.',
+    alreadyActiveMessage: 'Bạn đã có quyền sử dụng công cụ này.',
+    openToolButton: 'Mở công cụ ngay',
+    secureNotice: 'Thanh toán chuyển khoản VietQR an toàn, tự động kích hoạt sau khi xác nhận',
+    pageBadge: 'Trạm Dừng Cảm Xúc · Bán lẻ công cụ số',
+    pageHeading: 'Xác nhận đơn hàng',
+    pageSubheading: 'Bước cuối cùng để sở hữu công cụ đồng hành cùng cảm xúc của bạn',
+    productMissingTitle: 'Không tìm thấy sản phẩm',
+    productMissingDesc:
+      'Vui lòng chọn một công cụ số từ thư viện hoặc trang chủ để tiếp tục thanh toán.',
+    exploreLibrary: 'Khám phá thư viện',
+    productUnavailableTitle: 'Sản phẩm không khả dụng',
+    backToLibrary: 'Quay lại thư viện',
+    amountToPay: 'Số tiền thanh toán:',
+    createOrderError: 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.',
+    categories: {
+      habit: 'Habit Formation',
+      eq: 'EQ Buddy',
+      digital_tool: 'Công cụ số',
     },
   },
 } as const

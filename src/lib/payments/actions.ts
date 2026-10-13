@@ -4,14 +4,18 @@ import { headers as getHeaders } from 'next/headers'
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import { isAdminUser, isOwnerUser } from '@/lib/auth/access'
+import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getSiteUrl } from '@/lib/site-url'
 import {
   confirmManualPayment,
   cancelOrder,
   PaymentError,
   acceptOrderTermsForToken,
+  createDigitalToolOrder,
+  AlreadyHasActiveAccessError,
 } from './orders.server'
 import { vi } from '@/lib/i18n/vi'
+import { RateLimitError } from '@/lib/forms/ratelimit.server'
 
 export interface AdminPaymentActionResult {
   success: boolean
@@ -190,4 +194,70 @@ export async function acceptOrderTerms(
     // Ngoài request scope
   }
   return acceptOrderTermsForToken(token, { ip })
+}
+
+export interface CreateDigitalToolOrderActionResult {
+  success: boolean
+  payToken?: string
+  reused?: boolean
+  error?: string
+  unauthenticated?: boolean
+  alreadyActive?: boolean
+  toolUrl?: string
+}
+
+// REVIEW-REQUIRED: Server action tạo đơn mua lẻ công cụ số.
+// Lấy ID khách hàng trực tiếp từ phiên đăng nhập server (getCurrentCustomer), không nhận ID từ client.
+export async function createDigitalToolOrderAction(
+  productSlug: string,
+  termsAccepted: boolean,
+): Promise<CreateDigitalToolOrderActionResult> {
+  try {
+    const customer = await getCurrentCustomer()
+    if (!customer) {
+      return {
+        success: false,
+        error: vi.auth.unauthorizedNotice,
+        unauthenticated: true,
+      }
+    }
+
+    let ip: string | undefined
+    try {
+      const headerStore = await getHeaders()
+      const forwarded = headerStore.get('x-forwarded-for')
+      ip =
+        (forwarded ? forwarded.split(',')[0].trim() : headerStore.get('x-real-ip')?.trim()) ||
+        undefined
+    } catch {
+      // Ngoài request scope
+    }
+
+    const res = await createDigitalToolOrder(customer.id, productSlug, { termsAccepted, ip })
+    return {
+      success: true,
+      payToken: res.payToken,
+      reused: res.reused,
+    }
+  } catch (err: unknown) {
+    if (err instanceof AlreadyHasActiveAccessError) {
+      return {
+        success: false,
+        alreadyActive: true,
+        toolUrl: err.toolUrl,
+        error: err.message,
+      }
+    }
+    if (err instanceof PaymentError || err instanceof RateLimitError) {
+      return {
+        success: false,
+        error: err.message,
+      }
+    }
+    console.error('[PaymentAction] Unexpected error in createDigitalToolOrderAction:', err)
+    return {
+      success: false,
+      error: vi.payment.errors.serverError,
+    }
+  }
 }

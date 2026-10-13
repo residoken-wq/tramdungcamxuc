@@ -1,10 +1,17 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { getPayload } from 'payload'
+import config from '@/payload.config'
+import type { Product } from '@/payload-types'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { logoutAction } from '@/lib/auth/actions'
+import { getAccess } from '@/lib/entitlements'
+import { getEligibleWorkshops } from '@/lib/workshops/eligible.server'
 import { vi } from '@/lib/i18n/vi'
+import { getToolUrl } from '@/lib/products'
 import { Button } from '@/components/ui/Button'
+import { WorkshopSchedule } from '@/components/site/account/WorkshopSchedule'
 
 export const metadata: Metadata = {
   title: 'Tài khoản của tôi | Trạm Dừng Cảm Xúc',
@@ -20,7 +27,62 @@ export default async function AccountPage() {
     redirect('/tai-khoan/dang-nhap?next=/tai-khoan')
   }
 
+  const payload = await getPayload({ config: await config })
+
+  // Đọc danh sách quyền truy cập (entitlements) của riêng khách hàng hiện tại
+  const entitlementsRes = await payload.find({
+    collection: 'entitlements',
+    where: { customer: { equals: customer.id } },
+    depth: 1,
+    limit: 100,
+    overrideAccess: true,
+  })
+
+  // Thu thập các sản phẩm duy nhất được cấp quyền
+  const productMap = new Map<number, Product>()
+  for (const ent of entitlementsRes.docs) {
+    const p = ent.product
+    if (p && typeof p === 'object' && p.id) {
+      if (!productMap.has(p.id)) {
+        productMap.set(p.id, p as Product)
+      }
+    } else if (typeof p === 'number' && !productMap.has(p)) {
+      try {
+        const fetchedProduct = (await payload.findByID({
+          collection: 'products',
+          id: p,
+          depth: 1,
+          overrideAccess: true,
+        })) as Product
+        if (fetchedProduct) {
+          productMap.set(p, fetchedProduct)
+        }
+      } catch {
+        // bỏ qua nếu không tìm thấy
+      }
+    }
+  }
+
+  // Đánh giá quyền truy cập thời gian thực cho từng sản phẩm qua getAccess
+  const coursesWithAccess = await Promise.all(
+    Array.from(productMap.values()).map(async (product) => {
+      const access = await getAccess(customer.id, product.id, { payload })
+      const toolUrl = getToolUrl(product)
+      const buyUrl = `/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`
+
+      return {
+        product,
+        access,
+        toolUrl,
+        buyUrl,
+      }
+    }),
+  )
+
+  const userCourses = coursesWithAccess.filter((item) => item.access.status !== 'none')
+
   const displayName = customer.name?.trim() || customer.email
+  const eligibleWorkshops = await getEligibleWorkshops(customer.id)
 
   return (
     <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-8">
@@ -72,14 +134,77 @@ export default async function AccountPage() {
           </div>
         </div>
 
-        {/* Courses & Orders Sections (T2-02 & T2-08 fill) */}
+        {/* Courses, Workshops & Orders Sections */}
         <div className="md:col-span-2 space-y-6">
+          {/* Lịch workshop của tôi */}
+          <WorkshopSchedule workshops={eligibleWorkshops} />
+
           {/* Khóa học của tôi */}
           <div className="bg-white/95 rounded-2xl p-6 border border-lavender-mist shadow-sm space-y-4">
             <h2 className="font-ui text-base font-bold text-deep-navy">{vi.auth.myCourses}</h2>
-            <div className="p-8 rounded-xl bg-warm-ivory/50 border border-dashed border-deep-navy/20 text-center">
-              <p className="font-sans text-sm text-deep-navy/60">{vi.auth.myCoursesEmpty}</p>
-            </div>
+            {userCourses.length === 0 ? (
+              <div className="p-8 rounded-xl bg-warm-ivory/50 border border-dashed border-deep-navy/20 text-center">
+                <p className="font-sans text-sm text-deep-navy/60">{vi.auth.myCoursesEmpty}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {userCourses.map(({ product, access, toolUrl, buyUrl }) => {
+                  const statusLabel =
+                    vi.entitlement.status[access.status as keyof typeof vi.entitlement.status] ||
+                    access.status
+                  const statusBadgeStyle =
+                    access.status === 'active'
+                      ? 'bg-mint-haze text-deep-navy border-mint-haze'
+                      : access.status === 'trial'
+                        ? 'bg-butter-cream text-deep-navy border-butter-cream'
+                        : 'bg-gray-100 text-gray-600 border-gray-200'
+
+                  return (
+                    <div
+                      key={product.id}
+                      data-testid={`course-item-${product.slug}`}
+                      className="p-4 rounded-xl border border-lavender-mist bg-warm-ivory/30 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                    >
+                      <div className="space-y-1.5">
+                        <h3 className="font-ui font-bold text-deep-navy text-base">
+                          {product.name}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            data-testid="entitlement-status-badge"
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-ui text-xs font-semibold border ${statusBadgeStyle}`}
+                          >
+                            {statusLabel}
+                          </span>
+                          {access.status === 'trial' && typeof access.daysLeft === 'number' && (
+                            <span
+                              data-testid="trial-days-left"
+                              className="inline-flex items-center rounded-full px-2.5 py-0.5 font-ui text-xs font-medium bg-soft-pink text-bright-magenta border border-bright-magenta/20"
+                            >
+                              {vi.entitlement.daysLeft(access.daysLeft)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 sm:self-center">
+                        {access.hasAccess && (
+                          <Button href={toolUrl} variant="secondary" size="sm">
+                            {vi.auth.openTool}
+                          </Button>
+                        )}
+                        {(access.status === 'trial' || access.status === 'expired') &&
+                          product.saleStatus === 'on_sale' && (
+                            <Button href={buyUrl} variant="primary" size="sm">
+                              {vi.auth.buyToContinue}
+                            </Button>
+                          )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           {/* Đơn hàng */}

@@ -484,6 +484,22 @@ Kiểm (demo đã chạy đúng 10/10): gọi có khóa → `200`, không khóa 
 
 ---
 
+### Lịch Cron nhắc workshop trước 24 giờ (T2-10)
+
+Endpoint `/api/cron/workshop-reminders` tự động tìm các workshop đã xuất bản có thời gian bắt đầu `startsAt` trong khoảng `(now + 23h, now + 25h]`, xác định các khách hàng có đơn hàng đã thanh toán (`paymentStatus = 'paid'`) chứa sản phẩm trong danh sách `audienceProducts`, và gửi email nhắc lịch.
+
+Route này được bảo vệ nghiêm ngặt bằng header `Authorization: Bearer <CRON_SECRET>` (so khớp hằng thời gian `timingSafeEqual`). Hệ thống bảo đảm tính lũy đẳng (idempotency) thông qua khóa duy nhất `workshop:customer` trong collection `workshopReminders` – không gửi trùng email kể cả khi cron chạy lại hoặc chạy song song.
+
+**Cấu hình crontab mẫu trên server Linux / Docker:**
+Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 15 của mỗi giờ):
+
+```bash
+# Mở crontab: crontab -e
+15 * * * * cd /opt/tramdungcamxuc && curl -s -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= .env | cut -d= -f2)" http://127.0.0.1:3400/api/cron/workshop-reminders >> /var/log/tdcx-cron-workshop.log 2>&1 && echo >> /var/log/tdcx-cron-workshop.log
+```
+
+---
+
 ### Lịch Cron cập nhật quyền truy cập hết hạn (T2-02)
 
 Endpoint `/api/cron/expire-entitlements` tự động tìm các bản ghi quyền truy cập (`entitlements`) ở trạng thái `trial` hoặc `active` đã quá thời hạn `expiresAt` để chuyển trạng thái sang `expired`, đồng thời phát sự kiện phân tích `trial_expired`.
