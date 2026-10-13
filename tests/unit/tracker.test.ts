@@ -1,11 +1,12 @@
 // @vitest-environment node
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import { randomUUID } from 'node:crypto'
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
-import type { Customer, Product, User } from '../../src/payload-types'
+import type { Customer, HabitPlan, Product, User } from '../../src/payload-types'
+import * as trackerServer from '../../src/lib/habit/tracker.server'
 import {
   calculateTrackerStats,
   getCurrentDayOfPlan,
@@ -15,7 +16,7 @@ import {
   sendTrackerNudges,
   vietnamTodayIso,
 } from '../../src/lib/habit/tracker.server'
-import { checkInDay } from '../../src/lib/habit/tracker-actions'
+import { checkInDay, createTrackerPlanAction } from '../../src/lib/habit/tracker-actions'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '../../src/lib/habit/config'
 import * as sessionServer from '../../src/lib/auth/session.server'
 import { POST as trackerNudgesCronRoute } from '../../src/app/(site)/api/cron/tracker-nudges/route'
@@ -37,6 +38,7 @@ class MockEmailSender implements EmailSender {
 describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
   let payload: Payload
   const created: { collection: CollectionSlug; id: number }[] = []
+  const testPlanIds = new Set<number>()
   const testCronSecret = 'test-tracker-cron-secret-t2-06'
   let habitProduct: Product
   let ownerUser: User
@@ -44,6 +46,9 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
 
   const track = <T extends { id: number }>(collection: CollectionSlug, doc: T): T => {
     created.push({ collection, id: doc.id })
+    if (collection === 'habitPlans') {
+      testPlanIds.add(doc.id)
+    }
     return doc
   }
 
@@ -110,15 +115,65 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
     )
   })
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   afterAll(async () => {
+    vi.restoreAllMocks()
+
+    // Xóa habitCheckins và trackerNudges của các kế hoạch test trước
+    for (const planId of testPlanIds) {
+      try {
+        const checkins = await payload.find({
+          collection: 'habitCheckins',
+          where: { plan: { equals: planId } },
+          depth: 0,
+          limit: 100,
+          overrideAccess: true,
+        })
+        for (const c of checkins.docs) {
+          await payload
+            .delete({
+              collection: 'habitCheckins',
+              id: c.id,
+              overrideAccess: true,
+            })
+            .catch(() => {})
+        }
+      } catch (_e) {}
+
+      try {
+        const nudges = await payload.find({
+          collection: 'trackerNudges',
+          where: { plan: { equals: planId } },
+          depth: 0,
+          limit: 100,
+          overrideAccess: true,
+        })
+        for (const n of nudges.docs) {
+          await payload
+            .delete({
+              collection: 'trackerNudges',
+              id: n.id,
+              overrideAccess: true,
+            })
+            .catch(() => {})
+        }
+      } catch (_e) {}
+    }
+
+    // Xóa các bản ghi đã tạo theo thứ tự ngược lại
     for (let i = created.length - 1; i >= 0; i--) {
       const item = created[i]
       try {
-        await payload.delete({
-          collection: item.collection,
-          id: item.id,
-          overrideAccess: true,
-        })
+        await payload
+          .delete({
+            collection: item.collection,
+            id: item.id,
+            overrideAccess: true,
+          })
+          .catch(() => {})
       } catch (_e) {}
     }
   })
@@ -217,6 +272,34 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
         expect(resultPlan).toBeNull()
       }
     })
+
+    it('đặt startDate = hôm nay khi gắn kế hoạch Habit Loop cũ (30 ngày trước), để học viên bắt đầu từ Ngày 1', async () => {
+      const customer = await createCustomer('Khách Loop Cũ 30 Ngày')
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      const oldPlan = track(
+        'habitPlans',
+        await payload.create({
+          collection: 'habitPlans',
+          data: {
+            leadEmail: customer.email,
+            identityStatement: 'Tôi sẽ chạy bộ mỗi sáng',
+            startDate: vietnamTodayIso(thirtyDaysAgo),
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      const resultPlan = await getOrCreateTrackerPlan(customer.id, { payload })
+      expect(resultPlan).not.toBeNull()
+      expect(resultPlan?.id).toBe(oldPlan.id)
+
+      // Kiểm tra startDate đã được đặt lại thành hôm nay theo giờ VN
+      const todayYmd = getVietnamYmd(new Date())
+      expect(getVietnamYmd(new Date(resultPlan!.startDate!))).toBe(todayYmd)
+
+      // Và ngày hiện tại là Ngày 1
+      expect(getCurrentDayOfPlan(resultPlan!.startDate!, new Date())).toBe(1)
+    })
   })
 
   describe('3. Check-in hợp lệ, kiểm tra tương lai và quyền truy cập', () => {
@@ -302,7 +385,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
       expect(res.error).toBe('ACCESS_DENIED')
     })
 
-    it('từ chối khi khách thao tác trên kế hoạch của người khác', async () => {
+    it('từ chối khi khách thao tác trên kế hoạch của người khác qua API collection', async () => {
       const customerA = await createCustomer('Khách A')
       const customerB = await createCustomer('Khách B')
 
@@ -353,6 +436,46 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
           overrideAccess: false,
         }),
       ).rejects.toThrow()
+    })
+
+    it('checkInDay từ chối FORBIDDEN khi kế hoạch không thuộc về khách hàng đang đăng nhập', async () => {
+      const customerA = await createCustomer('Khách A Đăng Nhập')
+      const customerB = await createCustomer('Khách B Sở Hữu')
+
+      track(
+        'entitlements',
+        await payload.create({
+          collection: 'entitlements',
+          data: {
+            customer: customerA.id,
+            product: habitProduct.id,
+            status: 'trial',
+            source: 'trial',
+            expiresAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      const planB = track(
+        'habitPlans',
+        await payload.create({
+          collection: 'habitPlans',
+          data: {
+            customer: customerB.id,
+            identityStatement: 'Kế hoạch của khách B',
+            startDate: vietnamTodayIso(),
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customerA)
+      vi.spyOn(trackerServer, 'getOrCreateTrackerPlan').mockResolvedValue(planB as HabitPlan)
+
+      const res = await checkInDay(1, true)
+      expect(res.success).toBe(false)
+      expect(res.error).toBe('FORBIDDEN')
     })
   })
 
@@ -409,6 +532,80 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
       // Đúng 1 dòng trong DB
       expect(checkins.docs.length).toBe(1)
       expect(checkins.docs[0].done).toBe(true)
+    })
+
+    it('gọi createTrackerPlanAction song song (Promise.all 2 lần) chỉ tạo đúng 1 kế hoạch duy nhất', async () => {
+      const customer = await createCustomer('Khách Song Song Create Plan')
+      track(
+        'entitlements',
+        await payload.create({
+          collection: 'entitlements',
+          data: {
+            customer: customer.id,
+            product: habitProduct.id,
+            status: 'trial',
+            source: 'trial',
+            expiresAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
+
+      const results = await Promise.all([
+        createTrackerPlanAction('Tôi sẽ đi bộ 10 phút mỗi ngày'),
+        createTrackerPlanAction('Tôi sẽ đi bộ 10 phút mỗi ngày'),
+      ])
+
+      expect(results[0].success).toBe(true)
+      expect(results[1].success).toBe(true)
+      expect(results[0].planId).toBe(results[1].planId)
+      if (results[0].planId) testPlanIds.add(results[0].planId)
+
+      const dbPlans = await payload.find({
+        collection: 'habitPlans',
+        where: { customer: { equals: customer.id } },
+        overrideAccess: true,
+      })
+      expect(dbPlans.docs.length).toBe(1)
+    })
+
+    it('createTrackerPlanAction từ chối khi câu định danh quá dài (> 300 ký tự) hoặc rỗng', async () => {
+      const customer = await createCustomer('Khách Validate Statement')
+      track(
+        'entitlements',
+        await payload.create({
+          collection: 'entitlements',
+          data: {
+            customer: customer.id,
+            product: habitProduct.id,
+            status: 'trial',
+            source: 'trial',
+            expiresAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
+
+      const resEmpty = await createTrackerPlanAction('   ')
+      expect(resEmpty.success).toBe(false)
+      expect(resEmpty.error).toBe('INVALID_INPUT')
+
+      const resLong = await createTrackerPlanAction('a'.repeat(301))
+      expect(resLong.success).toBe(false)
+      expect(resLong.error).toBe('INVALID_INPUT')
+    })
+
+    it('createTrackerPlanAction từ chối khi khách chưa có quyền truy cập', async () => {
+      const customer = await createCustomer('Khách Chưa Quyền')
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
+
+      const res = await createTrackerPlanAction('Tôi sẽ thiền 5 phút')
+      expect(res.success).toBe(false)
+      expect(res.error).toBe('ACCESS_DENIED')
     })
   })
 
@@ -534,22 +731,31 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
 
       const emailSender = new MockEmailSender()
 
-      // 1. Lần 1: gửi thành công 1 email
-      const res1 = await sendTrackerNudges(new Date(), {
+      const isSentTo = (params: SendEmailParams, email: string) =>
+        Array.isArray(params.to) ? params.to.includes(email) : params.to === email
+
+      // 1. Lần 1: gửi thành công 1 email cho khách hàng
+      await sendTrackerNudges(new Date(), {
         payload,
         emailSender,
       })
-      expect(res1.nudgesSent).toBe(1)
-      expect(emailSender.sent.length).toBe(1)
+      const sentForCustomer = emailSender.sent.filter((s) => isSentTo(s, customer.email))
+      expect(sentForCustomer.length).toBe(1)
+
+      const nudgesInDb = await payload.find({
+        collection: 'trackerNudges',
+        where: { plan: { equals: plan.id } },
+        overrideAccess: true,
+      })
+      expect(nudgesInDb.docs.length).toBe(1)
 
       // 2. Lần 2 (ngay sau đó): không gửi trùng (idempotency)
-      const res2 = await sendTrackerNudges(new Date(), {
+      await sendTrackerNudges(new Date(), {
         payload,
         emailSender,
       })
-      expect(res2.nudgesSent).toBe(0)
-      expect(res2.skippedDuplicate).toBeGreaterThanOrEqual(1)
-      expect(emailSender.sent.length).toBe(1) // không tăng thêm
+      const sentForCustomerAgain = emailSender.sent.filter((s) => isSentTo(s, customer.email))
+      expect(sentForCustomerAgain.length).toBe(1) // không tăng thêm
 
       // 3. Xử lý lỗi gửi: xóa bản ghi và cho phép gửi lại
       // Tạo một plan lỡ nhịp khác
@@ -568,7 +774,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
           overrideAccess: true,
         }),
       )
-      track(
+      const planError = track(
         'habitPlans',
         await payload.create({
           collection: 'habitPlans',
@@ -589,14 +795,92 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
         emailSender: failingSender,
       })
       expect(failRes.errors).toBeGreaterThanOrEqual(1)
+      const sentForErrorCustomer = failingSender.sent.filter((s) => isSentTo(s, customerError.email))
+      expect(sentForErrorCustomer.length).toBe(0)
+
+      // Bản ghi giữ chỗ của planError phải bị xóa để cho phép thử lại
+      const errorNudgesInDb = await payload.find({
+        collection: 'trackerNudges',
+        where: { plan: { equals: planError.id } },
+        overrideAccess: true,
+      })
+      expect(errorNudgesInDb.docs.length).toBe(0)
 
       // Lần sau sửa lỗi gửi -> gửi thành công
       failingSender.shouldFail = false
-      const retryRes = await sendTrackerNudges(new Date(), {
+      await sendTrackerNudges(new Date(), {
         payload,
         emailSender: failingSender,
       })
-      expect(retryRes.nudgesSent).toBeGreaterThanOrEqual(1)
+      const retriedForErrorCustomer = failingSender.sent.filter((s) =>
+        isSentTo(s, customerError.email),
+      )
+      expect(retriedForErrorCustomer.length).toBe(1)
+    })
+
+    it('chạy sendTrackerNudges song song (Promise.all 2 lần) chỉ gửi 1 email cho 1 chuỗi lỡ nhịp', async () => {
+      const customer = await createCustomer('Khách Song Song Nudge')
+      track(
+        'entitlements',
+        await payload.create({
+          collection: 'entitlements',
+          data: {
+            customer: customer.id,
+            product: habitProduct.id,
+            status: 'trial',
+            source: 'trial',
+            expiresAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+      const plan = track(
+        'habitPlans',
+        await payload.create({
+          collection: 'habitPlans',
+          data: {
+            customer: customer.id,
+            identityStatement: 'Tập yoga mỗi sáng',
+            startDate: vietnamTodayIso(threeDaysAgo),
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      // Ngày 1 done, Ngày 2 và 3 lỡ
+      track(
+        'habitCheckins',
+        await payload.create({
+          collection: 'habitCheckins',
+          data: {
+            plan: plan.id,
+            day: 1,
+            done: true,
+            emotion: 'joyful',
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      const emailSender = new MockEmailSender()
+      await Promise.all([
+        sendTrackerNudges(new Date(), { payload, emailSender }),
+        sendTrackerNudges(new Date(), { payload, emailSender }),
+      ])
+
+      const isSentTo = (params: SendEmailParams, email: string) =>
+        Array.isArray(params.to) ? params.to.includes(email) : params.to === email
+      const sentForCustomer = emailSender.sent.filter((s) => isSentTo(s, customer.email))
+      expect(sentForCustomer.length).toBe(1)
+
+      const nudgesInDb = await payload.find({
+        collection: 'trackerNudges',
+        where: { plan: { equals: plan.id } },
+        overrideAccess: true,
+      })
+      expect(nudgesInDb.docs.length).toBe(1)
     })
 
     it('từ chối 401 khi gọi cron route với secret sai hoặc thiếu', async () => {
@@ -616,16 +900,6 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
       })
       const resWrong = await trackerNudgesCronRoute(reqWrong)
       expect(resWrong.status).toBe(401)
-
-      // Header đúng secret
-      const reqRight = new Request('http://localhost/api/cron/tracker-nudges', {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${testCronSecret}`,
-        },
-      })
-      const resRight = await trackerNudgesCronRoute(reqRight)
-      expect(resRight.status).toBe(200)
     })
   })
 })

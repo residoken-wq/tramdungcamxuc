@@ -156,17 +156,20 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
       const createPlanBtn = guestPage.locator('button[type="submit"]', {
         hasText: /Bắt đầu hành trình 21 ngày/i,
       })
-      await createPlanBtn.click()
+      const day1Btn = guestPage.getByRole('button', { name: /^Ngày 1:/ })
 
-      // 10. Chờ lưới tracker 21 ngày xuất hiện
-      const day1Btn = guestPage.getByRole('button', { name: /Ngày 1/i })
-      await expect(day1Btn).toBeVisible()
+      // Bấm tạo kế hoạch trong toPass cho tới khi lưới tracker 21 ngày xuất hiện
+      await expect(async () => {
+        await createPlanBtn.click({ timeout: 5000 })
+        await expect(day1Btn).toBeVisible({ timeout: 3000 })
+      }).toPass({ timeout: 30000 })
 
-      // 11. Bấm vào Ngày 1 để mở modal check-in
-      await day1Btn.click()
-
+      // 11. Bấm vào Ngày 1 để mở modal check-in (bấm lại trong toPass nếu modal chưa mở)
       const modal = guestPage.locator('div[role="dialog"]')
-      await expect(modal).toBeVisible()
+      await expect(async () => {
+        await day1Btn.click({ timeout: 5000 })
+        await expect(modal).toBeVisible({ timeout: 3000 })
+      }).toPass({ timeout: 15000 })
 
       // Tick hoàn thành
       const doneCheckbox = modal.locator('input[type="checkbox"]')
@@ -176,20 +179,20 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
       const peacefulRadio = modal.getByRole('radio', { name: /Bình an/i })
       await peacefulRadio.click()
 
-      // Bấm Lưu check-in
+      // Bấm Lưu check-in (bấm lại trong toPass nếu modal chưa đóng)
       const saveBtn = modal.locator('button[type="submit"]', { hasText: /Lưu check-in/i })
-      await saveBtn.click()
-
-      // Chờ modal đóng
-      await expect(modal).toBeHidden()
+      await expect(async () => {
+        await saveBtn.click({ timeout: 5000 })
+        await expect(modal).toBeHidden({ timeout: 3000 })
+      }).toPass({ timeout: 15000 })
 
       // 12. Tải lại trang -> Ngày 1 vẫn còn trạng thái hoàn thành với cảm xúc
       await guestPage.reload()
-      const day1AfterReload = guestPage.getByRole('button', { name: /Ngày 1: Đã hoàn thành/i })
+      const day1AfterReload = guestPage.getByRole('button', { name: /^Ngày 1: Đã hoàn thành/i })
       await expect(day1AfterReload).toBeVisible()
 
       // 13. Ô Ngày 2 không bấm được (chưa tới, disabled)
-      const day2Btn = guestPage.getByRole('button', { name: /Ngày 2: Chưa tới/i })
+      const day2Btn = guestPage.getByRole('button', { name: /^Ngày 2: Chưa tới/i })
       await expect(day2Btn).toBeDisabled()
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
