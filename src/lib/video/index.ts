@@ -3,6 +3,7 @@ import type { VideoProvider } from './types'
 
 export * from './types'
 export * from './sandbox'
+export * from './bunny'
 
 /**
  * REVIEW-REQUIRED: Video provider factory.

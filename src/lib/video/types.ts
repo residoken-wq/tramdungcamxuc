@@ -4,6 +4,7 @@ export interface VideoPlayback {
   kind: PlaybackKind
   url: string | null
   expiresAt: Date
+  allowSimulate?: boolean
 }
 
 export interface VideoPlaybackOptions {
