@@ -154,7 +154,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **MỞ 10/10/2026** (cổng GĐ 1 đạt). Quyết định đã chốt: Q8 SePay, Q9 Bunny, Q14 10 cảm xúc emoji, H1/H2 quiz 1–5 trung bình, Q19, D1/D2 server riêng. Còn mở: Q15 (giá, trong CMS).
 
-**🔒 Migration: T2-06 (PC nhà) · 🔒 Package: (trống)** · Local và Laptop nghỉ đến hết 10/10.
+**🔒 Migration: (trống – T2-06 trả khi PR #93 merge) · 🔒 Package: (trống)** · Local và Laptop nghỉ đến hết 10/10.
 
 **Thứ tự máy (từ 11/10)**: Laptop = T2-00 → T2-12 → T1-18 → T2-10 → T2-05a · PC nhà = T2-01 → T2-13 → T2-02 → T2-08 · Local = T2-03 → T2-03b.
 
@@ -166,7 +166,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T2-03 | Habit Loop 5 phút + trang offer                                  |          | cổng GĐ 1    | Local    | QA ĐẠT vòng 2 12/10 – PR #80 (T2-03b Local + T2-03c Planning), IT duyệt ([review](reviews/T2-03.md)) · merge khi CI xanh                                                                                                    |
 | T2-04 | Luồng dùng thử 21 ngày, đổi CTA quiz                             |          | T2-02        | PC nhà   | ✅ Merge 13/10 – PR #90, Planning sửa 7 lỗi (T2-04c), IT duyệt ([review](reviews/T2-04.md))                                                                                                                                 |
 | T2-05 | Video bảo vệ + dashboard học                                     | [REVIEW] | T2-02        | Laptop   | T2-05a **ĐẠT** 13/10 (vòng 2 + Planning sửa T2-05a3, IT duyệt) – PR #86 ([review](reviews/T2-05a.md)) · T2-05b giao Laptop 13/10 (prompt `prompts/T2-05b.md`; code + test bằng khóa giả, nghiệm thu khi có tài khoản Bunny) |
-| T2-06 | Tracker 21 ngày + nhắc nhở                                       |          | T2-02, T2-04 | PC nhà   | T2-06 **CHƯA ĐẠT** 13/10 – PR #93: e2e, tạo kế hoạch không cần quyền, analytics ([review](reviews/T2-06.md)) → PC nhà sửa theo `prompts/T2-06b.md`, giữ 🔒 Migration                                                        |
+| T2-06 | Tracker 21 ngày + nhắc nhở                                       |          | T2-02, T2-04 | PC nhà   | T2-06 **ĐẠT** 13/10 (vòng 2 + Planning sửa T2-06c, IT duyệt) – PR #93 ([review](reviews/T2-06.md)); merge xong trả 🔒 Migration                                                                                             |
 | T2-07 | Chứng nhận 21 ngày                                               |          | T2-06        | Local    | Chờ T2-06                                                                                                                                                                                                                   |
 | T2-08 | Mua công cụ số (xác nhận thủ công)                               | [REVIEW] | T2-02        | PC nhà   | ✅ Merge 12/10 – PR #84, vòng 2 (T2-08b), IT duyệt ([review](reviews/T2-08.md))                                                                                                                                             |
 | T2-09 | Webhook thanh toán tự động                                       | [REVIEW] | T2-08        | PC nhà   | Chờ T2-08 + tài khoản SePay                                                                                                                                                                                                 |
