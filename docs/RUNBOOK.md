@@ -539,7 +539,7 @@ Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 30 củ
 
 ### Lịch Cron nhắc nhở gián đoạn chuỗi Habit Tracker (T2-06)
 
-Endpoint `/api/cron/tracker-nudges` tự động quét các kế hoạch Habit Loop (`habitPlans`) của khách hàng đang trong chu kỳ 21 ngày (`day >= 3` và `day <= 21`). Khi phát hiện khách hàng đã bỏ lỡ 2 ngày liên tiếp gần nhất mà chưa từng được gửi nhắc nhở cho chuỗi gián đoạn này, hệ thống sẽ gửi email động viên kèm mẹo 2 phút ("Thương mình một nhịp, quay lại hôm nay") và đường dẫn tiếp tục hành trình.
+Endpoint `/api/cron/tracker-nudges` tự động quét các kế hoạch Habit Loop (`habitPlans`) của khách hàng đang trong chu kỳ 21 ngày (`day >= 3` và `day <= 21`). Khi phát hiện khách hàng đã bỏ lỡ 2 ngày liên tiếp gần nhất mà chưa từng được gửi nhắc nhở cho chuỗi gián đoạn này, hệ thống sẽ gửi email động viên ("Thương mình một nhịp, quay lại hôm nay") và đường dẫn tiếp tục hành trình.
 
 Route này được bảo vệ nghiêm ngặt bằng header `Authorization: Bearer <CRON_SECRET>` (so khớp hằng thời gian `timingSafeEqual` với biến môi trường `CRON_SECRET` trong `.env`). Tính lũy đẳng (idempotency) được đảm bảo ở cấp CSDL thông qua trường `uniqueKey` dạng `${planId}:${missedStartDay}` trong collection ẩn `trackerNudges` – không gửi trùng email kể cả khi cron chạy lại hoặc chạy song song. Nếu quá trình gửi email phát sinh lỗi, bản ghi giữ chỗ sẽ tự động bị xóa để cho phép cron thử lại ở lần quét kế tiếp.
 
