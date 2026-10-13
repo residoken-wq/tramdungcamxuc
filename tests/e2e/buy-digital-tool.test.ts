@@ -87,7 +87,7 @@ test.describe('Buy Digital Tool Flow (T2-08)', () => {
         data: {
           bankBin: '970422',
           bankName: 'Ngân hàng Quân Đội (MB)',
-          accountNumber: '0023457923442',
+          accountNumber: '0000000000',
           accountName: 'TAI KHOAN TEST',
           transferPrefix: 'TDCX',
         },

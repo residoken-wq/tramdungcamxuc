@@ -127,7 +127,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
       const nameInput = screen.getByLabelText(new RegExp(vi.leadForm.nameLabel, 'i'))
       const emailInput = screen.getByLabelText(new RegExp(vi.leadForm.emailLabel, 'i'))
 
-      fireEvent.change(nameInput, { target: { value: 'Nguyễn Văn A' } })
+      fireEvent.change(nameInput, { target: { value: 'Học viên Test 01' } })
       fireEvent.change(emailInput, { target: { value: 'invalid-email-address' } })
       fireEvent.click(submitButton)
 
@@ -164,7 +164,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
       const emailInput = screen.getByLabelText(new RegExp(vi.leadForm.emailLabel, 'i'))
       const consentCheckbox = screen.getByRole('checkbox')
 
-      fireEvent.change(nameInput, { target: { value: 'Nguyễn Văn B' } })
+      fireEvent.change(nameInput, { target: { value: 'Học viên Test 02' } })
       fireEvent.change(emailInput, { target: { value: 'vanb@example.com' } })
       fireEvent.click(consentCheckbox)
 
@@ -173,7 +173,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
 
       await waitFor(() => {
         expect(mockSubmit).toHaveBeenCalledWith({
-          name: 'Nguyễn Văn B',
+          name: 'Học viên Test 02',
           email: 'vanb@example.com',
           consent: true,
         })

@@ -280,7 +280,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
       collection: 'customers',
       data: {
         email: existingCustEmail,
-        name: 'Nguyễn Văn A',
+        name: 'Học viên Test 01',
       },
       overrideAccess: true,
     })

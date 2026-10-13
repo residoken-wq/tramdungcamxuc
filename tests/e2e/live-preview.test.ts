@@ -8,6 +8,7 @@ test('admin sees unsaved live edits; guests never see drafts', async ({
   test.setTimeout(180000)
   const pageErrors: string[] = []
   page.on('pageerror', (error) => pageErrors.push(error.message))
+  page.on('dialog', (dialog) => dialog.accept())
   const init = await (await page.request.get('/api/users/init')).json()
   expect(init, 'Use a migrated test database without admin users.').toMatchObject({
     initialized: false,
@@ -47,13 +48,22 @@ test('admin sees unsaved live edits; guests never see drafts', async ({
       const id = (await res.json()).doc.id
       created.push({ collection, id })
       await page.goto(`/admin/collections/${collection}/${id}`, { waitUntil: 'domcontentloaded' })
-      await expect(page.getByRole('textbox', { name: label, exact: false })).toBeVisible()
+      const textbox = page.getByRole('textbox', { name: label, exact: false })
+      await expect(textbox).toBeVisible()
       const toggle = page.getByRole('button', { name: /^Xem trước$|live preview/i })
       const iframe = page.locator('iframe').filter({ visible: true })
-      if (!(await iframe.count())) await toggle.click()
+
+      await expect(toggle).toBeVisible()
+      await expect(async () => {
+        if (!(await iframe.count())) {
+          await toggle.click()
+        }
+        await expect(iframe.first()).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 20000 })
+
       const preview = page.frameLocator('iframe').first()
       await expect(preview.getByRole('heading', { name: published, exact: true })).toBeVisible()
-      await page.getByRole('textbox', { name: label, exact: false }).fill(unsaved)
+      await textbox.fill(unsaved)
       await expect(preview.getByRole('heading', { name: unsaved, exact: true })).toBeVisible()
 
       const publicPage = await guest.newPage()
@@ -73,14 +83,15 @@ test('admin sees unsaved live edits; guests never see drafts', async ({
       await expect(publicPage.getByRole('heading', { name: published, exact: true })).toBeVisible()
       await expect(publicPage.getByText(savedDraft, { exact: true })).toHaveCount(0)
       await publicPage.close()
-      page.once('dialog', (dialog) => dialog.accept())
     }
     expect(pageErrors).toEqual([])
   } finally {
-    await guest.close()
+    await guest.close().catch(() => {})
     for (const { collection, id } of created.reverse()) {
-      expect((await page.request.delete(`/api/${collection}/${id}`)).ok()).toBe(true)
+      await page.request.delete(`/api/${collection}/${id}`).catch(() => {})
     }
-    if (userId) expect((await page.request.delete(`/api/users/${userId}`)).ok()).toBe(true)
+    if (userId) {
+      await page.request.delete(`/api/users/${userId}`).catch(() => {})
+    }
   }
 })

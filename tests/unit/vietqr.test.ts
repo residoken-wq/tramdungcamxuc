@@ -29,10 +29,16 @@ describe('VietQR & Payment Provider (T1-12a)', () => {
         '00020101021238570010A00000072701270006970403011300110123456780208QRIBFTTA530370454061800005802VN62340107NPS68690819thanh toan don hang6304'
       expect(crc16CcittFalse(napasDynamicSample)).toBe('2E2E')
 
-      // Mẫu chuẩn tài khoản động 40.123đ kèm ghi chú "test text string" (CRC: D9C6)
-      const subizDynamicSample =
-        '00020101021238570010A00000072701270006970422011300234579234420208QRIBFTTA53037045405401235802VN62200816test text string6304'
-      expect(crc16CcittFalse(subizDynamicSample)).toBe('D9C6')
+      // Mẫu chuẩn tài khoản động 40.123đ kèm ghi chú "test text string" tính bằng buildVietQrPayload
+      const dynamicSamplePayload = buildVietQrPayload({
+        bin: '970422',
+        accountNumber: '0000000000',
+        amount: 40123,
+        addInfo: 'test text string',
+      })
+      const dynamicSampleBeforeCrc = dynamicSamplePayload.slice(0, -4)
+      const expectedDynamicCrc = dynamicSamplePayload.slice(-4)
+      expect(crc16CcittFalse(dynamicSampleBeforeCrc)).toBe(expectedDynamicCrc)
     })
   })
 
@@ -40,7 +46,7 @@ describe('VietQR & Payment Provider (T1-12a)', () => {
     it('đặt số tiền 149000 ở tag 54 và addInfo ở tag 62 chuẩn EMVCo', () => {
       const payload = buildVietQrPayload({
         bin: '970422',
-        accountNumber: '0023457923442',
+        accountNumber: '0000000000',
         amount: 149000,
         addInfo: 'TDCX8F3K2',
       })
@@ -52,7 +58,7 @@ describe('VietQR & Payment Provider (T1-12a)', () => {
       expect(payload).toContain('0010A000000727')
       expect(payload).toContain('0208QRIBFTTA')
       expect(payload).toContain('0006970422')
-      expect(payload).toContain('01130023457923442')
+      expect(payload).toContain('01100000000000')
 
       // Tag 53 tiền tệ VND
       expect(payload).toContain('5303704')
@@ -111,7 +117,7 @@ describe('VietQR & Payment Provider (T1-12a)', () => {
           bankBin: '970422',
           bankName: 'MB Bank',
           accountNumber: '0123456789',
-          accountName: 'LUONG THI THU HUYEN',
+          accountName: 'TAI KHOAN TEST',
         }),
       ).not.toThrow()
     })
@@ -121,7 +127,7 @@ describe('VietQR & Payment Provider (T1-12a)', () => {
         assertValidBankConfig({
           bankBin: '',
           accountNumber: '0123456789',
-          accountName: 'LUONG THI THU HUYEN',
+          accountName: 'TAI KHOAN TEST',
         }),
       ).toThrow(vi.payment.errors.bankConfigMissing)
 
@@ -129,7 +135,7 @@ describe('VietQR & Payment Provider (T1-12a)', () => {
         assertValidBankConfig({
           bankBin: '970422',
           accountNumber: '   ',
-          accountName: 'LUONG THI THU HUYEN',
+          accountName: 'TAI KHOAN TEST',
         }),
       ).toThrow(vi.payment.errors.bankConfigMissing)
 
@@ -156,7 +162,7 @@ describe('VietQR & Payment Provider (T1-12a)', () => {
           bankBin: '970422',
           bankName: 'MB Bank',
           accountNumber: '0123456789',
-          accountName: 'LUONG THI THU HUYEN',
+          accountName: 'TAI KHOAN TEST',
         },
       )
 

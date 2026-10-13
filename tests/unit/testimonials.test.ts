@@ -4,7 +4,7 @@ import { toPublicTestimonial, type PublicTestimonial } from '@/lib/testimonials'
 describe('T1-02b: Testimonials DTO & Consent-only Policy', () => {
   const samplePublishedTestimonial = {
     id: 10,
-    name: 'Nguyễn Văn A',
+    name: 'Học viên Test 01',
     role: 'Học viên khóa EQ',
     quote: 'Khóa học đã giúp tôi hiểu rõ cảm xúc bản thân và tìm lại sự bình an.',
     language: 'vi',
@@ -16,7 +16,7 @@ describe('T1-02b: Testimonials DTO & Consent-only Policy', () => {
     photo: {
       id: 5,
       url: '/media/avatar.png',
-      alt: 'Ảnh chân dung Nguyễn Văn A',
+      alt: 'Ảnh chân dung Học viên Test 01',
       filename: 'avatar.png',
       mimeType: 'image/png',
       filesize: 10240,
@@ -62,7 +62,7 @@ describe('T1-02b: Testimonials DTO & Consent-only Policy', () => {
 
       const nonNullResult = result as PublicTestimonial
       expect(nonNullResult.id).toBe(10)
-      expect(nonNullResult.name).toBe('Nguyễn Văn A')
+      expect(nonNullResult.name).toBe('Học viên Test 01')
       expect(nonNullResult.role).toBe('Học viên khóa EQ')
       expect(nonNullResult.quote).toBe(
         'Khóa học đã giúp tôi hiểu rõ cảm xúc bản thân và tìm lại sự bình an.',
@@ -70,7 +70,7 @@ describe('T1-02b: Testimonials DTO & Consent-only Policy', () => {
       expect(nonNullResult.language).toBe('vi')
       expect(nonNullResult.photo).toEqual({
         url: '/media/avatar.png',
-        alt: 'Ảnh chân dung Nguyễn Văn A',
+        alt: 'Ảnh chân dung Học viên Test 01',
       })
 
       // Verify no forbidden keys exist in returned object
