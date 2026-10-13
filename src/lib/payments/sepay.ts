@@ -1,13 +1,13 @@
 import { timingSafeEqual } from 'node:crypto'
 import { z } from 'zod'
 import {
-  ManualPaymentProvider,
   type BankConfig,
   type PaymentCreationResult,
   type PaymentOrderInput,
   type PaymentProvider,
   type WebhookParseResult,
-} from './provider'
+} from './types'
+import { assertValidBankConfig, buildVietQrPayload, generateVietQrSvg } from './vietqr'
 import { extractPaymentRef } from './payment-ref'
 
 export const sepayWebhookSchema = z.object({
@@ -45,14 +45,39 @@ export interface SepayWebhookParseResult extends WebhookParseResult {
  */
 export class SepayPaymentProvider implements PaymentProvider {
   readonly name = 'sepay'
-  private readonly manualFallback = new ManualPaymentProvider()
 
   async createPayment(
     order: PaymentOrderInput,
     bankConfig: BankConfig,
     options?: { sandbox?: boolean },
   ): Promise<PaymentCreationResult> {
-    return this.manualFallback.createPayment(order, bankConfig, options)
+    assertValidBankConfig(bankConfig)
+
+    const isSandbox = options?.sandbox ?? process.env.PAYMENT_SANDBOX === 'true'
+
+    const qrPayload = buildVietQrPayload({
+      bin: bankConfig.bankBin,
+      accountNumber: bankConfig.accountNumber,
+      amount: order.total,
+      addInfo: order.paymentRef,
+    })
+
+    const qrSvg = await generateVietQrSvg(qrPayload)
+
+    return {
+      paymentRef: order.paymentRef,
+      amount: order.total,
+      bankInfo: {
+        bankBin: bankConfig.bankBin,
+        bankName: bankConfig.bankName || undefined,
+        accountNumber: bankConfig.accountNumber,
+        accountName: bankConfig.accountName,
+        transferPrefix: bankConfig.transferPrefix || 'TDCX',
+      },
+      qrPayload,
+      qrSvg,
+      sandbox: isSandbox,
+    }
   }
 
   // REVIEW-REQUIRED: So khớp API key bằng timingSafeEqual để ngăn chặn tấn công timing attack.
@@ -100,9 +125,7 @@ export class SepayPaymentProvider implements PaymentProvider {
     }
   }
 
-  async parseWebhook(
-    req: Request | Record<string, unknown>,
-  ): Promise<SepayWebhookParseResult> {
+  async parseWebhook(req: Request | Record<string, unknown>): Promise<SepayWebhookParseResult> {
     let body: unknown
     if (req && typeof (req as Request).json === 'function') {
       body = await (req as Request).json()
@@ -123,9 +146,7 @@ export class SepayPaymentProvider implements PaymentProvider {
     const isMoneyIn = transferType === 'in'
 
     // Tìm paymentRef trong cả content, description và code
-    const combinedText = [parsed.content, parsed.description, parsed.code]
-      .filter(Boolean)
-      .join(' ')
+    const combinedText = [parsed.content, parsed.description, parsed.code].filter(Boolean).join(' ')
 
     const ref = extractPaymentRef(combinedText) || ''
 

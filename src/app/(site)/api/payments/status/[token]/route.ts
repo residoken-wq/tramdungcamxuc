@@ -17,10 +17,7 @@ interface RouteContext {
  * - Tuyệt đối CHỈ trả về `{ paymentStatus: string }`.
  * - Không làm lộ tên, email, số điện thoại, số tiền, mã đơn hàng hay bất kỳ thông tin nhạy cảm nào.
  */
-export async function GET(
-  _req: Request,
-  context: RouteContext,
-): Promise<Response> {
+export async function GET(_req: Request, context: RouteContext): Promise<Response> {
   const { token } = await context.params
 
   if (!token || typeof token !== 'string' || token.trim().length === 0) {
@@ -43,7 +40,14 @@ export async function GET(
 
   const order = orders.docs[0]
 
-  return NextResponse.json({
-    paymentStatus: order.paymentStatus,
-  })
+  return NextResponse.json(
+    {
+      paymentStatus: order.paymentStatus,
+    },
+    {
+      headers: {
+        'Cache-Control': 'no-store',
+      },
+    },
+  )
 }

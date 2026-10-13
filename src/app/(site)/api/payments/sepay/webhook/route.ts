@@ -1,74 +1,100 @@
 import 'server-only'
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import { ValidationError } from 'payload'
+import { getPayload, ValidationError } from 'payload'
 import config from '@/payload.config'
 import { SepayPaymentProvider } from '@/lib/payments/sepay'
-import { markOrderPaid } from '@/lib/payments/orders.server'
+import { markOrderPaid, InvalidOrderStatusError } from '@/lib/payments/orders.server'
 import { checkAndRecordRateLimit, RateLimitError } from '@/lib/forms/ratelimit.server'
+import { getClientIp } from '@/lib/payments/ip'
+import type { EmailSender } from '@/lib/email/types'
 
 export const dynamic = 'force-dynamic'
+
+const MAX_BODY_BYTES = 16 * 1024 // 16 KB
+
+interface WebhookContext {
+  emailSender?: EmailSender
+  params?: Promise<Record<string, string | string[]>>
+}
 
 /**
  * REVIEW-REQUIRED: Webhook nhận thông báo biến động số dư từ SePay.
  * - Chặn khi PAYMENT_PROVIDER !== 'sepay' -> 404.
- * - Kiểm tra chữ ký / API key bằng constant-time timingSafeEqual -> 401 khi không hợp lệ, ghi log paymentEvents signatureValid: false.
- * - Rate limit theo IP để chống spam/DDoS.
- * - Idempotency: bắt ValidationError từ Payload khi transactionId đã tồn tại -> trả 200 { success: true, result: 'duplicate' }, không cấp quyền lần 2.
- * - Chỉ xử lý tiền vào (transferType = 'in').
- * - Xử lý lệch tiền (amount_mismatch), đơn hủy (order_cancelled), đơn đã thanh toán (already_paid), đơn chờ đồng ý điều khoản (terms_missing).
- * - Luôn phản hồi HTTP 200 { success: true } khi webhook đã được ghi nhận để SePay không retry vô hạn.
+ * - Giới hạn kích thước body <= 16 KB -> 413, ghi event không kèm body.
+ * - Xác thực chữ ký / API key (timingSafeEqual) TRƯỚC rate limit.
+ * - Chỉ request SAI KHÓA mới qua rate limit (theo IP từ phần tử cuối X-Forwarded-For).
+ * - Nhánh 401: KHÔNG đặt transactionId (để rỗng, chống kẻ xấu giữ chỗ transactionId).
+ * - Request đúng khóa: không bị rate limit.
+ * - JSON lỗi -> ghi event invalid_payload rồi 400.
+ * - Trạng thái đơn và event khớp nhau:
+ *   + Ghi event với result: 'processing' trước khi markOrderPaid.
+ *   + Thành công -> cập nhật result: 'paid' (hoặc 'already_paid' nếu đơn đã được xác nhận ở luồng song song).
+ *   + InvalidOrderStatusError -> đọc lại đơn, cập nhật result: order_cancelled / already_paid / ignored, trả 200.
+ *   + Lỗi khác -> XÓA event vừa ghi (để SePay retry được), log, trả 500.
  */
-export async function POST(req: Request): Promise<Response> {
+export async function POST(req: Request, context?: WebhookContext): Promise<Response> {
   // REVIEW-REQUIRED: Chế độ PAYMENT_PROVIDER !== 'sepay' -> 404
   if (process.env.PAYMENT_PROVIDER !== 'sepay') {
     return NextResponse.json({ error: 'Not Found' }, { status: 404 })
   }
 
-  const payload = await getPayload({ config })
+  const payload = await getPayload({ config: await config })
 
-  // Rate limit theo IP
-  const forwarded = req.headers.get('x-forwarded-for')
-  const ip =
-    (forwarded ? forwarded.split(',')[0].trim() : req.headers.get('x-real-ip')?.trim()) ||
-    undefined
+  // 1. Đọc body text và kiểm tra giới hạn kích thước (tối đa 16 KB)
+  let rawText: string
+  try {
+    rawText = await req.text()
+  } catch {
+    return NextResponse.json({ error: 'Failed to read request body' }, { status: 400 })
+  }
 
-  if (ip) {
+  const bodyLength = Buffer.byteLength(rawText, 'utf8')
+  if (bodyLength > MAX_BODY_BYTES) {
+    try {
+      await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          rawPayload: { error: 'payload_too_large', size: bodyLength },
+          signatureValid: false,
+          result: 'payload_too_large',
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+    } catch (err) {
+      console.error('[Sepay Webhook] Failed to record payload_too_large event:', err)
+    }
+    return NextResponse.json({ error: 'Payload Too Large' }, { status: 413 })
+  }
+
+  const provider = new SepayPaymentProvider()
+  const isSignatureValid = await provider.verifyWebhook(req)
+
+  // 2. REVIEW-REQUIRED: Xác thực API key thất bại -> rate limit theo IP, ghi event KHÔNG ĐẶT transactionId, trả 401
+  if (!isSignatureValid) {
+    const ip = getClientIp(req)
     try {
       await checkAndRecordRateLimit(payload, {
-        form: 'sepay_webhook',
+        form: 'sepay_webhook_invalid',
         ip,
         windowMinutes: 1,
-        maxHits: 120,
+        maxHits: 60,
       })
     } catch (err) {
       if (err instanceof RateLimitError) {
         return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
       }
     }
-  }
 
-  // Đọc body JSON an toàn
-  let rawBody: unknown
-  try {
-    rawBody = await req.json()
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
-  }
-
-  const payloadData: Record<string, unknown> =
-    typeof rawBody === 'object' && rawBody !== null
-      ? (rawBody as Record<string, unknown>)
-      : { value: rawBody }
-
-  const provider = new SepayPaymentProvider()
-  const isSignatureValid = await provider.verifyWebhook(req)
-
-  // REVIEW-REQUIRED: Xác thực API key thất bại -> 401 và ghi log paymentEvents (không lưu header khóa)
-  if (!isSignatureValid) {
-    let transactionId: string | undefined
-    if (rawBody && typeof rawBody === 'object' && 'id' in rawBody) {
-      transactionId = String((rawBody as { id: unknown }).id)
+    let parsedBody: Record<string, unknown> = {}
+    try {
+      const json = JSON.parse(rawText)
+      if (typeof json === 'object' && json !== null) {
+        parsedBody = json as Record<string, unknown>
+      }
+    } catch {
+      parsedBody = { rawText }
     }
 
     try {
@@ -76,24 +102,51 @@ export async function POST(req: Request): Promise<Response> {
         collection: 'paymentEvents',
         data: {
           provider: 'sepay',
-          rawPayload: payloadData,
+          rawPayload: parsedBody,
           signatureValid: false,
           result: 'invalid_signature',
-          transactionId: transactionId || undefined,
+          // A1: KHÔNG đặt transactionId để tránh kẻ xấu giữ chỗ ID
           receivedAt: new Date().toISOString(),
         },
         overrideAccess: true,
       })
     } catch (err) {
-      if (!(err instanceof ValidationError)) {
-        console.error('[Sepay Webhook] Failed to record invalid signature event:', err)
-      }
+      console.error('[Sepay Webhook] Failed to record invalid signature event:', err)
     }
 
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Parse webhook payload
+  // 3. Request đúng khóa: KHÔNG rate limit. Parse JSON.
+  let payloadData: Record<string, unknown>
+  try {
+    const json = JSON.parse(rawText)
+    if (typeof json === 'object' && json !== null) {
+      payloadData = json as Record<string, unknown>
+    } else {
+      payloadData = { value: json }
+    }
+  } catch {
+    // C5: JSON lỗi -> ghi event invalid_payload rồi 400
+    try {
+      await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          rawPayload: { rawText },
+          signatureValid: true,
+          result: 'invalid_payload',
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+    } catch (err) {
+      console.error('[Sepay Webhook] Failed to record invalid payload event:', err)
+    }
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
+  // Parse webhook schema với Zod
   let parsed
   try {
     parsed = await provider.parseWebhook(payloadData)
@@ -121,7 +174,7 @@ export async function POST(req: Request): Promise<Response> {
 
   const transactionId = parsed.transactionId
 
-  // 1. Tiền ra (transferType !== 'in') -> ignored, không đổi đơn
+  // 4. Tiền ra (transferType !== 'in') -> ignored, không đổi đơn
   if (!parsed.isMoneyIn) {
     try {
       await payload.create({
@@ -146,7 +199,7 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ success: true, result: 'ignored' })
   }
 
-  // 2. Không tìm thấy mã thanh toán hợp lệ -> no_match, không đổi đơn
+  // 5. Không tìm thấy mã thanh toán hợp lệ -> no_match, không đổi đơn
   if (!parsed.paymentRef) {
     try {
       await payload.create({
@@ -171,7 +224,7 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ success: true, result: 'no_match' })
   }
 
-  // 3. Tìm đơn hàng theo paymentRef
+  // 6. Tìm đơn hàng theo paymentRef
   let order
   try {
     const orderSearch = await payload.find({
@@ -214,41 +267,128 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ success: true, result: 'no_match' })
   }
 
-  // REVIEW-REQUIRED: Xử lý theo đúng thứ tự logic bảng nghiệp vụ:
-  // - Số tiền khác order.total -> amount_mismatch, không đổi đơn (Hana xử lý tay)
-  // - Đơn cancelled -> order_cancelled, không đổi đơn (Hana xử lý tay)
+  // 7. REVIEW-REQUIRED: Xử lý theo đúng thứ tự logic nghiệp vụ:
+  // - Số tiền khác order.total -> amount_mismatch, không đổi đơn
+  // - Đơn cancelled -> order_cancelled, không đổi đơn
   // - Đơn đã paid -> already_paid, không đổi đơn
   // - Đơn createdByAdmin chưa đồng ý điều khoản -> terms_missing, không đổi đơn
-  // - Đơn pending/failed + đúng số tiền -> paid -> gọi markOrderPaid
-  let result: string
-  let shouldMarkPaid = false
-
+  // - Đơn pending/failed + đúng số tiền -> chuyển tiếp sang bước markOrderPaid
   if (parsed.amount !== order.total) {
-    result = 'amount_mismatch'
-  } else if (order.paymentStatus === 'cancelled') {
-    result = 'order_cancelled'
-  } else if (order.paymentStatus === 'paid') {
-    result = 'already_paid'
-  } else if (order.createdByAdmin && !order.termsAcceptedAt) {
-    result = 'terms_missing'
-  } else if (order.paymentStatus === 'pending' || order.paymentStatus === 'failed') {
-    result = 'paid'
-    shouldMarkPaid = true
-  } else {
-    result = 'ignored'
+    try {
+      await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          order: order.id,
+          rawPayload: payloadData,
+          signatureValid: true,
+          result: 'amount_mismatch',
+          transactionId,
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        return NextResponse.json({ success: true, result: 'duplicate' })
+      }
+      console.error('[Sepay Webhook] Failed to record amount_mismatch event:', err)
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    }
+    return NextResponse.json({ success: true, result: 'amount_mismatch' })
   }
 
-  // REVIEW-REQUIRED: Chống trùng lặp - transactionId unique.
-  // Bắt ValidationError của Payload khi transactionId đã tồn tại -> trả duplicate mà không cấp quyền lần 2.
+  if (order.paymentStatus === 'cancelled') {
+    try {
+      await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          order: order.id,
+          rawPayload: payloadData,
+          signatureValid: true,
+          result: 'order_cancelled',
+          transactionId,
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        return NextResponse.json({ success: true, result: 'duplicate' })
+      }
+      console.error('[Sepay Webhook] Failed to record order_cancelled event:', err)
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    }
+    return NextResponse.json({ success: true, result: 'order_cancelled' })
+  }
+
+  if (order.paymentStatus === 'paid') {
+    try {
+      await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          order: order.id,
+          rawPayload: payloadData,
+          signatureValid: true,
+          result: 'already_paid',
+          transactionId,
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        return NextResponse.json({ success: true, result: 'duplicate' })
+      }
+      console.error('[Sepay Webhook] Failed to record already_paid event:', err)
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    }
+    return NextResponse.json({ success: true, result: 'already_paid' })
+  }
+
+  if (order.createdByAdmin && !order.termsAcceptedAt) {
+    try {
+      await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          order: order.id,
+          rawPayload: payloadData,
+          signatureValid: true,
+          result: 'terms_missing',
+          transactionId,
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        return NextResponse.json({ success: true, result: 'duplicate' })
+      }
+      console.error('[Sepay Webhook] Failed to record terms_missing event:', err)
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    }
+    return NextResponse.json({ success: true, result: 'terms_missing' })
+  }
+
+  // 8. REVIEW-REQUIRED (B2): Đơn pending / failed + đúng số tiền
+  // - Ghi event với result: 'processing' và transactionId unique.
+  // - Gọi markOrderPaid:
+  //   + Thành công: cập nhật result: 'paid' (hoặc 'already_paid' nếu đã paid bởi luồng song song).
+  //   + InvalidOrderStatusError: đọc lại đơn, cập nhật result: order_cancelled / already_paid / ignored, trả 200.
+  //   + Lỗi khác: XÓA event vừa ghi (để SePay retry được không bị kẹt transactionId), log, trả 500.
+  let eventDoc
   try {
-    await payload.create({
+    eventDoc = await payload.create({
       collection: 'paymentEvents',
       data: {
         provider: 'sepay',
         order: order.id,
         rawPayload: payloadData,
         signatureValid: true,
-        result,
+        result: 'processing',
         transactionId,
         receivedAt: new Date().toISOString(),
       },
@@ -258,22 +398,86 @@ export async function POST(req: Request): Promise<Response> {
     if (err instanceof ValidationError) {
       return NextResponse.json({ success: true, result: 'duplicate' })
     }
-    console.error('[Sepay Webhook] Failed to record payment event:', err)
+    console.error('[Sepay Webhook] Failed to record processing payment event:', err)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 
-  // Gọi markOrderPaid cho đơn hợp lệ
-  if (shouldMarkPaid) {
-    try {
-      await markOrderPaid(order.id, {
-        source: 'webhook',
-        payload,
-      })
-    } catch (payErr) {
-      console.error('[Sepay Webhook] Failed to mark order paid:', payErr)
-      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
-    }
-  }
+  try {
+    const paidResult = await markOrderPaid(order.id, {
+      source: 'webhook',
+      payload,
+      emailSender: context?.emailSender,
+    })
 
-  return NextResponse.json({ success: true, result })
+    const finalResult = (paidResult as { __alreadyPaid?: boolean })?.__alreadyPaid
+      ? 'already_paid'
+      : 'paid'
+
+    await payload.update({
+      collection: 'paymentEvents',
+      id: eventDoc.id,
+      data: {
+        result: finalResult,
+      },
+      overrideAccess: true,
+    })
+
+    return NextResponse.json({ success: true, result: finalResult })
+  } catch (payErr) {
+    if (payErr instanceof InvalidOrderStatusError) {
+      // Race condition với hủy đơn hoặc thanh toán đồng thời: đọc lại đơn hàng
+      let updatedResult = 'ignored'
+      try {
+        const freshOrder = await payload.findByID({
+          collection: 'orders',
+          id: order.id,
+          overrideAccess: true,
+          depth: 0,
+        })
+        if (freshOrder?.paymentStatus === 'cancelled') {
+          updatedResult = 'order_cancelled'
+        } else if (freshOrder?.paymentStatus === 'paid') {
+          updatedResult = 'already_paid'
+        }
+      } catch (readErr) {
+        console.error(
+          '[Sepay Webhook] Failed to re-read order after InvalidOrderStatusError:',
+          readErr,
+        )
+      }
+
+      try {
+        await payload.update({
+          collection: 'paymentEvents',
+          id: eventDoc.id,
+          data: {
+            result: updatedResult,
+          },
+          overrideAccess: true,
+        })
+      } catch (updateErr) {
+        console.error(
+          '[Sepay Webhook] Failed to update event after InvalidOrderStatusError:',
+          updateErr,
+        )
+      }
+
+      return NextResponse.json({ success: true, result: updatedResult })
+    }
+
+    // Lỗi khác (DB đứt mạng, lỗi server tạm thời, v.v.):
+    // Xóa event vừa ghi để SePay gửi lại sau không bị coi là duplicate
+    try {
+      await payload.delete({
+        collection: 'paymentEvents',
+        id: eventDoc.id,
+        overrideAccess: true,
+      })
+    } catch (delErr) {
+      console.error('[Sepay Webhook] Failed to delete event after processing error:', delErr)
+    }
+
+    console.error('[Sepay Webhook] Failed to mark order paid:', payErr)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+  }
 }

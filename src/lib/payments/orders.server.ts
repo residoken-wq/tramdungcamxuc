@@ -155,7 +155,6 @@ export interface PublicOrderViewDto {
   toolUrl?: string | null
 }
 
-
 async function resolvePayload(injected?: Payload): Promise<Payload> {
   if (injected) return injected
   return await getPayload({ config })
@@ -709,7 +708,6 @@ export async function getPublicOrderView(
   }
 }
 
-
 export interface AdminActor {
   id: number | string
   role?: string
@@ -784,6 +782,7 @@ export async function markOrderPaid(
       },
       overrideAccess: true,
     })
+    Object.assign(order, { __alreadyPaid: true })
     return order
   }
 
@@ -848,6 +847,7 @@ export async function markOrderPaid(
         },
         overrideAccess: true,
       })
+      Object.assign(refreshed, { __alreadyPaid: true })
       return refreshed
     }
     // Thua race với hủy đơn: đơn không còn pending/failed -> báo lỗi, không báo "đã xác nhận"
