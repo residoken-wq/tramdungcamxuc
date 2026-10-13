@@ -19,7 +19,7 @@ interface LessonPageProps {
 
 export async function generateMetadata({ params }: LessonPageProps): Promise<Metadata> {
   const { lessonId: rawId } = await params
-  const lessonId = parseInt(rawId, 10)
+  const lessonId = /^\d+$/.test(rawId) ? parseInt(rawId, 10) : NaN
 
   if (isNaN(lessonId)) {
     return {
@@ -46,11 +46,10 @@ export async function generateMetadata({ params }: LessonPageProps): Promise<Met
 
 export default async function HabitLessonPage({ params }: LessonPageProps) {
   const { lessonId: rawId } = await params
-  const lessonId = parseInt(rawId, 10)
-
-  if (isNaN(lessonId)) {
+  if (!/^\d+$/.test(rawId)) {
     notFound()
   }
+  const lessonId = parseInt(rawId, 10)
 
   const customer = await getCurrentCustomer()
   const result = await getLessonPlayback(lessonId, customer ? customer.id : null)
@@ -66,7 +65,7 @@ export default async function HabitLessonPage({ params }: LessonPageProps) {
       <div className="min-h-screen bg-warm-ivory py-10 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
         <div className="w-full max-w-xl">
           <LockedLessonCard
-            lessonTitle={result.lesson?.title || 'Bài học'}
+            lessonTitle={result.lesson?.title || vi.learning.lesson.defaultLessonTitle}
             isUnauthenticated={result.reason === 'unauthenticated'}
             lessonId={lessonId}
           />
@@ -141,7 +140,9 @@ export default async function HabitLessonPage({ params }: LessonPageProps) {
           </h1>
 
           <div className="flex flex-wrap items-center gap-2 pt-1 font-ui text-xs text-deep-navy/60">
-            {typeof lesson.order === 'number' && <span>Bài {lesson.order + 1}</span>}
+            {typeof lesson.order === 'number' && (
+              <span>{vi.learning.lesson.lessonOrderLabel(lesson.order)}</span>
+            )}
             {durationText && (
               <>
                 <span>•</span>
@@ -159,12 +160,13 @@ export default async function HabitLessonPage({ params }: LessonPageProps) {
             moduleId={modId}
             lessonOrder={lesson.order ?? 0}
             initialCompleted={isCompleted}
+            isAuthenticated={Boolean(customer)}
           />
         </main>
 
         {/* Lesson Summary / Content */}
         {lesson.summary && (
-          <div className="rounded-2xl border border-lavender-mist/70 bg-white p-5 sm:p-7 shadow-sm">
+          <div className="rounded-2xl border border-lavender-mist/70 bg-warm-ivory p-5 sm:p-7 shadow-sm">
             <h2 className="font-ui text-sm font-bold uppercase tracking-wider text-deep-navy/80">
               {vi.learning.lesson.summaryHeading}
             </h2>

@@ -21,6 +21,7 @@ describe('Lesson Access Control & Playback Authorization Matrix (T2-05a)', () =>
   let freePreviewLesson: Lesson
   let paidLesson: Lesson
   let draftLesson: Lesson
+  let lessonInDraftModule: Lesson
 
   const created: { collection: CollectionSlug; id: number }[] = []
 
@@ -237,6 +238,37 @@ describe('Lesson Access Control & Playback Authorization Matrix (T2-05a)', () =>
         overrideAccess: true,
       }),
     )
+
+    const draftModuleDoc = track(
+      'courseModules',
+      await payload.create({
+        collection: 'courseModules',
+        data: {
+          title: 'Module Nháp (Test T2-05a)',
+          group: 'technique',
+          order: 99,
+          _status: 'draft',
+        },
+        overrideAccess: true,
+      }),
+    )
+
+    lessonInDraftModule = track(
+      'lessons',
+      await payload.create({
+        collection: 'lessons',
+        data: {
+          title: 'Bài học đã xuất bản nhưng nằm trong module nháp',
+          module: draftModuleDoc.id,
+          videoId: 'secret_bunny_video_in_draft_mod',
+          isFreePreview: true,
+          durationSec: 300,
+          order: 1,
+          _status: 'published',
+        },
+        overrideAccess: true,
+      }),
+    )
   })
 
   afterAll(async () => {
@@ -367,5 +399,18 @@ describe('Lesson Access Control & Playback Authorization Matrix (T2-05a)', () =>
     expect(serialized).not.toContain('secret_bunny_video')
     expect(serialized).not.toContain('secret_bunny_video_paid_888')
     expect(serialized).not.toContain('secret_bunny_video_free_preview_999')
+  })
+
+  it('10. Bài đã xuất bản nhưng nằm trong nhóm bài học nháp (draft module) -> bị từ chối (allowed = false, reason = not_published)', async () => {
+    const result = await getLessonPlayback(
+      lessonInDraftModule.id,
+      customerWithPurchased.id,
+      new Date(),
+      payload,
+    )
+    expect(result.allowed).toBe(false)
+    expect(result.reason).toBe('not_published')
+    expect(result.lesson).toBeNull()
+    expect(result.playback).toBeNull()
   })
 })

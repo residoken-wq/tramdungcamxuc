@@ -513,3 +513,11 @@ Chạy kiểm tra định kỳ mỗi giờ một lần:
 # Mở crontab: crontab -e
 0 * * * * cd /opt/tramdungcamxuc && curl -s -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= .env | cut -d= -f2)" http://127.0.0.1:3400/api/cron/expire-entitlements >> /var/log/tdcx-cron-entitlements.log 2>&1 && echo >> /var/log/tdcx-cron-entitlements.log
 ```
+
+---
+
+### Cấu hình Video Provider và Streaming (T2-05a / T2-05b)
+
+- Biến môi trường: `VIDEO_PROVIDER` (mặc định là `sandbox` nếu không khai báo).
+- Môi trường thử nghiệm / phát triển: để trống hoặc đặt `VIDEO_PROVIDER=sandbox`. Trình phát video hiển thị khung giả lập sandbox nội bộ, không lộ ID video và hỗ trợ kiểm thử tiến độ qua nút "Giả lập xem hết".
+- **Môi trường Production**: Bắt buộc phải đặt `VIDEO_PROVIDER` (ví dụ `bunny` khi hoàn thành tích hợp Bunny Stream ở task T2-05b) kèm theo các thông tin xác thực/ký token tương ứng. Hiện tại nếu chọn `VIDEO_PROVIDER=bunny`, hệ thống sẽ ném lỗi "Chưa cấu hình Bunny (T2-05b)" do chưa hoàn thành cấu hình dịch vụ stream thật.

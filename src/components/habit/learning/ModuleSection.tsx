@@ -20,7 +20,7 @@ export function ModuleSection({ module, moduleIndex }: ModuleSectionProps) {
             {groupLabel}
           </span>
           <span className="font-ui text-xs font-semibold text-deep-navy/50">
-            Phần {moduleIndex + 1}
+            {vi.learning.dashboard.sectionPart(moduleIndex + 1)}
           </span>
         </div>
         <h3
@@ -40,7 +40,7 @@ export function ModuleSection({ module, moduleIndex }: ModuleSectionProps) {
         </div>
       ) : (
         <p className="rounded-xl border border-dashed border-lavender-mist/80 p-4 text-center font-body text-sm text-deep-navy/60">
-          Chưa có bài học trong phần này.
+          {vi.learning.dashboard.emptyModule}
         </p>
       )}
     </section>

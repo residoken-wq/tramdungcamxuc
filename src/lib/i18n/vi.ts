@@ -1011,6 +1011,8 @@ export const vi = {
       startLearning: 'Bắt đầu học',
       continueLearning: 'Học tiếp',
       reviewLesson: 'Xem lại',
+      sectionPart: (part: number) => `Phần ${part}`,
+      emptyModule: 'Chưa có bài học trong phần này.',
     },
     lesson: {
       backToDashboard: 'Quay lại danh sách bài học',
@@ -1026,12 +1028,21 @@ export const vi = {
       lockedTitle: 'Nội dung này chưa được mở khóa',
       lockedDesc:
         'Bạn cần kích hoạt dùng thử 21 ngày hoặc sở hữu Habit Tracker số để xem bài học này.',
+      unauthenticatedPrompt:
+        'Vui lòng đăng nhập vào tài khoản của bạn để kiểm tra quyền truy cập bài học này.',
       unlockButton: 'Nhận ưu đãi 1% Better ngay',
       notFoundTitle: 'Không tìm thấy bài học',
       notFoundDesc: 'Bài học bạn đang tìm kiếm không tồn tại hoặc đã ngừng cung cấp.',
       notPublishedTitle: 'Bài học chưa xuất bản',
       notPublishedDesc: 'Nội dung bài học này đang được chuẩn bị và sẽ sớm ra mắt.',
       summaryHeading: 'Tóm tắt bài học',
+      lessonOrderLabel: (order: number) => `Bài ${order}`,
+      defaultLessonTitle: 'Bài học',
+      videoTitle: 'Video bài học',
+      noVideoUrl: 'Chưa có liên kết phát video khả dụng.',
+      navAriaLabel: 'Điều hướng bài học',
+      progressRecordFailed: 'Không thể ghi nhận tiến độ.',
+      progressError: 'Đã có lỗi xảy ra khi ghi nhận tiến độ.',
     },
   },
   checkout: {

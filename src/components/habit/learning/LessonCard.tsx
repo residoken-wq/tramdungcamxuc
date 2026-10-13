@@ -17,9 +17,9 @@ export function LessonCard({ lesson, index }: LessonCardProps) {
 
   return (
     <div
-      className={`group relative flex flex-col justify-between rounded-2xl border p-5 transition-all duration-200 ${
+      className={`group relative flex flex-col justify-between rounded-2xl border p-5 transition-all duration-200 motion-reduce:transition-none ${
         lesson.canAccess
-          ? 'border-lavender-mist/70 bg-white shadow-sm hover:border-bright-magenta/40 hover:shadow-md'
+          ? 'border-lavender-mist/70 bg-warm-ivory shadow-sm hover:border-bright-magenta/40 hover:shadow-md'
           : 'border-lavender-mist/40 bg-warm-ivory/60'
       }`}
     >
@@ -109,7 +109,7 @@ export function LessonCard({ lesson, index }: LessonCardProps) {
         {lesson.canAccess ? (
           <Link
             href={href}
-            className="inline-flex items-center gap-1 font-ui text-xs sm:text-sm font-bold text-accent-pink hover:text-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded transition-colors"
+            className="inline-flex items-center gap-1 font-ui text-xs sm:text-sm font-bold text-accent-pink hover:text-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded transition-colors motion-reduce:transition-none"
           >
             {lesson.isCompleted
               ? vi.learning.dashboard.reviewLesson
@@ -119,7 +119,7 @@ export function LessonCard({ lesson, index }: LessonCardProps) {
         ) : (
           <Link
             href={vi.learning.dashboard.offerHref}
-            className="inline-flex items-center gap-1 font-ui text-xs font-bold text-bright-magenta hover:text-accent-pink underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded transition-colors"
+            className="inline-flex items-center gap-1 font-ui text-xs font-bold text-bright-magenta hover:text-accent-pink underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded transition-colors motion-reduce:transition-none"
           >
             {vi.learning.dashboard.unlockCta}
             <span aria-hidden="true">→</span>

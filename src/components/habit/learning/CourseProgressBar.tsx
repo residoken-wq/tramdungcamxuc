@@ -18,7 +18,7 @@ export function CourseProgressBar({
 
   return (
     <div
-      className={`rounded-2xl border border-lavender-mist/60 bg-white/90 p-5 sm:p-6 shadow-sm backdrop-blur-sm ${className}`}
+      className={`rounded-2xl border border-lavender-mist/60 bg-warm-ivory p-5 sm:p-6 shadow-sm ${className}`}
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -45,7 +45,7 @@ export function CourseProgressBar({
         aria-label={vi.learning.dashboard.overallProgress}
       >
         <div
-          className="h-full rounded-full bg-gradient-to-r from-accent-pink to-bright-magenta transition-all duration-500 ease-out"
+          className="h-full rounded-full bg-gradient-to-r from-accent-pink to-bright-magenta transition-all duration-500 ease-out motion-reduce:transition-none"
           style={{ width: `${percent}%` }}
         />
       </div>
