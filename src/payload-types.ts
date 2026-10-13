@@ -1584,7 +1584,20 @@ export interface HabitCheckin {
   /**
    * Chọn một mục phù hợp.
    */
-  emotion?: ('calm' | 'grateful' | 'energized' | 'overwhelmed' | 'tired' | 'anxious') | null;
+  emotion?:
+    | (
+        | 'joyful'
+        | 'peaceful'
+        | 'fresh'
+        | 'serene'
+        | 'grateful'
+        | 'relaxed'
+        | 'confident'
+        | 'tired'
+        | 'discouraged'
+        | 'stressed'
+      )
+    | null;
   /**
    * Nhập ghi chú.
    */

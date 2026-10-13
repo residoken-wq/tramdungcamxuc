@@ -4,7 +4,7 @@ import React, { useRef, useId } from 'react'
 import { EMOTIONS, type EmotionKey } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 
-// PENDING Q14: Uses the sample emotions defined in src/lib/emotions.ts
+// Q14: Uses the 10 fixed emotions with emojis defined in src/lib/emotions.ts
 
 export interface EmotionPickerProps {
   value?: string | null
@@ -48,7 +48,8 @@ export function EmotionPicker({
     }
 
     // Focus the target radio button
-    const buttons = containerRef.current?.querySelectorAll<HTMLButtonElement>('button[role="radio"]')
+    const buttons =
+      containerRef.current?.querySelectorAll<HTMLButtonElement>('button[role="radio"]')
     if (buttons && buttons[nextIndex]) {
       buttons[nextIndex].focus()
     }
@@ -71,12 +72,15 @@ export function EmotionPicker({
         role="radiogroup"
         aria-labelledby={groupLabel ? labelId : undefined}
         aria-label={groupLabel ? undefined : vi.emotionPicker.label}
-        className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3"
+        className="grid grid-cols-5 sm:grid-cols-5 lg:grid-cols-10 gap-1.5 sm:gap-2"
       >
         {EMOTIONS.map((emotion, index) => {
           const isSelected = value === emotion.key
-          const Icon = emotion.icon
-          const tabIndex = disabled ? -1 : isSelected || (selectedIndex === -1 && index === activeTabIndex) ? 0 : -1
+          const tabIndex = disabled
+            ? -1
+            : isSelected || (selectedIndex === -1 && index === activeTabIndex)
+              ? 0
+              : -1
 
           return (
             <button
@@ -94,7 +98,7 @@ export function EmotionPicker({
               }}
               onKeyDown={(e) => handleKeyDown(e, index)}
               className={[
-                'min-h-[44px] min-w-[44px] p-2.5 sm:p-3 rounded-xl border flex flex-col items-center justify-center transition-all duration-200 select-none cursor-pointer',
+                'min-h-[44px] min-w-[44px] p-1.5 sm:p-2.5 rounded-xl border flex flex-col items-center justify-center transition-all duration-200 select-none cursor-pointer',
                 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
                 isSelected
                   ? 'border-accent-pink bg-soft-pink text-deep-navy font-bold shadow-sm ring-1 ring-accent-pink/50'
@@ -104,10 +108,14 @@ export function EmotionPicker({
                 .filter(Boolean)
                 .join(' ')}
             >
-              <span className="w-6 h-6 flex items-center justify-center mb-1 text-current">
-                <Icon className="w-5 h-5" />
+              <span
+                className="text-xl sm:text-2xl leading-none select-none mb-1"
+                role="img"
+                aria-hidden="true"
+              >
+                {emotion.emoji}
               </span>
-              <span className="text-xs font-ui text-center leading-tight tracking-tight">
+              <span className="text-[11px] sm:text-xs font-ui text-center leading-tight tracking-tight">
                 {emotion.label}
               </span>
             </button>

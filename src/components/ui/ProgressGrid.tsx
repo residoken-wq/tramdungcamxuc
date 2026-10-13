@@ -169,7 +169,6 @@ export function ProgressGrid({
           const { day, status, emotionKey } = item
           const isNonInteractive = !isInteractive || status === 'future' || status === 'locked'
           const emotion = emotionKey ? getEmotion(emotionKey) : undefined
-          const EmotionIcon = emotion?.icon
 
           const statusText = vi.habit.statuses[status]
           const ariaLabel = vi.habit.ariaDay(day, statusText, emotion?.label)
@@ -179,13 +178,18 @@ export function ProgressGrid({
 
           switch (status) {
             case 'done':
-              stateStyle =
-                'bg-mint-haze border-deep-navy/20 text-deep-navy font-bold shadow-sm'
+              stateStyle = 'bg-mint-haze border-deep-navy/20 text-deep-navy font-bold shadow-sm'
               if (isInteractive) {
                 stateStyle += ' hover:border-deep-navy cursor-pointer'
               }
-              indicatorIcon = EmotionIcon ? (
-                <EmotionIcon className="w-3.5 h-3.5 text-deep-navy" />
+              indicatorIcon = emotion ? (
+                <span
+                  className="text-xs sm:text-sm leading-none select-none"
+                  role="img"
+                  aria-hidden="true"
+                >
+                  {emotion.emoji}
+                </span>
               ) : (
                 <CheckIcon className="w-3.5 h-3.5 text-deep-navy" />
               )
@@ -203,8 +207,7 @@ export function ProgressGrid({
               break
 
             case 'missed':
-              stateStyle =
-                'bg-butter-cream/40 border-deep-navy/20 text-deep-navy/80 font-medium'
+              stateStyle = 'bg-butter-cream/40 border-deep-navy/20 text-deep-navy/80 font-medium'
               if (isInteractive) {
                 stateStyle += ' hover:bg-butter-cream/70 cursor-pointer'
               }
@@ -243,15 +246,10 @@ export function ProgressGrid({
               ].join(' ')}
             >
               {/* Day Number */}
-              <span className="font-ui text-xs sm:text-sm leading-none font-bold">
-                {day}
-              </span>
+              <span className="font-ui text-xs sm:text-sm leading-none font-bold">{day}</span>
 
               {/* Status Indicator Slot */}
-              <div
-                className="flex items-center justify-center h-4 w-4 mt-1"
-                aria-hidden="true"
-              >
+              <div className="flex items-center justify-center h-4 w-4 mt-1" aria-hidden="true">
                 {indicatorIcon}
               </div>
             </button>
