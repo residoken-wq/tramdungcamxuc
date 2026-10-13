@@ -46,11 +46,11 @@ export async function issueCertificateAction(): Promise<IssueCertificateActionRe
     return {
       success: true,
       certificate: {
-        code: cert.code,
+        code: cert.code || '',
         customerName: customer.name || 'Học viên',
         identityStatement: cert.identityStatement || '',
         daysCompleted: cert.daysCompleted ?? 0,
-        issuedAt: cert.issuedAt,
+        issuedAt: cert.issuedAt || new Date().toISOString(),
         isPublic: Boolean(cert.isPublic),
         isOwner: true,
       },

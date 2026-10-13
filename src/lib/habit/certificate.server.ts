@@ -58,11 +58,11 @@ function sanitizeCertificate(cert: Certificate, defaultName = 'Học viên'): Pu
       : defaultName
 
   return {
-    code: cert.code,
+    code: cert.code || '',
     customerName,
     identityStatement: cert.identityStatement || '',
     daysCompleted: cert.daysCompleted ?? 0,
-    issuedAt: cert.issuedAt,
+    issuedAt: cert.issuedAt || new Date().toISOString(),
     isPublic: Boolean(cert.isPublic),
   }
 }
@@ -248,14 +248,18 @@ export async function getCertificateEligibility(
     }
   }
 
+  const sanitizedCert = existingCert ? sanitizeCertificate(existingCert) : null
+
   return {
     eligible,
     currentDay,
     completedDays,
     minDays,
+    certificateMinDays: minDays,
     planId: ownPlan.id,
     hasCertificate,
-    certificate: existingCert ? sanitizeCertificate(existingCert) : null,
+    certificate: sanitizedCert,
+    existingCertificate: sanitizedCert,
     reason,
     message,
   }

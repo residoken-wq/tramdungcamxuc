@@ -13,6 +13,7 @@ import {
   getCurrentDayOfPlan,
   getOrCreateTrackerPlan,
 } from '@/lib/habit/tracker.server'
+import { getCertificateEligibility } from '@/lib/habit/certificate.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
@@ -130,6 +131,9 @@ export default async function HabitTrackerPage() {
   const isReadOnly = !access.hasAccess
   const isTrialOrExpired = access.status === 'trial' || access.status === 'expired'
 
+  // Lấy điều kiện nhận chứng nhận 21 ngày
+  const eligibility = await getCertificateEligibility(customer.id, { payload, now })
+
   return (
     <div className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-warm-ivory/80 to-lavender-mist/20">
       <TrackerDashboard
@@ -140,6 +144,8 @@ export default async function HabitTrackerPage() {
         readOnly={isReadOnly}
         isTrialOrExpired={isTrialOrExpired}
         buyUrl={buyUrl}
+        initialCertificate={eligibility.existingCertificate ?? null}
+        eligibility={eligibility}
       />
     </div>
   )

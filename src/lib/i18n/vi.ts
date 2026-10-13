@@ -1227,6 +1227,8 @@ export const vi = {
       actionButton: 'Trở lại với nhịp quen hôm nay',
       signOff: 'Thương mến,',
       author: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
+      footerNote:
+        'Email tự động từ Trạm Dừng Cảm Xúc nhằm đồng hành cùng bạn trên hành trình rèn luyện.',
     },
   },
   certificate: {
