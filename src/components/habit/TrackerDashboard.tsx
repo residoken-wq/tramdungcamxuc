@@ -105,7 +105,7 @@ export function TrackerDashboard({
   return (
     <div className="w-full max-w-2xl mx-auto space-y-8">
       {/* 1. Header & Identity Statement */}
-      <div className="bg-white rounded-card border border-deep-navy/10 p-6 sm:p-8 shadow-soft text-center space-y-4">
+      <div className="bg-warm-ivory rounded-card border border-deep-navy/10 p-6 sm:p-8 shadow-soft text-center space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-ui font-semibold bg-lavender-mist/60 text-deep-navy">
           <span className="w-2 h-2 rounded-full bg-accent-pink" />
           <span>{vi.tracker.currentDayBadge(Math.min(21, currentDay))}</span>
@@ -116,9 +116,9 @@ export function TrackerDashboard({
         </h1>
 
         {identityStatement && (
-          <div className="p-3.5 rounded-xl bg-warm-ivory border border-deep-navy/10 inline-block text-left max-w-md w-full">
+          <div className="p-3.5 rounded-xl bg-warm-ivory/80 border border-deep-navy/10 inline-block text-left max-w-md w-full">
             <p className="text-xs font-ui uppercase font-bold text-bright-magenta mb-1">
-              Cam kết danh tính của bạn
+              {vi.tracker.identityCommitmentLabel}
             </p>
             <p className="font-sans text-sm font-medium text-deep-navy leading-relaxed">
               {identityStatement}
@@ -135,7 +135,7 @@ export function TrackerDashboard({
           </p>
           <Link
             href={buyUrl}
-            className="shrink-0 px-4 py-1.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-xs hover:bg-bright-magenta/90 transition-colors shadow-xs"
+            className="shrink-0 px-4 py-1.5 rounded-full bg-bright-magenta text-warm-ivory font-ui font-semibold text-xs hover:bg-bright-magenta/90 transition-colors shadow-xs"
           >
             {vi.tracker.expiredNotice.buyButton}
           </Link>
@@ -154,13 +154,13 @@ export function TrackerDashboard({
       )}
 
       {/* 3. Lưới 21 ngày */}
-      <div className="bg-white rounded-card border border-deep-navy/10 p-6 sm:p-8 shadow-soft space-y-4">
+      <div className="bg-warm-ivory rounded-card border border-deep-navy/10 p-6 sm:p-8 shadow-soft space-y-4">
         <div className="flex items-center justify-between border-b border-deep-navy/10 pb-3">
           <h2 className="font-ui font-bold text-base sm:text-lg text-deep-navy">
             {vi.tracker.pageTitle}
           </h2>
           <span className="text-xs font-sans text-deep-navy/60">
-            {stats.completedDays} / 21 ngày xong
+            {stats.completedDays} / 21 {vi.tracker.daysCompletedSuffix}
           </span>
         </div>
 

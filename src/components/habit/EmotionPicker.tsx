@@ -72,7 +72,7 @@ export function EmotionPicker({
         role="radiogroup"
         aria-labelledby={groupLabel ? labelId : undefined}
         aria-label={groupLabel ? undefined : vi.emotionPicker.label}
-        className="grid grid-cols-5 sm:grid-cols-5 lg:grid-cols-10 gap-1.5 sm:gap-2"
+        className="grid grid-cols-5 gap-1.5 sm:gap-2"
       >
         {EMOTIONS.map((emotion, index) => {
           const isSelected = value === emotion.key

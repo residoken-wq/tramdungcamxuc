@@ -16,9 +16,9 @@ export function TrackerSummaryCard({ stats, isTrialOrExpired, buyUrl }: TrackerS
   const { completedDays, mostFrequentEmotion } = stats
 
   return (
-    <div className="w-full max-w-2xl mx-auto rounded-card border-2 border-bright-magenta/20 bg-linear-to-br from-white via-soft-pink/30 to-lavender-mist/40 p-6 sm:p-8 shadow-md space-y-6">
+    <div className="w-full max-w-2xl mx-auto rounded-card border-2 border-bright-magenta/20 bg-linear-to-br from-warm-ivory via-soft-pink/30 to-lavender-mist/40 p-6 sm:p-8 shadow-md space-y-6">
       <div className="text-center space-y-2">
-        <span className="inline-block px-3.5 py-1 rounded-full text-xs font-ui font-bold bg-bright-magenta text-white shadow-xs">
+        <span className="inline-block px-3.5 py-1 rounded-full text-xs font-ui font-bold bg-bright-magenta text-warm-ivory shadow-xs">
           {vi.tracker.summary.badge}
         </span>
         <h2 className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy">
@@ -31,26 +31,28 @@ export function TrackerSummaryCard({ stats, isTrialOrExpired, buyUrl }: TrackerS
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Số ngày hoàn thành */}
-        <div className="p-4 rounded-xl border border-deep-navy/10 bg-white/90 text-center space-y-1">
+        <div className="p-4 rounded-xl border border-deep-navy/10 bg-warm-ivory/90 text-center space-y-1">
           <p className="text-xs font-ui uppercase font-semibold text-deep-navy/60">
-            Tiến độ hoàn thành
+            {vi.tracker.summary.progressTitle}
           </p>
           <p className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy">
             {completedDays}{' '}
-            <span className="text-base text-deep-navy/60 font-normal">/ 21 ngày</span>
+            <span className="text-base text-deep-navy/60 font-normal">
+              {vi.tracker.summary.totalDaysSuffix}
+            </span>
           </p>
           <div className="w-full bg-deep-navy/10 h-2 rounded-full overflow-hidden mt-2">
             <div
-              className="bg-accent-pink h-full rounded-full transition-all duration-500"
+              className="bg-accent-pink h-full rounded-full transition-all duration-500 motion-reduce:transition-none"
               style={{ width: `${Math.min(100, Math.round((completedDays / 21) * 100))}%` }}
             />
           </div>
         </div>
 
         {/* Cảm xúc gặp nhiều nhất */}
-        <div className="p-4 rounded-xl border border-deep-navy/10 bg-white/90 text-center space-y-1 flex flex-col justify-center">
+        <div className="p-4 rounded-xl border border-deep-navy/10 bg-warm-ivory/90 text-center space-y-1 flex flex-col justify-center">
           <p className="text-xs font-ui uppercase font-semibold text-deep-navy/60">
-            Cảm xúc đồng hành nhiều nhất
+            {vi.tracker.summary.mostFrequentEmotionTitle}
           </p>
           {mostFrequentEmotion ? (
             <div className="flex items-center justify-center gap-2 mt-1">
@@ -62,7 +64,7 @@ export function TrackerSummaryCard({ stats, isTrialOrExpired, buyUrl }: TrackerS
                   {mostFrequentEmotion.label}
                 </p>
                 <p className="text-xs text-deep-navy/60">
-                  {mostFrequentEmotion.count} ngày xuất hiện
+                  {mostFrequentEmotion.count} {vi.tracker.summary.emotionCountSuffix}
                 </p>
               </div>
             </div>
@@ -79,14 +81,14 @@ export function TrackerSummaryCard({ stats, isTrialOrExpired, buyUrl }: TrackerS
         {isTrialOrExpired && (
           <Link
             href={buyUrl}
-            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-bright-magenta text-white font-ui font-bold text-sm hover:bg-bright-magenta/90 shadow-sm transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-bright-magenta text-warm-ivory font-ui font-bold text-sm hover:bg-bright-magenta/90 shadow-sm transition-all"
           >
             {vi.tracker.summary.buyButton}
           </Link>
         )}
         <Link
           href={GROWTH_MIRROR_PATH}
-          className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border-2 border-accent-pink text-deep-navy bg-white hover:bg-soft-pink font-ui font-bold text-sm transition-all shadow-xs"
+          className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border-2 border-accent-pink text-deep-navy bg-warm-ivory hover:bg-soft-pink font-ui font-bold text-sm transition-all shadow-xs"
         >
           {vi.tracker.summary.bookingButton}
         </Link>
