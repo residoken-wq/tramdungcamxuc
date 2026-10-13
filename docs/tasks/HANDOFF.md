@@ -5,10 +5,10 @@
 **Trạng thái GĐ 2** (bảng đầy đủ: `README.md`):
 
 - **Đã merge**: T2-00, T2-01, T2-02, T2-03, T2-04, T2-05a, T2-05b, T2-06, T2-08, T2-10, T2-12, T2-13, T2-14. Biên bản ở `reviews/`.
-- **Chờ QA (báo "done" 13/10, chưa mở PR)**:
-  - **T2-07** chứng nhận 21 ngày – Laptop – nhánh `task/T2-07-certificate`, prompt `prompts/T2-07.md`.
-  - **T2-09** SePay + chế độ `manual` (VietQR miễn phí) – PC nhà – nhánh `task/T2-09-sepay`, prompt `prompts/T2-09.md`. **Có migration** (`paymentEvents.transactionId` unique), giữ 🔒 Migration tới khi merge.
-- **Máy rảnh**: Local (và Laptop / PC nhà sau khi QA xong).
+- **Đang sửa sau QA 13/10 (CHƯA ĐẠT)**:
+  - **T2-07b** @Laptop – PR #102, nhánh `task/T2-07-certificate`, prompt `prompts/T2-07b.md`, biên bản `reviews/T2-07.md`. Anh Nhân chốt: hỏi họ tên khi nhận chứng nhận nếu khách chưa có tên.
+  - **T2-09b** @PC nhà – PR #103, nhánh `task/T2-09-sepay`, prompt `prompts/T2-09b.md`, biên bản `reviews/T2-09.md`. **Có migration**, giữ 🔒 Migration tới khi merge. REVIEW-REQUIRED chuyển IT sau vòng 2.
+- **Máy rảnh**: Local.
 - **Nghiệm thu thật còn chờ tài khoản**: Bunny (T2-05b, RUNBOOK "Cấu hình Bunny Stream"), SePay (T2-09).
 - **Lên demo** cần crontab mỗi giờ: `/api/cron/workshop-reminders`, `/api/cron/trial-reminders`, `/api/cron/expire-entitlements`, `/api/cron/tracker-nudges` (mẫu trong `docs/RUNBOOK.md`).
 
@@ -17,7 +17,7 @@
 1. Mở PR **draft** cho nhánh của máy (máy không tự mở được PR), body ghi "Planning mở PR…".
 2. Đọc prompt + diff; cho 1 agent review độc lập chạy song song (đối chiếu từng mục prompt, tìm lỗi mới).
 3. Worktree QA riêng (vd `git worktree add /home/user/qa`), checkout nhánh, `git merge origin/main` (xung đột thường chỉ ở `docs/RUNBOOK.md`, `docs/HUONG_DAN_CMS.md`, `src/lib/i18n/vi.ts` → giữ cả 2 bên).
-4. `service postgresql start`; truyền biến qua lệnh, **không** tạo / đọc `.env*`:
+4. `service postgresql start`; container mới **không** đặt `trust` cho 127.0.0.1 → tạo role trùng user OS (`su postgres -c "psql -c 'create role root superuser login'"`) rồi dùng socket: `DATABASE_URI='postgres://root@/tdcx_unit?host=/var/run/postgresql'` (không sửa `pg_hba`). Truyền biến qua lệnh, **không** tạo / đọc `.env*`:
    `DATABASE_URI=postgres://postgres@127.0.0.1:5432/tdcx_unit PAYLOAD_SECRET=qa-unit-throwaway-secret-0000000000 NEXT_PUBLIC_SITE_URL=http://localhost:3000` → `pnpm migrate`, `pnpm lint`, `pnpm typecheck`, `pnpm test`.
    Migration mới: thử lên → xuống → lên trên DB sạch (đặt `batch` của migration mới lên số lớn rồi `pnpm payload migrate:down` để chỉ lùi 1 file).
 5. E2E trên máy cloud: DB `tdcx_e2e` (phải **không** có user admin), thêm `E2E_TEST_HOOKS=1`; chép test thành `tests/e2e/zz-qa-*.test.ts`, thay bước chờ `cf-turnstile-response` bằng `Promise.resolve({` (proxy chặn Cloudflare); file cấu hình `playwright.qa.config.ts` (chỉ ở worktree QA, không commit) trỏ `QA_CHROME=/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; chạy `env -u CI pnpm exec playwright test -c playwright.qa.config.ts <file> --workers=1 --repeat-each=2`; xóa `rate_limit_hits` giữa các lần; xóa file `zz-qa-*` sau đó; tắt server bằng `pkill -f '[n]ext dev'; pkill -f '[n]ext-server'`.
