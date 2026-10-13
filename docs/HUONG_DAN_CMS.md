@@ -773,6 +773,56 @@ _(ảnh: Planning chụp)_
 
 ---
 
+### 7.6. Tự động hóa thanh toán qua SePay & Xem Sự kiện thanh toán
+
+Khi Trạm kích hoạt chế độ thanh toán tự động qua SePay (`PAYMENT_PROVIDER=sepay`), website sẽ tự động đối soát giao dịch và kích hoạt đơn hàng trong vài phút mà Hana không cần phải vào CMS bấm duyệt thủ công cho từng đơn.
+
+#### 1. Hai chế độ vận hành thanh toán
+
+| Chế độ                | Khi nào áp dụng           | Trải nghiệm của khách & Hana                                                                                                                                                                                                                                                                                                                 |
+| :-------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tự động (SePay)**   | `PAYMENT_PROVIDER=sepay`  | Sau khi khách quét mã VietQR và chuyển khoản, ngân hàng báo về SePay, SePay gửi thông báo tự động (webhook) đến website. Đơn hàng tự động chuyển sang **Đã thanh toán**, quyền công cụ số lập tức được mở và email kích hoạt tự động gửi đi. Trang thanh toán của khách tự động cập nhật sau vài giây/phút mà khách không cần tải lại trang. |
+| **Thủ công (Manual)** | `PAYMENT_PROVIDER=manual` | Dùng khi SePay bảo trì hoặc chưa cấu hình. Khách chuyển khoản bình thường, Hana mở app ngân hàng kiểm tra sao kê rồi vào CMS bấm **✓ Xác nhận thanh toán** như hướng dẫn ở mục 7.5.                                                                                                                                                          |
+
+#### 2. Xem lịch sử Sự kiện thanh toán trong đơn hàng
+
+Trong trang chi tiết của mỗi đơn hàng tại CMS, ở cột bên phải (Sidebar), Hana sẽ thấy mục **Sự kiện thanh toán (SePay)**:
+
+- Hiển thị danh sách tất cả các thông báo giao dịch mà SePay đã gửi về cho đơn hàng này.
+- Các thông tin hiển thị gồm:
+  - Thời gian nhận giao dịch.
+  - Mã giao dịch SePay (`ID: ...`).
+  - Số tiền thực nhận trong tài khoản ngân hàng.
+  - Kết quả xử lý: **Thành công (`paid`)**, **Trùng lặp (`duplicate`)**, **Đơn đã thanh toán trước đó (`already_paid`)**, hoặc các cảnh báo cần xử lý tay.
+
+#### 3. Xử lý các tình huống đặc biệt (Hana xử lý thủ công)
+
+Hệ thống được thiết kế an toàn tối đa: khi có bất thường về tiền bạc, hệ thống **không bao giờ tự ý duyệt đơn** mà sẽ dừng lại, gắn nhãn cảnh báo nổi bật màu đỏ trong mục **Sự kiện thanh toán** để Hana can thiệp:
+
+1. **Lệch số tiền (`amount_mismatch`) – Cảnh báo màu đỏ**:
+   - **Hiện tượng**: Khách chuyển thiếu tiền (ví dụ: đơn 250.000đ nhưng khách chuyển nhầm 200.000đ) hoặc khách chuyển thừa tiền.
+   - **Cách hệ thống xử lý**: Đơn hàng vẫn giữ nguyên trạng thái **Chờ thanh toán** (`pending`), chưa cấp quyền công cụ số. Một sự kiện `amount_mismatch` màu đỏ được ghi lại trong sidebar đơn hàng.
+   - **Việc Hana cần làm**:
+     - Xem số tiền thực chuyển hiển thị trong khung Sự kiện thanh toán.
+     - Liên hệ với khách hàng (qua Zalo/Email) để thông báo. Nếu khách chuyển thiếu, hướng dẫn khách chuyển nốt phần còn lại. Nếu khách chuyển thừa, đối soát để chuyển trả lại phần tiền thừa.
+     - Sau khi khách đã hoàn tất đủ tiền vào tài khoản ngân hàng, Hana bấm nút **✓ Xác nhận thanh toán** ở sidebar để kích hoạt đơn thủ công.
+
+2. **Đơn hàng đã bị hủy mà khách vẫn chuyển tiền (`order_cancelled`) – Cảnh báo màu đỏ**:
+   - **Hiện tượng**: Khách đã yêu cầu hủy đơn (hoặc Hana bấm Hủy đơn), nhưng sau đó khách lại vào app ngân hàng quét mã chuyển tiền cũ.
+   - **Cách hệ thống xử lý**: Đơn hàng giữ nguyên trạng thái **Đã hủy** (`cancelled`), tuyệt đối không tự động mở quyền. Một sự kiện `order_cancelled` màu đỏ hiển thị trong sidebar.
+   - **Việc Hana cần làm**:
+     - Kiểm tra tiền đã vào tài khoản ngân hàng.
+     - Liên hệ khách hàng: nếu khách vẫn muốn mua, Hana tạo một đơn hàng mới cho khách rồi bấm duyệt; nếu khách không muốn mua nữa, Hana đối soát chuyển khoản trả lại tiền cho khách.
+
+3. **Khách chuyển tiền cho đơn đã quá hạn 24 giờ (`failed`)**:
+   - Khác với đơn đã hủy, nếu đơn hàng chỉ bị quá hạn 24 giờ (`failed`) và khách chuyển **đúng số tiền + đúng mã chuyển khoản**, hệ thống SePay vẫn **tự động duyệt thanh toán và kích hoạt đơn bình thường**, giúp khách nhận ngay sản phẩm mà không phải chờ đợi.
+
+4. **Khách chuyển tiền 2 lần cho cùng một đơn (`already_paid` hoặc `duplicate`)**:
+   - Nếu khách vô tình chuyển tiền 2 lần cho cùng một mã đơn, hệ thống ghi nhận sự kiện `already_paid` và **không bao giờ cấp quyền hay gửi email trùng lặp lần 2**.
+   - Hana kiểm tra khung Sự kiện thanh toán để thấy 2 giao dịch, sau đó liên hệ khách hoàn trả lại số tiền chuyển thừa lần 2.
+
+---
+
 ## 8. Quản lý Khách tiềm năng (Leads) và Xuất file CSV
 
 ### 8.1. Xem và lọc danh sách khách tiềm năng
