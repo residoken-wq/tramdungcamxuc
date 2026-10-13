@@ -553,8 +553,55 @@ Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 45 củ
 
 ---
 
-### Cấu hình Video Provider và Streaming (T2-05a / T2-05b)
+### Cấu hình Bunny Stream cho video trả phí (T2-05b)
+
+Hệ thống tích hợp trực tiếp dịch vụ Bunny Stream (`https://bunny.net`) thông qua cơ chế Token Authentication và nhúng iframe trình phát chuẩn Player.js. Video trả phí được bảo vệ bằng URL có chữ ký hết hạn sau mỗi phiên truy cập.
+
+#### Hướng dẫn anh IT cấu hình trên Server & Bunny Dashboard
+
+1. **Tạo Video Library trên Bunny.net:**
+   - Đăng nhập vào dashboard Bunny.net -> Chọn mục **Stream** trong menu bên trái.
+   - Bấm **Add Video Library** và đặt tên thư viện (ví dụ: `tramdungcamxuc-production`).
+   - Sau khi tạo, ghi lại **Video Library ID** (dãy số nguyên dương, ví dụ `123456`).
+
+2. **Bật Token Authentication & Lấy Security Key:**
+   - Trong chi tiết Video Library vừa tạo, chọn tab **Security**.
+   - Bật tính năng **Enable Token Authentication**.
+   - Sao chép giá trị tại mục **URL Token Authentication Key** (chuỗi ký tự bí mật dài).
+
+3. **Cấu hình Allowed Domains / Referrers:**
+   - Trong mục **Allowed Referrers** / **Allowed Domains**, thêm các domain được phép nhúng iframe:
+     - `tramdungcamxuc.com`
+     - `*.tramdungcamxuc.com`
+     - `localhost:3000` (để kiểm thử môi trường dev nếu cần).
+   - Lưu cài đặt bảo mật.
+
+4. **Cấu hình biến môi trường trên Server:**
+   - Thêm các biến sau vào file `.env` trên máy chủ:
+     ```env
+     VIDEO_PROVIDER=bunny
+     BUNNY_STREAM_LIBRARY_ID=123456
+     BUNNY_STREAM_TOKEN_KEY=your_token_security_key_here
+     ```
+
+5. **Khởi động lại Server:**
+   - Khởi động lại container dịch vụ:
+     ```bash
+     docker compose up -d
+     # Hoặc với cấu hình production:
+     docker compose -p tdcx-demo -f docker-compose.prod.yml up -d
+     ```
+
+6. **Kiểm tra nghiệm thu trên hệ thống:**
+   - Đăng nhập tài khoản học viên có quyền truy cập khóa học.
+   - Vào 1 bài học bất kỳ có video Bunny Stream (GUID).
+   - Kiểm tra iframe hiển thị mượt mà, video chạy bình thường.
+   - Sau 15 giây xem video, thanh tiến độ bài học được ghi nhận tự động qua Player.js postMessage API.
+
+---
+
+### Cấu hình Video Provider và Sandbox (Môi trường dev / test)
 
 - Biến môi trường: `VIDEO_PROVIDER` (mặc định là `sandbox` nếu không khai báo).
-- Môi trường thử nghiệm / phát triển: để trống hoặc đặt `VIDEO_PROVIDER=sandbox`. Trình phát video hiển thị khung giả lập sandbox nội bộ, không lộ ID video và hỗ trợ kiểm thử tiến độ qua nút "Giả lập xem hết".
-- **Môi trường Production**: Bắt buộc phải đặt `VIDEO_PROVIDER` (ví dụ `bunny` khi hoàn thành tích hợp Bunny Stream ở task T2-05b) kèm theo các thông tin xác thực/ký token tương ứng. Hiện tại nếu chọn `VIDEO_PROVIDER=bunny`, hệ thống sẽ ném lỗi "Chưa cấu hình Bunny (T2-05b)" do chưa hoàn thành cấu hình dịch vụ stream thật.
+- Môi trường thử nghiệm / phát triển: để trống hoặc đặt `VIDEO_PROVIDER=sandbox`. Trình phát video hiển thị khung giả lập sandbox nội bộ, không lộ ID video. Nút "Giả lập xem hết" chỉ hiển thị trong môi trường phát triển (`NODE_ENV !== 'production'`) hoặc khi bật cờ test e2e (`E2E_TEST_HOOKS=1`).
+- Môi trường Production: Khi dùng `VIDEO_PROVIDER=bunny`, cờ `allowSimulate` luôn là `false` và nút giả lập hoàn toàn bị ẩn để đảm bảo tính trung thực của tiến độ học tập.

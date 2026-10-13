@@ -1,10 +1,12 @@
 'use client'
 
-import React, { useRef, useState, useTransition } from 'react'
+import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import type { VideoPlayback } from '@/lib/video'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
 import { recordLessonProgress } from '@/lib/courses/actions'
+
+const BUNNY_PLAYER_ORIGIN = 'https://iframe.mediadelivery.net'
 
 export interface VideoPlayerProps {
   lessonId: number
@@ -29,60 +31,187 @@ export function VideoPlayer({
   const [isPending, startTransition] = useTransition()
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
-  // Tracking refs cho thẻ <video>
+  // Tracking refs cho thẻ <video> và <iframe>
   const lastRecordedTimeRef = useRef<number>(0)
+  const lastRecordedPercentRef = useRef<number>(initialCompleted ? 100 : 0)
   const isCompletedRef = useRef<boolean>(initialCompleted)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  const sendProgress = async (percent: number) => {
-    if (!isAuthenticated) return
+  const sendProgress = useCallback(
+    async (percent: number) => {
+      if (!isAuthenticated) return
+      try {
+        const res = await recordLessonProgress(lessonId, percent)
+        if (res.success) {
+          if (percent >= 80) {
+            setIsCompleted(true)
+            isCompletedRef.current = true
+          }
+          if (onProgressRecorded) {
+            onProgressRecorded(percent)
+          }
+          if (res.newlyCompleted && res.meta) {
+            track('lesson_completed', {
+              courseSlug: res.meta.courseSlug,
+              moduleId: res.meta.moduleId ?? moduleId,
+              lessonId: res.meta.lessonId,
+              lessonOrder: res.meta.lessonOrder ?? lessonOrder,
+            })
+          }
+        }
+      } catch {
+        // Bỏ qua lỗi kết nối nền
+      }
+    },
+    [isAuthenticated, lessonId, moduleId, lessonOrder, onProgressRecorded],
+  )
+
+  // Xử lý sự kiện postMessage từ iframe Bunny Stream (Player.js API)
+  useEffect(() => {
+    if (playback.kind !== 'iframe' || !playback.url) return
+
+    const handleMessage = (event: MessageEvent) => {
+      // BẢO MẬT: Chỉ chấp nhận message từ iframe Bunny Stream
+      if (event.origin !== BUNNY_PLAYER_ORIGIN) {
+        return
+      }
+      // Only the lesson's own player iframe, not any other frame served from the same origin.
+      if (!iframeRef.current || event.source !== iframeRef.current.contentWindow) {
+        return
+      }
+
+      let data: Record<string, unknown> | null = null
+      if (typeof event.data === 'string') {
+        try {
+          const parsed = JSON.parse(event.data)
+          if (parsed && typeof parsed === 'object') {
+            data = parsed as Record<string, unknown>
+          }
+        } catch {
+          return
+        }
+      } else if (event.data && typeof event.data === 'object') {
+        data = event.data as Record<string, unknown>
+      }
+
+      if (!data) {
+        return
+      }
+
+      if (data.context !== 'player.js') {
+        return
+      }
+
+      const eventName = data.event
+
+      if (eventName === 'timeupdate') {
+        const val =
+          data.value && typeof data.value === 'object'
+            ? (data.value as Record<string, unknown>)
+            : null
+        const seconds =
+          typeof val?.seconds === 'number'
+            ? val.seconds
+            : typeof data.seconds === 'number'
+              ? data.seconds
+              : null
+        const duration =
+          typeof val?.duration === 'number'
+            ? val.duration
+            : typeof data.duration === 'number'
+              ? data.duration
+              : null
+
+        if (seconds !== null && duration !== null && duration > 0) {
+          const percent = Math.min(100, Math.round((seconds / duration) * 100))
+          const timeSinceLast = Math.abs(seconds - lastRecordedTimeRef.current)
+          const percentDiff = Math.abs(percent - lastRecordedPercentRef.current)
+
+          if (percentDiff >= 5 || timeSinceLast >= 15) {
+            lastRecordedTimeRef.current = seconds
+            lastRecordedPercentRef.current = percent
+            sendProgress(percent)
+          }
+        }
+      } else if (eventName === 'pause') {
+        const val =
+          data.value && typeof data.value === 'object'
+            ? (data.value as Record<string, unknown>)
+            : null
+        const seconds =
+          typeof val?.seconds === 'number'
+            ? val.seconds
+            : typeof data.seconds === 'number'
+              ? data.seconds
+              : null
+        const duration =
+          typeof val?.duration === 'number'
+            ? val.duration
+            : typeof data.duration === 'number'
+              ? data.duration
+              : null
+
+        if (seconds !== null && duration !== null && duration > 0) {
+          const percent = Math.min(100, Math.round((seconds / duration) * 100))
+          lastRecordedPercentRef.current = percent
+          sendProgress(percent)
+        } else if (lastRecordedPercentRef.current > 0) {
+          sendProgress(lastRecordedPercentRef.current)
+        }
+      } else if (eventName === 'ended') {
+        lastRecordedPercentRef.current = 100
+        sendProgress(100)
+      }
+    }
+
+    window.addEventListener('message', handleMessage)
+    return () => {
+      window.removeEventListener('message', handleMessage)
+    }
+  }, [playback.kind, playback.url, sendProgress])
+
+  const handleIframeLoad = () => {
     try {
-      const res = await recordLessonProgress(lessonId, percent)
-      if (res.success) {
-        if (percent >= 80) {
-          setIsCompleted(true)
-          isCompletedRef.current = true
-        }
-        if (onProgressRecorded) {
-          onProgressRecorded(percent)
-        }
-        if (res.newlyCompleted && res.meta) {
-          track('lesson_completed', {
-            courseSlug: res.meta.courseSlug,
-            moduleId: res.meta.moduleId ?? moduleId,
-            lessonId: res.meta.lessonId,
-            lessonOrder: res.meta.lessonOrder ?? lessonOrder,
-          })
-        }
+      const target = iframeRef.current?.contentWindow
+      if (!target) return
+      const events = ['timeupdate', 'pause', 'ended']
+      for (const ev of events) {
+        target.postMessage(
+          { context: 'player.js', method: 'addEventListener', value: ev },
+          BUNNY_PLAYER_ORIGIN,
+        )
       }
     } catch {
-      // Bỏ qua lỗi kết nối nền
+      // Bỏ qua lỗi gửi postMessage tới iframe
     }
   }
 
-  // Xử lý sự kiện timeupdate (tối đa mỗi 15 giây)
+  // Xử lý sự kiện timeupdate cho thẻ video trực tiếp (tối đa mỗi 15 giây)
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget
     if (!video.duration || video.duration <= 0) return
     const nowSec = video.currentTime
-    // Kiểm tra đã qua tối thiểu 15 giây kể từ lần ghi trước
     if (Math.abs(nowSec - lastRecordedTimeRef.current) >= 15) {
       lastRecordedTimeRef.current = nowSec
       const percent = Math.min(100, Math.round((nowSec / video.duration) * 100))
+      lastRecordedPercentRef.current = percent
       sendProgress(percent)
     }
   }
 
-  // Xử lý sự kiện pause
+  // Xử lý sự kiện pause cho thẻ video trực tiếp
   const handlePause = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget
     if (!video.duration || video.duration <= 0) return
     const percent = Math.min(100, Math.round((video.currentTime / video.duration) * 100))
     lastRecordedTimeRef.current = video.currentTime
+    lastRecordedPercentRef.current = percent
     sendProgress(percent)
   }
 
-  // Xử lý sự kiện ended
+  // Xử lý sự kiện ended cho thẻ video trực tiếp
   const handleEnded = () => {
+    lastRecordedPercentRef.current = 100
     sendProgress(100)
   }
 
@@ -98,7 +227,6 @@ export function VideoPlayer({
             onProgressRecorded(100)
           }
 
-          // Phát sự kiện analytics khi lần đầu hoàn thành bài học
           if (res.newlyCompleted && res.meta) {
             track('lesson_completed', {
               courseSlug: res.meta.courseSlug,
@@ -116,12 +244,11 @@ export function VideoPlayer({
     })
   }
 
-  // 1. Sandbox Video Provider (chưa kết nối Bunny)
+  // 1. Sandbox Video Provider
   if (playback.kind === 'sandbox') {
     return (
       <div className="overflow-hidden rounded-2xl border border-lavender-mist/80 bg-deep-navy text-warm-ivory shadow-lg">
         <div className="relative aspect-video w-full flex flex-col items-center justify-center p-6 text-center">
-          {/* Subtle background decoration */}
           <div
             className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-bright-magenta/20 via-deep-navy to-deep-navy opacity-75"
             aria-hidden="true"
@@ -154,8 +281,8 @@ export function VideoPlayer({
               </p>
             </div>
 
-            {/* Nút giả lập xem hết (chỉ hiển thị khi đã đăng nhập và provider là sandbox, phục vụ test - mục 15) */}
-            {isAuthenticated && (
+            {/* Nút giả lập xem hết (chỉ hiển thị khi đã đăng nhập, provider cho phép simulate, và chưa hoàn thành) */}
+            {isAuthenticated && Boolean(playback.allowSimulate) && !isCompleted && (
               <div className="pt-2">
                 <button
                   type="button"
@@ -188,24 +315,25 @@ export function VideoPlayer({
   }
 
   // 2. Iframe Embed (Bunny stream player hoặc nhúng)
-  // TODO(T2-05b): Lắng nghe sự kiện từ Bunny Player API (postMessage / SDK) để theo dõi tiến độ timeupdate, pause, ended
   if (playback.kind === 'iframe' && playback.url) {
     return (
       <div className="overflow-hidden rounded-2xl border border-lavender-mist/80 bg-deep-navy shadow-lg">
         <div className="relative aspect-video w-full">
           <iframe
+            ref={iframeRef}
             src={playback.url}
             title={vi.learning.lesson.videoTitle}
             className="absolute inset-0 h-full w-full border-0"
             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
             allowFullScreen
+            onLoad={handleIframeLoad}
           />
         </div>
       </div>
     )
   }
 
-  // 3. Direct Video Element (ghi nhận tiến độ qua timeupdate, pause, ended - mục 4)
+  // 3. Direct Video Element
   if (playback.kind === 'video' && playback.url) {
     return (
       <div className="overflow-hidden rounded-2xl border border-lavender-mist/80 bg-deep-navy shadow-lg">

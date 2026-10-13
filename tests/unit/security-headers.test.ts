@@ -63,6 +63,9 @@ describe('Security Headers', () => {
         'https://challenges.cloudflare.com',
       )
       expect(headers['Content-Security-Policy-Report-Only']).toContain('https://plausible.io')
+      expect(headers['Content-Security-Policy-Report-Only']).toContain(
+        'https://iframe.mediadelivery.net',
+      )
 
       // In development / non-production, HSTS is omitted
       expect(headers['Strict-Transport-Security']).toBeUndefined()
