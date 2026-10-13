@@ -153,7 +153,7 @@ describe('Detail Pages Pure Logic & DTOs (T1-10)', () => {
     it('rejects testimonial when consent is false', () => {
       const res = toPublicTestimonial({
         id: 1,
-        name: 'Nguyễn Văn A',
+        name: 'Học viên Test 01',
         quote: 'Dịch vụ tuyệt vời!',
         consent: false,
         _status: 'published',

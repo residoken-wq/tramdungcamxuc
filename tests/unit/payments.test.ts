@@ -139,7 +139,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         bankBin: '970422',
         bankName: 'Ngân hàng Quân Đội (MB)',
         accountNumber: '0123456789',
-        accountName: 'LUONG THI THU HUYEN',
+        accountName: 'TAI KHOAN TEST',
         transferPrefix: 'TDCX',
         experienceBookingUrl: 'https://cal.com/hana-luong/growth-mirror-149k',
       },
@@ -229,7 +229,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       const result = await createExperienceOrder(
         {
           productId: experienceProductId,
-          name: 'Nguyễn Văn Test',
+          name: 'Học viên Test 01',
           email,
           phone: '0901234567',
           need: 'Cần định hướng bước chuyển sự nghiệp',
@@ -494,7 +494,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       expect(view?.status).toBe('pending')
       expect(view?.bankInfo.bankBin).toBe('970422')
       expect(view?.bankInfo.accountNumber).toBe('0123456789')
-      expect(view?.bankInfo.accountName).toBe('LUONG THI THU HUYEN')
+      expect(view?.bankInfo.accountName).toBe('TAI KHOAN TEST')
       expect(view?.qrPayload).toContain('5406149000')
       expect(view?.qrSvg).toContain('<svg')
       expect(view?.sandbox).toBe(true)

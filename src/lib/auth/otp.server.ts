@@ -347,10 +347,12 @@ export async function verifyOtp(
   })
 
   let customer = customerQuery.docs[0]
+  // REVIEW-REQUIRED: Khách (mới hoặc cũ) chưa có consentAt bắt buộc phải đồng ý điều khoản (consentPolicy === true)
+  if ((!customer || !customer.consentAt) && validated.consentPolicy !== true) {
+    throw new OtpVerificationError(vi.auth.consentRequired)
+  }
+
   if (!customer) {
-    if (validated.consentPolicy !== true) {
-      throw new OtpVerificationError(vi.auth.consentRequired)
-    }
     customer = await payload.create({
       collection: 'customers',
       data: {

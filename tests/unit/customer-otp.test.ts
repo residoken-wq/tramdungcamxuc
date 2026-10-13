@@ -233,6 +233,160 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
       expect(search.docs).toHaveLength(0)
     })
 
+    it('chặn khách cũ chưa có consentAt khi không gửi consentPolicy = true (T2-14)', async () => {
+      const email = `existing-no-consent-${randomUUID()}@example.test`
+      // Khách cũ chưa có consentAt
+      const cust = track(
+        'customers',
+        await payload.create({
+          collection: 'customers',
+          data: {
+            email,
+            consentAt: null,
+          },
+          overrideAccess: true,
+        }),
+      )
+      expect(cust.consentAt).toBeNull()
+
+      const code = '123456'
+      const codeHash = computeOtpHash(email, code)
+      const now = new Date()
+      const expiresAt = new Date(now.getTime() + 10 * 60 * 1000).toISOString()
+      track(
+        'otpCodes',
+        await payload.create({
+          collection: 'otpCodes',
+          data: {
+            email,
+            codeHash,
+            expiresAt,
+            attempts: 0,
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      // Khách cũ chưa có consentAt không gửi consentPolicy -> bị từ chối
+      await expect(
+        verifyOtp({ email, code }, { ip: uniqueIp() }, { payload, now }),
+      ).rejects.toThrow(viDict.auth.consentRequired)
+
+      // Tạo mã OTP mới để kiểm tra thêm trường hợp consentPolicy: false
+      const code2 = '654321'
+      const codeHash2 = computeOtpHash(email, code2)
+      track(
+        'otpCodes',
+        await payload.create({
+          collection: 'otpCodes',
+          data: {
+            email,
+            codeHash: codeHash2,
+            expiresAt,
+            attempts: 0,
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      await expect(
+        verifyOtp(
+          { email, code: code2, consentPolicy: false },
+          { ip: uniqueIp() },
+          { payload, now },
+        ),
+      ).rejects.toThrow(viDict.auth.consentRequired)
+    })
+
+    it('cho phép khách cũ chưa có consentAt đăng nhập khi tick đồng ý và cập nhật consentAt (T2-14)', async () => {
+      const email = `existing-give-consent-${randomUUID()}@example.test`
+      const cust = track(
+        'customers',
+        await payload.create({
+          collection: 'customers',
+          data: {
+            email,
+            consentAt: null,
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      const code = '123456'
+      const codeHash = computeOtpHash(email, code)
+      const now = new Date()
+      const expiresAt = new Date(now.getTime() + 10 * 60 * 1000).toISOString()
+      track(
+        'otpCodes',
+        await payload.create({
+          collection: 'otpCodes',
+          data: {
+            email,
+            codeHash,
+            expiresAt,
+            attempts: 0,
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      const result = await verifyOtp(
+        { email, code, consentPolicy: true },
+        { ip: uniqueIp() },
+        { payload, now },
+      )
+      expect(result.success).toBe(true)
+      expect(result.token).toBeDefined()
+
+      // Kiểm tra DB: consentAt đã được cập nhật
+      const updatedCust = await payload.findByID({
+        collection: 'customers',
+        id: cust.id,
+        overrideAccess: true,
+      })
+      expect(updatedCust.consentAt).toBeDefined()
+      expect(typeof updatedCust.consentAt).toBe('string')
+    })
+
+    it('cho phép khách đã có consentAt đăng nhập bình thường mà không bắt tick lại (T2-14)', async () => {
+      const email = `existing-has-consent-${randomUUID()}@example.test`
+      const pastConsent = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+      track(
+        'customers',
+        await payload.create({
+          collection: 'customers',
+          data: {
+            email,
+            consentAt: pastConsent,
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      const code = '123456'
+      const codeHash = computeOtpHash(email, code)
+      const now = new Date()
+      const expiresAt = new Date(now.getTime() + 10 * 60 * 1000).toISOString()
+      track(
+        'otpCodes',
+        await payload.create({
+          collection: 'otpCodes',
+          data: {
+            email,
+            codeHash,
+            expiresAt,
+            attempts: 0,
+          },
+          overrideAccess: true,
+        }),
+      )
+
+      // Không gửi consentPolicy -> vẫn thành công
+      const result = await verifyOtp({ email, code }, { ip: uniqueIp() }, { payload, now })
+      expect(result.success).toBe(true)
+      expect(result.token).toBeDefined()
+    })
+
     it('rejects invalid code and increments attempts', async () => {
       const email = `invalid-code-${randomUUID()}@example.test`
       const code = '654321'

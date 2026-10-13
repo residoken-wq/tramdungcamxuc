@@ -140,24 +140,24 @@ describe('Free Resource Delivery & Access Control (T1-07)', () => {
   describe('Zod Validation for Resource Form', () => {
     it('validates required fields: name, email, slug, and consent', () => {
       const valid = resourceRequestSchema.safeParse({
-        name: 'Nguyễn Văn A',
-        email: 'nguyenvana@example.com',
+        name: 'Học viên Test 01',
+        email: 'hocvientest01@example.test',
         slug: productSlug,
         consent: true,
       })
       expect(valid.success).toBe(true)
 
       const missingConsent = resourceRequestSchema.safeParse({
-        name: 'Nguyễn Văn A',
-        email: 'nguyenvana@example.com',
+        name: 'Học viên Test 01',
+        email: 'hocvientest01@example.test',
         slug: productSlug,
         consent: false,
       })
       expect(missingConsent.success).toBe(false)
 
       const missingSlug = resourceRequestSchema.safeParse({
-        name: 'Nguyễn Văn A',
-        email: 'nguyenvana@example.com',
+        name: 'Học viên Test 01',
+        email: 'hocvientest01@example.test',
         slug: '   ',
         consent: true,
       })

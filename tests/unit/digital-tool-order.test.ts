@@ -64,8 +64,8 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
       data: {
         bankBin: '970422',
         bankName: 'Ngân hàng Quân Đội (MB)',
-        accountNumber: '0023457923442',
-        accountName: 'LUONG THI THU HUYEN',
+        accountNumber: '0000000000',
+        accountName: 'TAI KHOAN TEST',
         transferPrefix: 'TDCX',
       },
       overrideAccess: true,
