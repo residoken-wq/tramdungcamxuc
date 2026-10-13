@@ -24,6 +24,7 @@ import { Techniques } from './collections/Techniques'
 import { LegalPages } from './collections/LegalPages'
 import { Workshops } from './collections/Workshops'
 import { WorkshopReminders } from './collections/WorkshopReminders'
+import { TrialReminders } from './collections/TrialReminders'
 import { Pages } from './collections/Pages'
 import { Customers } from './collections/Customers'
 import { Entitlements } from './collections/Entitlements'
@@ -78,6 +79,7 @@ export default buildConfig({
     LegalPages,
     Workshops,
     WorkshopReminders,
+    TrialReminders,
     Pages,
     Customers,
     Entitlements,

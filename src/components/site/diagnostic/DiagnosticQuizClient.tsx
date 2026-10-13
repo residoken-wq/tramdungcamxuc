@@ -333,7 +333,7 @@ export function DiagnosticQuizClient({ questions }: DiagnosticQuizClientProps) {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
               <Button href={result.ctaHref} variant="primary" size="lg">
-                {vi.diagnostic.result.ctaButton}
+                {result.ctaLabel || vi.diagnostic.result.ctaButton}
               </Button>
               <Button variant="ghost" size="md" onClick={handleResetQuiz} type="button">
                 {vi.diagnostic.result.retakeButton}

@@ -873,6 +873,7 @@ export const vi = {
       ctaSubheading:
         'Khám phá phiên trải nghiệm 1:1 và lộ trình Growth Mirror được thiết kế riêng cho bạn.',
       ctaButton: 'Tìm hiểu phiên trải nghiệm 149.000đ',
+      trialCtaButton: (days: number) => `Bắt đầu dùng thử Habit Tracker (${days} ngày)`,
       retakeButton: 'Làm lại bài test',
     },
     errors: {
@@ -1076,6 +1077,62 @@ export const vi = {
       habit: 'Habit Formation',
       eq: 'EQ Buddy',
       digital_tool: 'Công cụ số',
+    },
+  },
+  trial: {
+    title: 'Dùng thử công cụ số',
+    pageBadge: 'Trạm Dừng Cảm Xúc · Dùng thử miễn phí',
+    daysLabel: (days: number) => `Dùng thử ${days} ngày miễn phí`,
+    startButton: (days: number) => `Bắt đầu dùng thử ${days} ngày`,
+    starting: 'Đang kích hoạt...',
+    openToolButton: 'Vào công cụ',
+    buyToContinueButton: 'Mua để dùng tiếp',
+    benefitsHeading: 'Bạn sẽ nhận được trong phiên dùng thử:',
+    loginPrompt: 'Vui lòng đăng nhập để bắt đầu dùng thử.',
+    productNotFound: 'Không tìm thấy sản phẩm hoặc sản phẩm chưa mở chương trình dùng thử.',
+    alreadyActiveNotice: 'Bạn đã có quyền sử dụng không giới hạn công cụ này.',
+    alreadyActiveTrialNotice: (daysLeft: number) =>
+      `Bạn đang trong thời gian dùng thử (còn ${daysLeft} ngày).`,
+    expiredNotice: 'Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ.',
+    generalError: 'Có lỗi xảy ra khi bắt đầu dùng thử. Vui lòng thử lại sau.',
+    banner: {
+      trialAria: 'Thông báo dùng thử',
+      expiredAria: 'Thông báo hết hạn dùng thử',
+      daysLeft: (days: number) => `Còn ${days} ngày dùng thử`,
+      expired: 'Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ',
+      buyButton: 'Mua để dùng tiếp',
+    },
+    email: {
+      welcomeSubject: (toolName: string) => `Trạm Dừng Cảm Xúc – Kích hoạt dùng thử ${toolName}`,
+      reminder18Subject: (toolName: string, daysLeft: number) =>
+        `Trạm Dừng Cảm Xúc – Còn ${daysLeft} ngày dùng thử ${toolName}`,
+      reminder21Subject: (toolName: string) =>
+        `Trạm Dừng Cảm Xúc – Ngày dùng thử cuối cùng: ${toolName}`,
+      reminder: {
+        brandLabel: 'TRẠM DỪNG CẢM XÚC · NHẮC HẠN DÙNG THỬ',
+        heading21: 'Hôm nay là ngày dùng thử cuối cùng!',
+        heading18: (daysLeft: number) => `Còn ${daysLeft} ngày dùng thử miễn phí!`,
+        greeting: (name: string, toolName: string) =>
+          `Chào ${name || 'bạn'}, ${toolName} đồng hành cùng bạn trên hành trình thấu hiểu cảm xúc.`,
+        toolLabel: 'Công cụ:',
+        statusLabel: 'Thời hạn dùng thử:',
+        statusLastDay: 'Ngày cuối cùng',
+        statusDaysLeft: (daysLeft: number) => `Còn ${daysLeft} ngày`,
+        priceLabelLifetime: 'Giá sở hữu vĩnh viễn:',
+        priceLabel: 'Giá:',
+        dataLabel: 'Dữ liệu của bạn:',
+        dataValue: 'Được giữ nguyên',
+        body21:
+          'Hôm nay là ngày cuối cùng của thời gian dùng thử. Mua để giữ mạch thực hành mỗi ngày mà không bị gián đoạn.',
+        body18: (daysLeft: number) =>
+          `Còn ${daysLeft} ngày nữa là thời gian dùng thử khép lại. Để không gián đoạn nhịp thực hành, bạn có thể mua để dùng tiếp ngay hôm nay.`,
+        buyButton: 'Mua để dùng tiếp',
+        buyButtonWithPrice: (price: string) => `Mua để dùng tiếp (${price})`,
+        toolLink: 'Vào thực hành hôm nay →',
+        signOff: 'Thương mến,',
+        author: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
+        autoNotice: 'Email thông báo tự động dành cho tài khoản đang dùng thử công cụ số.',
+      },
     },
   },
 } as const

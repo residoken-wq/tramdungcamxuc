@@ -84,6 +84,7 @@ export interface Config {
     legalPages: LegalPage;
     workshops: Workshop;
     workshopReminders: WorkshopReminder;
+    trialReminders: TrialReminder;
     pages: Page;
     customers: Customer;
     entitlements: Entitlement;
@@ -123,6 +124,7 @@ export interface Config {
     legalPages: LegalPagesSelect<false> | LegalPagesSelect<true>;
     workshops: WorkshopsSelect<false> | WorkshopsSelect<true>;
     workshopReminders: WorkshopRemindersSelect<false> | WorkshopRemindersSelect<true>;
+    trialReminders: TrialRemindersSelect<false> | TrialRemindersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
@@ -1209,55 +1211,26 @@ export interface Customer {
   collection: 'customers';
 }
 /**
- * Quản lý trang nội dung. Lưu nháp trước khi xuất bản.
- *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
+ * via the `definition` "trialReminders".
  */
-export interface Page {
+export interface TrialReminder {
   id: number;
   /**
-   * Nhập tên trang.
+   * Chọn nội dung đã tạo trong hệ thống.
    */
-  title: string;
-  /**
-   * Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.
-   */
-  slug: string;
-  /**
-   * Dữ liệu bố cục lưu từ trình dựng trang Puck.
-   */
-  puckData?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  entitlement?: (number | null) | Entitlement;
   /**
    * Chọn một mục phù hợp.
    */
-  template?: ('campaign' | 'service' | 'workshop' | 'event') | null;
-  seo?: {
-    /**
-     * Nhập tiêu đề tìm kiếm.
-     */
-    title?: string | null;
-    /**
-     * Nhập mô tả tìm kiếm.
-     */
-    description?: string | null;
-    /**
-     * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
-     */
-    ogImage?: (number | null) | Media;
-  };
-  isSample?: boolean | null;
+  milestone: 'day_18' | 'day_21';
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  sentAt: string;
+  reminderKey?: string | null;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1404,6 +1377,57 @@ export interface DiscountCode {
   products?: (number | Product)[] | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Quản lý trang nội dung. Lưu nháp trước khi xuất bản.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  /**
+   * Nhập tên trang.
+   */
+  title: string;
+  /**
+   * Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.
+   */
+  slug: string;
+  /**
+   * Dữ liệu bố cục lưu từ trình dựng trang Puck.
+   */
+  puckData?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  template?: ('campaign' | 'service' | 'workshop' | 'event') | null;
+  seo?: {
+    /**
+     * Nhập tiêu đề tìm kiếm.
+     */
+    title?: string | null;
+    /**
+     * Nhập mô tả tìm kiếm.
+     */
+    description?: string | null;
+    /**
+     * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+     */
+    ogImage?: (number | null) | Media;
+  };
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1890,6 +1914,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'workshopReminders';
         value: number | WorkshopReminder;
+      } | null)
+    | ({
+        relationTo: 'trialReminders';
+        value: number | TrialReminder;
       } | null)
     | ({
         relationTo: 'pages';
@@ -2392,6 +2420,18 @@ export interface WorkshopRemindersSelect<T extends boolean = true> {
   customer?: T;
   sentAt?: T;
   workshopCustomer?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trialReminders_select".
+ */
+export interface TrialRemindersSelect<T extends boolean = true> {
+  entitlement?: T;
+  milestone?: T;
+  sentAt?: T;
+  reminderKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }

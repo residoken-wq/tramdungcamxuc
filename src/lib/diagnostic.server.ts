@@ -1,7 +1,7 @@
 import 'server-only'
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
-import type { DiagnosticQuestion } from '@/payload-types'
+import type { DiagnosticQuestion, Product } from '@/payload-types'
 import {
   scoreDiagnostic,
   selectDiagnosticSuggestions,
@@ -12,7 +12,9 @@ import {
 import { diagnosticSubmissionSchema, type DiagnosticSubmissionInput } from './forms/schemas'
 import { checkAndRecordRateLimit } from './forms/ratelimit.server'
 import { verifyTurnstile } from './forms/turnstile.server'
-import { GROWTH_MIRROR_PATH } from './products'
+import { GROWTH_MIRROR_PATH, resolveProductCta } from './products'
+import { HABIT_TRACKER_PRODUCT_SLUG } from './habit/config'
+import { vi } from './i18n/vi'
 import type { SubmissionContext, SubmissionOptions } from './forms/submit.server'
 
 export interface PublicDiagnosticQuestion {
@@ -30,6 +32,7 @@ export interface DiagnosticResultData {
   suggestions: DiagnosticSuggestionItem[]
   secondarySuggestions: DiagnosticSuggestionItem[]
   ctaHref: string
+  ctaLabel?: string
 }
 
 export interface DiagnosticSubmissionResult {
@@ -203,6 +206,32 @@ export async function submitDiagnostic(
     overrideAccess: true,
   })
 
+  // 8. Xác định CTA kết quả: ưu tiên dẫn tới luồng dùng thử nếu Habit Tracker số mở dùng thử
+  let ctaHref = GROWTH_MIRROR_PATH
+  let ctaLabel: string = vi.diagnostic.result.ctaButton
+
+  const habitProductRes = await payload.find({
+    collection: 'products',
+    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+    overrideAccess: true,
+    limit: 1,
+  })
+
+  const habitProduct = habitProductRes.docs[0] as Product | undefined
+  if (
+    habitProduct &&
+    habitProduct._status === 'published' &&
+    habitProduct.saleStatus === 'on_sale' &&
+    typeof habitProduct.trialDays === 'number' &&
+    habitProduct.trialDays > 0
+  ) {
+    const resolvedCta = resolveProductCta(habitProduct)
+    if (resolvedCta) {
+      ctaHref = resolvedCta.href
+      ctaLabel = vi.diagnostic.result.trialCtaButton(habitProduct.trialDays)
+    }
+  }
+
   return {
     success: true,
     data: {
@@ -212,7 +241,8 @@ export async function submitDiagnostic(
       averageScores,
       suggestions,
       secondarySuggestions,
-      ctaHref: GROWTH_MIRROR_PATH,
+      ctaHref,
+      ctaLabel,
     },
   }
 }

@@ -14,6 +14,8 @@ import { HabitPlanEmail, type HabitPlanEmailTechniqueItem } from '@/emails/Habit
 import { DigitalToolOrderPaidEmail } from '@/emails/DigitalToolOrderPaidEmail'
 import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
 import { WorkshopReminderEmail } from '@/emails/WorkshopReminderEmail'
+import { TrialWelcomeEmail } from '@/emails/TrialWelcomeEmail'
+import { TrialReminderEmail } from '@/emails/TrialReminderEmail'
 import { vi } from '@/lib/i18n/vi'
 import { getSiteUrl } from '@/lib/site-url'
 import { getDefaultEmailSender } from './sender.server'
@@ -621,5 +623,116 @@ export async function sendHabitPlanEmail(
   } catch (err) {
     console.error('[Email] Failed to send habit plan email:', err)
     // Lỗi gửi email không làm hỏng việc lưu kế hoạch của học viên
+  }
+}
+
+export async function sendTrialWelcomeEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    toolName: string
+    expiresAtFormatted: string
+    trialDays: number
+    toolUrl: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  try {
+    const userHtml = await render(
+      React.createElement(TrialWelcomeEmail, {
+        name: data.name,
+        toolName: data.toolName,
+        expiresAtFormatted: data.expiresAtFormatted,
+        trialDays: data.trialDays,
+        toolUrl: data.toolUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(TrialWelcomeEmail, {
+        name: data.name,
+        toolName: data.toolName,
+        expiresAtFormatted: data.expiresAtFormatted,
+        trialDays: data.trialDays,
+        toolUrl: data.toolUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject: vi.trial.email.welcomeSubject(data.toolName),
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send trial welcome email:', err)
+    throw err
+  }
+}
+
+export async function sendTrialReminderEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    toolName: string
+    milestone: 'day_18' | 'day_21'
+    daysLeft: number
+    formattedPrice: string | null
+    isLifetime?: boolean
+    originalPriceFormatted?: string | null
+    checkoutUrl: string
+    toolUrl: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+
+  const subject =
+    data.milestone === 'day_21'
+      ? vi.trial.email.reminder21Subject(data.toolName)
+      : vi.trial.email.reminder18Subject(data.toolName, data.daysLeft)
+
+  try {
+    const userHtml = await render(
+      React.createElement(TrialReminderEmail, {
+        name: data.name,
+        toolName: data.toolName,
+        milestone: data.milestone,
+        daysLeft: data.daysLeft,
+        formattedPrice: data.formattedPrice,
+        isLifetime: data.isLifetime,
+        originalPriceFormatted: data.originalPriceFormatted,
+        checkoutUrl: data.checkoutUrl,
+        toolUrl: data.toolUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(TrialReminderEmail, {
+        name: data.name,
+        toolName: data.toolName,
+        milestone: data.milestone,
+        daysLeft: data.daysLeft,
+        formattedPrice: data.formattedPrice,
+        isLifetime: data.isLifetime,
+        originalPriceFormatted: data.originalPriceFormatted,
+        checkoutUrl: data.checkoutUrl,
+        toolUrl: data.toolUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject,
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send trial reminder email:', err)
+    throw err
   }
 }
