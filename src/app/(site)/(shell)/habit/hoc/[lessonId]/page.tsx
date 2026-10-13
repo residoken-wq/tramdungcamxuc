@@ -153,7 +153,7 @@ export default async function HabitLessonPage({ params }: LessonPageProps) {
         </header>
 
         {/* Video Player Box */}
-        <main>
+        <div>
           <VideoPlayer
             lessonId={lesson.id}
             playback={result.playback}
@@ -162,7 +162,7 @@ export default async function HabitLessonPage({ params }: LessonPageProps) {
             initialCompleted={isCompleted}
             isAuthenticated={Boolean(customer)}
           />
-        </main>
+        </div>
 
         {/* Lesson Summary / Content */}
         {lesson.summary && (

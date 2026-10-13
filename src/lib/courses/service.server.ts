@@ -448,6 +448,7 @@ export async function recordLessonProgressInternal(
   watchedPercent: number,
   nowOrCtx?: Date | { payload?: Payload; now?: Date },
   injectedPayload?: Payload,
+  isRetry = false,
 ): Promise<{
   success: boolean
   watchedPercent: number
@@ -564,19 +565,13 @@ export async function recordLessonProgressInternal(
       newlyCompleted: isCompleted,
     }
   } catch (err: unknown) {
-    // Xử lý xung đột tương tranh nếu một request khác vừa tạo cùng lúc (ValidationError hoặc Postgres unique constraint)
+    // Concurrent request created the same (customer, lesson) row first: Payload reports the
+    // unique-key clash as a ValidationError. Retry once through the atomic UPDATE path; a second
+    // failure is a real validation error and must surface instead of looping.
     const isValidationErr =
       err instanceof ValidationError || (err as { name?: string })?.name === 'ValidationError'
-    const msg = err instanceof Error ? err.message : String(err)
-    if (
-      isValidationErr ||
-      msg.includes('unique') ||
-      msg.includes('duplicate') ||
-      msg.includes('Đã có tiến độ') ||
-      (err as { code?: string })?.code === '23505'
-    ) {
-      // Đọc lại và cập nhật nguyên tử
-      return recordLessonProgressInternal(customerId, lessonId, safePercent, now, payload)
+    if (isValidationErr && !isRetry) {
+      return recordLessonProgressInternal(customerId, lessonId, safePercent, now, payload, true)
     }
     throw err
   }

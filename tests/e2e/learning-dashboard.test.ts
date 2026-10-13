@@ -169,7 +169,7 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
 
       // 7. Khách truy cập /habit/hoc -> bị chuyển hướng đăng nhập
       await guestPage.goto('/habit/hoc')
-      await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap/)
+      await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap\?next=\/habit\/hoc$/)
 
       // 8. Đăng nhập OTP
       await guestPage.locator('input[name="email"]').fill(customerEmail)
@@ -207,9 +207,13 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
       const simulateBtn = guestPage.getByRole('button', { name: /Giả lập xem hết/i })
       await expect(simulateBtn).toBeVisible()
 
-      // Bấm "Giả lập xem hết"
-      await simulateBtn.click()
-      await expect(guestPage.getByText(/Đã xem|hoàn thành/i)).toBeVisible({ timeout: 10000 })
+      // Bấm "Giả lập xem hết" – bấm lại trong toPass vì cú bấm trước khi hydrate không có tác dụng
+      await expect(async () => {
+        await simulateBtn.click()
+        await expect(guestPage.getByText(/Đã xem|hoàn thành/i).first()).toBeVisible({
+          timeout: 3000,
+        })
+      }).toPass({ timeout: 20000 })
 
       // 10. Quay lại dashboard /habit/hoc -> thấy dấu "Đã xem"
       await guestPage.goto('/habit/hoc')

@@ -40,7 +40,11 @@ export function LockedLessonCard({
         {vi.learning.dashboard.status.locked}
       </span>
 
-      <h3 className="mt-4 font-ui text-xl sm:text-2xl font-bold text-deep-navy">{lessonTitle}</h3>
+      <h1 className="mt-4 font-ui text-xl sm:text-2xl font-bold text-deep-navy">{lessonTitle}</h1>
+
+      <p className="mt-2 font-ui text-sm font-semibold text-bright-magenta">
+        {vi.learning.lesson.lockedTitle}
+      </p>
 
       <p className="mx-auto mt-2 max-w-lg font-body text-sm sm:text-base text-deep-navy/75 leading-relaxed">
         {isUnauthenticated

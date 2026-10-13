@@ -69,9 +69,9 @@ export default async function HabitLearningDashboardPage() {
                 />
               </svg>
             </div>
-            <h3 className="font-ui text-xl font-bold text-deep-navy">
+            <h2 className="font-ui text-xl font-bold text-deep-navy">
               {vi.learning.dashboard.errorTitle}
-            </h3>
+            </h2>
             <p className="mx-auto mt-2 max-w-md font-body text-sm text-deep-navy/70">
               {vi.learning.dashboard.errorDesc}
             </p>
@@ -121,9 +121,9 @@ export default async function HabitLearningDashboardPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="font-ui text-xl font-bold text-deep-navy">
+                <h2 className="font-ui text-xl font-bold text-deep-navy">
                   {vi.learning.dashboard.emptyTitle}
-                </h3>
+                </h2>
                 <p className="mx-auto mt-2 max-w-md font-body text-sm text-deep-navy/70">
                   {vi.learning.dashboard.emptyDesc}
                 </p>
