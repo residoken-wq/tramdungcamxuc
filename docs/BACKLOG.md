@@ -42,3 +42,4 @@
 - [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
 - [ ] T2-08: khóa chống tạo 2 đơn song song đang ở bộ nhớ tiến trình (`withOrderLock`). Khi chạy nhiều bản Next.js → đổi sang `pg_advisory_xact_lock(customerId, productId)`.
 - [ ] T2-03: bọc lưu kế hoạch + tạo lead trong 1 transaction (lead lỗi → kế hoạch trùng khi gửi lại); cân nhắc không lưu tên/email vào nháp `localStorage`.
+- [ ] T2-04: chuyển chữ trong `TrialWelcomeEmail.tsx` vào `vi.ts`; banner/trang `/dung-thu` phân biệt "quyền mua có hạn đã hết" với "dùng thử đã hết" (khi có `accessDurationDays`); `trialDays` ≤ 3 thì mail ngày 18 gửi ngay.
