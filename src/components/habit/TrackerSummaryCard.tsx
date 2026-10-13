@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { vi } from '@/lib/i18n/vi'
 import { GROWTH_MIRROR_PATH } from '@/lib/products'
-import type { TrackerStats } from '@/lib/habit/tracker.server'
+import type { TrackerStats } from '@/lib/habit/tracker-stats'
 
 export interface TrackerSummaryCardProps {
   stats: TrackerStats

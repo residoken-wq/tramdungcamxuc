@@ -7,7 +7,7 @@ import { ProgressGrid, type ProgressDayItem } from '@/components/ui/ProgressGrid
 import { CheckInModal } from './CheckInModal'
 import { TrackerSummaryCard } from './TrackerSummaryCard'
 import type { EmotionKey } from '@/lib/emotions'
-import { calculateTrackerStats } from '@/lib/habit/tracker.server'
+import { calculateTrackerStats } from '@/lib/habit/tracker-stats'
 
 export interface InitialCheckinData {
   day: number
