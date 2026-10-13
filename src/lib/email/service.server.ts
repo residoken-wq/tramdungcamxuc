@@ -681,7 +681,8 @@ export async function sendTrialReminderEmail(
     toolName: string
     milestone: 'day_18' | 'day_21'
     daysLeft: number
-    formattedPrice: string
+    formattedPrice: string | null
+    isLifetime?: boolean
     originalPriceFormatted?: string | null
     checkoutUrl: string
     toolUrl: string
@@ -693,7 +694,7 @@ export async function sendTrialReminderEmail(
   const subject =
     data.milestone === 'day_21'
       ? vi.trial.email.reminder21Subject(data.toolName)
-      : vi.trial.email.reminder18Subject(data.toolName)
+      : vi.trial.email.reminder18Subject(data.toolName, data.daysLeft)
 
   try {
     const userHtml = await render(
@@ -703,6 +704,7 @@ export async function sendTrialReminderEmail(
         milestone: data.milestone,
         daysLeft: data.daysLeft,
         formattedPrice: data.formattedPrice,
+        isLifetime: data.isLifetime,
         originalPriceFormatted: data.originalPriceFormatted,
         checkoutUrl: data.checkoutUrl,
         toolUrl: data.toolUrl,
@@ -715,6 +717,7 @@ export async function sendTrialReminderEmail(
         milestone: data.milestone,
         daysLeft: data.daysLeft,
         formattedPrice: data.formattedPrice,
+        isLifetime: data.isLifetime,
         originalPriceFormatted: data.originalPriceFormatted,
         checkoutUrl: data.checkoutUrl,
         toolUrl: data.toolUrl,

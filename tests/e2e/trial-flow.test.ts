@@ -103,10 +103,16 @@ test.describe('Trial Flow (T2-04)', () => {
 
       // 3. Khách chưa đăng nhập mở /dung-thu?san-pham=habit-tracker-so -> chuyển hướng sang /tai-khoan/dang-nhap
       await guestPage.goto('/dung-thu?san-pham=habit-tracker-so')
-      await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap/)
+      await expect(guestPage).toHaveURL(
+        /\/tai-khoan\/dang-nhap\?next=%2Fdung-thu%3Fsan-pham%3Dhabit-tracker-so$/,
+      )
 
-      // 4. Nhập email để xin OTP
-      await guestPage.locator('input[type="email"]').fill(customerEmail)
+      // 4. Nhập email, tick đồng ý (nút bị khóa khi chưa tick), chờ Turnstile rồi xin OTP
+      await guestPage.locator('input[name="email"]').fill(customerEmail)
+      await guestPage.locator('input[name="consentPolicy"]').check()
+      await expect(guestPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
       await guestPage.locator('button[type="submit"]').click()
 
       // Chờ form chuyển sang bước nhập OTP
@@ -118,7 +124,9 @@ test.describe('Trial Flow (T2-04)', () => {
       await guestPage.locator('button[type="submit"]').click()
 
       // 6. Sau khi đăng nhập thành công, chờ quay lại trang /dung-thu?san-pham=habit-tracker-so
-      await expect(guestPage).toHaveURL(/\/dung-thu\?san-pham=habit-tracker-so/)
+      await expect(guestPage).toHaveURL(/\/dung-thu\?san-pham=habit-tracker-so$/, {
+        timeout: 15000,
+      })
 
       // 7. Bấm nút "Bắt đầu dùng thử 21 ngày"
       const startButton = guestPage.locator('button', { hasText: /Bắt đầu dùng thử 21 ngày/i })
@@ -132,19 +140,19 @@ test.describe('Trial Flow (T2-04)', () => {
       await guestPage.goto('/dung-thu?san-pham=habit-tracker-so')
       const openToolLink = guestPage.locator('a', { hasText: /Vào công cụ/i })
       await expect(openToolLink).toBeVisible()
+    } finally {
+      test.setTimeout(testInfo.timeout + 30000)
 
       // Ghi nhận ID khách để dọn dẹp
-      const custLookup = await page.request.get(
-        `/api/customers?where[email][equals]=${encodeURIComponent(customerEmail)}`,
-      )
-      if (custLookup.ok()) {
+      const custLookup = await page.request
+        .get(`/api/customers?where[email][equals]=${encodeURIComponent(customerEmail)}`)
+        .catch(() => null)
+      if (!createdCustomerId && custLookup?.ok()) {
         const custData = await custLookup.json()
         if (custData.docs && custData.docs[0]) {
           createdCustomerId = custData.docs[0].id
         }
       }
-    } finally {
-      test.setTimeout(testInfo.timeout + 30000)
 
       if (createdCustomerId) {
         // Xóa entitlements của customer trước

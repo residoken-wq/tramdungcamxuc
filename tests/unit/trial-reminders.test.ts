@@ -132,7 +132,7 @@ describe('Trial 21-Day Reminders & Cron (T2-04)', () => {
 
       expect(res.remindersSent).toBe(1)
       expect(emailSender.sent).toHaveLength(1)
-      expect(emailSender.sent[0].subject).toContain('Chỉ còn 3 ngày dùng thử')
+      expect(emailSender.sent[0].subject).toContain('Còn 2 ngày dùng thử')
     })
 
     it('nhắc mốc day_21 khi còn 12h (trong khoảng 0h - 24h cuối)', async () => {

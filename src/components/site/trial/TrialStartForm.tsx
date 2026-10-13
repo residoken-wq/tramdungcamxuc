@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { track } from '@/lib/analytics/track'
@@ -23,6 +23,12 @@ export function TrialStartForm({
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  // Khóa nút tới khi trang chạy JavaScript: bấm sớm thì form gửi kiểu HTML thường (GET) và mất ?san-pham=
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
 
   const handleStart = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,7 +78,7 @@ export function TrialStartForm({
         type="submit"
         variant="primary"
         size="lg"
-        disabled={isLoading}
+        disabled={!isHydrated || isLoading}
         className="w-full justify-center shadow-md shadow-accent-pink/20"
       >
         {isLoading ? vi.trial.starting : vi.trial.startButton(trialDays)}

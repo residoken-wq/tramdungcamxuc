@@ -48,10 +48,20 @@ export async function sendTrialReminders(
   const payload = options?.payload ?? (await getPayload({ config: await config }))
   const siteUrl = options?.siteUrl ?? getSiteUrl()
 
+  const oneDayMsQuery = 24 * 60 * 60 * 1000
+  // Chỉ lấy quyền dùng thử sắp hết hạn trong 3 ngày tới (lọc ở DB, không quét toàn bộ mỗi giờ)
   const entitlementsRes = await payload.find({
     collection: 'entitlements',
     where: {
-      status: { equals: 'trial' },
+      and: [
+        { status: { equals: 'trial' } },
+        { expiresAt: { greater_than: now.toISOString() } },
+        {
+          expiresAt: {
+            less_than_equal: new Date(now.getTime() + 3 * oneDayMsQuery).toISOString(),
+          },
+        },
+      ],
     },
     depth: 1,
     pagination: false,
@@ -67,146 +77,156 @@ export async function sendTrialReminders(
   const threeDaysMs = 3 * oneDayMs
 
   for (const rawDoc of entitlementsRes.docs) {
-    const ent = rawDoc as unknown as Entitlement
-    if (!ent.expiresAt) continue
-
-    const expiresAt = new Date(ent.expiresAt)
-    const timeLeftMs = expiresAt.getTime() - now.getTime()
-
-    // Đã hết hạn hoặc chưa tới mốc nhắc (còn > 3 ngày) -> bỏ qua
-    if (timeLeftMs <= 0 || timeLeftMs > threeDaysMs) {
-      continue
-    }
-
-    // Đọc thông tin sản phẩm và khách hàng
-    const rawProduct = ent.product
-    const product =
-      typeof rawProduct === 'object' && rawProduct !== null
-        ? (rawProduct as Product)
-        : await payload.findByID({
-            collection: 'products',
-            id: Number(rawProduct),
-            depth: 0,
-            overrideAccess: true,
-          })
-
-    if (!product || !product.trialDays || product.trialDays <= 0) {
-      continue
-    }
-
-    const rawCustomer = ent.customer
-    const customer =
-      typeof rawCustomer === 'object' && rawCustomer !== null
-        ? (rawCustomer as Customer)
-        : await payload.findByID({
-            collection: 'customers',
-            id: Number(rawCustomer),
-            depth: 0,
-            overrideAccess: true,
-          })
-
-    if (!customer || !customer.email) {
-      continue
-    }
-
-    // Kiểm tra quyền hiện tại: nếu đã mua (active) thì KHÔNG nhắc
-    const currentAccess = await getAccess(customer.id, product.id, { payload, now })
-    if (currentAccess.status === 'active') {
-      continue
-    }
-
-    processedTrials++
-
-    // Xác định mốc
-    let milestone: 'day_18' | 'day_21'
-    let daysLeft: number
-
-    if (timeLeftMs <= oneDayMs) {
-      milestone = 'day_21'
-      daysLeft = 1
-    } else {
-      milestone = 'day_18'
-      daysLeft = Math.max(1, Math.ceil(timeLeftMs / oneDayMs))
-    }
-
-    // Chuẩn bị thông tin giá và link
-    const effective = getEffectivePrice(product, now)
-    const formattedPrice =
-      effective.salePrice != null
-        ? formatVnd(effective.salePrice)
-        : effective.price != null
-          ? formatVnd(effective.price)
-          : '178.000đ'
-
-    const originalPriceFormatted =
-      effective.salePrice != null &&
-      effective.price != null &&
-      effective.salePrice < effective.price
-        ? formatVnd(effective.price)
-        : null
-
-    const checkoutUrl = `${siteUrl}/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`
-    const toolUrl = `${siteUrl}${getToolUrl(product)}`
-
-    // 1. Tạo bản ghi nhắc trước trong DB (nhận việc)
-    let reminderId: number | null = null
+    // Một bản ghi lỗi không làm dừng cả lượt cron
     try {
-      const created = await payload.create({
-        collection: 'trialReminders',
-        data: {
-          entitlement: ent.id,
-          milestone,
-          sentAt: now.toISOString(),
-        },
-        overrideAccess: true,
-      })
-      reminderId = created.id
-    } catch (_err) {
-      // Đã tồn tại bản ghi nhắc cho mốc này (hoặc lượt chạy đồng thời đã nhận việc)
-      skippedDuplicate++
-      continue
-    }
+      const ent = rawDoc as unknown as Entitlement
+      if (!ent.expiresAt) continue
 
-    // 2. Gửi email
-    if (reminderId !== null) {
-      try {
-        await sendTrialReminderEmail(
-          payload,
-          {
-            name: customer.name || '',
-            email: customer.email,
-            toolName: product.name,
-            milestone,
-            daysLeft,
-            formattedPrice,
-            originalPriceFormatted,
-            checkoutUrl,
-            toolUrl,
-          },
-          options?.emailSender,
-        )
-        remindersSent++
-      } catch (err) {
-        console.error(
-          `[Trial Reminder] Lỗi gửi email nhắc (customer ${customer.id}, entitlement ${ent.id}):`,
-          err,
-        )
+      const expiresAt = new Date(ent.expiresAt)
+      const timeLeftMs = expiresAt.getTime() - now.getTime()
 
-        // Gửi lỗi: xóa bản ghi vừa tạo để lượt cron sau có thể gửi lại
-        try {
-          await payload.delete({
-            collection: 'trialReminders',
-            id: reminderId,
-            overrideAccess: true,
-          })
-        } catch (deleteErr) {
-          console.error(
-            `[Trial Reminder] Không thể xóa bản ghi nhắc sau lỗi gửi (id ${reminderId}):`,
-            deleteErr,
-          )
-        }
-        errors++
+      // Đã hết hạn hoặc chưa tới mốc nhắc (còn > 3 ngày) -> bỏ qua
+      if (timeLeftMs <= 0 || timeLeftMs > threeDaysMs) {
+        continue
       }
+
+      // Đọc thông tin sản phẩm và khách hàng
+      const rawProduct = ent.product
+      const product =
+        typeof rawProduct === 'object' && rawProduct !== null
+          ? (rawProduct as Product)
+          : await payload.findByID({
+              collection: 'products',
+              id: Number(rawProduct),
+              depth: 0,
+              overrideAccess: true,
+            })
+
+      if (!product || !product.trialDays || product.trialDays <= 0) {
+        continue
+      }
+
+      const rawCustomer = ent.customer
+      const customer =
+        typeof rawCustomer === 'object' && rawCustomer !== null
+          ? (rawCustomer as Customer)
+          : await payload.findByID({
+              collection: 'customers',
+              id: Number(rawCustomer),
+              depth: 0,
+              overrideAccess: true,
+            })
+
+      if (!customer || !customer.email) {
+        continue
+      }
+
+      // Kiểm tra quyền hiện tại: nếu đã mua (active) thì KHÔNG nhắc
+      const currentAccess = await getAccess(customer.id, product.id, { payload, now })
+      if (currentAccess.status === 'active') {
+        continue
+      }
+
+      processedTrials++
+
+      // Xác định mốc
+      let milestone: 'day_18' | 'day_21'
+      let daysLeft: number
+
+      if (timeLeftMs <= oneDayMs) {
+        milestone = 'day_21'
+        daysLeft = 1
+      } else {
+        milestone = 'day_18'
+        daysLeft = Math.max(1, Math.ceil(timeLeftMs / oneDayMs))
+      }
+
+      // Chuẩn bị thông tin giá và link
+      const effective = getEffectivePrice(product, now)
+      const formattedPrice =
+        effective.salePrice != null
+          ? formatVnd(effective.salePrice)
+          : effective.price != null
+            ? formatVnd(effective.price)
+            : null
+
+      const originalPriceFormatted =
+        effective.salePrice != null &&
+        effective.price != null &&
+        effective.salePrice < effective.price
+          ? formatVnd(effective.price)
+          : null
+
+      const checkoutUrl = `${siteUrl}/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`
+      const toolUrl = `${siteUrl}${getToolUrl(product)}`
+
+      // 1. Tạo bản ghi nhắc trước trong DB (nhận việc)
+      let reminderId: number | null = null
+      try {
+        const created = await payload.create({
+          collection: 'trialReminders',
+          data: {
+            entitlement: ent.id,
+            milestone,
+            sentAt: now.toISOString(),
+          },
+          overrideAccess: true,
+        })
+        reminderId = created.id
+      } catch (_err) {
+        // Đã tồn tại bản ghi nhắc cho mốc này (hoặc lượt chạy đồng thời đã nhận việc)
+        skippedDuplicate++
+        continue
+      }
+
+      // 2. Gửi email
+      if (reminderId !== null) {
+        try {
+          await sendTrialReminderEmail(
+            payload,
+            {
+              name: customer.name || '',
+              email: customer.email,
+              toolName: product.name,
+              milestone,
+              daysLeft,
+              formattedPrice,
+              originalPriceFormatted,
+              isLifetime: !product.accessDurationDays || product.accessDurationDays <= 0,
+              checkoutUrl,
+              toolUrl,
+            },
+            options?.emailSender,
+          )
+          remindersSent++
+        } catch (err) {
+          console.error(
+            `[Trial Reminder] Lỗi gửi email nhắc (customer ${customer.id}, entitlement ${ent.id}):`,
+            err,
+          )
+
+          // Gửi lỗi: xóa bản ghi vừa tạo để lượt cron sau có thể gửi lại
+          try {
+            await payload.delete({
+              collection: 'trialReminders',
+              id: reminderId,
+              overrideAccess: true,
+            })
+          } catch (deleteErr) {
+            console.error(
+              `[Trial Reminder] Không thể xóa bản ghi nhắc sau lỗi gửi (id ${reminderId}):`,
+              deleteErr,
+            )
+          }
+          errors++
+        }
+      }
+    } catch (err) {
+      console.error(
+        `[Trial Reminder] Lỗi xử lý quyền dùng thử ${(rawDoc as { id?: number }).id}:`,
+        err,
+      )
+      errors++
     }
   }
 

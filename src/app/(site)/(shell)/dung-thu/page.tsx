@@ -77,14 +77,10 @@ export default async function TrialPage({ searchParams }: PageProps) {
 
   const trialDays = product.trialDays as number
 
-  const benefits =
-    Array.isArray(product.includes) && product.includes.length > 0
-      ? product.includes.map((i) => i.text).filter(Boolean)
-      : [
-          'Trải nghiệm đầy đủ tất cả bài học và tính năng',
-          'Lưu trữ dữ liệu cảm xúc cá nhân an toàn và bảo mật',
-          'Không ràng buộc, không cần nhập thẻ thanh toán',
-        ]
+  // Chỉ lấy lợi ích từ CMS; CMS trống thì ẩn khối lợi ích (không tự viết lời hứa)
+  const benefits = Array.isArray(product.includes)
+    ? product.includes.map((i) => i.text).filter(Boolean)
+    : []
 
   return (
     <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-xl mx-auto">
@@ -105,30 +101,34 @@ export default async function TrialPage({ searchParams }: PageProps) {
       </div>
 
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-deep-navy/10 shadow-sm space-y-6">
-        {/* Lợi ích */}
-        <div className="space-y-3">
-          <h2 className="font-ui font-semibold text-sm text-deep-navy uppercase tracking-wider">
-            {vi.trial.benefitsHeading}
-          </h2>
-          <ul className="space-y-3 pt-1">
-            {benefits.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3">
-                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-soft-pink text-accent-pink shrink-0 mt-0.5">
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-                <span className="font-sans text-sm text-deep-navy/85 leading-relaxed">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* Lợi ích – chỉ hiện khi CMS có danh sách */}
+        {benefits.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="font-ui font-semibold text-sm text-deep-navy uppercase tracking-wider">
+              {vi.trial.benefitsHeading}
+            </h2>
+            <ul className="space-y-3 pt-1">
+              {benefits.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-soft-pink text-accent-pink shrink-0 mt-0.5">
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </span>
+                  <span className="font-sans text-sm text-deep-navy/85 leading-relaxed">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Trạng thái quyền truy cập */}
         {access.hasAccess && access.status === 'active' && (

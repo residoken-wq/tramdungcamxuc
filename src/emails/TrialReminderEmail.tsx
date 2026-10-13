@@ -12,14 +12,18 @@ import {
   Section,
   Text,
 } from '@react-email/components'
+import { vi } from '@/lib/i18n/vi'
 
 export interface TrialReminderEmailProps {
   name: string
   toolName: string
   milestone: 'day_18' | 'day_21'
   daysLeft: number
-  formattedPrice: string
+  /** Giá hiện hành từ CMS (đã định dạng); null khi CMS chưa có giá → không hiện giá */
+  formattedPrice: string | null
   originalPriceFormatted?: string | null
+  /** true khi sản phẩm mua là dùng vĩnh viễn (accessDurationDays trống) */
+  isLifetime?: boolean
   checkoutUrl: string
   toolUrl: string
 }
@@ -31,20 +35,17 @@ export const TrialReminderEmail: React.FC<TrialReminderEmailProps> = ({
   daysLeft,
   formattedPrice,
   originalPriceFormatted,
+  isLifetime = true,
   checkoutUrl,
   toolUrl,
 }) => {
+  const t = vi.trial.email.reminder
   const isDay21 = milestone === 'day_21'
-
   const previewText = isDay21
-    ? `Trạm Dừng Cảm Xúc – Ngày dùng thử cuối cùng: ${toolName}`
-    : `Trạm Dừng Cảm Xúc – Chỉ còn 3 ngày dùng thử ${toolName}`
-
-  const headingText = isDay21
-    ? 'Hôm nay là ngày dùng thử cuối cùng!'
-    : 'Chỉ còn 3 ngày dùng thử miễn phí!'
-
-  const statusLabel = isDay21 ? 'Ngày cuối cùng' : `Còn ${daysLeft} ngày`
+    ? vi.trial.email.reminder21Subject(toolName)
+    : vi.trial.email.reminder18Subject(toolName, daysLeft)
+  const headingText = isDay21 ? t.heading21 : t.heading18(daysLeft)
+  const statusLabel = isDay21 ? t.statusLastDay : t.statusDaysLeft(daysLeft)
 
   return (
     <Html lang="vi">
@@ -52,59 +53,45 @@ export const TrialReminderEmail: React.FC<TrialReminderEmailProps> = ({
       <Preview>{previewText}</Preview>
       <Body style={mainStyle}>
         <Container style={containerStyle}>
-          {/* Header */}
           <Section style={headerStyle}>
-            <Text style={brandLabelStyle}>TRẠM DỪNG CẢM XÚC · NHẮC HẠN DÙNG THỬ</Text>
+            <Text style={brandLabelStyle}>{t.brandLabel}</Text>
             <Heading style={headingStyle}>{headingText}</Heading>
-            <Text style={subheadingStyle}>
-              Chào {name || 'bạn'}, {toolName} đồng hành cùng bạn trên hành trình thấu hiểu cảm xúc.
-            </Text>
+            <Text style={subheadingStyle}>{t.greeting(name, toolName)}</Text>
           </Section>
 
           <Hr style={dividerStyle} />
 
-          {/* Details */}
           <Section style={contentSectionStyle}>
             <Section style={highlightBoxStyle}>
               <Text style={highlightItemStyle}>
-                <strong>Công cụ:</strong> {toolName}
+                <strong>{t.toolLabel}</strong> {toolName}
               </Text>
               <Text style={highlightItemStyle}>
-                <strong>Thời hạn dùng thử:</strong> {statusLabel}
+                <strong>{t.statusLabel}</strong> {statusLabel}
               </Text>
+              {formattedPrice && (
+                <Text style={highlightItemStyle}>
+                  <strong>{isLifetime ? t.priceLabelLifetime : t.priceLabel}</strong>{' '}
+                  {formattedPrice}
+                  {originalPriceFormatted && (
+                    <span style={strikethroughStyle}> ({originalPriceFormatted})</span>
+                  )}
+                </Text>
+              )}
               <Text style={highlightItemStyle}>
-                <strong>Giá sở hữu trọn đời:</strong> {formattedPrice}
-                {originalPriceFormatted && (
-                  <span style={strikethroughStyle}> ({originalPriceFormatted})</span>
-                )}
-              </Text>
-              <Text style={highlightItemStyle}>
-                <strong>Dữ liệu của bạn:</strong> Được bảo lưu nguyên vẹn và an toàn
+                <strong>{t.dataLabel}</strong> {t.dataValue}
               </Text>
             </Section>
 
-            {isDay21 ? (
-              <Text style={paragraphStyle}>
-                Hôm nay là ngày cuối cùng trong hành trình 21 ngày trải nghiệm. Hành trình này đã
-                giúp bạn đặt những bước chân đầu tiên cho sự vững vàng nội tâm. Hãy đăng ký sở hữu
-                trọn đời để giữ mạch thực hành và mở khóa đầy đủ tiện ích mà không bị gián đoạn.
-              </Text>
-            ) : (
-              <Text style={paragraphStyle}>
-                Chỉ còn 3 ngày nữa là phiên dùng thử miễn phí của bạn sẽ khép lại. 21 ngày là khoảng
-                thời gian quý giá để hình thành một thói quen mới. Để không gián đoạn nhịp thực hành
-                mỗi ngày, bạn có thể nâng cấp ngay với mức giá ưu đãi đặc biệt bên dưới.
-              </Text>
-            )}
+            <Text style={paragraphStyle}>{isDay21 ? t.body21 : t.body18(daysLeft)}</Text>
 
-            {/* CTA Button */}
             <Section style={buttonContainerStyle}>
               <Button style={buttonStyle} href={checkoutUrl}>
-                Mua để dùng tiếp ({formattedPrice})
+                {formattedPrice ? t.buyButtonWithPrice(formattedPrice) : t.buyButton}
               </Button>
               <Section style={{ marginTop: '16px', textAlign: 'center' }}>
                 <Link href={toolUrl} style={secondaryLinkStyle}>
-                  Vào thực hành hôm nay &rarr;
+                  {t.toolLink}
                 </Link>
               </Section>
             </Section>
@@ -112,14 +99,10 @@ export const TrialReminderEmail: React.FC<TrialReminderEmailProps> = ({
 
           <Hr style={dividerStyle} />
 
-          {/* Footer */}
           <Section style={footerStyle}>
-            <Text style={footerSignOffStyle}>Thương mến,</Text>
-            <Text style={footerAuthorStyle}>Hana Lương &amp; Đội ngũ Trạm Dừng Cảm Xúc</Text>
-            <Text style={footerNoticeStyle}>
-              Email thông báo tự động từ tramdungcamxuc.com dành cho tài khoản đang dùng thử công cụ
-              số.
-            </Text>
+            <Text style={footerSignOffStyle}>{t.signOff}</Text>
+            <Text style={footerAuthorStyle}>{t.author}</Text>
+            <Text style={footerNoticeStyle}>{t.autoNotice}</Text>
           </Section>
         </Container>
       </Body>

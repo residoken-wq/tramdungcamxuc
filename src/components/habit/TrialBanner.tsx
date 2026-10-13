@@ -36,7 +36,7 @@ export async function TrialBanner() {
     const daysLeft = access.daysLeft ?? product.trialDays ?? 0
     return (
       <aside
-        aria-label="Thông báo dùng thử"
+        aria-label={vi.trial.banner.trialAria}
         className="w-full bg-soft-pink/90 border-b border-accent-pink/20 py-2.5 px-4 text-deep-navy"
       >
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
@@ -60,7 +60,7 @@ export async function TrialBanner() {
   if (access.status === 'expired') {
     return (
       <aside
-        aria-label="Thông báo hết hạn dùng thử"
+        aria-label={vi.trial.banner.expiredAria}
         className="w-full bg-butter-cream/90 border-b border-butter-cream py-2.5 px-4 text-deep-navy"
       >
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
