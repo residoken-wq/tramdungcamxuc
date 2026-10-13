@@ -2,10 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useAuth, useDocumentInfo } from '@payloadcms/ui'
-import {
-  getOrderPaymentEventsAction,
-  type OrderPaymentEventItem,
-} from '@/lib/payments/actions'
+import { getOrderPaymentEventsAction, type OrderPaymentEventItem } from '@/lib/payments/actions'
 import { vi } from '@/lib/i18n/vi'
 import { formatVnd } from '@/lib/format'
 
@@ -13,14 +10,13 @@ export const OrderPaymentEvents: React.FC = () => {
   const { user } = useAuth()
   const { id } = useDocumentInfo()
   const [events, setEvents] = useState<OrderPaymentEventItem[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const orderId = id ? Number(id) : null
 
   useEffect(() => {
     let active = true
     if (orderId && user && (user as { role?: string }).role === 'owner') {
-      setLoading(true)
       getOrderPaymentEventsAction(orderId)
         .then((res) => {
           if (active) {

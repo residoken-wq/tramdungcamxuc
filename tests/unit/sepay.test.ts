@@ -9,11 +9,7 @@ import type { SiteSetting } from '../../src/payload-types'
 import { extractPaymentRef } from '../../src/lib/payments/payment-ref'
 import { getPaymentProvider, ManualPaymentProvider } from '../../src/lib/payments/provider'
 import { SepayPaymentProvider } from '../../src/lib/payments/sepay'
-import {
-  confirmManualPayment,
-  createDigitalToolOrder,
-  createExperienceOrder,
-} from '../../src/lib/payments/orders.server'
+import { confirmManualPayment, createDigitalToolOrder } from '../../src/lib/payments/orders.server'
 import { getAccess } from '../../src/lib/entitlements'
 import { POST as sepayWebhookRoute } from '../../src/app/(site)/api/payments/sepay/webhook/route'
 import { GET as orderStatusRoute } from '../../src/app/(site)/api/payments/status/[token]/route'
@@ -92,7 +88,6 @@ describe('SePay Automated Payment & VietQR Integration (T2-09)', () => {
     createdProducts.push(prodDoc.id)
     digitalToolProductId = prodDoc.id
   })
-
 
   afterAll(async () => {
     // Dọn dẹp theo thứ tự khóa ngoại
@@ -536,7 +531,6 @@ describe('SePay Automated Payment & VietQR Integration (T2-09)', () => {
         expect(access.hasAccess).toBe(true)
         expect(access.status).toBe('active')
 
-
         const evs = await payload.find({
           collection: 'paymentEvents',
           where: { transactionId: { equals: txId } },
@@ -734,7 +728,6 @@ describe('SePay Automated Payment & VietQR Integration (T2-09)', () => {
           overrideAccess: true,
         })
 
-
         const txIdCancel = String(Date.now() + 700)
         const res = await sepayWebhookRoute(
           new Request('http://localhost/api/payments/sepay/webhook', {
@@ -908,7 +901,6 @@ describe('SePay Automated Payment & VietQR Integration (T2-09)', () => {
         )
         const json = await res.json()
         expect(json.result).toBe('terms_missing')
-
 
         const refreshed = await payload.findByID({
           collection: 'orders',
