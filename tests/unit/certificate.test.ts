@@ -136,9 +136,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     await createTestPlan(customer.id, todayYmd)
 
     // Tạo sẵn 5 check-in
-    await expect(
-      issueCertificate(customer.id, { payload }),
-    ).rejects.toThrow(i18n.certificate.errors.notDay21)
+    await expect(issueCertificate(customer.id, { payload })).rejects.toThrow(
+      i18n.certificate.errors.notDay21,
+    )
 
     const eligibility = await getCertificateEligibility(customer.id, { payload })
     expect(eligibility.eligible).toBe(false)
@@ -156,9 +156,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     // Chỉ hoàn thành 10 ngày (< 15)
     await createCheckins(plan.id, 10)
 
-    await expect(
-      issueCertificate(customer.id, { payload }),
-    ).rejects.toThrow(i18n.certificate.errors.notEnoughDays(15))
+    await expect(issueCertificate(customer.id, { payload })).rejects.toThrow(
+      i18n.certificate.errors.notEnoughDays(15),
+    )
 
     const eligibility = await getCertificateEligibility(customer.id, { payload })
     expect(eligibility.eligible).toBe(false)
@@ -222,9 +222,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
   it('không thể cấp chứng nhận cho khách hàng chưa có kế hoạch', async () => {
     const customerWithoutPlan = await createTestCustomer('Lê Văn Cường')
 
-    await expect(
-      issueCertificate(customerWithoutPlan.id, { payload }),
-    ).rejects.toThrow(i18n.certificate.errors.noPlan)
+    await expect(issueCertificate(customerWithoutPlan.id, { payload })).rejects.toThrow(
+      i18n.certificate.errors.noPlan,
+    )
   })
 
   it('khách hàng hết hạn dùng thử vẫn được nhận chứng nhận cho 21 ngày đã thực hành', async () => {
