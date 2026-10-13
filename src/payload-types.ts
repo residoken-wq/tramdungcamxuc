@@ -1787,6 +1787,10 @@ export interface PaymentEvent {
    * Nhập cổng thanh toán.
    */
   provider: string;
+  /**
+   * Mã giao dịch từ cổng thanh toán (chống xử lý trùng).
+   */
+  transactionId?: string | null;
   rawPayload?:
     | {
         [k: string]: unknown;
@@ -2740,6 +2744,7 @@ export interface OtpCodesSelect<T extends boolean = true> {
 export interface PaymentEventsSelect<T extends boolean = true> {
   order?: T;
   provider?: T;
+  transactionId?: T;
   rawPayload?: T;
   signatureValid?: T;
   result?: T;

@@ -9,15 +9,24 @@ export const PaymentEvents: CollectionConfig = {
   labels: { singular: 'Sự kiện thanh toán', plural: 'Sự kiện thanh toán' },
   admin: {
     group: 'Hệ thống',
-    defaultColumns: ['provider', 'order', 'signatureValid', 'result', 'receivedAt'],
+    defaultColumns: ['provider', 'transactionId', 'order', 'signatureValid', 'result', 'receivedAt'],
   },
   access: { read: isOwner, create: nobody, update: nobody, delete: nobody },
   fields: [
     relation('order', 'Đơn hàng', 'orders'),
     { ...text('provider', 'Cổng thanh toán', true) },
+    {
+      ...text('transactionId', 'Mã giao dịch'),
+      unique: true,
+      index: true,
+      admin: {
+        description: 'Mã giao dịch từ cổng thanh toán (chống xử lý trùng).',
+      },
+    },
     { name: 'rawPayload', label: 'Dữ liệu gốc', type: 'json' },
     checkbox('signatureValid', 'Chữ ký hợp lệ'),
     text('result', 'Kết quả xử lý'),
     { ...date('receivedAt', 'Nhận lúc'), defaultValue: () => new Date().toISOString() },
   ],
 }
+
