@@ -75,7 +75,7 @@ export function buildCspDirective(options: CspOptions = {}): string {
     "default-src 'self'",
     `img-src 'self' data: blob:${s3OriginStr}`,
     `media-src 'self' data: blob:${s3OriginStr}`,
-    "frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com",
+    "frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com https://iframe.mediadelivery.net",
     `script-src ${scriptSources}`,
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data:",
