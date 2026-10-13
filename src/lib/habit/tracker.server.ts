@@ -44,9 +44,10 @@ export function vietnamTodayIso(now: Date = new Date()): string {
  * Tính số ngày chênh lệch giữa 2 ngày lịch theo giờ Việt Nam.
  */
 export function getVietnamCalendarDayDiff(
-  startDate: Date | string,
+  startDate?: Date | string | null,
   now: Date = new Date(),
 ): number {
+  if (!startDate) return 0
   const start = typeof startDate === 'string' ? new Date(startDate) : startDate
   const startYmd = getVietnamYmd(start)
   const nowYmd = getVietnamYmd(now)
@@ -65,7 +66,11 @@ export function getVietnamCalendarDayDiff(
  * Ngày bắt đầu (startDate) là Ngày 1.
  * Ngày thứ N = số ngày từ startDate (giờ VN) + 1.
  */
-export function getCurrentDayOfPlan(startDate: Date | string, now: Date = new Date()): number {
+export function getCurrentDayOfPlan(
+  startDate?: Date | string | null,
+  now: Date = new Date(),
+): number {
+  if (!startDate) return 1
   const diff = getVietnamCalendarDayDiff(startDate, now)
   return diff + 1
 }

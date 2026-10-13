@@ -134,7 +134,7 @@ export async function checkInDay(
     }
   }
 
-  const cleanEmotion = validation.data.emotion ?? null
+  const cleanEmotion = (validation.data.emotion ?? null) as EmotionKey | null
   const cleanNote = validation.data.note?.trim() || null
 
   // 6. Upsert bản ghi check-in (plan + day) với xử lý xung đột song song an toàn

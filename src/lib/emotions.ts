@@ -1,13 +1,25 @@
 // Q14: Bộ 10 cảm xúc cố định (hiển thị emoji) theo Brand Book 2026 và quyết định 10/10/2026.
 // Danh sách 10 cảm xúc: Vui vẻ, Bình an, Tươi mới, An yên, Biết ơn, Thư thái, Tự tin, Hơi mệt, Chùn bước, Căng thẳng.
 
+export type EmotionKey =
+  | 'joyful'
+  | 'peaceful'
+  | 'fresh'
+  | 'serene'
+  | 'grateful'
+  | 'relaxed'
+  | 'confident'
+  | 'tired'
+  | 'discouraged'
+  | 'stressed'
+
 export interface Emotion {
-  key: string
+  key: EmotionKey
   label: string
   emoji: string
 }
 
-export const EMOTIONS: readonly Emotion[] = [
+export const EMOTIONS = [
   {
     key: 'joyful',
     label: 'Vui vẻ',
@@ -59,8 +71,6 @@ export const EMOTIONS: readonly Emotion[] = [
     emoji: '⚡',
   },
 ] as const
-
-export type EmotionKey = (typeof EMOTIONS)[number]['key']
 
 /**
  * Lấy đối tượng cảm xúc theo khóa định danh.

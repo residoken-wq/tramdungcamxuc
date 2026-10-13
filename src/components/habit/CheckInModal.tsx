@@ -144,7 +144,7 @@ export function CheckInModal({
           <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-deep-navy/10">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={onClose}
               disabled={isSubmitting}

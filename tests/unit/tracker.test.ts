@@ -90,7 +90,6 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
         data: {
           email: `owner-tracker-${randomUUID()}@example.test`,
           password: 'Password123!',
-          name: 'Owner User',
           role: 'owner',
         },
         overrideAccess: true,
@@ -104,7 +103,6 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
         data: {
           email: `editor-tracker-${randomUUID()}@example.test`,
           password: 'Password123!',
-          name: 'Editor User',
           role: 'editor',
         },
         overrideAccess: true,

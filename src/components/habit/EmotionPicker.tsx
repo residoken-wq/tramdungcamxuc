@@ -28,7 +28,7 @@ export function EmotionPicker({
 
   // Handle arrow key navigation across radio options
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
-    if (disabled || EMOTIONS.length === 0) return
+    if (disabled) return
 
     let nextIndex = currentIndex
 

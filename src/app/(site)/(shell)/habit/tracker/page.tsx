@@ -14,7 +14,7 @@ import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
 
 export const metadata: Metadata = {
-  title: `${vi.tracker.pageTitle} | ${vi.siteName}`,
+  title: `${vi.tracker.pageTitle} | Trạm Dừng Cảm Xúc`,
   description: vi.tracker.subtitle,
   robots: {
     index: false,

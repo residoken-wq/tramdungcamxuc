@@ -111,7 +111,7 @@ export function TrackerDashboard({
           <span>{vi.tracker.currentDayBadge(Math.min(21, currentDay))}</span>
         </div>
 
-        <h1 className="font-serif italic text-lg sm:text-xl text-deep-navy font-normal max-w-lg mx-auto">
+        <h1 className="font-quote italic text-lg sm:text-xl text-deep-navy font-normal max-w-lg mx-auto">
           &ldquo;{vi.tracker.votingQuestion}&rdquo;
         </h1>
 
