@@ -14,6 +14,7 @@
    - [3.6. Xem trước khi sửa dịch vụ, chương trình và bài viết (Live Preview)](#36-xem-trước-khi-sửa-dịch-vụ-chương-trình-và-bài-viết-live-preview)
    - [3.8. Quản lý Lịch workshop và quyền tham gia (Workshops)](#38-quản-lý-lịch-workshop-và-quyền-tham-gia-workshops)
    - [3.9. Chương trình dùng thử 21 ngày cho công cụ số](#39-chương-trình-dùng-thử-21-ngày-cho-công-cụ-số)
+   - [3.10. Quản lý Bài học và Video khóa học (Habit Hack)](#310-quản-lý-bài-học-và-video-khóa-học-habit-hack)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
@@ -284,6 +285,32 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 - **Tắt chương trình dùng thử**: Xóa ô **Số ngày dùng thử** (hoặc đặt về `0`). Toàn bộ nút dùng thử trên website và Quiz CTA sẽ tự động chuyển về luồng mua hàng thông thường.
 - **Thay đổi giá bán ưu đãi**: Chỉnh sửa ô **Giá bán** (ví dụ `250000`) và **Giá ưu đãi** (ví dụ `178000`). Toàn bộ website và email nhắc sẽ tự động cập nhật ngay lập tức.
+
+### 3.10. Quản lý Bài học và Video khóa học (Habit Hack)
+
+**Mục đích**: Đăng tải và sắp xếp các bài học, lộ trình video thực hành thói quen trên trang Góc học tập `/habit/hoc`.
+
+**Các bước thực hiện**:
+
+1. **Quản lý Nhóm bài học (`courseModules`)**:
+   - Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm vào **Nhóm bài học**.
+   - Bấm **Tạo mới** hoặc bấm vào nhóm có sẵn để sửa.
+   - Nhập **Tên nhóm bài học** (ví dụ: _Giai đoạn 1: Hiểu mình & Điểm nghẽn_).
+   - Chọn **Nhóm nội dung**: chọn 1 trong 3 nhóm chuẩn gồm _Hiểu mình_ (`insight`), _Nguyên tắc_ (`principle`), hoặc _Kỹ thuật_ (`technique`). Lộ trình trên website sẽ tự động gom các bài học theo thứ tự 3 nhóm này.
+   - Nhập **Thứ tự** hiển thị (số nhỏ hơn đứng trước).
+   - Bấm **Xuất bản**.
+
+2. **Quản lý Bài học (`lessons`)**:
+   - Trong nhóm **Khóa học**, bấm vào **Bài học**.
+   - Bấm **Tạo mới** và điền các trường:
+     - **Tiêu đề**: Tên bài học hiển thị cho học viên.
+     - **Nhóm bài học**: Chọn nhóm bài học đã tạo ở bước 1.
+     - **Tóm tắt**: Ghi chú ngắn gọn về nội dung hoặc câu hỏi gợi mở cho học viên.
+     - **Thời lượng (giây)**: Tổng số giây của video (ví dụ: `300` tương đương 5 phút).
+     - **Thứ tự**: Thứ tự xuất hiện trong nhóm (số nhỏ hơn đứng trước).
+     - **Cho phép xem thử**: Tích chọn ô này nếu bạn muốn bài học mở tự do cho mọi người xem trước (kể cả khách chưa đăng nhập hoặc chưa mua gói). Nếu bỏ tích, bài học sẽ yêu cầu khách hàng đăng nhập và kích hoạt dùng thử 21 ngày hoặc mua sản phẩm Habit Tracker số mới xem được.
+     - **Mã video**: Điền mã định danh video từ dịch vụ lưu trữ Bunny Stream. Ô này được bảo mật tuyệt đối, chỉ quản trị viên nhìn thấy trong admin. Khi hệ thống ở chế độ thử nghiệm nội bộ (sandbox), bài học sẽ hiển thị khung phát thử nghiệm; khi kết nối dịch vụ Bunny chính thức, video sẽ được phát an toàn chống tải lậu cho học viên.
+   - Bấm **Xuất bản** để đưa bài học lên Góc học tập.
 
 ---
 
