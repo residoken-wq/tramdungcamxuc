@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState, useTransition } from 'react'
+import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import type { VideoPlayback } from '@/lib/video'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
@@ -35,31 +35,34 @@ export function VideoPlayer({
   const isCompletedRef = useRef<boolean>(initialCompleted)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  const sendProgress = async (percent: number) => {
-    if (!isAuthenticated) return
-    try {
-      const res = await recordLessonProgress(lessonId, percent)
-      if (res.success) {
-        if (percent >= 80) {
-          setIsCompleted(true)
-          isCompletedRef.current = true
+  const sendProgress = useCallback(
+    async (percent: number) => {
+      if (!isAuthenticated) return
+      try {
+        const res = await recordLessonProgress(lessonId, percent)
+        if (res.success) {
+          if (percent >= 80) {
+            setIsCompleted(true)
+            isCompletedRef.current = true
+          }
+          if (onProgressRecorded) {
+            onProgressRecorded(percent)
+          }
+          if (res.newlyCompleted && res.meta) {
+            track('lesson_completed', {
+              courseSlug: res.meta.courseSlug,
+              moduleId: res.meta.moduleId ?? moduleId,
+              lessonId: res.meta.lessonId,
+              lessonOrder: res.meta.lessonOrder ?? lessonOrder,
+            })
+          }
         }
-        if (onProgressRecorded) {
-          onProgressRecorded(percent)
-        }
-        if (res.newlyCompleted && res.meta) {
-          track('lesson_completed', {
-            courseSlug: res.meta.courseSlug,
-            moduleId: res.meta.moduleId ?? moduleId,
-            lessonId: res.meta.lessonId,
-            lessonOrder: res.meta.lessonOrder ?? lessonOrder,
-          })
-        }
+      } catch {
+        // Bỏ qua lỗi kết nối nền
       }
-    } catch {
-      // Bỏ qua lỗi kết nối nền
-    }
-  }
+    },
+    [isAuthenticated, lessonId, moduleId, lessonOrder, onProgressRecorded],
+  )
 
   // Xử lý sự kiện postMessage từ iframe Bunny Stream (Player.js API)
   useEffect(() => {
@@ -71,16 +74,21 @@ export function VideoPlayer({
         return
       }
 
-      let data: any = event.data
-      if (typeof data === 'string') {
+      let data: Record<string, unknown> | null = null
+      if (typeof event.data === 'string') {
         try {
-          data = JSON.parse(data)
+          const parsed = JSON.parse(event.data)
+          if (parsed && typeof parsed === 'object') {
+            data = parsed as Record<string, unknown>
+          }
         } catch {
           return
         }
+      } else if (event.data && typeof event.data === 'object') {
+        data = event.data as Record<string, unknown>
       }
 
-      if (!data || typeof data !== 'object') {
+      if (!data) {
         return
       }
 
@@ -91,7 +99,10 @@ export function VideoPlayer({
       const eventName = data.event
 
       if (eventName === 'timeupdate') {
-        const val = data.value
+        const val =
+          data.value && typeof data.value === 'object'
+            ? (data.value as Record<string, unknown>)
+            : null
         const seconds =
           typeof val?.seconds === 'number'
             ? val.seconds
@@ -117,7 +128,10 @@ export function VideoPlayer({
           }
         }
       } else if (eventName === 'pause') {
-        const val = data.value
+        const val =
+          data.value && typeof data.value === 'object'
+            ? (data.value as Record<string, unknown>)
+            : null
         const seconds =
           typeof val?.seconds === 'number'
             ? val.seconds
@@ -148,15 +162,7 @@ export function VideoPlayer({
     return () => {
       window.removeEventListener('message', handleMessage)
     }
-  }, [
-    playback.kind,
-    playback.url,
-    lessonId,
-    isAuthenticated,
-    moduleId,
-    lessonOrder,
-    onProgressRecorded,
-  ])
+  }, [playback.kind, playback.url, sendProgress])
 
   const handleIframeLoad = () => {
     try {

@@ -122,8 +122,10 @@ describe('Bunny Stream Token Signing & Provider (T2-05b)', () => {
           videoId: '../traversal-attack',
           tokenKey: fakeTokenKey,
         })
-      } catch (err: any) {
-        thrownMessage = err.message
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          thrownMessage = err.message
+        }
       }
 
       expect(thrownMessage).toContain('không đúng định dạng GUID')
