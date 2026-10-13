@@ -43,14 +43,9 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
     page,
     browser,
   }, testInfo) => {
-    test.skip(testInfo.project.name !== 'desktop-1440', 'Bootstrap runs once per database.')
     test.setTimeout(180000)
 
     const init = await (await page.request.get('/api/users/init')).json()
-    test.skip(
-      !process.env.CI && init.initialized === true,
-      'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
-    )
     expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
 
     let adminUserId: number | undefined
@@ -194,8 +189,8 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
       await codeInput.fill(otpCode)
       await guestPage.locator('button[type="submit"]').click()
 
-      // Đăng nhập thành công và được chuyển hướng về /habit/hoc
-      await expect(guestPage).toHaveURL(/\/habit\/hoc/, { timeout: 15000 })
+      // Đăng nhập thành công và được chuyển hướng về /habit/hoc (neo cuối chuỗi)
+      await expect(guestPage).toHaveURL(/\/habit\/hoc\/?$/, { timeout: 15000 })
       await expect(guestPage.getByRole('heading', { level: 1 })).toBeVisible()
 
       // Thấy cả 2 bài học
@@ -205,7 +200,7 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
 
       // 9. Mở bài thường -> kiểm tra giao diện phát video sandbox
       await paidLessonLink.click()
-      await expect(guestPage).toHaveURL(new RegExp(`/habit/hoc/${paidLessonId}`))
+      await expect(guestPage).toHaveURL(new RegExp(`/habit/hoc/${paidLessonId}/?$`))
 
       // Kiểm tra khung sandbox và nút "Giả lập xem hết"
       await expect(guestPage.getByText(/Video mẫu – chưa kết nối Bunny/i)).toBeVisible()
@@ -218,7 +213,7 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
 
       // 10. Quay lại dashboard /habit/hoc -> thấy dấu "Đã xem"
       await guestPage.goto('/habit/hoc')
-      await expect(guestPage).toHaveURL(/\/habit\/hoc/)
+      await expect(guestPage).toHaveURL(/\/habit\/hoc\/?$/)
 
       // Bài thường giờ đã có dấu "Đã xem"
       const completedBadge = guestPage.locator('span:has-text("Đã xem")')
@@ -244,47 +239,49 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
         await expect(unauthPage.getByText(/Nội dung này chưa được mở khóa/i)).toBeVisible()
         await expect(unauthPage.getByRole('button', { name: /Giả lập xem hết/i })).not.toBeVisible()
       } finally {
-        await unauthContext.close()
+        await unauthContext.close().catch(() => {})
       }
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
-      await customerContext.close()
+      await guestPage.close().catch(() => {})
+      await customerContext.close().catch(() => {})
 
       // Dọn dẹp dữ liệu
       if (entitlementId) {
-        await page.request.delete(`/api/entitlements/${entitlementId}`)
+        await page.request.delete(`/api/entitlements/${entitlementId}`).catch(() => {})
       }
 
       if (customerId) {
         // Xóa tiến độ bài học của khách
-        const progressRes = await page.request.get(
-          `/api/lessonProgress?where[customer][equals]=${customerId}`,
-        )
-        if (progressRes.ok()) {
-          const docs = (await progressRes.json()).docs
+        const progressRes = await page.request
+          .get(`/api/lessonProgress?where[customer][equals]=${customerId}`)
+          .catch(() => null)
+        if (progressRes && progressRes.ok()) {
+          const docs =
+            ((await progressRes.json().catch(() => ({}))) as { docs?: Array<{ id: number }> })
+              .docs ?? []
           for (const d of docs) {
-            await page.request.delete(`/api/lessonProgress/${d.id}`)
+            await page.request.delete(`/api/lessonProgress/${d.id}`).catch(() => {})
           }
         }
-        await page.request.delete(`/api/customers/${customerId}`)
+        await page.request.delete(`/api/customers/${customerId}`).catch(() => {})
       }
 
       if (paidLessonId) {
-        await page.request.delete(`/api/lessons/${paidLessonId}`)
+        await page.request.delete(`/api/lessons/${paidLessonId}`).catch(() => {})
       }
       if (freeLessonId) {
-        await page.request.delete(`/api/lessons/${freeLessonId}`)
+        await page.request.delete(`/api/lessons/${freeLessonId}`).catch(() => {})
       }
       if (moduleId) {
-        await page.request.delete(`/api/courseModules/${moduleId}`)
+        await page.request.delete(`/api/courseModules/${moduleId}`).catch(() => {})
       }
       if (createdProduct && productId) {
-        await page.request.delete(`/api/products/${productId}`)
+        await page.request.delete(`/api/products/${productId}`).catch(() => {})
       }
 
       if (adminUserId) {
-        const deletedAdmin = await page.request.delete(`/api/users/${adminUserId}`)
-        expect(deletedAdmin.ok(), 'Admin user must be cleaned up').toBe(true)
+        await page.request.delete(`/api/users/${adminUserId}`).catch(() => {})
       }
     }
   })

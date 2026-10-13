@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useRef, useState, useTransition } from 'react'
 import type { VideoPlayback } from '@/lib/video'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
@@ -12,6 +12,7 @@ export interface VideoPlayerProps {
   moduleId?: number
   lessonOrder?: number
   initialCompleted?: boolean
+  isAuthenticated?: boolean
   onProgressRecorded?: (percent: number) => void
 }
 
@@ -21,11 +22,69 @@ export function VideoPlayer({
   moduleId = 0,
   lessonOrder = 0,
   initialCompleted = false,
+  isAuthenticated = false,
   onProgressRecorded,
 }: VideoPlayerProps) {
   const [isCompleted, setIsCompleted] = useState(initialCompleted)
   const [isPending, startTransition] = useTransition()
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
+
+  // Tracking refs cho thẻ <video>
+  const lastRecordedTimeRef = useRef<number>(0)
+  const isCompletedRef = useRef<boolean>(initialCompleted)
+
+  const sendProgress = async (percent: number) => {
+    if (!isAuthenticated) return
+    try {
+      const res = await recordLessonProgress(lessonId, percent)
+      if (res.success) {
+        if (percent >= 80) {
+          setIsCompleted(true)
+          isCompletedRef.current = true
+        }
+        if (onProgressRecorded) {
+          onProgressRecorded(percent)
+        }
+        if (res.newlyCompleted && res.meta) {
+          track('lesson_completed', {
+            courseSlug: res.meta.courseSlug,
+            moduleId: res.meta.moduleId ?? moduleId,
+            lessonId: res.meta.lessonId,
+            lessonOrder: res.meta.lessonOrder ?? lessonOrder,
+          })
+        }
+      }
+    } catch {
+      // Bỏ qua lỗi kết nối nền
+    }
+  }
+
+  // Xử lý sự kiện timeupdate (tối đa mỗi 15 giây)
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget
+    if (!video.duration || video.duration <= 0) return
+    const nowSec = video.currentTime
+    // Kiểm tra đã qua tối thiểu 15 giây kể từ lần ghi trước
+    if (Math.abs(nowSec - lastRecordedTimeRef.current) >= 15) {
+      lastRecordedTimeRef.current = nowSec
+      const percent = Math.min(100, Math.round((nowSec / video.duration) * 100))
+      sendProgress(percent)
+    }
+  }
+
+  // Xử lý sự kiện pause
+  const handlePause = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget
+    if (!video.duration || video.duration <= 0) return
+    const percent = Math.min(100, Math.round((video.currentTime / video.duration) * 100))
+    lastRecordedTimeRef.current = video.currentTime
+    sendProgress(percent)
+  }
+
+  // Xử lý sự kiện ended
+  const handleEnded = () => {
+    sendProgress(100)
+  }
 
   const handleSimulateWatch = () => {
     startTransition(async () => {
@@ -33,6 +92,7 @@ export function VideoPlayer({
         const res = await recordLessonProgress(lessonId, 100)
         if (res.success) {
           setIsCompleted(true)
+          isCompletedRef.current = true
           setStatusMessage(vi.learning.lesson.simulatedSuccess)
           if (onProgressRecorded) {
             onProgressRecorded(100)
@@ -48,10 +108,10 @@ export function VideoPlayer({
             })
           }
         } else {
-          setStatusMessage('Không thể ghi nhận tiến độ.')
+          setStatusMessage(vi.learning.lesson.progressRecordFailed)
         }
       } catch {
-        setStatusMessage('Đã có lỗi xảy ra khi ghi nhận tiến độ.')
+        setStatusMessage(vi.learning.lesson.progressError)
       }
     })
   }
@@ -94,23 +154,24 @@ export function VideoPlayer({
               </p>
             </div>
 
-            {/* Nút giả lập xem hết (chỉ có khi provider là sandbox, phục vụ test) */}
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={handleSimulateWatch}
-                disabled={isPending}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent-pink px-5 py-2.5 font-ui text-sm font-bold text-white shadow transition-all hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:opacity-50"
-              >
-                {isPending ? vi.learning.lesson.simulating : 'Giả lập xem hết'}
-              </button>
-            </div>
+            {/* Nút giả lập xem hết (chỉ hiển thị khi đã đăng nhập và provider là sandbox, phục vụ test - mục 15) */}
+            {isAuthenticated && (
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleSimulateWatch}
+                  disabled={isPending}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent-pink px-5 py-2.5 font-ui text-sm font-bold text-warm-ivory shadow transition-all hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warm-ivory motion-reduce:transition-none disabled:opacity-50"
+                >
+                  {isPending
+                    ? vi.learning.lesson.simulating
+                    : vi.learning.lesson.simulateWatchButton}
+                </button>
+              </div>
+            )}
 
             {statusMessage && (
-              <p
-                role="status"
-                className="font-ui text-xs font-semibold text-mint-haze animate-fade-in"
-              >
+              <p role="status" className="font-ui text-xs font-semibold text-mint-haze">
                 {statusMessage}
               </p>
             )}
@@ -127,13 +188,14 @@ export function VideoPlayer({
   }
 
   // 2. Iframe Embed (Bunny stream player hoặc nhúng)
+  // TODO(T2-05b): Lắng nghe sự kiện từ Bunny Player API (postMessage / SDK) để theo dõi tiến độ timeupdate, pause, ended
   if (playback.kind === 'iframe' && playback.url) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-lavender-mist/80 bg-black shadow-lg">
+      <div className="overflow-hidden rounded-2xl border border-lavender-mist/80 bg-deep-navy shadow-lg">
         <div className="relative aspect-video w-full">
           <iframe
             src={playback.url}
-            title="Video bài học"
+            title={vi.learning.lesson.videoTitle}
             className="absolute inset-0 h-full w-full border-0"
             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
             allowFullScreen
@@ -143,12 +205,20 @@ export function VideoPlayer({
     )
   }
 
-  // 3. Direct Video Element
+  // 3. Direct Video Element (ghi nhận tiến độ qua timeupdate, pause, ended - mục 4)
   if (playback.kind === 'video' && playback.url) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-lavender-mist/80 bg-black shadow-lg">
+      <div className="overflow-hidden rounded-2xl border border-lavender-mist/80 bg-deep-navy shadow-lg">
         <div className="relative aspect-video w-full">
-          <video controls src={playback.url} className="h-full w-full object-contain" playsInline />
+          <video
+            controls
+            src={playback.url}
+            className="h-full w-full object-contain"
+            playsInline
+            onTimeUpdate={handleTimeUpdate}
+            onPause={handlePause}
+            onEnded={handleEnded}
+          />
         </div>
       </div>
     )
@@ -156,7 +226,7 @@ export function VideoPlayer({
 
   return (
     <div className="aspect-video w-full rounded-2xl border border-dashed border-lavender-mist/80 bg-warm-ivory flex items-center justify-center p-6 text-center text-deep-navy/70">
-      <p className="font-body text-sm">Chưa có liên kết phát video khả dụng.</p>
+      <p className="font-body text-sm">{vi.learning.lesson.noVideoUrl}</p>
     </div>
   )
 }
