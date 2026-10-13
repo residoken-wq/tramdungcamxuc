@@ -16,6 +16,7 @@ import { CustomerOtpEmail } from '@/emails/CustomerOtpEmail'
 import { WorkshopReminderEmail } from '@/emails/WorkshopReminderEmail'
 import { TrialWelcomeEmail } from '@/emails/TrialWelcomeEmail'
 import { TrialReminderEmail } from '@/emails/TrialReminderEmail'
+import { TrackerNudgeEmail } from '@/emails/TrackerNudgeEmail'
 import { vi } from '@/lib/i18n/vi'
 import { getSiteUrl } from '@/lib/site-url'
 import { getDefaultEmailSender } from './sender.server'
@@ -733,6 +734,45 @@ export async function sendTrialReminderEmail(
     })
   } catch (err) {
     console.error('[Email] Failed to send trial reminder email:', err)
+    throw err
+  }
+}
+
+export async function sendTrackerNudgeEmail(
+  payload: Payload,
+  data: {
+    name: string
+    email: string
+    trackerUrl: string
+  },
+  customSender?: EmailSender,
+): Promise<void> {
+  const sender = customSender || getDefaultEmailSender()
+  const subject = vi.tracker.nudgeEmail.subject(data.name || 'bạn')
+
+  try {
+    const userHtml = await render(
+      React.createElement(TrackerNudgeEmail, {
+        name: data.name,
+        trackerUrl: data.trackerUrl,
+      }),
+    )
+    const userText = await render(
+      React.createElement(TrackerNudgeEmail, {
+        name: data.name,
+        trackerUrl: data.trackerUrl,
+      }),
+      { plainText: true },
+    )
+
+    await sender.send({
+      to: data.email,
+      subject,
+      html: userHtml,
+      text: userText,
+    })
+  } catch (err) {
+    console.error('[Email] Failed to send tracker nudge email:', err)
     throw err
   }
 }

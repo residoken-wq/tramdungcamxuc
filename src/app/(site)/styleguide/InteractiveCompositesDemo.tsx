@@ -19,7 +19,7 @@ import type { EmotionKey } from '@/lib/emotions'
 
 export function InteractiveCompositesDemo() {
   // State for EmotionPicker demo
-  const [selectedEmotion, setSelectedEmotion] = useState<EmotionKey>('calm')
+  const [selectedEmotion, setSelectedEmotion] = useState<EmotionKey>('peaceful')
   const [isEmotionPickerDisabled, setIsEmotionPickerDisabled] = useState(false)
 
   // State for Testimonial consent toggle demo
@@ -73,11 +73,11 @@ export function InteractiveCompositesDemo() {
   ]
 
   const sampleProgressDays: ProgressDayItem[] = [
-    { day: 1, status: 'done', emotionKey: 'calm' },
+    { day: 1, status: 'done', emotionKey: 'peaceful' },
     { day: 2, status: 'done', emotionKey: 'grateful' },
-    { day: 3, status: 'done', emotionKey: 'energized' },
+    { day: 3, status: 'done', emotionKey: 'fresh' },
     { day: 4, status: 'missed' },
-    { day: 5, status: 'done', emotionKey: 'calm' },
+    { day: 5, status: 'done', emotionKey: 'joyful' },
     { day: 6, status: 'today' },
     { day: 7, status: 'future' },
     { day: 8, status: 'future' },
@@ -141,11 +141,7 @@ export function InteractiveCompositesDemo() {
         </div>
 
         <div className="flex items-center gap-3 mb-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setShowHiddenProduct((prev) => !prev)}
-          >
+          <Button size="sm" variant="ghost" onClick={() => setShowHiddenProduct((prev) => !prev)}>
             {showHiddenProduct
               ? 'Đang bật sản phẩm ẩn (saleStatus="hidden" -> return null)'
               : 'Thử nghiệm sản phẩm ẩn (saleStatus="hidden")'}
@@ -242,11 +238,7 @@ export function InteractiveCompositesDemo() {
         </div>
 
         <div className="flex items-center gap-3 mb-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setTestimonialConsent((prev) => !prev)}
-          >
+          <Button size="sm" variant="ghost" onClick={() => setTestimonialConsent((prev) => !prev)}>
             {testimonialConsent
               ? 'Consent: TRUE (Đang hiển thị)'
               : 'Consent: FALSE (Đang ẩn theo quy tắc bảo mật)'}
@@ -274,7 +266,8 @@ export function InteractiveCompositesDemo() {
         </div>
         {!testimonialConsent && (
           <p className="text-center font-ui text-xs italic text-deep-navy/60 p-4 border border-dashed border-deep-navy/20 rounded-xl">
-            (Cả hai TestimonialCard đang ẩn hoàn toàn vì consent=false – tuân thủ tuyệt đối quy định bảo mật)
+            (Cả hai TestimonialCard đang ẩn hoàn toàn vì consent=false – tuân thủ tuyệt đối quy định
+            bảo mật)
           </p>
         )}
       </div>
@@ -303,19 +296,24 @@ export function InteractiveCompositesDemo() {
             </h4>
             <ul className="list-disc pl-4 space-y-1.5 leading-relaxed">
               <li>
-                <strong>Bỏ trống và bấm Gửi:</strong> Hiển thị thông báo lỗi tiếng Việt dưới từng trường.
+                <strong>Bỏ trống và bấm Gửi:</strong> Hiển thị thông báo lỗi tiếng Việt dưới từng
+                trường.
               </li>
               <li>
-                <strong>Nhập email sai cú pháp:</strong> Báo lỗi &ldquo;Địa chỉ email không hợp lệ&rdquo;.
+                <strong>Nhập email sai cú pháp:</strong> Báo lỗi &ldquo;Địa chỉ email không hợp
+                lệ&rdquo;.
               </li>
               <li>
-                <strong>Bấm Tab qua bàn phím:</strong> Thứ tự Tab hợp lý từ Họ tên → Email → Checkbox → Nút gửi (Bỏ qua ô Honeypot).
+                <strong>Bấm Tab qua bàn phím:</strong> Thứ tự Tab hợp lý từ Họ tên → Email →
+                Checkbox → Nút gửi (Bỏ qua ô Honeypot).
               </li>
               <li>
-                <strong>Thử nghiệm lỗi mô phỏng:</strong> Nhập tên là &ldquo;error&rdquo; để xem thông báo lỗi máy chủ tiếng Việt.
+                <strong>Thử nghiệm lỗi mô phỏng:</strong> Nhập tên là &ldquo;error&rdquo; để xem
+                thông báo lỗi máy chủ tiếng Việt.
               </li>
               <li>
-                <strong>Thành công:</strong> Nhập thông tin hợp lệ và tick đồng ý để xem màn hình xác nhận với vai trò <code>role=&quot;status&quot;</code>.
+                <strong>Thành công:</strong> Nhập thông tin hợp lệ và tick đồng ý để xem màn hình
+                xác nhận với vai trò <code>role=&quot;status&quot;</code>.
               </li>
             </ul>
           </div>
@@ -329,7 +327,7 @@ export function InteractiveCompositesDemo() {
             5. EmotionPicker Component (Chọn Trạng Thái Cảm Xúc)
           </h3>
           <span className="font-ui text-xs text-deep-navy/60">
-            Đánh dấu // PENDING Q14 · Radio group bàn phím (Phím mũi tên) · SVG nét mảnh, không dùng emoji
+            Đã chốt Q14 · 10 cảm xúc với emoji · Radio group bàn phím (Phím mũi tên)
           </span>
         </div>
 
@@ -339,9 +337,7 @@ export function InteractiveCompositesDemo() {
               <p className="font-ui text-xs font-semibold text-deep-navy/60 uppercase">
                 Trạng thái đang chọn:
               </p>
-              <p className="font-ui font-bold text-lg text-deep-navy">
-                {selectedEmotion}
-              </p>
+              <p className="font-ui font-bold text-lg text-deep-navy">{selectedEmotion}</p>
             </div>
             <Button
               size="sm"
@@ -367,7 +363,8 @@ export function InteractiveCompositesDemo() {
             6. ProgressGrid Component (Lưới Tiến Trình 21 Ngày)
           </h3>
           <span className="font-ui text-xs text-deep-navy/60">
-            21 ô tương thích màn hình 375px · Không dựa hoàn toàn vào màu · Khóa ngày tương lai / đã khóa
+            21 ô tương thích màn hình 375px · Không dựa hoàn toàn vào màu · Khóa ngày tương lai / đã
+            khóa
           </span>
         </div>
 
@@ -391,7 +388,7 @@ export function InteractiveCompositesDemo() {
               setSelectedDayInfo(
                 `Bạn vừa chọn Ngày ${day}: ${item?.status} ${
                   item?.emotionKey ? `(Cảm xúc: ${item.emotionKey})` : ''
-                }`
+                }`,
               )
             }}
           />
@@ -429,7 +426,8 @@ export function InteractiveCompositesDemo() {
             7. Footer Component (Chân Trang Thương Hiệu &amp; Pháp Lý)
           </h3>
           <span className="font-ui text-xs text-deep-navy/60">
-            6 trang pháp lý xếp theo order · Ẩn trường rỗng trong sellerInfo · Bản quyền tự tính theo năm
+            6 trang pháp lý xếp theo order · Ẩn trường rỗng trong sellerInfo · Bản quyền tự tính
+            theo năm
           </span>
         </div>
 

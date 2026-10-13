@@ -41,14 +41,23 @@ export default async function HabitLearningDashboardPage() {
     <div className="min-h-screen bg-warm-ivory py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl space-y-8">
         {/* Header Section */}
-        <SectionHeader
-          seriesLabel={vi.learning.dashboard.seriesLabel}
-          titleLine1={vi.learning.dashboard.titleLine1}
-          titleLine2={vi.learning.dashboard.titleLine2}
-          emotionLine={vi.learning.dashboard.emotionLine}
-          as="h1"
-          align="left"
-        />
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <SectionHeader
+            seriesLabel={vi.learning.dashboard.seriesLabel}
+            titleLine1={vi.learning.dashboard.titleLine1}
+            titleLine2={vi.learning.dashboard.titleLine2}
+            emotionLine={vi.learning.dashboard.emotionLine}
+            as="h1"
+            align="left"
+          />
+          <Link
+            href="/habit/tracker"
+            className="inline-flex items-center gap-1.5 self-start sm:self-end px-4 py-2 rounded-full border border-deep-navy/20 bg-warm-ivory hover:bg-lavender-mist/40 text-deep-navy font-ui font-semibold text-xs transition-all motion-reduce:transition-none shadow-xs"
+          >
+            <span>{vi.tracker.navLink}</span>
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
 
         {loadError ? (
           /* Trạng thái lỗi (mục 11) */

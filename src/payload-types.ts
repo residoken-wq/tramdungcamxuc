@@ -85,6 +85,7 @@ export interface Config {
     workshops: Workshop;
     workshopReminders: WorkshopReminder;
     trialReminders: TrialReminder;
+    trackerNudges: TrackerNudge;
     pages: Page;
     customers: Customer;
     entitlements: Entitlement;
@@ -125,6 +126,7 @@ export interface Config {
     workshops: WorkshopsSelect<false> | WorkshopsSelect<true>;
     workshopReminders: WorkshopRemindersSelect<false> | WorkshopRemindersSelect<true>;
     trialReminders: TrialRemindersSelect<false> | TrialRemindersSelect<true>;
+    trackerNudges: TrackerNudgesSelect<false> | TrackerNudgesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
@@ -1379,6 +1381,76 @@ export interface DiscountCode {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trackerNudges".
+ */
+export interface TrackerNudge {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  plan?: (number | null) | HabitPlan;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  missedStartDay: number;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  sentAt: string;
+  nudgeKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitPlans".
+ */
+export interface HabitPlan {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer?: (number | null) | Customer;
+  leadEmail?: string | null;
+  scorecard?:
+    | {
+        /**
+         * Nhập thói quen.
+         */
+        habit: string;
+        /**
+         * Chọn một mục phù hợp.
+         */
+        rating?: ('good' | 'neutral' | 'bad') | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập câu định danh "tôi sẽ … để trở thành …".
+   */
+  identityStatement?: string | null;
+  chosenTechniques?:
+    | {
+        /**
+         * Chọn nội dung đã tạo trong hệ thống.
+         */
+        technique?: (number | null) | Technique;
+        /**
+         * Nhập hành động cụ thể.
+         */
+        action?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  startDate?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Quản lý trang nội dung. Lưu nháp trước khi xuất bản.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1517,54 +1589,6 @@ export interface Lead {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "habitPlans".
- */
-export interface HabitPlan {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  customer?: (number | null) | Customer;
-  leadEmail?: string | null;
-  scorecard?:
-    | {
-        /**
-         * Nhập thói quen.
-         */
-        habit: string;
-        /**
-         * Chọn một mục phù hợp.
-         */
-        rating?: ('good' | 'neutral' | 'bad') | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Nhập câu định danh "tôi sẽ … để trở thành …".
-   */
-  identityStatement?: string | null;
-  chosenTechniques?:
-    | {
-        /**
-         * Chọn nội dung đã tạo trong hệ thống.
-         */
-        technique?: (number | null) | Technique;
-        /**
-         * Nhập hành động cụ thể.
-         */
-        action?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  startDate?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "habitCheckins".
  */
 export interface HabitCheckin {
@@ -1584,7 +1608,20 @@ export interface HabitCheckin {
   /**
    * Chọn một mục phù hợp.
    */
-  emotion?: ('calm' | 'grateful' | 'energized' | 'overwhelmed' | 'tired' | 'anxious') | null;
+  emotion?:
+    | (
+        | 'joyful'
+        | 'peaceful'
+        | 'fresh'
+        | 'serene'
+        | 'grateful'
+        | 'relaxed'
+        | 'confident'
+        | 'tired'
+        | 'discouraged'
+        | 'stressed'
+      )
+    | null;
   /**
    * Nhập ghi chú.
    */
@@ -1918,6 +1955,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'trialReminders';
         value: number | TrialReminder;
+      } | null)
+    | ({
+        relationTo: 'trackerNudges';
+        value: number | TrackerNudge;
       } | null)
     | ({
         relationTo: 'pages';
@@ -2432,6 +2473,18 @@ export interface TrialRemindersSelect<T extends boolean = true> {
   milestone?: T;
   sentAt?: T;
   reminderKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trackerNudges_select".
+ */
+export interface TrackerNudgesSelect<T extends boolean = true> {
+  plan?: T;
+  missedStartDay?: T;
+  sentAt?: T;
+  nudgeKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }

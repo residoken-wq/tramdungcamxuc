@@ -184,11 +184,11 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
   })
 
   describe('EmotionPicker Component', () => {
-    it('renders all 6 sample emotions and responds to arrow key navigation', () => {
+    it('renders all 10 emotions and responds to arrow key navigation', () => {
       const mockChange = vitestVi.fn()
-      render(<EmotionPicker value="calm" onChange={mockChange} />)
+      render(<EmotionPicker value="peaceful" onChange={mockChange} />)
 
-      // Verify all 6 sample emotions are rendered
+      // Verify all 10 emotions are rendered
       for (const emotion of EMOTIONS) {
         expect(screen.getByText(emotion.label)).toBeDefined()
       }
@@ -197,16 +197,16 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
       const radiogroup = screen.getByRole('radiogroup')
       expect(radiogroup).toBeDefined()
 
-      const calmRadio = screen.getByRole('radio', { name: new RegExp('Bình yên', 'i') })
-      expect(calmRadio.getAttribute('aria-checked')).toBe('true')
+      const peacefulRadio = screen.getByRole('radio', { name: new RegExp('Bình an', 'i') })
+      expect(peacefulRadio.getAttribute('aria-checked')).toBe('true')
 
-      // Press ArrowRight to move to next emotion (grateful)
-      fireEvent.keyDown(calmRadio, { key: 'ArrowRight' })
-      expect(mockChange).toHaveBeenCalledWith('grateful')
+      // Press ArrowRight to move to next emotion (fresh)
+      fireEvent.keyDown(peacefulRadio, { key: 'ArrowRight' })
+      expect(mockChange).toHaveBeenCalledWith('fresh')
 
-      // Press ArrowLeft to wrap around to previous emotion
-      fireEvent.keyDown(calmRadio, { key: 'ArrowLeft' })
-      expect(mockChange).toHaveBeenCalledWith('anxious')
+      // Press ArrowLeft to wrap around to previous emotion (joyful)
+      fireEvent.keyDown(peacefulRadio, { key: 'ArrowLeft' })
+      expect(mockChange).toHaveBeenCalledWith('joyful')
     })
   })
 
@@ -214,7 +214,7 @@ describe('UI Composites (T0-05 & T0-05b)', () => {
     it('disables future and locked days and prevents onSelectDay call', () => {
       const mockSelect = vitestVi.fn()
       const sampleDays = [
-        { day: 1, status: 'done' as const, emotionKey: 'calm' },
+        { day: 1, status: 'done' as const, emotionKey: 'peaceful' },
         { day: 2, status: 'today' as const },
         { day: 3, status: 'future' as const },
         { day: 4, status: 'locked' as const },
