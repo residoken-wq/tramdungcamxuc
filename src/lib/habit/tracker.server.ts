@@ -1,15 +1,14 @@
 import 'server-only'
-import { getPayload, type Payload } from 'payload'
+import { getPayload, ValidationError, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { Customer, HabitCheckin, HabitPlan, Product } from '@/payload-types'
-import { type EmotionKey, getEmotion } from '@/lib/emotions'
 import { getAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { getSiteUrl } from '@/lib/site-url'
 import { sendTrackerNudgeEmail } from '@/lib/email/service.server'
 import type { EmailSender } from '@/lib/email/types'
 
-import { getCurrentDayOfPlan, vietnamTodayIso } from './tracker-stats'
+import { getCurrentDayOfPlan, getVietnamYmd, vietnamTodayIso } from './tracker-stats'
 export * from './tracker-stats'
 
 /**
@@ -73,6 +72,7 @@ export async function getOrCreateTrackerPlan(
           id: planToAttach.id,
           data: {
             customer: customerId,
+            startDate: vietnamTodayIso(options?.now),
           },
           depth: 1,
           overrideAccess: true,
@@ -147,11 +147,20 @@ export async function sendTrackerNudges(
     return { processedPlans, nudgesSent, skippedDuplicate, errors }
   }
 
-  // 2. Lấy các kế hoạch thói quen đã gắn khách hàng và có ngày bắt đầu
+  // 2. Lấy các kế hoạch thói quen đã gắn khách hàng và có ngày bắt đầu còn trong 21 ngày (day 3..21)
+  const twentyDaysAgo = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000)
+  const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)
+  const minStartDateIso = new Date(`${getVietnamYmd(twentyDaysAgo)}T00:00:00+07:00`).toISOString()
+  const maxStartDateIso = new Date(`${getVietnamYmd(twoDaysAgo)}T23:59:59.999+07:00`).toISOString()
+
   const plansRes = await payload.find({
     collection: 'habitPlans',
     where: {
-      and: [{ customer: { exists: true } }, { startDate: { exists: true } }],
+      and: [
+        { customer: { exists: true } },
+        { startDate: { greater_than_equal: minStartDateIso } },
+        { startDate: { less_than_equal: maxStartDateIso } },
+      ],
     },
     depth: 1,
     pagination: false,
@@ -235,9 +244,18 @@ export async function sendTrackerNudges(
           overrideAccess: true,
         })
         nudgeId = created.id
-      } catch (_err) {
-        // Đã gửi nhắc cho chuỗi lỡ nhịp này
-        skippedDuplicate++
+      } catch (err) {
+        const isValidationErr =
+          err instanceof ValidationError || (err as { name?: string })?.name === 'ValidationError'
+
+        if (isValidationErr) {
+          // Đã gửi nhắc cho chuỗi lỡ nhịp này
+          skippedDuplicate++
+          continue
+        }
+
+        console.error(`[Tracker Nudge] Lỗi tạo bản ghi giữ chỗ cho plan ${plan.id}:`, err)
+        errors++
         continue
       }
 

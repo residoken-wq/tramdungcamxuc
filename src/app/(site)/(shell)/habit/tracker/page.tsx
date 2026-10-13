@@ -42,11 +42,9 @@ export default async function HabitTrackerPage() {
   const product = products.docs[0] as Product | undefined
   if (!product) {
     return (
-      <main className="w-full max-w-xl mx-auto py-12 px-4 text-center">
-        <p className="text-sm font-sans text-deep-navy/70">
-          Chưa tìm thấy cấu hình sản phẩm Habit Tracker số.
-        </p>
-      </main>
+      <div className="w-full max-w-xl mx-auto py-12 px-4 text-center">
+        <p className="text-sm font-sans text-deep-navy/70">{vi.tracker.productNotFound}</p>
+      </div>
     )
   }
 
@@ -56,11 +54,15 @@ export default async function HabitTrackerPage() {
   const buyUrl = `/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`
   const trialUrl = `/dung-thu?san-pham=${encodeURIComponent(product.slug)}`
 
-  // 3. Khách chưa có quyền (chưa dùng thử, chưa mua) -> Khối mời dùng thử / mua
-  if (!access.hasAccess && access.status === 'none') {
+  // 3. Lấy kế hoạch của khách hàng (nếu có)
+  const plan = await getOrCreateTrackerPlan(customer.id, { payload })
+
+  // 4. Nếu khách hàng không có quyền truy cập (chưa dùng thử hoặc đã hết hạn) và chưa có kế hoạch
+  // -> Hiển thị khối mời dùng thử / mua sản phẩm (không hiển thị form tạo kế hoạch)
+  if (!plan && !access.hasAccess) {
     return (
-      <main className="w-full max-w-xl mx-auto py-12 px-4">
-        <div className="bg-white rounded-card border border-deep-navy/15 p-6 sm:p-8 shadow-soft text-center space-y-5">
+      <div className="w-full max-w-xl mx-auto py-12 px-4">
+        <div className="bg-warm-ivory rounded-card border border-deep-navy/15 p-6 sm:p-8 shadow-soft text-center space-y-5">
           <span className="inline-block px-3.5 py-1 rounded-full text-xs font-ui font-bold bg-soft-pink text-deep-navy">
             {vi.tracker.paywall.title}
           </span>
@@ -72,35 +74,32 @@ export default async function HabitTrackerPage() {
           <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href={trialUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-accent-pink text-white font-ui font-bold text-sm hover:bg-accent-pink/90 transition-all shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 transition-all shadow-sm"
             >
               {vi.tracker.paywall.trialButton}
             </Link>
             <Link
               href={buyUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-deep-navy/20 text-deep-navy bg-white hover:bg-lavender-mist/40 font-ui font-semibold text-sm transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-deep-navy/20 text-deep-navy bg-warm-ivory hover:bg-lavender-mist/40 font-ui font-semibold text-sm transition-all"
             >
               {vi.tracker.paywall.buyButton}
             </Link>
           </div>
         </div>
-      </main>
+      </div>
     )
   }
 
-  // 4. Lấy hoặc tạo kế hoạch của khách hàng
-  const plan = await getOrCreateTrackerPlan(customer.id, { payload })
-
-  // Nếu chưa có kế hoạch -> hiển thị form tạo kế hoạch ngắn
+  // 5. Nếu chưa có kế hoạch nhưng có quyền truy cập -> hiển thị form tạo kế hoạch
   if (!plan) {
     return (
-      <main className="w-full max-w-2xl mx-auto py-10 px-4">
+      <div className="w-full max-w-2xl mx-auto py-10 px-4">
         <PlanSetupForm />
-      </main>
+      </div>
     )
   }
 
-  // 5. Đọc các check-in hiện có của kế hoạch
+  // 6. Đọc các check-in hiện có của kế hoạch
   const checkinsRes = await payload.find({
     collection: 'habitCheckins',
     where: {
@@ -124,7 +123,7 @@ export default async function HabitTrackerPage() {
   const isTrialOrExpired = access.status === 'trial' || access.status === 'expired'
 
   return (
-    <main className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-white to-lavender-mist/20">
+    <div className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-warm-ivory/80 to-lavender-mist/20">
       <TrackerDashboard
         planId={plan.id}
         identityStatement={plan.identityStatement}
@@ -134,6 +133,6 @@ export default async function HabitTrackerPage() {
         isTrialOrExpired={isTrialOrExpired}
         buyUrl={buyUrl}
       />
-    </main>
+    </div>
   )
 }

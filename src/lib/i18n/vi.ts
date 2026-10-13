@@ -1138,6 +1138,10 @@ export const vi = {
   tracker: {
     pageTitle: 'Tracker 21 ngày',
     subtitle: 'Đồng hành xây dựng thói quen bền vững cùng Trạm Dừng Cảm Xúc',
+    productNotFound: 'Chưa tìm thấy cấu hình sản phẩm Habit Tracker số.',
+    identityCommitmentLabel: 'Cam kết danh tính của bạn',
+    navLink: 'Tracker 21 ngày',
+    daysCompletedSuffix: 'ngày xong',
     votingQuestion: 'Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?',
     missedOneDayEncouragement:
       'Lỡ nhịp 1 ngày là không sao cả. Quan trọng là bạn vẫn ở đây hôm nay.',
@@ -1152,6 +1156,9 @@ export const vi = {
       submit: 'Bắt đầu hành trình 21 ngày',
       submitting: 'Đang khởi tạo...',
       errorEmpty: 'Vui lòng nhập câu định danh trước khi bắt đầu.',
+      errorTooLong: 'Câu định danh không được vượt quá 300 ký tự.',
+      errorCreate: 'Không thể tạo kế hoạch. Vui lòng thử lại.',
+      errorGeneral: 'Đã có lỗi xảy ra. Vui lòng thử lại.',
     },
     dialog: {
       title: (day: number) => `Check-in Ngày ${day}`,
@@ -1162,14 +1169,21 @@ export const vi = {
       submit: 'Lưu check-in',
       saving: 'Đang lưu...',
       cancel: 'Đóng',
+      closeAria: 'Đóng',
       futureDayError: 'Chưa tới ngày này, bạn chưa thể tick trước.',
       expiredError: 'Thời gian dùng thử đã hết hạn. Vui lòng mua công cụ để tiếp tục ghi nhận.',
       cannotCheckinFuture: 'Không thể check-in cho ngày trong tương lai.',
+      errorSave: 'Không thể lưu check-in. Vui lòng thử lại.',
+      errorGeneral: 'Đã có lỗi xảy ra trong quá trình lưu check-in.',
     },
     summary: {
       badge: 'Tổng kết 21 ngày',
       title: 'Hành trình 21 ngày của bạn',
       congrats: 'Chúc mừng bạn đã hoàn thành chặng đường rèn luyện và thấu hiểu cảm xúc.',
+      progressTitle: 'Tiến độ hoàn thành',
+      totalDaysSuffix: '/ 21 ngày',
+      mostFrequentEmotionTitle: 'Cảm xúc đồng hành nhiều nhất',
+      emotionCountSuffix: 'ngày xuất hiện',
       completedCount: (completed: number, total: number = 21) =>
         `Đã hoàn thành: ${completed}/${total} ngày`,
       mostFrequentEmotion: (emotion: string, count: number) =>
@@ -1188,6 +1202,20 @@ export const vi = {
       message:
         'Thời hạn dùng thử 21 ngày đã kết thúc. Mua công cụ để tiếp tục ghi nhận và đồng hành bền vững.',
       buyButton: 'Mua để dùng tiếp',
+    },
+    actions: {
+      unauthorized: 'Vui lòng đăng nhập để thực hiện check-in.',
+      invalidInput: 'Dữ liệu check-in không hợp lệ.',
+      productNotFound: 'Không tìm thấy cấu hình sản phẩm Habit Tracker.',
+      accessDenied: 'Thời gian dùng thử đã hết hạn. Vui lòng mua công cụ để tiếp tục check-in.',
+      planNotFound: 'Không tìm thấy kế hoạch thói quen của bạn.',
+      forbidden: 'Bạn không có quyền thao tác trên kế hoạch này.',
+      futureDay: 'Không thể check-in cho ngày chưa tới trong tương lai.',
+      createUnauthorized: 'Vui lòng đăng nhập để tạo kế hoạch.',
+      emptyStatement: 'Vui lòng nhập câu định danh trước khi bắt đầu.',
+      tooLongStatement: 'Câu định danh không được vượt quá 300 ký tự.',
+      createAccessDenied: 'Bạn cần kích hoạt dùng thử hoặc mua công cụ để tạo kế hoạch.',
+      createFailed: 'Không thể tạo kế hoạch thói quen. Vui lòng thử lại.',
     },
     nudgeEmail: {
       subject: (name: string) => `Trạm Dừng Cảm Xúc – Lỡ nhịp một chút là không sao cả, ${name}`,

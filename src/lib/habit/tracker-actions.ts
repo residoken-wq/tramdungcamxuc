@@ -8,7 +8,7 @@ import { getAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { getCurrentDayOfPlan, getOrCreateTrackerPlan } from './tracker.server'
 import { EMOTIONS, type EmotionKey } from '@/lib/emotions'
-import { track } from '@/lib/analytics/track'
+import { vi } from '@/lib/i18n/vi'
 import { revalidatePath } from 'next/cache'
 
 const emotionKeys = EMOTIONS.map((e) => e.key) as [EmotionKey, ...EmotionKey[]]
@@ -19,6 +19,35 @@ export const checkInDaySchema = z.object({
   emotion: z.enum(emotionKeys).nullable().optional(),
   note: z.string().max(500).nullable().optional(),
 })
+
+export const trackerPlanStatementSchema = z
+  .string()
+  .trim()
+  .min(1, vi.tracker.actions.emptyStatement)
+  .max(300, vi.tracker.actions.tooLongStatement)
+
+const planCreationLocks = new Map<string, Promise<unknown>>()
+
+export async function withPlanLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  while (planCreationLocks.has(key)) {
+    try {
+      await planCreationLocks.get(key)
+    } catch {
+      // Bỏ qua lỗi từ luồng trước
+    }
+  }
+  let resolveLock!: () => void
+  const lockPromise = new Promise<void>((resolve) => {
+    resolveLock = resolve
+  })
+  planCreationLocks.set(key, lockPromise)
+  try {
+    return await fn()
+  } finally {
+    planCreationLocks.delete(key)
+    resolveLock()
+  }
+}
 
 export type CheckInDayResult = {
   success: boolean
@@ -38,7 +67,7 @@ export type CheckInDayResult = {
  * 4. Không cho phép tick ngày trong tương lai (day <= currentDay tính theo giờ Việt Nam).
  * 5. Giới hạn độ dài ghi chú <= 500 ký tự và cảm xúc phải thuộc bộ 10 chuẩn.
  * 6. Tính lũy đẳng & đồng thời: bắt ValidationError khi ghi song song để đọc lại và cập nhật an toàn.
- * 7. Quyền riêng tư: sự kiện phân tích 'tracker_day_checked' chỉ chứa { day }, tuyệt đối không chứa cảm xúc, ghi chú hay id khách.
+ * 7. Quyền riêng tư: sự kiện phân tích 'tracker_day_checked' kích hoạt từ client, chỉ chứa { day }.
  */
 export async function checkInDay(
   day: number,
@@ -52,7 +81,7 @@ export async function checkInDay(
     return {
       success: false,
       error: 'UNAUTHORIZED',
-      message: 'Vui lòng đăng nhập để thực hiện check-in.',
+      message: vi.tracker.actions.unauthorized,
     }
   }
 
@@ -68,7 +97,7 @@ export async function checkInDay(
     return {
       success: false,
       error: 'INVALID_INPUT',
-      message: 'Dữ liệu check-in không hợp lệ.',
+      message: vi.tracker.actions.invalidInput,
     }
   }
 
@@ -87,7 +116,7 @@ export async function checkInDay(
     return {
       success: false,
       error: 'PRODUCT_NOT_FOUND',
-      message: 'Không tìm thấy cấu hình sản phẩm Habit Tracker.',
+      message: vi.tracker.actions.productNotFound,
     }
   }
 
@@ -96,7 +125,7 @@ export async function checkInDay(
     return {
       success: false,
       error: 'ACCESS_DENIED',
-      message: 'Thời gian dùng thử đã hết hạn. Vui lòng mua công cụ để tiếp tục check-in.',
+      message: vi.tracker.actions.accessDenied,
     }
   }
 
@@ -106,7 +135,7 @@ export async function checkInDay(
     return {
       success: false,
       error: 'PLAN_NOT_FOUND',
-      message: 'Không tìm thấy kế hoạch thói quen của bạn.',
+      message: vi.tracker.actions.planNotFound,
     }
   }
 
@@ -120,7 +149,7 @@ export async function checkInDay(
     return {
       success: false,
       error: 'FORBIDDEN',
-      message: 'Bạn không có quyền thao tác trên kế hoạch này.',
+      message: vi.tracker.actions.forbidden,
     }
   }
 
@@ -130,7 +159,7 @@ export async function checkInDay(
     return {
       success: false,
       error: 'FUTURE_DAY',
-      message: 'Không thể check-in cho ngày chưa tới trong tương lai.',
+      message: vi.tracker.actions.futureDay,
     }
   }
 
@@ -206,11 +235,6 @@ export async function checkInDay(
     }
   }
 
-  // 7. Ghi nhận sự kiện phân tích: CHỈ gửi day, bảo mật tuyệt đối dữ liệu cảm xúc & ghi chú
-  try {
-    track('tracker_day_checked', { day: validation.data.day })
-  } catch (_e) {}
-
   try {
     revalidatePath('/habit/tracker')
   } catch (_e) {}
@@ -223,7 +247,7 @@ export async function checkInDay(
 }
 
 /**
- * Server action cho phép học viên khởi tạo kế hoạch mới khi chưa có kế hoạch nào.
+ * REVIEW-REQUIRED: Khách hàng tạo kế hoạch 21 ngày cần kiểm tra quyền sử dụng và khóa đồng thời.
  */
 export async function createTrackerPlanAction(identityStatement: string): Promise<{
   success: boolean
@@ -236,38 +260,85 @@ export async function createTrackerPlanAction(identityStatement: string): Promis
     return {
       success: false,
       error: 'UNAUTHORIZED',
-      message: 'Vui lòng đăng nhập để tạo kế hoạch.',
+      message: vi.tracker.actions.createUnauthorized,
     }
   }
 
-  const clean = identityStatement.trim()
-  if (!clean) {
+  const validation = trackerPlanStatementSchema.safeParse(identityStatement)
+  if (!validation.success) {
     return {
       success: false,
-      error: 'EMPTY_STATEMENT',
-      message: 'Vui lòng nhập câu định danh thói quen của bạn.',
+      error: 'INVALID_INPUT',
+      message: validation.error.issues[0]?.message || vi.tracker.actions.invalidInput,
     }
   }
 
   const payload = await getPayload({ config: await config })
-  const plan = await getOrCreateTrackerPlan(customer.id, {
-    identityStatement: clean,
-    payload,
+
+  // Kiểm tra cấu hình sản phẩm và quyền truy cập
+  const products = await payload.find({
+    collection: 'products',
+    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+    overrideAccess: true,
+    limit: 1,
   })
 
-  if (!plan) {
+  const product = products.docs[0]
+  if (!product) {
     return {
       success: false,
-      error: 'CREATE_FAILED',
-      message: 'Không thể tạo kế hoạch thói quen. Vui lòng thử lại.',
+      error: 'PRODUCT_NOT_FOUND',
+      message: vi.tracker.actions.productNotFound,
     }
   }
 
-  try {
-    revalidatePath('/habit/tracker')
-  } catch (_e) {}
-  return {
-    success: true,
-    planId: plan.id,
+  const access = await getAccess(customer.id, product.id, { payload, now: new Date() })
+  if (!access.hasAccess) {
+    return {
+      success: false,
+      error: 'ACCESS_DENIED',
+      message: vi.tracker.actions.createAccessDenied,
+    }
   }
+
+  return withPlanLock(String(customer.id), async () => {
+    // Kiểm tra xem khách đã có kế hoạch hay chưa
+    const existingPlans = await payload.find({
+      collection: 'habitPlans',
+      where: { customer: { equals: customer.id } },
+      sort: '-createdAt',
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+
+    if (existingPlans.docs.length > 0) {
+      return {
+        success: true,
+        planId: existingPlans.docs[0].id,
+      }
+    }
+
+    const plan = await getOrCreateTrackerPlan(customer.id, {
+      identityStatement: validation.data,
+      payload,
+    })
+
+    if (!plan) {
+      return {
+        success: false,
+        error: 'CREATE_FAILED',
+        message: vi.tracker.actions.createFailed,
+      }
+    }
+
+    try {
+      revalidatePath('/habit/tracker')
+    } catch (_e) {}
+
+    return {
+      success: true,
+      planId: plan.id,
+    }
+  })
 }
