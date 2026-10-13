@@ -272,6 +272,7 @@ export interface OrderPaymentEventItem {
   amount?: number | null
   isMismatch?: boolean
   isCancelled?: boolean
+  isTermsMissing?: boolean
 }
 
 // REVIEW-REQUIRED: Server action lấy danh sách sự kiện thanh toán của đơn hàng cho chủ sở hữu (owner).
@@ -324,12 +325,11 @@ export async function getOrderPaymentEventsAction(
         amount: transferAmount,
         isMismatch: ev.result === 'amount_mismatch',
         isCancelled: ev.result === 'order_cancelled',
+        isTermsMissing: ev.result === 'terms_missing',
       }
-
     })
   } catch (err) {
     console.error('[AdminPaymentAction] Error fetching order payment events:', err)
     return []
   }
 }
-

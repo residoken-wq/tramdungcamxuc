@@ -49,12 +49,18 @@ export const OrderPaymentEvents: React.FC = () => {
     }
   }
 
+  const getResultLabel = (result?: string | null) => {
+    if (!result) return vi.payment.ui.adminActions.recorded
+    const dict = vi.payment.ui.adminActions.eventResults as Record<string, string>
+    return dict[result] || result
+  }
+
   return (
     <div
       style={{
         marginTop: '16px',
         padding: '12px',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'var(--theme-elevation-0, #FAF7F4)',
         border: '1px solid #E9DDF9',
         borderRadius: '8px',
         display: 'flex',
@@ -73,11 +79,21 @@ export const OrderPaymentEvents: React.FC = () => {
         }}
       >
         <span>🔔 {vi.payment.ui.adminActions.paymentEventsTitle}</span>
-        {loading && <span style={{ fontSize: '11px', color: '#888' }}>Đang tải...</span>}
+        {loading && (
+          <span style={{ fontSize: '11px', color: 'var(--theme-text-secondary, #280A60)' }}>
+            {vi.payment.ui.adminActions.loadingEvents}
+          </span>
+        )}
       </div>
 
       {events.length === 0 && !loading && (
-        <div style={{ fontSize: '11px', color: '#888', fontStyle: 'italic' }}>
+        <div
+          style={{
+            fontSize: '11px',
+            color: 'var(--theme-text-secondary, #280A60)',
+            fontStyle: 'italic',
+          }}
+        >
           {vi.payment.ui.adminActions.noPaymentEvents}
         </div>
       )}
@@ -85,7 +101,8 @@ export const OrderPaymentEvents: React.FC = () => {
       {events.map((ev) => {
         const isMismatch = ev.isMismatch
         const isCancelled = ev.isCancelled
-        const isWarning = isMismatch || isCancelled
+        const isTermsMissing = ev.isTermsMissing
+        const isWarning = isMismatch || isCancelled || isTermsMissing
 
         return (
           <div
@@ -95,8 +112,8 @@ export const OrderPaymentEvents: React.FC = () => {
               borderRadius: '6px',
               fontSize: '11px',
               lineHeight: '1.4',
-              backgroundColor: isWarning ? '#FFF5F5' : '#FAF7F4',
-              border: `1px solid ${isMismatch ? '#EF3B83' : isCancelled ? '#F6A828' : '#E9DDF9'}`,
+              backgroundColor: isWarning ? '#FDE6F6' : '#FAF7F4',
+              border: `1px solid ${isWarning ? '#EF3B83' : '#E9DDF9'}`,
               display: 'flex',
               flexDirection: 'column',
               gap: '4px',
@@ -107,7 +124,7 @@ export const OrderPaymentEvents: React.FC = () => {
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                color: '#666',
+                color: 'var(--theme-text-secondary, #280A60)',
                 fontSize: '10px',
               }}
             >
@@ -117,7 +134,7 @@ export const OrderPaymentEvents: React.FC = () => {
               <span>{formatTime(ev.receivedAt)}</span>
             </div>
 
-            {/* Cảnh báo nổi bật nếu Lệch số tiền hoặc Đơn đã hủy */}
+            {/* Cảnh báo nổi bật: Lệch số tiền */}
             {isMismatch && (
               <div
                 style={{
@@ -138,11 +155,12 @@ export const OrderPaymentEvents: React.FC = () => {
               </div>
             )}
 
+            {/* Cảnh báo nổi bật: Đơn đã hủy */}
             {isCancelled && (
               <div
                 style={{
-                  backgroundColor: '#FEF3C7',
-                  color: '#B45309',
+                  backgroundColor: '#FDE6F6',
+                  color: '#BC039E',
                   fontWeight: 700,
                   padding: '4px 6px',
                   borderRadius: '4px',
@@ -155,10 +173,29 @@ export const OrderPaymentEvents: React.FC = () => {
               </div>
             )}
 
+            {/* Cảnh báo nổi bật: Chưa đồng ý điều khoản */}
+            {isTermsMissing && (
+              <div
+                style={{
+                  backgroundColor: '#FDE6F6',
+                  color: '#BC039E',
+                  fontWeight: 700,
+                  padding: '4px 6px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <span>⚠️ {vi.payment.ui.adminActions.termsMissingWarning}</span>
+              </div>
+            )}
+
             {/* Trạng thái xử lý bình thường */}
             {!isWarning && (
               <div style={{ color: '#280A60', fontWeight: 600 }}>
-                Kết quả: <span style={{ color: '#0F5132' }}>{ev.result || 'Đã ghi nhận'}</span>
+                {vi.payment.ui.adminActions.resultLabel}{' '}
+                <span style={{ color: '#280A60' }}>{getResultLabel(ev.result)}</span>
               </div>
             )}
           </div>

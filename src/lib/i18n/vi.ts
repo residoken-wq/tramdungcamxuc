@@ -765,6 +765,8 @@ export const vi = {
         timingNoticeSepay: 'Hệ thống tự xác nhận trong vài phút sau khi nhận tiền',
         timingNoticeSepaySub:
           'Trang sẽ tự động cập nhật ngay khi giao dịch hoàn tất (đang tự động kiểm tra).',
+        pollTimedOutNotice:
+          'Hết thời gian chờ tự động. Vui lòng tải lại trang để kiểm tra hoặc liên hệ Hana nếu bạn đã chuyển khoản thành công.',
         goToToolButton: 'Vào sử dụng công cụ ngay →',
         goToAccountButton: 'Vào tài khoản của tôi →',
         backHomeButton: '← Quay về trang chủ',
@@ -774,8 +776,25 @@ export const vi = {
         noPaymentEvents: 'Chưa có sự kiện thanh toán nào được ghi nhận cho đơn này.',
         amountMismatchWarning: 'Lệch số tiền – Cần xử lý tay',
         orderCancelledWarning: 'Đơn đã hủy – Khách vẫn chuyển tiền',
+        termsMissingWarning: 'Chưa đồng ý điều khoản – Cần xử lý tay',
+        loadingEvents: 'Đang tải...',
+        resultLabel: 'Kết quả:',
+        recorded: 'Đã ghi nhận',
+        eventResults: {
+          paid: 'Thành công',
+          duplicate: 'Trùng lặp',
+          already_paid: 'Đơn đã thanh toán trước đó',
+          amount_mismatch: 'Lệch số tiền',
+          order_cancelled: 'Đơn đã bị hủy',
+          terms_missing: 'Chưa đồng ý điều khoản',
+          invalid_signature: 'Sai chữ ký / API key',
+          invalid_payload: 'Dữ liệu không hợp lệ',
+          payload_too_large: 'Dung lượng quá lớn',
+          no_match: 'Không khớp đơn',
+          ignored: 'Bỏ qua (tiền ra)',
+          processing: 'Đang xử lý',
+        },
         panelTitle: 'Thao tác đơn hàng (Chủ sở hữu)',
-
         panelDesc:
           'Trạng thái thanh toán được bảo vệ và chỉ có thể thay đổi an toàn qua các nút chức năng bên dưới.',
         saveFirstNotice: 'Vui lòng lưu đơn hàng trước khi thực hiện thao tác duyệt hoặc hủy.',
