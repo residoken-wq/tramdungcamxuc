@@ -513,3 +513,24 @@ Chạy kiểm tra định kỳ mỗi giờ một lần:
 # Mở crontab: crontab -e
 0 * * * * cd /opt/tramdungcamxuc && curl -s -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= .env | cut -d= -f2)" http://127.0.0.1:3400/api/cron/expire-entitlements >> /var/log/tdcx-cron-entitlements.log 2>&1 && echo >> /var/log/tdcx-cron-entitlements.log
 ```
+
+---
+
+### Lịch Cron nhắc hạn dùng thử ngày 18 và ngày 21 (T2-04)
+
+Endpoint `/api/cron/trial-reminders` tự động quét các quyền dùng thử (`entitlements` với `status = 'trial'`) của công cụ số có `trialDays > 0`. Hệ thống xác định các mốc nhắc:
+
+- **Mốc Ngày 18 (còn 3 ngày)**: khi thời gian còn lại nằm trong khoảng `24h < timeLeft <= 72h`.
+- **Mốc Ngày 21 (ngày cuối cùng)**: khi thời gian còn lại nằm trong khoảng `0 < timeLeft <= 24h`.
+
+Hệ thống gửi email nhắc nhở kèm giá ưu đãi đọc tự động từ sản phẩm (`getEffectivePrice`). Nếu khách hàng đã mua sản phẩm (`status = 'active'`), hệ thống không gửi nhắc.
+
+Route được bảo vệ nghiêm ngặt bằng header `Authorization: Bearer <CRON_SECRET>` (so khớp hằng thời gian `timingSafeEqual`). Tính lũy đẳng (idempotency) được đảm bảo ở cấp CSDL thông qua khóa duy nhất `entitlement:milestone` trong collection `trialReminders`.
+
+**Cấu hình crontab mẫu trên server Linux / Docker:**
+Chạy kiểm tra định kỳ mỗi giờ một lần (vào phút thứ 30 của mỗi giờ):
+
+```bash
+# Mở crontab: crontab -e
+30 * * * * cd /opt/tramdungcamxuc && curl -s -X POST -H "Authorization: Bearer $(grep ^CRON_SECRET= .env | cut -d= -f2)" http://127.0.0.1:3400/api/cron/trial-reminders >> /var/log/tdcx-cron-trial.log 2>&1 && echo >> /var/log/tdcx-cron-trial.log
+```
