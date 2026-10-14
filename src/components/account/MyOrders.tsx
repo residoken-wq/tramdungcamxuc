@@ -3,9 +3,12 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
 import type { CustomerOrderDto } from '@/lib/account/orders.server'
+import { OrderFileDownloadButton } from './OrderFileDownloadButton'
 
 export interface MyOrdersProps {
   orders: CustomerOrderDto[]
+  /** Đọc đơn lỗi → hiện thông báo trong khối, phần còn lại của trang vẫn hiển thị. */
+  loadError?: boolean
 }
 
 const ORDER_STATUS_MAP: Record<
@@ -18,17 +21,21 @@ const ORDER_STATUS_MAP: Record<
   cancelled: { status: 'hidden', label: vi.account.orders.status.cancelled },
 }
 
-export function MyOrders({ orders }: MyOrdersProps) {
+export function MyOrders({ orders, loadError = false }: MyOrdersProps) {
   return (
-    <div className="bg-white/95 rounded-2xl p-6 border border-lavender-mist shadow-sm space-y-4">
+    <div className="bg-warm-ivory rounded-2xl p-6 border border-lavender-mist shadow-sm space-y-4">
       <h2 className="font-ui text-base font-bold text-deep-navy">{vi.account.orders.heading}</h2>
 
-      {orders.length === 0 ? (
+      {loadError ? (
+        <p role="alert" className="font-sans text-sm text-accent-pink">
+          {vi.account.orders.loadError}
+        </p>
+      ) : orders.length === 0 ? (
         <div className="p-8 rounded-xl bg-warm-ivory/50 border border-dashed border-deep-navy/20 text-center space-y-4">
           <p className="font-sans text-sm text-deep-navy/70">{vi.account.orders.empty}</p>
           <div>
             <Button
-              href="/tai-nguyen"
+              href="/thu-vien"
               variant="secondary"
               size="sm"
               className="motion-reduce:transition-none"
@@ -94,23 +101,20 @@ export function MyOrders({ orders }: MyOrdersProps) {
                     </Button>
                   )}
 
-                  {order.downloadFiles && order.downloadFiles.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-2">
-                      {order.downloadFiles.map((file) => (
-                        <Button
-                          key={file.fileId}
-                          href={file.downloadUrl}
-                          variant="secondary"
-                          size="sm"
-                          className="motion-reduce:transition-none"
-                        >
-                          {file.filename
-                            ? vi.account.orders.downloadFileWithFilename(file.filename)
-                            : vi.account.orders.downloadFile}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
+                  {order.orderId !== undefined &&
+                    order.downloadFiles &&
+                    order.downloadFiles.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        {order.downloadFiles.map((file) => (
+                          <OrderFileDownloadButton
+                            key={file.fileId}
+                            orderId={order.orderId as number}
+                            fileId={file.fileId}
+                            filename={file.filename}
+                          />
+                        ))}
+                      </div>
+                    )}
                 </div>
               </div>
             )

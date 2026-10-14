@@ -4,12 +4,10 @@ import config from '@/payload.config'
 import type { Order, Product, PrivateFile } from '@/payload-types'
 import { formatVnd } from '../format'
 import { vi } from '../i18n/vi'
-import { signDownloadToken } from '../downloads/token'
 
 export interface CustomerOrderFile {
-  fileId: number | string
+  fileId: number
   filename?: string
-  downloadUrl: string
 }
 
 export interface CustomerOrderDto {
@@ -20,7 +18,8 @@ export interface CustomerOrderDto {
   createdAtFormatted: string
   paidAtFormatted?: string | null
   payToken?: string | null
-  paymentRef?: string | null
+  /** Chỉ có với đơn `paid` có file: dùng để gọi action tải lại (action tự kiểm quyền ở server). */
+  orderId?: number
   downloadFiles?: CustomerOrderFile[]
 }
 
@@ -44,7 +43,8 @@ function formatOrderDate(dateStr: string | null | undefined): string {
  * Đọc danh sách đơn hàng của chính khách hàng hiện tại.
  * - Chỉ đơn của chính khách trong phiên (lọc customer = customerId ở server, overrideAccess chỉ sau khi lọc).
  * - Sắp xếp mới nhất trước (-createdAt), tối đa 20 đơn.
- * - Trả về DTO an toàn: không id nội bộ, không email, không lộ paymentRef của đơn đã hủy.
+ * - Trả về DTO an toàn: không email, không paymentRef; id đơn chỉ có ở đơn `paid` có file
+ *   (cần để gọi action tải lại – action tự kiểm đơn thuộc khách trong phiên).
  */
 export async function getCustomerOrders(
   customerId: number,
@@ -62,6 +62,19 @@ export async function getCustomerOrders(
     sort: '-createdAt',
     limit: 20,
     depth: 2,
+    // Chỉ lấy trường cần hiển thị; không kéo khách (email) hay ảnh sản phẩm
+    select: {
+      items: true,
+      total: true,
+      paymentStatus: true,
+      createdAt: true,
+      paidAt: true,
+      payToken: true,
+    },
+    populate: {
+      products: { name: true, files: true },
+      privateFiles: { filename: true },
+    },
     overrideAccess: true,
   })
 
@@ -84,14 +97,10 @@ export async function getCustomerOrders(
       }
     }
 
-    const isCancelled = order.paymentStatus === 'cancelled'
     const isPendingOrFailed = order.paymentStatus === 'pending' || order.paymentStatus === 'failed'
-
-    // Không hiện paymentRef của đơn đã hủy; không hiện email, id nội bộ
-    const paymentRef = isCancelled ? null : order.paymentRef || null
     const payToken = isPendingOrFailed ? order.payToken || null : null
 
-    // 2. Tải lại file đã mua: chỉ sinh link ký cho đơn 'paid' có sản phẩm có files
+    // 2. Tải lại file đã mua: chỉ liệt kê file cho đơn 'paid'; link ký sinh khi khách bấm (action)
     let downloadFiles: CustomerOrderFile[] | undefined
     if (order.paymentStatus === 'paid' && Array.isArray(order.items)) {
       const files: CustomerOrderFile[] = []
@@ -106,16 +115,8 @@ export async function getCustomerOrders(
                 typeof fileObj === 'object' && fileObj !== null
                   ? (fileObj as PrivateFile).filename || undefined
                   : undefined
-              if (fileId) {
-                const token = signDownloadToken({
-                  productId: prod.id,
-                  fileId,
-                })
-                files.push({
-                  fileId,
-                  filename,
-                  downloadUrl: `/api/download/${token}`,
-                })
+              if (typeof fileId === 'number') {
+                files.push({ fileId, filename })
               }
             }
           }
@@ -134,8 +135,7 @@ export async function getCustomerOrders(
       createdAtFormatted: formatOrderDate(order.createdAt),
       paidAtFormatted: order.paidAt ? formatOrderDate(order.paidAt) : null,
       payToken,
-      paymentRef,
-      downloadFiles,
+      ...(downloadFiles ? { orderId: order.id, downloadFiles } : {}),
     })
   }
 

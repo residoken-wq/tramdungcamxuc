@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import fs from 'node:fs'
@@ -8,8 +8,12 @@ import os from 'node:os'
 import { randomUUID } from 'node:crypto'
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
+import type { Customer } from '../../src/payload-types'
 import { getCustomerOrders } from '../../src/lib/account/orders.server'
-import { verifyDownloadToken } from '../../src/lib/downloads/token'
+import { requestOrderFileDownloadAction } from '../../src/lib/account/download-actions'
+import { signDownloadToken } from '../../src/lib/downloads/token'
+import * as sessionServer from '../../src/lib/auth/session.server'
+import { GET as downloadRoute } from '../../src/app/(site)/api/download/[token]/route'
 
 describe('Customer Account Orders & Downloads (T2-17)', () => {
   let payload: Payload
@@ -19,6 +23,12 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
   let productWithoutFileId: number
   let privateFileId: number
   let tempFilePath: string
+  let freeProductId: number
+  let orderA1Id: number
+  let orderA2Id: number
+  let orderB1Id: number
+  let customerA: Customer
+  let customerB: Customer
 
   const createdOrders: number[] = []
   const createdCustomers: number[] = []
@@ -83,6 +93,22 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
     productWithoutFileId = prodWithoutFile.id
     createdProducts.push(productWithoutFileId)
 
+    const freeProduct = await payload.create({
+      collection: 'products',
+      data: {
+        name: 'Toolkit Miễn Phí Test',
+        slug: `toolkit-free-test-${randomUUID().slice(0, 8)}`,
+        web: 'site',
+        type: 'toolkit',
+        saleStatus: 'free',
+        files: [{ file: privateFileId }],
+        _status: 'published',
+      },
+      overrideAccess: true,
+    })
+    freeProductId = freeProduct.id
+    createdProducts.push(freeProductId)
+
     // 3. Tạo 2 khách hàng test: Học viên Test 01 và Học viên Test 02
     const custA = await payload.create({
       collection: 'customers',
@@ -93,6 +119,7 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
       overrideAccess: true,
     })
     customerAId = custA.id
+    customerA = custA as Customer
     createdCustomers.push(customerAId)
 
     const custB = await payload.create({
@@ -104,6 +131,7 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
       overrideAccess: true,
     })
     customerBId = custB.id
+    customerB = custB as Customer
     createdCustomers.push(customerBId)
 
     // 4. Tạo các đơn hàng cho Khách A
@@ -121,6 +149,7 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
       overrideAccess: true,
     })
     createdOrders.push(orderA1.id)
+    orderA1Id = orderA1.id
 
     // Đơn A2: paid (đã thanh toán), sản phẩm CÓ file
     const orderA2 = await payload.create({
@@ -137,6 +166,7 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
       overrideAccess: true,
     })
     createdOrders.push(orderA2.id)
+    orderA2Id = orderA2.id
 
     // Đơn A3: cancelled (đã hủy)
     const orderA3 = await payload.create({
@@ -168,6 +198,11 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
       overrideAccess: true,
     })
     createdOrders.push(orderB1.id)
+    orderB1Id = orderB1.id
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   afterAll(async () => {
@@ -213,86 +248,62 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
     }
   })
 
+  const callRoute = (token: string) =>
+    downloadRoute(new Request(`http://localhost/api/download/${token}`), {
+      params: Promise.resolve({ token }),
+    })
+
+  const loginAs = (customer: Customer | null) =>
+    vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
+
   it('khách A không thấy đơn của khách B và ngược lại', async () => {
     const ordersA = await getCustomerOrders(customerAId, { payload })
     const ordersB = await getCustomerOrders(customerBId, { payload })
 
-    // Khách A có đúng 3 đơn
     expect(ordersA).toHaveLength(3)
-    // Khách B có đúng 1 đơn
     expect(ordersB).toHaveLength(1)
+    expect(ordersB.map((o) => o.rawTotal)).toEqual([250000])
 
-    // Khách A không có đơn của khách B
-    const bOrderRawTotals = ordersB.map((o) => o.rawTotal)
-    expect(bOrderRawTotals).toEqual([250000])
-
-    // Truy vấn với ID không hợp lệ -> trả về rỗng
     expect(await getCustomerOrders(0, { payload })).toEqual([])
     expect(await getCustomerOrders(-1, { payload })).toEqual([])
-    expect(await getCustomerOrders(999999, { payload })).toEqual([])
+
+    // Khách vừa tạo rồi xóa (không dùng id cứng) -> rỗng
+    const temp = await payload.create({
+      collection: 'customers',
+      data: { email: `tam-${randomUUID().slice(0, 8)}@example.test`, name: 'Học viên Test 03' },
+      overrideAccess: true,
+    })
+    await payload.delete({ collection: 'customers', id: temp.id, overrideAccess: true })
+    expect(await getCustomerOrders(temp.id, { payload })).toEqual([])
   })
 
-  it('đơn pending có payToken, đơn cancelled không lộ paymentRef và không lộ ID nội bộ', async () => {
+  it('đơn pending có payToken; không lộ paymentRef, email, khách; id đơn chỉ ở đơn paid có file', async () => {
     const ordersA = await getCustomerOrders(customerAId, { payload })
 
     const pendingOrder = ordersA.find((o) => o.paymentStatus === 'pending')
-    expect(pendingOrder).toBeDefined()
-    expect(pendingOrder!.payToken).toBeDefined()
-    expect(typeof pendingOrder!.payToken).toBe('string')
-    expect(pendingOrder!.payToken!.length).toBeGreaterThan(0)
-    // Đơn pending có paymentRef
-    expect(pendingOrder!.paymentRef).toBeDefined()
+    expect(pendingOrder!.payToken).toEqual(expect.any(String))
+    expect(pendingOrder!.orderId).toBeUndefined()
 
     const cancelledOrder = ordersA.find((o) => o.paymentStatus === 'cancelled')
-    expect(cancelledOrder).toBeDefined()
-    // Không hiện paymentRef của đơn đã hủy
-    expect(cancelledOrder!.paymentRef).toBeNull()
-    // Không có payToken cho đơn đã hủy
     expect(cancelledOrder!.payToken).toBeNull()
+    expect(cancelledOrder!.orderId).toBeUndefined()
 
-    // Kiểm tra không lộ id nội bộ hay email/customer
     for (const o of ordersA) {
-      const orderRecord = o as unknown as Record<string, unknown>
-      expect(orderRecord.id).toBeUndefined()
-      expect(orderRecord.customer).toBeUndefined()
-      expect(orderRecord.email).toBeUndefined()
-    }
-  })
-
-  it('link tải chỉ sinh cho đơn paid có file; đơn không có file không sinh link tải', async () => {
-    const ordersA = await getCustomerOrders(customerAId, { payload })
-
-    // Đơn A2: paid và sản phẩm có file
-    const paidOrderWithFile = ordersA.find(
-      (o) => o.paymentStatus === 'paid' && o.productName.includes('Ebook'),
-    )
-    expect(paidOrderWithFile).toBeDefined()
-    expect(paidOrderWithFile!.downloadFiles).toBeDefined()
-    expect(paidOrderWithFile!.downloadFiles!.length).toBe(1)
-
-    const downloadItem = paidOrderWithFile!.downloadFiles![0]
-    expect(downloadItem.fileId).toBe(privateFileId)
-    expect(downloadItem.downloadUrl).toMatch(/^\/api\/download\//)
-
-    // Token hợp lệ khi kiểm tra bằng verifyDownloadToken
-    const token = downloadItem.downloadUrl.replace('/api/download/', '')
-    const verifyRes = verifyDownloadToken(token)
-    expect(verifyRes.valid).toBe(true)
-    if (verifyRes.valid) {
-      expect(String(verifyRes.payload.fileId)).toBe(String(privateFileId))
-      expect(String(verifyRes.payload.productId)).toBe(String(productWithFileId))
+      const record = o as unknown as Record<string, unknown>
+      expect(record.paymentRef).toBeUndefined()
+      expect(record.id).toBeUndefined()
+      expect(record.customer).toBeUndefined()
+      expect(record.email).toBeUndefined()
     }
 
-    // Đơn pending hoặc cancelled không có link tải
-    const pendingOrder = ordersA.find((o) => o.paymentStatus === 'pending')
-    expect(pendingOrder!.downloadFiles).toBeUndefined()
-
-    const cancelledOrder = ordersA.find((o) => o.paymentStatus === 'cancelled')
-    expect(cancelledOrder!.downloadFiles).toBeUndefined()
+    const paidWithFile = ordersA.find((o) => o.paymentStatus === 'paid')
+    expect(paidWithFile!.orderId).toBe(orderA2Id)
+    expect(paidWithFile!.downloadFiles).toEqual([
+      expect.objectContaining({ fileId: privateFileId }),
+    ])
   })
 
-  it('đơn paid nhưng sản phẩm không có file -> không sinh downloadFiles', async () => {
-    // Tạo thêm 1 đơn paid cho sản phẩm không có file
+  it('đơn paid nhưng sản phẩm không có file -> không có downloadFiles', async () => {
     const paidNoFileOrder = await payload.create({
       collection: 'orders',
       data: {
@@ -312,8 +323,92 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
     const matched = ordersA.find(
       (o) => o.paymentStatus === 'paid' && o.productName.includes('Gói Đồng Hành'),
     )
-
-    expect(matched).toBeDefined()
     expect(matched!.downloadFiles).toBeUndefined()
+    expect(matched!.orderId).toBeUndefined()
+  })
+
+  it('chủ đơn bấm Tải lại -> nhận link, route trả file sản phẩm trả phí', async () => {
+    loginAs(customerA)
+    const res = await requestOrderFileDownloadAction({ orderId: orderA2Id, fileId: privateFileId })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    expect(res.url).toMatch(/^\/api\/download\//)
+
+    const download = await callRoute(res.url.replace('/api/download/', ''))
+    expect(download.status).toBe(200)
+    expect(download.headers.get('Cache-Control')).toContain('no-store')
+    const body = Buffer.from(await download.arrayBuffer()).toString('utf8')
+    expect(body).toContain('%PDF')
+  })
+
+  it('action từ chối: chưa đăng nhập, đơn của khách khác, đơn pending, file không thuộc sản phẩm', async () => {
+    loginAs(null)
+    expect(
+      (await requestOrderFileDownloadAction({ orderId: orderA2Id, fileId: privateFileId })).ok,
+    ).toBe(false)
+
+    loginAs(customerA)
+    expect(
+      (await requestOrderFileDownloadAction({ orderId: orderB1Id, fileId: privateFileId })).ok,
+    ).toBe(false)
+    expect(
+      (await requestOrderFileDownloadAction({ orderId: orderA1Id, fileId: privateFileId })).ok,
+    ).toBe(false)
+    expect(
+      (await requestOrderFileDownloadAction({ orderId: orderA2Id, fileId: privateFileId + 999999 }))
+        .ok,
+    ).toBe(false)
+    expect((await requestOrderFileDownloadAction({ orderId: 'x', fileId: privateFileId })).ok).toBe(
+      false,
+    )
+  })
+
+  it('route: người khác cầm link -> 403; chưa đăng nhập -> 403; hết hạn -> 410', async () => {
+    const token = signDownloadToken({
+      productId: productWithFileId,
+      fileId: privateFileId,
+      orderId: orderA2Id,
+      customerId: customerAId,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+    })
+
+    loginAs(customerB)
+    expect((await callRoute(token)).status).toBe(403)
+
+    loginAs(null)
+    expect((await callRoute(token)).status).toBe(403)
+
+    const expired = signDownloadToken({
+      productId: productWithFileId,
+      fileId: privateFileId,
+      orderId: orderA2Id,
+      customerId: customerAId,
+      expiresAt: Date.now() - 1000,
+    })
+    loginAs(customerA)
+    expect((await callRoute(expired)).status).toBe(410)
+
+    // Token gắn đơn của khách B nhưng khách B đăng nhập với đơn A -> không khớp đơn -> 404
+    const mismatched = signDownloadToken({
+      productId: productWithFileId,
+      fileId: privateFileId,
+      orderId: orderA2Id,
+      customerId: customerBId,
+      expiresAt: Date.now() + 60_000,
+    })
+    loginAs(customerB)
+    expect((await callRoute(mismatched)).status).toBe(404)
+  })
+
+  it('link tài nguyên miễn phí cũ (không gắn đơn) vẫn tải được; link không gắn đơn cho đồ trả phí -> 410', async () => {
+    loginAs(null)
+    const freeToken = signDownloadToken({ productId: freeProductId, fileId: privateFileId })
+    expect((await callRoute(freeToken)).status).toBe(200)
+
+    const paidWithoutOrder = signDownloadToken({
+      productId: productWithFileId,
+      fileId: privateFileId,
+    })
+    expect((await callRoute(paidWithoutOrder)).status).toBe(410)
   })
 })

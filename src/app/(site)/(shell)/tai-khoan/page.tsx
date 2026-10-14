@@ -84,8 +84,15 @@ export default async function AccountPage() {
   const userCourses = coursesWithAccess.filter((item) => item.access.status !== 'none')
 
   const displayName = customer.name?.trim() || customer.email
-  const eligibleWorkshops = await getEligibleWorkshops(customer.id)
-  const orders = await getCustomerOrders(customer.id)
+  const [eligibleWorkshops, ordersResult] = await Promise.all([
+    getEligibleWorkshops(customer.id),
+    getCustomerOrders(customer.id)
+      .then((orders) => ({ orders, loadError: false }))
+      .catch((err) => {
+        console.error('[Account] Failed to load customer orders:', err)
+        return { orders: [], loadError: true }
+      }),
+  ])
 
   return (
     <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-8">
@@ -211,7 +218,7 @@ export default async function AccountPage() {
           </div>
 
           {/* Đơn hàng */}
-          <MyOrders orders={orders} />
+          <MyOrders orders={ordersResult.orders} loadError={ordersResult.loadError} />
         </div>
       </div>
     </div>
