@@ -1,8 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth, useDocumentInfo } from '@payloadcms/ui'
-import { deleteCustomerAdminAction } from '@/lib/account/actions'
+import {
+  deleteCustomerAdminAction,
+  checkCustomerPendingOrdersAdminAction,
+} from '@/lib/account/actions'
 import { vi } from '@/lib/i18n/vi'
 
 export const CustomerActions: React.FC = () => {
@@ -28,6 +31,22 @@ export const CustomerActions: React.FC = () => {
   const customerId = Number(id)
   const customerEmail = ((data as { email?: string })?.email || '').trim()
   const deletionRequestedAt = (data as { deletionRequestedAt?: string | null })?.deletionRequestedAt
+
+  const [pendingOrdersCount, setPendingOrdersCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    let active = true
+    if (customerId) {
+      checkCustomerPendingOrdersAdminAction(customerId).then((res) => {
+        if (active) {
+          setPendingOrdersCount(res.pendingCount)
+        }
+      })
+    }
+    return () => {
+      active = false
+    }
+  }, [customerId])
 
   const handleDelete = async () => {
     if (loading) return
@@ -122,14 +141,39 @@ export const CustomerActions: React.FC = () => {
         </div>
       )}
 
+      {pendingOrdersCount !== null && pendingOrdersCount > 0 && (
+        <div
+          data-testid="pending-orders-warning"
+          style={{
+            padding: '10px 12px',
+            backgroundColor: '#FDE6F6',
+            border: '1px solid #EF3B83',
+            borderRadius: '8px',
+            fontSize: '12px',
+            fontWeight: 600,
+            color: '#280A60',
+            lineHeight: '1.4',
+          }}
+        >
+          {vi.account.adminDeletion.pendingOrders(pendingOrdersCount)}
+        </div>
+      )}
+
       <button
         type="button"
         onClick={() => {
+          if (pendingOrdersCount !== null && pendingOrdersCount > 0) {
+            setFeedback({
+              type: 'error',
+              message: vi.account.adminDeletion.pendingOrders(pendingOrdersCount),
+            })
+            return
+          }
           setTypedEmail('')
           setFeedback(null)
           setShowModal(true)
         }}
-        disabled={loading}
+        disabled={loading || (pendingOrdersCount !== null && pendingOrdersCount > 0)}
         style={{
           padding: '8px 14px',
           backgroundColor: '#B00020',
@@ -138,8 +182,11 @@ export const CustomerActions: React.FC = () => {
           borderRadius: '8px',
           fontSize: '13px',
           fontWeight: 600,
-          cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.6 : 1,
+          cursor:
+            loading || (pendingOrdersCount !== null && pendingOrdersCount > 0)
+              ? 'not-allowed'
+              : 'pointer',
+          opacity: loading || (pendingOrdersCount !== null && pendingOrdersCount > 0) ? 0.6 : 1,
           transition: 'background-color 0.2s',
           display: 'inline-flex',
           alignItems: 'center',

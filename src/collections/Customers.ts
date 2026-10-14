@@ -1,4 +1,9 @@
-import type { CollectionConfig, FieldAccess } from 'payload'
+import {
+  APIError,
+  type CollectionBeforeDeleteHook,
+  type CollectionConfig,
+  type FieldAccess,
+} from 'payload'
 import { checkbox, date, text } from '../fields/content'
 import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
 import { customerAuthStrategy } from '../lib/auth/strategy'
@@ -19,6 +24,15 @@ const nameUpdateAccess: FieldAccess = async (args) => {
     req: args.req,
   })
   return certificates.totalDocs === 0
+}
+
+// REVIEW-REQUIRED: Chặn xóa khách hàng ngoài luồng chuẩn (T2-16b A1).
+// Chỉ cho phép xóa khi req.context?.accountDeletion === true (luồng deleteCustomerData đặt cờ này).
+// Mọi đường khác (nút Xóa mặc định, xóa hàng loạt, REST) -> ném lỗi tiếng Việt 403.
+const preventUnauthorizedCustomerDelete: CollectionBeforeDeleteHook = ({ req }) => {
+  if (req.context?.accountDeletion !== true) {
+    throw new APIError(vi.account.adminDeletion.unauthorizedDirectDelete, 403)
+  }
 }
 
 export const Customers: CollectionConfig = {
@@ -42,6 +56,9 @@ export const Customers: CollectionConfig = {
     create: isEditorOrOwner,
     update: adminOrSelfCustomer('id'),
     delete: isOwner,
+  },
+  hooks: {
+    beforeDelete: [preventUnauthorizedCustomerDelete],
   },
   fields: [
     {

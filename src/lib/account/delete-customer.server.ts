@@ -81,11 +81,26 @@ export async function deleteCustomerData(
   })
   const customerOrders = orders.docs
 
+  // REVIEW-REQUIRED: Chặn xóa khi khách còn đơn hàng 'pending' chưa thanh toán (T2-16b A2, anh Nhân chốt 14/10).
+  // Yêu cầu admin/Hana phải hủy đơn trước khi xóa để tránh treo đơn và xung đột với webhook/cron.
+  const pendingOrders = customerOrders.filter((o) => o.paymentStatus === 'pending')
+  if (pendingOrders.length > 0) {
+    return {
+      success: false,
+      message: vi.account.adminDeletion.pendingOrders(pendingOrders.length),
+    }
+  }
+
   let transactionID: null | number | string = null
   if (payload.db && typeof payload.db.beginTransaction === 'function') {
     transactionID = await payload.db.beginTransaction()
   }
-  const req = transactionID ? ({ transactionID } as any) : undefined
+  const req: any = {
+    ...(transactionID ? { transactionID } : {}),
+    context: {
+      accountDeletion: true,
+    },
+  }
 
   try {
     // 2. Xóa certificates
@@ -232,10 +247,43 @@ export async function deleteCustomerData(
       tally.leads = resLeads.docs?.length ?? 0
     }
 
+    const now = new Date().toISOString()
+
+    // 13b. REVIEW-REQUIRED: Chuyển đơn hàng 'failed' sang 'cancelled' và ghi nhật ký thao tác (T2-16b A2, anh Nhân chốt 14/10).
+    // Đơn failed (quá hạn) được chuyển sang cancelled trong transaction trước khi ẩn danh để webhook không nhận nhầm tiền.
+    const failedOrders = customerOrders.filter((o) => o.paymentStatus === 'failed')
+    for (const failedOrder of failedOrders) {
+      const resCancel = await payload.update({
+        collection: 'orders',
+        where: {
+          and: [{ id: { equals: failedOrder.id } }, { paymentStatus: { equals: 'failed' } }],
+        },
+        data: {
+          paymentStatus: 'cancelled',
+        },
+        req,
+        context: { paymentAction: true, accountDeletion: true },
+        overrideAccess: true,
+      })
+      if (resCancel.errors?.length) {
+        throw new Error(`Không thể hủy đơn hàng thất bại #${failedOrder.id}`)
+      }
+      await payload.create({
+        collection: 'auditLogs',
+        data: {
+          action: 'order_cancelled_for_deletion',
+          target: `orders:${failedOrder.id}`,
+          actor: params.actorUserId ? Number(params.actorUserId) : undefined,
+          at: now,
+        },
+        req,
+        overrideAccess: true,
+      })
+    }
+
     // 14. Ẩn danh hóa đơn hàng của khách hàng
     // REVIEW-REQUIRED: Giữ lại số tiền, paymentRef, paymentStatus, deliveryStatus, paidAt, termsAcceptedAt, items.
     // Xóa customer (gán null), anonymizedAt (now), xóa notes và customerNeed.
-    const now = new Date().toISOString()
     let anonymizedCount = 0
     for (const order of customerOrders) {
       await payload.update({
@@ -254,11 +302,12 @@ export async function deleteCustomerData(
     }
     tally.orders = anonymizedCount
 
-    // 15. Xóa customers
+    // 15. Xóa customers (chỉ thành công khi req.context?.accountDeletion === true)
     await payload.delete({
       collection: 'customers',
       id: customerId,
       req,
+      context: { accountDeletion: true },
       overrideAccess: true,
     })
     tally.customers = 1

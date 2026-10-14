@@ -187,3 +187,23 @@ export async function deleteCustomerAdminAction(
     }
   }
 }
+
+// REVIEW-REQUIRED: Kiểm tra số đơn hàng 'pending' của khách trước khi hiển thị cảnh báo trên UI admin (T2-16b A2).
+export async function checkCustomerPendingOrdersAdminAction(
+  customerId: number,
+  options: { payload?: Payload } = {},
+): Promise<{ pendingCount: number }> {
+  try {
+    const payload = options.payload ?? (await getPayload({ config: await config }))
+    const { totalDocs } = await payload.count({
+      collection: 'orders',
+      where: {
+        and: [{ customer: { equals: customerId } }, { paymentStatus: { equals: 'pending' } }],
+      },
+      overrideAccess: true,
+    })
+    return { pendingCount: totalDocs }
+  } catch {
+    return { pendingCount: 0 }
+  }
+}

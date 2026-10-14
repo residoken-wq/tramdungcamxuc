@@ -396,7 +396,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         overrideAccess: true,
       })
 
-      const orderPendingA = track(
+      const orderFailedA = track(
         'orders',
         (await payload.create({
           collection: 'orders',
@@ -406,13 +406,21 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
             subtotal: 178000,
             total: 178000,
             paymentStatus: 'pending',
-            notes: 'Ghi chú đơn pending',
+            notes: 'Ghi chú đơn failed',
             customerNeed: 'Đặt hẹn',
             termsAcceptedAt: new Date().toISOString(),
           },
           overrideAccess: true,
         })) as Order,
       )
+      // Cập nhật paymentStatus failed cho orderFailedA
+      await payload.update({
+        collection: 'orders',
+        id: orderFailedA.id,
+        data: { paymentStatus: 'failed' },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
 
       // Dữ liệu cho khách B
       const planB = track(
@@ -557,17 +565,18 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
       expect(updatedOrderPaid?.notes).toBeNull()
       expect(updatedOrderPaid?.customerNeed).toBeNull()
 
-      const updatedOrderPending = await payload.findByID({
+      const updatedOrderFailed = await payload.findByID({
         collection: 'orders',
-        id: orderPendingA.id,
+        id: orderFailedA.id,
         overrideAccess: true,
       })
-      expect(updatedOrderPending?.customer).toBeNull()
-      expect(updatedOrderPending?.anonymizedAt).toBeTruthy()
-      expect(updatedOrderPending?.total).toBe(178000)
-      expect(updatedOrderPending?.paymentRef).toBe(orderPendingA.paymentRef)
-      expect(updatedOrderPending?.notes).toBeNull()
-      expect(updatedOrderPending?.customerNeed).toBeNull()
+      expect(updatedOrderFailed?.customer).toBeNull()
+      expect(updatedOrderFailed?.anonymizedAt).toBeTruthy()
+      expect(updatedOrderFailed?.paymentStatus).toBe('cancelled')
+      expect(updatedOrderFailed?.total).toBe(178000)
+      expect(updatedOrderFailed?.paymentRef).toBe(orderFailedA.paymentRef)
+      expect(updatedOrderFailed?.notes).toBeNull()
+      expect(updatedOrderFailed?.customerNeed).toBeNull()
 
       // Xác minh khách B không bị đụng chạm
       const findCustomerB = await payload.findByID({
@@ -644,6 +653,14 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         })) as Order,
       )
 
+      await payload.update({
+        collection: 'orders',
+        id: orderC.id,
+        data: { paymentStatus: 'paid', paidAt: new Date().toISOString() },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
       // Giả lỗi ở bước xóa habitPlans bằng cách spy payload.delete
       const originalDelete = payload.delete.bind(payload)
       const deleteSpy = vi.spyOn(payload, 'delete').mockImplementation((async (args: any) => {
@@ -687,6 +704,153 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
       expect(checkOrder?.customer).toBe(customerC.id)
       expect(checkOrder?.anonymizedAt).toBeNull()
       expect(checkOrder?.notes).toBe('Đơn của khách C')
+    })
+
+    it('A1: owner gọi payload.delete trực tiếp trên customers -> bị từ chối với 403', async () => {
+      const email = `direct-del-${randomUUID().slice(0, 8)}@example.test`
+      const customer = track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: { email, name: 'Khách Xóa Trực Tiếp' },
+          overrideAccess: true,
+        })) as Customer,
+      )
+
+      // Gọi payload.delete trực tiếp mà không có req.context.accountDeletion -> ném lỗi 403
+      await expect(
+        payload.delete({
+          collection: 'customers',
+          id: customer.id,
+          overrideAccess: true,
+        }),
+      ).rejects.toThrow("Dùng nút 'Xóa dữ liệu khách' để xóa đúng quy trình.")
+    })
+
+    it('A2: khách còn đơn hàng pending -> từ chối xóa, không có bản ghi nào bị thay đổi', async () => {
+      const email = `pending-del-${randomUUID().slice(0, 8)}@example.test`
+      const customer = track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: { email, name: 'Khách Đơn Pending' },
+          overrideAccess: true,
+        })) as Customer,
+      )
+
+      const pendingOrder = track(
+        'orders',
+        (await payload.create({
+          collection: 'orders',
+          data: {
+            customer: customer.id,
+            items: [{ product: testProduct.id, price: 178000 }],
+            subtotal: 178000,
+            total: 178000,
+            paymentStatus: 'pending',
+            notes: 'Đơn pending chờ xử lý',
+            termsAcceptedAt: new Date().toISOString(),
+          },
+          overrideAccess: true,
+        })) as Order,
+      )
+
+      const res = await deleteCustomerData(payload, {
+        customerId: customer.id,
+        confirmationEmail: email,
+        actorUserId: ownerUser.id,
+      })
+
+      expect(res.success).toBe(false)
+      expect(res.message).toContain('Khách còn 1 đơn chờ thanh toán – hủy đơn trước khi xóa')
+
+      // Đảm bảo khách và đơn không bị đổi
+      const stillCustomer = await payload.findByID({
+        collection: 'customers',
+        id: customer.id,
+        overrideAccess: true,
+      })
+      expect(stillCustomer).not.toBeNull()
+
+      const stillOrder = await payload.findByID({
+        collection: 'orders',
+        id: pendingOrder.id,
+        depth: 0,
+        overrideAccess: true,
+      })
+      expect(stillOrder?.customer).toBe(customer.id)
+      expect(stillOrder?.anonymizedAt).toBeNull()
+      expect(stillOrder?.paymentStatus).toBe('pending')
+    })
+
+    it('A2: khách có đơn failed -> chuyển sang cancelled, ghi audit order_cancelled_for_deletion và ẩn danh', async () => {
+      const email = `failed-del-${randomUUID().slice(0, 8)}@example.test`
+      const customer = track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: { email, name: 'Khách Đơn Failed' },
+          overrideAccess: true,
+        })) as Customer,
+      )
+
+      const failedOrder = track(
+        'orders',
+        (await payload.create({
+          collection: 'orders',
+          data: {
+            customer: customer.id,
+            items: [{ product: testProduct.id, price: 178000 }],
+            subtotal: 178000,
+            total: 178000,
+            paymentStatus: 'pending',
+            notes: 'Đơn failed',
+            termsAcceptedAt: new Date().toISOString(),
+          },
+          overrideAccess: true,
+        })) as Order,
+      )
+
+      await payload.update({
+        collection: 'orders',
+        id: failedOrder.id,
+        data: { paymentStatus: 'failed' },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
+      const res = await deleteCustomerData(payload, {
+        customerId: customer.id,
+        confirmationEmail: email,
+        actorUserId: ownerUser.id,
+      })
+
+      expect(res.success).toBe(true)
+
+      // Đơn được chuyển sang cancelled và ẩn danh
+      const updatedOrder = await payload.findByID({
+        collection: 'orders',
+        id: failedOrder.id,
+        depth: 0,
+        overrideAccess: true,
+      })
+      expect(updatedOrder?.paymentStatus).toBe('cancelled')
+      expect(updatedOrder?.customer).toBeNull()
+      expect(updatedOrder?.anonymizedAt).toBeTruthy()
+      expect(updatedOrder?.notes).toBeNull()
+
+      // Nhật ký thao tác order_cancelled_for_deletion được ghi
+      const cancelAudit = await payload.find({
+        collection: 'auditLogs',
+        where: {
+          and: [
+            { action: { equals: 'order_cancelled_for_deletion' } },
+            { target: { equals: `orders:${failedOrder.id}` } },
+          ],
+        },
+        overrideAccess: true,
+      })
+      expect(cancelAudit.totalDocs).toBe(1)
     })
   })
 

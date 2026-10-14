@@ -1373,6 +1373,9 @@ export const vi = {
       deleting: 'Đang xóa dữ liệu...',
       deleteSuccess: 'Đã xóa toàn bộ dữ liệu cá nhân của khách hàng thành công.',
       unauthorized: 'Chỉ chủ sở hữu (owner) mới có quyền xóa dữ liệu khách hàng.',
+      unauthorizedDirectDelete: "Dùng nút 'Xóa dữ liệu khách' để xóa đúng quy trình.",
+      pendingOrders: (count: number) =>
+        `Khách còn ${count} đơn chờ thanh toán – hủy đơn trước khi xóa.`,
       notFound: 'Không tìm thấy thông tin khách hàng.',
       serverError: 'Đã có lỗi xảy ra khi xóa dữ liệu. Toàn bộ thao tác đã được hoàn tác an toàn.',
     },
