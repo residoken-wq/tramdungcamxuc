@@ -342,8 +342,10 @@ export async function submitHabitPlan(
 
   // 5. Lưu bản ghi habitPlans và leads trong cùng 1 transaction (T2-17: lead lỗi -> rollback kế hoạch, không có kế hoạch thừa)
   // REVIEW-REQUIRED: Transaction đảm bảo lưu kế hoạch và tạo lead nguyên tử
-  const req = (options.req as Partial<PayloadRequest>) || { payload }
-  if (!req.payload) req.payload = payload
+  const req = {
+    ...(options.req as Partial<PayloadRequest>),
+    payload: (options.req as Partial<PayloadRequest>)?.payload ?? payload,
+  }
   const hasDb = typeof payload?.db?.beginTransaction === 'function'
   const shouldCommit = !options.disableTransaction && hasDb && (await initTransaction(req))
   const cleanName = validated.name?.trim() || undefined
