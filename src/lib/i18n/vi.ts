@@ -1363,6 +1363,31 @@ export const vi = {
       downloadFileWithFilename: (filename: string) => `Tải lại ${filename}`,
     },
   },
+  email: {
+    trialWelcome: {
+      preview: (toolName: string, trialDays: number) =>
+        `Trạm Dừng Cảm Xúc – Kích hoạt dùng thử ${toolName} (${trialDays} ngày)`,
+      brandLabel: 'TRẠM DỪNG CẢM XÚC · DÙNG THỬ CÔNG CỤ SỐ',
+      heading: 'Kích hoạt dùng thử thành công!',
+      subheading: (name: string, trialDays: number, toolName: string) =>
+        `Chào ${name || 'bạn'}, phiên dùng thử ${trialDays} ngày công cụ ${toolName} của bạn đã sẵn sàng.`,
+      toolLabel: 'Công cụ:',
+      trialDurationLabel: 'Thời hạn dùng thử:',
+      trialDurationValue: (trialDays: number) => `${trialDays} ngày miễn phí`,
+      expiresAtLabel: 'Hạn sử dụng:',
+      vietnamTimeSuffix: '(giờ Việt Nam)',
+      statusLabel: 'Trạng thái:',
+      statusValue: 'Đang dùng thử',
+      body: 'Hãy dành ra 5 phút mỗi ngày để dừng lại, lắng nghe và thấu hiểu cảm xúc của mình. Bạn có thể bắt đầu ngay hôm nay để hình thành thói quen vững vàng.',
+      ctaButton: (toolName: string) => `Vào ${toolName} ngay`,
+      accountNotice:
+        'Bạn cũng có thể xem lại quyền dùng thử bất cứ lúc nào trong mục "Tài khoản của tôi".',
+      footerSignOff: 'Thương mến,',
+      footerAuthor: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
+      footerNotice:
+        'Email thông báo tự động từ tramdungcamxuc.com khi kích hoạt dùng thử công cụ số.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
