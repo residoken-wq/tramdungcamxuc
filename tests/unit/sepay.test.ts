@@ -20,6 +20,11 @@ import { POST as sepayWebhookRoute } from '../../src/app/(site)/api/payments/sep
 import { GET as orderStatusRoute } from '../../src/app/(site)/api/payments/status/[token]/route'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
 
+const advanceClockPastResume = () => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date(Date.now() + 2 * 60 * 1000))
+}
+
 class MockEmailSender implements EmailSender {
   public sent: SendEmailParams[] = []
 
@@ -105,6 +110,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
 
   afterEach(() => {
     vi.unstubAllEnvs()
+    vi.useRealTimers()
     vi.restoreAllMocks()
   })
 
@@ -1233,9 +1239,10 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
       expect(stuckCheck.totalDocs).toBe(1)
       expect(stuckCheck.docs[0].result).toBe('processing')
 
-      // 2. SePay gửi lại cùng ID -> không bị kẹt duplicate, xử lý thành công paid!
+      // 2. SePay gửi lại cùng ID sau > 60 giây -> xử lý lại event kẹt, thành công paid
       errorSpy.mockRestore()
       vi.restoreAllMocks()
+      advanceClockPastResume()
 
       const retryReq = new Request('http://localhost/api/payments/sepay/webhook', {
         method: 'POST',
@@ -1271,7 +1278,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
       expect(finalEvent.docs[0].result).toBe('paid')
     })
 
-    it('T2-09c: đơn đã chuyển paid rồi lỗi (event kẹt processing) -> gửi lại ghi paid, không phải already_paid, không cấp quyền lần 2', async () => {
+    it('T2-09c: đơn đã chuyển paid rồi lỗi (event kẹt processing) -> gửi lại ghi paid_incomplete, không cấp quyền lần 2', async () => {
       vi.stubEnv('PAYMENT_PROVIDER', 'sepay')
       vi.stubEnv('SEPAY_WEBHOOK_API_KEY', TEST_SEPAY_API_KEY)
 
@@ -1317,6 +1324,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
       })
 
       const retrySender = new MockEmailSender()
+      advanceClockPastResume()
       const retryRes = await sepayWebhookRoute(
         new Request('http://localhost/api/payments/sepay/webhook', {
           method: 'POST',
@@ -1334,7 +1342,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
         { emailSender: retrySender },
       )
       expect(retryRes.status).toBe(200)
-      expect((await retryRes.json()).result).toBe('paid')
+      expect((await retryRes.json()).result).toBe('paid_incomplete')
       expect(retrySender.sent).toHaveLength(0)
 
       const events = await payload.find({
@@ -1343,7 +1351,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
         overrideAccess: true,
       })
       expect(events.totalDocs).toBe(1)
-      expect(events.docs[0].result).toBe('paid')
+      expect(events.docs[0].result).toBe('paid_incomplete')
 
       const ents = await payload.find({
         collection: 'entitlements',
@@ -1351,6 +1359,87 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
         overrideAccess: true,
       })
       expect(ents.totalDocs).toBe(1)
+    })
+
+    it('T2-09c: tiến trình chết sau khi đơn chuyển paid, trước khi cấp quyền -> gửi lại cấp bù quyền', async () => {
+      vi.stubEnv('PAYMENT_PROVIDER', 'sepay')
+      vi.stubEnv('SEPAY_WEBHOOK_API_KEY', TEST_SEPAY_API_KEY)
+
+      const customer = await payload.create({
+        collection: 'customers',
+        data: { email: `cust-nogrant-${randomUUID()}@example.test`, name: 'Khach No Grant' },
+        overrideAccess: true,
+      })
+      createdCustomers.push(customer.id)
+
+      const orderResult = await createDigitalToolOrder(customer.id, digitalToolSlug, {
+        termsAccepted: true,
+        ip: nextIp(),
+      })
+      const order = (
+        await payload.find({
+          collection: 'orders',
+          where: { payToken: { equals: orderResult.payToken } },
+          overrideAccess: true,
+        })
+      ).docs[0]
+      createdOrders.push(order.id)
+
+      const txId = String(Date.now() + 995)
+      await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          order: order.id,
+          rawPayload: { id: txId },
+          signatureValid: true,
+          result: 'processing',
+          transactionId: txId,
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+      // Đơn đã paid nhưng chưa cấp quyền (deliveryStatus vẫn 'none')
+      await payload.update({
+        collection: 'orders',
+        id: order.id,
+        data: { paymentStatus: 'paid', paidAt: new Date().toISOString() },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
+      advanceClockPastResume()
+      const res = await sepayWebhookRoute(
+        new Request('http://localhost/api/payments/sepay/webhook', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Apikey ${TEST_SEPAY_API_KEY}`,
+          },
+          body: JSON.stringify({
+            id: txId,
+            transferAmount: 178000,
+            content: `CK ${order.paymentRef}`,
+            transferType: 'in',
+          }),
+        }),
+        { emailSender: new MockEmailSender() },
+      )
+      expect(res.status).toBe(200)
+      expect((await res.json()).result).toBe('paid_incomplete')
+
+      const ents = await payload.find({
+        collection: 'entitlements',
+        where: { customer: { equals: customer.id } },
+        overrideAccess: true,
+      })
+      expect(ents.docs.some((e) => e.status === 'active')).toBe(true)
+      const refreshed = await payload.findByID({
+        collection: 'orders',
+        id: order.id,
+        overrideAccess: true,
+      })
+      expect(refreshed.deliveryStatus).toBe('access_granted')
     })
   })
 

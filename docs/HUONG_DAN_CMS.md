@@ -831,7 +831,14 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 
 6. **Đang xử lý chưa xong (`processing`) – Cảnh báo nổi bật**:
    - Xảy ra khi máy chủ gặp lỗi giữa lúc ghi nhận thanh toán. SePay tự gửi lại sau ít phút và hệ thống xử lý tiếp (không cấp quyền 2 lần).
-   - Quá 30 phút vẫn còn cảnh báo này: mở đơn xem trạng thái. Đơn vẫn **Chờ thanh toán** mà tiền đã vào tài khoản → bấm **✓ Xác nhận thanh toán**; báo anh IT xem log máy chủ.
+   - Quá 30 phút vẫn còn cảnh báo này: mở đơn xem trạng thái và đối chiếu sao kê ngân hàng. Đơn vẫn **Chờ thanh toán** mà tiền đã vào tài khoản → bấm **✓ Xác nhận thanh toán**; báo anh IT xem log máy chủ. Nếu đơn đã **Đã thanh toán** nhờ một giao dịch khác thì khách có thể đã chuyển 2 lần → liên hệ khách.
+
+7. **Thành công sau khi xử lý lại (`paid_incomplete`) – Cảnh báo nổi bật**:
+   - Lần xử lý đầu bị gián đoạn sau khi đơn đã chuyển **Đã thanh toán**. Hệ thống tự cấp lại quyền còn thiếu, nhưng **không** gửi lại email.
+   - Việc Hana cần làm: mở khách hàng kiểm tra đã có quyền dùng công cụ / gói; nhắn khách xác nhận đã nhận tiền nếu khách chưa nhận email.
+
+8. **Đơn đã được xác nhận tay trước đó (`confirmed_manually_before`)**:
+   - Hana đã bấm **✓ Xác nhận thanh toán** trước khi SePay báo về. Bình thường, không cần làm gì (nhưng nếu ngân hàng có 2 khoản tiền cho cùng mã đơn thì liên hệ khách).
 
 ---
 

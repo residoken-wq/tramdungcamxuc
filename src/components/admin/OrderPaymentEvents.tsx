@@ -104,7 +104,9 @@ export const OrderPaymentEvents: React.FC = () => {
         const isTermsMissing = ev.isTermsMissing
         const isPaidTwice = ev.isPaidTwice
         const isStuck = ev.isStuck
-        const isWarning = isMismatch || isCancelled || isTermsMissing || isPaidTwice || isStuck
+        const isIncomplete = ev.isIncomplete
+        const isWarning =
+          isMismatch || isCancelled || isTermsMissing || isPaidTwice || isStuck || isIncomplete
 
         return (
           <div
@@ -226,6 +228,24 @@ export const OrderPaymentEvents: React.FC = () => {
                 }}
               >
                 <span>{vi.payment.ui.adminActions.stuckWarning}</span>
+              </div>
+            )}
+
+            {/* Cảnh báo nổi bật: Xử lý lại sau gián đoạn */}
+            {isIncomplete && (
+              <div
+                style={{
+                  backgroundColor: '#FDE6F6',
+                  color: '#BC039E',
+                  fontWeight: 700,
+                  padding: '4px 6px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <span>{vi.payment.ui.adminActions.incompleteWarning}</span>
               </div>
             )}
 

@@ -275,6 +275,7 @@ export interface OrderPaymentEventItem {
   isTermsMissing?: boolean
   isPaidTwice?: boolean
   isStuck?: boolean
+  isIncomplete?: boolean
 }
 
 // REVIEW-REQUIRED: Server action lấy danh sách sự kiện thanh toán của đơn hàng cho chủ sở hữu (owner).
@@ -330,6 +331,7 @@ export async function getOrderPaymentEventsAction(
         isTermsMissing: ev.result === 'terms_missing',
         isPaidTwice: ev.result === 'already_paid',
         isStuck: ev.result === 'processing',
+        isIncomplete: ev.result === 'paid_incomplete',
       }
     })
   } catch (err) {

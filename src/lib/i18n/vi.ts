@@ -778,7 +778,10 @@ export const vi = {
         orderCancelledWarning: 'Đơn đã hủy – Khách vẫn chuyển tiền',
         termsMissingWarning: 'Chưa đồng ý điều khoản – Cần xử lý tay',
         paidTwiceWarning: 'Khách chuyển tiền lần nữa cho đơn đã thanh toán – Cần liên hệ khách',
-        stuckWarning: 'Đang xử lý chưa xong – Chờ SePay gửi lại; quá 30 phút thì kiểm tra đơn',
+        stuckWarning:
+          'Đang xử lý chưa xong – Chờ SePay gửi lại; quá 30 phút thì kiểm tra đơn và đối chiếu ngân hàng',
+        incompleteWarning:
+          'Đã nhận tiền nhưng lần xử lý đầu bị gián đoạn – Kiểm tra khách đã có quyền; có thể khách chưa nhận email xác nhận',
         loadingEvents: 'Đang tải...',
         resultLabel: 'Kết quả:',
         recorded: 'Đã ghi nhận',
@@ -795,6 +798,8 @@ export const vi = {
           no_match: 'Không khớp đơn',
           ignored: 'Bỏ qua',
           processing: 'Đang xử lý',
+          paid_incomplete: 'Thành công (xử lý lại)',
+          confirmed_manually_before: 'Đơn đã được xác nhận tay trước đó',
         },
         panelTitle: 'Thao tác đơn hàng (Chủ sở hữu)',
         panelDesc:
