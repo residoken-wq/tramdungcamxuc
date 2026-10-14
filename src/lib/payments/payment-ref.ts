@@ -28,3 +28,24 @@ export async function generateUniquePaymentRef(
 export function generatePayToken(): string {
   return randomBytes(24).toString('base64url')
 }
+
+/**
+ * REVIEW-REQUIRED: Trích xuất paymentRef từ chuỗi nội dung chuyển khoản của ngân hàng.
+ * Ngân hàng có thể thêm tiền tố/hậu tố, đổi chữ hoa/thường, hoặc thêm dấu cách.
+ * Tìm TDCX + 5 ký tự thuộc PAYMENT_REF_ALPHABET, không phân biệt hoa thường.
+ * Không thấy hoặc thấy 2 mã khác nhau -> trả về null.
+ */
+export function extractPaymentRef(text?: string | null): string | null {
+  if (!text || typeof text !== 'string') return null
+  const pattern = new RegExp(`TDCX\\s*[${PAYMENT_REF_ALPHABET}]{5}`, 'gi')
+  const matches = text.match(pattern)
+  if (!matches || matches.length === 0) return null
+
+  const normalized = Array.from(
+    new Set(matches.map((m) => m.replace(/\s+/g, '').toUpperCase())),
+  )
+  if (normalized.length !== 1) {
+    return null
+  }
+  return normalized[0]
+}

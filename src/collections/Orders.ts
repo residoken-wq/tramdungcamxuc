@@ -349,6 +349,17 @@ export const Orders: CollectionConfig = {
       },
     },
     {
+      name: 'paymentEventsList',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/OrderPaymentEvents#OrderPaymentEvents',
+        },
+      },
+    },
+
+    {
       ...select(
         'paymentStatus',
         'Trạng thái thanh toán',

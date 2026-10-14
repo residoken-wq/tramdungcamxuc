@@ -762,9 +762,45 @@ export const vi = {
           '• Sau khi nhận được chuyển khoản, Coach Hana Lương sẽ xác nhận đơn và gửi link đặt lịch qua email của bạn trong thời gian sớm nhất.',
         timingNoticeLine2:
           '• Nếu cần hỗ trợ khẩn cấp, bạn có thể nhắn tin qua nút chat Zalo ở góc dưới màn hình.',
+        timingNoticeSepay: 'Hệ thống tự xác nhận trong vài phút sau khi nhận tiền',
+        timingNoticeSepaySub:
+          'Trang sẽ tự động cập nhật ngay khi giao dịch hoàn tất (đang tự động kiểm tra).',
+        pollTimedOutNotice:
+          'Hết thời gian chờ tự động. Vui lòng tải lại trang để kiểm tra hoặc liên hệ Hana nếu bạn đã chuyển khoản thành công.',
+        goToToolButton: 'Vào sử dụng công cụ ngay →',
+        goToAccountButton: 'Vào tài khoản của tôi →',
         backHomeButton: '← Quay về trang chủ',
       },
       adminActions: {
+        paymentEventsTitle: 'Sự kiện thanh toán (Webhook / Đối soát)',
+        noPaymentEvents: 'Chưa có sự kiện thanh toán nào được ghi nhận cho đơn này.',
+        amountMismatchWarning: 'Lệch số tiền – Cần xử lý tay',
+        orderCancelledWarning: 'Đơn đã hủy – Khách vẫn chuyển tiền',
+        termsMissingWarning: 'Chưa đồng ý điều khoản – Cần xử lý tay',
+        paidTwiceWarning: 'Khách chuyển tiền lần nữa cho đơn đã thanh toán – Cần liên hệ khách',
+        stuckWarning:
+          'Đang xử lý chưa xong – Chờ SePay gửi lại; quá 30 phút thì kiểm tra đơn và đối chiếu ngân hàng',
+        incompleteWarning:
+          'Đã nhận tiền nhưng lần xử lý đầu bị gián đoạn – Kiểm tra khách đã có quyền; có thể khách chưa nhận email xác nhận',
+        loadingEvents: 'Đang tải...',
+        resultLabel: 'Kết quả:',
+        recorded: 'Đã ghi nhận',
+        eventResults: {
+          paid: 'Thành công',
+          duplicate: 'Trùng lặp',
+          already_paid: 'Đơn đã thanh toán trước đó',
+          amount_mismatch: 'Lệch số tiền',
+          order_cancelled: 'Đơn đã bị hủy',
+          terms_missing: 'Chưa đồng ý điều khoản',
+          invalid_signature: 'Sai chữ ký / API key',
+          invalid_payload: 'Dữ liệu không hợp lệ',
+          payload_too_large: 'Dung lượng quá lớn',
+          no_match: 'Không khớp đơn',
+          ignored: 'Bỏ qua',
+          processing: 'Đang xử lý',
+          paid_incomplete: 'Thành công (xử lý lại)',
+          confirmed_manually_before: 'Đơn đã được xác nhận tay trước đó',
+        },
         panelTitle: 'Thao tác đơn hàng (Chủ sở hữu)',
         panelDesc:
           'Trạng thái thanh toán được bảo vệ và chỉ có thể thay đổi an toàn qua các nút chức năng bên dưới.',

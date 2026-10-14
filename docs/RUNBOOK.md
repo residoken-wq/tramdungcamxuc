@@ -608,6 +608,66 @@ Hệ thống tích hợp trực tiếp dịch vụ Bunny Stream (`https://bunny.
 
 ---
 
+### Cấu hình Tự động hóa thanh toán qua SePay Webhook (T2-09)
+
+Hệ thống hỗ trợ 2 chế độ xử lý thanh toán, chuyển đổi linh hoạt qua biến môi trường `PAYMENT_PROVIDER`:
+
+- `manual` (mặc định): Miễn phí, VietQR hiển thị thông tin chuyển khoản; Hana bấm nút "Xác nhận thanh toán" thủ công trong trang quản trị CMS.
+- `sepay`: Tự động 100%, SePay gọi webhook khi có tiền về tài khoản ngân hàng -> hệ thống tự đổi đơn sang `paid`, cấp quyền truy cập, gửi email xác nhận. Nút xác nhận thủ công trong admin vẫn được giữ lại để dự phòng.
+
+#### Hướng dẫn anh IT bật chế độ tự động SePay trên Production
+
+1. **Đăng ký tài khoản SePay:**
+   - Truy cập `https://sepay.vn` và đăng ký tài khoản (tài khoản cá nhân theo Q8).
+2. **Liên kết tài khoản ngân hàng:**
+   - Trong bảng điều khiển SePay, thêm tài khoản ngân hàng nhận tiền của Hana (khớp với số tài khoản và ngân hàng đã cấu hình trong CMS `siteSettings`).
+3. **Tạo Webhook trên SePay Dashboard:**
+   - Vào mục **Tích hợp Webhook** -> Bấm **Thêm Webhook**.
+   - **URL Webhook**: Nhập đường dẫn chính thức:
+     `https://tramdungcamxuc.com/api/payments/sepay/webhook`
+   - **Phương thức xác thực**: Chọn **API Key**.
+   - Tạo hoặc sao chép **API Key** bí mật được cấp (chuỗi ngẫu nhiên dài, ví dụ: `sepay_live_xxxx...`).
+   - Chọn sự kiện kích hoạt: Giao dịch tiền vào (`transferType: in`).
+4. **Cấu hình biến môi trường trên Server:**
+   - Mở file `.env` trên máy chủ và cập nhật 2 biến:
+     ```env
+     PAYMENT_PROVIDER=sepay
+     SEPAY_WEBHOOK_API_KEY=sepay_live_xxxx...
+     ```
+   - _Lưu ý_: Tuyệt đối không commit giá trị khóa thật vào Git, log hay gửi qua kênh chat công khai.
+5. **Khởi động lại ứng dụng:**
+   - Chạy lệnh cập nhật container trên máy chủ (Lưu ý: lệnh `restart` không nhận các biến môi trường mới khai báo trong `.env`, bắt buộc dùng lệnh `up -d`):
+     ```bash
+     docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
+     ```
+6. **Kiểm tra nghiệm thu:**
+   - Tạo một đơn hàng thông thường trên web (vd. mua Habit Tracker) và chuyển **đúng tổng số tiền** của đơn đó, nội dung là mã chuyển khoản trên trang đơn. Không chuyển số tiền thử nhỏ hơn: hệ thống so số tiền chính xác nên sẽ ghi `amount_mismatch`. (Sản phẩm ẩn không đặt mua được, nên không dùng cách tạo sản phẩm thử giá thấp.)
+   - Quét mã VietQR trên trang thanh toán đơn hàng.
+   - Kiểm tra:
+     - Trong vòng vài giây sau khi ngân hàng báo biến động số dư, SePay gọi webhook.
+     - Trang đơn hàng của khách tự động phát hiện trạng thái đã chuyển sang "Đã thanh toán" (polling 5s).
+     - Khách nhận được email kích hoạt.
+     - Trong CMS Admin của đơn hàng, khung "Sự kiện thanh toán" hiển thị bản ghi SePay `paid`.
+
+#### Quy trình chuyển về chế độ thủ công (`manual`) khi SePay trục trặc
+
+Nếu SePay gặp sự cố bảo trì, gián đoạn mạng hoặc ngân hàng đổi kết nối:
+
+1. Mở file `.env` trên server và đổi lại:
+   ```env
+   PAYMENT_PROVIDER=manual
+   ```
+2. Khởi động lại container bằng `up -d` để nhận biến mới:
+   ```bash
+   docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
+   ```
+3. Hệ thống sẽ ngay lập tức quay về chế độ VietQR miễn phí:
+   - Các đơn hàng đang chờ hoặc đơn mới tạo vẫn giữ nguyên mã VietQR hợp lệ.
+   - Hana mở danh sách đơn hàng trong CMS Admin và bấm nút **"Xác nhận thanh toán"** thủ công như bình thường.
+   - Khi SePay hoạt động ổn định trở lại, chỉ cần đổi lại `PAYMENT_PROVIDER=sepay` và chạy lại lệnh `up -d` mà không làm mất bất kỳ dữ liệu nào.
+
+---
+
 ## Dữ liệu demo GĐ 2 (T2-15)
 
 Dành cho Hana, anh Nhân và đội ngũ kiểm thử bấm trải nghiệm ngay các tính năng chính của Giai đoạn 2 trên server demo hoặc máy dev:

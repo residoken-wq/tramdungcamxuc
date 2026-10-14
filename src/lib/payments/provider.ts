@@ -1,55 +1,21 @@
+import { assertValidBankConfig, buildVietQrPayload, generateVietQrSvg } from './vietqr'
 import {
-  assertValidBankConfig,
-  buildVietQrPayload,
-  generateVietQrSvg,
+  type BankAccountInfo,
   type BankConfig,
-} from './vietqr'
+  type PaymentCreationResult,
+  type PaymentOrderInput,
+  type PaymentProvider,
+  type WebhookParseResult,
+} from './types'
+import { SepayPaymentProvider } from './sepay'
 
-export interface PaymentOrderInput {
-  id?: number | string
-  paymentRef: string
-  total: number
-  payToken?: string | null
-  items?: Array<{
-    product?: number | { id: number; name?: string; title?: string } | null
-    price?: number
-  }>
-}
-
-export interface BankAccountInfo {
-  bankBin: string
-  bankName?: string
-  accountNumber: string
-  accountName: string
-  transferPrefix?: string
-}
-
-export interface PaymentCreationResult {
-  paymentRef: string
-  amount: number
-  bankInfo: BankAccountInfo
-  qrPayload: string
-  qrSvg: string
-  sandbox: boolean
-  orderSummary?: string
-}
-
-export interface WebhookParseResult {
-  paymentRef: string
-  amount: number
-  transactionId?: string
-  raw?: unknown
-}
-
-export interface PaymentProvider {
-  readonly name: string
-  createPayment(
-    order: PaymentOrderInput,
-    bankInfo: BankConfig,
-    options?: { sandbox?: boolean },
-  ): Promise<PaymentCreationResult>
-  verifyWebhook(req: Request | Record<string, unknown>): Promise<boolean>
-  parseWebhook(req: Request | Record<string, unknown>): Promise<WebhookParseResult>
+export type {
+  BankAccountInfo,
+  BankConfig,
+  PaymentCreationResult,
+  PaymentOrderInput,
+  PaymentProvider,
+  WebhookParseResult,
 }
 
 /**
@@ -107,14 +73,48 @@ export class ManualPaymentProvider implements PaymentProvider {
   }
 }
 
+let hasWarnedInvalidProvider = false
+
 /**
  * Trả về provider thanh toán tương ứng dựa theo biến môi trường PAYMENT_PROVIDER (mặc định là 'manual').
  * Đảm bảo luồng thanh toán không bị phụ thuộc cứng vào bất kỳ cổng cụ thể nào.
+ * - Nếu tham số name được truyền rõ ràng: trả về provider tương ứng hoặc ném lỗi nếu không hỗ trợ.
+ * - Nếu đọc từ biến môi trường: giá trị lạ sẽ console.warn 1 lần và fallback về 'manual'.
  */
 export function getPaymentProvider(name?: string): PaymentProvider {
-  const providerName = name || process.env.PAYMENT_PROVIDER || 'manual'
-  if (providerName === 'manual') {
+  if (name !== undefined) {
+    const normalizedName = name.trim().toLowerCase()
+    if (normalizedName === 'manual') {
+      return new ManualPaymentProvider()
+    }
+    if (normalizedName === 'sepay') {
+      return new SepayPaymentProvider()
+    }
+    throw new Error(`Cổng thanh toán "${name}" chưa được hỗ trợ trong hệ thống.`)
+  }
+
+  const rawEnv = process.env.PAYMENT_PROVIDER || 'manual'
+  const normalizedEnv = normalizePaymentProviderEnv()
+
+  if (normalizedEnv === 'manual') {
     return new ManualPaymentProvider()
   }
-  throw new Error(`Cổng thanh toán "${providerName}" chưa được hỗ trợ trong hệ thống.`)
+  if (normalizedEnv === 'sepay') {
+    return new SepayPaymentProvider()
+  }
+
+  if (!hasWarnedInvalidProvider) {
+    console.warn(`[payment] Cổng thanh toán "${rawEnv}" không hợp lệ, chuyển về chế độ "manual".`)
+    hasWarnedInvalidProvider = true
+  }
+  return new ManualPaymentProvider()
+}
+
+function normalizePaymentProviderEnv(): string {
+  return (process.env.PAYMENT_PROVIDER || 'manual').trim().toLowerCase()
+}
+
+/** Chế độ SePay đang bật (cùng cách chuẩn hóa với getPaymentProvider: không phân biệt hoa thường). */
+export function isSepayMode(): boolean {
+  return normalizePaymentProviderEnv() === 'sepay'
 }

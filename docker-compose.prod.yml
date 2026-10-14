@@ -18,6 +18,8 @@ services:
       # Without CRON_SECRET /api/cron/expire-orders always answers 401 and pending orders never expire.
       CRON_SECRET: ${CRON_SECRET:-}
       PAYMENT_SANDBOX: ${PAYMENT_SANDBOX:-}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-manual}
+      SEPAY_WEBHOOK_API_KEY: ${SEPAY_WEBHOOK_API_KEY:-}
     ports:
       - '${APP_PORT:-3000}:3000'
     volumes:

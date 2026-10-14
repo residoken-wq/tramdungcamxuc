@@ -9,6 +9,7 @@ import * as migration_20261010_124840_customer_auth from './20261010_124840_cust
 import * as migration_20261012_122924_workshop_reminders from './20261012_122924_workshop_reminders'
 import * as migration_20261012_161015_trial_reminders from './20261012_161015_trial_reminders'
 import * as migration_20261013_015236_tracker_and_nudges from './20261013_015236_tracker_and_nudges'
+import * as migration_20261013_083641_sepay_transaction_id from './20261013_083641_sepay_transaction_id'
 
 export const migrations = [
   {
@@ -65,5 +66,10 @@ export const migrations = [
     up: migration_20261013_015236_tracker_and_nudges.up,
     down: migration_20261013_015236_tracker_and_nudges.down,
     name: '20261013_015236_tracker_and_nudges',
+  },
+  {
+    up: migration_20261013_083641_sepay_transaction_id.up,
+    down: migration_20261013_083641_sepay_transaction_id.down,
+    name: '20261013_083641_sepay_transaction_id',
   },
 ]
