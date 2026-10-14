@@ -12,6 +12,7 @@ import { vi } from '@/lib/i18n/vi'
 import { getToolUrl } from '@/lib/products'
 import { Button } from '@/components/ui/Button'
 import { WorkshopSchedule } from '@/components/site/account/WorkshopSchedule'
+import { AccountDeletionRequest } from '@/components/account/AccountDeletionRequest'
 
 export const metadata: Metadata = {
   title: 'Tài khoản của tôi | Trạm Dừng Cảm Xúc',
@@ -214,6 +215,7 @@ export default async function AccountPage() {
               <p className="font-sans text-sm text-deep-navy/60">{vi.auth.myOrdersEmpty}</p>
             </div>
           </div>
+          <AccountDeletionRequest initialRequestedAt={customer.deletionRequestedAt} />
         </div>
       </div>
     </div>
