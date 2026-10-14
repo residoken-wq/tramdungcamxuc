@@ -1,6 +1,7 @@
 import {
   APIError,
   type CollectionBeforeDeleteHook,
+  type CollectionBeforeValidateHook,
   type CollectionConfig,
   type FieldAccess,
 } from 'payload'
@@ -24,6 +25,15 @@ const nameUpdateAccess: FieldAccess = async (args) => {
     req: args.req,
   })
   return certificates.totalDocs === 0
+}
+
+// REVIEW-REQUIRED: Chuẩn hóa họ tên khách hàng trước khi validate và lưu (T2-16b C6).
+// Loại bỏ khoảng trắng thừa ở đầu/cuối để tránh lọt ký tự điều khiển và lưu giá trị chuẩn.
+const sanitizeCustomerName: CollectionBeforeValidateHook = ({ data }) => {
+  if (data && typeof data.name === 'string') {
+    data.name = data.name.trim()
+  }
+  return data
 }
 
 // REVIEW-REQUIRED: Chặn xóa khách hàng ngoài luồng chuẩn (T2-16b A1).
@@ -58,6 +68,7 @@ export const Customers: CollectionConfig = {
     delete: isOwner,
   },
   hooks: {
+    beforeValidate: [sanitizeCustomerName],
     beforeDelete: [preventUnauthorizedCustomerDelete],
   },
   fields: [

@@ -95,7 +95,7 @@ describe('access control (T0-07)', () => {
     if (!payload) return
     try {
       for (const entry of created.reverse())
-        await payload.delete({ ...entry, overrideAccess: true })
+        await payload.delete({ ...entry, overrideAccess: true, context: { accountDeletion: true } })
     } finally {
       await payload.destroy()
     }

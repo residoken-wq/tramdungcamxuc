@@ -443,7 +443,12 @@ describe('Workshop Schedule & 24h Reminder (T2-10)', () => {
       // Orders keep a required customer (outside T2-10); remove it so only the reminder FK is tested.
       await payload.delete({ collection: 'orders', id: order.id, overrideAccess: true })
       await expect(
-        payload.delete({ collection: 'customers', id: customer.id, overrideAccess: true }),
+        payload.delete({
+          collection: 'customers',
+          id: customer.id,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        }),
       ).resolves.toBeTruthy()
     })
   })

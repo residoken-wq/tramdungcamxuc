@@ -100,6 +100,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
         overrideAccess: true,
       })) as User,
     )
+    ownerUser.role = 'owner'
 
     editorUser = track(
       'users',

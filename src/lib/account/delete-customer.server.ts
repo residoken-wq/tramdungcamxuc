@@ -1,6 +1,7 @@
 import 'server-only'
 
-import type { Payload, Where } from 'payload'
+import type { Payload, PayloadRequest, Where } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
 import { hashTrialEmail } from '@/lib/auth/token'
 import { vi } from '@/lib/i18n/vi'
 import type { DeleteCustomerDataResult } from './types'
@@ -9,6 +10,15 @@ export interface DeleteCustomerParams {
   customerId: number
   confirmationEmail: string
   actorUserId?: number | string
+}
+
+interface DrizzleDbExecutor {
+  execute: (query: unknown) => Promise<unknown>
+}
+
+function getDrizzleDb(payload: Payload): DrizzleDbExecutor | null {
+  const db = (payload.db as unknown as { drizzle?: DrizzleDbExecutor })?.drizzle
+  return db && typeof db.execute === 'function' ? db : null
 }
 
 // REVIEW-REQUIRED: Xóa vĩnh viễn dữ liệu cá nhân của khách hàng theo Nghị định 13/2023/NĐ-CP.
@@ -54,18 +64,20 @@ export async function deleteCustomerData(
 
   const customerId = customer.id
   const customerEmail = customer.email
+  const normalizedEmail = customerEmail.trim().toLowerCase()
+  const db = getDrizzleDb(payload)
   const tally: Record<string, number> = {}
 
   let transactionID: null | number | string = null
   if (payload.db && typeof payload.db.beginTransaction === 'function') {
     transactionID = await payload.db.beginTransaction()
   }
-  const req: any = {
+  const req = {
     ...(transactionID ? { transactionID } : {}),
     context: {
       accountDeletion: true,
     },
-  }
+  } as unknown as PayloadRequest
 
   try {
     // 1. Thu thập các bản ghi liên kết của khách hàng bên trong transaction
@@ -91,16 +103,31 @@ export async function deleteCustomerData(
       }
     }
 
-    const habitPlans = await payload.find({
-      collection: 'habitPlans',
-      where: {
-        or: [{ customer: { equals: customerId } }, { leadEmail: { equals: customerEmail } }],
-      },
-      pagination: false,
-      req,
-      overrideAccess: true,
-    })
-    const planIds = habitPlans.docs.map((p) => p.id)
+    let planIds: number[] = []
+    if (db) {
+      const planRowsResult = await db.execute(
+        sql`SELECT id FROM "habit_plans" WHERE "customer_id" = ${customerId} OR lower("lead_email") = ${normalizedEmail}`,
+      )
+      const planRows = Array.isArray(planRowsResult)
+        ? planRowsResult
+        : ((planRowsResult as { rows?: Array<{ id: number }> }).rows ?? [])
+      planIds = planRows.map((r: { id: number }) => r.id)
+    } else {
+      const habitPlans = await payload.find({
+        collection: 'habitPlans',
+        where: {
+          or: [
+            { customer: { equals: customerId } },
+            { leadEmail: { equals: customerEmail } },
+            { leadEmail: { equals: normalizedEmail } },
+          ],
+        },
+        pagination: false,
+        req,
+        overrideAccess: true,
+      })
+      planIds = habitPlans.docs.map((p) => p.id)
+    }
 
     const entitlements = await payload.find({
       collection: 'entitlements',
@@ -303,48 +330,126 @@ export async function deleteCustomerData(
       tally.entitlements = 0
     }
 
-    // 11. Xóa otpCodes (theo email)
+    // 11. Xóa otpCodes (theo email, không phân biệt hoa thường)
     {
-      const resOtp = await payload.delete({
-        collection: 'otpCodes',
-        where: { email: { equals: customerEmail } },
-        req,
-        overrideAccess: true,
-      })
-      if (resOtp.errors && resOtp.errors.length > 0) {
-        throw new Error(`Lỗi khi xóa otpCodes: ${resOtp.errors.map((e) => e.message).join(', ')}`)
-      }
-      tally.otpCodes = resOtp.docs?.length ?? 0
-    }
-
-    // 12. Xóa diagnosticResults (theo email)
-    {
-      const resDiag = await payload.delete({
-        collection: 'diagnosticResults',
-        where: { email: { equals: customerEmail } },
-        req,
-        overrideAccess: true,
-      })
-      if (resDiag.errors && resDiag.errors.length > 0) {
-        throw new Error(
-          `Lỗi khi xóa diagnosticResults: ${resDiag.errors.map((e) => e.message).join(', ')}`,
+      let otpIds: number[] = []
+      if (db) {
+        const otpRowsResult = await db.execute(
+          sql`SELECT id FROM "otp_codes" WHERE lower("email") = ${normalizedEmail}`,
         )
+        const otpRows = Array.isArray(otpRowsResult)
+          ? otpRowsResult
+          : ((otpRowsResult as { rows?: Array<{ id: number }> }).rows ?? [])
+        otpIds = otpRows.map((r: { id: number }) => r.id)
+      } else {
+        const otps = await payload.find({
+          collection: 'otpCodes',
+          where: {
+            or: [{ email: { equals: customerEmail } }, { email: { equals: normalizedEmail } }],
+          },
+          pagination: false,
+          req,
+          overrideAccess: true,
+        })
+        otpIds = otps.docs.map((o) => o.id)
       }
-      tally.diagnosticResults = resDiag.docs?.length ?? 0
+
+      if (otpIds.length > 0) {
+        const resOtp = await payload.delete({
+          collection: 'otpCodes',
+          where: { id: { in: otpIds } },
+          req,
+          overrideAccess: true,
+        })
+        if (resOtp.errors && resOtp.errors.length > 0) {
+          throw new Error(`Lỗi khi xóa otpCodes: ${resOtp.errors.map((e) => e.message).join(', ')}`)
+        }
+        tally.otpCodes = resOtp.docs?.length ?? 0
+      } else {
+        tally.otpCodes = 0
+      }
     }
 
-    // 13. Xóa leads (theo email)
+    // 12. Xóa diagnosticResults (theo email, không phân biệt hoa thường)
     {
-      const resLeads = await payload.delete({
-        collection: 'leads',
-        where: { email: { equals: customerEmail } },
-        req,
-        overrideAccess: true,
-      })
-      if (resLeads.errors && resLeads.errors.length > 0) {
-        throw new Error(`Lỗi khi xóa leads: ${resLeads.errors.map((e) => e.message).join(', ')}`)
+      let diagIds: number[] = []
+      if (db) {
+        const diagRowsResult = await db.execute(
+          sql`SELECT id FROM "diagnostic_results" WHERE lower("email") = ${normalizedEmail}`,
+        )
+        const diagRows = Array.isArray(diagRowsResult)
+          ? diagRowsResult
+          : ((diagRowsResult as { rows?: Array<{ id: number }> }).rows ?? [])
+        diagIds = diagRows.map((r: { id: number }) => r.id)
+      } else {
+        const diags = await payload.find({
+          collection: 'diagnosticResults',
+          where: {
+            or: [{ email: { equals: customerEmail } }, { email: { equals: normalizedEmail } }],
+          },
+          pagination: false,
+          req,
+          overrideAccess: true,
+        })
+        diagIds = diags.docs.map((d) => d.id)
       }
-      tally.leads = resLeads.docs?.length ?? 0
+
+      if (diagIds.length > 0) {
+        const resDiag = await payload.delete({
+          collection: 'diagnosticResults',
+          where: { id: { in: diagIds } },
+          req,
+          overrideAccess: true,
+        })
+        if (resDiag.errors && resDiag.errors.length > 0) {
+          throw new Error(
+            `Lỗi khi xóa diagnosticResults: ${resDiag.errors.map((e) => e.message).join(', ')}`,
+          )
+        }
+        tally.diagnosticResults = resDiag.docs?.length ?? 0
+      } else {
+        tally.diagnosticResults = 0
+      }
+    }
+
+    // 13. Xóa leads (theo email, không phân biệt hoa thường)
+    {
+      let leadIds: number[] = []
+      if (db) {
+        const leadRowsResult = await db.execute(
+          sql`SELECT id FROM "leads" WHERE lower("email") = ${normalizedEmail}`,
+        )
+        const leadRows = Array.isArray(leadRowsResult)
+          ? leadRowsResult
+          : ((leadRowsResult as { rows?: Array<{ id: number }> }).rows ?? [])
+        leadIds = leadRows.map((r: { id: number }) => r.id)
+      } else {
+        const leads = await payload.find({
+          collection: 'leads',
+          where: {
+            or: [{ email: { equals: customerEmail } }, { email: { equals: normalizedEmail } }],
+          },
+          pagination: false,
+          req,
+          overrideAccess: true,
+        })
+        leadIds = leads.docs.map((l) => l.id)
+      }
+
+      if (leadIds.length > 0) {
+        const resLeads = await payload.delete({
+          collection: 'leads',
+          where: { id: { in: leadIds } },
+          req,
+          overrideAccess: true,
+        })
+        if (resLeads.errors && resLeads.errors.length > 0) {
+          throw new Error(`Lỗi khi xóa leads: ${resLeads.errors.map((e) => e.message).join(', ')}`)
+        }
+        tally.leads = resLeads.docs?.length ?? 0
+      } else {
+        tally.leads = 0
+      }
     }
 
     // 13b. REVIEW-REQUIRED: Chuyển đơn hàng 'failed' sang 'cancelled' và ghi nhật ký thao tác (T2-16b A2, anh Nhân chốt 14/10).

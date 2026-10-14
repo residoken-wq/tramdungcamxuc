@@ -75,6 +75,28 @@ describe('Trial Actions & Quiz CTA (T2-04)', () => {
     saleStatus?: 'on_sale' | 'consult' | 'coming_soon' | 'free' | 'hidden'
     status?: 'published' | 'draft'
   }): Promise<Product> {
+    if (data.slug) {
+      const existing = await payload.find({
+        collection: 'products',
+        where: { slug: { equals: data.slug } },
+        overrideAccess: true,
+      })
+      if (existing.docs[0]) {
+        const updated = await payload.update({
+          collection: 'products',
+          id: existing.docs[0].id,
+          data: {
+            name: data.name,
+            trialDays: data.trialDays ?? 21,
+            saleStatus: data.saleStatus ?? 'on_sale',
+            _status: data.status ?? 'published',
+          },
+          overrideAccess: true,
+        })
+        createdProducts.push(updated.id)
+        return updated
+      }
+    }
     const prod = await payload.create({
       collection: 'products',
       data: {

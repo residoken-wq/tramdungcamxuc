@@ -30,6 +30,14 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
     payload = await getPayload({ config })
     // Dọn dữ liệu demo cũ; dùng lại sản phẩm habit-tracker-so nếu đã có (không xóa danh mục mẫu)
     await cleanDemoGd2(payload)
+    await payload
+      .delete({
+        collection: 'customers',
+        where: { email: { equals: NON_DEMO_EMAIL } },
+        overrideAccess: true,
+        context: { accountDeletion: true },
+      })
+      .catch(() => {})
     const existing = await payload.find({
       collection: 'products',
       where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
@@ -77,6 +85,7 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
           collection: 'customers',
           where: { id: { equals: nonDemoCustomerId } },
           overrideAccess: true,
+          context: { accountDeletion: true },
         })
         .catch((e) => console.error('[cleanup]', e))
     }

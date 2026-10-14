@@ -7,6 +7,7 @@ import {
   isEditorOrOwner,
   isOwner,
   isOwnerUser,
+  nobody,
 } from '../lib/auth/access'
 import { generatePayToken, generateUniquePaymentRef } from '../lib/payments/payment-ref'
 import { getEffectivePrice } from '../lib/products'
@@ -275,6 +276,19 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
   const isAlreadyAnonymized = Boolean(originalDoc?.anonymizedAt)
   const isAnonymized = isAnonymizingNow || isAlreadyAnonymized
 
+  // REVIEW-REQUIRED: Đơn đã ẩn danh không thể gán lại khách hàng.
+  if (isAlreadyAnonymized && data.customer) {
+    throw new ValidationError(
+      {
+        errors: [
+          { path: 'customer', message: 'Không thể gán lại khách hàng cho đơn hàng đã ẩn danh.' },
+        ],
+        req,
+      },
+      req?.t,
+    )
+  }
+
   if (!isAnonymized) {
     const resultingCustomer = data.customer !== undefined ? data.customer : originalDoc?.customer
     if (!resultingCustomer) {
@@ -299,7 +313,7 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
     createdByAdmin: originalDoc?.createdByAdmin,
     trialCreditOrder: originalDoc?.trialCreditOrder,
     ...(amountsEditable
-      ? isAnonymizingNow
+      ? isAnonymized
         ? { customer: null }
         : {}
       : {
@@ -445,7 +459,8 @@ export const Orders: CollectionConfig = {
         description: 'Thời điểm đơn hàng được ẩn danh khi khách hàng yêu cầu xóa dữ liệu.',
       },
       access: {
-        update: isOwner,
+        create: nobody,
+        update: nobody,
       },
     },
     {

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth, useDocumentInfo } from '@payloadcms/ui'
 import {
   deleteCustomerAdminAction,
@@ -9,6 +10,7 @@ import {
 import { vi } from '@/lib/i18n/vi'
 
 export const CustomerActions: React.FC = () => {
+  const router = useRouter()
   const { user } = useAuth()
   const { id, data } = useDocumentInfo()
 
@@ -18,25 +20,16 @@ export const CustomerActions: React.FC = () => {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
     null,
   )
+  const [pendingOrdersCount, setPendingOrdersCount] = useState<number | null>(null)
 
-  // Chỉ hiển thị panel thao tác cho người dùng có vai trò 'owner'
-  if (!user || (user as { role?: string }).role !== 'owner') {
-    return null
-  }
-
-  if (!id) {
-    return null
-  }
-
-  const customerId = Number(id)
+  const isOwner = Boolean(user && (user as { role?: string }).role === 'owner')
+  const customerId = id ? Number(id) : null
   const customerEmail = ((data as { email?: string })?.email || '').trim()
   const deletionRequestedAt = (data as { deletionRequestedAt?: string | null })?.deletionRequestedAt
 
-  const [pendingOrdersCount, setPendingOrdersCount] = useState<number | null>(null)
-
   useEffect(() => {
     let active = true
-    if (customerId) {
+    if (isOwner && customerId) {
       checkCustomerPendingOrdersAdminAction(customerId).then((res) => {
         if (active) {
           setPendingOrdersCount(res.pendingCount)
@@ -46,7 +39,12 @@ export const CustomerActions: React.FC = () => {
     return () => {
       active = false
     }
-  }, [customerId])
+  }, [isOwner, customerId])
+
+  // Chỉ hiển thị panel thao tác cho người dùng có vai trò 'owner'
+  if (!isOwner || !customerId) {
+    return null
+  }
 
   const handleDelete = async () => {
     if (loading) return
@@ -64,9 +62,8 @@ export const CustomerActions: React.FC = () => {
       if (res.success) {
         setFeedback({ type: 'success', message: res.message })
         setTimeout(() => {
-          if (typeof window !== 'undefined') {
-            window.location.href = '/admin/collections/customers'
-          }
+          router.push('/admin/collections/customers')
+          router.refresh()
         }, 1200)
       } else {
         setFeedback({ type: 'error', message: res.message })
@@ -93,9 +90,8 @@ export const CustomerActions: React.FC = () => {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <span style={{ fontSize: '14px' }}>🛡️</span>
         <span style={{ fontSize: '13px', fontWeight: 600, color: '#280A60' }}>
-          Quản lý quyền riêng tư & dữ liệu
+          {vi.account.adminDeletion.panelTitle}
         </span>
       </div>
 
@@ -116,12 +112,12 @@ export const CustomerActions: React.FC = () => {
             lineHeight: '1.4',
           }}
         >
-          <span>⚠️</span>
           <span>
-            Khách yêu cầu xóa ngày{' '}
-            {new Date(deletionRequestedAt).toLocaleDateString('vi-VN', {
-              timeZone: 'Asia/Ho_Chi_Minh',
-            })}
+            {vi.account.adminDeletion.requestedOn(
+              new Date(deletionRequestedAt).toLocaleDateString('vi-VN', {
+                timeZone: 'Asia/Ho_Chi_Minh',
+              }),
+            )}
           </span>
         </div>
       )}
@@ -133,8 +129,8 @@ export const CustomerActions: React.FC = () => {
             borderRadius: '6px',
             fontSize: '12px',
             backgroundColor: feedback.type === 'success' ? '#D9F1EA' : '#FDE6F6',
-            color: '#280A60',
-            border: `1px solid ${feedback.type === 'success' ? '#A3E3D1' : '#EF3B83'}`,
+            color: feedback.type === 'success' ? '#280A60' : '#BC039E',
+            border: `1px solid ${feedback.type === 'success' ? '#D9F1EA' : '#EF3B83'}`,
           }}
         >
           {feedback.message}
@@ -176,7 +172,7 @@ export const CustomerActions: React.FC = () => {
         disabled={loading || (pendingOrdersCount !== null && pendingOrdersCount > 0)}
         style={{
           padding: '8px 14px',
-          backgroundColor: '#B00020',
+          backgroundColor: '#EF3B83',
           color: '#FFFFFF',
           border: 'none',
           borderRadius: '8px',
@@ -194,7 +190,6 @@ export const CustomerActions: React.FC = () => {
           gap: '6px',
         }}
       >
-        <span>🗑️</span>
         <span>{vi.account.adminDeletion.button}</span>
       </button>
 
@@ -231,13 +226,20 @@ export const CustomerActions: React.FC = () => {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '20px' }}>⚠️</span>
               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#280A60' }}>
                 {vi.account.adminDeletion.modalTitle}
               </h3>
             </div>
 
-            <p style={{ margin: 0, fontSize: '13px', color: '#444', lineHeight: '1.5' }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: '13px',
+                color: '#280A60',
+                opacity: 0.8,
+                lineHeight: '1.5',
+              }}
+            >
               {vi.account.adminDeletion.modalWarning}
             </p>
 
@@ -254,10 +256,11 @@ export const CustomerActions: React.FC = () => {
                 style={{
                   padding: '10px 12px',
                   fontSize: '13px',
-                  border: '1px solid #CCC',
+                  border: '1px solid #E9DDF9',
                   borderRadius: '8px',
                   width: '100%',
                   boxSizing: 'border-box',
+                  color: '#280A60',
                 }}
               />
             </div>
@@ -300,7 +303,7 @@ export const CustomerActions: React.FC = () => {
                   cursor: 'pointer',
                 }}
               >
-                Hủy
+                {vi.account.adminDeletion.cancel}
               </button>
 
               <button
@@ -311,7 +314,7 @@ export const CustomerActions: React.FC = () => {
                 }
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#B00020',
+                  backgroundColor: '#EF3B83',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '8px',
@@ -327,7 +330,9 @@ export const CustomerActions: React.FC = () => {
                       : 1,
                 }}
               >
-                {loading ? vi.account.adminDeletion.deleting : 'Xác nhận xóa vĩnh viễn'}
+                {loading
+                  ? vi.account.adminDeletion.deleting
+                  : vi.account.adminDeletion.confirmDelete}
               </button>
             </div>
           </div>

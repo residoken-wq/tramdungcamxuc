@@ -1343,7 +1343,7 @@ export const vi = {
   },
   account: {
     validation: {
-      nameMax100: 'Họ và tên tối đa 100 ký tự sau khi cắt khoảng trắng.',
+      nameMax100: 'Họ và tên không được vượt quá 100 ký tự',
       nameSpecialChars: 'Họ và tên không được chứa ký tự <, >, {, } hoặc ký tự điều khiển.',
     },
     deletion: {
@@ -1364,6 +1364,10 @@ export const vi = {
       serverError: 'Đã có lỗi xảy ra từ máy chủ. Vui lòng thử lại sau.',
     },
     adminDeletion: {
+      panelTitle: 'Quản lý quyền riêng tư & dữ liệu',
+      requestedOn: (date: string) => `Khách yêu cầu xóa ngày ${date}`,
+      cancel: 'Hủy',
+      confirmDelete: 'Xác nhận xóa vĩnh viễn',
       button: 'Xóa dữ liệu khách',
       modalTitle: 'Xác nhận xóa dữ liệu khách hàng',
       modalWarning:

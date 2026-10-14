@@ -3,18 +3,17 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 vi.mock('server-only', () => ({}))
 
 import { randomUUID } from 'node:crypto'
+import { sql } from '@payloadcms/db-postgres'
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
-import type { Customer, HabitPlan, Order, Product } from '../../src/payload-types'
-import {
-  requestAccountDeletionAction,
-  deleteCustomerAdminAction,
-} from '../../src/lib/account/actions'
+import type { Customer, HabitPlan, Order, Product, User } from '../../src/payload-types'
+import { requestAccountDeletion, deleteCustomerAdmin } from '../../src/lib/account/actions'
 import { deleteCustomerData } from '../../src/lib/account/delete-customer.server'
 import * as sessionServer from '../../src/lib/auth/session.server'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
 import { ValidationError } from 'payload'
 import { hashRateLimitKey } from '../../src/lib/forms/ratelimit.server'
+import { createNameSchema } from '../../src/lib/forms/schemas'
 import { hashTrialEmail } from '../../src/lib/auth/token'
 import { startTrial } from '../../src/lib/entitlements/service.server'
 import { vi as viStrings } from '../../src/lib/i18n/vi'
@@ -36,9 +35,9 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
   let emailSender: MockEmailSender
   const created: { collection: CollectionSlug; id: number }[] = []
   let testProduct: Product
-  let ownerUser: any
+  let ownerUser: { id: number; email: string; role: string }
   let testStartedAt: string
-  let settingsBefore: any
+  let settingsBefore: Awaited<ReturnType<Payload['findGlobal']>> | null = null
   const trackedEmails: string[] = []
 
   const track = <T extends { id: number }>(collection: CollectionSlug, doc: T): T => {
@@ -76,8 +75,13 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
           role: 'owner',
         },
         overrideAccess: true,
-      })) as any,
+        user: { role: 'owner', collection: 'users' } as unknown as User,
+      })) as unknown as { id: number; email: string; role: string },
     )
+    await payload.db.drizzle.execute(
+      sql`UPDATE "users" SET "role" = 'owner' WHERE "id" = ${ownerUser.id}`,
+    )
+    ownerUser.role = 'owner'
 
     const existingProduct = await payload.find({
       collection: 'products',
@@ -122,7 +126,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         await payload.updateGlobal({
           slug: 'siteSettings',
           data: {
-            email: settingsBefore.email ?? '',
+            email: (settingsBefore as { email?: string | null })?.email || '',
           },
           overrideAccess: true,
         })
@@ -195,7 +199,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
       vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
 
       // Lần 1: gửi yêu cầu thành công, ghi deletionRequestedAt và gửi email cho admin
-      const res1 = await requestAccountDeletionAction({ payload, emailSender })
+      const res1 = await requestAccountDeletion({ payload, emailSender })
       expect(res1.success).toBe(true)
       expect(res1.alreadyRequested).toBe(false)
       expect(res1.requestedAt).toBeTruthy()
@@ -216,15 +220,50 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
       expect(updatedCustomer?.deletionRequestedAt).toBeTruthy()
 
       // Lần 2: gọi lại -> thành công, alreadyRequested = true, KHÔNG gửi thêm email
-      const res2 = await requestAccountDeletionAction({ payload, emailSender })
+      const res2 = await requestAccountDeletion({ payload, emailSender })
       expect(res2.success).toBe(true)
       expect(res2.alreadyRequested).toBe(true)
       expect(emailSender.sentEmails).toHaveLength(1) // Vẫn chỉ là 1 email
 
       // Khách khác không gửi hộ được: action lấy từ phiên, nếu không có phiên -> từ chối
       vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(null)
-      const resUnauth = await requestAccountDeletionAction({ payload, emailSender })
+      const resUnauth = await requestAccountDeletion({ payload, emailSender })
       expect(resUnauth.success).toBe(false)
+    })
+
+    it('gửi yêu cầu 2 lần đồng thời song song -> đúng 1 email cho Hana (T2-16b C4)', async () => {
+      emailSender.sentEmails = []
+      const email = `hoc-vien-parallel-${randomUUID().slice(0, 8)}@example.test`
+      trackedEmails.push(email)
+      const customer = track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: {
+            email,
+            name: 'Học viên Parallel Test',
+          },
+          overrideAccess: true,
+        })) as Customer,
+      )
+
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
+
+      // Chạy 2 yêu cầu đồng thời bằng Promise.all
+      const [resA, resB] = await Promise.all([
+        requestAccountDeletion({ payload, emailSender }),
+        requestAccountDeletion({ payload, emailSender }),
+      ])
+
+      expect(resA.success).toBe(true)
+      expect(resB.success).toBe(true)
+      const initialRequests = [resA, resB].filter((r) => r.alreadyRequested === false)
+      const duplicateRequests = [resA, resB].filter((r) => r.alreadyRequested === true)
+      expect(initialRequests).toHaveLength(1)
+      expect(duplicateRequests).toHaveLength(1)
+
+      // Chính xác 1 email được gửi tới Hana
+      expect(emailSender.sentEmails).toHaveLength(1)
     })
   })
 
@@ -250,10 +289,10 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
           email: 'editor@example.test',
           role: 'editor',
           collection: 'users',
-        } as any,
-      } as any)
+        },
+      } as unknown as Awaited<ReturnType<Payload['auth']>>)
 
-      const res = await deleteCustomerAdminAction(customer.id, email, { payload })
+      const res = await deleteCustomerAdmin(customer.id, email, { payload })
       expect(res.success).toBe(false)
       expect(res.message).toContain('Chỉ chủ sở hữu')
     })
@@ -296,31 +335,31 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         })) as HabitPlan,
       )
 
-      const checkinA = track(
+      track(
         'habitCheckins',
         (await payload.create({
           collection: 'habitCheckins',
           data: { plan: planA.id, day: 1, emotion: 'joyful' },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
-      const nudgeA = track(
+      track(
         'trackerNudges',
         (await payload.create({
           collection: 'trackerNudges',
           data: { plan: planA.id, missedStartDay: 2, sentAt: new Date().toISOString() },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
-      const certA = track(
+      track(
         'certificates',
         (await payload.create({
           collection: 'certificates',
           data: { customer: customerA.id, plan: planA.id, daysCompleted: 21 },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
       const entA = track(
@@ -334,10 +373,10 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
             status: 'active',
           },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
-      const trialRemA = track(
+      track(
         'trialReminders',
         (await payload.create({
           collection: 'trialReminders',
@@ -347,7 +386,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
             sentAt: new Date().toISOString(),
           },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
       const lessonDoc = track(
@@ -356,16 +395,16 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
           collection: 'lessons',
           data: { title: 'Bài học test xóa tài khoản', _status: 'published' },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
-      const lessonA = track(
+      track(
         'lessonProgress',
         (await payload.create({
           collection: 'lessonProgress',
           data: { customer: customerA.id, lesson: lessonDoc.id, watchedPercent: 100 },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
       const eqCard = track(
@@ -380,34 +419,34 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         }),
       )
 
-      const cardA = track(
+      track(
         'savedCards',
         (await payload.create({
           collection: 'savedCards',
           data: { customer: customerA.id, card: eqCard.id, reflection: 'Suy ngẫm' },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
-      const workshopRemA = track(
+      track(
         'workshopReminders',
         (await payload.create({
           collection: 'workshopReminders',
           data: { customer: customerA.id, sentAt: new Date().toISOString() },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
-      const leadA = track(
+      track(
         'leads',
         (await payload.create({
           collection: 'leads',
           data: { email: emailA, name: 'Học viên Test 03A' },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
-      const otpA = track(
+      track(
         'otpCodes',
         (await payload.create({
           collection: 'otpCodes',
@@ -417,16 +456,16 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
             expiresAt: new Date(Date.now() + 600000).toISOString(),
           },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
-      const diagA = track(
+      track(
         'diagnosticResults',
         (await payload.create({
           collection: 'diagnosticResults',
           data: { email: emailA },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
       // 2 đơn hàng cho khách A: 1 paid, 1 pending
@@ -510,10 +549,10 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
 
       // Giả lập tài khoản owner gọi server action
       vi.spyOn(payload, 'auth').mockResolvedValue({
-        user: ownerUser as any,
-      } as any)
+        user: { ...ownerUser, collection: 'users' },
+      } as unknown as Awaited<ReturnType<Payload['auth']>>)
 
-      const res = await deleteCustomerAdminAction(customerA.id, emailA, { payload })
+      const res = await deleteCustomerAdmin(customerA.id, emailA, { payload })
       expect(res.success).toBe(true)
 
       // Xác minh khách A đã bị xóa hoàn toàn khỏi DB
@@ -732,7 +771,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
             status: 'active',
           },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
       const certC = track(
@@ -745,17 +784,20 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
             daysCompleted: 21,
           },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
       // B1: Giả lập lỗi ở bước CUỐI CÙNG (ghi audit log) sau khi đơn đã ẩn danh và customer đã xóa trong transaction
       const originalCreate = payload.create.bind(payload)
-      const createSpy = vi.spyOn(payload, 'create').mockImplementation((async (args: any) => {
-        if (args.collection === 'auditLogs' && args.data?.action === 'customer_data_deleted') {
+      const createSpy = vi.spyOn(payload, 'create').mockImplementation(async (args) => {
+        if (
+          args.collection === 'auditLogs' &&
+          (args.data as { action?: string })?.action === 'customer_data_deleted'
+        ) {
           throw new Error('Cố tình giả lập lỗi mạng DB tại bước ghi audit log cuối cùng')
         }
         return originalCreate(args)
-      }) as any)
+      })
 
       await expect(
         deleteCustomerData(payload, {
@@ -987,7 +1029,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         overrideAccess: true,
       })
       expect(usageCheck.totalDocs).toBe(1)
-      track('trialUsage', usageCheck.docs[0] as any)
+      track('trialUsage', usageCheck.docs[0] as unknown as { id: number })
 
       // Tạo lại khách hàng mới cùng email nhưng KHÁC HOA THƯỜNG
       const emailRecreated = emailOriginal.toUpperCase()
@@ -1013,6 +1055,189 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         overrideAccess: true,
       })
       expect(entCheck.totalDocs).toBe(0)
+    })
+
+    it('C5: xóa theo email không phân biệt hoa thường (leads, diagnosticResults, habitPlans.leadEmail, otpCodes)', async () => {
+      const email = `casing-del-${randomUUID().slice(0, 8)}@example.test`
+      const mixedEmail = email.toUpperCase()
+      trackedEmails.push(email)
+
+      const customer = track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: {
+            email,
+            name: 'Học viên Casing Test',
+          },
+          overrideAccess: true,
+        })) as Customer,
+      )
+
+      // Tạo lead với chữ HOA
+      const lead = track(
+        'leads',
+        (await payload.create({
+          collection: 'leads',
+          data: {
+            email: mixedEmail,
+            name: 'Học viên Casing Test',
+            consent: true,
+          },
+          overrideAccess: true,
+        })) as unknown as { id: number },
+      )
+
+      // Tạo diagnosticResults với chữ HOA
+      const diag = track(
+        'diagnosticResults',
+        (await payload.create({
+          collection: 'diagnosticResults',
+          data: {
+            email: mixedEmail,
+            topStage: 'cue',
+          },
+          overrideAccess: true,
+        })) as unknown as { id: number },
+      )
+
+      // Tạo otpCodes với chữ HOA
+      const otp = track(
+        'otpCodes',
+        (await payload.create({
+          collection: 'otpCodes',
+          data: {
+            email: mixedEmail,
+            codeHash: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+            expiresAt: new Date(Date.now() + 600000).toISOString(),
+          },
+          overrideAccess: true,
+        })) as unknown as { id: number },
+      )
+
+      // Tạo habitPlan vãng lai với leadEmail chữ HOA
+      const plan = track(
+        'habitPlans',
+        (await payload.create({
+          collection: 'habitPlans',
+          data: {
+            leadEmail: mixedEmail,
+            identityStatement: 'Tôi trở thành người dậy sớm',
+            scorecard: [{ habit: 'Dậy lúc 6h', rating: 'good' }],
+          },
+          overrideAccess: true,
+        })) as HabitPlan,
+      )
+
+      // Thực hiện xóa với email chữ thường
+      const res = await deleteCustomerAdmin(customer.id, email.toLowerCase(), {
+        payload,
+        actorUserId: ownerUser.id,
+      })
+      expect(res.success).toBe(true)
+
+      // Kiểm tra tất cả đã bị xóa sạch bất kể hoa thường
+      const checkLead = await payload.find({
+        collection: 'leads',
+        where: { id: { equals: lead.id } },
+        overrideAccess: true,
+      })
+      expect(checkLead.totalDocs).toBe(0)
+
+      const checkDiag = await payload.find({
+        collection: 'diagnosticResults',
+        where: { id: { equals: diag.id } },
+        overrideAccess: true,
+      })
+      expect(checkDiag.totalDocs).toBe(0)
+
+      const checkOtp = await payload.find({
+        collection: 'otpCodes',
+        where: { id: { equals: otp.id } },
+        overrideAccess: true,
+      })
+      expect(checkOtp.totalDocs).toBe(0)
+
+      const checkPlan = await payload.find({
+        collection: 'habitPlans',
+        where: { id: { equals: plan.id } },
+        overrideAccess: true,
+      })
+      expect(checkPlan.totalDocs).toBe(0)
+    })
+
+    it('C2: đơn đã anonymizedAt không thể gán lại customer', async () => {
+      const email = `reassign-order-${randomUUID().slice(0, 8)}@example.test`
+      trackedEmails.push(email)
+      const customer = track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: { email, name: 'Khách Test Reassign' },
+          overrideAccess: true,
+        })) as Customer,
+      )
+
+      const order = track(
+        'orders',
+        (await payload.create({
+          collection: 'orders',
+          data: {
+            customer: customer.id,
+            items: [{ product: testProduct.id, price: 178000 }],
+            subtotal: 178000,
+            total: 178000,
+            paymentStatus: 'pending',
+            termsAcceptedAt: new Date().toISOString(),
+          },
+          overrideAccess: true,
+        })) as Order,
+      )
+
+      // Cập nhật trạng thái paid để đơn hợp lệ cho luồng xóa
+      await payload.update({
+        collection: 'orders',
+        id: order.id,
+        data: { paymentStatus: 'paid', paidAt: new Date().toISOString() },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+
+      // Xóa khách hàng -> đơn bị ẩn danh
+      const delRes = await deleteCustomerAdmin(customer.id, email, {
+        payload,
+        actorUserId: ownerUser.id,
+      })
+      expect(delRes.success).toBe(true)
+
+      const anonymizedOrder = await payload.findByID({
+        collection: 'orders',
+        id: order.id,
+        overrideAccess: true,
+      })
+      expect(anonymizedOrder?.anonymizedAt).toBeTruthy()
+      expect(anonymizedOrder?.customer).toBeNull()
+
+      // Tạo một khách hàng mới và thử gán lại cho đơn hàng đã ẩn danh
+      const newCustomer = track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: { email: `new-cust-${randomUUID().slice(0, 8)}@example.test`, name: 'Khách Mới' },
+          overrideAccess: true,
+        })) as Customer,
+      )
+
+      await expect(
+        payload.update({
+          collection: 'orders',
+          id: order.id,
+          data: {
+            customer: newCustomer.id,
+          },
+          overrideAccess: true,
+        }),
+      ).rejects.toThrow(ValidationError)
     })
   })
 
@@ -1044,7 +1269,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
           collection: 'certificates',
           data: { customer: customer.id, plan: plan.id, daysCompleted: 21 },
           overrideAccess: true,
-        })) as any,
+        })) as unknown as { id: number },
       )
 
       // Chứng nhận 2 cùng plan -> phải bị từ chối
@@ -1108,6 +1333,38 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         })) as Customer,
       )
       expect(validCustomer.id).toBeTruthy()
+    })
+
+    it('C6: customers.name chuẩn hóa trim trước khi lưu và schema đồng bộ', async () => {
+      const emailTrim = `hoc-vien-trim-${randomUUID().slice(0, 8)}@example.test`
+      const customer = track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: {
+            email: emailTrim,
+            name: '   Nguyễn Văn An   ',
+          },
+          overrideAccess: true,
+        })) as Customer,
+      )
+
+      expect(customer.name).toBe('Nguyễn Văn An')
+
+      // Kiểm tra createNameSchema
+      const valid = createNameSchema().safeParse('  Trần Thị Bình  ')
+      expect(valid.success).toBe(true)
+      if (valid.success) {
+        expect(valid.data).toBe('Trần Thị Bình')
+      }
+
+      const invalidChars = createNameSchema().safeParse('Nguyễn <script>')
+      expect(invalidChars.success).toBe(false)
+      if (!invalidChars.success) {
+        expect(invalidChars.error.errors[0].message).toBe(
+          viStrings.account.validation.nameSpecialChars,
+        )
+      }
     })
   })
 })

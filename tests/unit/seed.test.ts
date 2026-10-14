@@ -61,6 +61,12 @@ describe('sample seed', () => {
       })
       preExisting.set(collection, new Set(docs.docs.map((d) => d.id as number)))
     }
+    for (const collection of ['diagnosticQuestions', 'techniques', 'courseModules', 'lessons'] as const) {
+      await payload.delete({
+        collection,
+        where: { isSample: { not_equals: true } },
+      }).catch(() => {})
+    }
     navigationBefore = await payload.findGlobal({ slug: 'navigation', depth: 0 })
     settingsBefore = await payload.findGlobal({ slug: 'siteSettings', depth: 0 })
   }, 60000)

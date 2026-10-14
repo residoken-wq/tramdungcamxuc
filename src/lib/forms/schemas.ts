@@ -2,12 +2,25 @@ import { z } from 'zod'
 import { vi } from '../i18n/vi'
 import { DIAGNOSTIC_SCALE_MIN, DIAGNOSTIC_SCALE_MAX } from '../diagnostic'
 
-export const leadFormSchema = z.object({
-  name: z
+// REVIEW-REQUIRED: Quy tắc kiểm tra họ và tên dùng chung giữa các form và Customers collection (T2-16b C6):
+// - Tối đa 100 ký tự sau khi cắt khoảng trắng
+// - Không chứa ký tự <, >, {, } hoặc ký tự điều khiển
+export function createNameSchema(
+  requiredMessage: string = vi.forms.validation.nameRequired,
+  maxMessage: string = vi.forms.validation.nameMax,
+) {
+  return z
     .string()
     .trim()
-    .min(1, vi.forms.validation.nameRequired)
-    .max(100, vi.forms.validation.nameMax),
+    .min(1, requiredMessage)
+    .max(100, maxMessage)
+    .refine((val) => !/[<>{}]|[\x00-\x1F\x7F]/.test(val), {
+      message: vi.account.validation.nameSpecialChars,
+    })
+}
+
+export const leadFormSchema = z.object({
+  name: createNameSchema(vi.forms.validation.nameRequired),
   email: z
     .string()
     .trim()
@@ -31,11 +44,7 @@ export const leadFormSchema = z.object({
 export type LeadFormInput = z.infer<typeof leadFormSchema>
 
 export const coachingFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, vi.forms.validation.nameRequired)
-    .max(100, vi.forms.validation.nameMax),
+  name: createNameSchema(vi.forms.validation.nameRequired),
   email: z
     .string()
     .trim()
@@ -66,11 +75,7 @@ export const coachingFormSchema = z.object({
 export type CoachingFormInput = z.infer<typeof coachingFormSchema>
 
 export const b2bBriefSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, vi.forms.validation.nameRequired)
-    .max(100, vi.forms.validation.nameMax),
+  name: createNameSchema(vi.forms.validation.nameRequired),
   email: z
     .string()
     .trim()
@@ -97,11 +102,7 @@ export const b2bBriefSchema = z.object({
 export type B2BBriefInput = z.infer<typeof b2bBriefSchema>
 
 export const resourceRequestSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, vi.forms.validation.nameRequired)
-    .max(100, vi.forms.validation.nameMax),
+  name: createNameSchema(vi.forms.validation.nameRequired),
   email: z
     .string()
     .trim()
@@ -143,11 +144,7 @@ export const experienceOrderSchema = z.object({
       }
       return num
     }),
-  name: z
-    .string()
-    .trim()
-    .min(1, vi.payment.validation.nameRequired)
-    .max(100, vi.forms.validation.nameMax),
+  name: createNameSchema(vi.payment.validation.nameRequired),
   email: z
     .string()
     .trim()
@@ -253,7 +250,15 @@ export const habitPlanSubmissionSchema = z
     chosenTechniques: z
       .array(habitChosenTechniqueSchema)
       .max(8, vi.habit.wizard.errors.techniquesTooMany),
-    name: z.string().trim().max(100, vi.forms.validation.nameMax).optional().nullable(),
+    name: z
+      .string()
+      .trim()
+      .max(100, vi.account.validation.nameMax100)
+      .refine((val) => !/[<>{}]|[\x00-\x1F\x7F]/.test(val), {
+        message: vi.account.validation.nameSpecialChars,
+      })
+      .optional()
+      .nullable(),
     email: z
       .string()
       .trim()
