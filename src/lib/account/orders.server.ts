@@ -1,9 +1,10 @@
 import 'server-only'
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
-import type { Order, Product } from '@/payload-types'
+import type { Order, Product, PrivateFile } from '@/payload-types'
 import { formatVnd } from '../format'
 import { vi } from '../i18n/vi'
+import { signDownloadToken } from '../downloads/token'
 
 export interface CustomerOrderFile {
   fileId: number | string
@@ -90,6 +91,41 @@ export async function getCustomerOrders(
     const paymentRef = isCancelled ? null : order.paymentRef || null
     const payToken = isPendingOrFailed ? order.payToken || null : null
 
+    // 2. Tải lại file đã mua: chỉ sinh link ký cho đơn 'paid' có sản phẩm có files
+    let downloadFiles: CustomerOrderFile[] | undefined
+    if (order.paymentStatus === 'paid' && Array.isArray(order.items)) {
+      const files: CustomerOrderFile[] = []
+      for (const item of order.items) {
+        if (typeof item.product === 'object' && item.product !== null) {
+          const prod = item.product as Product
+          if (Array.isArray(prod.files) && prod.files.length > 0) {
+            for (const fileEntry of prod.files) {
+              const fileObj = fileEntry.file
+              const fileId = typeof fileObj === 'object' && fileObj !== null ? fileObj.id : fileObj
+              const filename =
+                typeof fileObj === 'object' && fileObj !== null
+                  ? (fileObj as PrivateFile).filename || undefined
+                  : undefined
+              if (fileId) {
+                const token = signDownloadToken({
+                  productId: prod.id,
+                  fileId,
+                })
+                files.push({
+                  fileId,
+                  filename,
+                  downloadUrl: `/api/download/${token}`,
+                })
+              }
+            }
+          }
+        }
+      }
+      if (files.length > 0) {
+        downloadFiles = files
+      }
+    }
+
     dtos.push({
       productName,
       totalFormatted: formatVnd(order.total) || '0đ',
@@ -99,6 +135,7 @@ export async function getCustomerOrders(
       paidAtFormatted: order.paidAt ? formatOrderDate(order.paidAt) : null,
       payToken,
       paymentRef,
+      downloadFiles,
     })
   }
 
