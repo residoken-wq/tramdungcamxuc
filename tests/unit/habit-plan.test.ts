@@ -622,12 +622,14 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
 
     let failLeadCreation = true
     const originalCreate = payload.create.bind(payload)
-    const createSpy = vi.spyOn(payload, 'create').mockImplementation(async (args: any) => {
-      if (args.collection === 'leads' && failLeadCreation) {
-        throw new Error('Simulated leads DB creation error (T2-17)')
-      }
-      return originalCreate(args)
-    })
+    const createSpy = vi
+      .spyOn(payload, 'create')
+      .mockImplementation(async (args: Parameters<typeof payload.create>[0]) => {
+        if (args.collection === 'leads' && failLeadCreation) {
+          throw new Error('Simulated leads DB creation error (T2-17)')
+        }
+        return originalCreate(args)
+      })
 
     const inputData = {
       scorecard: [{ habit: 'Tập thở sâu', rating: 'good' as const }],

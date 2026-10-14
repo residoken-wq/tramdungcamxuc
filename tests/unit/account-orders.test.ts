@@ -252,9 +252,10 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
 
     // Kiểm tra không lộ id nội bộ hay email/customer
     for (const o of ordersA) {
-      expect((o as any).id).toBeUndefined()
-      expect((o as any).customer).toBeUndefined()
-      expect((o as any).email).toBeUndefined()
+      const orderRecord = o as unknown as Record<string, unknown>
+      expect(orderRecord.id).toBeUndefined()
+      expect(orderRecord.customer).toBeUndefined()
+      expect(orderRecord.email).toBeUndefined()
     }
   })
 
