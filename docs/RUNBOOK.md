@@ -619,7 +619,9 @@ Dành cho Hana, anh Nhân và đội ngũ kiểm thử bấm trải nghiệm nga
 
 > ⚠️ **CẢNH BÁO QUAN TRỌNG**:
 > **TUYỆT ĐỐI KHÔNG CHẠY TRÊN SERVER PRODUCTION** (`tramdungcamxuc.com` / `www.tramdungcamxuc.com`).
-> Hệ thống có guard bảo vệ (`seed/demo-guard.ts`) sẽ tự động từ chối nếu phát hiện tên miền production thật hoặc có đơn hàng thanh toán của người dùng thật.
+> Hệ thống có guard bảo vệ (`seed/demo-guard.ts`): từ chối khi thiếu `DEMO_SEED_ALLOW=true`, khi `SITE_URL` là tên miền thật (`tramdungcamxuc.com` / `www.`), khi chạy production mà **không** truyền `SITE_URL` (container seed không tự có biến này – luôn thêm `-e SITE_URL=…` như lệnh dưới), hoặc khi DB có đơn đã thanh toán của email thật.
+>
+> Lưu ý: workshop demo diễn ra sau 3 ngày nên khoảng 2 ngày sau khi seed, cron nhắc workshop sẽ gửi email tới `hoc-vien-test-03@example.test` (địa chỉ không tồn tại, thư bị trả về). Muốn tránh thì chạy `:clean` sau khi thử xong.
 > Đơn chờ thanh toán của Test 01 sẽ tự động hết hạn sau 24 giờ do cron job đóng đơn. Khi cần thử lại, chỉ cần chạy lại lệnh seed để đặt lại dữ liệu mới.
 
 ### 1. Các lệnh chạy trên máy dev (Local)
@@ -643,15 +645,15 @@ Sử dụng profile `tools` của service `seed` trong `docker-compose.prod.yml`
 
 - **Tạo / Reset dữ liệu demo**:
   ```bash
-  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true seed pnpm seed:demo-gd2 < /dev/null
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e SITE_URL=https://<tên miền demo> seed pnpm seed:demo-gd2 < /dev/null
   ```
 - **Xóa sạch dữ liệu demo**:
   ```bash
-  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true seed pnpm seed:demo-gd2:clean < /dev/null
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e SITE_URL=https://<tên miền demo> seed pnpm seed:demo-gd2:clean < /dev/null
   ```
 - **Lấy mã OTP đăng nhập**:
   ```bash
-  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e DEMO_EMAIL=hoc-vien-test-01@example.test seed pnpm seed:demo-gd2:otp < /dev/null
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e SITE_URL=https://<tên miền demo> -e DEMO_EMAIL=hoc-vien-test-01@example.test seed pnpm seed:demo-gd2:otp < /dev/null
   ```
 
 ### 3. Hướng dẫn đăng nhập và kịch bản trải nghiệm

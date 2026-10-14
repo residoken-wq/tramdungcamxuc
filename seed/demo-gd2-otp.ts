@@ -5,7 +5,13 @@
 import { getPayload } from 'payload'
 import config from '../src/payload.config'
 import { collectDemoSeedFacts, createDemoOtp, DEMO_EMAILS } from './demo-gd2-lib'
-import { checkDemoSeedAllowed } from './demo-guard'
+import { checkDemoSeedAllowed, checkDemoSeedEnv } from './demo-guard'
+
+const envGuard = checkDemoSeedEnv(process.env)
+if (!envGuard.ok) {
+  console.error(envGuard.reason)
+  process.exit(1)
+}
 
 const payload = await getPayload({ config })
 

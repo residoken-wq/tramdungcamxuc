@@ -1,7 +1,8 @@
 // REVIEW-REQUIRED: Chặn chạy seed/clean/otp dữ liệu demo trên môi trường production.
 // Chỉ cho phép chạy khi thỏa mãn đồng thời cả 3 điều kiện an toàn:
 // 1. DEMO_SEED_ALLOW=true (biến riêng biệt, không dùng chung SEED_ALLOW_PROD).
-// 2. SITE_URL / NEXT_PUBLIC_SITE_URL không trỏ về tên miền production thật (tramdungcamxuc.com hoặc www.tramdungcamxuc.com).
+// 2. SITE_URL / NEXT_PUBLIC_SITE_URL không trỏ về tên miền production thật (tramdungcamxuc.com hoặc www.tramdungcamxuc.com);
+//    khi NODE_ENV=production thì BẮT BUỘC có một trong hai biến (container seed không tự có URL).
 // 3. Cơ sở dữ liệu không có đơn hàng đã thanh toán (paid) của người dùng thật (email không kết thúc bằng @example.test).
 
 export interface DemoSeedFacts {
@@ -24,13 +25,10 @@ function extractHostname(urlStr?: string): string | null {
 }
 
 /**
- * Hàm thuần kiểm tra tính hợp lệ của việc chạy seed dữ liệu demo.
- * Không thực hiện truy vấn cơ sở dữ liệu hay đọc trực tiếp biến môi trường toàn cục.
+ * Phần kiểm chỉ dựa vào biến môi trường (điều kiện 1–2). Gọi TRƯỚC getPayload() để không
+ * khởi tạo Payload (có thể chạy migration) khi đã biết là không được chạy.
  */
-export function checkDemoSeedAllowed(
-  env: Record<string, string | undefined>,
-  facts: DemoSeedFacts,
-): DemoSeedCheckResult {
+export function checkDemoSeedEnv(env: Record<string, string | undefined>): DemoSeedCheckResult {
   // Điều kiện 1: Phải có DEMO_SEED_ALLOW=true
   if (env.DEMO_SEED_ALLOW !== 'true') {
     return {
@@ -44,6 +42,14 @@ export function checkDemoSeedAllowed(
   const siteUrlHost = extractHostname(env.SITE_URL)
   const nextPublicSiteUrlHost = extractHostname(env.NEXT_PUBLIC_SITE_URL)
 
+  if (env.NODE_ENV === 'production' && !siteUrlHost && !nextPublicSiteUrlHost) {
+    return {
+      ok: false,
+      reason:
+        'Từ chối chạy demo seed: NODE_ENV=production nhưng thiếu SITE_URL. Truyền thêm -e SITE_URL=<địa chỉ server demo> để xác nhận đây không phải tên miền thật.',
+    }
+  }
+
   if (
     (siteUrlHost && PRODUCTION_HOSTNAMES.has(siteUrlHost)) ||
     (nextPublicSiteUrlHost && PRODUCTION_HOSTNAMES.has(nextPublicSiteUrlHost))
@@ -54,6 +60,20 @@ export function checkDemoSeedAllowed(
         'Từ chối chạy demo seed: Tên miền cấu hình (SITE_URL/NEXT_PUBLIC_SITE_URL) đang trỏ tới tên miền production thật (tramdungcamxuc.com / www.tramdungcamxuc.com).',
     }
   }
+
+  return { ok: true }
+}
+
+/**
+ * Hàm thuần kiểm tra tính hợp lệ của việc chạy seed dữ liệu demo.
+ * Không thực hiện truy vấn cơ sở dữ liệu hay đọc trực tiếp biến môi trường toàn cục.
+ */
+export function checkDemoSeedAllowed(
+  env: Record<string, string | undefined>,
+  facts: DemoSeedFacts,
+): DemoSeedCheckResult {
+  const envCheck = checkDemoSeedEnv(env)
+  if (!envCheck.ok) return envCheck
 
   // Điều kiện 3: Không có đơn hàng đã thanh toán của người dùng thật
   if (facts.hasPaidOrderFromNonExampleEmail) {

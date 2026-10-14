@@ -5,7 +5,10 @@ vi.mock('server-only', () => ({}))
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import { verifyOtp } from '../../src/lib/auth/otp.server'
-import { checkDemoSeedAllowed } from '../../seed/demo-guard'
+import { checkDemoSeedAllowed, checkDemoSeedEnv } from '../../seed/demo-guard'
+import { getAccess } from '../../src/lib/entitlements/service.server'
+import { getCurrentDayOfPlan } from '../../src/lib/habit/tracker-stats'
+import { getEligibleWorkshops } from '../../src/lib/workshops/eligible.server'
 import {
   cleanDemoGd2,
   createDemoOtp,
@@ -21,23 +24,19 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
   let nonDemoCustomerId: number | null = null
   let nonDemoPlanId: number | null = null
   let testProductId: number | null = null
+  const testStartedAt = new Date().toISOString()
 
   beforeAll(async () => {
     payload = await getPayload({ config })
-    // Dọn dẹp dữ liệu demo và sản phẩm mẫu cũ trước khi bắt đầu
-    await cleanDemoGd2(payload).catch(() => {})
-    await payload
-      .delete({
-        collection: 'products',
-        where: {
-          or: [
-            { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
-            { isSample: { equals: true } },
-          ],
-        },
-        overrideAccess: true,
-      })
-      .catch(() => {})
+    // Dọn dữ liệu demo cũ; dùng lại sản phẩm habit-tracker-so nếu đã có (không xóa danh mục mẫu)
+    await cleanDemoGd2(payload)
+    const existing = await payload.find({
+      collection: 'products',
+      where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (existing.docs[0]) return
 
     const prod = await payload.create({
       collection: 'products',
@@ -60,7 +59,7 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
 
   afterAll(async () => {
     // 1. Dọn dẹp toàn bộ dữ liệu demo trước (orders, entitlements, workshops)
-    await cleanDemoGd2(payload).catch(() => {})
+    await cleanDemoGd2(payload)
 
     // 2. Dọn dẹp khách không phải demo
     if (nonDemoPlanId) {
@@ -70,7 +69,7 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
           where: { id: { equals: nonDemoPlanId } },
           overrideAccess: true,
         })
-        .catch(() => {})
+        .catch((e) => console.error('[cleanup]', e))
     }
     if (nonDemoCustomerId) {
       await payload
@@ -79,31 +78,20 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
           where: { id: { equals: nonDemoCustomerId } },
           overrideAccess: true,
         })
-        .catch(() => {})
+        .catch((e) => console.error('[cleanup]', e))
     }
 
-    // 3. Xóa sản phẩm test sau khi các bảng con đã được xóa sạch
+    // verifyOtp ghi rateLimitHits cho email demo
+    await payload.delete({
+      collection: 'rateLimitHits',
+      where: { createdAt: { greater_than_equal: testStartedAt } },
+      overrideAccess: true,
+    })
+
+    // 3. Chỉ xóa sản phẩm do chính test tạo
     if (testProductId) {
-      await payload
-        .delete({
-          collection: 'products',
-          where: { id: { equals: testProductId } },
-          overrideAccess: true,
-        })
-        .catch(() => {})
+      await payload.delete({ collection: 'products', id: testProductId, overrideAccess: true })
     }
-    await payload
-      .delete({
-        collection: 'products',
-        where: {
-          or: [
-            { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
-            { isSample: { equals: true } },
-          ],
-        },
-        overrideAccess: true,
-      })
-      .catch(() => {})
   })
 
   describe('checkDemoSeedAllowed (Guard checks)', () => {
@@ -164,6 +152,17 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
       if (!res.ok) {
         expect(res.reason).toContain('đơn hàng đã thanh toán')
       }
+    })
+
+    it('NODE_ENV=production mà thiếu SITE_URL -> từ chối (container seed không tự có URL)', () => {
+      const res = checkDemoSeedEnv({ DEMO_SEED_ALLOW: 'true', NODE_ENV: 'production' })
+      expect(res.ok).toBe(false)
+      const ok = checkDemoSeedEnv({
+        DEMO_SEED_ALLOW: 'true',
+        NODE_ENV: 'production',
+        SITE_URL: 'https://demo.tramdungcamxuc.com',
+      })
+      expect(ok.ok).toBe(true)
     })
 
     it('cho phép chạy khi thỏa mãn đầy đủ cả 3 điều kiện', () => {
@@ -318,6 +317,30 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
         overrideAccess: true,
       })
       expect(cert03.totalDocs).toBe(0)
+
+      // 7. Tình huống thật như app thấy: ngày hiện tại, quyền truy cập, workshop
+      const productId = (
+        typeof pendingOrder!.items?.[0]?.product === 'object'
+          ? pendingOrder!.items[0].product.id
+          : pendingOrder!.items?.[0]?.product
+      ) as number
+      expect(getCurrentDayOfPlan(plan01.startDate)).toBe(5)
+      const access01 = await getAccess(cust01.id, productId, { payload })
+      expect(access01.status).toBe('trial')
+      expect(access01.hasAccess).toBe(true)
+      const access02 = await getAccess(cust02.id, productId, { payload })
+      expect(access02.hasAccess).toBe(false)
+      expect(access02.status).toBe('expired')
+      const access03 = await getAccess(cust03.id, productId, { payload })
+      expect(access03.status).toBe('active')
+      const workshops03 = await getEligibleWorkshops(cust03.id, new Date(), payload)
+      expect(workshops03.some((w) => w.title === DEMO_WORKSHOP_TITLE)).toBe(true)
+
+      // 8. Mã chuyển khoản và link in ra phải khớp đúng đơn trong DB
+      const row01 = res2.rows.find((r) => r.email === DEMO_EMAILS[0])!
+      expect(row01.paymentRef).toBe(pendingOrder!.paymentRef)
+      expect(res2.pendingOrderToken).toBe(pendingOrder!.payToken)
+      expect(row01.link).toContain(`/thanh-toan/don/${pendingOrder!.payToken}`)
     })
 
     it('cleanDemoGd2 xóa sạch toàn bộ bản ghi demo mà không đụng tới khách khác', async () => {

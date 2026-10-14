@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'
 import type { Payload, Where } from 'payload'
 import { EMOTIONS } from '../src/lib/emotions'
 import { getVietnamYmd } from '../src/lib/habit/tracker-stats'
-import { generatePaymentRef, generatePayToken } from '../src/lib/payments/payment-ref'
+import { getEffectivePrice } from '../src/lib/products'
 import type { DemoSeedFacts } from './demo-guard'
 
 // Intercept server-only package when executed outside Next.js bundler
@@ -122,7 +122,10 @@ export async function cleanDemoGd2(payload: Payload): Promise<Record<string, num
     pagination: false,
     overrideAccess: true,
   })
-  const demoWorkshopIds = demoWorkshops.docs.map((w) => w.id)
+  // `like` của Payload khớp "chứa"; chỉ lấy đúng tiêu đề BẮT ĐẦU bằng tiền tố demo
+  const demoWorkshopIds = demoWorkshops.docs
+    .filter((w) => typeof w.title === 'string' && w.title.startsWith(DEMO_WORKSHOP_PREFIX))
+    .map((w) => w.id)
 
   let demoOrderIds: number[] = []
   let demoPlanIds: number[] = []
@@ -404,10 +407,7 @@ export async function seedDemoGd2(
   payload: Payload,
   options?: { now?: Date },
 ): Promise<DemoSeedResult> {
-  // 1. Reset dữ liệu demo cũ
-  await cleanDemoGd2(payload)
-
-  // 2. Kiểm tra sản phẩm habit-tracker-so
+  // 1. Kiểm tra sản phẩm habit-tracker-so TRƯỚC khi xóa gì
   const productRes = await payload.find({
     collection: 'products',
     where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
@@ -421,11 +421,22 @@ export async function seedDemoGd2(
     )
   }
 
+  // 2. Reset dữ liệu demo cũ
+  await cleanDemoGd2(payload)
+
   const now = options?.now ?? new Date()
   const nowIso = now.toISOString()
   const todayYmd = getVietnamYmd(now)
-  const productPrice = habitProduct.salePrice ?? habitProduct.price ?? 250000
-  const trialDays = habitProduct.trialDays || 21
+  // Giá và số ngày dùng thử lấy từ CMS, cùng cách tính với createDigitalToolOrder (không ghi cứng)
+  const effective = getEffectivePrice(habitProduct, now)
+  const productPrice = effective.salePrice ?? effective.price
+  if (productPrice == null || productPrice <= 0) {
+    throw new Error(`Sản phẩm '${HABIT_TRACKER_PRODUCT_SLUG}' chưa có giá trong CMS.`)
+  }
+  const trialDays = habitProduct.trialDays
+  if (!trialDays || trialDays <= 0) {
+    throw new Error(`Sản phẩm '${HABIT_TRACKER_PRODUCT_SLUG}' chưa đặt số ngày dùng thử.`)
+  }
 
   // -------------------------------------------------------------
   // KHÁCH 01: Học viên Test 01
@@ -483,20 +494,9 @@ export async function seedDemoGd2(
     })
   }
 
-  // Đơn chờ thanh toán của Học viên Test 01
-  let paymentRef01 = generatePaymentRef()
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const existing = await payload.count({
-      collection: 'orders',
-      where: { paymentRef: { equals: paymentRef01 } },
-      overrideAccess: true,
-    })
-    if (existing.totalDocs === 0) break
-    paymentRef01 = generatePaymentRef()
-  }
-
-  const payToken01 = generatePayToken()
-  await payload.create({
+  // Đơn chờ thanh toán của Học viên Test 01. paymentRef / payToken do hook của Orders sinh
+  // (context.paymentAction như createDigitalToolOrder) → đọc lại từ bản ghi để in đúng.
+  const pendingOrder = await payload.create({
     collection: 'orders',
     data: {
       customer: customer01.id,
@@ -504,13 +504,16 @@ export async function seedDemoGd2(
       subtotal: productPrice,
       total: productPrice,
       paymentStatus: 'pending',
-      paymentRef: paymentRef01,
-      payToken: payToken01,
       termsAcceptedAt: nowIso,
-      createdAt: nowIso,
     },
+    context: { paymentAction: true },
     overrideAccess: true,
   })
+  const paymentRef01 = pendingOrder.paymentRef ?? ''
+  const payToken01 = pendingOrder.payToken ?? ''
+  if (!paymentRef01 || !payToken01) {
+    throw new Error('Đơn chờ thanh toán demo không có mã chuyển khoản hoặc payToken.')
+  }
 
   // -------------------------------------------------------------
   // KHÁCH 02: Học viên Test 02
@@ -652,7 +655,7 @@ export async function seedDemoGd2(
       endsAt: wsEndsAt,
       product: habitProduct.id,
       audienceProducts: [habitProduct.id],
-      joinUrl: 'https://meet.google.com/demo-gd2-test',
+      joinUrl: 'https://example.test/demo-gd2-workshop',
       _status: 'published',
     },
     overrideAccess: true,
