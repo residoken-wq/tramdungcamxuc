@@ -8,6 +8,7 @@ import { CheckInModal } from './CheckInModal'
 import { TrackerSummaryCard } from './TrackerSummaryCard'
 import type { EmotionKey } from '@/lib/emotions'
 import { calculateTrackerStats } from '@/lib/habit/tracker-stats'
+import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/certificate-types'
 
 export interface InitialCheckinData {
   day: number
@@ -24,6 +25,9 @@ export interface TrackerDashboardProps {
   readOnly?: boolean
   isTrialOrExpired?: boolean
   buyUrl: string
+  initialCertificate?: PublicCertificateData | null
+  eligibility?: CertificateEligibility | null
+  customerName?: string | null
 }
 
 export function TrackerDashboard({
@@ -33,6 +37,9 @@ export function TrackerDashboard({
   readOnly = false,
   isTrialOrExpired = false,
   buyUrl,
+  initialCertificate,
+  eligibility,
+  customerName,
 }: TrackerDashboardProps) {
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
   const [activeModalDay, setActiveModalDay] = useState<number | null>(null)
@@ -167,10 +174,17 @@ export function TrackerDashboard({
         <ProgressGrid days={gridDays} onSelectDay={handleSelectDay} readOnly={readOnly} />
       </div>
 
-      {/* 4. Tổng kết từ ngày 21 trở đi */}
-      {currentDay >= 21 && (
+      {/* 4. Tổng kết từ ngày 21 trở đi hoặc khi đã có chứng nhận */}
+      {(currentDay >= 21 || Boolean(initialCertificate)) && (
         <div className="pt-4">
-          <TrackerSummaryCard stats={stats} isTrialOrExpired={isTrialOrExpired} buyUrl={buyUrl} />
+          <TrackerSummaryCard
+            stats={stats}
+            isTrialOrExpired={isTrialOrExpired}
+            buyUrl={buyUrl}
+            initialCertificate={initialCertificate}
+            eligibility={eligibility}
+            customerName={customerName}
+          />
         </div>
       )}
 
