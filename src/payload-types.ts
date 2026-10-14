@@ -1208,6 +1208,10 @@ export interface Customer {
    * Chọn ngày và giờ áp dụng.
    */
   consentAt?: string | null;
+  /**
+   * Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).
+   */
+  deletionRequestedAt?: string | null;
   updatedAt: string;
   createdAt: string;
   collection: 'customers';
@@ -1282,7 +1286,7 @@ export interface Order {
   /**
    * Chọn nội dung đã tạo trong hệ thống.
    */
-  customer: number | Customer;
+  customer?: (number | null) | Customer;
   items: {
     /**
      * Chọn nội dung đã tạo trong hệ thống.
@@ -1319,6 +1323,10 @@ export interface Order {
    * Chỉ cập nhật khi chủ sở hữu xác nhận thanh toán thành công.
    */
   paidAt?: string | null;
+  /**
+   * Thời điểm đơn hàng được ẩn danh khi khách hàng yêu cầu xóa dữ liệu.
+   */
+  anonymizedAt?: string | null;
   /**
    * Thời điểm khách tick đồng ý Điều khoản và Chính sách giá – thanh toán.
    */
@@ -2523,6 +2531,7 @@ export interface CustomersSelect<T extends boolean = true> {
   phone?: T;
   consentMarketing?: T;
   consentAt?: T;
+  deletionRequestedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2563,6 +2572,7 @@ export interface OrdersSelect<T extends boolean = true> {
   paymentStatus?: T;
   deliveryStatus?: T;
   paidAt?: T;
+  anonymizedAt?: T;
   termsAcceptedAt?: T;
   createdByAdmin?: T;
   trialCreditOrder?: T;

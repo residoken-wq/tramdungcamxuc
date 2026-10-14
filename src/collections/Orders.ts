@@ -54,6 +54,18 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
     let trialCreditOrderId: number | null = null
     let notes = data.notes
 
+    // REVIEW-REQUIRED: Bắt buộc chọn khách hàng khi tạo đơn, trừ khi đơn đã được đánh dấu ẩn danh.
+    const isAnonymized = Boolean(data.anonymizedAt)
+    if (!data.customer && !isAnonymized) {
+      throw new ValidationError(
+        {
+          errors: [{ path: 'customer', message: 'Vui lòng chọn khách hàng cho đơn hàng.' }],
+          req,
+        },
+        req?.t,
+      )
+    }
+
     // REVIEW-REQUIRED: Khi owner tạo đơn createdByAdmin: chọn khách + đúng 1 gói đồng hành đã published.
     // Server tự tính items[0].price, subtotal, total từ getEffectivePrice (bỏ qua số Hana gõ).
     // Nếu trialCreditApplies bật và khách có đơn coaching_trial đã paid chưa được trừ -> trừ đúng số tiền đơn đó,
@@ -258,24 +270,50 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
     }
   }
 
+  // REVIEW-REQUIRED: Bắt buộc chọn khách hàng khi sửa đơn, trừ khi đơn đã ẩn danh hoặc đang được ẩn danh.
+  const isAnonymizingNow = Boolean(data.anonymizedAt)
+  const isAlreadyAnonymized = Boolean(originalDoc?.anonymizedAt)
+  const isAnonymized = isAnonymizingNow || isAlreadyAnonymized
+
+  if (!isAnonymized) {
+    const resultingCustomer = data.customer !== undefined ? data.customer : originalDoc?.customer
+    if (!resultingCustomer) {
+      throw new ValidationError(
+        {
+          errors: [{ path: 'customer', message: 'Vui lòng chọn khách hàng cho đơn hàng.' }],
+          req,
+        },
+        req?.t,
+      )
+    }
+  }
+
   // REVIEW-REQUIRED: Amounts and buyer are frozen once created, except an owner editing a
   // still-pending order. Otherwise the customer's QR amount or a paid order's history could change.
+  // Khi đơn được ẩn danh, customer chuyển thành null vĩnh viễn.
   const amountsEditable = !editor && originalDoc?.paymentStatus === 'pending'
+  const lockedCustomer = isAnonymized ? null : originalDoc?.customer
   const locked = {
     paymentRef: originalDoc?.paymentRef,
     payToken: originalDoc?.payToken,
     createdByAdmin: originalDoc?.createdByAdmin,
     trialCreditOrder: originalDoc?.trialCreditOrder,
     ...(amountsEditable
-      ? {}
+      ? isAnonymizingNow
+        ? { customer: null }
+        : {}
       : {
-          customer: originalDoc?.customer,
+          customer: lockedCustomer,
           items: originalDoc?.items,
           subtotal: originalDoc?.subtotal,
           discountCode: originalDoc?.discountCode,
           total: originalDoc?.total,
         }),
   }
+
+  const anonymizedAtValue = isAlreadyAnonymized
+    ? originalDoc.anonymizedAt
+    : (data.anonymizedAt ?? null)
 
   // REVIEW-REQUIRED: Chặn sửa thẳng trạng thái đơn hàng (paymentStatus, paidAt, deliveryStatus).
   // Chỉ các hàm nghiệp vụ được ủy quyền (confirmManualPayment, cancelOrder, expirePendingOrders)
@@ -284,13 +322,14 @@ const protectOrderFields: CollectionBeforeChangeHook = async ({
     return {
       ...data,
       ...locked,
+      anonymizedAt: anonymizedAtValue,
       paymentStatus: originalDoc?.paymentStatus,
       paidAt: originalDoc?.paidAt,
       deliveryStatus: originalDoc?.deliveryStatus,
     }
   }
 
-  return { ...data, ...locked }
+  return { ...data, ...locked, anonymizedAt: anonymizedAtValue }
 }
 
 // No refund field and no shipping address by design (AGENTS.md mục 7, 14).
@@ -312,7 +351,7 @@ export const Orders: CollectionConfig = {
   },
   hooks: { beforeChange: [protectOrderFields] },
   fields: [
-    { ...relation('customer', 'Khách hàng', 'customers'), required: true },
+    relation('customer', 'Khách hàng', 'customers'),
     {
       name: 'items',
       label: 'Sản phẩm trong đơn',
@@ -397,6 +436,16 @@ export const Orders: CollectionConfig = {
       admin: {
         readOnly: true,
         description: 'Chỉ cập nhật khi chủ sở hữu xác nhận thanh toán thành công.',
+      },
+    },
+    {
+      ...date('anonymizedAt', 'Ẩn danh lúc'),
+      admin: {
+        readOnly: true,
+        description: 'Thời điểm đơn hàng được ẩn danh khi khách hàng yêu cầu xóa dữ liệu.',
+      },
+      access: {
+        update: isOwner,
       },
     },
     {

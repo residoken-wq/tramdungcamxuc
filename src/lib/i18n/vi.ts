@@ -1341,6 +1341,42 @@ export const vi = {
       verifyUrl: 'tramdungcamxuc.com',
     },
   },
+  account: {
+    validation: {
+      nameMax100: 'Họ và tên tối đa 100 ký tự sau khi cắt khoảng trắng.',
+      nameSpecialChars: 'Họ và tên không được chứa ký tự <, >, {, } hoặc ký tự điều khiển.',
+    },
+    deletion: {
+      heading: 'Xóa tài khoản và dữ liệu cá nhân',
+      description:
+        'Bạn có thể gửi yêu cầu xóa tài khoản và dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân.',
+      confirmNotice:
+        'Hana sẽ xóa toàn bộ dữ liệu trong 7 ngày làm việc; đơn hàng được giữ ẩn danh để đối soát.',
+      confirmCheckbox: 'Tôi hiểu và xác nhận yêu cầu xóa tài khoản cùng toàn bộ dữ liệu cá nhân.',
+      requestButton: 'Yêu cầu xóa tài khoản',
+      submitting: 'Đang gửi yêu cầu...',
+      requestedOn: (date: string) => `Đã gửi yêu cầu ngày ${date}`,
+      requestedNotice:
+        'Yêu cầu xóa dữ liệu của bạn đã được ghi nhận. Hana sẽ xử lý trong vòng 7 ngày làm việc.',
+      success: 'Yêu cầu xóa tài khoản đã được ghi nhận thành công.',
+      rateLimited: 'Bạn đã gửi yêu cầu quá nhiều lần. Vui lòng thử lại sau 1 giờ.',
+      unauthorized: 'Vui lòng đăng nhập để thực hiện thao tác này.',
+      serverError: 'Đã có lỗi xảy ra từ máy chủ. Vui lòng thử lại sau.',
+    },
+    adminDeletion: {
+      button: 'Xóa dữ liệu khách',
+      modalTitle: 'Xác nhận xóa dữ liệu khách hàng',
+      modalWarning:
+        'Hành động này sẽ xóa toàn bộ dữ liệu cá nhân, quyền sử dụng, kế hoạch và lịch sử học tập của khách hàng vĩnh viễn. Đơn hàng được giữ lại nhưng ẩn danh để đối soát.',
+      confirmPrompt: (email: string) => `Vui lòng gõ lại email "${email}" để xác nhận:`,
+      emailMismatch: 'Email gõ lại không khớp với email của khách hàng.',
+      deleting: 'Đang xóa dữ liệu...',
+      deleteSuccess: 'Đã xóa toàn bộ dữ liệu cá nhân của khách hàng thành công.',
+      unauthorized: 'Chỉ chủ sở hữu (owner) mới có quyền xóa dữ liệu khách hàng.',
+      notFound: 'Không tìm thấy thông tin khách hàng.',
+      serverError: 'Đã có lỗi xảy ra khi xóa dữ liệu. Toàn bộ thao tác đã được hoàn tác an toàn.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

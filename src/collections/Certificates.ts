@@ -31,7 +31,11 @@ export const Certificates: CollectionConfig = {
       required: true,
       access: { update: isEditorOrOwner },
     },
-    relation('plan', 'Kế hoạch', 'habitPlans'),
+    {
+      ...relation('plan', 'Kế hoạch', 'habitPlans'),
+      unique: true,
+      index: true,
+    },
     textarea('identityStatement', 'Câu định danh'),
     { ...number('daysCompleted', 'Số ngày hoàn thành'), max: 21 },
     { ...date('issuedAt', 'Ngày cấp'), defaultValue: () => new Date().toISOString() },
