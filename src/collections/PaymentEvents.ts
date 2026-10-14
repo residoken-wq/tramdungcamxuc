@@ -9,7 +9,14 @@ export const PaymentEvents: CollectionConfig = {
   labels: { singular: 'Sự kiện thanh toán', plural: 'Sự kiện thanh toán' },
   admin: {
     group: 'Hệ thống',
-    defaultColumns: ['provider', 'transactionId', 'order', 'signatureValid', 'result', 'receivedAt'],
+    defaultColumns: [
+      'provider',
+      'transactionId',
+      'order',
+      'signatureValid',
+      'result',
+      'receivedAt',
+    ],
   },
   access: { read: isOwner, create: nobody, update: nobody, delete: nobody },
   fields: [
@@ -29,4 +36,3 @@ export const PaymentEvents: CollectionConfig = {
     { ...date('receivedAt', 'Nhận lúc'), defaultValue: () => new Date().toISOString() },
   ],
 }
-

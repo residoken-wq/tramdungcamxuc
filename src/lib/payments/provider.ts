@@ -94,7 +94,7 @@ export function getPaymentProvider(name?: string): PaymentProvider {
   }
 
   const rawEnv = process.env.PAYMENT_PROVIDER || 'manual'
-  const normalizedEnv = rawEnv.trim().toLowerCase()
+  const normalizedEnv = normalizePaymentProviderEnv()
 
   if (normalizedEnv === 'manual') {
     return new ManualPaymentProvider()
@@ -108,4 +108,13 @@ export function getPaymentProvider(name?: string): PaymentProvider {
     hasWarnedInvalidProvider = true
   }
   return new ManualPaymentProvider()
+}
+
+function normalizePaymentProviderEnv(): string {
+  return (process.env.PAYMENT_PROVIDER || 'manual').trim().toLowerCase()
+}
+
+/** Chế độ SePay đang bật (cùng cách chuẩn hóa với getPaymentProvider: không phân biệt hoa thường). */
+export function isSepayMode(): boolean {
+  return normalizePaymentProviderEnv() === 'sepay'
 }

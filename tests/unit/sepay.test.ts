@@ -18,7 +18,6 @@ import {
 import { getAccess } from '../../src/lib/entitlements'
 import { POST as sepayWebhookRoute } from '../../src/app/(site)/api/payments/sepay/webhook/route'
 import { GET as orderStatusRoute } from '../../src/app/(site)/api/payments/status/[token]/route'
-import { hashRateLimitKey } from '../../src/lib/forms/ratelimit.server'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
 
 class MockEmailSender implements EmailSender {
@@ -32,6 +31,7 @@ class MockEmailSender implements EmailSender {
 
 describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => {
   let payload: Payload
+  let testStartedAt = ''
   let ownerUser: { id: number; role: string; email: string }
   let digitalToolProductId: number
   let digitalToolSlug: string
@@ -52,6 +52,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
 
   beforeAll(async () => {
     payload = await getPayload({ config: await config })
+    testStartedAt = new Date().toISOString()
 
     settingsBefore = await payload.findGlobal({
       slug: 'siteSettings',
@@ -137,6 +138,21 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
         .catch((e) => console.error('[cleanup] paymentEvent:', e))
     }
 
+    // Event không gắn đơn (401 / invalid_payload / no_match / ignored) do test tạo trong lúc chạy
+    await payload
+      .delete({
+        collection: 'paymentEvents',
+        where: {
+          and: [
+            { provider: { equals: 'sepay' } },
+            { order: { exists: false } },
+            { createdAt: { greater_than_equal: testStartedAt } },
+          ],
+        },
+        overrideAccess: true,
+      })
+      .catch((e) => console.error('[cleanup] orphan paymentEvents:', e))
+
     for (const orderId of createdOrders) {
       try {
         const pEvents = await payload.find({
@@ -173,23 +189,14 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
         .catch((e) => console.error('[cleanup] auditLog:', e))
     }
 
-    for (let i = 100; i < ipCounter; i++) {
-      const ip = `192.168.99.${i}`
-      const ipKey = hashRateLimitKey('ip', 'sepay_webhook_invalid', ip)
-      try {
-        const hits = await payload.find({
-          collection: 'rateLimitHits',
-          where: { key: { equals: ipKey } },
-          overrideAccess: true,
-          limit: 100,
-        })
-        for (const h of hits.docs) {
-          await payload.delete({ collection: 'rateLimitHits', id: h.id, overrideAccess: true })
-        }
-      } catch (e) {
-        console.error('[cleanup] Failed to delete rateLimitHits for ip', ip, e)
-      }
-    }
+    // Lượt rate limit do test tạo (key là hash theo IP / email ngẫu nhiên) → xóa theo thời gian chạy
+    await payload
+      .delete({
+        collection: 'rateLimitHits',
+        where: { createdAt: { greater_than_equal: testStartedAt } },
+        overrideAccess: true,
+      })
+      .catch((e) => console.error('[cleanup] rateLimitHits:', e))
 
     for (const id of createdOrders) {
       await payload
@@ -697,7 +704,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
       expect(emailSender.sent).toHaveLength(1)
     })
 
-    it('Idempotency: Cùng transactionId gửi 2 lần song song -> đúng 1 lần paid, lần 2 duplicate, đúng 1 email, đúng 1 entitlement', async () => {
+    it('Idempotency: Cùng transactionId gửi 2 lần song song -> 1 event paid, đúng 1 email, đúng 1 entitlement', async () => {
       vi.stubEnv('PAYMENT_PROVIDER', 'sepay')
       vi.stubEnv('SEPAY_WEBHOOK_API_KEY', TEST_SEPAY_API_KEY)
 
@@ -749,10 +756,19 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
       const json1 = await res1.json()
       const json2 = await res2.json()
 
+      // Lần 2 có thể gặp event còn 'processing' và xử lý lại (markOrderPaid không cấp lần 2)
       const results = [json1.result, json2.result]
       expect(results).toContain('paid')
-      expect(results).toContain('duplicate')
+      for (const r of results) expect(['paid', 'duplicate']).toContain(r)
       expect(emailSender.sent).toHaveLength(1)
+
+      const events = await payload.find({
+        collection: 'paymentEvents',
+        where: { transactionId: { equals: txIdParallel } },
+        overrideAccess: true,
+      })
+      expect(events.totalDocs).toBe(1)
+      expect(events.docs[0].result).toBe('paid')
 
       const ents = await payload.find({
         collection: 'entitlements',
@@ -1160,7 +1176,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
       expect(evs.docs[0].result).toBe('order_cancelled')
     })
 
-    it('B2: Lỗi DB tạm thời trong markOrderPaid -> 500, xóa event, sau đó gửi lại cùng ID -> thành công paid', async () => {
+    it('B2: Lỗi DB tạm thời trong markOrderPaid -> 500, event giữ processing, gửi lại cùng ID -> paid', async () => {
       vi.stubEnv('PAYMENT_PROVIDER', 'sepay')
       vi.stubEnv('SEPAY_WEBHOOK_API_KEY', TEST_SEPAY_API_KEY)
 
@@ -1208,13 +1224,14 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
       const failRes = await sepayWebhookRoute(failReq)
       expect(failRes.status).toBe(500)
 
-      // Kiểm tra event processing ĐÃ BỊ XÓA khỏi database
-      const deletedCheck = await payload.find({
+      // Event giữ 'processing' để lần gửi lại xử lý tiếp
+      const stuckCheck = await payload.find({
         collection: 'paymentEvents',
         where: { transactionId: { equals: txIdB2Retry } },
         overrideAccess: true,
       })
-      expect(deletedCheck.totalDocs).toBe(0)
+      expect(stuckCheck.totalDocs).toBe(1)
+      expect(stuckCheck.docs[0].result).toBe('processing')
 
       // 2. SePay gửi lại cùng ID -> không bị kẹt duplicate, xử lý thành công paid!
       errorSpy.mockRestore()
@@ -1245,6 +1262,95 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
         overrideAccess: true,
       })
       expect(refreshed.paymentStatus).toBe('paid')
+
+      const finalEvent = await payload.find({
+        collection: 'paymentEvents',
+        where: { transactionId: { equals: txIdB2Retry } },
+        overrideAccess: true,
+      })
+      expect(finalEvent.docs[0].result).toBe('paid')
+    })
+
+    it('T2-09c: đơn đã chuyển paid rồi lỗi (event kẹt processing) -> gửi lại ghi paid, không phải already_paid, không cấp quyền lần 2', async () => {
+      vi.stubEnv('PAYMENT_PROVIDER', 'sepay')
+      vi.stubEnv('SEPAY_WEBHOOK_API_KEY', TEST_SEPAY_API_KEY)
+
+      const customer = await payload.create({
+        collection: 'customers',
+        data: { email: `cust-postcommit-${randomUUID()}@example.test`, name: 'Khach Post Commit' },
+        overrideAccess: true,
+      })
+      createdCustomers.push(customer.id)
+
+      const orderResult = await createDigitalToolOrder(customer.id, digitalToolSlug, {
+        termsAccepted: true,
+        ip: nextIp(),
+      })
+      const orderRes = await payload.find({
+        collection: 'orders',
+        where: { payToken: { equals: orderResult.payToken } },
+        overrideAccess: true,
+      })
+      const order = orderRes.docs[0]
+      createdOrders.push(order.id)
+
+      const txId = String(Date.now() + 990)
+      // Giả lập lần trước: đã ghi event 'processing', đơn đã chuyển paid, rồi tiến trình chết
+      await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          order: order.id,
+          rawPayload: { id: txId },
+          signatureValid: true,
+          result: 'processing',
+          transactionId: txId,
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+      const firstSender = new MockEmailSender()
+      await ordersServer.markOrderPaid(order.id, {
+        source: 'webhook',
+        payload,
+        emailSender: firstSender,
+      })
+
+      const retrySender = new MockEmailSender()
+      const retryRes = await sepayWebhookRoute(
+        new Request('http://localhost/api/payments/sepay/webhook', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Apikey ${TEST_SEPAY_API_KEY}`,
+          },
+          body: JSON.stringify({
+            id: txId,
+            transferAmount: 178000,
+            content: `CK ${order.paymentRef}`,
+            transferType: 'in',
+          }),
+        }),
+        { emailSender: retrySender },
+      )
+      expect(retryRes.status).toBe(200)
+      expect((await retryRes.json()).result).toBe('paid')
+      expect(retrySender.sent).toHaveLength(0)
+
+      const events = await payload.find({
+        collection: 'paymentEvents',
+        where: { transactionId: { equals: txId } },
+        overrideAccess: true,
+      })
+      expect(events.totalDocs).toBe(1)
+      expect(events.docs[0].result).toBe('paid')
+
+      const ents = await payload.find({
+        collection: 'entitlements',
+        where: { customer: { equals: customer.id } },
+        overrideAccess: true,
+      })
+      expect(ents.totalDocs).toBe(1)
     })
   })
 

@@ -3,10 +3,12 @@ import { NextResponse } from 'next/server'
 import { getPayload, ValidationError } from 'payload'
 import config from '@/payload.config'
 import { SepayPaymentProvider } from '@/lib/payments/sepay'
+import { isSepayMode } from '@/lib/payments/provider'
 import { markOrderPaid, InvalidOrderStatusError } from '@/lib/payments/orders.server'
 import { checkAndRecordRateLimit, RateLimitError } from '@/lib/forms/ratelimit.server'
 import { getClientIp } from '@/lib/payments/ip'
 import type { EmailSender } from '@/lib/email/types'
+import type { PaymentEvent } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,7 +22,7 @@ interface WebhookContext {
 /**
  * REVIEW-REQUIRED: Webhook nhận thông báo biến động số dư từ SePay.
  * - Chặn khi PAYMENT_PROVIDER !== 'sepay' -> 404.
- * - Giới hạn kích thước body <= 16 KB -> 413, ghi event không kèm body.
+ * - Giới hạn kích thước body <= 16 KB -> 413 (không ghi DB vì chưa xác thực).
  * - Xác thực chữ ký / API key (timingSafeEqual) TRƯỚC rate limit.
  * - Chỉ request SAI KHÓA mới qua rate limit (theo IP từ phần tử cuối X-Forwarded-For).
  * - Nhánh 401: KHÔNG đặt transactionId (để rỗng, chống kẻ xấu giữ chỗ transactionId).
@@ -30,17 +32,24 @@ interface WebhookContext {
  *   + Ghi event với result: 'processing' trước khi markOrderPaid.
  *   + Thành công -> cập nhật result: 'paid' (hoặc 'already_paid' nếu đơn đã được xác nhận ở luồng song song).
  *   + InvalidOrderStatusError -> đọc lại đơn, cập nhật result: order_cancelled / already_paid / ignored, trả 200.
- *   + Lỗi khác -> XÓA event vừa ghi (để SePay retry được), log, trả 500.
+ *   + Lỗi khác -> GIỮ event 'processing', log, trả 500. SePay gửi lại → gặp event 'processing'
+ *     cùng transactionId → xử lý lại (markOrderPaid không cấp quyền 2 lần) và gắn nhãn đúng.
  */
 export async function POST(req: Request, context?: WebhookContext): Promise<Response> {
   // REVIEW-REQUIRED: Chế độ PAYMENT_PROVIDER !== 'sepay' -> 404
-  if (process.env.PAYMENT_PROVIDER !== 'sepay') {
+  if (!isSepayMode()) {
     return NextResponse.json({ error: 'Not Found' }, { status: 404 })
   }
 
   const payload = await getPayload({ config: await config })
 
-  // 1. Đọc body text và kiểm tra giới hạn kích thước (tối đa 16 KB)
+  // 1. Giới hạn kích thước body (16 KB). Chưa xác thực nên KHÔNG ghi DB ở nhánh này
+  // (tránh người lạ gửi body lớn làm phình bảng paymentEvents).
+  const declaredLength = Number(req.headers.get('content-length') ?? '0')
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: 'Payload Too Large' }, { status: 413 })
+  }
+
   let rawText: string
   try {
     rawText = await req.text()
@@ -50,21 +59,6 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
 
   const bodyLength = Buffer.byteLength(rawText, 'utf8')
   if (bodyLength > MAX_BODY_BYTES) {
-    try {
-      await payload.create({
-        collection: 'paymentEvents',
-        data: {
-          provider: 'sepay',
-          rawPayload: { error: 'payload_too_large', size: bodyLength },
-          signatureValid: false,
-          result: 'payload_too_large',
-          receivedAt: new Date().toISOString(),
-        },
-        overrideAccess: true,
-      })
-    } catch (err) {
-      console.error('[Sepay Webhook] Failed to record payload_too_large event:', err)
-    }
     return NextResponse.json({ error: 'Payload Too Large' }, { status: 413 })
   }
 
@@ -267,13 +261,36 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
     return NextResponse.json({ success: true, result: 'no_match' })
   }
 
+  // 6b. REVIEW-REQUIRED: Giao dịch đã ghi trước đó. Còn 'processing' (lần trước lỗi giữa chừng)
+  // → xử lý lại ở bước 8, bỏ qua các nhánh trạng thái đơn bên dưới; kết quả khác → trùng.
+  let resumeEvent: PaymentEvent | undefined
+  try {
+    const previous = await payload.find({
+      collection: 'paymentEvents',
+      where: { transactionId: { equals: transactionId } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const previousEvent = previous.docs[0]
+    if (previousEvent) {
+      if (previousEvent.result !== 'processing') {
+        return NextResponse.json({ success: true, result: 'duplicate' })
+      }
+      resumeEvent = previousEvent
+    }
+  } catch (dbErr) {
+    console.error('[Sepay Webhook] Error looking up previous event:', dbErr)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+  }
+
   // 7. REVIEW-REQUIRED: Xử lý theo đúng thứ tự logic nghiệp vụ:
   // - Số tiền khác order.total -> amount_mismatch, không đổi đơn
   // - Đơn cancelled -> order_cancelled, không đổi đơn
   // - Đơn đã paid -> already_paid, không đổi đơn
   // - Đơn createdByAdmin chưa đồng ý điều khoản -> terms_missing, không đổi đơn
   // - Đơn pending/failed + đúng số tiền -> chuyển tiếp sang bước markOrderPaid
-  if (parsed.amount !== order.total) {
+  if (!resumeEvent && parsed.amount !== order.total) {
     try {
       await payload.create({
         collection: 'paymentEvents',
@@ -298,7 +315,7 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
     return NextResponse.json({ success: true, result: 'amount_mismatch' })
   }
 
-  if (order.paymentStatus === 'cancelled') {
+  if (!resumeEvent && order.paymentStatus === 'cancelled') {
     try {
       await payload.create({
         collection: 'paymentEvents',
@@ -323,7 +340,7 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
     return NextResponse.json({ success: true, result: 'order_cancelled' })
   }
 
-  if (order.paymentStatus === 'paid') {
+  if (!resumeEvent && order.paymentStatus === 'paid') {
     try {
       await payload.create({
         collection: 'paymentEvents',
@@ -348,7 +365,7 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
     return NextResponse.json({ success: true, result: 'already_paid' })
   }
 
-  if (order.createdByAdmin && !order.termsAcceptedAt) {
+  if (!resumeEvent && order.createdByAdmin && !order.termsAcceptedAt) {
     try {
       await payload.create({
         collection: 'paymentEvents',
@@ -379,27 +396,62 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
   //   + Thành công: cập nhật result: 'paid' (hoặc 'already_paid' nếu đã paid bởi luồng song song).
   //   + InvalidOrderStatusError: đọc lại đơn, cập nhật result: order_cancelled / already_paid / ignored, trả 200.
   //   + Lỗi khác: XÓA event vừa ghi (để SePay retry được không bị kẹt transactionId), log, trả 500.
-  let eventDoc
-  try {
-    eventDoc = await payload.create({
+  let eventDoc: PaymentEvent
+  if (resumeEvent) {
+    eventDoc = resumeEvent
+  } else {
+    try {
+      eventDoc = await payload.create({
+        collection: 'paymentEvents',
+        data: {
+          provider: 'sepay',
+          order: order.id,
+          rawPayload: payloadData,
+          signatureValid: true,
+          result: 'processing',
+          transactionId,
+          receivedAt: new Date().toISOString(),
+        },
+        overrideAccess: true,
+      })
+    } catch (err) {
+      if (!(err instanceof ValidationError)) {
+        console.error('[Sepay Webhook] Failed to record processing payment event:', err)
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+      }
+      // REVIEW-REQUIRED: transactionId đã có. Nếu event cũ còn 'processing' (lần trước lỗi giữa chừng
+      // hoặc tiến trình chết) thì xử lý lại; markOrderPaid không cấp quyền / gửi email lần 2.
+      const existing = await payload.find({
+        collection: 'paymentEvents',
+        where: { transactionId: { equals: transactionId } },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const existingEvent = existing.docs[0]
+      if (!existingEvent || existingEvent.result !== 'processing') {
+        return NextResponse.json({ success: true, result: 'duplicate' })
+      }
+      eventDoc = existingEvent
+    }
+  }
+
+  // Nhãn khi markOrderPaid báo đơn đã paid: nếu đơn chưa có giao dịch KHÁC đang/đã xử lý
+  // ('processing' / 'paid') thì chính giao dịch này đã làm đơn paid (lần trước lỗi sau khi đơn
+  // đã chuyển paid) → 'paid'; ngược lại là khách trả lần 2 → 'already_paid'.
+  const resolveAlreadyPaidLabel = async (): Promise<'paid' | 'already_paid'> => {
+    const otherPaid = await payload.count({
       collection: 'paymentEvents',
-      data: {
-        provider: 'sepay',
-        order: order.id,
-        rawPayload: payloadData,
-        signatureValid: true,
-        result: 'processing',
-        transactionId,
-        receivedAt: new Date().toISOString(),
+      where: {
+        and: [
+          { order: { equals: order.id } },
+          { result: { in: ['paid', 'processing'] } },
+          { id: { not_equals: eventDoc.id } },
+        ],
       },
       overrideAccess: true,
     })
-  } catch (err) {
-    if (err instanceof ValidationError) {
-      return NextResponse.json({ success: true, result: 'duplicate' })
-    }
-    console.error('[Sepay Webhook] Failed to record processing payment event:', err)
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    return otherPaid.totalDocs > 0 ? 'already_paid' : 'paid'
   }
 
   try {
@@ -410,7 +462,7 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
     })
 
     const finalResult = (paidResult as { __alreadyPaid?: boolean })?.__alreadyPaid
-      ? 'already_paid'
+      ? await resolveAlreadyPaidLabel()
       : 'paid'
 
     await payload.update({
@@ -437,7 +489,7 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
         if (freshOrder?.paymentStatus === 'cancelled') {
           updatedResult = 'order_cancelled'
         } else if (freshOrder?.paymentStatus === 'paid') {
-          updatedResult = 'already_paid'
+          updatedResult = await resolveAlreadyPaidLabel()
         }
       } catch (readErr) {
         console.error(
@@ -465,18 +517,8 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
       return NextResponse.json({ success: true, result: updatedResult })
     }
 
-    // Lỗi khác (DB đứt mạng, lỗi server tạm thời, v.v.):
-    // Xóa event vừa ghi để SePay gửi lại sau không bị coi là duplicate
-    try {
-      await payload.delete({
-        collection: 'paymentEvents',
-        id: eventDoc.id,
-        overrideAccess: true,
-      })
-    } catch (delErr) {
-      console.error('[Sepay Webhook] Failed to delete event after processing error:', delErr)
-    }
-
+    // Lỗi khác (DB đứt mạng, lỗi sau khi đơn đã chuyển paid…): GIỮ event 'processing'.
+    // SePay gửi lại → nhánh trùng ở trên xử lý lại. Admin thấy cảnh báo 'processing' nếu vẫn kẹt.
     console.error('[Sepay Webhook] Failed to mark order paid:', payErr)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }

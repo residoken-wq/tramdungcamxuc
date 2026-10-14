@@ -12,6 +12,7 @@ import { getEffectivePrice, getToolUrl } from '../products'
 import { computePackageValue } from '../pricing'
 import { generatePayToken, generateUniquePaymentRef } from './payment-ref'
 import { assertValidBankConfig, buildVietQrPayload, generateVietQrSvg } from './vietqr'
+import { isSepayMode } from './provider'
 import {
   sendDigitalToolOrderPaidEmail,
   sendExperienceOrderPaidEmail,
@@ -680,12 +681,18 @@ export async function getPublicOrderView(
   let toolUrl: string | null = null
   if (Array.isArray(order.items) && order.items.length > 0) {
     const firstItem = order.items[0]
-    if (typeof firstItem.product === 'object' && firstItem.product !== null) {
-      toolUrl = getToolUrl(firstItem.product as { web?: string | null })
+    const product = firstItem.product
+    // Chỉ công cụ số (Habit / EQ) mới có nút "Vào sử dụng công cụ"; đơn 149k / gói → nút tài khoản
+    if (
+      typeof product === 'object' &&
+      product !== null &&
+      (product.web === 'habit' || product.web === 'eq')
+    ) {
+      toolUrl = getToolUrl(product)
     }
   }
 
-  const paymentProvider = process.env.PAYMENT_PROVIDER === 'sepay' ? 'sepay' : 'manual'
+  const paymentProvider = isSepayMode() ? 'sepay' : 'manual'
 
   // REVIEW-REQUIRED: DTO công khai không chứa email, số điện thoại hay ID nội bộ của khách hàng
   return {

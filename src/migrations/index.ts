@@ -1,15 +1,15 @@
-import * as migration_20261004_050321_initial from './20261004_050321_initial';
-import * as migration_20261005_031311_content_collections from './20261005_031311_content_collections';
-import * as migration_20261005_123719_access_control from './20261005_123719_access_control';
-import * as migration_20261006_090527_leads_forms from './20261006_090527_leads_forms';
-import * as migration_20261007_025629_private_files from './20261007_025629_private_files';
-import * as migration_20261008_022007_payment_backend from './20261008_022007_payment_backend';
-import * as migration_20261009_030050_package_payment_entitlements from './20261009_030050_package_payment_entitlements';
-import * as migration_20261010_124840_customer_auth from './20261010_124840_customer_auth';
-import * as migration_20261012_122924_workshop_reminders from './20261012_122924_workshop_reminders';
-import * as migration_20261012_161015_trial_reminders from './20261012_161015_trial_reminders';
-import * as migration_20261013_015236_tracker_and_nudges from './20261013_015236_tracker_and_nudges';
-import * as migration_20261013_083641_sepay_transaction_id from './20261013_083641_sepay_transaction_id';
+import * as migration_20261004_050321_initial from './20261004_050321_initial'
+import * as migration_20261005_031311_content_collections from './20261005_031311_content_collections'
+import * as migration_20261005_123719_access_control from './20261005_123719_access_control'
+import * as migration_20261006_090527_leads_forms from './20261006_090527_leads_forms'
+import * as migration_20261007_025629_private_files from './20261007_025629_private_files'
+import * as migration_20261008_022007_payment_backend from './20261008_022007_payment_backend'
+import * as migration_20261009_030050_package_payment_entitlements from './20261009_030050_package_payment_entitlements'
+import * as migration_20261010_124840_customer_auth from './20261010_124840_customer_auth'
+import * as migration_20261012_122924_workshop_reminders from './20261012_122924_workshop_reminders'
+import * as migration_20261012_161015_trial_reminders from './20261012_161015_trial_reminders'
+import * as migration_20261013_015236_tracker_and_nudges from './20261013_015236_tracker_and_nudges'
+import * as migration_20261013_083641_sepay_transaction_id from './20261013_083641_sepay_transaction_id'
 
 export const migrations = [
   {
@@ -70,6 +70,6 @@ export const migrations = [
   {
     up: migration_20261013_083641_sepay_transaction_id.up,
     down: migration_20261013_083641_sepay_transaction_id.down,
-    name: '20261013_083641_sepay_transaction_id'
+    name: '20261013_083641_sepay_transaction_id',
   },
-];
+]

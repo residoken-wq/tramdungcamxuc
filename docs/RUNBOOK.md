@@ -641,7 +641,7 @@ Hệ thống hỗ trợ 2 chế độ xử lý thanh toán, chuyển đổi linh
      docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
      ```
 6. **Kiểm tra nghiệm thu:**
-   - Vào CMS tạo một sản phẩm thử nghiệm với giá 2.000đ (đặt trạng thái `saleStatus = hidden` để không lộ ngoài trang web, xóa sau khi nghiệm thu xong) HOẶC tạo một đơn hàng thông thường trên web và chuyển đúng tổng số tiền của đơn đó (không chuyển 2.000đ cho đơn 178.000đ vì hệ thống sẽ phát hiện lệch tiền `amount_mismatch`).
+   - Tạo một đơn hàng thông thường trên web (vd. mua Habit Tracker) và chuyển **đúng tổng số tiền** của đơn đó, nội dung là mã chuyển khoản trên trang đơn. Không chuyển số tiền thử nhỏ hơn: hệ thống so số tiền chính xác nên sẽ ghi `amount_mismatch`. (Sản phẩm ẩn không đặt mua được, nên không dùng cách tạo sản phẩm thử giá thấp.)
    - Quét mã VietQR trên trang thanh toán đơn hàng.
    - Kiểm tra:
      - Trong vòng vài giây sau khi ngân hàng báo biến động số dư, SePay gọi webhook.

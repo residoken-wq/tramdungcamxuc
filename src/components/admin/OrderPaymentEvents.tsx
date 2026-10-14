@@ -72,13 +72,13 @@ export const OrderPaymentEvents: React.FC = () => {
         style={{
           fontSize: '12px',
           fontWeight: 700,
-          color: '#280A60',
+          color: 'var(--theme-text, #280A60)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
-        <span>🔔 {vi.payment.ui.adminActions.paymentEventsTitle}</span>
+        <span>{vi.payment.ui.adminActions.paymentEventsTitle}</span>
         {loading && (
           <span style={{ fontSize: '11px', color: 'var(--theme-text-secondary, #280A60)' }}>
             {vi.payment.ui.adminActions.loadingEvents}
@@ -102,7 +102,9 @@ export const OrderPaymentEvents: React.FC = () => {
         const isMismatch = ev.isMismatch
         const isCancelled = ev.isCancelled
         const isTermsMissing = ev.isTermsMissing
-        const isWarning = isMismatch || isCancelled || isTermsMissing
+        const isPaidTwice = ev.isPaidTwice
+        const isStuck = ev.isStuck
+        const isWarning = isMismatch || isCancelled || isTermsMissing || isPaidTwice || isStuck
 
         return (
           <div
@@ -148,7 +150,7 @@ export const OrderPaymentEvents: React.FC = () => {
                   gap: '4px',
                 }}
               >
-                <span>⚠️ {vi.payment.ui.adminActions.amountMismatchWarning}</span>
+                <span>{vi.payment.ui.adminActions.amountMismatchWarning}</span>
                 {ev.amount !== null && ev.amount !== undefined && (
                   <span>({formatVnd(ev.amount)})</span>
                 )}
@@ -169,7 +171,7 @@ export const OrderPaymentEvents: React.FC = () => {
                   gap: '4px',
                 }}
               >
-                <span>⚠️ {vi.payment.ui.adminActions.orderCancelledWarning}</span>
+                <span>{vi.payment.ui.adminActions.orderCancelledWarning}</span>
               </div>
             )}
 
@@ -187,15 +189,53 @@ export const OrderPaymentEvents: React.FC = () => {
                   gap: '4px',
                 }}
               >
-                <span>⚠️ {vi.payment.ui.adminActions.termsMissingWarning}</span>
+                <span>{vi.payment.ui.adminActions.termsMissingWarning}</span>
+              </div>
+            )}
+
+            {/* Cảnh báo nổi bật: Khách chuyển tiền 2 lần */}
+            {isPaidTwice && (
+              <div
+                style={{
+                  backgroundColor: '#FDE6F6',
+                  color: '#BC039E',
+                  fontWeight: 700,
+                  padding: '4px 6px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <span>{vi.payment.ui.adminActions.paidTwiceWarning}</span>
+              </div>
+            )}
+
+            {/* Cảnh báo nổi bật: Event kẹt processing */}
+            {isStuck && (
+              <div
+                style={{
+                  backgroundColor: '#FDE6F6',
+                  color: '#BC039E',
+                  fontWeight: 700,
+                  padding: '4px 6px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <span>{vi.payment.ui.adminActions.stuckWarning}</span>
               </div>
             )}
 
             {/* Trạng thái xử lý bình thường */}
             {!isWarning && (
-              <div style={{ color: '#280A60', fontWeight: 600 }}>
+              <div style={{ color: 'var(--theme-text, #280A60)', fontWeight: 600 }}>
                 {vi.payment.ui.adminActions.resultLabel}{' '}
-                <span style={{ color: '#280A60' }}>{getResultLabel(ev.result)}</span>
+                <span style={{ color: 'var(--theme-text, #280A60)' }}>
+                  {getResultLabel(ev.result)}
+                </span>
               </div>
             )}
           </div>

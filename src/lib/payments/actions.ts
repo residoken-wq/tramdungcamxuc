@@ -273,6 +273,8 @@ export interface OrderPaymentEventItem {
   isMismatch?: boolean
   isCancelled?: boolean
   isTermsMissing?: boolean
+  isPaidTwice?: boolean
+  isStuck?: boolean
 }
 
 // REVIEW-REQUIRED: Server action lấy danh sách sự kiện thanh toán của đơn hàng cho chủ sở hữu (owner).
@@ -326,6 +328,8 @@ export async function getOrderPaymentEventsAction(
         isMismatch: ev.result === 'amount_mismatch',
         isCancelled: ev.result === 'order_cancelled',
         isTermsMissing: ev.result === 'terms_missing',
+        isPaidTwice: ev.result === 'already_paid',
+        isStuck: ev.result === 'processing',
       }
     })
   } catch (err) {
