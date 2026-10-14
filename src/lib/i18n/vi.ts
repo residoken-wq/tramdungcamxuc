@@ -1230,6 +1230,81 @@ export const vi = {
       footerNote: 'Email nhắc nhở nhẹ nhàng từ công cụ Habit Tracker 21 ngày.',
     },
   },
+  certificate: {
+    pageTitle: 'Chứng nhận 21 ngày',
+    metaTitle: (name: string) => `Chứng nhận 21 ngày – ${name} | Trạm Dừng Cảm Xúc`,
+    metaDescription:
+      'Chứng nhận hoàn thành hành trình 21 ngày rèn luyện thói quen và thấu hiểu cảm xúc.',
+    badge: 'Chứng nhận hoàn thành',
+    titleLine1: 'CHỨNG NHẬN',
+    titleLine2: 'HÀNH TRÌNH 21 NGÀY',
+    subtitle: 'Được trao cho',
+    identityCommitmentTitle: 'Cam kết định danh',
+    completedStats: (days: number) => `Đã hoàn thành ${days}/21 ngày thực hành`,
+    issuedDateLabel: 'Ngày cấp:',
+    verificationCodeLabel: 'Mã xác minh:',
+    nameInputLabel: 'Họ và tên',
+    nameInputPlaceholder: 'Nhập họ và tên để in trên chứng nhận',
+    nameInputNote: 'Họ và tên sẽ được in cố định trên chứng nhận 21 ngày.',
+    eligibleNotice:
+      'Chúc mừng bạn đã hoàn thành chặng đường 21 ngày rèn luyện thói quen! Hãy nhận chứng nhận tốt nghiệp của riêng bạn.',
+    imageAlt: (name: string) => `Chứng nhận 21 ngày – ${name}`,
+    backToTracker: '← Quay lại trang Habit Tracker 21 ngày',
+    publicStatus: {
+      isPublic: 'Đang mở công khai',
+      isPrivate: 'Link công khai đang tắt',
+      togglePublic: 'Bật link công khai',
+      togglePrivate: 'Tắt link công khai',
+      toggling: 'Đang cập nhật...',
+      privateNotice:
+        'Chỉ bạn (khi đã đăng nhập) mới xem được chứng nhận này. Người khác mở link sẽ nhận thông báo không tìm thấy.',
+      privateShareNotice: 'Link công khai đang tắt – người khác chưa xem được',
+    },
+    actions: {
+      getCertificate: 'Nhận chứng nhận',
+      gettingCertificate: 'Đang tạo chứng nhận...',
+      download45: 'Tải ảnh 4:5',
+      download916: 'Tải ảnh 9:16',
+      share: 'Chia sẻ',
+      copyLink: 'Sao chép link',
+      copiedLink: 'Đã sao chép link chứng nhận!',
+      viewPublicPage: 'Xem trang chứng nhận',
+    },
+    notEligible: {
+      title: 'Tiếp tục hành trình để nhận chứng nhận',
+      minDaysNotice: (minDays: number) =>
+        `Bạn cần hoàn thành tối thiểu ${minDays}/21 ngày để nhận chứng nhận tốt nghiệp hành trình.`,
+      notDay21Notice: 'Chứng nhận sẽ được mở từ Ngày 21 của hành trình.',
+      keepGoing: 'Hãy tiếp tục kiên trì mỗi ngày một bước nhỏ nhé!',
+    },
+    notFound: {
+      title: 'Không tìm thấy chứng nhận',
+    },
+    errors: {
+      unauthorized: 'Vui lòng đăng nhập để nhận chứng nhận.',
+      noPlan: 'Không tìm thấy kế hoạch thói quen của bạn.',
+      notDay21: 'Chưa tới ngày 21 của hành trình thói quen.',
+      notEnoughDays: (minDays: number) =>
+        `Bạn cần hoàn thành tối thiểu ${minDays} ngày để nhận chứng nhận.`,
+      notFound: 'Không tìm thấy chứng nhận.',
+      forbidden: 'Bạn không có quyền thay đổi trạng thái chứng nhận này.',
+      nameRequired: 'Vui lòng nhập họ và tên để nhận chứng nhận.',
+      nameInvalid: 'Họ và tên phải từ 2 đến 60 ký tự, không chứa ký tự đặc biệt.',
+      issueFailed: 'Có lỗi xảy ra khi tạo chứng nhận. Vui lòng thử lại sau.',
+      updateStatusFailed: 'Có lỗi xảy ra khi cập nhật trạng thái liên kết. Vui lòng thử lại sau.',
+      generalError: 'Có lỗi xảy ra. Vui lòng thử lại sau.',
+    },
+    og: {
+      brand: 'Trạm Dừng Cảm Xúc',
+      journeyTitle: 'HÀNH TRÌNH 21 NGÀY RÈN LUYỆN THÓI QUEN',
+      certifyThat: 'CHỨNG NHẬN',
+      recipientSubtitle: 'Được trân trọng trao cho',
+      daysCompleted: (days: number) => `ĐÃ HOÀN THÀNH ${days}/21 NGÀY`,
+      issuedOn: (date: string) => `NGÀY CẤP: ${date}`,
+      verifyCode: (code: string) => `MÃ XÁC MINH: ${code}`,
+      verifyUrl: 'tramdungcamxuc.com',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
