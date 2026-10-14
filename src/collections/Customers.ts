@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, FieldAccess } from 'payload'
 import { checkbox, date, text } from '../fields/content'
 import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
 import { customerAuthStrategy } from '../lib/auth/strategy'
@@ -7,6 +7,19 @@ import { customerAuthStrategy } from '../lib/auth/strategy'
 // Đăng nhập bằng OTP email, không mật khẩu (disableLocalStrategy: true).
 // Phiên khách là cookie riêng httpOnly + secure (trừ dev) + sameSite=lax.
 // Khách không bao giờ được phép vào trang quản trị /admin (chỉ dành cho collection 'users').
+const nameUpdateAccess: FieldAccess = async (args) => {
+  if (isEditorOrOwner(args)) return true
+  const customerId = args.id ?? args.doc?.id
+  if (!customerId) return false
+  const certificates = await args.req.payload.count({
+    collection: 'certificates',
+    where: { customer: { equals: customerId } },
+    overrideAccess: true,
+    req: args.req,
+  })
+  return certificates.totalDocs === 0
+}
+
 export const Customers: CollectionConfig = {
   slug: 'customers',
   labels: { singular: 'Khách hàng', plural: 'Khách hàng' },
@@ -41,7 +54,16 @@ export const Customers: CollectionConfig = {
         update: isEditorOrOwner,
       },
     },
-    text('name', 'Họ tên'),
+    {
+      // REVIEW-REQUIRED: the name is printed on the 21-day certificate and its public
+      // verification page. Admins can always fix it; a customer can edit their own name only
+      // until they hold a certificate (decided 14/10, T2-07c).
+      ...text('name', 'Họ tên'),
+      maxLength: 100,
+      access: {
+        update: nameUpdateAccess,
+      },
+    },
     text('phone', 'Điện thoại'),
     checkbox('consentMarketing', 'Đồng ý nhận tin'),
     {

@@ -665,3 +665,68 @@ Nếu SePay gặp sự cố bảo trì, gián đoạn mạng hoặc ngân hàng 
    - Các đơn hàng đang chờ hoặc đơn mới tạo vẫn giữ nguyên mã VietQR hợp lệ.
    - Hana mở danh sách đơn hàng trong CMS Admin và bấm nút **"Xác nhận thanh toán"** thủ công như bình thường.
    - Khi SePay hoạt động ổn định trở lại, chỉ cần đổi lại `PAYMENT_PROVIDER=sepay` và chạy lại lệnh `up -d` mà không làm mất bất kỳ dữ liệu nào.
+
+---
+
+## Dữ liệu demo GĐ 2 (T2-15)
+
+Dành cho Hana, anh Nhân và đội ngũ kiểm thử bấm trải nghiệm ngay các tính năng chính của Giai đoạn 2 trên server demo hoặc máy dev:
+
+- Dùng thử đang chạy (ngày 5/21, check-in 4 ngày) + 1 đơn chờ thanh toán
+- Dùng thử hết hạn (check-in 10 ngày dở dang) -> tracker chuyển sang chế độ chỉ xem
+- Đã mua + hoàn thành 21/21 ngày -> sẵn sàng bấm nhận chứng nhận + xem lịch workshop demo
+- Workshop sắp diễn ra sau 3 ngày (`[DEMO GĐ2] Tập thương cảm xúc`)
+
+> ⚠️ **CẢNH BÁO QUAN TRỌNG**:
+> **TUYỆT ĐỐI KHÔNG CHẠY TRÊN SERVER PRODUCTION** (`tramdungcamxuc.com` / `www.tramdungcamxuc.com`).
+> Hệ thống có guard bảo vệ (`seed/demo-guard.ts`): từ chối khi thiếu `DEMO_SEED_ALLOW=true`, khi `SITE_URL` là tên miền thật (`tramdungcamxuc.com` / `www.`), khi chạy production mà **không** truyền `SITE_URL` (container seed không tự có biến này – luôn thêm `-e SITE_URL=…` như lệnh dưới), hoặc khi DB có đơn đã thanh toán của email thật.
+>
+> Lưu ý: workshop demo diễn ra sau 3 ngày nên khoảng 2 ngày sau khi seed, cron nhắc workshop sẽ gửi email tới `hoc-vien-test-03@example.test` (địa chỉ không tồn tại, thư bị trả về). Muốn tránh thì chạy `:clean` sau khi thử xong.
+> Đơn chờ thanh toán của Test 01 sẽ tự động hết hạn sau 24 giờ do cron job đóng đơn. Khi cần thử lại, chỉ cần chạy lại lệnh seed để đặt lại dữ liệu mới.
+
+### 1. Các lệnh chạy trên máy dev (Local)
+
+- **Tạo / Reset dữ liệu demo**:
+  ```bash
+  DEMO_SEED_ALLOW=true pnpm seed:demo-gd2
+  ```
+- **Xóa sạch dữ liệu demo**:
+  ```bash
+  DEMO_SEED_ALLOW=true pnpm seed:demo-gd2:clean
+  ```
+- **Lấy mã OTP đăng nhập cho khách demo**:
+  ```bash
+  DEMO_SEED_ALLOW=true DEMO_EMAIL=hoc-vien-test-01@example.test pnpm seed:demo-gd2:otp
+  ```
+
+### 2. Các lệnh chạy trên server demo (Docker)
+
+Sử dụng profile `tools` của service `seed` trong `docker-compose.prod.yml`:
+
+- **Tạo / Reset dữ liệu demo**:
+  ```bash
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e SITE_URL=https://<tên miền demo> seed pnpm seed:demo-gd2 < /dev/null
+  ```
+- **Xóa sạch dữ liệu demo**:
+  ```bash
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e SITE_URL=https://<tên miền demo> seed pnpm seed:demo-gd2:clean < /dev/null
+  ```
+- **Lấy mã OTP đăng nhập**:
+  ```bash
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e SITE_URL=https://<tên miền demo> -e DEMO_EMAIL=hoc-vien-test-01@example.test seed pnpm seed:demo-gd2:otp < /dev/null
+  ```
+
+### 3. Hướng dẫn đăng nhập và kịch bản trải nghiệm
+
+Do email `@example.test` là email giả lập không nhận được thư thật, quy trình đăng nhập được thiết kế qua CLI an toàn:
+
+1. Mở trình duyệt tới trang đăng nhập: `/tai-khoan/dang-nhap`.
+2. Nhập email demo mong muốn (xem bảng dưới), tích đồng ý điều khoản, bấm **"Gửi mã"**.
+3. Chạy lệnh OTP ở mục 1 hoặc 2 với biến `DEMO_EMAIL=<email-vừa-nhập>`.
+4. Màn hình console sẽ in mã 6 số (hiệu lực 10 phút). Nhập mã này vào ô OTP trên web và bấm **"Đăng nhập"**.
+
+| Khách hàng           | Email                           | Tình huống trải nghiệm                                                                      | Trang nên mở                                     | Điều mong đợi thấy                                                                                                                                                                                                                                                |
+| :------------------- | :------------------------------ | :------------------------------------------------------------------------------------------ | :----------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Học viên Test 01** | `hoc-vien-test-01@example.test` | Dùng thử đang chạy (ngày 5/21). Check-in 4 ngày đầu đã tick xanh. Kèm 1 đơn chờ thanh toán. | `/habit/tracker`<br>`/thanh-toan/don/<payToken>` | • Header hiện: _"Còn 17 ngày dùng thử"_.<br>• Ngày 1–4 có cảm xúc; ngày 5 đang chờ check-in.<br>• Mở link thanh toán thấy mã VietQR và số tiền 178.000đ.                                                                                                          |
+| **Học viên Test 02** | `hoc-vien-test-02@example.test` | Dùng thử đã hết hạn. Đã check-in 10 ngày dở dang.                                           | `/habit/tracker`                                 | • Banner: _"Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ"_.<br>• Toàn bộ lưới tracker ở chế độ **chỉ xem** (không tick thêm được).<br>• Nút kêu gọi: _"Mua để dùng tiếp"_.                                                                       |
+| **Học viên Test 03** | `hoc-vien-test-03@example.test` | Đã mua công cụ số + hoàn thành trọn vẹn 21/21 ngày. Đủ điều kiện nhận chứng nhận.           | `/habit/tracker`<br>`/tai-khoan`                 | • Tại `/habit/tracker`: Thấy thẻ tổng kết hoàn thành 21 ngày kèm nút **"Nhận chứng nhận"**.<br>• Bấm nhận chứng nhận: sinh mã xác minh, xem trước ảnh 4:5 và 9:16.<br>• Tại `/tai-khoan`: Thấy workshop `[DEMO GĐ2] Tập thương cảm xúc` trong danh sách workshop. |
