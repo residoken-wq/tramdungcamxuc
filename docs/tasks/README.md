@@ -154,7 +154,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **MỞ 10/10/2026** (cổng GĐ 1 đạt). Quyết định đã chốt: Q8 SePay, Q9 Bunny, Q14 10 cảm xúc emoji, H1/H2 quiz 1–5 trung bình, Q19, D1/D2 server riêng. Còn mở: Q15 (giá, trong CMS).
 
-**🔒 Migration: (trống) · 🔒 Package: (trống)** · Local và Laptop nghỉ đến hết 10/10.
+**🔒 Migration: T2-16 (PC nhà) · 🔒 Package: (trống)** · Local và Laptop nghỉ đến hết 10/10.
 
 **Thứ tự máy (từ 11/10)**: Laptop = T2-00 → T2-12 → T1-18 → T2-10 → T2-05a · PC nhà = T2-01 → T2-13 → T2-02 → T2-08 · Local = T2-03 → T2-03b.
 
@@ -175,6 +175,8 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T2-13 | Owner xác nhận đơn đã hết hạn (Q19)                              | [REVIEW] | –                   | PC nhà   | QA ĐẠT 11/10 – PR #76, Planning thay e2e rỗng bằng unit test giao diện ([review](reviews/T2-13.md)) · IT duyệt, ✅ merge 11/10                                                                                         |
 | T2-14 | Dọn dữ liệu thử giống thật, chặn đồng ý ở server, test chập chờn | [REVIEW] | –                   | Laptop   | **ĐẠT** 13/10 (IT duyệt) – PR #95 ([review](reviews/T2-14.md))                                                                                                                                                         |
 | T2-15 | Seed dữ liệu demo GĐ 2 (3 khách mẫu, đơn chờ, workshop)          | [REVIEW] | T2-06, T2-08, T2-10 | Local    | **ĐẠT** 14/10 (PR #106) – Planning sửa T2-15b; IT duyệt; biên bản `reviews/T2-15.md`; merge xong trả 🔒 Package                                                                                                        |
+| T2-16 | Yêu cầu xóa tài khoản + Hana xóa dữ liệu khách (đơn giữ ẩn danh) | [REVIEW] | T2-01, T2-08        | PC nhà   | Đã giao PC nhà 14/10 (prompt `prompts/T2-16.md`); giữ 🔒 Migration                                                                                                                                                     |
+| T2-17 | Tài khoản: Đơn hàng của tôi, tải lại file; dọn nợ nhỏ GĐ 2       |          | T2-08               | Laptop   | Đã giao Laptop 14/10 (prompt `prompts/T2-17.md`), không migration                                                                                                                                                      |
 | T2-11 | E2E luồng Habit + cổng GĐ 2                                      | [HANA]   | tất cả              | Planning | –                                                                                                                                                                                                                      |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
