@@ -96,5 +96,15 @@ export const Customers: CollectionConfig = {
         description: 'Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).',
       },
     },
+    {
+      name: 'customerActions',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/CustomerActions#CustomerActions',
+        },
+      },
+    },
   ],
 }

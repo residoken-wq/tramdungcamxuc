@@ -1,17 +1,20 @@
 'use server'
 
 import React from 'react'
+import { headers as getHeaders } from 'next/headers'
 import { render } from '@react-email/render'
 import type { Payload } from 'payload'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
+import { isAdminUser, isOwnerUser } from '@/lib/auth/access'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { checkAndRecordRateLimit, RateLimitError } from '@/lib/forms/ratelimit.server'
 import { getDefaultEmailSender } from '@/lib/email/sender.server'
 import type { EmailSender } from '@/lib/email/types'
 import { AdminNotificationEmail } from '@/emails/AdminNotificationEmail'
 import { vi } from '@/lib/i18n/vi'
-import type { RequestAccountDeletionResult } from './types'
+import { deleteCustomerData } from './delete-customer.server'
+import type { DeleteCustomerDataResult, RequestAccountDeletionResult } from './types'
 
 // REVIEW-REQUIRED: Server action cho khách hàng gửi yêu cầu xóa tài khoản và dữ liệu cá nhân.
 // - Khách hàng xác thực nghiêm ngặt từ phiên máy chủ (getCurrentCustomer); khách khác không thể gửi hộ.
@@ -141,6 +144,46 @@ export async function requestAccountDeletionAction(
     return {
       success: false,
       message: vi.account.deletion.serverError,
+    }
+  }
+}
+
+// REVIEW-REQUIRED: Server action cho chủ sở hữu (owner) xóa toàn bộ dữ liệu khách hàng từ admin.
+// Bắt buộc xác thực người dùng trên server và kiểm tra nghiêm ngặt quyền owner (isAdminUser + isOwnerUser).
+export async function deleteCustomerAdminAction(
+  customerId: number,
+  confirmationEmail: string,
+  options: { payload?: Payload } = {},
+): Promise<DeleteCustomerDataResult> {
+  try {
+    let headers: Headers | undefined
+    try {
+      headers = await getHeaders()
+    } catch {
+      // Bắt lỗi khi gọi ngoài request scope (ví dụ trong môi trường kiểm thử)
+    }
+
+    const payload = options.payload ?? (await getPayload({ config: await config }))
+    const { user } = await payload.auth({ headers: headers || new Headers() })
+
+    if (!user || !isAdminUser(user) || !isOwnerUser(user)) {
+      return {
+        success: false,
+        message: vi.account.adminDeletion.unauthorized,
+      }
+    }
+
+    return await deleteCustomerData(payload, {
+      customerId,
+      confirmationEmail,
+      actorUserId: user.id,
+    })
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : vi.account.adminDeletion.serverError
+    console.error('[DeleteCustomerAction] Lỗi khi thực hiện xóa dữ liệu khách hàng:', err)
+    return {
+      success: false,
+      message: errorMsg,
     }
   }
 }
