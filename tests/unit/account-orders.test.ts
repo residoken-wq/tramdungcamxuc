@@ -400,6 +400,41 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
     expect((await callRoute(mismatched)).status).toBe(404)
   })
 
+  it('tên file có dấu tiếng Việt không làm route lỗi 500', async () => {
+    const viName = `Tài-liệu-đọc-${randomUUID().slice(0, 6)}.pdf`
+    const viPath = path.resolve(os.tmpdir(), viName)
+    fs.writeFileSync(
+      viPath,
+      Buffer.from('%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\nstartxref\n9\n%%EOF\n'),
+    )
+    const viFile = await payload.create({
+      collection: 'privateFiles',
+      data: { description: 'Tài liệu test tên có dấu' },
+      filePath: viPath,
+      overrideAccess: true,
+    })
+    createdPrivateFiles.push(viFile.id)
+    fs.unlinkSync(viPath)
+    expect(viFile.filename).toMatch(/[^\x00-\x7f]/)
+    const freeVi = await payload.create({
+      collection: 'products',
+      data: {
+        name: 'Toolkit Tiếng Việt Test',
+        slug: `toolkit-vi-test-${randomUUID().slice(0, 8)}`,
+        web: 'site',
+        type: 'toolkit',
+        saleStatus: 'free',
+        files: [{ file: viFile.id }],
+        _status: 'published',
+      },
+      overrideAccess: true,
+    })
+    createdProducts.push(freeVi.id)
+    loginAs(null)
+    const res = await callRoute(signDownloadToken({ productId: freeVi.id, fileId: viFile.id }))
+    expect(res.status).toBe(200)
+  })
+
   it('link tài nguyên miễn phí cũ (không gắn đơn) vẫn tải được; link không gắn đơn cho đồ trả phí -> 410', async () => {
     loginAs(null)
     const freeToken = signDownloadToken({ productId: freeProductId, fileId: privateFileId })

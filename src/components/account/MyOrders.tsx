@@ -27,7 +27,7 @@ export function MyOrders({ orders, loadError = false }: MyOrdersProps) {
       <h2 className="font-ui text-base font-bold text-deep-navy">{vi.account.orders.heading}</h2>
 
       {loadError ? (
-        <p role="alert" className="font-sans text-sm text-accent-pink">
+        <p role="alert" className="font-sans text-sm font-semibold text-deep-navy">
           {vi.account.orders.loadError}
         </p>
       ) : orders.length === 0 ? (

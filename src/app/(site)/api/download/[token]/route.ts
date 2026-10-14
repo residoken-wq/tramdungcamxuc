@@ -31,6 +31,18 @@ function getS3Client(): S3Client {
   return s3ClientInstance
 }
 
+/** Header chỉ nhận Latin-1: bản `filename=` bỏ dấu; tên đầy đủ đi qua `filename*` (UTF-8). */
+function toAsciiFilename(filename: string): string {
+  const ascii = filename
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .replace(/[^\x20-\x7e]/g, '_')
+    .replace(/"/g, '')
+  return ascii || 'download'
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ token: string }> },
@@ -172,7 +184,7 @@ export async function GET(
   headers.set('Content-Type', mimeType)
   headers.set(
     'Content-Disposition',
-    `attachment; filename="${filename.replace(/"/g, '')}"; filename*=UTF-8''${encodedFilename}`,
+    `attachment; filename="${toAsciiFilename(filename)}"; filename*=UTF-8''${encodedFilename}`,
   )
   if (fileDoc.filesize) {
     headers.set('Content-Length', String(fileDoc.filesize))

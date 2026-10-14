@@ -115,7 +115,7 @@ export async function getCustomerOrders(
                 typeof fileObj === 'object' && fileObj !== null
                   ? (fileObj as PrivateFile).filename || undefined
                   : undefined
-              if (typeof fileId === 'number') {
+              if (typeof fileId === 'number' && !files.some((f) => f.fileId === fileId)) {
                 files.push({ fileId, filename })
               }
             }

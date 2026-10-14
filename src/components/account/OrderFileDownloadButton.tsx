@@ -56,7 +56,7 @@ export function OrderFileDownloadButton({
             : vi.account.orders.downloadFile}
       </Button>
       {error && (
-        <p role="alert" className="text-xs font-sans text-accent-pink">
+        <p role="alert" className="text-xs font-sans font-semibold text-deep-navy">
           {error}
         </p>
       )}
