@@ -38,12 +38,12 @@
 
 - [ ] Phiên khách (T2-01): thu hồi phiên phía server khi đăng xuất / đổi email (hiện chỉ xóa cookie, hạn 30 ngày).
 - [x] T2-01: server chặn đăng nhập khi khách cũ chưa có `consentAt` (form đã chặn) (xong T2-14).
-- [ ] Xóa tài khoản khách (AGENTS 8.4): `orders`, `entitlements`, `savedCards`, `certificates`, `lessonProgress` có `customer` NOT NULL + `ON DELETE SET NULL` → xóa khách có dữ liệu sẽ lỗi DB. Phải xóa / ẩn danh dữ liệu con trước (thấy khi QA T2-10).
+- [x] Xóa tài khoản khách (AGENTS 8.4): `orders`, `entitlements`, `savedCards`, `certificates`, `lessonProgress` có `customer` NOT NULL + `ON DELETE SET NULL` → xóa khách có dữ liệu sẽ lỗi DB. Phải xóa / ẩn danh dữ liệu con trước (xong T2-16).
 - [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
 - [ ] T2-08: khóa chống tạo 2 đơn song song đang ở bộ nhớ tiến trình (`withOrderLock`). Khi chạy nhiều bản Next.js → đổi sang `pg_advisory_xact_lock(customerId, productId)`.
 - [ ] T2-03: bọc lưu kế hoạch + tạo lead trong 1 transaction (lead lỗi → kế hoạch trùng khi gửi lại); cân nhắc không lưu tên/email vào nháp `localStorage`.
 - [ ] T2-04: chuyển chữ trong `TrialWelcomeEmail.tsx` vào `vi.ts`; banner/trang `/dung-thu` phân biệt "quyền mua có hạn đã hết" với "dùng thử đã hết" (khi có `accessDurationDays`); `trialDays` ≤ 3 thì mail ngày 18 gửi ngay.
-- [ ] T2-07: validate `customers.name` ở mức collection (chặn `< > { }`, ký tự điều khiển) – hiện chỉ action nhận chứng nhận kiểm.
+- [x] T2-07: validate `customers.name` ở mức collection (chặn `< > { }`, ký tự điều khiển) – hiện chỉ action nhận chứng nhận kiểm (xong T2-16).
 - [ ] T2-09: giới hạn body webhook ở reverse proxy (request chunked không có `Content-Length`); demo phải chạy sau proxy để `X-Forwarded-For` đáng tin.
 - [ ] T2-09: gói `markOrderPaid` (đổi `paid` + cấp quyền + email) trong 1 transaction; hiện tiến trình chết giữa chừng → nhãn `paid_incomplete`, email xác nhận không gửi lại.
-- [ ] T2-07: chống cấp 2 chứng nhận cho 1 kế hoạch đang dựa vào khóa trong bộ nhớ (`withCertLock`, một tiến trình). Khi có migration tiếp theo → thêm unique cho `certificates.plan`.
+- [x] T2-07: chống cấp 2 chứng nhận cho 1 kế hoạch đang dựa vào khóa trong bộ nhớ (`withCertLock`, một tiến trình). Khi có migration tiếp theo → thêm unique cho `certificates.plan` (xong T2-16).

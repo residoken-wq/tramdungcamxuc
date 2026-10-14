@@ -9,6 +9,7 @@
 
 1. [Đăng nhập và Bảo mật tài khoản](#1-đăng-nhập-và-bảo-mật-tài-khoản)
    - [1.4. Khách hàng đăng nhập thế nào](#14-khách-hàng-đăng-nhập-thế-nào)
+   - [1.5. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách](#15-khách-hàng-yêu-cầu-xóa-tài-khoản--hana-xóa-dữ-liệu-khách)
 2. [Nhận biết và Làm việc với dữ liệu mẫu](#2-nhận-biết-và-làm-việc-với-dữ-liệu-mẫu)
 3. [Quản lý Sản phẩm, Giá bán và Tài nguyên](#3-quản-lý-sản-phẩm-giá-bán-và-tài-nguyên)
    - [3.6. Xem trước khi sửa dịch vụ, chương trình và bài viết (Live Preview)](#36-xem-trước-khi-sửa-dịch-vụ-chương-trình-và-bài-viết-live-preview)
@@ -89,6 +90,57 @@ Hệ thống phân chia tài khoản quản trị thành hai vai trò rõ ràng 
 - **Mã xác thực 6 chữ số qua Email**: Hệ thống tự động gửi một mã OTP gồm 6 chữ số tới hộp thư của khách, có hiệu lực trong 10 phút. Khách nhập mã này để vào tài khoản ngay lập tức.
 - **Bảo mật và Tự động**: Mỗi mã chỉ dùng được 1 lần, nếu nhập sai quá 5 lần mã sẽ tự khóa để chống dò mã. Phiên đăng nhập được lưu an toàn trên trình duyệt của khách trong 30 ngày.
 - **Hồ sơ khách hàng trong CMS**: Hệ thống tự động tạo hồ sơ khách hàng mới trong mục **Khách hàng** (`customers`) ngay lần đăng nhập đầu tiên và tự động gắn đúng các đơn hàng, quyền học của họ. Khách hàng hoàn toàn không thể truy cập vào trang quản trị `/admin` của Hana.
+
+---
+
+### 1.5. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách
+
+**Mục đích**: Thực hiện quyền xóa dữ liệu cá nhân theo quy định bảo vệ dữ liệu (Nghị định 13/2023/NĐ-CP) khi khách hàng không còn nhu cầu sử dụng dịch vụ trên Trạm Dừng Cảm Xúc.
+
+#### 1. Quy trình từ phía khách hàng
+
+- Khách hàng đã đăng nhập có thể truy cập trang **Tài khoản của tôi** (`/tai-khoan`).
+- Ở cuối trang có mục **Quyền riêng tư & Xóa tài khoản**. Khách bấm nút "Yêu cầu xóa tài khoản" và xác nhận.
+- Khi gửi yêu cầu thành công, hệ thống ghi nhận thời điểm yêu cầu (`deletionRequestedAt`) và gửi email thông báo bảo mật tới địa chỉ quản trị của Hana với tiêu đề:
+  `[Bảo mật] Yêu cầu xóa dữ liệu: Khách hàng #[ID] (Thời điểm: ...)`
+  _(Tiêu đề email tuân thủ bảo mật, không để lộ email hay tên của khách ra ngoài)._
+
+#### 2. Thao tác xóa dữ liệu của Hana trong CMS
+
+1. Mở email thông báo hoặc vào mục **Khách hàng** (`customers`) trong CMS. Bạn sẽ thấy cột **Yêu cầu xóa** hiển thị thời điểm khách gửi yêu cầu.
+2. Bấm vào khách hàng cần xử lý để mở trang chi tiết (`/admin/collections/customers/[id]`).
+3. Tại cột bên phải (Sidebar), tìm nút **Xóa dữ liệu khách hàng** (chỉ hiển thị cho tài khoản Chủ sở hữu - `owner`).
+4. Bấm nút và hệ thống sẽ mở ra hộp thoại xác nhận an toàn:
+   - Hana cần **gõ lại chính xác địa chỉ email của khách hàng** vào ô xác nhận.
+   - Nút **Xác nhận xóa vĩnh viễn** chỉ sáng lên khi email gõ vào trùng khớp 100% (giúp ngăn chặn hoàn toàn việc bấm nhầm).
+5. Bấm **Xác nhận xóa vĩnh viễn**. Hệ thống sẽ thực hiện xóa toàn bộ dữ liệu trong một phiên giao dịch cơ sở dữ liệu duy nhất. Nếu có bất kỳ sự cố kỹ thuật nào xảy ra giữa chừng, toàn bộ thao tác sẽ được hoàn tác an toàn (rollback), không làm mất dữ liệu chắp vá.
+
+#### 3. Quy định SLA thời hạn xử lý
+
+- **Theo Nghị định 13/2023/NĐ-CP**: Thời hạn tối đa để hoàn tất xử lý yêu cầu xóa dữ liệu cá nhân của khách hàng là **7 ngày** kể từ khi nhận được yêu cầu.
+- **Khuyến nghị cho Trạm Dừng Cảm Xúc**: Hana nên kiểm tra và bấm xác nhận xóa trong vòng **72 giờ** kể từ khi nhận email thông báo để mang lại trải nghiệm chuyên nghiệp, an tâm cho khách hàng.
+
+#### 4. Dữ liệu nào bị xóa và dữ liệu nào được giữ lại?
+
+- **Dữ liệu bị xóa vĩnh viễn (0 bản ghi còn lại)**:
+  - Tài khoản khách hàng (`customers`).
+  - Toàn bộ kế hoạch và mục tiêu thói quen (`habitPlans`).
+  - Toàn bộ lịch sử check-in cảm xúc hàng ngày (`habitCheckins`).
+  - Toàn bộ thông báo nhắc nhở thói quen (`trackerNudges`).
+  - Toàn bộ chứng nhận hoàn thành 21 ngày (`certificates`).
+  - Toàn bộ quyền truy cập công cụ và khóa học (`entitlements`).
+  - Toàn bộ lịch sử nhắc hạn dùng thử (`trialReminders`) và nhắc hẹn workshop (`workshopReminders`).
+  - Toàn bộ tiến độ xem bài học (`lessonProgress`).
+  - Toàn bộ thẻ suy ngẫm cảm xúc đã lưu (`savedCards`).
+  - Toàn bộ mã xác thực OTP (`otpCodes`), kết quả trắc nghiệm (`diagnosticResults`), và thông tin khách tiềm năng (`leads`) có cùng email.
+- **Dữ liệu được giữ lại dưới dạng ẩn danh (Anonymized)**:
+  - **Đơn hàng (`orders`)**: Theo quy định pháp luật kế toán và thuế (lưu trữ chứng từ tài chính tối thiểu 5 năm), các đơn hàng mua sản phẩm **không bị xóa mất**. Thay vào đó, hệ thống tự động **ẩn danh hóa**:
+    - Ngắt liên kết với khách hàng (`customer = null`).
+    - Ghi nhận thời điểm ẩn danh (`anonymizedAt`).
+    - Xóa toàn bộ ghi chú riêng tư và nhu cầu cá nhân (`notes = null`, `customerNeed = null`).
+    - Giữ nguyên số tiền, ngày thanh toán, mã đối soát ngân hàng (`paymentRef`) để phục vụ kiểm toán tài chính và đối soát doanh thu.
+  - **Sự kiện thanh toán (`paymentEvents`)**: Giữ nguyên nguyên trạng vì đây là chứng từ giao dịch đối soát ngân hàng.
+  - **Nhật ký hệ thống (`auditLogs`)**: Hệ thống tự động ghi lại một dòng nhật ký ẩn danh xác nhận Hana đã xóa dữ liệu khách hàng #[ID] kèm tổng số lượng bản ghi từng bảng đã xóa sạch, tuyệt đối không lưu lại tên hay email của khách.
 
 ---
 

@@ -267,7 +267,12 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         'entitlements',
         (await payload.create({
           collection: 'entitlements',
-          data: { customer: customerA.id, product: testProduct.id, source: 'manual', status: 'active' },
+          data: {
+            customer: customerA.id,
+            product: testProduct.id,
+            source: 'manual',
+            status: 'active',
+          },
           overrideAccess: true,
         })) as any,
       )
