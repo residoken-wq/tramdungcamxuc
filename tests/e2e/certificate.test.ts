@@ -199,11 +199,13 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
       await expect(claimCertBtn).toBeVisible()
 
       // 11. Bấm nhận chứng nhận -> xuất hiện ảnh xem trước & các nút thao tác
+      const viewCertLink = ownerPage.getByRole('link', { name: /Xem trang chứng nhận/i })
       await expect(async () => {
-        await claimCertBtn.click({ timeout: 5000 })
-        await expect(ownerPage.getByRole('link', { name: /Xem trang chứng nhận/i })).toBeVisible({
-          timeout: 5000,
-        })
+        // Lần bấm trước có thể đã thành công nhưng link hiện chậm → chỉ bấm khi nút còn trên trang
+        if (await claimCertBtn.isVisible()) {
+          await claimCertBtn.click({ timeout: 5000 })
+        }
+        await expect(viewCertLink).toBeVisible({ timeout: 5000 })
       }).toPass({ timeout: 30000 })
 
       // Lấy link xem trang chứng nhận

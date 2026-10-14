@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import { randomUUID } from 'node:crypto'
@@ -62,7 +62,21 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     }
   })
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   afterAll(async () => {
+    // 0. Chứng nhận do action tạo có thể chưa được track nếu expect hỏng → xóa theo khách test
+    const customerIds = created.filter((c) => c.collection === 'customers').map((c) => c.id)
+    if (customerIds.length > 0) {
+      await payload.delete({
+        collection: 'certificates',
+        where: { customer: { in: customerIds } },
+        overrideAccess: true,
+      })
+    }
+
     // 1. Dọn dẹp toàn bộ dữ liệu do test tạo theo thứ tự ngược lại (certificates -> checkins -> plans -> entitlements -> customers)
     for (const item of created.reverse()) {
       try {
@@ -81,10 +95,12 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     const planIds = created.filter((c) => c.collection === 'habitPlans').map((c) => c.id)
     const checkinIds = created.filter((c) => c.collection === 'habitCheckins').map((c) => c.id)
 
-    if (certIds.length > 0) {
+    if (certIds.length > 0 || customerIds.length > 0) {
       const remainingCerts = await payload.find({
         collection: 'certificates',
-        where: { id: { in: certIds } },
+        where: {
+          or: [{ id: { in: certIds } }, { customer: { in: customerIds } }],
+        },
         overrideAccess: true,
       })
       expect(remainingCerts.totalDocs).toBe(0)
@@ -474,6 +490,70 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
         overrideAccess: true,
       })
       expect(customerInDb.name || '').toBe('')
+    })
+
+    it('khách đã có chứng nhận không tự đổi được tên qua API; admin vẫn sửa được', async () => {
+      const customer = await createTestCustomer('Học viên Test Khóa Tên')
+      const pastDate = new Date()
+      pastDate.setDate(pastDate.getDate() - 22)
+      const plan = await createTestPlan(customer.id, pastDate.toISOString().split('T')[0])
+      await createCheckins(plan.id, 16)
+
+      const asCustomer = { ...customer, collection: 'customers' as const }
+
+      // Chưa có chứng nhận → khách tự sửa được tên (giữ hành vi T2-01)
+      await payload.update({
+        collection: 'customers',
+        id: customer.id,
+        data: { name: 'Học viên Test Trước Khi Nhận' },
+        user: asCustomer,
+        overrideAccess: false,
+      })
+
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue({
+        ...customer,
+        name: 'Học viên Test Trước Khi Nhận',
+      })
+      const res = await issueCertificateAction({})
+      expect(res.success).toBe(true)
+
+      // Đã có chứng nhận → khách sửa tên bị bỏ qua
+      await payload.update({
+        collection: 'customers',
+        id: customer.id,
+        data: { name: 'Tên Tự Sửa' },
+        user: asCustomer,
+        overrideAccess: false,
+      })
+      const afterCustomer = await payload.findByID({
+        collection: 'customers',
+        id: customer.id,
+        depth: 0,
+        overrideAccess: true,
+      })
+      expect(afterCustomer.name).toBe('Học viên Test Trước Khi Nhận')
+
+      // Admin (owner/editor) vẫn sửa được để chữa tên in sai
+      const adminUser = {
+        id: 1,
+        collection: 'users' as const,
+        role: 'editor' as const,
+        email: 'qa@example.test',
+      }
+      await payload.update({
+        collection: 'customers',
+        id: customer.id,
+        data: { name: 'Học viên Test Admin Sửa' },
+        user: adminUser,
+        overrideAccess: false,
+      })
+      const afterAdmin = await payload.findByID({
+        collection: 'customers',
+        id: customer.id,
+        depth: 0,
+        overrideAccess: true,
+      })
+      expect(afterAdmin.name).toBe('Học viên Test Admin Sửa')
     })
 
     it('khách đã có tên gửi tên khác -> tên khách giữ nguyên', async () => {

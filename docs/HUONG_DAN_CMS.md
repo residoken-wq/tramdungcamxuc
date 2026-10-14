@@ -400,6 +400,11 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
      - Chỉ duy nhất học viên sở hữu (khi đã đăng nhập đúng tài khoản) mới có thể xem lại chứng nhận của mình kèm thông báo nhắc nhở: _"Link công khai đang tắt"_.
 - Nếu cần xóa hoàn toàn: Chỉ tài khoản `owner` mới có nút xóa chứng nhận khỏi hệ thống.
 
+**Sửa tên in sai trên chứng nhận**:
+
+- Tên trên chứng nhận lấy từ trường **Họ tên** của khách. Khách nhập tên khi bấm "Nhận chứng nhận" (nếu chưa có tên). Sau khi đã có chứng nhận, khách **không** tự đổi tên được nữa.
+- Khách báo tên in sai: vào **Khách hàng** → tìm theo email → sửa **Họ tên** → **Lưu**. Trang xác minh và ảnh chứng nhận cập nhật ngay ở lần tải sau.
+
 **Cài đặt số ngày tối thiểu để nhận chứng nhận**:
 
 - Theo mặc định, học viên phải đạt tối thiểu **15/21 ngày** check-in (và đã bước sang Ngày 21) mới đủ điều kiện nhận chứng nhận.

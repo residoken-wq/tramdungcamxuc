@@ -139,7 +139,7 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
             </span>
             <span>
               {vi.certificate.verificationCodeLabel}{' '}
-              <strong className="font-mono text-deep-navy">{cert.code}</strong>
+              <strong className="font-ui tracking-wider text-deep-navy">{cert.code}</strong>
             </span>
           </div>
 
@@ -167,7 +167,7 @@ export default async function CertificatePage({ params }: CertificatePageProps) 
             <div className="pt-4 border-t border-deep-navy/10">
               <Link
                 href="/habit/tracker"
-                className="text-xs font-ui font-semibold text-deep-navy/70 hover:text-bright-magenta underline transition-colors"
+                className="text-xs font-ui font-semibold text-deep-navy/70 hover:text-bright-magenta underline transition-colors motion-reduce:transition-none"
               >
                 {vi.certificate.backToTracker}
               </Link>

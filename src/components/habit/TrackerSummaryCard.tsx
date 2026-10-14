@@ -240,6 +240,11 @@ export function TrackerSummaryCard({
                 {vi.certificate.actions.viewPublicPage} &rarr;
               </Link>
             </div>
+            {!certificate.isPublic && (
+              <p className="text-xs font-sans text-deep-navy/70 text-center">
+                {vi.certificate.publicStatus.privateShareNotice}
+              </p>
+            )}
           </div>
         ) : isEligible ? (
           // Đủ điều kiện nhưng chưa nhận -> Hiện nút nhận chứng nhận (kèm ô nhập tên nếu khách chưa có tên)
