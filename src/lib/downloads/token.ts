@@ -4,6 +4,9 @@ export interface DownloadTokenPayload {
   productId: number | string
   fileId: number | string
   expiresAt: number
+  /** Có khi link tải file đã mua: route bắt buộc đúng khách đăng nhập + đơn đã thanh toán. */
+  orderId?: number
+  customerId?: number
 }
 
 export interface SignDownloadTokenOptions {
@@ -11,6 +14,8 @@ export interface SignDownloadTokenOptions {
   fileId: number | string
   expiresAt?: number
   secret?: string
+  orderId?: number
+  customerId?: number
 }
 
 export type VerifyDownloadTokenResult =
@@ -26,6 +31,8 @@ export function signDownloadToken({
   fileId,
   expiresAt,
   secret,
+  orderId,
+  customerId,
 }: SignDownloadTokenOptions): string {
   const secretKey = secret || process.env.PAYLOAD_SECRET
   if (!secretKey) {
@@ -39,6 +46,8 @@ export function signDownloadToken({
     productId,
     fileId,
     expiresAt: effectiveExpiresAt,
+    ...(orderId !== undefined ? { orderId } : {}),
+    ...(customerId !== undefined ? { customerId } : {}),
   }
 
   const payloadString = JSON.stringify(payload)
@@ -103,7 +112,10 @@ export function verifyDownloadToken(
     typeof payload !== 'object' ||
     payload.productId === undefined ||
     payload.fileId === undefined ||
-    typeof payload.expiresAt !== 'number'
+    typeof payload.expiresAt !== 'number' ||
+    (payload.orderId !== undefined && typeof payload.orderId !== 'number') ||
+    (payload.customerId !== undefined && typeof payload.customerId !== 'number') ||
+    (payload.orderId !== undefined) !== (payload.customerId !== undefined)
   ) {
     return { valid: false, reason: 'invalid' }
   }
