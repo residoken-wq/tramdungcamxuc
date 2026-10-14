@@ -6,7 +6,7 @@
 
 - **Đã merge**: T2-00, T2-01, T2-02, T2-03, T2-04, T2-05a, T2-05b, T2-06, T2-08, T2-10, T2-12, T2-13, T2-14. Biên bản ở `reviews/`.
 - **ĐẠT 14/10, merge**: T2-07 (PR #102), T2-09 (PR #103, trả 🔒 Migration), T2-15 (PR #106, trả 🔒 Package). Biên bản `reviews/`.
-- **Đang sửa sau QA 14/10 (CHƯA ĐẠT)**: T2-16b @PC nhà (PR #109, giữ 🔒 Migration) – chặn xóa ngoài luồng, chặn khi còn đơn chờ, hủy đơn quá hạn, transaction thật, dấu vết dùng thử (hash email), 72 giờ · T2-17b @Laptop (PR #110) – tải lại file trả phí bằng link gắn đơn + khách, hạn 10 phút. Quyết định anh Nhân 14/10 ghi trong `reviews/T2-16.md`, `T2-17.md`. Local rảnh.
+- **Đang sửa sau QA 14/10 (CHƯA ĐẠT)**: T2-16b @PC nhà (PR #109, giữ 🔒 Migration) – chặn xóa ngoài luồng, chặn khi còn đơn chờ, hủy đơn quá hạn, transaction thật, dấu vết dùng thử (hash email), 72 giờ · T2-17 **ĐẠT** 14/10 (Planning tự làm T2-17b, IT duyệt, PR #110). Quyết định anh Nhân 14/10 ghi trong `reviews/T2-16.md`, `T2-17.md`. Local, Laptop rảnh.
 - **Nghiệm thu thật còn chờ tài khoản**: Bunny (T2-05b, RUNBOOK "Cấu hình Bunny Stream"), SePay (T2-09).
 - **Lên demo** cần crontab mỗi giờ: `/api/cron/workshop-reminders`, `/api/cron/trial-reminders`, `/api/cron/expire-entitlements`, `/api/cron/tracker-nudges` (mẫu trong `docs/RUNBOOK.md`).
 
