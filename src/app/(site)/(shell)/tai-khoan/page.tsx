@@ -12,6 +12,8 @@ import { vi } from '@/lib/i18n/vi'
 import { getToolUrl } from '@/lib/products'
 import { Button } from '@/components/ui/Button'
 import { WorkshopSchedule } from '@/components/site/account/WorkshopSchedule'
+import { getCustomerOrders } from '@/lib/account/orders.server'
+import { MyOrders } from '@/components/account/MyOrders'
 
 export const metadata: Metadata = {
   title: 'Tài khoản của tôi | Trạm Dừng Cảm Xúc',
@@ -83,6 +85,7 @@ export default async function AccountPage() {
 
   const displayName = customer.name?.trim() || customer.email
   const eligibleWorkshops = await getEligibleWorkshops(customer.id)
+  const orders = await getCustomerOrders(customer.id)
 
   return (
     <div className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-8">
@@ -208,12 +211,7 @@ export default async function AccountPage() {
           </div>
 
           {/* Đơn hàng */}
-          <div className="bg-white/95 rounded-2xl p-6 border border-lavender-mist shadow-sm space-y-4">
-            <h2 className="font-ui text-base font-bold text-deep-navy">{vi.auth.myOrders}</h2>
-            <div className="p-8 rounded-xl bg-warm-ivory/50 border border-dashed border-deep-navy/20 text-center">
-              <p className="font-sans text-sm text-deep-navy/60">{vi.auth.myOrdersEmpty}</p>
-            </div>
-          </div>
+          <MyOrders orders={orders} />
         </div>
       </div>
     </div>

@@ -1341,6 +1341,28 @@ export const vi = {
       verifyUrl: 'tramdungcamxuc.com',
     },
   },
+  account: {
+    orders: {
+      heading: 'Đơn hàng của tôi',
+      empty: 'Bạn chưa có đơn hàng nào.',
+      exploreLibrary: 'Khám phá Thư viện',
+      productLabel: 'Sản phẩm',
+      totalLabel: 'Tổng tiền',
+      statusLabel: 'Trạng thái',
+      createdLabel: 'Ngày tạo',
+      paidLabel: 'Ngày thanh toán',
+      viewPayment: 'Xem cách thanh toán',
+      defaultProductName: 'Sản phẩm',
+      status: {
+        pending: 'Chờ thanh toán',
+        paid: 'Đã thanh toán',
+        failed: 'Thất bại',
+        cancelled: 'Đã hủy',
+      },
+      downloadFile: 'Tải lại',
+      downloadFileWithFilename: (filename: string) => `Tải lại ${filename}`,
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
