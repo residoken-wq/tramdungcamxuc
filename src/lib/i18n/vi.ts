@@ -1351,13 +1351,13 @@ export const vi = {
       description:
         'Bạn có thể gửi yêu cầu xóa tài khoản và dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân.',
       confirmNotice:
-        'Hana sẽ xóa toàn bộ dữ liệu trong 7 ngày làm việc; đơn hàng được giữ ẩn danh để đối soát.',
+        'Hana sẽ xóa toàn bộ dữ liệu trong vòng 72 giờ; đơn hàng được giữ ẩn danh để đối soát.',
       confirmCheckbox: 'Tôi hiểu và xác nhận yêu cầu xóa tài khoản cùng toàn bộ dữ liệu cá nhân.',
       requestButton: 'Yêu cầu xóa tài khoản',
       submitting: 'Đang gửi yêu cầu...',
       requestedOn: (date: string) => `Đã gửi yêu cầu ngày ${date}`,
       requestedNotice:
-        'Yêu cầu xóa dữ liệu của bạn đã được ghi nhận. Hana sẽ xử lý trong vòng 7 ngày làm việc.',
+        'Yêu cầu xóa dữ liệu của bạn đã được ghi nhận. Hana sẽ xử lý trong vòng 72 giờ.',
       success: 'Yêu cầu xóa tài khoản đã được ghi nhận thành công.',
       rateLimited: 'Bạn đã gửi yêu cầu quá nhiều lần. Vui lòng thử lại sau 1 giờ.',
       unauthorized: 'Vui lòng đăng nhập để thực hiện thao tác này.',

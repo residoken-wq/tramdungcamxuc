@@ -31,6 +31,25 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
 }
 
 export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs): Promise<void> {
+  const nullOrdersResult = await db.execute(sql`
+    SELECT COUNT(*) as cnt
+    FROM "orders"
+    WHERE "customer_id" IS NULL;
+  `)
+
+  const rows = ((
+    nullOrdersResult as unknown as {
+      rows?: Array<{ cnt: number | string }>
+    }
+  )?.rows ?? nullOrdersResult) as Array<{ cnt: number | string }>
+
+  const nullCount = Number(rows?.[0]?.cnt ?? 0)
+  if (nullCount > 0) {
+    throw new Error(
+      `[Rollback T2-16] Phát hiện ${nullCount} đơn hàng đã bị ẩn danh (customer_id = NULL). Không thể khôi phục ràng buộc NOT NULL trên orders.customer_id. Vui lòng xử lý dữ liệu thủ công trước khi rollback.`,
+    )
+  }
+
   await db.execute(sql`
    DROP INDEX IF EXISTS "certificates_plan_idx";
   ALTER TABLE "orders" ALTER COLUMN "customer_id" SET NOT NULL;

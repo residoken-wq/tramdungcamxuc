@@ -3,6 +3,7 @@ import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { Entitlement, Product } from '@/payload-types'
 import { track } from '@/lib/analytics/track'
+import { hashTrialEmail } from '@/lib/auth/token'
 import { vi } from '@/lib/i18n/vi'
 import type { AccessResult, EntitlementStatus, MarkExpiredResult, StartTrialResult } from './types'
 
@@ -172,6 +173,39 @@ export async function startTrial(
   if (existingTrial.totalDocs > 0) {
     // Có thể là trial vừa được một yêu cầu song song tạo ra -> đọc lại trạng thái thật.
     return await existingTrialResult(customerId, productId, payload, now)
+  }
+
+  // REVIEW-REQUIRED: Kiểm tra dấu vết dùng thử ẩn danh (T2-16b B6, anh Nhân chốt 14/10).
+  // Nếu khách từng dùng thử, sau đó xóa tài khoản rồi tạo lại (kể cả khác hoa thường email),
+  // trialUsage khớp hash + product sẽ từ chối dùng thử lần 2.
+  const customerDoc = await payload.findByID({
+    collection: 'customers',
+    id: customerId,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  if (customerDoc?.email) {
+    const emailHash = hashTrialEmail(customerDoc.email)
+    const existingUsage = await payload.find({
+      collection: 'trialUsage',
+      where: {
+        and: [{ emailHash: { equals: emailHash } }, { product: { equals: productId } }],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+
+    if (existingUsage.totalDocs > 0) {
+      return {
+        success: false,
+        message: vi.entitlement.trialAlreadyUsed,
+        code: 'TRIAL_ALREADY_USED',
+        status: 'expired',
+        daysLeft: 0,
+      }
+    }
   }
 
   // 4. Tạo bản ghi trial với trialKey duy nhất

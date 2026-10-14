@@ -102,6 +102,7 @@ export interface Config {
     paymentEvents: PaymentEvent;
     auditLogs: AuditLog;
     rateLimitHits: RateLimitHit;
+    trialUsage: TrialUsage;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -143,6 +144,7 @@ export interface Config {
     paymentEvents: PaymentEventsSelect<false> | PaymentEventsSelect<true>;
     auditLogs: AuditLogsSelect<false> | AuditLogsSelect<true>;
     rateLimitHits: RateLimitHitsSelect<false> | RateLimitHitsSelect<true>;
+    trialUsage: TrialUsageSelect<false> | TrialUsageSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -1878,6 +1880,28 @@ export interface RateLimitHit {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trialUsage".
+ */
+export interface TrialUsage {
+  id: number;
+  /**
+   * Nhập mã băm email (hmac-sha256).
+   */
+  emailHash: string;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  product: number | Product;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  usedAt?: string | null;
+  usageKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -2035,6 +2059,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'rateLimitHits';
         value: number | RateLimitHit;
+      } | null)
+    | ({
+        relationTo: 'trialUsage';
+        value: number | TrialUsage;
       } | null);
   globalSlug?: string | null;
   user:
@@ -2782,6 +2810,18 @@ export interface AuditLogsSelect<T extends boolean = true> {
  */
 export interface RateLimitHitsSelect<T extends boolean = true> {
   key?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trialUsage_select".
+ */
+export interface TrialUsageSelect<T extends boolean = true> {
+  emailHash?: T;
+  product?: T;
+  usedAt?: T;
+  usageKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }

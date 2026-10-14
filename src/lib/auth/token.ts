@@ -24,6 +24,16 @@ export function getAuthSecret(): string {
 }
 
 /**
+ * REVIEW-REQUIRED: Hashes a customer's email using HMAC-SHA256 and PAYLOAD_SECRET (T2-16b B6, anh Nhân chốt 14/10).
+ * Email is trimmed and lowercased before hashing.
+ * Used to track trial usage anonymously after account deletion (RGPD / Nghị định 13/2023/NĐ-CP).
+ */
+export function hashTrialEmail(email: string, secret: string = getAuthSecret()): string {
+  const normalized = email.trim().toLowerCase()
+  return createHmac('sha256', secret).update(normalized).digest('hex')
+}
+
+/**
  * Signs a JWT-compatible session token for a customer using HMAC-SHA256 and PAYLOAD_SECRET.
  * Implemented with node:crypto without external dependencies.
  */
