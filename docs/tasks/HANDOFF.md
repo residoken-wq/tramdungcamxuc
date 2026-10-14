@@ -5,10 +5,7 @@
 **Trạng thái GĐ 2** (bảng đầy đủ: `README.md`):
 
 - **Đã merge**: T2-00, T2-01, T2-02, T2-03, T2-04, T2-05a, T2-05b, T2-06, T2-08, T2-10, T2-12, T2-13, T2-14. Biên bản ở `reviews/`.
-- **Đang sửa sau QA 13/10 (CHƯA ĐẠT)**:
-  - **T2-07b** @Laptop – PR #102, nhánh `task/T2-07-certificate`, prompt `prompts/T2-07b.md`, biên bản `reviews/T2-07.md`. Anh Nhân chốt: hỏi họ tên khi nhận chứng nhận nếu khách chưa có tên.
-  - **T2-09b** @PC nhà – PR #103, nhánh `task/T2-09-sepay`, prompt `prompts/T2-09b.md`, biên bản `reviews/T2-09.md`. **Có migration**, giữ 🔒 Migration tới khi merge. REVIEW-REQUIRED chuyển IT sau vòng 2.
-- **Local**: T2-15 seed dữ liệu demo GĐ 2 (prompt `prompts/T2-15.md`, giữ 🔒 Package chỉ cho `scripts`).
+- **ĐẠT 14/10, merge**: T2-07 (PR #102), T2-09 (PR #103, trả 🔒 Migration), T2-15 (PR #106, trả 🔒 Package). Biên bản `reviews/`. Ba máy rảnh.
 - **Nghiệm thu thật còn chờ tài khoản**: Bunny (T2-05b, RUNBOOK "Cấu hình Bunny Stream"), SePay (T2-09).
 - **Lên demo** cần crontab mỗi giờ: `/api/cron/workshop-reminders`, `/api/cron/trial-reminders`, `/api/cron/expire-entitlements`, `/api/cron/tracker-nudges` (mẫu trong `docs/RUNBOOK.md`).
 

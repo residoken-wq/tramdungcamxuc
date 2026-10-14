@@ -43,3 +43,6 @@
 - [ ] T2-08: khóa chống tạo 2 đơn song song đang ở bộ nhớ tiến trình (`withOrderLock`). Khi chạy nhiều bản Next.js → đổi sang `pg_advisory_xact_lock(customerId, productId)`.
 - [ ] T2-03: bọc lưu kế hoạch + tạo lead trong 1 transaction (lead lỗi → kế hoạch trùng khi gửi lại); cân nhắc không lưu tên/email vào nháp `localStorage`.
 - [ ] T2-04: chuyển chữ trong `TrialWelcomeEmail.tsx` vào `vi.ts`; banner/trang `/dung-thu` phân biệt "quyền mua có hạn đã hết" với "dùng thử đã hết" (khi có `accessDurationDays`); `trialDays` ≤ 3 thì mail ngày 18 gửi ngay.
+- [ ] T2-07: validate `customers.name` ở mức collection (chặn `< > { }`, ký tự điều khiển) – hiện chỉ action nhận chứng nhận kiểm.
+- [ ] T2-09: giới hạn body webhook ở reverse proxy (request chunked không có `Content-Length`); demo phải chạy sau proxy để `X-Forwarded-For` đáng tin.
+- [ ] T2-09: gói `markOrderPaid` (đổi `paid` + cấp quyền + email) trong 1 transaction; hiện tiến trình chết giữa chừng → nhãn `paid_incomplete`, email xác nhận không gửi lại.
