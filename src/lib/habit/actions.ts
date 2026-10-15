@@ -22,6 +22,7 @@ async function getClientContext(): Promise<{ ip?: string; page?: string }> {
   }
 }
 
+// REVIEW-REQUIRED: submitHabitPlan thực thi lưu kế hoạch và tạo lead trong cùng 1 transaction (T2-17)
 export async function submitHabitPlanAction(
   data: Record<string, unknown>,
   extra?: { utm?: string },

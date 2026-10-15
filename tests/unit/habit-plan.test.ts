@@ -616,4 +616,83 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     })
     expect(leads.docs.length).toBe(0)
   })
+
+  it('T2-17: tạo lead lỗi trong transaction -> không còn kế hoạch thừa; gửi lại tạo đúng 1 kế hoạch', async () => {
+    const email = `hoc-vien-test-${randomUUID().slice(0, 8)}@example.test`
+
+    let failLeadCreation = true
+    const originalCreate = payload.create.bind(payload)
+    const createSpy = vi
+      .spyOn(payload, 'create')
+      .mockImplementation(async (args: Parameters<typeof payload.create>[0]) => {
+        if (args.collection === 'leads' && failLeadCreation) {
+          throw new Error('Simulated leads DB creation error (T2-17)')
+        }
+        return originalCreate(args)
+      })
+
+    const inputData = {
+      scorecard: [{ habit: 'Tập thở sâu', rating: 'good' as const }],
+      identityStatement: 'Tôi sẽ tập thở 5 phút mỗi sáng để sống an yên hơn',
+      chosenTechniques: [
+        {
+          techniqueId: validCueTechId,
+          stage: 'cue' as const,
+          action: 'Ngồi thiền sau khi thức dậy',
+        },
+      ],
+      email,
+      name: 'Học viên Test 01',
+      consent: true,
+    }
+
+    try {
+      // Lần 1: Giả lập tạo lead lỗi -> ném lỗi và rollback transaction
+      await expect(
+        submitHabitPlan(
+          inputData,
+          { ip: `192.168.5.${Math.floor(Math.random() * 200) + 10}` },
+          { payload, emailSender },
+        ),
+      ).rejects.toThrow('Simulated leads DB creation error (T2-17)')
+
+      // Kiểm tra trong DB thật: 0 kế hoạch thừa nào của email này được lưu (đã rollback)
+      const plansAfterFail = await payload.find({
+        collection: 'habitPlans',
+        where: { leadEmail: { equals: email } },
+        overrideAccess: true,
+      })
+      expect(plansAfterFail.totalDocs).toBe(0)
+
+      // Lần 2: Người dùng gửi lại (không còn lỗi) -> thành công, chỉ tạo đúng 1 kế hoạch
+      failLeadCreation = false
+      const successResult = await submitHabitPlan(
+        inputData,
+        { ip: `192.168.5.${Math.floor(Math.random() * 200) + 10}` },
+        { payload, emailSender },
+      )
+
+      expect(successResult.success).toBe(true)
+      expect(successResult.planId).toBeDefined()
+      if (successResult.planId) createdPlans.push(successResult.planId)
+
+      const plansAfterSuccess = await payload.find({
+        collection: 'habitPlans',
+        where: { leadEmail: { equals: email } },
+        overrideAccess: true,
+      })
+      expect(plansAfterSuccess.totalDocs).toBe(1)
+      expect(plansAfterSuccess.docs[0].id).toBe(successResult.planId)
+
+      const leadsAfterSuccess = await payload.find({
+        collection: 'leads',
+        where: { email: { equals: email } },
+        overrideAccess: true,
+      })
+      expect(leadsAfterSuccess.totalDocs).toBe(1)
+      if (leadsAfterSuccess.docs[0]) createdLeads.push(leadsAfterSuccess.docs[0].id)
+    } finally {
+      createSpy.mockRestore()
+    }
+  })
 })

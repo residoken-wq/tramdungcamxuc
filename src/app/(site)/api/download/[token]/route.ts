@@ -6,6 +6,8 @@ import { getPayload } from 'payload'
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import config from '@/payload.config'
 import { verifyDownloadToken } from '@/lib/downloads/token'
+import { getCurrentCustomer } from '@/lib/auth/session.server'
+import { findOwnPaidOrderFile } from '@/lib/account/order-files.server'
 import { vi } from '@/lib/i18n/vi'
 import type { Product, PrivateFile } from '@/payload-types'
 
@@ -29,17 +31,34 @@ function getS3Client(): S3Client {
   return s3ClientInstance
 }
 
+/** Header chỉ nhận Latin-1: bản `filename=` bỏ dấu; tên đầy đủ đi qua `filename*` (UTF-8). */
+function toAsciiFilename(filename: string): string {
+  const ascii = filename
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .replace(/[^\x20-\x7e]/g, '_')
+    .replace(/"/g, '')
+  return ascii || 'download'
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ token: string }> },
 ): Promise<Response> {
   const { token } = await params
 
-  // REVIEW-REQUIRED: Download token verification (HMAC-SHA256, 7-day expiration, file-product association check)
+  // REVIEW-REQUIRED: Download token verification (HMAC-SHA256, expiry, file-product association check;
+  // purchased-file tokens are also bound to order + logged-in customer)
   const result = verifyDownloadToken(token)
   if (!result.valid) {
     if (result.reason === 'expired') {
-      return new Response(vi.resource.downloadExpired, {
+      const expiredMessage =
+        result.payload?.orderId !== undefined
+          ? vi.account.orders.downloadExpired
+          : vi.resource.downloadExpired
+      return new Response(expiredMessage, {
         status: 410,
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
       })
@@ -50,8 +69,38 @@ export async function GET(
     })
   }
 
-  const { productId, fileId } = result.payload
+  const { productId, fileId, orderId, customerId } = result.payload
   const payload = await getPayload({ config })
+  const isPurchasedFile = orderId !== undefined && customerId !== undefined
+
+  // REVIEW-REQUIRED: Link tải file đã mua (T2-17b) – chỉ đúng khách đang đăng nhập, đơn đã thanh toán,
+  // file thuộc sản phẩm trong đơn. Link miễn phí (không có orderId) giữ nguyên luồng cũ bên dưới.
+  if (isPurchasedFile) {
+    const customer = await getCurrentCustomer(payload)
+    if (!customer || customer.id !== customerId) {
+      return new Response(vi.account.orders.downloadLoginRequired, {
+        status: 403,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'private, no-store',
+        },
+      })
+    }
+    const match = await findOwnPaidOrderFile(payload, {
+      customerId: customer.id,
+      orderId,
+      fileId: Number(fileId),
+    })
+    if (!match || String(match.productId) !== String(productId)) {
+      return new Response(vi.resource.downloadNotFound, {
+        status: 404,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'private, no-store',
+        },
+      })
+    }
+  }
 
   // 1. Verify that product exists
   let product: Product | null = null
@@ -82,7 +131,7 @@ export async function GET(
     product.saleStatus === 'free' &&
     (product.type === 'ebook' || product.type === 'toolkit')
 
-  if (!isEligibleFreeResource) {
+  if (!isPurchasedFile && !isEligibleFreeResource) {
     return new Response(vi.resource.noLongerFree, {
       status: 410,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
@@ -135,7 +184,7 @@ export async function GET(
   headers.set('Content-Type', mimeType)
   headers.set(
     'Content-Disposition',
-    `attachment; filename="${filename.replace(/"/g, '')}"; filename*=UTF-8''${encodedFilename}`,
+    `attachment; filename="${toAsciiFilename(filename)}"; filename*=UTF-8''${encodedFilename}`,
   )
   if (fileDoc.filesize) {
     headers.set('Content-Length', String(fileDoc.filesize))

@@ -11,6 +11,7 @@ import {
   Section,
   Text,
 } from '@react-email/components'
+import { vi } from '@/lib/i18n/vi'
 
 export interface TrialWelcomeEmailProps {
   name: string
@@ -27,20 +28,19 @@ export const TrialWelcomeEmail: React.FC<TrialWelcomeEmailProps> = ({
   trialDays,
   toolUrl,
 }) => {
+  const strings = vi.email.trialWelcome
+
   return (
     <Html lang="vi">
       <Head />
-      <Preview>{`Trạm Dừng Cảm Xúc – Kích hoạt dùng thử ${toolName} (${trialDays} ngày)`}</Preview>
+      <Preview>{strings.preview(toolName, trialDays)}</Preview>
       <Body style={mainStyle}>
         <Container style={containerStyle}>
           {/* Header */}
           <Section style={headerStyle}>
-            <Text style={brandLabelStyle}>TRẠM DỪNG CẢM XÚC · DÙNG THỬ CÔNG CỤ SỐ</Text>
-            <Heading style={headingStyle}>Kích hoạt dùng thử thành công!</Heading>
-            <Text style={subheadingStyle}>
-              Chào {name || 'bạn'}, phiên dùng thử {trialDays} ngày công cụ {toolName} của bạn đã
-              sẵn sàng.
-            </Text>
+            <Text style={brandLabelStyle}>{strings.brandLabel}</Text>
+            <Heading style={headingStyle}>{strings.heading}</Heading>
+            <Text style={subheadingStyle}>{strings.subheading(name, trialDays, toolName)}</Text>
           </Section>
 
           <Hr style={dividerStyle} />
@@ -49,33 +49,29 @@ export const TrialWelcomeEmail: React.FC<TrialWelcomeEmailProps> = ({
           <Section style={contentSectionStyle}>
             <Section style={highlightBoxStyle}>
               <Text style={highlightItemStyle}>
-                <strong>Công cụ:</strong> {toolName}
+                <strong>{strings.toolLabel}</strong> {toolName}
               </Text>
               <Text style={highlightItemStyle}>
-                <strong>Thời hạn dùng thử:</strong> {trialDays} ngày miễn phí
+                <strong>{strings.trialDurationLabel}</strong>{' '}
+                {strings.trialDurationValue(trialDays)}
               </Text>
               <Text style={highlightItemStyle}>
-                <strong>Hạn sử dụng:</strong> {expiresAtFormatted} (giờ Việt Nam)
+                <strong>{strings.expiresAtLabel}</strong> {expiresAtFormatted}{' '}
+                {strings.vietnamTimeSuffix}
               </Text>
               <Text style={highlightItemStyle}>
-                <strong>Trạng thái:</strong> Đang dùng thử
+                <strong>{strings.statusLabel}</strong> {strings.statusValue}
               </Text>
             </Section>
 
-            <Text style={paragraphStyle}>
-              Hãy dành ra 5 phút mỗi ngày để dừng lại, lắng nghe và thấu hiểu cảm xúc của mình. Bạn
-              có thể bắt đầu ngay hôm nay để hình thành thói quen vững vàng.
-            </Text>
+            <Text style={paragraphStyle}>{strings.body}</Text>
 
             {/* CTA Button */}
             <Section style={buttonContainerStyle}>
               <Button style={buttonStyle} href={toolUrl}>
-                Vào {toolName} ngay
+                {strings.ctaButton(toolName)}
               </Button>
-              <Text style={noteStyle}>
-                Bạn cũng có thể xem lại quyền dùng thử bất cứ lúc nào trong mục &quot;Tài khoản của
-                tôi&quot;.
-              </Text>
+              <Text style={noteStyle}>{strings.accountNotice}</Text>
             </Section>
           </Section>
 
@@ -83,11 +79,9 @@ export const TrialWelcomeEmail: React.FC<TrialWelcomeEmailProps> = ({
 
           {/* Footer */}
           <Section style={footerStyle}>
-            <Text style={footerSignOffStyle}>Thương mến,</Text>
-            <Text style={footerAuthorStyle}>Hana Lương &amp; Đội ngũ Trạm Dừng Cảm Xúc</Text>
-            <Text style={footerNoticeStyle}>
-              Email thông báo tự động từ tramdungcamxuc.com khi kích hoạt dùng thử công cụ số.
-            </Text>
+            <Text style={footerSignOffStyle}>{strings.footerSignOff}</Text>
+            <Text style={footerAuthorStyle}>{strings.footerAuthor}</Text>
+            <Text style={footerNoticeStyle}>{strings.footerNotice}</Text>
           </Section>
         </Container>
       </Body>

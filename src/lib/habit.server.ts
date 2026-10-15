@@ -1,7 +1,14 @@
 import 'server-only'
 import { ZodError } from 'zod'
 import { vi } from './i18n/vi'
-import { getPayload, type Payload } from 'payload'
+import {
+  getPayload,
+  initTransaction,
+  commitTransaction,
+  killTransaction,
+  type Payload,
+  type PayloadRequest,
+} from 'payload'
 import config from '@/payload.config'
 import type { Product, SiteSetting, Technique } from '@/payload-types'
 import type { PublicTechnique } from './habit'
@@ -19,6 +26,11 @@ export interface HabitPlanSubmissionResult {
   planId?: number
   zaloGroupUrl?: string
   fake?: boolean
+}
+
+export type HabitPlanSubmissionOptions = SubmissionOptions & {
+  req?: Partial<PayloadRequest>
+  disableTransaction?: boolean
 }
 
 export interface HabitProductData {
@@ -226,7 +238,7 @@ export async function getHabitProduct(payloadInstance?: Payload): Promise<HabitP
 export async function submitHabitPlan(
   input: HabitPlanSubmissionInput | Record<string, unknown>,
   ctx: SubmissionContext = {},
-  options: SubmissionOptions = {},
+  options: HabitPlanSubmissionOptions = {},
 ): Promise<HabitPlanSubmissionResult> {
   // 1. Honeypot check
   if (typeof input === 'object' && input !== null && 'honeypot' in input) {
@@ -328,47 +340,68 @@ export async function submitHabitPlan(
     }
   }
 
-  // 5. Lưu bản ghi habitPlans trước (tránh tạo lead mồ côi nếu kế hoạch lưu lỗi - B12)
-  // REVIEW-REQUIRED: Lưu kế hoạch thói quen của người dùng (chỉ lưu leadEmail, không tự ý gán customer)
-  const habitPlanDoc = await payload.create({
-    collection: 'habitPlans',
-    data: {
-      leadEmail: cleanEmail,
-      scorecard: validated.scorecard.map((item) => ({
-        habit: item.habit,
-        rating: item.rating,
-      })),
-      identityStatement: validated.identityStatement,
-      chosenTechniques: validated.chosenTechniques.map((item) => ({
-        technique: item.techniqueId,
-        action: item.action,
-      })),
-      startDate: vietnamTodayIso(),
-    },
-    overrideAccess: true, // overrideAccess cho phép server action lưu kế hoạch của học viên chưa đăng nhập
-  })
-
-  // 6. Tạo lead trong collection leads với need 'resource' và tag 'habit-loop'
-  // REVIEW-REQUIRED: Tạo lead trong collection leads sau khi đã lưu xong kế hoạch
+  // 5. Lưu bản ghi habitPlans và leads trong cùng 1 transaction (T2-17: lead lỗi -> rollback kế hoạch, không có kế hoạch thừa)
+  // REVIEW-REQUIRED: Transaction đảm bảo lưu kế hoạch và tạo lead nguyên tử
+  const req = {
+    ...(options.req as Partial<PayloadRequest>),
+    payload: (options.req as Partial<PayloadRequest>)?.payload ?? payload,
+  }
+  const hasDb = typeof payload?.db?.beginTransaction === 'function'
+  const shouldCommit = !options.disableTransaction && hasDb && (await initTransaction(req))
   const cleanName = validated.name?.trim() || undefined
-  await payload.create({
-    collection: 'leads',
-    data: {
-      name: cleanName,
-      email: cleanEmail,
-      need: 'resource',
-      consent: true,
-      consentAt: new Date().toISOString(),
-      source: {
-        form: 'habit-loop',
-        page: ctx.page || HABIT_LOOP_PATH,
-        utm: ctx.utm,
+
+  let habitPlanDoc: { id: number }
+  try {
+    habitPlanDoc = (await payload.create({
+      collection: 'habitPlans',
+      data: {
+        leadEmail: cleanEmail,
+        scorecard: validated.scorecard.map((item) => ({
+          habit: item.habit,
+          rating: item.rating,
+        })),
+        identityStatement: validated.identityStatement,
+        chosenTechniques: validated.chosenTechniques.map((item) => ({
+          technique: item.techniqueId,
+          action: item.action,
+        })),
+        startDate: vietnamTodayIso(),
       },
-      interestTags: [{ text: 'habit-loop' }],
-      followUpStatus: 'new',
-    },
-    overrideAccess: true, // overrideAccess cho phép server action ghi nhận khách tiềm năng mà không yêu cầu user login
-  })
+      overrideAccess: true, // overrideAccess cho phép server action lưu kế hoạch của học viên chưa đăng nhập
+      req,
+    })) as { id: number }
+
+    // 6. Tạo lead trong collection leads với need 'resource' và tag 'habit-loop'
+    // REVIEW-REQUIRED: Tạo lead trong collection leads sau khi đã lưu xong kế hoạch trong cùng transaction
+    await payload.create({
+      collection: 'leads',
+      data: {
+        name: cleanName,
+        email: cleanEmail,
+        need: 'resource',
+        consent: true,
+        consentAt: new Date().toISOString(),
+        source: {
+          form: 'habit-loop',
+          page: ctx.page || HABIT_LOOP_PATH,
+          utm: ctx.utm,
+        },
+        interestTags: [{ text: 'habit-loop' }],
+        followUpStatus: 'new',
+      },
+      overrideAccess: true, // overrideAccess cho phép server action ghi nhận khách tiềm năng mà không yêu cầu user login
+      req,
+    })
+
+    if (shouldCommit) {
+      await commitTransaction(req)
+    }
+  } catch (err) {
+    if (shouldCommit) {
+      await killTransaction(req)
+    }
+    throw err
+  }
 
   // 7. Gửi email xác nhận kế hoạch nếu người dùng có email
   if (cleanEmail) {
