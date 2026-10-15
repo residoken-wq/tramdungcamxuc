@@ -79,20 +79,14 @@ export function PhysicalDeckButton({
         className="inline-flex items-center justify-center gap-2 motion-reduce:transition-none"
       >
         {/* Biểu tượng túi xách Shopee */}
-        <svg
-          className="w-4 h-4 fill-current shrink-0"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
+        <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M19.5 7.5h-3a4.5 4.5 0 0 0-9 0h-3l-2 13.5a1.5 1.5 0 0 0 1.5 1.5h18a1.5 1.5 0 0 0 1.5-1.5l-2-13.5zm-7.5-3a3 3 0 0 1 3 3h-6a3 3 0 0 1 3-3zm7.4 15H4.6l1.7-12h2.2v2a1 1 0 1 0 2 0v-2h3v2a1 1 0 1 0 2 0v-2h2.2l1.7 12z" />
         </svg>
         <span>{vi.eqBuddy.offer.buyPhysicalDeck}</span>
       </Button>
 
       {showHint && (
-        <p className="text-xs text-deep-navy/70 max-w-sm">
-          {vi.eqBuddy.offer.shopeeHint}
-        </p>
+        <p className="text-xs text-deep-navy/70 max-w-sm">{vi.eqBuddy.offer.shopeeHint}</p>
       )}
     </div>
   )

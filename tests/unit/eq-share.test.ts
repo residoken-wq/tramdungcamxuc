@@ -450,5 +450,4 @@ describe('EQ Buddy Share & Offers Suite (T3-05)', () => {
       })
     })
   })
-
 })

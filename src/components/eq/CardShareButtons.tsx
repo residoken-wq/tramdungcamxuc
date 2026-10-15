@@ -10,11 +10,7 @@ export interface CardShareButtonsProps {
   className?: string
 }
 
-export function CardShareButtons({
-  cardCode,
-  qrSlug,
-  className = '',
-}: CardShareButtonsProps) {
+export function CardShareButtons({ cardCode, qrSlug, className = '' }: CardShareButtonsProps) {
   const [copied, setCopied] = useState(false)
   const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 

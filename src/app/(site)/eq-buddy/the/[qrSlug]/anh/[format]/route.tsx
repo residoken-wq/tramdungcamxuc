@@ -40,10 +40,7 @@ export async function GET(
   const result = await payload.find({
     collection: 'eqCards',
     where: {
-      and: [
-        { qrSlug: { equals: qrSlug } },
-        { _status: { equals: 'published' } },
-      ],
+      and: [{ qrSlug: { equals: qrSlug } }, { _status: { equals: 'published' } }],
     },
     limit: 1,
     depth: 1,
@@ -55,19 +52,33 @@ export async function GET(
   }
 
   // Nếu thẻ đã có ảnh tải lên trước trên CMS thì redirect 302
-  if (is45 && card.shareImage45 && typeof card.shareImage45 === 'object' && 'url' in card.shareImage45 && card.shareImage45.url) {
+  if (
+    is45 &&
+    card.shareImage45 &&
+    typeof card.shareImage45 === 'object' &&
+    'url' in card.shareImage45 &&
+    card.shareImage45.url
+  ) {
     const rawUrl = card.shareImage45.url
-    const redirectUrl = rawUrl.startsWith('http://') || rawUrl.startsWith('https://')
-      ? rawUrl
-      : new URL(rawUrl, request.url).toString()
+    const redirectUrl =
+      rawUrl.startsWith('http://') || rawUrl.startsWith('https://')
+        ? rawUrl
+        : new URL(rawUrl, request.url).toString()
     return NextResponse.redirect(redirectUrl, 302)
   }
 
-  if (!is45 && card.shareImage916 && typeof card.shareImage916 === 'object' && 'url' in card.shareImage916 && card.shareImage916.url) {
+  if (
+    !is45 &&
+    card.shareImage916 &&
+    typeof card.shareImage916 === 'object' &&
+    'url' in card.shareImage916 &&
+    card.shareImage916.url
+  ) {
     const rawUrl = card.shareImage916.url
-    const redirectUrl = rawUrl.startsWith('http://') || rawUrl.startsWith('https://')
-      ? rawUrl
-      : new URL(rawUrl, request.url).toString()
+    const redirectUrl =
+      rawUrl.startsWith('http://') || rawUrl.startsWith('https://')
+        ? rawUrl
+        : new URL(rawUrl, request.url).toString()
     return NextResponse.redirect(redirectUrl, 302)
   }
 

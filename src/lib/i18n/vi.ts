@@ -1489,5 +1489,4 @@ export const vi = {
   },
 } as const
 
-
 export type LocaleStrings = typeof vi
