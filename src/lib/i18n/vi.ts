@@ -1479,6 +1479,29 @@ export const vi = {
       forbidden: 'Không có quyền truy cập',
       cardNotFound: 'Không tìm thấy thẻ',
     },
+    shareImage: {
+      brandName: 'Trạm Dừng Cảm Xúc',
+      series: 'EQ BUDDY',
+      domain: 'tramdungcamxuc.com',
+      badge: (code: string) => `EQ BUDDY · ${code}`,
+    },
+    share: {
+      download45: 'Tải ảnh 4:5',
+      download916: 'Tải ảnh 9:16',
+      share: 'Chia sẻ',
+      copied: 'Đã sao chép liên kết!',
+      shareTitle: (code: string) => `EQ Buddy · Thẻ ${code}`,
+      shareText: (code: string) =>
+        `Khám phá thông điệp thẻ ${code} từ bộ thẻ EQ Buddy – Trạm Dừng Cảm Xúc`,
+      ariaDownload45: 'Tải ảnh thẻ định dạng 4:5',
+      ariaDownload916: 'Tải ảnh thẻ định dạng 9:16',
+      ariaShare: 'Chia sẻ thẻ',
+    },
+    offer: {
+      relatedHeading: 'Gợi ý đồng hành cùng bạn',
+      buyPhysicalDeck: 'Mua bộ thẻ trên Shopee',
+      shopeeHint: 'Sở hữu bộ 26 thẻ vật lý cầm trên tay kèm hướng dẫn chi tiết.',
+    },
   },
 } as const
 
