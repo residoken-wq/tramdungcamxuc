@@ -1445,6 +1445,65 @@ export const vi = {
     },
   },
   eqBuddy: {
+    intro: {
+      defaultTitle: 'EQ Buddy – Bộ thẻ cảm xúc',
+      defaultDescription:
+        'Không gian dừng lại, nhận diện và đối thoại với cảm xúc của chính mình qua 26 thông điệp sâu lắng.',
+      badge: 'CÔNG CỤ SỐ · EQ BUDDY',
+      drawButton: 'Rút một thẻ',
+      howToUseHeading: 'Cách sử dụng',
+      aboutHeading: 'Về bộ thẻ EQ Buddy',
+      metaTitle: 'EQ Buddy – Bộ thẻ cảm xúc',
+      metaDescription:
+        'Rút thẻ cảm xúc EQ Buddy để dừng lại một nhịp, nhận diện và thấu hiểu cảm xúc của bản thân.',
+    },
+    draw: {
+      metaTitle: 'Rút thẻ EQ Buddy',
+      metaDescription: 'Rút một thẻ cảm xúc để lắng nghe và kết nối với chính mình.',
+      heading: 'Rút thẻ EQ Buddy',
+      subheading: 'Dành 5 phút dừng lại một nhịp, lắng nghe thông điệp cảm xúc hôm nay.',
+      backToIntro: 'Trở về giới thiệu EQ Buddy',
+      step1: {
+        title: 'Bước 1: Chọn cách rút thẻ',
+        feelingLabel: 'Hôm nay bạn đang cảm thấy thế nào?',
+        feelingPlaceholder: 'Ví dụ: Hơi mệt mỏi, háo hức, lo âu, biết ơn...',
+        randomButton: 'Rút ngẫu nhiên một thẻ',
+        orKeyword: 'Hoặc chọn theo từ khóa (A–Z)',
+        drawingButton: 'Đang rút thẻ...',
+      },
+      step2: {
+        title: 'Bước 2: Thông điệp mặt trước',
+        flipButton: 'Lật thẻ sang mặt sau',
+        hint: 'Chạm hoặc bấm nút để lật thẻ và khám phá câu hỏi suy ngẫm.',
+      },
+      step3: {
+        title: 'Bước 3: Dừng lại và suy ngẫm',
+        continueButton: 'Viết suy ngẫm',
+      },
+      step4: {
+        title: 'Bước 4: Ghi chú suy ngẫm',
+        reflectionLabel: 'Suy ngẫm của bạn',
+        backToQuestions: 'Xem lại câu hỏi',
+        reflectionPlaceholder: 'Viết ra những suy nghĩ, cảm xúc hay điều bạn nhận ra lúc này...',
+        localOnlyNotice: 'Ghi chú chỉ ở trên máy bạn',
+        nextButton: 'Đi tiếp',
+      },
+      step5: {
+        title: 'Bước 5: Đồng hành tiếp theo',
+        drawAnotherButton: 'Rút thẻ khác',
+        openCardPageButton: 'Mở trang thẻ',
+      },
+      paywall: {
+        badge: 'EQ BUDDY',
+        description:
+          'Thẻ đầu tiên là món quà tự do trải nghiệm từ Trạm Dừng Cảm Xúc. Để rút thêm thẻ, bạn dùng thử miễn phí hoặc mua công cụ.',
+      },
+      errors: {
+        cardNotFound: 'Không tìm thấy thẻ hợp lệ.',
+        noCardsAvailable: 'Hiện chưa có thẻ nào được xuất bản.',
+        generalError: 'Có lỗi xảy ra khi rút thẻ. Vui lòng thử lại.',
+      },
+    },
     cardPage: {
       seriesLabel: (code: string) => `EQ BUDDY · ${code}`,
       defaultMetaTitle: 'Thẻ EQ Buddy',
@@ -1459,6 +1518,7 @@ export const vi = {
       backToDeck: 'Trở về EQ Buddy',
       drawAnotherCard: 'Rút thêm một thẻ',
       storyHeading: 'Câu chuyện',
+      smallActionHeading: 'Hành động nhỏ',
     },
     qrExport: {
       exportCsvButton: 'Xuất danh sách QR (CSV)',

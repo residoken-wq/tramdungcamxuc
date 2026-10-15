@@ -16,13 +16,15 @@ export interface PublicEqCard {
   printedAt: string | null
   order: number | null
   _status: string | null
+  smallAction?: string | null
+  topic?: string | null
 }
 
 /**
  * Tìm thẻ EQ Buddy theo qrSlug, chỉ lấy bản ghi đã xuất bản (_status = 'published').
  * Dùng React cache() để dùng chung kết quả giữa generateMetadata và Page component trong cùng request.
  *
- * Chỉ đọc các trường an toàn: code, message, story, qrSlug, printedAt, order, _status
+ * Chỉ đọc các trường an toàn: code, message, story, qrSlug, printedAt, order, _status, smallAction, topic
  * (tuân thủ ranh giới song song với T3-01).
  */
 export const getPublishedEqCardByQrSlug = cache(
@@ -49,6 +51,8 @@ export const getPublishedEqCardByQrSlug = cache(
           promptPack: true,
           promptAcknowledge: true,
           story: true,
+          smallAction: true,
+          topic: true,
           qrSlug: true,
           printedAt: true,
           order: true,
@@ -70,6 +74,8 @@ export const getPublishedEqCardByQrSlug = cache(
         promptPack: doc.promptPack || null,
         promptAcknowledge: doc.promptAcknowledge || null,
         story: doc.story || null,
+        smallAction: doc.smallAction || null,
+        topic: doc.topic || null,
         qrSlug: doc.qrSlug || cleanSlug,
         printedAt: doc.printedAt ? String(doc.printedAt) : null,
         order: typeof doc.order === 'number' ? doc.order : null,
@@ -82,3 +88,49 @@ export const getPublishedEqCardByQrSlug = cache(
     }
   },
 )
+
+export interface PublicEqCardKeyword {
+  code: string
+  keywordEn: string
+  qrSlug: string
+  order: number | null
+}
+
+/**
+ * Lấy danh sách từ khóa của toàn bộ thẻ EQ Buddy đã xuất bản, sắp theo order (A–Z).
+ * Dùng cho lưới chọn theo từ khóa ở Bước 1 của luồng rút thẻ.
+ */
+export const getPublishedEqKeywords = cache(async (): Promise<PublicEqCardKeyword[]> => {
+  try {
+    const payloadConfig = await config
+    const payload = await getPayload({ config: payloadConfig })
+
+    const result = await payload.find({
+      collection: 'eqCards',
+      where: {
+        _status: { equals: 'published' },
+      },
+      select: {
+        code: true,
+        keywordEn: true,
+        qrSlug: true,
+        order: true,
+      },
+      sort: 'order',
+      limit: 100,
+      draft: false,
+    })
+
+    return result.docs
+      .filter((doc) => Boolean(doc.keywordEn && doc.qrSlug))
+      .map((doc) => ({
+        code: doc.code || '',
+        keywordEn: doc.keywordEn || '',
+        qrSlug: doc.qrSlug || '',
+        order: typeof doc.order === 'number' ? doc.order : null,
+      }))
+  } catch (err) {
+    if ((err as { status?: number })?.status === 404) return []
+    throw err
+  }
+})
