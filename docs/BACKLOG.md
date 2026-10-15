@@ -37,6 +37,7 @@
 - [x] E2E `live-preview.test.ts` (375px) thỉnh thoảng lỗi lần đầu, qua khi chạy lại (thấy ở CI PR #74, 11/10) – tìm gốc, không tăng timeout (xong T2-14).
 
 - [ ] Phiên khách (T2-01): thu hồi phiên phía server khi đăng xuất / đổi email (hiện chỉ xóa cookie, hạn 30 ngày).
+- [ ] **Phiên khách đè phiên admin** (thấy 15/10, review CM-01): `customer-auth` chạy trước JWT admin nên trình duyệt có cookie `tdcx_customer_token` vào `/admin` bị báo không có quyền. Sửa trong `customerAuthStrategy` (bỏ qua khi có phiên admin hợp lệ) + e2e. Tạm thời: phiên khách dùng cửa sổ ẩn danh.
 - [x] T2-01: server chặn đăng nhập khi khách cũ chưa có `consentAt` (form đã chặn) (xong T2-14).
 - [x] Xóa tài khoản khách (AGENTS 8.4): `orders`, `entitlements`, `savedCards`, `certificates`, `lessonProgress` có `customer` NOT NULL + `ON DELETE SET NULL` → xóa khách có dữ liệu sẽ lỗi DB. Phải xóa / ẩn danh dữ liệu con trước (xong T2-16).
 - [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
