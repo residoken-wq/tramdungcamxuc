@@ -19,6 +19,7 @@ import {
 } from '@/components/brand'
 import { InteractivePrimitivesDemo } from './InteractivePrimitivesDemo'
 import { InteractiveCompositesDemo } from './InteractiveCompositesDemo'
+import { EqShareDemo } from './EqShareDemo'
 
 export const dynamic = 'force-dynamic'
 
@@ -408,7 +409,20 @@ export default async function StyleguidePage() {
 
           <InteractiveCompositesDemo />
         </section>
+
+        {/* Section 8: EQ Buddy Sharing & Offers (T3-05) */}
+        <section aria-labelledby="heading-eq-share">
+          <h2
+            id="heading-eq-share"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            8. Bộ EQ Buddy Sharing &amp; Offers (T3-05 [MẪU])
+          </h2>
+
+          <EqShareDemo />
+        </section>
       </main>
+
 
       <footer className="border-t border-deep-navy/10 bg-warm-ivory py-8 text-center">
         <p className="font-ui text-xs text-deep-navy/60">
