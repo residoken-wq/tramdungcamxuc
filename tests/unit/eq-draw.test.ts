@@ -296,7 +296,9 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
       expect(res2.success).toBe(false)
       if (!res2.success) {
         expect(res2.code).toBe('PAYWALL')
-        expect(res2.productSlug).toBe(EQ_BUDDY_PRODUCT_SLUG)
+        if (res2.code === 'PAYWALL') {
+          expect(res2.productSlug).toBe(EQ_BUDDY_PRODUCT_SLUG)
+        }
       }
     })
 
@@ -333,7 +335,7 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
           product: productId,
           source: 'trial',
           status: 'trial',
-          startsAt: now.toISOString(),
+          grantedAt: now.toISOString(),
           expiresAt,
         },
         overrideAccess: true,
@@ -369,7 +371,7 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
           product: productId,
           source: 'trial',
           status: 'expired',
-          startsAt: new Date(now.getTime() - 22 * 24 * 60 * 60 * 1000).toISOString(),
+          grantedAt: new Date(now.getTime() - 22 * 24 * 60 * 60 * 1000).toISOString(),
           expiresAt: past,
         },
         overrideAccess: true,
