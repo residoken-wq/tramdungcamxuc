@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { checkbox, date, relation, text } from '../fields/content'
-import { isOwner, nobody } from '../lib/auth/access'
+import { isHiddenFromEditor, isOwner, nobody } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Append-only log of every payment webhook / manual confirmation.
@@ -10,6 +10,7 @@ export const PaymentEvents: CollectionConfig = {
   labels: { singular: 'Sự kiện thanh toán', plural: 'Sự kiện thanh toán' },
   admin: {
     group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
     defaultColumns: [
       'provider',
       'transactionId',

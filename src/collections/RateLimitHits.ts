@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { nobody } from '../lib/auth/access'
+import { isHiddenFromEditor, nobody } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
 
 export const RateLimitHits: CollectionConfig = {
@@ -7,7 +7,7 @@ export const RateLimitHits: CollectionConfig = {
   labels: { singular: 'Lượt gửi form', plural: 'Lượt gửi form' },
   admin: {
     group: vi.cms.nav.system,
-    hidden: true,
+    hidden: isHiddenFromEditor,
   },
   access: {
     read: nobody,

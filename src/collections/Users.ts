@@ -1,5 +1,5 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
-import { isAdminUser, isOwner, isOwnerUser } from '../lib/auth/access'
+import { isAdminUser, isHiddenFromEditor, isOwner, isOwnerUser } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: The very first admin becomes owner; everyone created later defaults to
@@ -18,6 +18,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
     defaultColumns: ['email', 'role'],
   },
   auth: true,

@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { date, relation, text } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
-import { nobody } from '../lib/auth/access'
+import { isHiddenFromEditor, nobody } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Dấu vết dùng thử của khách hàng sau khi xóa tài khoản (T2-16b B6, anh Nhân chốt 14/10).
@@ -14,7 +14,7 @@ export const TrialUsage: CollectionConfig = {
   labels: { singular: 'Dấu vết dùng thử', plural: 'Dấu vết dùng thử' },
   admin: {
     group: vi.cms.nav.system,
-    hidden: true,
+    hidden: isHiddenFromEditor,
   },
   access: {
     read: nobody,

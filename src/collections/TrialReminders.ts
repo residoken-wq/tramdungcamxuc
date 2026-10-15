@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { date, relation, select } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
-import { isOwner } from '../lib/auth/access'
+import { isHiddenFromEditor, isOwner } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
 
 export const TrialReminders: CollectionConfig = {
@@ -9,6 +9,7 @@ export const TrialReminders: CollectionConfig = {
   labels: { singular: 'Nhắc hạn dùng thử', plural: 'Nhắc hạn dùng thử' },
   admin: {
     group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
     defaultColumns: ['entitlement', 'milestone', 'sentAt'],
   },
   access: {

@@ -3,6 +3,7 @@ import { date, relation, textarea } from '../fields/content'
 import {
   adminOrSelfCustomer,
   isEditorOrOwner,
+  isHiddenFromEditor,
   isOwner,
   ownerOrSelfCustomerField,
 } from '../lib/auth/access'
@@ -22,7 +23,11 @@ const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, ope
 export const SavedCards: CollectionConfig = {
   slug: 'savedCards',
   labels: { singular: 'Thẻ đã lưu', plural: 'Thẻ đã lưu' },
-  admin: { group: vi.cms.nav.system, defaultColumns: ['customer', 'card', 'savedAt'] },
+  admin: {
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    defaultColumns: ['customer', 'card', 'savedAt'],
+  },
   access: {
     read: adminOrSelfCustomer(),
     create: adminOrSelfCustomer(),

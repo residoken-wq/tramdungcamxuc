@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { authenticated } from '../lib/auth/access'
+import { authenticated, isHiddenFromEditor } from '../lib/auth/access'
 import { sampleField } from '../fields/content'
 import { vi } from '../lib/i18n/vi'
 
@@ -8,6 +8,7 @@ export const Media: CollectionConfig = {
   labels: { singular: 'Thư viện ảnh và tài liệu', plural: 'Thư viện ảnh và tài liệu' },
   admin: {
     group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
     useAsTitle: 'alt',
     description: 'Tải ảnh và tài liệu lên. Luôn thêm mô tả dễ hiểu.',
   },
