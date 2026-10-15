@@ -57,6 +57,15 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: {
+      titleSuffix: ' – Trạm Dừng Cảm Xúc',
+    },
+    components: {
+      graphics: {
+        Logo: '@/components/admin/brand/Logo#AdminLogo',
+        Icon: '@/components/admin/brand/Icon#AdminIcon',
+      },
+    },
   },
   // Lock admin interface to Vietnamese only: matches non-technical owner's workflow (HUONG_DAN_CMS.md)
   // and eliminates language-switching confusion.

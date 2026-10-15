@@ -63,44 +63,44 @@ export type SupportedTimezones =
 
 export interface Config {
   auth: {
-    users: UserAuthOperations;
     customers: CustomerAuthOperations;
+    users: UserAuthOperations;
   };
   blocks: {};
   collections: {
-    users: User;
-    media: Media;
-    privateFiles: PrivateFile;
+    pages: Page;
+    posts: Post;
+    testimonials: Testimonial;
+    legalPages: LegalPage;
     products: Product;
     services: Service;
     programs: Program;
-    posts: Post;
-    testimonials: Testimonial;
-    eqCards: EqCard;
-    courseModules: CourseModule;
-    lessons: Lesson;
-    diagnosticQuestions: DiagnosticQuestion;
-    techniques: Technique;
-    legalPages: LegalPage;
-    workshops: Workshop;
-    workshopReminders: WorkshopReminder;
-    trialReminders: TrialReminder;
-    trackerNudges: TrackerNudge;
-    pages: Page;
-    customers: Customer;
-    entitlements: Entitlement;
     orders: Order;
     discountCodes: DiscountCode;
+    courseModules: CourseModule;
+    lessons: Lesson;
+    techniques: Technique;
+    diagnosticQuestions: DiagnosticQuestion;
+    workshops: Workshop;
+    eqCards: EqCard;
+    customers: Customer;
     leads: Lead;
-    habitPlans: HabitPlan;
-    habitCheckins: HabitCheckin;
-    savedCards: SavedCard;
-    diagnosticResults: DiagnosticResult;
     certificates: Certificate;
+    habitPlans: HabitPlan;
+    users: User;
+    media: Media;
+    privateFiles: PrivateFile;
+    entitlements: Entitlement;
+    habitCheckins: HabitCheckin;
     lessonProgress: LessonProgress;
-    otpCodes: OtpCode;
+    diagnosticResults: DiagnosticResult;
+    savedCards: SavedCard;
     paymentEvents: PaymentEvent;
     auditLogs: AuditLog;
+    trialReminders: TrialReminder;
+    workshopReminders: WorkshopReminder;
+    trackerNudges: TrackerNudge;
+    otpCodes: OtpCode;
     rateLimitHits: RateLimitHit;
     trialUsage: TrialUsage;
     'payload-kv': PayloadKv;
@@ -110,39 +110,39 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    privateFiles: PrivateFilesSelect<false> | PrivateFilesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    legalPages: LegalPagesSelect<false> | LegalPagesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     programs: ProgramsSelect<false> | ProgramsSelect<true>;
-    posts: PostsSelect<false> | PostsSelect<true>;
-    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
-    eqCards: EqCardsSelect<false> | EqCardsSelect<true>;
-    courseModules: CourseModulesSelect<false> | CourseModulesSelect<true>;
-    lessons: LessonsSelect<false> | LessonsSelect<true>;
-    diagnosticQuestions: DiagnosticQuestionsSelect<false> | DiagnosticQuestionsSelect<true>;
-    techniques: TechniquesSelect<false> | TechniquesSelect<true>;
-    legalPages: LegalPagesSelect<false> | LegalPagesSelect<true>;
-    workshops: WorkshopsSelect<false> | WorkshopsSelect<true>;
-    workshopReminders: WorkshopRemindersSelect<false> | WorkshopRemindersSelect<true>;
-    trialReminders: TrialRemindersSelect<false> | TrialRemindersSelect<true>;
-    trackerNudges: TrackerNudgesSelect<false> | TrackerNudgesSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
-    customers: CustomersSelect<false> | CustomersSelect<true>;
-    entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     discountCodes: DiscountCodesSelect<false> | DiscountCodesSelect<true>;
+    courseModules: CourseModulesSelect<false> | CourseModulesSelect<true>;
+    lessons: LessonsSelect<false> | LessonsSelect<true>;
+    techniques: TechniquesSelect<false> | TechniquesSelect<true>;
+    diagnosticQuestions: DiagnosticQuestionsSelect<false> | DiagnosticQuestionsSelect<true>;
+    workshops: WorkshopsSelect<false> | WorkshopsSelect<true>;
+    eqCards: EqCardsSelect<false> | EqCardsSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
-    habitPlans: HabitPlansSelect<false> | HabitPlansSelect<true>;
-    habitCheckins: HabitCheckinsSelect<false> | HabitCheckinsSelect<true>;
-    savedCards: SavedCardsSelect<false> | SavedCardsSelect<true>;
-    diagnosticResults: DiagnosticResultsSelect<false> | DiagnosticResultsSelect<true>;
     certificates: CertificatesSelect<false> | CertificatesSelect<true>;
+    habitPlans: HabitPlansSelect<false> | HabitPlansSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    privateFiles: PrivateFilesSelect<false> | PrivateFilesSelect<true>;
+    entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
+    habitCheckins: HabitCheckinsSelect<false> | HabitCheckinsSelect<true>;
     lessonProgress: LessonProgressSelect<false> | LessonProgressSelect<true>;
-    otpCodes: OtpCodesSelect<false> | OtpCodesSelect<true>;
+    diagnosticResults: DiagnosticResultsSelect<false> | DiagnosticResultsSelect<true>;
+    savedCards: SavedCardsSelect<false> | SavedCardsSelect<true>;
     paymentEvents: PaymentEventsSelect<false> | PaymentEventsSelect<true>;
     auditLogs: AuditLogsSelect<false> | AuditLogsSelect<true>;
+    trialReminders: TrialRemindersSelect<false> | TrialRemindersSelect<true>;
+    workshopReminders: WorkshopRemindersSelect<false> | WorkshopRemindersSelect<true>;
+    trackerNudges: TrackerNudgesSelect<false> | TrackerNudgesSelect<true>;
+    otpCodes: OtpCodesSelect<false> | OtpCodesSelect<true>;
     rateLimitHits: RateLimitHitsSelect<false> | RateLimitHitsSelect<true>;
     trialUsage: TrialUsageSelect<false> | TrialUsageSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -155,39 +155,21 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
-    siteSettings: SiteSetting;
     navigation: Navigation;
+    siteSettings: SiteSetting;
   };
   globalsSelect: {
-    siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
+    siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User | Customer;
+  user: Customer | User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
-  };
-}
-export interface UserAuthOperations {
-  forgotPassword: {
-    email: string;
-    password: string;
-  };
-  login: {
-    email: string;
-    password: string;
-  };
-  registerFirstUser: {
-    email: string;
-    password: string;
-  };
-  unlock: {
-    email: string;
-    password: string;
   };
 }
 export interface CustomerAuthOperations {
@@ -208,35 +190,74 @@ export interface CustomerAuthOperations {
     password: string;
   };
 }
+export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
 /**
+ * Trang tĩnh và landing page dựng bằng kéo thả trực quan Puck.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "pages".
  */
-export interface User {
+export interface Page {
   id: number;
   /**
-   * Chủ sở hữu: toàn quyền, gồm thanh toán và đơn hàng. Biên tập: chỉ sửa nội dung. Người tạo đầu tiên tự là chủ sở hữu.
+   * Nhập tên trang.
    */
-  role: 'owner' | 'editor';
+  title: string;
+  /**
+   * Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.
+   */
+  slug: string;
+  /**
+   * Dữ liệu bố cục lưu từ trình dựng trang Puck.
+   */
+  puckData?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  template?: ('campaign' | 'service' | 'workshop' | 'event') | null;
+  seo?: {
+    /**
+     * Nhập tiêu đề tìm kiếm.
+     */
+    title?: string | null;
+    /**
+     * Nhập mô tả tìm kiếm.
+     */
+    description?: string | null;
+    /**
+     * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+     */
+    ogImage?: (number | null) | Media;
+  };
+  isSample?: boolean | null;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Tải ảnh và tài liệu lên. Luôn thêm mô tả dễ hiểu.
@@ -266,34 +287,74 @@ export interface Media {
   focalY?: number | null;
 }
 /**
- * Tải tài liệu riêng tư (PDF, ZIP, EPUB). Chỉ giao qua liên kết ký có hạn.
+ * Bài viết chuyên môn và video truyền cảm hứng trong thư viện.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "privateFiles".
+ * via the `definition` "posts".
  */
-export interface PrivateFile {
+export interface Post {
   id: number;
   /**
-   * Mô tả ngắn gọn nội dung tài liệu.
+   * Nhập tiêu đề.
    */
-  description?: string | null;
+  title: string;
+  /**
+   * Dùng chữ thường không dấu, số và dấu -.
+   */
+  slug: string;
+  /**
+   * Nhập chuỗi nội dung.
+   */
+  series?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  topic?: ('eq' | 'habit' | 'career') | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  format?: ('article' | 'video') | null;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  thumbnail?: (number | null) | Media;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  videoUrl?: string | null;
+  /**
+   * Soạn nội dung.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  ctaProduct?: (number | null) | Product;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  leadMagnet?: (number | null) | Product;
   isSample?: boolean | null;
-  prefix?: string | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
- * Quản lý sản phẩm. Lưu nháp trước khi xuất bản.
+ * Tất cả sản phẩm mở bán hoặc tặng: công cụ số, sách điện tử, gói đồng hành.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
@@ -506,7 +567,87 @@ export interface Product {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Quản lý dịch vụ đồng hành. Lưu nháp trước khi xuất bản.
+ * Tải tài liệu riêng tư (PDF, ZIP, EPUB). Chỉ giao qua liên kết ký có hạn.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privateFiles".
+ */
+export interface PrivateFile {
+  id: number;
+  /**
+   * Mô tả ngắn gọn nội dung tài liệu.
+   */
+  description?: string | null;
+  isSample?: boolean | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Lời chia sẻ và cảm nhận của học viên, khách hàng trên website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  /**
+   * Nhập tên người chia sẻ.
+   */
+  name: string;
+  /**
+   * Nhập vai trò.
+   */
+  role?: string | null;
+  /**
+   * Nhập lời chia sẻ.
+   */
+  quote?: string | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  relatedOffer?:
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'programs';
+        value: number | Program;
+      } | null);
+  /**
+   * Chọn một mục phù hợp.
+   */
+  language?: ('vi' | 'en') | null;
+  /**
+   * Chỉ xuất bản khi người chia sẻ đã đồng ý.
+   */
+  consent?: boolean | null;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  photo?: (number | null) | Media;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Dịch vụ coaching 1:1 và các gói đồng hành chuyên sâu cá nhân.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services".
@@ -599,60 +740,7 @@ export interface Service {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Quản lý lời chia sẻ. Lưu nháp trước khi xuất bản.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials".
- */
-export interface Testimonial {
-  id: number;
-  /**
-   * Nhập tên người chia sẻ.
-   */
-  name: string;
-  /**
-   * Nhập vai trò.
-   */
-  role?: string | null;
-  /**
-   * Nhập lời chia sẻ.
-   */
-  quote?: string | null;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  relatedOffer?:
-    | ({
-        relationTo: 'products';
-        value: number | Product;
-      } | null)
-    | ({
-        relationTo: 'services';
-        value: number | Service;
-      } | null)
-    | ({
-        relationTo: 'programs';
-        value: number | Program;
-      } | null);
-  /**
-   * Chọn một mục phù hợp.
-   */
-  language?: ('vi' | 'en') | null;
-  /**
-   * Chỉ xuất bản khi người chia sẻ đã đồng ý.
-   */
-  consent?: boolean | null;
-  /**
-   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
-   */
-  photo?: (number | null) | Media;
-  isSample?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Quản lý chương trình doanh nghiệp. Lưu nháp trước khi xuất bản.
+ * Chương trình đào tạo và giải pháp trí tuệ cảm xúc cho doanh nghiệp.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "programs".
@@ -737,12 +825,12 @@ export interface Program {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Quản lý bài viết và video. Lưu nháp trước khi xuất bản.
+ * Trang điều khoản sử dụng, chính sách bảo mật và quy định pháp lý.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts".
+ * via the `definition` "legalPages".
  */
-export interface Post {
+export interface LegalPage {
   id: number;
   /**
    * Nhập tiêu đề.
@@ -752,26 +840,6 @@ export interface Post {
    * Dùng chữ thường không dấu, số và dấu -.
    */
   slug: string;
-  /**
-   * Nhập chuỗi nội dung.
-   */
-  series?: string | null;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  topic?: ('eq' | 'habit' | 'career') | null;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  format?: ('article' | 'video') | null;
-  /**
-   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
-   */
-  thumbnail?: (number | null) | Media;
-  /**
-   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
-   */
-  videoUrl?: string | null;
   /**
    * Soạn nội dung.
    */
@@ -791,20 +859,388 @@ export interface Post {
     [k: string]: unknown;
   } | null;
   /**
-   * Chọn nội dung đã tạo trong hệ thống.
+   * Chọn ngày và giờ áp dụng.
    */
-  ctaProduct?: (number | null) | Product;
+  lastUpdated?: string | null;
   /**
-   * Chọn nội dung đã tạo trong hệ thống.
+   * Nhập số không âm. Giá tiền tính bằng đồng.
    */
-  leadMagnet?: (number | null) | Product;
+  order?: number | null;
   isSample?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Quản lý thẻ eq buddy. Lưu nháp trước khi xuất bản.
+ * Quản lý đơn hàng, tra cứu mã chuyển khoản và đối soát thanh toán.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer?: (number | null) | Customer;
+  items: {
+    /**
+     * Chọn nội dung đã tạo trong hệ thống.
+     */
+    product: number | Product;
+    /**
+     * Nhập số không âm. Giá tiền tính bằng đồng.
+     */
+    price: number;
+    id?: string | null;
+  }[];
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  subtotal?: number | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  discountCode?: (number | null) | DiscountCode;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  total: number;
+  /**
+   * Tự sinh khi tạo đơn. Khách ghi mã này ở nội dung chuyển khoản.
+   */
+  paymentRef?: string | null;
+  /**
+   * Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn qua nút thao tác.
+   */
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'cancelled';
+  deliveryStatus?: ('none' | 'access_granted' | 'email_sent' | 'scheduled') | null;
+  /**
+   * Chỉ cập nhật khi chủ sở hữu xác nhận thanh toán thành công.
+   */
+  paidAt?: string | null;
+  /**
+   * Thời điểm đơn hàng được ẩn danh khi khách hàng yêu cầu xóa dữ liệu.
+   */
+  anonymizedAt?: string | null;
+  /**
+   * Thời điểm khách tick đồng ý Điều khoản và Chính sách giá – thanh toán.
+   */
+  termsAcceptedAt?: string | null;
+  /**
+   * Bật để áp dụng: hana tạo link thanh toán.
+   */
+  createdByAdmin?: boolean | null;
+  /**
+   * Đơn trải nghiệm đã dùng để trừ phí vào gói (chỉ trừ 1 lần).
+   */
+  trialCreditOrder?: (number | null) | Order;
+  /**
+   * Tự sinh cho link /thanh-toan/… khi Hana tạo đơn.
+   */
+  payToken?: string | null;
+  /**
+   * Nhu cầu hoặc mục tiêu khi đặt phiên trải nghiệm.
+   */
+  customerNeed?: string | null;
+  /**
+   * Nhập ghi chú.
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Học viên và khách hàng đã tạo tài khoản trên hệ sinh thái.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  email: string;
+  /**
+   * Nhập họ tên.
+   */
+  name?: string | null;
+  /**
+   * Nhập điện thoại.
+   */
+  phone?: string | null;
+  /**
+   * Bật để áp dụng: đồng ý nhận tin.
+   */
+  consentMarketing?: boolean | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  consentAt?: string | null;
+  /**
+   * Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).
+   */
+  deletionRequestedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  collection: 'customers';
+}
+/**
+ * Mã giảm giá cho các sản phẩm và dịch vụ.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discountCodes".
+ */
+export interface DiscountCode {
+  id: number;
+  /**
+   * Nhập mã.
+   */
+  code: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  type: 'percent' | 'fixed';
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  value: number;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  validUntil?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  maxUses?: number | null;
+  usedCount?: number | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  products?: (number | Product)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Các nhóm bài học trong lộ trình chuyển hóa của khóa Habit.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "courseModules".
+ */
+export interface CourseModule {
+  id: number;
+  /**
+   * Nhập tên nhóm bài học.
+   */
+  title: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  group?: ('insight' | 'principle' | 'technique') | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Bài giảng video và tài liệu thực hành trong khóa Habit.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lessons".
+ */
+export interface Lesson {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  module?: (number | null) | CourseModule;
+  /**
+   * Nhập tiêu đề.
+   */
+  title: string;
+  /**
+   * Nhập tóm tắt.
+   */
+  summary?: string | null;
+  /**
+   * Mã video trên dịch vụ lưu trữ. Chỉ quản trị viên xem được.
+   */
+  videoId?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  durationSec?: number | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  stage?: ('cue' | 'craving' | 'response' | 'reward' | 'none') | null;
+  downloadables?:
+    | {
+        /**
+         * Chọn tài liệu (PDF…)
+         */
+        file?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  /**
+   * Bật để áp dụng: cho phép xem thử.
+   */
+  isFreePreview?: boolean | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Kỹ thuật Atomic Habits thực chiến ứng dụng vào 4 mắt xích thói quen.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "techniques".
+ */
+export interface Technique {
+  id: number;
+  /**
+   * Nhập tên kỹ thuật.
+   */
+  name: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  stage?: ('cue' | 'craving' | 'response' | 'reward') | null;
+  /**
+   * Soạn cách thực hiện.
+   */
+  howTo?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Soạn ví dụ.
+   */
+  example?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  lesson?: (number | null) | Lesson;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Bộ câu hỏi trắc nghiệm chẩn đoán điểm nghẽn thói quen 5 phút.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "diagnosticQuestions".
+ */
+export interface DiagnosticQuestion {
+  id: number;
+  /**
+   * Nhập nội dung câu hỏi.
+   */
+  statement: string;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  stage?: ('cue' | 'craving' | 'response' | 'reward') | null;
+  /**
+   * Soạn gợi ý.
+   */
+  suggestion?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Lịch các buổi workshop trực tuyến đồng hành cùng học viên.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshops".
+ */
+export interface Workshop {
+  id: number;
+  /**
+   * Nhập tên workshop.
+   */
+  title: string;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  product?: (number | null) | Product;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  startsAt?: string | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  endsAt?: string | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  joinUrl?: string | null;
+  /**
+   * Khách đã mua các sản phẩm này sẽ thấy lịch và nhận email nhắc trước 24 giờ.
+   */
+  audienceProducts?: (number | Product)[] | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Bộ 26 thẻ bài EQ Buddy giúp nhận diện và điều hòa cảm xúc.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "eqCards".
@@ -920,619 +1356,8 @@ export interface EqCard {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Quản lý nhóm bài học. Lưu nháp trước khi xuất bản.
+ * Khách hàng tiềm năng để lại thông tin tư vấn hoặc tải tài nguyên.
  *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "courseModules".
- */
-export interface CourseModule {
-  id: number;
-  /**
-   * Nhập tên nhóm bài học.
-   */
-  title: string;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  group?: ('insight' | 'principle' | 'technique') | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  order?: number | null;
-  isSample?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Quản lý bài học. Lưu nháp trước khi xuất bản.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "lessons".
- */
-export interface Lesson {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  module?: (number | null) | CourseModule;
-  /**
-   * Nhập tiêu đề.
-   */
-  title: string;
-  /**
-   * Nhập tóm tắt.
-   */
-  summary?: string | null;
-  /**
-   * Mã video trên dịch vụ lưu trữ. Chỉ quản trị viên xem được.
-   */
-  videoId?: string | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  durationSec?: number | null;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  stage?: ('cue' | 'craving' | 'response' | 'reward' | 'none') | null;
-  downloadables?:
-    | {
-        /**
-         * Chọn tài liệu (PDF…)
-         */
-        file?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  order?: number | null;
-  /**
-   * Bật để áp dụng: cho phép xem thử.
-   */
-  isFreePreview?: boolean | null;
-  isSample?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Quản lý câu hỏi chẩn đoán. Lưu nháp trước khi xuất bản.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "diagnosticQuestions".
- */
-export interface DiagnosticQuestion {
-  id: number;
-  /**
-   * Nhập nội dung câu hỏi.
-   */
-  statement: string;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  stage?: ('cue' | 'craving' | 'response' | 'reward') | null;
-  /**
-   * Soạn gợi ý.
-   */
-  suggestion?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  order?: number | null;
-  isSample?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Quản lý kỹ thuật thực hành. Lưu nháp trước khi xuất bản.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "techniques".
- */
-export interface Technique {
-  id: number;
-  /**
-   * Nhập tên kỹ thuật.
-   */
-  name: string;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  stage?: ('cue' | 'craving' | 'response' | 'reward') | null;
-  /**
-   * Soạn cách thực hiện.
-   */
-  howTo?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Soạn ví dụ.
-   */
-  example?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  lesson?: (number | null) | Lesson;
-  isSample?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Quản lý trang pháp lý. Lưu nháp trước khi xuất bản.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "legalPages".
- */
-export interface LegalPage {
-  id: number;
-  /**
-   * Nhập tiêu đề.
-   */
-  title: string;
-  /**
-   * Dùng chữ thường không dấu, số và dấu -.
-   */
-  slug: string;
-  /**
-   * Soạn nội dung.
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  lastUpdated?: string | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  order?: number | null;
-  isSample?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Quản lý lịch workshop. Lưu nháp trước khi xuất bản.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "workshops".
- */
-export interface Workshop {
-  id: number;
-  /**
-   * Nhập tên workshop.
-   */
-  title: string;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  product?: (number | null) | Product;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  startsAt?: string | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  endsAt?: string | null;
-  /**
-   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
-   */
-  joinUrl?: string | null;
-  /**
-   * Khách đã mua các sản phẩm này sẽ thấy lịch và nhận email nhắc trước 24 giờ.
-   */
-  audienceProducts?: (number | Product)[] | null;
-  isSample?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "workshopReminders".
- */
-export interface WorkshopReminder {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  workshop?: (number | null) | Workshop;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  customer?: (number | null) | Customer;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  sentAt: string;
-  workshopCustomer?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers".
- */
-export interface Customer {
-  id: number;
-  email: string;
-  /**
-   * Nhập họ tên.
-   */
-  name?: string | null;
-  /**
-   * Nhập điện thoại.
-   */
-  phone?: string | null;
-  /**
-   * Bật để áp dụng: đồng ý nhận tin.
-   */
-  consentMarketing?: boolean | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  consentAt?: string | null;
-  /**
-   * Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).
-   */
-  deletionRequestedAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  collection: 'customers';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "trialReminders".
- */
-export interface TrialReminder {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  entitlement?: (number | null) | Entitlement;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  milestone: 'day_18' | 'day_21';
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  sentAt: string;
-  reminderKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "entitlements".
- */
-export interface Entitlement {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  customer: number | Customer;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  product: number | Product;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  order?: (number | null) | Order;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  grantedAt?: string | null;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  source: 'trial' | 'order' | 'package' | 'manual' | 'gift';
-  /**
-   * Chọn một mục phù hợp.
-   */
-  status: 'trial' | 'active' | 'expired';
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  expiresAt?: string | null;
-  trialKey?: string | null;
-  grantKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders".
- */
-export interface Order {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  customer?: (number | null) | Customer;
-  items: {
-    /**
-     * Chọn nội dung đã tạo trong hệ thống.
-     */
-    product: number | Product;
-    /**
-     * Nhập số không âm. Giá tiền tính bằng đồng.
-     */
-    price: number;
-    id?: string | null;
-  }[];
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  subtotal?: number | null;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  discountCode?: (number | null) | DiscountCode;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  total: number;
-  /**
-   * Tự sinh khi tạo đơn. Khách ghi mã này ở nội dung chuyển khoản.
-   */
-  paymentRef?: string | null;
-  /**
-   * Chỉ chủ sở hữu được xác nhận thủ công hoặc hủy đơn qua nút thao tác.
-   */
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'cancelled';
-  deliveryStatus?: ('none' | 'access_granted' | 'email_sent' | 'scheduled') | null;
-  /**
-   * Chỉ cập nhật khi chủ sở hữu xác nhận thanh toán thành công.
-   */
-  paidAt?: string | null;
-  /**
-   * Thời điểm đơn hàng được ẩn danh khi khách hàng yêu cầu xóa dữ liệu.
-   */
-  anonymizedAt?: string | null;
-  /**
-   * Thời điểm khách tick đồng ý Điều khoản và Chính sách giá – thanh toán.
-   */
-  termsAcceptedAt?: string | null;
-  /**
-   * Bật để áp dụng: hana tạo link thanh toán.
-   */
-  createdByAdmin?: boolean | null;
-  /**
-   * Đơn trải nghiệm đã dùng để trừ phí vào gói (chỉ trừ 1 lần).
-   */
-  trialCreditOrder?: (number | null) | Order;
-  /**
-   * Tự sinh cho link /thanh-toan/… khi Hana tạo đơn.
-   */
-  payToken?: string | null;
-  /**
-   * Nhu cầu hoặc mục tiêu khi đặt phiên trải nghiệm.
-   */
-  customerNeed?: string | null;
-  /**
-   * Nhập ghi chú.
-   */
-  notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "discountCodes".
- */
-export interface DiscountCode {
-  id: number;
-  /**
-   * Nhập mã.
-   */
-  code: string;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  type: 'percent' | 'fixed';
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  value: number;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  validUntil?: string | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  maxUses?: number | null;
-  usedCount?: number | null;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  products?: (number | Product)[] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "trackerNudges".
- */
-export interface TrackerNudge {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  plan?: (number | null) | HabitPlan;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  missedStartDay: number;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  sentAt: string;
-  nudgeKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "habitPlans".
- */
-export interface HabitPlan {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  customer?: (number | null) | Customer;
-  leadEmail?: string | null;
-  scorecard?:
-    | {
-        /**
-         * Nhập thói quen.
-         */
-        habit: string;
-        /**
-         * Chọn một mục phù hợp.
-         */
-        rating?: ('good' | 'neutral' | 'bad') | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Nhập câu định danh "tôi sẽ … để trở thành …".
-   */
-  identityStatement?: string | null;
-  chosenTechniques?:
-    | {
-        /**
-         * Chọn nội dung đã tạo trong hệ thống.
-         */
-        technique?: (number | null) | Technique;
-        /**
-         * Nhập hành động cụ thể.
-         */
-        action?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  startDate?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Quản lý trang nội dung. Lưu nháp trước khi xuất bản.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: number;
-  /**
-   * Nhập tên trang.
-   */
-  title: string;
-  /**
-   * Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.
-   */
-  slug: string;
-  /**
-   * Dữ liệu bố cục lưu từ trình dựng trang Puck.
-   */
-  puckData?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  template?: ('campaign' | 'service' | 'workshop' | 'event') | null;
-  seo?: {
-    /**
-     * Nhập tiêu đề tìm kiếm.
-     */
-    title?: string | null;
-    /**
-     * Nhập mô tả tìm kiếm.
-     */
-    description?: string | null;
-    /**
-     * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
-     */
-    ogImage?: (number | null) | Media;
-  };
-  isSample?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads".
  */
@@ -1619,6 +1444,175 @@ export interface Lead {
   createdAt: string;
 }
 /**
+ * Chứng nhận hoàn thành thử thách 21 ngày xây dựng thói quen.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates".
+ */
+export interface Certificate {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  plan?: (number | null) | HabitPlan;
+  /**
+   * Nhập câu định danh.
+   */
+  identityStatement?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  daysCompleted?: number | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  issuedAt?: string | null;
+  code?: string | null;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  image45?: (number | null) | Media;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  image916?: (number | null) | Media;
+  /**
+   * Bật để áp dụng: cho phép xem công khai.
+   */
+  isPublic?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Kế hoạch vòng lặp thói quen 21 ngày do học viên thiết lập.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitPlans".
+ */
+export interface HabitPlan {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer?: (number | null) | Customer;
+  leadEmail?: string | null;
+  scorecard?:
+    | {
+        /**
+         * Nhập thói quen.
+         */
+        habit: string;
+        /**
+         * Chọn một mục phù hợp.
+         */
+        rating?: ('good' | 'neutral' | 'bad') | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập câu định danh "tôi sẽ … để trở thành …".
+   */
+  identityStatement?: string | null;
+  chosenTechniques?:
+    | {
+        /**
+         * Chọn nội dung đã tạo trong hệ thống.
+         */
+        technique?: (number | null) | Technique;
+        /**
+         * Nhập hành động cụ thể.
+         */
+        action?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  startDate?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Tài khoản quản trị viên và biên tập viên nội dung.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  /**
+   * Chủ sở hữu: toàn quyền, gồm thanh toán và đơn hàng. Biên tập: chỉ sửa nội dung. Người tạo đầu tiên tự là chủ sở hữu.
+   */
+  role: 'owner' | 'editor';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * Quyền sử dụng công cụ số trả phí hoặc dùng thử.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "entitlements".
+ */
+export interface Entitlement {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  product: number | Product;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  order?: (number | null) | Order;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  grantedAt?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  source: 'trial' | 'order' | 'package' | 'manual' | 'gift';
+  /**
+   * Chọn một mục phù hợp.
+   */
+  status: 'trial' | 'active' | 'expired';
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  expiresAt?: string | null;
+  trialKey?: string | null;
+  grantKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Nhật ký check-in hành trình 21 ngày của học viên.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "habitCheckins".
  */
@@ -1662,10 +1656,12 @@ export interface HabitCheckin {
   createdAt: string;
 }
 /**
+ * Tiến độ xem video bài học của từng học viên.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "savedCards".
+ * via the `definition` "lessonProgress".
  */
-export interface SavedCard {
+export interface LessonProgress {
   id: number;
   /**
    * Chọn nội dung đã tạo trong hệ thống.
@@ -1674,19 +1670,22 @@ export interface SavedCard {
   /**
    * Chọn nội dung đã tạo trong hệ thống.
    */
-  card: number | EqCard;
+  lesson: number | Lesson;
   /**
-   * Nhập suy ngẫm.
+   * Nhập số không âm. Giá tiền tính bằng đồng.
    */
-  reflection?: string | null;
+  watchedPercent?: number | null;
   /**
    * Chọn ngày và giờ áp dụng.
    */
-  savedAt?: string | null;
+  completedAt?: string | null;
+  customerLesson?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Kết quả bài quiz chẩn đoán thói quen 5 phút.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "diagnosticResults".
  */
@@ -1714,10 +1713,12 @@ export interface DiagnosticResult {
   createdAt: string;
 }
 /**
+ * Các thẻ EQ được học viên lưu lại để suy ngẫm.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "certificates".
+ * via the `definition` "savedCards".
  */
-export interface Certificate {
+export interface SavedCard {
   id: number;
   /**
    * Chọn nội dung đã tạo trong hệ thống.
@@ -1726,85 +1727,21 @@ export interface Certificate {
   /**
    * Chọn nội dung đã tạo trong hệ thống.
    */
-  plan?: (number | null) | HabitPlan;
+  card: number | EqCard;
   /**
-   * Nhập câu định danh.
+   * Nhập suy ngẫm.
    */
-  identityStatement?: string | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  daysCompleted?: number | null;
+  reflection?: string | null;
   /**
    * Chọn ngày và giờ áp dụng.
    */
-  issuedAt?: string | null;
-  code?: string | null;
-  /**
-   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
-   */
-  image45?: (number | null) | Media;
-  /**
-   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
-   */
-  image916?: (number | null) | Media;
-  /**
-   * Bật để áp dụng: cho phép xem công khai.
-   */
-  isPublic?: boolean | null;
+  savedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "lessonProgress".
- */
-export interface LessonProgress {
-  id: number;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  customer: number | Customer;
-  /**
-   * Chọn nội dung đã tạo trong hệ thống.
-   */
-  lesson: number | Lesson;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  watchedPercent?: number | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  completedAt?: string | null;
-  customerLesson?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "otpCodes".
- */
-export interface OtpCode {
-  id: number;
-  email: string;
-  codeHash: string;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  expiresAt: string;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  attempts?: number | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  usedAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
+ * Nhật ký webhook và sự kiện giao dịch từ cổng thanh toán SePay.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "paymentEvents".
  */
@@ -1847,6 +1784,8 @@ export interface PaymentEvent {
   createdAt: string;
 }
 /**
+ * Nhật ký các thao tác quan trọng của quản trị viên.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auditLogs".
  */
@@ -1890,6 +1829,105 @@ export interface AuditLog {
   createdAt: string;
 }
 /**
+ * Lịch sử email nhắc hạn dùng thử 18 và 21 ngày.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trialReminders".
+ */
+export interface TrialReminder {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  entitlement?: (number | null) | Entitlement;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  milestone: 'day_18' | 'day_21';
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  sentAt: string;
+  reminderKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Lịch sử email nhắc tham gia workshop trước 24 giờ.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshopReminders".
+ */
+export interface WorkshopReminder {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  workshop?: (number | null) | Workshop;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer?: (number | null) | Customer;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  sentAt: string;
+  workshopCustomer?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Lịch sử email nhắc nhở khi học viên lỡ nhịp thực hành.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trackerNudges".
+ */
+export interface TrackerNudge {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  plan?: (number | null) | HabitPlan;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  missedStartDay: number;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  sentAt: string;
+  nudgeKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Mã xác thực đăng nhập một lần (OTP) của học viên.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "otpCodes".
+ */
+export interface OtpCode {
+  id: number;
+  email: string;
+  codeHash: string;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  expiresAt: string;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  attempts?: number | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  usedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Ghi nhận tần suất gửi form để chặn spam.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "rateLimitHits".
  */
@@ -1900,6 +1938,8 @@ export interface RateLimitHit {
   createdAt: string;
 }
 /**
+ * Dấu vết dùng thử ẩn danh chống lạm dụng sau khi xóa tài khoản.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "trialUsage".
  */
@@ -1946,16 +1986,20 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'pages';
+        value: number | Page;
       } | null)
     | ({
-        relationTo: 'media';
-        value: number | Media;
+        relationTo: 'posts';
+        value: number | Post;
       } | null)
     | ({
-        relationTo: 'privateFiles';
-        value: number | PrivateFile;
+        relationTo: 'testimonials';
+        value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'legalPages';
+        value: number | LegalPage;
       } | null)
     | ({
         relationTo: 'products';
@@ -1970,16 +2014,12 @@ export interface PayloadLockedDocument {
         value: number | Program;
       } | null)
     | ({
-        relationTo: 'posts';
-        value: number | Post;
+        relationTo: 'orders';
+        value: number | Order;
       } | null)
     | ({
-        relationTo: 'testimonials';
-        value: number | Testimonial;
-      } | null)
-    | ({
-        relationTo: 'eqCards';
-        value: number | EqCard;
+        relationTo: 'discountCodes';
+        value: number | DiscountCode;
       } | null)
     | ({
         relationTo: 'courseModules';
@@ -1990,84 +2030,68 @@ export interface PayloadLockedDocument {
         value: number | Lesson;
       } | null)
     | ({
-        relationTo: 'diagnosticQuestions';
-        value: number | DiagnosticQuestion;
-      } | null)
-    | ({
         relationTo: 'techniques';
         value: number | Technique;
       } | null)
     | ({
-        relationTo: 'legalPages';
-        value: number | LegalPage;
+        relationTo: 'diagnosticQuestions';
+        value: number | DiagnosticQuestion;
       } | null)
     | ({
         relationTo: 'workshops';
         value: number | Workshop;
       } | null)
     | ({
-        relationTo: 'workshopReminders';
-        value: number | WorkshopReminder;
-      } | null)
-    | ({
-        relationTo: 'trialReminders';
-        value: number | TrialReminder;
-      } | null)
-    | ({
-        relationTo: 'trackerNudges';
-        value: number | TrackerNudge;
-      } | null)
-    | ({
-        relationTo: 'pages';
-        value: number | Page;
+        relationTo: 'eqCards';
+        value: number | EqCard;
       } | null)
     | ({
         relationTo: 'customers';
         value: number | Customer;
       } | null)
     | ({
-        relationTo: 'entitlements';
-        value: number | Entitlement;
-      } | null)
-    | ({
-        relationTo: 'orders';
-        value: number | Order;
-      } | null)
-    | ({
-        relationTo: 'discountCodes';
-        value: number | DiscountCode;
-      } | null)
-    | ({
         relationTo: 'leads';
         value: number | Lead;
-      } | null)
-    | ({
-        relationTo: 'habitPlans';
-        value: number | HabitPlan;
-      } | null)
-    | ({
-        relationTo: 'habitCheckins';
-        value: number | HabitCheckin;
-      } | null)
-    | ({
-        relationTo: 'savedCards';
-        value: number | SavedCard;
-      } | null)
-    | ({
-        relationTo: 'diagnosticResults';
-        value: number | DiagnosticResult;
       } | null)
     | ({
         relationTo: 'certificates';
         value: number | Certificate;
       } | null)
     | ({
+        relationTo: 'habitPlans';
+        value: number | HabitPlan;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'privateFiles';
+        value: number | PrivateFile;
+      } | null)
+    | ({
+        relationTo: 'entitlements';
+        value: number | Entitlement;
+      } | null)
+    | ({
+        relationTo: 'habitCheckins';
+        value: number | HabitCheckin;
+      } | null)
+    | ({
         relationTo: 'lessonProgress';
         value: number | LessonProgress;
       } | null)
     | ({
-        relationTo: 'otpCodes';
-        value: number | OtpCode;
+        relationTo: 'diagnosticResults';
+        value: number | DiagnosticResult;
+      } | null)
+    | ({
+        relationTo: 'savedCards';
+        value: number | SavedCard;
       } | null)
     | ({
         relationTo: 'paymentEvents';
@@ -2076,6 +2100,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'auditLogs';
         value: number | AuditLog;
+      } | null)
+    | ({
+        relationTo: 'trialReminders';
+        value: number | TrialReminder;
+      } | null)
+    | ({
+        relationTo: 'workshopReminders';
+        value: number | WorkshopReminder;
+      } | null)
+    | ({
+        relationTo: 'trackerNudges';
+        value: number | TrackerNudge;
+      } | null)
+    | ({
+        relationTo: 'otpCodes';
+        value: number | OtpCode;
       } | null)
     | ({
         relationTo: 'rateLimitHits';
@@ -2088,12 +2128,12 @@ export interface PayloadLockedDocument {
   globalSlug?: string | null;
   user:
     | {
-        relationTo: 'users';
-        value: number | User;
-      }
-    | {
         relationTo: 'customers';
         value: number | Customer;
+      }
+    | {
+        relationTo: 'users';
+        value: number | User;
       };
   updatedAt: string;
   createdAt: string;
@@ -2106,12 +2146,12 @@ export interface PayloadPreference {
   id: number;
   user:
     | {
-        relationTo: 'users';
-        value: number | User;
-      }
-    | {
         relationTo: 'customers';
         value: number | Customer;
+      }
+    | {
+        relationTo: 'users';
+        value: number | User;
       };
   key?: string | null;
   value?:
@@ -2139,69 +2179,76 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "pages_select".
  */
-export interface UsersSelect<T extends boolean = true> {
-  role?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  resetPasswordRequestedAt?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  puckData?: T;
+  template?: T;
+  seo?:
     | T
     | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
+        title?: T;
+        description?: T;
+        ogImage?: T;
       };
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "posts_select".
  */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  series?: T;
+  topic?: T;
+  format?: T;
+  thumbnail?: T;
+  videoUrl?: T;
+  content?: T;
+  ctaProduct?: T;
+  leadMagnet?: T;
   isSample?: T;
-  prefix?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "privateFiles_select".
+ * via the `definition` "testimonials_select".
  */
-export interface PrivateFilesSelect<T extends boolean = true> {
-  description?: T;
+export interface TestimonialsSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  quote?: T;
+  relatedOffer?: T;
+  language?: T;
+  consent?: T;
+  photo?: T;
   isSample?: T;
-  prefix?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legalPages_select".
+ */
+export interface LegalPagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  content?: T;
+  lastUpdated?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2351,257 +2398,6 @@ export interface ProgramsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "posts_select".
- */
-export interface PostsSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  series?: T;
-  topic?: T;
-  format?: T;
-  thumbnail?: T;
-  videoUrl?: T;
-  content?: T;
-  ctaProduct?: T;
-  leadMagnet?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials_select".
- */
-export interface TestimonialsSelect<T extends boolean = true> {
-  name?: T;
-  role?: T;
-  quote?: T;
-  relatedOffer?: T;
-  language?: T;
-  consent?: T;
-  photo?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "eqCards_select".
- */
-export interface EqCardsSelect<T extends boolean = true> {
-  code?: T;
-  keywordEn?: T;
-  keywordVi?: T;
-  message?: T;
-  promptRecall?: T;
-  promptPack?: T;
-  promptAcknowledge?: T;
-  story?: T;
-  smallAction?: T;
-  topic?: T;
-  emotionTags?: T;
-  relatedProduct?: T;
-  image?: T;
-  shareImage45?: T;
-  shareImage916?: T;
-  qrSlug?: T;
-  printedQrSlug?: T;
-  printedAt?: T;
-  order?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "courseModules_select".
- */
-export interface CourseModulesSelect<T extends boolean = true> {
-  title?: T;
-  group?: T;
-  order?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "lessons_select".
- */
-export interface LessonsSelect<T extends boolean = true> {
-  module?: T;
-  title?: T;
-  summary?: T;
-  videoId?: T;
-  durationSec?: T;
-  stage?: T;
-  downloadables?:
-    | T
-    | {
-        file?: T;
-        id?: T;
-      };
-  order?: T;
-  isFreePreview?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "diagnosticQuestions_select".
- */
-export interface DiagnosticQuestionsSelect<T extends boolean = true> {
-  statement?: T;
-  stage?: T;
-  suggestion?: T;
-  order?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "techniques_select".
- */
-export interface TechniquesSelect<T extends boolean = true> {
-  name?: T;
-  stage?: T;
-  howTo?: T;
-  example?: T;
-  lesson?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "legalPages_select".
- */
-export interface LegalPagesSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  content?: T;
-  lastUpdated?: T;
-  order?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "workshops_select".
- */
-export interface WorkshopsSelect<T extends boolean = true> {
-  title?: T;
-  product?: T;
-  startsAt?: T;
-  endsAt?: T;
-  joinUrl?: T;
-  audienceProducts?: T;
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "workshopReminders_select".
- */
-export interface WorkshopRemindersSelect<T extends boolean = true> {
-  workshop?: T;
-  customer?: T;
-  sentAt?: T;
-  workshopCustomer?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "trialReminders_select".
- */
-export interface TrialRemindersSelect<T extends boolean = true> {
-  entitlement?: T;
-  milestone?: T;
-  sentAt?: T;
-  reminderKey?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "trackerNudges_select".
- */
-export interface TrackerNudgesSelect<T extends boolean = true> {
-  plan?: T;
-  missedStartDay?: T;
-  sentAt?: T;
-  nudgeKey?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
- */
-export interface PagesSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  puckData?: T;
-  template?: T;
-  seo?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        ogImage?: T;
-      };
-  isSample?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers_select".
- */
-export interface CustomersSelect<T extends boolean = true> {
-  email?: T;
-  name?: T;
-  phone?: T;
-  consentMarketing?: T;
-  consentAt?: T;
-  deletionRequestedAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "entitlements_select".
- */
-export interface EntitlementsSelect<T extends boolean = true> {
-  customer?: T;
-  product?: T;
-  order?: T;
-  grantedAt?: T;
-  source?: T;
-  status?: T;
-  expiresAt?: T;
-  trialKey?: T;
-  grantKey?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "orders_select".
  */
 export interface OrdersSelect<T extends boolean = true> {
@@ -2647,6 +2443,131 @@ export interface DiscountCodesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "courseModules_select".
+ */
+export interface CourseModulesSelect<T extends boolean = true> {
+  title?: T;
+  group?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lessons_select".
+ */
+export interface LessonsSelect<T extends boolean = true> {
+  module?: T;
+  title?: T;
+  summary?: T;
+  videoId?: T;
+  durationSec?: T;
+  stage?: T;
+  downloadables?:
+    | T
+    | {
+        file?: T;
+        id?: T;
+      };
+  order?: T;
+  isFreePreview?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "techniques_select".
+ */
+export interface TechniquesSelect<T extends boolean = true> {
+  name?: T;
+  stage?: T;
+  howTo?: T;
+  example?: T;
+  lesson?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "diagnosticQuestions_select".
+ */
+export interface DiagnosticQuestionsSelect<T extends boolean = true> {
+  statement?: T;
+  stage?: T;
+  suggestion?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshops_select".
+ */
+export interface WorkshopsSelect<T extends boolean = true> {
+  title?: T;
+  product?: T;
+  startsAt?: T;
+  endsAt?: T;
+  joinUrl?: T;
+  audienceProducts?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eqCards_select".
+ */
+export interface EqCardsSelect<T extends boolean = true> {
+  code?: T;
+  keywordEn?: T;
+  keywordVi?: T;
+  message?: T;
+  promptRecall?: T;
+  promptPack?: T;
+  promptAcknowledge?: T;
+  story?: T;
+  smallAction?: T;
+  topic?: T;
+  emotionTags?: T;
+  relatedProduct?: T;
+  image?: T;
+  shareImage45?: T;
+  shareImage916?: T;
+  qrSlug?: T;
+  printedQrSlug?: T;
+  printedAt?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  email?: T;
+  name?: T;
+  phone?: T;
+  consentMarketing?: T;
+  consentAt?: T;
+  deletionRequestedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads_select".
  */
 export interface LeadsSelect<T extends boolean = true> {
@@ -2685,6 +2606,23 @@ export interface LeadsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certificates_select".
+ */
+export interface CertificatesSelect<T extends boolean = true> {
+  customer?: T;
+  plan?: T;
+  identityStatement?: T;
+  daysCompleted?: T;
+  issuedAt?: T;
+  code?: T;
+  image45?: T;
+  image916?: T;
+  isPublic?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "habitPlans_select".
  */
 export interface HabitPlansSelect<T extends boolean = true> {
@@ -2711,6 +2649,89 @@ export interface HabitPlansSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  role?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  resetPasswordRequestedAt?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  isSample?: T;
+  prefix?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privateFiles_select".
+ */
+export interface PrivateFilesSelect<T extends boolean = true> {
+  description?: T;
+  isSample?: T;
+  prefix?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "entitlements_select".
+ */
+export interface EntitlementsSelect<T extends boolean = true> {
+  customer?: T;
+  product?: T;
+  order?: T;
+  grantedAt?: T;
+  source?: T;
+  status?: T;
+  expiresAt?: T;
+  trialKey?: T;
+  grantKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "habitCheckins_select".
  */
 export interface HabitCheckinsSelect<T extends boolean = true> {
@@ -2725,13 +2746,14 @@ export interface HabitCheckinsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "savedCards_select".
+ * via the `definition` "lessonProgress_select".
  */
-export interface SavedCardsSelect<T extends boolean = true> {
+export interface LessonProgressSelect<T extends boolean = true> {
   customer?: T;
-  card?: T;
-  reflection?: T;
-  savedAt?: T;
+  lesson?: T;
+  watchedPercent?: T;
+  completedAt?: T;
+  customerLesson?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2754,44 +2776,13 @@ export interface DiagnosticResultsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "certificates_select".
+ * via the `definition` "savedCards_select".
  */
-export interface CertificatesSelect<T extends boolean = true> {
+export interface SavedCardsSelect<T extends boolean = true> {
   customer?: T;
-  plan?: T;
-  identityStatement?: T;
-  daysCompleted?: T;
-  issuedAt?: T;
-  code?: T;
-  image45?: T;
-  image916?: T;
-  isPublic?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "lessonProgress_select".
- */
-export interface LessonProgressSelect<T extends boolean = true> {
-  customer?: T;
-  lesson?: T;
-  watchedPercent?: T;
-  completedAt?: T;
-  customerLesson?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "otpCodes_select".
- */
-export interface OtpCodesSelect<T extends boolean = true> {
-  email?: T;
-  codeHash?: T;
-  expiresAt?: T;
-  attempts?: T;
-  usedAt?: T;
+  card?: T;
+  reflection?: T;
+  savedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2821,6 +2812,55 @@ export interface AuditLogsSelect<T extends boolean = true> {
   before?: T;
   after?: T;
   at?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trialReminders_select".
+ */
+export interface TrialRemindersSelect<T extends boolean = true> {
+  entitlement?: T;
+  milestone?: T;
+  sentAt?: T;
+  reminderKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workshopReminders_select".
+ */
+export interface WorkshopRemindersSelect<T extends boolean = true> {
+  workshop?: T;
+  customer?: T;
+  sentAt?: T;
+  workshopCustomer?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trackerNudges_select".
+ */
+export interface TrackerNudgesSelect<T extends boolean = true> {
+  plan?: T;
+  missedStartDay?: T;
+  sentAt?: T;
+  nudgeKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "otpCodes_select".
+ */
+export interface OtpCodesSelect<T extends boolean = true> {
+  email?: T;
+  codeHash?: T;
+  expiresAt?: T;
+  attempts?: T;
+  usedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2886,6 +2926,69 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Quản lý các liên kết trong menu chính và menu chân trang.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  /**
+   * Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.
+   */
+  mainMenu?:
+    | {
+        /**
+         * Nhập tên mục.
+         */
+        label: string;
+        /**
+         * Chọn một mục phù hợp.
+         */
+        linkType: 'page' | 'url';
+        page?: (number | null) | Page;
+        /**
+         * Nhập đường dẫn /habit/chan-doan hoặc liên kết https://.
+         */
+        url?: string | null;
+        /**
+         * Bật để áp dụng: hiển thị nổi bật.
+         */
+        highlight?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.
+   */
+  footerMenu?:
+    | {
+        /**
+         * Nhập tên mục.
+         */
+        label: string;
+        /**
+         * Chọn một mục phù hợp.
+         */
+        linkType: 'page' | 'url';
+        page?: (number | null) | Page;
+        /**
+         * Nhập đường dẫn /habit/chan-doan hoặc liên kết https://.
+         */
+        url?: string | null;
+        /**
+         * Bật để áp dụng: hiển thị nổi bật.
+         */
+        highlight?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Cấu hình thông tin thương hiệu, thanh toán VietQR và liên hệ toàn trang.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "siteSettings".
  */
@@ -3004,62 +3107,32 @@ export interface SiteSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation".
+ * via the `definition` "navigation_select".
  */
-export interface Navigation {
-  id: number;
-  /**
-   * Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.
-   */
+export interface NavigationSelect<T extends boolean = true> {
   mainMenu?:
+    | T
     | {
-        /**
-         * Nhập tên mục.
-         */
-        label: string;
-        /**
-         * Chọn một mục phù hợp.
-         */
-        linkType: 'page' | 'url';
-        page?: (number | null) | Page;
-        /**
-         * Nhập đường dẫn /habit/chan-doan hoặc liên kết https://.
-         */
-        url?: string | null;
-        /**
-         * Bật để áp dụng: hiển thị nổi bật.
-         */
-        highlight?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.
-   */
+        label?: T;
+        linkType?: T;
+        page?: T;
+        url?: T;
+        highlight?: T;
+        id?: T;
+      };
   footerMenu?:
+    | T
     | {
-        /**
-         * Nhập tên mục.
-         */
-        label: string;
-        /**
-         * Chọn một mục phù hợp.
-         */
-        linkType: 'page' | 'url';
-        page?: (number | null) | Page;
-        /**
-         * Nhập đường dẫn /habit/chan-doan hoặc liên kết https://.
-         */
-        url?: string | null;
-        /**
-         * Bật để áp dụng: hiển thị nổi bật.
-         */
-        highlight?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
+        label?: T;
+        linkType?: T;
+        page?: T;
+        url?: T;
+        highlight?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3100,35 +3173,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         email?: T;
       };
   certificateMinDays?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation_select".
- */
-export interface NavigationSelect<T extends boolean = true> {
-  mainMenu?:
-    | T
-    | {
-        label?: T;
-        linkType?: T;
-        page?: T;
-        url?: T;
-        highlight?: T;
-        id?: T;
-      };
-  footerMenu?:
-    | T
-    | {
-        label?: T;
-        linkType?: T;
-        page?: T;
-        url?: T;
-        highlight?: T;
-        id?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
