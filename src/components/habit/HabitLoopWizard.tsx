@@ -70,8 +70,8 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
             setDraft((prev) => ({
               ...prev,
               ...parsed,
-              name: typeof parsed.name === 'string' ? parsed.name : '',
-              email: typeof parsed.email === 'string' ? parsed.email : '',
+              name: '', // T2-03: Không lưu/khôi phục tên từ nháp (kể cả nháp cũ có tên)
+              email: '', // T2-03: Không lưu/khôi phục email từ nháp (kể cả nháp cũ có email)
               consent: false, // B11: Nghị định 13/2023 - không bao giờ tự động tick sẵn ô đồng ý từ nháp
               scorecard: Array.isArray(parsed.scorecard) ? parsed.scorecard : [],
               actionText: typeof parsed.actionText === 'string' ? parsed.actionText : '',
@@ -105,11 +105,16 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     // techniques là props từ server, không đổi trong vòng đời trang
   }, [techniques])
 
-  // 2. Tự động lưu nháp vào localStorage mỗi khi thay đổi (không lưu consent)
+  // 2. Tự động lưu nháp vào localStorage mỗi khi thay đổi (T2-03: không lưu consent, name, email)
   useEffect(() => {
     if (!isLoaded || submitSuccess) return
     try {
-      const { consent: _ignoredConsent, ...draftToPersist } = draft
+      const {
+        consent: _ignoredConsent,
+        name: _ignoredName,
+        email: _ignoredEmail,
+        ...draftToPersist
+      } = draft
       localStorage.setItem(HABIT_LOOP_STORAGE_KEY, JSON.stringify(draftToPersist))
     } catch {
       // QuotaExceeded hoặc Private mode
