@@ -2,7 +2,7 @@ import 'server-only'
 import { notFound } from 'next/navigation'
 import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import { sql } from '@payloadcms/db-postgres'
-import type { Product } from '@/payload-types'
+import type { Order, Product } from '@/payload-types'
 import config from '@/payload.config'
 import { vi } from '../i18n/vi'
 import { experienceOrderSchema, type ExperienceOrderInput } from '../forms/schemas'
@@ -880,7 +880,9 @@ export async function markOrderPaid(
       WHERE o."id" = prev."id"
       RETURNING o."id", prev."payment_status" AS "old_status"`,
     )
-    const rows = (updateResult as { rows?: Array<{ id: number; old_status: string }> }).rows ?? []
+    const rows =
+      (updateResult as { rows?: Array<{ id: number; old_status: 'pending' | 'failed' }> }).rows ??
+      []
 
     // Chỉ khi RETURNING có dòng mới gửi email / cấp quyền / ghi auditLogs;
     // Không có dòng -> trả kết quả "đã xử lý trước đó" (idempotent), không ném lỗi.
@@ -1265,7 +1267,8 @@ export async function cancelOrder(
 
   // REVIEW-REQUIRED: Hủy đơn hàng nguyên tử bằng câu lệnh UPDATE có điều kiện tại DB
   // Bảng orders không cấu hình versions (không có _orders_v). UPDATE chỉ đổi khi payment_status = 'pending'.
-  const db = getTransactionDb(payload, options.req?.transactionID)
+  const txId = options.req ? await options.req.transactionID : undefined
+  const db = getTransactionDb(payload, txId)
   const updateResult = await db.execute(
     sql`UPDATE "orders" SET "payment_status" = 'cancelled', "notes" = ${nextNotes ?? null}, "updated_at" = ${nowIso}::timestamptz WHERE "id" = ${orderId} AND "payment_status" = 'pending' RETURNING "id"`,
   )
@@ -1440,4 +1443,208 @@ export async function acceptOrderTermsForToken(
     success: true,
     message: vi.payment.success.termsAccepted,
   }
+}
+
+/**
+ * Gửi lại email xác nhận đơn hàng (CHỈ role 'owner').
+ * Chỉ cho phép đối với đơn 'paid' có deliveryStatus khác 'email_sent'.
+ * Gửi lại email tương ứng với loại đơn (package, digital_tool, experience),
+ * cập nhật deliveryStatus = 'email_sent', và ghi nhận nhật ký auditLogs.
+ */
+export async function resendPaymentConfirmation(
+  orderId: number,
+  user: AdminActor,
+  options: {
+    payload?: Payload
+    now?: Date
+    emailSender?: EmailSender
+  } = {},
+): Promise<Order> {
+  // REVIEW-REQUIRED: Chỉ role owner mới được gửi lại email xác nhận đơn hàng
+  if (!user || user.role !== 'owner') {
+    throw new UnauthorizedPaymentError(vi.payment.errors.unauthorized)
+  }
+
+  const payload = await resolvePayload(options.payload)
+  const now = options.now ?? new Date()
+
+  const order = (await payload.findByID({
+    collection: 'orders',
+    id: orderId,
+    overrideAccess: true,
+  })) as Order | null
+
+  if (!order) {
+    throw new OrderNotFoundError(vi.payment.errors.orderNotFound)
+  }
+
+  // Chỉ cho phép gửi lại khi đơn đã paid
+  if (order.paymentStatus !== 'paid') {
+    throw new InvalidOrderStatusError(vi.payment.errors.orderNotPaid)
+  }
+
+  // Chỉ cho phép gửi lại khi deliveryStatus khác 'email_sent'
+  if (order.deliveryStatus === 'email_sent') {
+    throw new PaymentError(vi.payment.errors.alreadyEmailSent)
+  }
+
+  const customerId =
+    typeof order.customer === 'object' && order.customer !== null
+      ? (order.customer as { id: number }).id
+      : Number(order.customer)
+
+  const customerDoc = await payload.findByID({
+    collection: 'customers',
+    id: customerId,
+    overrideAccess: true,
+  })
+
+  if (!customerDoc?.email) {
+    throw new PaymentError(vi.payment.errors.customerEmailNotFound)
+  }
+
+  // Xác định loại sản phẩm
+  const items = Array.isArray(order.items) ? order.items : []
+  let packageProduct: Product | null = null
+  let digitalToolProduct: Product | null = null
+
+  for (const item of items) {
+    let p: Product | number | string | null = item.product as Product | number | string | null
+    if (typeof p === 'number' || typeof p === 'string') {
+      p = (await payload.findByID({
+        collection: 'products',
+        id: Number(p),
+        depth: 1,
+        overrideAccess: true,
+      })) as Product
+    }
+    if (p && typeof p === 'object') {
+      if (p.type === 'package') {
+        packageProduct = p
+        break
+      } else if (p.type === 'digital_tool' && !digitalToolProduct) {
+        digitalToolProduct = p
+      }
+    }
+  }
+
+  const isPackageOrder = Boolean(packageProduct)
+  const isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
+
+  const siteSettings = await payload.findGlobal({
+    slug: 'siteSettings',
+    overrideAccess: true,
+  })
+
+  if (isPackageOrder && packageProduct) {
+    let upcomingWorkshops: Array<{ title: string; timeString: string }> = []
+    try {
+      const workshopsRes = await payload.find({
+        collection: 'workshops',
+        where: {
+          audienceProducts: { contains: packageProduct.id },
+          startsAt: { greater_than_equal: now.toISOString() },
+        },
+        sort: 'startsAt',
+        limit: 5,
+        overrideAccess: true,
+      })
+      upcomingWorkshops = workshopsRes.docs.map(
+        (w: { startsAt?: string | null; title?: string | null }) => {
+          const timeStr = w.startsAt
+            ? new Intl.DateTimeFormat('vi-VN', {
+                timeZone: 'Asia/Bangkok',
+                dateStyle: 'full',
+                timeStyle: 'short',
+              }).format(new Date(w.startsAt))
+            : ''
+          return {
+            title: w.title || '',
+            timeString: timeStr,
+          }
+        },
+      )
+    } catch {
+      // Bỏ qua nếu lỗi truy vấn workshop
+    }
+
+    const comps = Array.isArray(packageProduct.components) ? packageProduct.components : []
+    const hasDigitalTools = comps.some((c) => Boolean(c.grantsProduct))
+    const hasCommunity = comps.some((c) => (c.label || '').toLowerCase().includes('cộng đồng'))
+    const communityZaloUrl =
+      hasCommunity && siteSettings?.zaloGroupUrl ? siteSettings.zaloGroupUrl : null
+
+    await sendPackageOrderPaidEmail(
+      payload,
+      {
+        name: customerDoc.name || 'bạn',
+        email: customerDoc.email,
+        paymentRef: order.paymentRef || '',
+        amount: order.total,
+        packageName: packageProduct.name || 'Gói Growth Mirror',
+        components: comps.map((c) => ({
+          label: c.label || '',
+          quantity: c.quantity,
+        })),
+        hasDigitalTools,
+        toolsUrl: getSiteUrl(),
+        coachingBookingUrl: siteSettings?.experienceBookingUrl || null,
+        upcomingWorkshops,
+        communityZaloUrl,
+      },
+      options.emailSender,
+    )
+  } else if (isDigitalToolOrder && digitalToolProduct) {
+    const siteUrl = getSiteUrl()
+    const toolUrl = `${siteUrl}${getToolUrl(digitalToolProduct)}`
+    await sendDigitalToolOrderPaidEmail(
+      payload,
+      {
+        name: customerDoc.name || 'bạn',
+        email: customerDoc.email,
+        paymentRef: order.paymentRef || '',
+        amount: order.total,
+        toolName: digitalToolProduct.name || 'Công cụ số',
+        accessDurationDays: digitalToolProduct.accessDurationDays,
+        toolUrl,
+      },
+      options.emailSender,
+    )
+  } else {
+    await sendExperienceOrderPaidEmail(
+      payload,
+      {
+        name: customerDoc.name || 'bạn',
+        email: customerDoc.email,
+        paymentRef: order.paymentRef || '',
+        amount: order.total,
+        bookingUrl: siteSettings?.experienceBookingUrl,
+      },
+      options.emailSender,
+    )
+  }
+
+  const updatedOrder = (await payload.update({
+    collection: 'orders',
+    id: orderId,
+    data: { deliveryStatus: 'email_sent' },
+    context: { paymentAction: true },
+    overrideAccess: true,
+  })) as Order
+
+  // REVIEW-REQUIRED: Ghi nhật ký auditLogs sau khi gửi lại email thành công
+  await payload.create({
+    collection: 'auditLogs',
+    data: {
+      actor: user.id ? Number(user.id) : undefined,
+      action: 'resend_payment_confirmation',
+      target: `orders:${orderId}`,
+      before: { deliveryStatus: order.deliveryStatus },
+      after: { deliveryStatus: 'email_sent' },
+      at: now.toISOString(),
+    },
+    overrideAccess: true,
+  })
+
+  return updatedOrder
 }

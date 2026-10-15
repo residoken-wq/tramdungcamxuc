@@ -5,6 +5,7 @@ import { useAuth, useDocumentInfo } from '@payloadcms/ui'
 import {
   confirmManualPaymentAdminAction,
   cancelOrderAdminAction,
+  resendPaymentConfirmationAction,
   getOrderPaymentLinkAction,
 } from '@/lib/payments/actions'
 import { vi } from '@/lib/i18n/vi'
@@ -13,8 +14,8 @@ export const OrderActions: React.FC = () => {
   const { user } = useAuth()
   const { id, data } = useDocumentInfo()
 
-  const [loading, setLoading] = useState<'confirm' | 'cancel' | null>(null)
-  const [confirmModal, setConfirmModal] = useState<'confirm' | 'cancel' | null>(null)
+  const [loading, setLoading] = useState<'confirm' | 'cancel' | 'resend' | null>(null)
+  const [confirmModal, setConfirmModal] = useState<'confirm' | 'cancel' | 'resend' | null>(null)
   const [cancelReason, setCancelReason] = useState('')
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
     null,
@@ -124,11 +125,40 @@ export const OrderActions: React.FC = () => {
     }
   }
 
+  const handleResendConfirmation = async () => {
+    if (!orderId) return
+    setLoading('resend')
+    setFeedback(null)
+    try {
+      const res = await resendPaymentConfirmationAction(orderId)
+      if (res.success) {
+        setFeedback({ type: 'success', message: res.message })
+        setConfirmModal(null)
+        setTimeout(() => {
+          if (typeof window !== 'undefined') window.location.reload()
+        }, 1200)
+      } else {
+        setFeedback({ type: 'error', message: res.message })
+        setConfirmModal(null)
+      }
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err instanceof Error ? err.message : vi.payment.ui.adminActions.defaultResendError,
+      })
+      setConfirmModal(null)
+    } finally {
+      setLoading(null)
+    }
+  }
+
   const docStatus = (data as { paymentStatus?: string } | undefined)?.paymentStatus
+  const deliveryStatus = (data as { deliveryStatus?: string } | undefined)?.deliveryStatus
   const isPending = orderInfo ? orderInfo.isPending : docStatus === 'pending'
   const isFailed = docStatus === 'failed'
   const isCancelled = docStatus === 'cancelled'
   const isPaid = docStatus === 'paid' || (!isPending && !isFailed && !isCancelled)
+  const canResendConfirmation = isPaid && deliveryStatus !== 'email_sent'
 
   return (
     <div
@@ -348,6 +378,47 @@ export const OrderActions: React.FC = () => {
         </div>
       )}
 
+      {/* Nút gửi lại email xác nhận: chỉ đơn paid có deliveryStatus khác email_sent */}
+      {canResendConfirmation && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <button
+            type="button"
+            data-testid="order-resend-confirmation-button"
+            onClick={() => setConfirmModal('resend')}
+            disabled={loading !== null}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '10px 14px',
+              backgroundColor: '#BC039E',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: loading !== null ? 'not-allowed' : 'pointer',
+              opacity: loading !== null ? 0.7 : 1,
+              transition: 'background-color 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (loading === null) e.currentTarget.style.backgroundColor = '#980280'
+            }}
+            onMouseLeave={(e) => {
+              if (loading === null) e.currentTarget.style.backgroundColor = '#BC039E'
+            }}
+          >
+            <span>✉️</span>
+            <span>
+              {loading === 'resend'
+                ? vi.payment.ui.adminActions.processing
+                : vi.payment.ui.adminActions.resendConfirmationButton}
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* Confirmation Modal */}
       {confirmModal && (
         <div
@@ -381,7 +452,9 @@ export const OrderActions: React.FC = () => {
             <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#280A60' }}>
               {confirmModal === 'confirm'
                 ? vi.payment.ui.adminActions.confirmModalTitle
-                : vi.payment.ui.adminActions.cancelModalTitle}
+                : confirmModal === 'cancel'
+                  ? vi.payment.ui.adminActions.cancelModalTitle
+                  : vi.payment.ui.adminActions.resendConfirmationModalTitle}
             </h4>
 
             <p style={{ margin: 0, fontSize: '13px', color: '#444', lineHeight: '1.5' }}>
@@ -389,7 +462,9 @@ export const OrderActions: React.FC = () => {
                 ? isFailed
                   ? vi.payment.ui.adminActions.confirmExpiredModalDesc
                   : vi.payment.ui.adminActions.confirmModalDesc
-                : vi.payment.ui.adminActions.cancelModalDesc}
+                : confirmModal === 'cancel'
+                  ? vi.payment.ui.adminActions.cancelModalDesc
+                  : vi.payment.ui.adminActions.resendConfirmationModalDesc}
             </p>
 
             {confirmModal === 'cancel' && (
@@ -442,11 +517,22 @@ export const OrderActions: React.FC = () => {
 
               <button
                 type="button"
-                onClick={confirmModal === 'confirm' ? handleConfirmPayment : handleCancelOrder}
+                onClick={
+                  confirmModal === 'confirm'
+                    ? handleConfirmPayment
+                    : confirmModal === 'cancel'
+                      ? handleCancelOrder
+                      : handleResendConfirmation
+                }
                 disabled={loading !== null}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: confirmModal === 'confirm' ? '#280A60' : '#DC3545',
+                  backgroundColor:
+                    confirmModal === 'confirm'
+                      ? '#280A60'
+                      : confirmModal === 'cancel'
+                        ? '#DC3545'
+                        : '#BC039E',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '6px',
@@ -460,7 +546,9 @@ export const OrderActions: React.FC = () => {
                   ? vi.payment.ui.adminActions.processing
                   : confirmModal === 'confirm'
                     ? vi.payment.ui.adminActions.agreeConfirmButton
-                    : vi.payment.ui.adminActions.agreeCancelButton}
+                    : confirmModal === 'cancel'
+                      ? vi.payment.ui.adminActions.agreeCancelButton
+                      : vi.payment.ui.adminActions.agreeResendButton}
               </button>
             </div>
           </div>
