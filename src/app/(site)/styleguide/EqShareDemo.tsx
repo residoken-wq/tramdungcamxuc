@@ -17,8 +17,7 @@ export function EqShareDemo() {
     id: 999,
     name: '[MẪU] Gói Đồng Hành Growth Mirror (CLEAR)',
     slug: 'mau-san-pham-lien-quan',
-    shortDescription:
-      '[MẪU] Mô tả ngắn của sản phẩm liên quan.',
+    shortDescription: '[MẪU] Mô tả ngắn của sản phẩm liên quan.',
     saleStatus: 'on_sale' as const,
     price: 2500000,
     salePrice: 1750000,

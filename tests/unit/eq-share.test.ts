@@ -182,7 +182,7 @@ describe('EQ Buddy Share & Offers Suite (T3-05)', () => {
       expect(res.status).toBe(200)
       expect(res.headers.get('content-type')).toContain('image/png')
       expect(res.headers.get('cache-control')).toContain('public, max-age=300')
-      expect(res.headers.get('cache-control')).toContain('stale-while-revalidate=86400')
+      expect(res.headers.get('cache-control')).toContain('stale-while-revalidate=300')
 
       const buf = Buffer.from(await res.arrayBuffer())
       expect(buf.byteLength).toBeGreaterThan(1000)
