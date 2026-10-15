@@ -33,4 +33,10 @@ export const Posts = contentCollection('posts', 'Bài viết và video', vi.cms.
   relation('leadMagnet', 'Tài nguyên tặng', 'products'),
 ])
 
-Posts.admin = { ...Posts.admin, livePreview: detailLivePreview('posts') }
+Posts.admin = {
+  ...Posts.admin,
+  description: 'Bài viết chuyên môn và video truyền cảm hứng trong thư viện.',
+  defaultColumns: ['title', 'format', 'topic', '_status', 'updatedAt'],
+  listSearchableFields: ['title', 'slug'],
+  livePreview: detailLivePreview('posts'),
+}

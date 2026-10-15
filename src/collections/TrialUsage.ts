@@ -15,6 +15,10 @@ export const TrialUsage: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'emailHash',
+    description: 'Dấu vết dùng thử ẩn danh chống lạm dụng sau khi xóa tài khoản.',
+    defaultColumns: ['emailHash', 'product', 'usedAt'],
+    listSearchableFields: ['emailHash'],
   },
   access: {
     read: nobody,

@@ -17,7 +17,10 @@ export const Entitlements: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'trialKey',
+    description: 'Quyền sử dụng công cụ số trả phí hoặc dùng thử.',
     defaultColumns: ['customer', 'product', 'source', 'status', 'expiresAt'],
+    listSearchableFields: ['trialKey', 'grantKey'],
   },
   access: {
     read: adminOrSelfCustomer(),

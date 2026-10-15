@@ -8,6 +8,10 @@ export const RateLimitHits: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'key',
+    description: 'Ghi nhận tần suất gửi form để chặn spam.',
+    defaultColumns: ['key', 'createdAt'],
+    listSearchableFields: ['key'],
   },
   access: {
     read: nobody,

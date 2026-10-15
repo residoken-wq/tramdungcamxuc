@@ -127,3 +127,10 @@ export const Pages = {
   },
   versions: { drafts: { autosave: { interval: 30000 } } },
 }
+
+Pages.admin = {
+  ...Pages.admin,
+  description: 'Trang tĩnh và landing page dựng bằng kéo thả trực quan Puck.',
+  defaultColumns: ['title', 'slug', 'template', '_status', 'updatedAt'],
+  listSearchableFields: ['title', 'slug'],
+}

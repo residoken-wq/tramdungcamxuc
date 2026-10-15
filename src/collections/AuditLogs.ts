@@ -11,7 +11,10 @@ export const AuditLogs: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'action',
+    description: 'Nhật ký các thao tác quan trọng của quản trị viên.',
     defaultColumns: ['action', 'actor', 'target', 'at'],
+    listSearchableFields: ['action', 'target'],
   },
   access: { read: isOwner, create: nobody, update: nobody, delete: nobody },
   fields: [

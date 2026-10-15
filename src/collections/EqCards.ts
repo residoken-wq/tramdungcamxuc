@@ -203,7 +203,9 @@ export const EqCards = {
   ...baseCollection,
   admin: {
     ...baseCollection.admin,
-    defaultColumns: ['code', 'keywordEn', 'qrSlug', 'printedAt', '_status'],
+    description: 'Bộ 26 thẻ bài EQ Buddy giúp nhận diện và điều hòa cảm xúc.',
+    defaultColumns: ['code', 'keywordVi', 'keywordEn', 'qrSlug', 'printedAt', '_status'],
+    listSearchableFields: ['code', 'keywordVi', 'keywordEn', 'qrSlug'],
     components: {
       ...baseCollection.admin?.components,
       beforeListTable: ['@/components/admin/EqQrExportButton#EqQrExportButton'],

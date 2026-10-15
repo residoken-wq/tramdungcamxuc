@@ -23,4 +23,10 @@ export const Programs = contentCollection(
   ],
 )
 
-Programs.admin = { ...Programs.admin, livePreview: detailLivePreview('programs') }
+Programs.admin = {
+  ...Programs.admin,
+  description: 'Chương trình đào tạo và giải pháp trí tuệ cảm xúc cho doanh nghiệp.',
+  defaultColumns: ['name', 'format', 'duration', 'saleStatus', 'updatedAt'],
+  listSearchableFields: ['name', 'slug'],
+  livePreview: detailLivePreview('programs'),
+}

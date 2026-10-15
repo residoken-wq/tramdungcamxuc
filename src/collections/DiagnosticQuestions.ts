@@ -13,3 +13,10 @@ export const DiagnosticQuestions = contentCollection(
     number('order', 'Thứ tự', 0),
   ],
 )
+
+DiagnosticQuestions.admin = {
+  ...DiagnosticQuestions.admin,
+  description: 'Bộ câu hỏi trắc nghiệm chẩn đoán điểm nghẽn thói quen 5 phút.',
+  defaultColumns: ['statement', 'stage', 'order', 'updatedAt'],
+  listSearchableFields: ['statement'],
+}

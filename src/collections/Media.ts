@@ -11,6 +11,8 @@ export const Media: CollectionConfig = {
     hidden: isHiddenFromEditor,
     useAsTitle: 'alt',
     description: 'Tải ảnh và tài liệu lên. Luôn thêm mô tả dễ hiểu.',
+    defaultColumns: ['alt', 'filename', 'mimeType', 'filesize', 'updatedAt'],
+    listSearchableFields: ['alt', 'filename'],
   },
   access: { read: () => true, create: authenticated, update: authenticated, delete: authenticated },
   fields: [

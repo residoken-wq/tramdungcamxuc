@@ -21,3 +21,10 @@ export const Techniques = contentCollection(
     relation('lesson', 'Bài học liên quan', 'lessons'),
   ],
 )
+
+Techniques.admin = {
+  ...Techniques.admin,
+  description: 'Kỹ thuật Atomic Habits thực chiến ứng dụng vào 4 mắt xích thói quen.',
+  defaultColumns: ['name', 'stage', 'lesson', 'updatedAt'],
+  listSearchableFields: ['name'],
+}

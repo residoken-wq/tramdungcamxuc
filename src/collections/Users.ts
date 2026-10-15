@@ -19,7 +19,9 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    description: 'Tài khoản quản trị viên và biên tập viên nội dung.',
     defaultColumns: ['email', 'role'],
+    listSearchableFields: ['email'],
   },
   auth: true,
   // REVIEW-REQUIRED: Admin accounts – only owners create or delete; anyone signed in may

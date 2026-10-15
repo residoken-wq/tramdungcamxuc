@@ -26,6 +26,7 @@ export const SavedCards: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    description: 'Các thẻ EQ được học viên lưu lại để suy ngẫm.',
     defaultColumns: ['customer', 'card', 'savedAt'],
   },
   access: {

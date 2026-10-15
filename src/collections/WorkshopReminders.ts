@@ -10,6 +10,8 @@ export const WorkshopReminders: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'workshopCustomer',
+    description: 'Lịch sử email nhắc tham gia workshop trước 24 giờ.',
     defaultColumns: ['workshop', 'customer', 'sentAt'],
   },
   access: {

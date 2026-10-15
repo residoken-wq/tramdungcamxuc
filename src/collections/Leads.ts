@@ -11,7 +11,9 @@ export const Leads: CollectionConfig = {
   admin: {
     group: vi.cms.nav.customers,
     useAsTitle: 'email',
+    description: 'Khách hàng tiềm năng để lại thông tin tư vấn hoặc tải tài nguyên.',
     defaultColumns: ['email', 'name', 'need', 'followUpStatus', 'createdAt'],
+    listSearchableFields: ['email', 'name', 'phone'],
     components: {
       beforeListTable: ['@/components/admin/ExportLeadsButton#ExportLeadsButton'],
     },

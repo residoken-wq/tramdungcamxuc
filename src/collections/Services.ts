@@ -43,4 +43,10 @@ export const Services = contentCollection(
   ],
 )
 
-Services.admin = { ...Services.admin, livePreview: detailLivePreview('services') }
+Services.admin = {
+  ...Services.admin,
+  description: 'Dịch vụ coaching 1:1 và các gói đồng hành chuyên sâu cá nhân.',
+  defaultColumns: ['name', 'priceMode', 'price', 'saleStatus', 'updatedAt'],
+  listSearchableFields: ['name', 'slug'],
+  livePreview: detailLivePreview('services'),
+}

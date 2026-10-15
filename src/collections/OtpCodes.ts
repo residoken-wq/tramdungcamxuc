@@ -8,7 +8,14 @@ import { vi } from '../lib/i18n/vi'
 export const OtpCodes: CollectionConfig = {
   slug: 'otpCodes',
   labels: { singular: 'Mã OTP', plural: 'Mã OTP' },
-  admin: { hidden: isHiddenFromEditor, group: vi.cms.nav.system },
+  admin: {
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    useAsTitle: 'email',
+    description: 'Mã xác thực đăng nhập một lần (OTP) của học viên.',
+    defaultColumns: ['email', 'attempts', 'expiresAt', 'usedAt'],
+    listSearchableFields: ['email'],
+  },
   access: { read: nobody, create: nobody, update: nobody, delete: nobody },
   fields: [
     { name: 'email', type: 'email', required: true, index: true },

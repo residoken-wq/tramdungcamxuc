@@ -51,3 +51,10 @@ export const Testimonials = {
   ]),
   hooks: { beforeChange: [requireConsent] },
 }
+
+Testimonials.admin = {
+  ...Testimonials.admin,
+  description: 'Lời chia sẻ và cảm nhận của học viên, khách hàng trên website.',
+  defaultColumns: ['name', 'role', 'relatedOffer', 'consent', 'updatedAt'],
+  listSearchableFields: ['name', 'role', 'quote'],
+}

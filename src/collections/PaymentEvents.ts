@@ -11,6 +11,8 @@ export const PaymentEvents: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'transactionId',
+    description: 'Nhật ký webhook và sự kiện giao dịch từ cổng thanh toán SePay.',
     defaultColumns: [
       'provider',
       'transactionId',
@@ -19,6 +21,7 @@ export const PaymentEvents: CollectionConfig = {
       'result',
       'receivedAt',
     ],
+    listSearchableFields: ['transactionId'],
   },
   access: { read: isOwner, create: nobody, update: nobody, delete: nobody },
   fields: [

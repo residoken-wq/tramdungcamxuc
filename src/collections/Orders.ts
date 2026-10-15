@@ -354,7 +354,9 @@ export const Orders: CollectionConfig = {
   admin: {
     group: vi.cms.nav.commerce,
     useAsTitle: 'paymentRef',
+    description: 'Quản lý đơn hàng, tra cứu mã chuyển khoản và đối soát thanh toán.',
     defaultColumns: ['paymentRef', 'customer', 'total', 'paymentStatus', 'createdAt'],
+    listSearchableFields: ['paymentRef'],
   },
   // REVIEW-REQUIRED: Editors may create and annotate orders but never delete them or change
   // payment status; only an owner (or a verified webhook via server code) marks an order paid.

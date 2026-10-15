@@ -35,3 +35,10 @@ export const Lessons = contentCollection('lessons', 'Bài học', vi.cms.nav.hab
   number('order', 'Thứ tự', 0),
   checkbox('isFreePreview', 'Cho phép xem thử'),
 ])
+
+Lessons.admin = {
+  ...Lessons.admin,
+  description: 'Bài giảng video và tài liệu thực hành trong khóa Habit.',
+  defaultColumns: ['title', 'module', 'stage', 'isFreePreview', 'order'],
+  listSearchableFields: ['title', 'summary'],
+}

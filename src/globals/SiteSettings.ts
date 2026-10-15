@@ -6,7 +6,10 @@ import { vi } from '../lib/i18n/vi'
 export const SiteSettings: GlobalConfig = {
   slug: 'siteSettings',
   label: 'Cài đặt website',
-  admin: { group: vi.cms.nav.website },
+  admin: {
+    group: vi.cms.nav.website,
+    description: 'Cấu hình thông tin thương hiệu, thanh toán VietQR và liên hệ toàn trang.',
+  },
   access: { read: () => true, update: authenticated },
   fields: [
     {

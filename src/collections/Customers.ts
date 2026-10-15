@@ -51,7 +51,9 @@ export const Customers: CollectionConfig = {
   admin: {
     group: vi.cms.nav.customers,
     useAsTitle: 'email',
+    description: 'Học viên và khách hàng đã tạo tài khoản trên hệ sinh thái.',
     defaultColumns: ['email', 'name', 'deletionRequestedAt', 'createdAt'],
+    listSearchableFields: ['email', 'name'],
   },
   auth: {
     disableLocalStrategy: true,

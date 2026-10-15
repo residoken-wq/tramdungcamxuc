@@ -11,6 +11,8 @@ export const PrivateFiles: CollectionConfig = {
     hidden: isHiddenFromEditor,
     useAsTitle: 'filename',
     description: 'Tải tài liệu riêng tư (PDF, ZIP, EPUB). Chỉ giao qua liên kết ký có hạn.',
+    defaultColumns: ['filename', 'description', 'filesize', 'createdAt'],
+    listSearchableFields: ['filename', 'description'],
   },
   access: {
     read: authenticated,

@@ -10,6 +10,9 @@ export const TrackerNudges: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'nudgeKey',
+    description: 'Lịch sử email nhắc nhở khi học viên lỡ nhịp thực hành.',
+    defaultColumns: ['plan', 'missedStartDay', 'sentAt'],
   },
   access: {
     read: isOwner,

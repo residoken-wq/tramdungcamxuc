@@ -7,7 +7,13 @@ import { vi } from '../lib/i18n/vi'
 export const DiscountCodes: CollectionConfig = {
   slug: 'discountCodes',
   labels: { singular: 'Mã giảm giá', plural: 'Mã giảm giá' },
-  admin: { group: vi.cms.nav.commerce, useAsTitle: 'code' },
+  admin: {
+    group: vi.cms.nav.commerce,
+    useAsTitle: 'code',
+    description: 'Mã giảm giá cho các sản phẩm và dịch vụ.',
+    defaultColumns: ['code', 'type', 'value', 'usedCount', 'validUntil'],
+    listSearchableFields: ['code'],
+  },
   access: { read: isEditorOrOwner, create: isOwner, update: isOwner, delete: isOwner },
   fields: [
     { ...text('code', 'Mã', true), unique: true },

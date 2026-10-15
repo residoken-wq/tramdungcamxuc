@@ -17,7 +17,13 @@ const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, ope
 export const HabitPlans: CollectionConfig = {
   slug: 'habitPlans',
   labels: { singular: 'Kế hoạch thói quen', plural: 'Kế hoạch thói quen' },
-  admin: { group: vi.cms.nav.customers, defaultColumns: ['customer', 'leadEmail', 'startDate'] },
+  admin: {
+    group: vi.cms.nav.customers,
+    useAsTitle: 'identityStatement',
+    description: 'Kế hoạch vòng lặp thói quen 21 ngày do học viên thiết lập.',
+    defaultColumns: ['identityStatement', 'customer', 'leadEmail', 'startDate'],
+    listSearchableFields: ['identityStatement', 'leadEmail'],
+  },
   access: {
     read: adminOrSelfCustomer(),
     create: adminOrSelfCustomer(),

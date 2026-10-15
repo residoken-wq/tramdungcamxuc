@@ -11,7 +11,10 @@ export const DiagnosticResults: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'email',
+    description: 'Kết quả bài quiz chẩn đoán thói quen 5 phút.',
     defaultColumns: ['email', 'topStage', 'createdAt'],
+    listSearchableFields: ['email'],
   },
   access: { read: isEditorOrOwner, create: isEditorOrOwner, update: isOwner, delete: isOwner },
   fields: [

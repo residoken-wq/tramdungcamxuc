@@ -22,3 +22,10 @@ export const Workshops = contentCollection(
     },
   ],
 )
+
+Workshops.admin = {
+  ...Workshops.admin,
+  description: 'Lịch các buổi workshop trực tuyến đồng hành cùng học viên.',
+  defaultColumns: ['title', 'product', 'startsAt', 'endsAt', 'updatedAt'],
+  listSearchableFields: ['title'],
+}

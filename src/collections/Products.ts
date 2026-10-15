@@ -138,3 +138,10 @@ export const Products: CollectionConfig = {
   ]),
   hooks: { beforeChange: [computeValues] },
 }
+
+Products.admin = {
+  ...Products.admin,
+  description: 'Tất cả sản phẩm mở bán hoặc tặng: công cụ số, sách điện tử, gói đồng hành.',
+  defaultColumns: ['name', 'type', 'saleStatus', 'price', 'updatedAt'],
+  listSearchableFields: ['name', 'slug'],
+}

@@ -10,6 +10,8 @@ export const TrialReminders: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'reminderKey',
+    description: 'Lịch sử email nhắc hạn dùng thử 18 và 21 ngày.',
     defaultColumns: ['entitlement', 'milestone', 'sentAt'],
   },
   access: {

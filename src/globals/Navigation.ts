@@ -54,7 +54,10 @@ function menu(name: string, label: string): Field {
 export const Navigation: GlobalConfig = {
   slug: 'navigation',
   label: 'Menu điều hướng',
-  admin: { group: vi.cms.nav.website },
+  admin: {
+    group: vi.cms.nav.website,
+    description: 'Quản lý các liên kết trong menu chính và menu chân trang.',
+  },
   access: { read: () => true, update: authenticated },
   fields: [menu('mainMenu', 'Menu chính'), menu('footerMenu', 'Menu chân trang')],
 }

@@ -17,7 +17,9 @@ export const Certificates: CollectionConfig = {
   admin: {
     group: vi.cms.nav.customers,
     useAsTitle: 'code',
-    defaultColumns: ['code', 'customer', 'issuedAt'],
+    description: 'Chứng nhận hoàn thành thử thách 21 ngày xây dựng thói quen.',
+    defaultColumns: ['code', 'customer', 'daysCompleted', 'issuedAt'],
+    listSearchableFields: ['code'],
   },
   access: {
     read: adminOrSelfCustomer(),

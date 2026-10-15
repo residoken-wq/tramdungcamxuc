@@ -26,7 +26,9 @@ export const LessonProgress: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
-    defaultColumns: ['customer', 'lesson', 'watchedPercent'],
+    useAsTitle: 'customerLesson',
+    description: 'Tiến độ xem video bài học của từng học viên.',
+    defaultColumns: ['customer', 'lesson', 'watchedPercent', 'completedAt'],
   },
   access: {
     read: adminOrSelfCustomer(),

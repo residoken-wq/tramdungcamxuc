@@ -16,3 +16,10 @@ export const CourseModules = contentCollection(
     number('order', 'Thứ tự', 0),
   ],
 )
+
+CourseModules.admin = {
+  ...CourseModules.admin,
+  description: 'Các nhóm bài học trong lộ trình chuyển hóa của khóa Habit.',
+  defaultColumns: ['title', 'group', 'order', 'updatedAt'],
+  listSearchableFields: ['title'],
+}

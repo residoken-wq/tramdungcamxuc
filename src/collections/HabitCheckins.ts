@@ -62,6 +62,8 @@ export const HabitCheckins: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'planDay',
+    description: 'Nhật ký check-in hành trình 21 ngày của học viên.',
     defaultColumns: ['plan', 'day', 'done'],
   },
   access: {

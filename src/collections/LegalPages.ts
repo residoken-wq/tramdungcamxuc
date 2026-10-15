@@ -14,3 +14,10 @@ export const LegalPages = contentCollection(
     number('order', 'Thứ tự', 0),
   ],
 )
+
+LegalPages.admin = {
+  ...LegalPages.admin,
+  description: 'Trang điều khoản sử dụng, chính sách bảo mật và quy định pháp lý.',
+  defaultColumns: ['title', 'slug', 'lastUpdated', 'updatedAt'],
+  listSearchableFields: ['title', 'slug'],
+}
