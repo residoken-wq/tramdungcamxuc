@@ -3,9 +3,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPublishedEqCardByQrSlug } from '@/lib/eq/cards.server'
+import { getCurrentCustomer } from '@/lib/auth/session.server'
+import { getSavedCardStatus } from '@/lib/eq/saved.server'
 import { vi } from '@/lib/i18n/vi'
 import { Button } from '@/components/ui/Button'
 import { EqCardFace } from '@/components/eq/EqCardFace'
+import { SaveCardButton } from '@/components/eq/SaveCardButton'
 import { QrOpenedTracker } from '@/components/eq/QrOpenedTracker'
 
 export const dynamic = 'force-dynamic'
@@ -40,6 +43,9 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
     notFound()
   }
 
+  const customer = await getCurrentCustomer().catch(() => null)
+  const isSaved = customer ? (await getSavedCardStatus(customer.id, card.qrSlug)).isSaved : false
+
   return (
     <div className="w-full py-10 sm:py-16 px-6 sm:px-8">
       <div className="max-w-2xl mx-auto">
@@ -58,11 +64,16 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
           {/* Chỗ trống cho khối chia sẻ / offer (T3-05 làm component; T3-02 gắn) */}
           <div id="eq-card-share-slot" className="empty:hidden" />
 
-          {/* CTA: Rút thêm một thẻ */}
-          <div className="mt-10 pt-8 border-t border-deep-navy/10 flex flex-col items-center">
+          {/* CTA: Lưu thẻ & Rút thêm một thẻ */}
+          <div className="mt-10 pt-8 border-t border-deep-navy/10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <SaveCardButton
+              qrSlug={card.qrSlug}
+              isLoggedIn={Boolean(customer)}
+              initialIsSaved={isSaved}
+            />
             <Button
               href="/eq-buddy"
-              variant="primary"
+              variant="secondary"
               size="md"
               className="motion-reduce:transition-none"
             >
