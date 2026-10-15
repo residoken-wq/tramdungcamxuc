@@ -10,12 +10,9 @@ import {
   drawEqCardCore,
   signGuestDrawCookie,
   verifyGuestDrawCookie,
-  checkEqDrawAccess,
-  EQ_DRAW_GUEST_COOKIE,
 } from '../../src/lib/eq/draw.server'
 import { getPublishedEqKeywords } from '../../src/lib/eq/cards.server'
 import { EQ_BUDDY_PRODUCT_SLUG } from '../../src/lib/eq/config'
-import type { Customer, Product } from '../../src/payload-types'
 
 describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
   let payload: Payload
@@ -161,7 +158,7 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
       overrideAccess: true,
       limit: 10,
     })
-    console.log('REMAINING_CUSTOMERS_IN_DB:', remainingCusts.totalDocs)
+    expect(remainingCusts.totalDocs).toBe(0)
 
     await payload.destroy()
   }, 30000)
