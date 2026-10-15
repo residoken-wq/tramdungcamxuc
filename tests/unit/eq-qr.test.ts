@@ -47,7 +47,6 @@ describe('EQ Card QR & Printing Export (T3-03)', () => {
       collection: 'customers',
       data: {
         email: customerEmail,
-        consent: true,
         consentAt: new Date().toISOString(),
       },
     })
