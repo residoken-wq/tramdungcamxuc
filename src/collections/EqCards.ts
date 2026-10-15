@@ -5,10 +5,8 @@ import {
   image,
   number,
   relation,
-  richText,
   select,
   text,
-  textarea,
   topicOptions,
 } from '../fields/content'
 import { EMOTIONS } from '../lib/emotions'
@@ -33,7 +31,13 @@ const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) =
 
 const validateRequiredOnPublish =
   (label: string, maxLength?: number) =>
-  (value: unknown, { data, siblingData }: any) => {
+  (
+    value: unknown,
+    {
+      data,
+      siblingData,
+    }: { data?: Record<string, unknown>; siblingData?: Record<string, unknown> },
+  ) => {
     const status = data?._status ?? siblingData?._status
     const isSample = data?.isSample ?? siblingData?.isSample
     if (status === 'draft' || isSample) {

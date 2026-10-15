@@ -3,8 +3,6 @@ import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { getPayload, ValidationError, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
-import { migrations } from '../../src/migrations'
-import type { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
 import {
   mapLegacyEmotionTag,
   migrateEmotionTags,
