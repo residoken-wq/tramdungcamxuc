@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto'
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { checkbox, date, image, number, relation, textarea } from '../fields/content'
 import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Public verification (/chung-nhan/[code], GĐ 2) must show only name, identity
 // statement, days and date – never emotions or notes. The code is random and unique.
@@ -14,9 +15,11 @@ export const Certificates: CollectionConfig = {
   slug: 'certificates',
   labels: { singular: 'Chứng nhận 21 ngày', plural: 'Chứng nhận 21 ngày' },
   admin: {
-    group: 'Khóa học',
+    group: vi.cms.nav.customers,
     useAsTitle: 'code',
-    defaultColumns: ['code', 'customer', 'issuedAt'],
+    description: 'Chứng nhận hoàn thành thử thách 21 ngày xây dựng thói quen.',
+    defaultColumns: ['code', 'customer', 'daysCompleted', 'issuedAt'],
+    listSearchableFields: ['code'],
   },
   access: {
     read: adminOrSelfCustomer(),

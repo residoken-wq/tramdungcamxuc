@@ -1,13 +1,18 @@
 import type { CollectionConfig } from 'payload'
 import { date, number, relation } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
-import { isOwner } from '../lib/auth/access'
+import { isHiddenFromEditor, isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 export const TrackerNudges: CollectionConfig = {
   slug: 'trackerNudges',
   labels: { singular: 'Nhắc lỡ nhịp tracker', plural: 'Nhắc lỡ nhịp tracker' },
   admin: {
-    hidden: true,
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    useAsTitle: 'nudgeKey',
+    description: 'Lịch sử email nhắc nhở khi học viên lỡ nhịp thực hành.',
+    defaultColumns: ['plan', 'missedStartDay', 'sentAt'],
   },
   access: {
     read: isOwner,

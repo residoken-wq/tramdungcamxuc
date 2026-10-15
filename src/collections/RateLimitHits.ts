@@ -1,11 +1,17 @@
 import type { CollectionConfig } from 'payload'
-import { nobody } from '../lib/auth/access'
+import { isHiddenFromEditor, nobody } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 export const RateLimitHits: CollectionConfig = {
   slug: 'rateLimitHits',
   labels: { singular: 'Lượt gửi form', plural: 'Lượt gửi form' },
   admin: {
-    hidden: true,
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    useAsTitle: 'key',
+    description: 'Ghi nhận tần suất gửi form để chặn spam.',
+    defaultColumns: ['key', 'createdAt'],
+    listSearchableFields: ['key'],
   },
   access: {
     read: nobody,

@@ -1,13 +1,17 @@
 import type { CollectionConfig } from 'payload'
 import { date, relation, select } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
-import { isOwner } from '../lib/auth/access'
+import { isHiddenFromEditor, isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 export const TrialReminders: CollectionConfig = {
   slug: 'trialReminders',
   labels: { singular: 'Nhắc hạn dùng thử', plural: 'Nhắc hạn dùng thử' },
   admin: {
-    group: 'Hệ thống',
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    useAsTitle: 'reminderKey',
+    description: 'Lịch sử email nhắc hạn dùng thử 18 và 21 ngày.',
     defaultColumns: ['entitlement', 'milestone', 'sentAt'],
   },
   access: {

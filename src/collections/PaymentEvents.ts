@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { checkbox, date, relation, text } from '../fields/content'
-import { isOwner, nobody } from '../lib/auth/access'
+import { isHiddenFromEditor, isOwner, nobody } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Append-only log of every payment webhook / manual confirmation.
 // Owner reads; nobody edits or deletes through the API; server code writes.
@@ -8,7 +9,10 @@ export const PaymentEvents: CollectionConfig = {
   slug: 'paymentEvents',
   labels: { singular: 'Sự kiện thanh toán', plural: 'Sự kiện thanh toán' },
   admin: {
-    group: 'Hệ thống',
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    useAsTitle: 'transactionId',
+    description: 'Nhật ký webhook và sự kiện giao dịch từ cổng thanh toán SePay.',
     defaultColumns: [
       'provider',
       'transactionId',
@@ -17,6 +21,7 @@ export const PaymentEvents: CollectionConfig = {
       'result',
       'receivedAt',
     ],
+    listSearchableFields: ['transactionId'],
   },
   access: { read: isOwner, create: nobody, update: nobody, delete: nobody },
   fields: [

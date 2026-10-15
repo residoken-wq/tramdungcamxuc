@@ -4,6 +4,7 @@ import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
 import {
   adminOrSelfCustomer,
   isEditorOrOwner,
+  isHiddenFromEditor,
   isOwner,
   ownerOrSelfCustomerField,
 } from '../lib/auth/access'
@@ -23,7 +24,12 @@ const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, ope
 export const SavedCards: CollectionConfig = {
   slug: 'savedCards',
   labels: { singular: 'Thẻ đã lưu', plural: 'Thẻ đã lưu' },
-  admin: { group: 'EQ Buddy', defaultColumns: ['customer', 'card', 'savedAt'] },
+  admin: {
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    description: 'Các thẻ EQ được học viên lưu lại để suy ngẫm.',
+    defaultColumns: ['customer', 'card', 'savedAt'],
+  },
   access: {
     read: adminOrSelfCustomer(),
     create: adminOrSelfCustomer(),

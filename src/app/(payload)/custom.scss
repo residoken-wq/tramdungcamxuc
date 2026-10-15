@@ -1,0 +1,47 @@
+/**
+ * Custom styling for Trạm Dừng Cảm Xúc CMS Admin.
+ * Brand Book 2026 accents: deep-navy (#280A60), bright-magenta (#BC039E), accent-pink (#EF3B83).
+ * Preserves default Payload layout entirely; ensures WCAG AA contrast.
+ */
+
+:root {
+  --brand-deep-navy: #280a60;
+  --brand-bright-magenta: #bc039e;
+  --brand-accent-pink: #ef3b83;
+  --brand-soft-pink: #fde6f6;
+  --brand-lavender: #e9ddf9;
+  --brand-mint: #d9f1ea;
+  --brand-butter-cream: #f6e9b8;
+  --brand-warm-ivory: #faf7f4;
+}
+
+[data-theme='dark'] {
+  --brand-deep-navy: #e9ddf9;
+  --brand-bright-magenta: #fde6f6;
+}
+
+/* Subtle brand accent on focus rings and interactive states */
+:focus-visible {
+  outline-color: var(--brand-accent-pink);
+}
+
+/* Admin brand header */
+.admin-brand-logo {
+  transition: opacity 0.15s ease-in-out;
+
+  &:hover {
+    opacity: 0.92;
+  }
+}
+
+/* Subtle brand accent on active navigation items */
+.nav__link.active,
+.nav__link--active,
+a.nav__link[aria-current='page'] {
+  border-left: 2px solid var(--brand-accent-pink);
+}
+
+/* Subtle hover accent on primary action buttons */
+.btn--style-primary:focus-visible {
+  box-shadow: 0 0 0 2px var(--brand-accent-pink);
+}

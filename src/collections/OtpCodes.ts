@@ -1,13 +1,21 @@
 import type { CollectionConfig } from 'payload'
 import { date, number } from '../fields/content'
-import { nobody } from '../lib/auth/access'
+import { isHiddenFromEditor, nobody } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: OTP storage for customer login (GĐ 2). Hidden from the admin UI and closed
 // to every API caller; only server code (overrideAccess) reads/writes. Store a hash, never the code.
 export const OtpCodes: CollectionConfig = {
   slug: 'otpCodes',
   labels: { singular: 'Mã OTP', plural: 'Mã OTP' },
-  admin: { hidden: true, group: 'Hệ thống' },
+  admin: {
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    useAsTitle: 'email',
+    description: 'Mã xác thực đăng nhập một lần (OTP) của học viên.',
+    defaultColumns: ['email', 'attempts', 'expiresAt', 'usedAt'],
+    listSearchableFields: ['email'],
+  },
   access: { read: nobody, create: nobody, update: nobody, delete: nobody },
   fields: [
     { name: 'email', type: 'email', required: true, index: true },

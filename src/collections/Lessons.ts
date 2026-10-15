@@ -10,8 +10,9 @@ import {
   textarea,
 } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
-export const Lessons = contentCollection('lessons', 'Bài học', 'Khóa học', 'title', [
+export const Lessons = contentCollection('lessons', 'Bài học', vi.cms.nav.habit, 'title', [
   relation('module', 'Nhóm bài học', 'courseModules'),
   text('title', 'Tiêu đề', true),
   textarea('summary', 'Tóm tắt'),
@@ -34,3 +35,10 @@ export const Lessons = contentCollection('lessons', 'Bài học', 'Khóa học',
   number('order', 'Thứ tự', 0),
   checkbox('isFreePreview', 'Cho phép xem thử'),
 ])
+
+Lessons.admin = {
+  ...Lessons.admin,
+  description: 'Bài giảng video và tài liệu thực hành trong khóa Habit.',
+  defaultColumns: ['title', 'module', 'stage', 'isFreePreview', 'order'],
+  listSearchableFields: ['title', 'summary'],
+}

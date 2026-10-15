@@ -1,4 +1,4 @@
-import type { Access, FieldAccess, PayloadRequest, Where } from 'payload'
+import type { Access, ClientUser, FieldAccess, PayloadRequest, Where } from 'payload'
 
 export type AdminRole = 'owner' | 'editor'
 
@@ -20,6 +20,17 @@ export function isAdminUser(user: MaybeUser): boolean {
 // REVIEW-REQUIRED: Owner = full rights (payments, settings, deleting orders, audit logs).
 export function isOwnerUser(user: MaybeUser): boolean {
   return isAdminUser(user) && (user as { role?: AdminRole }).role === 'owner'
+}
+
+// REVIEW-REQUIRED: CM-01: Ẩn các collection kỹ thuật khỏi menu admin đối với vai trò editor.
+// Chỉ chủ sở hữu (owner) mới thấy nhóm Hệ thống trong sidebar admin.
+// Hàm này chỉ tác động UI admin (admin.hidden), không thay đổi quyền truy cập API (access).
+export function isHiddenFromEditor({
+  user,
+}: {
+  user?: ClientUser | Record<string, unknown> | null
+}): boolean {
+  return (user as { role?: string } | null | undefined)?.role !== 'owner'
 }
 
 // REVIEW-REQUIRED: Any signed-in admin (owner or editor) – content editing rights.

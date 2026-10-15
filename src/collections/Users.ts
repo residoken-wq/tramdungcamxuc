@@ -1,5 +1,6 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
-import { isAdminUser, isOwner, isOwnerUser } from '../lib/auth/access'
+import { isAdminUser, isHiddenFromEditor, isOwner, isOwnerUser } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: The very first admin becomes owner; everyone created later defaults to
 // editor and only an owner may change a role (field-level update access below).
@@ -16,8 +17,11 @@ export const Users: CollectionConfig = {
   labels: { singular: 'Quản trị viên', plural: 'Quản trị viên' },
   admin: {
     useAsTitle: 'email',
-    group: 'Hệ thống',
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    description: 'Tài khoản quản trị viên và biên tập viên nội dung.',
     defaultColumns: ['email', 'role'],
+    listSearchableFields: ['email'],
   },
   auth: true,
   // REVIEW-REQUIRED: Admin accounts – only owners create or delete; anyone signed in may
