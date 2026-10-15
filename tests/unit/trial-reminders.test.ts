@@ -33,35 +33,48 @@ describe('Trial 21-Day Reminders & Cron (T2-04)', () => {
     process.env.CRON_SECRET = testCronSecret
     payload = await getPayload({ config: await config })
 
-    // Dọn dẹp bản ghi nhắc cũ nếu có từ lượt chạy trước bị ngắt
-    const oldReminders = await payload.find({
+    // Leftovers of an interrupted earlier run: only reminders of test customers (@example.test)
+    await payload.delete({
       collection: 'trialReminders',
-      limit: 100,
+      where: { 'entitlement.customer.email': { like: '@example.test' } },
       overrideAccess: true,
     })
-    for (const r of oldReminders.docs) {
-      await payload.delete({
-        collection: 'trialReminders',
-        id: r.id,
-        overrideAccess: true,
-        context: { accountDeletion: true },
-      })
-    }
   })
 
   afterAll(async () => {
-    // Dọn dẹp dữ liệu test theo thứ tự ngược lại
+    // 1. Reminders of the customers this test created (never the whole table)
+    const customerIds = created.filter((c) => c.collection === 'customers').map((c) => c.id)
+    if (customerIds.length > 0) {
+      await payload.delete({
+        collection: 'trialReminders',
+        where: { 'entitlement.customer': { in: customerIds } },
+        overrideAccess: true,
+      })
+    }
+
+    // 2. Dọn dẹp dữ liệu test theo thứ tự ngược lại
     for (let i = created.length - 1; i >= 0; i--) {
       const item = created[i]
       try {
+        if (item.collection === 'customers') {
+          try {
+            await payload.delete({
+              collection: 'entitlements',
+              where: { customer: { equals: item.id } },
+              overrideAccess: true,
+            })
+          } catch {}
+        }
         await payload.delete({
           collection: item.collection,
           id: item.id,
           overrideAccess: true,
           context: { accountDeletion: true },
         })
-      } catch (_err) {
-        // Bỏ qua nếu đã xóa
+      } catch (err) {
+        if (item.collection === 'customers') {
+          throw err
+        }
       }
     }
   })

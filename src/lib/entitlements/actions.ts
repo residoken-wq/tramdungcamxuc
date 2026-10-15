@@ -10,6 +10,7 @@ import { checkAndRecordRateLimit, RateLimitError } from '@/lib/forms/ratelimit.s
 import { getToolUrl } from '@/lib/products'
 import { getSiteUrl } from '@/lib/site-url'
 import { sendTrialWelcomeEmail } from '@/lib/email/service.server'
+import { sendImmediateDay18Reminder } from '@/lib/entitlements/reminders.server'
 import { vi } from '@/lib/i18n/vi'
 
 export interface StartTrialActionResult {
@@ -153,6 +154,23 @@ export async function startTrialAction(productSlug: string): Promise<StartTrialA
           customer.id,
           emailErr,
         )
+      }
+
+      // T2-18 / T2-04 BACKLOG: trialDays <= 3 gửi ngay email nhắc mốc day_18 thay vì bỏ qua
+      if (product.trialDays <= 3 && result.entitlementId) {
+        try {
+          await sendImmediateDay18Reminder(result.entitlementId, {
+            payload,
+            now,
+            siteUrl,
+          })
+        } catch (reminderErr) {
+          console.error(
+            '[TrialAction] Failed to send immediate day 18 reminder for customer:',
+            customer.id,
+            reminderErr,
+          )
+        }
       }
 
       return {

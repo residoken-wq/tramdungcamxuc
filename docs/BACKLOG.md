@@ -42,11 +42,11 @@
 - [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
 - [ ] T2-08: khóa chống tạo 2 đơn song song đang ở bộ nhớ tiến trình (`withOrderLock`). Khi chạy nhiều bản Next.js → đổi sang `pg_advisory_xact_lock(customerId, productId)`.
 - [x] T2-03: bọc lưu kế hoạch + tạo lead trong 1 transaction (lead lỗi → kế hoạch trùng khi gửi lại) (xong T2-17).
-- [ ] T2-03: cân nhắc không lưu tên/email vào nháp `localStorage`.
-- [ ] T2-17: gửi Habit Loop lần 2 sau khi đã thành công vẫn tạo thêm 1 kế hoạch + 1 lead (chống gửi trùng phía server).
+- [x] T2-03: cân nhắc không lưu tên/email vào nháp `localStorage` (xong T2-18).
+- [x] T2-17: gửi Habit Loop lần 2 sau khi đã thành công vẫn tạo thêm 1 kế hoạch + 1 lead (chống gửi trùng phía server) (xong T2-18).
 - [x] T2-04: chuyển chữ trong `TrialWelcomeEmail.tsx` vào `vi.ts` (xong T2-17).
-- [ ] T2-04: banner/trang `/dung-thu` phân biệt "quyền mua có hạn đã hết" với "dùng thử đã hết" (khi có `accessDurationDays`); `trialDays` ≤ 3 thì mail ngày 18 gửi ngay.
-- [ ] Route `/api/download/[token]`: còn vài câu lỗi tiếng Việt ghi cứng (có từ T1-07) → chuyển vào `vi.ts`.
+- [x] T2-04: banner/trang `/dung-thu` phân biệt "quyền mua có hạn đã hết" với "dùng thử đã hết" (khi có `accessDurationDays`); `trialDays` ≤ 3 thì mail ngày 18 gửi ngay (xong T2-18).
+- [x] Route `/api/download/[token]`: còn vài câu lỗi tiếng Việt ghi cứng (có từ T1-07) → chuyển vào `vi.ts` (xong T2-18).
 - [x] T2-07: validate `customers.name` ở mức collection (chặn `< > { }`, ký tự điều khiển) – hiện chỉ action nhận chứng nhận kiểm (xong T2-16).
 - [ ] T2-09: giới hạn body webhook ở reverse proxy (request chunked không có `Content-Length`); demo phải chạy sau proxy để `X-Forwarded-For` đáng tin.
 - [ ] T2-09: gói `markOrderPaid` (đổi `paid` + cấp quyền + email) trong 1 transaction; hiện tiến trình chết giữa chừng → nhãn `paid_incomplete`, email xác nhận không gửi lại.

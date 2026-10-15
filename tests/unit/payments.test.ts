@@ -184,16 +184,35 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       } catch {}
     }
 
-    // 3. Xóa customers do test tạo
+    // 3. Xóa customers do test tạo (xóa con trước cha: nhắc dùng thử, quyền, đơn hàng)
     for (const custId of createdCustomers) {
       try {
         await payload.delete({
-          collection: 'customers',
-          id: custId,
+          collection: 'trialReminders',
+          where: { 'entitlement.customer': { equals: custId } },
           overrideAccess: true,
-          context: { accountDeletion: true },
         })
       } catch {}
+      try {
+        await payload.delete({
+          collection: 'entitlements',
+          where: { customer: { equals: custId } },
+          overrideAccess: true,
+        })
+      } catch {}
+      try {
+        await payload.delete({
+          collection: 'orders',
+          where: { customer: { equals: custId } },
+          overrideAccess: true,
+        })
+      } catch {}
+      await payload.delete({
+        collection: 'customers',
+        id: custId,
+        overrideAccess: true,
+        context: { accountDeletion: true },
+      })
     }
 
     // 4. Xóa products do test tạo
@@ -328,32 +347,46 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       expect(item2ProdId).toBe(product2.id)
 
       // Đặt đơn với productId là ebook (loại khác) -> báo lỗi productNotFound
+      const wrongTypeEmail = `wrong-type-${randomUUID()}@example.test`
       await expect(
         createExperienceOrder(
           {
             productId: ebookProduct.id,
             name: 'Khách Chọn Ebook',
-            email: `wrong-type-${randomUUID()}@example.test`,
+            email: wrongTypeEmail,
             termsAccepted: true,
           },
           { ip: nextIp() },
           { payload, emailSender: mockEmailSender },
         ),
       ).rejects.toThrow(viStrings.payment.errors.productNotFound)
+      const wrongTypeCust = await payload.find({
+        collection: 'customers',
+        where: { email: { equals: wrongTypeEmail } },
+        overrideAccess: true,
+      })
+      if (wrongTypeCust.docs[0]) createdCustomers.push(wrongTypeCust.docs[0].id)
 
       // Đặt đơn với productId không tồn tại -> báo lỗi productNotFound
+      const notExistEmail = `not-exist-${randomUUID()}@example.test`
       await expect(
         createExperienceOrder(
           {
             productId: 99999999,
             name: 'Khách Sai ID',
-            email: `not-exist-${randomUUID()}@example.test`,
+            email: notExistEmail,
             termsAccepted: true,
           },
           { ip: nextIp() },
           { payload, emailSender: mockEmailSender },
         ),
       ).rejects.toThrow(viStrings.payment.errors.productNotFound)
+      const notExistCust = await payload.find({
+        collection: 'customers',
+        where: { email: { equals: notExistEmail } },
+        overrideAccess: true,
+      })
+      if (notExistCust.docs[0]) createdCustomers.push(notExistCust.docs[0].id)
     })
 
     it('sản phẩm có saleStatus = consult / hidden / coming_soon -> từ chối với lỗi tiếng Việt', async () => {
@@ -372,18 +405,25 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       })
       createdProducts.push(consultProduct.id)
 
+      const consultEmail = `consult-${randomUUID()}@example.test`
       await expect(
         createExperienceOrder(
           {
             productId: consultProduct.id,
             name: 'Khách Consult',
-            email: `consult-${randomUUID()}@example.test`,
+            email: consultEmail,
             termsAccepted: true,
           },
           { ip: nextIp() },
           { payload, emailSender: mockEmailSender },
         ),
       ).rejects.toThrow(viStrings.payment.errors.productNotForSale)
+      const consultCust = await payload.find({
+        collection: 'customers',
+        where: { email: { equals: consultEmail } },
+        overrideAccess: true,
+      })
+      if (consultCust.docs[0]) createdCustomers.push(consultCust.docs[0].id)
     })
 
     it('thiếu ô đồng ý điều khoản -> lỗi tiếng Việt, không tạo đơn', async () => {

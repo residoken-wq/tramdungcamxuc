@@ -8,6 +8,7 @@ import config from '../../src/payload.config'
 import type { Customer, Product } from '../../src/payload-types'
 import { resolveProductCta, GROWTH_MIRROR_PATH } from '../../src/lib/products'
 import { startTrialAction } from '../../src/lib/entitlements/actions'
+import { getAccess } from '../../src/lib/entitlements'
 import * as sessionServer from '../../src/lib/auth/session.server'
 import * as emailService from '../../src/lib/email/service.server'
 import { submitDiagnostic } from '../../src/lib/diagnostic.server'
@@ -27,6 +28,30 @@ describe('Trial Actions & Quiz CTA (T2-04)', () => {
   })
 
   afterAll(async () => {
+    // 1. Dọn dẹp con: trialReminders và entitlements thuộc khách hàng
+    for (const custId of createdCustomers) {
+      try {
+        const ents = await payload.find({
+          collection: 'entitlements',
+          where: { customer: { equals: custId } },
+          overrideAccess: true,
+          limit: 100,
+        })
+        for (const ent of ents.docs) {
+          try {
+            await payload.delete({
+              collection: 'trialReminders',
+              where: { entitlement: { equals: ent.id } },
+              overrideAccess: true,
+            })
+          } catch (_e) {}
+          try {
+            await payload.delete({ collection: 'entitlements', id: ent.id, overrideAccess: true })
+          } catch (_e) {}
+        }
+      } catch (_e) {}
+    }
+
     for (const id of createdEntitlements) {
       try {
         await payload.delete({ collection: 'entitlements', id, overrideAccess: true })
@@ -42,16 +67,18 @@ describe('Trial Actions & Quiz CTA (T2-04)', () => {
         await payload.delete({ collection: 'leads', id, overrideAccess: true })
       } catch (_e) {}
     }
+
+    // 2. Xóa khách hàng: bắt buộc truyền accountDeletion và không nuốt lỗi im lặng
     for (const id of createdCustomers) {
-      try {
-        await payload.delete({
-          collection: 'customers',
-          id,
-          overrideAccess: true,
-          context: { accountDeletion: true },
-        })
-      } catch (_e) {}
+      await payload.delete({
+        collection: 'customers',
+        id,
+        overrideAccess: true,
+        context: { accountDeletion: true },
+      })
     }
+
+    // 3. Xóa sản phẩm
     for (const id of createdProducts) {
       try {
         await payload.delete({ collection: 'products', id, overrideAccess: true })
@@ -157,6 +184,52 @@ describe('Trial Actions & Quiz CTA (T2-04)', () => {
       expect(res2.code).toBe('TRIAL_ACTIVE')
       expect(sendEmailSpy).not.toHaveBeenCalled()
     })
+
+    it('trialDays <= 3: TRIAL_STARTED gửi cả welcome email VÀ reminder email mốc day_18 ngay lập tức; gọi lại không gửi trùng', async () => {
+      const product = await createDigitalProduct({
+        name: 'Công Cụ 3 Ngày Test',
+        trialDays: 3,
+      })
+      const customer = await createCustomer('Khách 3 Ngày')
+
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
+      const sendWelcomeSpy = vi
+        .spyOn(emailService, 'sendTrialWelcomeEmail')
+        .mockResolvedValue(undefined)
+      const sendReminderSpy = vi
+        .spyOn(emailService, 'sendTrialReminderEmail')
+        .mockResolvedValue(undefined)
+
+      // Lần 1: Bắt đầu dùng thử -> TRIAL_STARTED
+      const res1 = await startTrialAction(product.slug)
+      expect(res1.success).toBe(true)
+      expect(res1.code).toBe('TRIAL_STARTED')
+      expect(res1.days).toBe(3)
+      expect(sendWelcomeSpy).toHaveBeenCalledTimes(1)
+      expect(sendReminderSpy).toHaveBeenCalledTimes(1)
+
+      const reminderCall = sendReminderSpy.mock.calls[0]
+      expect(reminderCall[1].email).toBe(customer.email)
+      expect(reminderCall[1].toolName).toBe(product.name)
+      expect(reminderCall[1].milestone).toBe('day_18')
+
+      // Kiểm tra trong DB: bản ghi trialReminders cho day_18 đã được tạo
+      const remindersRes = await payload.find({
+        collection: 'trialReminders',
+        where: { milestone: { equals: 'day_18' } },
+        overrideAccess: true,
+      })
+      expect(remindersRes.totalDocs).toBeGreaterThanOrEqual(1)
+
+      // Lần 2: Gọi lại -> TRIAL_ACTIVE, không gửi thêm bất kỳ email nào
+      sendWelcomeSpy.mockClear()
+      sendReminderSpy.mockClear()
+      const res2 = await startTrialAction(product.slug)
+      expect(res2.success).toBe(true)
+      expect(res2.code).toBe('TRIAL_ACTIVE')
+      expect(sendWelcomeSpy).not.toHaveBeenCalled()
+      expect(sendReminderSpy).not.toHaveBeenCalled()
+    })
   })
 
   describe('3. CTA kết quả quiz (submitDiagnostic)', () => {
@@ -232,6 +305,70 @@ describe('Trial Actions & Quiz CTA (T2-04)', () => {
           data: { _status: 'published' },
         })
       }
+    })
+  })
+
+  describe('4. Phân biệt quyền mua có hạn đã hết vs dùng thử đã hết (T2-18)', () => {
+    it('getAccess trả về expiredType: trial khi quyền dùng thử hết hạn', async () => {
+      const customer = await createCustomer('Khách Hết Hạn Trial')
+      const product = await createDigitalProduct({
+        name: 'Tool Hết Hạn Trial',
+        trialDays: 21,
+      })
+
+      // Quyền dùng thử hết hạn
+      const past = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+      const ent = await payload.create({
+        collection: 'entitlements',
+        data: {
+          customer: customer.id,
+          product: product.id,
+          source: 'trial',
+          status: 'trial',
+          expiresAt: past,
+          trialKey: `${customer.id}:${product.id}`,
+        },
+        overrideAccess: true,
+      })
+      createdEntitlements.push(ent.id)
+
+      const access = await getAccess(customer.id, product.id, { payload })
+      expect(access.hasAccess).toBe(false)
+      expect(access.status).toBe('expired')
+      expect(access.expiredType).toBe('trial')
+    })
+
+    it('getAccess trả về expiredType: purchased khi quyền mua (source order/active) đã hết hạn', async () => {
+      const customer = await createCustomer('Khách Hết Hạn Mua')
+      const product = await createDigitalProduct({
+        name: 'Tool Hết Hạn Mua',
+        trialDays: 21,
+      })
+
+      // Quyền mua có thời hạn đã hết hạn
+      const past = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+      const ent = await payload.create({
+        collection: 'entitlements',
+        data: {
+          customer: customer.id,
+          product: product.id,
+          source: 'order',
+          status: 'active',
+          expiresAt: past,
+        },
+        overrideAccess: true,
+      })
+      createdEntitlements.push(ent.id)
+
+      const access = await getAccess(customer.id, product.id, { payload })
+      expect(access.hasAccess).toBe(false)
+      expect(access.status).toBe('expired')
+      expect(access.expiredType).toBe('purchased')
+    })
+
+    it('chữ thông báo cho quyền mua đã hết hạn khác với dùng thử đã hết hạn', () => {
+      expect(viStrings.trial.banner.expiredPurchased).not.toBe(viStrings.trial.banner.expired)
+      expect(viStrings.trial.expiredPurchasedNotice).not.toBe(viStrings.trial.expiredNotice)
     })
   })
 })

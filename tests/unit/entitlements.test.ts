@@ -156,14 +156,41 @@ describe('Entitlement Service – 21-day trial, lifetime purchase & access contr
     try {
       for (const entry of created.reverse()) {
         try {
+          if (entry.collection === 'customers') {
+            // Xóa con trước cha: nhắc dùng thử, quyền, đơn hàng
+            try {
+              await payload.delete({
+                collection: 'trialReminders',
+                where: { 'entitlement.customer': { equals: entry.id } },
+                overrideAccess: true,
+              })
+            } catch {}
+            try {
+              await payload.delete({
+                collection: 'entitlements',
+                where: { customer: { equals: entry.id } },
+                overrideAccess: true,
+              })
+            } catch {}
+            try {
+              await payload.delete({
+                collection: 'orders',
+                where: { customer: { equals: entry.id } },
+                overrideAccess: true,
+              })
+            } catch {}
+          }
+
           await payload.delete({
             collection: entry.collection,
             id: entry.id,
             overrideAccess: true,
             context: { accountDeletion: true },
           })
-        } catch {
-          // ignore cleanup failures
+        } catch (err) {
+          if (entry.collection === 'customers') {
+            throw err
+          }
         }
       }
     } finally {

@@ -86,42 +86,48 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
   })
 
   afterAll(async () => {
-    // Dọn dẹp theo thứ tự FK
-    for (const id of createdEntitlements) {
-      try {
-        await payload.delete({ collection: 'entitlements', id, overrideAccess: true })
-      } catch {
-        // ignore
-      }
-    }
-
-    for (const id of createdOrders) {
-      try {
-        await payload.delete({ collection: 'orders', id, overrideAccess: true })
-      } catch {
-        // ignore
-      }
-    }
-
+    // Dọn dẹp theo thứ tự FK: xóa con trước cha (nhắc dùng thử, quyền, đơn hàng -> khách hàng)
     for (const id of createdCustomers) {
       try {
         await payload.delete({
-          collection: 'customers',
-          id,
+          collection: 'trialReminders',
+          where: { 'entitlement.customer': { equals: id } },
           overrideAccess: true,
-          context: { accountDeletion: true },
         })
-      } catch {
-        // ignore
-      }
+      } catch {}
+      try {
+        await payload.delete({
+          collection: 'entitlements',
+          where: { customer: { equals: id } },
+          overrideAccess: true,
+        })
+      } catch {}
+      try {
+        await payload.delete({
+          collection: 'orders',
+          where: { customer: { equals: id } },
+          overrideAccess: true,
+        })
+      } catch {}
+      await payload.delete({
+        collection: 'customers',
+        id,
+        overrideAccess: true,
+        context: { accountDeletion: true },
+      })
     }
 
     for (const id of createdProducts) {
       try {
+        await payload.delete({
+          collection: 'orders',
+          where: { 'items.product': { equals: id } },
+          overrideAccess: true,
+        })
+      } catch {}
+      try {
         await payload.delete({ collection: 'products', id, overrideAccess: true })
-      } catch {
-        // ignore
-      }
+      } catch {}
     }
 
     for (const id of createdUsers) {

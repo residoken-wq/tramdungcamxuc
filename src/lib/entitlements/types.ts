@@ -5,6 +5,7 @@ export interface AccessResult {
   status: EntitlementStatus
   expiresAt: Date | null
   daysLeft: number | null
+  expiredType?: 'trial' | 'purchased'
 }
 
 export type StartTrialErrorCode =

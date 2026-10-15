@@ -8,14 +8,20 @@ import { getAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
 import { vi } from '@/lib/i18n/vi'
 
-export async function TrialBanner() {
+export interface TrialBannerProps {
+  productSlug?: string
+}
+
+export async function TrialBanner({
+  productSlug = HABIT_TRACKER_PRODUCT_SLUG,
+}: TrialBannerProps = {}) {
   const customer = await getCurrentCustomer()
   if (!customer) return null
 
   const payload = await getPayload({ config: await config })
   const products = await payload.find({
     collection: 'products',
-    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+    where: { slug: { equals: productSlug } },
     overrideAccess: true,
     limit: 1,
   })
@@ -41,7 +47,7 @@ export async function TrialBanner() {
       >
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-bright-magenta animate-pulse shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-bright-magenta animate-pulse motion-reduce:animate-none shrink-0" />
             <p className="font-sans text-xs sm:text-sm font-semibold text-deep-navy">
               {vi.trial.banner.daysLeft(daysLeft)}
             </p>
@@ -58,16 +64,24 @@ export async function TrialBanner() {
   }
 
   if (access.status === 'expired') {
+    const isPurchasedExpired = access.expiredType === 'purchased'
+    const ariaLabel = isPurchasedExpired
+      ? vi.trial.banner.expiredPurchasedAria
+      : vi.trial.banner.expiredAria
+    const expiredText = isPurchasedExpired
+      ? vi.trial.banner.expiredPurchased
+      : vi.trial.banner.expired
+
     return (
       <aside
-        aria-label={vi.trial.banner.expiredAria}
+        aria-label={ariaLabel}
         className="w-full bg-butter-cream/90 border-b border-butter-cream py-2.5 px-4 text-deep-navy"
       >
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-accent-pink shrink-0" />
             <p className="font-sans text-xs sm:text-sm font-semibold text-deep-navy">
-              {vi.trial.banner.expired}
+              {expiredText}
             </p>
           </div>
           <Link

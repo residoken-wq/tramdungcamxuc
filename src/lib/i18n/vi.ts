@@ -531,6 +531,13 @@ export const vi = {
     downloadNotFound: 'Tài liệu không còn khả dụng trên hệ thống.',
     noLongerFree: 'Tài nguyên này không còn được tặng miễn phí.',
   },
+  downloads: {
+    notBelongToProduct: 'Tài liệu không còn thuộc sản phẩm này.',
+    fileNotFound: 'Tập tin không tồn tại.',
+    cloudReadError: 'Không thể đọc dữ liệu tập tin từ lưu trữ đám mây.',
+    cloudFetchError: 'Không thể tải tập tin từ lưu trữ.',
+    localFileNotFound: 'Tập tin không tìm thấy trên máy chủ lưu trữ.',
+  },
   comingSoon: {
     backToLibrary: 'Quay lại Thư viện',
     seriesLabel: 'Sắp ra mắt',
@@ -1115,6 +1122,8 @@ export const vi = {
   },
   trial: {
     title: 'Dùng thử công cụ số',
+    paywallBadge: 'Công cụ số',
+    paywallDescription: 'Bạn chưa kích hoạt quyền sử dụng công cụ này.',
     pageBadge: 'Trạm Dừng Cảm Xúc · Dùng thử miễn phí',
     daysLabel: (days: number) => `Dùng thử ${days} ngày miễn phí`,
     startButton: (days: number) => `Bắt đầu dùng thử ${days} ngày`,
@@ -1128,12 +1137,15 @@ export const vi = {
     alreadyActiveTrialNotice: (daysLeft: number) =>
       `Bạn đang trong thời gian dùng thử (còn ${daysLeft} ngày).`,
     expiredNotice: 'Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ.',
+    expiredPurchasedNotice: 'Thời hạn sử dụng đã kết thúc – dữ liệu của bạn vẫn được giữ.',
     generalError: 'Có lỗi xảy ra khi bắt đầu dùng thử. Vui lòng thử lại sau.',
     banner: {
       trialAria: 'Thông báo dùng thử',
       expiredAria: 'Thông báo hết hạn dùng thử',
+      expiredPurchasedAria: 'Thông báo hết hạn sử dụng',
       daysLeft: (days: number) => `Còn ${days} ngày dùng thử`,
       expired: 'Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ',
+      expiredPurchased: 'Thời hạn sử dụng đã kết thúc – dữ liệu của bạn vẫn được giữ',
       buyButton: 'Mua để dùng tiếp',
     },
     email: {
@@ -1229,7 +1241,6 @@ export const vi = {
     paywall: {
       title: 'Habit Tracker Số 21 Ngày',
       description: 'Bạn chưa kích hoạt quyền sử dụng công cụ Habit Tracker số.',
-      trialButton: 'Bắt đầu dùng thử 21 ngày',
       buyButton: 'Mua công cụ số',
     },
     expiredNotice: {

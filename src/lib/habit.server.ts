@@ -1,4 +1,5 @@
 import 'server-only'
+import { sql } from '@payloadcms/db-postgres'
 import { ZodError } from 'zod'
 import { vi } from './i18n/vi'
 import {
@@ -352,6 +353,49 @@ export async function submitHabitPlan(
 
   let habitPlanDoc: { id: number }
   try {
+    // T2-17 / T2-18: Cùng email (không phân biệt hoa thường) + cùng câu định danh gửi lại trong 10 phút
+    // -> trả về kế hoạch đã có, không tạo thêm kế hoạch / lead, không gửi lại email.
+    // Serialize submits for the same email inside this transaction so two parallel clicks
+    // cannot both miss the duplicate check (lock released at commit / rollback).
+    const txId = await req.transactionID
+    const txDb = txId
+      ? (
+          payload.db as unknown as {
+            sessions?: Record<string, { db?: { execute: (q: unknown) => Promise<unknown> } }>
+          }
+        ).sessions?.[String(txId)]?.db
+      : undefined
+    if (txDb) {
+      await txDb.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${'habit-plan:' + cleanEmail}))`)
+    }
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+    const existing = await payload.find({
+      collection: 'habitPlans',
+      where: {
+        and: [
+          { leadEmail: { equals: cleanEmail } },
+          { identityStatement: { equals: validated.identityStatement } },
+          { createdAt: { greater_than_equal: tenMinutesAgo } },
+        ],
+      },
+      sort: '-createdAt',
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+      req,
+    })
+
+    if (existing.docs.length > 0) {
+      if (shouldCommit) {
+        await commitTransaction(req)
+      }
+      return {
+        success: true,
+        planId: existing.docs[0].id,
+        zaloGroupUrl,
+      }
+    }
+
     habitPlanDoc = (await payload.create({
       collection: 'habitPlans',
       data: {

@@ -10,6 +10,7 @@ import {
   verifyOtp,
   computeOtpHash,
   OtpVerificationError,
+  type VerifyOtpResult,
 } from '../../src/lib/auth/otp.server'
 import { getSafeRedirectUrl } from '../../src/lib/auth/redirect'
 import { vi as viDict } from '../../src/lib/i18n/vi'
@@ -63,8 +64,10 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
             overrideAccess: true,
             context: { accountDeletion: true },
           })
-        } catch {
-          // ignore cleanup failures
+        } catch (err) {
+          if (entry.collection === 'customers') {
+            throw err
+          }
         }
       }
     } finally {
@@ -534,6 +537,11 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
 
       expect(fulfilled).toHaveLength(1)
       expect(rejected).toHaveLength(1)
+
+      const successVal = (fulfilled[0] as PromiseFulfilledResult<VerifyOtpResult>).value
+      if (successVal?.customer?.id) {
+        track('customers', { id: successVal.customer.id })
+      }
 
       const err = (rejected[0] as PromiseRejectedResult).reason as Error
       expect(err.message).toBe(viDict.auth.invalidCode)

@@ -1,7 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Product, HabitCheckin } from '@/payload-types'
@@ -17,6 +16,7 @@ import { getCertificateEligibility } from '@/lib/habit/certificate.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
+import { ToolPaywall } from '@/components/site/trial/ToolPaywall'
 
 export const metadata: Metadata = {
   title: `${vi.tracker.pageTitle} | Trạm Dừng Cảm Xúc`,
@@ -57,7 +57,6 @@ export default async function HabitTrackerPage() {
   const access = await getAccess(customer.id, product.id, { payload, now })
 
   const buyUrl = `/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`
-  const trialUrl = `/dung-thu?san-pham=${encodeURIComponent(product.slug)}`
 
   // 3. Lấy kế hoạch của khách hàng (nếu có).
   // REVIEW-REQUIRED: Chỉ khách còn quyền mới được gắn kế hoạch Habit Loop; khách không có quyền
@@ -70,32 +69,13 @@ export default async function HabitTrackerPage() {
   // -> Hiển thị khối mời dùng thử / mua sản phẩm (không hiển thị form tạo kế hoạch)
   if (!plan && !access.hasAccess) {
     return (
-      <div className="w-full max-w-xl mx-auto py-12 px-4">
-        <div className="bg-warm-ivory rounded-card border border-deep-navy/15 p-6 sm:p-8 shadow-soft text-center space-y-5">
-          <span className="inline-block px-3.5 py-1 rounded-full text-xs font-ui font-bold bg-soft-pink text-deep-navy">
-            {vi.tracker.paywall.title}
-          </span>
-          <h1 className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy">{product.name}</h1>
-          <p className="font-sans text-sm text-deep-navy/80 max-w-md mx-auto leading-relaxed">
-            {vi.tracker.paywall.description}
-          </p>
-
-          <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href={trialUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 transition-all motion-reduce:transition-none shadow-sm"
-            >
-              {vi.tracker.paywall.trialButton}
-            </Link>
-            <Link
-              href={buyUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-deep-navy/20 text-deep-navy bg-warm-ivory hover:bg-lavender-mist/40 font-ui font-semibold text-sm transition-all motion-reduce:transition-none"
-            >
-              {vi.tracker.paywall.buyButton}
-            </Link>
-          </div>
-        </div>
-      </div>
+      <ToolPaywall
+        productSlug={HABIT_TRACKER_PRODUCT_SLUG}
+        product={product}
+        access={access}
+        badge={vi.tracker.paywall.title}
+        fallbackDescription={vi.tracker.paywall.description}
+      />
     )
   }
 
