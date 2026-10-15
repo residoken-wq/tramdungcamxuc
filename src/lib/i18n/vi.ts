@@ -1453,12 +1453,12 @@ export const vi = {
       drawButton: 'Rút một thẻ',
       howToUseHeading: 'Cách sử dụng',
       aboutHeading: 'Về bộ thẻ EQ Buddy',
-      metaTitle: 'EQ Buddy – Bộ thẻ cảm xúc | Trạm Dừng Cảm Xúc',
+      metaTitle: 'EQ Buddy – Bộ thẻ cảm xúc',
       metaDescription:
         'Rút thẻ cảm xúc EQ Buddy để dừng lại một nhịp, nhận diện và thấu hiểu cảm xúc của bản thân.',
     },
     draw: {
-      metaTitle: 'Rút thẻ EQ Buddy | Trạm Dừng Cảm Xúc',
+      metaTitle: 'Rút thẻ EQ Buddy',
       metaDescription: 'Rút một thẻ cảm xúc để lắng nghe và kết nối với chính mình.',
       heading: 'Rút thẻ EQ Buddy',
       subheading: 'Dành 5 phút dừng lại một nhịp, lắng nghe thông điệp cảm xúc hôm nay.',
@@ -1483,6 +1483,7 @@ export const vi = {
       step4: {
         title: 'Bước 4: Ghi chú suy ngẫm',
         reflectionLabel: 'Suy ngẫm của bạn',
+        backToQuestions: 'Xem lại câu hỏi',
         reflectionPlaceholder: 'Viết ra những suy nghĩ, cảm xúc hay điều bạn nhận ra lúc này...',
         localOnlyNotice: 'Ghi chú chỉ ở trên máy bạn',
         nextButton: 'Đi tiếp',
@@ -1493,13 +1494,9 @@ export const vi = {
         openCardPageButton: 'Mở trang thẻ',
       },
       paywall: {
-        badge: 'DÙNG THỬ 21 NGÀY',
-        title: 'Kích hoạt 21 ngày dùng thử để tiếp tục rút thẻ',
+        badge: 'EQ BUDDY',
         description:
-          'Thẻ đầu tiên là món quà tự do trải nghiệm từ Trạm Dừng Cảm Xúc. Để rút thêm các thẻ tiếp theo và lưu lại nhật ký suy ngẫm, hãy đăng ký dùng thử 21 ngày hoàn toàn miễn phí.',
-        trialButton: (days: number = 21) => `Bắt đầu ${days} ngày dùng thử`,
-        buyButton: 'Mua trọn bộ để dùng tiếp',
-        loginButton: 'Đăng nhập tài khoản',
+          'Thẻ đầu tiên là món quà tự do trải nghiệm từ Trạm Dừng Cảm Xúc. Để rút thêm thẻ, bạn dùng thử miễn phí hoặc mua công cụ.',
       },
       errors: {
         cardNotFound: 'Không tìm thấy thẻ hợp lệ.',

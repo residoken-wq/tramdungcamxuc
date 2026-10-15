@@ -54,6 +54,7 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
 
     let adminId: number | undefined
     const createdCardIds: (number | string)[] = []
+    let createdProductId: number | undefined
 
     const suffix = randomUUID().slice(0, 8)
     const cardCode1 = `EQ-DRAW-1-${suffix}`
@@ -73,6 +74,26 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
 
     try {
       adminId = await bootstrapAdmin(page)
+
+      // The paywall reads the EQ Buddy product; create it when the DB has none
+      const existingProduct = await (
+        await page.request.get('/api/products?where[slug][equals]=eq-buddy-so&draft=true')
+      ).json()
+      if (!existingProduct.docs?.length) {
+        const prodRes = await page.request.post('/api/products', {
+          data: {
+            name: '[TEST] EQ Buddy số',
+            slug: 'eq-buddy-so',
+            web: 'eq',
+            type: 'digital_tool',
+            trialDays: 21,
+            saleStatus: 'on_sale',
+            _status: 'published',
+          },
+        })
+        expect(prodRes.ok()).toBe(true)
+        createdProductId = (await prodRes.json()).doc?.id
+      }
 
       // 1. Tạo 2 thẻ EQ Buddy test qua REST API /api/eqCards
       const res1 = await page.request.post('/api/eqCards', {
@@ -133,7 +154,7 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
       }).toPass({ timeout: 15000 })
 
       // Thấy câu hỏi Gợi nhớ ở mặt sau
-      await expect(guestPage1.getByText(/Gợi nhớ/i)).toBeVisible({ timeout: 10000 })
+      await expect(guestPage1.locator('dt', { hasText: 'Gợi nhớ' })).toBeVisible({ timeout: 10000 })
 
       // Tiếp tục qua bước suy ngẫm
       await expect(async () => {
@@ -143,7 +164,7 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
       }).toPass({ timeout: 10000 })
 
       // Thấy dòng chữ "Ghi chú chỉ ở trên máy bạn"
-      await expect(guestPage1.getByText(/Ghi chú chỉ ở trên máy bạn/i)).toBeVisible()
+      await expect(guestPage1.getByText(/Ghi chú chỉ ở trên máy bạn/i).first()).toBeVisible()
 
       // Tiếp tục qua bước 5
       await expect(async () => {
@@ -160,10 +181,9 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
       }).toPass({ timeout: 15000 })
 
       // Màn hình dùng thử hiển thị
-      await expect(guestPage1.getByText(/DÙNG THỬ 21 NGÀY/i)).toBeVisible({ timeout: 15000 })
-      await expect(
-        guestPage1.getByRole('link', { name: /Bắt đầu 21 ngày dùng thử/i }),
-      ).toBeVisible()
+      await expect(guestPage1.getByRole('link', { name: /Bắt đầu dùng thử 21 ngày/i })).toBeVisible(
+        { timeout: 15000 },
+      )
 
       // 3. Kịch bản 2: Khách mới chọn theo từ khóa đúng thẻ
       await guestPage2.goto('/eq-buddy/rut-the')
@@ -188,6 +208,9 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
           } catch {
             // Ignore individual delete errors
           }
+        }
+        if (createdProductId) {
+          await page.request.delete(`/api/products/${createdProductId}`)
         }
         if (adminId) {
           await page.request.delete(`/api/users/${adminId}`)

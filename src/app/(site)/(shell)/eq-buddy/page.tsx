@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const product = res.docs[0] as Product | undefined
     if (product) {
       return {
-        title: `${product.name} | Trạm Dừng Cảm Xúc`,
+        title: product.name,
         description: product.shortDescription || vi.eqBuddy.intro.metaDescription,
       }
     }

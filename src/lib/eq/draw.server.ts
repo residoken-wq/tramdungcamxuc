@@ -27,7 +27,7 @@ export function signGuestDrawCookie(
   secret: string = getAuthSecret(),
 ): string {
   const payload = `${data.count}:${data.timestamp}`
-  const signature = createHmac('sha256', secret).update(payload).digest('base64url')
+  const signature = createHmac('sha256', secret).update(`eq-draw:${payload}`).digest('base64url')
   return `${payload}.${signature}`
 }
 
@@ -50,7 +50,7 @@ export function verifyGuestDrawCookie(
   }
 
   const [payload, signature] = parts
-  const expectedSig = createHmac('sha256', secret).update(payload).digest('base64url')
+  const expectedSig = createHmac('sha256', secret).update(`eq-draw:${payload}`).digest('base64url')
 
   const sigBuf = Buffer.from(signature)
   const expBuf = Buffer.from(expectedSig)
@@ -108,7 +108,8 @@ export async function checkEqDrawAccess(options?: CheckAccessOptions): Promise<{
 
   if (customer) {
     if (!product) {
-      throw new Error(`Product ${EQ_BUDDY_PRODUCT_SLUG} not found`)
+      // Product not set up in the CMS yet: behave like "no access" instead of a 500.
+      return { allowed: false, customerState: 'logged_in', accessStatus: 'none', trialDays }
     }
 
     const now = new Date()
@@ -230,6 +231,7 @@ export async function drawEqCardCore(
         and: [{ qrSlug: { equals: cleanSlug } }, { _status: { equals: 'published' } }],
       },
       limit: 1,
+      depth: 0,
       draft: false,
     })
 
@@ -243,12 +245,16 @@ export async function drawEqCardCore(
     }
   } else {
     // mode === 'random'
+    // Only codes first (cheap), then load the chosen card.
     const res = await payload.find({
       collection: 'eqCards',
       where: {
         _status: { equals: 'published' },
       },
-      limit: 100,
+      select: { code: true },
+      depth: 0,
+      limit: 200,
+      pagination: false,
       draft: false,
     })
 
@@ -270,7 +276,16 @@ export async function drawEqCardCore(
     }
 
     const randomIndex = Math.floor(Math.random() * candidates.length)
-    selectedDoc = candidates[randomIndex]
+    const chosen = await payload.findByID({
+      collection: 'eqCards',
+      id: candidates[randomIndex].id,
+      depth: 0,
+      draft: false,
+    })
+    selectedDoc = chosen || null
+    if (!selectedDoc) {
+      return { success: false, code: 'NOT_FOUND', message: vi.eqBuddy.draw.errors.noCardsAvailable }
+    }
   }
 
   // 3. Nếu là khách chưa đăng nhập: đặt cookie ký HMAC đếm lượt rút (lần 1)

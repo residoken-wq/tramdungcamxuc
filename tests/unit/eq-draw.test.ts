@@ -28,6 +28,8 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
   let cardBSlug: string
   let cardDraftSlug: string
 
+  let createdProductId: number | undefined
+
   beforeAll(async () => {
     payload = await getPayload({ config: await config })
 
@@ -57,6 +59,7 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
         overrideAccess: true,
       })
       productId = p.id
+      createdProductId = p.id
     }
 
     const suffix = randomUUID().slice(0, 8)
@@ -153,12 +156,20 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
       }
     }
 
-    const remainingCusts = await payload.find({
-      collection: 'customers',
-      overrideAccess: true,
-      limit: 10,
-    })
-    expect(remainingCusts.totalDocs).toBe(0)
+    // 4. Product created by this test (never the real one)
+    if (createdProductId) {
+      await payload.delete({ collection: 'products', id: createdProductId, overrideAccess: true })
+    }
+
+    // Only this test's customers – the DB may hold other data
+    if (createdCustomerIds.length > 0) {
+      const remainingCusts = await payload.find({
+        collection: 'customers',
+        where: { id: { in: createdCustomerIds } },
+        overrideAccess: true,
+      })
+      expect(remainingCusts.totalDocs).toBe(0)
+    }
 
     await payload.destroy()
   }, 30000)
@@ -229,7 +240,9 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
 
     it('rút ngẫu nhiên không trùng thẻ vừa rút liền trước khi có ≥ 2 thẻ', async () => {
       // Khi loại trừ cardACode, nếu candidates có ≥ 2 thì không được trả về cardACode
-      for (let i = 0; i < 5; i++) {
+      // First and last candidate: without the filter one of them is cardA on a clean DB
+      for (const r of [0, 0.9999]) {
+        vi.spyOn(Math, 'random').mockReturnValue(r)
         const res = await drawEqCardCore(
           { mode: 'random', previousCardCode: cardACode },
           { guestCookieOverride: null },
@@ -239,6 +252,7 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
           expect(res.card.code).not.toBe(cardACode)
         }
       }
+      vi.restoreAllMocks()
     })
 
     it('chọn theo từ khóa với slug nháp hoặc không tồn tại trả về lỗi NOT_FOUND', async () => {

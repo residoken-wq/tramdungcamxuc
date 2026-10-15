@@ -19,24 +19,10 @@ export default async function EqRutThePage() {
   // 1. Kiểm tra quyền truy cập (khách rút 1 thẻ / thành viên có trial hoặc active)
   const access = await checkEqDrawAccess()
 
-  // 2. Nếu đã hết quyền ngay từ khi tải trang (ví dụ khách đã rút trước đó hoặc trial hết hạn)
-  if (!access.allowed) {
-    return (
-      <div className="w-full py-10 sm:py-16 px-6">
-        <div className="max-w-xl mx-auto mb-6">
-          <Link
-            href="/eq-buddy"
-            className="inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-deep-navy/70 hover:text-bright-magenta motion-reduce:transition-none transition-colors"
-          >
-            ← {vi.eqBuddy.draw.backToIntro}
-          </Link>
-        </div>
-        <ToolPaywall productSlug={EQ_BUDDY_PRODUCT_SLUG} />
-      </div>
-    )
-  }
-
-  // 3. Lấy danh sách 26 từ khóa A–Z đã xuất bản
+  // The wizard is always rendered at the same position: after a guest's free draw the server
+  // action sets the cookie and Next re-renders this page; switching to a different element here
+  // would unmount the wizard and hide the card just drawn (T3-02c). The paywall is passed in and
+  // shown by the wizard itself.
   const keywords = await getPublishedEqKeywords()
 
   return (
@@ -50,7 +36,17 @@ export default async function EqRutThePage() {
         </Link>
       </div>
 
-      <EqDrawWizard keywords={keywords} />
+      <EqDrawWizard
+        keywords={keywords}
+        initialStep={access.allowed ? 1 : 'paywall'}
+        paywall={
+          <ToolPaywall
+            productSlug={EQ_BUDDY_PRODUCT_SLUG}
+            badge={vi.eqBuddy.draw.paywall.badge}
+            fallbackDescription={vi.eqBuddy.draw.paywall.description}
+          />
+        }
+      />
     </div>
   )
 }

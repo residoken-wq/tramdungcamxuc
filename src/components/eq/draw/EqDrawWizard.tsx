@@ -1,22 +1,27 @@
 'use client'
 
 import React, { useState, useSyncExternalStore } from 'react'
-import Link from 'next/link'
 import type { PublicEqCard, PublicEqCardKeyword } from '@/lib/eq/cards.server'
 import { drawEqCardAction } from '@/lib/eq/actions'
 import { EqCardFace } from '@/components/eq/EqCardFace'
 import { Button } from '@/components/ui/Button'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
-import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
 
 export interface EqDrawWizardProps {
   keywords: PublicEqCardKeyword[]
   initialCard?: PublicEqCard | null
   initialStep?: 1 | 2 | 3 | 4 | 5 | 'paywall'
+  /** Server-rendered ToolPaywall (trial / buy by the customer's status). */
+  paywall: React.ReactNode
 }
 
-export function EqDrawWizard({ keywords, initialCard = null, initialStep = 1 }: EqDrawWizardProps) {
+export function EqDrawWizard({
+  keywords,
+  initialCard = null,
+  initialStep = 1,
+  paywall,
+}: EqDrawWizardProps) {
   const isHydrated = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -69,55 +74,9 @@ export function EqDrawWizard({ keywords, initialCard = null, initialStep = 1 }: 
     }
   }
 
-  // MÀN HÌNH GIỚI HẠN DÙNG THỬ (PAYWALL)
+  // Paywall (rendered on the server with the customer's current status)
   if (currentStep === 'paywall') {
-    const trialUrl = `/dung-thu?san-pham=${encodeURIComponent(EQ_BUDDY_PRODUCT_SLUG)}`
-    const buyUrl = `/thanh-toan?san-pham=${encodeURIComponent(EQ_BUDDY_PRODUCT_SLUG)}`
-    const loginUrl = `/tai-khoan/dang-nhap?next=${encodeURIComponent('/eq-buddy/rut-the')}`
-
-    return (
-      <div className="w-full max-w-xl mx-auto py-12 px-4">
-        <div className="bg-warm-ivory rounded-3xl border border-deep-navy/15 p-6 sm:p-10 shadow-soft text-center space-y-6">
-          <div>
-            <span className="inline-block px-3.5 py-1 rounded-full text-xs font-ui font-bold bg-soft-pink text-bright-magenta tracking-wider uppercase">
-              {vi.eqBuddy.draw.paywall.badge}
-            </span>
-          </div>
-
-          <h2 className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy leading-snug">
-            {vi.eqBuddy.draw.paywall.title}
-          </h2>
-
-          <p className="font-sans text-sm sm:text-base text-deep-navy/85 max-w-md mx-auto leading-relaxed">
-            {vi.eqBuddy.draw.paywall.description}
-          </p>
-
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href={trialUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 transition-all motion-reduce:transition-none shadow-sm"
-            >
-              {vi.eqBuddy.draw.paywall.trialButton(21)}
-            </Link>
-            <Link
-              href={buyUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full border border-deep-navy/20 text-deep-navy bg-warm-ivory hover:bg-lavender-mist/40 font-ui font-bold text-sm transition-all motion-reduce:transition-none shadow-sm"
-            >
-              {vi.eqBuddy.draw.paywall.buyButton}
-            </Link>
-          </div>
-
-          <div className="pt-2 border-t border-deep-navy/10">
-            <Link
-              href={loginUrl}
-              className="font-ui text-xs text-deep-navy/70 hover:text-bright-magenta font-semibold transition-colors"
-            >
-              {vi.eqBuddy.draw.paywall.loginButton} →
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
+    return <>{paywall}</>
   }
 
   return (
@@ -153,7 +112,7 @@ export function EqDrawWizard({ keywords, initialCard = null, initialStep = 1 }: 
               onChange={(e) => setFeeling(e.target.value)}
               placeholder={vi.eqBuddy.draw.step1.feelingPlaceholder}
               rows={2}
-              className="w-full px-4 py-3 rounded-2xl bg-white border border-deep-navy/15 text-deep-navy font-sans text-sm focus:outline-none focus:ring-2 focus:ring-bright-magenta/50"
+              className="w-full px-4 py-3 rounded-2xl bg-warm-ivory border border-deep-navy/15 text-deep-navy font-sans text-sm focus:outline-none focus:ring-2 focus:ring-bright-magenta/50"
             />
           </div>
 
@@ -327,7 +286,7 @@ export function EqDrawWizard({ keywords, initialCard = null, initialStep = 1 }: 
               }}
               className="font-ui text-xs font-semibold text-deep-navy/70 hover:text-bright-magenta underline transition-colors"
             >
-              Xem lại câu hỏi
+              {vi.eqBuddy.draw.step4.backToQuestions}
             </button>
           </div>
 
@@ -345,7 +304,7 @@ export function EqDrawWizard({ keywords, initialCard = null, initialStep = 1 }: 
               onChange={(e) => setReflection(e.target.value)}
               placeholder={vi.eqBuddy.draw.step4.reflectionPlaceholder}
               rows={5}
-              className="w-full px-4 py-3 rounded-2xl bg-white border border-deep-navy/15 text-deep-navy font-sans text-base leading-relaxed focus:outline-none focus:ring-2 focus:ring-bright-magenta/50"
+              className="w-full px-4 py-3 rounded-2xl bg-warm-ivory border border-deep-navy/15 text-deep-navy font-sans text-base leading-relaxed focus:outline-none focus:ring-2 focus:ring-bright-magenta/50"
             />
             <p className="font-sans text-xs text-deep-navy/60 italic pt-1">
               * {vi.eqBuddy.draw.step4.localOnlyNotice}
