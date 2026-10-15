@@ -171,7 +171,11 @@ export default async function TrialPage({ searchParams }: PageProps) {
 
         {access.status === 'expired' && (
           <div className="p-5 rounded-2xl bg-butter-cream/60 border border-butter-cream space-y-4">
-            <p className="font-sans text-sm text-deep-navy font-medium">{vi.trial.expiredNotice}</p>
+            <p className="font-sans text-sm text-deep-navy font-medium">
+              {access.expiredType === 'purchased'
+                ? vi.trial.expiredPurchasedNotice
+                : vi.trial.expiredNotice}
+            </p>
             <div>
               <Link
                 href={`/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`}

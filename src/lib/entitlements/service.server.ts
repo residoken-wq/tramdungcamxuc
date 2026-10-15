@@ -292,11 +292,13 @@ export async function getAccess(
     hasAccess: boolean
     expiresAt: Date | null
     daysLeft: number | null
+    expiredType?: 'trial' | 'purchased'
   }
 
   const evaluated: EvaluatedEntitlement[] = docs.map((doc) => {
     const expiresAt = doc.expiresAt ? new Date(doc.expiresAt) : null
     const isExpiredAtNow = expiresAt !== null && now.getTime() >= expiresAt.getTime()
+    const isPurchased = doc.source !== 'trial'
 
     if (isExpiredAtNow || doc.status === 'expired') {
       return {
@@ -304,6 +306,7 @@ export async function getAccess(
         hasAccess: false,
         expiresAt,
         daysLeft: 0,
+        expiredType: isPurchased ? 'purchased' : 'trial',
       }
     }
 
@@ -338,6 +341,7 @@ export async function getAccess(
       hasAccess: false,
       expiresAt,
       daysLeft: 0,
+      expiredType: isPurchased ? 'purchased' : 'trial',
     }
   })
 
@@ -363,15 +367,21 @@ export async function getAccess(
 
   // 3. Toàn bộ bản ghi đã hết hạn
   const expiredDocs = evaluated.filter((e) => e.status === 'expired')
-  expiredDocs.sort((a, b) => (b.expiresAt?.getTime() ?? 0) - (a.expiresAt?.getTime() ?? 0))
-  return (
-    expiredDocs[0] ?? {
-      hasAccess: false,
-      status: 'none',
-      expiresAt: null,
-      daysLeft: null,
-    }
-  )
+  if (expiredDocs.length > 0) {
+    // Ưu tiên quyền mua có hạn đã hết nếu có
+    const purchased = expiredDocs.find((e) => e.expiredType === 'purchased')
+    if (purchased) return purchased
+
+    expiredDocs.sort((a, b) => (b.expiresAt?.getTime() ?? 0) - (a.expiresAt?.getTime() ?? 0))
+    return expiredDocs[0]!
+  }
+
+  return {
+    hasAccess: false,
+    status: 'none',
+    expiresAt: null,
+    daysLeft: null,
+  }
 }
 
 /**

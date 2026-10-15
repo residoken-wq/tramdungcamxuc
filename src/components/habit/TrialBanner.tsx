@@ -64,16 +64,24 @@ export async function TrialBanner({
   }
 
   if (access.status === 'expired') {
+    const isPurchasedExpired = access.expiredType === 'purchased'
+    const ariaLabel = isPurchasedExpired
+      ? vi.trial.banner.expiredPurchasedAria
+      : vi.trial.banner.expiredAria
+    const expiredText = isPurchasedExpired
+      ? vi.trial.banner.expiredPurchased
+      : vi.trial.banner.expired
+
     return (
       <aside
-        aria-label={vi.trial.banner.expiredAria}
+        aria-label={ariaLabel}
         className="w-full bg-butter-cream/90 border-b border-butter-cream py-2.5 px-4 text-deep-navy"
       >
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-accent-pink shrink-0" />
             <p className="font-sans text-xs sm:text-sm font-semibold text-deep-navy">
-              {vi.trial.banner.expired}
+              {expiredText}
             </p>
           </div>
           <Link

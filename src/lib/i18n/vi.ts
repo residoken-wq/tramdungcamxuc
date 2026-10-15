@@ -1128,12 +1128,15 @@ export const vi = {
     alreadyActiveTrialNotice: (daysLeft: number) =>
       `Bạn đang trong thời gian dùng thử (còn ${daysLeft} ngày).`,
     expiredNotice: 'Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ.',
+    expiredPurchasedNotice: 'Thời hạn sử dụng đã kết thúc – dữ liệu của bạn vẫn được giữ.',
     generalError: 'Có lỗi xảy ra khi bắt đầu dùng thử. Vui lòng thử lại sau.',
     banner: {
       trialAria: 'Thông báo dùng thử',
       expiredAria: 'Thông báo hết hạn dùng thử',
+      expiredPurchasedAria: 'Thông báo hết hạn sử dụng',
       daysLeft: (days: number) => `Còn ${days} ngày dùng thử`,
       expired: 'Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ',
+      expiredPurchased: 'Thời hạn sử dụng đã kết thúc – dữ liệu của bạn vẫn được giữ',
       buyButton: 'Mua để dùng tiếp',
     },
     email: {
