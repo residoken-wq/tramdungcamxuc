@@ -100,6 +100,16 @@
   ```powershell
   $env:EQ_CARDS_FILE="C:\secure\eq-cards-26.json"; pnpm import:eq; Remove-Item Env:\EQ_CARDS_FILE
   ```
+- **Trên server Docker** (server không cài `pnpm`; chạy trong image `tools`, file JSON gắn vào container ở thư mục ngoài `/app`):
+  ```bash
+  cd /opt/tramdungcamxuc
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools pull seed < /dev/null
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm \
+    -v /root/eq-cards-26.json:/import/eq-cards.json:ro \
+    -e EQ_CARDS_FILE=/import/eq-cards.json \
+    seed pnpm import:eq < /dev/null
+  ```
+  Thay `/root/eq-cards-26.json` bằng đường dẫn thật của file trên server (ngoài thư mục repo). Chạy lại không tạo trùng.
 - **Hành vi an toàn của lệnh**:
   - Xác thực toàn bộ dữ liệu qua Zod (mã `code` `TDCX-01`…`TDCX-26`, từ khóa `keywordEn`, mã QR `qrSlug` theo regex, thông điệp `message`, đủ 3 câu hỏi `promptRecall`, `promptPack`, `promptAcknowledge`). Nếu có bất kỳ lỗi định dạng nào, lệnh sẽ dừng ngay và không ghi gì vào DB.
   - Tự động gán sản phẩm liên quan `relatedProduct` (`eq-buddy-so`).
