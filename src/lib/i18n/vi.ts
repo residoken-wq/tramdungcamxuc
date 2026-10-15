@@ -1436,11 +1436,9 @@ export const vi = {
   eqBuddy: {
     cardPage: {
       seriesLabel: (code: string) => `EQ BUDDY · ${code}`,
-      defaultMetaTitle: 'Thẻ EQ Buddy – Trạm Dừng Cảm Xúc',
+      defaultMetaTitle: 'Thẻ EQ Buddy',
       metaTitle: (code: string, snippet: string) =>
-        snippet
-          ? `EQ BUDDY · ${code} – ${snippet} | Trạm Dừng Cảm Xúc`
-          : `EQ BUDDY · ${code} – Trạm Dừng Cảm Xúc`,
+        snippet ? `EQ BUDDY · ${code} – ${snippet}` : `EQ BUDDY · ${code}`,
       defaultMetaDescription: 'Thông điệp và câu chuyện từ bộ thẻ EQ Buddy – Trạm Dừng Cảm Xúc',
       backToDeck: 'Trở về EQ Buddy',
       drawAnotherCard: 'Rút thêm một thẻ',

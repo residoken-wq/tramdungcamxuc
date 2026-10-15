@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: CardPageProps): Promise<Metad
     }
   }
 
-  const snippet = card.message?.trim().slice(0, 120) || ''
+  const snippet = card.message?.trim().slice(0, 60) || ''
 
   return {
     title: vi.eqBuddy.cardPage.metaTitle(card.code, snippet),
@@ -45,7 +45,7 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
   const hasStory = Boolean(card.story && !isRichTextEmpty(card.story))
 
   return (
-    <main className="w-full bg-warm-ivory min-h-screen py-10 sm:py-16 px-6 sm:px-8">
+    <div className="w-full py-10 sm:py-16 px-6 sm:px-8">
       <div className="max-w-2xl mx-auto">
         {/* Điều hướng quay lại */}
         <div className="mb-6 sm:mb-8">
@@ -58,7 +58,7 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
         </div>
 
         {/* Thẻ nội dung chính */}
-        <article className="rounded-3xl bg-white border border-lavender-mist shadow-soft p-6 sm:p-10 md:p-12">
+        <article className="rounded-3xl bg-warm-ivory border border-lavender-mist shadow-soft p-6 sm:p-10 md:p-12">
           {/* Nhãn Series & Mã thẻ */}
           <div className="text-center mb-6">
             <span className="inline-block px-3.5 py-1 rounded-full bg-soft-pink text-bright-magenta font-ui text-xs sm:text-sm font-bold uppercase tracking-wider">
@@ -100,7 +100,7 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
           )}
 
           {/* Chỗ trống cho khối chia sẻ / offer (T3-05 làm component; T3-02 gắn) */}
-          <div id="eq-card-share-slot" aria-hidden="true" className="empty:hidden" />
+          <div id="eq-card-share-slot" className="empty:hidden" />
 
           {/* CTA: Rút thêm một thẻ */}
           <div className="mt-10 pt-8 border-t border-deep-navy/10 flex flex-col items-center">
@@ -118,6 +118,6 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
 
       {/* Ghi nhận phân tích một lần duy nhất khi mở trang từ QR */}
       <QrOpenedTracker cardCode={card.code} qrSlug={card.qrSlug} />
-    </main>
+    </div>
   )
 }

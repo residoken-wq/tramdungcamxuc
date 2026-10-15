@@ -68,7 +68,12 @@ describe('EQ Card QR & Printing Export (T3-03)', () => {
         await payload.delete({ collection: 'users', id: editorId, overrideAccess: true })
       }
       if (customerId) {
-        await payload.delete({ collection: 'customers', id: customerId, overrideAccess: true })
+        await payload.delete({
+          collection: 'customers',
+          id: customerId,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       }
     } catch {
       // Ignore cleanup errors
@@ -85,9 +90,13 @@ describe('EQ Card QR & Printing Export (T3-03)', () => {
       expect(buildCardQrUrl('biet-on', 'https://demo.tramdungcamxuc.com/')).toBe(
         'https://demo.tramdungcamxuc.com/eq-buddy/the/biet-on',
       )
-      // Base url mặc định từ getSiteUrl()
+      // Default base is always the production domain, even when SITE_URL points at a demo host
+      const prevSiteUrl = process.env.SITE_URL
+      process.env.SITE_URL = 'http://10.0.0.1:3400'
       const url = buildCardQrUrl('tu-tin')
-      expect(url).toMatch(/^https?:\/\/.+\/eq-buddy\/the\/tu-tin$/)
+      if (prevSiteUrl === undefined) delete process.env.SITE_URL
+      else process.env.SITE_URL = prevSiteUrl
+      expect(url).toBe('https://tramdungcamxuc.com/eq-buddy/the/tu-tin')
       expect(url).not.toContain('?')
       expect(url).not.toContain('&')
     })
@@ -181,7 +190,7 @@ describe('EQ Card QR & Printing Export (T3-03)', () => {
 
       // Kiểm tra chống CSV injection: code bắt đầu bằng '=' được escape thành "'="
       expect(csv).toContain(`'=SUM(1)-${suffix}`)
-      expect(csv).not.toContain(`,=SUM(1)-${suffix},`)
+      expect(csv).not.toMatch(new RegExp(`(^|\\n)=SUM\\(1\\)-${suffix}`))
     })
   })
 

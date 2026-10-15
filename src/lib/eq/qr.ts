@@ -1,13 +1,13 @@
 import QRCode from 'qrcode'
-import { getSiteUrl } from '../site-url'
+import { DEFAULT_SITE_URL } from '../site-url'
 
 /**
- * Xây dựng liên kết cố định in trên mã QR vật lý cho thẻ EQ Buddy.
- * Đích đến là /eq-buddy/the/[qrSlug] – tuyệt đối không thêm tham số truy vấn
- * vì mã QR sau khi in ấn không thể thay đổi được.
+ * Link printed on a physical card's QR: /eq-buddy/the/[qrSlug], no query string.
+ * Always the production domain (not getSiteUrl()): a QR exported from the demo admin would
+ * otherwise encode the demo host forever, and printed cards cannot be changed (T3-03c).
  */
 export function buildCardQrUrl(qrSlug: string, baseUrl?: string): string {
-  const base = (baseUrl !== undefined ? baseUrl : getSiteUrl()).trim().replace(/\/+$/, '')
+  const base = (baseUrl !== undefined ? baseUrl : DEFAULT_SITE_URL).trim().replace(/\/+$/, '')
   const cleanSlug = (qrSlug || '').trim()
   return `${base}/eq-buddy/the/${cleanSlug}`
 }

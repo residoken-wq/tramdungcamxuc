@@ -32,7 +32,8 @@ export async function GET(request: Request): Promise<Response> {
     collection: 'eqCards',
     limit: 1000,
     sort: 'order',
-    draft: true,
+    // Published version: a pending draft edit (new qrSlug, printedAt) must not reach the print file.
+    draft: false,
     overrideAccess: true,
   })
 
@@ -51,9 +52,11 @@ export async function GET(request: Request): Promise<Response> {
     const statusText = isPublished
       ? vi.eqBuddy.qrExport.statusPublished
       : vi.eqBuddy.qrExport.statusDraft
-    const qrUrl = buildCardQrUrl(card.qrSlug || '', siteUrl)
+    const qrUrl = buildCardQrUrl(card.qrSlug || '')
     const pngUrl = `${siteUrl}/api/eq-cards/${card.id}/qr`
-    const printedAtText = card.printedAt ? String(card.printedAt) : ''
+    const printedAtText = card.printedAt
+      ? new Date(card.printedAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+      : ''
 
     return [card.code || '', card.qrSlug || '', qrUrl, statusText, printedAtText, pngUrl]
   })

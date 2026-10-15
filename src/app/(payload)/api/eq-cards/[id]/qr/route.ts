@@ -36,7 +36,7 @@ export async function GET(
     card = await payload.findByID({
       collection: 'eqCards',
       id,
-      draft: true,
+      draft: false,
       overrideAccess: true,
     })
   } catch {

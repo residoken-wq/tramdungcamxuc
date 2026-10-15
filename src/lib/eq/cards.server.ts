@@ -63,8 +63,10 @@ export const getPublishedEqCardByQrSlug = cache(
         order: typeof doc.order === 'number' ? doc.order : null,
         _status: doc._status ? String(doc._status) : null,
       }
-    } catch {
-      return null
+    } catch (err) {
+      // A DB outage must show the error page, not a 404 on a printed QR.
+      if ((err as { status?: number })?.status === 404) return null
+      throw err
     }
   },
 )
