@@ -196,6 +196,20 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T3-04 | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản                                                      | [REVIEW] | T3-02        | PC nhà   | Giao 15/10 – `prompts/T3-04.md` (sau khi T3-02 merge); 🔒 Migration                                                     |
 | T3-06 | E2E luồng EQ + cổng GĐ 3                                                                                   | [HANA]   | tất cả       | Planning | –                                                                                                                       |
 
+### CMS-UX cho Hana (kế hoạch `docs/plan/CMS_UX.md`, viết 15/10)
+
+| Mã    | Việc                                                       | Phụ thuộc    | Máy đề xuất | Trạng thái                     |
+| ----- | ---------------------------------------------------------- | ------------ | ----------- | ------------------------------ |
+| CM-01 | Menu theo việc + ẩn mục kỹ thuật theo vai trò + logo admin | –            | Local       | Chưa giao (`prompts/CM-01.md`) |
+| CM-02 | Dashboard "Hôm nay"                                        | CM-01        | Laptop      | Chưa giao (`prompts/CM-02.md`) |
+| CM-03 | Form Sản phẩm theo loại (tabs, ẩn trường, cảnh báo)        | –            | PC nhà      | Chưa giao (`prompts/CM-03.md`) |
+| CM-05 | Live Preview cho sản phẩm, bài học, thẻ EQ, testimonial…   | –            | Laptop      | Chưa giao (`prompts/CM-05.md`) |
+| CM-04 | Wizard "Tạo sản phẩm" 5 bước                               | CM-03, CM-05 | PC nhà      | Chưa giao (`prompts/CM-04.md`) |
+| CM-06 | Wizard "Thêm bài học" + "Lên lịch workshop"                | CM-04        | Local       | Chưa giao (`prompts/CM-06.md`) |
+| CM-07 | Hướng dẫn CMS + buổi thử với Hana (5 việc, bấm giờ)        | CM-01→06     | Planning    | –                              |
+
+Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ CM-03 ‖ CM-05.
+
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 
 - [ ] Báo cáo đủ 6 mục theo mẫu AGENTS.md mục 13
