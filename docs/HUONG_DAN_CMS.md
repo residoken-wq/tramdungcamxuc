@@ -8,9 +8,10 @@
 ## Mục lục
 
 1. [Đăng nhập và Bảo mật tài khoản](#1-đăng-nhập-và-bảo-mật-tài-khoản)
-   - [1.4. Khách hàng đăng nhập thế nào](#14-khách-hàng-đăng-nhập-thế-nào)
-   - [1.5. Khách hàng tự xem đơn hàng và link thanh toán tại /tai-khoan](#15-khách-hàng-tự-xem-đơn-hàng-và-link-thanh-toán-tại-tai-khoan)
-   - [1.6. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách](#16-khách-hàng-yêu-cầu-xóa-tài-khoản--hana-xóa-dữ-liệu-khách)
+   - [1.4. Cấu trúc menu bên trái theo công việc của Hana](#14-cấu-trúc-menu-bên-trái-theo-công-việc-của-hana)
+   - [1.5. Khách hàng đăng nhập thế nào](#15-khách-hàng-đăng-nhập-thế-nào)
+   - [1.6. Khách hàng tự xem đơn hàng và link thanh toán tại /tai-khoan](#16-khách-hàng-tự-xem-đơn-hàng-và-link-thanh-toán-tại-tai-khoan)
+   - [1.7. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách](#17-khách-hàng-yêu-cầu-xóa-tài-khoản--hana-xóa-dữ-liệu-khách)
 2. [Nhận biết và Làm việc với dữ liệu mẫu](#2-nhận-biết-và-làm-việc-với-dữ-liệu-mẫu)
 3. [Quản lý Sản phẩm, Giá bán và Tài nguyên](#3-quản-lý-sản-phẩm-giá-bán-và-tài-nguyên)
    - [3.6. Xem trước khi sửa dịch vụ, chương trình và bài viết (Live Preview)](#36-xem-trước-khi-sửa-dịch-vụ-chương-trình-và-bài-viết-live-preview)
@@ -87,7 +88,32 @@ Hệ thống phân chia tài khoản quản trị thành hai vai trò rõ ràng 
 
 ---
 
-### 1.4. Khách hàng đăng nhập thế nào
+### 1.4. Cấu trúc menu bên trái theo công việc của Hana
+
+**Mục đích**: Menu quản trị được thiết kế theo đúng luồng công việc tự nhiên hàng ngày của Hana, chia thành 6 nhóm mạch lạc, giúp Hana và cộng sự tìm kiếm thông tin nhanh chóng mà không bị rối mắt bởi các bảng dữ liệu kỹ thuật.
+
+#### Bảng 6 nhóm menu chính
+
+| Tên nhóm                | Mục đích công việc                                                                                             | Các mục hiển thị trong nhóm                                                                                                                                                                                                                                                                                                                              | Ai nhìn thấy?      |
+| :---------------------- | :------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------- |
+| **Trang web**           | Quản lý các trang nội dung công khai, bài viết chia sẻ, cảm nhận của khách hàng, chân trang và cấu hình chung. | • **Trang** (`pages`): Dựng trang bằng Puck editor.<br>• **Bài viết** (`posts`): Blog và bài chia sẻ.<br>• **Lời chia sẻ** (`testimonials`): Đánh giá của học viên.<br>• **Trang pháp lý** (`legalPages`): Điều khoản, bảo mật.<br>• **Menu** (`navigation`): Menu đầu và chân trang.<br>• **Cài đặt website** (`siteSettings`): Ngân hàng VietQR, logo. | `owner` + `editor` |
+| **Sản phẩm & bán hàng** | Quản lý danh mục gói đồng hành, sách điện tử, dịch vụ coaching, đơn hàng và ưu đãi.                            | • **Sản phẩm** (`products`): Công cụ số, gói đồng hành, ebook.<br>• **Dịch vụ đồng hành** (`services`): Coaching 1:1, tư vấn.<br>• **Chương trình doanh nghiệp** (`programs`): Đào tạo B2B.<br>• **Đơn hàng** (`orders`): Theo dõi và xác nhận đơn chuyển khoản.<br>• **Mã giảm giá** (`discountCodes`): Ưu đãi cho chiến dịch.                          | `owner` + `editor` |
+| **Khóa Habit**          | Quản lý toàn bộ nội dung khóa học Habit Hack 1% Better và hoạt động tương tác.                                 | • **Nhóm bài học** (`courseModules`): 7 chặng học tập.<br>• **Bài học** (`lessons`): 20 bài học kèm video Bunny Stream.<br>• **Kỹ thuật** (`techniques`): 11 kỹ thuật can thiệp hành vi.<br>• **Câu hỏi quiz** (`diagnosticQuestions`): 16 tình huống trì hoãn.<br>• **Lịch workshop** (`workshops`): Lịch học Zoom và đường dẫn.                        | `owner` + `editor` |
+| **EQ Buddy**            | Quản lý bộ 26 thẻ nhận diện và điều hòa cảm xúc.                                                               | • **Thẻ EQ** (`eqCards`): 26 thẻ bài, thông điệp, câu chuyện, câu hỏi đào sâu và xuất mã QR in ấn.                                                                                                                                                                                                                                                       | `owner` + `editor` |
+| **Học viên & khách**    | Chăm sóc học viên, theo dõi quá trình rèn luyện và cấp chứng nhận hoàn thành.                                  | • **Khách hàng** (`customers`): Danh sách học viên và tài khoản.<br>• **Khách tiềm năng** (`leads`): Thu thập email từ form, xuất CSV.<br>• **Chứng nhận** (`certificates`): Chứng nhận 21 ngày hoàn thành.<br>• **Kế hoạch thói quen** (`habitPlans`): Kế hoạch Habit Loop 5 phút.                                                                      | `owner` + `editor` |
+| **Hệ thống**            | Khu vực kỹ thuật dành riêng cho Chủ dự án và IT: phân quyền, kiểm tra lỗi, đối soát thanh toán.                | • Quản trị viên, Media, Quyền truy cập, Check-in, Tiến độ bài học, Kết quả quiz, Thẻ đã lưu, Sự kiện thanh toán, Nhật ký kiểm toán, Nhắc dùng thử, Nhắc workshop, Nhắc tracker, Mã OTP, Giới hạn tần suất, Lịch sử dùng thử, Tài liệu riêng tư (16 collections).                                                                                         | **Chỉ `owner`**    |
+
+#### Bảo vệ an toàn: Ẩn mục kỹ thuật với vai trò Biên tập (`editor`)
+
+- Khi cộng sự hoặc trợ lý đăng nhập bằng tài khoản `editor`, nhóm **Hệ thống** sẽ **tự động ẩn hoàn toàn khỏi thanh menu bên trái**.
+- **Lợi ích**:
+  - Giao diện của cộng sự cực kỳ gọn gàng, chỉ tập trung vào việc viết bài, cập nhật bài học và chăm sóc học viên.
+  - Ngăn ngừa tuyệt đối nguy cơ bấm nhầm làm thay đổi tài khoản ngân hàng, xóa dữ liệu nhật ký bảo mật hoặc can thiệp vào các tiến trình thanh toán tự động của hệ thống.
+  - Hana (vai trò `owner`) vẫn xem được đầy đủ 6 nhóm để đối soát khi cần.
+
+---
+
+### 1.5. Khách hàng đăng nhập thế nào
 
 **Mục đích**: Giúp Hana nắm rõ trải nghiệm của học viên và khách hàng khi truy cập vào hệ thống học tập hoặc tài khoản cá nhân (Hana không cần thao tác gì, hệ thống xử lý tự động 100%).
 
@@ -98,7 +124,7 @@ Hệ thống phân chia tài khoản quản trị thành hai vai trò rõ ràng 
 
 ---
 
-### 1.5. Khách hàng tự xem đơn hàng và link thanh toán tại `/tai-khoan`
+### 1.6. Khách hàng tự xem đơn hàng và link thanh toán tại `/tai-khoan`
 
 **Mục đích**: Giúp khách hàng chủ động kiểm tra trạng thái đơn, tiếp tục thanh toán đơn chưa trả hoặc tải lại tài liệu mà Hana không cần phải tìm và gửi lại link thanh toán thủ công.
 
@@ -113,7 +139,9 @@ Hệ thống phân chia tài khoản quản trị thành hai vai trò rõ ràng 
   - Khách báo không tải được: kiểm tra đơn ở trạng thái **Đã thanh toán** và sản phẩm vẫn còn file đính kèm trong mục **Tài liệu đính kèm**.
 - **Bảo mật và an toàn**: Đơn đã hủy (`cancelled`) không lộ mã chuyển khoản hay thông tin nội bộ. Khách chỉ xem được đơn thuộc về chính tài khoản của mình.
 
-### 1.6. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách
+---
+
+### 1.7. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách
 
 **Mục đích**: Thực hiện quyền xóa dữ liệu cá nhân theo quy định bảo vệ dữ liệu (Nghị định 13/2023/NĐ-CP) khi khách hàng không còn nhu cầu sử dụng dịch vụ trên Trạm Dừng Cảm Xúc.
 
