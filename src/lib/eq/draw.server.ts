@@ -84,12 +84,16 @@ export async function checkEqDrawAccess(options?: CheckAccessOptions): Promise<{
   accessStatus?: string
   trialDays?: number
 }> {
-  const customer =
-    options?.customerIdOverride !== undefined
-      ? options.customerIdOverride
-        ? { id: options.customerIdOverride }
-        : null
-      : await getCurrentCustomer()
+  let customer: { id: number } | null = null
+  if (options?.customerIdOverride !== undefined) {
+    customer = options.customerIdOverride ? { id: options.customerIdOverride } : null
+  } else {
+    try {
+      customer = await getCurrentCustomer()
+    } catch {
+      customer = null
+    }
+  }
 
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
@@ -130,8 +134,12 @@ export async function checkEqDrawAccess(options?: CheckAccessOptions): Promise<{
   // Unauthenticated guest check
   let rawCookie: string | undefined | null = options?.guestCookieOverride
   if (rawCookie === undefined) {
-    const cookieStore = await cookies()
-    rawCookie = cookieStore.get(EQ_DRAW_GUEST_COOKIE)?.value
+    try {
+      const cookieStore = await cookies()
+      rawCookie = cookieStore.get(EQ_DRAW_GUEST_COOKIE)?.value
+    } catch {
+      rawCookie = null
+    }
   }
 
   const { count } = verifyGuestDrawCookie(rawCookie)
