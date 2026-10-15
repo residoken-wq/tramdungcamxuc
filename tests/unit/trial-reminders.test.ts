@@ -50,18 +50,39 @@ describe('Trial 21-Day Reminders & Cron (T2-04)', () => {
   })
 
   afterAll(async () => {
-    // Dọn dẹp dữ liệu test theo thứ tự ngược lại
+    // 1. Dọn dẹp bản ghi trialReminders trước (con của customer & entitlement)
+    try {
+      await payload.delete({
+        collection: 'trialReminders',
+        where: { id: { exists: true } },
+        overrideAccess: true,
+        context: { accountDeletion: true },
+      })
+    } catch {}
+
+    // 2. Dọn dẹp dữ liệu test theo thứ tự ngược lại
     for (let i = created.length - 1; i >= 0; i--) {
       const item = created[i]
       try {
+        if (item.collection === 'customers') {
+          try {
+            await payload.delete({
+              collection: 'entitlements',
+              where: { customer: { equals: item.id } },
+              overrideAccess: true,
+            })
+          } catch {}
+        }
         await payload.delete({
           collection: item.collection,
           id: item.id,
           overrideAccess: true,
           context: { accountDeletion: true },
         })
-      } catch (_err) {
-        // Bỏ qua nếu đã xóa
+      } catch (err) {
+        if (item.collection === 'customers') {
+          throw err
+        }
       }
     }
   })
