@@ -1,5 +1,6 @@
 import type { CollectionSlug, Payload, Where } from 'payload'
 import * as data from './data'
+import { EQ_BUDDY_PRODUCT_SLUG } from '../src/lib/eq/config'
 
 // The seed writes many collections through one generic helper; Payload's per-collection
 // generics cannot express that, so writes go through this deliberately loose view.
@@ -86,12 +87,6 @@ export async function seed(payload: Payload): Promise<SeedReport> {
       { publish: false },
     )
 
-  const eqBuddy = productIds.get('eq-buddy-so')
-  for (const { code, ...card } of data.eqCards)
-    await upsert('eqCards', 'code', code, { ...card, relatedProduct: eqBuddy })
-
-  // Once Hana's real Habit Hack content is imported (pnpm import:habit), samples would
-  // mix into the quiz and the course, so these collections are left alone.
   const hasReal = async (collection: CollectionSlug) =>
     (
       await payload.count({
@@ -99,6 +94,14 @@ export async function seed(payload: Payload): Promise<SeedReport> {
         where: { isSample: { not_equals: true } },
       })
     ).totalDocs > 0
+
+  const eqHasReal = await hasReal('eqCards')
+  const eqBuddy = productIds.get(EQ_BUDDY_PRODUCT_SLUG)
+  for (const { code, ...card } of eqHasReal ? [] : data.eqCards)
+    await upsert('eqCards', 'code', code, { ...card, relatedProduct: eqBuddy })
+
+  // Once Hana's real Habit Hack content is imported (pnpm import:habit), samples would
+  // mix into the quiz and the course, so these collections are left alone.
   const habitHasReal = (
     await Promise.all(
       (['diagnosticQuestions', 'techniques', 'courseModules', 'lessons'] as const).map(hasReal),

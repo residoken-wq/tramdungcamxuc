@@ -262,12 +262,17 @@ export const testimonials = [1, 2, 3].map((n) => ({
 export const eqCards = [1, 2, 3].map((n) => ({
   code: `MAU-${String(n).padStart(2, '0')}`,
   qrSlug: `mau-${String(n).padStart(2, '0')}`,
+  keywordVi: `${S} Thấu hiểu ${n}`,
+  keywordEn: `Clarity ${n}`,
   message: `${S} Thông điệp thẻ ${n}`,
   story: lexical(`${S} Câu chuyện của thẻ ${n}.`),
-  reflectionPrompt: `${S} Câu hỏi suy ngẫm ${n}?`,
+  reflectionPrompts: [
+    { prompt: `${S} Câu hỏi suy ngẫm ${n}A?` },
+    ...(n > 1 ? [{ prompt: `${S} Câu hỏi suy ngẫm ${n}B?` }] : []),
+  ],
   smallAction: `${S} Một hành động nhỏ ${n}`,
   topic: 'eq',
-  emotionTags: lines(`${S} cảm xúc ${n}`),
+  emotionTags: n === 1 ? ['joyful'] : n === 2 ? ['peaceful', 'serene'] : ['grateful', 'confident'],
   order: n,
 }))
 
