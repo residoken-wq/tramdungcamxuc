@@ -1,5 +1,6 @@
 import type { CollectionBeforeChangeHook, CollectionConfig, Field } from 'payload'
 import { date, relation, textarea } from '../fields/content'
+import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
 import {
   adminOrSelfCustomer,
   isEditorOrOwner,
@@ -36,7 +37,14 @@ export const SavedCards: CollectionConfig = {
     delete: isOwner,
   },
   hooks: {
-    beforeChange: [bindCustomerOnCreate],
+    beforeChange: [
+      bindCustomerOnCreate,
+      uniqueKeyHook({
+        keyField: 'saveKey',
+        parts: ['customer', 'card'],
+        message: vi.eqBuddy.savedCards.alreadySaved,
+      }),
+    ],
   },
   fields: [
     {
@@ -45,7 +53,13 @@ export const SavedCards: CollectionConfig = {
       access: { update: isEditorOrOwner },
     },
     { ...relation('card', 'Thẻ', 'eqCards'), required: true },
-    { ...textarea('reflection', 'Suy ngẫm'), access: { read: ownerOrSelfCustomerField } } as Field,
+    {
+      ...textarea('reflection', 'Suy ngẫm'),
+      maxLength: 2000,
+      // Suy ngẫm là dữ liệu nhạy cảm: editor không đọc, không sửa.
+      access: { read: ownerOrSelfCustomerField, update: ownerOrSelfCustomerField },
+    } as Field,
     { ...date('savedAt', 'Lưu lúc'), defaultValue: () => new Date().toISOString() },
+    uniqueKeyField('saveKey'),
   ],
 }

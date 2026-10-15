@@ -154,7 +154,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **MỞ 10/10/2026** (cổng GĐ 1 đạt). Quyết định đã chốt: Q8 SePay, Q9 Bunny, Q14 10 cảm xúc emoji, H1/H2 quiz 1–5 trung bình, Q19, D1/D2 server riêng. Còn mở: Q15 (giá, trong CMS).
 
-**🔒 Migration: T3-04 (PC nhà, từ khi T3-02 merge) · 🔒 Package: (trống)**
+**🔒 Migration: (trống – sau khi PR #127 merge) · 🔒 Package: (trống)**
 
 **Thứ tự máy (từ 11/10)**: Laptop = T2-00 → T2-12 → T1-18 → T2-10 → T2-05a · PC nhà = T2-01 → T2-13 → T2-02 → T2-08 · Local = T2-03 → T2-03b.
 
@@ -187,14 +187,14 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **Thứ tự máy**: PC nhà = T3-01 → T3-01b → T3-04 · Laptop = T3-03 → T2-18 → T3-02 · Local = T3-05 · Planning = QA, import 26 thẻ, T3-06.
 
-| Mã    | Task                                                                                                       | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                                                                                              |
-| ----- | ---------------------------------------------------------------------------------------------------------- | -------- | ------------ | -------- | ----------------------------------------------------------------------------------------------------------------------- |
-| T3-01 | Schema thẻ EQ (mặt trước: thông điệp + từ khóa; mặt sau: Gợi nhớ / Gói ghém / Ghi nhận) + lệnh nhập 26 thẻ |          | T2-16 merge  | PC nhà   | **ĐẠT** 15/10 (PR #116) – T3-01 + T3-01b, Planning sửa T3-01c; biên bản `reviews/T3-01.md`; merge xong trả 🔒 Migration |
-| T3-03 | Trang thẻ mở từ QR + xuất QR in ấn (CSV + PNG)                                                             | [REVIEW] | –            | Laptop   | **ĐẠT** 15/10 (PR #115) – Planning sửa T3-03c; IT duyệt; biên bản `reviews/T3-03.md`                                    |
-| T3-05 | Ảnh chia sẻ thẻ 4:5 / 9:16 + offer liên quan + nút Shopee                                                  |          | –            | Local    | **ĐẠT** 15/10 (PR #119) – Planning sửa T3-05c; biên bản `reviews/T3-05.md`                                              |
-| T3-02 | Luồng rút thẻ (ngẫu nhiên / theo từ khóa A–Z) + giới hạn dùng thử 21 ngày                                  | [REVIEW] | T3-01, T2-18 | Laptop   | **ĐẠT** 15/10 (PR #121) – Planning sửa T3-02c (khách mất thẻ sau khi rút); IT duyệt; biên bản `reviews/T3-02.md`        |
-| T3-04 | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản                                                      | [REVIEW] | T3-02        | PC nhà   | Giao 15/10 – `prompts/T3-04.md` (sau khi T3-02 merge); 🔒 Migration                                                     |
-| T3-06 | E2E luồng EQ + cổng GĐ 3                                                                                   | [HANA]   | tất cả       | Planning | –                                                                                                                       |
+| Mã    | Task                                                                                                       | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                                                                                                                                                               |
+| ----- | ---------------------------------------------------------------------------------------------------------- | -------- | ------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T3-01 | Schema thẻ EQ (mặt trước: thông điệp + từ khóa; mặt sau: Gợi nhớ / Gói ghém / Ghi nhận) + lệnh nhập 26 thẻ |          | T2-16 merge  | PC nhà   | **ĐẠT** 15/10 (PR #116) – T3-01 + T3-01b, Planning sửa T3-01c; biên bản `reviews/T3-01.md`; merge xong trả 🔒 Migration                                                                  |
+| T3-03 | Trang thẻ mở từ QR + xuất QR in ấn (CSV + PNG)                                                             | [REVIEW] | –            | Laptop   | **ĐẠT** 15/10 (PR #115) – Planning sửa T3-03c; IT duyệt; biên bản `reviews/T3-03.md`                                                                                                     |
+| T3-05 | Ảnh chia sẻ thẻ 4:5 / 9:16 + offer liên quan + nút Shopee                                                  |          | –            | Local    | **ĐẠT** 15/10 (PR #119) – Planning sửa T3-05c; biên bản `reviews/T3-05.md`                                                                                                               |
+| T3-02 | Luồng rút thẻ (ngẫu nhiên / theo từ khóa A–Z) + giới hạn dùng thử 21 ngày                                  | [REVIEW] | T3-01, T2-18 | Laptop   | **ĐẠT** 15/10 (PR #121) – Planning sửa T3-02c (khách mất thẻ sau khi rút); IT duyệt; biên bản `reviews/T3-02.md`                                                                         |
+| T3-04 | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản                                                      | [REVIEW] | T3-02        | PC nhà   | **ĐẠT** 15/10 (PR #127) – Planning sửa T3-04c (action tin id khách từ trình duyệt → xóa / ghi đè thẻ của người khác); IT duyệt; biên bản `reviews/T3-04.md`; merge xong trả 🔒 Migration |
+| T3-06 | E2E luồng EQ + cổng GĐ 3                                                                                   | [HANA]   | tất cả       | Planning | –                                                                                                                                                                                        |
 
 ### CMS-UX cho Hana (kế hoạch `docs/plan/CMS_UX.md`, viết 15/10)
 

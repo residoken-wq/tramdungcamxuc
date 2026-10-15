@@ -1736,6 +1736,7 @@ export interface SavedCard {
    * Chọn ngày và giờ áp dụng.
    */
   savedAt?: string | null;
+  saveKey?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2783,6 +2784,7 @@ export interface SavedCardsSelect<T extends boolean = true> {
   card?: T;
   reflection?: T;
   savedAt?: T;
+  saveKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }

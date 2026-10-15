@@ -15,6 +15,8 @@ import { WorkshopSchedule } from '@/components/site/account/WorkshopSchedule'
 import { AccountDeletionRequest } from '@/components/account/AccountDeletionRequest'
 import { getCustomerOrders } from '@/lib/account/orders.server'
 import { MyOrders } from '@/components/account/MyOrders'
+import { getCustomerSavedCards } from '@/lib/eq/saved.server'
+import { SavedCards } from '@/components/account/SavedCards'
 
 export const metadata: Metadata = {
   title: 'Tài khoản của tôi | Trạm Dừng Cảm Xúc',
@@ -85,13 +87,19 @@ export default async function AccountPage() {
   const userCourses = coursesWithAccess.filter((item) => item.access.status !== 'none')
 
   const displayName = customer.name?.trim() || customer.email
-  const [eligibleWorkshops, ordersResult] = await Promise.all([
+  const [eligibleWorkshops, ordersResult, savedCardsResult] = await Promise.all([
     getEligibleWorkshops(customer.id),
     getCustomerOrders(customer.id)
       .then((orders) => ({ orders, loadError: false }))
       .catch((err) => {
         console.error('[Account] Failed to load customer orders:', err)
         return { orders: [], loadError: true }
+      }),
+    getCustomerSavedCards(customer.id)
+      .then((savedCards) => ({ savedCards, loadError: false }))
+      .catch((err) => {
+        console.error('[Account] Failed to load customer saved cards:', err)
+        return { savedCards: [], loadError: true }
       }),
   ])
 
@@ -217,6 +225,12 @@ export default async function AccountPage() {
               </div>
             )}
           </div>
+
+          {/* Thẻ đã lưu */}
+          <SavedCards
+            initialCards={savedCardsResult.savedCards}
+            loadError={savedCardsResult.loadError}
+          />
 
           {/* Đơn hàng */}
           <MyOrders orders={ordersResult.orders} loadError={ordersResult.loadError} />
