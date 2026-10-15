@@ -17,7 +17,7 @@
 ## Lịch máy
 
 - **PC nhà** (🔒 Migration): T3-01 → T3-01b (chỉnh theo bộ thẻ thật + lệnh nhập) → T3-04.
-- **Laptop**: T3-03 → T3-02.
+- **Laptop**: T3-03 → T2-18 (dọn nợ GĐ 2 + banner dùng thử dùng chung, trong lúc chờ T3-01b) → T3-02.
 - **Local**: T3-05.
 - **Planning**: QA, import 26 thẻ, T3-06 (e2e + cổng GĐ 3).
 
