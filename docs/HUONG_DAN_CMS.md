@@ -8,9 +8,10 @@
 ## Mục lục
 
 1. [Đăng nhập và Bảo mật tài khoản](#1-đăng-nhập-và-bảo-mật-tài-khoản)
-   - [1.4. Khách hàng đăng nhập thế nào](#14-khách-hàng-đăng-nhập-thế-nào)
-   - [1.5. Khách hàng tự xem đơn hàng và link thanh toán tại /tai-khoan](#15-khách-hàng-tự-xem-đơn-hàng-và-link-thanh-toán-tại-tai-khoan)
-   - [1.6. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách](#16-khách-hàng-yêu-cầu-xóa-tài-khoản--hana-xóa-dữ-liệu-khách)
+   - [1.4. Cấu trúc menu bên trái theo công việc của Hana](#14-cấu-trúc-menu-bên-trái-theo-công-việc-của-hana)
+   - [1.5. Khách hàng đăng nhập thế nào](#15-khách-hàng-đăng-nhập-thế-nào)
+   - [1.6. Khách hàng tự xem đơn hàng và link thanh toán tại /tai-khoan](#16-khách-hàng-tự-xem-đơn-hàng-và-link-thanh-toán-tại-tai-khoan)
+   - [1.7. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách](#17-khách-hàng-yêu-cầu-xóa-tài-khoản--hana-xóa-dữ-liệu-khách)
 2. [Nhận biết và Làm việc với dữ liệu mẫu](#2-nhận-biết-và-làm-việc-với-dữ-liệu-mẫu)
 3. [Quản lý Sản phẩm, Giá bán và Tài nguyên](#3-quản-lý-sản-phẩm-giá-bán-và-tài-nguyên)
    - [3.6. Xem trước khi sửa dịch vụ, chương trình và bài viết (Live Preview)](#36-xem-trước-khi-sửa-dịch-vụ-chương-trình-và-bài-viết-live-preview)
@@ -24,6 +25,7 @@
    - [3.14. In QR cho bộ thẻ EQ Buddy (EqCards)](#314-in-qr-cho-bộ-thẻ-eq-buddy-eqcards)
    - [3.15. Ảnh chia sẻ thẻ EQ Buddy và Liên kết Shopee bộ thẻ vật lý](#315-ảnh-chia-sẻ-thẻ-eq-buddy-và-liên-kết-shopee-bộ-thẻ-vật-lý)
    - [3.16. Trang giới thiệu bộ thẻ và Kích hoạt dùng thử EQ Buddy số](#316-trang-giới-thiệu-bộ-thẻ-và-kích-hoạt-dùng-thử-eq-buddy-số)
+   - [3.17. Quản lý Thẻ đã lưu và Bảo mật suy ngẫm của khách hàng (SavedCards)](#317-quản-lý-thẻ-đã-lưu-và-bảo-mật-suy-ngẫm-của-khách-hàng-savedcards)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
@@ -87,7 +89,32 @@ Hệ thống phân chia tài khoản quản trị thành hai vai trò rõ ràng 
 
 ---
 
-### 1.4. Khách hàng đăng nhập thế nào
+### 1.4. Cấu trúc menu bên trái theo công việc của Hana
+
+**Mục đích**: Menu quản trị được thiết kế theo đúng luồng công việc tự nhiên hàng ngày của Hana, chia thành 6 nhóm mạch lạc, giúp Hana và cộng sự tìm kiếm thông tin nhanh chóng mà không bị rối mắt bởi các bảng dữ liệu kỹ thuật.
+
+#### Bảng 6 nhóm menu chính
+
+| Tên nhóm                | Mục đích công việc                                                                                             | Các mục hiển thị trong nhóm                                                                                                                                                                                                                                                                                                                                            | Ai nhìn thấy?      |
+| :---------------------- | :------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------- |
+| **Trang web**           | Quản lý các trang nội dung công khai, bài viết chia sẻ, cảm nhận của khách hàng, chân trang và cấu hình chung. | • **Trang** (`pages`): Dựng trang bằng Puck editor.<br>• **Bài viết** (`posts`): Blog và bài chia sẻ.<br>• **Lời chia sẻ** (`testimonials`): Đánh giá của học viên.<br>• **Trang pháp lý** (`legalPages`): Điều khoản, bảo mật.<br>• **Menu** (`navigation`): Menu đầu và chân trang.<br>• **Cài đặt website** (`siteSettings`): Ngân hàng VietQR, logo.               | `owner` + `editor` |
+| **Sản phẩm & bán hàng** | Quản lý danh mục gói đồng hành, sách điện tử, dịch vụ coaching, đơn hàng và ưu đãi.                            | • **Sản phẩm** (`products`): Công cụ số, gói đồng hành, ebook.<br>• **Dịch vụ đồng hành** (`services`): Coaching 1:1, tư vấn.<br>• **Chương trình doanh nghiệp** (`programs`): Đào tạo B2B.<br>• **Đơn hàng** (`orders`): Theo dõi và xác nhận đơn chuyển khoản.<br>• **Mã giảm giá** (`discountCodes`): Ưu đãi cho chiến dịch.                                        | `owner` + `editor` |
+| **Khóa Habit**          | Quản lý toàn bộ nội dung khóa học Habit Hack 1% Better và hoạt động tương tác.                                 | • **Nhóm bài học** (`courseModules`): 7 chặng học tập.<br>• **Bài học** (`lessons`): 20 bài học kèm video Bunny Stream.<br>• **Kỹ thuật** (`techniques`): 11 kỹ thuật can thiệp hành vi.<br>• **Câu hỏi quiz** (`diagnosticQuestions`): 16 tình huống trì hoãn.<br>• **Lịch workshop** (`workshops`): Lịch học Zoom và đường dẫn.                                      | `owner` + `editor` |
+| **EQ Buddy**            | Quản lý bộ 26 thẻ nhận diện và điều hòa cảm xúc.                                                               | • **Thẻ EQ** (`eqCards`): 26 thẻ bài, thông điệp, câu chuyện, câu hỏi đào sâu và xuất mã QR in ấn.                                                                                                                                                                                                                                                                     | `owner` + `editor` |
+| **Học viên & khách**    | Chăm sóc học viên, theo dõi quá trình rèn luyện và cấp chứng nhận hoàn thành.                                  | • **Khách hàng** (`customers`): Danh sách học viên và tài khoản.<br>• **Khách tiềm năng** (`leads`): Thu thập email từ form, xuất CSV.<br>• **Chứng nhận** (`certificates`): Chứng nhận 21 ngày hoàn thành.<br>• **Kế hoạch thói quen** (`habitPlans`): Kế hoạch Habit Loop 5 phút.                                                                                    | `owner` + `editor` |
+| **Hệ thống**            | Khu vực kỹ thuật dành riêng cho Chủ dự án và IT: phân quyền, kiểm tra lỗi, đối soát thanh toán.                | • Quản trị viên, Quyền truy cập, Check-in, Tiến độ bài học, Kết quả quiz, Thẻ đã lưu, Sự kiện thanh toán, Nhật ký kiểm toán, Nhắc dùng thử, Nhắc workshop, Nhắc tracker, Mã OTP, Giới hạn tần suất, Lịch sử dùng thử (14 collections). _Thư viện ảnh và tài liệu_ nằm ở nhóm **Trang web**, _Tài liệu riêng tư_ ở nhóm **Sản phẩm & bán hàng** – editor vẫn dùng được. | **Chỉ `owner`**    |
+
+#### Bảo vệ an toàn: Ẩn mục kỹ thuật với vai trò Biên tập (`editor`)
+
+- Khi cộng sự hoặc trợ lý đăng nhập bằng tài khoản `editor`, nhóm **Hệ thống** sẽ **tự động ẩn hoàn toàn khỏi thanh menu bên trái**.
+- **Lợi ích**:
+  - Giao diện của cộng sự cực kỳ gọn gàng, chỉ tập trung vào việc viết bài, cập nhật bài học và chăm sóc học viên.
+  - Ngăn ngừa tuyệt đối nguy cơ bấm nhầm làm thay đổi tài khoản ngân hàng, xóa dữ liệu nhật ký bảo mật hoặc can thiệp vào các tiến trình thanh toán tự động của hệ thống.
+  - Hana (vai trò `owner`) vẫn xem được đầy đủ 6 nhóm để đối soát khi cần.
+
+---
+
+### 1.5. Khách hàng đăng nhập thế nào
 
 **Mục đích**: Giúp Hana nắm rõ trải nghiệm của học viên và khách hàng khi truy cập vào hệ thống học tập hoặc tài khoản cá nhân (Hana không cần thao tác gì, hệ thống xử lý tự động 100%).
 
@@ -98,7 +125,7 @@ Hệ thống phân chia tài khoản quản trị thành hai vai trò rõ ràng 
 
 ---
 
-### 1.5. Khách hàng tự xem đơn hàng và link thanh toán tại `/tai-khoan`
+### 1.6. Khách hàng tự xem đơn hàng và link thanh toán tại `/tai-khoan`
 
 **Mục đích**: Giúp khách hàng chủ động kiểm tra trạng thái đơn, tiếp tục thanh toán đơn chưa trả hoặc tải lại tài liệu mà Hana không cần phải tìm và gửi lại link thanh toán thủ công.
 
@@ -113,7 +140,9 @@ Hệ thống phân chia tài khoản quản trị thành hai vai trò rõ ràng 
   - Khách báo không tải được: kiểm tra đơn ở trạng thái **Đã thanh toán** và sản phẩm vẫn còn file đính kèm trong mục **Tài liệu đính kèm**.
 - **Bảo mật và an toàn**: Đơn đã hủy (`cancelled`) không lộ mã chuyển khoản hay thông tin nội bộ. Khách chỉ xem được đơn thuộc về chính tài khoản của mình.
 
-### 1.6. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách
+---
+
+### 1.7. Khách hàng yêu cầu xóa tài khoản & Hana xóa dữ liệu khách
 
 **Mục đích**: Thực hiện quyền xóa dữ liệu cá nhân theo quy định bảo vệ dữ liệu (Nghị định 13/2023/NĐ-CP) khi khách hàng không còn nhu cầu sử dụng dịch vụ trên Trạm Dừng Cảm Xúc.
 
@@ -194,7 +223,7 @@ Mọi khóa học, công cụ số, tài liệu miễn phí, dịch vụ coachin
 
 **Các bước thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm chọn **Sản phẩm**.
+1. Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm chọn **Sản phẩm**.
 2. Bấm nút **Tạo mới** ở góc trên bên phải màn hình (hoặc bấm vào tên sản phẩm có sẵn để sửa).
 3. Điền các trường thông tin cơ bản:
    - **Tên sản phẩm**: Tên hiển thị công khai trên website (ví dụ: _Bộ thẻ EQ Buddy 26 thẻ_).
@@ -278,7 +307,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào **Tài liệu riêng tư**.
+1. Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm vào **Tài liệu riêng tư**.
 2. Bấm nút **Tạo mới** ở góc trên bên phải.
 3. Bấm nút tải tệp và chọn tệp PDF (hoặc ZIP, EPUB) từ máy tính của bạn.
 4. Nhập tóm tắt vào ô **Mô tả tài liệu** (ví dụ: _Ebook và bộ công cụ EQ bản chính thức PDF_).
@@ -320,7 +349,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước thực hiện**:
 
-1. Ở menu bên trái, tìm nhóm **Khóa học**, bấm chọn **Lịch workshop**.
+1. Ở menu bên trái, tìm nhóm **Khóa Habit**, bấm chọn **Lịch workshop**.
 2. Bấm nút **Tạo mới** (ở góc trên bên phải).
 3. Điền các trường thông tin:
    - **Tên workshop**: Tiêu đề buổi workshop (ví dụ: _Workshop "Tập thương cảm xúc" – Buổi 1_).
@@ -373,7 +402,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 **Các bước thực hiện**:
 
 1. **Quản lý Nhóm bài học (`courseModules`)**:
-   - Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm vào **Nhóm bài học**.
+   - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Nhóm bài học**.
    - Bấm **Tạo mới** hoặc bấm vào nhóm có sẵn để sửa.
    - Nhập **Tên nhóm bài học** (ví dụ: _Giai đoạn 1: Hiểu mình & Điểm nghẽn_).
    - Chọn **Nhóm nội dung**: chọn 1 trong 3 nhóm chuẩn gồm _Hiểu mình_ (`insight`), _Nguyên tắc_ (`principle`), hoặc _Kỹ thuật_ (`technique`). Lộ trình trên website sẽ tự động gom các bài học theo thứ tự 3 nhóm này.
@@ -381,7 +410,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
    - Bấm **Xuất bản**.
 
 2. **Quản lý Bài học (`lessons`)**:
-   - Trong nhóm **Khóa học**, bấm vào **Bài học**.
+   - Trong nhóm **Khóa Habit**, bấm vào **Bài học**.
    - Bấm **Tạo mới** và điền các trường:
      - **Tiêu đề**: Tên bài học hiển thị cho học viên.
      - **Nhóm bài học**: Chọn nhóm bài học đã tạo ở bước 1.
@@ -409,7 +438,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
    - Bấm nút sao chép (Copy) chuỗi mã này.
 
 3. **Dán vào bài học trong CMS**:
-   - Quay lại trang quản trị CMS (`/admin`) -> Vào nhóm **Khóa học** -> chọn **Bài học**.
+   - Quay lại trang quản trị CMS (`/admin`) -> Vào nhóm **Khóa Habit** -> chọn **Bài học**.
    - Bấm vào bài học bạn muốn gắn video.
    - Cuộn đến trường **Mã video (Bunny)** (`videoId`) và dán chính xác chuỗi mã GUID vừa sao chép vào.
    - Bấm nút **Lưu** hoặc **Xuất bản**.
@@ -452,7 +481,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước xem và quản lý trong trang quản trị**:
 
-1. Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm chọn **Chứng nhận 21 ngày** (`certificates`).
+1. Ở cột menu bên trái, tìm nhóm **Học viên & khách**, bấm chọn **Chứng nhận 21 ngày** (`certificates`).
 2. Màn hình danh sách hiển thị các cột:
    - **Mã xác minh (`code`)**: Chuỗi mã duy nhất được hệ thống sinh ngẫu nhiên tự động (ví dụ: `wF9d_a`).
    - **Khách hàng (`customer`)**: Tên học viên được trao chứng nhận.
@@ -628,6 +657,28 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 ---
 
+### 3.17. Quản lý Thẻ đã lưu và Bảo mật suy ngẫm của khách hàng (SavedCards)
+
+**Mục đích**: Theo dõi danh sách các lá thẻ cảm xúc EQ Buddy mà học viên và khách hàng đã lưu vào tài khoản cá nhân, đồng thời đảm bảo an toàn và bảo mật tuyệt đối cho dữ liệu suy ngẫm nhạy cảm của người dùng.
+
+**Cách xem trong trang quản trị**:
+
+1. Ở cột menu bên trái, tìm nhóm **EQ Buddy** -> chọn **Thẻ đã lưu** (`savedCards`).
+2. Bảng danh sách hiển thị các thông tin:
+   - **Khách hàng (`customer`)**: Tên hoặc email của người đã lưu thẻ.
+   - **Thẻ (`card`)**: Thẻ EQ Buddy tương ứng được lưu.
+   - **Lưu lúc (`savedAt`)**: Thời điểm khách hàng lưu thẻ.
+
+**Quy tắc phân quyền và Bảo mật dữ liệu nhạy cảm (CỰC KỲ QUAN TRỌNG)**:
+
+- **Bảo vệ quyền riêng tư cảm xúc**: Nội dung suy ngẫm (`reflection`) là dữ liệu riêng tư nhạy cảm của học viên.
+- **Tài khoản Biên tập (`editor`)**: Các bạn trợ lý hoặc cộng sự ở vai trò biên tập viên **hoàn toàn không thể đọc được nội dung suy ngẫm** của khách hàng (ô suy ngẫm sẽ bị ẩn đi khi mở xem chi tiết). Biên tập viên chỉ thấy thông tin khách hàng đã lưu thẻ nào vào lúc nào để hỗ trợ kỹ thuật khi cần.
+- **Tài khoản Chủ sở hữu (`owner`)**: Chỉ riêng tài khoản của Hana mới có quyền xem nội dung suy ngẫm khi cần thiết để hỗ trợ khách hàng hoặc tham vấn chuyên môn.
+- **Khách hàng xem tại `/tai-khoan`**: Khách hàng chỉ xem được danh sách thẻ và suy ngẫm của chính mình trong khối **"Thẻ đã lưu"**. Khách hàng có thể mở lại chi tiết thẻ hoặc chủ động bấm nút "Xóa" kèm hộp thoại xác nhận.
+- **Khi khách hàng xóa tài khoản**: Theo đúng quy định bảo vệ dữ liệu cá nhân (Nghị định 13/2023/NĐ-CP và tính năng T2-16), khi một khách hàng yêu cầu xóa tài khoản và được duyệt xóa, toàn bộ dữ liệu thẻ đã lưu cùng suy ngẫm của khách hàng đó sẽ **bị xóa vĩnh viễn** khỏi cơ sở dữ liệu một cách an toàn.
+
+---
+
 ## 4. Quản lý Lời chia sẻ của khách hàng (Testimonials)
 
 ### 4.1. Thêm một lời chia sẻ mới
@@ -636,7 +687,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Nội dung**, bấm chọn **Lời chia sẻ**.
+1. Ở cột menu bên trái, tìm nhóm **Trang web**, bấm chọn **Lời chia sẻ**.
 2. Bấm nút **Tạo mới** ở góc trên bên phải.
 3. Điền các thông tin:
    - **Tên người chia sẻ**: Tên hoặc danh xưng của khách hàng (ví dụ: _Chị Minh Anh_).
@@ -673,7 +724,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Nội dung**, bấm chọn **Trang nội dung**.
+1. Ở cột menu bên trái, tìm nhóm **Trang web**, bấm chọn **Trang nội dung**.
 2. Bấm nút **Tạo mới** ở góc trên bên phải.
 3. Nhập **Tên trang** (ví dụ: _Chiến dịch Chuyển mình Cuối năm_).
 4. Nhập **Đường dẫn**: Viết chữ thường không dấu, ví dụ `chien-dich-cuoi-nam` (riêng Trang chủ là đúng một dấu `/`).
@@ -898,7 +949,7 @@ Màn hình trình dựng gồm 3 khu vực:
 
 **Cách thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào **Dịch vụ đồng hành**.
+1. Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm vào **Dịch vụ đồng hành**.
 2. Bấm vào dịch vụ _Growth Mirror_ hoặc _Thinking Mirror_.
 3. Dán link đặt lịch cá nhân của bạn vào ô **Liên kết đặt lịch** (`bookingUrl`).
 4. Bấm **Lưu** hoặc **Xuất bản**.
@@ -937,7 +988,7 @@ Dưới đây là quy trình đối chiếu và duyệt đơn chuẩn dành cho 
 
 2. **Tìm đơn hàng trong trang quản trị CMS:**
    - Đăng nhập vào trang quản trị `<ĐỊA CHỈ DEMO>/admin` bằng tài khoản Chủ sở hữu (Owner).
-   - Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào mục **Đơn hàng**.
+   - Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm vào mục **Đơn hàng**.
    - Tìm đơn hàng có cột **Mã chuyển khoản** khớp với mã trên thông báo ngân hàng.
    - Bấm vào dòng đơn hàng đó để mở trang chi tiết.
 
@@ -999,7 +1050,7 @@ _(ảnh: Planning chụp)_
 **Các bước Hana làm**:
 
 1. Đăng nhập vào trang quản trị CMS bằng tài khoản Chủ sở hữu (Owner).
-2. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào **Đơn hàng** -> bấm nút **Tạo mới**.
+2. Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm vào **Đơn hàng** -> bấm nút **Tạo mới**.
 3. Đánh dấu tick vào ô **Hana tạo link thanh toán** (`createdByAdmin`).
 4. Tại ô **Khách hàng**: chọn khách hàng trong danh sách (hoặc tạo hồ sơ khách hàng mới nếu chưa có).
 5. Tại mục **Sản phẩm trong đơn**: chọn đúng **một** gói đồng hành Growth Mirror đã xuất bản (`type = package`, ví dụ: _Gói CLEAR_, _Gói BUILD_, hoặc _Gói SHINE_).
@@ -1025,7 +1076,7 @@ _(ảnh: Planning chụp)_
    - Mở ứng dụng ngân hàng, kiểm tra thông báo biến động số dư và sao kê nhận tiền.
    - Đối chiếu số tiền (250.000đ hoặc 178.000đ ưu đãi) và mã chuyển khoản `TDCX...`.
 3. **Bấm nút duyệt đơn an toàn trong CMS**:
-   - Vào nhóm **Bán hàng** -> **Đơn hàng**, bấm vào đơn hàng tương ứng.
+   - Vào nhóm **Sản phẩm & bán hàng** -> **Đơn hàng**, bấm vào đơn hàng tương ứng.
    - Tại cột bên phải (Sidebar), bấm nút **✓ Xác nhận thanh toán** và chọn **Đồng ý xác nhận**.
 4. **Hệ thống tự động kích hoạt quyền & gửi email**:
    - Đơn hàng chuyển sang trạng thái **Đã thanh toán** (`paid`), trạng thái giao đổi sang **Đã cấp quyền** (`access_granted`).
@@ -1096,8 +1147,11 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
    - Quá 30 phút vẫn còn cảnh báo này: mở đơn xem trạng thái và đối chiếu sao kê ngân hàng. Đơn vẫn **Chờ thanh toán** mà tiền đã vào tài khoản → bấm **✓ Xác nhận thanh toán**; báo anh IT xem log máy chủ. Nếu đơn đã **Đã thanh toán** nhờ một giao dịch khác thì khách có thể đã chuyển 2 lần → liên hệ khách.
 
 7. **Thành công sau khi xử lý lại (`paid_incomplete`) – Cảnh báo nổi bật**:
-   - Lần xử lý đầu bị gián đoạn sau khi đơn đã chuyển **Đã thanh toán**. Hệ thống tự cấp lại quyền còn thiếu, nhưng **không** gửi lại email.
-   - Việc Hana cần làm: mở khách hàng kiểm tra đã có quyền dùng công cụ / gói; nhắn khách xác nhận đã nhận tiền nếu khách chưa nhận email.
+   - **Ý nghĩa**: Đơn hàng đã được ghi nhận thanh toán thành công và cấp quyền truy cập đầy đủ (nhờ cơ chế transaction "đã thanh toán ⇔ đã cấp quyền"). Tuy nhiên, tiến trình gửi email kích hoạt/đặt lịch ban đầu gặp trục trặc mạng hoặc timeout.
+   - **Việc Hana cần làm**:
+     - Mở chi tiết đơn hàng trong CMS Admin.
+     - Khung **Thao tác đơn hàng (Chủ sở hữu)** ở bên phải sẽ xuất hiện nút màu hồng **✉️ Gửi lại email xác nhận**.
+     - Hana bấm nút này và chọn **Đồng ý gửi lại email**. Hệ thống sẽ gửi lại email kích hoạt/đặt lịch cho khách hàng và tự động cập nhật trạng thái giao hàng thành **Đã gửi email** (nút sẽ tự ẩn đi). Không lo bị cấp quyền 2 lần.
 
 8. **Đơn đã được xác nhận tay trước đó (`confirmed_manually_before`)**:
    - Hana đã bấm **✓ Xác nhận thanh toán** trước khi SePay báo về. Bình thường, không cần làm gì (nhưng nếu ngân hàng có 2 khoản tiền cho cùng mã đơn thì liên hệ khách).
@@ -1155,7 +1209,7 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 
 **Cách thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm vào **Câu hỏi chẩn đoán**.
+1. Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Câu hỏi chẩn đoán**.
 2. Bấm vào câu hỏi bạn muốn chỉnh sửa.
 3. Bạn có thể sửa:
    - **Nội dung câu hỏi**: Tình huống độc giả tự chấm điểm (ví dụ: _Tôi thường trì hoãn khi không biết bắt đầu từ đâu_).
@@ -1175,7 +1229,7 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 **Cách thực hiện**:
 
 1. **Quản lý danh sách kỹ thuật thực chiến (`techniques`)**:
-   - Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm vào **Kỹ thuật thực hành**.
+   - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Kỹ thuật thực hành**.
    - Hana có thể thêm mới hoặc sửa tên, cách thực hiện, ví dụ và gán vào 1 trong 4 giai đoạn (_Cue - Gợi ý_, _Craving - Khao khát_, _Response - Phản hồi_, _Reward - Phần thưởng_). Các kỹ thuật đã xuất bản sẽ tự động hiển thị trong Bước 3 của công cụ Habit Loop 5 phút.
 
 2. **Cập nhật giá và câu hỏi thường gặp (FAQ) cho Habit Tracker số**:

@@ -57,6 +57,15 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: {
+      titleSuffix: ' – Trạm Dừng Cảm Xúc',
+    },
+    components: {
+      graphics: {
+        Logo: '@/components/admin/brand/Logo#AdminLogo',
+        Icon: '@/components/admin/brand/Icon#AdminIcon',
+      },
+    },
   },
   // Lock admin interface to Vietnamese only: matches non-technical owner's workflow (HUONG_DAN_CMS.md)
   // and eliminates language-switching confusion.
@@ -65,43 +74,54 @@ export default buildConfig({
     fallbackLanguage: 'vi',
   },
   collections: [
-    Users,
+    // Trang web
+    Pages,
+    Posts,
+    Testimonials,
+    LegalPages,
     Media,
-    PrivateFiles,
+
+    // Sản phẩm & bán hàng
     Products,
     Services,
     Programs,
-    Posts,
-    Testimonials,
-    EqCards,
-    CourseModules,
-    Lessons,
-    DiagnosticQuestions,
-    Techniques,
-    LegalPages,
-    Workshops,
-    WorkshopReminders,
-    TrialReminders,
-    TrackerNudges,
-    Pages,
-    Customers,
-    Entitlements,
     Orders,
     DiscountCodes,
+    PrivateFiles,
+
+    // Khóa Habit
+    CourseModules,
+    Lessons,
+    Techniques,
+    DiagnosticQuestions,
+    Workshops,
+
+    // EQ Buddy
+    EqCards,
+
+    // Học viên & khách
+    Customers,
     Leads,
-    HabitPlans,
-    HabitCheckins,
-    SavedCards,
-    DiagnosticResults,
     Certificates,
+    HabitPlans,
+
+    // Hệ thống
+    Users,
+    Entitlements,
+    HabitCheckins,
     LessonProgress,
-    OtpCodes,
+    DiagnosticResults,
+    SavedCards,
     PaymentEvents,
     AuditLogs,
+    TrialReminders,
+    WorkshopReminders,
+    TrackerNudges,
+    OtpCodes,
     RateLimitHits,
     TrialUsage,
   ],
-  globals: [SiteSettings, Navigation],
+  globals: [Navigation, SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

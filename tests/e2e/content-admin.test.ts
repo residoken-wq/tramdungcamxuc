@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Response } from '@playwright/test'
 
-test('first administrator sees all five content groups', async ({ page }, testInfo) => {
+test('first administrator sees all six admin groups (CM-01)', async ({ page }, testInfo) => {
   // Bootstrap once: projects share the same database. Mobile is verified below.
   test.skip(testInfo.project.name !== 'desktop-1440', 'Bootstrap runs once per database.')
   test.setTimeout(180000)
@@ -52,12 +52,23 @@ test('first administrator sees all five content groups', async ({ page }, testIn
     await expect(page).toHaveURL(/\/admin\/?$/)
     if (!userId) userId = (await (await page.request.get('/api/users/me')).json()).user.id
 
-    const groups = ['Nội dung', 'Bán hàng', 'Khóa học', 'EQ Buddy', 'Hệ thống']
+    // CM-01: menu grouped by Hana's jobs; owner also sees the system group.
+    const groups = [
+      'Trang web',
+      'Sản phẩm & bán hàng',
+      'Khóa Habit',
+      'EQ Buddy',
+      'Học viên & khách',
+      'Hệ thống',
+    ]
     await page.setViewportSize({ width: 1440, height: 1200 })
     const openMenu = page.locator('button.nav-toggler:visible').first()
     if (await openMenu.count()) await openMenu.click()
     const nav = page.locator('.nav')
-    for (const group of groups) await expect(nav.getByText(group, { exact: true })).toBeInViewport()
+    for (const group of groups) {
+      await nav.getByText(group, { exact: true }).scrollIntoViewIfNeeded()
+      await expect(nav.getByText(group, { exact: true })).toBeInViewport()
+    }
     for (const [slug, label] of [
       ['products', 'Sản phẩm'],
       ['services', 'Dịch vụ đồng hành'],
@@ -78,9 +89,9 @@ test('first administrator sees all five content groups', async ({ page }, testIn
     await expect(page.locator('#nav-global-siteSettings')).toHaveText('Cài đặt website')
     await expect(page.locator('#nav-global-navigation')).toHaveText('Menu điều hướng')
     await page.setViewportSize({ width: 1440, height: 1200 })
-    await page.screenshot({ path: testInfo.outputPath('admin-five-groups.png'), fullPage: true })
-    await testInfo.attach('Sidebar admin — 5 nhóm', {
-      path: testInfo.outputPath('admin-five-groups.png'),
+    await page.screenshot({ path: testInfo.outputPath('admin-six-groups.png'), fullPage: true })
+    await testInfo.attach('Sidebar admin — 6 nhóm', {
+      path: testInfo.outputPath('admin-six-groups.png'),
       contentType: 'image/png',
     })
 

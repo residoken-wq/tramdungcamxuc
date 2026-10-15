@@ -6,11 +6,12 @@ import {
   stageOptions,
   text,
 } from '../fields/content'
+import { vi } from '../lib/i18n/vi'
 
 export const Techniques = contentCollection(
   'techniques',
   'Kỹ thuật thực hành',
-  'Khóa học',
+  vi.cms.nav.habit,
   'name',
   [
     text('name', 'Tên kỹ thuật', true),
@@ -20,3 +21,10 @@ export const Techniques = contentCollection(
     relation('lesson', 'Bài học liên quan', 'lessons'),
   ],
 )
+
+Techniques.admin = {
+  ...Techniques.admin,
+  description: 'Kỹ thuật Atomic Habits thực chiến ứng dụng vào 4 mắt xích thói quen.',
+  defaultColumns: ['name', 'stage', 'lesson', 'updatedAt'],
+  listSearchableFields: ['name'],
+}

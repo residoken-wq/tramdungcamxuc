@@ -49,9 +49,11 @@ export const Customers: CollectionConfig = {
   slug: 'customers',
   labels: { singular: 'Khách hàng', plural: 'Khách hàng' },
   admin: {
-    group: 'Khách hàng',
+    group: vi.cms.nav.customers,
     useAsTitle: 'email',
+    description: 'Học viên và khách hàng đã tạo tài khoản trên hệ sinh thái.',
     defaultColumns: ['email', 'name', 'deletionRequestedAt', 'createdAt'],
+    listSearchableFields: ['email', 'name'],
   },
   auth: {
     disableLocalStrategy: true,

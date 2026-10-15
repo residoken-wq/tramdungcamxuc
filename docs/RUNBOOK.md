@@ -100,6 +100,16 @@
   ```powershell
   $env:EQ_CARDS_FILE="C:\secure\eq-cards-26.json"; pnpm import:eq; Remove-Item Env:\EQ_CARDS_FILE
   ```
+- **Trên server Docker** (server không cài `pnpm`; chạy trong image `tools`, file JSON gắn vào container ở thư mục ngoài `/app`):
+  ```bash
+  cd /opt/tramdungcamxuc
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools pull seed < /dev/null
+  docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm \
+    -v /root/eq-cards-26.json:/import/eq-cards.json:ro \
+    -e EQ_CARDS_FILE=/import/eq-cards.json \
+    seed pnpm import:eq < /dev/null
+  ```
+  Thay `/root/eq-cards-26.json` bằng đường dẫn thật của file trên server (ngoài thư mục repo). Chạy lại không tạo trùng.
 - **Hành vi an toàn của lệnh**:
   - Xác thực toàn bộ dữ liệu qua Zod (mã `code` `TDCX-01`…`TDCX-26`, từ khóa `keywordEn`, mã QR `qrSlug` theo regex, thông điệp `message`, đủ 3 câu hỏi `promptRecall`, `promptPack`, `promptAcknowledge`). Nếu có bất kỳ lỗi định dạng nào, lệnh sẽ dừng ngay và không ghi gì vào DB.
   - Tự động gán sản phẩm liên quan `relatedProduct` (`eq-buddy-so`).
@@ -684,6 +694,15 @@ Nếu SePay gặp sự cố bảo trì, gián đoạn mạng hoặc ngân hàng 
    - Các đơn hàng đang chờ hoặc đơn mới tạo vẫn giữ nguyên mã VietQR hợp lệ.
    - Hana mở danh sách đơn hàng trong CMS Admin và bấm nút **"Xác nhận thanh toán"** thủ công như bình thường.
    - Khi SePay hoạt động ổn định trở lại, chỉ cần đổi lại `PAYMENT_PROVIDER=sepay` và chạy lại lệnh `up -d` mà không làm mất bất kỳ dữ liệu nào.
+
+#### Xử lý sự cố thanh toán và giao dịch gián đoạn (T2-19)
+
+- **Nguyên tử "đã thanh toán ⇔ đã cấp quyền"**:
+  - `markOrderPaid` thực hiện chuyển trạng thái `paid` và cấp quyền (`grantEntitlementsForOrder`) trong **một transaction Postgres duy nhất**.
+  - Nếu bước cấp quyền gặp sự cố (ví dụ lỗi DB hoặc vi phạm dữ liệu), toàn bộ giao dịch được tự động rollback: đơn hàng quay lại trạng thái `pending`/`failed`, không có quyền nửa vời nào được cấp, hệ thống ghi audit log `grant_entitlements_failed` và trả về mã lỗi HTTP 500 để SePay tự động gửi lại.
+- **Sự cố gửi email xác nhận (`paid_incomplete` / `deliveryStatus !== 'email_sent'`)**:
+  - Email kích hoạt được gửi sau khi transaction đã commit. Nếu mạng SMTP/Resend lỗi, đơn hàng vẫn `paid` và quyền đã cấp an toàn (ghi audit `confirmation_email_failed`).
+  - Trong CMS Admin, tài khoản `owner` sẽ thấy nút **✉️ Gửi lại email xác nhận** trên khung thao tác đơn hàng. Bấm nút này để gửi lại email mà không sợ cấp quyền trùng lặp.
 
 ---
 

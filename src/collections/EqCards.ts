@@ -10,6 +10,7 @@ import {
   topicOptions,
 } from '../fields/content'
 import { EMOTIONS } from '../lib/emotions'
+import { vi } from '../lib/i18n/vi'
 
 const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   if (originalDoc?.printedAt) {
@@ -54,7 +55,7 @@ const validateRequiredOnPublish =
     return true
   }
 
-const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy', 'code', [
+const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', vi.cms.nav.eq, 'code', [
   { ...text('code', 'Mã thẻ', true), unique: true },
   {
     name: 'keywordEn',
@@ -202,7 +203,9 @@ export const EqCards = {
   ...baseCollection,
   admin: {
     ...baseCollection.admin,
-    defaultColumns: ['code', 'keywordEn', 'qrSlug', 'printedAt', '_status'],
+    description: 'Bộ 26 thẻ bài EQ Buddy giúp nhận diện và điều hòa cảm xúc.',
+    defaultColumns: ['code', 'keywordVi', 'keywordEn', 'qrSlug', 'printedAt', '_status'],
+    listSearchableFields: ['code', 'keywordVi', 'keywordEn', 'qrSlug'],
     components: {
       ...baseCollection.admin?.components,
       beforeListTable: ['@/components/admin/EqQrExportButton#EqQrExportButton'],

@@ -1,8 +1,10 @@
 'use client'
 
 import React, { useState, useSyncExternalStore } from 'react'
+import Link from 'next/link'
 import type { PublicEqCard, PublicEqCardKeyword } from '@/lib/eq/cards.server'
 import { drawEqCardAction } from '@/lib/eq/actions'
+import { saveEqCardAction } from '@/lib/eq/saved-actions'
 import { EqCardFace } from '@/components/eq/EqCardFace'
 import { Button } from '@/components/ui/Button'
 import { track } from '@/lib/analytics/track'
@@ -14,6 +16,7 @@ export interface EqDrawWizardProps {
   initialStep?: 1 | 2 | 3 | 4 | 5 | 'paywall'
   /** Server-rendered ToolPaywall (trial / buy by the customer's status). */
   paywall: React.ReactNode
+  isLoggedIn?: boolean
 }
 
 export function EqDrawWizard({
@@ -21,6 +24,7 @@ export function EqDrawWizard({
   initialCard = null,
   initialStep = 1,
   paywall,
+  isLoggedIn = false,
 }: EqDrawWizardProps) {
   const isHydrated = useSyncExternalStore(
     () => () => {},
@@ -35,10 +39,16 @@ export function EqDrawWizard({
   const [isFlipped, setIsFlipped] = useState(false)
   const [reflection, setReflection] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const handleDraw = async (mode: 'random' | 'keyword', qrSlug?: string) => {
     setIsDrawing(true)
     setError(null)
+    setSaveSuccess(false)
+    setSaveError(null)
+    setIsSaving(false)
 
     try {
       const res = await drawEqCardAction(
@@ -71,6 +81,28 @@ export function EqDrawWizard({
       setError(vi.eqBuddy.draw.errors.generalError)
     } finally {
       setIsDrawing(false)
+    }
+  }
+
+  const handleSaveCard = async () => {
+    if (!currentCard || isSaving || !isLoggedIn) return
+    setIsSaving(true)
+    setSaveError(null)
+    try {
+      const res = await saveEqCardAction({
+        qrSlug: currentCard.qrSlug,
+        // Ô trống → giữ suy ngẫm đã lưu trước đó (không xóa)
+        reflection: reflection.trim() ? reflection : undefined,
+      })
+      if (res.success) {
+        setSaveSuccess(true)
+      } else {
+        setSaveError(res.message || vi.eqBuddy.savedCards.errors.generalError)
+      }
+    } catch {
+      setSaveError(vi.eqBuddy.savedCards.errors.generalError)
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -266,7 +298,9 @@ export function EqDrawWizard({
               {vi.eqBuddy.draw.step4.title}
             </h2>
             <p className="font-sans text-xs text-deep-navy/60">
-              {vi.eqBuddy.draw.step4.localOnlyNotice}
+              {isLoggedIn
+                ? vi.eqBuddy.draw.step4.reflectionLabel
+                : vi.eqBuddy.draw.step4.localOnlyNotice}
             </p>
           </div>
 
@@ -301,24 +335,64 @@ export function EqDrawWizard({
             <textarea
               id="reflection-input"
               value={reflection}
-              onChange={(e) => setReflection(e.target.value)}
+              onChange={(e) => {
+                setReflection(e.target.value)
+                setSaveSuccess(false)
+              }}
               placeholder={vi.eqBuddy.draw.step4.reflectionPlaceholder}
               rows={5}
+              maxLength={2000}
               className="w-full px-4 py-3 rounded-2xl bg-warm-ivory border border-deep-navy/15 text-deep-navy font-sans text-base leading-relaxed focus:outline-none focus:ring-2 focus:ring-bright-magenta/50"
             />
-            <p className="font-sans text-xs text-deep-navy/60 italic pt-1">
-              * {vi.eqBuddy.draw.step4.localOnlyNotice}
-            </p>
+            {isLoggedIn ? (
+              saveSuccess ? (
+                <p className="font-sans text-xs font-semibold text-bright-magenta pt-1">
+                  ✓ {vi.eqBuddy.savedCards.savedSuccess}
+                </p>
+              ) : null
+            ) : (
+              <div className="pt-1 space-y-1">
+                <p className="font-sans text-xs text-deep-navy/60 italic">
+                  * {vi.eqBuddy.draw.step4.localOnlyNotice}
+                </p>
+                <p className="font-sans text-xs text-deep-navy/70">
+                  {vi.eqBuddy.savedCards.loginToSaveNotice}{' '}
+                  <Link
+                    href="/tai-khoan/dang-nhap?next=/eq-buddy/rut-the"
+                    className="font-semibold text-bright-magenta hover:underline motion-reduce:transition-none"
+                  >
+                    {vi.eqBuddy.savedCards.loginButton} →
+                  </Link>
+                </p>
+              </div>
+            )}
+            {saveError && <p className="font-sans text-xs text-accent-pink pt-1">{saveError}</p>}
           </div>
 
-          <div className="flex justify-center pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            {isLoggedIn && (
+              <Button
+                type="button"
+                variant={saveSuccess ? 'secondary' : 'primary'}
+                size="md"
+                onClick={handleSaveCard}
+                disabled={!isHydrated || isSaving}
+                className="w-full sm:w-auto shadow-md motion-reduce:transition-none"
+              >
+                {saveSuccess
+                  ? `✓ ${vi.eqBuddy.savedCards.savedBadge}`
+                  : isSaving
+                    ? vi.eqBuddy.savedCards.savingButton
+                    : vi.eqBuddy.savedCards.saveAndReflectButton}
+              </Button>
+            )}
             <Button
               type="button"
-              variant="primary"
+              variant={isLoggedIn ? 'secondary' : 'primary'}
               size="md"
               onClick={() => setCurrentStep(5)}
               disabled={!isHydrated}
-              className="w-full sm:w-auto shadow-md"
+              className="w-full sm:w-auto shadow-md motion-reduce:transition-none"
             >
               {vi.eqBuddy.draw.step4.nextButton} →
             </Button>

@@ -1,14 +1,17 @@
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '../lib/auth/access'
 import { sampleField } from '../fields/content'
+import { vi } from '../lib/i18n/vi'
 
 export const Media: CollectionConfig = {
   slug: 'media',
   labels: { singular: 'Thư viện ảnh và tài liệu', plural: 'Thư viện ảnh và tài liệu' },
   admin: {
-    group: 'Hệ thống',
+    group: vi.cms.nav.website,
     useAsTitle: 'alt',
     description: 'Tải ảnh và tài liệu lên. Luôn thêm mô tả dễ hiểu.',
+    defaultColumns: ['alt', 'filename', 'mimeType', 'filesize', 'updatedAt'],
+    listSearchableFields: ['alt', 'filename'],
   },
   access: { read: () => true, create: authenticated, update: authenticated, delete: authenticated },
   fields: [

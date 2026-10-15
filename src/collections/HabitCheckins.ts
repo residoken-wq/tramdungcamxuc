@@ -9,10 +9,12 @@ import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
 import {
   adminOrSelfCustomerPlan,
   isEditorOrOwner,
+  isHiddenFromEditor,
   isOwner,
   ownerOrSelfCustomerField,
 } from '../lib/auth/access'
 import { EMOTIONS } from '../lib/emotions'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Verify plan ownership on check-in creation/update.
 // Prevents customers from forging check-ins into another customer's plan.
@@ -57,7 +59,13 @@ const verifyPlanOwnership: CollectionBeforeChangeHook = async ({ data, req }) =>
 export const HabitCheckins: CollectionConfig = {
   slug: 'habitCheckins',
   labels: { singular: 'Check-in 21 ngày', plural: 'Check-in 21 ngày' },
-  admin: { group: 'Khóa học', defaultColumns: ['plan', 'day', 'done'] },
+  admin: {
+    group: vi.cms.nav.system,
+    hidden: isHiddenFromEditor,
+    useAsTitle: 'planDay',
+    description: 'Nhật ký check-in hành trình 21 ngày của học viên.',
+    defaultColumns: ['plan', 'day', 'done'],
+  },
   access: {
     read: adminOrSelfCustomerPlan,
     create: adminOrSelfCustomerPlan,

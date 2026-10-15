@@ -39,6 +39,7 @@ export default async function EqRutThePage() {
       <EqDrawWizard
         keywords={keywords}
         initialStep={access.allowed ? 1 : 'paywall'}
+        isLoggedIn={access.customerState === 'logged_in'}
         paywall={
           <ToolPaywall
             productSlug={EQ_BUDDY_PRODUCT_SLUG}

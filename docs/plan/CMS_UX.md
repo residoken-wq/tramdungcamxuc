@@ -24,14 +24,14 @@
 
 ## 3. Cấu trúc menu đề xuất (CM-01)
 
-| Nhóm (thứ tự)              | Mục                                                                                                                                                                     | `editor` thấy?                                                       |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| **Trang web**              | Trang (Puck), Bài viết & video, Lời chia sẻ, Trang pháp lý, Menu (global), Cài đặt site (global)                                                                        | Có (Cài đặt site: chỉ owner sửa phần thanh toán – giữ quyền hiện có) |
-| **Sản phẩm & bán hàng**    | Sản phẩm, Dịch vụ đồng hành, Chương trình doanh nghiệp, Đơn hàng, Mã giảm giá                                                                                           | Có (Đơn hàng: theo quyền hiện có)                                    |
-| **Khóa Habit**             | Nhóm bài học, Bài học, Kỹ thuật, Câu hỏi quiz, Lịch workshop                                                                                                            | Có                                                                   |
-| **EQ Buddy**               | Thẻ EQ                                                                                                                                                                  | Có                                                                   |
-| **Học viên & khách**       | Khách hàng, Lead, Chứng nhận, Kế hoạch thói quen                                                                                                                        | Có (cảm xúc / ghi chú vẫn ẩn với editor)                             |
-| **Hệ thống** (cuối, owner) | Quản trị viên, Media, Tài liệu riêng tư, Quyền truy cập, Check-in, Tiến độ bài học, Kết quả quiz, Thẻ đã lưu, Sự kiện thanh toán, Nhật ký, Nhắc dùng thử, Nhắc workshop | **Không** (ẩn bằng `admin.hidden` theo vai trò)                      |
+| Nhóm (thứ tự)              | Mục                                                                                                                                           | `editor` thấy?                                                       |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **Trang web**              | Trang (Puck), Bài viết & video, Lời chia sẻ, Trang pháp lý, Thư viện ảnh, Thư viện ảnh, Menu (global), Cài đặt site (global)                  | Có (Cài đặt site: chỉ owner sửa phần thanh toán – giữ quyền hiện có) |
+| **Sản phẩm & bán hàng**    | Sản phẩm, Dịch vụ đồng hành, Chương trình doanh nghiệp, Đơn hàng, Mã giảm giá, Tài liệu riêng tư                                              | Có (Đơn hàng: theo quyền hiện có)                                    |
+| **Khóa Habit**             | Nhóm bài học, Bài học, Kỹ thuật, Câu hỏi quiz, Lịch workshop                                                                                  | Có                                                                   |
+| **EQ Buddy**               | Thẻ EQ                                                                                                                                        | Có                                                                   |
+| **Học viên & khách**       | Khách hàng, Lead, Chứng nhận, Kế hoạch thói quen                                                                                              | Có (cảm xúc / ghi chú vẫn ẩn với editor)                             |
+| **Hệ thống** (cuối, owner) | Quản trị viên, Quyền truy cập, Check-in, Tiến độ bài học, Kết quả quiz, Thẻ đã lưu, Sự kiện thanh toán, Nhật ký, Nhắc dùng thử, Nhắc workshop | **Không** (ẩn bằng `admin.hidden` theo vai trò)                      |
 
 Mỗi collection: `admin.description` 1 câu tiếng Việt "dùng để làm gì", `defaultColumns` hữu ích, `listSearchableFields`, `useAsTitle` có nghĩa. Thứ tự trong `payload.config.ts` = thứ tự menu.
 

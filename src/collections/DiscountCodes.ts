@@ -1,12 +1,19 @@
 import type { CollectionConfig } from 'payload'
 import { date, number, relation, select, text } from '../fields/content'
 import { isEditorOrOwner, isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Discount codes are admin-only; checkout validates them server-side (GĐ 4).
 export const DiscountCodes: CollectionConfig = {
   slug: 'discountCodes',
   labels: { singular: 'Mã giảm giá', plural: 'Mã giảm giá' },
-  admin: { group: 'Bán hàng', useAsTitle: 'code' },
+  admin: {
+    group: vi.cms.nav.commerce,
+    useAsTitle: 'code',
+    description: 'Mã giảm giá cho các sản phẩm và dịch vụ.',
+    defaultColumns: ['code', 'type', 'value', 'usedCount', 'validUntil'],
+    listSearchableFields: ['code'],
+  },
   access: { read: isEditorOrOwner, create: isOwner, update: isOwner, delete: isOwner },
   fields: [
     { ...text('code', 'Mã', true), unique: true },

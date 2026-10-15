@@ -154,7 +154,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **MỞ 10/10/2026** (cổng GĐ 1 đạt). Quyết định đã chốt: Q8 SePay, Q9 Bunny, Q14 10 cảm xúc emoji, H1/H2 quiz 1–5 trung bình, Q19, D1/D2 server riêng. Còn mở: Q15 (giá, trong CMS).
 
-**🔒 Migration: T3-04 (PC nhà, từ khi T3-02 merge) · 🔒 Package: (trống)**
+**🔒 Migration: (trống – sau khi PR #127 merge) · 🔒 Package: (trống)**
 
 **Thứ tự máy (từ 11/10)**: Laptop = T2-00 → T2-12 → T1-18 → T2-10 → T2-05a · PC nhà = T2-01 → T2-13 → T2-02 → T2-08 · Local = T2-03 → T2-03b.
 
@@ -178,7 +178,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T2-16 | Yêu cầu xóa tài khoản + Hana xóa dữ liệu khách (đơn giữ ẩn danh)                                                              | [REVIEW] | T2-01, T2-08        | PC nhà   | **ĐẠT** 15/10 (PR #109) – vòng 2 + Planning sửa T2-16c; IT duyệt; biên bản `reviews/T2-16.md`; merge xong trả 🔒 Migration                                                                                             |
 | T2-17 | Tài khoản: Đơn hàng của tôi, tải lại file; dọn nợ nhỏ GĐ 2                                                                    | [REVIEW] | T2-08               | Planning | **ĐẠT** 14/10 (PR #110) – T2-17b do Planning làm; IT duyệt; biên bản `reviews/T2-17.md`                                                                                                                                |
 | T2-18 | Dọn nợ nhỏ GĐ 2 + banner / paywall dùng thử dùng chung (chuẩn bị EQ)                                                          | [REVIEW] | –                   | Laptop   | **ĐẠT** 15/10 (PR #118) – Planning sửa T2-18c; IT duyệt; biên bản `reviews/T2-18.md`                                                                                                                                   |
-| T2-19 | Thanh toán bền vững: khóa tạo đơn bằng Postgres + "đã thanh toán ⇔ đã cấp quyền" trong 1 transaction + gửi lại email xác nhận | [REVIEW] | T2-08, T2-09        | Laptop   | Giao 15/10 – `prompts/T2-19.md`                                                                                                                                                                                        |
+| T2-19 | Thanh toán bền vững: khóa tạo đơn bằng Postgres + "đã thanh toán ⇔ đã cấp quyền" trong 1 transaction + gửi lại email xác nhận | [REVIEW] | T2-08, T2-09        | Laptop   | **ĐẠT** 15/10 (PR #125) – Planning sửa T2-19c (lỗi nuốt trong transaction → mail "đã thanh toán" cho đơn chưa paid); IT duyệt; biên bản `reviews/T2-19.md`                                                             |
 | T2-11 | E2E luồng Habit + cổng GĐ 2                                                                                                   | [HANA]   | tất cả              | Planning | Đơn thật SePay **ĐẠT** 15/10 (anh Nhân: trang đơn tự đổi, email kích hoạt, sự kiện `paid`); còn e2e tổng + Lighthouse / axe + `GATE_GD2.md` (Planning)                                                                 |
 
 ### GĐ 3 – Web 3 EQ Buddy (`docs/tasks/GD3.md`)
@@ -187,14 +187,28 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **Thứ tự máy**: PC nhà = T3-01 → T3-01b → T3-04 · Laptop = T3-03 → T2-18 → T3-02 · Local = T3-05 · Planning = QA, import 26 thẻ, T3-06.
 
-| Mã    | Task                                                                                                       | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                                                                                              |
-| ----- | ---------------------------------------------------------------------------------------------------------- | -------- | ------------ | -------- | ----------------------------------------------------------------------------------------------------------------------- |
-| T3-01 | Schema thẻ EQ (mặt trước: thông điệp + từ khóa; mặt sau: Gợi nhớ / Gói ghém / Ghi nhận) + lệnh nhập 26 thẻ |          | T2-16 merge  | PC nhà   | **ĐẠT** 15/10 (PR #116) – T3-01 + T3-01b, Planning sửa T3-01c; biên bản `reviews/T3-01.md`; merge xong trả 🔒 Migration |
-| T3-03 | Trang thẻ mở từ QR + xuất QR in ấn (CSV + PNG)                                                             | [REVIEW] | –            | Laptop   | **ĐẠT** 15/10 (PR #115) – Planning sửa T3-03c; IT duyệt; biên bản `reviews/T3-03.md`                                    |
-| T3-05 | Ảnh chia sẻ thẻ 4:5 / 9:16 + offer liên quan + nút Shopee                                                  |          | –            | Local    | **ĐẠT** 15/10 (PR #119) – Planning sửa T3-05c; biên bản `reviews/T3-05.md`                                              |
-| T3-02 | Luồng rút thẻ (ngẫu nhiên / theo từ khóa A–Z) + giới hạn dùng thử 21 ngày                                  | [REVIEW] | T3-01, T2-18 | Laptop   | **ĐẠT** 15/10 (PR #121) – Planning sửa T3-02c (khách mất thẻ sau khi rút); IT duyệt; biên bản `reviews/T3-02.md`        |
-| T3-04 | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản                                                      | [REVIEW] | T3-02        | PC nhà   | Giao 15/10 – `prompts/T3-04.md` (sau khi T3-02 merge); 🔒 Migration                                                     |
-| T3-06 | E2E luồng EQ + cổng GĐ 3                                                                                   | [HANA]   | tất cả       | Planning | –                                                                                                                       |
+| Mã    | Task                                                                                                       | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                                                                                                                                                               |
+| ----- | ---------------------------------------------------------------------------------------------------------- | -------- | ------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T3-01 | Schema thẻ EQ (mặt trước: thông điệp + từ khóa; mặt sau: Gợi nhớ / Gói ghém / Ghi nhận) + lệnh nhập 26 thẻ |          | T2-16 merge  | PC nhà   | **ĐẠT** 15/10 (PR #116) – T3-01 + T3-01b, Planning sửa T3-01c; biên bản `reviews/T3-01.md`; merge xong trả 🔒 Migration                                                                  |
+| T3-03 | Trang thẻ mở từ QR + xuất QR in ấn (CSV + PNG)                                                             | [REVIEW] | –            | Laptop   | **ĐẠT** 15/10 (PR #115) – Planning sửa T3-03c; IT duyệt; biên bản `reviews/T3-03.md`                                                                                                     |
+| T3-05 | Ảnh chia sẻ thẻ 4:5 / 9:16 + offer liên quan + nút Shopee                                                  |          | –            | Local    | **ĐẠT** 15/10 (PR #119) – Planning sửa T3-05c; biên bản `reviews/T3-05.md`                                                                                                               |
+| T3-02 | Luồng rút thẻ (ngẫu nhiên / theo từ khóa A–Z) + giới hạn dùng thử 21 ngày                                  | [REVIEW] | T3-01, T2-18 | Laptop   | **ĐẠT** 15/10 (PR #121) – Planning sửa T3-02c (khách mất thẻ sau khi rút); IT duyệt; biên bản `reviews/T3-02.md`                                                                         |
+| T3-04 | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản                                                      | [REVIEW] | T3-02        | PC nhà   | **ĐẠT** 15/10 (PR #127) – Planning sửa T3-04c (action tin id khách từ trình duyệt → xóa / ghi đè thẻ của người khác); IT duyệt; biên bản `reviews/T3-04.md`; merge xong trả 🔒 Migration |
+| T3-06 | E2E luồng EQ + cổng GĐ 3                                                                                   | [HANA]   | tất cả       | Planning | –                                                                                                                                                                                        |
+
+### CMS-UX cho Hana (kế hoạch `docs/plan/CMS_UX.md`, viết 15/10)
+
+| Mã    | Việc                                                       | Phụ thuộc    | Máy đề xuất | Trạng thái                     |
+| ----- | ---------------------------------------------------------- | ------------ | ----------- | ------------------------------ |
+| CM-01 | Menu theo việc + ẩn mục kỹ thuật theo vai trò + logo admin | –            | Local       | Chưa giao (`prompts/CM-01.md`) |
+| CM-02 | Dashboard "Hôm nay"                                        | CM-01        | Laptop      | Chưa giao (`prompts/CM-02.md`) |
+| CM-03 | Form Sản phẩm theo loại (tabs, ẩn trường, cảnh báo)        | –            | PC nhà      | Chưa giao (`prompts/CM-03.md`) |
+| CM-05 | Live Preview cho sản phẩm, bài học, thẻ EQ, testimonial…   | –            | Laptop      | Chưa giao (`prompts/CM-05.md`) |
+| CM-04 | Wizard "Tạo sản phẩm" 5 bước                               | CM-03, CM-05 | PC nhà      | Chưa giao (`prompts/CM-04.md`) |
+| CM-06 | Wizard "Thêm bài học" + "Lên lịch workshop"                | CM-04        | Local       | Chưa giao (`prompts/CM-06.md`) |
+| CM-07 | Hướng dẫn CMS + buổi thử với Hana (5 việc, bấm giờ)        | CM-01→06     | Planning    | –                              |
+
+Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ CM-03 ‖ CM-05.
 
 ### CMS-UX cho Hana (kế hoạch `docs/plan/CMS_UX.md`, viết 15/10)
 

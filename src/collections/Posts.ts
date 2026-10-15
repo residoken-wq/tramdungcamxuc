@@ -1,3 +1,4 @@
+import { vi } from '../lib/i18n/vi'
 import { detailLivePreview } from '@/lib/live-preview'
 import {
   contentCollection,
@@ -11,7 +12,7 @@ import {
   url,
 } from '../fields/content'
 
-export const Posts = contentCollection('posts', 'Bài viết và video', 'Nội dung', 'title', [
+export const Posts = contentCollection('posts', 'Bài viết và video', vi.cms.nav.website, 'title', [
   text('title', 'Tiêu đề', true),
   slug(),
   text('series', 'Chuỗi nội dung'),
@@ -32,4 +33,10 @@ export const Posts = contentCollection('posts', 'Bài viết và video', 'Nội 
   relation('leadMagnet', 'Tài nguyên tặng', 'products'),
 ])
 
-Posts.admin = { ...Posts.admin, livePreview: detailLivePreview('posts') }
+Posts.admin = {
+  ...Posts.admin,
+  description: 'Bài viết chuyên môn và video truyền cảm hứng trong thư viện.',
+  defaultColumns: ['title', 'format', 'topic', '_status', 'updatedAt'],
+  listSearchableFields: ['title', 'slug'],
+  livePreview: detailLivePreview('posts'),
+}
