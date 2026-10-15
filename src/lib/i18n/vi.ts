@@ -1433,6 +1433,39 @@ export const vi = {
         'Email thông báo tự động từ tramdungcamxuc.com khi kích hoạt dùng thử công cụ số.',
     },
   },
+  eqBuddy: {
+    cardPage: {
+      seriesLabel: (code: string) => `EQ BUDDY · ${code}`,
+      defaultMetaTitle: 'Thẻ EQ Buddy – Trạm Dừng Cảm Xúc',
+      metaTitle: (code: string, snippet: string) =>
+        snippet
+          ? `EQ BUDDY · ${code} – ${snippet} | Trạm Dừng Cảm Xúc`
+          : `EQ BUDDY · ${code} – Trạm Dừng Cảm Xúc`,
+      defaultMetaDescription: 'Thông điệp và câu chuyện từ bộ thẻ EQ Buddy – Trạm Dừng Cảm Xúc',
+      backToDeck: 'Trở về EQ Buddy',
+      drawAnotherCard: 'Rút thêm một thẻ',
+      storyHeading: 'Câu chuyện',
+    },
+    qrExport: {
+      exportCsvButton: 'Xuất danh sách QR (CSV)',
+      downloadPngButton: 'Tải ảnh QR (PNG)',
+      downloadPngHint: 'Tải mã QR định dạng PNG 1200×1200 để gửi nhà in.',
+      saveBeforeDownloadNotice: 'Vui lòng lưu thẻ trước khi tải mã QR.',
+      csvHeaders: {
+        code: 'code',
+        qrSlug: 'qrSlug',
+        url: 'url',
+        status: 'trạng thái',
+        printedAt: 'ngày in',
+        pngUrl: 'link PNG',
+      },
+      statusPublished: 'Đã xuất bản',
+      statusDraft: 'Bản nháp',
+      unauthenticated: 'Chưa đăng nhập',
+      forbidden: 'Không có quyền truy cập',
+      cardNotFound: 'Không tìm thấy thẻ',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
