@@ -74,9 +74,11 @@ export function migrateEmotionTags(
  * Chuyển giá trị reflectionPrompt cũ (nếu có) thành promptRecall;
  * promptPack và promptAcknowledge để rỗng.
  */
-export function migrateReflectionPromptToPrompts(
-  legacyPrompt: string | null | undefined,
-): { promptRecall: string; promptPack: string; promptAcknowledge: string } {
+export function migrateReflectionPromptToPrompts(legacyPrompt: string | null | undefined): {
+  promptRecall: string
+  promptPack: string
+  promptAcknowledge: string
+} {
   return {
     promptRecall: typeof legacyPrompt === 'string' ? legacyPrompt.trim() : '',
     promptPack: '',

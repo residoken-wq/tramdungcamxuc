@@ -5,10 +5,7 @@ import { z } from 'zod'
 import { EQ_BUDDY_PRODUCT_SLUG } from '../../src/lib/eq/config'
 
 export const eqCardInputSchema = z.object({
-  code: z
-    .string({ required_error: 'Mã thẻ là bắt buộc' })
-    .trim()
-    .min(1, 'Mã thẻ không được rỗng'),
+  code: z.string({ required_error: 'Mã thẻ là bắt buộc' }).trim().min(1, 'Mã thẻ không được rỗng'),
   keywordEn: z
     .string({ required_error: 'Từ khóa tiếng Anh là bắt buộc' })
     .trim()
@@ -95,9 +92,7 @@ export function validateEqCardsData(raw: unknown): EqCardInput[] {
 
   const parsed = z.array(eqCardInputSchema).safeParse(raw)
   if (!parsed.success) {
-    const issues = parsed.error.issues
-      .map((i) => `[${i.path.join('.')}] ${i.message}`)
-      .join('; ')
+    const issues = parsed.error.issues.map((i) => `[${i.path.join('.')}] ${i.message}`).join('; ')
     throw new Error(`Dữ liệu thẻ EQ không hợp lệ: ${issues}`)
   }
 

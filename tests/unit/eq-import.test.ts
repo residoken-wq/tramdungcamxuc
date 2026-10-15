@@ -42,7 +42,9 @@ describe('EQ Cards import logic and validation', () => {
       // Nằm trong repo
       expect(isPathInsideRepo(path.join(repoRoot, 'cards.json'), repoRoot)).toBe(true)
       expect(isPathInsideRepo(path.join(repoRoot, 'seed', 'cards.json'), repoRoot)).toBe(true)
-      expect(isPathInsideRepo(path.join(repoRoot, 'src', 'data', 'cards.json'), repoRoot)).toBe(true)
+      expect(isPathInsideRepo(path.join(repoRoot, 'src', 'data', 'cards.json'), repoRoot)).toBe(
+        true,
+      )
 
       // Nằm ngoài repo
       expect(isPathInsideRepo(path.join(repoRoot, '..', 'cards.json'), repoRoot)).toBe(false)
@@ -67,7 +69,11 @@ describe('EQ Cards import logic and validation', () => {
       )
 
       // File không tồn tại (ở ngoài repo)
-      const nonExistentPath = path.resolve(process.cwd(), '..', 'non-existent-cards-file-12345.json')
+      const nonExistentPath = path.resolve(
+        process.cwd(),
+        '..',
+        'non-existent-cards-file-12345.json',
+      )
       expect(() => validateEqCardsFilePath(nonExistentPath, process.cwd())).toThrow(
         'Không tìm thấy file tại đường dẫn',
       )
@@ -239,10 +245,12 @@ describe('EQ Cards import logic and validation', () => {
       track('eqCards', foundCard2)
 
       // Thẻ mẫu đã bị xóa
-      const checkSample = await payload.findByID({
-        collection: 'eqCards',
-        id: sampleCard.id,
-      }).catch(() => null)
+      const checkSample = await payload
+        .findByID({
+          collection: 'eqCards',
+          id: sampleCard.id,
+        })
+        .catch(() => null)
       expect(checkSample).toBeNull()
 
       // 2. Lần 2: Chạy lại với cùng dữ liệu -> Không tạo trùng, chỉ cập nhật

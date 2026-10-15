@@ -1,7 +1,4 @@
-import {
-  ValidationError,
-  type CollectionBeforeChangeHook,
-} from 'payload'
+import { ValidationError, type CollectionBeforeChangeHook } from 'payload'
 import {
   contentCollection,
   date,

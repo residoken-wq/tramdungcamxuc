@@ -96,7 +96,7 @@
   ```bash
   EQ_CARDS_FILE=/đường/dẫn/ngoài/repo.json pnpm import:eq
   ```
-  *(Trên Windows PowerShell)*:
+  _(Trên Windows PowerShell)_:
   ```powershell
   $env:EQ_CARDS_FILE="C:\secure\eq-cards-26.json"; pnpm import:eq; Remove-Item Env:\EQ_CARDS_FILE
   ```
