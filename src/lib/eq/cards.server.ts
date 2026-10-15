@@ -88,3 +88,49 @@ export const getPublishedEqCardByQrSlug = cache(
     }
   },
 )
+
+export interface PublicEqCardKeyword {
+  code: string
+  keywordEn: string
+  qrSlug: string
+  order: number | null
+}
+
+/**
+ * Lấy danh sách từ khóa của toàn bộ thẻ EQ Buddy đã xuất bản, sắp theo order (A–Z).
+ * Dùng cho lưới chọn theo từ khóa ở Bước 1 của luồng rút thẻ.
+ */
+export const getPublishedEqKeywords = cache(async (): Promise<PublicEqCardKeyword[]> => {
+  try {
+    const payloadConfig = await config
+    const payload = await getPayload({ config: payloadConfig })
+
+    const result = await payload.find({
+      collection: 'eqCards',
+      where: {
+        _status: { equals: 'published' },
+      },
+      select: {
+        code: true,
+        keywordEn: true,
+        qrSlug: true,
+        order: true,
+      },
+      sort: 'order',
+      limit: 100,
+      draft: false,
+    })
+
+    return result.docs
+      .filter((doc) => Boolean(doc.keywordEn && doc.qrSlug))
+      .map((doc) => ({
+        code: doc.code || '',
+        keywordEn: doc.keywordEn || '',
+        qrSlug: doc.qrSlug || '',
+        order: typeof doc.order === 'number' ? doc.order : null,
+      }))
+  } catch (err) {
+    if ((err as { status?: number })?.status === 404) return []
+    throw err
+  }
+})
