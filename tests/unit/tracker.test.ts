@@ -139,6 +139,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
               collection: 'habitCheckins',
               id: c.id,
               overrideAccess: true,
+              context: { accountDeletion: true },
             })
             .catch(() => {})
         }
@@ -158,6 +159,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
               collection: 'trackerNudges',
               id: n.id,
               overrideAccess: true,
+              context: { accountDeletion: true },
             })
             .catch(() => {})
         }
@@ -173,6 +175,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
             collection: item.collection,
             id: item.id,
             overrideAccess: true,
+            context: { accountDeletion: true },
           })
           .catch(() => {})
       } catch (_e) {}

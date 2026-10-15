@@ -1360,6 +1360,8 @@ export const vi = {
       rateLimited: 'Bạn đã gửi yêu cầu quá nhiều lần. Vui lòng thử lại sau 1 giờ.',
       unauthorized: 'Vui lòng đăng nhập để thực hiện thao tác này.',
       serverError: 'Đã có lỗi xảy ra từ máy chủ. Vui lòng thử lại sau.',
+      emailSubject: (customerId: number, requestedAt: string) =>
+        `[TDCX] Yêu cầu xóa dữ liệu: Khách hàng #${customerId} (${requestedAt})`,
     },
     adminDeletion: {
       panelTitle: 'Quản lý quyền riêng tư & dữ liệu',

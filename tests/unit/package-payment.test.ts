@@ -250,7 +250,12 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
     // Xóa customers
     for (const custId of createdCustomers) {
       try {
-        await payload.delete({ collection: 'customers', id: custId, overrideAccess: true })
+        await payload.delete({
+          collection: 'customers',
+          id: custId,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       } catch {}
     }
 

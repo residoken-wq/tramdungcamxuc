@@ -74,6 +74,7 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
         collection: 'certificates',
         where: { customer: { in: customerIds } },
         overrideAccess: true,
+        context: { accountDeletion: true },
       })
     }
 
@@ -84,6 +85,7 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
           collection: item.collection,
           id: item.id,
           overrideAccess: true,
+          context: { accountDeletion: true },
         })
       } catch {
         // Bỏ qua lỗi xóa nếu đã bị xóa trước đó

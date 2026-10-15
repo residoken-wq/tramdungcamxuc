@@ -123,7 +123,7 @@ Hệ thống phân chia tài khoản quản trị thành hai vai trò rõ ràng 
 
 #### 2. Thao tác xóa dữ liệu của Hana trong CMS
 
-1. Mở email thông báo hoặc vào mục **Khách hàng** (`customers`) trong CMS. Bạn sẽ thấy cột **Yêu cầu xóa** hiển thị thời điểm khách gửi yêu cầu.
+1. Mở email thông báo hoặc vào mục **Khách hàng** (`customers`) trong CMS. Bạn sẽ thấy cột **Yêu cầu xóa lúc** hiển thị thời điểm khách gửi yêu cầu.
 2. Bấm vào khách hàng cần xử lý để mở trang chi tiết (`/admin/collections/customers/[id]`).
 3. Tại cột bên phải (Sidebar), tìm nút **Xóa dữ liệu khách** (chỉ hiển thị cho tài khoản Chủ sở hữu - `owner`).
 4. **Lưu ý về đơn hàng chờ**:

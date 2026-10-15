@@ -51,3 +51,5 @@
 - [ ] T2-09: giới hạn body webhook ở reverse proxy (request chunked không có `Content-Length`); demo phải chạy sau proxy để `X-Forwarded-For` đáng tin.
 - [ ] T2-09: gói `markOrderPaid` (đổi `paid` + cấp quyền + email) trong 1 transaction; hiện tiến trình chết giữa chừng → nhãn `paid_incomplete`, email xác nhận không gửi lại.
 - [x] T2-07: chống cấp 2 chứng nhận cho 1 kế hoạch đang dựa vào khóa trong bộ nhớ (`withCertLock`, một tiến trình). Khi có migration tiếp theo → thêm unique cho `certificates.plan` (xong T2-16).
+- [ ] T2-16: `trialUsage.product` NOT NULL nhưng khóa ngoại `ON DELETE SET NULL` → xóa hẳn một sản phẩm đã có dấu vết dùng thử sẽ lỗi. Khi có migration tiếp theo: đổi sang `CASCADE` (hoặc cho phép null).
+- [ ] T2-16: đổi `PAYLOAD_SECRET` làm mọi `trialUsage.emailHash` cũ mất tác dụng (khách đã xóa có thể dùng thử lại) – ghi vào RUNBOOK khi có quy trình xoay khóa.

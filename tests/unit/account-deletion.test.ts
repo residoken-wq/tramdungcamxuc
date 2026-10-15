@@ -7,7 +7,7 @@ import { sql } from '@payloadcms/db-postgres'
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import type { Customer, HabitPlan, Order, Product, User } from '../../src/payload-types'
-import { requestAccountDeletion, deleteCustomerAdmin } from '../../src/lib/account/actions'
+import { requestAccountDeletion, deleteCustomerAdmin } from '../../src/lib/account/deletion.server'
 import { deleteCustomerData } from '../../src/lib/account/delete-customer.server'
 import * as sessionServer from '../../src/lib/auth/session.server'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
@@ -142,6 +142,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
           collection: item.collection,
           id: item.id,
           overrideAccess: true,
+          context: { accountDeletion: true },
         })
       } catch {
         // Bỏ qua nếu bản ghi đã được xóa trong luồng test
@@ -1365,6 +1366,174 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
           viStrings.account.validation.nameSpecialChars,
         )
       }
+    })
+  })
+
+  describe('4. T2-16c: server action công khai, khóa dòng khách, hủy đơn quá hạn có điều kiện', () => {
+    const makeCustomer = async (label: string) => {
+      const email = `hoc-vien-test-${label}-${randomUUID().slice(0, 8)}@example.test`
+      return track(
+        'customers',
+        (await payload.create({
+          collection: 'customers',
+          data: { email, name: 'Học viên Test 05' },
+          overrideAccess: true,
+        })) as Customer,
+      )
+    }
+
+    it('file server action chỉ export 3 hàm bọc; không phải owner -> từ chối, không lộ số đơn chờ', async () => {
+      const actions = await import('../../src/lib/account/actions')
+      expect(Object.keys(actions).sort()).toEqual([
+        'checkCustomerPendingOrdersAdminAction',
+        'deleteCustomerAdminAction',
+        'requestAccountDeletionAction',
+      ])
+
+      const customer = await makeCustomer('c1')
+      track(
+        'orders',
+        (await payload.create({
+          collection: 'orders',
+          data: {
+            customer: customer.id,
+            items: [{ product: testProduct.id, price: 178000 }],
+            subtotal: 178000,
+            total: 178000,
+            paymentStatus: 'pending',
+            termsAcceptedAt: new Date().toISOString(),
+          },
+          overrideAccess: true,
+        })) as Order,
+      )
+
+      // Không có phiên admin
+      const noUser = await actions.deleteCustomerAdminAction(customer.id, customer.email)
+      expect(noUser.success).toBe(false)
+      expect(noUser.message).toBe(viStrings.account.adminDeletion.unauthorized)
+      expect(await actions.checkCustomerPendingOrdersAdminAction(customer.id)).toEqual({
+        pendingCount: 0,
+      })
+
+      // Editor
+      vi.spyOn(payload, 'auth').mockResolvedValue({
+        user: { id: 888, email: 'editor@example.test', role: 'editor', collection: 'users' },
+      } as unknown as Awaited<ReturnType<Payload['auth']>>)
+      expect(await actions.checkCustomerPendingOrdersAdminAction(customer.id)).toEqual({
+        pendingCount: 0,
+      })
+
+      // Owner thấy đúng số đơn chờ
+      vi.spyOn(payload, 'auth').mockResolvedValue({
+        user: { ...ownerUser, collection: 'users' },
+      } as unknown as Awaited<ReturnType<Payload['auth']>>)
+      expect(await actions.checkCustomerPendingOrdersAdminAction(customer.id)).toEqual({
+        pendingCount: 1,
+      })
+
+      const stillThere = await payload.findByID({
+        collection: 'customers',
+        id: customer.id,
+        overrideAccess: true,
+      })
+      expect(stillThere.id).toBe(customer.id)
+    })
+
+    it('đơn mới tạo cho khách trong lúc đang xóa -> phải chờ khóa rồi thất bại, không lọt đơn mồ côi', async () => {
+      const customer = await makeCustomer('c2')
+      const realFind = payload.find.bind(payload)
+      let concurrentCreate: Promise<unknown> | null = null
+      vi.spyOn(payload, 'find').mockImplementation(((args: Parameters<Payload['find']>[0]) => {
+        if (args.collection === 'orders' && !concurrentCreate) {
+          // Một yêu cầu khác (ngoài transaction) tạo đơn chờ cho khách này ngay sau khi luồng xóa đã khóa dòng khách
+          concurrentCreate = payload.db.drizzle.execute(
+            sql`INSERT INTO "orders" ("customer_id", "total", "payment_status", "delivery_status", "payment_ref", "pay_token") VALUES (${customer.id}, 178000, 'pending', 'none', ${'TDCXQA' + randomUUID().slice(0, 6).toUpperCase()}, ${randomUUID()}) RETURNING "id"`,
+          )
+          concurrentCreate.catch(() => {})
+        }
+        return realFind(args)
+      }) as Payload['find'])
+
+      const result = await deleteCustomerData(payload, {
+        customerId: customer.id,
+        confirmationEmail: customer.email,
+        actorUserId: ownerUser.id,
+      })
+      vi.restoreAllMocks()
+      expect(result.success).toBe(true)
+      expect(concurrentCreate).not.toBeNull()
+      await expect(concurrentCreate).rejects.toThrow()
+
+      const orphans = await payload.db.drizzle.execute(
+        sql`SELECT count(*)::int AS n FROM "orders" WHERE "customer_id" IS NULL AND "anonymized_at" IS NULL`,
+      )
+      expect((orphans as unknown as { rows: Array<{ n: number }> }).rows[0].n).toBe(0)
+    })
+
+    it('đơn quá hạn vừa được thanh toán ngay trước bước hủy -> giữ paid, không ghi audit hủy', async () => {
+      const customer = await makeCustomer('c3')
+      const order = track(
+        'orders',
+        (await payload.create({
+          collection: 'orders',
+          data: {
+            customer: customer.id,
+            items: [{ product: testProduct.id, price: 178000 }],
+            subtotal: 178000,
+            total: 178000,
+            paymentStatus: 'pending',
+            termsAcceptedAt: new Date().toISOString(),
+          },
+          overrideAccess: true,
+        })) as Order,
+      )
+      await payload.db.drizzle.execute(
+        sql`UPDATE "orders" SET "payment_status" = 'paid', "paid_at" = now() WHERE "id" = ${order.id}`,
+      )
+
+      // Luồng xóa đọc thấy đơn còn 'failed' (ảnh cũ), nhưng DB đã 'paid'
+      const realFind = payload.find.bind(payload)
+      vi.spyOn(payload, 'find').mockImplementation((async (
+        args: Parameters<Payload['find']>[0],
+      ) => {
+        const res = await realFind(args)
+        if (args.collection === 'orders') {
+          return {
+            ...res,
+            docs: res.docs.map((d) =>
+              (d as Order).id === order.id ? { ...d, paymentStatus: 'failed' } : d,
+            ),
+          }
+        }
+        return res
+      }) as Payload['find'])
+
+      const result = await deleteCustomerData(payload, {
+        customerId: customer.id,
+        confirmationEmail: customer.email,
+        actorUserId: ownerUser.id,
+      })
+      vi.restoreAllMocks()
+      expect(result.success).toBe(true)
+
+      const after = await payload.findByID({
+        collection: 'orders',
+        id: order.id,
+        overrideAccess: true,
+      })
+      expect(after.paymentStatus).toBe('paid')
+      expect(after.anonymizedAt).toBeTruthy()
+      const audits = await payload.find({
+        collection: 'auditLogs',
+        where: {
+          and: [
+            { action: { equals: 'order_cancelled_for_deletion' } },
+            { target: { equals: `orders:${order.id}` } },
+          ],
+        },
+        overrideAccess: true,
+      })
+      expect(audits.totalDocs).toBe(0)
     })
   })
 })

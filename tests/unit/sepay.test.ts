@@ -212,7 +212,12 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
 
     for (const id of createdCustomers) {
       await payload
-        .delete({ collection: 'customers', id, overrideAccess: true })
+        .delete({
+          collection: 'customers',
+          id,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
         .catch((e) => console.error('[cleanup] customer:', e))
     }
 

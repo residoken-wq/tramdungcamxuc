@@ -16,9 +16,21 @@ interface DrizzleDbExecutor {
   execute: (query: unknown) => Promise<unknown>
 }
 
-function getDrizzleDb(payload: Payload): DrizzleDbExecutor | null {
-  const db = (payload.db as unknown as { drizzle?: DrizzleDbExecutor })?.drizzle
+// The drizzle handle bound to this transaction (payload.db.drizzle would run outside it).
+function getTransactionDb(
+  payload: Payload,
+  transactionID: number | string,
+): DrizzleDbExecutor | null {
+  const sessions = (
+    payload.db as unknown as { sessions?: Record<string, { db?: DrizzleDbExecutor }> }
+  ).sessions
+  const db = sessions?.[String(transactionID)]?.db
   return db && typeof db.execute === 'function' ? db : null
+}
+
+function rowsOf<T>(result: unknown): T[] {
+  if (Array.isArray(result)) return result as T[]
+  return ((result as { rows?: T[] })?.rows ?? []) as T[]
 }
 
 // REVIEW-REQUIRED: Xóa vĩnh viễn dữ liệu cá nhân của khách hàng theo Nghị định 13/2023/NĐ-CP.
@@ -40,44 +52,58 @@ export async function deleteCustomerData(
     actorUserId?: number | string
   },
 ): Promise<DeleteCustomerDataResult> {
-  const customer = await payload.findByID({
-    collection: 'customers',
-    id: params.customerId,
-    overrideAccess: true,
-  })
-
-  if (!customer) {
-    return {
-      success: false,
-      message: vi.account.adminDeletion.notFound,
+  // REVIEW-REQUIRED: Mọi đọc/ghi chạy trên cùng một transaction. Không có transaction → từ chối (không xóa nửa vời).
+  if (
+    typeof payload.db?.beginTransaction !== 'function' ||
+    typeof payload.db.commitTransaction !== 'function' ||
+    typeof payload.db.rollbackTransaction !== 'function'
+  ) {
+    throw new Error(vi.account.adminDeletion.serverError)
+  }
+  const transactionID = await payload.db.beginTransaction()
+  if (!transactionID) throw new Error(vi.account.adminDeletion.serverError)
+  const rollback = async () => {
+    try {
+      await payload.db.rollbackTransaction(transactionID)
+    } catch (rollbackErr) {
+      console.error('[DeleteCustomer] Lỗi rollback transaction:', rollbackErr)
     }
+  }
+  // A fresh req per call: Payload's local API merges `context` into the req it is given, so a
+  // shared req would leak one call's context into the next.
+  const txReq = () =>
+    ({ transactionID, context: { accountDeletion: true } }) as unknown as PayloadRequest
+  const db = getTransactionDb(payload, transactionID)
+  if (!db) {
+    await rollback()
+    throw new Error(vi.account.adminDeletion.serverError)
+  }
+
+  // REVIEW-REQUIRED: Khóa dòng khách (FOR UPDATE) tới khi commit: đơn mới tạo cho khách này (khóa ngoại
+  // cần khóa KEY SHARE trên dòng khách) phải chờ, rồi lỗi vì khách đã bị xóa – không lọt đơn chờ mới.
+  const lockedResult = await db.execute(
+    sql`SELECT "id", "email" FROM "customers" WHERE "id" = ${params.customerId} FOR UPDATE`,
+  )
+  const locked = rowsOf<{ id: number; email: string }>(lockedResult)[0]
+  if (!locked) {
+    await rollback()
+    return { success: false, message: vi.account.adminDeletion.notFound }
   }
 
   const normalizedInput = params.confirmationEmail.trim().toLowerCase()
-  const normalizedActual = customer.email.trim().toLowerCase()
+  const normalizedActual = locked.email.trim().toLowerCase()
   if (normalizedInput !== normalizedActual) {
+    await rollback()
     return {
       success: false,
       message: vi.account.adminDeletion.emailMismatch,
     }
   }
 
-  const customerId = customer.id
-  const customerEmail = customer.email
+  const customerId = locked.id
+  const customerEmail = locked.email
   const normalizedEmail = customerEmail.trim().toLowerCase()
-  const db = getDrizzleDb(payload)
   const tally: Record<string, number> = {}
-
-  let transactionID: null | number | string = null
-  if (payload.db && typeof payload.db.beginTransaction === 'function') {
-    transactionID = await payload.db.beginTransaction()
-  }
-  const req = {
-    ...(transactionID ? { transactionID } : {}),
-    context: {
-      accountDeletion: true,
-    },
-  } as unknown as PayloadRequest
 
   try {
     // 1. Thu thập các bản ghi liên kết của khách hàng bên trong transaction
@@ -85,7 +111,7 @@ export async function deleteCustomerData(
       collection: 'orders',
       where: { customer: { equals: customerId } },
       pagination: false,
-      req,
+      req: txReq(),
       overrideAccess: true,
     })
     const customerOrders = orders.docs
@@ -94,9 +120,7 @@ export async function deleteCustomerData(
     // Yêu cầu admin/Hana phải hủy đơn trước khi xóa để tránh treo đơn và xung đột với webhook/cron.
     const pendingOrders = customerOrders.filter((o) => o.paymentStatus === 'pending')
     if (pendingOrders.length > 0) {
-      if (transactionID && typeof payload.db.rollbackTransaction === 'function') {
-        await payload.db.rollbackTransaction(transactionID)
-      }
+      await rollback()
       return {
         success: false,
         message: vi.account.adminDeletion.pendingOrders(pendingOrders.length),
@@ -123,7 +147,7 @@ export async function deleteCustomerData(
           ],
         },
         pagination: false,
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       planIds = habitPlans.docs.map((p) => p.id)
@@ -133,7 +157,7 @@ export async function deleteCustomerData(
       collection: 'entitlements',
       where: { customer: { equals: customerId } },
       pagination: false,
-      req,
+      req: txReq(),
       overrideAccess: true,
     })
     const entitlementIds = entitlements.docs.map((e) => e.id)
@@ -146,7 +170,7 @@ export async function deleteCustomerData(
     const resCert = await payload.delete({
       collection: 'certificates',
       where: { or: certConditions },
-      req,
+      req: txReq(),
       overrideAccess: true,
     })
     if (resCert.errors && resCert.errors.length > 0) {
@@ -161,7 +185,7 @@ export async function deleteCustomerData(
       const resCheckins = await payload.delete({
         collection: 'habitCheckins',
         where: { plan: { in: planIds } },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       if (resCheckins.errors && resCheckins.errors.length > 0) {
@@ -179,7 +203,7 @@ export async function deleteCustomerData(
       const resNudges = await payload.delete({
         collection: 'trackerNudges',
         where: { plan: { in: planIds } },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       if (resNudges.errors && resNudges.errors.length > 0) {
@@ -197,7 +221,7 @@ export async function deleteCustomerData(
       const resPlans = await payload.delete({
         collection: 'habitPlans',
         where: { id: { in: planIds } },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       if (resPlans.errors && resPlans.errors.length > 0) {
@@ -215,7 +239,7 @@ export async function deleteCustomerData(
       const resWorkshop = await payload.delete({
         collection: 'workshopReminders',
         where: { customer: { equals: customerId } },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       if (resWorkshop.errors && resWorkshop.errors.length > 0) {
@@ -231,7 +255,7 @@ export async function deleteCustomerData(
       const resTrial = await payload.delete({
         collection: 'trialReminders',
         where: { entitlement: { in: entitlementIds } },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       if (resTrial.errors && resTrial.errors.length > 0) {
@@ -249,7 +273,7 @@ export async function deleteCustomerData(
       const resLesson = await payload.delete({
         collection: 'lessonProgress',
         where: { customer: { equals: customerId } },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       if (resLesson.errors && resLesson.errors.length > 0) {
@@ -265,7 +289,7 @@ export async function deleteCustomerData(
       const resCards = await payload.delete({
         collection: 'savedCards',
         where: { customer: { equals: customerId } },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       if (resCards.errors && resCards.errors.length > 0) {
@@ -294,7 +318,7 @@ export async function deleteCustomerData(
           and: [{ emailHash: { equals: emailHash } }, { product: { equals: prodId } }],
         },
         pagination: false,
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
 
@@ -306,7 +330,7 @@ export async function deleteCustomerData(
             product: prodId,
             usedAt: ent.grantedAt || now,
           },
-          req,
+          req: txReq(),
           overrideAccess: true,
         })
       }
@@ -317,7 +341,7 @@ export async function deleteCustomerData(
       const resEnt = await payload.delete({
         collection: 'entitlements',
         where: { id: { in: entitlementIds } },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
       if (resEnt.errors && resEnt.errors.length > 0) {
@@ -348,7 +372,7 @@ export async function deleteCustomerData(
             or: [{ email: { equals: customerEmail } }, { email: { equals: normalizedEmail } }],
           },
           pagination: false,
-          req,
+          req: txReq(),
           overrideAccess: true,
         })
         otpIds = otps.docs.map((o) => o.id)
@@ -358,7 +382,7 @@ export async function deleteCustomerData(
         const resOtp = await payload.delete({
           collection: 'otpCodes',
           where: { id: { in: otpIds } },
-          req,
+          req: txReq(),
           overrideAccess: true,
         })
         if (resOtp.errors && resOtp.errors.length > 0) {
@@ -388,7 +412,7 @@ export async function deleteCustomerData(
             or: [{ email: { equals: customerEmail } }, { email: { equals: normalizedEmail } }],
           },
           pagination: false,
-          req,
+          req: txReq(),
           overrideAccess: true,
         })
         diagIds = diags.docs.map((d) => d.id)
@@ -398,7 +422,7 @@ export async function deleteCustomerData(
         const resDiag = await payload.delete({
           collection: 'diagnosticResults',
           where: { id: { in: diagIds } },
-          req,
+          req: txReq(),
           overrideAccess: true,
         })
         if (resDiag.errors && resDiag.errors.length > 0) {
@@ -430,7 +454,7 @@ export async function deleteCustomerData(
             or: [{ email: { equals: customerEmail } }, { email: { equals: normalizedEmail } }],
           },
           pagination: false,
-          req,
+          req: txReq(),
           overrideAccess: true,
         })
         leadIds = leads.docs.map((l) => l.id)
@@ -440,7 +464,7 @@ export async function deleteCustomerData(
         const resLeads = await payload.delete({
           collection: 'leads',
           where: { id: { in: leadIds } },
-          req,
+          req: txReq(),
           overrideAccess: true,
         })
         if (resLeads.errors && resLeads.errors.length > 0) {
@@ -454,32 +478,26 @@ export async function deleteCustomerData(
 
     // 13b. REVIEW-REQUIRED: Chuyển đơn hàng 'failed' sang 'cancelled' và ghi nhật ký thao tác (T2-16b A2, anh Nhân chốt 14/10).
     // Đơn failed (quá hạn) được chuyển sang cancelled trong transaction trước khi ẩn danh để webhook không nhận nhầm tiền.
-    const failedOrders = customerOrders.filter((o) => o.paymentStatus === 'failed')
-    for (const failedOrder of failedOrders) {
-      const resCancel = await payload.update({
-        collection: 'orders',
-        where: {
-          and: [{ id: { equals: failedOrder.id } }, { paymentStatus: { equals: 'failed' } }],
-        },
-        data: {
-          paymentStatus: 'cancelled',
-        },
-        req,
-        context: { paymentAction: true, accountDeletion: true },
-        overrideAccess: true,
-      })
-      if (resCancel.errors?.length) {
-        throw new Error(`Không thể hủy đơn hàng thất bại #${failedOrder.id}`)
-      }
+    // UPDATE có điều kiện tại DB (như cancelOrder), trong transaction; chỉ ghi audit cho đơn thật sự đổi.
+    const failedOrderIds = customerOrders
+      .filter((o) => o.paymentStatus === 'failed')
+      .map((o) => o.id)
+    for (const failedOrderId of failedOrderIds) {
+      const cancelResult = await db.execute(
+        sql`UPDATE "orders" SET "payment_status" = 'cancelled', "updated_at" = ${now}::timestamptz WHERE "id" = ${failedOrderId} AND "customer_id" = ${customerId} AND "payment_status" = 'failed' RETURNING "id"`,
+      )
+      if (rowsOf<{ id: number }>(cancelResult).length === 0) continue
       await payload.create({
         collection: 'auditLogs',
         data: {
           action: 'order_cancelled_for_deletion',
-          target: `orders:${failedOrder.id}`,
+          target: `orders:${failedOrderId}`,
           actor: params.actorUserId ? Number(params.actorUserId) : undefined,
+          before: { paymentStatus: 'failed' },
+          after: { paymentStatus: 'cancelled' },
           at: now,
         },
-        req,
+        req: txReq(),
         overrideAccess: true,
       })
     }
@@ -498,8 +516,7 @@ export async function deleteCustomerData(
           notes: null,
           customerNeed: null,
         },
-        req,
-        context: { accountDeletion: true },
+        req: txReq(),
         overrideAccess: true,
       })
       anonymizedCount++
@@ -510,8 +527,7 @@ export async function deleteCustomerData(
     await payload.delete({
       collection: 'customers',
       id: customerId,
-      req,
-      context: { accountDeletion: true },
+      req: txReq(),
       overrideAccess: true,
     })
     tally.customers = 1
@@ -526,14 +542,12 @@ export async function deleteCustomerData(
         after: { tally },
         at: now,
       },
-      req,
+      req: txReq(),
       overrideAccess: true,
     })
 
     // Hoàn tất transaction thành công
-    if (transactionID && typeof payload.db.commitTransaction === 'function') {
-      await payload.db.commitTransaction(transactionID)
-    }
+    await payload.db.commitTransaction(transactionID)
 
     return {
       success: true,
@@ -541,13 +555,7 @@ export async function deleteCustomerData(
       tally,
     }
   } catch (err) {
-    if (transactionID && typeof payload.db.rollbackTransaction === 'function') {
-      try {
-        await payload.db.rollbackTransaction(transactionID)
-      } catch (rollbackErr) {
-        console.error('[DeleteCustomer] Lỗi rollback transaction:', rollbackErr)
-      }
-    }
+    await rollback()
     console.error('[DeleteCustomer] Lỗi trong quá trình xóa dữ liệu khách hàng:', err)
     throw new Error(vi.account.adminDeletion.serverError)
   }
