@@ -11,7 +11,7 @@ import {
   migrateReflectionPromptToPrompts,
   rollbackReflectionPromptsToPrompt,
 } from '../../src/lib/eq/migration'
-import { EMOTIONS, type EmotionKey } from '../../src/lib/emotions'
+import { type EmotionKey } from '../../src/lib/emotions'
 import { shouldHideFloatingChat } from '../../src/components/site/FloatingChat'
 import { seed } from '../../seed/seed'
 

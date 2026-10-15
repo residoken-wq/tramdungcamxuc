@@ -77,9 +77,12 @@ const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy'
     },
     fields: [
       {
-        ...textarea('prompt', 'Câu hỏi suy ngẫm'),
+        name: 'prompt',
+        label: 'Câu hỏi suy ngẫm',
+        type: 'textarea',
         required: true,
-        validate: (value: string | null | undefined) =>
+        admin: { description: 'Nhập câu hỏi suy ngẫm.' },
+        validate: (value: unknown) =>
           (typeof value === 'string' && value.trim().length > 0) ||
           'Vui lòng nhập câu hỏi suy ngẫm.',
       },
