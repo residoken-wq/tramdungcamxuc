@@ -1,6 +1,6 @@
 import 'server-only'
 import { notFound } from 'next/navigation'
-import { getPayload, type Payload } from 'payload'
+import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import { sql } from '@payloadcms/db-postgres'
 import type { Product } from '@/payload-types'
 import config from '@/payload.config'
@@ -323,27 +323,28 @@ export async function createExperienceOrder(
   }
 }
 
-const orderCreationLocks = new Map<string, Promise<unknown>>()
+interface DrizzleDbExecutor {
+  execute: (query: unknown) => Promise<unknown>
+}
 
-export async function withOrderLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
-  while (orderCreationLocks.has(key)) {
-    try {
-      await orderCreationLocks.get(key)
-    } catch {
-      // Bỏ qua lỗi từ luồng trước
+function getTransactionDb(
+  payload: Payload,
+  transactionID?: number | string | null,
+): DrizzleDbExecutor {
+  if (transactionID) {
+    const sessions = (
+      payload.db as unknown as { sessions?: Record<string, { db?: DrizzleDbExecutor }> }
+    ).sessions
+    const db = sessions?.[String(transactionID)]?.db
+    if (db && typeof db.execute === 'function') {
+      return db
     }
   }
-  let resolveLock!: () => void
-  const lockPromise = new Promise<void>((resolve) => {
-    resolveLock = resolve
-  })
-  orderCreationLocks.set(key, lockPromise)
-  try {
-    return await fn()
-  } finally {
-    orderCreationLocks.delete(key)
-    resolveLock()
-  }
+  return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
+}
+
+function getDrizzleDb(payload: Payload): DrizzleDbExecutor {
+  return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
 }
 
 /**
@@ -439,9 +440,32 @@ export async function createDigitalToolOrder(
   })
   assertValidBankConfig(siteSettings)
 
-  // Khóa theo cặp (customerId, productId) quanh bước tìm + tạo đơn
-  const lockKey = `${customerId}:${product.id}`
-  return await withOrderLock(lockKey, async () => {
+  // Khóa theo cặp (customerId, productId) quanh bước tìm + tạo đơn bằng Postgres transaction + advisory lock
+  const hasTx =
+    typeof payload.db?.beginTransaction === 'function' &&
+    typeof payload.db?.commitTransaction === 'function' &&
+    typeof payload.db?.rollbackTransaction === 'function'
+
+  const transactionID = hasTx ? await payload.db.beginTransaction() : null
+  const txDb = transactionID ? getTransactionDb(payload, transactionID) : null
+  const txReq = transactionID
+    ? (() =>
+        ({
+          transactionID,
+          context: { paymentAction: true },
+        }) as unknown as PayloadRequest)
+    : undefined
+
+  try {
+    // REVIEW-REQUIRED: Khóa tạo đơn bằng Postgres advisory lock trong transaction.
+    // pg_advisory_xact_lock(hashtext('order:' || customerId || ':' || productId))
+    // tự động giải phóng khi commit hoặc rollback, ngăn chặn tạo 2 đơn pending trùng lặp.
+    if (txDb) {
+      await txDb.execute(
+        sql`SELECT pg_advisory_xact_lock(hashtext(${`order:${customerId}:${product.id}`}))`,
+      )
+    }
+
     // 6. Kiểm tra xem khách đã có quyền active còn hiệu lực hay chưa
     const access = await getAccess(customerId, product.id, { payload, now })
     if (access.hasAccess && access.status === 'active') {
@@ -470,6 +494,7 @@ export async function createDigitalToolOrder(
       sort: '-createdAt',
       limit: 20,
       overrideAccess: true,
+      req: txReq ? txReq() : undefined,
     })
 
     const reusableOrder = recentPendingOrders.docs.find((ord) => {
@@ -493,7 +518,12 @@ export async function createDigitalToolOrder(
           },
           context: { paymentAction: true },
           overrideAccess: true,
+          req: txReq ? txReq() : undefined,
         })
+
+        if (transactionID) {
+          await payload.db.commitTransaction(transactionID)
+        }
 
         return {
           success: true,
@@ -506,6 +536,7 @@ export async function createDigitalToolOrder(
         await cancelOrder(reusableOrder.id, { id: 0, role: 'system' }, 'Giá sản phẩm đã thay đổi', {
           payload,
           now,
+          req: txReq ? txReq() : undefined,
         })
       }
     }
@@ -516,6 +547,7 @@ export async function createDigitalToolOrder(
         collection: 'orders',
         where: { paymentRef: { equals: ref } },
         overrideAccess: true,
+        req: txReq ? txReq() : undefined,
       })
       return totalDocs > 0
     })
@@ -546,14 +578,28 @@ export async function createDigitalToolOrder(
       },
       context: { paymentAction: true },
       overrideAccess: true,
+      req: txReq ? txReq() : undefined,
     })
+
+    if (transactionID) {
+      await payload.db.commitTransaction(transactionID)
+    }
 
     return {
       success: true,
       payToken,
       message: vi.payment.success.orderCreated,
     }
-  })
+  } catch (err) {
+    if (transactionID) {
+      try {
+        await payload.db.rollbackTransaction(transactionID)
+      } catch (rollbackErr) {
+        console.error('[Payment] Lỗi rollback transaction tạo đơn:', rollbackErr)
+      }
+    }
+    throw err
+  }
 }
 
 /**
@@ -726,14 +772,6 @@ export interface AdminActor {
  * Idempotent: chỉ chuyển pending -> paid; gọi lần 2 không đổi paidAt, không gửi lại email.
  * Ghi nhận nhật ký auditLogs. Sau khi paid: gửi email chứa experienceBookingUrl.
  */
-interface DrizzleDbExecutor {
-  execute: (query: unknown) => Promise<unknown>
-}
-
-function getDrizzleDb(payload: Payload): DrizzleDbExecutor {
-  return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
-}
-
 export interface MarkOrderPaidOptions {
   source: 'manual' | 'webhook'
   actorId?: number | string | null
@@ -1115,7 +1153,7 @@ export async function cancelOrder(
   orderId: number,
   user: AdminActor,
   reason?: string,
-  options: { payload?: Payload; now?: Date } = {},
+  options: { payload?: Payload; now?: Date; req?: PayloadRequest } = {},
 ): Promise<unknown> {
   // REVIEW-REQUIRED: Chỉ tài khoản 'owner' hoặc 'system' mới được hủy đơn hàng
   if (!user || (user.role !== 'owner' && user.role !== 'system')) {
@@ -1128,6 +1166,7 @@ export async function cancelOrder(
     collection: 'orders',
     id: orderId,
     overrideAccess: true,
+    req: options.req,
   })
 
   if (!order) {
@@ -1149,7 +1188,7 @@ export async function cancelOrder(
 
   // REVIEW-REQUIRED: Hủy đơn hàng nguyên tử bằng câu lệnh UPDATE có điều kiện tại DB
   // Bảng orders không cấu hình versions (không có _orders_v). UPDATE chỉ đổi khi payment_status = 'pending'.
-  const db = getDrizzleDb(payload)
+  const db = getTransactionDb(payload, options.req?.transactionID)
   const updateResult = await db.execute(
     sql`UPDATE "orders" SET "payment_status" = 'cancelled', "notes" = ${nextNotes ?? null}, "updated_at" = ${nowIso}::timestamptz WHERE "id" = ${orderId} AND "payment_status" = 'pending' RETURNING "id"`,
   )
@@ -1160,6 +1199,7 @@ export async function cancelOrder(
       collection: 'orders',
       id: orderId,
       overrideAccess: true,
+      req: options.req,
     })
     if (refreshed?.paymentStatus === 'paid') {
       throw new CannotCancelPaidOrderError(vi.payment.errors.cannotCancelPaidOrder)
@@ -1182,12 +1222,14 @@ export async function cancelOrder(
       at: nowIso,
     },
     overrideAccess: true,
+    req: options.req,
   })
 
   const updatedOrder = await payload.findByID({
     collection: 'orders',
     id: orderId,
     overrideAccess: true,
+    req: options.req,
   })
 
   return updatedOrder ?? order
