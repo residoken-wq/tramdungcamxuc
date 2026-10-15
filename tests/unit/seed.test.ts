@@ -211,6 +211,38 @@ describe('sample seed', () => {
     }
   }, 120000)
 
+  it('skips EQ sample cards once a real card exists and never edits the real card', async () => {
+    const realCode = `TEST-REAL-${randomUUID().slice(0, 8)}`
+    const realCard = await payload.create({
+      collection: 'eqCards',
+      data: {
+        code: realCode,
+        keywordEn: '[TEST] Real',
+        qrSlug: realCode.toLowerCase(),
+        message: '[TEST] real card',
+        promptRecall: '[TEST] a',
+        promptPack: '[TEST] b',
+        promptAcknowledge: '[TEST] c',
+        isSample: false,
+        _status: 'published',
+      },
+    })
+    const samplesBefore = await payload.count({
+      collection: 'eqCards',
+      where: { isSample: { equals: true } },
+    })
+    await seed(payload)
+    const samplesAfter = await payload.count({
+      collection: 'eqCards',
+      where: { isSample: { equals: true } },
+    })
+    expect(samplesAfter.totalDocs).toBe(samplesBefore.totalDocs)
+    const reloaded = await payload.findByID({ collection: 'eqCards', id: realCard.id })
+    expect(reloaded.message).toBe('[TEST] real card')
+    expect(reloaded.isSample).toBe(false)
+    await payload.delete({ collection: 'eqCards', id: realCard.id })
+  }, 120000)
+
   it('refuses production without an explicit opt-in', () => {
     expect(canSeed({ NODE_ENV: 'production' }, ['seed'])).toBe(false)
     expect(canSeed({ NODE_ENV: 'production', SEED_ALLOW_PROD: '1' }, ['seed'])).toBe(false)

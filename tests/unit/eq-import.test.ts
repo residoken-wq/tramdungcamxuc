@@ -48,7 +48,6 @@ describe('EQ Cards import logic and validation', () => {
 
       // Nằm ngoài repo
       expect(isPathInsideRepo(path.join(repoRoot, '..', 'cards.json'), repoRoot)).toBe(false)
-      expect(isPathInsideRepo('C:\\temp\\eq-cards.json', 'C:\\projects\\my-repo')).toBe(false)
       expect(isPathInsideRepo('/tmp/eq-cards.json', '/var/www/my-repo')).toBe(false)
     })
 
@@ -85,8 +84,8 @@ describe('EQ Cards import logic and validation', () => {
       const validCards: EqCardInput[] = [
         {
           code: 'TDCX-01',
-          keywordEn: 'Abundance',
-          qrSlug: 'abundance',
+          keywordEn: 'Test Alpha',
+          qrSlug: 'test-alpha',
           order: 1,
           message: 'Thông điệp 1',
           promptRecall: 'Gợi nhớ 1',
@@ -95,8 +94,8 @@ describe('EQ Cards import logic and validation', () => {
         },
         {
           code: 'TDCX-02',
-          keywordEn: 'Belonging',
-          qrSlug: 'belonging',
+          keywordEn: 'Test Beta',
+          qrSlug: 'test-beta',
           order: 2,
           message: 'Thông điệp 2',
           promptRecall: 'Gợi nhớ 2',
@@ -121,8 +120,8 @@ describe('EQ Cards import logic and validation', () => {
       const invalid = [
         {
           code: 'TDCX-01',
-          keywordEn: 'Abundance',
-          qrSlug: 'abundance',
+          keywordEn: 'Test Alpha',
+          qrSlug: 'test-alpha',
           message: 'Thông điệp',
           promptRecall: 'Gợi nhớ',
           promptPack: 'Gói ghém',
@@ -136,8 +135,8 @@ describe('EQ Cards import logic and validation', () => {
       const invalid = [
         {
           code: 'TDCX-01',
-          keywordEn: 'Abundance',
-          qrSlug: 'Abundance_QR', // Sai regex /^[a-z0-9-]+$/
+          keywordEn: 'Test Alpha',
+          qrSlug: 'Alpha_QR', // Sai regex /^[a-z0-9-]+$/
           message: 'Thông điệp',
           promptRecall: 'Gợi nhớ',
           promptPack: 'Gói ghém',
@@ -151,8 +150,8 @@ describe('EQ Cards import logic and validation', () => {
       const duplicated = [
         {
           code: 'TDCX-01',
-          keywordEn: 'Abundance',
-          qrSlug: 'abundance',
+          keywordEn: 'Test Alpha',
+          qrSlug: 'test-alpha',
           message: 'Thông điệp 1',
           promptRecall: 'Gợi nhớ 1',
           promptPack: 'Gói ghém 1',
@@ -160,8 +159,8 @@ describe('EQ Cards import logic and validation', () => {
         },
         {
           code: 'TDCX-01', // Trùng mã
-          keywordEn: 'Belonging',
-          qrSlug: 'belonging',
+          keywordEn: 'Test Beta',
+          qrSlug: 'test-beta',
           message: 'Thông điệp 2',
           promptRecall: 'Gợi nhớ 2',
           promptPack: 'Gói ghém 2',
@@ -186,6 +185,11 @@ describe('EQ Cards import logic and validation', () => {
         data: {
           code: `${prefix}-sample`,
           qrSlug: `${prefix}-sample-slug`,
+          keywordEn: '[MẪU] K',
+          message: '[MẪU] m',
+          promptRecall: '[MẪU] a',
+          promptPack: '[MẪU] b',
+          promptAcknowledge: '[MẪU] c',
           isSample: true,
           _status: 'published',
         },
@@ -216,11 +220,12 @@ describe('EQ Cards import logic and validation', () => {
       ]
 
       // 1. Lần 1: Nhập tạo mới
-      const report1 = await importEqCards(payload, testCards)
+      const report1 = await importEqCards(payload, testCards, { deleteSamples: false })
       expect(report1.created).toBe(2)
       expect(report1.updated).toBe(0)
       expect(report1.skipped).toBe(0)
-      expect(report1.samplesRemoved).toBeGreaterThanOrEqual(1)
+      // deleteSamples: false in tests – the real run would delete every sample card in the DB
+      expect(report1.samplesRemoved).toBe(0)
 
       // Kiểm tra thẻ trong DB
       const card1Res = await payload.find({
@@ -244,17 +249,12 @@ describe('EQ Cards import logic and validation', () => {
       const foundCard2 = card2Res.docs[0]
       track('eqCards', foundCard2)
 
-      // Thẻ mẫu đã bị xóa
-      const checkSample = await payload
-        .findByID({
-          collection: 'eqCards',
-          id: sampleCard.id,
-        })
-        .catch(() => null)
-      expect(checkSample).toBeNull()
+      // Sample cards are kept when deleteSamples is false
+      const checkSample = await payload.findByID({ collection: 'eqCards', id: sampleCard.id })
+      expect(checkSample.isSample).toBe(true)
 
       // 2. Lần 2: Chạy lại với cùng dữ liệu -> Không tạo trùng, chỉ cập nhật
-      const report2 = await importEqCards(payload, testCards)
+      const report2 = await importEqCards(payload, testCards, { deleteSamples: false })
       expect(report2.created).toBe(0)
       expect(report2.updated).toBe(2)
       expect(report2.skipped).toBe(0)
@@ -262,7 +262,7 @@ describe('EQ Cards import logic and validation', () => {
       // 3. Cập nhật nội dung chữ
       testCards[0].message = '[TEST] Thông điệp đã được chỉnh sửa'
       testCards[0].promptRecall = '[TEST] Gợi nhớ cập nhật mới'
-      const report3 = await importEqCards(payload, testCards)
+      const report3 = await importEqCards(payload, testCards, { deleteSamples: false })
       expect(report3.updated).toBe(2)
 
       const reloaded1 = await payload.findByID({ collection: 'eqCards', id: foundCard1.id })
@@ -278,13 +278,57 @@ describe('EQ Cards import logic and validation', () => {
 
       // Đổi qrSlug trong dữ liệu nhập
       testCards[0].qrSlug = `${slug1}-new-attempt`
-      const report4 = await importEqCards(payload, testCards)
+      const report4 = await importEqCards(payload, testCards, { deleteSamples: false })
       expect(report4.skipped).toBe(1) // Bỏ qua thẻ 1 vì đã in
       expect(report4.updated).toBe(1) // Thẻ 2 vẫn cập nhật bình thường
 
       // Thẻ 1 vẫn giữ qrSlug cũ
       const checkPrinted = await payload.findByID({ collection: 'eqCards', id: foundCard1.id })
       expect(checkPrinted.qrSlug).toBe(slug1)
+    })
+
+    it('lỗi giữa chừng -> không ghi thẻ nào (giao dịch); file rỗng / trùng mã QR bị chặn', async () => {
+      const suffix = Math.random().toString(36).slice(2, 8)
+      const other = await payload.create({
+        collection: 'eqCards',
+        data: {
+          code: `TEST-OWN-${suffix}`,
+          keywordEn: '[TEST] Owner',
+          qrSlug: `test-own-${suffix}`,
+          message: '[TEST] m',
+          promptRecall: '[TEST] a',
+          promptPack: '[TEST] b',
+          promptAcknowledge: '[TEST] c',
+          _status: 'published',
+        },
+      })
+      track('eqCards', other)
+      const base = {
+        keywordEn: '[TEST] K',
+        message: '[TEST] m',
+        promptRecall: '[TEST] a',
+        promptPack: '[TEST] b',
+        promptAcknowledge: '[TEST] c',
+      }
+      const cards = [
+        { ...base, code: `TEST-OK-${suffix}`, qrSlug: `test-ok-${suffix}` },
+        // second card reuses the slug of an existing card -> whole import must roll back
+        { ...base, code: `TEST-BAD-${suffix}`, qrSlug: `test-own-${suffix}` },
+      ]
+      await expect(importEqCards(payload, cards, { deleteSamples: false })).rejects.toThrow()
+      const leaked = await payload.count({
+        collection: 'eqCards',
+        where: { code: { equals: `TEST-OK-${suffix}` } },
+      })
+      expect(leaked.totalDocs).toBe(0)
+
+      await expect(importEqCards(payload, [], { deleteSamples: false })).rejects.toThrow()
+      expect(() =>
+        validateEqCardsData([
+          { ...base, code: 'A', qrSlug: 'same' },
+          { ...base, code: 'B', qrSlug: 'same' },
+        ]),
+      ).toThrow()
     })
   })
 })

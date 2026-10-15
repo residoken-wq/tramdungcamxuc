@@ -6,27 +6,15 @@ import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
 
 /**
- * Các tiền tố đường dẫn cần ẩn nút chat nổi để tránh che nội dung trải nghiệm / học tập.
- * GĐ 2/3 bổ sung: /eq-buddy/the (T3-01).
- * Giữ Symbol.iterator tương thích ngược cho snapshot test T1-05.
+ * Path prefixes where the floating chat would cover a learning / card flow.
+ * T3-01 adds /eq-buddy/the (card page opened from a printed QR).
  */
-export const HIDE_FLOATING_CHAT_PREFIXES = (() => {
-  const list = [
-    '/habit/hoc',
-    '/habit/tracker',
-    '/eq-buddy/the',
-    '/eq-buddy/rut-the',
-  ] as unknown as ['/habit/hoc', '/habit/tracker', '/eq-buddy/the', '/eq-buddy/rut-the']
-  Object.defineProperty(list, Symbol.iterator, {
-    enumerable: false,
-    value: function* () {
-      for (let i = 0; i < this.length; i++) {
-        if (this[i] !== '/eq-buddy/the') yield this[i]
-      }
-    },
-  })
-  return list
-})()
+export const HIDE_FLOATING_CHAT_PREFIXES = [
+  '/habit/hoc',
+  '/habit/tracker',
+  '/eq-buddy/the',
+  '/eq-buddy/rut-the',
+] as const
 
 /**
  * Kiểm tra xem một pathname có thuộc danh sách cần ẩn FloatingChat không.

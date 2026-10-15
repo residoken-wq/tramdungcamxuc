@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 import { z } from 'zod'
 import { EQ_BUDDY_PRODUCT_SLUG } from '../../src/lib/eq/config'
 
@@ -48,13 +48,19 @@ export interface EqImportReport {
  * Chặn file nằm trong repo để bảo vệ nội dung thương mại thẻ in.
  */
 export function isPathInsideRepo(filePath: string, repoRoot: string = process.cwd()): boolean {
-  const resolvedPath = path.resolve(filePath).toLowerCase()
-  const resolvedRoot = path.resolve(repoRoot).toLowerCase()
-  return (
-    resolvedPath === resolvedRoot ||
-    resolvedPath.startsWith(resolvedRoot + path.sep) ||
-    resolvedPath.startsWith(resolvedRoot + '/')
-  )
+  // Resolve symlinks on both sides so a link outside the repo pointing inside it is caught.
+  const real = (p: string) => {
+    const resolved = path.resolve(p)
+    try {
+      return fs.realpathSync(resolved)
+    } catch {
+      return resolved
+    }
+  }
+  const resolvedPath = real(filePath)
+  const resolvedRoot = real(repoRoot)
+  const rel = path.relative(resolvedRoot, resolvedPath)
+  return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel))
 }
 
 /**
@@ -90,35 +96,53 @@ export function validateEqCardsData(raw: unknown): EqCardInput[] {
     throw new Error('Dữ liệu file JSON phải là một mảng các thẻ EQ.')
   }
 
-  const parsed = z.array(eqCardInputSchema).safeParse(raw)
+  const parsed = z.array(eqCardInputSchema).min(1, 'File không có thẻ nào.').safeParse(raw)
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `[${i.path.join('.')}] ${i.message}`).join('; ')
     throw new Error(`Dữ liệu thẻ EQ không hợp lệ: ${issues}`)
   }
 
   const codes = new Set<string>()
+  const slugs = new Set<string>()
   for (const card of parsed.data) {
     if (codes.has(card.code)) {
       throw new Error(`Mã thẻ "${card.code}" bị trùng lặp trong dữ liệu nhập.`)
     }
+    if (slugs.has(card.qrSlug)) {
+      throw new Error(`Mã QR "${card.qrSlug}" bị trùng lặp trong dữ liệu nhập.`)
+    }
     codes.add(card.code)
+    slugs.add(card.qrSlug)
   }
 
   return parsed.data
 }
 
-/**
- * Nhập danh sách thẻ EQ thật vào database:
- * - Xác thực Zod (nếu lỗi, in dòng lỗi và không ghi gì vào DB)
- * - Tìm theo mã code: chưa có -> tạo mới (isSample = false, _status = 'published')
- * - Đã có -> cập nhật nội dung chữ, KHÔNG đổi qrSlug nếu thẻ đã có printedAt (khác -> báo và bỏ qua)
- * - Xóa thẻ MẪU (isSample = true) sau khi nhập thành công
- * - An toàn khi chạy lại nhiều lần (không tạo trùng)
- */
-export async function importEqCards(payload: Payload, rawCards: unknown): Promise<EqImportReport> {
-  const cards = validateEqCardsData(rawCards)
+export interface EqImportOptions {
+  /** Delete every sample (isSample) card after a successful import. Tests pass false. */
+  deleteSamples?: boolean
+}
 
-  let relatedProductId: number | undefined
+/**
+ * Imports the real cards in ONE transaction: any error rolls everything back (no partial import).
+ * - Validates first (Zod, unique code + qrSlug, non-empty).
+ * - Upsert by code; always published, isSample false.
+ * - A printed card keeps its qrSlug: a different slug in the file -> that card is skipped.
+ * - A qrSlug already used by another card -> error before writing.
+ * - Sample cards are removed only when at least one real card was created or updated.
+ */
+export async function importEqCards(
+  payload: Payload,
+  rawCards: unknown,
+  options: EqImportOptions = {},
+): Promise<EqImportReport> {
+  const cards = validateEqCardsData(rawCards)
+  const deleteSamples = options.deleteSamples ?? true
+
+  const transactionID = await payload.db.beginTransaction()
+  if (!transactionID) throw new Error('Không mở được giao dịch DB để nhập thẻ.')
+  const req = { transactionID } as unknown as PayloadRequest
+
   try {
     const productRes = await payload.find({
       collection: 'products',
@@ -126,100 +150,106 @@ export async function importEqCards(payload: Payload, rawCards: unknown): Promis
       limit: 1,
       depth: 0,
       draft: true,
+      req,
     })
-    if (productRes.docs.length > 0) {
-      relatedProductId = productRes.docs[0].id
-    }
-  } catch {
-    // Không tìm thấy sản phẩm, tiếp tục không gán
-  }
+    const relatedProductId = productRes.docs[0]?.id as number | undefined
 
-  let created = 0
-  let updated = 0
-  let skipped = 0
-  let samplesRemoved = 0
+    let created = 0
+    let updated = 0
+    let skipped = 0
+    let samplesRemoved = 0
 
-  for (const card of cards) {
-    const existingRes = await payload.find({
-      collection: 'eqCards',
-      where: { code: { equals: card.code } },
-      limit: 1,
-      depth: 0,
-      draft: true,
-    })
-
-    const found = existingRes.docs[0] as
-      | {
-          id: number
-          code: string
-          qrSlug: string
-          printedAt?: string | null
-          order?: number | null
-          relatedProduct?: unknown
-        }
-      | undefined
-
-    if (!found) {
-      await payload.create({
+    for (const card of cards) {
+      const existingRes = await payload.find({
         collection: 'eqCards',
-        data: {
-          code: card.code,
-          keywordEn: card.keywordEn,
-          qrSlug: card.qrSlug,
-          order: card.order ?? 0,
-          message: card.message,
-          promptRecall: card.promptRecall,
-          promptPack: card.promptPack,
-          promptAcknowledge: card.promptAcknowledge,
-          ...(relatedProductId ? { relatedProduct: relatedProductId } : {}),
-          isSample: false,
-          _status: 'published',
-        },
+        where: { code: { equals: card.code } },
+        limit: 1,
+        depth: 0,
+        draft: true,
+        req,
       })
-      created++
-    } else {
-      if (found.printedAt && card.qrSlug !== found.qrSlug) {
+      const found = existingRes.docs[0] as
+        | { id: number; qrSlug: string; printedAt?: string | null; relatedProduct?: unknown }
+        | undefined
+
+      if (found?.printedAt && card.qrSlug !== found.qrSlug) {
         console.warn(
-          `[BỎ QUA] Thẻ ${card.code} đã in ngày ${found.printedAt}, không thể đổi mã QR từ "${found.qrSlug}" sang "${card.qrSlug}".`,
+          `[BỎ QUA] Thẻ ${card.code} đã in, không đổi mã QR "${found.qrSlug}" sang "${card.qrSlug}".`,
         )
         skipped++
         continue
       }
 
-      await payload.update({
+      const slugOwner = await payload.find({
         collection: 'eqCards',
-        id: found.id,
-        data: {
-          keywordEn: card.keywordEn,
-          message: card.message,
-          promptRecall: card.promptRecall,
-          promptPack: card.promptPack,
-          promptAcknowledge: card.promptAcknowledge,
-          ...(card.order !== undefined ? { order: card.order } : {}),
-          ...(found.printedAt ? {} : { qrSlug: card.qrSlug }),
-          ...(relatedProductId && !found.relatedProduct
-            ? { relatedProduct: relatedProductId }
-            : {}),
-        },
+        where: { qrSlug: { equals: card.qrSlug } },
+        limit: 1,
+        depth: 0,
+        draft: true,
+        req,
       })
-      updated++
+      const owner = slugOwner.docs[0] as { id: number; code: string } | undefined
+      if (owner && owner.id !== found?.id) {
+        throw new Error(`Mã QR "${card.qrSlug}" đang thuộc thẻ ${owner.code}.`)
+      }
+
+      const content = {
+        keywordEn: card.keywordEn,
+        message: card.message,
+        promptRecall: card.promptRecall,
+        promptPack: card.promptPack,
+        promptAcknowledge: card.promptAcknowledge,
+        isSample: false,
+        _status: 'published' as const,
+      }
+
+      if (!found) {
+        await payload.create({
+          collection: 'eqCards',
+          data: {
+            ...content,
+            code: card.code,
+            qrSlug: card.qrSlug,
+            order: card.order ?? 0,
+            ...(relatedProductId ? { relatedProduct: relatedProductId } : {}),
+          },
+          draft: false,
+          req,
+        })
+        created++
+      } else {
+        await payload.update({
+          collection: 'eqCards',
+          id: found.id,
+          data: {
+            ...content,
+            ...(card.order !== undefined ? { order: card.order } : {}),
+            ...(found.printedAt ? {} : { qrSlug: card.qrSlug }),
+            ...(relatedProductId && !found.relatedProduct
+              ? { relatedProduct: relatedProductId }
+              : {}),
+          },
+          draft: false,
+          req,
+        })
+        updated++
+      }
     }
+
+    if (deleteSamples && created + updated > 0) {
+      const res = await payload.delete({
+        collection: 'eqCards',
+        where: { isSample: { equals: true } },
+        req,
+      })
+      if (res.errors?.length) throw new Error('Không xóa được thẻ MẪU.')
+      samplesRemoved = res.docs.length
+    }
+
+    await payload.db.commitTransaction(transactionID)
+    return { created, updated, skipped, samplesRemoved }
+  } catch (err) {
+    await payload.db.rollbackTransaction(transactionID)
+    throw err
   }
-
-  // Xóa thẻ MẪU sau khi nhập thành công thẻ thật
-  const samplesRes = await payload.find({
-    collection: 'eqCards',
-    where: { isSample: { equals: true } },
-    limit: 1000,
-    depth: 0,
-    draft: true,
-    pagination: false,
-  })
-
-  for (const sample of samplesRes.docs as { id: number }[]) {
-    await payload.delete({ collection: 'eqCards', id: sample.id })
-    samplesRemoved++
-  }
-
-  return { created, updated, skipped, samplesRemoved }
 }

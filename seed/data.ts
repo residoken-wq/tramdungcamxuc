@@ -262,7 +262,7 @@ export const testimonials = [1, 2, 3].map((n) => ({
 export const eqCards = [1, 2, 3].map((n) => ({
   code: `MAU-${String(n).padStart(2, '0')}`,
   qrSlug: `mau-${String(n).padStart(2, '0')}`,
-  keywordEn: n === 1 ? 'Abundance' : n === 2 ? 'Belonging' : 'Clarity',
+  keywordEn: `${S} Từ khóa ${n}`,
   keywordVi: `${S} Từ khóa tiếng Việt ${n}`,
   message: `${S} Thông điệp thẻ ${n}`,
   promptRecall: `${S} Câu hỏi gợi nhớ ${n}?`,

@@ -43,11 +43,11 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
   }
 
   const hasStory = Boolean(card.story && !isRichTextEmpty(card.story))
-  const prompts = [
+  const prompts: { label: string; text: string | null }[] = [
     { label: vi.eqBuddy.cardPage.promptRecall, text: card.promptRecall },
     { label: vi.eqBuddy.cardPage.promptPack, text: card.promptPack },
     { label: vi.eqBuddy.cardPage.promptAcknowledge, text: card.promptAcknowledge },
-  ].filter((p): p is { label: string; text: string } => Boolean(p.text?.trim()))
+  ].filter((p) => Boolean(p.text?.trim()))
 
   return (
     <div className="w-full py-10 sm:py-16 px-6 sm:px-8">

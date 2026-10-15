@@ -39,8 +39,7 @@ const validateRequiredOnPublish =
     }: { data?: Record<string, unknown>; siblingData?: Record<string, unknown> },
   ) => {
     const status = data?._status ?? siblingData?._status
-    const isSample = data?.isSample ?? siblingData?.isSample
-    if (status === 'draft' || isSample) {
+    if (status === 'draft') {
       if (typeof value === 'string' && maxLength && value.length > maxLength) {
         return `${label} không được vượt quá ${maxLength} ký tự.`
       }

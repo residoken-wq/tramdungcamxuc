@@ -11,7 +11,6 @@ import {
 } from '../../src/lib/eq/migration'
 import { type EmotionKey } from '../../src/lib/emotions'
 import { shouldHideFloatingChat } from '../../src/components/site/FloatingChat'
-import { seed } from '../../seed/seed'
 
 describe('EQ Cards schema, migration helpers, and seed protection', () => {
   let payload: Payload
@@ -167,7 +166,7 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
         collection: 'eqCards',
         data: {
           code: `${codeBase}-full`,
-          keywordEn: 'Abundance',
+          keywordEn: 'Test Alpha',
           message: 'Thông điệp đầy đủ',
           qrSlug: `${codeBase}-full`,
           promptRecall: 'Gợi nhớ điều gì?',
@@ -177,7 +176,7 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
         },
       })
       track('eqCards', fullCard)
-      expect(fullCard.keywordEn).toBe('Abundance')
+      expect(fullCard.keywordEn).toBe('Test Alpha')
       expect(fullCard.promptRecall).toBe('Gợi nhớ điều gì?')
       expect(fullCard.promptPack).toBe('Gói ghém bài học gì?')
       expect(fullCard.promptAcknowledge).toBe('Ghi nhận bản thân ra sao?')
@@ -357,53 +356,6 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
         data: { message: '[TEST] Cập nhật thông điệp mới' },
       })
       expect(updated.message).toBe('[TEST] Cập nhật thông điệp mới')
-    })
-  })
-
-  describe('Cơ chế bảo vệ thẻ thật và tính lũy thừa khi seed', () => {
-    it('seed chạy không tạo trùng và không sửa đổi thẻ thật của Hana', async () => {
-      // 1. Tạo 1 thẻ thật (isSample = false)
-      const realCode = `REAL-${unique()}`
-      const realCard = await payload.create({
-        collection: 'eqCards',
-        data: {
-          code: realCode,
-          keywordEn: 'Real Card',
-          qrSlug: realCode.toLowerCase(),
-          message: '[TEST] Thẻ thật của Hana',
-          promptRecall: '[TEST] Gợi nhớ',
-          promptPack: '[TEST] Gói ghém',
-          promptAcknowledge: '[TEST] Ghi nhận',
-          isSample: false,
-          emotionTags: ['joyful'],
-          _status: 'published',
-        },
-      })
-      track('eqCards', realCard)
-
-      // Đếm số lượng thẻ mẫu trước khi seed
-      const countBefore = await payload.count({
-        collection: 'eqCards',
-        where: { isSample: { equals: true } },
-      })
-
-      // 2. Chạy seed khi đã có thẻ thật
-      await seed(payload)
-
-      // Vì có thẻ thật (isSample != true), seed không tạo hoặc ghi đè thẻ MẪU
-      const countAfter = await payload.count({
-        collection: 'eqCards',
-        where: { isSample: { equals: true } },
-      })
-      expect(countAfter.totalDocs).toBe(countBefore.totalDocs)
-
-      // Thẻ thật hoàn toàn nguyên vẹn
-      const reloadedReal = await payload.findByID({
-        collection: 'eqCards',
-        id: realCard.id,
-      })
-      expect(reloadedReal.message).toBe('[TEST] Thẻ thật của Hana')
-      expect(reloadedReal.isSample).toBe(false)
     })
   })
 
