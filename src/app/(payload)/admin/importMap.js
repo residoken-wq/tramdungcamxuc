@@ -21,6 +21,8 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { EqQrDownloadButton as EqQrDownloadButton_182b90ea1823c05b86095b55fa616cf3 } from '@/components/admin/EqQrDownloadButton'
+import { EqQrExportButton as EqQrExportButton_3a70474255dc3ca7584dba70ddaf8a23 } from '@/components/admin/EqQrExportButton'
 import { VisualBuilderButton as VisualBuilderButton_830bc320715e5767c759716592e699b4 } from '@/components/admin/VisualBuilderButton'
 import { CustomerActions as CustomerActions_9fd8238a1722f59df871ef58a48eb6c2 } from '@/components/admin/CustomerActions'
 import { OrderActions as OrderActions_bd9a3eb0969675b027902d6a22a18ee7 } from '@/components/admin/OrderActions'
@@ -54,6 +56,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/admin/EqQrDownloadButton#EqQrDownloadButton": EqQrDownloadButton_182b90ea1823c05b86095b55fa616cf3,
+  "@/components/admin/EqQrExportButton#EqQrExportButton": EqQrExportButton_3a70474255dc3ca7584dba70ddaf8a23,
   "@/components/admin/VisualBuilderButton#VisualBuilderButton": VisualBuilderButton_830bc320715e5767c759716592e699b4,
   "@/components/admin/CustomerActions#CustomerActions": CustomerActions_9fd8238a1722f59df871ef58a48eb6c2,
   "@/components/admin/OrderActions#OrderActions": OrderActions_bd9a3eb0969675b027902d6a22a18ee7,

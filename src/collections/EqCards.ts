@@ -187,6 +187,16 @@ const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy'
     admin: { description: 'Sau khi lưu ngày này, mã QR và ngày in được khóa.' },
   },
   number('order', 'Thứ tự', 0),
+  {
+    name: 'downloadQrPng',
+    type: 'ui',
+    admin: {
+      position: 'sidebar',
+      components: {
+        Field: '@/components/admin/EqQrDownloadButton#EqQrDownloadButton',
+      },
+    },
+  },
 ])
 
 export const EqCards = {
@@ -194,6 +204,10 @@ export const EqCards = {
   admin: {
     ...baseCollection.admin,
     defaultColumns: ['code', 'keywordEn', 'qrSlug', 'printedAt', '_status'],
+    components: {
+      ...baseCollection.admin?.components,
+      beforeListTable: ['@/components/admin/EqQrExportButton#EqQrExportButton'],
+    },
   },
   hooks: {
     ...baseCollection.hooks,
