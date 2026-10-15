@@ -700,4 +700,103 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
       createSpy.mockRestore()
     }
   })
+
+  it('chống gửi trùng trong 10 phút: cùng email (không phân biệt hoa thường) + cùng câu định danh trả về kế hoạch cũ, khác câu định danh tạo kế hoạch mới (T2-17/T2-18)', async () => {
+    const baseEmail = `dedup-${randomUUID().slice(0, 8)}@example.com`
+    const identity1 = 'Tôi sẽ thiền định 10 phút để trở thành người an yên'
+    const identity2 = 'Tôi sẽ đọc sách 15 phút để trở thành người hiểu biết'
+
+    const emailSentCountBefore = emailSender.sent.length
+
+    // 1. Gửi lần 1: email chữ thường
+    const res1 = await submitHabitPlan(
+      {
+        scorecard: [{ habit: 'Ngồi tĩnh lặng', rating: 'good' }],
+        identityStatement: identity1,
+        chosenTechniques: [
+          { techniqueId: validCueTechId, stage: 'cue', action: 'Đặt chuông lúc 6h sáng' },
+        ],
+        name: 'Học viên Test Dedup',
+        email: baseEmail,
+        consent: true,
+      },
+      { ip: `192.168.10.${Math.floor(Math.random() * 200) + 10}` },
+      { payload, emailSender },
+    )
+
+    expect(res1.success).toBe(true)
+    expect(res1.planId).toBeDefined()
+    if (res1.planId) createdPlans.push(res1.planId)
+    expect(emailSender.sent.length).toBe(emailSentCountBefore + 1)
+
+    // 2. Gửi lần 2: email CHỮ HOA + cùng câu định danh trong 10 phút
+    const res2 = await submitHabitPlan(
+      {
+        scorecard: [{ habit: 'Ngồi tĩnh lặng', rating: 'good' }],
+        identityStatement: identity1,
+        chosenTechniques: [
+          { techniqueId: validCueTechId, stage: 'cue', action: 'Đặt chuông lúc 6h sáng' },
+        ],
+        name: 'Học viên Test Dedup HOA',
+        email: baseEmail.toUpperCase(),
+        consent: true,
+      },
+      { ip: `192.168.10.${Math.floor(Math.random() * 200) + 10}` },
+      { payload, emailSender },
+    )
+
+    // Trả về kế hoạch đã có, cùng planId
+    expect(res2.success).toBe(true)
+    expect(res2.planId).toBe(res1.planId)
+
+    // Kiểm tra trong DB: chỉ đúng 1 kế hoạch, 1 lead, 1 email gửi đi
+    const plansAfterSecond = await payload.find({
+      collection: 'habitPlans',
+      where: { leadEmail: { equals: baseEmail } },
+      overrideAccess: true,
+    })
+    expect(plansAfterSecond.totalDocs).toBe(1)
+
+    const leadsAfterSecond = await payload.find({
+      collection: 'leads',
+      where: { email: { equals: baseEmail } },
+      overrideAccess: true,
+    })
+    expect(leadsAfterSecond.totalDocs).toBe(1)
+    if (leadsAfterSecond.docs[0]) createdLeads.push(leadsAfterSecond.docs[0].id)
+
+    expect(emailSender.sent.length).toBe(emailSentCountBefore + 1) // Không gửi thêm email
+
+    // 3. Gửi lần 3: cùng email nhưng KHÁC câu định danh
+    const res3 = await submitHabitPlan(
+      {
+        scorecard: [{ habit: 'Đọc sách', rating: 'good' }],
+        identityStatement: identity2,
+        chosenTechniques: [
+          { techniqueId: validCueTechId, stage: 'cue', action: 'Đặt sách cạnh giường' },
+        ],
+        name: 'Học viên Test Dedup Khác Câu',
+        email: baseEmail,
+        consent: true,
+      },
+      { ip: `192.168.10.${Math.floor(Math.random() * 200) + 10}` },
+      { payload, emailSender },
+    )
+
+    expect(res3.success).toBe(true)
+    expect(res3.planId).toBeDefined()
+    expect(res3.planId).not.toBe(res1.planId)
+    if (res3.planId) createdPlans.push(res3.planId)
+
+    // Kiểm tra trong DB: có 2 kế hoạch
+    const plansAfterThird = await payload.find({
+      collection: 'habitPlans',
+      where: { leadEmail: { equals: baseEmail } },
+      overrideAccess: true,
+    })
+    expect(plansAfterThird.totalDocs).toBe(2)
+
+    // Email gửi đi thêm 1 cái
+    expect(emailSender.sent.length).toBe(emailSentCountBefore + 2)
+  })
 })

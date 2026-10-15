@@ -352,6 +352,36 @@ export async function submitHabitPlan(
 
   let habitPlanDoc: { id: number }
   try {
+    // T2-17 / T2-18: Cùng email (không phân biệt hoa thường) + cùng câu định danh gửi lại trong 10 phút
+    // -> trả về kế hoạch đã có, không tạo thêm kế hoạch / lead, không gửi lại email.
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+    const existing = await payload.find({
+      collection: 'habitPlans',
+      where: {
+        and: [
+          { leadEmail: { equals: cleanEmail } },
+          { identityStatement: { equals: validated.identityStatement } },
+          { createdAt: { greater_than_equal: tenMinutesAgo } },
+        ],
+      },
+      sort: '-createdAt',
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+      req,
+    })
+
+    if (existing.docs.length > 0) {
+      if (shouldCommit) {
+        await commitTransaction(req)
+      }
+      return {
+        success: true,
+        planId: existing.docs[0].id,
+        zaloGroupUrl,
+      }
+    }
+
     habitPlanDoc = (await payload.create({
       collection: 'habitPlans',
       data: {
