@@ -9,6 +9,7 @@ import { getSiteUrl } from '@/lib/site-url'
 import {
   confirmManualPayment,
   cancelOrder,
+  resendPaymentConfirmation,
   PaymentError,
   acceptOrderTermsForToken,
   createDigitalToolOrder,
@@ -123,6 +124,59 @@ export async function cancelOrderAdminAction(
       }
     }
     console.error('[AdminPaymentAction] Unexpected error in cancelOrderAdminAction:', err)
+    return {
+      success: false,
+      message: vi.payment.errors.serverError,
+    }
+  }
+}
+
+// REVIEW-REQUIRED: Server action gửi lại email xác nhận đơn hàng cho chủ sở hữu (owner).
+// Bắt buộc xác thực người dùng trên server và kiểm tra nghiêm ngặt quyền owner (isAdminUser + isOwnerUser).
+export async function resendPaymentConfirmationAction(
+  orderId: number,
+  options: { payload?: Payload } = {},
+): Promise<AdminPaymentActionResult> {
+  try {
+    let headers: Headers | undefined
+    try {
+      headers = await getHeaders()
+    } catch {
+      // Ngoài request scope (môi trường kiểm thử)
+    }
+
+    const payload = options.payload ?? (await getPayload({ config: await config }))
+    const { user } = await payload.auth({ headers: headers || new Headers() })
+
+    if (!user || !isAdminUser(user) || !isOwnerUser(user)) {
+      return {
+        success: false,
+        message: vi.payment.errors.unauthorized,
+      }
+    }
+
+    await resendPaymentConfirmation(
+      orderId,
+      {
+        id: user.id,
+        role: (user as { role?: string }).role,
+        email: (user as { email?: string }).email,
+      },
+      { payload },
+    )
+
+    return {
+      success: true,
+      message: vi.payment.success.resendConfirmation,
+    }
+  } catch (err) {
+    if (err instanceof PaymentError) {
+      return {
+        success: false,
+        message: err.message,
+      }
+    }
+    console.error('[AdminPaymentAction] Unexpected error in resendPaymentConfirmationAction:', err)
     return {
       success: false,
       message: vi.payment.errors.serverError,

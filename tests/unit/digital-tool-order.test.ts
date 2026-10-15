@@ -388,7 +388,7 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
     })) as { id: number; paymentStatus: string; deliveryStatus: string }
 
     expect(confirmed.paymentStatus).toBe('paid')
-    expect(confirmed.deliveryStatus).toBe('access_granted')
+    expect(confirmed.deliveryStatus).toBe('email_sent')
 
     // Kiểm tra quyền truy cập được cấp
     const access = await getAccess(customer.id, product.id, { payload })
@@ -648,10 +648,12 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
       .mockRejectedValueOnce(new Error('Simulated grant entitlements DB connection error'))
 
     try {
-      await confirmManualPayment(orderDoc.id, owner, {
-        payload,
-        emailSender: mockEmailSender,
-      })
+      await expect(
+        confirmManualPayment(orderDoc.id, owner, {
+          payload,
+          emailSender: mockEmailSender,
+        }),
+      ).rejects.toThrow('Simulated grant entitlements DB connection error')
 
       // KHÔNG gửi email kích hoạt khi cấp quyền lỗi
       expect(mockEmailSender.sent.length).toBe(0)

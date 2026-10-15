@@ -626,6 +626,10 @@ export const vi = {
       productNotForSale: 'Sản phẩm phiên trải nghiệm hiện không mở bán.',
       productPriceInvalid: 'Giá sản phẩm không hợp lệ. Vui lòng liên hệ quản trị viên.',
       orderNotFound: 'Không tìm thấy đơn hàng.',
+      orderNotPaid: 'Đơn hàng chưa được thanh toán.',
+      alreadyEmailSent: 'Email xác nhận đã được gửi thành công trước đó.',
+      transactionUnavailable: 'Hệ thống thanh toán đang bận, vui lòng thử lại sau ít phút.',
+      customerEmailNotFound: 'Không tìm thấy thông tin email khách hàng.',
       unauthorized:
         'Chỉ chủ sở hữu (owner) mới có quyền xác nhận thanh toán thủ công hoặc hủy đơn.',
       onlyPendingCanBeConfirmed: 'Chỉ có thể xác nhận đơn hàng đang ở trạng thái chờ thanh toán.',
@@ -642,6 +646,7 @@ export const vi = {
       confirmed: 'Xác nhận thanh toán thành công.',
       cancelled: 'Hủy đơn hàng thành công.',
       termsAccepted: 'Đã xác nhận đồng ý điều khoản thanh toán.',
+      resendConfirmation: 'Gửi lại email xác nhận thành công.',
     },
     sandboxNotice: 'THỬ NGHIỆM – không chuyển tiền thật',
     email: {
@@ -846,8 +851,14 @@ export const vi = {
         closeButton: 'Đóng',
         agreeConfirmButton: 'Đồng ý xác nhận',
         agreeCancelButton: 'Đồng ý hủy đơn',
+        resendConfirmationButton: 'Gửi lại email xác nhận',
+        resendConfirmationModalTitle: 'Gửi lại email xác nhận đơn hàng',
+        resendConfirmationModalDesc:
+          'Bạn có chắc chắn muốn gửi lại email xác nhận cho khách hàng? Thao tác này sẽ gửi lại email kích hoạt/đặt lịch và cập nhật trạng thái giao hàng thành "Đã gửi email".',
+        agreeResendButton: 'Đồng ý gửi lại email',
         defaultConfirmError: 'Có lỗi xảy ra khi xác nhận thanh toán',
         defaultCancelError: 'Có lỗi xảy ra khi hủy đơn hàng',
+        defaultResendError: 'Có lỗi xảy ra khi gửi lại email xác nhận',
       },
     },
   },

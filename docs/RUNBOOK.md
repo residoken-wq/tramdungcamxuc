@@ -695,6 +695,15 @@ Nếu SePay gặp sự cố bảo trì, gián đoạn mạng hoặc ngân hàng 
    - Hana mở danh sách đơn hàng trong CMS Admin và bấm nút **"Xác nhận thanh toán"** thủ công như bình thường.
    - Khi SePay hoạt động ổn định trở lại, chỉ cần đổi lại `PAYMENT_PROVIDER=sepay` và chạy lại lệnh `up -d` mà không làm mất bất kỳ dữ liệu nào.
 
+#### Xử lý sự cố thanh toán và giao dịch gián đoạn (T2-19)
+
+- **Nguyên tử "đã thanh toán ⇔ đã cấp quyền"**:
+  - `markOrderPaid` thực hiện chuyển trạng thái `paid` và cấp quyền (`grantEntitlementsForOrder`) trong **một transaction Postgres duy nhất**.
+  - Nếu bước cấp quyền gặp sự cố (ví dụ lỗi DB hoặc vi phạm dữ liệu), toàn bộ giao dịch được tự động rollback: đơn hàng quay lại trạng thái `pending`/`failed`, không có quyền nửa vời nào được cấp, hệ thống ghi audit log `grant_entitlements_failed` và trả về mã lỗi HTTP 500 để SePay tự động gửi lại.
+- **Sự cố gửi email xác nhận (`paid_incomplete` / `deliveryStatus !== 'email_sent'`)**:
+  - Email kích hoạt được gửi sau khi transaction đã commit. Nếu mạng SMTP/Resend lỗi, đơn hàng vẫn `paid` và quyền đã cấp an toàn (ghi audit `confirmation_email_failed`).
+  - Trong CMS Admin, tài khoản `owner` sẽ thấy nút **✉️ Gửi lại email xác nhận** trên khung thao tác đơn hàng. Bấm nút này để gửi lại email mà không sợ cấp quyền trùng lặp.
+
 ---
 
 ## Dữ liệu demo GĐ 2 (T2-15)
