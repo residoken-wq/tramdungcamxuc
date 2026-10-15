@@ -1,7 +1,6 @@
 import {
   ValidationError,
   type CollectionBeforeChangeHook,
-  type CollectionBeforeValidateHook,
 } from 'payload'
 import {
   contentCollection,
@@ -35,60 +34,104 @@ const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) =
   return data
 }
 
-const ensureSampleReflectionPrompts: CollectionBeforeValidateHook = ({ data, operation }) => {
-  if (data?.isSample && data?.reflectionPrompts === undefined && operation === 'create') {
-    data.reflectionPrompts = [{ prompt: '[MẪU] Câu hỏi suy ngẫm' }]
+const validateRequiredOnPublish =
+  (label: string, maxLength?: number) =>
+  (value: unknown, { data, siblingData }: any) => {
+    const status = data?._status ?? siblingData?._status
+    const isSample = data?.isSample ?? siblingData?.isSample
+    if (status === 'draft' || isSample) {
+      if (typeof value === 'string' && maxLength && value.length > maxLength) {
+        return `${label} không được vượt quá ${maxLength} ký tự.`
+      }
+      return true
+    }
+    if (typeof value !== 'string' || value.trim().length === 0) {
+      return `Vui lòng nhập ${label.toLocaleLowerCase('vi')}.`
+    }
+    if (maxLength && value.length > maxLength) {
+      return `${label} không được vượt quá ${maxLength} ký tự.`
+    }
+    return true
   }
-  return data
-}
 
 const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy', 'code', [
   { ...text('code', 'Mã thẻ', true), unique: true },
   {
+    name: 'keywordEn',
+    label: 'Từ khóa (mặt trước)',
+    type: 'text',
+    maxLength: 40,
+    admin: {
+      description: 'Từ khóa tiếng Anh trên mặt trước thẻ (tối đa 40 ký tự). Bắt buộc khi xuất bản.',
+    },
+    validate: validateRequiredOnPublish('Từ khóa (mặt trước)', 40),
+  },
+  {
     ...text('keywordVi', 'Từ khóa tiếng Việt'),
     maxLength: 40,
+    admin: {
+      description: 'Không bắt buộc – bộ thẻ in hiện không có.',
+    },
     validate: (value: string | null | undefined) =>
       !value || value.length <= 40 || 'Từ khóa tiếng Việt không được vượt quá 40 ký tự.',
   },
   {
-    ...text('keywordEn', 'Từ khóa tiếng Anh'),
-    maxLength: 40,
-    validate: (value: string | null | undefined) =>
-      !value || value.length <= 40 || 'Từ khóa tiếng Anh không được vượt quá 40 ký tự.',
-  },
-  textarea('message', 'Thông điệp'),
-  richText('story', 'Câu chuyện'),
-  {
-    name: 'reflectionPrompts',
-    label: 'Câu hỏi suy ngẫm',
-    type: 'array',
-    minRows: 1,
-    maxRows: 3,
+    name: 'message',
+    label: 'Thông điệp (mặt trước)',
+    type: 'textarea',
     admin: {
-      description: 'Thêm 1–3 câu hỏi suy ngẫm cho thẻ.',
+      description: 'Câu thông điệp mặt trước thẻ. Bắt buộc khi xuất bản.',
     },
-    validate: (value: unknown) => {
-      if (Array.isArray(value)) {
-        if (value.length < 1) return 'Phải có ít nhất 1 câu hỏi suy ngẫm.'
-        if (value.length > 3) return 'Chỉ được có tối đa 3 câu hỏi suy ngẫm.'
-        return true
-      }
-      return 'Phải có từ 1 đến 3 câu hỏi suy ngẫm.'
+    validate: validateRequiredOnPublish('Thông điệp (mặt trước)'),
+  },
+  {
+    type: 'collapsible',
+    label: 'Mặt sau – 3 câu hỏi',
+    admin: {
+      initCollapsed: false,
     },
     fields: [
       {
-        name: 'prompt',
-        label: 'Câu hỏi suy ngẫm',
+        name: 'promptRecall',
+        label: 'Gợi nhớ',
         type: 'textarea',
-        required: true,
-        admin: { description: 'Nhập câu hỏi suy ngẫm.' },
-        validate: (value: unknown) =>
-          (typeof value === 'string' && value.trim().length > 0) ||
-          'Vui lòng nhập câu hỏi suy ngẫm.',
+        admin: {
+          description: 'Câu hỏi gợi nhớ trên mặt sau thẻ. Bắt buộc khi xuất bản.',
+        },
+        validate: validateRequiredOnPublish('Gợi nhớ'),
+      },
+      {
+        name: 'promptPack',
+        label: 'Gói ghém',
+        type: 'textarea',
+        admin: {
+          description: 'Câu hỏi gói ghém trên mặt sau thẻ. Bắt buộc khi xuất bản.',
+        },
+        validate: validateRequiredOnPublish('Gói ghém'),
+      },
+      {
+        name: 'promptAcknowledge',
+        label: 'Ghi nhận',
+        type: 'textarea',
+        admin: {
+          description: 'Câu hỏi ghi nhận trên mặt sau thẻ. Bắt buộc khi xuất bản.',
+        },
+        validate: validateRequiredOnPublish('Ghi nhận'),
       },
     ],
   },
-  textarea('smallAction', 'Hành động nhỏ'),
+  {
+    name: 'story',
+    label: 'Câu chuyện',
+    type: 'richText',
+    admin: { description: 'Không bắt buộc – bộ thẻ in hiện không có.' },
+  },
+  {
+    name: 'smallAction',
+    label: 'Hành động nhỏ',
+    type: 'textarea',
+    admin: { description: 'Không bắt buộc – bộ thẻ in hiện không có.' },
+  },
   select('topic', 'Chủ đề', topicOptions),
   select(
     'emotionTags',
@@ -96,19 +139,18 @@ const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy'
     EMOTIONS.map((e) => [e.key, `${e.emoji} ${e.label}`]),
     {
       hasMany: true,
-      admin: { description: 'Chọn một hoặc nhiều cảm xúc phù hợp từ bộ 10 cảm xúc.' },
+      admin: { description: 'Không bắt buộc – bộ thẻ in hiện không có.' },
       validate: (value: unknown) => {
         if (!value) return true
         const validKeys = new Set<string>(EMOTIONS.map((e) => e.key))
         if (Array.isArray(value)) {
-          const invalid = value.filter((v) => !validKeys.has(String(v)))
+          const invalid = value.filter((v) => typeof v !== 'string' || !validKeys.has(v))
           if (invalid.length > 0) {
-            return `Cảm xúc không hợp lệ: ${invalid.join(', ')}. Chỉ được chọn trong 10 cảm xúc có sẵn.`
+            return `Nhãn cảm xúc không hợp lệ: ${invalid.join(', ')}`
           }
-        } else if (!validKeys.has(String(value))) {
-          return 'Cảm xúc không hợp lệ.'
+          return true
         }
-        return true
+        return 'Nhãn cảm xúc phải là danh sách.'
       },
     },
   ),
@@ -150,10 +192,10 @@ export const EqCards = {
   ...baseCollection,
   admin: {
     ...baseCollection.admin,
-    defaultColumns: ['code', 'keywordVi', 'qrSlug', 'printedAt', '_status'],
+    defaultColumns: ['code', 'keywordEn', 'qrSlug', 'printedAt', '_status'],
   },
   hooks: {
-    beforeValidate: [ensureSampleReflectionPrompts],
+    ...baseCollection.hooks,
     beforeChange: [lockPrintedQR],
   },
 }

@@ -5,7 +5,6 @@ import {
   migrateReflectionPromptToPrompts,
   rollbackReflectionPromptsToPrompt,
 } from '../lib/eq/migration'
-import { getEmotion } from '../lib/emotions'
 
 function getRows<T>(result: unknown): T[] {
   if (!result) return []
@@ -18,7 +17,7 @@ function getRows<T>(result: unknown): T[] {
   return []
 }
 
-export async function up({ db, payload, req: _req }: MigrateUpArgs): Promise<void> {
+export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): Promise<void> {
   // 1. Đọc dữ liệu cũ trước khi thay đổi bảng
   const legacyCardsResult = await db.execute(sql`
     SELECT "id", "reflection_prompt" FROM "eq_cards" WHERE "reflection_prompt" IS NOT NULL;
@@ -52,7 +51,7 @@ export async function up({ db, payload, req: _req }: MigrateUpArgs): Promise<voi
     text: string | null
   }>(legacyVersionTagsResult)
 
-  // 2. Tạo Enum Types an toàn (bỏ qua nếu đã tồn tại)
+  // 2. Tạo Enum Types an toàn
   await db.execute(sql`
     DO $$ BEGIN
       CREATE TYPE "public"."enum_eq_cards_emotion_tags" AS ENUM('joyful', 'peaceful', 'fresh', 'serene', 'grateful', 'relaxed', 'confident', 'tired', 'discouraged', 'stressed');
@@ -67,267 +66,279 @@ export async function up({ db, payload, req: _req }: MigrateUpArgs): Promise<voi
     END $$;
   `)
 
-  // 3. Tạo bảng reflectionPrompts cho thẻ và bản version
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS "eq_cards_reflection_prompts" (
-      "_order" integer NOT NULL,
-      "_parent_id" integer NOT NULL,
-      "id" varchar PRIMARY KEY NOT NULL,
-      "prompt" varchar
-    );
-
-    CREATE TABLE IF NOT EXISTS "_eq_cards_v_version_reflection_prompts" (
-      "_order" integer NOT NULL,
-      "_parent_id" integer NOT NULL,
-      "id" serial PRIMARY KEY NOT NULL,
-      "prompt" varchar,
-      "_uuid" varchar
-    );
-
-    ALTER TABLE "eq_cards_reflection_prompts" DROP CONSTRAINT IF EXISTS "eq_cards_reflection_prompts_parent_id_fk";
-    ALTER TABLE "eq_cards_reflection_prompts" ADD CONSTRAINT "eq_cards_reflection_prompts_parent_id_fk"
-      FOREIGN KEY ("_parent_id") REFERENCES "public"."eq_cards"("id") ON DELETE cascade ON UPDATE no action;
-
-    ALTER TABLE "_eq_cards_v_version_reflection_prompts" DROP CONSTRAINT IF EXISTS "_eq_cards_v_version_reflection_prompts_parent_id_fk";
-    ALTER TABLE "_eq_cards_v_version_reflection_prompts" ADD CONSTRAINT "_eq_cards_v_version_reflection_prompts_parent_id_fk"
-      FOREIGN KEY ("_parent_id") REFERENCES "public"."_eq_cards_v"("id") ON DELETE cascade ON UPDATE no action;
-
-    CREATE INDEX IF NOT EXISTS "eq_cards_reflection_prompts_order_idx" ON "eq_cards_reflection_prompts" USING btree ("_order");
-    CREATE INDEX IF NOT EXISTS "eq_cards_reflection_prompts_parent_id_idx" ON "eq_cards_reflection_prompts" USING btree ("_parent_id");
-    CREATE INDEX IF NOT EXISTS "_eq_cards_v_version_reflection_prompts_order_idx" ON "_eq_cards_v_version_reflection_prompts" USING btree ("_order");
-    CREATE INDEX IF NOT EXISTS "_eq_cards_v_version_reflection_prompts_parent_id_idx" ON "_eq_cards_v_version_reflection_prompts" USING btree ("_parent_id");
-  `)
-
-  // 4. Thêm cột từ khóa cho eq_cards và _eq_cards_v
-  await db.execute(sql`
-    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "keyword_vi" varchar;
-    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "keyword_en" varchar;
-    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_keyword_vi" varchar;
-    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_keyword_en" varchar;
-  `)
-
-  // 5. Thay thế cấu trúc bảng eq_cards_emotion_tags và _eq_cards_v_version_emotion_tags
-  await db.execute(sql`
-    DROP TABLE IF EXISTS "eq_cards_emotion_tags" CASCADE;
-    CREATE TABLE "eq_cards_emotion_tags" (
-      "id" serial PRIMARY KEY NOT NULL,
-      "order" integer NOT NULL,
-      "parent_id" integer NOT NULL,
-      "value" "enum_eq_cards_emotion_tags"
-    );
-    ALTER TABLE "eq_cards_emotion_tags" ADD CONSTRAINT "eq_cards_emotion_tags_parent_fk"
-      FOREIGN KEY ("parent_id") REFERENCES "public"."eq_cards"("id") ON DELETE cascade ON UPDATE no action;
-    CREATE INDEX IF NOT EXISTS "eq_cards_emotion_tags_parent_idx" ON "eq_cards_emotion_tags" USING btree ("parent_id");
-    CREATE INDEX IF NOT EXISTS "eq_cards_emotion_tags_order_idx" ON "eq_cards_emotion_tags" USING btree ("order");
-
-    DROP TABLE IF EXISTS "_eq_cards_v_version_emotion_tags" CASCADE;
-    CREATE TABLE "_eq_cards_v_version_emotion_tags" (
-      "id" serial PRIMARY KEY NOT NULL,
-      "order" integer NOT NULL,
-      "parent_id" integer NOT NULL,
-      "value" "enum__eq_cards_v_version_emotion_tags"
-    );
-    ALTER TABLE "_eq_cards_v_version_emotion_tags" ADD CONSTRAINT "_eq_cards_v_version_emotion_tags_parent_fk"
-      FOREIGN KEY ("parent_id") REFERENCES "public"."_eq_cards_v"("id") ON DELETE cascade ON UPDATE no action;
-    CREATE INDEX IF NOT EXISTS "_eq_cards_v_version_emotion_tags_parent_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("parent_id");
-    CREATE INDEX IF NOT EXISTS "_eq_cards_v_version_emotion_tags_order_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("order");
-  `)
-
-  // 6. Chuyển dữ liệu reflection_prompt -> reflectionPrompts (bản chính & version)
-  for (const card of legacyCards) {
-    const prompts = migrateReflectionPromptToPrompts(card.reflection_prompt)
-    for (let i = 0; i < prompts.length; i++) {
-      const promptId = randomUUID()
-      await db.execute(sql`
-        INSERT INTO "eq_cards_reflection_prompts" ("_order", "_parent_id", "id", "prompt")
-        VALUES (${i + 1}, ${card.id}, ${promptId}, ${prompts[i].prompt});
-      `)
-    }
-  }
-
-  for (const version of legacyVersions) {
-    const prompts = migrateReflectionPromptToPrompts(version.version_reflection_prompt)
-    for (let i = 0; i < prompts.length; i++) {
-      const uuid = randomUUID()
-      await db.execute(sql`
-        INSERT INTO "_eq_cards_v_version_reflection_prompts" ("_order", "_parent_id", "prompt", "_uuid")
-        VALUES (${i + 1}, ${version.id}, ${prompts[i].prompt}, ${uuid});
-      `)
-    }
-  }
-
-  // 7. Chuyển dữ liệu emotionTags (bản chính & version), ánh xạ 10 cảm xúc và ghi log các thẻ bị bỏ
-  const groupedTags = new Map<number, string[]>()
-  for (const tag of legacyTags) {
-    if (tag.text) {
-      const list = groupedTags.get(tag._parent_id) ?? []
-      list.push(tag.text)
-      groupedTags.set(tag._parent_id, list)
-    }
-  }
-
-  let totalDroppedMain = 0
-  for (const [parentId, tags] of groupedTags.entries()) {
-    const { tags: mapped, droppedCount } = migrateEmotionTags(tags)
-    totalDroppedMain += droppedCount
-    for (let i = 0; i < mapped.length; i++) {
-      await db.execute(sql`
-        INSERT INTO "eq_cards_emotion_tags" ("order", "parent_id", "value")
-        VALUES (${i + 1}, ${parentId}, ${mapped[i]});
-      `)
-    }
-  }
-
-  const groupedVersionTags = new Map<number, string[]>()
-  for (const tag of legacyVersionTags) {
-    if (tag.text) {
-      const list = groupedVersionTags.get(tag._parent_id) ?? []
-      list.push(tag.text)
-      groupedVersionTags.set(tag._parent_id, list)
-    }
-  }
-
-  let totalDroppedVersion = 0
-  for (const [parentId, tags] of groupedVersionTags.entries()) {
-    const { tags: mapped, droppedCount } = migrateEmotionTags(tags)
-    totalDroppedVersion += droppedCount
-    for (let i = 0; i < mapped.length; i++) {
-      await db.execute(sql`
-        INSERT INTO "_eq_cards_v_version_emotion_tags" ("order", "parent_id", "value")
-        VALUES (${i + 1}, ${parentId}, ${mapped[i]});
-      `)
-    }
-  }
-
-  payload.logger.info(
-    `[Migration eq_cards_q17] Đã hoàn thành chuyển đổi emotionTags. Số nhãn bị bỏ do không khớp 10 cảm xúc chuẩn: bản chính = ${totalDroppedMain}, bản version = ${totalDroppedVersion}.`,
-  )
-
-  // 8. Xóa các cột cũ
-  await db.execute(sql`
-    ALTER TABLE "eq_cards" DROP COLUMN IF EXISTS "reflection_prompt";
-    ALTER TABLE "_eq_cards_v" DROP COLUMN IF EXISTS "version_reflection_prompt";
-  `)
-}
-
-export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs): Promise<void> {
-  // 1. Đọc dữ liệu hiện tại để phục hồi lại cấu trúc cũ
-  const promptsResult = await db.execute(sql`
-    SELECT "_parent_id", "prompt" FROM "eq_cards_reflection_prompts" ORDER BY "_parent_id", "_order" ASC;
-  `)
-  const prompts = getRows<{ _parent_id: number; prompt: string | null }>(promptsResult)
-  const promptsByParent = new Map<number, Array<{ prompt: string | null }>>()
-  for (const p of prompts) {
-    const list = promptsByParent.get(p._parent_id) ?? []
-    list.push({ prompt: p.prompt })
-    promptsByParent.set(p._parent_id, list)
-  }
-
-  const vPromptsResult = await db.execute(sql`
-    SELECT "_parent_id", "prompt" FROM "_eq_cards_v_version_reflection_prompts" ORDER BY "_parent_id", "_order" ASC;
-  `)
-  const vPrompts = getRows<{ _parent_id: number; prompt: string | null }>(vPromptsResult)
-  const vPromptsByParent = new Map<number, Array<{ prompt: string | null }>>()
-  for (const p of vPrompts) {
-    const list = vPromptsByParent.get(p._parent_id) ?? []
-    list.push({ prompt: p.prompt })
-    vPromptsByParent.set(p._parent_id, list)
-  }
-
-  const currentTagsResult = await db.execute(sql`
-    SELECT "parent_id", "order", "value" FROM "eq_cards_emotion_tags" ORDER BY "parent_id", "order" ASC;
-  `)
-  const currentTags = getRows<{ parent_id: number; order: number; value: string | null }>(
-    currentTagsResult,
-  )
-
-  const currentVTagsResult = await db.execute(sql`
-    SELECT "parent_id", "order", "value" FROM "_eq_cards_v_version_emotion_tags" ORDER BY "parent_id", "order" ASC;
-  `)
-  const currentVTags = getRows<{ parent_id: number; order: number; value: string | null }>(
-    currentVTagsResult,
-  )
-
-  // 2. Khôi phục cột reflection_prompt
-  await db.execute(sql`
-    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "reflection_prompt" varchar;
-    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_reflection_prompt" varchar;
-  `)
-
-  for (const [parentId, promptList] of promptsByParent.entries()) {
-    const restored = rollbackReflectionPromptsToPrompt(promptList)
-    if (restored) {
-      await db.execute(sql`
-        UPDATE "eq_cards" SET "reflection_prompt" = ${restored} WHERE "id" = ${parentId};
-      `)
-    }
-  }
-
-  for (const [parentId, promptList] of vPromptsByParent.entries()) {
-    const restored = rollbackReflectionPromptsToPrompt(promptList)
-    if (restored) {
-      await db.execute(sql`
-        UPDATE "_eq_cards_v" SET "version_reflection_prompt" = ${restored} WHERE "id" = ${parentId};
-      `)
-    }
-  }
-
-  // 3. Khôi phục bảng eq_cards_emotion_tags và _eq_cards_v_version_emotion_tags
-  await db.execute(sql`
-    DROP TABLE IF EXISTS "eq_cards_emotion_tags" CASCADE;
-    CREATE TABLE "eq_cards_emotion_tags" (
-      "id" varchar PRIMARY KEY NOT NULL,
-      "_order" integer NOT NULL,
-      "_parent_id" integer NOT NULL,
-      "text" varchar
-    );
-    ALTER TABLE "eq_cards_emotion_tags" ADD CONSTRAINT "eq_cards_emotion_tags_parent_id_fk"
-      FOREIGN KEY ("_parent_id") REFERENCES "public"."eq_cards"("id") ON DELETE cascade ON UPDATE no action;
-    CREATE INDEX IF NOT EXISTS "eq_cards_emotion_tags_parent_id_idx" ON "eq_cards_emotion_tags" USING btree ("_parent_id");
-    CREATE INDEX IF NOT EXISTS "eq_cards_emotion_tags_order_idx" ON "eq_cards_emotion_tags" USING btree ("_order");
-
-    DROP TABLE IF EXISTS "_eq_cards_v_version_emotion_tags" CASCADE;
-    CREATE TABLE "_eq_cards_v_version_emotion_tags" (
-      "id" serial PRIMARY KEY NOT NULL,
-      "_order" integer NOT NULL,
-      "_parent_id" integer NOT NULL,
-      "text" varchar,
-      "_uuid" varchar
-    );
-    ALTER TABLE "_eq_cards_v_version_emotion_tags" ADD CONSTRAINT "_eq_cards_v_version_emotion_tags_parent_id_fk"
-      FOREIGN KEY ("_parent_id") REFERENCES "public"."_eq_cards_v"("id") ON DELETE cascade ON UPDATE no action;
-    CREATE INDEX IF NOT EXISTS "_eq_cards_v_version_emotion_tags_parent_id_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("_parent_id");
-    CREATE INDEX IF NOT EXISTS "_eq_cards_v_version_emotion_tags_order_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("_order");
-  `)
-
-  for (const tag of currentTags) {
-    const emotion = getEmotion(tag.value)
-    const label = emotion ? emotion.label : tag.value
-    const id = randomUUID()
-    await db.execute(sql`
-      INSERT INTO "eq_cards_emotion_tags" ("id", "_order", "_parent_id", "text")
-      VALUES (${id}, ${tag.order}, ${tag.parent_id}, ${label});
-    `)
-  }
-
-  for (const tag of currentVTags) {
-    const emotion = getEmotion(tag.value)
-    const label = emotion ? emotion.label : tag.value
-    const uuid = randomUUID()
-    await db.execute(sql`
-      INSERT INTO "_eq_cards_v_version_emotion_tags" ("_order", "_parent_id", "text", "_uuid")
-      VALUES (${tag.order}, ${tag.parent_id}, ${label}, ${uuid});
-    `)
-  }
-
-  // 4. Xóa bảng reflectionPrompts và các cột mới
+  // 3. Xóa các bảng phụ không còn dùng
   await db.execute(sql`
     DROP TABLE IF EXISTS "eq_cards_reflection_prompts" CASCADE;
     DROP TABLE IF EXISTS "_eq_cards_v_version_reflection_prompts" CASCADE;
-    ALTER TABLE "eq_cards" DROP COLUMN IF EXISTS "keyword_vi";
-    ALTER TABLE "eq_cards" DROP COLUMN IF EXISTS "keyword_en";
-    ALTER TABLE "_eq_cards_v" DROP COLUMN IF EXISTS "version_keyword_vi";
-    ALTER TABLE "_eq_cards_v" DROP COLUMN IF EXISTS "version_keyword_en";
+  `)
+
+  // 4. Thêm các cột mới vào eq_cards và di chuyển dữ liệu câu hỏi cũ
+  await db.execute(sql`
+    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "keyword_vi" varchar;
+    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "keyword_en" varchar;
+    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "prompt_recall" varchar;
+    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "prompt_pack" varchar;
+    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "prompt_acknowledge" varchar;
+  `)
+
+  for (const card of legacyCards) {
+    const { promptRecall } = migrateReflectionPromptToPrompts(card.reflection_prompt)
+    if (promptRecall) {
+      await db.execute(sql`
+        UPDATE "eq_cards" SET "prompt_recall" = ${promptRecall} WHERE "id" = ${card.id};
+      `)
+    }
+  }
+
+  await db.execute(sql`
+    ALTER TABLE "eq_cards" DROP COLUMN IF EXISTS "reflection_prompt";
+  `)
+
+  // 5. Thêm các cột mới vào _eq_cards_v và di chuyển dữ liệu câu hỏi cũ
+  await db.execute(sql`
+    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_keyword_vi" varchar;
+    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_keyword_en" varchar;
+    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_prompt_recall" varchar;
+    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_prompt_pack" varchar;
+    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_prompt_acknowledge" varchar;
+  `)
+
+  for (const ver of legacyVersions) {
+    const { promptRecall } = migrateReflectionPromptToPrompts(ver.version_reflection_prompt)
+    if (promptRecall) {
+      await db.execute(sql`
+        UPDATE "_eq_cards_v" SET "version_prompt_recall" = ${promptRecall} WHERE "id" = ${ver.id};
+      `)
+    }
+  }
+
+  await db.execute(sql`
+    ALTER TABLE "_eq_cards_v" DROP COLUMN IF EXISTS "version_reflection_prompt";
+  `)
+
+  // 6. Xây dựng lại bảng emotion_tags với kiểu enum
+  await db.execute(sql`
+    DROP TABLE IF EXISTS "eq_cards_emotion_tags" CASCADE;
+
+    CREATE TABLE "eq_cards_emotion_tags" (
+      "_order" integer NOT NULL,
+      "_parent_id" integer NOT NULL,
+      "id" varchar PRIMARY KEY NOT NULL,
+      "value" "public"."enum_eq_cards_emotion_tags"
+    );
+
+    ALTER TABLE "eq_cards_emotion_tags" ADD CONSTRAINT "eq_cards_emotion_tags_parent_id_fk"
+      FOREIGN KEY ("_parent_id") REFERENCES "public"."eq_cards"("id") ON DELETE cascade ON UPDATE no action;
+
+    CREATE INDEX "eq_cards_emotion_tags_order_idx" ON "eq_cards_emotion_tags" USING btree ("_order");
+    CREATE INDEX "eq_cards_emotion_tags_parent_id_idx" ON "eq_cards_emotion_tags" USING btree ("_parent_id");
+  `)
+
+  // Gom và chuyển đổi dữ liệu nhãn cảm xúc thẻ chính
+  const tagsByParent = new Map<number, Array<{ text?: string | null }>>()
+  for (const row of legacyTags) {
+    const list = tagsByParent.get(row._parent_id) ?? []
+    list.push({ text: row.text })
+    tagsByParent.set(row._parent_id, list)
+  }
+
+  let totalDroppedCards = 0
+  for (const [parentId, oldList] of tagsByParent.entries()) {
+    const { tags, droppedCount } = migrateEmotionTags(oldList)
+    totalDroppedCards += droppedCount
+    for (let i = 0; i < tags.length; i++) {
+      const tagKey = tags[i]
+      const tagId = randomUUID()
+      await db.execute(sql`
+        INSERT INTO "eq_cards_emotion_tags" ("_order", "_parent_id", "id", "value")
+        VALUES (${i + 1}, ${parentId}, ${tagId}, ${tagKey});
+      `)
+    }
+  }
+
+  // Xây dựng lại bảng _eq_cards_v_version_emotion_tags
+  await db.execute(sql`
+    DROP TABLE IF EXISTS "_eq_cards_v_version_emotion_tags" CASCADE;
+
+    CREATE TABLE "_eq_cards_v_version_emotion_tags" (
+      "_order" integer NOT NULL,
+      "_parent_id" integer NOT NULL,
+      "id" serial PRIMARY KEY NOT NULL,
+      "value" "public"."enum__eq_cards_v_version_emotion_tags",
+      "_uuid" varchar
+    );
+
+    ALTER TABLE "_eq_cards_v_version_emotion_tags" ADD CONSTRAINT "_eq_cards_v_version_emotion_tags_parent_id_fk"
+      FOREIGN KEY ("_parent_id") REFERENCES "public"."_eq_cards_v"("id") ON DELETE cascade ON UPDATE no action;
+
+    CREATE INDEX "_eq_cards_v_version_emotion_tags_order_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("_order");
+    CREATE INDEX "_eq_cards_v_version_emotion_tags_parent_id_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("_parent_id");
+  `)
+
+  const versionTagsByParent = new Map<number, Array<{ text?: string | null }>>()
+  for (const row of legacyVersionTags) {
+    const list = versionTagsByParent.get(row._parent_id) ?? []
+    list.push({ text: row.text })
+    versionTagsByParent.set(row._parent_id, list)
+  }
+
+  let totalDroppedVersions = 0
+  for (const [parentId, oldList] of versionTagsByParent.entries()) {
+    const { tags, droppedCount } = migrateEmotionTags(oldList)
+    totalDroppedVersions += droppedCount
+    for (let i = 0; i < tags.length; i++) {
+      const tagKey = tags[i]
+      const uuid = randomUUID()
+      await db.execute(sql`
+        INSERT INTO "_eq_cards_v_version_emotion_tags" ("_order", "_parent_id", "value", "_uuid")
+        VALUES (${i + 1}, ${parentId}, ${tagKey}, ${uuid});
+      `)
+    }
+  }
+
+  if (totalDroppedCards > 0 || totalDroppedVersions > 0) {
+    console.log(
+      `[MIGRATION-INFO] Bỏ qua ${totalDroppedCards} nhãn không khớp trong eq_cards và ${totalDroppedVersions} nhãn trong _eq_cards_v.`,
+    )
+  }
+}
+
+export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs): Promise<void> {
+  // 1. Đọc lại promptRecall để khôi phục về reflection_prompt
+  const cardsResult = await db.execute(sql`
+    SELECT "id", "prompt_recall" FROM "eq_cards" WHERE "prompt_recall" IS NOT NULL;
+  `)
+  const cards = getRows<{ id: number; prompt_recall: string | null }>(cardsResult)
+
+  const versionsResult = await db.execute(sql`
+    SELECT "id", "version_prompt_recall" FROM "_eq_cards_v" WHERE "version_prompt_recall" IS NOT NULL;
+  `)
+  const versions = getRows<{ id: number; version_prompt_recall: string | null }>(versionsResult)
+
+  // 2. Đọc lại emotion tags enum hiện tại để đưa về dạng text
+  const currentTagsResult = await db.execute(sql`
+    SELECT "id", "_parent_id", "_order", "value" FROM "eq_cards_emotion_tags" ORDER BY "_parent_id", "_order";
+  `)
+  const currentTags = getRows<{
+    id: string
+    _parent_id: number
+    _order: number
+    value: string | null
+  }>(currentTagsResult)
+
+  const currentVersionTagsResult = await db.execute(sql`
+    SELECT "id", "_parent_id", "_order", "value" FROM "_eq_cards_v_version_emotion_tags" ORDER BY "_parent_id", "_order";
+  `)
+  const currentVersionTags = getRows<{
+    id: number
+    _parent_id: number
+    _order: number
+    value: string | null
+  }>(currentVersionTagsResult)
+
+  // 3. Khôi phục cột reflection_prompt trong eq_cards và xóa các cột mới
+  await db.execute(sql`
+    ALTER TABLE "eq_cards" ADD COLUMN IF NOT EXISTS "reflection_prompt" varchar;
+  `)
+
+  for (const card of cards) {
+    const rolledBack = rollbackReflectionPromptsToPrompt(card.prompt_recall)
+    if (rolledBack) {
+      await db.execute(sql`
+        UPDATE "eq_cards" SET "reflection_prompt" = ${rolledBack} WHERE "id" = ${card.id};
+      `)
+    }
+  }
+
+  await db.execute(sql`
+    ALTER TABLE "eq_cards"
+      DROP COLUMN IF EXISTS "keyword_vi",
+      DROP COLUMN IF EXISTS "keyword_en",
+      DROP COLUMN IF EXISTS "prompt_recall",
+      DROP COLUMN IF EXISTS "prompt_pack",
+      DROP COLUMN IF EXISTS "prompt_acknowledge";
+  `)
+
+  // 4. Khôi phục cột version_reflection_prompt trong _eq_cards_v
+  await db.execute(sql`
+    ALTER TABLE "_eq_cards_v" ADD COLUMN IF NOT EXISTS "version_reflection_prompt" varchar;
+  `)
+
+  for (const ver of versions) {
+    const rolledBack = rollbackReflectionPromptsToPrompt(ver.version_prompt_recall)
+    if (rolledBack) {
+      await db.execute(sql`
+        UPDATE "_eq_cards_v" SET "version_reflection_prompt" = ${rolledBack} WHERE "id" = ${ver.id};
+      `)
+    }
+  }
+
+  await db.execute(sql`
+    ALTER TABLE "_eq_cards_v"
+      DROP COLUMN IF EXISTS "version_keyword_vi",
+      DROP COLUMN IF EXISTS "version_keyword_en",
+      DROP COLUMN IF EXISTS "version_prompt_recall",
+      DROP COLUMN IF EXISTS "version_prompt_pack",
+      DROP COLUMN IF EXISTS "version_prompt_acknowledge";
+  `)
+
+  // 5. Khôi phục bảng emotion_tags dạng lines (text)
+  await db.execute(sql`
+    DROP TABLE IF EXISTS "eq_cards_emotion_tags" CASCADE;
+
+    CREATE TABLE "eq_cards_emotion_tags" (
+      "_order" integer NOT NULL,
+      "_parent_id" integer NOT NULL,
+      "id" varchar PRIMARY KEY NOT NULL,
+      "text" varchar
+    );
+
+    ALTER TABLE "eq_cards_emotion_tags" ADD CONSTRAINT "eq_cards_emotion_tags_parent_id_fk"
+      FOREIGN KEY ("_parent_id") REFERENCES "public"."eq_cards"("id") ON DELETE cascade ON UPDATE no action;
+
+    CREATE INDEX "eq_cards_emotion_tags_order_idx" ON "eq_cards_emotion_tags" USING btree ("_order");
+    CREATE INDEX "eq_cards_emotion_tags_parent_id_idx" ON "eq_cards_emotion_tags" USING btree ("_parent_id");
+  `)
+
+  for (const row of currentTags) {
+    if (row.value) {
+      await db.execute(sql`
+        INSERT INTO "eq_cards_emotion_tags" ("_order", "_parent_id", "id", "text")
+        VALUES (${row._order}, ${row._parent_id}, ${row.id}, ${row.value});
+      `)
+    }
+  }
+
+  await db.execute(sql`
+    DROP TABLE IF EXISTS "_eq_cards_v_version_emotion_tags" CASCADE;
+
+    CREATE TABLE "_eq_cards_v_version_emotion_tags" (
+      "_order" integer NOT NULL,
+      "_parent_id" integer NOT NULL,
+      "id" serial PRIMARY KEY NOT NULL,
+      "text" varchar,
+      "_uuid" varchar
+    );
+
+    ALTER TABLE "_eq_cards_v_version_emotion_tags" ADD CONSTRAINT "_eq_cards_v_version_emotion_tags_parent_id_fk"
+      FOREIGN KEY ("_parent_id") REFERENCES "public"."_eq_cards_v"("id") ON DELETE cascade ON UPDATE no action;
+
+    CREATE INDEX "_eq_cards_v_version_emotion_tags_order_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("_order");
+    CREATE INDEX "_eq_cards_v_version_emotion_tags_parent_id_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("_parent_id");
+  `)
+
+  for (const row of currentVersionTags) {
+    if (row.value) {
+      const uuid = randomUUID()
+      await db.execute(sql`
+        INSERT INTO "_eq_cards_v_version_emotion_tags" ("_order", "_parent_id", "text", "_uuid")
+        VALUES (${row._order}, ${row._parent_id}, ${row.value}, ${uuid});
+      `)
+    }
+  }
+
+  // 6. Xóa enum types nếu không còn dùng
+  await db.execute(sql`
     DROP TYPE IF EXISTS "public"."enum_eq_cards_emotion_tags";
     DROP TYPE IF EXISTS "public"."enum__eq_cards_v_version_emotion_tags";
   `)

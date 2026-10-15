@@ -6145,88 +6145,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.eq_cards_reflection_prompts": {
-      "name": "eq_cards_reflection_prompts",
-      "schema": "",
-      "columns": {
-        "_order": {
-          "name": "_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "_parent_id": {
-          "name": "_parent_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id": {
-          "name": "id",
-          "type": "varchar",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "prompt": {
-          "name": "prompt",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "eq_cards_reflection_prompts_order_idx": {
-          "name": "eq_cards_reflection_prompts_order_idx",
-          "columns": [
-            {
-              "expression": "_order",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "eq_cards_reflection_prompts_parent_id_idx": {
-          "name": "eq_cards_reflection_prompts_parent_id_idx",
-          "columns": [
-            {
-              "expression": "_parent_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "eq_cards_reflection_prompts_parent_id_fk": {
-          "name": "eq_cards_reflection_prompts_parent_id_fk",
-          "tableFrom": "eq_cards_reflection_prompts",
-          "tableTo": "eq_cards",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.eq_cards_emotion_tags": {
       "name": "eq_cards_emotion_tags",
       "schema": "",
@@ -6434,6 +6352,24 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'draft'"
+        },
+        "prompt_recall": {
+          "name": "prompt_recall",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prompt_pack": {
+          "name": "prompt_pack",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "prompt_acknowledge": {
+          "name": "prompt_acknowledge",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -6624,94 +6560,6 @@
             "id"
           ],
           "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public._eq_cards_v_version_reflection_prompts": {
-      "name": "_eq_cards_v_version_reflection_prompts",
-      "schema": "",
-      "columns": {
-        "_order": {
-          "name": "_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "_parent_id": {
-          "name": "_parent_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "prompt": {
-          "name": "prompt",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "_uuid": {
-          "name": "_uuid",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "_eq_cards_v_version_reflection_prompts_order_idx": {
-          "name": "_eq_cards_v_version_reflection_prompts_order_idx",
-          "columns": [
-            {
-              "expression": "_order",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "_eq_cards_v_version_reflection_prompts_parent_id_idx": {
-          "name": "_eq_cards_v_version_reflection_prompts_parent_id_idx",
-          "columns": [
-            {
-              "expression": "_parent_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "_eq_cards_v_version_reflection_prompts_parent_id_fk": {
-          "name": "_eq_cards_v_version_reflection_prompts_parent_id_fk",
-          "tableFrom": "_eq_cards_v_version_reflection_prompts",
-          "tableTo": "_eq_cards_v",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -6950,6 +6798,24 @@
         "latest": {
           "name": "latest",
           "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_prompt_recall": {
+          "name": "version_prompt_recall",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_prompt_pack": {
+          "name": "version_prompt_pack",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_prompt_acknowledge": {
+          "name": "version_prompt_acknowledge",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         }

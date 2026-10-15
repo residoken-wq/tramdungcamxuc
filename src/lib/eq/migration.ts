@@ -56,29 +56,27 @@ export function migrateEmotionTags(
 }
 
 /**
- * Chuyển chuỗi reflectionPrompt cũ thành mảng reflectionPrompts (1–3 câu).
- * Nếu chuỗi cũ khác rỗng, tạo phần tử đầu tiên.
+ * Chuyển giá trị reflectionPrompt cũ (nếu có) thành promptRecall;
+ * promptPack và promptAcknowledge để rỗng.
  */
 export function migrateReflectionPromptToPrompts(
   legacyPrompt: string | null | undefined,
-): Array<{ prompt: string }> {
-  if (typeof legacyPrompt === 'string' && legacyPrompt.trim().length > 0) {
-    return [{ prompt: legacyPrompt.trim() }]
+): { promptRecall: string; promptPack: string; promptAcknowledge: string } {
+  return {
+    promptRecall: typeof legacyPrompt === 'string' ? legacyPrompt.trim() : '',
+    promptPack: '',
+    promptAcknowledge: '',
   }
-  return []
 }
 
 /**
- * Trích xuất chuỗi câu hỏi đầu tiên khi rollback về reflectionPrompt đơn.
+ * Trích xuất lại chuỗi promptRecall khi rollback về reflectionPrompt đơn.
  */
 export function rollbackReflectionPromptsToPrompt(
-  prompts: Array<{ prompt?: string | null }> | null | undefined,
+  promptRecall: string | null | undefined,
 ): string | null {
-  if (Array.isArray(prompts) && prompts.length > 0) {
-    const first = prompts[0]?.prompt
-    if (typeof first === 'string' && first.trim().length > 0) {
-      return first.trim()
-    }
+  if (typeof promptRecall === 'string' && promptRecall.trim().length > 0) {
+    return promptRecall.trim()
   }
   return null
 }

@@ -816,19 +816,31 @@ export interface EqCard {
    */
   code: string;
   /**
-   * Nhập từ khóa tiếng việt.
-   */
-  keywordVi?: string | null;
-  /**
-   * Nhập từ khóa tiếng anh.
+   * Từ khóa tiếng Anh trên mặt trước thẻ (tối đa 40 ký tự). Bắt buộc khi xuất bản.
    */
   keywordEn?: string | null;
   /**
-   * Nhập thông điệp.
+   * Không bắt buộc – bộ thẻ in hiện không có.
+   */
+  keywordVi?: string | null;
+  /**
+   * Câu thông điệp mặt trước thẻ. Bắt buộc khi xuất bản.
    */
   message?: string | null;
   /**
-   * Soạn câu chuyện.
+   * Câu hỏi gợi nhớ trên mặt sau thẻ. Bắt buộc khi xuất bản.
+   */
+  promptRecall?: string | null;
+  /**
+   * Câu hỏi gói ghém trên mặt sau thẻ. Bắt buộc khi xuất bản.
+   */
+  promptPack?: string | null;
+  /**
+   * Câu hỏi ghi nhận trên mặt sau thẻ. Bắt buộc khi xuất bản.
+   */
+  promptAcknowledge?: string | null;
+  /**
+   * Không bắt buộc – bộ thẻ in hiện không có.
    */
   story?: {
     root: {
@@ -846,19 +858,7 @@ export interface EqCard {
     [k: string]: unknown;
   } | null;
   /**
-   * Thêm 1–3 câu hỏi suy ngẫm cho thẻ.
-   */
-  reflectionPrompts?:
-    | {
-        /**
-         * Nhập câu hỏi suy ngẫm.
-         */
-        prompt: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Nhập hành động nhỏ.
+   * Không bắt buộc – bộ thẻ in hiện không có.
    */
   smallAction?: string | null;
   /**
@@ -866,7 +866,7 @@ export interface EqCard {
    */
   topic?: ('eq' | 'habit' | 'career') | null;
   /**
-   * Chọn một hoặc nhiều cảm xúc phù hợp từ bộ 10 cảm xúc.
+   * Không bắt buộc – bộ thẻ in hiện không có.
    */
   emotionTags?:
     | (
@@ -2392,16 +2392,13 @@ export interface TestimonialsSelect<T extends boolean = true> {
  */
 export interface EqCardsSelect<T extends boolean = true> {
   code?: T;
-  keywordVi?: T;
   keywordEn?: T;
+  keywordVi?: T;
   message?: T;
+  promptRecall?: T;
+  promptPack?: T;
+  promptAcknowledge?: T;
   story?: T;
-  reflectionPrompts?:
-    | T
-    | {
-        prompt?: T;
-        id?: T;
-      };
   smallAction?: T;
   topic?: T;
   emotionTags?: T;
