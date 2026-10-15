@@ -89,13 +89,13 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
       ).toBe(true)
     })
 
-    it('tất cả 16 collections thuộc nhóm Hệ thống có admin.hidden là hàm ẩn với editor', async () => {
+    it('tất cả 14 collections thuộc nhóm Hệ thống có admin.hidden là hàm ẩn với editor', async () => {
       const config = await configPromise
       const systemCollections = config.collections.filter(
         (col) => isProjectCollection(col.slug) && col.admin?.group === vi.cms.nav.system,
       )
 
-      expect(systemCollections.length).toBe(16)
+      expect(systemCollections.length).toBe(14)
 
       const editorUser = {
         id: 2,
@@ -120,13 +120,22 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
       }
     })
 
+    it('Media và Tài liệu riêng tư hiện với editor (cần để tải ảnh, file ebook)', async () => {
+      const config = await configPromise
+      for (const slug of ['media', 'privateFiles']) {
+        const col = config.collections.find((c) => c.slug === slug)!
+        expect(col.admin?.group).not.toBe(vi.cms.nav.system)
+        expect(col.admin?.hidden).toBeFalsy()
+      }
+    })
+
     it('các collection không thuộc nhóm Hệ thống KHÔNG bị ẩn với editor', async () => {
       const config = await configPromise
       const nonSystemCollections = config.collections.filter(
         (col) => isProjectCollection(col.slug) && col.admin?.group !== vi.cms.nav.system,
       )
 
-      expect(nonSystemCollections.length).toBe(19)
+      expect(nonSystemCollections.length).toBe(21)
 
       const editorUser = {
         id: 2,

@@ -79,6 +79,7 @@ export default buildConfig({
     Posts,
     Testimonials,
     LegalPages,
+    Media,
 
     // Sản phẩm & bán hàng
     Products,
@@ -86,6 +87,7 @@ export default buildConfig({
     Programs,
     Orders,
     DiscountCodes,
+    PrivateFiles,
 
     // Khóa Habit
     CourseModules,
@@ -105,8 +107,6 @@ export default buildConfig({
 
     // Hệ thống
     Users,
-    Media,
-    PrivateFiles,
     Entitlements,
     HabitCheckins,
     LessonProgress,

@@ -72,11 +72,13 @@ export interface Config {
     posts: Post;
     testimonials: Testimonial;
     legalPages: LegalPage;
+    media: Media;
     products: Product;
     services: Service;
     programs: Program;
     orders: Order;
     discountCodes: DiscountCode;
+    privateFiles: PrivateFile;
     courseModules: CourseModule;
     lessons: Lesson;
     techniques: Technique;
@@ -88,8 +90,6 @@ export interface Config {
     certificates: Certificate;
     habitPlans: HabitPlan;
     users: User;
-    media: Media;
-    privateFiles: PrivateFile;
     entitlements: Entitlement;
     habitCheckins: HabitCheckin;
     lessonProgress: LessonProgress;
@@ -114,11 +114,13 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     legalPages: LegalPagesSelect<false> | LegalPagesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     programs: ProgramsSelect<false> | ProgramsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     discountCodes: DiscountCodesSelect<false> | DiscountCodesSelect<true>;
+    privateFiles: PrivateFilesSelect<false> | PrivateFilesSelect<true>;
     courseModules: CourseModulesSelect<false> | CourseModulesSelect<true>;
     lessons: LessonsSelect<false> | LessonsSelect<true>;
     techniques: TechniquesSelect<false> | TechniquesSelect<true>;
@@ -130,8 +132,6 @@ export interface Config {
     certificates: CertificatesSelect<false> | CertificatesSelect<true>;
     habitPlans: HabitPlansSelect<false> | HabitPlansSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    privateFiles: PrivateFilesSelect<false> | PrivateFilesSelect<true>;
     entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
     habitCheckins: HabitCheckinsSelect<false> | HabitCheckinsSelect<true>;
     lessonProgress: LessonProgressSelect<false> | LessonProgressSelect<true>;
@@ -2002,6 +2002,10 @@ export interface PayloadLockedDocument {
         value: number | LegalPage;
       } | null)
     | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
         relationTo: 'products';
         value: number | Product;
       } | null)
@@ -2020,6 +2024,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'discountCodes';
         value: number | DiscountCode;
+      } | null)
+    | ({
+        relationTo: 'privateFiles';
+        value: number | PrivateFile;
       } | null)
     | ({
         relationTo: 'courseModules';
@@ -2064,14 +2072,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
-      } | null)
-    | ({
-        relationTo: 'media';
-        value: number | Media;
-      } | null)
-    | ({
-        relationTo: 'privateFiles';
-        value: number | PrivateFile;
       } | null)
     | ({
         relationTo: 'entitlements';
@@ -2249,6 +2249,27 @@ export interface LegalPagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  isSample?: T;
+  prefix?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2440,6 +2461,27 @@ export interface DiscountCodesSelect<T extends boolean = true> {
   products?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privateFiles_select".
+ */
+export interface PrivateFilesSelect<T extends boolean = true> {
+  description?: T;
+  isSample?: T;
+  prefix?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2670,48 +2712,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  isSample?: T;
-  prefix?: T;
-  _objectKey?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "privateFiles_select".
- */
-export interface PrivateFilesSelect<T extends boolean = true> {
-  description?: T;
-  isSample?: T;
-  prefix?: T;
-  _objectKey?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
