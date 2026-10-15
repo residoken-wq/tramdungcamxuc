@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { date, relation, select } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
 import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Access rights to paid tools. A customer may use the trial of a product only
 // once: enforced by a DB unique index on `trialKey` (set only for source = trial) and the hook.
@@ -9,7 +10,7 @@ export const Entitlements: CollectionConfig = {
   slug: 'entitlements',
   labels: { singular: 'Quyền truy cập', plural: 'Quyền truy cập' },
   admin: {
-    group: 'Bán hàng',
+    group: vi.cms.nav.system,
     defaultColumns: ['customer', 'product', 'source', 'status', 'expiresAt'],
   },
   access: {

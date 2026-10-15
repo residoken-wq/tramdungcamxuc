@@ -11,6 +11,7 @@ import {
 } from '../lib/auth/access'
 import { generatePayToken, generateUniquePaymentRef } from '../lib/payments/payment-ref'
 import { getEffectivePrice } from '../lib/products'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Server-owned order fields, enforced in one place:
 // - paymentRef (TDCX + 5 chars) and payToken are generated on create and never change;
@@ -351,7 +352,7 @@ export const Orders: CollectionConfig = {
   slug: 'orders',
   labels: { singular: 'Đơn hàng', plural: 'Đơn hàng' },
   admin: {
-    group: 'Bán hàng',
+    group: vi.cms.nav.commerce,
     useAsTitle: 'paymentRef',
     defaultColumns: ['paymentRef', 'customer', 'total', 'paymentStatus', 'createdAt'],
   },

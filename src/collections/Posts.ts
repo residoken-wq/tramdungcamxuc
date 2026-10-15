@@ -1,3 +1,4 @@
+import { vi } from '../lib/i18n/vi'
 import { detailLivePreview } from '@/lib/live-preview'
 import {
   contentCollection,
@@ -11,7 +12,7 @@ import {
   url,
 } from '../fields/content'
 
-export const Posts = contentCollection('posts', 'Bài viết và video', 'Nội dung', 'title', [
+export const Posts = contentCollection('posts', 'Bài viết và video', vi.cms.nav.website, 'title', [
   text('title', 'Tiêu đề', true),
   slug(),
   text('series', 'Chuỗi nội dung'),

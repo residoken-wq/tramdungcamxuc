@@ -8,6 +8,7 @@ import {
   text,
   textarea,
 } from '../fields/content'
+import { vi } from '../lib/i18n/vi'
 
 export const requireConsent: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   const next = { ...originalDoc, ...data }
@@ -24,7 +25,7 @@ export const requireConsent: CollectionBeforeChangeHook = ({ data, originalDoc, 
 }
 
 export const Testimonials = {
-  ...contentCollection('testimonials', 'Lời chia sẻ', 'Nội dung', 'name', [
+  ...contentCollection('testimonials', 'Lời chia sẻ', vi.cms.nav.website, 'name', [
     text('name', 'Tên người chia sẻ', true),
     text('role', 'Vai trò'),
     textarea('quote', 'Lời chia sẻ'),

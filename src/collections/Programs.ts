@@ -1,10 +1,11 @@
 import { detailLivePreview } from '@/lib/live-preview'
 import { contentCollection, lines, saleStatus, slug, text, textarea } from '../fields/content'
+import { vi } from '../lib/i18n/vi'
 
 export const Programs = contentCollection(
   'programs',
   'Chương trình doanh nghiệp',
-  'Bán hàng',
+  vi.cms.nav.commerce,
   'name',
   [
     text('name', 'Tên chương trình', true),

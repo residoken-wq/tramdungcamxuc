@@ -10,6 +10,7 @@ import {
   topicOptions,
 } from '../fields/content'
 import { EMOTIONS } from '../lib/emotions'
+import { vi } from '../lib/i18n/vi'
 
 const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   if (originalDoc?.printedAt) {
@@ -54,7 +55,7 @@ const validateRequiredOnPublish =
     return true
   }
 
-const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy', 'code', [
+const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', vi.cms.nav.eq, 'code', [
   { ...text('code', 'Mã thẻ', true), unique: true },
   {
     name: 'keywordEn',

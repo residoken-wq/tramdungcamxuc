@@ -1,6 +1,7 @@
 import type { Field, GlobalConfig } from 'payload'
 import { checkbox, relation, select, text, url } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 function menu(name: string, label: string): Field {
   return {
@@ -53,7 +54,7 @@ function menu(name: string, label: string): Field {
 export const Navigation: GlobalConfig = {
   slug: 'navigation',
   label: 'Menu điều hướng',
-  admin: { group: 'Hệ thống' },
+  admin: { group: vi.cms.nav.website },
   access: { read: () => true, update: authenticated },
   fields: [menu('mainMenu', 'Menu chính'), menu('footerMenu', 'Menu chân trang')],
 }

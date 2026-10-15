@@ -17,6 +17,7 @@ import {
 } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
 import { computePackageValue } from '../lib/pricing'
+import { vi } from '../lib/i18n/vi'
 
 const computeValues: CollectionBeforeChangeHook = ({ data, originalDoc }) => ({
   ...data,
@@ -24,7 +25,7 @@ const computeValues: CollectionBeforeChangeHook = ({ data, originalDoc }) => ({
 })
 
 export const Products: CollectionConfig = {
-  ...contentCollection('products', 'Sản phẩm', 'Bán hàng', 'name', [
+  ...contentCollection('products', 'Sản phẩm', vi.cms.nav.commerce, 'name', [
     text('name', 'Tên sản phẩm', true),
     slug(),
     select(

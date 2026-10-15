@@ -1,6 +1,7 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { date, relation, select, text, textarea } from '../fields/content'
 import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
   if (operation === 'create' && req.user && req.user.collection === 'customers') {
@@ -16,7 +17,7 @@ const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, ope
 export const HabitPlans: CollectionConfig = {
   slug: 'habitPlans',
   labels: { singular: 'Kế hoạch thói quen', plural: 'Kế hoạch thói quen' },
-  admin: { group: 'Khóa học', defaultColumns: ['customer', 'leadEmail', 'startDate'] },
+  admin: { group: vi.cms.nav.customers, defaultColumns: ['customer', 'leadEmail', 'startDate'] },
   access: {
     read: adminOrSelfCustomer(),
     create: adminOrSelfCustomer(),

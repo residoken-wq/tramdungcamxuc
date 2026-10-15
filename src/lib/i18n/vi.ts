@@ -1,4 +1,14 @@
 export const vi = {
+  cms: {
+    nav: {
+      website: 'Trang web',
+      commerce: 'Sản phẩm & bán hàng',
+      habit: 'Khóa Habit',
+      eq: 'EQ Buddy',
+      customers: 'Học viên & khách',
+      system: 'Hệ thống',
+    },
+  },
   livePreview: { mobile: 'Điện thoại', tablet: 'Máy tính bảng', desktop: 'Máy tính' },
   common: {
     send: 'Gửi',

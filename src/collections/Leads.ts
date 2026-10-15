@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { checkbox, lines, relation, select, text, textarea } from '../fields/content'
 import { isEditorOrOwner, isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Personal data (NĐ 13/2023). Public forms create leads through server code
 // (T1-06) with overrideAccess after validation; the REST API never accepts anonymous writes.
@@ -8,7 +9,7 @@ export const Leads: CollectionConfig = {
   slug: 'leads',
   labels: { singular: 'Khách tiềm năng', plural: 'Khách tiềm năng' },
   admin: {
-    group: 'Khách hàng',
+    group: vi.cms.nav.customers,
     useAsTitle: 'email',
     defaultColumns: ['email', 'name', 'need', 'followUpStatus', 'createdAt'],
     components: {

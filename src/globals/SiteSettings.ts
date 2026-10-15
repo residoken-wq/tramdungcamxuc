@@ -1,11 +1,12 @@
 import type { Field, GlobalConfig } from 'payload'
 import { checkbox, image, number, select, text, url } from '../fields/content'
 import { authenticated, isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'siteSettings',
   label: 'Cài đặt website',
-  admin: { group: 'Hệ thống' },
+  admin: { group: vi.cms.nav.website },
   access: { read: () => true, update: authenticated },
   fields: [
     {

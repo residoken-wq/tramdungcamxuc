@@ -2,12 +2,13 @@ import type { CollectionConfig } from 'payload'
 import { date, relation } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
 import { isOwner } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 export const WorkshopReminders: CollectionConfig = {
   slug: 'workshopReminders',
   labels: { singular: 'Nhắc lịch workshop', plural: 'Nhắc lịch workshop' },
   admin: {
-    group: 'Hệ thống',
+    group: vi.cms.nav.system,
     defaultColumns: ['workshop', 'customer', 'sentAt'],
   },
   access: {

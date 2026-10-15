@@ -49,7 +49,7 @@ export const Customers: CollectionConfig = {
   slug: 'customers',
   labels: { singular: 'Khách hàng', plural: 'Khách hàng' },
   admin: {
-    group: 'Khách hàng',
+    group: vi.cms.nav.customers,
     useAsTitle: 'email',
     defaultColumns: ['email', 'name', 'deletionRequestedAt', 'createdAt'],
   },

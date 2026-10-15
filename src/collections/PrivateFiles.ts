@@ -1,12 +1,13 @@
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '../lib/auth/access'
 import { sampleField } from '../fields/content'
+import { vi } from '../lib/i18n/vi'
 
 export const PrivateFiles: CollectionConfig = {
   slug: 'privateFiles',
   labels: { singular: 'Tài liệu riêng tư', plural: 'Tài liệu riêng tư' },
   admin: {
-    group: 'Bán hàng',
+    group: vi.cms.nav.system,
     useAsTitle: 'filename',
     description: 'Tải tài liệu riêng tư (PDF, ZIP, EPUB). Chỉ giao qua liên kết ký có hạn.',
   },

@@ -9,6 +9,7 @@ import {
 import { contentCollection, image, select, slug, text, textarea } from '../fields/content'
 import { getTemplateData } from '@/puck/templates'
 import { validatePageLockedBlocks } from '@/puck/locks'
+import { vi } from '../lib/i18n/vi'
 
 export function normalizePageSlug(value: string, req?: Partial<PayloadRequest>): string {
   const trimmed = value.trim()
@@ -83,7 +84,7 @@ export const revalidatePage: CollectionAfterChangeHook = ({ doc, previousDoc }) 
 }
 
 export const Pages = {
-  ...contentCollection('pages', 'Trang nội dung', 'Nội dung', 'title', [
+  ...contentCollection('pages', 'Trang nội dung', vi.cms.nav.website, 'title', [
     text('title', 'Tên trang', true),
     slug(true),
     {

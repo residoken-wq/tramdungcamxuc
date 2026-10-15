@@ -1,17 +1,24 @@
 import { contentCollection, date, relation, text, url } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
-export const Workshops = contentCollection('workshops', 'Lịch workshop', 'Khóa học', 'title', [
-  text('title', 'Tên workshop', true),
-  relation('product', 'Sản phẩm workshop', 'products'),
-  date('startsAt', 'Bắt đầu'),
-  date('endsAt', 'Kết thúc'),
-  // REVIEW-REQUIRED: Meeting URLs must remain private until audience entitlement checks exist.
-  { ...url('joinUrl', 'Liên kết tham gia'), access: { read: authenticated } },
-  {
-    ...relation('audienceProducts', 'Sản phẩm được tham gia', 'products', true),
-    admin: {
-      description: 'Khách đã mua các sản phẩm này sẽ thấy lịch và nhận email nhắc trước 24 giờ.',
+export const Workshops = contentCollection(
+  'workshops',
+  'Lịch workshop',
+  vi.cms.nav.habit,
+  'title',
+  [
+    text('title', 'Tên workshop', true),
+    relation('product', 'Sản phẩm workshop', 'products'),
+    date('startsAt', 'Bắt đầu'),
+    date('endsAt', 'Kết thúc'),
+    // REVIEW-REQUIRED: Meeting URLs must remain private until audience entitlement checks exist.
+    { ...url('joinUrl', 'Liên kết tham gia'), access: { read: authenticated } },
+    {
+      ...relation('audienceProducts', 'Sản phẩm được tham gia', 'products', true),
+      admin: {
+        description: 'Khách đã mua các sản phẩm này sẽ thấy lịch và nhận email nhắc trước 24 giờ.',
+      },
     },
-  },
-])
+  ],
+)
