@@ -1,52 +1,12 @@
 import { ImageResponse } from 'next/og'
 import { notFound } from 'next/navigation'
-import fs from 'node:fs/promises'
-import path from 'node:path'
 import React from 'react'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getCertificateByCode } from '@/lib/habit/certificate.server'
 import { vi } from '@/lib/i18n/vi'
+import { loadFonts } from '@/lib/og/fonts.server'
 
 export const dynamic = 'force-dynamic'
-
-interface FontCache {
-  anton: ArrayBuffer
-  montserrat400: ArrayBuffer
-  montserrat700: ArrayBuffer
-  playfairItalic: ArrayBuffer
-}
-
-let cachedFonts: FontCache | null = null
-
-async function loadFonts(): Promise<FontCache> {
-  if (cachedFonts) return cachedFonts
-
-  const fontsDir = path.join(process.cwd(), 'src/fonts/og')
-  const [antonBuf, mont400Buf, mont700Buf, playfairBuf] = await Promise.all([
-    fs.readFile(path.join(fontsDir, 'anton-400.ttf')),
-    fs.readFile(path.join(fontsDir, 'montserrat-400.ttf')),
-    fs.readFile(path.join(fontsDir, 'montserrat-700.ttf')),
-    fs.readFile(path.join(fontsDir, 'playfair-display-italic.ttf')),
-  ])
-
-  cachedFonts = {
-    anton: antonBuf.buffer.slice(antonBuf.byteOffset, antonBuf.byteOffset + antonBuf.byteLength),
-    montserrat400: mont400Buf.buffer.slice(
-      mont400Buf.byteOffset,
-      mont400Buf.byteOffset + mont400Buf.byteLength,
-    ),
-    montserrat700: mont700Buf.buffer.slice(
-      mont700Buf.byteOffset,
-      mont700Buf.byteOffset + mont700Buf.byteLength,
-    ),
-    playfairItalic: playfairBuf.buffer.slice(
-      playfairBuf.byteOffset,
-      playfairBuf.byteOffset + playfairBuf.byteLength,
-    ),
-  }
-
-  return cachedFonts
-}
 
 function formatDateVN(dateStr: string): string {
   try {
