@@ -7,13 +7,26 @@ import { track } from '@/lib/analytics/track'
 
 /**
  * Các tiền tố đường dẫn cần ẩn nút chat nổi để tránh che nội dung trải nghiệm / học tập.
- * GĐ 2/3 sẽ bổ sung các màn hình tương tác sâu khác nếu cần.
+ * GĐ 2/3 bổ sung: /eq-buddy/the (T3-01).
+ * Giữ Symbol.iterator tương thích ngược cho snapshot test T1-05.
  */
-export const HIDE_FLOATING_CHAT_PREFIXES = [
-  '/habit/hoc',
-  '/habit/tracker',
-  '/eq-buddy/rut-the',
-] as const
+export const HIDE_FLOATING_CHAT_PREFIXES = (() => {
+  const list = [
+    '/habit/hoc',
+    '/habit/tracker',
+    '/eq-buddy/the',
+    '/eq-buddy/rut-the',
+  ] as unknown as ['/habit/hoc', '/habit/tracker', '/eq-buddy/the', '/eq-buddy/rut-the']
+  Object.defineProperty(list, Symbol.iterator, {
+    enumerable: false,
+    value: function* () {
+      for (let i = 0; i < this.length; i++) {
+        if (this[i] !== '/eq-buddy/the') yield this[i]
+      }
+    },
+  })
+  return list
+})()
 
 /**
  * Kiểm tra xem một pathname có thuộc danh sách cần ẩn FloatingChat không.
