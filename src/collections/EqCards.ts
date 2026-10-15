@@ -1,4 +1,8 @@
-import { ValidationError, type CollectionBeforeChangeHook } from 'payload'
+import {
+  ValidationError,
+  type CollectionBeforeChangeHook,
+  type CollectionBeforeValidateHook,
+} from 'payload'
 import {
   contentCollection,
   date,
@@ -31,6 +35,13 @@ const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) =
   return data
 }
 
+const ensureSampleReflectionPrompts: CollectionBeforeValidateHook = ({ data, operation }) => {
+  if (data?.isSample && data?.reflectionPrompts === undefined && operation === 'create') {
+    data.reflectionPrompts = [{ prompt: '[MẪU] Câu hỏi suy ngẫm' }]
+  }
+  return data
+}
+
 const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy', 'code', [
   { ...text('code', 'Mã thẻ', true), unique: true },
   {
@@ -57,13 +68,12 @@ const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy'
       description: 'Thêm 1–3 câu hỏi suy ngẫm cho thẻ.',
     },
     validate: (value: unknown) => {
-      if (value === undefined || value === null) return true
       if (Array.isArray(value)) {
         if (value.length < 1) return 'Phải có ít nhất 1 câu hỏi suy ngẫm.'
         if (value.length > 3) return 'Chỉ được có tối đa 3 câu hỏi suy ngẫm.'
         return true
       }
-      return 'Dữ liệu câu hỏi suy ngẫm không hợp lệ.'
+      return 'Phải có từ 1 đến 3 câu hỏi suy ngẫm.'
     },
     fields: [
       {
@@ -139,5 +149,8 @@ export const EqCards = {
     ...baseCollection.admin,
     defaultColumns: ['code', 'keywordVi', 'qrSlug', 'printedAt', '_status'],
   },
-  hooks: { beforeChange: [lockPrintedQR] },
+  hooks: {
+    beforeValidate: [ensureSampleReflectionPrompts],
+    beforeChange: [lockPrintedQR],
+  },
 }
