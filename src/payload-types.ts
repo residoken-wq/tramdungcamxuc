@@ -816,6 +816,14 @@ export interface EqCard {
    */
   code: string;
   /**
+   * Nhập từ khóa tiếng việt.
+   */
+  keywordVi?: string | null;
+  /**
+   * Nhập từ khóa tiếng anh.
+   */
+  keywordEn?: string | null;
+  /**
    * Nhập thông điệp.
    */
   message?: string | null;
@@ -838,9 +846,17 @@ export interface EqCard {
     [k: string]: unknown;
   } | null;
   /**
-   * Nhập câu hỏi suy ngẫm.
+   * Thêm 1–3 câu hỏi suy ngẫm cho thẻ.
    */
-  reflectionPrompt?: string | null;
+  reflectionPrompts?:
+    | {
+        /**
+         * Nhập câu hỏi suy ngẫm.
+         */
+        prompt: string;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Nhập hành động nhỏ.
    */
@@ -850,16 +866,21 @@ export interface EqCard {
    */
   topic?: ('eq' | 'habit' | 'career') | null;
   /**
-   * Thêm từng mục, kéo để đổi thứ tự.
+   * Chọn một hoặc nhiều cảm xúc phù hợp từ bộ 10 cảm xúc.
    */
   emotionTags?:
-    | {
-        /**
-         * Nhập nội dung.
-         */
-        text: string;
-        id?: string | null;
-      }[]
+    | (
+        | 'joyful'
+        | 'peaceful'
+        | 'fresh'
+        | 'serene'
+        | 'grateful'
+        | 'relaxed'
+        | 'confident'
+        | 'tired'
+        | 'discouraged'
+        | 'stressed'
+      )[]
     | null;
   /**
    * Chọn nội dung đã tạo trong hệ thống.
@@ -2371,17 +2392,19 @@ export interface TestimonialsSelect<T extends boolean = true> {
  */
 export interface EqCardsSelect<T extends boolean = true> {
   code?: T;
+  keywordVi?: T;
+  keywordEn?: T;
   message?: T;
   story?: T;
-  reflectionPrompt?: T;
-  smallAction?: T;
-  topic?: T;
-  emotionTags?:
+  reflectionPrompts?:
     | T
     | {
-        text?: T;
+        prompt?: T;
         id?: T;
       };
+  smallAction?: T;
+  topic?: T;
+  emotionTags?: T;
   relatedProduct?: T;
   image?: T;
   shareImage45?: T;
