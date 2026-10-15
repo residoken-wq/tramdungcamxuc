@@ -88,6 +88,25 @@
   pnpm generate:types
   ```
 
+### Nhập 26 thẻ EQ thật
+
+- **Mục đích**: Nhập 26 lá thẻ thật từ file JSON vào cơ sở dữ liệu production/staging.
+- **Bảo mật dữ liệu thương mại**: Repo dự án là mã nguồn mở/công khai, do đó nội dung 26 thẻ in thật **tuyệt đối không được commit vào git repo**. File JSON phải được lưu trữ ở một thư mục an toàn **bên ngoài repo** (ví dụ: `~/eq-cards-26.json` trên Linux hoặc `C:\secure\eq-cards-26.json` trên Windows). Lệnh nhập sẽ chủ động từ chối và báo lỗi nếu file nằm bên trong thư mục dự án.
+- **Lệnh thực thi**:
+  ```bash
+  EQ_CARDS_FILE=/đường/dẫn/ngoài/repo.json pnpm import:eq
+  ```
+  *(Trên Windows PowerShell)*:
+  ```powershell
+  $env:EQ_CARDS_FILE="C:\secure\eq-cards-26.json"; pnpm import:eq; Remove-Item Env:\EQ_CARDS_FILE
+  ```
+- **Hành vi an toàn của lệnh**:
+  - Xác thực toàn bộ dữ liệu qua Zod (mã `code` `TDCX-01`…`TDCX-26`, từ khóa `keywordEn`, mã QR `qrSlug` theo regex, thông điệp `message`, đủ 3 câu hỏi `promptRecall`, `promptPack`, `promptAcknowledge`). Nếu có bất kỳ lỗi định dạng nào, lệnh sẽ dừng ngay và không ghi gì vào DB.
+  - Tự động gán sản phẩm liên quan `relatedProduct` (`eq-buddy-so`).
+  - An toàn khi chạy lại nhiều lần (idempotent): thẻ chưa có sẽ được tạo mới với `isSample: false` và `_status: 'published'`; thẻ đã có sẽ cập nhật nội dung chữ.
+  - **Bảo vệ mã QR**: Nếu thẻ đã được đánh dấu in (`printedAt` khác rỗng) mà file JSON cố tình thay đổi `qrSlug`, hệ thống sẽ cảnh báo và bỏ qua thẻ đó mà không ghi đè mã QR đã in.
+  - Sau khi nhập thành công thẻ thật, toàn bộ thẻ mẫu (`isSample: true`) sẽ tự động được xóa khỏi hệ thống.
+
 ---
 
 ## 4. Xử lý sự cố thường gặp (Troubleshooting)

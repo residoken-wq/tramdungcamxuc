@@ -494,33 +494,28 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Mục đích**: Quản lý kho nội dung 26 lá thẻ của công cụ số EQ Buddy (`/eq-buddy`) và trang chi tiết mở qua mã QR trên bộ thẻ vật lý 2.0 (`/eq-buddy/the/[qrSlug]`).
 
-**Các bước thực hiện**:
+**Cấu trúc lá thẻ**: Được thiết kế chuẩn hóa theo đúng bộ thẻ in thực tế ngoài đời thực của Hana:
 
-1. Ở cột menu bên trái, tìm nhóm **EQ Buddy**, bấm chọn **Thẻ EQ Buddy** (`eqCards`).
-2. Màn hình danh sách hiển thị các cột mặc định: **Mã thẻ**, **Từ khóa tiếng Việt**, **Mã đường dẫn QR**, **Ngày đã in**, và **Trạng thái**.
-3. Bấm nút **Tạo mới** (hoặc bấm vào một thẻ có sẵn để chỉnh sửa).
-4. Điền các thông tin của lá thẻ:
-   - **Mã thẻ (`code`)**: Mã số quản lý duy nhất (ví dụ: `TDCX-01`, `TDCX-02`...).
-   - **Từ khóa tiếng Việt (`keywordVi`)**: Tối đa 40 ký tự (ví dụ: _Thấu hiểu_, _Chấp nhận_, _Khoảng dừng_). Đây là từ khóa lớn xuất hiện trên mặt trước lá thẻ.
-   - **Từ khóa tiếng Anh (`keywordEn`)**: Tối đa 40 ký tự (ví dụ: _Clarity_, _Acceptance_, _Pause_).
-   - **Thông điệp (`message`)**: Lời nhắn nhủ ngắn gọn, ấm áp (dùng font Playfair Display Italic trên web).
-   - **Câu chuyện (`story`)**: Soạn thảo câu chuyện truyền cảm hứng, góc nhìn mở rộng cho thông điệp.
-   - **Câu hỏi suy ngẫm (`reflectionPrompts`)**: Chứa từ **1 đến 3 câu hỏi** phản chiếu tự nhận thức.
-     - Bấm nút **"Thêm mới"** để thêm câu hỏi 2 hoặc 3.
-     - Mỗi câu hỏi là một ô soạn thảo riêng và **bắt buộc phải có nội dung** (không được để trống).
-     - Bấm biểu tượng thùng rác ở góc dòng nếu muốn xóa bớt câu hỏi (phải giữ lại tối thiểu 1 câu hỏi và tối đa 3 câu).
-   - **Hành động nhỏ (`smallAction`)**: Một việc làm cụ thể, nhẹ nhàng học viên có thể thực hành ngay.
-   - **Chủ đề (`topic`)**: Chọn một trong 3 chủ đề: Cảm xúc, Thói quen, hoặc Sự nghiệp.
-   - **Nhãn cảm xúc (`emotionTags`)**: Menu chọn nhiều từ **10 cảm xúc cố định** của Brand Book 2026:
-     - `😊 Vui vẻ`, `🕊️ Bình an`, `🌱 Tươi mới`, `🍵 An yên`, `🙏 Biết ơn`
-     - `🌿 Thư thái`, `✨ Tự tin`, `🥱 Hơi mệt`, `🌧️ Chùn bước`, `⚡ Căng thẳng`
-     - Có thể tick chọn 1 hoặc nhiều cảm xúc liên quan để người dùng lọc thẻ theo tâm trạng.
-   - **Sản phẩm liên quan (`relatedProduct`)**: Chọn sản phẩm hoặc gói để gợi ý ở chân trang thẻ.
-   - **Ảnh thẻ (`image`)**, **Ảnh chia sẻ 4:5 (`shareImage45`)**, **Ảnh chia sẻ 9:16 (`shareImage916`)**: Tải lên các file thiết kế của thẻ. Nếu để trống ảnh chia sẻ, hệ thống sẽ tự động tạo ảnh thương hiệu khi người dùng bấm chia sẻ.
-   - **Mã đường dẫn QR (`qrSlug`)**: Đường dẫn ngắn dùng cho mã QR in trên thẻ (ví dụ: `thau-hieu-01`).
-     - Chỉ dùng chữ thường không dấu, số và dấu gạch nối (`-`).
+1. **Mặt trước**:
+   - **Mã thẻ (`code`)**: Mã số quản lý duy nhất theo thứ tự từ `TDCX-01` đến `TDCX-26`.
+   - **Từ khóa mặt trước (`keywordEn`)**: Bắt buộc khi xuất bản, tối đa 40 ký tự. Là từ khóa tiếng Anh tương ứng 26 chữ cái A → Z (ví dụ: *Abundance*, *Belonging*, *Clarity*...).
+   - **Thông điệp mặt trước (`message`)**: Bắt buộc khi xuất bản. Câu thông điệp ấm áp, sâu sắc trên mặt trước lá thẻ.
+2. **Mặt sau – 3 câu hỏi**:
+   - Nằm trong nhóm **Mặt sau – 3 câu hỏi** với đúng 3 ô cố định theo cấu trúc in:
+     - **Gợi nhớ (`promptRecall`)**: Câu hỏi kích hoạt suy ngẫm, kết nối lại trải nghiệm trong quá khứ (bắt buộc khi xuất bản).
+     - **Gói ghém (`promptPack`)**: Câu hỏi giúp đúc kết bài học, chuyển hóa cảm xúc (bắt buộc khi xuất bản).
+     - **Ghi nhận (`promptAcknowledge`)**: Câu hỏi ghi nhận nỗ lực và giá trị của bản thân (bắt buộc khi xuất bản).
+   - *Lưu ý*: Khi lưu nháp (`Draft`), Hana có thể để trống; nhưng khi bấm **Xuất bản** (`Published`), hệ thống yêu cầu điền đủ cả 3 câu hỏi để đảm bảo trải nghiệm người dùng hoàn chỉnh.
+3. **Các trường bổ sung (không bắt buộc – bộ thẻ in hiện không có, Hana có thể thêm sau)**:
+   - **Từ khóa tiếng Việt (`keywordVi`)**: Tối đa 40 ký tự (ví dụ: *Thấu hiểu*, *Gắn kết*).
+   - **Câu chuyện (`story`)**: Soạn thảo câu chuyện truyền cảm hứng hoặc bài học mở rộng cho thẻ.
+   - **Hành động nhỏ (`smallAction`)**: Một việc làm cụ thể, nhẹ nhàng học viên có thể thực hành ngay trong ngày.
+   - **Nhãn cảm xúc (`emotionTags`)**: Chọn một hoặc nhiều cảm xúc liên quan từ bộ 10 cảm xúc cố định của Brand Book 2026.
+4. **Mã QR và thông tin xuất bản**:
+   - **Mã đường dẫn QR (`qrSlug`)**: Bắt buộc. Viết thường không dấu của từ khóa tiếng Anh (ví dụ: `abundance`, `belonging`... `zero`).
      - Đường dẫn quét QR trên điện thoại sẽ là: `https://tramdungcamxuc.com/eq-buddy/the/[qrSlug]`.
    - **Ngày đã in (`printedAt`)**: Ngày gửi file đi in tại xưởng in.
+   - **Ảnh thẻ (`image`)**, **Ảnh chia sẻ 4:5 (`shareImage45`)**, **Ảnh chia sẻ 9:16 (`shareImage916`)**: Tải lên các file thiết kế của thẻ. Nếu để trống ảnh chia sẻ, hệ thống sẽ tự động tạo ảnh thương hiệu khi người dùng bấm chia sẻ.
 
 > **QUY TẮC BẢO VỆ BẮT BUỘC: KHÔNG ĐỔI MÃ QR SAU KHI IN**
 >
