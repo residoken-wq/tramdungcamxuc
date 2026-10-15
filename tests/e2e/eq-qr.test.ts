@@ -66,7 +66,7 @@ test.describe('EQ Card QR Page Flow (T3-03)', () => {
       adminId = await bootstrapAdmin(page)
 
       // 1. Tạo thẻ EQ Buddy test có đầy đủ thông điệp và câu chuyện (rich text Lexical)
-      const cardRes = await page.request.post('/api/eq-cards', {
+      const cardRes = await page.request.post('/api/eqCards', {
         data: {
           code: cardCode,
           qrSlug,
@@ -120,7 +120,7 @@ test.describe('EQ Card QR Page Flow (T3-03)', () => {
       // 3. Dọn dẹp dữ liệu kiểm thử
       try {
         if (createdCardId) {
-          await page.request.delete(`/api/eq-cards/${createdCardId}`)
+          await page.request.delete(`/api/eqCards/${createdCardId}`)
         }
         if (adminId) {
           await page.request.delete(`/api/users/${adminId}`)
