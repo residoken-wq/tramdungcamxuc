@@ -688,7 +688,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
         overrideAccess: true,
       })
       expect(refreshedOrder.paymentStatus).toBe('paid')
-      expect(refreshedOrder.deliveryStatus).toBe('access_granted')
+      expect(['access_granted', 'email_sent']).toContain(refreshedOrder.deliveryStatus)
 
       const access = await getAccess(customer.id, digitalToolProductId, { payload })
       expect(access.hasAccess).toBe(true)

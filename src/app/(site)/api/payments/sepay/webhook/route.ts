@@ -480,9 +480,12 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
       emailSender: context?.emailSender,
     })
 
+    const isEmailFailed = Boolean((paidResult as { __emailFailed?: boolean })?.__emailFailed)
     let finalResult: string = (paidResult as { __alreadyPaid?: boolean })?.__alreadyPaid
       ? await resolveAlreadyPaidLabel()
-      : 'paid'
+      : isEmailFailed
+        ? 'paid_incomplete'
+        : 'paid'
 
     // REVIEW-REQUIRED: Xử lý lại một giao dịch mà chính nó đã làm đơn paid ở lần trước (lần trước
     // lỗi / tiến trình chết sau khi đơn chuyển paid). markOrderPaid không cấp quyền / gửi email lại,
@@ -566,8 +569,8 @@ export async function POST(req: Request, context?: WebhookContext): Promise<Resp
       return NextResponse.json({ success: true, result: updatedResult })
     }
 
-    // Lỗi khác (DB đứt mạng, lỗi sau khi đơn đã chuyển paid…): GIỮ event 'processing'.
-    // SePay gửi lại → nhánh trùng ở trên xử lý lại. Admin thấy cảnh báo 'processing' nếu vẫn kẹt.
+    // Lỗi khác (DB đứt mạng, cấp quyền lỗi...): Không update eventDoc, giữ nguyên 'processing' để lần sau
+    // SePay gửi lại ở nhánh trùng ở trên xử lý lại. Admin thấy cảnh báo 'processing' nếu vẫn kẹt.
     console.error('[Sepay Webhook] Failed to mark order paid:', payErr)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }

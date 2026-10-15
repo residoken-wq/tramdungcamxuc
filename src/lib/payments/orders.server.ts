@@ -449,11 +449,11 @@ export async function createDigitalToolOrder(
   const transactionID = hasTx ? await payload.db.beginTransaction() : null
   const txDb = transactionID ? getTransactionDb(payload, transactionID) : null
   const txReq = transactionID
-    ? (() =>
+    ? () =>
         ({
           transactionID,
           context: { paymentAction: true },
-        }) as unknown as PayloadRequest)
+        }) as unknown as PayloadRequest
     : undefined
 
   try {
@@ -787,7 +787,7 @@ export interface MarkOrderPaidOptions {
 export async function markOrderPaid(
   orderId: number,
   options: MarkOrderPaidOptions,
-): Promise<unknown> {
+): Promise<Order> {
   const payload = await resolvePayload(options.payload)
 
   const order = await payload.findByID({
@@ -840,147 +840,196 @@ export async function markOrderPaid(
     throw new InvalidOrderStatusError(vi.payment.errors.termsNotAccepted)
   }
 
-  // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB (T2-13 / Q19)
-  // Hỗ trợ cả đơn 'pending' và 'failed' (quá hạn 24h). Lấy trạng thái cũ ngay trong cùng câu truy vấn CTE.
-  // Bảng orders không cấu hình versions (không có _orders_v) nên câu UPDATE trực tiếp an toàn tuyệt đối.
+  // Bắt đầu transaction nguyên tử: đổi paid + ghi audit + cấp quyền + deliveryStatus = access_granted
+  const hasTx =
+    typeof payload.db?.beginTransaction === 'function' &&
+    typeof payload.db?.commitTransaction === 'function' &&
+    typeof payload.db?.rollbackTransaction === 'function'
+
+  const transactionID = hasTx ? await payload.db.beginTransaction() : null
+  const txDb = getTransactionDb(payload, transactionID)
+  const txReq = transactionID
+    ? () =>
+        ({
+          transactionID,
+          context: { paymentAction: true },
+        }) as unknown as PayloadRequest
+    : undefined
+
   const paidAt = now.toISOString()
-  const db = getDrizzleDb(payload)
-  const updateResult = await db.execute(
-    sql`WITH prev AS (
-      SELECT "id", "payment_status"
-      FROM "orders"
-      WHERE "id" = ${orderId} AND "payment_status" IN ('pending', 'failed')
-      FOR UPDATE
-    )
-    UPDATE "orders" AS o
-    SET "payment_status" = 'paid', "paid_at" = ${paidAt}::timestamptz, "updated_at" = ${paidAt}::timestamptz
-    FROM prev
-    WHERE o."id" = prev."id"
-    RETURNING o."id", prev."payment_status" AS "old_status"`,
-  )
-  const rows = (updateResult as { rows?: Array<{ id: number; old_status: string }> }).rows ?? []
+  let oldStatus = order.paymentStatus
 
-  // Chỉ khi RETURNING có dòng mới gửi email / cấp quyền / ghi auditLogs;
-  // Không có dòng -> trả kết quả "đã xử lý trước đó" (idempotent), không ném lỗi.
-  if (rows.length === 0) {
-    const refreshed = await payload.findByID({
-      collection: 'orders',
-      id: orderId,
-      depth: 1,
-      overrideAccess: true,
-    })
-    if (refreshed && refreshed.paymentStatus === 'paid') {
-      const actor = options.actorId ? Number(options.actorId) : undefined
-      const action =
-        options.source === 'webhook'
-          ? 'webhook_payment_duplicate'
-          : 'confirm_manual_payment_duplicate'
-
-      await payload.create({
-        collection: 'auditLogs',
-        data: {
-          actor,
-          action,
-          target: `orders:${orderId}`,
-          before: { paymentStatus: refreshed.paymentStatus, paidAt: refreshed.paidAt },
-          after: {
-            paymentStatus: refreshed.paymentStatus,
-            paidAt: refreshed.paidAt,
-            note: 'đã xác nhận trước đó',
-          },
-          at: now.toISOString(),
-        },
-        overrideAccess: true,
-      })
-      Object.assign(refreshed, { __alreadyPaid: true })
-      return refreshed
-    }
-    // Thua race với hủy đơn: đơn không còn pending/failed -> báo lỗi, không báo "đã xác nhận"
-    throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
-  }
-
-  // REVIEW-REQUIRED: Ghi nhật ký thao tác: webhook ghi 'webhook_payment' (actor rỗng); manual: đơn failed ghi 'confirm_expired_order', đơn pending ghi 'confirm_manual_payment'
-  const oldStatus = rows[0].old_status
-  const auditAction =
-    options.source === 'webhook'
-      ? 'webhook_payment'
-      : oldStatus === 'failed'
-        ? 'confirm_expired_order'
-        : 'confirm_manual_payment'
-
-  await payload.create({
-    collection: 'auditLogs',
-    data: {
-      actor: options.actorId ? Number(options.actorId) : undefined,
-      action: auditAction,
-      target: `orders:${orderId}`,
-      before: { paymentStatus: oldStatus, paidAt: null },
-      after: { paymentStatus: 'paid', paidAt },
-      at: paidAt,
-    },
-    overrideAccess: true,
-  })
-
-  // Kiểm tra đơn hàng có chứa sản phẩm dạng package hoặc digital_tool hay không
-  const items = Array.isArray(order.items) ? order.items : []
   let packageProduct: Product | null = null
   let digitalToolProduct: Product | null = null
+  let isPackageOrder = false
+  let isDigitalToolOrder = false
 
-  for (const item of items) {
-    let p: Product | number | string | null = item.product as Product | number | string | null
-    if (typeof p === 'number' || typeof p === 'string') {
-      p = (await payload.findByID({
-        collection: 'products',
-        id: Number(p),
+  try {
+    // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB (T2-13 / Q19)
+    // Hỗ trợ cả đơn 'pending' và 'failed' (quá hạn 24h). Lấy trạng thái cũ ngay trong cùng câu truy vấn CTE.
+    const updateResult = await txDb.execute(
+      sql`WITH prev AS (
+        SELECT "id", "payment_status"
+        FROM "orders"
+        WHERE "id" = ${orderId} AND "payment_status" IN ('pending', 'failed')
+        FOR UPDATE
+      )
+      UPDATE "orders" AS o
+      SET "payment_status" = 'paid', "paid_at" = ${paidAt}::timestamptz, "updated_at" = ${paidAt}::timestamptz
+      FROM prev
+      WHERE o."id" = prev."id"
+      RETURNING o."id", prev."payment_status" AS "old_status"`,
+    )
+    const rows = (updateResult as { rows?: Array<{ id: number; old_status: string }> }).rows ?? []
+
+    // Chỉ khi RETURNING có dòng mới gửi email / cấp quyền / ghi auditLogs;
+    // Không có dòng -> trả kết quả "đã xử lý trước đó" (idempotent), không ném lỗi.
+    if (rows.length === 0) {
+      if (transactionID) {
+        await payload.db.rollbackTransaction(transactionID)
+      }
+      const refreshed = await payload.findByID({
+        collection: 'orders',
+        id: orderId,
         depth: 1,
         overrideAccess: true,
-      })) as Product
+      })
+      if (refreshed && refreshed.paymentStatus === 'paid') {
+        const actor = options.actorId ? Number(options.actorId) : undefined
+        const action =
+          options.source === 'webhook'
+            ? 'webhook_payment_duplicate'
+            : 'confirm_manual_payment_duplicate'
+
+        await payload.create({
+          collection: 'auditLogs',
+          data: {
+            actor,
+            action,
+            target: `orders:${orderId}`,
+            before: { paymentStatus: refreshed.paymentStatus, paidAt: refreshed.paidAt },
+            after: {
+              paymentStatus: refreshed.paymentStatus,
+              paidAt: refreshed.paidAt,
+              note: 'đã xác nhận trước đó',
+            },
+            at: now.toISOString(),
+          },
+          overrideAccess: true,
+        })
+        Object.assign(refreshed, { __alreadyPaid: true })
+        return refreshed
+      }
+      // Thua race với hủy đơn: đơn không còn pending/failed -> báo lỗi, không báo "đã xác nhận"
+      throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
     }
-    if (p && typeof p === 'object') {
-      if (p.type === 'package') {
-        packageProduct = p
-        break
-      } else if (p.type === 'digital_tool' && !digitalToolProduct) {
-        digitalToolProduct = p
+
+    // REVIEW-REQUIRED: Ghi nhật ký thao tác trong cùng transaction
+    oldStatus = rows[0].old_status
+    const auditAction =
+      options.source === 'webhook'
+        ? 'webhook_payment'
+        : oldStatus === 'failed'
+          ? 'confirm_expired_order'
+          : 'confirm_manual_payment'
+
+    await payload.create({
+      collection: 'auditLogs',
+      data: {
+        actor: options.actorId ? Number(options.actorId) : undefined,
+        action: auditAction,
+        target: `orders:${orderId}`,
+        before: { paymentStatus: oldStatus, paidAt: null },
+        after: { paymentStatus: 'paid', paidAt },
+        at: paidAt,
+      },
+      overrideAccess: true,
+      req: txReq ? txReq() : undefined,
+    })
+
+    // Kiểm tra đơn hàng có chứa sản phẩm dạng package hoặc digital_tool hay không
+    const items = Array.isArray(order.items) ? order.items : []
+
+    for (const item of items) {
+      let p: Product | number | string | null = item.product as Product | number | string | null
+      if (typeof p === 'number' || typeof p === 'string') {
+        p = (await payload.findByID({
+          collection: 'products',
+          id: Number(p),
+          depth: 1,
+          overrideAccess: true,
+          req: txReq ? txReq() : undefined,
+        })) as Product
+      }
+      if (p && typeof p === 'object') {
+        if (p.type === 'package') {
+          packageProduct = p
+          break
+        } else if (p.type === 'digital_tool' && !digitalToolProduct) {
+          digitalToolProduct = p
+        }
       }
     }
-  }
 
-  const isPackageOrder = Boolean(packageProduct)
-  const isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
+    isPackageOrder = Boolean(packageProduct)
+    isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
 
-  // REVIEW-REQUIRED: Cấp quyền truy cập cho đơn gói Growth Mirror hoặc đơn công cụ số
-  let grantFailed = false
-  if (isPackageOrder || isDigitalToolOrder) {
-    try {
-      await grantEntitlementsForOrder(orderId, { payload, now })
+    // REVIEW-REQUIRED: Cấp quyền truy cập trong transaction ("đã thanh toán ⇔ đã cấp quyền").
+    // Nếu cấp quyền thất bại -> rollback cả transaction (đơn vẫn pending/failed, không có quyền nửa vời).
+    if (isPackageOrder || isDigitalToolOrder) {
+      await grantEntitlementsForOrder(orderId, {
+        payload,
+        now,
+        req: txReq ? txReq() : undefined,
+      })
       await payload.update({
         collection: 'orders',
         id: orderId,
         data: { deliveryStatus: 'access_granted' },
         context: { paymentAction: true },
         overrideAccess: true,
+        req: txReq ? txReq() : undefined,
       })
-    } catch (grantErr) {
-      grantFailed = true
-      console.error('[Payment] Grant entitlements failed for order', orderId, grantErr)
-      const actor = options.actorId ? Number(options.actorId) : undefined
+    }
+
+    // REVIEW-REQUIRED: Commit transaction - chốt trạng thái paid và quyền truy cập đồng thời
+    if (transactionID) {
+      await payload.db.commitTransaction(transactionID)
+    }
+  } catch (txErr) {
+    // REVIEW-REQUIRED: Rollback transaction khi bất kỳ thao tác nào thất bại
+    if (transactionID) {
+      try {
+        await payload.db.rollbackTransaction(transactionID)
+      } catch (rollbackErr) {
+        console.error('[Payment] Lỗi rollback transaction markOrderPaid:', rollbackErr)
+      }
+    }
+    console.error('[Payment] Mark order paid failed in transaction for order', orderId, txErr)
+    // Ghi audit grant_entitlements_failed sau rollback (ngoài transaction)
+    const actor = options.actorId ? Number(options.actorId) : undefined
+    try {
       await payload.create({
         collection: 'auditLogs',
         data: {
           actor,
           action: 'grant_entitlements_failed',
           target: `orders:${orderId}`,
-          before: { error: String(grantErr) },
+          before: { error: String(txErr) },
           after: null,
           at: now.toISOString(),
         },
         overrideAccess: true,
       })
+    } catch (auditErr) {
+      console.error('[Payment] Failed to record grant_entitlements_failed audit:', auditErr)
     }
+    throw txErr
   }
 
-  // Gửi email xác nhận kèm link đặt lịch / hướng dẫn (chỉ gửi khi cấp quyền không bị lỗi)
+  // REVIEW-REQUIRED: Gửi email xác nhận sau khi commit (không gửi trong transaction).
+  // Email lỗi -> đơn vẫn paid + đã cấp quyền, ghi audit confirmation_email_failed.
+  let emailFailed = false
   const siteSettings = await payload.findGlobal({
     slug: 'siteSettings',
     overrideAccess: true,
@@ -995,7 +1044,7 @@ export async function markOrderPaid(
           overrideAccess: true,
         })
 
-  if (customerDoc?.email && !grantFailed) {
+  if (customerDoc?.email) {
     try {
       if (isPackageOrder && packageProduct) {
         // Tìm các workshop sắp diễn ra có audienceProducts chứa gói này
@@ -1081,7 +1130,14 @@ export async function markOrderPaid(
           },
           options.emailSender,
         )
-        // Lưu ý: với đơn công cụ số, deliveryStatus vẫn giữ là 'access_granted' đã cập nhật ở trên
+
+        await payload.update({
+          collection: 'orders',
+          id: orderId,
+          data: { deliveryStatus: 'email_sent' },
+          context: { paymentAction: true },
+          overrideAccess: true,
+        })
       } else {
         // Đơn trải nghiệm 149k giữ nguyên hành vi
         await sendExperienceOrderPaidEmail(
@@ -1105,8 +1161,25 @@ export async function markOrderPaid(
         })
       }
     } catch (emailErr) {
+      emailFailed = true
       console.error('[Payment] Confirmation email delivery failed for order', orderId, emailErr)
-      // Đơn hàng vẫn giữ nguyên trạng thái paid (không revert)
+      const actor = options.actorId ? Number(options.actorId) : undefined
+      try {
+        await payload.create({
+          collection: 'auditLogs',
+          data: {
+            actor,
+            action: 'confirmation_email_failed',
+            target: `orders:${orderId}`,
+            before: { error: String(emailErr) },
+            after: null,
+            at: now.toISOString(),
+          },
+          overrideAccess: true,
+        })
+      } catch (auditErr) {
+        console.error('[Payment] Failed to record confirmation_email_failed audit:', auditErr)
+      }
     }
   }
 
@@ -1117,7 +1190,11 @@ export async function markOrderPaid(
     overrideAccess: true,
   })
 
-  return updatedOrder ?? order
+  const result = updatedOrder ?? order
+  if (emailFailed) {
+    Object.assign(result, { __emailFailed: true })
+  }
+  return result
 }
 
 /**

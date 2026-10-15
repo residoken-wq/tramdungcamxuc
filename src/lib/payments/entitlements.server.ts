@@ -1,5 +1,5 @@
 import 'server-only'
-import { getPayload, type Payload } from 'payload'
+import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import type { Product } from '@/payload-types'
 import config from '@/payload.config'
 import { track } from '@/lib/analytics/track'
@@ -7,6 +7,12 @@ import { track } from '@/lib/analytics/track'
 export interface GrantEntitlementsResult {
   grantedCount: number
   skipped?: boolean
+}
+
+export interface GrantEntitlementsOptions {
+  payload?: Payload
+  now?: Date
+  req?: PayloadRequest
 }
 
 function isDuplicateGrantKeyError(err: unknown): boolean {
@@ -43,6 +49,7 @@ async function checkAndEmitTrialConverted(
   payload: Payload,
   customerId: number,
   productDoc: Product | { id: number; slug?: string | null },
+  req?: PayloadRequest,
 ): Promise<void> {
   try {
     const existingTrial = await payload.find({
@@ -57,6 +64,7 @@ async function checkAndEmitTrialConverted(
       limit: 1,
       depth: 0,
       overrideAccess: true,
+      req,
     })
     if (existingTrial.totalDocs > 0) {
       // TODO(T2-04): track() không ghi nhận gì ở server; cần kênh gửi sự kiện từ server.
@@ -88,10 +96,11 @@ async function checkAndEmitTrialConverted(
  */
 export async function grantEntitlementsForOrder(
   orderId: number,
-  options: { payload?: Payload; now?: Date } = {},
+  options: GrantEntitlementsOptions = {},
 ): Promise<GrantEntitlementsResult> {
   const payload = options.payload ?? (await getPayload({ config: await config }))
   const now = options.now ?? new Date()
+  const req = options.req
 
   // 1. Đọc đơn hàng
   const order = await payload.findByID({
@@ -99,6 +108,7 @@ export async function grantEntitlementsForOrder(
     id: orderId,
     depth: 2,
     overrideAccess: true,
+    req,
   })
 
   if (!order) {
@@ -136,6 +146,7 @@ export async function grantEntitlementsForOrder(
         id: Number(productDoc),
         depth: 1,
         overrideAccess: true,
+        req,
       })) as Product
     }
 
@@ -168,10 +179,11 @@ export async function grantEntitlementsForOrder(
             grantKey,
           },
           overrideAccess: true,
+          req,
         })
         grantedCount++
         // Chỉ sau khi cấp thành công: webhook trùng / xác nhận 2 lần không đếm chuyển đổi 2 lần.
-        await checkAndEmitTrialConverted(payload, customerId, productDoc)
+        await checkAndEmitTrialConverted(payload, customerId, productDoc, req)
       } catch (err: unknown) {
         if (isDuplicateGrantKeyError(err)) {
           // Idempotent: Đã được cấp trước đó, bỏ qua không báo lỗi
@@ -216,6 +228,7 @@ export async function grantEntitlementsForOrder(
             id: grantedProductId,
             depth: 0,
             overrideAccess: true,
+            req,
           })) as Product
         }
 
@@ -242,10 +255,11 @@ export async function grantEntitlementsForOrder(
               grantKey,
             },
             overrideAccess: true,
+            req,
           })
           grantedCount++
           if (grantedProductDoc) {
-            await checkAndEmitTrialConverted(payload, customerId, grantedProductDoc)
+            await checkAndEmitTrialConverted(payload, customerId, grantedProductDoc, req)
           }
         } catch (err: unknown) {
           if (isDuplicateGrantKeyError(err)) {
