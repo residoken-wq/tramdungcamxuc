@@ -181,18 +181,18 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 ### GĐ 3 – Web 3 EQ Buddy (`docs/tasks/GD3.md`)
 
-**MỞ 15/10/2026** – anh Nhân xác nhận thay Hana; cổng GĐ 2: đơn thật SePay mở khóa tự động (15/10). Nội dung 26 thẻ thật: anh Nhân có file → Planning import sau T3-01.
+**MỞ 15/10/2026** – anh Nhân xác nhận thay Hana; cổng GĐ 2: đơn thật SePay mở khóa tự động (15/10). Nội dung 26 thẻ thật: đã nhận file in (15/10), Planning chép thành JSON **ngoài repo**; nhập bằng `pnpm import:eq` sau khi T3-01b merge. Q17 / Q18 chốt lại theo bộ thẻ (xem `GD3.md`). Trang thẻ QR (T3-03) bổ sung từ khóa + 3 câu hỏi khi QA, sau T3-01b.
 
 **Thứ tự máy**: PC nhà = T3-01 (sau merge T2-16) → T3-04 · Laptop = T3-03 → T3-02 · Local = T3-05 · Planning = QA, import 26 thẻ, T3-06.
 
-| Mã    | Task                                                      | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                      |
-| ----- | --------------------------------------------------------- | -------- | ------------ | -------- | ------------------------------- |
-| T3-01 | Schema thẻ EQ theo Q17 (từ khóa, 1–3 câu hỏi, 10 cảm xúc) |          | T2-16 merge  | PC nhà   | Giao 15/10 – `prompts/T3-01.md` |
-| T3-03 | Trang thẻ mở từ QR + xuất QR in ấn (CSV + PNG)            | [REVIEW] | –            | Laptop   | Giao 15/10 – `prompts/T3-03.md` |
-| T3-05 | Ảnh chia sẻ thẻ 4:5 / 9:16 + offer liên quan + nút Shopee |          | –            | Local    | Giao 15/10 – `prompts/T3-05.md` |
-| T3-02 | Luồng rút thẻ 5 bước + giới hạn dùng thử 21 ngày          |          | T3-01, T3-03 | Laptop   | Chưa giao                       |
-| T3-04 | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản     | [REVIEW] | T3-02        | PC nhà   | Chưa giao                       |
-| T3-06 | E2E luồng EQ + cổng GĐ 3                                  | [HANA]   | tất cả       | Planning | –                               |
+| Mã    | Task                                                                                                       | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                                                                                |
+| ----- | ---------------------------------------------------------------------------------------------------------- | -------- | ------------ | -------- | ----------------------------------------------------------------------------------------- |
+| T3-01 | Schema thẻ EQ (mặt trước: thông điệp + từ khóa; mặt sau: Gợi nhớ / Gói ghém / Ghi nhận) + lệnh nhập 26 thẻ |          | T2-16 merge  | PC nhà   | T3-01 xong 15/10 (chưa QA) → **T3-01b** cùng nhánh – `prompts/T3-01b.md` (theo bộ thẻ in) |
+| T3-03 | Trang thẻ mở từ QR + xuất QR in ấn (CSV + PNG)                                                             | [REVIEW] | –            | Laptop   | Giao 15/10 – `prompts/T3-03.md`                                                           |
+| T3-05 | Ảnh chia sẻ thẻ 4:5 / 9:16 + offer liên quan + nút Shopee                                                  |          | –            | Local    | Giao 15/10 – `prompts/T3-05.md`                                                           |
+| T3-02 | Luồng rút thẻ 5 bước + giới hạn dùng thử 21 ngày                                                           |          | T3-01, T3-03 | Laptop   | Chưa giao                                                                                 |
+| T3-04 | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản                                                      | [REVIEW] | T3-02        | PC nhà   | Chưa giao                                                                                 |
+| T3-06 | E2E luồng EQ + cổng GĐ 3                                                                                   | [HANA]   | tất cả       | Planning | –                                                                                         |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 

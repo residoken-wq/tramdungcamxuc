@@ -6,17 +6,17 @@
 
 ## Quyết định áp dụng
 
-| Mã  | Chốt                                                                                                          | Task         |
-| --- | ------------------------------------------------------------------------------------------------------------- | ------------ |
-| Q17 | Giữ schema spec, thêm từ khóa Anh / Việt, 1–3 câu hỏi suy ngẫm                                                | T3-01        |
-| Q18 | Chọn thẻ theo **cảm xúc** + nút **ngẫu nhiên**; ô viết tự do không lưu, không gửi đi đâu (kể cả analytics)    | T3-02        |
-| Q14 | Bộ 10 cảm xúc emoji cố định (`src/lib/emotions.ts`) – `emotionTags` của thẻ chọn trong bộ này                 | T3-01, T3-02 |
-| –   | Nội dung 26 thẻ thật: anh Nhân có file → Planning import vào DB sau T3-01 (như Habit Hack, `pnpm import:...`) | Planning     |
-| –   | EQ Buddy số: dùng thử 21 ngày, cơ chế entitlement của GĐ 2 (sản phẩm `eq-buddy-so`)                           | T3-02        |
+| Mã  | Chốt                                                                                                                                                                                                                                      | Task             |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| Q17 | **Chốt lại 15/10 theo bộ thẻ in của Hana**: mặt trước = thông điệp + 1 từ khóa tiếng Anh (A → Z); mặt sau = 3 câu hỏi nhãn cố định **Gợi nhớ / Gói ghém / Ghi nhận** (3 ô riêng). Câu chuyện, hành động nhỏ, từ khóa Việt: không bắt buộc | T3-01, T3-01b    |
+| Q18 | **Đổi 15/10**: **bỏ chọn theo cảm xúc** – rút **ngẫu nhiên** + chọn thẻ theo **từ khóa A–Z**; ô viết tự do không lưu, không gửi đi đâu                                                                                                    | T3-02            |
+| –   | Mã `TDCX-01` … `TDCX-26` theo A → Z; `qrSlug` = từ khóa viết thường (`abundance` … `zero`)                                                                                                                                                | T3-01b, T3-03    |
+| –   | 26 thẻ thật: **không** commit (repo công khai, `DECISIONS.md` 10/10). Planning giữ file JSON ngoài repo, nhập bằng `EQ_CARDS_FILE=… pnpm import:eq`                                                                                       | T3-01b, Planning |
+| –   | EQ Buddy số: dùng thử 21 ngày, cơ chế entitlement của GĐ 2 (sản phẩm `eq-buddy-so`)                                                                                                                                                       | T3-02            |
 
 ## Lịch máy
 
-- **PC nhà** (🔒 Migration): T3-01 (sau khi Planning merge T2-16 – PR #109) → T3-04.
+- **PC nhà** (🔒 Migration): T3-01 → T3-01b (chỉnh theo bộ thẻ thật + lệnh nhập) → T3-04.
 - **Laptop**: T3-03 → T3-02.
 - **Local**: T3-05.
 - **Planning**: QA, import 26 thẻ, T3-06 (e2e + cổng GĐ 3).
@@ -39,7 +39,7 @@ Route ảnh `next/og` cho thẻ (dùng ảnh riêng nếu thẻ đã có), nút 
 
 ## T3-02 – Luồng rút thẻ 5 bước + giới hạn dùng thử (Laptop, sau T3-01 + T3-03) – prompt viết khi giao
 
-`/eq-buddy`: giới thiệu (nội dung từ sản phẩm `eq-buddy-so`) → chọn cảm xúc / ngẫu nhiên → lật thẻ (tôn trọng `prefers-reduced-motion`) → câu chuyện → suy ngẫm (câu hỏi + hành động nhỏ; ô viết chỉ lưu khi đăng nhập ở T3-04) → đi tiếp. Thẻ đầu xem tự do; rút tiếp cần dùng thử 21 ngày / đã mua. `card_drawn`. Ước lượng 10 h + 6 h (E3-1, E3-3).
+`/eq-buddy`: giới thiệu (nội dung từ sản phẩm `eq-buddy-so`) → rút ngẫu nhiên / chọn theo từ khóa A–Z → lật thẻ, mặt trước thông điệp + từ khóa (tôn trọng `prefers-reduced-motion`) → mặt sau 3 câu hỏi Gợi nhớ / Gói ghém / Ghi nhận (câu chuyện, hành động nhỏ hiện thêm nếu có) → suy ngẫm (ô viết chỉ lưu khi đăng nhập ở T3-04) → đi tiếp. Thẻ đầu xem tự do; rút tiếp cần dùng thử 21 ngày / đã mua. `card_drawn`. Ước lượng 10 h + 6 h (E3-1, E3-3).
 
 ## T3-04 – Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản (PC nhà, sau T3-02) [REVIEW] – prompt viết khi giao
 
