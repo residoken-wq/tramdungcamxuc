@@ -1459,6 +1459,7 @@ export const vi = {
       backToDeck: 'Trở về EQ Buddy',
       drawAnotherCard: 'Rút thêm một thẻ',
       storyHeading: 'Câu chuyện',
+      smallActionHeading: 'Hành động nhỏ',
     },
     qrExport: {
       exportCsvButton: 'Xuất danh sách QR (CSV)',
