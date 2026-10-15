@@ -1,7 +1,14 @@
-import type { CollectionConfig, FieldAccess } from 'payload'
+import {
+  APIError,
+  type CollectionBeforeDeleteHook,
+  type CollectionBeforeValidateHook,
+  type CollectionConfig,
+  type FieldAccess,
+} from 'payload'
 import { checkbox, date, text } from '../fields/content'
 import { adminOrSelfCustomer, isEditorOrOwner, isOwner } from '../lib/auth/access'
 import { customerAuthStrategy } from '../lib/auth/strategy'
+import { vi } from '../lib/i18n/vi'
 
 // REVIEW-REQUIRED: Khách hàng (customers) trở thành auth collection của Payload (GĐ 2).
 // Đăng nhập bằng OTP email, không mật khẩu (disableLocalStrategy: true).
@@ -20,13 +27,31 @@ const nameUpdateAccess: FieldAccess = async (args) => {
   return certificates.totalDocs === 0
 }
 
+// REVIEW-REQUIRED: Chuẩn hóa họ tên khách hàng trước khi validate và lưu (T2-16b C6).
+// Loại bỏ khoảng trắng thừa ở đầu/cuối để tránh lọt ký tự điều khiển và lưu giá trị chuẩn.
+const sanitizeCustomerName: CollectionBeforeValidateHook = ({ data }) => {
+  if (data && typeof data.name === 'string') {
+    data.name = data.name.trim()
+  }
+  return data
+}
+
+// REVIEW-REQUIRED: Chặn xóa khách hàng ngoài luồng chuẩn (T2-16b A1).
+// Chỉ cho phép xóa khi req.context?.accountDeletion === true (luồng deleteCustomerData đặt cờ này).
+// Mọi đường khác (nút Xóa mặc định, xóa hàng loạt, REST) -> ném lỗi tiếng Việt 403.
+const preventUnauthorizedCustomerDelete: CollectionBeforeDeleteHook = ({ req }) => {
+  if (req.context?.accountDeletion !== true) {
+    throw new APIError(vi.account.adminDeletion.unauthorizedDirectDelete, 403)
+  }
+}
+
 export const Customers: CollectionConfig = {
   slug: 'customers',
   labels: { singular: 'Khách hàng', plural: 'Khách hàng' },
   admin: {
     group: 'Khách hàng',
     useAsTitle: 'email',
-    defaultColumns: ['email', 'name', 'createdAt'],
+    defaultColumns: ['email', 'name', 'deletionRequestedAt', 'createdAt'],
   },
   auth: {
     disableLocalStrategy: true,
@@ -41,6 +66,10 @@ export const Customers: CollectionConfig = {
     create: isEditorOrOwner,
     update: adminOrSelfCustomer('id'),
     delete: isOwner,
+  },
+  hooks: {
+    beforeValidate: [sanitizeCustomerName],
+    beforeDelete: [preventUnauthorizedCustomerDelete],
   },
   fields: [
     {
@@ -63,6 +92,18 @@ export const Customers: CollectionConfig = {
       access: {
         update: nameUpdateAccess,
       },
+      validate: (value: string | null | undefined) => {
+        if (value == null || value === '') return true
+        if (typeof value !== 'string') return true
+        const trimmed = value.trim()
+        if (trimmed.length > 100) {
+          return vi.account.validation.nameMax100
+        }
+        if (/[<>{}]|[\x00-\x1F\x7F]/.test(trimmed)) {
+          return vi.account.validation.nameSpecialChars
+        }
+        return true
+      },
     },
     text('phone', 'Điện thoại'),
     checkbox('consentMarketing', 'Đồng ý nhận tin'),
@@ -70,6 +111,27 @@ export const Customers: CollectionConfig = {
       ...date('consentAt', 'Thời điểm đồng ý'),
       access: {
         update: isEditorOrOwner,
+      },
+    },
+    {
+      ...date('deletionRequestedAt', 'Yêu cầu xóa lúc'),
+      access: {
+        read: isEditorOrOwner,
+        update: isEditorOrOwner,
+      },
+      admin: {
+        readOnly: true,
+        description: 'Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).',
+      },
+    },
+    {
+      name: 'customerActions',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '@/components/admin/CustomerActions#CustomerActions',
+        },
       },
     },
   ],

@@ -42,6 +42,7 @@ import { OtpCodes } from './collections/OtpCodes'
 import { PaymentEvents } from './collections/PaymentEvents'
 import { AuditLogs } from './collections/AuditLogs'
 import { RateLimitHits } from './collections/RateLimitHits'
+import { TrialUsage } from './collections/TrialUsage'
 import { SiteSettings } from './globals/SiteSettings'
 import { Navigation } from './globals/Navigation'
 
@@ -98,6 +99,7 @@ export default buildConfig({
     PaymentEvents,
     AuditLogs,
     RateLimitHits,
+    TrialUsage,
   ],
   globals: [SiteSettings, Navigation],
   editor: lexicalEditor(),

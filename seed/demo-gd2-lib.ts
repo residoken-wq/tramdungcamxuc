@@ -376,6 +376,7 @@ export async function cleanDemoGd2(payload: Payload): Promise<Record<string, num
       collection: 'customers',
       where: { id: { in: demoCustomerIds } },
       overrideAccess: true,
+      context: { accountDeletion: true },
     })
     if (res.errors?.length) throw new Error(`Lỗi xóa customers: ${JSON.stringify(res.errors)}`)
     tally.customers = res.docs.length

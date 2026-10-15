@@ -187,7 +187,12 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
     // 3. Xóa customers do test tạo
     for (const custId of createdCustomers) {
       try {
-        await payload.delete({ collection: 'customers', id: custId, overrideAccess: true })
+        await payload.delete({
+          collection: 'customers',
+          id: custId,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       } catch {}
     }
 

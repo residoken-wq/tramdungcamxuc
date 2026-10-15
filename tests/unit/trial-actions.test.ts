@@ -44,7 +44,12 @@ describe('Trial Actions & Quiz CTA (T2-04)', () => {
     }
     for (const id of createdCustomers) {
       try {
-        await payload.delete({ collection: 'customers', id, overrideAccess: true })
+        await payload.delete({
+          collection: 'customers',
+          id,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       } catch (_e) {}
     }
     for (const id of createdProducts) {

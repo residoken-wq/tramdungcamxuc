@@ -82,7 +82,7 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
       overrideAccess: true,
     })
     createdUsers.push(ownerUser.id)
-    owner = asUser(ownerUser)
+    owner = asUser({ ...ownerUser, role: 'owner' })
   })
 
   afterAll(async () => {
@@ -105,7 +105,12 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
 
     for (const id of createdCustomers) {
       try {
-        await payload.delete({ collection: 'customers', id, overrideAccess: true })
+        await payload.delete({
+          collection: 'customers',
+          id,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       } catch {
         // ignore
       }

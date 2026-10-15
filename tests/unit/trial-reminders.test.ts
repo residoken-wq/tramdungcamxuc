@@ -40,7 +40,12 @@ describe('Trial 21-Day Reminders & Cron (T2-04)', () => {
       overrideAccess: true,
     })
     for (const r of oldReminders.docs) {
-      await payload.delete({ collection: 'trialReminders', id: r.id, overrideAccess: true })
+      await payload.delete({
+        collection: 'trialReminders',
+        id: r.id,
+        overrideAccess: true,
+        context: { accountDeletion: true },
+      })
     }
   })
 
@@ -53,6 +58,7 @@ describe('Trial 21-Day Reminders & Cron (T2-04)', () => {
           collection: item.collection,
           id: item.id,
           overrideAccess: true,
+          context: { accountDeletion: true },
         })
       } catch (_err) {
         // Bỏ qua nếu đã xóa

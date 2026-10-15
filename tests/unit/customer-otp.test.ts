@@ -45,6 +45,7 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
         collection: 'rateLimitHits',
         where: { id: { exists: true } },
         overrideAccess: true,
+        context: { accountDeletion: true },
       })
     } catch {
       // ignore cleanup
@@ -56,7 +57,12 @@ describe('Customer Email OTP Authentication (T2-01)', () => {
     try {
       for (const entry of created.reverse()) {
         try {
-          await payload.delete({ collection: entry.collection, id: entry.id, overrideAccess: true })
+          await payload.delete({
+            collection: entry.collection,
+            id: entry.id,
+            overrideAccess: true,
+            context: { accountDeletion: true },
+          })
         } catch {
           // ignore cleanup failures
         }

@@ -87,7 +87,12 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
         await payload.delete({ collection: 'leads', id, overrideAccess: true })
       }
       for (const id of createdCustomers) {
-        await payload.delete({ collection: 'customers', id, overrideAccess: true })
+        await payload.delete({
+          collection: 'customers',
+          id,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       }
       for (const id of createdTechniques) {
         await payload.delete({ collection: 'techniques', id, overrideAccess: true })

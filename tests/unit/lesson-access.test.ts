@@ -274,7 +274,12 @@ describe('Lesson Access Control & Playback Authorization Matrix (T2-05a)', () =>
   afterAll(async () => {
     for (const item of created.reverse()) {
       try {
-        await payload.delete({ collection: item.collection, id: item.id, overrideAccess: true })
+        await payload.delete({
+          collection: item.collection,
+          id: item.id,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       } catch {}
     }
   })

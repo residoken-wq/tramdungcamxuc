@@ -12,6 +12,7 @@ import { vi } from '@/lib/i18n/vi'
 import { getToolUrl } from '@/lib/products'
 import { Button } from '@/components/ui/Button'
 import { WorkshopSchedule } from '@/components/site/account/WorkshopSchedule'
+import { AccountDeletionRequest } from '@/components/account/AccountDeletionRequest'
 import { getCustomerOrders } from '@/lib/account/orders.server'
 import { MyOrders } from '@/components/account/MyOrders'
 
@@ -219,6 +220,7 @@ export default async function AccountPage() {
 
           {/* Đơn hàng */}
           <MyOrders orders={ordersResult.orders} loadError={ordersResult.loadError} />
+          <AccountDeletionRequest initialRequestedAt={customer.deletionRequestedAt} />
         </div>
       </div>
     </div>

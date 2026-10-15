@@ -102,6 +102,7 @@ export interface Config {
     paymentEvents: PaymentEvent;
     auditLogs: AuditLog;
     rateLimitHits: RateLimitHit;
+    trialUsage: TrialUsage;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -143,6 +144,7 @@ export interface Config {
     paymentEvents: PaymentEventsSelect<false> | PaymentEventsSelect<true>;
     auditLogs: AuditLogsSelect<false> | AuditLogsSelect<true>;
     rateLimitHits: RateLimitHitsSelect<false> | RateLimitHitsSelect<true>;
+    trialUsage: TrialUsageSelect<false> | TrialUsageSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -1208,6 +1210,10 @@ export interface Customer {
    * Chọn ngày và giờ áp dụng.
    */
   consentAt?: string | null;
+  /**
+   * Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).
+   */
+  deletionRequestedAt?: string | null;
   updatedAt: string;
   createdAt: string;
   collection: 'customers';
@@ -1282,7 +1288,7 @@ export interface Order {
   /**
    * Chọn nội dung đã tạo trong hệ thống.
    */
-  customer: number | Customer;
+  customer?: (number | null) | Customer;
   items: {
     /**
      * Chọn nội dung đã tạo trong hệ thống.
@@ -1319,6 +1325,10 @@ export interface Order {
    * Chỉ cập nhật khi chủ sở hữu xác nhận thanh toán thành công.
    */
   paidAt?: string | null;
+  /**
+   * Thời điểm đơn hàng được ẩn danh khi khách hàng yêu cầu xóa dữ liệu.
+   */
+  anonymizedAt?: string | null;
   /**
    * Thời điểm khách tick đồng ý Điều khoản và Chính sách giá – thanh toán.
    */
@@ -1870,6 +1880,28 @@ export interface RateLimitHit {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trialUsage".
+ */
+export interface TrialUsage {
+  id: number;
+  /**
+   * Nhập mã băm email (hmac-sha256).
+   */
+  emailHash: string;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  product: number | Product;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  usedAt?: string | null;
+  usageKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -2027,6 +2059,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'rateLimitHits';
         value: number | RateLimitHit;
+      } | null)
+    | ({
+        relationTo: 'trialUsage';
+        value: number | TrialUsage;
       } | null);
   globalSlug?: string | null;
   user:
@@ -2523,6 +2559,7 @@ export interface CustomersSelect<T extends boolean = true> {
   phone?: T;
   consentMarketing?: T;
   consentAt?: T;
+  deletionRequestedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2563,6 +2600,7 @@ export interface OrdersSelect<T extends boolean = true> {
   paymentStatus?: T;
   deliveryStatus?: T;
   paidAt?: T;
+  anonymizedAt?: T;
   termsAcceptedAt?: T;
   createdByAdmin?: T;
   trialCreditOrder?: T;
@@ -2772,6 +2810,18 @@ export interface AuditLogsSelect<T extends boolean = true> {
  */
 export interface RateLimitHitsSelect<T extends boolean = true> {
   key?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "trialUsage_select".
+ */
+export interface TrialUsageSelect<T extends boolean = true> {
+  emailHash?: T;
+  product?: T;
+  usedAt?: T;
+  usageKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -167,13 +167,23 @@ describe('Lesson Progress Recording & Validation Rules (T2-05a)', () => {
     })
     for (const p of progresses.docs) {
       try {
-        await payload.delete({ collection: 'lessonProgress', id: p.id, overrideAccess: true })
+        await payload.delete({
+          collection: 'lessonProgress',
+          id: p.id,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       } catch {}
     }
 
     for (const item of created.reverse()) {
       try {
-        await payload.delete({ collection: item.collection, id: item.id, overrideAccess: true })
+        await payload.delete({
+          collection: item.collection,
+          id: item.id,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       } catch {}
     }
   })

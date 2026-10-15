@@ -156,7 +156,12 @@ describe('Entitlement Service – 21-day trial, lifetime purchase & access contr
     try {
       for (const entry of created.reverse()) {
         try {
-          await payload.delete({ collection: entry.collection, id: entry.id, overrideAccess: true })
+          await payload.delete({
+            collection: entry.collection,
+            id: entry.id,
+            overrideAccess: true,
+            context: { accountDeletion: true },
+          })
         } catch {
           // ignore cleanup failures
         }

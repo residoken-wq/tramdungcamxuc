@@ -217,7 +217,12 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
 
     for (const custId of createdCustomers) {
       try {
-        await payload.delete({ collection: 'customers', id: custId, overrideAccess: true })
+        await payload.delete({
+          collection: 'customers',
+          id: custId,
+          overrideAccess: true,
+          context: { accountDeletion: true },
+        })
       } catch {
         // bỏ qua
       }
@@ -273,7 +278,12 @@ describe('Customer Account Orders & Downloads (T2-17)', () => {
       data: { email: `tam-${randomUUID().slice(0, 8)}@example.test`, name: 'Học viên Test 03' },
       overrideAccess: true,
     })
-    await payload.delete({ collection: 'customers', id: temp.id, overrideAccess: true })
+    await payload.delete({
+      collection: 'customers',
+      id: temp.id,
+      overrideAccess: true,
+      context: { accountDeletion: true },
+    })
     expect(await getCustomerOrders(temp.id, { payload })).toEqual([])
   })
 
