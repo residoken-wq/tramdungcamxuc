@@ -816,11 +816,31 @@ export interface EqCard {
    */
   code: string;
   /**
-   * Nhập thông điệp.
+   * Từ khóa tiếng Anh trên mặt trước thẻ (tối đa 40 ký tự). Bắt buộc khi xuất bản.
+   */
+  keywordEn?: string | null;
+  /**
+   * Không bắt buộc – bộ thẻ in hiện không có.
+   */
+  keywordVi?: string | null;
+  /**
+   * Câu thông điệp mặt trước thẻ. Bắt buộc khi xuất bản.
    */
   message?: string | null;
   /**
-   * Soạn câu chuyện.
+   * Câu hỏi gợi nhớ trên mặt sau thẻ. Bắt buộc khi xuất bản.
+   */
+  promptRecall?: string | null;
+  /**
+   * Câu hỏi gói ghém trên mặt sau thẻ. Bắt buộc khi xuất bản.
+   */
+  promptPack?: string | null;
+  /**
+   * Câu hỏi ghi nhận trên mặt sau thẻ. Bắt buộc khi xuất bản.
+   */
+  promptAcknowledge?: string | null;
+  /**
+   * Không bắt buộc – bộ thẻ in hiện không có.
    */
   story?: {
     root: {
@@ -838,11 +858,7 @@ export interface EqCard {
     [k: string]: unknown;
   } | null;
   /**
-   * Nhập câu hỏi suy ngẫm.
-   */
-  reflectionPrompt?: string | null;
-  /**
-   * Nhập hành động nhỏ.
+   * Không bắt buộc – bộ thẻ in hiện không có.
    */
   smallAction?: string | null;
   /**
@@ -850,16 +866,21 @@ export interface EqCard {
    */
   topic?: ('eq' | 'habit' | 'career') | null;
   /**
-   * Thêm từng mục, kéo để đổi thứ tự.
+   * Không bắt buộc – bộ thẻ in hiện không có.
    */
   emotionTags?:
-    | {
-        /**
-         * Nhập nội dung.
-         */
-        text: string;
-        id?: string | null;
-      }[]
+    | (
+        | 'joyful'
+        | 'peaceful'
+        | 'fresh'
+        | 'serene'
+        | 'grateful'
+        | 'relaxed'
+        | 'confident'
+        | 'tired'
+        | 'discouraged'
+        | 'stressed'
+      )[]
     | null;
   /**
    * Chọn nội dung đã tạo trong hệ thống.
@@ -2371,17 +2392,16 @@ export interface TestimonialsSelect<T extends boolean = true> {
  */
 export interface EqCardsSelect<T extends boolean = true> {
   code?: T;
+  keywordEn?: T;
+  keywordVi?: T;
   message?: T;
+  promptRecall?: T;
+  promptPack?: T;
+  promptAcknowledge?: T;
   story?: T;
-  reflectionPrompt?: T;
   smallAction?: T;
   topic?: T;
-  emotionTags?:
-    | T
-    | {
-        text?: T;
-        id?: T;
-      };
+  emotionTags?: T;
   relatedProduct?: T;
   image?: T;
   shareImage45?: T;

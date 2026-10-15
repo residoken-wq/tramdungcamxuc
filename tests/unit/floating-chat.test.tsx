@@ -21,10 +21,11 @@ describe('FloatingChat Component & Route Hiding', () => {
     vitest.clearAllMocks()
   })
 
-  it('chứa chính xác danh sách prefix cần ẩn từ spec T1-05', () => {
+  it('chứa chính xác danh sách prefix cần ẩn (T1-05 + /eq-buddy/the của T3-01)', () => {
     expect([...HIDE_FLOATING_CHAT_PREFIXES]).toEqual([
       '/habit/hoc',
       '/habit/tracker',
+      '/eq-buddy/the',
       '/eq-buddy/rut-the',
     ])
   })

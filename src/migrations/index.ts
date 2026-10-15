@@ -12,6 +12,7 @@ import * as migration_20261013_015236_tracker_and_nudges from './20261013_015236
 import * as migration_20261013_083641_sepay_transaction_id from './20261013_083641_sepay_transaction_id'
 import * as migration_20261014_095212_account_deletion from './20261014_095212_account_deletion'
 import * as migration_20261014_122224_trial_usage from './20261014_122224_trial_usage'
+import * as migration_20261015_023402_eq_cards_q17 from './20261015_023402_eq_cards_q17'
 
 export const migrations = [
   {
@@ -83,5 +84,10 @@ export const migrations = [
     up: migration_20261014_122224_trial_usage.up,
     down: migration_20261014_122224_trial_usage.down,
     name: '20261014_122224_trial_usage',
+  },
+  {
+    up: migration_20261015_023402_eq_cards_q17.up,
+    down: migration_20261015_023402_eq_cards_q17.down,
+    name: '20261015_023402_eq_cards_q17',
   },
 ]

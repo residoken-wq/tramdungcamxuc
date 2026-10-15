@@ -6,12 +6,13 @@ import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
 
 /**
- * Các tiền tố đường dẫn cần ẩn nút chat nổi để tránh che nội dung trải nghiệm / học tập.
- * GĐ 2/3 sẽ bổ sung các màn hình tương tác sâu khác nếu cần.
+ * Path prefixes where the floating chat would cover a learning / card flow.
+ * T3-01 adds /eq-buddy/the (card page opened from a printed QR).
  */
 export const HIDE_FLOATING_CHAT_PREFIXES = [
   '/habit/hoc',
   '/habit/tracker',
+  '/eq-buddy/the',
   '/eq-buddy/rut-the',
 ] as const
 

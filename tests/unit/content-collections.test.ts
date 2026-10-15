@@ -79,6 +79,11 @@ describe('content collections with PostgreSQL', () => {
       data: {
         code: unique(),
         qrSlug: unique(),
+        keywordEn: '[TEST] K',
+        message: '[TEST] m',
+        promptRecall: '[TEST] a',
+        promptPack: '[TEST] b',
+        promptAcknowledge: '[TEST] c',
         isSample: true,
         _status: 'published',
       },
