@@ -20,6 +20,7 @@
      - [3.10.1. Cách nhập video Bunny Stream cho bài học](#3101-cách-nhập-video-bunny-stream-cho-bài-học)
    - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
    - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
+   - [3.13. Quản lý 26 thẻ EQ Buddy](#313-quản-lý-26-thẻ-eq-buddy)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
@@ -486,6 +487,46 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
   2. Tìm trường **Số ngày hoàn thành tối thiểu để nhận chứng nhận** (`certificateMinDays`).
   3. Nhập con số mong muốn (ví dụ: `18`) và bấm **Lưu thay đổi**.
   4. Hệ thống sẽ tự động áp dụng ngưỡng mới cho toàn bộ học viên mà không cần can thiệp kỹ thuật!
+
+---
+
+### 3.13. Quản lý 26 thẻ EQ Buddy
+
+**Mục đích**: Quản lý kho nội dung 26 lá thẻ của công cụ số EQ Buddy (`/eq-buddy`) và trang chi tiết mở qua mã QR trên bộ thẻ vật lý 2.0 (`/eq-buddy/the/[qrSlug]`).
+
+**Các bước thực hiện**:
+
+1. Ở cột menu bên trái, tìm nhóm **EQ Buddy**, bấm chọn **Thẻ EQ Buddy** (`eqCards`).
+2. Màn hình danh sách hiển thị các cột mặc định: **Mã thẻ**, **Từ khóa tiếng Việt**, **Mã đường dẫn QR**, **Ngày đã in**, và **Trạng thái**.
+3. Bấm nút **Tạo mới** (hoặc bấm vào một thẻ có sẵn để chỉnh sửa).
+4. Điền các thông tin của lá thẻ:
+   - **Mã thẻ (`code`)**: Mã số quản lý duy nhất (ví dụ: `TDCX-01`, `TDCX-02`...).
+   - **Từ khóa tiếng Việt (`keywordVi`)**: Tối đa 40 ký tự (ví dụ: _Thấu hiểu_, _Chấp nhận_, _Khoảng dừng_). Đây là từ khóa lớn xuất hiện trên mặt trước lá thẻ.
+   - **Từ khóa tiếng Anh (`keywordEn`)**: Tối đa 40 ký tự (ví dụ: _Clarity_, _Acceptance_, _Pause_).
+   - **Thông điệp (`message`)**: Lời nhắn nhủ ngắn gọn, ấm áp (dùng font Playfair Display Italic trên web).
+   - **Câu chuyện (`story`)**: Soạn thảo câu chuyện truyền cảm hứng, góc nhìn mở rộng cho thông điệp.
+   - **Câu hỏi suy ngẫm (`reflectionPrompts`)**: Chứa từ **1 đến 3 câu hỏi** phản chiếu tự nhận thức.
+     - Bấm nút **"Thêm mới"** để thêm câu hỏi 2 hoặc 3.
+     - Mỗi câu hỏi là một ô soạn thảo riêng và **bắt buộc phải có nội dung** (không được để trống).
+     - Bấm biểu tượng thùng rác ở góc dòng nếu muốn xóa bớt câu hỏi (phải giữ lại tối thiểu 1 câu hỏi và tối đa 3 câu).
+   - **Hành động nhỏ (`smallAction`)**: Một việc làm cụ thể, nhẹ nhàng học viên có thể thực hành ngay.
+   - **Chủ đề (`topic`)**: Chọn một trong 3 chủ đề: Cảm xúc, Thói quen, hoặc Sự nghiệp.
+   - **Nhãn cảm xúc (`emotionTags`)**: Menu chọn nhiều từ **10 cảm xúc cố định** của Brand Book 2026:
+     - `😊 Vui vẻ`, `🕊️ Bình an`, `🌱 Tươi mới`, `🍵 An yên`, `🙏 Biết ơn`
+     - `🌿 Thư thái`, `✨ Tự tin`, `🥱 Hơi mệt`, `🌧️ Chùn bước`, `⚡ Căng thẳng`
+     - Có thể tick chọn 1 hoặc nhiều cảm xúc liên quan để người dùng lọc thẻ theo tâm trạng.
+   - **Sản phẩm liên quan (`relatedProduct`)**: Chọn sản phẩm hoặc gói để gợi ý ở chân trang thẻ.
+   - **Ảnh thẻ (`image`)**, **Ảnh chia sẻ 4:5 (`shareImage45`)**, **Ảnh chia sẻ 9:16 (`shareImage916`)**: Tải lên các file thiết kế của thẻ. Nếu để trống ảnh chia sẻ, hệ thống sẽ tự động tạo ảnh thương hiệu khi người dùng bấm chia sẻ.
+   - **Mã đường dẫn QR (`qrSlug`)**: Đường dẫn ngắn dùng cho mã QR in trên thẻ (ví dụ: `thau-hieu-01`).
+     - Chỉ dùng chữ thường không dấu, số và dấu gạch nối (`-`).
+     - Đường dẫn quét QR trên điện thoại sẽ là: `https://tramdungcamxuc.com/eq-buddy/the/[qrSlug]`.
+   - **Ngày đã in (`printedAt`)**: Ngày gửi file đi in tại xưởng in.
+
+> **QUY TẮC BẢO VỆ BẮT BUỘC: KHÔNG ĐỔI MÃ QR SAU KHI IN**
+>
+> - Khi gửi bộ thẻ vật lý đi in tại xưởng, hãy nhập ngày in vào ô **Ngày đã in** (`printedAt`) và bấm **Lưu**.
+> - **Ngay sau khi lưu ngày in**, hệ thống sẽ **TỰ ĐỘNG KHÓA VĨNH VIỄN** trường **Mã đường dẫn QR** và trường **Ngày đã in**. Ô nhập mã QR sẽ chuyển sang chế độ bảo vệ cố định, và bạn không thể thay đổi hay xóa ngày in.
+> - Cơ chế này nhằm bảo vệ bạn tuyệt đối: tránh tình trạng vô tình sửa đổi mã đường dẫn trên web làm đứt gãy liên kết, khiến hàng nghìn lá thẻ vật lý đã in ngoài đời thực không quét được QR nữa!
 
 ---
 
