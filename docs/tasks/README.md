@@ -154,7 +154,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **MỞ 10/10/2026** (cổng GĐ 1 đạt). Quyết định đã chốt: Q8 SePay, Q9 Bunny, Q14 10 cảm xúc emoji, H1/H2 quiz 1–5 trung bình, Q19, D1/D2 server riêng. Còn mở: Q15 (giá, trong CMS).
 
-**🔒 Migration: T2-16 (PC nhà) · 🔒 Package: (trống)** · Local và Laptop nghỉ đến hết 10/10.
+**🔒 Migration: T2-16 (PR #109, tới khi merge) → T3-01 · 🔒 Package: (trống)**
 
 **Thứ tự máy (từ 11/10)**: Laptop = T2-00 → T2-12 → T1-18 → T2-10 → T2-05a · PC nhà = T2-01 → T2-13 → T2-02 → T2-08 · Local = T2-03 → T2-03b.
 
@@ -175,9 +175,24 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T2-13 | Owner xác nhận đơn đã hết hạn (Q19)                              | [REVIEW] | –                   | PC nhà   | QA ĐẠT 11/10 – PR #76, Planning thay e2e rỗng bằng unit test giao diện ([review](reviews/T2-13.md)) · IT duyệt, ✅ merge 11/10                                                                                         |
 | T2-14 | Dọn dữ liệu thử giống thật, chặn đồng ý ở server, test chập chờn | [REVIEW] | –                   | Laptop   | **ĐẠT** 13/10 (IT duyệt) – PR #95 ([review](reviews/T2-14.md))                                                                                                                                                         |
 | T2-15 | Seed dữ liệu demo GĐ 2 (3 khách mẫu, đơn chờ, workshop)          | [REVIEW] | T2-06, T2-08, T2-10 | Local    | **ĐẠT** 14/10 (PR #106) – Planning sửa T2-15b; IT duyệt; biên bản `reviews/T2-15.md`; merge xong trả 🔒 Package                                                                                                        |
-| T2-16 | Yêu cầu xóa tài khoản + Hana xóa dữ liệu khách (đơn giữ ẩn danh) | [REVIEW] | T2-01, T2-08        | PC nhà   | Sửa T2-16b @PC nhà (PR #109) – QA 14/10 CHƯA ĐẠT, biên bản `reviews/T2-16.md`, prompt `prompts/T2-16b.md`; giữ 🔒 Migration                                                                                            |
+| T2-16 | Yêu cầu xóa tài khoản + Hana xóa dữ liệu khách (đơn giữ ẩn danh) | [REVIEW] | T2-01, T2-08        | PC nhà   | **ĐẠT** 15/10 (PR #109) – vòng 2 + Planning sửa T2-16c; IT duyệt; biên bản `reviews/T2-16.md`; merge xong trả 🔒 Migration                                                                                             |
 | T2-17 | Tài khoản: Đơn hàng của tôi, tải lại file; dọn nợ nhỏ GĐ 2       | [REVIEW] | T2-08               | Planning | **ĐẠT** 14/10 (PR #110) – T2-17b do Planning làm; IT duyệt; biên bản `reviews/T2-17.md`                                                                                                                                |
-| T2-11 | E2E luồng Habit + cổng GĐ 2                                      | [HANA]   | tất cả              | Planning | –                                                                                                                                                                                                                      |
+| T2-11 | E2E luồng Habit + cổng GĐ 2                                      | [HANA]   | tất cả              | Planning | Đơn thật SePay **ĐẠT** 15/10 (anh Nhân: trang đơn tự đổi, email kích hoạt, sự kiện `paid`); còn e2e tổng + Lighthouse / axe + `GATE_GD2.md` (Planning)                                                                 |
+
+### GĐ 3 – Web 3 EQ Buddy (`docs/tasks/GD3.md`)
+
+**MỞ 15/10/2026** – anh Nhân xác nhận thay Hana; cổng GĐ 2: đơn thật SePay mở khóa tự động (15/10). Nội dung 26 thẻ thật: anh Nhân có file → Planning import sau T3-01.
+
+**Thứ tự máy**: PC nhà = T3-01 (sau merge T2-16) → T3-04 · Laptop = T3-03 → T3-02 · Local = T3-05 · Planning = QA, import 26 thẻ, T3-06.
+
+| Mã    | Task                                                      | Nhãn     | Phụ thuộc    | Máy      | Trạng thái                      |
+| ----- | --------------------------------------------------------- | -------- | ------------ | -------- | ------------------------------- |
+| T3-01 | Schema thẻ EQ theo Q17 (từ khóa, 1–3 câu hỏi, 10 cảm xúc) |          | T2-16 merge  | PC nhà   | Giao 15/10 – `prompts/T3-01.md` |
+| T3-03 | Trang thẻ mở từ QR + xuất QR in ấn (CSV + PNG)            | [REVIEW] | –            | Laptop   | Giao 15/10 – `prompts/T3-03.md` |
+| T3-05 | Ảnh chia sẻ thẻ 4:5 / 9:16 + offer liên quan + nút Shopee |          | –            | Local    | Giao 15/10 – `prompts/T3-05.md` |
+| T3-02 | Luồng rút thẻ 5 bước + giới hạn dùng thử 21 ngày          |          | T3-01, T3-03 | Laptop   | Chưa giao                       |
+| T3-04 | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản     | [REVIEW] | T3-02        | PC nhà   | Chưa giao                       |
+| T3-06 | E2E luồng EQ + cổng GĐ 3                                  | [HANA]   | tất cả       | Planning | –                               |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 

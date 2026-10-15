@@ -1,4 +1,12 @@
-# Bàn giao ghế Planning (Claude) – cập nhật 13/10/2026
+# Bàn giao ghế Planning (Claude) – cập nhật 15/10/2026
+
+## Cập nhật 15/10/2026 – đọc mục này trước
+
+- **Cổng GĐ 2**: đơn thật qua SePay đã thanh toán và mở khóa tự động (anh Nhân xác nhận 15/10). T2-11 còn: e2e tổng luồng Habit, Lighthouse / axe trang mới, biên bản `GATE_GD2.md` (Planning).
+- **T2-16**: vòng 2 CHƯA ĐẠT, Planning sửa T2-16c (`8e12f01`, `dc86c5b`, PR #109) – biên bản `reviews/T2-16.md`. **ĐẠT**, IT duyệt 15/10 → merge khi CI xanh, trả 🔒 Migration cho T3-01.
+- **GĐ 3 MỞ 15/10** (`GD3.md`, bảng `README.md`): PC nhà = T3-01 (chờ merge T2-16) · Laptop = T3-03 · Local = T3-05. Tiếp theo: T3-02 (Laptop), T3-04 (PC nhà), T3-06 (Planning).
+- **26 thẻ EQ thật**: anh Nhân có file, chưa có trong repo → khi nhận, Planning chép vào `seed/import/` (dạng TS như Habit Hack) và import sau khi T3-01 merge.
+- Bài học QA vòng này: kiểm `git diff --stat` tìm file **ngoài ranh giới** (PC nhà sửa test của task khác, có lệnh xóa nội dung thật); hàm export từ file `'use server'` là endpoint công khai.
 
 ## Cập nhật 13/10/2026 (bàn giao sang acc Claude mới) – đọc mục này TRƯỚC TIÊN
 
