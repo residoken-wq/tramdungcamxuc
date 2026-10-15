@@ -2,7 +2,7 @@
 
 ## Cập nhật 15/10/2026 – đọc mục này trước
 
-- **15/10 tối**: T2-18, T3-05 ĐẠT + merge; T3-02 ĐẠT sau T3-02c (PR #121, IT duyệt cookie khách + kiểm quyền). PC nhà: T3-04 (`prompts/T3-04.md`, 🔒 Migration). Laptop: T2-19 (`prompts/T2-19.md`, thanh toán bền vững). Local rảnh. Planning: T2-11, T3-06.
+- **15/10 tối**: T2-18, T3-05 ĐẠT + merge; T3-02 ĐẠT sau T3-02c (PR #121, IT duyệt cookie khách + kiểm quyền). PC nhà: T3-04 (`prompts/T3-04.md`, 🔒 Migration). Laptop: T2-19 ĐẠT sau T2-19c (PR #125, IT duyệt) → rảnh. Local rảnh. Planning: T2-11, T3-06.
 - **Cổng GĐ 2**: đơn thật qua SePay đã thanh toán và mở khóa tự động (anh Nhân xác nhận 15/10). T2-11 còn: e2e tổng luồng Habit, Lighthouse / axe trang mới, biên bản `GATE_GD2.md` (Planning).
 - **T2-16**: vòng 2 CHƯA ĐẠT, Planning sửa T2-16c (`8e12f01`, `dc86c5b`, PR #109) – biên bản `reviews/T2-16.md`. **ĐẠT**, IT duyệt 15/10 → merge khi CI xanh, trả 🔒 Migration cho T3-01.
 - **15/10 chiều**: T3-03 ĐẠT + merge (PR #115); T3-01 + T3-01b ĐẠT sau T3-01c (PR #116) – đã nhập thử 26 thẻ thật trên DB QA. Laptop: T2-18 → T3-02 (`prompts/T3-02.md`). PC nhà sau T3-01: T3-04 (chưa viết prompt). Local: T3-05.
