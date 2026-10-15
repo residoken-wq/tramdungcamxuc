@@ -618,6 +618,7 @@ export const vi = {
       orderNotFound: 'Không tìm thấy đơn hàng.',
       orderNotPaid: 'Đơn hàng chưa được thanh toán.',
       alreadyEmailSent: 'Email xác nhận đã được gửi thành công trước đó.',
+      transactionUnavailable: 'Hệ thống thanh toán đang bận, vui lòng thử lại sau ít phút.',
       customerEmailNotFound: 'Không tìm thấy thông tin email khách hàng.',
       unauthorized:
         'Chỉ chủ sở hữu (owner) mới có quyền xác nhận thanh toán thủ công hoặc hủy đơn.',

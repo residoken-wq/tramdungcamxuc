@@ -12,7 +12,12 @@ export interface GrantEntitlementsResult {
 export interface GrantEntitlementsOptions {
   payload?: Payload
   now?: Date
-  req?: PayloadRequest
+  /**
+   * Chạy trong transaction của người gọi: mỗi lệnh local API nhận một req mới từ hàm này.
+   * Khi có, mọi lỗi được ném ra (không nuốt) – Payload đã rollback transaction khi một lệnh lỗi,
+   * nuốt lỗi sẽ làm các lệnh sau chạy ngoài transaction.
+   */
+  reqFactory?: () => PayloadRequest
 }
 
 function isDuplicateGrantKeyError(err: unknown): boolean {
@@ -49,8 +54,9 @@ async function checkAndEmitTrialConverted(
   payload: Payload,
   customerId: number,
   productDoc: Product | { id: number; slug?: string | null },
-  req?: PayloadRequest,
+  reqFactory?: () => PayloadRequest,
 ): Promise<void> {
+  const inTransaction = Boolean(reqFactory)
   try {
     const existingTrial = await payload.find({
       collection: 'entitlements',
@@ -64,7 +70,7 @@ async function checkAndEmitTrialConverted(
       limit: 1,
       depth: 0,
       overrideAccess: true,
-      req,
+      req: reqFactory?.(),
     })
     if (existingTrial.totalDocs > 0) {
       // TODO(T2-04): track() không ghi nhận gì ở server; cần kênh gửi sự kiện từ server.
@@ -73,8 +79,9 @@ async function checkAndEmitTrialConverted(
         productId: productDoc.id,
       })
     }
-  } catch {
-    // Non-blocking for analytics event
+  } catch (err) {
+    // Non-blocking for analytics event – trừ khi đang trong transaction (lỗi đã hủy transaction).
+    if (inTransaction) throw err
   }
 }
 
@@ -100,7 +107,24 @@ export async function grantEntitlementsForOrder(
 ): Promise<GrantEntitlementsResult> {
   const payload = options.payload ?? (await getPayload({ config: await config }))
   const now = options.now ?? new Date()
-  const req = options.req
+  const reqFactory = options.reqFactory
+  const inTransaction = Boolean(reqFactory)
+  const req = () => reqFactory?.()
+  // REVIEW-REQUIRED: Trong transaction không dựa vào lỗi trùng khóa (lỗi đã hủy transaction):
+  // kiểm grantKey đã có trước khi tạo, và mỗi sản phẩm chỉ cấp một lần trong một lượt.
+  const seenGrantKeys = new Set<string>()
+  const grantKeyExists = async (grantKey: string): Promise<boolean> => {
+    if (seenGrantKeys.has(grantKey)) return true
+    seenGrantKeys.add(grantKey)
+    if (!inTransaction) return false
+    const { totalDocs } = await payload.count({
+      collection: 'entitlements',
+      where: { grantKey: { equals: grantKey } },
+      overrideAccess: true,
+      req: req(),
+    })
+    return totalDocs > 0
+  }
 
   // 1. Đọc đơn hàng
   const order = await payload.findByID({
@@ -108,7 +132,7 @@ export async function grantEntitlementsForOrder(
     id: orderId,
     depth: 2,
     overrideAccess: true,
-    req,
+    req: req(),
   })
 
   if (!order) {
@@ -146,7 +170,7 @@ export async function grantEntitlementsForOrder(
         id: Number(productDoc),
         depth: 1,
         overrideAccess: true,
-        req,
+        req: req(),
       })) as Product
     }
 
@@ -163,6 +187,9 @@ export async function grantEntitlementsForOrder(
       }
 
       const grantKey = `${orderId}:${productDoc.id}`
+      if (await grantKeyExists(grantKey)) {
+        continue
+      }
 
       // REVIEW-REQUIRED: Tạo entitlement cho digital_tool với grantKey duy nhất
       try {
@@ -179,13 +206,13 @@ export async function grantEntitlementsForOrder(
             grantKey,
           },
           overrideAccess: true,
-          req,
+          req: req(),
         })
         grantedCount++
         // Chỉ sau khi cấp thành công: webhook trùng / xác nhận 2 lần không đếm chuyển đổi 2 lần.
-        await checkAndEmitTrialConverted(payload, customerId, productDoc, req)
+        await checkAndEmitTrialConverted(payload, customerId, productDoc, reqFactory)
       } catch (err: unknown) {
-        if (isDuplicateGrantKeyError(err)) {
+        if (!inTransaction && isDuplicateGrantKeyError(err)) {
           // Idempotent: Đã được cấp trước đó, bỏ qua không báo lỗi
         } else {
           throw err
@@ -228,7 +255,7 @@ export async function grantEntitlementsForOrder(
             id: grantedProductId,
             depth: 0,
             overrideAccess: true,
-            req,
+            req: req(),
           })) as Product
         }
 
@@ -239,6 +266,9 @@ export async function grantEntitlementsForOrder(
         }
 
         const grantKey = `${orderId}:${grantedProductId}`
+        if (await grantKeyExists(grantKey)) {
+          continue
+        }
 
         // REVIEW-REQUIRED: Tạo entitlement cho package component với grantKey duy nhất
         try {
@@ -255,14 +285,14 @@ export async function grantEntitlementsForOrder(
               grantKey,
             },
             overrideAccess: true,
-            req,
+            req: req(),
           })
           grantedCount++
           if (grantedProductDoc) {
-            await checkAndEmitTrialConverted(payload, customerId, grantedProductDoc, req)
+            await checkAndEmitTrialConverted(payload, customerId, grantedProductDoc, reqFactory)
           }
         } catch (err: unknown) {
-          if (isDuplicateGrantKeyError(err)) {
+          if (!inTransaction && isDuplicateGrantKeyError(err)) {
             // Idempotent: Đã được cấp trước đó, bỏ qua không báo lỗi
           } else {
             throw err

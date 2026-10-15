@@ -158,7 +158,7 @@ export const OrderActions: React.FC = () => {
   const isFailed = docStatus === 'failed'
   const isCancelled = docStatus === 'cancelled'
   const isPaid = docStatus === 'paid' || (!isPending && !isFailed && !isCancelled)
-  const canResendConfirmation = isPaid && deliveryStatus !== 'email_sent'
+  const canResendConfirmation = docStatus === 'paid' && deliveryStatus !== 'email_sent'
 
   return (
     <div
@@ -403,7 +403,7 @@ export const OrderActions: React.FC = () => {
               transition: 'background-color 0.2s',
             }}
             onMouseEnter={(e) => {
-              if (loading === null) e.currentTarget.style.backgroundColor = '#980280'
+              if (loading === null) e.currentTarget.style.backgroundColor = '#280A60'
             }}
             onMouseLeave={(e) => {
               if (loading === null) e.currentTarget.style.backgroundColor = '#BC039E'

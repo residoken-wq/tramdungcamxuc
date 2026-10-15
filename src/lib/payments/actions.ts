@@ -184,8 +184,6 @@ export async function resendPaymentConfirmationAction(
   }
 }
 
-export const resendPaymentConfirmationAdminAction = resendPaymentConfirmationAction
-
 // REVIEW-REQUIRED: Server action lấy link thanh toán cho đơn hàng do admin tạo (dùng getSiteUrl(), không ghép tay).
 // Chỉ trả về đường dẫn thanh toán khi người dùng là quản trị viên, đơn do admin tạo và đang ở trạng thái pending.
 export async function getOrderPaymentLinkAction(

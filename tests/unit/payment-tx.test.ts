@@ -4,9 +4,14 @@ vi.mock('server-only', () => ({}))
 
 import { randomUUID } from 'node:crypto'
 import { getPayload, type Payload } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
 import config from '../../src/payload.config'
 import type { SiteSetting, User } from '../../src/payload-types'
-import { createDigitalToolOrder, markOrderPaid } from '../../src/lib/payments/orders.server'
+import {
+  createDigitalToolOrder,
+  markOrderPaid,
+  resendPaymentConfirmation,
+} from '../../src/lib/payments/orders.server'
 import * as entitlementsServer from '../../src/lib/payments/entitlements.server'
 import { resendPaymentConfirmationAction } from '../../src/lib/payments/actions'
 import type { EmailSender, SendEmailParams, SendEmailResult } from '../../src/lib/email/types'
@@ -25,7 +30,6 @@ class MockEmailSender implements EmailSender {
 
 describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
   let payload: Payload
-  let payload2: Payload
   let ownerUser: User
   let editorUser: User
   let mockEmailSender: MockEmailSender
@@ -40,7 +44,6 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
 
   beforeAll(async () => {
     payload = await getPayload({ config: await config })
-    payload2 = await getPayload({ config: await config })
     mockEmailSender = new MockEmailSender()
 
     settingsBefore = await payload.findGlobal({
@@ -217,10 +220,37 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
     return product
   }
 
-  // 1. Hai lệnh createDigitalToolOrder song song cùng khách + sản phẩm (2 payload/kết nối) -> đúng 1 đơn pending
-  it('1. hai lệnh createDigitalToolOrder song song cùng khách + sản phẩm (2 kết nối) -> đúng 1 đơn pending duy nhất', async () => {
+  // 1. Khóa thật ở Postgres: một transaction khác giữ advisory lock cùng khóa → lệnh tạo đơn phải chờ;
+  // nhả khóa → chạy tiếp. Sau đó 2 lệnh song song → đúng 1 đơn pending.
+  it('1. createDigitalToolOrder chờ advisory lock Postgres; 2 lệnh song song -> đúng 1 đơn pending', async () => {
     const customer = await createTestCustomer('parallel-order')
     const product = await createTestDigitalToolProduct('parallel-1')
+
+    const holderTx = await payload.db.beginTransaction()
+    const sessions = (
+      payload.db as unknown as {
+        sessions: Record<string, { db: { execute: (q: unknown) => Promise<unknown> } }>
+      }
+    ).sessions
+    await sessions[String(holderTx)]!.db.execute(
+      sql`SELECT pg_advisory_xact_lock(hashtext(${`order:${customer.id}:${product.id}`}))`,
+    )
+
+    let settled = false
+    const blocked = createDigitalToolOrder(
+      customer.id,
+      product.slug,
+      { termsAccepted: true, ip: nextIp() },
+      { payload },
+    ).finally(() => {
+      settled = true
+    })
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    expect(settled).toBe(false)
+
+    await payload.db.commitTransaction(holderTx!)
+    const first = await blocked
+    expect(first.success).toBe(true)
 
     const [res1, res2] = await Promise.all([
       createDigitalToolOrder(
@@ -233,13 +263,12 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
         customer.id,
         product.slug,
         { termsAccepted: true, ip: nextIp() },
-        { payload: payload2 },
+        { payload },
       ),
     ])
+    expect(res1.payToken).toBe(first.payToken)
+    expect(res2.payToken).toBe(first.payToken)
 
-    expect(res1.payToken).toBe(res2.payToken)
-
-    // Xác minh trên DB chỉ có đúng 1 đơn hàng cho khách này
     const allOrders = await payload.find({
       collection: 'orders',
       where: { customer: { equals: customer.id } },
@@ -248,6 +277,132 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
     expect(allOrders.totalDocs).toBe(1)
     expect(allOrders.docs[0].paymentStatus).toBe('pending')
     createdOrders.push(allOrders.docs[0].id)
+  })
+
+  // 1b. Gói có 2 cấu phần cùng cấp một sản phẩm → không có lỗi trùng khóa trong transaction:
+  // đơn paid, đúng 1 quyền, 1 email.
+  it('1b. gói có 2 cấu phần cùng cấp một sản phẩm -> paid, đúng 1 entitlement, 1 email', async () => {
+    const customer = await createTestCustomer('dup-component')
+    const tool = await createTestDigitalToolProduct('dup-component-tool')
+    const pkg = await payload.create({
+      collection: 'products',
+      data: {
+        name: '[TEST] Gói trùng cấu phần',
+        slug: `test-pkg-dup-${randomUUID().slice(0, 8)}`,
+        type: 'package',
+        web: 'site',
+        price: 1000000,
+        saleStatus: 'consult',
+        _status: 'published',
+        components: [
+          { label: '[TEST] Công cụ A', quantity: 1, unitValue: 250000, grantsProduct: tool.id },
+          {
+            label: '[TEST] Công cụ A lần 2',
+            quantity: 1,
+            unitValue: 250000,
+            grantsProduct: tool.id,
+          },
+        ],
+      },
+      overrideAccess: true,
+    })
+    createdProducts.push(pkg.id)
+    const order = await payload.create({
+      collection: 'orders',
+      data: {
+        customer: customer.id,
+        items: [{ product: pkg.id, price: 1000000 }],
+        subtotal: 1000000,
+        total: 1000000,
+        paymentRef: `TDCX${randomUUID().slice(0, 6).toUpperCase()}`,
+        payToken: randomUUID(),
+        paymentStatus: 'pending',
+        deliveryStatus: 'none',
+        termsAcceptedAt: new Date().toISOString(),
+        createdByAdmin: false,
+      },
+      context: { paymentAction: true },
+      overrideAccess: true,
+    })
+    createdOrders.push(order.id)
+
+    const sender = new MockEmailSender()
+    const paid = await markOrderPaid(order.id, {
+      payload,
+      source: 'manual',
+      actorId: ownerUser.id,
+      emailSender: sender,
+    })
+    expect(paid.paymentStatus).toBe('paid')
+    const ents = await payload.find({
+      collection: 'entitlements',
+      where: { customer: { equals: customer.id } },
+      overrideAccess: true,
+    })
+    expect(ents.totalDocs).toBe(1)
+    expect(sender.sent.length).toBe(1)
+  })
+
+  // 1c. Lỗi DB thật trong transaction (trùng grantKey mà bước kiểm trước bị bỏ qua): Payload hủy
+  // transaction → markOrderPaid phải ném lỗi, đơn vẫn pending, không gửi email.
+  it('1c. lỗi DB thật khi cấp quyền -> ném lỗi, đơn vẫn pending, không gửi email', async () => {
+    const customer = await createTestCustomer('real-db-err')
+    const product = await createTestDigitalToolProduct('real-db-err-tool')
+    const res = await createDigitalToolOrder(
+      customer.id,
+      product.slug,
+      { termsAccepted: true, ip: nextIp() },
+      { payload },
+    )
+    const orderDoc = await payload.find({
+      collection: 'orders',
+      where: { payToken: { equals: res.payToken } },
+      overrideAccess: true,
+    })
+    const orderId = orderDoc.docs[0].id
+    createdOrders.push(orderId)
+
+    // Bản ghi chiếm sẵn grantKey của đơn này (ngoài transaction)
+    await payload.create({
+      collection: 'entitlements',
+      data: {
+        customer: customer.id,
+        product: product.id,
+        order: orderId,
+        source: 'manual',
+        status: 'active',
+        grantedAt: new Date().toISOString(),
+        grantKey: `${orderId}:${product.id}`,
+      },
+      overrideAccess: true,
+    })
+    // Bỏ qua bước kiểm grantKey trước khi tạo → lệnh tạo gặp lỗi trùng khóa thật trong transaction
+    const realCount = payload.count.bind(payload)
+    const countSpy = vi.spyOn(payload, 'count').mockImplementation((args) => {
+      if (args.collection === 'entitlements') {
+        return Promise.resolve({ totalDocs: 0 })
+      }
+      return realCount(args)
+    })
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const sender = new MockEmailSender()
+    try {
+      await expect(
+        markOrderPaid(orderId, { payload, source: 'webhook', emailSender: sender }),
+      ).rejects.toThrow()
+    } finally {
+      countSpy.mockRestore()
+      errorSpy.mockRestore()
+    }
+
+    const after = await payload.findByID({
+      collection: 'orders',
+      id: orderId,
+      overrideAccess: true,
+    })
+    expect(after.paymentStatus).toBe('pending')
+    expect(after.deliveryStatus).toBe('none')
+    expect(sender.sent.length).toBe(0)
   })
 
   // 2. Cấp quyền ném lỗi -> rollback cả đơn, đơn vẫn pending, không có entitlement, có audit grant_entitlements_failed; gọi lại -> paid + 1 entitlement
@@ -483,7 +638,7 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
         emailSender: parallelEmailSender,
       }),
       markOrderPaid(orderId, {
-        payload: payload2,
+        payload,
         source: 'manual',
         actorId: ownerUser.id,
         emailSender: parallelEmailSender,
@@ -504,5 +659,52 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
 
     // Đúng 1 email được gửi
     expect(parallelEmailSender.sent.length).toBe(1)
+  })
+
+  // 5. Bấm "Gửi lại email xác nhận" 2 lần cùng lúc -> chỉ 1 email
+  it('5. gửi lại email xác nhận 2 lần song song -> đúng 1 email, deliveryStatus email_sent', async () => {
+    const customer = await createTestCustomer('resend-race')
+    const product = await createTestDigitalToolProduct('resend-race-tool')
+    const res = await createDigitalToolOrder(
+      customer.id,
+      product.slug,
+      { termsAccepted: true, ip: nextIp() },
+      { payload },
+    )
+    const orderDoc = await payload.find({
+      collection: 'orders',
+      where: { payToken: { equals: res.payToken } },
+      overrideAccess: true,
+    })
+    const orderId = orderDoc.docs[0].id
+    createdOrders.push(orderId)
+    await markOrderPaid(orderId, {
+      payload,
+      source: 'manual',
+      actorId: ownerUser.id,
+      emailSender: mockEmailSender,
+    })
+    await payload.update({
+      collection: 'orders',
+      id: orderId,
+      data: { deliveryStatus: 'access_granted' },
+      context: { paymentAction: true },
+      overrideAccess: true,
+    })
+
+    const sender = new MockEmailSender()
+    const owner = { id: ownerUser.id, role: 'owner' as const }
+    const results = await Promise.allSettled([
+      resendPaymentConfirmation(orderId, owner, { payload, emailSender: sender }),
+      resendPaymentConfirmation(orderId, owner, { payload, emailSender: sender }),
+    ])
+    expect(results.filter((r) => r.status === 'fulfilled').length).toBe(1)
+    expect(sender.sent.length).toBe(1)
+    const after = await payload.findByID({
+      collection: 'orders',
+      id: orderId,
+      overrideAccess: true,
+    })
+    expect(after.deliveryStatus).toBe('email_sent')
   })
 })

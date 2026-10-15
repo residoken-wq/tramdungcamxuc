@@ -388,7 +388,7 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
     })) as { id: number; paymentStatus: string; deliveryStatus: string }
 
     expect(confirmed.paymentStatus).toBe('paid')
-    expect(['access_granted', 'email_sent']).toContain(confirmed.deliveryStatus)
+    expect(confirmed.deliveryStatus).toBe('email_sent')
 
     // Kiểm tra quyền truy cập được cấp
     const access = await getAccess(customer.id, product.id, { payload })
