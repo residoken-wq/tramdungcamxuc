@@ -78,17 +78,77 @@ export interface CheckAccessOptions {
  * - Logged-in customer: getAccess(customer, eq-buddy-so) must be 'trial' or 'active' for unlimited draws.
  * - Unauthenticated guest: Allowed for first draw (count == 0). Blocked on second draw (count >= 1).
  */
-export async function checkEqDrawAccess(_options?: CheckAccessOptions): Promise<{
+export async function checkEqDrawAccess(options?: CheckAccessOptions): Promise<{
   allowed: boolean
   customerState: 'guest' | 'logged_in'
   accessStatus?: string
   trialDays?: number
 }> {
+  const customer =
+    options?.customerIdOverride !== undefined
+      ? options.customerIdOverride
+        ? { id: options.customerIdOverride }
+        : null
+      : await getCurrentCustomer()
+
+  const payloadConfig = await config
+  const payload = await getPayload({ config: payloadConfig })
+  const products = await payload.find({
+    collection: 'products',
+    where: { slug: { equals: EQ_BUDDY_PRODUCT_SLUG } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  const product = products.docs[0] as Product | undefined
+  const trialDays = product?.trialDays ?? 21
+
+  if (customer) {
+    if (!product) {
+      throw new Error(`Product ${EQ_BUDDY_PRODUCT_SLUG} not found`)
+    }
+
+    const now = new Date()
+    const access = await getAccess(customer.id, product.id, { payload, now })
+
+    if (access.status === 'trial' || access.status === 'active') {
+      return {
+        allowed: true,
+        customerState: 'logged_in',
+        accessStatus: access.status,
+        trialDays,
+      }
+    }
+
+    return {
+      allowed: false,
+      customerState: 'logged_in',
+      accessStatus: access.status,
+      trialDays,
+    }
+  }
+
+  // Unauthenticated guest check
+  let rawCookie: string | undefined | null = options?.guestCookieOverride
+  if (rawCookie === undefined) {
+    const cookieStore = await cookies()
+    rawCookie = cookieStore.get(EQ_DRAW_GUEST_COOKIE)?.value
+  }
+
+  const { count } = verifyGuestDrawCookie(rawCookie)
+  if (count >= 1) {
+    return {
+      allowed: false,
+      customerState: 'guest',
+      accessStatus: 'guest_limit_reached',
+      trialDays,
+    }
+  }
+
   return {
     allowed: true,
     customerState: 'guest',
     accessStatus: 'guest_first_draw',
-    trialDays: 21,
+    trialDays,
   }
 }
 
