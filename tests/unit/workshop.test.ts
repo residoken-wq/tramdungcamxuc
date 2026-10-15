@@ -44,6 +44,7 @@ describe('Workshop Schedule & 24h Reminder (T2-10)', () => {
           collection: item.collection,
           id: item.id,
           overrideAccess: true,
+          context: { accountDeletion: true },
         })
       } catch (_err) {
         // Bỏ qua lỗi dọn dẹp nếu bản ghi đã bị xóa
