@@ -20,6 +20,7 @@
      - [3.10.1. Cách nhập video Bunny Stream cho bài học](#3101-cách-nhập-video-bunny-stream-cho-bài-học)
    - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
    - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
+   - [3.13. In QR cho bộ thẻ EQ Buddy (EqCards)](#313-in-qr-cho-bộ-thẻ-eq-buddy-eqcards)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
@@ -486,6 +487,35 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
   2. Tìm trường **Số ngày hoàn thành tối thiểu để nhận chứng nhận** (`certificateMinDays`).
   3. Nhập con số mong muốn (ví dụ: `18`) và bấm **Lưu thay đổi**.
   4. Hệ thống sẽ tự động áp dụng ngưỡng mới cho toàn bộ học viên mà không cần can thiệp kỹ thuật!
+
+---
+
+### 3.13. In QR cho bộ thẻ EQ Buddy (EqCards)
+
+**Mục đích**: Xuất danh sách liên kết mã QR và tải ảnh QR chất lượng cao (1200×1200 px) gửi cho nhà in để in trực tiếp lên bộ thẻ vật lý EQ Buddy.
+
+**Các bước thực hiện**:
+
+1. **Chuẩn bị và kiểm tra thẻ trong CMS**:
+   - Ở cột menu bên trái, tìm nhóm **EQ Buddy** -> chọn **Thẻ EQ Buddy**.
+   - Mỗi thẻ cần có **Mã thẻ** (`code`), **Thông điệp** (`message`), **Câu chuyện** (`story`) và **Mã đường dẫn QR** (`qrSlug`).
+   - Đường dẫn quét mã của thẻ là cố định: `https://tramdungcamxuc.com/eq-buddy/the/[qrSlug]`. Trang này mở tự do cho khách mua bộ thẻ vật lý quét mã xem thông điệp và câu chuyện mà không cần đăng nhập hay mua thêm gói.
+   - Thẻ cần được bấm **Xuất bản** trước khi khách hàng quét thực tế.
+
+2. **Xuất danh sách QR tổng hợp (CSV)**:
+   - Trên màn hình danh sách Thẻ EQ Buddy, bấm nút **Xuất danh sách QR (CSV)** ở góc trên bên phải bảng.
+   - Hệ thống tải về file `eq-qr-YYYY-MM-DD.csv` chuẩn UTF-8 (có BOM mở tốt trên Excel mà không lỗi font tiếng Việt).
+   - Danh sách chứa đầy đủ các cột: `code`, `qrSlug`, `url`, `trạng thái` (Đã xuất bản / Bản nháp), `ngày in`, `link PNG`.
+   - File này có thể gửi trực tiếp cho đơn vị thiết kế / in ấn để đối chiếu mã và đường dẫn.
+
+3. **Tải file ảnh QR từng thẻ (PNG)**:
+   - Bấm vào một thẻ EQ Buddy cụ thể để vào trang chỉnh sửa chi tiết.
+   - Ở cột bên phải (sidebar), bấm nút **Tải ảnh QR (PNG)**.
+   - Trình duyệt sẽ tải về file ảnh `qr-<code>.png` chất lượng cao kích thước 1200×1200 px, mức sửa lỗi 'Q' (25% phục hồi), màu nhận diện thương hiệu Deep Navy `#280A60` trên nền trắng có viền an toàn 4 ô (quiet zone) cho máy quét mã vạch / camera điện thoại.
+
+4. **Đánh dấu ngày in sau khi gửi file in (RẤT QUAN TRỌNG)**:
+   - Sau khi hoàn tất rà soát và gửi file cho nhà in ấn, Hana mở thẻ và điền thời điểm vào ô **Ngày đã in** (`printedAt`), sau đó bấm **Lưu**.
+   - **Cơ chế khóa bảo vệ**: Ngay sau khi lưu ngày in, hệ thống sẽ **khóa vĩnh viễn** trường `qrSlug` và `printedAt`. Không ai (kể cả quản trị viên) có thể thay đổi hoặc xóa mã QR của thẻ đã in. Điều này đảm bảo mã QR in trên bộ thẻ vật lý đã xuất xưởng không bao giờ bị sai lệch hay mất liên kết.
 
 ---
 
