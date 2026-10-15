@@ -1445,6 +1445,18 @@ export const vi = {
     },
   },
   eqBuddy: {
+    intro: {
+      defaultTitle: 'EQ Buddy – Bộ thẻ cảm xúc',
+      defaultDescription:
+        'Không gian dừng lại, nhận diện và đối thoại với cảm xúc của chính mình qua 26 thông điệp sâu lắng.',
+      badge: 'CÔNG CỤ SỐ · EQ BUDDY',
+      drawButton: 'Rút một thẻ',
+      howToUseHeading: 'Cách sử dụng',
+      aboutHeading: 'Về bộ thẻ EQ Buddy',
+      metaTitle: 'EQ Buddy – Bộ thẻ cảm xúc | Trạm Dừng Cảm Xúc',
+      metaDescription:
+        'Rút thẻ cảm xúc EQ Buddy để dừng lại một nhịp, nhận diện và thấu hiểu cảm xúc của bản thân.',
+    },
     cardPage: {
       seriesLabel: (code: string) => `EQ BUDDY · ${code}`,
       defaultMetaTitle: 'Thẻ EQ Buddy',
