@@ -77,7 +77,17 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     createdTechniques.push(draftTech.id)
   }, 60000)
 
+  // Leads created indirectly (by submitHabitPlan) for these emails are removed in afterAll.
+  const trackedEmails: string[] = []
+
   afterAll(async () => {
+    if (trackedEmails.length > 0) {
+      await payload.delete({
+        collection: 'leads',
+        where: { email: { in: trackedEmails } },
+        overrideAccess: true,
+      })
+    }
     if (!payload) return
     try {
       for (const id of createdPlans) {
@@ -281,6 +291,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
 
   it('A2: không tự ý gán customer khi nhập email của khách hàng đã có trong DB', async () => {
     const existingCustEmail = `cust-existing-${randomUUID().slice(0, 8)}@example.test`
+    trackedEmails.push(existingCustEmail)
     const cust = await payload.create({
       collection: 'customers',
       data: {
@@ -509,7 +520,8 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
   })
 
   it('B9: server luôn tự đặt startDate là ngày hôm nay, không nhận startDate từ client', async () => {
-    const email = `test-b9-${randomUUID().slice(0, 8)}@example.com`
+    const email = `test-b9-${randomUUID().slice(0, 8)}@example.test`
+    trackedEmails.push(email)
     const fakeClientStartDate = '2020-01-01T00:00:00.000Z'
 
     const result = await submitHabitPlan(
@@ -798,5 +810,47 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
 
     // Email gửi đi thêm 1 cái
     expect(emailSender.sent.length).toBe(emailSentCountBefore + 2)
+
+    const allLeads = await payload.find({
+      collection: 'leads',
+      where: { email: { equals: baseEmail } },
+      overrideAccess: true,
+    })
+    for (const lead of allLeads.docs) {
+      if (!createdLeads.includes(lead.id)) createdLeads.push(lead.id)
+    }
+  })
+
+  it('2 lần gửi đồng thời cùng email + câu định danh -> chỉ 1 kế hoạch', async () => {
+    const email = `hoc-vien-test-race-${Math.random().toString(36).slice(2, 8)}@example.test`
+    const input = {
+      scorecard: [{ habit: 'Đọc sách', rating: 'good' as const }],
+      identityStatement: 'Tôi sẽ đọc sách để trở thành người học suốt đời',
+      chosenTechniques: [
+        { techniqueId: validCueTechId, stage: 'cue' as const, action: 'Đặt sách cạnh giường' },
+      ],
+      name: 'Học viên Test Race',
+      email,
+      consent: true,
+    }
+    const [a, b] = await Promise.all([
+      submitHabitPlan(input, { ip: '192.168.20.11' }, { payload, emailSender }),
+      submitHabitPlan(input, { ip: '192.168.20.12' }, { payload, emailSender }),
+    ])
+    expect(a.success && b.success).toBe(true)
+    const plans = await payload.find({
+      collection: 'habitPlans',
+      where: { leadEmail: { equals: email } },
+      overrideAccess: true,
+    })
+    for (const p of plans.docs) createdPlans.push(p.id)
+    const leads = await payload.find({
+      collection: 'leads',
+      where: { email: { equals: email } },
+      overrideAccess: true,
+    })
+    for (const l of leads.docs) createdLeads.push(l.id)
+    expect(plans.totalDocs).toBe(1)
+    expect(a.planId).toBe(b.planId)
   })
 })

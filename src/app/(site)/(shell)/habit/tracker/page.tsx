@@ -69,7 +69,13 @@ export default async function HabitTrackerPage() {
   // -> Hiển thị khối mời dùng thử / mua sản phẩm (không hiển thị form tạo kế hoạch)
   if (!plan && !access.hasAccess) {
     return (
-      <ToolPaywall productSlug={HABIT_TRACKER_PRODUCT_SLUG} product={product} access={access} />
+      <ToolPaywall
+        productSlug={HABIT_TRACKER_PRODUCT_SLUG}
+        product={product}
+        access={access}
+        badge={vi.tracker.paywall.title}
+        fallbackDescription={vi.tracker.paywall.description}
+      />
     )
   }
 

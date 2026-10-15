@@ -161,7 +161,7 @@ describe('Entitlement Service – 21-day trial, lifetime purchase & access contr
             try {
               await payload.delete({
                 collection: 'trialReminders',
-                where: { customer: { equals: entry.id } },
+                where: { 'entitlement.customer': { equals: entry.id } },
                 overrideAccess: true,
               })
             } catch {}

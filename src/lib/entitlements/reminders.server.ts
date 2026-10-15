@@ -134,25 +134,10 @@ export async function sendTrialReminders(
       let daysLeft: number
 
       if (timeLeftMs <= oneDayMs) {
-        if (product.trialDays <= 3) {
-          const hasDay18 = await payload.count({
-            collection: 'trialReminders',
-            where: {
-              and: [{ entitlement: { equals: ent.id } }, { milestone: { equals: 'day_18' } }],
-            },
-            overrideAccess: true,
-          })
-          if (hasDay18.totalDocs === 0) {
-            milestone = 'day_18'
-            daysLeft = Math.max(1, Math.ceil(timeLeftMs / oneDayMs))
-          } else {
-            milestone = 'day_21'
-            daysLeft = 1
-          }
-        } else {
-          milestone = 'day_21'
-          daysLeft = 1
-        }
+        // Short trials (<= 3 days) get their day_18 mail at trial start (sendImmediateDay18Reminder),
+        // so the cron only sends day_21 here (T2-18c).
+        milestone = 'day_21'
+        daysLeft = 1
       } else {
         milestone = 'day_18'
         daysLeft = Math.max(1, Math.ceil(timeLeftMs / oneDayMs))

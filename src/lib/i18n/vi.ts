@@ -1122,6 +1122,8 @@ export const vi = {
   },
   trial: {
     title: 'Dùng thử công cụ số',
+    paywallBadge: 'Công cụ số',
+    paywallDescription: 'Bạn chưa kích hoạt quyền sử dụng công cụ này.',
     pageBadge: 'Trạm Dừng Cảm Xúc · Dùng thử miễn phí',
     daysLabel: (days: number) => `Dùng thử ${days} ngày miễn phí`,
     startButton: (days: number) => `Bắt đầu dùng thử ${days} ngày`,
@@ -1239,7 +1241,6 @@ export const vi = {
     paywall: {
       title: 'Habit Tracker Số 21 Ngày',
       description: 'Bạn chưa kích hoạt quyền sử dụng công cụ Habit Tracker số.',
-      trialButton: 'Bắt đầu dùng thử 21 ngày',
       buyButton: 'Mua công cụ số',
     },
     expiredNotice: {

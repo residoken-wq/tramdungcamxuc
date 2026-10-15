@@ -189,7 +189,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
       try {
         await payload.delete({
           collection: 'trialReminders',
-          where: { customer: { equals: custId } },
+          where: { 'entitlement.customer': { equals: custId } },
           overrideAccess: true,
         })
       } catch {}

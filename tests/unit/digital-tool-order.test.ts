@@ -91,7 +91,7 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
       try {
         await payload.delete({
           collection: 'trialReminders',
-          where: { customer: { equals: id } },
+          where: { 'entitlement.customer': { equals: id } },
           overrideAccess: true,
         })
       } catch {}

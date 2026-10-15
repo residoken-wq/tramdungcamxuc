@@ -65,11 +65,7 @@ describe('EQ Card QR & Printing Export (T3-03)', () => {
         }
       }
       if (editorId) {
-        try {
-          await payload.delete({ collection: 'users', id: editorId, overrideAccess: true })
-        } catch {
-          // Ignore individual delete errors
-        }
+        await payload.delete({ collection: 'users', id: editorId, overrideAccess: true })
       }
       if (customerId) {
         await payload.delete({

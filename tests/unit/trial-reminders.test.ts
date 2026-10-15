@@ -33,32 +33,24 @@ describe('Trial 21-Day Reminders & Cron (T2-04)', () => {
     process.env.CRON_SECRET = testCronSecret
     payload = await getPayload({ config: await config })
 
-    // Dọn dẹp bản ghi nhắc cũ nếu có từ lượt chạy trước bị ngắt
-    const oldReminders = await payload.find({
+    // Leftovers of an interrupted earlier run: only reminders of test customers (@example.test)
+    await payload.delete({
       collection: 'trialReminders',
-      limit: 100,
+      where: { 'entitlement.customer.email': { like: '@example.test' } },
       overrideAccess: true,
     })
-    for (const r of oldReminders.docs) {
-      await payload.delete({
-        collection: 'trialReminders',
-        id: r.id,
-        overrideAccess: true,
-        context: { accountDeletion: true },
-      })
-    }
   })
 
   afterAll(async () => {
-    // 1. Dọn dẹp bản ghi trialReminders trước (con của customer & entitlement)
-    try {
+    // 1. Reminders of the customers this test created (never the whole table)
+    const customerIds = created.filter((c) => c.collection === 'customers').map((c) => c.id)
+    if (customerIds.length > 0) {
       await payload.delete({
         collection: 'trialReminders',
-        where: { id: { exists: true } },
+        where: { 'entitlement.customer': { in: customerIds } },
         overrideAccess: true,
-        context: { accountDeletion: true },
       })
-    } catch {}
+    }
 
     // 2. Dọn dẹp dữ liệu test theo thứ tự ngược lại
     for (let i = created.length - 1; i >= 0; i--) {
