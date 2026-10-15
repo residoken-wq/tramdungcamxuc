@@ -65,7 +65,7 @@ export function SavedCards({ initialCards, loadError = false }: SavedCardsProps)
       {errorMessage && (
         <div
           role="alert"
-          className="p-3 rounded-xl bg-accent-pink/10 border border-accent-pink/30 text-accent-pink text-xs font-sans"
+          className="p-3 rounded-xl bg-accent-pink/10 border border-accent-pink/30 text-deep-navy text-xs font-sans"
         >
           {errorMessage}
         </div>
@@ -170,7 +170,6 @@ export function SavedCards({ initialCards, loadError = false }: SavedCardsProps)
                         size="sm"
                         onClick={() => handleDelete(card.id)}
                         disabled={isDeleting}
-                        className="text-xs py-1 px-2.5 bg-accent-pink hover:bg-accent-pink/90 text-white"
                       >
                         {isDeleting
                           ? vi.eqBuddy.savedCards.deletingButton

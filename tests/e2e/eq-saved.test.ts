@@ -78,7 +78,11 @@ test.describe('EQ Saved Cards Flow (T3-04)', () => {
     const message = `Lắng nghe và ôm ấp cảm xúc với lòng biết ơn (${suffix})`
     const customerEmail = `khach-saved-${suffix}@example.test`
 
-    const visitor = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+    // IP riêng cho khách: giới hạn tần suất OTP không đụng các e2e khác
+    const visitor = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      extraHTTPHeaders: { 'x-forwarded-for': `203.0.113.${Math.floor(Math.random() * 254) + 1}` },
+    })
     const guestPage = await visitor.newPage()
 
     try {

@@ -91,7 +91,8 @@ export function EqDrawWizard({
     try {
       const res = await saveEqCardAction({
         qrSlug: currentCard.qrSlug,
-        reflection: reflection || null,
+        // Ô trống → giữ suy ngẫm đã lưu trước đó (không xóa)
+        reflection: reflection.trim() ? reflection : undefined,
       })
       if (res.success) {
         setSaveSuccess(true)
@@ -340,6 +341,7 @@ export function EqDrawWizard({
               }}
               placeholder={vi.eqBuddy.draw.step4.reflectionPlaceholder}
               rows={5}
+              maxLength={2000}
               className="w-full px-4 py-3 rounded-2xl bg-warm-ivory border border-deep-navy/15 text-deep-navy font-sans text-base leading-relaxed focus:outline-none focus:ring-2 focus:ring-bright-magenta/50"
             />
             {isLoggedIn ? (

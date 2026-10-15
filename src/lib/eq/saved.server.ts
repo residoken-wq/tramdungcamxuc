@@ -9,9 +9,8 @@ import { vi } from '@/lib/i18n/vi'
 
 export interface SaveEqCardInput {
   qrSlug: string
+  /** undefined → giữ suy ngẫm đã lưu; chuỗi rỗng / null → xóa suy ngẫm */
   reflection?: string | null
-  /** Optional customer override for unit testing with mock sessions */
-  customerIdOverride?: number
 }
 
 export interface SaveEqCardResult {
@@ -23,8 +22,17 @@ export interface SaveEqCardResult {
 
 export interface DeleteSavedCardInput {
   savedCardId: number
-  /** Optional customer override for unit testing with mock sessions */
-  customerIdOverride?: number
+}
+
+// REVIEW-REQUIRED: Khách lấy từ phiên ở server – hàm bọc 'use server' gọi hàm này, KHÔNG nhận id khách
+// từ trình duyệt.
+export async function getSessionCustomerId(): Promise<number | null> {
+  try {
+    const customer = await getCurrentCustomer()
+    return customer ? customer.id : null
+  } catch {
+    return null
+  }
 }
 
 export interface DeleteSavedCardResult {
@@ -53,19 +61,11 @@ export interface CustomerSavedCardItem {
  * - reflection tối đa 2000 ký tự, trim, rỗng -> null.
  * - Không gửi reflection vào analytics, log, email.
  */
-export async function saveEqCardCore(input: SaveEqCardInput): Promise<SaveEqCardResult> {
-  // REVIEW-REQUIRED: Kiểm tra phiên khách hàng đăng nhập
-  let customerId: number | null = null
-  if (typeof input?.customerIdOverride === 'number') {
-    customerId = input.customerIdOverride
-  } else {
-    try {
-      const customer = await getCurrentCustomer()
-      customerId = customer ? customer.id : null
-    } catch {
-      customerId = null
-    }
-  }
+export async function saveEqCardCore(
+  customerId: number | null,
+  input: SaveEqCardInput,
+): Promise<SaveEqCardResult> {
+  // REVIEW-REQUIRED: customerId do hàm bọc lấy từ phiên (getSessionCustomerId), không từ input
 
   if (!customerId) {
     return {
@@ -76,7 +76,7 @@ export async function saveEqCardCore(input: SaveEqCardInput): Promise<SaveEqCard
   }
 
   // REVIEW-REQUIRED: Chỉ thẻ đã xuất bản mới được phép lưu
-  const card = await getPublishedEqCardByQrSlug(input.qrSlug)
+  const card = await getPublishedEqCardByQrSlug(String(input?.qrSlug ?? ''))
   if (!card) {
     return {
       success: false,
@@ -86,6 +86,8 @@ export async function saveEqCardCore(input: SaveEqCardInput): Promise<SaveEqCard
   }
 
   // Chuẩn hóa và xác thực reflection (tối đa 2000 ký tự, trim, rỗng -> null)
+  // undefined → không đụng tới suy ngẫm đã lưu (vd. nút "Lưu thẻ" ở trang QR)
+  const touchReflection = input.reflection !== undefined
   let cleanReflection: string | null = null
   if (typeof input.reflection === 'string') {
     const trimmed = input.reflection.trim()
@@ -122,9 +124,9 @@ export async function saveEqCardCore(input: SaveEqCardInput): Promise<SaveEqCard
       const updated = await payload.update({
         collection: 'savedCards',
         id: existingDoc.id,
-        data: {
-          reflection: cleanReflection,
-        },
+        data: touchReflection
+          ? { reflection: cleanReflection, savedAt: new Date().toISOString() }
+          : { savedAt: new Date().toISOString() },
         overrideAccess: true,
       })
       return {
@@ -163,7 +165,9 @@ export async function saveEqCardCore(input: SaveEqCardInput): Promise<SaveEqCard
         const updated = await payload.update({
           collection: 'savedCards',
           id: retryExisting.docs[0].id,
-          data: { reflection: cleanReflection },
+          data: touchReflection
+            ? { reflection: cleanReflection, savedAt: new Date().toISOString() }
+            : { savedAt: new Date().toISOString() },
           overrideAccess: true,
         })
         return {
@@ -192,20 +196,10 @@ export async function saveEqCardCore(input: SaveEqCardInput): Promise<SaveEqCard
  * - Không phải của mình -> lỗi chung, không tiết lộ lý do bảo mật.
  */
 export async function deleteSavedCardCore(
+  customerId: number | null,
   input: DeleteSavedCardInput,
 ): Promise<DeleteSavedCardResult> {
-  // REVIEW-REQUIRED: Kiểm tra phiên khách hàng
-  let customerId: number | null = null
-  if (typeof input?.customerIdOverride === 'number') {
-    customerId = input.customerIdOverride
-  } else {
-    try {
-      const customer = await getCurrentCustomer()
-      customerId = customer ? customer.id : null
-    } catch {
-      customerId = null
-    }
-  }
+  // REVIEW-REQUIRED: customerId do hàm bọc lấy từ phiên (getSessionCustomerId), không từ input
 
   if (!customerId) {
     return {

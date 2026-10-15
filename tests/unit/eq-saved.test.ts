@@ -170,8 +170,7 @@ describe('EQ Buddy Saved Cards & Reflection (T3-04)', () => {
 
   it('1. lưu 2 lần cùng thẻ → 1 bản ghi, reflection cập nhật (upsert theo saveKey)', async () => {
     // Lần 1: Lưu thẻ kèm suy ngẫm ban đầu
-    const res1 = await saveEqCardCore({
-      customerIdOverride: customerA.id,
+    const res1 = await saveEqCardCore(customerA.id, {
       qrSlug: cardPublished.qrSlug!,
       reflection: 'Suy ngẫm lần đầu',
     })
@@ -191,8 +190,7 @@ describe('EQ Buddy Saved Cards & Reflection (T3-04)', () => {
     expect(check1.docs[0].saveKey).toBe(`${customerA.id}:${cardPublished.id}`)
 
     // Lần 2: Lưu lại cùng thẻ nhưng cập nhật suy ngẫm
-    const res2 = await saveEqCardCore({
-      customerIdOverride: customerA.id,
+    const res2 = await saveEqCardCore(customerA.id, {
       qrSlug: cardPublished.qrSlug!,
       reflection: '  Suy ngẫm đã cập nhật và được trim  ',
     })
@@ -218,8 +216,7 @@ describe('EQ Buddy Saved Cards & Reflection (T3-04)', () => {
 
   it('2. khách A không xóa / đọc được bản của khách B (qua action và qua REST /api/savedCards)', async () => {
     // Khách B lưu thẻ
-    const resB = await saveEqCardCore({
-      customerIdOverride: customerB.id,
+    const resB = await saveEqCardCore(customerB.id, {
       qrSlug: cardPublished.qrSlug!,
       reflection: 'Suy ngẫm riêng của Khách B',
     })
@@ -227,8 +224,7 @@ describe('EQ Buddy Saved Cards & Reflection (T3-04)', () => {
     if (resB.savedCardId) createdSavedCardIds.push(resB.savedCardId)
 
     // Khách A gọi deleteSavedCardCore nhằm xóa bản của khách B -> từ chối
-    const deleteAttempt = await deleteSavedCardCore({
-      customerIdOverride: customerA.id,
+    const deleteAttempt = await deleteSavedCardCore(customerA.id, {
       savedCardId: resB.savedCardId!,
     })
     expect(deleteAttempt.success).toBe(false)
@@ -280,8 +276,7 @@ describe('EQ Buddy Saved Cards & Reflection (T3-04)', () => {
   })
 
   it('4. thẻ nháp → lỗi', async () => {
-    const resDraft = await saveEqCardCore({
-      customerIdOverride: customerA.id,
+    const resDraft = await saveEqCardCore(customerA.id, {
       qrSlug: cardDraft.qrSlug!,
       reflection: 'Thử lưu thẻ nháp',
     })
@@ -289,20 +284,67 @@ describe('EQ Buddy Saved Cards & Reflection (T3-04)', () => {
     expect(resDraft.code).toBe('CARD_NOT_FOUND')
   })
 
-  it('5. chưa đăng nhập → lỗi', async () => {
-    // Không truyền customerIdOverride, không có phiên đăng nhập
-    const saveNoAuth = await saveEqCardCore({
+  it('5. chưa đăng nhập → lỗi; trình duyệt gửi kèm id khách khác cũng không giả danh được', async () => {
+    const saveNoAuth = await saveEqCardCore(null, {
       qrSlug: cardPublished.qrSlug!,
       reflection: 'Chưa đăng nhập',
     })
     expect(saveNoAuth.success).toBe(false)
     expect(saveNoAuth.code).toBe('UNAUTHENTICATED')
 
-    const deleteNoAuth = await deleteSavedCardCore({
-      savedCardId: 12345,
-    })
+    const deleteNoAuth = await deleteSavedCardCore(null, { savedCardId: 12345 })
     expect(deleteNoAuth.success).toBe(false)
     expect(deleteNoAuth.code).toBe('UNAUTHENTICATED')
+
+    // Server action gọi thẳng (không có phiên) với trường lạ customerIdOverride = id khách B
+    const victim = await saveEqCardCore(customerB.id, {
+      qrSlug: cardPublished.qrSlug!,
+      reflection: 'Suy ngẫm của B – không ai khác được sửa',
+    })
+    expect(victim.success).toBe(true)
+    const forgedSave = await savedActions.saveEqCardAction({
+      qrSlug: cardPublished.qrSlug!,
+      reflection: 'ghi đè',
+      customerIdOverride: customerB.id,
+    } as unknown as Parameters<typeof savedActions.saveEqCardAction>[0])
+    expect(forgedSave.code).toBe('UNAUTHENTICATED')
+    const forgedDelete = await savedActions.deleteSavedCardAction({
+      savedCardId: victim.savedCardId!,
+      customerIdOverride: customerB.id,
+    } as unknown as Parameters<typeof savedActions.deleteSavedCardAction>[0])
+    expect(forgedDelete.code).toBe('UNAUTHENTICATED')
+    const still = await payload.findByID({
+      collection: 'savedCards',
+      id: victim.savedCardId!,
+      overrideAccess: true,
+    })
+    expect(still.reflection).toBe('Suy ngẫm của B – không ai khác được sửa')
+  })
+
+  it('5b. lưu song song cùng thẻ → 1 bản ghi; lưu lại không kèm suy ngẫm → giữ suy ngẫm cũ', async () => {
+    const results = await Promise.all([
+      saveEqCardCore(customerB.id, { qrSlug: cardPublished.qrSlug!, reflection: 'song song 1' }),
+      saveEqCardCore(customerB.id, { qrSlug: cardPublished.qrSlug!, reflection: 'song song 2' }),
+    ])
+    expect(results.every((r) => r.success)).toBe(true)
+    const rows = await payload.find({
+      collection: 'savedCards',
+      where: {
+        and: [{ customer: { equals: customerB.id } }, { card: { equals: cardPublished.id } }],
+      },
+      overrideAccess: true,
+    })
+    expect(rows.totalDocs).toBe(1)
+    const kept = rows.docs[0]!.reflection
+
+    const again = await saveEqCardCore(customerB.id, { qrSlug: cardPublished.qrSlug! })
+    expect(again.success).toBe(true)
+    const after = await payload.findByID({
+      collection: 'savedCards',
+      id: rows.docs[0]!.id,
+      overrideAccess: true,
+    })
+    expect(after.reflection).toBe(kept)
   })
 
   it('6. file action chỉ export hàm bọc duy nhất', () => {
@@ -326,8 +368,7 @@ describe('EQ Buddy Saved Cards & Reflection (T3-04)', () => {
     createdCustomerIds.push(custC.id)
 
     // Khách C lưu thẻ
-    const saveC = await saveEqCardCore({
-      customerIdOverride: custC.id,
+    const saveC = await saveEqCardCore(custC.id, {
       qrSlug: cardPublished.qrSlug!,
       reflection: 'Ghi chú của C',
     })
