@@ -223,7 +223,7 @@ Mọi khóa học, công cụ số, tài liệu miễn phí, dịch vụ coachin
 
 **Các bước thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm chọn **Sản phẩm**.
+1. Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm chọn **Sản phẩm**.
 2. Bấm nút **Tạo mới** ở góc trên bên phải màn hình (hoặc bấm vào tên sản phẩm có sẵn để sửa).
 3. Điền các trường thông tin cơ bản:
    - **Tên sản phẩm**: Tên hiển thị công khai trên website (ví dụ: _Bộ thẻ EQ Buddy 26 thẻ_).
@@ -349,7 +349,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước thực hiện**:
 
-1. Ở menu bên trái, tìm nhóm **Khóa học**, bấm chọn **Lịch workshop**.
+1. Ở menu bên trái, tìm nhóm **Khóa Habit**, bấm chọn **Lịch workshop**.
 2. Bấm nút **Tạo mới** (ở góc trên bên phải).
 3. Điền các trường thông tin:
    - **Tên workshop**: Tiêu đề buổi workshop (ví dụ: _Workshop "Tập thương cảm xúc" – Buổi 1_).
@@ -402,7 +402,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 **Các bước thực hiện**:
 
 1. **Quản lý Nhóm bài học (`courseModules`)**:
-   - Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm vào **Nhóm bài học**.
+   - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Nhóm bài học**.
    - Bấm **Tạo mới** hoặc bấm vào nhóm có sẵn để sửa.
    - Nhập **Tên nhóm bài học** (ví dụ: _Giai đoạn 1: Hiểu mình & Điểm nghẽn_).
    - Chọn **Nhóm nội dung**: chọn 1 trong 3 nhóm chuẩn gồm _Hiểu mình_ (`insight`), _Nguyên tắc_ (`principle`), hoặc _Kỹ thuật_ (`technique`). Lộ trình trên website sẽ tự động gom các bài học theo thứ tự 3 nhóm này.
@@ -410,7 +410,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
    - Bấm **Xuất bản**.
 
 2. **Quản lý Bài học (`lessons`)**:
-   - Trong nhóm **Khóa học**, bấm vào **Bài học**.
+   - Trong nhóm **Khóa Habit**, bấm vào **Bài học**.
    - Bấm **Tạo mới** và điền các trường:
      - **Tiêu đề**: Tên bài học hiển thị cho học viên.
      - **Nhóm bài học**: Chọn nhóm bài học đã tạo ở bước 1.
@@ -438,7 +438,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
    - Bấm nút sao chép (Copy) chuỗi mã này.
 
 3. **Dán vào bài học trong CMS**:
-   - Quay lại trang quản trị CMS (`/admin`) -> Vào nhóm **Khóa học** -> chọn **Bài học**.
+   - Quay lại trang quản trị CMS (`/admin`) -> Vào nhóm **Khóa Habit** -> chọn **Bài học**.
    - Bấm vào bài học bạn muốn gắn video.
    - Cuộn đến trường **Mã video (Bunny)** (`videoId`) và dán chính xác chuỗi mã GUID vừa sao chép vào.
    - Bấm nút **Lưu** hoặc **Xuất bản**.
@@ -481,7 +481,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước xem và quản lý trong trang quản trị**:
 
-1. Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm chọn **Chứng nhận 21 ngày** (`certificates`).
+1. Ở cột menu bên trái, tìm nhóm **Học viên & khách**, bấm chọn **Chứng nhận 21 ngày** (`certificates`).
 2. Màn hình danh sách hiển thị các cột:
    - **Mã xác minh (`code`)**: Chuỗi mã duy nhất được hệ thống sinh ngẫu nhiên tự động (ví dụ: `wF9d_a`).
    - **Khách hàng (`customer`)**: Tên học viên được trao chứng nhận.
@@ -687,7 +687,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Nội dung**, bấm chọn **Lời chia sẻ**.
+1. Ở cột menu bên trái, tìm nhóm **Trang web**, bấm chọn **Lời chia sẻ**.
 2. Bấm nút **Tạo mới** ở góc trên bên phải.
 3. Điền các thông tin:
    - **Tên người chia sẻ**: Tên hoặc danh xưng của khách hàng (ví dụ: _Chị Minh Anh_).
@@ -724,7 +724,7 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 **Các bước thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Nội dung**, bấm chọn **Trang nội dung**.
+1. Ở cột menu bên trái, tìm nhóm **Trang web**, bấm chọn **Trang nội dung**.
 2. Bấm nút **Tạo mới** ở góc trên bên phải.
 3. Nhập **Tên trang** (ví dụ: _Chiến dịch Chuyển mình Cuối năm_).
 4. Nhập **Đường dẫn**: Viết chữ thường không dấu, ví dụ `chien-dich-cuoi-nam` (riêng Trang chủ là đúng một dấu `/`).
@@ -949,7 +949,7 @@ Màn hình trình dựng gồm 3 khu vực:
 
 **Cách thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào **Dịch vụ đồng hành**.
+1. Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm vào **Dịch vụ đồng hành**.
 2. Bấm vào dịch vụ _Growth Mirror_ hoặc _Thinking Mirror_.
 3. Dán link đặt lịch cá nhân của bạn vào ô **Liên kết đặt lịch** (`bookingUrl`).
 4. Bấm **Lưu** hoặc **Xuất bản**.
@@ -988,7 +988,7 @@ Dưới đây là quy trình đối chiếu và duyệt đơn chuẩn dành cho 
 
 2. **Tìm đơn hàng trong trang quản trị CMS:**
    - Đăng nhập vào trang quản trị `<ĐỊA CHỈ DEMO>/admin` bằng tài khoản Chủ sở hữu (Owner).
-   - Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào mục **Đơn hàng**.
+   - Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm vào mục **Đơn hàng**.
    - Tìm đơn hàng có cột **Mã chuyển khoản** khớp với mã trên thông báo ngân hàng.
    - Bấm vào dòng đơn hàng đó để mở trang chi tiết.
 
@@ -1050,7 +1050,7 @@ _(ảnh: Planning chụp)_
 **Các bước Hana làm**:
 
 1. Đăng nhập vào trang quản trị CMS bằng tài khoản Chủ sở hữu (Owner).
-2. Ở cột menu bên trái, tìm nhóm **Bán hàng**, bấm vào **Đơn hàng** -> bấm nút **Tạo mới**.
+2. Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm vào **Đơn hàng** -> bấm nút **Tạo mới**.
 3. Đánh dấu tick vào ô **Hana tạo link thanh toán** (`createdByAdmin`).
 4. Tại ô **Khách hàng**: chọn khách hàng trong danh sách (hoặc tạo hồ sơ khách hàng mới nếu chưa có).
 5. Tại mục **Sản phẩm trong đơn**: chọn đúng **một** gói đồng hành Growth Mirror đã xuất bản (`type = package`, ví dụ: _Gói CLEAR_, _Gói BUILD_, hoặc _Gói SHINE_).
@@ -1076,7 +1076,7 @@ _(ảnh: Planning chụp)_
    - Mở ứng dụng ngân hàng, kiểm tra thông báo biến động số dư và sao kê nhận tiền.
    - Đối chiếu số tiền (250.000đ hoặc 178.000đ ưu đãi) và mã chuyển khoản `TDCX...`.
 3. **Bấm nút duyệt đơn an toàn trong CMS**:
-   - Vào nhóm **Bán hàng** -> **Đơn hàng**, bấm vào đơn hàng tương ứng.
+   - Vào nhóm **Sản phẩm & bán hàng** -> **Đơn hàng**, bấm vào đơn hàng tương ứng.
    - Tại cột bên phải (Sidebar), bấm nút **✓ Xác nhận thanh toán** và chọn **Đồng ý xác nhận**.
 4. **Hệ thống tự động kích hoạt quyền & gửi email**:
    - Đơn hàng chuyển sang trạng thái **Đã thanh toán** (`paid`), trạng thái giao đổi sang **Đã cấp quyền** (`access_granted`).
@@ -1209,7 +1209,7 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 
 **Cách thực hiện**:
 
-1. Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm vào **Câu hỏi chẩn đoán**.
+1. Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Câu hỏi chẩn đoán**.
 2. Bấm vào câu hỏi bạn muốn chỉnh sửa.
 3. Bạn có thể sửa:
    - **Nội dung câu hỏi**: Tình huống độc giả tự chấm điểm (ví dụ: _Tôi thường trì hoãn khi không biết bắt đầu từ đâu_).
@@ -1229,7 +1229,7 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 **Cách thực hiện**:
 
 1. **Quản lý danh sách kỹ thuật thực chiến (`techniques`)**:
-   - Ở cột menu bên trái, tìm nhóm **Khóa học**, bấm vào **Kỹ thuật thực hành**.
+   - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Kỹ thuật thực hành**.
    - Hana có thể thêm mới hoặc sửa tên, cách thực hiện, ví dụ và gán vào 1 trong 4 giai đoạn (_Cue - Gợi ý_, _Craving - Khao khát_, _Response - Phản hồi_, _Reward - Phần thưởng_). Các kỹ thuật đã xuất bản sẽ tự động hiển thị trong Bước 3 của công cụ Habit Loop 5 phút.
 
 2. **Cập nhật giá và câu hỏi thường gặp (FAQ) cho Habit Tracker số**:
