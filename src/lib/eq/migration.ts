@@ -1,7 +1,15 @@
 import { EMOTIONS, type EmotionKey } from '../emotions'
 
+function removeVietnameseTones(str: string): string {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'd')
+}
+
 /**
- * Ánh xạ một nhãn cảm xúc cũ (không phân biệt hoa thường, bỏ khoảng trắng)
+ * Ánh xạ một nhãn cảm xúc cũ (không phân biệt hoa thường, bỏ khoảng trắng, có/không dấu)
  * sang khóa định danh EmotionKey (10 cảm xúc chuẩn Q14).
  * Trả về null nếu không khớp cảm xúc nào.
  */
@@ -9,12 +17,19 @@ export function mapLegacyEmotionTag(raw: string | null | undefined): EmotionKey 
   if (!raw || typeof raw !== 'string') return null
   const clean = raw.trim().toLowerCase().replace(/\s+/g, '')
   if (!clean) return null
+  const cleanNoTone = removeVietnameseTones(clean)
 
   for (const emotion of EMOTIONS) {
     const keyNorm = emotion.key.toLowerCase().replace(/\s+/g, '')
     const labelNorm = emotion.label.toLowerCase().replace(/\s+/g, '')
     const fullNorm = `${emotion.emoji}${emotion.label}`.toLowerCase().replace(/\s+/g, '')
-    if (clean === keyNorm || clean === labelNorm || clean === fullNorm) {
+    const labelNoTone = removeVietnameseTones(labelNorm)
+    if (
+      clean === keyNorm ||
+      clean === labelNorm ||
+      clean === fullNorm ||
+      cleanNoTone === labelNoTone
+    ) {
       return emotion.key
     }
   }

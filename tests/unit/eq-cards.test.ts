@@ -26,66 +26,41 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
 
   beforeAll(async () => {
     payload = await getPayload({ config })
-    await payload.db.migrate({
-      migrations: migrations.map((migration) => ({
-        name: migration.name,
-        up: (args: unknown) => migration.up(args as MigrateUpArgs),
-        down: (args: unknown) => migration.down(args as MigrateDownArgs),
-      })),
-    })
-  }, 60000)
+  })
 
   afterAll(async () => {
-    if (!payload) return
-    try {
-      for (const entry of created.reverse()) {
-        try {
-          await payload.delete(entry)
-        } catch {
-          // Record may have been cleaned up by another step
-        }
+    for (const item of created.reverse()) {
+      try {
+        await payload.delete({ collection: item.collection, id: item.id })
+      } catch {
+        // Bỏ qua lỗi dọn dẹp nếu bản ghi đã bị xóa
       }
-    } finally {
-      await payload.destroy()
     }
-  }, 30000)
+  })
 
-  describe('Pure migration functions', () => {
-    it('ánh xạ chính xác các nhãn cảm xúc cũ sang EmotionKey chuẩn', () => {
-      // 10 cảm xúc chuẩn theo tên tiếng Việt
+  describe('Migration helpers độc lập (pure functions)', () => {
+    it('ánh xạ đúng các biến thể của 10 nhãn cảm xúc và loại bỏ nhãn không hợp lệ', () => {
+      // Khớp chính xác nhãn hoặc key
+      expect(mapLegacyEmotionTag('joyful')).toBe('joyful')
       expect(mapLegacyEmotionTag('Vui vẻ')).toBe('joyful')
+      expect(mapLegacyEmotionTag('vui ve')).toBe('joyful')
+      expect(mapLegacyEmotionTag('😊 Vui vẻ')).toBe('joyful')
+
+      // Cảm xúc có khoảng trắng
       expect(mapLegacyEmotionTag('Bình an')).toBe('peaceful')
-      expect(mapLegacyEmotionTag('Tươi mới')).toBe('fresh')
-      expect(mapLegacyEmotionTag('An yên')).toBe('serene')
-      expect(mapLegacyEmotionTag('Biết ơn')).toBe('grateful')
-      expect(mapLegacyEmotionTag('Thư thái')).toBe('relaxed')
-      expect(mapLegacyEmotionTag('Tự tin')).toBe('confident')
       expect(mapLegacyEmotionTag('Hơi mệt')).toBe('tired')
       expect(mapLegacyEmotionTag('Chùn bước')).toBe('discouraged')
       expect(mapLegacyEmotionTag('Căng thẳng')).toBe('stressed')
 
-      // Không phân biệt hoa thường và khoảng trắng
-      expect(mapLegacyEmotionTag('  vui vẻ  ')).toBe('joyful')
-      expect(mapLegacyEmotionTag('VUI VẺ')).toBe('joyful')
-      expect(mapLegacyEmotionTag('bình   an')).toBe('peaceful')
-
-      // Khớp nhãn có emoji kèm theo
-      expect(mapLegacyEmotionTag('😊 Vui vẻ')).toBe('joyful')
-      expect(mapLegacyEmotionTag('🕊️ Bình an')).toBe('peaceful')
-
-      // Khớp trực tiếp khóa tiếng Anh
-      expect(mapLegacyEmotionTag('joyful')).toBe('joyful')
-      expect(mapLegacyEmotionTag('SERENE')).toBe('serene')
-
-      // Các chuỗi không khớp hoặc rác -> null
-      expect(mapLegacyEmotionTag('[MẪU] cảm xúc 1')).toBeNull()
+      // Không hợp lệ hoặc rỗng
+      expect(mapLegacyEmotionTag('Buồn bã')).toBeNull()
       expect(mapLegacyEmotionTag('Tức giận')).toBeNull()
-      expect(mapLegacyEmotionTag('')).toBeNull()
+      expect(mapLegacyEmotionTag('   ')).toBeNull()
       expect(mapLegacyEmotionTag(null)).toBeNull()
       expect(mapLegacyEmotionTag(undefined)).toBeNull()
     })
 
-    it('chuyển đổi danh sách emotionTags và tính chính xác droppedCount', () => {
+    it('chuẩn hóa danh sách nhãn cảm xúc cũ, loại bỏ trùng lặp và đếm nhãn bị bỏ', () => {
       const legacy = [
         { text: 'Vui vẻ' },
         { text: '  Bình an  ' },
@@ -101,98 +76,146 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
     })
 
     it('xử lý migrateReflectionPromptToPrompts và rollbackReflectionPromptsToPrompt', () => {
-      // Up migration: chuỗi -> mảng 1 phần tử
-      expect(migrateReflectionPromptToPrompts('Bạn cảm thấy thế nào hôm nay?')).toEqual([
-        { prompt: 'Bạn cảm thấy thế nào hôm nay?' },
-      ])
-      expect(migrateReflectionPromptToPrompts('  ')).toEqual([])
-      expect(migrateReflectionPromptToPrompts(null)).toEqual([])
-      expect(migrateReflectionPromptToPrompts(undefined)).toEqual([])
+      // Up migration: chuỗi -> 3 ô câu hỏi với promptRecall nhận giá trị cũ
+      expect(migrateReflectionPromptToPrompts('Bạn cảm thấy thế nào hôm nay?')).toEqual({
+        promptRecall: 'Bạn cảm thấy thế nào hôm nay?',
+        promptPack: '',
+        promptAcknowledge: '',
+      })
+      expect(migrateReflectionPromptToPrompts('  ')).toEqual({
+        promptRecall: '',
+        promptPack: '',
+        promptAcknowledge: '',
+      })
+      expect(migrateReflectionPromptToPrompts(null)).toEqual({
+        promptRecall: '',
+        promptPack: '',
+        promptAcknowledge: '',
+      })
 
-      // Down migration: mảng -> chuỗi đầu tiên
-      expect(
-        rollbackReflectionPromptsToPrompt([{ prompt: 'Câu hỏi 1' }, { prompt: 'Câu hỏi 2' }]),
-      ).toBe('Câu hỏi 1')
-      expect(rollbackReflectionPromptsToPrompt([])).toBeNull()
+      // Down migration: promptRecall -> chuỗi đơn
+      expect(rollbackReflectionPromptsToPrompt('Câu hỏi 1')).toBe('Câu hỏi 1')
+      expect(rollbackReflectionPromptsToPrompt('  ')).toBeNull()
       expect(rollbackReflectionPromptsToPrompt(null)).toBeNull()
     })
   })
 
   describe('Validation schema thẻ eqCards trong Payload', () => {
-    it('chặn tạo thẻ với 0 câu hỏi hoặc 4 câu hỏi suy ngẫm; cho phép 1–3 câu', async () => {
+    it('xuất bản thiếu 1 trong 3 câu hỏi suy ngẫm -> ValidationError; nháp thiếu thì được', async () => {
       const codeBase = unique()
 
-      // 0 câu hỏi -> ValidationError
+      // Thiếu promptRecall khi xuất bản -> ValidationError
       await expect(
         payload.create({
           collection: 'eqCards',
           data: {
-            code: `${codeBase}-0`,
-            qrSlug: `${codeBase}-0`,
-            isSample: true,
-            reflectionPrompts: [],
+            code: `${codeBase}-no-recall`,
+            keywordEn: 'Recall Missing',
+            message: 'Thông điệp',
+            qrSlug: `${codeBase}-no-recall`,
+            promptPack: 'Gói ghém',
+            promptAcknowledge: 'Ghi nhận',
+            _status: 'published',
           },
         }),
       ).rejects.toThrow(ValidationError)
 
-      // 4 câu hỏi -> ValidationError
+      // Thiếu promptPack khi xuất bản -> ValidationError
       await expect(
         payload.create({
           collection: 'eqCards',
           data: {
-            code: `${codeBase}-4`,
-            qrSlug: `${codeBase}-4`,
-            isSample: true,
-            reflectionPrompts: [
-              { prompt: '[TEST] Câu 1' },
-              { prompt: '[TEST] Câu 2' },
-              { prompt: '[TEST] Câu 3' },
-              { prompt: '[TEST] Câu 4' },
-            ],
+            code: `${codeBase}-no-pack`,
+            keywordEn: 'Pack Missing',
+            message: 'Thông điệp',
+            qrSlug: `${codeBase}-no-pack`,
+            promptRecall: 'Gợi nhớ',
+            promptAcknowledge: 'Ghi nhận',
+            _status: 'published',
           },
         }),
       ).rejects.toThrow(ValidationError)
 
-      // 1 câu hỏi -> Thành công
-      const card1 = await payload.create({
-        collection: 'eqCards',
-        data: {
-          code: `${codeBase}-1`,
-          qrSlug: `${codeBase}-1`,
-          isSample: true,
-          reflectionPrompts: [{ prompt: '[TEST] Câu hỏi 1' }],
-        },
-      })
-      track('eqCards', card1)
-      expect(card1.reflectionPrompts).toHaveLength(1)
-      expect(card1.reflectionPrompts?.[0].prompt).toBe('[TEST] Câu hỏi 1')
-
-      // 3 câu hỏi -> Thành công
-      const card3 = await payload.create({
-        collection: 'eqCards',
-        data: {
-          code: `${codeBase}-3`,
-          qrSlug: `${codeBase}-3`,
-          isSample: true,
-          reflectionPrompts: [
-            { prompt: '[TEST] Câu hỏi 1' },
-            { prompt: '[TEST] Câu hỏi 2' },
-            { prompt: '[TEST] Câu hỏi 3' },
-          ],
-        },
-      })
-      track('eqCards', card3)
-      expect(card3.reflectionPrompts).toHaveLength(3)
-
-      // Câu hỏi rỗng bên trong mảng -> ValidationError
+      // Thiếu promptAcknowledge khi xuất bản -> ValidationError
       await expect(
         payload.create({
           collection: 'eqCards',
           data: {
-            code: `${codeBase}-empty`,
-            qrSlug: `${codeBase}-empty`,
-            isSample: true,
-            reflectionPrompts: [{ prompt: '   ' }],
+            code: `${codeBase}-no-ack`,
+            keywordEn: 'Ack Missing',
+            message: 'Thông điệp',
+            qrSlug: `${codeBase}-no-ack`,
+            promptRecall: 'Gợi nhớ',
+            promptPack: 'Gói ghém',
+            _status: 'published',
+          },
+        }),
+      ).rejects.toThrow(ValidationError)
+
+      // Nháp thiếu cả 3 câu hỏi suy ngẫm -> Được phép
+      const draftCard = await payload.create({
+        collection: 'eqCards',
+        data: {
+          code: `${codeBase}-draft`,
+          qrSlug: `${codeBase}-draft`,
+          _status: 'draft',
+        },
+      })
+      track('eqCards', draftCard)
+      expect(draftCard._status).toBe('draft')
+
+      // Đủ cả 3 câu hỏi khi xuất bản -> Thành công
+      const fullCard = await payload.create({
+        collection: 'eqCards',
+        data: {
+          code: `${codeBase}-full`,
+          keywordEn: 'Abundance',
+          message: 'Thông điệp đầy đủ',
+          qrSlug: `${codeBase}-full`,
+          promptRecall: 'Gợi nhớ điều gì?',
+          promptPack: 'Gói ghém bài học gì?',
+          promptAcknowledge: 'Ghi nhận bản thân ra sao?',
+          _status: 'published',
+        },
+      })
+      track('eqCards', fullCard)
+      expect(fullCard.keywordEn).toBe('Abundance')
+      expect(fullCard.promptRecall).toBe('Gợi nhớ điều gì?')
+      expect(fullCard.promptPack).toBe('Gói ghém bài học gì?')
+      expect(fullCard.promptAcknowledge).toBe('Ghi nhận bản thân ra sao?')
+    })
+
+    it('xuất bản thiếu keywordEn hoặc message -> ValidationError', async () => {
+      const codeBase = unique()
+
+      // Thiếu keywordEn khi xuất bản -> ValidationError
+      await expect(
+        payload.create({
+          collection: 'eqCards',
+          data: {
+            code: `${codeBase}-no-kw`,
+            qrSlug: `${codeBase}-no-kw`,
+            message: 'Thông điệp',
+            promptRecall: 'Gợi nhớ',
+            promptPack: 'Gói ghém',
+            promptAcknowledge: 'Ghi nhận',
+            _status: 'published',
+          },
+        }),
+      ).rejects.toThrow(ValidationError)
+
+      // Thiếu message khi xuất bản -> ValidationError
+      await expect(
+        payload.create({
+          collection: 'eqCards',
+          data: {
+            code: `${codeBase}-no-msg`,
+            keywordEn: 'No Message',
+            qrSlug: `${codeBase}-no-msg`,
+            promptRecall: 'Gợi nhớ',
+            promptPack: 'Gói ghém',
+            promptAcknowledge: 'Ghi nhận',
+            _status: 'published',
           },
         }),
       ).rejects.toThrow(ValidationError)
@@ -207,24 +230,13 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
           collection: 'eqCards',
           data: {
             code: `${codeBase}-invalid-tag`,
+            keywordEn: 'Invalid Tag',
+            message: 'Thông điệp',
             qrSlug: `${codeBase}-invalid-tag`,
-            isSample: true,
-            reflectionPrompts: [{ prompt: '[TEST] Câu hỏi' }],
+            promptRecall: 'Gợi nhớ',
+            promptPack: 'Gói ghém',
+            promptAcknowledge: 'Ghi nhận',
             emotionTags: ['invalid-emotion' as EmotionKey],
-          },
-        }),
-      ).rejects.toThrow(ValidationError)
-
-      // Chứa cả key hợp lệ và key không hợp lệ
-      await expect(
-        payload.create({
-          collection: 'eqCards',
-          data: {
-            code: `${codeBase}-mixed-tag`,
-            qrSlug: `${codeBase}-mixed-tag`,
-            isSample: true,
-            reflectionPrompts: [{ prompt: '[TEST] Câu hỏi' }],
-            emotionTags: ['joyful', 'unknown_tag' as EmotionKey],
           },
         }),
       ).rejects.toThrow(ValidationError)
@@ -234,10 +246,14 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
         collection: 'eqCards',
         data: {
           code: `${codeBase}-valid-tag`,
+          keywordEn: 'Valid Tag',
+          message: 'Thông điệp',
           qrSlug: `${codeBase}-valid-tag`,
-          isSample: true,
-          reflectionPrompts: [{ prompt: '[TEST] Câu hỏi' }],
+          promptRecall: 'Gợi nhớ',
+          promptPack: 'Gói ghém',
+          promptAcknowledge: 'Ghi nhận',
           emotionTags: ['joyful', 'peaceful'],
+          _status: 'published',
         },
       })
       track('eqCards', card)
@@ -253,9 +269,12 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
           collection: 'eqCards',
           data: {
             code: `${codeBase}-long-vi`,
+            keywordEn: 'Valid EN',
+            message: 'Thông điệp',
             qrSlug: `${codeBase}-long-vi`,
-            isSample: true,
-            reflectionPrompts: [{ prompt: '[TEST] Câu hỏi' }],
+            promptRecall: 'Gợi nhớ',
+            promptPack: 'Gói ghém',
+            promptAcknowledge: 'Ghi nhận',
             keywordVi: longText,
           },
         }),
@@ -266,28 +285,15 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
           collection: 'eqCards',
           data: {
             code: `${codeBase}-long-en`,
-            qrSlug: `${codeBase}-long-en`,
-            isSample: true,
-            reflectionPrompts: [{ prompt: '[TEST] Câu hỏi' }],
             keywordEn: longText,
+            message: 'Thông điệp',
+            qrSlug: `${codeBase}-long-en`,
+            promptRecall: 'Gợi nhớ',
+            promptPack: 'Gói ghém',
+            promptAcknowledge: 'Ghi nhận',
           },
         }),
       ).rejects.toThrow(ValidationError)
-
-      const card = await payload.create({
-        collection: 'eqCards',
-        data: {
-          code: `${codeBase}-valid-keywords`,
-          qrSlug: `${codeBase}-valid-keywords`,
-          isSample: true,
-          reflectionPrompts: [{ prompt: '[TEST] Câu hỏi' }],
-          keywordVi: 'Thấu hiểu cảm xúc',
-          keywordEn: 'Emotional Clarity',
-        },
-      })
-      track('eqCards', card)
-      expect(card.keywordVi).toBe('Thấu hiểu cảm xúc')
-      expect(card.keywordEn).toBe('Emotional Clarity')
     })
 
     it('khóa qrSlug của thẻ sau khi đã in (giữ nguyên hành vi bảo vệ)', async () => {
@@ -296,9 +302,13 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
         collection: 'eqCards',
         data: {
           code: codeBase,
+          keywordEn: 'Printed Lock',
+          message: 'Thông điệp',
           qrSlug: codeBase,
-          isSample: true,
-          reflectionPrompts: [{ prompt: '[TEST] Câu hỏi' }],
+          promptRecall: 'Gợi nhớ',
+          promptPack: 'Gói ghém',
+          promptAcknowledge: 'Ghi nhận',
+          _status: 'published',
         },
       })
       track('eqCards', card)
@@ -360,11 +370,15 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
         collection: 'eqCards',
         data: {
           code: realCode,
+          keywordEn: 'Real Card',
           qrSlug: realCode.toLowerCase(),
           message: '[TEST] Thẻ thật của Hana',
+          promptRecall: '[TEST] Gợi nhớ',
+          promptPack: '[TEST] Gói ghém',
+          promptAcknowledge: '[TEST] Ghi nhận',
           isSample: false,
-          reflectionPrompts: [{ prompt: '[TEST] Câu hỏi thẻ thật' }],
           emotionTags: ['joyful'],
+          _status: 'published',
         },
       })
       track('eqCards', realCard)

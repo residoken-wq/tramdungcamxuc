@@ -116,22 +116,22 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
     ALTER TABLE "_eq_cards_v" DROP COLUMN IF EXISTS "version_reflection_prompt";
   `)
 
-  // 6. Xây dựng lại bảng emotion_tags với kiểu enum
+  // 6. Xây dựng lại bảng emotion_tags với kiểu enum (select hasMany: order, parent_id, value, id)
   await db.execute(sql`
     DROP TABLE IF EXISTS "eq_cards_emotion_tags" CASCADE;
 
     CREATE TABLE "eq_cards_emotion_tags" (
-      "_order" integer NOT NULL,
-      "_parent_id" integer NOT NULL,
-      "id" varchar PRIMARY KEY NOT NULL,
+      "order" integer NOT NULL,
+      "parent_id" integer NOT NULL,
+      "id" serial PRIMARY KEY NOT NULL,
       "value" "public"."enum_eq_cards_emotion_tags"
     );
 
-    ALTER TABLE "eq_cards_emotion_tags" ADD CONSTRAINT "eq_cards_emotion_tags_parent_id_fk"
-      FOREIGN KEY ("_parent_id") REFERENCES "public"."eq_cards"("id") ON DELETE cascade ON UPDATE no action;
+    ALTER TABLE "eq_cards_emotion_tags" ADD CONSTRAINT "eq_cards_emotion_tags_parent_fk"
+      FOREIGN KEY ("parent_id") REFERENCES "public"."eq_cards"("id") ON DELETE cascade ON UPDATE no action;
 
-    CREATE INDEX "eq_cards_emotion_tags_order_idx" ON "eq_cards_emotion_tags" USING btree ("_order");
-    CREATE INDEX "eq_cards_emotion_tags_parent_id_idx" ON "eq_cards_emotion_tags" USING btree ("_parent_id");
+    CREATE INDEX "eq_cards_emotion_tags_order_idx" ON "eq_cards_emotion_tags" USING btree ("order");
+    CREATE INDEX "eq_cards_emotion_tags_parent_idx" ON "eq_cards_emotion_tags" USING btree ("parent_id");
   `)
 
   // Gom và chuyển đổi dữ liệu nhãn cảm xúc thẻ chính
@@ -148,10 +148,9 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
     totalDroppedCards += droppedCount
     for (let i = 0; i < tags.length; i++) {
       const tagKey = tags[i]
-      const tagId = randomUUID()
       await db.execute(sql`
-        INSERT INTO "eq_cards_emotion_tags" ("_order", "_parent_id", "id", "value")
-        VALUES (${i + 1}, ${parentId}, ${tagId}, ${tagKey});
+        INSERT INTO "eq_cards_emotion_tags" ("order", "parent_id", "value")
+        VALUES (${i + 1}, ${parentId}, ${tagKey});
       `)
     }
   }
@@ -161,18 +160,17 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
     DROP TABLE IF EXISTS "_eq_cards_v_version_emotion_tags" CASCADE;
 
     CREATE TABLE "_eq_cards_v_version_emotion_tags" (
-      "_order" integer NOT NULL,
-      "_parent_id" integer NOT NULL,
+      "order" integer NOT NULL,
+      "parent_id" integer NOT NULL,
       "id" serial PRIMARY KEY NOT NULL,
-      "value" "public"."enum__eq_cards_v_version_emotion_tags",
-      "_uuid" varchar
+      "value" "public"."enum__eq_cards_v_version_emotion_tags"
     );
 
-    ALTER TABLE "_eq_cards_v_version_emotion_tags" ADD CONSTRAINT "_eq_cards_v_version_emotion_tags_parent_id_fk"
-      FOREIGN KEY ("_parent_id") REFERENCES "public"."_eq_cards_v"("id") ON DELETE cascade ON UPDATE no action;
+    ALTER TABLE "_eq_cards_v_version_emotion_tags" ADD CONSTRAINT "_eq_cards_v_version_emotion_tags_parent_fk"
+      FOREIGN KEY ("parent_id") REFERENCES "public"."_eq_cards_v"("id") ON DELETE cascade ON UPDATE no action;
 
-    CREATE INDEX "_eq_cards_v_version_emotion_tags_order_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("_order");
-    CREATE INDEX "_eq_cards_v_version_emotion_tags_parent_id_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("_parent_id");
+    CREATE INDEX "_eq_cards_v_version_emotion_tags_order_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("order");
+    CREATE INDEX "_eq_cards_v_version_emotion_tags_parent_idx" ON "_eq_cards_v_version_emotion_tags" USING btree ("parent_id");
   `)
 
   const versionTagsByParent = new Map<number, Array<{ text?: string | null }>>()
@@ -188,10 +186,9 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
     totalDroppedVersions += droppedCount
     for (let i = 0; i < tags.length; i++) {
       const tagKey = tags[i]
-      const uuid = randomUUID()
       await db.execute(sql`
-        INSERT INTO "_eq_cards_v_version_emotion_tags" ("_order", "_parent_id", "value", "_uuid")
-        VALUES (${i + 1}, ${parentId}, ${tagKey}, ${uuid});
+        INSERT INTO "_eq_cards_v_version_emotion_tags" ("order", "parent_id", "value")
+        VALUES (${i + 1}, ${parentId}, ${tagKey});
       `)
     }
   }
@@ -215,24 +212,48 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
   `)
   const versions = getRows<{ id: number; version_prompt_recall: string | null }>(versionsResult)
 
-  // 2. Đọc lại emotion tags enum hiện tại để đưa về dạng text
+  // 2. Đọc lại emotion tags enum hiện tại để đưa về dạng text (kiểm tra an toàn qua information_schema)
+  const colRes = await db.execute(sql`
+    SELECT column_name FROM information_schema.columns
+    WHERE table_name = 'eq_cards_emotion_tags' AND column_name IN ('parent_id', '_parent_id');
+  `)
+  const hasParentId = getRows<{ column_name: string }>(colRes).some(
+    (r) => r.column_name === 'parent_id',
+  )
+  const parentCol = hasParentId ? '"parent_id"' : '"_parent_id"'
+  const orderCol = hasParentId ? '"order"' : '"_order"'
+
   const currentTagsResult = await db.execute(sql`
-    SELECT "id", "_parent_id", "_order", "value" FROM "eq_cards_emotion_tags" ORDER BY "_parent_id", "_order";
+    SELECT "id", ${sql.raw(parentCol)} as "parent_id", ${sql.raw(orderCol)} as "order", "value"
+    FROM "eq_cards_emotion_tags"
+    ORDER BY 2, 3;
   `)
   const currentTags = getRows<{
-    id: string
-    _parent_id: number
-    _order: number
+    id: number | string
+    parent_id: number
+    order: number
     value: string | null
   }>(currentTagsResult)
 
+  const vColRes = await db.execute(sql`
+    SELECT column_name FROM information_schema.columns
+    WHERE table_name = '_eq_cards_v_version_emotion_tags' AND column_name IN ('parent_id', '_parent_id');
+  `)
+  const hasVParentId = getRows<{ column_name: string }>(vColRes).some(
+    (r) => r.column_name === 'parent_id',
+  )
+  const vParentCol = hasVParentId ? '"parent_id"' : '"_parent_id"'
+  const vOrderCol = hasVParentId ? '"order"' : '"_order"'
+
   const currentVersionTagsResult = await db.execute(sql`
-    SELECT "id", "_parent_id", "_order", "value" FROM "_eq_cards_v_version_emotion_tags" ORDER BY "_parent_id", "_order";
+    SELECT "id", ${sql.raw(vParentCol)} as "parent_id", ${sql.raw(vOrderCol)} as "order", "value"
+    FROM "_eq_cards_v_version_emotion_tags"
+    ORDER BY 2, 3;
   `)
   const currentVersionTags = getRows<{
     id: number
-    _parent_id: number
-    _order: number
+    parent_id: number
+    order: number
     value: string | null
   }>(currentVersionTagsResult)
 
@@ -302,9 +323,10 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
 
   for (const row of currentTags) {
     if (row.value) {
+      const id = randomUUID()
       await db.execute(sql`
         INSERT INTO "eq_cards_emotion_tags" ("_order", "_parent_id", "id", "text")
-        VALUES (${row._order}, ${row._parent_id}, ${row.id}, ${row.value});
+        VALUES (${row.order}, ${row.parent_id}, ${id}, ${row.value});
       `)
     }
   }
@@ -332,7 +354,7 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
       const uuid = randomUUID()
       await db.execute(sql`
         INSERT INTO "_eq_cards_v_version_emotion_tags" ("_order", "_parent_id", "text", "_uuid")
-        VALUES (${row._order}, ${row._parent_id}, ${row.value}, ${uuid});
+        VALUES (${row.order}, ${row.parent_id}, ${row.value}, ${uuid});
       `)
     }
   }
