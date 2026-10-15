@@ -47,7 +47,11 @@ async function getTestOtpCode(page: Page, email: string): Promise<string> {
 
 async function expectCodeStep(page: Page) {
   const codeInput = page.locator('input[name="code"]')
-  const alert = page.locator('div[role="alert"]').filter({ hasText: /\S/ })
+  // Bỏ qua thông báo chuyển trang của Next (#__next-route-announcer__, cũng role="alert"):
+  // tới trang đăng nhập bằng link nên nó có chữ tiêu đề trang.
+  const alert = page
+    .locator('div[role="alert"]:not(#__next-route-announcer__)')
+    .filter({ hasText: /\S/ })
   await expect(codeInput.or(alert).first()).toBeVisible({ timeout: 15000 })
   if (await alert.isVisible()) {
     throw new Error(`OTP request failed on page: ${await alert.innerText()}`)
