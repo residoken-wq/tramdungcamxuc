@@ -1,8 +1,8 @@
 import 'server-only'
 import { notFound } from 'next/navigation'
-import { getPayload, type Payload } from 'payload'
+import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import { sql } from '@payloadcms/db-postgres'
-import type { Product } from '@/payload-types'
+import type { Order, Product } from '@/payload-types'
 import config from '@/payload.config'
 import { vi } from '../i18n/vi'
 import { experienceOrderSchema, type ExperienceOrderInput } from '../forms/schemas'
@@ -323,27 +323,75 @@ export async function createExperienceOrder(
   }
 }
 
-const orderCreationLocks = new Map<string, Promise<unknown>>()
+interface DrizzleDbExecutor {
+  execute: (query: unknown) => Promise<unknown>
+}
 
-export async function withOrderLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
-  while (orderCreationLocks.has(key)) {
-    try {
-      await orderCreationLocks.get(key)
-    } catch {
-      // Bỏ qua lỗi từ luồng trước
+function getTransactionSessions(
+  payload: Payload,
+): Record<string, { db?: DrizzleDbExecutor }> | undefined {
+  return (payload.db as unknown as { sessions?: Record<string, { db?: DrizzleDbExecutor }> })
+    .sessions
+}
+
+// REVIEW-REQUIRED: Có transactionID mà không còn session (Payload đã rollback khi một lệnh local API
+// lỗi) → ném lỗi, KHÔNG rơi về kết nối chung (ghi ngoài transaction).
+function getTransactionDb(
+  payload: Payload,
+  transactionID?: number | string | null,
+): DrizzleDbExecutor {
+  if (transactionID) {
+    const db = getTransactionSessions(payload)?.[String(transactionID)]?.db
+    if (db && typeof db.execute === 'function') {
+      return db
     }
+    throw new PaymentError(vi.payment.errors.transactionUnavailable)
   }
-  let resolveLock!: () => void
-  const lockPromise = new Promise<void>((resolve) => {
-    resolveLock = resolve
-  })
-  orderCreationLocks.set(key, lockPromise)
+  return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
+}
+
+// REVIEW-REQUIRED: Bắt đầu transaction bắt buộc – adapter không hỗ trợ → từ chối, không chạy không khóa.
+async function beginPaymentTransaction(payload: Payload): Promise<number | string> {
+  if (
+    typeof payload.db?.beginTransaction !== 'function' ||
+    typeof payload.db.commitTransaction !== 'function' ||
+    typeof payload.db.rollbackTransaction !== 'function'
+  ) {
+    throw new PaymentError(vi.payment.errors.transactionUnavailable)
+  }
+  const transactionID = await payload.db.beginTransaction()
+  if (!transactionID) {
+    throw new PaymentError(vi.payment.errors.transactionUnavailable)
+  }
+  return transactionID
+}
+
+// REVIEW-REQUIRED: commitTransaction của adapter im lặng khi session đã bị hủy (một lệnh trong
+// transaction lỗi và Payload đã rollback). Kiểm session còn sống trước khi commit; mất → ném lỗi.
+async function commitPaymentTransaction(
+  payload: Payload,
+  transactionID: number | string,
+): Promise<void> {
+  if (!getTransactionSessions(payload)?.[String(transactionID)]) {
+    throw new PaymentError(vi.payment.errors.transactionUnavailable)
+  }
+  await payload.db.commitTransaction(transactionID)
+}
+
+async function rollbackPaymentTransaction(
+  payload: Payload,
+  transactionID: number | string,
+  label: string,
+): Promise<void> {
   try {
-    return await fn()
-  } finally {
-    orderCreationLocks.delete(key)
-    resolveLock()
+    await payload.db.rollbackTransaction(transactionID)
+  } catch (rollbackErr) {
+    console.error(`[Payment] Lỗi rollback transaction ${label}:`, rollbackErr)
   }
+}
+
+function getDrizzleDb(payload: Payload): DrizzleDbExecutor {
+  return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
 }
 
 /**
@@ -439,15 +487,32 @@ export async function createDigitalToolOrder(
   })
   assertValidBankConfig(siteSettings)
 
-  // Khóa theo cặp (customerId, productId) quanh bước tìm + tạo đơn
-  const lockKey = `${customerId}:${product.id}`
-  return await withOrderLock(lockKey, async () => {
-    // 6. Kiểm tra xem khách đã có quyền active còn hiệu lực hay chưa
-    const access = await getAccess(customerId, product.id, { payload, now })
-    if (access.hasAccess && access.status === 'active') {
-      const toolUrl = getToolUrl(product)
-      throw new AlreadyHasActiveAccessError(vi.entitlement.alreadyHasActiveAccess, toolUrl)
-    }
+  // 6. Kiểm tra xem khách đã có quyền active còn hiệu lực hay chưa – TRƯỚC khi mở transaction:
+  // getAccess chạy trên kết nối chung; gọi trong lúc giữ khóa sẽ cần kết nối thứ hai và có thể treo
+  // cả pool khi nhiều yêu cầu cùng chờ khóa.
+  const access = await getAccess(customerId, product.id, { payload, now })
+  if (access.hasAccess && access.status === 'active') {
+    const toolUrl = getToolUrl(product)
+    throw new AlreadyHasActiveAccessError(vi.entitlement.alreadyHasActiveAccess, toolUrl)
+  }
+
+  // Khóa theo cặp (customerId, productId) quanh bước tìm + tạo đơn bằng Postgres transaction + advisory lock
+  const transactionID = await beginPaymentTransaction(payload)
+  // A fresh req per call: Payload's local API merges `context` into the req it is given.
+  const txReq = () =>
+    ({
+      transactionID,
+      context: { paymentAction: true },
+    }) as unknown as PayloadRequest
+
+  try {
+    const txDb = getTransactionDb(payload, transactionID)
+    // REVIEW-REQUIRED: Khóa tạo đơn bằng Postgres advisory lock trong transaction.
+    // pg_advisory_xact_lock(hashtext('order:' || customerId || ':' || productId))
+    // tự động giải phóng khi commit hoặc rollback, ngăn chặn tạo 2 đơn pending trùng lặp.
+    await txDb.execute(
+      sql`SELECT pg_advisory_xact_lock(hashtext(${`order:${customerId}:${product.id}`}))`,
+    )
 
     // 7. Đọc giá hiệu lực từ DB trước
     const effective = getEffectivePrice(product, now)
@@ -470,6 +535,7 @@ export async function createDigitalToolOrder(
       sort: '-createdAt',
       limit: 20,
       overrideAccess: true,
+      req: txReq(),
     })
 
     const reusableOrder = recentPendingOrders.docs.find((ord) => {
@@ -493,7 +559,10 @@ export async function createDigitalToolOrder(
           },
           context: { paymentAction: true },
           overrideAccess: true,
+          req: txReq(),
         })
+
+        await commitPaymentTransaction(payload, transactionID)
 
         return {
           success: true,
@@ -506,6 +575,7 @@ export async function createDigitalToolOrder(
         await cancelOrder(reusableOrder.id, { id: 0, role: 'system' }, 'Giá sản phẩm đã thay đổi', {
           payload,
           now,
+          req: txReq(),
         })
       }
     }
@@ -516,6 +586,7 @@ export async function createDigitalToolOrder(
         collection: 'orders',
         where: { paymentRef: { equals: ref } },
         overrideAccess: true,
+        req: txReq(),
       })
       return totalDocs > 0
     })
@@ -546,14 +617,30 @@ export async function createDigitalToolOrder(
       },
       context: { paymentAction: true },
       overrideAccess: true,
+      req: txReq(),
     })
+
+    await commitPaymentTransaction(payload, transactionID)
+
+    // REVIEW-REQUIRED: COMMIT lỗi (mất kết nối) không ném ra từ adapter → đọc lại đơn trước khi trả payToken.
+    const { totalDocs: savedCount } = await payload.count({
+      collection: 'orders',
+      where: { payToken: { equals: payToken } },
+      overrideAccess: true,
+    })
+    if (savedCount === 0) {
+      throw new PaymentError(vi.payment.errors.transactionUnavailable)
+    }
 
     return {
       success: true,
       payToken,
       message: vi.payment.success.orderCreated,
     }
-  })
+  } catch (err) {
+    await rollbackPaymentTransaction(payload, transactionID, 'tạo đơn')
+    throw err
+  }
 }
 
 /**
@@ -726,14 +813,6 @@ export interface AdminActor {
  * Idempotent: chỉ chuyển pending -> paid; gọi lần 2 không đổi paidAt, không gửi lại email.
  * Ghi nhận nhật ký auditLogs. Sau khi paid: gửi email chứa experienceBookingUrl.
  */
-interface DrizzleDbExecutor {
-  execute: (query: unknown) => Promise<unknown>
-}
-
-function getDrizzleDb(payload: Payload): DrizzleDbExecutor {
-  return (payload.db as unknown as { drizzle: DrizzleDbExecutor }).drizzle
-}
-
 export interface MarkOrderPaidOptions {
   source: 'manual' | 'webhook'
   actorId?: number | string | null
@@ -749,7 +828,7 @@ export interface MarkOrderPaidOptions {
 export async function markOrderPaid(
   orderId: number,
   options: MarkOrderPaidOptions,
-): Promise<unknown> {
+): Promise<Order> {
   const payload = await resolvePayload(options.payload)
 
   const order = await payload.findByID({
@@ -802,29 +881,161 @@ export async function markOrderPaid(
     throw new InvalidOrderStatusError(vi.payment.errors.termsNotAccepted)
   }
 
-  // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB (T2-13 / Q19)
-  // Hỗ trợ cả đơn 'pending' và 'failed' (quá hạn 24h). Lấy trạng thái cũ ngay trong cùng câu truy vấn CTE.
-  // Bảng orders không cấu hình versions (không có _orders_v) nên câu UPDATE trực tiếp an toàn tuyệt đối.
-  const paidAt = now.toISOString()
-  const db = getDrizzleDb(payload)
-  const updateResult = await db.execute(
-    sql`WITH prev AS (
-      SELECT "id", "payment_status"
-      FROM "orders"
-      WHERE "id" = ${orderId} AND "payment_status" IN ('pending', 'failed')
-      FOR UPDATE
-    )
-    UPDATE "orders" AS o
-    SET "payment_status" = 'paid', "paid_at" = ${paidAt}::timestamptz, "updated_at" = ${paidAt}::timestamptz
-    FROM prev
-    WHERE o."id" = prev."id"
-    RETURNING o."id", prev."payment_status" AS "old_status"`,
-  )
-  const rows = (updateResult as { rows?: Array<{ id: number; old_status: string }> }).rows ?? []
+  // Bắt đầu transaction nguyên tử: đổi paid + ghi audit + cấp quyền + deliveryStatus = access_granted
+  const transactionID = await beginPaymentTransaction(payload)
+  // A fresh req per call: Payload's local API merges `context` into the req it is given.
+  const txReq = () =>
+    ({
+      transactionID,
+      context: { paymentAction: true },
+    }) as unknown as PayloadRequest
 
-  // Chỉ khi RETURNING có dòng mới gửi email / cấp quyền / ghi auditLogs;
-  // Không có dòng -> trả kết quả "đã xử lý trước đó" (idempotent), không ném lỗi.
-  if (rows.length === 0) {
+  const paidAt = now.toISOString()
+  let oldStatus = order.paymentStatus
+
+  let packageProduct: Product | null = null
+  let digitalToolProduct: Product | null = null
+  let isPackageOrder = false
+  let isDigitalToolOrder = false
+  // Chỉ lỗi ở bước cấp quyền mới ghi audit grant_entitlements_failed (lỗi khác: rollback, ném lại).
+  let grantStarted = false
+  // Đơn không còn pending/failed (đã paid / đã hủy) → xử lý sau khi rollback, ngoài transaction.
+  let noRowUpdated = false
+
+  try {
+    const txDb = getTransactionDb(payload, transactionID)
+    // REVIEW-REQUIRED: Chuyển trạng thái sang 'paid' nguyên tử bằng một câu UPDATE có điều kiện tại DB (T2-13 / Q19)
+    // Hỗ trợ cả đơn 'pending' và 'failed' (quá hạn 24h). Lấy trạng thái cũ ngay trong cùng câu truy vấn CTE.
+    const updateResult = await txDb.execute(
+      sql`WITH prev AS (
+        SELECT "id", "payment_status"
+        FROM "orders"
+        WHERE "id" = ${orderId} AND "payment_status" IN ('pending', 'failed')
+        FOR UPDATE
+      )
+      UPDATE "orders" AS o
+      SET "payment_status" = 'paid', "paid_at" = ${paidAt}::timestamptz, "updated_at" = ${paidAt}::timestamptz
+      FROM prev
+      WHERE o."id" = prev."id"
+      RETURNING o."id", prev."payment_status" AS "old_status"`,
+    )
+    const rows =
+      (updateResult as { rows?: Array<{ id: number; old_status: 'pending' | 'failed' }> }).rows ??
+      []
+
+    // Chỉ khi RETURNING có dòng mới gửi email / cấp quyền / ghi auditLogs;
+    // Không có dòng -> trả kết quả "đã xử lý trước đó" (idempotent), không ném lỗi.
+    if (rows.length === 0) {
+      noRowUpdated = true
+    }
+
+    if (!noRowUpdated) {
+      // REVIEW-REQUIRED: Ghi nhật ký thao tác trong cùng transaction
+      oldStatus = rows[0].old_status
+      const auditAction =
+        options.source === 'webhook'
+          ? 'webhook_payment'
+          : oldStatus === 'failed'
+            ? 'confirm_expired_order'
+            : 'confirm_manual_payment'
+
+      await payload.create({
+        collection: 'auditLogs',
+        data: {
+          actor: options.actorId ? Number(options.actorId) : undefined,
+          action: auditAction,
+          target: `orders:${orderId}`,
+          before: { paymentStatus: oldStatus, paidAt: null },
+          after: { paymentStatus: 'paid', paidAt },
+          at: paidAt,
+        },
+        overrideAccess: true,
+        req: txReq(),
+      })
+
+      // Kiểm tra đơn hàng có chứa sản phẩm dạng package hoặc digital_tool hay không
+      const items = Array.isArray(order.items) ? order.items : []
+
+      for (const item of items) {
+        let p: Product | number | string | null = item.product as Product | number | string | null
+        if (typeof p === 'number' || typeof p === 'string') {
+          p = (await payload.findByID({
+            collection: 'products',
+            id: Number(p),
+            depth: 1,
+            overrideAccess: true,
+            req: txReq(),
+          })) as Product
+        }
+        if (p && typeof p === 'object') {
+          if (p.type === 'package') {
+            packageProduct = p
+            break
+          } else if (p.type === 'digital_tool' && !digitalToolProduct) {
+            digitalToolProduct = p
+          }
+        }
+      }
+
+      isPackageOrder = Boolean(packageProduct)
+      isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
+
+      // REVIEW-REQUIRED: Cấp quyền truy cập trong transaction ("đã thanh toán ⇔ đã cấp quyền").
+      // Nếu cấp quyền thất bại -> rollback cả transaction (đơn vẫn pending/failed, không có quyền nửa vời).
+      if (isPackageOrder || isDigitalToolOrder) {
+        grantStarted = true
+        await grantEntitlementsForOrder(orderId, {
+          payload,
+          now,
+          reqFactory: txReq,
+        })
+        grantStarted = false
+        await payload.update({
+          collection: 'orders',
+          id: orderId,
+          data: { deliveryStatus: 'access_granted' },
+          context: { paymentAction: true },
+          overrideAccess: true,
+          req: txReq(),
+        })
+      }
+    }
+
+    if (noRowUpdated) {
+      await rollbackPaymentTransaction(payload, transactionID, 'markOrderPaid')
+    } else {
+      // REVIEW-REQUIRED: Commit transaction - chốt trạng thái paid và quyền truy cập đồng thời
+      await commitPaymentTransaction(payload, transactionID)
+    }
+  } catch (txErr) {
+    // REVIEW-REQUIRED: Rollback transaction khi bất kỳ thao tác nào thất bại
+    await rollbackPaymentTransaction(payload, transactionID, 'markOrderPaid')
+    console.error('[Payment] Mark order paid failed in transaction for order', orderId, txErr)
+    if (!grantStarted) {
+      throw txErr
+    }
+    // Ghi audit grant_entitlements_failed sau rollback (ngoài transaction)
+    const actor = options.actorId ? Number(options.actorId) : undefined
+    try {
+      await payload.create({
+        collection: 'auditLogs',
+        data: {
+          actor,
+          action: 'grant_entitlements_failed',
+          target: `orders:${orderId}`,
+          before: { error: String(txErr) },
+          after: null,
+          at: now.toISOString(),
+        },
+        overrideAccess: true,
+      })
+    } catch (auditErr) {
+      console.error('[Payment] Failed to record grant_entitlements_failed audit:', auditErr)
+    }
+    throw txErr
+  }
+
+  if (noRowUpdated) {
     const refreshed = await payload.findByID({
       collection: 'orders',
       id: orderId,
@@ -861,88 +1072,22 @@ export async function markOrderPaid(
     throw new InvalidOrderStatusError(vi.payment.errors.onlyPendingCanBeConfirmed)
   }
 
-  // REVIEW-REQUIRED: Ghi nhật ký thao tác: webhook ghi 'webhook_payment' (actor rỗng); manual: đơn failed ghi 'confirm_expired_order', đơn pending ghi 'confirm_manual_payment'
-  const oldStatus = rows[0].old_status
-  const auditAction =
-    options.source === 'webhook'
-      ? 'webhook_payment'
-      : oldStatus === 'failed'
-        ? 'confirm_expired_order'
-        : 'confirm_manual_payment'
-
-  await payload.create({
-    collection: 'auditLogs',
-    data: {
-      actor: options.actorId ? Number(options.actorId) : undefined,
-      action: auditAction,
-      target: `orders:${orderId}`,
-      before: { paymentStatus: oldStatus, paidAt: null },
-      after: { paymentStatus: 'paid', paidAt },
-      at: paidAt,
-    },
+  // REVIEW-REQUIRED: COMMIT lỗi (mất kết nối) không ném ra từ adapter → đọc lại đơn, chỉ gửi email
+  // khi đơn thật sự đã 'paid' trong DB.
+  const committed = await payload.findByID({
+    collection: 'orders',
+    id: orderId,
+    depth: 0,
     overrideAccess: true,
   })
-
-  // Kiểm tra đơn hàng có chứa sản phẩm dạng package hoặc digital_tool hay không
-  const items = Array.isArray(order.items) ? order.items : []
-  let packageProduct: Product | null = null
-  let digitalToolProduct: Product | null = null
-
-  for (const item of items) {
-    let p: Product | number | string | null = item.product as Product | number | string | null
-    if (typeof p === 'number' || typeof p === 'string') {
-      p = (await payload.findByID({
-        collection: 'products',
-        id: Number(p),
-        depth: 1,
-        overrideAccess: true,
-      })) as Product
-    }
-    if (p && typeof p === 'object') {
-      if (p.type === 'package') {
-        packageProduct = p
-        break
-      } else if (p.type === 'digital_tool' && !digitalToolProduct) {
-        digitalToolProduct = p
-      }
-    }
+  if (committed?.paymentStatus !== 'paid') {
+    throw new PaymentError(vi.payment.errors.transactionUnavailable)
   }
 
-  const isPackageOrder = Boolean(packageProduct)
-  const isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
-
-  // REVIEW-REQUIRED: Cấp quyền truy cập cho đơn gói Growth Mirror hoặc đơn công cụ số
-  let grantFailed = false
-  if (isPackageOrder || isDigitalToolOrder) {
-    try {
-      await grantEntitlementsForOrder(orderId, { payload, now })
-      await payload.update({
-        collection: 'orders',
-        id: orderId,
-        data: { deliveryStatus: 'access_granted' },
-        context: { paymentAction: true },
-        overrideAccess: true,
-      })
-    } catch (grantErr) {
-      grantFailed = true
-      console.error('[Payment] Grant entitlements failed for order', orderId, grantErr)
-      const actor = options.actorId ? Number(options.actorId) : undefined
-      await payload.create({
-        collection: 'auditLogs',
-        data: {
-          actor,
-          action: 'grant_entitlements_failed',
-          target: `orders:${orderId}`,
-          before: { error: String(grantErr) },
-          after: null,
-          at: now.toISOString(),
-        },
-        overrideAccess: true,
-      })
-    }
-  }
-
-  // Gửi email xác nhận kèm link đặt lịch / hướng dẫn (chỉ gửi khi cấp quyền không bị lỗi)
+  // REVIEW-REQUIRED: Gửi email xác nhận sau khi commit (không gửi trong transaction).
+  // Email lỗi -> đơn vẫn paid + đã cấp quyền, ghi audit confirmation_email_failed.
+  let emailFailed = false
+  let emailSent = false
   const siteSettings = await payload.findGlobal({
     slug: 'siteSettings',
     overrideAccess: true,
@@ -957,7 +1102,7 @@ export async function markOrderPaid(
           overrideAccess: true,
         })
 
-  if (customerDoc?.email && !grantFailed) {
+  if (customerDoc?.email) {
     try {
       if (isPackageOrder && packageProduct) {
         // Tìm các workshop sắp diễn ra có audienceProducts chứa gói này
@@ -1019,13 +1164,7 @@ export async function markOrderPaid(
           options.emailSender,
         )
 
-        await payload.update({
-          collection: 'orders',
-          id: orderId,
-          data: { deliveryStatus: 'email_sent' },
-          context: { paymentAction: true },
-          overrideAccess: true,
-        })
+        emailSent = true
       } else if (isDigitalToolOrder && digitalToolProduct) {
         // REVIEW-REQUIRED: Gửi email kích hoạt đơn mua lẻ công cụ số
         const siteUrl = getSiteUrl()
@@ -1043,7 +1182,8 @@ export async function markOrderPaid(
           },
           options.emailSender,
         )
-        // Lưu ý: với đơn công cụ số, deliveryStatus vẫn giữ là 'access_granted' đã cập nhật ở trên
+
+        emailSent = true
       } else {
         // Đơn trải nghiệm 149k giữ nguyên hành vi
         await sendExperienceOrderPaidEmail(
@@ -1058,17 +1198,48 @@ export async function markOrderPaid(
           options.emailSender,
         )
 
-        await payload.update({
-          collection: 'orders',
-          id: orderId,
-          data: { deliveryStatus: 'email_sent' },
-          context: { paymentAction: true },
-          overrideAccess: true,
-        })
+        emailSent = true
       }
     } catch (emailErr) {
+      emailFailed = true
       console.error('[Payment] Confirmation email delivery failed for order', orderId, emailErr)
-      // Đơn hàng vẫn giữ nguyên trạng thái paid (không revert)
+      const actor = options.actorId ? Number(options.actorId) : undefined
+      try {
+        await payload.create({
+          collection: 'auditLogs',
+          data: {
+            actor,
+            action: 'confirmation_email_failed',
+            target: `orders:${orderId}`,
+            before: { error: String(emailErr) },
+            after: null,
+            at: now.toISOString(),
+          },
+          overrideAccess: true,
+        })
+      } catch (auditErr) {
+        console.error('[Payment] Failed to record confirmation_email_failed audit:', auditErr)
+      }
+    }
+  }
+
+  // Cập nhật trạng thái ngoài khối gửi email: email đã đi mà ghi trạng thái lỗi thì không coi là
+  // "email lỗi" (tránh gửi lại lần 2 bằng nút "Gửi lại email xác nhận").
+  if (emailSent) {
+    try {
+      await payload.update({
+        collection: 'orders',
+        id: orderId,
+        data: { deliveryStatus: 'email_sent' },
+        context: { paymentAction: true },
+        overrideAccess: true,
+      })
+    } catch (statusErr) {
+      console.error(
+        '[Payment] Failed to set deliveryStatus email_sent for order',
+        orderId,
+        statusErr,
+      )
     }
   }
 
@@ -1079,7 +1250,11 @@ export async function markOrderPaid(
     overrideAccess: true,
   })
 
-  return updatedOrder ?? order
+  const result = updatedOrder ?? order
+  if (emailFailed) {
+    Object.assign(result, { __emailFailed: true })
+  }
+  return result
 }
 
 /**
@@ -1115,7 +1290,7 @@ export async function cancelOrder(
   orderId: number,
   user: AdminActor,
   reason?: string,
-  options: { payload?: Payload; now?: Date } = {},
+  options: { payload?: Payload; now?: Date; req?: PayloadRequest } = {},
 ): Promise<unknown> {
   // REVIEW-REQUIRED: Chỉ tài khoản 'owner' hoặc 'system' mới được hủy đơn hàng
   if (!user || (user.role !== 'owner' && user.role !== 'system')) {
@@ -1128,6 +1303,7 @@ export async function cancelOrder(
     collection: 'orders',
     id: orderId,
     overrideAccess: true,
+    req: options.req,
   })
 
   if (!order) {
@@ -1149,7 +1325,8 @@ export async function cancelOrder(
 
   // REVIEW-REQUIRED: Hủy đơn hàng nguyên tử bằng câu lệnh UPDATE có điều kiện tại DB
   // Bảng orders không cấu hình versions (không có _orders_v). UPDATE chỉ đổi khi payment_status = 'pending'.
-  const db = getDrizzleDb(payload)
+  const txId = options.req ? await options.req.transactionID : undefined
+  const db = getTransactionDb(payload, txId)
   const updateResult = await db.execute(
     sql`UPDATE "orders" SET "payment_status" = 'cancelled', "notes" = ${nextNotes ?? null}, "updated_at" = ${nowIso}::timestamptz WHERE "id" = ${orderId} AND "payment_status" = 'pending' RETURNING "id"`,
   )
@@ -1160,6 +1337,7 @@ export async function cancelOrder(
       collection: 'orders',
       id: orderId,
       overrideAccess: true,
+      req: options.req,
     })
     if (refreshed?.paymentStatus === 'paid') {
       throw new CannotCancelPaidOrderError(vi.payment.errors.cannotCancelPaidOrder)
@@ -1182,12 +1360,14 @@ export async function cancelOrder(
       at: nowIso,
     },
     overrideAccess: true,
+    req: options.req,
   })
 
   const updatedOrder = await payload.findByID({
     collection: 'orders',
     id: orderId,
     overrideAccess: true,
+    req: options.req,
   })
 
   return updatedOrder ?? order
@@ -1321,4 +1501,227 @@ export async function acceptOrderTermsForToken(
     success: true,
     message: vi.payment.success.termsAccepted,
   }
+}
+
+/**
+ * Gửi lại email xác nhận đơn hàng (CHỈ role 'owner').
+ * Chỉ cho phép đối với đơn 'paid' có deliveryStatus khác 'email_sent'.
+ * Gửi lại email tương ứng với loại đơn (package, digital_tool, experience),
+ * cập nhật deliveryStatus = 'email_sent', và ghi nhận nhật ký auditLogs.
+ */
+export async function resendPaymentConfirmation(
+  orderId: number,
+  user: AdminActor,
+  options: {
+    payload?: Payload
+    now?: Date
+    emailSender?: EmailSender
+  } = {},
+): Promise<Order> {
+  // REVIEW-REQUIRED: Chỉ role owner mới được gửi lại email xác nhận đơn hàng
+  if (!user || user.role !== 'owner') {
+    throw new UnauthorizedPaymentError(vi.payment.errors.unauthorized)
+  }
+
+  const payload = await resolvePayload(options.payload)
+  const now = options.now ?? new Date()
+
+  const order = (await payload.findByID({
+    collection: 'orders',
+    id: orderId,
+    overrideAccess: true,
+  })) as Order | null
+
+  if (!order) {
+    throw new OrderNotFoundError(vi.payment.errors.orderNotFound)
+  }
+
+  // Chỉ cho phép gửi lại khi đơn đã paid
+  if (order.paymentStatus !== 'paid') {
+    throw new InvalidOrderStatusError(vi.payment.errors.orderNotPaid)
+  }
+
+  // Chỉ cho phép gửi lại khi deliveryStatus khác 'email_sent'
+  if (order.deliveryStatus === 'email_sent') {
+    throw new PaymentError(vi.payment.errors.alreadyEmailSent)
+  }
+
+  const customerId =
+    typeof order.customer === 'object' && order.customer !== null
+      ? (order.customer as { id: number }).id
+      : Number(order.customer)
+
+  const customerDoc = await payload.findByID({
+    collection: 'customers',
+    id: customerId,
+    overrideAccess: true,
+  })
+
+  if (!customerDoc?.email) {
+    throw new PaymentError(vi.payment.errors.customerEmailNotFound)
+  }
+
+  // Xác định loại sản phẩm
+  const items = Array.isArray(order.items) ? order.items : []
+  let packageProduct: Product | null = null
+  let digitalToolProduct: Product | null = null
+
+  for (const item of items) {
+    let p: Product | number | string | null = item.product as Product | number | string | null
+    if (typeof p === 'number' || typeof p === 'string') {
+      p = (await payload.findByID({
+        collection: 'products',
+        id: Number(p),
+        depth: 1,
+        overrideAccess: true,
+      })) as Product
+    }
+    if (p && typeof p === 'object') {
+      if (p.type === 'package') {
+        packageProduct = p
+        break
+      } else if (p.type === 'digital_tool' && !digitalToolProduct) {
+        digitalToolProduct = p
+      }
+    }
+  }
+
+  const isPackageOrder = Boolean(packageProduct)
+  const isDigitalToolOrder = !isPackageOrder && Boolean(digitalToolProduct)
+
+  // REVIEW-REQUIRED: Giành quyền gửi bằng một câu UPDATE có điều kiện TRƯỚC khi gửi: hai lần bấm /
+  // hai owner cùng lúc → chỉ một bên gửi. Gửi lỗi → trả deliveryStatus về như cũ.
+  const previousDelivery = order.deliveryStatus ?? 'none'
+  const claimResult = await getDrizzleDb(payload).execute(
+    sql`UPDATE "orders" SET "delivery_status" = 'email_sent', "updated_at" = ${now.toISOString()}::timestamptz
+      WHERE "id" = ${orderId} AND "payment_status" = 'paid'
+        AND "delivery_status" IS DISTINCT FROM 'email_sent'
+      RETURNING "id"`,
+  )
+  if (((claimResult as { rows?: unknown[] }).rows ?? []).length === 0) {
+    throw new PaymentError(vi.payment.errors.alreadyEmailSent)
+  }
+
+  try {
+    const siteSettings = await payload.findGlobal({
+      slug: 'siteSettings',
+      overrideAccess: true,
+    })
+
+    if (isPackageOrder && packageProduct) {
+      let upcomingWorkshops: Array<{ title: string; timeString: string }> = []
+      try {
+        const workshopsRes = await payload.find({
+          collection: 'workshops',
+          where: {
+            audienceProducts: { contains: packageProduct.id },
+            startsAt: { greater_than_equal: now.toISOString() },
+          },
+          sort: 'startsAt',
+          limit: 5,
+          overrideAccess: true,
+        })
+        upcomingWorkshops = workshopsRes.docs.map(
+          (w: { startsAt?: string | null; title?: string | null }) => {
+            const timeStr = w.startsAt
+              ? new Intl.DateTimeFormat('vi-VN', {
+                  timeZone: 'Asia/Bangkok',
+                  dateStyle: 'full',
+                  timeStyle: 'short',
+                }).format(new Date(w.startsAt))
+              : ''
+            return {
+              title: w.title || '',
+              timeString: timeStr,
+            }
+          },
+        )
+      } catch {
+        // Bỏ qua nếu lỗi truy vấn workshop
+      }
+
+      const comps = Array.isArray(packageProduct.components) ? packageProduct.components : []
+      const hasDigitalTools = comps.some((c) => Boolean(c.grantsProduct))
+      const hasCommunity = comps.some((c) => (c.label || '').toLowerCase().includes('cộng đồng'))
+      const communityZaloUrl =
+        hasCommunity && siteSettings?.zaloGroupUrl ? siteSettings.zaloGroupUrl : null
+
+      await sendPackageOrderPaidEmail(
+        payload,
+        {
+          name: customerDoc.name || 'bạn',
+          email: customerDoc.email,
+          paymentRef: order.paymentRef || '',
+          amount: order.total,
+          packageName: packageProduct.name || 'Gói Growth Mirror',
+          components: comps.map((c) => ({
+            label: c.label || '',
+            quantity: c.quantity,
+          })),
+          hasDigitalTools,
+          toolsUrl: getSiteUrl(),
+          coachingBookingUrl: siteSettings?.experienceBookingUrl || null,
+          upcomingWorkshops,
+          communityZaloUrl,
+        },
+        options.emailSender,
+      )
+    } else if (isDigitalToolOrder && digitalToolProduct) {
+      const siteUrl = getSiteUrl()
+      const toolUrl = `${siteUrl}${getToolUrl(digitalToolProduct)}`
+      await sendDigitalToolOrderPaidEmail(
+        payload,
+        {
+          name: customerDoc.name || 'bạn',
+          email: customerDoc.email,
+          paymentRef: order.paymentRef || '',
+          amount: order.total,
+          toolName: digitalToolProduct.name || 'Công cụ số',
+          accessDurationDays: digitalToolProduct.accessDurationDays,
+          toolUrl,
+        },
+        options.emailSender,
+      )
+    } else {
+      await sendExperienceOrderPaidEmail(
+        payload,
+        {
+          name: customerDoc.name || 'bạn',
+          email: customerDoc.email,
+          paymentRef: order.paymentRef || '',
+          amount: order.total,
+          bookingUrl: siteSettings?.experienceBookingUrl,
+        },
+        options.emailSender,
+      )
+    }
+  } catch (sendErr) {
+    await getDrizzleDb(payload).execute(
+      sql`UPDATE "orders" SET "delivery_status" = ${previousDelivery}::"enum_orders_delivery_status"
+        WHERE "id" = ${orderId} AND "delivery_status" = 'email_sent'`,
+    )
+    throw sendErr
+  }
+
+  const updatedOrder = (await payload.findByID({
+    collection: 'orders',
+    id: orderId,
+    overrideAccess: true,
+  })) as Order
+
+  // REVIEW-REQUIRED: Ghi nhật ký auditLogs sau khi gửi lại email thành công
+  await payload.create({
+    collection: 'auditLogs',
+    data: {
+      actor: user.id ? Number(user.id) : undefined,
+      action: 'resend_payment_confirmation',
+      target: `orders:${orderId}`,
+      before: { deliveryStatus: order.deliveryStatus },
+      after: { deliveryStatus: 'email_sent' },
+      at: now.toISOString(),
+    },
+    overrideAccess: true,
+  })
+
+  return updatedOrder
 }
