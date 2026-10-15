@@ -54,7 +54,8 @@ export function PhysicalDeckButton({
   })
 
   const safeLink = safeHref(urlWithUtm)
-  if (!safeLink) {
+  // A physical deck link must be an absolute https URL (no relative / mailto / tel).
+  if (!safeLink || !safeLink.startsWith('https://')) {
     return null
   }
 
@@ -63,7 +64,7 @@ export function PhysicalDeckButton({
       url: safeLink,
       type: 'shopee',
       platform: 'shopee',
-      productSlug: product.slug || 'bo-the-eq-buddy',
+      ...(product.slug ? { productSlug: product.slug } : {}),
     })
   }
 

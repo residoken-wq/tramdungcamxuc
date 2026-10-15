@@ -100,6 +100,10 @@ test.describe('EQ Card QR Page Flow (T3-03)', () => {
               direction: 'ltr',
             },
           },
+          keywordEn: '[TEST] Keyword',
+          promptRecall: '[TEST] Gợi nhớ?',
+          promptPack: '[TEST] Gói ghém?',
+          promptAcknowledge: '[TEST] Ghi nhận?',
           _status: 'published',
         },
       })
@@ -116,6 +120,8 @@ test.describe('EQ Card QR Page Flow (T3-03)', () => {
       // Kiểm tra thông điệp và câu chuyện hiển thị trên giao diện
       await expect(guestPage.getByText(expectedMessage)).toBeVisible({ timeout: 15000 })
       await expect(guestPage.getByText(expectedStory)).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText('[TEST] Keyword')).toBeVisible()
+      await expect(guestPage.getByText('[TEST] Ghi nhận?')).toBeVisible()
     } finally {
       // 3. Dọn dẹp dữ liệu kiểm thử
       try {

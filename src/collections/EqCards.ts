@@ -3,15 +3,13 @@ import {
   contentCollection,
   date,
   image,
-  lines,
   number,
   relation,
-  richText,
   select,
   text,
-  textarea,
   topicOptions,
 } from '../fields/content'
+import { EMOTIONS } from '../lib/emotions'
 
 const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   if (originalDoc?.printedAt) {
@@ -31,14 +29,131 @@ const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) =
   return data
 }
 
+const validateRequiredOnPublish =
+  (label: string, maxLength?: number) =>
+  (
+    value: unknown,
+    {
+      data,
+      siblingData,
+    }: { data?: Record<string, unknown>; siblingData?: Record<string, unknown> },
+  ) => {
+    const status = data?._status ?? siblingData?._status
+    if (status === 'draft') {
+      if (typeof value === 'string' && maxLength && value.length > maxLength) {
+        return `${label} không được vượt quá ${maxLength} ký tự.`
+      }
+      return true
+    }
+    if (typeof value !== 'string' || value.trim().length === 0) {
+      return `Vui lòng nhập ${label.toLocaleLowerCase('vi')}.`
+    }
+    if (maxLength && value.length > maxLength) {
+      return `${label} không được vượt quá ${maxLength} ký tự.`
+    }
+    return true
+  }
+
 const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', 'EQ Buddy', 'code', [
   { ...text('code', 'Mã thẻ', true), unique: true },
-  textarea('message', 'Thông điệp'),
-  richText('story', 'Câu chuyện'),
-  textarea('reflectionPrompt', 'Câu hỏi suy ngẫm'),
-  textarea('smallAction', 'Hành động nhỏ'),
+  {
+    name: 'keywordEn',
+    label: 'Từ khóa (mặt trước)',
+    type: 'text',
+    maxLength: 40,
+    admin: {
+      description: 'Từ khóa tiếng Anh trên mặt trước thẻ (tối đa 40 ký tự). Bắt buộc khi xuất bản.',
+    },
+    validate: validateRequiredOnPublish('Từ khóa (mặt trước)', 40),
+  },
+  {
+    ...text('keywordVi', 'Từ khóa tiếng Việt'),
+    maxLength: 40,
+    admin: {
+      description: 'Không bắt buộc – bộ thẻ in hiện không có.',
+    },
+    validate: (value: string | null | undefined) =>
+      !value || value.length <= 40 || 'Từ khóa tiếng Việt không được vượt quá 40 ký tự.',
+  },
+  {
+    name: 'message',
+    label: 'Thông điệp (mặt trước)',
+    type: 'textarea',
+    admin: {
+      description: 'Câu thông điệp mặt trước thẻ. Bắt buộc khi xuất bản.',
+    },
+    validate: validateRequiredOnPublish('Thông điệp (mặt trước)'),
+  },
+  {
+    type: 'collapsible',
+    label: 'Mặt sau – 3 câu hỏi',
+    admin: {
+      initCollapsed: false,
+    },
+    fields: [
+      {
+        name: 'promptRecall',
+        label: 'Gợi nhớ',
+        type: 'textarea',
+        admin: {
+          description: 'Câu hỏi gợi nhớ trên mặt sau thẻ. Bắt buộc khi xuất bản.',
+        },
+        validate: validateRequiredOnPublish('Gợi nhớ'),
+      },
+      {
+        name: 'promptPack',
+        label: 'Gói ghém',
+        type: 'textarea',
+        admin: {
+          description: 'Câu hỏi gói ghém trên mặt sau thẻ. Bắt buộc khi xuất bản.',
+        },
+        validate: validateRequiredOnPublish('Gói ghém'),
+      },
+      {
+        name: 'promptAcknowledge',
+        label: 'Ghi nhận',
+        type: 'textarea',
+        admin: {
+          description: 'Câu hỏi ghi nhận trên mặt sau thẻ. Bắt buộc khi xuất bản.',
+        },
+        validate: validateRequiredOnPublish('Ghi nhận'),
+      },
+    ],
+  },
+  {
+    name: 'story',
+    label: 'Câu chuyện',
+    type: 'richText',
+    admin: { description: 'Không bắt buộc – bộ thẻ in hiện không có.' },
+  },
+  {
+    name: 'smallAction',
+    label: 'Hành động nhỏ',
+    type: 'textarea',
+    admin: { description: 'Không bắt buộc – bộ thẻ in hiện không có.' },
+  },
   select('topic', 'Chủ đề', topicOptions),
-  lines('emotionTags', 'Nhãn cảm xúc'),
+  select(
+    'emotionTags',
+    'Nhãn cảm xúc',
+    EMOTIONS.map((e) => [e.key, `${e.emoji} ${e.label}`]),
+    {
+      hasMany: true,
+      admin: { description: 'Không bắt buộc – bộ thẻ in hiện không có.' },
+      validate: (value: unknown) => {
+        if (!value) return true
+        const validKeys = new Set<string>(EMOTIONS.map((e) => e.key))
+        if (Array.isArray(value)) {
+          const invalid = value.filter((v) => typeof v !== 'string' || !validKeys.has(v))
+          if (invalid.length > 0) {
+            return `Nhãn cảm xúc không hợp lệ: ${invalid.join(', ')}`
+          }
+          return true
+        }
+        return 'Nhãn cảm xúc phải là danh sách.'
+      },
+    },
+  ),
   relation('relatedProduct', 'Sản phẩm liên quan', 'products'),
   image('image', 'Ảnh thẻ'),
   image('shareImage45', 'Ảnh chia sẻ 4:5'),
@@ -87,10 +202,14 @@ export const EqCards = {
   ...baseCollection,
   admin: {
     ...baseCollection.admin,
+    defaultColumns: ['code', 'keywordEn', 'qrSlug', 'printedAt', '_status'],
     components: {
       ...baseCollection.admin?.components,
       beforeListTable: ['@/components/admin/EqQrExportButton#EqQrExportButton'],
     },
   },
-  hooks: { beforeChange: [lockPrintedQR] },
+  hooks: {
+    ...baseCollection.hooks,
+    beforeChange: [lockPrintedQR],
+  },
 }

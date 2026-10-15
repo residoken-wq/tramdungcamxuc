@@ -43,6 +43,11 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
   }
 
   const hasStory = Boolean(card.story && !isRichTextEmpty(card.story))
+  const prompts: { label: string; text: string | null }[] = [
+    { label: vi.eqBuddy.cardPage.promptRecall, text: card.promptRecall },
+    { label: vi.eqBuddy.cardPage.promptPack, text: card.promptPack },
+    { label: vi.eqBuddy.cardPage.promptAcknowledge, text: card.promptAcknowledge },
+  ].filter((p) => Boolean(p.text?.trim()))
 
   return (
     <div className="w-full py-10 sm:py-16 px-6 sm:px-8">
@@ -66,11 +71,16 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
             </span>
           </div>
 
-          {/* Thông điệp thẻ (Playfair Display Italic cỡ lớn) */}
+          {/* Front: keyword + message */}
+          {card.keywordEn && (
+            <h1 className="text-center font-display text-4xl sm:text-5xl text-bright-magenta tracking-wide">
+              {card.keywordEn}
+            </h1>
+          )}
           {card.message && (
             <div className="text-center my-6 sm:my-8 px-2 sm:px-4">
               <blockquote className="font-quote italic text-2xl sm:text-3xl md:text-4xl text-deep-navy leading-relaxed sm:leading-relaxed">
-                &ldquo;{card.message}&rdquo;
+                {card.message}
               </blockquote>
             </div>
           )}
@@ -82,6 +92,28 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
           >
             <HeartLine width={80} height={28} />
           </div>
+
+          {/* Back: the three printed prompts */}
+          {prompts.length > 0 && (
+            <section
+              aria-label={vi.eqBuddy.cardPage.promptsHeading}
+              className="border-t border-deep-navy/10 pt-8 mt-8"
+            >
+              <h2 className="font-ui text-sm sm:text-base font-bold text-bright-magenta uppercase tracking-wider mb-6">
+                {vi.eqBuddy.cardPage.promptsHeading}
+              </h2>
+              <dl className="space-y-6">
+                {prompts.map((p) => (
+                  <div key={p.label}>
+                    <dt className="font-ui text-base font-bold text-deep-navy">{p.label}</dt>
+                    <dd className="mt-1 font-sans text-base sm:text-lg text-deep-navy/85 leading-relaxed">
+                      {p.text}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
 
           {/* Câu chuyện của thẻ */}
           {hasStory && (

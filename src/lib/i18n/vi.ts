@@ -1439,7 +1439,12 @@ export const vi = {
       defaultMetaTitle: 'Thẻ EQ Buddy',
       metaTitle: (code: string, snippet: string) =>
         snippet ? `EQ BUDDY · ${code} – ${snippet}` : `EQ BUDDY · ${code}`,
-      defaultMetaDescription: 'Thông điệp và câu chuyện từ bộ thẻ EQ Buddy – Trạm Dừng Cảm Xúc',
+      defaultMetaDescription:
+        'Thông điệp và câu hỏi suy ngẫm từ bộ thẻ EQ Buddy – Trạm Dừng Cảm Xúc',
+      promptsHeading: 'Dừng lại một nhịp',
+      promptRecall: 'Gợi nhớ',
+      promptPack: 'Gói ghém',
+      promptAcknowledge: 'Ghi nhận',
       backToDeck: 'Trở về EQ Buddy',
       drawAnotherCard: 'Rút thêm một thẻ',
       storyHeading: 'Câu chuyện',

@@ -6,7 +6,11 @@ import config from '@/payload.config'
 export interface PublicEqCard {
   id: number | string
   code: string
+  keywordEn: string | null
   message: string | null
+  promptRecall: string | null
+  promptPack: string | null
+  promptAcknowledge: string | null
   story: unknown | null
   qrSlug: string
   printedAt: string | null
@@ -39,7 +43,11 @@ export const getPublishedEqCardByQrSlug = cache(
         select: {
           id: true,
           code: true,
+          keywordEn: true,
           message: true,
+          promptRecall: true,
+          promptPack: true,
+          promptAcknowledge: true,
           story: true,
           qrSlug: true,
           printedAt: true,
@@ -56,7 +64,11 @@ export const getPublishedEqCardByQrSlug = cache(
       return {
         id: doc.id,
         code: doc.code || '',
+        keywordEn: doc.keywordEn || null,
         message: doc.message || null,
+        promptRecall: doc.promptRecall || null,
+        promptPack: doc.promptPack || null,
+        promptAcknowledge: doc.promptAcknowledge || null,
         story: doc.story || null,
         qrSlug: doc.qrSlug || cleanSlug,
         printedAt: doc.printedAt ? String(doc.printedAt) : null,

@@ -28,6 +28,7 @@ const mockCards = [
     id: 1,
     code: 'B-01',
     qrSlug: 'b-01-binh-an',
+    keywordEn: '[TEST] Keyword',
     message: 'Bình an là khi bạn nhận ra mọi cảm xúc đều đến để dạy bạn điều gì đó.',
     _status: 'published',
     shareImage45: null,
@@ -49,7 +50,7 @@ const mockCards = [
     message: 'Thông điệp thẻ B-03 có ảnh 9:16 đã tải lên.',
     _status: 'published',
     shareImage45: null,
-    shareImage916: { url: 'https://cdn.example.com/cards/b-03-916.png' },
+    shareImage916: { url: '/api/media/file/b-03-916.png' },
   },
   {
     id: 4,
@@ -167,7 +168,8 @@ describe('EQ Buddy Share & Offers Suite (T3-05)', () => {
         },
       )
       expect(res.status).toBe(302)
-      expect(res.headers.get('location')).toBe('https://cdn.example.com/cards/b-03-916.png')
+      // relative media URL stays relative (not resolved against the container host)
+      expect(res.headers.get('location')).toBe('/api/media/file/b-03-916.png')
     })
 
     it('generates 4x5 PNG with correct IHDR dimensions (1080x1350) and public cache headers', async () => {

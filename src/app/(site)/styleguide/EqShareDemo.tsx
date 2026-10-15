@@ -8,17 +8,17 @@ import { RelatedOffer } from '@/components/eq/RelatedOffer'
 export function EqShareDemo() {
   const sampleDeckProduct = {
     name: '[MẪU] Bộ Thẻ EQ Buddy Vật Lý (26 Thẻ)',
-    slug: 'bo-the-eq-buddy',
+    slug: 'mau-bo-the-vat-ly',
     type: 'physical_external' as const,
-    externalUrl: 'https://shopee.vn/tramdungcamxuc-eq-buddy-deck',
+    externalUrl: 'https://example.com/mau-bo-the-shopee',
   }
 
   const sampleOfferProduct = {
     id: 999,
     name: '[MẪU] Gói Đồng Hành Growth Mirror (CLEAR)',
-    slug: 'growth-mirror-clear',
+    slug: 'mau-san-pham-lien-quan',
     shortDescription:
-      'Phiên khai vấn 1:1 cùng Hana Lương và trọn bộ công cụ số Habit Tracker + EQ Buddy vĩnh viễn.',
+      '[MẪU] Mô tả ngắn của sản phẩm liên quan.',
     saleStatus: 'on_sale' as const,
     price: 2500000,
     salePrice: 1750000,
@@ -41,7 +41,7 @@ export function EqShareDemo() {
           <span className="text-xs text-deep-navy/60">Mã thẻ: B-01</span>
         </div>
         <div className="py-6 flex justify-center bg-warm-ivory/50 rounded-lg border border-deep-navy/5">
-          <CardShareButtons cardCode="B-01" qrSlug="b-01-binh-an" />
+          <CardShareButtons cardCode="MAU-01" qrSlug="mau-01" />
         </div>
       </div>
 

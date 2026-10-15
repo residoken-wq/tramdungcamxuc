@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og'
 import { notFound } from 'next/navigation'
-import { NextResponse } from 'next/server'
 import React from 'react'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
@@ -10,8 +9,11 @@ import { loadFonts } from '@/lib/og/fonts.server'
 export const dynamic = 'force-dynamic'
 
 function calculateMessageStyle(length: number, is45: boolean) {
+  if (length > 220) {
+    return { fontSize: is45 ? 26 : 30, lineHeight: 1.45 }
+  }
   if (length > 160) {
-    return { fontSize: is45 ? 32 : 36, lineHeight: 1.45 }
+    return { fontSize: is45 ? 30 : 34, lineHeight: 1.45 }
   }
   if (length > 110) {
     return { fontSize: is45 ? 38 : 42, lineHeight: 1.4 }
@@ -40,8 +42,12 @@ export async function GET(
   const result = await payload.find({
     collection: 'eqCards',
     where: {
-      and: [{ qrSlug: { equals: qrSlug } }, { _status: { equals: 'published' } }],
+      and: [
+        { qrSlug: { equals: qrSlug.trim().toLowerCase() } },
+        { _status: { equals: 'published' } },
+      ],
     },
+    select: { code: true, keywordEn: true, message: true, shareImage45: true, shareImage916: true },
     limit: 1,
     depth: 1,
   })
@@ -59,12 +65,9 @@ export async function GET(
     'url' in card.shareImage45 &&
     card.shareImage45.url
   ) {
-    const rawUrl = card.shareImage45.url
-    const redirectUrl =
-      rawUrl.startsWith('http://') || rawUrl.startsWith('https://')
-        ? rawUrl
-        : new URL(rawUrl, request.url).toString()
-    return NextResponse.redirect(redirectUrl, 302)
+    // Keep relative media URLs relative: request.url behind the reverse proxy can be the
+    // container address (T3-05c).
+    return new Response(null, { status: 302, headers: { Location: card.shareImage45.url } })
   }
 
   if (
@@ -74,17 +77,15 @@ export async function GET(
     'url' in card.shareImage916 &&
     card.shareImage916.url
   ) {
-    const rawUrl = card.shareImage916.url
-    const redirectUrl =
-      rawUrl.startsWith('http://') || rawUrl.startsWith('https://')
-        ? rawUrl
-        : new URL(rawUrl, request.url).toString()
-    return NextResponse.redirect(redirectUrl, 302)
+    // Keep relative media URLs relative: request.url behind the reverse proxy can be the
+    // container address (T3-05c).
+    return new Response(null, { status: 302, headers: { Location: card.shareImage916.url } })
   }
 
   // Tự động sinh ảnh theo chuẩn Brand Book 2026
   const fonts = await loadFonts()
   const message = card.message?.trim() || ''
+  const keyword = card.keywordEn?.trim() || ''
   const { fontSize, lineHeight } = calculateMessageStyle(message.length, is45)
 
   const element = (
@@ -150,7 +151,7 @@ export async function GET(
           </div>
         </div>
 
-        {/* 2. Body: Thông điệp cảm xúc (Playfair Display Italic) */}
+        {/* 2. Body: keyword (Anton) + message (Playfair Display Italic), like the printed front */}
         <div
           style={{
             display: 'flex',
@@ -163,6 +164,20 @@ export async function GET(
             width: '100%',
           }}
         >
+          {keyword ? (
+            <div
+              style={{
+                fontFamily: 'Anton',
+                fontSize: is45 ? 76 : 88,
+                color: '#BC039E',
+                letterSpacing: 2,
+                marginBottom: is45 ? 24 : 32,
+                textAlign: 'center',
+              }}
+            >
+              {keyword}
+            </div>
+          ) : null}
           <div
             style={{
               fontFamily: 'Playfair Display',
@@ -176,7 +191,7 @@ export async function GET(
               wordBreak: 'break-word',
             }}
           >
-            {message ? `“${message}”` : ''}
+            {message}
           </div>
 
           <div
@@ -232,7 +247,7 @@ export async function GET(
     width,
     height,
     headers: {
-      'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+      'Cache-Control': 'public, max-age=300, stale-while-revalidate=300',
     },
     fonts: [
       {
