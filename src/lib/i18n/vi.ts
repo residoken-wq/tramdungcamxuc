@@ -531,6 +531,13 @@ export const vi = {
     downloadNotFound: 'Tài liệu không còn khả dụng trên hệ thống.',
     noLongerFree: 'Tài nguyên này không còn được tặng miễn phí.',
   },
+  downloads: {
+    notBelongToProduct: 'Tài liệu không còn thuộc sản phẩm này.',
+    fileNotFound: 'Tập tin không tồn tại.',
+    cloudReadError: 'Không thể đọc dữ liệu tập tin từ lưu trữ đám mây.',
+    cloudFetchError: 'Không thể tải tập tin từ lưu trữ.',
+    localFileNotFound: 'Tập tin không tìm thấy trên máy chủ lưu trữ.',
+  },
   comingSoon: {
     backToLibrary: 'Quay lại Thư viện',
     seriesLabel: 'Sắp ra mắt',

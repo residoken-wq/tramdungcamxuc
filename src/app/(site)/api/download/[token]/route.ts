@@ -146,7 +146,7 @@ export async function GET(
   })
 
   if (!belongsToProduct) {
-    return new Response('Tài liệu không còn thuộc sản phẩm này.', {
+    return new Response(vi.downloads.notBelongToProduct, {
       status: 404,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
@@ -162,14 +162,14 @@ export async function GET(
       overrideAccess: true,
     })
   } catch {
-    return new Response('Tập tin không tồn tại.', {
+    return new Response(vi.downloads.fileNotFound, {
       status: 404,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
   }
 
   if (!fileDoc || !fileDoc.filename) {
-    return new Response('Tập tin không tồn tại.', {
+    return new Response(vi.downloads.fileNotFound, {
       status: 404,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
@@ -202,18 +202,18 @@ export async function GET(
         }),
       )
       if (!s3Res.Body) {
-        return new Response('Không thể đọc dữ liệu tập tin từ lưu trữ đám mây.', { status: 500 })
+        return new Response(vi.downloads.cloudReadError, { status: 500 })
       }
       const webStream = s3Res.Body.transformToWebStream()
       return new Response(webStream, { headers })
     } catch (err) {
       console.error('[Download] Failed to fetch object from S3:', err)
-      return new Response('Không thể tải tập tin từ lưu trữ.', { status: 500 })
+      return new Response(vi.downloads.cloudFetchError, { status: 500 })
     }
   } else {
     const filePath = path.resolve(process.cwd(), 'private', filename)
     if (!fs.existsSync(filePath)) {
-      return new Response('Tập tin không tìm thấy trên máy chủ lưu trữ.', {
+      return new Response(vi.downloads.localFileNotFound, {
         status: 404,
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
       })
