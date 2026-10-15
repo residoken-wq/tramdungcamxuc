@@ -21,6 +21,7 @@
    - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
    - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
    - [3.13. In QR cho bộ thẻ EQ Buddy (EqCards)](#313-in-qr-cho-bộ-thẻ-eq-buddy-eqcards)
+   - [3.14. Ảnh chia sẻ thẻ EQ Buddy và Liên kết Shopee bộ thẻ vật lý](#314-ảnh-chia-sẻ-thẻ-eq-buddy-và-liên-kết-shopee-bộ-thẻ-vật-lý)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
@@ -520,7 +521,45 @@ Tại trường **Trạng thái bán** (`saleStatus`), Hana có thể chọn 1 t
 
 ---
 
+### 3.14. Ảnh chia sẻ thẻ EQ Buddy và Liên kết Shopee bộ thẻ vật lý
+
+#### 3.14.1. Ảnh chia sẻ thẻ trên mạng xã hội (Tỷ lệ 4:5 và 9:16)
+
+**Mục đích**: Học viên khi rút được thẻ có thể bấm nút tải ảnh về máy để đăng lên Facebook, Instagram (dạng bài đăng hoặc Story) hoặc chia sẻ qua Zalo/tin nhắn.
+
+**Cơ chế hoạt động**:
+1. **Hệ thống tự động sinh ảnh đẹp chuẩn nhận diện**:
+   - Mặc định, mỗi khi khách bấm "Tải ảnh 4:5" hoặc "Tải ảnh 9:16", hệ thống sẽ tự động ghép thông điệp của thẻ trên nền gradient pastel thương hiệu Trạm Dừng Cảm Xúc, kèm huy hiệu mã thẻ, chữ ký thương hiệu Trạm Dừng Cảm Xúc và tên miền `tramdungcamxuc.com`.
+   - Hana không cần làm gì thêm, mọi thẻ tạo mới đều có sẵn tính năng tải ảnh chia sẻ tự động.
+2. **Nếu Hana muốn dùng ảnh thiết kế riêng (ví dụ ảnh xuất từ Canva hoặc Photoshop)**:
+   - Mở chi tiết thẻ trong mục **EQ Buddy** -> **Thẻ EQ Buddy**.
+   - Cuộn xuống tìm 2 ô tải ảnh:
+     * **Ảnh chia sẻ 4:5** (`shareImage45`): Dùng cho bài đăng Facebook/Instagram feed. Kích thước chuẩn khuyến nghị: **1080 × 1350 px**.
+     * **Ảnh chia sẻ 9:16** (`shareImage916`): Dùng cho tin/story 24h trên Facebook/Instagram/TikTok. Kích thước chuẩn khuyến nghị: **1080 × 1920 px**.
+   - Sau khi tải ảnh lên, bấm **Xuất bản** (hoặc Lưu).
+   - Ngay lập tức, khi khách bấm nút tải ảnh trên web, hệ thống sẽ ưu tiên trả về đúng ảnh thiết kế riêng của Hana thay cho ảnh tự sinh.
+
+#### 3.14.2. Cấu hình liên kết gian hàng Shopee cho Bộ thẻ vật lý
+
+**Mục đích**: Bán bộ 26 thẻ vật lý trên gian hàng Shopee của Hana. Trên website chỉ đặt nút "Mua bộ thẻ trên Shopee" dẫn khách sang Shopee đặt hàng, không xây giỏ hàng phức tạp và không xử lý giao vận trên website.
+
+**Các bước thực hiện**:
+1. Vào menu **Sản phẩm** -> **Sản phẩm**.
+2. Bấm **Tạo mới** (hoặc mở sản phẩm bộ thẻ vật lý có sẵn):
+   - **Tên sản phẩm**: Ví dụ *Bộ Thẻ EQ Buddy Vật Lý (26 thẻ)*.
+   - **Đường dẫn (Slug)**: `bo-the-eq-buddy`.
+   - **Website**: Chọn `eq` (EQ Buddy).
+   - **Loại sản phẩm**: Chọn **Bộ thẻ vật lý (Shopee)** (`physical_external`).
+   - **Đường dẫn ngoài (externalUrl)**: Dán liên kết sản phẩm trên gian hàng Shopee của Hana (ví dụ: `https://shopee.vn/tramdungcamxuc-eq-buddy-deck`).
+   - **Trạng thái mở bán**: Chọn **Đang mở bán** (`on_sale`).
+3. Bấm **Xuất bản**.
+
+> **Hana lưu ý**: Website sẽ **tự động gắn các mã đo lường chiến dịch (UTM)** như `utm_source=tramdungcamxuc&utm_medium=website` vào đường dẫn khi khách click nút mua. Hana chỉ cần dán link Shopee gốc bình thường, không cần tự thêm tham số UTM thủ công.
+
+---
+
 ## 4. Quản lý Lời chia sẻ của khách hàng (Testimonials)
+
 
 ### 4.1. Thêm một lời chia sẻ mới
 
