@@ -22,6 +22,7 @@ vi.mock('next/headers', () => ({
 
 import { createHmac, randomUUID } from 'node:crypto'
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
 import config from '../../src/payload.config'
 import {
   CUSTOMER_TOKEN_COOKIE,
@@ -44,6 +45,14 @@ describe('Customer Session Management & Isolation (T2-20)', () => {
 
   beforeAll(async () => {
     payload = await getPayload({ config })
+    try {
+      await payload.db.drizzle.execute(
+        sql`UPDATE "users" SET "role" = 'owner' WHERE "email" = 'owner@tramdungcamxuc.com';
+            DELETE FROM "users" WHERE "email" LIKE '%example.test%';`,
+      )
+    } catch {
+      // ignore
+    }
   }, 60000)
 
   afterAll(async () => {
