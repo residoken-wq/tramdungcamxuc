@@ -17,7 +17,10 @@ import { expect, test, type Page, type Response } from '@playwright/test'
  * 6. Dọn dẹp toàn bộ dữ liệu mẫu trong khối finally.
  */
 
-async function bootstrapAdmin(page: Page): Promise<{ id: number; email: string }> {
+async function bootstrapAdmin(
+  page: Page,
+  onCreated: (id: number) => void,
+): Promise<{ id: number; email: string }> {
   await page.goto('/admin/create-first-user', { waitUntil: 'domcontentloaded' })
   const password = `AdminPass-${randomUUID()}`
   const email = `admin-cm02-${randomUUID()}@example.test`
@@ -37,9 +40,13 @@ async function bootstrapAdmin(page: Page): Promise<{ id: number; email: string }
 
   if (!response) throw new Error('First-user registration request was never sent.')
   expect(response.ok()).toBe(true)
+  // Take the id from the registration response and hand it to the caller before any further
+  // request: if a later step fails, the test's finally block can still delete this admin
+  // (a leftover admin breaks every e2e spec that needs an empty admin table).
+  const id = ((await response.json()) as { user: { id: number } }).user.id
+  onCreated(id)
   await expect(page).toHaveURL(/\/admin\/?$/)
-  const me = await (await page.request.get('/api/users/me')).json()
-  return { id: me.user.id, email }
+  return { id, email }
 }
 
 test.describe('CMS Dashboard "Hôm nay" (CM-02)', () => {
@@ -54,8 +61,9 @@ test.describe('CMS Dashboard "Hôm nay" (CM-02)', () => {
 
     try {
       // 1. Khởi tạo tài khoản admin đầu tiên
-      const adminInfo = await bootstrapAdmin(page)
-      adminId = adminInfo.id
+      await bootstrapAdmin(page, (id) => {
+        adminId = id
+      })
 
       // Other e2e tests share this DB (leads from lead forms, orders from checkout),
       // so assert "baseline + 1" instead of an absolute number.
