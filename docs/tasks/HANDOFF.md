@@ -2,6 +2,7 @@
 
 ## Cập nhật 15/10/2026 – đọc mục này trước
 
+- **16/10 – phân vai (anh Nhân)**: Planning (phiên này) điều phối các GĐ, giao cho **PC nhà**; agent CMS riêng lo `docs/plan/CMS_UX.md` (CM-xx, Laptop / Local). Task GĐ nào liên quan CMS / giao diện admin → báo anh Nhân chuyển cho agent CMS. PC nhà: T2-20 (`prompts/T2-20.md`, 🔒 Migration).
 - **15/10 khuya**: T2-19 ĐẠT + merge (PR #125); T3-04 ĐẠT sau T3-04c (PR #127, IT duyệt). Cả 3 máy rảnh. Planning còn: T2-11, T3-06 (cổng GĐ 3).
 - **15/10 tối**: T2-18, T3-05 ĐẠT + merge; T3-02 ĐẠT sau T3-02c (PR #121, IT duyệt cookie khách + kiểm quyền). PC nhà: T3-04 (`prompts/T3-04.md`, 🔒 Migration). Laptop: T2-19 ĐẠT sau T2-19c (PR #125, IT duyệt) → rảnh. Local rảnh. Planning: T2-11, T3-06.
 - **Cổng GĐ 2**: đơn thật qua SePay đã thanh toán và mở khóa tự động (anh Nhân xác nhận 15/10). T2-11 còn: e2e tổng luồng Habit, Lighthouse / axe trang mới, biên bản `GATE_GD2.md` (Planning).
