@@ -9,6 +9,7 @@ import {
   killTransaction,
   type Payload,
   type PayloadRequest,
+  type Where,
 } from 'payload'
 import config from '@/payload.config'
 import type { Product, SiteSetting, Technique } from '@/payload-types'
@@ -120,33 +121,42 @@ export async function getTechniques(payloadInstance?: Payload): Promise<PublicTe
  * Đọc thông tin sản phẩm Habit Tracker số (Habit Hack 1% Better) từ CMS.
  * Nếu sản phẩm không tồn tại hoặc có trạng thái hidden -> trả về null (trang offer gọi notFound()).
  */
-export async function getHabitProduct(payloadInstance?: Payload): Promise<HabitProductData | null> {
+export async function getHabitProduct(
+  payloadInstance?: Payload,
+  options?: { draft?: boolean; previewId?: string | number; user?: unknown },
+): Promise<HabitProductData | null> {
   const payload = await resolvePayload(payloadInstance)
+  const isDraft = Boolean(options?.draft)
 
-  const [productRes, lessonCountRes, techniqueCountRes] = await Promise.all([
-    payload.find({
-      collection: 'products',
-      where: {
+  const productWhere = isDraft
+    ? options?.previewId
+      ? { id: { equals: options.previewId } }
+      : { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } }
+    : {
         and: [
           { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
           { _status: { equals: 'published' } },
         ],
-      },
+      }
+
+  const [productRes, lessonCountRes, techniqueCountRes] = await Promise.all([
+    payload.find({
+      collection: 'products',
+      where: productWhere as unknown as Where,
       limit: 1,
       depth: 1,
-      draft: false,
+      draft: isDraft,
+      // Draft preview: enforce the admin's access. Public read keeps the previous behaviour
+      // (field access such as products.files is admin-only and must not blank the public page).
+      ...(isDraft ? { overrideAccess: false, user: options?.user as never } : {}),
     }),
     payload.count({
       collection: 'lessons',
-      where: {
-        _status: { equals: 'published' },
-      },
+      where: isDraft ? {} : { _status: { equals: 'published' } },
     }),
     payload.count({
       collection: 'techniques',
-      where: {
-        _status: { equals: 'published' },
-      },
+      where: isDraft ? {} : { _status: { equals: 'published' } },
     }),
   ])
 
@@ -156,8 +166,8 @@ export async function getHabitProduct(payloadInstance?: Payload): Promise<HabitP
 
   const doc = productRes.docs[0] as Product
 
-  // Sản phẩm ở trạng thái hidden -> ẩn khỏi trang công khai (theo AGENTS.md)
-  if (doc.saleStatus === 'hidden') {
+  // Sản phẩm ở trạng thái hidden -> ẩn khỏi trang công khai (theo AGENTS.md), trừ khi xem trước
+  if (doc.saleStatus === 'hidden' && !isDraft) {
     return null
   }
 

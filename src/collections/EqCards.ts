@@ -11,6 +11,7 @@ import {
 } from '../fields/content'
 import { EMOTIONS } from '../lib/emotions'
 import { vi } from '../lib/i18n/vi'
+import { collectionLivePreview } from '../lib/live-preview'
 
 const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   if (originalDoc?.printedAt) {
@@ -206,6 +207,7 @@ export const EqCards = {
     description: 'Bộ 26 thẻ bài EQ Buddy giúp nhận diện và điều hòa cảm xúc.',
     defaultColumns: ['code', 'keywordVi', 'keywordEn', 'qrSlug', 'printedAt', '_status'],
     listSearchableFields: ['code', 'keywordVi', 'keywordEn', 'qrSlug'],
+    livePreview: collectionLivePreview('eqCards'),
     components: {
       ...baseCollection.admin?.components,
       beforeListTable: ['@/components/admin/EqQrExportButton#EqQrExportButton'],
