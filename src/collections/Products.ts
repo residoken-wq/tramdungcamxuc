@@ -18,6 +18,7 @@ import {
 import { authenticated } from '../lib/auth/access'
 import { computePackageValue } from '../lib/pricing'
 import { vi } from '../lib/i18n/vi'
+import { showFor } from '../lib/cms/product-form'
 
 const computeValues: CollectionBeforeChangeHook = ({ data, originalDoc }) => ({
   ...data,
@@ -82,30 +83,115 @@ export const Products: CollectionConfig = {
         },
         {
           label: 'Giá & bán',
+          admin: {
+            condition: showFor([
+              'digital_tool',
+              'ebook',
+              'toolkit',
+              'package',
+              'coaching_trial',
+              'workshop',
+              'community',
+              'b2b',
+            ]),
+          },
           fields: [
-            number('price', 'Giá bán'),
-            number('salePrice', 'Giá ưu đãi'),
-            date('saleEndsAt', 'Hạn ưu đãi'),
+            {
+              ...number('price', 'Giá bán'),
+              admin: {
+                ...number('price', 'Giá bán').admin,
+                condition: showFor([
+                  'digital_tool',
+                  'ebook',
+                  'toolkit',
+                  'package',
+                  'coaching_trial',
+                  'workshop',
+                  'community',
+                  'b2b',
+                ]),
+              },
+            },
+            {
+              ...number('salePrice', 'Giá ưu đãi'),
+              admin: {
+                ...number('salePrice', 'Giá ưu đãi').admin,
+                condition: showFor(['digital_tool']),
+              },
+            },
+            {
+              ...date('saleEndsAt', 'Hạn ưu đãi'),
+              admin: {
+                ...date('saleEndsAt', 'Hạn ưu đãi').admin,
+                condition: showFor(['digital_tool']),
+              },
+            },
             {
               ...number('trialDays', 'Số ngày dùng thử', 0),
-              admin: { description: 'Nhập 0 nếu không dùng thử. Công cụ số thường dùng 21 ngày.' },
+              admin: {
+                description: 'Nhập 0 nếu không dùng thử. Công cụ số thường dùng 21 ngày.',
+                condition: showFor(['digital_tool']),
+              },
             },
             {
               ...number('accessDurationDays', 'Số ngày sử dụng'),
-              admin: { description: 'Để trống nếu sử dụng vĩnh viễn.' },
+              admin: {
+                description: 'Để trống nếu sử dụng vĩnh viễn.',
+                condition: showFor(['digital_tool']),
+              },
             },
-            text('ctaLabel', 'Nhãn nút'),
-            select('ctaType', 'Hành động của nút', [
-              ['buy', 'Mua'],
-              ['download', 'Tải tài liệu'],
-              ['book', 'Đặt lịch'],
-              ['contact', 'Liên hệ'],
-              ['external', 'Mở liên kết ngoài'],
-            ]),
+            {
+              ...text('ctaLabel', 'Nhãn nút'),
+              admin: {
+                ...text('ctaLabel', 'Nhãn nút').admin,
+                condition: showFor([
+                  'digital_tool',
+                  'ebook',
+                  'toolkit',
+                  'coaching_trial',
+                  'workshop',
+                  'community',
+                  'b2b',
+                ]),
+              },
+            },
+            {
+              ...select('ctaType', 'Hành động của nút', [
+                ['buy', 'Mua'],
+                ['download', 'Tải tài liệu'],
+                ['book', 'Đặt lịch'],
+                ['contact', 'Liên hệ'],
+                ['external', 'Mở liên kết ngoài'],
+              ]),
+              admin: {
+                description: 'Chọn một mục phù hợp.',
+                condition: showFor([
+                  'digital_tool',
+                  'ebook',
+                  'toolkit',
+                  'coaching_trial',
+                  'workshop',
+                  'community',
+                  'b2b',
+                ]),
+              },
+            },
           ],
         },
         {
           label: 'Nội dung trang',
+          admin: {
+            condition: showFor([
+              'digital_tool',
+              'ebook',
+              'toolkit',
+              'package',
+              'coaching_trial',
+              'workshop',
+              'community',
+              'b2b',
+            ]),
+          },
           fields: [
             textarea('painPoint', 'Khó khăn'),
             textarea('outcome', 'Kết quả mong đợi'),
@@ -116,6 +202,9 @@ export const Products: CollectionConfig = {
               name: 'faq',
               label: 'Câu hỏi thường gặp',
               type: 'array',
+              admin: {
+                condition: showFor(['digital_tool', 'package']),
+              },
               fields: [text('question', 'Câu hỏi', true), textarea('answer', 'Trả lời')],
             },
             relation('relatedProducts', 'Sản phẩm liên quan', 'products', true),
@@ -123,12 +212,18 @@ export const Products: CollectionConfig = {
         },
         {
           label: 'Gói & quyền',
+          admin: {
+            condition: showFor(['package']),
+          },
           fields: [
             {
               name: 'components',
               label: 'Cấu phần của gói',
               type: 'array',
-              admin: { description: 'Tổng giá trị được tính từ số lượng nhân giá trị mỗi cấu phần.' },
+              admin: {
+                description: 'Tổng giá trị được tính từ số lượng nhân giá trị mỗi cấu phần.',
+                condition: showFor(['package']),
+              },
               fields: [
                 text('label', 'Tên cấu phần', true),
                 { ...number('quantity', 'Số lượng'), required: true },
@@ -142,19 +237,27 @@ export const Products: CollectionConfig = {
             },
             {
               ...number('totalValue', 'Tổng giá trị'),
-              admin: { readOnly: true, description: 'Tự tính từ các cấu phần, không nhập tay.' },
+              admin: {
+                readOnly: true,
+                description: 'Tự tính từ các cấu phần, không nhập tay.',
+                condition: showFor(['package']),
+              },
             },
             {
               ...number('discountPercent', 'Ưu đãi (%)'),
               admin: {
                 readOnly: true,
                 description: 'Tự tính theo giá ưu đãi, hoặc giá bán nếu chưa có giá ưu đãi.',
+                condition: showFor(['package']),
               },
             },
           ],
         },
         {
           label: 'Tài liệu giao',
+          admin: {
+            condition: showFor(['ebook', 'toolkit']),
+          },
           fields: [
             // REVIEW-REQUIRED: Paid files remain admin-only until entitlement checks in T0-07.
             {
@@ -162,16 +265,58 @@ export const Products: CollectionConfig = {
               label: 'Tài liệu được giao',
               type: 'array',
               access: { read: authenticated },
-              admin: { description: 'Chỉ quản trị viên xem được. Quyền giao tài liệu sẽ bổ sung sau.' },
+              admin: {
+                description: 'Chỉ quản trị viên xem được. Quyền giao tài liệu sẽ bổ sung sau.',
+                condition: showFor(['ebook', 'toolkit']),
+              },
               fields: [privateFile('file', 'Tài liệu')],
             },
           ],
         },
         {
           label: 'Liên kết ngoài',
+          admin: {
+            condition: showFor([
+              'physical_external',
+              'coaching_trial',
+              'workshop',
+              'community',
+              'b2b',
+            ]),
+          },
           fields: [
-            internalOrExternalUrl('externalUrl', 'Liên kết của nút (ngoài web hoặc trong web)'),
-            text('externalLabel', 'Nhãn liên kết ngoài'),
+            {
+              ...internalOrExternalUrl(
+                'externalUrl',
+                'Liên kết của nút (ngoài web hoặc trong web)',
+              ),
+              admin: {
+                ...internalOrExternalUrl(
+                  'externalUrl',
+                  'Liên kết của nút (ngoài web hoặc trong web)',
+                ).admin,
+                condition: showFor([
+                  'physical_external',
+                  'coaching_trial',
+                  'workshop',
+                  'community',
+                  'b2b',
+                ]),
+              },
+            },
+            {
+              ...text('externalLabel', 'Nhãn liên kết ngoài'),
+              admin: {
+                ...text('externalLabel', 'Nhãn liên kết ngoài').admin,
+                condition: showFor([
+                  'physical_external',
+                  'coaching_trial',
+                  'workshop',
+                  'community',
+                  'b2b',
+                ]),
+              },
+            },
           ],
         },
       ],
