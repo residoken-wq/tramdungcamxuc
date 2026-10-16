@@ -81,25 +81,20 @@ export const validateCoverImageOnSale: Validate = (value, options) => {
   return true
 }
 
-// REVIEW-REQUIRED: Hàm validate kiểm tra đường dẫn (slug) khi xuất bản sản phẩm đang mở bán (on_sale).
-// Cho phép lưu nháp tự do (_status === 'draft').
+// REVIEW-REQUIRED: Hàm validate đường dẫn (slug) của sản phẩm.
+// Slug luôn bắt buộc và đúng định dạng (cột NOT NULL + unique, là URL công khai), kể cả bản nháp –
+// giữ nguyên quy tắc của `slug()` trước CM-03. Đang bán mà thiếu slug → báo lỗi rõ hơn.
 export const validateSlugOnSale =
   (allowSlash = false): Validate =>
   (value, options) => {
-    if (options?.data?._status === 'draft') return true
-
-    if (options?.data?.saleStatus === 'on_sale') {
-      if (!value || typeof value !== 'string' || value.trim().length === 0) {
-        return vi.cms.productForm.validation.missingSlugOnSale
-      }
+    if (!value || typeof value !== 'string' || value.trim().length === 0) {
+      return options?.data?.saleStatus === 'on_sale'
+        ? vi.cms.productForm.validation.missingSlugOnSale
+        : 'Đường dẫn chỉ dùng chữ thường không dấu, số và dấu được cho phép.'
     }
-
-    if (typeof value === 'string' && value.trim().length > 0) {
-      const regex = allowSlash ? /^[a-z0-9/-]+$/ : /^[a-z0-9-]+$/
-      if (!regex.test(value)) {
-        return 'Đường dẫn chỉ dùng chữ thường không dấu, số và dấu được cho phép.'
-      }
+    const regex = allowSlash ? /^[a-z0-9/-]+$/ : /^[a-z0-9-]+$/
+    if (!regex.test(value)) {
+      return 'Đường dẫn chỉ dùng chữ thường không dấu, số và dấu được cho phép.'
     }
-
     return true
   }

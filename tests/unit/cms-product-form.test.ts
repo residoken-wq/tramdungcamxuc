@@ -194,12 +194,19 @@ describe('Product Form CMS UX Conditions & Validation (CM-03)', () => {
       expect(result).toBe(true)
     })
 
-    it('validateSlugOnSale: allows drafts without slug', () => {
+    it('validateSlugOnSale: slug stays required and well-formed even for drafts', () => {
       const validator = validateSlugOnSale(false)
-      const result = validator('', {
-        data: { _status: 'draft', saleStatus: 'on_sale' },
-      } as any)
-      expect(result).toBe(true)
+      expect(
+        typeof validator('', { data: { _status: 'draft', saleStatus: 'coming_soon' } } as any),
+      ).toBe('string')
+      expect(
+        typeof validator('Có Dấu', {
+          data: { _status: 'draft', saleStatus: 'coming_soon' },
+        } as any),
+      ).toBe('string')
+      expect(
+        validator('ok-slug', { data: { _status: 'draft', saleStatus: 'coming_soon' } } as any),
+      ).toBe(true)
     })
 
     it('validateSlugOnSale: blocks published on_sale without slug', () => {
