@@ -4,7 +4,13 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { ZodError } from 'zod'
 import { requestOtp, verifyOtp, OtpVerificationError } from './otp.server'
-import { setCustomerSessionCookie, clearCustomerSessionCookie } from './session.server'
+import {
+  setCustomerSessionCookie,
+  clearCustomerSessionCookie,
+  getCurrentCustomerToken,
+  revokeCustomerSession,
+} from './session.server'
+import { getAuthSecret, verifyCustomerToken } from './token'
 import { vi } from '../i18n/vi'
 import { RateLimitError } from '../forms/ratelimit.server'
 import { TurnstileError } from '../forms/turnstile.server'
@@ -104,8 +110,23 @@ export async function verifyOtpAction(
 
 /**
  * REVIEW-REQUIRED: Server action to log out customer.
+ * Revokes customer session server-side across all devices by atomically incrementing sessionVersion
+ * via a single UPDATE query (session_version = session_version + 1), then clears the session cookie.
  */
 export async function logoutAction(): Promise<void> {
-  await clearCustomerSessionCookie()
-  redirect('/tai-khoan/dang-nhap')
+  try {
+    const token = await getCurrentCustomerToken()
+    if (token) {
+      const secret = getAuthSecret()
+      const verified = verifyCustomerToken(token, secret)
+      if (verified?.id) {
+        await revokeCustomerSession(verified.id)
+      }
+    }
+  } catch (err) {
+    console.error('[AuthAction] logoutAction error revoking session:', err)
+  } finally {
+    await clearCustomerSessionCookie()
+    redirect('/tai-khoan/dang-nhap')
+  }
 }

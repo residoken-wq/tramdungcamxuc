@@ -33,6 +33,13 @@ export const customerAuthStrategy: AuthStrategy = {
         return { user: null }
       }
 
+      // REVIEW-REQUIRED: Compare sessionVersion to reject revoked tokens
+      const customerSv = typeof customer.sessionVersion === 'number' ? customer.sessionVersion : 0
+      const tokenSv = typeof verified.sv === 'number' ? verified.sv : 0
+      if (tokenSv !== customerSv) {
+        return { user: null }
+      }
+
       return {
         user: {
           ...customer,

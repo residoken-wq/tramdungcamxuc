@@ -9,6 +9,7 @@ export interface CustomerTokenPayload {
   exp: number
   iat: number
   collection: 'customers'
+  sv?: number
 }
 
 /**
@@ -34,11 +35,12 @@ export function hashTrialEmail(email: string, secret: string = getAuthSecret()):
 }
 
 /**
- * Signs a JWT-compatible session token for a customer using HMAC-SHA256 and PAYLOAD_SECRET.
+ * REVIEW-REQUIRED: Signs a JWT-compatible session token for a customer using HMAC-SHA256 and PAYLOAD_SECRET.
  * Implemented with node:crypto without external dependencies.
+ * Attaches sv (sessionVersion) to allow server-side session revocation.
  */
 export function signCustomerToken(
-  customer: { id: number; email: string },
+  customer: { id: number; email: string; sessionVersion?: number },
   secret: string = getAuthSecret(),
   expiresInSeconds: number = DEFAULT_CUSTOMER_SESSION_EXPIRATION,
 ): string {
@@ -54,6 +56,7 @@ export function signCustomerToken(
     exp,
     iat: now,
     collection: 'customers',
+    sv: typeof customer.sessionVersion === 'number' ? customer.sessionVersion : 0,
   }
 
   const headerB64 = Buffer.from(JSON.stringify(header)).toString('base64url')
@@ -65,8 +68,9 @@ export function signCustomerToken(
 }
 
 /**
- * Verifies a customer session token using constant-time HMAC comparison.
+ * REVIEW-REQUIRED: Verifies a customer session token using constant-time HMAC comparison.
  * Returns decoded payload if valid and unexpired, null otherwise.
+ * Legacy tokens without sv default to sv: 0 for backwards compatibility.
  */
 export function verifyCustomerToken(
   token: string | null | undefined,
@@ -113,6 +117,9 @@ export function verifyCustomerToken(
     if (typeof payload.exp !== 'number' || payload.exp <= now) {
       return null
     }
+
+    // REVIEW-REQUIRED: Default sv to 0 if missing in legacy tokens so active sessions stay valid
+    payload.sv = typeof payload.sv === 'number' ? payload.sv : 0
 
     return payload
   } catch {

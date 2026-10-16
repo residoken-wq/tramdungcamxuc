@@ -1,5 +1,6 @@
 import {
   APIError,
+  type CollectionBeforeChangeHook,
   type CollectionBeforeDeleteHook,
   type CollectionBeforeValidateHook,
   type CollectionConfig,
@@ -32,6 +33,26 @@ const nameUpdateAccess: FieldAccess = async (args) => {
 const sanitizeCustomerName: CollectionBeforeValidateHook = ({ data }) => {
   if (data && typeof data.name === 'string') {
     data.name = data.name.trim()
+  }
+  return data
+}
+
+// REVIEW-REQUIRED: Tự động tăng sessionVersion khi admin đổi email khách hàng (T2-20).
+// Chỉ kích hoạt khi operation === 'update' và email thực sự thay đổi sau khi trim và lowercase.
+// Thu hồi toàn bộ phiên đăng nhập cũ trên mọi thiết bị; khách phải đăng nhập lại với email mới.
+const bumpSessionVersionOnEmailChange: CollectionBeforeChangeHook = ({
+  data,
+  originalDoc,
+  operation,
+}) => {
+  if (operation === 'update' && originalDoc && data && typeof data.email === 'string') {
+    const oldEmail = originalDoc.email?.trim().toLowerCase()
+    const newEmail = data.email.trim().toLowerCase()
+    if (oldEmail && newEmail && oldEmail !== newEmail) {
+      const currentVersion =
+        typeof originalDoc.sessionVersion === 'number' ? originalDoc.sessionVersion : 0
+      data.sessionVersion = currentVersion + 1
+    }
   }
   return data
 }
@@ -71,6 +92,7 @@ export const Customers: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [sanitizeCustomerName],
+    beforeChange: [bumpSessionVersionOnEmailChange],
     beforeDelete: [preventUnauthorizedCustomerDelete],
   },
   fields: [
