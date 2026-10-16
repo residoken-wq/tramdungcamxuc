@@ -99,6 +99,86 @@ export const vi = {
         editor: 'Biên tập viên',
       },
     },
+    productForm: {
+      collectionDescription:
+        'Tất cả sản phẩm mở bán hoặc tặng: công cụ số, sách điện tử, gói đồng hành.',
+      tabs: {
+        basic: 'Cơ bản',
+        pricing: 'Giá & bán',
+        content: 'Nội dung trang',
+        package: 'Gói & quyền',
+        files: 'Tài liệu giao',
+        links: 'Liên kết ngoài',
+      },
+      sidebar: {
+        type: 'Loại sản phẩm (công cụ số, sách điện tử, gói đồng hành, Shopee...). Quyết định trường nào cần điền.',
+        web: 'Khu vực hiển thị chính: Trang chủ (site), Thói quen (habit), EQ Buddy (eq).',
+        saleStatus: 'Trạng thái hiển thị và mở bán trên toàn website.',
+        order: 'Thứ tự sắp xếp trên trang danh sách (số nhỏ hơn đứng trước).',
+      },
+      descriptions: {
+        name: 'Hiện trên tiêu đề thẻ sản phẩm ở Thư viện, đầu trang chi tiết, giỏ hàng và email xác nhận.',
+        slug: 'Đường dẫn trang sản phẩm (URL), dùng trong liên kết chia sẻ và xem chi tiết.',
+        coverImage:
+          'Ảnh bìa hiện trên thẻ sản phẩm ở Thư viện, trang chi tiết và ảnh chia sẻ mạng xã hội.',
+        shortDescription:
+          'Hiện dưới tên sản phẩm trên thẻ ở Thư viện, đầu trang chi tiết và email giới thiệu.',
+        journeyStep:
+          'Hiện nhãn bước hành trình (Dừng lại, Cảm nhận, Gọi tên...) trên thẻ sản phẩm.',
+        audience: 'Hiện trong khối "Sản phẩm này dành cho ai" trên trang chi tiết.',
+        price:
+          'Giá bán niêm yết (VND). Hiện trên thẻ sản phẩm ở Thư viện, đầu trang chi tiết và hóa đơn.',
+        salePrice:
+          'Giá ưu đãi (VND). Hiện nổi bật kèm giá gốc gạch ngang trên thẻ và trang chi tiết.',
+        saleEndsAt: 'Hạn ưu đãi. Hiện đồng hồ đếm ngược hoặc nhãn thời hạn trên trang chi tiết.',
+        trialDays:
+          'Số ngày trải nghiệm miễn phí không cần thẻ (vd 21 ngày). Hiện trên nút dùng thử và email nhắc ngày 18.',
+        accessDurationDays:
+          'Thời hạn sử dụng tính bằng ngày sau khi mua. Để trống nếu sở hữu vĩnh viễn (hiện trong tài khoản học viên).',
+        ctaLabel:
+          'Chữ trên nút kêu gọi hành động (vd "Bắt đầu dùng thử", "Mua ngay"). Mặc định tự sinh theo loại.',
+        ctaType:
+          'Hành vi khi khách bấm nút: Mua ngay, Tải tài liệu, Đặt lịch hẹn, hoặc Mở liên kết.',
+        painPoint:
+          'Khó khăn của khách hàng. Hiện trong phần "Vấn đề bạn đang gặp phải" trên trang chi tiết.',
+        outcome: 'Kết quả sau khi dùng. Hiện trong phần "Bạn sẽ đạt được gì" trên trang chi tiết.',
+        description: 'Bài viết giới thiệu chi tiết về sản phẩm, hiện ở phần thân trang chi tiết.',
+        includes:
+          'Danh sách cấu phần hoặc lợi ích ("Bao gồm"). Hiện dạng danh sách dấu tích trên trang bán hàng.',
+        preview: 'Ảnh chụp màn hình bên trong công cụ hoặc giao diện sách, hiện ở phần xem trước.',
+        faq: 'Các câu hỏi thắc mắc thường gặp. Hiện dạng accordion mở gập ở cuối trang chi tiết.',
+        relatedProducts:
+          'Sản phẩm gợi ý mua kèm hoặc bước tiếp theo trong hành trình. Hiện ở chân trang.',
+        components:
+          'Danh sách cấu phần tạo nên gói (workshop, coaching, công cụ số). Dùng để tính tổng giá trị gói.',
+        componentLabel: 'Tên cấu phần hiển thị trong bảng so sánh gói (vd "Coaching 1:1").',
+        componentQuantity: 'Số buổi hoặc số lượng của cấu phần này trong gói.',
+        componentUnitValue:
+          'Giá trị đơn vị mỗi buổi/mục (dùng nhân với số lượng để tính tổng giá trị gói).',
+        componentRetailPrice:
+          'Giá mua lẻ tham khảo nếu khách mua riêng từng mục (chỉ để so sánh, không tính vào tổng giá trị gói).',
+        componentGrantsProduct:
+          'Sản phẩm số hệ thống sẽ tự động kích hoạt vào tài khoản khách sau khi thanh toán thành công.',
+        totalValue:
+          'Tổng giá trị thực tế của gói (VND). Tự động tính từ số lượng × giá trị từng cấu phần, hiện trên bảng so sánh.',
+        discountPercent:
+          'Mức ưu đãi (%) so với tổng giá trị. Tự động tính theo giá bán thực tế, hiện trên huy hiệu giảm giá.',
+        files:
+          'Tệp PDF/tài liệu đính kèm. Khách nhận được link tải an toàn trong email xác nhận sau khi đăng ký hoặc thanh toán.',
+        externalUrl:
+          'Đường dẫn gian hàng Shopee, link đặt lịch Cal.com hoặc trang nội bộ (bắt đầu bằng https:// hoặc /).',
+        externalLabel:
+          'Chữ hiển thị trên nút liên kết ngoài (vd "Mua bộ thẻ trên Shopee", "Đặt lịch tư vấn").',
+      },
+      validation: {
+        missingPriceOnSale:
+          'Sản phẩm đang mở bán bắt buộc phải có giá bán (hoặc chuyển trạng thái sang Miễn phí / Mua trên Shopee).',
+        missingCoverImageOnSale:
+          'Sản phẩm đang mở bán bắt buộc phải có ảnh bìa để hiển thị cho khách hàng.',
+        missingSlugOnSale:
+          'Sản phẩm đang mở bán bắt buộc phải có đường dẫn (slug) để khách hàng truy cập.',
+      },
+    },
   },
   livePreview: { mobile: 'Điện thoại', tablet: 'Máy tính bảng', desktop: 'Máy tính' },
   common: {

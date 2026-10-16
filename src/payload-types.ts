@@ -362,7 +362,7 @@ export interface Post {
 export interface Product {
   id: number;
   /**
-   * Chọn một mục phù hợp.
+   * Loại sản phẩm (công cụ số, sách điện tử, gói đồng hành, Shopee...). Quyết định trường nào cần điền.
    */
   type:
     | 'ebook'
@@ -375,39 +375,39 @@ export interface Product {
     | 'package'
     | 'b2b';
   /**
-   * Chọn một mục phù hợp.
+   * Khu vực hiển thị chính: Trang chủ (site), Thói quen (habit), EQ Buddy (eq).
    */
   web: 'site' | 'habit' | 'eq';
   /**
-   * Chọn một mục phù hợp.
+   * Trạng thái hiển thị và mở bán trên toàn website.
    */
   saleStatus: 'coming_soon' | 'on_sale' | 'free' | 'consult' | 'hidden';
   /**
-   * Nhập số không âm. Số nhỏ hơn đứng trước.
+   * Thứ tự sắp xếp trên trang danh sách (số nhỏ hơn đứng trước).
    */
   order?: number | null;
   /**
-   * Nhập tên sản phẩm.
+   * Hiện trên tiêu đề thẻ sản phẩm ở Thư viện, đầu trang chi tiết, giỏ hàng và email xác nhận.
    */
   name: string;
   /**
-   * Dùng chữ thường không dấu, số và dấu -.
+   * Đường dẫn trang sản phẩm (URL), dùng trong liên kết chia sẻ và xem chi tiết.
    */
   slug: string;
   /**
-   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   * Ảnh bìa hiện trên thẻ sản phẩm ở Thư viện, trang chi tiết và ảnh chia sẻ mạng xã hội.
    */
   coverImage?: (number | null) | Media;
   /**
-   * Nhập giới thiệu ngắn.
+   * Hiện dưới tên sản phẩm trên thẻ ở Thư viện, đầu trang chi tiết và email giới thiệu.
    */
   shortDescription?: string | null;
   /**
-   * Chọn một mục phù hợp.
+   * Hiện nhãn bước hành trình (Dừng lại, Cảm nhận, Gọi tên...) trên thẻ sản phẩm.
    */
   journeyStep?: ('pause' | 'feel' | 'name' | 'choose' | 'practice') | null;
   /**
-   * Thêm từng mục, kéo để đổi thứ tự.
+   * Hiện trong khối "Sản phẩm này dành cho ai" trên trang chi tiết.
    */
   audience?:
     | {
@@ -419,43 +419,43 @@ export interface Product {
       }[]
     | null;
   /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
+   * Giá bán niêm yết (VND). Hiện trên thẻ sản phẩm ở Thư viện, đầu trang chi tiết và hóa đơn.
    */
   price?: number | null;
   /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
+   * Giá ưu đãi (VND). Hiện nổi bật kèm giá gốc gạch ngang trên thẻ và trang chi tiết.
    */
   salePrice?: number | null;
   /**
-   * Chọn ngày và giờ áp dụng.
+   * Hạn ưu đãi. Hiện đồng hồ đếm ngược hoặc nhãn thời hạn trên trang chi tiết.
    */
   saleEndsAt?: string | null;
   /**
-   * Nhập 0 nếu không dùng thử. Công cụ số thường dùng 21 ngày.
+   * Số ngày trải nghiệm miễn phí không cần thẻ (vd 21 ngày). Hiện trên nút dùng thử và email nhắc ngày 18.
    */
   trialDays?: number | null;
   /**
-   * Để trống nếu sử dụng vĩnh viễn.
+   * Thời hạn sử dụng tính bằng ngày sau khi mua. Để trống nếu sở hữu vĩnh viễn (hiện trong tài khoản học viên).
    */
   accessDurationDays?: number | null;
   /**
-   * Nhập nhãn nút.
+   * Chữ trên nút kêu gọi hành động (vd "Bắt đầu dùng thử", "Mua ngay"). Mặc định tự sinh theo loại.
    */
   ctaLabel?: string | null;
   /**
-   * Chọn một mục phù hợp.
+   * Hành vi khi khách bấm nút: Mua ngay, Tải tài liệu, Đặt lịch hẹn, hoặc Mở liên kết.
    */
   ctaType?: ('buy' | 'download' | 'book' | 'contact' | 'external') | null;
   /**
-   * Nhập khó khăn.
+   * Khó khăn của khách hàng. Hiện trong phần "Vấn đề bạn đang gặp phải" trên trang chi tiết.
    */
   painPoint?: string | null;
   /**
-   * Nhập kết quả mong đợi.
+   * Kết quả sau khi dùng. Hiện trong phần "Bạn sẽ đạt được gì" trên trang chi tiết.
    */
   outcome?: string | null;
   /**
-   * Soạn giới thiệu chi tiết.
+   * Bài viết giới thiệu chi tiết về sản phẩm, hiện ở phần thân trang chi tiết.
    */
   description?: {
     root: {
@@ -473,7 +473,7 @@ export interface Product {
     [k: string]: unknown;
   } | null;
   /**
-   * Thêm từng mục, kéo để đổi thứ tự.
+   * Danh sách cấu phần hoặc lợi ích ("Bao gồm"). Hiện dạng danh sách dấu tích trên trang bán hàng.
    */
   includes?:
     | {
@@ -485,9 +485,12 @@ export interface Product {
       }[]
     | null;
   /**
-   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   * Ảnh chụp màn hình bên trong công cụ hoặc giao diện sách, hiện ở phần xem trước.
    */
   preview?: (number | null) | Media;
+  /**
+   * Các câu hỏi thắc mắc thường gặp. Hiện dạng accordion mở gập ở cuối trang chi tiết.
+   */
   faq?:
     | {
         /**
@@ -502,47 +505,47 @@ export interface Product {
       }[]
     | null;
   /**
-   * Chọn nội dung đã tạo trong hệ thống.
+   * Sản phẩm gợi ý mua kèm hoặc bước tiếp theo trong hành trình. Hiện ở chân trang.
    */
   relatedProducts?: (number | Product)[] | null;
   /**
-   * Tổng giá trị được tính từ số lượng nhân giá trị mỗi cấu phần.
+   * Danh sách cấu phần tạo nên gói (workshop, coaching, công cụ số). Dùng để tính tổng giá trị gói.
    */
   components?:
     | {
         /**
-         * Nhập tên cấu phần.
+         * Tên cấu phần hiển thị trong bảng so sánh gói (vd "Coaching 1:1").
          */
         label: string;
         /**
-         * Nhập số không âm. Giá tiền tính bằng đồng.
+         * Số buổi hoặc số lượng của cấu phần này trong gói.
          */
         quantity: number;
         /**
-         * Nhập số không âm. Giá tiền tính bằng đồng.
+         * Giá trị đơn vị mỗi buổi/mục (dùng nhân với số lượng để tính tổng giá trị gói).
          */
         unitValue: number;
         /**
-         * Chỉ để tham khảo, không dùng để tính tổng giá trị gói.
+         * Giá mua lẻ tham khảo nếu khách mua riêng từng mục (chỉ để so sánh, không tính vào tổng giá trị gói).
          */
         retailPrice?: number | null;
         /**
-         * Chọn nội dung đã tạo trong hệ thống.
+         * Sản phẩm số hệ thống sẽ tự động kích hoạt vào tài khoản khách sau khi thanh toán thành công.
          */
         grantsProduct?: (number | null) | Product;
         id?: string | null;
       }[]
     | null;
   /**
-   * Tự tính từ các cấu phần, không nhập tay.
+   * Tổng giá trị thực tế của gói (VND). Tự động tính từ số lượng × giá trị từng cấu phần, hiện trên bảng so sánh.
    */
   totalValue?: number | null;
   /**
-   * Tự tính theo giá ưu đãi, hoặc giá bán nếu chưa có giá ưu đãi.
+   * Mức ưu đãi (%) so với tổng giá trị. Tự động tính theo giá bán thực tế, hiện trên huy hiệu giảm giá.
    */
   discountPercent?: number | null;
   /**
-   * Chỉ quản trị viên xem được. Quyền giao tài liệu sẽ bổ sung sau.
+   * Tệp PDF/tài liệu đính kèm. Khách nhận được link tải an toàn trong email xác nhận sau khi đăng ký hoặc thanh toán.
    */
   files?:
     | {
@@ -554,11 +557,11 @@ export interface Product {
       }[]
     | null;
   /**
-   * Link Shopee… bắt đầu bằng https://, hoặc trang trong web bắt đầu bằng / (VD: /habit/chan-doan).
+   * Đường dẫn gian hàng Shopee, link đặt lịch Cal.com hoặc trang nội bộ (bắt đầu bằng https:// hoặc /).
    */
   externalUrl?: string | null;
   /**
-   * Nhập nhãn liên kết ngoài.
+   * Chữ hiển thị trên nút liên kết ngoài (vd "Mua bộ thẻ trên Shopee", "Đặt lịch tư vấn").
    */
   externalLabel?: string | null;
   isSample?: boolean | null;

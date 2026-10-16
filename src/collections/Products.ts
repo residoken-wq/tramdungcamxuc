@@ -42,7 +42,13 @@ export const Products: CollectionConfig = {
         ['package', 'Gói đồng hành'],
         ['b2b', 'Doanh nghiệp'],
       ],
-      { required: true, admin: { position: 'sidebar', description: 'Chọn một mục phù hợp.' } },
+      {
+        required: true,
+        admin: {
+          position: 'sidebar',
+          description: vi.cms.productForm.sidebar.type,
+        },
+      },
     ),
     select(
       'web',
@@ -52,37 +58,67 @@ export const Products: CollectionConfig = {
         ['habit', 'Thói quen'],
         ['eq', 'EQ Buddy'],
       ],
-      { required: true, admin: { position: 'sidebar', description: 'Chọn một mục phù hợp.' } },
+      {
+        required: true,
+        admin: {
+          position: 'sidebar',
+          description: vi.cms.productForm.sidebar.web,
+        },
+      },
     ),
-    saleStatus({ admin: { position: 'sidebar', description: 'Chọn một mục phù hợp.' } }),
-    {
-      ...number('order', 'Thứ tự', 0),
-      admin: { position: 'sidebar', description: 'Nhập số không âm. Số nhỏ hơn đứng trước.' },
-    },
+    saleStatus({
+      admin: {
+        position: 'sidebar',
+        description: vi.cms.productForm.sidebar.saleStatus,
+      },
+    }),
+    number('order', 'Thứ tự', 0, {
+      admin: {
+        position: 'sidebar',
+        description: vi.cms.productForm.sidebar.order,
+      },
+    }),
 
     // Tabs không tên (không đổi cấu trúc dữ liệu / schema)
     {
       type: 'tabs',
       tabs: [
         {
-          label: 'Cơ bản',
+          label: vi.cms.productForm.tabs.basic,
           fields: [
-            text('name', 'Tên sản phẩm', true),
-            slug(),
-            image('coverImage', 'Ảnh bìa'),
-            textarea('shortDescription', 'Giới thiệu ngắn'),
-            select('journeyStep', 'Bước hành trình', [
-              ['pause', 'Dừng lại'],
-              ['feel', 'Cảm nhận'],
-              ['name', 'Gọi tên'],
-              ['choose', 'Lựa chọn'],
-              ['practice', 'Thực hành'],
-            ]),
-            lines('audience', 'Dành cho ai'),
+            text('name', 'Tên sản phẩm', true, {
+              admin: { description: vi.cms.productForm.descriptions.name },
+            }),
+            slug(false, {
+              admin: { description: vi.cms.productForm.descriptions.slug },
+            }),
+            image('coverImage', 'Ảnh bìa', {
+              admin: { description: vi.cms.productForm.descriptions.coverImage },
+            }),
+            textarea('shortDescription', 'Giới thiệu ngắn', {
+              admin: { description: vi.cms.productForm.descriptions.shortDescription },
+            }),
+            select(
+              'journeyStep',
+              'Bước hành trình',
+              [
+                ['pause', 'Dừng lại'],
+                ['feel', 'Cảm nhận'],
+                ['name', 'Gọi tên'],
+                ['choose', 'Lựa chọn'],
+                ['practice', 'Thực hành'],
+              ],
+              {
+                admin: { description: vi.cms.productForm.descriptions.journeyStep },
+              },
+            ),
+            lines('audience', 'Dành cho ai', {
+              admin: { description: vi.cms.productForm.descriptions.audience },
+            }),
           ],
         },
         {
-          label: 'Giá & bán',
+          label: vi.cms.productForm.tabs.pricing,
           admin: {
             condition: showFor([
               'digital_tool',
@@ -96,10 +132,8 @@ export const Products: CollectionConfig = {
             ]),
           },
           fields: [
-            {
-              ...number('price', 'Giá bán'),
+            number('price', 'Giá bán', undefined, {
               admin: {
-                ...number('price', 'Giá bán').admin,
                 condition: showFor([
                   'digital_tool',
                   'ebook',
@@ -110,40 +144,36 @@ export const Products: CollectionConfig = {
                   'community',
                   'b2b',
                 ]),
+                description: vi.cms.productForm.descriptions.price,
               },
-            },
-            {
-              ...number('salePrice', 'Giá ưu đãi'),
+            }),
+            number('salePrice', 'Giá ưu đãi', undefined, {
               admin: {
-                ...number('salePrice', 'Giá ưu đãi').admin,
                 condition: showFor(['digital_tool']),
+                description: vi.cms.productForm.descriptions.salePrice,
               },
-            },
-            {
-              ...date('saleEndsAt', 'Hạn ưu đãi'),
+            }),
+            date('saleEndsAt', 'Hạn ưu đãi', {
               admin: {
-                ...date('saleEndsAt', 'Hạn ưu đãi').admin,
                 condition: showFor(['digital_tool']),
+                date: { pickerAppearance: 'dayAndTime' },
+                description: vi.cms.productForm.descriptions.saleEndsAt,
               },
-            },
-            {
-              ...number('trialDays', 'Số ngày dùng thử', 0),
+            }),
+            number('trialDays', 'Số ngày dùng thử', 0, {
               admin: {
-                description: 'Nhập 0 nếu không dùng thử. Công cụ số thường dùng 21 ngày.',
                 condition: showFor(['digital_tool']),
+                description: vi.cms.productForm.descriptions.trialDays,
               },
-            },
-            {
-              ...number('accessDurationDays', 'Số ngày sử dụng'),
+            }),
+            number('accessDurationDays', 'Số ngày sử dụng', undefined, {
               admin: {
-                description: 'Để trống nếu sử dụng vĩnh viễn.',
                 condition: showFor(['digital_tool']),
+                description: vi.cms.productForm.descriptions.accessDurationDays,
               },
-            },
-            {
-              ...text('ctaLabel', 'Nhãn nút'),
+            }),
+            text('ctaLabel', 'Nhãn nút', false, {
               admin: {
-                ...text('ctaLabel', 'Nhãn nút').admin,
                 condition: showFor([
                   'digital_tool',
                   'ebook',
@@ -153,33 +183,38 @@ export const Products: CollectionConfig = {
                   'community',
                   'b2b',
                 ]),
+                description: vi.cms.productForm.descriptions.ctaLabel,
               },
-            },
-            {
-              ...select('ctaType', 'Hành động của nút', [
+            }),
+            select(
+              'ctaType',
+              'Hành động của nút',
+              [
                 ['buy', 'Mua'],
                 ['download', 'Tải tài liệu'],
                 ['book', 'Đặt lịch'],
                 ['contact', 'Liên hệ'],
                 ['external', 'Mở liên kết ngoài'],
-              ]),
-              admin: {
-                description: 'Chọn một mục phù hợp.',
-                condition: showFor([
-                  'digital_tool',
-                  'ebook',
-                  'toolkit',
-                  'coaching_trial',
-                  'workshop',
-                  'community',
-                  'b2b',
-                ]),
+              ],
+              {
+                admin: {
+                  condition: showFor([
+                    'digital_tool',
+                    'ebook',
+                    'toolkit',
+                    'coaching_trial',
+                    'workshop',
+                    'community',
+                    'b2b',
+                  ]),
+                  description: vi.cms.productForm.descriptions.ctaType,
+                },
               },
-            },
+            ),
           ],
         },
         {
-          label: 'Nội dung trang',
+          label: vi.cms.productForm.tabs.content,
           admin: {
             condition: showFor([
               'digital_tool',
@@ -193,25 +228,38 @@ export const Products: CollectionConfig = {
             ]),
           },
           fields: [
-            textarea('painPoint', 'Khó khăn'),
-            textarea('outcome', 'Kết quả mong đợi'),
-            richText('description', 'Giới thiệu chi tiết'),
-            lines('includes', 'Bao gồm'),
-            image('preview', 'Ảnh xem trước'),
+            textarea('painPoint', 'Khó khăn', {
+              admin: { description: vi.cms.productForm.descriptions.painPoint },
+            }),
+            textarea('outcome', 'Kết quả mong đợi', {
+              admin: { description: vi.cms.productForm.descriptions.outcome },
+            }),
+            richText('description', 'Giới thiệu chi tiết', {
+              admin: { description: vi.cms.productForm.descriptions.description },
+            }),
+            lines('includes', 'Bao gồm', {
+              admin: { description: vi.cms.productForm.descriptions.includes },
+            }),
+            image('preview', 'Ảnh xem trước', {
+              admin: { description: vi.cms.productForm.descriptions.preview },
+            }),
             {
               name: 'faq',
               label: 'Câu hỏi thường gặp',
               type: 'array',
               admin: {
                 condition: showFor(['digital_tool', 'package']),
+                description: vi.cms.productForm.descriptions.faq,
               },
               fields: [text('question', 'Câu hỏi', true), textarea('answer', 'Trả lời')],
             },
-            relation('relatedProducts', 'Sản phẩm liên quan', 'products', true),
+            relation('relatedProducts', 'Sản phẩm liên quan', 'products', true, {
+              admin: { description: vi.cms.productForm.descriptions.relatedProducts },
+            }),
           ],
         },
         {
-          label: 'Gói & quyền',
+          label: vi.cms.productForm.tabs.package,
           admin: {
             condition: showFor(['package']),
           },
@@ -221,40 +269,51 @@ export const Products: CollectionConfig = {
               label: 'Cấu phần của gói',
               type: 'array',
               admin: {
-                description: 'Tổng giá trị được tính từ số lượng nhân giá trị mỗi cấu phần.',
                 condition: showFor(['package']),
+                description: vi.cms.productForm.descriptions.components,
               },
               fields: [
-                text('label', 'Tên cấu phần', true),
-                { ...number('quantity', 'Số lượng'), required: true },
-                { ...number('unitValue', 'Giá trị mỗi đơn vị'), required: true },
-                {
-                  ...number('retailPrice', 'Giá mua lẻ'),
-                  admin: { description: 'Chỉ để tham khảo, không dùng để tính tổng giá trị gói.' },
-                },
-                relation('grantsProduct', 'Sản phẩm được mở khóa', 'products'),
+                text('label', 'Tên cấu phần', true, {
+                  admin: { description: vi.cms.productForm.descriptions.componentLabel },
+                }),
+                number('quantity', 'Số lượng', undefined, {
+                  required: true,
+                  admin: { description: vi.cms.productForm.descriptions.componentQuantity },
+                }),
+                number('unitValue', 'Giá trị mỗi đơn vị', undefined, {
+                  required: true,
+                  admin: { description: vi.cms.productForm.descriptions.componentUnitValue },
+                }),
+                number('retailPrice', 'Giá mua lẻ', undefined, {
+                  admin: {
+                    description: vi.cms.productForm.descriptions.componentRetailPrice,
+                  },
+                }),
+                relation('grantsProduct', 'Sản phẩm được mở khóa', 'products', false, {
+                  admin: {
+                    description: vi.cms.productForm.descriptions.componentGrantsProduct,
+                  },
+                }),
               ],
             },
-            {
-              ...number('totalValue', 'Tổng giá trị'),
+            number('totalValue', 'Tổng giá trị', undefined, {
               admin: {
                 readOnly: true,
-                description: 'Tự tính từ các cấu phần, không nhập tay.',
                 condition: showFor(['package']),
+                description: vi.cms.productForm.descriptions.totalValue,
               },
-            },
-            {
-              ...number('discountPercent', 'Ưu đãi (%)'),
+            }),
+            number('discountPercent', 'Ưu đãi (%)', undefined, {
               admin: {
                 readOnly: true,
-                description: 'Tự tính theo giá ưu đãi, hoặc giá bán nếu chưa có giá ưu đãi.',
                 condition: showFor(['package']),
+                description: vi.cms.productForm.descriptions.discountPercent,
               },
-            },
+            }),
           ],
         },
         {
-          label: 'Tài liệu giao',
+          label: vi.cms.productForm.tabs.files,
           admin: {
             condition: showFor(['ebook', 'toolkit']),
           },
@@ -266,15 +325,15 @@ export const Products: CollectionConfig = {
               type: 'array',
               access: { read: authenticated },
               admin: {
-                description: 'Chỉ quản trị viên xem được. Quyền giao tài liệu sẽ bổ sung sau.',
                 condition: showFor(['ebook', 'toolkit']),
+                description: vi.cms.productForm.descriptions.files,
               },
               fields: [privateFile('file', 'Tài liệu')],
             },
           ],
         },
         {
-          label: 'Liên kết ngoài',
+          label: vi.cms.productForm.tabs.links,
           admin: {
             condition: showFor([
               'physical_external',
@@ -285,16 +344,8 @@ export const Products: CollectionConfig = {
             ]),
           },
           fields: [
-            {
-              ...internalOrExternalUrl(
-                'externalUrl',
-                'Liên kết của nút (ngoài web hoặc trong web)',
-              ),
+            internalOrExternalUrl('externalUrl', 'Liên kết của nút (ngoài web hoặc trong web)', {
               admin: {
-                ...internalOrExternalUrl(
-                  'externalUrl',
-                  'Liên kết của nút (ngoài web hoặc trong web)',
-                ).admin,
                 condition: showFor([
                   'physical_external',
                   'coaching_trial',
@@ -302,12 +353,11 @@ export const Products: CollectionConfig = {
                   'community',
                   'b2b',
                 ]),
+                description: vi.cms.productForm.descriptions.externalUrl,
               },
-            },
-            {
-              ...text('externalLabel', 'Nhãn liên kết ngoài'),
+            }),
+            text('externalLabel', 'Nhãn liên kết ngoài', false, {
               admin: {
-                ...text('externalLabel', 'Nhãn liên kết ngoài').admin,
                 condition: showFor([
                   'physical_external',
                   'coaching_trial',
@@ -315,8 +365,9 @@ export const Products: CollectionConfig = {
                   'community',
                   'b2b',
                 ]),
+                description: vi.cms.productForm.descriptions.externalLabel,
               },
-            },
+            }),
           ],
         },
       ],
@@ -327,7 +378,7 @@ export const Products: CollectionConfig = {
 
 Products.admin = {
   ...Products.admin,
-  description: 'Tất cả sản phẩm mở bán hoặc tặng: công cụ số, sách điện tử, gói đồng hành.',
+  description: vi.cms.productForm.collectionDescription,
   defaultColumns: ['name', 'type', 'saleStatus', 'price', 'updatedAt'],
   listSearchableFields: ['name', 'slug'],
 }
