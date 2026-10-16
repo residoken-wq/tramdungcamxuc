@@ -22,7 +22,6 @@ vi.mock('next/headers', () => ({
 
 import { createHmac, randomUUID } from 'node:crypto'
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
-import { sql } from '@payloadcms/db-postgres'
 import config from '../../src/payload.config'
 import {
   CUSTOMER_TOKEN_COOKIE,
@@ -45,14 +44,6 @@ describe('Customer Session Management & Isolation (T2-20)', () => {
 
   beforeAll(async () => {
     payload = await getPayload({ config })
-    try {
-      await payload.db.drizzle.execute(
-        sql`UPDATE "users" SET "role" = 'owner' WHERE "email" = 'owner@tramdungcamxuc.com';
-            DELETE FROM "users" WHERE "email" LIKE '%example.test%';`,
-      )
-    } catch {
-      // ignore
-    }
   }, 60000)
 
   afterAll(async () => {
@@ -313,7 +304,7 @@ describe('Customer Session Management & Isolation (T2-20)', () => {
   })
 
   // 5. Strategy khách trả null khi request có JWT admin hợp lệ
-  it('strategy khách trả null khi request có JWT admin hợp lệ (không đè phiên admin)', async () => {
+  it('request có cả cookie khách và JWT admin hợp lệ → xác thực là admin (không đè phiên admin)', async () => {
     const suffix = randomUUID().slice(0, 8)
     const adminEmail = `admin-dual-${suffix}@example.test`
     const adminPassword = `AdminPass-${suffix}`
@@ -369,12 +360,12 @@ describe('Customer Session Management & Isolation (T2-20)', () => {
       Cookie: `payload-token=${adminToken}; ${CUSTOMER_TOKEN_COOKIE}=${customerToken}`,
     })
 
-    // customerAuthStrategy must yield and return { user: null }
+    // Có cả hai: customerAuthStrategy trả về chính admin (collection 'users'), không phải khách
     const authResultWithDualCookie = await customerAuthStrategy.authenticate({
       headers: dualCookieHeaders,
       payload,
     })
-    expect(authResultWithDualCookie.user).toBeNull()
+    expect(authResultWithDualCookie.user?.collection).toBe('users')
 
     // Request containing customer cookie AND admin Authorization Bearer header:
     const dualBearerHeaders = new Headers({
@@ -385,7 +376,7 @@ describe('Customer Session Management & Isolation (T2-20)', () => {
       headers: dualBearerHeaders,
       payload,
     })
-    expect(authResultWithDualBearer.user).toBeNull()
+    expect(authResultWithDualBearer.user?.collection).toBe('users')
 
     // If admin token is NOT present (only customer cookie), customerAuthStrategy authenticates customer:
     const customerOnlyHeaders = new Headers({

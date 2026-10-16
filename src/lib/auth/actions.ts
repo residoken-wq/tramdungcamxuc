@@ -7,10 +7,9 @@ import { requestOtp, verifyOtp, OtpVerificationError } from './otp.server'
 import {
   setCustomerSessionCookie,
   clearCustomerSessionCookie,
-  getCurrentCustomerToken,
+  getCurrentCustomer,
   revokeCustomerSession,
 } from './session.server'
-import { getAuthSecret, verifyCustomerToken } from './token'
 import { vi } from '../i18n/vi'
 import { RateLimitError } from '../forms/ratelimit.server'
 import { TurnstileError } from '../forms/turnstile.server'
@@ -115,13 +114,11 @@ export async function verifyOtpAction(
  */
 export async function logoutAction(): Promise<void> {
   try {
-    const token = await getCurrentCustomerToken()
-    if (token) {
-      const secret = getAuthSecret()
-      const verified = verifyCustomerToken(token, secret)
-      if (verified?.id) {
-        await revokeCustomerSession(verified.id)
-      }
+    // Chỉ phiên còn hiệu lực (đúng sessionVersion) mới được thu hồi: token đã bị thu hồi không thể
+    // gọi lại để đăng xuất khách khỏi mọi thiết bị lần nữa.
+    const customer = await getCurrentCustomer()
+    if (customer?.id) {
+      await revokeCustomerSession(customer.id)
     }
   } catch (err) {
     console.error('[AuthAction] logoutAction error revoking session:', err)

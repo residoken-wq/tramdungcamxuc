@@ -43,10 +43,8 @@ async function bootstrapAdmin(
     await expect(page).toHaveURL(/\/admin\/?$/)
     const user = (await (await page.request.get('/api/users/me')).json()).user
     return { id: user.id, email, password }
-  } else {
-    // Already initialized in dev environment
-    return { id: 0, email: '', password: '' }
   }
+  throw new Error('DB e2e đã có quản trị viên – test này cần DB chưa có admin (tự tạo rồi tự xóa).')
 }
 
 async function getTestOtpCode(page: Page, email: string): Promise<string> {
@@ -157,6 +155,10 @@ test.describe('Admin Isolation with Customer Cookie (T2-20)', () => {
       await sharedPage.goto('/tai-khoan', { waitUntil: 'domcontentloaded' })
       await expect(sharedPage).toHaveURL(/\/tai-khoan\/dang-nhap\/?$/, { timeout: 15000 })
     } finally {
+      // Xóa admin tự tạo (page vẫn giữ phiên admin) để test sau / project sau chạy trên DB chưa có admin
+      if (adminInfo?.id) {
+        await page.request.delete(`/api/users/${adminInfo.id}`).catch(() => {})
+      }
       await context.close()
     }
   })
