@@ -386,6 +386,7 @@ export async function verifyOtp(
     {
       id: Number(customer.id),
       email: customer.email,
+      sessionVersion: typeof customer.sessionVersion === 'number' ? customer.sessionVersion : 0,
     },
     secret,
   )

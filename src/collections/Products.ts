@@ -24,6 +24,7 @@ import {
   validatePriceOnSale,
   validateSlugOnSale,
 } from '../lib/cms/product-form'
+import { collectionLivePreview } from '../lib/live-preview'
 
 const computeValues: CollectionBeforeChangeHook = ({ data, originalDoc }) => ({
   ...data,
@@ -391,4 +392,5 @@ Products.admin = {
   description: vi.cms.productForm.collectionDescription,
   defaultColumns: ['name', 'type', 'saleStatus', 'price', 'updatedAt'],
   listSearchableFields: ['name', 'slug'],
+  livePreview: collectionLivePreview('products'),
 }

@@ -179,8 +179,21 @@ export const vi = {
           'Sản phẩm đang mở bán bắt buộc phải có đường dẫn (slug) để khách hàng truy cập.',
       },
     },
+    preview: {
+      saveDraftToPreview: 'Lưu nháp để xem trước',
+      adminOnlyBanner: 'Chế độ xem trước dành riêng cho quản trị viên',
+      draftNotice: 'Bản xem trước trực tiếp (Live Preview) – Thay đổi chưa lưu hiển thị tức thì.',
+      missingSlug: 'Vui lòng nhập đường dẫn (slug) và lưu nháp để xem trước.',
+      missingQrSlug: 'Vui lòng nhập mã đường dẫn QR (qrSlug) và lưu nháp để xem trước.',
+      missingSave: 'Vui lòng lưu bản ghi để xem trước.',
+    },
   },
-  livePreview: { mobile: 'Điện thoại', tablet: 'Máy tính bảng', desktop: 'Máy tính' },
+  livePreview: {
+    mobile: 'Điện thoại',
+    tablet: 'Máy tính bảng',
+    desktop: 'Máy tính',
+    saveDraftToPreview: 'Lưu nháp để xem trước',
+  },
   common: {
     send: 'Gửi',
     login: 'Đăng nhập',

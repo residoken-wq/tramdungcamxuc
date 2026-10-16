@@ -1,6 +1,7 @@
 import { contentCollection, date, relation, text, url } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
+import { collectionLivePreview } from '../lib/live-preview'
 
 export const Workshops = contentCollection(
   'workshops',
@@ -28,4 +29,5 @@ Workshops.admin = {
   description: 'Lịch các buổi workshop trực tuyến đồng hành cùng học viên.',
   defaultColumns: ['title', 'product', 'startsAt', 'endsAt', 'updatedAt'],
   listSearchableFields: ['title'],
+  livePreview: collectionLivePreview('workshops'),
 }

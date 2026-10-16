@@ -8,13 +8,17 @@ import { getSavedCardStatus } from '@/lib/eq/saved.server'
 import { vi } from '@/lib/i18n/vi'
 import { Button } from '@/components/ui/Button'
 import { EqCardFace } from '@/components/eq/EqCardFace'
+import { EqCardLivePreview } from '@/components/eq/EqCardLivePreview'
 import { SaveCardButton } from '@/components/eq/SaveCardButton'
 import { QrOpenedTracker } from '@/components/eq/QrOpenedTracker'
+
+import { getAdminPreviewUser } from '@/lib/live-preview.server'
 
 export const dynamic = 'force-dynamic'
 
 interface CardPageProps {
   params: Promise<{ qrSlug: string }>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 export async function generateMetadata({ params }: CardPageProps): Promise<Metadata> {
@@ -35,9 +39,18 @@ export async function generateMetadata({ params }: CardPageProps): Promise<Metad
   }
 }
 
-export default async function EqCardQrPage({ params }: CardPageProps) {
+export default async function EqCardQrPage({ params, searchParams }: CardPageProps) {
   const { qrSlug } = await params
-  const card = await getPublishedEqCardByQrSlug(qrSlug)
+  const search = (await searchParams) || {}
+  // REVIEW-REQUIRED: Chỉ phiên admin Payload (users collection) mới được đọc bản nháp của thẻ EQ.
+  // Khách vãng lai và học viên dù có preview=1 vẫn chỉ đọc bản đã xuất bản.
+  const adminUser = await getAdminPreviewUser(search)
+
+  const card = await getPublishedEqCardByQrSlug(qrSlug, {
+    draft: Boolean(adminUser),
+    previewId: typeof search.previewId === 'string' ? search.previewId : undefined,
+    user: adminUser,
+  })
 
   if (!card) {
     notFound()
@@ -45,6 +58,30 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
 
   const customer = await getCurrentCustomer().catch(() => null)
   const isSaved = customer ? (await getSavedCardStatus(customer.id, card.qrSlug)).isSaved : false
+
+  const cardActions = (
+    <>
+      {/* Chỗ trống cho khối chia sẻ / offer (T3-05 làm component; T3-02 gắn) */}
+      <div id="eq-card-share-slot" className="empty:hidden" />
+
+      {/* CTA: Lưu thẻ & Rút thêm một thẻ */}
+      <div className="mt-10 pt-8 border-t border-deep-navy/10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <SaveCardButton
+          qrSlug={card.qrSlug}
+          isLoggedIn={Boolean(customer)}
+          initialIsSaved={isSaved}
+        />
+        <Button
+          href="/eq-buddy"
+          variant="secondary"
+          size="md"
+          className="motion-reduce:transition-none"
+        >
+          {vi.eqBuddy.cardPage.drawAnotherCard}
+        </Button>
+      </div>
+    </>
+  )
 
   return (
     <div className="w-full py-10 sm:py-16 px-6 sm:px-8">
@@ -60,31 +97,17 @@ export default async function EqCardQrPage({ params }: CardPageProps) {
         </div>
 
         {/* Thẻ nội dung chính */}
-        <EqCardFace card={card} face="both">
-          {/* Chỗ trống cho khối chia sẻ / offer (T3-05 làm component; T3-02 gắn) */}
-          <div id="eq-card-share-slot" className="empty:hidden" />
-
-          {/* CTA: Lưu thẻ & Rút thêm một thẻ */}
-          <div className="mt-10 pt-8 border-t border-deep-navy/10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <SaveCardButton
-              qrSlug={card.qrSlug}
-              isLoggedIn={Boolean(customer)}
-              initialIsSaved={isSaved}
-            />
-            <Button
-              href="/eq-buddy"
-              variant="secondary"
-              size="md"
-              className="motion-reduce:transition-none"
-            >
-              {vi.eqBuddy.cardPage.drawAnotherCard}
-            </Button>
-          </div>
-        </EqCardFace>
+        {adminUser ? (
+          <EqCardLivePreview initialCard={card}>{cardActions}</EqCardLivePreview>
+        ) : (
+          <EqCardFace card={card} face="both">
+            {cardActions}
+          </EqCardFace>
+        )}
       </div>
 
-      {/* Ghi nhận phân tích một lần duy nhất khi mở trang từ QR */}
-      <QrOpenedTracker cardCode={card.code} qrSlug={card.qrSlug} />
+      {/* Ghi nhận phân tích một lần duy nhất khi mở trang từ QR (không ghi nhận khi admin xem trước) */}
+      {!adminUser && <QrOpenedTracker cardCode={card.code} qrSlug={card.qrSlug} />}
     </div>
   )
 }

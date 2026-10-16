@@ -982,6 +982,7 @@ export interface Customer {
    * Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).
    */
   deletionRequestedAt?: string | null;
+  sessionVersion?: number | null;
   updatedAt: string;
   createdAt: string;
   collection: 'customers';
@@ -1956,7 +1957,7 @@ export interface TrialUsage {
   /**
    * Chọn nội dung đã tạo trong hệ thống.
    */
-  product: number | Product;
+  product?: (number | null) | Product;
   /**
    * Chọn ngày và giờ áp dụng.
    */
@@ -2609,6 +2610,7 @@ export interface CustomersSelect<T extends boolean = true> {
   consentMarketing?: T;
   consentAt?: T;
   deletionRequestedAt?: T;
+  sessionVersion?: T;
   updatedAt?: T;
   createdAt?: T;
 }

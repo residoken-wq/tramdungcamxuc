@@ -4,7 +4,12 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { ZodError } from 'zod'
 import { requestOtp, verifyOtp, OtpVerificationError } from './otp.server'
-import { setCustomerSessionCookie, clearCustomerSessionCookie } from './session.server'
+import {
+  setCustomerSessionCookie,
+  clearCustomerSessionCookie,
+  getCurrentCustomer,
+  revokeCustomerSession,
+} from './session.server'
 import { vi } from '../i18n/vi'
 import { RateLimitError } from '../forms/ratelimit.server'
 import { TurnstileError } from '../forms/turnstile.server'
@@ -104,8 +109,21 @@ export async function verifyOtpAction(
 
 /**
  * REVIEW-REQUIRED: Server action to log out customer.
+ * Revokes customer session server-side across all devices by atomically incrementing sessionVersion
+ * via a single UPDATE query (session_version = session_version + 1), then clears the session cookie.
  */
 export async function logoutAction(): Promise<void> {
-  await clearCustomerSessionCookie()
-  redirect('/tai-khoan/dang-nhap')
+  try {
+    // Chỉ phiên còn hiệu lực (đúng sessionVersion) mới được thu hồi: token đã bị thu hồi không thể
+    // gọi lại để đăng xuất khách khỏi mọi thiết bị lần nữa.
+    const customer = await getCurrentCustomer()
+    if (customer?.id) {
+      await revokeCustomerSession(customer.id)
+    }
+  } catch (err) {
+    console.error('[AuthAction] logoutAction error revoking session:', err)
+  } finally {
+    await clearCustomerSessionCookie()
+    redirect('/tai-khoan/dang-nhap')
+  }
 }
