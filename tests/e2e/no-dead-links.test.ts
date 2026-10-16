@@ -99,6 +99,7 @@ test.describe('No dead links & Coming soon lead form (T1-18)', () => {
           web: 'habit',
           type: 'digital_tool',
           saleStatus: 'coming_soon',
+          isSample: true,
           _status: 'published',
         },
       })

@@ -97,7 +97,7 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
         price: 250000,
         accessDurationDays: 365,
         saleStatus: 'on_sale',
-        isSample: false,
+        isSample: true,
       },
       overrideAccess: true,
     })
@@ -115,7 +115,7 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
         price: 250000,
         accessDurationDays: null,
         saleStatus: 'on_sale',
-        isSample: false,
+        isSample: true,
       },
       overrideAccess: true,
     })
@@ -133,7 +133,7 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
         _status: 'published',
         price: 2900000,
         saleStatus: 'on_sale',
-        isSample: false,
+        isSample: true,
         components: [
           {
             label: 'Habit Tracker Số 1 Năm',
@@ -170,7 +170,7 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
         _status: 'published',
         price: 1500000,
         saleStatus: 'on_sale',
-        isSample: false,
+        isSample: true,
         components: [
           {
             label: 'Chỉ có Workshop',
@@ -195,7 +195,7 @@ describe('Package Payment Link & Entitlements (T1-13)', () => {
         _status: 'published',
         price: 149000,
         saleStatus: 'on_sale',
-        isSample: false,
+        isSample: true,
       },
       overrideAccess: true,
     })

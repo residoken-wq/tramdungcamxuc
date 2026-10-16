@@ -126,7 +126,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         _status: 'published',
         price: 149000,
         saleStatus: 'on_sale',
-        isSample: false,
+        isSample: true,
       },
     })
     experienceProductId = productDoc.id
@@ -291,7 +291,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
           _status: 'published',
           price: 199000,
           saleStatus: 'on_sale',
-          isSample: false,
+          isSample: true,
         },
       })
       createdProducts.push(product2.id)
@@ -307,7 +307,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
           _status: 'published',
           price: 50000,
           saleStatus: 'on_sale',
-          isSample: false,
+          isSample: true,
         },
       })
       createdProducts.push(ebookProduct.id)

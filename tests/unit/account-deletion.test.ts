@@ -50,6 +50,11 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
     emailSender = new MockEmailSender()
     testStartedAt = new Date().toISOString()
 
+    // Dọn dẹp đơn mồ côi còn sót lại từ các lần test trước (nếu có)
+    await payload.db.drizzle.execute(
+      sql`DELETE FROM "orders" WHERE "customer_id" IS NULL AND "anonymized_at" IS NULL`,
+    )
+
     // B4: Lưu cấu hình siteSettings hiện tại và đặt giá trị test để chạy xanh trên DB sạch
     settingsBefore = await payload.findGlobal({
       slug: 'siteSettings',
@@ -91,7 +96,19 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
     })
 
     if (existingProduct.docs.length > 0) {
-      testProduct = existingProduct.docs[0] as Product
+      testProduct = (await payload.update({
+        collection: 'products',
+        id: existingProduct.docs[0].id,
+        data: {
+          saleStatus: 'on_sale',
+          trialDays: 21,
+          price: 250000,
+          salePrice: 178000,
+          isSample: true,
+          _status: 'published',
+        },
+        overrideAccess: true,
+      })) as Product
     } else {
       testProduct = track(
         'products',
@@ -106,6 +123,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
             price: 250000,
             salePrice: 178000,
             saleStatus: 'on_sale',
+            isSample: true,
             _status: 'published',
           },
           overrideAccess: true,

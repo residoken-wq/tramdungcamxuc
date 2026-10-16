@@ -91,6 +91,7 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
             price: 250000,
             salePrice: 178000,
             trialDays: 21,
+            isSample: true,
             _status: 'published',
           },
         })
