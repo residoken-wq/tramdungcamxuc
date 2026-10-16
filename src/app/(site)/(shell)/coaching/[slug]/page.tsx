@@ -8,6 +8,7 @@ import { getPuckPageBySlug, getServiceDetail } from '@/lib/detail-pages.server'
 
 import { ServiceDetail } from '@/components/site/ServiceDetail'
 import { DetailLivePreview } from '@/components/site/DetailLivePreview'
+import { RefreshOnSave } from '@/components/site/RefreshOnSave'
 import { getAdminPreviewUser, getDetailPreview } from '@/lib/live-preview.server'
 import type { PreviewSearchParams } from '@/lib/live-preview'
 
@@ -74,7 +75,12 @@ export default async function CoachingDetailPage({
     user: adminUser,
   })
   if (puckPage) {
-    return <Render config={puckConfig} data={puckPage.puckData} />
+    return (
+      <>
+        {adminUser && <RefreshOnSave />}
+        <Render config={puckConfig} data={puckPage.puckData} />
+      </>
+    )
   }
 
   // 2. Nạp dữ liệu từ collection services

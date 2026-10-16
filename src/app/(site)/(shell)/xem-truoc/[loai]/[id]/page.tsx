@@ -73,7 +73,5 @@ export default async function PreviewPage({ params }: PreviewRouteProps) {
     notFound()
   }
 
-  return (
-    <PreviewItemLive type={previewType} initialData={doc as Record<string, unknown>} />
-  )
+  return <PreviewItemLive type={previewType} initialData={doc as Record<string, unknown>} />
 }

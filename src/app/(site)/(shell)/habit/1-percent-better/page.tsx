@@ -5,6 +5,7 @@ import { vi } from '@/lib/i18n/vi'
 import { getHabitProduct } from '@/lib/habit.server'
 import { HabitOfferClient } from '@/components/habit/HabitOfferClient'
 
+import { RefreshOnSave } from '@/components/site/RefreshOnSave'
 import { getAdminPreviewUser } from '@/lib/live-preview.server'
 
 export const dynamic = 'force-dynamic'
@@ -38,5 +39,10 @@ export default async function HabitOfferPage({ searchParams }: HabitOfferPagePro
     notFound()
   }
 
-  return <HabitOfferClient product={product} />
+  return (
+    <>
+      {adminUser && <RefreshOnSave />}
+      <HabitOfferClient product={product} />
+    </>
+  )
 }

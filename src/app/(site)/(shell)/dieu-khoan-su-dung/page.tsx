@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getLegalPageData, getLegalPageMetadata } from '@/lib/site-shell.server'
 import { LegalPageView } from '@/components/site/LegalPageView'
 
+import { RefreshOnSave } from '@/components/site/RefreshOnSave'
 import { getAdminPreviewUser } from '@/lib/live-preview.server'
 
 export const dynamic = 'force-dynamic'
@@ -29,5 +30,10 @@ export default async function DieuKhoanSuDungPage({ searchParams }: PageProps) {
     user: adminUser,
   })
   if (!data) notFound()
-  return <LegalPageView page={data.page} />
+  return (
+    <>
+      {adminUser && <RefreshOnSave />}
+      <LegalPageView page={data.page} />
+    </>
+  )
 }

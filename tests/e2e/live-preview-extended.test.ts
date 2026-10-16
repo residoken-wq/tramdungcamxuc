@@ -155,6 +155,56 @@ test('admin sees unsaved live edits for products and eq cards; guests never see 
       await publicPage.close()
     }
 
+    // 3. Trang render phía server (tài nguyên ebook): bấm "Lưu bản nháp" -> iframe tự tải lại bản nháp.
+    {
+      const slug = `ebook-preview-${randomUUID()}`
+      const published = `[MẪU] Ebook Published ${slug}`
+      const savedDraft = `[MẪU] Ebook Draft ${slug}`
+      const res = await page.request.post('/api/products', {
+        data: {
+          name: published,
+          slug,
+          type: 'ebook',
+          web: 'site',
+          saleStatus: 'free',
+          _status: 'published',
+        },
+      })
+      expect(res.ok()).toBe(true)
+      const id = (await res.json()).doc.id
+      created.push({ collection: 'products', id })
+
+      await page.goto(`/admin/collections/products/${id}`, { waitUntil: 'domcontentloaded' })
+      const textbox = page.getByRole('textbox', { name: 'Tên sản phẩm', exact: false })
+      await expect(textbox).toBeVisible()
+      const toggle = page.getByRole('button', { name: /^Xem trước$|live preview/i })
+      // Payload nhớ trạng thái "Xem trước" đang mở từ khối 1 và tự mở lại khung sau khi tải trang;
+      // bấm nút lúc đó sẽ đóng khung. Chờ khung tự mở trước, chỉ bấm khi không thấy.
+      const frameEl = page.locator(`iframe[src*="/tai-nguyen/${slug}"]`).first()
+      const autoOpened = await frameEl
+        .waitFor({ state: 'visible', timeout: 10000 })
+        .then(() => true)
+        .catch(() => false)
+      if (!autoOpened) {
+        await toggle.click()
+      }
+      const preview = frameEl.contentFrame()
+      await expect(preview.getByRole('heading', { name: published, exact: true })).toBeVisible({
+        timeout: 20000,
+      })
+      await textbox.fill(savedDraft)
+      await page.getByRole('button', { name: 'Lưu bản nháp' }).click()
+      await expect(preview.getByRole('heading', { name: savedDraft, exact: true })).toBeVisible({
+        timeout: 15000,
+      })
+
+      const publicPage = await guest.newPage()
+      await publicPage.goto(`/tai-nguyen/${slug}?preview=1`)
+      await expect(publicPage.getByRole('heading', { name: published, exact: true })).toBeVisible()
+      await expect(publicPage.getByText(savedDraft, { exact: true })).toHaveCount(0)
+      await publicPage.close()
+    }
+
     expect(pageErrors).toEqual([])
   } finally {
     await guest.close().catch(() => {})
