@@ -40,10 +40,7 @@ export const TrialUsage: CollectionConfig = {
       ...text('emailHash', 'Mã băm email (HMAC-SHA256)', true),
       index: true,
     },
-    {
-      ...relation('product', 'Sản phẩm', 'products'),
-      required: true,
-    },
+    relation('product', 'Sản phẩm', 'products'),
     {
       ...date('usedAt', 'Thời điểm dùng thử'),
       defaultValue: () => new Date().toISOString(),
