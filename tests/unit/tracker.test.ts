@@ -74,6 +74,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
           data: {
             name: 'Habit Tracker Số',
             slug: HABIT_TRACKER_PRODUCT_SLUG,
+            isSample: true,
             web: 'habit',
             type: 'digital_tool',
             price: 250000,
