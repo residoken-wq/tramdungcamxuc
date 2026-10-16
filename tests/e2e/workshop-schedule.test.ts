@@ -110,6 +110,7 @@ test.describe('Workshop Schedule in Account Page Flow (T2-10)', () => {
           type: 'package',
           saleStatus: 'on_sale',
           price: 2900000,
+          isSample: true,
           _status: 'published',
         },
       })

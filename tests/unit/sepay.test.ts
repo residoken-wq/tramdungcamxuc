@@ -100,6 +100,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
         price: 250000,
         salePrice: 178000,
         accessDurationDays: 0,
+        isSample: true,
         _status: 'published',
       },
       overrideAccess: true,
@@ -1076,6 +1077,7 @@ describe('SePay Automated Payment & VietQR Integration (T2-09 & T2-09b)', () => 
           price: 1750000,
           components: [{ label: 'Buổi coaching', quantity: 1, unitValue: 1000000 }],
           _status: 'published',
+          isSample: true,
         },
         overrideAccess: true,
       })

@@ -76,6 +76,7 @@ test.describe('CMS Dashboard "Hôm nay" (CM-02)', () => {
           type: 'digital_tool',
           price: 250000,
           saleStatus: 'on_sale',
+          isSample: true,
           _status: 'published',
         },
       })

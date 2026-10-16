@@ -94,6 +94,7 @@ test.describe('Account Orders Flow (T2-17)', () => {
           type: 'package',
           price: 1750000,
           saleStatus: 'on_sale',
+          isSample: true,
           _status: 'published',
         },
       })

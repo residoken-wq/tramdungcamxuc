@@ -87,7 +87,9 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
             web: 'eq',
             type: 'digital_tool',
             trialDays: 21,
+            price: 250000,
             saleStatus: 'on_sale',
+            isSample: true,
             _status: 'published',
           },
         })

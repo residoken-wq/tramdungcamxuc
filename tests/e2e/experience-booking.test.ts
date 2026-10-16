@@ -78,6 +78,7 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
           saleStatus: 'on_sale',
           price: 250000,
           salePrice: 149000,
+          isSample: true,
           _status: 'published',
         },
       })

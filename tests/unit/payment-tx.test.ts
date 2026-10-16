@@ -70,6 +70,7 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
         password: `TestP@ss!${randomUUID()}`,
         role: 'owner',
       },
+      user: { role: 'owner', collection: 'users' } as unknown as User,
       overrideAccess: true,
     })) as User
     createdUsers.push(ownerUser.id)
@@ -212,6 +213,7 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
         price: 250000,
         salePrice: 178000,
         saleStatus: 'on_sale',
+        isSample: true,
         _status: 'published',
       },
       overrideAccess: true,
@@ -293,6 +295,7 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
         web: 'site',
         price: 1000000,
         saleStatus: 'consult',
+        isSample: true,
         _status: 'published',
         components: [
           { label: '[TEST] Công cụ A', quantity: 1, unitValue: 250000, grantsProduct: tool.id },

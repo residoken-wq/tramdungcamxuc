@@ -60,7 +60,9 @@ test.describe('Thư viện (T1-09): tabs, topics, URL persistence & 375px mobile
           slug: productSlug,
           web: 'habit',
           type: 'digital_tool',
+          price: 250000,
           saleStatus: 'on_sale',
+          isSample: true,
           _status: 'published',
         },
       })
