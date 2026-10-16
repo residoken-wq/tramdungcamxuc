@@ -72,6 +72,14 @@ describe('T2-19: Payment Transactions & Entitlement Atomicity', () => {
       },
       overrideAccess: true,
     })) as User
+    if (ownerUser.role !== 'owner') {
+      ownerUser = (await payload.update({
+        collection: 'users',
+        id: ownerUser.id,
+        data: { role: 'owner' },
+        overrideAccess: true,
+      })) as User
+    }
     createdUsers.push(ownerUser.id)
 
     editorUser = (await payload.create({
