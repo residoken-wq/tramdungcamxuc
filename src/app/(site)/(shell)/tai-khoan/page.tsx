@@ -112,7 +112,7 @@ export default async function AccountPage() {
           <p className="text-xs font-bold uppercase tracking-wider text-bright-magenta mb-1">
             {vi.auth.accountHeading}
           </p>
-          <h1 className="font-heading text-3xl sm:text-4xl text-deep-navy">
+          <h1 className="font-display text-3xl sm:text-4xl text-deep-navy">
             {vi.auth.welcomeCustomer(displayName)}
           </h1>
           <p className="font-quote italic text-sm text-deep-navy/70 mt-1">{customer.email}</p>

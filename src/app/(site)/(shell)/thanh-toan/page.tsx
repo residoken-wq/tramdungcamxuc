@@ -49,7 +49,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   if (!productSlug) {
     return (
       <div className="py-12 sm:py-20 px-4 max-w-xl mx-auto text-center space-y-4">
-        <h1 className="font-heading text-3xl text-deep-navy">{vi.checkout.productMissingTitle}</h1>
+        <h1 className="font-display text-3xl text-deep-navy">{vi.checkout.productMissingTitle}</h1>
         <p className="font-sans text-sm text-deep-navy/70">{vi.checkout.productMissingDesc}</p>
         <div className="pt-4">
           <Link
@@ -84,7 +84,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   if (!isEligible) {
     return (
       <div className="py-12 sm:py-20 px-4 max-w-xl mx-auto text-center space-y-4">
-        <h1 className="font-heading text-3xl text-deep-navy">
+        <h1 className="font-display text-3xl text-deep-navy">
           {vi.checkout.productUnavailableTitle}
         </h1>
         <p className="font-sans text-sm text-deep-navy/70">{vi.checkout.productNotFound}</p>
@@ -139,7 +139,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
         <p className="text-xs font-bold uppercase tracking-wider text-bright-magenta">
           {vi.checkout.pageBadge}
         </p>
-        <h1 className="font-heading text-3xl sm:text-4xl text-deep-navy">
+        <h1 className="font-display text-3xl sm:text-4xl text-deep-navy">
           {vi.checkout.pageHeading}
         </h1>
         <p className="font-quote italic text-sm text-deep-navy/70">{vi.checkout.pageSubheading}</p>

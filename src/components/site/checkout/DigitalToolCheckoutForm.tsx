@@ -104,7 +104,7 @@ export function DigitalToolCheckoutForm({
         <div className="w-12 h-12 bg-mint-haze rounded-full flex items-center justify-center mx-auto text-deep-navy text-xl">
           ✓
         </div>
-        <h2 className="font-heading text-2xl text-deep-navy">{product.name}</h2>
+        <h2 className="font-display text-2xl text-deep-navy">{product.name}</h2>
         <p className="font-sans text-sm text-deep-navy/80">{vi.checkout.alreadyActiveMessage}</p>
         <div className="pt-2">
           <Button
@@ -135,7 +135,7 @@ export function DigitalToolCheckoutForm({
             />
           </div>
         ) : (
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-lavender-mist/50 flex items-center justify-center shrink-0 border border-lavender-mist text-bright-magenta font-bold text-2xl font-heading">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-lavender-mist/50 flex items-center justify-center shrink-0 border border-lavender-mist text-bright-magenta font-bold text-2xl font-display">
             TDCX
           </div>
         )}
@@ -160,7 +160,7 @@ export function DigitalToolCheckoutForm({
             </span>
           </div>
 
-          <h2 className="font-heading text-xl sm:text-2xl text-deep-navy break-words">
+          <h2 className="font-display text-xl sm:text-2xl text-deep-navy break-words">
             {product.name}
           </h2>
 
