@@ -537,11 +537,11 @@ export interface Product {
       }[]
     | null;
   /**
-   * Tổng giá trị thực tế của gói (VND). Tự động tính từ số lượng × giá trị từng cấu phần, hiện trên bảng so sánh.
+   * Tổng giá trị của gói (VND). Tự động tính từ tổng (Số lượng × Giá trị mỗi đơn vị) của các cấu phần. Trường chỉ đọc, hệ thống tự động cập nhật khi lưu.
    */
   totalValue?: number | null;
   /**
-   * Mức ưu đãi (%) so với tổng giá trị. Tự động tính theo giá bán thực tế, hiện trên huy hiệu giảm giá.
+   * Mức ưu đãi (%) so với tổng giá trị. Tự động tính theo công thức: (Tổng giá trị - Giá bán) / Tổng giá trị × 100% (hoặc ưu tiên Giá ưu đãi nếu có). Trường chỉ đọc, hệ thống tự động cập nhật khi lưu.
    */
   discountPercent?: number | null;
   /**

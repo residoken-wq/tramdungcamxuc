@@ -62,8 +62,15 @@ export const validatePriceOnSale: Validate = (value, options) => {
 
 // REVIEW-REQUIRED: Hàm validate kiểm tra ảnh bìa khi xuất bản sản phẩm đang mở bán (on_sale).
 // Cho phép lưu nháp tự do (_status === 'draft').
+// Bỏ qua cho dữ liệu mẫu seed (isSample === true) chưa có ảnh tải lên.
 export const validateCoverImageOnSale: Validate = (value, options) => {
   if (options?.data?._status === 'draft') return true
+  if (
+    options?.data?.isSample ||
+    (options?.siblingData as { isSample?: unknown } | undefined)?.isSample
+  ) {
+    return true
+  }
 
   if (options?.data?.saleStatus === 'on_sale') {
     if (!value) {

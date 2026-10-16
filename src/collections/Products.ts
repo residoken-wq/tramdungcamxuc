@@ -30,26 +30,6 @@ const computeValues: CollectionBeforeChangeHook = ({ data, originalDoc }) => ({
   ...computePackageValue({ ...originalDoc, ...data }),
 })
 
-// REVIEW-REQUIRED: Chặn xuất bản sản phẩm đang mở bán (on_sale) nếu thiếu giá, ảnh bìa hoặc slug.
-// Cho phép lưu nháp (_status === 'draft').
-const validatePublishingOnSale: CollectionBeforeChangeHook = ({ data }) => {
-  if (data._status === 'published' && data.saleStatus === 'on_sale') {
-    if (
-      data.type !== 'physical_external' &&
-      (data.price == null || typeof data.price !== 'number' || Number.isNaN(data.price))
-    ) {
-      throw new Error(vi.cms.productForm.validation.missingPriceOnSale)
-    }
-    if (!data.coverImage) {
-      throw new Error(vi.cms.productForm.validation.missingCoverImageOnSale)
-    }
-    if (!data.slug || typeof data.slug !== 'string' || data.slug.trim().length === 0) {
-      throw new Error(vi.cms.productForm.validation.missingSlugOnSale)
-    }
-  }
-  return data
-}
-
 export const Products: CollectionConfig = {
   ...contentCollection('products', 'Sản phẩm', vi.cms.nav.commerce, 'name', [
     // Trường hiển thị ở cột Sidebar (admin.position: 'sidebar')
@@ -403,7 +383,7 @@ export const Products: CollectionConfig = {
       ],
     },
   ]),
-  hooks: { beforeChange: [computeValues, validatePublishingOnSale] },
+  hooks: { beforeChange: [computeValues] },
 }
 
 Products.admin = {

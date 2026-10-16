@@ -1,4 +1,11 @@
-import { describe, expect, it } from 'vitest'
+// @vitest-environment node
+import { randomUUID } from 'node:crypto'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { getPayload, type CollectionSlug, type Payload } from 'payload'
+import config from '../../src/payload.config'
+import { migrations } from '../../src/migrations'
+import type { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
+import { seed } from '../../seed/seed'
 import {
   PRODUCT_TYPES,
   showFor,
@@ -8,7 +15,7 @@ import {
   validateSlugOnSale,
 } from '@/lib/cms/product-form'
 
-describe('Product Form CMS UX Conditions (CM-03)', () => {
+describe('Product Form CMS UX Conditions & Validation (CM-03)', () => {
   describe('showFor helper', () => {
     it('returns true when data.type is in allowedTypes', () => {
       const condition = showFor(['digital_tool'])
@@ -125,8 +132,8 @@ describe('Product Form CMS UX Conditions (CM-03)', () => {
     })
   })
 
-  describe('on_sale publication validation (Item 4)', () => {
-    // REVIEW-REQUIRED: Tests for publication validation on on_sale products
+  describe('on_sale publication validation (Item 4 unit tests)', () => {
+    // REVIEW-REQUIRED: Pure validation unit tests for on_sale products
     it('validatePriceOnSale: allows drafts without price', () => {
       const result = validatePriceOnSale(null, {
         data: { _status: 'draft', saleStatus: 'on_sale', type: 'digital_tool' },
@@ -216,6 +223,223 @@ describe('Product Form CMS UX Conditions (CM-03)', () => {
         data: { _status: 'published', saleStatus: 'on_sale' },
       } as any)
       expect(valid).toBe(true)
+    })
+  })
+
+  describe('Local API Product Validation & Seeded Products (Item 6)', () => {
+    let payload: Payload
+    const created: { collection: CollectionSlug; id: number }[] = []
+    const unique = () => `test-${randomUUID()}`
+    const track = (collection: CollectionSlug, doc: { id: number }) => {
+      created.push({ collection, id: doc.id })
+      return doc.id
+    }
+    let testMediaId: number
+
+    beforeAll(async () => {
+      payload = await getPayload({ config })
+      await payload.db.migrate({
+        migrations: migrations.map((migration) => ({
+          name: migration.name,
+          up: (args: unknown) => migration.up(args as MigrateUpArgs),
+          down: (args: unknown) => migration.down(args as MigrateDownArgs),
+        })),
+      })
+
+      // Ensure sample seed products exist for testing
+      const clearCheck = await payload.find({
+        collection: 'products',
+        where: { slug: { equals: 'growth-mirror-clear' } },
+        limit: 1,
+      })
+      if (clearCheck.docs.length === 0) {
+        await seed(payload)
+      }
+
+      // Find or create test media for cover image tests
+      const mediaList = await payload.find({ collection: 'media', limit: 1 })
+      if (mediaList.docs.length > 0) {
+        testMediaId = mediaList.docs[0].id
+      } else {
+        const png = Buffer.from(
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aH9sAAAAASUVORK5CYII=',
+          'base64',
+        )
+        const m = await payload.create({
+          collection: 'media',
+          data: { alt: 'Ảnh kiểm thử bìa', isSample: true },
+          file: {
+            data: png,
+            mimetype: 'image/png',
+            name: `test-${unique()}.png`,
+            size: png.length,
+          },
+        })
+        testMediaId = track('media', m)
+      }
+    }, 60000)
+
+    afterAll(async () => {
+      if (!payload) return
+      try {
+        for (const entry of created.reverse()) await payload.delete(entry)
+      } finally {
+        await payload.destroy()
+      }
+    }, 30000)
+
+    // REVIEW-REQUIRED: Local API validation tests
+    it('allows saving draft product without price, coverImage or slug', async () => {
+      const draft = await payload.create({
+        collection: 'products',
+        draft: true,
+        data: {
+          name: '[MẪU] Bản nháp chưa có giá',
+          web: 'habit',
+          type: 'digital_tool',
+          saleStatus: 'on_sale',
+          _status: 'draft',
+          isSample: true,
+        },
+      })
+      track('products', draft)
+      expect(draft.id).toBeDefined()
+      expect(draft._status).toBe('draft')
+    })
+
+    it('blocks publishing on_sale product when price is missing', async () => {
+      await expect(
+        payload.create({
+          collection: 'products',
+          draft: false,
+          data: {
+            name: '[MẪU] Thiếu giá khi mở bán',
+            slug: unique(),
+            web: 'habit',
+            type: 'digital_tool',
+            saleStatus: 'on_sale',
+            coverImage: testMediaId,
+            _status: 'published',
+            isSample: false,
+          },
+        }),
+      ).rejects.toSatisfy((err: any) => {
+        return (
+          err.name === 'ValidationError' &&
+          err.data?.errors?.some((e: any) => e.message?.includes('bắt buộc phải có giá bán'))
+        )
+      })
+    })
+
+    it('blocks publishing on_sale product when coverImage is missing', async () => {
+      await expect(
+        payload.create({
+          collection: 'products',
+          draft: false,
+          data: {
+            name: '[MẪU] Thiếu ảnh bìa khi mở bán',
+            slug: unique(),
+            web: 'habit',
+            type: 'digital_tool',
+            price: 250000,
+            saleStatus: 'on_sale',
+            _status: 'published',
+            isSample: false,
+          },
+        }),
+      ).rejects.toSatisfy((err: any) => {
+        return (
+          err.name === 'ValidationError' &&
+          err.data?.errors?.some((e: any) => e.message?.includes('bắt buộc phải có ảnh bìa'))
+        )
+      })
+    })
+
+    it('allows publishing on_sale physical_external (Shopee) product without price', async () => {
+      const shopee = await payload.create({
+        collection: 'products',
+        draft: false,
+        data: {
+          name: '[MẪU] Thẻ Shopee không cần giá web',
+          slug: unique(),
+          web: 'eq',
+          type: 'physical_external',
+          saleStatus: 'on_sale',
+          coverImage: testMediaId,
+          externalUrl: 'https://shopee.vn/test',
+          externalLabel: 'Mua trên Shopee',
+          _status: 'published',
+          isSample: true,
+        },
+      })
+      track('products', shopee)
+      expect(shopee.id).toBeDefined()
+      expect(shopee.price).toBeNull()
+      expect(shopee.saleStatus).toBe('on_sale')
+    })
+
+    it('allows publishing on_sale product with all required fields', async () => {
+      const validProd = await payload.create({
+        collection: 'products',
+        draft: false,
+        data: {
+          name: '[MẪU] Sản phẩm hợp lệ',
+          slug: unique(),
+          web: 'habit',
+          type: 'digital_tool',
+          price: 250000,
+          saleStatus: 'on_sale',
+          coverImage: testMediaId,
+          _status: 'published',
+          isSample: true,
+        },
+      })
+      track('products', validProd)
+      expect(validProd.id).toBeDefined()
+      expect(validProd._status).toBe('published')
+    })
+
+    it('existing seeded products open and save without error (Local API update retains data)', async () => {
+      const sampleSlugs = [
+        'growth-mirror-clear',
+        'growth-mirror-build',
+        'growth-mirror-shine',
+        'ebook-cong-cu-eq',
+        'habit-tracker-so',
+        'bo-the-vat-ly-2-0',
+        'growth-mirror-phien-trai-nghiem',
+      ]
+      const { docs: seededDocs } = await payload.find({
+        collection: 'products',
+        where: {
+          slug: { in: sampleSlugs },
+        },
+        limit: 20,
+      })
+      expect(seededDocs.length).toBeGreaterThan(0)
+      const slugs = seededDocs.map((p) => p.slug)
+      expect(slugs).toContain('growth-mirror-clear')
+      expect(slugs).toContain('growth-mirror-build')
+      expect(slugs).toContain('growth-mirror-shine')
+
+      for (const prod of seededDocs) {
+        const updated = await payload.update({
+          collection: 'products',
+          id: prod.id,
+          data: {},
+        })
+        expect(updated.id).toBe(prod.id)
+        expect(updated.slug).toBe(prod.slug)
+        expect(updated.type).toBe(prod.type)
+
+        // Ensure fields hidden by condition still retain original database values
+        if (prod.externalUrl) {
+          expect(updated.externalUrl).toBe(prod.externalUrl)
+        }
+        if (prod.components && prod.components.length > 0) {
+          expect(updated.components?.length).toBe(prod.components.length)
+        }
+      }
     })
   })
 })
