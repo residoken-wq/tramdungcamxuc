@@ -6,12 +6,7 @@ import { createHmac, randomUUID } from 'node:crypto'
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import type { Customer, Order, Product, Workshop } from '../../src/payload-types'
-import {
-  getReminderOptOutUrl,
-  REMINDER_OPTOUT_PREFIX,
-  signReminderOptOutToken,
-  verifyReminderOptOutToken,
-} from '../../src/lib/reminders/token'
+import { signReminderOptOutToken, verifyReminderOptOutToken } from '../../src/lib/reminders/token'
 import {
   optOutWithTokenAction,
   updateReminderPreferenceAction,
@@ -422,7 +417,7 @@ describe('Reminder Emails Opt-Out Flow (T2-21)', () => {
 
       const emailSender = new MockEmailSender()
 
-      const result = await sendTrackerNudges(now, {
+      await sendTrackerNudges(now, {
         payload,
         emailSender,
       })
