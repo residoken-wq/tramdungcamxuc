@@ -32,7 +32,7 @@ export async function TodayDashboard(props: TodayDashboardProps) {
 
   return (
     <section
-      aria-label="Dashboard Hôm nay"
+      aria-label={vi.cms.dashboard.ariaLabel}
       style={{
         width: '100%',
         margin: '0 0 32px 0',
@@ -76,7 +76,7 @@ export async function TodayDashboard(props: TodayDashboardProps) {
                 marginBottom: '4px',
               }}
             >
-              Trang quản trị trung tâm
+              {vi.cms.dashboard.eyebrow}
             </span>
             <h1
               style={{

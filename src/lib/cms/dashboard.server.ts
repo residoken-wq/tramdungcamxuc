@@ -1,6 +1,12 @@
 import 'server-only'
 
-import type { Payload, PayloadRequest } from 'payload'
+import {
+  Forbidden,
+  type CollectionSlug,
+  type Payload,
+  type PayloadRequest,
+  type Where,
+} from 'payload'
 import { isAdminUser, isOwnerUser } from '../auth/access'
 import { vi } from '../i18n/vi'
 
@@ -127,156 +133,119 @@ export async function getDashboardStats(
 
   const todos: DashboardTodoItem[] = []
   let hasError = false
-  let errorMessage: string | undefined
 
-  try {
-    // 1. Đơn pending
-    // Kiểm tra quyền đọc đơn hàng thông qua Access Control hiện có
-    let pendingOrdersCount = 0
-    let canReadOrders = false
+  // null = the user may not read this collection (Forbidden) → hide the card.
+  // Any other error is a real failure → show the error state instead of a misleading "0".
+  async function countOrNull(collection: CollectionSlug, where: Where): Promise<number | null> {
     try {
-      const ordersRes = await payload.count({
-        collection: 'orders',
-        where: {
-          paymentStatus: { equals: 'pending' },
+      const res = await payload.count({ collection, where, user, overrideAccess: false })
+      return res.totalDocs
+    } catch (err) {
+      if (err instanceof Forbidden) return null
+      hasError = true
+      console.error(`[cms-dashboard] count ${collection} failed:`, err)
+      return null
+    }
+  }
+
+  // 1. Đơn pending (theo quyền đọc đơn hiện có)
+  const pendingOrdersCount = await countOrNull('orders', { paymentStatus: { equals: 'pending' } })
+  if (pendingOrdersCount !== null) {
+    todos.push({
+      id: 'pendingOrders',
+      title: vi.cms.dashboard.todos.pendingOrders.title,
+      description: vi.cms.dashboard.todos.pendingOrders.description,
+      count: pendingOrdersCount,
+      href: '/admin/collections/orders?where[paymentStatus][equals]=pending',
+      visible: true,
+      badgeColor: 'warning',
+    })
+  }
+
+  // 2. Sự kiện amount_mismatch / order_cancelled trong 7 ngày qua (chỉ owner).
+  // paymentEvents không có cờ "đã xử lý" (chỉ đọc, append-only) → giới hạn 7 ngày để số tự về 0.
+  if (isOwner) {
+    const sinceIso = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    const paymentIssuesCount = await countOrNull('paymentEvents', {
+      or: [
+        {
+          and: [
+            { result: { equals: 'amount_mismatch' } },
+            { receivedAt: { greater_than_equal: sinceIso } },
+          ],
         },
-        user,
-        overrideAccess: false,
-      })
-      pendingOrdersCount = ordersRes.totalDocs
-      canReadOrders = true
-    } catch {
-      canReadOrders = false
-    }
-
-    if (canReadOrders) {
-      todos.push({
-        id: 'pendingOrders',
-        title: vi.cms.dashboard.todos.pendingOrders.title,
-        description: vi.cms.dashboard.todos.pendingOrders.description,
-        count: pendingOrdersCount,
-        href: '/admin/collections/orders?where[paymentStatus][equals]=pending',
-        visible: true,
-        badgeColor: 'warning',
-      })
-    }
-
-    // 2. Sự kiện thanh toán amount_mismatch / order_cancelled chưa xử lý (chỉ owner)
-    if (isOwner) {
-      let paymentIssuesCount = 0
-      try {
-        const eventsRes = await payload.count({
-          collection: 'paymentEvents',
-          where: {
-            or: [
-              { result: { equals: 'amount_mismatch' } },
-              { result: { equals: 'order_cancelled' } },
-            ],
-          },
-          user,
-          overrideAccess: false,
-        })
-        paymentIssuesCount = eventsRes.totalDocs
-      } catch {
-        paymentIssuesCount = 0
-      }
-
+        {
+          and: [
+            { result: { equals: 'order_cancelled' } },
+            { receivedAt: { greater_than_equal: sinceIso } },
+          ],
+        },
+      ],
+    })
+    if (paymentIssuesCount !== null) {
+      const since = encodeURIComponent(sinceIso)
       todos.push({
         id: 'paymentIssues',
         title: vi.cms.dashboard.todos.paymentIssues.title,
         description: vi.cms.dashboard.todos.paymentIssues.description,
         count: paymentIssuesCount,
-        href: '/admin/collections/paymentEvents?where[or][0][result][equals]=amount_mismatch&where[or][1][result][equals]=order_cancelled',
+        href:
+          '/admin/collections/paymentEvents?' +
+          `where[or][0][and][0][result][equals]=amount_mismatch&where[or][0][and][1][receivedAt][greater_than_equal]=${since}` +
+          `&where[or][1][and][0][result][equals]=order_cancelled&where[or][1][and][1][receivedAt][greater_than_equal]=${since}`,
         visible: true,
         badgeColor: 'accent',
       })
     }
+  }
 
-    // 3. Lead mới (followUpStatus = 'new')
-    let newLeadsCount = 0
-    try {
-      const leadsRes = await payload.count({
-        collection: 'leads',
-        where: {
-          followUpStatus: { equals: 'new' },
-        },
-        user,
-        overrideAccess: false,
-      })
-      newLeadsCount = leadsRes.totalDocs
-      todos.push({
-        id: 'newLeads',
-        title: vi.cms.dashboard.todos.newLeads.title,
-        description: vi.cms.dashboard.todos.newLeads.description,
-        count: newLeadsCount,
-        href: '/admin/collections/leads?where[followUpStatus][equals]=new',
-        visible: true,
-        badgeColor: 'info',
-      })
-    } catch {
-      // User without read permission on leads
-    }
+  // 3. Lead mới (followUpStatus = 'new')
+  const newLeadsCount = await countOrNull('leads', { followUpStatus: { equals: 'new' } })
+  if (newLeadsCount !== null) {
+    todos.push({
+      id: 'newLeads',
+      title: vi.cms.dashboard.todos.newLeads.title,
+      description: vi.cms.dashboard.todos.newLeads.description,
+      count: newLeadsCount,
+      href: '/admin/collections/leads?where[followUpStatus][equals]=new',
+      visible: true,
+      badgeColor: 'info',
+    })
+  }
 
-    // 4. Khách có yêu cầu xóa tài khoản (deletionRequestedAt exists)
-    let deletionCount = 0
-    try {
-      const deletionRes = await payload.count({
-        collection: 'customers',
-        where: {
-          deletionRequestedAt: { exists: true },
-        },
-        user,
-        overrideAccess: false,
-      })
-      deletionCount = deletionRes.totalDocs
-      todos.push({
-        id: 'deletionRequests',
-        title: vi.cms.dashboard.todos.deletionRequests.title,
-        description: vi.cms.dashboard.todos.deletionRequests.description,
-        count: deletionCount,
-        href: '/admin/collections/customers?where[deletionRequestedAt][exists]=true',
-        visible: true,
-        badgeColor: 'warning',
-      })
-    } catch {
-      // User without read permission on customers
-    }
+  // 4. Khách có yêu cầu xóa tài khoản (deletionRequestedAt exists)
+  const deletionCount = await countOrNull('customers', { deletionRequestedAt: { exists: true } })
+  if (deletionCount !== null) {
+    todos.push({
+      id: 'deletionRequests',
+      title: vi.cms.dashboard.todos.deletionRequests.title,
+      description: vi.cms.dashboard.todos.deletionRequests.description,
+      count: deletionCount,
+      href: '/admin/collections/customers?where[deletionRequestedAt][exists]=true',
+      visible: true,
+      badgeColor: 'warning',
+    })
+  }
 
-    // 5. Workshop bắt đầu trong 7 ngày tới
-    let upcomingWorkshopsCount = 0
-    try {
-      const now = new Date()
-      const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-      const nowIso = now.toISOString()
-      const in7DaysIso = in7Days.toISOString()
-
-      const workshopsRes = await payload.count({
-        collection: 'workshops',
-        where: {
-          and: [
-            { startsAt: { greater_than_equal: nowIso } },
-            { startsAt: { less_than_equal: in7DaysIso } },
-          ],
-        },
-        user,
-        overrideAccess: false,
-      })
-      upcomingWorkshopsCount = workshopsRes.totalDocs
-      todos.push({
-        id: 'upcomingWorkshops',
-        title: vi.cms.dashboard.todos.upcomingWorkshops.title,
-        description: vi.cms.dashboard.todos.upcomingWorkshops.description,
-        count: upcomingWorkshopsCount,
-        href: `/admin/collections/workshops?where[and][0][startsAt][greater_than_equal]=${encodeURIComponent(nowIso)}&where[and][1][startsAt][less_than_equal]=${encodeURIComponent(in7DaysIso)}`,
-        visible: true,
-        badgeColor: 'info',
-      })
-    } catch {
-      // User without read permission on workshops
-    }
-  } catch (err) {
-    hasError = true
-    errorMessage = err instanceof Error ? err.message : vi.cms.dashboard.errorMessage
+  // 5. Workshop bắt đầu trong 7 ngày tới
+  const nowIso = new Date().toISOString()
+  const in7DaysIso = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+  const upcomingWorkshopsCount = await countOrNull('workshops', {
+    and: [
+      { startsAt: { greater_than_equal: nowIso } },
+      { startsAt: { less_than_equal: in7DaysIso } },
+    ],
+  })
+  if (upcomingWorkshopsCount !== null) {
+    todos.push({
+      id: 'upcomingWorkshops',
+      title: vi.cms.dashboard.todos.upcomingWorkshops.title,
+      description: vi.cms.dashboard.todos.upcomingWorkshops.description,
+      count: upcomingWorkshopsCount,
+      href: `/admin/collections/workshops?where[and][0][startsAt][greater_than_equal]=${encodeURIComponent(nowIso)}&where[and][1][startsAt][less_than_equal]=${encodeURIComponent(in7DaysIso)}`,
+      visible: true,
+      badgeColor: 'info',
+    })
   }
 
   const visibleTodos = todos.filter((t) => t.visible)
@@ -289,6 +258,6 @@ export async function getDashboardStats(
     totalActionableCount,
     userRole,
     hasError,
-    errorMessage,
+    errorMessage: hasError ? vi.cms.dashboard.errorMessage : undefined,
   }
 }

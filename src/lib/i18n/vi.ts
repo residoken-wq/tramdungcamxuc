@@ -9,6 +9,8 @@ export const vi = {
       system: 'Hệ thống',
     },
     dashboard: {
+      ariaLabel: 'Bảng việc hôm nay',
+      eyebrow: 'Trang quản trị trung tâm',
       headingLine1: 'Hôm nay tại',
       headingLine2: 'Trạm Dừng Cảm Xúc',
       welcome: (name?: string) =>
@@ -29,7 +31,8 @@ export const vi = {
         },
         paymentIssues: {
           title: 'Giao dịch cần đối soát',
-          description: 'Sự kiện lệch số tiền hoặc đơn đã hủy nhưng khách vẫn chuyển khoản.',
+          description:
+            'Trong 7 ngày qua: tiền nhận lệch số tiền đơn, hoặc khách chuyển khoản vào đơn đã hủy.',
         },
         newLeads: {
           title: 'Khách tiềm năng mới',

@@ -261,4 +261,39 @@ describe('CMS Today Dashboard - getDashboardStats (CM-02)', () => {
       'deletion',
     ])
   })
+
+  it('7. Không đăng nhập: ẩn thẻ không có quyền (Forbidden), không báo lỗi', async () => {
+    const stats = await getDashboardStats(payload, null)
+    const ids = stats.todos.map((t) => t.id)
+    expect(ids).not.toContain('pendingOrders')
+    expect(ids).not.toContain('newLeads')
+    expect(ids).not.toContain('deletionRequests')
+    expect(ids).not.toContain('paymentIssues')
+    expect(stats.hasError).toBe(false)
+  })
+
+  it('8. Đối soát thanh toán chỉ đếm sự kiện trong 7 ngày qua', async () => {
+    const count = async () =>
+      (await getDashboardStats(payload, owner)).todos.find((t) => t.id === 'paymentIssues')
+        ?.count ?? -1
+    const before = await count()
+    const mk = (receivedAt: string, result: string) =>
+      payload
+        .create({
+          collection: 'paymentEvents',
+          data: {
+            provider: 'qa-test',
+            transactionId: `cm02-${randomUUID()}`,
+            signatureValid: true,
+            result,
+            receivedAt,
+          },
+          overrideAccess: true,
+        })
+        .then((doc) => track('paymentEvents', doc))
+    await mk(new Date().toISOString(), 'amount_mismatch')
+    await mk(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), 'order_cancelled')
+    await mk(new Date().toISOString(), 'paid')
+    expect(await count()).toBe(before + 1)
+  })
 })
