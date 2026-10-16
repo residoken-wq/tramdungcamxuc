@@ -85,6 +85,7 @@ test.describe('Package Payment Link & Entitlements Flow (T1-13)', () => {
           saleStatus: 'on_sale',
           price: 250000,
           accessDurationDays: 365,
+          isSample: true,
           _status: 'published',
         },
       })
@@ -100,6 +101,7 @@ test.describe('Package Payment Link & Entitlements Flow (T1-13)', () => {
           saleStatus: 'on_sale',
           price: 250000,
           accessDurationDays: null,
+          isSample: true,
           _status: 'published',
         },
       })
@@ -115,6 +117,7 @@ test.describe('Package Payment Link & Entitlements Flow (T1-13)', () => {
           type: 'package',
           saleStatus: 'on_sale',
           price: 2900000,
+          isSample: true,
           _status: 'published',
           components: [
             {

@@ -81,6 +81,7 @@ describe('Workshop Schedule & 24h Reminder (T2-10)', () => {
           type: 'package',
           price: 2900000,
           saleStatus: 'on_sale',
+          isSample: true,
           _status: 'published',
         },
         overrideAccess: true,

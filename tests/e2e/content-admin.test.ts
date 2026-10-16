@@ -9,6 +9,7 @@ test('first administrator sees all six admin groups (CM-01)', async ({ page }, t
   const email = `t0-06-${randomUUID()}@example.test`
   const password = randomUUID()
   let userId: number | undefined
+  let packageId: number | undefined
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   page.on('response', (response) => {
@@ -95,7 +96,21 @@ test('first administrator sees all six admin groups (CM-01)', async ({ page }, t
       contentType: 'image/png',
     })
 
-    await page.goto('/admin/collections/products/create')
+    // CM-03: package value fields only show for type = package, in the "Gói & quyền" tab.
+    const pkgRes = await page.request.post('/api/products?draft=true', {
+      data: {
+        name: '[MẪU] Gói kiểm thử CM-01',
+        slug: `goi-kiem-thu-${Date.now()}`,
+        web: 'site',
+        type: 'package',
+        saleStatus: 'coming_soon',
+        _status: 'draft',
+      },
+    })
+    expect(pkgRes.ok(), await pkgRes.text()).toBe(true)
+    packageId = (await pkgRes.json()).doc.id
+    await page.goto(`/admin/collections/products/${packageId}`)
+    await page.getByRole('button', { name: 'Gói & quyền' }).click()
     await expect(page.locator('#field-totalValue')).toBeDisabled()
     await expect(page.locator('#field-discountPercent')).toBeDisabled()
 
@@ -109,6 +124,7 @@ test('first administrator sees all six admin groups (CM-01)', async ({ page }, t
     await page.screenshot({ path: testInfo.outputPath('admin-mobile.png'), fullPage: true })
     expect(errors).toEqual([])
   } finally {
+    if (packageId) await page.request.delete(`/api/products/${packageId}`).catch(() => {})
     test.setTimeout(testInfo.timeout + 30000)
     // Remove only the test account created above, leaving the first-user flow repeatable.
     if (userId) {

@@ -106,6 +106,7 @@ test.describe('Buy Digital Tool Flow (T2-08)', () => {
           salePrice: 178000,
           accessDurationDays: null, // Vĩnh viễn
           trialDays: 21,
+          isSample: true,
           _status: 'published',
         },
       })

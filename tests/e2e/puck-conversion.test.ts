@@ -80,6 +80,7 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
           price: 250000,
           salePrice: 178000,
           saleStatus: 'on_sale',
+          isSample: true,
           _status: 'published',
         },
       })
