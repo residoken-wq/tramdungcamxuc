@@ -23,7 +23,6 @@ vi.mock('next/headers', () => ({
 import { createHmac, randomUUID } from 'node:crypto'
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
-import type { Customer } from '../../src/payload-types'
 import {
   CUSTOMER_TOKEN_COOKIE,
   getAuthSecret,
@@ -311,7 +310,7 @@ describe('Customer Session Management & Isolation (T2-20)', () => {
     const adminPassword = `AdminPass-${suffix}`
 
     // Create an admin user
-    const adminUser = track(
+    track(
       'users',
       await payload.create({
         collection: 'users',
