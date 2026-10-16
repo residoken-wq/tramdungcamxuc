@@ -329,6 +329,7 @@ export const Products: CollectionConfig = {
                 readOnly: true,
                 condition: showFor(['package']),
                 description: vi.cms.productForm.descriptions.totalValue,
+                width: '50%',
               },
             }),
             number('discountPercent', 'Ưu đãi (%)', undefined, {
@@ -336,6 +337,7 @@ export const Products: CollectionConfig = {
                 readOnly: true,
                 condition: showFor(['package']),
                 description: vi.cms.productForm.descriptions.discountPercent,
+                width: '50%',
               },
             }),
           ],

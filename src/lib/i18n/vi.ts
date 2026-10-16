@@ -160,9 +160,9 @@ export const vi = {
         componentGrantsProduct:
           'Sản phẩm số hệ thống sẽ tự động kích hoạt vào tài khoản khách sau khi thanh toán thành công.',
         totalValue:
-          'Tổng giá trị thực tế của gói (VND). Tự động tính từ số lượng × giá trị từng cấu phần, hiện trên bảng so sánh.',
+          'Tổng giá trị của gói (VND). Tự động tính từ tổng (Số lượng × Giá trị mỗi đơn vị) của các cấu phần. Trường chỉ đọc, hệ thống tự động cập nhật khi lưu.',
         discountPercent:
-          'Mức ưu đãi (%) so với tổng giá trị. Tự động tính theo giá bán thực tế, hiện trên huy hiệu giảm giá.',
+          'Mức ưu đãi (%) so với tổng giá trị. Tự động tính theo công thức: (Tổng giá trị - Giá bán) / Tổng giá trị × 100% (hoặc ưu tiên Giá ưu đãi nếu có). Trường chỉ đọc, hệ thống tự động cập nhật khi lưu.',
         files:
           'Tệp PDF/tài liệu đính kèm. Khách nhận được link tải an toàn trong email xác nhận sau khi đăng ký hoặc thanh toán.',
         externalUrl:
