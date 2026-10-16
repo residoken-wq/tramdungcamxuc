@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { PRODUCT_TYPES, showFor, type ProductType } from '@/lib/cms/product-form'
+import {
+  PRODUCT_TYPES,
+  showFor,
+  type ProductType,
+  validateCoverImageOnSale,
+  validatePriceOnSale,
+  validateSlugOnSale,
+} from '@/lib/cms/product-form'
 
 describe('Product Form CMS UX Conditions (CM-03)', () => {
   describe('showFor helper', () => {
@@ -115,6 +122,100 @@ describe('Product Form CMS UX Conditions (CM-03)', () => {
         expect(isEbookOrToolkit(data, {})).toBe(false)
         expect(isDigitalTool(data, {})).toBe(false)
       }
+    })
+  })
+
+  describe('on_sale publication validation (Item 4)', () => {
+    // REVIEW-REQUIRED: Tests for publication validation on on_sale products
+    it('validatePriceOnSale: allows drafts without price', () => {
+      const result = validatePriceOnSale(null, {
+        data: { _status: 'draft', saleStatus: 'on_sale', type: 'digital_tool' },
+      } as any)
+      expect(result).toBe(true)
+    })
+
+    it('validatePriceOnSale: allows physical_external on_sale without price', () => {
+      const result = validatePriceOnSale(null, {
+        data: { _status: 'published', saleStatus: 'on_sale', type: 'physical_external' },
+      } as any)
+      expect(result).toBe(true)
+    })
+
+    it('validatePriceOnSale: blocks published on_sale digital_tool without price', () => {
+      const result = validatePriceOnSale(null, {
+        data: { _status: 'published', saleStatus: 'on_sale', type: 'digital_tool' },
+      } as any)
+      expect(typeof result).toBe('string')
+      expect(result).toContain('bắt buộc phải có giá bán')
+    })
+
+    it('validatePriceOnSale: allows published on_sale digital_tool with valid price', () => {
+      const result = validatePriceOnSale(250000, {
+        data: { _status: 'published', saleStatus: 'on_sale', type: 'digital_tool' },
+      } as any)
+      expect(result).toBe(true)
+    })
+
+    it('validatePriceOnSale: allows coming_soon / free / consult / hidden without price', () => {
+      for (const s of ['coming_soon', 'free', 'consult', 'hidden'] as const) {
+        const result = validatePriceOnSale(null, {
+          data: { _status: 'published', saleStatus: s, type: 'digital_tool' },
+        } as any)
+        expect(result).toBe(true)
+      }
+    })
+
+    it('validateCoverImageOnSale: allows drafts without cover image', () => {
+      const result = validateCoverImageOnSale(null, {
+        data: { _status: 'draft', saleStatus: 'on_sale' },
+      } as any)
+      expect(result).toBe(true)
+    })
+
+    it('validateCoverImageOnSale: blocks published on_sale without cover image', () => {
+      const result = validateCoverImageOnSale(null, {
+        data: { _status: 'published', saleStatus: 'on_sale' },
+      } as any)
+      expect(typeof result).toBe('string')
+      expect(result).toContain('bắt buộc phải có ảnh bìa')
+    })
+
+    it('validateCoverImageOnSale: allows published on_sale with cover image', () => {
+      const result = validateCoverImageOnSale(123, {
+        data: { _status: 'published', saleStatus: 'on_sale' },
+      } as any)
+      expect(result).toBe(true)
+    })
+
+    it('validateSlugOnSale: allows drafts without slug', () => {
+      const validator = validateSlugOnSale(false)
+      const result = validator('', {
+        data: { _status: 'draft', saleStatus: 'on_sale' },
+      } as any)
+      expect(result).toBe(true)
+    })
+
+    it('validateSlugOnSale: blocks published on_sale without slug', () => {
+      const validator = validateSlugOnSale(false)
+      const result = validator('', {
+        data: { _status: 'published', saleStatus: 'on_sale' },
+      } as any)
+      expect(typeof result).toBe('string')
+      expect(result).toContain('bắt buộc phải có đường dẫn')
+    })
+
+    it('validateSlugOnSale: validates slug characters format', () => {
+      const validator = validateSlugOnSale(false)
+      const invalid = validator('Invalid Slug With Spaces!', {
+        data: { _status: 'published', saleStatus: 'on_sale' },
+      } as any)
+      expect(typeof invalid).toBe('string')
+      expect(invalid).toContain('chỉ dùng chữ thường không dấu')
+
+      const valid = validator('habit-tracker-so-2026', {
+        data: { _status: 'published', saleStatus: 'on_sale' },
+      } as any)
+      expect(valid).toBe(true)
     })
   })
 })

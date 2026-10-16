@@ -18,12 +18,37 @@ import {
 import { authenticated } from '../lib/auth/access'
 import { computePackageValue } from '../lib/pricing'
 import { vi } from '../lib/i18n/vi'
-import { showFor } from '../lib/cms/product-form'
+import {
+  showFor,
+  validateCoverImageOnSale,
+  validatePriceOnSale,
+  validateSlugOnSale,
+} from '../lib/cms/product-form'
 
 const computeValues: CollectionBeforeChangeHook = ({ data, originalDoc }) => ({
   ...data,
   ...computePackageValue({ ...originalDoc, ...data }),
 })
+
+// REVIEW-REQUIRED: Chặn xuất bản sản phẩm đang mở bán (on_sale) nếu thiếu giá, ảnh bìa hoặc slug.
+// Cho phép lưu nháp (_status === 'draft').
+const validatePublishingOnSale: CollectionBeforeChangeHook = ({ data }) => {
+  if (data._status === 'published' && data.saleStatus === 'on_sale') {
+    if (
+      data.type !== 'physical_external' &&
+      (data.price == null || typeof data.price !== 'number' || Number.isNaN(data.price))
+    ) {
+      throw new Error(vi.cms.productForm.validation.missingPriceOnSale)
+    }
+    if (!data.coverImage) {
+      throw new Error(vi.cms.productForm.validation.missingCoverImageOnSale)
+    }
+    if (!data.slug || typeof data.slug !== 'string' || data.slug.trim().length === 0) {
+      throw new Error(vi.cms.productForm.validation.missingSlugOnSale)
+    }
+  }
+  return data
+}
 
 export const Products: CollectionConfig = {
   ...contentCollection('products', 'Sản phẩm', vi.cms.nav.commerce, 'name', [
@@ -91,9 +116,11 @@ export const Products: CollectionConfig = {
             }),
             slug(false, {
               admin: { description: vi.cms.productForm.descriptions.slug },
+              validate: validateSlugOnSale(false),
             }),
             image('coverImage', 'Ảnh bìa', {
               admin: { description: vi.cms.productForm.descriptions.coverImage },
+              validate: validateCoverImageOnSale,
             }),
             textarea('shortDescription', 'Giới thiệu ngắn', {
               admin: { description: vi.cms.productForm.descriptions.shortDescription },
@@ -146,6 +173,7 @@ export const Products: CollectionConfig = {
                 ]),
                 description: vi.cms.productForm.descriptions.price,
               },
+              validate: validatePriceOnSale,
             }),
             number('salePrice', 'Giá ưu đãi', undefined, {
               admin: {
@@ -373,7 +401,7 @@ export const Products: CollectionConfig = {
       ],
     },
   ]),
-  hooks: { beforeChange: [computeValues] },
+  hooks: { beforeChange: [computeValues, validatePublishingOnSale] },
 }
 
 Products.admin = {

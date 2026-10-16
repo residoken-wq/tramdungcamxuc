@@ -1,4 +1,5 @@
-import type { Condition } from 'payload'
+import type { Condition, Validate } from 'payload'
+import { vi } from '../i18n/vi'
 
 export const PRODUCT_TYPES = [
   'ebook',
@@ -39,3 +40,59 @@ export function showFor(
   }
   return conditionFn as Condition & ProductCondition
 }
+
+// REVIEW-REQUIRED: Hàm validate kiểm tra giá bán khi xuất bản sản phẩm đang mở bán (on_sale).
+// Cho phép lưu nháp tự do (_status === 'draft').
+// Miễn trừ sản phẩm Shopee (physical_external) vì bán trên gian hàng ngoài.
+export const validatePriceOnSale: Validate = (value, options) => {
+  if (options?.data?._status === 'draft') return true
+
+  const saleStatus = options?.data?.saleStatus
+  const type = options?.data?.type
+
+  if (saleStatus === 'on_sale') {
+    if (type === 'physical_external') return true
+    if (value == null || typeof value !== 'number' || Number.isNaN(value)) {
+      return vi.cms.productForm.validation.missingPriceOnSale
+    }
+  }
+
+  return true
+}
+
+// REVIEW-REQUIRED: Hàm validate kiểm tra ảnh bìa khi xuất bản sản phẩm đang mở bán (on_sale).
+// Cho phép lưu nháp tự do (_status === 'draft').
+export const validateCoverImageOnSale: Validate = (value, options) => {
+  if (options?.data?._status === 'draft') return true
+
+  if (options?.data?.saleStatus === 'on_sale') {
+    if (!value) {
+      return vi.cms.productForm.validation.missingCoverImageOnSale
+    }
+  }
+
+  return true
+}
+
+// REVIEW-REQUIRED: Hàm validate kiểm tra đường dẫn (slug) khi xuất bản sản phẩm đang mở bán (on_sale).
+// Cho phép lưu nháp tự do (_status === 'draft').
+export const validateSlugOnSale =
+  (allowSlash = false): Validate =>
+  (value, options) => {
+    if (options?.data?._status === 'draft') return true
+
+    if (options?.data?.saleStatus === 'on_sale') {
+      if (!value || typeof value !== 'string' || value.trim().length === 0) {
+        return vi.cms.productForm.validation.missingSlugOnSale
+      }
+    }
+
+    if (typeof value === 'string' && value.trim().length > 0) {
+      const regex = allowSlash ? /^[a-z0-9/-]+$/ : /^[a-z0-9-]+$/
+      if (!regex.test(value)) {
+        return 'Đường dẫn chỉ dùng chữ thường không dấu, số và dấu được cho phép.'
+      }
+    }
+
+    return true
+  }
