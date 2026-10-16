@@ -362,18 +362,6 @@ export interface Post {
 export interface Product {
   id: number;
   /**
-   * Nhập tên sản phẩm.
-   */
-  name: string;
-  /**
-   * Dùng chữ thường không dấu, số và dấu -.
-   */
-  slug: string;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  web: 'site' | 'habit' | 'eq';
-  /**
    * Chọn một mục phù hợp.
    */
   type:
@@ -386,6 +374,34 @@ export interface Product {
     | 'coaching_trial'
     | 'package'
     | 'b2b';
+  /**
+   * Chọn một mục phù hợp.
+   */
+  web: 'site' | 'habit' | 'eq';
+  /**
+   * Chọn một mục phù hợp.
+   */
+  saleStatus: 'coming_soon' | 'on_sale' | 'free' | 'consult' | 'hidden';
+  /**
+   * Nhập số không âm. Số nhỏ hơn đứng trước.
+   */
+  order?: number | null;
+  /**
+   * Nhập tên sản phẩm.
+   */
+  name: string;
+  /**
+   * Dùng chữ thường không dấu, số và dấu -.
+   */
+  slug: string;
+  /**
+   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
+   */
+  coverImage?: (number | null) | Media;
+  /**
+   * Nhập giới thiệu ngắn.
+   */
+  shortDescription?: string | null;
   /**
    * Chọn một mục phù hợp.
    */
@@ -403,6 +419,34 @@ export interface Product {
       }[]
     | null;
   /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  price?: number | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  salePrice?: number | null;
+  /**
+   * Chọn ngày và giờ áp dụng.
+   */
+  saleEndsAt?: string | null;
+  /**
+   * Nhập 0 nếu không dùng thử. Công cụ số thường dùng 21 ngày.
+   */
+  trialDays?: number | null;
+  /**
+   * Để trống nếu sử dụng vĩnh viễn.
+   */
+  accessDurationDays?: number | null;
+  /**
+   * Nhập nhãn nút.
+   */
+  ctaLabel?: string | null;
+  /**
+   * Chọn một mục phù hợp.
+   */
+  ctaType?: ('buy' | 'download' | 'book' | 'contact' | 'external') | null;
+  /**
    * Nhập khó khăn.
    */
   painPoint?: string | null;
@@ -410,10 +454,6 @@ export interface Product {
    * Nhập kết quả mong đợi.
    */
   outcome?: string | null;
-  /**
-   * Nhập giới thiệu ngắn.
-   */
-  shortDescription?: string | null;
   /**
    * Soạn giới thiệu chi tiết.
    */
@@ -448,42 +488,6 @@ export interface Product {
    * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
    */
   preview?: (number | null) | Media;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  price?: number | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  salePrice?: number | null;
-  /**
-   * Chọn ngày và giờ áp dụng.
-   */
-  saleEndsAt?: string | null;
-  /**
-   * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
-   */
-  coverImage?: (number | null) | Media;
-  /**
-   * Chỉ quản trị viên xem được. Quyền giao tài liệu sẽ bổ sung sau.
-   */
-  files?:
-    | {
-        /**
-         * Chọn tài liệu (PDF…)
-         */
-        file?: (number | null) | PrivateFile;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Nhập nhãn nút.
-   */
-  ctaLabel?: string | null;
-  /**
-   * Chọn một mục phù hợp.
-   */
-  ctaType?: ('buy' | 'download' | 'book' | 'contact' | 'external') | null;
   faq?:
     | {
         /**
@@ -498,33 +502,9 @@ export interface Product {
       }[]
     | null;
   /**
-   * Chọn một mục phù hợp.
-   */
-  saleStatus: 'coming_soon' | 'on_sale' | 'free' | 'consult' | 'hidden';
-  /**
    * Chọn nội dung đã tạo trong hệ thống.
    */
   relatedProducts?: (number | Product)[] | null;
-  /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
-   */
-  order?: number | null;
-  /**
-   * Nhập 0 nếu không dùng thử. Công cụ số thường dùng 21 ngày.
-   */
-  trialDays?: number | null;
-  /**
-   * Để trống nếu sử dụng vĩnh viễn.
-   */
-  accessDurationDays?: number | null;
-  /**
-   * Link Shopee… bắt đầu bằng https://, hoặc trang trong web bắt đầu bằng / (VD: /habit/chan-doan).
-   */
-  externalUrl?: string | null;
-  /**
-   * Nhập nhãn liên kết ngoài.
-   */
-  externalLabel?: string | null;
   /**
    * Tổng giá trị được tính từ số lượng nhân giá trị mỗi cấu phần.
    */
@@ -561,6 +541,26 @@ export interface Product {
    * Tự tính theo giá ưu đãi, hoặc giá bán nếu chưa có giá ưu đãi.
    */
   discountPercent?: number | null;
+  /**
+   * Chỉ quản trị viên xem được. Quyền giao tài liệu sẽ bổ sung sau.
+   */
+  files?:
+    | {
+        /**
+         * Chọn tài liệu (PDF…)
+         */
+        file?: (number | null) | PrivateFile;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Link Shopee… bắt đầu bằng https://, hoặc trang trong web bắt đầu bằng / (VD: /habit/chan-doan).
+   */
+  externalUrl?: string | null;
+  /**
+   * Nhập nhãn liên kết ngoài.
+   */
+  externalLabel?: string | null;
   isSample?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -2277,10 +2277,14 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
+  type?: T;
+  web?: T;
+  saleStatus?: T;
+  order?: T;
   name?: T;
   slug?: T;
-  web?: T;
-  type?: T;
+  coverImage?: T;
+  shortDescription?: T;
   journeyStep?: T;
   audience?:
     | T
@@ -2288,9 +2292,15 @@ export interface ProductsSelect<T extends boolean = true> {
         text?: T;
         id?: T;
       };
+  price?: T;
+  salePrice?: T;
+  saleEndsAt?: T;
+  trialDays?: T;
+  accessDurationDays?: T;
+  ctaLabel?: T;
+  ctaType?: T;
   painPoint?: T;
   outcome?: T;
-  shortDescription?: T;
   description?: T;
   includes?:
     | T
@@ -2299,18 +2309,6 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   preview?: T;
-  price?: T;
-  salePrice?: T;
-  saleEndsAt?: T;
-  coverImage?: T;
-  files?:
-    | T
-    | {
-        file?: T;
-        id?: T;
-      };
-  ctaLabel?: T;
-  ctaType?: T;
   faq?:
     | T
     | {
@@ -2318,13 +2316,7 @@ export interface ProductsSelect<T extends boolean = true> {
         answer?: T;
         id?: T;
       };
-  saleStatus?: T;
   relatedProducts?: T;
-  order?: T;
-  trialDays?: T;
-  accessDurationDays?: T;
-  externalUrl?: T;
-  externalLabel?: T;
   components?:
     | T
     | {
@@ -2337,6 +2329,14 @@ export interface ProductsSelect<T extends boolean = true> {
       };
   totalValue?: T;
   discountPercent?: T;
+  files?:
+    | T
+    | {
+        file?: T;
+        id?: T;
+      };
+  externalUrl?: T;
+  externalLabel?: T;
   isSample?: T;
   updatedAt?: T;
   createdAt?: T;

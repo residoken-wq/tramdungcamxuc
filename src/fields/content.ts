@@ -179,7 +179,7 @@ export const stageOptions: [string, string][] = [
   ['response', 'Phản hồi'],
   ['reward', 'Phần thưởng'],
 ]
-export const saleStatus = (): Field =>
+export const saleStatus = (extra?: Partial<SelectField>): SelectField =>
   select(
     'saleStatus',
     'Trạng thái bán',
@@ -190,7 +190,7 @@ export const saleStatus = (): Field =>
       ['consult', 'Cần tư vấn'],
       ['hidden', 'Ẩn'],
     ],
-    { defaultValue: 'consult', required: true },
+    { defaultValue: 'consult', required: true, ...extra },
   )
 export const sampleField = (): Field => ({
   name: 'isSample',
