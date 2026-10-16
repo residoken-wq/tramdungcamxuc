@@ -73,7 +73,8 @@ export default async function HabitLessonPage({ params, searchParams }: LessonPa
         id: lessonId,
         depth: 1,
         draft: true,
-        overrideAccess: true,
+        overrideAccess: false,
+        user: adminUser as never,
       })
       .catch(() => null)) as (Lesson & { videoId?: string | null }) | null
 
@@ -212,7 +213,8 @@ export default async function HabitLessonPage({ params, searchParams }: LessonPa
             moduleId={modId}
             lessonOrder={lesson.order ?? 0}
             initialCompleted={isCompleted}
-            isAuthenticated={Boolean(customer || adminUser)}
+            // Admin preview never records progress (no customer session).
+            isAuthenticated={Boolean(customer)}
           />
         </div>
 
