@@ -8,7 +8,8 @@ import { getPuckPageBySlug, getServiceDetail } from '@/lib/detail-pages.server'
 
 import { ServiceDetail } from '@/components/site/ServiceDetail'
 import { DetailLivePreview } from '@/components/site/DetailLivePreview'
-import { getDetailPreview } from '@/lib/live-preview.server'
+import { RefreshOnSave } from '@/components/site/RefreshOnSave'
+import { getAdminPreviewUser, getDetailPreview } from '@/lib/live-preview.server'
 import type { PreviewSearchParams } from '@/lib/live-preview'
 
 export const dynamic = 'force-dynamic'
@@ -58,14 +59,28 @@ export default async function CoachingDetailPage({
   searchParams,
 }: CoachingDetailPageProps) {
   const { slug } = await params
-  const preview = await getDetailPreview('services', slug, await searchParams)
+  const search = (await searchParams) || {}
+  const preview = await getDetailPreview('services', slug, search)
   if (preview) return <DetailLivePreview collection="services" initialData={preview} />
   const fullSlug = `coaching/${slug}`
 
+  // REVIEW-REQUIRED: Chỉ phiên admin Payload (users collection) mới được đọc bản nháp sản phẩm trong trang Puck.
+  // Khách vãng lai và học viên dù có preview=1 vẫn chỉ đọc bản đã xuất bản.
+  const adminUser = await getAdminPreviewUser(search)
+
   // 1. Ưu tiên render trang Puck nếu có bản published
-  const puckPage = await getPuckPageBySlug(fullSlug)
+  const puckPage = await getPuckPageBySlug(fullSlug, {
+    draft: Boolean(adminUser),
+    previewId: typeof search.previewId === 'string' ? search.previewId : undefined,
+    user: adminUser,
+  })
   if (puckPage) {
-    return <Render config={puckConfig} data={puckPage.puckData} />
+    return (
+      <>
+        {adminUser && <RefreshOnSave />}
+        <Render config={puckConfig} data={puckPage.puckData} />
+      </>
+    )
   }
 
   // 2. Nạp dữ liệu từ collection services
