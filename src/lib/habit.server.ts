@@ -146,8 +146,9 @@ export async function getHabitProduct(
       limit: 1,
       depth: 1,
       draft: isDraft,
-      overrideAccess: false,
-      user: options?.user as never,
+      // Draft preview: enforce the admin's access. Public read keeps the previous behaviour
+      // (field access such as products.files is admin-only and must not blank the public page).
+      ...(isDraft ? { overrideAccess: false, user: options?.user as never } : {}),
     }),
     payload.count({
       collection: 'lessons',

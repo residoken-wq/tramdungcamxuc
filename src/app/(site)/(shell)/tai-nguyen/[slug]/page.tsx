@@ -75,8 +75,9 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
     limit: 1,
     depth: 2,
     draft: isDraft,
-    overrideAccess: false,
-    user: adminUser ?? undefined,
+    // Draft preview: enforce the admin's access. Public read keeps the previous behaviour
+    // (field access such as products.files is admin-only and must not blank the public page).
+    ...(isDraft ? { overrideAccess: false, user: adminUser ?? undefined } : {}),
   })
 
   const product = res.docs[0]
