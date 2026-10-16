@@ -17,6 +17,7 @@ import { getCustomerOrders } from '@/lib/account/orders.server'
 import { MyOrders } from '@/components/account/MyOrders'
 import { getCustomerSavedCards } from '@/lib/eq/saved.server'
 import { SavedCards } from '@/components/account/SavedCards'
+import { ReminderEmailToggle } from '@/components/account/ReminderEmailToggle'
 
 export const metadata: Metadata = {
   title: 'Tài khoản của tôi | Trạm Dừng Cảm Xúc',
@@ -234,6 +235,10 @@ export default async function AccountPage() {
 
           {/* Đơn hàng */}
           <MyOrders orders={ordersResult.orders} loadError={ordersResult.loadError} />
+
+          {/* Tùy chọn email thông báo */}
+          <ReminderEmailToggle initialOptOut={customer.reminderEmailsOptOut} />
+
           <AccountDeletionRequest initialRequestedAt={customer.deletionRequestedAt} />
         </div>
       </div>

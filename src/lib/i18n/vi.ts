@@ -1124,6 +1124,7 @@ export const vi = {
       footerAuthor: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
       footerAutoNotice:
         'Email này được gửi tự động nhắc lịch buổi học trong gói đồng hành của bạn.',
+      optOutLink: 'Không nhận email nhắc nữa',
     },
   },
   entitlement: {
@@ -1398,6 +1399,7 @@ export const vi = {
       signOff: 'Thương mến,',
       author: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
       footerNote: 'Email nhắc nhở nhẹ nhàng từ công cụ Habit Tracker 21 ngày.',
+      optOutLink: 'Không nhận email nhắc nữa',
     },
   },
   certificate: {
@@ -1719,6 +1721,39 @@ export const vi = {
         reflectionTooLong: 'Suy ngẫm không được vượt quá 2000 ký tự.',
         generalError: 'Có lỗi xảy ra. Vui lòng thử lại sau.',
       },
+    },
+  },
+  reminders: {
+    optOut: {
+      pageTitle: 'Xác nhận ngừng nhận email nhắc | Trạm Dừng Cảm Xúc',
+      eyebrow: 'Quản lý thông báo',
+      heading: 'Ngừng nhận email nhắc nhở',
+      prompt:
+        'Bạn có chắc muốn ngừng nhận các email nhắc lịch workshop và nhắc nhở rèn luyện thói quen từ Trạm Dừng Cảm Xúc?',
+      note: 'Các email giao dịch quan trọng (như mã OTP đăng nhập, xác nhận thanh toán đơn hàng, kích hoạt quyền học và tài liệu đã mua) vẫn sẽ được gửi bình thường tới bạn.',
+      confirmButton: 'Ngừng nhận email nhắc',
+      processingButton: 'Đang xử lý...',
+      successTitle: 'Đã ngừng nhận email nhắc thành công',
+      successMessage:
+        'Bạn đã ngừng nhận email nhắc lịch workshop và nhắc nhở rèn luyện thói quen từ Trạm Dừng Cảm Xúc.',
+      reEnablePrompt:
+        'Nếu muốn bật lại sau này, bạn có thể đăng nhập vào trang Tài khoản của mình để cập nhật tùy chọn.',
+      reEnableButton: 'Đăng nhập vào Tài khoản để bật lại',
+      invalidTokenTitle: 'Liên kết không hợp lệ',
+      invalidTokenMessage:
+        'Liên kết ngừng nhận email nhắc không hợp lệ hoặc đã có lỗi xảy ra. Vui lòng đăng nhập vào tài khoản để cập nhật tùy chọn thông báo.',
+      backHomeButton: 'Về trang chủ',
+      accountButton: 'Vào trang tài khoản',
+    },
+    account: {
+      cardHeading: 'Tùy chọn email thông báo',
+      toggleLabel: 'Nhận email nhắc lịch workshop và nhắc tập',
+      toggleDescription:
+        'Nhận email nhắc nhở trước 24 giờ khi có workshop sắp diễn ra và lời nhắn động viên khi lỡ nhịp thực hành 2 ngày.',
+      enabledSuccess: 'Đã bật nhận email nhắc lịch workshop và nhắc tập.',
+      disabledSuccess: 'Đã tắt nhận email nhắc lịch workshop và nhắc tập.',
+      updating: 'Đang lưu tùy chọn...',
+      error: 'Không thể cập nhật tùy chọn lúc này. Vui lòng thử lại sau.',
     },
   },
 } as const

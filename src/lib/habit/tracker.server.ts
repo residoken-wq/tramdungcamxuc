@@ -7,6 +7,7 @@ import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { getSiteUrl } from '@/lib/site-url'
 import { sendTrackerNudgeEmail } from '@/lib/email/service.server'
 import type { EmailSender } from '@/lib/email/types'
+import { getReminderOptOutUrl } from '@/lib/reminders/token'
 
 import { getCurrentDayOfPlan, getVietnamYmd, vietnamTodayIso } from './tracker-stats'
 export * from './tracker-stats'
@@ -272,13 +273,21 @@ export async function sendTrackerNudges(
 
       // 4. Gửi email nhắc nhở nhẹ nhàng
       if (nudgeId !== null) {
+        // REVIEW-REQUIRED: Khách đã tắt nhận email nhắc -> bỏ qua gửi email (T2-21).
+        // Vẫn giữ lại bản ghi trackerNudges (sentAt) để đánh dấu đã xử lý và không gửi lại.
+        if (customer.reminderEmailsOptOut) {
+          continue
+        }
+
         try {
+          const optOutUrl = getReminderOptOutUrl(customer.id, siteUrl)
           await sendTrackerNudgeEmail(
             payload,
             {
               name: customer.name || '',
               email: customer.email,
               trackerUrl: `${siteUrl}/habit/tracker`,
+              optOutUrl,
             },
             options?.emailSender,
           )

@@ -7,6 +7,7 @@ import {
   Heading,
   Hr,
   Html,
+  Link,
   Preview,
   Section,
   Text,
@@ -16,9 +17,14 @@ import { vi } from '@/lib/i18n/vi'
 export interface TrackerNudgeEmailProps {
   name: string
   trackerUrl: string
+  optOutUrl?: string
 }
 
-export const TrackerNudgeEmail: React.FC<TrackerNudgeEmailProps> = ({ name, trackerUrl }) => {
+export const TrackerNudgeEmail: React.FC<TrackerNudgeEmailProps> = ({
+  name,
+  trackerUrl,
+  optOutUrl,
+}) => {
   const t = vi.tracker.nudgeEmail
   const displayName = name ? name.trim() : 'bạn'
 
@@ -53,11 +59,29 @@ export const TrackerNudgeEmail: React.FC<TrackerNudgeEmailProps> = ({ name, trac
             <Text style={footerSignOffStyle}>{t.signOff}</Text>
             <Text style={footerAuthorStyle}>{t.author}</Text>
             <Text style={footerNoticeStyle}>{t.footerNote}</Text>
+            {optOutUrl && (
+              <Text style={footerOptOutStyle}>
+                <Link href={optOutUrl} style={footerOptOutLinkStyle}>
+                  {t.optOutLink}
+                </Link>
+              </Text>
+            )}
           </Section>
         </Container>
       </Body>
     </Html>
   )
+}
+
+const footerOptOutStyle: React.CSSProperties = {
+  margin: '8px 0 0 0',
+  fontSize: '11px',
+  lineHeight: '1.5',
+}
+
+const footerOptOutLinkStyle: React.CSSProperties = {
+  color: 'rgba(40, 10, 96, 0.5)',
+  textDecoration: 'underline',
 }
 
 export default TrackerNudgeEmail
