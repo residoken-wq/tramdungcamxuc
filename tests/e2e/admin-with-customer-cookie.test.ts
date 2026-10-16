@@ -124,13 +124,11 @@ test.describe('Admin Isolation with Customer Cookie (T2-20)', () => {
       })
       expect(loginRes.ok()).toBe(true)
 
-      // 4. Mở /admin -> mở được trang quản trị và danh sách các collection
-      await sharedPage.goto('/admin', { waitUntil: 'domcontentloaded' })
-      await expect(sharedPage).toHaveURL(/\/admin\/?$/)
-
-      // Kiểm tra trang admin render giao diện quản trị thành công
-      const adminNav = sharedPage.locator('nav, .dashboard, #nav-toggler').first()
-      await expect(adminNav).toBeVisible({ timeout: 15000 })
+      // 4. Mở danh sách quản trị viên trong /admin -> không bị đá về trang đăng nhập / báo không có quyền,
+      // thấy đúng email admin trong danh sách (chỉ admin mới đọc được collection users)
+      await sharedPage.goto('/admin/collections/users', { waitUntil: 'domcontentloaded' })
+      await expect(sharedPage).toHaveURL(/\/admin\/collections\/users/)
+      await expect(sharedPage.getByText(adminInfo.email).first()).toBeVisible({ timeout: 20000 })
 
       // Gọi REST API /api/users/me -> người dùng trả về phải là admin, không bị phiên khách đè
       const meRes = await context.request.get('/api/users/me')
