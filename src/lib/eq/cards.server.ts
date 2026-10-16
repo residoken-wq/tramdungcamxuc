@@ -1,6 +1,6 @@
 import 'server-only'
 import { cache } from 'react'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import config from '@/payload.config'
 
 export interface PublicEqCard {
@@ -28,20 +28,31 @@ export interface PublicEqCard {
  * (tuân thủ ranh giới song song với T3-01).
  */
 export const getPublishedEqCardByQrSlug = cache(
-  async (qrSlug: string): Promise<PublicEqCard | null> => {
+  async (
+    qrSlug: string,
+    options?: { draft?: boolean; previewId?: string | number; user?: unknown },
+  ): Promise<PublicEqCard | null> => {
     if (!qrSlug || typeof qrSlug !== 'string') return null
     const cleanSlug = qrSlug.trim().toLowerCase()
     if (!cleanSlug) return null
+
+    const isDraft = Boolean(options?.draft)
 
     try {
       const payloadConfig = await config
       const payload = await getPayload({ config: payloadConfig })
 
+      const whereConditions = isDraft
+        ? options?.previewId
+          ? { id: { equals: options.previewId } }
+          : { qrSlug: { equals: cleanSlug } }
+        : {
+            and: [{ qrSlug: { equals: cleanSlug } }, { _status: { equals: 'published' } }],
+          }
+
       const result = await payload.find({
         collection: 'eqCards',
-        where: {
-          and: [{ qrSlug: { equals: cleanSlug } }, { _status: { equals: 'published' } }],
-        },
+        where: whereConditions as unknown as Where,
         select: {
           id: true,
           code: true,
@@ -59,7 +70,9 @@ export const getPublishedEqCardByQrSlug = cache(
           _status: true,
         },
         limit: 1,
-        draft: false,
+        draft: isDraft,
+        overrideAccess: false,
+        user: options?.user as never,
       })
 
       const doc = result.docs[0]

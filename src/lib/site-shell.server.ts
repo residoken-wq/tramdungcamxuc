@@ -1,6 +1,6 @@
 import 'server-only'
 import { cache } from 'react'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import config from '@/payload.config'
 import type { Navigation, SiteSetting, LegalPage, Page } from '@/payload-types'
 import { safeHref } from '@/lib/safe-href'
@@ -203,6 +203,7 @@ export async function getSiteShellData(): Promise<SiteShellData> {
 export const getLegalPageData = cache(
   async (
     slug: string,
+    options?: { draft?: boolean; previewId?: string | number; user?: unknown },
   ): Promise<{
     page: LegalPage
     sellerInfo?: SellerInfo | null
@@ -210,14 +211,23 @@ export const getLegalPageData = cache(
     try {
       const payloadConfig = await config
       const payload = await getPayload({ config: payloadConfig })
+      const isDraft = Boolean(options?.draft)
+
+      const whereConditions = isDraft
+        ? options?.previewId
+          ? { id: { equals: options.previewId } }
+          : { slug: { equals: slug } }
+        : {
+            and: [{ slug: { equals: slug } }, { _status: { equals: 'published' } }],
+          }
 
       const result = await payload.find({
         collection: 'legalPages',
-        where: {
-          and: [{ slug: { equals: slug } }, { _status: { equals: 'published' } }],
-        },
+        where: whereConditions as unknown as Where,
         limit: 1,
-        draft: false,
+        draft: isDraft,
+        overrideAccess: false,
+        user: options?.user as never,
       })
 
       const page = result.docs[0] as LegalPage | undefined

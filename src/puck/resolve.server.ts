@@ -41,6 +41,9 @@ const PUBLIC_TESTIMONIAL_SELECT = {
 
 export interface ResolveServerDataOptions {
   pageSlug?: string
+  draft?: boolean
+  previewId?: string | number
+  user?: unknown
 }
 
 /**
@@ -243,24 +246,30 @@ export async function resolveServerData(
   if (productIdsToFetch.size > 0) {
     const rawIds = Array.from(productIdsToFetch)
     const numericOrStrIds = rawIds.map((id) => (isNaN(Number(id)) ? id : Number(id)))
+    const isDraft = Boolean(options?.draft)
 
     try {
       const productDocs = await payload.find({
         collection: 'products',
-        where: {
-          and: [{ id: { in: numericOrStrIds } }, { _status: { equals: 'published' } }],
-        },
+        where: isDraft
+          ? { id: { in: numericOrStrIds } }
+          : {
+              and: [{ id: { in: numericOrStrIds } }, { _status: { equals: 'published' } }],
+            },
         select: PUBLIC_PRODUCT_SELECT as never,
         depth: 1,
         limit: numericOrStrIds.length + 20,
+        draft: isDraft,
+        overrideAccess: false,
+        user: options?.user as never,
       })
 
       for (const doc of productDocs.docs as unknown as Array<{
         id: string | number
         saleStatus: string
       }>) {
-        // Discard hidden products (spec requirement)
-        if (doc.saleStatus !== 'hidden') {
+        // Discard hidden products (spec requirement), trừ khi admin đang xem trước
+        if (doc.saleStatus !== 'hidden' || isDraft) {
           productMap.set(String(doc.id), toPublicProduct(doc))
         }
       }

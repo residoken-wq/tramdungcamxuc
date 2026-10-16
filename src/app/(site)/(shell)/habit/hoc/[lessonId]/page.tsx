@@ -10,11 +10,16 @@ import { vi } from '@/lib/i18n/vi'
 import { VideoPlayer } from '@/components/habit/learning/VideoPlayer'
 import { LockedLessonCard } from '@/components/habit/learning/LockedLessonCard'
 import { LessonNavigation } from '@/components/habit/learning/LessonNavigation'
+import { getVideoProvider } from '@/lib/video'
+import { getAdminPreviewUser } from '@/lib/live-preview.server'
+import type { Lesson } from '@/payload-types'
+import type { LessonPlaybackResult } from '@/lib/courses/types'
 
 export const dynamic = 'force-dynamic'
 
 interface LessonPageProps {
   params: Promise<{ lessonId: string }>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 export async function generateMetadata({ params }: LessonPageProps): Promise<Metadata> {
@@ -44,15 +49,59 @@ export async function generateMetadata({ params }: LessonPageProps): Promise<Met
   }
 }
 
-export default async function HabitLessonPage({ params }: LessonPageProps) {
+export default async function HabitLessonPage({ params, searchParams }: LessonPageProps) {
   const { lessonId: rawId } = await params
   if (!/^\d+$/.test(rawId)) {
     notFound()
   }
   const lessonId = parseInt(rawId, 10)
+  const search = (await searchParams) || {}
 
-  const customer = await getCurrentCustomer()
-  const result = await getLessonPlayback(lessonId, customer ? customer.id : null)
+  // REVIEW-REQUIRED: Chỉ phiên quản trị viên (users collection) mới được phép xem trước bài học.
+  // Khách vãng lai và học viên dù có preview=1 vẫn KHÔNG được cấp quyền xem video bài học trả phí,
+  // và tuyệt đối không được ghi nhận tiến độ bài học.
+  const adminUser = await getAdminPreviewUser(search)
+  const customer = adminUser ? null : await getCurrentCustomer()
+
+  let result: LessonPlaybackResult
+
+  if (adminUser) {
+    const payload = await getPayload({ config: await config })
+    const doc = (await payload
+      .findByID({
+        collection: 'lessons',
+        id: lessonId,
+        depth: 1,
+        draft: true,
+        overrideAccess: true,
+      })
+      .catch(() => null)) as (Lesson & { videoId?: string | null }) | null
+
+    if (!doc) {
+      notFound()
+    }
+
+    const provider = getVideoProvider()
+    const playback = doc.videoId ? await provider.getPlayback(doc.videoId) : null
+
+    result = {
+      allowed: true,
+      reason: null,
+      lesson: {
+        id: doc.id,
+        title: doc.title,
+        summary: doc.summary ?? null,
+        durationSec: doc.durationSec ?? null,
+        stage: doc.stage ?? 'none',
+        order: doc.order ?? 0,
+        isFreePreview: Boolean(doc.isFreePreview),
+        module: doc.module,
+      },
+      playback,
+    }
+  } else {
+    result = await getLessonPlayback(lessonId, customer ? customer.id : null)
+  }
 
   // 1. Bài học không tồn tại hoặc chưa xuất bản -> trả 404
   if (result.reason === 'not_found' || result.reason === 'not_published') {
@@ -83,17 +132,20 @@ export default async function HabitLessonPage({ params }: LessonPageProps) {
   ])
 
   let isCompleted = false
-  if (customer) {
-    const progressDoc = await payload.find({
-      collection: 'lessonProgress',
-      where: {
-        and: [{ customer: { equals: customer.id } }, { lesson: { equals: lessonId } }],
-      },
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    })
-    isCompleted = Boolean(progressDoc.docs[0]?.completedAt)
+  if (!adminUser) {
+    const customer = await getCurrentCustomer()
+    if (customer) {
+      const progressDoc = await payload.find({
+        collection: 'lessonProgress',
+        where: {
+          and: [{ customer: { equals: customer.id } }, { lesson: { equals: lessonId } }],
+        },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      isCompleted = Boolean(progressDoc.docs[0]?.completedAt)
+    }
   }
 
   const modTitle =
@@ -160,7 +212,7 @@ export default async function HabitLessonPage({ params }: LessonPageProps) {
             moduleId={modId}
             lessonOrder={lesson.order ?? 0}
             initialCompleted={isCompleted}
-            isAuthenticated={Boolean(customer)}
+            isAuthenticated={Boolean(customer || adminUser)}
           />
         </div>
 

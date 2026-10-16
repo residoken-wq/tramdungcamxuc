@@ -58,39 +58,49 @@ export interface PuckPageData {
  * Kiểm tra và lấy dữ liệu trang Puck đã xuất bản theo đường dẫn đầy đủ (ví dụ: 'coaching/growth-mirror').
  * Bọc cache() của React để chia sẻ một truy vấn giữa generateMetadata và Page component.
  */
-export const getPuckPageBySlug = cache(async (pageSlug: string): Promise<PuckPageData | null> => {
-  try {
-    const payloadConfig = await config
-    const payload = await getPayload({ config: payloadConfig })
+export const getPuckPageBySlug = cache(
+  async (
+    pageSlug: string,
+    options?: { draft?: boolean; previewId?: string | number; user?: unknown },
+  ): Promise<PuckPageData | null> => {
+    try {
+      const payloadConfig = await config
+      const payload = await getPayload({ config: payloadConfig })
 
-    const result = await payload.find({
-      collection: 'pages',
-      where: buildPublishedPuckPageWhere(pageSlug) as never,
-      limit: 1,
-      draft: false,
-    })
+      const result = await payload.find({
+        collection: 'pages',
+        where: buildPublishedPuckPageWhere(pageSlug) as never,
+        limit: 1,
+        draft: false,
+      })
 
-    const doc = result.docs[0]
-    if (!doc || !doc.puckData) {
+      const doc = result.docs[0]
+      if (!doc || !doc.puckData) {
+        return null
+      }
+
+      const initialData: Data = (doc.puckData as Data) || {
+        content: [],
+        root: { props: { title: doc.title || '' } },
+      }
+
+      const resolvedData = await resolveServerData(initialData, {
+        pageSlug,
+        draft: options?.draft,
+        previewId: options?.previewId,
+        user: options?.user,
+      })
+
+      return {
+        title: doc.title || '',
+        seo: doc.seo || null,
+        puckData: resolvedData,
+      }
+    } catch {
       return null
     }
-
-    const initialData: Data = (doc.puckData as Data) || {
-      content: [],
-      root: { props: { title: doc.title || '' } },
-    }
-
-    const resolvedData = await resolveServerData(initialData, { pageSlug })
-
-    return {
-      title: doc.title || '',
-      seo: doc.seo || null,
-      puckData: resolvedData,
-    }
-  } catch {
-    return null
-  }
-})
+  },
+)
 
 /**
  * Lấy chi tiết dịch vụ Coaching từ collection `services`:

@@ -3,16 +3,18 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayload, type Where } from 'payload'
 import config from '@/payload.config'
 import { Card } from '@/components/ui/Card'
 import { ResourceRequestForm } from '@/components/site/ResourceRequestForm'
+import { getAdminPreviewUser } from '@/lib/live-preview.server'
 import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
 
 interface ResourcePageProps {
   params: Promise<{ slug: string }>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 export async function generateMetadata({ params }: ResourcePageProps): Promise<Metadata> {
@@ -43,22 +45,37 @@ export async function generateMetadata({ params }: ResourcePageProps): Promise<M
   }
 }
 
-export default async function ResourcePage({ params }: ResourcePageProps) {
+export default async function ResourcePage({ params, searchParams }: ResourcePageProps) {
   const { slug } = await params
+  const search = (await searchParams) || {}
   const payload = await getPayload({ config })
+
+  // REVIEW-REQUIRED: Chỉ phiên admin Payload (users collection) mới được đọc bản nháp của tài nguyên.
+  // Khách vãng lai và học viên dù có preview=1 vẫn chỉ đọc bản đã xuất bản.
+  const adminUser = await getAdminPreviewUser(search)
+  const isDraft = Boolean(adminUser)
+
+  const whereConditions = isDraft
+    ? typeof search.previewId === 'string'
+      ? { id: { equals: search.previewId } }
+      : { slug: { equals: slug } }
+    : {
+        and: [
+          { slug: { equals: slug } },
+          { _status: { equals: 'published' } },
+          { or: [{ type: { equals: 'ebook' } }, { type: { equals: 'toolkit' } }] },
+          { saleStatus: { equals: 'free' } },
+        ],
+      }
 
   const res = await payload.find({
     collection: 'products',
-    where: {
-      and: [
-        { slug: { equals: slug } },
-        { _status: { equals: 'published' } },
-        { or: [{ type: { equals: 'ebook' } }, { type: { equals: 'toolkit' } }] },
-        { saleStatus: { equals: 'free' } },
-      ],
-    },
+    where: whereConditions as unknown as Where,
     limit: 1,
     depth: 2,
+    draft: isDraft,
+    overrideAccess: false,
+    user: adminUser ?? undefined,
   })
 
   const product = res.docs[0]
