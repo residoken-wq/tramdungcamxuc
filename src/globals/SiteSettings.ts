@@ -2,6 +2,7 @@ import type { Field, GlobalConfig } from 'payload'
 import { checkbox, image, number, select, text, url } from '../fields/content'
 import { authenticated, isOwner } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
+import { globalLivePreview } from '../lib/live-preview'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'siteSettings',
@@ -9,6 +10,7 @@ export const SiteSettings: GlobalConfig = {
   admin: {
     group: vi.cms.nav.website,
     description: 'Cấu hình thông tin thương hiệu, thanh toán VietQR và liên hệ toàn trang.',
+    livePreview: globalLivePreview('siteSettings'),
   },
   access: { read: () => true, update: authenticated },
   fields: [

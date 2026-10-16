@@ -11,6 +11,7 @@ import {
 } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
+import { collectionLivePreview } from '../lib/live-preview'
 
 export const Lessons = contentCollection('lessons', 'Bài học', vi.cms.nav.habit, 'title', [
   relation('module', 'Nhóm bài học', 'courseModules'),
@@ -41,4 +42,5 @@ Lessons.admin = {
   description: 'Bài giảng video và tài liệu thực hành trong khóa Habit.',
   defaultColumns: ['title', 'module', 'stage', 'isFreePreview', 'order'],
   listSearchableFields: ['title', 'summary'],
+  livePreview: collectionLivePreview('lessons'),
 }

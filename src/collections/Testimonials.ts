@@ -9,6 +9,7 @@ import {
   textarea,
 } from '../fields/content'
 import { vi } from '../lib/i18n/vi'
+import { collectionLivePreview } from '../lib/live-preview'
 
 export const requireConsent: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   const next = { ...originalDoc, ...data }
@@ -57,4 +58,5 @@ Testimonials.admin = {
   description: 'Lời chia sẻ và cảm nhận của học viên, khách hàng trên website.',
   defaultColumns: ['name', 'role', 'relatedOffer', 'consent', 'updatedAt'],
   listSearchableFields: ['name', 'role', 'quote'],
+  livePreview: collectionLivePreview('testimonials'),
 }

@@ -2,6 +2,7 @@ import type { Field, GlobalConfig } from 'payload'
 import { checkbox, relation, select, text, url } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
+import { globalLivePreview } from '../lib/live-preview'
 
 function menu(name: string, label: string): Field {
   return {
@@ -57,6 +58,7 @@ export const Navigation: GlobalConfig = {
   admin: {
     group: vi.cms.nav.website,
     description: 'Quản lý các liên kết trong menu chính và menu chân trang.',
+    livePreview: globalLivePreview('navigation'),
   },
   access: { read: () => true, update: authenticated },
   fields: [menu('mainMenu', 'Menu chính'), menu('footerMenu', 'Menu chân trang')],

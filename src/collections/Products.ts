@@ -18,6 +18,7 @@ import {
 import { authenticated } from '../lib/auth/access'
 import { computePackageValue } from '../lib/pricing'
 import { vi } from '../lib/i18n/vi'
+import { collectionLivePreview } from '../lib/live-preview'
 
 const computeValues: CollectionBeforeChangeHook = ({ data, originalDoc }) => ({
   ...data,
@@ -144,4 +145,5 @@ Products.admin = {
   description: 'Tất cả sản phẩm mở bán hoặc tặng: công cụ số, sách điện tử, gói đồng hành.',
   defaultColumns: ['name', 'type', 'saleStatus', 'price', 'updatedAt'],
   listSearchableFields: ['name', 'slug'],
+  livePreview: collectionLivePreview('products'),
 }
