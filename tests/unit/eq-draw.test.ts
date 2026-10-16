@@ -54,6 +54,8 @@ describe('EQ Buddy Card Draw & 21-Day Trial Limit (T3-02)', () => {
           journeyStep: 'feel',
           trialDays: 21,
           saleStatus: 'on_sale',
+          isSample: true,
+          price: 250000,
           _status: 'published',
         },
         overrideAccess: true,

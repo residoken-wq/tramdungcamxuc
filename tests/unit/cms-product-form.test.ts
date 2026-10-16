@@ -5,7 +5,7 @@ import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import { migrations } from '../../src/migrations'
 import type { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
-import { seed } from '../../seed/seed'
+import { products as seedProducts } from '../../seed/data'
 import {
   PRODUCT_TYPES,
   showFor,
@@ -242,6 +242,7 @@ describe('Product Form CMS UX Conditions & Validation (CM-03)', () => {
       return doc.id
     }
     let testMediaId: number
+    const seededSlugs = new Map<string, string>()
 
     beforeAll(async () => {
       payload = await getPayload({ config })
@@ -253,14 +254,36 @@ describe('Product Form CMS UX Conditions & Validation (CM-03)', () => {
         })),
       })
 
-      // Ensure sample seed products exist for testing
-      const clearCheck = await payload.find({
-        collection: 'products',
-        where: { slug: { equals: 'growth-mirror-clear' } },
-        limit: 1,
-      })
-      if (clearCheck.docs.length === 0) {
-        await seed(payload)
+      // Create products shaped exactly like the sample seed (seed/data.ts) under unique slugs.
+      // Do not call seed(): it fills the shared DB (pages, quiz, EQ cards, globals) and CI
+      // runs e2e on the same database right after the unit suite.
+      const suffix = unique()
+      const idBySeedSlug = new Map<string, number>()
+      const ordered = [
+        ...seedProducts.filter((p) => !p.components),
+        ...seedProducts.filter((p) => p.components),
+      ]
+      for (const { components, slug, ...product } of ordered) {
+        const resolved = components?.map(({ grants, ...component }) => ({
+          ...component,
+          ...(grants && idBySeedSlug.has(grants)
+            ? { grantsProduct: idBySeedSlug.get(grants) }
+            : {}),
+        }))
+        const doc = await payload.create({
+          collection: 'products',
+          data: {
+            ...product,
+            ...(resolved ? { components: resolved } : {}),
+            slug: `${slug}-${suffix}`,
+            isSample: true,
+            _status: 'published',
+          } as never,
+          overrideAccess: true,
+        })
+        track('products', doc)
+        idBySeedSlug.set(slug, doc.id)
+        seededSlugs.set(slug, `${slug}-${suffix}`)
       }
 
       // Find or create test media for cover image tests
@@ -419,15 +442,15 @@ describe('Product Form CMS UX Conditions & Validation (CM-03)', () => {
       const { docs: seededDocs } = await payload.find({
         collection: 'products',
         where: {
-          slug: { in: sampleSlugs },
+          slug: { in: sampleSlugs.map((slug) => seededSlugs.get(slug) ?? slug) },
         },
         limit: 20,
       })
       expect(seededDocs.length).toBeGreaterThan(0)
       const slugs = seededDocs.map((p) => p.slug)
-      expect(slugs).toContain('growth-mirror-clear')
-      expect(slugs).toContain('growth-mirror-build')
-      expect(slugs).toContain('growth-mirror-shine')
+      expect(slugs).toContain(seededSlugs.get('growth-mirror-clear'))
+      expect(slugs).toContain(seededSlugs.get('growth-mirror-build'))
+      expect(slugs).toContain(seededSlugs.get('growth-mirror-shine'))
 
       for (const prod of seededDocs) {
         const updated = await payload.update({
