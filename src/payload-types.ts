@@ -976,6 +976,10 @@ export interface Customer {
    */
   consentAt?: string | null;
   /**
+   * Bật để áp dụng: không nhận email nhắc lịch / nhắc tập.
+   */
+  reminderEmailsOptOut?: boolean | null;
+  /**
    * Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).
    */
   deletionRequestedAt?: string | null;
@@ -2606,6 +2610,7 @@ export interface CustomersSelect<T extends boolean = true> {
   phone?: T;
   consentMarketing?: T;
   consentAt?: T;
+  reminderEmailsOptOut?: T;
   deletionRequestedAt?: T;
   sessionVersion?: T;
   updatedAt?: T;

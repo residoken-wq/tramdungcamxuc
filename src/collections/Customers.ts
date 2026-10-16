@@ -137,6 +137,7 @@ export const Customers: CollectionConfig = {
         update: isEditorOrOwner,
       },
     },
+    checkbox('reminderEmailsOptOut', 'Không nhận email nhắc lịch / nhắc tập', false),
     {
       ...date('deletionRequestedAt', 'Yêu cầu xóa lúc'),
       access: {
