@@ -10818,7 +10818,7 @@
           "name": "session_version",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": 0
         },
         "updated_at": {

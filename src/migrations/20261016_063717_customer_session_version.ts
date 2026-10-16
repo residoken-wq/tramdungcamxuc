@@ -3,7 +3,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
     ALTER TABLE IF EXISTS "trial_usage" ALTER COLUMN "product_id" DROP NOT NULL;
-    ALTER TABLE IF EXISTS "customers" ADD COLUMN IF NOT EXISTS "session_version" numeric DEFAULT 0 NOT NULL;
+    ALTER TABLE IF EXISTS "customers" ADD COLUMN IF NOT EXISTS "session_version" numeric DEFAULT 0;
   `)
 }
 

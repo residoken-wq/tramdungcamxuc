@@ -151,7 +151,6 @@ export const Customers: CollectionConfig = {
     {
       name: 'sessionVersion',
       type: 'number',
-      required: true,
       defaultValue: 0,
       admin: {
         hidden: true,

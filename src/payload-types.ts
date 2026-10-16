@@ -979,7 +979,7 @@ export interface Customer {
    * Thời điểm khách gửi yêu cầu xóa tài khoản (chỉ admin có quyền sửa).
    */
   deletionRequestedAt?: string | null;
-  sessionVersion: number;
+  sessionVersion?: number | null;
   updatedAt: string;
   createdAt: string;
   collection: 'customers';
