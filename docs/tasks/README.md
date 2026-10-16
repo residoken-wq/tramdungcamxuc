@@ -199,15 +199,15 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 ### CMS-UX cho Hana (kế hoạch `docs/plan/CMS_UX.md`, viết 15/10)
 
-| Mã    | Việc                                                       | Phụ thuộc    | Máy đề xuất | Trạng thái                                                                                                                                    |
-| ----- | ---------------------------------------------------------- | ------------ | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| CM-01 | Menu theo việc + ẩn mục kỹ thuật theo vai trò + logo admin | –            | Local       | **ĐẠT** 16/10 – PR #129, Planning sửa CM-01b (Media / Tài liệu riêng tư hiện với editor, e2e nhóm mới), IT duyệt ([review](reviews/CM-01.md)) |
-| CM-02 | Dashboard "Hôm nay"                                        | CM-01        | Laptop      | **ĐẠT** 16/10 – PR #131, Planning sửa CM-02b (lỗi thật không bị nuốt, đối soát 7 ngày), IT duyệt ([review](reviews/CM-02.md))                 |
-| CM-03 | Form Sản phẩm theo loại (tabs, ẩn trường, cảnh báo)        | –            | PC nhà      | Chưa giao (`prompts/CM-03.md`)                                                                                                                |
-| CM-05 | Live Preview cho sản phẩm, bài học, thẻ EQ, testimonial…   | –            | Laptop      | **ĐẠT** 16/10 – PR #133, Planning sửa CM-05b (bài học xem trước: quyền + không ghi tiến độ) ([review](reviews/CM-05.md))                      |
-| CM-04 | Wizard "Tạo sản phẩm" 5 bước                               | CM-03, CM-05 | PC nhà      | Chưa giao (`prompts/CM-04.md`)                                                                                                                |
-| CM-06 | Wizard "Thêm bài học" + "Lên lịch workshop"                | CM-04        | Local       | Chưa giao (`prompts/CM-06.md`)                                                                                                                |
-| CM-07 | Hướng dẫn CMS + buổi thử với Hana (5 việc, bấm giờ)        | CM-01→06     | Planning    | –                                                                                                                                             |
+| Mã    | Việc                                                       | Phụ thuộc    | Máy đề xuất | Trạng thái                                                                                                                                                                   |
+| ----- | ---------------------------------------------------------- | ------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CM-01 | Menu theo việc + ẩn mục kỹ thuật theo vai trò + logo admin | –            | Local       | **ĐẠT** 16/10 – PR #129, Planning sửa CM-01b (Media / Tài liệu riêng tư hiện với editor, e2e nhóm mới), IT duyệt ([review](reviews/CM-01.md))                                |
+| CM-02 | Dashboard "Hôm nay"                                        | CM-01        | Laptop      | **ĐẠT** 16/10 – PR #131, Planning sửa CM-02b (lỗi thật không bị nuốt, đối soát 7 ngày), IT duyệt ([review](reviews/CM-02.md))                                                |
+| CM-03 | Form Sản phẩm theo loại (tabs, ẩn trường, cảnh báo)        | –            | PC nhà      | Chưa giao (`prompts/CM-03.md`)                                                                                                                                               |
+| CM-05 | Live Preview cho sản phẩm, bài học, thẻ EQ, testimonial…   | –            | Laptop      | **ĐẠT** 16/10 – PR #133, Planning sửa CM-05b (bài học xem trước: quyền + không ghi tiến độ; khung tự tải lại sau khi lưu nháp; /gia-thanh-toan) ([review](reviews/CM-05.md)) |
+| CM-04 | Wizard "Tạo sản phẩm" 5 bước                               | CM-03, CM-05 | PC nhà      | Chưa giao (`prompts/CM-04.md`)                                                                                                                                               |
+| CM-06 | Wizard "Thêm bài học" + "Lên lịch workshop"                | CM-04        | Local       | Chưa giao (`prompts/CM-06.md`)                                                                                                                                               |
+| CM-07 | Hướng dẫn CMS + buổi thử với Hana (5 việc, bấm giờ)        | CM-01→06     | Planning    | –                                                                                                                                                                            |
 
 Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ CM-03 ‖ CM-05.
 
