@@ -8,6 +8,94 @@ export const vi = {
       customers: 'Học viên & khách',
       system: 'Hệ thống',
     },
+    dashboard: {
+      headingLine1: 'Hôm nay tại',
+      headingLine2: 'Trạm Dừng Cảm Xúc',
+      welcome: (name?: string) =>
+        name ? `Chào mừng trở lại, ${name}.` : 'Chào mừng bạn đến với trang quản trị.',
+      welcomeSub: 'Dưới đây là các đầu việc cần lưu tâm và thao tác nhanh trong ngày hôm nay.',
+      todosTitle: 'Việc cần làm hôm nay',
+      todosSubtitle: 'Nhấn vào từng thẻ để mở danh sách chi tiết đã lọc sẵn trong hệ thống.',
+      emptyTodosTitle: 'Không có việc nào – tuyệt!',
+      emptyTodosDesc: 'Mọi việc đều đang ổn thỏa và không có đầu việc nào cần xử lý khẩn cấp.',
+      quickActionsTitle: 'Tạo nhanh',
+      quickActionsSubtitle: 'Lối tắt giúp bạn tạo nội dung, sản phẩm và lên lịch nhanh chóng.',
+      guidesTitle: 'Hướng dẫn sử dụng',
+      guidesSubtitle: 'Tài liệu hướng dẫn từng bước giúp Hana tự tin làm chủ trang quản trị.',
+      todos: {
+        pendingOrders: {
+          title: 'Đơn chờ xác nhận',
+          description: 'Đơn hàng đang chờ kiểm tra chuyển khoản hoặc duyệt thủ công.',
+        },
+        paymentIssues: {
+          title: 'Giao dịch cần đối soát',
+          description: 'Sự kiện lệch số tiền hoặc đơn đã hủy nhưng khách vẫn chuyển khoản.',
+        },
+        newLeads: {
+          title: 'Khách tiềm năng mới',
+          description: 'Khách để lại thông tin cần liên hệ tư vấn hoặc hỗ trợ.',
+        },
+        deletionRequests: {
+          title: 'Yêu cầu xóa tài khoản',
+          description: 'Khách hàng yêu cầu xóa dữ liệu cá nhân theo NĐ 13/2023.',
+        },
+        upcomingWorkshops: {
+          title: 'Workshop trong 7 ngày tới',
+          description: 'Các buổi chia sẻ trực tuyến sắp diễn ra cần chuẩn bị.',
+        },
+      },
+      quickActions: {
+        createProduct: {
+          title: 'Tạo sản phẩm',
+          description: 'Thêm sản phẩm, gói đồng hành hoặc tài nguyên mới.',
+        },
+        createPage: {
+          title: 'Thiết kế trang',
+          description: 'Xem danh sách trang và mở công cụ kéo thả trực quan Puck.',
+        },
+        createTestimonial: {
+          title: 'Thêm lời chia sẻ',
+          description: 'Lưu lại phản hồi, cảm nhận từ học viên và khách hàng.',
+        },
+        createWorkshop: {
+          title: 'Lên lịch workshop',
+          description: 'Tạo buổi chia sẻ trực tuyến đồng hành cùng học viên.',
+        },
+        createLesson: {
+          title: 'Thêm bài học',
+          description: 'Bổ sung video và bài học vào khóa học Habit Hack.',
+        },
+      },
+      guides: {
+        products: {
+          title: 'Tạo & quản lý sản phẩm, gói đồng hành',
+          description: 'Cách định giá, thiết lập dùng thử và cấu phần gói.',
+        },
+        puck: {
+          title: 'Dựng trang kéo thả trực quan (Puck Editor)',
+          description: 'Tự chỉnh sửa bố cục trang chủ, landing page chiến dịch.',
+        },
+        payments: {
+          title: 'Xử lý đơn hàng & đối soát thanh toán',
+          description: 'Quy trình kiểm tra tiền vào tài khoản VietQR và mở quyền học.',
+        },
+        leads: {
+          title: 'Quản lý khách tiềm năng & xuất file CSV',
+          description: 'Theo dõi tiến trình chăm sóc và tải danh sách khách hàng.',
+        },
+        deletion: {
+          title: 'Xử lý yêu cầu xóa tài khoản của khách',
+          description: 'Quy trình xóa sạch dữ liệu cá nhân tuân thủ pháp luật.',
+        },
+      },
+      errorTitle: 'Không thể tải số liệu việc cần làm',
+      errorMessage:
+        'Đã có lỗi xảy ra khi đọc số liệu từ cơ sở dữ liệu. Vui lòng thử tải lại trang.',
+      roleBadge: {
+        owner: 'Chủ sở hữu (Toàn quyền)',
+        editor: 'Biên tập viên',
+      },
+    },
   },
   livePreview: { mobile: 'Điện thoại', tablet: 'Máy tính bảng', desktop: 'Máy tính' },
   common: {

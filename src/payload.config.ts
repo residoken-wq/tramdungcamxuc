@@ -61,6 +61,7 @@ export default buildConfig({
       titleSuffix: ' – Trạm Dừng Cảm Xúc',
     },
     components: {
+      beforeDashboard: ['@/components/admin/dashboard/TodayDashboard#TodayDashboard'],
       graphics: {
         Logo: '@/components/admin/brand/Logo#AdminLogo',
         Icon: '@/components/admin/brand/Icon#AdminIcon',

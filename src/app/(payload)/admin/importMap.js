@@ -30,6 +30,7 @@ import { CustomerActions as CustomerActions_9fd8238a1722f59df871ef58a48eb6c2 } f
 import { ExportLeadsButton as ExportLeadsButton_dfc015e147ecca7392a50b58d946480c } from '@/components/admin/ExportLeadsButton'
 import { AdminIcon as AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534 } from '@/components/admin/brand/Icon'
 import { AdminLogo as AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67 } from '@/components/admin/brand/Logo'
+import { TodayDashboard as TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd } from '@/components/admin/dashboard/TodayDashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -67,6 +68,7 @@ export const importMap = {
   "@/components/admin/ExportLeadsButton#ExportLeadsButton": ExportLeadsButton_dfc015e147ecca7392a50b58d946480c,
   "@/components/admin/brand/Icon#AdminIcon": AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534,
   "@/components/admin/brand/Logo#AdminLogo": AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67,
+  "@/components/admin/dashboard/TodayDashboard#TodayDashboard": TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }
