@@ -289,6 +289,7 @@ export async function TodayDashboard(props: TodayDashboardProps) {
                           lineHeight: 1,
                           color: hasItems ? '#EF3B83' : 'rgba(40, 10, 96, 0.35)',
                         }}
+                        data-testid={`cms-todo-${todo.id}-count`}
                       >
                         {todo.count}
                       </span>

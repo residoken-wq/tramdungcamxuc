@@ -57,6 +57,16 @@ test.describe('CMS Dashboard "Hôm nay" (CM-02)', () => {
       const adminInfo = await bootstrapAdmin(page)
       adminId = adminInfo.id
 
+      // Other e2e tests share this DB (leads from lead forms, orders from checkout),
+      // so assert "baseline + 1" instead of an absolute number.
+      const countDocs = async (path: string) => {
+        const res = await page.request.get(`${path}&limit=1&depth=0`)
+        expect(res.ok()).toBe(true)
+        return ((await res.json()) as { totalDocs: number }).totalDocs
+      }
+      const pendingBefore = await countDocs('/api/orders?where[paymentStatus][equals]=pending')
+      const leadsBefore = await countDocs('/api/leads?where[followUpStatus][equals]=new')
+
       // 2. Tạo 1 sản phẩm
       const prodRes = await page.request.post('/api/products', {
         data: {
@@ -116,15 +126,17 @@ test.describe('CMS Dashboard "Hôm nay" (CM-02)', () => {
       const heading = page.locator('h1', { hasText: 'Trạm Dừng Cảm Xúc' })
       await expect(heading).toBeVisible({ timeout: 15000 })
 
-      // Thẻ "Đơn chờ xác nhận" hiển thị ít nhất 1
+      // Thẻ "Đơn chờ xác nhận" tăng đúng 1
       const orderTodoCard = page.locator('[data-testid="cms-todo-pendingOrders"]')
       await expect(orderTodoCard).toBeVisible()
-      await expect(orderTodoCard).toContainText('1')
+      await expect(page.getByTestId('cms-todo-pendingOrders-count')).toHaveText(
+        String(pendingBefore + 1),
+      )
 
-      // Thẻ "Khách tiềm năng mới" hiển thị ít nhất 1
+      // Thẻ "Khách tiềm năng mới" tăng đúng 1
       const leadTodoCard = page.locator('[data-testid="cms-todo-newLeads"]')
       await expect(leadTodoCard).toBeVisible()
-      await expect(leadTodoCard).toContainText('1')
+      await expect(page.getByTestId('cms-todo-newLeads-count')).toHaveText(String(leadsBefore + 1))
 
       // 7. Bấm vào thẻ "Đơn chờ xác nhận" -> mở danh sách đã lọc
       await orderTodoCard.click()
