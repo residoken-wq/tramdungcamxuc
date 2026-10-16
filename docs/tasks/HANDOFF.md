@@ -35,7 +35,7 @@
 7. Biên bản `reviews/<MÃ>.md` (mẫu: `reviews/T2-06.md`), hỏi anh Nhân duyệt từng nhóm `REVIEW-REQUIRED` (AskUserQuestion), ghi "IT duyệt" vào biên bản.
 8. PR task: bỏ draft → merge khi CI xanh. Docs (biên bản, prompt, README) đi PR riêng từ nhánh Planning, merge khi CI xanh.
 
-**Lỗi hay gặp ở các máy** (soát kỹ): e2e không tick đồng ý / không chờ Turnstile / URL không neo `$` / bấm trước khi trang sẵn sàng (phải `toPass`); form bấm được trước khi hydrate (khóa bằng `useSyncExternalStore`); dò chữ "unique" thay vì bắt `ValidationError`; thử lại không giới hạn; file `'use server'` export object; tạo / gắn dữ liệu trước khi kiểm quyền; chữ tiếng Việt ngoài `vi.ts`; màu ngoài 8 màu brand (`bg-white`, `red-*`); thiếu `motion-reduce`; test để rác trong DB.
+**Lỗi hay gặp ở các máy** (soát kỹ): e2e không tick đồng ý / không chờ Turnstile / URL không neo `$` / bấm trước khi trang sẵn sàng (phải `toPass`); form bấm được trước khi hydrate (khóa bằng `useSyncExternalStore`); dò chữ "unique" thay vì bắt `ValidationError`; thử lại không giới hạn; file `'use server'` export object; tạo / gắn dữ liệu trước khi kiểm quyền; chữ tiếng Việt ngoài `vi.ts`; màu ngoài 8 màu brand (`bg-white`, `red-*`); thiếu `motion-reduce`; test để rác trong DB (CI chạy unit rồi e2e **trên cùng một DB**: unit không gọi `seed()`, không để lại admin / sản phẩm / trang); từ CM-03, sản phẩm `on_sale` + xuất bản trong test phải có `price` và `isSample: true` (hoặc ảnh bìa); chạy `pnpm test` trên DB **trống** trước khi báo xanh.
 
 ## Cập nhật 10/10/2026 (phiên cloud) – đọc mục này trước
 
