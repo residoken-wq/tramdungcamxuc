@@ -77,7 +77,7 @@ export function SaveCardButton({
             ? vi.eqBuddy.savedCards.savingButton
             : vi.eqBuddy.savedCards.saveCardButton}
       </Button>
-      {error && <span className="text-xs text-accent-pink font-sans text-center">{error}</span>}
+      {error && <span className="text-xs text-bright-magenta font-sans text-center">{error}</span>}
     </div>
   )
 }

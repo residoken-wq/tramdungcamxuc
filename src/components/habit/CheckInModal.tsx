@@ -82,9 +82,9 @@ export function CheckInModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-deep-navy/10 pb-3">
-          <h3 id="checkin-modal-title" className="font-ui font-bold text-lg text-deep-navy">
+          <h2 id="checkin-modal-title" className="font-ui font-bold text-lg text-deep-navy">
             {vi.tracker.dialog.title(day)}
-          </h3>
+          </h2>
           <button
             type="button"
             onClick={onClose}
@@ -144,7 +144,7 @@ export function CheckInModal({
               disabled={readOnly || isSubmitting}
               className="w-full rounded-xl border border-deep-navy/20 p-3 text-xs sm:text-sm font-sans text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 focus:ring-accent-pink/50 focus:border-accent-pink resize-none"
             />
-            <div className="text-right text-[11px] text-deep-navy/50 mt-1">{note.length} / 500</div>
+            <div className="text-right text-[11px] text-deep-navy/70 mt-1">{note.length} / 500</div>
           </div>
 
           {error && (

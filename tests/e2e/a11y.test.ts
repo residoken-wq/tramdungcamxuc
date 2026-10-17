@@ -1,27 +1,40 @@
-import { test, expect } from '@playwright/test'
-import AxeBuilder from '@axe-core/playwright'
+import { test } from '@playwright/test'
+import { expectNoSeriousA11y } from './helpers/a11y'
 
 /**
- * T1-17e & T1-17b: Automated Accessibility Spec using Axe Core Playwright
+ * T1-17e & T3-06a: Automated Accessibility Spec using Axe Core Playwright
  *
  * Scans key public routes against WCAG 2.0 / 2.1 Level A and AA tags.
  * Runs on both desktop-1440 and mobile-375 projects defined in playwright.config.ts.
  * Fails when any 'serious' or 'critical' violations are detected.
  *
  * NOTE: Does NOT use networkidle because pages load Turnstile / live scripts.
- * No rules are excluded by default. If any rule must be excluded, record rationale here and in report.
  *
  * ROUTE AUDIT FOR UNSEEDED CI DB:
- * - Added: `/thu-vien?tab=noi-dung` (renders 200 OK on unseeded DB with fallback header, tab switcher, topic filters, search bar, and empty state card).
- * - Retained from T1-17e:
- *   - `/` (Home): has fallback brand UI when DB is unseeded (200 OK).
- *   - `/thu-vien` (Library): has fallback header and empty state when unseeded (200 OK).
- *   - `/habit/chan-doan` (Diagnostic Quiz): renders quiz shell with empty question notification (200 OK).
- *   - `/coaching/growth-mirror` & `/gia-thanh-toan`: scanned in T1-17e; renders full Puck/Legal layout when seeded, shell 404 when unseeded.
- * - Evaluated & Skipped:
- *   - `/ve-hana`, `/doanh-nghiep`, `/coaching`: Dynamic Puck catch-all pages (`[...slug]` or `[slug]`) requiring published records in `pages` collection; return 404 when DB is empty.
- *   - Other legal routes (`/dieu-khoan-su-dung`, `/chinh-sach-bao-mat`, `/chinh-sach-cung-cap-dich-vu`, `/phan-anh-khieu-nai`, `/thong-tin-phap-ly`): `getLegalPageData(slug)` queries `legalPages` collection; returns 404 when unseeded.
- *   - Transactional / dynamic detail routes (`/dat-phien-trai-nghiem`, `/thanh-toan/don/[token]`, `/thanh-toan/goi/[slug]`, `/blog/[slug]`, `/tai-nguyen/[slug]`): Require existing DB entities / tokens; return 404 when unseeded.
+ * - Scanned static routes (200 OK on unseeded DB):
+ *   - `/` (Home): has fallback brand UI when DB is unseeded.
+ *   - `/thu-vien` (Library): has fallback header and empty state when unseeded.
+ *   - `/thu-vien?tab=noi-dung`: fallback header, tabs, search bar, empty state card.
+ *   - `/habit/chan-doan` (Diagnostic Quiz): renders quiz shell with empty question notification.
+ *   - `/coaching/growth-mirror` & `/gia-thanh-toan`: renders full Puck/Legal layout when seeded, shell 404 fallback when unseeded.
+ *   - `/habit/5-phut`: renders 4-step habit loop wizard with fallback steps.
+ *   - `/eq-buddy`: renders EQ buddy landing with fallback cards when DB is unseeded.
+ *   - `/eq-buddy/rut-the`: renders EQ card draw wizard with fallback deck.
+ *   - `/tai-khoan/dang-nhap`: renders customer login form with OTP request.
+ *   - `/nhac-lich/huy`: renders reminder opt-out form with invalid token notice.
+ *
+ * - Evaluated & Skipped on unseeded scan (audited in connected E2E journey tests instead):
+ *   - `/habit/1-percent-better`: Calls notFound() when product 'habit-tracker-so' is not in DB.
+ *     Audited via expectNoSeriousA11y inside tests/e2e/gate-habit-journey.test.ts after seeding.
+ *   - `/dung-thu`: Redirects to /tai-khoan/dang-nhap when guest; calls notFound() if ?san-pham is missing.
+ *     Audited via expectNoSeriousA11y inside tests/e2e/gate-habit-journey.test.ts.
+ *   - `/sap-ra-mat`: Calls notFound() when query param ?san-pham=<slug> is missing. GĐ 1 page
+ *     (T1-18), not part of the GĐ 2/3 journeys – not scanned; Planning checks it by hand at the gate.
+ *   - `/habit/hoc` & `/habit/tracker`: Requires customer auth + active trial/order.
+ *     Audited via expectNoSeriousA11y inside tests/e2e/gate-habit-journey.test.ts.
+ *   - `/tai-khoan`: Requires customer auth. Audited in journey tests.
+ *   - Dynamic catch-all Puck routes (`/ve-hana`, `/doanh-nghiep`, `/coaching`): require DB pages.
+ *   - Dynamic legal routes (`/dieu-khoan-su-dung`, etc.): require DB legalPages.
  */
 
 const SCAN_ROUTES = [
@@ -31,6 +44,11 @@ const SCAN_ROUTES = [
   '/habit/chan-doan',
   '/coaching/growth-mirror',
   '/gia-thanh-toan',
+  '/habit/5-phut',
+  '/eq-buddy',
+  '/eq-buddy/rut-the',
+  '/tai-khoan/dang-nhap',
+  '/nhac-lich/huy',
 ]
 
 test.describe('Accessibility Scans (Axe WCAG 2.0 / 2.1 A & AA)', () => {
@@ -42,30 +60,7 @@ test.describe('Accessibility Scans (Axe WCAG 2.0 / 2.1 A & AA)', () => {
       // Ensure main content is attached before scanning
       await page.locator('body').waitFor({ state: 'visible' })
 
-      const scanResults = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()
-
-      const seriousOrCritical = scanResults.violations.filter(
-        (v) => v.impact === 'serious' || v.impact === 'critical',
-      )
-
-      if (seriousOrCritical.length > 0) {
-        const details = seriousOrCritical
-          .map((v) => {
-            const nodesSummary = v.nodes
-              .map((n) => `    - Selector: ${n.target.join(' > ')}\n      HTML: ${n.html}`)
-              .join('\n')
-            return `[${v.impact?.toUpperCase()}] Rule: ${v.id} (${v.help})\n  Details: ${v.description}\n  Nodes:\n${nodesSummary}`
-          })
-          .join('\n\n')
-
-        console.error(`\n[A11Y] Violations found on ${route}:\n${details}\n`)
-      }
-
-      expect(
-        seriousOrCritical,
-        `Expected 0 critical/serious a11y violations on "${route}", but found ${seriousOrCritical.length}.\n` +
-          seriousOrCritical.map((v) => `[${v.impact}] ${v.id}: ${v.description}`).join('; '),
-      ).toEqual([])
+      await expectNoSeriousA11y(page, route)
     })
   }
 })

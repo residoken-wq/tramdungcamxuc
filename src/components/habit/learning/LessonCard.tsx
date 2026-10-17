@@ -109,7 +109,7 @@ export function LessonCard({ lesson, index }: LessonCardProps) {
         {lesson.canAccess ? (
           <Link
             href={href}
-            className="inline-flex items-center gap-1 font-ui text-xs sm:text-sm font-bold text-accent-pink hover:text-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded transition-colors motion-reduce:transition-none"
+            className="inline-flex items-center gap-1 font-ui text-xs sm:text-sm font-bold text-bright-magenta hover:text-deep-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded transition-colors motion-reduce:transition-none"
           >
             {lesson.isCompleted
               ? vi.learning.dashboard.reviewLesson
