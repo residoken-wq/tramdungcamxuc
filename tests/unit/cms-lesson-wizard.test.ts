@@ -139,6 +139,15 @@ describe('Lesson Wizard (CM-06) Unit Tests', () => {
       expect(res.errors?.videoId).toBeDefined()
     })
 
+    it('rejects invalid video GUID even when saving a draft', () => {
+      const res = validateLessonWizardData(
+        { moduleId: '123', title: 'Bài 1', videoId: 'not-a-guid' },
+        { publish: false },
+      )
+      expect(res.success).toBe(false)
+      expect(res.errors?.videoId).toBeDefined()
+    })
+
     it('rejects invalid duration input', () => {
       const input: unknown = {
         moduleId: '123',

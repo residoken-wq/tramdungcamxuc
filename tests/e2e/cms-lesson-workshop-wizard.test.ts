@@ -45,6 +45,10 @@ test.describe('Lesson & Workshop Creation Wizards (CM-06)', () => {
     const createdWorkshopIds: number[] = []
     const createdModuleIds: number[] = []
     const createdProductIds: number[] = []
+    const uniqueLesson = randomUUID().slice(0, 6)
+    const lessonTitle = `Bài học E2E ${uniqueLesson}`
+    const workshopTitle = `Workshop E2E ${uniqueLesson}`
+    const moduleTitle = `Chương E2E ${uniqueLesson}`
 
     try {
       // 1. Khởi tạo tài khoản admin đầu tiên
@@ -55,8 +59,6 @@ test.describe('Lesson & Workshop Creation Wizards (CM-06)', () => {
       // ==========================================
       // LUỒNG 1: TẠO BÀI HỌC QUA WIZARD (/admin/them-bai-hoc)
       // ==========================================
-      const uniqueLesson = randomUUID().slice(0, 6)
-      const lessonTitle = `Bài học E2E ${uniqueLesson}`
 
       await page.goto('/admin/them-bai-hoc', { waitUntil: 'domcontentloaded' })
       await expect(page.locator('h1')).toContainText('Thêm bài học mới')
@@ -66,13 +68,20 @@ test.describe('Lesson & Workshop Creation Wizards (CM-06)', () => {
       if (hasModules === 0) {
         // Tạo nhanh nhóm bài học
         const toggleBtn = page.getByRole('button', { name: /Tạo nhóm bài học mới/i })
-        await toggleBtn.click()
-        await page.locator('input[placeholder*="Chương 1"]').fill(`Chương E2E ${uniqueLesson}`)
-        await page.getByRole('button', { name: /Tạo nhóm ngay/i }).click()
+        const newModuleInput = page.locator('input[placeholder*="Chặng 1"]')
+        // The page may not be hydrated yet: retry the click until the form really opens.
+        await expect(async () => {
+          if (!(await newModuleInput.isVisible())) await toggleBtn.click()
+          await expect(newModuleInput).toBeVisible({ timeout: 1000 })
+        }).toPass({ timeout: 20000 })
+        await newModuleInput.fill(moduleTitle)
+        await page.getByRole('button', { name: 'Tạo nhóm mới', exact: true }).click()
       } else {
         const firstModule = page.locator('button[aria-pressed]').first()
-        await firstModule.click()
-        await expect(firstModule).toHaveAttribute('aria-pressed', 'true')
+        await expect(async () => {
+          await firstModule.click()
+          await expect(firstModule).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 })
+        }).toPass({ timeout: 20000 })
       }
 
       // Tiếp tục sang Bước 2
@@ -84,10 +93,10 @@ test.describe('Lesson & Workshop Creation Wizards (CM-06)', () => {
       }).toPass({ timeout: 15000 })
 
       // Bước 2: Nhập thông tin chi tiết bài học
-      await page.locator('input[placeholder*="Nhập tên bài học"]').fill(lessonTitle)
+      await page.locator('input[placeholder*="Nhận biết van xả"]').fill(lessonTitle)
       await page.locator('textarea').fill('Tóm tắt nội dung bài học E2E test')
       // Chọn giai đoạn "Khao khát (Craving)"
-      const cravingBtn = page.getByRole('button', { name: /Khao khát/i })
+      const cravingBtn = page.getByRole('button', { name: /Cơn thèm/i })
       await cravingBtn.click()
 
       // Tiếp tục sang Bước 3
@@ -95,14 +104,14 @@ test.describe('Lesson & Workshop Creation Wizards (CM-06)', () => {
         const nextBtn = page.getByRole('button', { name: /Tiếp tục/i })
         await expect(nextBtn).toBeEnabled()
         await nextBtn.click()
-        await expect(page.getByText('Bước 3: Video bài học')).toBeVisible()
+        await expect(page.getByText('Bước 3: Video bài giảng & Xem thử')).toBeVisible()
       }).toPass({ timeout: 15000 })
 
       // Bước 3: Video Bunny ID và thời lượng
       await page
-        .locator('input[placeholder*="vd: 4a2b3c4d"]')
+        .locator('input[placeholder*="xxxxxxxx-xxxx"]')
         .fill('a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d')
-      await page.locator('input[placeholder*="12:30"]').fill('08:45')
+      await page.locator('input[placeholder*="05:30 hoặc 330"]').fill('08:45')
       await page.locator('input[type="checkbox"]').check()
 
       // Tiếp tục sang Bước 4 (Xem trước & Lưu)
@@ -150,34 +159,36 @@ test.describe('Lesson & Workshop Creation Wizards (CM-06)', () => {
       await expect(page.locator('h1')).toContainText('Lên lịch workshop mới')
 
       // Bước 1: Tiêu đề & Chọn audience
-      const workshopTitle = `Workshop E2E ${uniqueLesson}`
-      await page.locator('input[placeholder*="Workshop Tập thương cảm xúc"]').fill(workshopTitle)
-
+      const workshopTitleInput = page.locator('input[placeholder^="Ví dụ: Workshop"]')
       const audienceCard = page.locator('button[aria-pressed]').first()
       await expect(audienceCard).toBeVisible()
-      await audienceCard.click()
+      // Typing/clicking before hydration is lost: retry until the state really changed.
+      await expect(async () => {
+        await workshopTitleInput.fill(workshopTitle)
+        if ((await audienceCard.getAttribute('aria-pressed')) !== 'true') await audienceCard.click()
+        await expect(workshopTitleInput).toHaveValue(workshopTitle, { timeout: 1000 })
+        await expect(audienceCard).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 })
+      }).toPass({ timeout: 20000 })
 
       // Tiếp tục sang Bước 2
       await expect(async () => {
         const nextBtn = page.getByRole('button', { name: /Tiếp tục/i })
         await expect(nextBtn).toBeEnabled()
         await nextBtn.click()
-        await expect(page.getByText('Bước 2: Thời gian và địa điểm')).toBeVisible()
+        await expect(page.getByText('Bước 2: Thời gian & Phòng họp')).toBeVisible()
       }).toPass({ timeout: 15000 })
 
       // Bước 2: Nhập ngày giờ VN và link họp
       await page.locator('input[type="date"]').fill('2026-11-20')
       await page.locator('input[type="time"]').fill('20:00')
-      await page
-        .locator('input[type="url"]')
-        .fill('https://meet.google.com/abc-test-meet')
+      await page.locator('input[type="url"]').fill('https://meet.google.com/abc-test-meet')
 
       // Tiếp tục sang Bước 3 (Xem trước email)
       await expect(async () => {
         const nextBtn = page.getByRole('button', { name: /Tiếp tục/i })
         await expect(nextBtn).toBeEnabled()
         await nextBtn.click()
-        await expect(page.getByText('Bước 3: Xem trước thông báo và lưu')).toBeVisible()
+        await expect(page.getByText('Bước 3: Xem trước email nhắc 24h & Lưu')).toBeVisible()
       }).toPass({ timeout: 25000 })
 
       // Kiểm tra iframe xem trước email hiển thị
@@ -205,6 +216,23 @@ test.describe('Lesson & Workshop Creation Wizards (CM-06)', () => {
       await page.goto('/admin/collections/workshops', { waitUntil: 'domcontentloaded' })
       await expect(page.getByText('Lên lịch bằng Wizard')).toBeVisible()
     } finally {
+      // Records created through the UI may exist even when the redirect never happened:
+      // find them by their unique title before deleting.
+      const findIds = async (collection: string, field: string, value: string) => {
+        const res = await page.request
+          .get(
+            `/api/${collection}?where[${field}][equals]=${encodeURIComponent(value)}&draft=true&depth=0&limit=5`,
+          )
+          .catch(() => null)
+        if (!res || !res.ok()) return [] as number[]
+        return ((await res.json()) as { docs: { id: number }[] }).docs.map((d) => d.id)
+      }
+      for (const id of await findIds('lessons', 'title', lessonTitle))
+        if (!createdLessonIds.includes(id)) createdLessonIds.push(id)
+      for (const id of await findIds('workshops', 'title', workshopTitle))
+        if (!createdWorkshopIds.includes(id)) createdWorkshopIds.push(id)
+      for (const id of await findIds('courseModules', 'title', moduleTitle))
+        if (!createdModuleIds.includes(id)) createdModuleIds.push(id)
       // Dọn dẹp dữ liệu
       for (const id of createdLessonIds) {
         try {

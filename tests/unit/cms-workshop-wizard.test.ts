@@ -124,22 +124,6 @@ describe('Workshop Wizard (CM-06) Unit Tests', () => {
     })
   })
 
-  describe('Email Preview Rendering', () => {
-    it('renders WorkshopReminderEmail HTML without sending real email', async () => {
-      const res = await renderWorkshopEmailPreviewAction({
-        title: 'Workshop Thử Nghiệm Xem Trước',
-        vnDate: '2026-10-25',
-        vnTime: '20:00',
-        joinUrl: 'https://meet.google.com/test-meet',
-      })
-
-      expect(res.success).toBe(true)
-      expect(res.html).toBeDefined()
-      expect(res.html).toContain('Workshop Thử Nghiệm Xem Trước')
-      expect(res.html).toContain('20:00 ngày 25/10/2026')
-    })
-  })
-
   describe('Server Actions Integration (Auth & Enforcement)', () => {
     let payload: Payload
     let ownerToken: string
@@ -188,6 +172,32 @@ describe('Workshop Wizard (CM-06) Unit Tests', () => {
           // ignore cleanup errors
         }
       }
+    })
+
+    it('email preview: refuses callers without an admin session', async () => {
+      mockHeadersValue = new Headers()
+      const res = await renderWorkshopEmailPreviewAction({
+        title: 'Không đăng nhập',
+        vnDate: '2026-10-25',
+        vnTime: '20:00',
+      })
+      expect(res.success).toBe(false)
+      expect(res.html).toBeUndefined()
+    })
+
+    it('email preview: renders WorkshopReminderEmail HTML for an admin without sending email', async () => {
+      mockHeadersValue = new Headers()
+      mockHeadersValue.set('Authorization', `JWT ${ownerToken}`)
+      const res = await renderWorkshopEmailPreviewAction({
+        title: 'Workshop Thử Nghiệm Xem Trước',
+        vnDate: '2026-10-25',
+        vnTime: '20:00',
+        joinUrl: 'https://meet.google.com/test-meet',
+      })
+
+      expect(res.success).toBe(true)
+      expect(res.html).toContain('Workshop Thử Nghiệm Xem Trước')
+      expect(res.html).toContain('20:00 ngày 25/10/2026')
     })
 
     it('rejects unauthorized user from scheduling a workshop', async () => {

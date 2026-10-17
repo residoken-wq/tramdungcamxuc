@@ -158,8 +158,9 @@ export function validateLessonWizardData(
     finalDurationSec = converted ?? undefined
   }
 
-  // Khi xuất bản: nếu có videoId thì bắt buộc phải đúng định dạng GUID
-  if (options.publish && parsed.videoId) {
+  // Có videoId thì phải đúng định dạng GUID – cả khi lưu nháp (collection không tự kiểm, bản nháp
+  // sai có thể được xuất bản sau qua form thường).
+  if (parsed.videoId) {
     if (!BUNNY_VIDEO_ID_REGEX.test(parsed.videoId)) {
       return {
         success: false,

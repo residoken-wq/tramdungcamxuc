@@ -81,6 +81,13 @@ export async function renderWorkshopEmailPreviewAction(data: {
   joinUrl?: string
 }): Promise<{ success: boolean; html?: string; error?: string }> {
   try {
+    // REVIEW-REQUIRED: server actions are public endpoints – admin session only, like the other actions.
+    const payload = await getPayload({ config: await config })
+    const { user } = await payload.auth({ headers: await getHeaders() })
+    if (!user || !isAdminUser(user)) {
+      return { success: false, error: vi.cms.workshopWizard.errors.unauthorized }
+    }
+
     const formattedTime = formatVietnamDateTime(data.vnDate, data.vnTime)
     const emailElement = React.createElement(WorkshopReminderEmail, {
       name: 'Học viên Trạm Dừng',
@@ -195,7 +202,8 @@ export async function createWorkshopFromWizard(
       }
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : vi.cms.workshopWizard.errors.createFailed
+    const message =
+      error instanceof Error ? error.message : vi.cms.workshopWizard.errors.createFailed
     return {
       success: false,
       error: message,
