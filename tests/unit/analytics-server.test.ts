@@ -275,13 +275,11 @@ describe('Server-side Plausible Analytics (T2-22)', () => {
         data: {
           customer: testCustomer.id,
           paymentStatus: 'pending',
-          paymentMethod: 'vietqr',
           paymentRef: `TDCX${randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()}`,
           total: 178000,
           items: [
             {
               product: testProduct.id,
-              quantity: 1,
               price: 178000,
             },
           ],
@@ -342,14 +340,11 @@ describe('Server-side Plausible Analytics (T2-22)', () => {
 
     it('markOrderPaid lần đầu -> gửi 1 sự kiện order_paid; gọi lại đơn đã paid -> không gửi thêm', async () => {
       // Giả lập môi trường production (không có cờ test) để trackServer thực thi bình thường
-      process.env.NODE_ENV = 'production'
+      ;(process.env as Record<string, string | undefined>)['NODE_ENV'] = 'production'
       delete process.env.VITEST
       delete process.env.SITE_NOINDEX
 
-      vi.spyOn(emailService, 'sendDigitalToolOrderPaidEmail').mockResolvedValue({
-        success: true,
-        id: 'mock-mail',
-      })
+      vi.spyOn(emailService, 'sendDigitalToolOrderPaidEmail').mockResolvedValue(undefined)
 
       // Lần 1: Chuyển đơn sang trạng thái paid
       const paidOrder = await markOrderPaid(testOrder.id, {
