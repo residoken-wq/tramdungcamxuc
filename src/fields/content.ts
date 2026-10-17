@@ -27,10 +27,16 @@ export const text = (
   label,
   type: 'text',
   required,
-  validate: (value: string | null | undefined) =>
-    !required ||
-    (typeof value === 'string' && value.trim().length > 0) ||
-    'Vui lòng điền thông tin này.',
+  // Custom validate replaces Payload's default, so `maxLength` has to be checked here too.
+  validate: (value: string | null | undefined) => {
+    if (required && !(typeof value === 'string' && value.trim().length > 0)) {
+      return 'Vui lòng điền thông tin này.'
+    }
+    if (extra.maxLength && typeof value === 'string' && value.length > extra.maxLength) {
+      return `Tối đa ${extra.maxLength} ký tự.`
+    }
+    return true
+  },
   ...extra,
   admin: {
     description: `Nhập ${label.toLocaleLowerCase('vi')}.`,

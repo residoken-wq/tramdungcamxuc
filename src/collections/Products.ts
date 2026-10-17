@@ -13,8 +13,10 @@ import {
   slug,
   text,
   textarea,
+  topicOptions,
   internalOrExternalUrl,
 } from '../fields/content'
+import { brandIconOptions } from '../lib/brand/icons'
 import { authenticated } from '../lib/auth/access'
 import { computePackageValue } from '../lib/pricing'
 import { vi } from '../lib/i18n/vi'
@@ -84,6 +86,18 @@ export const Products: CollectionConfig = {
         description: vi.cms.productForm.sidebar.order,
       },
     }),
+    select('topic', 'Chủ đề', topicOptions, {
+      admin: { position: 'sidebar', description: vi.cms.productForm.sidebar.topic },
+    }),
+    select(
+      'audienceSegment',
+      'Dành cho nhóm',
+      [
+        ['individual', 'Cá nhân'],
+        ['business', 'Doanh nghiệp'],
+      ],
+      { admin: { position: 'sidebar', description: vi.cms.productForm.sidebar.audienceSegment } },
+    ),
 
     // Tabs không tên (không đổi cấu trúc dữ liệu / schema)
     {
@@ -105,6 +119,13 @@ export const Products: CollectionConfig = {
             }),
             textarea('shortDescription', 'Giới thiệu ngắn', {
               admin: { description: vi.cms.productForm.descriptions.shortDescription },
+            }),
+            text('tagline', 'Câu tóm tắt', false, {
+              maxLength: 60,
+              admin: { description: vi.cms.productForm.descriptions.tagline },
+            }),
+            select('icon', 'Biểu tượng', brandIconOptions, {
+              admin: { description: vi.cms.productForm.descriptions.icon },
             }),
             select(
               'journeyStep',

@@ -51,6 +51,16 @@ export const Leads: CollectionConfig = {
       },
     },
     relation('service', 'Dịch vụ quan tâm', 'services'),
+    relation('interestedPackage', 'Gói quan tâm', 'products', false, {
+      filterOptions: { type: { equals: 'package' } },
+      admin: { description: 'Gói khách bấm "Chọn gói này" trước khi đặt phiên trải nghiệm.' },
+    }),
+    relation('interestedProgram', 'Chương trình quan tâm', 'programs', false, {
+      admin: { description: 'Chương trình doanh nghiệp khách quan tâm.' },
+    }),
+    text('currentStatus', 'Tình trạng hiện tại', false, {
+      admin: { description: 'Lựa chọn khách chọn trên form liên hệ.' },
+    }),
     {
       name: 'brief',
       label: 'Thông tin doanh nghiệp',
@@ -60,6 +70,9 @@ export const Leads: CollectionConfig = {
       },
       fields: [
         text('company', 'Công ty / Tổ chức'),
+        text('contactRole', 'Vai trò người liên hệ', false, {
+          admin: { description: 'VD: HRD, L&D Manager, CEO.' },
+        }),
         text('teamSize', 'Quy mô đội ngũ'),
         textarea('targetBehaviors', 'Hành vi mục tiêu'),
         text('timeline', 'Thời gian dự kiến'),

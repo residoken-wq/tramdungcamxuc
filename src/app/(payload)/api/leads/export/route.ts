@@ -76,7 +76,11 @@ export async function GET(request: Request): Promise<Response> {
     'Số điện thoại',
     'Nhu cầu',
     'Dịch vụ quan tâm',
+    'Gói quan tâm',
+    'Chương trình quan tâm',
+    'Tình trạng hiện tại',
     'Công ty',
+    'Vai trò người liên hệ',
     'Quy mô đội ngũ',
     'Hành vi mục tiêu',
     'Thời gian dự kiến',
@@ -116,6 +120,13 @@ export async function GET(request: Request): Promise<Response> {
       serviceTitle = String(lead.service)
     }
 
+    const relationName = (value: unknown): string => {
+      if (typeof value === 'object' && value !== null && 'name' in value) {
+        return String((value as { name?: unknown }).name ?? '')
+      }
+      return value ? String(value) : ''
+    }
+
     const tags = Array.isArray(lead.interestTags)
       ? lead.interestTags
           .map((item) =>
@@ -134,7 +145,11 @@ export async function GET(request: Request): Promise<Response> {
       lead.phone || '',
       lead.need ? needMap[lead.need] || lead.need : '',
       serviceTitle,
+      relationName(lead.interestedPackage),
+      relationName(lead.interestedProgram),
+      lead.currentStatus || '',
       lead.brief?.company || '',
+      lead.brief?.contactRole || '',
       lead.brief?.teamSize || '',
       lead.brief?.targetBehaviors || '',
       lead.brief?.timeline || '',

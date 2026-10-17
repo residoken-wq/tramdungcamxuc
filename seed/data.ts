@@ -259,6 +259,18 @@ export const testimonials = [1, 2, 3].map((n) => ({
   consent: false,
 }))
 
+// Shared FAQ samples. Answers are placeholders for Hana; never seed refund or card-payment
+// claims (no refunds, VietQR only – AGENTS.md 1).
+export const faqs = [1, 2, 3].map((n) => ({
+  question: `${S} Câu hỏi thường gặp ${n}`,
+  answer: `${S} Câu trả lời chờ Hana viết.`,
+  group: 'general' as const,
+  order: n,
+}))
+
+// Choices for the "Tình trạng hiện tại" select on the contact form (siteSettings).
+export const leadStatusOptions = [1, 2, 3].map((n) => ({ label: `${S} Tình trạng ${n}` }))
+
 export const eqCards = [1, 2, 3].map((n) => ({
   code: `MAU-${String(n).padStart(2, '0')}`,
   qrSlug: `mau-${String(n).padStart(2, '0')}`,

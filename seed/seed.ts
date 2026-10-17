@@ -129,6 +129,7 @@ export async function seed(payload: Payload): Promise<SeedReport> {
   }
 
   for (const { slug, ...page } of data.legalPages) await upsert('legalPages', 'slug', slug, page)
+  for (const { question, ...faq } of data.faqs) await upsert('faqs', 'question', question, faq)
 
   function resolveBlockProductIds(blockItem: Record<string, unknown>): Record<string, unknown> {
     const item = JSON.parse(JSON.stringify(blockItem))
@@ -217,12 +218,13 @@ export async function seed(payload: Payload): Promise<SeedReport> {
 
   const settings = (await payload.findGlobal({ slug: 'siteSettings', depth: 0 })) as {
     shopeeStoreUrl?: string | null
+    leadStatusOptions?: unknown[] | null
   }
-  if (!settings.shopeeStoreUrl) {
-    await payload.updateGlobal({
-      slug: 'siteSettings',
-      data: { shopeeStoreUrl: 'https://shopee.vn/' },
-    })
+  const settingsUpdate: Record<string, unknown> = {}
+  if (!settings.shopeeStoreUrl) settingsUpdate.shopeeStoreUrl = 'https://shopee.vn/'
+  if (!settings.leadStatusOptions?.length) settingsUpdate.leadStatusOptions = data.leadStatusOptions
+  if (Object.keys(settingsUpdate).length) {
+    await payload.updateGlobal({ slug: 'siteSettings', data: settingsUpdate })
     tally('siteSettings').updated++
   }
 

@@ -1,5 +1,13 @@
 import type { Field, GlobalConfig } from 'payload'
-import { checkbox, image, number, select, text, url } from '../fields/content'
+import {
+  checkbox,
+  image,
+  internalOrExternalUrl,
+  number,
+  select,
+  text,
+  url,
+} from '../fields/content'
 import { authenticated, isOwner } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
 import { globalLivePreview } from '../lib/live-preview'
@@ -22,6 +30,9 @@ export const SiteSettings: GlobalConfig = {
           fields: [
             image('logo', 'Logo thương hiệu'),
             text('tagline', 'Thông điệp thương hiệu'),
+            image('founderSignature', 'Ảnh chữ ký nhà sáng lập', {
+              admin: { description: 'PNG nền trong, dùng ở khối "Lời chào từ nhà sáng lập".' },
+            }),
             {
               ...text('brandAscii', 'Tên không dấu'),
               defaultValue: 'TRAM DUNG CAM XUC',
@@ -78,11 +89,36 @@ export const SiteSettings: GlobalConfig = {
               type: 'email',
               admin: { description: 'Email nhận liên hệ từ khách hàng.' },
             },
+            {
+              ...text('hotline', 'Hotline / Zalo'),
+              admin: { description: 'Số điện thoại hiện ở trang Liên hệ. VD: 0930 000 000.' },
+              validate: (value: string | null | undefined) =>
+                !value ||
+                /^\+?[0-9 .]{8,20}$/.test(value.trim()) ||
+                'Chỉ dùng số, khoảng trắng, dấu chấm và dấu + ở đầu.',
+            },
+            {
+              ...text('officeAddress', 'Địa điểm văn phòng'),
+              admin: { description: 'Có thể chỉ ghi thành phố. VD: TP. Hồ Chí Minh, Việt Nam.' },
+            },
             url('linkedInUrl', 'LinkedIn'),
+            url('facebookUrl', 'Facebook / Fanpage'),
+            url('youtubeUrl', 'YouTube'),
             url('zaloGroupUrl', 'Nhóm Zalo'),
             url('zaloChatUrl', 'Liên kết trò chuyện Zalo'),
             checkbox('showFloatingChat', 'Hiện nút trò chuyện Zalo'),
             url('shopeeStoreUrl', 'Gian hàng Shopee'),
+            {
+              name: 'leadStatusOptions',
+              label: 'Lựa chọn "Tình trạng hiện tại" trên form liên hệ',
+              type: 'array',
+              maxRows: 10,
+              admin: {
+                description:
+                  'Các lựa chọn khách thấy ở ô "Tình trạng hiện tại" của form liên hệ. Kéo để đổi thứ tự.',
+              },
+              fields: [text('label', 'Lựa chọn', true)],
+            },
           ],
         },
         {
@@ -115,6 +151,12 @@ export const SiteSettings: GlobalConfig = {
               max: 21,
               admin: { description: 'Số ngày hoàn thành trong hành trình 21 ngày.' },
             },
+            internalOrExternalUrl('quizCtaPath', 'Nút sau kết quả quiz dẫn tới đâu', {
+              admin: {
+                description:
+                  'Để trống thì dẫn tới trang lộ trình. Khi Habit Tracker số đang mở dùng thử, nút luôn dẫn tới dùng thử.',
+              },
+            }),
           ],
         },
       ],
