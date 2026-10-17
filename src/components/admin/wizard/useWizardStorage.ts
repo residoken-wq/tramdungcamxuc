@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { vi } from '@/lib/i18n/vi'
 
 interface UseWizardStorageOptions<T> {
@@ -9,44 +9,51 @@ interface UseWizardStorageOptions<T> {
 }
 
 export function useWizardStorage<T>({ key, initialData }: UseWizardStorageOptions<T>) {
-  // Đọc từ localStorage an toàn với try / catch
-  const [data, setData] = useState<T>(() => {
-    if (typeof window === 'undefined') return initialData
-    try {
-      const stored = window.localStorage.getItem(key)
-      if (stored) {
-        return { ...initialData, ...JSON.parse(stored) }
-      }
-    } catch {
-      // Bỏ qua lỗi trong chế độ ẩn danh hoặc khi cookie/storage bị chặn
-    }
-    return initialData
-  })
-
+  const [data, setData] = useState<T>(initialData)
+  const [isLoaded, setIsLoaded] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  // Lưu vào localStorage an toàn
-  const updateData = useCallback(
-    (updater: Partial<T> | ((prev: T) => T)) => {
-      setData((prev) => {
-        const next = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater }
-        if (typeof window !== 'undefined') {
-          try {
-            window.localStorage.setItem(key, JSON.stringify(next))
-          } catch {
-            // QuotaExceededError hoặc Storage disabled
+  // 1. Khôi phục nháp từ localStorage an toàn sau khi mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const stored = window.localStorage.getItem(key)
+        if (stored) {
+          const parsed = JSON.parse(stored)
+          if (parsed && typeof parsed === 'object') {
+            setData((prev) => ({ ...prev, ...parsed }))
+            setIsDirty(true)
           }
         }
-        setIsDirty(true)
-        return next
-      })
-    },
-    [key],
-  )
+      } catch {
+        // Bỏ qua lỗi trong chế độ ẩn danh hoặc khi cookie/storage bị chặn
+      } finally {
+        setIsLoaded(true)
+      }
+    }, 0)
+
+    return () => clearTimeout(timer)
+  }, [key])
+
+  // Lưu vào localStorage an toàn
+  const updateData = (updater: Partial<T> | ((prev: T) => T)) => {
+    setData((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater }
+      if (typeof window !== 'undefined') {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(next))
+        } catch {
+          // QuotaExceededError hoặc Storage disabled
+        }
+      }
+      setIsDirty(true)
+      return next
+    })
+  }
 
   // Xóa nháp tạm khỏi localStorage
-  const clearStorage = useCallback(() => {
+  const clearStorage = () => {
     if (typeof window !== 'undefined') {
       try {
         window.localStorage.removeItem(key)
@@ -56,10 +63,10 @@ export function useWizardStorage<T>({ key, initialData }: UseWizardStorageOption
     }
     setData(initialData)
     setIsDirty(false)
-  }, [key, initialData])
+  }
 
   // Đánh dấu đã submit thành công để không cảnh báo rời trang
-  const markSubmitted = useCallback(() => {
+  const markSubmitted = () => {
     setIsSubmitted(true)
     setIsDirty(false)
     if (typeof window !== 'undefined') {
@@ -69,7 +76,7 @@ export function useWizardStorage<T>({ key, initialData }: UseWizardStorageOption
         // ignore
       }
     }
-  }, [key])
+  }
 
   // Cảnh báo rời trang khi có dữ liệu chưa lưu
   useEffect(() => {
@@ -93,5 +100,6 @@ export function useWizardStorage<T>({ key, initialData }: UseWizardStorageOption
     clearStorage,
     markSubmitted,
     isDirty,
+    isLoaded,
   }
 }

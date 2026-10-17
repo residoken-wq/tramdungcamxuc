@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand Book 2026 Colors (Hex) */
+  --color-deep-navy: #280a60;
+  --color-bright-magenta: #bc039e;
+  --color-accent-pink: #ef3b83;
+  --color-soft-pink: #fde6f6;
+  --color-lavender-mist: #e9ddf9;
+  --color-mint-haze: #d9f1ea;
+  --color-butter-cream: #f6e9b8;
+  --color-warm-ivory: #faf7f4;
+
+  /* Brand Book 2026 Colors (RGB Triplet for Tailwind Opacity) */
+  --color-deep-navy-rgb: 40 10 96;
+  --color-bright-magenta-rgb: 188 3 158;
+  --color-accent-pink-rgb: 239 59 131;
+  --color-soft-pink-rgb: 253 230 246;
+  --color-lavender-mist-rgb: 233 221 249;
+  --color-mint-haze-rgb: 217 241 234;
+  --color-butter-cream-rgb: 246 233 184;
+  --color-warm-ivory-rgb: 250 247 244;
+}
+
+/* Fallback styles in case Tailwind classes conflict with Payload admin CSS */
+.wizard-root {
+  font-family:
+    Montserrat,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: #280a60;
+}

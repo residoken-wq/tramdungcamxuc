@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import './wizard.css'
 import { WizardProgress, type WizardStepMeta } from '../wizard/WizardProgress'
 import { WizardControls } from '../wizard/WizardControls'
 import { useWizardStorage } from '../wizard/useWizardStorage'
