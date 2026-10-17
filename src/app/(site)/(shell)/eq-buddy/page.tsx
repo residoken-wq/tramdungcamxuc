@@ -8,6 +8,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import { isRichTextEmpty } from '@/lib/legal'
 import { TrialBanner } from '@/components/habit/TrialBanner'
 import { Button } from '@/components/ui/Button'
+import { PhysicalDeckButton } from '@/components/eq/PhysicalDeckButton'
 import { HeartLine } from '@/components/brand/HeartLine'
 import { vi } from '@/lib/i18n/vi'
 
@@ -40,13 +41,28 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function EqBuddyIntroPage() {
   const payload = await getPayload({ config: await config })
-  const res = await payload.find({
-    collection: 'products',
-    where: { slug: { equals: EQ_BUDDY_PRODUCT_SLUG } },
-    limit: 1,
-    overrideAccess: true,
-  })
+  const [res, physicalRes] = await Promise.all([
+    payload.find({
+      collection: 'products',
+      where: { slug: { equals: EQ_BUDDY_PRODUCT_SLUG } },
+      limit: 1,
+      overrideAccess: true,
+    }),
+    payload.find({
+      collection: 'products',
+      where: {
+        and: [
+          { type: { equals: 'physical_external' } },
+          { web: { equals: 'eq' } },
+          { _status: { equals: 'published' } },
+        ],
+      },
+      limit: 1,
+      overrideAccess: true,
+    }),
+  ])
   const product = res.docs[0] as Product | undefined
+  const physicalProduct = physicalRes.docs[0] as Product | undefined
 
   const title = product?.name || vi.eqBuddy.intro.defaultTitle
   const shortDesc = product?.shortDescription || vi.eqBuddy.intro.defaultDescription
@@ -71,8 +87,8 @@ export default async function EqBuddyIntroPage() {
             </p>
           )}
 
-          {/* Primary CTA */}
-          <div className="pt-6 flex justify-center">
+          {/* Primary CTA & Shopee Physical Deck */}
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
               href="/eq-buddy/rut-the"
               variant="primary"
@@ -81,6 +97,9 @@ export default async function EqBuddyIntroPage() {
             >
               {vi.eqBuddy.intro.drawButton}
             </Button>
+            {physicalProduct && (
+              <PhysicalDeckButton product={physicalProduct} campaign="eq_intro_page" />
+            )}
           </div>
         </header>
 
