@@ -187,6 +187,193 @@ export const vi = {
       missingQrSlug: 'Vui lòng nhập mã đường dẫn QR (qrSlug) và lưu nháp để xem trước.',
       missingSave: 'Vui lòng lưu bản ghi để xem trước.',
     },
+    wizard: {
+      title: 'Tạo sản phẩm mới',
+      subtitle: 'Trình hướng dẫn từng bước dành riêng cho Hana – đơn giản, rõ ràng và trực quan.',
+      steps: {
+        step1: {
+          number: 1,
+          name: 'Chọn loại',
+          title: 'Bước 1: Chọn loại sản phẩm',
+          description: 'Mỗi loại sản phẩm có cách bán, giao diện và thiết lập riêng biệt.',
+        },
+        step2: {
+          number: 2,
+          name: 'Thông tin cơ bản',
+          title: 'Bước 2: Thông tin cơ bản',
+          description: 'Tên gọi, đường dẫn, khu vực web và ảnh bìa đại diện cho sản phẩm.',
+        },
+        step3: {
+          number: 3,
+          name: 'Giá & cách bán',
+          title: 'Bước 3: Thiết lập giá và cách bán',
+          description: 'Giá bán, giá ưu đãi, thời hạn trải nghiệm hoặc cấu phần của gói đồng hành.',
+        },
+        step4: {
+          number: 4,
+          name: 'Nội dung trang',
+          title: 'Bước 4: Nội dung giới thiệu',
+          description: 'Những gì khách hàng nhận được, khó khăn giải quyết và câu hỏi thường gặp.',
+        },
+        step5: {
+          number: 5,
+          name: 'Xem trước & lưu',
+          title: 'Bước 5: Xem trước và lưu sản phẩm',
+          description:
+            'Kiểm tra giao diện hiển thị trên điện thoại, máy tính bảng và máy tính trước khi lưu.',
+        },
+      },
+      types: {
+        digital_tool: {
+          label: 'Công cụ số',
+          tag: 'Phổ biến',
+          description:
+            'Mở dùng thử 21 ngày tự do, sau đó bán bản quyền sử dụng vĩnh viễn (như Habit Tracker số, EQ Buddy số).',
+        },
+        ebook: {
+          label: 'Sách điện tử (Ebook)',
+          tag: 'Thu lead',
+          description:
+            'Tài liệu PDF chia sẻ kiến thức, có thể miễn phí để thu lead hoặc bán có phí.',
+        },
+        toolkit: {
+          label: 'Bộ tài nguyên (Toolkit)',
+          tag: 'Tài liệu',
+          description:
+            'Bộ công cụ, biểu mẫu, bài tập thực hành giao qua email sau khi mua hoặc đăng ký.',
+        },
+        package: {
+          label: 'Gói đồng hành (Growth Mirror)',
+          tag: 'Gói cao cấp',
+          description:
+            'Gộp nhiều cấu phần (coaching, workshop, công cụ số), tự động tính tổng giá trị và mức ưu đãi.',
+        },
+        physical_external: {
+          label: 'Sản phẩm trên Shopee',
+          tag: 'Vật lý',
+          description:
+            'Sản phẩm vật lý bán qua gian hàng Shopee (như Bộ thẻ EQ Buddy), nút trên web dẫn link ngoài.',
+        },
+        coaching_trial: {
+          label: 'Phiên trải nghiệm (149k)',
+          tag: 'Trải nghiệm',
+          description:
+            'Phiên khai vấn 1:1 làm quen (149.000đ), giúp định hướng trước khi chọn 1 trong 3 gói dài hạn.',
+        },
+        workshop: {
+          label: 'Workshop',
+          tag: 'Sự kiện',
+          description:
+            'Buổi chia sẻ hoặc thực hành trực tuyến có giới hạn người tham dự theo lịch hẹn.',
+        },
+        community: {
+          label: 'Cộng đồng',
+          tag: 'Thành viên',
+          description:
+            'Quyền tham gia cộng đồng riêng tư "Tập thương cảm xúc" và các buổi giao lưu nội bộ.',
+        },
+        b2b: {
+          label: 'Doanh nghiệp (B2B)',
+          tag: 'Tổ chức',
+          description:
+            'Chương trình đào tạo, hội thảo dành cho tổ chức và doanh nghiệp, liên hệ tư vấn.',
+        },
+      },
+      buttons: {
+        back: 'Quay lại',
+        continue: 'Tiếp tục',
+        saveDraft: 'Lưu nháp',
+        savingDraft: 'Đang lưu nháp...',
+        publish: 'Xuất bản',
+        publishing: 'Đang xuất bản...',
+        regenerateSlug: 'Tạo lại theo tên',
+        addComponent: 'Thêm cấu phần',
+        removeComponent: 'Xóa',
+        addInclude: 'Thêm mục',
+        removeInclude: 'Xóa',
+        addFaq: 'Thêm câu hỏi',
+        removeFaq: 'Xóa',
+        selectMedia: 'Chọn từ thư viện ảnh',
+        uploadNewImage: 'Tải ảnh mới',
+        clearDraft: 'Xóa nháp tạm & bắt đầu lại',
+        viewInCatalog: 'Mở trang quản lý sản phẩm',
+      },
+      labels: {
+        name: 'Tên sản phẩm',
+        namePlaceholder: 'Ví dụ: Habit Tracker số – 1% Better Everyday',
+        slug: 'Đường dẫn (URL slug)',
+        slugPlaceholder: 'habit-tracker-so',
+        web: 'Khu vực hiển thị',
+        shortDescription: 'Giới thiệu ngắn gọn',
+        shortDescriptionPlaceholder: 'Tóm tắt nội dung và giá trị sản phẩm trong 1-2 câu...',
+        journeyStep: 'Bước trong hành trình 5 bước',
+        coverImage: 'Ảnh bìa sản phẩm',
+        coverImageAlt: 'Mô tả hình ảnh (Alt text - bắt buộc)',
+        coverImageAltPlaceholder: 'Mô tả ngắn về nội dung bức ảnh...',
+        saleStatus: 'Trạng thái mở bán',
+        price: 'Giá niêm yết (VND)',
+        pricePlaceholder: '250000',
+        salePrice: 'Giá ưu đãi (VND)',
+        salePricePlaceholder: '178000',
+        saleEndsAt: 'Hạn ưu đãi (tùy chọn)',
+        trialDays: 'Số ngày dùng thử miễn phí',
+        trialDaysPlaceholder: '21',
+        accessDurationDays: 'Thời hạn truy cập sau mua (ngày)',
+        accessDurationPlaceholder: 'Để trống = vĩnh viễn',
+        externalUrl: 'Đường dẫn liên kết ngoài',
+        externalUrlPlaceholder: 'https://shopee.vn/...',
+        externalLabel: 'Chữ trên nút liên kết ngoài',
+        externalLabelPlaceholder: 'Mua trên Shopee',
+        includesTitle: 'Cấu phần bao gồm ("Bao gồm")',
+        includesPlaceholder: 'Ví dụ: Bảng theo dõi 21 ngày kèm 10 cảm xúc mỗi ngày',
+        painPoint: 'Khó khăn của học viên / khách hàng',
+        painPointPlaceholder: 'Thường xuyên trì hoãn, không duy trì được thói quen quá 3 ngày...',
+        outcome: 'Kết quả học viên sẽ đạt được',
+        outcomePlaceholder: 'Hình thành nhịp sinh hoạt vững vàng, thấu hiểu cảm xúc bản thân...',
+        faqTitle: 'Câu hỏi thường gặp (FAQ)',
+        faqQuestionPlaceholder: 'Ví dụ: Tôi có cần cài thêm ứng dụng nào không?',
+        faqAnswerPlaceholder:
+          'Công cụ hoạt động trực tiếp trên trình duyệt web, không cần cài đặt.',
+        packageComponents: 'Danh sách cấu phần trong gói',
+        packageComponentName: 'Tên cấu phần',
+        packageComponentQty: 'Số lượng',
+        packageComponentUnitValue: 'Đơn giá cấu phần (VND)',
+        packageComponentRetail: 'Giá lẻ tham khảo (VND)',
+        packageComponentGrants: 'Cấp quyền sản phẩm số (tùy chọn)',
+        totalPackageValue: 'Tổng giá trị thực tế của gói',
+        packageDiscount: 'Mức ưu đãi tự động',
+      },
+      preview: {
+        mobile: 'Điện thoại (375px)',
+        tablet: 'Máy tính bảng (768px)',
+        desktop: 'Máy tính (1440px)',
+        loadingPreview: 'Đang chuẩn bị bản xem trước...',
+        readyHint:
+          'Bản xem trước hiển thị trực quan thẻ sản phẩm như khách hàng sẽ nhìn thấy trên website.',
+        draftSavedNotice: 'Bản nháp đã được đồng bộ với hệ thống.',
+      },
+      confirm: {
+        unsavedChanges:
+          'Bạn có những thay đổi chưa được lưu trên hệ thống. Bạn có chắc chắn muốn rời đi?',
+        clearDraft: 'Bạn có chắc chắn muốn xóa dữ liệu tạm và bắt đầu lại từ đầu?',
+      },
+      success: {
+        draftSaved: 'Đã lưu bản nháp thành công! Đang chuyển đến trang chi tiết...',
+        published: 'Đã xuất bản sản phẩm thành công! Đang chuyển đến trang chi tiết...',
+      },
+      errors: {
+        unauthorized:
+          'Phiên làm việc đã hết hạn hoặc bạn không có quyền thực hiện. Vui lòng đăng nhập lại.',
+        createFailed: 'Không thể tạo sản phẩm. Vui lòng kiểm tra lại thông tin.',
+        missingName: 'Vui lòng nhập tên sản phẩm.',
+        missingType: 'Vui lòng chọn loại sản phẩm.',
+        missingSlug: 'Vui lòng nhập đường dẫn hợp lệ cho sản phẩm.',
+        missingPriceOnSale:
+          'Sản phẩm đang mở bán bắt buộc phải có giá bán (hoặc chuyển trạng thái sang Miễn phí / Mua trên Shopee).',
+        missingCoverImageOnSale: 'Sản phẩm đang mở bán bắt buộc phải có ảnh bìa.',
+        invalidData: 'Dữ liệu không hợp lệ. Vui lòng kiểm tra các trường thông tin.',
+      },
+    },
   },
   livePreview: {
     mobile: 'Điện thoại',

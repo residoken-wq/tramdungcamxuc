@@ -22,6 +22,7 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { CreateProductButton as CreateProductButton_524a0c2fe6867b553aa2ee9b68ac70cd } from '@/components/admin/product-wizard/CreateProductButton'
 import { OrderActions as OrderActions_bd9a3eb0969675b027902d6a22a18ee7 } from '@/components/admin/OrderActions'
 import { OrderPaymentEvents as OrderPaymentEvents_5d110d44f1eb9dcabda3b8db24c36faf } from '@/components/admin/OrderPaymentEvents'
 import { EqQrDownloadButton as EqQrDownloadButton_182b90ea1823c05b86095b55fa616cf3 } from '@/components/admin/EqQrDownloadButton'
@@ -31,6 +32,7 @@ import { ExportLeadsButton as ExportLeadsButton_dfc015e147ecca7392a50b58d946480c
 import { AdminIcon as AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534 } from '@/components/admin/brand/Icon'
 import { AdminLogo as AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67 } from '@/components/admin/brand/Logo'
 import { TodayDashboard as TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd } from '@/components/admin/dashboard/TodayDashboard'
+import { ProductWizardView as ProductWizardView_8f354467b2158b3508b409ee61903a48 } from '@/components/admin/product-wizard/ProductWizardView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -60,6 +62,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/admin/product-wizard/CreateProductButton#CreateProductButton": CreateProductButton_524a0c2fe6867b553aa2ee9b68ac70cd,
   "@/components/admin/OrderActions#OrderActions": OrderActions_bd9a3eb0969675b027902d6a22a18ee7,
   "@/components/admin/OrderPaymentEvents#OrderPaymentEvents": OrderPaymentEvents_5d110d44f1eb9dcabda3b8db24c36faf,
   "@/components/admin/EqQrDownloadButton#EqQrDownloadButton": EqQrDownloadButton_182b90ea1823c05b86095b55fa616cf3,
@@ -69,6 +72,7 @@ export const importMap = {
   "@/components/admin/brand/Icon#AdminIcon": AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534,
   "@/components/admin/brand/Logo#AdminLogo": AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67,
   "@/components/admin/dashboard/TodayDashboard#TodayDashboard": TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd,
+  "@/components/admin/product-wizard/ProductWizardView#ProductWizardView": ProductWizardView_8f354467b2158b3508b409ee61903a48,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

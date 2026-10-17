@@ -393,4 +393,7 @@ Products.admin = {
   defaultColumns: ['name', 'type', 'saleStatus', 'price', 'updatedAt'],
   listSearchableFields: ['name', 'slug'],
   livePreview: collectionLivePreview('products'),
+  components: {
+    beforeListTable: ['@/components/admin/product-wizard/CreateProductButton#CreateProductButton'],
+  },
 }
