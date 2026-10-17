@@ -76,7 +76,7 @@ export async function ProductWizardView(props: AdminViewServerProps) {
   }
 
   return (
-    <div className="min-h-screen bg-warm-ivory/30 pb-16">
+    <div className="wizard-root min-h-screen bg-warm-ivory/30 pb-16">
       <ProductWizardContainer mediaList={mediaList} availableProducts={availableProducts} />
     </div>
   )
