@@ -66,6 +66,15 @@ export default buildConfig({
         Logo: '@/components/admin/brand/Logo#AdminLogo',
         Icon: '@/components/admin/brand/Icon#AdminIcon',
       },
+      views: {
+        ProductWizard: {
+          Component: '@/components/admin/product-wizard/ProductWizardView#ProductWizardView',
+          path: '/tao-san-pham',
+          meta: {
+            title: 'Tạo sản phẩm – Trạm Dừng Cảm Xúc',
+          },
+        },
+      },
     },
   },
   // Lock admin interface to Vietnamese only: matches non-technical owner's workflow (HUONG_DAN_CMS.md)

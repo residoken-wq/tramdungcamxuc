@@ -1,0 +1,74 @@
+/*
+ * No `@tailwind base` here: Payload bundles every admin component's CSS for ALL admin pages,
+ * so Tailwind's global preflight reset broke Payload's own layout (e.g. live preview at 375px
+ * hid the edit form). The minimal reset below only applies inside the wizard and uses :where()
+ * (specificity 0) so Tailwind utilities still win.
+ */
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand Book 2026 Colors (Hex) */
+  --color-deep-navy: #280a60;
+  --color-bright-magenta: #bc039e;
+  --color-accent-pink: #ef3b83;
+  --color-soft-pink: #fde6f6;
+  --color-lavender-mist: #e9ddf9;
+  --color-mint-haze: #d9f1ea;
+  --color-butter-cream: #f6e9b8;
+  --color-warm-ivory: #faf7f4;
+
+  /* Brand Book 2026 Colors (RGB Triplet for Tailwind Opacity) */
+  --color-deep-navy-rgb: 40 10 96;
+  --color-bright-magenta-rgb: 188 3 158;
+  --color-accent-pink-rgb: 239 59 131;
+  --color-soft-pink-rgb: 253 230 246;
+  --color-lavender-mist-rgb: 233 221 249;
+  --color-mint-haze-rgb: 217 241 234;
+  --color-butter-cream-rgb: 246 233 184;
+  --color-warm-ivory-rgb: 250 247 244;
+}
+
+/* Fallback styles in case Tailwind classes conflict with Payload admin CSS */
+.wizard-root {
+  font-family:
+    Montserrat,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: #280a60;
+}
+
+:where(.wizard-root) *,
+:where(.wizard-root) ::before,
+:where(.wizard-root) ::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}
+
+:where(.wizard-root) button,
+:where(.wizard-root) input,
+:where(.wizard-root) select,
+:where(.wizard-root) textarea {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+:where(.wizard-root) button {
+  background-color: transparent;
+  background-image: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+:where(.wizard-root) h1,
+:where(.wizard-root) h2,
+:where(.wizard-root) h3,
+:where(.wizard-root) p {
+  margin: 0;
+}
