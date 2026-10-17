@@ -6,6 +6,10 @@ test('admin sees unsaved live edits for products and eq cards; guests never see 
   browser,
 }, testInfo) => {
   test.setTimeout(180000)
+  // Admin live preview is a side-by-side desktop tool: at 375px Payload shows either the form
+  // or the preview, never both, so the admin page always runs at desktop width. The guest
+  // context keeps the project viewport (375px is still checked for guests).
+  await page.setViewportSize({ width: 1440, height: 900 })
   const pageErrors: string[] = []
   page.on('pageerror', (error) => pageErrors.push(error.message))
   page.on('dialog', (dialog) => dialog.accept())
