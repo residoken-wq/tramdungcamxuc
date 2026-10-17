@@ -2,11 +2,21 @@ import 'server-only'
 import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import type { Product } from '@/payload-types'
 import config from '@/payload.config'
-import { track } from '@/lib/analytics/track'
+import { trackServer } from '@/lib/analytics/track.server'
+
+export interface ConvertedTrialProduct {
+  productId: number
+  productSlug?: string
+}
 
 export interface GrantEntitlementsResult {
   grantedCount: number
   skipped?: boolean
+  /**
+   * Sản phẩm khách từng dùng thử nay được cấp quyền – người gọi chạy trong transaction gửi
+   * `trial_converted` SAU khi commit (không gửi trước: đơn có thể bị rollback).
+   */
+  convertedTrials?: ConvertedTrialProduct[]
 }
 
 export interface GrantEntitlementsOptions {
@@ -54,7 +64,8 @@ async function checkAndEmitTrialConverted(
   payload: Payload,
   customerId: number,
   productDoc: Product | { id: number; slug?: string | null },
-  reqFactory?: () => PayloadRequest,
+  reqFactory: (() => PayloadRequest) | undefined,
+  convertedTrials: ConvertedTrialProduct[],
 ): Promise<void> {
   const inTransaction = Boolean(reqFactory)
   try {
@@ -73,11 +84,16 @@ async function checkAndEmitTrialConverted(
       req: reqFactory?.(),
     })
     if (existingTrial.totalDocs > 0) {
-      // TODO(T2-04): track() không ghi nhận gì ở server; cần kênh gửi sự kiện từ server.
-      track('trial_converted', {
-        productSlug: 'slug' in productDoc ? (productDoc.slug ?? undefined) : undefined,
+      const converted = {
         productId: productDoc.id,
-      })
+        productSlug: 'slug' in productDoc ? (productDoc.slug ?? undefined) : undefined,
+      }
+      if (inTransaction) {
+        // REVIEW-REQUIRED (T2-22c): trong transaction → để người gọi gửi sau commit
+        convertedTrials.push(converted)
+      } else {
+        void trackServer('trial_converted', converted, { payload })
+      }
     }
   } catch (err) {
     // Non-blocking for analytics event – trừ khi đang trong transaction (lỗi đã hủy transaction).
@@ -155,6 +171,7 @@ export async function grantEntitlementsForOrder(
 
   const paidAt = order.paidAt ? new Date(order.paidAt) : now
   let grantedCount = 0
+  const convertedTrials: ConvertedTrialProduct[] = []
 
   // 2. Duyệt các sản phẩm trong đơn hàng
   const items = Array.isArray(order.items) ? order.items : []
@@ -210,7 +227,13 @@ export async function grantEntitlementsForOrder(
         })
         grantedCount++
         // Chỉ sau khi cấp thành công: webhook trùng / xác nhận 2 lần không đếm chuyển đổi 2 lần.
-        await checkAndEmitTrialConverted(payload, customerId, productDoc, reqFactory)
+        await checkAndEmitTrialConverted(
+          payload,
+          customerId,
+          productDoc,
+          reqFactory,
+          convertedTrials,
+        )
       } catch (err: unknown) {
         if (!inTransaction && isDuplicateGrantKeyError(err)) {
           // Idempotent: Đã được cấp trước đó, bỏ qua không báo lỗi
@@ -289,7 +312,13 @@ export async function grantEntitlementsForOrder(
           })
           grantedCount++
           if (grantedProductDoc) {
-            await checkAndEmitTrialConverted(payload, customerId, grantedProductDoc, reqFactory)
+            await checkAndEmitTrialConverted(
+              payload,
+              customerId,
+              grantedProductDoc,
+              reqFactory,
+              convertedTrials,
+            )
           }
         } catch (err: unknown) {
           if (!inTransaction && isDuplicateGrantKeyError(err)) {
@@ -302,5 +331,5 @@ export async function grantEntitlementsForOrder(
     }
   }
 
-  return { grantedCount }
+  return { grantedCount, convertedTrials }
 }

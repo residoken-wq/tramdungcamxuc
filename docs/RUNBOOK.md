@@ -186,6 +186,16 @@ Khi chuyển từ môi trường thử nghiệm sang môi trường production c
 - Tại trường **Tên miền Plausible** (`plausibleDomain`), nhập tên miền đã đăng ký với Plausible (ví dụ: `tramdungcamxuc.com`).
 - Hệ thống sẽ nạp script Plausible (`https://plausible.io/js/script.js`) không dùng cookie, không yêu cầu banner cookie và tuân thủ bảo mật thông tin người dùng (không gửi email, họ tên, số điện thoại hay dữ liệu cảm xúc).
 
+### 5. Sự kiện đo lường từ phía Server (Server-side Analytics Events) (T2-22)
+
+- Bên cạnh các sự kiện từ trình duyệt (`track()`), hệ thống tự động ghi nhận các sự kiện chuyển đổi phát sinh từ backend qua Plausible Events API (`POST https://plausible.io/api/event`):
+  - `order_paid`: sau khi đơn hàng được xác nhận thanh toán thành công (thủ công hoặc webhook SePay).
+  - `trial_converted`: khi người dùng hoàn tất mua gói/công cụ số sau khi đã từng dùng thử.
+  - `trial_expired`: khi cron job cập nhật trạng thái dùng thử hết hạn 21 ngày.
+  - `resource_downloaded`: khi khách hàng tải tập tin tài nguyên miễn phí hoặc file mua thành công tại `/api/download/[token]`.
+- **Yêu cầu mạng máy chủ (Network Egress)**: Container / máy chủ ứng dụng **bắt buộc phải kết nối được ra Internet tới `plausible.io:443`** (HTTPS). Nếu server nằm trong mạng nội bộ có firewall chặn kết nối chiều ra, cần mở egress cho domain `plausible.io` cổng 443. Nếu không kết nối được, hàm `trackServer` sẽ timeout sau 2 giây và ghi `console.warn` mà không làm gián đoạn luồng nghiệp vụ chính.
+- **Bảo mật và riêng tư**: Mọi sự kiện từ server đều được làm sạch qua `sanitizeAnalyticsProps`, loại bỏ hoàn toàn PII (email, họ tên, điện thoại) và dữ liệu cảm xúc/suy ngẫm; URL sự kiện không chứa token, mã đơn hay thông tin định danh cá nhân.
+
 ---
 
 ## Deploy bản demo trên server riêng
