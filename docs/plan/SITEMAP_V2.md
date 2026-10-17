@@ -189,6 +189,8 @@ Không có mockup → **chặn**, chờ Hana (Q10). Tạm thời mục menu tr�
 | Q12 | Có trang chi tiết cho từng gói (CLEAR / BUILD / SHINE) không, hay chỉ 1 trang lộ trình?                                                                                      | 1 trang lộ trình (như mockup)                                                                                                     | –            |
 | Q13 | Newsletter: chỉ thu email, hay cần gửi bản tin hằng tuần tự động?                                                                                                            | GĐ này chỉ thu email; gửi bản tin → BACKLOG (Resend Broadcast)                                                                    | SM-06        |
 
+Bảng câu hỏi gửi Hana (Claude Docs, 17/10) đánh số lại. Đối chiếu số trong bảng gửi Hana → số ở đây: Q1→Q1 · Q2→Q2 · Q3→Q5 · Q4→Q3 · Q5→Q4 · Q6→Q6 · Q7→Q7 · Q8→Q12 · Q9a–c→Q11 · Q10→Q8 · Q11→Q10 · Q12→Q9 · Q13→Q13.
+
 Khi Hana trả lời: ghi vào `docs/DECISIONS.md` và cập nhật AGENTS.md mục 8.1 (menu, tên gói, trang con). Quyết định Q1, Q2, Q5 phải chốt trước khi bắt đầu SM-02.
 
 ---
