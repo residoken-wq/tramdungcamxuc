@@ -22,6 +22,8 @@ export async function expectNoSeriousA11y(
   // Finish CSS transitions at once (motion-reduce:transition-none) so axe does not measure
   // colours mid-fade, e.g. a button fading in from its pre-hydration disabled opacity.
   await page.emulateMedia({ reducedMotion: 'reduce' })
+  // Next streams <title> in after the shell; wait for it so document-title reflects the real page.
+  await expect(page).toHaveTitle(/\S/, { timeout: 10000 })
 
   let builder = new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa'])
 

@@ -25,7 +25,7 @@ export function LessonNavigation({ prevLesson, nextLesson }: LessonNavigationPro
             ←
           </span>
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/50">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/70">
               {vi.learning.lesson.prevLesson}
             </span>
             <span className="line-clamp-1 max-w-[200px] sm:max-w-[260px] font-bold text-deep-navy">
@@ -43,7 +43,7 @@ export function LessonNavigation({ prevLesson, nextLesson }: LessonNavigationPro
           className="group flex items-center justify-end gap-2 rounded-xl border border-lavender-mist/80 bg-warm-ivory p-3 sm:px-4 sm:py-2.5 text-right font-ui text-sm font-semibold text-deep-navy shadow-sm hover:border-bright-magenta/50 hover:bg-lavender-mist/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink transition-all motion-reduce:transition-none"
         >
           <div className="flex flex-col items-end">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/50">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/70">
               {vi.learning.lesson.nextLesson}
             </span>
             <span className="line-clamp-1 max-w-[200px] sm:max-w-[260px] font-bold text-deep-navy">

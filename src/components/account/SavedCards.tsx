@@ -116,7 +116,7 @@ export function SavedCards({ initialCards, loadError = false }: SavedCardsProps)
                       </span>
                     )}
                   </div>
-                  <span className="font-sans text-xs text-deep-navy/50">
+                  <span className="font-sans text-xs text-deep-navy/70">
                     {vi.eqBuddy.savedCards.savedAt(formatDate(card.savedAt))}
                   </span>
                 </div>
@@ -131,7 +131,7 @@ export function SavedCards({ initialCards, loadError = false }: SavedCardsProps)
                 {/* Suy ngẫm của riêng chủ tài khoản */}
                 {card.reflection && (
                   <div className="p-3.5 rounded-xl bg-soft-pink/40 border border-lavender-mist/70 space-y-1">
-                    <span className="font-ui text-[11px] font-bold uppercase tracking-wider text-bright-magenta/80 block">
+                    <span className="font-ui text-[11px] font-bold uppercase tracking-wider text-bright-magenta block">
                       {vi.eqBuddy.savedCards.savedNotePrefix}
                     </span>
                     <p className="font-quote italic text-sm text-deep-navy whitespace-pre-wrap">
@@ -180,7 +180,7 @@ export function SavedCards({ initialCards, loadError = false }: SavedCardsProps)
                     <button
                       type="button"
                       onClick={() => setConfirmId(card.id)}
-                      className="font-ui text-xs font-semibold text-deep-navy/50 hover:text-accent-pink transition-colors motion-reduce:transition-none"
+                      className="font-ui text-xs font-semibold text-deep-navy/70 hover:text-accent-pink transition-colors motion-reduce:transition-none"
                     >
                       {vi.eqBuddy.savedCards.deleteButton}
                     </button>

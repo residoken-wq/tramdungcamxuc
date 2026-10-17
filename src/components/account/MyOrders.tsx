@@ -67,20 +67,20 @@ export function MyOrders({ orders, loadError = false }: MyOrdersProps) {
 
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-deep-navy/70 font-sans">
                     <div>
-                      <span className="font-medium text-deep-navy/50">
+                      <span className="font-medium text-deep-navy/70">
                         {vi.account.orders.totalLabel}:{' '}
                       </span>
                       <span className="font-bold text-deep-navy">{order.totalFormatted}</span>
                     </div>
                     <div>
-                      <span className="font-medium text-deep-navy/50">
+                      <span className="font-medium text-deep-navy/70">
                         {vi.account.orders.createdLabel}:{' '}
                       </span>
                       <span>{order.createdAtFormatted}</span>
                     </div>
                     {order.paidAtFormatted && (
                       <div>
-                        <span className="font-medium text-deep-navy/50">
+                        <span className="font-medium text-deep-navy/70">
                           {vi.account.orders.paidLabel}:{' '}
                         </span>
                         <span>{order.paidAtFormatted}</span>
