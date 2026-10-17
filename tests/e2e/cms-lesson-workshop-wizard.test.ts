@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from '@playwright/test'
+import { vi } from '@/lib/i18n/vi'
 
 /**
  * End-to-End Test cho Wizard "Thêm bài học" và "Lên lịch workshop" (CM-06).
@@ -211,10 +212,10 @@ test.describe('Lesson & Workshop Creation Wizards (CM-06)', () => {
       // LUỒNG 3: KIỂM TRA NÚT BANNER TRÊN LIST TABLE
       // ==========================================
       await page.goto('/admin/collections/lessons', { waitUntil: 'domcontentloaded' })
-      await expect(page.getByText('Thêm bài học bằng Wizard')).toBeVisible()
+      await expect(page.getByText(vi.cms.wizard.listButtons.lesson)).toBeVisible()
 
       await page.goto('/admin/collections/workshops', { waitUntil: 'domcontentloaded' })
-      await expect(page.getByText('Lên lịch bằng Wizard')).toBeVisible()
+      await expect(page.getByText(vi.cms.wizard.listButtons.workshop)).toBeVisible()
     } finally {
       // Records created through the UI may exist even when the redirect never happened:
       // find them by their unique title before deleting.

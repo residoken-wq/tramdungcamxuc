@@ -190,6 +190,11 @@ export const vi = {
     wizard: {
       title: 'Tạo sản phẩm mới',
       subtitle: 'Trình hướng dẫn từng bước dành riêng cho Hana – đơn giản, rõ ràng và trực quan.',
+      listButtons: {
+        product: '+ Tạo sản phẩm (từng bước)',
+        lesson: '+ Thêm bài học (từng bước)',
+        workshop: '+ Lên lịch workshop (từng bước)',
+      },
       steps: {
         step1: {
           number: 1,
@@ -377,7 +382,8 @@ export const vi = {
     lessonWizard: {
       seriesLabel: 'Trình hướng dẫn',
       title: 'Thêm bài học mới',
-      subtitle: 'Trình hướng dẫn từng bước tạo bài giảng video và tài liệu thực hành trong khóa Habit.',
+      subtitle:
+        'Trình hướng dẫn từng bước tạo bài giảng video và tài liệu thực hành trong khóa Habit.',
       description: 'Từng bước thêm bài học mới vào lộ trình khóa Habit và xem trước trực quan.',
       steps: {
         step1: {
@@ -455,8 +461,7 @@ export const vi = {
           'Mã video không hợp lệ. Phải là mã GUID chuẩn 36 ký tự từ Bunny Stream (ví dụ: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).',
         invalidDuration:
           'Thời lượng không hợp lệ. Vui lòng nhập định dạng phút:giây (ví dụ: 05:30) hoặc số giây dương.',
-        unauthorized:
-          'Phiên làm việc đã hết hạn hoặc bạn không có quyền. Vui lòng đăng nhập lại.',
+        unauthorized: 'Phiên làm việc đã hết hạn hoặc bạn không có quyền. Vui lòng đăng nhập lại.',
         createFailed: 'Không thể tạo bài học. Vui lòng kiểm tra lại thông tin.',
         createModuleFailed: 'Không thể tạo nhóm bài học mới. Vui lòng kiểm tra lại tên nhóm.',
       },
@@ -538,8 +543,7 @@ export const vi = {
         missingJoinUrl: 'Vui lòng nhập liên kết phòng họp trực tuyến.',
         invalidJoinUrl:
           'Liên kết phòng họp không hợp lệ (phải bắt đầu bằng http:// hoặc https://).',
-        unauthorized:
-          'Phiên làm việc đã hết hạn hoặc bạn không có quyền. Vui lòng đăng nhập lại.',
+        unauthorized: 'Phiên làm việc đã hết hạn hoặc bạn không có quyền. Vui lòng đăng nhập lại.',
         createFailed: 'Không thể lưu lịch workshop. Vui lòng kiểm tra lại thông tin.',
       },
       success: {
