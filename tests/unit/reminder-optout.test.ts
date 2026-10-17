@@ -66,7 +66,8 @@ describe('Reminder Emails Opt-Out Flow (T2-21)', () => {
             web: 'habit',
             price: 250000,
             salePrice: 178000,
-            saleStatus: 'on_sale',
+            // Không cần "Đang bán" cho test gửi nhắc (đang bán bắt buộc ảnh bìa từ CM-03)
+            saleStatus: 'coming_soon',
             _status: 'published',
           },
           overrideAccess: true,
@@ -124,7 +125,8 @@ describe('Reminder Emails Opt-Out Flow (T2-21)', () => {
           web: 'site',
           type: 'package',
           price: 1750000,
-          saleStatus: 'on_sale',
+          // Không cần "Đang bán" cho test gửi nhắc (đang bán bắt buộc ảnh bìa từ CM-03)
+          saleStatus: 'coming_soon',
           _status: 'published',
         },
         overrideAccess: true,
