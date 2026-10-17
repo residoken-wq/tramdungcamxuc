@@ -11,15 +11,16 @@
 - [ ] **Đa ngôn ngữ (Song ngữ Anh - Việt)**: Tùy chọn mở rộng cho khách hàng nước ngoài.
 - [ ] **Mobile App PWA / Native**: Nghiên cứu sau khi bản web đạt traction ổn định.
 - [ ] **Tự động đối soát ngân hàng**: Kết nối API ngân hàng sâu hơn khi khối lượng giao dịch lớn.
-- [ ] **Thêm trường `topic` cho collection `products`** (T1-09): Hiện tại `products` chưa có trường chủ đề riêng; trang Thư viện `/thu-vien` đang suy luận chủ đề theo `web` (`habit` / `eq`) và `type` (`package` → `career`). Cần migration thêm select `topic` (eq / habit / career) vào `Products` để Hana tự gắn trong admin CMS.
+- [x] **Thêm trường `topic` cho collection `products`** (T1-09; field xong SM-01, `/thu-vien` đọc field ở SM-02): Hiện tại `products` chưa có trường chủ đề riêng; trang Thư viện `/thu-vien` đang suy luận chủ đề theo `web` (`habit` / `eq`) và `type` (`package` → `career`). Cần migration thêm select `topic` (eq / habit / career) vào `Products` để Hana tự gắn trong admin CMS.
 - [ ] **Tự động gửi link tải tài nguyên qua email sau khi submit LeadForm** (T1-03 / T1-07): Hiện tại khối Puck `LeadForm` chọn sản phẩm tài nguyên miễn phí chỉ lưu ID và tạo lead kèm tag `resource:<slug>`. Logic tự động gửi email đính kèm link tải file có hạn sẽ được kết nối sau khi task T1-07 (giao tài liệu có ký hạn và queue email) được merge vào main.
-- [ ] **Cấu hình CTA kết quả quiz trong CMS** (T1-14): Cho phép Hana tự cấu hình CTA kết quả quiz trong CMS (cần trường trong `siteSettings`, triển khai sau khi nhả khóa Migration). Tạm thời CTA đang trỏ cố định tới `GROWTH_MIRROR_PATH` ('/coaching/growth-mirror').
+- [x] **Cấu hình CTA kết quả quiz trong CMS** (T1-14; xong SM-01 – `siteSettings.quizCtaPath`): Cho phép Hana tự cấu hình CTA kết quả quiz trong CMS (cần trường trong `siteSettings`, triển khai sau khi nhả khóa Migration). Tạm thời CTA đang trỏ cố định tới `GROWTH_MIRROR_PATH` ('/coaching/growth-mirror').
 - [ ] **Cấu hình liên kết hướng dẫn CMS trong SiteSettings** (CM-02): Hiện tại 5 liên kết tài liệu hướng dẫn trên Dashboard admin được cấu hình bằng hằng số trong code (`CMS_DASHBOARD_GUIDES`). Khi mở khóa migration, bổ sung mảng trường `adminGuideLinks` (title, description, url) vào global `siteSettings` để Hana có thể tự cập nhật hoặc bổ sung tài liệu mới trực tiếp từ giao diện CMS.
 
 ---
 
 ## 2. Kỹ thuật & Hạ tầng
 
+- [ ] **`down` của migration `20261007_025629_private_files` lỗi** (thấy ở SM-01, 17/10): lùi cả lô trên DB mới migrate một lần báo `constraint "products_files_file_id_private_files_id_fk" … does not exist`. Thêm `IF EXISTS` / kiểm tên constraint thật. Không ảnh hưởng `up`.
 - [ ] **Favicon chính thức**: Hiện thiếu `favicon.ico` (404 trên browser console). Chờ file logo chính thức từ Hana để tạo trọn bộ icon/favicon chuẩn.
 - [ ] **Tối ưu build cache trên CI**: Tăng tốc độ pipeline GitHub Actions với Turborepo / pnpm cache.
 - [ ] **Automated Performance Testing**: Tự động test điểm Lighthouse trên mỗi PR preview.

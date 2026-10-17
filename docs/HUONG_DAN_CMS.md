@@ -621,6 +621,7 @@ Hệ thống tự động nhận biết loại nội dung bạn đang mở và d
 #### 1. Cách mở Trình hướng dẫn lên lịch workshop
 
 Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
+
 - **Từ trang chủ Dashboard "Hôm nay"**: Tại ô phím tắt nhanh, bấm vào **"Lên lịch workshop"**.
 - **Từ bảng danh sách Lịch workshop**: Vào menu **Khóa Habit** -> chọn **Lịch workshop**, bạn sẽ nhìn thấy banner màu tím nổi bật ở ngay đầu trang -> bấm nút **+ Lên lịch bằng Wizard**.
 - **Nhập trực tiếp đường dẫn**: Truy cập thẳng vào `/admin/len-lich-workshop`.
@@ -628,6 +629,7 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 #### 2. Các bước thiết lập chi tiết
 
 ##### Bước 1: Đối tượng tham gia
+
 - **Tên buổi workshop**: Nhập tiêu đề buổi học (ví dụ: `Workshop "Tập thương cảm xúc" – Kỳ 1`).
 - **Chọn sản phẩm được tham gia**: Tích chọn các gói đồng hành (CLEAR, BUILD, SHINE) hoặc sản phẩm workshop bán lẻ mà học viên đã mua sẽ được quyền vào phòng.
   - Có sẵn nút **Chọn tất cả** hoặc **Bỏ chọn** để thao tác nhanh chỉ với 1 cú nhấp chuột.
@@ -635,6 +637,7 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 - Bấm **Tiếp tục**.
 
 ##### Bước 2: Thời gian và địa điểm
+
 - **Ngày và Giờ bắt đầu (theo giờ Việt Nam)**: Chọn ngày diễn ra và giờ bắt đầu bình thường theo múi giờ sinh hoạt tại Việt Nam (ICT, UTC+7).
 - **Hệ thống tự động quy đổi múi giờ chuẩn quốc tế (UTC)**:
   - Ngay khi bạn chọn giờ, hệ thống sẽ tính toán và hiển thị chuỗi thời gian quốc tế tương đương.
@@ -643,6 +646,7 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 - Bấm **Tiếp tục**.
 
 ##### Bước 3: Xem trước thông báo và lưu
+
 - **Khung xem trước email nhắc nhở 24 giờ**:
   - Hệ thống sử dụng chính mẫu email thật của Trạm Dừng Cảm Xúc để hiển thị bản xem trước sinh động với tên workshop, ngày giờ Việt Nam chuẩn xác và nút truy cập tài khoản học viên.
   - Bạn có thể chuyển đổi giữa chế độ **Điện thoại** (375px) và **Máy tính** (100%) để kiểm tra độ hiển thị đẹp mắt.
@@ -653,6 +657,7 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 - Sau khi bấm Lưu, hệ thống sẽ tự động chuyển hướng về form chuẩn tại `/admin/collections/workshops/[id]`.
 
 #### 3. Tính năng an toàn cho Hana
+
 - **Tự động lưu nháp vào máy**: Nếu bạn lỡ tay đóng tab hay mất điện, dữ liệu đang nhập sẽ tự động khôi phục khi bạn quay lại.
 - **Cảnh báo rời trang**: Trình duyệt sẽ hỏi xác nhận nếu bạn rời đi khi chưa lưu.
 - **Lùi bước linh hoạt**: Bạn có thể bấm **Quay lại** bất kỳ lúc nào để chỉnh sửa mà không bị mất dữ liệu ở các bước khác.
@@ -747,6 +752,7 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 #### 1. Cách mở Trình hướng dẫn thêm bài học
 
 Bạn có 3 cách rất dễ dàng:
+
 - **Từ Dashboard "Hôm nay"**: Tại ô phím tắt nhanh, bấm vào **"Thêm bài học"**.
 - **Từ bảng danh sách Bài học**: Vào menu **Khóa Habit** -> chọn **Bài học**, bạn sẽ nhìn thấy banner màu tím nổi bật ở ngay đầu trang -> bấm nút **+ Thêm bài học bằng Wizard**.
 - **Nhập trực tiếp đường dẫn**: Truy cập thẳng vào `/admin/them-bai-hoc`.
@@ -754,6 +760,7 @@ Bạn có 3 cách rất dễ dàng:
 #### 2. Các bước thiết lập chi tiết
 
 ##### Bước 1: Chọn chương học
+
 - **Danh sách nhóm bài học hiện có**: Hiển thị toàn bộ các chương đã có trên hệ thống, kèm theo nhãn phân loại (_Hiểu mình_, _Nguyên tắc_, hoặc _Kỹ thuật_) và số thứ tự chương. Bạn chỉ cần nhấp chuột vào thẻ chương mong muốn để chọn.
 - **Tạo nhanh nhóm bài học mới ngay tại chỗ**: Nếu bài học thuộc một chương mới toanh chưa có trên website, bạn không cần phải quay ra ngoài menu khác:
   - Bấm nút **+ Tạo nhóm bài học mới**.
@@ -763,6 +770,7 @@ Bạn có 3 cách rất dễ dàng:
 - Bấm **Tiếp tục**.
 
 ##### Bước 2: Thông tin bài học
+
 - **Tiêu đề bài học**: Nhập tên bài giảng hiển thị cho học viên (ví dụ: `Bài 1: Nhận diện tín hiệu kích hoạt`).
 - **Tóm tắt bài học**: Viết ngắn gọn 1–2 câu giới thiệu nội dung hoặc câu hỏi gợi mở suy ngẫm.
 - **Chặng thói quen (Habit Loop)**: Chọn 1 trong 5 nút lựa chọn:
@@ -775,6 +783,7 @@ Bạn có 3 cách rất dễ dàng:
 - Bấm **Tiếp tục**.
 
 ##### Bước 3: Video bài học & Thời lượng
+
 - **Mã video Bunny Stream (GUID)**:
   - Dán chuỗi mã định danh 36 ký tự từ Bunny Stream (ví dụ: `a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d`).
   - Hệ thống **kiểm tra định dạng thời gian thực**: nếu mã đúng chuẩn GUID, hệ thống sẽ hiện dấu tích xanh `✓ Định dạng GUID hợp lệ`. Nếu mã bị thiếu ký tự hoặc nhầm link web, hệ thống sẽ nhắc nhở ngay lập tức để bạn sửa.
@@ -785,6 +794,7 @@ Bạn có 3 cách rất dễ dàng:
 - Bấm **Tiếp tục**.
 
 ##### Bước 4: Xem trước và lưu bài học
+
 - **Khung xem trước trực quan**:
   - Hệ thống tự động tạo bản nháp tạm thời và tải trực tiếp giao diện phát video bài học thực tế bên trong khung xem trước.
   - Bạn có thể chuyển đổi giữa 3 kích thước:
@@ -797,6 +807,7 @@ Bạn có 3 cách rất dễ dàng:
 - Sau khi bấm Lưu, hệ thống tự động chuyển hướng về trang bài học chuẩn tại `/admin/collections/lessons/[id]`.
 
 #### 3. Tính năng an toàn cho Hana
+
 - **Tự động lưu nháp vào máy**: Không lo mất nội dung khi mất điện hoặc vô tình đóng trình duyệt.
 - **Cảnh báo rời trang**: Tránh việc bấm nhầm nút quay lại khi đang nhập dở.
 - **Khôi phục dữ liệu**: Bạn có thể bấm nút **Quay lại** ở bất kỳ bước nào để chỉnh sửa thông tin mà không sợ mất các bước đã nhập.
@@ -1066,6 +1077,35 @@ Bạn có 3 cách rất dễ dàng:
 ![Thêm testimonial với ô tick đồng ý](images/huong-dan/08-them-testimonial-dong-y.png)
 <!-- ẢNH 08: trang <ĐỊA CHỈ DEMO>/admin/collections/testimonials/create, form nhập cảm nhận và khoanh đỏ ô tick Đã đồng ý cho phép hiển thị -->
 
+### 4.3. Câu chuyện "Trước / Sau" của khách hàng
+
+Trong form **Lời chia sẻ** có thêm:
+
+- **Tuổi** (không bắt buộc) và **Vai trò** – chức danh hiện trên thẻ (VD: _Project Manager_). Chỉ nhập khi khách đồng ý hiện các thông tin này.
+- Nhóm **Câu chuyện**: _Trước / Vấn đề ban đầu_, _Quá trình nhận thức_ (không bắt buộc), _Sau / Kết quả_. Dùng cho các thẻ câu chuyện trên trang lộ trình và trang Coach 1:1.
+- **Sản phẩm hoặc dịch vụ liên quan**: chọn gói (CLEAR / BUILD / SHINE…) để thẻ hiện nhãn "Gói đồng hành".
+
+Quy tắc đồng ý ở mục 4.2 vẫn áp dụng: chưa tick đồng ý thì không xuất bản được.
+
+### 4.4. Câu hỏi thường gặp (FAQ) dùng chung
+
+Menu trái → nhóm **Trang web** → **Câu hỏi thường gặp**.
+
+1. Bấm **Tạo mới**, nhập **Câu hỏi** và **Trả lời** (xuống dòng được giữ nguyên trên web).
+2. Bên phải chọn **Nhóm** (Chung, Lộ trình, Coaching 1:1, Sản phẩm số, Doanh nghiệp, Thanh toán) và **Thứ tự** (số nhỏ đứng trước).
+3. Bấm **Xuất bản**.
+
+Mỗi câu chỉ cần nhập **một lần**: trang nào hiện FAQ theo nhóm đó sẽ tự cập nhật khi bạn sửa. Câu trả lời về thanh toán cần đúng chính sách: chuyển khoản QR, **không hoàn tiền**, phiên trải nghiệm 149.000đ để thử trước.
+
+### 4.5. Đội ngũ chuyên gia
+
+Menu trái → nhóm **Trang web** → **Đội ngũ**.
+
+- Chỉ thêm **người thật** đã đồng ý cho Trạm hiện tên và ảnh trên web.
+- Điền Họ tên, Vai trò, Chuyên môn, Giới thiệu ngắn (tối đa 400 ký tự), Ảnh chân dung (có mô tả ảnh).
+- Bên phải tick **Người này đã đồng ý hiện tên, ảnh trên web** rồi mới bấm **Xuất bản** – chưa tick thì hệ thống chặn lại.
+- Chưa có ai thì để trống: khối Đội ngũ trên trang Về Trạm sẽ tự ẩn.
+
 ---
 
 ## 5. Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)
@@ -1312,6 +1352,32 @@ Màn hình trình dựng gồm 3 khu vực:
 <!-- ẢNH 22: trang chỉnh sửa Dịch vụ đồng hành, trường Liên kết đặt lịch -->
 
 ---
+
+### 7.3b. Thông tin liên hệ, mạng xã hội và lựa chọn "Tình trạng hiện tại"
+
+**Cài đặt website** → tab **Liên hệ & Zalo**:
+
+- **Hotline / Zalo**: chỉ dùng số, khoảng trắng, dấu chấm và dấu + ở đầu (VD: `+84 930 000 000`).
+- **Địa điểm văn phòng**: có thể chỉ ghi thành phố.
+- **LinkedIn**, **Facebook / Fanpage**, **YouTube**: dán liên kết bắt đầu bằng `https://`. Ô để trống thì trang Liên hệ không hiện kênh đó.
+- **Lựa chọn "Tình trạng hiện tại"**: các lựa chọn khách thấy trong form liên hệ (thay các mục `[MẪU]`), kéo để đổi thứ tự.
+
+Tab **Chung** có thêm **Ảnh chữ ký nhà sáng lập** (PNG nền trong) cho khối "Lời chào từ nhà sáng lập".
+
+### 7.3c. Nút sau kết quả quiz chẩn đoán
+
+**Cài đặt website** → tab **Công cụ số** → **Nút sau kết quả quiz dẫn tới đâu**: nhập đường dẫn trong web (bắt đầu bằng `/`) hoặc liên kết `https://`. Để trống thì nút dẫn tới trang lộ trình. Khi Habit Tracker số đang mở dùng thử, nút luôn mời dùng thử.
+
+### 7.3d. Menu con (menu "Sản phẩm", "Tài nguyên"…)
+
+**Menu điều hướng** → **Menu chính** → mở một mục:
+
+1. Kéo xuống phần **Menu con** → **Thêm** một nhóm. Đặt **Tên nhóm** (VD: _Dành cho Cá nhân_) nếu muốn.
+2. Trong nhóm, **Thêm** mục con: Tên mục, **Mô tả ngắn** (tối đa 60 ký tự, VD: _Công cụ hỗ trợ cảm xúc_), chọn trang đích hoặc liên kết.
+3. Mục cha không có trang riêng (như "Sản phẩm"): ở **Loại liên kết** chọn **Chỉ mở menu con**. Mục này cần ít nhất 1 mục con.
+4. Bấm **Lưu**. Kéo các nhóm / mục con để đổi thứ tự.
+
+Menu con hiện trên web từ đợt cập nhật menu (SM-02).
 
 ### 7.4. Cài đặt đo lường truy cập (Plausible / GA4)
 
