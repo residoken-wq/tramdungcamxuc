@@ -2,7 +2,7 @@ import 'server-only'
 import { getPayload, type Payload, type PayloadRequest } from 'payload'
 import type { Product } from '@/payload-types'
 import config from '@/payload.config'
-import { track } from '@/lib/analytics/track'
+import { trackServer } from '@/lib/analytics/track.server'
 
 export interface GrantEntitlementsResult {
   grantedCount: number
@@ -73,11 +73,15 @@ async function checkAndEmitTrialConverted(
       req: reqFactory?.(),
     })
     if (existingTrial.totalDocs > 0) {
-      // TODO(T2-04): track() không ghi nhận gì ở server; cần kênh gửi sự kiện từ server.
-      track('trial_converted', {
-        productSlug: 'slug' in productDoc ? (productDoc.slug ?? undefined) : undefined,
-        productId: productDoc.id,
-      })
+      // REVIEW-REQUIRED: Gửi sự kiện trial_converted từ server (không await trong transaction) (T2-22)
+      void trackServer(
+        'trial_converted',
+        {
+          productSlug: 'slug' in productDoc ? (productDoc.slug ?? undefined) : undefined,
+          productId: productDoc.id,
+        },
+        { payload },
+      )
     }
   } catch (err) {
     // Non-blocking for analytics event – trừ khi đang trong transaction (lỗi đã hủy transaction).

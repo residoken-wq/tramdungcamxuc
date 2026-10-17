@@ -3,6 +3,7 @@ import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { Entitlement, Product } from '@/payload-types'
 import { track } from '@/lib/analytics/track'
+import { trackServer } from '@/lib/analytics/track.server'
 import { hashTrialEmail } from '@/lib/auth/token'
 import { vi } from '@/lib/i18n/vi'
 import type { AccessResult, EntitlementStatus, MarkExpiredResult, StartTrialResult } from './types'
@@ -449,11 +450,15 @@ export async function markExpiredEntitlements(
 
       if (doc.status === 'trial') {
         const prod = typeof doc.product === 'object' && doc.product !== null ? doc.product : null
-        // TODO(T2-04): track() không ghi nhận gì ở server; cần kênh gửi sự kiện từ server.
-        track('trial_expired', {
-          productSlug: prod?.slug,
-          productId: prod?.id ?? (typeof doc.product === 'number' ? doc.product : undefined),
-        })
+        // REVIEW-REQUIRED: Gửi sự kiện trial_expired từ server khi cron cập nhật hết hạn dùng thử (T2-22)
+        await trackServer(
+          'trial_expired',
+          {
+            productSlug: prod?.slug,
+            productId: prod?.id ?? (typeof doc.product === 'number' ? doc.product : undefined),
+          },
+          { payload },
+        )
       }
     } catch (updateErr) {
       console.error(

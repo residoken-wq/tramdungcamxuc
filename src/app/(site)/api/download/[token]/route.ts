@@ -9,6 +9,7 @@ import { verifyDownloadToken } from '@/lib/downloads/token'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { findOwnPaidOrderFile } from '@/lib/account/order-files.server'
 import { vi } from '@/lib/i18n/vi'
+import { trackServer } from '@/lib/analytics/track.server'
 import type { Product, PrivateFile } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
@@ -44,7 +45,7 @@ function toAsciiFilename(filename: string): string {
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ token: string }> },
 ): Promise<Response> {
   const { token } = await params
@@ -191,6 +192,26 @@ export async function GET(
   }
   headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate')
 
+  // REVIEW-REQUIRED: Gửi sự kiện analytics resource_downloaded từ server (T2-22)
+  const sendDownloadAnalytics = () => {
+    const format = filename ? filename.split('.').pop()?.toLowerCase() : undefined
+    const pageSlug = isPurchasedFile ? 'tai-khoan/don-hang' : `tai-nguyen/${product.slug || ''}`
+    void trackServer(
+      'resource_downloaded',
+      {
+        resource: product.name || filename,
+        productSlug: product.slug || undefined,
+        format,
+        pageSlug,
+      },
+      {
+        payload,
+        req,
+        path: '/api/download',
+      },
+    )
+  }
+
   if (storageEnabled) {
     const s3 = getS3Client()
     const key = fileDoc.prefix ? `${fileDoc.prefix}/${filename}` : filename
@@ -205,6 +226,7 @@ export async function GET(
         return new Response(vi.downloads.cloudReadError, { status: 500 })
       }
       const webStream = s3Res.Body.transformToWebStream()
+      sendDownloadAnalytics()
       return new Response(webStream, { headers })
     } catch (err) {
       console.error('[Download] Failed to fetch object from S3:', err)
@@ -221,6 +243,7 @@ export async function GET(
 
     const nodeStream = fs.createReadStream(filePath)
     const webStream = Readable.toWeb(nodeStream) as ReadableStream
+    sendDownloadAnalytics()
     return new Response(webStream, { headers })
   }
 }
