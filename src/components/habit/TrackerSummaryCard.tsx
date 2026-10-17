@@ -272,7 +272,7 @@ export function TrackerSummaryCard({
                     htmlFor="customer-cert-name"
                     className="block text-xs font-ui font-semibold text-deep-navy mb-1"
                   >
-                    {vi.certificate.nameInputLabel} <span className="text-accent-pink">*</span>
+                    {vi.certificate.nameInputLabel} <span className="text-bright-magenta">*</span>
                   </label>
                   <input
                     id="customer-cert-name"

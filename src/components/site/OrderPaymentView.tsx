@@ -315,7 +315,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                     </p>
                     <p>{vi.payment.ui.orderView.timingNoticeSepaySub}</p>
                     {pollTimedOut && (
-                      <p className="font-medium text-accent-pink pt-1">
+                      <p className="font-medium text-bright-magenta pt-1">
                         {vi.payment.ui.orderView.pollTimedOutNotice}
                       </p>
                     )}

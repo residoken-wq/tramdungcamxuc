@@ -366,7 +366,7 @@ export function EqDrawWizard({
                 </p>
               </div>
             )}
-            {saveError && <p className="font-sans text-xs text-accent-pink pt-1">{saveError}</p>}
+            {saveError && <p className="font-sans text-xs text-bright-magenta pt-1">{saveError}</p>}
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
