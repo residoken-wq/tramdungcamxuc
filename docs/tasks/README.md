@@ -154,7 +154,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 **MỞ 10/10/2026** (cổng GĐ 1 đạt). Quyết định đã chốt: Q8 SePay, Q9 Bunny, Q14 10 cảm xúc emoji, H1/H2 quiz 1–5 trung bình, Q19, D1/D2 server riêng. Còn mở: Q15 (giá, trong CMS).
 
-**🔒 Migration: T2-20 (tới khi PR #134 merge) → T2-21 (PC nhà) · 🔒 Package: (trống)**
+**🔒 Migration: T2-21 (tới khi PR #139 merge) → (trống) · 🔒 Package: (trống)**
 
 **Thứ tự máy (từ 11/10)**: Laptop = T2-00 → T2-12 → T1-18 → T2-10 → T2-05a · PC nhà = T2-01 → T2-13 → T2-02 → T2-08 · Local = T2-03 → T2-03b.
 
@@ -180,7 +180,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T2-18 | Dọn nợ nhỏ GĐ 2 + banner / paywall dùng thử dùng chung (chuẩn bị EQ)                                                          | [REVIEW] | –                   | Laptop   | **ĐẠT** 15/10 (PR #118) – Planning sửa T2-18c; IT duyệt; biên bản `reviews/T2-18.md`                                                                                                                                                       |
 | T2-19 | Thanh toán bền vững: khóa tạo đơn bằng Postgres + "đã thanh toán ⇔ đã cấp quyền" trong 1 transaction + gửi lại email xác nhận | [REVIEW] | T2-08, T2-09        | Laptop   | **ĐẠT** 15/10 (PR #125) – Planning sửa T2-19c (lỗi nuốt trong transaction → mail "đã thanh toán" cho đơn chưa paid); IT duyệt; biên bản `reviews/T2-19.md`                                                                                 |
 | T2-20 | Phiên khách: thu hồi phía server (đăng xuất / đổi email) + không đè phiên admin + `trialUsage.product` cho phép null          | [REVIEW] | T2-16               | PC nhà   | **ĐẠT** 16/10 (PR #134) – Planning sửa T2-20c (e2e để lại admin, test xóa user không phải của nó, admin xác thực 2 lần, token đã thu hồi vẫn đăng xuất được); IT duyệt; biên bản `reviews/T2-20.md`; merge xong trả 🔒 Migration cho T2-21 |
-| T2-21 | Link "Không nhận nhắc nữa" trong email nhắc workshop / tracker + `font-heading` + RUNBOOK (proxy webhook, xoay khóa)          | [REVIEW] | T2-20 merge         | PC nhà   | Giao 16/10 – `prompts/T2-21.md` (sau khi PR #134 merge); 🔒 Migration                                                                                                                                                                      |
+| T2-21 | Link "Không nhận nhắc nữa" trong email nhắc workshop / tracker + `font-heading` + RUNBOOK (proxy webhook, xoay khóa)          | [REVIEW] | T2-20 merge         | PC nhà   | **ĐẠT** 17/10 (PR #139) – Planning sửa T2-21c (RUNBOOK proxy để lộ giả IP, nút trước hydrate, công tắc vô hình, test đánh dấu nhắc khách thật); IT duyệt; biên bản `reviews/T2-21.md`; merge xong trả 🔒 Migration                         |
 | T2-11 | E2E luồng Habit + cổng GĐ 2                                                                                                   | [HANA]   | tất cả              | Planning | Đơn thật SePay **ĐẠT** 15/10 (anh Nhân: trang đơn tự đổi, email kích hoạt, sự kiện `paid`); còn e2e tổng + Lighthouse / axe + `GATE_GD2.md` (Planning)                                                                                     |
 
 ### GĐ 3 – Web 3 EQ Buddy (`docs/tasks/GD3.md`)
