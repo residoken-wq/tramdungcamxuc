@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useSyncExternalStore } from 'react'
 import { updateReminderPreferenceAction } from '@/lib/reminders/actions'
 import { vi } from '@/lib/i18n/vi'
 
@@ -12,6 +12,12 @@ export function ReminderEmailToggle({ initialOptOut }: ReminderEmailToggleProps)
   // initialOptOut === true -> toggle is OFF (disabled); false/null/undefined -> toggle is ON (enabled)
   const [enabled, setEnabled] = useState(!initialOptOut)
   const [isLoading, setIsLoading] = useState(false)
+  // Khóa công tắc tới khi trang chạy JavaScript (bấm trước đó chỉ đổi giao diện, không lưu)
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
     null,
   )
@@ -67,14 +73,16 @@ export function ReminderEmailToggle({ initialOptOut }: ReminderEmailToggleProps)
               id="reminder-toggle"
               type="checkbox"
               checked={enabled}
-              disabled={isLoading}
+              role="switch"
+              aria-checked={enabled}
+              disabled={!isHydrated || isLoading}
               onChange={handleToggle}
               className="sr-only peer"
               aria-label={t.toggleLabel}
             />
             <div
-              className={`w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-pink ${
-                isLoading ? 'opacity-60 cursor-not-allowed' : ''
+              className={`w-11 h-6 bg-lavender-mist rounded-full peer peer-focus-visible:ring-2 peer-focus-visible:ring-accent-pink peer-focus-visible:ring-offset-2 peer-checked:after:translate-x-full peer-checked:after:border-accent-pink after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-warm-ivory after:border-deep-navy/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all motion-reduce:after:transition-none peer-checked:bg-accent-pink ${
+                !isHydrated || isLoading ? 'opacity-60 cursor-not-allowed' : ''
               }`}
             />
           </label>
@@ -83,6 +91,8 @@ export function ReminderEmailToggle({ initialOptOut }: ReminderEmailToggleProps)
 
       {feedback && (
         <div
+          role="status"
+          aria-live="polite"
           className={`text-xs px-3 py-2 rounded-lg ${
             feedback.type === 'success'
               ? 'bg-mint-haze/60 text-deep-navy border border-mint-haze'

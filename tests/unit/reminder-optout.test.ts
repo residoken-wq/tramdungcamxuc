@@ -277,7 +277,8 @@ describe('Reminder Emails Opt-Out Flow (T2-21)', () => {
   describe('3. Workshop Reminders: Bỏ qua khách đã tắt nhận nhắc', () => {
     it('sendWorkshopReminders không gửi cho khách tắt nhắc nhưng vẫn gửi cho khách khác', async () => {
       const pkg = await createPackageProduct('Gói Học Workshop T2-21')
-      const now = new Date('2026-10-20T10:00:00Z')
+      // Mốc thời gian xa (2099) để chỉ dữ liệu của test rơi vào khung gửi – không đụng workshop / kế hoạch thật
+      const now = new Date('2099-10-20T10:00:00Z')
       const wsStartsAt = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString() // sau 24h
       const ws = await createWorkshop({
         title: 'Tập thương cảm xúc 24h T2-21',
@@ -336,7 +337,8 @@ describe('Reminder Emails Opt-Out Flow (T2-21)', () => {
 
   describe('4. Habit Tracker Nudge: Bỏ qua khách đã tắt nhận nhắc', () => {
     it('sendTrackerNudges không gửi cho khách tắt nhắc nhưng vẫn gửi cho khách khác', async () => {
-      const now = new Date('2026-10-20T08:00:00Z')
+      // Mốc thời gian xa (2099) để chỉ dữ liệu của test rơi vào khung gửi – không đụng kế hoạch thật
+      const now = new Date('2099-10-20T08:00:00Z')
       const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000)
 
       // Khách C: Đã tắt nhận nhắc (reminderEmailsOptOut = true)

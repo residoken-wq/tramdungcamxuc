@@ -63,6 +63,9 @@ export async function updateReminderPreferenceAction(
   enabled: boolean,
   ..._untrustedArgs: unknown[]
 ): Promise<ToggleReminderActionResult> {
+  if (typeof enabled !== 'boolean') {
+    return { success: false, message: vi.reminders.account.error }
+  }
   const customer = await getCurrentCustomer()
   if (!customer) {
     return {

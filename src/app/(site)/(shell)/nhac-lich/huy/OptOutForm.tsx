@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { optOutWithTokenAction } from '@/lib/reminders/actions'
 import { vi } from '@/lib/i18n/vi'
@@ -14,6 +14,12 @@ interface OptOutFormProps {
 export function OptOutForm({ token, initialValid }: OptOutFormProps) {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  // Khóa nút tới khi trang chạy JavaScript (bấm trước đó gửi form HTML thường, mất token)
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  )
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const t = vi.reminders.optOut
@@ -107,7 +113,7 @@ export function OptOutForm({ token, initialValid }: OptOutFormProps) {
           type="submit"
           variant="primary"
           size="md"
-          disabled={isLoading}
+          disabled={!isHydrated || isLoading}
           className="w-full sm:w-auto"
         >
           {isLoading ? t.processingButton : t.confirmButton}

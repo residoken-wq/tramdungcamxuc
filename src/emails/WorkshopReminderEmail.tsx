@@ -100,7 +100,7 @@ const footerOptOutStyle: React.CSSProperties = {
 }
 
 const footerOptOutLinkStyle: React.CSSProperties = {
-  color: '#71717A',
+  color: 'rgba(40,10,96,0.5)',
   textDecoration: 'underline',
 }
 

@@ -682,7 +682,7 @@ Hệ thống hỗ trợ 2 chế độ xử lý thanh toán, chuyển đổi linh
    - _Lưu ý_: Tuyệt đối không commit giá trị khóa thật vào Git, log hay gửi qua kênh chat công khai.
 5. **Cấu hình Reverse Proxy bảo vệ Webhook (T2-21):**
    - **Giới hạn kích thước body (Body Size Limit)**: Cấu hình giới hạn kích thước body tại reverse proxy (ví dụ `client_max_body_size 64k;` trong Nginx cho đường dẫn `/api/payments/sepay/webhook`). Webhook SePay chỉ chứa payload JSON thông tin chuyển khoản nhỏ; việc giới hạn 64k ở proxy giúp ngăn chặn triệt để tấn công từ chối dịch vụ (DoS) bằng HTTP request chunked không khai báo `Content-Length`.
-   - **Chạy sau Proxy để `X-Forwarded-For` đáng tin**: Ứng dụng Next.js phải chạy phía sau reverse proxy (Nginx / Caddy) đã cấu hình chuyển tiếp IP chuẩn (`proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;`) để hệ thống nhận diện chính xác địa chỉ IP của nguồn gọi webhook, phục vụ rate limiting và audit log bảo mật.
+   - **Chạy sau Proxy để `X-Forwarded-For` đáng tin**: Ứng dụng Next.js phải chạy phía sau reverse proxy (Nginx / Caddy) **ghi đè** (không nối thêm) header IP bằng địa chỉ thật của kết nối: `proxy_set_header X-Forwarded-For $remote_addr;` và `proxy_set_header X-Real-IP $remote_addr;`. **Không** dùng `$proxy_add_x_forwarded_for` – nó nối IP thật vào sau giá trị khách tự gửi, mà ứng dụng đọc IP **đầu tiên** → kẻ gian đổi IP giả mỗi lần gửi để lách giới hạn OTP / form. Cổng của app (3000 / 3400) **không** được mở ra Internet, chỉ proxy gọi vào.
 6. **Khởi động lại ứng dụng:**
    - Chạy lệnh cập nhật container trên máy chủ (Lưu ý: lệnh `restart` không nhận các biến môi trường mới khai báo trong `.env`, bắt buộc dùng lệnh `up -d`):
      ```bash
