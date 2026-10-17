@@ -206,7 +206,6 @@ export async function GET(
       },
       {
         payload,
-        req,
         path: '/api/download',
       },
     )

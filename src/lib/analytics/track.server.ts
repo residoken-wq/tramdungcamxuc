@@ -23,13 +23,6 @@ export interface TrackServerContext {
    */
   path?: string
   /**
-   * Request object or header collection to extract User-Agent and X-Forwarded-For.
-   */
-  req?: Request | { headers?: Headers | Record<string, string | string[] | undefined> }
-  headers?: Headers | Record<string, string | string[] | undefined>
-  userAgent?: string
-  ip?: string
-  /**
    * For unit tests: allow bypassing the test environment check (NODE_ENV === 'test' || VITEST).
    */
   bypassTestEnv?: boolean
@@ -40,20 +33,6 @@ const EVENT_DEFAULT_PATHS: Partial<Record<AnalyticsEvent, string>> = {
   trial_converted: '/habit',
   trial_expired: '/habit',
   resource_downloaded: '/api/download',
-}
-
-function getHeader(
-  source: Headers | Record<string, string | string[] | undefined> | undefined,
-  name: string,
-): string | undefined {
-  if (!source) return undefined
-  if (typeof (source as Headers).get === 'function') {
-    return (source as Headers).get(name) || undefined
-  }
-  const record = source as Record<string, string | string[] | undefined>
-  const val = record[name] ?? record[name.toLowerCase()]
-  if (Array.isArray(val)) return val[0]
-  return typeof val === 'string' ? val : undefined
 }
 
 async function resolvePlausibleDomain(ctx?: TrackServerContext): Promise<string | null> {
@@ -78,6 +57,7 @@ async function resolvePlausibleDomain(ctx?: TrackServerContext): Promise<string 
  * Tuân thủ bảo mật tuyệt đối:
  * - Áp dụng sanitizeAnalyticsProps loại bỏ mọi trường nhạy cảm, PII, email, cảm xúc, reflection.
  * - Không đưa token, mã đơn hay email vào URL sự kiện.
+ * - Không chuyển tiếp IP (X-Forwarded-For) hay User-Agent của người dùng.
  * - Non-blocking: timeout 2 giây, không ném lỗi nếu mạng trục trặc (console.warn không in props).
  * - Chỉ gửi khi: có plausibleDomain trong siteSettings, SITE_NOINDEX !== 'true', không phải test environment.
  */
@@ -113,24 +93,11 @@ export async function trackServer(
   // 5. Làm sạch thuộc tính qua danh sách trắng (whitelist)
   const sanitizedProps = sanitizeAnalyticsProps(event, props)
 
-  // 6. Trích xuất User-Agent & X-Forwarded-For
-  const userAgent =
-    ctx?.userAgent ||
-    getHeader(ctx?.headers, 'user-agent') ||
-    (ctx?.req && 'headers' in ctx.req ? getHeader(ctx.req.headers, 'user-agent') : undefined) ||
-    DEFAULT_SERVER_USER_AGENT
-
-  const forwardedFor =
-    ctx?.ip ||
-    getHeader(ctx?.headers, 'x-forwarded-for') ||
-    (ctx?.req && 'headers' in ctx.req ? getHeader(ctx.req.headers, 'x-forwarded-for') : undefined)
-
+  // 6. Không chuyển tiếp IP / User-Agent của người dùng sang bên thứ ba (T2-22d):
+  //    mọi sự kiện server dùng User-Agent cố định và không có X-Forwarded-For.
   const requestHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
-    'User-Agent': userAgent,
-  }
-  if (forwardedFor) {
-    requestHeaders['X-Forwarded-For'] = forwardedFor
+    'User-Agent': DEFAULT_SERVER_USER_AGENT,
   }
 
   const payloadBody: {

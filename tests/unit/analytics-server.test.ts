@@ -83,14 +83,7 @@ describe('Server-side Plausible Analytics (T2-22)', () => {
   })
 
   describe('trackServer Request & Sanitization', () => {
-    it('bật: gọi fetch 1 lần đúng endpoint, đúng headers, body đúng domain và URL không chứa token/email', async () => {
-      const mockReq = new Request('https://tramdungcamxuc.com/api/download/test-token-123', {
-        headers: {
-          'user-agent': 'Mozilla/5.0 Custom Client',
-          'x-forwarded-for': '203.0.113.195',
-        },
-      })
-
+    it('bật: gọi fetch 1 lần đúng endpoint, đúng headers, body đúng domain và URL không chứa token/email/IP', async () => {
       await trackServer(
         'resource_downloaded',
         {
@@ -110,7 +103,6 @@ describe('Server-side Plausible Analytics (T2-22)', () => {
           bypassTestEnv: true,
           plausibleDomain: 'tramdungcamxuc.com',
           path: '/api/download?token=secret-token-must-be-stripped#hash',
-          req: mockReq,
         },
       )
 
@@ -120,8 +112,9 @@ describe('Server-side Plausible Analytics (T2-22)', () => {
       expect(url).toBe(PLAUSIBLE_EVENT_API)
       expect(options.method).toBe('POST')
       expect(options.headers['Content-Type']).toBe('application/json')
-      expect(options.headers['User-Agent']).toBe('Mozilla/5.0 Custom Client')
-      expect(options.headers['X-Forwarded-For']).toBe('203.0.113.195')
+      // Không chuyển tiếp IP / User-Agent của người dùng (T2-22d)
+      expect(options.headers['User-Agent']).toBe(DEFAULT_SERVER_USER_AGENT)
+      expect(options.headers['X-Forwarded-For']).toBeUndefined()
 
       const body = JSON.parse(options.body)
       expect(body.name).toBe('resource_downloaded')
