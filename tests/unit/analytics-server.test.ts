@@ -302,6 +302,22 @@ describe('Server-side Plausible Analytics (T2-22)', () => {
         } catch {}
       }
 
+      // Dọn con trước cha: quyền truy cập và nhật ký của đơn (đơn đã paid cấp quyền cho khách)
+      if (testCustomer?.id) {
+        await payload.delete({
+          collection: 'entitlements',
+          where: { customer: { equals: testCustomer.id } },
+          overrideAccess: true,
+        })
+      }
+      if (testOrder?.id) {
+        await payload.delete({
+          collection: 'auditLogs',
+          where: { target: { equals: `orders:${testOrder.id}` } },
+          overrideAccess: true,
+        })
+      }
+
       // Dọn dẹp bản ghi đơn hàng
       if (testOrder?.id) {
         try {
@@ -316,14 +332,13 @@ describe('Server-side Plausible Analytics (T2-22)', () => {
 
       // Dọn dẹp khách hàng bằng context: { accountDeletion: true }
       if (testCustomer?.id) {
-        try {
-          await payload.delete({
-            collection: 'customers',
-            id: testCustomer.id,
-            context: { accountDeletion: true },
-            overrideAccess: true,
-          })
-        } catch {}
+        // Không nuốt lỗi: xóa khách thất bại là test để lại dữ liệu
+        await payload.delete({
+          collection: 'customers',
+          id: testCustomer.id,
+          context: { accountDeletion: true },
+          overrideAccess: true,
+        })
       }
 
       // Dọn dẹp sản phẩm mẫu

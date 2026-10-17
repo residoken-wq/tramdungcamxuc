@@ -20,7 +20,7 @@ import {
   sendPackageOrderPaidEmail,
 } from '../email/service.server'
 import type { EmailSender } from '../email/types'
-import { grantEntitlementsForOrder } from './entitlements.server'
+import { grantEntitlementsForOrder, type ConvertedTrialProduct } from './entitlements.server'
 import { getAccess } from '../entitlements'
 import { getSiteUrl } from '../site-url'
 import { trackServer } from '../analytics/track.server'
@@ -900,6 +900,8 @@ export async function markOrderPaid(
   let isDigitalToolOrder = false
   // Chỉ lỗi ở bước cấp quyền mới ghi audit grant_entitlements_failed (lỗi khác: rollback, ném lại).
   let grantStarted = false
+  // trial_converted gom lại trong transaction, gửi sau commit (T2-22c)
+  let convertedTrials: ConvertedTrialProduct[] = []
   // Đơn không còn pending/failed (đã paid / đã hủy) → xử lý sau khi rollback, ngoài transaction.
   let noRowUpdated = false
 
@@ -985,11 +987,12 @@ export async function markOrderPaid(
       // Nếu cấp quyền thất bại -> rollback cả transaction (đơn vẫn pending/failed, không có quyền nửa vời).
       if (isPackageOrder || isDigitalToolOrder) {
         grantStarted = true
-        await grantEntitlementsForOrder(orderId, {
+        const grantResult = await grantEntitlementsForOrder(orderId, {
           payload,
           now,
           reqFactory: txReq,
         })
+        convertedTrials = grantResult.convertedTrials ?? []
         grantStarted = false
         await payload.update({
           collection: 'orders',
@@ -1271,6 +1274,9 @@ export async function markOrderPaid(
       },
       { payload },
     )
+    for (const converted of convertedTrials) {
+      await trackServer('trial_converted', { ...converted }, { payload })
+    }
   } catch (analyticsErr) {
     console.warn('[Payment] Non-blocking analytics error for order_paid:', analyticsErr)
   }
