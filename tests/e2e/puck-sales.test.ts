@@ -74,6 +74,7 @@ test.describe('T1-02a: Puck Sales Blocks – ProductGrid publication & price rea
           price: initialPrice,
           salePrice: initialSalePrice,
           saleStatus: 'on_sale',
+          isSample: true,
           _status: 'published',
         },
       })

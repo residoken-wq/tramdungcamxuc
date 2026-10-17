@@ -1,62 +1,120 @@
 import type {
+  ArrayField,
+  CheckboxField,
   CollectionConfig,
+  DateField,
   Field,
+  NumberField,
   RelationshipField,
+  RichTextField,
   SelectField,
   TextField,
-  NumberField,
-  DateField,
-  CheckboxField,
+  TextareaField,
+  UploadField,
 } from 'payload'
 import { authenticated, publishedOrAuthenticated } from '../lib/auth/access'
 
 type SingleTextField = TextField & { hasMany?: false }
 type SingleNumberField = NumberField & { hasMany?: false }
 
-export const text = (name: string, label: string, required = false): SingleTextField => ({
+export const text = (
+  name: string,
+  label: string,
+  required = false,
+  extra: Partial<SingleTextField> = {},
+): SingleTextField => ({
   name,
   label,
   type: 'text',
   required,
-  admin: { description: `Nhập ${label.toLocaleLowerCase('vi')}.` },
   validate: (value: string | null | undefined) =>
     !required ||
     (typeof value === 'string' && value.trim().length > 0) ||
     'Vui lòng điền thông tin này.',
+  ...extra,
+  admin: {
+    description: `Nhập ${label.toLocaleLowerCase('vi')}.`,
+    ...extra.admin,
+  },
 })
-export const richText = (name: string, label: string): Field => ({
+
+export const richText = (
+  name: string,
+  label: string,
+  extra: Partial<RichTextField> = {},
+): RichTextField => ({
   name,
   label,
   type: 'richText',
-  admin: { description: `Soạn ${label.toLocaleLowerCase('vi')}.` },
+  ...extra,
+  admin: {
+    description: `Soạn ${label.toLocaleLowerCase('vi')}.`,
+    ...extra.admin,
+  },
 })
-export const textarea = (name: string, label: string): Field => ({
+
+export const textarea = (
+  name: string,
+  label: string,
+  extra: Partial<TextareaField> = {},
+): TextareaField => ({
   name,
   label,
   type: 'textarea',
-  admin: { description: `Nhập ${label.toLocaleLowerCase('vi')}.` },
+  ...extra,
+  admin: {
+    description: `Nhập ${label.toLocaleLowerCase('vi')}.`,
+    ...extra.admin,
+  },
 })
-export const number = (name: string, label: string, defaultValue?: number): SingleNumberField => ({
+
+export const number = (
+  name: string,
+  label: string,
+  defaultValue?: number,
+  extra: Partial<SingleNumberField> = {},
+): SingleNumberField => ({
   name,
   label,
   type: 'number',
   min: 0,
   defaultValue,
-  admin: { description: 'Nhập số không âm. Giá tiền tính bằng đồng.' },
+  ...extra,
+  admin: {
+    description: 'Nhập số không âm. Giá tiền tính bằng đồng.',
+    ...extra.admin,
+  },
 })
-export const date = (name: string, label: string): DateField => ({
+
+export const date = (name: string, label: string, extra: Partial<DateField> = {}): DateField => ({
   name,
   label,
   type: 'date',
-  admin: { description: 'Chọn ngày và giờ áp dụng.', date: { pickerAppearance: 'dayAndTime' } },
+  ...extra,
+  admin: {
+    description: 'Chọn ngày và giờ áp dụng.',
+    date: { pickerAppearance: 'dayAndTime' },
+    ...extra.admin,
+  },
 })
-export const checkbox = (name: string, label: string, defaultValue = false): CheckboxField => ({
+
+export const checkbox = (
+  name: string,
+  label: string,
+  defaultValue = false,
+  extra: Partial<CheckboxField> = {},
+): CheckboxField => ({
   name,
   label,
   type: 'checkbox',
   defaultValue,
-  admin: { description: `Bật để áp dụng: ${label.toLocaleLowerCase('vi')}.` },
+  ...extra,
+  admin: {
+    description: `Bật để áp dụng: ${label.toLocaleLowerCase('vi')}.`,
+    ...extra.admin,
+  },
 })
+
 export const select = (
   name: string,
   label: string,
@@ -68,14 +126,19 @@ export const select = (
     label,
     type: 'select',
     options: options.map(([value, optionLabel]) => ({ value, label: optionLabel })),
-    admin: { description: 'Chọn một mục phù hợp.' },
     ...extra,
+    admin: {
+      description: 'Chọn một mục phù hợp.',
+      ...extra.admin,
+    },
   }) as SelectField
+
 export const relation = (
   name: string,
   label: string,
   relationTo: RelationshipField['relationTo'],
   hasMany = false,
+  extra: Partial<RelationshipField> = {},
 ): RelationshipField =>
   ({
     name,
@@ -83,34 +146,66 @@ export const relation = (
     type: 'relationship',
     relationTo,
     hasMany,
-    admin: { description: 'Chọn nội dung đã tạo trong hệ thống.' },
+    ...extra,
+    admin: {
+      description: 'Chọn nội dung đã tạo trong hệ thống.',
+      ...extra.admin,
+    },
   }) as RelationshipField
-export const image = (name: string, label: string): Field => ({
-  name,
-  label,
-  type: 'upload',
-  relationTo: 'media',
-  admin: { description: 'Chọn ảnh có mô tả để người dùng dễ tiếp cận.' },
-})
+
+export const image = (name: string, label: string, extra: Partial<UploadField> = {}): UploadField =>
+  ({
+    name,
+    label,
+    type: 'upload',
+    relationTo: 'media',
+    ...extra,
+    admin: {
+      description: 'Chọn ảnh có mô tả để người dùng dễ tiếp cận.',
+      ...extra.admin,
+    },
+  }) as UploadField
+
 export const file = (
   name: string,
   label: string,
   relationTo: 'media' | 'privateFiles' = 'media',
-): Field => ({
-  name,
-  label,
-  type: 'upload',
-  relationTo,
-  admin: { description: 'Chọn tài liệu (PDF…)' },
-})
-export const privateFile = (name: string, label: string): Field => file(name, label, 'privateFiles')
-export const lines = (name: string, label: string): Field => ({
+  extra: Partial<UploadField> = {},
+): UploadField =>
+  ({
+    name,
+    label,
+    type: 'upload',
+    relationTo,
+    ...extra,
+    admin: {
+      description: 'Chọn tài liệu (PDF…)',
+      ...extra.admin,
+    },
+  }) as UploadField
+
+export const privateFile = (
+  name: string,
+  label: string,
+  extra: Partial<UploadField> = {},
+): UploadField => file(name, label, 'privateFiles', extra)
+
+export const lines = (
+  name: string,
+  label: string,
+  extra: Partial<ArrayField> = {},
+): ArrayField => ({
   name,
   label,
   type: 'array',
-  admin: { description: 'Thêm từng mục, kéo để đổi thứ tự.' },
   fields: [text('text', 'Nội dung', true)],
+  ...extra,
+  admin: {
+    description: 'Thêm từng mục, kéo để đổi thứ tự.',
+    ...extra.admin,
+  },
 })
+
 export const url = (name: string, label: string): SingleTextField => ({
   ...text(name, label),
   admin: { description: 'Nhập liên kết bắt đầu bằng https:// hoặc http://.' },
@@ -126,12 +221,13 @@ export const url = (name: string, label: string): SingleTextField => ({
     }
   },
 })
-export const internalOrExternalUrl = (name: string, label: string): SingleTextField => ({
+
+export const internalOrExternalUrl = (
+  name: string,
+  label: string,
+  extra: Partial<SingleTextField> = {},
+): SingleTextField => ({
   ...text(name, label),
-  admin: {
-    description:
-      'Link Shopee… bắt đầu bằng https://, hoặc trang trong web bắt đầu bằng / (VD: /habit/chan-doan).',
-  },
   validate: (value: string | null | undefined) => {
     if (!value || typeof value !== 'string' || value.trim().length === 0) return true
     const trimmed = value.trim()
@@ -154,20 +250,33 @@ export const internalOrExternalUrl = (name: string, label: string): SingleTextFi
       return 'Vui lòng nhập liên kết hợp lệ (bắt đầu bằng https:// hoặc /).'
     }
   },
+  ...extra,
+  admin: {
+    description:
+      'Link Shopee… bắt đầu bằng https://, hoặc trang trong web bắt đầu bằng / (VD: /habit/chan-doan).',
+    ...extra.admin,
+  },
 })
-export const slug = (allowSlash = false): SingleTextField => ({
+
+export const slug = (
+  allowSlash = false,
+  extra: Partial<SingleTextField> = {},
+): SingleTextField => ({
   ...text('slug', 'Đường dẫn', true),
   unique: true,
   index: true,
+  validate: (value: string | null | undefined) =>
+    (typeof value === 'string' && (allowSlash ? /^[a-z0-9/-]+$/ : /^[a-z0-9-]+$/).test(value)) ||
+    'Đường dẫn chỉ dùng chữ thường không dấu, số và dấu được cho phép.',
+  ...extra,
   admin: {
     description: allowSlash
       ? 'Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.'
       : 'Dùng chữ thường không dấu, số và dấu -.',
+    ...extra.admin,
   },
-  validate: (value: string | null | undefined) =>
-    (typeof value === 'string' && (allowSlash ? /^[a-z0-9/-]+$/ : /^[a-z0-9-]+$/).test(value)) ||
-    'Đường dẫn chỉ dùng chữ thường không dấu, số và dấu được cho phép.',
 })
+
 export const topicOptions: [string, string][] = [
   ['eq', 'Cảm xúc'],
   ['habit', 'Thói quen'],
@@ -179,19 +288,28 @@ export const stageOptions: [string, string][] = [
   ['response', 'Phản hồi'],
   ['reward', 'Phần thưởng'],
 ]
-export const saleStatus = (): Field =>
+export const saleStatus = (extra?: Partial<SelectField>): SelectField =>
   select(
     'saleStatus',
     'Trạng thái bán',
     [
       ['coming_soon', 'Sắp ra mắt'],
-      ['on_sale', 'Đang bán'],
+      ['on_sale', 'Đang mở bán'],
       ['free', 'Miễn phí'],
-      ['consult', 'Cần tư vấn'],
+      ['consult', 'Tư vấn'],
       ['hidden', 'Ẩn'],
     ],
-    { defaultValue: 'consult', required: true },
+    {
+      required: true,
+      defaultValue: 'coming_soon',
+      ...extra,
+      admin: {
+        description: 'Chọn một mục phù hợp.',
+        ...extra?.admin,
+      },
+    },
   )
+
 export const sampleField = (): Field => ({
   name: 'isSample',
   label: 'Dữ liệu mẫu',
@@ -199,6 +317,7 @@ export const sampleField = (): Field => ({
   defaultValue: false,
   admin: { hidden: true },
 })
+
 export function contentCollection(
   slug: CollectionConfig['slug'],
   label: string,

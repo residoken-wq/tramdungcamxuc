@@ -48,6 +48,7 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
           data: {
             name: 'Habit Tracker Số',
             slug: HABIT_TRACKER_PRODUCT_SLUG,
+            isSample: true,
             web: 'habit',
             type: 'digital_tool',
             price: 250000,

@@ -184,6 +184,7 @@ describe('Digital Tool Order Backend & Manual Confirmation (T2-08)', () => {
         price: 250000,
         salePrice: 178000,
         accessDurationDays: null, // Vĩnh viễn
+        isSample: true,
         _status: 'published',
         ...overrides,
       },

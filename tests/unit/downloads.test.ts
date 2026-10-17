@@ -51,6 +51,8 @@ describe('Download Token & Delivery Route (T1-07)', () => {
         web: 'site',
         type: 'ebook',
         saleStatus: 'free',
+        price: 250000,
+        isSample: true,
         files: [{ file: privateFileId }],
         _status: 'published',
       },
@@ -67,6 +69,8 @@ describe('Download Token & Delivery Route (T1-07)', () => {
         web: 'site',
         type: 'toolkit',
         saleStatus: 'free',
+        price: 250000,
+        isSample: true,
         files: [],
         _status: 'published',
       },
@@ -314,6 +318,7 @@ describe('Download Token & Delivery Route (T1-07)', () => {
         id: productId,
         data: {
           saleStatus: 'on_sale',
+          price: 250000,
         },
         overrideAccess: true,
       })

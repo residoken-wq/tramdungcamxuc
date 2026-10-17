@@ -54,6 +54,7 @@ describe('Lesson Access Control & Playback Authorization Matrix (T2-05a)', () =>
             web: 'habit',
             type: 'digital_tool',
             saleStatus: 'on_sale',
+            isSample: true,
             price: 250000,
             salePrice: 178000,
             trialDays: 21,

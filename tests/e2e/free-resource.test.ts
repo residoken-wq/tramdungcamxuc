@@ -79,6 +79,7 @@ test.describe('Free resource delivery (T1-07)', () => {
           type: 'ebook',
           saleStatus: 'free',
           files: [{ file: fileId }],
+          isSample: true,
           _status: 'published',
         },
       })
@@ -126,7 +127,7 @@ test.describe('Free resource delivery (T1-07)', () => {
 
       // 5. Product no longer free → the old link stops working.
       const paid = await page.request.patch(`/api/products/${productId}`, {
-        data: { saleStatus: 'on_sale', price: 99000 },
+        data: { saleStatus: 'on_sale', price: 99000, isSample: true },
       })
       expect(paid.ok()).toBe(true)
       expect((await guest.request.get(`/api/download/${token}`)).status()).toBe(410)

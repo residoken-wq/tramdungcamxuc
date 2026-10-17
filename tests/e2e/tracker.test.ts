@@ -95,6 +95,7 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
           salePrice: 178000,
           trialDays: 21,
           saleStatus: 'on_sale',
+          isSample: true,
           _status: 'published',
         },
       })

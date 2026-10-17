@@ -87,6 +87,7 @@ test.describe('T1-11: Growth Mirror page – 3 packages comparison & coaching tr
               retailPrice: 2200000,
             },
           ],
+          isSample: true,
           _status: 'published',
         },
       })
@@ -113,6 +114,7 @@ test.describe('T1-11: Growth Mirror page – 3 packages comparison & coaching tr
             { label: 'Tư vấn hướng nghiệp', quantity: 1, unitValue: 1000000, retailPrice: 1500000 },
             { label: 'Cộng đồng private "Tập thương cảm xúc"', quantity: 1, unitValue: 300000 },
           ],
+          isSample: true,
           _status: 'published',
         },
       })
@@ -139,6 +141,7 @@ test.describe('T1-11: Growth Mirror page – 3 packages comparison & coaching tr
             { label: 'Tư vấn hướng nghiệp', quantity: 3, unitValue: 1000000, retailPrice: 1500000 },
             { label: 'Cộng đồng private "Tập thương cảm xúc"', quantity: 1, unitValue: 300000 },
           ],
+          isSample: true,
           _status: 'published',
         },
       })
@@ -155,6 +158,7 @@ test.describe('T1-11: Growth Mirror page – 3 packages comparison & coaching tr
           price: 149000,
           saleStatus: 'on_sale',
           ctaLabel: 'Đặt phiên trải nghiệm',
+          isSample: true,
           _status: 'published',
         },
       })

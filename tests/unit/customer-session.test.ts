@@ -407,6 +407,7 @@ describe('Customer Session Management & Isolation (T2-20)', () => {
           type: 'digital_tool',
           price: 150000,
           saleStatus: 'on_sale',
+          isSample: true,
           _status: 'published',
         },
         overrideAccess: true,
