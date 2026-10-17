@@ -3,7 +3,7 @@
 > Người lập: Planning · 17/10/2026
 > Nguồn: file PDF "Sơ đồ cấu trúc website Trạm Dừng Cảm Xúc" (51 trang, Hana gửi 17/10). **Không commit file PDF** (repo công khai, PDF có ảnh chân dung, email, ảnh khách hàng). Planning giữ bản gốc ngoài repo; trích dẫn theo số trang.
 > Task card: `docs/tasks/SM.md`.
-> Trạng thái: **CHỜ HANA CHỐT** các câu hỏi ở mục 4 trước khi giao task có nhãn `[HANA]`.
+> Trạng thái: **ĐÃ CHỐT 17/10** (Planning trả lời thay Hana) – kết quả ở `docs/DECISIONS.md` mục "Sitemap v2 – chốt 17/10/2026". Còn chờ Hana nội dung thật (SM-00).
 
 ---
 

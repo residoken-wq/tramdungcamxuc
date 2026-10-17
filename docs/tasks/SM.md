@@ -1,6 +1,6 @@
 # SM – Sitemap v2: task card
 
-> **CHƯA MỞ** – chờ Hana trả lời Q1–Q13 trong `docs/plan/SITEMAP_V2.md` mục 4. Q1, Q2, Q5 chốt xong thì mở SM-01, SM-02; các task khác mở theo phụ thuộc.
+> **MỞ 17/10/2026** – câu hỏi đã chốt (`docs/DECISIONS.md` mục "Sitemap v2 – chốt 17/10/2026"). Áp dụng: `teamMembers` và `faqs` **làm luôn** (không còn có điều kiện); gói không bán trực tiếp; quiz nằm trong menu con Tài nguyên; trang Cộng đồng do Hana tự dựng bằng Puck (SM-08 chỉ làm mẫu trang); `qrSlug` thẻ EQ còn đổi được đến khi in.
 > Phân tích đầy đủ: `docs/plan/SITEMAP_V2.md` (mục 2 = điểm mâu thuẫn **không được làm theo mockup**, mục 7 = quy tắc UI/UX chung).
 > Mỗi task: đọc AGENTS.md → `GAPS_AND_QUESTIONS.md` → `DECISIONS.md` → `SITEMAP_V2.md` → card này. Task có giao diện: skill `tdcx-brand` trước.
 > Mockup (PDF ngoài repo): Planning gửi ảnh chụp trang liên quan kèm prompt khi giao. **Không chép ảnh mockup vào repo.**
@@ -35,7 +35,7 @@ Theo `SITEMAP_V2.md` mục 5:
 - `testimonials`: `age?`, `headline?`, nhóm `story` {before, insight?, after}. Giữ quy tắc `consent`.
 - `siteSettings`: `hotline`, `officeAddress`, `facebookUrl`, `youtubeUrl`, `bookingCallUrl?`, `founderSignature`, `quizCtaPath`, danh sách lựa chọn "Tình trạng hiện tại".
 - `leads`: `currentStatus`, `interestedService`, `interestedPackage`, `contactRole`, `interestedProgram`.
-- Có điều kiện: `faqs` (nếu Q9), `teamMembers` (nếu Q8).
+- Collection mới: `faqs`, `teamMembers` (chốt 17/10).
 
 Tiêu chí nghiệm thu:
 
@@ -81,7 +81,7 @@ Tiêu chí nghiệm thu:
 
 ## SM-04 – Khối Puck đợt B: Về Trạm + Coach 1:1 (sau SM-01, song song SM-03) – ước lượng 10–12 h
 
-Mới: `VisionMission`, `ServiceCards` (📦 `services`), `TwoPathCards`, `TeamGrid` (chỉ khi Q8 có người thật).
+Mới: `VisionMission`, `ServiceCards` (📦 `services`), `TwoPathCards`, `TeamGrid` (📦 `teamMembers`).
 Nâng cấp: `JourneySteps` v2 (3 kiểu: vòng tròn / card nối nét đứt / danh sách dọc; bước nổi bật; dòng phụ), `HanaStory` v2 (nền tối, chip, kiểu "thư" + ảnh chữ ký từ `siteSettings.founderSignature`), `ImageText` v2 (quote + nhãn ảnh), `LogoStrip` v2 (nhóm logo), `TestimonialGrid` kiểu "3 giai đoạn" (phối hợp SM-03: cùng khối, SM-03 làm trước khung variant), form đặt phiên trải nghiệm thêm "Lộ trình quan tâm" + "Bạn đang trăn trở điều gì" (vẫn tạo đơn 149.000đ, không đổi logic thanh toán – nếu phải chạm `src/lib/payments` thì dừng và hỏi, `REVIEW-REQUIRED`).
 
 Tiêu chí nghiệm thu: như SM-03.
@@ -97,7 +97,7 @@ Tiêu chí nghiệm thu: như SM-03.
 
 - `ContactInfo`: đọc `siteSettings` (email, hotline/Zalo, địa điểm, LinkedIn, Facebook, YouTube); mục trống thì ẩn.
 - `ContactForms`: 2 kiểu (tab trên trang chủ, 2 cột trên Liên hệ). B2C: họ tên, email, SĐT, dịch vụ quan tâm (từ `services`), trăn trở. B2B: dùng lại `B2BBriefForm` + vai trò, chương trình quan tâm (từ `programs`). Email xác nhận cho khách + thông báo cho Hana (hạ tầng T1-06).
-- Nếu Q9 = có: route `/cau-hoi-thuong-gap` đọc `faqs` theo nhóm; `FAQ` v2 thêm chế độ "lấy theo nhóm" (chỉ lưu nhóm, không chép câu hỏi) + link "Xem toàn bộ".
+- Route `/cau-hoi-thuong-gap` đọc `faqs` theo nhóm; `FAQ` v2 thêm chế độ "lấy theo nhóm" (chỉ lưu nhóm, không chép câu hỏi) + link "Xem toàn bộ".
 - M1: **không** seed câu hỏi về hoàn tiền / Visa. FAQ seed đánh dấu `[MẪU]`, nội dung do Hana viết.
 
 ## SM-07 – Mẫu trang + dựng trang MẪU (sau SM-03, SM-04, SM-06) [HANA] – ước lượng 6 h

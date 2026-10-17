@@ -331,7 +331,7 @@ Trang chủ dựng bằng Puck (mục 5B). Bản seed ban đầu gồm 4 khối 
 
 Trang con: `/ve-hana`, `/coaching`, `/coaching/[slug]`, `/doanh-nghiep`, `/doanh-nghiep/[slug]`, `/thu-vien`, `/tai-nguyen/[slug]`, `/blog/[slug]`, `/chung-nhan/[code]`, và 6 trang pháp lý.
 
-**Menu chính** (sửa được trong CMS qua global `navigation`): Về Hana · Thư viện · Test thói quen 5 phút (→ `/habit/chan-doan`) · Growth Mirror · Doanh nghiệp · nút nổi bật "Đặt phiên trải nghiệm". Quiz chẩn đoán là lead magnet chính, phải nằm trên menu cả desktop lẫn mobile.
+**Menu chính** (sửa được trong CMS qua global `navigation`, có menu con – sitemap v2 chốt 17/10, chi tiết `docs/plan/SITEMAP_V2.md`): Trang chủ · Sản phẩm (Cá nhân: Lộ trình "Chuyển mình không chênh vênh", EQ Buddy, Habit Hack, Coach 1:1 · Doanh nghiệp: EQ, Habit, Coach 1:1) · Về Trạm · Tài nguyên (quiz chẩn đoán nằm đầu menu con) · Cộng đồng của Trạm · Liên hệ. Quiz chẩn đoán là lead magnet chính, phải nằm trên menu cả desktop lẫn mobile.
 
 **Thư viện** (`/thu-vien`): 2 tab.
 
