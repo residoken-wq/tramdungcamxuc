@@ -140,7 +140,7 @@ export function CardShareButtons({ cardCode, qrSlug, className = '' }: CardShare
           disabled={!isHydrated}
           onClick={handleShare}
           aria-label={vi.eqBuddy.share.ariaShare}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold text-white bg-accent-pink shadow-sm hover:bg-bright-magenta active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 motion-reduce:transition-none"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold text-white bg-deep-navy shadow-sm hover:bg-bright-magenta active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 motion-reduce:transition-none"
         >
           <svg
             className="w-4 h-4 shrink-0"

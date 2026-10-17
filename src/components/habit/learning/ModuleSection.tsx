@@ -19,7 +19,7 @@ export function ModuleSection({ module, moduleIndex }: ModuleSectionProps) {
           <span className="rounded-md bg-soft-pink px-2.5 py-0.5 font-ui text-[11px] font-bold uppercase tracking-wider text-bright-magenta">
             {groupLabel}
           </span>
-          <span className="font-ui text-xs font-semibold text-deep-navy/50">
+          <span className="font-ui text-xs font-semibold text-deep-navy/70">
             {vi.learning.dashboard.sectionPart(moduleIndex + 1)}
           </span>
         </div>

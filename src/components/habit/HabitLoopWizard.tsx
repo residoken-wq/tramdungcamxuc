@@ -353,7 +353,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
 
       {/* Thanh tiến độ 4 bước */}
       {!submitSuccess && (
-        <div className="mb-8" aria-label={vi.habit.wizard.errors.progressAria}>
+        <div className="mb-8">
           <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-deep-navy mb-2">
             <span>{vi.habit.wizard.stepIndicator(draft.step, 4)}</span>
             <span className="text-bright-magenta">
@@ -368,6 +368,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               className="h-full bg-bright-magenta transition-all duration-300 rounded-full"
               style={{ width: `${(draft.step / 4) * 100}%` }}
               role="progressbar"
+              aria-label={vi.habit.wizard.errors.progressAria}
               aria-valuenow={(draft.step / 4) * 100}
               aria-valuemin={0}
               aria-valuemax={100}
@@ -417,7 +418,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                 href={zaloGroupUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors"
               >
                 {vi.habit.wizard.step4.joinZaloButton}
               </a>
@@ -445,9 +446,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {draft.step === 1 && (
             <div className="space-y-6 animate-fade-in">
               <div>
-                <h3 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+                <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
                   {vi.habit.wizard.step1.title}
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base text-deep-navy/80">
                   {vi.habit.wizard.step1.subtitle}
                 </p>
@@ -587,9 +588,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {draft.step === 2 && (
             <div className="space-y-6 animate-fade-in">
               <div>
-                <h3 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+                <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
                   {vi.habit.wizard.step2.title}
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base text-deep-navy/80">
                   {vi.habit.wizard.step2.subtitle}
                 </p>
@@ -649,9 +650,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {draft.step === 3 && (
             <div className="space-y-8 animate-fade-in">
               <div>
-                <h3 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+                <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
                   {vi.habit.wizard.step3.title}
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base text-deep-navy/80">
                   {vi.habit.wizard.step3.subtitle}
                 </p>
@@ -673,9 +674,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                       <div>
-                        <h4 className="font-semibold text-deep-navy text-base">
+                        <h3 className="font-semibold text-deep-navy text-base">
                           {stageInfo.title}
-                        </h4>
+                        </h3>
                         <span className="text-xs text-bright-magenta font-medium block">
                           {stageInfo.rule}
                         </span>
@@ -754,9 +755,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {draft.step === 4 && (
             <div className="space-y-8 animate-fade-in">
               <div>
-                <h3 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+                <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
                   {vi.habit.wizard.step4.title}
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base text-deep-navy/80">
                   {vi.habit.wizard.step4.subtitle}
                 </p>
@@ -778,9 +779,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               {/* Lưới 21 ngày */}
               <div className="p-5 rounded-card bg-warm-ivory border border-lavender-mist">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-semibold text-deep-navy text-sm">
+                  <h3 className="font-semibold text-deep-navy text-sm">
                     {vi.habit.wizard.step4.trackerPreviewHeading}
-                  </h4>
+                  </h3>
                   <span className="text-xs text-bright-magenta font-medium">
                     {vi.habit.wizard.step4.continuousDays}
                   </span>
@@ -793,9 +794,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
 
               {/* Tóm tắt kỹ thuật đã chọn */}
               <div className="p-5 rounded-card bg-white border border-lavender-mist space-y-3">
-                <h4 className="font-semibold text-deep-navy text-sm">
+                <h3 className="font-semibold text-deep-navy text-sm">
                   {vi.habit.wizard.step4.techniquesHeading}
-                </h4>
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   {HABIT_STAGES.map((stage) => {
                     const list = draft.chosenTechniques[stage] || []
@@ -827,9 +828,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                 className="p-6 rounded-card bg-soft-pink/40 border border-soft-pink space-y-4"
               >
                 <div>
-                  <h4 className="font-display text-lg text-deep-navy mb-1">
+                  <h3 className="font-display text-lg text-deep-navy mb-1">
                     {vi.habit.wizard.step4.emailHeading}
-                  </h4>
+                  </h3>
                   <p className="text-xs sm:text-sm text-deep-navy/80">
                     {vi.habit.wizard.step4.emailSubheading}
                   </p>

@@ -135,7 +135,7 @@ export default async function AccountPage() {
 
           <div className="space-y-3 text-sm">
             <div>
-              <span className="text-xs font-semibold uppercase text-deep-navy/50 block">
+              <span className="text-xs font-semibold uppercase text-deep-navy/70 block">
                 {vi.auth.nameLabel}
               </span>
               <span className="font-medium text-deep-navy">
@@ -144,7 +144,7 @@ export default async function AccountPage() {
             </div>
 
             <div>
-              <span className="text-xs font-semibold uppercase text-deep-navy/50 block">
+              <span className="text-xs font-semibold uppercase text-deep-navy/70 block">
                 {vi.auth.emailLabel}
               </span>
               <span className="font-medium text-deep-navy font-mono text-xs sm:text-sm break-all">
