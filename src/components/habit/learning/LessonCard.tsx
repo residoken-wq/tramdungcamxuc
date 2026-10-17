@@ -119,7 +119,7 @@ export function LessonCard({ lesson, index }: LessonCardProps) {
         ) : (
           <Link
             href={vi.learning.dashboard.offerHref}
-            className="inline-flex items-center gap-1 font-ui text-xs font-bold text-bright-magenta hover:text-accent-pink underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded transition-colors motion-reduce:transition-none"
+            className="inline-flex items-center gap-1 font-ui text-xs font-bold text-bright-magenta hover:text-deep-navy underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded transition-colors motion-reduce:transition-none"
           >
             {vi.learning.dashboard.unlockCta}
             <span aria-hidden="true">→</span>

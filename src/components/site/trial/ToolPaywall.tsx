@@ -90,7 +90,7 @@ export async function ToolPaywall({
             href={buyUrl}
             className={`w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full font-ui font-bold text-sm transition-all motion-reduce:transition-none shadow-sm ${
               isExpired
-                ? 'bg-bright-magenta text-warm-ivory hover:bg-bright-magenta'
+                ? 'bg-bright-magenta text-warm-ivory hover:bg-bright-magenta/90'
                 : 'border border-deep-navy/20 text-deep-navy bg-warm-ivory hover:bg-lavender-mist/40'
             }`}
           >

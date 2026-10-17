@@ -180,7 +180,7 @@ export function SavedCards({ initialCards, loadError = false }: SavedCardsProps)
                     <button
                       type="button"
                       onClick={() => setConfirmId(card.id)}
-                      className="font-ui text-xs font-semibold text-deep-navy/70 hover:text-accent-pink transition-colors motion-reduce:transition-none"
+                      className="font-ui text-xs font-semibold text-deep-navy/70 hover:text-deep-navy transition-colors motion-reduce:transition-none"
                     >
                       {vi.eqBuddy.savedCards.deleteButton}
                     </button>

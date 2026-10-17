@@ -20,20 +20,22 @@ function hasIgnoredPrefix(token: string): boolean {
 }
 
 function isLargeText(tokens: string[]): boolean {
-  const hasBold = tokens.some((t) =>
-    /^(?:[a-z0-9_-]+:)*(font-bold|font-extrabold|font-black)$/.test(t),
-  )
-  const hasLargeSize = tokens.some((t) => {
-    if (/^(?:[a-z0-9_-]+:)*text-(lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)$/.test(t)) {
+  // Only unprefixed classes count: `text-sm md:text-lg` is still small text on mobile.
+  const base = tokens.map(stripImportant).filter((t) => !t.includes(':'))
+  const hasBold = base.some((t) => /^(font-bold|font-extrabold|font-black)$/.test(t))
+  const hasLargeSize = base.some((t) => {
+    if (/^text-(lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)$/.test(t)) {
       return true
     }
-    const match = t.match(/^(?:[a-z0-9_-]+:)*text-\[(\d+)px\]$/)
-    if (match && parseInt(match[1], 10) >= 19) {
-      return true
-    }
-    return false
+    const match = t.match(/^text-\[(\d+)px\]$/)
+    return Boolean(match && parseInt(match[1], 10) >= 19)
   })
   return hasBold && hasLargeSize
+}
+
+function stripImportant(token: string): string {
+  // Tailwind important modifier: `!text-accent-pink`, `md:!text-accent-pink`.
+  return token.replace(/(^|:)!/, '$1')
 }
 
 function collectTsxFiles(dir: string, baseDir = dir): string[] {
@@ -55,109 +57,123 @@ function collectTsxFiles(dir: string, baseDir = dir): string[] {
   return results
 }
 
+interface ClassString {
+  tokens: { value: string; line: number }[]
+}
+
+/**
+ * Collects class-like strings with the line of each token.
+ * - `'…'` and `"…"` per line (JSX text may contain apostrophes, so these never span lines);
+ * - backtick template literals over the whole file, so multi-line `className={`…`}` is scanned;
+ *   `${…}` interpolations act as separators.
+ */
+function extractClassStrings(content: string): ClassString[] {
+  const lineStarts = [0]
+  for (let k = 0; k < content.length; k++) {
+    if (content[k] === '\n') lineStarts.push(k + 1)
+  }
+  const lineOf = (offset: number): number => {
+    let lo = 0
+    let hi = lineStarts.length - 1
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1
+      if (lineStarts[mid] <= offset) lo = mid
+      else hi = mid - 1
+    }
+    return lo + 1
+  }
+  const toClassString = (raw: string, rawStart: number): ClassString => {
+    const blanked = raw.replace(/\$\{[^}]*\}/g, (m) => ' '.repeat(m.length))
+    const tokens: ClassString['tokens'] = []
+    for (const m of blanked.matchAll(/\S+/g)) {
+      tokens.push({ value: m[0], line: lineOf(rawStart + (m.index ?? 0)) })
+    }
+    return { tokens }
+  }
+
+  const strings: ClassString[] = []
+  for (const m of content.matchAll(/`([^`]*)`/g)) {
+    strings.push(toClassString(m[1], (m.index ?? 0) + 1))
+  }
+  const withoutTemplates = content.replace(/`[^`]*`/g, (m) => m.replace(/[^\n]/g, ' '))
+  let offset = 0
+  for (const line of withoutTemplates.split('\n')) {
+    for (const m of line.matchAll(/(['"])([^'"]+)\1/g)) {
+      strings.push(toClassString(m[2], offset + (m.index ?? 0) + 1))
+    }
+    offset += line.length + 1
+  }
+  return strings
+}
+
 export function scanContrastIssues(): ContrastViolation[] {
   const srcDir = path.resolve(process.cwd(), 'src')
   const files = collectTsxFiles(srcDir, srcDir)
   const violations: ContrastViolation[] = []
 
   for (const file of files) {
-    const content = fs.readFileSync(file, 'utf8')
-    const lines = content.split(/\r?\n/)
+    const content = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n')
+    const lines = content.split('\n')
     const relFile = path.relative(process.cwd(), file).replace(/\\/g, '/')
+    // Exception: an `a11y-contrast-ok: <reason>` comment on the same line or the line directly above.
+    const isExempt = (line: number): boolean =>
+      [line - 1, line].some((n) => n >= 1 && /\ba11y-contrast-ok:\s*\S+/i.test(lines[n - 1]))
+    const push = (line: number, rule: ContrastViolation['rule'], token: string) => {
+      if (isExempt(line)) return
+      violations.push({ file: relFile, line, rule, token, context: lines[line - 1].trim() })
+    }
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i]
-      // Ngoại lệ hợp lệ: dòng có comment a11y-contrast-ok: <lý do> ngay trên → bỏ qua
-      let hasExceptionComment = false
-      for (let j = Math.max(0, i - 4); j <= i; j++) {
-        if (/\ba11y-contrast-ok:\s*\S+/i.test(lines[j])) {
-          hasExceptionComment = true
-          break
+    for (const { tokens: located } of extractClassStrings(content)) {
+      const tokens = located.map((t) => t.value)
+
+      for (const { value: rawToken, line } of located) {
+        if (hasIgnoredPrefix(rawToken)) {
+          continue
         }
-      }
-      if (hasExceptionComment) {
-        continue
-      }
+        const token = stripImportant(rawToken)
 
-      // Trích xuất các chuỗi class trong dấu nháy kép, nháy đơn hoặc template literal
-      const stringMatches = line.match(/(['"`])([^'"`]+)\1/g) || []
-
-      for (const quoted of stringMatches) {
-        const rawString = quoted.slice(1, -1)
-        const tokens = rawString.split(/\s+/).filter(Boolean)
-
-        for (const token of tokens) {
-          if (hasIgnoredPrefix(token)) {
-            continue
+        // 1. text-deep-navy/NN với NN < 60
+        const navyMatch = token.match(/^(?:[a-z0-9_-]+:)*text-deep-navy\/(\d+|\[[\d.]+%?\])$/)
+        if (navyMatch) {
+          const rawVal = navyMatch[1]
+          let pct: number
+          if (rawVal.startsWith('[')) {
+            const num = parseFloat(rawVal.replace(/[[\]%]/g, ''))
+            pct = rawVal.includes('%') || num > 1 ? num : num * 100
+          } else {
+            pct = parseInt(rawVal, 10)
           }
+          if (pct < 60) push(line, 'navy-low-contrast', rawToken)
+        }
 
-          // 1. text-deep-navy/NN với NN < 60
-          const navyMatch = token.match(/^(?:[a-z0-9_-]+:)*text-deep-navy\/(\d+|\[[\d.]+\])$/)
-          if (navyMatch) {
-            const rawVal = navyMatch[1]
-            let pct: number
-            if (rawVal.startsWith('[')) {
-              const num = parseFloat(rawVal.replace(/[[\]]/g, ''))
-              pct = num <= 1 ? num * 100 : num
-            } else {
-              pct = parseInt(rawVal, 10)
-            }
-            if (pct < 60) {
-              violations.push({
-                file: relFile,
-                line: i + 1,
-                rule: 'navy-low-contrast',
-                token,
-                context: line.trim(),
-              })
-            }
-          }
-
-          // 2. text-bright-magenta/NN hoặc text-accent-pink/NN (mọi độ mờ)
-          const magPinkMatch = token.match(
-            /^(?:[a-z0-9_-]+:)*(text-bright-magenta|text-accent-pink)\/(\d+|\[[\d.]+\])$/,
+        // 2. text-bright-magenta/NN hoặc text-accent-pink/NN (mọi độ mờ)
+        if (
+          /^(?:[a-z0-9_-]+:)*(text-bright-magenta|text-accent-pink)\/(\d+|\[[\d.]+%?\])$/.test(
+            token,
           )
-          if (magPinkMatch) {
-            violations.push({
-              file: relFile,
-              line: i + 1,
-              rule: 'magenta-pink-opacity',
-              token,
-              context: line.trim(),
-            })
-          }
-
-          // 3. text-accent-pink trên phần tử không phải chữ lớn
-          const accentPinkMatch = token.match(/^(?:[a-z0-9_-]+:)*text-accent-pink$/)
-          if (accentPinkMatch) {
-            if (!isLargeText(tokens)) {
-              violations.push({
-                file: relFile,
-                line: i + 1,
-                rule: 'small-accent-pink',
-                token,
-                context: line.trim(),
-              })
-            }
-          }
+        ) {
+          push(line, 'magenta-pink-opacity', rawToken)
         }
 
-        // 4. bg-accent-pink + text-white (hoặc text-warm-ivory) mà không có (text-[19px]/text-[20px]/text-lg+ và font-bold)
-        const hasBgPink = tokens.some(
-          (t) => /^(?:[a-z0-9_-]+:)*bg-accent-pink$/.test(t) && !hasIgnoredPrefix(t),
-        )
-        const hasLightText = tokens.some(
-          (t) => /^(?:[a-z0-9_-]+:)*(text-white|text-warm-ivory)$/.test(t) && !hasIgnoredPrefix(t),
-        )
-        if (hasBgPink && hasLightText && !isLargeText(tokens)) {
-          violations.push({
-            file: relFile,
-            line: i + 1,
-            rule: 'pink-white-button-small',
-            token: 'bg-accent-pink + text-white/warm-ivory',
-            context: line.trim(),
-          })
+        // 3. text-accent-pink trên phần tử không phải chữ lớn
+        if (/^(?:[a-z0-9_-]+:)*text-accent-pink$/.test(token) && !isLargeText(tokens)) {
+          push(line, 'small-accent-pink', rawToken)
         }
+      }
+
+      // 4. bg-accent-pink(/NN) + text-white / text-warm-ivory mà không phải chữ lớn đậm
+      const bgPink = located.find(
+        (t) =>
+          !hasIgnoredPrefix(t.value) &&
+          /^(?:[a-z0-9_-]+:)*bg-accent-pink(\/\d+)?$/.test(stripImportant(t.value)),
+      )
+      const hasLightText = located.some(
+        (t) =>
+          !hasIgnoredPrefix(t.value) &&
+          /^(?:[a-z0-9_-]+:)*(text-white|text-warm-ivory)$/.test(stripImportant(t.value)),
+      )
+      if (bgPink && hasLightText && !isLargeText(tokens)) {
+        push(bgPink.line, 'pink-white-button-small', 'bg-accent-pink + text-white/warm-ivory')
       }
     }
   }

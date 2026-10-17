@@ -108,8 +108,8 @@ export default async function EqBuddyIntroPage() {
           </div>
         </header>
 
-        {/* a11y-contrast-ok: SVG trang trí HeartLine có aria-hidden, không chứa chữ */}
         <div
+          // a11y-contrast-ok: SVG trang trí HeartLine có aria-hidden, không chứa chữ
           className="flex items-center justify-center my-10 sm:my-14 text-accent-pink/40"
           aria-hidden="true"
         >
