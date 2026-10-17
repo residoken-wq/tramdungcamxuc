@@ -117,7 +117,7 @@ export function PackageSummaryTerms({
             <span className="text-deep-navy/70">
               {vi.payment.ui.packageSummary.totalValueLabel}
             </span>
-            <span className="line-through text-deep-navy/50 font-medium">
+            <span className="line-through text-deep-navy/70 font-medium">
               {formatVnd(totalValue)}
             </span>
           </div>

@@ -80,6 +80,7 @@ export function Footer({
             )}
 
             <div className="pt-2">
+              {/* a11y-contrast-ok: SVG trang trí HeartLine ở footer */}
               <HeartLine className="w-24 h-4 text-accent-pink/40" />
             </div>
           </div>

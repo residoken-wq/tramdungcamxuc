@@ -62,7 +62,7 @@ export function CertificateShareButtons({
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleDownload45}
-          className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 transition-all motion-reduce:transition-none shadow-sm"
+          className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-deep-navy text-warm-ivory font-ui font-bold text-sm hover:bg-deep-navy/90 transition-all motion-reduce:transition-none shadow-sm"
         >
           {vi.certificate.actions.download45}
         </a>

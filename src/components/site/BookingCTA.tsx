@@ -83,7 +83,7 @@ export function BookingCTA({
                 {formatVnd(currentPrice)}
               </span>
               {originalPrice != null && (
-                <span className="font-sans text-lg text-deep-navy/50 line-through">
+                <span className="font-sans text-lg text-deep-navy/70 line-through">
                   {formatVnd(originalPrice)}
                 </span>
               )}

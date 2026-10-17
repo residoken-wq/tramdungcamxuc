@@ -83,6 +83,7 @@ export function HanaStory({
               </div>
             )}
             <div className="mt-4 flex justify-center">
+              {/* a11y-contrast-ok: SVG trang trí HeartLine trong HanaStory */}
               <HeartLine className="w-20 h-4 text-accent-pink/50" />
             </div>
           </div>

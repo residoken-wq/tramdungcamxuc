@@ -97,7 +97,7 @@ export function LogoStrip({
                   className={`h-10 sm:h-12 px-4 rounded-md border border-dashed flex items-center justify-center text-xs font-ui ${
                     isDeepNavy
                       ? 'border-white/20 text-white/50'
-                      : 'border-deep-navy/20 text-deep-navy/50'
+                      : 'border-deep-navy/20 text-deep-navy/70'
                   }`}
                 >
                   {alt}

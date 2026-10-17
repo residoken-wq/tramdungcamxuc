@@ -92,7 +92,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
                 <ul className="space-y-2">
                   {includesList.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm text-deep-navy/90">
-                      <span className="text-accent-pink font-bold">✓</span>
+                      <span className="text-bright-magenta font-bold">✓</span>
                       <span>{item}</span>
                     </li>
                   ))}

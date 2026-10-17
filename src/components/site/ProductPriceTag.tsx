@@ -42,7 +42,7 @@ export function ProductPriceTag({
   if (loading && !product) {
     return (
       <div className={`py-2 px-4 flex ${alignClasses}`}>
-        <span className="font-ui text-sm text-deep-navy/50">Đang tải giá...</span>
+        <span className="font-ui text-sm text-deep-navy/70">Đang tải giá...</span>
       </div>
     )
   }
@@ -51,7 +51,7 @@ export function ProductPriceTag({
     if (isEditing) {
       return (
         <div className={`py-2 px-4 flex ${alignClasses}`}>
-          <span className="font-ui text-sm text-deep-navy/50 border border-dashed border-deep-navy/20 px-3 py-1 rounded">
+          <span className="font-ui text-sm text-deep-navy/70 border border-dashed border-deep-navy/20 px-3 py-1 rounded">
             Chưa chọn sản phẩm hiển thị giá
           </span>
         </div>

@@ -164,7 +164,7 @@ export function ExperienceBookingForm({
                   {formatVnd(product.currentPrice)}
                 </span>
                 {product.originalPrice != null && product.originalPrice > product.currentPrice && (
-                  <span className="font-sans text-base text-deep-navy/40 line-through">
+                  <span className="font-sans text-base text-deep-navy/70 line-through">
                     {formatVnd(product.originalPrice)}
                   </span>
                 )}

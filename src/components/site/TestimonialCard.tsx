@@ -41,6 +41,7 @@ export function TestimonialCard({
         <span className="text-3xl sm:text-4xl text-bright-magenta font-quote leading-none select-none">
           &ldquo;
         </span>
+        {/* a11y-contrast-ok: SVG trang trí HeartLine trên TestimonialCard */}
         <HeartLine className="w-16 h-4 text-accent-pink/40" />
       </div>
 
@@ -74,9 +75,7 @@ export function TestimonialCard({
           )}
 
           <div className="flex flex-col">
-            <cite className="not-italic font-ui font-bold text-base text-deep-navy">
-              {name}
-            </cite>
+            <cite className="not-italic font-ui font-bold text-base text-deep-navy">{name}</cite>
             {role && (
               <span className="text-sm font-sans text-deep-navy/70 leading-tight mt-0.5">
                 {role}

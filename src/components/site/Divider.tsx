@@ -43,7 +43,9 @@ export function Divider({
   const isDeepNavy = bgColor === 'deep-navy'
   const containerBgClass = bgColor ? BG_COLORS[bgColor] : ''
 
+  // a11y-contrast-ok: SVG đường kẻ và SVG trái tim trang trí
   const thinLineColor = isDeepNavy ? 'text-white/25' : 'text-deep-navy/15'
+  // a11y-contrast-ok: SVG đường kẻ và SVG trái tim trang trí
   const heartLineColor = isDeepNavy ? 'text-soft-pink' : 'text-accent-pink'
 
   return (

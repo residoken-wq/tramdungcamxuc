@@ -51,7 +51,7 @@ export function PostCard({
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-lavender-mist/40 via-soft-pink/30 to-warm-ivory p-4 text-center">
-            <span className="font-display text-2xl uppercase tracking-wider text-deep-navy/30 select-none">
+            <span className="font-display text-2xl uppercase tracking-wider text-deep-navy/70 select-none">
               {isVideo ? 'Video' : 'Bài viết'}
             </span>
           </div>

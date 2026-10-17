@@ -212,7 +212,7 @@ export function TrackerSummaryCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={handleDownload45}
-                className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-xs sm:text-sm hover:bg-accent-pink/90 transition-all motion-reduce:transition-none shadow-xs"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-deep-navy text-warm-ivory font-ui font-bold text-xs sm:text-sm hover:bg-deep-navy/90 transition-all motion-reduce:transition-none shadow-xs"
               >
                 {vi.certificate.actions.download45}
               </a>
@@ -235,7 +235,7 @@ export function TrackerSummaryCard({
               </button>
               <Link
                 href={`/chung-nhan/${certificate.code}`}
-                className="inline-flex items-center justify-center px-4 py-2 rounded-full text-bright-magenta hover:text-bright-magenta/80 underline font-ui font-semibold text-xs sm:text-sm transition-all motion-reduce:transition-none"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-full text-bright-magenta hover:text-deep-navy underline font-ui font-semibold text-xs sm:text-sm transition-all motion-reduce:transition-none"
               >
                 {vi.certificate.actions.viewPublicPage} &rarr;
               </Link>
@@ -293,7 +293,7 @@ export function TrackerSummaryCard({
                 <button
                   type="submit"
                   disabled={!isHydrated || isClaiming || !nameInput.trim()}
-                  className="w-full inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all motion-reduce:transition-none shadow-sm"
+                  className="w-full inline-flex items-center justify-center min-h-[48px] px-6 py-3 rounded-full bg-accent-pink text-white font-ui font-bold text-[19px] tracking-tight hover:bg-bright-magenta disabled:opacity-50 disabled:cursor-not-allowed transition-all motion-reduce:transition-none shadow-sm"
                 >
                   {isClaiming
                     ? vi.certificate.actions.gettingCertificate
@@ -305,7 +305,7 @@ export function TrackerSummaryCard({
                 type="button"
                 disabled={!isHydrated || isClaiming}
                 onClick={() => handleClaim()}
-                className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all motion-reduce:transition-none shadow-sm"
+                className="inline-flex items-center justify-center min-h-[48px] px-6 py-3 rounded-full bg-accent-pink text-white font-ui font-bold text-[19px] tracking-tight hover:bg-bright-magenta disabled:opacity-50 disabled:cursor-not-allowed transition-all motion-reduce:transition-none shadow-sm"
               >
                 {isClaiming
                   ? vi.certificate.actions.gettingCertificate
