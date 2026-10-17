@@ -271,7 +271,7 @@ export function LessonWizardContainer({ initialModules }: LessonWizardContainerP
         <h1 className="font-display text-2xl uppercase tracking-wider text-deep-navy sm:text-3xl">
           {vi.cms.lessonWizard.title}
         </h1>
-        <p className="mt-1 font-serif text-sm italic text-deep-navy/70">
+        <p className="mt-1 font-ui text-sm text-deep-navy/70">
           {vi.cms.lessonWizard.description}
         </p>
       </div>
