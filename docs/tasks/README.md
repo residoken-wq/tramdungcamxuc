@@ -211,8 +211,8 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | CM-05  | Live Preview cho sản phẩm, bài học, thẻ EQ, testimonial…   | –            | Laptop      | **ĐẠT** 16/10 – PR #133, IT duyệt, Planning sửa CM-05b (bài học xem trước: quyền + không ghi tiến độ; khung tự tải lại sau khi lưu nháp; /gia-thanh-toan) ([review](reviews/CM-05.md)) |
 | CM-04  | Wizard "Tạo sản phẩm" 5 bước                               | CM-03, CM-05 | PC nhà      | **ĐẠT** 17/10 – PR #143, IT duyệt, Planning sửa CM-04b (lách luật ảnh bìa, tạo trùng khi lưu, màu ngoài palette) ([review](reviews/CM-04.md))                                          |
 | CM-06  | Wizard "Thêm bài học" + "Lên lịch workshop"                | CM-04        | Local       | **ĐẠT** 17/10 – PR #147, IT duyệt, Planning sửa CM-06b (action xem trước email thiếu kiểm phiên, GUID khi lưu nháp, e2e chưa từng chạy được) ([review](reviews/CM-06.md))              |
-| CM-07a | Đổi chữ "Wizard" trên nút / giao diện trước buổi thử       | CM-06        | Laptop      | Chưa giao (`prompts/CM-07a.md`)                                                                                                                                                        |
-| CM-07  | Hướng dẫn CMS + buổi thử với Hana (7 việc, bấm giờ)        | CM-07a       | Planning    | Kế hoạch `docs/plan/CM-07.md` – chờ chốt ngày thử                                                                                                                                      |
+| CM-07a | Đổi chữ "Wizard" trên nút / giao diện trước buổi thử       | CM-06        | Laptop      | ĐẠT – `reviews/CM-07a.md`, PR #150                                                                                                                                                     |
+| CM-07  | Hướng dẫn CMS + buổi thử với Hana (7 việc, bấm giờ)        | CM-07a       | Planning    | Kế hoạch `docs/plan/CM-07.md` – CM-07a xong, chờ chốt ngày thử                                                                                                                         |
 
 Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ CM-03 ‖ CM-05.
 
