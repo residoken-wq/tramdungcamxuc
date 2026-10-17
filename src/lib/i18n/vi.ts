@@ -375,8 +375,10 @@ export const vi = {
       },
     },
     lessonWizard: {
+      seriesLabel: 'Trình hướng dẫn',
       title: 'Thêm bài học mới',
       subtitle: 'Trình hướng dẫn từng bước tạo bài giảng video và tài liệu thực hành trong khóa Habit.',
+      description: 'Từng bước thêm bài học mới vào lộ trình khóa Habit và xem trước trực quan.',
       steps: {
         step1: {
           number: 1,
@@ -465,9 +467,11 @@ export const vi = {
       },
     },
     workshopWizard: {
+      seriesLabel: 'Trình hướng dẫn',
       title: 'Lên lịch workshop mới',
       subtitle:
         'Trình hướng dẫn từng bước lên lịch buổi chia sẻ trực tuyến Zoom và thiết lập nhắc lịch cho học viên.',
+      description: 'Lên lịch buổi workshop trực tuyến và gửi email nhắc tự động.',
       steps: {
         step1: {
           number: 1,
@@ -489,6 +493,9 @@ export const vi = {
         },
       },
       labels: {
+        audience: 'Sản phẩm được tham gia workshop',
+        audienceHint:
+          'Học viên sở hữu bất kỳ sản phẩm nào được chọn sẽ nhìn thấy lịch và nhận email nhắc trước 24 giờ.',
         audienceProducts: 'Sản phẩm được tham gia workshop',
         audienceProductsHint:
           'Học viên sở hữu bất kỳ sản phẩm nào được chọn sẽ nhìn thấy lịch và nhận email nhắc trước 24 giờ.',
@@ -496,15 +503,19 @@ export const vi = {
         linkedProductPlaceholder: '-- Chọn sản phẩm workshop tương ứng nếu có --',
         title: 'Tên buổi workshop',
         titlePlaceholder: 'Ví dụ: Workshop "Tập thương cảm xúc" – Kỳ tháng 10/2026',
+        date: 'Ngày tổ chức',
+        time: 'Giờ bắt đầu',
         startDate: 'Ngày tổ chức (Giờ Việt Nam)',
         startTime: 'Giờ bắt đầu (Giờ Việt Nam)',
         startTimePlaceholder: '20:00',
         endDate: 'Ngày kết thúc (tùy chọn)',
         endTime: 'Giờ kết thúc (tùy chọn)',
+        timezoneNotice: 'Thời gian nhập theo giờ Việt Nam (UTC+7)',
         timeZoneNotice: 'Giờ Việt Nam (UTC+7). Hệ thống tự động quy đổi và lưu trữ chuẩn UTC.',
         joinUrl: 'Liên kết phòng họp trực tuyến (Zoom / Google Meet)',
         joinUrlPlaceholder: 'https://zoom.us/j/... hoặc https://meet.google.com/...',
         joinUrlHint: 'Được bảo mật riêng tư, chỉ gửi cho học viên đủ điều kiện tham dự.',
+        emailPreviewNotice: 'Bản xem trước email nhắc nhở 24 giờ',
       },
       emailPreview: {
         eyebrow: 'Xem trước email nhắc lịch tự động (Gửi trước 24 giờ)',
@@ -520,6 +531,8 @@ export const vi = {
       errors: {
         missingAudience: 'Vui lòng chọn ít nhất một sản phẩm được tham gia.',
         missingTitle: 'Vui lòng nhập tên buổi workshop.',
+        missingDate: 'Vui lòng chọn ngày tổ chức.',
+        missingTime: 'Vui lòng chọn giờ bắt đầu.',
         missingStartTime: 'Vui lòng nhập ngày và giờ bắt đầu.',
         invalidStartTime: 'Thời gian bắt đầu không hợp lệ.',
         missingJoinUrl: 'Vui lòng nhập liên kết phòng họp trực tuyến.',
@@ -531,6 +544,8 @@ export const vi = {
       },
       success: {
         saved: 'Đã lưu lịch workshop thành công! Đang chuyển đến trang chi tiết...',
+        draftSaved: 'Đã lưu bản nháp workshop thành công!',
+        published: 'Đã xuất bản lịch workshop thành công!',
       },
     },
   },

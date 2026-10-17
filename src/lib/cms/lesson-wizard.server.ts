@@ -8,7 +8,6 @@ import { vi } from '@/lib/i18n/vi'
 import {
   validateLessonWizardData,
   type LessonWizardInput,
-  type LessonStage,
 } from './lesson-wizard-schema'
 
 export interface CourseModuleOption {

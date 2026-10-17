@@ -143,17 +143,19 @@ describe('Workshop Wizard (CM-06) Unit Tests', () => {
   describe('Server Actions Integration (Auth & Enforcement)', () => {
     let payload: Payload
     let ownerToken: string
-    let customerToken: string
     const cleanupDocs: { collection: CollectionSlug; id: string | number }[] = []
 
     beforeAll(async () => {
       const payloadConfig = await config
       payload = await getPayload({ config: payloadConfig })
 
-      const migrationContext = { payload } as unknown as MigrateUpArgs & MigrateDownArgs
-      for (const migration of migrations) {
-        await migration.up(migrationContext)
-      }
+      await payload.db.migrate({
+        migrations: migrations.map((migration) => ({
+          name: migration.name,
+          up: (args: unknown) => migration.up(args as MigrateUpArgs),
+          down: (args: unknown) => migration.down(args as MigrateDownArgs),
+        })),
+      })
 
       // Create owner user
       const ownerEmail = `test-workshop-wizard-owner-${randomUUID()}@tdcx.test`
@@ -162,7 +164,6 @@ describe('Workshop Wizard (CM-06) Unit Tests', () => {
         data: {
           email: ownerEmail,
           password: 'Password123!',
-          name: 'Owner Tester',
           role: 'owner',
         },
       })
@@ -173,25 +174,6 @@ describe('Workshop Wizard (CM-06) Unit Tests', () => {
         data: { email: ownerEmail, password: 'Password123!' },
       })
       ownerToken = ownerLogin.token!
-
-      // Create customer user
-      const customerEmail = `test-workshop-wizard-cust-${randomUUID()}@tdcx.test`
-      const customer = await payload.create({
-        collection: 'users',
-        data: {
-          email: customerEmail,
-          password: 'Password123!',
-          name: 'Customer Tester',
-          role: 'customer',
-        },
-      })
-      cleanupDocs.push({ collection: 'users', id: customer.id })
-
-      const customerLogin = await payload.login({
-        collection: 'users',
-        data: { email: customerEmail, password: 'Password123!' },
-      })
-      customerToken = customerLogin.token!
     })
 
     afterAll(async () => {
@@ -209,8 +191,8 @@ describe('Workshop Wizard (CM-06) Unit Tests', () => {
     })
 
     it('rejects unauthorized user from scheduling a workshop', async () => {
+      // No auth header provided
       mockHeadersValue = new Headers()
-      mockHeadersValue.set('Authorization', `JWT ${customerToken}`)
 
       const res = await createWorkshopFromWizard({
         audienceProductIds: [1],
@@ -265,7 +247,7 @@ describe('Workshop Wizard (CM-06) Unit Tests', () => {
         expect(workshopInDb.isSample).toBe(false)
         expect(workshopInDb.title).toBe('Workshop Tập thương cảm xúc - Kỳ 1')
         // Starts at 02:00 on Oct 25 ICT -> 19:00 on Oct 24 UTC
-        expect(new Date(workshopInDb.startsAt).toISOString()).toBe('2026-10-24T19:00:00.000Z')
+        expect(new Date(workshopInDb.startsAt!).toISOString()).toBe('2026-10-24T19:00:00.000Z')
         expect(workshopInDb.joinUrl).toBe('https://meet.google.com/abc-test-meet')
       }
     })

@@ -21,7 +21,7 @@ export function Step1Module({
   const [showNewModuleForm, setShowNewModuleForm] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newGroup, setNewGroup] = useState<'insight' | 'principle' | 'technique'>('insight')
-  const [newOrder, setNewOrder] = useState<number>(modules.length + 1)
+  const [newOrder, _setNewOrder] = useState<number>(modules.length + 1)
   const [isCreating, setIsCreating] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
 
