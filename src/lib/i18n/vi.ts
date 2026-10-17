@@ -115,6 +115,9 @@ export const vi = {
         web: 'Khu vực hiển thị chính: Trang chủ (site), Thói quen (habit), EQ Buddy (eq).',
         saleStatus: 'Trạng thái hiển thị và mở bán trên toàn website.',
         order: 'Thứ tự sắp xếp trên trang danh sách (số nhỏ hơn đứng trước).',
+        topic: 'Chủ đề dùng cho bộ lọc ở trang Tài nguyên (Cảm xúc, Thói quen, Sự nghiệp).',
+        audienceSegment:
+          'Sản phẩm dành cho Cá nhân hay Doanh nghiệp – dùng để tự xếp nhóm trên menu và khối giới thiệu.',
       },
       descriptions: {
         name: 'Hiện trên tiêu đề thẻ sản phẩm ở Thư viện, đầu trang chi tiết, giỏ hàng và email xác nhận.',
@@ -126,6 +129,9 @@ export const vi = {
         journeyStep:
           'Hiện nhãn bước hành trình (Dừng lại, Cảm nhận, Gọi tên...) trên thẻ sản phẩm.',
         audience: 'Hiện trong khối "Sản phẩm này dành cho ai" trên trang chi tiết.',
+        tagline:
+          'Câu ngắn dưới tên gói trên thẻ lộ trình (vd "Tỏ tường từ bên trong"). Tối đa 60 ký tự.',
+        icon: 'Biểu tượng nhỏ ở đầu thẻ sản phẩm trên các khối giới thiệu (chọn trong bộ icon thương hiệu).',
         price:
           'Giá bán niêm yết (VND). Hiện trên thẻ sản phẩm ở Thư viện, đầu trang chi tiết và hóa đơn.',
         salePrice:
@@ -377,7 +383,8 @@ export const vi = {
     lessonWizard: {
       seriesLabel: 'Trình hướng dẫn',
       title: 'Thêm bài học mới',
-      subtitle: 'Trình hướng dẫn từng bước tạo bài giảng video và tài liệu thực hành trong khóa Habit.',
+      subtitle:
+        'Trình hướng dẫn từng bước tạo bài giảng video và tài liệu thực hành trong khóa Habit.',
       description: 'Từng bước thêm bài học mới vào lộ trình khóa Habit và xem trước trực quan.',
       steps: {
         step1: {
@@ -455,8 +462,7 @@ export const vi = {
           'Mã video không hợp lệ. Phải là mã GUID chuẩn 36 ký tự từ Bunny Stream (ví dụ: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).',
         invalidDuration:
           'Thời lượng không hợp lệ. Vui lòng nhập định dạng phút:giây (ví dụ: 05:30) hoặc số giây dương.',
-        unauthorized:
-          'Phiên làm việc đã hết hạn hoặc bạn không có quyền. Vui lòng đăng nhập lại.',
+        unauthorized: 'Phiên làm việc đã hết hạn hoặc bạn không có quyền. Vui lòng đăng nhập lại.',
         createFailed: 'Không thể tạo bài học. Vui lòng kiểm tra lại thông tin.',
         createModuleFailed: 'Không thể tạo nhóm bài học mới. Vui lòng kiểm tra lại tên nhóm.',
       },
@@ -538,8 +544,7 @@ export const vi = {
         missingJoinUrl: 'Vui lòng nhập liên kết phòng họp trực tuyến.',
         invalidJoinUrl:
           'Liên kết phòng họp không hợp lệ (phải bắt đầu bằng http:// hoặc https://).',
-        unauthorized:
-          'Phiên làm việc đã hết hạn hoặc bạn không có quyền. Vui lòng đăng nhập lại.',
+        unauthorized: 'Phiên làm việc đã hết hạn hoặc bạn không có quyền. Vui lòng đăng nhập lại.',
         createFailed: 'Không thể lưu lịch workshop. Vui lòng kiểm tra lại thông tin.',
       },
       success: {

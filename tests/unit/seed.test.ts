@@ -32,6 +32,7 @@ const seeded: CollectionSlug[] = [
   'lessons',
   'courseModules',
   'legalPages',
+  'faqs',
   'pages',
 ]
 
@@ -124,7 +125,10 @@ describe('sample seed', () => {
       if (settingsBefore)
         await payload.updateGlobal({
           slug: 'siteSettings',
-          data: { shopeeStoreUrl: settingsBefore.shopeeStoreUrl ?? null },
+          data: {
+            shopeeStoreUrl: settingsBefore.shopeeStoreUrl ?? null,
+            leadStatusOptions: settingsBefore.leadStatusOptions ?? [],
+          },
         })
     } finally {
       await payload.destroy()

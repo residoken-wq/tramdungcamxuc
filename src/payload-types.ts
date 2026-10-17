@@ -71,6 +71,8 @@ export interface Config {
     pages: Page;
     posts: Post;
     testimonials: Testimonial;
+    faqs: Faq;
+    teamMembers: TeamMember;
     legalPages: LegalPage;
     media: Media;
     products: Product;
@@ -113,6 +115,8 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    faqs: FaqsSelect<false> | FaqsSelect<true>;
+    teamMembers: TeamMembersSelect<false> | TeamMembersSelect<true>;
     legalPages: LegalPagesSelect<false> | LegalPagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
@@ -319,6 +323,10 @@ export interface Post {
    */
   thumbnail?: (number | null) | Media;
   /**
+   * Bật để đưa bài lên vị trí nổi bật đầu danh sách bài viết.
+   */
+  featured?: boolean | null;
+  /**
    * Nhập liên kết bắt đầu bằng https:// hoặc http://.
    */
   videoUrl?: string | null;
@@ -387,6 +395,14 @@ export interface Product {
    */
   order?: number | null;
   /**
+   * Chủ đề dùng cho bộ lọc ở trang Tài nguyên (Cảm xúc, Thói quen, Sự nghiệp).
+   */
+  topic?: ('eq' | 'habit' | 'career') | null;
+  /**
+   * Sản phẩm dành cho Cá nhân hay Doanh nghiệp – dùng để tự xếp nhóm trên menu và khối giới thiệu.
+   */
+  audienceSegment?: ('individual' | 'business') | null;
+  /**
    * Hiện trên tiêu đề thẻ sản phẩm ở Thư viện, đầu trang chi tiết, giỏ hàng và email xác nhận.
    */
   name: string;
@@ -402,6 +418,33 @@ export interface Product {
    * Hiện dưới tên sản phẩm trên thẻ ở Thư viện, đầu trang chi tiết và email giới thiệu.
    */
   shortDescription?: string | null;
+  /**
+   * Câu ngắn dưới tên gói trên thẻ lộ trình (vd "Tỏ tường từ bên trong"). Tối đa 60 ký tự.
+   */
+  tagline?: string | null;
+  /**
+   * Biểu tượng nhỏ ở đầu thẻ sản phẩm trên các khối giới thiệu (chọn trong bộ icon thương hiệu).
+   */
+  icon?:
+    | (
+        | 'target'
+        | 'layers'
+        | 'star'
+        | 'heart'
+        | 'butterfly'
+        | 'leaf'
+        | 'valve'
+        | 'compass'
+        | 'mask'
+        | 'signpost'
+        | 'team'
+        | 'chat'
+        | 'book'
+        | 'spark'
+        | 'shield'
+        | 'mirror'
+      )
+    | null;
   /**
    * Hiện nhãn bước hành trình (Dừng lại, Cảm nhận, Gọi tên...) trên thẻ sản phẩm.
    */
@@ -609,9 +652,13 @@ export interface Testimonial {
    */
   name: string;
   /**
-   * Nhập vai trò.
+   * Chức danh hiện trên thẻ (VD: Project Manager). Cần khách đồng ý.
    */
   role?: string | null;
+  /**
+   * Không bắt buộc. Chỉ nhập khi khách đồng ý hiện tuổi.
+   */
+  age?: number | null;
   /**
    * Nhập lời chia sẻ.
    */
@@ -644,6 +691,23 @@ export interface Testimonial {
    * Chọn ảnh có mô tả để người dùng dễ tiếp cận.
    */
   photo?: (number | null) | Media;
+  /**
+   * Không bắt buộc. Dùng cho thẻ câu chuyện "Trước / Sau". Chỉ hiện trên web khi khách đã đồng ý.
+   */
+  story?: {
+    /**
+     * Nhập trước / vấn đề ban đầu.
+     */
+    before?: string | null;
+    /**
+     * Nhập quá trình nhận thức.
+     */
+    insight?: string | null;
+    /**
+     * Nhập sau / kết quả.
+     */
+    after?: string | null;
+  };
   isSample?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -669,6 +733,18 @@ export interface Service {
    * Nhập dành cho ai.
    */
   audience?: string | null;
+  /**
+   * Dòng nhãn nhỏ trên thẻ dịch vụ. VD: Dành cho chuyên gia & cá nhân.
+   */
+  audienceLabel?: string | null;
+  /**
+   * Chữ ngắn trên huy hiệu của thẻ dịch vụ. VD: Growth Mirror.
+   */
+  badge?: string | null;
+  /**
+   * Ảnh minh họa trên thẻ dịch vụ ở trang Coach 1:1. Cần có mô tả ảnh.
+   */
+  image?: (number | null) | Media;
   /**
    * Thêm từng mục, kéo để đổi thứ tự.
    */
@@ -822,6 +898,76 @@ export interface Program {
    * Chọn một mục phù hợp.
    */
   saleStatus: 'coming_soon' | 'on_sale' | 'free' | 'consult' | 'hidden';
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Câu hỏi thường gặp dùng chung cho nhiều trang. Sửa ở đây, mọi trang dùng câu hỏi này tự cập nhật.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs".
+ */
+export interface Faq {
+  id: number;
+  /**
+   * Nhập câu hỏi.
+   */
+  question: string;
+  /**
+   * Viết câu trả lời. Xuống dòng sẽ được giữ nguyên trên web.
+   */
+  answer: string;
+  /**
+   * Trang nào lấy câu hỏi theo nhóm này sẽ tự hiện câu hỏi.
+   */
+  group: 'general' | 'journey' | 'coaching' | 'digital' | 'business' | 'payment';
+  /**
+   * Số nhỏ hơn đứng trước.
+   */
+  order?: number | null;
+  isSample?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Thành viên đội ngũ hiện ở trang Về Trạm. Chỉ thêm người thật đã đồng ý.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teamMembers".
+ */
+export interface TeamMember {
+  id: number;
+  /**
+   * Nhập họ tên.
+   */
+  name: string;
+  /**
+   * VD: Executive Coach.
+   */
+  role?: string | null;
+  /**
+   * VD: Chuyên gia khai vấn lãnh đạo.
+   */
+  specialty?: string | null;
+  /**
+   * Tối đa 400 ký tự.
+   */
+  bio?: string | null;
+  /**
+   * Ảnh thật của người này, cần có mô tả ảnh.
+   */
+  photo?: (number | null) | Media;
+  /**
+   * Số nhỏ hơn đứng trước.
+   */
+  order?: number | null;
+  /**
+   * Bắt buộc bật trước khi xuất bản.
+   */
+  consent?: boolean | null;
   isSample?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -1414,11 +1560,27 @@ export interface Lead {
    * Chọn nội dung đã tạo trong hệ thống.
    */
   service?: (number | null) | Service;
+  /**
+   * Gói khách bấm "Chọn gói này" trước khi đặt phiên trải nghiệm.
+   */
+  interestedPackage?: (number | null) | Product;
+  /**
+   * Chương trình doanh nghiệp khách quan tâm.
+   */
+  interestedProgram?: (number | null) | Program;
+  /**
+   * Lựa chọn khách chọn trên form liên hệ.
+   */
+  currentStatus?: string | null;
   brief?: {
     /**
      * Nhập công ty / tổ chức.
      */
     company?: string | null;
+    /**
+     * VD: HRD, L&D Manager, CEO.
+     */
+    contactRole?: string | null;
     /**
      * Nhập quy mô đội ngũ.
      */
@@ -2007,6 +2169,14 @@ export interface PayloadLockedDocument {
         value: number | Testimonial;
       } | null)
     | ({
+        relationTo: 'faqs';
+        value: number | Faq;
+      } | null)
+    | ({
+        relationTo: 'teamMembers';
+        value: number | TeamMember;
+      } | null)
+    | ({
         relationTo: 'legalPages';
         value: number | LegalPage;
       } | null)
@@ -2218,6 +2388,7 @@ export interface PostsSelect<T extends boolean = true> {
   topic?: T;
   format?: T;
   thumbnail?: T;
+  featured?: T;
   videoUrl?: T;
   content?: T;
   ctaProduct?: T;
@@ -2234,11 +2405,50 @@ export interface PostsSelect<T extends boolean = true> {
 export interface TestimonialsSelect<T extends boolean = true> {
   name?: T;
   role?: T;
+  age?: T;
   quote?: T;
   relatedOffer?: T;
   language?: T;
   consent?: T;
   photo?: T;
+  story?:
+    | T
+    | {
+        before?: T;
+        insight?: T;
+        after?: T;
+      };
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs_select".
+ */
+export interface FaqsSelect<T extends boolean = true> {
+  question?: T;
+  answer?: T;
+  group?: T;
+  order?: T;
+  isSample?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teamMembers_select".
+ */
+export interface TeamMembersSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  specialty?: T;
+  bio?: T;
+  photo?: T;
+  order?: T;
+  consent?: T;
   isSample?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2289,10 +2499,14 @@ export interface ProductsSelect<T extends boolean = true> {
   web?: T;
   saleStatus?: T;
   order?: T;
+  topic?: T;
+  audienceSegment?: T;
   name?: T;
   slug?: T;
   coverImage?: T;
   shortDescription?: T;
+  tagline?: T;
+  icon?: T;
   journeyStep?: T;
   audience?:
     | T
@@ -2358,6 +2572,9 @@ export interface ServicesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   audience?: T;
+  audienceLabel?: T;
+  badge?: T;
+  image?: T;
   situations?:
     | T
     | {
@@ -2639,10 +2856,14 @@ export interface LeadsSelect<T extends boolean = true> {
   consent?: T;
   consentAt?: T;
   service?: T;
+  interestedPackage?: T;
+  interestedProgram?: T;
+  currentStatus?: T;
   brief?:
     | T
     | {
         company?: T;
+        contactRole?: T;
         teamSize?: T;
         targetBehaviors?: T;
         timeline?: T;
@@ -2957,7 +3178,7 @@ export interface Navigation {
         /**
          * Chọn một mục phù hợp.
          */
-        linkType: 'page' | 'url';
+        linkType: 'page' | 'url' | 'none';
         page?: (number | null) | Page;
         /**
          * Nhập đường dẫn /habit/chan-doan hoặc liên kết https://.
@@ -2967,6 +3188,40 @@ export interface Navigation {
          * Bật để áp dụng: hiển thị nổi bật.
          */
         highlight?: boolean | null;
+        /**
+         * Không bắt buộc. Mỗi nhóm có tên (VD: "Dành cho Cá nhân") và các mục con; kéo để đổi thứ tự.
+         */
+        children?:
+          | {
+              /**
+               * Không bắt buộc. VD: Dành cho Cá nhân.
+               */
+              groupLabel?: string | null;
+              items?:
+                | {
+                    /**
+                     * Nhập tên mục.
+                     */
+                    label: string;
+                    /**
+                     * Không bắt buộc, tối đa 60 ký tự. VD: Công cụ hỗ trợ cảm xúc.
+                     */
+                    description?: string | null;
+                    /**
+                     * Chọn một mục phù hợp.
+                     */
+                    linkType: 'page' | 'url';
+                    page?: (number | null) | Page;
+                    /**
+                     * Nhập đường dẫn /habit/chan-doan hoặc liên kết https://.
+                     */
+                    url?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -3014,6 +3269,10 @@ export interface SiteSetting {
    * Nhập thông điệp thương hiệu.
    */
   tagline?: string | null;
+  /**
+   * PNG nền trong, dùng ở khối "Lời chào từ nhà sáng lập".
+   */
+  founderSignature?: (number | null) | Media;
   /**
    * Dùng trong chuyển khoản, email và mã đơn.
    */
@@ -3069,9 +3328,25 @@ export interface SiteSetting {
    */
   email?: string | null;
   /**
+   * Số điện thoại hiện ở trang Liên hệ. VD: 0930 000 000.
+   */
+  hotline?: string | null;
+  /**
+   * Có thể chỉ ghi thành phố. VD: TP. Hồ Chí Minh, Việt Nam.
+   */
+  officeAddress?: string | null;
+  /**
    * Nhập liên kết bắt đầu bằng https:// hoặc http://.
    */
   linkedInUrl?: string | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  facebookUrl?: string | null;
+  /**
+   * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+   */
+  youtubeUrl?: string | null;
   /**
    * Nhập liên kết bắt đầu bằng https:// hoặc http://.
    */
@@ -3088,6 +3363,18 @@ export interface SiteSetting {
    * Nhập liên kết bắt đầu bằng https:// hoặc http://.
    */
   shopeeStoreUrl?: string | null;
+  /**
+   * Các lựa chọn khách thấy ở ô "Tình trạng hiện tại" của form liên hệ. Kéo để đổi thứ tự.
+   */
+  leadStatusOptions?:
+    | {
+        /**
+         * Nhập lựa chọn.
+         */
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
   sellerInfo?: {
     /**
      * Nhập tên người bán hoặc hộ kinh doanh.
@@ -3114,6 +3401,10 @@ export interface SiteSetting {
    * Số ngày hoàn thành trong hành trình 21 ngày.
    */
   certificateMinDays?: number | null;
+  /**
+   * Để trống thì dẫn tới trang lộ trình. Khi Habit Tracker số đang mở dùng thử, nút luôn dẫn tới dùng thử.
+   */
+  quizCtaPath?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3130,6 +3421,22 @@ export interface NavigationSelect<T extends boolean = true> {
         page?: T;
         url?: T;
         highlight?: T;
+        children?:
+          | T
+          | {
+              groupLabel?: T;
+              items?:
+                | T
+                | {
+                    label?: T;
+                    description?: T;
+                    linkType?: T;
+                    page?: T;
+                    url?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
         id?: T;
       };
   footerMenu?:
@@ -3153,6 +3460,7 @@ export interface NavigationSelect<T extends boolean = true> {
 export interface SiteSettingsSelect<T extends boolean = true> {
   logo?: T;
   tagline?: T;
+  founderSignature?: T;
   brandAscii?: T;
   domain?: T;
   analytics?:
@@ -3170,11 +3478,21 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   experienceBookingUrl?: T;
   trialCreditApplies?: T;
   email?: T;
+  hotline?: T;
+  officeAddress?: T;
   linkedInUrl?: T;
+  facebookUrl?: T;
+  youtubeUrl?: T;
   zaloGroupUrl?: T;
   zaloChatUrl?: T;
   showFloatingChat?: T;
   shopeeStoreUrl?: T;
+  leadStatusOptions?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
   sellerInfo?:
     | T
     | {
@@ -3185,6 +3503,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         email?: T;
       };
   certificateMinDays?: T;
+  quizCtaPath?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

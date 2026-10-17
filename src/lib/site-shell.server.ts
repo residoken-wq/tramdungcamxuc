@@ -42,8 +42,10 @@ export const DEFAULT_SITE_SHELL_DATA: SiteShellData = {
   },
 }
 
+// `none` (parent that only opens its submenu) falls back to '/' until the Navbar renders
+// submenus (SM-02).
 function resolveMenuHref(item: {
-  linkType: 'page' | 'url'
+  linkType: 'page' | 'url' | 'none'
   page?: (number | null) | Page
   url?: string | null
 }): string {

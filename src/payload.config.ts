@@ -15,6 +15,8 @@ import { Products } from './collections/Products'
 import { Services } from './collections/Services'
 import { Programs } from './collections/Programs'
 import { Posts } from './collections/Posts'
+import { Faqs } from './collections/Faqs'
+import { TeamMembers } from './collections/TeamMembers'
 import { Testimonials } from './collections/Testimonials'
 import { EqCards } from './collections/EqCards'
 import { CourseModules } from './collections/CourseModules'
@@ -102,6 +104,8 @@ export default buildConfig({
     Pages,
     Posts,
     Testimonials,
+    Faqs,
+    TeamMembers,
     LegalPages,
     Media,
 

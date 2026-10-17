@@ -1,6 +1,7 @@
 import { detailLivePreview } from '@/lib/live-preview'
 import {
   contentCollection,
+  image,
   lines,
   number,
   relation,
@@ -21,6 +22,16 @@ export const Services = contentCollection(
     text('name', 'Tên dịch vụ', true),
     slug(),
     text('audience', 'Dành cho ai'),
+    text('audienceLabel', 'Nhãn đối tượng', false, {
+      admin: { description: 'Dòng nhãn nhỏ trên thẻ dịch vụ. VD: Dành cho chuyên gia & cá nhân.' },
+    }),
+    text('badge', 'Huy hiệu', false, {
+      maxLength: 30,
+      admin: { description: 'Chữ ngắn trên huy hiệu của thẻ dịch vụ. VD: Growth Mirror.' },
+    }),
+    image('image', 'Ảnh dịch vụ', {
+      admin: { description: 'Ảnh minh họa trên thẻ dịch vụ ở trang Coach 1:1. Cần có mô tả ảnh.' },
+    }),
     lines('situations', 'Tình huống phù hợp'),
     lines('outcomes', 'Kết quả mong đợi'),
     lines('process', 'Quy trình'),
