@@ -84,8 +84,9 @@ export default async function StyleguidePage() {
               Tỏa sáng bằng thế mạnh riêng trong từng nhịp thở thường ngày.
             </p>
             <div className="mt-6 flex items-center gap-3">
+              {/* a11y-contrast-ok: SVG trang trí HeartLine hiển thị mẫu */}
               <HeartLine className="text-accent-pink" width={56} height={20} />
-              <span className="font-ui text-xs text-deep-navy/50">
+              <span className="font-ui text-xs text-deep-navy/70">
                 Quy tắc: Dòng 1 Anton (deep-navy) → Dòng 2 Anton (bright-magenta) → Dòng cảm xúc
                 Playfair Display Italic
               </span>
@@ -154,7 +155,7 @@ export default async function StyleguidePage() {
                 <span className="font-ui text-xs font-bold uppercase tracking-wider text-deep-navy">
                   Font Display: Anton (Weight 400) – Tiêu đề chính H1, H2
                 </span>
-                <span className="font-ui text-xs text-deep-navy/50">--font-display</span>
+                <span className="font-ui text-xs text-deep-navy/70">--font-display</span>
               </div>
               <p className="font-display text-2xl uppercase tracking-tight text-deep-navy sm:text-3xl">
                 Trạm Dừng Cảm Xúc – Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.
@@ -179,25 +180,25 @@ export default async function StyleguidePage() {
                 <span className="font-ui text-xs font-bold uppercase tracking-wider text-deep-navy">
                   Font UI & Body: Montserrat (Weights 400, 600, 700) – Đoạn văn, nhãn, nút
                 </span>
-                <span className="font-ui text-xs text-deep-navy/50">--font-ui</span>
+                <span className="font-ui text-xs text-deep-navy/70">--font-ui</span>
               </div>
               <div className="space-y-3 font-ui text-deep-navy">
                 <p className="font-normal text-base">
-                  <span className="font-semibold text-xs uppercase text-deep-navy/50 mr-2">
+                  <span className="font-semibold text-xs uppercase text-deep-navy/70 mr-2">
                     Regular 400:
                   </span>
                   Trạm Dừng Cảm Xúc là không gian đồng hành cùng bạn nhận diện, điều hòa cảm xúc và
                   chuyển hóa thành thói quen hành động bền vững.
                 </p>
                 <p className="font-semibold text-base">
-                  <span className="font-semibold text-xs uppercase text-deep-navy/50 mr-2">
+                  <span className="font-semibold text-xs uppercase text-deep-navy/70 mr-2">
                     SemiBold 600:
                   </span>
                   Chẩn đoán thói quen 5 phút · Bộ công cụ số Habit Tracker · EQ Buddy 26 thẻ cảm
                   xúc.
                 </p>
                 <p className="font-bold text-base">
-                  <span className="font-semibold text-xs uppercase text-deep-navy/50 mr-2">
+                  <span className="font-semibold text-xs uppercase text-deep-navy/70 mr-2">
                     Bold 700:
                   </span>
                   Đặt phiên trải nghiệm · Dùng thử 21 ngày miễn phí · Khám phá cách Hana đồng hành.
@@ -211,7 +212,7 @@ export default async function StyleguidePage() {
                 <span className="font-ui text-xs font-bold uppercase tracking-wider text-deep-navy">
                   Font Quote: Playfair Display (Style Italic) – Câu quote, dòng cảm xúc
                 </span>
-                <span className="font-ui text-xs text-deep-navy/50">--font-quote</span>
+                <span className="font-ui text-xs text-deep-navy/70">--font-quote</span>
               </div>
               <blockquote className="font-quote text-xl italic text-deep-navy/90 sm:text-2xl">
                 “Lỡ nhịp một ngày là không sao cả. Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn
@@ -300,30 +301,32 @@ export default async function StyleguidePage() {
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {/* HeartLine */}
             <div className="flex flex-col items-center justify-center rounded-card border border-deep-navy/10 bg-white p-6 text-center shadow-soft">
+              {/* a11y-contrast-ok: SVG trang trí HeartLine hiển thị mẫu */}
               <HeartLine className="text-accent-pink" width={64} height={24} />
               <span className="mt-3 font-ui text-xs font-semibold text-deep-navy">HeartLine</span>
-              <span className="font-ui text-[10px] text-deep-navy/50">Nét trái tim</span>
+              <span className="font-ui text-[10px] text-deep-navy/70">Nét trái tim</span>
             </div>
 
             {/* Valve */}
             <div className="flex flex-col items-center justify-center rounded-card border border-deep-navy/10 bg-white p-6 text-center shadow-soft">
               <Valve className="text-deep-navy" width={32} height={32} />
               <span className="mt-3 font-ui text-xs font-semibold text-deep-navy">Valve</span>
-              <span className="font-ui text-[10px] text-deep-navy/50">Van cảm xúc</span>
+              <span className="font-ui text-[10px] text-deep-navy/70">Van cảm xúc</span>
             </div>
 
             {/* Butterfly */}
             <div className="flex flex-col items-center justify-center rounded-card border border-deep-navy/10 bg-white p-6 text-center shadow-soft">
               <Butterfly className="text-bright-magenta" width={32} height={32} />
               <span className="mt-3 font-ui text-xs font-semibold text-deep-navy">Butterfly</span>
-              <span className="font-ui text-[10px] text-deep-navy/50">Cánh bướm</span>
+              <span className="font-ui text-[10px] text-deep-navy/70">Cánh bướm</span>
             </div>
 
             {/* Leaf */}
             <div className="flex flex-col items-center justify-center rounded-card border border-deep-navy/10 bg-white p-6 text-center shadow-soft">
+              {/* a11y-contrast-ok: SVG trang trí Leaf hiển thị mẫu */}
               <Leaf className="text-accent-pink" width={32} height={32} />
               <span className="mt-3 font-ui text-xs font-semibold text-deep-navy">Leaf</span>
-              <span className="font-ui text-[10px] text-deep-navy/50">Họa tiết lá</span>
+              <span className="font-ui text-[10px] text-deep-navy/70">Họa tiết lá</span>
             </div>
 
             {/* ThinLine */}
@@ -332,14 +335,14 @@ export default async function StyleguidePage() {
                 <ThinLine className="text-deep-navy" width="100%" height={8} />
               </div>
               <span className="mt-3 font-ui text-xs font-semibold text-deep-navy">ThinLine</span>
-              <span className="font-ui text-[10px] text-deep-navy/50">Đường kẻ mảnh</span>
+              <span className="font-ui text-[10px] text-deep-navy/70">Đường kẻ mảnh</span>
             </div>
 
             {/* Logo */}
             <div className="flex flex-col items-center justify-center rounded-card border border-deep-navy/10 bg-white p-6 text-center shadow-soft">
               <Logo width={120} />
               <span className="mt-3 font-ui text-xs font-semibold text-deep-navy">Logo</span>
-              <span className="font-ui text-[10px] text-deep-navy/50">Placeholder chuẩn</span>
+              <span className="font-ui text-[10px] text-deep-navy/70">Placeholder chuẩn</span>
             </div>
           </div>
 

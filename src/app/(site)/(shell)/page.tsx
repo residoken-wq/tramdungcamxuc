@@ -82,6 +82,7 @@ export default async function HomePage() {
           Trạm Dừng Cảm Xúc
         </h1>
 
+        {/* a11y-contrast-ok: SVG trang trí HeartLine, không chứa chữ */}
         <HeartLine className="my-4 text-accent-pink" width={72} height={28} />
 
         <p className="font-quote text-lg italic text-deep-navy/85">

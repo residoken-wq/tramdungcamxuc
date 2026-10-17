@@ -67,6 +67,7 @@ export function EqCardFace({
       )}
 
       {/* HeartLine divider between front and back when showing both */}
+      {/* a11y-contrast-ok: SVG trang trí HeartLine trên mặt thẻ EQ */}
       {face === 'both' && (
         <div
           className="flex items-center justify-center my-8 text-accent-pink/40"

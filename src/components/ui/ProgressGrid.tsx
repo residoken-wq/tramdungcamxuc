@@ -216,14 +216,14 @@ export function ProgressGrid({
 
             case 'locked':
               stateStyle =
-                'bg-deep-navy/5 border-dashed border-deep-navy/15 text-deep-navy/40 cursor-not-allowed opacity-60'
-              indicatorIcon = <LockIcon className="w-3 h-3 text-deep-navy/40" />
+                'bg-deep-navy/5 border-dashed border-deep-navy/15 text-deep-navy/70 cursor-not-allowed opacity-60'
+              indicatorIcon = <LockIcon className="w-3 h-3 text-deep-navy/70" />
               break
 
             case 'future':
             default:
               stateStyle =
-                'bg-deep-navy/[0.02] border-deep-navy/15 text-deep-navy/50 cursor-not-allowed opacity-75'
+                'bg-deep-navy/[0.02] border-deep-navy/15 text-deep-navy/70 cursor-not-allowed opacity-75'
               break
           }
 
@@ -279,7 +279,7 @@ export function ProgressGrid({
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-md bg-deep-navy/5 border border-dashed border-deep-navy/15 flex items-center justify-center">
-            <LockIcon className="w-2 h-2 text-deep-navy/40" />
+            <LockIcon className="w-2 h-2 text-deep-navy/70" />
           </span>
           <span>{vi.habit.statuses.locked} / Chưa tới</span>
         </div>

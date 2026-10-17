@@ -93,6 +93,7 @@ export function JourneySteps({
   const cardBgClass = isDeepNavy
     ? 'bg-white/10 border-white/20 text-white'
     : 'bg-white border-deep-navy/10 text-deep-navy shadow-soft'
+  // a11y-contrast-ok: Số bước 01-05 dùng font-display (Anton) text-2xl/text-3xl là chữ lớn
   const stepNumberColorClass = isDeepNavy ? 'text-soft-pink' : 'text-accent-pink'
   const descColorClass = isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
 

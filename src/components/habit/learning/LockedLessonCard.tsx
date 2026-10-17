@@ -56,14 +56,14 @@ export function LockedLessonCard({
         {isUnauthenticated ? (
           <Link
             href={loginUrl}
-            className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-accent-pink px-6 py-3 font-ui text-sm font-bold text-warm-ivory shadow-sm hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink transition-all motion-reduce:transition-none"
+            className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-accent-pink px-6 py-3 font-ui font-bold text-[19px] tracking-tight text-white shadow-sm hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink transition-all motion-reduce:transition-none"
           >
             {vi.common.login}
           </Link>
         ) : (
           <Link
             href={vi.learning.dashboard.offerHref}
-            className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-accent-pink px-6 py-3 font-ui text-sm font-bold text-warm-ivory shadow-sm hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink transition-all motion-reduce:transition-none"
+            className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-accent-pink px-6 py-3 font-ui font-bold text-[19px] tracking-tight text-white shadow-sm hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink transition-all motion-reduce:transition-none"
           >
             {vi.learning.lesson.unlockButton}
           </Link>

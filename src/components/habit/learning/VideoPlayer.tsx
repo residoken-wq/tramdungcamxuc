@@ -288,7 +288,7 @@ export function VideoPlayer({
                   type="button"
                   onClick={handleSimulateWatch}
                   disabled={isPending}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent-pink px-5 py-2.5 font-ui text-sm font-bold text-warm-ivory shadow transition-all hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warm-ivory motion-reduce:transition-none disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent-pink px-6 py-3 font-ui font-bold text-[19px] tracking-tight text-white shadow transition-all hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warm-ivory motion-reduce:transition-none disabled:opacity-50"
                 >
                   {isPending
                     ? vi.learning.lesson.simulating

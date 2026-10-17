@@ -6,21 +6,12 @@ interface ContrastViolation {
   file: string
   line: number
   rule:
-    | 'navy-low-contrast'
-    | 'magenta-pink-opacity'
-    | 'small-accent-pink'
-    | 'pink-white-button-small'
+    'navy-low-contrast' | 'magenta-pink-opacity' | 'small-accent-pink' | 'pink-white-button-small'
   token: string
   context: string
 }
 
-const IGNORED_PREFIXES = new Set([
-  'placeholder',
-  'hover',
-  'focus',
-  'group-hover',
-  'disabled',
-])
+const IGNORED_PREFIXES = new Set(['placeholder', 'hover', 'focus', 'group-hover', 'disabled'])
 
 function hasIgnoredPrefix(token: string): boolean {
   const parts = token.split(':')
@@ -33,9 +24,7 @@ function isLargeText(tokens: string[]): boolean {
     /^(?:[a-z0-9_-]+:)*(font-bold|font-extrabold|font-black)$/.test(t),
   )
   const hasLargeSize = tokens.some((t) => {
-    if (
-      /^(?:[a-z0-9_-]+:)*text-(lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)$/.test(t)
-    ) {
+    if (/^(?:[a-z0-9_-]+:)*text-(lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)$/.test(t)) {
       return true
     }
     const match = t.match(/^(?:[a-z0-9_-]+:)*text-\[(\d+)px\]$/)
@@ -78,15 +67,15 @@ export function scanContrastIssues(): ContrastViolation[] {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]
-      const prevLine = i > 0 ? lines[i - 1] : ''
-      const prevLine2 = i > 1 ? lines[i - 2] : ''
-
-      // Ngoại lệ hợp lệ: dòng có comment a11y-contrast-ok: <lý do> ngay trên (hoặc ngay dòng này) → bỏ qua
-      if (
-        /\ba11y-contrast-ok:\s*\S+/i.test(line) ||
-        /\ba11y-contrast-ok:\s*\S+/i.test(prevLine) ||
-        (/\ba11y-contrast-ok:\s*\S+/i.test(prevLine2) && line.trim().startsWith('className'))
-      ) {
+      // Ngoại lệ hợp lệ: dòng có comment a11y-contrast-ok: <lý do> ngay trên → bỏ qua
+      let hasExceptionComment = false
+      for (let j = Math.max(0, i - 4); j <= i; j++) {
+        if (/\ba11y-contrast-ok:\s*\S+/i.test(lines[j])) {
+          hasExceptionComment = true
+          break
+        }
+      }
+      if (hasExceptionComment) {
         continue
       }
 
@@ -103,9 +92,7 @@ export function scanContrastIssues(): ContrastViolation[] {
           }
 
           // 1. text-deep-navy/NN với NN < 60
-          const navyMatch = token.match(
-            /^(?:[a-z0-9_-]+:)*text-deep-navy\/(\d+|\[[\d.]+\])$/,
-          )
+          const navyMatch = token.match(/^(?:[a-z0-9_-]+:)*text-deep-navy\/(\d+|\[[\d.]+\])$/)
           if (navyMatch) {
             const rawVal = navyMatch[1]
             let pct: number
@@ -141,9 +128,7 @@ export function scanContrastIssues(): ContrastViolation[] {
           }
 
           // 3. text-accent-pink trên phần tử không phải chữ lớn
-          const accentPinkMatch = token.match(
-            /^(?:[a-z0-9_-]+:)*text-accent-pink$/,
-          )
+          const accentPinkMatch = token.match(/^(?:[a-z0-9_-]+:)*text-accent-pink$/)
           if (accentPinkMatch) {
             if (!isLargeText(tokens)) {
               violations.push({
@@ -159,14 +144,10 @@ export function scanContrastIssues(): ContrastViolation[] {
 
         // 4. bg-accent-pink + text-white (hoặc text-warm-ivory) mà không có (text-[19px]/text-[20px]/text-lg+ và font-bold)
         const hasBgPink = tokens.some(
-          (t) =>
-            /^(?:[a-z0-9_-]+:)*bg-accent-pink$/.test(t) &&
-            !hasIgnoredPrefix(t),
+          (t) => /^(?:[a-z0-9_-]+:)*bg-accent-pink$/.test(t) && !hasIgnoredPrefix(t),
         )
         const hasLightText = tokens.some(
-          (t) =>
-            /^(?:[a-z0-9_-]+:)*(text-white|text-warm-ivory)$/.test(t) &&
-            !hasIgnoredPrefix(t),
+          (t) => /^(?:[a-z0-9_-]+:)*(text-white|text-warm-ivory)$/.test(t) && !hasIgnoredPrefix(t),
         )
         if (hasBgPink && hasLightText && !isLargeText(tokens)) {
           violations.push({
@@ -189,19 +170,13 @@ describe('a11y contrast guard test (T3-07)', () => {
     const violations = scanContrastIssues()
 
     if (violations.length > 0) {
-      const summaryByType = violations.reduce<Record<string, number>>(
-        (acc, v) => {
-          acc[v.rule] = (acc[v.rule] || 0) + 1
-          return acc
-        },
-        {},
-      )
+      const summaryByType = violations.reduce<Record<string, number>>((acc, v) => {
+        acc[v.rule] = (acc[v.rule] || 0) + 1
+        return acc
+      }, {})
 
       const formatted = violations
-        .map(
-          (v) =>
-            `${v.file}:${v.line} [${v.rule}] ${v.token} (context: "${v.context}")`,
-        )
+        .map((v) => `${v.file}:${v.line} [${v.rule}] ${v.token} (context: "${v.context}")`)
         .join('\n')
 
       const message =

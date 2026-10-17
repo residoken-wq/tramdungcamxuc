@@ -68,7 +68,7 @@ export function TrialStartForm({
       {errorMessage && (
         <div
           role="alert"
-          className="p-3.5 rounded-xl bg-accent-pink/10 border border-accent-pink/30 text-accent-pink font-sans text-xs sm:text-sm"
+          className="p-3.5 rounded-xl bg-accent-pink/10 border border-accent-pink/30 text-bright-magenta font-sans text-xs sm:text-sm"
         >
           {errorMessage}
         </div>

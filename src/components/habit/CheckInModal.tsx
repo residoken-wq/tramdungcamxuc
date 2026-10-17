@@ -148,7 +148,7 @@ export function CheckInModal({
           </div>
 
           {error && (
-            <p className="text-xs font-ui text-accent-pink bg-soft-pink p-2.5 rounded-lg border border-accent-pink/30">
+            <p className="text-xs font-ui text-bright-magenta bg-soft-pink p-2.5 rounded-lg border border-accent-pink/30">
               {error}
             </p>
           )}

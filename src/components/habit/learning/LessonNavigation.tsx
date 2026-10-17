@@ -20,7 +20,7 @@ export function LessonNavigation({ prevLesson, nextLesson }: LessonNavigationPro
         >
           <span
             aria-hidden="true"
-            className="text-accent-pink transition-transform group-hover:-translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+            className="text-bright-magenta transition-transform group-hover:-translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
           >
             ←
           </span>
@@ -52,7 +52,7 @@ export function LessonNavigation({ prevLesson, nextLesson }: LessonNavigationPro
           </div>
           <span
             aria-hidden="true"
-            className="text-accent-pink transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+            className="text-bright-magenta transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
           >
             →
           </span>

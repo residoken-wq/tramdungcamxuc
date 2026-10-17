@@ -35,6 +35,7 @@ export type ButtonProps = ButtonAsButton | ButtonAsLink
  */
 export const BUTTON_STYLES = {
   variants: {
+    // a11y-contrast-ok: BUTTON_STYLES ghép size md/lg text-[19px] font-bold ở resolveButtonClasses (Q13) hoặc fallback secondary
     primary: 'bg-accent-pink text-white hover:opacity-95 active:opacity-90',
     secondary: 'bg-deep-navy text-white hover:opacity-95 active:opacity-90',
     ghost:
