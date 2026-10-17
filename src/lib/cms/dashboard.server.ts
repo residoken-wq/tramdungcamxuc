@@ -70,13 +70,13 @@ export const CMS_DASHBOARD_QUICK_ACTIONS: DashboardQuickActionItem[] = [
     id: 'createWorkshop',
     title: vi.cms.dashboard.quickActions.createWorkshop.title,
     description: vi.cms.dashboard.quickActions.createWorkshop.description,
-    href: '/admin/collections/workshops/create',
+    href: '/admin/len-lich-workshop',
   },
   {
     id: 'createLesson',
     title: vi.cms.dashboard.quickActions.createLesson.title,
     description: vi.cms.dashboard.quickActions.createLesson.description,
-    href: '/admin/collections/lessons/create',
+    href: '/admin/them-bai-hoc',
   },
 ]
 

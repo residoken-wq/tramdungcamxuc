@@ -74,6 +74,20 @@ export default buildConfig({
             title: 'Tạo sản phẩm – Trạm Dừng Cảm Xúc',
           },
         },
+        LessonWizard: {
+          Component: '@/components/admin/lesson-wizard/LessonWizardView#LessonWizardView',
+          path: '/them-bai-hoc',
+          meta: {
+            title: 'Thêm bài học – Trạm Dừng Cảm Xúc',
+          },
+        },
+        WorkshopWizard: {
+          Component: '@/components/admin/workshop-wizard/WorkshopWizardView#WorkshopWizardView',
+          path: '/len-lich-workshop',
+          meta: {
+            title: 'Lên lịch workshop – Trạm Dừng Cảm Xúc',
+          },
+        },
       },
     },
   },
