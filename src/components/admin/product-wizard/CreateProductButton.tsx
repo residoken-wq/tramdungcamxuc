@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { vi } from '@/lib/i18n/vi'
 
 export function CreateProductButton() {
   return (
@@ -10,7 +11,7 @@ export function CreateProductButton() {
         </span>
         <div>
           <h3 className="font-ui text-sm font-bold text-deep-navy">
-            Tạo sản phẩm qua Trình hướng dẫn (Wizard 5 bước)
+            Tạo sản phẩm qua trình hướng dẫn (5 bước)
           </h3>
           <p className="text-xs text-deep-navy/70">
             Dành riêng cho Hana: thiết lập nhanh công cụ số, gói Growth Mirror, sách điện tử và xem
@@ -23,7 +24,7 @@ export function CreateProductButton() {
         href="/admin/tao-san-pham"
         className="inline-flex items-center gap-2 rounded-xl bg-deep-navy px-4 py-2 font-ui text-xs font-bold text-white shadow-sm transition-all hover:bg-bright-magenta hover:shadow-md"
       >
-        <span>+ Tạo sản phẩm bằng Wizard</span>
+        <span>{vi.cms.wizard.listButtons.product}</span>
         <span>→</span>
       </Link>
     </div>

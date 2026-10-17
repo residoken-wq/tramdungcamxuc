@@ -17,14 +17,14 @@
 2. [Nhận biết và Làm việc với dữ liệu mẫu](#2-nhận-biết-và-làm-việc-với-dữ-liệu-mẫu)
 3. [Quản lý Sản phẩm, Giá bán và Tài nguyên](#3-quản-lý-sản-phẩm-giá-bán-và-tài-nguyên)
    - [3.1. Tạo và chỉnh sửa sản phẩm: Giao diện 6 tab theo loại](#31-tạo-và-chỉnh-sửa-sản-phẩm-giao-diện-6-tab-theo-loại)
-   - [3.1b. Tạo sản phẩm bằng trình hướng dẫn (Wizard 5 bước)](#31b-tạo-sản-phẩm-bằng-trình-hướng-dẫn-wizard-5-bước)
+   - [3.1b. Tạo sản phẩm bằng trình hướng dẫn (5 bước)](#31b-tạo-sản-phẩm-bằng-trình-hướng-dẫn-5-bước)
    - [3.7. Xem trước trước khi xuất bản (Live Preview)](#37-xem-trước-trước-khi-xuất-bản-live-preview)
    - [3.8. Quản lý Lịch workshop và quyền tham gia (Workshops)](#38-quản-lý-lịch-workshop-và-quyền-tham-gia-workshops)
-     - [3.8b. Lên lịch workshop bằng Trình hướng dẫn (Wizard 3 bước)](#38b-lên-lịch-workshop-bằng-trình-hướng-dẫn-wizard-3-bước)
+     - [3.8b. Lên lịch workshop bằng Trình hướng dẫn (3 bước)](#38b-lên-lịch-workshop-bằng-trình-hướng-dẫn-3-bước)
    - [3.9. Chương trình dùng thử 21 ngày cho công cụ số](#39-chương-trình-dùng-thử-21-ngày-cho-công-cụ-số)
    - [3.10. Quản lý Bài học và Video khóa học (Habit Hack)](#310-quản-lý-bài-học-và-video-khóa-học-habit-hack)
      - [3.10.1. Cách nhập video Bunny Stream cho bài học](#3101-cách-nhập-video-bunny-stream-cho-bài-học)
-     - [3.10.2. Thêm bài học bằng Trình hướng dẫn (Wizard 4 bước)](#3102-thêm-bài-học-bằng-trình-hướng-dẫn-wizard-4-bước)
+     - [3.10.2. Thêm bài học bằng Trình hướng dẫn (4 bước)](#3102-thêm-bài-học-bằng-trình-hướng-dẫn-4-bước)
    - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
    - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
    - [3.13. Quản lý 26 thẻ EQ Buddy](#313-quản-lý-26-thẻ-eq-buddy)
@@ -360,16 +360,16 @@ Hệ thống đã tự động ẩn đi các ô không liên quan để Hana kh�
 
 ---
 
-### 3.1b. Tạo sản phẩm bằng trình hướng dẫn (Wizard 5 bước)
+### 3.1b. Tạo sản phẩm bằng trình hướng dẫn (5 bước)
 
-**Mục đích**: Giúp Hana và cộng sự tạo sản phẩm mới nhanh chóng, trực quan và không bị quá tải. Thay vì phải đối mặt với hàng chục ô nhập liệu cùng lúc, Wizard dẫn dắt bạn qua 5 bước tuần tự, tự động điền sẵn các thiết lập tối ưu theo từng loại sản phẩm và cho phép xem trước diện mạo thực tế trước khi lưu.
+**Mục đích**: Giúp Hana và cộng sự tạo sản phẩm mới nhanh chóng, trực quan và không bị quá tải. Thay vì phải đối mặt với hàng chục ô nhập liệu cùng lúc, trình hướng dẫn dẫn dắt bạn qua 5 bước tuần tự, tự động điền sẵn các thiết lập tối ưu theo từng loại sản phẩm và cho phép xem trước diện mạo thực tế trước khi lưu.
 
-#### 1. Lối tắt vào Wizard Tạo sản phẩm
+#### 1. Lối tắt vào Trình hướng dẫn Tạo sản phẩm
 
 Hana có thể mở trình hướng dẫn bằng một trong hai cách:
 
 - **Cách 1**: Từ trang chủ admin (Dashboard "Hôm nay"), tại mục _Tạo nhanh_, bấm vào thẻ màu hồng **Tạo sản phẩm**.
-- **Cách 2**: Trong menu bên trái, vào **Sản phẩm & bán hàng** -> **Sản phẩm**, bấm vào nút **+ Tạo sản phẩm bằng Wizard** đặt nổi bật phía trên danh sách sản phẩm.
+- **Cách 2**: Trong menu bên trái, vào **Sản phẩm & bán hàng** -> **Sản phẩm**, bấm vào nút **+ Tạo sản phẩm (từng bước)** đặt nổi bật phía trên danh sách sản phẩm.
 - Địa chỉ truy cập trực tiếp: `<ĐỊA CHỈ DEMO>/admin/tao-san-pham`.
 
 #### 2. Chi tiết 5 bước tạo sản phẩm
@@ -429,7 +429,7 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
   - **Xuất bản**: Xuất bản sản phẩm trực tiếp lên website (`published`). Hệ thống sẽ tự động kiểm tra an toàn (bắt buộc có giá và ảnh bìa nếu đang mở bán).
 - Sau khi bấm Lưu, hệ thống sẽ tự động chuyển hướng về form quản lý chuẩn của bản ghi tại `/admin/collections/products/[id]`, sẵn sàng cho các tinh chỉnh nâng cao nếu cần.
 
-#### 3. Các tính năng bảo vệ an toàn cho Hana trong Wizard
+#### 3. Các tính năng bảo vệ an toàn cho Hana trong trình hướng dẫn
 
 1. **Tự động lưu nháp vào trình duyệt (`localStorage`)**:
    - Khi bạn đang nhập dở mà vô tình tải lại trang (`F5`) hoặc máy tính mất điện, dữ liệu đã nhập ở các bước sẽ tự động khôi phục nguyên vẹn.
@@ -614,20 +614,22 @@ Hệ thống tự động nhận biết loại nội dung bạn đang mở và d
 
 ---
 
-### 3.8b. Lên lịch workshop bằng Trình hướng dẫn (Wizard 3 bước)
+### 3.8b. Lên lịch workshop bằng Trình hướng dẫn (3 bước)
 
 **Mục đích**: Giúp Hana lên lịch các buổi workshop Zoom/Google Meet đồng hành cùng học viên một cách nhanh chóng và an toàn tuyệt đối: không lo nhầm lẫn múi giờ, chọn đúng gói học viên được tham gia, và xem trước giao diện email nhắc nhở 24 giờ mà không gửi email thật.
 
 #### 1. Cách mở Trình hướng dẫn lên lịch workshop
 
-Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
+Bạn có thể mở trình hướng dẫn bằng 3 cách rất thuận tiện:
+
 - **Từ trang chủ Dashboard "Hôm nay"**: Tại ô phím tắt nhanh, bấm vào **"Lên lịch workshop"**.
-- **Từ bảng danh sách Lịch workshop**: Vào menu **Khóa Habit** -> chọn **Lịch workshop**, bạn sẽ nhìn thấy banner màu tím nổi bật ở ngay đầu trang -> bấm nút **+ Lên lịch bằng Wizard**.
+- **Từ bảng danh sách Lịch workshop**: Vào menu **Khóa Habit** -> chọn **Lịch workshop**, bạn sẽ nhìn thấy banner màu tím nổi bật ở ngay đầu trang -> bấm nút **+ Lên lịch workshop (từng bước)**.
 - **Nhập trực tiếp đường dẫn**: Truy cập thẳng vào `/admin/len-lich-workshop`.
 
 #### 2. Các bước thiết lập chi tiết
 
 ##### Bước 1: Đối tượng tham gia
+
 - **Tên buổi workshop**: Nhập tiêu đề buổi học (ví dụ: `Workshop "Tập thương cảm xúc" – Kỳ 1`).
 - **Chọn sản phẩm được tham gia**: Tích chọn các gói đồng hành (CLEAR, BUILD, SHINE) hoặc sản phẩm workshop bán lẻ mà học viên đã mua sẽ được quyền vào phòng.
   - Có sẵn nút **Chọn tất cả** hoặc **Bỏ chọn** để thao tác nhanh chỉ với 1 cú nhấp chuột.
@@ -635,6 +637,7 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 - Bấm **Tiếp tục**.
 
 ##### Bước 2: Thời gian và địa điểm
+
 - **Ngày và Giờ bắt đầu (theo giờ Việt Nam)**: Chọn ngày diễn ra và giờ bắt đầu bình thường theo múi giờ sinh hoạt tại Việt Nam (ICT, UTC+7).
 - **Hệ thống tự động quy đổi múi giờ chuẩn quốc tế (UTC)**:
   - Ngay khi bạn chọn giờ, hệ thống sẽ tính toán và hiển thị chuỗi thời gian quốc tế tương đương.
@@ -643,6 +646,7 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 - Bấm **Tiếp tục**.
 
 ##### Bước 3: Xem trước thông báo và lưu
+
 - **Khung xem trước email nhắc nhở 24 giờ**:
   - Hệ thống sử dụng chính mẫu email thật của Trạm Dừng Cảm Xúc để hiển thị bản xem trước sinh động với tên workshop, ngày giờ Việt Nam chuẩn xác và nút truy cập tài khoản học viên.
   - Bạn có thể chuyển đổi giữa chế độ **Điện thoại** (375px) và **Máy tính** (100%) để kiểm tra độ hiển thị đẹp mắt.
@@ -653,6 +657,7 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 - Sau khi bấm Lưu, hệ thống sẽ tự động chuyển hướng về form chuẩn tại `/admin/collections/workshops/[id]`.
 
 #### 3. Tính năng an toàn cho Hana
+
 - **Tự động lưu nháp vào máy**: Nếu bạn lỡ tay đóng tab hay mất điện, dữ liệu đang nhập sẽ tự động khôi phục khi bạn quay lại.
 - **Cảnh báo rời trang**: Trình duyệt sẽ hỏi xác nhận nếu bạn rời đi khi chưa lưu.
 - **Lùi bước linh hoạt**: Bạn có thể bấm **Quay lại** bất kỳ lúc nào để chỉnh sửa mà không bị mất dữ liệu ở các bước khác.
@@ -740,20 +745,22 @@ Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
 
 ---
 
-### 3.10.2. Thêm bài học bằng Trình hướng dẫn (Wizard 4 bước)
+### 3.10.2. Thêm bài học bằng Trình hướng dẫn (4 bước)
 
 **Mục đích**: Hỗ trợ Hana đăng tải bài học mới vào lộ trình khóa học một cách nhanh gọn và trực quan nhất: vừa chọn chương vừa có thể tạo nhanh chương mới ngay tại chỗ, gắn bài học vào 4 chặng Habit Loop, tự động kiểm tra mã video Bunny và gõ thời lượng theo dạng phút:giây quen thuộc, kèm theo màn hình xem trước 3 kích thước trước khi lưu.
 
 #### 1. Cách mở Trình hướng dẫn thêm bài học
 
 Bạn có 3 cách rất dễ dàng:
+
 - **Từ Dashboard "Hôm nay"**: Tại ô phím tắt nhanh, bấm vào **"Thêm bài học"**.
-- **Từ bảng danh sách Bài học**: Vào menu **Khóa Habit** -> chọn **Bài học**, bạn sẽ nhìn thấy banner màu tím nổi bật ở ngay đầu trang -> bấm nút **+ Thêm bài học bằng Wizard**.
+- **Từ bảng danh sách Bài học**: Vào menu **Khóa Habit** -> chọn **Bài học**, bạn sẽ nhìn thấy banner màu tím nổi bật ở ngay đầu trang -> bấm nút **+ Thêm bài học (từng bước)**.
 - **Nhập trực tiếp đường dẫn**: Truy cập thẳng vào `/admin/them-bai-hoc`.
 
 #### 2. Các bước thiết lập chi tiết
 
 ##### Bước 1: Chọn chương học
+
 - **Danh sách nhóm bài học hiện có**: Hiển thị toàn bộ các chương đã có trên hệ thống, kèm theo nhãn phân loại (_Hiểu mình_, _Nguyên tắc_, hoặc _Kỹ thuật_) và số thứ tự chương. Bạn chỉ cần nhấp chuột vào thẻ chương mong muốn để chọn.
 - **Tạo nhanh nhóm bài học mới ngay tại chỗ**: Nếu bài học thuộc một chương mới toanh chưa có trên website, bạn không cần phải quay ra ngoài menu khác:
   - Bấm nút **+ Tạo nhóm bài học mới**.
@@ -763,6 +770,7 @@ Bạn có 3 cách rất dễ dàng:
 - Bấm **Tiếp tục**.
 
 ##### Bước 2: Thông tin bài học
+
 - **Tiêu đề bài học**: Nhập tên bài giảng hiển thị cho học viên (ví dụ: `Bài 1: Nhận diện tín hiệu kích hoạt`).
 - **Tóm tắt bài học**: Viết ngắn gọn 1–2 câu giới thiệu nội dung hoặc câu hỏi gợi mở suy ngẫm.
 - **Chặng thói quen (Habit Loop)**: Chọn 1 trong 5 nút lựa chọn:
@@ -775,6 +783,7 @@ Bạn có 3 cách rất dễ dàng:
 - Bấm **Tiếp tục**.
 
 ##### Bước 3: Video bài học & Thời lượng
+
 - **Mã video Bunny Stream (GUID)**:
   - Dán chuỗi mã định danh 36 ký tự từ Bunny Stream (ví dụ: `a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d`).
   - Hệ thống **kiểm tra định dạng thời gian thực**: nếu mã đúng chuẩn GUID, hệ thống sẽ hiện dấu tích xanh `✓ Định dạng GUID hợp lệ`. Nếu mã bị thiếu ký tự hoặc nhầm link web, hệ thống sẽ nhắc nhở ngay lập tức để bạn sửa.
@@ -785,6 +794,7 @@ Bạn có 3 cách rất dễ dàng:
 - Bấm **Tiếp tục**.
 
 ##### Bước 4: Xem trước và lưu bài học
+
 - **Khung xem trước trực quan**:
   - Hệ thống tự động tạo bản nháp tạm thời và tải trực tiếp giao diện phát video bài học thực tế bên trong khung xem trước.
   - Bạn có thể chuyển đổi giữa 3 kích thước:
@@ -797,6 +807,7 @@ Bạn có 3 cách rất dễ dàng:
 - Sau khi bấm Lưu, hệ thống tự động chuyển hướng về trang bài học chuẩn tại `/admin/collections/lessons/[id]`.
 
 #### 3. Tính năng an toàn cho Hana
+
 - **Tự động lưu nháp vào máy**: Không lo mất nội dung khi mất điện hoặc vô tình đóng trình duyệt.
 - **Cảnh báo rời trang**: Tránh việc bấm nhầm nút quay lại khi đang nhập dở.
 - **Khôi phục dữ liệu**: Bạn có thể bấm nút **Quay lại** ở bất kỳ bước nào để chỉnh sửa thông tin mà không sợ mất các bước đã nhập.

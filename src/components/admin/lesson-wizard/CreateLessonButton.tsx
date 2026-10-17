@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { vi } from '@/lib/i18n/vi'
 
 export function CreateLessonButton() {
   return (
@@ -10,10 +11,11 @@ export function CreateLessonButton() {
         </span>
         <div>
           <h3 className="font-ui text-sm font-bold text-deep-navy">
-            Thêm bài học qua Trình hướng dẫn (Wizard 4 bước)
+            Thêm bài học qua trình hướng dẫn (4 bước)
           </h3>
           <p className="text-xs text-deep-navy/70">
-            Dành riêng cho Hana: thiết lập nhanh bài học theo chương, Habit Loop, Bunny Video và xem trước trực quan.
+            Dành riêng cho Hana: thiết lập nhanh bài học theo chương, Habit Loop, Bunny Video và xem
+            trước trực quan.
           </p>
         </div>
       </div>
@@ -22,7 +24,7 @@ export function CreateLessonButton() {
         href="/admin/them-bai-hoc"
         className="inline-flex items-center gap-2 rounded-xl bg-deep-navy px-4 py-2 font-ui text-xs font-bold text-white shadow-sm transition-all hover:bg-bright-magenta hover:shadow-md"
       >
-        <span>+ Thêm bài học bằng Wizard</span>
+        <span>{vi.cms.wizard.listButtons.lesson}</span>
         <span>→</span>
       </Link>
     </div>
