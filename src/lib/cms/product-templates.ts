@@ -6,7 +6,7 @@ export interface ProductTypeTemplate {
   saleStatus: 'on_sale' | 'free' | 'coming_soon' | 'consult' | 'hidden'
   trialDays?: number | null
   accessDurationDays?: number | null
-  ctaType?: 'buy' | 'download' | 'calendar' | 'external'
+  ctaType?: 'buy' | 'download' | 'book' | 'contact' | 'external'
   ctaLabel?: string
   externalUrl?: string
   externalLabel?: string
@@ -72,7 +72,7 @@ export const PRODUCT_TYPE_TEMPLATES: Record<ProductType, ProductTypeTemplate> = 
     saleStatus: 'on_sale',
     trialDays: null,
     accessDurationDays: null,
-    ctaType: 'calendar',
+    ctaType: 'book',
     ctaLabel: 'Đặt lịch trải nghiệm',
     externalLabel: 'Đặt lịch hẹn',
   },

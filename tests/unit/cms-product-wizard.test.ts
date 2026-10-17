@@ -240,7 +240,6 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
         data: {
           email: editorEmail,
           password: 'TestPassword123!',
-          name: 'Editor Test',
           role: 'editor',
         },
       })

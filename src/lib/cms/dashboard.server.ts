@@ -52,8 +52,7 @@ export const CMS_DASHBOARD_QUICK_ACTIONS: DashboardQuickActionItem[] = [
     id: 'createProduct',
     title: vi.cms.dashboard.quickActions.createProduct.title,
     description: vi.cms.dashboard.quickActions.createProduct.description,
-    // TODO(CM-04): Chuyển hướng sang /admin/tao-san-pham khi wizard CM-04 hoàn thành.
-    href: '/admin/collections/products/create',
+    href: '/admin/tao-san-pham',
   },
   {
     id: 'createPage',

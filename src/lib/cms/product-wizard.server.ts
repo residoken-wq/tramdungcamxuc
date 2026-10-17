@@ -141,27 +141,45 @@ export async function createProductFromWizard(
     }
 
     // Nếu đã có docId (đã lưu nháp trước đó), gọi update; ngược lại gọi create
+    const isDraft = !options.publish
     if (options.docId) {
-      const updatedDoc = await payload.update({
-        collection: 'products',
-        id: options.docId,
-        data: payloadData,
-        draft: !options.publish,
-        user,
-        overrideAccess: false,
-      })
+      const updatedDoc = isDraft
+        ? await payload.update({
+            collection: 'products',
+            id: options.docId,
+            data: payloadData as any,
+            draft: true,
+            user,
+            overrideAccess: false,
+          })
+        : await payload.update({
+            collection: 'products',
+            id: options.docId,
+            data: payloadData as any,
+            draft: false,
+            user,
+            overrideAccess: false,
+          })
       return {
         success: true,
         docId: updatedDoc.id,
       }
     } else {
-      const createdDoc = await payload.create({
-        collection: 'products',
-        data: payloadData,
-        draft: !options.publish,
-        user,
-        overrideAccess: false,
-      })
+      const createdDoc = isDraft
+        ? await payload.create({
+            collection: 'products',
+            data: payloadData as any,
+            draft: true,
+            user,
+            overrideAccess: false,
+          })
+        : await payload.create({
+            collection: 'products',
+            data: payloadData as any,
+            draft: false,
+            user,
+            overrideAccess: false,
+          })
       return {
         success: true,
         docId: createdDoc.id,
