@@ -19,6 +19,10 @@ export async function expectNoSeriousA11y(
   label?: string,
   options?: A11yCheckOptions,
 ): Promise<void> {
+  // Finish CSS transitions at once (motion-reduce:transition-none) so axe does not measure
+  // colours mid-fade, e.g. a button fading in from its pre-hydration disabled opacity.
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+
   let builder = new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa'])
 
   if (options?.include) {

@@ -353,7 +353,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
 
       {/* Thanh tiến độ 4 bước */}
       {!submitSuccess && (
-        <div className="mb-8" aria-label={vi.habit.wizard.errors.progressAria}>
+        <div className="mb-8">
           <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-deep-navy mb-2">
             <span>{vi.habit.wizard.stepIndicator(draft.step, 4)}</span>
             <span className="text-bright-magenta">
@@ -368,6 +368,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               className="h-full bg-bright-magenta transition-all duration-300 rounded-full"
               style={{ width: `${(draft.step / 4) * 100}%` }}
               role="progressbar"
+              aria-label={vi.habit.wizard.errors.progressAria}
               aria-valuenow={(draft.step / 4) * 100}
               aria-valuemin={0}
               aria-valuemax={100}
@@ -417,7 +418,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                 href={zaloGroupUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-accent-pink text-white font-semibold text-base shadow-soft hover:bg-bright-magenta transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors"
               >
                 {vi.habit.wizard.step4.joinZaloButton}
               </a>
