@@ -25,7 +25,7 @@ SM-03 và SM-04 cùng sửa `src/puck/config.tsx` và `src/puck/migrations/index
 
 Planning gửi Hana bảng Q1–Q13 và danh sách M1–M13 (bản dễ đọc, không thuật ngữ). Thu về: tên gói / sản phẩm, đường dẫn, số liệu có nguồn, testimonial có đồng ý, danh sách tổ chức được phép nêu tên + logo, đội ngũ (nếu có), ảnh chữ ký, email + hotline thật, nội dung 2 chương trình DN, ý tưởng trang Cộng đồng. Ghi quyết định vào `DECISIONS.md`, cập nhật AGENTS.md 8.1.
 
-## SM-01 – CMS schema cho sitemap v2 (🔒 Migration) – ước lượng 6–8 h
+## SM-01 – CMS schema cho sitemap v2 (Laptop, 🔒 Migration) – ước lượng 6–8 h – prompt `prompts/SM-01.md`
 
 Theo `SITEMAP_V2.md` mục 5:
 
@@ -45,7 +45,7 @@ Tiêu chí nghiệm thu:
 - [ ] Gỡ 2 mục BACKLOG (`products.topic`, CTA quiz trong CMS) khi xong.
 - [ ] `pnpm lint && pnpm typecheck && pnpm test`.
 
-## SM-02 – Menu con, đường dẫn mới, chuyển hướng 301 (sau SM-01, Q2, Q5) – ước lượng 6 h
+## SM-02 – Menu con, đường dẫn mới, chuyển hướng 301 (PC nhà, sau SM-01, 🔒 Migration) – ước lượng 6–8 h – prompt `prompts/SM-02.md`
 
 - `Navbar`: mục có `children` mở menu con (desktop: panel 2 nhóm như PDF tr. 1, mở bằng hover + click + bàn phím, Esc đóng, `aria-expanded`); mobile: accordion, quiz nằm đúng chỗ Hana chốt ở Q5.
 - Gom mọi đường dẫn cố định vào `src/lib/paths.ts` (thay `GROWTH_MIRROR_PATH` rải rác: `products.ts`, `diagnostic.server.ts`, `TrackerSummaryCard.tsx`, email…).

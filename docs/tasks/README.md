@@ -214,6 +214,21 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 
 Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ CM-03 ‖ CM-05.
 
+### Sitemap v2 (kế hoạch `docs/plan/SITEMAP_V2.md`, card `SM.md`, chốt 17/10)
+
+**🔒 Migration: SM-01 (Laptop) → SM-02 (PC nhà)**
+
+| Mã    | Việc                                                 | Phụ thuộc           | Máy      | Trạng thái                      |
+| ----- | ---------------------------------------------------- | ------------------- | -------- | ------------------------------- |
+| SM-01 | CMS schema: menu con, faqs, teamMembers, field mới   | –                   | Laptop   | Giao 17/10 (`prompts/SM-01.md`) |
+| SM-02 | Menu con, đường dẫn mới, 301, migration dữ liệu link | SM-01 merge, T3-06a | PC nhà   | Chờ SM-01 (`prompts/SM-02.md`)  |
+| SM-03 | Khối Puck đợt A (trang chủ + lộ trình)               | SM-01               | –        | –                               |
+| SM-04 | Khối Puck đợt B (Về Trạm + Coach 1:1)                | SM-01               | –        | –                               |
+| SM-05 | Trang Tài nguyên + newsletter                        | SM-02               | –        | –                               |
+| SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01               | –        | –                               |
+| SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | –        | –                               |
+| SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Planning | –                               |
+
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 
 - [ ] Báo cáo đủ 6 mục theo mẫu AGENTS.md mục 13
