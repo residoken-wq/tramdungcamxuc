@@ -219,7 +219,8 @@ export const vi = {
           number: 5,
           name: 'Xem trước & lưu',
           title: 'Bước 5: Xem trước và lưu sản phẩm',
-          description: 'Kiểm tra giao diện hiển thị trên điện thoại, máy tính bảng và máy tính trước khi lưu.',
+          description:
+            'Kiểm tra giao diện hiển thị trên điện thoại, máy tính bảng và máy tính trước khi lưu.',
         },
       },
       types: {
@@ -331,7 +332,8 @@ export const vi = {
         outcomePlaceholder: 'Hình thành nhịp sinh hoạt vững vàng, thấu hiểu cảm xúc bản thân...',
         faqTitle: 'Câu hỏi thường gặp (FAQ)',
         faqQuestionPlaceholder: 'Ví dụ: Tôi có cần cài thêm ứng dụng nào không?',
-        faqAnswerPlaceholder: 'Công cụ hoạt động trực tiếp trên trình duyệt web, không cần cài đặt.',
+        faqAnswerPlaceholder:
+          'Công cụ hoạt động trực tiếp trên trình duyệt web, không cần cài đặt.',
         packageComponents: 'Danh sách cấu phần trong gói',
         packageComponentName: 'Tên cấu phần',
         packageComponentQty: 'Số lượng',

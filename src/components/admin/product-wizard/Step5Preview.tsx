@@ -41,9 +41,7 @@ export function Step5Preview({
           <h2 className="font-ui text-lg font-bold text-deep-navy">
             {vi.cms.wizard.steps.step5.title}
           </h2>
-          <p className="text-sm text-deep-navy/70">
-            {vi.cms.wizard.steps.step5.description}
-          </p>
+          <p className="text-sm text-deep-navy/70">{vi.cms.wizard.steps.step5.description}</p>
         </div>
 
         {/* Bộ chuyển kích thước hiển thị */}
@@ -95,7 +93,9 @@ export function Step5Preview({
           <div className="flex flex-col items-center justify-center p-12 text-center text-sm text-deep-navy/70">
             <span className="mb-3 inline-block h-8 w-8 animate-spin rounded-full border-3 border-bright-magenta border-t-transparent" />
             <p className="font-semibold">{vi.cms.wizard.preview.loadingPreview}</p>
-            <p className="text-xs text-deep-navy/50 mt-1">Hệ thống đang chuẩn bị bản ghi xem trước...</p>
+            <p className="text-xs text-deep-navy/50 mt-1">
+              Hệ thống đang chuẩn bị bản ghi xem trước...
+            </p>
           </div>
         ) : saveDraftError ? (
           <div className="flex flex-col items-center justify-center p-12 text-center text-sm text-red-600">
@@ -117,7 +117,9 @@ export function Step5Preview({
           >
             <div className="flex items-center justify-between border-b border-lavender-mist bg-soft-pink/30 px-3 py-2 text-[11px] text-deep-navy/60 font-mono">
               <span>{previewUrl}</span>
-              <span>{viewport === 'mobile' ? '375px' : viewport === 'tablet' ? '768px' : '100%'}</span>
+              <span>
+                {viewport === 'mobile' ? '375px' : viewport === 'tablet' ? '768px' : '100%'}
+              </span>
             </div>
             <iframe
               src={previewUrl}

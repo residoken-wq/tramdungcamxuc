@@ -47,7 +47,9 @@ export function Step2Basic({
   mediaList,
   onChange,
 }: Step2BasicProps) {
-  const [hasManuallyEditedSlug, setHasManuallyEditedSlug] = useState(Boolean(slug && slug !== slugifyVietnamese(name)))
+  const [hasManuallyEditedSlug, setHasManuallyEditedSlug] = useState(
+    Boolean(slug && slug !== slugifyVietnamese(name)),
+  )
 
   const handleNameChange = (newName: string) => {
     if (!hasManuallyEditedSlug) {
@@ -71,9 +73,7 @@ export function Step2Basic({
         <h2 className="font-ui text-lg font-bold text-deep-navy">
           {vi.cms.wizard.steps.step2.title}
         </h2>
-        <p className="text-sm text-deep-navy/70">
-          {vi.cms.wizard.steps.step2.description}
-        </p>
+        <p className="text-sm text-deep-navy/70">{vi.cms.wizard.steps.step2.description}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -90,9 +90,7 @@ export function Step2Basic({
             className="w-full rounded-xl border border-lavender-mist bg-white px-4 py-2.5 text-sm text-deep-navy focus:border-bright-magenta focus:outline-none focus:ring-2 focus:ring-soft-pink"
             required
           />
-          <p className="mt-1 text-xs text-deep-navy/60">
-            {vi.cms.productForm.descriptions.name}
-          </p>
+          <p className="mt-1 text-xs text-deep-navy/60">{vi.cms.productForm.descriptions.name}</p>
         </div>
 
         {/* Đường dẫn (Slug) */}
@@ -120,9 +118,7 @@ export function Step2Basic({
             className="w-full rounded-xl border border-lavender-mist bg-white px-4 py-2.5 font-mono text-sm text-deep-navy focus:border-bright-magenta focus:outline-none focus:ring-2 focus:ring-soft-pink"
             required
           />
-          <p className="mt-1 text-xs text-deep-navy/60">
-            {vi.cms.productForm.descriptions.slug}
-          </p>
+          <p className="mt-1 text-xs text-deep-navy/60">{vi.cms.productForm.descriptions.slug}</p>
         </div>
 
         {/* Khu vực web */}
@@ -139,9 +135,7 @@ export function Step2Basic({
             <option value="habit">Thói quen (/habit)</option>
             <option value="eq">EQ Buddy (/eq-buddy)</option>
           </select>
-          <p className="mt-1 text-xs text-deep-navy/60">
-            {vi.cms.productForm.sidebar.web}
-          </p>
+          <p className="mt-1 text-xs text-deep-navy/60">{vi.cms.productForm.sidebar.web}</p>
         </div>
 
         {/* Giới thiệu ngắn */}
@@ -170,7 +164,8 @@ export function Step2Basic({
             value={journeyStep || ''}
             onChange={(e) =>
               onChange({
-                journeyStep: (e.target.value as 'pause' | 'feel' | 'name' | 'choose' | 'practice') || null,
+                journeyStep:
+                  (e.target.value as 'pause' | 'feel' | 'name' | 'choose' | 'practice') || null,
               })
             }
             className="w-full rounded-xl border border-lavender-mist bg-white px-4 py-2.5 text-sm text-deep-navy focus:border-bright-magenta focus:outline-none focus:ring-2 focus:ring-soft-pink"
@@ -220,6 +215,7 @@ export function Step2Basic({
 
           {selectedMedia && (
             <div className="mt-4 flex items-center gap-4 rounded-xl border border-lavender-mist bg-white p-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={selectedMedia.url}
                 alt={selectedMedia.alt || name}

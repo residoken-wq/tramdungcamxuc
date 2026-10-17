@@ -394,8 +394,6 @@ Products.admin = {
   listSearchableFields: ['name', 'slug'],
   livePreview: collectionLivePreview('products'),
   components: {
-    beforeListTable: [
-      '@/components/admin/product-wizard/CreateProductButton#CreateProductButton',
-    ],
+    beforeListTable: ['@/components/admin/product-wizard/CreateProductButton#CreateProductButton'],
   },
 }

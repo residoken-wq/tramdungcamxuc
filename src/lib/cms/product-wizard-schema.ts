@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { PRODUCT_TYPES, type ProductType } from './product-form'
+import { PRODUCT_TYPES } from './product-form'
 import { vi } from '../i18n/vi'
 
 export const productWizardComponentSchema = z.object({
@@ -35,26 +35,18 @@ export const productWizardBaseSchema = z.object({
     errorMap: () => ({ message: 'Vui lòng chọn khu vực web hợp lệ' }),
   }),
   shortDescription: z.string().optional().nullable(),
-  journeyStep: z
-    .enum(['pause', 'feel', 'name', 'choose', 'practice'])
-    .optional()
-    .nullable(),
+  journeyStep: z.enum(['pause', 'feel', 'name', 'choose', 'practice']).optional().nullable(),
   coverImage: z.union([z.number(), z.string()]).optional().nullable(),
   isSample: z.boolean().optional(),
 
   // Bước 3: Giá & cách bán
-  saleStatus: z
-    .enum(['on_sale', 'free', 'coming_soon', 'consult', 'hidden'])
-    .default('on_sale'),
+  saleStatus: z.enum(['on_sale', 'free', 'coming_soon', 'consult', 'hidden']).default('on_sale'),
   price: z.number().min(0, 'Giá bán không được âm').optional().nullable(),
   salePrice: z.number().min(0, 'Giá ưu đãi không được âm').optional().nullable(),
   saleEndsAt: z.string().optional().nullable(),
   trialDays: z.number().int().min(0).optional().nullable(),
   accessDurationDays: z.number().int().min(0).optional().nullable(),
-  ctaType: z
-    .enum(['buy', 'download', 'book', 'contact', 'external'])
-    .optional()
-    .nullable(),
+  ctaType: z.enum(['buy', 'download', 'book', 'contact', 'external']).optional().nullable(),
   ctaLabel: z.string().optional().nullable(),
   externalUrl: z.string().optional().nullable(),
   externalLabel: z.string().optional().nullable(),
@@ -79,7 +71,9 @@ export type ProductWizardInput = z.infer<typeof productWizardBaseSchema>
 export function validateProductWizardData(
   data: unknown,
   options: { publish: boolean } = { publish: false },
-): { success: true; data: ProductWizardInput } | { success: false; error: string; issues?: z.ZodIssue[] } {
+):
+  | { success: true; data: ProductWizardInput }
+  | { success: false; error: string; issues?: z.ZodIssue[] } {
   const parseResult = productWizardBaseSchema.safeParse(data)
   if (!parseResult.success) {
     const firstIssue = parseResult.error.issues[0]

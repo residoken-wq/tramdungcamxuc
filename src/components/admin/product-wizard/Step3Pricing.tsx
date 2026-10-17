@@ -127,9 +127,7 @@ export function Step3Pricing({
         <h2 className="font-ui text-lg font-bold text-deep-navy">
           {vi.cms.wizard.steps.step3.title}
         </h2>
-        <p className="text-sm text-deep-navy/70">
-          {vi.cms.wizard.steps.step3.description}
-        </p>
+        <p className="text-sm text-deep-navy/70">{vi.cms.wizard.steps.step3.description}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -143,11 +141,7 @@ export function Step3Pricing({
             onChange={(e) =>
               onChange({
                 saleStatus: e.target.value as
-                  | 'on_sale'
-                  | 'free'
-                  | 'coming_soon'
-                  | 'consult'
-                  | 'hidden',
+                  'on_sale' | 'free' | 'coming_soon' | 'consult' | 'hidden',
               })
             }
             className="w-full rounded-xl border border-lavender-mist bg-white px-4 py-2.5 text-sm text-deep-navy focus:border-bright-magenta focus:outline-none focus:ring-2 focus:ring-soft-pink"
@@ -158,9 +152,7 @@ export function Step3Pricing({
             <option value="consult">Liên hệ tư vấn (consult)</option>
             <option value="hidden">Ẩn (hidden)</option>
           </select>
-          <p className="mt-1 text-xs text-deep-navy/60">
-            {vi.cms.productForm.sidebar.saleStatus}
-          </p>
+          <p className="mt-1 text-xs text-deep-navy/60">{vi.cms.productForm.sidebar.saleStatus}</p>
         </div>
 
         {/* Giá niêm yết */}
@@ -342,7 +334,7 @@ export function Step3Pricing({
             {/* Bảng cấu phần */}
             {(!components || components.length === 0) && (
               <div className="rounded-xl border border-dashed border-lavender-mist bg-white p-6 text-center text-sm text-deep-navy/60">
-                Chưa có cấu phần nào trong gói. Nhấn <strong>"Thêm cấu phần"</strong> để bắt đầu.
+                Chưa có cấu phần nào trong gói. Nhấn <strong>&ldquo;Thêm cấu phần&rdquo;</strong> để bắt đầu.
               </div>
             )}
 
@@ -361,9 +353,7 @@ export function Step3Pricing({
                       <input
                         type="text"
                         value={comp.label}
-                        onChange={(e) =>
-                          handleUpdateComponent(idx, 'label', e.target.value)
-                        }
+                        onChange={(e) => handleUpdateComponent(idx, 'label', e.target.value)}
                         placeholder="Ví dụ: Coaching 1:1"
                         className="w-full rounded-lg border border-lavender-mist px-3 py-1.5 text-xs text-deep-navy focus:border-bright-magenta focus:outline-none"
                         required
@@ -380,11 +370,7 @@ export function Step3Pricing({
                         min="1"
                         value={comp.quantity}
                         onChange={(e) =>
-                          handleUpdateComponent(
-                            idx,
-                            'quantity',
-                            Number(e.target.value) || 1,
-                          )
+                          handleUpdateComponent(idx, 'quantity', Number(e.target.value) || 1)
                         }
                         className="w-full rounded-lg border border-lavender-mist px-3 py-1.5 text-xs text-deep-navy focus:border-bright-magenta focus:outline-none"
                       />
@@ -401,11 +387,7 @@ export function Step3Pricing({
                         step="100000"
                         value={comp.unitValue}
                         onChange={(e) =>
-                          handleUpdateComponent(
-                            idx,
-                            'unitValue',
-                            Number(e.target.value) || 0,
-                          )
+                          handleUpdateComponent(idx, 'unitValue', Number(e.target.value) || 0)
                         }
                         className="w-full rounded-lg border border-lavender-mist px-3 py-1.5 text-xs text-deep-navy focus:border-bright-magenta focus:outline-none"
                       />

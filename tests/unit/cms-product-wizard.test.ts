@@ -12,17 +12,10 @@ import config from '../../src/payload.config'
 import { migrations } from '../../src/migrations'
 import type { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
 import { PRODUCT_TYPES, type ProductType } from '@/lib/cms/product-form'
-import {
-  getProductTemplate,
-  PRODUCT_TYPE_TEMPLATES,
-} from '@/lib/cms/product-templates'
-import {
-  validateProductWizardData,
-  type ProductWizardInput,
-} from '@/lib/cms/product-wizard-schema'
+import { getProductTemplate, PRODUCT_TYPE_TEMPLATES } from '@/lib/cms/product-templates'
+import { validateProductWizardData, type ProductWizardInput } from '@/lib/cms/product-wizard-schema'
 import { createProductFromWizard } from '@/lib/cms/product-wizard.server'
 import { vi as i18nVi } from '@/lib/i18n/vi'
-
 
 describe('Product Wizard (CM-04) Unit Tests', () => {
   describe('Product Templates (src/lib/cms/product-templates.ts)', () => {
@@ -201,7 +194,7 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
     const unique = () => `test-${randomUUID()}`
 
     let editorUser: { id: number; email: string; token?: string }
-    let customerUser: { id: number; email: string; token?: string }
+    let _customerUser: { id: number; email: string; token?: string }
     let testMediaId: number
 
     beforeAll(async () => {
@@ -262,7 +255,7 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
         },
       })
       createdDocs.push({ collection: 'customers', id: customer.id })
-      customerUser = { id: customer.id, email: customerEmail }
+      _customerUser = { id: customer.id, email: customerEmail }
     })
 
     afterAll(async () => {

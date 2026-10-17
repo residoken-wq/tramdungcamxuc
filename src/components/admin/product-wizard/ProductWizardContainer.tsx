@@ -268,9 +268,7 @@ export function ProductWizardContainer({
           <h1 className="font-heading text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-deep-navy">
             {vi.cms.wizard.title}
           </h1>
-          <p className="text-xs md:text-sm text-deep-navy/70 mt-1">
-            {vi.cms.wizard.subtitle}
-          </p>
+          <p className="text-xs md:text-sm text-deep-navy/70 mt-1">{vi.cms.wizard.subtitle}</p>
         </div>
 
         <button
@@ -295,10 +293,7 @@ export function ProductWizardContainer({
       {/* Nội dung từng bước */}
       <div className="rounded-2xl border border-lavender-mist/60 bg-white p-6 shadow-sm md:p-8">
         {currentStep === 1 && (
-          <Step1Type
-            selectedType={data.type}
-            onSelectType={handleSelectType}
-          />
+          <Step1Type selectedType={data.type} onSelectType={handleSelectType} />
         )}
 
         {currentStep === 2 && (

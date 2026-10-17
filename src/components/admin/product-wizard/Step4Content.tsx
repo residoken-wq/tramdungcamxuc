@@ -25,13 +25,7 @@ interface Step4ContentProps {
   }) => void
 }
 
-export function Step4Content({
-  includes,
-  painPoint,
-  outcome,
-  faq,
-  onChange,
-}: Step4ContentProps) {
+export function Step4Content({ includes, painPoint, outcome, faq, onChange }: Step4ContentProps) {
   // Quản lý Includes
   const handleAddInclude = () => {
     const current = includes ? [...includes] : []
@@ -64,15 +58,9 @@ export function Step4Content({
     onChange({ faq: updated })
   }
 
-  const handleUpdateFaq = (
-    index: number,
-    field: 'question' | 'answer',
-    value: string,
-  ) => {
+  const handleUpdateFaq = (index: number, field: 'question' | 'answer', value: string) => {
     if (!faq) return
-    const updated = faq.map((item, i) =>
-      i === index ? { ...item, [field]: value } : item,
-    )
+    const updated = faq.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     onChange({ faq: updated })
   }
 
@@ -82,9 +70,7 @@ export function Step4Content({
         <h2 className="font-ui text-lg font-bold text-deep-navy">
           {vi.cms.wizard.steps.step4.title}
         </h2>
-        <p className="text-sm text-deep-navy/70">
-          {vi.cms.wizard.steps.step4.description}
-        </p>
+        <p className="text-sm text-deep-navy/70">{vi.cms.wizard.steps.step4.description}</p>
       </div>
 
       <div className="space-y-6">
@@ -145,7 +131,7 @@ export function Step4Content({
 
           {(!includes || includes.length === 0) && (
             <div className="rounded-xl border border-dashed border-lavender-mist bg-white p-4 text-center text-xs text-deep-navy/60">
-              Chưa có mục nào. Nhấn <strong>"Thêm mục"</strong> để liệt kê những gì khách nhận được.
+              Chưa có mục nào. Nhấn <strong>&ldquo;Thêm mục&rdquo;</strong> để liệt kê những gì khách nhận được.
             </div>
           )}
 
@@ -182,9 +168,7 @@ export function Step4Content({
               <h3 className="font-ui text-base font-bold text-deep-navy">
                 {vi.cms.wizard.labels.faqTitle}
               </h3>
-              <p className="text-xs text-deep-navy/70">
-                {vi.cms.productForm.descriptions.faq}
-              </p>
+              <p className="text-xs text-deep-navy/70">{vi.cms.productForm.descriptions.faq}</p>
             </div>
             <button
               type="button"
@@ -224,18 +208,14 @@ export function Step4Content({
                   <input
                     type="text"
                     value={item.question}
-                    onChange={(e) =>
-                      handleUpdateFaq(idx, 'question', e.target.value)
-                    }
+                    onChange={(e) => handleUpdateFaq(idx, 'question', e.target.value)}
                     placeholder={vi.cms.wizard.labels.faqQuestionPlaceholder}
                     className="w-full rounded-lg border border-lavender-mist px-3 py-1.5 text-xs font-semibold text-deep-navy focus:border-bright-magenta focus:outline-none"
                   />
                   <textarea
                     rows={2}
                     value={item.answer || ''}
-                    onChange={(e) =>
-                      handleUpdateFaq(idx, 'answer', e.target.value)
-                    }
+                    onChange={(e) => handleUpdateFaq(idx, 'answer', e.target.value)}
                     placeholder={vi.cms.wizard.labels.faqAnswerPlaceholder}
                     className="w-full rounded-lg border border-lavender-mist px-3 py-1.5 text-xs text-deep-navy focus:border-bright-magenta focus:outline-none"
                   />

@@ -183,6 +183,7 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
 
       // Bước 2: Thông tin cơ bản
       await page.locator('input[placeholder*="Habit Tracker"]').first().fill(packageName)
+      await expect(page.locator('input[placeholder*="habit-tracker"]').first()).toHaveValue(packageSlug)
 
       await expect(async () => {
         const nextBtn = page.getByRole('button', { name: /Tiếp tục/i })
@@ -201,9 +202,7 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       const compLabelInput = page.locator('input[placeholder*="Coaching 1:1"]').first()
       await compLabelInput.fill('Coaching 1:1')
 
-      // Nhập số lượng 3 và đơn giá 1.000.000
-      const qtyInputs = page.locator('input[type="number"]')
-      // Thêm cấu phần 2: Workshop, quantity 2, unitValue 500.000
+      // Thêm cấu phần 2: Workshop
       await addCompBtn.click()
 
       // Xác nhận tổng giá trị hiển thị dạng tiền tệ VND

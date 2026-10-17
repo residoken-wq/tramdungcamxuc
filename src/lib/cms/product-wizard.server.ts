@@ -5,10 +5,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { isAdminUser } from '@/lib/auth/access'
 import { vi } from '@/lib/i18n/vi'
-import {
-  validateProductWizardData,
-  type ProductWizardInput,
-} from './product-wizard-schema'
+import { validateProductWizardData, type ProductWizardInput } from './product-wizard-schema'
 
 export interface CreateProductWizardResult {
   success: boolean

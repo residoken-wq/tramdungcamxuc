@@ -16,9 +16,7 @@ export function Step1Type({ selectedType, onSelectType }: Step1TypeProps) {
         <h2 className="font-ui text-lg font-bold text-deep-navy">
           {vi.cms.wizard.steps.step1.title}
         </h2>
-        <p className="text-sm text-deep-navy/70">
-          {vi.cms.wizard.steps.step1.description}
-        </p>
+        <p className="text-sm text-deep-navy/70">{vi.cms.wizard.steps.step1.description}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

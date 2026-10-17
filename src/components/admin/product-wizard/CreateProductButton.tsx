@@ -13,7 +13,8 @@ export function CreateProductButton() {
             Tạo sản phẩm qua Trình hướng dẫn (Wizard 5 bước)
           </h3>
           <p className="text-xs text-deep-navy/70">
-            Dành riêng cho Hana: thiết lập nhanh công cụ số, gói Growth Mirror, sách điện tử và xem trước giao diện.
+            Dành riêng cho Hana: thiết lập nhanh công cụ số, gói Growth Mirror, sách điện tử và xem
+            trước giao diện.
           </p>
         </div>
       </div>

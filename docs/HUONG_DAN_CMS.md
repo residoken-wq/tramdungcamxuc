@@ -347,7 +347,9 @@ Hệ thống đã tự động ẩn đi các ô không liên quan để Hana kh�
 **Mục đích**: Giúp Hana và cộng sự tạo sản phẩm mới nhanh chóng, trực quan và không bị quá tải. Thay vì phải đối mặt với hàng chục ô nhập liệu cùng lúc, Wizard dẫn dắt bạn qua 5 bước tuần tự, tự động điền sẵn các thiết lập tối ưu theo từng loại sản phẩm và cho phép xem trước diện mạo thực tế trước khi lưu.
 
 #### 1. Lối tắt vào Wizard Tạo sản phẩm
+
 Hana có thể mở trình hướng dẫn bằng một trong hai cách:
+
 - **Cách 1**: Từ trang chủ admin (Dashboard "Hôm nay"), tại mục _Tạo nhanh_, bấm vào thẻ màu hồng **Tạo sản phẩm**.
 - **Cách 2**: Trong menu bên trái, vào **Sản phẩm & bán hàng** -> **Sản phẩm**, bấm vào nút **+ Tạo sản phẩm bằng Wizard** đặt nổi bật phía trên danh sách sản phẩm.
 - Địa chỉ truy cập trực tiếp: `<ĐỊA CHỈ DEMO>/admin/tao-san-pham`.
@@ -355,6 +357,7 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
 #### 2. Chi tiết 5 bước tạo sản phẩm
 
 ##### Bước 1: Chọn loại sản phẩm
+
 - Hệ thống hiển thị 9 thẻ sản phẩm tương ứng với 9 mô hình bán hàng của Trạm Dừng Cảm Xúc:
   1. **Công cụ số** (`digital_tool`): Habit Tracker số, EQ Buddy số. Tự động gắn quyền dùng thử 21 ngày, thuộc phân hệ Habit/EQ.
   2. **Sách điện tử** (`ebook`): Ebook "Tập thương cảm xúc". Tự động thiết lập nút tải về và liên kết tệp PDF an toàn.
@@ -368,14 +371,16 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
 - Bấm chọn loại sản phẩm bạn muốn tạo, thẻ được chọn sẽ sáng viền màu tím nhung (`deep-navy`) và hồng điểm nhấn. Bấm **Tiếp tục**.
 
 ##### Bước 2: Thông tin cơ bản
+
 - **Tên sản phẩm**: Nhập tên tiếng Việt có dấu (ví dụ: `Habit Tracker 21 ngày`).
 - **Đường dẫn (slug)**: Hệ thống **tự động sinh** từ tên sản phẩm theo chuẩn chữ thường không dấu (ví dụ: `habit-tracker-21-ngay`). Bạn có thể sửa thủ công hoặc bấm nút **Tạo lại slug** kế bên.
 - **Khu vực web**: Chọn phân hệ hiển thị (`Trang chính`, `Habit Formation` hoặc `EQ Buddy`).
-- **Chặng trải nghiệm**: Gắn sản phẩm với 1 trong 5 chặng hành trình: *Dừng lại*, *Cảm nhận*, *Gọi tên*, *Lựa chọn*, *Rèn luyện*.
+- **Chặng trải nghiệm**: Gắn sản phẩm với 1 trong 5 chặng hành trình: _Dừng lại_, _Cảm nhận_, _Gọi tên_, _Lựa chọn_, _Rèn luyện_.
 - **Mô tả ngắn**: 1–2 câu tóm tắt điểm nổi bật của sản phẩm.
 - **Ảnh bìa**: Bấm **Chọn ảnh từ thư viện** để chọn ảnh đã có hoặc tải ảnh mới lên. Bắt buộc nhập **Văn bản thay thế (alt)** để bảo đảm khả năng tiếp cận và chuẩn SEO.
 
 ##### Bước 3: Thiết lập giá và cách bán
+
 - Giao diện bước 3 tự động biến đổi thông minh theo loại sản phẩm đã chọn ở Bước 1 (dựa trên helper điều kiện `showFor`):
   - **Với Công cụ số & Khóa học**: Hiển thị ô nhập Giá niêm yết, Giá ưu đãi (ví dụ `178.000đ`), Hạn ưu đãi, Số ngày dùng thử (mặc định 21 ngày), và Thời hạn sử dụng (để trống là vĩnh viễn).
   - **Với Gói đồng hành (Growth Mirror)**:
@@ -388,12 +393,14 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
   - **Với Ebook / Quà tặng miễn phí**: Giá bán mặc định 0đ và nút hành động chuyển sang "Tải về".
 
 ##### Bước 4: Nội dung giới thiệu
+
 - **Bao gồm những gì**: Bấm **+ Thêm mục** để gạch đầu dòng các quyền lợi khách sẽ nhận được (ví dụ: `Bảng theo dõi 21 ngày kèm 10 cảm xúc`, `Hướng dẫn sử dụng chi tiết`).
 - **Khó khăn của khách**: Mô tả ngắn gọn vấn đề hoặc điểm kẹt mà khách đang gặp phải.
 - **Kết quả đạt được**: Mô tả giá trị chuyển hóa sau khi hoàn thành.
 - **Câu hỏi thường gặp (FAQ)**: Bấm **+ Thêm câu hỏi** để bổ sung các cặp Câu hỏi & Câu trả lời giải đáp băn khoăn cho khách.
 
 ##### Bước 5: Xem trước và lưu sản phẩm
+
 - **Bộ chọn kích thước xem trước**: Bấm vào các biểu tượng trên thanh công cụ để kiểm tra giao diện hiển thị:
   - **Điện thoại** (375px)
   - **Máy tính bảng** (768px)
@@ -405,6 +412,7 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
 - Sau khi bấm Lưu, hệ thống sẽ tự động chuyển hướng về form quản lý chuẩn của bản ghi tại `/admin/collections/products/[id]`, sẵn sàng cho các tinh chỉnh nâng cao nếu cần.
 
 #### 3. Các tính năng bảo vệ an toàn cho Hana trong Wizard
+
 1. **Tự động lưu nháp vào trình duyệt (`localStorage`)**:
    - Khi bạn đang nhập dở mà vô tình tải lại trang (`F5`) hoặc máy tính mất điện, dữ liệu đã nhập ở các bước sẽ tự động khôi phục nguyên vẹn.
    - Khi đã lưu thành công lên hệ thống, bản nháp tạm này sẽ tự động được dọn sạch.
