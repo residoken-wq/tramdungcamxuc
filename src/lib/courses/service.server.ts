@@ -4,7 +4,7 @@ import { sql } from '@payloadcms/db-postgres'
 import config from '@/payload.config'
 import type { CourseModule, Lesson, LessonProgress } from '@/payload-types'
 import { hasAccess } from '@/lib/entitlements'
-import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
+import { HABIT_TRACKER_PRODUCT_SLUG, HABIT_TRACKER_PRODUCT_SLUGS } from '@/lib/habit/config'
 import { getVideoProvider } from '@/lib/video'
 import type {
   CourseDashboardData,
@@ -172,7 +172,7 @@ async function getLessonPlaybackInternal(
   // 4. Kiểm tra quyền truy cập sản phẩm Habit Tracker số
   const productRes = await payload.find({
     collection: 'products',
-    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+    where: { slug: { in: Array.from(HABIT_TRACKER_PRODUCT_SLUGS) } },
     depth: 0,
     limit: 1,
     overrideAccess: true,
@@ -227,7 +227,7 @@ export async function getCourseDashboardData(
   // 1. Kiểm tra quyền truy cập của khách hàng với Habit Tracker số
   const productRes = await payload.find({
     collection: 'products',
-    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+    where: { slug: { in: Array.from(HABIT_TRACKER_PRODUCT_SLUGS) } },
     depth: 0,
     limit: 1,
     overrideAccess: true,

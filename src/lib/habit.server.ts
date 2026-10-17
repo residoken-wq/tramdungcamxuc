@@ -15,7 +15,7 @@ import config from '@/payload.config'
 import type { Product, SiteSetting, Technique } from '@/payload-types'
 import type { PublicTechnique } from './habit'
 import { HABIT_LOOP_PATH } from './habit'
-import { HABIT_TRACKER_PRODUCT_SLUG } from './habit/config'
+import { HABIT_TRACKER_PRODUCT_SLUG, HABIT_TRACKER_PRODUCT_SLUGS } from './habit/config'
 import { resolveProductCta, type ProductCta } from './products'
 import { sendHabitPlanEmail } from './email/service.server'
 import { habitPlanSubmissionSchema, type HabitPlanSubmissionInput } from './forms/schemas'
@@ -131,10 +131,10 @@ export async function getHabitProduct(
   const productWhere = isDraft
     ? options?.previewId
       ? { id: { equals: options.previewId } }
-      : { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } }
+      : { slug: { in: Array.from(HABIT_TRACKER_PRODUCT_SLUGS) } }
     : {
         and: [
-          { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+          { slug: { in: Array.from(HABIT_TRACKER_PRODUCT_SLUGS) } },
           { _status: { equals: 'published' } },
         ],
       }
