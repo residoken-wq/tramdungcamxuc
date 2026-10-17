@@ -4,7 +4,7 @@ import { sql } from '@payloadcms/db-postgres'
 import config from '@/payload.config'
 import type { CourseModule, Lesson, LessonProgress } from '@/payload-types'
 import { hasAccess } from '@/lib/entitlements'
-import { HABIT_TRACKER_PRODUCT_SLUG, HABIT_TRACKER_PRODUCT_SLUGS } from '@/lib/habit/config'
+import { HABIT_TRACKER_PRODUCT_SLUGS } from '@/lib/habit/config'
 import { getVideoProvider } from '@/lib/video'
 import type {
   CourseDashboardData,

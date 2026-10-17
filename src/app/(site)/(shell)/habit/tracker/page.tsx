@@ -6,7 +6,7 @@ import config from '@/payload.config'
 import type { Product, HabitCheckin } from '@/payload-types'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getAccess } from '@/lib/entitlements'
-import { HABIT_TRACKER_PRODUCT_SLUG, HABIT_TRACKER_PRODUCT_SLUGS } from '@/lib/habit/config'
+import { HABIT_TRACKER_PRODUCT_SLUGS } from '@/lib/habit/config'
 import {
   findOwnTrackerPlan,
   getCurrentDayOfPlan,
