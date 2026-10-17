@@ -43,4 +43,7 @@ Lessons.admin = {
   defaultColumns: ['title', 'module', 'stage', 'isFreePreview', 'order'],
   listSearchableFields: ['title', 'summary'],
   livePreview: collectionLivePreview('lessons'),
+  components: {
+    beforeListTable: ['@/components/admin/lesson-wizard/CreateLessonButton#CreateLessonButton'],
+  },
 }
