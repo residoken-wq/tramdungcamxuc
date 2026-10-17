@@ -8,14 +8,16 @@ import { expectNoSeriousA11y } from './helpers/a11y'
  * Kịch bản xuyên suốt:
  * 1. Bootstrap admin trên database CI độc lập (không có seed).
  * 2. Cấu hình thông tin ngân hàng trong siteSettings.
- * 3. Tạo sản phẩm Habit Tracker số (slug: '1-percent-better', type: 'digital_tool', trialDays: 21).
+ * 3. Tạo sản phẩm Habit Tracker số (slug: 'habit-tracker-so', type: 'digital_tool', trialDays: 21).
  * 4. Tạo module + bài học video mẫu để kiểm tra trang học.
  * 5. Khách vãng lai truy cập landing `/habit/1-percent-better` -> kiểm tra CTA dùng thử + a11y.
  * 6. Đăng ký dùng thử qua luồng OTP -> vào `/habit/hoc` xem bài học đầu tiên -> đánh dấu đã xem + a11y.
  * 7. Vào `/habit/tracker` -> thiết lập kế hoạch mẫu -> check-in ngày 1 (chọn cảm xúc Bình an) -> grid cập nhật + a11y.
- * 8. Chuyển đổi từ dùng thử sang mua thật: tới `/thanh-toan?san-pham=1-percent-better` -> tạo đơn chuyển khoản -> owner xác nhận thanh toán.
+ * 8. Chuyển đổi từ dùng thử sang mua thật: tới `/thanh-toan?san-pham=habit-tracker-so` -> tạo đơn chuyển khoản -> owner xác nhận thanh toán.
  * 9. Vào `/tai-khoan` -> kiểm tra quyền truy cập chuyển sang 'Đang hiệu lực' vĩnh viễn, quay lại `/habit/tracker` kiểm tra ngày 1 đã tick vẫn giữ nguyên.
- * 10. Dọn dẹp toàn bộ dữ liệu trong khối finally (order -> entitlements -> customer -> lesson -> module -> product -> admin).
+ * 10. Dọn dẹp trong finally theo thứ tự khóa ngoại: entitlements -> orders -> lessonProgress -> checkins -> plans
+ *     -> lessons -> modules -> product -> admin; khôi phục siteSettings. Khách hàng không xóa được qua REST
+ *     (Customers.beforeDelete chỉ cho phép luồng xóa tài khoản) – DB CI dùng một lần.
  */
 
 async function bootstrapAdmin(page: Page): Promise<number> {
@@ -51,7 +53,10 @@ async function getTestOtpCode(page: Page, email: string): Promise<string> {
 
 async function expectCodeStep(page: Page) {
   const codeInput = page.locator('input[name="code"]')
-  const alert = page.locator('div[role="alert"]').filter({ hasText: /\S/ })
+  // Bỏ qua thông báo chuyển trang của Next (#__next-route-announcer__, cũng role="alert")
+  const alert = page
+    .locator('div[role="alert"]:not(#__next-route-announcer__)')
+    .filter({ hasText: /\S/ })
   await expect(codeInput.or(alert).first()).toBeVisible({ timeout: 15000 })
   if (await alert.isVisible()) {
     throw new Error(`OTP request failed on page: ${await alert.innerText()}`)
@@ -67,7 +72,10 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
     test.setTimeout(240000)
 
     const init = await (await page.request.get('/api/users/init')).json()
-    expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
+    test.skip(
+      !process.env.CI && init.initialized === true,
+      'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
+    )
 
     let adminId: number | undefined
     let createdProductId: number | undefined
@@ -75,10 +83,11 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
     let createdLessonId: number | undefined
     let createdCustomerId: number | undefined
     let createdOrderId: number | undefined
+    let settingsBefore: Record<string, unknown> | undefined
 
     const customerEmail = `khach-gate-habit-${randomUUID().slice(0, 6)}@example.test`
-    const productSlug = '1-percent-better'
-    const productName = 'Habit Hack 1% Better (Gate E2E)'
+    const productSlug = 'habit-tracker-so'
+    const productName = '[TEST] Habit Tracker (Gate E2E)'
 
     const visitorIp = `203.0.113.${Math.floor(Math.random() * 200) + 10}`
     const visitor = await browser.newContext({
@@ -93,19 +102,22 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       // 1. Bootstrap admin
       adminId = await bootstrapAdmin(page)
 
-      // 2. Cấu hình ngân hàng trong siteSettings để luồng checkout VietQR hoạt động
+      // 2. Cấu hình ngân hàng trong siteSettings để luồng checkout VietQR hoạt động (khôi phục trong finally)
+      settingsBefore = (await (
+        await page.request.get('/api/globals/siteSettings')
+      ).json()) as Record<string, unknown>
       const patchSettings = await page.request.post('/api/globals/siteSettings', {
         data: {
           bankBin: '970422',
           bankName: 'Ngân hàng Quân Đội (MB)',
           accountNumber: '0000000000',
-          accountName: 'TRAM DUNG CAM XUC',
+          accountName: 'TAI KHOAN TEST',
           transferPrefix: 'TDCX',
         },
       })
       expect(patchSettings.ok()).toBe(true)
 
-      // 3. Admin tạo sản phẩm Habit Tracker số (slug: '1-percent-better', type: 'digital_tool', trialDays: 21)
+      // 3. Admin tạo sản phẩm Habit Tracker số (slug: 'habit-tracker-so', type: 'digital_tool', trialDays: 21)
       const prodRes = await page.request.post('/api/products', {
         data: {
           name: productName,
@@ -151,8 +163,8 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       expect(lessonRes.status()).toBe(201)
       createdLessonId = (await lessonRes.json()).doc.id
 
-      // 6. Khách vãng lai truy cập landing /habit/1-percent-better
-      await guestPage.goto(`/habit/${productSlug}`, { waitUntil: 'load' })
+      // 6. Khách vãng lai truy cập trang offer /habit/1-percent-better (đọc sản phẩm habit-tracker-so)
+      await guestPage.goto('/habit/1-percent-better', { waitUntil: 'load' })
       await expect(guestPage.getByRole('heading', { level: 1 })).toBeVisible()
 
       // Chạy a11y audit tại landing /habit/1-percent-better
@@ -182,19 +194,20 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       await codeInput.fill(otpCode)
       await guestPage.locator('button[type="submit"]').click()
 
-      // Ghi nhận customer ID để dọn dẹp
-      const custQuery = await page.request.get(
-        `/api/customers?where[email][equals]=${encodeURIComponent(customerEmail)}`,
-      )
-      if (custQuery.ok()) {
-        const custDocs = (await custQuery.json()).docs
-        if (custDocs.length > 0) createdCustomerId = custDocs[0].id
-      }
-
-      // Đăng nhập xong quay lại /dung-thu?san-pham=1-percent-better
+      // Đăng nhập xong quay lại /dung-thu?san-pham=habit-tracker-so
       await expect(guestPage).toHaveURL(new RegExp(`/dung-thu\\?san-pham=${productSlug}`), {
         timeout: 15000,
       })
+
+      // Ghi nhận customer ID để dọn dẹp (sau khi đăng nhập xong mới chắc chắn đã có bản ghi)
+      const custQuery = await page.request.get(
+        `/api/customers?where[email][equals]=${encodeURIComponent(customerEmail)}`,
+      )
+      expect(custQuery.ok()).toBe(true)
+      createdCustomerId = (await custQuery.json()).docs[0]?.id
+      expect(createdCustomerId).toBeTruthy()
+
+      await expectNoSeriousA11y(guestPage, 'habit-journey-dung-thu')
 
       // Bấm nút "Bắt đầu dùng thử 21 ngày"
       const startTrialBtn = guestPage.locator('button', { hasText: /Bắt đầu dùng thử 21 ngày/i })
@@ -222,10 +235,14 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
 
       await expect(async () => {
         await simulateBtn.click()
-        await expect(guestPage.getByText(/Đã xem|hoàn thành/i).first()).toBeVisible({
+        await expect(guestPage.getByText(/Đã giả lập xem hết/i)).toBeVisible({
           timeout: 3000,
         })
       }).toPass({ timeout: 20000 })
+
+      // Dashboard hiện dấu "Đã xem" cho bài vừa học
+      await guestPage.goto('/habit/hoc')
+      await expect(guestPage.locator('span:has-text("Đã xem")')).toBeVisible()
 
       // 9. Vào /habit/tracker -> thiết lập thói quen mẫu -> check-in ngày 1
       await guestPage.goto('/habit/tracker', { waitUntil: 'load' })
@@ -274,7 +291,7 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       const day1Completed = guestPage.getByRole('button', { name: /^Ngày 1: Đã hoàn thành/i })
       await expect(day1Completed).toBeVisible()
 
-      // 10. Chuyển đổi từ dùng thử sang mua thật qua /thanh-toan?san-pham=1-percent-better
+      // 10. Chuyển đổi từ dùng thử sang mua thật qua /thanh-toan?san-pham=habit-tracker-so
       await guestPage.goto(`/thanh-toan?san-pham=${productSlug}`, { waitUntil: 'load' })
       await expect(guestPage.getByRole('heading', { name: productName })).toBeVisible({
         timeout: 15000,
@@ -297,6 +314,8 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       await expect(paymentRefEl).toBeVisible()
       const paymentRef = (await paymentRefEl.innerText()).trim()
       expect(paymentRef.startsWith('TDCX')).toBe(true)
+
+      await expectNoSeriousA11y(guestPage, 'habit-journey-order-page')
 
       const payToken = guestPage.url().split('/thanh-toan/don/')[1]?.split('?')[0]
       expect(payToken).toBeTruthy()
@@ -335,62 +354,58 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
           hasText: 'Đang hiệu lực',
         }),
       ).toBeVisible()
+      await expectNoSeriousA11y(guestPage, 'habit-journey-tai-khoan')
 
       // 12. Quay lại /habit/tracker -> dữ liệu ngày 1 đã check-in vẫn còn nguyên vẹn
       await guestPage.goto('/habit/tracker', { waitUntil: 'load' })
-      const day1Retained = guestPage.getByRole('button', { name: /^Ngày 1: Đã hoàn thành/i })
+      const day1Retained = guestPage.getByRole('button', {
+        name: /^Ngày 1: Đã hoàn thành, cảm xúc Bình an/i,
+      })
       await expect(day1Retained).toBeVisible({ timeout: 15000 })
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
       await guestPage.close().catch(() => {})
       await visitor.close().catch(() => {})
 
-      // Dọn dẹp dữ liệu theo thứ tự FK: orders & entitlements -> customers -> lessons -> modules -> products -> users
-      if (createdOrderId) {
-        const entsToDelete = await page.request
-          .get(`/api/entitlements?where[order][equals]=${createdOrderId}`)
+      // Dọn dẹp theo thứ tự khóa ngoại: entitlements -> orders -> lessonProgress -> checkins -> plans
+      if (createdCustomerId) {
+        const ents = await page.request
+          .get(`/api/entitlements?where[customer][equals]=${createdCustomerId}&limit=100`)
           .catch(() => null)
-        if (entsToDelete?.ok()) {
-          const docs = (await entsToDelete.json()).docs
-          for (const doc of docs) {
+        if (ents?.ok()) {
+          for (const doc of (await ents.json()).docs || []) {
             await page.request.delete(`/api/entitlements/${doc.id}`).catch(() => {})
           }
         }
+      }
+      if (createdOrderId) {
         await page.request.delete(`/api/orders/${createdOrderId}`).catch(() => {})
       }
-
       if (createdCustomerId) {
-        const custEnts = await page.request
-          .get(`/api/entitlements?where[customer][equals]=${createdCustomerId}`)
+        const progress = await page.request
+          .get(`/api/lessonProgress?where[customer][equals]=${createdCustomerId}&limit=100`)
           .catch(() => null)
-        if (custEnts?.ok()) {
-          const docs = (await custEnts.json()).docs
-          for (const doc of docs) {
-            await page.request.delete(`/api/entitlements/${doc.id}`).catch(() => {})
-          }
-        }
-        // Xóa habitCheckins và habitPlans của customer
-        const checkins = await page.request
-          .get(`/api/habitCheckins?where[customer][equals]=${createdCustomerId}`)
-          .catch(() => null)
-        if (checkins?.ok()) {
-          for (const c of (await checkins.json()).docs || []) {
-            await page.request.delete(`/api/habitCheckins/${c.id}`).catch(() => {})
+        if (progress?.ok()) {
+          for (const doc of (await progress.json()).docs || []) {
+            await page.request.delete(`/api/lessonProgress/${doc.id}`).catch(() => {})
           }
         }
         const plans = await page.request
-          .get(`/api/habitPlans?where[customer][equals]=${createdCustomerId}`)
+          .get(`/api/habitPlans?where[customer][equals]=${createdCustomerId}&limit=100`)
           .catch(() => null)
         if (plans?.ok()) {
-          for (const p of (await plans.json()).docs || []) {
-            await page.request.delete(`/api/habitPlans/${p.id}`).catch(() => {})
+          for (const plan of (await plans.json()).docs || []) {
+            const checkins = await page.request
+              .get(`/api/habitCheckins?where[plan][equals]=${plan.id}&limit=100`)
+              .catch(() => null)
+            if (checkins?.ok()) {
+              for (const c of (await checkins.json()).docs || []) {
+                await page.request.delete(`/api/habitCheckins/${c.id}`).catch(() => {})
+              }
+            }
+            await page.request.delete(`/api/habitPlans/${plan.id}`).catch(() => {})
           }
         }
-        await page.request
-          .delete(`/api/customers/${createdCustomerId}`, {
-            data: { context: { accountDeletion: true } },
-          })
-          .catch(() => {})
       }
 
       if (createdLessonId) {
@@ -403,6 +418,20 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
 
       if (createdProductId) {
         await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+      }
+
+      if (settingsBefore) {
+        await page.request
+          .post('/api/globals/siteSettings', {
+            data: {
+              bankBin: settingsBefore.bankBin ?? null,
+              bankName: settingsBefore.bankName ?? null,
+              accountNumber: settingsBefore.accountNumber ?? null,
+              accountName: settingsBefore.accountName ?? null,
+              transferPrefix: settingsBefore.transferPrefix ?? null,
+            },
+          })
+          .catch(() => {})
       }
 
       if (adminId) {

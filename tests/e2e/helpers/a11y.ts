@@ -4,7 +4,6 @@ import AxeBuilder from '@axe-core/playwright'
 export interface A11yCheckOptions {
   include?: string[]
   exclude?: string[]
-  rules?: Record<string, { enabled: boolean }>
 }
 
 /**
@@ -13,7 +12,7 @@ export interface A11yCheckOptions {
  *
  * @param page Playwright Page instance
  * @param label Optional route or context description for error reporting
- * @param options Optional AxeBuilder configuration (include, exclude, rules)
+ * @param options Optional AxeBuilder configuration (include, exclude)
  */
 export async function expectNoSeriousA11y(
   page: Page,
@@ -32,10 +31,6 @@ export async function expectNoSeriousA11y(
     for (const sel of options.exclude) {
       builder = builder.exclude(sel)
     }
-  }
-
-  if (options?.rules) {
-    builder = builder.withRules(Object.keys(options.rules))
   }
 
   const scanResults = await builder.analyze()

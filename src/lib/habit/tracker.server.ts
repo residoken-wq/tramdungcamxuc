@@ -3,7 +3,7 @@ import { getPayload, ValidationError, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { Customer, HabitCheckin, HabitPlan, Product } from '@/payload-types'
 import { getAccess } from '@/lib/entitlements'
-import { HABIT_TRACKER_PRODUCT_SLUGS } from './config'
+import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { getSiteUrl } from '@/lib/site-url'
 import { sendTrackerNudgeEmail } from '@/lib/email/service.server'
 import type { EmailSender } from '@/lib/email/types'
@@ -150,7 +150,7 @@ export async function sendTrackerNudges(
   // 1. Lấy sản phẩm Habit Tracker số để kiểm tra quyền
   const products = await payload.find({
     collection: 'products',
-    where: { slug: { in: Array.from(HABIT_TRACKER_PRODUCT_SLUGS) } },
+    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
     overrideAccess: true,
     limit: 1,
   })

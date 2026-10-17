@@ -24,11 +24,12 @@ import { expectNoSeriousA11y } from './helpers/a11y'
  *   - `/nhac-lich/huy`: renders reminder opt-out form with invalid token notice.
  *
  * - Evaluated & Skipped on unseeded scan (audited in connected E2E journey tests instead):
- *   - `/habit/1-percent-better`: Calls notFound() when product '1-percent-better' is not in DB.
+ *   - `/habit/1-percent-better`: Calls notFound() when product 'habit-tracker-so' is not in DB.
  *     Audited via expectNoSeriousA11y inside tests/e2e/gate-habit-journey.test.ts after seeding.
  *   - `/dung-thu`: Redirects to /tai-khoan/dang-nhap when guest; calls notFound() if ?san-pham is missing.
  *     Audited via expectNoSeriousA11y inside tests/e2e/gate-habit-journey.test.ts.
- *   - `/sap-ra-mat`: Calls notFound() when query param ?san-pham=<slug> is missing.
+ *   - `/sap-ra-mat`: Calls notFound() when query param ?san-pham=<slug> is missing. GĐ 1 page
+ *     (T1-18), not part of the GĐ 2/3 journeys – not scanned; Planning checks it by hand at the gate.
  *   - `/habit/hoc` & `/habit/tracker`: Requires customer auth + active trial/order.
  *     Audited via expectNoSeriousA11y inside tests/e2e/gate-habit-journey.test.ts.
  *   - `/tai-khoan`: Requires customer auth. Audited in journey tests.

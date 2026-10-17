@@ -407,9 +407,9 @@ export function EqDrawWizard({
             <h1 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
               {vi.eqBuddy.draw.step5.title}
             </h1>
-            <h2 className="font-display text-2xl sm:text-3xl text-bright-magenta">
+            <p className="font-display text-2xl sm:text-3xl text-bright-magenta">
               {currentCard.keywordEn} · {currentCard.code}
-            </h2>
+            </p>
           </div>
 
           {/* Các nút điều hướng */}

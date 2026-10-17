@@ -54,6 +54,7 @@ export default async function EqBuddyIntroPage() {
         and: [
           { type: { equals: 'physical_external' } },
           { web: { equals: 'eq' } },
+          { saleStatus: { not_equals: 'hidden' } },
           { _status: { equals: 'published' } },
         ],
       },
@@ -98,7 +99,11 @@ export default async function EqBuddyIntroPage() {
               {vi.eqBuddy.intro.drawButton}
             </Button>
             {physicalProduct && (
-              <PhysicalDeckButton product={physicalProduct} campaign="eq_intro_page" />
+              <PhysicalDeckButton
+                product={physicalProduct}
+                campaign="eq_intro_page"
+                variant="ghost"
+              />
             )}
           </div>
         </header>

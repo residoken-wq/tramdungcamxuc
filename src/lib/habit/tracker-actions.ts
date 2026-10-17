@@ -5,7 +5,7 @@ import { getPayload, ValidationError } from 'payload'
 import config from '@/payload.config'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getAccess } from '@/lib/entitlements'
-import { HABIT_TRACKER_PRODUCT_SLUGS } from './config'
+import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { getCurrentDayOfPlan, getOrCreateTrackerPlan } from './tracker.server'
 import { EMOTIONS, type EmotionKey } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
@@ -107,7 +107,7 @@ export async function checkInDay(
   // 3. Kiểm tra sản phẩm và quyền truy cập
   const products = await payload.find({
     collection: 'products',
-    where: { slug: { in: Array.from(HABIT_TRACKER_PRODUCT_SLUGS) } },
+    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
     overrideAccess: true,
     limit: 1,
   })
@@ -279,7 +279,7 @@ export async function createTrackerPlanAction(identityStatement: string): Promis
   // Kiểm tra cấu hình sản phẩm và quyền truy cập
   const products = await payload.find({
     collection: 'products',
-    where: { slug: { in: Array.from(HABIT_TRACKER_PRODUCT_SLUGS) } },
+    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
     overrideAccess: true,
     limit: 1,
   })

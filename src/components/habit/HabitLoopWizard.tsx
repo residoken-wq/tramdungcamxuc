@@ -673,9 +673,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                       <div>
-                        <h4 className="font-semibold text-deep-navy text-base">
+                        <h3 className="font-semibold text-deep-navy text-base">
                           {stageInfo.title}
-                        </h4>
+                        </h3>
                         <span className="text-xs text-bright-magenta font-medium block">
                           {stageInfo.rule}
                         </span>
@@ -778,9 +778,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               {/* Lưới 21 ngày */}
               <div className="p-5 rounded-card bg-warm-ivory border border-lavender-mist">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-semibold text-deep-navy text-sm">
+                  <h3 className="font-semibold text-deep-navy text-sm">
                     {vi.habit.wizard.step4.trackerPreviewHeading}
-                  </h4>
+                  </h3>
                   <span className="text-xs text-bright-magenta font-medium">
                     {vi.habit.wizard.step4.continuousDays}
                   </span>
@@ -793,9 +793,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
 
               {/* Tóm tắt kỹ thuật đã chọn */}
               <div className="p-5 rounded-card bg-white border border-lavender-mist space-y-3">
-                <h4 className="font-semibold text-deep-navy text-sm">
+                <h3 className="font-semibold text-deep-navy text-sm">
                   {vi.habit.wizard.step4.techniquesHeading}
-                </h4>
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   {HABIT_STAGES.map((stage) => {
                     const list = draft.chosenTechniques[stage] || []
@@ -827,9 +827,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                 className="p-6 rounded-card bg-soft-pink/40 border border-soft-pink space-y-4"
               >
                 <div>
-                  <h4 className="font-display text-lg text-deep-navy mb-1">
+                  <h3 className="font-display text-lg text-deep-navy mb-1">
                     {vi.habit.wizard.step4.emailHeading}
-                  </h4>
+                  </h3>
                   <p className="text-xs sm:text-sm text-deep-navy/80">
                     {vi.habit.wizard.step4.emailSubheading}
                   </p>

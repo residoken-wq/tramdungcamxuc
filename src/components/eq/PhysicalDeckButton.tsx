@@ -23,6 +23,8 @@ export interface PhysicalDeckButtonProps {
   campaign?: string
   className?: string
   showHint?: boolean
+  /** Next to another primary CTA, use 'ghost' so the page keeps a single pink CTA. */
+  variant?: 'primary' | 'ghost'
 }
 
 /**
@@ -35,6 +37,7 @@ export function PhysicalDeckButton({
   campaign,
   className = '',
   showHint = false,
+  variant = 'primary',
 }: PhysicalDeckButtonProps) {
   if (
     !product ||
@@ -72,7 +75,7 @@ export function PhysicalDeckButton({
     <div className={`flex flex-col items-center gap-2 text-center ${className}`}>
       <Button
         href={safeLink}
-        variant="primary"
+        variant={variant}
         size="md"
         target="_blank"
         rel="noopener noreferrer"

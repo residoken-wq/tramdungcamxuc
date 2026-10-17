@@ -6,7 +6,7 @@ import config from '@/payload.config'
 import type { Product, HabitCheckin } from '@/payload-types'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getAccess } from '@/lib/entitlements'
-import { HABIT_TRACKER_PRODUCT_SLUGS } from '@/lib/habit/config'
+import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
 import {
   findOwnTrackerPlan,
   getCurrentDayOfPlan,
@@ -39,7 +39,7 @@ export default async function HabitTrackerPage() {
   // 2. Kiểm tra sản phẩm và quyền truy cập
   const products = await payload.find({
     collection: 'products',
-    where: { slug: { in: Array.from(HABIT_TRACKER_PRODUCT_SLUGS) } },
+    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
     overrideAccess: true,
     limit: 1,
   })
@@ -70,7 +70,7 @@ export default async function HabitTrackerPage() {
   if (!plan && !access.hasAccess) {
     return (
       <ToolPaywall
-        productSlug={product.slug}
+        productSlug={HABIT_TRACKER_PRODUCT_SLUG}
         product={product}
         access={access}
         badge={vi.tracker.paywall.title}
