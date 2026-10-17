@@ -30,4 +30,7 @@ Workshops.admin = {
   defaultColumns: ['title', 'product', 'startsAt', 'endsAt', 'updatedAt'],
   listSearchableFields: ['title'],
   livePreview: collectionLivePreview('workshops'),
+  components: {
+    beforeListTable: ['@/components/admin/workshop-wizard/CreateWorkshopButton#CreateWorkshopButton'],
+  },
 }

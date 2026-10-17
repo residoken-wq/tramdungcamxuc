@@ -20,9 +20,11 @@
    - [3.1b. Tạo sản phẩm bằng trình hướng dẫn (Wizard 5 bước)](#31b-tạo-sản-phẩm-bằng-trình-hướng-dẫn-wizard-5-bước)
    - [3.7. Xem trước trước khi xuất bản (Live Preview)](#37-xem-trước-trước-khi-xuất-bản-live-preview)
    - [3.8. Quản lý Lịch workshop và quyền tham gia (Workshops)](#38-quản-lý-lịch-workshop-và-quyền-tham-gia-workshops)
+     - [3.8b. Lên lịch workshop bằng Trình hướng dẫn (Wizard 3 bước)](#38b-lên-lịch-workshop-bằng-trình-hướng-dẫn-wizard-3-bước)
    - [3.9. Chương trình dùng thử 21 ngày cho công cụ số](#39-chương-trình-dùng-thử-21-ngày-cho-công-cụ-số)
    - [3.10. Quản lý Bài học và Video khóa học (Habit Hack)](#310-quản-lý-bài-học-và-video-khóa-học-habit-hack)
      - [3.10.1. Cách nhập video Bunny Stream cho bài học](#3101-cách-nhập-video-bunny-stream-cho-bài-học)
+     - [3.10.2. Thêm bài học bằng Trình hướng dẫn (Wizard 4 bước)](#3102-thêm-bài-học-bằng-trình-hướng-dẫn-wizard-4-bước)
    - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
    - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
    - [3.13. Quản lý 26 thẻ EQ Buddy](#313-quản-lý-26-thẻ-eq-buddy)
@@ -612,6 +614,51 @@ Hệ thống tự động nhận biết loại nội dung bạn đang mở và d
 
 ---
 
+### 3.8b. Lên lịch workshop bằng Trình hướng dẫn (Wizard 3 bước)
+
+**Mục đích**: Giúp Hana lên lịch các buổi workshop Zoom/Google Meet đồng hành cùng học viên một cách nhanh chóng và an toàn tuyệt đối: không lo nhầm lẫn múi giờ, chọn đúng gói học viên được tham gia, và xem trước giao diện email nhắc nhở 24 giờ mà không gửi email thật.
+
+#### 1. Cách mở Trình hướng dẫn lên lịch workshop
+
+Bạn có thể mở Wizard bằng 3 cách rất thuận tiện:
+- **Từ trang chủ Dashboard "Hôm nay"**: Tại ô phím tắt nhanh, bấm vào **"Lên lịch workshop"**.
+- **Từ bảng danh sách Lịch workshop**: Vào menu **Khóa Habit** -> chọn **Lịch workshop**, bạn sẽ nhìn thấy banner màu tím nổi bật ở ngay đầu trang -> bấm nút **+ Lên lịch bằng Wizard**.
+- **Nhập trực tiếp đường dẫn**: Truy cập thẳng vào `/admin/len-lich-workshop`.
+
+#### 2. Các bước thiết lập chi tiết
+
+##### Bước 1: Đối tượng tham gia
+- **Tên buổi workshop**: Nhập tiêu đề buổi học (ví dụ: `Workshop "Tập thương cảm xúc" – Kỳ 1`).
+- **Chọn sản phẩm được tham gia**: Tích chọn các gói đồng hành (CLEAR, BUILD, SHINE) hoặc sản phẩm workshop bán lẻ mà học viên đã mua sẽ được quyền vào phòng.
+  - Có sẵn nút **Chọn tất cả** hoặc **Bỏ chọn** để thao tác nhanh chỉ với 1 cú nhấp chuột.
+  - Thẻ sản phẩm hiển thị nhãn phân loại rõ ràng (`Gói đồng hành` hoặc `Workshop`).
+- Bấm **Tiếp tục**.
+
+##### Bước 2: Thời gian và địa điểm
+- **Ngày và Giờ bắt đầu (theo giờ Việt Nam)**: Chọn ngày diễn ra và giờ bắt đầu bình thường theo múi giờ sinh hoạt tại Việt Nam (ICT, UTC+7).
+- **Hệ thống tự động quy đổi múi giờ chuẩn quốc tế (UTC)**:
+  - Ngay khi bạn chọn giờ, hệ thống sẽ tính toán và hiển thị chuỗi thời gian quốc tế tương đương.
+  - **Xử lý thông minh rạng sáng 0h–7h**: Nếu bạn lên lịch vào khung giờ rạng sáng (ví dụ: 02:00 sáng ngày 25/10 tại Việt Nam), hệ thống sẽ tự động hiểu và lưu chính xác là 19:00 ngày 24/10 theo giờ quốc tế (UTC), tránh hoàn toàn lỗi lệch ngày khi gửi email nhắc nhở.
+- **Liên kết tham gia**: Dán đường link phòng họp trực tuyến (Google Meet hoặc Zoom, ví dụ: `https://meet.google.com/abc-defg-hij`). Hệ thống sẽ kiểm tra định dạng đường link ngay khi bạn nhập.
+- Bấm **Tiếp tục**.
+
+##### Bước 3: Xem trước thông báo và lưu
+- **Khung xem trước email nhắc nhở 24 giờ**:
+  - Hệ thống sử dụng chính mẫu email thật của Trạm Dừng Cảm Xúc để hiển thị bản xem trước sinh động với tên workshop, ngày giờ Việt Nam chuẩn xác và nút truy cập tài khoản học viên.
+  - Bạn có thể chuyển đổi giữa chế độ **Điện thoại** (375px) và **Máy tính** (100%) để kiểm tra độ hiển thị đẹp mắt.
+  - **An toàn tuyệt đối**: Bước này chỉ nhằm mục đích giúp bạn duyệt trước nội dung, hệ thống **hoàn toàn KHÔNG gửi email thật** ra ngoài.
+- **Lưu lịch workshop**:
+  - **Lưu nháp (Mặc định)**: Lưu lịch ở trạng thái nháp an toàn (`draft`) để chuẩn bị trước.
+  - **Xuất bản**: Mở lịch chính thức trên hệ thống (`published`) để học viên thấy trong trang tài khoản `/tai-khoan`.
+- Sau khi bấm Lưu, hệ thống sẽ tự động chuyển hướng về form chuẩn tại `/admin/collections/workshops/[id]`.
+
+#### 3. Tính năng an toàn cho Hana
+- **Tự động lưu nháp vào máy**: Nếu bạn lỡ tay đóng tab hay mất điện, dữ liệu đang nhập sẽ tự động khôi phục khi bạn quay lại.
+- **Cảnh báo rời trang**: Trình duyệt sẽ hỏi xác nhận nếu bạn rời đi khi chưa lưu.
+- **Lùi bước linh hoạt**: Bạn có thể bấm **Quay lại** bất kỳ lúc nào để chỉnh sửa mà không bị mất dữ liệu ở các bước khác.
+
+---
+
 ### 3.9. Chương trình dùng thử 21 ngày cho công cụ số
 
 **Mục đích**: Cho phép độc giả trải nghiệm trọn vẹn công cụ số (Habit Tracker số và EQ Buddy số) trong 21 ngày miễn phí trước khi quyết định mua sở hữu trọn đời.
@@ -690,6 +737,69 @@ Hệ thống tự động nhận biết loại nội dung bạn đang mở và d
 4. **Kiểm tra hiển thị**:
    - Bấm nút mở bài học trên Góc học tập (`/habit/hoc/[id]`).
    - Video được phát qua trình phát bảo mật của hệ thống; tiến độ xem của học viên được tự động ghi nhận sau mỗi 15 giây.
+
+---
+
+### 3.10.2. Thêm bài học bằng Trình hướng dẫn (Wizard 4 bước)
+
+**Mục đích**: Hỗ trợ Hana đăng tải bài học mới vào lộ trình khóa học một cách nhanh gọn và trực quan nhất: vừa chọn chương vừa có thể tạo nhanh chương mới ngay tại chỗ, gắn bài học vào 4 chặng Habit Loop, tự động kiểm tra mã video Bunny và gõ thời lượng theo dạng phút:giây quen thuộc, kèm theo màn hình xem trước 3 kích thước trước khi lưu.
+
+#### 1. Cách mở Trình hướng dẫn thêm bài học
+
+Bạn có 3 cách rất dễ dàng:
+- **Từ Dashboard "Hôm nay"**: Tại ô phím tắt nhanh, bấm vào **"Thêm bài học"**.
+- **Từ bảng danh sách Bài học**: Vào menu **Khóa Habit** -> chọn **Bài học**, bạn sẽ nhìn thấy banner màu tím nổi bật ở ngay đầu trang -> bấm nút **+ Thêm bài học bằng Wizard**.
+- **Nhập trực tiếp đường dẫn**: Truy cập thẳng vào `/admin/them-bai-hoc`.
+
+#### 2. Các bước thiết lập chi tiết
+
+##### Bước 1: Chọn chương học
+- **Danh sách nhóm bài học hiện có**: Hiển thị toàn bộ các chương đã có trên hệ thống, kèm theo nhãn phân loại (_Hiểu mình_, _Nguyên tắc_, hoặc _Kỹ thuật_) và số thứ tự chương. Bạn chỉ cần nhấp chuột vào thẻ chương mong muốn để chọn.
+- **Tạo nhanh nhóm bài học mới ngay tại chỗ**: Nếu bài học thuộc một chương mới toanh chưa có trên website, bạn không cần phải quay ra ngoài menu khác:
+  - Bấm nút **+ Tạo nhóm bài học mới**.
+  - Nhập **Tên nhóm bài học** (ví dụ: `Chương 4: Tự tin duy trì thói quen`).
+  - Chọn **Nhóm nội dung** (`Hiểu mình`, `Nguyên tắc`, hoặc `Kỹ thuật`).
+  - Bấm **Tạo nhóm ngay**. Nhóm mới sẽ tự động được tạo và chọn ngay cho bạn.
+- Bấm **Tiếp tục**.
+
+##### Bước 2: Thông tin bài học
+- **Tiêu đề bài học**: Nhập tên bài giảng hiển thị cho học viên (ví dụ: `Bài 1: Nhận diện tín hiệu kích hoạt`).
+- **Tóm tắt bài học**: Viết ngắn gọn 1–2 câu giới thiệu nội dung hoặc câu hỏi gợi mở suy ngẫm.
+- **Chặng thói quen (Habit Loop)**: Chọn 1 trong 5 nút lựa chọn:
+  - _Gợi ý (Cue)_: Tín hiệu kích hoạt thói quen.
+  - _Khao khát (Craving)_: Động lực và cảm xúc thúc đẩy.
+  - _Phản hồi (Response)_: Hành động thực hiện thói quen.
+  - _Phần thưởng (Reward)_: Lợi ích và cảm giác thỏa mãn nhận được.
+  - _Không áp dụng_: Bài học nhập môn hoặc tổng kết chung không thuộc vòng lặp 4 bước.
+- **Thứ tự hiển thị trong chương**: Hệ thống **tự động gợi ý** số thứ tự tiếp theo (bằng số thứ tự lớn nhất trong chương cộng 1). Bạn có thể sửa lại số này nếu muốn chèn bài vào vị trí khác.
+- Bấm **Tiếp tục**.
+
+##### Bước 3: Video bài học & Thời lượng
+- **Mã video Bunny Stream (GUID)**:
+  - Dán chuỗi mã định danh 36 ký tự từ Bunny Stream (ví dụ: `a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d`).
+  - Hệ thống **kiểm tra định dạng thời gian thực**: nếu mã đúng chuẩn GUID, hệ thống sẽ hiện dấu tích xanh `✓ Định dạng GUID hợp lệ`. Nếu mã bị thiếu ký tự hoặc nhầm link web, hệ thống sẽ nhắc nhở ngay lập tức để bạn sửa.
+- **Thời lượng video**:
+  - Bạn có thể nhập theo dạng **phút:giây** quen thuộc (ví dụ gõ `12:30` hoặc `05:45`).
+  - Hệ thống **tự động chuyển đổi** sang tổng số giây (`750` giây hoặc `345` giây) hiển thị ngay bên cạnh và lưu chuẩn xác vào cơ sở dữ liệu.
+- **Cho phép xem thử**: Tích chọn ô này nếu bạn muốn bài học mở tự do cho mọi khách xem trước mà không cần đăng nhập hay mua khóa học.
+- Bấm **Tiếp tục**.
+
+##### Bước 4: Xem trước và lưu bài học
+- **Khung xem trước trực quan**:
+  - Hệ thống tự động tạo bản nháp tạm thời và tải trực tiếp giao diện phát video bài học thực tế bên trong khung xem trước.
+  - Bạn có thể chuyển đổi giữa 3 kích thước:
+    - **Điện thoại** (375px)
+    - **Máy tính bảng** (768px)
+    - **Máy tính** (1440px)
+- **Lưu bài học**:
+  - **Lưu nháp (Mặc định)**: Lưu bài học ở trạng thái nháp an toàn (`draft`).
+  - **Xuất bản**: Mở bài học chính thức trên Góc học tập `/habit/hoc` (`published`).
+- Sau khi bấm Lưu, hệ thống tự động chuyển hướng về trang bài học chuẩn tại `/admin/collections/lessons/[id]`.
+
+#### 3. Tính năng an toàn cho Hana
+- **Tự động lưu nháp vào máy**: Không lo mất nội dung khi mất điện hoặc vô tình đóng trình duyệt.
+- **Cảnh báo rời trang**: Tránh việc bấm nhầm nút quay lại khi đang nhập dở.
+- **Khôi phục dữ liệu**: Bạn có thể bấm nút **Quay lại** ở bất kỳ bước nào để chỉnh sửa thông tin mà không sợ mất các bước đã nhập.
 
 ---
 

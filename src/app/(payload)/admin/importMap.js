@@ -25,6 +25,8 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { CreateProductButton as CreateProductButton_524a0c2fe6867b553aa2ee9b68ac70cd } from '@/components/admin/product-wizard/CreateProductButton'
 import { OrderActions as OrderActions_bd9a3eb0969675b027902d6a22a18ee7 } from '@/components/admin/OrderActions'
 import { OrderPaymentEvents as OrderPaymentEvents_5d110d44f1eb9dcabda3b8db24c36faf } from '@/components/admin/OrderPaymentEvents'
+import { CreateLessonButton as CreateLessonButton_681bfb91f7b7742918db68651f971dd4 } from '@/components/admin/lesson-wizard/CreateLessonButton'
+import { CreateWorkshopButton as CreateWorkshopButton_838ecc55f38375be15f768950c657be6 } from '@/components/admin/workshop-wizard/CreateWorkshopButton'
 import { EqQrDownloadButton as EqQrDownloadButton_182b90ea1823c05b86095b55fa616cf3 } from '@/components/admin/EqQrDownloadButton'
 import { EqQrExportButton as EqQrExportButton_3a70474255dc3ca7584dba70ddaf8a23 } from '@/components/admin/EqQrExportButton'
 import { CustomerActions as CustomerActions_9fd8238a1722f59df871ef58a48eb6c2 } from '@/components/admin/CustomerActions'
@@ -33,6 +35,8 @@ import { AdminIcon as AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534 } from '@/compo
 import { AdminLogo as AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67 } from '@/components/admin/brand/Logo'
 import { TodayDashboard as TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd } from '@/components/admin/dashboard/TodayDashboard'
 import { ProductWizardView as ProductWizardView_8f354467b2158b3508b409ee61903a48 } from '@/components/admin/product-wizard/ProductWizardView'
+import { LessonWizardView as LessonWizardView_21c2c02bf6a97019810f9bcf3a4a1a5c } from '@/components/admin/lesson-wizard/LessonWizardView'
+import { WorkshopWizardView as WorkshopWizardView_a4703348d9752b2b071d157e36283cae } from '@/components/admin/workshop-wizard/WorkshopWizardView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -65,6 +69,8 @@ export const importMap = {
   "@/components/admin/product-wizard/CreateProductButton#CreateProductButton": CreateProductButton_524a0c2fe6867b553aa2ee9b68ac70cd,
   "@/components/admin/OrderActions#OrderActions": OrderActions_bd9a3eb0969675b027902d6a22a18ee7,
   "@/components/admin/OrderPaymentEvents#OrderPaymentEvents": OrderPaymentEvents_5d110d44f1eb9dcabda3b8db24c36faf,
+  "@/components/admin/lesson-wizard/CreateLessonButton#CreateLessonButton": CreateLessonButton_681bfb91f7b7742918db68651f971dd4,
+  "@/components/admin/workshop-wizard/CreateWorkshopButton#CreateWorkshopButton": CreateWorkshopButton_838ecc55f38375be15f768950c657be6,
   "@/components/admin/EqQrDownloadButton#EqQrDownloadButton": EqQrDownloadButton_182b90ea1823c05b86095b55fa616cf3,
   "@/components/admin/EqQrExportButton#EqQrExportButton": EqQrExportButton_3a70474255dc3ca7584dba70ddaf8a23,
   "@/components/admin/CustomerActions#CustomerActions": CustomerActions_9fd8238a1722f59df871ef58a48eb6c2,
@@ -73,6 +79,8 @@ export const importMap = {
   "@/components/admin/brand/Logo#AdminLogo": AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67,
   "@/components/admin/dashboard/TodayDashboard#TodayDashboard": TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd,
   "@/components/admin/product-wizard/ProductWizardView#ProductWizardView": ProductWizardView_8f354467b2158b3508b409ee61903a48,
+  "@/components/admin/lesson-wizard/LessonWizardView#LessonWizardView": LessonWizardView_21c2c02bf6a97019810f9bcf3a4a1a5c,
+  "@/components/admin/workshop-wizard/WorkshopWizardView#WorkshopWizardView": WorkshopWizardView_a4703348d9752b2b071d157e36283cae,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }
