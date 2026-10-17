@@ -152,7 +152,7 @@ export function LoginForm({ initialNext }: LoginFormProps) {
         <p className="text-xs font-bold uppercase tracking-wider text-bright-magenta mb-1">
           TRẠM DỪNG CẢM XÚC
         </p>
-        <h1 className="font-heading text-2xl sm:text-3xl text-deep-navy">{vi.auth.loginTitle}</h1>
+        <h1 className="font-display text-2xl sm:text-3xl text-deep-navy">{vi.auth.loginTitle}</h1>
         <p className="font-quote italic text-sm text-deep-navy/70 mt-1">{vi.auth.loginSubtitle}</p>
       </div>
 

@@ -6,6 +6,7 @@ import { formatWorkshopTime } from './format'
 import { sendWorkshopReminderEmail } from '@/lib/email/service.server'
 import type { EmailSender } from '@/lib/email/types'
 import { getSiteUrl } from '@/lib/site-url'
+import { getReminderOptOutUrl } from '@/lib/reminders/token'
 
 export interface WorkshopReminderResult {
   processedWorkshops: number
@@ -100,7 +101,10 @@ export async function sendWorkshopReminders(
       overrideAccess: true,
     })
 
-    const eligibleCustomers = new Map<number, { id: number; email: string; name: string }>()
+    const eligibleCustomers = new Map<
+      number,
+      { id: number; email: string; name: string; reminderEmailsOptOut: boolean }
+    >()
 
     for (const order of paidOrders.docs) {
       if (!Array.isArray(order.items)) continue
@@ -115,12 +119,16 @@ export async function sendWorkshopReminders(
         const c = order.customer
         const custId = typeof c === 'object' && c !== null ? (c as { id: number }).id : Number(c)
         if (Number.isFinite(custId) && custId > 0 && !eligibleCustomers.has(custId)) {
+          let email = ''
+          let name = ''
+          let reminderEmailsOptOut = false
+
           if (typeof c === 'object' && c !== null && (c as { email?: string }).email) {
-            eligibleCustomers.set(custId, {
-              id: custId,
-              email: (c as { email: string }).email,
-              name: (c as { name?: string }).name || '',
-            })
+            email = (c as { email: string }).email
+            name = (c as { name?: string }).name || ''
+            reminderEmailsOptOut = Boolean(
+              (c as { reminderEmailsOptOut?: boolean }).reminderEmailsOptOut,
+            )
           } else {
             const custDoc = await payload.findByID({
               collection: 'customers',
@@ -129,12 +137,19 @@ export async function sendWorkshopReminders(
               overrideAccess: true,
             })
             if (custDoc?.email) {
-              eligibleCustomers.set(custId, {
-                id: custId,
-                email: custDoc.email,
-                name: custDoc.name || '',
-              })
+              email = custDoc.email
+              name = custDoc.name || ''
+              reminderEmailsOptOut = Boolean(custDoc.reminderEmailsOptOut)
             }
+          }
+
+          if (email) {
+            eligibleCustomers.set(custId, {
+              id: custId,
+              email,
+              name,
+              reminderEmailsOptOut,
+            })
           }
         }
       }
@@ -160,8 +175,15 @@ export async function sendWorkshopReminders(
       }
 
       if (reminderId !== null) {
+        // REVIEW-REQUIRED: Khách đã tắt nhận email nhắc -> bỏ qua gửi email (T2-21).
+        // Vẫn giữ lại bản ghi workshopReminders (sentAt) để ghi nhận đã xử lý và không thử gửi lại mãi.
+        if (customer.reminderEmailsOptOut) {
+          continue
+        }
+
         try {
           const formattedTime = formatWorkshopTime(ws.startsAt, ws.endsAt)
+          const optOutUrl = getReminderOptOutUrl(customer.id)
           await sendWorkshopReminderEmail(
             payload,
             {
@@ -170,6 +192,7 @@ export async function sendWorkshopReminders(
               workshopTitle: ws.title,
               workshopTimeFormatted: formattedTime,
               accountUrl,
+              optOutUrl,
             },
             options?.emailSender,
           )
