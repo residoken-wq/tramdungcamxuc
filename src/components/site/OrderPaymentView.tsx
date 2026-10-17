@@ -149,7 +149,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
         </p>
 
         {order.productName && (
-          <div className="pt-2 text-xs text-deep-navy/60 font-medium">
+          <div className="pt-2 text-xs text-deep-navy/70 font-medium">
             {vi.payment.ui.orderView.productPrefix}{' '}
             <span className="font-semibold text-deep-navy">{order.productName}</span>
           </div>
@@ -180,7 +180,7 @@ export function OrderPaymentView({ order }: OrderPaymentViewProps) {
                 <span className="text-xs font-bold text-deep-navy uppercase tracking-wider">
                   {vi.payment.ui.orderView.qrTitle}
                 </span>
-                <p className="text-xs text-deep-navy/60">{vi.payment.ui.orderView.qrInstruction}</p>
+                <p className="text-xs text-deep-navy/70">{vi.payment.ui.orderView.qrInstruction}</p>
               </div>
 
               {/* QR SVG */}

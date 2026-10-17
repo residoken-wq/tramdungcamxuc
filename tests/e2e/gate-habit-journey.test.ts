@@ -315,8 +315,6 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       const paymentRef = (await paymentRefEl.innerText()).trim()
       expect(paymentRef.startsWith('TDCX')).toBe(true)
 
-      await expectNoSeriousA11y(guestPage, 'habit-journey-order-page')
-
       const payToken = guestPage.url().split('/thanh-toan/don/')[1]?.split('?')[0]
       expect(payToken).toBeTruthy()
 
@@ -327,6 +325,9 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       const orderDocs = (await orderQuery.json()).docs
       expect(orderDocs.length).toBe(1)
       createdOrderId = orderDocs[0].id
+
+      // Quét sau khi đã ghi nhận đơn để finally luôn dọn được đơn (đơn giữ khóa ngoại tới sản phẩm)
+      await expectNoSeriousA11y(guestPage, 'habit-journey-order-page')
 
       // Owner vào trang quản trị xác nhận thanh toán
       await page.goto(`/admin/collections/orders/${createdOrderId}`)
@@ -378,7 +379,18 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
           }
         }
       }
-      if (createdOrderId) {
+      // Xóa mọi đơn của khách (không chỉ createdOrderId) – đơn còn sót sẽ chặn xóa sản phẩm
+      // habit-tracker-so và làm hỏng các e2e sau dùng cùng slug.
+      if (createdCustomerId) {
+        const orders = await page.request
+          .get(`/api/orders?where[customer][equals]=${createdCustomerId}&limit=100`)
+          .catch(() => null)
+        if (orders?.ok()) {
+          for (const doc of (await orders.json()).docs || []) {
+            await page.request.delete(`/api/orders/${doc.id}`).catch(() => {})
+          }
+        }
+      } else if (createdOrderId) {
         await page.request.delete(`/api/orders/${createdOrderId}`).catch(() => {})
       }
       if (createdCustomerId) {
@@ -417,7 +429,14 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       }
 
       if (createdProductId) {
-        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+        const delProduct = await page.request
+          .delete(`/api/products/${createdProductId}`)
+          .catch(() => null)
+        if (!delProduct?.ok()) {
+          console.error(
+            `[gate-habit-journey] Không xóa được sản phẩm ${productSlug} (${delProduct?.status()}) – các e2e sau dùng cùng slug sẽ lỗi.`,
+          )
+        }
       }
 
       if (settingsBefore) {
