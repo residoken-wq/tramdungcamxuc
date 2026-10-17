@@ -66,7 +66,9 @@ export async function createProductFromWizard(
       type: validData.type,
       web: validData.web,
       saleStatus: validData.saleStatus,
-      isSample: validData.isSample ?? false,
+      // Never taken from the client: products made in the wizard are real products, so the
+      // CM-03 cover-image rule (which exempts sample data) always applies.
+      isSample: false,
     }
 
     if (validData.shortDescription !== undefined && validData.shortDescription !== null) {

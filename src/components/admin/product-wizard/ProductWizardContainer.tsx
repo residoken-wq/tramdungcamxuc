@@ -126,6 +126,13 @@ export function ProductWizardContainer({
         if (data.type === 'physical_external' && !data.externalUrl?.trim()) {
           return false
         }
+        // Every package component needs a name: catch it here, not at the step 5 save.
+        if (
+          data.type === 'package' &&
+          (data.components ?? []).some((component) => !component.label?.trim())
+        ) {
+          return false
+        }
         return true
       case 4:
         return true
@@ -354,7 +361,9 @@ export function ProductWizardContainer({
         totalSteps={5}
         canGoBack={currentStep > 1}
         canContinue={canContinue()}
-        isSaving={isSaving}
+        // Block save/publish while step 5 is still creating the preview draft: a click during
+        // that request would create a second product with the same slug.
+        isSaving={isSaving || isSavingPreviewDraft}
         isPublishing={isPublishing}
         errorMessage={errorMessage}
         successMessage={successMessage}

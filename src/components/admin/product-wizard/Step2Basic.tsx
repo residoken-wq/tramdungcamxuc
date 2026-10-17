@@ -80,7 +80,7 @@ export function Step2Basic({
         {/* Tên sản phẩm */}
         <div className="md:col-span-2">
           <label className="block font-ui text-sm font-bold text-deep-navy mb-1.5">
-            {vi.cms.wizard.labels.name} <span className="text-red-500">*</span>
+            {vi.cms.wizard.labels.name} <span className="text-accent-pink">*</span>
           </label>
           <input
             type="text"
@@ -97,7 +97,7 @@ export function Step2Basic({
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="font-ui text-sm font-bold text-deep-navy">
-              {vi.cms.wizard.labels.slug} <span className="text-red-500">*</span>
+              {vi.cms.wizard.labels.slug} <span className="text-accent-pink">*</span>
             </label>
             <button
               type="button"
@@ -124,7 +124,7 @@ export function Step2Basic({
         {/* Khu vực web */}
         <div>
           <label className="block font-ui text-sm font-bold text-deep-navy mb-1.5">
-            {vi.cms.wizard.labels.web} <span className="text-red-500">*</span>
+            {vi.cms.wizard.labels.web} <span className="text-accent-pink">*</span>
           </label>
           <select
             value={web}

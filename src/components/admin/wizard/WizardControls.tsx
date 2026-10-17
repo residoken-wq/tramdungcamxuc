@@ -43,7 +43,7 @@ export function WizardControls({
       {errorMessage && (
         <div
           role="alert"
-          className="mb-3 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          className="mb-3 flex items-start gap-2 rounded-xl border border-accent-pink/40 bg-soft-pink p-3 text-sm text-accent-pink"
         >
           <span className="font-bold">⚠️</span>
           <span className="flex-1 font-medium">{errorMessage}</span>
@@ -70,7 +70,7 @@ export function WizardControls({
             className={`inline-flex items-center gap-2 rounded-xl border border-lavender-mist px-4 py-2.5 font-ui text-sm font-semibold transition-all ${
               canGoBack && !isBusy
                 ? 'bg-white text-deep-navy hover:bg-soft-pink/40 hover:text-bright-magenta'
-                : 'cursor-not-allowed bg-gray-50 text-gray-300'
+                : 'cursor-not-allowed bg-warm-ivory text-deep-navy/30'
             }`}
           >
             ← {vi.cms.wizard.buttons.back}
@@ -81,7 +81,7 @@ export function WizardControls({
               type="button"
               onClick={onClearDraft}
               disabled={isBusy}
-              className="text-xs font-medium text-deep-navy/50 underline hover:text-red-600 transition-colors px-2 py-1"
+              className="text-xs font-medium text-deep-navy/50 underline hover:text-accent-pink transition-colors px-2 py-1"
             >
               {vi.cms.wizard.buttons.clearDraft}
             </button>
@@ -115,7 +115,7 @@ export function WizardControls({
                 className={`inline-flex items-center gap-2 rounded-xl px-6 py-2.5 font-ui text-sm font-bold shadow-sm transition-all ${
                   canContinue && !isBusy
                     ? 'bg-accent-pink text-white hover:bg-bright-magenta hover:shadow-md'
-                    : 'cursor-not-allowed bg-gray-200 text-gray-400'
+                    : 'cursor-not-allowed bg-lavender-mist text-deep-navy/40'
                 }`}
               >
                 {vi.cms.wizard.buttons.continue} →

@@ -88,7 +88,7 @@ export function Step5Preview({
       </div>
 
       {/* Khung xem trước iframe */}
-      <div className="flex justify-center rounded-2xl border border-lavender-mist/80 bg-gray-100 p-4 min-h-[560px] overflow-hidden">
+      <div className="flex justify-center rounded-2xl border border-lavender-mist/80 bg-lavender-mist/40 p-4 min-h-[560px] overflow-hidden">
         {isSavingDraft ? (
           <div className="flex flex-col items-center justify-center p-12 text-center text-sm text-deep-navy/70">
             <span className="mb-3 inline-block h-8 w-8 animate-spin rounded-full border-3 border-bright-magenta border-t-transparent" />
@@ -98,7 +98,7 @@ export function Step5Preview({
             </p>
           </div>
         ) : saveDraftError ? (
-          <div className="flex flex-col items-center justify-center p-12 text-center text-sm text-red-600">
+          <div className="flex flex-col items-center justify-center p-12 text-center text-sm text-accent-pink">
             <span className="text-2xl mb-2">⚠️</span>
             <p className="font-bold">Không thể tải bản xem trước</p>
             <p className="text-xs mt-1 text-deep-navy/70 max-w-md">{saveDraftError}</p>

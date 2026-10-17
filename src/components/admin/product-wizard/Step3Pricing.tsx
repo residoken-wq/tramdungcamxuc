@@ -134,7 +134,7 @@ export function Step3Pricing({
         {/* Trạng thái mở bán */}
         <div className="md:col-span-2">
           <label className="block font-ui text-sm font-bold text-deep-navy mb-1.5">
-            {vi.cms.wizard.labels.saleStatus} <span className="text-red-500">*</span>
+            {vi.cms.wizard.labels.saleStatus} <span className="text-accent-pink">*</span>
           </label>
           <select
             value={saleStatus}
@@ -160,7 +160,7 @@ export function Step3Pricing({
           <div>
             <label className="block font-ui text-sm font-bold text-deep-navy mb-1.5">
               {vi.cms.wizard.labels.price}{' '}
-              {saleStatus === 'on_sale' && <span className="text-red-500">*</span>}
+              {saleStatus === 'on_sale' && <span className="text-accent-pink">*</span>}
             </label>
             <input
               type="number"
@@ -278,7 +278,7 @@ export function Step3Pricing({
             <div>
               <label className="block font-ui text-sm font-bold text-deep-navy mb-1.5">
                 {vi.cms.wizard.labels.externalUrl}{' '}
-                {type === 'physical_external' && <span className="text-red-500">*</span>}
+                {type === 'physical_external' && <span className="text-accent-pink">*</span>}
               </label>
               <input
                 type="text"
@@ -334,7 +334,8 @@ export function Step3Pricing({
             {/* Bảng cấu phần */}
             {(!components || components.length === 0) && (
               <div className="rounded-xl border border-dashed border-lavender-mist bg-white p-6 text-center text-sm text-deep-navy/60">
-                Chưa có cấu phần nào trong gói. Nhấn <strong>&ldquo;Thêm cấu phần&rdquo;</strong> để bắt đầu.
+                Chưa có cấu phần nào trong gói. Nhấn <strong>&ldquo;Thêm cấu phần&rdquo;</strong> để
+                bắt đầu.
               </div>
             )}
 
@@ -423,7 +424,7 @@ export function Step3Pricing({
                       <button
                         type="button"
                         onClick={() => handleRemoveComponent(idx)}
-                        className="text-xs font-bold text-red-500 hover:text-red-700 p-1"
+                        className="text-xs font-bold text-accent-pink hover:text-accent-pink p-1"
                         title="Xóa cấu phần này"
                       >
                         ✕

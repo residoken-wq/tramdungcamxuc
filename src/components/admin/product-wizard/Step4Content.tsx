@@ -131,7 +131,8 @@ export function Step4Content({ includes, painPoint, outcome, faq, onChange }: St
 
           {(!includes || includes.length === 0) && (
             <div className="rounded-xl border border-dashed border-lavender-mist bg-white p-4 text-center text-xs text-deep-navy/60">
-              Chưa có mục nào. Nhấn <strong>&ldquo;Thêm mục&rdquo;</strong> để liệt kê những gì khách nhận được.
+              Chưa có mục nào. Nhấn <strong>&ldquo;Thêm mục&rdquo;</strong> để liệt kê những gì
+              khách nhận được.
             </div>
           )}
 
@@ -150,7 +151,7 @@ export function Step4Content({ includes, painPoint, outcome, faq, onChange }: St
                   <button
                     type="button"
                     onClick={() => handleRemoveInclude(idx)}
-                    className="text-xs font-bold text-red-500 hover:text-red-700 p-1"
+                    className="text-xs font-bold text-accent-pink hover:text-accent-pink p-1"
                     title="Xóa mục này"
                   >
                     ✕
@@ -199,7 +200,7 @@ export function Step4Content({ includes, painPoint, outcome, faq, onChange }: St
                     <button
                       type="button"
                       onClick={() => handleRemoveFaq(idx)}
-                      className="text-xs font-bold text-red-500 hover:text-red-700 p-0.5"
+                      className="text-xs font-bold text-accent-pink hover:text-accent-pink p-0.5"
                       title="Xóa câu hỏi này"
                     >
                       ✕

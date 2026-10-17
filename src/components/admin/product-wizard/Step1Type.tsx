@@ -28,6 +28,7 @@ export function Step1Type({ selectedType, onSelectType }: Step1TypeProps) {
             <button
               key={type}
               type="button"
+              aria-pressed={isSelected}
               onClick={() => onSelectType(type)}
               className={`group relative flex flex-col justify-between rounded-2xl border-2 p-5 text-left transition-all hover:shadow-md ${
                 isSelected

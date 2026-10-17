@@ -62,6 +62,9 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
 
     let adminId: number | undefined
     const createdProductIds: number[] = []
+    // Step 5 saves a preview draft before any redirect: clean up by slug too, so a failed
+    // run never leaves a product behind (CI reuses the DB).
+    const createdSlugs: string[] = []
 
     try {
       // 1. Khởi tạo tài khoản admin đầu tiên
@@ -75,6 +78,7 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       const unique1 = randomUUID().slice(0, 6)
       const toolName = `Habit Tracker E2E ${unique1}`
       const toolSlug = `habit-tracker-e2e-${unique1}`
+      createdSlugs.push(toolSlug)
 
       await page.goto('/admin/tao-san-pham', { waitUntil: 'domcontentloaded' })
       await expect(page.locator('h1')).toContainText('Tạo sản phẩm mới')
@@ -82,7 +86,11 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       // Bước 1: Chọn loại "Công cụ số"
       const digitalToolCard = page.locator('button').filter({ hasText: 'Công cụ số' }).first()
       await expect(digitalToolCard).toBeVisible()
-      await digitalToolCard.click()
+      // The page may not be hydrated yet: retry until the card is really selected.
+      await expect(async () => {
+        await digitalToolCard.click()
+        await expect(digitalToolCard).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 })
+      }).toPass({ timeout: 15000 })
 
       // Bấm Tiếp tục
       await expect(async () => {
@@ -158,7 +166,9 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
 
       // Xác nhận các trường trên form chuẩn hiển thị đúng giá trị
       await expect(page.locator('#field-name')).toHaveValue(toolName)
-      await expect(page.locator('#field-price')).toHaveValue('250,000')
+      // CM-03: price lives in the "Giá & bán" tab
+      await page.getByRole('button', { name: 'Giá & bán' }).click()
+      await expect(page.locator('#field-price')).toHaveValue('250000')
 
       // ==========================================
       // LUỒNG 2: TẠO GÓI ĐỒNG HÀNH (PACKAGE)
@@ -166,13 +176,18 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       const unique2 = randomUUID().slice(0, 6)
       const packageName = `Growth Mirror E2E ${unique2}`
       const packageSlug = `growth-mirror-e2e-${unique2}`
+      createdSlugs.push(packageSlug)
 
       await page.goto('/admin/tao-san-pham', { waitUntil: 'domcontentloaded' })
 
       // Bước 1: Chọn loại "Gói đồng hành"
       const packageCard = page.locator('button').filter({ hasText: 'Gói đồng hành' }).first()
       await expect(packageCard).toBeVisible()
-      await packageCard.click()
+      // The page may not be hydrated yet: retry until the card is really selected.
+      await expect(async () => {
+        await packageCard.click()
+        await expect(packageCard).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 })
+      }).toPass({ timeout: 15000 })
 
       await expect(async () => {
         const nextBtn = page.getByRole('button', { name: /Tiếp tục/i })
@@ -183,7 +198,9 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
 
       // Bước 2: Thông tin cơ bản
       await page.locator('input[placeholder*="Habit Tracker"]').first().fill(packageName)
-      await expect(page.locator('input[placeholder*="habit-tracker"]').first()).toHaveValue(packageSlug)
+      await expect(page.locator('input[placeholder*="habit-tracker"]').first()).toHaveValue(
+        packageSlug,
+      )
 
       await expect(async () => {
         const nextBtn = page.getByRole('button', { name: /Tiếp tục/i })
@@ -202,11 +219,15 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       const compLabelInput = page.locator('input[placeholder*="Coaching 1:1"]').first()
       await compLabelInput.fill('Coaching 1:1')
 
-      // Thêm cấu phần 2: Workshop
+      // Thêm cấu phần 2: Workshop (mặc định 1 × 500.000đ)
       await addCompBtn.click()
+      // Chưa có tên cấu phần 2 → chưa được sang bước 4
+      await expect(page.getByRole('button', { name: /Tiếp tục/i })).toBeDisabled()
+      await page.locator('input[placeholder*="Coaching 1:1"]').nth(1).fill('Workshop')
 
-      // Xác nhận tổng giá trị hiển thị dạng tiền tệ VND
+      // Tổng giá trị = 1 × 500.000 (cấu phần 1 mặc định) + 1 × 500.000 = 1.000.000đ
       await expect(page.getByText(/Tổng giá trị thực tế của gói/i)).toBeVisible()
+      await expect(page.getByText('1.000.000 đ').first()).toBeVisible()
 
       // Bấm Tiếp tục sang bước 4
       await expect(async () => {
@@ -239,6 +260,15 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       }
     } finally {
       // Dọn dẹp dữ liệu sản phẩm và admin user
+      for (const slug of createdSlugs) {
+        const found = await page.request
+          .get(`/api/products?where[slug][equals]=${slug}&draft=true&depth=0&limit=5`)
+          .then((r) => (r.ok() ? r.json() : { docs: [] }))
+          .catch(() => ({ docs: [] }))
+        for (const doc of (found as { docs: { id: number }[] }).docs) {
+          if (!createdProductIds.includes(doc.id)) createdProductIds.push(doc.id)
+        }
+      }
       for (const prodId of createdProductIds) {
         try {
           await page.request.delete(`/api/products/${prodId}`)

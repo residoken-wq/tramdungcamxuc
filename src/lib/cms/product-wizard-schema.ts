@@ -37,7 +37,6 @@ export const productWizardBaseSchema = z.object({
   shortDescription: z.string().optional().nullable(),
   journeyStep: z.enum(['pause', 'feel', 'name', 'choose', 'practice']).optional().nullable(),
   coverImage: z.union([z.number(), z.string()]).optional().nullable(),
-  isSample: z.boolean().optional(),
 
   // Bước 3: Giá & cách bán
   saleStatus: z.enum(['on_sale', 'free', 'coming_soon', 'consult', 'hidden']).default('on_sale'),
@@ -65,7 +64,7 @@ export type ProductWizardInput = z.infer<typeof productWizardBaseSchema>
  * Validate dữ liệu đầu vào theo loại sản phẩm và chế độ lưu (nháp / xuất bản).
  * Khi `publish: true`, kiểm tra nghiêm ngặt theo các quy tắc của CM-03:
  * - Sản phẩm `on_sale` (trừ Shopee) bắt buộc phải có giá bán (price).
- * - Sản phẩm `on_sale` bắt buộc phải có ảnh bìa (coverImage) trừ khi isSample: true.
+ * - Sản phẩm `on_sale` bắt buộc phải có ảnh bìa (coverImage).
  * - Loại package nếu có components thì từng cấu phần phải hợp lệ.
  */
 export function validateProductWizardData(
@@ -102,7 +101,7 @@ export function validateProductWizardData(
     }
 
     // Kiểm tra ảnh bìa khi xuất bản sản phẩm đang mở bán
-    if (validData.saleStatus === 'on_sale' && !validData.isSample) {
+    if (validData.saleStatus === 'on_sale') {
       if (!validData.coverImage) {
         return {
           success: false,

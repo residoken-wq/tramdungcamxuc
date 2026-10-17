@@ -144,7 +144,7 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
         slug: 'habit-tracker-so-test',
         web: 'habit',
         saleStatus: 'on_sale',
-        isSample: true, // skip image check
+        coverImage: 1,
         // price missing
       }
       const res = validateProductWizardData(dataWithoutPrice, { publish: true })
@@ -154,7 +154,7 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
       }
     })
 
-    it('publish mode: blocks on_sale product without cover image (when not isSample)', () => {
+    it('publish mode: blocks on_sale product without cover image ', () => {
       const dataWithoutCover: ProductWizardInput = {
         type: 'digital_tool',
         name: 'Habit Tracker Số',
@@ -162,7 +162,6 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
         web: 'habit',
         saleStatus: 'on_sale',
         price: 250000,
-        isSample: false,
         coverImage: null,
       }
       const res = validateProductWizardData(dataWithoutCover, { publish: true })
@@ -181,7 +180,7 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
         saleStatus: 'on_sale',
         externalUrl: 'https://shopee.vn/eq-buddy',
         externalLabel: 'Mua trên Shopee',
-        isSample: true,
+        coverImage: 1,
       }
       const res = validateProductWizardData(shopeeData, { publish: true })
       expect(res.success).toBe(true)
@@ -350,13 +349,34 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
         slug,
         web: 'habit',
         saleStatus: 'on_sale',
-        isSample: true,
+        coverImage: testMediaId,
         // no price
       }
 
       const res = await createProductFromWizard(data, { publish: true })
       expect(res.success).toBe(false)
       expect(res.error).toBe(i18nVi.cms.productForm.validation.missingPriceOnSale)
+    })
+
+    it('ignores a client-sent isSample flag: publishing on_sale without cover stays blocked', async () => {
+      mockHeadersValue = new Headers({
+        Authorization: `users JWT ${editorUser.token}`,
+        cookie: `payload-token=${editorUser.token}`,
+      })
+
+      const data = {
+        type: 'digital_tool',
+        name: 'Sản Phẩm Giả Mẫu',
+        slug: `fake-sample-${unique()}`,
+        web: 'habit',
+        saleStatus: 'on_sale',
+        price: 250000,
+        isSample: true,
+      } as unknown as ProductWizardInput
+
+      const res = await createProductFromWizard(data, { publish: true })
+      expect(res.success).toBe(false)
+      expect(res.error).toBe(i18nVi.cms.productForm.validation.missingCoverImageOnSale)
     })
 
     it('creates package and automatically calculates totalValue and discountPercent', async () => {
@@ -372,7 +392,6 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
         slug,
         web: 'site',
         saleStatus: 'on_sale',
-        isSample: true,
         price: 2900000,
         components: [
           {
