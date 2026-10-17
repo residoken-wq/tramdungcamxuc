@@ -89,7 +89,7 @@ export default async function TrialPage({ searchParams }: PageProps) {
         <p className="text-xs font-bold uppercase tracking-wider text-bright-magenta">
           {vi.trial.pageBadge}
         </p>
-        <h1 className="font-heading text-3xl sm:text-4xl text-deep-navy">{product.name}</h1>
+        <h1 className="font-display text-3xl sm:text-4xl text-deep-navy">{product.name}</h1>
         <p className="font-sans text-sm sm:text-base text-deep-navy/80 font-medium">
           {vi.trial.daysLabel(trialDays)}
         </p>

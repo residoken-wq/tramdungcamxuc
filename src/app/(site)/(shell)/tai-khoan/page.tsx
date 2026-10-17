@@ -17,6 +17,7 @@ import { getCustomerOrders } from '@/lib/account/orders.server'
 import { MyOrders } from '@/components/account/MyOrders'
 import { getCustomerSavedCards } from '@/lib/eq/saved.server'
 import { SavedCards } from '@/components/account/SavedCards'
+import { ReminderEmailToggle } from '@/components/account/ReminderEmailToggle'
 
 export const metadata: Metadata = {
   title: 'Tài khoản của tôi | Trạm Dừng Cảm Xúc',
@@ -111,7 +112,7 @@ export default async function AccountPage() {
           <p className="text-xs font-bold uppercase tracking-wider text-bright-magenta mb-1">
             {vi.auth.accountHeading}
           </p>
-          <h1 className="font-heading text-3xl sm:text-4xl text-deep-navy">
+          <h1 className="font-display text-3xl sm:text-4xl text-deep-navy">
             {vi.auth.welcomeCustomer(displayName)}
           </h1>
           <p className="font-quote italic text-sm text-deep-navy/70 mt-1">{customer.email}</p>
@@ -234,6 +235,10 @@ export default async function AccountPage() {
 
           {/* Đơn hàng */}
           <MyOrders orders={ordersResult.orders} loadError={ordersResult.loadError} />
+
+          {/* Tùy chọn email thông báo */}
+          <ReminderEmailToggle initialOptOut={customer.reminderEmailsOptOut} />
+
           <AccountDeletionRequest initialRequestedAt={customer.deletionRequestedAt} />
         </div>
       </div>

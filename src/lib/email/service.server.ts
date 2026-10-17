@@ -539,6 +539,7 @@ export async function sendWorkshopReminderEmail(
     workshopTitle: string
     workshopTimeFormatted: string
     accountUrl?: string
+    optOutUrl?: string
   },
   customSender?: EmailSender,
 ): Promise<void> {
@@ -551,6 +552,7 @@ export async function sendWorkshopReminderEmail(
         workshopTitle: data.workshopTitle,
         workshopTimeFormatted: data.workshopTimeFormatted,
         accountUrl: data.accountUrl,
+        optOutUrl: data.optOutUrl,
       }),
     )
     const userText = await render(
@@ -559,6 +561,7 @@ export async function sendWorkshopReminderEmail(
         workshopTitle: data.workshopTitle,
         workshopTimeFormatted: data.workshopTimeFormatted,
         accountUrl: data.accountUrl,
+        optOutUrl: data.optOutUrl,
       }),
       { plainText: true },
     )
@@ -744,6 +747,7 @@ export async function sendTrackerNudgeEmail(
     name: string
     email: string
     trackerUrl: string
+    optOutUrl?: string
   },
   customSender?: EmailSender,
 ): Promise<void> {
@@ -755,12 +759,14 @@ export async function sendTrackerNudgeEmail(
       React.createElement(TrackerNudgeEmail, {
         name: data.name,
         trackerUrl: data.trackerUrl,
+        optOutUrl: data.optOutUrl,
       }),
     )
     const userText = await render(
       React.createElement(TrackerNudgeEmail, {
         name: data.name,
         trackerUrl: data.trackerUrl,
+        optOutUrl: data.optOutUrl,
       }),
       { plainText: true },
     )

@@ -62,7 +62,7 @@ export default async function EqBuddyIntroPage() {
           <span className="inline-block px-4 py-1.5 rounded-full bg-soft-pink text-bright-magenta font-ui text-xs font-bold uppercase tracking-wider">
             {vi.eqBuddy.intro.badge}
           </span>
-          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold text-deep-navy tracking-tight">
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-deep-navy tracking-tight">
             {title}
           </h1>
           {shortDesc && (

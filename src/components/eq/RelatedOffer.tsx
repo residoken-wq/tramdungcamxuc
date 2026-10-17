@@ -34,7 +34,7 @@ export function RelatedOffer({ product, className = '' }: RelatedOfferProps) {
       <div className="text-center mb-6">
         <h3
           id="related-offer-heading"
-          className="font-heading text-2xl md:text-3xl text-deep-navy tracking-tight"
+          className="font-display text-2xl md:text-3xl text-deep-navy tracking-tight"
         >
           {vi.eqBuddy.offer.relatedHeading}
         </h3>

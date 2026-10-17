@@ -41,7 +41,7 @@
 - [x] **Phiên khách đè phiên admin** (thấy 15/10, review CM-01): `customer-auth` chạy trước JWT admin nên trình duyệt có cookie `tdcx_customer_token` vào `/admin` bị báo không có quyền. Sửa trong `customerAuthStrategy` (bỏ qua khi có phiên admin hợp lệ) + e2e (xong T2-20).
 - [x] T2-01: server chặn đăng nhập khi khách cũ chưa có `consentAt` (form đã chặn) (xong T2-14).
 - [x] Xóa tài khoản khách (AGENTS 8.4): `orders`, `entitlements`, `savedCards`, `certificates`, `lessonProgress` có `customer` NOT NULL + `ON DELETE SET NULL` → xóa khách có dữ liệu sẽ lỗi DB. Phải xóa / ẩn danh dữ liệu con trước (xong T2-16).
-- [ ] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc.
+- [x] Email nhắc workshop (T2-10): thêm link hủy nhận nhắc (xong T2-21).
 - [x] T2-08: khóa chống tạo 2 đơn song song đang ở bộ nhớ tiến trình (`withOrderLock`). Đổi sang `pg_advisory_xact_lock(customerId, productId)` (xong T2-19).
 - [x] T2-03: bọc lưu kế hoạch + tạo lead trong 1 transaction (lead lỗi → kế hoạch trùng khi gửi lại) (xong T2-17).
 - [x] T2-03: cân nhắc không lưu tên/email vào nháp `localStorage` (xong T2-18).
@@ -50,8 +50,8 @@
 - [x] T2-04: banner/trang `/dung-thu` phân biệt "quyền mua có hạn đã hết" với "dùng thử đã hết" (khi có `accessDurationDays`); `trialDays` ≤ 3 thì mail ngày 18 gửi ngay (xong T2-18).
 - [x] Route `/api/download/[token]`: còn vài câu lỗi tiếng Việt ghi cứng (có từ T1-07) → chuyển vào `vi.ts` (xong T2-18).
 - [x] T2-07: validate `customers.name` ở mức collection (chặn `< > { }`, ký tự điều khiển) – hiện chỉ action nhận chứng nhận kiểm (xong T2-16).
-- [ ] T2-09: giới hạn body webhook ở reverse proxy (request chunked không có `Content-Length`); demo phải chạy sau proxy để `X-Forwarded-For` đáng tin.
+- [x] T2-09: giới hạn body webhook ở reverse proxy (request chunked không có `Content-Length`); demo phải chạy sau proxy để `X-Forwarded-For` đáng tin (ghi vào RUNBOOK, xong T2-21).
 - [x] T2-09: gói `markOrderPaid` (đổi `paid` + cấp quyền) trong 1 transaction ("đã thanh toán ⇔ đã cấp quyền"); email gửi sau commit, nút gửi lại email xác nhận cho owner (xong T2-19).
 - [x] T2-07: chống cấp 2 chứng nhận cho 1 kế hoạch đang dựa vào khóa trong bộ nhớ (`withCertLock`, một tiến trình). Khi có migration tiếp theo → thêm unique cho `certificates.plan` (xong T2-16).
 - [x] T2-16: `trialUsage.product` NOT NULL nhưng khóa ngoại `ON DELETE SET NULL` → xóa hẳn một sản phẩm đã có dấu vết dùng thử sẽ lỗi. Khi có migration tiếp theo: đổi sang `CASCADE` (hoặc cho phép null) (xong T2-20, cho phép null).
-- [ ] T2-16: đổi `PAYLOAD_SECRET` làm mọi `trialUsage.emailHash` cũ mất tác dụng (khách đã xóa có thể dùng thử lại) – ghi vào RUNBOOK khi có quy trình xoay khóa.
+- [x] T2-16: đổi `PAYLOAD_SECRET` làm mọi `trialUsage.emailHash` cũ mất tác dụng (khách đã xóa có thể dùng thử lại) – ghi vào RUNBOOK khi có quy trình xoay khóa (ghi vào RUNBOOK, xong T2-21).

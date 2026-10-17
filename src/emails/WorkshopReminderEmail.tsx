@@ -7,6 +7,7 @@ import {
   Heading,
   Hr,
   Html,
+  Link,
   Preview,
   Section,
   Text,
@@ -18,6 +19,7 @@ export interface WorkshopReminderEmailProps {
   workshopTitle: string
   workshopTimeFormatted: string
   accountUrl?: string
+  optOutUrl?: string
 }
 
 export const WorkshopReminderEmail: React.FC<WorkshopReminderEmailProps> = ({
@@ -25,6 +27,7 @@ export const WorkshopReminderEmail: React.FC<WorkshopReminderEmailProps> = ({
   workshopTitle,
   workshopTimeFormatted,
   accountUrl = 'https://tramdungcamxuc.com/tai-khoan',
+  optOutUrl,
 }) => {
   const i18n = vi.workshop.reminderEmail
 
@@ -76,11 +79,29 @@ export const WorkshopReminderEmail: React.FC<WorkshopReminderEmailProps> = ({
               <strong>{i18n.footerAuthor}</strong>
             </Text>
             <Text style={footerSubtextStyle}>{i18n.footerAutoNotice}</Text>
+            {optOutUrl && (
+              <Text style={footerOptOutStyle}>
+                <Link href={optOutUrl} style={footerOptOutLinkStyle}>
+                  {i18n.optOutLink}
+                </Link>
+              </Text>
+            )}
           </Section>
         </Container>
       </Body>
     </Html>
   )
+}
+
+const footerOptOutStyle: React.CSSProperties = {
+  margin: '8px 0 0 0',
+  fontSize: '11px',
+  lineHeight: '1.5',
+}
+
+const footerOptOutLinkStyle: React.CSSProperties = {
+  color: 'rgba(40,10,96,0.5)',
+  textDecoration: 'underline',
 }
 
 const mainStyle: React.CSSProperties = {

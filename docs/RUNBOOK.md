@@ -128,6 +128,22 @@
 - **Lỗi cache Next.js / build cũ**:
   - Chạy `pnpm devsafe` để xóa thư mục `.next` và khởi động lại sạch sẽ.
 
+### Quy trình xoay khóa bảo mật PAYLOAD_SECRET và các hệ quả (T2-21)
+
+`PAYLOAD_SECRET` là khóa bí mật trung tâm được sử dụng để ký JWT phiên đăng nhập admin/khách hàng, băm email ẩn danh chống lạm dụng dùng thử (`trialUsage.emailHash`), và ký các liên kết không cần đăng nhập (như link tải file có hạn và link ngừng nhận email nhắc `/nhac-lich/huy?t=...`).
+
+**Khi nào cần xoay khóa?**
+
+- **CHỈ xoay khi lộ khóa bí mật** (ví dụ: vô tình commit vào git, gửi nhầm qua kênh chat công khai hoặc phát hiện bị rò rỉ). Tuyệt đối không xoay khóa định kỳ tùy tiện mà không có kế hoạch vì các hệ quả nghiêm trọng dưới đây.
+
+**Các hệ quả khi thay đổi PAYLOAD_SECRET:**
+
+1. **Đăng xuất toàn bộ người dùng**: Toàn bộ phiên đăng nhập hiện tại của tất cả Quản trị viên (`/admin`) và Khách hàng (`/tai-khoan`) trên mọi thiết bị lập tức bị vô hiệu hóa; mọi người dùng phải đăng nhập lại từ đầu.
+2. **Mất tác dụng của mã băm dùng thử ẩn danh (`trialUsage.emailHash`)**: Toàn bộ mã băm email của các khách hàng đã từng yêu cầu xóa tài khoản trước đó sẽ không còn khớp với mã băm mới tính bằng secret mới. Hệ quả: các khách hàng đã xóa tài khoản có thể kích hoạt dùng thử lại công cụ số một lần nữa.
+3. **Vô hiệu hóa liên kết trong email cũ**: Mọi đường link có chữ ký HMAC trong các email đã gửi trước thời điểm đổi khóa sẽ hết hiệu lực:
+   - Link "Không nhận email nhắc nữa" (`/nhac-lich/huy?t=...`) trong email cũ sẽ bị từ chối với thông báo "Liên kết không hợp lệ". Khách hàng cần đăng nhập vào `/tai-khoan` để tự bật/tắt tùy chọn.
+   - Các link tải tài nguyên có hạn (`/api/download/...`) sinh trước đó không còn xác thực được.
+
 ---
 
 ## 5. Chuẩn bị đưa lên Production (Tên miền chính thức, SEO, CSP & Plausible)
@@ -664,12 +680,15 @@ Hệ thống hỗ trợ 2 chế độ xử lý thanh toán, chuyển đổi linh
      SEPAY_WEBHOOK_API_KEY=sepay_live_xxxx...
      ```
    - _Lưu ý_: Tuyệt đối không commit giá trị khóa thật vào Git, log hay gửi qua kênh chat công khai.
-5. **Khởi động lại ứng dụng:**
+5. **Cấu hình Reverse Proxy bảo vệ Webhook (T2-21):**
+   - **Giới hạn kích thước body (Body Size Limit)**: Cấu hình giới hạn kích thước body tại reverse proxy (ví dụ `client_max_body_size 64k;` trong Nginx cho đường dẫn `/api/payments/sepay/webhook`). Webhook SePay chỉ chứa payload JSON thông tin chuyển khoản nhỏ; việc giới hạn 64k ở proxy giúp ngăn chặn triệt để tấn công từ chối dịch vụ (DoS) bằng HTTP request chunked không khai báo `Content-Length`.
+   - **Chạy sau Proxy để `X-Forwarded-For` đáng tin**: Ứng dụng Next.js phải chạy phía sau reverse proxy (Nginx / Caddy) **ghi đè** (không nối thêm) header IP bằng địa chỉ thật của kết nối: `proxy_set_header X-Forwarded-For $remote_addr;` và `proxy_set_header X-Real-IP $remote_addr;`. **Không** dùng `$proxy_add_x_forwarded_for` – nó nối IP thật vào sau giá trị khách tự gửi, mà ứng dụng đọc IP **đầu tiên** → kẻ gian đổi IP giả mỗi lần gửi để lách giới hạn OTP / form. Cổng của app (3000 / 3400) **không** được mở ra Internet, chỉ proxy gọi vào.
+6. **Khởi động lại ứng dụng:**
    - Chạy lệnh cập nhật container trên máy chủ (Lưu ý: lệnh `restart` không nhận các biến môi trường mới khai báo trong `.env`, bắt buộc dùng lệnh `up -d`):
      ```bash
      docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
      ```
-6. **Kiểm tra nghiệm thu:**
+7. **Kiểm tra nghiệm thu:**
    - Tạo một đơn hàng thông thường trên web (vd. mua Habit Tracker) và chuyển **đúng tổng số tiền** của đơn đó, nội dung là mã chuyển khoản trên trang đơn. Không chuyển số tiền thử nhỏ hơn: hệ thống so số tiền chính xác nên sẽ ghi `amount_mismatch`. (Sản phẩm ẩn không đặt mua được, nên không dùng cách tạo sản phẩm thử giá thấp.)
    - Quét mã VietQR trên trang thanh toán đơn hàng.
    - Kiểm tra:
