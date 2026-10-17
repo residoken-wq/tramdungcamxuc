@@ -82,9 +82,9 @@ export function CheckInModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-deep-navy/10 pb-3">
-          <h3 id="checkin-modal-title" className="font-ui font-bold text-lg text-deep-navy">
+          <h2 id="checkin-modal-title" className="font-ui font-bold text-lg text-deep-navy">
             {vi.tracker.dialog.title(day)}
-          </h3>
+          </h2>
           <button
             type="button"
             onClick={onClose}

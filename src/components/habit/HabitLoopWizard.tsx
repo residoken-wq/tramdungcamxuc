@@ -445,9 +445,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {draft.step === 1 && (
             <div className="space-y-6 animate-fade-in">
               <div>
-                <h3 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+                <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
                   {vi.habit.wizard.step1.title}
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base text-deep-navy/80">
                   {vi.habit.wizard.step1.subtitle}
                 </p>
@@ -587,9 +587,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {draft.step === 2 && (
             <div className="space-y-6 animate-fade-in">
               <div>
-                <h3 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+                <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
                   {vi.habit.wizard.step2.title}
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base text-deep-navy/80">
                   {vi.habit.wizard.step2.subtitle}
                 </p>
@@ -649,9 +649,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {draft.step === 3 && (
             <div className="space-y-8 animate-fade-in">
               <div>
-                <h3 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+                <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
                   {vi.habit.wizard.step3.title}
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base text-deep-navy/80">
                   {vi.habit.wizard.step3.subtitle}
                 </p>
@@ -754,9 +754,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           {draft.step === 4 && (
             <div className="space-y-8 animate-fade-in">
               <div>
-                <h3 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+                <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
                   {vi.habit.wizard.step4.title}
-                </h3>
+                </h2>
                 <p className="text-sm sm:text-base text-deep-navy/80">
                   {vi.habit.wizard.step4.subtitle}
                 </p>

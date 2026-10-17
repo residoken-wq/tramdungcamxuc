@@ -124,9 +124,9 @@ export function EqDrawWizard({
       {currentStep === 1 && (
         <div className="space-y-8">
           <div className="text-center space-y-2">
-            <h2 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
+            <h1 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
               {vi.eqBuddy.draw.step1.title}
-            </h2>
+            </h1>
             <p className="font-sans text-sm text-deep-navy/70">{vi.eqBuddy.draw.subheading}</p>
           </div>
 
@@ -165,9 +165,9 @@ export function EqDrawWizard({
           {/* Lựa chọn B: Lưới 26 từ khóa A–Z */}
           {keywords.length > 0 && (
             <div className="pt-6 border-t border-deep-navy/10 space-y-4">
-              <h3 className="text-center font-ui text-sm font-bold text-bright-magenta uppercase tracking-wider">
+              <h2 className="text-center font-ui text-sm font-bold text-bright-magenta uppercase tracking-wider">
                 {vi.eqBuddy.draw.step1.orKeyword}
-              </h3>
+              </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
                 {keywords.map((kw) => (
                   <button
@@ -195,9 +195,9 @@ export function EqDrawWizard({
       {(currentStep === 2 || currentStep === 3) && currentCard && (
         <div className="space-y-6">
           <div className="text-center space-y-1">
-            <h2 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
+            <h1 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
               {!isFlipped ? vi.eqBuddy.draw.step2.title : vi.eqBuddy.draw.step3.title}
-            </h2>
+            </h1>
             {!isFlipped && (
               <p className="font-sans text-xs sm:text-sm text-deep-navy/70">
                 {vi.eqBuddy.draw.step2.hint}
@@ -294,9 +294,9 @@ export function EqDrawWizard({
       {currentStep === 4 && currentCard && (
         <div className="space-y-6">
           <div className="text-center space-y-1">
-            <h2 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
+            <h1 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
               {vi.eqBuddy.draw.step4.title}
-            </h2>
+            </h1>
             <p className="font-sans text-xs text-deep-navy/60">
               {isLoggedIn
                 ? vi.eqBuddy.draw.step4.reflectionLabel
@@ -404,12 +404,12 @@ export function EqDrawWizard({
       {currentStep === 5 && currentCard && (
         <div className="space-y-8">
           <div className="text-center space-y-2">
-            <h2 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
+            <h1 className="font-ui font-bold text-xl sm:text-2xl text-deep-navy">
               {vi.eqBuddy.draw.step5.title}
-            </h2>
-            <p className="font-display text-2xl sm:text-3xl text-bright-magenta">
+            </h1>
+            <h2 className="font-display text-2xl sm:text-3xl text-bright-magenta">
               {currentCard.keywordEn} · {currentCard.code}
-            </p>
+            </h2>
           </div>
 
           {/* Các nút điều hướng */}
