@@ -1,3 +1,4 @@
+import { NextRequest } from 'next/server'
 import { describe, expect, it } from 'vitest'
 import {
   isSecurityHeadersExempt,
@@ -147,6 +148,37 @@ describe('Security Headers', () => {
       expect(res.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
       expect(res.headers.get('Permissions-Policy')).toBe('camera=(), microphone=(), geolocation=()')
       expect(res.headers.has('Content-Security-Policy-Report-Only')).toBe(true)
+    })
+  })
+
+  describe('admin unauthorized with a customer session (T2-20d)', () => {
+    const request = (path: string, cookie?: string) =>
+      new NextRequest(`http://localhost:3000${path}`, {
+        headers: cookie ? { cookie } : undefined,
+      })
+
+    it('drops the customer cookie and returns to /admin', () => {
+      const res = proxy(request('/admin/unauthorized', 'tdcx_customer_token=abc; payload-token=x'))
+      expect(res.status).toBe(307)
+      expect(res.headers.get('location')).toBe('http://localhost:3000/admin')
+      const setCookie = res.headers.get('set-cookie') ?? ''
+      expect(setCookie).toContain('tdcx_customer_token=;')
+      expect(setCookie).toContain('Path=/')
+      expect(setCookie).not.toContain('payload-token')
+    })
+
+    it('leaves /admin/unauthorized alone without a customer cookie (no redirect loop)', () => {
+      const res = proxy(request('/admin/unauthorized', 'payload-token=x'))
+      expect(res.headers.get('location')).toBeNull()
+      expect(res.headers.get('set-cookie')).toBeNull()
+    })
+
+    it('keeps the customer cookie on other admin and site pages', () => {
+      for (const path of ['/admin', '/admin/collections/orders', '/tai-khoan']) {
+        const res = proxy(request(path, 'tdcx_customer_token=abc'))
+        expect(res.headers.get('location')).toBeNull()
+        expect(res.headers.get('set-cookie')).toBeNull()
+      }
     })
   })
 })
