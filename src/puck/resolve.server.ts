@@ -275,7 +275,11 @@ export async function resolveServerData(
       productIdsToFetch.add(item.props.productId as string | number)
     }
 
-    if (item.type === 'ShopeeButton' || item.type === 'ZaloButton') {
+    if (
+      item.type === 'ShopeeButton' ||
+      item.type === 'ZaloButton' ||
+      (item.type === 'FAQ' && item.props.aside === 'booking')
+    ) {
       needsSiteSettings = true
     }
   })
@@ -820,6 +824,10 @@ export async function resolveServerData(
         } catch {
           item.props._resolved = { items: [] }
         }
+      }
+    } else if (item.type === 'FAQ') {
+      item.props._resolved = {
+        siteSettings: publicSiteSettings,
       }
     }
 

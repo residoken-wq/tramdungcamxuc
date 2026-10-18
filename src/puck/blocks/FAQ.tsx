@@ -11,6 +11,50 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
     titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
     titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
+    numbered: {
+      type: 'select',
+      label: 'Đánh số thứ tự câu hỏi',
+      options: [
+        { label: 'Không đánh số', value: false },
+        { label: 'Đánh số thứ tự (01, 02...)', value: true },
+      ],
+    },
+    aside: {
+      type: 'select',
+      label: 'Khối bên cạnh (Aside)',
+      options: [
+        { label: 'Không có (Căn giữa trang)', value: 'none' },
+        { label: 'Khối đặt lịch (Booking Aside nền Deep Navy)', value: 'booking' },
+      ],
+    },
+    bookingAsideTitle: {
+      type: 'text',
+      label: 'Tiêu đề khối đặt lịch (Khi bật Booking Aside)',
+    },
+    bookingAsideDescription: {
+      type: 'textarea',
+      label: 'Mô tả khối đặt lịch',
+    },
+    bookingButtonText: {
+      type: 'text',
+      label: 'Chữ trên nút đặt lịch',
+    },
+    bookingButtonLink: {
+      type: 'text',
+      label: 'Đường dẫn nút đặt lịch (Để trống sẽ dẫn tới /dat-phien-trai-nghiem)',
+    },
+    showEmail: {
+      type: 'select',
+      label: 'Hiển thị email liên hệ từ Cài đặt trang',
+      options: [
+        { label: 'Không hiển thị email', value: false },
+        { label: 'Hiển thị email liên hệ', value: true },
+      ],
+    },
+    seeAllLink: {
+      type: 'text',
+      label: 'Liên kết "Xem toàn bộ" (Tùy chọn)',
+    },
     items: {
       type: 'array',
       label: 'Danh sách câu hỏi & trả lời',
@@ -41,10 +85,21 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
+    // Chừa source = 'manual' để SM-06 mở rộng thêm nguồn 'group' từ collection faqs
+    source: 'manual',
     seriesLabel: '[MẪU] Thắc mắc thường gặp',
     titleLine1: '[MẪU] CÂU HỎI THƯỜNG GẶP',
     titleLine2: '[MẪU] GIẢI ĐÁP BĂN KHOĂN',
+    numbered: false,
+    aside: 'none',
+    bookingAsideTitle: '[MẪU] Đặt phiên trải nghiệm',
+    bookingAsideDescription:
+      '[MẪU] Trò chuyện 1:1 cùng Hana để thấu hiểu rõ lộ trình phát triển phù hợp nhất.',
+    bookingButtonText: '[MẪU] Đặt lịch ngay',
+    bookingButtonLink: '',
+    showEmail: false,
+    seeAllLink: '',
     items: [
       {
         question: '[MẪU] Câu hỏi thường gặp 1',
