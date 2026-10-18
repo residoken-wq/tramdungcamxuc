@@ -16,6 +16,13 @@ export interface PublicTestimonial {
   quote: string
   photo: PublicTestimonialPhoto | null
   consent: true
+  age?: number | string | null
+  story?: {
+    before?: string
+    insight?: string
+    after?: string
+  } | null
+  relatedOffer?: string | null
 }
 
 export interface PublicService {
@@ -236,6 +243,12 @@ export function toPublicTestimonial(doc: unknown): PublicTestimonial | null {
 
   const id = (t.id as string | number) ?? ''
   const role = typeof t.role === 'string' && t.role.trim().length > 0 ? t.role.trim() : null
+  const age =
+    typeof t.age === 'number'
+      ? t.age
+      : typeof t.age === 'string' && t.age.trim().length > 0
+        ? t.age.trim()
+        : null
 
   let photo: PublicTestimonialPhoto | null = null
   if (t.photo && typeof t.photo === 'object') {
@@ -248,6 +261,33 @@ export function toPublicTestimonial(doc: unknown): PublicTestimonial | null {
     }
   }
 
+  let story: { before?: string; insight?: string; after?: string } | null = null
+  if (t.story && typeof t.story === 'object') {
+    const s = t.story as Record<string, unknown>
+    const before =
+      typeof s.before === 'string' && s.before.trim().length > 0 ? s.before.trim() : undefined
+    const insight =
+      typeof s.insight === 'string' && s.insight.trim().length > 0 ? s.insight.trim() : undefined
+    const after =
+      typeof s.after === 'string' && s.after.trim().length > 0 ? s.after.trim() : undefined
+    if (before || insight || after) {
+      story = { before, insight, after }
+    }
+  }
+
+  let relatedOffer: string | null = null
+  if (t.relatedOffer && typeof t.relatedOffer === 'object') {
+    const ro = t.relatedOffer as Record<string, unknown>
+    if (ro.value && typeof ro.value === 'object') {
+      const val = ro.value as Record<string, unknown>
+      if (typeof val.name === 'string') relatedOffer = val.name
+    } else if (typeof ro.name === 'string') {
+      relatedOffer = ro.name
+    }
+  } else if (typeof t.relatedOffer === 'string' && t.relatedOffer.trim().length > 0) {
+    relatedOffer = t.relatedOffer.trim()
+  }
+
   return {
     id,
     name,
@@ -255,6 +295,9 @@ export function toPublicTestimonial(doc: unknown): PublicTestimonial | null {
     quote,
     photo,
     consent: true,
+    age,
+    story,
+    relatedOffer,
   }
 }
 

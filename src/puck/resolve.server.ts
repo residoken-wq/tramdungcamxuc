@@ -39,10 +39,13 @@ const PUBLIC_TESTIMONIAL_SELECT = {
   id: true,
   name: true,
   role: true,
+  age: true,
   quote: true,
   language: true,
   consent: true,
   photo: true,
+  story: true,
+  relatedOffer: true,
 } as const
 
 export interface ResolveServerDataOptions {
@@ -333,7 +336,7 @@ export async function resolveServerData(
           ],
         },
         select: PUBLIC_TESTIMONIAL_SELECT as never,
-        depth: 1,
+        depth: 2,
         limit: numericOrStrTids.length + 20,
       })
 
@@ -665,7 +668,7 @@ export async function resolveServerData(
               and: [{ consent: { equals: true } }, { _status: { equals: 'published' } }],
             },
             select: PUBLIC_TESTIMONIAL_SELECT as never,
-            depth: 1,
+            depth: 2,
             limit,
             sort: '-createdAt',
           })

@@ -4,16 +4,23 @@ import React from 'react'
 import { TestimonialCard } from './TestimonialCard'
 import type { PublicTestimonial } from '@/lib/testimonials'
 import { useClientTestimonials } from '@/puck/client-preview'
+import { vi } from '@/lib/i18n/vi'
 
 export interface TestimonialGridProps {
   version?: number
+  variant?: 'quote' | 'story' | 'stages'
   mode?: 'manual' | 'recent'
   manualTestimonials?: Array<{ testimonialId?: string | number }>
   testimonialIds?: Array<string | number>
   limit?: 3 | 6
   columns?: 2 | 3
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     testimonials?: PublicTestimonial[]
@@ -39,6 +46,7 @@ const PADDINGS = {
 } as const
 
 export function TestimonialGrid({
+  variant = 'quote',
   mode = 'manual',
   manualTestimonials,
   testimonialIds,
@@ -62,8 +70,19 @@ export function TestimonialGrid({
     initialTestimonials: _resolved?.testimonials,
   })
 
-  // On public page, if no testimonials are resolved, do not render empty section
-  if (!isEditing && (!testimonials || testimonials.length === 0)) {
+  // Filter out testimonials that lack required variant data
+  const validTestimonials = (testimonials || []).filter((t) => {
+    if (variant === 'story') {
+      return Boolean(t?.story?.before || t?.story?.after)
+    }
+    if (variant === 'stages') {
+      return Boolean(t?.story?.before || t?.story?.insight || t?.story?.after)
+    }
+    return Boolean(t?.quote && t.quote.trim().length > 0)
+  })
+
+  // On public page, if no testimonials are valid, do not render empty section
+  if (!isEditing && validTestimonials.length === 0) {
     return null
   }
 
@@ -72,27 +91,30 @@ export function TestimonialGrid({
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-6xl">
-        {loading && testimonials.length === 0 ? (
+        {loading && validTestimonials.length === 0 ? (
           <div className="py-12 text-center text-sm font-ui text-deep-navy/60">
             Đang tải lời chia sẻ...
           </div>
-        ) : testimonials.length === 0 ? (
+        ) : validTestimonials.length === 0 ? (
           isEditing ? (
             <div className="py-12 px-4 rounded-card border-2 border-dashed border-deep-navy/20 text-center font-ui text-sm text-deep-navy/70 bg-white/50">
-              Chưa có lời chia sẻ nào được chọn hoặc hiển thị. Vui lòng chọn lời chia sẻ trong thanh
-              cấu hình bên phải.
+              {vi.builder.noDataSelectInCms}
             </div>
           ) : null
         ) : (
           <div className={`grid grid-cols-1 ${colClass} gap-6 sm:gap-8 items-stretch`}>
-            {testimonials.map((t) => (
+            {validTestimonials.map((t) => (
               <TestimonialCard
                 key={String(t.id)}
                 name={t.name}
                 quote={t.quote}
                 role={t.role}
+                age={t.age}
+                story={t.story}
+                relatedOffer={t.relatedOffer}
                 photo={t.photo ? { src: t.photo.url, alt: t.photo.alt } : undefined}
                 consent={true}
+                variant={variant}
                 className="h-full"
               />
             ))}
