@@ -8,6 +8,7 @@ import { expect, test, type Page, type Response } from '@playwright/test'
  * 1. Khởi tạo tài khoản admin trên database CI nếu chưa có người dùng.
  * 2. Khách hàng đăng nhập OTP (IP riêng x-forwarded-for, tick consentPolicy, chờ Turnstile).
  * 3. Trình duyệt hiện có cookie khách `tdcx_customer_token` và đang ở /tai-khoan.
+ *    (T2-20d) Chỉ có phiên khách -> mở /admin về trang đăng nhập admin, không kẹt ở /admin/unauthorized.
  * 4. Cùng trình duyệt đăng nhập admin -> cookie có cả `tdcx_customer_token` và `payload-token`.
  * 5. Mở /admin -> mở được trang danh sách quản trị (không bị phiên khách đè thành collection customers).
  * 6. Quay lại /tai-khoan, bấm Đăng xuất khách -> chuyển hướng về /tai-khoan/dang-nhap.
@@ -114,6 +115,17 @@ test.describe('Admin Isolation with Customer Cookie (T2-20)', () => {
 
       // Khách chuyển về /tai-khoan thành công
       await expect(sharedPage).toHaveURL(/\/tai-khoan\/?$/, { timeout: 15000 })
+
+      // 2b. (T2-20d) Chỉ có phiên khách, chưa có phiên admin: mở /admin không được kẹt ở
+      // "/admin/unauthorized" – cookie khách bị bỏ và trình duyệt về trang đăng nhập admin.
+      const customerCookie = (await context.cookies()).find((c) => c.name === 'tdcx_customer_token')
+      expect(customerCookie).toBeTruthy()
+      await sharedPage.goto('/admin', { waitUntil: 'domcontentloaded' })
+      await expect(sharedPage).toHaveURL(/\/admin\/login/, { timeout: 15000 })
+      await expect(sharedPage.locator('input[name="email"]')).toBeVisible({ timeout: 15000 })
+      expect((await context.cookies()).some((c) => c.name === 'tdcx_customer_token')).toBe(false)
+      // Khôi phục phiên khách cho các bước sau
+      await context.addCookies([customerCookie!])
 
       // 3. Cùng trình duyệt, đăng nhập admin qua REST login hoặc form login
       const loginRes = await context.request.post('/api/users/login', {
