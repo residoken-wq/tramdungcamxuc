@@ -72,6 +72,8 @@ export interface PublicProduct {
   type?: Product['type'] | null
   journeyStep?: Product['journeyStep'] | null
   shortDescription?: string | null
+  tagline?: string | null
+  icon?: string | null
   includes?: readonly (string | { text?: string | null })[] | null
   price: number | null
   salePrice: number | null
@@ -109,6 +111,8 @@ export function toPublicProduct(doc: unknown): PublicProduct {
   const type = (p.type as Product['type']) ?? null
   const journeyStep = (p.journeyStep as PublicProduct['journeyStep']) ?? null
   const shortDescription = typeof p.shortDescription === 'string' ? p.shortDescription : null
+  const tagline = typeof p.tagline === 'string' ? p.tagline : null
+  const icon = typeof p.icon === 'string' ? p.icon : null
   const price = typeof p.price === 'number' ? p.price : null
   const salePrice = typeof p.salePrice === 'number' ? p.salePrice : null
   const saleEndsAt = typeof p.saleEndsAt === 'string' ? p.saleEndsAt : null
@@ -155,6 +159,8 @@ export function toPublicProduct(doc: unknown): PublicProduct {
     type,
     journeyStep,
     shortDescription,
+    tagline,
+    icon,
     includes,
     price,
     salePrice,

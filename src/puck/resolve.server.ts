@@ -16,6 +16,8 @@ const PUBLIC_PRODUCT_SELECT = {
   type: true,
   journeyStep: true,
   shortDescription: true,
+  tagline: true,
+  icon: true,
   includes: true,
   price: true,
   salePrice: true,
@@ -203,7 +205,7 @@ export async function resolveServerData(
       if (item.props.productId) {
         productIdsToFetch.add(item.props.productId as string | number)
       }
-    } else if (item.type === 'PackageComparison') {
+    } else if (item.type === 'PackageComparison' || item.type === 'PackageCards') {
       const pkgs = item.props.packages as
         Array<{ packageId?: string | number; productId?: string | number }> | undefined
       if (Array.isArray(pkgs)) {
@@ -220,12 +222,12 @@ export async function resolveServerData(
       }
     }
 
-    // Collect page IDs for CTAButton & Callout (linkType = page)
+    // Collect page IDs for CTAButton, Callout & PackageCards (linkType = page)
     if (item.type === 'CTAButton' && item.props.linkType === 'page' && item.props.pageId) {
       pageIdsToFetch.add(item.props.pageId as string | number)
     }
     if (
-      item.type === 'Callout' &&
+      (item.type === 'Callout' || item.type === 'PackageCards') &&
       item.props.buttonLinkType === 'page' &&
       item.props.buttonPageId
     ) {
@@ -465,6 +467,41 @@ export async function resolveServerData(
         .map((id) => productMap.get(String(id)))
         .filter(Boolean) as PublicProduct[]
       item.props._resolved = { packages: resolvedList }
+    } else if (item.type === 'PackageCards') {
+      const pkgs = item.props.packages as
+        Array<{ packageId?: string | number; productId?: string | number }> | undefined
+      const flatIds = item.props.packageIds as Array<string | number> | undefined
+      const ids: Array<string | number> = []
+      if (Array.isArray(pkgs)) {
+        for (const p of pkgs) {
+          const id = p?.packageId || p?.productId
+          if (id) ids.push(id)
+        }
+      }
+      if (Array.isArray(flatIds)) {
+        for (const id of flatIds) {
+          if (id) ids.push(id)
+        }
+      }
+      const resolvedList = ids
+        .map((id) => productMap.get(String(id)))
+        .filter(Boolean) as PublicProduct[]
+
+      let resolvedButtonUrl: string | null = null
+      if (item.props.buttonLinkType === 'page') {
+        const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
+        const slug = pId ? pageMap.get(pId) : null
+        resolvedButtonUrl = slug ? (slug === 'trang-chu' ? '/' : `/${slug}`) : null
+      } else if (item.props.buttonLinkType === 'url') {
+        resolvedButtonUrl = item.props.buttonUrl || item.props.buttonLink || null
+      } else {
+        resolvedButtonUrl = item.props.buttonLink || null
+      }
+
+      item.props._resolved = {
+        packages: resolvedList,
+        buttonUrl: resolvedButtonUrl,
+      }
     } else if (item.type === 'TestimonialGrid') {
       const mode = item.props.mode || 'manual'
       if (mode === 'recent') {
