@@ -1377,7 +1377,9 @@ Tab **Chung** có thêm **Ảnh chữ ký nhà sáng lập** (PNG nền trong) c
 3. Mục cha không có trang riêng (như "Sản phẩm"): ở **Loại liên kết** chọn **Chỉ mở menu con**. Mục này cần ít nhất 1 mục con.
 4. Bấm **Lưu**. Kéo các nhóm / mục con để đổi thứ tự.
 
-Menu con hiện trên web từ đợt cập nhật menu (SM-02).
+Trên máy tính, rê chuột hoặc bấm vào mục cha để mở menu con; trên điện thoại, mục cha mở ra danh sách con ngay trong menu. Mục cha có bật **Hiển thị nổi bật** sẽ thành nút màu hồng bên phải (mục "Chỉ mở menu con" không làm nút nổi bật được).
+
+**Đường dẫn mới (từ 18/10):** Về Trạm `/ve-tram`, Lộ trình `/lo-trinh-chuyen-minh`, Tài nguyên `/tai-nguyen`. Link cũ (`/ve-hana`, `/coaching/growth-mirror`, `/thu-vien`) vẫn tự chuyển sang link mới.
 
 ### 7.4. Cài đặt đo lường truy cập (Plausible / GA4)
 
