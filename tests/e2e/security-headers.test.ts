@@ -26,11 +26,11 @@ test.describe('Security Headers and SEO End-to-End Tests', () => {
     await expect(page).toHaveURL(/\/admin/)
   })
 
-  test('/sitemap.xml trả về 200 và có chứa URL /thu-vien', async ({ request }) => {
+  test('/sitemap.xml trả về 200 và có chứa URL /tai-nguyen', async ({ request }) => {
     const res = await request.get('/sitemap.xml')
     expect(res.status(), 'Sitemap XML phải trả về 200').toBe(200)
 
     const xml = await res.text()
-    expect(xml).toContain('/thu-vien')
+    expect(xml).toContain('/tai-nguyen')
   })
 })

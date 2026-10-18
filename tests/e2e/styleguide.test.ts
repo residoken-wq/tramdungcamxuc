@@ -204,7 +204,7 @@ test.describe('UI Composites (T0-05)', () => {
         page.getByRole('link', { name: /\[MẪU\] Test 5p|Test thói quen/i }).first(),
       ).toBeVisible()
     } else {
-      await expect(page.getByRole('link', { name: /\[MẪU\] Về Hana/i }).first()).toBeVisible()
+      await expect(page.getByRole('link', { name: /\[MẪU\] Về Trạm/i }).first()).toBeVisible()
       await expect(
         page.getByRole('link', { name: /\[MẪU\] Đặt phiên trải nghiệm/i }).first(),
       ).toBeVisible()

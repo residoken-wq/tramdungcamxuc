@@ -23,10 +23,16 @@ describe('SEO - Sitemap and Robots', () => {
       }
     })
 
+    it('leaves out legacy paths that only redirect (SM-02)', () => {
+      expect(isExcludedFromSitemap('/thu-vien')).toBe(true)
+      expect(isExcludedFromSitemap('/ve-hana')).toBe(true)
+      expect(isExcludedFromSitemap('/coaching/growth-mirror')).toBe(true)
+    })
+
     it('permits public routes', () => {
       expect(isExcludedFromSitemap('/')).toBe(false)
-      expect(isExcludedFromSitemap('/thu-vien')).toBe(false)
-      expect(isExcludedFromSitemap('/coaching/growth-mirror')).toBe(false)
+      expect(isExcludedFromSitemap('/tai-nguyen')).toBe(false)
+      expect(isExcludedFromSitemap('/lo-trinh-chuyen-minh')).toBe(false)
       expect(isExcludedFromSitemap('/blog/bai-viet-1')).toBe(false)
       expect(isExcludedFromSitemap('/chinh-sach-bao-mat')).toBe(false)
     })
@@ -67,7 +73,7 @@ describe('SEO - Sitemap and Robots', () => {
 
       // Home and Library
       expect(urls).toContain('https://tramdungcamxuc.com')
-      expect(urls).toContain('https://tramdungcamxuc.com/thu-vien')
+      expect(urls).toContain('https://tramdungcamxuc.com/tai-nguyen')
 
       // 6 Legal Pages
       expect(urls).toContain('https://tramdungcamxuc.com/chinh-sach-bao-mat')

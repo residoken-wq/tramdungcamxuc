@@ -5,14 +5,16 @@ import { applyPuckMigrations } from '../../src/puck/migrations'
 describe('five seed pages from real blocks (T1-16)', () => {
   const pagesBySlug = new Map(seedData.pages.map((p) => [p.slug, p]))
 
-  it('contains exactly the 5 specified pages', () => {
-    expect(seedData.pages).toHaveLength(5)
+  it('contains the 5 specified pages (sitemap v2 slugs) + 2 placeholder pages (SM-02)', () => {
+    expect(seedData.pages).toHaveLength(7)
     expect(Array.from(pagesBySlug.keys())).toEqual([
       '/',
-      've-hana',
+      've-tram',
       'coaching',
-      'coaching/growth-mirror',
+      'lo-trinh-chuyen-minh',
       'doanh-nghiep',
+      'lien-he',
+      'cong-dong',
     ])
   })
 
@@ -56,8 +58,8 @@ describe('five seed pages from real blocks (T1-16)', () => {
     expect(entry2.buttonLink).toBe('/doanh-nghiep')
   })
 
-  it('/ve-hana has HeroImage + HanaStory + JourneySteps + QuoteBlock + CTAButton', () => {
-    const page = pagesBySlug.get('ve-hana')
+  it('/ve-tram has HeroImage + HanaStory + JourneySteps + QuoteBlock + CTAButton', () => {
+    const page = pagesBySlug.get('ve-tram')
     expect(page).toBeDefined()
     const blockTypes = page!.blocks.map((b) => b.type)
     expect(blockTypes).toEqual([
@@ -76,8 +78,8 @@ describe('five seed pages from real blocks (T1-16)', () => {
     expect(blockTypes).toEqual(['SectionHeader', 'ProductGrid', 'FAQ', 'BookingCTA'])
   })
 
-  it('/coaching/growth-mirror has SectionHeader + PackageComparison + BookingCTA + FAQ + TestimonialSlider', () => {
-    const page = pagesBySlug.get('coaching/growth-mirror')
+  it('/lo-trinh-chuyen-minh has SectionHeader + PackageComparison + BookingCTA + FAQ + TestimonialSlider', () => {
+    const page = pagesBySlug.get('lo-trinh-chuyen-minh')
     expect(page).toBeDefined()
     const blockTypes = page!.blocks.map((b) => b.type)
     expect(blockTypes).toEqual([

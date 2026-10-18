@@ -311,15 +311,15 @@ describe('Conversion Blocks Unit Tests (T1-03)', () => {
   })
 
   describe('LibraryPreview', () => {
-    it('renders "Xem tất cả" button pointing to /thu-vien?tab=khoa-hoc', () => {
+    it('renders "Xem tất cả" button pointing to /tai-nguyen?tab=khoa-hoc', () => {
       const markup = renderToStaticMarkup(<LibraryPreview tab="khoa-hoc" items={[]} />)
-      expect(markup).toContain('/thu-vien?tab=khoa-hoc')
+      expect(markup).toContain('/tai-nguyen?tab=khoa-hoc')
       expect(markup).toContain('Xem tất cả')
     })
 
-    it('renders "Xem tất cả" button pointing to /thu-vien?tab=noi-dung', () => {
+    it('renders "Xem tất cả" button pointing to /tai-nguyen?tab=noi-dung', () => {
       const markup = renderToStaticMarkup(<LibraryPreview tab="noi-dung" items={[]} />)
-      expect(markup).toContain('/thu-vien?tab=noi-dung')
+      expect(markup).toContain('/tai-nguyen?tab=noi-dung')
     })
   })
 

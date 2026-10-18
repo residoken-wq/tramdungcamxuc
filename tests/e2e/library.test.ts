@@ -91,7 +91,7 @@ test.describe('Thư viện (T1-09): tabs, topics, URL persistence & 375px mobile
         const pub = await ctx.newPage()
         try {
           // Mở URL đã lọc: tab nội dung, chủ đề cảm xúc
-          await pub.goto('/thu-vien?tab=noi-dung&topic=eq', { waitUntil: 'domcontentloaded' })
+          await pub.goto('/tai-nguyen?tab=noi-dung&topic=eq', { waitUntil: 'domcontentloaded' })
 
           // Thấy bài viết chủ đề eq
           const postLink = pub.getByRole('link', { name: postTitle }).first()
@@ -110,7 +110,7 @@ test.describe('Thư viện (T1-09): tabs, topics, URL persistence & 375px mobile
             const windowInnerWidth = await pub.evaluate(() => window.innerWidth)
             expect(
               bodyScrollWidth,
-              'trang /thu-vien không được tràn ngang ở màn hình 375px',
+              'trang /tai-nguyen không được tràn ngang ở màn hình 375px',
             ).toBeLessThanOrEqual(windowInnerWidth)
           }
         } finally {

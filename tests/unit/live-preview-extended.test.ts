@@ -61,10 +61,10 @@ describe('buildPreviewUrl mapping for all collections and globals', () => {
       )
     })
 
-    it('maps package to /coaching/growth-mirror', () => {
+    it('maps package to /lo-trinh-chuyen-minh', () => {
       expect(
         buildPreviewUrl('products', { id: 104, type: 'package', slug: 'growth-mirror-clear' }),
-      ).toBe('/coaching/growth-mirror?preview=1&previewId=104')
+      ).toBe('/lo-trinh-chuyen-minh?preview=1&previewId=104')
     })
 
     it.each(['physical_external', 'workshop', 'coaching_trial', 'b2b'])(

@@ -25,6 +25,11 @@ describe('Library Unit Tests (T1-09)', () => {
       expect(productTopic({ web: null, type: 'package' })).toBe('career')
     })
 
+    it('prefers the topic chosen in the CMS (SM-01/SM-02)', () => {
+      expect(productTopic({ topic: 'career', web: 'habit', type: 'digital_tool' })).toBe('career')
+      expect(productTopic({ topic: null, web: 'eq', type: 'digital_tool' })).toBe('eq')
+    })
+
     it('returns null for any other product (not assigned to specific topic)', () => {
       expect(productTopic({ web: 'site', type: 'ebook' })).toBeNull()
       expect(productTopic({ web: 'site', type: 'toolkit' })).toBeNull()
@@ -114,15 +119,22 @@ describe('Library Unit Tests (T1-09)', () => {
       expect(where.and).toContainEqual({ name: { like: 'Habit Tracker' } })
     })
 
-    it('translates topics to appropriate product attributes', () => {
+    it('filters by the CMS topic, falling back to the old rule when topic is empty (SM-02)', () => {
       const habitWhere = buildProductsWhere({ tab: 'khoa-hoc', topic: 'habit' })
-      expect(habitWhere.and).toContainEqual({ web: { equals: 'habit' } })
-
-      const eqWhere = buildProductsWhere({ tab: 'khoa-hoc', topic: 'eq' })
-      expect(eqWhere.and).toContainEqual({ web: { equals: 'eq' } })
+      expect(habitWhere.and).toContainEqual({
+        or: [
+          { topic: { equals: 'habit' } },
+          { and: [{ topic: { exists: false } }, { web: { equals: 'habit' } }] },
+        ],
+      })
 
       const careerWhere = buildProductsWhere({ tab: 'khoa-hoc', topic: 'career' })
-      expect(careerWhere.and).toContainEqual({ type: { equals: 'package' } })
+      expect(careerWhere.and).toContainEqual({
+        or: [
+          { topic: { equals: 'career' } },
+          { and: [{ topic: { exists: false } }, { type: { equals: 'package' } }] },
+        ],
+      })
     })
   })
 
@@ -145,12 +157,12 @@ describe('Library Unit Tests (T1-09)', () => {
 
   describe('buildLibraryUrl', () => {
     it('constructs correct query strings', () => {
-      expect(buildLibraryUrl({ tab: 'khoa-hoc' })).toBe('/thu-vien?tab=khoa-hoc')
+      expect(buildLibraryUrl({ tab: 'khoa-hoc' })).toBe('/tai-nguyen?tab=khoa-hoc')
       expect(buildLibraryUrl({ tab: 'noi-dung', topic: 'eq' })).toBe(
-        '/thu-vien?tab=noi-dung&topic=eq',
+        '/tai-nguyen?tab=noi-dung&topic=eq',
       )
       expect(buildLibraryUrl({ tab: 'noi-dung', topic: 'habit', q: 'sách' })).toBe(
-        '/thu-vien?tab=noi-dung&topic=habit&q=s%C3%A1ch',
+        '/tai-nguyen?tab=noi-dung&topic=habit&q=s%C3%A1ch',
       )
     })
   })

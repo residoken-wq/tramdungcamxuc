@@ -33,7 +33,7 @@ test.describe('No dead links & Coming soon lead form (T1-18)', () => {
     page,
     request,
   }) => {
-    const urlsToCrawl = ['/', '/thu-vien?tab=khoa-hoc', '/thu-vien?tab=noi-dung']
+    const urlsToCrawl = ['/', '/tai-nguyen?tab=khoa-hoc', '/tai-nguyen?tab=noi-dung']
     const collectedHrefs = new Set<string>()
 
     for (const url of urlsToCrawl) {

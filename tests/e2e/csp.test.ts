@@ -91,12 +91,12 @@ test.describe('Content Security Policy Enforced Tests (CSP_ENFORCE=true)', () =>
     expect(consoleErrors, 'Console không được có lỗi CSP Refused to').toEqual([])
   })
 
-  test('Trang Thư viện (/thu-vien) lọc tài nguyên & nạp script không bị CSP chặn', async ({
+  test('Trang Tài nguyên (/tai-nguyen) lọc tài nguyên & nạp script không bị CSP chặn', async ({
     page,
   }) => {
     const watcher = await setupCspViolationWatcher(page)
 
-    const res = await page.goto('/thu-vien', { waitUntil: 'domcontentloaded' })
+    const res = await page.goto('/tai-nguyen', { waitUntil: 'domcontentloaded' })
     expect(res?.status()).toBe(200)
     await page.waitForLoadState('load')
 

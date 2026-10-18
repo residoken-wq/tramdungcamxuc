@@ -41,7 +41,23 @@ export function InteractiveCompositesDemo() {
       href: '/habit/chan-doan',
       featured: true,
     },
-    { label: '[MẪU] Lộ trình', href: PATHS.journey },
+    {
+      label: '[MẪU] Sản phẩm',
+      href: '',
+      groups: [
+        {
+          label: '[MẪU] Dành cho Cá nhân',
+          items: [
+            { label: '[MẪU] Lộ trình', href: PATHS.journey, description: '[MẪU] Gói giải pháp' },
+            { label: '[MẪU] EQ Buddy', href: '/eq-buddy', description: '[MẪU] Công cụ cảm xúc' },
+          ],
+        },
+        {
+          label: '[MẪU] Dành cho Doanh nghiệp',
+          items: [{ label: '[MẪU] Coach 1:1', href: '/coaching/thinking-mirror' }],
+        },
+      ],
+    },
     { label: '[MẪU] Doanh nghiệp', href: '/doanh-nghiep' },
   ]
 
