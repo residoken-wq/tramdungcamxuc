@@ -217,9 +217,16 @@ export async function resolveServerData(
       }
     }
 
-    // Collect page IDs for CTAButton (linkType = page)
+    // Collect page IDs for CTAButton & Callout (linkType = page)
     if (item.type === 'CTAButton' && item.props.linkType === 'page' && item.props.pageId) {
       pageIdsToFetch.add(item.props.pageId as string | number)
+    }
+    if (
+      item.type === 'Callout' &&
+      item.props.buttonLinkType === 'page' &&
+      item.props.buttonPageId
+    ) {
+      pageIdsToFetch.add(item.props.buttonPageId as string | number)
     }
 
     // Collect product IDs for conversion blocks
@@ -534,6 +541,9 @@ export async function resolveServerData(
       }
     } else if (item.type === 'CTAButton') {
       const pId = item.props.pageId ? String(item.props.pageId) : ''
+      item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+    } else if (item.type === 'Callout') {
+      const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
       item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
     } else if (item.type === 'LeadForm') {
       const rId = item.props.resourceProductId ? String(item.props.resourceProductId) : ''
