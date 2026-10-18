@@ -8,6 +8,10 @@ export interface HeroStat {
   label: string
 }
 
+export interface HeroBadge {
+  text: string
+}
+
 export interface HeroImageProps {
   version?: number
   seriesLabel?: string
@@ -21,7 +25,7 @@ export interface HeroImageProps {
   buttonLink?: string
   secondaryButtonText?: string
   secondaryButtonLink?: string
-  badges?: Array<{ text?: string } | string>
+  badges?: HeroBadge[]
   stats?: HeroStat[]
   priority?: boolean
   bgColor?:

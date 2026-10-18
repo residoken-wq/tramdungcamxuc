@@ -1,7 +1,7 @@
 import React from 'react'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 
-export interface BrandIconProps extends React.SVGProps<SVGSVGElement> {
+export interface BrandIconProps extends Omit<React.SVGProps<SVGSVGElement>, 'name'> {
   name?: BrandIconKey | string | null
   className?: string
   size?: number | string
