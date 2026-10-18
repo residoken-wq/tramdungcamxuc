@@ -20,7 +20,7 @@ export interface LibraryDataResult {
 
 /**
  * Đọc dữ liệu thư viện phía máy chủ:
- * - Puck intro từ `pages` slug 'thu-vien' (nếu có bản published)
+ * - Puck intro từ `pages` slug 'tai-nguyen' (nếu có bản published)
  * - Sản phẩm (products) theo tab và bộ lọc
  * - Bài viết / video (posts) theo tab 'noi-dung' và bộ lọc
  * - Bọc try/catch toàn bộ để không bao giờ quăng lỗi 500 ra giao diện.
@@ -30,13 +30,13 @@ export async function getLibraryData(params: LibraryQueryParams): Promise<Librar
     const payloadConfig = await config
     const payload = await getPayload({ config: payloadConfig })
 
-    // 1. Lấy dữ liệu Puck giới thiệu nếu có trang 'thu-vien' đã xuất bản
+    // 1. Lấy dữ liệu Puck giới thiệu nếu có trang 'tai-nguyen' đã xuất bản
     let introData: Data | null = null
     try {
       const pageResult = await payload.find({
         collection: 'pages',
         where: {
-          and: [{ slug: { equals: 'thu-vien' } }, { _status: { equals: 'published' } }],
+          and: [{ slug: { equals: 'tai-nguyen' } }, { _status: { equals: 'published' } }],
         },
         limit: 1,
         draft: false,
@@ -44,7 +44,7 @@ export async function getLibraryData(params: LibraryQueryParams): Promise<Librar
       const pageDoc = pageResult.docs[0]
       if (pageDoc?.puckData) {
         const initialData = pageDoc.puckData as Data
-        introData = await resolveServerData(initialData, { pageSlug: 'thu-vien' })
+        introData = await resolveServerData(initialData, { pageSlug: 'tai-nguyen' })
       }
     } catch {
       // Nếu lỗi đọc trang giới thiệu, bỏ qua để phần còn lại hoạt động bình thường

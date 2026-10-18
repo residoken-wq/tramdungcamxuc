@@ -11,6 +11,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Butterfly } from '@/components/brand/Butterfly'
 import { LeadForm } from '@/components/site/LeadForm'
 import { vi } from '@/lib/i18n/vi'
+import { PATHS } from '@/lib/paths'
 
 export const dynamic = 'force-dynamic'
 
@@ -127,7 +128,7 @@ export default async function ComingSoonPage({ searchParams }: ComingSoonPagePro
         {/* Navigation back */}
         <div className="mb-6 sm:mb-8">
           <Link
-            href="/thu-vien"
+            href={PATHS.resources}
             className="inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-deep-navy/70 hover:text-bright-magenta transition-colors"
           >
             ← {vi.comingSoon.backToLibrary}

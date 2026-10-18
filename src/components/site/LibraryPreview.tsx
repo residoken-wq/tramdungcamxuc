@@ -7,6 +7,7 @@ import { ProductCard } from '@/components/site/ProductCard'
 import { PostCard } from '@/components/site/PostCard'
 import { resolveProductCta, type PublicProduct } from '@/lib/products'
 import type { LibraryTab } from '@/lib/library'
+import { PATHS } from '@/lib/paths'
 
 export interface LibraryPreviewItemPost {
   id: string | number
@@ -57,7 +58,7 @@ export function LibraryPreview({
   }[padding]
 
   const displayItems = Array.isArray(items) ? items : []
-  const allUrl = `/thu-vien?tab=${tab}`
+  const allUrl = `${PATHS.resources}?tab=${tab}`
 
   return (
     <section className={`w-full bg-${bgColor} ${paddingClasses}`}>

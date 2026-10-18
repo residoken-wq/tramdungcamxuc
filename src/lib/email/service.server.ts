@@ -18,6 +18,7 @@ import { TrialWelcomeEmail } from '@/emails/TrialWelcomeEmail'
 import { TrialReminderEmail } from '@/emails/TrialReminderEmail'
 import { TrackerNudgeEmail } from '@/emails/TrackerNudgeEmail'
 import { vi } from '@/lib/i18n/vi'
+import { PATHS } from '@/lib/paths'
 import { getSiteUrl } from '@/lib/site-url'
 import { getDefaultEmailSender } from './sender.server'
 import type { EmailSender } from './types'
@@ -357,16 +358,19 @@ export async function sendOrderExpiredReminderEmail(
   customSender?: EmailSender,
 ): Promise<void> {
   const sender = customSender || getDefaultEmailSender()
+  const reorderUrl = `${getSiteUrl()}${PATHS.journey}`
 
   try {
     const userHtml = await render(
       React.createElement(ExperienceOrderExpiredEmail, {
         name: data.name,
+        reorderUrl,
       }),
     )
     const userText = await render(
       React.createElement(ExperienceOrderExpiredEmail, {
         name: data.name,
+        reorderUrl,
       }),
       { plainText: true },
     )

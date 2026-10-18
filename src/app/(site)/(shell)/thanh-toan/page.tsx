@@ -14,6 +14,7 @@ import {
   DigitalToolCheckoutForm,
   type DigitalToolCheckoutProduct,
 } from '@/components/site/checkout/DigitalToolCheckoutForm'
+import { PATHS } from '@/lib/paths'
 
 export const dynamic = 'force-dynamic'
 
@@ -53,7 +54,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
         <p className="font-sans text-sm text-deep-navy/70">{vi.checkout.productMissingDesc}</p>
         <div className="pt-4">
           <Link
-            href="/thu-vien"
+            href={PATHS.resources}
             className="inline-flex items-center px-5 py-2.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-sm hover:bg-bright-magenta/90 transition-colors"
           >
             {vi.checkout.exploreLibrary}
@@ -90,7 +91,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
         <p className="font-sans text-sm text-deep-navy/70">{vi.checkout.productNotFound}</p>
         <div className="pt-4">
           <Link
-            href="/thu-vien"
+            href={PATHS.resources}
             className="inline-flex items-center px-5 py-2.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-sm hover:bg-bright-magenta/90 transition-colors"
           >
             {vi.checkout.backToLibrary}

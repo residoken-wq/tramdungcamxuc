@@ -17,6 +17,7 @@ import * as migration_20261015_092239_saved_cards_unique from './20261015_092239
 import * as migration_20261016_063717_customer_session_version from './20261016_063717_customer_session_version'
 import * as migration_20261016_113859_reminder_emails_opt_out from './20261016_113859_reminder_emails_opt_out'
 import * as migration_20261017_083454_sitemap_v2_schema from './20261017_083454_sitemap_v2_schema'
+import * as migration_20261018_020000_sitemap_v2_paths from './20261018_020000_sitemap_v2_paths'
 
 export const migrations = [
   {
@@ -113,5 +114,10 @@ export const migrations = [
     up: migration_20261017_083454_sitemap_v2_schema.up,
     down: migration_20261017_083454_sitemap_v2_schema.down,
     name: '20261017_083454_sitemap_v2_schema',
+  },
+  {
+    up: migration_20261018_020000_sitemap_v2_paths.up,
+    down: migration_20261018_020000_sitemap_v2_paths.down,
+    name: '20261018_020000_sitemap_v2_paths',
   },
 ]

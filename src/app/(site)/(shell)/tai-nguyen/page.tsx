@@ -18,6 +18,7 @@ import {
 } from '@/lib/library'
 import { getLibraryData } from '@/lib/library.server'
 import { vi } from '@/lib/i18n/vi'
+import { PATHS } from '@/lib/paths'
 
 export const dynamic = 'force-dynamic'
 
@@ -147,7 +148,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
           {/* Ô tìm kiếm bằng FORM GET */}
           <form
             method="get"
-            action="/thu-vien"
+            action={PATHS.resources}
             className="relative flex items-center w-full md:w-72"
           >
             <input type="hidden" name="tab" value={params.tab} />

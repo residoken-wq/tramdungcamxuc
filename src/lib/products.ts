@@ -1,6 +1,7 @@
 import type { Product } from '@/payload-types'
 import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
+import { PATHS } from '@/lib/paths'
 
 export interface EffectivePrice {
   price: number | null
@@ -30,7 +31,8 @@ export type ProductCtaInput = {
   ctaLabel?: string | null
 }
 
-export const GROWTH_MIRROR_PATH = '/coaching/growth-mirror'
+/** @deprecated Use `PATHS.journey` from `@/lib/paths`. */
+export const GROWTH_MIRROR_PATH = PATHS.journey
 export const BOOKING_PATH = '/dat-phien-trai-nghiem'
 
 export function getBookingPath(productId?: string | number | null): string {

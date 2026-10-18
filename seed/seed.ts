@@ -1,5 +1,6 @@
 import type { CollectionSlug, Payload, Where } from 'payload'
 import * as data from './data'
+import { LEGACY_PAGE_SLUGS, rewriteLink } from '../src/lib/paths'
 import { EQ_BUDDY_PRODUCT_SLUG } from '../src/lib/eq/config'
 
 // The seed writes many collections through one generic helper; Payload's per-collection
@@ -201,15 +202,32 @@ export async function seed(payload: Payload): Promise<SeedReport> {
     pageIds.set(slug, (await upsert('pages', 'slug', slug, { title, puckData }))!)
   }
 
-  // Globals: only fill when empty so real settings entered by Hana are never overwritten.
+  // Globals: only fill when empty (or, for the main menu, still the old seed menu) so real
+  // settings entered by Hana are never overwritten.
   const navigation = (await payload.findGlobal({ slug: 'navigation', depth: 0 })) as {
-    mainMenu?: unknown[]
+    mainMenu?: StoredMenuItem[]
     footerMenu?: unknown[]
   }
+  const withPage = <T extends { page?: string }>({ page, ...item }: T) => ({
+    ...item,
+    ...(page ? { page: pageIds.get(page) } : {}),
+  })
   const toMenu = (items: data.NavItemSeed[]) =>
-    items.map(({ page, ...item }) => ({ ...item, ...(page ? { page: pageIds.get(page) } : {}) }))
+    items.map(({ children, ...item }) => ({
+      ...withPage(item),
+      ...(children
+        ? {
+            children: children.map((group) => ({
+              ...group,
+              items: group.items.map(withPage),
+            })),
+          }
+        : {}),
+    }))
   const navUpdate: Record<string, unknown> = {}
-  if (!navigation.mainMenu?.length) navUpdate.mainMenu = toMenu(data.mainMenu)
+  if (!navigation.mainMenu?.length || isLegacySeedMenu(navigation.mainMenu, pageIds)) {
+    navUpdate.mainMenu = toMenu(data.mainMenu)
+  }
   if (!navigation.footerMenu?.length) navUpdate.footerMenu = toMenu(data.footerMenu)
   if (Object.keys(navUpdate).length) {
     await payload.updateGlobal({ slug: 'navigation', data: navUpdate })
@@ -229,4 +247,36 @@ export async function seed(payload: Payload): Promise<SeedReport> {
   }
 
   return report
+}
+
+type StoredMenuItem = {
+  label?: string | null
+  linkType?: string | null
+  page?: unknown
+  url?: string | null
+  highlight?: boolean | null
+  children?: unknown[] | null
+}
+
+/**
+ * True while the stored main menu is still the pre-sitemap-v2 seed menu – before or after the
+ * SM-02 migration rewrote its links / page slugs. Any edit by Hana makes it false.
+ */
+export function isLegacySeedMenu(
+  menu: readonly StoredMenuItem[],
+  pageIds: ReadonlyMap<string, number>,
+): boolean {
+  if (menu.length !== data.legacyMainMenu.length) return false
+  const newSlug = (slug: string) => LEGACY_PAGE_SLUGS.find((m) => m.from === slug)?.to ?? slug
+  const pageId = (page: unknown) =>
+    typeof page === 'object' && page !== null ? (page as { id?: unknown }).id : page
+  return data.legacyMainMenu.every((seed, index) => {
+    const item = menu[index]!
+    if (item.label !== seed.label || item.linkType !== seed.linkType) return false
+    if (Boolean(item.highlight) !== Boolean(seed.highlight)) return false
+    if (item.children?.length) return false
+    if (seed.linkType === 'url') return item.url === seed.url || item.url === rewriteLink(seed.url!)
+    const expected = pageIds.get(newSlug(seed.page!)) ?? pageIds.get(seed.page!)
+    return expected !== undefined && pageId(item.page) === expected
+  })
 }

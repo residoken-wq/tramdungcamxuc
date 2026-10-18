@@ -9,13 +9,7 @@ import { expect, test } from '@playwright/test'
 // - /doanh-nghiep contains the #gui-brief form target
 // - Does NOT use networkidle on pages containing forms
 
-const SEED_PAGES = [
-  '/',
-  '/ve-hana',
-  '/coaching',
-  '/coaching/growth-mirror',
-  '/doanh-nghiep',
-] as const
+const SEED_PAGES = ['/', '/ve-tram', '/coaching', '/lo-trinh-chuyen-minh', '/doanh-nghiep'] as const
 
 const VIEWPORTS = [
   { name: 'mobile-375', width: 375, height: 667 },

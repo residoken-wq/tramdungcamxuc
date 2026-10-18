@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
+import { PATHS } from '@/lib/paths'
 
 export default function ShellNotFound() {
   return (
@@ -22,7 +23,7 @@ export default function ShellNotFound() {
           <Button href="/" variant="primary" size="md" className="w-full sm:w-auto">
             {vi.notFound.homeButton}
           </Button>
-          <Button href="/thu-vien" variant="secondary" size="md" className="w-full sm:w-auto">
+          <Button href={PATHS.resources} variant="secondary" size="md" className="w-full sm:w-auto">
             {vi.notFound.libraryButton}
           </Button>
         </div>

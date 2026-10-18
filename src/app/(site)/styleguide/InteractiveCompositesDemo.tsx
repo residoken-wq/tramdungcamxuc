@@ -16,6 +16,7 @@ import {
 import { EmotionPicker, ProgressGrid, type ProgressDayItem } from '@/components/habit'
 import { Button } from '@/components/ui/Button'
 import type { EmotionKey } from '@/lib/emotions'
+import { PATHS } from '@/lib/paths'
 
 export function InteractiveCompositesDemo() {
   // State for EmotionPicker demo
@@ -33,20 +34,36 @@ export function InteractiveCompositesDemo() {
 
   // Sample data marked with [MẪU] for styleguide demonstration
   const sampleNavItems: NavItem[] = [
-    { label: '[MẪU] Về Hana', href: '/ve-hana' },
-    { label: '[MẪU] Thư viện', href: '/thu-vien' },
+    { label: '[MẪU] Về Trạm', href: PATHS.about },
+    { label: '[MẪU] Thư viện', href: PATHS.resources },
     {
       label: 'Test thói quen 5 phút',
       href: '/habit/chan-doan',
       featured: true,
     },
-    { label: '[MẪU] Growth Mirror', href: '/coaching/growth-mirror' },
+    {
+      label: '[MẪU] Sản phẩm',
+      href: '',
+      groups: [
+        {
+          label: '[MẪU] Dành cho Cá nhân',
+          items: [
+            { label: '[MẪU] Lộ trình', href: PATHS.journey, description: '[MẪU] Gói giải pháp' },
+            { label: '[MẪU] EQ Buddy', href: '/eq-buddy', description: '[MẪU] Công cụ cảm xúc' },
+          ],
+        },
+        {
+          label: '[MẪU] Dành cho Doanh nghiệp',
+          items: [{ label: '[MẪU] Coach 1:1', href: '/coaching/thinking-mirror' }],
+        },
+      ],
+    },
     { label: '[MẪU] Doanh nghiệp', href: '/doanh-nghiep' },
   ]
 
   const sampleNavbarCta: NavbarCta = {
     label: '[MẪU] Đặt phiên trải nghiệm',
-    href: '/coaching/growth-mirror#dat-phien',
+    href: `${PATHS.journey}#dat-phien`,
   }
 
   const sampleLegalLinks: LegalLink[] = [

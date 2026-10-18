@@ -381,6 +381,16 @@ curl -fsS http://127.0.0.1:3400/api/users/init
 
 Mong đợi: hai service healthy; `initialized: true` khi đã có admin. Đăng nhập lại, mở ảnh đã upload và kiểm tra trang đã xuất bản. `up` không xóa volume. Muốn dừng toàn bộ rồi khởi động lại: dùng `down` **không có `-v`**, sau đó `up -d`.
 
+#### Sau khi cập nhật lên bản có SM-02 (Sitemap v2, đường dẫn mới)
+
+Migration `20261018_020000_sitemap_v2_paths` (chạy cùng lúc `up`) đổi slug trang `ve-hana` → `ve-tram`, `coaching/growth-mirror` → `lo-trinh-chuyen-minh`, `thu-vien` → `tai-nguyen` và đổi các liên kết cũ trong trang / menu. Trang nào đã có slug đích thì **không** bị đổi – xem log container có dòng `[Migration SM-02] Đã có trang đường dẫn …`.
+
+```bash
+for p in /thu-vien /ve-hana /coaching/growth-mirror; do curl -s -o /dev/null -w "$p %{http_code} %{redirect_url}\n" "http://127.0.0.1:3400$p"; done
+```
+
+Mong đợi: cả ba trả `308` về `/tai-nguyen`, `/ve-tram`, `/lo-trinh-chuyen-minh`. Container mới không giữ cache trang cũ nên không cần revalidate. Muốn có menu mới mẫu: chạy lại seed MẪU (chỉ thay menu khi menu vẫn đúng bản seed cũ, menu Hana đã sửa được giữ nguyên).
+
 ### Backup DB và media cùng thời điểm
 
 Tạm dừng app để không có upload/ghi DB chen giữa hai bản sao. Lưu `.env` ở nơi bảo mật riêng; bản DB chứa tài khoản nhưng không thay thế secret cấu hình. Thư mục backup phải nằm ngoài Git và được chép sang máy/lưu trữ khác sau khi hoàn tất.

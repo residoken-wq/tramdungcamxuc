@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
 import type { CustomerOrderDto } from '@/lib/account/orders.server'
 import { OrderFileDownloadButton } from './OrderFileDownloadButton'
+import { PATHS } from '@/lib/paths'
 
 export interface MyOrdersProps {
   orders: CustomerOrderDto[]
@@ -35,7 +36,7 @@ export function MyOrders({ orders, loadError = false }: MyOrdersProps) {
           <p className="font-sans text-sm text-deep-navy/70">{vi.account.orders.empty}</p>
           <div>
             <Button
-              href="/thu-vien"
+              href={PATHS.resources}
               variant="secondary"
               size="sm"
               className="motion-reduce:transition-none"

@@ -13,10 +13,10 @@ import { expectNoSeriousA11y } from './helpers/a11y'
  * ROUTE AUDIT FOR UNSEEDED CI DB:
  * - Scanned static routes (200 OK on unseeded DB):
  *   - `/` (Home): has fallback brand UI when DB is unseeded.
- *   - `/thu-vien` (Library): has fallback header and empty state when unseeded.
- *   - `/thu-vien?tab=noi-dung`: fallback header, tabs, search bar, empty state card.
+ *   - `/tai-nguyen` (Library): has fallback header and empty state when unseeded.
+ *   - `/tai-nguyen?tab=noi-dung`: fallback header, tabs, search bar, empty state card.
  *   - `/habit/chan-doan` (Diagnostic Quiz): renders quiz shell with empty question notification.
- *   - `/coaching/growth-mirror` & `/gia-thanh-toan`: renders full Puck/Legal layout when seeded, shell 404 fallback when unseeded.
+ *   - `/lo-trinh-chuyen-minh` & `/gia-thanh-toan`: renders full Puck/Legal layout when seeded, shell 404 fallback when unseeded.
  *   - `/habit/5-phut`: renders 4-step habit loop wizard with fallback steps.
  *   - `/eq-buddy`: renders EQ buddy landing with fallback cards when DB is unseeded.
  *   - `/eq-buddy/rut-the`: renders EQ card draw wizard with fallback deck.
@@ -33,16 +33,16 @@ import { expectNoSeriousA11y } from './helpers/a11y'
  *   - `/habit/hoc` & `/habit/tracker`: Requires customer auth + active trial/order.
  *     Audited via expectNoSeriousA11y inside tests/e2e/gate-habit-journey.test.ts.
  *   - `/tai-khoan`: Requires customer auth. Audited in journey tests.
- *   - Dynamic catch-all Puck routes (`/ve-hana`, `/doanh-nghiep`, `/coaching`): require DB pages.
+ *   - Dynamic catch-all Puck routes (`/ve-tram`, `/doanh-nghiep`, `/coaching`): require DB pages.
  *   - Dynamic legal routes (`/dieu-khoan-su-dung`, etc.): require DB legalPages.
  */
 
 const SCAN_ROUTES = [
   '/',
-  '/thu-vien',
-  '/thu-vien?tab=noi-dung',
+  '/tai-nguyen',
+  '/tai-nguyen?tab=noi-dung',
   '/habit/chan-doan',
-  '/coaching/growth-mirror',
+  '/lo-trinh-chuyen-minh',
   '/gia-thanh-toan',
   '/habit/5-phut',
   '/eq-buddy',

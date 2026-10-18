@@ -2,15 +2,34 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Logo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
+import { DesktopSubmenu } from './nav/DesktopSubmenu'
+import { MobileSubmenu } from './nav/MobileSubmenu'
+import { isCurrentPath } from './nav/current'
+
+export interface NavLink {
+  label: string
+  href: string
+  description?: string
+  featured?: boolean
+  shortLabel?: string
+}
+
+export interface NavGroup {
+  label?: string
+  items: NavLink[]
+}
 
 export interface NavItem {
   label: string
+  /** Empty when the item only opens its submenu. */
   href: string
   featured?: boolean
   shortLabel?: string
+  groups?: NavGroup[]
 }
 
 export interface NavbarCta {
@@ -32,16 +51,28 @@ export interface NavbarProps {
 
 export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [openGroup, setOpenGroup] = useState<number | null>(null)
   const toggleButtonRef = useRef<HTMLButtonElement>(null)
+  const pathname = usePathname() ?? '/'
 
-  // Find the featured item (e.g. 5-min habit test lead magnet) to highlight
-  const featuredItem = items.find((item) => item.featured)
+  // Find the featured item (e.g. 5-min habit test lead magnet) to highlight – also inside submenus
+  const featuredItem: NavLink | undefined =
+    items.find((item) => item.featured && item.href) ??
+    items
+      .flatMap((item) => item.groups ?? [])
+      .flatMap((group) => group.items)
+      .find((child) => child.featured)
+  const closeDrawer = () => {
+    setIsOpen(false)
+    setOpenGroup(null)
+  }
 
   // Handle Escape key to close mobile drawer and return focus to toggle button
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false)
+        setOpenGroup(null)
         toggleButtonRef.current?.focus()
       }
     }
@@ -73,14 +104,22 @@ export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
             aria-label={vi.navbar.mainNav}
             className="hidden lg:flex items-center space-x-6 xl:space-x-8"
           >
-            {items.map((item) => {
+            {items.map((item, index) => {
+              if (item.groups?.length) {
+                return (
+                  <DesktopSubmenu key={`${item.label}-${index}`} item={item} pathname={pathname} />
+                )
+              }
               const isFeatured = Boolean(item.featured)
+              const current = isCurrentPath(pathname, item.href)
               return (
                 <Link
-                  key={item.href}
+                  key={`${item.label}-${index}`}
                   href={item.href}
+                  aria-current={current ? 'page' : undefined}
                   className={[
-                    'font-ui text-sm font-semibold transition-colors duration-150 py-1 border-b-2 border-transparent',
+                    'font-ui text-sm font-semibold transition-colors duration-150 py-1 border-b-2',
+                    current ? 'border-bright-magenta/60' : 'border-transparent',
                     isFeatured
                       ? 'text-bright-magenta hover:text-deep-navy font-bold'
                       : 'text-deep-navy hover:text-bright-magenta hover:border-bright-magenta/40',
@@ -119,11 +158,13 @@ export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center">
-            <Button href={cta.href} variant="primary" size="md">
-              {cta.label}
-            </Button>
-          </div>
+          {cta.label && cta.href && (
+            <div className="hidden lg:flex items-center">
+              <Button href={cta.href} variant="primary" size="md">
+                {cta.label}
+              </Button>
+            </div>
+          )}
 
           {/* Mobile Right Controls: Featured action + Hamburger button */}
           <div className="flex lg:hidden items-center gap-2 sm:gap-3 min-w-0">
@@ -146,7 +187,7 @@ export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
               aria-expanded={isOpen}
               aria-controls="mobile-nav-drawer"
               aria-label={isOpen ? vi.navbar.closeMenu : vi.navbar.openMenu}
-              onClick={() => setIsOpen((prev) => !prev)}
+              onClick={() => (isOpen ? closeDrawer() : setIsOpen(true))}
               className="flex-shrink-0 min-h-[44px] min-w-[44px] p-2.5 rounded-xl border border-deep-navy/15 text-deep-navy hover:bg-lavender-mist/40 transition-colors flex items-center justify-center focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
             >
               {isOpen ? (
@@ -184,23 +225,35 @@ export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
           className="lg:hidden border-t border-deep-navy/10 bg-warm-ivory/98 backdrop-blur-md px-4 pt-4 pb-6 space-y-3 shadow-lg"
         >
           <nav aria-label={vi.navbar.mobileNav} className="space-y-1">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className="block py-2.5 px-3 rounded-lg text-base font-ui font-semibold text-deep-navy hover:bg-lavender-mist/40 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {items.map((item, index) =>
+              item.groups?.length ? (
+                <MobileSubmenu
+                  key={`${item.label}-${index}`}
+                  item={item}
+                  pathname={pathname}
+                  open={openGroup === index}
+                  onToggle={() => setOpenGroup((prev) => (prev === index ? null : index))}
+                  onNavigate={closeDrawer}
+                />
+              ) : (
+                <Link
+                  key={`${item.label}-${index}`}
+                  href={item.href}
+                  onClick={closeDrawer}
+                  aria-current={isCurrentPath(pathname, item.href) ? 'page' : undefined}
+                  className="block min-h-[44px] py-2.5 px-3 rounded-lg text-base font-ui font-semibold text-deep-navy hover:bg-lavender-mist/40 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy"
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
           </nav>
 
           {/* Mobile Account Link */}
           <div className="pt-2 border-t border-deep-navy/10">
             <Link
               href={customer ? '/tai-khoan' : '/tai-khoan/dang-nhap'}
-              onClick={() => setIsOpen(false)}
+              onClick={closeDrawer}
               className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg font-ui text-base font-semibold text-deep-navy hover:bg-lavender-mist/40 hover:text-bright-magenta transition-colors"
             >
               <svg
@@ -224,17 +277,19 @@ export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
             </Link>
           </div>
 
-          <div className="pt-2 border-t border-deep-navy/10">
-            <Button
-              href={cta.href}
-              variant="primary"
-              size="md"
-              className="w-full"
-              onClick={() => setIsOpen(false)}
-            >
-              {cta.label}
-            </Button>
-          </div>
+          {cta.label && cta.href && (
+            <div className="pt-2 border-t border-deep-navy/10">
+              <Button
+                href={cta.href}
+                variant="primary"
+                size="md"
+                className="w-full"
+                onClick={closeDrawer}
+              >
+                {cta.label}
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </header>

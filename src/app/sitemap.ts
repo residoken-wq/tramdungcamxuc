@@ -2,13 +2,14 @@ import type { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 
+import { LEGACY_REDIRECTS, PATHS } from '@/lib/paths'
 import { getSiteUrl } from '@/lib/site-url'
 
 export const dynamic = 'force-dynamic'
 
 export const STATIC_SITEMAP_ROUTES = [
   '/',
-  '/thu-vien',
+  PATHS.resources,
   '/chinh-sach-bao-mat',
   '/chinh-sach-cung-cap-dich-vu',
   '/dieu-khoan-su-dung',
@@ -27,6 +28,8 @@ export const EXCLUDED_SITEMAP_PREFIXES = [
 
 export function isExcludedFromSitemap(pathname: string): boolean {
   const normalized = pathname.trim() || '/'
+  // Old paths only redirect (e.g. the Growth Mirror service shares /coaching/growth-mirror).
+  if (LEGACY_REDIRECTS.some(({ from }) => normalized === from)) return true
   return EXCLUDED_SITEMAP_PREFIXES.some(
     (prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`),
   )
