@@ -117,5 +117,6 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <FAQ {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck: _puck, ...props }) => <FAQ {...props} />,
 }
