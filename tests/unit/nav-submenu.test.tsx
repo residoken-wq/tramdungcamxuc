@@ -86,7 +86,8 @@ describe('isLegacySeedMenu (SM-02 seed guard)', () => {
     ['lo-trinh-chuyen-minh', 12],
     ['doanh-nghiep', 13],
   ])
-  const legacy = () => [
+  type Item = { label: string; linkType: string; page?: number; url?: string; highlight?: boolean }
+  const legacy = (): Item[] => [
     { label: 'Về Hana', linkType: 'page', page: 11 },
     { label: 'Thư viện', linkType: 'url', url: '/tai-nguyen' },
     { label: 'Test thói quen 5 phút', linkType: 'url', url: '/habit/chan-doan' },
