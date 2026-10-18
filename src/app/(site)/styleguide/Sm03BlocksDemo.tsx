@@ -3,7 +3,7 @@
 import React from 'react'
 import { IconCardGrid } from '@/components/site/IconCardGrid'
 import { Callout } from '@/components/site/Callout'
-import { QuoteBlock } from '@/components/site/QuoteBlock'
+import { QuoteBlock } from '@/components/ui/QuoteBlock'
 import { StatsBar } from '@/components/site/StatsBar'
 import { HeroTwoEntries } from '@/components/site/HeroTwoEntries'
 import { HeroImage } from '@/components/site/HeroImage'
@@ -24,6 +24,7 @@ const mockPackages: PublicProduct[] = [
     web: 'site',
     type: 'package',
     price: 1750000,
+    salePrice: null,
     tagline: 'Thấu hiểu bản thân',
     icon: 'compass',
     shortDescription: 'Nhận diện và làm quen với bản đồ cảm xúc cá nhân',
@@ -36,6 +37,7 @@ const mockPackages: PublicProduct[] = [
     web: 'site',
     type: 'package',
     price: 2900000,
+    salePrice: null,
     tagline: 'Kiến tạo sự vững vàng',
     icon: 'shield',
     shortDescription: 'Xây dựng thói quen điều hòa cảm xúc và rèn luyện bền bỉ',
@@ -48,6 +50,7 @@ const mockPackages: PublicProduct[] = [
     web: 'site',
     type: 'package',
     price: 4320000,
+    salePrice: null,
     tagline: 'Tỏa sáng thế mạnh riêng',
     icon: 'spark',
     shortDescription: 'Chuyển hóa toàn diện và phát huy tiềm năng độc bản',
@@ -150,7 +153,7 @@ export function Sm03BlocksDemo() {
             titleLine2="KHIẾN BẠN CHÙN BƯỚC"
             marker="number"
             columns={4}
-            cards={[
+            items={[
               {
                 title: 'Trì hoãn kéo dài',
                 text: 'Luôn bắt đầu với quyết tâm cao nhưng bỏ cuộc giữa chừng vì thiếu hệ thống.',
@@ -191,7 +194,7 @@ export function Sm03BlocksDemo() {
           3. QuoteBlock v2 – Nền Deep Navy Chữ Trắng (Trang chủ tr. 5)
         </h3>
         <QuoteBlock
-          tone="dark"
+          theme="dark"
           quote="Cảm xúc không phải là kẻ thù cần chế ngự. Cảm xúc là người bạn chỉ đường cần được lắng nghe và thấu hiểu."
           cite="Hana Lương"
           roleOrContext="Chuyên gia Khai vấn Cảm xúc & Sự nghiệp"
@@ -314,7 +317,6 @@ export function Sm03BlocksDemo() {
           8. PackageComparison v3 – Cột nổi bật nền Deep Navy &amp; Nút chọn gói dẫn tới Đặt phiên trải nghiệm (Tr. 18)
         </h3>
         <PackageComparison
-          title="Bảng so sánh chi tiết cấu phần 3 gói"
           showPackageButtons={true}
           highlightPackageId="pkg-build"
           _resolved={{
@@ -392,12 +394,7 @@ export function Sm03BlocksDemo() {
           showEmail={true}
           seeAllLink="/faq"
           _resolved={{
-            siteSettings: {
-              shopeeStoreUrl: null,
-              zaloChatUrl: null,
-              zaloGroupUrl: null,
-              email: 'lienhe@tramdungcamxuc.com',
-            },
+            email: 'lienhe@tramdungcamxuc.com',
           }}
           items={[
             {

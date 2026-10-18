@@ -519,8 +519,9 @@ export function useClientSiteSettings(initialSettings?: PublicSiteSettings | nul
     let isMounted = true
     const controller = new AbortController()
 
-    if (!inFlightSiteSettings) {
-      inFlightSiteSettings = fetch('/api/globals/siteSettings?depth=0', {
+    let inFlight = inFlightSiteSettings
+    if (!inFlight) {
+      inFlight = fetch('/api/globals/siteSettings?depth=0', {
         credentials: 'include',
         signal: controller.signal,
       })
@@ -531,16 +532,21 @@ export function useClientSiteSettings(initialSettings?: PublicSiteSettings | nul
           return pub
         })
         .catch(() => {
-          const empty = { shopeeStoreUrl: null, zaloChatUrl: null, zaloGroupUrl: null }
+          const empty: PublicSiteSettings = {
+            shopeeStoreUrl: null,
+            zaloChatUrl: null,
+            zaloGroupUrl: null,
+          }
           siteSettingsCache = empty
           return empty
         })
         .finally(() => {
           inFlightSiteSettings = null
         })
+      inFlightSiteSettings = inFlight
     }
 
-    inFlightSiteSettings.then((data) => {
+    inFlight.then((data) => {
       if (isMounted) {
         setSettings(data)
       }

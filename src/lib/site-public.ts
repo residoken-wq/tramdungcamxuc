@@ -10,7 +10,6 @@ export interface PublicSiteSettings {
   shopeeStoreUrl: string | null
   zaloChatUrl: string | null
   zaloGroupUrl: string | null
-  email: string | null
 }
 
 export function toPublicSiteSettings(doc: unknown): PublicSiteSettings {
@@ -19,7 +18,6 @@ export function toPublicSiteSettings(doc: unknown): PublicSiteSettings {
       shopeeStoreUrl: null,
       zaloChatUrl: null,
       zaloGroupUrl: null,
-      email: null,
     }
   }
 
@@ -40,15 +38,9 @@ export function toPublicSiteSettings(doc: unknown): PublicSiteSettings {
       ? s.zaloGroupUrl.trim()
       : null
 
-  const email =
-    typeof s.email === 'string' && s.email.trim().length > 0
-      ? s.email.trim()
-      : null
-
   return {
     shopeeStoreUrl,
     zaloChatUrl,
     zaloGroupUrl,
-    email,
   }
 }

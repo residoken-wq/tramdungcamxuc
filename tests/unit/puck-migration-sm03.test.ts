@@ -6,8 +6,11 @@ import * as seedData from '../../seed/data'
 describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
   it('migrates seedData.pages: no legacy v1 blocks remain for blocks upgraded in SM-03', () => {
     for (const page of seedData.pages) {
-      const puckData = page.puckData as unknown as Data
-      if (!puckData?.content) continue
+      const puckData: Data = {
+        root: { props: { title: page.title } },
+        content: page.blocks as unknown as Data['content'],
+      }
+      if (!puckData.content || puckData.content.length === 0) continue
 
       const migrated = applyPuckMigrations(puckData)
       for (const block of migrated.content) {
@@ -30,8 +33,11 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
 
   it('is idempotent: running applyPuckMigrations twice produces the exact same output', () => {
     for (const page of seedData.pages) {
-      const puckData = page.puckData as unknown as Data
-      if (!puckData?.content) continue
+      const puckData: Data = {
+        root: { props: { title: page.title } },
+        content: page.blocks as unknown as Data['content'],
+      }
+      if (!puckData.content || puckData.content.length === 0) continue
 
       const run1 = applyPuckMigrations(puckData)
       const run2 = applyPuckMigrations(run1)

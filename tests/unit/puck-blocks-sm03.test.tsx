@@ -22,19 +22,18 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
           titleLine1="GIẢI PHÁP ĐỒNG HÀNH"
           titleLine2="TOÀN DIỆN"
           emotionLine="Dành cho từng giai đoạn phát triển của bạn."
-          variant="icon"
+          marker="icon"
           columns={3}
-          cards={[
+          items={[
             {
               icon: 'lotus',
               title: 'Thấu hiểu bản thân',
-              description: 'Nhận diện các tầng cảm xúc và nhu cầu cốt lõi.',
-              badge: 'Bước 1',
+              text: 'Nhận diện các tầng cảm xúc và nhu cầu cốt lõi.',
             },
             {
               icon: 'compass',
               title: 'Định hướng sự nghiệp',
-              description: 'Lựa chọn hướng đi phù hợp với giá trị cá nhân.',
+              text: 'Lựa chọn hướng đi phù hợp với giá trị cá nhân.',
             },
           ]}
         />,
@@ -48,18 +47,16 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
           seriesLabel="Tiến trình"
           titleLine1="3 BƯỚC ĐỒNG HÀNH"
           titleLine2="RÕ RÀNG"
-          variant="number"
+          marker="number"
           columns={3}
-          cards={[
+          items={[
             {
-              number: '01',
               title: 'Lắng nghe & Khám phá',
-              description: 'Nhìn nhận bức tranh hiện tại.',
+              text: 'Nhìn nhận bức tranh hiện tại.',
             },
             {
-              number: '02',
               title: 'Tháo gỡ & Chuyển hóa',
-              description: 'Thực hành các kỹ thuật điều hòa cảm xúc.',
+              text: 'Thực hành các kỹ thuật điều hòa cảm xúc.',
             },
           ]}
         />,
@@ -70,11 +67,10 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
     it('matches snapshot for Callout with default tone', () => {
       const { asFragment } = render(
         <Callout
-          seriesLabel="Cam kết đồng hành"
+          bgColor="deep-navy"
           title="Không gian an toàn tuyệt đối cho cảm xúc của bạn"
-          quote="Mọi chia sẻ của bạn đều được lắng nghe trung tính và bảo mật hoàn toàn."
-          author="Hana Lương"
-          authorRole="ICF Professional Coach"
+          description="Mọi chia sẻ của bạn đều được lắng nghe trung tính và bảo mật hoàn toàn."
+          showButton={true}
           buttonText="Đặt lịch kết nối"
           buttonLink="/coaching#booking"
         />,
@@ -85,10 +81,9 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
     it('matches snapshot for Callout with calm tone', () => {
       const { asFragment } = render(
         <Callout
-          tone="calm"
+          bgColor="lavender-mist"
           title="Dành 5 phút mỗi ngày cho chính mình"
-          quote="Hạnh phúc bắt đầu từ những khoảnh khắc tĩnh lặng."
-          author="Trạm Dừng Cảm Xúc"
+          description="Hạnh phúc bắt đầu từ những khoảnh khắc tĩnh lặng."
         />,
       )
       expect(asFragment()).toMatchSnapshot()
@@ -108,26 +103,30 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
                 id: 'clear',
                 name: 'CLEAR',
                 slug: 'clear',
-                sellingPrice: 1750000,
-                totalValue: 2500000,
-                discountPercent: 30,
+                web: 'site',
+                type: 'package',
+                price: 2500000,
+                salePrice: 1750000,
+                saleStatus: 'on_sale',
                 shortDescription: 'Nhận diện và tháo gỡ điểm nghẽn cảm xúc.',
                 components: [
-                  { name: 'Habit Tracker + EQ Buddy số', count: 1 },
-                  { name: 'Coaching 1:1', count: 1 },
+                  { label: 'Habit Tracker + EQ Buddy số', quantity: 1, unitValue: 500000 },
+                  { label: 'Coaching 1:1', quantity: 1, unitValue: 1000000 },
                 ],
               },
               {
                 id: 'build',
                 name: 'BUILD',
                 slug: 'build',
-                sellingPrice: 2900000,
-                totalValue: 5800000,
-                discountPercent: 50,
+                web: 'site',
+                type: 'package',
+                price: 5800000,
+                salePrice: 2900000,
+                saleStatus: 'on_sale',
                 shortDescription: 'Xây dựng thói quen và sự vững vàng.',
                 components: [
-                  { name: 'Habit Tracker + EQ Buddy số', count: 1 },
-                  { name: 'Coaching 1:1', count: 3 },
+                  { label: 'Habit Tracker + EQ Buddy số', quantity: 1, unitValue: 500000 },
+                  { label: 'Coaching 1:1', quantity: 3, unitValue: 1000000 },
                 ],
               },
             ],
@@ -143,22 +142,19 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
           seriesLabel="Hệ thống giải pháp"
           titleLine1="HỆ SINH THÁI ĐỒNG HÀNH"
           titleLine2="3 TRỤ CỘT CẢM XÚC"
-          variant="3-pillar"
           _resolved={{
             services: [
               {
                 id: 1,
                 name: 'Tự soi chiếu',
                 slug: 'tu-soi-chieu',
-                shortDescription: 'Công cụ và bài thực hành cá nhân.',
-                tagline: 'Trụ cột 1',
+                audienceLabel: 'Trụ cột 1',
               },
               {
                 id: 2,
                 name: 'Chuyển hóa 1:1',
                 slug: 'chuyen-hoa-1-1',
-                shortDescription: 'Phiên đồng hành chuyên sâu cùng Coach.',
-                tagline: 'Trụ cột 2',
+                audienceLabel: 'Trụ cột 2',
               },
             ],
             programs: [],
@@ -171,7 +167,6 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
     it('matches snapshot for CTASection with default and minimal variants', () => {
       const { asFragment: asFragmentDefault } = render(
         <CTASection
-          variant="default"
           titleLine1="SẴN SÀNG CHO HÀNH TRÌNH"
           titleLine2="LÀM CHỦ CẢM XÚC?"
           emotionLine="Bắt đầu ngay hôm nay để tìm lại sự bình an nội tại."
@@ -183,11 +178,9 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
 
       const { asFragment: asFragmentMinimal } = render(
         <CTASection
-          variant="minimal"
           titleLine1="KẾT NỐI NGAY HÔM NAY"
           buttonText="Bắt đầu ngay"
           buttonLink="/coaching"
-          showProofStrip={false}
         />,
       )
       expect(asFragmentMinimal()).toMatchSnapshot()
@@ -287,10 +280,11 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
                 id: 1,
                 name: 'Gói Thử Nghiệm',
                 slug: 'goi-thu-nghiem',
-                sellingPrice: 1500000,
-                totalValue: 2000000,
-                discountPercent: 25,
-                features: [{ name: 'Buổi 1:1', included: true }],
+                web: 'site',
+                type: 'package',
+                price: 2000000,
+                salePrice: 1500000,
+                saleStatus: 'on_sale',
               },
             ],
           }}

@@ -109,7 +109,6 @@ export function toPublicTestimonial(doc: unknown): PublicTestimonial | null {
     name,
     quote,
     language,
-    consent: true,
   }
 
   if (role !== undefined) result.role = role

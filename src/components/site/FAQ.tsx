@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { BOOKING_PATH } from '@/lib/products'
-import type { PublicSiteSettings } from '@/lib/site-public'
 import { vi } from '@/lib/i18n/vi'
 
 export interface FAQItem {
@@ -27,12 +26,13 @@ export interface FAQProps {
   bookingButtonText?: string
   bookingButtonLink?: string
   showEmail?: boolean
+  email?: string
   seeAllLink?: string
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
-    siteSettings?: PublicSiteSettings
+    email?: string | null
   }
 }
 
@@ -63,6 +63,7 @@ export function FAQ({
   bookingButtonText,
   bookingButtonLink,
   showEmail = false,
+  email: propEmail,
   seeAllLink,
   bgColor = 'warm-ivory',
   padding = 'md',
@@ -91,7 +92,7 @@ export function FAQ({
   const answerColorClass = isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
   const iconColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
 
-  const email = _resolved?.siteSettings?.email
+  const email = _resolved?.email ?? propEmail
   const seeAllSafeLink = seeAllLink ? safeHref(seeAllLink) : null
   const bookingButtonSafeHref = safeHref(bookingButtonLink || BOOKING_PATH) || BOOKING_PATH
 

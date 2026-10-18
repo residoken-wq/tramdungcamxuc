@@ -9,6 +9,7 @@ import type {
   PublicServiceSummary,
   PublicProgramSummary,
 } from '@/components/site/SolutionEcosystem'
+import type { Service, Program } from '@/payload-types'
 
 import { walkPuckItems } from './walk'
 
@@ -425,7 +426,7 @@ export async function resolveServerData(
         limit: numericOrStrSids.length + 10,
       })
 
-      for (const doc of serviceDocs.docs as any[]) {
+      for (const doc of serviceDocs.docs as unknown as Service[]) {
         if (doc?.saleStatus !== 'hidden') {
           serviceMap.set(String(doc.id), {
             id: doc.id,
@@ -468,7 +469,7 @@ export async function resolveServerData(
         limit: numericOrStrPids.length + 10,
       })
 
-      for (const doc of programDocs.docs as any[]) {
+      for (const doc of programDocs.docs as unknown as Program[]) {
         if (doc?.saleStatus !== 'hidden') {
           programMap.set(String(doc.id), {
             id: doc.id,
@@ -491,6 +492,7 @@ export async function resolveServerData(
     zaloChatUrl: null,
     zaloGroupUrl: null,
   }
+  let siteContactEmail: string | null = null
 
   if (needsSiteSettings) {
     try {
@@ -499,6 +501,10 @@ export async function resolveServerData(
         depth: 0,
       })
       publicSiteSettings = toPublicSiteSettings(siteDoc)
+      const rawEmail = (siteDoc as unknown as Record<string, unknown>)?.email
+      if (typeof rawEmail === 'string' && rawEmail.trim().length > 0) {
+        siteContactEmail = rawEmail.trim()
+      }
     } catch {
       // Gracefully continue
     }
@@ -858,7 +864,7 @@ export async function resolveServerData(
       }
     } else if (item.type === 'FAQ') {
       item.props._resolved = {
-        siteSettings: publicSiteSettings,
+        email: item.props.showEmail ? siteContactEmail : null,
       }
     }
 
