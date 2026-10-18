@@ -218,18 +218,18 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 
 ### Sitemap v2 (kế hoạch `docs/plan/SITEMAP_V2.md`, card `SM.md`, chốt 17/10)
 
-**🔒 Migration: SM-01 (Laptop) → SM-02 (PC nhà)**
+**🔒 Migration: SM-02 (tới khi PR merge) → (trống). SM-03, SM-04 không cần 🔒 Migration (chỉ migration dữ liệu Puck).**
 
-| Mã    | Việc                                                 | Phụ thuộc           | Máy      | Trạng thái                                                                                                                                  |
-| ----- | ---------------------------------------------------- | ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| SM-01 | CMS schema: menu con, faqs, teamMembers, field mới   | –                   | Laptop   | Code xong 17/10 (Planning làm trực tiếp, nhánh `claude/cool-ptolemy-cs8kls`) – chờ IT duyệt `REVIEW-REQUIRED` + merge; `decisions/SM-01.md` |
-| SM-02 | Menu con, đường dẫn mới, 301, migration dữ liệu link | SM-01 merge, T3-06a | PC nhà   | Chờ SM-01 (`prompts/SM-02.md`)                                                                                                              |
-| SM-03 | Khối Puck đợt A (trang chủ + lộ trình)               | SM-01               | –        | –                                                                                                                                           |
-| SM-04 | Khối Puck đợt B (Về Trạm + Coach 1:1)                | SM-01               | –        | –                                                                                                                                           |
-| SM-05 | Trang Tài nguyên + newsletter                        | SM-02               | –        | –                                                                                                                                           |
-| SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01               | –        | –                                                                                                                                           |
-| SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | –        | –                                                                                                                                           |
-| SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Planning | –                                                                                                                                           |
+| Mã    | Việc                                                 | Phụ thuộc           | Máy      | Trạng thái                                                                                                                                                   |
+| ----- | ---------------------------------------------------- | ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| SM-01 | CMS schema: menu con, faqs, teamMembers, field mới   | –                   | Laptop   | ✅ Merge 17/10 – PR #151; còn chờ IT duyệt `REVIEW-REQUIRED` (`TeamMembers`); `decisions/SM-01.md`                                                           |
+| SM-02 | Menu con, đường dẫn mới, 301, migration dữ liệu link | SM-01 merge, T3-06a | PC nhà   | Code xong 18/10 (Planning làm trực tiếp, nhánh `claude/cool-ptolemy-cs8kls`) – chờ PR + IT duyệt `REVIEW-REQUIRED` (migration dữ liệu); `decisions/SM-02.md` |
+| SM-03 | Khối Puck đợt A (trang chủ + lộ trình)               | SM-02 merge         | Laptop   | Giao Laptop sau khi SM-02 merge (`prompts/SM-03.md`)                                                                                                         |
+| SM-04 | Khối Puck đợt B (Về Trạm + Coach 1:1)                | SM-01               | –        | –                                                                                                                                                            |
+| SM-05 | Trang Tài nguyên + newsletter                        | SM-02               | –        | –                                                                                                                                                            |
+| SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01               | –        | –                                                                                                                                                            |
+| SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | –        | –                                                                                                                                                            |
+| SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Planning | –                                                                                                                                                            |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 

@@ -60,7 +60,7 @@ Tiêu chí nghiệm thu:
 - [ ] `/eq-buddy/the/[qrSlug]` không đổi.
 - [ ] e2e cũ về menu / đường dẫn đã cập nhật, xanh.
 
-## SM-03 – Khối Puck đợt A: trang chủ + trang lộ trình (sau SM-01) – ước lượng 12–16 h
+## SM-03 – Khối Puck đợt A: trang chủ + trang lộ trình (Laptop, sau SM-02 merge) – ước lượng 12–16 h – prompt `prompts/SM-03.md`
 
 Mới: `IconCardGrid`, `Callout`, `PackageCards`, `SolutionEcosystem`, `CTASection`.
 Nâng cấp (tăng `version` + migration): `HeroTwoEntries` v2, `HeroImage` v2, `QuoteBlock` (nền tối), `StatsBar` v2, `FAQ` v2, `PackageComparison` v2, `TestimonialGrid` v2 (kiểu "trước/sau").
@@ -82,7 +82,7 @@ Tiêu chí nghiệm thu:
 ## SM-04 – Khối Puck đợt B: Về Trạm + Coach 1:1 (sau SM-01, song song SM-03) – ước lượng 10–12 h
 
 Mới: `VisionMission`, `ServiceCards` (📦 `services`), `TwoPathCards`, `TeamGrid` (📦 `teamMembers`).
-Nâng cấp: `JourneySteps` v2 (3 kiểu: vòng tròn / card nối nét đứt / danh sách dọc; bước nổi bật; dòng phụ), `HanaStory` v2 (nền tối, chip, kiểu "thư" + ảnh chữ ký từ `siteSettings.founderSignature`), `ImageText` v2 (quote + nhãn ảnh), `LogoStrip` v2 (nhóm logo), `TestimonialGrid` kiểu "3 giai đoạn" (phối hợp SM-03: cùng khối, SM-03 làm trước khung variant), form đặt phiên trải nghiệm thêm "Lộ trình quan tâm" + "Bạn đang trăn trở điều gì" (vẫn tạo đơn 149.000đ, không đổi logic thanh toán – nếu phải chạm `src/lib/payments` thì dừng và hỏi, `REVIEW-REQUIRED`).
+Nâng cấp: `JourneySteps` v2 (3 kiểu: vòng tròn / card nối nét đứt / danh sách dọc; bước nổi bật; dòng phụ), `HanaStory` v2 (nền tối, chip, kiểu "thư" + ảnh chữ ký từ `siteSettings.founderSignature`), `ImageText` v2 (quote + nhãn ảnh), `LogoStrip` v2 (nhóm logo), (`TestimonialGrid` kiểu "3 giai đoạn" đã chuyển sang SM-03 – SM-04 chỉ dùng lại), form đặt phiên trải nghiệm thêm "Lộ trình quan tâm" + "Bạn đang trăn trở điều gì" (vẫn tạo đơn 149.000đ, không đổi logic thanh toán – nếu phải chạm `src/lib/payments` thì dừng và hỏi, `REVIEW-REQUIRED`).
 
 Tiêu chí nghiệm thu: như SM-03.
 
