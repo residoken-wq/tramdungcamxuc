@@ -4,8 +4,8 @@ import { headers as getHeaders } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import { BRAND_COLORS_HEX, BRAND_COLOR_DESCRIPTIONS, BrandColorToken } from '@/lib/brand/tokens'
-import { Logo, HeartLine, ThinLine, Valve, Butterfly, Leaf } from '@/components/brand'
+import { Logo, HeartLine, ThinLine, Valve, Butterfly, Leaf, BrandIcon } from '@/components/brand'
+import { BRAND_ICONS } from '@/lib/brand/icons'
 import { InteractivePrimitivesDemo } from './InteractivePrimitivesDemo'
 import { InteractiveCompositesDemo } from './InteractiveCompositesDemo'
 import { EqShareDemo } from './EqShareDemo'
@@ -370,6 +370,25 @@ export default async function StyleguidePage() {
                 <Logo variant="monochrome" width={130} />
                 <span className="mt-2 font-ui text-[11px] text-deep-navy/60">Monochrome</span>
               </div>
+            </div>
+          </div>
+
+          {/* Brand Icons 16 keys showcase */}
+          <div className="mt-6 rounded-card border border-deep-navy/10 bg-white p-6 shadow-soft">
+            <h3 className="mb-4 font-ui text-xs font-bold uppercase tracking-wider text-deep-navy">
+              16 Biểu tượng thương hiệu (Brand Icons – Brand Book 2026)
+            </h3>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
+              {BRAND_ICONS.map(({ value, label }) => (
+                <div
+                  key={value}
+                  className="flex flex-col items-center justify-center rounded-lg border border-deep-navy/10 bg-warm-ivory/50 p-4 text-center hover:bg-soft-pink/30 transition-colors"
+                >
+                  <BrandIcon name={value} className="text-deep-navy" size={28} />
+                  <span className="mt-2 font-ui text-xs font-semibold text-deep-navy">{label}</span>
+                  <span className="font-ui text-[10px] text-deep-navy/60">{value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
