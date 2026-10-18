@@ -1,6 +1,6 @@
 # Hướng dẫn sử dụng hệ thống quản trị Trạm Dừng Cảm Xúc
 
-> **Dành cho Hana Lương** · Phiên bản 1 (Cổng Giai đoạn 1)
+> **Dành cho Hana Lương** · Phiên bản 2 (18/10/2026 – trước buổi thử CMS CM-07; đối chiếu từng bước trên bản chạy thử có dữ liệu MẪU)
 > Tài liệu hướng dẫn thao tác toàn diện trên hệ thống quản trị website: tạo và quản lý sản phẩm, thu thập lead, chăm sóc khách hàng, quản trị trang pháp lý, cài đặt thanh toán ngân hàng và tự tay dựng trang bằng công cụ kéo thả trực quan mà không cần biết lập trình.
 
 ---
@@ -10,6 +10,7 @@
 1. [Đăng nhập và Bảo mật tài khoản](#1-đăng-nhập-và-bảo-mật-tài-khoản)
    - [1.3b. Trang chủ admin – Dashboard "Hôm nay"](#13b-trang-chủ-admin--dashboard-hôm-nay)
    - [1.4. Cấu trúc menu bên trái theo công việc của Hana](#14-cấu-trúc-menu-bên-trái-theo-công-việc-của-hana)
+   - [1.4b. Tên các nút trên form và nút Xem trước (con mắt)](#14b-tên-các-nút-trên-form-và-nút-xem-trước-con-mắt)
    - [1.5. Khách hàng đăng nhập thế nào](#15-khách-hàng-đăng-nhập-thế-nào)
    - [1.5b. Quyền tự quản lý nhận email nhắc của khách hàng (Nghị định 13/2023)](#15b-quyền-tự-quản-lý-nhận-email-nhắc-của-khách-hàng-nghị-định-132023)
    - [1.6. Khách hàng tự xem đơn hàng và link thanh toán tại /tai-khoan](#16-khách-hàng-tự-xem-đơn-hàng-và-link-thanh-toán-tại-tai-khoan)
@@ -28,14 +29,21 @@
    - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
    - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
    - [3.13. Quản lý 26 thẻ EQ Buddy](#313-quản-lý-26-thẻ-eq-buddy)
+     - [3.13b. Sửa câu chuyện của một thẻ và xem trước](#313b-sửa-câu-chuyện-của-một-thẻ-và-xem-trước)
    - [3.14. In QR cho bộ thẻ EQ Buddy (EqCards)](#314-in-qr-cho-bộ-thẻ-eq-buddy-eqcards)
    - [3.15. Ảnh chia sẻ thẻ EQ Buddy và Liên kết Shopee bộ thẻ vật lý](#315-ảnh-chia-sẻ-thẻ-eq-buddy-và-liên-kết-shopee-bộ-thẻ-vật-lý)
    - [3.16. Trang giới thiệu bộ thẻ và Kích hoạt dùng thử EQ Buddy số](#316-trang-giới-thiệu-bộ-thẻ-và-kích-hoạt-dùng-thử-eq-buddy-số)
    - [3.17. Quản lý Thẻ đã lưu và Bảo mật suy ngẫm của khách hàng (SavedCards)](#317-quản-lý-thẻ-đã-lưu-và-bảo-mật-suy-ngẫm-của-khách-hàng-savedcards)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
+   - [4.1. Thêm một lời chia sẻ mới](#41-thêm-một-lời-chia-sẻ-mới)
+   - [4.2. Quy tắc bắt buộc: Đồng ý hiển thị (Consent)](#42-quy-tắc-bắt-buộc-đồng-ý-hiển-thị-consent)
+   - [4.3. Câu chuyện "Trước / Sau" của khách hàng](#43-câu-chuyện-trước--sau-của-khách-hàng)
+   - [4.4. Câu hỏi thường gặp (FAQ) dùng chung](#44-câu-hỏi-thường-gặp-faq-dùng-chung)
+   - [4.5. Đội ngũ chuyên gia](#45-đội-ngũ-chuyên-gia)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
+   - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
 8. [Quản lý Khách tiềm năng (Leads) và Xuất file CSV](#8-quản-lý-khách-tiềm-năng-leads-và-xuất-file-csv)
 9. [Quản lý Câu hỏi Quiz chẩn đoán thói quen](#9-quản-lý-câu-hỏi-quiz-chẩn-đoán-thói-quen)
 10. [Xử lý sự cố và Nhận biết thông báo lỗi thường gặp](#10-xử-lý-sự-cố-và-nhận-biết-thông-báo-lỗi-thường-gặp)
@@ -141,14 +149,14 @@ Các liên kết mở nhanh tới đúng tài liệu hướng dẫn chi tiết m
 
 #### Bảng 6 nhóm menu chính
 
-| Tên nhóm                | Mục đích công việc                                                                                             | Các mục hiển thị trong nhóm                                                                                                                                                                                                                                                                                                                                            | Ai nhìn thấy?      |
-| :---------------------- | :------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------- |
-| **Trang web**           | Quản lý các trang nội dung công khai, bài viết chia sẻ, cảm nhận của khách hàng, chân trang và cấu hình chung. | • **Trang** (`pages`): Dựng trang bằng Puck editor.<br>• **Bài viết** (`posts`): Blog và bài chia sẻ.<br>• **Lời chia sẻ** (`testimonials`): Đánh giá của học viên.<br>• **Trang pháp lý** (`legalPages`): Điều khoản, bảo mật.<br>• **Menu** (`navigation`): Menu đầu và chân trang.<br>• **Cài đặt website** (`siteSettings`): Ngân hàng VietQR, logo.               | `owner` + `editor` |
-| **Sản phẩm & bán hàng** | Quản lý danh mục gói đồng hành, sách điện tử, dịch vụ coaching, đơn hàng và ưu đãi.                            | • **Sản phẩm** (`products`): Công cụ số, gói đồng hành, ebook.<br>• **Dịch vụ đồng hành** (`services`): Coaching 1:1, tư vấn.<br>• **Chương trình doanh nghiệp** (`programs`): Đào tạo B2B.<br>• **Đơn hàng** (`orders`): Theo dõi và xác nhận đơn chuyển khoản.<br>• **Mã giảm giá** (`discountCodes`): Ưu đãi cho chiến dịch.                                        | `owner` + `editor` |
-| **Khóa Habit**          | Quản lý toàn bộ nội dung khóa học Habit Hack 1% Better và hoạt động tương tác.                                 | • **Nhóm bài học** (`courseModules`): 7 chặng học tập.<br>• **Bài học** (`lessons`): 20 bài học kèm video Bunny Stream.<br>• **Kỹ thuật** (`techniques`): 11 kỹ thuật can thiệp hành vi.<br>• **Câu hỏi quiz** (`diagnosticQuestions`): 16 tình huống trì hoãn.<br>• **Lịch workshop** (`workshops`): Lịch học Zoom và đường dẫn.                                      | `owner` + `editor` |
-| **EQ Buddy**            | Quản lý bộ 26 thẻ nhận diện và điều hòa cảm xúc.                                                               | • **Thẻ EQ** (`eqCards`): 26 thẻ bài, thông điệp, câu chuyện, câu hỏi đào sâu và xuất mã QR in ấn.                                                                                                                                                                                                                                                                     | `owner` + `editor` |
-| **Học viên & khách**    | Chăm sóc học viên, theo dõi quá trình rèn luyện và cấp chứng nhận hoàn thành.                                  | • **Khách hàng** (`customers`): Danh sách học viên và tài khoản.<br>• **Khách tiềm năng** (`leads`): Thu thập email từ form, xuất CSV.<br>• **Chứng nhận** (`certificates`): Chứng nhận 21 ngày hoàn thành.<br>• **Kế hoạch thói quen** (`habitPlans`): Kế hoạch Habit Loop 5 phút.                                                                                    | `owner` + `editor` |
-| **Hệ thống**            | Khu vực kỹ thuật dành riêng cho Chủ dự án và IT: phân quyền, kiểm tra lỗi, đối soát thanh toán.                | • Quản trị viên, Quyền truy cập, Check-in, Tiến độ bài học, Kết quả quiz, Thẻ đã lưu, Sự kiện thanh toán, Nhật ký kiểm toán, Nhắc dùng thử, Nhắc workshop, Nhắc tracker, Mã OTP, Giới hạn tần suất, Lịch sử dùng thử (14 collections). _Thư viện ảnh và tài liệu_ nằm ở nhóm **Trang web**, _Tài liệu riêng tư_ ở nhóm **Sản phẩm & bán hàng** – editor vẫn dùng được. | **Chỉ `owner`**    |
+| Tên nhóm                | Mục đích công việc                                                                                             | Các mục hiển thị trong nhóm                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Ai nhìn thấy?      |
+| :---------------------- | :------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------- |
+| **Trang web**           | Quản lý các trang nội dung công khai, bài viết chia sẻ, cảm nhận của khách hàng, chân trang và cấu hình chung. | • **Trang nội dung** (`pages`): Dựng trang bằng Puck editor.<br>• **Bài viết và video** (`posts`): Blog và bài chia sẻ.<br>• **Lời chia sẻ** (`testimonials`): Đánh giá của học viên.<br>• **Câu hỏi thường gặp** (`faqs`): FAQ dùng chung (mục 4.4).<br>• **Đội ngũ** (`teamMembers`): Chuyên gia của Trạm (mục 4.5).<br>• **Trang pháp lý** (`legalPages`): Điều khoản, bảo mật.<br>• **Thư viện ảnh và tài liệu** (`media`): Ảnh bìa, ảnh minh họa.<br>• **Menu điều hướng** (`navigation`): Menu đầu và chân trang.<br>• **Cài đặt website** (`siteSettings`): Ngân hàng VietQR, logo. | `owner` + `editor` |
+| **Sản phẩm & bán hàng** | Quản lý danh mục gói đồng hành, sách điện tử, dịch vụ coaching, đơn hàng và ưu đãi.                            | • **Sản phẩm** (`products`): Công cụ số, gói đồng hành, ebook.<br>• **Dịch vụ đồng hành** (`services`): Coaching 1:1, tư vấn.<br>• **Chương trình doanh nghiệp** (`programs`): Đào tạo B2B.<br>• **Đơn hàng** (`orders`): Theo dõi và xác nhận đơn chuyển khoản.<br>• **Mã giảm giá** (`discountCodes`): Ưu đãi cho chiến dịch.<br>• **Tài liệu riêng tư** (`privateFiles`): PDF chỉ giao sau khi đăng ký/mua.                                                                                                                                                                             | `owner` + `editor` |
+| **Khóa Habit**          | Quản lý toàn bộ nội dung khóa học Habit Hack 1% Better và hoạt động tương tác.                                 | • **Nhóm bài học** (`courseModules`): 7 chặng học tập.<br>• **Bài học** (`lessons`): 20 bài học kèm video Bunny Stream.<br>• **Kỹ thuật thực hành** (`techniques`): 11 kỹ thuật can thiệp hành vi.<br>• **Câu hỏi chẩn đoán** (`diagnosticQuestions`): 16 tình huống trì hoãn.<br>• **Lịch workshop** (`workshops`): Lịch học Zoom và đường dẫn.                                                                                                                                                                                                                                           | `owner` + `editor` |
+| **EQ Buddy**            | Quản lý bộ 26 thẻ nhận diện và điều hòa cảm xúc.                                                               | • **Thẻ EQ Buddy** (`eqCards`): 26 thẻ bài, thông điệp, câu chuyện, câu hỏi đào sâu và xuất mã QR in ấn.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | `owner` + `editor` |
+| **Học viên & khách**    | Chăm sóc học viên, theo dõi quá trình rèn luyện và cấp chứng nhận hoàn thành.                                  | • **Khách hàng** (`customers`): Danh sách học viên và tài khoản.<br>• **Khách tiềm năng** (`leads`): Thu thập email từ form, xuất CSV.<br>• **Chứng nhận 21 ngày** (`certificates`): Chứng nhận 21 ngày hoàn thành.<br>• **Kế hoạch thói quen** (`habitPlans`): Kế hoạch Habit Loop 5 phút.                                                                                                                                                                                                                                                                                                | `owner` + `editor` |
+| **Hệ thống**            | Khu vực kỹ thuật dành riêng cho Chủ dự án và IT: phân quyền, kiểm tra lỗi, đối soát thanh toán.                | • Quản trị viên, Quyền truy cập, Check-in 21 ngày, Tiến độ bài học, Kết quả chẩn đoán, Thẻ đã lưu, Sự kiện thanh toán, Nhật ký thao tác, Nhắc hạn dùng thử, Nhắc lịch workshop, Nhắc lỡ nhịp tracker, Mã OTP, Lượt gửi form, Dấu vết dùng thử (14 mục).                                                                                                                                                                                                                                                                                                                                    | **Chỉ `owner`**    |
 
 #### Bảo vệ an toàn: Ẩn mục kỹ thuật với vai trò Biên tập (`editor`)
 
@@ -157,6 +165,21 @@ Các liên kết mở nhanh tới đúng tài liệu hướng dẫn chi tiết m
   - Giao diện của cộng sự cực kỳ gọn gàng, chỉ tập trung vào việc viết bài, cập nhật bài học và chăm sóc học viên.
   - Ngăn ngừa tuyệt đối nguy cơ bấm nhầm làm thay đổi tài khoản ngân hàng, xóa dữ liệu nhật ký bảo mật hoặc can thiệp vào các tiến trình thanh toán tự động của hệ thống.
   - Hana (vai trò `owner`) vẫn xem được đầy đủ 6 nhóm để đối soát khi cần.
+
+---
+
+### 1.4b. Tên các nút trên form và nút Xem trước (con mắt)
+
+Trên **form chuẩn** của mọi bảng (sản phẩm, thẻ EQ, lời chia sẻ, bài học…), thanh nút ngay dưới tiêu đề gồm:
+
+| Nút trên màn hình      | Trong tài liệu này gọi tắt là | Làm gì                                                                                     |
+| :--------------------- | :---------------------------- | :----------------------------------------------------------------------------------------- |
+| 👁 (biểu tượng con mắt) | **Xem trước**                 | Mở / đóng khung xem trước bên phải form. Bản ghi mới phải **Lưu bản nháp** một lần mới có. |
+| **Lưu bản nháp**       | **Lưu nháp**                  | Lưu lại, khách **chưa** thấy.                                                              |
+| **Xuất bản tài liệu**  | **Xuất bản**                  | Đưa nội dung ra website. Hệ thống kiểm tra các ô bắt buộc trước khi cho xuất bản.          |
+
+- Dòng **Trạng thái** bên trái thanh nút cho biết bản ghi đang là **Bản nháp** hay **Đã xuất bản** – xem dòng này để chắc nội dung đã lên web.
+- Các **trình hướng dẫn từng bước** (tạo sản phẩm, thêm bài học, lên lịch workshop) có nút riêng ở cuối trang: **Lưu nháp**, **Tiếp tục**, **Quay lại** và ở bước cuối **🚀 Xuất bản**.
 
 ---
 
@@ -395,7 +418,7 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
 - **Khu vực web**: Chọn phân hệ hiển thị (`Trang chính`, `Habit Formation` hoặc `EQ Buddy`).
 - **Chặng trải nghiệm**: Gắn sản phẩm với 1 trong 5 chặng hành trình: _Dừng lại_, _Cảm nhận_, _Gọi tên_, _Lựa chọn_, _Rèn luyện_.
 - **Mô tả ngắn**: 1–2 câu tóm tắt điểm nổi bật của sản phẩm.
-- **Ảnh bìa**: Bấm **Chọn ảnh từ thư viện** để chọn ảnh đã có hoặc tải ảnh mới lên. Bắt buộc nhập **Văn bản thay thế (alt)** để bảo đảm khả năng tiếp cận và chuẩn SEO.
+- **Ảnh bìa sản phẩm**: chọn trong danh sách thả xuống **-- Chọn ảnh bìa từ Thư viện ảnh --**. Trình hướng dẫn chỉ chọn được ảnh **đã có** trong **Trang web → Thư viện ảnh và tài liệu** (ảnh hiện kèm mô tả ảnh trong ngoặc). Chưa có ảnh: tải ảnh lên Thư viện ảnh trước (bắt buộc nhập mô tả ảnh), rồi quay lại. Sản phẩm **Đang mở bán** phải có ảnh bìa mới xuất bản được.
 
 ##### Bước 3: Thiết lập giá và cách bán
 
@@ -404,11 +427,16 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
   - **Với Gói đồng hành (Growth Mirror)**:
     - Nhập Giá bán của gói.
     - Bấm nút **+ Thêm cấu phần** để bổ sung các thành phần: nhập Tên cấu phần (ví dụ `Coaching 1:1`), Số lượng, Đơn giá, và chọn Sản phẩm cấp quyền tương ứng.
+    - Mỗi cấu phần mới có sẵn **Số lượng 1** và **Đơn giá 500000** – nhớ sửa lại cho đúng (ví dụ workshop 2 buổi: Số lượng `2`).
     - Hệ thống **tự động tính trực tiếp**:
       - **Tổng giá trị thực tế của gói**: Tổng thành tiền của tất cả cấu phần.
       - **Mức ưu đãi dành cho khách**: Tỷ lệ tiết kiệm (ví dụ: `30%`, `50%`, `60%`).
-  - **Với Sản phẩm Shopee**: Ẩn ô giá web, chỉ hiển thị ô nhập Đường dẫn Shopee và Nhãn nút bấm.
-  - **Với Ebook / Quà tặng miễn phí**: Giá bán mặc định 0đ và nút hành động chuyển sang "Tải về".
+    - Hai con số này hiện trong ô **Tổng giá trị thực tế của gói** ở cuối danh sách cấu phần (kéo xuống dưới) – không cần tự tính.
+
+![Bước 3 gói đồng hành: cấu phần và tổng giá trị](images/huong-dan/29-wizard-cau-phan-goi.png)
+
+- **Với Sản phẩm Shopee**: Ẩn ô giá web, chỉ hiển thị ô nhập Đường dẫn Shopee và Nhãn nút bấm.
+- **Với Ebook / Quà tặng miễn phí**: Giá bán mặc định 0đ và nút hành động chuyển sang "Tải về".
 
 ##### Bước 4: Nội dung giới thiệu
 
@@ -419,15 +447,17 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
 
 ##### Bước 5: Xem trước và lưu sản phẩm
 
-- **Bộ chọn kích thước xem trước**: Bấm vào các biểu tượng trên thanh công cụ để kiểm tra giao diện hiển thị:
-  - **Điện thoại** (375px)
+- **Bộ chọn kích thước xem trước**: Bấm vào các nút ngay dưới tiêu đề bước để kiểm tra giao diện hiển thị:
+  - **📱 Điện thoại (375px)**
   - **Máy tính bảng** (768px)
   - **Máy tính** (1440px)
 - Khung xem trước hiển thị trực tiếp trang chi tiết sản phẩm với đúng phong cách thương hiệu Trạm Dừng Cảm Xúc.
 - **Lựa chọn lưu sản phẩm**:
-  - **Lưu nháp (Khuyên dùng)**: Lưu sản phẩm ở trạng thái nháp an toàn (`draft`), chưa hiển thị ra ngoài website. Phù hợp khi bạn muốn xem lại sau hoặc tiếp tục bổ sung nội dung.
-  - **Xuất bản**: Xuất bản sản phẩm trực tiếp lên website (`published`). Hệ thống sẽ tự động kiểm tra an toàn (bắt buộc có giá và ảnh bìa nếu đang mở bán).
-- Sau khi bấm Lưu, hệ thống sẽ tự động chuyển hướng về form quản lý chuẩn của bản ghi tại `/admin/collections/products/[id]`, sẵn sàng cho các tinh chỉnh nâng cao nếu cần.
+  - **💾 Lưu nháp (Mặc định)**: Lưu sản phẩm ở trạng thái nháp an toàn (`draft`), chưa hiển thị ra ngoài website. Phù hợp khi bạn muốn xem lại sau hoặc tiếp tục bổ sung nội dung.
+  - **🚀 Xuất bản**: Xuất bản sản phẩm trực tiếp lên website (`published`). Hệ thống sẽ tự động kiểm tra an toàn (bắt buộc có giá và ảnh bìa nếu đang mở bán).
+- Sau khi bấm Lưu, hệ thống sẽ tự động chuyển hướng về form quản lý chuẩn của bản ghi tại `/admin/collections/products/[id]`, sẵn sàng cho các tinh chỉnh nâng cao nếu cần. Nhìn dòng **Trạng thái** trên đầu form: phải là **Đã xuất bản** nếu bạn vừa bấm Xuất bản.
+
+![Bước 5: xem trước sản phẩm trên điện thoại 375px](images/huong-dan/28-wizard-xem-truoc-dien-thoai.png)
 
 #### 3. Các tính năng bảo vệ an toàn cho Hana trong trình hướng dẫn
 
@@ -560,7 +590,7 @@ Hệ thống tự động nhận biết loại nội dung bạn đang mở và d
 
 #### Ba kích thước xem trước chuẩn Brand Book 2026
 
-Ở thanh trên cùng của khung xem trước, bạn có thể chuyển đổi nhanh giữa 3 kích thước chuẩn:
+Ở thanh trên cùng của khung xem trước có ô chọn kích thước (mặc định ghi **Responsive**). Bấm vào ô này và chọn 1 trong 3 kích thước chuẩn:
 
 - 📱 **Điện thoại di động (Mobile - 375px)**: Kiểm tra khả năng hiển thị trên màn hình nhỏ (iPhone / Android).
 - 📱 **Máy tính bảng (Tablet - 768px)**: Kiểm tra bố cục trên iPad và máy tính bảng xoay dọc.
@@ -569,12 +599,12 @@ Hệ thống tự động nhận biết loại nội dung bạn đang mở và d
 #### Các bước thực hiện:
 
 1. Mở bất kỳ bản ghi nào trong các bảng nêu trên (ví dụ: mở một sản phẩm hoặc một thẻ EQ).
-2. Bấm nút **Xem trước** ở góc trên form (hoặc biểu tượng mắt xem trước).
+2. Bấm **biểu tượng con mắt** 👁 ngay bên trái nút **Lưu bản nháp** (mục 1.4b). Khung xem trước mở ra bên phải form; bấm lại con mắt để đóng.
 3. **Nếu là bản ghi mới tạo**: Nhập các thông tin cơ bản bắt buộc (như Tên và Đường dẫn slug) rồi bấm **Lưu nháp** một lần để hệ thống sinh đường dẫn xem trước. Nếu chưa lưu nháp lần đầu, hệ thống sẽ hiện thông báo nhẹ nhàng: _"Lưu nháp để xem trước"_.
 4. **Sửa nội dung trực tiếp**: Khi bạn gõ từng ký tự vào ô tên, tiêu đề, từ khóa, mô tả... khung xem trước bên cạnh sẽ **cập nhật ngay lập tức theo thời gian thực** mà bạn chưa cần bấm Lưu.
 5. Khi hoàn toàn ưng ý với giao diện:
-   - Bấm **Lưu nháp** nếu muốn tiếp tục hoàn thiện sau.
-   - Bấm **Xuất bản** khi muốn đưa nội dung mới ra website công khai cho độc giả.
+   - Bấm **Lưu bản nháp** nếu muốn tiếp tục hoàn thiện sau.
+   - Bấm **Xuất bản tài liệu** khi muốn đưa nội dung mới ra website công khai cho độc giả.
 
 > **Bảo mật và an toàn dữ liệu tuyệt đối (`// REVIEW-REQUIRED:`)**:
 >
@@ -643,7 +673,10 @@ Bạn có thể mở trình hướng dẫn bằng 3 cách rất thuận tiện:
   - Ngay khi bạn chọn giờ, hệ thống sẽ tính toán và hiển thị chuỗi thời gian quốc tế tương đương.
   - **Xử lý thông minh rạng sáng 0h–7h**: Nếu bạn lên lịch vào khung giờ rạng sáng (ví dụ: 02:00 sáng ngày 25/10 tại Việt Nam), hệ thống sẽ tự động hiểu và lưu chính xác là 19:00 ngày 24/10 theo giờ quốc tế (UTC), tránh hoàn toàn lỗi lệch ngày khi gửi email nhắc nhở.
 - **Liên kết tham gia**: Dán đường link phòng họp trực tuyến (Google Meet hoặc Zoom, ví dụ: `https://meet.google.com/abc-defg-hij`). Hệ thống sẽ kiểm tra định dạng đường link ngay khi bạn nhập.
+- **Kiểm lại trước khi đi tiếp**: đọc khung xanh **Thời gian hiển thị cho học viên** – phải đúng giờ Việt Nam bạn muốn (ví dụ `20:00 ngày 30/10/2026 (Giờ VN - UTC+7)`). Ô ngày / giờ có thể hiện kiểu tháng/ngày hoặc AM/PM tùy cài đặt máy; khung xanh này luôn ghi theo kiểu Việt Nam.
 - Bấm **Tiếp tục**.
+
+![Bước 2 lên lịch workshop: giờ Việt Nam và khung kiểm tra](images/huong-dan/33-wizard-workshop-gio-vn.png)
 
 ##### Bước 3: Xem trước thông báo và lưu
 
@@ -790,8 +823,10 @@ Bạn có 3 cách rất dễ dàng:
 - **Thời lượng video**:
   - Bạn có thể nhập theo dạng **phút:giây** quen thuộc (ví dụ gõ `12:30` hoặc `05:45`).
   - Hệ thống **tự động chuyển đổi** sang tổng số giây (`750` giây hoặc `345` giây) hiển thị ngay bên cạnh và lưu chuẩn xác vào cơ sở dữ liệu.
-- **Cho phép xem thử**: Tích chọn ô này nếu bạn muốn bài học mở tự do cho mọi khách xem trước mà không cần đăng nhập hay mua khóa học.
+- **Cho phép học viên xem thử miễn phí bài học này**: Tích chọn ô này nếu bạn muốn bài học mở tự do cho mọi khách xem trước mà không cần đăng nhập hay mua khóa học.
 - Bấm **Tiếp tục**.
+
+![Bước 3 thêm bài học: thời lượng 05:30 = 330 giây](images/huong-dan/32-wizard-bai-hoc-thoi-luong.png)
 
 ##### Bước 4: Xem trước và lưu bài học
 
@@ -919,6 +954,17 @@ Bạn có 3 cách rất dễ dàng:
 > - Khi gửi bộ thẻ vật lý đi in tại xưởng, hãy nhập ngày in vào ô **Ngày đã in** (`printedAt`) và bấm **Xuất bản** (chỉ lưu nháp thì chưa khóa). Cách xuất file in: mục 3.14.
 > - **Ngay sau khi xuất bản với ngày in**, hệ thống sẽ **TỰ ĐỘNG KHÓA VĨNH VIỄN** trường **Mã đường dẫn QR** và trường **Ngày đã in**. Ô nhập mã QR sẽ chuyển sang chế độ bảo vệ cố định, và bạn không thể thay đổi hay xóa ngày in.
 > - Cơ chế này nhằm bảo vệ bạn tuyệt đối: tránh tình trạng vô tình sửa đổi mã đường dẫn trên web làm đứt gãy liên kết, khiến hàng nghìn lá thẻ vật lý đã in ngoài đời thực không quét được QR nữa!
+
+### 3.13b. Sửa câu chuyện của một thẻ và xem trước
+
+1. Menu trái → nhóm **EQ Buddy** → **Thẻ EQ Buddy**. Bấm vào mã thẻ cần sửa (thẻ số 1 là dòng đầu tiên).
+2. Kéo xuống ô **Câu chuyện** (nằm dưới nhóm **Mặt sau – 3 câu hỏi**), bấm vào ô và sửa chữ.
+3. Bấm **biểu tượng con mắt** 👁 cạnh nút **Lưu bản nháp**: khung bên phải hiện trang thẻ như khi khách quét QR; kéo xuống phần câu chuyện để xem chữ vừa sửa (cập nhật ngay, chưa cần lưu).
+4. Ưng ý thì bấm **Xuất bản tài liệu**. Chỉ **Lưu bản nháp** thì khách vẫn thấy câu chuyện cũ.
+
+![Sửa câu chuyện thẻ EQ với khung xem trước](images/huong-dan/30-the-eq-xem-truoc.png)
+
+---
 
 ### 3.14. In QR cho bộ thẻ EQ Buddy (EqCards)
 
@@ -1060,6 +1106,9 @@ Bạn có 3 cách rất dễ dàng:
    - **Lời chia sẻ**: Trích đoạn cảm nghĩ chân thực của khách hàng.
    - **Sản phẩm hoặc dịch vụ liên quan**: Chọn khóa học hoặc phiên coaching mà khách hàng đã trải nghiệm.
    - **Ảnh người chia sẻ**: Tải ảnh chân dung của khách hàng (tùy chọn).
+4. Kéo xuống cuối form, tick **Đã đồng ý cho phép hiển thị** khi khách đã đồng ý (mục 4.2).
+5. **Xem thẻ lời chia sẻ trông thế nào**: bấm **Lưu bản nháp** một lần (bản ghi mới chưa có nút xem trước), rồi bấm **biểu tượng con mắt** 👁 cạnh nút **Lưu bản nháp**. Khung bên phải hiện thẻ lời chia sẻ; nếu chưa tick đồng ý, khung báo _"Chưa đồng ý cho phép hiển thị… đang ẩn trên website"_.
+6. Bấm **Xuất bản tài liệu**.
 
 ---
 
@@ -1407,7 +1456,8 @@ Dưới đây là quy trình đối chiếu và duyệt đơn chuẩn dành cho 
    - Nhìn vào phần **Nội dung giao dịch**: tìm mã bắt đầu bằng `TDCX...` (ví dụ `TDCX8F3K2`).
 
 2. **Tìm đơn hàng trong trang quản trị CMS:**
-   - Đăng nhập vào trang quản trị `<ĐỊA CHỈ DEMO>/admin` bằng tài khoản Chủ sở hữu (Owner).
+   - **Cách nhanh nhất**: ở trang chủ admin (Dashboard "Hôm nay"), bấm thẻ **Đơn chờ xác nhận** → danh sách chỉ còn các đơn **Chờ thanh toán** → bấm vào **Mã chuyển khoản** của đơn cần duyệt rồi làm tiếp bước 3.
+   - Hoặc đăng nhập vào trang quản trị `<ĐỊA CHỈ DEMO>/admin` bằng tài khoản Chủ sở hữu (Owner).
    - Ở cột menu bên trái, tìm nhóm **Sản phẩm & bán hàng**, bấm vào mục **Đơn hàng**.
    - Tìm đơn hàng có cột **Mã chuyển khoản** khớp với mã trên thông báo ngân hàng.
    - Bấm vào dòng đơn hàng đó để mở trang chi tiết.
@@ -1416,6 +1466,9 @@ Dưới đây là quy trình đối chiếu và duyệt đơn chuẩn dành cho 
    - Tại cột bên phải (Sidebar), Hana sẽ thấy khung **🛡️ Thao tác đơn hàng (Chủ sở hữu)**.
    - Bấm nút xanh tím **✓ Xác nhận thanh toán**.
    - Một hộp thoại xác nhận sẽ hiện lên: Hana đọc lại thông tin và bấm **Đồng ý xác nhận**.
+   - Xong: khung bên phải đổi thành dòng xanh **Đơn hàng này đã được xác nhận thanh toán.**
+
+![Hộp thoại xác nhận thanh toán đơn hàng](images/huong-dan/31-xac-nhan-thanh-toan.png)
 
 4. **Hệ thống tự động xử lý tiếp theo:**
    - Đơn hàng chuyển sang trạng thái **Đã thanh toán**.
@@ -1750,34 +1803,42 @@ Các mục trên (trừ mục 11 và 16) **đã có sẵn chỗ trống trong CM
 
 ## 13. Danh sách ảnh chụp màn hình hướng dẫn
 
-Dưới đây là bảng đối chiếu toàn bộ 27 ảnh màn hình được tích hợp trong tài liệu và kịch bản tự động chụp (`scripts/cms-screenshots.mjs`):
+Dưới đây là bảng đối chiếu toàn bộ 33 ảnh màn hình được tích hợp trong tài liệu và kịch bản tự động chụp (`scripts/cms-screenshots.mjs`):
 
-| Mã ảnh | Tệp hình ảnh                                         | Vị trí màn hình                               | Nội dung và điểm nhấn                                                    | Trạng thái tệp                     |
-| :----: | :--------------------------------------------------- | :-------------------------------------------- | :----------------------------------------------------------------------- | :--------------------------------- |
-| **01** | `images/huong-dan/01-dang-nhap.png`                  | `/admin/login`                                | Màn hình đăng nhập quản trị với Email, Mật khẩu                          | Đã có file                         |
-| **02** | `images/huong-dan/02-doi-mat-khau.png`               | `/admin/account`                              | Hồ sơ cá nhân sau khi bấm nút Đổi mật khẩu                               | Đã có file                         |
-| **03** | `images/huong-dan/03-du-lieu-mau.png`                | `/admin/collections/products`                 | Danh sách sản phẩm với tiền tố `[MẪU]` nhận diện                         | Đã có file                         |
-| **04** | `images/huong-dan/04-sua-gia-va-uu-dai.png`          | `/admin/collections/products/[id]`            | Khu vực Giá bán, Giá ưu đãi và Hạn ưu đãi                                | Đã có file                         |
-| **05** | `images/huong-dan/05-doi-trang-thai-san-pham.png`    | `/admin/collections/products/[id]`            | Danh sách thả xuống 5 trạng thái bán sản phẩm                            | Đã có file                         |
-| **06** | `images/huong-dan/06-cau-phan-goi-growth-mirror.png` | `/admin/collections/products/[growth-mirror]` | Bảng cấu phần gói tự động tính Tổng giá trị & Ưu đãi (%)                 | Đã có file                         |
-| **07** | `images/huong-dan/07-tai-lieu-rieng-tu.png`          | `/admin/collections/privateFiles`             | Danh sách và biểu mẫu tải lên Tài liệu riêng tư (PDF/ZIP)                | Đã có file                         |
-| **08** | `images/huong-dan/08-them-testimonial-dong-y.png`    | `/admin/collections/testimonials/create`      | Biểu mẫu Lời chia sẻ với ô tick bắt buộc Đã đồng ý                       | Đã có file                         |
-| **09** | `images/huong-dan/09-tao-trang-tu-mau.png`           | `/admin/collections/pages/create`             | Biểu mẫu tạo trang mới và chọn Mẫu trang có sẵn                          | Đã có file                         |
-| **10** | `images/huong-dan/10-nut-chinh-sua-truc-quan.png`    | `/admin/collections/pages/[id]`               | Cột bên phải với nút màu tím Chỉnh sửa trực quan (Puck Editor)           | Đã có file                         |
-| **11** | `images/huong-dan/11-toan-canh-puck-editor.png`      | `/builder/[id]`                               | Toàn cảnh 3 cột của trình dựng trực quan Puck                            | Đã có file                         |
-| **12** | `images/huong-dan/12-keo-khoi-sua-chu.png`           | `/builder/[id]`                               | Chọn khối trên canvas và sửa thuộc tính ở cột bên phải                   | Đã có file                         |
-| **13** | `images/huong-dan/13-khoa-khoi-hero-trang-chu.png`   | `/builder/[homeId]`                           | Khối Hero 2 Lối vào được bảo vệ, khóa xóa trên Trang chủ                 | Đã có file                         |
-| **14** | `images/huong-dan/14-xem-thu-3-man-hinh.png`         | `/builder/[id]`                               | Thanh trên cùng chọn xem Điện thoại, Tablet, Máy tính                    | Đã có file                         |
-| **15** | `images/huong-dan/15-lich-su-khoi-phuc.png`          | `/builder/[id]`                               | Cửa sổ Lịch sử phiên bản và nút Khôi phục bản trước                      | Đã có file                         |
-| **16** | `images/huong-dan/16-nhan-ban-trang.png`             | `/builder/[id]`                               | Nút Nhân bản trang trên thanh công cụ trên cùng                          | Đã có file                         |
-| **17** | `images/huong-dan/17-luu-nhap-va-xuat-ban.png`       | `/builder/[id]`                               | Các nút Lưu nháp, Xuất bản và nút Xem trang công khai                    | Đã có file                         |
-| **18** | `images/huong-dan/18-sua-trang-phap-ly.png`          | `/admin/collections/legalPages/[id]`          | Trình soạn thảo văn bản của trang pháp lý                                | Đã có file                         |
-| **19** | `images/huong-dan/19-thong-tin-nguoi-ban.png`        | `/admin/globals/siteSettings`                 | Tab Người bán với các trường thông tin hộ kinh doanh/MST                 | Đã có file                         |
-| **20** | `images/huong-dan/20-cai-dat-zalo-chat.png`          | `/admin/globals/siteSettings`                 | Tab Liên hệ & Zalo với liên kết Zalo và nút chat nổi                     | Đã có file                         |
-| **21** | `images/huong-dan/21-cai-dat-ngan-hang-vietqr.png`   | `/admin/globals/siteSettings`                 | Tab Thanh toán với thông tin số tài khoản VietQR                         | Đã có file                         |
-| **22** | `images/huong-dan/22-lien-ket-dat-lich-coaching.png` | `/admin/collections/services/[id]`            | Trường Liên kết đặt lịch trong dịch vụ coaching                          | Đã có file                         |
-| **23** | `images/huong-dan/23-quan-ly-leads-xuat-csv.png`     | `/admin/collections/leads`                    | Danh sách Khách tiềm năng, bộ lọc và nút Xuất CSV                        | Đã có file                         |
-| **24** | `images/huong-dan/24-cau-hoi-quiz-chan-doan.png`     | `/admin/collections/diagnosticQuestions/[id]` | Biểu mẫu sửa câu hỏi chẩn đoán và gợi ý rich text                        | Đã có file                         |
-| **25** | `images/huong-dan/25-thong-bao-loi-thuong-gap.png`   | `/admin/collections/testimonials/create`      | Thông báo lỗi khi xuất bản testimonial chưa có đồng ý                    | Đã có file                         |
-| **26** | `images/huong-dan/26-link-thanh-toan-goi.png`        | `/admin/collections/orders/[id]`              | Sidebar đơn hàng hiển thị link thanh toán cho khách và nút Sao chép link | **Chưa có file** _(Planning chụp)_ |
-| **27** | `images/huong-dan/27-xem-truoc-dich-vu.png`          | `/admin/collections/services/[id]`            | Form sửa dịch vụ với Xem trước đang mở, iframe và bộ chọn ba kích thước  | **Chưa có file** _(Planning chụp)_ |
+| Mã ảnh | Tệp hình ảnh                                          | Vị trí màn hình                               | Nội dung và điểm nhấn                                                    | Trạng thái tệp                     |
+| :----: | :---------------------------------------------------- | :-------------------------------------------- | :----------------------------------------------------------------------- | :--------------------------------- |
+| **01** | `images/huong-dan/01-dang-nhap.png`                   | `/admin/login`                                | Màn hình đăng nhập quản trị với Email, Mật khẩu                          | Đã có file                         |
+| **02** | `images/huong-dan/02-doi-mat-khau.png`                | `/admin/account`                              | Hồ sơ cá nhân sau khi bấm nút Đổi mật khẩu                               | Đã có file                         |
+| **03** | `images/huong-dan/03-du-lieu-mau.png`                 | `/admin/collections/products`                 | Danh sách sản phẩm với tiền tố `[MẪU]` nhận diện                         | Đã có file                         |
+| **04** | `images/huong-dan/04-sua-gia-va-uu-dai.png`           | `/admin/collections/products/[id]`            | Khu vực Giá bán, Giá ưu đãi và Hạn ưu đãi                                | Đã có file                         |
+| **05** | `images/huong-dan/05-doi-trang-thai-san-pham.png`     | `/admin/collections/products/[id]`            | Danh sách thả xuống 5 trạng thái bán sản phẩm                            | Đã có file                         |
+| **06** | `images/huong-dan/06-cau-phan-goi-growth-mirror.png`  | `/admin/collections/products/[growth-mirror]` | Bảng cấu phần gói tự động tính Tổng giá trị & Ưu đãi (%)                 | Đã có file                         |
+| **07** | `images/huong-dan/07-tai-lieu-rieng-tu.png`           | `/admin/collections/privateFiles`             | Danh sách và biểu mẫu tải lên Tài liệu riêng tư (PDF/ZIP)                | Đã có file                         |
+| **08** | `images/huong-dan/08-them-testimonial-dong-y.png`     | `/admin/collections/testimonials/create`      | Biểu mẫu Lời chia sẻ với ô tick bắt buộc Đã đồng ý                       | Đã có file                         |
+| **09** | `images/huong-dan/09-tao-trang-tu-mau.png`            | `/admin/collections/pages/create`             | Biểu mẫu tạo trang mới và chọn Mẫu trang có sẵn                          | Đã có file                         |
+| **10** | `images/huong-dan/10-nut-chinh-sua-truc-quan.png`     | `/admin/collections/pages/[id]`               | Cột bên phải với nút màu tím Chỉnh sửa trực quan (Puck Editor)           | Đã có file                         |
+| **11** | `images/huong-dan/11-toan-canh-puck-editor.png`       | `/builder/[id]`                               | Toàn cảnh 3 cột của trình dựng trực quan Puck                            | Đã có file                         |
+| **12** | `images/huong-dan/12-keo-khoi-sua-chu.png`            | `/builder/[id]`                               | Chọn khối trên canvas và sửa thuộc tính ở cột bên phải                   | Đã có file                         |
+| **13** | `images/huong-dan/13-khoa-khoi-hero-trang-chu.png`    | `/builder/[homeId]`                           | Khối Hero 2 Lối vào được bảo vệ, khóa xóa trên Trang chủ                 | Đã có file                         |
+| **14** | `images/huong-dan/14-xem-thu-3-man-hinh.png`          | `/builder/[id]`                               | Thanh trên cùng chọn xem Điện thoại, Tablet, Máy tính                    | Đã có file                         |
+| **15** | `images/huong-dan/15-lich-su-khoi-phuc.png`           | `/builder/[id]`                               | Cửa sổ Lịch sử phiên bản và nút Khôi phục bản trước                      | Đã có file                         |
+| **16** | `images/huong-dan/16-nhan-ban-trang.png`              | `/builder/[id]`                               | Nút Nhân bản trang trên thanh công cụ trên cùng                          | Đã có file                         |
+| **17** | `images/huong-dan/17-luu-nhap-va-xuat-ban.png`        | `/builder/[id]`                               | Các nút Lưu nháp, Xuất bản và nút Xem trang công khai                    | Đã có file                         |
+| **18** | `images/huong-dan/18-sua-trang-phap-ly.png`           | `/admin/collections/legalPages/[id]`          | Trình soạn thảo văn bản của trang pháp lý                                | Đã có file                         |
+| **19** | `images/huong-dan/19-thong-tin-nguoi-ban.png`         | `/admin/globals/siteSettings`                 | Tab Người bán với các trường thông tin hộ kinh doanh/MST                 | Đã có file                         |
+| **20** | `images/huong-dan/20-cai-dat-zalo-chat.png`           | `/admin/globals/siteSettings`                 | Tab Liên hệ & Zalo với liên kết Zalo và nút chat nổi                     | Đã có file                         |
+| **21** | `images/huong-dan/21-cai-dat-ngan-hang-vietqr.png`    | `/admin/globals/siteSettings`                 | Tab Thanh toán với thông tin số tài khoản VietQR                         | Đã có file                         |
+| **22** | `images/huong-dan/22-lien-ket-dat-lich-coaching.png`  | `/admin/collections/services/[id]`            | Trường Liên kết đặt lịch trong dịch vụ coaching                          | Đã có file                         |
+| **23** | `images/huong-dan/23-quan-ly-leads-xuat-csv.png`      | `/admin/collections/leads`                    | Danh sách Khách tiềm năng, bộ lọc và nút Xuất CSV                        | Đã có file                         |
+| **24** | `images/huong-dan/24-cau-hoi-quiz-chan-doan.png`      | `/admin/collections/diagnosticQuestions/[id]` | Biểu mẫu sửa câu hỏi chẩn đoán và gợi ý rich text                        | Đã có file                         |
+| **25** | `images/huong-dan/25-thong-bao-loi-thuong-gap.png`    | `/admin/collections/testimonials/create`      | Thông báo lỗi khi xuất bản testimonial chưa có đồng ý                    | Đã có file                         |
+| **26** | `images/huong-dan/26-link-thanh-toan-goi.png`         | `/admin/collections/orders/[id]`              | Sidebar đơn hàng hiển thị link thanh toán cho khách và nút Sao chép link | **Chưa có file** _(Planning chụp)_ |
+| **27** | `images/huong-dan/27-xem-truoc-dich-vu.png`           | `/admin/collections/services/[id]`            | Form sửa dịch vụ với Xem trước đang mở, iframe và bộ chọn ba kích thước  | **Chưa có file** _(Planning chụp)_ |
+| **28** | `images/huong-dan/28-wizard-xem-truoc-dien-thoai.png` | `/admin/tao-san-pham` (bước 5)                | Xem trước công cụ số ở 375px, nút Lưu nháp / Xuất bản                    | Đã có file (18/10)                 |
+| **29** | `images/huong-dan/29-wizard-cau-phan-goi.png`         | `/admin/tao-san-pham` (bước 3, gói)           | Danh sách cấu phần gói và ô Tổng giá trị + Ưu đãi %                      | Đã có file (18/10)                 |
+| **30** | `images/huong-dan/30-the-eq-xem-truoc.png`            | `/admin/collections/eqCards/[id]`             | Sửa Câu chuyện thẻ EQ với khung xem trước bên phải                       | Đã có file (18/10)                 |
+| **31** | `images/huong-dan/31-xac-nhan-thanh-toan.png`         | `/admin/collections/orders/[id]`              | Hộp thoại Xác nhận thanh toán đơn hàng                                   | Đã có file (18/10)                 |
+| **32** | `images/huong-dan/32-wizard-bai-hoc-thoi-luong.png`   | `/admin/them-bai-hoc` (bước 3)                | Thời lượng 05:30 = 330 giây, ô cho xem thử miễn phí                      | Đã có file (18/10)                 |
+| **33** | `images/huong-dan/33-wizard-workshop-gio-vn.png`      | `/admin/len-lich-workshop` (bước 2)           | Ngày giờ Việt Nam và khung Thời gian hiển thị cho học viên               | Đã có file (18/10)                 |
+
+_Ảnh 28–33 chụp tay từ buổi chạy thử 18/10 (dữ liệu MẪU), chưa có trong `scripts/cms-screenshots.mjs`._
