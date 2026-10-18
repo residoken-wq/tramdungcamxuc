@@ -2,6 +2,7 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { StatsBar, type StatsBarProps } from '@/components/site/StatsBar'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { BRAND_ICONS } from '@/lib/brand/icons'
 
 export type { StatsBarProps }
 
@@ -20,10 +21,24 @@ export const StatsBarBlock: ComponentConfig<StatsBarProps> = {
           type: 'text',
           label: 'Nhãn mô tả ý nghĩa',
         },
+        description: {
+          type: 'text',
+          label: 'Mô tả phụ (Tùy chọn)',
+        },
+        icon: {
+          type: 'select',
+          label: 'Biểu tượng (Hiện thay cho số - Tùy chọn)',
+          options: [
+            { label: 'Không dùng biểu tượng', value: '' },
+            ...BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
+          ],
+        },
       },
       defaultItemProps: {
         value: '[MẪU] Số liệu',
         label: '[MẪU] Nhãn mô tả số liệu',
+        description: '',
+        icon: '',
       },
     },
     bgColor: {
@@ -38,11 +53,11 @@ export const StatsBarBlock: ComponentConfig<StatsBarProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
     stats: [
-      { value: '[MẪU] Số liệu 1', label: '[MẪU] Nhãn mô tả 1' },
-      { value: '[MẪU] Số liệu 2', label: '[MẪU] Nhãn mô tả 2' },
-      { value: '[MẪU] Số liệu 3', label: '[MẪU] Nhãn mô tả 3' },
+      { value: '[MẪU] Số liệu 1', label: '[MẪU] Nhãn mô tả 1', description: '', icon: '' },
+      { value: '[MẪU] Số liệu 2', label: '[MẪU] Nhãn mô tả 2', description: '', icon: '' },
+      { value: '[MẪU] Số liệu 3', label: '[MẪU] Nhãn mô tả 3', description: '', icon: '' },
     ],
     bgColor: 'warm-ivory',
     padding: 'md',

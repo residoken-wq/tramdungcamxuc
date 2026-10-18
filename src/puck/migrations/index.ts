@@ -45,11 +45,13 @@ export type PuckMigration = (data: Data) => Data
 import { migrateCTAButtonV1ToV2 } from './v2-cta-button'
 import { migratePackageComparisonV1ToV2 } from './v2-package-comparison'
 import { migrateQuoteBlockV1ToV2 } from './v2-quote-block'
+import { migrateStatsBarV1ToV2 } from './v2-stats-bar'
 
 export const puckMigrations: PuckMigration[] = [
   migrateCTAButtonV1ToV2,
   migratePackageComparisonV1ToV2,
   migrateQuoteBlockV1ToV2,
+  migrateStatsBarV1ToV2,
 ]
 
 /**
