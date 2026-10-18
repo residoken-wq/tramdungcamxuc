@@ -187,7 +187,7 @@ export function PackageComparison({
                       }`}
                     >
                       {isHl && (
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-ui font-bold uppercase tracking-wider bg-accent-pink text-white mb-1 shadow-xs">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-ui font-bold uppercase tracking-wider bg-bright-magenta text-white mb-1 shadow-xs">
                           {effectiveHighlightLabel}
                         </span>
                       )}
@@ -382,7 +382,7 @@ export function PackageComparison({
                   }`}
                 >
                   {isHl && (
-                    <span className="inline-flex self-start items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-accent-pink text-white shadow-xs">
+                    <span className="inline-flex self-start items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-bright-magenta text-white shadow-xs">
                       {effectiveHighlightLabel}
                     </span>
                   )}

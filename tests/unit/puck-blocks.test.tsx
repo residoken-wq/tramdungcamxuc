@@ -25,6 +25,8 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'StatsBar',
         'HeroTwoEntries',
         'HeroImage',
+        'FAQ',
+        'TestimonialGrid',
       ]
       const expectedVersion = v3Blocks.includes(blockKey)
         ? 3
@@ -269,6 +271,8 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'ImageText',
         'QuoteBlock',
         'StatsBar',
+        'IconCardGrid',
+        'Callout',
         'JourneySteps',
         'FAQ',
         'VideoEmbed',
@@ -280,6 +284,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       expect(categories?.conversion?.title).toBe('Chuyển đổi')
       expect(categories?.conversion?.components).toEqual([
         'CTAButton',
+        'CTASection',
         'LeadForm',
         'BookingCTA',
         'B2BBriefForm',
