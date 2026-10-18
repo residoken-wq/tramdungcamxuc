@@ -18,7 +18,14 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       const blockConfig = puckConfig.components[blockKey]
       expect(blockConfig).toBeDefined()
       expect(blockConfig.defaultProps).toBeDefined()
-      const v2Blocks = ['CTAButton', 'PackageComparison', 'QuoteBlock', 'StatsBar']
+      const v2Blocks = [
+        'CTAButton',
+        'PackageComparison',
+        'QuoteBlock',
+        'StatsBar',
+        'HeroTwoEntries',
+        'HeroImage',
+      ]
       expect((blockConfig.defaultProps as { version?: number })?.version).toBe(
         v2Blocks.includes(blockKey) ? 2 : 1,
       )

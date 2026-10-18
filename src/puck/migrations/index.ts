@@ -47,6 +47,7 @@ import { migratePackageComparisonV1ToV2 } from './v2-package-comparison'
 import { migrateQuoteBlockV1ToV2 } from './v2-quote-block'
 import { migrateStatsBarV1ToV2 } from './v2-stats-bar'
 import { migrateHeroTwoEntriesV1ToV2 } from './v2-hero-two-entries'
+import { migrateHeroImageV1ToV2 } from './v2-hero-image'
 
 export const puckMigrations: PuckMigration[] = [
   migrateCTAButtonV1ToV2,
@@ -54,6 +55,7 @@ export const puckMigrations: PuckMigration[] = [
   migrateQuoteBlockV1ToV2,
   migrateStatsBarV1ToV2,
   migrateHeroTwoEntriesV1ToV2,
+  migrateHeroImageV1ToV2,
 ]
 
 /**
