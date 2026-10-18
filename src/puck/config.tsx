@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Config } from '@puckeditor/core'
-import { HeroTwoEntries, type HeroTwoEntriesProps } from '@/components/site/HeroTwoEntries'
+import { HeroTwoEntriesBlock, type HeroTwoEntriesProps } from './blocks/HeroTwoEntries'
 import { ImageText, type ImageTextProps } from '@/components/site/ImageText'
 import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
@@ -152,67 +152,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     ),
   },
   components: {
-    HeroTwoEntries: {
-      label: 'Hero 2 Lối vào (Cá nhân & Tổ chức)',
-      fields: {
-        seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
-        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
-        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
-        emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display Italic)' },
-        entry1: {
-          type: 'object',
-          label: 'Lối vào 1 (Cá nhân)',
-          objectFields: {
-            label: { type: 'text', label: 'Nhãn lối vào' },
-            description: { type: 'textarea', label: 'Mô tả ngắn' },
-            buttonText: { type: 'text', label: 'Chữ trên nút' },
-            buttonLink: { type: 'text', label: 'Đường dẫn liên kết' },
-          },
-        },
-        entry2: {
-          type: 'object',
-          label: 'Lối vào 2 (Tổ chức / Doanh nghiệp)',
-          objectFields: {
-            label: { type: 'text', label: 'Nhãn lối vào' },
-            description: { type: 'textarea', label: 'Mô tả ngắn' },
-            buttonText: { type: 'text', label: 'Chữ trên nút' },
-            buttonLink: { type: 'text', label: 'Đường dẫn liên kết' },
-          },
-        },
-        bgColor: {
-          type: 'select',
-          label: 'Màu nền',
-          options: [...BRAND_COLOR_OPTIONS],
-        },
-        padding: {
-          type: 'select',
-          label: 'Khoảng đệm (Padding)',
-          options: [...PADDING_OPTIONS],
-        },
-      },
-      defaultProps: {
-        version: 1,
-        seriesLabel: '[MẪU] Series nhãn',
-        titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
-        titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
-        emotionLine: '[MẪU] Dòng cảm xúc trích dẫn ấm áp và chân thành',
-        bgColor: 'warm-ivory',
-        padding: 'md',
-        entry1: {
-          label: '[MẪU] Lối vào 1',
-          description: '[MẪU] Mô tả ngắn gọn về lối vào dành cho cá nhân',
-          buttonText: '[MẪU] Khám phá ngay',
-          buttonLink: '#',
-        },
-        entry2: {
-          label: '[MẪU] Lối vào 2',
-          description: '[MẪU] Mô tả ngắn gọn về lối vào dành cho tổ chức',
-          buttonText: '[MẪU] Tìm hiểu thêm',
-          buttonLink: '#',
-        },
-      },
-      render: (props) => <HeroTwoEntries {...props} />,
-    },
+    HeroTwoEntries: HeroTwoEntriesBlock,
 
     SectionHeader: {
       label: 'Tiêu đề mục (Hai tầng màu)',

@@ -93,8 +93,8 @@ export async function resolveServerData(
   await walkPuckItems(resolvedData, async (item) => {
     if (!item || !item.props) return
 
-    // Priority flag for HeroImage (only first hero image on page gets priority=true for LCP)
-    if (item.type === 'HeroImage') {
+    // Priority flag for HeroImage & HeroTwoEntries (only first hero on page gets priority=true for LCP)
+    if (item.type === 'HeroImage' || item.type === 'HeroTwoEntries') {
       if (!hasSetHeroPriority) {
         item.props.priority = true
         hasSetHeroPriority = true
@@ -103,9 +103,12 @@ export async function resolveServerData(
       }
     }
 
-    // Media resolution for ImageText, HeroImage, & HanaStory
+    // Media resolution for ImageText, HeroImage, HanaStory & HeroTwoEntries
     if (
-      (item.type === 'ImageText' || item.type === 'HeroImage' || item.type === 'HanaStory') &&
+      (item.type === 'ImageText' ||
+        item.type === 'HeroImage' ||
+        item.type === 'HanaStory' ||
+        item.type === 'HeroTwoEntries') &&
       item.props.mediaId
     ) {
       try {

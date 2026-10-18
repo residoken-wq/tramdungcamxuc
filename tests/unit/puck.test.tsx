@@ -160,7 +160,7 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       const { HeroTwoEntries, SectionHeader, RichText, ImageText, CTAButton } =
         puckConfig.components
 
-      expect(HeroTwoEntries.defaultProps?.version).toBe(1)
+      expect(HeroTwoEntries.defaultProps?.version).toBe(2)
       expect(SectionHeader.defaultProps?.version).toBe(1)
       expect(RichText.defaultProps?.version).toBe(1)
       expect(ImageText.defaultProps?.version).toBe(1)
