@@ -1030,10 +1030,16 @@ export const vi = {
       result: 'Kết quả chuyển hóa',
     },
     relatedOfferLabel: 'Gói đồng hành:',
+    ageSuffix: 'tuổi',
+    totalValuePrefix: 'Trị giá',
+    discountPrefix: 'Ưu đãi',
+    noLabel: 'Không',
+    bookingColumnHeader: 'Đặt phiên trải nghiệm',
+    noProductsSelected: 'Chưa có sản phẩm nào được chọn',
+    noServicesSelected: 'Chưa có dịch vụ nào được chọn',
+    noProgramsSelected: 'Chưa có chương trình nào được chọn',
     seeAll: 'Xem toàn bộ',
     bookingAsideTitle: 'Đặt phiên trải nghiệm',
-    bookingAsideDescription:
-      'Trò chuyện 1:1 cùng Hana để thấu hiểu rõ lộ trình phát triển phù hợp nhất.',
     bookingButtonText: 'Đặt lịch ngay',
   },
 

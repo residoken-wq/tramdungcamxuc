@@ -48,13 +48,11 @@ describe('revalidatePage hook (S)', () => {
     type HookArgs = Parameters<typeof revalidatePage>[0]
     revalidatePage({
       doc: { slug: '/', _status: 'published' } as unknown as HookArgs['doc'],
-      previousDoc: {
-        slug: 'trang-chu',
-        _status: 'published',
-      } as unknown as HookArgs['previousDoc'],
+      previousDoc: { slug: 'trang-chu', _status: 'published' } as unknown as HookArgs['previousDoc'],
     } as HookArgs)
 
     expect(revalidatePath).toHaveBeenCalledWith('/')
     expect(revalidatePath).toHaveBeenCalledWith('/trang-chu')
   })
 })
+

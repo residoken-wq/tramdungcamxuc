@@ -341,7 +341,7 @@ export async function resolveServerData(
           ],
         },
         select: PUBLIC_TESTIMONIAL_SELECT as never,
-        depth: 2,
+        depth: 1,
         limit: numericOrStrTids.length + 20,
       })
 
@@ -589,7 +589,7 @@ export async function resolveServerData(
       }
       const resolvedList = ids
         .map((id) => productMap.get(String(id)))
-        .filter(Boolean) as PublicProduct[]
+        .filter((p): p is PublicProduct => Boolean(p && p.type === 'package'))
       item.props._resolved = { packages: resolvedList }
     } else if (item.type === 'PackageCards') {
       const pkgs = item.props.packages as
@@ -609,7 +609,7 @@ export async function resolveServerData(
       }
       const resolvedList = ids
         .map((id) => productMap.get(String(id)))
-        .filter(Boolean) as PublicProduct[]
+        .filter((p): p is PublicProduct => Boolean(p && p.type === 'package'))
 
       let resolvedButtonUrl: string | null = null
       if (item.props.buttonLinkType === 'page') {
@@ -678,7 +678,7 @@ export async function resolveServerData(
               and: [{ consent: { equals: true } }, { _status: { equals: 'published' } }],
             },
             select: PUBLIC_TESTIMONIAL_SELECT as never,
-            depth: 2,
+            depth: 1,
             limit,
             sort: '-createdAt',
           })

@@ -310,7 +310,7 @@ export function PackageComparison({
                               isHl ? 'bg-accent-pink text-white' : 'bg-bright-magenta text-white'
                             }`}
                           >
-                            Ưu đãi {pkg.discountPercent}%
+                            {vi.sm03.discountPrefix} {pkg.discountPercent}%
                           </span>
                         ) : (
                           <span
@@ -332,7 +332,7 @@ export function PackageComparison({
                     scope="row"
                     className="py-5 px-6 font-ui text-sm font-semibold text-deep-navy/70"
                   >
-                    Đặt phiên trải nghiệm
+                    {vi.sm03.bookingColumnHeader}
                   </th>
                   {pkgs.map((pkg) => {
                     const isHl = highlightIdStr !== '' && String(pkg.id) === highlightIdStr
@@ -344,7 +344,7 @@ export function PackageComparison({
                         <Button
                           href={`${BOOKING_PATH}?goi=${encodeURIComponent(pkg.slug || '')}`}
                           variant={isHl ? 'primary' : 'secondary'}
-                          size="sm"
+                          size="md"
                           className="w-full"
                         >
                           {effectiveButtonText}
@@ -422,7 +422,7 @@ export function PackageComparison({
                               isHl ? 'text-white/60' : 'text-deep-navy/70'
                             }`}
                           >
-                            Không
+                            {vi.sm03.noLabel}
                           </span>
                         </div>
                       )
@@ -452,13 +452,13 @@ export function PackageComparison({
                   }`}
                 >
                   <div>
-                    {showTotalValue && (
+                    {showTotalValue && pkg.totalValue > 0 && (
                       <div
                         className={`text-xs line-through font-ui mb-0.5 ${
                           isHl ? 'text-white/60' : 'text-deep-navy/60'
                         }`}
                       >
-                        Trị giá {formatVnd(pkg.totalValue)}
+                        {vi.sm03.totalValuePrefix} {formatVnd(pkg.totalValue)}
                       </div>
                     )}
                     <div

@@ -205,9 +205,11 @@ export function FAQ({
                 <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white mb-3">
                   {bookingAsideTitle || vi.sm03.bookingAsideTitle}
                 </h3>
-                <p className="font-ui text-sm text-white/80 leading-relaxed mb-6">
-                  {bookingAsideDescription || vi.sm03.bookingAsideDescription}
-                </p>
+                {bookingAsideDescription && (
+                  <p className="font-ui text-sm text-white/80 leading-relaxed mb-6">
+                    {bookingAsideDescription}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-4 pt-4 border-t border-white/10">

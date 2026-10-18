@@ -1303,7 +1303,8 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
   - Chọn **Biến thể (`variant`)**:
     - `3 trụ cột` (`3-pillar`): Tập trung vào 3 chặng hành trình (Tự soi chiếu, Khai vấn 1:1, Chuyển mình bền bỉ).
     - `Toàn bộ hệ sinh thái` (`full`): Hiển thị đồng thời cả dịch vụ cá nhân và các chương trình đào tạo doanh nghiệp B2B.
-  - Dữ liệu được liên kết trực tiếp từ danh mục **Dịch vụ đồng hành** (`services`) và **Chương trình doanh nghiệp** (`programs`).
+  - Dữ liệu được liên kết trực tiếp từ danh mục **Sản phẩm** (`products`), **Dịch vụ đồng hành** (`services`) và **Chương trình doanh nghiệp** (`programs`).
+  - **Lưu ý về trạng thái bán của gói Growth Mirror**: Theo quyết định thiết kế kinh doanh (DECISIONS Q4), các gói Growth Mirror không bán trực tiếp mà đi qua phiên trải nghiệm 149.000đ. Vì vậy trong danh mục Sản phẩm, Hana nên đặt **Trạng thái mở bán** của các gói này là **`Tư vấn` (`consult`)** (thay vì `on_sale`). Khi để `consult`, nút bấm ở Cột 1 sẽ hiển thị "Đăng ký tư vấn / Đặt phiên trải nghiệm" thay vì "Mua ngay". Trang công khai sẽ tự động ẩn các cột chưa có dữ liệu; khi Hana đang ở chế độ chỉnh sửa (Puck Editor), hệ thống hiển thị dòng ghi chú nhắc nhở để Hana thuận tiện lựa chọn.
 
 #### 5. Khối Chuyển đổi chân trang (`CTASection`)
 

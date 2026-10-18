@@ -82,7 +82,7 @@ export function IconCardGrid({
           return 'bg-transparent border-2 border-white/30 text-white'
         case 'white':
         default:
-          return 'bg-white/10 border-white/20 text-white backdrop-blur-sm'
+          return 'bg-white/10 border border-white/20 text-white'
       }
     }
 

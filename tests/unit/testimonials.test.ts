@@ -54,7 +54,7 @@ describe('T1-02b: Testimonials DTO & Consent-only Policy', () => {
   })
 
   describe('Anti-data-leak protection (Không rò rỉ trường hệ thống / nội bộ)', () => {
-    const ALLOWED_KEYS = new Set(['id', 'name', 'quote', 'role', 'language', 'photo'])
+    const ALLOWED_KEYS = new Set(['id', 'name', 'quote', 'role', 'language', 'photo', 'consent'])
 
     it('returns only allowed public fields and strictly excludes internal fields', () => {
       const result = toPublicTestimonial(samplePublishedTestimonial)
@@ -68,6 +68,7 @@ describe('T1-02b: Testimonials DTO & Consent-only Policy', () => {
         'Khóa học đã giúp tôi hiểu rõ cảm xúc bản thân và tìm lại sự bình an.',
       )
       expect(nonNullResult.language).toBe('vi')
+      expect(nonNullResult.consent).toBe(true)
       expect(nonNullResult.photo).toEqual({
         url: '/media/avatar.png',
         alt: 'Ảnh chân dung Học viên Test 01',
@@ -104,6 +105,56 @@ describe('T1-02b: Testimonials DTO & Consent-only Policy', () => {
       expect(result).not.toBeNull()
       expect(result?.photo).toBeUndefined()
       expect('photo' in (result || {})).toBe(false)
+    })
+
+    it('includes relatedOffer name only when target is published and not hidden', () => {
+      // 1. Published and on_sale product -> included
+      const docWithPublishedOffer = {
+        ...samplePublishedTestimonial,
+        relatedOffer: {
+          relationTo: 'products',
+          value: {
+            id: 101,
+            name: 'Gói CLEAR',
+            _status: 'published',
+            saleStatus: 'on_sale',
+          },
+        },
+      }
+      expect(toPublicTestimonial(docWithPublishedOffer)?.relatedOffer).toBe('Gói CLEAR')
+
+      // 2. Draft product -> excluded
+      const docWithDraftOffer = {
+        ...samplePublishedTestimonial,
+        relatedOffer: {
+          relationTo: 'products',
+          value: {
+            id: 102,
+            name: 'Gói Thử Nghiệm Nháp',
+            _status: 'draft',
+            saleStatus: 'on_sale',
+          },
+        },
+      }
+      expect(toPublicTestimonial(docWithDraftOffer)?.relatedOffer).toBeUndefined()
+
+      // 3. Hidden product -> excluded
+      const docWithHiddenOffer = {
+        ...samplePublishedTestimonial,
+        relatedOffer: {
+          relationTo: 'products',
+          value: {
+            id: 103,
+            name: 'Gói Đang Ẩn',
+            _status: 'published',
+            saleStatus: 'hidden',
+          },
+        },
+      }
+      expect(toPublicTestimonial(docWithHiddenOffer)?.relatedOffer).toBeUndefined()
+
+      // 4. Unpopulated relation (raw ID number) -> excluded
+      expect(toPublicTestimonial(samplePublishedTestimonial)?.relatedOffer).toBeUndefined()
     })
   })
 })

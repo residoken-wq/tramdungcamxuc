@@ -58,6 +58,16 @@ async function run() {
     console.log('Saved 04-testimonial-grid-story-desktop-1440.png')
   }
 
+  // 5. PackageComparison desktop (highlighted column with button)
+  const pkgCompH3 = pageDesktop.locator('text=8. PackageComparison v3')
+  if (await pkgCompH3.count() > 0) {
+    const pkgCompBox = pkgCompH3.locator('..')
+    await pkgCompBox.scrollIntoViewIfNeeded()
+    await pageDesktop.waitForTimeout(500)
+    await pkgCompBox.screenshot({ path: path.join(outDir, '08-package-comparison-desktop-1440.png') })
+    console.log('Saved 08-package-comparison-desktop-1440.png')
+  }
+
   // 2. Mobile 375px
   console.log('Capturing Mobile 375px...')
   const pageMobile = await browser.newPage({
@@ -67,7 +77,7 @@ async function run() {
   await pageMobile.goto('http://localhost:3000/styleguide', { waitUntil: 'networkidle' })
   await pageMobile.waitForTimeout(1000)
 
-  // 5. PackageComparison mobile (3 cards stacked)
+  // 6. PackageComparison mobile (3 cards stacked)
   const pkgCompH3M = pageMobile.locator('text=8. PackageComparison v3')
   if (await pkgCompH3M.count() > 0) {
     const pkgCompBoxM = pkgCompH3M.locator('..')
@@ -77,7 +87,7 @@ async function run() {
     console.log('Saved 05-package-comparison-mobile-375.png')
   }
 
-  // 6. HeroTwoEntries mobile
+  // 7. HeroTwoEntries mobile
   const heroH3M = pageMobile.locator('text=5. HeroTwoEntries v2')
   if (await heroH3M.count() > 0) {
     const heroBoxM = heroH3M.locator('..')
@@ -87,7 +97,7 @@ async function run() {
     console.log('Saved 06-hero-two-entries-mobile-375.png')
   }
 
-  // 7. SolutionEcosystem mobile
+  // 8. SolutionEcosystem mobile
   const ecoH3M = pageMobile.locator('text=9. SolutionEcosystem')
   if (await ecoH3M.count() > 0) {
     const ecoBoxM = ecoH3M.locator('..')
@@ -95,6 +105,26 @@ async function run() {
     await pageMobile.waitForTimeout(500)
     await ecoBoxM.screenshot({ path: path.join(outDir, '07-solution-ecosystem-mobile-375.png') })
     console.log('Saved 07-solution-ecosystem-mobile-375.png')
+  }
+
+  // 9. TestimonialGrid story mobile
+  const testH3M = pageMobile.locator('text=10. TestimonialGrid v2')
+  if (await testH3M.count() > 0) {
+    const testBoxM = testH3M.locator('..')
+    await testBoxM.scrollIntoViewIfNeeded()
+    await pageMobile.waitForTimeout(500)
+    await testBoxM.screenshot({ path: path.join(outDir, '09-testimonial-grid-story-mobile-375.png') })
+    console.log('Saved 09-testimonial-grid-story-mobile-375.png')
+  }
+
+  // 10. CTASection mobile (with photo proof strip)
+  const ctaH3M = pageMobile.locator('text=12. CTASection')
+  if (await ctaH3M.count() > 0) {
+    const ctaBoxM = ctaH3M.locator('..')
+    await ctaBoxM.scrollIntoViewIfNeeded()
+    await pageMobile.waitForTimeout(500)
+    await ctaBoxM.screenshot({ path: path.join(outDir, '10-cta-section-mobile-375.png') })
+    console.log('Saved 10-cta-section-mobile-375.png')
   }
 
   await browser.close()

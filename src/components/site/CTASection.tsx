@@ -1,7 +1,10 @@
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
+import { useClientTestimonials } from '@/puck/client-preview'
 import type { PublicTestimonial } from '@/lib/testimonials'
 
 export interface CTASectionProps {
@@ -18,7 +21,12 @@ export interface CTASectionProps {
   proofText?: string
   testimonials?: Array<{ testimonialId?: string | number }>
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     testimonials?: PublicTestimonial[]
@@ -48,17 +56,33 @@ export function CTASection({
   emotionLine,
   description,
   buttonText = '[MẪU] Đặt phiên trải nghiệm 149.000đ',
-  buttonLink = '#',
+  buttonLinkType = 'url',
+  buttonLink,
+  buttonPageId: _buttonPageId,
   proofText,
+  testimonials,
   bgColor = 'soft-pink',
   padding = 'lg',
   _resolved,
 }: CTASectionProps) {
-  const resolvedButtonHref = _resolved?.buttonUrl || buttonLink || '#'
-  const buttonSafeHref = safeHref(resolvedButtonHref)
+  let resolvedButtonHref: string | null = null
+  if (buttonLinkType === 'page') {
+    resolvedButtonHref = _resolved?.buttonUrl || null
+  } else {
+    resolvedButtonHref = _resolved?.buttonUrl || buttonLink || null
+  }
+  const buttonSafeHref = resolvedButtonHref ? safeHref(resolvedButtonHref) : null
+
+  const resolvedIds = (testimonials?.map((m) => m?.testimonialId).filter(Boolean) ??
+    []) as Array<string | number>
+
+  const { testimonials: loadedTestimonials } = useClientTestimonials({
+    testimonialIds: resolvedIds,
+    initialTestimonials: _resolved?.testimonials,
+  })
 
   // Filter only consented testimonials with valid photos (max 3)
-  const validTestimonials = (_resolved?.testimonials || [])
+  const validTestimonials = (loadedTestimonials || [])
     .filter((t) => t && t.consent === true && t.photo && t.photo.url)
     .slice(0, 3)
 
@@ -116,7 +140,7 @@ export function CTASection({
                         alt={t.photo!.alt || t.name}
                         width={36}
                         height={36}
-                        className="object-cover w-full h-full"
+                        className="object-cover w-full h-full text-[0px]"
                       />
                     </div>
                   ))}

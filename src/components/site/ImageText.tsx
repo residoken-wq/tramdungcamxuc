@@ -18,7 +18,12 @@ export interface ImageTextProps {
   buttonText?: string
   buttonLink?: string
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -95,13 +100,9 @@ export function ImageText({
   const isImageLeft = layout === 'image-left'
 
   return (
-    <section
-      className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
-    >
+    <section className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-5xl">
-        <div
-          className={`grid grid-cols-1 ${hasValidImage ? 'md:grid-cols-2' : ''} gap-8 lg:gap-12 items-center`}
-        >
+        <div className={`grid grid-cols-1 ${hasValidImage ? 'md:grid-cols-2' : ''} gap-8 lg:gap-12 items-center`}>
           {/* Image Column - only rendered if activeUrl and activeAlt are present */}
           {hasValidImage && (
             <div className={`${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full`}>
@@ -120,13 +121,9 @@ export function ImageText({
           )}
 
           {/* Text Column */}
-          <div
-            className={`${hasValidImage ? (isImageLeft ? 'md:order-2' : 'md:order-1') : 'max-w-3xl mx-auto'} flex flex-col justify-center`}
-          >
+          <div className={`${hasValidImage ? (isImageLeft ? 'md:order-2' : 'md:order-1') : 'max-w-3xl mx-auto'} flex flex-col justify-center`}>
             {seriesLabel && (
-              <span
-                className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
-              >
+              <span className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}>
                 {seriesLabel}
               </span>
             )}
@@ -146,11 +143,7 @@ export function ImageText({
 
             {Boolean(buttonText && safeHref(buttonLink)) && (
               <div className="pt-2">
-                <Button
-                  href={safeHref(buttonLink)!}
-                  variant={isDeepNavy ? 'secondary' : 'primary'}
-                  size="md"
-                >
+                <Button href={safeHref(buttonLink)!} variant={isDeepNavy ? 'secondary' : 'primary'} size="md">
                   {buttonText}
                 </Button>
               </div>
@@ -161,3 +154,4 @@ export function ImageText({
     </section>
   )
 }
+

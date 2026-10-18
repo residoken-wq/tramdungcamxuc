@@ -4,7 +4,12 @@ export interface RichTextProps {
   version?: number
   content: string
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -23,7 +28,11 @@ const PADDING_CLASSES = {
   lg: 'py-18 px-6 sm:px-12',
 } as const
 
-export function RichText({ content, bgColor = 'warm-ivory', padding = 'md' }: RichTextProps) {
+export function RichText({
+  content,
+  bgColor = 'warm-ivory',
+  padding = 'md',
+}: RichTextProps) {
   const paragraphs = (content || '')
     .split(/\n\s*\n/)
     .map((p) => p.trim())
@@ -33,9 +42,7 @@ export function RichText({ content, bgColor = 'warm-ivory', padding = 'md' }: Ri
   const textColorClass = isDeepNavy ? 'text-white/90' : 'text-deep-navy'
 
   return (
-    <section
-      className={`w-full ${BG_COLOR_CLASSES[bgColor]} ${PADDING_CLASSES[padding]} transition-colors`}
-    >
+    <section className={`w-full ${BG_COLOR_CLASSES[bgColor]} ${PADDING_CLASSES[padding]} transition-colors`}>
       <div className="mx-auto max-w-3xl space-y-4">
         {paragraphs.map((p, idx) => (
           <p key={idx} className={`font-ui text-base leading-relaxed ${textColorClass}`}>

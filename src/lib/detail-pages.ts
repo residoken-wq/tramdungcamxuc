@@ -278,14 +278,15 @@ export function toPublicTestimonial(doc: unknown): PublicTestimonial | null {
   let relatedOffer: string | null = null
   if (t.relatedOffer && typeof t.relatedOffer === 'object') {
     const ro = t.relatedOffer as Record<string, unknown>
-    if (ro.value && typeof ro.value === 'object') {
-      const val = ro.value as Record<string, unknown>
-      if (typeof val.name === 'string') relatedOffer = val.name
-    } else if (typeof ro.name === 'string') {
-      relatedOffer = ro.name
+    const target =
+      ro.value && typeof ro.value === 'object' ? (ro.value as Record<string, unknown>) : ro
+    if (typeof target.name === 'string' && target.name.trim().length > 0) {
+      const isPublished = !target._status || target._status === 'published'
+      const isNotHidden = target.saleStatus !== 'hidden'
+      if (isPublished && isNotHidden) {
+        relatedOffer = target.name.trim()
+      }
     }
-  } else if (typeof t.relatedOffer === 'string' && t.relatedOffer.trim().length > 0) {
-    relatedOffer = t.relatedOffer.trim()
   }
 
   return {

@@ -19,41 +19,41 @@ import type { PublicTestimonial } from '@/lib/testimonials'
 const mockPackages: PublicProduct[] = [
   {
     id: 'pkg-clear',
-    name: 'Gói CLEAR',
+    name: '[MẪU] Gói CLEAR',
     slug: 'clear',
     web: 'site',
     type: 'package',
     price: 1750000,
     salePrice: null,
-    tagline: 'Thấu hiểu bản thân',
+    tagline: '[MẪU] Thấu hiểu bản thân',
     icon: 'compass',
-    shortDescription: 'Nhận diện và làm quen với bản đồ cảm xúc cá nhân',
+    shortDescription: '[MẪU] Nhận diện và làm quen với bản đồ cảm xúc cá nhân',
     saleStatus: 'on_sale',
   },
   {
     id: 'pkg-build',
-    name: 'Gói BUILD',
+    name: '[MẪU] Gói BUILD',
     slug: 'build',
     web: 'site',
     type: 'package',
     price: 2900000,
     salePrice: null,
-    tagline: 'Kiến tạo sự vững vàng',
+    tagline: '[MẪU] Kiến tạo sự vững vàng',
     icon: 'shield',
-    shortDescription: 'Xây dựng thói quen điều hòa cảm xúc và rèn luyện bền bỉ',
+    shortDescription: '[MẪU] Xây dựng thói quen điều hòa cảm xúc và rèn luyện bền bỉ',
     saleStatus: 'on_sale',
   },
   {
     id: 'pkg-shine',
-    name: 'Gói SHINE',
+    name: '[MẪU] Gói SHINE',
     slug: 'shine',
     web: 'site',
     type: 'package',
     price: 4320000,
     salePrice: null,
-    tagline: 'Tỏa sáng thế mạnh riêng',
+    tagline: '[MẪU] Tỏa sáng thế mạnh riêng',
     icon: 'spark',
-    shortDescription: 'Chuyển hóa toàn diện và phát huy tiềm năng độc bản',
+    shortDescription: '[MẪU] Chuyển hóa toàn diện và phát huy tiềm năng độc bản',
     saleStatus: 'on_sale',
   },
 ]
@@ -61,79 +61,79 @@ const mockPackages: PublicProduct[] = [
 const mockServices = [
   {
     id: 'srv-1',
-    name: 'Coaching 1:1 Vững vàng chuyển mình',
+    name: '[MẪU] Coaching 1:1 Vững vàng chuyển mình',
     slug: 'vung-vang-chuyen-minh',
-    audienceLabel: 'Dành cho chuyên gia & người đang chuyển bước',
-    ctaLabel: 'Khám phá dịch vụ',
+    audienceLabel: '[MẪU] Dành cho chuyên gia & người đang chuyển bước',
+    ctaLabel: '[MẪU] Khám phá dịch vụ',
   },
 ]
 
 const mockPrograms = [
   {
     id: 'prg-1',
-    name: 'Trí tuệ cảm xúc cho Nhà lãnh đạo',
+    name: '[MẪU] Trí tuệ cảm xúc cho Nhà lãnh đạo',
     slug: 'eq-cho-lanh-dao',
-    learnerGroup: 'Quản lý cấp trung & cấp cao',
-    ctaLabel: 'Trao đổi chương trình',
+    learnerGroup: '[MẪU] Quản lý cấp trung & cấp cao',
+    ctaLabel: '[MẪU] Trao đổi chương trình',
   },
 ]
 
 const mockTestimonials: PublicTestimonial[] = [
   {
     id: 'test-1',
-    name: 'Nguyễn Minh Anh',
-    role: 'Product Lead',
+    name: '[MẪU] Học viên Test 01',
+    role: '[MẪU] Chuyên viên Sản phẩm',
     age: 32,
     quote:
-      'Phiên trải nghiệm đã giúp tôi nhận ra những nút thắt cảm xúc mà bấy lâu nay tôi vô tình né tránh.',
+      '[MẪU] Phiên trải nghiệm đã giúp tôi nhận diện những nút thắt cảm xúc mà bấy lâu nay vô tình né tránh.',
     consent: true,
-    relatedOffer: 'Gói BUILD',
+    relatedOffer: '[MẪU] Gói BUILD',
     photo: {
-      url: '/brand/portrait-hana.jpg',
-      alt: 'Minh Anh',
+      url: '/brand/sample-avatar.svg',
+      alt: '[MẪU] Học viên Test 01',
     },
     story: {
       before:
-        'Thường xuyên căng thẳng, hoài nghi năng lực bản thân và sợ đưa ra quyết định quan trọng.',
-      insight: 'Hiểu rằng cảm xúc bất an là một tín hiệu tự nhiên, học cách dừng lại một nhịp.',
-      after: 'Bình tĩnh trước áp lực, tự tin dẫn dắt đội ngũ và biết cách cân bằng cảm xúc cá nhân.',
+        '[MẪU] Thường xuyên căng thẳng, hoài nghi năng lực bản thân và sợ đưa ra quyết định quan trọng.',
+      insight: '[MẪU] Hiểu rằng cảm xúc bất an là một tín hiệu tự nhiên, học cách dừng lại một nhịp.',
+      after: '[MẪU] Bình tĩnh trước áp lực, tự tin dẫn dắt đội ngũ và biết cách cân bằng cảm xúc cá nhân.',
     },
   },
   {
     id: 'test-2',
-    name: 'Trần Hoàng Long',
-    role: 'Chuyên viên Nhân sự',
+    name: '[MẪU] Học viên Test 02',
+    role: '[MẪU] Chuyên viên Nhân sự',
     age: 28,
     quote:
-      'Bộ công cụ số Habit Tracker cùng sự đồng hành của Hana đã thay đổi hoàn toàn cách tôi làm việc.',
+      '[MẪU] Bộ công cụ số Habit Tracker cùng sự đồng hành đã thay đổi hoàn toàn cách tôi rèn luyện.',
     consent: true,
-    relatedOffer: 'Gói CLEAR',
+    relatedOffer: '[MẪU] Gói CLEAR',
     photo: {
-      url: '/brand/portrait-hana.jpg',
-      alt: 'Hoàng Long',
+      url: '/brand/sample-avatar.svg',
+      alt: '[MẪU] Học viên Test 02',
     },
     story: {
-      before: 'Bị cuốn vào vòng xoáy trì hoãn, luôn cảm thấy thiếu năng lượng mỗi sáng.',
-      insight: 'Nhận diện thói quen cũ và xây dựng Habit Loop 5 phút đơn giản, không áp lực.',
-      after: 'Duy trì chuỗi 21 ngày liên tục, tái tạo năng lượng tích cực và yêu công việc hơn.',
+      before: '[MẪU] Bị cuốn vào vòng xoáy trì hoãn, luôn cảm thấy thiếu năng lượng mỗi sáng.',
+      insight: '[MẪU] Nhận diện thói quen cũ và xây dựng Habit Loop 5 phút đơn giản, không áp lực.',
+      after: '[MẪU] Duy trì chuỗi 21 ngày liên tục, tái tạo năng lượng tích cực và yêu công việc hơn.',
     },
   },
   {
     id: 'test-3',
-    name: 'Lê Thu Trang',
-    role: 'Giám đốc Điều hành',
+    name: '[MẪU] Học viên Test 03',
+    role: '[MẪU] Giám đốc Điều hành',
     age: 36,
-    quote: 'Một không gian ấm áp, an toàn và cực kỳ chuyên nghiệp để lắng đọng và chuyển mình.',
+    quote: '[MẪU] Một không gian ấm áp, an toàn và chuyên nghiệp để lắng đọng và chuyển mình.',
     consent: true,
-    relatedOffer: 'Gói SHINE',
+    relatedOffer: '[MẪU] Gói SHINE',
     photo: {
-      url: '/brand/portrait-hana.jpg',
-      alt: 'Thu Trang',
+      url: '/brand/sample-avatar.svg',
+      alt: '[MẪU] Học viên Test 03',
     },
     story: {
-      before: 'Áp lực vận hành lớn, cảm giác cô đơn và mất kết nối với bản thân.',
-      insight: 'Chấp nhận những cảm xúc khó khăn và tìm lại giá trị cốt lõi của người làm lãnh đạo.',
-      after: 'Vững vàng đưa ra chiến lược mới, lan tỏa sự thấu cảm tới toàn bộ đội ngũ.',
+      before: '[MẪU] Áp lực vận hành lớn, cảm giác cô đơn và mất kết nối với bản thân.',
+      insight: '[MẪU] Chấp nhận những cảm xúc khó khăn và tìm lại giá trị cốt lõi của người làm lãnh đạo.',
+      after: '[MẪU] Vững vàng đưa ra chiến lược mới, lan tỏa sự thấu cảm tới toàn bộ đội ngũ.',
     },
   },
 ]
@@ -149,26 +149,26 @@ export function Sm03BlocksDemo() {
         <div className="rounded-card overflow-hidden border border-deep-navy/10 bg-warm-ivory">
           <IconCardGrid
             seriesLabel="[MẪU] 4 Nỗi đau thường gặp"
-            titleLine1="NHỮNG RÀO CẢN"
-            titleLine2="KHIẾN BẠN CHÙN BƯỚC"
+            titleLine1="[MẪU] NHỮNG RÀO CẢN"
+            titleLine2="[MẪU] KHIẾN BẠN CHÙN BƯỚC"
             marker="number"
             columns={4}
             items={[
               {
-                title: 'Trì hoãn kéo dài',
-                text: 'Luôn bắt đầu với quyết tâm cao nhưng bỏ cuộc giữa chừng vì thiếu hệ thống.',
+                title: '[MẪU] Trì hoãn kéo dài',
+                text: '[MẪU] Bắt đầu với quyết tâm cao nhưng khó duy trì bền bỉ vì thiếu hệ thống.',
               },
               {
-                title: 'Choáng ngợp cảm xúc',
-                text: 'Không nhận diện được cơn bão cảm xúc bên trong dẫn đến phản ứng bốc đồng.',
+                title: '[MẪU] Choáng ngợp cảm xúc',
+                text: '[MẪU] Chưa nhận diện được thông điệp của cảm xúc bên trong dẫn đến phản ứng bốc đồng.',
               },
               {
-                title: 'Mất phương hướng',
-                text: 'Loay hoay giữa nhiều ngã rẽ sự nghiệp mà không rõ thế mạnh cốt lõi.',
+                title: '[MẪU] Mất phương hướng',
+                text: '[MẪU] Loay hoay giữa nhiều ngã rẽ sự nghiệp mà không rõ thế mạnh cốt lõi.',
               },
               {
-                title: 'Cô đơn trong chuyển mình',
-                text: 'Thiếu người đồng hành tin cậy, lắng nghe sâu sắc và phản chiếu khách quan.',
+                title: '[MẪU] Cô đơn trong chuyển mình',
+                text: '[MẪU] Cần một không gian an toàn để soi chiếu và phản chiếu khách quan.',
               },
             ]}
           />
@@ -181,9 +181,9 @@ export function Sm03BlocksDemo() {
           2. Callout – Thẻ nền Deep Navy (Trang lộ trình tr. 16)
         </h3>
         <Callout
-          title="Bạn không cần phải tự mình vượt qua giai đoạn này một mình"
-          description="Một phiên trải nghiệm 149.000đ sẽ giúp bạn thấu suốt bức tranh hiện tại và tìm ra hướng đi vững chãi nhất."
-          buttonText="Đặt phiên trải nghiệm ngay"
+          title="[MẪU] Bạn không cần phải tự mình vượt qua giai đoạn này một mình"
+          description="[MẪU] Một phiên trải nghiệm 149.000đ sẽ giúp bạn thấu suốt bức tranh hiện tại và tìm ra hướng đi vững chãi nhất."
+          buttonText="[MẪU] Đặt phiên trải nghiệm ngay"
           buttonLink="/dat-phien-trai-nghiem"
         />
       </div>
@@ -195,9 +195,9 @@ export function Sm03BlocksDemo() {
         </h3>
         <QuoteBlock
           theme="dark"
-          quote="Cảm xúc không phải là kẻ thù cần chế ngự. Cảm xúc là người bạn chỉ đường cần được lắng nghe và thấu hiểu."
-          cite="Hana Lương"
-          roleOrContext="Chuyên gia Khai vấn Cảm xúc & Sự nghiệp"
+          quote="[MẪU] Cảm xúc không phải là kẻ thù cần chế ngự. Cảm xúc là người bạn chỉ đường cần được lắng nghe và thấu hiểu."
+          cite="[MẪU] Người đồng hành"
+          roleOrContext="[MẪU] Chuyên gia Khai vấn Cảm xúc & Sự nghiệp"
         />
       </div>
 
@@ -209,20 +209,20 @@ export function Sm03BlocksDemo() {
         <StatsBar
           stats={[
             {
-              value: '10+',
-              label: 'Năm kinh nghiệm',
-              description: 'Trong lĩnh vực quản trị và đào tạo nhân sự',
+              value: '[MẪU] 10+',
+              label: '[MẪU] Năm kinh nghiệm',
+              description: '[MẪU] Trong lĩnh vực quản trị và đào tạo nhân sự',
             },
             {
               icon: 'shield',
               value: '',
-              label: 'ICF ACC Coach',
-              description: 'Chứng chỉ Khai vấn Chuyên nghiệp Quốc tế',
+              label: '[MẪU] ICF ACC Coach',
+              description: '[MẪU] Chứng chỉ Khai vấn Chuyên nghiệp Quốc tế',
             },
             {
-              value: '500+',
-              label: 'Giờ khai vấn 1:1',
-              description: 'Đồng hành cùng học viên và nhà quản lý',
+              value: '[MẪU] 500+',
+              label: '[MẪU] Giờ khai vấn 1:1',
+              description: '[MẪU] Đồng hành cùng học viên và nhà quản lý',
             },
           ]}
         />
@@ -235,26 +235,26 @@ export function Sm03BlocksDemo() {
         </h3>
         <div className="rounded-card overflow-hidden border border-deep-navy/10">
           <HeroTwoEntries
-            seriesLabel="Trạm Dừng Cảm Xúc"
-            titleLine1="Hiểu mình rõ. Hành động bền bỉ."
-            titleLine2="Tỏa sáng bằng thế mạnh riêng."
-            emotionLine="Không gian ấm áp đồng hành cùng sự chuyển mình của bạn"
-            description="Chào mừng bạn đến với Trạm. Dù bạn là cá nhân đang tìm kiếm điểm tựa nội tâm hay doanh nghiệp mong muốn phát triển văn hóa đội ngũ, Trạm luôn có giải pháp phù hợp."
-            imageUrl="/brand/portrait-hana.jpg"
-            imageAlt="Hana Lương – Nhà sáng lập Trạm Dừng Cảm Xúc"
+            seriesLabel="[MẪU] Trạm Dừng Cảm Xúc"
+            titleLine1="[MẪU] HIỂU MÌNH RÕ. HÀNH ĐỘNG BỀN BỈ."
+            titleLine2="[MẪU] TỎA SÁNG BẰNG THẾ MẠNH RIÊNG."
+            emotionLine="[MẪU] Không gian ấm áp đồng hành cùng sự chuyển mình của bạn"
+            description="[MẪU] Chào mừng bạn đến với Trạm. Dù bạn là cá nhân đang tìm kiếm điểm tựa nội tâm hay doanh nghiệp mong muốn phát triển văn hóa đội ngũ, Trạm luôn có giải pháp phù hợp."
+            imageUrl="/brand/sample-cover.svg"
+            imageAlt="[MẪU] Minh họa Trạm Dừng Cảm Xúc"
             entry1={{
-              groupLabel: 'DÀNH CHO CÁ NHÂN',
-              label: 'Cá nhân',
-              description: 'Tôi đang ở một bước chuyển trong sự nghiệp và cuộc sống',
-              buttonText: 'Khám phá lộ trình',
+              groupLabel: '[MẪU] DÀNH CHO CÁ NHÂN',
+              label: '[MẪU] Cá nhân',
+              description: '[MẪU] Tôi đang ở một bước chuyển trong sự nghiệp và cuộc sống',
+              buttonText: '[MẪU] Khám phá lộ trình',
               buttonLink: '/coaching',
               buttonStyle: 'solid',
             }}
             entry2={{
-              groupLabel: 'DÀNH CHO DOANH NGHIỆP',
-              label: 'Doanh nghiệp',
-              description: 'Tôi muốn việc học tạo ra hành vi và văn hóa thực tế',
-              buttonText: 'Trao đổi chương trình',
+              groupLabel: '[MẪU] DÀNH CHO DOANH NGHIỆP',
+              label: '[MẪU] Doanh nghiệp',
+              description: '[MẪU] Tôi muốn việc học tạo ra hành vi và văn hóa thực tế',
+              buttonText: '[MẪU] Trao đổi chương trình',
               buttonLink: '/doanh-nghiep',
               buttonStyle: 'outline',
             }}
@@ -269,23 +269,23 @@ export function Sm03BlocksDemo() {
         </h3>
         <div className="rounded-card overflow-hidden border border-deep-navy/10">
           <HeroImage
-            seriesLabel="Lộ trình đồng hành chuyên sâu"
-            titleLine1="VỮNG VÀNG"
-            titleLine2="CHUYỂN MÌNH"
-            emotionLine="Hành trình tái kết nối và bứt phá sự nghiệp"
-            buttonText="Đặt phiên trải nghiệm"
+            seriesLabel="[MẪU] Lộ trình đồng hành chuyên sâu"
+            titleLine1="[MẪU] VỮNG VÀNG"
+            titleLine2="[MẪU] CHUYỂN MÌNH"
+            emotionLine="[MẪU] Hành trình tái kết nối và bứt phá sự nghiệp"
+            buttonText="[MẪU] Đặt phiên trải nghiệm"
             buttonLink="/dat-phien-trai-nghiem"
-            secondaryButtonText="Tìm hiểu các gói"
+            secondaryButtonText="[MẪU] Tìm hiểu các gói"
             secondaryButtonLink="#packages"
             badges={[
-              { text: 'Bảo mật tuyệt đối' },
-              { text: 'Chuẩn quốc tế ICF' },
-              { text: 'Cá nhân hóa 100%' },
+              { text: '[MẪU] Bảo mật tuyệt đối' },
+              { text: '[MẪU] Chuẩn quốc tế ICF' },
+              { text: '[MẪU] Cá nhân hóa 100%' },
             ]}
             stats={[
-              { value: '1:1', label: 'Tương tác trực tiếp' },
-              { value: '3 - 6', label: 'Tháng đồng hành' },
-              { value: '98%', label: 'Hài lòng chuyển hóa' },
+              { value: '[MẪU] 1:1', label: '[MẪU] Tương tác trực tiếp' },
+              { value: '[MẪU] 3 - 6', label: '[MẪU] Tháng đồng hành' },
+              { value: '[MẪU] 98%', label: '[MẪU] Hài lòng chuyển hóa' },
             ]}
           />
         </div>
@@ -297,13 +297,13 @@ export function Sm03BlocksDemo() {
           7. PackageCards – Thẻ 3 gói Growth Mirror (Trang chủ tr. 4 &amp; Lộ trình tr. 17)
         </h3>
         <PackageCards
-          seriesLabel="3 Gói Growth Mirror"
-          titleLine1="CHỌN LỘ TRÌNH"
-          titleLine2="PHÙ HỢP VỚI BẠN"
-          emotionLine="Mỗi giai đoạn chuyển mình cần một sự nâng đỡ và cường độ khác nhau"
+          seriesLabel="[MẪU] 3 Gói Growth Mirror"
+          titleLine1="[MẪU] CHỌN LỘ TRÌNH"
+          titleLine2="[MẪU] PHÙ HỢP VỚI BẠN"
+          emotionLine="[MẪU] Mỗi giai đoạn chuyển mình cần một sự nâng đỡ và cường độ khác nhau"
           style="icon"
           highlightPackageId="pkg-build"
-          buttonText="Khám phá chi tiết so sánh các gói"
+          buttonText="[MẪU] Khám phá chi tiết so sánh các gói"
           buttonLink="/lo-trinh-chuyen-minh"
           _resolved={{
             packages: mockPackages,
@@ -331,16 +331,16 @@ export function Sm03BlocksDemo() {
           9. SolutionEcosystem – Hệ sinh thái 3 trụ cột (Cột giữa nền Deep Navy, Trang chủ tr. 10)
         </h3>
         <SolutionEcosystem
-          seriesLabel="Hệ sinh thái giải pháp"
-          titleLine1="ĐỒNG HÀNH TOÀN DIỆN"
-          titleLine2="TRÊN MỌI CHẶNG ĐƯỜNG"
-          emotionLine="Từ bước tự nhận thức đầu tiên đến sự chuyển hóa sâu sắc"
-          col1Title="Đào tạo cá nhân"
-          col1Description="Các công cụ số và lộ trình tự học linh hoạt theo nhịp sống"
-          col2Title="Khai vấn 1:1"
-          col2Description="Đồng hành chuyên sâu cá nhân hóa theo phương pháp ICF"
-          col3Title="Doanh nghiệp"
-          col3Description="Giải pháp phát triển trí tuệ cảm xúc cho đội ngũ và lãnh đạo"
+          seriesLabel="[MẪU] Hệ sinh thái giải pháp"
+          titleLine1="[MẪU] ĐỒNG HÀNH TOÀN DIỆN"
+          titleLine2="[MẪU] TRÊN MỌI CHẶNG ĐƯỜNG"
+          emotionLine="[MẪU] Từ bước tự nhận thức đầu tiên đến sự chuyển hóa sâu sắc"
+          col1Title="[MẪU] Đào tạo cá nhân"
+          col1Description="[MẪU] Các công cụ số và lộ trình tự học linh hoạt theo nhịp sống"
+          col2Title="[MẪU] Khai vấn 1:1"
+          col2Description="[MẪU] Đồng hành chuyên sâu cá nhân hóa theo phương pháp ICF"
+          col3Title="[MẪU] Doanh nghiệp"
+          col3Description="[MẪU] Giải pháp phát triển trí tuệ cảm xúc cho đội ngũ và lãnh đạo"
           _resolved={{
             products: mockPackages.slice(0, 2),
             services: mockServices,
@@ -388,9 +388,9 @@ export function Sm03BlocksDemo() {
         <FAQ
           numbered={true}
           aside="booking"
-          bookingAsideTitle="Đặt phiên trải nghiệm"
-          bookingAsideDescription="Nếu bạn còn bất kỳ băn khoăn nào về lộ trình, hãy đặt một phiên trò chuyện 1:1 cùng Hana."
-          bookingButtonText="Đặt lịch 149.000đ"
+          bookingAsideTitle="[MẪU] Đặt phiên trải nghiệm"
+          bookingAsideDescription="[MẪU] Nếu bạn còn bất kỳ băn khoăn nào về lộ trình, hãy đặt một phiên trò chuyện 1:1."
+          bookingButtonText="[MẪU] Đặt lịch 149.000đ"
           showEmail={true}
           seeAllLink="/faq"
           _resolved={{
@@ -398,19 +398,19 @@ export function Sm03BlocksDemo() {
           }}
           items={[
             {
-              question: 'Phiên trải nghiệm 149.000đ diễn ra như thế nào?',
+              question: '[MẪU] Phiên trải nghiệm 149.000đ diễn ra như thế nào?',
               answer:
-                'Phiên trải nghiệm kéo dài 45 phút qua Google Meet. Hana sẽ lắng nghe khó khăn hiện tại của bạn, soi chiếu lại các điểm nghẽn cảm xúc và cùng bạn phác thảo lộ trình phù hợp.',
+                '[MẪU] Phiên trải nghiệm diễn ra qua Google Meet. Chuyên gia sẽ lắng nghe khó khăn hiện tại, soi chiếu lại các điểm nghẽn cảm xúc và cùng bạn phác thảo lộ trình phù hợp.',
             },
             {
-              question: 'Tôi có được trừ 149.000đ khi đăng ký gói chính thức không?',
+              question: '[MẪU] Tôi có được trừ 149.000đ khi đăng ký gói chính thức không?',
               answer:
-                'Hiện tại phí phiên trải nghiệm là khoản phí riêng biệt cho thời gian và tâm huyết của phiên làm việc đó, không trừ vào giá gói chính thức.',
+                '[MẪU] Hiện tại phí phiên trải nghiệm là khoản phí riêng biệt cho phiên làm việc đó, không trừ vào giá gói chính thức.',
             },
             {
-              question: 'Nếu tôi không ở TP. Hồ Chí Minh thì có tham gia được không?',
+              question: '[MẪU] Nếu tôi ở xa thì có tham gia được không?',
               answer:
-                'Toàn bộ các phiên khai vấn và công cụ số đều diễn ra online qua nền tảng số của Trạm, bạn có thể tham gia từ bất kỳ đâu.',
+                '[MẪU] Toàn bộ các phiên khai vấn và công cụ số đều diễn ra online qua nền tảng số của Trạm, bạn có thể tham gia từ bất kỳ đâu.',
             },
           ]}
         />
@@ -422,14 +422,14 @@ export function Sm03BlocksDemo() {
           12. CTASection – Khối kêu gọi chuyển đổi lớn kèm dải bảo chứng (Trang lộ trình tr. 21)
         </h3>
         <CTASection
-          seriesLabel="Bước đi đầu tiên"
-          titleLine1="BẮT ĐẦU HÀNH TRÌNH"
-          titleLine2="CHUYỂN MÌNH CÙNG HANA"
-          emotionLine="Đừng để những bất an cảm xúc ngăn cản bạn bước tiếp"
-          description="Dành tặng bản thân một khoảng dừng chất lượng để thấu hiểu chính mình và khai mở tiềm năng vốn có."
-          buttonText="Đặt phiên trải nghiệm 149.000đ ngay"
+          seriesLabel="[MẪU] Bước đi đầu tiên"
+          titleLine1="[MẪU] BẮT ĐẦU HÀNH TRÌNH"
+          titleLine2="[MẪU] CHUYỂN MÌNH CÙNG TRẠM"
+          emotionLine="[MẪU] Đừng để những bất an cảm xúc ngăn cản bạn bước tiếp"
+          description="[MẪU] Dành tặng bản thân một khoảng dừng chất lượng để thấu hiểu chính mình và khai mở tiềm năng vốn có."
+          buttonText="[MẪU] Đặt phiên trải nghiệm 149.000đ ngay"
           buttonLink="/dat-phien-trai-nghiem"
-          proofText="Đồng hành cùng hơn 500+ học viên và nhà quản lý trên toàn quốc"
+          proofText="[MẪU] Đồng hành cùng học viên và nhà quản lý trên toàn quốc"
           _resolved={{
             testimonials: mockTestimonials,
           }}

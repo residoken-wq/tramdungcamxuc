@@ -70,7 +70,7 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     buttonLinkType: 'url',
     buttonLink: '/dat-phien-trai-nghiem',
     buttonPageId: '',
-    proofText: '[MẪU] Đồng hành cùng hơn 500+ cá nhân và chuyên gia',
+    proofText: '[MẪU] Đồng hành cùng học viên và chuyên gia trên hành trình chuyển mình',
     testimonials: [],
     bgColor: 'soft-pink',
     padding: 'lg',

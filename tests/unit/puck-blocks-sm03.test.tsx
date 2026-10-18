@@ -12,6 +12,7 @@ import { PackageComparison } from '@/components/site/PackageComparison'
 import { FAQ } from '@/components/site/FAQ'
 import { vi } from '@/lib/i18n/vi'
 import { BOOKING_PATH } from '@/lib/products'
+import { toPublicTestimonial } from '@/lib/testimonials'
 
 describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
   describe('Snapshots of 5 New Blocks & Variants', () => {
@@ -210,11 +211,16 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
       expect(container.firstChild).toBeNull()
     })
 
-    it('SolutionEcosystem: renders placeholder in editor mode when services and programs are empty', () => {
+    it('SolutionEcosystem: renders column empty notes in editor mode when columns have no items', () => {
       render(
-        <SolutionEcosystem puck={{ isEditing: true }} _resolved={{ services: [], programs: [] }} />,
+        <SolutionEcosystem
+          puck={{ isEditing: true }}
+          _resolved={{ products: [], services: [], programs: [] }}
+        />,
       )
-      expect(screen.getByText(vi.builder.noDataSelectInCms)).toBeTruthy()
+      expect(screen.getByText(vi.sm03.noProductsSelected)).toBeTruthy()
+      expect(screen.getByText(vi.sm03.noServicesSelected)).toBeTruthy()
+      expect(screen.getByText(vi.sm03.noProgramsSelected)).toBeTruthy()
     })
 
     it('TestimonialGrid: renders null on public page when testimonials are empty', () => {
@@ -345,4 +351,58 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
       expect(ariaControls).toBe(answerElement.getAttribute('id'))
     })
   })
+
+  describe('CTASection: Real toPublicTestimonial Flow & Button Visibility', () => {
+    it('renders photo evidence strip when testimonials pass through real toPublicTestimonial', () => {
+      const rawDoc = {
+        id: 101,
+        name: 'Học viên A',
+        quote: 'Trải nghiệm rất tuyệt vời.',
+        consent: true,
+        _status: 'published',
+        photo: {
+          url: '/brand/sample-avatar.svg',
+          alt: 'Avatar Học viên A',
+        },
+      }
+
+      const publicTestimonial = toPublicTestimonial(rawDoc)
+      expect(publicTestimonial).not.toBeNull()
+      expect(publicTestimonial?.consent).toBe(true)
+
+      render(
+        <CTASection
+          titleLine1="BẮT ĐẦU"
+          titleLine2="CHUYỂN MÌNH"
+          buttonText="Đặt lịch"
+          buttonLink="/dat-lich"
+          proofText="500+ học viên tin tưởng"
+          _resolved={{
+            testimonials: [publicTestimonial!],
+          }}
+        />,
+      )
+
+      expect(screen.getByAltText('Avatar Học viên A')).toBeTruthy()
+      expect(screen.getByText('500+ học viên tin tưởng')).toBeTruthy()
+    })
+
+    it('hides CTA button when buttonLinkType is page and _resolved buttonUrl is missing', () => {
+      render(
+        <CTASection
+          titleLine1="BẮT ĐẦU"
+          titleLine2="CHUYỂN MÌNH"
+          buttonLinkType="page"
+          buttonPageId="unresolved-page"
+          buttonText="Đến trang đích"
+          _resolved={{
+            buttonUrl: '',
+          }}
+        />,
+      )
+
+      expect(screen.queryByRole('link', { name: /Đến trang đích/i })).toBeNull()
+    })
+  })
 })
+

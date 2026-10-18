@@ -79,7 +79,7 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
     entry1: {
-      groupLabel: '[MẪU] CHO CÁ NHÂN',
+      groupLabel: '',
       label: '[MẪU] Lối vào 1',
       description: '[MẪU] Mô tả ngắn gọn về lối vào dành cho cá nhân',
       buttonText: '[MẪU] Khám phá ngay',
@@ -87,7 +87,7 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
       buttonStyle: 'solid',
     },
     entry2: {
-      groupLabel: '[MẪU] CHO DOANH NGHIỆP',
+      groupLabel: '',
       label: '[MẪU] Lối vào 2',
       description: '[MẪU] Mô tả ngắn gọn về lối vào dành cho tổ chức',
       buttonText: '[MẪU] Tìm hiểu thêm',

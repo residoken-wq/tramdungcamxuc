@@ -518,33 +518,8 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         </h2>
       </div>
       <div
-        class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch"
+        class="grid max-w-md mx-auto grid-cols-1 gap-6 sm:gap-8 items-stretch"
       >
-        <div
-          class="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft"
-        >
-          <div>
-            <h3
-              class="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2"
-            >
-              [MẪU] Đào tạo cá nhân
-            </h3>
-            <p
-              class="font-ui text-sm text-deep-navy/70 leading-relaxed mb-6"
-            >
-              [MẪU] Các công cụ số và lộ trình tự học
-            </p>
-            <div
-              class="space-y-4"
-            >
-              <p
-                class="text-xs italic text-deep-navy/60"
-              >
-                Chưa có sản phẩm nào được chọn
-              </p>
-            </div>
-          </div>
-        </div>
         <div
           class="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-white/20 bg-deep-navy text-white shadow-soft relative ring-2 ring-deep-navy"
         >
@@ -585,7 +560,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
                     href="/coaching/tu-soi-chieu"
                   >
                     <span>
-                      Khám phá dịch vụ
+                      Đặt lịch đồng hành
                     </span>
                   </a>
                 </div>
@@ -613,36 +588,11 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
                     href="/coaching/chuyen-hoa-1-1"
                   >
                     <span>
-                      Khám phá dịch vụ
+                      Đặt lịch đồng hành
                     </span>
                   </a>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft"
-        >
-          <div>
-            <h3
-              class="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2"
-            >
-              [MẪU] Doanh nghiệp
-            </h3>
-            <p
-              class="font-ui text-sm text-deep-navy/70 leading-relaxed mb-6"
-            >
-              [MẪU] Giải pháp phát triển văn hóa và đội ngũ
-            </p>
-            <div
-              class="space-y-4"
-            >
-              <p
-                class="text-xs italic text-deep-navy/60"
-              >
-                Chưa có chương trình nào được chọn
-              </p>
             </div>
           </div>
         </div>

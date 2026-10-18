@@ -2,7 +2,10 @@ import React from 'react'
 import { describe, expect, it, vi as vitestVi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { ProgressGrid } from '@/components/ui/ProgressGrid'
-import { getDefaultHabitDraft, formatIdentityStatement } from '@/lib/habit'
+import {
+  getDefaultHabitDraft,
+  formatIdentityStatement,
+} from '@/lib/habit'
 
 describe('ProgressGrid Component & Draft Resilience (T2-03)', () => {
   describe('ProgressGrid Rendering', () => {

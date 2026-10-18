@@ -87,20 +87,21 @@ export function HeroTwoEntries({
         className={`flex flex-col justify-between p-6 sm:p-8 rounded-card border shadow-soft ${cardBgClass}`}
       >
         <div>
-          {entry?.groupLabel && (
+          {entry?.groupLabel && entry.groupLabel.trim().length > 0 ? (
             <span
-              className={`block font-ui text-xs font-bold uppercase tracking-widest mb-2 ${
+              className={`block font-ui text-xs font-bold uppercase tracking-widest mb-4 ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
             >
               {entry.groupLabel}
             </span>
-          )}
-          <span
-            className={`inline-block px-3 py-1 rounded-full text-xs font-ui font-bold uppercase tracking-wider ${badgeBg} text-deep-navy mb-4`}
-          >
-            {entry?.label}
-          </span>
+          ) : entry?.label ? (
+            <span
+              className={`inline-block px-3 py-1 rounded-full text-xs font-ui font-bold uppercase tracking-wider ${badgeBg} text-deep-navy mb-4`}
+            >
+              {entry.label}
+            </span>
+          ) : null}
           <p className={`font-ui text-base leading-relaxed mb-6 ${descColorClass}`}>
             {entry?.description}
           </p>

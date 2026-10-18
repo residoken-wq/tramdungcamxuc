@@ -53,7 +53,7 @@ export function TestimonialCard({
     return null
   }
 
-  const displayName = age ? `${name}, ${age} tuổi` : name
+  const displayNameWithAge = age ? `${name}, ${age} ${vi.sm03?.ageSuffix || 'tuổi'}` : name
 
   const avatar = photo?.src ? (
     <div className="relative w-12 h-12 rounded-full overflow-hidden border border-deep-navy/15 flex-shrink-0 bg-soft-pink">
@@ -62,7 +62,7 @@ export function TestimonialCard({
         alt={photo.alt || name}
         width={48}
         height={48}
-        className="object-cover w-full h-full"
+        className="object-cover w-full h-full text-[0px]"
       />
     </div>
   ) : (
@@ -94,7 +94,7 @@ export function TestimonialCard({
             {avatar}
             <div className="flex flex-col">
               <cite className="not-italic font-ui font-bold text-base text-deep-navy">
-                {displayName}
+                {displayNameWithAge}
               </cite>
               {role && (
                 <span className="text-xs sm:text-sm font-sans text-deep-navy/70 leading-tight">
@@ -156,7 +156,7 @@ export function TestimonialCard({
             {avatar}
             <div className="flex flex-col">
               <cite className="not-italic font-ui font-bold text-base text-deep-navy">
-                {displayName}
+                {displayNameWithAge}
               </cite>
               {role && (
                 <span className="text-xs sm:text-sm font-sans text-deep-navy/70 leading-tight">
@@ -244,14 +244,13 @@ export function TestimonialCard({
 
           <div className="flex flex-col">
             <cite className="not-italic font-ui font-bold text-base text-deep-navy">
-              {displayName}
+              {name}
             </cite>
             {role && (
               <span className="text-sm font-sans text-deep-navy/70 leading-tight mt-0.5">
                 {role}
               </span>
             )}
-            {relatedOfferBadge}
           </div>
         </figcaption>
       </figure>

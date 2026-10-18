@@ -53,20 +53,14 @@ describe('Brand Design Tokens & Tailwind Palette Lock (T0-03)', () => {
 
     const theme = tailwindConfig.theme as CustomTheme
     const actualColors = theme.colors
-    expect(
-      actualColors,
-      'theme.colors phải được định nghĩa ở cấp theme (thay thế), không được rỗng',
-    ).toBeDefined()
+    expect(actualColors, 'theme.colors phải được định nghĩa ở cấp theme (thay thế), không được rỗng').toBeDefined()
 
     const actualTokens = Object.keys(actualColors!).sort()
     expect(actualTokens).toEqual(expectedTokens)
 
     // Đảm bảo không có theme.extend.colors nào làm rò rỉ màu mặc định
     const extendedColors = theme.extend?.colors
-    expect(
-      extendedColors,
-      'Không được dùng theme.extend.colors vì sẽ giữ lại bảng màu mặc định',
-    ).toBeUndefined()
+    expect(extendedColors, 'Không được dùng theme.extend.colors vì sẽ giữ lại bảng màu mặc định').toBeUndefined()
   })
 
   // 3. Chứng minh class bg-red-500 / text-gray-700 KHÔNG sinh CSS khi compile
@@ -139,14 +133,14 @@ describe('Brand Design Tokens & Tailwind Palette Lock (T0-03)', () => {
       const hexRegex = new RegExp(`--color-${token}:\\s*${hex};`, 'i')
       expect(
         hexRegex.test(cssContent),
-        `styles.css phải chứa biến --color-${token}: ${hex}; khớp với tokens.ts`,
+        `styles.css phải chứa biến --color-${token}: ${hex}; khớp với tokens.ts`
       ).toBe(true)
 
       const rgb = BRAND_COLORS_RGB[token as BrandColorToken]
       const rgbRegex = new RegExp(`--color-${token}-rgb:\\s*${rgb};`, 'i')
       expect(
         rgbRegex.test(cssContent),
-        `styles.css phải chứa biến --color-${token}-rgb: ${rgb}; khớp với tokens.ts`,
+        `styles.css phải chứa biến --color-${token}-rgb: ${rgb}; khớp với tokens.ts`
       ).toBe(true)
     }
   })

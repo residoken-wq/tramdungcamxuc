@@ -4,27 +4,16 @@ import React from 'react'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { resolveProductCta, type PublicProduct } from '@/lib/products'
+import {
+  useClientProducts,
+  useClientServices,
+  useClientPrograms,
+  type PublicServiceSummary,
+  type PublicProgramSummary,
+} from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
 
-export interface PublicServiceSummary {
-  id: string | number
-  name: string
-  slug: string
-  audience?: string | null
-  audienceLabel?: string | null
-  ctaLabel?: string | null
-  saleStatus?: string | null
-}
-
-export interface PublicProgramSummary {
-  id: string | number
-  name: string
-  slug: string
-  learnerGroup?: string | null
-  format?: string | null
-  ctaLabel?: string | null
-  saleStatus?: string | null
-}
+export type { PublicServiceSummary, PublicProgramSummary }
 
 export interface SolutionEcosystemProps {
   version?: number
@@ -46,7 +35,12 @@ export interface SolutionEcosystemProps {
   col3Description?: string
   col3Programs?: Array<{ programId?: string | number }>
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     products?: PublicProduct[]
@@ -81,10 +75,13 @@ export function SolutionEcosystem({
   description,
   col1Title = '[MẪU] Đào tạo cá nhân',
   col1Description = '[MẪU] Các công cụ số và lộ trình tự học',
+  col1Products,
   col2Title = '[MẪU] Khai vấn 1:1',
   col2Description = '[MẪU] Đồng hành chuyên sâu cá nhân hóa',
+  col2Services,
   col3Title = '[MẪU] Doanh nghiệp',
   col3Description = '[MẪU] Giải pháp phát triển văn hóa và đội ngũ',
+  col3Programs,
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
@@ -96,13 +93,38 @@ export function SolutionEcosystem({
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const descColorClass = isDeepNavy ? 'text-white/80' : 'text-deep-navy/80'
 
-  const products = _resolved?.products || []
-  const services = _resolved?.services || []
-  const programs = _resolved?.programs || []
+  const productIds = col1Products?.map((p) => p.productId).filter(Boolean) as
+    | Array<string | number>
+    | undefined
+  const serviceIds = col2Services?.map((s) => s.serviceId).filter(Boolean) as
+    | Array<string | number>
+    | undefined
+  const programIds = col3Programs?.map((p) => p.programId).filter(Boolean) as
+    | Array<string | number>
+    | undefined
 
-  const hasAnyData = products.length > 0 || services.length > 0 || programs.length > 0
+  const { products: loadedProducts } = useClientProducts({
+    productIds,
+    initialProducts: _resolved?.products,
+  })
+  const { services: loadedServices } = useClientServices({
+    serviceIds,
+    initialServices: _resolved?.services,
+  })
+  const { programs: loadedPrograms } = useClientPrograms({
+    programIds,
+    initialPrograms: _resolved?.programs,
+  })
 
-  if (!hasAnyData) {
+  const products = loadedProducts || []
+  const services = loadedServices || []
+  const programs = loadedPrograms || []
+
+  const showCol1 = isEditing || products.length > 0
+  const showCol2 = isEditing || services.length > 0
+  const showCol3 = isEditing || programs.length > 0
+
+  if (!showCol1 && !showCol2 && !showCol3) {
     if (isEditing) {
       return (
         <div className="p-8 text-center text-deep-navy/60 bg-warm-ivory rounded-card border border-dashed border-deep-navy/20 m-4">
@@ -112,6 +134,14 @@ export function SolutionEcosystem({
     }
     return null
   }
+
+  const visibleCount = [showCol1, showCol2, showCol3].filter(Boolean).length
+  const gridClass =
+    visibleCount === 1
+      ? 'max-w-md mx-auto grid-cols-1'
+      : visibleCount === 2
+        ? 'max-w-4xl mx-auto grid-cols-1 md:grid-cols-2'
+        : 'grid-cols-1 md:grid-cols-3'
 
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
@@ -154,181 +184,197 @@ export function SolutionEcosystem({
           </div>
         )}
 
-        {/* 3 Pillars Grid: Mobile 3 stacked, Desktop 3 columns */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch">
+        {/* Dynamic Pillars Grid */}
+        <div className={`grid ${gridClass} gap-6 sm:gap-8 items-stretch`}>
           {/* Column 1: Products (Đào tạo cá nhân) */}
-          <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft">
-            <div>
-              <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
-                {col1Title}
-              </h3>
-              {col1Description && (
-                <p className="font-ui text-sm text-deep-navy/70 leading-relaxed mb-6">
-                  {col1Description}
-                </p>
-              )}
+          {showCol1 && (
+            <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft">
+              <div>
+                <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
+                  {col1Title}
+                </h3>
+                {col1Description && (
+                  <p className="font-ui text-sm text-deep-navy/70 leading-relaxed mb-6">
+                    {col1Description}
+                  </p>
+                )}
 
-              <div className="space-y-4">
-                {products.length === 0 ? (
-                  <p className="text-xs italic text-deep-navy/60">Chưa có sản phẩm nào được chọn</p>
-                ) : (
-                  products.map((p) => {
-                    const cta = resolveProductCta({
-                      slug: p.slug,
-                      saleStatus: p.saleStatus,
-                      type: p.type,
-                      trialDays: p.trialDays,
-                      externalUrl: p.externalUrl,
-                      externalLabel: p.externalLabel,
-                      ctaLabel: p.ctaLabel,
-                    })
-                    const safeLink = cta?.href ? safeHref(cta.href) : null
-                    const desc = p.shortDescription || p.tagline || ''
+                <div className="space-y-4">
+                  {products.length === 0 ? (
+                    isEditing ? (
+                      <p className="text-xs italic text-deep-navy/60">
+                        {vi.sm03.noProductsSelected}
+                      </p>
+                    ) : null
+                  ) : (
+                    products.map((p) => {
+                      const cta = resolveProductCta({
+                        slug: p.slug,
+                        saleStatus: p.saleStatus,
+                        type: p.type,
+                        trialDays: p.trialDays,
+                        externalUrl: p.externalUrl,
+                        externalLabel: p.externalLabel,
+                        ctaLabel: p.ctaLabel,
+                      })
+                      const safeLink = cta?.href ? safeHref(cta.href) : null
+                      const desc = p.shortDescription || p.tagline || ''
 
-                    return (
-                      <div
-                        key={p.id}
-                        className="rounded-xl border border-deep-navy/10 bg-warm-ivory/60 p-4 flex flex-col justify-between gap-3"
-                      >
-                        <div>
-                          <h4 className="font-ui font-bold text-base text-deep-navy">{p.name}</h4>
-                          {desc && (
-                            <p className="font-ui text-xs text-deep-navy/75 leading-relaxed mt-1">
-                              {desc}
-                            </p>
+                      return (
+                        <div
+                          key={p.id}
+                          className="rounded-xl border border-deep-navy/10 bg-warm-ivory/60 p-4 flex flex-col justify-between gap-3"
+                        >
+                          <div>
+                            <h4 className="font-ui font-bold text-base text-deep-navy">{p.name}</h4>
+                            {desc && (
+                              <p className="font-ui text-xs text-deep-navy/75 leading-relaxed mt-1">
+                                {desc}
+                              </p>
+                            )}
+                          </div>
+                          {safeLink && cta && (
+                            <div className="pt-1">
+                              <Button
+                                href={safeLink}
+                                variant="secondary"
+                                size="sm"
+                                className="w-full text-xs"
+                              >
+                                {cta.label}
+                              </Button>
+                            </div>
                           )}
                         </div>
-                        {safeLink && cta && (
-                          <div className="pt-1">
-                            <Button
-                              href={safeLink}
-                              variant="secondary"
-                              size="sm"
-                              className="w-full text-xs"
-                            >
-                              {cta.label}
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })
-                )}
+                      )
+                    })
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Column 2: Services (Khai vấn 1:1) - NỀN DEEP-NAVY */}
-          <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-white/20 bg-deep-navy text-white shadow-soft relative ring-2 ring-deep-navy">
-            <div>
-              <h3 className="font-display text-2xl uppercase tracking-tight text-white mb-2">
-                {col2Title}
-              </h3>
-              {col2Description && (
-                <p className="font-ui text-sm text-white/80 leading-relaxed mb-6">
-                  {col2Description}
-                </p>
-              )}
+          {showCol2 && (
+            <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-white/20 bg-deep-navy text-white shadow-soft relative ring-2 ring-deep-navy">
+              <div>
+                <h3 className="font-display text-2xl uppercase tracking-tight text-white mb-2">
+                  {col2Title}
+                </h3>
+                {col2Description && (
+                  <p className="font-ui text-sm text-white/80 leading-relaxed mb-6">
+                    {col2Description}
+                  </p>
+                )}
 
-              <div className="space-y-4">
-                {services.length === 0 ? (
-                  <p className="text-xs italic text-white/60">Chưa có dịch vụ nào được chọn</p>
-                ) : (
-                  services.map((s) => {
-                    const label = s.ctaLabel || 'Khám phá dịch vụ'
-                    const safeLink = safeHref(`/coaching/${encodeURIComponent(s.slug)}`)
-                    const desc = s.audienceLabel || s.audience || ''
+                <div className="space-y-4">
+                  {services.length === 0 ? (
+                    isEditing ? (
+                      <p className="text-xs italic text-white/60">
+                        {vi.sm03.noServicesSelected}
+                      </p>
+                    ) : null
+                  ) : (
+                    services.map((s) => {
+                      const label = s.ctaLabel || vi.detail.service.defaultBookingLabel
+                      const safeLink = safeHref(`/coaching/${encodeURIComponent(s.slug)}`)
+                      const desc = s.audienceLabel || s.audience || ''
 
-                    return (
-                      <div
-                        key={s.id}
-                        className="rounded-xl border border-white/20 bg-white/10 p-4 flex flex-col justify-between gap-3"
-                      >
-                        <div>
-                          <h4 className="font-ui font-bold text-base text-white">{s.name}</h4>
-                          {desc && (
-                            <p className="font-ui text-xs text-white/80 leading-relaxed mt-1">
-                              {desc}
-                            </p>
+                      return (
+                        <div
+                          key={s.id}
+                          className="rounded-xl border border-white/20 bg-white/10 p-4 flex flex-col justify-between gap-3"
+                        >
+                          <div>
+                            <h4 className="font-ui font-bold text-base text-white">{s.name}</h4>
+                            {desc && (
+                              <p className="font-ui text-xs text-white/80 leading-relaxed mt-1">
+                                {desc}
+                              </p>
+                            )}
+                          </div>
+                          {safeLink && (
+                            <div className="pt-1">
+                              <Button
+                                href={safeLink}
+                                variant="primary"
+                                size="sm"
+                                className="w-full text-xs"
+                              >
+                                {label}
+                              </Button>
+                            </div>
                           )}
                         </div>
-                        {safeLink && (
-                          <div className="pt-1">
-                            <Button
-                              href={safeLink}
-                              variant="primary"
-                              size="sm"
-                              className="w-full text-xs"
-                            >
-                              {label}
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })
-                )}
+                      )
+                    })
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Column 3: Programs (Giải pháp doanh nghiệp) */}
-          <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft">
-            <div>
-              <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
-                {col3Title}
-              </h3>
-              {col3Description && (
-                <p className="font-ui text-sm text-deep-navy/70 leading-relaxed mb-6">
-                  {col3Description}
-                </p>
-              )}
-
-              <div className="space-y-4">
-                {programs.length === 0 ? (
-                  <p className="text-xs italic text-deep-navy/60">
-                    Chưa có chương trình nào được chọn
+          {showCol3 && (
+            <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft">
+              <div>
+                <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
+                  {col3Title}
+                </h3>
+                {col3Description && (
+                  <p className="font-ui text-sm text-deep-navy/70 leading-relaxed mb-6">
+                    {col3Description}
                   </p>
-                ) : (
-                  programs.map((prog) => {
-                    const label = prog.ctaLabel || 'Trao đổi về chương trình'
-                    const safeLink = safeHref(`/doanh-nghiep/${encodeURIComponent(prog.slug)}`)
-                    const desc = prog.learnerGroup || prog.format || ''
+                )}
 
-                    return (
-                      <div
-                        key={prog.id}
-                        className="rounded-xl border border-deep-navy/10 bg-warm-ivory/60 p-4 flex flex-col justify-between gap-3"
-                      >
-                        <div>
-                          <h4 className="font-ui font-bold text-base text-deep-navy">
-                            {prog.name}
-                          </h4>
-                          {desc && (
-                            <p className="font-ui text-xs text-deep-navy/75 leading-relaxed mt-1">
-                              {desc}
-                            </p>
+                <div className="space-y-4">
+                  {programs.length === 0 ? (
+                    isEditing ? (
+                      <p className="text-xs italic text-deep-navy/60">
+                        {vi.sm03.noProgramsSelected}
+                      </p>
+                    ) : null
+                  ) : (
+                    programs.map((prog) => {
+                      const label = prog.ctaLabel || vi.detail.program.sendBrief
+                      const safeLink = safeHref(`/doanh-nghiep/${encodeURIComponent(prog.slug)}`)
+                      const desc = prog.learnerGroup || prog.format || ''
+
+                      return (
+                        <div
+                          key={prog.id}
+                          className="rounded-xl border border-deep-navy/10 bg-warm-ivory/60 p-4 flex flex-col justify-between gap-3"
+                        >
+                          <div>
+                            <h4 className="font-ui font-bold text-base text-deep-navy">
+                              {prog.name}
+                            </h4>
+                            {desc && (
+                              <p className="font-ui text-xs text-deep-navy/75 leading-relaxed mt-1">
+                                {desc}
+                              </p>
+                            )}
+                          </div>
+                          {safeLink && (
+                            <div className="pt-1">
+                              <Button
+                                href={safeLink}
+                                variant="secondary"
+                                size="sm"
+                                className="w-full text-xs"
+                              >
+                                {label}
+                              </Button>
+                            </div>
                           )}
                         </div>
-                        {safeLink && (
-                          <div className="pt-1">
-                            <Button
-                              href={safeLink}
-                              variant="secondary"
-                              size="sm"
-                              className="w-full text-xs"
-                            >
-                              {label}
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })
-                )}
+                      )
+                    })
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>
