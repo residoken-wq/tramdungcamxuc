@@ -5,7 +5,8 @@ import config from '@/payload.config'
 import type { Navigation, SiteSetting, LegalPage, Page } from '@/payload-types'
 import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
-import type { NavItem, NavbarCta } from '@/components/site/Navbar'
+import type { NavGroup, NavItem, NavbarCta } from '@/components/site/Navbar'
+import { PATHS } from '@/lib/paths'
 import type { LegalLink, SellerInfo, SocialLink } from '@/components/site/Footer'
 
 export interface SiteShellData {
@@ -42,8 +43,6 @@ export const DEFAULT_SITE_SHELL_DATA: SiteShellData = {
   },
 }
 
-// `none` (parent that only opens its submenu) falls back to '/' until the Navbar renders
-// submenus (SM-02).
 function resolveMenuHref(item: {
   linkType: 'page' | 'url' | 'none'
   page?: (number | null) | Page
@@ -68,7 +67,26 @@ function resolveMenuHref(item: {
     return safeHref(raw) || '/'
   }
 
+  // `none`: a parent that only opens its submenu has no link of its own.
+  if (item.linkType === 'none') return ''
+
   return '/'
+}
+
+type RawMenuItem = NonNullable<Navigation['mainMenu']>[number]
+
+function mapSubmenu(item: RawMenuItem): NavGroup[] | undefined {
+  const groups = (item.children ?? [])
+    .map((group) => ({
+      label: group.groupLabel?.trim() || undefined,
+      items: (group.items ?? []).map((child) => ({
+        label: child.label,
+        href: resolveMenuHref(child),
+        description: child.description?.trim() || undefined,
+      })),
+    }))
+    .filter((group) => group.items.length > 0)
+  return groups.length > 0 ? groups : undefined
 }
 
 export function buildSiteShellFromPayloadData(args: {
@@ -85,7 +103,8 @@ export function buildSiteShellFromPayloadData(args: {
   // Tìm mục có highlight: true để làm CTA nổi bật bên phải Navbar
   let highlightIndex = -1
   for (let i = rawItems.length - 1; i >= 0; i--) {
-    if (rawItems[i]?.highlight) {
+    // A "submenu only" parent cannot be the CTA button: it has no destination.
+    if (rawItems[i]?.highlight && rawItems[i]?.linkType !== 'none') {
       highlightIndex = i
       break
     }
@@ -100,15 +119,26 @@ export function buildSiteShellFromPayloadData(args: {
     itemsToProcess = rawItems.filter((_, idx) => idx !== highlightIndex)
   }
 
+  // Tự động nhận diện Quiz chẩn đoán (lead magnet chính) khi đích là /habit/chan-doan – ở menu
+  // chính hoặc trong menu con (sitemap v2 đặt quiz đầu menu con "Tài nguyên").
+  const quizMark = (href: string) =>
+    href === PATHS.quiz ? { featured: true, shortLabel: vi.site.quizShortLabel } : {}
+
   const items: NavItem[] = itemsToProcess.map((item) => {
     const href = resolveMenuHref(item)
-    // Tự động nhận diện Quiz chẩn đoán (lead magnet chính) chỉ khi href === '/habit/chan-doan'
-    const isQuiz = href === '/habit/chan-doan'
-
+    const groups = mapSubmenu(item)
     return {
       label: item.label,
       href,
-      ...(isQuiz ? { featured: true, shortLabel: vi.site.quizShortLabel } : {}),
+      ...quizMark(href),
+      ...(groups
+        ? {
+            groups: groups.map((group) => ({
+              ...group,
+              items: group.items.map((child) => ({ ...child, ...quizMark(child.href) })),
+            })),
+          }
+        : {}),
     }
   })
 

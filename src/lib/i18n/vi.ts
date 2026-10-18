@@ -947,6 +947,7 @@ export const vi = {
     mobileNav: 'Điều hướng di động',
     openMenu: 'Mở menu điều hướng',
     closeMenu: 'Đóng menu điều hướng',
+    openSubmenu: (label: string) => `Mở menu con ${label}`,
   },
   footer: {
     legalHeading: 'Chính sách & Quy định',
