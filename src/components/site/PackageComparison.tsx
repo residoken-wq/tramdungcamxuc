@@ -234,8 +234,8 @@ export function PackageComparison({
                 </tr>
               ))}
 
-              {/* Total Value Row */}
-              {showTotalValue && (
+              {/* Total Value Row – hidden when no package has components to value */}
+              {showTotalValue && pkgs.some((p) => p.totalValue > 0) && (
                 <tr className="bg-lavender-mist/10 border-t-2 border-deep-navy/15">
                   <th
                     scope="row"
@@ -255,7 +255,7 @@ export function PackageComparison({
                             isHl ? 'text-white/60' : 'text-deep-navy/60'
                           }`}
                         >
-                          {formatVnd(pkg.totalValue)}
+                          {pkg.totalValue > 0 ? formatVnd(pkg.totalValue) : '—'}
                         </span>
                       </td>
                     )
