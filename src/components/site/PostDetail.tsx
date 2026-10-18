@@ -6,6 +6,7 @@ import { ProductCard } from '@/components/site/ProductCard'
 import { getEffectivePrice, resolveProductCta } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import type { PublicPost } from '@/lib/detail-pages'
+import { PATHS } from '@/lib/paths'
 
 export function PostDetail({ post }: { post: PublicPost }) {
   const topicLabel =
@@ -23,7 +24,7 @@ export function PostDetail({ post }: { post: PublicPost }) {
         {/* Điều hướng quay lại Thư viện */}
         <div className="mb-6">
           <Link
-            href="/thu-vien?tab=noi-dung"
+            href={`${PATHS.resources}?tab=noi-dung`}
             className="inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-deep-navy/70 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy rounded-sm min-h-[44px]"
           >
             <svg

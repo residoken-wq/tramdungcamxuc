@@ -1,3 +1,4 @@
+import { PATHS } from './paths'
 export type LibraryTab = 'khoa-hoc' | 'noi-dung'
 export type LibraryTopic = 'eq' | 'habit' | 'career'
 
@@ -43,20 +44,31 @@ export function parseLibraryParams(raw: {
 }
 
 /**
- * Suy ra chủ đề cho sản phẩm (products chưa có trường topic trong schema):
+ * Chủ đề của sản phẩm: ưu tiên trường `topic` Hana chọn trong CMS (SM-01); để trống thì suy ra:
  * - web = habit -> 'habit'
  * - web = eq -> 'eq'
  * - type = package -> 'career'
  * - còn lại -> null (không thuộc chủ đề cụ thể, chỉ hiển thị khi chọn Tất cả)
  */
 export function productTopic(product: {
+  topic?: string | null
   web?: string | null
   type?: string | null
 }): LibraryTopic | null {
+  if (product.topic === 'habit' || product.topic === 'eq' || product.topic === 'career') {
+    return product.topic
+  }
   if (product.web === 'habit') return 'habit'
   if (product.web === 'eq') return 'eq'
   if (product.type === 'package') return 'career'
   return null
+}
+
+// Fallback rule for products without an explicit `topic` (mirrors productTopic).
+const inferredTopicWhere: Record<LibraryTopic, Record<string, unknown>> = {
+  habit: { web: { equals: 'habit' } },
+  eq: { web: { equals: 'eq' } },
+  career: { type: { equals: 'package' } },
 }
 
 /**
@@ -81,12 +93,13 @@ export function buildProductsWhere(params: LibraryQueryParams): {
     and.push({ name: { like: params.q } })
   }
 
-  if (params.topic === 'habit') {
-    and.push({ web: { equals: 'habit' } })
-  } else if (params.topic === 'eq') {
-    and.push({ web: { equals: 'eq' } })
-  } else if (params.topic === 'career') {
-    and.push({ type: { equals: 'package' } })
+  if (params.topic) {
+    and.push({
+      or: [
+        { topic: { equals: params.topic } },
+        { and: [{ topic: { exists: false } }, inferredTopicWhere[params.topic]] },
+      ],
+    })
   }
 
   return { and }
@@ -128,7 +141,7 @@ export function buildLibraryUrl(params: {
     searchParams.set('q', params.q)
   }
   const queryString = searchParams.toString()
-  return queryString ? `/thu-vien?${queryString}` : '/thu-vien'
+  return queryString ? `${PATHS.resources}?${queryString}` : PATHS.resources
 }
 
 export type LibraryEmptyKind = 'updating' | 'filtered'

@@ -55,7 +55,7 @@ export interface PuckPageData {
 }
 
 /**
- * Kiểm tra và lấy dữ liệu trang Puck đã xuất bản theo đường dẫn đầy đủ (ví dụ: 'coaching/growth-mirror').
+ * Kiểm tra và lấy dữ liệu trang Puck đã xuất bản theo đường dẫn đầy đủ (ví dụ: 'coaching/thinking-mirror').
  * Bọc cache() của React để chia sẻ một truy vấn giữa generateMetadata và Page component.
  */
 export const getPuckPageBySlug = cache(

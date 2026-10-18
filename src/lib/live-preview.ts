@@ -1,5 +1,6 @@
 import type { CollectionConfig, GlobalConfig } from 'payload'
 import { vi } from '@/lib/i18n/vi'
+import { PATHS } from '@/lib/paths'
 
 export type PreviewCollection =
   | 'services'
@@ -56,7 +57,7 @@ function appendPreviewQuery(path: string, previewId?: string | number | null): s
  * - `products`:
  *   - digital_tool + habit -> `/habit/1-percent-better`
  *   - ebook | toolkit -> `/tai-nguyen/[slug]` (bắt buộc slug)
- *   - package -> `/coaching/growth-mirror`
+ *   - package -> `/lo-trinh-chuyen-minh` (PATHS.journey)
  *   - còn lại -> `/xem-truoc/san-pham/[id]` (bắt buộc id)
  * - `lessons`: `/habit/hoc/[id]` (bắt buộc id)
  * - `eqCards`: `/eq-buddy/the/[qrSlug]` (bắt buộc qrSlug)
@@ -119,7 +120,7 @@ export function buildPreviewUrl(
       }
 
       if (type === 'package') {
-        return appendPreviewQuery('/coaching/growth-mirror', id)
+        return appendPreviewQuery(PATHS.journey, id)
       }
 
       // Còn lại: sản phẩm Shopee, workshop, coaching trial, B2B, hoặc digital_tool khác

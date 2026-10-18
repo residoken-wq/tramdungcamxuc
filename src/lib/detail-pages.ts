@@ -197,7 +197,7 @@ export function formatServicePrice(
 
 /**
  * Quyết định nguồn render cho route động:
- * - Ưu tiên 1: Trang Puck nếu có bản published với slug tương ứng (VD: coaching/growth-mirror).
+ * - Ưu tiên 1: Trang Puck nếu có bản published với slug tương ứng (VD: coaching/thinking-mirror).
  * - Ưu tiên 2: Collection tương ứng nếu tìm thấy bản ghi published.
  * - Không có cả hai: not_found.
  */

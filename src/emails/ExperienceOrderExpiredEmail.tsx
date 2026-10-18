@@ -1,4 +1,5 @@
 import React from 'react'
+import { PATHS } from '@/lib/paths'
 import {
   Body,
   Button,
@@ -19,7 +20,7 @@ interface ExperienceOrderExpiredEmailProps {
 
 export const ExperienceOrderExpiredEmail: React.FC<ExperienceOrderExpiredEmailProps> = ({
   name,
-  reorderUrl = 'https://tramdungcamxuc.com/coaching/growth-mirror',
+  reorderUrl = `https://tramdungcamxuc.com${PATHS.journey}`,
 }) => {
   return (
     <Html lang="vi">

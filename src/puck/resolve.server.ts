@@ -50,7 +50,7 @@ export interface ResolveServerDataOptions {
  * Chuẩn hóa slug trang cho UTM campaign và nguồn lead:
  * - '/' hoặc rỗng -> 'trang-chu'
  * - Cắt bỏ dấu '/' ở đầu/cuối
- * - Thay thế '/' bên trong bằng '-' (ví dụ: 'coaching/growth-mirror' -> 'coaching-growth-mirror')
+ * - Thay thế '/' bên trong bằng '-' (ví dụ: 'coaching/thinking-mirror' -> 'coaching-thinking-mirror')
  */
 export function normalizePageSlug(slug?: string): string {
   if (!slug) return 'trang-chu'
