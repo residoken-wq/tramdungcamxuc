@@ -11,7 +11,7 @@ export const campaignTemplate: Data = {
       type: 'HeroImage',
       props: {
         id: 'campaign-hero',
-        version: 1,
+        version: 2,
         seriesLabel: '[MẪU] Chiến dịch đồng hành',
         titleLine1: '[MẪU] KHỞI ĐẦU HÀNH TRÌNH',
         titleLine2: '[MẪU] CHUYỂN HÓA CẢM XÚC',
@@ -21,6 +21,10 @@ export const campaignTemplate: Data = {
         imageAlt: '',
         buttonText: '[MẪU] Tham gia ngay',
         buttonLink: '#lead-form',
+        secondaryButtonText: '',
+        secondaryButtonLink: '',
+        badges: [],
+        stats: [],
         bgColor: 'warm-ivory',
         padding: 'lg',
       },
@@ -62,7 +66,8 @@ export const campaignTemplate: Data = {
       type: 'TestimonialGrid',
       props: {
         id: 'campaign-testimonials',
-        version: 1,
+        version: 2,
+        variant: 'quote',
         mode: 'manual',
         manualTestimonials: [
           {
@@ -95,10 +100,11 @@ export const campaignTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'campaign-faq',
-        version: 1,
+        version: 2,
         seriesLabel: '[MẪU] Giải đáp',
         titleLine1: '[MẪU] CÂU HỎI',
         titleLine2: '[MẪU] THƯỜNG GẶP',
+        source: 'manual',
         items: [
           {
             question: '[MẪU] Hành trình này phù hợp với ai?',
@@ -111,6 +117,14 @@ export const campaignTemplate: Data = {
               '[MẪU] Bạn chỉ cần chuẩn bị một tâm thế cởi mở và sẵn sàng dành 10-15 phút mỗi ngày.',
           },
         ],
+        numbered: false,
+        aside: 'none',
+        bookingAsideTitle: '',
+        bookingAsideDescription: '',
+        bookingButtonText: '',
+        bookingButtonLink: '',
+        showEmail: false,
+        seeAllLink: '',
         bgColor: 'warm-ivory',
         padding: 'md',
       },

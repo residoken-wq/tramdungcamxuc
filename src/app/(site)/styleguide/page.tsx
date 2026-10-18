@@ -10,6 +10,7 @@ import { BRAND_COLORS_HEX, type BrandColorToken, BRAND_COLOR_DESCRIPTIONS } from
 import { InteractivePrimitivesDemo } from './InteractivePrimitivesDemo'
 import { InteractiveCompositesDemo } from './InteractiveCompositesDemo'
 import { EqShareDemo } from './EqShareDemo'
+import { Sm03BlocksDemo } from './Sm03BlocksDemo'
 
 export const dynamic = 'force-dynamic'
 
@@ -428,6 +429,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <EqShareDemo />
+        </section>
+
+        {/* Section 9: SM-03 Blocks & Variants (Sitemap v2) */}
+        <section aria-labelledby="heading-sm03-blocks">
+          <h2
+            id="heading-sm03-blocks"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            9. Khối Puck mới &amp; Nâng cấp (Sitemap v2 – SM-03 [MẪU])
+          </h2>
+
+          <Sm03BlocksDemo />
         </section>
       </main>
 

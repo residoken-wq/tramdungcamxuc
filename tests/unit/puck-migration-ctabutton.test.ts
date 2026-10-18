@@ -142,6 +142,6 @@ describe('CTAButton Puck Migration v1 -> v2', () => {
     expect(btn.props.version).toBe(2)
     expect(btn.props.linkType).toBe('page')
     expect(btn.props.pageId).toBe('page-123')
-    expect(hero.props.version).toBe(1)
+    expect(hero.props.version).toBe(2)
   })
 })

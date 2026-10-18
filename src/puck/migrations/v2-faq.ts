@@ -77,6 +77,6 @@ export function migrateFAQV1ToV2(data: Data): Data {
   return {
     ...data,
     content: newContent,
-    ...(newZones ? { zones: newZones } : {}),
+    ...(data.zones !== undefined ? { zones: newZones } : {}),
   }
 }

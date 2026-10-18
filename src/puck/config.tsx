@@ -24,6 +24,11 @@ import { TestimonialGridBlock, type TestimonialGridProps } from './blocks/Testim
 import { TestimonialSliderBlock, type TestimonialSliderProps } from './blocks/TestimonialSlider'
 import { LogoStripBlock, type LogoStripProps } from './blocks/LogoStrip'
 import { HanaStoryBlock, type HanaStoryProps } from './blocks/HanaStory'
+import { IconCardGridBlock, type IconCardGridProps } from './blocks/IconCardGrid'
+import { CalloutBlock, type CalloutProps } from './blocks/Callout'
+import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards'
+import { SolutionEcosystemBlock, type SolutionEcosystemProps } from './blocks/SolutionEcosystem'
+import { CTASectionBlock, type CTASectionProps } from './blocks/CTASection'
 
 // Khối Chuyển đổi (Conversion Blocks)
 import { CTAButtonBlock, type CTAButtonBlockProps } from './blocks/CTAButton'
@@ -64,6 +69,8 @@ export type PageComponentsProps = {
   ImageText: ImageTextProps
   QuoteBlock: QuoteBlockProps
   StatsBar: StatsBarProps
+  IconCardGrid: IconCardGridProps
+  Callout: CalloutProps
   JourneySteps: JourneyStepsProps
   FAQ: FAQProps
   VideoEmbed: VideoEmbedProps
@@ -74,7 +81,9 @@ export type PageComponentsProps = {
   // Bán hàng
   ProductGrid: ProductGridProps
   ProductFeature: ProductFeatureProps
+  PackageCards: PackageCardsProps
   PackageComparison: PackageComparisonProps
+  SolutionEcosystem: SolutionEcosystemProps
   PriceTag: ProductPriceTagProps
   TrialCTA: TrialCTAProps
   // Niềm tin
@@ -84,6 +93,7 @@ export type PageComponentsProps = {
   HanaStory: HanaStoryProps
   // Chuyển đổi
   CTAButton: CTAButtonBlockProps
+  CTASection: CTASectionProps
   LeadForm: LeadFormBlockProps
   BookingCTA: BookingCTABlockProps
   B2BBriefForm: B2BBriefFormProps
@@ -106,6 +116,8 @@ export const puckConfig: Config<PageComponentsProps> = {
         'ImageText',
         'QuoteBlock',
         'StatsBar',
+        'IconCardGrid',
+        'Callout',
         'JourneySteps',
         'FAQ',
         'VideoEmbed',
@@ -117,7 +129,15 @@ export const puckConfig: Config<PageComponentsProps> = {
     },
     sales: {
       title: 'Bán hàng',
-      components: ['ProductGrid', 'ProductFeature', 'PackageComparison', 'PriceTag', 'TrialCTA'],
+      components: [
+        'ProductGrid',
+        'ProductFeature',
+        'PackageCards',
+        'PackageComparison',
+        'SolutionEcosystem',
+        'PriceTag',
+        'TrialCTA',
+      ],
     },
     trust: {
       title: 'Niềm tin',
@@ -127,6 +147,7 @@ export const puckConfig: Config<PageComponentsProps> = {
       title: 'Chuyển đổi',
       components: [
         'CTAButton',
+        'CTASection',
         'LeadForm',
         'BookingCTA',
         'B2BBriefForm',
@@ -358,6 +379,7 @@ export const puckConfig: Config<PageComponentsProps> = {
 
     // Chuyển đổi
     CTAButton: CTAButtonBlock,
+    CTASection: CTASectionBlock,
     LeadForm: LeadFormBlock,
     BookingCTA: BookingCTABlock,
     B2BBriefForm: B2BBriefFormBlock,
@@ -369,6 +391,8 @@ export const puckConfig: Config<PageComponentsProps> = {
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
     StatsBar: StatsBarBlock,
+    IconCardGrid: IconCardGridBlock,
+    Callout: CalloutBlock,
     JourneySteps: JourneyStepsBlock,
     FAQ: FAQBlock,
     VideoEmbed: VideoEmbedBlock,
@@ -378,7 +402,9 @@ export const puckConfig: Config<PageComponentsProps> = {
 
     ProductGrid: ProductGridBlock,
     ProductFeature: ProductFeatureBlock,
+    PackageCards: PackageCardsBlock,
     PackageComparison: PackageComparisonBlock,
+    SolutionEcosystem: SolutionEcosystemBlock,
     PriceTag: PriceTagBlock,
     TrialCTA: TrialCTABlock,
 

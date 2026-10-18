@@ -116,16 +116,16 @@ describe('PackageComparison Puck Migration v1 -> v2', () => {
       props: { version: number; note: string; showPaymentPolicyLink: boolean }
     }
 
-    expect(colRoot.props.col1[0].props.version).toBe(2)
+    expect(colRoot.props.col1[0].props.version).toBe(3)
     expect(colRoot.props.col1[0].props.note).toBe('')
     expect(colRoot.props.col1[0].props.showPaymentPolicyLink).toBe(false)
 
-    expect(zoneItem?.props.version).toBe(2)
+    expect(zoneItem?.props.version).toBe(3)
     expect(zoneItem?.props.note).toBe('')
     expect(zoneItem?.props.showPaymentPolicyLink).toBe(false)
   })
 
-  it('does not alter already migrated version 2 blocks or other block types', () => {
+  it('does not alter already migrated blocks or other block types unnecessarily', () => {
     const v2Data: Data = {
       root: {},
       content: [
@@ -156,7 +156,7 @@ describe('PackageComparison Puck Migration v1 -> v2', () => {
     }
     const sec = migrated.content[1] as { props: { version: number } }
 
-    expect(pkg.props.version).toBe(2)
+    expect(pkg.props.version).toBe(3)
     expect(pkg.props.note).toBe('Ghi chú tùy chỉnh của Hana')
     expect(pkg.props.showPaymentPolicyLink).toBe(true)
     expect(sec.props.version).toBe(1)

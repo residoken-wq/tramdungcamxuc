@@ -69,6 +69,6 @@ export function migrateHeroImageV1ToV2(data: Data): Data {
   return {
     ...data,
     content: newContent,
-    zones: newZones,
+    ...(data.zones !== undefined ? { zones: newZones } : {}),
   }
 }
