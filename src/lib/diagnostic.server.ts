@@ -207,7 +207,13 @@ export async function submitDiagnostic(
   })
 
   // 8. Xác định CTA kết quả: ưu tiên dẫn tới luồng dùng thử nếu Habit Tracker số mở dùng thử
-  let ctaHref = GROWTH_MIRROR_PATH
+  // Hana's fallback CTA from siteSettings; an open Habit Tracker trial still takes priority.
+  const settings = await payload.findGlobal({
+    slug: 'siteSettings',
+    depth: 0,
+    overrideAccess: true,
+  })
+  let ctaHref = settings.quizCtaPath?.trim() || GROWTH_MIRROR_PATH
   let ctaLabel: string = vi.diagnostic.result.ctaButton
 
   const habitProductRes = await payload.find({

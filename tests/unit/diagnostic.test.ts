@@ -15,6 +15,7 @@ import {
   type DiagnosticSubmissionInput,
 } from '@/lib/forms/schemas'
 import { submitDiagnostic } from '@/lib/diagnostic.server'
+import { GROWTH_MIRROR_PATH } from '@/lib/products'
 import { vi as viStrings } from '@/lib/i18n/vi'
 import type { Payload } from 'payload'
 
@@ -399,11 +400,12 @@ describe('Diagnostic Submission & Validation (submitDiagnostic)', () => {
     },
   ]
 
-  const createMockPayload = () => {
+  const createMockPayload = (settings: { quizCtaPath?: string | null } = {}) => {
     const leadsCreated: Array<Record<string, unknown>> = []
     const resultsCreated: Array<Record<string, unknown>> = []
 
     const mockPayload = {
+      findGlobal: vi.fn().mockResolvedValue(settings),
       find: vi.fn().mockResolvedValue({
         docs: dummyQuestions,
       }),
@@ -431,6 +433,23 @@ describe('Diagnostic Submission & Validation (submitDiagnostic)', () => {
 
     return { mockPayload, leadsCreated, resultsCreated }
   }
+
+  it('CTA kết quả quiz dùng quizCtaPath trong Cài đặt; để trống thì về trang lộ trình (SM-01)', async () => {
+    const input: DiagnosticSubmissionInput = {
+      answers: [{ questionId: 1, score: 3 }],
+      email: '',
+      consent: false,
+    }
+    const fallback = await submitDiagnostic(input, {}, { payload: createMockPayload().mockPayload })
+    expect(fallback.data?.ctaHref).toBe(GROWTH_MIRROR_PATH)
+
+    const custom = await submitDiagnostic(
+      input,
+      {},
+      { payload: createMockPayload({ quizCtaPath: ' /dat-phien-trai-nghiem ' }).mockPayload },
+    )
+    expect(custom.data?.ctaHref).toBe('/dat-phien-trai-nghiem')
+  })
 
   it('Schema bắt lỗi tiếng Việt khi nhập email nhưng không tick đồng ý chính sách bảo mật', () => {
     const invalidInput = {

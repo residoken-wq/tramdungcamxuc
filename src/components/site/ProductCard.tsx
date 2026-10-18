@@ -74,6 +74,7 @@ export function ProductCard({
             className="w-full h-full bg-lavender-mist flex items-center justify-center"
             aria-hidden="true"
           >
+            {/* a11y-contrast-ok: SVG trang trí Butterfly có aria-hidden, không chứa chữ */}
             <Butterfly className="w-16 h-16 text-deep-navy/35" aria-hidden={true} />
           </div>
         )}

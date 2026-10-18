@@ -21,7 +21,8 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
     it('mọi collection đều có admin.group thuộc danh sách 6 nhóm hợp lệ', async () => {
       const config = await configPromise
       const projectCollections = config.collections.filter((col) => isProjectCollection(col.slug))
-      expect(projectCollections.length).toBe(35)
+      // 35 + faqs, teamMembers (SM-01)
+      expect(projectCollections.length).toBe(37)
 
       for (const col of projectCollections) {
         expect(
@@ -135,7 +136,8 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
         (col) => isProjectCollection(col.slug) && col.admin?.group !== vi.cms.nav.system,
       )
 
-      expect(nonSystemCollections.length).toBe(21)
+      // 21 + faqs, teamMembers (SM-01)
+      expect(nonSystemCollections.length).toBe(23)
 
       const editorUser = {
         id: 2,

@@ -571,7 +571,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                         <button
                           type="button"
                           onClick={() => handleRemoveHabit(index)}
-                          className="ml-2 p-1 text-deep-navy/40 hover:text-accent-pink text-sm"
+                          className="ml-2 p-1 text-deep-navy/70 hover:text-deep-navy text-sm"
                           aria-label={vi.habit.wizard.step1.deleteButton}
                         >
                           ✕
@@ -631,7 +631,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                 </span>
                 <p className="font-quote italic text-deep-navy text-lg sm:text-xl">
                   {draft.identityStatement || (
-                    <span className="text-deep-navy/40">
+                    <span className="text-deep-navy/70">
                       {vi.habit.wizard.errors.identityExample}
                     </span>
                   )}
@@ -806,7 +806,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                           {vi.habit.wizard.step3.stages[stage].title}:
                         </span>
                         {list.length === 0 ? (
-                          <span className="text-deep-navy/50 italic">
+                          <span className="text-deep-navy/70 italic">
                             {vi.habit.wizard.step4.notSelected}
                           </span>
                         ) : (

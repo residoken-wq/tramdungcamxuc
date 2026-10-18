@@ -115,6 +115,9 @@ export const vi = {
         web: 'Khu vực hiển thị chính: Trang chủ (site), Thói quen (habit), EQ Buddy (eq).',
         saleStatus: 'Trạng thái hiển thị và mở bán trên toàn website.',
         order: 'Thứ tự sắp xếp trên trang danh sách (số nhỏ hơn đứng trước).',
+        topic: 'Chủ đề dùng cho bộ lọc ở trang Tài nguyên (Cảm xúc, Thói quen, Sự nghiệp).',
+        audienceSegment:
+          'Sản phẩm dành cho Cá nhân hay Doanh nghiệp – dùng để tự xếp nhóm trên menu và khối giới thiệu.',
       },
       descriptions: {
         name: 'Hiện trên tiêu đề thẻ sản phẩm ở Thư viện, đầu trang chi tiết, giỏ hàng và email xác nhận.',
@@ -126,6 +129,9 @@ export const vi = {
         journeyStep:
           'Hiện nhãn bước hành trình (Dừng lại, Cảm nhận, Gọi tên...) trên thẻ sản phẩm.',
         audience: 'Hiện trong khối "Sản phẩm này dành cho ai" trên trang chi tiết.',
+        tagline:
+          'Câu ngắn dưới tên gói trên thẻ lộ trình (vd "Tỏ tường từ bên trong"). Tối đa 60 ký tự.',
+        icon: 'Biểu tượng nhỏ ở đầu thẻ sản phẩm trên các khối giới thiệu (chọn trong bộ icon thương hiệu).',
         price:
           'Giá bán niêm yết (VND). Hiện trên thẻ sản phẩm ở Thư viện, đầu trang chi tiết và hóa đơn.',
         salePrice:

@@ -218,7 +218,7 @@ export function InteractiveCompositesDemo() {
                 coverImage={{ src: '/brand/sample-cover.svg', alt: '[MẪU] Bìa' }}
                 saleStatus="hidden"
               />
-              <p className="italic text-deep-navy/50">
+              <p className="italic text-deep-navy/70">
                 (Component ProductCard đã trả về null – hoàn toàn không có DOM rác được sinh ra)
               </p>
             </div>

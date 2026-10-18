@@ -110,7 +110,7 @@ export default async function TrialPage({ searchParams }: PageProps) {
             <ul className="space-y-3 pt-1">
               {benefits.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-soft-pink text-accent-pink shrink-0 mt-0.5">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-soft-pink text-bright-magenta shrink-0 mt-0.5">
                     <svg
                       className="w-3.5 h-3.5"
                       fill="none"

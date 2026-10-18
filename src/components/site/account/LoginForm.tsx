@@ -221,7 +221,7 @@ export function LoginForm({ initialNext }: LoginFormProps) {
               checked={consentPolicy}
               onChange={(e) => setConsentPolicy(e.target.checked)}
               required
-              className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-accent-pink focus:ring-bright-magenta cursor-pointer"
+              className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-bright-magenta focus:ring-bright-magenta cursor-pointer"
             />
             <label
               htmlFor="auth-consent-policy"
@@ -247,7 +247,7 @@ export function LoginForm({ initialNext }: LoginFormProps) {
               name="consentMarketing"
               checked={consentMarketing}
               onChange={(e) => setConsentMarketing(e.target.checked)}
-              className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-accent-pink focus:ring-bright-magenta cursor-pointer"
+              className="mt-1 h-4 w-4 rounded border-deep-navy/30 text-bright-magenta focus:ring-bright-magenta cursor-pointer"
             />
             <label
               htmlFor="auth-consent-marketing"

@@ -323,3 +323,21 @@ Tạm thời định nghĩa 6 cảm xúc mẫu với biểu tượng SVG nét m�
   - Dữ liệu mẫu và test chỉ dùng tên, email, số điện thoại **rõ ràng là giả** (`@example.test`, `Học viên Test 01`); không dùng tên người thật.
   - Không đưa dữ liệu khách hàng thật, lead thật, ảnh chụp có thông tin khách vào repo.
   - Nội dung mới của Hana chưa muốn công khai (video, 26 thẻ EQ, tài liệu chiến lược mới) gửi qua kênh riêng và nhập thẳng vào DB, không commit file gốc.
+
+## Sitemap v2 – chốt 17/10/2026
+
+Planning trả lời thay Hana trong bảng câu hỏi (Claude Docs "Câu hỏi cho Hana – Sơ đồ website mới"). Số câu theo bảng gửi Hana; đối chiếu sang `docs/plan/SITEMAP_V2.md` mục 4.
+
+| Câu        | Chốt                                                                                                                                                                              |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q1         | Đồng ý: 3 gói gọi là Lộ trình "Chuyển mình không chênh vênh"; Growth Mirror / Thinking Mirror là dịch vụ coach 1:1. Hana tự đổi tên gói trong CMS                                 |
+| Q2         | Đồng ý bộ đường dẫn mới (`/ve-tram`, `/lo-trinh-chuyen-minh`, `/tai-nguyen`, `/lien-he`, `/cong-dong`) + 301 từ link cũ. QR thẻ EQ **chưa in** → `qrSlug` còn đổi được đến khi in |
+| Q3         | Quiz chẩn đoán vào menu con "Tài nguyên miễn phí"; trang chủ vẫn giữ nút quiz                                                                                                     |
+| Q4         | Phương án A: gói không bán trực tiếp; "Chọn gói này" mở form đặt phiên trải nghiệm 149.000đ, ghi gói quan tâm                                                                     |
+| Q5         | "Phiên Khám phá" = phiên trải nghiệm 149.000đ; cuộc gọi 15 phút miễn phí đi qua form liên hệ (không có link đặt lịch riêng)                                                       |
+| Q6, Q7     | Tên sản phẩm, masterclass, chương trình DN: Hana tự tạo / sửa trong CMS – code không cố định tên nào                                                                              |
+| Q8         | Chưa trả lời → mặc định 1 trang lộ trình chung                                                                                                                                    |
+| Q9a–c, Q10 | Làm chức năng trong CMS để Hana tự nhập / ẩn: số liệu, logo đối tác (có nhóm), testimonial dạng câu chuyện, đội ngũ (`teamMembers`). Quy tắc `consent` của testimonial giữ nguyên |
+| Q11        | Trang Cộng đồng: làm sẵn khối / mẫu, Hana tự dựng nội dung bằng Puck                                                                                                              |
+| Q12        | Có trang Câu hỏi thường gặp riêng; FAQ là collection `faqs` dùng chung                                                                                                            |
+| Q13        | Form newsletter: chữ và lựa chọn sửa trong CMS; GĐ này chỉ thu email, gửi bản tin tự động vẫn ở BACKLOG                                                                           |

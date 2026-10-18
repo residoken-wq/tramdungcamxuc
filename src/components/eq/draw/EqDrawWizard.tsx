@@ -115,7 +115,7 @@ export function EqDrawWizard({
     <div className="w-full max-w-3xl mx-auto py-8 sm:py-12 px-4 sm:px-6">
       {/* Thông báo lỗi */}
       {error && (
-        <div className="mb-6 p-4 rounded-2xl bg-accent-pink/10 border border-accent-pink/30 text-accent-pink text-sm font-sans text-center">
+        <div className="mb-6 p-4 rounded-2xl bg-accent-pink/10 border border-accent-pink/30 text-bright-magenta text-sm font-sans text-center">
           {error}
         </div>
       )}
@@ -177,7 +177,7 @@ export function EqDrawWizard({
                     disabled={!isHydrated || isDrawing}
                     className="p-3 rounded-2xl bg-warm-ivory border border-deep-navy/15 hover:border-bright-magenta hover:bg-soft-pink/40 text-center transition-all motion-reduce:transition-none group focus:outline-none focus:ring-2 focus:ring-bright-magenta disabled:opacity-50"
                   >
-                    <span className="block font-ui text-[11px] font-bold text-bright-magenta/70 uppercase">
+                    <span className="block font-ui text-[11px] font-bold text-bright-magenta uppercase">
                       {kw.code}
                     </span>
                     <span className="block font-display text-lg sm:text-xl text-deep-navy group-hover:text-bright-magenta transition-colors mt-0.5">

@@ -211,7 +211,7 @@ export function DigitalToolCheckoutForm({
               <Link
                 href="/dieu-khoan-su-dung"
                 target="_blank"
-                className="text-bright-magenta underline hover:text-accent-pink font-semibold"
+                className="text-bright-magenta underline hover:text-deep-navy font-semibold"
               >
                 {vi.checkout.termsLink}
               </Link>{' '}
@@ -219,7 +219,7 @@ export function DigitalToolCheckoutForm({
               <Link
                 href="/gia-thanh-toan"
                 target="_blank"
-                className="text-bright-magenta underline hover:text-accent-pink font-semibold"
+                className="text-bright-magenta underline hover:text-deep-navy font-semibold"
               >
                 {vi.checkout.pricingPolicyLink}
               </Link>

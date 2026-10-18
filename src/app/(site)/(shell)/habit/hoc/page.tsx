@@ -87,7 +87,7 @@ export default async function HabitLearningDashboardPage() {
             <div className="mt-6">
               <Link
                 href="/habit/hoc"
-                className="inline-flex items-center justify-center rounded-xl bg-accent-pink px-5 py-2.5 font-ui text-sm font-bold text-warm-ivory shadow transition-all hover:bg-bright-magenta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink motion-reduce:transition-none"
+                className="inline-flex items-center justify-center rounded-xl bg-deep-navy px-5 py-2.5 font-ui text-sm font-bold text-warm-ivory shadow transition-all hover:bg-deep-navy/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-deep-navy motion-reduce:transition-none"
               >
                 {vi.learning.dashboard.retry}
               </Link>

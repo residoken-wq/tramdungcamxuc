@@ -1,6 +1,7 @@
 import { vi } from '../lib/i18n/vi'
 import { detailLivePreview } from '@/lib/live-preview'
 import {
+  checkbox,
   contentCollection,
   image,
   relation,
@@ -27,6 +28,9 @@ export const Posts = contentCollection('posts', 'Bài viết và video', vi.cms.
     { defaultValue: 'article' },
   ),
   image('thumbnail', 'Ảnh đại diện'),
+  checkbox('featured', 'Bài nổi bật trên trang Tài nguyên', false, {
+    admin: { description: 'Bật để đưa bài lên vị trí nổi bật đầu danh sách bài viết.' },
+  }),
   url('videoUrl', 'Liên kết video'),
   richText('content', 'Nội dung'),
   relation('ctaProduct', 'Sản phẩm giới thiệu', 'products'),

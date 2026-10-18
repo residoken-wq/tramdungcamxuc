@@ -198,7 +198,7 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | T3-02  | Luồng rút thẻ (ngẫu nhiên / theo từ khóa A–Z) + giới hạn dùng thử 21 ngày                                  | [REVIEW] | T3-01, T2-18  | Laptop   | **ĐẠT** 15/10 (PR #121) – Planning sửa T3-02c (khách mất thẻ sau khi rút); IT duyệt; biên bản `reviews/T3-02.md`                                                                         |
 | T3-04  | Lưu thẻ + ghi suy ngẫm + "Thẻ đã lưu" trong tài khoản                                                      | [REVIEW] | T3-02         | PC nhà   | **ĐẠT** 15/10 (PR #127) – Planning sửa T3-04c (action tin id khách từ trình duyệt → xóa / ghi đè thẻ của người khác); IT duyệt; biên bản `reviews/T3-04.md`; merge xong trả 🔒 Migration |
 | T3-06a | Chuẩn bị cổng GĐ 2 + GĐ 3 phía code: e2e hành trình Habit + EQ, axe trang mới, rà a11y                     | –        | T2-22 merge   | PC nhà   | QA ĐẠT 17/10 – PR #145, Planning sửa T3-06c (gỡ alias slug trong kiểm quyền, test hành trình, 6 lỗi tương phản / a11y thật) ([review](reviews/T3-06a.md)) · ✅ merge 17/10               |
-| T3-07  | Rà tương phản chữ toàn site + test chặn lặp lại (lỗi cổng GĐ 2/3 phát hiện)                                | –        | PR #145 merge | PC nhà   | Giao 17/10 – `prompts/T3-07.md` (sau khi PR #145 merge)                                                                                                                                  |
+| T3-07  | Rà tương phản chữ toàn site + test chặn lặp lại (lỗi cổng GĐ 2/3 phát hiện)                                | –        | PR #145 merge | PC nhà   | QA ĐẠT 17/10 – PR #149, Planning sửa T3-07c (3 lỗ hổng test chặn, 4 hover hồng, 1 ngoại lệ sai) ([review](reviews/T3-07.md)) · ✅ merge 17/10                                         |
 | T3-06  | E2E luồng EQ + cổng GĐ 3                                                                                   | [HANA]   | tất cả        | Planning | –                                                                                                                                                                                        |
 
 ### CMS-UX cho Hana (kế hoạch `docs/plan/CMS_UX.md`, viết 15/10)
@@ -215,6 +215,21 @@ Mở từ 06/10/2026. Đã tách T1-02, T1-12, T1-17 theo `docs/plan/ESTIMATES.m
 | CM-07  | Hướng dẫn CMS + buổi thử với Hana (7 việc, bấm giờ)        | CM-07a       | Planning    | Kế hoạch `docs/plan/CM-07.md` – chờ chốt ngày thử                                                                                                                                      |
 
 Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ CM-03 ‖ CM-05.
+
+### Sitemap v2 (kế hoạch `docs/plan/SITEMAP_V2.md`, card `SM.md`, chốt 17/10)
+
+**🔒 Migration: SM-01 (Laptop) → SM-02 (PC nhà)**
+
+| Mã    | Việc                                                 | Phụ thuộc           | Máy      | Trạng thái                                                                                                                                  |
+| ----- | ---------------------------------------------------- | ------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| SM-01 | CMS schema: menu con, faqs, teamMembers, field mới   | –                   | Laptop   | Code xong 17/10 (Planning làm trực tiếp, nhánh `claude/cool-ptolemy-cs8kls`) – chờ IT duyệt `REVIEW-REQUIRED` + merge; `decisions/SM-01.md` |
+| SM-02 | Menu con, đường dẫn mới, 301, migration dữ liệu link | SM-01 merge, T3-06a | PC nhà   | Chờ SM-01 (`prompts/SM-02.md`)                                                                                                              |
+| SM-03 | Khối Puck đợt A (trang chủ + lộ trình)               | SM-01               | –        | –                                                                                                                                           |
+| SM-04 | Khối Puck đợt B (Về Trạm + Coach 1:1)                | SM-01               | –        | –                                                                                                                                           |
+| SM-05 | Trang Tài nguyên + newsletter                        | SM-02               | –        | –                                                                                                                                           |
+| SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01               | –        | –                                                                                                                                           |
+| SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | –        | –                                                                                                                                           |
+| SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Planning | –                                                                                                                                           |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 

@@ -81,7 +81,7 @@ export async function ToolPaywall({
           {showTrial && (
             <Link
               href={trialUrl}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-accent-pink text-warm-ivory font-ui font-bold text-sm hover:bg-accent-pink/90 transition-all motion-reduce:transition-none shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center min-h-[48px] px-6 py-3 rounded-full bg-accent-pink text-white font-ui font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-all motion-reduce:transition-none"
             >
               {vi.trial.startButton(trialDays)}
             </Link>
