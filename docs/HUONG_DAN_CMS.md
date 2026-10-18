@@ -34,6 +34,7 @@
    - [3.17. Quản lý Thẻ đã lưu và Bảo mật suy ngẫm của khách hàng (SavedCards)](#317-quản-lý-thẻ-đã-lưu-và-bảo-mật-suy-ngẫm-của-khách-hàng-savedcards)
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
+   - [5.9. Các khối mới (Sitemap v2)](#59-các-khối-mới-sitemap-v2)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
 8. [Quản lý Khách tiềm năng (Leads) và Xuất file CSV](#8-quản-lý-khách-tiềm-năng-leads-và-xuất-file-csv)
@@ -1256,6 +1257,57 @@ Màn hình trình dựng gồm 3 khu vực:
 
 ![Lưu nháp, Xuất bản và Xem trang](images/huong-dan/17-luu-nhap-va-xuat-ban.png)
 <!-- ẢNH 17: thanh trên cùng của Puck Editor với các nút Lưu nháp, Xuất bản và Xem trang -->
+
+---
+
+### 5.9. Các khối mới (Sitemap v2)
+
+Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối kéo thả mới và nâng cấp 7 khối hiện có để Hana dễ dàng tùy biến Trang chủ và Trang Lộ trình chuyển mình:
+
+#### 1. Khối Lưới thẻ icon / số thứ tự (`IconCardGrid`)
+- **Vị trí**: Nhóm **Nội dung**.
+- **Mục đích**: Trình bày danh sách đặc điểm, lợi ích hoặc các bước tiến trình một cách gọn gàng, trực quan.
+- **Cách dùng**:
+  - Chọn **Kiểu hiển thị**:
+    - `Icon`: Hiển thị biểu tượng cảm xúc hữu cơ (hoa sen `lotus`, chiếc lá `leaf`, bướm `butterfly`, ngọn đuốc, trái tim...).
+    - `Số thứ tự`: Hiển thị số đếm nổi bật `01, 02, 03` thích hợp cho các bước quy trình.
+  - Chọn **Số cột**: Hỗ trợ 2, 3 hoặc 4 cột linh hoạt.
+  - Mỗi thẻ cho phép nhập: Tiêu đề thẻ, Mô tả chi tiết, Nhãn phụ (badge) và Link điều hướng (tùy chọn).
+
+#### 2. Khối Điểm nhấn thông điệp (`Callout`)
+- **Vị trí**: Nhóm **Nội dung**.
+- **Mục đích**: Thu hút ánh nhìn vào một câu trích dẫn tâm đắc, lời cam kết đồng hành hoặc thông điệp cốt lõi của Hana.
+- **Cách dùng**:
+  - Chọn **Sắc thái (`tone`)**:
+    - `Mặc định` (`default`): Thẻ nền xanh thẫm `deep-navy` sang trọng, chữ trắng, câu quote font Playfair Display Italic và nút kêu gọi hành động `accent-pink` rực rỡ.
+    - `Tĩnh lặng` (`calm`): Thẻ nền tím sương `lavender-mist` nhẹ nhàng, chữ xanh thẫm sâu lắng.
+  - Nhập Tiêu đề lớn, Câu nói/trích dẫn, Tên tác giả, Chức danh và Nút hành động (nếu muốn dẫn về trang Đặt lịch).
+
+#### 3. Khối Thẻ gói Growth Mirror (`PackageCards`)
+- **Vị trí**: Nhóm **Bán hàng**.
+- **Mục đích**: Hiển thị trực quan 3 gói đồng hành (CLEAR, BUILD, SHINE) với đầy đủ cấu phần, giá trị thực tế và mức ưu đãi.
+- **Cách dùng**:
+  - Chọn danh sách các gói đồng hành từ mục `products` (loại `package`).
+  - **Gói nổi bật (`highlightPackageId`)**: Chọn gói bạn muốn khuyến nghị học viên nhất (ví dụ: gói `BUILD`). Gói được chọn sẽ khoác nền xanh thẫm `deep-navy` nổi bật với huy hiệu `ĐỀ XUẤT CHO BẠN`.
+  - Hệ thống **tự động tính tổng giá trị và % ưu đãi** từ cấu phần gói trong CMS, Hana không cần nhập tay.
+  - Nút bấm tự động dẫn về form đặt lịch tư vấn gói tương ứng, tuyệt đối không tạo đơn thanh toán trực tiếp.
+
+#### 4. Khối Hệ sinh thái giải pháp (`SolutionEcosystem`)
+- **Vị trí**: Nhóm **Bán hàng**.
+- **Mục đích**: Giới thiệu toàn cảnh giải pháp của Trạm Dừng Cảm Xúc dành cho cá nhân và doanh nghiệp.
+- **Cách dùng**:
+  - Chọn **Biến thể (`variant`)**:
+    - `3 trụ cột` (`3-pillar`): Tập trung vào 3 chặng hành trình (Tự soi chiếu, Khai vấn 1:1, Chuyển mình bền bỉ).
+    - `Toàn bộ hệ sinh thái` (`full`): Hiển thị đồng thời cả dịch vụ cá nhân và các chương trình đào tạo doanh nghiệp B2B.
+  - Dữ liệu được liên kết trực tiếp từ danh mục **Dịch vụ đồng hành** (`services`) và **Chương trình doanh nghiệp** (`programs`).
+
+#### 5. Khối Chuyển đổi chân trang (`CTASection`)
+- **Vị trí**: Nhóm **Chuyển đổi**.
+- **Mục đích**: Khối kêu gọi hành động quyết định đặt ở cuối mỗi trang, thôi thúc độc giả đăng ký phiên trải nghiệm hoặc kết nối.
+- **Cách dùng**:
+  - Chọn **Biến thể (`variant`)**: `Mặc định` (đầy đủ tiêu đề 2 tầng màu, dòng cảm xúc và dải chỉ số niềm tin) hoặc `Tối giản` (gọn gàng, tập trung).
+  - Bật/tắt **Dải chỉ số niềm tin (`showProofStrip`)**: Hiển thị nhanh các con số bảo chứng (10+ năm kinh nghiệm, 500+ giờ khai vấn, tiêu chuẩn ICF ACC...).
+  - Thiết lập nút kêu gọi dẫn về trang Đặt phiên trải nghiệm 149.000đ hoặc trang Khai vấn.
 
 ---
 
