@@ -196,6 +196,11 @@ export const vi = {
     wizard: {
       title: 'Tạo sản phẩm mới',
       subtitle: 'Trình hướng dẫn từng bước dành riêng cho Hana – đơn giản, rõ ràng và trực quan.',
+      listButtons: {
+        product: '+ Tạo sản phẩm (từng bước)',
+        lesson: '+ Thêm bài học (từng bước)',
+        workshop: '+ Lên lịch workshop (từng bước)',
+      },
       steps: {
         step1: {
           number: 1,

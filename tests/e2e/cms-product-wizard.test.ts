@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from '@playwright/test'
+import { vi } from '@/lib/i18n/vi'
 
 /**
  * End-to-End Test cho Wizard "Tạo sản phẩm" 5 bước (CM-04).
@@ -258,6 +259,12 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       if (pkgUrlMatch) {
         createdProductIds.push(parseInt(pkgUrlMatch[1], 10))
       }
+
+      // ==========================================
+      // LUỒNG 3: KIỂM TRA NÚT BANNER TRÊN LIST TABLE
+      // ==========================================
+      await page.goto('/admin/collections/products', { waitUntil: 'domcontentloaded' })
+      await expect(page.getByText(vi.cms.wizard.listButtons.product)).toBeVisible()
     } finally {
       // Dọn dẹp dữ liệu sản phẩm và admin user
       for (const slug of createdSlugs) {
