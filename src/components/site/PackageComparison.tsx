@@ -27,12 +27,7 @@ export interface PackageComparisonProps {
   note?: string
   showPaymentPolicyLink?: boolean
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     packages?: PublicProduct[]
@@ -312,9 +307,7 @@ export function PackageComparison({
                         {pkg.discountPercent != null && pkg.discountPercent > 0 ? (
                           <span
                             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider shadow-sm ${
-                              isHl
-                                ? 'bg-accent-pink text-white'
-                                : 'bg-bright-magenta text-white'
+                              isHl ? 'bg-accent-pink text-white' : 'bg-bright-magenta text-white'
                             }`}
                           >
                             Ưu đãi {pkg.discountPercent}%
@@ -335,7 +328,10 @@ export function PackageComparison({
               {/* Package Booking Buttons Row (Conditional) */}
               {showPackageButtons && (
                 <tr className="border-t border-deep-navy/10 bg-lavender-mist/20">
-                  <th scope="row" className="py-5 px-6 font-ui text-sm font-semibold text-deep-navy/70">
+                  <th
+                    scope="row"
+                    className="py-5 px-6 font-ui text-sm font-semibold text-deep-navy/70"
+                  >
                     Đặt phiên trải nghiệm
                   </th>
                   {pkgs.map((pkg) => {
@@ -399,9 +395,7 @@ export function PackageComparison({
                       pkg.discountPercent > 0 && (
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${
-                            isHl
-                              ? 'bg-accent-pink text-white'
-                              : 'bg-bright-magenta text-white'
+                            isHl ? 'bg-accent-pink text-white' : 'bg-bright-magenta text-white'
                           }`}
                         >
                           Ưu đãi {pkg.discountPercent}%
@@ -442,9 +436,7 @@ export function PackageComparison({
                       >
                         <span className="font-medium">{row.label}</span>
                         <span
-                          className={`font-bold ${
-                            isHl ? 'text-soft-pink' : 'text-bright-magenta'
-                          }`}
+                          className={`font-bold ${isHl ? 'text-soft-pink' : 'text-bright-magenta'}`}
                         >
                           {cell.text}
                         </span>

@@ -1,9 +1,6 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
-import {
-  SolutionEcosystem,
-  type SolutionEcosystemProps,
-} from '@/components/site/SolutionEcosystem'
+import { SolutionEcosystem, type SolutionEcosystemProps } from '@/components/site/SolutionEcosystem'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createProductExternalField } from '../product-field'
 import { createServiceExternalField } from '../service-field'
@@ -56,7 +53,8 @@ export const SolutionEcosystemBlock: ComponentConfig<SolutionEcosystemProps> = {
           label: 'Chọn chương trình',
         }),
       },
-      getItemSummary: (item) => (item?.programId ? `Chương trình ID: ${item.programId}` : 'Chưa chọn'),
+      getItemSummary: (item) =>
+        item?.programId ? `Chương trình ID: ${item.programId}` : 'Chưa chọn',
     },
 
     bgColor: {

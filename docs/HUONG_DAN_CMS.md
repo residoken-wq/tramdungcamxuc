@@ -1265,6 +1265,7 @@ Màn hình trình dựng gồm 3 khu vực:
 Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối kéo thả mới và nâng cấp 7 khối hiện có để Hana dễ dàng tùy biến Trang chủ và Trang Lộ trình chuyển mình:
 
 #### 1. Khối Lưới thẻ icon / số thứ tự (`IconCardGrid`)
+
 - **Vị trí**: Nhóm **Nội dung**.
 - **Mục đích**: Trình bày danh sách đặc điểm, lợi ích hoặc các bước tiến trình một cách gọn gàng, trực quan.
 - **Cách dùng**:
@@ -1275,6 +1276,7 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
   - Mỗi thẻ cho phép nhập: Tiêu đề thẻ, Mô tả chi tiết, Nhãn phụ (badge) và Link điều hướng (tùy chọn).
 
 #### 2. Khối Điểm nhấn thông điệp (`Callout`)
+
 - **Vị trí**: Nhóm **Nội dung**.
 - **Mục đích**: Thu hút ánh nhìn vào một câu trích dẫn tâm đắc, lời cam kết đồng hành hoặc thông điệp cốt lõi của Hana.
 - **Cách dùng**:
@@ -1284,6 +1286,7 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
   - Nhập Tiêu đề lớn, Câu nói/trích dẫn, Tên tác giả, Chức danh và Nút hành động (nếu muốn dẫn về trang Đặt lịch).
 
 #### 3. Khối Thẻ gói Growth Mirror (`PackageCards`)
+
 - **Vị trí**: Nhóm **Bán hàng**.
 - **Mục đích**: Hiển thị trực quan 3 gói đồng hành (CLEAR, BUILD, SHINE) với đầy đủ cấu phần, giá trị thực tế và mức ưu đãi.
 - **Cách dùng**:
@@ -1293,6 +1296,7 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
   - Nút bấm tự động dẫn về form đặt lịch tư vấn gói tương ứng, tuyệt đối không tạo đơn thanh toán trực tiếp.
 
 #### 4. Khối Hệ sinh thái giải pháp (`SolutionEcosystem`)
+
 - **Vị trí**: Nhóm **Bán hàng**.
 - **Mục đích**: Giới thiệu toàn cảnh giải pháp của Trạm Dừng Cảm Xúc dành cho cá nhân và doanh nghiệp.
 - **Cách dùng**:
@@ -1302,6 +1306,7 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
   - Dữ liệu được liên kết trực tiếp từ danh mục **Dịch vụ đồng hành** (`services`) và **Chương trình doanh nghiệp** (`programs`).
 
 #### 5. Khối Chuyển đổi chân trang (`CTASection`)
+
 - **Vị trí**: Nhóm **Chuyển đổi**.
 - **Mục đích**: Khối kêu gọi hành động quyết định đặt ở cuối mỗi trang, thôi thúc độc giả đăng ký phiên trải nghiệm hoặc kết nối.
 - **Cách dùng**:

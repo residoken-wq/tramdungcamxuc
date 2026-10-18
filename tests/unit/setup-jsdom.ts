@@ -1,7 +1,6 @@
 // @ts-expect-error No type declarations for jsdom in this project
 import { JSDOM } from 'jsdom'
 
-
 const dom = new JSDOM('<!doctype html><html><body></body></html>', {
   url: 'http://localhost',
 })

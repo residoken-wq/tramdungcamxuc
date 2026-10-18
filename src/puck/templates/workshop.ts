@@ -60,7 +60,12 @@ export const workshopTemplate: Data = {
         id: 'workshop-stats',
         version: 2,
         stats: [
-          { value: '[MẪU] 2,5 giờ', label: '[MẪU] Thời lượng chuyên sâu', description: '', icon: '' },
+          {
+            value: '[MẪU] 2,5 giờ',
+            label: '[MẪU] Thời lượng chuyên sâu',
+            description: '',
+            icon: '',
+          },
           { value: '[MẪU] 12 người', label: '[MẪU] Giới hạn nhóm nhỏ', description: '', icon: '' },
           { value: '[MẪU] 100%', label: '[MẪU] Thực hành trải nghiệm', description: '', icon: '' },
         ],

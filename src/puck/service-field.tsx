@@ -2,9 +2,7 @@ import type { ExternalField } from '@puckeditor/core'
 
 export function createServiceExternalField<
   T extends string | number | undefined = string | number | undefined,
->(options?: {
-  label?: string
-}): ExternalField<T> {
+>(options?: { label?: string }): ExternalField<T> {
   const { label = 'Dịch vụ đồng hành' } = options || {}
 
   return {
@@ -29,13 +27,8 @@ export function createServiceExternalField<
         return []
       }
     },
-    mapProp: (item: { id?: string | number }): T =>
-      (item?.id != null ? String(item.id) : '') as T,
-    mapRow: (item: {
-      id?: string | number
-      name?: string
-      saleStatus?: string
-    }) => ({
+    mapProp: (item: { id?: string | number }): T => (item?.id != null ? String(item.id) : '') as T,
+    mapRow: (item: { id?: string | number; name?: string; saleStatus?: string }) => ({
       'Tên dịch vụ': item.name || '',
       'Trạng thái': item.saleStatus || '',
     }),

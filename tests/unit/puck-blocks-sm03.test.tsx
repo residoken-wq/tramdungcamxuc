@@ -197,23 +197,13 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
   describe('Empty CMS Data Handling (Editor Mode vs Public Page)', () => {
     it('PackageCards: renders null on public page when packages are empty', () => {
       const { container } = render(
-        <PackageCards
-          packages={[]}
-          puck={{ isEditing: false }}
-          _resolved={{ packages: [] }}
-        />,
+        <PackageCards packages={[]} puck={{ isEditing: false }} _resolved={{ packages: [] }} />,
       )
       expect(container.firstChild).toBeNull()
     })
 
     it('PackageCards: renders placeholder in editor mode when packages are empty', () => {
-      render(
-        <PackageCards
-          packages={[]}
-          puck={{ isEditing: true }}
-          _resolved={{ packages: [] }}
-        />,
-      )
+      render(<PackageCards packages={[]} puck={{ isEditing: true }} _resolved={{ packages: [] }} />)
       expect(screen.getByText(vi.builder.noDataSelectInCms)).toBeTruthy()
     })
 
@@ -229,10 +219,7 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
 
     it('SolutionEcosystem: renders placeholder in editor mode when services and programs are empty', () => {
       render(
-        <SolutionEcosystem
-          puck={{ isEditing: true }}
-          _resolved={{ services: [], programs: [] }}
-        />,
+        <SolutionEcosystem puck={{ isEditing: true }} _resolved={{ services: [], programs: [] }} />,
       )
       expect(screen.getByText(vi.builder.noDataSelectInCms)).toBeTruthy()
     })

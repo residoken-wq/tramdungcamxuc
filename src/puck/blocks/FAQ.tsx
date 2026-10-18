@@ -103,18 +103,15 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     items: [
       {
         question: '[MẪU] Câu hỏi thường gặp 1',
-        answer:
-          '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
+        answer: '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
       },
       {
         question: '[MẪU] Câu hỏi thường gặp 2',
-        answer:
-          '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
+        answer: '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
       },
       {
         question: '[MẪU] Câu hỏi thường gặp 3',
-        answer:
-          '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
+        answer: '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
       },
     ],
     bgColor: 'warm-ivory',

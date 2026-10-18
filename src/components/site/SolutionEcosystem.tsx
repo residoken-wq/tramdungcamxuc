@@ -46,12 +46,7 @@ export interface SolutionEcosystemProps {
   col3Description?: string
   col3Programs?: Array<{ programId?: string | number }>
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     products?: PublicProduct[]
@@ -291,7 +286,9 @@ export function SolutionEcosystem({
 
               <div className="space-y-4">
                 {programs.length === 0 ? (
-                  <p className="text-xs italic text-deep-navy/60">Chưa có chương trình nào được chọn</p>
+                  <p className="text-xs italic text-deep-navy/60">
+                    Chưa có chương trình nào được chọn
+                  </p>
                 ) : (
                   programs.map((prog) => {
                     const label = prog.ctaLabel || 'Trao đổi về chương trình'
@@ -304,7 +301,9 @@ export function SolutionEcosystem({
                         className="rounded-xl border border-deep-navy/10 bg-warm-ivory/60 p-4 flex flex-col justify-between gap-3"
                       >
                         <div>
-                          <h4 className="font-ui font-bold text-base text-deep-navy">{prog.name}</h4>
+                          <h4 className="font-ui font-bold text-base text-deep-navy">
+                            {prog.name}
+                          </h4>
                           {desc && (
                             <p className="font-ui text-xs text-deep-navy/75 leading-relaxed mt-1">
                               {desc}

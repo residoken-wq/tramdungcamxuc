@@ -255,9 +255,7 @@ export async function resolveServerData(
       pageIdsToFetch.add(item.props.pageId as string | number)
     }
     if (
-      (item.type === 'Callout' ||
-        item.type === 'PackageCards' ||
-        item.type === 'CTASection') &&
+      (item.type === 'Callout' || item.type === 'PackageCards' || item.type === 'CTASection') &&
       item.props.buttonLinkType === 'page' &&
       item.props.buttonPageId
     ) {
@@ -747,8 +745,7 @@ export async function resolveServerData(
       const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
       item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
     } else if (item.type === 'CTASection') {
-      const list = item.props.testimonials as
-        Array<{ testimonialId?: string | number }> | undefined
+      const list = item.props.testimonials as Array<{ testimonialId?: string | number }> | undefined
       const ids: Array<string | number> = []
       if (Array.isArray(list)) {
         for (const m of list) {
@@ -757,9 +754,8 @@ export async function resolveServerData(
       }
       const resolvedList = ids
         .map((id) => testimonialMap.get(String(id)))
-        .filter(
-          (t): t is PublicTestimonial =>
-            Boolean(t && t.consent === true && t.photo && t.photo.url),
+        .filter((t): t is PublicTestimonial =>
+          Boolean(t && t.consent === true && t.photo && t.photo.url),
         )
 
       let resolvedButtonUrl: string | null = null

@@ -15,12 +15,7 @@ export interface TestimonialGridProps {
   limit?: 3 | 6
   columns?: 2 | 3
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     testimonials?: PublicTestimonial[]
