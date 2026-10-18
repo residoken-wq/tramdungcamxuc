@@ -1,6 +1,6 @@
 # Review CM-07a – Đổi chữ "Wizard" trước buổi thử với Hana
 
-**Kết luận: ĐẠT** (17/10). Không có chỗ REVIEW-REQUIRED (chỉ đổi chữ). PR #150 do Planning mở.
+**Kết luận: ĐẠT** (17/10). Không có chỗ REVIEW-REQUIRED (chỉ đổi chữ). PR #150 do Planning mở; gộp main (xung đột 1 dòng HUONG_DAN), CI xanh, đã merge.
 
 Kiểm trên máy QA (DB Postgres thật):
 
