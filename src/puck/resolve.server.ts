@@ -172,8 +172,8 @@ export async function resolveServerData(
           }
         }
       }
-    } else if (item.type === 'TestimonialSlider') {
-      const manuals = item.props.manualTestimonials as
+    } else if (item.type === 'TestimonialSlider' || item.type === 'CTASection') {
+      const manuals = (item.props.manualTestimonials || item.props.testimonials) as
         Array<{ testimonialId?: string | number }> | undefined
       if (Array.isArray(manuals)) {
         for (const m of manuals) {
@@ -250,12 +250,14 @@ export async function resolveServerData(
       }
     }
 
-    // Collect page IDs for CTAButton, Callout & PackageCards (linkType = page)
+    // Collect page IDs for CTAButton, Callout, PackageCards & CTASection (linkType = page)
     if (item.type === 'CTAButton' && item.props.linkType === 'page' && item.props.pageId) {
       pageIdsToFetch.add(item.props.pageId as string | number)
     }
     if (
-      (item.type === 'Callout' || item.type === 'PackageCards') &&
+      (item.type === 'Callout' ||
+        item.type === 'PackageCards' ||
+        item.type === 'CTASection') &&
       item.props.buttonLinkType === 'page' &&
       item.props.buttonPageId
     ) {
@@ -744,6 +746,39 @@ export async function resolveServerData(
     } else if (item.type === 'Callout') {
       const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
       item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+    } else if (item.type === 'CTASection') {
+      const list = item.props.testimonials as
+        Array<{ testimonialId?: string | number }> | undefined
+      const ids: Array<string | number> = []
+      if (Array.isArray(list)) {
+        for (const m of list) {
+          if (m?.testimonialId) ids.push(m.testimonialId)
+        }
+      }
+      const resolvedList = ids
+        .map((id) => testimonialMap.get(String(id)))
+        .filter(
+          (t): t is PublicTestimonial =>
+            Boolean(t && t.consent === true && t.photo && t.photo.url),
+        )
+
+      let resolvedButtonUrl: string | null = null
+      if (item.props.buttonLinkType === 'page') {
+        const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
+        const slug = pId ? pageMap.get(pId) : null
+        resolvedButtonUrl = slug ? (slug === 'trang-chu' ? '/' : `/${slug}`) : null
+      } else if (item.props.buttonLinkType === 'url') {
+        const rawUrl = item.props.buttonUrl ?? item.props.buttonLink
+        resolvedButtonUrl = typeof rawUrl === 'string' && rawUrl.length > 0 ? rawUrl : null
+      } else {
+        const rawUrl = item.props.buttonLink
+        resolvedButtonUrl = typeof rawUrl === 'string' && rawUrl.length > 0 ? rawUrl : null
+      }
+
+      item.props._resolved = {
+        testimonials: resolvedList,
+        buttonUrl: resolvedButtonUrl,
+      }
     } else if (item.type === 'LeadForm') {
       const rId = item.props.resourceProductId ? String(item.props.resourceProductId) : ''
       const rProd = rId ? productMap.get(rId) : null
