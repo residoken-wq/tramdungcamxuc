@@ -2,6 +2,8 @@
 // unless it is copied verbatim from the project brief (AGENTS.md / Planning docx).
 // Prices are the tentative prices from AGENTS.md and Growth_Mirror_Pricing_Calculator.xlsx.
 
+import { PATHS } from '../src/lib/paths'
+
 export const S = '[MẪU]'
 
 /** Minimal Lexical editor state with one paragraph per string. */
@@ -416,7 +418,7 @@ export const pages = [
         imageUrl: '',
         imageAlt: '',
         buttonText: 'Tìm hiểu thêm về người đồng hành',
-        buttonLink: '/ve-hana',
+        buttonLink: PATHS.about,
         bgColor: 'warm-ivory',
         padding: 'lg',
       }),
@@ -471,8 +473,8 @@ export const pages = [
     ],
   },
   {
-    slug: 've-hana',
-    title: `${S} Về Hana`,
+    slug: 've-tram',
+    title: `${S} Về Trạm`,
     blocks: [
       block('HeroImage', {
         version: 1,
@@ -525,7 +527,7 @@ export const pages = [
         bgColor: 'lavender-mist',
         padding: 'lg',
       }),
-      cta('Đặt phiên trải nghiệm', '/coaching/growth-mirror', 'primary', 'lg'),
+      cta('Đặt phiên trải nghiệm', PATHS.journey, 'primary', 'lg'),
     ],
   },
   {
@@ -582,8 +584,8 @@ export const pages = [
     ],
   },
   {
-    slug: 'coaching/growth-mirror',
-    title: `${S} Growth Mirror`,
+    slug: 'lo-trinh-chuyen-minh',
+    title: `${S} Lộ trình Chuyển mình không chênh vênh`,
     blocks: [
       header(
         `${S} GROWTH MIRROR`,
@@ -693,18 +695,62 @@ export const pages = [
       }),
     ],
   },
+  // Minimal pages so the sitemap v2 menu has no dead links; SM-06 / SM-07 rebuild them.
+  {
+    slug: 'lien-he',
+    title: `${S} Liên hệ`,
+    blocks: [
+      header(
+        `${S} LẮNG NGHE ĐỂ`,
+        `${S} KIẾN TẠO SỰ CHUYỂN HÓA`,
+        `${S} Dòng cảm xúc chờ Hana viết`,
+        'h1',
+      ),
+      block('B2BBriefForm', {
+        version: 1,
+        title: `${S} Gửi yêu cầu cho Trạm`,
+        description: `${S} Mô tả chờ Hana viết.`,
+        submitLabel: 'Gửi yêu cầu',
+      }),
+    ],
+  },
+  {
+    slug: 'cong-dong',
+    title: `${S} Cộng đồng của Trạm`,
+    blocks: [
+      header(`${S} CỘNG ĐỒNG`, `${S} CỦA TRẠM`, `${S} Dòng cảm xúc chờ Hana viết`, 'h1'),
+      block('ZaloButton', {
+        version: 1,
+        target: 'group',
+        label: 'Tham gia nhóm Zalo',
+        variant: 'primary',
+        size: 'md',
+        align: 'center',
+      }),
+    ],
+  },
 ]
 
-export type NavItemSeed = {
+type NavLinkSeed = {
   label: string
   linkType: 'page' | 'url'
   page?: string
   url?: string
-  highlight?: boolean
+  description?: string
 }
 
-// Main menu order from AGENTS.md 8.1. `page` refers to a seeded page slug.
-export const mainMenu: NavItemSeed[] = [
+export type NavItemSeed = {
+  label: string
+  linkType: 'page' | 'url' | 'none'
+  page?: string
+  url?: string
+  highlight?: boolean
+  children?: { groupLabel?: string; items: NavLinkSeed[] }[]
+}
+
+// Menu seeded before sitemap v2. The seed replaces the menu only while it still equals this
+// (labels + targets), so a menu Hana has edited is never overwritten.
+export const legacyMainMenu: NavItemSeed[] = [
   { label: 'Về Hana', linkType: 'page', page: 've-hana' },
   { label: 'Thư viện', linkType: 'url', url: '/thu-vien' },
   { label: 'Test thói quen 5 phút', linkType: 'url', url: '/habit/chan-doan' },
@@ -716,6 +762,95 @@ export const mainMenu: NavItemSeed[] = [
     page: 'coaching/growth-mirror',
     highlight: true,
   },
+]
+
+// Sitemap v2 main menu (docs/plan/SITEMAP_V2.md §1.1, DECISIONS 17/10). `page` refers to a seeded
+// page slug. Labels and short descriptions follow Hana's sitemap; Hana edits them in the CMS.
+export const mainMenu: NavItemSeed[] = [
+  { label: 'Trang chủ', linkType: 'url', url: PATHS.home },
+  {
+    label: 'Sản phẩm',
+    linkType: 'none',
+    children: [
+      {
+        groupLabel: 'Dành cho Cá nhân',
+        items: [
+          {
+            label: 'Chuyển mình không chênh vênh',
+            description: 'Gói giải pháp',
+            linkType: 'page',
+            page: 'lo-trinh-chuyen-minh',
+          },
+          {
+            label: 'EQ Buddy',
+            description: 'Công cụ hỗ trợ cảm xúc',
+            linkType: 'url',
+            url: '/eq-buddy',
+          },
+          {
+            label: 'Habit Hack',
+            description: 'Công cụ rèn thói quen',
+            linkType: 'url',
+            url: '/habit/1-percent-better',
+          },
+          {
+            label: 'Coach 1:1',
+            description: 'Khai vấn chuyên sâu',
+            linkType: 'page',
+            page: 'coaching',
+          },
+        ],
+      },
+      {
+        groupLabel: 'Dành cho Doanh nghiệp',
+        items: [
+          {
+            label: 'EQ',
+            description: 'Giải pháp tổ chức',
+            linkType: 'url',
+            url: '/doanh-nghiep/eq-development-for-clarity',
+          },
+          {
+            label: 'Habit',
+            description: 'Giải pháp tổ chức',
+            linkType: 'url',
+            url: '/doanh-nghiep/habit-formation-for-resilience',
+          },
+          {
+            label: 'Coach 1:1',
+            description: 'Khai vấn chuyên sâu',
+            linkType: 'url',
+            url: '/coaching/thinking-mirror',
+          },
+        ],
+      },
+    ],
+  },
+  { label: 'Về Trạm', linkType: 'page', page: 've-tram' },
+  {
+    label: 'Tài nguyên miễn phí',
+    linkType: 'none',
+    children: [
+      {
+        items: [
+          {
+            label: 'Test thói quen 5 phút',
+            description: `${S} Chẩn đoán miễn phí`,
+            linkType: 'url',
+            url: PATHS.quiz,
+          },
+          {
+            label: 'Thư viện tài nguyên',
+            description: `${S} Tài nguyên miễn phí, bài viết`,
+            linkType: 'url',
+            url: PATHS.resources,
+          },
+        ],
+      },
+    ],
+  },
+  { label: 'Cộng đồng của Trạm', linkType: 'page', page: 'cong-dong' },
+  { label: 'Liên hệ', linkType: 'page', page: 'lien-he' },
 ]
 
 export const footerMenu: NavItemSeed[] = legalPages.map((p) => ({
