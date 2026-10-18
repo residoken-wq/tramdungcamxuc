@@ -428,6 +428,72 @@ describe('Product Wizard (CM-04) Unit Tests', () => {
       }
     })
 
+    it('publish: true stores the product as published, not as a draft', async () => {
+      mockHeadersValue = new Headers({
+        Authorization: `users JWT ${editorUser.token}`,
+        cookie: `payload-token=${editorUser.token}`,
+      })
+
+      const data: ProductWizardInput = {
+        type: 'digital_tool',
+        name: 'Công Cụ Xuất Bản',
+        slug: `publish-tool-${unique()}`,
+        web: 'habit',
+        saleStatus: 'on_sale',
+        price: 250000,
+        salePrice: 178000,
+        coverImage: testMediaId,
+      }
+
+      const res = await createProductFromWizard(data, { publish: true })
+      expect(res.success).toBe(true)
+      createdDocs.push({ collection: 'products', id: res.docId! })
+
+      const doc = await payload.findByID({
+        collection: 'products',
+        id: res.docId!,
+        overrideAccess: true,
+      })
+      expect(doc._status).toBe('published')
+    })
+
+    it('publishing a previously saved draft (docId) makes it published', async () => {
+      mockHeadersValue = new Headers({
+        Authorization: `users JWT ${editorUser.token}`,
+        cookie: `payload-token=${editorUser.token}`,
+      })
+
+      const data: ProductWizardInput = {
+        type: 'digital_tool',
+        name: 'Nháp Rồi Xuất Bản',
+        slug: `draft-then-publish-${unique()}`,
+        web: 'habit',
+        saleStatus: 'on_sale',
+        price: 250000,
+        coverImage: testMediaId,
+      }
+
+      const draft = await createProductFromWizard(data, { publish: false })
+      expect(draft.success).toBe(true)
+      createdDocs.push({ collection: 'products', id: draft.docId! })
+      const draftDoc = await payload.findByID({
+        collection: 'products',
+        id: draft.docId!,
+        draft: true,
+        overrideAccess: true,
+      })
+      expect(draftDoc._status).toBe('draft')
+
+      const published = await createProductFromWizard(data, { publish: true, docId: draft.docId })
+      expect(published.success).toBe(true)
+      const doc = await payload.findByID({
+        collection: 'products',
+        id: draft.docId!,
+        overrideAccess: true,
+      })
+      expect(doc._status).toBe('published')
+    })
+
     it('updates existing draft when docId is provided', async () => {
       mockHeadersValue = new Headers({
         Authorization: `users JWT ${editorUser.token}`,

@@ -156,6 +156,10 @@ export async function createWorkshopFromWizard(
       payloadData.product = clean.audienceProductIds[0]
     }
 
+    // Payload keeps `_status` at its 'draft' default unless it is sent: without this line
+    // "Xuất bản" saved a draft.
+    payloadData._status = isDraft ? 'draft' : 'published'
+
     if (options.docId) {
       const updatedDoc = isDraft
         ? await payload.update({

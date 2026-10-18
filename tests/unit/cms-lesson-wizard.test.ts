@@ -281,5 +281,37 @@ describe('Lesson Wizard (CM-06) Unit Tests', () => {
         expect(lessonInDb.stage).toBe('response')
       }
     })
+
+    it('publish: true stores the lesson as published, not as a draft', async () => {
+      mockHeadersValue = new Headers()
+      mockHeadersValue.set('Authorization', `JWT ${ownerToken}`)
+
+      const moduleRes = await createCourseModuleQuickAction({
+        title: `Chương xuất bản ${randomUUID().slice(0, 8)}`,
+        group: 'technique',
+        order: 6,
+      })
+      expect(moduleRes.success).toBe(true)
+      cleanupDocs.push({ collection: 'courseModules', id: moduleRes.docId! })
+
+      const lessonRes = await createLessonFromWizard(
+        {
+          moduleId: moduleRes.docId!,
+          title: 'Bài xuất bản thử',
+          stage: 'none',
+          order: 1,
+          videoId: 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+          durationInput: '05:30',
+          isFreePreview: true,
+        },
+        { publish: true },
+      )
+      expect(lessonRes.success).toBe(true)
+      cleanupDocs.push({ collection: 'lessons', id: lessonRes.docId! })
+
+      const lessonInDb = await payload.findByID({ collection: 'lessons', id: lessonRes.docId! })
+      expect(lessonInDb._status).toBe('published')
+      expect(lessonInDb.durationSec).toBe(330)
+    })
   })
 })

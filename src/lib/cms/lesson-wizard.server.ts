@@ -5,10 +5,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { isAdminUser } from '@/lib/auth/access'
 import { vi } from '@/lib/i18n/vi'
-import {
-  validateLessonWizardData,
-  type LessonWizardInput,
-} from './lesson-wizard-schema'
+import { validateLessonWizardData, type LessonWizardInput } from './lesson-wizard-schema'
 
 export interface CourseModuleOption {
   id: number | string
@@ -73,9 +70,7 @@ export async function getCourseModulesForWizard(): Promise<CourseModuleOption[]>
 /**
  * Lấy thứ tự bài học tiếp theo (gợi ý) trong một nhóm bài học cụ thể.
  */
-export async function getNextLessonOrderByModule(
-  moduleId: number | string,
-): Promise<number> {
+export async function getNextLessonOrderByModule(moduleId: number | string): Promise<number> {
   try {
     const payloadConfig = await config
     const payload = await getPayload({ config: payloadConfig })
@@ -159,7 +154,8 @@ export async function createCourseModuleQuickAction(data: {
       title: created.title,
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : vi.cms.lessonWizard.errors.createModuleFailed
+    const message =
+      error instanceof Error ? error.message : vi.cms.lessonWizard.errors.createModuleFailed
     return {
       success: false,
       error: message,
@@ -212,6 +208,10 @@ export async function createLessonFromWizard(
       isFreePreview: clean.isFreePreview,
       isSample: false,
     }
+
+    // Payload keeps `_status` at its 'draft' default unless it is sent: without this line
+    // "Xuất bản" saved a draft.
+    payloadData._status = isDraft ? 'draft' : 'published'
 
     if (options.docId) {
       const updatedDoc = isDraft
