@@ -729,6 +729,57 @@ export const pages = [
       }),
     ],
   },
+  {
+    slug: 'tai-nguyen',
+    title: `${S} Tài nguyên`,
+    blocks: [
+      header(
+        `${S} TÀI NGUYÊN MIỄN PHÍ`,
+        `${S} & BÀI VIẾT CHUYỂN MÌNH`,
+        `${S} Không gian lưu trữ tri thức, bài tập thực hành và công cụ đồng hành cùng bạn.`,
+        'h1',
+      ),
+      block('LeadMagnetCarousel', {
+        version: 1,
+        seriesLabel: `${S} Tài nguyên nhận ngay qua email`,
+        titleLine1: `${S} CÔNG CỤ & TÀI LIỆU`,
+        titleLine2: `${S} ĐỒNG HÀNH MIỄN PHÍ`,
+        emotionLine: `${S} Những tài liệu được đúc kết từ thực tế, sẵn sàng hỗ trợ bạn trên từng bước chuyển.`,
+        mode: 'auto',
+        manualProducts: [],
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      }),
+      block('ResourcePostsSlot', {
+        version: 1,
+      }),
+      block('NewsletterForm', {
+        version: 1,
+        seriesLabel: `${S} Bản tin định kỳ`,
+        titleLine1: `${S} NHẬN BẢN TIN TỪ`,
+        titleLine2: `${S} TRẠM DỪNG CẢM XÚC`,
+        emotionLine: `${S} Những góc nhìn sâu sắc về thói quen, cảm xúc và sự nghiệp gửi tới hộp thư của bạn.`,
+        description: `${S} Đăng ký để nhận những bài viết mới nhất và tài nguyên chọn lọc từ Hana.`,
+        submitLabel: `${S} Đăng ký nhận tin`,
+        consentText: `${S} Tôi đồng ý nhận email chia sẻ và thông tin hữu ích từ Trạm Dừng Cảm Xúc.`,
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      }),
+      block('CTASection', {
+        version: 1,
+        seriesLabel: `${S} Bắt đầu ngay hôm nay`,
+        titleLine1: `${S} BẮT ĐẦU HÀNH TRÌNH`,
+        titleLine2: `${S} THẤU HIỂU BẢN THÂN`,
+        emotionLine: `${S} Dành cho bạn một khoảng dừng tĩnh lặng để nhận diện và đón nhận trọn vẹn cảm xúc.`,
+        description: `${S} Khám phá mức độ nhận thức và quản trị cảm xúc hiện tại của bạn qua bài trắc nghiệm nhanh hoặc đặt phiên làm việc 1:1.`,
+        buttonText: `${S} Làm bài test 5 phút`,
+        buttonLinkType: 'url',
+        buttonLink: PATHS.quiz,
+        bgColor: 'deep-navy',
+        padding: 'lg',
+      }),
+    ],
+  },
 ]
 
 type NavLinkSeed = {

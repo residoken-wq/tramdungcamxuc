@@ -314,3 +314,29 @@ export const habitPlanSubmissionSchema = z
   )
 
 export type HabitPlanSubmissionInput = z.infer<typeof habitPlanSubmissionSchema>
+
+export const newsletterSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, vi.forms.validation.emailRequired)
+    .max(254, vi.forms.validation.emailMax)
+    .email(vi.forms.validation.emailInvalid),
+  name: z
+    .string()
+    .trim()
+    .max(100, vi.account.validation.nameMax100)
+    .refine((val) => !/[<>{}]|[\x00-\x1F\x7F]/.test(val), {
+      message: vi.account.validation.nameSpecialChars,
+    })
+    .optional()
+    .nullable(),
+  consent: z.boolean().refine((val) => val === true, {
+    message: vi.forms.validation.consentRequired,
+  }),
+  pageSlug: z.string().max(200).optional(),
+  honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+  turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+})
+
+export type NewsletterInput = z.infer<typeof newsletterSchema>

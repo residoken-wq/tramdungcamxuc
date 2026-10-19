@@ -664,6 +664,7 @@ export const vi = {
       b2b: 'Cảm ơn quý doanh nghiệp đã gửi yêu cầu. Đội ngũ Trạm Dừng Cảm Xúc sẽ liên hệ tư vấn sớm nhất.',
       resource:
         'Cảm ơn bạn. Chúng tôi đã gửi liên kết tải tài nguyên vào email của bạn. Vui lòng kiểm tra hộp thư (kể cả mục thư rác).',
+      newsletter: 'Cảm ơn bạn đã đăng ký nhận bản tin từ Trạm Dừng Cảm Xúc.',
     },
     b2b: {
       defaultTitle: '[MẪU] Gửi brief đào tạo & đồng hành doanh nghiệp',
@@ -2252,6 +2253,57 @@ export const vi = {
       disabledSuccess: 'Đã tắt nhận email nhắc lịch workshop và nhắc tập.',
       updating: 'Đang lưu tùy chọn...',
       error: 'Không thể cập nhật tùy chọn lúc này. Vui lòng thử lại sau.',
+    },
+  },
+  sm05: {
+    postsSlotEditorHint: 'Vị trí danh sách bài viết ứng dụng sẽ hiển thị tại đây',
+    postsSlotLabel: 'Vị trí danh sách bài viết',
+    readingTime: (minutes: number) => `${minutes} phút đọc`,
+    featuredBadge: 'Bài nổi bật',
+    topics: {
+      all: 'Tất cả',
+      taiLieu: 'Tài liệu',
+      habit: 'Thói quen',
+      eq: 'Cảm xúc',
+      career: 'Sự nghiệp',
+    },
+    pagination: {
+      prev: 'Trước',
+      next: 'Sau',
+      page: (current: number, total: number) => `Trang ${current} / ${total}`,
+    },
+    empty: {
+      noResults: 'Chưa có nội dung phù hợp',
+      noResultsDesc: 'Không tìm thấy bài viết hay tài nguyên nào khớp với tiêu chí bạn đã chọn.',
+      resetFilters: 'Xóa bộ lọc',
+      updating: 'Chuyên mục đang được cập nhật.',
+    },
+    error: {
+      title: 'Không thể tải danh sách bài viết',
+      desc: 'Đã có lỗi xảy ra khi kết nối máy chủ. Vui lòng thử lại sau giây lát.',
+      retry: 'Thử lại',
+    },
+    carousel: {
+      emptyEditor: 'Chưa có tài nguyên miễn phí – tạo sản phẩm "Miễn phí" trong CMS',
+      prev: 'Xem tài nguyên trước',
+      next: 'Xem tài nguyên tiếp theo',
+      slideNumber: (current: number, total: number) => `Tài nguyên ${current} trên ${total}`,
+    },
+    newsletter: {
+      defaultTitle: '[MẪU] Nhận bản tin từ Trạm Dừng Cảm Xúc',
+      defaultDesc:
+        '[MẪU] Những góc nhìn thực tiễn và bài tập thực hành được gửi trực tiếp đến hộp thư của bạn.',
+      defaultSubmit: 'Đăng ký nhận tin',
+      defaultConsent: '[MẪU] Tôi đồng ý nhận email chia sẻ định kỳ từ Trạm Dừng Cảm Xúc.',
+      promiseNotice: 'Chỉ hứa điều đang làm được',
+      nameLabel: 'Tên của bạn (không bắt buộc)',
+      namePlaceholder: 'Ví dụ: Minh Anh',
+      emailLabel: 'Email nhận bản tin',
+      emailPlaceholder: 'email@example.com',
+      submitting: 'Đang đăng ký...',
+      successTitle: 'Cảm ơn bạn đã đăng ký!',
+      successMessage:
+        'Thông tin của bạn đã được ghi nhận. Trạm sẽ gửi những bài viết mới nhất tới hộp thư của bạn.',
     },
   },
 } as const

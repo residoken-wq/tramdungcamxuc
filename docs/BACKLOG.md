@@ -13,6 +13,7 @@
 - [ ] **Tự động đối soát ngân hàng**: Kết nối API ngân hàng sâu hơn khi khối lượng giao dịch lớn.
 - [x] **Thêm trường `topic` cho collection `products`** (T1-09; field xong SM-01, `/thu-vien` đọc field ở SM-02): Hiện tại `products` chưa có trường chủ đề riêng; trang Thư viện `/thu-vien` đang suy luận chủ đề theo `web` (`habit` / `eq`) và `type` (`package` → `career`). Cần migration thêm select `topic` (eq / habit / career) vào `Products` để Hana tự gắn trong admin CMS.
 - [ ] **Tự động gửi link tải tài nguyên qua email sau khi submit LeadForm** (T1-03 / T1-07): Hiện tại khối Puck `LeadForm` chọn sản phẩm tài nguyên miễn phí chỉ lưu ID và tạo lead kèm tag `resource:<slug>`. Logic tự động gửi email đính kèm link tải file có hạn sẽ được kết nối sau khi task T1-07 (giao tài liệu có ký hạn và queue email) được merge vào main.
+- [ ] **Gửi bản tin tự động (Newsletter Dispatch)** (SM-05): Tự động hóa gửi bản tin định kỳ tới danh sách khách tiềm năng có gắn thẻ `newsletter` trong `leads`. Hiện tại form đăng ký lưu thông tin và cho phép xuất CSV để gửi thủ công qua các nền tảng email marketing bên ngoài.
 - [x] **Cấu hình CTA kết quả quiz trong CMS** (T1-14; xong SM-01 – `siteSettings.quizCtaPath`): Cho phép Hana tự cấu hình CTA kết quả quiz trong CMS (cần trường trong `siteSettings`, triển khai sau khi nhả khóa Migration). Tạm thời CTA đang trỏ cố định tới `GROWTH_MIRROR_PATH` ('/coaching/growth-mirror').
 - [ ] **Cấu hình liên kết hướng dẫn CMS trong SiteSettings** (CM-02): Hiện tại 5 liên kết tài liệu hướng dẫn trên Dashboard admin được cấu hình bằng hằng số trong code (`CMS_DASHBOARD_GUIDES`). Khi mở khóa migration, bổ sung mảng trường `adminGuideLinks` (title, description, url) vào global `siteSettings` để Hana có thể tự cập nhật hoặc bổ sung tài liệu mới trực tiếp từ giao diện CMS.
 
@@ -59,3 +60,5 @@
 
 - (SM-04 review 19/10) Editor Puck: nút đặt phiên / "Chọn gói này" luôn hiện ghi chú "Chưa có sản phẩm phiên trải nghiệm đang bán" vì editor không có `_resolved.bookingProductId` – thêm hook client hoặc đổi ghi chú (SM-07).
 - (SM-04 review 19/10) `/styleguide`: thêm ví dụ `HanaStory` kiểu `letter` có `greeting` + `signatureName`.
+- (SM-05 review 19/10) `CTASection` chỉ có 1 nút – cân nhắc thêm nút thứ 2 (VD: quiz + đặt phiên) cho dải CTA nền tối trang Tài nguyên.
+- (SM-05 review 19/10) Bỏ link `?tab=noi-dung` còn sót ở `PostDetail.tsx` và `tai-nguyen/[slug]/page.tsx`; đổi placeholder "Ví dụ: Minh Anh" của form newsletter.

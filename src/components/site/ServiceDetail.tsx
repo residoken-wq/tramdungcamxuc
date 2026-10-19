@@ -25,7 +25,7 @@ export function ServiceDetail({ service }: { service: PublicService }) {
         {/* Điều hướng quay lại */}
         <div className="mb-6">
           <Link
-            href={`${PATHS.resources}?tab=khoa-hoc`}
+            href={PATHS.coaching}
             className="inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-deep-navy/70 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy rounded-sm min-h-[44px]"
           >
             <svg

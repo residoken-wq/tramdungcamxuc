@@ -15,6 +15,7 @@ import { VideoEmbedBlock, type VideoEmbedProps } from './blocks/VideoEmbed'
 import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
 import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
 import { DividerBlock, type DividerProps } from './blocks/Divider'
+import { ResourcePostsSlotBlock, type ResourcePostsSlotProps } from './blocks/ResourcePostsSlot'
 import { ProductGridBlock, type ProductGridProps } from './blocks/ProductGrid'
 import { ProductFeatureBlock, type ProductFeatureProps } from './blocks/ProductFeature'
 import { PackageComparisonBlock, type PackageComparisonProps } from './blocks/PackageComparison'
@@ -47,6 +48,8 @@ import { VisionMissionBlock, type VisionMissionProps } from './blocks/VisionMiss
 import { ServiceCardsBlock, type ServiceCardsProps } from './blocks/ServiceCards'
 import { TwoPathCardsBlock, type TwoPathCardsProps } from './blocks/TwoPathCards'
 import { TeamGridBlock, type TeamGridProps } from './blocks/TeamGrid'
+import { LeadMagnetCarouselBlock, type LeadMagnetCarouselProps } from './blocks/LeadMagnetCarousel'
+import { NewsletterFormBlock, type NewsletterFormProps } from './blocks/NewsletterForm'
 
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
 import { getLockedComponentPermissions } from './locks'
@@ -65,6 +68,9 @@ export type {
   ServiceCardsProps,
   TwoPathCardsProps,
   TeamGridProps,
+  ResourcePostsSlotProps,
+  LeadMagnetCarouselProps,
+  NewsletterFormProps,
 }
 
 export type PageComponentsProps = {
@@ -87,6 +93,7 @@ export type PageComponentsProps = {
   Columns: ColumnsProps
   Spacer: SpacerProps
   Divider: DividerProps
+  ResourcePostsSlot: ResourcePostsSlotProps
   // Bán hàng
   ProductGrid: ProductGridProps
   ProductFeature: ProductFeatureProps
@@ -113,6 +120,8 @@ export type PageComponentsProps = {
   ShopeeButton: ShopeeButtonBlockProps
   ZaloButton: ZaloButtonBlockProps
   LibraryPreview: LibraryPreviewBlockProps
+  LeadMagnetCarousel: LeadMagnetCarouselProps
+  NewsletterForm: NewsletterFormProps
 }
 
 export const puckConfig: Config<PageComponentsProps> = {
@@ -138,7 +147,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     },
     layout: {
       title: 'Bố cục',
-      components: ['Columns', 'Spacer', 'Divider'],
+      components: ['Columns', 'Spacer', 'Divider', 'ResourcePostsSlot'],
     },
     sales: {
       title: 'Bán hàng',
@@ -170,6 +179,8 @@ export const puckConfig: Config<PageComponentsProps> = {
         'ShopeeButton',
         'ZaloButton',
         'LibraryPreview',
+        'LeadMagnetCarousel',
+        'NewsletterForm',
       ],
     },
   },
@@ -412,6 +423,8 @@ export const puckConfig: Config<PageComponentsProps> = {
     ShopeeButton: ShopeeButtonBlock,
     ZaloButton: ZaloButtonBlock,
     LibraryPreview: LibraryPreviewBlock,
+    LeadMagnetCarousel: LeadMagnetCarouselBlock,
+    NewsletterForm: NewsletterFormBlock,
 
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
@@ -424,6 +437,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,
     Divider: DividerBlock,
+    ResourcePostsSlot: ResourcePostsSlotBlock,
 
     ProductGrid: ProductGridBlock,
     ProductFeature: ProductFeatureBlock,

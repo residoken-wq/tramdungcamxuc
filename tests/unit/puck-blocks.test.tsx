@@ -279,7 +279,12 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       ])
 
       expect(categories?.layout?.title).toBe('Bố cục')
-      expect(categories?.layout?.components).toEqual(['Columns', 'Spacer', 'Divider'])
+      expect(categories?.layout?.components).toEqual([
+        'Columns',
+        'Spacer',
+        'Divider',
+        'ResourcePostsSlot',
+      ])
 
       expect(categories?.conversion?.title).toBe('Chuyển đổi')
       expect(categories?.conversion?.components).toEqual([
@@ -293,6 +298,8 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'ShopeeButton',
         'ZaloButton',
         'LibraryPreview',
+        'LeadMagnetCarousel',
+        'NewsletterForm',
       ])
     })
   })
