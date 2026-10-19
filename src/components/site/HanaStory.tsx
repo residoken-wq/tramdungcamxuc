@@ -1,6 +1,5 @@
 import React from 'react'
 import Image from 'next/image'
-import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
 import { HeartLine } from '@/components/brand/HeartLine'
 import { safeHref } from '@/lib/safe-href'
@@ -153,15 +152,33 @@ export function HanaStory({
             className={`lg:col-span-7 flex flex-col ${isImageRight ? 'lg:order-1' : 'lg:order-2'}`}
           >
             {(seriesLabel || titleLine1 || titleLine2) && (
-              <div className="mb-6">
-                <SectionHeader
-                  seriesLabel={seriesLabel}
-                  titleLine1={titleLine1 || ''}
-                  titleLine2={titleLine2}
-                  align="left"
-                  as="h2"
-                />
-              </div>
+              <header className="mb-6 flex flex-col text-left items-start">
+                {seriesLabel && (
+                  <span
+                    className={`mb-4 font-ui text-xs font-bold uppercase tracking-widest ${
+                      isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
+                    }`}
+                  >
+                    {seriesLabel}
+                  </span>
+                )}
+                <h2 className="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl">
+                  {titleLine1 && (
+                    <span
+                      className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}
+                    >
+                      {titleLine1}
+                    </span>
+                  )}
+                  {titleLine2 && (
+                    <span
+                      className={`block ${isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}`}
+                    >
+                      {titleLine2}
+                    </span>
+                  )}
+                </h2>
+              </header>
             )}
 
             {/* Job Title under heading in standard story layout */}

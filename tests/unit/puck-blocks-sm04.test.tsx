@@ -294,12 +294,40 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
     it('renders HanaStory with tone "dark"', () => {
       const { container } = render(
         <HanaStory
+          seriesLabel="HÀNH TRÌNH"
           titleLine1="TÂM SỰ NỀN TỐI"
+          titleLine2="DÒNG THỨ HAI"
           tone="dark"
           storyContent="Nội dung nền tối."
         />,
       )
       expect(container.innerHTML).toContain('bg-deep-navy')
+      const line1 = screen.getByText('TÂM SỰ NỀN TỐI')
+      expect(line1.className).toContain('text-white')
+      expect(line1.className).not.toContain('text-deep-navy')
+      const line2 = screen.getByText('DÒNG THỨ HAI')
+      expect(line2.className).toContain('text-soft-pink')
+      const series = screen.getByText('HÀNH TRÌNH')
+      expect(series.className).toContain('text-soft-pink')
+    })
+
+    it('renders HanaStory with bgColor "deep-navy" using dark styling', () => {
+      render(
+        <HanaStory
+          seriesLabel="HÀNH TRÌNH"
+          titleLine1="TÂM SỰ DEEP NAVY"
+          titleLine2="DÒNG THỨ HAI"
+          bgColor="deep-navy"
+          storyContent="Nội dung nền navy."
+        />,
+      )
+      const line1 = screen.getByText('TÂM SỰ DEEP NAVY')
+      expect(line1.className).toContain('text-white')
+      expect(line1.className).not.toContain('text-deep-navy')
+      const line2 = screen.getByText('DÒNG THỨ HAI')
+      expect(line2.className).toContain('text-soft-pink')
+      const series = screen.getByText('HÀNH TRÌNH')
+      expect(series.className).toContain('text-soft-pink')
     })
 
     it('renders ImageText with quote and imageLabel', () => {
