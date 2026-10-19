@@ -86,7 +86,7 @@ Nâng cấp: `JourneySteps` v2 (3 kiểu: vòng tròn / card nối nét đứt /
 
 Tiêu chí nghiệm thu: như SM-03.
 
-## SM-05 – Trang Tài nguyên + newsletter (sau SM-02) – ước lượng 8 h
+## SM-05 – Trang Tài nguyên + newsletter (PC nhà, sau SM-02 + SM-04) – ước lượng 8 h – prompt `prompts/SM-05.md`
 
 - `/tai-nguyen` (thay `/thu-vien`): khối đầu là `LeadMagnetCarousel` (sản phẩm `saleStatus = free`, form gửi link tải qua T1-07); khu bài viết: ô tìm kiếm, chip chủ đề (Tất cả / Tài liệu / Thói quen / Cảm xúc / Sự nghiệp), 1 bài nổi bật + lưới; thời gian đọc tính từ nội dung; bộ lọc trên URL như cũ (sự kiện `library_filtered`).
 - `posts`: thêm `featured` (nếu SM-01 chưa làm thì làm ở đây, xin 🔒 Migration).
