@@ -1043,6 +1043,21 @@ export const vi = {
     bookingButtonText: 'Đặt lịch ngay',
   },
 
+  sm04: {
+    suitsLabel: 'Phù hợp với',
+    outcomesLabel: 'Bạn nhận được',
+    defaultServiceCta: 'Tìm hiểu chi tiết',
+    emptyServicesMessage: 'Chưa có dữ liệu – nhập trong CMS',
+    visionLabel: 'Tầm nhìn',
+    missionLabel: 'Sứ mệnh',
+    teamEmptyMessage: 'Chưa có dữ liệu – nhập trong CMS',
+    forIndividual: 'CHO CÁ NHÂN',
+    forBusiness: 'CHO DOANH NGHIỆP',
+    serviceLabel: 'Lộ trình quan tâm',
+    uncertainServiceOption: 'Chưa chắc chắn',
+    packageInterestPrefix: 'Gói quan tâm:',
+  },
+
   legal: {
     lastUpdated: 'Cập nhật ngày',
     updatingContent: 'Nội dung đang được cập nhật.',

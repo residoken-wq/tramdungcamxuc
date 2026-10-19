@@ -264,6 +264,16 @@ export async function resolveServerData(
           if (prog?.programId) programIdsToFetch.add(prog.programId)
         }
       }
+    } else if (item.type === 'ServiceCards') {
+      const list = item.props.services as Array<{ serviceId?: string | number }> | undefined
+      if (Array.isArray(list)) {
+        for (const s of list) {
+          if (s?.serviceId) serviceIdsToFetch.add(s.serviceId)
+        }
+      }
+      if (item.props.highlightServiceId) {
+        serviceIdsToFetch.add(item.props.highlightServiceId as string | number)
+      }
     }
 
     // Collect page IDs for CTAButton, Callout, PackageCards & CTASection (linkType = page)
@@ -433,23 +443,44 @@ export async function resolveServerData(
           id: true,
           name: true,
           slug: true,
+          badge: true,
+          image: true,
+          situations: true,
+          outcomes: true,
           audience: true,
           audienceLabel: true,
           ctaLabel: true,
           saleStatus: true,
         } as never,
-        depth: 0,
+        depth: 1,
         limit: numericOrStrSids.length + 10,
       })
 
       for (const doc of serviceDocs.docs as unknown as Service[]) {
         if (doc?.saleStatus !== 'hidden') {
+          const img = doc.image as { url?: string; alt?: string } | undefined
+          const situations = Array.isArray(doc.situations)
+            ? doc.situations
+                .map((s: { text?: string } | string) => (typeof s === 'string' ? s : s?.text || ''))
+                .filter(Boolean)
+            : []
+          const outcomes = Array.isArray(doc.outcomes)
+            ? doc.outcomes
+                .map((o: { text?: string } | string) => (typeof o === 'string' ? o : o?.text || ''))
+                .filter(Boolean)
+            : []
+
           serviceMap.set(String(doc.id), {
             id: doc.id,
             name: doc.name,
             slug: doc.slug,
+            badge: doc.badge || null,
+            imageUrl: img?.url || null,
+            imageAlt: img?.alt || null,
             audience: doc.audience || null,
             audienceLabel: doc.audienceLabel || null,
+            situations,
+            outcomes,
             ctaLabel: doc.ctaLabel || null,
             saleStatus: doc.saleStatus || null,
           })
@@ -690,6 +721,18 @@ export async function resolveServerData(
         services: resolvedServices,
         programs: resolvedPrograms,
       }
+    } else if (item.type === 'ServiceCards') {
+      const list = item.props.services as Array<{ serviceId?: string | number }> | undefined
+      const resolvedList: PublicServiceSummary[] = []
+      if (Array.isArray(list)) {
+        for (const s of list) {
+          if (s?.serviceId) {
+            const srv = serviceMap.get(String(s.serviceId))
+            if (srv) resolvedList.push(srv)
+          }
+        }
+      }
+      item.props._resolved = { services: resolvedList }
     } else if (item.type === 'TestimonialGrid') {
       const mode = item.props.mode || 'manual'
       if (mode === 'recent') {

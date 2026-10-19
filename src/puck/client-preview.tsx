@@ -26,8 +26,13 @@ export interface PublicServiceSummary {
   id: string | number
   name: string
   slug: string
+  badge?: string | null
+  imageUrl?: string | null
+  imageAlt?: string | null
   audience?: string | null
   audienceLabel?: string | null
+  situations?: string[] | null
+  outcomes?: string[] | null
   ctaLabel?: string | null
   saleStatus?: string | null
 }
@@ -704,20 +709,43 @@ export function useClientServices(options: {
     if (!promise) {
       const ids = queryKey.split(',').filter(Boolean)
       const params = ids.map((id) => `where[id][in][]=${encodeURIComponent(id)}`).join('&')
-      const url = `/api/services?limit=${ids.length}&where[_status][equals]=published&${params}`
+      const url = `/api/services?limit=${ids.length}&depth=1&where[_status][equals]=published&${params}`
 
       promise = fetch(url, { credentials: 'include', signal: controller.signal })
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
-          const rawDocs = (data?.docs || []).map((doc: Record<string, unknown>) => ({
-            id: doc.id as string | number,
-            name: doc.name as string,
-            slug: doc.slug as string,
-            audience: doc.audience as string | undefined,
-            audienceLabel: doc.audienceLabel as string | undefined,
-            ctaLabel: doc.ctaLabel as string | undefined,
-            saleStatus: doc.saleStatus as PublicServiceSummary['saleStatus'],
-          })) as PublicServiceSummary[]
+          const rawDocs = (data?.docs || []).map((doc: Record<string, unknown>) => {
+            const img = doc.image as { url?: string; alt?: string } | undefined
+            const situations = Array.isArray(doc.situations)
+              ? doc.situations
+                  .map((s: { text?: string } | string) =>
+                    typeof s === 'string' ? s : s?.text || '',
+                  )
+                  .filter(Boolean)
+              : []
+            const outcomes = Array.isArray(doc.outcomes)
+              ? doc.outcomes
+                  .map((o: { text?: string } | string) =>
+                    typeof o === 'string' ? o : o?.text || '',
+                  )
+                  .filter(Boolean)
+              : []
+
+            return {
+              id: doc.id as string | number,
+              name: doc.name as string,
+              slug: doc.slug as string,
+              badge: (doc.badge as string) || null,
+              imageUrl: img?.url || null,
+              imageAlt: img?.alt || null,
+              audience: doc.audience as string | undefined,
+              audienceLabel: doc.audienceLabel as string | undefined,
+              situations,
+              outcomes,
+              ctaLabel: doc.ctaLabel as string | undefined,
+              saleStatus: doc.saleStatus as PublicServiceSummary['saleStatus'],
+            }
+          }) as PublicServiceSummary[]
 
           const idMap = new Map(rawDocs.map((d) => [String(d.id), d]))
           const finalDocs = ids.map((id) => idMap.get(id)).filter(Boolean) as PublicServiceSummary[]
@@ -757,7 +785,7 @@ export function useClientServices(options: {
   }
 
   const cached = multiServicesCache.get(queryKey)
-  const current = state?.key === queryKey ? state.services : cached ?? []
+  const current = state?.key === queryKey ? state.services : (cached ?? [])
   return {
     services: current,
     loading: !multiServicesCache.has(queryKey) && state?.key !== queryKey,
@@ -848,7 +876,7 @@ export function useClientPrograms(options: {
   }
 
   const cached = multiProgramsCache.get(queryKey)
-  const current = state?.key === queryKey ? state.programs : cached ?? []
+  const current = state?.key === queryKey ? state.programs : (cached ?? [])
   return {
     programs: current,
     loading: !multiProgramsCache.has(queryKey) && state?.key !== queryKey,
