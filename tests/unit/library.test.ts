@@ -7,6 +7,7 @@ import {
   buildLibraryUrl,
   getLibraryEmptyKind,
   splitAtPostsSlot,
+  estimateReadingMinutes,
 } from '@/lib/library'
 
 describe('Library Unit Tests (T1-09)', () => {
@@ -40,35 +41,79 @@ describe('Library Unit Tests (T1-09)', () => {
     })
   })
 
+  describe('estimateReadingMinutes', () => {
+    it('returns 1 for empty or null content (minimum 1 minute)', () => {
+      expect(estimateReadingMinutes(null)).toBe(1)
+      expect(estimateReadingMinutes(undefined)).toBe(1)
+      expect(estimateReadingMinutes('')).toBe(1)
+      expect(estimateReadingMinutes('   ')).toBe(1)
+      expect(estimateReadingMinutes({})).toBe(1)
+    })
+
+    it('returns 1 for 1 word', () => {
+      expect(estimateReadingMinutes('Xin chào')).toBe(1)
+      expect(estimateReadingMinutes({ root: { children: [{ text: 'Đơn' }] } })).toBe(1)
+    })
+
+    it('returns 3 for 401 words (ceil(401 / 200) = 3)', () => {
+      const words = Array.from({ length: 401 }, (_, i) => `từ${i}`).join(' ')
+      expect(estimateReadingMinutes(words)).toBe(3)
+      expect(
+        estimateReadingMinutes({
+          root: { children: [{ text: words }] },
+        }),
+      ).toBe(3)
+    })
+
+    it('correctly traverses nested Lexical AST trees', () => {
+      const nestedLexical = {
+        root: {
+          children: [
+            {
+              type: 'paragraph',
+              children: [
+                { text: 'Đây là đoạn văn thứ nhất với một số từ ngữ.' },
+                { text: 'Và thêm một số từ nữa ở node anh em.' },
+              ],
+            },
+            {
+              type: 'block',
+              children: [
+                {
+                  children: [{ text: 'Đoạn văn nằm sâu trong cấp lồng nhau.' }],
+                },
+              ],
+            },
+          ],
+        },
+      }
+      // Total words is ~21 words -> Math.ceil(21 / 200) = 1
+      expect(estimateReadingMinutes(nestedLexical)).toBe(1)
+    })
+  })
+
   describe('parseLibraryParams', () => {
-    it('defaults tab to "khoa-hoc" when empty or unknown', () => {
-      expect(parseLibraryParams({})).toEqual({
-        tab: 'khoa-hoc',
-        topic: undefined,
-        q: undefined,
-      })
-      expect(parseLibraryParams({ tab: 'unknown-tab' })).toEqual({
-        tab: 'khoa-hoc',
-        topic: undefined,
-        q: undefined,
-      })
-      expect(parseLibraryParams({ tab: '' })).toEqual({
-        tab: 'khoa-hoc',
-        topic: undefined,
-        q: undefined,
-      })
+    it('defaults trang to 1 when empty, invalid, or <= 0', () => {
+      expect(parseLibraryParams({}).trang).toBe(1)
+      expect(parseLibraryParams({ trang: '0' }).trang).toBe(1)
+      expect(parseLibraryParams({ trang: '-5' }).trang).toBe(1)
+      expect(parseLibraryParams({ trang: 'abc' }).trang).toBe(1)
+      expect(parseLibraryParams({ trang: '1.5' }).trang).toBe(1)
     })
 
-    it('recognizes "noi-dung" tab', () => {
-      expect(parseLibraryParams({ tab: 'noi-dung' }).tab).toBe('noi-dung')
+    it('parses valid integer trang >= 1', () => {
+      expect(parseLibraryParams({ trang: '1' }).trang).toBe(1)
+      expect(parseLibraryParams({ trang: '2' }).trang).toBe(2)
+      expect(parseLibraryParams({ trang: '10' }).trang).toBe(10)
     })
 
-    it('accepts valid topics ("eq", "habit", "career") and ignores invalid topics', () => {
+    it('accepts valid topics ("tai-lieu", "eq", "habit", "career") and ignores invalid topics', () => {
+      expect(parseLibraryParams({ topic: 'tai-lieu' }).topic).toBe('tai-lieu')
       expect(parseLibraryParams({ topic: 'eq' }).topic).toBe('eq')
       expect(parseLibraryParams({ topic: 'habit' }).topic).toBe('habit')
       expect(parseLibraryParams({ topic: 'career' }).topic).toBe('career')
 
-      // Topic lạ bị bỏ qua
+      // Topic lạ bị bỏ qua (undefined -> "Tất cả")
       expect(parseLibraryParams({ topic: 'invalid-topic' }).topic).toBeUndefined()
       expect(parseLibraryParams({ topic: '' }).topic).toBeUndefined()
     })
@@ -89,11 +134,13 @@ describe('Library Unit Tests (T1-09)', () => {
           tab: ['noi-dung', 'khoa-hoc'],
           topic: ['eq', 'habit'],
           q: ['  cảm xúc  '],
+          trang: ['3', '1'],
         }),
       ).toEqual({
         tab: 'noi-dung',
         topic: 'eq',
         q: 'cảm xúc',
+        trang: 3,
       })
     })
   })
@@ -157,14 +204,18 @@ describe('Library Unit Tests (T1-09)', () => {
   })
 
   describe('buildLibraryUrl', () => {
-    it('constructs correct query strings', () => {
-      expect(buildLibraryUrl({ tab: 'khoa-hoc' })).toBe('/tai-nguyen?tab=khoa-hoc')
-      expect(buildLibraryUrl({ tab: 'noi-dung', topic: 'eq' })).toBe(
-        '/tai-nguyen?tab=noi-dung&topic=eq',
+    it('constructs correct query strings without tab (sitemap v2)', () => {
+      expect(buildLibraryUrl({})).toBe('/tai-nguyen')
+      expect(buildLibraryUrl({ tab: 'khoa-hoc' })).toBe('/tai-nguyen')
+      expect(buildLibraryUrl({ topic: 'eq' })).toBe('/tai-nguyen?topic=eq')
+      expect(buildLibraryUrl({ topic: 'habit', q: 'sách' })).toBe(
+        '/tai-nguyen?topic=habit&q=s%C3%A1ch',
       )
-      expect(buildLibraryUrl({ tab: 'noi-dung', topic: 'habit', q: 'sách' })).toBe(
-        '/tai-nguyen?tab=noi-dung&topic=habit&q=s%C3%A1ch',
+      expect(buildLibraryUrl({ topic: 'habit', q: 'sách', trang: 2 })).toBe(
+        '/tai-nguyen?topic=habit&q=s%C3%A1ch&trang=2',
       )
+      // trang = 1 is omitted from URL to keep URLs clean
+      expect(buildLibraryUrl({ topic: 'eq', trang: 1 })).toBe('/tai-nguyen?topic=eq')
     })
   })
 
