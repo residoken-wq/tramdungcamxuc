@@ -49,12 +49,17 @@ export async function submitLeadAction(
 
 export async function submitCoachingAction(
   data: Record<string, unknown>,
-  extra?: { utm?: string },
+  extra?: { utm?: string; form?: string; page?: string },
 ): Promise<ActionResponse> {
   try {
     const ctx = await getClientContext()
+    const page =
+      extra?.page || (typeof data.page === 'string' ? data.page : undefined) || ctx.page
+    const form = extra?.form || (typeof data.form === 'string' ? data.form : undefined)
     const res: SubmissionResult = await submitCoachingForm(data, {
       ...ctx,
+      page,
+      form,
       utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
     })
     return {
@@ -68,12 +73,17 @@ export async function submitCoachingAction(
 
 export async function submitB2BBriefAction(
   data: Record<string, unknown>,
-  extra?: { utm?: string },
+  extra?: { utm?: string; form?: string; page?: string },
 ): Promise<ActionResponse> {
   try {
     const ctx = await getClientContext()
+    const page =
+      extra?.page || (typeof data.page === 'string' ? data.page : undefined) || ctx.page
+    const form = extra?.form || (typeof data.form === 'string' ? data.form : undefined)
     const res: SubmissionResult = await submitB2BBrief(data, {
       ...ctx,
+      page,
+      form,
       utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
     })
     return {

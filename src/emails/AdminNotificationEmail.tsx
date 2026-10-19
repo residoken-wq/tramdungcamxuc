@@ -26,6 +26,9 @@ interface AdminNotificationEmailProps {
   interestTags?: string[]
   page?: string
   utm?: string
+  currentStatus?: string
+  contactRole?: string
+  interestedProgram?: string
 }
 
 const formTypeLabels: Record<string, string> = {
@@ -49,6 +52,9 @@ export const AdminNotificationEmail: React.FC<AdminNotificationEmailProps> = ({
   interestTags,
   page,
   utm,
+  currentStatus,
+  contactRole,
+  interestedProgram,
 }) => {
   const formLabel = formTypeLabels[formType] || formType
 
@@ -88,6 +94,11 @@ export const AdminNotificationEmail: React.FC<AdminNotificationEmailProps> = ({
                   <strong>Nhu cầu:</strong> {need}
                 </Text>
               )}
+              {currentStatus && (
+                <Text style={infoRowStyle}>
+                  <strong>Tình trạng hiện tại:</strong> {currentStatus}
+                </Text>
+              )}
               {serviceName && (
                 <Text style={infoRowStyle}>
                   <strong>Dịch vụ quan tâm:</strong> {serviceName}
@@ -96,6 +107,16 @@ export const AdminNotificationEmail: React.FC<AdminNotificationEmailProps> = ({
               {company && (
                 <Text style={infoRowStyle}>
                   <strong>Doanh nghiệp:</strong> {company}
+                </Text>
+              )}
+              {contactRole && (
+                <Text style={infoRowStyle}>
+                  <strong>Vai trò người liên hệ:</strong> {contactRole}
+                </Text>
+              )}
+              {interestedProgram && (
+                <Text style={infoRowStyle}>
+                  <strong>Chương trình quan tâm:</strong> {interestedProgram}
                 </Text>
               )}
               {teamSize && (

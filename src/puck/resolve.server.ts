@@ -178,6 +178,7 @@ export async function resolveServerData(
   let needsSiteSettings = false
   let needsTeamMembers = false
   let needsBookingProduct = false
+  let needsContactFormsData = false
   let hasSetHeroPriority = false
 
   await walkPuckItems(resolvedData, async (item) => {
@@ -401,9 +402,14 @@ export async function resolveServerData(
       item.type === 'ZaloButton' ||
       (item.type === 'FAQ' && item.props.aside === 'booking') ||
       item.type === 'HanaStory' ||
-      item.type === 'ContactInfo'
+      item.type === 'ContactInfo' ||
+      item.type === 'ContactForms'
     ) {
       needsSiteSettings = true
+    }
+
+    if (item.type === 'ContactForms') {
+      needsContactFormsData = true
     }
 
     if (item.type === 'TeamGrid') {
@@ -652,6 +658,8 @@ export async function resolveServerData(
     zaloChatUrl: null,
   }
 
+  let publicLeadStatusOptions: Array<{ label: string }> = []
+
   if (needsSiteSettings) {
     try {
       const siteDoc = await payload.findGlobal({
@@ -699,6 +707,60 @@ export async function resolveServerData(
             ? rawDoc.zaloChatUrl.trim()
             : null,
       }
+      const rawLeadOptions = (
+        siteDoc as unknown as { leadStatusOptions?: Array<{ label?: string }> }
+      )?.leadStatusOptions
+      if (Array.isArray(rawLeadOptions)) {
+        publicLeadStatusOptions = rawLeadOptions
+          .filter((opt) => typeof opt?.label === 'string' && opt.label.trim().length > 0)
+          .map((opt) => ({ label: opt.label!.trim() }))
+      }
+    } catch {
+      // Gracefully continue
+    }
+  }
+
+  let resolvedContactServices: Array<{ id: number; name: string }> = []
+  let resolvedContactPrograms: Array<{ id: number; name: string }> = []
+  if (needsContactFormsData) {
+    try {
+      const sDocs = await payload.find({
+        collection: 'services',
+        where: {
+          and: [{ _status: { equals: 'published' } }, { saleStatus: { not_equals: 'hidden' } }],
+        },
+        select: { id: true, name: true } as never,
+        sort: 'order',
+        depth: 0,
+        limit: 100,
+      })
+      const rawServices = (sDocs?.docs || []) as unknown as Array<{
+        id: number | string
+        name?: string
+      }>
+      resolvedContactServices = rawServices.map((doc) => ({
+        id: typeof doc.id === 'number' ? doc.id : Number(doc.id),
+        name: String(doc.name || ''),
+      }))
+
+      const pDocs = await payload.find({
+        collection: 'programs',
+        where: {
+          and: [{ _status: { equals: 'published' } }, { saleStatus: { not_equals: 'hidden' } }],
+        },
+        select: { id: true, name: true } as never,
+        sort: 'order',
+        depth: 0,
+        limit: 100,
+      })
+      const rawPrograms = (pDocs?.docs || []) as unknown as Array<{
+        id: number | string
+        name?: string
+      }>
+      resolvedContactPrograms = rawPrograms.map((doc) => ({
+        id: typeof doc.id === 'number' ? doc.id : Number(doc.id),
+        name: String(doc.name || ''),
+      }))
     } catch {
       // Gracefully continue
     }
@@ -1171,6 +1233,12 @@ export async function resolveServerData(
     } else if (item.type === 'ContactInfo') {
       item.props._resolved = {
         contact: publicContactInfo,
+      }
+    } else if (item.type === 'ContactForms') {
+      item.props._resolved = {
+        services: resolvedContactServices,
+        programs: resolvedContactPrograms,
+        leadStatusOptions: publicLeadStatusOptions,
       }
     } else if (item.type === 'LeadMagnetCarousel') {
       const mode = item.props.mode || 'auto'
