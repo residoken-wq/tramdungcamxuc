@@ -13,6 +13,18 @@ export const metadata: Metadata = {
   title: vi.library.pageTitle,
 }
 
+// The page is split around the posts section, so each half is a short fragment: drop the
+// root wrapper's `min-h-screen`, which otherwise leaves a screen-tall gap under a short intro.
+const sectionConfig: typeof puckConfig = {
+  ...puckConfig,
+  root: {
+    ...puckConfig.root,
+    render: ({ children }) => (
+      <div className="font-sans text-deep-navy antialiased">{children}</div>
+    ),
+  },
+}
+
 type LibraryPageProps = {
   searchParams: Promise<{
     tab?: string | string[]
@@ -34,7 +46,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         {/* 1. Phần mở đầu Puck (trước ResourcePostsSlot) hoặc tiêu đề dự phòng */}
         {puckBefore ? (
           <div className="mb-8 md:mb-12">
-            <Render config={puckConfig} data={puckBefore} />
+            <Render config={sectionConfig} data={puckBefore} />
           </div>
         ) : !libraryData.introData ? (
           <header className="mb-8 sm:mb-12 text-center max-w-3xl mx-auto">
@@ -50,7 +62,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         {/* 3. Phần sau Puck (sau ResourcePostsSlot) */}
         {puckAfter && (
           <div className="mt-12 md:mt-16">
-            <Render config={puckConfig} data={puckAfter} />
+            <Render config={sectionConfig} data={puckAfter} />
           </div>
         )}
       </div>
