@@ -1,6 +1,8 @@
 import React from 'react'
 import { Button, type ButtonVariant, type ButtonSize } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
+import { getBookingPath, BOOKING_PATH } from '@/lib/products'
+import { vi } from '@/lib/i18n/vi'
 
 export interface CalloutProps {
   version?: number
@@ -18,6 +20,10 @@ export interface CalloutProps {
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     pageSlug?: string | null
+    bookingProductId?: number | null
+  }
+  puck?: {
+    isEditing?: boolean
   }
 }
 
@@ -48,7 +54,11 @@ export function Callout({
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
+  puck,
 }: CalloutProps) {
+  const isEditing = puck?.isEditing ?? false
+  const bookingProductId = _resolved?.bookingProductId ?? null
+
   let targetHref: string = buttonLink || '#'
   if (buttonLinkType === 'page') {
     const resolvedSlug = _resolved?.pageSlug
@@ -60,7 +70,22 @@ export function Callout({
     }
   }
 
-  const safeLink = safeHref(targetHref)
+  const isBookingLink =
+    targetHref.trim() === BOOKING_PATH || targetHref.trim() === '/dat-phien-trai-nghiem'
+
+  let finalSafeLink: string | null = null
+  let isBookingUnavailable = false
+
+  if (isBookingLink) {
+    if (bookingProductId != null) {
+      finalSafeLink = safeHref(getBookingPath(bookingProductId))
+    } else {
+      isBookingUnavailable = true
+      finalSafeLink = null
+    }
+  } else {
+    finalSafeLink = safeHref(targetHref)
+  }
 
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
@@ -78,12 +103,21 @@ export function Callout({
             </p>
           )}
 
-          {showButton && buttonText && safeLink && (
-            <div className="mt-8 flex justify-center">
-              <Button href={safeLink} variant={buttonVariant} size={buttonSize}>
-                {buttonText}
-              </Button>
-            </div>
+          {showButton && buttonText && (
+            finalSafeLink ? (
+              <div className="mt-8 flex justify-center">
+                <Button href={finalSafeLink} variant={buttonVariant} size={buttonSize}>
+                  {buttonText}
+                </Button>
+              </div>
+            ) : isEditing && isBookingUnavailable ? (
+              <div className="mt-8 flex flex-col items-center">
+                <Button href="#" variant={buttonVariant} size={buttonSize} className="opacity-60 pointer-events-none">
+                  {buttonText}
+                </Button>
+                <p className="text-xs text-soft-pink mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
+              </div>
+            ) : null
           )}
         </div>
       </div>

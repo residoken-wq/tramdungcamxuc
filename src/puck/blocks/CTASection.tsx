@@ -76,5 +76,7 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     padding: 'lg',
   },
   // `puck` carries functions (renderDropZone) that cannot cross into a client component.
-  render: ({ puck: _puck, ...props }) => <CTASection {...props} />,
+  render: ({ puck, ...props }) => (
+    <CTASection {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

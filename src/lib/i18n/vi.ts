@@ -1056,6 +1056,7 @@ export const vi = {
     serviceLabel: 'Lộ trình quan tâm',
     uncertainServiceOption: 'Chưa chắc chắn',
     packageInterestPrefix: 'Gói quan tâm:',
+    noBookingProduct: 'Chưa có sản phẩm phiên trải nghiệm đang bán',
   },
 
   legal: {

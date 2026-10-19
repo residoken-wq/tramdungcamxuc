@@ -1,8 +1,8 @@
 import 'server-only'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
-import { toPublicProduct, type PublicProduct } from '@/lib/products'
+import { toPublicProduct, type PublicProduct, getEffectivePrice } from '@/lib/products'
 import { toPublicTestimonial, type PublicTestimonial } from '@/lib/testimonials'
 import { toPublicSiteSettings, type PublicSiteSettings } from '@/lib/site-public'
 import type {
@@ -71,6 +71,78 @@ export function normalizePageSlug(slug?: string): string {
 }
 
 /**
+ * Helper chọn sản phẩm phiên trải nghiệm mặc định theo các tiêu chí (SM-04b C1):
+ * - type = 'coaching_trial'
+ * - _status = 'published'
+ * - saleStatus = 'on_sale'
+ * - Giá hiệu lực > 0 (tính qua getEffectivePrice)
+ * - Sắp xếp theo order ASC (nếu bằng nhau hoặc null/undefined thì theo id ASC)
+ */
+export function selectDefaultBookingProduct<
+  T extends {
+    id: number
+    order?: number | null
+    type?: string | null
+    _status?: string | null
+    saleStatus?: string | null
+    price?: number | null
+    salePrice?: number | null
+    saleEndsAt?: string | null
+  },
+>(products: T[], now = new Date()): T | null {
+  const eligible = products.filter((p) => {
+    if (p.type !== 'coaching_trial') return false
+    if (p._status !== 'published') return false
+    if (p.saleStatus !== 'on_sale') return false
+    const pricing = getEffectivePrice(p, now)
+    const price = pricing.salePrice ?? pricing.price
+    return price != null && price > 0
+  })
+
+  if (eligible.length === 0) return null
+
+  eligible.sort((a, b) => {
+    const orderA = typeof a.order === 'number' ? a.order : 0
+    const orderB = typeof b.order === 'number' ? b.order : 0
+    if (orderA !== orderB) return orderA - orderB
+    return a.id - b.id
+  })
+
+  return eligible[0] ?? null
+}
+
+export async function resolveDefaultBookingProductId(payload: Payload): Promise<number | null> {
+  try {
+    const res = await payload.find({
+      collection: 'products',
+      where: {
+        and: [
+          { type: { equals: 'coaching_trial' } },
+          { _status: { equals: 'published' } },
+          { saleStatus: { equals: 'on_sale' } },
+        ],
+      },
+      sort: ['order', 'id'],
+      limit: 20,
+    })
+
+    const product = selectDefaultBookingProduct(res.docs as unknown as Array<{
+      id: number
+      order?: number | null
+      type?: string | null
+      _status?: string | null
+      saleStatus?: string | null
+      price?: number | null
+      salePrice?: number | null
+      saleEndsAt?: string | null
+    }>)
+    return product ? product.id : null
+  } catch {
+    return null
+  }
+}
+
+/**
  * Server-only helper to resolve server-side data (media URL/alt from Local API,
  * published products and consent-approved published testimonials by ID without storing in DB)
  * for Puck Data before passing to <Render>.
@@ -102,6 +174,7 @@ export async function resolveServerData(
   const programIdsToFetch = new Set<string | number>()
   let needsSiteSettings = false
   let needsTeamMembers = false
+  let needsBookingProduct = false
   let hasSetHeroPriority = false
 
   await walkPuckItems(resolvedData, async (item) => {
@@ -233,6 +306,7 @@ export async function resolveServerData(
         productIdsToFetch.add(item.props.productId as string | number)
       }
     } else if (item.type === 'PackageComparison' || item.type === 'PackageCards') {
+      needsBookingProduct = true
       const pkgs = item.props.packages as
         Array<{ packageId?: string | number; productId?: string | number }> | undefined
       if (Array.isArray(pkgs)) {
@@ -246,6 +320,14 @@ export async function resolveServerData(
         for (const id of flatIds) {
           if (id) productIdsToFetch.add(id)
         }
+      }
+    } else if (item.type === 'CTASection') {
+      needsBookingProduct = true
+    } else if (item.type === 'Callout') {
+      needsBookingProduct = true
+    } else if (item.type === 'FAQ') {
+      if (item.props.aside === 'booking') {
+        needsBookingProduct = true
       }
     } else if (item.type === 'SolutionEcosystem') {
       const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
@@ -612,6 +694,11 @@ export async function resolveServerData(
     }
   }
 
+  let defaultBookingProductId: number | null = null
+  if (needsBookingProduct) {
+    defaultBookingProductId = await resolveDefaultBookingProductId(payload)
+  }
+
   // Phase 3: Attach _resolved to each block (including blocks inside Columns slots)
   await walkPuckItems(resolvedData, async (item) => {
     if (!item || !item.props) return
@@ -692,7 +779,10 @@ export async function resolveServerData(
       const resolvedList = ids
         .map((id) => productMap.get(String(id)))
         .filter((p): p is PublicProduct => Boolean(p && p.type === 'package'))
-      item.props._resolved = { packages: resolvedList }
+      item.props._resolved = {
+        packages: resolvedList,
+        bookingProductId: defaultBookingProductId,
+      }
     } else if (item.type === 'PackageCards') {
       const pkgs = item.props.packages as
         Array<{ packageId?: string | number; productId?: string | number }> | undefined
@@ -729,6 +819,7 @@ export async function resolveServerData(
       item.props._resolved = {
         packages: resolvedList,
         buttonUrl: resolvedButtonUrl,
+        bookingProductId: defaultBookingProductId,
       }
     } else if (item.type === 'SolutionEcosystem') {
       const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
@@ -906,7 +997,10 @@ export async function resolveServerData(
       item.props._resolved = { members: resolvedTeamMembers }
     } else if (item.type === 'Callout') {
       const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
-      item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+      item.props._resolved = {
+        pageSlug: pId ? pageMap.get(pId) || null : null,
+        bookingProductId: defaultBookingProductId,
+      }
     } else if (item.type === 'CTASection') {
       const list = item.props.testimonials as Array<{ testimonialId?: string | number }> | undefined
       const ids: Array<string | number> = []
@@ -937,6 +1031,7 @@ export async function resolveServerData(
       item.props._resolved = {
         testimonials: resolvedList,
         buttonUrl: resolvedButtonUrl,
+        bookingProductId: defaultBookingProductId,
       }
     } else if (item.type === 'LeadForm') {
       const rId = item.props.resourceProductId ? String(item.props.resourceProductId) : ''
@@ -1022,6 +1117,7 @@ export async function resolveServerData(
     } else if (item.type === 'FAQ') {
       item.props._resolved = {
         email: item.props.showEmail ? siteContactEmail : null,
+        bookingProductId: item.props.aside === 'booking' ? defaultBookingProductId : null,
       }
     } else if (item.type === 'HanaStory') {
       item.props._resolved = {
