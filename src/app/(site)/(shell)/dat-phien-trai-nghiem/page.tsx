@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic'
 interface PageProps {
   searchParams: Promise<{
     'san-pham'?: string
+    goi?: string
   }>
 }
 
@@ -43,7 +44,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 }
 
 export default async function ExperienceBookingPage({ searchParams }: PageProps) {
-  const { 'san-pham': sanPhamParam } = await searchParams
+  const { 'san-pham': sanPhamParam, goi: goiParam } = await searchParams
 
   if (!sanPhamParam) {
     notFound()
@@ -83,6 +84,51 @@ export default async function ExperienceBookingPage({ searchParams }: PageProps)
     notFound()
   }
 
+  // Fetch published services for "Lộ trình quan tâm"
+  let servicesList: Array<{ id: number; name: string }> = []
+  try {
+    const servicesDocs = await payload.find({
+      collection: 'services',
+      where: {
+        _status: { equals: 'published' },
+      },
+      sort: 'createdAt',
+      limit: 50,
+    })
+    servicesList = servicesDocs.docs.map((s) => ({
+      id: s.id,
+      name: s.name,
+    }))
+  } catch {
+    // fallback
+  }
+
+  // Fetch interested package if ?goi=<slug> is present
+  let interestedPackage: { slug: string; name: string } | null = null
+  if (typeof goiParam === 'string' && goiParam.trim().length > 0) {
+    try {
+      const pkgDocs = await payload.find({
+        collection: 'products',
+        where: {
+          and: [
+            { slug: { equals: goiParam.trim() } },
+            { type: { equals: 'package' } },
+            { _status: { equals: 'published' } },
+          ],
+        },
+        limit: 1,
+      })
+      if (pkgDocs.totalDocs > 0 && pkgDocs.docs[0]?.name) {
+        interestedPackage = {
+          slug: pkgDocs.docs[0].slug,
+          name: pkgDocs.docs[0].name,
+        }
+      }
+    } catch {
+      // Slug lạ / gói ẩn -> bỏ qua im lặng
+    }
+  }
+
   const productInfo = {
     id: product.id,
     name: product.name,
@@ -104,7 +150,11 @@ export default async function ExperienceBookingPage({ searchParams }: PageProps)
           align="center"
         />
 
-        <ExperienceBookingForm product={productInfo} />
+        <ExperienceBookingForm
+          product={productInfo}
+          services={servicesList}
+          interestedPackage={interestedPackage}
+        />
       </div>
     </div>
   )

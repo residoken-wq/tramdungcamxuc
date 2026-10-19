@@ -1321,7 +1321,7 @@ export const vi = {
         phoneLabel: 'Số điện thoại',
         phoneOptional: '(tùy chọn)',
         phonePlaceholder: '0912 345 678',
-        needLabel: 'Nhu cầu hoặc mục tiêu khi đặt phiên',
+        needLabel: 'Bạn đang trăn trở điều gì?',
         needMaxHint: '(tối đa 1.000 ký tự)',
         needPlaceholder:
           'Bạn đang gặp khó khăn gì hoặc mong muốn đạt được điều gì sau phiên trải nghiệm này?...',
