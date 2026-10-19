@@ -6,6 +6,7 @@ import {
   buildPostsWhere,
   buildLibraryUrl,
   getLibraryEmptyKind,
+  splitAtPostsSlot,
 } from '@/lib/library'
 
 describe('Library Unit Tests (T1-09)', () => {
@@ -186,6 +187,103 @@ describe('Library Unit Tests (T1-09)', () => {
 
     it('returns "filtered" when both topic and q are provided', () => {
       expect(getLibraryEmptyKind({ topic: 'eq', q: 'cảm xúc' })).toBe('filtered')
+    })
+  })
+
+  describe('splitAtPostsSlot', () => {
+    it('returns null for before and after when data is null, undefined, or has no content array', () => {
+      expect(splitAtPostsSlot(null)).toEqual({ before: null, after: null })
+      expect(splitAtPostsSlot(undefined)).toEqual({ before: null, after: null })
+      expect(splitAtPostsSlot({} as never)).toEqual({ before: null, after: null })
+      expect(splitAtPostsSlot({ content: [] } as never)).toEqual({ before: null, after: null })
+    })
+
+    it('returns before = data and after = null when there is no ResourcePostsSlot', () => {
+      const data = {
+        content: [
+          { type: 'SectionHeader', props: { id: 'header-1' } },
+          { type: 'QuoteBlock', props: { id: 'quote-1' } },
+        ],
+        root: { props: { title: 'Tài nguyên' } },
+      }
+      expect(splitAtPostsSlot(data as never)).toEqual({
+        before: data,
+        after: null,
+      })
+    })
+
+    it('splits data into before and after when exactly 1 ResourcePostsSlot is present', () => {
+      const data = {
+        content: [
+          { type: 'SectionHeader', props: { id: 'header-1' } },
+          { type: 'ResourcePostsSlot', props: { id: 'slot-1' } },
+          { type: 'NewsletterForm', props: { id: 'newsletter-1' } },
+          { type: 'CTASection', props: { id: 'cta-1' } },
+        ],
+        root: { props: { title: 'Tài nguyên' } },
+      }
+
+      const res = splitAtPostsSlot(data as never)
+      expect(res.before?.content).toHaveLength(1)
+      expect(res.before?.content[0].type).toBe('SectionHeader')
+      expect(res.after?.content).toHaveLength(2)
+      expect(res.after?.content[0].type).toBe('NewsletterForm')
+      expect(res.after?.content[1].type).toBe('CTASection')
+    })
+
+    it('uses the first slot and filters out subsequent ResourcePostsSlot when >= 2 slots exist', () => {
+      const data = {
+        content: [
+          { type: 'SectionHeader', props: { id: 'header-1' } },
+          { type: 'ResourcePostsSlot', props: { id: 'slot-1' } },
+          { type: 'NewsletterForm', props: { id: 'newsletter-1' } },
+          { type: 'ResourcePostsSlot', props: { id: 'slot-2' } },
+          { type: 'CTASection', props: { id: 'cta-1' } },
+        ],
+        root: { props: { title: 'Tài nguyên' } },
+      }
+
+      const res = splitAtPostsSlot(data as never)
+      expect(res.before?.content).toHaveLength(1)
+      expect(res.before?.content[0].type).toBe('SectionHeader')
+      expect(res.after?.content).toHaveLength(2)
+      expect(res.after?.content[0].type).toBe('NewsletterForm')
+      expect(res.after?.content[1].type).toBe('CTASection')
+    })
+
+    it('ignores ResourcePostsSlot when nested inside Columns (only top-level content counts)', () => {
+      const data = {
+        content: [
+          {
+            type: 'Columns',
+            props: { id: 'col-1' },
+          },
+          { type: 'SectionHeader', props: { id: 'header-1' } },
+        ],
+        zones: {
+          'col-1:col1': [{ type: 'ResourcePostsSlot', props: { id: 'nested-slot' } }],
+        },
+        root: { props: { title: 'Tài nguyên' } },
+      }
+
+      const res = splitAtPostsSlot(data as never)
+      expect(res.before).toEqual(data)
+      expect(res.after).toBeNull()
+    })
+
+    it('returns before = null when ResourcePostsSlot is the first item', () => {
+      const data = {
+        content: [
+          { type: 'ResourcePostsSlot', props: { id: 'slot-1' } },
+          { type: 'NewsletterForm', props: { id: 'newsletter-1' } },
+        ],
+        root: { props: { title: 'Tài nguyên' } },
+      }
+
+      const res = splitAtPostsSlot(data as never)
+      expect(res.before).toBeNull()
+      expect(res.after?.content).toHaveLength(1)
+      expect(res.after?.content[0].type).toBe('NewsletterForm')
     })
   })
 })

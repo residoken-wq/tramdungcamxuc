@@ -1,3 +1,4 @@
+import type { Data } from '@puckeditor/core'
 import { PATHS } from './paths'
 export type LibraryTab = 'khoa-hoc' | 'noi-dung'
 export type LibraryTopic = 'eq' | 'habit' | 'career'
@@ -6,6 +7,40 @@ export interface LibraryQueryParams {
   tab: LibraryTab
   topic?: LibraryTopic
   q?: string
+}
+
+export interface SplitPuckData {
+  before: Data | null
+  after: Data | null
+}
+
+/**
+ * Tách dữ liệu Puck tại khối ResourcePostsSlot:
+ * - Phần trước -> khu bài viết -> phần sau
+ * - Không có khối này -> before = data, after = null
+ * - Có >= 2 khối -> dùng khối đầu, bỏ qua khối sau
+ * - Chỉ khối ở cấp content (không lồng trong Columns) mới tính
+ */
+export function splitAtPostsSlot(data: Data | null | undefined): SplitPuckData {
+  if (!data || !Array.isArray(data.content) || data.content.length === 0) {
+    return { before: null, after: null }
+  }
+
+  const slotIndex = data.content.findIndex((item) => item?.type === 'ResourcePostsSlot')
+
+  if (slotIndex === -1) {
+    return { before: data, after: null }
+  }
+
+  const beforeItems = data.content.slice(0, slotIndex)
+  const afterItems = data.content
+    .slice(slotIndex + 1)
+    .filter((item) => item?.type !== 'ResourcePostsSlot')
+
+  return {
+    before: beforeItems.length > 0 ? { ...data, content: beforeItems } : null,
+    after: afterItems.length > 0 ? { ...data, content: afterItems } : null,
+  }
 }
 
 export const DEFAULT_LIBRARY_TAB: LibraryTab = 'khoa-hoc'

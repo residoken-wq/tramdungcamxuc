@@ -13,6 +13,7 @@ import {
   parseLibraryParams,
   buildLibraryUrl,
   getLibraryEmptyKind,
+  splitAtPostsSlot,
   VALID_TOPICS,
   type LibraryTopic,
 } from '@/lib/library'
@@ -38,6 +39,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   const rawParams = await searchParams
   const params = parseLibraryParams(rawParams)
   const { products, posts, introData, hasError } = await getLibraryData(params)
+  const { before: puckBefore, after: puckAfter } = splitAtPostsSlot(introData)
 
   const now = new Date()
   const totalItems = products.length + posts.length
@@ -45,58 +47,18 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
   return (
     <div className="w-full bg-warm-ivory min-h-screen py-8 sm:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 1. Phần giới thiệu (Puck hoặc Fallback Header) */}
-        {introData ? (
+        {/* 1. Phần mở đầu Puck (trước ResourcePostsSlot) hoặc tiêu đề dự phòng */}
+        {puckBefore ? (
           <div className="mb-8 md:mb-12">
-            <Render config={puckConfig} data={introData} />
+            <Render config={puckConfig} data={puckBefore} />
           </div>
-        ) : (
+        ) : !introData ? (
           <header className="mb-8 sm:mb-12 text-center max-w-3xl mx-auto">
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-[1.15] text-deep-navy">
               {vi.library.heading}
             </h1>
           </header>
-        )}
-
-        {/* 2. Điều hướng 2 Tab: Khóa học & Nội dung */}
-        <nav aria-label="Phân loại thư viện" className="flex justify-center mb-6 sm:mb-8">
-          <div className="inline-flex p-1.5 rounded-2xl bg-lavender-mist/40 border border-deep-navy/10 shadow-sm max-w-full">
-            <LibraryFilterLink
-              href={buildLibraryUrl({
-                tab: 'khoa-hoc',
-                topic: params.topic,
-                q: params.q,
-              })}
-              tab="khoa-hoc"
-              topic={params.topic}
-              isActive={params.tab === 'khoa-hoc'}
-              className={`min-h-[44px] px-6 py-2.5 rounded-xl font-ui text-sm sm:text-base font-bold transition-all duration-200 select-none flex items-center justify-center ${
-                params.tab === 'khoa-hoc'
-                  ? 'bg-deep-navy text-white shadow-sm'
-                  : 'text-deep-navy/80 hover:text-deep-navy hover:bg-white/60'
-              }`}
-            >
-              {vi.library.tabs.courses}
-            </LibraryFilterLink>
-            <LibraryFilterLink
-              href={buildLibraryUrl({
-                tab: 'noi-dung',
-                topic: params.topic,
-                q: params.q,
-              })}
-              tab="noi-dung"
-              topic={params.topic}
-              isActive={params.tab === 'noi-dung'}
-              className={`min-h-[44px] px-6 py-2.5 rounded-xl font-ui text-sm sm:text-base font-bold transition-all duration-200 select-none flex items-center justify-center ${
-                params.tab === 'noi-dung'
-                  ? 'bg-deep-navy text-white shadow-sm'
-                  : 'text-deep-navy/80 hover:text-deep-navy hover:bg-white/60'
-              }`}
-            >
-              {vi.library.tabs.content}
-            </LibraryFilterLink>
-          </div>
-        </nav>
+        ) : null}
 
         {/* 3. Thanh bộ lọc: Chủ đề và Ô tìm kiếm */}
         <div className="mb-8 sm:mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-deep-navy/10 shadow-sm">
@@ -307,6 +269,13 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
               })}
             </div>
           </section>
+        )}
+
+        {/* 5. Phần sau Puck (sau ResourcePostsSlot) */}
+        {puckAfter && (
+          <div className="mt-12 md:mt-16">
+            <Render config={puckConfig} data={puckAfter} />
+          </div>
         )}
       </div>
     </div>

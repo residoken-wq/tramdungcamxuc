@@ -15,6 +15,7 @@ import { VideoEmbedBlock, type VideoEmbedProps } from './blocks/VideoEmbed'
 import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
 import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
 import { DividerBlock, type DividerProps } from './blocks/Divider'
+import { ResourcePostsSlotBlock, type ResourcePostsSlotProps } from './blocks/ResourcePostsSlot'
 import { ProductGridBlock, type ProductGridProps } from './blocks/ProductGrid'
 import { ProductFeatureBlock, type ProductFeatureProps } from './blocks/ProductFeature'
 import { PackageComparisonBlock, type PackageComparisonProps } from './blocks/PackageComparison'
@@ -65,6 +66,7 @@ export type {
   ServiceCardsProps,
   TwoPathCardsProps,
   TeamGridProps,
+  ResourcePostsSlotProps,
 }
 
 export type PageComponentsProps = {
@@ -87,6 +89,7 @@ export type PageComponentsProps = {
   Columns: ColumnsProps
   Spacer: SpacerProps
   Divider: DividerProps
+  ResourcePostsSlot: ResourcePostsSlotProps
   // Bán hàng
   ProductGrid: ProductGridProps
   ProductFeature: ProductFeatureProps
@@ -138,7 +141,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     },
     layout: {
       title: 'Bố cục',
-      components: ['Columns', 'Spacer', 'Divider'],
+      components: ['Columns', 'Spacer', 'Divider', 'ResourcePostsSlot'],
     },
     sales: {
       title: 'Bán hàng',
@@ -424,6 +427,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,
     Divider: DividerBlock,
+    ResourcePostsSlot: ResourcePostsSlotBlock,
 
     ProductGrid: ProductGridBlock,
     ProductFeature: ProductFeatureBlock,
