@@ -34,6 +34,7 @@ export interface LeadMagnetCarouselProps {
   bgColor?: string
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
   isDemo?: boolean
+  items?: LeadMagnetItem[]
   _resolved?: {
     items?: LeadMagnetItem[]
   }
@@ -67,11 +68,12 @@ export function LeadMagnetCarousel({
   bgColor = 'warm-ivory',
   padding = 'md',
   isDemo = false,
+  items: propsItems,
   _resolved,
   puck,
 }: LeadMagnetCarouselProps) {
   const isEditing = puck?.isEditing ?? false
-  const items = _resolved?.items || []
+  const items = propsItems || _resolved?.items || []
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
