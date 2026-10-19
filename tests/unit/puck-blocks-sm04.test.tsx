@@ -407,9 +407,9 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
 
       for (const blockName of sm04BlockNames) {
         const componentConfig = (
-          puckConfig.components as Record<
+          puckConfig.components as unknown as Record<
             string,
-            { defaultProps: Record<string, unknown>; render: (props: unknown) => React.ReactNode }
+            { defaultProps?: Record<string, unknown>; render: (props: unknown) => React.ReactNode }
           >
         )[blockName]
         expect(componentConfig, `Block ${blockName} must be registered in puckConfig`).toBeDefined()
@@ -421,7 +421,12 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
           React.isValidElement(rendered),
           `Block ${blockName} render must return valid React element`,
         ).toBe(true)
-        assertNoFunctionProps(rendered.props, blockName)
+        if (React.isValidElement(rendered)) {
+          assertNoFunctionProps(
+            (rendered as React.ReactElement<Record<string, unknown>>).props,
+            blockName,
+          )
+        }
       }
     })
   })

@@ -139,6 +139,7 @@ describe('SM-04b C1: Booking Product Resolution & Link Generation', () => {
         name: 'Gói CLEAR',
         slug: 'growth-mirror-clear',
         price: 1750000,
+        salePrice: null,
         type: 'package' as const,
         saleStatus: 'on_sale' as const,
       },
