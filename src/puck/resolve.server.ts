@@ -1126,6 +1126,95 @@ export async function resolveServerData(
         founderSignatureUrl,
         founderSignatureAlt,
       }
+    } else if (item.type === 'LeadMagnetCarousel') {
+      const mode = item.props.mode || 'auto'
+      if (mode === 'manual') {
+        const manuals = item.props.manualProducts as
+          Array<{ productId?: string | number }> | undefined
+        const ids: Array<string | number> = []
+        if (Array.isArray(manuals)) {
+          for (const m of manuals) {
+            if (m?.productId) ids.push(m.productId)
+          }
+        }
+        if (ids.length === 0) {
+          item.props._resolved = { items: [] }
+        } else {
+          const numericOrStrIds = ids.map((id) => (isNaN(Number(id)) ? id : Number(id)))
+          try {
+            const docs = await payload.find({
+              collection: 'products',
+              where: {
+                and: [
+                  { id: { in: numericOrStrIds } },
+                  { _status: { equals: 'published' } },
+                  { saleStatus: { equals: 'free' } },
+                ],
+              },
+              overrideAccess: true,
+              depth: 1,
+              limit: 12,
+            })
+            const eligible = (docs.docs || []).filter(
+              (doc) =>
+                Array.isArray(doc.files) && doc.files.length > 0 && doc.saleStatus === 'free',
+            )
+            const docMap = new Map(eligible.map((d) => [String(d.id), d]))
+            const ordered = ids
+              .map((id) => docMap.get(String(id)))
+              .filter(Boolean)
+              .slice(0, 12)
+              .map((doc) => {
+                const img = doc!.coverImage as { url?: string; alt?: string } | undefined
+                return {
+                  id: doc!.id,
+                  name: doc!.name,
+                  slug: doc!.slug,
+                  shortDescription: doc!.shortDescription || null,
+                  topic: doc!.topic || null,
+                  coverImage: img?.url ? { url: img.url, alt: img.alt || doc!.name } : null,
+                }
+              })
+            item.props._resolved = { items: ordered }
+          } catch {
+            item.props._resolved = { items: [] }
+          }
+        }
+      } else {
+        // mode === 'auto'
+        try {
+          const docs = await payload.find({
+            collection: 'products',
+            where: {
+              and: [{ _status: { equals: 'published' } }, { saleStatus: { equals: 'free' } }],
+            },
+            overrideAccess: true,
+            sort: 'order',
+            depth: 1,
+            limit: 24,
+          })
+          const eligible = (docs.docs || [])
+            .filter(
+              (doc) =>
+                Array.isArray(doc.files) && doc.files.length > 0 && doc.saleStatus === 'free',
+            )
+            .slice(0, 12)
+            .map((doc) => {
+              const img = doc.coverImage as { url?: string; alt?: string } | undefined
+              return {
+                id: doc.id,
+                name: doc.name,
+                slug: doc.slug,
+                shortDescription: doc.shortDescription || null,
+                topic: doc.topic || null,
+                coverImage: img?.url ? { url: img.url, alt: img.alt || doc.name } : null,
+              }
+            })
+          item.props._resolved = { items: eligible }
+        } catch {
+          item.props._resolved = { items: [] }
+        }
+      }
     }
 
     // Gắn slug trang đã chuẩn hóa vào props của các khối chuyển đổi (khóa tạm, không lưu DB)
