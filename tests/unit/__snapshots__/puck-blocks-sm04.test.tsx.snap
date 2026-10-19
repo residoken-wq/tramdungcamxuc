@@ -230,7 +230,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TeamGrid Block > matches sna
             class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-accent-pink/30 shadow-soft mx-auto mb-4 bg-warm-ivory/50"
           >
             <img
-              alt="Hana Lương"
+              alt="[MẪU] Thành viên Test 01"
               class="object-cover"
               data-nimg="fill"
               decoding="async"
@@ -242,17 +242,17 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TeamGrid Block > matches sna
           <h3
             class="font-display text-xl sm:text-2xl uppercase tracking-tight mb-1 text-deep-navy"
           >
-            Hana Lương
+            [MẪU] Thành viên Test 01
           </h3>
           <p
             class="font-ui text-sm font-bold mb-1 text-bright-magenta"
           >
-            Sáng lập Trạm
+            [MẪU] Vai trò Test 01
           </p>
           <p
             class="font-ui text-sm leading-relaxed text-deep-navy/80"
           >
-            ICF ACC Coach với 10+ năm kinh nghiệm.
+            [MẪU] Mô tả thông tin thành viên 01.
           </p>
         </div>
         <div
@@ -264,23 +264,23 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TeamGrid Block > matches sna
             <span
               class="font-display text-2xl sm:text-3xl text-deep-navy font-bold"
             >
-              N
+              T
             </span>
           </div>
           <h3
             class="font-display text-xl sm:text-2xl uppercase tracking-tight mb-1 text-deep-navy"
           >
-            Nguyễn Văn A
+            [MẪU] Thành viên Test 02
           </h3>
           <p
             class="font-ui text-sm font-bold mb-1 text-bright-magenta"
           >
-            Chuyên viên Tâm lý
+            [MẪU] Vai trò Test 02
           </p>
           <p
             class="font-ui text-sm leading-relaxed text-deep-navy/80"
           >
-            Thạc sĩ Tâm lý học lâm sàng.
+            [MẪU] Mô tả thông tin thành viên 02.
           </p>
         </div>
       </div>

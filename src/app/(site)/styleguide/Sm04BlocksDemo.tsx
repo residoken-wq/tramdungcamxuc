@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { JourneySteps } from '@/components/site/JourneySteps'
-import { HanaStory } from '@/components/site/HanaStory'
+import { StoryBlock } from '@/components/site'
 import { ImageText } from '@/components/site/ImageText'
 import { LogoStrip } from '@/components/site/LogoStrip'
 import { VisionMission } from '@/components/site/VisionMission'
@@ -68,11 +68,11 @@ export function Sm04BlocksDemo() {
         </div>
       </div>
 
-      {/* 2. HanaStory variants */}
+      {/* 2. Story variants */}
       <div className="space-y-6">
         <div className="border-b border-deep-navy/10 pb-2">
           <h3 className="font-ui text-sm font-bold uppercase tracking-wider text-bright-magenta">
-            Khối HanaStory v2 – Tone tối (dark) &amp; Bố cục thư gửi (letter)
+            Khối Câu chuyện sáng lập – Tone tối (dark) &amp; Bố cục thư gửi (letter)
           </h3>
           <p className="mt-1 font-ui text-xs text-deep-navy/70">
             Hỗ trợ tone light/dark, layout story/letter kèm chữ ký cuối thư
@@ -83,7 +83,7 @@ export function Sm04BlocksDemo() {
           <p className="mb-4 font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/70">
             Biến thể Thư gửi (layout: letter, tone: light)
           </p>
-          <HanaStory
+          <StoryBlock
             seriesLabel="[MẪU SM-04] LỜI NGỎ TỪ COACH"
             titleLine1="GỬI BẠN,"
             titleLine2="NGƯỜI ĐANG DỪNG LẠI"
@@ -94,14 +94,14 @@ export function Sm04BlocksDemo() {
               'Tôi từng trải qua những năm tháng gồng mình để đáp ứng kỳ vọng của mọi người, cho đến khi nhận ra cảm xúc không phải là gánh nặng cần che giấu.\n\nTrạm Dừng Cảm Xúc ra đời như một chiếc trạm dừng nghỉ chân ấm áp, nơi bạn có thể tháo bỏ chiếc áo giáp và nhẹ nhàng ôm lấy chính mình.'
             }
             chips={[
-              { text: 'ICF Associate Certified Coach (ACC)' },
-              { text: '10+ năm kinh nghiệm đồng hành' },
+              { text: '[MẪU] Chứng nhận chuyên môn' },
+              { text: '[MẪU] Kinh nghiệm đồng hành' },
             ]}
-            jobTitle="Sáng lập Trạm Dừng Cảm Xúc"
-            founderSignatureAlt="Chữ ký Hana Lương"
+            jobTitle="[MẪU] Người đồng hành"
+            founderSignatureAlt="[MẪU] Chữ ký người đồng hành"
             _resolved={{
               founderSignatureUrl: '/brand/sample-avatar.svg',
-              founderSignatureAlt: 'Chữ ký Hana Lương',
+              founderSignatureAlt: '[MẪU] Chữ ký người đồng hành',
             }}
           />
         </div>
@@ -110,7 +110,7 @@ export function Sm04BlocksDemo() {
           <p className="mb-4 font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/70">
             Biến thể Nền tối (tone: dark, layout: story)
           </p>
-          <HanaStory
+          <StoryBlock
             seriesLabel="[MẪU SM-04] CÂU CHUYỆN SÁNG LẬP"
             titleLine1="CHUYỂN HÓA NỘI TÂM"
             titleLine2="TỎA SÁNG TỰ NHIÊN"
@@ -121,10 +121,10 @@ export function Sm04BlocksDemo() {
               'Hành trình của tôi không bắt đầu bằng những thành tựu rực rỡ, mà bắt đầu từ những ngày tháng mất kết nối với chính cảm xúc của mình.\n\nNhờ phương pháp chánh niệm và trí tuệ cảm xúc, tôi đã tìm lại sự cân bằng và muốn lan tỏa điều đó tới cộng đồng.'
             }
             chips={[
-              { text: 'Hơn 500+ giờ khai vấn cá nhân' },
-              { text: 'Đồng hành cùng 12+ doanh nghiệp' },
+              { text: '[MẪU] Khai vấn cá nhân' },
+              { text: '[MẪU] Đồng hành doanh nghiệp' },
             ]}
-            jobTitle="Executive & Life Coach"
+            jobTitle="[MẪU] Chuyên gia khai vấn"
           />
         </div>
       </div>
@@ -145,11 +145,11 @@ export function Sm04BlocksDemo() {
             seriesLabel="[MẪU SM-04] KHÔNG GIAN ĐỒNG HÀNH"
             titleLine1="LẮNG NGHE KHÔNG PHÁN XÉT"
             titleLine2="HIỂU MÌNH ĐỂ THƯƠNG MÌNH"
-            content="Mỗi phiên làm việc cùng Hana là một trải nghiệm sâu lắng, giúp bạn nhận diện những rào cản vô hình và tìm lại động lực nội tại."
-            quote="Khi ta đủ can đảm để nhìn thẳng vào cảm xúc, vết thương bắt đầu lành lại."
-            imageLabel="Phiên khai vấn 1:1 cùng Hana Lương tại TP. Hồ Chí Minh"
-            imageUrl="/brand/sample-avatar.svg"
-            imageAlt="[MẪU SM-04] Ảnh minh họa phiên khai vấn"
+            content="[MẪU] Mỗi phiên làm việc là một trải nghiệm sâu lắng, giúp bạn nhận diện những rào cản vô hình và tìm lại động lực nội tại."
+            quote="[MẪU] Khi ta đủ can đảm để nhìn thẳng vào cảm xúc, vết thương bắt đầu lành lại."
+            imageLabel="[MẪU] Phiên khai vấn thực tế"
+            imageUrl="/brand/sample-cover.svg"
+            imageAlt="[MẪU] Ảnh minh họa phiên khai vấn"
             layout="image-left"
             buttonText="Tìm hiểu quy trình"
             buttonLink="#quy-trinh"
@@ -170,18 +170,18 @@ export function Sm04BlocksDemo() {
 
         <div className="rounded-card border border-deep-navy/10 bg-white p-6 shadow-soft">
           <LogoStrip
-            title="[MẪU SM-04] ĐỐI TÁC VÀ CHỨNG NHẬN ĐỒNG HÀNH"
+            title="[MẪU] ĐỐI TÁC VÀ CHỨNG NHẬN ĐỒNG HÀNH"
             groups={[
               {
-                label: 'Chứng nhận chuyên môn',
+                label: '[MẪU] Nhóm chứng nhận chuyên môn',
                 logos: [
-                  { alt: 'ICF - International Coaching Federation' },
-                  { alt: 'Six Seconds EQ Network' },
+                  { alt: '[MẪU] Tổ chức Test 01' },
+                  { alt: '[MẪU] Tổ chức Test 02' },
                 ],
               },
               {
-                label: 'Doanh nghiệp đồng hành',
-                logos: [{ alt: 'Tập đoàn A' }, { alt: 'Công ty Công nghệ B' }],
+                label: '[MẪU] Nhóm doanh nghiệp đồng hành',
+                logos: [{ alt: '[MẪU] Tổ chức Test 03' }, { alt: '[MẪU] Tổ chức Test 04' }],
               },
             ]}
           />
@@ -282,7 +282,7 @@ export function Sm04BlocksDemo() {
             titleLine2="VỚI NHU CẦU CỦA BẠN"
             path1GroupLabel="Lộ trình Cá nhân"
             path1Title="Dành cho Cá nhân"
-            path1Description="Khám phá bản thân qua các công cụ tự học, chuỗi 21 ngày và phiên coaching 1:1 chuyên sâu cùng Hana Lương."
+            path1Description="[MẪU] Khám phá bản thân qua các công cụ tự học, chuỗi 21 ngày và phiên coaching 1:1 chuyên sâu."
             path1ButtonLabel="Khám phá lộ trình cá nhân"
             path1ButtonStyle="solid"
             path1Href="/coaching"
@@ -317,25 +317,28 @@ export function Sm04BlocksDemo() {
               members: [
                 {
                   id: 'mem-1',
-                  name: 'Hana Lương',
-                  role: 'Sáng lập & Giám đốc Chuyên môn',
-                  bio: 'ICF Associate Certified Coach (ACC) với hơn 10 năm kinh nghiệm đồng hành cùng cá nhân và doanh nghiệp.',
+                  name: '[MẪU] Thành viên Test 01',
+                  role: '[MẪU] Vai trò Test 01',
+                  bio: '[MẪU] Mô tả kinh nghiệm và chuyên môn của thành viên đồng hành.',
                   photoUrl: '/brand/sample-avatar.svg',
-                  photoAlt: 'Hana Lương',
+                  photoAlt: '[MẪU] Thành viên Test 01',
+                  consent: true,
                 },
                 {
                   id: 'mem-2',
-                  name: 'Nguyễn Minh Anh',
-                  role: 'Chuyên viên Tham vấn Tâm lý',
-                  bio: 'Thạc sĩ Tâm lý học Lâm sàng, chuyên sâu về điều hòa cảm xúc và liệu pháp nhận thức hành vi (CBT).',
+                  name: '[MẪU] Thành viên Test 02',
+                  role: '[MẪU] Vai trò Test 02',
+                  bio: '[MẪU] Mô tả thông tin chuyên sâu về điều hòa cảm xúc và tâm lý.',
                   photoUrl: null,
+                  consent: true,
                 },
                 {
                   id: 'mem-3',
-                  name: 'Trần Bảo Ngọc',
-                  role: 'Điều phối Trải nghiệm Cộng đồng',
-                  bio: 'Người kết nối và đồng hành cùng các học viên trong chuỗi 21 ngày rèn luyện thói quen cảm xúc.',
+                  name: '[MẪU] Thành viên Test 03',
+                  role: '[MẪU] Vai trò Test 03',
+                  bio: '[MẪU] Mô tả thông tin kết nối và đồng hành cùng học viên.',
                   photoUrl: null,
+                  consent: true,
                 },
               ],
             }}

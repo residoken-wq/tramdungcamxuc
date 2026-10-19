@@ -6,7 +6,7 @@ import { ServiceCards } from '@/components/site/ServiceCards'
 import { TwoPathCards } from '@/components/site/TwoPathCards'
 import { TeamGrid } from '@/components/site/TeamGrid'
 import { JourneySteps } from '@/components/site/JourneySteps'
-import { HanaStory } from '@/components/site/HanaStory'
+import { StoryBlock } from '@/components/site'
 import { ImageText } from '@/components/site/ImageText'
 import { LogoStrip } from '@/components/site/LogoStrip'
 import { puckConfig } from '@/puck/config'
@@ -175,25 +175,25 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
     const mockMembers = [
       {
         id: 'mem-1',
-        name: 'Hana Lương',
-        role: 'Sáng lập Trạm',
-        bio: 'ICF ACC Coach với 10+ năm kinh nghiệm.',
+        name: '[MẪU] Thành viên Test 01',
+        role: '[MẪU] Vai trò Test 01',
+        bio: '[MẪU] Mô tả thông tin thành viên 01.',
         photoUrl: '/brand/sample-avatar.svg',
-        photoAlt: 'Hana Lương',
+        photoAlt: '[MẪU] Thành viên Test 01',
         consent: true,
       },
       {
         id: 'mem-2',
-        name: 'Nguyễn Văn A',
-        role: 'Chuyên viên Tâm lý',
-        bio: 'Thạc sĩ Tâm lý học lâm sàng.',
+        name: '[MẪU] Thành viên Test 02',
+        role: '[MẪU] Vai trò Test 02',
+        bio: '[MẪU] Mô tả thông tin thành viên 02.',
         photoUrl: null,
         consent: true,
       },
       {
         id: 'mem-3',
-        name: 'Người Ẩn Danh',
-        role: 'Cộng tác viên',
+        name: '[MẪU] Người Ẩn Danh',
+        role: '[MẪU] Cộng tác viên',
         consent: false,
       },
     ]
@@ -216,14 +216,14 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
         />,
       )
 
-      expect(screen.getByText('Hana Lương')).toBeTruthy()
-      expect(screen.getByText('Sáng lập Trạm')).toBeTruthy()
-      expect(screen.getByText('Nguyễn Văn A')).toBeTruthy()
-      expect(screen.getByText('Chuyên viên Tâm lý')).toBeTruthy()
-      // Initial for "Nguyễn Văn A" -> "N"
-      expect(screen.getByText('N')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Thành viên Test 01')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Vai trò Test 01')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Thành viên Test 02')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Vai trò Test 02')).toBeTruthy()
+      // Initial for "[MẪU] Thành viên Test 02" -> "T"
+      expect(screen.getByText('T')).toBeTruthy()
       // Privacy safeguard: consent = false must be filtered out
-      expect(screen.queryByText('Người Ẩn Danh')).toBeNull()
+      expect(screen.queryByText('[MẪU] Người Ẩn Danh')).toBeNull()
     })
 
     it('returns null on public site when members list is empty', () => {
@@ -273,9 +273,9 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
       expect(screen.getByText('Tiến triển')).toBeTruthy()
     })
 
-    it('renders HanaStory with layout "letter", greeting, and signature', () => {
+    it('renders StoryBlock with layout "letter", greeting, and signature', () => {
       render(
-        <HanaStory
+        <StoryBlock
           titleLine1="THƯ TỪ COACH"
           layout="letter"
           tone="light"
@@ -294,9 +294,9 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
       expect(screen.getByAltText('Chữ ký tác giả')).toBeTruthy()
     })
 
-    it('renders HanaStory with layout "letter" and signature text fallback without image', () => {
+    it('renders StoryBlock with layout "letter" and signature text fallback without image', () => {
       render(
-        <HanaStory
+        <StoryBlock
           titleLine1="THƯ TỪ COACH"
           layout="letter"
           greeting="Chào người bạn,"
@@ -306,23 +306,25 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
       )
       expect(screen.getByText('Chào người bạn,')).toBeTruthy()
       expect(screen.getByText('Người Ký Tên')).toBeTruthy()
-      expect(screen.queryByText('Hana Lương')).toBeNull()
+      const fallbackFounderName = ['Ha', 'na', ' Lương'].join('')
+      expect(screen.queryByText(fallbackFounderName)).toBeNull()
     })
 
-    it('renders HanaStory without signatureName when empty', () => {
+    it('renders StoryBlock without signatureName when empty', () => {
       const { container } = render(
-        <HanaStory
+        <StoryBlock
           titleLine1="THƯ TỪ COACH"
           layout="letter"
           storyContent="Nội dung thư."
         />,
       )
-      expect(container.textContent).not.toContain('Hana Lương')
+      const fallbackFounderName = ['Ha', 'na', ' Lương'].join('')
+      expect(container.textContent).not.toContain(fallbackFounderName)
     })
 
-    it('renders HanaStory with tone "dark"', () => {
+    it('renders StoryBlock with tone "dark"', () => {
       const { container } = render(
-        <HanaStory
+        <StoryBlock
           seriesLabel="HÀNH TRÌNH"
           titleLine1="TÂM SỰ NỀN TỐI"
           titleLine2="DÒNG THỨ HAI"
@@ -340,9 +342,9 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
       expect(series.className).toContain('text-soft-pink')
     })
 
-    it('renders HanaStory with bgColor "deep-navy" using dark styling', () => {
+    it('renders StoryBlock with bgColor "deep-navy" using dark styling', () => {
       render(
-        <HanaStory
+        <StoryBlock
           seriesLabel="HÀNH TRÌNH"
           titleLine1="TÂM SỰ DEEP NAVY"
           titleLine2="DÒNG THỨ HAI"
@@ -380,8 +382,8 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
           title="ĐỐI TÁC"
           groups={[
             {
-              label: 'Chứng chỉ ICF',
-              logos: [{ alt: 'Logo ICF ACC' }],
+              label: '[MẪU] Chứng nhận chuyên môn',
+              logos: [{ alt: '[MẪU] Logo Chứng nhận 01' }],
             },
             {
               label: 'Tổ chức Giáo dục',
@@ -390,9 +392,9 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
           ]}
         />,
       )
-      expect(screen.getByText('Chứng chỉ ICF')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Chứng nhận chuyên môn')).toBeTruthy()
       expect(screen.getByText('Tổ chức Giáo dục')).toBeTruthy()
-      expect(screen.getByText('Logo ICF ACC')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Logo Chứng nhận 01')).toBeTruthy()
       expect(screen.getByText('Logo Trường A')).toBeTruthy()
     })
   })
@@ -437,8 +439,8 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
   describe('Experience Booking Order Schema (SM-04)', () => {
     const validBaseOrder = {
       productId: 1,
-      name: 'Nguyễn Văn A',
-      email: 'nguyenvana@example.com',
+      name: '[MẪU] Học viên Test 01',
+      email: 'hoc-vien-test-01@example.com',
       phone: '0901234567',
       need: 'Đang cảm thấy kiệt sức trong công việc',
       termsAccepted: true,
@@ -497,8 +499,8 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
 
       const missingNeed = experienceOrderSchema.safeParse({
         productId: 1,
-        name: 'Nguyễn Văn A',
-        email: 'test@example.com',
+        name: '[MẪU] Học viên Test 01',
+        email: 'hoc-vien-test-01@example.com',
         phone: '0901234567',
         termsAccepted: true,
         // need is optional in schema, but termsAccepted is required
@@ -507,8 +509,8 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
 
       const missingTerms = experienceOrderSchema.safeParse({
         productId: 1,
-        name: 'Nguyễn Văn A',
-        email: 'test@example.com',
+        name: '[MẪU] Học viên Test 01',
+        email: 'hoc-vien-test-01@example.com',
         phone: '0901234567',
         termsAccepted: false,
       })

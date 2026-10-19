@@ -71,7 +71,7 @@ export function TeamGrid({
         className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]}`}
       >
         <div className="mx-auto max-w-5xl py-8 px-4 rounded-card border-2 border-dashed border-deep-navy/20 text-center font-ui text-sm text-deep-navy/70 bg-white/50">
-          {vi.sm04?.teamEmptyMessage || 'Chưa có dữ liệu – nhập trong CMS'}
+          {vi.sm04.teamEmptyMessage}
         </div>
       </section>
     )
@@ -110,7 +110,11 @@ export function TeamGrid({
 
         <div className={gridColsClass}>
           {validMembers.map((member) => {
-            const initial = (member.name || '').trim().charAt(0).toUpperCase() || '?'
+            const cleanName = (member.name || '').replace(/^\[MẪU\]\s*/i, '').trim()
+            const initial =
+              cleanName.charAt(0).toUpperCase() ||
+              (member.name || '').trim().charAt(0).toUpperCase() ||
+              '?'
 
             return (
               <div
