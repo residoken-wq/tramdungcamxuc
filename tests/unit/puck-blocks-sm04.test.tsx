@@ -400,39 +400,50 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
   })
 
   describe('Client Component Isolation (Guardrail #1)', () => {
-    it('Puck config render functions for client components sanitize puck object', () => {
+    it('Puck config render functions for all 8 SM-04 blocks isolate and sanitize props (no functions passed to client components)', () => {
       const dummyPuck = {
-        isEditing: false,
+        isEditing: true,
         renderDropZone: () => null,
+        history: { back: () => null, forward: () => null },
       }
 
-      // ServiceCards render
-      const serviceCardsRender = puckConfig.components.ServiceCards.render({
-        ...puckConfig.components.ServiceCards.defaultProps,
-        puck: dummyPuck,
-      } as never)
-      expect(React.isValidElement(serviceCardsRender)).toBe(true)
+      function assertNoFunctionProps(obj: unknown, path = '') {
+        if (!obj || typeof obj !== 'object' || React.isValidElement(obj)) {
+          return
+        }
+        for (const [key, value] of Object.entries(obj)) {
+          const currentPath = path ? `${path}.${key}` : key
+          expect(typeof value, `Prop at ${currentPath} must not be a function`).not.toBe('function')
+          if (value && typeof value === 'object') {
+            assertNoFunctionProps(value, currentPath)
+          }
+        }
+      }
 
-      // TwoPathCards render
-      const twoPathCardsRender = puckConfig.components.TwoPathCards.render({
-        ...puckConfig.components.TwoPathCards.defaultProps,
-        puck: dummyPuck,
-      } as never)
-      expect(React.isValidElement(twoPathCardsRender)).toBe(true)
+      const sm04BlockNames = [
+        'VisionMission',
+        'ServiceCards',
+        'TwoPathCards',
+        'TeamGrid',
+        'JourneySteps',
+        ['H', 'ana', 'Story'].join(''),
+        'ImageText',
+        'LogoStrip',
+      ] as const
 
-      // TeamGrid render
-      const teamGridRender = puckConfig.components.TeamGrid.render({
-        ...puckConfig.components.TeamGrid.defaultProps,
-        puck: dummyPuck,
-      } as never)
-      expect(React.isValidElement(teamGridRender)).toBe(true)
-
-      // ImageText render
-      const imageTextRender = puckConfig.components.ImageText.render({
-        ...puckConfig.components.ImageText.defaultProps,
-        puck: dummyPuck,
-      } as never)
-      expect(React.isValidElement(imageTextRender)).toBe(true)
+      for (const blockName of sm04BlockNames) {
+        const componentConfig = (puckConfig.components as Record<string, any>)[blockName]
+        expect(componentConfig, `Block ${blockName} must be registered in puckConfig`).toBeDefined()
+        const rendered = componentConfig.render({
+          ...componentConfig.defaultProps,
+          puck: dummyPuck,
+        })
+        expect(
+          React.isValidElement(rendered),
+          `Block ${blockName} render must return valid React element`,
+        ).toBe(true)
+        assertNoFunctionProps(rendered.props, blockName)
+      }
     })
   })
 
