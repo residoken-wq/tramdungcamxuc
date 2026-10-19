@@ -60,3 +60,5 @@
 
 - (SM-04 review 19/10) Editor Puck: nút đặt phiên / "Chọn gói này" luôn hiện ghi chú "Chưa có sản phẩm phiên trải nghiệm đang bán" vì editor không có `_resolved.bookingProductId` – thêm hook client hoặc đổi ghi chú (SM-07).
 - (SM-04 review 19/10) `/styleguide`: thêm ví dụ `HanaStory` kiểu `letter` có `greeting` + `signatureName`.
+- (SM-05 review 19/10) `CTASection` chỉ có 1 nút – cân nhắc thêm nút thứ 2 (VD: quiz + đặt phiên) cho dải CTA nền tối trang Tài nguyên.
+- (SM-05 review 19/10) Bỏ link `?tab=noi-dung` còn sót ở `PostDetail.tsx` và `tai-nguyen/[slug]/page.tsx`; đổi placeholder "Ví dụ: Minh Anh" của form newsletter.
