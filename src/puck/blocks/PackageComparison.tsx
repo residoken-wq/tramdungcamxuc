@@ -21,6 +21,26 @@ export const PackageComparisonBlock: ComponentConfig<PackageComparisonProps> = {
       },
       getItemSummary: (item) => (item?.packageId ? `Gói ID: ${item.packageId}` : 'Chưa chọn'),
     },
+    highlightPackageId: createProductExternalField({
+      label: 'Gói nổi bật (Cột nền tối)',
+      filterType: 'package',
+    }),
+    highlightLabel: {
+      type: 'text',
+      label: 'Nhãn gói nổi bật (Mặc định: Khuyên dùng)',
+    },
+    showPackageButtons: {
+      type: 'select',
+      label: 'Hiển thị nút đặt phiên trải nghiệm dưới mỗi cột',
+      options: [
+        { label: 'Tắt (Ẩn nút - Mặc định)', value: false as never },
+        { label: 'Bật (Hiện nút)', value: true as never },
+      ],
+    },
+    packageButtonText: {
+      type: 'text',
+      label: 'Chữ trên nút (Mặc định: Chọn gói này)',
+    },
     showTotalValue: {
       type: 'select',
       label: 'Hiển thị tổng giá trị gạch ngang',
@@ -61,8 +81,12 @@ export const PackageComparisonBlock: ComponentConfig<PackageComparisonProps> = {
     },
   },
   defaultProps: {
-    version: 2,
+    version: 3,
     packages: [],
+    highlightPackageId: '',
+    highlightLabel: '',
+    showPackageButtons: false,
+    packageButtonText: '',
     showTotalValue: true,
     showDiscountPercent: true,
     note: '[MẪU] Các gói đồng hành được thiết kế theo lộ trình cá nhân hóa.',

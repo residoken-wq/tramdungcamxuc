@@ -22,6 +22,32 @@ const inFlightPageSlug = new Map<string, Promise<string | null>>()
 let siteSettingsCache: PublicSiteSettings | null = null
 let inFlightSiteSettings: Promise<PublicSiteSettings> | null = null
 
+export interface PublicServiceSummary {
+  id: string | number
+  name: string
+  slug: string
+  audience?: string | null
+  audienceLabel?: string | null
+  ctaLabel?: string | null
+  saleStatus?: string | null
+}
+
+export interface PublicProgramSummary {
+  id: string | number
+  name: string
+  slug: string
+  learnerGroup?: string | null
+  format?: string | null
+  ctaLabel?: string | null
+  saleStatus?: string | null
+}
+
+const multiServicesCache = new Map<string, PublicServiceSummary[]>()
+const inFlightMultiServices = new Map<string, Promise<PublicServiceSummary[]>>()
+
+const multiProgramsCache = new Map<string, PublicProgramSummary[]>()
+const inFlightMultiPrograms = new Map<string, Promise<PublicProgramSummary[]>>()
+
 /**
  * Xóa cache client preview (dùng cho unit test hoặc reset khi cần)
  */
@@ -35,6 +61,12 @@ export function clearClientPreviewCache() {
   multiTestimonialsCache.clear()
   inFlightSingleTestimonial.clear()
   inFlightMultiTestimonials.clear()
+
+  multiServicesCache.clear()
+  inFlightMultiServices.clear()
+
+  multiProgramsCache.clear()
+  inFlightMultiPrograms.clear()
 
   pageSlugCache.clear()
   inFlightPageSlug.clear()
@@ -519,8 +551,9 @@ export function useClientSiteSettings(initialSettings?: PublicSiteSettings | nul
     let isMounted = true
     const controller = new AbortController()
 
-    if (!inFlightSiteSettings) {
-      inFlightSiteSettings = fetch('/api/globals/siteSettings?depth=0', {
+    let inFlight = inFlightSiteSettings
+    if (!inFlight) {
+      inFlight = fetch('/api/globals/siteSettings?depth=0', {
         credentials: 'include',
         signal: controller.signal,
       })
@@ -531,16 +564,21 @@ export function useClientSiteSettings(initialSettings?: PublicSiteSettings | nul
           return pub
         })
         .catch(() => {
-          const empty = { shopeeStoreUrl: null, zaloChatUrl: null, zaloGroupUrl: null }
+          const empty: PublicSiteSettings = {
+            shopeeStoreUrl: null,
+            zaloChatUrl: null,
+            zaloGroupUrl: null,
+          }
           siteSettingsCache = empty
           return empty
         })
         .finally(() => {
           inFlightSiteSettings = null
         })
+      inFlightSiteSettings = inFlight
     }
 
-    inFlightSiteSettings.then((data) => {
+    inFlight.then((data) => {
       if (isMounted) {
         setSettings(data)
       }
@@ -632,5 +670,187 @@ export function useClientPageSlug(
   return {
     slug: current,
     loading: !pageSlugCache.has(pid) && slug === null,
+  }
+}
+
+export function useClientServices(options: {
+  serviceIds?: Array<string | number>
+  initialServices?: PublicServiceSummary[]
+}): { services: PublicServiceSummary[]; loading: boolean } {
+  const isResolved = options.initialServices !== undefined
+  const rawIds = options.serviceIds || []
+  const cleanIds = rawIds
+    .filter((id): id is string | number => id != null && String(id).trim() !== '')
+    .map(String)
+  const queryKey = cleanIds.join(',')
+
+  const [state, setState] = useState<{ key: string; services: PublicServiceSummary[] } | null>(
+    () => {
+      if (queryKey && multiServicesCache.has(queryKey)) {
+        return { key: queryKey, services: multiServicesCache.get(queryKey) ?? [] }
+      }
+      return null
+    },
+  )
+
+  useEffect(() => {
+    if (isResolved || !queryKey) return
+    if (multiServicesCache.has(queryKey)) return
+
+    let isMounted = true
+    const controller = new AbortController()
+
+    let promise = inFlightMultiServices.get(queryKey)
+    if (!promise) {
+      const ids = queryKey.split(',').filter(Boolean)
+      const params = ids.map((id) => `where[id][in][]=${encodeURIComponent(id)}`).join('&')
+      const url = `/api/services?limit=${ids.length}&where[_status][equals]=published&${params}`
+
+      promise = fetch(url, { credentials: 'include', signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const rawDocs = (data?.docs || []).map((doc: Record<string, unknown>) => ({
+            id: doc.id as string | number,
+            name: doc.name as string,
+            slug: doc.slug as string,
+            audience: doc.audience as string | undefined,
+            audienceLabel: doc.audienceLabel as string | undefined,
+            ctaLabel: doc.ctaLabel as string | undefined,
+            saleStatus: doc.saleStatus as PublicServiceSummary['saleStatus'],
+          })) as PublicServiceSummary[]
+
+          const idMap = new Map(rawDocs.map((d) => [String(d.id), d]))
+          const finalDocs = ids.map((id) => idMap.get(id)).filter(Boolean) as PublicServiceSummary[]
+
+          multiServicesCache.set(queryKey, finalDocs)
+          return finalDocs
+        })
+        .catch(() => {
+          multiServicesCache.set(queryKey, [])
+          return []
+        })
+        .finally(() => {
+          inFlightMultiServices.delete(queryKey)
+        })
+
+      inFlightMultiServices.set(queryKey, promise)
+    }
+
+    promise.then((docs) => {
+      if (isMounted) {
+        setState({ key: queryKey, services: docs })
+      }
+    })
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [queryKey, isResolved])
+
+  if (isResolved) {
+    return { services: options.initialServices ?? [], loading: false }
+  }
+
+  if (!queryKey) {
+    return { services: [], loading: false }
+  }
+
+  const cached = multiServicesCache.get(queryKey)
+  const current = state?.key === queryKey ? state.services : cached ?? []
+  return {
+    services: current,
+    loading: !multiServicesCache.has(queryKey) && state?.key !== queryKey,
+  }
+}
+
+export function useClientPrograms(options: {
+  programIds?: Array<string | number>
+  initialPrograms?: PublicProgramSummary[]
+}): { programs: PublicProgramSummary[]; loading: boolean } {
+  const isResolved = options.initialPrograms !== undefined
+  const rawIds = options.programIds || []
+  const cleanIds = rawIds
+    .filter((id): id is string | number => id != null && String(id).trim() !== '')
+    .map(String)
+  const queryKey = cleanIds.join(',')
+
+  const [state, setState] = useState<{ key: string; programs: PublicProgramSummary[] } | null>(
+    () => {
+      if (queryKey && multiProgramsCache.has(queryKey)) {
+        return { key: queryKey, programs: multiProgramsCache.get(queryKey) ?? [] }
+      }
+      return null
+    },
+  )
+
+  useEffect(() => {
+    if (isResolved || !queryKey) return
+    if (multiProgramsCache.has(queryKey)) return
+
+    let isMounted = true
+    const controller = new AbortController()
+
+    let promise = inFlightMultiPrograms.get(queryKey)
+    if (!promise) {
+      const ids = queryKey.split(',').filter(Boolean)
+      const params = ids.map((id) => `where[id][in][]=${encodeURIComponent(id)}`).join('&')
+      const url = `/api/programs?limit=${ids.length}&where[_status][equals]=published&${params}`
+
+      promise = fetch(url, { credentials: 'include', signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const rawDocs = (data?.docs || []).map((doc: Record<string, unknown>) => ({
+            id: doc.id as string | number,
+            name: doc.name as string,
+            slug: doc.slug as string,
+            learnerGroup: doc.learnerGroup as string | undefined,
+            format: doc.format as string | undefined,
+            ctaLabel: doc.ctaLabel as string | undefined,
+            saleStatus: doc.saleStatus as PublicProgramSummary['saleStatus'],
+          })) as PublicProgramSummary[]
+
+          const idMap = new Map(rawDocs.map((d) => [String(d.id), d]))
+          const finalDocs = ids.map((id) => idMap.get(id)).filter(Boolean) as PublicProgramSummary[]
+
+          multiProgramsCache.set(queryKey, finalDocs)
+          return finalDocs
+        })
+        .catch(() => {
+          multiProgramsCache.set(queryKey, [])
+          return []
+        })
+        .finally(() => {
+          inFlightMultiPrograms.delete(queryKey)
+        })
+
+      inFlightMultiPrograms.set(queryKey, promise)
+    }
+
+    promise.then((docs) => {
+      if (isMounted) {
+        setState({ key: queryKey, programs: docs })
+      }
+    })
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [queryKey, isResolved])
+
+  if (isResolved) {
+    return { programs: options.initialPrograms ?? [], loading: false }
+  }
+
+  if (!queryKey) {
+    return { programs: [], loading: false }
+  }
+
+  const cached = multiProgramsCache.get(queryKey)
+  const current = state?.key === queryKey ? state.programs : cached ?? []
+  return {
+    programs: current,
+    loading: !multiProgramsCache.has(queryKey) && state?.key !== queryKey,
   }
 }

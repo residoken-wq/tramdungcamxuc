@@ -84,6 +84,8 @@ test.describe('T1-01: Puck Columns & QuoteBlock publication across viewports', (
         name: 'Bố cục Cột (2 hoặc 3 Cột)',
         exact: true,
       })
+      // The drawer lists many blocks; bring the item into view before dragging it.
+      await columnsDrawerItem.scrollIntoViewIfNeeded()
       const colSource = await columnsDrawerItem.boundingBox()
       const rootTarget = await dropzone.boundingBox()
       if (!colSource || !rootTarget)
@@ -109,6 +111,7 @@ test.describe('T1-01: Puck Columns & QuoteBlock publication across viewports', (
         name: 'Khối Trích dẫn cảm xúc (Quote Block)',
         exact: true,
       })
+      await quoteDrawerItem.scrollIntoViewIfNeeded()
       const quoteSource = await quoteDrawerItem.boundingBox()
       const col1Target = await canvas.locator('[data-puck-dropzone]').nth(1).boundingBox()
       if (!quoteSource || !col1Target)

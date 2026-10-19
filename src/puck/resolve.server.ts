@@ -5,6 +5,11 @@ import type { Data } from '@puckeditor/core'
 import { toPublicProduct, type PublicProduct } from '@/lib/products'
 import { toPublicTestimonial, type PublicTestimonial } from '@/lib/testimonials'
 import { toPublicSiteSettings, type PublicSiteSettings } from '@/lib/site-public'
+import type {
+  PublicServiceSummary,
+  PublicProgramSummary,
+} from '@/components/site/SolutionEcosystem'
+import type { Service, Program } from '@/payload-types'
 
 import { walkPuckItems } from './walk'
 
@@ -16,6 +21,8 @@ const PUBLIC_PRODUCT_SELECT = {
   type: true,
   journeyStep: true,
   shortDescription: true,
+  tagline: true,
+  icon: true,
   includes: true,
   price: true,
   salePrice: true,
@@ -33,10 +40,13 @@ const PUBLIC_TESTIMONIAL_SELECT = {
   id: true,
   name: true,
   role: true,
+  age: true,
   quote: true,
   language: true,
   consent: true,
   photo: true,
+  story: true,
+  relatedOffer: true,
 } as const
 
 export interface ResolveServerDataOptions {
@@ -87,14 +97,16 @@ export async function resolveServerData(
   const testimonialIdsToFetch = new Set<string | number>()
   const logoMediaIdsToFetch = new Set<string | number>()
   const pageIdsToFetch = new Set<string | number>()
+  const serviceIdsToFetch = new Set<string | number>()
+  const programIdsToFetch = new Set<string | number>()
   let needsSiteSettings = false
   let hasSetHeroPriority = false
 
   await walkPuckItems(resolvedData, async (item) => {
     if (!item || !item.props) return
 
-    // Priority flag for HeroImage (only first hero image on page gets priority=true for LCP)
-    if (item.type === 'HeroImage') {
+    // Priority flag for HeroImage & HeroTwoEntries (only first hero on page gets priority=true for LCP)
+    if (item.type === 'HeroImage' || item.type === 'HeroTwoEntries') {
       if (!hasSetHeroPriority) {
         item.props.priority = true
         hasSetHeroPriority = true
@@ -103,9 +115,12 @@ export async function resolveServerData(
       }
     }
 
-    // Media resolution for ImageText, HeroImage, & HanaStory
+    // Media resolution for ImageText, HeroImage, HanaStory & HeroTwoEntries
     if (
-      (item.type === 'ImageText' || item.type === 'HeroImage' || item.type === 'HanaStory') &&
+      (item.type === 'ImageText' ||
+        item.type === 'HeroImage' ||
+        item.type === 'HanaStory' ||
+        item.type === 'HeroTwoEntries') &&
       item.props.mediaId
     ) {
       try {
@@ -158,8 +173,8 @@ export async function resolveServerData(
           }
         }
       }
-    } else if (item.type === 'TestimonialSlider') {
-      const manuals = item.props.manualTestimonials as
+    } else if (item.type === 'TestimonialSlider' || item.type === 'CTASection') {
+      const manuals = (item.props.manualTestimonials || item.props.testimonials) as
         Array<{ testimonialId?: string | number }> | undefined
       if (Array.isArray(manuals)) {
         for (const m of manuals) {
@@ -200,7 +215,7 @@ export async function resolveServerData(
       if (item.props.productId) {
         productIdsToFetch.add(item.props.productId as string | number)
       }
-    } else if (item.type === 'PackageComparison') {
+    } else if (item.type === 'PackageComparison' || item.type === 'PackageCards') {
       const pkgs = item.props.packages as
         Array<{ packageId?: string | number; productId?: string | number }> | undefined
       if (Array.isArray(pkgs)) {
@@ -215,11 +230,37 @@ export async function resolveServerData(
           if (id) productIdsToFetch.add(id)
         }
       }
+    } else if (item.type === 'SolutionEcosystem') {
+      const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
+      if (Array.isArray(col1)) {
+        for (const p of col1) {
+          if (p?.productId) productIdsToFetch.add(p.productId)
+        }
+      }
+      const col2 = item.props.col2Services as Array<{ serviceId?: string | number }> | undefined
+      if (Array.isArray(col2)) {
+        for (const s of col2) {
+          if (s?.serviceId) serviceIdsToFetch.add(s.serviceId)
+        }
+      }
+      const col3 = item.props.col3Programs as Array<{ programId?: string | number }> | undefined
+      if (Array.isArray(col3)) {
+        for (const prog of col3) {
+          if (prog?.programId) programIdsToFetch.add(prog.programId)
+        }
+      }
     }
 
-    // Collect page IDs for CTAButton (linkType = page)
+    // Collect page IDs for CTAButton, Callout, PackageCards & CTASection (linkType = page)
     if (item.type === 'CTAButton' && item.props.linkType === 'page' && item.props.pageId) {
       pageIdsToFetch.add(item.props.pageId as string | number)
+    }
+    if (
+      (item.type === 'Callout' || item.type === 'PackageCards' || item.type === 'CTASection') &&
+      item.props.buttonLinkType === 'page' &&
+      item.props.buttonPageId
+    ) {
+      pageIdsToFetch.add(item.props.buttonPageId as string | number)
     }
 
     // Collect product IDs for conversion blocks
@@ -235,7 +276,11 @@ export async function resolveServerData(
       productIdsToFetch.add(item.props.productId as string | number)
     }
 
-    if (item.type === 'ShopeeButton' || item.type === 'ZaloButton') {
+    if (
+      item.type === 'ShopeeButton' ||
+      item.type === 'ZaloButton' ||
+      (item.type === 'FAQ' && item.props.aside === 'booking')
+    ) {
       needsSiteSettings = true
     }
   })
@@ -356,11 +401,98 @@ export async function resolveServerData(
     }
   }
 
+  const serviceMap = new Map<string, PublicServiceSummary>()
+
+  if (serviceIdsToFetch.size > 0) {
+    const rawSids = Array.from(serviceIdsToFetch)
+    const numericOrStrSids = rawSids.map((id) => (isNaN(Number(id)) ? id : Number(id)))
+
+    try {
+      const serviceDocs = await payload.find({
+        collection: 'services',
+        where: {
+          and: [{ id: { in: numericOrStrSids } }, { _status: { equals: 'published' } }],
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          audience: true,
+          audienceLabel: true,
+          ctaLabel: true,
+          saleStatus: true,
+        } as never,
+        depth: 0,
+        limit: numericOrStrSids.length + 10,
+      })
+
+      for (const doc of serviceDocs.docs as unknown as Service[]) {
+        if (doc?.saleStatus !== 'hidden') {
+          serviceMap.set(String(doc.id), {
+            id: doc.id,
+            name: doc.name,
+            slug: doc.slug,
+            audience: doc.audience || null,
+            audienceLabel: doc.audienceLabel || null,
+            ctaLabel: doc.ctaLabel || null,
+            saleStatus: doc.saleStatus || null,
+          })
+        }
+      }
+    } catch {
+      // Gracefully continue
+    }
+  }
+
+  const programMap = new Map<string, PublicProgramSummary>()
+
+  if (programIdsToFetch.size > 0) {
+    const rawPids = Array.from(programIdsToFetch)
+    const numericOrStrPids = rawPids.map((id) => (isNaN(Number(id)) ? id : Number(id)))
+
+    try {
+      const programDocs = await payload.find({
+        collection: 'programs',
+        where: {
+          and: [{ id: { in: numericOrStrPids } }, { _status: { equals: 'published' } }],
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          learnerGroup: true,
+          format: true,
+          ctaLabel: true,
+          saleStatus: true,
+        } as never,
+        depth: 0,
+        limit: numericOrStrPids.length + 10,
+      })
+
+      for (const doc of programDocs.docs as unknown as Program[]) {
+        if (doc?.saleStatus !== 'hidden') {
+          programMap.set(String(doc.id), {
+            id: doc.id,
+            name: doc.name,
+            slug: doc.slug,
+            learnerGroup: doc.learnerGroup || null,
+            format: doc.format || null,
+            ctaLabel: doc.ctaLabel || null,
+            saleStatus: doc.saleStatus || null,
+          })
+        }
+      }
+    } catch {
+      // Gracefully continue
+    }
+  }
+
   let publicSiteSettings: PublicSiteSettings = {
     shopeeStoreUrl: null,
     zaloChatUrl: null,
     zaloGroupUrl: null,
   }
+  let siteContactEmail: string | null = null
 
   if (needsSiteSettings) {
     try {
@@ -369,6 +501,10 @@ export async function resolveServerData(
         depth: 0,
       })
       publicSiteSettings = toPublicSiteSettings(siteDoc)
+      const rawEmail = (siteDoc as unknown as Record<string, unknown>)?.email
+      if (typeof rawEmail === 'string' && rawEmail.trim().length > 0) {
+        siteContactEmail = rawEmail.trim()
+      }
     } catch {
       // Gracefully continue
     }
@@ -453,8 +589,84 @@ export async function resolveServerData(
       }
       const resolvedList = ids
         .map((id) => productMap.get(String(id)))
-        .filter(Boolean) as PublicProduct[]
+        .filter((p): p is PublicProduct => Boolean(p && p.type === 'package'))
       item.props._resolved = { packages: resolvedList }
+    } else if (item.type === 'PackageCards') {
+      const pkgs = item.props.packages as
+        Array<{ packageId?: string | number; productId?: string | number }> | undefined
+      const flatIds = item.props.packageIds as Array<string | number> | undefined
+      const ids: Array<string | number> = []
+      if (Array.isArray(pkgs)) {
+        for (const p of pkgs) {
+          const id = p?.packageId || p?.productId
+          if (id) ids.push(id)
+        }
+      }
+      if (Array.isArray(flatIds)) {
+        for (const id of flatIds) {
+          if (id) ids.push(id)
+        }
+      }
+      const resolvedList = ids
+        .map((id) => productMap.get(String(id)))
+        .filter((p): p is PublicProduct => Boolean(p && p.type === 'package'))
+
+      let resolvedButtonUrl: string | null = null
+      if (item.props.buttonLinkType === 'page') {
+        const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
+        const slug = pId ? pageMap.get(pId) : null
+        resolvedButtonUrl = slug ? (slug === 'trang-chu' ? '/' : `/${slug}`) : null
+      } else if (item.props.buttonLinkType === 'url') {
+        const rawUrl = item.props.buttonUrl ?? item.props.buttonLink
+        resolvedButtonUrl = typeof rawUrl === 'string' && rawUrl.length > 0 ? rawUrl : null
+      } else {
+        const rawUrl = item.props.buttonLink
+        resolvedButtonUrl = typeof rawUrl === 'string' && rawUrl.length > 0 ? rawUrl : null
+      }
+
+      item.props._resolved = {
+        packages: resolvedList,
+        buttonUrl: resolvedButtonUrl,
+      }
+    } else if (item.type === 'SolutionEcosystem') {
+      const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
+      const resolvedProducts: PublicProduct[] = []
+      if (Array.isArray(col1)) {
+        for (const p of col1) {
+          if (p?.productId) {
+            const prod = productMap.get(String(p.productId))
+            if (prod) resolvedProducts.push(prod)
+          }
+        }
+      }
+
+      const col2 = item.props.col2Services as Array<{ serviceId?: string | number }> | undefined
+      const resolvedServices: PublicServiceSummary[] = []
+      if (Array.isArray(col2)) {
+        for (const s of col2) {
+          if (s?.serviceId) {
+            const srv = serviceMap.get(String(s.serviceId))
+            if (srv) resolvedServices.push(srv)
+          }
+        }
+      }
+
+      const col3 = item.props.col3Programs as Array<{ programId?: string | number }> | undefined
+      const resolvedPrograms: PublicProgramSummary[] = []
+      if (Array.isArray(col3)) {
+        for (const prog of col3) {
+          if (prog?.programId) {
+            const prg = programMap.get(String(prog.programId))
+            if (prg) resolvedPrograms.push(prg)
+          }
+        }
+      }
+
+      item.props._resolved = {
+        products: resolvedProducts,
+        services: resolvedServices,
+        programs: resolvedPrograms,
+      }
     } else if (item.type === 'TestimonialGrid') {
       const mode = item.props.mode || 'manual'
       if (mode === 'recent') {
@@ -535,6 +747,40 @@ export async function resolveServerData(
     } else if (item.type === 'CTAButton') {
       const pId = item.props.pageId ? String(item.props.pageId) : ''
       item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+    } else if (item.type === 'Callout') {
+      const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
+      item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+    } else if (item.type === 'CTASection') {
+      const list = item.props.testimonials as Array<{ testimonialId?: string | number }> | undefined
+      const ids: Array<string | number> = []
+      if (Array.isArray(list)) {
+        for (const m of list) {
+          if (m?.testimonialId) ids.push(m.testimonialId)
+        }
+      }
+      const resolvedList = ids
+        .map((id) => testimonialMap.get(String(id)))
+        .filter((t): t is PublicTestimonial =>
+          Boolean(t && t.consent === true && t.photo && t.photo.url),
+        )
+
+      let resolvedButtonUrl: string | null = null
+      if (item.props.buttonLinkType === 'page') {
+        const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
+        const slug = pId ? pageMap.get(pId) : null
+        resolvedButtonUrl = slug ? (slug === 'trang-chu' ? '/' : `/${slug}`) : null
+      } else if (item.props.buttonLinkType === 'url') {
+        const rawUrl = item.props.buttonUrl ?? item.props.buttonLink
+        resolvedButtonUrl = typeof rawUrl === 'string' && rawUrl.length > 0 ? rawUrl : null
+      } else {
+        const rawUrl = item.props.buttonLink
+        resolvedButtonUrl = typeof rawUrl === 'string' && rawUrl.length > 0 ? rawUrl : null
+      }
+
+      item.props._resolved = {
+        testimonials: resolvedList,
+        buttonUrl: resolvedButtonUrl,
+      }
     } else if (item.type === 'LeadForm') {
       const rId = item.props.resourceProductId ? String(item.props.resourceProductId) : ''
       const rProd = rId ? productMap.get(rId) : null
@@ -615,6 +861,10 @@ export async function resolveServerData(
         } catch {
           item.props._resolved = { items: [] }
         }
+      }
+    } else if (item.type === 'FAQ') {
+      item.props._resolved = {
+        email: item.props.showEmail ? siteContactEmail : null,
       }
     }
 

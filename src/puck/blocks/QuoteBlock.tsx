@@ -8,6 +8,7 @@ export interface QuoteBlockProps {
   quote: string
   cite?: string
   roleOrContext?: string
+  tone?: 'light' | 'dark'
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -43,6 +44,14 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
       type: 'text',
       label: 'Vai trò / Ngữ cảnh (Tùy chọn)',
     },
+    tone: {
+      type: 'select',
+      label: 'Sắc thái giao diện (Tone)',
+      options: [
+        { label: 'Sáng (Mặc định)', value: 'light' },
+        { label: 'Tối (Nền Deep Navy, chữ trắng)', value: 'dark' },
+      ],
+    },
     bgColor: {
       type: 'select',
       label: 'Màu nền',
@@ -55,25 +64,33 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
     },
   },
   defaultProps: {
-    version: 1,
-    quote:
-      '[MẪU] Câu trích dẫn cảm xúc ấm áp và sâu sắc chạm đến người đọc.',
+    version: 2,
+    tone: 'light',
+    quote: '[MẪU] Câu trích dẫn cảm xúc ấm áp và sâu sắc chạm đến người đọc.',
     cite: '[MẪU] Tên người nói',
     roleOrContext: '[MẪU] Vai trò / bối cảnh',
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ quote, cite, roleOrContext, bgColor = 'warm-ivory', padding = 'md' }) => {
-    const isDeepNavy = bgColor === 'deep-navy'
+  render: ({
+    quote,
+    cite,
+    roleOrContext,
+    tone = 'light',
+    bgColor = 'warm-ivory',
+    padding = 'md',
+  }) => {
+    const isDark = tone === 'dark' || bgColor === 'deep-navy'
+    const sectionBg = tone === 'dark' ? 'bg-deep-navy text-white' : BG_COLORS[bgColor]
 
     return (
-      <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+      <section className={`w-full ${sectionBg} ${PADDINGS[padding]} transition-colors`}>
         <div className="mx-auto max-w-4xl">
           <UiQuoteBlock
             quote={quote}
             cite={cite}
             roleOrContext={roleOrContext}
-            theme={isDeepNavy ? 'dark' : 'light'}
+            theme={isDark ? 'dark' : 'light'}
           />
         </div>
       </section>

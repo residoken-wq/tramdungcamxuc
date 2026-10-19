@@ -49,8 +49,32 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       }),
       getItemSummary: (id: string) => (id ? `Media ID: ${id}` : 'Chưa chọn ảnh'),
     },
-    buttonText: { type: 'text', label: 'Chữ trên nút (tùy chọn)' },
-    buttonLink: { type: 'text', label: 'Đường dẫn liên kết (tùy chọn)' },
+    buttonText: { type: 'text', label: 'Chữ trên nút chính (tùy chọn)' },
+    buttonLink: { type: 'text', label: 'Đường dẫn nút chính (tùy chọn)' },
+    secondaryButtonText: { type: 'text', label: 'Chữ trên nút thứ 2 (viền, tùy chọn)' },
+    secondaryButtonLink: { type: 'text', label: 'Đường dẫn nút thứ 2 (tùy chọn)' },
+    badges: {
+      type: 'array',
+      label: 'Dải huy hiệu / nhãn ngắn (0 – 3 chip)',
+      arrayFields: {
+        text: { type: 'text', label: 'Nội dung chip (VD: Bảo mật tuyệt đối)' },
+      },
+      defaultItemProps: {
+        text: '[MẪU] Nhãn chứng thực',
+      },
+    },
+    stats: {
+      type: 'array',
+      label: 'Số liệu nhỏ dưới nút (0 – 3 ô)',
+      arrayFields: {
+        value: { type: 'text', label: 'Con số (VD: [MẪU] 500+)' },
+        label: { type: 'text', label: 'Nhãn mô tả ngắn' },
+      },
+      defaultItemProps: {
+        value: '[MẪU] 500+',
+        label: '[MẪU] Giờ khai vấn',
+      },
+    },
     bgColor: {
       type: 'select',
       label: 'Màu nền',
@@ -63,7 +87,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
     seriesLabel: '[MẪU] Khởi đầu hành trình',
     titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
     titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
@@ -73,6 +97,10 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     imageAlt: '',
     buttonText: '[MẪU] Bắt đầu ngay',
     buttonLink: '#',
+    secondaryButtonText: '',
+    secondaryButtonLink: '',
+    badges: [],
+    stats: [],
     bgColor: 'warm-ivory',
     padding: 'md',
   },

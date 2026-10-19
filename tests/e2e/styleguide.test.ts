@@ -59,11 +59,11 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
     await expect(page.getByText('Hành động bền bỉ.', { exact: true })).toBeVisible()
 
     // 5. Kiểm tra các icon nhận diện thương hiệu
-    await expect(page.getByText('HeartLine')).toBeVisible()
-    await expect(page.getByText('Valve')).toBeVisible()
-    await expect(page.getByText('Butterfly')).toBeVisible()
-    await expect(page.getByText('Leaf')).toBeVisible()
-    await expect(page.getByText('ThinLine')).toBeVisible()
+    await expect(page.getByText('HeartLine', { exact: true })).toBeVisible()
+    await expect(page.getByText('Valve', { exact: true })).toBeVisible()
+    await expect(page.getByText('Butterfly', { exact: true })).toBeVisible()
+    await expect(page.getByText('Leaf', { exact: true })).toBeVisible()
+    await expect(page.getByText('ThinLine', { exact: true })).toBeVisible()
   })
 
   test('UI Primitives (T0-04) hiển thị đầy đủ trên /styleguide và kiểm tra trạng thái tương tác', async ({
@@ -93,7 +93,7 @@ test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
     await expect(page.getByText('Tìm về điểm tựa.')).toBeVisible()
 
     // 5. QuoteBlock
-    await expect(page.getByText(/Cảm xúc không phải là kẻ thù cần chế ngự/)).toBeVisible()
+    await expect(page.getByText(/Cảm xúc không phải là kẻ thù cần chế ngự, mà là/)).toBeVisible()
     await expect(page.getByText('[MẪU] Tên tác giả').first()).toBeVisible()
 
     // 6. PriceTag & StatusBadge

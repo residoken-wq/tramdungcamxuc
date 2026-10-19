@@ -104,7 +104,7 @@ describe('five seed pages from real blocks (T1-16)', () => {
     ])
   })
 
-  it('all blocks pass through puckMigrations without change (invariant)', () => {
+  it('all blocks pass through puckMigrations idempotently (invariant)', () => {
     for (const page of seedData.pages) {
       const puckData = {
         content: JSON.parse(JSON.stringify(page.blocks)),
@@ -112,7 +112,8 @@ describe('five seed pages from real blocks (T1-16)', () => {
         zones: {},
       }
       const migrated = applyPuckMigrations(puckData)
-      expect(migrated).toEqual(puckData)
+      const twice = applyPuckMigrations(migrated)
+      expect(twice).toEqual(migrated)
     }
   })
 

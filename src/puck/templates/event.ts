@@ -11,7 +11,7 @@ export const eventTemplate: Data = {
       type: 'HeroImage',
       props: {
         id: 'event-hero',
-        version: 1,
+        version: 2,
         seriesLabel: '[MẪU] Sự kiện đặc biệt',
         titleLine1: '[MẪU] NGÀY HỘI KẾT NỐI',
         titleLine2: '[MẪU] LAN TỎA YÊU THƯƠNG',
@@ -21,6 +21,10 @@ export const eventTemplate: Data = {
         imageAlt: '',
         buttonText: '[MẪU] Khám phá sự kiện',
         buttonLink: '#booking',
+        secondaryButtonText: '',
+        secondaryButtonLink: '',
+        badges: [],
+        stats: [],
         bgColor: 'warm-ivory',
         padding: 'lg',
       },
@@ -71,7 +75,8 @@ export const eventTemplate: Data = {
       type: 'TestimonialGrid',
       props: {
         id: 'event-testimonials',
-        version: 1,
+        version: 2,
+        variant: 'quote',
         mode: 'manual',
         manualTestimonials: [
           {
@@ -91,16 +96,25 @@ export const eventTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'event-faq',
-        version: 1,
+        version: 2,
         seriesLabel: '[MẪU] Giải đáp',
         titleLine1: '[MẪU] THẮC MẮC VỀ SỰ KIỆN',
         titleLine2: '[MẪU] HƯỚNG DẪN THAM GIA',
+        source: 'manual',
         items: [
           {
             question: '[MẪU] Tôi có thể mời thêm bạn bè cùng tham gia không?',
             answer: '[MẪU] Hoàn toàn có thể, bạn chỉ cần chia sẻ đường dẫn để bạn bè cùng đăng ký.',
           },
         ],
+        numbered: false,
+        aside: 'none',
+        bookingAsideTitle: '',
+        bookingAsideDescription: '',
+        bookingButtonText: '',
+        bookingButtonLink: '',
+        showEmail: false,
+        seeAllLink: '',
         bgColor: 'warm-ivory',
         padding: 'md',
       },

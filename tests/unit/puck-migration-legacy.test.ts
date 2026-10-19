@@ -176,21 +176,57 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
     expect(nestedCta?.props.href).toBe('/dang-ky-col')
     expect(nestedCta?.props.variant).toBe('secondary')
 
-    // 3. All T1-01 blocks retain 100% of their props without any data loss
+    // 3. All legacy blocks retain their original props without any data loss and have new v2 defaults
     const hero = migrated.content.find((item) => item.props.id === 'hero-1')
-    expect(hero?.props).toEqual(legacyPageData.content[0].props)
+    expect(hero?.props).toMatchObject({
+      seriesLabel: 'Nhãn series gốc',
+      titleLine1: 'TIÊU ĐỀ 1',
+      titleLine2: 'TIÊU ĐỀ 2',
+      emotionLine: 'Dòng cảm xúc nhẹ nhàng',
+      mediaId: 'media-123',
+      imageUrl: 'https://example.com/hero.jpg',
+      imageAlt: 'Hero alt text',
+      buttonText: 'Tìm hiểu ngay',
+      buttonLink: '/about',
+      bgColor: 'lavender-mist',
+      padding: 'lg',
+      version: 2,
+    })
 
     const quote = migrated.content.find((item) => item.props.id === 'quote-1')
-    expect(quote?.props).toEqual(legacyPageData.content[1].props)
+    expect(quote?.props).toMatchObject({
+      quoteText: 'Mỗi cảm xúc đều mang một thông điệp quý giá.',
+      authorName: 'Tác giả',
+      authorTitle: 'Chuyên gia khai vấn',
+      bgColor: 'warm-ivory',
+      padding: 'md',
+      version: 2,
+    })
 
     const stats = migrated.content.find((item) => item.props.id === 'stats-1')
-    expect(stats?.props).toEqual(legacyPageData.content[2].props)
+    expect(stats?.props).toMatchObject({
+      version: 2,
+      bgColor: 'warm-ivory',
+      padding: 'sm',
+    })
+    expect(stats?.props.stats).toEqual([
+      { value: '10+', label: 'Năm đồng hành', description: '', icon: '' },
+      { value: '500+', label: 'Giờ khai vấn', description: '', icon: '' },
+    ])
 
     const journey = migrated.content.find((item) => item.props.id === 'journey-1')
     expect(journey?.props).toEqual(legacyPageData.content[3].props)
 
     const faq = migrated.content.find((item) => item.props.id === 'faq-1')
-    expect(faq?.props).toEqual(legacyPageData.content[4].props)
+    expect(faq?.props).toMatchObject({
+      seriesLabel: 'Giải đáp',
+      titleLine1: 'CÂU HỎI',
+      titleLine2: 'THƯỜNG GẶP',
+      items: [{ question: 'Câu hỏi 1?', answer: 'Trả lời 1' }],
+      bgColor: 'warm-ivory',
+      padding: 'md',
+      version: 2,
+    })
 
     const video = migrated.content.find((item) => item.props.id === 'video-1')
     expect(video?.props).toEqual(legacyPageData.content[5].props)

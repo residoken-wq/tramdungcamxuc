@@ -6,16 +6,22 @@ import {
   buildPackageComparison,
   type ProductPackageInput,
   type PublicProduct,
+  BOOKING_PATH,
 } from '@/lib/products'
 import { formatVnd } from '@/lib/format'
 import { useClientProducts } from '@/puck/client-preview'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
+import { Button } from '@/components/ui/Button'
 
 export interface PackageComparisonProps {
   version?: number
   packages?: Array<{ packageId?: string | number }>
   packageIds?: Array<string | number>
+  highlightPackageId?: string | number
+  highlightLabel?: string
+  showPackageButtons?: boolean
+  packageButtonText?: string
   showTotalValue?: boolean
   showDiscountPercent?: boolean
   note?: string
@@ -49,6 +55,10 @@ const PADDINGS = {
 export function PackageComparison({
   packages: rawPackages,
   packageIds,
+  highlightPackageId,
+  highlightLabel,
+  showPackageButtons = false,
+  packageButtonText,
   showTotalValue = true,
   showDiscountPercent = true,
   note,
@@ -140,6 +150,10 @@ export function PackageComparison({
   const pkgs = comparison.packages
   const rows = comparison.rows
 
+  const highlightIdStr = highlightPackageId ? String(highlightPackageId) : ''
+  const effectiveHighlightLabel = highlightLabel?.trim() || vi.sm03.recommendedLabel
+  const effectiveButtonText = packageButtonText?.trim() || vi.sm03.choosePackage
+
   return (
     <section
       ref={sectionRef}
@@ -157,15 +171,25 @@ export function PackageComparison({
                 >
                   Cấu phần & Quyền lợi
                 </th>
-                {pkgs.map((pkg) => (
-                  <th
-                    key={pkg.id}
-                    scope="col"
-                    className="py-5 px-6 font-display text-2xl uppercase tracking-tight text-deep-navy text-center"
-                  >
-                    {pkg.name}
-                  </th>
-                ))}
+                {pkgs.map((pkg) => {
+                  const isHl = highlightIdStr !== '' && String(pkg.id) === highlightIdStr
+                  return (
+                    <th
+                      key={pkg.id}
+                      scope="col"
+                      className={`py-5 px-6 font-display text-2xl uppercase tracking-tight text-center relative ${
+                        isHl ? 'bg-deep-navy text-white' : 'text-deep-navy'
+                      }`}
+                    >
+                      {isHl && (
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-ui font-bold uppercase tracking-wider bg-bright-magenta text-white mb-1 shadow-xs">
+                          {effectiveHighlightLabel}
+                        </span>
+                      )}
+                      <div>{pkg.name}</div>
+                    </th>
+                  )
+                })}
               </tr>
             </thead>
             <tbody className="divide-y divide-deep-navy/10 font-ui text-sm">
@@ -177,22 +201,41 @@ export function PackageComparison({
                   >
                     {row.label}
                   </th>
-                  {row.cells.map((cell, cellIndex) => (
-                    <td key={cellIndex} className="py-4 px-6 text-center">
-                      {cell.text === 'Có' ? (
-                        <span className="font-bold text-bright-magenta text-base">Có</span>
-                      ) : cell.text === 'Không' ? (
-                        <span className="text-deep-navy/70 font-medium">Không</span>
-                      ) : (
-                        <span className="font-bold text-deep-navy text-base">{cell.text}</span>
-                      )}
-                    </td>
-                  ))}
+                  {row.cells.map((cell, cellIndex) => {
+                    const isHl =
+                      highlightIdStr !== '' && String(pkgs[cellIndex]?.id) === highlightIdStr
+                    return (
+                      <td
+                        key={cellIndex}
+                        className={`py-4 px-6 text-center ${isHl ? 'bg-deep-navy text-white' : ''}`}
+                      >
+                        {cell.text === 'Có' ? (
+                          <span
+                            className={`font-bold text-base ${isHl ? 'text-soft-pink' : 'text-bright-magenta'}`}
+                          >
+                            Có
+                          </span>
+                        ) : cell.text === 'Không' ? (
+                          <span
+                            className={`font-medium ${isHl ? 'text-white/60' : 'text-deep-navy/70'}`}
+                          >
+                            Không
+                          </span>
+                        ) : (
+                          <span
+                            className={`font-bold text-base ${isHl ? 'text-white' : 'text-deep-navy'}`}
+                          >
+                            {cell.text}
+                          </span>
+                        )}
+                      </td>
+                    )
+                  })}
                 </tr>
               ))}
 
-              {/* Total Value Row */}
-              {showTotalValue && (
+              {/* Total Value Row – hidden when no package has components to value */}
+              {showTotalValue && pkgs.some((p) => p.totalValue > 0) && (
                 <tr className="bg-lavender-mist/10 border-t-2 border-deep-navy/15">
                   <th
                     scope="row"
@@ -200,13 +243,23 @@ export function PackageComparison({
                   >
                     Tổng giá trị thực tế
                   </th>
-                  {pkgs.map((pkg) => (
-                    <td key={pkg.id} className="py-4 px-6 text-center">
-                      <span className="line-through font-ui font-medium text-deep-navy/60 text-sm">
-                        {formatVnd(pkg.totalValue)}
-                      </span>
-                    </td>
-                  ))}
+                  {pkgs.map((pkg) => {
+                    const isHl = highlightIdStr !== '' && String(pkg.id) === highlightIdStr
+                    return (
+                      <td
+                        key={pkg.id}
+                        className={`py-4 px-6 text-center ${isHl ? 'bg-deep-navy' : ''}`}
+                      >
+                        <span
+                          className={`line-through font-ui font-medium text-sm ${
+                            isHl ? 'text-white/60' : 'text-deep-navy/60'
+                          }`}
+                        >
+                          {pkg.totalValue > 0 ? formatVnd(pkg.totalValue) : '—'}
+                        </span>
+                      </td>
+                    )
+                  })}
                 </tr>
               )}
 
@@ -218,13 +271,21 @@ export function PackageComparison({
                 >
                   Giá gói đồng hành
                 </th>
-                {pkgs.map((pkg) => (
-                  <td key={pkg.id} className="py-5 px-6 text-center">
-                    <span className="font-ui text-xl font-bold text-deep-navy">
-                      {formatVnd(pkg.sellingPrice)}
-                    </span>
-                  </td>
-                ))}
+                {pkgs.map((pkg) => {
+                  const isHl = highlightIdStr !== '' && String(pkg.id) === highlightIdStr
+                  return (
+                    <td
+                      key={pkg.id}
+                      className={`py-5 px-6 text-center ${isHl ? 'bg-deep-navy' : ''}`}
+                    >
+                      <span
+                        className={`font-ui text-xl font-bold ${isHl ? 'text-white' : 'text-deep-navy'}`}
+                      >
+                        {formatVnd(pkg.sellingPrice)}
+                      </span>
+                    </td>
+                  )
+                })}
               </tr>
 
               {/* Discount Percent Row */}
@@ -236,17 +297,61 @@ export function PackageComparison({
                   >
                     Mức ưu đãi
                   </th>
-                  {pkgs.map((pkg) => (
-                    <td key={pkg.id} className="py-4 px-6 text-center">
-                      {pkg.discountPercent != null && pkg.discountPercent > 0 ? (
-                        <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider bg-bright-magenta text-white shadow-sm">
-                          Ưu đãi {pkg.discountPercent}%
-                        </span>
-                      ) : (
-                        <span className="text-deep-navy/70 text-xs">—</span>
-                      )}
-                    </td>
-                  ))}
+                  {pkgs.map((pkg) => {
+                    const isHl = highlightIdStr !== '' && String(pkg.id) === highlightIdStr
+                    return (
+                      <td
+                        key={pkg.id}
+                        className={`py-4 px-6 text-center ${isHl ? 'bg-deep-navy' : ''}`}
+                      >
+                        {pkg.discountPercent != null && pkg.discountPercent > 0 ? (
+                          <span
+                            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider shadow-sm ${
+                              isHl ? 'bg-accent-pink text-white' : 'bg-bright-magenta text-white'
+                            }`}
+                          >
+                            {vi.sm03.discountPrefix} {pkg.discountPercent}%
+                          </span>
+                        ) : (
+                          <span
+                            className={`text-xs ${isHl ? 'text-white/60' : 'text-deep-navy/70'}`}
+                          >
+                            —
+                          </span>
+                        )}
+                      </td>
+                    )
+                  })}
+                </tr>
+              )}
+
+              {/* Package Booking Buttons Row (Conditional) */}
+              {showPackageButtons && (
+                <tr className="border-t border-deep-navy/10 bg-lavender-mist/20">
+                  <th
+                    scope="row"
+                    className="py-5 px-6 font-ui text-sm font-semibold text-deep-navy/70"
+                  >
+                    {vi.sm03.bookingColumnHeader}
+                  </th>
+                  {pkgs.map((pkg) => {
+                    const isHl = highlightIdStr !== '' && String(pkg.id) === highlightIdStr
+                    return (
+                      <td
+                        key={pkg.id}
+                        className={`py-5 px-6 text-center ${isHl ? 'bg-deep-navy' : ''}`}
+                      >
+                        <Button
+                          href={`${BOOKING_PATH}?goi=${encodeURIComponent(pkg.slug || '')}`}
+                          variant={isHl ? 'primary' : 'secondary'}
+                          size="md"
+                          className="w-full"
+                        >
+                          {effectiveButtonText}
+                        </Button>
+                      </td>
+                    )
+                  })}
                 </tr>
               )}
             </tbody>
@@ -255,62 +360,133 @@ export function PackageComparison({
 
         {/* Mobile View: Vertical Cards on <= 768px (Không bảng tràn ngang) */}
         <div className="block md:hidden space-y-6">
-          {pkgs.map((pkg, pkgIndex) => (
-            <div
-              key={pkg.id}
-              className="rounded-card border border-deep-navy/15 bg-white p-6 shadow-soft flex flex-col gap-5"
-            >
-              {/* Header */}
-              <div className="flex items-baseline justify-between border-b border-deep-navy/10 pb-4">
-                <h3 className="font-display text-3xl uppercase tracking-tight text-deep-navy">
-                  {pkg.name}
-                </h3>
-                {showDiscountPercent && pkg.discountPercent != null && pkg.discountPercent > 0 && (
-                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-bright-magenta text-white">
-                    Ưu đãi {pkg.discountPercent}%
-                  </span>
-                )}
-              </div>
+          {pkgs.map((pkg, pkgIndex) => {
+            const isHl = highlightIdStr !== '' && String(pkg.id) === highlightIdStr
+            return (
+              <div
+                key={pkg.id}
+                className={`rounded-card border p-6 flex flex-col gap-5 ${
+                  isHl
+                    ? 'bg-deep-navy text-white border-accent-pink ring-2 ring-accent-pink shadow-md'
+                    : 'bg-white border-deep-navy/15 text-deep-navy shadow-soft'
+                }`}
+              >
+                {/* Header */}
+                <div
+                  className={`flex flex-col gap-2 border-b pb-4 ${
+                    isHl ? 'border-white/20' : 'border-deep-navy/10'
+                  }`}
+                >
+                  {isHl && (
+                    <span className="inline-flex self-start items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-bright-magenta text-white shadow-xs">
+                      {effectiveHighlightLabel}
+                    </span>
+                  )}
+                  <div className="flex items-baseline justify-between">
+                    <h3
+                      className={`font-display text-3xl uppercase tracking-tight ${
+                        isHl ? 'text-white' : 'text-deep-navy'
+                      }`}
+                    >
+                      {pkg.name}
+                    </h3>
+                    {showDiscountPercent &&
+                      pkg.discountPercent != null &&
+                      pkg.discountPercent > 0 && (
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${
+                            isHl ? 'bg-accent-pink text-white' : 'bg-bright-magenta text-white'
+                          }`}
+                        >
+                          Ưu đãi {pkg.discountPercent}%
+                        </span>
+                      )}
+                  </div>
+                </div>
 
-              {/* Components List */}
-              <div className="space-y-3 font-ui text-sm">
-                {rows.map((row, rIdx) => {
-                  const cell = row.cells[pkgIndex]
-                  if (!cell.has) {
+                {/* Components List */}
+                <div className="space-y-3 font-ui text-sm">
+                  {rows.map((row, rIdx) => {
+                    const cell = row.cells[pkgIndex]
+                    if (!cell.has) {
+                      return (
+                        <div
+                          key={rIdx}
+                          className={`flex items-center justify-between line-through ${
+                            isHl ? 'text-white/60' : 'text-deep-navy/70'
+                          }`}
+                        >
+                          <span>{row.label}</span>
+                          <span
+                            className={`text-xs font-semibold no-underline ${
+                              isHl ? 'text-white/60' : 'text-deep-navy/70'
+                            }`}
+                          >
+                            {vi.sm03.noLabel}
+                          </span>
+                        </div>
+                      )
+                    }
                     return (
                       <div
                         key={rIdx}
-                        className="flex items-center justify-between text-deep-navy/70 line-through"
+                        className={`flex items-center justify-between ${
+                          isHl ? 'text-white' : 'text-deep-navy'
+                        }`}
                       >
-                        <span>{row.label}</span>
-                        <span className="text-xs font-semibold no-underline">Không</span>
+                        <span className="font-medium">{row.label}</span>
+                        <span
+                          className={`font-bold ${isHl ? 'text-soft-pink' : 'text-bright-magenta'}`}
+                        >
+                          {cell.text}
+                        </span>
                       </div>
                     )
-                  }
-                  return (
-                    <div key={rIdx} className="flex items-center justify-between text-deep-navy">
-                      <span className="font-medium">{row.label}</span>
-                      <span className="font-bold text-bright-magenta">{cell.text}</span>
-                    </div>
-                  )
-                })}
-              </div>
+                  })}
+                </div>
 
-              {/* Price section */}
-              <div className="border-t border-deep-navy/10 pt-4 flex items-baseline justify-between">
-                <div>
-                  {showTotalValue && (
-                    <div className="text-xs line-through text-deep-navy/60 font-ui mb-0.5">
-                      Trị giá {formatVnd(pkg.totalValue)}
+                {/* Price section */}
+                <div
+                  className={`border-t pt-4 flex items-baseline justify-between ${
+                    isHl ? 'border-white/20' : 'border-deep-navy/10'
+                  }`}
+                >
+                  <div>
+                    {showTotalValue && pkg.totalValue > 0 && (
+                      <div
+                        className={`text-xs line-through font-ui mb-0.5 ${
+                          isHl ? 'text-white/60' : 'text-deep-navy/60'
+                        }`}
+                      >
+                        {vi.sm03.totalValuePrefix} {formatVnd(pkg.totalValue)}
+                      </div>
+                    )}
+                    <div
+                      className={`font-ui text-xl font-bold ${
+                        isHl ? 'text-white' : 'text-deep-navy'
+                      }`}
+                    >
+                      {formatVnd(pkg.sellingPrice)}
                     </div>
-                  )}
-                  <div className="font-ui text-xl font-bold text-deep-navy">
-                    {formatVnd(pkg.sellingPrice)}
                   </div>
                 </div>
+
+                {/* Optional Booking button */}
+                {showPackageButtons && (
+                  <div className="pt-2">
+                    <Button
+                      href={`${BOOKING_PATH}?goi=${encodeURIComponent(pkg.slug || '')}`}
+                      variant={isHl ? 'primary' : 'secondary'}
+                      size="md"
+                      className="w-full"
+                    >
+                      {effectiveButtonText}
+                    </Button>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Optional note and payment policy link */}

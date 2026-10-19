@@ -1,8 +1,12 @@
 import React from 'react'
+import { BrandIcon } from '@/components/brand/BrandIcon'
+import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 
 export interface StatItem {
-  value: string
+  value?: string
   label: string
+  description?: string
+  icon?: BrandIconKey | string
 }
 
 export interface StatsBarProps {
@@ -30,7 +34,9 @@ const PADDINGS = {
 
 export function StatsBar({ stats = [], bgColor = 'warm-ivory', padding = 'md' }: StatsBarProps) {
   const isDeepNavy = bgColor === 'deep-navy'
-  const validStats = Array.isArray(stats) ? stats.filter((s) => s && (s.value || s.label)) : []
+  const validStats = Array.isArray(stats)
+    ? stats.filter((s) => s && (s.value || s.label || s.icon))
+    : []
 
   if (validStats.length === 0) {
     return null
@@ -48,6 +54,7 @@ export function StatsBar({ stats = [], bgColor = 'warm-ivory', padding = 'md' }:
 
   const valueColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const labelColorClass = isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
+  const descriptionColorClass = isDeepNavy ? 'text-white/75' : 'text-deep-navy/70'
 
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
@@ -58,16 +65,29 @@ export function StatsBar({ stats = [], bgColor = 'warm-ivory', padding = 'md' }:
               key={index}
               className={`flex flex-col items-center text-center p-6 sm:p-8 rounded-card border ${cardBgClass} transition-transform hover:-translate-y-0.5`}
             >
-              <div
-                className={`font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none ${valueColorClass}`}
-              >
-                {item.value}
-              </div>
+              {item.icon ? (
+                <div className="flex h-14 sm:h-16 items-center justify-center">
+                  <BrandIcon name={item.icon} size={44} className={valueColorClass} />
+                </div>
+              ) : (
+                <div
+                  className={`font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none ${valueColorClass}`}
+                >
+                  {item.value}
+                </div>
+              )}
               <p
                 className={`mt-3 font-ui text-sm sm:text-base font-semibold leading-relaxed ${labelColorClass}`}
               >
                 {item.label}
               </p>
+              {item.description && (
+                <p
+                  className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed ${descriptionColorClass}`}
+                >
+                  {item.description}
+                </p>
+              )}
             </div>
           ))}
         </div>

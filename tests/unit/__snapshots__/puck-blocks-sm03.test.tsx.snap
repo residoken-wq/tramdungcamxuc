@@ -1,0 +1,603 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for CTASection with default and minimal variants 1`] = `
+<DocumentFragment>
+  <section
+    class="w-full bg-soft-pink py-20 px-6 sm:px-12 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-4xl"
+    >
+      <div
+        class="rounded-card bg-white border border-deep-navy/10 p-8 sm:p-12 lg:p-16 shadow-soft text-center flex flex-col items-center"
+      >
+        <h2
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+        >
+          <span
+            class="text-deep-navy"
+          >
+            SẴN SÀNG CHO HÀNH TRÌNH
+          </span>
+           
+          <span
+            class="text-bright-magenta"
+          >
+            LÀM CHỦ CẢM XÚC?
+          </span>
+        </h2>
+        <p
+          class="mt-4 font-quote text-lg sm:text-xl italic text-deep-navy/85 max-w-2xl"
+        >
+          Bắt đầu ngay hôm nay để tìm lại sự bình an nội tại.
+        </p>
+        <div
+          class="mt-8"
+        >
+          <a
+            class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[56px] min-w-[56px] px-8 py-3.5 text-[20px] font-bold tracking-tight"
+            href="/coaching#booking"
+          >
+            <span>
+              Đặt phiên trải nghiệm 149.000đ
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for CTASection with default and minimal variants 2`] = `
+<DocumentFragment>
+  <section
+    class="w-full bg-soft-pink py-20 px-6 sm:px-12 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-4xl"
+    >
+      <div
+        class="rounded-card bg-white border border-deep-navy/10 p-8 sm:p-12 lg:p-16 shadow-soft text-center flex flex-col items-center"
+      >
+        <h2
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+        >
+          <span
+            class="text-deep-navy"
+          >
+            KẾT NỐI NGAY HÔM NAY
+          </span>
+           
+          <span
+            class="text-bright-magenta"
+          >
+            [MẪU] CHUYỂN MÌNH CÙNG HANA
+          </span>
+        </h2>
+        <div
+          class="mt-8"
+        >
+          <a
+            class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[56px] min-w-[56px] px-8 py-3.5 text-[20px] font-bold tracking-tight"
+            href="/coaching"
+          >
+            <span>
+              Bắt đầu ngay
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for Callout with calm tone 1`] = `
+<DocumentFragment>
+  <section
+    class="w-full bg-lavender-mist py-12 px-6 sm:px-8 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-4xl"
+    >
+      <div
+        class="rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 text-center text-white shadow-soft"
+      >
+        <h2
+          class="font-ui text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug"
+        >
+          Dành 5 phút mỗi ngày cho chính mình
+        </h2>
+        <p
+          class="mx-auto mt-4 max-w-2xl font-ui text-base sm:text-lg leading-relaxed text-white/90"
+        >
+          Hạnh phúc bắt đầu từ những khoảnh khắc tĩnh lặng.
+        </p>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for Callout with default tone 1`] = `
+<DocumentFragment>
+  <section
+    class="w-full bg-deep-navy py-12 px-6 sm:px-8 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-4xl"
+    >
+      <div
+        class="rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 text-center text-white shadow-soft"
+      >
+        <h2
+          class="font-ui text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug"
+        >
+          Không gian an toàn tuyệt đối cho cảm xúc của bạn
+        </h2>
+        <p
+          class="mx-auto mt-4 max-w-2xl font-ui text-base sm:text-lg leading-relaxed text-white/90"
+        >
+          Mọi chia sẻ của bạn đều được lắng nghe trung tính và bảo mật hoàn toàn.
+        </p>
+        <div
+          class="mt-8 flex justify-center"
+        >
+          <a
+            class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight"
+            href="/coaching#booking"
+          >
+            <span>
+              Đặt lịch kết nối
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for IconCardGrid with icon variant 1`] = `
+<DocumentFragment>
+  <section
+    class="w-full bg-warm-ivory py-12 px-6 sm:px-8 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-6xl"
+    >
+      <div
+        class="mb-8 sm:mb-12"
+      >
+        <header
+          class="flex flex-col text-center items-center "
+        >
+          <span
+            class="mb-4 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta"
+          >
+            Đặc điểm nổi bật
+          </span>
+          <h2
+            class="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl"
+          >
+            <span
+              class="block text-deep-navy"
+            >
+              GIẢI PHÁP ĐỒNG HÀNH
+            </span>
+            <span
+              class="block text-bright-magenta"
+            >
+              TOÀN DIỆN
+            </span>
+          </h2>
+          <p
+            class="mt-3.5 font-quote text-lg sm:text-xl italic text-deep-navy/85 max-w-2xl"
+          >
+            Dành cho từng giai đoạn phát triển của bạn.
+          </p>
+        </header>
+      </div>
+      <div
+        class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl gap-6 sm:gap-8"
+      >
+        <div
+          class="flex flex-col p-6 sm:p-8 rounded-card border bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-0.5"
+        >
+          <div
+            class="mb-4 flex items-center"
+          >
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
+            />
+          </div>
+          <h3
+            class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy"
+          >
+            Thấu hiểu bản thân
+          </h3>
+          <p
+            class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75"
+          >
+            Nhận diện các tầng cảm xúc và nhu cầu cốt lõi.
+          </p>
+        </div>
+        <div
+          class="flex flex-col p-6 sm:p-8 rounded-card border bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-0.5"
+        >
+          <div
+            class="mb-4 flex items-center"
+          >
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
+            >
+              <svg
+                aria-hidden="true"
+                class="inline-block shrink-0 "
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <polygon
+                  points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </div>
+          </div>
+          <h3
+            class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy"
+          >
+            Định hướng sự nghiệp
+          </h3>
+          <p
+            class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75"
+          >
+            Lựa chọn hướng đi phù hợp với giá trị cá nhân.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for IconCardGrid with number variant 1`] = `
+<DocumentFragment>
+  <section
+    class="w-full bg-warm-ivory py-12 px-6 sm:px-8 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-6xl"
+    >
+      <div
+        class="mb-8 sm:mb-12"
+      >
+        <header
+          class="flex flex-col text-center items-center "
+        >
+          <span
+            class="mb-4 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta"
+          >
+            Tiến trình
+          </span>
+          <h2
+            class="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl"
+          >
+            <span
+              class="block text-deep-navy"
+            >
+              3 BƯỚC ĐỒNG HÀNH
+            </span>
+            <span
+              class="block text-bright-magenta"
+            >
+              RÕ RÀNG
+            </span>
+          </h2>
+        </header>
+      </div>
+      <div
+        class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl gap-6 sm:gap-8"
+      >
+        <div
+          class="flex flex-col p-6 sm:p-8 rounded-card border bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-0.5"
+        >
+          <div
+            class="mb-4 flex items-center"
+          >
+            <span
+              class="font-display text-3xl sm:text-4xl text-bright-magenta"
+            >
+              01
+            </span>
+          </div>
+          <h3
+            class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy"
+          >
+            Lắng nghe & Khám phá
+          </h3>
+          <p
+            class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75"
+          >
+            Nhìn nhận bức tranh hiện tại.
+          </p>
+        </div>
+        <div
+          class="flex flex-col p-6 sm:p-8 rounded-card border bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-0.5"
+        >
+          <div
+            class="mb-4 flex items-center"
+          >
+            <span
+              class="font-display text-3xl sm:text-4xl text-bright-magenta"
+            >
+              02
+            </span>
+          </div>
+          <h3
+            class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy"
+          >
+            Tháo gỡ & Chuyển hóa
+          </h3>
+          <p
+            class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75"
+          >
+            Thực hành các kỹ thuật điều hòa cảm xúc.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for PackageCards 1`] = `
+<DocumentFragment>
+  <section
+    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-5xl"
+    >
+      <div
+        class="text-center mb-10 sm:mb-14 flex flex-col items-center"
+      >
+        <span
+          class="mb-3 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta"
+        >
+          Hành trình đồng hành
+        </span>
+        <h2
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+        >
+          <span
+            class="text-deep-navy"
+          >
+            3 GÓI GROWTH MIRROR
+          </span>
+           
+          <span
+            class="text-bright-magenta"
+          >
+            ĐỒNG HÀNH TOÀN DIỆN
+          </span>
+        </h2>
+        <p
+          class="mt-4 font-quote text-lg sm:text-xl italic max-w-2xl text-deep-navy/85"
+        >
+          Chọn lộ trình phù hợp với tốc độ của bạn.
+        </p>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch"
+      >
+        <div
+          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-deep-navy/10 shadow-soft"
+        >
+          <div>
+            <div
+              class="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4"
+            >
+              <svg
+                aria-hidden="true"
+                class="inline-block shrink-0 w-6 h-6 text-deep-navy"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </div>
+            <h3
+              class="font-display text-2xl uppercase tracking-tight mb-2 text-deep-navy"
+            >
+              CLEAR
+            </h3>
+            <p
+              class="font-ui text-sm sm:text-base leading-relaxed text-deep-navy/80"
+            >
+              Nhận diện và tháo gỡ điểm nghẽn cảm xúc.
+            </p>
+          </div>
+        </div>
+        <div
+          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-accent-pink shadow-md ring-2 ring-accent-pink"
+        >
+          <div>
+            <div
+              class="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4"
+            >
+              <svg
+                aria-hidden="true"
+                class="inline-block shrink-0 w-6 h-6 text-deep-navy"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </div>
+            <h3
+              class="font-display text-2xl uppercase tracking-tight mb-2 text-deep-navy"
+            >
+              BUILD
+            </h3>
+            <p
+              class="font-ui text-sm sm:text-base leading-relaxed text-deep-navy/80"
+            >
+              Xây dựng thói quen và sự vững vàng.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for SolutionEcosystem with 3-pillar variant 1`] = `
+<DocumentFragment>
+  <section
+    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-6xl"
+    >
+      <div
+        class="text-center mb-10 sm:mb-14 flex flex-col items-center"
+      >
+        <span
+          class="mb-3 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta"
+        >
+          Hệ thống giải pháp
+        </span>
+        <h2
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+        >
+          <span
+            class="text-deep-navy"
+          >
+            HỆ SINH THÁI ĐỒNG HÀNH
+          </span>
+           
+          <span
+            class="text-bright-magenta"
+          >
+            3 TRỤ CỘT CẢM XÚC
+          </span>
+        </h2>
+      </div>
+      <div
+        class="grid max-w-md mx-auto grid-cols-1 gap-6 sm:gap-8 items-stretch"
+      >
+        <div
+          class="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-white/20 bg-deep-navy text-white shadow-soft relative ring-2 ring-deep-navy"
+        >
+          <div>
+            <h3
+              class="font-display text-2xl uppercase tracking-tight text-white mb-2"
+            >
+              [MẪU] Khai vấn 1:1
+            </h3>
+            <p
+              class="font-ui text-sm text-white/80 leading-relaxed mb-6"
+            >
+              [MẪU] Đồng hành chuyên sâu cá nhân hóa
+            </p>
+            <div
+              class="space-y-4"
+            >
+              <div
+                class="rounded-xl border border-white/20 bg-white/10 p-4 flex flex-col justify-between gap-3"
+              >
+                <div>
+                  <h4
+                    class="font-ui font-bold text-base text-white"
+                  >
+                    Tự soi chiếu
+                  </h4>
+                  <p
+                    class="font-ui text-xs text-white/80 leading-relaxed mt-1"
+                  >
+                    Trụ cột 1
+                  </p>
+                </div>
+                <div
+                  class="pt-1"
+                >
+                  <a
+                    class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-deep-navy text-white hover:opacity-95 active:opacity-90 min-h-[44px] min-w-[44px] px-4 py-2 text-sm font-semibold w-full text-xs"
+                    href="/coaching/tu-soi-chieu"
+                  >
+                    <span>
+                      Đặt lịch đồng hành
+                    </span>
+                  </a>
+                </div>
+              </div>
+              <div
+                class="rounded-xl border border-white/20 bg-white/10 p-4 flex flex-col justify-between gap-3"
+              >
+                <div>
+                  <h4
+                    class="font-ui font-bold text-base text-white"
+                  >
+                    Chuyển hóa 1:1
+                  </h4>
+                  <p
+                    class="font-ui text-xs text-white/80 leading-relaxed mt-1"
+                  >
+                    Trụ cột 2
+                  </p>
+                </div>
+                <div
+                  class="pt-1"
+                >
+                  <a
+                    class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-deep-navy text-white hover:opacity-95 active:opacity-90 min-h-[44px] min-w-[44px] px-4 py-2 text-sm font-semibold w-full text-xs"
+                    href="/coaching/chuyen-hoa-1-1"
+                  >
+                    <span>
+                      Đặt lịch đồng hành
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;

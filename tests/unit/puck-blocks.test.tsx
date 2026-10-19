@@ -18,9 +18,18 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       const blockConfig = puckConfig.components[blockKey]
       expect(blockConfig).toBeDefined()
       expect(blockConfig.defaultProps).toBeDefined()
-      expect((blockConfig.defaultProps as { version?: number })?.version).toBe(
-        blockKey === 'CTAButton' || blockKey === 'PackageComparison' ? 2 : 1,
-      )
+      const v3Blocks = ['PackageComparison']
+      const v2Blocks = [
+        'CTAButton',
+        'QuoteBlock',
+        'StatsBar',
+        'HeroTwoEntries',
+        'HeroImage',
+        'FAQ',
+        'TestimonialGrid',
+      ]
+      const expectedVersion = v3Blocks.includes(blockKey) ? 3 : v2Blocks.includes(blockKey) ? 2 : 1
+      expect((blockConfig.defaultProps as { version?: number })?.version).toBe(expectedVersion)
 
       const markup = renderToStaticMarkup(
         blockConfig.render({
@@ -258,6 +267,8 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'ImageText',
         'QuoteBlock',
         'StatsBar',
+        'IconCardGrid',
+        'Callout',
         'JourneySteps',
         'FAQ',
         'VideoEmbed',
@@ -269,6 +280,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       expect(categories?.conversion?.title).toBe('Chuyển đổi')
       expect(categories?.conversion?.components).toEqual([
         'CTAButton',
+        'CTASection',
         'LeadForm',
         'BookingCTA',
         'B2BBriefForm',

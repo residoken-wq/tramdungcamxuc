@@ -9,6 +9,15 @@ export type { TestimonialGridProps }
 export const TestimonialGridBlock: ComponentConfig<TestimonialGridProps> = {
   label: 'Lưới lời chia sẻ (Testimonial Grid)',
   fields: {
+    variant: {
+      type: 'select',
+      label: 'Kiểu hiển thị',
+      options: [
+        { label: 'Trích dẫn truyền thống (Quote)', value: 'quote' },
+        { label: 'Câu chuyện Trước / Sau (Story)', value: 'story' },
+        { label: '3 Giai đoạn chuyển hóa (Stages)', value: 'stages' },
+      ],
+    },
     mode: {
       type: 'select',
       label: 'Phương thức hiển thị',
@@ -54,7 +63,8 @@ export const TestimonialGridBlock: ComponentConfig<TestimonialGridProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
+    variant: 'quote',
     mode: 'manual',
     manualTestimonials: [],
     limit: 6,

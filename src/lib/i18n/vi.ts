@@ -1012,10 +1012,35 @@ export const vi = {
     redo: 'Làm lại',
     duplicateBlock: 'Nhân bản',
     deleteBlock: 'Xóa',
+    noDataSelectInCms: 'Chưa có dữ liệu – chọn trong CMS',
     packageComparison: {
       defaultNote: '[MẪU] Các gói đồng hành được thiết kế theo lộ trình cá nhân hóa.',
       paymentPolicyLabel: 'Xem Chính sách giá & thanh toán',
     },
+  },
+
+  sm03: {
+    recommendedLabel: 'Khuyên dùng',
+    choosePackage: 'Chọn gói này',
+    before: 'Trước',
+    after: 'Sau',
+    stages: {
+      problem: 'Vấn đề ban đầu',
+      insight: 'Quá trình nhận thức',
+      result: 'Kết quả chuyển hóa',
+    },
+    relatedOfferLabel: 'Gói đồng hành:',
+    ageSuffix: 'tuổi',
+    totalValuePrefix: 'Trị giá',
+    discountPrefix: 'Ưu đãi',
+    noLabel: 'Không',
+    bookingColumnHeader: 'Đặt phiên trải nghiệm',
+    noProductsSelected: 'Chưa có sản phẩm nào được chọn',
+    noServicesSelected: 'Chưa có dịch vụ nào được chọn',
+    noProgramsSelected: 'Chưa có chương trình nào được chọn',
+    seeAll: 'Xem toàn bộ',
+    bookingAsideTitle: 'Đặt phiên trải nghiệm',
+    bookingButtonText: 'Đặt lịch ngay',
   },
 
   legal: {

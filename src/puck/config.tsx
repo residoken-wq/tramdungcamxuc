@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Config } from '@puckeditor/core'
-import { HeroTwoEntries, type HeroTwoEntriesProps } from '@/components/site/HeroTwoEntries'
+import { HeroTwoEntriesBlock, type HeroTwoEntriesProps } from './blocks/HeroTwoEntries'
 import { ImageText, type ImageTextProps } from '@/components/site/ImageText'
 import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
@@ -24,6 +24,11 @@ import { TestimonialGridBlock, type TestimonialGridProps } from './blocks/Testim
 import { TestimonialSliderBlock, type TestimonialSliderProps } from './blocks/TestimonialSlider'
 import { LogoStripBlock, type LogoStripProps } from './blocks/LogoStrip'
 import { HanaStoryBlock, type HanaStoryProps } from './blocks/HanaStory'
+import { IconCardGridBlock, type IconCardGridProps } from './blocks/IconCardGrid'
+import { CalloutBlock, type CalloutProps } from './blocks/Callout'
+import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards'
+import { SolutionEcosystemBlock, type SolutionEcosystemProps } from './blocks/SolutionEcosystem'
+import { CTASectionBlock, type CTASectionProps } from './blocks/CTASection'
 
 // Khối Chuyển đổi (Conversion Blocks)
 import { CTAButtonBlock, type CTAButtonBlockProps } from './blocks/CTAButton'
@@ -64,6 +69,8 @@ export type PageComponentsProps = {
   ImageText: ImageTextProps
   QuoteBlock: QuoteBlockProps
   StatsBar: StatsBarProps
+  IconCardGrid: IconCardGridProps
+  Callout: CalloutProps
   JourneySteps: JourneyStepsProps
   FAQ: FAQProps
   VideoEmbed: VideoEmbedProps
@@ -74,7 +81,9 @@ export type PageComponentsProps = {
   // Bán hàng
   ProductGrid: ProductGridProps
   ProductFeature: ProductFeatureProps
+  PackageCards: PackageCardsProps
   PackageComparison: PackageComparisonProps
+  SolutionEcosystem: SolutionEcosystemProps
   PriceTag: ProductPriceTagProps
   TrialCTA: TrialCTAProps
   // Niềm tin
@@ -84,6 +93,7 @@ export type PageComponentsProps = {
   HanaStory: HanaStoryProps
   // Chuyển đổi
   CTAButton: CTAButtonBlockProps
+  CTASection: CTASectionProps
   LeadForm: LeadFormBlockProps
   BookingCTA: BookingCTABlockProps
   B2BBriefForm: B2BBriefFormProps
@@ -106,6 +116,8 @@ export const puckConfig: Config<PageComponentsProps> = {
         'ImageText',
         'QuoteBlock',
         'StatsBar',
+        'IconCardGrid',
+        'Callout',
         'JourneySteps',
         'FAQ',
         'VideoEmbed',
@@ -117,7 +129,15 @@ export const puckConfig: Config<PageComponentsProps> = {
     },
     sales: {
       title: 'Bán hàng',
-      components: ['ProductGrid', 'ProductFeature', 'PackageComparison', 'PriceTag', 'TrialCTA'],
+      components: [
+        'ProductGrid',
+        'ProductFeature',
+        'PackageCards',
+        'PackageComparison',
+        'SolutionEcosystem',
+        'PriceTag',
+        'TrialCTA',
+      ],
     },
     trust: {
       title: 'Niềm tin',
@@ -127,6 +147,7 @@ export const puckConfig: Config<PageComponentsProps> = {
       title: 'Chuyển đổi',
       components: [
         'CTAButton',
+        'CTASection',
         'LeadForm',
         'BookingCTA',
         'B2BBriefForm',
@@ -152,67 +173,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     ),
   },
   components: {
-    HeroTwoEntries: {
-      label: 'Hero 2 Lối vào (Cá nhân & Tổ chức)',
-      fields: {
-        seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
-        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
-        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
-        emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display Italic)' },
-        entry1: {
-          type: 'object',
-          label: 'Lối vào 1 (Cá nhân)',
-          objectFields: {
-            label: { type: 'text', label: 'Nhãn lối vào' },
-            description: { type: 'textarea', label: 'Mô tả ngắn' },
-            buttonText: { type: 'text', label: 'Chữ trên nút' },
-            buttonLink: { type: 'text', label: 'Đường dẫn liên kết' },
-          },
-        },
-        entry2: {
-          type: 'object',
-          label: 'Lối vào 2 (Tổ chức / Doanh nghiệp)',
-          objectFields: {
-            label: { type: 'text', label: 'Nhãn lối vào' },
-            description: { type: 'textarea', label: 'Mô tả ngắn' },
-            buttonText: { type: 'text', label: 'Chữ trên nút' },
-            buttonLink: { type: 'text', label: 'Đường dẫn liên kết' },
-          },
-        },
-        bgColor: {
-          type: 'select',
-          label: 'Màu nền',
-          options: [...BRAND_COLOR_OPTIONS],
-        },
-        padding: {
-          type: 'select',
-          label: 'Khoảng đệm (Padding)',
-          options: [...PADDING_OPTIONS],
-        },
-      },
-      defaultProps: {
-        version: 1,
-        seriesLabel: '[MẪU] Series nhãn',
-        titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
-        titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
-        emotionLine: '[MẪU] Dòng cảm xúc trích dẫn ấm áp và chân thành',
-        bgColor: 'warm-ivory',
-        padding: 'md',
-        entry1: {
-          label: '[MẪU] Lối vào 1',
-          description: '[MẪU] Mô tả ngắn gọn về lối vào dành cho cá nhân',
-          buttonText: '[MẪU] Khám phá ngay',
-          buttonLink: '#',
-        },
-        entry2: {
-          label: '[MẪU] Lối vào 2',
-          description: '[MẪU] Mô tả ngắn gọn về lối vào dành cho tổ chức',
-          buttonText: '[MẪU] Tìm hiểu thêm',
-          buttonLink: '#',
-        },
-      },
-      render: (props) => <HeroTwoEntries {...props} />,
-    },
+    HeroTwoEntries: HeroTwoEntriesBlock,
 
     SectionHeader: {
       label: 'Tiêu đề mục (Hai tầng màu)',
@@ -418,6 +379,7 @@ export const puckConfig: Config<PageComponentsProps> = {
 
     // Chuyển đổi
     CTAButton: CTAButtonBlock,
+    CTASection: CTASectionBlock,
     LeadForm: LeadFormBlock,
     BookingCTA: BookingCTABlock,
     B2BBriefForm: B2BBriefFormBlock,
@@ -429,6 +391,8 @@ export const puckConfig: Config<PageComponentsProps> = {
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
     StatsBar: StatsBarBlock,
+    IconCardGrid: IconCardGridBlock,
+    Callout: CalloutBlock,
     JourneySteps: JourneyStepsBlock,
     FAQ: FAQBlock,
     VideoEmbed: VideoEmbedBlock,
@@ -438,7 +402,9 @@ export const puckConfig: Config<PageComponentsProps> = {
 
     ProductGrid: ProductGridBlock,
     ProductFeature: ProductFeatureBlock,
+    PackageCards: PackageCardsBlock,
     PackageComparison: PackageComparisonBlock,
+    SolutionEcosystem: SolutionEcosystemBlock,
     PriceTag: PriceTagBlock,
     TrialCTA: TrialCTABlock,
 
