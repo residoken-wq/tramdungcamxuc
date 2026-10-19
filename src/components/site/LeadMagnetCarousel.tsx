@@ -2,9 +2,14 @@
 
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { SectionHeader } from '@/components/ui/SectionHeader'
-import { ResourceRequestForm } from '@/components/site/ResourceRequestForm'
 import { vi } from '@/lib/i18n/vi'
+
+const ResourceRequestForm = dynamic(
+  () => import('@/components/site/ResourceRequestForm').then((mod) => mod.ResourceRequestForm),
+  { ssr: true },
+)
 
 export interface LeadMagnetItem {
   id: string | number

@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
-import { submitNewsletterAction } from '@/lib/forms/actions'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
 
@@ -112,6 +111,7 @@ export function NewsletterForm({
     setIsSubmitting(true)
 
     try {
+      const { submitNewsletterAction } = await import('@/lib/forms/actions')
       const res = await submitNewsletterAction({
         email: email.trim(),
         name: name.trim() || undefined,

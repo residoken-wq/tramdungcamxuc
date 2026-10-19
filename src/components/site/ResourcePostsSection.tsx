@@ -248,7 +248,7 @@ export function ResourcePostsSection({ data, params }: ResourcePostsSectionProps
               ) : (
                 <span
                   aria-disabled="true"
-                  className="min-h-[44px] px-4 py-2 rounded-xl border border-deep-navy/10 bg-warm-ivory font-ui text-sm font-semibold text-deep-navy/30 cursor-not-allowed flex items-center justify-center"
+                  className="min-h-[44px] px-4 py-2 rounded-xl border border-deep-navy/10 bg-warm-ivory font-ui text-sm font-semibold text-deep-navy/60 opacity-40 cursor-not-allowed flex items-center justify-center"
                 >
                   ← {vi.sm05.pagination.prev}
                 </span>
@@ -272,7 +272,7 @@ export function ResourcePostsSection({ data, params }: ResourcePostsSectionProps
               ) : (
                 <span
                   aria-disabled="true"
-                  className="min-h-[44px] px-4 py-2 rounded-xl border border-deep-navy/10 bg-warm-ivory font-ui text-sm font-semibold text-deep-navy/30 cursor-not-allowed flex items-center justify-center"
+                  className="min-h-[44px] px-4 py-2 rounded-xl border border-deep-navy/10 bg-warm-ivory font-ui text-sm font-semibold text-deep-navy/60 opacity-40 cursor-not-allowed flex items-center justify-center"
                 >
                   {vi.sm05.pagination.next} →
                 </span>
