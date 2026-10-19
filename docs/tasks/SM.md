@@ -79,7 +79,7 @@ Tiêu chí nghiệm thu:
 - [ ] Field màu chỉ 8 màu brand, khoảng cách S/M/L, nhãn editor tiếng Việt.
 - [ ] Không còn emoji làm icon (M11); không có kính mờ trên ảnh (M12).
 
-## SM-04 – Khối Puck đợt B: Về Trạm + Coach 1:1 (PC nhà, sau SM-01, song song SM-03) – ước lượng 10–12 h – prompt `prompts/SM-04.md`
+## SM-04 – Khối Puck đợt B: Về Trạm + Coach 1:1 (Laptop, sau SM-01 + SM-03) – ước lượng 10–12 h – prompt `prompts/SM-04.md`
 
 Mới: `VisionMission`, `ServiceCards` (📦 `services`), `TwoPathCards`, `TeamGrid` (📦 `teamMembers`).
 Nâng cấp: `JourneySteps` v2 (3 kiểu: vòng tròn / card nối nét đứt / danh sách dọc; bước nổi bật; dòng phụ), `HanaStory` v2 (nền tối, chip, kiểu "thư" + ảnh chữ ký từ `siteSettings.founderSignature`), `ImageText` v2 (quote + nhãn ảnh), `LogoStrip` v2 (nhóm logo), (`TestimonialGrid` kiểu "3 giai đoạn" đã chuyển sang SM-03 – SM-04 chỉ dùng lại), form đặt phiên trải nghiệm thêm "Lộ trình quan tâm" + "Bạn đang trăn trở điều gì" (vẫn tạo đơn 149.000đ, không đổi logic thanh toán – nếu phải chạm `src/lib/payments` thì dừng và hỏi, `REVIEW-REQUIRED`).
