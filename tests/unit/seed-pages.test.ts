@@ -5,8 +5,8 @@ import { applyPuckMigrations } from '../../src/puck/migrations'
 describe('five seed pages from real blocks (T1-16)', () => {
   const pagesBySlug = new Map(seedData.pages.map((p) => [p.slug, p]))
 
-  it('contains the 5 specified pages (sitemap v2 slugs) + 2 placeholder pages (SM-02)', () => {
-    expect(seedData.pages).toHaveLength(7)
+  it('contains the 5 specified pages (sitemap v2 slugs) + 2 placeholder pages (SM-02) + tai-nguyen (SM-05)', () => {
+    expect(seedData.pages).toHaveLength(8)
     expect(Array.from(pagesBySlug.keys())).toEqual([
       '/',
       've-tram',
@@ -15,6 +15,20 @@ describe('five seed pages from real blocks (T1-16)', () => {
       'doanh-nghiep',
       'lien-he',
       'cong-dong',
+      'tai-nguyen',
+    ])
+  })
+
+  it('/tai-nguyen has SectionHeader + LeadMagnetCarousel + ResourcePostsSlot + NewsletterForm + CTASection (SM-05)', () => {
+    const page = pagesBySlug.get('tai-nguyen')
+    expect(page).toBeDefined()
+    const blockTypes = page!.blocks.map((b) => b.type)
+    expect(blockTypes).toEqual([
+      'SectionHeader',
+      'LeadMagnetCarousel',
+      'ResourcePostsSlot',
+      'NewsletterForm',
+      'CTASection',
     ])
   })
 

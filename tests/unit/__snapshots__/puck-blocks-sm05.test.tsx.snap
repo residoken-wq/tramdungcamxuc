@@ -1,0 +1,406 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SM-05: Puck Blocks Unit & Snapshot Tests > LeadMagnetCarousel Block > renders carousel with resolved items and matches snapshot 1`] = `
+<DocumentFragment>
+  <section
+    aria-label="CÔNG CỤ & TÀI LIỆU"
+    aria-roledescription="carousel"
+    class="w-full bg-warm-ivory py-12 sm:py-16 overflow-hidden"
+  >
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <div
+        class="mb-8 sm:mb-12 text-center max-w-3xl mx-auto"
+      >
+        <header
+          class="flex flex-col text-center items-center "
+        >
+          <span
+            class="mb-4 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta"
+          >
+            Tài nguyên nhận ngay
+          </span>
+          <h2
+            class="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl"
+          >
+            <span
+              class="block text-deep-navy"
+            >
+              CÔNG CỤ & TÀI LIỆU
+            </span>
+            <span
+              class="block text-bright-magenta"
+            >
+              ĐỒNG HÀNH MIỄN PHÍ
+            </span>
+          </h2>
+          <p
+            class="mt-3.5 font-quote text-lg sm:text-xl italic text-deep-navy/85 max-w-2xl"
+          >
+            Những tài liệu đúc kết từ thực tế
+          </p>
+        </header>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          aria-label="CÔNG CỤ & TÀI LIỆU"
+          class="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta focus-visible:ring-offset-2 rounded-2xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          role="region"
+          tabindex="0"
+        >
+          <article
+            aria-label="Tài nguyên 1 trên 2"
+            aria-roledescription="slide"
+            class="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start flex flex-col"
+            role="group"
+          >
+            <div
+              class="rounded-2xl border border-deep-navy/10 bg-white shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow"
+            >
+              <div
+                class="relative aspect-[16/10] w-full bg-lavender-mist/30 overflow-hidden"
+              >
+                <div
+                  class="w-full h-full flex flex-col items-center justify-center p-6 text-center"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="text-3xl mb-1"
+                  >
+                    📖
+                  </span>
+                  <span
+                    class="font-ui text-xs font-semibold text-deep-navy/60"
+                  >
+                    Cảm xúc
+                  </span>
+                </div>
+                <span
+                  class="absolute top-3 left-3 px-3 py-1 rounded-full bg-soft-pink/95 text-bright-magenta font-ui text-xs font-bold uppercase tracking-wider backdrop-blur-xs shadow-xs"
+                >
+                  Cảm xúc
+                </span>
+              </div>
+              <div
+                class="p-5 sm:p-6 flex flex-col flex-1"
+              >
+                <h3
+                  class="font-display uppercase text-xl sm:text-2xl text-deep-navy tracking-tight leading-snug line-clamp-2 mb-2"
+                >
+                  [MẪU] Cẩm nang Cảm xúc Miễn phí
+                </h3>
+                <p
+                  class="font-body text-sm text-deep-navy/80 line-clamp-3 mb-4 leading-relaxed"
+                >
+                  Tài liệu hướng dẫn 26 sắc thái cảm xúc
+                </p>
+                <div
+                  class="mt-auto pt-4 border-t border-deep-navy/10"
+                >
+                  <div
+                    class="py-2.5 px-3 rounded-xl bg-warm-ivory border border-deep-navy/10 text-center font-ui text-xs font-semibold text-deep-navy/70"
+                  >
+                    [MẪU] Form nhận tài liệu qua email
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article
+            aria-label="Tài nguyên 2 trên 2"
+            aria-roledescription="slide"
+            class="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start flex flex-col"
+            role="group"
+          >
+            <div
+              class="rounded-2xl border border-deep-navy/10 bg-white shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow"
+            >
+              <div
+                class="relative aspect-[16/10] w-full bg-lavender-mist/30 overflow-hidden"
+              >
+                <div
+                  class="w-full h-full flex flex-col items-center justify-center p-6 text-center"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="text-3xl mb-1"
+                  >
+                    📖
+                  </span>
+                  <span
+                    class="font-ui text-xs font-semibold text-deep-navy/60"
+                  >
+                    Thói quen
+                  </span>
+                </div>
+                <span
+                  class="absolute top-3 left-3 px-3 py-1 rounded-full bg-soft-pink/95 text-bright-magenta font-ui text-xs font-bold uppercase tracking-wider backdrop-blur-xs shadow-xs"
+                >
+                  Thói quen
+                </span>
+              </div>
+              <div
+                class="p-5 sm:p-6 flex flex-col flex-1"
+              >
+                <h3
+                  class="font-display uppercase text-xl sm:text-2xl text-deep-navy tracking-tight leading-snug line-clamp-2 mb-2"
+                >
+                  [MẪU] Toolkit Thói quen Miễn phí
+                </h3>
+                <p
+                  class="font-body text-sm text-deep-navy/80 line-clamp-3 mb-4 leading-relaxed"
+                >
+                  Bộ công cụ rèn luyện thói quen 21 ngày
+                </p>
+                <div
+                  class="mt-auto pt-4 border-t border-deep-navy/10"
+                >
+                  <div
+                    class="py-2.5 px-3 rounded-xl bg-warm-ivory border border-deep-navy/10 text-center font-ui text-xs font-semibold text-deep-navy/70"
+                  >
+                    [MẪU] Form nhận tài liệu qua email
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div
+          class="mt-6 flex flex-wrap items-center justify-between gap-4"
+        >
+          <div
+            class="flex items-center gap-2"
+          >
+            <button
+              aria-label="Xem tài nguyên trước"
+              class="min-h-[44px] min-w-[44px] rounded-full border border-deep-navy/20 bg-white text-deep-navy flex items-center justify-center transition-all hover:bg-soft-pink/40 hover:border-bright-magenta disabled:opacity-30 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-bright-magenta"
+              disabled=""
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15 19l-7-7 7-7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="Xem tài nguyên tiếp theo"
+              class="min-h-[44px] min-w-[44px] rounded-full border border-deep-navy/20 bg-white text-deep-navy flex items-center justify-center transition-all hover:bg-soft-pink/40 hover:border-bright-magenta disabled:opacity-30 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-bright-magenta"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M9 5l7 7-7 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            aria-label="Vị trí slide"
+            class="flex items-center gap-1.5"
+            role="tablist"
+          >
+            <button
+              aria-label="Tài nguyên 1 trên 2"
+              aria-selected="true"
+              class="min-h-[44px] min-w-[20px] flex items-center justify-center focus-visible:outline-2 focus-visible:outline-bright-magenta"
+              role="tab"
+              type="button"
+            >
+              <span
+                class="block rounded-full transition-all duration-200 w-7 h-2.5 bg-bright-magenta shadow-xs"
+              />
+            </button>
+            <button
+              aria-label="Tài nguyên 2 trên 2"
+              aria-selected="false"
+              class="min-h-[44px] min-w-[20px] flex items-center justify-center focus-visible:outline-2 focus-visible:outline-bright-magenta"
+              role="tab"
+              type="button"
+            >
+              <span
+                class="block rounded-full transition-all duration-200 w-2.5 h-2.5 bg-deep-navy/20 hover:bg-deep-navy/40"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-05: Puck Blocks Unit & Snapshot Tests > NewsletterForm Block > renders newsletter form with default props and matches snapshot 1`] = `
+<DocumentFragment>
+  <section
+    aria-label="[MẪU] NHẬN BẢN TIN TỪ TRẠM DỪNG CẢM XÚC"
+    class="w-full bg-warm-ivory py-12 sm:py-16 "
+  >
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <div
+        class="rounded-card border border-deep-navy/10 shadow-soft transition-all duration-200 p-6 bg-white w-full max-w-xl mx-auto p-6 sm:p-10 bg-white border border-lavender-mist shadow-sm"
+      >
+        <div
+          class="mb-6 text-center"
+        >
+          <h3
+            class="font-display uppercase tracking-tight text-2xl sm:text-3xl text-deep-navy"
+          >
+            [MẪU] NHẬN BẢN TIN TỪ TRẠM DỪNG CẢM XÚC
+          </h3>
+          <p
+            class="mt-2.5 font-body text-sm sm:text-base text-deep-navy/75 leading-relaxed"
+          >
+            Đăng ký nhận bài viết mới nhất
+          </p>
+        </div>
+        <form
+          class="space-y-4 sm:space-y-5"
+          novalidate=""
+        >
+          <div
+            aria-hidden="true"
+            style="display: none;"
+          >
+            <label
+              for="_r_0_-nl-hp"
+            >
+              Do not fill this
+            </label>
+            <input
+              autocomplete="off"
+              id="_r_0_-nl-hp"
+              name="organization_newsletter_hp"
+              tabindex="-1"
+              type="text"
+              value=""
+            />
+          </div>
+          <div>
+            <label
+              class="block font-ui text-sm font-bold text-deep-navy mb-1.5"
+              for="_r_0_-email"
+            >
+              Email nhận bản tin 
+              <span
+                class="text-bright-magenta"
+              >
+                *
+              </span>
+            </label>
+            <input
+              aria-invalid="false"
+              class="w-full px-4 py-3 rounded-xl border bg-warm-ivory/50 font-body text-base text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 focus:ring-bright-magenta focus:bg-white transition-all border-lavender-mist "
+              id="_r_0_-email"
+              placeholder="email@example.com"
+              required=""
+              type="email"
+              value=""
+            />
+          </div>
+          <div>
+            <label
+              class="block font-ui text-sm font-bold text-deep-navy mb-1.5"
+              for="_r_0_-name"
+            >
+              Tên của bạn (không bắt buộc)
+            </label>
+            <input
+              aria-invalid="false"
+              class="w-full px-4 py-3 rounded-xl border bg-warm-ivory/50 font-body text-base text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 focus:ring-bright-magenta focus:bg-white transition-all border-lavender-mist "
+              id="_r_0_-name"
+              placeholder="Ví dụ: Minh Anh"
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="pt-1"
+          >
+            <label
+              class="flex items-start gap-3 cursor-pointer select-none"
+            >
+              <span
+                aria-hidden="true"
+                class="mt-1 h-5 w-5 rounded border border-deep-navy/30 bg-white inline-flex items-center justify-center text-xs text-bright-magenta flex-shrink-0"
+              >
+                ✓
+              </span>
+              <span
+                class="font-body text-xs sm:text-sm text-deep-navy/80 leading-normal"
+              >
+                [MẪU] Tôi đồng ý nhận email chia sẻ định kỳ từ Trạm Dừng Cảm Xúc. 
+                <a
+                  class="text-bright-magenta font-semibold underline underline-offset-2 hover:text-deep-navy"
+                  href="/chinh-sach-bao-mat"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Chính sách bảo mật
+                </a>
+                . 
+                <span
+                  class="text-bright-magenta"
+                >
+                  *
+                </span>
+              </span>
+            </label>
+          </div>
+          <div
+            class="pt-2"
+          >
+            <button
+              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[56px] min-w-[56px] px-8 py-3.5 text-[20px] font-bold tracking-tight w-full min-h-[48px]"
+              type="submit"
+            >
+              <span>
+                Đăng ký nhận tin
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`SM-05: Puck Blocks Unit & Snapshot Tests > ResourcePostsSlot Block > matches snapshot in editing mode 1`] = `
+<DocumentFragment>
+  <div
+    aria-label="Vị trí danh sách bài viết ứng dụng sẽ hiển thị tại đây"
+    class="my-8 rounded-2xl border-2 border-dashed border-deep-navy/30 bg-lavender-mist/30 p-8 text-center"
+    role="region"
+  >
+    <p
+      class="font-ui text-sm font-bold tracking-wider uppercase text-deep-navy"
+    >
+      Vị trí danh sách bài viết ứng dụng sẽ hiển thị tại đây
+    </p>
+  </div>
+</DocumentFragment>
+`;

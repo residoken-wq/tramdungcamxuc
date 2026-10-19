@@ -664,6 +664,7 @@ export const vi = {
       b2b: 'Cảm ơn quý doanh nghiệp đã gửi yêu cầu. Đội ngũ Trạm Dừng Cảm Xúc sẽ liên hệ tư vấn sớm nhất.',
       resource:
         'Cảm ơn bạn. Chúng tôi đã gửi liên kết tải tài nguyên vào email của bạn. Vui lòng kiểm tra hộp thư (kể cả mục thư rác).',
+      newsletter: 'Cảm ơn bạn đã đăng ký nhận bản tin từ Trạm Dừng Cảm Xúc.',
     },
     b2b: {
       defaultTitle: '[MẪU] Gửi brief đào tạo & đồng hành doanh nghiệp',
@@ -1043,6 +1044,27 @@ export const vi = {
     bookingButtonText: 'Đặt lịch ngay',
   },
 
+  sm04: {
+    suitsLabel: 'Phù hợp với',
+    outcomesLabel: 'Bạn nhận được',
+    defaultServiceCta: 'Tìm hiểu chi tiết',
+    emptyServicesMessage: 'Chưa có dữ liệu – nhập trong CMS',
+    visionLabel: 'Tầm nhìn',
+    missionLabel: 'Sứ mệnh',
+    teamEmptyMessage: 'Chưa có dữ liệu – nhập trong CMS',
+    forIndividual: 'CHO CÁ NHÂN',
+    forBusiness: 'CHO DOANH NGHIỆP',
+    serviceLabel: 'Lộ trình quan tâm',
+    uncertainServiceOption: 'Chưa chắc chắn',
+    packageInterestPrefix: 'Gói quan tâm:',
+    noBookingProduct: 'Chưa có sản phẩm phiên trải nghiệm đang bán',
+    readOnlyBadge: 'Chỉ đọc',
+    optionalLabel: '(tùy chọn)',
+    logoStripEmptyMessage:
+      'Chưa có logo nào được thêm. Vui lòng thêm logo trong thanh cấu hình bên phải.',
+    logoStripGroupEmptyMessage: (groupName: string) => `Nhóm "${groupName}" chưa có logo.`,
+  },
+
   legal: {
     lastUpdated: 'Cập nhật ngày',
     updatingContent: 'Nội dung đang được cập nhật.',
@@ -1306,7 +1328,7 @@ export const vi = {
         phoneLabel: 'Số điện thoại',
         phoneOptional: '(tùy chọn)',
         phonePlaceholder: '0912 345 678',
-        needLabel: 'Nhu cầu hoặc mục tiêu khi đặt phiên',
+        needLabel: 'Bạn đang trăn trở điều gì?',
         needMaxHint: '(tối đa 1.000 ký tự)',
         needPlaceholder:
           'Bạn đang gặp khó khăn gì hoặc mong muốn đạt được điều gì sau phiên trải nghiệm này?...',
@@ -2231,6 +2253,57 @@ export const vi = {
       disabledSuccess: 'Đã tắt nhận email nhắc lịch workshop và nhắc tập.',
       updating: 'Đang lưu tùy chọn...',
       error: 'Không thể cập nhật tùy chọn lúc này. Vui lòng thử lại sau.',
+    },
+  },
+  sm05: {
+    postsSlotEditorHint: 'Vị trí danh sách bài viết ứng dụng sẽ hiển thị tại đây',
+    postsSlotLabel: 'Vị trí danh sách bài viết',
+    readingTime: (minutes: number) => `${minutes} phút đọc`,
+    featuredBadge: 'Bài nổi bật',
+    topics: {
+      all: 'Tất cả',
+      taiLieu: 'Tài liệu',
+      habit: 'Thói quen',
+      eq: 'Cảm xúc',
+      career: 'Sự nghiệp',
+    },
+    pagination: {
+      prev: 'Trước',
+      next: 'Sau',
+      page: (current: number, total: number) => `Trang ${current} / ${total}`,
+    },
+    empty: {
+      noResults: 'Chưa có nội dung phù hợp',
+      noResultsDesc: 'Không tìm thấy bài viết hay tài nguyên nào khớp với tiêu chí bạn đã chọn.',
+      resetFilters: 'Xóa bộ lọc',
+      updating: 'Chuyên mục đang được cập nhật.',
+    },
+    error: {
+      title: 'Không thể tải danh sách bài viết',
+      desc: 'Đã có lỗi xảy ra khi kết nối máy chủ. Vui lòng thử lại sau giây lát.',
+      retry: 'Thử lại',
+    },
+    carousel: {
+      emptyEditor: 'Chưa có tài nguyên miễn phí – tạo sản phẩm "Miễn phí" trong CMS',
+      prev: 'Xem tài nguyên trước',
+      next: 'Xem tài nguyên tiếp theo',
+      slideNumber: (current: number, total: number) => `Tài nguyên ${current} trên ${total}`,
+    },
+    newsletter: {
+      defaultTitle: '[MẪU] Nhận bản tin từ Trạm Dừng Cảm Xúc',
+      defaultDesc:
+        '[MẪU] Những góc nhìn thực tiễn và bài tập thực hành được gửi trực tiếp đến hộp thư của bạn.',
+      defaultSubmit: 'Đăng ký nhận tin',
+      defaultConsent: '[MẪU] Tôi đồng ý nhận email chia sẻ định kỳ từ Trạm Dừng Cảm Xúc.',
+      promiseNotice: 'Chỉ hứa điều đang làm được',
+      nameLabel: 'Tên của bạn (không bắt buộc)',
+      namePlaceholder: 'Ví dụ: Minh Anh',
+      emailLabel: 'Email nhận bản tin',
+      emailPlaceholder: 'email@example.com',
+      submitting: 'Đang đăng ký...',
+      successTitle: 'Cảm ơn bạn đã đăng ký!',
+      successMessage:
+        'Thông tin của bạn đã được ghi nhận. Trạm sẽ gửi những bài viết mới nhất tới hộp thư của bạn.',
     },
   },
 } as const

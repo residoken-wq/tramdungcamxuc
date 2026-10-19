@@ -96,7 +96,7 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
       await guest.getByLabel(/Địa chỉ email/).fill(guestEmail)
       await guest.getByLabel(/Số điện thoại/).fill('0912345678')
       await guest
-        .getByLabel(/Nhu cầu hoặc mục tiêu/)
+        .getByLabel(/Bạn đang trăn trở điều gì/)
         .fill('Mong muốn hiểu rõ cảm xúc bế tắc công việc')
 
       // Tick ô đồng ý điều khoản bắt buộc

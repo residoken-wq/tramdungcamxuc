@@ -4,26 +4,46 @@ import config from '@/payload.config'
 import type { Product, Post } from '@/payload-types'
 import type { Data } from '@puckeditor/core'
 import { resolveServerData } from '@/puck/resolve.server'
-import {
-  type LibraryQueryParams,
-  buildProductsWhere,
-  buildPostsWhere,
-  productTopic,
-} from '@/lib/library'
+import { type LibraryQueryParams, estimateReadingMinutes } from '@/lib/library'
+
+export interface LibraryProductItem {
+  id: string | number
+  name: string
+  slug: string
+  shortDescription?: string | null
+  topic?: string | null
+  type: 'ebook' | 'toolkit'
+  coverImage?: { url?: string | null; alt?: string | null } | null
+  isProduct: true
+}
+
+export interface LibraryPostItem extends Post {
+  readingMinutes?: number
+  isProduct?: false
+}
+
+export type LibraryFeedItem = LibraryProductItem | LibraryPostItem
 
 export interface LibraryDataResult {
-  products: Product[]
-  posts: Post[]
+  featuredPost: LibraryPostItem | null
+  items: LibraryFeedItem[]
+  totalItems: number
+  currentPage: number
+  totalPages: number
   introData: Data | null
   hasError: boolean
+  products: Product[]
+  posts: Post[]
 }
 
 /**
- * Đọc dữ liệu thư viện phía máy chủ:
- * - Puck intro từ `pages` slug 'tai-nguyen' (nếu có bản published)
- * - Sản phẩm (products) theo tab và bộ lọc
- * - Bài viết / video (posts) theo tab 'noi-dung' và bộ lọc
- * - Bọc try/catch toàn bộ để không bao giờ quăng lỗi 500 ra giao diện.
+ * Đọc dữ liệu thư viện phía máy chủ theo Sitemap v2 (SM-05):
+ * - Puck intro từ `pages` slug 'tai-nguyen'
+ * - Lọc theo chủ đề: Tất cả / Tài liệu (ebook/toolkit miễn phí) / Thói quen / Cảm xúc / Sự nghiệp
+ * - Tìm kiếm theo tiêu đề `?q=`
+ * - Tách 1 bài nổi bật `featured = true` mới nhất (không lặp lại trong lưới)
+ * - Phân trang 9 bài / trang (`?trang=`)
+ * - Thời gian đọc tự tính qua `estimateReadingMinutes` cho bài viết không phải video
  */
 export async function getLibraryData(params: LibraryQueryParams): Promise<LibraryDataResult> {
   try {
@@ -47,66 +67,154 @@ export async function getLibraryData(params: LibraryQueryParams): Promise<Librar
         introData = await resolveServerData(initialData, { pageSlug: 'tai-nguyen' })
       }
     } catch {
-      // Nếu lỗi đọc trang giới thiệu, bỏ qua để phần còn lại hoạt động bình thường
       introData = null
     }
 
-    // 2. Lấy danh sách sản phẩm
-    let products: Product[] = []
-    try {
-      const productsWhere = buildProductsWhere(params)
-      const productsResult = await payload.find({
-        collection: 'products',
-        where: productsWhere as unknown as Where,
-        sort: 'order',
-        depth: 1,
-        limit: 100,
-        draft: false,
-      })
+    const isTaiLieuOnly = params.topic === 'tai-lieu'
+    const isTopicPost =
+      params.topic === 'habit' || params.topic === 'eq' || params.topic === 'career'
 
-      // Lọc an toàn phía server: loại bỏ hidden và đảm bảo productTopic khớp nếu có topic
-      products = (productsResult.docs as Product[]).filter((p) => {
-        if (p.saleStatus === 'hidden') return false
-        if (params.topic) {
-          return productTopic(p) === params.topic
+    // 2. Lấy sản phẩm miễn phí (ebook, toolkit)
+    // Chỉ lấy khi topic là 'tai-lieu' hoặc không chọn topic ('Tất cả')
+    let rawProducts: Product[] = []
+    if (!isTopicPost) {
+      try {
+        const productsAnd: Record<string, unknown>[] = [
+          { _status: { equals: 'published' } },
+          { saleStatus: { equals: 'free' } },
+          { or: [{ type: { equals: 'ebook' } }, { type: { equals: 'toolkit' } }] },
+        ]
+
+        if (params.q) {
+          productsAnd.push({ name: { like: params.q } })
         }
-        return true
-      })
-    } catch {
-      products = []
+
+        const productsResult = await payload.find({
+          collection: 'products',
+          where: { and: productsAnd } as unknown as Where,
+          sort: 'order',
+          depth: 1,
+          limit: 100,
+          draft: false,
+        })
+        rawProducts = productsResult.docs as Product[]
+      } catch {
+        rawProducts = []
+      }
     }
 
-    // 3. Lấy danh sách bài viết / video (chỉ áp dụng cho tab 'noi-dung')
-    let posts: Post[] = []
-    if (params.tab === 'noi-dung') {
+    // 3. Lấy danh sách bài viết / video
+    // Chỉ lấy khi topic không phải 'tai-lieu'
+    let rawPosts: Post[] = []
+    if (!isTaiLieuOnly) {
       try {
-        const postsWhere = buildPostsWhere(params)
+        const postsAnd: Record<string, unknown>[] = [{ _status: { equals: 'published' } }]
+
+        if (isTopicPost && params.topic) {
+          postsAnd.push({ topic: { equals: params.topic } })
+        }
+
+        if (params.q) {
+          postsAnd.push({ title: { like: params.q } })
+        }
+
         const postsResult = await payload.find({
           collection: 'posts',
-          where: postsWhere as unknown as Where,
+          where: { and: postsAnd } as unknown as Where,
           sort: '-createdAt',
           depth: 1,
           limit: 100,
           draft: false,
         })
-        posts = postsResult.docs as Post[]
+        rawPosts = postsResult.docs as Post[]
       } catch {
-        posts = []
+        rawPosts = []
       }
     }
 
+    // 4. Tách 1 bài nổi bật (featured = true mới nhất khớp bộ lọc)
+    let featuredPost: LibraryPostItem | null = null
+    const nonFeaturedPosts: Post[] = []
+
+    for (const post of rawPosts) {
+      if (!featuredPost && post.featured === true) {
+        const readingMinutes =
+          post.format !== 'video' ? estimateReadingMinutes(post.content) : undefined
+        featuredPost = {
+          ...post,
+          readingMinutes,
+          isProduct: false,
+        }
+      } else {
+        nonFeaturedPosts.push(post)
+      }
+    }
+
+    // 5. Chuẩn hóa sản phẩm thành feed items
+    const productItems: LibraryProductItem[] = rawProducts.map((p) => {
+      const cover =
+        p.coverImage && typeof p.coverImage === 'object' && 'url' in p.coverImage
+          ? {
+              url: (p.coverImage as { url?: string }).url || null,
+              alt: (p.coverImage as { alt?: string }).alt || p.name,
+            }
+          : null
+
+      return {
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        shortDescription: p.shortDescription || null,
+        topic: p.topic || null,
+        type: (p.type === 'toolkit' ? 'toolkit' : 'ebook') as 'ebook' | 'toolkit',
+        coverImage: cover,
+        isProduct: true,
+      }
+    })
+
+    // 6. Chuẩn hóa bài viết thành feed items với thời gian đọc
+    const postItems: LibraryPostItem[] = nonFeaturedPosts.map((post) => {
+      const readingMinutes =
+        post.format !== 'video' ? estimateReadingMinutes(post.content) : undefined
+      return {
+        ...post,
+        readingMinutes,
+        isProduct: false,
+      }
+    })
+
+    // Ghép toàn bộ feed items (bài viết + sản phẩm tài liệu)
+    const allItems: LibraryFeedItem[] = [...postItems, ...productItems]
+
+    // 7. Phân trang: 9 bài / trang
+    const PAGE_SIZE = 9
+    const totalItems = allItems.length
+    const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
+    const currentPage = Math.min(Math.max(1, params.trang || 1), totalPages)
+    const paginatedItems = allItems.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+
     return {
-      products,
-      posts,
+      featuredPost,
+      items: paginatedItems,
+      totalItems,
+      currentPage,
+      totalPages,
       introData,
       hasError: false,
+      products: rawProducts,
+      posts: rawPosts,
     }
   } catch {
     return {
-      products: [],
-      posts: [],
+      featuredPost: null,
+      items: [],
+      totalItems: 0,
+      currentPage: 1,
+      totalPages: 1,
       introData: null,
       hasError: true,
+      products: [],
+      posts: [],
     }
   }
 }

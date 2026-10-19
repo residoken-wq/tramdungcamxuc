@@ -12,18 +12,15 @@ export interface ImageTextProps {
   titleLine1: string
   titleLine2?: string
   content: string
+  quote?: string
   mediaId?: string
   imageUrl?: string
   imageAlt?: string
+  imageLabel?: string
   buttonText?: string
   buttonLink?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -48,9 +45,11 @@ export function ImageText({
   titleLine1,
   titleLine2,
   content,
+  quote,
   mediaId,
   imageUrl,
   imageAlt,
+  imageLabel,
   buttonText,
   buttonLink,
   bgColor = 'warm-ivory',
@@ -100,13 +99,17 @@ export function ImageText({
   const isImageLeft = layout === 'image-left'
 
   return (
-    <section className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}>
+    <section
+      className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+    >
       <div className="mx-auto max-w-5xl">
-        <div className={`grid grid-cols-1 ${hasValidImage ? 'md:grid-cols-2' : ''} gap-8 lg:gap-12 items-center`}>
+        <div
+          className={`grid grid-cols-1 ${hasValidImage ? 'md:grid-cols-2' : ''} gap-8 lg:gap-12 items-center`}
+        >
           {/* Image Column - only rendered if activeUrl and activeAlt are present */}
           {hasValidImage && (
             <div className={`${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full`}>
-              <div className="overflow-hidden rounded-card border border-deep-navy/10 shadow-soft bg-white">
+              <div className="relative overflow-hidden rounded-card border border-deep-navy/10 shadow-soft bg-white">
                 <Image
                   src={activeUrl!}
                   alt={activeAlt}
@@ -116,14 +119,23 @@ export function ImageText({
                   loading="lazy"
                   unoptimized={activeUrl?.startsWith('data:') || activeUrl?.startsWith('blob:')}
                 />
+                {imageLabel && (
+                  <span className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-deep-navy/90 px-3 py-1 font-ui text-xs font-semibold text-white shadow-soft">
+                    {imageLabel}
+                  </span>
+                )}
               </div>
             </div>
           )}
 
           {/* Text Column */}
-          <div className={`${hasValidImage ? (isImageLeft ? 'md:order-2' : 'md:order-1') : 'max-w-3xl mx-auto'} flex flex-col justify-center`}>
+          <div
+            className={`${hasValidImage ? (isImageLeft ? 'md:order-2' : 'md:order-1') : 'max-w-3xl mx-auto'} flex flex-col justify-center`}
+          >
             {seriesLabel && (
-              <span className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}>
+              <span
+                className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+              >
                 {seriesLabel}
               </span>
             )}
@@ -141,9 +153,23 @@ export function ImageText({
               ))}
             </div>
 
+            {quote && (
+              <blockquote
+                className={`mb-6 border-l-2 border-accent-pink pl-4 font-quote text-lg sm:text-xl italic leading-relaxed ${
+                  isDeepNavy ? 'text-soft-pink' : 'text-deep-navy'
+                }`}
+              >
+                &ldquo;{quote}&rdquo;
+              </blockquote>
+            )}
+
             {Boolean(buttonText && safeHref(buttonLink)) && (
               <div className="pt-2">
-                <Button href={safeHref(buttonLink)!} variant={isDeepNavy ? 'secondary' : 'primary'} size="md">
+                <Button
+                  href={safeHref(buttonLink)!}
+                  variant={isDeepNavy ? 'secondary' : 'primary'}
+                  size="md"
+                >
                   {buttonText}
                 </Button>
               </div>
@@ -154,4 +180,3 @@ export function ImageText({
     </section>
   )
 }
-

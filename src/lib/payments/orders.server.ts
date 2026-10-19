@@ -290,6 +290,57 @@ export async function createExperienceOrder(
   const payToken = generatePayToken()
 
   // REVIEW-REQUIRED: Tạo order với trạng thái pending và thời điểm đồng ý điều khoản
+  // REVIEW-REQUIRED (SM-04): Tra cứu server dịch vụ và gói quan tâm để ghi vào notes của đơn hàng
+  const notesLines: string[] = []
+  if (validated.need?.trim()) {
+    notesLines.push(`Nhu cầu: ${validated.need.trim()}`)
+  }
+
+  if (validated.interestedServiceId) {
+    try {
+      const srvDoc = await payload.findByID({
+        collection: 'services',
+        id: validated.interestedServiceId,
+        overrideAccess: true,
+      })
+      if (
+        srvDoc &&
+        srvDoc._status === 'published' &&
+        srvDoc.saleStatus !== 'hidden' &&
+        srvDoc.name
+      ) {
+        notesLines.push(`Lộ trình quan tâm: ${srvDoc.name.trim()}`)
+      }
+    } catch {
+      // Ignore if not found or invalid ID
+    }
+  }
+
+  if (validated.interestedPackageSlug) {
+    try {
+      const pkgDocs = await payload.find({
+        collection: 'products',
+        where: {
+          and: [
+            { slug: { equals: validated.interestedPackageSlug } },
+            { type: { equals: 'package' } },
+            { _status: { equals: 'published' } },
+            { saleStatus: { not_equals: 'hidden' } },
+          ],
+        },
+        overrideAccess: true,
+        limit: 1,
+      })
+      if (pkgDocs.totalDocs > 0 && pkgDocs.docs[0]?.name) {
+        notesLines.push(`Gói quan tâm: ${pkgDocs.docs[0].name.trim()}`)
+      }
+    } catch {
+      // Ignore if not found
+    }
+  }
+
+  const finalNotes = notesLines.length > 0 ? notesLines.join('\n') : undefined
+
   const termsAcceptedAt = now.toISOString()
   await payload.create({
     collection: 'orders',
@@ -309,7 +360,7 @@ export async function createExperienceOrder(
       deliveryStatus: 'none',
       termsAcceptedAt,
       customerNeed: validated.need?.trim() || undefined,
-      notes: validated.need?.trim() ? `Nhu cầu: ${validated.need.trim()}` : undefined,
+      notes: finalNotes,
       createdByAdmin: false,
     },
     context: { paymentAction: true },

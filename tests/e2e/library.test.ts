@@ -1,13 +1,13 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from '@playwright/test'
 
-// Test E2E Thư viện (T1-09): tự tạo dữ liệu độc lập qua REST, kiểm tra lọc tab/topic và responsive 375px,
-// sau đó tự dọn dẹp để không làm bẩn cơ sở dữ liệu.
+// Test E2E Thư viện & Tài nguyên (SM-05, sitemap v2):
+// Bỏ 2 tab cũ, lọc chủ đề, tìm kiếm trên URL, phân trang ?trang=2, link cũ ?tab=khoa-hoc vẫn 200, responsive 375px.
 
 async function bootstrapAdmin(page: Page): Promise<number> {
   await page.goto('/admin/create-first-user', { waitUntil: 'networkidle' })
   const password = randomUUID()
-  await page.locator('#field-email').fill(`t1-09-${randomUUID()}@example.test`)
+  await page.locator('#field-email').fill(`sm-05-${randomUUID()}@example.test`)
   await page.locator('#field-password').fill(password)
   await page.locator('#field-confirm-password').fill(password)
 
@@ -27,8 +27,8 @@ async function bootstrapAdmin(page: Page): Promise<number> {
   return (await (await page.request.get('/api/users/me')).json()).user.id
 }
 
-test.describe('Thư viện (T1-09): tabs, topics, URL persistence & 375px mobile', () => {
-  test('tab=noi-dung&topic=eq shows post, hides product; 375px does not overflow', async ({
+test.describe('Thư viện & Tài nguyên (SM-05): sitemap v2 layout, topics, search & 375px mobile', () => {
+  test('legacy ?tab=khoa-hoc opens 200 without redirect; topic & search filter updates URL; 375px no overflow', async ({
     page,
     browser,
   }, testInfo) => {
@@ -42,47 +42,55 @@ test.describe('Thư viện (T1-09): tabs, topics, URL persistence & 375px mobile
     expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
 
     let userId: number | undefined
-    let createdProductId: number | undefined
+    let createdFreeProductId: number | undefined
     let createdPostId: number | undefined
 
-    const productSlug = `habit-tracker-test-${randomUUID()}`
-    const productName = `Habit Tracker Test ${randomUUID().slice(0, 8)}`
+    const productSlug = `free-ebook-test-${randomUUID()}`
+    const productName = `Free Ebook Test ${randomUUID().slice(0, 8)}`
     const postSlug = `eq-article-test-${randomUUID()}`
     const postTitle = `EQ Article Test ${randomUUID().slice(0, 8)}`
 
     try {
       userId = await bootstrapAdmin(page)
 
-      // 1. Tạo 1 product: digital_tool, web: 'habit' (thuộc tab khóa học, chủ đề habit)
+      // 1. Tạo 1 free product: ebook, saleStatus: 'free' (tài nguyên miễn phí)
       const productRes = await page.request.post('/api/products', {
         data: {
           name: productName,
           slug: productSlug,
-          web: 'habit',
-          type: 'digital_tool',
-          price: 250000,
-          saleStatus: 'on_sale',
+          web: 'site',
+          type: 'ebook',
+          saleStatus: 'free',
           isSample: true,
           _status: 'published',
         },
       })
       expect(productRes.ok()).toBe(true)
-      createdProductId = (await productRes.json()).doc.id
+      createdFreeProductId = (await productRes.json()).doc.id
 
-      // 2. Tạo 1 post: topic 'eq', format 'article' (thuộc tab nội dung, chủ đề eq)
+      // 2. Tạo 1 post: topic 'eq', format 'article', featured: true
       const postRes = await page.request.post('/api/posts', {
         data: {
           title: postTitle,
           slug: postSlug,
           topic: 'eq',
           format: 'article',
+          featured: true,
           _status: 'published',
         },
       })
       expect(postRes.ok()).toBe(true)
       createdPostId = (await postRes.json()).doc.id
 
-      // 3. Kiểm tra hiển thị tại desktop 1440px và mobile 375px
+      // 3. Kiểm tra link cũ ?tab=khoa-hoc vẫn trả về 200 (bỏ qua im lặng)
+      const legacyRes = await page.request.get('/tai-nguyen?tab=khoa-hoc')
+      expect(legacyRes.status()).toBe(200)
+
+      // 4. Kiểm tra trang 2 (?trang=2) vẫn trả về 200
+      const page2Res = await page.request.get('/tai-nguyen?trang=2')
+      expect(page2Res.status()).toBe(200)
+
+      // 5. Kiểm tra hiển thị tại desktop 1440px và mobile 375px
       for (const width of [1440, 375]) {
         const ctx = await browser.newContext({
           baseURL: testInfo.project.use.baseURL,
@@ -90,19 +98,17 @@ test.describe('Thư viện (T1-09): tabs, topics, URL persistence & 375px mobile
         })
         const pub = await ctx.newPage()
         try {
-          // Mở URL đã lọc: tab nội dung, chủ đề cảm xúc
-          await pub.goto('/tai-nguyen?tab=noi-dung&topic=eq', { waitUntil: 'domcontentloaded' })
+          // Mở URL đã lọc theo topic eq và tìm kiếm
+          await pub.goto(`/tai-nguyen?topic=eq&q=${encodeURIComponent('EQ Article')}`, {
+            waitUntil: 'domcontentloaded',
+          })
 
-          // Thấy bài viết chủ đề eq
-          const postLink = pub.getByRole('link', { name: postTitle }).first()
-          await expect(postLink, `bài viết ${postTitle} phải hiển thị tại ${width}px`).toBeVisible()
-
-          // Không thấy sản phẩm khóa học habit tracker
-          const productLocator = pub.getByText(productName)
+          // Thấy bài viết nổi bật chủ đề eq
+          const postHeading = pub.getByRole('heading', { name: postTitle }).first()
           await expect(
-            productLocator,
-            `sản phẩm ${productName} không được hiển thị tại ${width}px`,
-          ).toHaveCount(0)
+            postHeading,
+            `bài viết ${postTitle} phải hiển thị tại ${width}px`,
+          ).toBeVisible()
 
           // Tại 375px: kiểm tra không tràn ngang (no horizontal overflow)
           if (width === 375) {
@@ -119,8 +125,8 @@ test.describe('Thư viện (T1-09): tabs, topics, URL persistence & 375px mobile
       }
     } finally {
       // Dọn dẹp dữ liệu thử nghiệm
-      if (createdProductId) {
-        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+      if (createdFreeProductId) {
+        await page.request.delete(`/api/products/${createdFreeProductId}`).catch(() => {})
       }
       if (createdPostId) {
         await page.request.delete(`/api/posts/${createdPostId}`).catch(() => {})

@@ -35,6 +35,8 @@
 4. [Quản lý Lời chia sẻ của khách hàng (Testimonials)](#4-quản-lý-lời-chia-sẻ-của-khách-hàng-testimonials)
 5. [Dựng trang trực quan bằng công cụ kéo thả (Puck Editor)](#5-dựng-trang-trực-quan-bằng-công-cụ-kéo-thả-puck-editor)
    - [5.9. Các khối mới (Sitemap v2)](#59-các-khối-mới-sitemap-v2)
+   - [5.10. Các khối mới – đợt B (Sitemap v2: Về Trạm + Coach 1:1)](#510-các-khối-mới--đợt-b-sitemap-v2-về-trạm--coach-11)
+   - [5.11. Trang Tài nguyên (Sitemap v2)](#511-trang-tài-nguyên-sitemap-v2)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
 8. [Quản lý Khách tiềm năng (Leads) và Xuất file CSV](#8-quản-lý-khách-tiềm-năng-leads-và-xuất-file-csv)
@@ -1314,6 +1316,137 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
   - Chọn **Biến thể (`variant`)**: `Mặc định` (đầy đủ tiêu đề 2 tầng màu, dòng cảm xúc và dải chỉ số niềm tin) hoặc `Tối giản` (gọn gàng, tập trung).
   - Bật/tắt **Dải chỉ số niềm tin (`showProofStrip`)**: Hiển thị nhanh các con số bảo chứng (10+ năm kinh nghiệm, 500+ giờ khai vấn, tiêu chuẩn ICF ACC...).
   - Thiết lập nút kêu gọi dẫn về trang Đặt phiên trải nghiệm 149.000đ hoặc trang Khai vấn.
+
+---
+
+### 5.10. Các khối mới – đợt B (Sitemap v2: Về Trạm + Coach 1:1)
+
+Trong đợt nâng cấp Sitemap v2 (SM-04), hệ thống bổ sung **4 khối kéo thả mới** và nâng cấp **4 khối hiện có** để Hana xây dựng trang Về Trạm (`/ve-tram`), trang Giới thiệu Hana (`/ve-hana`) và trang Khai vấn 1:1 (`/coaching`):
+
+#### 1. Khối Tầm nhìn & Sứ mệnh (`VisionMission`)
+
+- **Vị trí**: Nhóm **Nội dung**.
+- **Mục đích**: Khắc họa định hướng tương lai và tôn chỉ phụng sự của Trạm Dừng Cảm Xúc qua 2 thẻ đối xứng trang nhã kèm câu trích dẫn đúc kết.
+- **Cách dùng**:
+  - Nhập **Tiêu đề 2 tầng màu** và **Nhãn series**.
+  - Thẻ **Tầm nhìn** (bên trái, viền tím sương): Nhập Tiêu đề tầm nhìn, Nội dung phân đoạn (các đoạn cách nhau một dòng trống) và chọn Icon biểu tượng (mặc định la bàn `compass`).
+  - Thẻ **Sứ mệnh** (bên phải, viền bạc hà): Nhập Tiêu đề sứ mệnh, Nội dung phân đoạn và chọn Icon biểu tượng (mặc định trái tim `heart`).
+  - **Câu trích dẫn đúc kết (`quote`)**: Hiển thị bên dưới dạng quote trang trọng với biểu tượng đường nét trái tim `HeartLine`.
+
+#### 2. Khối Lưới dịch vụ chuyên biệt (`ServiceCards`)
+
+- **Vị trí**: Nhóm **Bán hàng**.
+- **Mục đích**: Giới thiệu các lộ trình đồng hành cá nhân hóa (Coaching 1:1, Tư vấn hướng nghiệp, Workshop may đo) với thông tin lấy trực tiếp từ CMS.
+- **Cách dùng**:
+  - Thêm các dịch vụ muốn hiển thị bằng cách bấm **+ Thêm dịch vụ** và chọn mã dịch vụ từ danh mục **Dịch vụ đồng hành** (`services`).
+  - **Dịch vụ nổi bật (`highlightServiceId`)**: Điền mã ID của dịch vụ bạn muốn khuyến khích học viên đăng ký nhất. Dịch vụ đó sẽ tự động khoác nền xanh thẫm `deep-navy`, chữ trắng và huy hiệu nổi bật.
+  - **Tự động đồng bộ**: Khi bạn chỉnh sửa tên, mô tả hay quyền lợi của dịch vụ trong danh mục `services`, khối trên trang web sẽ **tự động cập nhật tức thì**, không cần chỉnh sửa lại trang kéo thả.
+  - **An toàn hiển thị**: Nếu danh sách dịch vụ đang trống hoặc chưa xuất bản dịch vụ nào, trang công khai sẽ tự động ẩn khối; trong màn hình Puck Editor sẽ hiển thị khung viền nét đứt màu xám nhắc nhở để bạn biết.
+
+#### 3. Khối Hai lối đi Cá nhân & Doanh nghiệp (`TwoPathCards`)
+
+- **Vị trí**: Nhóm **Chuyển đổi**.
+- **Mục đích**: Điều hướng người truy cập chọn đúng hành trình dành riêng cho họ (Khách hàng cá nhân tự thấu hiểu hoặc Doanh nghiệp muốn gắn kết đội ngũ).
+- **Cách dùng**:
+  - Nhập thông tin cho **Lối 1 (Cá nhân)**: Nhãn nhóm (`Lộ trình Cá nhân`), Tiêu đề, Đoạn mô tả, Câu chữ trên nút, Kiểu nút (mặc định là nút nền màu `solid` nổi bật).
+  - Nhập thông tin cho **Lối 2 (Doanh nghiệp)**: Nhãn nhóm (`Giải pháp Tổ chức`), Tiêu đề, Đoạn mô tả, Câu chữ trên nút, Kiểu nút (mặc định là nút viền mảnh `outline` thanh lịch).
+  - **Chọn liên kết linh hoạt**: Bạn có thể chọn dẫn đến một đường dẫn tùy ý (ví dụ `/coaching`) hoặc chọn trực tiếp một **Trang nội dung** đã tạo trên website.
+
+#### 4. Khối Đội ngũ chuyên môn & Cộng sự (`TeamGrid`)
+
+- **Vị trí**: Nhóm **Niềm tin**.
+- **Mục đích**: Tăng cường sự tin cậy bằng cách giới thiệu đội ngũ chuyên gia tâm lý, coach và cộng sự cùng đồng hành tại Trạm.
+- **Cách dùng**:
+  - Dữ liệu được hệ thống tự động tải từ danh mục **Đội ngũ** (`teamMembers`).
+  - **Bảo mật quyền riêng tư (Bắt buộc)**: Để bảo vệ thông tin cá nhân của các cộng sự, hệ thống chỉ hiển thị những thành viên đã được tích chọn **"Người này đã đồng ý hiện tên, ảnh trên web"** trong trang quản trị.
+  - **Hiển thị linh hoạt**: Nếu thành viên chưa kịp chụp ảnh đại diện chuyên nghiệp, hệ thống sẽ tự động hiển thị chữ cái đầu tiên của tên thành viên trên nền tròn màu hồng sen thanh lịch, đảm bảo giao diện luôn chỉn chu.
+  - Nếu danh mục chưa có thành viên nào, khối sẽ tự ẩn trên website ngoài đời để không để lại khoảng trống.
+
+#### 5. Các tính năng nâng cấp trên các khối hiện có (v2)
+
+- **`JourneySteps` (5 bước hành trình cảm xúc)**:
+  - Bổ sung **Kiểu hiển thị (`variant`)**: Hỗ trợ 3 kiểu gồm Vòng tròn truyền thống (`circles`), Thẻ bài học độc lập (`cards`), và Danh sách từng bước dọc (`list`).
+  - **Bước trọng tâm (`highlightStep`)**: Nhập số thứ tự bước bạn muốn làm nổi bật (ví dụ gõ `2` để làm nổi bật bước _Cảm nhận - Feel_). Bước được chọn sẽ đổi sang nền xanh thẫm `deep-navy`.
+  - **Phụ đề cho từng bước**: Cho phép nhập phụ đề ngắn gọn ngay dưới tên bước (ví dụ: _Tạo khoảng lặng_, _Lắng nghe cơ thể_...).
+- **`HanaStory` (Câu chuyện người sáng lập)**:
+  - Bổ sung **Sắc thái (`tone`)**: Chọn `Sáng` (mặc định) hoặc `Nền tối` (`dark`) với nền xanh thẫm tạo cảm giác sâu lắng, trang trọng.
+  - Bổ sung **Bố cục (`layout`)**: Chọn dạng kể chuyện truyền thống (`story`) hoặc dạng **Bức thư ngỏ (`letter`)**.
+  - **Chữ ký người sáng lập**: Khi chọn dạng Thư ngỏ (`letter`), hệ thống sẽ tự động chèn ảnh chữ ký viết tay của Hana ở cuối thư. Hana có thể tải ảnh chữ ký lên tại: **Cài đặt website** -> tab **Nhận diện thương hiệu** -> ô **Chữ ký người sáng lập**.
+  - **Huy hiệu chứng chỉ (`chips`)**: Nhập danh sách các chứng chỉ ngắn gọn (như _ICF Associate Certified Coach (ACC)_, _10+ năm kinh nghiệm_) hiển thị dưới ảnh chân dung.
+- **`ImageText` (Ảnh & Đoạn văn)**:
+  - Bổ sung trường **Trích dẫn nổi bật (`quote`)**: Hiển thị đoạn văn ngắn có dấu ngoặc kép và đường viền hồng sen trang trọng.
+  - Bổ sung **Nhãn ảnh (`imageLabel`)**: Hiển thị chú thích nhỏ ghim ở góc dưới ảnh chụp thực tế.
+- **`LogoStrip` (Dải logo đối tác & Chứng nhận)**:
+  - Bổ sung tính năng **Phân nhóm logo (`groups`)**: Cho phép chia logo thành các nhóm riêng biệt (như nhóm _Chứng chỉ chuyên môn_, nhóm _Doanh nghiệp đồng hành_) có tiêu đề nhóm rõ ràng.
+
+#### 6. Nâng cấp biểu mẫu Đặt phiên trải nghiệm (Booking Form)
+
+- **Thay đổi nhãn câu hỏi**: Ô nhập trăn trở được đổi thành câu hỏi đồng cảm hơn: _"Bạn đang trăn trở điều gì?"_.
+- **Lựa chọn lộ trình quan tâm**: Học viên có thể chọn trực tiếp lộ trình mà họ hướng tới trong danh sách thả xuống (lấy từ các dịch vụ đang mở bán của Trạm, hoặc chọn _"Chưa chắc chắn"_ nếu cần tư vấn thêm).
+- **Ghi nhận gói quan tâm từ liên kết**: Khi học viên bấm vào nút Đặt lịch từ một gói đồng hành cụ thể (ví dụ bấm từ gói `CLEAR`, `BUILD`, hoặc `SHINE`), biểu mẫu sẽ hiển thị một dòng thông báo nhỏ xác nhận: _"Gói quan tâm: [Tên gói]"_. Khi đơn được gửi, hệ thống tự động lưu tên lộ trình và gói quan tâm vào phần **Ghi chú đơn hàng** trong CMS để Hana nắm rõ trước khi bước vào phiên khai vấn 1:1.
+- **Liên kết đặt phiên tự động**: Nút đặt phiên tự dẫn tới sản phẩm phiên trải nghiệm đang bán đầu tiên (theo thứ tự); không có sản phẩm đang bán thì nút tự ẩn.
+
+---
+
+### 5.11. Trang Tài nguyên (Sitemap v2)
+
+Trong đợt nâng cấp Sitemap v2 (SM-05), trang **Tài nguyên** (`/tai-nguyen`) được kết hợp linh hoạt giữa các khối kéo thả Puck trực quan và ứng dụng danh sách bài viết/tài liệu tự động.
+
+#### 1. Chỉnh sửa phần đầu và phần cuối trang bằng Puck Editor
+
+- Mở danh mục **Trang nội dung** (`pages`), tìm trang có đường dẫn `tai-nguyen`.
+- Bấm nút **"Chỉnh sửa trực quan"** ở thanh công cụ phía trên để mở màn hình kéo thả Puck Editor.
+- Phần đầu trang thường gồm: Khối tiêu đề `SectionHeader` và Khối trượt tài nguyên miễn phí `LeadMagnetCarousel`.
+- Phần cuối trang thường gồm: Khối đăng ký nhận bản tin `NewsletterForm` và Khối kêu gọi chuyển đổi `CTASection`.
+
+#### 2. Khối Vị trí danh sách bài viết (`ResourcePostsSlot`)
+
+- **Vị trí**: Nhóm **Bố cục**.
+- **Mục đích**: Đánh dấu vị trí hiển thị khu ứng dụng bài viết (thanh tìm kiếm, bộ lọc chủ đề, bài viết nổi bật, lưới bài viết và phân trang).
+- **Cách dùng**:
+  - Kéo khối `ResourcePostsSlot` vào vị trí bạn muốn danh sách bài viết xuất hiện trên trang (thường đặt ở giữa khối `LeadMagnetCarousel` và `NewsletterForm`).
+  - Khối không có trường cài đặt. Trong màn hình chỉnh sửa Puck, khối hiển thị khung nét đứt thông báo _"Vị trí danh sách bài viết (ResourcePostsSlot) – Danh sách bài viết, ô tìm kiếm và bộ lọc chủ đề sẽ tự động hiển thị tại vị trí này trên trang công khai"_.
+  - Trên trang công khai ngoài website, hệ thống sẽ tự động tách nội dung Puck thành 2 phần: các khối đặt trước khối này sẽ hiện ở trên, và các khối đặt sau sẽ hiện ở dưới khu bài viết.
+  - _Lưu ý_: Chỉ khối `ResourcePostsSlot` nằm trực tiếp ở cấp ngoài cùng mới có hiệu lực (không đặt lồng bên trong khối Cột `Columns`). Nếu không có khối này, khu bài viết sẽ tự động hiển thị ở cuối toàn bộ nội dung Puck.
+
+#### 3. Khối Trượt tài nguyên miễn phí (`LeadMagnetCarousel`)
+
+- **Vị trí**: Nhóm **Chuyển đổi**.
+- **Mục đích**: Trình bày danh sách tài nguyên miễn phí (Ebook, Toolkit, tài liệu hướng dẫn) dạng slide trượt mượt mà kèm biểu mẫu đăng ký nhận nhanh qua email (link ký hạn 7 ngày an toàn).
+- **Cách dùng**:
+  - Chọn **Chế độ hiển thị (`mode`)**:
+    - `Tự động (`auto`)`: Tự động tải tất cả các sản phẩm có trạng thái **Miễn phí** (`saleStatus = free`), đã xuất bản và có đính kèm tệp tải về (tối đa 12 tài nguyên, sắp xếp theo thứ tự).
+    - `Thủ công (`manual`)`: Tự tay lựa chọn từ 1 đến 12 sản phẩm tài nguyên cụ thể từ danh mục Sản phẩm.
+  - Trên trang công khai, độc giả có thể bấm nút chuyển slide trước/sau, bấm các chấm tròn vị trí hoặc vuốt cảm ứng trên điện thoại.
+  - Độc giả chỉ cần điền tên, email và tích chọn đồng ý là hệ thống tự động gửi email chứa link tải tệp bảo mật có thời hạn 7 ngày.
+  - _Lưu ý_: Nếu chưa có tài nguyên miễn phí nào đủ điều kiện, khối sẽ tự ẩn trên trang công khai.
+
+#### 4. Đánh dấu Bài viết nổi bật (Featured Post)
+
+- Vào danh mục **Bài viết** (`posts`) ở cột menu bên trái.
+- Chọn bài viết chất lượng cao mà bạn muốn làm tâm điểm trên trang Tài nguyên.
+- Tích chọn ô **Đánh dấu là bài viết nổi bật** (`featured`).
+- Trên trang `/tai-nguyen`, bài viết nổi bật mới nhất sẽ được hiển thị thành một thẻ lớn trang trọng ở đầu danh sách (kèm ảnh bìa lớn, huy hiệu chủ đề, tiêu đề, tóm tắt và thời gian đọc dự kiến). Thẻ này sẽ không bị lặp lại trong lưới bài viết bên dưới.
+
+#### 5. Tạo tài nguyên miễn phí trong CMS
+
+- Vào danh mục **Sản phẩm** (`products`) -> **Tạo mới**.
+- **Tab 1: Cơ bản**: Nhập tên tài nguyên, đường dẫn slug, mô tả ngắn, chọn chủ đề và tải lên ảnh bìa.
+- **Tab 2: Giá & bán**: Ở mục **Trạng thái mở bán**, chọn **`Miễn phí` (`free`)**. (Giá bán để `0`).
+- **Tab 5: Tệp đính kèm**: Bấm tải lên tài liệu PDF hoặc bộ công cụ mà bạn muốn tặng độc giả.
+- Bấm **Lưu** hoặc **Xuất bản**. Tài nguyên sẽ tự động xuất hiện trong khối `LeadMagnetCarousel` và trong bộ lọc chủ đề "Tài liệu" trên trang Tài nguyên.
+
+#### 6. Khối Đăng ký nhận bản tin (`NewsletterForm`) & Quản lý Leads
+
+- **Vị trí**: Nhóm **Chuyển đổi**.
+- **Mục đích**: Thu hút độc giả đăng ký nhận bản tin chia sẻ cảm xúc và bài viết mới từ Hana.
+- **Cách cấu hình trong Puck**: Hana có thể tùy chỉnh Tiêu đề, Đoạn mô tả, Chữ trên nút đăng ký và Câu cam kết bảo mật.
+  - _Lưu ý từ nguyên tắc nội dung_: Chỉ hứa những điều Trạm đang thực hiện đều đặn (không hứa tần suất cố định như "mỗi tuần" hay định dạng chưa có như "podcast").
+- **Cơ chế chống gửi trùng**: Nếu một độc giả đăng ký lại bằng cùng email, hệ thống vẫn hiện thông báo thành công ấm áp nhưng không tạo thêm bản ghi trùng lặp trong cơ sở dữ liệu.
+- **Xem và xuất danh sách độc giả đăng ký newsletter**:
+  - Vào mục **Khách tiềm năng** (`leads`) ở menu bên trái.
+  - Trong danh sách, các độc giả đăng ký qua khối này sẽ được gắn thẻ nhãn `newsletter` và nhu cầu `Tài nguyên` (`resource`).
+  - Bấm nút **Xuất CSV** ở góc trên bên phải để tải danh sách về máy tính (file UTF-8 BOM chuẩn tiếng Việt), sau đó Hana có thể nhập vào các hệ thống gửi email bản tin định kỳ.
 
 ---
 

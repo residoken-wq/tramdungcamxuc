@@ -153,6 +153,26 @@ export const experienceOrderSchema = z.object({
     .email(vi.forms.validation.emailInvalid),
   phone: z.string().trim().max(20, vi.forms.validation.phoneMax).optional(),
   need: z.string().trim().max(1000, vi.payment.validation.needMax).optional(),
+  interestedServiceId: z
+    .union([
+      z.number().int().positive(),
+      z
+        .string()
+        .trim()
+        .regex(/^\d+$/)
+        .transform((val) => Number(val))
+        .refine((n) => n > 0),
+    ])
+    .optional()
+    .nullable()
+    .transform((val) => (val === null || val === undefined ? undefined : val)),
+  interestedPackageSlug: z
+    .string()
+    .trim()
+    .max(100)
+    .optional()
+    .nullable()
+    .transform((val) => (val === null || val === undefined || val === '' ? undefined : val)),
   termsAccepted: z
     .boolean({
       required_error: vi.payment.validation.termsAcceptedRequired,
@@ -294,3 +314,29 @@ export const habitPlanSubmissionSchema = z
   )
 
 export type HabitPlanSubmissionInput = z.infer<typeof habitPlanSubmissionSchema>
+
+export const newsletterSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, vi.forms.validation.emailRequired)
+    .max(254, vi.forms.validation.emailMax)
+    .email(vi.forms.validation.emailInvalid),
+  name: z
+    .string()
+    .trim()
+    .max(100, vi.account.validation.nameMax100)
+    .refine((val) => !/[<>{}]|[\x00-\x1F\x7F]/.test(val), {
+      message: vi.account.validation.nameSpecialChars,
+    })
+    .optional()
+    .nullable(),
+  consent: z.boolean().refine((val) => val === true, {
+    message: vi.forms.validation.consentRequired,
+  }),
+  pageSlug: z.string().max(200).optional(),
+  honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+  turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+})
+
+export type NewsletterInput = z.infer<typeof newsletterSchema>

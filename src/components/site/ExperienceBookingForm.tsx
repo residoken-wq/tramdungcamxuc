@@ -20,8 +20,20 @@ export interface ExperienceBookingProductInfo {
   shortDescription?: string | null
 }
 
+export interface InterestedPackageInfo {
+  slug: string
+  name: string
+}
+
+export interface ServiceOptionInfo {
+  id: number
+  name: string
+}
+
 export interface ExperienceBookingFormProps {
   product: ExperienceBookingProductInfo
+  services?: ServiceOptionInfo[]
+  interestedPackage?: InterestedPackageInfo | null
   className?: string
   pageSlug?: string
 }
@@ -37,6 +49,8 @@ export interface ExperienceBookingFormErrors {
 
 export function ExperienceBookingForm({
   product,
+  services = [],
+  interestedPackage,
   className = '',
   pageSlug,
 }: ExperienceBookingFormProps) {
@@ -45,6 +59,7 @@ export function ExperienceBookingForm({
   const nameId = `${id}-exp-name`
   const emailId = `${id}-exp-email`
   const phoneId = `${id}-exp-phone`
+  const serviceSelectId = `${id}-exp-service`
   const needId = `${id}-exp-need`
   const termsId = `${id}-exp-terms`
   const honeypotId = `${id}-exp-hp`
@@ -52,6 +67,7 @@ export function ExperienceBookingForm({
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [interestedServiceId, setInterestedServiceId] = useState('')
   const [need, setNeed] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [honeypot, setHoneypot] = useState('')
@@ -106,6 +122,8 @@ export function ExperienceBookingForm({
         email: email.trim(),
         phone: phone.trim() || undefined,
         need: need.trim() || undefined,
+        interestedServiceId: interestedServiceId ? Number(interestedServiceId) : undefined,
+        interestedPackageSlug: interestedPackage?.slug || undefined,
         termsAccepted,
         honeypot,
         turnstileToken,
@@ -125,7 +143,7 @@ export function ExperienceBookingForm({
           setErrors(res.fieldErrors as ExperienceBookingFormErrors)
         }
       }
-    } catch (err) {
+    } catch (_err) {
       setStatus('error')
       setServerError(vi.payment.errors.serverError)
     }
@@ -199,6 +217,22 @@ export function ExperienceBookingForm({
                   {vi.payment.ui.booking.formDesc}
                 </p>
               </div>
+
+              {interestedPackage && (
+                <div className="p-3.5 rounded-xl bg-warm-ivory border border-deep-navy/10 text-sm font-ui text-deep-navy flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="text-xs font-medium text-deep-navy/70 block">
+                      {vi.sm04.packageInterestPrefix}
+                    </span>
+                    <span className="text-sm font-bold text-bright-magenta truncate block">
+                      {interestedPackage.name}
+                    </span>
+                  </div>
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-soft-pink text-deep-navy font-bold uppercase tracking-wider whitespace-nowrap shrink-0">
+                    {vi.sm04.readOnlyBadge}
+                  </span>
+                </div>
+              )}
 
               {serverError && (
                 <div
@@ -306,6 +340,34 @@ export function ExperienceBookingForm({
                   className="w-full px-4 py-2.5 rounded-xl border border-lavender-mist text-sm text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:border-bright-magenta focus:ring-2 focus:ring-accent-pink/20 transition-all"
                 />
               </div>
+
+              {/* Lộ trình quan tâm */}
+              {services && services.length > 0 && (
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor={serviceSelectId}
+                    className="block text-sm font-semibold text-deep-navy"
+                  >
+                    {vi.sm04.serviceLabel}{' '}
+                    <span className="text-xs font-normal text-deep-navy/60">
+                      {vi.sm04.optionalLabel}
+                    </span>
+                  </label>
+                  <select
+                    id={serviceSelectId}
+                    value={interestedServiceId}
+                    onChange={(e) => setInterestedServiceId(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-lavender-mist text-sm text-deep-navy bg-white focus:outline-none focus:border-bright-magenta focus:ring-2 focus:ring-accent-pink/20 transition-all"
+                  >
+                    <option value="">{vi.sm04.uncertainServiceOption}</option>
+                    {services.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Nhu cầu ngắn */}
               <div className="space-y-1.5">

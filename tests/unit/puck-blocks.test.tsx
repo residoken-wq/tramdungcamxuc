@@ -18,7 +18,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       const blockConfig = puckConfig.components[blockKey]
       expect(blockConfig).toBeDefined()
       expect(blockConfig.defaultProps).toBeDefined()
-      const v3Blocks = ['PackageComparison']
+      const v3Blocks = ['PackageComparison', 'HanaStory']
       const v2Blocks = [
         'CTAButton',
         'QuoteBlock',
@@ -27,6 +27,9 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'HeroImage',
         'FAQ',
         'TestimonialGrid',
+        'JourneySteps',
+        'ImageText',
+        'LogoStrip',
       ]
       const expectedVersion = v3Blocks.includes(blockKey) ? 3 : v2Blocks.includes(blockKey) ? 2 : 1
       expect((blockConfig.defaultProps as { version?: number })?.version).toBe(expectedVersion)
@@ -270,17 +273,24 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'IconCardGrid',
         'Callout',
         'JourneySteps',
+        'VisionMission',
         'FAQ',
         'VideoEmbed',
       ])
 
       expect(categories?.layout?.title).toBe('Bố cục')
-      expect(categories?.layout?.components).toEqual(['Columns', 'Spacer', 'Divider'])
+      expect(categories?.layout?.components).toEqual([
+        'Columns',
+        'Spacer',
+        'Divider',
+        'ResourcePostsSlot',
+      ])
 
       expect(categories?.conversion?.title).toBe('Chuyển đổi')
       expect(categories?.conversion?.components).toEqual([
         'CTAButton',
         'CTASection',
+        'TwoPathCards',
         'LeadForm',
         'BookingCTA',
         'B2BBriefForm',
@@ -288,6 +298,8 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'ShopeeButton',
         'ZaloButton',
         'LibraryPreview',
+        'LeadMagnetCarousel',
+        'NewsletterForm',
       ])
     })
   })

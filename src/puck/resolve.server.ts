@@ -1,14 +1,15 @@
 import 'server-only'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
-import { toPublicProduct, type PublicProduct } from '@/lib/products'
+import { toPublicProduct, type PublicProduct, getEffectivePrice } from '@/lib/products'
 import { toPublicTestimonial, type PublicTestimonial } from '@/lib/testimonials'
 import { toPublicSiteSettings, type PublicSiteSettings } from '@/lib/site-public'
 import type {
   PublicServiceSummary,
   PublicProgramSummary,
 } from '@/components/site/SolutionEcosystem'
+import type { PublicTeamMember } from '@/puck/client-preview'
 import type { Service, Program } from '@/payload-types'
 
 import { walkPuckItems } from './walk'
@@ -70,6 +71,80 @@ export function normalizePageSlug(slug?: string): string {
 }
 
 /**
+ * Helper chọn sản phẩm phiên trải nghiệm mặc định theo các tiêu chí (SM-04b C1):
+ * - type = 'coaching_trial'
+ * - _status = 'published'
+ * - saleStatus = 'on_sale'
+ * - Giá hiệu lực > 0 (tính qua getEffectivePrice)
+ * - Sắp xếp theo order ASC (nếu bằng nhau hoặc null/undefined thì theo id ASC)
+ */
+export function selectDefaultBookingProduct<
+  T extends {
+    id: number
+    order?: number | null
+    type?: string | null
+    _status?: string | null
+    saleStatus?: string | null
+    price?: number | null
+    salePrice?: number | null
+    saleEndsAt?: string | null
+  },
+>(products: T[], now = new Date()): T | null {
+  const eligible = products.filter((p) => {
+    if (p.type !== 'coaching_trial') return false
+    if (p._status !== 'published') return false
+    if (p.saleStatus !== 'on_sale') return false
+    const pricing = getEffectivePrice(p, now)
+    const price = pricing.salePrice ?? pricing.price
+    return price != null && price > 0
+  })
+
+  if (eligible.length === 0) return null
+
+  eligible.sort((a, b) => {
+    const orderA = typeof a.order === 'number' ? a.order : 0
+    const orderB = typeof b.order === 'number' ? b.order : 0
+    if (orderA !== orderB) return orderA - orderB
+    return a.id - b.id
+  })
+
+  return eligible[0] ?? null
+}
+
+export async function resolveDefaultBookingProductId(payload: Payload): Promise<number | null> {
+  try {
+    const res = await payload.find({
+      collection: 'products',
+      where: {
+        and: [
+          { type: { equals: 'coaching_trial' } },
+          { _status: { equals: 'published' } },
+          { saleStatus: { equals: 'on_sale' } },
+        ],
+      },
+      sort: ['order', 'id'],
+      limit: 20,
+    })
+
+    const product = selectDefaultBookingProduct(
+      res.docs as unknown as Array<{
+        id: number
+        order?: number | null
+        type?: string | null
+        _status?: string | null
+        saleStatus?: string | null
+        price?: number | null
+        salePrice?: number | null
+        saleEndsAt?: string | null
+      }>,
+    )
+    return product ? product.id : null
+  } catch {
+    return null
+  }
+}
+
+/**
  * Server-only helper to resolve server-side data (media URL/alt from Local API,
  * published products and consent-approved published testimonials by ID without storing in DB)
  * for Puck Data before passing to <Render>.
@@ -100,6 +175,8 @@ export async function resolveServerData(
   const serviceIdsToFetch = new Set<string | number>()
   const programIdsToFetch = new Set<string | number>()
   let needsSiteSettings = false
+  let needsTeamMembers = false
+  let needsBookingProduct = false
   let hasSetHeroPriority = false
 
   await walkPuckItems(resolvedData, async (item) => {
@@ -147,10 +224,25 @@ export async function resolveServerData(
     }
 
     // Collect logo media IDs for LogoStrip
-    if (item.type === 'LogoStrip' && Array.isArray(item.props.logos)) {
-      for (const logo of item.props.logos) {
-        if (logo?.mediaId) {
-          logoMediaIdsToFetch.add(String(logo.mediaId))
+    if (item.type === 'LogoStrip') {
+      const groups = item.props.groups as
+        Array<{ label?: string; logos?: Array<{ mediaId?: string | number }> }> | undefined
+      if (Array.isArray(groups)) {
+        for (const grp of groups) {
+          if (Array.isArray(grp?.logos)) {
+            for (const logo of grp.logos) {
+              if (logo?.mediaId) {
+                logoMediaIdsToFetch.add(String(logo.mediaId))
+              }
+            }
+          }
+        }
+      }
+      if (Array.isArray(item.props.logos)) {
+        for (const logo of item.props.logos) {
+          if (logo?.mediaId) {
+            logoMediaIdsToFetch.add(String(logo.mediaId))
+          }
         }
       }
     }
@@ -216,6 +308,7 @@ export async function resolveServerData(
         productIdsToFetch.add(item.props.productId as string | number)
       }
     } else if (item.type === 'PackageComparison' || item.type === 'PackageCards') {
+      needsBookingProduct = true
       const pkgs = item.props.packages as
         Array<{ packageId?: string | number; productId?: string | number }> | undefined
       if (Array.isArray(pkgs)) {
@@ -229,6 +322,14 @@ export async function resolveServerData(
         for (const id of flatIds) {
           if (id) productIdsToFetch.add(id)
         }
+      }
+    } else if (item.type === 'CTASection') {
+      needsBookingProduct = true
+    } else if (item.type === 'Callout') {
+      needsBookingProduct = true
+    } else if (item.type === 'FAQ') {
+      if (item.props.aside === 'booking') {
+        needsBookingProduct = true
       }
     } else if (item.type === 'SolutionEcosystem') {
       const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
@@ -249,6 +350,16 @@ export async function resolveServerData(
           if (prog?.programId) programIdsToFetch.add(prog.programId)
         }
       }
+    } else if (item.type === 'ServiceCards') {
+      const list = item.props.services as Array<{ serviceId?: string | number }> | undefined
+      if (Array.isArray(list)) {
+        for (const s of list) {
+          if (s?.serviceId) serviceIdsToFetch.add(s.serviceId)
+        }
+      }
+      if (item.props.highlightServiceId) {
+        serviceIdsToFetch.add(item.props.highlightServiceId as string | number)
+      }
     }
 
     // Collect page IDs for CTAButton, Callout, PackageCards & CTASection (linkType = page)
@@ -261,6 +372,14 @@ export async function resolveServerData(
       item.props.buttonPageId
     ) {
       pageIdsToFetch.add(item.props.buttonPageId as string | number)
+    }
+    if (item.type === 'TwoPathCards') {
+      if (item.props.path1LinkType === 'page' && item.props.path1PageId) {
+        pageIdsToFetch.add(item.props.path1PageId as string | number)
+      }
+      if (item.props.path2LinkType === 'page' && item.props.path2PageId) {
+        pageIdsToFetch.add(item.props.path2PageId as string | number)
+      }
     }
 
     // Collect product IDs for conversion blocks
@@ -279,9 +398,14 @@ export async function resolveServerData(
     if (
       item.type === 'ShopeeButton' ||
       item.type === 'ZaloButton' ||
-      (item.type === 'FAQ' && item.props.aside === 'booking')
+      (item.type === 'FAQ' && item.props.aside === 'booking') ||
+      item.type === 'HanaStory'
     ) {
       needsSiteSettings = true
+    }
+
+    if (item.type === 'TeamGrid') {
+      needsTeamMembers = true
     }
   })
 
@@ -417,23 +541,44 @@ export async function resolveServerData(
           id: true,
           name: true,
           slug: true,
+          badge: true,
+          image: true,
+          situations: true,
+          outcomes: true,
           audience: true,
           audienceLabel: true,
           ctaLabel: true,
           saleStatus: true,
         } as never,
-        depth: 0,
+        depth: 1,
         limit: numericOrStrSids.length + 10,
       })
 
       for (const doc of serviceDocs.docs as unknown as Service[]) {
         if (doc?.saleStatus !== 'hidden') {
+          const img = doc.image as { url?: string; alt?: string } | undefined
+          const situations = Array.isArray(doc.situations)
+            ? doc.situations
+                .map((s: { text?: string } | string) => (typeof s === 'string' ? s : s?.text || ''))
+                .filter(Boolean)
+            : []
+          const outcomes = Array.isArray(doc.outcomes)
+            ? doc.outcomes
+                .map((o: { text?: string } | string) => (typeof o === 'string' ? o : o?.text || ''))
+                .filter(Boolean)
+            : []
+
           serviceMap.set(String(doc.id), {
             id: doc.id,
             name: doc.name,
             slug: doc.slug,
+            badge: doc.badge || null,
+            imageUrl: img?.url || null,
+            imageAlt: img?.alt || null,
             audience: doc.audience || null,
             audienceLabel: doc.audienceLabel || null,
+            situations,
+            outcomes,
             ctaLabel: doc.ctaLabel || null,
             saleStatus: doc.saleStatus || null,
           })
@@ -493,21 +638,67 @@ export async function resolveServerData(
     zaloGroupUrl: null,
   }
   let siteContactEmail: string | null = null
+  let founderSignatureUrl: string | null = null
+  let founderSignatureAlt: string | null = null
 
   if (needsSiteSettings) {
     try {
       const siteDoc = await payload.findGlobal({
         slug: 'siteSettings',
-        depth: 0,
+        depth: 1,
       })
       publicSiteSettings = toPublicSiteSettings(siteDoc)
       const rawEmail = (siteDoc as unknown as Record<string, unknown>)?.email
       if (typeof rawEmail === 'string' && rawEmail.trim().length > 0) {
         siteContactEmail = rawEmail.trim()
       }
+      const rawSig = (siteDoc as unknown as Record<string, unknown>)?.founderSignature
+      if (rawSig && typeof rawSig === 'object' && 'url' in rawSig) {
+        founderSignatureUrl = (rawSig as { url?: string }).url || null
+        founderSignatureAlt = (rawSig as { alt?: string }).alt || null
+      }
     } catch {
       // Gracefully continue
     }
+  }
+
+  let resolvedTeamMembers: PublicTeamMember[] = []
+  if (needsTeamMembers) {
+    try {
+      const docs = await payload.find({
+        collection: 'teamMembers',
+        where: {
+          and: [{ _status: { equals: 'published' } }, { consent: { equals: true } }],
+        },
+        sort: 'order',
+        depth: 1,
+        limit: 100,
+      })
+
+      resolvedTeamMembers = (docs?.docs || [])
+        .filter((doc) => doc.consent === true)
+        .map((doc) => {
+          const p = doc.photo as { url?: string; alt?: string } | undefined
+          return {
+            id: doc.id,
+            name: doc.name,
+            role: doc.role || null,
+            specialty: doc.specialty || null,
+            bio: doc.bio || null,
+            photoUrl: p?.url || null,
+            photoAlt: p?.alt || null,
+            order: doc.order ?? 0,
+            consent: Boolean(doc.consent),
+          }
+        })
+    } catch {
+      // Gracefully continue
+    }
+  }
+
+  let defaultBookingProductId: number | null = null
+  if (needsBookingProduct) {
+    defaultBookingProductId = await resolveDefaultBookingProductId(payload)
   }
 
   // Phase 3: Attach _resolved to each block (including blocks inside Columns slots)
@@ -590,7 +781,10 @@ export async function resolveServerData(
       const resolvedList = ids
         .map((id) => productMap.get(String(id)))
         .filter((p): p is PublicProduct => Boolean(p && p.type === 'package'))
-      item.props._resolved = { packages: resolvedList }
+      item.props._resolved = {
+        packages: resolvedList,
+        bookingProductId: defaultBookingProductId,
+      }
     } else if (item.type === 'PackageCards') {
       const pkgs = item.props.packages as
         Array<{ packageId?: string | number; productId?: string | number }> | undefined
@@ -627,6 +821,7 @@ export async function resolveServerData(
       item.props._resolved = {
         packages: resolvedList,
         buttonUrl: resolvedButtonUrl,
+        bookingProductId: defaultBookingProductId,
       }
     } else if (item.type === 'SolutionEcosystem') {
       const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
@@ -667,6 +862,18 @@ export async function resolveServerData(
         services: resolvedServices,
         programs: resolvedPrograms,
       }
+    } else if (item.type === 'ServiceCards') {
+      const list = item.props.services as Array<{ serviceId?: string | number }> | undefined
+      const resolvedList: PublicServiceSummary[] = []
+      if (Array.isArray(list)) {
+        for (const s of list) {
+          if (s?.serviceId) {
+            const srv = serviceMap.get(String(s.serviceId))
+            if (srv) resolvedList.push(srv)
+          }
+        }
+      }
+      item.props._resolved = { services: resolvedList }
     } else if (item.type === 'TestimonialGrid') {
       const mode = item.props.mode || 'manual'
       if (mode === 'recent') {
@@ -729,11 +936,41 @@ export async function resolveServerData(
         .filter(Boolean) as PublicTestimonial[]
       item.props._resolved = { testimonials: resolvedList }
     } else if (item.type === 'LogoStrip') {
+      const groups = item.props.groups as
+        | Array<{
+            label?: string
+            logos?: Array<{
+              mediaId?: string | number
+              alt?: string
+              link?: string
+              imageUrl?: string
+            }>
+          }>
+        | undefined
       const logos = item.props.logos as
         | Array<{ mediaId?: string | number; alt?: string; link?: string; imageUrl?: string }>
         | undefined
+
+      let resolvedGroups: typeof groups = undefined
+      if (Array.isArray(groups)) {
+        resolvedGroups = groups.map((grp) => {
+          if (!Array.isArray(grp?.logos)) return { ...grp, logos: [] }
+          const resLogos = grp.logos.map((l) => {
+            const mid = l?.mediaId ? String(l.mediaId) : ''
+            const found = mid ? logoMediaMap.get(mid) : undefined
+            return {
+              ...l,
+              imageUrl: found?.url || l.imageUrl || '',
+              alt: l.alt || found?.alt || '',
+            }
+          })
+          return { ...grp, logos: resLogos }
+        })
+      }
+
+      let resolvedLogos: typeof logos = undefined
       if (Array.isArray(logos)) {
-        const resolvedLogos = logos.map((l) => {
+        resolvedLogos = logos.map((l) => {
           const mid = l?.mediaId ? String(l.mediaId) : ''
           const found = mid ? logoMediaMap.get(mid) : undefined
           return {
@@ -742,14 +979,30 @@ export async function resolveServerData(
             alt: l.alt || found?.alt || '',
           }
         })
-        item.props._resolved = { logos: resolvedLogos }
+      }
+
+      item.props._resolved = {
+        ...(resolvedGroups ? { groups: resolvedGroups } : {}),
+        ...(resolvedLogos ? { logos: resolvedLogos } : {}),
       }
     } else if (item.type === 'CTAButton') {
       const pId = item.props.pageId ? String(item.props.pageId) : ''
       item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+    } else if (item.type === 'TwoPathCards') {
+      const p1 = item.props.path1PageId ? String(item.props.path1PageId) : ''
+      const p2 = item.props.path2PageId ? String(item.props.path2PageId) : ''
+      item.props._resolved = {
+        path1PageSlug: p1 ? pageMap.get(p1) || null : null,
+        path2PageSlug: p2 ? pageMap.get(p2) || null : null,
+      }
+    } else if (item.type === 'TeamGrid') {
+      item.props._resolved = { members: resolvedTeamMembers }
     } else if (item.type === 'Callout') {
       const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
-      item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+      item.props._resolved = {
+        pageSlug: pId ? pageMap.get(pId) || null : null,
+        bookingProductId: defaultBookingProductId,
+      }
     } else if (item.type === 'CTASection') {
       const list = item.props.testimonials as Array<{ testimonialId?: string | number }> | undefined
       const ids: Array<string | number> = []
@@ -780,6 +1033,7 @@ export async function resolveServerData(
       item.props._resolved = {
         testimonials: resolvedList,
         buttonUrl: resolvedButtonUrl,
+        bookingProductId: defaultBookingProductId,
       }
     } else if (item.type === 'LeadForm') {
       const rId = item.props.resourceProductId ? String(item.props.resourceProductId) : ''
@@ -865,6 +1119,101 @@ export async function resolveServerData(
     } else if (item.type === 'FAQ') {
       item.props._resolved = {
         email: item.props.showEmail ? siteContactEmail : null,
+        bookingProductId: item.props.aside === 'booking' ? defaultBookingProductId : null,
+      }
+    } else if (item.type === 'HanaStory') {
+      item.props._resolved = {
+        founderSignatureUrl,
+        founderSignatureAlt,
+      }
+    } else if (item.type === 'LeadMagnetCarousel') {
+      const mode = item.props.mode || 'auto'
+      if (mode === 'manual') {
+        const manuals = item.props.manualProducts as
+          Array<{ productId?: string | number }> | undefined
+        const ids: Array<string | number> = []
+        if (Array.isArray(manuals)) {
+          for (const m of manuals) {
+            if (m?.productId) ids.push(m.productId)
+          }
+        }
+        if (ids.length === 0) {
+          item.props._resolved = { items: [] }
+        } else {
+          const numericOrStrIds = ids.map((id) => (isNaN(Number(id)) ? id : Number(id)))
+          try {
+            const docs = await payload.find({
+              collection: 'products',
+              where: {
+                and: [
+                  { id: { in: numericOrStrIds } },
+                  { _status: { equals: 'published' } },
+                  { saleStatus: { equals: 'free' } },
+                ],
+              },
+              overrideAccess: true,
+              depth: 1,
+              limit: 12,
+            })
+            const eligible = (docs.docs || []).filter(
+              (doc) =>
+                Array.isArray(doc.files) && doc.files.length > 0 && doc.saleStatus === 'free',
+            )
+            const docMap = new Map(eligible.map((d) => [String(d.id), d]))
+            const ordered = ids
+              .map((id) => docMap.get(String(id)))
+              .filter(Boolean)
+              .slice(0, 12)
+              .map((doc) => {
+                const img = doc!.coverImage as { url?: string; alt?: string } | undefined
+                return {
+                  id: doc!.id,
+                  name: doc!.name,
+                  slug: doc!.slug,
+                  shortDescription: doc!.shortDescription || null,
+                  topic: doc!.topic || null,
+                  coverImage: img?.url ? { url: img.url, alt: img.alt || doc!.name } : null,
+                }
+              })
+            item.props._resolved = { items: ordered }
+          } catch {
+            item.props._resolved = { items: [] }
+          }
+        }
+      } else {
+        // mode === 'auto'
+        try {
+          const docs = await payload.find({
+            collection: 'products',
+            where: {
+              and: [{ _status: { equals: 'published' } }, { saleStatus: { equals: 'free' } }],
+            },
+            overrideAccess: true,
+            sort: 'order',
+            depth: 1,
+            limit: 24,
+          })
+          const eligible = (docs.docs || [])
+            .filter(
+              (doc) =>
+                Array.isArray(doc.files) && doc.files.length > 0 && doc.saleStatus === 'free',
+            )
+            .slice(0, 12)
+            .map((doc) => {
+              const img = doc.coverImage as { url?: string; alt?: string } | undefined
+              return {
+                id: doc.id,
+                name: doc.name,
+                slug: doc.slug,
+                shortDescription: doc.shortDescription || null,
+                topic: doc.topic || null,
+                coverImage: img?.url ? { url: img.url, alt: img.alt || doc.name } : null,
+              }
+            })
+          item.props._resolved = { items: eligible }
+        } catch {
+          item.props._resolved = { items: [] }
+        }
       }
     }
 
