@@ -169,7 +169,7 @@ describe('sample seed', () => {
     await seed(payload)
     expect(await counts()).toEqual(first)
     expect(first).toMatchObject({
-      pages: 7, // 5 trang T1-16 + lien-he, cong-dong (SM-02)
+      pages: 8, // 5 trang T1-16 + lien-he, cong-dong (SM-02) + tai-nguyen (SM-05)
       lessons: 20,
       diagnosticQuestions: 16,
       techniques: 11,
