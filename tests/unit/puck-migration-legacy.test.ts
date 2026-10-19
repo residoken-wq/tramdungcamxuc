@@ -215,7 +215,27 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
     ])
 
     const journey = migrated.content.find((item) => item.props.id === 'journey-1')
-    expect(journey?.props).toEqual(legacyPageData.content[3].props)
+    expect(journey?.props).toMatchObject({
+      seriesLabel: '5 Bước',
+      titleLine1: 'HÀNH TRÌNH',
+      titleLine2: 'CHUYỂN HÓA',
+      emotionLine: 'Từng bước thấu hiểu bản thân',
+      step1Description: 'Bước 1 mô tả',
+      step2Description: 'Bước 2 mô tả',
+      step3Description: 'Bước 3 mô tả',
+      step4Description: 'Bước 4 mô tả',
+      step5Description: 'Bước 5 mô tả',
+      bgColor: 'warm-ivory',
+      padding: 'md',
+      version: 2,
+      variant: 'circles',
+      highlightStep: 0,
+      step1Subtitle: '',
+      step2Subtitle: '',
+      step3Subtitle: '',
+      step4Subtitle: '',
+      step5Subtitle: '',
+    })
 
     const faq = migrated.content.find((item) => item.props.id === 'faq-1')
     expect(faq?.props).toMatchObject({

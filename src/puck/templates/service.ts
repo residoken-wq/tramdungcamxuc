@@ -58,11 +58,18 @@ export const serviceTemplate: Data = {
       type: 'JourneySteps',
       props: {
         id: 'service-journey',
-        version: 1,
+        version: 2,
+        variant: 'circles',
+        highlightStep: 0,
         seriesLabel: '[MẪU] Tiến trình đồng hành',
         titleLine1: '[MẪU] 5 BƯỚC',
         titleLine2: '[MẪU] CHUYỂN HÓA NỘI TÂM',
         emotionLine: '[MẪU] Từng bước đi qua sự thấu cảm để tái tạo năng lượng sống.',
+        step1Subtitle: '',
+        step2Subtitle: '',
+        step3Subtitle: '',
+        step4Subtitle: '',
+        step5Subtitle: '',
         step1Description:
           '[MẪU] Dừng lại quan sát và nhận diện trạng thái cảm xúc hiện tại mà không vội phán xét.',
         step2Description:
