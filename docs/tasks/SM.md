@@ -93,7 +93,7 @@ Tiêu chí nghiệm thu: như SM-03.
 - `NewsletterForm`: lưu `leads` (`need = resource`, tag `newsletter`, consent + `consentAt`), honeypot + rate limit + Turnstile, Zod. Không gửi bản tin (BACKLOG).
 - Trạng thái rỗng / đang tải / lỗi cho cả carousel và danh sách bài.
 
-## SM-06 – Trang Liên hệ + FAQ dùng chung (sau SM-01) – ước lượng 6–8 h
+## SM-06 – Trang Liên hệ + FAQ dùng chung (PC nhà, sau SM-01 + SM-05) – ước lượng 6–8 h – prompt `prompts/SM-06.md`
 
 - `ContactInfo`: đọc `siteSettings` (email, hotline/Zalo, địa điểm, LinkedIn, Facebook, YouTube); mục trống thì ẩn.
 - `ContactForms`: 2 kiểu (tab trên trang chủ, 2 cột trên Liên hệ). B2C: họ tên, email, SĐT, dịch vụ quan tâm (từ `services`), trăn trở. B2B: dùng lại `B2BBriefForm` + vai trò, chương trình quan tâm (từ `programs`). Email xác nhận cho khách + thông báo cho Hana (hạ tầng T1-06).

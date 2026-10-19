@@ -228,7 +228,7 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 | SM-03 | Khối Puck đợt A (trang chủ + lộ trình)               | SM-02 merge         | Laptop   | ✅ Merge 19/10 – PR #159; còn chờ IT xem A2 ([review](reviews/SM-03.md)); lỗi C1 (nút "Chọn gói này" → 404) chuyển SM-04b |
 | SM-04 | Khối Puck đợt B (Về Trạm + Coach 1:1)                | SM-01, SM-03 merge  | Laptop   | ✅ Merge 19/10 – PR #162; còn chờ IT duyệt `REVIEW-REQUIRED (SM-04)` ([review](reviews/SM-04.md))                         |
 | SM-05 | Trang Tài nguyên + newsletter                        | SM-02, SM-04 merge  | PC nhà   | ĐẠT 19/10 sau SM-05c ([review](reviews/SM-05.md)); Planning mở PR (PC nhà không chạy được `gh`)                           |
-| SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01               | –        | –                                                                                                                         |
+| SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01, SM-05 merge  | PC nhà   | Giao PC nhà 19/10 – `prompts/SM-06.md` (mockup tr. 47–51 anh Nhân gửi kèm; PC nhà chưa có `gh` → Planning mở PR)          |
 | SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | –        | –                                                                                                                         |
 | SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Planning | –                                                                                                                         |
 
@@ -243,3 +243,4 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 - [ ] `.env.example` cập nhật nếu thêm biến
 - [ ] Chỗ nhạy cảm có `// REVIEW-REQUIRED:` và IT đã duyệt
 - [ ] Không file nào ngoài phạm vi task bị sửa mà không giải thích
+- [ ] Task đổi chữ / nhãn / đường dẫn giao diện: grep chữ **cũ** trong `tests/e2e/` → sửa test cùng task; chạy local các file e2e chạm vào trang đó trước khi đẩy CI (bài học SM-04: 1 nhãn đổi tên làm CI chạy 2 giờ)

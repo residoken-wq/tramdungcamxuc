@@ -16,8 +16,11 @@ export default defineConfig({
   testDir: './tests/e2e',
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  /* Retry on CI only – once: a real failure repeated twice more only cost time. */
+  retries: process.env.CI ? 1 : 0,
+  /* Stop CI early: after a few failures later tests usually fail in cascade
+     (e.g. a test aborted mid-way leaves its first admin user behind). */
+  maxFailures: process.env.CI ? 3 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -29,6 +32,11 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Fail a missing element in seconds instead of waiting for the whole test timeout
+       (3–4 min). Assertions keep their own `expect` timeout. */
+    actionTimeout: 30_000,
+    navigationTimeout: 60_000,
   },
   projects: [
     {
