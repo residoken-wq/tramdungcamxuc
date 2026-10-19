@@ -18,7 +18,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       const blockConfig = puckConfig.components[blockKey]
       expect(blockConfig).toBeDefined()
       expect(blockConfig.defaultProps).toBeDefined()
-      const v3Blocks = ['PackageComparison']
+      const v3Blocks = ['PackageComparison', 'HanaStory']
       const v2Blocks = [
         'CTAButton',
         'QuoteBlock',
@@ -28,7 +28,6 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'FAQ',
         'TestimonialGrid',
         'JourneySteps',
-        'HanaStory',
         'ImageText',
         'LogoStrip',
       ]

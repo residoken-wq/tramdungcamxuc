@@ -316,7 +316,11 @@ export function JourneySteps({
                   </div>
 
                   {/* Step Name */}
-                  <h3 className={`font-ui text-lg font-bold mb-1 ${nameColor}`}>{step.name}</h3>
+                  <h3
+                    className={`font-ui text-lg font-bold ${subtitles[idx] ? 'mb-1' : 'mb-2'} ${nameColor}`}
+                  >
+                    {step.name}
+                  </h3>
 
                   {/* Optional Subtitle */}
                   {subtitles[idx] && (
