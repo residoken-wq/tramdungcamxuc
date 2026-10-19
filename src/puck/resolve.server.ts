@@ -287,6 +287,14 @@ export async function resolveServerData(
     ) {
       pageIdsToFetch.add(item.props.buttonPageId as string | number)
     }
+    if (item.type === 'TwoPathCards') {
+      if (item.props.path1LinkType === 'page' && item.props.path1PageId) {
+        pageIdsToFetch.add(item.props.path1PageId as string | number)
+      }
+      if (item.props.path2LinkType === 'page' && item.props.path2PageId) {
+        pageIdsToFetch.add(item.props.path2PageId as string | number)
+      }
+    }
 
     // Collect product IDs for conversion blocks
     if (item.type === 'LeadForm' && item.props.resourceProductId) {
@@ -847,6 +855,13 @@ export async function resolveServerData(
     } else if (item.type === 'CTAButton') {
       const pId = item.props.pageId ? String(item.props.pageId) : ''
       item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+    } else if (item.type === 'TwoPathCards') {
+      const p1 = item.props.path1PageId ? String(item.props.path1PageId) : ''
+      const p2 = item.props.path2PageId ? String(item.props.path2PageId) : ''
+      item.props._resolved = {
+        path1PageSlug: p1 ? pageMap.get(p1) || null : null,
+        path2PageSlug: p2 ? pageMap.get(p2) || null : null,
+      }
     } else if (item.type === 'Callout') {
       const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
       item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
