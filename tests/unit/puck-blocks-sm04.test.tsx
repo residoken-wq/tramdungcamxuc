@@ -406,7 +406,12 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
       ] as const
 
       for (const blockName of sm04BlockNames) {
-        const componentConfig = (puckConfig.components as Record<string, any>)[blockName]
+        const componentConfig = (
+          puckConfig.components as Record<
+            string,
+            { defaultProps: Record<string, unknown>; render: (props: unknown) => React.ReactNode }
+          >
+        )[blockName]
         expect(componentConfig, `Block ${blockName} must be registered in puckConfig`).toBeDefined()
         const rendered = componentConfig.render({
           ...componentConfig.defaultProps,
