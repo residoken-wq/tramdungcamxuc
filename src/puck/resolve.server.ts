@@ -11,6 +11,7 @@ import type {
 } from '@/components/site/SolutionEcosystem'
 import type { PublicTeamMember } from '@/puck/client-preview'
 import type { Service, Program } from '@/payload-types'
+import type { PublicContactInfo } from '@/components/site/ContactInfo'
 
 import { walkPuckItems } from './walk'
 
@@ -399,7 +400,8 @@ export async function resolveServerData(
       item.type === 'ShopeeButton' ||
       item.type === 'ZaloButton' ||
       (item.type === 'FAQ' && item.props.aside === 'booking') ||
-      item.type === 'HanaStory'
+      item.type === 'HanaStory' ||
+      item.type === 'ContactInfo'
     ) {
       needsSiteSettings = true
     }
@@ -640,6 +642,15 @@ export async function resolveServerData(
   let siteContactEmail: string | null = null
   let founderSignatureUrl: string | null = null
   let founderSignatureAlt: string | null = null
+  let publicContactInfo: PublicContactInfo = {
+    email: null,
+    hotline: null,
+    officeAddress: null,
+    linkedInUrl: null,
+    facebookUrl: null,
+    youtubeUrl: null,
+    zaloChatUrl: null,
+  }
 
   if (needsSiteSettings) {
     try {
@@ -656,6 +667,37 @@ export async function resolveServerData(
       if (rawSig && typeof rawSig === 'object' && 'url' in rawSig) {
         founderSignatureUrl = (rawSig as { url?: string }).url || null
         founderSignatureAlt = (rawSig as { alt?: string }).alt || null
+      }
+      const rawDoc = siteDoc as unknown as Record<string, unknown>
+      publicContactInfo = {
+        email:
+          typeof rawDoc?.email === 'string' && rawDoc.email.trim()
+            ? rawDoc.email.trim()
+            : null,
+        hotline:
+          typeof rawDoc?.hotline === 'string' && rawDoc.hotline.trim()
+            ? rawDoc.hotline.trim()
+            : null,
+        officeAddress:
+          typeof rawDoc?.officeAddress === 'string' && rawDoc.officeAddress.trim()
+            ? rawDoc.officeAddress.trim()
+            : null,
+        linkedInUrl:
+          typeof rawDoc?.linkedInUrl === 'string' && rawDoc.linkedInUrl.trim()
+            ? rawDoc.linkedInUrl.trim()
+            : null,
+        facebookUrl:
+          typeof rawDoc?.facebookUrl === 'string' && rawDoc.facebookUrl.trim()
+            ? rawDoc.facebookUrl.trim()
+            : null,
+        youtubeUrl:
+          typeof rawDoc?.youtubeUrl === 'string' && rawDoc.youtubeUrl.trim()
+            ? rawDoc.youtubeUrl.trim()
+            : null,
+        zaloChatUrl:
+          typeof rawDoc?.zaloChatUrl === 'string' && rawDoc.zaloChatUrl.trim()
+            ? rawDoc.zaloChatUrl.trim()
+            : null,
       }
     } catch {
       // Gracefully continue
@@ -1125,6 +1167,10 @@ export async function resolveServerData(
       item.props._resolved = {
         founderSignatureUrl,
         founderSignatureAlt,
+      }
+    } else if (item.type === 'ContactInfo') {
+      item.props._resolved = {
+        contact: publicContactInfo,
       }
     } else if (item.type === 'LeadMagnetCarousel') {
       const mode = item.props.mode || 'auto'
