@@ -147,3 +147,23 @@ export async function submitDiagnosticAction(
     return handleActionError(err)
   }
 }
+
+export async function submitNewsletterAction(
+  data: Record<string, unknown>,
+  extra?: { utm?: string },
+): Promise<ActionResponse> {
+  try {
+    const ctx = await getClientContext()
+    const { submitNewsletter } = await import('./submit.server')
+    const res: SubmissionResult = await submitNewsletter(data, {
+      ...ctx,
+      utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
+    })
+    return {
+      success: res.success,
+      message: res.message,
+    }
+  } catch (err) {
+    return handleActionError(err)
+  }
+}

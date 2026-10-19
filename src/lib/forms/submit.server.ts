@@ -6,10 +6,12 @@ import {
   b2bBriefSchema,
   coachingFormSchema,
   leadFormSchema,
+  newsletterSchema,
   resourceRequestSchema,
   type B2BBriefInput,
   type CoachingFormInput,
   type LeadFormInput,
+  type NewsletterInput,
   type ResourceRequestInput,
 } from './schemas'
 import { checkAndRecordRateLimit } from './ratelimit.server'
@@ -484,5 +486,100 @@ export async function submitResourceRequest(
     success: true,
     id: lead.id,
     message: vi.forms.success.resource,
+  }
+}
+
+/**
+ * Handles Newsletter signup (SM-05).
+ * Order of checks: honeypot -> Zod -> Turnstile -> rate limit -> deduplication check -> create lead.
+ */
+export async function submitNewsletter(
+  input: NewsletterInput | Record<string, unknown>,
+  ctx: SubmissionContext = {},
+  options: SubmissionOptions = {},
+): Promise<SubmissionResult> {
+  // 1. Honeypot check (raw check)
+  if (typeof input === 'object' && input !== null && 'honeypot' in input) {
+    const rawHp = String(input.honeypot || '').trim()
+    if (rawHp.length > 0) {
+      return {
+        success: true,
+        message: vi.sm05.newsletter.successMessage,
+        fake: true,
+      }
+    }
+  }
+
+  // 2. Zod validation
+  const validated = newsletterSchema.parse(input)
+
+  if (validated.honeypot && validated.honeypot.trim().length > 0) {
+    return {
+      success: true,
+      message: vi.sm05.newsletter.successMessage,
+      fake: true,
+    }
+  }
+
+  // 3. Turnstile verification
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
+
+  // 4. Rate limiting check & record
+  const payload = await resolvePayload(options.payload)
+  await checkAndRecordRateLimit(payload, {
+    form: 'newsletter',
+    ip: ctx.ip,
+    email: validated.email,
+  })
+
+  const normalizedEmail = validated.email.toLowerCase().trim()
+
+  // 5. Anti-deduplication check:
+  // If a lead with this email already has the 'newsletter' interest tag,
+  // return the same success message without creating a duplicate record.
+  const existingLeads = await payload.find({
+    collection: 'leads',
+    where: {
+      and: [
+        { email: { equals: normalizedEmail } },
+        { 'interestTags.text': { equals: 'newsletter' } },
+      ],
+    },
+    limit: 1,
+    overrideAccess: true,
+  })
+
+  if (existingLeads.docs.length > 0) {
+    return {
+      success: true,
+      id: existingLeads.docs[0].id,
+      message: vi.sm05.newsletter.successMessage,
+    }
+  }
+
+  // 6. REVIEW-REQUIRED: Personal data (NĐ 13/2023). Public forms create leads through server code with overrideAccess after server validation.
+  const lead = await payload.create({
+    collection: 'leads',
+    data: {
+      name: validated.name || undefined,
+      email: normalizedEmail,
+      need: 'resource',
+      interestTags: [{ text: 'newsletter' }],
+      consent: true,
+      consentAt: new Date().toISOString(),
+      source: {
+        form: 'newsletter',
+        page: ctx.page || validated.pageSlug || undefined,
+        utm: ctx.utm || undefined,
+      },
+      followUpStatus: 'new',
+    },
+    overrideAccess: true,
+  })
+
+  return {
+    success: true,
+    id: lead.id,
+    message: vi.sm05.newsletter.successMessage,
   }
 }
