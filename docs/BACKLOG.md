@@ -56,3 +56,6 @@
 - [x] T2-07: chống cấp 2 chứng nhận cho 1 kế hoạch đang dựa vào khóa trong bộ nhớ (`withCertLock`, một tiến trình). Khi có migration tiếp theo → thêm unique cho `certificates.plan` (xong T2-16).
 - [x] T2-16: `trialUsage.product` NOT NULL nhưng khóa ngoại `ON DELETE SET NULL` → xóa hẳn một sản phẩm đã có dấu vết dùng thử sẽ lỗi. Khi có migration tiếp theo: đổi sang `CASCADE` (hoặc cho phép null) (xong T2-20, cho phép null).
 - [x] T2-16: đổi `PAYLOAD_SECRET` làm mọi `trialUsage.emailHash` cũ mất tác dụng (khách đã xóa có thể dùng thử lại) – ghi vào RUNBOOK khi có quy trình xoay khóa (ghi vào RUNBOOK, xong T2-21).
+
+- (SM-04 review 19/10) Editor Puck: nút đặt phiên / "Chọn gói này" luôn hiện ghi chú "Chưa có sản phẩm phiên trải nghiệm đang bán" vì editor không có `_resolved.bookingProductId` – thêm hook client hoặc đổi ghi chú (SM-07).
+- (SM-04 review 19/10) `/styleguide`: thêm ví dụ `HanaStory` kiểu `letter` có `greeting` + `signatureName`.
