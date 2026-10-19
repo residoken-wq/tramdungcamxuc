@@ -48,14 +48,8 @@ import { VisionMissionBlock, type VisionMissionProps } from './blocks/VisionMiss
 import { ServiceCardsBlock, type ServiceCardsProps } from './blocks/ServiceCards'
 import { TwoPathCardsBlock, type TwoPathCardsProps } from './blocks/TwoPathCards'
 import { TeamGridBlock, type TeamGridProps } from './blocks/TeamGrid'
-import {
-  LeadMagnetCarouselBlock,
-  type LeadMagnetCarouselProps,
-} from './blocks/LeadMagnetCarousel'
-import {
-  NewsletterFormBlock,
-  type NewsletterFormProps,
-} from './blocks/NewsletterForm'
+import { LeadMagnetCarouselBlock, type LeadMagnetCarouselProps } from './blocks/LeadMagnetCarousel'
+import { NewsletterFormBlock, type NewsletterFormProps } from './blocks/NewsletterForm'
 
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
 import { getLockedComponentPermissions } from './locks'
