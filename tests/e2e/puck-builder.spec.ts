@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { test, expect, type Response } from '@playwright/test'
+import { test, expect, type Response } from './fixtures'
 
 test.describe('T0-09: Puck publication lifecycle', () => {
   test('(a) redirects anonymous visitors to login with the editor return URL', async ({ page }) => {

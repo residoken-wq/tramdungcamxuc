@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { test, expect, type Response } from '@playwright/test'
+import { test, expect, type Response } from './fixtures'
 
 test.describe('T1-01: Puck Columns & QuoteBlock publication across viewports', () => {
   test('drags Columns, drops QuoteBlock into column, publishes, and verifies on public page at 375 and 1440', async ({

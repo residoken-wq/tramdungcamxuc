@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 
 /**
  * End-to-End Test cho Lịch workshop của tôi trong /tai-khoan (T2-10).

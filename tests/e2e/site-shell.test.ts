@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type APIRequestContext, type Page, type Response } from '@playwright/test'
+import { expect, test, type APIRequestContext, type Page, type Response } from './fixtures'
 
 // The spec builds its own data (menu, legal page, Zalo chat) so it runs on an empty CI database,
 // then restores the globals it touched.

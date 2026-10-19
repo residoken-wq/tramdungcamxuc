@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 // SM-02: navbar submenus (styleguide demo data, no DB needed) and legacy path redirects.
 

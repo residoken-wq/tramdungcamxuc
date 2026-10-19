@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { test, expect, type Response } from '@playwright/test'
+import { test, expect, type Response } from './fixtures'
 
 test.describe('T1-02b: Puck Trust Blocks – TestimonialGrid publication & consent privacy', () => {
   test('creates 2 testimonials (1 consented, 1 unconsented), creates page with TestimonialGrid referencing both, publishes page, and verifies only consented testimonial appears in HTML and UI', async ({

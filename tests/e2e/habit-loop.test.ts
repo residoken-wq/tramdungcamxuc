@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 
 /**
  * E2E tests cho Habit Loop 5 phút (/habit/5-phut) và Trang Offer (/habit/1-percent-better) (T2-03).

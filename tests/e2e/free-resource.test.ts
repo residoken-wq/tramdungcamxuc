@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 import { signDownloadToken } from '../../src/lib/downloads/token'
 
 // Builds its own data (admin, private PDF, free product) so it runs on an empty CI database.

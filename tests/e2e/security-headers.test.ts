@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 test.describe('Security Headers and SEO End-to-End Tests', () => {
   test('trang chủ / trả về các security headers mong muốn', async ({ request }) => {

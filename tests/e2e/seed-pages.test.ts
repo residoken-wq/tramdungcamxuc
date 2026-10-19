@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 // E2E Test for 5 seed pages created from real Puck blocks (T1-16).
 // Assumes seed data has been populated (pnpm seed).
