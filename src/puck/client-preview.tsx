@@ -78,6 +78,9 @@ export function clearClientPreviewCache() {
 
   siteSettingsCache = null
   inFlightSiteSettings = null
+
+  teamMembersCache = null
+  inFlightTeamMembers = null
 }
 
 /**
@@ -880,5 +883,102 @@ export function useClientPrograms(options: {
   return {
     programs: current,
     loading: !multiProgramsCache.has(queryKey) && state?.key !== queryKey,
+  }
+}
+
+export interface PublicTeamMember {
+  id: string | number
+  name: string
+  role?: string | null
+  specialty?: string | null
+  bio?: string | null
+  photoUrl?: string | null
+  photoAlt?: string | null
+  order?: number | null
+  consent?: boolean | null
+}
+
+let teamMembersCache: PublicTeamMember[] | null = null
+let inFlightTeamMembers: Promise<PublicTeamMember[]> | null = null
+
+export function useClientTeamMembers(options?: { initialMembers?: PublicTeamMember[] }): {
+  members: PublicTeamMember[]
+  loading: boolean
+} {
+  const initialMembers = options?.initialMembers
+  const isResolved = initialMembers !== undefined
+
+  const [members, setMembers] = useState<PublicTeamMember[] | null>(() => {
+    if (isResolved) return initialMembers ?? []
+    return teamMembersCache
+  })
+
+  useEffect(() => {
+    if (isResolved) return
+    if (teamMembersCache !== null) return
+
+    let isMounted = true
+    const controller = new AbortController()
+
+    let inFlight = inFlightTeamMembers
+    if (!inFlight) {
+      inFlight = fetch(
+        '/api/teamMembers?limit=100&depth=1&where[_status][equals]=published&where[consent][equals]=true&sort=order',
+        {
+          credentials: 'include',
+          signal: controller.signal,
+        },
+      )
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const list = (data?.docs || [])
+            .filter((doc: Record<string, unknown>) => doc.consent === true)
+            .map((doc: Record<string, unknown>) => {
+              const p = doc.photo as { url?: string; alt?: string } | undefined
+              return {
+                id: doc.id as string | number,
+                name: doc.name as string,
+                role: (doc.role as string) || null,
+                specialty: (doc.specialty as string) || null,
+                bio: (doc.bio as string) || null,
+                photoUrl: p?.url || null,
+                photoAlt: p?.alt || null,
+                order: (doc.order as number) ?? 0,
+                consent: Boolean(doc.consent),
+              }
+            })
+          teamMembersCache = list
+          return list
+        })
+        .catch(() => {
+          teamMembersCache = []
+          return []
+        })
+        .finally(() => {
+          inFlightTeamMembers = null
+        })
+      inFlightTeamMembers = inFlight
+    }
+
+    inFlight.then((data) => {
+      if (isMounted) {
+        setMembers(data)
+      }
+    })
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [isResolved])
+
+  if (isResolved) {
+    return { members: initialMembers ?? [], loading: false }
+  }
+
+  const current = members || teamMembersCache || []
+  return {
+    members: current,
+    loading: teamMembersCache === null && members === null,
   }
 }

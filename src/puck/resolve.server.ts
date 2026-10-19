@@ -9,6 +9,7 @@ import type {
   PublicServiceSummary,
   PublicProgramSummary,
 } from '@/components/site/SolutionEcosystem'
+import type { PublicTeamMember } from '@/puck/client-preview'
 import type { Service, Program } from '@/payload-types'
 
 import { walkPuckItems } from './walk'
@@ -100,6 +101,7 @@ export async function resolveServerData(
   const serviceIdsToFetch = new Set<string | number>()
   const programIdsToFetch = new Set<string | number>()
   let needsSiteSettings = false
+  let needsTeamMembers = false
   let hasSetHeroPriority = false
 
   await walkPuckItems(resolvedData, async (item) => {
@@ -316,6 +318,10 @@ export async function resolveServerData(
       item.type === 'HanaStory'
     ) {
       needsSiteSettings = true
+    }
+
+    if (item.type === 'TeamGrid') {
+      needsTeamMembers = true
     }
   })
 
@@ -567,6 +573,40 @@ export async function resolveServerData(
         founderSignatureUrl = (rawSig as { url?: string }).url || null
         founderSignatureAlt = (rawSig as { alt?: string }).alt || null
       }
+    } catch {
+      // Gracefully continue
+    }
+  }
+
+  let resolvedTeamMembers: PublicTeamMember[] = []
+  if (needsTeamMembers) {
+    try {
+      const docs = await payload.find({
+        collection: 'teamMembers',
+        where: {
+          and: [{ _status: { equals: 'published' } }, { consent: { equals: true } }],
+        },
+        sort: 'order',
+        depth: 1,
+        limit: 100,
+      })
+
+      resolvedTeamMembers = (docs?.docs || [])
+        .filter((doc) => doc.consent === true)
+        .map((doc) => {
+          const p = doc.photo as { url?: string; alt?: string } | undefined
+          return {
+            id: doc.id,
+            name: doc.name,
+            role: doc.role || null,
+            specialty: doc.specialty || null,
+            bio: doc.bio || null,
+            photoUrl: p?.url || null,
+            photoAlt: p?.alt || null,
+            order: doc.order ?? 0,
+            consent: Boolean(doc.consent),
+          }
+        })
     } catch {
       // Gracefully continue
     }
@@ -862,6 +902,8 @@ export async function resolveServerData(
         path1PageSlug: p1 ? pageMap.get(p1) || null : null,
         path2PageSlug: p2 ? pageMap.get(p2) || null : null,
       }
+    } else if (item.type === 'TeamGrid') {
+      item.props._resolved = { members: resolvedTeamMembers }
     } else if (item.type === 'Callout') {
       const pId = item.props.buttonPageId ? String(item.props.buttonPageId) : ''
       item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
