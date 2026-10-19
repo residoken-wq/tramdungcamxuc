@@ -143,7 +143,7 @@ export function ExperienceBookingForm({
           setErrors(res.fieldErrors as ExperienceBookingFormErrors)
         }
       }
-    } catch (err) {
+    } catch (_err) {
       setStatus('error')
       setServerError(vi.payment.errors.serverError)
     }

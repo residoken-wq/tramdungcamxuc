@@ -159,7 +159,6 @@ export function JourneySteps({
               const itemBgClass = isHighlighted
                 ? 'bg-deep-navy text-white border-deep-navy shadow-md'
                 : defaultCardBgClass
-              const numColorClass = isHighlighted ? 'text-soft-pink' : defaultStepNumberColorClass
               const nameColorClass = isHighlighted || isDeepNavy ? 'text-white' : 'text-deep-navy'
               const subnameBadgeClass =
                 isHighlighted || isDeepNavy
