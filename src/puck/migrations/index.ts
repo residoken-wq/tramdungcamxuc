@@ -56,6 +56,13 @@ import { migrateHanaStoryV1ToV2 } from './v2-hana-story'
 import { migrateImageTextV1ToV2 } from './v2-image-text'
 import { migrateLogoStripV1ToV2 } from './v2-logo-strip'
 
+export {
+  migrateJourneyStepsV1ToV2,
+  migrateHanaStoryV1ToV2,
+  migrateImageTextV1ToV2,
+  migrateLogoStripV1ToV2,
+}
+
 export const puckMigrations: PuckMigration[] = [
   migrateCTAButtonV1ToV2,
   migratePackageComparisonV1ToV2,
