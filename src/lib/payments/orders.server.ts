@@ -303,7 +303,12 @@ export async function createExperienceOrder(
         id: validated.interestedServiceId,
         overrideAccess: true,
       })
-      if (srvDoc && srvDoc._status === 'published' && srvDoc.name) {
+      if (
+        srvDoc &&
+        srvDoc._status === 'published' &&
+        srvDoc.saleStatus !== 'hidden' &&
+        srvDoc.name
+      ) {
         notesLines.push(`Lộ trình quan tâm: ${srvDoc.name.trim()}`)
       }
     } catch {
@@ -320,6 +325,7 @@ export async function createExperienceOrder(
             { slug: { equals: validated.interestedPackageSlug } },
             { type: { equals: 'package' } },
             { _status: { equals: 'published' } },
+            { saleStatus: { not_equals: 'hidden' } },
           ],
         },
         overrideAccess: true,
