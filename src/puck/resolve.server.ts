@@ -279,7 +279,8 @@ export async function resolveServerData(
     if (
       item.type === 'ShopeeButton' ||
       item.type === 'ZaloButton' ||
-      (item.type === 'FAQ' && item.props.aside === 'booking')
+      (item.type === 'FAQ' && item.props.aside === 'booking') ||
+      item.type === 'HanaStory'
     ) {
       needsSiteSettings = true
     }
@@ -493,17 +494,24 @@ export async function resolveServerData(
     zaloGroupUrl: null,
   }
   let siteContactEmail: string | null = null
+  let founderSignatureUrl: string | null = null
+  let founderSignatureAlt: string | null = null
 
   if (needsSiteSettings) {
     try {
       const siteDoc = await payload.findGlobal({
         slug: 'siteSettings',
-        depth: 0,
+        depth: 1,
       })
       publicSiteSettings = toPublicSiteSettings(siteDoc)
       const rawEmail = (siteDoc as unknown as Record<string, unknown>)?.email
       if (typeof rawEmail === 'string' && rawEmail.trim().length > 0) {
         siteContactEmail = rawEmail.trim()
+      }
+      const rawSig = (siteDoc as unknown as Record<string, unknown>)?.founderSignature
+      if (rawSig && typeof rawSig === 'object' && 'url' in rawSig) {
+        founderSignatureUrl = (rawSig as { url?: string }).url || null
+        founderSignatureAlt = (rawSig as { alt?: string }).alt || null
       }
     } catch {
       // Gracefully continue
@@ -865,6 +873,11 @@ export async function resolveServerData(
     } else if (item.type === 'FAQ') {
       item.props._resolved = {
         email: item.props.showEmail ? siteContactEmail : null,
+      }
+    } else if (item.type === 'HanaStory') {
+      item.props._resolved = {
+        founderSignatureUrl,
+        founderSignatureAlt,
       }
     }
 
