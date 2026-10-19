@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { test, expect, type Response } from '@playwright/test'
+import { test, expect, type Response } from './fixtures'
 
 test.describe('T1-04: Puck Templates, Versions, Locked Blocks and Autosave', () => {
   test('creates page from campaign template, edits, publishes, restores from history, and verifies locked Hero on homepage', async ({

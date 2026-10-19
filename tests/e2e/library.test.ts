@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 
 // Test E2E Thư viện & Tài nguyên (SM-05, sitemap v2):
 // Bỏ 2 tab cũ, lọc chủ đề, tìm kiếm trên URL, phân trang ?trang=2, link cũ ?tab=khoa-hoc vẫn 200, responsive 375px.

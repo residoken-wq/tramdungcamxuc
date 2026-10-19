@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { test, expect, type Response } from '@playwright/test'
+import { test, expect, type Response } from './fixtures'
 
 test.describe('T1-02a: Puck Sales Blocks – ProductGrid publication & price reactivity', () => {
   test('creates product via REST, drops ProductGrid selecting it, publishes, updates price in admin, verifies updated price on public page, and ensures puckData contains no product name or price', async ({

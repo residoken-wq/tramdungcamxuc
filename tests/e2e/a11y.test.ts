@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { test } from './fixtures'
 import { expectNoSeriousA11y } from './helpers/a11y'
 
 /**

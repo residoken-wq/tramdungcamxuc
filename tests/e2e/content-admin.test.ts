@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Response } from '@playwright/test'
+import { expect, test, type Response } from './fixtures'
 
 test('first administrator sees all six admin groups (CM-01)', async ({ page }, testInfo) => {
   // Bootstrap once: projects share the same database. Mobile is verified below.

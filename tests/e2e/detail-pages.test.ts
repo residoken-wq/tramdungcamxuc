@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 
 // Test E2E Các trang con dữ liệu (T1-10): coaching, doanh nghiệp, blog.
 // Tự tạo dữ liệu độc lập qua REST (admin, service + testimonials consent, program, post),

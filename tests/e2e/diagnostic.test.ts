@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 
 /**
  * E2E tests luồng Quiz chẩn đoán thói quen 5 phút (/habit/chan-doan) (T1-14).

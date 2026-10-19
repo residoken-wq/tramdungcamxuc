@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { test, expect, type Response } from '@playwright/test'
+import { test, expect, type Response } from './fixtures'
 
 test.describe('T1-11: Growth Mirror page – 3 packages comparison & coaching trial booking', () => {
   test('verifies Growth Mirror comparison table, zero package buy buttons, mobile & desktop layouts, and price reactivity', async ({

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 test.describe('Brand Tokens, Styleguide & Homepage Cleanup (T0-03)', () => {
   test('Trang chủ sạch template Payload và có lang="vi"', async ({ page }) => {

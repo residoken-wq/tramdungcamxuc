@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 
 // E2E Test cho luồng Mua công cụ số với xác nhận thủ công (T2-08)
 // 1. Tự tạo admin (bootstrapAdmin), sản phẩm digital_tool, thông tin ngân hàng giả (TAI KHOAN TEST)

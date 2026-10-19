@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { test, expect, type Response } from '@playwright/test'
+import { test, expect, type Response } from './fixtures'
 
 test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & ShopeeButton UTM', () => {
   test('creates product with externalUrl, creates page with B2BBriefForm and ShopeeButton, publishes page, visitor submits brief, verifies lead in REST API, and verifies ShopeeButton UTM params', async ({
