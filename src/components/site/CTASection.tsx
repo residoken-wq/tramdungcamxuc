@@ -5,6 +5,8 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { useClientTestimonials } from '@/puck/client-preview'
+import { getBookingPath, BOOKING_PATH } from '@/lib/products'
+import { vi } from '@/lib/i18n/vi'
 import type { PublicTestimonial } from '@/lib/testimonials'
 
 export interface CTASectionProps {
@@ -21,16 +23,15 @@ export interface CTASectionProps {
   proofText?: string
   testimonials?: Array<{ testimonialId?: string | number }>
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     testimonials?: PublicTestimonial[]
     buttonUrl?: string | null
+    bookingProductId?: number | null
+  }
+  puck?: {
+    isEditing?: boolean
   }
 }
 
@@ -64,17 +65,39 @@ export function CTASection({
   bgColor = 'soft-pink',
   padding = 'lg',
   _resolved,
+  puck,
 }: CTASectionProps) {
+  const isEditing = puck?.isEditing ?? false
+  const bookingProductId = _resolved?.bookingProductId ?? null
+
   let resolvedButtonHref: string | null = null
   if (buttonLinkType === 'page') {
     resolvedButtonHref = _resolved?.buttonUrl || null
   } else {
     resolvedButtonHref = _resolved?.buttonUrl || buttonLink || null
   }
-  const buttonSafeHref = resolvedButtonHref ? safeHref(resolvedButtonHref) : null
 
-  const resolvedIds = (testimonials?.map((m) => m?.testimonialId).filter(Boolean) ??
-    []) as Array<string | number>
+  const isBookingLink =
+    resolvedButtonHref?.trim() === BOOKING_PATH ||
+    resolvedButtonHref?.trim() === '/dat-phien-trai-nghiem'
+
+  let finalButtonHref: string | null = null
+  let isBookingUnavailable = false
+
+  if (isBookingLink) {
+    if (bookingProductId != null) {
+      finalButtonHref = safeHref(getBookingPath(bookingProductId))
+    } else {
+      isBookingUnavailable = true
+      finalButtonHref = null
+    }
+  } else {
+    finalButtonHref = resolvedButtonHref ? safeHref(resolvedButtonHref) : null
+  }
+
+  const resolvedIds = (testimonials?.map((m) => m?.testimonialId).filter(Boolean) ?? []) as Array<
+    string | number
+  >
 
   const { testimonials: loadedTestimonials } = useClientTestimonials({
     testimonialIds: resolvedIds,
@@ -117,13 +140,28 @@ export function CTASection({
             </p>
           )}
 
-          {buttonSafeHref && buttonText && (
-            <div className="mt-8">
-              <Button href={buttonSafeHref} variant="primary" size="lg">
-                {buttonText}
-              </Button>
-            </div>
-          )}
+          {buttonText &&
+            (finalButtonHref ? (
+              <div className="mt-8">
+                <Button href={finalButtonHref} variant="primary" size="lg">
+                  {buttonText}
+                </Button>
+              </div>
+            ) : isEditing && isBookingUnavailable ? (
+              <div className="mt-8">
+                <Button
+                  href="#"
+                  variant="primary"
+                  size="lg"
+                  className="opacity-60 pointer-events-none"
+                >
+                  {buttonText}
+                </Button>
+                <p className="text-xs text-bright-magenta mt-2 font-ui">
+                  {vi.sm04.noBookingProduct}
+                </p>
+              </div>
+            ) : null)}
 
           {/* Proof Strip (up to 3 photos + 1 line of text) */}
           {showProofStrip && (

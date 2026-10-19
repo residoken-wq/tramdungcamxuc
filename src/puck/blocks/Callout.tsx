@@ -78,5 +78,7 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <Callout {...props} />,
+  render: ({ puck, ...props }) => (
+    <Callout {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

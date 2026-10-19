@@ -9,9 +9,45 @@ export type { HanaStoryProps }
 export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
   label: 'Câu chuyện Hana (Hana Story)',
   fields: {
+    tone: {
+      type: 'select',
+      label: 'Sắc thái giao diện',
+      options: [
+        { label: 'Sáng (Light - Mặc định)', value: 'light' },
+        { label: 'Tối (Dark - Nền xanh thẫm Deep Navy)', value: 'dark' },
+      ],
+    },
+    layout: {
+      type: 'select',
+      label: 'Bố cục',
+      options: [
+        { label: 'Câu chuyện kể (Story - Mặc định)', value: 'story' },
+        { label: 'Thư từ nhà sáng lập (Letter)', value: 'letter' },
+      ],
+    },
+    imagePosition: {
+      type: 'select',
+      label: 'Vị trí ảnh chân dung',
+      options: [
+        { label: 'Bên trái (Mặc định)', value: 'left' },
+        { label: 'Bên phải', value: 'right' },
+      ],
+    },
     seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
     titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
     titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
+    jobTitle: {
+      type: 'text',
+      label: 'Chức danh / Vai trò (tùy chọn)',
+    },
+    greeting: {
+      type: 'text',
+      label: 'Lời chào đầu thư (chỉ áp dụng cho bố cục Thư - Letter)',
+    },
+    signatureName: {
+      type: 'text',
+      label: 'Tên người ký (chữ ký dạng chữ hoặc alt chữ ký)',
+    },
     storyContent: {
       type: 'textarea',
       label: 'Đoạn kể câu chuyện (các đoạn phân tách bằng 2 lần xuống dòng)',
@@ -19,6 +55,15 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     quoteLine: {
       type: 'textarea',
       label: 'Dòng cảm xúc trích dẫn (Playfair Display Italic)',
+    },
+    chips: {
+      type: 'array',
+      label: 'Nhãn giá trị / từ khóa (tối đa 6 từ)',
+      max: 6,
+      arrayFields: {
+        text: { type: 'text', label: 'Từ khóa' },
+      },
+      getItemSummary: (item) => item?.text || 'Từ khóa',
     },
     mediaId: createMediaExternalField({
       label: 'Ảnh chân dung (Thư viện media)',
@@ -38,10 +83,17 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 3,
+    tone: 'light',
+    layout: 'story',
+    imagePosition: 'left',
     seriesLabel: '[MẪU] Về người đồng hành',
     titleLine1: '[MẪU] HÀNH TRÌNH ĐỒNG HÀNH',
     titleLine2: '[MẪU] THẤU CẢM & CHUYỂN HÓA',
+    jobTitle: '',
+    greeting: '',
+    signatureName: '',
+    chips: [],
     storyContent:
       '[MẪU] Đoạn văn bản thứ nhất kể về hành trình và chiêm nghiệm.\n\n[MẪU] Đoạn văn bản thứ hai làm rõ hơn giá trị và sự đồng hành.',
     quoteLine: '[MẪU] Dòng cảm xúc trích dẫn chạm đến trái tim người đọc.',
@@ -54,34 +106,53 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     padding: 'md',
   },
   resolveData: async (data) => {
-    const { mediaId } = data.props
-    if (!mediaId) {
-      return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
-    }
+    let resolvedImageUrl = ''
+    let resolvedImageAlt = ''
+    let resolvedSigUrl: string | null = null
+    let resolvedSigAlt: string | null = null
 
     try {
       if (typeof window !== 'undefined') {
-        const res = await fetch(`/api/media/${encodeURIComponent(mediaId)}`, {
+        if (data.props.mediaId) {
+          const res = await fetch(`/api/media/${encodeURIComponent(data.props.mediaId)}`, {
+            credentials: 'include',
+          })
+          if (res.ok) {
+            const json = await res.json()
+            if (json && json.alt && typeof json.alt === 'string' && json.alt.trim().length > 0) {
+              resolvedImageUrl = json.url || ''
+              resolvedImageAlt = json.alt.trim()
+            }
+          }
+        }
+
+        const siteRes = await fetch('/api/globals/siteSettings?depth=1', {
           credentials: 'include',
         })
-        if (res.ok) {
-          const json = await res.json()
-          if (json && json.alt && typeof json.alt === 'string' && json.alt.trim().length > 0) {
-            return {
-              props: {
-                ...data.props,
-                imageUrl: json.url || '',
-                imageAlt: json.alt.trim(),
-              },
-            }
+        if (siteRes.ok) {
+          const siteJson = await siteRes.json()
+          const sig = siteJson?.founderSignature
+          if (sig && typeof sig === 'object' && sig.url) {
+            resolvedSigUrl = sig.url
+            resolvedSigAlt = sig.alt || data.props.signatureName || ''
           }
         }
       }
     } catch {
-      // If resolution fails, preserve props
+      // ignore
     }
 
-    return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+    return {
+      props: {
+        ...data.props,
+        imageUrl: resolvedImageUrl || data.props.imageUrl || '',
+        imageAlt: resolvedImageAlt || data.props.imageAlt || '',
+        _resolved: {
+          founderSignatureUrl: resolvedSigUrl,
+          founderSignatureAlt: resolvedSigAlt,
+        },
+      },
+    }
   },
   render: ({ puck, ...props }) => (
     <HanaStory {...props} puck={{ isEditing: puck?.isEditing ?? false }} />

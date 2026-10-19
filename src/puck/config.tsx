@@ -43,6 +43,10 @@ import { QuizCTABlock, type QuizCTAProps } from './blocks/QuizCTA'
 import { ShopeeButtonBlock, type ShopeeButtonBlockProps } from './blocks/ShopeeButton'
 import { ZaloButtonBlock, type ZaloButtonBlockProps } from './blocks/ZaloButton'
 import { LibraryPreviewBlock, type LibraryPreviewBlockProps } from './blocks/LibraryPreview'
+import { VisionMissionBlock, type VisionMissionProps } from './blocks/VisionMission'
+import { ServiceCardsBlock, type ServiceCardsProps } from './blocks/ServiceCards'
+import { TwoPathCardsBlock, type TwoPathCardsProps } from './blocks/TwoPathCards'
+import { TeamGridBlock, type TeamGridProps } from './blocks/TeamGrid'
 
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
 import { getLockedComponentPermissions } from './locks'
@@ -57,6 +61,10 @@ export type {
   ShopeeButtonBlockProps,
   ZaloButtonBlockProps,
   LibraryPreviewBlockProps,
+  VisionMissionProps,
+  ServiceCardsProps,
+  TwoPathCardsProps,
+  TeamGridProps,
 }
 
 export type PageComponentsProps = {
@@ -72,6 +80,7 @@ export type PageComponentsProps = {
   IconCardGrid: IconCardGridProps
   Callout: CalloutProps
   JourneySteps: JourneyStepsProps
+  VisionMission: VisionMissionProps
   FAQ: FAQProps
   VideoEmbed: VideoEmbedProps
   // Bố cục
@@ -83,6 +92,7 @@ export type PageComponentsProps = {
   ProductFeature: ProductFeatureProps
   PackageCards: PackageCardsProps
   PackageComparison: PackageComparisonProps
+  ServiceCards: ServiceCardsProps
   SolutionEcosystem: SolutionEcosystemProps
   PriceTag: ProductPriceTagProps
   TrialCTA: TrialCTAProps
@@ -91,9 +101,11 @@ export type PageComponentsProps = {
   TestimonialGrid: TestimonialGridProps
   LogoStrip: LogoStripProps
   HanaStory: HanaStoryProps
+  TeamGrid: TeamGridProps
   // Chuyển đổi
   CTAButton: CTAButtonBlockProps
   CTASection: CTASectionProps
+  TwoPathCards: TwoPathCardsProps
   LeadForm: LeadFormBlockProps
   BookingCTA: BookingCTABlockProps
   B2BBriefForm: B2BBriefFormProps
@@ -119,6 +131,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         'IconCardGrid',
         'Callout',
         'JourneySteps',
+        'VisionMission',
         'FAQ',
         'VideoEmbed',
       ],
@@ -134,6 +147,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         'ProductFeature',
         'PackageCards',
         'PackageComparison',
+        'ServiceCards',
         'SolutionEcosystem',
         'PriceTag',
         'TrialCTA',
@@ -141,13 +155,14 @@ export const puckConfig: Config<PageComponentsProps> = {
     },
     trust: {
       title: 'Niềm tin',
-      components: ['TestimonialSlider', 'TestimonialGrid', 'LogoStrip', 'HanaStory'],
+      components: ['TestimonialSlider', 'TestimonialGrid', 'LogoStrip', 'HanaStory', 'TeamGrid'],
     },
     conversion: {
       title: 'Chuyển đổi',
       components: [
         'CTAButton',
         'CTASection',
+        'TwoPathCards',
         'LeadForm',
         'BookingCTA',
         'B2BBriefForm',
@@ -271,6 +286,10 @@ export const puckConfig: Config<PageComponentsProps> = {
           type: 'textarea',
           label: 'Nội dung văn bản (các đoạn phân tách bằng 2 lần xuống dòng)',
         },
+        quote: {
+          type: 'textarea',
+          label: 'Câu trích dẫn (Playfair Display Italic, tùy chọn)',
+        },
         mediaId: {
           type: 'external',
           label: 'Ảnh minh họa (Thư viện media)',
@@ -313,6 +332,10 @@ export const puckConfig: Config<PageComponentsProps> = {
           }),
           getItemSummary: (id: string) => (id ? `Media ID: ${id}` : 'Chưa chọn ảnh'),
         },
+        imageLabel: {
+          type: 'text',
+          label: 'Nhãn nhỏ góc ảnh (Tùy chọn)',
+        },
         buttonText: { type: 'text', label: 'Chữ trên nút (tùy chọn)' },
         buttonLink: { type: 'text', label: 'Đường dẫn liên kết (tùy chọn)' },
         bgColor: {
@@ -327,16 +350,18 @@ export const puckConfig: Config<PageComponentsProps> = {
         },
       },
       defaultProps: {
-        version: 1,
+        version: 2,
         layout: 'image-left',
         seriesLabel: '[MẪU] Câu chuyện',
         titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
         titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
         content:
           '[MẪU] Nội dung đoạn thứ nhất kể về hành trình và cảm xúc.\n\n[MẪU] Nội dung đoạn thứ hai làm rõ hơn giá trị mang lại.',
+        quote: '',
         mediaId: '',
         imageUrl: '',
         imageAlt: '',
+        imageLabel: '',
         buttonText: '[MẪU] Đọc tiếp câu chuyện',
         buttonLink: '#',
         bgColor: 'warm-ivory',
@@ -412,6 +437,11 @@ export const puckConfig: Config<PageComponentsProps> = {
     TestimonialGrid: TestimonialGridBlock,
     LogoStrip: LogoStripBlock,
     HanaStory: HanaStoryBlock,
+
+    VisionMission: VisionMissionBlock,
+    ServiceCards: ServiceCardsBlock,
+    TwoPathCards: TwoPathCardsBlock,
+    TeamGrid: TeamGridBlock,
   },
 }
 

@@ -293,6 +293,7 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
                 saleStatus: 'on_sale',
               },
             ],
+            bookingProductId: 1,
           }}
         />,
       )

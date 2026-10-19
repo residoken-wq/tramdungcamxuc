@@ -118,6 +118,7 @@ describe('T1-02b: Puck Trust Blocks – Niềm tin', () => {
         'TestimonialGrid',
         'LogoStrip',
         'HanaStory',
+        'TeamGrid',
       ])
     })
 

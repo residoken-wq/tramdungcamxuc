@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { useClientProducts } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
-import type { PublicProduct } from '@/lib/products'
+import { getBookingPath, BOOKING_PATH, type PublicProduct } from '@/lib/products'
 
 export interface PackageCardsProps {
   version?: number
@@ -31,6 +31,7 @@ export interface PackageCardsProps {
     packages?: PublicProduct[]
     buttonUrl?: string | null
     pageSlug?: string | null
+    bookingProductId?: number | null
   }
   puck?: {
     isEditing?: boolean
@@ -100,7 +101,24 @@ export function PackageCards({
   } else {
     targetHref = buttonLink || ''
   }
-  const buttonSafeHref = safeHref(targetHref)
+
+  const bookingProductId = _resolved?.bookingProductId ?? null
+  const isBookingLink =
+    targetHref.trim() === BOOKING_PATH || targetHref.trim() === '/dat-phien-trai-nghiem'
+
+  let finalButtonHref: string | null = null
+  let isBookingUnavailable = false
+
+  if (isBookingLink) {
+    if (bookingProductId != null) {
+      finalButtonHref = safeHref(getBookingPath(bookingProductId))
+    } else {
+      isBookingUnavailable = true
+      finalButtonHref = null
+    }
+  } else {
+    finalButtonHref = safeHref(targetHref)
+  }
 
   // Empty data handling
   if (!loadedPackages || loadedPackages.length === 0) {
@@ -223,13 +241,26 @@ export function PackageCards({
         </div>
 
         {/* Optional Action Button below cards (NO purchase button on individual cards - Q4/M2) */}
-        {buttonSafeHref && buttonText && (
-          <div className="mt-10 sm:mt-12 text-center">
-            <Button href={buttonSafeHref} variant="primary" size="md">
-              {buttonText}
-            </Button>
-          </div>
-        )}
+        {buttonText &&
+          (finalButtonHref ? (
+            <div className="mt-10 sm:mt-12 text-center">
+              <Button href={finalButtonHref} variant="primary" size="md">
+                {buttonText}
+              </Button>
+            </div>
+          ) : isEditing && isBookingUnavailable ? (
+            <div className="mt-10 sm:mt-12 text-center">
+              <Button
+                href="#"
+                variant="primary"
+                size="md"
+                className="opacity-60 pointer-events-none"
+              >
+                {buttonText}
+              </Button>
+              <p className="text-xs text-bright-magenta mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
+            </div>
+          ) : null)}
       </div>
     </section>
   )

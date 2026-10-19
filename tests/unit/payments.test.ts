@@ -42,6 +42,7 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
   const createdOrders: number[] = []
   const createdCustomers: number[] = []
   const createdProducts: number[] = []
+  const createdServices: number[] = []
   const createdUsers: number[] = []
   let settingsBefore: SiteSetting | null = null
 
@@ -219,6 +220,13 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
     for (const prodId of createdProducts) {
       try {
         await payload.delete({ collection: 'products', id: prodId, overrideAccess: true })
+      } catch {}
+    }
+
+    // 4b. Xóa services do test tạo
+    for (const srvId of createdServices) {
+      try {
+        await payload.delete({ collection: 'services', id: srvId, overrideAccess: true })
       } catch {}
     }
 
@@ -504,6 +512,242 @@ describe('Payment Backend & Order Flow (T1-12a)', () => {
         overrideAccess: true,
       })
       expect(orderQuery.totalDocs).toBe(0)
+    })
+
+    describe('Ghi nhận lộ trình và gói quan tâm vào notes (SM-04b B5)', () => {
+      let publishedServiceId: number
+      let hiddenServiceId: number
+      let draftServiceId: number
+      let publishedPackageSlug: string
+      let hiddenPackageSlug: string
+      let draftPackageSlug: string
+      let nonPackageProductSlug: string
+
+      beforeAll(async () => {
+        // 1. Tạo published service
+        const srvPublished = await payload.create({
+          collection: 'services',
+          data: {
+            name: '[MẪU] Dịch vụ Test Hợp Lệ',
+            slug: `service-test-${randomUUID()}`,
+            priceMode: 'fixed',
+            price: 500000,
+            saleStatus: 'on_sale',
+            _status: 'published',
+            isSample: true,
+          },
+        })
+        publishedServiceId = srvPublished.id
+        createdServices.push(publishedServiceId)
+
+        // 2. Tạo hidden service
+        const srvHidden = await payload.create({
+          collection: 'services',
+          data: {
+            name: '[MẪU] Dịch vụ Test Ẩn',
+            slug: `service-hidden-${randomUUID()}`,
+            priceMode: 'fixed',
+            price: 500000,
+            saleStatus: 'hidden',
+            _status: 'published',
+            isSample: true,
+          },
+        })
+        hiddenServiceId = srvHidden.id
+        createdServices.push(hiddenServiceId)
+
+        // 3. Tạo draft service
+        const srvDraft = await payload.create({
+          collection: 'services',
+          data: {
+            name: '[MẪU] Dịch vụ Test Nháp',
+            slug: `service-draft-${randomUUID()}`,
+            priceMode: 'fixed',
+            price: 500000,
+            saleStatus: 'on_sale',
+            _status: 'draft',
+            isSample: true,
+          },
+        })
+        draftServiceId = srvDraft.id
+        createdServices.push(draftServiceId)
+
+        // 4. Tạo published package
+        publishedPackageSlug = `pkg-test-${randomUUID()}`
+        const pkgPublished = await payload.create({
+          collection: 'products',
+          data: {
+            name: '[MẪU] Gói Test Hợp Lệ',
+            slug: publishedPackageSlug,
+            web: 'site',
+            type: 'package',
+            price: 1500000,
+            saleStatus: 'on_sale',
+            _status: 'published',
+            isSample: true,
+          },
+        })
+        createdProducts.push(pkgPublished.id)
+
+        // 5. Tạo hidden package
+        hiddenPackageSlug = `pkg-hidden-${randomUUID()}`
+        const pkgHidden = await payload.create({
+          collection: 'products',
+          data: {
+            name: '[MẪU] Gói Test Ẩn',
+            slug: hiddenPackageSlug,
+            web: 'site',
+            type: 'package',
+            price: 1500000,
+            saleStatus: 'hidden',
+            _status: 'published',
+            isSample: true,
+          },
+        })
+        createdProducts.push(pkgHidden.id)
+
+        // 6. Tạo draft package
+        draftPackageSlug = `pkg-draft-${randomUUID()}`
+        const pkgDraft = await payload.create({
+          collection: 'products',
+          data: {
+            name: '[MẪU] Gói Test Nháp',
+            slug: draftPackageSlug,
+            web: 'site',
+            type: 'package',
+            price: 1500000,
+            saleStatus: 'on_sale',
+            _status: 'draft',
+            isSample: true,
+          },
+        })
+        createdProducts.push(pkgDraft.id)
+
+        // 7. Tạo sản phẩm khác loại (ebook, không phải package)
+        nonPackageProductSlug = `non-pkg-${randomUUID()}`
+        const nonPkg = await payload.create({
+          collection: 'products',
+          data: {
+            name: '[MẪU] Sách Ebook Test',
+            slug: nonPackageProductSlug,
+            web: 'site',
+            type: 'ebook',
+            price: 100000,
+            saleStatus: 'on_sale',
+            _status: 'published',
+            isSample: true,
+          },
+        })
+        createdProducts.push(nonPkg.id)
+      })
+
+      it('dịch vụ + gói hợp lệ -> notes có đúng Nhu cầu, Lộ trình quan tâm, Gói quan tâm (tra từ DB)', async () => {
+        const email = `test-b5-valid-${randomUUID()}@example.com`
+        const res = await createExperienceOrder(
+          {
+            productId: experienceProductId,
+            name: '[MẪU] Học viên Test 01',
+            email,
+            phone: '0901234567',
+            need: 'Cần hỗ trợ chuyển việc',
+            interestedServiceId: publishedServiceId,
+            interestedPackageSlug: publishedPackageSlug,
+            termsAccepted: true,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        )
+
+        expect(res.success).toBe(true)
+        const order = await trackOrderAndCustomer(res.payToken)
+        expect(order).not.toBeNull()
+        expect(order!.total).toBe(149000)
+        expect(order!.paymentStatus).toBe('pending')
+        expect(order!.notes).toContain('Nhu cầu: Cần hỗ trợ chuyển việc')
+        expect(order!.notes).toContain('Lộ trình quan tâm: [MẪU] Dịch vụ Test Hợp Lệ')
+        expect(order!.notes).toContain('Gói quan tâm: [MẪU] Gói Test Hợp Lệ')
+      })
+
+      it('ID/slug không tồn tại, bản nháp, ẩn, hoặc không phải gói -> không thêm dòng, đơn vẫn tạo bình thường', async () => {
+        const email = `test-b5-invalid-${randomUUID()}@example.com`
+        const res = await createExperienceOrder(
+          {
+            productId: experienceProductId,
+            name: '[MẪU] Học viên Test 02',
+            email,
+            phone: '0901234567',
+            need: 'Chỉ có nhu cầu cơ bản',
+            interestedServiceId: 999999999, // Không tồn tại
+            interestedPackageSlug: 'slug-khong-ton-tai-xyz',
+            termsAccepted: true,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        )
+
+        expect(res.success).toBe(true)
+        const order = await trackOrderAndCustomer(res.payToken)
+        expect(order).not.toBeNull()
+        expect(order!.total).toBe(149000)
+        expect(order!.paymentStatus).toBe('pending')
+        expect(order!.notes).toBe('Nhu cầu: Chỉ có nhu cầu cơ bản')
+
+        // Test với service ẩn và package ẩn
+        const emailHidden = `test-b5-hidden-${randomUUID()}@example.com`
+        const resHidden = await createExperienceOrder(
+          {
+            productId: experienceProductId,
+            name: '[MẪU] Học viên Test 03',
+            email: emailHidden,
+            phone: '0901234567',
+            need: 'Không nhận diện gói ẩn',
+            interestedServiceId: hiddenServiceId,
+            interestedPackageSlug: hiddenPackageSlug,
+            termsAccepted: true,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        )
+        const orderHidden = await trackOrderAndCustomer(resHidden.payToken)
+        expect(orderHidden!.notes).toBe('Nhu cầu: Không nhận diện gói ẩn')
+
+        // Test với service nháp, package nháp, và sản phẩm không phải gói
+        const emailDraft = `test-b5-draft-${randomUUID()}@example.com`
+        const resDraft = await createExperienceOrder(
+          {
+            productId: experienceProductId,
+            name: '[MẪU] Học viên Test 04',
+            email: emailDraft,
+            phone: '0901234567',
+            need: 'Không nhận diện bản nháp',
+            interestedServiceId: draftServiceId,
+            interestedPackageSlug: draftPackageSlug,
+            termsAccepted: true,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        )
+        const orderDraft = await trackOrderAndCustomer(resDraft.payToken)
+        expect(orderDraft!.notes).toBe('Nhu cầu: Không nhận diện bản nháp')
+
+        // Test slug sản phẩm không phải loại package (ebook)
+        const emailNonPkg = `test-b5-nonpkg-${randomUUID()}@example.com`
+        const resNonPkg = await createExperienceOrder(
+          {
+            productId: experienceProductId,
+            name: '[MẪU] Học viên Test 05',
+            email: emailNonPkg,
+            phone: '0901234567',
+            need: 'Sản phẩm không phải gói',
+            interestedPackageSlug: nonPackageProductSlug,
+            termsAccepted: true,
+          },
+          { ip: nextIp() },
+          { payload, emailSender: mockEmailSender },
+        )
+        const orderNonPkg = await trackOrderAndCustomer(resNonPkg.payToken)
+        expect(orderNonPkg!.notes).toBe('Nhu cầu: Sản phẩm không phải gói')
+      })
     })
   })
 

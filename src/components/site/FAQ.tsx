@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
-import { BOOKING_PATH } from '@/lib/products'
+import { BOOKING_PATH, getBookingPath } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 
 export interface FAQItem {
@@ -29,10 +29,14 @@ export interface FAQProps {
   email?: string
   seeAllLink?: string
   bgColor?:
-    | 'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     email?: string | null
+    bookingProductId?: number | null
+  }
+  puck?: {
+    isEditing?: boolean
   }
 }
 
@@ -68,6 +72,7 @@ export function FAQ({
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
+  puck,
 }: FAQProps) {
   const isDeepNavy = bgColor === 'deep-navy'
   const validItems = Array.isArray(items)
@@ -94,7 +99,28 @@ export function FAQ({
 
   const email = _resolved?.email ?? propEmail
   const seeAllSafeLink = seeAllLink ? safeHref(seeAllLink) : null
-  const bookingButtonSafeHref = safeHref(bookingButtonLink || BOOKING_PATH) || BOOKING_PATH
+  const isEditing = puck?.isEditing ?? false
+  const bookingProductId = _resolved?.bookingProductId ?? null
+
+  const isBookingLink =
+    !bookingButtonLink ||
+    bookingButtonLink.trim() === '' ||
+    bookingButtonLink.trim() === BOOKING_PATH ||
+    bookingButtonLink.trim() === '/dat-phien-trai-nghiem'
+
+  let finalBookingHref: string | null = null
+  let isBookingUnavailable = false
+
+  if (isBookingLink) {
+    if (bookingProductId != null) {
+      finalBookingHref = safeHref(getBookingPath(bookingProductId))
+    } else {
+      isBookingUnavailable = true
+      finalBookingHref = null
+    }
+  } else {
+    finalBookingHref = safeHref(bookingButtonLink)
+  }
 
   const accordionContent = (
     <div className="space-y-4">
@@ -213,14 +239,30 @@ export function FAQ({
               </div>
 
               <div className="space-y-4 pt-4 border-t border-white/10">
-                <Button
-                  href={bookingButtonSafeHref}
-                  variant="primary"
-                  size="md"
-                  className="w-full text-center"
-                >
-                  {bookingButtonText || vi.sm03.bookingButtonText}
-                </Button>
+                {finalBookingHref ? (
+                  <Button
+                    href={finalBookingHref}
+                    variant="primary"
+                    size="md"
+                    className="w-full text-center"
+                  >
+                    {bookingButtonText || vi.sm03.bookingButtonText}
+                  </Button>
+                ) : isEditing && isBookingUnavailable ? (
+                  <div>
+                    <Button
+                      href="#"
+                      variant="primary"
+                      size="md"
+                      className="w-full text-center opacity-60 pointer-events-none"
+                    >
+                      {bookingButtonText || vi.sm03.bookingButtonText}
+                    </Button>
+                    <p className="text-xs text-soft-pink mt-2 text-center font-ui">
+                      {vi.sm04.noBookingProduct}
+                    </p>
+                  </div>
+                ) : null}
                 {showEmail && email && (
                   <div className="text-center font-ui text-xs text-white/70 pt-1">
                     <span>Email: </span>

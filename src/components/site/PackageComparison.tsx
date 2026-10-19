@@ -31,6 +31,7 @@ export interface PackageComparisonProps {
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     packages?: PublicProduct[]
+    bookingProductId?: number | null
   }
   puck?: {
     isEditing?: boolean
@@ -68,7 +69,17 @@ export function PackageComparison({
   _resolved,
   puck,
 }: PackageComparisonProps) {
+  const bookingProductId = _resolved?.bookingProductId ?? null
   const isEditing = puck?.isEditing ?? false
+  const canShowBookingButtons = showPackageButtons && (bookingProductId != null || isEditing)
+
+  const buildPackageBookingHref = (slug?: string) => {
+    if (bookingProductId == null) return '#'
+    const params = new URLSearchParams()
+    params.set('san-pham', String(bookingProductId))
+    if (slug) params.set('goi', slug)
+    return `${BOOKING_PATH}?${params.toString()}`
+  }
   const sectionRef = React.useRef<HTMLElement | null>(null)
   const hasTrackedView = React.useRef(false)
 
@@ -326,7 +337,7 @@ export function PackageComparison({
               )}
 
               {/* Package Booking Buttons Row (Conditional) */}
-              {showPackageButtons && (
+              {canShowBookingButtons && (
                 <tr className="border-t border-deep-navy/10 bg-lavender-mist/20">
                   <th
                     scope="row"
@@ -336,19 +347,36 @@ export function PackageComparison({
                   </th>
                   {pkgs.map((pkg) => {
                     const isHl = highlightIdStr !== '' && String(pkg.id) === highlightIdStr
+                    const pkgHref = buildPackageBookingHref(pkg.slug)
                     return (
                       <td
                         key={pkg.id}
                         className={`py-5 px-6 text-center ${isHl ? 'bg-deep-navy' : ''}`}
                       >
-                        <Button
-                          href={`${BOOKING_PATH}?goi=${encodeURIComponent(pkg.slug || '')}`}
-                          variant={isHl ? 'primary' : 'secondary'}
-                          size="md"
-                          className="w-full"
-                        >
-                          {effectiveButtonText}
-                        </Button>
+                        {bookingProductId != null ? (
+                          <Button
+                            href={pkgHref}
+                            variant={isHl ? 'primary' : 'secondary'}
+                            size="md"
+                            className="w-full"
+                          >
+                            {effectiveButtonText}
+                          </Button>
+                        ) : (
+                          <div>
+                            <Button
+                              href="#"
+                              variant={isHl ? 'primary' : 'secondary'}
+                              size="md"
+                              className="w-full opacity-60 pointer-events-none"
+                            >
+                              {effectiveButtonText}
+                            </Button>
+                            <span className="text-xs text-bright-magenta block mt-1 font-ui">
+                              {vi.sm04.noBookingProduct}
+                            </span>
+                          </div>
+                        )}
                       </td>
                     )
                   })}
@@ -472,16 +500,32 @@ export function PackageComparison({
                 </div>
 
                 {/* Optional Booking button */}
-                {showPackageButtons && (
+                {canShowBookingButtons && (
                   <div className="pt-2">
-                    <Button
-                      href={`${BOOKING_PATH}?goi=${encodeURIComponent(pkg.slug || '')}`}
-                      variant={isHl ? 'primary' : 'secondary'}
-                      size="md"
-                      className="w-full"
-                    >
-                      {effectiveButtonText}
-                    </Button>
+                    {bookingProductId != null ? (
+                      <Button
+                        href={buildPackageBookingHref(pkg.slug)}
+                        variant={isHl ? 'primary' : 'secondary'}
+                        size="md"
+                        className="w-full"
+                      >
+                        {effectiveButtonText}
+                      </Button>
+                    ) : (
+                      <div>
+                        <Button
+                          href="#"
+                          variant={isHl ? 'primary' : 'secondary'}
+                          size="md"
+                          className="w-full opacity-60 pointer-events-none"
+                        >
+                          {effectiveButtonText}
+                        </Button>
+                        <p className="text-xs text-bright-magenta mt-1 text-center font-ui">
+                          {vi.sm04.noBookingProduct}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

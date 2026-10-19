@@ -11,6 +11,7 @@ import { InteractivePrimitivesDemo } from './InteractivePrimitivesDemo'
 import { InteractiveCompositesDemo } from './InteractiveCompositesDemo'
 import { EqShareDemo } from './EqShareDemo'
 import { Sm03BlocksDemo } from './Sm03BlocksDemo'
+import { Sm04BlocksDemo } from './Sm04BlocksDemo'
 
 export const dynamic = 'force-dynamic'
 
@@ -441,6 +442,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <Sm03BlocksDemo />
+        </section>
+
+        {/* Section 10: SM-04 Blocks & Variants (Sitemap v2) */}
+        <section aria-labelledby="heading-sm04-blocks">
+          <h2
+            id="heading-sm04-blocks"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            10. Khối Puck mới &amp; Nâng cấp (Sitemap v2 – SM-04 [MẪU])
+          </h2>
+
+          <Sm04BlocksDemo />
         </section>
       </main>
 

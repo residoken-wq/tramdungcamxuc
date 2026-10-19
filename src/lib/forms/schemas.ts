@@ -153,6 +153,26 @@ export const experienceOrderSchema = z.object({
     .email(vi.forms.validation.emailInvalid),
   phone: z.string().trim().max(20, vi.forms.validation.phoneMax).optional(),
   need: z.string().trim().max(1000, vi.payment.validation.needMax).optional(),
+  interestedServiceId: z
+    .union([
+      z.number().int().positive(),
+      z
+        .string()
+        .trim()
+        .regex(/^\d+$/)
+        .transform((val) => Number(val))
+        .refine((n) => n > 0),
+    ])
+    .optional()
+    .nullable()
+    .transform((val) => (val === null || val === undefined ? undefined : val)),
+  interestedPackageSlug: z
+    .string()
+    .trim()
+    .max(100)
+    .optional()
+    .nullable()
+    .transform((val) => (val === null || val === undefined || val === '' ? undefined : val)),
   termsAccepted: z
     .boolean({
       required_error: vi.payment.validation.termsAcceptedRequired,

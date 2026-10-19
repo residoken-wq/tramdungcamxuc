@@ -1043,6 +1043,27 @@ export const vi = {
     bookingButtonText: 'Đặt lịch ngay',
   },
 
+  sm04: {
+    suitsLabel: 'Phù hợp với',
+    outcomesLabel: 'Bạn nhận được',
+    defaultServiceCta: 'Tìm hiểu chi tiết',
+    emptyServicesMessage: 'Chưa có dữ liệu – nhập trong CMS',
+    visionLabel: 'Tầm nhìn',
+    missionLabel: 'Sứ mệnh',
+    teamEmptyMessage: 'Chưa có dữ liệu – nhập trong CMS',
+    forIndividual: 'CHO CÁ NHÂN',
+    forBusiness: 'CHO DOANH NGHIỆP',
+    serviceLabel: 'Lộ trình quan tâm',
+    uncertainServiceOption: 'Chưa chắc chắn',
+    packageInterestPrefix: 'Gói quan tâm:',
+    noBookingProduct: 'Chưa có sản phẩm phiên trải nghiệm đang bán',
+    readOnlyBadge: 'Chỉ đọc',
+    optionalLabel: '(tùy chọn)',
+    logoStripEmptyMessage:
+      'Chưa có logo nào được thêm. Vui lòng thêm logo trong thanh cấu hình bên phải.',
+    logoStripGroupEmptyMessage: (groupName: string) => `Nhóm "${groupName}" chưa có logo.`,
+  },
+
   legal: {
     lastUpdated: 'Cập nhật ngày',
     updatingContent: 'Nội dung đang được cập nhật.',
@@ -1306,7 +1327,7 @@ export const vi = {
         phoneLabel: 'Số điện thoại',
         phoneOptional: '(tùy chọn)',
         phonePlaceholder: '0912 345 678',
-        needLabel: 'Nhu cầu hoặc mục tiêu khi đặt phiên',
+        needLabel: 'Bạn đang trăn trở điều gì?',
         needMaxHint: '(tối đa 1.000 ký tự)',
         needPlaceholder:
           'Bạn đang gặp khó khăn gì hoặc mong muốn đạt được điều gì sau phiên trải nghiệm này?...',

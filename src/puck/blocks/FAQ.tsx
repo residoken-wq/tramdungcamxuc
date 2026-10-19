@@ -118,5 +118,5 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     padding: 'md',
   },
   // `puck` carries functions (renderDropZone) that cannot cross into a client component.
-  render: ({ puck: _puck, ...props }) => <FAQ {...props} />,
+  render: ({ puck, ...props }) => <FAQ {...props} puck={{ isEditing: puck?.isEditing ?? false }} />,
 }

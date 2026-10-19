@@ -13,16 +13,30 @@ export const LogoStripBlock: ComponentConfig<LogoStripProps> = {
       type: 'text',
       label: 'Tiêu đề hàng logo (tùy chọn)',
     },
-    logos: {
+    groups: {
       type: 'array',
-      label: 'Danh sách logo đối tác',
+      label: 'Danh sách nhóm logo đối tác',
       arrayFields: {
-        mediaId: createMediaExternalField({ label: 'Ảnh logo (Thư viện media)' }),
-        alt: { type: 'text', label: 'Tên đối tác / Mô tả ảnh (alt - bắt buộc)' },
-        link: { type: 'text', label: 'Đường dẫn liên kết website (tùy chọn)' },
+        label: {
+          type: 'text',
+          label:
+            'Tên nhóm (VD "Doanh nghiệp", "Truyền thông" - để trống nếu không hiện tiêu đề nhóm)',
+        },
+        logos: {
+          type: 'array',
+          label: 'Danh sách logo trong nhóm',
+          arrayFields: {
+            mediaId: createMediaExternalField({ label: 'Ảnh logo (Thư viện media)' }),
+            alt: { type: 'text', label: 'Tên đối tác / Mô tả ảnh (alt - bắt buộc)' },
+            link: { type: 'text', label: 'Đường dẫn liên kết website (tùy chọn)' },
+          },
+          getItemSummary: (item) =>
+            item?.alt || (item?.mediaId ? `Media ID: ${item.mediaId}` : 'Chưa đặt tên'),
+        },
       },
-      getItemSummary: (item) =>
-        item?.alt || (item?.mediaId ? `Media ID: ${item.mediaId}` : 'Chưa đặt tên'),
+      getItemSummary: (group, index) =>
+        group?.label ||
+        `Nhóm ${index !== undefined ? index + 1 : ''} (${group?.logos?.length || 0} logo)`,
     },
     bgColor: {
       type: 'select',
@@ -36,45 +50,83 @@ export const LogoStripBlock: ComponentConfig<LogoStripProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
     title: '[MẪU] ĐƯỢC ĐỒNG HÀNH VÀ TIN TƯỞNG BỞI',
-    logos: [],
+    groups: [],
     bgColor: 'warm-ivory',
     padding: 'md',
   },
   resolveData: async (data) => {
-    const { logos } = data.props
-    if (!Array.isArray(logos) || logos.length === 0) {
-      return data
-    }
+    const { groups, logos } = data.props
 
-    try {
-      if (typeof window !== 'undefined') {
-        const resolvedLogos = await Promise.all(
-          logos.map(async (item) => {
-            if (!item?.mediaId) return item
-            try {
-              const res = await fetch(`/api/media/${encodeURIComponent(item.mediaId)}`, {
-                credentials: 'include',
-              })
-              if (res.ok) {
-                const json = await res.json()
-                return {
-                  ...item,
-                  imageUrl: json.url || item.imageUrl || '',
-                  alt: item.alt || json.alt || '',
+    if (typeof window !== 'undefined') {
+      try {
+        let resolvedGroups = groups
+        if (Array.isArray(groups) && groups.length > 0) {
+          resolvedGroups = await Promise.all(
+            groups.map(async (group) => {
+              if (!Array.isArray(group?.logos) || group.logos.length === 0) return group
+              const resLogos = await Promise.all(
+                group.logos.map(async (item) => {
+                  if (!item?.mediaId) return item
+                  try {
+                    const res = await fetch(`/api/media/${encodeURIComponent(item.mediaId)}`, {
+                      credentials: 'include',
+                    })
+                    if (res.ok) {
+                      const json = await res.json()
+                      return {
+                        ...item,
+                        imageUrl: json.url || item.imageUrl || '',
+                        alt: item.alt || json.alt || '',
+                      }
+                    }
+                  } catch {
+                    // ignore
+                  }
+                  return item
+                }),
+              )
+              return { ...group, logos: resLogos }
+            }),
+          )
+        }
+
+        let resolvedLogos = logos
+        if (Array.isArray(logos) && logos.length > 0) {
+          resolvedLogos = await Promise.all(
+            logos.map(async (item) => {
+              if (!item?.mediaId) return item
+              try {
+                const res = await fetch(`/api/media/${encodeURIComponent(item.mediaId)}`, {
+                  credentials: 'include',
+                })
+                if (res.ok) {
+                  const json = await res.json()
+                  return {
+                    ...item,
+                    imageUrl: json.url || item.imageUrl || '',
+                    alt: item.alt || json.alt || '',
+                  }
                 }
+              } catch {
+                // ignore
               }
-            } catch {
-              // ignore fetch error
-            }
-            return item
-          }),
-        )
-        return { props: { ...data.props, logos: resolvedLogos } }
+              return item
+            }),
+          )
+        }
+
+        return {
+          props: {
+            ...data.props,
+            ...(resolvedGroups ? { groups: resolvedGroups } : {}),
+            ...(resolvedLogos ? { logos: resolvedLogos } : {}),
+          },
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
     }
 
     return data
