@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { safeHref } from '@/lib/safe-href'
+import { vi } from '@/lib/i18n/vi'
 
 export interface LogoItem {
   mediaId?: string | number
@@ -94,7 +95,7 @@ export function LogoStrip({
         {totalLogosCount === 0 ? (
           isEditing ? (
             <div className="py-8 px-4 rounded-card border-2 border-dashed border-deep-navy/20 text-center font-ui text-sm text-deep-navy/70 bg-white/50">
-              Chưa có logo nào được thêm. Vui lòng thêm logo trong thanh cấu hình bên phải.
+              {vi.sm04.logoStripEmptyMessage}
             </div>
           ) : null
         ) : (
@@ -118,7 +119,7 @@ export function LogoStrip({
                   {groupLogos.length === 0 ? (
                     isEditing ? (
                       <div className="py-4 px-3 rounded-card border border-dashed border-deep-navy/20 text-center font-ui text-xs text-deep-navy/70">
-                        Nhóm &quot;{group.label || `#${groupIdx + 1}`}&quot; chưa có logo.
+                        {vi.sm04.logoStripGroupEmptyMessage(group.label || `#${groupIdx + 1}`)}
                       </div>
                     ) : null
                   ) : (

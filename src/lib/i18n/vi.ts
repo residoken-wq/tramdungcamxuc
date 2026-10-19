@@ -1057,6 +1057,11 @@ export const vi = {
     uncertainServiceOption: 'Chưa chắc chắn',
     packageInterestPrefix: 'Gói quan tâm:',
     noBookingProduct: 'Chưa có sản phẩm phiên trải nghiệm đang bán',
+    readOnlyBadge: 'Chỉ đọc',
+    optionalLabel: '(tùy chọn)',
+    logoStripEmptyMessage:
+      'Chưa có logo nào được thêm. Vui lòng thêm logo trong thanh cấu hình bên phải.',
+    logoStripGroupEmptyMessage: (groupName: string) => `Nhóm "${groupName}" chưa có logo.`,
   },
 
   legal: {

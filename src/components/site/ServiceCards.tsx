@@ -95,7 +95,7 @@ export function ServiceCards({
         className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]}`}
       >
         <div className="mx-auto max-w-5xl py-8 px-4 rounded-card border-2 border-dashed border-deep-navy/20 text-center font-ui text-sm text-deep-navy/70 bg-white/50">
-          {vi.sm04?.emptyServicesMessage || 'Chưa có dữ liệu – nhập trong CMS'}
+          {vi.sm04.emptyServicesMessage}
         </div>
       </section>
     )
@@ -212,7 +212,7 @@ export function ServiceCards({
                             isHighlighted ? 'text-soft-pink' : 'text-deep-navy/70'
                           }`}
                         >
-                          {vi.sm04?.suitsLabel || 'Phù hợp với'}
+                          {vi.sm04.suitsLabel}
                         </p>
                         <ul className="space-y-1.5 font-ui text-sm">
                           {service.situations.map((sit, i) => (
@@ -240,7 +240,7 @@ export function ServiceCards({
                             isHighlighted ? 'text-soft-pink' : 'text-deep-navy/70'
                           }`}
                         >
-                          {vi.sm04?.outcomesLabel || 'Bạn nhận được'}
+                          {vi.sm04.outcomesLabel}
                         </p>
                         <ul className="space-y-1.5 font-ui text-sm">
                           {service.outcomes.map((out, i) => (
@@ -270,7 +270,7 @@ export function ServiceCards({
                     size="md"
                     className="w-full text-center"
                   >
-                    {service.ctaLabel || vi.sm04?.defaultServiceCta || 'Tìm hiểu chi tiết'}
+                    {service.ctaLabel || vi.sm04.defaultServiceCta}
                   </Button>
                 </div>
               </div>

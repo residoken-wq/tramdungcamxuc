@@ -219,17 +219,17 @@ export function ExperienceBookingForm({
               </div>
 
               {interestedPackage && (
-                <div className="p-3.5 rounded-xl bg-warm-ivory border border-deep-navy/10 text-sm font-ui text-deep-navy flex items-center justify-between">
-                  <div>
+                <div className="p-3.5 rounded-xl bg-warm-ivory border border-deep-navy/10 text-sm font-ui text-deep-navy flex items-center justify-between gap-2">
+                  <div className="min-w-0">
                     <span className="text-xs font-medium text-deep-navy/70 block">
-                      {vi.sm04?.packageInterestPrefix || 'Gói quan tâm:'}
+                      {vi.sm04.packageInterestPrefix}
                     </span>
-                    <span className="text-sm font-bold text-bright-magenta">
+                    <span className="text-sm font-bold text-bright-magenta truncate block">
                       {interestedPackage.name}
                     </span>
                   </div>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-soft-pink text-deep-navy font-bold uppercase tracking-wider">
-                    Chỉ đọc
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-soft-pink text-deep-navy font-bold uppercase tracking-wider whitespace-nowrap shrink-0">
+                    {vi.sm04.readOnlyBadge}
                   </span>
                 </div>
               )}
@@ -348,9 +348,9 @@ export function ExperienceBookingForm({
                     htmlFor={serviceSelectId}
                     className="block text-sm font-semibold text-deep-navy"
                   >
-                    {vi.sm04?.serviceLabel || 'Lộ trình quan tâm'}{' '}
+                    {vi.sm04.serviceLabel}{' '}
                     <span className="text-xs font-normal text-deep-navy/60">
-                      {vi.payment.ui.booking.phoneOptional}
+                      {vi.sm04.optionalLabel}
                     </span>
                   </label>
                   <select
@@ -359,7 +359,7 @@ export function ExperienceBookingForm({
                     onChange={(e) => setInterestedServiceId(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-lavender-mist text-sm text-deep-navy bg-white focus:outline-none focus:border-bright-magenta focus:ring-2 focus:ring-accent-pink/20 transition-all"
                   >
-                    <option value="">{vi.sm04?.uncertainServiceOption || 'Chưa chắc chắn'}</option>
+                    <option value="">{vi.sm04.uncertainServiceOption}</option>
                     {services.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name}
