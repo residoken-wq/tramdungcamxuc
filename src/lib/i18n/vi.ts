@@ -2298,7 +2298,7 @@ export const vi = {
       promiseNotice: 'Chỉ hứa điều đang làm được',
       nameLabel: 'Tên của bạn (không bắt buộc)',
       namePlaceholder: 'Ví dụ: Minh Anh',
-      emailLabel: 'Địa chỉ email nhận bản tin',
+      emailLabel: 'Email nhận bản tin',
       emailPlaceholder: 'email@example.com',
       submitting: 'Đang đăng ký...',
       successTitle: 'Cảm ơn bạn đã đăng ký!',

@@ -28,6 +28,7 @@ export interface LeadMagnetCarouselProps {
   manualProducts?: Array<{ productId?: string | number }>
   bgColor?: string
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
+  isDemo?: boolean
   _resolved?: {
     items?: LeadMagnetItem[]
   }
@@ -60,6 +61,7 @@ export function LeadMagnetCarousel({
   emotionLine,
   bgColor = 'warm-ivory',
   padding = 'md',
+  isDemo = false,
   _resolved,
   puck,
 }: LeadMagnetCarouselProps) {
@@ -219,11 +221,17 @@ export function LeadMagnetCarousel({
 
                       {/* Embedded ResourceRequestForm reusing submitResourceRequest with 7-day signed link */}
                       <div className="mt-auto pt-4 border-t border-deep-navy/10">
-                        <ResourceRequestForm
-                          slug={item.slug}
-                          productName={item.name}
-                          className="!p-0 !border-0 !shadow-none !bg-transparent !max-w-full"
-                        />
+                        {isDemo ? (
+                          <div className="py-2.5 px-3 rounded-xl bg-warm-ivory border border-deep-navy/10 text-center font-ui text-xs font-semibold text-deep-navy/70">
+                            [MẪU] Form nhận tài liệu qua email
+                          </div>
+                        ) : (
+                          <ResourceRequestForm
+                            slug={item.slug}
+                            productName={item.name}
+                            className="!p-0 !border-0 !shadow-none !bg-transparent !max-w-full"
+                          />
+                        )}
                       </div>
                     </div>
                   </div>

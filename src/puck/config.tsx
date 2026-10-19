@@ -48,6 +48,14 @@ import { VisionMissionBlock, type VisionMissionProps } from './blocks/VisionMiss
 import { ServiceCardsBlock, type ServiceCardsProps } from './blocks/ServiceCards'
 import { TwoPathCardsBlock, type TwoPathCardsProps } from './blocks/TwoPathCards'
 import { TeamGridBlock, type TeamGridProps } from './blocks/TeamGrid'
+import {
+  LeadMagnetCarouselBlock,
+  type LeadMagnetCarouselProps,
+} from './blocks/LeadMagnetCarousel'
+import {
+  NewsletterFormBlock,
+  type NewsletterFormProps,
+} from './blocks/NewsletterForm'
 
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
 import { getLockedComponentPermissions } from './locks'
@@ -67,6 +75,8 @@ export type {
   TwoPathCardsProps,
   TeamGridProps,
   ResourcePostsSlotProps,
+  LeadMagnetCarouselProps,
+  NewsletterFormProps,
 }
 
 export type PageComponentsProps = {
@@ -116,6 +126,8 @@ export type PageComponentsProps = {
   ShopeeButton: ShopeeButtonBlockProps
   ZaloButton: ZaloButtonBlockProps
   LibraryPreview: LibraryPreviewBlockProps
+  LeadMagnetCarousel: LeadMagnetCarouselProps
+  NewsletterForm: NewsletterFormProps
 }
 
 export const puckConfig: Config<PageComponentsProps> = {
@@ -173,6 +185,8 @@ export const puckConfig: Config<PageComponentsProps> = {
         'ShopeeButton',
         'ZaloButton',
         'LibraryPreview',
+        'LeadMagnetCarousel',
+        'NewsletterForm',
       ],
     },
   },
@@ -415,6 +429,8 @@ export const puckConfig: Config<PageComponentsProps> = {
     ShopeeButton: ShopeeButtonBlock,
     ZaloButton: ZaloButtonBlock,
     LibraryPreview: LibraryPreviewBlock,
+    LeadMagnetCarousel: LeadMagnetCarouselBlock,
+    NewsletterForm: NewsletterFormBlock,
 
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,

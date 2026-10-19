@@ -19,6 +19,7 @@ export interface NewsletterFormProps {
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl'
   pageSlug?: string
   className?: string
+  isDemo?: boolean
   puck?: {
     isEditing?: boolean
   }
@@ -50,6 +51,7 @@ export function NewsletterForm({
   padding = 'md',
   pageSlug,
   className = '',
+  isDemo = false,
 }: NewsletterFormProps) {
   const id = useId()
   const emailInputId = `${id}-email`
@@ -86,7 +88,7 @@ export function NewsletterForm({
       errors.name = vi.account.validation.nameSpecialChars
     }
 
-    if (!consent) {
+    if (!isDemo && !consent) {
       errors.consent = vi.forms.validation.consentRequired
     }
 
@@ -97,6 +99,11 @@ export function NewsletterForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setErrorMessage(null)
+
+    if (isDemo) {
+      setIsSuccess(true)
+      return
+    }
 
     if (!validate()) {
       return
@@ -270,19 +277,28 @@ export function NewsletterForm({
                 {/* Consent checkbox (required) */}
                 <div className="pt-1">
                   <label className="flex items-start gap-3 cursor-pointer select-none">
-                    <input
-                      id={consentInputId}
-                      type="checkbox"
-                      disabled={isSubmitting}
-                      checked={consent}
-                      onChange={(e) => {
-                        setConsent(e.target.checked)
-                        if (fieldErrors.consent) {
-                          setFieldErrors((prev) => ({ ...prev, consent: '' }))
-                        }
-                      }}
-                      className="mt-1 h-5 w-5 rounded border-lavender-mist text-bright-magenta focus:ring-bright-magenta accent-bright-magenta cursor-pointer"
-                    />
+                    {isDemo ? (
+                      <span
+                        className="mt-1 h-5 w-5 rounded border border-deep-navy/30 bg-white inline-flex items-center justify-center text-xs text-bright-magenta flex-shrink-0"
+                        aria-hidden="true"
+                      >
+                        ✓
+                      </span>
+                    ) : (
+                      <input
+                        id={consentInputId}
+                        type="checkbox"
+                        disabled={isSubmitting}
+                        checked={consent}
+                        onChange={(e) => {
+                          setConsent(e.target.checked)
+                          if (fieldErrors.consent) {
+                            setFieldErrors((prev) => ({ ...prev, consent: '' }))
+                          }
+                        }}
+                        className="mt-1 h-5 w-5 rounded border-lavender-mist text-bright-magenta focus:ring-bright-magenta accent-bright-magenta cursor-pointer"
+                      />
+                    )}
                     <span className="font-body text-xs sm:text-sm text-deep-navy/80 leading-normal">
                       {consentText}{' '}
                       <Link
@@ -307,10 +323,12 @@ export function NewsletterForm({
                 </div>
 
                 {/* Cloudflare Turnstile */}
-                <TurnstileWidget
-                  onVerify={(token) => setTurnstileToken(token)}
-                  onExpire={() => setTurnstileToken('')}
-                />
+                {!isDemo && (
+                  <TurnstileWidget
+                    onVerify={(token) => setTurnstileToken(token)}
+                    onExpire={() => setTurnstileToken('')}
+                  />
+                )}
 
                 {/* Submit button */}
                 <div className="pt-2">
