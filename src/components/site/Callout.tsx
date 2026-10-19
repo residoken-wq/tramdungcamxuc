@@ -103,8 +103,9 @@ export function Callout({
             </p>
           )}
 
-          {showButton && buttonText && (
-            finalSafeLink ? (
+          {showButton &&
+            buttonText &&
+            (finalSafeLink ? (
               <div className="mt-8 flex justify-center">
                 <Button href={finalSafeLink} variant={buttonVariant} size={buttonSize}>
                   {buttonText}
@@ -112,13 +113,17 @@ export function Callout({
               </div>
             ) : isEditing && isBookingUnavailable ? (
               <div className="mt-8 flex flex-col items-center">
-                <Button href="#" variant={buttonVariant} size={buttonSize} className="opacity-60 pointer-events-none">
+                <Button
+                  href="#"
+                  variant={buttonVariant}
+                  size={buttonSize}
+                  className="opacity-60 pointer-events-none"
+                >
                   {buttonText}
                 </Button>
                 <p className="text-xs text-soft-pink mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
               </div>
-            ) : null
-          )}
+            ) : null)}
         </div>
       </div>
     </section>

@@ -120,10 +120,7 @@ export function Sm04BlocksDemo() {
             storyContent={
               'Hành trình của tôi không bắt đầu bằng những thành tựu rực rỡ, mà bắt đầu từ những ngày tháng mất kết nối với chính cảm xúc của mình.\n\nNhờ phương pháp chánh niệm và trí tuệ cảm xúc, tôi đã tìm lại sự cân bằng và muốn lan tỏa điều đó tới cộng đồng.'
             }
-            chips={[
-              { text: '[MẪU] Khai vấn cá nhân' },
-              { text: '[MẪU] Đồng hành doanh nghiệp' },
-            ]}
+            chips={[{ text: '[MẪU] Khai vấn cá nhân' }, { text: '[MẪU] Đồng hành doanh nghiệp' }]}
             jobTitle="[MẪU] Chuyên gia khai vấn"
           />
         </div>
@@ -174,10 +171,7 @@ export function Sm04BlocksDemo() {
             groups={[
               {
                 label: '[MẪU] Nhóm chứng nhận chuyên môn',
-                logos: [
-                  { alt: '[MẪU] Tổ chức Test 01' },
-                  { alt: '[MẪU] Tổ chức Test 02' },
-                ],
+                logos: [{ alt: '[MẪU] Tổ chức Test 01' }, { alt: '[MẪU] Tổ chức Test 02' }],
               },
               {
                 label: '[MẪU] Nhóm doanh nghiệp đồng hành',
@@ -226,7 +220,8 @@ export function Sm04BlocksDemo() {
             Khối ServiceCards – Danh sách dịch vụ từ collection services
           </h3>
           <p className="mt-1 font-ui text-xs text-deep-navy/70">
-            Hiển thị các dịch vụ chuyên biệt (coaching, workshop), hỗ trợ gắn cờ nổi bật (highlighted)
+            Hiển thị các dịch vụ chuyên biệt (coaching, workshop), hỗ trợ gắn cờ nổi bật
+            (highlighted)
           </p>
         </div>
 
@@ -271,7 +266,8 @@ export function Sm04BlocksDemo() {
             Khối TwoPathCards – Hai lối đi Cá nhân &amp; Doanh nghiệp
           </h3>
           <p className="mt-1 font-ui text-xs text-deep-navy/70">
-            Thẻ solid (Cá nhân) và thẻ outline (Doanh nghiệp) điều hướng người dùng tới trang đích phù hợp
+            Thẻ solid (Cá nhân) và thẻ outline (Doanh nghiệp) điều hướng người dùng tới trang đích
+            phù hợp
           </p>
         </div>
 

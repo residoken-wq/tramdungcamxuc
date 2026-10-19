@@ -241,8 +241,8 @@ export function PackageCards({
         </div>
 
         {/* Optional Action Button below cards (NO purchase button on individual cards - Q4/M2) */}
-        {buttonText && (
-          finalButtonHref ? (
+        {buttonText &&
+          (finalButtonHref ? (
             <div className="mt-10 sm:mt-12 text-center">
               <Button href={finalButtonHref} variant="primary" size="md">
                 {buttonText}
@@ -250,13 +250,17 @@ export function PackageCards({
             </div>
           ) : isEditing && isBookingUnavailable ? (
             <div className="mt-10 sm:mt-12 text-center">
-              <Button href="#" variant="primary" size="md" className="opacity-60 pointer-events-none">
+              <Button
+                href="#"
+                variant="primary"
+                size="md"
+                className="opacity-60 pointer-events-none"
+              >
                 {buttonText}
               </Button>
               <p className="text-xs text-bright-magenta mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
             </div>
-          ) : null
-        )}
+          ) : null)}
       </div>
     </section>
   )

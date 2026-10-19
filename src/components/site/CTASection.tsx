@@ -23,12 +23,7 @@ export interface CTASectionProps {
   proofText?: string
   testimonials?: Array<{ testimonialId?: string | number }>
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     testimonials?: PublicTestimonial[]
@@ -100,8 +95,9 @@ export function CTASection({
     finalButtonHref = resolvedButtonHref ? safeHref(resolvedButtonHref) : null
   }
 
-  const resolvedIds = (testimonials?.map((m) => m?.testimonialId).filter(Boolean) ??
-    []) as Array<string | number>
+  const resolvedIds = (testimonials?.map((m) => m?.testimonialId).filter(Boolean) ?? []) as Array<
+    string | number
+  >
 
   const { testimonials: loadedTestimonials } = useClientTestimonials({
     testimonialIds: resolvedIds,
@@ -144,8 +140,8 @@ export function CTASection({
             </p>
           )}
 
-          {buttonText && (
-            finalButtonHref ? (
+          {buttonText &&
+            (finalButtonHref ? (
               <div className="mt-8">
                 <Button href={finalButtonHref} variant="primary" size="lg">
                   {buttonText}
@@ -153,13 +149,19 @@ export function CTASection({
               </div>
             ) : isEditing && isBookingUnavailable ? (
               <div className="mt-8">
-                <Button href="#" variant="primary" size="lg" className="opacity-60 pointer-events-none">
+                <Button
+                  href="#"
+                  variant="primary"
+                  size="lg"
+                  className="opacity-60 pointer-events-none"
+                >
                   {buttonText}
                 </Button>
-                <p className="text-xs text-bright-magenta mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
+                <p className="text-xs text-bright-magenta mt-2 font-ui">
+                  {vi.sm04.noBookingProduct}
+                </p>
               </div>
-            ) : null
-          )}
+            ) : null)}
 
           {/* Proof Strip (up to 3 photos + 1 line of text) */}
           {showProofStrip && (

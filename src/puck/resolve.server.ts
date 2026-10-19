@@ -126,16 +126,18 @@ export async function resolveDefaultBookingProductId(payload: Payload): Promise<
       limit: 20,
     })
 
-    const product = selectDefaultBookingProduct(res.docs as unknown as Array<{
-      id: number
-      order?: number | null
-      type?: string | null
-      _status?: string | null
-      saleStatus?: string | null
-      price?: number | null
-      salePrice?: number | null
-      saleEndsAt?: string | null
-    }>)
+    const product = selectDefaultBookingProduct(
+      res.docs as unknown as Array<{
+        id: number
+        order?: number | null
+        type?: string | null
+        _status?: string | null
+        saleStatus?: string | null
+        price?: number | null
+        salePrice?: number | null
+        saleEndsAt?: string | null
+      }>,
+    )
     return product ? product.id : null
   } catch {
     return null

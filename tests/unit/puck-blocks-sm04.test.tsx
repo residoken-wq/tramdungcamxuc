@@ -101,19 +101,13 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
     })
 
     it('returns null on public site when services list is empty', () => {
-      const { container } = render(
-        <ServiceCards titleLine1="Trống" _resolved={{ services: [] }} />,
-      )
+      const { container } = render(<ServiceCards titleLine1="Trống" _resolved={{ services: [] }} />)
       expect(container.firstChild).toBeNull()
     })
 
     it('renders placeholder in Puck editor mode when services list is empty', () => {
       render(
-        <ServiceCards
-          titleLine1="Trống"
-          _resolved={{ services: [] }}
-          puck={{ isEditing: true }}
-        />,
+        <ServiceCards titleLine1="Trống" _resolved={{ services: [] }} puck={{ isEditing: true }} />,
       )
       expect(screen.getByText(/Chưa có dữ liệu – nhập trong CMS/i)).toBeTruthy()
     })
@@ -200,21 +194,13 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
 
     it('matches snapshot with photos and avatar initials fallback', () => {
       const { asFragment } = render(
-        <TeamGrid
-          titleLine1="ĐỘI NGŨ ĐỒNG HÀNH"
-          _resolved={{ members: mockMembers }}
-        />,
+        <TeamGrid titleLine1="ĐỘI NGŨ ĐỒNG HÀNH" _resolved={{ members: mockMembers }} />,
       )
       expect(asFragment()).toMatchSnapshot()
     })
 
     it('renders team member names, roles, initials fallback, and filters unconsented members', () => {
-      render(
-        <TeamGrid
-          titleLine1="ĐỘI NGŨ ĐỒNG HÀNH"
-          _resolved={{ members: mockMembers }}
-        />,
-      )
+      render(<TeamGrid titleLine1="ĐỘI NGŨ ĐỒNG HÀNH" _resolved={{ members: mockMembers }} />)
 
       expect(screen.getByText('[MẪU] Thành viên Test 01')).toBeTruthy()
       expect(screen.getByText('[MẪU] Vai trò Test 01')).toBeTruthy()
@@ -227,20 +213,12 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
     })
 
     it('returns null on public site when members list is empty', () => {
-      const { container } = render(
-        <TeamGrid titleLine1="Trống" _resolved={{ members: [] }} />,
-      )
+      const { container } = render(<TeamGrid titleLine1="Trống" _resolved={{ members: [] }} />)
       expect(container.firstChild).toBeNull()
     })
 
     it('renders placeholder in Puck editor mode when members list is empty', () => {
-      render(
-        <TeamGrid
-          titleLine1="Trống"
-          _resolved={{ members: [] }}
-          puck={{ isEditing: true }}
-        />,
-      )
+      render(<TeamGrid titleLine1="Trống" _resolved={{ members: [] }} puck={{ isEditing: true }} />)
       expect(screen.getByText(/Chưa có dữ liệu – nhập trong CMS/i)).toBeTruthy()
     })
   })
@@ -312,11 +290,7 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
 
     it('renders StoryBlock without signatureName when empty', () => {
       const { container } = render(
-        <StoryBlock
-          titleLine1="THƯ TỪ COACH"
-          layout="letter"
-          storyContent="Nội dung thư."
-        />,
+        <StoryBlock titleLine1="THƯ TỪ COACH" layout="letter" storyContent="Nội dung thư." />,
       )
       const fallbackFounderName = ['Ha', 'na', ' Lương'].join('')
       expect(container.textContent).not.toContain(fallbackFounderName)

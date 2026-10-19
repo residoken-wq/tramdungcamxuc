@@ -90,10 +90,7 @@ export default async function ExperienceBookingPage({ searchParams }: PageProps)
     const servicesDocs = await payload.find({
       collection: 'services',
       where: {
-        and: [
-          { _status: { equals: 'published' } },
-          { saleStatus: { not_equals: 'hidden' } },
-        ],
+        and: [{ _status: { equals: 'published' } }, { saleStatus: { not_equals: 'hidden' } }],
       },
       sort: 'createdAt',
       limit: 50,
