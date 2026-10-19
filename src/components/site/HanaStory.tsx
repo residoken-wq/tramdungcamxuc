@@ -12,6 +12,8 @@ export interface HanaStoryProps {
   version?: number
   tone?: 'light' | 'dark'
   jobTitle?: string
+  greeting?: string
+  signatureName?: string
   chips?: HanaStoryChipItem[]
   layout?: 'story' | 'letter'
   imagePosition?: 'left' | 'right'
@@ -57,6 +59,8 @@ const PADDINGS = {
 export function HanaStory({
   tone = 'light',
   jobTitle,
+  greeting,
+  signatureName,
   chips = [],
   layout = 'story',
   imagePosition = 'left',
@@ -122,7 +126,7 @@ export function HanaStory({
               >
                 <Image
                   src={imageUrl}
-                  alt={imageAlt || 'Chân dung Hana Lương'}
+                  alt={imageAlt || ''}
                   fill
                   sizes="(max-width: 1024px) 100vw, 400px"
                   className="object-cover"
@@ -192,6 +196,17 @@ export function HanaStory({
               </p>
             )}
 
+            {/* Greeting in letter layout (Playfair Italic) */}
+            {layout === 'letter' && greeting && (
+              <p
+                className={`font-quote italic text-xl sm:text-2xl mb-5 ${
+                  isDarkOrNavy ? 'text-white' : 'text-deep-navy'
+                }`}
+              >
+                {greeting}
+              </p>
+            )}
+
             {/* Story Paragraphs */}
             {paragraphs.length > 0 && (
               <div
@@ -239,21 +254,21 @@ export function HanaStory({
                   <div className="relative h-14 sm:h-16 w-48 mb-2">
                     <Image
                       src={resolvedSignatureUrl}
-                      alt={resolvedSignatureAlt || 'Chữ ký nhà sáng lập Hana Lương'}
+                      alt={resolvedSignatureAlt || signatureName || ''}
                       fill
                       sizes="200px"
                       className="object-contain object-left"
                     />
                   </div>
-                ) : (
+                ) : signatureName ? (
                   <p
                     className={`font-quote italic text-2xl sm:text-3xl mb-1 ${
                       isDarkOrNavy ? 'text-white' : 'text-deep-navy'
                     }`}
                   >
-                    Hana Lương
+                    {signatureName}
                   </p>
-                )}
+                ) : null}
 
                 {jobTitle && (
                   <p

@@ -273,12 +273,14 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
       expect(screen.getByText('Tiến triển')).toBeTruthy()
     })
 
-    it('renders HanaStory with layout "letter" and signature', () => {
+    it('renders HanaStory with layout "letter", greeting, and signature', () => {
       render(
         <HanaStory
           titleLine1="THƯ TỪ COACH"
           layout="letter"
           tone="light"
+          greeting="Gửi bạn thân mến,"
+          signatureName="Coach Đồng Hành"
           storyContent="Nội dung bức thư gửi thân chủ."
           founderSignatureAlt="Chữ ký tác giả"
           _resolved={{
@@ -287,8 +289,35 @@ describe('SM-04: Puck Blocks Unit & Snapshot Tests', () => {
           }}
         />,
       )
+      expect(screen.getByText('Gửi bạn thân mến,')).toBeTruthy()
       expect(screen.getByText('Nội dung bức thư gửi thân chủ.')).toBeTruthy()
       expect(screen.getByAltText('Chữ ký tác giả')).toBeTruthy()
+    })
+
+    it('renders HanaStory with layout "letter" and signature text fallback without image', () => {
+      render(
+        <HanaStory
+          titleLine1="THƯ TỪ COACH"
+          layout="letter"
+          greeting="Chào người bạn,"
+          signatureName="Người Ký Tên"
+          storyContent="Nội dung thư không ảnh."
+        />,
+      )
+      expect(screen.getByText('Chào người bạn,')).toBeTruthy()
+      expect(screen.getByText('Người Ký Tên')).toBeTruthy()
+      expect(screen.queryByText('Hana Lương')).toBeNull()
+    })
+
+    it('renders HanaStory without signatureName when empty', () => {
+      const { container } = render(
+        <HanaStory
+          titleLine1="THƯ TỪ COACH"
+          layout="letter"
+          storyContent="Nội dung thư."
+        />,
+      )
+      expect(container.textContent).not.toContain('Hana Lương')
     })
 
     it('renders HanaStory with tone "dark"', () => {

@@ -4,6 +4,7 @@ import {
   applyPuckMigrations,
   migrateJourneyStepsV1ToV2,
   migrateHanaStoryV1ToV2,
+  migrateHanaStoryV2ToV3,
   migrateImageTextV1ToV2,
   migrateLogoStripV1ToV2,
 } from '@/puck/migrations'
@@ -29,11 +30,12 @@ describe('SM-04: Puck Migrations on Seed Pages and Upgraded Blocks', () => {
       for (const block of migrated.content) {
         if (
           block.type === 'JourneySteps' ||
-          block.type === 'HanaStory' ||
           block.type === 'ImageText' ||
           block.type === 'LogoStrip'
         ) {
           expect((block.props as { version?: number }).version).toBe(2)
+        } else if (block.type === 'HanaStory') {
+          expect((block.props as { version?: number }).version).toBe(3)
         }
       }
     }
@@ -117,6 +119,49 @@ describe('SM-04: Puck Migrations on Seed Pages and Upgraded Blocks', () => {
       expect(result.tone).toBe('dark')
       expect(result.layout).toBe('letter')
       expect(result.founderSignatureAlt).toBe('Chữ ký tay')
+    })
+  })
+
+  describe('migrateHanaStoryV2ToV3', () => {
+    it('upgrades v2 HanaStory props to v3 with greeting and signatureName defaults', () => {
+      const data = wrapBlock('HanaStory', {
+        version: 2,
+        titleLine1: 'CHUYỆN CỦA HANA',
+        layout: 'letter',
+      })
+
+      const migrated = migrateHanaStoryV2ToV3(data)
+      const v3Props = migrated.content[0].props as Record<string, unknown>
+      expect(v3Props.version).toBe(3)
+      expect(v3Props.greeting).toBe('')
+      expect(v3Props.signatureName).toBe('')
+      expect(v3Props.titleLine1).toBe('CHUYỆN CỦA HANA')
+    })
+
+    it('preserves existing greeting and signatureName in v3', () => {
+      const data = wrapBlock('HanaStory', {
+        version: 2,
+        layout: 'letter',
+        greeting: 'Chào bạn thương mến,',
+        signatureName: 'Hana',
+      })
+
+      const migrated = migrateHanaStoryV2ToV3(data)
+      const result = migrated.content[0].props as Record<string, unknown>
+      expect(result.version).toBe(3)
+      expect(result.greeting).toBe('Chào bạn thương mến,')
+      expect(result.signatureName).toBe('Hana')
+    })
+
+    it('is idempotent: running migrateHanaStoryV2ToV3 twice produces identical output', () => {
+      const data = wrapBlock('HanaStory', {
+        version: 2,
+        layout: 'letter',
+        greeting: 'Chào bạn,',
+      })
+      const run1 = migrateHanaStoryV2ToV3(data)
+      const run2 = migrateHanaStoryV2ToV3(run1)
+      expect(run2).toEqual(run1)
     })
   })
 
@@ -219,9 +264,11 @@ describe('SM-04: Puck Migrations on Seed Pages and Upgraded Blocks', () => {
     expect(migrated.content[0].props.titleLine1).toBe('HÀNH TRÌNH TÙY BIẾN')
     expect(migrated.content[0].props.step1Subtitle).toBe('Khởi đầu')
 
-    expect(migrated.content[1].props.version).toBe(2)
+    expect(migrated.content[1].props.version).toBe(3)
     expect(migrated.content[1].props.titleLine1).toBe('LỜI BẠC TÙY BIẾN')
     expect(migrated.content[1].props.chips).toEqual([{ text: 'ACC' }])
+    expect((migrated.content[1].props as Record<string, unknown>).greeting).toBe('')
+    expect((migrated.content[1].props as Record<string, unknown>).signatureName).toBe('')
 
     expect(migrated.content[2].props.version).toBe(2)
     expect(migrated.content[2].props.titleLine1).toBe('ẢNH CHỮ TÙY BIẾN')

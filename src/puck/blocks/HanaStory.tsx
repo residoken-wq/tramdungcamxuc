@@ -40,6 +40,14 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
       type: 'text',
       label: 'Chức danh / Vai trò (tùy chọn)',
     },
+    greeting: {
+      type: 'text',
+      label: 'Lời chào đầu thư (chỉ áp dụng cho bố cục Thư - Letter)',
+    },
+    signatureName: {
+      type: 'text',
+      label: 'Tên người ký (chữ ký dạng chữ hoặc alt chữ ký)',
+    },
     storyContent: {
       type: 'textarea',
       label: 'Đoạn kể câu chuyện (các đoạn phân tách bằng 2 lần xuống dòng)',
@@ -75,7 +83,7 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     },
   },
   defaultProps: {
-    version: 2,
+    version: 3,
     tone: 'light',
     layout: 'story',
     imagePosition: 'left',
@@ -83,6 +91,8 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     titleLine1: '[MẪU] HÀNH TRÌNH ĐỒNG HÀNH',
     titleLine2: '[MẪU] THẤU CẢM & CHUYỂN HÓA',
     jobTitle: '',
+    greeting: '',
+    signatureName: '',
     chips: [],
     storyContent:
       '[MẪU] Đoạn văn bản thứ nhất kể về hành trình và chiêm nghiệm.\n\n[MẪU] Đoạn văn bản thứ hai làm rõ hơn giá trị và sự đồng hành.',
@@ -124,7 +134,7 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
           const sig = siteJson?.founderSignature
           if (sig && typeof sig === 'object' && sig.url) {
             resolvedSigUrl = sig.url
-            resolvedSigAlt = sig.alt || 'Chữ ký nhà sáng lập Hana Lương'
+            resolvedSigAlt = sig.alt || data.props.signatureName || ''
           }
         }
       }
