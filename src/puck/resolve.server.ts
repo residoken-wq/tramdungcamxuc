@@ -147,10 +147,25 @@ export async function resolveServerData(
     }
 
     // Collect logo media IDs for LogoStrip
-    if (item.type === 'LogoStrip' && Array.isArray(item.props.logos)) {
-      for (const logo of item.props.logos) {
-        if (logo?.mediaId) {
-          logoMediaIdsToFetch.add(String(logo.mediaId))
+    if (item.type === 'LogoStrip') {
+      const groups = item.props.groups as
+        Array<{ label?: string; logos?: Array<{ mediaId?: string | number }> }> | undefined
+      if (Array.isArray(groups)) {
+        for (const grp of groups) {
+          if (Array.isArray(grp?.logos)) {
+            for (const logo of grp.logos) {
+              if (logo?.mediaId) {
+                logoMediaIdsToFetch.add(String(logo.mediaId))
+              }
+            }
+          }
+        }
+      }
+      if (Array.isArray(item.props.logos)) {
+        for (const logo of item.props.logos) {
+          if (logo?.mediaId) {
+            logoMediaIdsToFetch.add(String(logo.mediaId))
+          }
         }
       }
     }
@@ -737,11 +752,41 @@ export async function resolveServerData(
         .filter(Boolean) as PublicTestimonial[]
       item.props._resolved = { testimonials: resolvedList }
     } else if (item.type === 'LogoStrip') {
+      const groups = item.props.groups as
+        | Array<{
+            label?: string
+            logos?: Array<{
+              mediaId?: string | number
+              alt?: string
+              link?: string
+              imageUrl?: string
+            }>
+          }>
+        | undefined
       const logos = item.props.logos as
         | Array<{ mediaId?: string | number; alt?: string; link?: string; imageUrl?: string }>
         | undefined
+
+      let resolvedGroups: typeof groups = undefined
+      if (Array.isArray(groups)) {
+        resolvedGroups = groups.map((grp) => {
+          if (!Array.isArray(grp?.logos)) return { ...grp, logos: [] }
+          const resLogos = grp.logos.map((l) => {
+            const mid = l?.mediaId ? String(l.mediaId) : ''
+            const found = mid ? logoMediaMap.get(mid) : undefined
+            return {
+              ...l,
+              imageUrl: found?.url || l.imageUrl || '',
+              alt: l.alt || found?.alt || '',
+            }
+          })
+          return { ...grp, logos: resLogos }
+        })
+      }
+
+      let resolvedLogos: typeof logos = undefined
       if (Array.isArray(logos)) {
-        const resolvedLogos = logos.map((l) => {
+        resolvedLogos = logos.map((l) => {
           const mid = l?.mediaId ? String(l.mediaId) : ''
           const found = mid ? logoMediaMap.get(mid) : undefined
           return {
@@ -750,7 +795,11 @@ export async function resolveServerData(
             alt: l.alt || found?.alt || '',
           }
         })
-        item.props._resolved = { logos: resolvedLogos }
+      }
+
+      item.props._resolved = {
+        ...(resolvedGroups ? { groups: resolvedGroups } : {}),
+        ...(resolvedLogos ? { logos: resolvedLogos } : {}),
       }
     } else if (item.type === 'CTAButton') {
       const pId = item.props.pageId ? String(item.props.pageId) : ''
