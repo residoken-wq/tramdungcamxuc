@@ -243,3 +243,4 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 - [ ] `.env.example` cập nhật nếu thêm biến
 - [ ] Chỗ nhạy cảm có `// REVIEW-REQUIRED:` và IT đã duyệt
 - [ ] Không file nào ngoài phạm vi task bị sửa mà không giải thích
+- [ ] Task đổi chữ / nhãn / đường dẫn giao diện: grep chữ **cũ** trong `tests/e2e/` → sửa test cùng task; chạy local các file e2e chạm vào trang đó trước khi đẩy CI (bài học SM-04: 1 nhãn đổi tên làm CI chạy 2 giờ)
