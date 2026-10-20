@@ -234,7 +234,21 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 | SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | Laptop | ✅ Merge 20/10 – PR #169; còn chờ IT xem migration enum + `seed/template-drafts.ts` ([review](reviews/SM-07.md))                    |
 | SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Laptop | ĐẠT 20/10 sau SM-08c ([review](reviews/SM-08.md)); chờ CI + IT xem migration + **Hana nghiệm thu cổng** (`plan/SITEMAP_V2_GATE.md`) |
 
-## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
+### Họp 20/10 – Puck khối con + Habit 28 ngày (kế hoạch `docs/plan/MEETING_2010.md`)
+
+Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB chờ Hana chốt 10 câu (kế hoạch phần 2) và có nhiều migration DB.
+
+| Mã          | Việc                                                                       | Phụ thuộc    | Máy      | Trạng thái                      |
+| ----------- | -------------------------------------------------------------------------- | ------------ | -------- | ------------------------------- |
+| PK-01       | Preset màu chữ / cỡ chữ + SectionHeader v2                                 | –            | PC nhà   | Giao 20/10 – `prompts/PK-01.md` |
+| PK-02       | Khối con Card / Stat / Step + IconCardGrid dùng slot                       | PK-01        | PC nhà   | Chờ PK-01                       |
+| PK-03       | StatsBar, JourneySteps dùng slot                                           | PK-02        | PC nhà   | –                               |
+| PK-04       | ServiceCards, PackageCards dùng slot + ảnh từng thẻ; ImageText dùng helper | PK-02        | PC nhà   | –                               |
+| PK-05       | FAQ slot, Columns nhận khối con, mẫu trang + seed, e2e, hướng dẫn          | PK-03, PK-04 | PC nhà   | –                               |
+| HB-01       | Ghi quyết định Habit 28 ngày (10 câu)                                      | Hana trả lời | Planning | Chờ Hana                        |
+| HB-02→HB-15 | Habit Hack theo workflow 28 ngày (xem kế hoạch phần 2)                     | HB-01        | –        | Chờ HB-01                       |
+
+(Planning dùng cho mọi task)
 
 - [ ] Báo cáo đủ 6 mục theo mẫu AGENTS.md mục 13
 - [ ] Tiêu chí nghiệm thu riêng của task đều tick, có cách kiểm tra cho người không biết code
