@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Logo } from '@/components/brand/Logo'
+import { Logo, type SiteLogo } from '@/components/brand/Logo'
 import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
 import { DesktopSubmenu } from './nav/DesktopSubmenu'
@@ -46,10 +46,11 @@ export interface NavbarProps {
   items: NavItem[]
   cta: NavbarCta
   customer?: NavbarCustomer | null
+  logo?: SiteLogo
   className?: string
 }
 
-export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
+export function Navbar({ items, cta, customer, logo, className = '' }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [openGroup, setOpenGroup] = useState<number | null>(null)
   const toggleButtonRef = useRef<HTMLButtonElement>(null)
@@ -96,7 +97,7 @@ export function Navbar({ items, cta, customer, className = '' }: NavbarProps) {
             href="/"
             className="flex-shrink-0 focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm"
           >
-            <Logo width={130} height={38} />
+            <Logo width={130} height={38} src={logo?.src} alt={logo?.alt} />
           </Link>
 
           {/* Desktop Navigation Links */}

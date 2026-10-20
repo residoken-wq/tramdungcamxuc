@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { Logo } from '@/components/brand/Logo'
+import { Logo, type SiteLogo } from '@/components/brand/Logo'
 import { HeartLine } from '@/components/brand/HeartLine'
 import { vi } from '@/lib/i18n/vi'
 
@@ -28,6 +28,7 @@ export interface FooterProps {
   sellerInfo?: SellerInfo
   socialLinks?: SocialLink[]
   tagline?: string
+  logo?: SiteLogo
   className?: string
 }
 
@@ -36,6 +37,7 @@ export function Footer({
   sellerInfo,
   socialLinks,
   tagline,
+  logo,
   className = '',
 }: FooterProps) {
   const currentYear = new Date().getFullYear()
@@ -69,7 +71,7 @@ export function Footer({
               href="/"
               className="inline-block focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm"
             >
-              <Logo width={140} height={40} />
+              <Logo width={140} height={40} src={logo?.src} alt={logo?.alt} />
             </Link>
 
             {/* Optional brand tagline from CMS */}

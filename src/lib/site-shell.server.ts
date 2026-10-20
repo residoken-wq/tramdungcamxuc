@@ -8,8 +8,10 @@ import { vi } from '@/lib/i18n/vi'
 import type { NavGroup, NavItem, NavbarCta } from '@/components/site/Navbar'
 import { PATHS } from '@/lib/paths'
 import type { LegalLink, SellerInfo, SocialLink } from '@/components/site/Footer'
+import type { SiteLogo } from '@/components/brand/Logo'
 
 export interface SiteShellData {
+  logo?: SiteLogo
   navbar: {
     items: NavItem[]
     cta: NavbarCta
@@ -175,6 +177,13 @@ export function buildSiteShellFromPayloadData(args: {
 
   const tagline = siteSettings?.tagline?.trim() || undefined
 
+  // Logo: needs siteSettings read with depth >= 1 so the upload is populated.
+  const logoDoc = siteSettings?.logo
+  const logo: SiteLogo | undefined =
+    logoDoc && typeof logoDoc === 'object' && typeof logoDoc.url === 'string' && logoDoc.url
+      ? { src: logoDoc.url, alt: logoDoc.alt?.trim() || 'Trạm Dừng Cảm Xúc' }
+      : undefined
+
   // 3. FloatingChat mapping
   const floatingChat = {
     showFloatingChat: Boolean(siteSettings?.showFloatingChat),
@@ -182,6 +191,7 @@ export function buildSiteShellFromPayloadData(args: {
   }
 
   return {
+    logo,
     navbar: { items, cta },
     footer: {
       legalLinks,
@@ -204,7 +214,7 @@ export async function getSiteShellData(): Promise<SiteShellData> {
 
     const [navigation, siteSettings, legalPagesResult] = await Promise.all([
       payload.findGlobal({ slug: 'navigation', depth: 1 }).catch(() => null),
-      payload.findGlobal({ slug: 'siteSettings', depth: 0 }).catch(() => null),
+      payload.findGlobal({ slug: 'siteSettings', depth: 1 }).catch(() => null),
       payload
         .find({
           collection: 'legalPages',

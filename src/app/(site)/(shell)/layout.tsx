@@ -11,6 +11,7 @@ export default async function SiteShellLayout({ children }: { children: React.Re
       <Navbar
         items={shellData.navbar.items}
         cta={shellData.navbar.cta}
+        logo={shellData.logo}
         customer={customer ? { name: customer.name, email: customer.email } : null}
       />
       <main id="noi-dung" className="flex-1">
@@ -21,6 +22,7 @@ export default async function SiteShellLayout({ children }: { children: React.Re
         sellerInfo={shellData.footer.sellerInfo}
         socialLinks={shellData.footer.socialLinks}
         tagline={shellData.footer.tagline}
+        logo={shellData.logo}
       />
       <FloatingChat
         showFloatingChat={shellData.floatingChat.showFloatingChat}

@@ -1,12 +1,19 @@
 import React from 'react'
 import Image from 'next/image'
 
+/** Logo uploaded in Cài đặt website (siteSettings.logo). */
+export interface SiteLogo {
+  src: string
+  alt: string
+}
+
 export interface LogoProps {
   variant?: 'default' | 'light' | 'dark' | 'monochrome'
   className?: string
   width?: number
   height?: number
   src?: string
+  alt?: string
 }
 
 /**
@@ -23,21 +30,21 @@ export function Logo({
   width = 140,
   height = 40,
   src,
+  alt,
 }: LogoProps) {
   const minWidth = Math.max(120, width)
 
   // Nếu có đường dẫn ảnh thật truyền vào hoặc tồn tại
   if (src) {
     return (
-      <div
-        className={`inline-block ${className}`}
-        style={{ minWidth: `${minWidth}px` }}
-      >
+      <div className={`inline-block ${className}`} style={{ minWidth: `${minWidth}px` }}>
         <Image
           src={src}
-          alt="Trạm Dừng Cảm Xúc"
+          alt={alt || 'Trạm Dừng Cảm Xúc'}
           width={width}
           height={height}
+          // next.config only allows local /api/media/file/** through the optimizer.
+          unoptimized={!src.startsWith('/')}
           className="h-auto w-full object-contain"
         />
       </div>
