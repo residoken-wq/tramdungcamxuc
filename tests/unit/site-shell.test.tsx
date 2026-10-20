@@ -139,6 +139,38 @@ describe('site-shell.server & Footer empty states', () => {
     expect(result.floatingChat.zaloChatUrl).toBe('https://zalo.me/0900000000')
   })
 
+  it('logo: lấy ảnh đã tải trong Cài đặt website, chưa có thì không có logo', () => {
+    const withLogo = buildSiteShellFromPayloadData({
+      navigation: null,
+      siteSettings: {
+        logo: { id: 7, alt: 'Logo Trạm', url: '/api/media/file/logo.png' },
+      } as unknown as SiteSetting,
+    })
+    expect(withLogo.logo).toEqual({ src: '/api/media/file/logo.png', alt: 'Logo Trạm' })
+
+    // depth 0 returns only the id: never render a broken image
+    const idOnly = buildSiteShellFromPayloadData({
+      navigation: null,
+      siteSettings: { logo: 7 } as unknown as SiteSetting,
+    })
+    expect(idOnly.logo).toBeUndefined()
+
+    const none = buildSiteShellFromPayloadData({ navigation: null, siteSettings: null })
+    expect(none.logo).toBeUndefined()
+  })
+
+  it('Footer hiện ảnh logo khi có, khung chờ khi chưa có', () => {
+    const { unmount } = render(
+      <Footer logo={{ src: '/api/media/file/logo.png', alt: 'Logo Trạm' }} />,
+    )
+    expect(screen.getByAltText('Logo Trạm')).toBeTruthy()
+    expect(screen.queryByText('LOGO – chờ file từ Hana')).toBeNull()
+    unmount()
+
+    render(<Footer />)
+    expect(screen.getByText('LOGO – chờ file từ Hana')).toBeTruthy()
+  })
+
   it('Footer ẩn hoàn toàn trường sellerInfo trống hoặc chỉ chứa khoảng trắng', () => {
     // Trường hợp 1: sellerInfo có các trường rỗng / chuỗi trắng -> không hiển thị trường nào
     const { container: c1 } = render(
