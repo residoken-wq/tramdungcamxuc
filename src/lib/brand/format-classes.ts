@@ -1,7 +1,5 @@
 import {
-  FONT_SIZE_OPTIONS,
   TEXT_COLOR_OPTIONS,
-  ALIGN_OPTIONS,
   type FontSizeOption,
   type TextColorOption,
   type AlignOption,

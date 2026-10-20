@@ -7,13 +7,9 @@ import {
   textColorClass,
   emotionColorClass,
   fontSizeClass,
-  type TextColorOption,
   type FontSizeOption,
 } from '@/lib/brand/format-classes'
 import {
-  FONT_SIZE_OPTIONS,
-  TEXT_COLOR_OPTIONS,
-  ALIGN_OPTIONS,
   SECTION_BG_COLOR_OPTIONS,
 } from '@/puck/constants'
 import { puckConfig } from '@/puck/config'
@@ -259,8 +255,8 @@ describe('PK-01: SectionHeader v2 Migration & Snapshot Parity', () => {
   })
 
   it('trang cũ (v1) sau migration render HTML giống hệt trước khi nâng cấp', () => {
-    const v1Props = sampleV1Data.content[0].props as any
-    const v2Props = migrateSectionHeaderV1ToV2(sampleV1Data).content[0].props as any
+    const v1Props = sampleV1Data.content[0].props as unknown as React.ComponentProps<typeof SectionHeader>
+    const v2Props = migrateSectionHeaderV1ToV2(sampleV1Data).content[0].props as unknown as React.ComponentProps<typeof SectionHeader>
 
     const v1Html = renderToStaticMarkup(<SectionHeader {...v1Props} />)
     const v2Html = renderToStaticMarkup(<SectionHeader {...v2Props} />)
@@ -269,53 +265,65 @@ describe('PK-01: SectionHeader v2 Migration & Snapshot Parity', () => {
   })
 })
 
+interface ResolvedColorField {
+  type?: string
+  contentEditable?: boolean
+  options?: Array<{ label: string; value: string }>
+}
+
 describe('PK-01: SectionHeader Puck Config & resolveFields', () => {
   it('cấu hình fields không chứa ô nhập tự do nào cho màu chữ hay cỡ chữ', () => {
     const block = puckConfig.components.SectionHeader
     expect(block).toBeDefined()
     expect(block.defaultProps?.version).toBe(2)
 
-    const fields = block.fields as Record<string, any>
-    expect(fields.line1Color.type).toBe('select')
-    expect(fields.line2Color.type).toBe('select')
-    expect(fields.eyebrowColor.type).toBe('select')
-    expect(fields.emotionColor.type).toBe('select')
-    expect(fields.titleSize.type).toBe('select')
-    expect(fields.emotionSize.type).toBe('select')
+    const fields = block.fields as Record<string, ResolvedColorField>
+    expect(fields.line1Color?.type).toBe('select')
+    expect(fields.line2Color?.type).toBe('select')
+    expect(fields.eyebrowColor?.type).toBe('select')
+    expect(fields.emotionColor?.type).toBe('select')
+    expect(fields.titleSize?.type).toBe('select')
+    expect(fields.emotionSize?.type).toBe('select')
 
     // Bật contentEditable trên các trường văn bản
-    expect(fields.titleLine1.contentEditable).toBe(true)
-    expect(fields.titleLine2.contentEditable).toBe(true)
-    expect(fields.seriesLabel.contentEditable).toBe(true)
-    expect(fields.emotionLine.contentEditable).toBe(true)
+    expect(fields.titleLine1?.contentEditable).toBe(true)
+    expect(fields.titleLine2?.contentEditable).toBe(true)
+    expect(fields.seriesLabel?.contentEditable).toBe(true)
+    expect(fields.emotionLine?.contentEditable).toBe(true)
   })
 
   it('resolveFields động lọc màu an toàn dựa trên nền của cha và cỡ chữ', () => {
     const block = puckConfig.components.SectionHeader
     expect(block.resolveFields).toBeDefined()
 
+    type ResolveFn = (
+      data: unknown,
+      appState: unknown,
+    ) => Record<string, { options: Array<{ label: string; value: string }> }>
+    const resolve = block.resolveFields as unknown as ResolveFn
+
     // 1. Trên nền deep-navy: chỉ hiện white và soft-pink
-    const resolvedNavy = (block.resolveFields as any)(
+    const resolvedNavy = resolve(
       { props: { titleSize: 'md' } },
       { parent: { props: { bgColor: 'deep-navy' } } },
     )
-    const navyLine1Options = resolvedNavy.line1Color.options.map((o: any) => o.value)
+    const navyLine1Options = resolvedNavy.line1Color.options.map((o) => o.value)
     expect(navyLine1Options).toEqual(['white', 'soft-pink'])
 
     // 2. Trên nền lavender-mist với cỡ nhỏ (sm): bright-magenta bị loại
-    const resolvedLavenderSm = (block.resolveFields as any)(
+    const resolvedLavenderSm = resolve(
       { props: { titleSize: 'sm' } },
       { parent: { props: { bgColor: 'lavender-mist' } } },
     )
-    const lavenderSmOptions = resolvedLavenderSm.line1Color.options.map((o: any) => o.value)
+    const lavenderSmOptions = resolvedLavenderSm.line1Color.options.map((o) => o.value)
     expect(lavenderSmOptions).not.toContain('bright-magenta')
 
     // 3. Trên nền lavender-mist với cỡ lớn (lg): bright-magenta được phép
-    const resolvedLavenderLg = (block.resolveFields as any)(
+    const resolvedLavenderLg = resolve(
       { props: { titleSize: 'lg' } },
       { parent: { props: { bgColor: 'lavender-mist' } } },
     )
-    const lavenderLgOptions = resolvedLavenderLg.line1Color.options.map((o: any) => o.value)
+    const lavenderLgOptions = resolvedLavenderLg.line1Color.options.map((o) => o.value)
     expect(lavenderLgOptions).toContain('bright-magenta')
   })
 })
