@@ -6,6 +6,7 @@ export const workshopTemplate: Data = {
       title: 'Trang workshop',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroImage',

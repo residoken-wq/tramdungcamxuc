@@ -6,6 +6,7 @@ export const journeyTemplate: Data = {
       title: 'Trang lộ trình',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroImage',

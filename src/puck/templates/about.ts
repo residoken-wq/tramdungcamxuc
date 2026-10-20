@@ -6,6 +6,7 @@ export const aboutTemplate: Data = {
       title: 'Trang Về Trạm',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroImage',

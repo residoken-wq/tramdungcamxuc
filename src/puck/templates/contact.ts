@@ -6,6 +6,7 @@ export const contactTemplate: Data = {
       title: 'Trang Liên hệ',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroImage',

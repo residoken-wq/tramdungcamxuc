@@ -6,6 +6,7 @@ export const coachTemplate: Data = {
       title: 'Trang Coach 1:1',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroImage',

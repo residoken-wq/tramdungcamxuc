@@ -6,6 +6,7 @@ export const campaignTemplate: Data = {
       title: 'Landing chiến dịch',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroImage',

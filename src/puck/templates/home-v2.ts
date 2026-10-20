@@ -6,6 +6,7 @@ export const homeV2Template: Data = {
       title: 'Trang chủ v2',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroTwoEntries',
