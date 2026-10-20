@@ -34,7 +34,7 @@ export const workshopTemplate: Data = {
       type: 'SectionHeader',
       props: {
         id: 'workshop-content-header',
-        version: 1,
+        version: 2,
         seriesLabel: '[MẪU] Nội dung buổi học',
         titleLine1: '[MẪU] ĐIỂM CHẠM SÂU SẮC',
         titleLine2: '[MẪU] THỰC HÀNH CÙNG NHAU',
@@ -42,6 +42,12 @@ export const workshopTemplate: Data = {
           '[MẪU] Kết hợp giữa lý thuyết tâm lý thực hành và các bài tập chánh niệm ứng dụng.',
         align: 'center',
         as: 'h2',
+        titleSize: 'md',
+        line1Color: 'deep-navy',
+        line2Color: 'bright-magenta',
+        eyebrowColor: 'bright-magenta',
+        emotionColor: 'deep-navy',
+        emotionSize: 'md',
       },
     },
     {
