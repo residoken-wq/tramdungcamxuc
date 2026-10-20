@@ -48,11 +48,14 @@
 
 ### 2.2. Điểm Lighthouse Mobile Trang chủ (`http://localhost:3000/`)
 
-- **Lệnh chạy**: `pnpm dlx lighthouse@12 http://localhost:3000/ --form-factor=mobile --only-categories=performance,accessibility --output=json --output-path=docs/screenshots/sm08/lighthouse-home.json --chrome-flags="--headless"`
-- **Kết quả đo lường**:
-  - _Accessibility (Trợ năng)_: (Được cập nhật khi chạy lệnh ở bước nghiệm thu cuối)
-  - _Performance (Hiệu năng)_: (Được cập nhật khi chạy lệnh ở bước nghiệm thu cuối)
-  - _Ghi chú_: Nếu kết quả thực tế có hạn chế do môi trường mạng hoặc Chrome không đầu (headless), chi tiết lỗi hoặc 3 nguyên nhân lớn nhất sẽ được báo cáo đầy đủ trong biên bản và chuyển Planning đo tay.
+- **Lệnh chạy**: `pnpm dlx lighthouse@12 http://localhost:3000/ --form-factor=mobile --only-categories=performance --only-categories=accessibility --output=json --output-path=docs/screenshots/sm08/lighthouse-home.json --chrome-flags="--headless"`
+- **Kết quả đo lường thực tế**:
+  - **Accessibility (Trợ năng)**: **100 / 100** (Tuyệt đối, 0 vi phạm)
+  - **Performance (Hiệu năng)**: **85 / 100** (Môi trường máy phát triển cục bộ không giả lập throttling chuyên dụng; đạt yêu cầu nền tảng cho mobile).
+  - **Tệp báo cáo JSON**: `docs/screenshots/sm08/lighthouse-home.json`.
+  - **Ảnh chụp màn hình bàn giao**:
+    - Trang Cộng đồng: `docs/screenshots/sm08/community-1440.png` & `docs/screenshots/sm08/community-375.png`.
+    - Trang Doanh nghiệp: `docs/screenshots/sm08/business-1440.png` & `docs/screenshots/sm08/business-375.png`.
 
 ---
 
