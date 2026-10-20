@@ -20,7 +20,7 @@ Planning **không** vào server, không đọc / ghi mật khẩu hay khóa. M�
 
 **Kết luận: code chạy ổn, nhưng chưa đủ để bàn giao.** Còn 3 lỗi kỹ thuật chặn (mục B, GO-01) và phần nội dung Hana phải đưa (mục C).
 
-## B. GO-01 – sửa kỹ thuật trước khi lên (Planning làm, ~3 h)
+## B. GO-01 – sửa kỹ thuật trước khi lên (Planning đã làm 20/10, PR kèm file này)
 
 | #   | Vấn đề                                                                                                                                                                                                                                                                                  | Sửa                                                                                                                                                                                                               |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -75,11 +75,15 @@ Ngoài code, anh cần làm ở GitHub: **Settings → Secrets and variables →
 1. Trên **server demo**, dọn trước khi sao lưu. Lệnh xóa khách demo không chạy được trên bản thật vì bị chặn với domain thật:
    `docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e SITE_URL=https://tdcx.skoolmate.vn seed pnpm seed:demo-gd2:clean < /dev/null` (đúng lệnh trong RUNBOOK mục "Dữ liệu demo GĐ 2")
    Lệnh này chỉ xóa 3 khách demo cố định (`hoc-vien-test-0x@example.test`), đơn / quyền / tracker của họ và workshop `[MẪU]` demo. Đơn thật ngày 15/10 không bị đụng.
-2. Vẫn trên server demo: chạy quy trình backup trong RUNBOOK ("Backup DB và media cùng thời điểm") **và thêm volume `private`** (hoặc dùng `scripts/backup.sh` của GO-01). Kiểm `SHA256SUMS`.
+2. Vẫn trên server demo: `git pull --ff-only`, rồi sao lưu bằng script mới (DB + `media` + `private`):
+   `PROJECT=tdcx-demo COMPOSE_FILES="-f docker-compose.prod.yml" BACKUP_ROOT=/root/tdcx-move ./scripts/backup.sh`
+   Mong đợi dòng `backup OK: …`. Kiểm `SHA256SUMS`. App demo dừng vài giây rồi tự chạy lại.
 3. Chép thư mục backup sang VPS mới (`scp` / `rsync`), kiểm lại checksum trên VPS.
-4. Trên VPS mới: `docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml up -d postgres`, rồi khôi phục DB, `media` và `private` theo RUNBOOK mục "Phục hồi toàn diện" (đổi `tdcx-demo` thành `tdcx`).
+4. Trên VPS mới: `docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml up -d postgres`, rồi khôi phục DB và `media` theo RUNBOOK mục "Phục hồi toàn diện" (đổi `tdcx-demo` thành `tdcx`, thêm `-f docker-compose.npm.yml`). `private` khôi phục giống `media`, đổi `/app/media` thành `/app/private` và `media.tar.gz` thành `private.tar.gz`.
 5. `docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml up -d`. App tự chạy các migration còn thiếu. Xem log: `docker compose -p tdcx logs app --tail 100`, không có dòng lỗi migration.
-6. Dữ liệu `[MẪU]` còn lại: chạy `pnpm sample:report` (GO-01 B5), Hana xóa hoặc sửa trong admin.
+6. Dữ liệu `[MẪU]` còn lại (chỉ đọc, không xóa gì):
+   `docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml --profile tools run --rm seed pnpm sample:report < /dev/null`
+   In bảng số bản ghi mẫu theo từng bảng và danh sách `#id – trạng thái – còn chữ [MẪU] hay đã sửa`. Hana sửa thành nội dung thật hoặc xóa trong admin. 6 trang pháp lý hiện "đã sửa chữ" vì là khung trống, chỉ cần điền nội dung.
 7. **Không** chạy `pnpm seed` hay bất kỳ lệnh `seed:demo-gd2*` nào trên server thật.
 8. Tài khoản admin chuyển theo DB. Tạo tài khoản `owner` cho Hana trong admin (anh tự gửi mật khẩu). Rà danh sách Quản trị viên, xóa tài khoản test.
 
@@ -88,7 +92,7 @@ Ngoài code, anh cần làm ở GitHub: **Settings → Secrets and variables →
 Tạo **Proxy Host**:
 
 - Domain Names: `tramdungcamxuc.com`, `www.tramdungcamxuc.com`
-- Scheme `http`, Forward Hostname: tên container app (ví dụ `tdcx-app-1`), Forward Port `3000`
+- Scheme `http`, Forward Hostname `tdcx-app` (tên app trong mạng NPM, đặt ở `docker-compose.npm.yml`), Forward Port `3000`
 - Bật **Block Common Exploits**, **Websockets Support**
 - Tab SSL: **Request a new SSL Certificate** (Let's Encrypt), bật **Force SSL** và **HTTP/2**. Chỉ bật **HSTS** sau khi HTTPS chạy ổn ít nhất 1 ngày: app đã tự gửi HSTS `includeSubDomains`, áp lên mọi tên miền con của tramdungcamxuc.com.
 - Tab **Advanced** – **bắt buộc**. Nếu thiếu, khách có thể giả IP để lách giới hạn gửi OTP / form (RUNBOOK mục SePay, T2-21). Ứng dụng đọc IP **đầu tiên** trong `X-Forwarded-For`, nên phải ghi đè header này bằng IP thật:
@@ -103,7 +107,7 @@ location / {
     proxy_set_header Connection $http_connection;
     proxy_http_version 1.1;
     client_max_body_size 50m;
-    proxy_pass http://tdcx-app-1:3000;
+    proxy_pass http://tdcx-app:3000;
 }
 
 location = /api/payments/sepay/webhook {
@@ -112,7 +116,7 @@ location = /api/payments/sepay/webhook {
     proxy_set_header X-Forwarded-For $remote_addr;
     proxy_set_header X-Real-IP $remote_addr;
     client_max_body_size 64k;
-    proxy_pass http://tdcx-app-1:3000;
+    proxy_pass http://tdcx-app:3000;
 }
 ```
 
@@ -120,7 +124,7 @@ Kiểm cấu hình NPM sinh ra **không** còn `$proxy_add_x_forwarded_for` cho 
 
 ### E4. Cron (crontab của user chạy Docker trên VPS)
 
-5 việc hẹn giờ, gọi bằng `CRON_SECRET` trong `.env`. Lệnh mẫu và giờ chạy lấy đúng RUNBOOK mục "Lịch Cron …" (T1-12a, T2-10, T2-02, T2-04, T2-06), đổi địa chỉ thành `https://tramdungcamxuc.com`. Thêm dòng backup hằng ngày của GO-01 B4. Thiếu cron thì đơn chờ không bao giờ hết hạn và không có email nhắc.
+5 việc hẹn giờ, gọi bằng `CRON_SECRET` trong `.env`. Backup hằng ngày: `15 3 * * * cd /opt/tdcx && ./scripts/backup.sh >> /var/log/tdcx-backup.log 2>&1` (giữ 14 ngày ở `/opt/tdcx-backups`; mỗi tuần chép thư mục này ra máy khác). Lệnh mẫu và giờ chạy lấy đúng RUNBOOK mục "Lịch Cron …" (T1-12a, T2-10, T2-02, T2-04, T2-06), đổi địa chỉ thành `https://tramdungcamxuc.com`. Thêm dòng backup hằng ngày của GO-01 B4. Thiếu cron thì đơn chờ không bao giờ hết hạn và không có email nhắc.
 
 ### E5. Kiểm sau khi lên (anh chạy, báo Planning kết quả)
 
@@ -141,7 +145,7 @@ Rồi trên trình duyệt (điện thoại + máy tính):
 
 ## F. Thứ tự đề xuất
 
-1. Planning làm **GO-01** → anh duyệt PR, merge, CI build image mới (đã đặt `TURNSTILE_SITE_KEY`).
+1. GO-01 đã làm → anh duyệt PR, merge, CI build image mới (đặt `TURNSTILE_SITE_KEY` **trước** khi merge để image mới có key thật).
 2. Anh: DNS + Resend (xác minh domain `tramdungcamxuc.com`: SPF, DKIM) + Turnstile + E1–E5 với `SITE_NOINDEX=true`, `PAYMENT_SANDBOX=` để trống (đơn thật).
 3. Hana: mục C (logo, pháp lý, giá, ngân hàng…) + buổi thử CM-07 trên bản thật. Planning chạy lại `pnpm sample:report`, viết biên bản CM-07.
 4. Anh: duyệt mục D.
