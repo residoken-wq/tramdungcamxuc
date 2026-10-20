@@ -38,6 +38,7 @@
    - [5.10. Các khối mới – đợt B (Sitemap v2: Về Trạm + Coach 1:1)](#510-các-khối-mới--đợt-b-sitemap-v2-về-trạm--coach-11)
    - [5.11. Trang Tài nguyên (Sitemap v2)](#511-trang-tài-nguyên-sitemap-v2)
    - [5.12. Trang Liên hệ & Câu hỏi thường gặp (Sitemap v2)](#512-trang-liên-hệ--câu-hỏi-thường-gặp-sitemap-v2)
+   - [5.13. Mẫu trang Sitemap v2 & bản nháp](#513-mẫu-trang-sitemap-v2--bản-nháp)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
 8. [Quản lý Khách tiềm năng (Leads) và Xuất file CSV](#8-quản-lý-khách-tiềm-năng-leads-và-xuất-file-csv)
@@ -1512,6 +1513,57 @@ Trong đợt nâng cấp Sitemap v2 (SM-06), website được bổ sung trang **
   2. Bấm vào nút **Lọc (Filter)** ở đầu bảng.
   3. Chọn điều kiện: `Nguồn form` (`source.form`) bằng `contact-b2c` (để xem riêng khách cá nhân liên hệ) hoặc `contact-b2b` (để xem riêng đề xuất từ doanh nghiệp).
   4. Hana có thể cập nhật trạng thái chăm sóc (`Mới`, `Đã liên hệ`, `Đang trao đổi`...) và bấm **Xuất CSV** khi cần bàn giao.
+
+---
+
+### 5.13. Mẫu trang Sitemap v2 & bản nháp
+
+Trong đợt nâng cấp Sitemap v2 (SM-07), website được trang bị **5 mẫu trang chuyên sâu mới** dựng sẵn theo đúng cấu trúc chuẩn của Trạm Dừng Cảm Xúc.
+
+#### 1. Danh sách 5 Mẫu trang Sitemap v2
+
+| Mẫu trang                      | Mục đích sử dụng                     | Các khối chính trong mẫu                                                                                                                                                                                                                                                                                                                             |
+| ------------------------------ | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Trang chủ v2 (`home-v2`)**   | Trang chủ chính thức toàn diện       | Hero 2 lối vào (Cá nhân & Tổ chức), 3 gói giải pháp CLEAR/BUILD/SHINE, 4 bước nhận diện cảm xúc, Trích dẫn sâu lắng, Quiz chẩn đoán thói quen, Hành trình chuyển hóa 5 bước, Câu chuyện người sáng lập Hana, Dải số liệu bảo chứng, Lời chia sẻ của khách hàng, Hệ sinh thái giải pháp, Câu hỏi thường gặp và Form kết nối nhanh (dạng tab B2C/B2B). |
+| **Trang lộ trình (`journey`)** | Giới thiệu lộ trình chuyển mình      | Hero ảnh lớn, 4 nỗi đau thường gặp (thẻ đánh số 1–4), Khối điểm dừng chiêm nghiệm (Callout), 3 gói đồng hành chi tiết, Bảng so sánh quyền lợi cấu phần và giá trị, Câu chuyện khách hàng thực tế (Testimonial story), Câu hỏi thường gặp và Khối kêu gọi hành động cuối trang kèm dải ảnh bảo chứng.                                                 |
+| **Trang Về Trạm (`about`)**    | Kể câu chuyện thương hiệu & Triết lý | Hero ảnh đại diện, Câu chuyện "Tại sao lại là Trạm Dừng", Tầm nhìn & Sứ mệnh, 4 giá trị cốt lõi, Khung phương pháp 5 bước, Bức thư ngỏ từ người sáng lập Hana (kèm chữ ký viết tay), Đội ngũ chuyên gia khai vấn, Tiêu chuẩn & Cam kết quốc tế, Dải logo đối tác/chứng nhận và 2 lối vào hành động tiếp theo.                                        |
+| **Trang Coach 1:1 (`coach`)**  | Dịch vụ khai vấn cá nhân chuyên sâu  | Hero khai vấn, 4 tình huống cần một tấm gương phản chiếu, 2 dịch vụ chính (Growth Mirror & Thinking Mirror), 3 yếu tố diễn ra trong một phiên khai vấn, Khái niệm không gian an toàn, Câu chuyện chuyển hóa 3 chặng, Tiến trình 5 bước và Khối đặt phiên trải nghiệm.                                                                                |
+| **Trang Liên hệ (`contact`)**  | Cổng kết nối và tiếp nhận thông tin  | Hero kết nối, 3 cam kết hồi đáp từ Trạm, Khối thông tin liên hệ chính thức (Email, Hotline, Văn phòng, Mạng xã hội), Biểu mẫu liên hệ 2 cột song song (Dành cho Cá nhân & Dành cho Doanh nghiệp) và Câu hỏi thường gặp theo nhóm chung.                                                                                                              |
+
+#### 2. Cơ chế Bản nháp mẫu an toàn (Sample Drafts)
+
+Để Hana có thể xem thử diện mạo mới của 5 trang chính mà **không làm ảnh hưởng đến trang đang hoạt động trên website**:
+
+- **Bản công khai vẫn an toàn 100%**: Bản đang chạy công khai ngoài website vẫn giữ nguyên nội dung ban đầu. Độc giả và khách hàng truy cập website không nhìn thấy bất kỳ xáo trộn nào.
+- **Xem trước bản nháp trong Puck Editor**:
+  1. Vào menu bên trái -> **Website** -> **Trang nội dung** (`pages`).
+  2. Bấm vào trang bạn muốn xem (ví dụ: trang chủ `/`, trang `/ve-tram`, `/lo-trinh-chuyen-minh`, `/coaching`, hoặc `/lien-he`).
+  3. Bấm nút **"Chỉnh sửa trực quan"** ở thanh công cụ phía trên.
+  4. Màn hình Puck Editor sẽ mở ra với toàn bộ bố cục của mẫu mới đã được sắp đặt sẵn. Hana có thể chỉnh sửa câu chữ, thay ảnh hoặc thay đổi thứ tự các khối theo ý thích.
+- **Nếu thích bản mới**: Bấm nút **"Xuất bản"** ở góc trên bên phải. Bản mẫu mới sẽ chính thức hiển thị ra ngoài website.
+- **Nếu chưa muốn dùng hoặc muốn quay lại bản cũ**:
+  1. Trong trang quản trị của trang đó, nhìn sang cột bên phải tìm mục **Lịch sử phiên bản (Versions)**.
+  2. Bấm vào phiên bản đã xuất bản trước đó (`Published`).
+  3. Bấm **Khôi phục phiên bản này (Restore)** để trở về bản cũ ngay lập tức.
+
+#### 3. Cách tạo trang mới hoàn toàn từ Mẫu có sẵn
+
+Khi bạn muốn tạo một chiến dịch mới, một trang dịch vụ mới hoặc một trang sự kiện mới:
+
+1. Vào menu bên trái -> **Website** -> **Trang nội dung** (`pages`) -> Bấm **Tạo mới**.
+2. Nhập **Tiêu đề trang** (ví dụ: _Chiến dịch Mùa Thu 2026_) và **Đường dẫn (slug)** (ví dụ: `mua-thu-2026`).
+3. Ở ô **Mẫu trang (`Template`)**, bấm chọn một trong 9 mẫu có sẵn:
+   - _Trang chủ v2_
+   - _Trang lộ trình_
+   - _Trang Về Trạm_
+   - _Trang Coach 1:1_
+   - _Trang Liên hệ_
+   - _Landing chiến dịch_
+   - _Trang dịch vụ_
+   - _Trang workshop_
+   - _Trang sự kiện_
+4. Bấm **Lưu bản nháp**. Hệ thống sẽ tự động điền sẵn toàn bộ bố cục, các khối và nội dung mẫu tương ứng vào trang.
+5. Bấm nút **"Chỉnh sửa trực quan"** để vào Puck Editor tinh chỉnh nội dung và hình ảnh trước khi xuất bản.
 
 ---
 
