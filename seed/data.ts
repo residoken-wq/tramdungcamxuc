@@ -271,7 +271,9 @@ export const faqs = [1, 2, 3].map((n) => ({
 }))
 
 // Choices for the "Tình trạng hiện tại" select on the contact form (siteSettings).
-export const leadStatusOptions = [1, 2, 3].map((n) => ({ label: `${S} Tình trạng ${n}` }))
+export const leadStatusOptions = [1, 2, 3].map((n) => ({
+  label: `${S} Tình trạng ${String(n).padStart(2, '0')}`,
+}))
 
 export const eqCards = [1, 2, 3].map((n) => ({
   code: `MAU-${String(n).padStart(2, '0')}`,
@@ -700,17 +702,65 @@ export const pages = [
     slug: 'lien-he',
     title: `${S} Liên hệ`,
     blocks: [
-      header(
-        `${S} LẮNG NGHE ĐỂ`,
-        `${S} KIẾN TẠO SỰ CHUYỂN HÓA`,
-        `${S} Dòng cảm xúc chờ Hana viết`,
-        'h1',
-      ),
-      block('B2BBriefForm', {
+      block('HeroImage', {
+        version: 2,
+        seriesLabel: `${S} KẾT NỐI VỚI TRẠM`,
+        titleLine1: `${S} LẮNG NGHE ĐỂ`,
+        titleLine2: `${S} KIẾN TẠO SỰ CHUYỂN HÓA`,
+        emotionLine: `${S} Mọi chia sẻ của bạn đều được đón nhận bằng sự thấu cảm, tôn trọng và trọn vẹn yêu thương.`,
+        mediaId: '',
+        imageUrl: '',
+        imageAlt: '',
+        buttonText: '',
+        buttonLink: '',
+        secondaryButtonText: '',
+        secondaryButtonLink: '',
+        badges: [],
+        stats: [],
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      }),
+      block('ContactInfo', {
         version: 1,
-        title: `${S} Gửi yêu cầu cho Trạm`,
-        description: `${S} Mô tả chờ Hana viết.`,
-        submitLabel: 'Gửi yêu cầu',
+        seriesLabel: `${S} THÔNG TIN LIÊN HỆ`,
+        titleLine1: `${S} KẾT NỐI VỚI TRẠM`,
+        titleLine2: `${S} LẮNG NGHE VÀ ĐỒNG HÀNH`,
+        emotionLine: `${S} Mọi chia sẻ của bạn đều được đón nhận bằng sự thấu cảm, tôn trọng và trọn vẹn yêu thương.`,
+        showEmail: true,
+        showHotline: true,
+        showAddress: true,
+        showSocial: true,
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      }),
+      block('ContactForms', {
+        version: 1,
+        layout: 'columns',
+        b2cTitle: `${S} Dành cho Cá nhân`,
+        b2cDescription: `${S} Đăng ký tư vấn 1:1 hoặc gửi những trăn trở của bạn về hành trình cảm xúc và thói quen.`,
+        b2bTitle: `${S} Dành cho Doanh nghiệp`,
+        b2bDescription: `${S} Cùng Trạm kiến tạo chương trình đào tạo và giải pháp chăm sóc sức khỏe tinh thần cho đội ngũ.`,
+        b2cSubmitLabel: 'Gửi yêu cầu tư vấn',
+        b2bSubmitLabel: 'Gửi đề xuất doanh nghiệp',
+        successMessageB2C: `${S} Trạm đã nhận được thông tin và sẽ phản hồi qua email hoặc số điện thoại trong vòng 24 giờ làm việc.`,
+        successMessageB2B: `${S} Cảm ơn quý doanh nghiệp đã gửi yêu cầu. Đội ngũ Trạm Dừng Cảm Xúc sẽ liên hệ lại trong thời gian sớm nhất.`,
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      }),
+      block('FAQ', {
+        version: 3,
+        source: 'group',
+        group: 'general',
+        limit: 5,
+        seriesLabel: `${S} Thắc mắc thường gặp`,
+        titleLine1: `${S} CÂU HỎI THƯỜNG GẶP`,
+        titleLine2: `${S} VỀ HÀNH TRÌNH ĐỒNG HÀNH`,
+        numbered: false,
+        aside: 'none',
+        showEmail: false,
+        seeAllLink: '',
+        bgColor: 'warm-ivory',
+        padding: 'md',
       }),
     ],
   },
