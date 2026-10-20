@@ -150,36 +150,9 @@ test.describe('Sitemap v2 Gate: Submenu Interactions', () => {
 })
 
 test.describe('Sitemap v2 Gate: 1.1 Tree Pages (200, no horizontal overflow, A11y)', () => {
-  // Extract business pages dynamically or use fallback
-  let allPages: string[] = [...STATIC_TREE_PAGES, ...FALLBACK_BUSINESS_PAGES]
+  const TREE_PAGES = [...STATIC_TREE_PAGES, ...FALLBACK_BUSINESS_PAGES]
 
-  test.beforeAll(async ({ request }) => {
-    try {
-      const navRes = await request.get('/api/globals/navigation?depth=1')
-      if (navRes.status() === 200) {
-        const navData = await navRes.json()
-        const businessLinks: string[] = []
-        for (const item of navData.mainMenu || []) {
-          for (const group of item.children || []) {
-            if (group.groupLabel?.includes('Doanh nghiệp')) {
-              for (const child of group.items || []) {
-                if (typeof child.url === 'string' && child.url.startsWith('/doanh-nghiep/')) {
-                  businessLinks.push(child.url)
-                }
-              }
-            }
-          }
-        }
-        if (businessLinks.length >= 2) {
-          allPages = Array.from(new Set([...STATIC_TREE_PAGES, ...businessLinks.slice(0, 2)]))
-        }
-      }
-    } catch {
-      // Fallback array remains in place
-    }
-  })
-
-  for (const pagePath of [...STATIC_TREE_PAGES, ...FALLBACK_BUSINESS_PAGES]) {
+  for (const pagePath of TREE_PAGES) {
     test(`page "${pagePath}" renders 200 without overflow and passes a11y`, async ({ page }) => {
       // Uses domcontentloaded instead of networkidle to prevent hanging on Turnstile/analytics
       const response = await page.goto(pagePath, { waitUntil: 'domcontentloaded' })
