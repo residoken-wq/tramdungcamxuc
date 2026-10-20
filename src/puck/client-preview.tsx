@@ -81,6 +81,9 @@ export function clearClientPreviewCache() {
 
   teamMembersCache = null
   inFlightTeamMembers = null
+
+  faqsCache.clear()
+  inFlightFaqs.clear()
 }
 
 /**
@@ -980,5 +983,79 @@ export function useClientTeamMembers(options?: { initialMembers?: PublicTeamMemb
   return {
     members: current,
     loading: teamMembersCache === null && members === null,
+  }
+}
+
+export interface PublicFaqItem {
+  question: string
+  answer: string
+}
+
+const faqsCache = new Map<string, PublicFaqItem[]>()
+const inFlightFaqs = new Map<string, Promise<PublicFaqItem[]>>()
+
+export function useClientFaqs(options: {
+  group?: string
+  limit?: number
+  initialItems?: PublicFaqItem[]
+}): { items: PublicFaqItem[]; loading: boolean } {
+  const isResolved = options.initialItems !== undefined
+  const group = options.group || 'general'
+  const limit = options.limit || 5
+  const queryKey = `${group}:${limit}`
+
+  const [items, setItems] = useState<PublicFaqItem[]>(() => {
+    if (faqsCache.has(queryKey)) return faqsCache.get(queryKey) || []
+    return []
+  })
+
+  useEffect(() => {
+    if (isResolved) return
+    if (faqsCache.has(queryKey)) return
+
+    let isMounted = true
+    const controller = new AbortController()
+
+    let promise = inFlightFaqs.get(queryKey)
+    if (!promise) {
+      const url = `/api/faqs?depth=0&where[_status][equals]=published&where[group][equals]=${encodeURIComponent(group)}&sort=order&limit=${limit}`
+      promise = fetch(url, { credentials: 'include', signal: controller.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const docs = (data?.docs || []).map((doc: { question?: string; answer?: string }) => ({
+            question: doc.question || '',
+            answer: doc.answer || '',
+          }))
+          faqsCache.set(queryKey, docs)
+          return docs
+        })
+        .catch(() => [])
+        .finally(() => {
+          inFlightFaqs.delete(queryKey)
+        })
+
+      inFlightFaqs.set(queryKey, promise)
+    }
+
+    promise.then((resDocs) => {
+      if (isMounted) {
+        setItems(resDocs)
+      }
+    })
+
+    return () => {
+      isMounted = false
+      controller.abort()
+    }
+  }, [queryKey, isResolved, group, limit])
+
+  if (isResolved) {
+    return { items: options.initialItems || [], loading: false }
+  }
+
+  const cached = faqsCache.get(queryKey)
+  return {
+    items: cached || items,
+    loading: !faqsCache.has(queryKey) && items.length === 0,
   }
 }

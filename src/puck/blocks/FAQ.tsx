@@ -2,12 +2,35 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { FAQ, type FAQProps } from '@/components/site/FAQ'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { faqGroupOptions } from '@/collections/Faqs'
 
 export type { FAQProps }
 
 export const FAQBlock: ComponentConfig<FAQProps> = {
   label: 'Hỏi & Đáp thường gặp (FAQ Accordion)',
   fields: {
+    source: {
+      type: 'select',
+      label: 'Nguồn câu hỏi',
+      options: [
+        { label: 'Tự nhập danh sách câu hỏi (Thủ công)', value: 'manual' },
+        { label: 'Lấy theo nhóm từ Câu hỏi thường gặp (CMS)', value: 'group' },
+      ],
+    },
+    group: {
+      type: 'select',
+      label: 'Nhóm câu hỏi (Khi chọn nguồn theo nhóm)',
+      options: faqGroupOptions.map(([val, label]) => ({
+        label: `${label} (${val})`,
+        value: val,
+      })),
+    },
+    limit: {
+      type: 'number',
+      label: 'Số lượng câu hỏi hiển thị (1 - 12)',
+      min: 1,
+      max: 12,
+    },
     seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
     titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
     titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
@@ -57,7 +80,7 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     },
     items: {
       type: 'array',
-      label: 'Danh sách câu hỏi & trả lời',
+      label: 'Danh sách câu hỏi & trả lời (Khi chọn nguồn thủ công)',
       arrayFields: {
         question: {
           type: 'text',
@@ -85,9 +108,10 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     },
   },
   defaultProps: {
-    version: 2,
-    // Chừa source = 'manual' để SM-06 mở rộng thêm nguồn 'group' từ collection faqs
+    version: 3,
     source: 'manual',
+    group: 'general',
+    limit: 5,
     seriesLabel: '[MẪU] Thắc mắc thường gặp',
     titleLine1: '[MẪU] CÂU HỎI THƯỜNG GẶP',
     titleLine2: '[MẪU] GIẢI ĐÁP BĂN KHOĂN',

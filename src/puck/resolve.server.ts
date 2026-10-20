@@ -175,6 +175,7 @@ export async function resolveServerData(
   const pageIdsToFetch = new Set<string | number>()
   const serviceIdsToFetch = new Set<string | number>()
   const programIdsToFetch = new Set<string | number>()
+  const faqGroupsToFetch = new Map<string, number>()
   let needsSiteSettings = false
   let needsTeamMembers = false
   let needsBookingProduct = false
@@ -400,12 +401,32 @@ export async function resolveServerData(
     if (
       item.type === 'ShopeeButton' ||
       item.type === 'ZaloButton' ||
-      (item.type === 'FAQ' && item.props.aside === 'booking') ||
+      (item.type === 'FAQ' && (item.props.aside === 'booking' || item.props.showEmail)) ||
       item.type === 'HanaStory' ||
       item.type === 'ContactInfo' ||
       item.type === 'ContactForms'
     ) {
       needsSiteSettings = true
+    }
+
+    if (item.type === 'FAQ') {
+      if (item.props.aside === 'booking') {
+        needsBookingProduct = true
+      }
+      if (item.props.source === 'group') {
+        const grp =
+          typeof item.props.group === 'string' && item.props.group.trim()
+            ? item.props.group.trim()
+            : 'general'
+        const lim =
+          typeof item.props.limit === 'number' && item.props.limit > 0
+            ? Math.min(Math.max(item.props.limit, 1), 12)
+            : 5
+        const currentMax = faqGroupsToFetch.get(grp) || 0
+        if (lim > currentMax) {
+          faqGroupsToFetch.set(grp, lim)
+        }
+      }
     }
 
     if (item.type === 'ContactForms') {
@@ -679,9 +700,7 @@ export async function resolveServerData(
       const rawDoc = siteDoc as unknown as Record<string, unknown>
       publicContactInfo = {
         email:
-          typeof rawDoc?.email === 'string' && rawDoc.email.trim()
-            ? rawDoc.email.trim()
-            : null,
+          typeof rawDoc?.email === 'string' && rawDoc.email.trim() ? rawDoc.email.trim() : null,
         hotline:
           typeof rawDoc?.hotline === 'string' && rawDoc.hotline.trim()
             ? rawDoc.hotline.trim()
@@ -803,6 +822,30 @@ export async function resolveServerData(
   let defaultBookingProductId: number | null = null
   if (needsBookingProduct) {
     defaultBookingProductId = await resolveDefaultBookingProductId(payload)
+  }
+
+  const resolvedFaqGroups = new Map<string, Array<{ question: string; answer: string }>>()
+  if (faqGroupsToFetch.size > 0) {
+    for (const [grp, lim] of faqGroupsToFetch.entries()) {
+      try {
+        const fDocs = await payload.find({
+          collection: 'faqs',
+          where: {
+            and: [{ _status: { equals: 'published' } }, { group: { equals: grp } }],
+          },
+          sort: 'order',
+          depth: 0,
+          limit: lim,
+        })
+        const items = (fDocs?.docs || []).map((doc: { question?: string; answer?: string }) => ({
+          question: String(doc.question || ''),
+          answer: String(doc.answer || ''),
+        }))
+        resolvedFaqGroups.set(grp, items)
+      } catch {
+        resolvedFaqGroups.set(grp, [])
+      }
+    }
   }
 
   // Phase 3: Attach _resolved to each block (including blocks inside Columns slots)
@@ -1221,9 +1264,23 @@ export async function resolveServerData(
         }
       }
     } else if (item.type === 'FAQ') {
+      let groupItems: Array<{ question: string; answer: string }> | null = null
+      if (item.props.source === 'group') {
+        const grp =
+          typeof item.props.group === 'string' && item.props.group.trim()
+            ? item.props.group.trim()
+            : 'general'
+        const lim =
+          typeof item.props.limit === 'number' && item.props.limit > 0
+            ? Math.min(Math.max(item.props.limit, 1), 12)
+            : 5
+        const allFetched = resolvedFaqGroups.get(grp) || []
+        groupItems = allFetched.slice(0, lim)
+      }
       item.props._resolved = {
         email: item.props.showEmail ? siteContactEmail : null,
         bookingProductId: item.props.aside === 'booking' ? defaultBookingProductId : null,
+        groupItems,
       }
     } else if (item.type === 'HanaStory') {
       item.props._resolved = {
