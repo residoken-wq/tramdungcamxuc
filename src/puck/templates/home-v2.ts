@@ -197,19 +197,19 @@ export const homeV2Template: Data = {
         version: 2,
         stats: [
           {
-            value: '[MẪU] 10+',
+            value: '[MẪU] Số liệu 1',
             label: '[MẪU] Năm kinh nghiệm',
             description: '[MẪU] Khai vấn & đào tạo',
             icon: '',
           },
           {
-            value: '[MẪU] 500+',
+            value: '[MẪU] Số liệu 2',
             label: '[MẪU] Giờ khai vấn',
             description: '[MẪU] Thực hành chuyên sâu',
             icon: '',
           },
           {
-            value: '[MẪU] 100%',
+            value: '[MẪU] Số liệu 3',
             label: '[MẪU] Tận tâm đồng hành',
             description: '[MẪU] Cam kết cùng học viên',
             icon: '',

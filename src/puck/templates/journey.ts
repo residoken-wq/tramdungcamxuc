@@ -23,8 +23,8 @@ export const journeyTemplate: Data = {
         imageAlt: '',
         buttonText: 'Đặt phiên trải nghiệm',
         buttonLink: '/dat-phien-trai-nghiem',
-        secondaryButtonText: 'Khám phá 3 cột mốc',
-        secondaryButtonLink: '#journey-packages',
+        secondaryButtonText: '',
+        secondaryButtonLink: '',
         badges: [{ text: '[MẪU] Bảo chứng chất lượng' }, { text: '[MẪU] Đồng hành 1:1' }],
         stats: [
           { value: '[MẪU] 3', label: '[MẪU] Giai đoạn' },

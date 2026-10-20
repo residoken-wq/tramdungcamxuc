@@ -22,13 +22,13 @@ export const aboutTemplate: Data = {
         imageUrl: '',
         imageAlt: '',
         buttonText: 'Khám phá hành trình',
-        buttonLink: '#about-story',
+        buttonLink: '/lo-trinh-chuyen-minh',
         secondaryButtonText: 'Xem các dịch vụ',
         secondaryButtonLink: '/coaching',
-        badges: [{ text: '[MẪU] ICF ACC Standards' }, { text: '[MẪU] Phương pháp EQ' }],
+        badges: [{ text: '[MẪU] Huy hiệu 1' }, { text: '[MẪU] Huy hiệu 2' }],
         stats: [
-          { value: '[MẪU] 10+', label: '[MẪU] Năm kinh nghiệm' },
-          { value: '[MẪU] 500+', label: '[MẪU] Giờ khai vấn' },
+          { value: '[MẪU] Số liệu 1', label: '[MẪU] Năm kinh nghiệm' },
+          { value: '[MẪU] Số liệu 2', label: '[MẪU] Giờ khai vấn' },
         ],
         bgColor: 'warm-ivory',
         padding: 'lg',
@@ -50,8 +50,8 @@ export const aboutTemplate: Data = {
         imageUrl: '',
         imageAlt: '',
         imageLabel: '[MẪU] Không gian an toàn',
-        buttonText: 'Tìm hiểu phương pháp',
-        buttonLink: '#about-journey',
+        buttonText: '',
+        buttonLink: '',
         bgColor: 'warm-ivory',
         padding: 'md',
       },
@@ -194,7 +194,7 @@ export const aboutTemplate: Data = {
         id: 'about-standards-text',
         version: 1,
         content:
-          '[MẪU] Mọi phiên khai vấn và chương trình đào tạo tại Trạm đều tuân thủ các chuẩn mực đạo đức và năng lực cốt lõi của Liên đoàn Khai vấn Quốc tế (ICF).\n\n[MẪU] Chúng tôi kết hợp các công cụ đo lường EQ chuẩn hóa toàn cầu nhằm đem lại những giải pháp vừa thấu cảm vừa chuẩn xác.',
+          '[MẪU] Đoạn văn về tiêu chuẩn quốc tế mà Trạm áp dụng – chờ nội dung thật có nguồn xác nhận.',
         bgColor: 'warm-ivory',
         padding: 'md',
       },
@@ -214,12 +214,12 @@ export const aboutTemplate: Data = {
         items: [
           {
             icon: 'target',
-            title: '[MẪU] Chuẩn mực ICF',
+            title: '[MẪU] Chuẩn mực 1',
             text: '[MẪU] Tuân thủ 8 năng lực cốt lõi và quy tắc đạo đức quốc tế trong mọi phiên khai vấn.',
           },
           {
             icon: 'compass',
-            title: '[MẪU] Phương pháp EQ',
+            title: '[MẪU] Huy hiệu 2',
             text: '[MẪU] Đo lường và phát triển năng lực cảm xúc có hệ thống dựa trên mô hình khoa học.',
           },
           {
@@ -239,19 +239,19 @@ export const aboutTemplate: Data = {
         version: 2,
         stats: [
           {
-            value: '[MẪU] 10+',
+            value: '[MẪU] Số liệu 1',
             label: '[MẪU] Năm kinh nghiệm',
             description: '[MẪU] Khai vấn & phát triển con người',
             icon: '',
           },
           {
-            value: '[MẪU] 500+',
+            value: '[MẪU] Số liệu 2',
             label: '[MẪU] Giờ khai vấn',
             description: '[MẪU] Thực hành chuyên nghiệp',
             icon: '',
           },
           {
-            value: '[MẪU] 98%',
+            value: '[MẪU] Số liệu 3',
             label: '[MẪU] Đánh giá tích cực',
             description: '[MẪU] Từ các khách hàng tham gia',
             icon: '',
