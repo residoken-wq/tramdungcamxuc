@@ -64,3 +64,4 @@
 - [x] (SM-05 review 19/10) Bỏ link `?tab=noi-dung` còn sót ở `PostDetail.tsx` và `tai-nguyen/[slug]/page.tsx`; đổi placeholder "Ví dụ: Minh Anh" của form newsletter (xong SM-08).
 - [x] (SM-06 review 20/10) `ContactInfo` chỉ có 1 mục → căn giữa thay vì dồn trái (xong SM-08).
 - [x] (SM-06 review 20/10) `ContactForms` bố cục 2 cột ở 1440px: chữ dài trong ô chọn (dịch vụ / chương trình) bị cắt (xong SM-08).
+- (SM-08 review 20/10) Lighthouse mobile trang chủ 85/100 (mục tiêu ≥ 90, đo local): LCP 4,1 s, JS không dùng ~0,45 s, audit "redirects" ~0,6 s – đo lại trên server thật rồi tối ưu (ảnh hero `priority`, tách JS khối dưới màn hình đầu).

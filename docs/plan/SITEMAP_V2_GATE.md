@@ -16,10 +16,10 @@
 | **05** | **Hiệu năng trang chủ (Lighthouse Mobile)**: Điểm Performance trang chủ trên thiết bị di động (mục tiêu ≥ 90).                               | Chạy đo thực tế trên bản `pnpm build && pnpm start` (Xem mục 2 bên dưới)         |               ☐                |                 |
 | **06** | **Chuyển hướng thông minh (308 Redirects)**: Các đường dẫn cũ (`/ve-hana`, `/thu-vien`, `/coaching/growth-mirror`) tự chuyển đúng trang mới. | Đã kiểm qua test `LEGACY_REDIRECTS` (Pass 3/3 link)                              |               ☐                |                 |
 | **07** | **Không có link chết (No Dead Links)**: Tất cả link nội bộ trong Menu chính, Menu con và Chân trang đều trả về 200.                          | Đã kiểm qua API `navigation?depth=1` trong test E2E (Pass)                       |               ☐                |                 |
-| **08** | **Tự sửa Menu con trong CMS**: Hana tự sửa 1 mục trong menu con và thấy website tự cập nhật.                                                 | Đã bàn giao cơ chế lưu `navigation` trong CMS; hướng dẫn tại mục 5.14            |               ☐                |                 |
+| **08** | **Tự sửa Menu con trong CMS**: Hana tự sửa 1 mục trong menu con và thấy website tự cập nhật.                                                 | Đã bàn giao cơ chế lưu `navigation` trong CMS; hướng dẫn tại mục 7.3d            |               ☐                |                 |
 | **09** | **Tự sửa Câu hỏi thường gặp (FAQ)**: Hana tự sửa 1 câu hỏi/trả lời và thấy khối FAQ cập nhật.                                                | Đã bàn giao collection `faqs` & nguồn `group` trong Puck; hướng dẫn tại mục 5.12 |               ☐                |                 |
 | **10** | **Tự đổi Tagline gói trong Sản phẩm**: Hana tự sửa tagline/tên gói trong `products`, không sửa trong Puck.                                   | Đã cấu hình resolver tự động cho các khối gói; hướng dẫn tại mục 3.1c            |               ☐                |                 |
-| **11** | **Tự sửa Số điện thoại Hotline**: Hana tự sửa số hotline tại Cài đặt chung và thấy trang Liên hệ cập nhật.                                   | Đã cấu hình khối `ContactInfo` đọc từ `siteSettings`; hướng dẫn tại mục 5.12     |               ☐                |                 |
+| **11** | **Tự sửa Số điện thoại Hotline**: Hana tự sửa số hotline tại Cài đặt chung và thấy trang Liên hệ cập nhật.                                   | Đã cấu hình khối `ContactInfo` đọc từ `siteSettings`; hướng dẫn tại mục 7.3b     |               ☐                |                 |
 
 ---
 
@@ -51,7 +51,8 @@
 - **Lệnh chạy**: `pnpm dlx lighthouse@12 http://localhost:3000/ --form-factor=mobile --only-categories=performance --only-categories=accessibility --output=json --output-path=docs/screenshots/sm08/lighthouse-home.json --chrome-flags="--headless"`
 - **Kết quả đo lường thực tế**:
   - **Accessibility (Trợ năng)**: **100 / 100** (Tuyệt đối, 0 vi phạm)
-  - **Performance (Hiệu năng)**: **85 / 100** (Môi trường máy phát triển cục bộ không giả lập throttling chuyên dụng; đạt yêu cầu nền tảng cho mobile).
+  - **Performance (Hiệu năng)**: **85 / 100 – CHƯA ĐẠT mục tiêu ≥ 90.** Đo trên máy local (throttling giả lập của Lighthouse), cần đo lại trên server thật trước khi kết luận.
+  - Nguyên nhân lớn nhất trong báo cáo: LCP 4,1 s (điểm 0,48); JavaScript không dùng (~0,45 s); audit "redirects" báo ~0,6 s dù `GET /` trả 200 trực tiếp – cần kiểm lại. Đã ghi `docs/BACKLOG.md`.
   - **Tệp báo cáo JSON**: `docs/screenshots/sm08/lighthouse-home.json`.
   - **Ảnh chụp màn hình bàn giao**:
     - Trang Cộng đồng: `docs/screenshots/sm08/community-1440.png` & `docs/screenshots/sm08/community-375.png`.
@@ -63,21 +64,21 @@
 
 Theo phân tích mâu thuẫn chính sách (M1–M13) và các câu hỏi mở (Q6–Q8) trong `SITEMAP_V2.md`:
 
-|   Mã    | Hạng mục cần Hana cung cấp / chốt                                     | Hiện trạng kỹ thuật trong code                                                         | Hành động tiếp theo của Hana                                   |
-| :-----: | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------- | :------------------------------------------------------------- |
-| **M1**  | Nội dung giải đáp về chính sách thanh toán & hoàn tiền trong FAQ      | Đã cấu hình giải đáp chuẩn: VietQR, không hoàn tiền, trải nghiệm 149.000đ để thử trước | Soạn câu chữ theo giọng điệu cá nhân nếu muốn điều chỉnh thêm  |
-| **M2**  | Quyết định nút trên 3 gói giải pháp                                   | Đang trỏ về phiên trải nghiệm 149.000đ (ghi nhận gói quan tâm)                         | Hana giữ nguyên hoặc quyết định mở bán trực tiếp ở Giai đoạn 4 |
-| **M3**  | Lời chia sẻ khách hàng thật (Testimonials)                            | Đang dùng dữ liệu mẫu có gắn tiền tố `[MẪU]`, có lọc `consent = true`                  | Nhập các testimonial thực tế đã được khách hàng cho phép       |
-| **M4**  | Số liệu chứng minh (Số năm kinh nghiệm, số giờ khai vấn, học viên...) | Đã gỡ toàn bộ số liệu chưa xác nhận; dùng nhãn định tính an toàn                       | Hana gửi số liệu thực tế đã kiểm chứng để đưa vào `StatsBar`   |
-| **M5**  | Danh sách Logo đối tác / Doanh nghiệp đã đồng hành                    | Đang dùng biểu tượng mẫu `[MẪU] Tổ chức Test`                                          | Gửi file logo PNG nền trong của các tổ chức được phép sử dụng  |
-| **M6**  | Thông tin Đội ngũ chuyên gia (nếu có cộng sự)                         | Đang hiển thị chuyên gia mẫu; ẩn trên trang công khai nếu chưa có dữ liệu thật         | Gửi ảnh, tên, chức danh và sự đồng ý của chuyên gia đồng hành  |
-| **M7**  | Tên gọi chuẩn của phiên tư vấn ban đầu                                | Dùng thống nhất: "Phiên trải nghiệm Growth Mirror 149.000đ"                            | Hana xác nhận nếu muốn đổi tên thành "Phiên Khám phá"          |
-| **M8**  | Vị trí Quiz chẩn đoán trên Menu                                       | Đã đặt ở đầu menu con "Tài nguyên miễn phí" và có nút trên trang chủ                   | Hana duyệt vị trí điều hướng này                               |
-| **M9**  | Email liên hệ, Hotline và Địa chỉ văn phòng chính thức                | Đã có sẵn các ô nhập tại Cài đặt chung (`siteSettings`)                                | Nhập số hotline và địa chỉ văn phòng thật                      |
-| **M10** | Tệp ảnh chữ ký người sáng lập Hana Lương                              | Đã hỗ trợ cả chữ ký dạng văn bản Playfair và ảnh chữ ký PNG                            | Tải ảnh chữ ký nền trong lên mục Thư viện ảnh                  |
-| **M11** | Bộ biểu tượng minh họa (Icons)                                        | Đã chuẩn hóa icon SVG nét mảnh theo bảng màu Brand Book 2026                           | Duyệt bộ icon SVG hiện tại                                     |
-| **M12** | Bảng màu nền và độ tương phản                                         | Tuân thủ 100% 8 màu Brand Book 2026, đạt chuẩn tương phản WCAG AA                      | Duyệt diện mạo màu sắc trên thiết bị thực tế                   |
-| **M13** | Nội dung và tần suất gửi Bản tin (Newsletter)                         | Biểu mẫu chỉ cam kết chia sẻ góc nhìn và bài tập thực hành                             | Hana soạn kế hoạch gửi email định kỳ khi sẵn sàng              |
-| **Q6**  | Chốt tên thương mại: "Habit Hack" hay "Habit Formation"               | Đang cấu hình trong CMS tại mục Sản phẩm                                               | Hana tự sửa tên trong mục Sản phẩm bất kỳ lúc nào              |
-| **Q7**  | Chốt tên 2 chương trình Doanh nghiệp                                  | Đã seed 2 chương trình mẫu trong `programs`                                            | Soạn nội dung chi tiết cho 2 chương trình đào tạo doanh nghiệp |
-| **Q8**  | Đội ngũ chuyên gia: Có đưa lên website ở giai đoạn này không?         | Nếu chưa có, khối `TeamGrid` sẽ tự động ẩn an toàn ngoài web                           | Hana phản hồi có sử dụng khối này hay không                    |
+|   Mã    | Hạng mục cần Hana cung cấp / chốt                                        | Hiện trạng kỹ thuật trong code                                                    | Hành động tiếp theo của Hana                                   |
+| :-----: | :----------------------------------------------------------------------- | :-------------------------------------------------------------------------------- | :------------------------------------------------------------- |
+| **M1**  | Câu hỏi thường gặp về thanh toán (mockup ghi hoàn tiền 7 ngày, thẻ Visa) | Không đưa nội dung hoàn tiền / Visa lên web; FAQ mẫu chỉ có `[MẪU]` chờ Hana viết | Viết câu trả lời FAQ thật: chỉ VietQR, không hoàn tiền         |
+| **M2**  | Quyết định nút trên 3 gói giải pháp                                      | Đang trỏ về phiên trải nghiệm 149.000đ (ghi nhận gói quan tâm)                    | Hana giữ nguyên hoặc quyết định mở bán trực tiếp ở Giai đoạn 4 |
+| **M3**  | Lời chia sẻ khách hàng thật (Testimonials)                               | Đang dùng dữ liệu mẫu có gắn tiền tố `[MẪU]`, có lọc `consent = true`             | Nhập các testimonial thực tế đã được khách hàng cho phép       |
+| **M4**  | Số liệu chứng minh (Số năm kinh nghiệm, số giờ khai vấn, học viên...)    | Đã gỡ toàn bộ số liệu chưa xác nhận; dùng nhãn định tính an toàn                  | Hana gửi số liệu thực tế đã kiểm chứng để đưa vào `StatsBar`   |
+| **M5**  | Danh sách Logo đối tác / Doanh nghiệp đã đồng hành                       | Đang dùng biểu tượng mẫu `[MẪU] Tổ chức Test`                                     | Gửi file logo PNG nền trong của các tổ chức được phép sử dụng  |
+| **M6**  | Thông tin Đội ngũ chuyên gia (nếu có cộng sự)                            | Đang hiển thị chuyên gia mẫu; ẩn trên trang công khai nếu chưa có dữ liệu thật    | Gửi ảnh, tên, chức danh và sự đồng ý của chuyên gia đồng hành  |
+| **M7**  | Tên gọi chuẩn của phiên tư vấn ban đầu                                   | Dùng thống nhất: "Phiên trải nghiệm Growth Mirror 149.000đ"                       | Hana xác nhận nếu muốn đổi tên thành "Phiên Khám phá"          |
+| **M8**  | Vị trí Quiz chẩn đoán trên Menu                                          | Đã đặt ở đầu menu con "Tài nguyên miễn phí" và có nút trên trang chủ              | Hana duyệt vị trí điều hướng này                               |
+| **M9**  | Email liên hệ, Hotline và Địa chỉ văn phòng chính thức                   | Đã có sẵn các ô nhập tại Cài đặt chung (`siteSettings`)                           | Nhập số hotline và địa chỉ văn phòng thật                      |
+| **M10** | Tệp ảnh chữ ký người sáng lập Hana Lương                                 | Đã hỗ trợ cả chữ ký dạng văn bản Playfair và ảnh chữ ký PNG                       | Tải ảnh chữ ký nền trong lên mục Thư viện ảnh                  |
+| **M11** | Bộ biểu tượng minh họa (Icons)                                           | Đã chuẩn hóa icon SVG nét mảnh theo bảng màu Brand Book 2026                      | Duyệt bộ icon SVG hiện tại                                     |
+| **M12** | Bảng màu nền và độ tương phản                                            | Tuân thủ 100% 8 màu Brand Book 2026, đạt chuẩn tương phản WCAG AA                 | Duyệt diện mạo màu sắc trên thiết bị thực tế                   |
+| **M13** | Nội dung và tần suất gửi Bản tin (Newsletter)                            | Biểu mẫu chỉ cam kết chia sẻ góc nhìn và bài tập thực hành                        | Hana soạn kế hoạch gửi email định kỳ khi sẵn sàng              |
+| **Q6**  | Chốt tên thương mại: "Habit Hack" hay "Habit Formation"                  | Đang cấu hình trong CMS tại mục Sản phẩm                                          | Hana tự sửa tên trong mục Sản phẩm bất kỳ lúc nào              |
+| **Q7**  | Chốt tên 2 chương trình Doanh nghiệp                                     | Đã seed 2 chương trình mẫu trong `programs`                                       | Soạn nội dung chi tiết cho 2 chương trình đào tạo doanh nghiệp |
+| **Q8**  | Đội ngũ chuyên gia: Có đưa lên website ở giai đoạn này không?            | Nếu chưa có, khối `TeamGrid` sẽ tự động ẩn an toàn ngoài web                      | Hana phản hồi có sử dụng khối này hay không                    |
