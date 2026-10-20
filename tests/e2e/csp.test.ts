@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './fixtures'
 
 /**
  * E2E tests kiểm tra Content-Security-Policy (CSP) khi kích hoạt chặn thật (CSP_ENFORCE=true).

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 
 // E2E Test cho luồng link thanh toán gói Growth Mirror do Hana tạo + cấp quyền (T1-13)
 // 1. Owner cấu hình ngân hàng + tạo 2 sản phẩm digital_tool + 1 gói package có 2 grantsProduct (REST)

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test, type Page, type Response } from '@playwright/test'
+import { expect, test, type Page, type Response } from './fixtures'
 
 // E2E Test cho luồng đặt phiên trải nghiệm 149k, sinh mã VietQR và owner duyệt trong admin (T1-12b)
 // Tự tạo dữ liệu (admin, cấu hình ngân hàng, sản phẩm coaching_trial) và dọn dẹp sạch sẽ sau test.

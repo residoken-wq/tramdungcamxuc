@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 test.describe('Admin Smoke Test (Real DB Check)', () => {
   test('GET /api/users/init trả về 200 và xác nhận DB đã sẵn sàng', async ({ request }) => {
