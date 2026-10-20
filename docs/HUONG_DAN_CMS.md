@@ -1240,7 +1240,7 @@ Menu trái → nhóm **Trang web** → **Đội ngũ**.
 
 ### 5.3. Thao tác với các khối: Thêm, sửa chữ, đổi màu nền, nhân bản và xóa
 
-**Mục đích**: Tùy biến toàn bộ nội dung trên trang theo ý thích của bạn.
+**Mục đích**: Tùy biến toàn bộ nội dung và diện mạo từng khối trên trang theo ý thích của bạn.
 
 Màn hình trình dựng gồm 3 khu vực:
 
@@ -1248,13 +1248,46 @@ Màn hình trình dựng gồm 3 khu vực:
 - **Khu vực ở giữa**: Khung trang web đang hiển thị trực quan.
 - **Cột bên phải**: Bảng thuộc tính của khối đang chọn.
 
-**Các thao tác cơ bản**:
+#### 5.3.1. Các thao tác cơ bản
 
 - **Thêm khối mới**: Giữ chuột trái vào khối mong muốn ở cột bên trái, kéo sang vị trí mong muốn ở giữa rồi thả tay ra.
 - **Sửa câu chữ**: Bấm chuột vào khối cần sửa ở giữa. Nhìn sang cột bên phải và gõ lại tiêu đề, dòng cảm xúc, đoạn văn bản theo ý bạn.
+- **Soạn thảo trực tiếp trên trang (Inline Editing)**: Với các khối tiêu đề như **Tiêu đề phân đoạn** (`SectionHeader`), bạn có thể nhấp chuột trực tiếp vào dòng chữ trên màn hình xem trước ở giữa và gõ sửa chữ ngay tại chỗ mà không cần nhìn sang bảng thuộc tính bên phải.
 - **Đổi màu nền**: Trong bảng thuộc tính bên phải, bấm vào ô **Màu nền** và chọn 1 trong các màu pastel nhẹ nhàng của Brand Book 2026 (_Ngà ấm_, _Hồng phấn_, _Tím sương_, _Bạc hà_, _Kem bơ_, _Xanh thẫm_).
 - **Nhân bản khối**: Rê chuột lên góc trên khối ở giữa, bấm vào biểu tượng hai ô vuông (**Nhân bản**) để nhân đôi khối đó ngay bên dưới.
 - **Xóa khối**: Rê chuột lên khối, bấm vào biểu tượng thùng rác (**Xóa**) để loại bỏ khối khỏi trang.
+
+#### 5.3.2. Định dạng cỡ chữ và màu chữ cho Tiêu đề phân đoạn (SectionHeader v2)
+
+Khối **Tiêu đề phân đoạn** (`SectionHeader`) cho phép Hana tự do điều chỉnh màu sắc và cỡ chữ cho từng tầng nội dung mà vẫn tuyệt đối giữ vững nhận diện thương hiệu:
+
+1. **Tùy chỉnh màu sắc từng tầng chữ**:
+   - **Màu tiêu đề dòng 1** (`line1Color`): Mặc định là **Xanh thẫm** (`deep-navy`), mang lại vẻ sang trọng, rõ ràng.
+   - **Màu tiêu đề dòng 2** (`line2Color`): Mặc định là **Hồng sen** (`bright-magenta`), tạo điểm nhấn ấm áp, thu hút.
+   - **Màu nhãn series** (`eyebrowColor`): Mặc định là **Hồng sen** (`bright-magenta`).
+   - **Màu dòng cảm xúc** (`emotionColor`): Mặc định là **Xanh thẫm** (`deep-navy`), thể hiện dòng suy ngẫm sâu lắng.
+
+2. **Tùy chỉnh kích thước và căn lề**:
+   - **Cỡ chữ tiêu đề** (`titleSize`): Gồm 3 mức **Nhỏ** (`sm`), **Vừa** (`md` – mặc định), **Lớn** (`lg`). Kích thước tự động co giãn hài hòa theo cấp độ thẻ HTML bạn chọn (`H1`, `H2` hoặc `H3`).
+   - **Cỡ chữ dòng cảm xúc** (`emotionSize`): Gồm 3 mức **Nhỏ** (`sm`), **Vừa** (`md` – mặc định), **Lớn** (`lg`) với font chữ nghiêng Playfair Display thanh lịch.
+   - **Căn lề** (`align`): Chọn **Căn giữa** (`center` – mặc định trang trọng) hoặc **Căn trái** (`left` – hiện đại, phù hợp bài viết/giới thiệu).
+
+#### 5.3.3. Cơ chế bảo vệ độ tương phản chuẩn WCAG AA (Lưới an toàn thị giác)
+
+> **Hana yên tâm**: *"Tại sao khi đổi màu nền trang hoặc cỡ chữ, danh sách màu chữ trong ô chọn lại tự động thay đổi?"*
+
+Website Trạm Dừng Cảm Xúc tích hợp hệ thống **Lưới an toàn thị giác thông minh** tuân thủ nghiêm ngặt tiêu chuẩn trợ năng quốc tế **WCAG 2.1 AA** (độ tương phản tối thiểu ≥ 4.5:1 đối với chữ thông thường và ≥ 3.0:1 đối với chữ lớn):
+
+- **Trên nền tối (Xanh thẫm `deep-navy`)**:
+  - Hệ thống chỉ cho phép chọn **Trắng** (tỷ lệ tương phản cực cao 16.12:1) hoặc **Hồng phấn** (tỷ lệ 13.69:1).
+  - Tự động ẩn các màu tối như Xanh thẫm hay Hồng sen để ngăn chặn hoàn toàn tình trạng chữ bị chìm vào nền tối khiến độc giả không thể đọc được.
+- **Trên nền sáng pastel thông thường (`warm-ivory`, `soft-pink`, `mint-haze`, `butter-cream`)**:
+  - Luôn mở sẵn màu **Xanh thẫm** (tỷ lệ 12.18–14.88:1) và **Hồng sen** (tỷ lệ 5.03–6.15:1).
+  - Riêng màu **Hồng đậm** (`accent-pink`) chỉ xuất hiện khi bạn chọn cỡ chữ **Lớn** (`lg`) vì tỷ lệ tương phản ~3.2:1 đạt chuẩn quốc tế cho chữ tiêu đề cỡ lớn nhưng chưa đủ an toàn cho chữ nhỏ.
+- **Trên nền Tím sương (`lavender-mist`)**:
+  - Với chữ nhỏ/vừa, hệ thống chỉ cho phép dùng màu **Xanh thẫm** (tỷ lệ 10.80:1). Màu **Hồng sen** (tỷ lệ 4.44:1) chỉ mở khi bạn chọn cỡ chữ **Lớn** (`lg`) để đảm bảo không bị lóa mắt bạn đọc.
+
+Nhờ cơ chế này, Hana và cộng sự có thể thỏa sức sáng tạo diện mạo cho các chiến dịch mà hệ thống luôn tự động bảo vệ trang web giữ vững tinh thần **Rõ ràng (Clarity), Ấm áp (Warmth) và Đáng tin cậy (Emotional Trust)**!
 
 ![Toàn cảnh giao diện trình dựng kéo thả Puck](images/huong-dan/11-toan-canh-puck-editor.png)
 <!-- ẢNH 11: toàn cảnh màn hình Puck Editor gồm 3 cột: thư viện khối bên trái, canvas ở giữa và bảng thuộc tính bên phải -->
