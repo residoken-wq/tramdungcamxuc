@@ -94,8 +94,10 @@ test.describe('SM-07: Sitemap v2 Page Templates (Contact Template E2E)', () => {
 
       // 5. Open public page on mobile viewport (375px)
       await publicPage.setViewportSize({ width: 375, height: 667 })
-      const publicRes = await publicPage.goto(`/${pageSlug}`, { waitUntil: 'networkidle' })
+      // No networkidle: the contact forms load Turnstile, which keeps the network busy on CI.
+      const publicRes = await publicPage.goto(`/${pageSlug}`, { waitUntil: 'domcontentloaded' })
       expect(publicRes?.status()).toBe(200)
+      await expect(publicPage.locator('form').first()).toBeVisible()
 
       // Verify no horizontal scrolling / overflow at 375px
       const isOverflowing = await publicPage.evaluate(() => {
