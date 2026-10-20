@@ -72,14 +72,17 @@ export function arePuckDataEquivalent(a: unknown, b: unknown): boolean {
  * 3. Bỏ qua nếu: bản mới nhất là nháp đã giống mẫu (chạy 2 lần không tạo version mới),
  *    hoặc bản mới nhất là nháp đang sửa dở (mới hơn bản xuất bản và khác mẫu).
  */
-export async function seedTemplateDrafts(payload: Payload): Promise<TemplateDraftReport> {
+export async function seedTemplateDrafts(
+  payload: Payload,
+  mappings: readonly TemplateDraftMapping[] = TEMPLATE_DRAFT_MAPPINGS,
+): Promise<TemplateDraftReport> {
   const report: TemplateDraftReport = {
     created: 0,
     drafted: 0,
     skipped: 0,
   }
 
-  for (const mapping of TEMPLATE_DRAFT_MAPPINGS) {
+  for (const mapping of mappings) {
     const { slug, template: templateKey, defaultTitle } = mapping
 
     // Tra trang hiện tại (lấy cả nháp để biết trạng thái mới nhất)
@@ -155,7 +158,7 @@ export async function seedTemplateDrafts(payload: Payload): Promise<TemplateDraf
     // Tra xem trang đã có bản xuất bản chưa
     const publishedRes = await payload.find({
       collection: 'pages',
-      where: { slug: { equals: slug } },
+      where: { and: [{ slug: { equals: slug } }, { _status: { equals: 'published' } }] },
       limit: 1,
       depth: 0,
       draft: false,
