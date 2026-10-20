@@ -2389,6 +2389,29 @@ export const vi = {
       seeAllGeneric: 'Xem toàn bộ câu hỏi thường gặp',
     },
   },
+  puckFormat: {
+    fontSizes: {
+      sm: 'Nhỏ',
+      md: 'Vừa',
+      lg: 'Lớn',
+    },
+    textColors: {
+      'deep-navy': 'Xanh thẫm (Deep Navy)',
+      'bright-magenta': 'Hồng sen (Bright Magenta)',
+      'accent-pink': 'Hồng nhấn (Accent Pink)',
+      white: 'Trắng (White)',
+      'soft-pink': 'Hồng phấn (Soft Pink)',
+    },
+    align: {
+      left: 'Căn trái',
+      center: 'Căn giữa',
+    },
+    roles: {
+      title: 'Tiêu đề',
+      body: 'Đoạn văn',
+      quote: 'Trích dẫn',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
