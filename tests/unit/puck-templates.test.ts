@@ -80,7 +80,7 @@ describe('Puck Page Templates (SM-07 & T1-04)', () => {
   it('block version matches defaultProps version for each block in all 9 templates', () => {
     for (const { key, data } of allTemplates) {
       for (const item of data.content) {
-        const comp = puckConfig.components[item.type]
+        const comp = (puckConfig.components as Record<string, { defaultProps?: Record<string, unknown> }>)[item.type]
         expect(comp, `Unknown component ${item.type} in ${key}`).toBeDefined()
         const defProps = comp.defaultProps as Record<string, unknown> | undefined
         const expectedVersion = defProps?.version ?? 1

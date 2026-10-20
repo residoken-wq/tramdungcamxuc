@@ -46,8 +46,26 @@ export async function seed(payload: Payload): Promise<SeedReport> {
   ): Promise<number | null> {
     const publish = options.publish ?? true
     const where: Where = { [key]: { equals: value } }
-    const existing = await payload.find({ collection, where, limit: 1, depth: 0, draft: true })
-    const found = existing.docs[0] as { id: number; isSample?: boolean } | undefined
+    const existing = await payload.find({
+      collection,
+      where,
+      limit: 1,
+      depth: 0,
+      draft: true,
+      overrideAccess: true,
+    })
+    let found = existing.docs[0] as { id: number; isSample?: boolean } | undefined
+    if (!found) {
+      const existingPublished = await payload.find({
+        collection,
+        where,
+        limit: 1,
+        depth: 0,
+        draft: false,
+        overrideAccess: true,
+      })
+      found = existingPublished.docs[0] as { id: number; isSample?: boolean } | undefined
+    }
     const payloadData = {
       ...doc,
       [key]: value,
@@ -59,11 +77,26 @@ export async function seed(payload: Payload): Promise<SeedReport> {
       return found.id
     }
     if (found) {
-      await writer.update({ collection, id: found.id, data: payloadData, draft: !publish })
+      if (collection === 'pages') {
+        tally(collection).updated++
+        return found.id
+      }
+      await writer.update({
+        collection,
+        id: found.id,
+        data: payloadData,
+        draft: !publish,
+        overrideAccess: true,
+      })
       tally(collection).updated++
       return found.id
     }
-    const created = await writer.create({ collection, data: payloadData, draft: !publish })
+    const created = await writer.create({
+      collection,
+      data: payloadData,
+      draft: !publish,
+      overrideAccess: true,
+    })
     tally(collection).created++
     return created.id
   }

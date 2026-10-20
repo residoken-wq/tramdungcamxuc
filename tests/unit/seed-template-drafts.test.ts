@@ -10,7 +10,7 @@ import type { Page } from '../../src/payload-types'
 
 describe('Seed Template Drafts (SM-07)', () => {
   let payload: Payload
-  const initialVersionIds = new Set<number>()
+  const initialVersionIds = new Set<string | number>()
   const originalPagesData = new Map<
     string,
     { id: number; title: string; puckData: unknown; isSample?: boolean }
@@ -28,29 +28,56 @@ describe('Seed Template Drafts (SM-07)', () => {
 
     // Ensure the 5 core pages exist as published base docs
     for (const mapping of TEMPLATE_DRAFT_MAPPINGS) {
-      const existing = await payload.find({
+      const existingDraft = await payload.find({
         collection: 'pages',
         where: { slug: { equals: mapping.slug } },
         limit: 1,
         depth: 0,
         draft: true,
+        overrideAccess: true,
       })
+      const existing = existingDraft.docs.length > 0
+        ? existingDraft
+        : await payload.find({
+            collection: 'pages',
+            where: { slug: { equals: mapping.slug } },
+            limit: 1,
+            depth: 0,
+            draft: false,
+            overrideAccess: true,
+          })
 
       let pageId: number
       const originalTitle = `[MẪU] Bản gốc ${mapping.slug}`
-      const originalPuckData = {
-        content: [
-          {
-            type: 'RichText',
-            props: {
-              id: `original-${mapping.slug}`,
-              content: `Original published content for ${mapping.slug}`,
-            },
-          },
-        ],
-        root: { props: { title: originalTitle } },
-        zones: {},
-      }
+      const isHome = mapping.slug === '/' || mapping.slug === 'trang-chu'
+      const originalPuckData = isHome
+        ? {
+            content: [
+              {
+                type: 'HeroTwoEntries',
+                props: {
+                  id: 'orig-home-hero',
+                  entry1: { label: 'Cá nhân', href: '/lo-trinh-chuyen-minh' },
+                  entry2: { label: 'Doanh nghiệp', href: '/doanh-nghiep' },
+                },
+              },
+            ],
+            root: { props: { title: originalTitle } },
+            zones: {},
+          }
+        : {
+            content: [
+              {
+                type: 'RichText',
+                props: {
+                  id: `original-${mapping.slug}`,
+                  content: `Original published content for ${mapping.slug}`,
+                },
+              },
+            ],
+            root: { props: { title: originalTitle } },
+            zones: {},
+          }
 
       if (existing.docs.length > 0) {
         const doc = existing.docs[0] as Page
@@ -60,6 +87,17 @@ describe('Seed Template Drafts (SM-07)', () => {
           title: doc.title,
           puckData: doc.puckData,
           isSample: doc.isSample ?? true,
+        })
+        await payload.update({
+          collection: 'pages',
+          id: pageId,
+          data: {
+            title: originalTitle,
+            puckData: originalPuckData as Page['puckData'],
+            _status: 'published',
+          },
+          draft: false,
+          overrideAccess: true,
         })
       } else {
         const created = await payload.create({
@@ -112,7 +150,7 @@ describe('Seed Template Drafts (SM-07)', () => {
       }
 
       // Restore original published data
-      for (const [slug, data] of originalPagesData.entries()) {
+      for (const data of originalPagesData.values()) {
         try {
           await payload.update({
             collection: 'pages',

@@ -89,6 +89,7 @@ export async function seedTemplateDrafts(payload: Payload): Promise<TemplateDraf
       limit: 1,
       depth: 0,
       draft: true,
+      overrideAccess: true,
     })
 
     if (existingDraftRes.docs.length === 0) {
@@ -111,6 +112,7 @@ export async function seedTemplateDrafts(payload: Payload): Promise<TemplateDraf
           _status: 'draft',
         },
         draft: true,
+        overrideAccess: true,
       })
 
       report.created++
@@ -133,6 +135,7 @@ export async function seedTemplateDrafts(payload: Payload): Promise<TemplateDraf
       where: { parent: { equals: page.id } },
       sort: '-createdAt',
       limit: 5,
+      overrideAccess: true,
     })
 
     const latestVersionDoc = versionsRes.docs[0]
@@ -183,6 +186,7 @@ export async function seedTemplateDrafts(payload: Payload): Promise<TemplateDraf
         template: templateKey,
       },
       draft: true,
+      overrideAccess: true,
     })
 
     report.drafted++
