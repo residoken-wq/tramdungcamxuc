@@ -1,0 +1,19 @@
+# Production behind Nginx Proxy Manager (NPM) running in Docker on the same host.
+# The app joins NPM's network as `tdcx-app` and publishes no host port, so only NPM reaches it.
+#
+#   docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml up -d
+#
+# NPM proxy host: scheme http, forward hostname `tdcx-app`, port 3000 (see docs/plan/GO_LIVE.md).
+services:
+  app:
+    ports: !reset []
+    networks:
+      default: {}
+      npm:
+        aliases:
+          - tdcx-app
+
+networks:
+  npm:
+    external: true
+    name: ${NPM_NETWORK:?Set NPM_NETWORK to the Docker network of Nginx Proxy Manager}
