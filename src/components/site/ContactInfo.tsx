@@ -25,12 +25,7 @@ export interface ContactInfoProps {
   showOfficeAddress?: boolean
   showSocial?: boolean
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     contact?: PublicContactInfo | null
@@ -73,7 +68,8 @@ export function ContactInfo({
   const isEditing = puck?.isEditing ?? false
   const contact = _resolved?.contact
 
-  const email = typeof contact?.email === 'string' && contact.email.trim() ? contact.email.trim() : null
+  const email =
+    typeof contact?.email === 'string' && contact.email.trim() ? contact.email.trim() : null
   const hotline =
     typeof contact?.hotline === 'string' && contact.hotline.trim() ? contact.hotline.trim() : null
   const officeAddress =
@@ -100,9 +96,7 @@ export function ContactInfo({
   const hasEmail = Boolean(showEmail && email)
   const hasHotline = Boolean(showHotline && hotline)
   const hasOfficeAddress = Boolean(showOfficeAddress && officeAddress)
-  const hasSocial = Boolean(
-    showSocial && (linkedInUrl || facebookUrl || youtubeUrl || zaloChatUrl),
-  )
+  const hasSocial = Boolean(showSocial && (linkedInUrl || facebookUrl || youtubeUrl || zaloChatUrl))
 
   const activeCount = [hasEmail, hasHotline, hasOfficeAddress, hasSocial].filter(Boolean).length
 
@@ -215,7 +209,7 @@ export function ContactInfo({
                 {emailHref ? (
                   <a
                     href={emailHref}
-                    className="inline-flex items-center min-h-[44px] font-ui text-base font-bold text-accent-pink hover:text-bright-magenta underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-md transition-colors"
+                    className="inline-flex items-center min-h-[44px] font-ui text-base font-bold text-bright-magenta hover:text-accent-pink underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-md transition-colors"
                   >
                     {email}
                   </a>
@@ -260,7 +254,7 @@ export function ContactInfo({
                 {telHref ? (
                   <a
                     href={telHref}
-                    className="inline-flex items-center min-h-[44px] font-ui text-base font-bold text-accent-pink hover:text-bright-magenta underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-md transition-colors"
+                    className="inline-flex items-center min-h-[44px] font-ui text-base font-bold text-bright-magenta hover:text-accent-pink underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-md transition-colors"
                   >
                     {hotline}
                   </a>

@@ -97,11 +97,13 @@ export const workshopTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'workshop-faq',
-        version: 2,
+        version: 3,
         seriesLabel: '[MẪU] Thắc mắc',
         titleLine1: '[MẪU] THÔNG TIN',
         titleLine2: '[MẪU] BUỔI WORKSHOP',
         source: 'manual',
+        group: 'general',
+        limit: 5,
         items: [
           {
             question: '[MẪU] Hình thức tham gia như thế nào?',

@@ -11,7 +11,7 @@ const hasFunction = (value: unknown, depth = 0): boolean => {
 }
 
 describe('Puck block renders do not forward functions', () => {
-  it.each(['ImageText'])('%s', (name) => {
+  it.each(['ImageText', 'ContactInfo', 'ContactForms', 'FAQ'])('%s', (name) => {
     const component = (
       puckConfig.components as Record<
         string,

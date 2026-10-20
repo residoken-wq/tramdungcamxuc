@@ -448,6 +448,7 @@ describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
           name: 'Khai vấn Thấu cảm 1:1',
           slug: `service-${randomUUID()}`,
           saleStatus: 'on_sale',
+          _status: 'published',
         },
         overrideAccess: true,
       })

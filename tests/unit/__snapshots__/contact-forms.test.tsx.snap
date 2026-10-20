@@ -1,0 +1,1104 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SM-06: ContactForms component > renders columns layout with both B2C and B2B forms side by side 1`] = `
+<div>
+  <section
+    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-6xl"
+    >
+      <div
+        class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start"
+      >
+        <div
+          class="rounded-card p-6 sm:p-8 border bg-white border-deep-navy/10 text-deep-navy shadow-soft"
+        >
+          <div
+            class="mb-6"
+          >
+            <h3
+              class="font-display text-2xl sm:text-3xl uppercase tracking-tight text-deep-navy mb-2"
+            >
+              [MẪU] Dành cho Cá nhân
+            </h3>
+            <p
+              class="font-ui text-sm sm:text-base leading-relaxed text-deep-navy/70"
+            >
+              [MẪU] Đăng ký tư vấn 1:1 hoặc gửi những trăn trở của bạn về hành trình cảm xúc và thói quen.
+            </p>
+          </div>
+          <form
+            class="space-y-4 sm:space-y-5"
+            novalidate=""
+          >
+            <div
+              aria-hidden="true"
+              style="display: none;"
+            >
+              <label
+                for="_r_0_-b2c-hp"
+              >
+                Do not fill this
+              </label>
+              <input
+                autocomplete="off"
+                id="_r_0_-b2c-hp"
+                name="b2c_organization_hp"
+                tabindex="-1"
+                type="text"
+                value=""
+              />
+            </div>
+            <div>
+              <label
+                class="block font-ui text-sm font-bold mb-1.5"
+                for="_r_0_-b2c-name"
+              >
+                Họ và tên
+                 
+                <span
+                  class="text-bright-magenta"
+                >
+                  *
+                </span>
+              </label>
+              <input
+                aria-invalid="false"
+                class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                id="_r_0_-b2c-name"
+                placeholder="Họ và tên của bạn"
+                required=""
+                type="text"
+                value=""
+              />
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2c-email"
+                >
+                  Email
+                   
+                  <span
+                    class="text-bright-magenta"
+                  >
+                    *
+                  </span>
+                </label>
+                <input
+                  aria-invalid="false"
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                  id="_r_0_-b2c-email"
+                  placeholder="email@example.com"
+                  required=""
+                  type="email"
+                  value=""
+                />
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2c-phone"
+                >
+                  Số điện thoại (tùy chọn)
+                </label>
+                <input
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2c-phone"
+                  placeholder="0900 000 000"
+                  type="tel"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2c-service"
+                >
+                  Dịch vụ quan tâm
+                </label>
+                <select
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2c-service"
+                >
+                  <option
+                    value=""
+                  >
+                    Chưa chắc chắn (Trạm sẽ tư vấn thêm)
+                  </option>
+                  <option
+                    value="1"
+                  >
+                    [MẪU] Khai vấn Cá nhân 1:1
+                  </option>
+                  <option
+                    value="2"
+                  >
+                    [MẪU] Đồng hành Cảm xúc
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2c-status"
+                >
+                  Tình trạng hiện tại
+                </label>
+                <select
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2c-status"
+                >
+                  <option
+                    value=""
+                  >
+                    Chọn tình trạng phù hợp với bạn
+                  </option>
+                  <option
+                    value="[MẪU] Đang căng thẳng, quá tải"
+                  >
+                    [MẪU] Đang căng thẳng, quá tải
+                  </option>
+                  <option
+                    value="[MẪU] Cần định hướng lại thói quen"
+                  >
+                    [MẪU] Cần định hướng lại thói quen
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label
+                class="block font-ui text-sm font-bold mb-1.5"
+                for="_r_0_-b2c-message"
+              >
+                Bạn đang trăn trở điều gì?
+                 
+                <span
+                  class="text-bright-magenta"
+                >
+                  *
+                </span>
+              </label>
+              <textarea
+                aria-invalid="false"
+                class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                id="_r_0_-b2c-message"
+                maxlength="2000"
+                placeholder="Chia sẻ một chút về băn khoăn, cảm xúc hoặc mong muốn của bạn..."
+                required=""
+                rows="4"
+              />
+            </div>
+            <div>
+              <label
+                class="flex items-start gap-3 cursor-pointer select-none"
+              >
+                <input
+                  class="mt-1 h-5 w-5 rounded border-lavender-mist text-bright-magenta focus:ring-bright-magenta accent-bright-magenta cursor-pointer"
+                  id="_r_0_-b2c-consent"
+                  type="checkbox"
+                />
+                <span
+                  class="font-ui text-xs sm:text-sm leading-normal text-deep-navy/70"
+                >
+                  Tôi đồng ý với chính sách bảo mật thông tin của Trạm Dừng Cảm Xúc.
+                   
+                  <a
+                    class="text-bright-magenta font-semibold underline underline-offset-2 hover:text-deep-navy"
+                    href="/chinh-sach-bao-mat"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Chính sách bảo mật
+                  </a>
+                  . 
+                  <span
+                    class="text-bright-magenta"
+                  >
+                    *
+                  </span>
+                </span>
+              </label>
+            </div>
+            <div
+              class="pt-2"
+            >
+              <button
+                class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+                type="submit"
+              >
+                <span>
+                  Gửi yêu cầu tư vấn
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+        <div
+          class="rounded-card p-6 sm:p-8 border bg-white border-deep-navy/10 text-deep-navy shadow-soft"
+        >
+          <div
+            class="mb-6"
+          >
+            <h3
+              class="font-display text-2xl sm:text-3xl uppercase tracking-tight text-deep-navy mb-2"
+            >
+              [MẪU] Dành cho Doanh nghiệp
+            </h3>
+            <p
+              class="font-ui text-sm sm:text-base leading-relaxed text-deep-navy/70"
+            >
+              [MẪU] Cùng Trạm kiến tạo chương trình đào tạo và giải pháp chăm sóc sức khỏe tinh thần cho đội ngũ.
+            </p>
+          </div>
+          <form
+            class="space-y-4 sm:space-y-5"
+            novalidate=""
+          >
+            <div
+              aria-hidden="true"
+              style="display: none;"
+            >
+              <label
+                for="_r_0_-b2b-hp"
+              >
+                Do not fill this
+              </label>
+              <input
+                autocomplete="off"
+                id="_r_0_-b2b-hp"
+                name="b2b_organization_hp"
+                tabindex="-1"
+                type="text"
+                value=""
+              />
+            </div>
+            <div>
+              <label
+                class="block font-ui text-sm font-bold mb-1.5"
+                for="_r_0_-b2b-name"
+              >
+                Họ và tên
+                 
+                <span
+                  class="text-bright-magenta"
+                >
+                  *
+                </span>
+              </label>
+              <input
+                aria-invalid="false"
+                class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                id="_r_0_-b2b-name"
+                placeholder="Họ và tên của bạn"
+                required=""
+                type="text"
+                value=""
+              />
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2b-email"
+                >
+                  Email
+                   
+                  <span
+                    class="text-bright-magenta"
+                  >
+                    *
+                  </span>
+                </label>
+                <input
+                  aria-invalid="false"
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                  id="_r_0_-b2b-email"
+                  placeholder="email@example.com"
+                  required=""
+                  type="email"
+                  value=""
+                />
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2b-phone"
+                >
+                  Số điện thoại (tùy chọn)
+                </label>
+                <input
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2b-phone"
+                  placeholder="0900 000 000"
+                  type="tel"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2b-company"
+                >
+                  Công ty / Tổ chức
+                   
+                  <span
+                    class="text-bright-magenta"
+                  >
+                    *
+                  </span>
+                </label>
+                <input
+                  aria-invalid="false"
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                  id="_r_0_-b2b-company"
+                  placeholder="Tên tổ chức hoặc doanh nghiệp của bạn"
+                  required=""
+                  type="text"
+                  value=""
+                />
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2b-role"
+                >
+                  Vai trò của bạn
+                </label>
+                <input
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2b-role"
+                  placeholder="Ví dụ: HRD, L&D Manager, CEO..."
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2b-teamsize"
+                >
+                  Quy mô đội ngũ
+                </label>
+                <input
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2b-teamsize"
+                  placeholder="Ví dụ: 20-50 người"
+                  type="text"
+                  value=""
+                />
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2b-program"
+                >
+                  Chương trình quan tâm
+                </label>
+                <select
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2b-program"
+                >
+                  <option
+                    value=""
+                  >
+                    Chưa chắc chắn (Cần tư vấn thiết kế riêng)
+                  </option>
+                  <option
+                    value="101"
+                  >
+                    [MẪU] Tập Thương Cảm Xúc Doanh Nghiệp
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2b-behaviors"
+                >
+                  Hành vi mục tiêu / Thách thức chính
+                </label>
+                <input
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2b-behaviors"
+                  placeholder="Mô tả ngắn về vấn đề đội ngũ đang gặp phải..."
+                  type="text"
+                  value=""
+                />
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_0_-b2b-timeline"
+                >
+                  Thời gian dự kiến triển khai
+                </label>
+                <input
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_0_-b2b-timeline"
+                  placeholder="Ví dụ: Quý 4/2026, Tháng tới..."
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                class="block font-ui text-sm font-bold mb-1.5"
+                for="_r_0_-b2b-message"
+              >
+                Nội dung chia sẻ thêm
+              </label>
+              <textarea
+                class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                id="_r_0_-b2b-message"
+                maxlength="2000"
+                placeholder="Bất kỳ thông tin bổ sung nào giúp Trạm hiểu rõ hơn nhu cầu..."
+                rows="3"
+              />
+            </div>
+            <div>
+              <label
+                class="flex items-start gap-3 cursor-pointer select-none"
+              >
+                <input
+                  class="mt-1 h-5 w-5 rounded border-lavender-mist text-bright-magenta focus:ring-bright-magenta accent-bright-magenta cursor-pointer"
+                  id="_r_0_-b2b-consent"
+                  type="checkbox"
+                />
+                <span
+                  class="font-ui text-xs sm:text-sm leading-normal text-deep-navy/70"
+                >
+                  Tôi đồng ý với chính sách bảo mật thông tin của Trạm Dừng Cảm Xúc.
+                   
+                  <a
+                    class="text-bright-magenta font-semibold underline underline-offset-2 hover:text-deep-navy"
+                    href="/chinh-sach-bao-mat"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Chính sách bảo mật
+                  </a>
+                  . 
+                  <span
+                    class="text-bright-magenta"
+                  >
+                    *
+                  </span>
+                </span>
+              </label>
+            </div>
+            <div
+              class="pt-2"
+            >
+              <button
+                class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+                type="submit"
+              >
+                <span>
+                  Gửi đề xuất doanh nghiệp
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`SM-06: ContactForms component > renders tabs layout with tablist and switches tabs via click 1`] = `
+<div>
+  <section
+    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+  >
+    <div
+      class="mx-auto max-w-6xl"
+    >
+      <div
+        class="max-w-2xl mx-auto"
+      >
+        <div
+          aria-label="Hình thức liên hệ"
+          class="flex items-center justify-center p-1.5 rounded-2xl bg-lavender-mist/50 border border-deep-navy/10 mb-8 max-w-md mx-auto"
+          role="tablist"
+        >
+          <button
+            aria-controls="_r_1_-panel-personal"
+            aria-selected="false"
+            class="flex-1 py-3 px-6 rounded-xl font-ui text-sm sm:text-base font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink text-deep-navy/80 hover:text-deep-navy"
+            id="_r_1_-tab-personal"
+            role="tab"
+            tabindex="-1"
+            type="button"
+          >
+            Cá nhân
+          </button>
+          <button
+            aria-controls="_r_1_-panel-business"
+            aria-selected="true"
+            class="flex-1 py-3 px-6 rounded-xl font-ui text-sm sm:text-base font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink bg-deep-navy text-white shadow-soft"
+            id="_r_1_-tab-business"
+            role="tab"
+            tabindex="0"
+            type="button"
+          >
+            Doanh nghiệp
+          </button>
+        </div>
+        <div
+          aria-labelledby="_r_1_-tab-personal"
+          hidden=""
+          id="_r_1_-panel-personal"
+          role="tabpanel"
+        >
+          <div
+            class="rounded-card p-6 sm:p-8 border bg-white border-deep-navy/10 text-deep-navy shadow-soft"
+          >
+            <div
+              class="mb-6"
+            >
+              <h3
+                class="font-display text-2xl sm:text-3xl uppercase tracking-tight text-deep-navy mb-2"
+              >
+                [MẪU] Dành cho Cá nhân
+              </h3>
+              <p
+                class="font-ui text-sm sm:text-base leading-relaxed text-deep-navy/70"
+              >
+                [MẪU] Đăng ký tư vấn 1:1 hoặc gửi những trăn trở của bạn về hành trình cảm xúc và thói quen.
+              </p>
+            </div>
+            <form
+              class="space-y-4 sm:space-y-5"
+              novalidate=""
+            >
+              <div
+                aria-hidden="true"
+                style="display: none;"
+              >
+                <label
+                  for="_r_1_-b2c-hp"
+                >
+                  Do not fill this
+                </label>
+                <input
+                  autocomplete="off"
+                  id="_r_1_-b2c-hp"
+                  name="b2c_organization_hp"
+                  tabindex="-1"
+                  type="text"
+                  value=""
+                />
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_1_-b2c-name"
+                >
+                  Họ và tên
+                   
+                  <span
+                    class="text-bright-magenta"
+                  >
+                    *
+                  </span>
+                </label>
+                <input
+                  aria-invalid="false"
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                  id="_r_1_-b2c-name"
+                  placeholder="Họ và tên của bạn"
+                  required=""
+                  type="text"
+                  value=""
+                />
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2c-email"
+                  >
+                    Email
+                     
+                    <span
+                      class="text-bright-magenta"
+                    >
+                      *
+                    </span>
+                  </label>
+                  <input
+                    aria-invalid="false"
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                    id="_r_1_-b2c-email"
+                    placeholder="email@example.com"
+                    required=""
+                    type="email"
+                    value=""
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2c-phone"
+                  >
+                    Số điện thoại (tùy chọn)
+                  </label>
+                  <input
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2c-phone"
+                    placeholder="0900 000 000"
+                    type="tel"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2c-service"
+                  >
+                    Dịch vụ quan tâm
+                  </label>
+                  <select
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2c-service"
+                  >
+                    <option
+                      value=""
+                    >
+                      Chưa chắc chắn (Trạm sẽ tư vấn thêm)
+                    </option>
+                    <option
+                      value="1"
+                    >
+                      [MẪU] Khai vấn Cá nhân 1:1
+                    </option>
+                    <option
+                      value="2"
+                    >
+                      [MẪU] Đồng hành Cảm xúc
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2c-status"
+                  >
+                    Tình trạng hiện tại
+                  </label>
+                  <select
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2c-status"
+                  >
+                    <option
+                      value=""
+                    >
+                      Chọn tình trạng phù hợp với bạn
+                    </option>
+                    <option
+                      value="[MẪU] Đang căng thẳng, quá tải"
+                    >
+                      [MẪU] Đang căng thẳng, quá tải
+                    </option>
+                    <option
+                      value="[MẪU] Cần định hướng lại thói quen"
+                    >
+                      [MẪU] Cần định hướng lại thói quen
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_1_-b2c-message"
+                >
+                  Bạn đang trăn trở điều gì?
+                   
+                  <span
+                    class="text-bright-magenta"
+                  >
+                    *
+                  </span>
+                </label>
+                <textarea
+                  aria-invalid="false"
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                  id="_r_1_-b2c-message"
+                  maxlength="2000"
+                  placeholder="Chia sẻ một chút về băn khoăn, cảm xúc hoặc mong muốn của bạn..."
+                  required=""
+                  rows="4"
+                />
+              </div>
+              <div>
+                <label
+                  class="flex items-start gap-3 cursor-pointer select-none"
+                >
+                  <input
+                    class="mt-1 h-5 w-5 rounded border-lavender-mist text-bright-magenta focus:ring-bright-magenta accent-bright-magenta cursor-pointer"
+                    id="_r_1_-b2c-consent"
+                    type="checkbox"
+                  />
+                  <span
+                    class="font-ui text-xs sm:text-sm leading-normal text-deep-navy/70"
+                  >
+                    Tôi đồng ý với chính sách bảo mật thông tin của Trạm Dừng Cảm Xúc.
+                     
+                    <a
+                      class="text-bright-magenta font-semibold underline underline-offset-2 hover:text-deep-navy"
+                      href="/chinh-sach-bao-mat"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Chính sách bảo mật
+                    </a>
+                    . 
+                    <span
+                      class="text-bright-magenta"
+                    >
+                      *
+                    </span>
+                  </span>
+                </label>
+              </div>
+              <div
+                class="pt-2"
+              >
+                <button
+                  class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+                  type="submit"
+                >
+                  <span>
+                    Gửi yêu cầu tư vấn
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div
+          aria-labelledby="_r_1_-tab-business"
+          id="_r_1_-panel-business"
+          role="tabpanel"
+        >
+          <div
+            class="rounded-card p-6 sm:p-8 border bg-white border-deep-navy/10 text-deep-navy shadow-soft"
+          >
+            <div
+              class="mb-6"
+            >
+              <h3
+                class="font-display text-2xl sm:text-3xl uppercase tracking-tight text-deep-navy mb-2"
+              >
+                [MẪU] Dành cho Doanh nghiệp
+              </h3>
+              <p
+                class="font-ui text-sm sm:text-base leading-relaxed text-deep-navy/70"
+              >
+                [MẪU] Cùng Trạm kiến tạo chương trình đào tạo và giải pháp chăm sóc sức khỏe tinh thần cho đội ngũ.
+              </p>
+            </div>
+            <form
+              class="space-y-4 sm:space-y-5"
+              novalidate=""
+            >
+              <div
+                aria-hidden="true"
+                style="display: none;"
+              >
+                <label
+                  for="_r_1_-b2b-hp"
+                >
+                  Do not fill this
+                </label>
+                <input
+                  autocomplete="off"
+                  id="_r_1_-b2b-hp"
+                  name="b2b_organization_hp"
+                  tabindex="-1"
+                  type="text"
+                  value=""
+                />
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_1_-b2b-name"
+                >
+                  Họ và tên
+                   
+                  <span
+                    class="text-bright-magenta"
+                  >
+                    *
+                  </span>
+                </label>
+                <input
+                  aria-invalid="false"
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                  id="_r_1_-b2b-name"
+                  placeholder="Họ và tên của bạn"
+                  required=""
+                  type="text"
+                  value=""
+                />
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2b-email"
+                  >
+                    Email
+                     
+                    <span
+                      class="text-bright-magenta"
+                    >
+                      *
+                    </span>
+                  </label>
+                  <input
+                    aria-invalid="false"
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                    id="_r_1_-b2b-email"
+                    placeholder="email@example.com"
+                    required=""
+                    type="email"
+                    value=""
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2b-phone"
+                  >
+                    Số điện thoại (tùy chọn)
+                  </label>
+                  <input
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2b-phone"
+                    placeholder="0900 000 000"
+                    type="tel"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2b-company"
+                  >
+                    Công ty / Tổ chức
+                     
+                    <span
+                      class="text-bright-magenta"
+                    >
+                      *
+                    </span>
+                  </label>
+                  <input
+                    aria-invalid="false"
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white "
+                    id="_r_1_-b2b-company"
+                    placeholder="Tên tổ chức hoặc doanh nghiệp của bạn"
+                    required=""
+                    type="text"
+                    value=""
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2b-role"
+                  >
+                    Vai trò của bạn
+                  </label>
+                  <input
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2b-role"
+                    placeholder="Ví dụ: HRD, L&D Manager, CEO..."
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2b-teamsize"
+                  >
+                    Quy mô đội ngũ
+                  </label>
+                  <input
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2b-teamsize"
+                    placeholder="Ví dụ: 20-50 người"
+                    type="text"
+                    value=""
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2b-program"
+                  >
+                    Chương trình quan tâm
+                  </label>
+                  <select
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2b-program"
+                  >
+                    <option
+                      value=""
+                    >
+                      Chưa chắc chắn (Cần tư vấn thiết kế riêng)
+                    </option>
+                    <option
+                      value="101"
+                    >
+                      [MẪU] Tập Thương Cảm Xúc Doanh Nghiệp
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              >
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2b-behaviors"
+                  >
+                    Hành vi mục tiêu / Thách thức chính
+                  </label>
+                  <input
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2b-behaviors"
+                    placeholder="Mô tả ngắn về vấn đề đội ngũ đang gặp phải..."
+                    type="text"
+                    value=""
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block font-ui text-sm font-bold mb-1.5"
+                    for="_r_1_-b2b-timeline"
+                  >
+                    Thời gian dự kiến triển khai
+                  </label>
+                  <input
+                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    id="_r_1_-b2b-timeline"
+                    placeholder="Ví dụ: Quý 4/2026, Tháng tới..."
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  class="block font-ui text-sm font-bold mb-1.5"
+                  for="_r_1_-b2b-message"
+                >
+                  Nội dung chia sẻ thêm
+                </label>
+                <textarea
+                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  id="_r_1_-b2b-message"
+                  maxlength="2000"
+                  placeholder="Bất kỳ thông tin bổ sung nào giúp Trạm hiểu rõ hơn nhu cầu..."
+                  rows="3"
+                />
+              </div>
+              <div>
+                <label
+                  class="flex items-start gap-3 cursor-pointer select-none"
+                >
+                  <input
+                    class="mt-1 h-5 w-5 rounded border-lavender-mist text-bright-magenta focus:ring-bright-magenta accent-bright-magenta cursor-pointer"
+                    id="_r_1_-b2b-consent"
+                    type="checkbox"
+                  />
+                  <span
+                    class="font-ui text-xs sm:text-sm leading-normal text-deep-navy/70"
+                  >
+                    Tôi đồng ý với chính sách bảo mật thông tin của Trạm Dừng Cảm Xúc.
+                     
+                    <a
+                      class="text-bright-magenta font-semibold underline underline-offset-2 hover:text-deep-navy"
+                      href="/chinh-sach-bao-mat"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Chính sách bảo mật
+                    </a>
+                    . 
+                    <span
+                      class="text-bright-magenta"
+                    >
+                      *
+                    </span>
+                  </span>
+                </label>
+              </div>
+              <div
+                class="pt-2"
+              >
+                <button
+                  class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+                  type="submit"
+                >
+                  <span>
+                    Gửi đề xuất doanh nghiệp
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
