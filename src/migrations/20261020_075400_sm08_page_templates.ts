@@ -8,7 +8,11 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
   ALTER TYPE "public"."enum__pages_v_version_template" ADD VALUE 'business' BEFORE 'campaign';`)
 }
 
-export async function down({ db: _db, payload: _payload, req: _req }: MigrateDownArgs): Promise<void> {
+export async function down({
+  db: _db,
+  payload: _payload,
+  req: _req,
+}: MigrateDownArgs): Promise<void> {
   // PostgreSQL không hỗ trợ xóa giá trị trực tiếp khỏi kiểu enum (ALTER TYPE DROP VALUE).
   // Để tránh lỗi và nguy cơ mất dữ liệu khi rollback, hàm down để trống theo đặc tả SM-08 (như SM-07).
 }

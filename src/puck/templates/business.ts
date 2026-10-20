@@ -14,7 +14,8 @@ export const businessTemplate: Data = {
         seriesLabel: '[MẪU] DÀNH CHO DOANH NGHIỆP & TỔ CHỨC',
         titleLine1: '[MẪU] NÂNG TẦM NĂNG LỰC CẢM XÚC',
         titleLine2: '[MẪU] VÀ GẮN KẾT ĐỘI NGŨ',
-        emotionLine: '[MẪU] Giải pháp đào tạo và khai vấn giúp doanh nghiệp phát triển bền vững từ nội lực con người.',
+        emotionLine:
+          '[MẪU] Giải pháp đào tạo và khai vấn giúp doanh nghiệp phát triển bền vững từ nội lực con người.',
         mediaId: '',
         imageUrl: '',
         imageAlt: '',
@@ -22,10 +23,7 @@ export const businessTemplate: Data = {
         buttonLink: '/lien-he',
         secondaryButtonText: '',
         secondaryButtonLink: '',
-        badges: [
-          { text: '[MẪU] An toàn tâm lý' },
-          { text: '[MẪU] Chuyển hóa bền vững' },
-        ],
+        badges: [{ text: '[MẪU] An toàn tâm lý' }, { text: '[MẪU] Chuyển hóa bền vững' }],
         stats: [],
         bgColor: 'warm-ivory',
         padding: 'md',
@@ -39,7 +37,8 @@ export const businessTemplate: Data = {
         seriesLabel: '[MẪU] THÁCH THỨC TỔ CHỨC',
         titleLine1: '[MẪU] NHỮNG ĐIỂM NGHẼN NỘI TÂM',
         titleLine2: '[MẪU] TRONG MÔI TRƯỜNG LÀM VIỆC',
-        emotionLine: '[MẪU] Nhận diện để cùng nhau kiến tạo môi trường làm việc thấu cảm và vững vàng.',
+        emotionLine:
+          '[MẪU] Nhận diện để cùng nhau kiến tạo môi trường làm việc thấu cảm và vững vàng.',
         marker: 'icon',
         columns: 3,
         cardStyle: 'white',
@@ -72,17 +71,20 @@ export const businessTemplate: Data = {
         seriesLabel: '[MẪU] HỆ SINH THÁI GIẢI PHÁP',
         titleLine1: '[MẪU] ĐỒNG HÀNH TOÀN DIỆN',
         titleLine2: '[MẪU] CÙNG TỔ CHỨC CỦA BẠN',
-        emotionLine: '[MẪU] Thiết kế linh hoạt theo bối cảnh văn hóa và mục tiêu cụ thể của từng doanh nghiệp.',
+        emotionLine:
+          '[MẪU] Thiết kế linh hoạt theo bối cảnh văn hóa và mục tiêu cụ thể của từng doanh nghiệp.',
         description:
           '[MẪU] Kết hợp giữa khoa học thói quen, trí tuệ cảm xúc và phương pháp khai vấn chuẩn quốc tế.',
         col1Title: '[MẪU] Đào tạo & Workshop',
-        col1Description: '[MẪU] Các chuyên đề thực hành EQ và chuyển hóa thói quen làm việc hiệu quả.',
+        col1Description:
+          '[MẪU] Các chuyên đề thực hành EQ và chuyển hóa thói quen làm việc hiệu quả.',
         col1Products: [],
         col2Title: '[MẪU] Khai vấn lãnh đạo & nhóm',
         col2Description: '[MẪU] Đồng hành nâng cao năng lực thấu cảm và phản tỉnh cho cấp quản lý.',
         col2Services: [],
         col3Title: '[MẪU] Chương trình chuyển đổi',
-        col3Description: '[MẪU] Lộ trình dài hạn xây dựng văn hóa an toàn tâm lý và gắn kết bền chặt.',
+        col3Description:
+          '[MẪU] Lộ trình dài hạn xây dựng văn hóa an toàn tâm lý và gắn kết bền chặt.',
         col3Programs: [],
         bgColor: 'warm-ivory',
         padding: 'md',

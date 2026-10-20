@@ -14,7 +14,8 @@ export const communityTemplate: Data = {
         seriesLabel: '[MẪU] CỘNG ĐỒNG TRẠM DỪNG CẢM XÚC',
         titleLine1: '[MẪU] KHÔNG GIAN KẾT NỐI',
         titleLine2: '[MẪU] VÀ THẤU CẢM CHÂN THÀNH',
-        emotionLine: '[MẪU] Nơi những tâm hồn đồng điệu cùng dừng lại, lắng nghe và đồng hành lớn lên.',
+        emotionLine:
+          '[MẪU] Nơi những tâm hồn đồng điệu cùng dừng lại, lắng nghe và đồng hành lớn lên.',
         mediaId: '',
         imageUrl: '',
         imageAlt: '',
@@ -22,10 +23,7 @@ export const communityTemplate: Data = {
         buttonLink: '',
         secondaryButtonText: '[MẪU] Tìm hiểu thêm',
         secondaryButtonLink: '/lien-he',
-        badges: [
-          { text: '[MẪU] Không gian an toàn' },
-          { text: '[MẪU] Chia sẻ chân thành' },
-        ],
+        badges: [{ text: '[MẪU] Không gian an toàn' }, { text: '[MẪU] Chia sẻ chân thành' }],
         stats: [],
         bgColor: 'warm-ivory',
         padding: 'md',
@@ -75,7 +73,8 @@ export const communityTemplate: Data = {
         titleLine2: '[MẪU] ĐỀU ĐƯỢC NÂNG NIU',
         content:
           '[MẪU] Cộng đồng Trạm Dừng Cảm Xúc là điểm tựa ấm áp cho bất kỳ ai đang trên hành trình học cách yêu thương chính mình.\n\n[MẪU] Tại đây, chúng mình tin rằng việc mở lòng đón nhận cảm xúc không phải là yếu đuối, mà là khởi đầu của lòng can đảm và sự chữa lành bền bỉ.',
-        quote: '[MẪU] Khi có một không gian an toàn, bạn sẽ tìm lại được tiếng nói chân thật nhất bên trong mình.',
+        quote:
+          '[MẪU] Khi có một không gian an toàn, bạn sẽ tìm lại được tiếng nói chân thật nhất bên trong mình.',
         mediaId: '',
         imageUrl: '',
         imageAlt: '',
