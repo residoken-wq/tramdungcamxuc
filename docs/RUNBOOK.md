@@ -363,6 +363,9 @@ Mong đợi: bảng kết quả có `products 12`, `pages 5`, `lessons 20`… v�
 - `http://IP-SERVER:3400/` hiện trang chủ dựng bằng Puck (Hero 2 lối vào); `/ve-hana`, `/coaching`, `/coaching/growth-mirror`, `/doanh-nghiep` hiện trang mẫu.
 - Trong `/admin`: Sản phẩm (9 sản phẩm + 3 gói CLEAR / BUILD / SHINE, tổng giá trị và % ưu đãi tự tính), Dịch vụ, Chương trình, Thẻ EQ, Bài học, Câu hỏi chẩn đoán, Kỹ thuật, 6 Trang pháp lý (chưa có nội dung), Menu điều hướng.
 - Mọi chữ mẫu bắt đầu bằng `[MẪU]`; testimonial mẫu để **nháp** vì chưa có đồng ý của khách.
+- **Bản nháp mẫu Sitemap v2 (SM-07)**: Lệnh seed tự động tạo thêm bản nháp (`_status = 'draft'`) từ 5 mẫu trang mới trên 5 trang chính (`/`, `/lo-trinh-chuyen-minh`, `/ve-tram`, `/coaching`, `/lien-he`) mà không đè lên bản đang xuất bản công khai. Chạy lại nhiều lần an toàn (idempotent, bỏ qua nếu đã có bản nháp). **Chỉ chạy seed trên DB local / demo**; chạy trên server thật là việc của người duyệt.
+- **Bỏ bản nháp mẫu nếu không ưng** (không xóa trực tiếp trong DB):
+  - _Qua Payload Admin_: Vào trang tương ứng -> cột phải chọn **Lịch sử phiên bản (Versions)** -> chọn bản `Published` ban đầu -> bấm **Khôi phục phiên bản này (Restore)**.
 
 ### Cập nhật
 

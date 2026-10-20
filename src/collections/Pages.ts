@@ -104,6 +104,11 @@ export const Pages = {
       admin: { description: 'Dữ liệu bố cục lưu từ trình dựng trang Puck.' },
     },
     select('template', 'Mẫu trang', [
+      ['home-v2', 'Trang chủ v2'],
+      ['journey', 'Trang lộ trình'],
+      ['about', 'Trang Về Trạm'],
+      ['coach', 'Trang Coach 1:1'],
+      ['contact', 'Trang Liên hệ'],
       ['campaign', 'Landing chiến dịch'],
       ['service', 'Trang dịch vụ'],
       ['workshop', 'Trang workshop'],

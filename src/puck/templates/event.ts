@@ -6,6 +6,7 @@ export const eventTemplate: Data = {
       title: 'Trang sự kiện',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroImage',

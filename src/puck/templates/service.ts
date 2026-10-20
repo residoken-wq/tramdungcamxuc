@@ -6,6 +6,7 @@ export const serviceTemplate: Data = {
       title: 'Trang dịch vụ',
     },
   },
+  zones: {},
   content: [
     {
       type: 'HeroImage',

@@ -1,10 +1,24 @@
 import type { Data } from '@puckeditor/core'
+import { homeV2Template } from './home-v2'
+import { journeyTemplate } from './journey'
+import { aboutTemplate } from './about'
+import { coachTemplate } from './coach'
+import { contactTemplate } from './contact'
 import { campaignTemplate } from './campaign'
 import { serviceTemplate } from './service'
 import { workshopTemplate } from './workshop'
 import { eventTemplate } from './event'
 
-export type PageTemplateKey = 'campaign' | 'service' | 'workshop' | 'event'
+export type PageTemplateKey =
+  | 'home-v2'
+  | 'journey'
+  | 'about'
+  | 'coach'
+  | 'contact'
+  | 'campaign'
+  | 'service'
+  | 'workshop'
+  | 'event'
 
 export type PageTemplateItem = {
   key: PageTemplateKey
@@ -14,6 +28,41 @@ export type PageTemplateItem = {
 }
 
 export const pageTemplates: Record<PageTemplateKey, PageTemplateItem> = {
+  'home-v2': {
+    key: 'home-v2',
+    label: 'Trang chủ v2',
+    description:
+      'Bố cục trang chủ toàn diện: Hero 2 lối vào, 3 gói giải pháp, chẩn đoán, 5 bước chuyển hóa, câu chuyện nhà sáng lập, bảo chứng và form kết nối.',
+    data: homeV2Template,
+  },
+  journey: {
+    key: 'journey',
+    label: 'Trang lộ trình',
+    description:
+      'Lộ trình "Chuyển mình không chênh vênh": 4 nỗi đau, 3 cột mốc CLEAR/BUILD/SHINE, bảng so sánh quyền lợi, câu chuyện khách hàng và đăng ký trải nghiệm.',
+    data: journeyTemplate,
+  },
+  about: {
+    key: 'about',
+    label: 'Trang Về Trạm',
+    description:
+      'Câu chuyện thương hiệu "Trạm Dừng", tầm nhìn sứ mệnh, giá trị cốt lõi, khung 5 bước, thư người sáng lập, đội ngũ chuyên gia và chuẩn mực quốc tế.',
+    data: aboutTemplate,
+  },
+  coach: {
+    key: 'coach',
+    label: 'Trang Coach 1:1',
+    description:
+      'Dịch vụ khai vấn chuyên sâu 1:1: 4 tình huống cần tấm gương soi chiếu, thẻ dịch vụ Growth & Thinking Mirror, bên trong một phiên khai vấn, tiến trình 5 bước và đặt lịch.',
+    data: coachTemplate,
+  },
+  contact: {
+    key: 'contact',
+    label: 'Trang Liên hệ',
+    description:
+      'Kênh kết nối chính thức: cam kết bảo mật & phản hồi nhanh, thông tin liên hệ đa kênh, biểu mẫu 2 cột Cá nhân & Doanh nghiệp và câu hỏi thường gặp.',
+    data: contactTemplate,
+  },
   campaign: {
     key: 'campaign',
     label: 'Landing chiến dịch',
@@ -60,4 +109,14 @@ export function getTemplateData(key: string, pageTitle?: string): Data | null {
   return clone
 }
 
-export { campaignTemplate, serviceTemplate, workshopTemplate, eventTemplate }
+export {
+  homeV2Template,
+  journeyTemplate,
+  aboutTemplate,
+  coachTemplate,
+  contactTemplate,
+  campaignTemplate,
+  serviceTemplate,
+  workshopTemplate,
+  eventTemplate,
+}

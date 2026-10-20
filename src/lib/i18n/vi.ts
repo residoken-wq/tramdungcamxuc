@@ -1057,7 +1057,7 @@ export const vi = {
     serviceLabel: 'Lộ trình quan tâm',
     uncertainServiceOption: 'Chưa chắc chắn',
     packageInterestPrefix: 'Gói quan tâm:',
-    noBookingProduct: 'Chưa có sản phẩm phiên trải nghiệm đang bán',
+    noBookingProduct: 'Nút dẫn tới phiên trải nghiệm đang bán – xem ở trang công khai',
     readOnlyBadge: 'Chỉ đọc',
     optionalLabel: '(tùy chọn)',
     logoStripEmptyMessage:

@@ -2,6 +2,7 @@ import type { CollectionSlug, Payload, Where } from 'payload'
 import * as data from './data'
 import { LEGACY_PAGE_SLUGS, rewriteLink } from '../src/lib/paths'
 import { EQ_BUDDY_PRODUCT_SLUG } from '../src/lib/eq/config'
+import { arePuckDataEquivalent, seedTemplateDrafts } from './template-drafts'
 
 // The seed writes many collections through one generic helper; Payload's per-collection
 // generics cannot express that, so writes go through this deliberately loose view.
@@ -10,7 +11,21 @@ type LooseWriter = {
   update(args: Record<string, unknown>): Promise<unknown>
 }
 
-export type SeedReport = Record<string, { created: number; updated: number; skippedReal: number }>
+export type CollectionSeedStats = {
+  created: number
+  updated: number
+  skippedReal: number
+}
+
+export type TemplateDraftStats = {
+  created: number
+  drafted: number
+  skipped: number
+}
+
+export type SeedReport = Record<string, CollectionSeedStats> & {
+  templateDrafts?: TemplateDraftStats
+}
 
 /**
  * Idempotent sample seed. Only creates or updates documents with isSample = true;
@@ -19,7 +34,7 @@ export type SeedReport = Record<string, { created: number; updated: number; skip
 export async function seed(payload: Payload): Promise<SeedReport> {
   const writer = payload as unknown as LooseWriter
   const report: SeedReport = {}
-  const tally = (collection: string) =>
+  const tally = (collection: string): CollectionSeedStats =>
     (report[collection] ??= { created: 0, updated: 0, skippedReal: 0 })
 
   async function upsert(
@@ -31,8 +46,26 @@ export async function seed(payload: Payload): Promise<SeedReport> {
   ): Promise<number | null> {
     const publish = options.publish ?? true
     const where: Where = { [key]: { equals: value } }
-    const existing = await payload.find({ collection, where, limit: 1, depth: 0, draft: true })
-    const found = existing.docs[0] as { id: number; isSample?: boolean } | undefined
+    const existing = await payload.find({
+      collection,
+      where,
+      limit: 1,
+      depth: 0,
+      draft: true,
+      overrideAccess: true,
+    })
+    let found = existing.docs[0] as { id: number; isSample?: boolean } | undefined
+    if (!found) {
+      const existingPublished = await payload.find({
+        collection,
+        where,
+        limit: 1,
+        depth: 0,
+        draft: false,
+        overrideAccess: true,
+      })
+      found = existingPublished.docs[0] as { id: number; isSample?: boolean } | undefined
+    }
     const payloadData = {
       ...doc,
       [key]: value,
@@ -44,11 +77,42 @@ export async function seed(payload: Payload): Promise<SeedReport> {
       return found.id
     }
     if (found) {
-      await writer.update({ collection, id: found.id, data: payloadData, draft: !publish })
+      // Re-publishing an unchanged sample page would drop its template draft (SM-07) and add
+      // a version on every run, so skip pages whose published copy already matches the seed.
+      if (collection === 'pages') {
+        const published = await payload.find({
+          collection,
+          where: { and: [where, { _status: { equals: 'published' } }] },
+          limit: 1,
+          depth: 0,
+          draft: false,
+          overrideAccess: true,
+        })
+        const current = published.docs[0] as { title?: unknown; puckData?: unknown } | undefined
+        if (
+          current &&
+          current.title === doc.title &&
+          arePuckDataEquivalent(current.puckData, doc.puckData)
+        ) {
+          return found.id
+        }
+      }
+      await writer.update({
+        collection,
+        id: found.id,
+        data: payloadData,
+        draft: !publish,
+        overrideAccess: true,
+      })
       tally(collection).updated++
       return found.id
     }
-    const created = await writer.create({ collection, data: payloadData, draft: !publish })
+    const created = await writer.create({
+      collection,
+      data: payloadData,
+      draft: !publish,
+      overrideAccess: true,
+    })
     tally(collection).created++
     return created.id
   }
@@ -201,6 +265,8 @@ export async function seed(payload: Payload): Promise<SeedReport> {
     const puckData = { content: resolvedBlocks, root: { props: { title } }, zones: {} }
     pageIds.set(slug, (await upsert('pages', 'slug', slug, { title, puckData }))!)
   }
+
+  report.templateDrafts = await seedTemplateDrafts(payload)
 
   // Globals: only fill when empty (or, for the main menu, still the old seed menu) so real
   // settings entered by Hana are never overwritten.

@@ -230,7 +230,7 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 | SM-04 | Khối Puck đợt B (Về Trạm + Coach 1:1)                | SM-01, SM-03 merge  | Laptop   | ✅ Merge 19/10 – PR #162; còn chờ IT duyệt `REVIEW-REQUIRED (SM-04)` ([review](reviews/SM-04.md))                         |
 | SM-05 | Trang Tài nguyên + newsletter                        | SM-02, SM-04 merge  | PC nhà   | ✅ Merge 19/10 – PR #165; còn chờ IT xem `REVIEW-REQUIRED` trong `submitNewsletter` ([review](reviews/SM-05.md))          |
 | SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01, SM-05 merge  | PC nhà   | ✅ Merge 20/10 – PR #167 ([review](reviews/SM-06.md))                                                                     |
-| SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | Laptop   | Giao Laptop 20/10 – `prompts/SM-07.md` (🔒 Migration: enum `pages.template`)                                              |
+| SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | Laptop   | ĐẠT 20/10 sau SM-07c ([review](reviews/SM-07.md)); chờ CI + IT xem migration enum, `seed/template-drafts.ts`              |
 | SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Planning | –                                                                                                                         |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
