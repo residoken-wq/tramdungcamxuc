@@ -85,6 +85,8 @@ Nguồn: biên bản họp 20/10 (anh Nhân). Planning phân tích 20/10 trên `
 | Sao lưu / khôi phục file, CSV, gửi kết quả cho coach                                 | Chưa (dữ liệu đã lưu server)                    | Không cần sao lưu file; thêm tải CSV dữ liệu của mình + nút chép kết quả               |
 | Đặt lịch coach / Ủng hộ                                                              | Đặt lịch có ở dịch vụ                           | Đặt lịch lấy link từ CMS; **Ủng hộ cần Hana quyết** (trái mô hình bán công cụ trả phí) |
 
+**Đã chốt 20/10** (anh Nhân): câu 1 = 28 ngày; câu 2 = ngày trong nhịp không check-in là lỡ nhịp, đạt 90% mới cấp chứng nhận, không đạt ghi "Đã trải nghiệm". Chi tiết cách hiểu: `docs/DECISIONS.md`. Đủ để làm HB-02 (prompt `docs/tasks/prompts/HB-02.md`); câu 3–10 chặn HB-07 trở đi.
+
 ### Hana / anh Nhân phải chốt trước khi code (theo thứ tự quan trọng)
 
 1. **21 hay 28 ngày?** AGENTS §1 / §8.2 đang chốt 21 ngày dùng thử + tracker 21 ngày. Nếu 28: dùng thử thành 28 ngày, hay hết thử ở ngày 22 rồi mời mua?
