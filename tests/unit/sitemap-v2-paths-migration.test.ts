@@ -51,14 +51,7 @@ describe('sitemap v2 paths migration (SM-02)', () => {
   beforeAll(async () => {
     payload = await getPayload({ config })
     for (const slug of slugs) {
-      const existing = (await pageBySlug(slug)) as { id: number; isSample?: boolean } | undefined
-      if (existing) {
-        if (existing.isSample) {
-          await payload.delete({ collection: 'pages', id: existing.id, overrideAccess: true })
-        } else {
-          throw new Error(`Test DB already has a page "${slug}"`)
-        }
-      }
+      if (await pageBySlug(slug)) throw new Error(`Test DB already has a page "${slug}"`)
     }
     navigationBefore = await payload.findGlobal({ slug: 'navigation', depth: 0 })
   }, 60000)
