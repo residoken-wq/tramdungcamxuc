@@ -18,6 +18,7 @@ import * as migration_20261016_063717_customer_session_version from './20261016_
 import * as migration_20261016_113859_reminder_emails_opt_out from './20261016_113859_reminder_emails_opt_out'
 import * as migration_20261017_083454_sitemap_v2_schema from './20261017_083454_sitemap_v2_schema'
 import * as migration_20261018_020000_sitemap_v2_paths from './20261018_020000_sitemap_v2_paths'
+import * as migration_20261020_031337_sm07_page_templates from './20261020_031337_sm07_page_templates'
 
 export const migrations = [
   {
@@ -119,5 +120,10 @@ export const migrations = [
     up: migration_20261018_020000_sitemap_v2_paths.up,
     down: migration_20261018_020000_sitemap_v2_paths.down,
     name: '20261018_020000_sitemap_v2_paths',
+  },
+  {
+    up: migration_20261020_031337_sm07_page_templates.up,
+    down: migration_20261020_031337_sm07_page_templates.down,
+    name: '20261020_031337_sm07_page_templates',
   },
 ]

@@ -243,7 +243,8 @@ export interface Page {
   /**
    * Chọn một mục phù hợp.
    */
-  template?: ('campaign' | 'service' | 'workshop' | 'event') | null;
+  template?:
+    ('home-v2' | 'journey' | 'about' | 'coach' | 'contact' | 'campaign' | 'service' | 'workshop' | 'event') | null;
   seo?: {
     /**
      * Nhập tiêu đề tìm kiếm.
