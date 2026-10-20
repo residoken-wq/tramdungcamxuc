@@ -3,7 +3,6 @@
 import React, { useState, useId, useRef } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
