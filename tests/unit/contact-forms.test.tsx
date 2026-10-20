@@ -35,6 +35,17 @@ describe('SM-06: ContactForms component', () => {
     // Program dropdown in B2B
     expect(screen.getByText('[MẪU] Tập Thương Cảm Xúc Doanh Nghiệp')).toBeTruthy()
 
+    // Select styling for long option text (truncate + title)
+    const serviceSelect = container.querySelector<HTMLSelectElement>('select[id$="-b2c-service"]')
+    expect(serviceSelect?.classList.contains('truncate')).toBe(true)
+    const serviceOption = serviceSelect?.querySelector('option[value="1"]')
+    expect(serviceOption?.getAttribute('title')).toBe('[MẪU] Khai vấn Cá nhân 1:1')
+
+    const programSelect = container.querySelector<HTMLSelectElement>('select[id$="-b2b-program"]')
+    expect(programSelect?.classList.contains('truncate')).toBe(true)
+    const programOption = programSelect?.querySelector('option[value="101"]')
+    expect(programOption?.getAttribute('title')).toBe('[MẪU] Tập Thương Cảm Xúc Doanh Nghiệp')
+
     expect(container).toMatchSnapshot()
   })
 

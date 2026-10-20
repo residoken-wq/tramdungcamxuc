@@ -21,12 +21,7 @@ export interface ContactFormsProps {
   successTitleB2B?: string
   successMessageB2B?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   pageSlug?: string
   _resolved?: {
@@ -91,9 +86,9 @@ export function ContactForms({
   const [b2cConsent, setB2cConsent] = useState(false)
   const [b2cHoneypot, setB2cHoneypot] = useState('')
   const [b2cTurnstileToken, setB2cTurnstileToken] = useState<string | undefined>(undefined)
-  const [b2cStatusState, setB2cStatusState] = useState<
-    'idle' | 'submitting' | 'success' | 'error'
-  >('idle')
+  const [b2cStatusState, setB2cStatusState] = useState<'idle' | 'submitting' | 'success' | 'error'>(
+    'idle',
+  )
   const [b2cErrors, setB2cErrors] = useState<Record<string, string>>({})
   const [b2cServerError, setB2cServerError] = useState<string | null>(null)
 
@@ -111,9 +106,9 @@ export function ContactForms({
   const [b2bConsent, setB2bConsent] = useState(false)
   const [b2bHoneypot, setB2bHoneypot] = useState('')
   const [b2bTurnstileToken, setB2bTurnstileToken] = useState<string | undefined>(undefined)
-  const [b2bStatusState, setB2bStatusState] = useState<
-    'idle' | 'submitting' | 'success' | 'error'
-  >('idle')
+  const [b2bStatusState, setB2bStatusState] = useState<'idle' | 'submitting' | 'success' | 'error'>(
+    'idle',
+  )
   const [b2bErrors, setB2bErrors] = useState<Record<string, string>>({})
   const [b2bServerError, setB2bServerError] = useState<string | null>(null)
 
@@ -372,10 +367,7 @@ export function ContactForms({
 
             {/* Họ và tên */}
             <div>
-              <label
-                htmlFor={`${id}-b2c-name`}
-                className="block font-ui text-sm font-bold mb-1.5"
-              >
+              <label htmlFor={`${id}-b2c-name`} className="block font-ui text-sm font-bold mb-1.5">
                 {vi.sm06.contactForms.nameLabel} <span className="text-bright-magenta">*</span>
               </label>
               <input
@@ -396,7 +388,11 @@ export function ContactForms({
                 aria-describedby={b2cErrors.name ? `${id}-b2c-name-err` : undefined}
               />
               {b2cErrors.name && (
-                <p id={`${id}-b2c-name-err`} role="alert" className="mt-1 font-ui text-xs text-bright-magenta font-semibold">
+                <p
+                  id={`${id}-b2c-name-err`}
+                  role="alert"
+                  className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                >
                   {b2cErrors.name}
                 </p>
               )}
@@ -429,7 +425,11 @@ export function ContactForms({
                   aria-describedby={b2cErrors.email ? `${id}-b2c-email-err` : undefined}
                 />
                 {b2cErrors.email && (
-                  <p id={`${id}-b2c-email-err`} role="alert" className="mt-1 font-ui text-xs text-bright-magenta font-semibold">
+                  <p
+                    id={`${id}-b2c-email-err`}
+                    role="alert"
+                    className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                  >
                     {b2cErrors.email}
                   </p>
                 )}
@@ -468,11 +468,17 @@ export function ContactForms({
                   disabled={b2cStatusState === 'submitting'}
                   value={b2cService}
                   onChange={(e) => setB2cService(e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
+                  title={
+                    services.find((s) => String(s.id) === String(b2cService))?.name ||
+                    (b2cService ? '' : vi.sm06.contactForms.serviceUncertain)
+                  }
+                  className={`w-full max-w-full px-4 py-3 rounded-xl border font-ui text-base truncate transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
                 >
-                  <option value="">{vi.sm06.contactForms.serviceUncertain}</option>
+                  <option value="" title={vi.sm06.contactForms.serviceUncertain}>
+                    {vi.sm06.contactForms.serviceUncertain}
+                  </option>
                   {services.map((s) => (
-                    <option key={s.id} value={s.id}>
+                    <option key={s.id} value={s.id} title={s.name}>
                       {s.name}
                     </option>
                   ))}
@@ -511,7 +517,8 @@ export function ContactForms({
                 htmlFor={`${id}-b2c-message`}
                 className="block font-ui text-sm font-bold mb-1.5"
               >
-                {vi.sm06.contactForms.messageB2CLabel} <span className="text-bright-magenta">*</span>
+                {vi.sm06.contactForms.messageB2CLabel}{' '}
+                <span className="text-bright-magenta">*</span>
               </label>
               <textarea
                 id={`${id}-b2c-message`}
@@ -532,7 +539,11 @@ export function ContactForms({
                 aria-describedby={b2cErrors.message ? `${id}-b2c-msg-err` : undefined}
               />
               {b2cErrors.message && (
-                <p id={`${id}-b2c-msg-err`} role="alert" className="mt-1 font-ui text-xs text-bright-magenta font-semibold">
+                <p
+                  id={`${id}-b2c-msg-err`}
+                  role="alert"
+                  className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                >
                   {b2cErrors.message}
                 </p>
               )}
@@ -599,9 +610,7 @@ export function ContactForms({
                 disabled={b2cStatusState === 'submitting'}
                 className="w-full text-center"
               >
-                {b2cStatusState === 'submitting'
-                  ? vi.sm06.contactForms.submitting
-                  : submitLabelB2C}
+                {b2cStatusState === 'submitting' ? vi.sm06.contactForms.submitting : submitLabelB2C}
               </Button>
             </div>
           </form>
@@ -677,10 +686,7 @@ export function ContactForms({
 
             {/* Họ và tên */}
             <div>
-              <label
-                htmlFor={`${id}-b2b-name`}
-                className="block font-ui text-sm font-bold mb-1.5"
-              >
+              <label htmlFor={`${id}-b2b-name`} className="block font-ui text-sm font-bold mb-1.5">
                 {vi.sm06.contactForms.nameLabel} <span className="text-bright-magenta">*</span>
               </label>
               <input
@@ -701,7 +707,11 @@ export function ContactForms({
                 aria-describedby={b2bErrors.name ? `${id}-b2b-name-err` : undefined}
               />
               {b2bErrors.name && (
-                <p id={`${id}-b2b-name-err`} role="alert" className="mt-1 font-ui text-xs text-bright-magenta font-semibold">
+                <p
+                  id={`${id}-b2b-name-err`}
+                  role="alert"
+                  className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                >
                   {b2bErrors.name}
                 </p>
               )}
@@ -734,7 +744,11 @@ export function ContactForms({
                   aria-describedby={b2bErrors.email ? `${id}-b2b-email-err` : undefined}
                 />
                 {b2bErrors.email && (
-                  <p id={`${id}-b2b-email-err`} role="alert" className="mt-1 font-ui text-xs text-bright-magenta font-semibold">
+                  <p
+                    id={`${id}-b2b-email-err`}
+                    role="alert"
+                    className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                  >
                     {b2bErrors.email}
                   </p>
                 )}
@@ -786,7 +800,11 @@ export function ContactForms({
                   aria-describedby={b2bErrors.company ? `${id}-b2b-comp-err` : undefined}
                 />
                 {b2bErrors.company && (
-                  <p id={`${id}-b2b-comp-err`} role="alert" className="mt-1 font-ui text-xs text-bright-magenta font-semibold">
+                  <p
+                    id={`${id}-b2b-comp-err`}
+                    role="alert"
+                    className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                  >
                     {b2bErrors.company}
                   </p>
                 )}
@@ -843,11 +861,17 @@ export function ContactForms({
                   disabled={b2bStatusState === 'submitting'}
                   value={b2bProgram}
                   onChange={(e) => setB2bProgram(e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
+                  title={
+                    programs.find((p) => String(p.id) === String(b2bProgram))?.name ||
+                    (b2bProgram ? '' : vi.sm06.contactForms.programUncertain)
+                  }
+                  className={`w-full max-w-full px-4 py-3 rounded-xl border font-ui text-base truncate transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
                 >
-                  <option value="">{vi.sm06.contactForms.programUncertain}</option>
+                  <option value="" title={vi.sm06.contactForms.programUncertain}>
+                    {vi.sm06.contactForms.programUncertain}
+                  </option>
                   {programs.map((p) => (
-                    <option key={p.id} value={p.id}>
+                    <option key={p.id} value={p.id} title={p.name}>
                       {p.name}
                     </option>
                   ))}
@@ -975,9 +999,7 @@ export function ContactForms({
                 disabled={b2bStatusState === 'submitting'}
                 className="w-full text-center"
               >
-                {b2bStatusState === 'submitting'
-                  ? vi.sm06.contactForms.submitting
-                  : submitLabelB2B}
+                {b2bStatusState === 'submitting' ? vi.sm06.contactForms.submitting : submitLabelB2B}
               </Button>
             </div>
           </form>

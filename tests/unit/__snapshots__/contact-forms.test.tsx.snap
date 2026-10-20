@@ -126,20 +126,24 @@ exports[`SM-06: ContactForms component > renders columns layout with both B2C an
                   Dịch vụ quan tâm
                 </label>
                 <select
-                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  class="w-full max-w-full px-4 py-3 rounded-xl border font-ui text-base truncate transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
                   id="_r_0_-b2c-service"
+                  title="Chưa chắc chắn (Trạm sẽ tư vấn thêm)"
                 >
                   <option
+                    title="Chưa chắc chắn (Trạm sẽ tư vấn thêm)"
                     value=""
                   >
                     Chưa chắc chắn (Trạm sẽ tư vấn thêm)
                   </option>
                   <option
+                    title="[MẪU] Khai vấn Cá nhân 1:1"
                     value="1"
                   >
                     [MẪU] Khai vấn Cá nhân 1:1
                   </option>
                   <option
+                    title="[MẪU] Đồng hành Cảm xúc"
                     value="2"
                   >
                     [MẪU] Đồng hành Cảm xúc
@@ -415,15 +419,18 @@ exports[`SM-06: ContactForms component > renders columns layout with both B2C an
                   Chương trình quan tâm
                 </label>
                 <select
-                  class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                  class="w-full max-w-full px-4 py-3 rounded-xl border font-ui text-base truncate transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
                   id="_r_0_-b2b-program"
+                  title="Chưa chắc chắn (Cần tư vấn thiết kế riêng)"
                 >
                   <option
+                    title="Chưa chắc chắn (Cần tư vấn thiết kế riêng)"
                     value=""
                   >
                     Chưa chắc chắn (Cần tư vấn thiết kế riêng)
                   </option>
                   <option
+                    title="[MẪU] Tập Thương Cảm Xúc Doanh Nghiệp"
                     value="101"
                   >
                     [MẪU] Tập Thương Cảm Xúc Doanh Nghiệp
@@ -691,20 +698,24 @@ exports[`SM-06: ContactForms component > renders tabs layout with tablist and sw
                     Dịch vụ quan tâm
                   </label>
                   <select
-                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    class="w-full max-w-full px-4 py-3 rounded-xl border font-ui text-base truncate transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
                     id="_r_1_-b2c-service"
+                    title="Chưa chắc chắn (Trạm sẽ tư vấn thêm)"
                   >
                     <option
+                      title="Chưa chắc chắn (Trạm sẽ tư vấn thêm)"
                       value=""
                     >
                       Chưa chắc chắn (Trạm sẽ tư vấn thêm)
                     </option>
                     <option
+                      title="[MẪU] Khai vấn Cá nhân 1:1"
                       value="1"
                     >
                       [MẪU] Khai vấn Cá nhân 1:1
                     </option>
                     <option
+                      title="[MẪU] Đồng hành Cảm xúc"
                       value="2"
                     >
                       [MẪU] Đồng hành Cảm xúc
@@ -986,15 +997,18 @@ exports[`SM-06: ContactForms component > renders tabs layout with tablist and sw
                     Chương trình quan tâm
                   </label>
                   <select
-                    class="w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
+                    class="w-full max-w-full px-4 py-3 rounded-xl border font-ui text-base truncate transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink bg-warm-ivory/60 border-lavender-mist text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:bg-white"
                     id="_r_1_-b2b-program"
+                    title="Chưa chắc chắn (Cần tư vấn thiết kế riêng)"
                   >
                     <option
+                      title="Chưa chắc chắn (Cần tư vấn thiết kế riêng)"
                       value=""
                     >
                       Chưa chắc chắn (Cần tư vấn thiết kế riêng)
                     </option>
                     <option
+                      title="[MẪU] Tập Thương Cảm Xúc Doanh Nghiệp"
                       value="101"
                     >
                       [MẪU] Tập Thương Cảm Xúc Doanh Nghiệp

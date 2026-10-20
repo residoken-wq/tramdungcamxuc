@@ -1121,7 +1121,7 @@ export const vi = {
     formSubtitle:
       'Điền thông tin bên dưới để nhận liên kết tải tài liệu trực tiếp vào hòm thư của bạn.',
     nameLabel: 'Họ và tên của bạn',
-    namePlaceholder: 'Ví dụ: Nguyễn Minh Anh',
+    namePlaceholder: 'Họ và tên của bạn',
     emailLabel: 'Địa chỉ email nhận tài liệu',
     emailPlaceholder: 'email@example.com',
     submit: 'Nhận tài liệu qua email',
@@ -2297,7 +2297,7 @@ export const vi = {
       defaultConsent: '[MẪU] Tôi đồng ý nhận email chia sẻ định kỳ từ Trạm Dừng Cảm Xúc.',
       promiseNotice: 'Chỉ hứa điều đang làm được',
       nameLabel: 'Tên của bạn (không bắt buộc)',
-      namePlaceholder: 'Ví dụ: Minh Anh',
+      namePlaceholder: 'Họ và tên của bạn',
       emailLabel: 'Email nhận bản tin',
       emailPlaceholder: 'email@example.com',
       submitting: 'Đang đăng ký...',

@@ -105,7 +105,7 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
           {/* Navigation link */}
           <div className="mb-6 sm:mb-8">
             <Link
-              href={`${PATHS.resources}?tab=noi-dung`}
+              href={PATHS.resources}
               className="inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-deep-navy/70 hover:text-bright-magenta transition-colors"
             >
               ← {vi.resource.backToLibrary}

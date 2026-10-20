@@ -170,9 +170,13 @@ export function ContactInfo({
 
         {/* Contact Cards Grid */}
         <div
-          className={`grid grid-cols-1 md:grid-cols-2 ${
-            activeCount >= 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'
-          } gap-6 sm:gap-8 items-stretch`}
+          className={
+            activeCount === 1
+              ? 'mx-auto max-w-md w-full'
+              : `grid grid-cols-1 md:grid-cols-2 ${
+                  activeCount >= 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'
+                } gap-6 sm:gap-8 items-stretch`
+          }
         >
           {/* Email Card */}
           {hasEmail && email && (

@@ -59,8 +59,8 @@
 - [x] T2-16: đổi `PAYLOAD_SECRET` làm mọi `trialUsage.emailHash` cũ mất tác dụng (khách đã xóa có thể dùng thử lại) – ghi vào RUNBOOK khi có quy trình xoay khóa (ghi vào RUNBOOK, xong T2-21).
 
 - (SM-04 review 19/10) Editor Puck: nút đặt phiên / "Chọn gói này" luôn hiện ghi chú "Chưa có sản phẩm phiên trải nghiệm đang bán" vì editor không có `_resolved.bookingProductId` – thêm hook client hoặc đổi ghi chú (SM-07).
-- (SM-04 review 19/10) `/styleguide`: thêm ví dụ `HanaStory` kiểu `letter` có `greeting` + `signatureName`.
+- [x] (SM-04 review 19/10) `/styleguide`: thêm ví dụ `HanaStory` kiểu `letter` có `greeting` + `signatureName` (xong SM-08).
 - (SM-05 review 19/10) `CTASection` chỉ có 1 nút – cân nhắc thêm nút thứ 2 (VD: quiz + đặt phiên) cho dải CTA nền tối trang Tài nguyên.
-- (SM-05 review 19/10) Bỏ link `?tab=noi-dung` còn sót ở `PostDetail.tsx` và `tai-nguyen/[slug]/page.tsx`; đổi placeholder "Ví dụ: Minh Anh" của form newsletter.
-- (SM-06 review 20/10) `ContactInfo` chỉ có 1 mục → căn giữa thay vì dồn trái.
-- (SM-06 review 20/10) `ContactForms` bố cục 2 cột ở 1440px: chữ dài trong ô chọn (dịch vụ / chương trình) bị cắt.
+- [x] (SM-05 review 19/10) Bỏ link `?tab=noi-dung` còn sót ở `PostDetail.tsx` và `tai-nguyen/[slug]/page.tsx`; đổi placeholder "Ví dụ: Minh Anh" của form newsletter (xong SM-08).
+- [x] (SM-06 review 20/10) `ContactInfo` chỉ có 1 mục → căn giữa thay vì dồn trái (xong SM-08).
+- [x] (SM-06 review 20/10) `ContactForms` bố cục 2 cột ở 1440px: chữ dài trong ô chọn (dịch vụ / chương trình) bị cắt (xong SM-08).
