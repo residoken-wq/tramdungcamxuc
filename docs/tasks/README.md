@@ -234,7 +234,22 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 | SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | Laptop | ✅ Merge 20/10 – PR #169; còn chờ IT xem migration enum + `seed/template-drafts.ts` ([review](reviews/SM-07.md))                                  |
 | SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Laptop | ✅ Merge 20/10 – PR #172; chờ IT xem migration + **Hana nghiệm thu cổng** (`plan/SITEMAP_V2_GATE.md`, HUONG_DAN 11b) ([review](reviews/SM-08.md)) |
 
-## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
+### Họp 20/10 – Puck khối con + Habit 28 ngày (kế hoạch `docs/plan/MEETING_2010.md`)
+
+Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiều migration DB: **🔒 Migration: HB-02 (Laptop, tới khi PR merge)**.
+
+| Mã          | Việc                                                                              | Phụ thuộc                        | Máy      | Trạng thái                                     |
+| ----------- | --------------------------------------------------------------------------------- | -------------------------------- | -------- | ---------------------------------------------- |
+| PK-01       | Preset màu chữ / cỡ chữ + SectionHeader v2                                        | –                                | PC nhà   | Giao 20/10 – `prompts/PK-01.md`                |
+| PK-02       | Khối con Card / Stat / Step + IconCardGrid dùng slot                              | PK-01                            | PC nhà   | Chờ PK-01                                      |
+| PK-03       | StatsBar, JourneySteps dùng slot                                                  | PK-02                            | PC nhà   | –                                              |
+| PK-04       | ServiceCards, PackageCards dùng slot + ảnh từng thẻ; ImageText dùng helper        | PK-02                            | PC nhà   | –                                              |
+| PK-05       | FAQ slot, Columns nhận khối con, mẫu trang + seed, e2e, hướng dẫn                 | PK-03, PK-04                     | PC nhà   | –                                              |
+| HB-01       | Ghi quyết định Habit 28 ngày (câu 1–2 đã chốt 20/10; câu 3–10 chờ Hana)           | –                                | Planning | Câu 1–2 xong – `DECISIONS.md`                  |
+| HB-02       | Hành trình 28 ngày (cài đặt + lưu vào kế hoạch), chứng nhận 90%, "Đã trải nghiệm" | HB-01 (câu 1–2)                  | Laptop   | Giao 20/10 – `prompts/HB-02.md` (🔒 Migration) |
+| HB-03→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)         | HB-02; câu 3–10 cho HB-07 trở đi | –        | Chờ                                            |
+
+(Planning dùng cho mọi task)
 
 - [ ] Báo cáo đủ 6 mục theo mẫu AGENTS.md mục 13
 - [ ] Tiêu chí nghiệm thu riêng của task đều tick, có cách kiểm tra cho người không biết code

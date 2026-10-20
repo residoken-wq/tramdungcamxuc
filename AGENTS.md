@@ -58,6 +58,12 @@ Tổng giá trị và % ưu đãi được **tính tự động** từ cấu ph�
 - Quiz chẩn đoán: thang **1–5**, chấm **điểm trung bình** mỗi giai đoạn.
 - Còn mở: giá Habit Tracker (250.000/178.000 hay 499.000/199.000) – giữ trong CMS, Hana tự sửa.
 
+### Đã chốt 20/10/2026 – Habit Hack 28 ngày (chi tiết: `docs/DECISIONS.md` mục "Habit Hack hành trình 28 ngày")
+
+- Hành trình Habit và dùng thử Habit Tracker số: **28 ngày** (thay 21 ngày ở trên và ở mục 8.2). Số ngày là cài đặt trong CMS, lưu cố định vào kế hoạch lúc tạo.
+- Ngày trong nhịp tuần không check-in = lỡ nhịp; ngày nghỉ theo nhịp không tính.
+- Chứng nhận khi check-in đạt **90%** số ngày bỏ phiếu; không đạt → kế hoạch ghi **"Đã trải nghiệm"**, không cấp chứng nhận.
+
 ---
 
 ## 2. Nguyên tắc làm việc (bắt buộc)
