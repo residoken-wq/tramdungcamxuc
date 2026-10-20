@@ -141,6 +141,10 @@ export async function createProductFromWizard(
 
     // Nếu đã có docId (đã lưu nháp trước đó), gọi update; ngược lại gọi create
     const isDraft = !options.publish
+    // Payload keeps `_status` at its 'draft' default unless it is sent: without this line
+    // "Xuất bản" saved a draft.
+    payloadData._status = isDraft ? 'draft' : 'published'
+
     if (options.docId) {
       const updatedDoc = isDraft
         ? await payload.update({

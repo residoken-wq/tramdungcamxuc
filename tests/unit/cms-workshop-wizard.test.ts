@@ -261,5 +261,41 @@ describe('Workshop Wizard (CM-06) Unit Tests', () => {
         expect(workshopInDb.joinUrl).toBe('https://meet.google.com/abc-test-meet')
       }
     })
+
+    it('publish: true stores the workshop as published, not as a draft', async () => {
+      mockHeadersValue = new Headers()
+      mockHeadersValue.set('Authorization', `JWT ${ownerToken}`)
+
+      const product = await payload.create({
+        collection: 'products',
+        data: {
+          name: 'Gói BUILD Test',
+          slug: `goi-build-test-${randomUUID().slice(0, 8)}`,
+          type: 'package',
+          web: 'site',
+          price: 2900000,
+          isSample: false,
+        },
+        draft: true,
+      })
+      cleanupDocs.push({ collection: 'products', id: product.id })
+
+      const res = await createWorkshopFromWizard(
+        {
+          audienceProductIds: [product.id],
+          title: 'Workshop xuất bản thử',
+          vnDate: '2026-10-30',
+          vnTime: '20:00',
+          joinUrl: 'https://meet.google.com/publish-test',
+        },
+        { publish: true },
+      )
+      expect(res.success).toBe(true)
+      cleanupDocs.push({ collection: 'workshops', id: res.docId! })
+
+      const workshopInDb = await payload.findByID({ collection: 'workshops', id: res.docId! })
+      expect(workshopInDb._status).toBe('published')
+      expect(new Date(workshopInDb.startsAt!).toISOString()).toBe('2026-10-30T13:00:00.000Z')
+    })
   })
 })
