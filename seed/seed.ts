@@ -2,7 +2,7 @@ import type { CollectionSlug, Payload, Where } from 'payload'
 import * as data from './data'
 import { LEGACY_PAGE_SLUGS, rewriteLink } from '../src/lib/paths'
 import { EQ_BUDDY_PRODUCT_SLUG } from '../src/lib/eq/config'
-import { seedTemplateDrafts } from './template-drafts'
+import { arePuckDataEquivalent, seedTemplateDrafts } from './template-drafts'
 
 // The seed writes many collections through one generic helper; Payload's per-collection
 // generics cannot express that, so writes go through this deliberately loose view.
@@ -77,9 +77,25 @@ export async function seed(payload: Payload): Promise<SeedReport> {
       return found.id
     }
     if (found) {
+      // Re-publishing an unchanged sample page would drop its template draft (SM-07) and add
+      // a version on every run, so skip pages whose published copy already matches the seed.
       if (collection === 'pages') {
-        tally(collection).updated++
-        return found.id
+        const published = await payload.find({
+          collection,
+          where: { and: [where, { _status: { equals: 'published' } }] },
+          limit: 1,
+          depth: 0,
+          draft: false,
+          overrideAccess: true,
+        })
+        const current = published.docs[0] as { title?: unknown; puckData?: unknown } | undefined
+        if (
+          current &&
+          current.title === doc.title &&
+          arePuckDataEquivalent(current.puckData, doc.puckData)
+        ) {
+          return found.id
+        }
       }
       await writer.update({
         collection,
