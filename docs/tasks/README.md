@@ -222,16 +222,16 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 
 **🔒 Migration: SM-02 → SM-07 (merge 20/10, PR #169) → SM-08 (tới khi PR merge – enum `pages.template`). SM-03 → SM-06 không cần 🔒 Migration (chỉ migration dữ liệu Puck).**
 
-| Mã    | Việc                                                 | Phụ thuộc           | Máy    | Trạng thái                                                                                                                |
-| ----- | ---------------------------------------------------- | ------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
-| SM-01 | CMS schema: menu con, faqs, teamMembers, field mới   | –                   | Laptop | ✅ Merge 17/10 – PR #151; còn chờ IT duyệt `REVIEW-REQUIRED` (`TeamMembers`); `decisions/SM-01.md`                        |
-| SM-02 | Menu con, đường dẫn mới, 301, migration dữ liệu link | SM-01 merge, T3-06a | PC nhà | ✅ Merge 18/10 – PR #157; còn chờ IT duyệt `REVIEW-REQUIRED` (migration dữ liệu); `decisions/SM-02.md`                    |
-| SM-03 | Khối Puck đợt A (trang chủ + lộ trình)               | SM-02 merge         | Laptop | ✅ Merge 19/10 – PR #159; còn chờ IT xem A2 ([review](reviews/SM-03.md)); lỗi C1 (nút "Chọn gói này" → 404) chuyển SM-04b |
-| SM-04 | Khối Puck đợt B (Về Trạm + Coach 1:1)                | SM-01, SM-03 merge  | Laptop | ✅ Merge 19/10 – PR #162; còn chờ IT duyệt `REVIEW-REQUIRED (SM-04)` ([review](reviews/SM-04.md))                         |
-| SM-05 | Trang Tài nguyên + newsletter                        | SM-02, SM-04 merge  | PC nhà | ✅ Merge 19/10 – PR #165; còn chờ IT xem `REVIEW-REQUIRED` trong `submitNewsletter` ([review](reviews/SM-05.md))          |
-| SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01, SM-05 merge  | PC nhà | ✅ Merge 20/10 – PR #167 ([review](reviews/SM-06.md))                                                                     |
-| SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | Laptop | ✅ Merge 20/10 – PR #169; còn chờ IT xem migration enum + `seed/template-drafts.ts` ([review](reviews/SM-07.md))          |
-| SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Laptop | Giao Laptop 20/10 – `prompts/SM-08.md` (🔒 Migration: enum `pages.template`); Planning chạy test cổng + Hana nghiệm thu   |
+| Mã    | Việc                                                 | Phụ thuộc           | Máy    | Trạng thái                                                                                                                          |
+| ----- | ---------------------------------------------------- | ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| SM-01 | CMS schema: menu con, faqs, teamMembers, field mới   | –                   | Laptop | ✅ Merge 17/10 – PR #151; còn chờ IT duyệt `REVIEW-REQUIRED` (`TeamMembers`); `decisions/SM-01.md`                                  |
+| SM-02 | Menu con, đường dẫn mới, 301, migration dữ liệu link | SM-01 merge, T3-06a | PC nhà | ✅ Merge 18/10 – PR #157; còn chờ IT duyệt `REVIEW-REQUIRED` (migration dữ liệu); `decisions/SM-02.md`                              |
+| SM-03 | Khối Puck đợt A (trang chủ + lộ trình)               | SM-02 merge         | Laptop | ✅ Merge 19/10 – PR #159; còn chờ IT xem A2 ([review](reviews/SM-03.md)); lỗi C1 (nút "Chọn gói này" → 404) chuyển SM-04b           |
+| SM-04 | Khối Puck đợt B (Về Trạm + Coach 1:1)                | SM-01, SM-03 merge  | Laptop | ✅ Merge 19/10 – PR #162; còn chờ IT duyệt `REVIEW-REQUIRED (SM-04)` ([review](reviews/SM-04.md))                                   |
+| SM-05 | Trang Tài nguyên + newsletter                        | SM-02, SM-04 merge  | PC nhà | ✅ Merge 19/10 – PR #165; còn chờ IT xem `REVIEW-REQUIRED` trong `submitNewsletter` ([review](reviews/SM-05.md))                    |
+| SM-06 | Trang Liên hệ + FAQ dùng chung                       | SM-01, SM-05 merge  | PC nhà | ✅ Merge 20/10 – PR #167 ([review](reviews/SM-06.md))                                                                               |
+| SM-07 | Mẫu trang + dựng trang MẪU                           | SM-03, SM-04, SM-06 | Laptop | ✅ Merge 20/10 – PR #169; còn chờ IT xem migration enum + `seed/template-drafts.ts` ([review](reviews/SM-07.md))                    |
+| SM-08 | Cộng đồng, trang DN, QA tổng, hướng dẫn CMS          | tất cả              | Laptop | ĐẠT 20/10 sau SM-08c ([review](reviews/SM-08.md)); chờ CI + IT xem migration + **Hana nghiệm thu cổng** (`plan/SITEMAP_V2_GATE.md`) |
 
 ## 4. Checklist nghiệm thu chung (Planning dùng cho mọi task)
 
