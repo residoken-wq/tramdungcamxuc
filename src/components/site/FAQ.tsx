@@ -13,6 +13,8 @@ export interface FAQItem {
 }
 
 export interface FAQProps {
+  sectionId?: string
+  headingId?: string
   version?: number
   source?: 'manual' | 'group'
   group?: string
@@ -60,6 +62,8 @@ const PADDINGS = {
 } as const
 
 export function FAQ({
+  sectionId,
+  headingId,
   version: _version,
   source = 'manual',
   group = 'general',
@@ -251,7 +255,10 @@ export function FAQ({
   )
 
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section
+      id={sectionId}
+      className={`w-full ${sectionId ? 'scroll-mt-24 ' : ''}${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
+    >
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
         {(titleLine1 || seriesLabel) && (
@@ -264,7 +271,10 @@ export function FAQ({
               </span>
             )}
 
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]">
+            <h2
+              id={headingId}
+              className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]`}
+            >
               <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
               <span className={titleLine2ColorClass}>{titleLine2}</span>
             </h2>

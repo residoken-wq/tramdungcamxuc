@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic'
 export const STATIC_SITEMAP_ROUTES = [
   '/',
   PATHS.resources,
+  PATHS.faq,
   '/chinh-sach-bao-mat',
   '/chinh-sach-cung-cap-dich-vu',
   '/dieu-khoan-su-dung',
