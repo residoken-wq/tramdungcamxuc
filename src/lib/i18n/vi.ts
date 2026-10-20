@@ -1065,10 +1065,6 @@ export const vi = {
     logoStripGroupEmptyMessage: (groupName: string) => `Nhóm "${groupName}" chưa có logo.`,
   },
 
-  sm07: {
-    editorBookingNote: 'Nút dẫn tới phiên trải nghiệm đang bán – xem ở trang công khai',
-  },
-
   legal: {
     lastUpdated: 'Cập nhật ngày',
     updatingContent: 'Nội dung đang được cập nhật.',
