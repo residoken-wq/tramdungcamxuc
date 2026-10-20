@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { BOOKING_PATH, getBookingPath } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
+import { useClientFaqs } from '@/puck/client-preview'
 
 export interface FAQItem {
   question: string
@@ -12,9 +13,13 @@ export interface FAQItem {
 }
 
 export interface FAQProps {
+  sectionId?: string
+  headingId?: string
   version?: number
-  // Chừa source = 'manual' để SM-06 mở rộng thêm nguồn 'group' từ collection faqs
-  source?: 'manual'
+  source?: 'manual' | 'group'
+  group?: string
+  limit?: number
+  preserveWhitespace?: boolean
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
@@ -34,6 +39,7 @@ export interface FAQProps {
   _resolved?: {
     email?: string | null
     bookingProductId?: number | null
+    groupItems?: FAQItem[] | null
   }
   puck?: {
     isEditing?: boolean
@@ -56,6 +62,13 @@ const PADDINGS = {
 } as const
 
 export function FAQ({
+  sectionId,
+  headingId,
+  version: _version,
+  source = 'manual',
+  group = 'general',
+  limit = 5,
+  preserveWhitespace = false,
   seriesLabel,
   titleLine1 = '[MẪU] CÂU HỎI THƯỜNG GẶP',
   titleLine2 = '[MẪU] GIẢI ĐÁP BĂN KHOĂN',
@@ -74,9 +87,31 @@ export function FAQ({
   _resolved,
   puck,
 }: FAQProps) {
+  const isEditing = puck?.isEditing ?? false
   const isDeepNavy = bgColor === 'deep-navy'
-  const validItems = Array.isArray(items)
-    ? items.filter((item) => item && (item.question || item.answer))
+  const isGroupSource = source === 'group'
+
+  const { items: clientItems } = useClientFaqs({
+    group,
+    limit,
+    initialItems: _resolved?.groupItems !== undefined ? (_resolved.groupItems ?? []) : undefined,
+  })
+
+  // When source === 'group', use resolved items (from SSR) or client preview items (in Puck editor),
+  // falling back to prop items if explicitly provided (e.g. styleguide / unit tests).
+  // When source === 'manual', use items prop.
+  const activeItems: FAQItem[] = isGroupSource
+    ? _resolved?.groupItems !== undefined
+      ? (_resolved.groupItems ?? [])
+      : isEditing
+        ? clientItems
+        : items && items.length > 0
+          ? items
+          : clientItems
+    : items || []
+
+  const validItems = Array.isArray(activeItems)
+    ? activeItems.filter((item) => item && (item.question || item.answer))
     : []
 
   const [openIndices, setOpenIndices] = useState<Record<number, boolean>>({})
@@ -88,6 +123,21 @@ export function FAQ({
     }))
   }
 
+  // When source === 'group' and there are no questions:
+  // Public page hides the entire block; editor shows a helpful placeholder note.
+  if (isGroupSource && validItems.length === 0) {
+    if (isEditing) {
+      return (
+        <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+          <div className="mx-auto max-w-4xl p-6 rounded-card border border-dashed border-deep-navy/30 text-center font-ui text-sm text-deep-navy/70">
+            {vi.sm06.faq.editorEmptyGroup}
+          </div>
+        </section>
+      )
+    }
+    return null
+  }
+
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const cardBgClass = isDeepNavy
@@ -96,10 +146,16 @@ export function FAQ({
   const questionColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const answerColorClass = isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
   const iconColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+  const answerWhitespaceClass = preserveWhitespace || isGroupSource ? ' whitespace-pre-line' : ''
 
   const email = _resolved?.email ?? propEmail
-  const seeAllSafeLink = seeAllLink ? safeHref(seeAllLink) : null
-  const isEditing = puck?.isEditing ?? false
+  const effectiveSeeAllLink =
+    seeAllLink && seeAllLink.trim() !== ''
+      ? seeAllLink.trim()
+      : isGroupSource
+        ? `/cau-hoi-thuong-gap#${group || 'general'}`
+        : null
+  const seeAllSafeLink = effectiveSeeAllLink ? safeHref(effectiveSeeAllLink) : null
   const bookingProductId = _resolved?.bookingProductId ?? null
 
   const isBookingLink =
@@ -180,7 +236,7 @@ export function FAQ({
               hidden={!isOpen}
               className={`mt-4 pt-3 border-t ${
                 isDeepNavy ? 'border-white/10' : 'border-deep-navy/10'
-              } font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}`}
+              } font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}${answerWhitespaceClass}`}
             >
               {item.answer}
             </div>
@@ -199,7 +255,10 @@ export function FAQ({
   )
 
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section
+      id={sectionId}
+      className={`w-full ${sectionId ? 'scroll-mt-24 ' : ''}${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
+    >
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
         {(titleLine1 || seriesLabel) && (
@@ -212,7 +271,10 @@ export function FAQ({
               </span>
             )}
 
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]">
+            <h2
+              id={headingId}
+              className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]`}
+            >
               <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
               <span className={titleLine2ColorClass}>{titleLine2}</span>
             </h2>

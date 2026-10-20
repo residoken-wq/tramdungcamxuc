@@ -30,6 +30,7 @@ export interface SubmissionContext {
   ip?: string
   page?: string
   utm?: string
+  form?: string
 }
 
 export interface SubmissionOptions {
@@ -185,8 +186,9 @@ export async function submitCoachingForm(
     email: validated.email,
   })
 
-  // Resolve service name from services collection (using field 'name')
+  // Resolve service name and id from services collection (strictly published and not hidden)
   let serviceName: string | undefined
+  let serviceId: number | undefined
   if (validated.service) {
     try {
       const sDoc = await payload.findByID({
@@ -194,7 +196,13 @@ export async function submitCoachingForm(
         id: validated.service,
         overrideAccess: true,
       })
-      if (sDoc && typeof sDoc === 'object') {
+      if (
+        sDoc &&
+        typeof sDoc === 'object' &&
+        sDoc._status === 'published' &&
+        sDoc.saleStatus !== 'hidden'
+      ) {
+        serviceId = typeof sDoc.id === 'number' ? sDoc.id : Number(sDoc.id)
         if ('name' in sDoc && sDoc.name) {
           serviceName = String(sDoc.name)
         } else if ('title' in sDoc && sDoc.title) {
@@ -202,16 +210,32 @@ export async function submitCoachingForm(
         }
       }
     } catch {
-      // Ignore if service not found
+      // Ignore if service not found, draft or hidden
     }
   }
 
-  const serviceId =
-    typeof validated.service === 'number'
-      ? validated.service
-      : typeof validated.service === 'string' && !isNaN(Number(validated.service))
-        ? Number(validated.service)
-        : undefined
+  // Validate currentStatus against siteSettings.leadStatusOptions (discard if invalid without error)
+  let validCurrentStatus: string | undefined
+  if (validated.currentStatus) {
+    try {
+      const siteDoc = await payload.findGlobal({
+        slug: 'siteSettings',
+        overrideAccess: true,
+      })
+      const options = (siteDoc as unknown as { leadStatusOptions?: Array<{ label?: string }> })
+        ?.leadStatusOptions
+      if (Array.isArray(options) && options.length > 0) {
+        const match = options.find(
+          (opt) => opt?.label && opt.label.trim() === validated.currentStatus?.trim(),
+        )
+        if (match?.label) {
+          validCurrentStatus = match.label.trim()
+        }
+      }
+    } catch {
+      // Ignore if siteSettings check fails
+    }
+  }
 
   // 5. REVIEW-REQUIRED: Personal data (NĐ 13/2023). Coaching form creates lead with overrideAccess after validation.
   const lead = await payload.create({
@@ -222,12 +246,13 @@ export async function submitCoachingForm(
       phone: validated.phone || undefined,
       message: validated.message,
       service: serviceId,
+      currentStatus: validCurrentStatus,
       need: 'personal',
       interestTags: [{ text: 'coaching' }],
       consent: true,
       consentAt: new Date().toISOString(),
       source: {
-        form: 'coaching',
+        form: ctx.form || 'coaching',
         page: ctx.page || undefined,
         utm: ctx.utm || undefined,
       },
@@ -244,6 +269,7 @@ export async function submitCoachingForm(
       email: validated.email.toLowerCase().trim(),
       phone: validated.phone,
       serviceName,
+      currentStatus: validCurrentStatus,
       message: validated.message,
     },
     ctx,
@@ -300,6 +326,32 @@ export async function submitB2BBrief(
     email: validated.email,
   })
 
+  // Resolve interestedProgram from programs collection (strictly published and not hidden)
+  let programName: string | undefined
+  let programId: number | undefined
+  if (validated.interestedProgram) {
+    try {
+      const pDoc = await payload.findByID({
+        collection: 'programs',
+        id: validated.interestedProgram,
+        overrideAccess: true,
+      })
+      if (
+        pDoc &&
+        typeof pDoc === 'object' &&
+        pDoc._status === 'published' &&
+        pDoc.saleStatus !== 'hidden'
+      ) {
+        programId = typeof pDoc.id === 'number' ? pDoc.id : Number(pDoc.id)
+        if ('name' in pDoc && pDoc.name) {
+          programName = String(pDoc.name)
+        }
+      }
+    } catch {
+      // Ignore if program not found, draft or hidden
+    }
+  }
+
   // 5. REVIEW-REQUIRED: Personal data (NĐ 13/2023). B2B brief creates lead with overrideAccess after validation.
   const lead = await payload.create({
     collection: 'leads',
@@ -311,15 +363,17 @@ export async function submitB2BBrief(
       need: 'business',
       brief: {
         company: validated.company,
+        contactRole: validated.contactRole || undefined,
         teamSize: validated.teamSize || undefined,
         targetBehaviors: validated.targetBehaviors || undefined,
         timeline: validated.timeline || undefined,
       },
+      interestedProgram: programId,
       interestTags: [{ text: 'b2b' }],
       consent: true,
       consentAt: new Date().toISOString(),
       source: {
-        form: 'b2b',
+        form: ctx.form || 'b2b',
         page: ctx.page || undefined,
         utm: ctx.utm || undefined,
       },
@@ -336,7 +390,9 @@ export async function submitB2BBrief(
       email: validated.email.toLowerCase().trim(),
       phone: validated.phone,
       company: validated.company,
+      contactRole: validated.contactRole,
       teamSize: validated.teamSize,
+      interestedProgram: programName,
       targetBehaviors: validated.targetBehaviors,
       timeline: validated.timeline,
       message: validated.message,

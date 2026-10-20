@@ -103,11 +103,13 @@ export const eventTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'event-faq',
-        version: 2,
+        version: 3,
         seriesLabel: '[MẪU] Giải đáp',
         titleLine1: '[MẪU] THẮC MẮC VỀ SỰ KIỆN',
         titleLine2: '[MẪU] HƯỚNG DẪN THAM GIA',
         source: 'manual',
+        group: 'general',
+        limit: 5,
         items: [
           {
             question: '[MẪU] Tôi có thể mời thêm bạn bè cùng tham gia không?',

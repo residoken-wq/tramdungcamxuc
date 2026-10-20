@@ -50,6 +50,8 @@ import { TwoPathCardsBlock, type TwoPathCardsProps } from './blocks/TwoPathCards
 import { TeamGridBlock, type TeamGridProps } from './blocks/TeamGrid'
 import { LeadMagnetCarouselBlock, type LeadMagnetCarouselProps } from './blocks/LeadMagnetCarousel'
 import { NewsletterFormBlock, type NewsletterFormProps } from './blocks/NewsletterForm'
+import { ContactInfoBlock, type ContactInfoProps } from './blocks/ContactInfo'
+import { ContactFormsBlock, type ContactFormsProps } from './blocks/ContactForms'
 
 import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
 import { getLockedComponentPermissions } from './locks'
@@ -71,6 +73,8 @@ export type {
   ResourcePostsSlotProps,
   LeadMagnetCarouselProps,
   NewsletterFormProps,
+  ContactInfoProps,
+  ContactFormsProps,
 }
 
 export type PageComponentsProps = {
@@ -89,6 +93,7 @@ export type PageComponentsProps = {
   VisionMission: VisionMissionProps
   FAQ: FAQProps
   VideoEmbed: VideoEmbedProps
+  ContactInfo: ContactInfoProps
   // Bố cục
   Columns: ColumnsProps
   Spacer: SpacerProps
@@ -122,6 +127,7 @@ export type PageComponentsProps = {
   LibraryPreview: LibraryPreviewBlockProps
   LeadMagnetCarousel: LeadMagnetCarouselProps
   NewsletterForm: NewsletterFormProps
+  ContactForms: ContactFormsProps
 }
 
 export const puckConfig: Config<PageComponentsProps> = {
@@ -143,6 +149,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         'VisionMission',
         'FAQ',
         'VideoEmbed',
+        'ContactInfo',
       ],
     },
     layout: {
@@ -181,6 +188,7 @@ export const puckConfig: Config<PageComponentsProps> = {
         'LibraryPreview',
         'LeadMagnetCarousel',
         'NewsletterForm',
+        'ContactForms',
       ],
     },
   },
@@ -425,6 +433,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     LibraryPreview: LibraryPreviewBlock,
     LeadMagnetCarousel: LeadMagnetCarouselBlock,
     NewsletterForm: NewsletterFormBlock,
+    ContactForms: ContactFormsBlock,
 
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
@@ -434,6 +443,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     JourneySteps: JourneyStepsBlock,
     FAQ: FAQBlock,
     VideoEmbed: VideoEmbedBlock,
+    ContactInfo: ContactInfoBlock,
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,
     Divider: DividerBlock,

@@ -56,6 +56,7 @@ import { migrateHanaStoryV1ToV2 } from './v2-hana-story'
 import { migrateImageTextV1ToV2 } from './v2-image-text'
 import { migrateLogoStripV1ToV2 } from './v2-logo-strip'
 import { migrateHanaStoryV2ToV3 } from './v3-hana-story'
+import { migrateFAQV2ToV3 } from './v3-faq'
 
 export {
   migrateJourneyStepsV1ToV2,
@@ -63,6 +64,7 @@ export {
   migrateHanaStoryV2ToV3,
   migrateImageTextV1ToV2,
   migrateLogoStripV1ToV2,
+  migrateFAQV2ToV3,
 }
 
 export const puckMigrations: PuckMigration[] = [
@@ -80,6 +82,7 @@ export const puckMigrations: PuckMigration[] = [
   migrateHanaStoryV2ToV3,
   migrateImageTextV1ToV2,
   migrateLogoStripV1ToV2,
+  migrateFAQV2ToV3,
 ]
 
 /**

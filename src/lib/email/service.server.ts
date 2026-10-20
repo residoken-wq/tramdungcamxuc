@@ -92,6 +92,7 @@ export async function sendCoachingEmails(
     email: string
     phone?: string
     serviceName?: string
+    currentStatus?: string
     message: string
   },
   ctx?: FormContext,
@@ -134,6 +135,7 @@ export async function sendCoachingEmails(
       email: data.email,
       phone: data.phone,
       serviceName: data.serviceName,
+      currentStatus: data.currentStatus,
       message: data.message,
       page: ctx?.page,
       utm: ctx?.utm,
@@ -149,7 +151,9 @@ export async function sendB2BBriefEmails(
     email: string
     phone?: string
     company: string
+    contactRole?: string
     teamSize?: string
+    interestedProgram?: string
     targetBehaviors?: string
     timeline?: string
     message?: string
@@ -198,7 +202,9 @@ export async function sendB2BBriefEmails(
       email: data.email,
       phone: data.phone,
       company: data.company,
+      contactRole: data.contactRole,
       teamSize: data.teamSize,
+      interestedProgram: data.interestedProgram,
       targetBehaviors: data.targetBehaviors,
       timeline: data.timeline,
       message: data.message,
@@ -269,6 +275,9 @@ async function notifyAdmin(
     interestTags?: string[]
     page?: string
     utm?: string
+    currentStatus?: string
+    contactRole?: string
+    interestedProgram?: string
   },
   sender: EmailSender,
 ): Promise<void> {

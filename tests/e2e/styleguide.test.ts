@@ -223,9 +223,13 @@ test.describe('UI Composites (T0-05)', () => {
 
     // 5. LeadForm component
     await expect(page.getByText('[MẪU] Đăng ký nhận cẩm nang cảm xúc')).toBeVisible()
-    await expect(page.getByLabel(/Họ và tên/i)).toBeVisible()
-    await expect(page.getByLabel(/Địa chỉ email/i)).toBeVisible()
-    await expect(page.getByRole('button', { name: /Gửi thông tin/i })).toBeVisible()
+    // Scope to the LeadForm: /styleguide also shows ContactForms (SM-06) with similar labels.
+    const leadForm = page
+      .locator('form')
+      .filter({ has: page.getByPlaceholder('Nhập họ và tên của bạn') })
+    await expect(leadForm.getByLabel(/Họ và tên/i)).toBeVisible()
+    await expect(leadForm.getByLabel(/Địa chỉ email/i)).toBeVisible()
+    await expect(leadForm.getByRole('button', { name: /Gửi thông tin/i })).toBeVisible()
 
     // 6. EmotionPicker component
     await expect(page.getByText('Chọn cảm xúc hôm nay').first()).toBeVisible()
@@ -273,30 +277,34 @@ test.describe('UI Composites (T0-05)', () => {
   test('Tab qua LeadForm theo thứ tự hợp lý và bỏ qua honeypot ẩn', async ({ page }) => {
     await page.goto('/styleguide')
 
-    const nameInput = page.getByLabel(/Họ và tên/i)
+    // Scope to the LeadForm: /styleguide also shows ContactForms (SM-06) with similar labels.
+    const leadForm = page
+      .locator('form')
+      .filter({ has: page.getByPlaceholder('Nhập họ và tên của bạn') })
+    const nameInput = leadForm.getByLabel(/Họ và tên/i)
     await nameInput.scrollIntoViewIfNeeded()
     await nameInput.focus()
     await expect(nameInput).toBeFocused()
 
     // Tab tới Email
     await page.keyboard.press('Tab')
-    const emailInput = page.getByLabel(/Địa chỉ email/i)
+    const emailInput = leadForm.getByLabel(/Địa chỉ email/i)
     await expect(emailInput).toBeFocused()
 
     // Tab bỏ qua Honeypot và tới checkbox đồng ý nhận tin
     await page.keyboard.press('Tab')
-    const consentCheckbox = page.getByRole('checkbox')
+    const consentCheckbox = leadForm.getByRole('checkbox')
     await expect(consentCheckbox).toBeFocused()
 
     // Tab tới link Chính sách bảo mật
     await page.keyboard.press('Tab')
-    const privacyLink = page.getByRole('link', { name: /Chính sách bảo mật/i }).first()
+    const privacyLink = leadForm.getByRole('link', { name: /Chính sách bảo mật/i }).first()
     await expect(privacyLink).toBeFocused()
 
     // Tab tới nút Submit. Widget Turnstile (iframe Cloudflare) là điểm dừng Tab hợp lệ nằm giữa;
     // nó chỉ có khi trình duyệt tải được script Cloudflare, nên cho phép tối đa 3 điểm dừng
     // trung gian, với điều kiện focus không rời khỏi form.
-    const submitBtn = page.getByRole('button', { name: /Gửi thông tin/i })
+    const submitBtn = leadForm.getByRole('button', { name: /Gửi thông tin/i })
     const submitHasFocus = () => submitBtn.evaluate((el) => el === document.activeElement)
     for (let stops = 0; stops < 4; stops++) {
       await page.keyboard.press('Tab')

@@ -18,14 +18,13 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       const blockConfig = puckConfig.components[blockKey]
       expect(blockConfig).toBeDefined()
       expect(blockConfig.defaultProps).toBeDefined()
-      const v3Blocks = ['PackageComparison', 'HanaStory']
+      const v3Blocks = ['PackageComparison', 'HanaStory', 'FAQ']
       const v2Blocks = [
         'CTAButton',
         'QuoteBlock',
         'StatsBar',
         'HeroTwoEntries',
         'HeroImage',
-        'FAQ',
         'TestimonialGrid',
         'JourneySteps',
         'ImageText',
@@ -276,6 +275,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'VisionMission',
         'FAQ',
         'VideoEmbed',
+        'ContactInfo',
       ])
 
       expect(categories?.layout?.title).toBe('Bố cục')
@@ -300,6 +300,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'LibraryPreview',
         'LeadMagnetCarousel',
         'NewsletterForm',
+        'ContactForms',
       ])
     })
   })

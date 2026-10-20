@@ -60,6 +60,13 @@ export const coachingFormSchema = z.object({
       if (val === null || val === undefined || val === '') return undefined
       return typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val
     }),
+  currentStatus: z
+    .string()
+    .trim()
+    .max(120)
+    .optional()
+    .nullable()
+    .transform((val) => (val && val.trim().length > 0 ? val.trim() : undefined)),
   message: z
     .string()
     .trim()
@@ -88,7 +95,22 @@ export const b2bBriefSchema = z.object({
     .trim()
     .min(1, vi.forms.validation.companyRequired)
     .max(200, vi.forms.validation.companyMax),
+  contactRole: z
+    .string()
+    .trim()
+    .max(100)
+    .optional()
+    .nullable()
+    .transform((val) => (val && val.trim().length > 0 ? val.trim() : undefined)),
   teamSize: z.string().trim().max(100, vi.forms.validation.teamSizeMax).optional(),
+  interestedProgram: z
+    .union([z.number(), z.string()])
+    .optional()
+    .nullable()
+    .transform((val) => {
+      if (val === null || val === undefined || val === '') return undefined
+      return typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val
+    }),
   targetBehaviors: z.string().trim().max(1000, vi.forms.validation.targetBehaviorsMax).optional(),
   timeline: z.string().trim().max(100, vi.forms.validation.timelineMax).optional(),
   message: z.string().trim().max(2000, vi.forms.validation.messageMax).optional(),

@@ -8,6 +8,7 @@ export const PATHS = {
   business: '/doanh-nghiep',
   resources: '/tai-nguyen',
   contact: '/lien-he',
+  faq: '/cau-hoi-thuong-gap',
   community: '/cong-dong',
   quiz: '/habit/chan-doan',
 } as const

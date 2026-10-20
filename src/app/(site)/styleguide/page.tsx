@@ -6,13 +6,18 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { Logo, HeartLine, ThinLine, Valve, Butterfly, Leaf, BrandIcon } from '@/components/brand'
 import { BRAND_ICONS } from '@/lib/brand/icons'
-import { BRAND_COLORS_HEX, type BrandColorToken, BRAND_COLOR_DESCRIPTIONS } from '@/lib/brand/tokens'
+import {
+  BRAND_COLORS_HEX,
+  type BrandColorToken,
+  BRAND_COLOR_DESCRIPTIONS,
+} from '@/lib/brand/tokens'
 import { InteractivePrimitivesDemo } from './InteractivePrimitivesDemo'
 import { InteractiveCompositesDemo } from './InteractiveCompositesDemo'
 import { EqShareDemo } from './EqShareDemo'
 import { Sm03BlocksDemo } from './Sm03BlocksDemo'
 import { Sm04BlocksDemo } from './Sm04BlocksDemo'
 import { Sm05BlocksDemo } from './Sm05BlocksDemo'
+import { Sm06BlocksDemo } from './Sm06BlocksDemo'
 
 export const dynamic = 'force-dynamic'
 
@@ -467,6 +472,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <Sm05BlocksDemo />
+        </section>
+
+        {/* Section 12: SM-06 Blocks & Features (Sitemap v2 – SM-06 [MẪU]) */}
+        <section aria-labelledby="heading-sm06-blocks">
+          <h2
+            id="heading-sm06-blocks"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            12. Khối Liên hệ &amp; Câu hỏi thường gặp (Sitemap v2 – SM-06 [MẪU])
+          </h2>
+
+          <Sm06BlocksDemo />
         </section>
       </main>
 

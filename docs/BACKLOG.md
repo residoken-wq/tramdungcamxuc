@@ -62,3 +62,5 @@
 - (SM-04 review 19/10) `/styleguide`: thêm ví dụ `HanaStory` kiểu `letter` có `greeting` + `signatureName`.
 - (SM-05 review 19/10) `CTASection` chỉ có 1 nút – cân nhắc thêm nút thứ 2 (VD: quiz + đặt phiên) cho dải CTA nền tối trang Tài nguyên.
 - (SM-05 review 19/10) Bỏ link `?tab=noi-dung` còn sót ở `PostDetail.tsx` và `tai-nguyen/[slug]/page.tsx`; đổi placeholder "Ví dụ: Minh Anh" của form newsletter.
+- (SM-06 review 20/10) `ContactInfo` chỉ có 1 mục → căn giữa thay vì dồn trái.
+- (SM-06 review 20/10) `ContactForms` bố cục 2 cột ở 1440px: chữ dài trong ô chọn (dịch vụ / chương trình) bị cắt.

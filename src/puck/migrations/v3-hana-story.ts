@@ -63,6 +63,6 @@ export function migrateHanaStoryV2ToV3(data: Data): Data {
   return {
     ...data,
     content: newContent,
-    zones: newZones,
+    ...(data.zones !== undefined ? { zones: newZones } : {}),
   }
 }

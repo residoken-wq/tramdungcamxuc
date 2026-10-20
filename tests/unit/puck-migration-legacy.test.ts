@@ -245,7 +245,7 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
       items: [{ question: 'Câu hỏi 1?', answer: 'Trả lời 1' }],
       bgColor: 'warm-ivory',
       padding: 'md',
-      version: 2,
+      version: 3,
     })
 
     const video = migrated.content.find((item) => item.props.id === 'video-1')

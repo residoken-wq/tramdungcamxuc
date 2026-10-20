@@ -102,11 +102,13 @@ export const campaignTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'campaign-faq',
-        version: 2,
+        version: 3,
         seriesLabel: '[MẪU] Giải đáp',
         titleLine1: '[MẪU] CÂU HỎI',
         titleLine2: '[MẪU] THƯỜNG GẶP',
         source: 'manual',
+        group: 'general',
+        limit: 5,
         items: [
           {
             question: '[MẪU] Hành trình này phù hợp với ai?',

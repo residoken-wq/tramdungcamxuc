@@ -11,6 +11,7 @@ import type {
 } from '@/components/site/SolutionEcosystem'
 import type { PublicTeamMember } from '@/puck/client-preview'
 import type { Service, Program } from '@/payload-types'
+import type { PublicContactInfo } from '@/components/site/ContactInfo'
 
 import { walkPuckItems } from './walk'
 
@@ -174,9 +175,11 @@ export async function resolveServerData(
   const pageIdsToFetch = new Set<string | number>()
   const serviceIdsToFetch = new Set<string | number>()
   const programIdsToFetch = new Set<string | number>()
+  const faqGroupsToFetch = new Map<string, number>()
   let needsSiteSettings = false
   let needsTeamMembers = false
   let needsBookingProduct = false
+  let needsContactFormsData = false
   let hasSetHeroPriority = false
 
   await walkPuckItems(resolvedData, async (item) => {
@@ -398,10 +401,36 @@ export async function resolveServerData(
     if (
       item.type === 'ShopeeButton' ||
       item.type === 'ZaloButton' ||
-      (item.type === 'FAQ' && item.props.aside === 'booking') ||
-      item.type === 'HanaStory'
+      (item.type === 'FAQ' && (item.props.aside === 'booking' || item.props.showEmail)) ||
+      item.type === 'HanaStory' ||
+      item.type === 'ContactInfo' ||
+      item.type === 'ContactForms'
     ) {
       needsSiteSettings = true
+    }
+
+    if (item.type === 'FAQ') {
+      if (item.props.aside === 'booking') {
+        needsBookingProduct = true
+      }
+      if (item.props.source === 'group') {
+        const grp =
+          typeof item.props.group === 'string' && item.props.group.trim()
+            ? item.props.group.trim()
+            : 'general'
+        const lim =
+          typeof item.props.limit === 'number' && item.props.limit > 0
+            ? Math.min(Math.max(item.props.limit, 1), 12)
+            : 5
+        const currentMax = faqGroupsToFetch.get(grp) || 0
+        if (lim > currentMax) {
+          faqGroupsToFetch.set(grp, lim)
+        }
+      }
+    }
+
+    if (item.type === 'ContactForms') {
+      needsContactFormsData = true
     }
 
     if (item.type === 'TeamGrid') {
@@ -640,6 +669,17 @@ export async function resolveServerData(
   let siteContactEmail: string | null = null
   let founderSignatureUrl: string | null = null
   let founderSignatureAlt: string | null = null
+  let publicContactInfo: PublicContactInfo = {
+    email: null,
+    hotline: null,
+    officeAddress: null,
+    linkedInUrl: null,
+    facebookUrl: null,
+    youtubeUrl: null,
+    zaloChatUrl: null,
+  }
+
+  let publicLeadStatusOptions: Array<{ label: string }> = []
 
   if (needsSiteSettings) {
     try {
@@ -657,6 +697,89 @@ export async function resolveServerData(
         founderSignatureUrl = (rawSig as { url?: string }).url || null
         founderSignatureAlt = (rawSig as { alt?: string }).alt || null
       }
+      const rawDoc = siteDoc as unknown as Record<string, unknown>
+      publicContactInfo = {
+        email:
+          typeof rawDoc?.email === 'string' && rawDoc.email.trim() ? rawDoc.email.trim() : null,
+        hotline:
+          typeof rawDoc?.hotline === 'string' && rawDoc.hotline.trim()
+            ? rawDoc.hotline.trim()
+            : null,
+        officeAddress:
+          typeof rawDoc?.officeAddress === 'string' && rawDoc.officeAddress.trim()
+            ? rawDoc.officeAddress.trim()
+            : null,
+        linkedInUrl:
+          typeof rawDoc?.linkedInUrl === 'string' && rawDoc.linkedInUrl.trim()
+            ? rawDoc.linkedInUrl.trim()
+            : null,
+        facebookUrl:
+          typeof rawDoc?.facebookUrl === 'string' && rawDoc.facebookUrl.trim()
+            ? rawDoc.facebookUrl.trim()
+            : null,
+        youtubeUrl:
+          typeof rawDoc?.youtubeUrl === 'string' && rawDoc.youtubeUrl.trim()
+            ? rawDoc.youtubeUrl.trim()
+            : null,
+        zaloChatUrl:
+          typeof rawDoc?.zaloChatUrl === 'string' && rawDoc.zaloChatUrl.trim()
+            ? rawDoc.zaloChatUrl.trim()
+            : null,
+      }
+      const rawLeadOptions = (
+        siteDoc as unknown as { leadStatusOptions?: Array<{ label?: string }> }
+      )?.leadStatusOptions
+      if (Array.isArray(rawLeadOptions)) {
+        publicLeadStatusOptions = rawLeadOptions
+          .filter((opt) => typeof opt?.label === 'string' && opt.label.trim().length > 0)
+          .map((opt) => ({ label: opt.label!.trim() }))
+      }
+    } catch {
+      // Gracefully continue
+    }
+  }
+
+  let resolvedContactServices: Array<{ id: number; name: string }> = []
+  let resolvedContactPrograms: Array<{ id: number; name: string }> = []
+  if (needsContactFormsData) {
+    try {
+      const sDocs = await payload.find({
+        collection: 'services',
+        where: {
+          and: [{ _status: { equals: 'published' } }, { saleStatus: { not_equals: 'hidden' } }],
+        },
+        select: { id: true, name: true } as never,
+        sort: 'order',
+        depth: 0,
+        limit: 100,
+      })
+      const rawServices = (sDocs?.docs || []) as unknown as Array<{
+        id: number | string
+        name?: string
+      }>
+      resolvedContactServices = rawServices.map((doc) => ({
+        id: typeof doc.id === 'number' ? doc.id : Number(doc.id),
+        name: String(doc.name || ''),
+      }))
+
+      const pDocs = await payload.find({
+        collection: 'programs',
+        where: {
+          and: [{ _status: { equals: 'published' } }, { saleStatus: { not_equals: 'hidden' } }],
+        },
+        select: { id: true, name: true } as never,
+        sort: 'order',
+        depth: 0,
+        limit: 100,
+      })
+      const rawPrograms = (pDocs?.docs || []) as unknown as Array<{
+        id: number | string
+        name?: string
+      }>
+      resolvedContactPrograms = rawPrograms.map((doc) => ({
+        id: typeof doc.id === 'number' ? doc.id : Number(doc.id),
+        name: String(doc.name || ''),
+      }))
     } catch {
       // Gracefully continue
     }
@@ -699,6 +822,30 @@ export async function resolveServerData(
   let defaultBookingProductId: number | null = null
   if (needsBookingProduct) {
     defaultBookingProductId = await resolveDefaultBookingProductId(payload)
+  }
+
+  const resolvedFaqGroups = new Map<string, Array<{ question: string; answer: string }>>()
+  if (faqGroupsToFetch.size > 0) {
+    for (const [grp, lim] of faqGroupsToFetch.entries()) {
+      try {
+        const fDocs = await payload.find({
+          collection: 'faqs',
+          where: {
+            and: [{ _status: { equals: 'published' } }, { group: { equals: grp } }],
+          },
+          sort: 'order',
+          depth: 0,
+          limit: lim,
+        })
+        const items = (fDocs?.docs || []).map((doc: { question?: string; answer?: string }) => ({
+          question: String(doc.question || ''),
+          answer: String(doc.answer || ''),
+        }))
+        resolvedFaqGroups.set(grp, items)
+      } catch {
+        resolvedFaqGroups.set(grp, [])
+      }
+    }
   }
 
   // Phase 3: Attach _resolved to each block (including blocks inside Columns slots)
@@ -1117,14 +1264,38 @@ export async function resolveServerData(
         }
       }
     } else if (item.type === 'FAQ') {
+      let groupItems: Array<{ question: string; answer: string }> | null = null
+      if (item.props.source === 'group') {
+        const grp =
+          typeof item.props.group === 'string' && item.props.group.trim()
+            ? item.props.group.trim()
+            : 'general'
+        const lim =
+          typeof item.props.limit === 'number' && item.props.limit > 0
+            ? Math.min(Math.max(item.props.limit, 1), 12)
+            : 5
+        const allFetched = resolvedFaqGroups.get(grp) || []
+        groupItems = allFetched.slice(0, lim)
+      }
       item.props._resolved = {
         email: item.props.showEmail ? siteContactEmail : null,
         bookingProductId: item.props.aside === 'booking' ? defaultBookingProductId : null,
+        groupItems,
       }
     } else if (item.type === 'HanaStory') {
       item.props._resolved = {
         founderSignatureUrl,
         founderSignatureAlt,
+      }
+    } else if (item.type === 'ContactInfo') {
+      item.props._resolved = {
+        contact: publicContactInfo,
+      }
+    } else if (item.type === 'ContactForms') {
+      item.props._resolved = {
+        services: resolvedContactServices,
+        programs: resolvedContactPrograms,
+        leadStatusOptions: publicLeadStatusOptions,
       }
     } else if (item.type === 'LeadMagnetCarousel') {
       const mode = item.props.mode || 'auto'
