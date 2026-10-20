@@ -2,6 +2,7 @@ import type { CollectionSlug, Payload, Where } from 'payload'
 import * as data from './data'
 import { LEGACY_PAGE_SLUGS, rewriteLink } from '../src/lib/paths'
 import { EQ_BUDDY_PRODUCT_SLUG } from '../src/lib/eq/config'
+import { seedTemplateDrafts } from './template-drafts'
 
 // The seed writes many collections through one generic helper; Payload's per-collection
 // generics cannot express that, so writes go through this deliberately loose view.
@@ -10,7 +11,21 @@ type LooseWriter = {
   update(args: Record<string, unknown>): Promise<unknown>
 }
 
-export type SeedReport = Record<string, { created: number; updated: number; skippedReal: number }>
+export type CollectionSeedStats = {
+  created: number
+  updated: number
+  skippedReal: number
+}
+
+export type TemplateDraftStats = {
+  created: number
+  drafted: number
+  skipped: number
+}
+
+export type SeedReport = Record<string, CollectionSeedStats> & {
+  templateDrafts?: TemplateDraftStats
+}
 
 /**
  * Idempotent sample seed. Only creates or updates documents with isSample = true;
@@ -19,7 +34,7 @@ export type SeedReport = Record<string, { created: number; updated: number; skip
 export async function seed(payload: Payload): Promise<SeedReport> {
   const writer = payload as unknown as LooseWriter
   const report: SeedReport = {}
-  const tally = (collection: string) =>
+  const tally = (collection: string): CollectionSeedStats =>
     (report[collection] ??= { created: 0, updated: 0, skippedReal: 0 })
 
   async function upsert(
@@ -201,6 +216,8 @@ export async function seed(payload: Payload): Promise<SeedReport> {
     const puckData = { content: resolvedBlocks, root: { props: { title } }, zones: {} }
     pageIds.set(slug, (await upsert('pages', 'slug', slug, { title, puckData }))!)
   }
+
+  report.templateDrafts = await seedTemplateDrafts(payload)
 
   // Globals: only fill when empty (or, for the main menu, still the old seed menu) so real
   // settings entered by Hana are never overwritten.
