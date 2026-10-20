@@ -47,15 +47,23 @@ export async function submitLeadAction(
   }
 }
 
+// Server action args come from the browser: only accept known form ids and a bounded page path.
+function pickForm(value: unknown, allowed: string): string | undefined {
+  return value === allowed ? allowed : undefined
+}
+
+function pickPage(value: unknown): string | undefined {
+  return typeof value === 'string' && value.length <= 300 ? value : undefined
+}
+
 export async function submitCoachingAction(
   data: Record<string, unknown>,
   extra?: { utm?: string; form?: string; page?: string },
 ): Promise<ActionResponse> {
   try {
     const ctx = await getClientContext()
-    const page =
-      extra?.page || (typeof data.page === 'string' ? data.page : undefined) || ctx.page
-    const form = extra?.form || (typeof data.form === 'string' ? data.form : undefined)
+    const page = pickPage(extra?.page ?? data.page) || ctx.page
+    const form = pickForm(extra?.form ?? data.form, 'contact-b2c')
     const res: SubmissionResult = await submitCoachingForm(data, {
       ...ctx,
       page,
@@ -77,9 +85,8 @@ export async function submitB2BBriefAction(
 ): Promise<ActionResponse> {
   try {
     const ctx = await getClientContext()
-    const page =
-      extra?.page || (typeof data.page === 'string' ? data.page : undefined) || ctx.page
-    const form = extra?.form || (typeof data.form === 'string' ? data.form : undefined)
+    const page = pickPage(extra?.page ?? data.page) || ctx.page
+    const form = pickForm(extra?.form ?? data.form, 'contact-b2b')
     const res: SubmissionResult = await submitB2BBrief(data, {
       ...ctx,
       page,
