@@ -13,6 +13,8 @@ export const TEMPLATE_DRAFT_MAPPINGS: readonly TemplateDraftMapping[] = [
   { slug: 've-tram', template: 'about', defaultTitle: '[MẪU] Về Trạm' },
   { slug: 'coaching', template: 'coach', defaultTitle: '[MẪU] Khai vấn 1:1' },
   { slug: 'lien-he', template: 'contact', defaultTitle: '[MẪU] Liên hệ' },
+  { slug: 'cong-dong', template: 'community', defaultTitle: '[MẪU] Cộng đồng' },
+  { slug: 'doanh-nghiep', template: 'business', defaultTitle: '[MẪU] Doanh nghiệp' },
 ] as const
 
 export type TemplateDraftReport = {

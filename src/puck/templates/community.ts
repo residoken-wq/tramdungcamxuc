@@ -1,0 +1,146 @@
+import type { Data } from '@puckeditor/core'
+
+/**
+ * Mẫu trang Cộng đồng (Sitemap v2) – template: 'community'
+ * Cấu trúc: HeroImage → IconCardGrid (lợi ích) → ImageText → TestimonialGrid → ZaloButton (nhóm) → FAQ (group)
+ */
+export const communityTemplate: Data = {
+  content: [
+    {
+      type: 'HeroImage',
+      props: {
+        id: 'community-hero',
+        version: 2,
+        seriesLabel: '[MẪU] CỘNG ĐỒNG TRẠM DỪNG CẢM XÚC',
+        titleLine1: '[MẪU] KHÔNG GIAN KẾT NỐI',
+        titleLine2: '[MẪU] VÀ THẤU CẢM CHÂN THÀNH',
+        emotionLine: '[MẪU] Nơi những tâm hồn đồng điệu cùng dừng lại, lắng nghe và đồng hành lớn lên.',
+        mediaId: '',
+        imageUrl: '',
+        imageAlt: '',
+        buttonText: '[MẪU] Tham gia nhóm Zalo',
+        buttonLink: '',
+        secondaryButtonText: '[MẪU] Tìm hiểu thêm',
+        secondaryButtonLink: '/lien-he',
+        badges: [
+          { text: '[MẪU] Không gian an toàn' },
+          { text: '[MẪU] Chia sẻ chân thành' },
+        ],
+        stats: [],
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      },
+    },
+    {
+      type: 'IconCardGrid',
+      props: {
+        id: 'community-benefits',
+        version: 1,
+        seriesLabel: '[MẪU] LỢI ÍCH THAM GIA',
+        titleLine1: '[MẪU] ĐỒNG HÀNH VÀ CHIA SẺ',
+        titleLine2: '[MẪU] TRONG TỪNG BƯỚC CHUYỂN MÌNH',
+        emotionLine: '[MẪU] Những giá trị nuôi dưỡng sự an yên và gắn kết mỗi ngày.',
+        marker: 'icon',
+        columns: 3,
+        cardStyle: 'white',
+        items: [
+          {
+            icon: 'heart',
+            title: '[MẪU] Vòng tròn lắng nghe',
+            text: '[MẪU] Không gian an toàn để bạn giãi bày cảm xúc mà không lo sợ bị phán xét hay đánh giá.',
+          },
+          {
+            icon: 'spark',
+            title: '[MẪU] Góc tự vấn định kỳ',
+            text: '[MẪU] Những câu hỏi gợi mở và bài tập thực hành nhỏ giúp soi chiếu bản thân đều đặn.',
+          },
+          {
+            icon: 'layers',
+            title: '[MẪU] Tài liệu độc quyền',
+            text: '[MẪU] Nhận các bài viết, cẩm nang và tài nguyên chuyển hóa cảm xúc dành riêng cho thành viên.',
+          },
+        ],
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      },
+    },
+    {
+      type: 'ImageText',
+      props: {
+        id: 'community-spirit',
+        version: 2,
+        layout: 'image-right',
+        seriesLabel: '[MẪU] TINH THẦN CỘNG ĐỒNG',
+        titleLine1: '[MẪU] NƠI MỖI CẢM XÚC',
+        titleLine2: '[MẪU] ĐỀU ĐƯỢC NÂNG NIU',
+        content:
+          '[MẪU] Cộng đồng Trạm Dừng Cảm Xúc là điểm tựa ấm áp cho bất kỳ ai đang trên hành trình học cách yêu thương chính mình.\n\n[MẪU] Tại đây, chúng mình tin rằng việc mở lòng đón nhận cảm xúc không phải là yếu đuối, mà là khởi đầu của lòng can đảm và sự chữa lành bền bỉ.',
+        quote: '[MẪU] Khi có một không gian an toàn, bạn sẽ tìm lại được tiếng nói chân thật nhất bên trong mình.',
+        mediaId: '',
+        imageUrl: '',
+        imageAlt: '',
+        imageLabel: '[MẪU] Vòng tròn thấu cảm',
+        buttonText: '',
+        buttonLink: '',
+        bgColor: 'soft-pink',
+        padding: 'md',
+      },
+    },
+    {
+      type: 'TestimonialGrid',
+      props: {
+        id: 'community-testimonials',
+        version: 2,
+        variant: 'quote',
+        mode: 'manual',
+        manualTestimonials: [],
+        limit: 3,
+        columns: 3,
+        bgColor: 'lavender-mist',
+        padding: 'md',
+      },
+    },
+    {
+      type: 'ZaloButton',
+      props: {
+        id: 'community-zalo',
+        version: 1,
+        target: 'group',
+        label: '[MẪU] Tham gia nhóm Zalo Cộng đồng',
+        variant: 'primary',
+        size: 'lg',
+        align: 'center',
+      },
+    },
+    {
+      type: 'FAQ',
+      props: {
+        id: 'community-faq',
+        version: 3,
+        source: 'group',
+        group: 'general',
+        limit: 6,
+        seriesLabel: '[MẪU] GIẢI ĐÁP THẮC MẮC',
+        titleLine1: '[MẪU] CÂU HỎI THƯỜNG GẶP',
+        titleLine2: '[MẪU] VỀ HOẠT ĐỘNG CỘNG ĐỒNG',
+        numbered: true,
+        aside: 'none',
+        bookingAsideTitle: '',
+        bookingAsideDescription: '',
+        bookingButtonText: '',
+        bookingButtonLink: '',
+        showEmail: false,
+        seeAllLink: '',
+        items: [],
+        bgColor: 'warm-ivory',
+        padding: 'md',
+      },
+    },
+  ],
+  root: {
+    props: {
+      title: '[MẪU] Trang Cộng đồng',
+    },
+  },
+  zones: {},
+}
