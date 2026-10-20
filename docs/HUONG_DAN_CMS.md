@@ -37,6 +37,7 @@
    - [5.9. Các khối mới (Sitemap v2)](#59-các-khối-mới-sitemap-v2)
    - [5.10. Các khối mới – đợt B (Sitemap v2: Về Trạm + Coach 1:1)](#510-các-khối-mới--đợt-b-sitemap-v2-về-trạm--coach-11)
    - [5.11. Trang Tài nguyên (Sitemap v2)](#511-trang-tài-nguyên-sitemap-v2)
+   - [5.12. Trang Liên hệ & Câu hỏi thường gặp (Sitemap v2)](#512-trang-liên-hệ--câu-hỏi-thường-gặp-sitemap-v2)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
 8. [Quản lý Khách tiềm năng (Leads) và Xuất file CSV](#8-quản-lý-khách-tiềm-năng-leads-và-xuất-file-csv)
@@ -1446,7 +1447,71 @@ Trong đợt nâng cấp Sitemap v2 (SM-05), trang **Tài nguyên** (`/tai-nguye
 - **Xem và xuất danh sách độc giả đăng ký newsletter**:
   - Vào mục **Khách tiềm năng** (`leads`) ở menu bên trái.
   - Trong danh sách, các độc giả đăng ký qua khối này sẽ được gắn thẻ nhãn `newsletter` và nhu cầu `Tài nguyên` (`resource`).
-  - Bấm nút **Xuất CSV** ở góc trên bên phải để tải danh sách về máy tính (file UTF-8 BOM chuẩn tiếng Việt), sau đó Hana có thể nhập vào các hệ thống gửi email bản tin định kỳ.
+
+### 5.12. Trang Liên hệ & Câu hỏi thường gặp (Sitemap v2)
+
+Trong đợt nâng cấp Sitemap v2 (SM-06), website được bổ sung trang **Liên hệ** (`/lien-he`) kết nối trực tiếp với trang **Câu hỏi thường gặp** (`/cau-hoi-thuong-gap`), giúp Hana quản lý tập trung thông tin kết nối và ngân hàng câu hỏi giải đáp.
+
+#### 1. Sửa Email, Hotline và Mạng xã hội tại Cài đặt chung
+
+- **Nguyên tắc an toàn dữ liệu**: Khối **Thông tin liên hệ (`ContactInfo`)** trên các trang web **không nhập thông tin trực tiếp trong trình dựng Puck**. Mọi dữ liệu liên hệ được quản lý tập trung tại một nơi duy nhất để đảm bảo tính nhất quán trên toàn bộ hệ sinh thái.
+- **Cách chỉnh sửa**:
+  1. Vào menu bên trái, tìm nhóm **Cài đặt**, bấm vào **Cài đặt chung** (`siteSettings`).
+  2. Chuyển sang tab **Liên hệ & Zalo**.
+  3. Cập nhật các mục:
+     - **Email liên hệ**: Hộp thư chính thức tiếp nhận thư của Trạm.
+     - **Hotline / Số điện thoại**: Số hotline hỗ trợ (có thể nhập `0901 234 567` hoặc `0901.234.567`, hệ thống tự chuẩn hóa link gọi điện thoại thông minh).
+     - **Địa chỉ văn phòng**: Địa điểm gặp gỡ, làm việc trực tiếp.
+     - **Link chat Zalo**: Đường dẫn kết nối nhanh qua Zalo Official Account hoặc Zalo cá nhân.
+     - **Mạng xã hội**: Đường dẫn LinkedIn, Facebook Fanpage và kênh YouTube chính thức của Trạm.
+  4. Bấm **Lưu thay đổi**. Tất cả các trang đang nhúng khối `ContactInfo` (như trang `/lien-he`) sẽ tự động cập nhật ngay lập tức.
+  5. _Lưu ý_: Nếu mục nào để trống, thẻ tương ứng sẽ tự động ẩn trên website ngoài đời.
+
+#### 2. Cấu hình danh sách "Tình trạng hiện tại" (Dành cho Form Cá nhân B2C)
+
+- Trên biểu mẫu liên hệ cá nhân, học viên có thể chọn nhanh tình trạng tâm lý/cảm xúc mà họ đang trải qua (ví dụ: _Đang căng thẳng, quá tải_, _Cần định hướng lại thói quen_...).
+- **Cách thay đổi các lựa chọn này**:
+  1. Trong trang **Cài đặt chung** (`siteSettings`), tại tab **Liên hệ & Zalo**.
+  2. Cuộn xuống mục **Lựa chọn tình trạng học viên** (`leadStatusOptions`).
+  3. Hana có thể bấm **+ Thêm dòng**, chỉnh sửa nhãn hiển thị hoặc xóa bớt dòng cũ.
+  4. Bấm **Lưu thay đổi**. Dropdown "Tình trạng hiện tại" trên form liên hệ sẽ hiển thị danh sách mới. Nếu danh sách này để trống, ô chọn sẽ tự động ẩn trên form mà không gây lỗi.
+
+#### 3. Thêm và sắp xếp Câu hỏi thường gặp theo nhóm
+
+- Toàn bộ ngân hàng câu hỏi giải đáp được lưu tập trung tại danh mục **Câu hỏi thường gặp** (`faqs`).
+- **Tạo câu hỏi mới**:
+  1. Vào menu bên trái -> **Website** -> **Câu hỏi thường gặp** (`faqs`) -> Bấm **Tạo mới**.
+  2. Nhập **Câu hỏi** và **Trả lời** (nội dung câu trả lời hỗ trợ xuống dòng tự nhiên, giữ nguyên khoảng cách ngắt đoạn khi hiển thị trên web).
+  3. Ở cột bên phải, chọn **Nhóm câu hỏi (`group`)**:
+     - `Chung` (`general`): Câu hỏi cơ bản về Trạm Dừng Cảm Xúc.
+     - `Lộ trình` (`journey`): Về 5 bước thực hành cảm xúc.
+     - `Coaching 1:1` (`coaching`): Về hình thức, thời lượng, cách chuẩn bị khi tham gia khai vấn.
+     - `Sản phẩm số` (`digital`): Về dùng thử 21 ngày, kích hoạt công cụ số Habit Tracker / EQ Buddy.
+     - `Doanh nghiệp` (`business`): Về đào tạo may đo, giải pháp sức khỏe tinh thần cho tổ chức.
+     - `Thanh toán` (`payment`): Về hình thức chuyển khoản VietQR, nhận tài nguyên.
+  4. Nhập số **Thứ tự (`order`)**: Số nhỏ hơn sẽ đứng trước (ví dụ: `1`, `2`, `3`).
+  5. Bấm **Xuất bản**. Câu hỏi sẽ tự động xuất hiện trên trang `/cau-hoi-thuong-gap` theo đúng nhóm và đúng thứ tự.
+
+#### 4. Dùng khối FAQ ở chế độ "Lấy theo nhóm" trong Puck Editor
+
+- Khi dựng bất kỳ trang nào (Trang chủ, Lộ trình, Về Trạm, Liên hệ...), bạn có thể kéo khối **FAQ** vào trang và cấu hình:
+  - **Nguồn câu hỏi (`source`)**: Chuyển từ `Nhập thủ công` sang **`Lấy theo nhóm` (`group`)**.
+  - **Chọn nhóm (`group`)**: Chọn nhóm chủ đề mong muốn (ví dụ chọn nhóm `Coaching 1:1`).
+  - **Số lượng câu hỏi (`limit`)**: Giới hạn số câu hiển thị (mặc định 5 câu).
+  - **Link xem thêm (`seeAllLink`)**: Nếu để trống, hệ thống sẽ tự động tạo nút "Xem thêm câu hỏi về [Tên nhóm]" dẫn trực tiếp đến phần tương ứng trên trang Câu hỏi thường gặp (ví dụ `/cau-hoi-thuong-gap#coaching`).
+  - **Tự động cập nhật**: Khi Hana thêm mới hoặc sửa câu trả lời trong mục `faqs`, các trang đang nhúng khối FAQ này sẽ tự động hiển thị nội dung mới mà không cần vào Puck Editor sửa lại.
+
+#### 5. Quản lý và lọc Khách tiềm năng (Leads) theo Form Liên hệ
+
+- Khi học viên hoặc đối tác gửi biểu mẫu qua khối `ContactForms` trên trang `/lien-he`:
+  - **Khách hàng cá nhân**: Lead được lưu với nhu cầu `Cá nhân` (`personal`), nguồn form là `contact-b2c`. Ghi nhận thông tin dịch vụ quan tâm và tình trạng hiện tại.
+  - **Khách hàng doanh nghiệp**: Lead được lưu với nhu cầu `Doanh nghiệp` (`business`), nguồn form là `contact-b2b`. Ghi nhận vai trò người liên hệ (`contactRole`), tên công ty, quy mô đội ngũ, chương trình quan tâm và thách thức cần hỗ trợ.
+- **Email thông báo tự động**: Ngay khi khách gửi form, Hana sẽ nhận được email thông báo chi tiết đầy đủ các thông tin trên để kịp thời phản hồi trong vòng 24 giờ.
+- **Lọc danh sách trong CMS**:
+  1. Vào menu bên trái -> **Khách hàng & Bán hàng** -> **Khách tiềm năng** (`leads`).
+  2. Bấm vào nút **Lọc (Filter)** ở đầu bảng.
+  3. Chọn điều kiện: `Nguồn form` (`source.form`) bằng `contact-b2c` (để xem riêng khách cá nhân liên hệ) hoặc `contact-b2b` (để xem riêng đề xuất từ doanh nghiệp).
+  4. Hana có thể cập nhật trạng thái chăm sóc (`Mới`, `Đã liên hệ`, `Đang trao đổi`...) và bấm **Xuất CSV** khi cần bàn giao.
 
 ---
 
