@@ -4,6 +4,8 @@ import { journeyTemplate } from './journey'
 import { aboutTemplate } from './about'
 import { coachTemplate } from './coach'
 import { contactTemplate } from './contact'
+import { communityTemplate } from './community'
+import { businessTemplate } from './business'
 import { campaignTemplate } from './campaign'
 import { serviceTemplate } from './service'
 import { workshopTemplate } from './workshop'
@@ -15,6 +17,8 @@ export type PageTemplateKey =
   | 'about'
   | 'coach'
   | 'contact'
+  | 'community'
+  | 'business'
   | 'campaign'
   | 'service'
   | 'workshop'
@@ -62,6 +66,20 @@ export const pageTemplates: Record<PageTemplateKey, PageTemplateItem> = {
     description:
       'Kênh kết nối chính thức: cam kết bảo mật & phản hồi nhanh, thông tin liên hệ đa kênh, biểu mẫu 2 cột Cá nhân & Doanh nghiệp và câu hỏi thường gặp.',
     data: contactTemplate,
+  },
+  community: {
+    key: 'community',
+    label: 'Trang Cộng đồng',
+    description:
+      'Không gian kết nối & thấu cảm: Hero cộng đồng, 3 lợi ích tham gia, tinh thần nâng niu cảm xúc, lời chia sẻ, nút Zalo nhóm và giải đáp thắc mắc.',
+    data: communityTemplate,
+  },
+  business: {
+    key: 'business',
+    label: 'Trang Doanh nghiệp',
+    description:
+      'Giải pháp cho tổ chức & doanh nghiệp: Hero đồng hành, 3 điểm nghẽn nội tâm, hệ sinh thái giải pháp B2B, dải logo bảo chứng, lời chia sẻ và form gửi brief.',
+    data: businessTemplate,
   },
   campaign: {
     key: 'campaign',
@@ -115,6 +133,8 @@ export {
   aboutTemplate,
   coachTemplate,
   contactTemplate,
+  communityTemplate,
+  businessTemplate,
   campaignTemplate,
   serviceTemplate,
   workshopTemplate,

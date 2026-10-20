@@ -87,6 +87,22 @@ describe('SM-06: ContactInfo component', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('centers the card with mx-auto max-w-md w-full when only 1 item is active', () => {
+    const { container } = render(
+      <ContactInfo
+        _resolved={{ contact: fullContact }}
+        showEmail={true}
+        showHotline={false}
+        showOfficeAddress={false}
+        showSocial={false}
+      />,
+    )
+
+    const centeredWrapper = container.querySelector('.max-w-md.mx-auto')
+    expect(centeredWrapper).toBeTruthy()
+    expect(centeredWrapper?.classList.contains('w-full')).toBe(true)
+  })
+
   it('renders null on public page when contact data is empty', () => {
     const { container } = render(
       <ContactInfo _resolved={{ contact: null }} puck={{ isEditing: false }} />,

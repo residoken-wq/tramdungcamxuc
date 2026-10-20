@@ -109,6 +109,8 @@ export const Pages = {
       ['about', 'Trang Về Trạm'],
       ['coach', 'Trang Coach 1:1'],
       ['contact', 'Trang Liên hệ'],
+      ['community', 'Trang Cộng đồng'],
+      ['business', 'Trang Doanh nghiệp'],
       ['campaign', 'Landing chiến dịch'],
       ['service', 'Trang dịch vụ'],
       ['workshop', 'Trang workshop'],

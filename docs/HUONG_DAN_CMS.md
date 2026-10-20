@@ -19,6 +19,7 @@
 3. [Quản lý Sản phẩm, Giá bán và Tài nguyên](#3-quản-lý-sản-phẩm-giá-bán-và-tài-nguyên)
    - [3.1. Tạo và chỉnh sửa sản phẩm: Giao diện 6 tab theo loại](#31-tạo-và-chỉnh-sửa-sản-phẩm-giao-diện-6-tab-theo-loại)
    - [3.1b. Tạo sản phẩm bằng trình hướng dẫn (5 bước)](#31b-tạo-sản-phẩm-bằng-trình-hướng-dẫn-5-bước)
+   - [3.1c. Đổi tên gói, tagline và tên sản phẩm số](#31c-đổi-tên-gói-tagline-và-tên-sản-phẩm-số-clear--build--shine-habit-hack-eq-buddy)
    - [3.7. Xem trước trước khi xuất bản (Live Preview)](#37-xem-trước-trước-khi-xuất-bản-live-preview)
    - [3.8. Quản lý Lịch workshop và quyền tham gia (Workshops)](#38-quản-lý-lịch-workshop-và-quyền-tham-gia-workshops)
      - [3.8b. Lên lịch workshop bằng Trình hướng dẫn (3 bước)](#38b-lên-lịch-workshop-bằng-trình-hướng-dẫn-3-bước)
@@ -46,6 +47,7 @@
    - [5.11. Trang Tài nguyên (Sitemap v2)](#511-trang-tài-nguyên-sitemap-v2)
    - [5.12. Trang Liên hệ & Câu hỏi thường gặp (Sitemap v2)](#512-trang-liên-hệ--câu-hỏi-thường-gặp-sitemap-v2)
    - [5.13. Mẫu trang Sitemap v2 & bản nháp](#513-mẫu-trang-sitemap-v2--bản-nháp)
+   - [5.14. Trang Cộng đồng & Doanh nghiệp (Sitemap v2)](#514-trang-cộng-đồng--doanh-nghiệp-sitemap-v2)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -53,6 +55,7 @@
 9. [Quản lý Câu hỏi Quiz chẩn đoán thói quen](#9-quản-lý-câu-hỏi-quiz-chẩn-đoán-thói-quen)
 10. [Xử lý sự cố và Nhận biết thông báo lỗi thường gặp](#10-xử-lý-sự-cố-và-nhận-biết-thông-báo-lỗi-thường-gặp)
 11. [Bài kiểm tra cổng Giai đoạn 1 (Checklist dành cho Hana)](#11-bài-kiểm-tra-cổng-giai-đoạn-1-checklist-dành-cho-hana)
+    - [11b. Checklist cổng Sitemap v2 (dành cho Hana)](#11b-checklist-cổng-sitemap-v2-dành-cho-hana)
 12. [Danh sách việc cần Hana cung cấp (Nội dung & Tài sản)](#12-danh-sách-việc-cần-hana-cung-cấp-nội-dung--tài-sản)
 13. [Danh sách ảnh chụp màn hình hướng dẫn](#13-danh-sách-ảnh-chụp-màn-hình-hướng-dẫn)
 
@@ -474,6 +477,38 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
    - Nếu bạn bấm nút quay lại trình duyệt hoặc đóng tab khi đang nhập dở, trình duyệt sẽ hiện hộp thoại nhắc nhở để tránh mất công sức nhập liệu.
 3. **Giữ nguyên dữ liệu khi lùi bước**:
    - Bạn có thể bấm nút **Quay lại** ở bất kỳ bước nào để chỉnh sửa thông tin ở bước trước mà không làm mất các dữ liệu đã nhập ở bước sau.
+
+---
+
+### 3.1c. Đổi tên gói, tagline và tên sản phẩm số (CLEAR / BUILD / SHINE, Habit Hack, EQ Buddy)
+
+**Mục đích**: Khi cần điều chỉnh tên gọi chiến lược của các gói giải pháp, câu định vị (tagline) hoặc tên thương mại của các công cụ số (ví dụ: đổi tên gói từ CLEAR / BUILD / SHINE sang tên mới, đổi tagline "Chuyển mình không chênh vênh", đổi tên "Habit Hack" thành "Habit Formation"...), Hana chỉ cần sửa tại một nơi duy nhất trong mục **Sản phẩm**. Mọi trang web, bảng so sánh và khối kéo thả sẽ tự động đồng bộ ngay lập tức mà không cần vào Puck Editor sửa tay.
+
+#### 1. Nguyên tắc quan trọng: Sửa trong Sản phẩm, KHÔNG sửa trong Puck
+
+- **Dữ liệu nguồn duy nhất**: Các khối hiển thị sản phẩm trên website (như bảng so sánh 3 gói `PackageComparison`, thẻ gói `PackageCards`, lưới sản phẩm `ProductGrid`, thẻ giá `PriceTag`) **không lưu trữ câu chữ hay giá bán cố định bên trong Puck Editor**. Các khối này chỉ lưu mã nhận diện (ID) của sản phẩm và tự động truy xuất dữ liệu mới nhất từ danh mục **Sản phẩm** (`products`).
+- **Lợi ích**: Bạn không cần phải mở từng trang một trong Puck Editor để sửa đi sửa lại câu chữ. Chỉ cần chỉnh sửa 1 lần trong **Sản phẩm**, toàn bộ các trang trên website đang giới thiệu gói đó sẽ tự động cập nhật đồng loạt.
+
+#### 2. Các bước đổi tên gói và câu định vị (Tagline)
+
+1. Ở menu bên trái, tìm nhóm **Khách hàng & Bán hàng** -> bấm vào **Sản phẩm** (`products`).
+2. Tìm và bấm vào gói bạn muốn sửa (ví dụ: gói `CLEAR`, `BUILD`, hoặc `SHINE`).
+3. Tại tab **Cơ bản**:
+   - **Tên sản phẩm (`name`)**: Nhập tên mới của gói (ví dụ: nếu sau này đổi tên gói từ `CLEAR` sang một tên truyền cảm hứng khác).
+   - **Mô tả ngắn (`shortDescription`)** hoặc **Câu định vị**: Sửa câu mô tả cô đọng tóm tắt ý nghĩa của gói.
+4. Tại tab **Giá & bán**:
+   - Sửa giá bán mới nếu có điều chỉnh.
+   - Nếu đổi cấu phần (thêm bớt buổi khai vấn hay workshop), hãy chỉnh trong bảng cấu phần; hệ thống sẽ tự tính lại Tổng giá trị và % ưu đãi.
+5. Bấm **Lưu thay đổi** (hoặc **Xuất bản** nếu đang ở bản nháp).
+6. Mở trang chủ (`/`), trang lộ trình (`/lo-trinh-chuyen-minh`) hoặc trang thanh toán ngoài đời, bạn sẽ thấy tên gói mới và tagline mới đã tự động hiển thị mượt mà.
+
+#### 3. Các bước đổi tên Habit Hack và EQ Buddy
+
+1. Trong danh sách **Sản phẩm** (`products`), mở sản phẩm `Habit Tracker số` hoặc `EQ Buddy số`.
+2. Tại tab **Cơ bản**:
+   - Sửa **Tên sản phẩm**: Đổi tên hiển thị mà khách hàng sẽ nhìn thấy trên toàn hệ thống.
+   - Sửa **Mô tả ngắn**: Cập nhật câu giới thiệu ngắn gọn.
+3. Bấm **Lưu thay đổi**. Tên mới sẽ tự động cập nhật trên toàn bộ các thanh điều hướng, thẻ sản phẩm và trang thanh toán.
 
 ---
 
@@ -1601,18 +1636,78 @@ Khi bạn muốn tạo một chiến dịch mới, một trang dịch vụ mới
 
 1. Vào menu bên trái -> **Website** -> **Trang nội dung** (`pages`) -> Bấm **Tạo mới**.
 2. Nhập **Tiêu đề trang** (ví dụ: _Chiến dịch Mùa Thu 2026_) và **Đường dẫn (slug)** (ví dụ: `mua-thu-2026`).
-3. Ở ô **Mẫu trang (`Template`)**, bấm chọn một trong 9 mẫu có sẵn:
+3. Ở ô **Mẫu trang (`Template`)**, bấm chọn một trong 11 mẫu có sẵn:
    - _Trang chủ v2_
    - _Trang lộ trình_
    - _Trang Về Trạm_
    - _Trang Coach 1:1_
    - _Trang Liên hệ_
+   - _Trang Cộng đồng_
+   - _Trang Doanh nghiệp_
    - _Landing chiến dịch_
    - _Trang dịch vụ_
    - _Trang workshop_
    - _Trang sự kiện_
 4. Bấm **Lưu bản nháp**. Hệ thống sẽ tự động điền sẵn toàn bộ bố cục, các khối và nội dung mẫu tương ứng vào trang.
 5. Bấm nút **"Chỉnh sửa trực quan"** để vào Puck Editor tinh chỉnh nội dung và hình ảnh trước khi xuất bản.
+
+---
+
+### 5.14. Trang Cộng đồng & Doanh nghiệp (Sitemap v2)
+
+Trong đợt nâng cấp hoàn thiện Sitemap v2 (SM-08), website được bổ sung **2 mẫu trang chuyên sâu** cho hai trụ cột quan trọng: trang **Cộng đồng** (`/cong-dong`) và trang **Doanh nghiệp** (`/doanh-nghiep`).
+
+#### 1. Mẫu trang Cộng đồng (`community`)
+
+- **Mục đích**: Dành cho trang giới thiệu không gian sinh hoạt, rèn luyện cảm xúc chung của Trạm Dừng Cảm Xúc (`/cong-dong`), giúp học viên hiểu rõ giá trị khi đồng hành cùng cộng đồng và dễ dàng tham gia nhóm Zalo.
+- **Thứ tự các khối trong mẫu**:
+  1. `HeroImage`: Hình ảnh mở đầu ấm áp, tiêu đề chào đón và lời dẫn truyền cảm hứng về cộng đồng.
+  2. `IconCardGrid`: 3–4 thẻ biểu tượng nêu bật những giá trị thực tế nhận được khi tham gia (không gian an toàn, thực hành định kỳ, chia sẻ nâng đỡ nhau...).
+  3. `ImageText`: Hình ảnh sinh hoạt thực tế kết hợp câu chuyện kết nối, giải thích văn hóa ứng xử và sinh hoạt của Trạm.
+  4. `TestimonialGrid`: Cảm nhận và chia sẻ chân thật của các thành viên đã gắn bó cùng cộng đồng.
+  5. `ZaloButton`: Nút kết nối nhanh đưa người dùng tham gia trực tiếp vào nhóm Zalo cộng đồng.
+  6. `FAQ`: Giải đáp các thắc mắc thường gặp về cộng đồng (chế độ lấy theo nhóm `group = general`).
+
+- **Cách cấu hình Link nhóm Zalo cộng đồng**:
+  1. Vào menu bên trái -> **Hệ thống** -> **Cài đặt website** (`siteSettings`).
+  2. Chuyển sang tab **Liên hệ & Zalo**.
+  3. Tại ô **Nhóm Zalo** (`zaloGroupUrl`), dán đường dẫn link tham gia nhóm Zalo của bạn (ví dụ: `https://zalo.me/g/...`).
+  4. Bấm **Lưu thay đổi**. Khối nút Zalo trên trang cộng đồng sẽ tự động trỏ đúng vào nhóm này.
+
+#### 2. Mẫu trang Doanh nghiệp (`business`)
+
+- **Mục đích**: Dành cho trang giải pháp tổ chức (`/doanh-nghiep`), phục vụ đối tượng lãnh đạo, HRD, L&D và quản lý đội ngũ đang tìm kiếm chương trình nâng cao sức khỏe tinh thần và trí tuệ cảm xúc cho nhân viên.
+- **Thứ tự các khối trong mẫu**:
+  1. `HeroImage`: Tiêu đề định vị giải pháp đào tạo và đồng hành doanh nghiệp.
+  2. `IconCardGrid`: Các thách thức, nỗi đau phổ biến mà tổ chức thường gặp phải (áp lực quá tải, thiếu gắn kết, mất kết nối cảm xúc...).
+  3. `SolutionEcosystem`: Giới thiệu hệ sinh thái các chương trình đào tạo may đo của Trạm (tự động đọc dữ liệu từ danh mục **Chương trình doanh nghiệp**).
+  4. `LogoStrip`: Dải logo các đối tác, tổ chức hoặc doanh nghiệp đã đồng hành.
+  5. `TestimonialGrid`: Lời nhận xét, phản hồi từ các quản lý và học viên doanh nghiệp.
+  6. `B2BBriefForm`: Biểu mẫu tiếp nhận yêu cầu đề xuất đào tạo (brief) chuyên nghiệp dành riêng cho doanh nghiệp.
+
+- **Cách nhập 2 Chương trình doanh nghiệp trong CMS**:
+  1. Vào menu bên trái -> **Khách hàng & Bán hàng** -> **Chương trình doanh nghiệp** (`programs`) -> Bấm **Tạo mới**.
+  2. Nhập các thông tin chi tiết của chương trình:
+     - **Tên chương trình**: Tên khóa học/giải pháp (ví dụ: _Trí tuệ cảm xúc dành cho Lãnh đạo_, _Xây dựng văn hóa thấu cảm trong đội ngũ_...).
+     - **Đường dẫn (slug)**: Đường dẫn trang con (ví dụ: `tri-tue-cam-xuc-lanh-dao`).
+     - **Hành vi mục tiêu**: Các hành vi cụ thể mà chương trình hướng tới giúp học viên thay đổi.
+     - **Nhóm người học**: Đối tượng tham gia (ví dụ: _Cấp quản lý, Trưởng nhóm, Nhân sự chủ chốt_).
+     - **Hình thức**: Trực tiếp tại doanh nghiệp (In-house offline), Online qua Zoom, hoặc Kết hợp (Hybrid).
+     - **Thời lượng**: Ví dụ: _1 ngày chuyên sâu (8 giờ)_, _4 buổi tối Zoom_...
+     - **Kết quả bàn giao**: Những tài liệu, bộ công cụ hoặc chứng nhận trao cho doanh nghiệp sau khóa học.
+     - **Đồng hành sau chương trình**: Kế hoạch theo dõi 21 ngày tiếp theo.
+     - **Trạng thái bán**: Chọn **Đang mở bán** hoặc **Cần tư vấn** -> Bấm **Xuất bản**.
+  3. Tạo tiếp chương trình doanh nghiệp thứ hai tương tự.
+
+- **Cách sửa menu "Dành cho Doanh nghiệp" trỏ đúng chương trình mới**:
+  1. Vào menu bên trái -> **Trang web** -> **Menu điều hướng** (`navigation`).
+  2. Trong mục **Menu chính** (`mainMenu`), tìm dòng **Sản phẩm**.
+  3. Mở phần **Menu con** (`children`) -> tìm nhóm **Dành cho Doanh nghiệp**.
+  4. Tại danh sách các mục con:
+     - Bấm vào mục chương trình bạn muốn chỉnh sửa.
+     - Ở ô **Loại liên kết**, bạn có thể chọn **Liên kết** và dán đường dẫn `/doanh-nghiep/<slug-chuong-trinh>` của chương trình bạn vừa tạo ở trên.
+     - Sửa lại **Tên mục** và **Mô tả ngắn** cho phù hợp.
+  5. Bấm **Lưu thay đổi**. Menu "Sản phẩm" ngoài đời thực sẽ dẫn khách hàng doanh nghiệp thẳng tới chương trình bạn mong muốn.
 
 ---
 
@@ -2081,6 +2176,60 @@ Dưới đây là các tình huống bạn có thể gặp và cách giải quy�
 - [ ] **8. Tạo 1 link thanh toán gói và gửi cho khách**:
   - Vào **Đơn hàng** -> bấm **Tạo mới** -> tick ô **Hana tạo link thanh toán** -> chọn khách hàng và gói Growth Mirror (CLEAR / BUILD / SHINE) -> bấm **Lưu**. _(Xem mục 7.5, phần "Tạo link thanh toán gói Growth Mirror")_
   - Tại cột bên phải (Sidebar), mục _Link thanh toán cho khách_, bấm nút **Sao chép link** -> gửi link cho khách qua Zalo hoặc Email để khách xem tóm tắt gói và thanh toán VietQR. _(Xem mục 7.5, phần "Tạo link thanh toán gói Growth Mirror")_
+
+---
+
+### 11b. Checklist cổng Sitemap v2 (dành cho Hana)
+
+> **Mục tiêu nghiệm thu Sitemap v2**: Đây là danh sách kiểm tra thực tế dành riêng cho Hana để tự tay xác nhận cấu trúc website mới (Sitemap v2) đã vận hành trơn tru, dễ quản trị và đúng theo kế hoạch trước khi bàn giao hoàn tất (theo `docs/plan/SITEMAP_V2.md` mục 9):
+
+#### Nhóm 1: Trải nghiệm người dùng và Điều hướng trên thiết bị
+
+- [ ] **Mở menu "Sản phẩm" trên điện thoại (màn hình nhỏ)**:
+  - Dùng điện thoại mở trang chủ website.
+  - Bấm vào nút mở menu (biểu tượng 3 gạch ở góc trên).
+  - Bấm vào mục **Sản phẩm** -> kiểm tra thấy mở rộng (accordion) và hiển thị rõ ràng 2 nhóm: **Dành cho Cá nhân** và **Dành cho Doanh nghiệp**.
+  - Các mục con có chữ rõ ràng, dễ bấm bằng ngón tay và không bị tràn khỏi màn hình.
+- [ ] **Mở menu con "Sản phẩm" trên máy tính (desktop)**:
+  - Mở trang chủ trên máy tính.
+  - Rê chuột vào mục **Sản phẩm** -> bảng menu con hiện ra mượt mà, phân chia 2 cột rõ ràng.
+  - Thử dùng bàn phím: bấm phím `Tab` để di chuyển tới nút "Sản phẩm", bấm phím `Enter` thấy menu con mở ra; bấm phím `Escape` (Esc) thấy menu con đóng lại an toàn.
+- [ ] **Kiểm tra đủ các trang trong cây danh mục 1.1**:
+  - Lần lượt bấm vào từng trang trong menu để đảm bảo trang nào cũng mở ra bình thường (không bị báo lỗi 404 hay trắng trang):
+    - Trang chủ (`/`)
+    - Lộ trình chuyển mình (`/lo-trinh-chuyen-minh`)
+    - EQ Buddy (`/eq-buddy`)
+    - Habit Hack (`/habit/1-percent-better`)
+    - Coach 1:1 cá nhân (`/coaching`)
+    - 2 trang chương trình Doanh nghiệp từ menu con
+    - Về Trạm (`/ve-tram`)
+    - Tài nguyên miễn phí (`/tai-nguyen`)
+    - Cộng đồng của Trạm (`/cong-dong`)
+    - Liên hệ (`/lien-he`)
+    - Câu hỏi thường gặp (`/cau-hoi-thuong-gap`)
+
+#### Nhóm 2: Quyền tự chủ quản trị trong CMS (Hana tự thử thao tác)
+
+- [ ] **Tự sửa 1 mục trong menu con**:
+  - Vào CMS -> **Menu điều hướng** -> mở mục **Sản phẩm** -> sửa tên 1 mục con (ví dụ thêm dấu chấm hoặc sửa 1 chữ).
+  - Bấm Lưu -> ra ngoài website tải lại trang và thấy tên mục đó trên menu đã tự cập nhật.
+- [ ] **Tự sửa 1 câu hỏi thường gặp (FAQ)**:
+  - Vào CMS -> **Câu hỏi thường gặp** -> mở 1 câu hỏi có sẵn -> sửa lại câu trả lời -> bấm Xuất bản.
+  - Ra trang `/cau-hoi-thuong-gap` hoặc khối FAQ trên trang liên quan -> bấm mở câu hỏi kiểm tra nội dung mới.
+- [ ] **Tự đổi tagline của một gói giải pháp**:
+  - Vào CMS -> **Sản phẩm** -> mở gói `CLEAR` hoặc `BUILD` -> sửa dòng mô tả ngắn / câu định vị.
+  - Bấm Lưu -> mở trang `/lo-trinh-chuyen-minh` ngoài web và thấy dòng giới thiệu gói đã tự đổi theo.
+- [ ] **Tự đổi số điện thoại Hotline liên hệ**:
+  - Vào CMS -> **Cài đặt website** -> tab **Liên hệ & Zalo** -> sửa lại số Hotline.
+  - Bấm Lưu -> mở trang `/lien-he` và thấy thẻ số điện thoại đổi đúng số mới; bấm vào số trên điện thoại thấy tự bật bàn phím gọi điện thoại.
+
+#### Nhóm 3: Kiểm tra chuyển hướng thông minh cho các link cũ
+
+- [ ] **Mở thử 3 đường dẫn cũ để kiểm tra hệ thống tự động dẫn đường**:
+  - Gõ vào trình duyệt địa chỉ: `<ĐỊA CHỈ TRANG>/ve-hana` -> hệ thống tự chuyển ngay sang trang mới `/ve-tram`.
+  - Gõ vào trình duyệt địa chỉ: `<ĐỊA CHỈ TRANG>/thu-vien` -> hệ thống tự chuyển ngay sang trang mới `/tai-nguyen`.
+  - Gõ vào trình duyệt địa chỉ: `<ĐỊA CHỈ TRANG>/coaching/growth-mirror` -> hệ thống tự chuyển ngay sang trang mới `/lo-trinh-chuyen-minh`.
+  - _Kết quả_: Tuyệt đối không có link cũ nào bị báo lỗi "Không tìm thấy trang" (404). Khách hàng cũ cầm link cũ vẫn vào đúng nội dung mới.
 
 ---
 

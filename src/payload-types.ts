@@ -244,7 +244,20 @@ export interface Page {
    * Chọn một mục phù hợp.
    */
   template?:
-    ('home-v2' | 'journey' | 'about' | 'coach' | 'contact' | 'campaign' | 'service' | 'workshop' | 'event') | null;
+    | (
+        | 'home-v2'
+        | 'journey'
+        | 'about'
+        | 'coach'
+        | 'contact'
+        | 'community'
+        | 'business'
+        | 'campaign'
+        | 'service'
+        | 'workshop'
+        | 'event'
+      )
+    | null;
   seo?: {
     /**
      * Nhập tiêu đề tìm kiếm.

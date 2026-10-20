@@ -24,7 +24,7 @@ export function PostDetail({ post }: { post: PublicPost }) {
         {/* Điều hướng quay lại Thư viện */}
         <div className="mb-6">
           <Link
-            href={`${PATHS.resources}?tab=noi-dung`}
+            href={PATHS.resources}
             className="inline-flex items-center gap-1.5 font-ui text-sm font-semibold text-deep-navy/70 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy rounded-sm min-h-[44px]"
           >
             <svg

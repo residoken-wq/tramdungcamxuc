@@ -68,7 +68,12 @@ export const workshopTemplate: Data = {
             icon: '',
           },
           { value: '[MẪU] 12 người', label: '[MẪU] Giới hạn nhóm nhỏ', description: '', icon: '' },
-          { value: '[MẪU] 100%', label: '[MẪU] Thực hành trải nghiệm', description: '', icon: '' },
+          {
+            value: '[MẪU] Chuyên sâu',
+            label: '[MẪU] Thực hành trải nghiệm',
+            description: '',
+            icon: '',
+          },
         ],
         bgColor: 'warm-ivory',
         padding: 'md',

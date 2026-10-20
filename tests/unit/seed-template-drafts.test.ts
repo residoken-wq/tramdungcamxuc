@@ -105,14 +105,32 @@ describe('Seed template drafts (SM-07)', () => {
     await payload.destroy()
   }, 30000)
 
-  it('maps the 5 sitemap v2 slugs to their templates', () => {
+  it('maps the 7 sitemap v2 slugs to their templates', () => {
     expect(TEMPLATE_DRAFT_MAPPINGS.map((m) => [m.slug, m.template])).toEqual([
       ['/', 'home-v2'],
       ['lo-trinh-chuyen-minh', 'journey'],
       ['ve-tram', 'about'],
       ['coaching', 'coach'],
       ['lien-he', 'contact'],
+      ['cong-dong', 'community'],
+      ['doanh-nghiep', 'business'],
     ])
+  })
+
+  it('creates draft from community and business templates on published pages', async () => {
+    await createPublished('community-page')
+    await createPublished('business-page')
+
+    const report = await seedTemplateDrafts(payload, [
+      mapping('community-page', 'community'),
+      mapping('business-page', 'business'),
+    ])
+    expect(report).toEqual({ created: 0, drafted: 2, skipped: 0 })
+
+    const commDraft = await findPage('community-page', true)
+    expect(commDraft?.template).toBe('community')
+    const bizDraft = await findPage('business-page', true)
+    expect(bizDraft?.template).toBe('business')
   })
 
   it('creates a missing page as an unpublished draft', async () => {

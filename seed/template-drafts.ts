@@ -13,6 +13,8 @@ export const TEMPLATE_DRAFT_MAPPINGS: readonly TemplateDraftMapping[] = [
   { slug: 've-tram', template: 'about', defaultTitle: '[MẪU] Về Trạm' },
   { slug: 'coaching', template: 'coach', defaultTitle: '[MẪU] Khai vấn 1:1' },
   { slug: 'lien-he', template: 'contact', defaultTitle: '[MẪU] Liên hệ' },
+  { slug: 'cong-dong', template: 'community', defaultTitle: '[MẪU] Cộng đồng' },
+  { slug: 'doanh-nghiep', template: 'business', defaultTitle: '[MẪU] Doanh nghiệp' },
 ] as const
 
 export type TemplateDraftReport = {
@@ -85,8 +87,8 @@ export async function seedTemplateDrafts(
   for (const mapping of mappings) {
     const { slug, template: templateKey, defaultTitle } = mapping
 
-    // Tra trang hiện tại (lấy cả nháp để biết trạng thái mới nhất)
-    const existingDraftRes = await payload.find({
+    // Tra trang hiện tại (lấy cả nháp để biết trạng thái mới nhất; nếu chưa có nháp, tra bản xuất bản)
+    let existingDraftRes = await payload.find({
       collection: 'pages',
       where: { slug: { equals: slug } },
       limit: 1,
@@ -94,6 +96,16 @@ export async function seedTemplateDrafts(
       draft: true,
       overrideAccess: true,
     })
+    if (existingDraftRes.docs.length === 0) {
+      existingDraftRes = await payload.find({
+        collection: 'pages',
+        where: { slug: { equals: slug } },
+        limit: 1,
+        depth: 0,
+        draft: false,
+        overrideAccess: true,
+      })
+    }
 
     if (existingDraftRes.docs.length === 0) {
       // 1. Chưa có trang -> tạo mới bản nháp

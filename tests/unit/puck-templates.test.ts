@@ -14,35 +14,41 @@ import {
   aboutTemplate,
   coachTemplate,
   contactTemplate,
+  communityTemplate,
+  businessTemplate,
   campaignTemplate,
   serviceTemplate,
   workshopTemplate,
   eventTemplate,
 } from '@/puck/templates'
 
-describe('Puck Page Templates (SM-07 & T1-04)', () => {
+describe('Puck Page Templates (SM-07, SM-08 & T1-04)', () => {
   const allTemplates = [
     { key: 'home-v2', name: 'Trang chủ v2', data: homeV2Template },
     { key: 'journey', name: 'Trang lộ trình', data: journeyTemplate },
     { key: 'about', name: 'Trang Về Trạm', data: aboutTemplate },
     { key: 'coach', name: 'Trang Coach 1:1', data: coachTemplate },
     { key: 'contact', name: 'Trang Liên hệ', data: contactTemplate },
+    { key: 'community', name: 'Trang Cộng đồng', data: communityTemplate },
+    { key: 'business', name: 'Trang Doanh nghiệp', data: businessTemplate },
     { key: 'campaign', name: 'Landing chiến dịch', data: campaignTemplate },
     { key: 'service', name: 'Trang dịch vụ', data: serviceTemplate },
     { key: 'workshop', name: 'Trang workshop', data: workshopTemplate },
     { key: 'event', name: 'Trang sự kiện', data: eventTemplate },
   ]
 
-  const newTemplates = allTemplates.slice(0, 5)
+  const sitemapV2Templates = allTemplates.slice(0, 7)
 
-  it('exports all 9 page templates with proper metadata and Vietnamese labels', () => {
-    expect(pageTemplateList).toHaveLength(9)
+  it('exports all 11 page templates with proper metadata and Vietnamese labels', () => {
+    expect(pageTemplateList).toHaveLength(11)
     expect(Object.keys(pageTemplates)).toEqual([
       'home-v2',
       'journey',
       'about',
       'coach',
       'contact',
+      'community',
+      'business',
       'campaign',
       'service',
       'workshop',
@@ -80,7 +86,9 @@ describe('Puck Page Templates (SM-07 & T1-04)', () => {
   it('block version matches defaultProps version for each block in all 9 templates', () => {
     for (const { key, data } of allTemplates) {
       for (const item of data.content) {
-        const comp = (puckConfig.components as Record<string, { defaultProps?: Record<string, unknown> }>)[item.type]
+        const comp = (
+          puckConfig.components as Record<string, { defaultProps?: Record<string, unknown> }>
+        )[item.type]
         expect(comp, `Unknown component ${item.type} in ${key}`).toBeDefined()
         const defProps = comp.defaultProps as Record<string, unknown> | undefined
         const expectedVersion = defProps?.version ?? 1
@@ -176,6 +184,17 @@ describe('Puck Page Templates (SM-07 & T1-04)', () => {
     }
   })
 
+  it('templates do not contain unconfirmed metric claims (\\d+\\+ or \\d+%) in sample copy', () => {
+    const unconfirmedMetric = /\b\d+(\+|%)/
+    for (const { key, data } of allTemplates) {
+      const jsonString = JSON.stringify(data)
+      expect(
+        unconfirmedMetric.test(jsonString),
+        `Template "${key}" contains unconfirmed metric claim matching \\d+\\+ or \\d+%`,
+      ).toBe(false)
+    }
+  })
+
   it('home-v2 template passes locked homepage block checks (validatePageLockedBlocks)', () => {
     const res = validatePageLockedBlocks('/', homeV2Template)
     expect(res.valid).toBe(true)
@@ -195,7 +214,7 @@ describe('Puck Page Templates (SM-07 & T1-04)', () => {
     expect(unknownResult).toBeNull()
   })
 
-  describe('Server-side rendering and snapshot verification of 5 new templates', () => {
+  describe('Server-side rendering and snapshot verification of Sitemap v2 templates', () => {
     function assertNoFunctions(obj: unknown, path = '') {
       if (obj === null || obj === undefined) return
       if (typeof obj === 'function') {
@@ -208,7 +227,7 @@ describe('Puck Page Templates (SM-07 & T1-04)', () => {
       }
     }
 
-    for (const { key, data } of newTemplates) {
+    for (const { key, data } of sitemapV2Templates) {
       it(`renders template "${key}" server-side without crashing and has no function props`, () => {
         assertNoFunctions(data.content, `${key}.content`)
         assertNoFunctions(data.root, `${key}.root`)

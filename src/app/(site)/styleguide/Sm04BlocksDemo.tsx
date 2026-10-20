@@ -81,12 +81,14 @@ export function Sm04BlocksDemo() {
 
         <div className="rounded-card border border-deep-navy/10 bg-white p-6 shadow-soft">
           <p className="mb-4 font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/70">
-            Biến thể Thư gửi (layout: letter, tone: light)
+            Biến thể Thư gửi có chữ ký ảnh (layout: letter, tone: light, greeting)
           </p>
           <StoryBlock
             seriesLabel="[MẪU SM-04] LỜI NGỎ TỪ COACH"
             titleLine1="GỬI BẠN,"
             titleLine2="NGƯỜI ĐANG DỪNG LẠI"
+            greeting="[MẪU] Thân gửi bạn,"
+            signatureName="[MẪU] Người sáng lập"
             quoteLine="Đôi dòng tâm tình gửi tới những trái tim đang tìm kiếm sự bình yên"
             tone="light"
             layout="letter"
@@ -103,6 +105,27 @@ export function Sm04BlocksDemo() {
               founderSignatureUrl: '/brand/sample-avatar.svg',
               founderSignatureAlt: '[MẪU] Chữ ký người đồng hành',
             }}
+          />
+        </div>
+
+        <div className="rounded-card border border-deep-navy/10 bg-white p-6 shadow-soft">
+          <p className="mb-4 font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/70">
+            Biến thể Thư gửi có chữ ký dạng chữ (layout: letter, greeting + signatureName)
+          </p>
+          <StoryBlock
+            seriesLabel="[MẪU SM-04] TÂM TÌNH ĐỒNG HÀNH"
+            titleLine1="KHOẢNG LẶNG,"
+            titleLine2="ĐỂ LẮNG NGHE"
+            greeting="[MẪU] Thân gửi bạn,"
+            signatureName="[MẪU] Người sáng lập"
+            quoteLine="Đôi dòng tâm tình gửi tới những trái tim đang tìm kiếm sự bình yên"
+            tone="light"
+            layout="letter"
+            storyContent={
+              'Tôi từng trải qua những năm tháng gồng mình để đáp ứng kỳ vọng của mọi người, cho đến khi nhận ra cảm xúc không phải là gánh nặng cần che giấu.\n\nTrạm Dừng Cảm Xúc ra đời như một chiếc trạm dừng nghỉ chân ấm áp, nơi bạn có thể tháo bỏ chiếc áo giáp và nhẹ nhàng ôm lấy chính mình.'
+            }
+            chips={[{ text: '[MẪU] Lắng nghe bản thân' }, { text: '[MẪU] Thấu hiểu cảm xúc' }]}
+            jobTitle="[MẪU] Người đồng hành"
           />
         </div>
 

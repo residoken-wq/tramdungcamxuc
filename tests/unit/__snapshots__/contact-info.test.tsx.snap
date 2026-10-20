@@ -397,7 +397,7 @@ exports[`SM-06: ContactInfo component > renders partial items when some switches
         </p>
       </div>
       <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch"
+        class="mx-auto max-w-md w-full"
       >
         <div
           class="rounded-card p-6 sm:p-8 border flex flex-col justify-between bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-1 duration-200"
