@@ -1,11 +1,26 @@
-# Lên tramdungcamxuc.com và bàn giao cho Hana (kế hoạch 20/10/2026)
+# Lên tramdungcamxuc.com và bàn giao cho Hana (kế hoạch 20/10/2026, sửa 21/10: NPM ở VPS khác)
 
 Đã chốt với anh Nhân 20/10:
 
 - Dữ liệu: **chuyển DB + ảnh của bản demo** sang server thật, rồi dọn dữ liệu `[MẪU]` / khách demo.
 - **Mở mềm**: lên domain thật nhưng `SITE_NOINDEX=true`, chưa quảng bá. Hana nhập nội dung thật và làm buổi thử CM-07 ngay trên bản thật. Đủ mục C mới bật index và bán.
-- DNS trỏ thẳng VPS `115.79.58.24`, không qua Cloudflare proxy.
-- Nginx Proxy Manager (NPM) chạy bằng Docker trên VPS này. Bản demo ở server khác.
+- DNS trỏ thẳng IP WAN `115.79.58.24`, không qua Cloudflare proxy.
+- **Sửa 21/10:** Nginx Proxy Manager (NPM) chạy bằng Docker trên **một VPS khác**, cùng lớp mạng nội bộ (LAN) với VPS production. Không phải cùng máy như bản 20/10. Bản demo ở server khác nữa.
+
+Mô hình mạng (anh Nhân xác nhận 21/10):
+
+```
+Khách ──80/443──▶ 115.79.58.24 (IP WAN) ──NAT──▶ máy chủ vật lý 192.168.1.240
+                                                   ├─ VPS NPM   192.168.250.10  (nhận 80/443)
+                                                   └─ VPS prod  192.168.250.30  (app :3000 + postgres)
+NPM 192.168.250.10 ──http──▶ 192.168.250.30:3000
+```
+
+Yêu cầu NAT (router / máy chủ vật lý, anh Nhân cấu hình):
+
+- WAN `80`, `443` → `192.168.250.10` (NPM). Let's Encrypt cần cổng 80.
+- **Không** NAT cổng `3000`, `5432` hay cổng admin NPM `81` ra WAN (81 chỉ mở trong LAN / VPN của anh).
+- **Giữ IP thật của khách** (chỉ DNAT, không SNAT / masquerade khi vào `192.168.250.10`). Nếu NPM thấy mọi khách cùng một IP (`192.168.1.240` hoặc `192.168.250.1`) thì giới hạn gửi OTP / form tính chung cho mọi người → khách thật bị chặn. Kiểm ở mục E5.
 
 Planning **không** vào server, không đọc / ghi mật khẩu hay khóa. Mọi lệnh dưới đây anh Nhân tự chạy rồi báo kết quả.
 
@@ -22,13 +37,13 @@ Planning **không** vào server, không đọc / ghi mật khẩu hay khóa. M�
 
 ## B. GO-01 – sửa kỹ thuật trước khi lên (Planning đã làm 20/10, PR kèm file này)
 
-| #   | Vấn đề                                                                                                                                                                                                                                                                                  | Sửa                                                                                                                                                                                                               |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| B1  | **Logo không bao giờ hiện.** `Navbar.tsx:99` và `Footer.tsx:72` gọi `<Logo>` không truyền ảnh, nên mọi trang luôn hiện khung "LOGO – chờ file từ Hana", kể cả khi Hana đã tải logo vào Cài đặt website.                                                                                 | Navbar / Footer đọc `siteSettings.logo` (ảnh + mô tả ảnh). Chưa có logo thì giữ khung chờ như hiện tại. Có test.                                                                                                  |
-| B2  | **`docker-compose.prod.yml` không chuyển biến video / lưu trữ vào app.** `VIDEO_PROVIDER`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_TOKEN_KEY` (và `S3_*` nếu sau này dùng R2) có ghi trong `.env` cũng không tới app, nên video trả phí luôn ở chế độ sandbox (không hiện video thật). | Thêm các biến này vào `environment` của `app` (để trống = như cũ).                                                                                                                                                |
-| B3  | **App mở cổng 3000 ra mọi địa chỉ, và NPM (container) không gọi được `127.0.0.1` của host.**                                                                                                                                                                                            | Thêm file `docker-compose.npm.yml`: app vào mạng Docker của NPM, **không** mở cổng ra ngoài. NPM gọi app theo tên container.                                                                                      |
-| B4  | **Backup chưa tự động và thiếu volume `private`** (PDF trả phí). AGENTS §11 yêu cầu backup hằng ngày, giữ 14 ngày.                                                                                                                                                                      | `scripts/backup.sh`: dump DB + nén `media` + `private`, kiểm checksum, xóa bản quá 14 ngày. Kèm 1 dòng crontab. RUNBOOK ghi cách chép bản backup ra ngoài server.                                                 |
-| B5  | **Chưa có cách liệt kê dữ liệu MẪU sau khi chuyển DB.**                                                                                                                                                                                                                                 | `pnpm sample:report` **chỉ đọc**: in số bản ghi `isSample` theo từng bảng, kèm trang / sản phẩm đã xuất bản còn chữ `[MẪU]`. Hana xóa hoặc sửa trong admin, script không tự xóa (tránh xóa nhầm thứ Hana đã sửa). |
+| #   | Vấn đề                                                                                                                                                                                                                                                                                  | Sửa                                                                                                                                                                                                                               |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1  | **Logo không bao giờ hiện.** `Navbar.tsx:99` và `Footer.tsx:72` gọi `<Logo>` không truyền ảnh, nên mọi trang luôn hiện khung "LOGO – chờ file từ Hana", kể cả khi Hana đã tải logo vào Cài đặt website.                                                                                 | Navbar / Footer đọc `siteSettings.logo` (ảnh + mô tả ảnh). Chưa có logo thì giữ khung chờ như hiện tại. Có test.                                                                                                                  |
+| B2  | **`docker-compose.prod.yml` không chuyển biến video / lưu trữ vào app.** `VIDEO_PROVIDER`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_TOKEN_KEY` (và `S3_*` nếu sau này dùng R2) có ghi trong `.env` cũng không tới app, nên video trả phí luôn ở chế độ sandbox (không hiện video thật). | Thêm các biến này vào `environment` của `app` (để trống = như cũ).                                                                                                                                                                |
+| B3  | **App mở cổng 3000 ra mọi địa chỉ.** Sửa 21/10: NPM ở VPS khác nên **không** dùng được `docker-compose.npm.yml` (mạng Docker chỉ có trong một máy).                                                                                                                                     | Không cần file override: đặt `APP_PORT=192.168.250.30:3000` trong `.env` → app chỉ nghe trên IP LAN. Thêm luật `DOCKER-USER` chỉ cho `192.168.250.10` vào cổng 3000 (mục E1). `docker-compose.npm.yml` chỉ dùng khi NPM cùng máy. |
+| B4  | **Backup chưa tự động và thiếu volume `private`** (PDF trả phí). AGENTS §11 yêu cầu backup hằng ngày, giữ 14 ngày.                                                                                                                                                                      | `scripts/backup.sh`: dump DB + nén `media` + `private`, kiểm checksum, xóa bản quá 14 ngày. Kèm 1 dòng crontab. RUNBOOK ghi cách chép bản backup ra ngoài server.                                                                 |
+| B5  | **Chưa có cách liệt kê dữ liệu MẪU sau khi chuyển DB.**                                                                                                                                                                                                                                 | `pnpm sample:report` **chỉ đọc**: in số bản ghi `isSample` theo từng bảng, kèm trang / sản phẩm đã xuất bản còn chữ `[MẪU]`. Hana xóa hoặc sửa trong admin, script không tự xóa (tránh xóa nhầm thứ Hana đã sửa).                 |
 
 **Không** sửa logic thanh toán / đăng nhập. Mục B1 có thêm test. B2–B4 chỉ là cấu hình và script vận hành.
 
@@ -64,9 +79,18 @@ Ngoài code, anh cần làm ở GitHub: **Settings → Secrets and variables →
 
 ### E1. DNS và chuẩn bị server
 
-1. Tại nhà cung cấp tên miền, tạo bản ghi `A`: `tramdungcamxuc.com` → `115.79.58.24` và `www` → `115.79.58.24`. Không bật proxy. Kiểm tra: `dig +short tramdungcamxuc.com` trả `115.79.58.24`.
-2. Trên VPS: cài Docker + plugin compose (nếu chưa có). Mở firewall **chỉ** 80, 443 (cho NPM) và cổng SSH. Cổng admin của NPM (81) chỉ mở cho IP của anh.
-3. Tìm mạng Docker của NPM: `docker network ls` rồi `docker inspect <container-npm> --format '{{json .NetworkSettings.Networks}}'`. Ghi lại tên mạng (ví dụ `npm_default`).
+1. Tại nhà cung cấp tên miền, tạo bản ghi `A`: `tramdungcamxuc.com` → `115.79.58.24` và `www` → `115.79.58.24` (NAT 80/443 vào NPM `192.168.250.10`). Không bật proxy. Kiểm tra: `dig +short tramdungcamxuc.com` trả đúng IP đó.
+2. **VPS NPM `192.168.250.10`**: nhận 80, 443 qua NAT (mục đầu file). Cổng admin NPM (81) chỉ mở trong LAN / cho IP của anh.
+3. **VPS production `192.168.250.30`**: cài Docker + plugin compose (nếu chưa có). **Không** NAT cổng nào của VPS này ra WAN (SSH chỉ trong LAN / VPN).
+   - Kiểm `ip -4 addr` có `192.168.250.30`. Từ VPS NPM thử `ping 192.168.250.30`.
+   - **Lưu ý:** cổng Docker mở ra **không** đi qua luật `ufw` thường. Gắn app vào IP LAN (`APP_PORT` ở mục G) để Internet không vào được, rồi chặn các máy LAN khác (mọi máy khác trong `192.168.250.0/24` hay `192.168.1.0/24` gọi thẳng được app và giả `X-Forwarded-For` để lách giới hạn OTP / form):
+
+     ```bash
+     sudo iptables -I DOCKER-USER -p tcp -m conntrack --ctorigdst 192.168.250.30 --ctorigdstport 3000 ! -s 192.168.250.10 -j DROP
+     sudo apt-get install -y iptables-persistent && sudo netfilter-persistent save   # giữ luật sau khi khởi động lại
+     ```
+
+     Chạy sau khi Docker đã chạy (chuỗi `DOCKER-USER` do Docker tạo). Kiểm ở mục E5.
 4. `git clone https://github.com/residoken-wq/tramdungcamxuc.git /opt/tdcx && cd /opt/tdcx`. Đăng nhập GHCR như RUNBOOK mục "Xác thực GitHub Container Registry".
 5. Tạo `/opt/tdcx/.env` (anh tự gõ, `chmod 600`, **không** gửi nội dung cho ai). Danh sách biến ở mục G.
 
@@ -79,10 +103,25 @@ Ngoài code, anh cần làm ở GitHub: **Settings → Secrets and variables →
    `PROJECT=tdcx-demo COMPOSE_FILES="-f docker-compose.prod.yml" BACKUP_ROOT=/root/tdcx-move ./scripts/backup.sh`
    Mong đợi dòng `backup OK: …`. Kiểm `SHA256SUMS`. App demo dừng vài giây rồi tự chạy lại.
 3. Chép thư mục backup sang VPS mới (`scp` / `rsync`), kiểm lại checksum trên VPS.
-4. Trên VPS mới: `docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml up -d postgres`, rồi khôi phục DB và `media` theo RUNBOOK mục "Phục hồi toàn diện" (đổi `tdcx-demo` thành `tdcx`, thêm `-f docker-compose.npm.yml`). `private` khôi phục giống `media`, đổi `/app/media` thành `/app/private` và `media.tar.gz` thành `private.tar.gz`.
-5. `docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml up -d`. App tự chạy các migration còn thiếu. Xem log: `docker compose -p tdcx logs app --tail 100`, không có dòng lỗi migration.
+4. Trên VPS production (`cd /opt/tdcx`), khôi phục bằng các lệnh dưới. **Không** làm theo nguyên mục "Phục hồi toàn diện" của RUNBOOK: mục đó có `git switch` về commit cũ và `curl 127.0.0.1:3400`, không đúng khi chuyển server.
+
+   ```bash
+   export B=/duong-dan/tdcx-move/<THOI-DIEM>          # thư mục backup vừa chép sang
+   (cd "$B" && sha256sum -c SHA256SUMS)
+   export DC="docker compose -p tdcx -f docker-compose.prod.yml"
+   $DC pull < /dev/null
+   $DC up -d postgres < /dev/null
+   $DC exec -T postgres pg_restore -U postgres -d tramdungcamxuc --no-owner --no-privileges --exit-on-error < "$B/database.dump"
+   $DC run --rm --no-deps -T --entrypoint tar app -C /app/media -xzf - < "$B/media.tar.gz"
+   $DC run --rm --no-deps -T --entrypoint tar app -C /app/private -xzf - < "$B/private.tar.gz"
+   ```
+
+   DB vừa tạo còn trống nên không cần `DROP DATABASE`. Nếu `pg_restore` báo bảng đã có (đã lỡ chạy app trước) thì dừng lại, báo Planning.
+   **Trước dòng `tar … /app/private` cuối, kiểm quyền thư mục `private`:** image hiện chỉ tạo sẵn `/app/media` cho user `node`; volume `private` mới có thể thuộc `root` nên lệnh `tar … /app/private` (chạy bằng user `node`) báo `Permission denied`, và Hana tải PDF trả phí cũng lỗi. Kiểm: `$DC run --rm --no-deps -T --entrypoint sh app -c 'ls -ld /app/private && touch /app/private/.w && rm /app/private/.w && echo OK'`. Không ra `OK` → chạy `$DC run --rm --no-deps -T -u root --entrypoint chown app -R node:node /app/private` rồi làm lại. (Kèm PR này: `Dockerfile` tạo sẵn `/app/private` cho user `node`, volume mới sẽ đúng quyền.)
+
+5. `$DC up -d < /dev/null`. App tự chạy các migration còn thiếu. Xem log: `$DC logs app --tail 100`, không có dòng lỗi migration. Từ **VPS NPM** thử: `curl -s http://192.168.250.30:3000/api/users/init` → có `"initialized":true`.
 6. Dữ liệu `[MẪU]` còn lại (chỉ đọc, không xóa gì):
-   `docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml --profile tools run --rm seed pnpm sample:report < /dev/null`
+   `$DC --profile tools run --rm seed pnpm sample:report < /dev/null`
    In bảng số bản ghi mẫu theo từng bảng và danh sách `#id – trạng thái – còn chữ [MẪU] hay đã sửa`. Hana sửa thành nội dung thật hoặc xóa trong admin. 6 trang pháp lý hiện "đã sửa chữ" vì là khung trống, chỉ cần điền nội dung.
 7. **Không** chạy `pnpm seed` hay bất kỳ lệnh `seed:demo-gd2*` nào trên server thật.
 8. Tài khoản admin chuyển theo DB. Tạo tài khoản `owner` cho Hana trong admin (anh tự gửi mật khẩu). Rà danh sách Quản trị viên, xóa tài khoản test.
@@ -92,7 +131,7 @@ Ngoài code, anh cần làm ở GitHub: **Settings → Secrets and variables →
 Tạo **Proxy Host**:
 
 - Domain Names: `tramdungcamxuc.com`, `www.tramdungcamxuc.com`
-- Scheme `http`, Forward Hostname `tdcx-app` (tên app trong mạng NPM, đặt ở `docker-compose.npm.yml`), Forward Port `3000`
+- Scheme `http`, Forward Hostname / IP **`192.168.250.30`**, Forward Port `3000` (NPM ở VPS khác nên không gọi được tên container)
 - Bật **Block Common Exploits**, **Websockets Support**
 - Tab SSL: **Request a new SSL Certificate** (Let's Encrypt), bật **Force SSL** và **HTTP/2**. Chỉ bật **HSTS** sau khi HTTPS chạy ổn ít nhất 1 ngày: app đã tự gửi HSTS `includeSubDomains`, áp lên mọi tên miền con của tramdungcamxuc.com.
 - Tab **Advanced** – **bắt buộc**. Nếu thiếu, khách có thể giả IP để lách giới hạn gửi OTP / form (RUNBOOK mục SePay, T2-21). Ứng dụng đọc IP **đầu tiên** trong `X-Forwarded-For`, nên phải ghi đè header này bằng IP thật:
@@ -107,7 +146,7 @@ location / {
     proxy_set_header Connection $http_connection;
     proxy_http_version 1.1;
     client_max_body_size 50m;
-    proxy_pass http://tdcx-app:3000;
+    proxy_pass http://192.168.250.30:3000;
 }
 
 location = /api/payments/sepay/webhook {
@@ -116,15 +155,15 @@ location = /api/payments/sepay/webhook {
     proxy_set_header X-Forwarded-For $remote_addr;
     proxy_set_header X-Real-IP $remote_addr;
     client_max_body_size 64k;
-    proxy_pass http://tdcx-app:3000;
+    proxy_pass http://192.168.250.30:3000;
 }
 ```
 
-Kiểm cấu hình NPM sinh ra **không** còn `$proxy_add_x_forwarded_for` cho host này: `docker exec <container-npm> sh -c 'grep -rn "forwarded_for\|tramdungcamxuc" /data/nginx/proxy_host/'`. NPM chỉ bỏ khối `location /` mặc định khi tab Advanced đã có `location /`. Nếu vẫn thấy `$proxy_add_x_forwarded_for` trong file của host này thì dừng lại, báo Planning.
+Kiểm (chạy trên **VPS NPM**) cấu hình NPM sinh ra **không** còn `$proxy_add_x_forwarded_for` cho host này: `docker exec <container-npm> sh -c 'grep -rn "forwarded_for\|tramdungcamxuc" /data/nginx/proxy_host/'`. NPM chỉ bỏ khối `location /` mặc định khi tab Advanced đã có `location /`. Nếu vẫn thấy `$proxy_add_x_forwarded_for` trong file của host này thì dừng lại, báo Planning.
 
 ### E4. Cron (crontab của user chạy Docker trên VPS)
 
-5 việc hẹn giờ, gọi bằng `CRON_SECRET` trong `.env`. Backup hằng ngày: `15 3 * * * cd /opt/tdcx && ./scripts/backup.sh >> /var/log/tdcx-backup.log 2>&1` (giữ 14 ngày ở `/opt/tdcx-backups`; mỗi tuần chép thư mục này ra máy khác). Lệnh mẫu và giờ chạy lấy đúng RUNBOOK mục "Lịch Cron …" (T1-12a, T2-10, T2-02, T2-04, T2-06), đổi địa chỉ thành `https://tramdungcamxuc.com`. Thêm dòng backup hằng ngày của GO-01 B4. Thiếu cron thì đơn chờ không bao giờ hết hạn và không có email nhắc.
+5 việc hẹn giờ, gọi bằng `CRON_SECRET` trong `.env`. Backup hằng ngày: `15 3 * * * cd /opt/tdcx && ./scripts/backup.sh >> /var/log/tdcx-backup.log 2>&1` (giữ 14 ngày ở `/opt/tdcx-backups`; mỗi tuần chép thư mục này ra máy khác). Lệnh mẫu và giờ chạy lấy đúng RUNBOOK mục "Lịch Cron …" (T1-12a, T2-10, T2-02, T2-04, T2-06), đổi `cd /opt/tramdungcamxuc` thành `cd /opt/tdcx` và `http://127.0.0.1:3400` thành **`http://192.168.250.30:3000`** (app không còn nghe `127.0.0.1`; gọi thẳng IP LAN tránh phải đi vòng ra IP công khai rồi vào lại NPM – nhiều mạng LAN không cho đi vòng như vậy). Lần đầu chạy tay 1 lệnh, phải ra `"success":true`. Thêm dòng backup hằng ngày của GO-01 B4. Thiếu cron thì đơn chờ không bao giờ hết hạn và không có email nhắc.
 
 ### E5. Kiểm sau khi lên (anh chạy, báo Planning kết quả)
 
@@ -133,8 +172,18 @@ curl -sI https://tramdungcamxuc.com | head -5                          # 200, c�
 curl -s https://tramdungcamxuc.com/robots.txt                          # đang mở mềm: Disallow toàn bộ
 curl -s -o /dev/null -w "%{http_code}\n" https://tramdungcamxuc.com/api/test-reset-admins   # phải 404
 curl -s -o /dev/null -w "%{http_code}\n" -X POST https://tramdungcamxuc.com/api/cron/expire-orders   # phải 401 (không kèm khóa)
-docker compose -p tdcx ps                                              # app + postgres healthy, không có cổng 3000 mở ra ngoài
+docker compose -p tdcx -f docker-compose.prod.yml ps                  # (trên VPS production) app + postgres healthy; cổng ghi 192.168.250.30:3000->3000, KHÔNG phải 0.0.0.0:3000
 ```
+
+Kiểm cổng 3000 chỉ NPM vào được:
+
+```bash
+curl -m 5 -s -o /dev/null -w "%{http_code}\n" http://115.79.58.24:3000/      # từ máy ngoài Internet: phải hết giờ / 000
+curl -m 5 -s -o /dev/null -w "%{http_code}\n" http://192.168.250.30:3000/         # từ VPS NPM: 200
+curl -m 5 -s -o /dev/null -w "%{http_code}\n" http://192.168.250.30:3000/         # từ máy chủ vật lý 192.168.1.240 hoặc máy LAN khác: phải hết giờ / 000
+```
+
+Kiểm NPM thấy **IP thật** của khách: mở trang chủ bằng 4G điện thoại, rồi trên VPS NPM xem log của proxy host (`docker exec <container-npm> sh -c 'tail -5 /data/logs/proxy-host-*_access.log'`). Phải thấy IP công khai của điện thoại, **không** phải `192.168.x.x`. Nếu là `192.168.x.x` → sửa NAT (chỉ DNAT) trước khi mở bán.
 
 Rồi trên trình duyệt (điện thoại + máy tính):
 
@@ -168,5 +217,5 @@ Rồi trên trình duyệt (điện thoại + máy tính):
 | `PAYMENT_SANDBOX`                                                                                 | **để trống**                                                                                                                                                |
 | `VIDEO_PROVIDER`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_TOKEN_KEY`                             | khi đã có Bunny (cần GO-01 B2)                                                                                                                              |
 | `APP_TAG`                                                                                         | `sha-<7 ký tự>` của commit đã duyệt (không dùng `latest` cho bản thật)                                                                                      |
-| `NPM_NETWORK`                                                                                     | tên mạng Docker của NPM (GO-01 B3)                                                                                                                          |
+| `APP_PORT`                                                                                        | **`192.168.250.30:3000`** – app chỉ nghe trên IP LAN (GO-01 B3, sửa 21/10). Để trống = mở `0.0.0.0:3000` ra Internet, **không được**                        |
 | **Không bao giờ đặt** `E2E_TEST_HOOKS`, `DEMO_SEED_ALLOW`, `SEED_ALLOW_PROD`, `STYLEGUIDE_PUBLIC` |                                                                                                                                                             |

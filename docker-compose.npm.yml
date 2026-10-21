@@ -1,4 +1,6 @@
-# Production behind Nginx Proxy Manager (NPM) running in Docker on the same host.
+# Only for Nginx Proxy Manager (NPM) running in Docker on the SAME host as the app.
+# tramdungcamxuc.com has NPM on another VPS in the same LAN: do not use this file there,
+# set APP_PORT=<LAN IP>:3000 instead (docs/plan/GO_LIVE.md).
 # The app joins NPM's network as `tdcx-app` and publishes no host port, so only NPM reaches it.
 #
 #   docker compose -p tdcx -f docker-compose.prod.yml -f docker-compose.npm.yml up -d
