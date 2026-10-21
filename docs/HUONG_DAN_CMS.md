@@ -889,20 +889,22 @@ Bạn có 3 cách rất dễ dàng:
 
 ---
 
-### 3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày
+### 3.11. Theo dõi Kế hoạch Thói quen & Tracker 28 ngày
 
-**Mục đích**: Xem danh sách các kế hoạch thiết lập thói quen (`habitPlans`) và tiến độ check-in 21 ngày của khách hàng/học viên.
+**Mục đích**: Xem danh sách các kế hoạch thiết lập thói quen (`habitPlans`) và tiến độ check-in 28 ngày của khách hàng/học viên.
 
 **Các bước xem trong trang quản trị**:
 
 1. Ở cột menu bên trái, tìm nhóm **Khách hàng** (hoặc danh mục **Kế hoạch thói quen** – `habitPlans`).
 2. Bấm vào một kế hoạch để xem chi tiết:
    - **Khách hàng sở hữu**: Tên và email của khách hàng gắn với kế hoạch.
+   - **Độ dài hành trình (`journeyDays`)**: Số ngày hành trình được khóa cố định lúc tạo (mặc định 28 ngày; các kế hoạch tạo trước đợt nâng cấp được lưu cố định 21 ngày). Trường chỉ đọc.
+   - **Kết quả hành trình (`outcome`)**: Trạng thái kết quả hiện tại gồm `Đang diễn ra` (`in_progress`), `Đạt chứng nhận` (`completed`), hoặc `Đã trải nghiệm` (`experienced`). Trường chỉ đọc.
    - **Bảng điểm thói quen (`scorecard`)**: Bảng đánh giá thói quen hiện tại (tốt, trung tính, chưa tốt).
-   - **Câu định danh cam kết (`identityStatement`)**: Cam kết danh tính cho hành trình 21 ngày ("Tôi sẽ... để trở thành...").
+   - **Câu định danh cam kết (`identityStatement`)**: Cam kết danh tính cho hành trình ("Tôi sẽ... để trở thành...").
    - **Kỹ thuật đã chọn (`chosenTechniques`)**: Danh sách các kỹ thuật rèn luyện thói quen học viên đã lựa chọn theo từng giai đoạn.
-   - **Ngày bắt đầu (`startDate`)**: Thời điểm kích hoạt hành trình 21 ngày theo giờ Việt Nam.
-   - **Danh sách ngày check-in (`habitCheckins`)**: Các ngày đã tick hoàn thành (`done = true`) cùng ngày ghi nhận tương ứng.
+   - **Ngày bắt đầu (`startDate`)**: Thời điểm kích hoạt hành trình theo giờ Việt Nam.
+   - **Danh sách ngày check-in (`habitCheckins`)**: Các ngày đã tick hoàn thành (`done = true`) cùng ngày ghi nhận tương ứng (tối đa tới `journeyDays`).
 
 **Quy tắc bảo vệ quyền riêng tư người học (Quan trọng)**:
 
@@ -915,22 +917,22 @@ Bạn có 3 cách rất dễ dàng:
 
 ---
 
-### 3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)
+### 3.12. Quản lý và Thu hồi Chứng nhận (Certificates)
 
-**Mục đích**: Theo dõi danh sách chứng nhận tốt nghiệp 21 ngày đã được cấp cho học viên, kiểm tra thông tin xác minh, hoặc thu hồi / tạm ẩn link công khai khi cần thiết.
+**Mục đích**: Theo dõi danh sách chứng nhận tốt nghiệp hành trình thói quen đã được cấp cho học viên, kiểm tra thông tin xác minh, hoặc thu hồi / tạm ẩn link công khai khi cần thiết.
 
 **Các bước xem và quản lý trong trang quản trị**:
 
-1. Ở cột menu bên trái, tìm nhóm **Học viên & khách**, bấm chọn **Chứng nhận 21 ngày** (`certificates`).
+1. Ở cột menu bên trái, tìm nhóm **Học viên & khách**, bấm chọn **Chứng nhận thói quen** (`certificates`).
 2. Màn hình danh sách hiển thị các cột:
    - **Mã xác minh (`code`)**: Chuỗi mã duy nhất được hệ thống sinh ngẫu nhiên tự động (ví dụ: `wF9d_a`).
    - **Khách hàng (`customer`)**: Tên học viên được trao chứng nhận.
    - **Ngày cấp (`issuedAt`)**: Thời điểm chứng nhận được tạo.
 3. Bấm vào một dòng chứng nhận để xem chi tiết:
    - **Khách hàng (`customer`)**: Tên và tài khoản của học viên.
-   - **Kế hoạch (`plan`)**: Kế hoạch thói quen 21 ngày tương ứng.
+   - **Kế hoạch (`plan`)**: Kế hoạch thói quen tương ứng.
    - **Câu định danh (`identityStatement`)**: Cam kết danh tính của học viên lúc cấp chứng nhận.
-   - **Số ngày hoàn thành (`daysCompleted`)**: Tổng số ngày học viên đã tick hoàn thành trong hành trình (tối đa 21 ngày).
+   - **Số ngày hoàn thành (`daysCompleted`)**: Tổng số ngày học viên đã tick hoàn thành trong hành trình (tối đa theo độ dài kế hoạch, ví dụ 28 ngày).
    - **Mã xác minh (`code`)**: Mã tra cứu công khai (chế độ chỉ đọc, không sửa).
    - **Cho phép xem công khai (`isPublic`)**: Trạng thái hiển thị ra bên ngoài.
 
@@ -951,14 +953,20 @@ Bạn có 3 cách rất dễ dàng:
 - Tên trên chứng nhận lấy từ trường **Họ tên** của khách. Khách nhập tên khi bấm "Nhận chứng nhận" (nếu chưa có tên). Sau khi đã có chứng nhận, khách **không** tự đổi tên được nữa.
 - Khách báo tên in sai: vào **Khách hàng** → tìm theo email → sửa **Họ tên** → **Lưu**. Trang xác minh và ảnh chứng nhận cập nhật ngay ở lần tải sau.
 
-**Cài đặt số ngày tối thiểu để nhận chứng nhận**:
+**Cài đặt độ dài hành trình và điều kiện cấp chứng nhận (Site Settings)**:
 
-- Theo mặc định, học viên phải đạt tối thiểu **15/21 ngày** check-in (và đã bước sang Ngày 21) mới đủ điều kiện nhận chứng nhận.
-- Nếu Hana muốn điều chỉnh số ngày yêu cầu (ví dụ: nâng lên 18 ngày hoặc 21 ngày):
-  1. Vào menu bên trái -> nhóm **Cài đặt** -> chọn **Cài đặt Website** (`siteSettings`).
-  2. Tìm trường **Số ngày hoàn thành tối thiểu để nhận chứng nhận** (`certificateMinDays`).
-  3. Nhập con số mong muốn (ví dụ: `18`) và bấm **Lưu thay đổi**.
-  4. Hệ thống sẽ tự động áp dụng ngưỡng mới cho toàn bộ học viên mà không cần can thiệp kỹ thuật!
+Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có thể tùy chỉnh 2 thông số:
+
+1. **Độ dài hành trình thói quen (`habitJourneyDays`)**: Mặc định là **28 ngày** (tương đương 4 tuần rèn luyện thói quen theo khoa học Atomic Habits). Hana có thể điều chỉnh từ 7 đến 60 ngày nếu tổ chức các chiến dịch đặc biệt (ví dụ thử thách 14 ngày hoặc 30 ngày).
+2. **Tỷ lệ ngày bỏ phiếu tối thiểu để nhận chứng nhận (`certificateMinPercent`)**: Mặc định là **90%** (cho phép nhập từ 50% đến 100%).
+
+> **Quy tắc vận hành quan trọng cần lưu ý**:
+>
+> 1. **Khóa cố định vào từng kế hoạch**: Khi Hana thay đổi `habitJourneyDays`, thay đổi này **chỉ áp dụng cho các học viên bắt đầu tạo kế hoạch mới sau đó**. Những học viên đang thực hiện dở dang kế hoạch cũ vẫn giữ nguyên số ngày ban đầu (ví dụ kế hoạch cũ giữ 21 ngày, kế hoạch mới 28 ngày) để đảm bảo tính công bằng và nhất quán.
+> 2. **Cách tính ngưỡng 90% theo ngày bỏ phiếu**: Tỷ lệ được tính trên tổng số ngày bỏ phiếu thực tế theo nhịp tuần đã đăng ký. Với nhịp cả tuần (7 ngày/tuần) trong hành trình 28 ngày, học viên cần đạt tối thiểu **26 ngày** (hệ thống làm tròn lên: `ceil(28 × 90%) = 26 ngày`).
+> 3. **Phân định kết quả "Đạt chứng nhận" và "Đã trải nghiệm"**:
+>    - **Đạt từ 90% trở lên**: Kết quả là **Đạt chứng nhận** (`completed`). Sau khi kết thúc hành trình, học viên thấy form nhập tên và bấm nút **"Nhận chứng nhận"**.
+>    - **Dưới 90% (ví dụ đạt 25/28 ngày)**: Kế hoạch chuyển sang trạng thái **"Đã trải nghiệm"** (`experienced`). Khối tổng kết trên Tracker hiển thị thông điệp ghi nhận ấm áp: hành trình đã khép lại, mọi bước đi đều đáng giá, và **hoàn toàn không có nút nhận chứng nhận** hay link công khai. Người học có thể tạo hành trình mới khi sẵn sàng.
 
 ---
 
