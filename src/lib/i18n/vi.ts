@@ -697,7 +697,7 @@ export const vi = {
     label: 'Chọn cảm xúc hôm nay',
   },
   habit: {
-    progressGridLabel: 'Lưới tiến trình 21 ngày',
+    progressGridLabel: 'Lưới tiến trình rèn luyện thói quen',
     dayPrefix: 'Ngày',
     statuses: {
       done: 'Đã hoàn thành',
@@ -1807,24 +1807,24 @@ export const vi = {
     },
   },
   tracker: {
-    pageTitle: 'Tracker 21 ngày',
+    pageTitle: 'Habit Tracker',
     subtitle: 'Đồng hành xây dựng thói quen bền vững cùng Trạm Dừng Cảm Xúc',
     productNotFound: 'Chưa tìm thấy cấu hình sản phẩm Habit Tracker số.',
     identityCommitmentLabel: 'Cam kết danh tính của bạn',
-    navLink: 'Tracker 21 ngày',
+    navLink: 'Habit Tracker',
     daysCompletedSuffix: 'ngày xong',
     votingQuestion: 'Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?',
     missedOneDayEncouragement:
       'Lỡ nhịp 1 ngày là không sao cả. Quan trọng là bạn vẫn ở đây hôm nay.',
     readOnlyBanner: 'Gói dùng thử đã kết thúc. Bạn đang ở chế độ xem lại tiến trình đã ghi nhận.',
-    currentDayBadge: (day: number) => `Hôm nay là Ngày ${day} / 21`,
+    currentDayBadge: (day: number, total: number = 28) => `Hôm nay là Ngày ${day} / ${total}`,
     dayStatusMissed: 'Hôm qua chưa ghi nhận',
     planSetup: {
-      title: 'Khởi tạo kế hoạch 21 ngày',
+      title: 'Khởi tạo kế hoạch thói quen',
       subtitle: 'Xác định cam kết danh tính cho hành trình của bạn',
       label: 'Câu định danh của bạn',
       placeholder: 'Tôi sẽ [hành động cụ thể] để trở thành [con người tôi muốn hướng tới]...',
-      submit: 'Bắt đầu hành trình 21 ngày',
+      submit: 'Bắt đầu hành trình thói quen',
       submitting: 'Đang khởi tạo...',
       errorEmpty: 'Vui lòng nhập câu định danh trước khi bắt đầu.',
       errorTooLong: 'Câu định danh không được vượt quá 300 ký tự.',
@@ -1848,14 +1848,14 @@ export const vi = {
       errorGeneral: 'Đã có lỗi xảy ra trong quá trình lưu check-in.',
     },
     summary: {
-      badge: 'Tổng kết 21 ngày',
-      title: 'Hành trình 21 ngày của bạn',
+      badge: 'Tổng kết hành trình',
+      title: 'Hành trình thói quen của bạn',
       congrats: 'Chúc mừng bạn đã hoàn thành chặng đường rèn luyện và thấu hiểu cảm xúc.',
       progressTitle: 'Tiến độ hoàn thành',
-      totalDaysSuffix: '/ 21 ngày',
+      totalDaysSuffix: '/ 28 ngày',
       mostFrequentEmotionTitle: 'Cảm xúc đồng hành nhiều nhất',
       emotionCountSuffix: 'ngày xuất hiện',
-      completedCount: (completed: number, total: number = 21) =>
+      completedCount: (completed: number, total: number = 28) =>
         `Đã hoàn thành: ${completed}/${total} ngày`,
       mostFrequentEmotion: (emotion: string, count: number) =>
         `Cảm xúc gặp nhiều nhất: ${emotion} (${count} ngày)`,
@@ -1864,13 +1864,13 @@ export const vi = {
       bookingButton: 'Đặt phiên trải nghiệm Growth Mirror',
     },
     paywall: {
-      title: 'Habit Tracker Số 21 Ngày',
+      title: 'Habit Tracker Số',
       description: 'Bạn chưa kích hoạt quyền sử dụng công cụ Habit Tracker số.',
       buyButton: 'Mua công cụ số',
     },
     expiredNotice: {
       message:
-        'Thời hạn dùng thử 21 ngày đã kết thúc. Mua công cụ để tiếp tục ghi nhận và đồng hành bền vững.',
+        'Thời hạn dùng thử đã kết thúc. Mua công cụ để tiếp tục ghi nhận và đồng hành bền vững.',
       buyButton: 'Mua để dùng tiếp',
     },
     actions: {
@@ -1881,6 +1881,8 @@ export const vi = {
       planNotFound: 'Không tìm thấy kế hoạch thói quen của bạn.',
       forbidden: 'Bạn không có quyền thao tác trên kế hoạch này.',
       futureDay: 'Không thể check-in cho ngày chưa tới trong tương lai.',
+      dayExceedsPlan: (day: number, journeyDays: number) =>
+        `Ngày check-in (${day}) vượt quá số ngày của kế hoạch (${journeyDays} ngày).`,
       createUnauthorized: 'Vui lòng đăng nhập để tạo kế hoạch.',
       emptyStatement: 'Vui lòng nhập câu định danh trước khi bắt đầu.',
       tooLongStatement: 'Câu định danh không được vượt quá 300 ký tự.',
@@ -1897,30 +1899,30 @@ export const vi = {
       actionButton: 'Trở lại với nhịp quen hôm nay',
       signOff: 'Thương mến,',
       author: 'Hana Lương & Đội ngũ Trạm Dừng Cảm Xúc',
-      footerNote: 'Email nhắc nhở nhẹ nhàng từ công cụ Habit Tracker 21 ngày.',
+      footerNote: 'Email nhắc nhở nhẹ nhàng từ công cụ Habit Tracker.',
       optOutLink: 'Không nhận email nhắc nữa',
     },
   },
   certificate: {
-    pageTitle: 'Chứng nhận 21 ngày',
-    metaTitle: (name: string) => `Chứng nhận 21 ngày – ${name} | Trạm Dừng Cảm Xúc`,
-    metaDescription:
-      'Chứng nhận hoàn thành hành trình 21 ngày rèn luyện thói quen và thấu hiểu cảm xúc.',
+    pageTitle: 'Chứng nhận hoàn thành',
+    metaTitle: (name: string) => `Chứng nhận tốt nghiệp – ${name} | Trạm Dừng Cảm Xúc`,
+    metaDescription: 'Chứng nhận hoàn thành hành trình rèn luyện thói quen và thấu hiểu cảm xúc.',
     badge: 'Chứng nhận hoàn thành',
     titleLine1: 'CHỨNG NHẬN',
-    titleLine2: 'HÀNH TRÌNH 21 NGÀY',
+    titleLine2: 'HÀNH TRÌNH RÈN LUYỆN THÓI QUEN',
     subtitle: 'Được trao cho',
     identityCommitmentTitle: 'Cam kết định danh',
-    completedStats: (days: number) => `Đã hoàn thành ${days}/21 ngày thực hành`,
+    completedStats: (days: number, total: number = 28) =>
+      `Đã hoàn thành ${days}/${total} ngày thực hành`,
     issuedDateLabel: 'Ngày cấp:',
     verificationCodeLabel: 'Mã xác minh:',
     nameInputLabel: 'Họ và tên',
     nameInputPlaceholder: 'Nhập họ và tên để in trên chứng nhận',
-    nameInputNote: 'Họ và tên sẽ được in cố định trên chứng nhận 21 ngày.',
+    nameInputNote: 'Họ và tên sẽ được in cố định trên chứng nhận.',
     eligibleNotice:
-      'Chúc mừng bạn đã hoàn thành chặng đường 21 ngày rèn luyện thói quen! Hãy nhận chứng nhận tốt nghiệp của riêng bạn.',
-    imageAlt: (name: string) => `Chứng nhận 21 ngày – ${name}`,
-    backToTracker: '← Quay lại trang Habit Tracker 21 ngày',
+      'Chúc mừng bạn đã hoàn thành chặng đường rèn luyện thói quen! Hãy nhận chứng nhận tốt nghiệp của riêng bạn.',
+    imageAlt: (name: string) => `Chứng nhận – ${name}`,
+    backToTracker: '← Quay lại trang Habit Tracker',
     publicStatus: {
       isPublic: 'Đang mở công khai',
       isPrivate: 'Link công khai đang tắt',
@@ -1943,10 +1945,18 @@ export const vi = {
     },
     notEligible: {
       title: 'Tiếp tục hành trình để nhận chứng nhận',
-      minDaysNotice: (minDays: number) =>
-        `Bạn cần hoàn thành tối thiểu ${minDays}/21 ngày để nhận chứng nhận tốt nghiệp hành trình.`,
-      notDay21Notice: 'Chứng nhận sẽ được mở từ Ngày 21 của hành trình.',
+      minDaysNotice: (minDays: number, total: number = 28) =>
+        `Bạn cần hoàn thành tối thiểu ${minDays}/${total} ngày để nhận chứng nhận tốt nghiệp hành trình.`,
+      notDay21Notice: 'Chứng nhận sẽ được mở sau khi bạn hoàn thành ngày cuối cùng của hành trình.',
       keepGoing: 'Hãy tiếp tục kiên trì mỗi ngày một bước nhỏ nhé!',
+    },
+    experienced: {
+      badge: 'Đã trải nghiệm',
+      title: 'Hành trình Đã trải nghiệm',
+      message: (minDays: number, total: number = 28) =>
+        `Bạn đã đồng hành cùng hành trình rèn luyện thói quen (${total} ngày). Dù chưa đạt tỷ lệ hoàn thành tối thiểu (${minDays}/${total} ngày) để nhận chứng nhận tốt nghiệp, mỗi ngày bạn đã bước qua đều là một trải nghiệm quý giá.`,
+      encouragement:
+        'Cảm ơn bạn đã can đảm bắt đầu và trải nghiệm. Bất cứ khi nào sẵn sàng, bạn luôn có thể tạo nhịp mới để tiếp tục hành trình!',
     },
     notFound: {
       title: 'Không tìm thấy chứng nhận',
@@ -1955,7 +1965,7 @@ export const vi = {
       unauthorized: 'Vui lòng đăng nhập để nhận chứng nhận.',
       noPlan: 'Không tìm thấy kế hoạch thói quen của bạn.',
       notDay21: 'Chưa tới ngày 21 của hành trình thói quen.',
-      notEnoughDays: (minDays: number) =>
+      notEnoughDays: (minDays: number, total?: number) =>
         `Bạn cần hoàn thành tối thiểu ${minDays} ngày để nhận chứng nhận.`,
       notFound: 'Không tìm thấy chứng nhận.',
       forbidden: 'Bạn không có quyền thay đổi trạng thái chứng nhận này.',
@@ -1967,10 +1977,10 @@ export const vi = {
     },
     og: {
       brand: 'Trạm Dừng Cảm Xúc',
-      journeyTitle: 'HÀNH TRÌNH 21 NGÀY RÈN LUYỆN THÓI QUEN',
+      journeyTitle: 'HÀNH TRÌNH RÈN LUYỆN THÓI QUEN',
       certifyThat: 'CHỨNG NHẬN',
       recipientSubtitle: 'Được trân trọng trao cho',
-      daysCompleted: (days: number) => `ĐÃ HOÀN THÀNH ${days}/21 NGÀY`,
+      daysCompleted: (days: number, total: number = 28) => `ĐÃ HOÀN THÀNH ${days}/${total} NGÀY`,
       issuedOn: (date: string) => `NGÀY CẤP: ${date}`,
       verifyCode: (code: string) => `MÃ XÁC MINH: ${code}`,
       verifyUrl: 'tramdungcamxuc.com',

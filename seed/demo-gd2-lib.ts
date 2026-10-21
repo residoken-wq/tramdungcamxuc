@@ -574,7 +574,7 @@ export async function seedDemoGd2(
 
   // -------------------------------------------------------------
   // KHÁCH 03: Học viên Test 03
-  // Đã mua + hoàn thành 21/21 ngày. Sẵn sàng bấm nhận chứng nhận.
+  // Đã mua + hoàn thành 28/28 ngày. Sẵn sàng bấm nhận chứng nhận.
   // -------------------------------------------------------------
   const customer03 = await payload.create({
     collection: 'customers',
@@ -587,7 +587,7 @@ export async function seedDemoGd2(
     overrideAccess: true,
   })
 
-  const c3PaidAt = addVietnamDays(todayYmd, -23, '12:00:00+07:00')
+  const c3PaidAt = addVietnamDays(todayYmd, -30, '12:00:00+07:00')
   const c3Order = await payload.create({
     collection: 'orders',
     data: {
@@ -597,7 +597,7 @@ export async function seedDemoGd2(
       total: productPrice,
       paymentStatus: 'paid',
       paidAt: c3PaidAt,
-      termsAcceptedAt: addVietnamDays(todayYmd, -23, '11:55:00+07:00'),
+      termsAcceptedAt: addVietnamDays(todayYmd, -30, '11:55:00+07:00'),
       deliveryStatus: 'access_granted',
     },
     context: { paymentAction: true },
@@ -621,14 +621,14 @@ export async function seedDemoGd2(
     collection: 'habitPlans',
     data: {
       customer: customer03.id,
-      startDate: addVietnamDays(todayYmd, -22),
+      startDate: addVietnamDays(todayYmd, -29),
       identityStatement: '[MẪU] Tôi sẽ tập thở sâu 5 phút mỗi sáng để tâm an yên',
     },
     overrideAccess: true,
   })
 
-  // Check-in đủ cả 21 ngày
-  for (let day = 1; day <= 21; day++) {
+  // Check-in đủ cả 28 ngày
+  for (let day = 1; day <= 28; day++) {
     const emotionIndex = (day - 1) % EMOTIONS.length
     await payload.create({
       collection: 'habitCheckins',

@@ -10,6 +10,7 @@ import type { EmailSender } from '@/lib/email/types'
 import { getReminderOptOutUrl } from '@/lib/reminders/token'
 
 import { getCurrentDayOfPlan, getVietnamYmd, vietnamTodayIso } from './tracker-stats'
+import { getJourneyDays } from './journey'
 export * from './tracker-stats'
 
 /**
@@ -159,10 +160,10 @@ export async function sendTrackerNudges(
     return { processedPlans, nudgesSent, skippedDuplicate, errors }
   }
 
-  // 2. Lấy các kế hoạch thói quen đã gắn khách hàng và có ngày bắt đầu còn trong 21 ngày (day 3..21)
-  const twentyDaysAgo = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000)
+  // 2. Lấy các kế hoạch thói quen đã gắn khách hàng và có ngày bắt đầu còn trong hành trình (day 3..journeyDays)
+  const maxDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
   const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)
-  const minStartDateIso = new Date(`${getVietnamYmd(twentyDaysAgo)}T00:00:00+07:00`).toISOString()
+  const minStartDateIso = new Date(`${getVietnamYmd(maxDaysAgo)}T00:00:00+07:00`).toISOString()
   const maxStartDateIso = new Date(`${getVietnamYmd(twoDaysAgo)}T23:59:59.999+07:00`).toISOString()
 
   const plansRes = await payload.find({
@@ -184,9 +185,10 @@ export async function sendTrackerNudges(
       const plan = rawPlan as unknown as HabitPlan
       if (!plan.startDate || !plan.customer) continue
 
+      const journeyDays = getJourneyDays(plan)
       const currentDay = getCurrentDayOfPlan(plan.startDate, now)
-      // Chỉ kiểm tra khi học viên đã ở ít nhất ngày 3 và chưa qua ngày 21
-      if (currentDay < 3 || currentDay > 21) {
+      // Chỉ kiểm tra khi học viên đã ở ít nhất ngày 3 và chưa qua ngày cuối của hành trình
+      if (currentDay < 3 || currentDay > journeyDays) {
         continue
       }
 

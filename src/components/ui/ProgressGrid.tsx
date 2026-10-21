@@ -15,14 +15,17 @@ export interface ProgressDayItem {
 
 export interface ProgressGridProps {
   /**
-   * Mảng trạng thái chi tiết cho từng ngày (1–21).
+   * Mảng trạng thái chi tiết cho từng ngày (1–28).
    */
   days?: ProgressDayItem[]
   /**
    * Danh sách ngày đã hoàn thành (số lượng ngày đã xong, ví dụ 5 -> ngày 1..5 done; hoặc mảng [1, 2, 5]).
-   * T2-06 sẽ mở rộng thành tracker có tick + chọn cảm xúc.
    */
   doneDays?: number | number[]
+  /**
+   * Tổng số ngày của hành trình (mặc định tự suy từ days/doneDays hoặc 21).
+   */
+  totalDays?: number
   /**
    * Callback khi người dùng chọn ngày (nếu ở chế độ tương tác).
    */
@@ -38,34 +41,43 @@ export interface ProgressGridProps {
 }
 
 /**
- * Generator for 21 days if not fully provided.
- * Hỗ trợ linh hoạt prop `days` hoặc `doneDays`.
+ * Generator for days in journey.
+ * Hỗ trợ linh hoạt prop `days`, `doneDays` và `totalDays` (21 hoặc 28 ngày).
  */
-function build21Days(
+export function build21Days(
   provided?: ProgressDayItem[],
   doneDays?: number | number[],
+  customTotalDays?: number,
 ): ProgressDayItem[] {
   const map = new Map<number, ProgressDayItem>()
+  let maxProvidedDay = 0
   if (provided) {
     for (const item of provided) {
       map.set(item.day, item)
+      if (item.day > maxProvidedDay) maxProvidedDay = item.day
     }
   }
 
   // Nếu truyền doneDays (number hoặc number[])
+  let maxDoneDay = 0
   const doneSet = new Set<number>()
   if (typeof doneDays === 'number') {
-    for (let i = 1; i <= Math.min(21, Math.max(0, doneDays)); i++) {
+    maxDoneDay = Math.max(0, doneDays)
+    for (let i = 1; i <= maxDoneDay; i++) {
       doneSet.add(i)
     }
   } else if (Array.isArray(doneDays)) {
     for (const d of doneDays) {
-      if (d >= 1 && d <= 21) doneSet.add(d)
+      if (d >= 1) {
+        doneSet.add(d)
+        if (d > maxDoneDay) maxDoneDay = d
+      }
     }
   }
 
+  const total = customTotalDays ?? Math.max(21, maxProvidedDay, maxDoneDay)
   const result: ProgressDayItem[] = []
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= total; d++) {
     if (map.has(d)) {
       result.push(map.get(d)!)
     } else if (doneSet.has(d)) {
@@ -151,11 +163,12 @@ function MissedIcon(props: React.SVGProps<SVGSVGElement>) {
 export function ProgressGrid({
   days,
   doneDays,
+  totalDays,
   onSelectDay,
   className = '',
   readOnly = false,
 }: ProgressGridProps) {
-  const allDays = build21Days(days, doneDays)
+  const allDays = build21Days(days, doneDays, totalDays)
   const isInteractive = Boolean(onSelectDay) && !readOnly
 
   return (

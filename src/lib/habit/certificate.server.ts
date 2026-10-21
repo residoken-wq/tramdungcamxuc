@@ -6,6 +6,7 @@ import type { Certificate, Customer, SiteSetting } from '@/payload-types'
 import { vi } from '@/lib/i18n/vi'
 import { findOwnTrackerPlan } from './tracker.server'
 import { getCurrentDayOfPlan } from './tracker-stats'
+import { computeOutcome, getJourneyDays, getVotingDays, requiredDays } from './journey'
 import type { CertificateEligibility, PublicCertificateData } from './certificate-types'
 
 const certCreationLocks = new Map<string, Promise<unknown>>()
@@ -32,7 +33,33 @@ async function withCertLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
 }
 
 /**
+ * Đọc tỷ lệ % hoàn thành tối thiểu để nhận chứng nhận từ cài đặt website (mặc định 90%).
+ */
+export async function getSiteCertificateMinPercent(payload: Payload): Promise<number> {
+  try {
+    const siteSettings = (await payload.findGlobal({
+      slug: 'siteSettings',
+      depth: 0,
+    })) as SiteSetting | null
+
+    const minPercent = siteSettings?.certificateMinPercent
+    if (
+      typeof minPercent === 'number' &&
+      Number.isFinite(minPercent) &&
+      minPercent >= 50 &&
+      minPercent <= 100
+    ) {
+      return minPercent
+    }
+  } catch {
+    // Bỏ qua lỗi và fallback về 90
+  }
+  return 90
+}
+
+/**
  * Đọc số ngày tối thiểu để nhận chứng nhận từ cài đặt website (mặc định 15).
+ * Cũ: Giữ lại để tương thích ngược.
  */
 export async function getSiteCertificateMinDays(payload: Payload): Promise<number> {
   try {
@@ -42,7 +69,7 @@ export async function getSiteCertificateMinDays(payload: Payload): Promise<numbe
     })) as SiteSetting | null
 
     const minDays = siteSettings?.certificateMinDays
-    if (typeof minDays === 'number' && Number.isFinite(minDays) && minDays >= 1 && minDays <= 21) {
+    if (typeof minDays === 'number' && Number.isFinite(minDays) && minDays >= 1 && minDays <= 60) {
       return minDays
     }
   } catch {
@@ -57,11 +84,17 @@ function sanitizeCertificate(cert: Certificate): PublicCertificateData {
       ? (cert.customer as Customer).name || ''
       : ''
 
+  const planJourneyDays =
+    typeof cert.plan === 'object' && cert.plan !== null && 'journeyDays' in cert.plan
+      ? ((cert.plan as { journeyDays?: number | null }).journeyDays ?? 28)
+      : 28
+
   return {
     code: cert.code || '',
     customerName,
     identityStatement: cert.identityStatement || '',
     daysCompleted: cert.daysCompleted ?? 0,
+    journeyDays: planJourneyDays,
     issuedAt: cert.issuedAt || new Date().toISOString(),
     isPublic: Boolean(cert.isPublic),
   }
@@ -70,18 +103,18 @@ function sanitizeCertificate(cert: Certificate): PublicCertificateData {
 export type IssuedCertificate = Certificate & { isNew?: boolean }
 
 /**
- * REVIEW-REQUIRED: Kiểm tra điều kiện tốt nghiệp và cấp chứng nhận 21 ngày cho học viên.
+ * REVIEW-REQUIRED: Kiểm tra điều kiện tốt nghiệp và cấp chứng nhận hành trình cho học viên.
  *
  * Tiêu chí kiểm soát:
  * 1. Chỉ cấp cho kế hoạch của chính khách hàng (findOwnTrackerPlan), không gắn hay tạo kế hoạch mới.
  * 2. Khách hàng bắt buộc phải có tên trong hồ sơ customers (không dùng tên dự phòng).
- * 3. Chỉ cấp khi đã tới Ngày 21 trở đi (currentDay >= 21 tính theo giờ Việt Nam).
- * 4. Số ngày hoàn thành (check-in done = true) phải đạt tối thiểu certificateMinDays từ SiteSettings (mặc định 15).
- * 5. Không cần còn quyền dùng thử: khách hết hạn vẫn nhận được chứng nhận cho 21 ngày đã làm.
- * 6. Tính duy nhất & chống trùng lặp: khóa trong bộ nhớ (withCertLock) theo ID khách hàng, giới hạn một tiến trình Node.js.
+ * 3. Chỉ cấp khi đã qua ngày cuối cùng của hành trình (currentDay > journeyDays tính theo giờ Việt Nam).
+ * 4. Số ngày hoàn thành (check-in done = true trong votingDays) phải đạt tối thiểu requiredDays(votingDays, minPercent) từ SiteSettings (mặc định 90%).
+ * 5. Cập nhật outcome của kế hoạch thành 'completed' (nếu đủ điều kiện) hoặc 'experienced' (nếu không đạt) - ghi một lần, chạy lại không đổi.
+ * 6. Không cần còn quyền dùng thử: khách hết hạn vẫn nhận được chứng nhận cho số ngày đã hoàn thành.
+ * 7. Tính duy nhất & chống trùng lặp: khóa trong bộ nhớ (withCertLock) theo ID khách hàng.
  *    Nếu đã có chứng nhận cho kế hoạch thì trả lại bản ghi cũ với isNew = false.
- *    (Ghi chú BACKLOG: thêm unique index trên trường plan trong migration tương lai khi được phép thêm migration).
- * 7. Sao chép snapshot identityStatement và daysCompleted từ kế hoạch tại thời điểm cấp.
+ * 8. Sao chép snapshot identityStatement và daysCompleted từ kế hoạch tại thời điểm cấp.
  */
 export async function issueCertificate(
   customerId: number,
@@ -127,14 +160,18 @@ export async function issueCertificate(
       return Object.assign(existingCerts.docs[0] as Certificate, { isNew: false })
     }
 
-    // 3. Kiểm tra ngày của kế hoạch (phải từ ngày 21 trở đi theo giờ VN)
+    const journeyDays = getJourneyDays(ownPlan)
     const currentDay = getCurrentDayOfPlan(ownPlan.startDate, now)
-    if (currentDay < 21) {
+
+    // 3. Kiểm tra ngày của kế hoạch: phải qua ngày cuối cùng (currentDay > journeyDays theo giờ VN)
+    if (currentDay <= journeyDays) {
       throw new Error(vi.certificate.errors.notDay21)
     }
 
-    // 4. Kiểm tra số ngày check-in hoàn thành
-    const minDays = await getSiteCertificateMinDays(payload)
+    // 4. Kiểm tra số ngày check-in hoàn thành theo tỷ lệ tối thiểu
+    const minPercent = await getSiteCertificateMinPercent(payload)
+    const votingDays = getVotingDays(ownPlan)
+    const minRequired = requiredDays(votingDays, minPercent)
 
     const checkinsRes = await payload.find({
       collection: 'habitCheckins',
@@ -147,8 +184,22 @@ export async function issueCertificate(
     })
 
     const completedDays = checkinsRes.docs.length
-    if (completedDays < minDays) {
-      throw new Error(vi.certificate.errors.notEnoughDays(minDays))
+    if (completedDays < minRequired) {
+      // Cập nhật outcome thành 'experienced' nếu chưa ghi nhận (ghi một lần, chạy lại không đổi)
+      if (ownPlan.outcome !== 'experienced' && ownPlan.outcome !== 'completed') {
+        try {
+          await payload.update({
+            collection: 'habitPlans',
+            id: ownPlan.id,
+            data: { outcome: 'experienced' },
+            depth: 0,
+            overrideAccess: true,
+          })
+        } catch {
+          // Bỏ qua lỗi cập nhật outcome
+        }
+      }
+      throw new Error(vi.certificate.errors.notEnoughDays(minRequired, journeyDays))
     }
 
     // 5. Tạo chứng nhận mới
@@ -166,6 +217,21 @@ export async function issueCertificate(
         depth: 1,
         overrideAccess: true,
       })
+
+      // Cập nhật outcome thành 'completed' (ghi một lần, chạy lại không đổi)
+      if (ownPlan.outcome !== 'completed') {
+        try {
+          await payload.update({
+            collection: 'habitPlans',
+            id: ownPlan.id,
+            data: { outcome: 'completed' },
+            depth: 0,
+            overrideAccess: true,
+          })
+        } catch {
+          // Bỏ qua lỗi cập nhật outcome
+        }
+      }
 
       return Object.assign(created as Certificate, { isNew: true })
     } catch (err) {
@@ -222,7 +288,7 @@ export async function getCertificateEligibility(
       eligible: false,
       currentDay: 0,
       completedDays: 0,
-      minDays: 15,
+      minDays: 26,
       customerName,
       hasCustomerName,
       hasCertificate: false,
@@ -230,6 +296,12 @@ export async function getCertificateEligibility(
       message: vi.certificate.errors.noPlan,
     }
   }
+
+  const journeyDays = getJourneyDays(ownPlan)
+  const currentDay = getCurrentDayOfPlan(ownPlan.startDate, now)
+  const minPercent = await getSiteCertificateMinPercent(payload)
+  const votingDays = getVotingDays(ownPlan)
+  const minRequired = requiredDays(votingDays, minPercent)
 
   // Kiểm tra chứng nhận hiện có
   const existingCerts = await payload.find({
@@ -245,9 +317,6 @@ export async function getCertificateEligibility(
   const hasCertificate = existingCerts.docs.length > 0
   const existingCert = hasCertificate ? (existingCerts.docs[0] as Certificate) : null
 
-  const currentDay = getCurrentDayOfPlan(ownPlan.startDate, now)
-  const minDays = await getSiteCertificateMinDays(payload)
-
   const checkinsRes = await payload.find({
     collection: 'habitCheckins',
     where: {
@@ -259,20 +328,45 @@ export async function getCertificateEligibility(
   })
   const completedDays = checkinsRes.docs.length
 
-  const isDay21OrMore = currentDay >= 21
-  const hasEnoughDays = completedDays >= minDays
-  const eligible = hasCertificate || (isDay21OrMore && hasEnoughDays)
+  // Tính kết quả hành trình (outcome)
+  let outcome = ownPlan.outcome as CertificateEligibility['outcome']
+  if (!outcome || outcome === 'in_progress') {
+    outcome = computeOutcome({
+      plan: ownPlan,
+      checkins: checkinsRes.docs,
+      today: now,
+      percent: minPercent,
+    })
+    // Ghi một lần vào DB khi hoàn thành hoặc đã trải nghiệm
+    if (outcome === 'completed' || outcome === 'experienced') {
+      try {
+        await payload.update({
+          collection: 'habitPlans',
+          id: ownPlan.id,
+          data: { outcome },
+          depth: 0,
+          overrideAccess: true,
+        })
+      } catch {
+        // Bỏ qua lỗi cập nhật outcome
+      }
+    }
+  }
+
+  const isPastEndDay = currentDay > journeyDays
+  const hasEnoughDays = completedDays >= minRequired
+  const eligible = hasCertificate || (isPastEndDay && hasEnoughDays)
 
   let reason: CertificateEligibility['reason']
   let message: string | undefined
 
   if (!hasCertificate) {
-    if (!isDay21OrMore) {
+    if (!isPastEndDay) {
       reason = 'NOT_YET_DAY_21'
       message = vi.certificate.notEligible.notDay21Notice
     } else if (!hasEnoughDays) {
       reason = 'NOT_ENOUGH_DAYS'
-      message = vi.certificate.notEligible.minDaysNotice(minDays)
+      message = vi.certificate.notEligible.minDaysNotice(minRequired, journeyDays)
     }
   }
 
@@ -282,8 +376,11 @@ export async function getCertificateEligibility(
     eligible,
     currentDay,
     completedDays,
-    minDays,
-    certificateMinDays: minDays,
+    minDays: minRequired,
+    certificateMinDays: minRequired,
+    journeyDays,
+    minPercent,
+    outcome,
     planId: ownPlan.id,
     customerName,
     hasCustomerName,

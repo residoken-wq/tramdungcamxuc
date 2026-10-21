@@ -127,6 +127,7 @@ export default async function HabitTrackerPage() {
         initialCertificate={eligibility.existingCertificate ?? null}
         eligibility={eligibility}
         customerName={customer.name ?? null}
+        journeyDays={plan.journeyDays ?? 28}
       />
     </div>
   )

@@ -3,6 +3,7 @@ export interface PublicCertificateData {
   customerName: string
   identityStatement: string
   daysCompleted: number
+  journeyDays?: number
   issuedAt: string
   isPublic: boolean
   isOwner?: boolean
@@ -14,6 +15,9 @@ export interface CertificateEligibility {
   completedDays: number
   minDays: number
   certificateMinDays?: number
+  journeyDays?: number
+  outcome?: 'in_progress' | 'completed' | 'experienced'
+  minPercent?: number
   planId?: number
   customerName?: string | null
   hasCustomerName?: boolean
@@ -24,6 +28,7 @@ export interface CertificateEligibility {
     | 'NO_PLAN'
     | 'NOT_YET_DAY_21'
     | 'NOT_ENOUGH_DAYS'
+    | 'EXPERIENCED'
     | 'before_day_21'
     | 'not_enough_completed_days'
     | 'no_customer'
