@@ -12,7 +12,8 @@
 set -euo pipefail
 
 PROJECT="${PROJECT:-tdcx}"
-COMPOSE_FILES="${COMPOSE_FILES:--f docker-compose.prod.yml -f docker-compose.npm.yml}"
+# NPM runs on another VPS (docs/plan/GO_LIVE.md), so production uses docker-compose.prod.yml only.
+COMPOSE_FILES="${COMPOSE_FILES:--f docker-compose.prod.yml}"
 BACKUP_ROOT="${BACKUP_ROOT:-/opt/tdcx-backups}"
 KEEP_DAYS="${KEEP_DAYS:-14}"
 
