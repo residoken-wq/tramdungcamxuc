@@ -93,7 +93,7 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
           type: 'digital_tool',
           price: 250000,
           salePrice: 178000,
-          trialDays: 21,
+          trialDays: 28,
           saleStatus: 'on_sale',
           isSample: true,
           _status: 'published',
@@ -121,7 +121,7 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
           product: createdProductId,
           status: 'trial',
           source: 'trial',
-          expiresAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+          expiresAt: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
         },
       })
       expect(entRes.ok()).toBe(true)
@@ -155,14 +155,16 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
       await statementInput.fill('Tôi sẽ tập thở 5 phút mỗi sáng để trở thành người bình an hơn')
 
       const createPlanBtn = guestPage.locator('button[type="submit"]', {
-        hasText: /Bắt đầu hành trình 21 ngày/i,
+        hasText: /Bắt đầu hành trình/i,
       })
       const day1Btn = guestPage.getByRole('button', { name: /^Ngày 1:/ })
+      const day28Btn = guestPage.getByRole('button', { name: /^Ngày 28:/ })
 
-      // Bấm tạo kế hoạch trong toPass cho tới khi lưới tracker 21 ngày xuất hiện
+      // Bấm tạo kế hoạch trong toPass cho tới khi lưới tracker 28 ngày xuất hiện
       await expect(async () => {
         await createPlanBtn.click({ timeout: 5000 })
         await expect(day1Btn).toBeVisible({ timeout: 3000 })
+        await expect(day28Btn).toBeVisible({ timeout: 3000 })
       }).toPass({ timeout: 30000 })
 
       // 11. Bấm vào Ngày 1 để mở modal check-in (bấm lại trong toPass nếu modal chưa mở)

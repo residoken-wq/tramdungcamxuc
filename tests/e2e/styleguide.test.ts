@@ -236,7 +236,9 @@ test.describe('UI Composites (T0-05)', () => {
     await expect(page.getByRole('radiogroup').first()).toBeVisible()
 
     // 7. ProgressGrid component
-    await expect(page.getByRole('region', { name: 'Lưới tiến trình 21 ngày' })).toBeVisible()
+    await expect(
+      page.getByRole('region', { name: 'Lưới tiến trình rèn luyện thói quen' }),
+    ).toBeVisible()
 
     // 8. Footer component
     await expect(page.getByText('Chính sách & Quy định').first()).toBeVisible()

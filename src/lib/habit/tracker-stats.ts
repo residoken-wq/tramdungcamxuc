@@ -67,6 +67,21 @@ export function getCurrentDayOfPlan(
 }
 
 /**
+ * Cộng/trừ số ngày vào chuỗi ngày YYYY-MM-DD theo giờ Việt Nam.
+ */
+export function addVietnamDays(
+  baseYmd: string,
+  days: number,
+  timeSuffix = '00:00:00+07:00',
+): string {
+  const [y, m, d] = baseYmd.split('-').map(Number)
+  const utc = Date.UTC(y, m - 1, d) + days * 86_400_000
+  const date = new Date(utc)
+  const nextYmd = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`
+  return `${nextYmd}T${timeSuffix}`
+}
+
+/**
  * Tính toán thống kê hoàn thành và cảm xúc thường gặp nhất từ danh sách check-in.
  */
 export function calculateTrackerStats(

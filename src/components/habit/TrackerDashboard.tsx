@@ -28,6 +28,7 @@ export interface TrackerDashboardProps {
   initialCertificate?: PublicCertificateData | null
   eligibility?: CertificateEligibility | null
   customerName?: string | null
+  journeyDays?: number
 }
 
 export function TrackerDashboard({
@@ -40,9 +41,12 @@ export function TrackerDashboard({
   initialCertificate,
   eligibility,
   customerName,
+  journeyDays: propJourneyDays,
 }: TrackerDashboardProps) {
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
   const [activeModalDay, setActiveModalDay] = useState<number | null>(null)
+
+  const journeyDays = propJourneyDays ?? eligibility?.journeyDays ?? 28
 
   // Map checkins to day map
   const checkinMap = new Map<number, InitialCheckinData>()
@@ -50,9 +54,9 @@ export function TrackerDashboard({
     checkinMap.set(c.day, c)
   }
 
-  // Construct 21 days for ProgressGrid
+  // Construct journeyDays for ProgressGrid
   const gridDays: ProgressDayItem[] = []
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= journeyDays; d++) {
     const entry = checkinMap.get(d)
     const isDone = Boolean(entry?.done)
     const isFuture = d > currentDay
@@ -85,7 +89,7 @@ export function TrackerDashboard({
   const todayDone = Boolean(todayCheckin?.done)
 
   const showMissedOneDayEncouragement =
-    hasYesterday && !yesterdayDone && !todayDone && currentDay <= 21
+    hasYesterday && !yesterdayDone && !todayDone && currentDay <= journeyDays
 
   // Handle day click
   const handleSelectDay = (day: number) => {
@@ -115,7 +119,7 @@ export function TrackerDashboard({
       <div className="bg-warm-ivory rounded-card border border-deep-navy/10 p-6 sm:p-8 shadow-soft text-center space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-ui font-semibold bg-lavender-mist/60 text-deep-navy">
           <span className="w-2 h-2 rounded-full bg-accent-pink" />
-          <span>{vi.tracker.currentDayBadge(Math.min(21, currentDay))}</span>
+          <span>{vi.tracker.currentDayBadge(Math.min(journeyDays, currentDay), journeyDays)}</span>
         </div>
 
         <h1 className="font-quote italic text-lg sm:text-xl text-deep-navy font-normal max-w-lg mx-auto">
@@ -160,22 +164,29 @@ export function TrackerDashboard({
         </div>
       )}
 
-      {/* 3. Lưới 21 ngày */}
+      {/* 3. Lưới hành trình */}
       <div className="bg-warm-ivory rounded-card border border-deep-navy/10 p-6 sm:p-8 shadow-soft space-y-4">
         <div className="flex items-center justify-between border-b border-deep-navy/10 pb-3">
           <h2 className="font-ui font-bold text-base sm:text-lg text-deep-navy">
             {vi.tracker.pageTitle}
           </h2>
           <span className="text-xs font-sans text-deep-navy/60">
-            {stats.completedDays} / 21 {vi.tracker.daysCompletedSuffix}
+            {stats.completedDays} / {journeyDays} {vi.tracker.daysCompletedSuffix}
           </span>
         </div>
 
-        <ProgressGrid days={gridDays} onSelectDay={handleSelectDay} readOnly={readOnly} />
+        <ProgressGrid
+          days={gridDays}
+          totalDays={journeyDays}
+          onSelectDay={handleSelectDay}
+          readOnly={readOnly}
+        />
       </div>
 
-      {/* 4. Tổng kết từ ngày 21 trở đi hoặc khi đã có chứng nhận */}
-      {(currentDay >= 21 || Boolean(initialCertificate)) && (
+      {/* 4. Tổng kết từ ngày cuối trở đi, khi đã có chứng nhận hoặc khi đã trải nghiệm */}
+      {(currentDay >= journeyDays ||
+        Boolean(initialCertificate) ||
+        eligibility?.outcome === 'experienced') && (
         <div className="pt-4">
           <TrackerSummaryCard
             stats={stats}
@@ -184,6 +195,7 @@ export function TrackerDashboard({
             initialCertificate={initialCertificate}
             eligibility={eligibility}
             customerName={customerName}
+            journeyDays={journeyDays}
           />
         </div>
       )}

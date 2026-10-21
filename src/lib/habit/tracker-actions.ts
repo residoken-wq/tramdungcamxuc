@@ -10,11 +10,12 @@ import { getCurrentDayOfPlan, getOrCreateTrackerPlan } from './tracker.server'
 import { EMOTIONS, type EmotionKey } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 import { revalidatePath } from 'next/cache'
+import { getJourneyDays } from './journey'
 
 const emotionKeys = EMOTIONS.map((e) => e.key) as [EmotionKey, ...EmotionKey[]]
 
 const checkInDaySchema = z.object({
-  day: z.number().int().min(1).max(21),
+  day: z.number().int().min(1).max(60),
   done: z.boolean(),
   emotion: z.enum(emotionKeys).nullable().optional(),
   note: z.string().max(500).nullable().optional(),
@@ -154,7 +155,16 @@ export async function checkInDay(
     }
   }
 
-  // 5. Kiểm tra ràng buộc ngày không vượt quá ngày hiện tại (giờ Việt Nam)
+  // 5. REVIEW-REQUIRED: Chặn ngày check-in vượt quá số ngày hành trình hoặc ngày tương lai (giờ VN)
+  const journeyDays = getJourneyDays(plan)
+  if (validation.data.day > journeyDays) {
+    return {
+      success: false,
+      error: 'INVALID_DAY',
+      message: vi.tracker.actions.dayExceedsPlan(validation.data.day, journeyDays),
+    }
+  }
+
   const currentDay = getCurrentDayOfPlan(plan.startDate, new Date())
   if (validation.data.day > currentDay) {
     return {

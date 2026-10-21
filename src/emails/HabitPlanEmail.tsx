@@ -90,7 +90,7 @@ export const HabitPlanEmail: React.FC<HabitPlanEmailProps> = ({
                   Tham gia nhóm Zalo đồng hành
                 </Button>
                 <Text style={{ fontSize: '13px', color: '#554271', marginTop: '8px' }}>
-                  Cùng chia sẻ tiến trình 21 ngày với cộng đồng thực hành thói quen.
+                  Cùng chia sẻ tiến trình với cộng đồng thực hành thói quen.
                 </Text>
               </Section>
             )}

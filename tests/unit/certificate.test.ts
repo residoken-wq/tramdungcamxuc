@@ -200,17 +200,17 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     expect(eligibility.reason).toBe('NOT_YET_DAY_21')
   })
 
-  it('đã tới ngày 21 nhưng dưới certificateMinDays (mặc định 15) -> không cấp chứng nhận', async () => {
+  it('đã qua ngày cuối nhưng dưới tỷ lệ tối thiểu (mặc định 90% -> 26 ngày) -> không cấp chứng nhận', async () => {
     const customer = await createTestCustomer('Học viên Test 02')
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 25)
+    pastDate.setDate(pastDate.getDate() - 30)
     const startDate = pastDate.toISOString().split('T')[0]
     const plan = await createTestPlan(customer.id, startDate)
 
     await createCheckins(plan.id, 10)
 
     await expect(issueCertificate(customer.id, { payload })).rejects.toThrow(
-      i18n.certificate.errors.notEnoughDays(15),
+      i18n.certificate.errors.notEnoughDays(26, 28),
     )
 
     const eligibility = await getCertificateEligibility(customer.id, { payload })
@@ -218,15 +218,15 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     expect(eligibility.reason).toBe('NOT_ENOUGH_DAYS')
   })
 
-  it('đủ điều kiện (currentDay >= 21 và hoàn thành >= minDays) -> cấp chứng nhận thành công', async () => {
+  it('đủ điều kiện (currentDay > journeyDays và hoàn thành >= minDays) -> cấp chứng nhận thành công', async () => {
     const customer = await createTestCustomer('Học viên Test 03')
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 22)
+    pastDate.setDate(pastDate.getDate() - 30)
     const startDate = pastDate.toISOString().split('T')[0]
     const statement = 'Tôi sẽ dành 5 phút mỗi sáng để trở thành người an yên.'
     const plan = await createTestPlan(customer.id, startDate, statement)
 
-    await createCheckins(plan.id, 18)
+    await createCheckins(plan.id, 26)
 
     const cert = await issueCertificate(customer.id, { payload })
     track('certificates', cert)
@@ -234,7 +234,7 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     expect(cert).toBeDefined()
     expect(cert.isNew).toBe(true)
     expect(cert.code).toBeTruthy()
-    expect(cert.daysCompleted).toBe(18)
+    expect(cert.daysCompleted).toBe(26)
     expect(cert.identityStatement).toBe(statement)
     expect(cert.isPublic).toBe(true)
 
@@ -247,10 +247,10 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
   it('gọi 2 lần hoặc gọi song song -> trả về đúng 1 bản ghi Certificate duy nhất', async () => {
     const customer = await createTestCustomer('Học viên Test 04')
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 23)
+    pastDate.setDate(pastDate.getDate() - 30)
     const startDate = pastDate.toISOString().split('T')[0]
     const plan = await createTestPlan(customer.id, startDate)
-    await createCheckins(plan.id, 16)
+    await createCheckins(plan.id, 26)
 
     const [cert1, cert2] = await Promise.all([
       issueCertificate(customer.id, { payload }),
@@ -282,10 +282,10 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     const strangerCustomer = await createTestCustomer('Học viên Test Khác')
 
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 22)
+    pastDate.setDate(pastDate.getDate() - 30)
     const startDate = pastDate.toISOString().split('T')[0]
     const plan = await createTestPlan(ownerCustomer.id, startDate)
-    await createCheckins(plan.id, 18)
+    await createCheckins(plan.id, 26)
 
     // Khách khác không có kế hoạch của riêng mình -> bị từ chối
     await expect(issueCertificate(strangerCustomer.id, { payload })).rejects.toThrow(
@@ -298,7 +298,7 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     expect(eligibility.hasCertificate).toBe(false)
   })
 
-  it('khách hàng hết hạn dùng thử vẫn được nhận chứng nhận cho 21 ngày đã thực hành', async () => {
+  it('khách hàng hết hạn dùng thử vẫn được nhận chứng nhận cho hành trình đã thực hành', async () => {
     const customer = await createTestCustomer('Học viên Test 06')
 
     track(
@@ -317,16 +317,16 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     )
 
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 24)
+    pastDate.setDate(pastDate.getDate() - 30)
     const startDate = pastDate.toISOString().split('T')[0]
     const plan = await createTestPlan(customer.id, startDate)
-    await createCheckins(plan.id, 17)
+    await createCheckins(plan.id, 26)
 
     const cert = await issueCertificate(customer.id, { payload })
     track('certificates', cert)
 
     expect(cert).toBeDefined()
-    expect(cert.daysCompleted).toBe(17)
+    expect(cert.daysCompleted).toBe(26)
   })
 
   it('quyền riêng tư: tắt công khai (isPublic = false) -> người ngoài không xem được, chủ sở hữu xem được', async () => {
@@ -334,9 +334,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     const strangerCustomer = await createTestCustomer('Học viên Test Người Lạ')
 
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 22)
+    pastDate.setDate(pastDate.getDate() - 30)
     const plan = await createTestPlan(ownerCustomer.id, pastDate.toISOString().split('T')[0])
-    await createCheckins(plan.id, 15)
+    await createCheckins(plan.id, 26)
 
     const cert = await issueCertificate(ownerCustomer.id, { payload })
     track('certificates', cert)
@@ -371,9 +371,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
   it('dữ liệu trang công khai TUYỆT ĐỐI KHÔNG có cảm xúc, ghi chú, email hay customer id', async () => {
     const customer = await createTestCustomer('Học viên Test Bảo Vệ')
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 22)
+    pastDate.setDate(pastDate.getDate() - 30)
     const plan = await createTestPlan(customer.id, pastDate.toISOString().split('T')[0])
-    await createCheckins(plan.id, 15)
+    await createCheckins(plan.id, 26)
 
     const cert = await issueCertificate(customer.id, { payload })
     track('certificates', cert)
@@ -404,9 +404,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     const hackerCustomer = await createTestCustomer('Học viên Test Giả Mạo')
 
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 22)
+    pastDate.setDate(pastDate.getDate() - 30)
     const plan = await createTestPlan(ownerCustomer.id, pastDate.toISOString().split('T')[0])
-    await createCheckins(plan.id, 15)
+    await createCheckins(plan.id, 26)
 
     const cert = await issueCertificate(ownerCustomer.id, { payload })
     track('certificates', cert)
@@ -421,9 +421,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     it('khách không tên + không gửi tên -> từ chối, không tạo chứng nhận', async () => {
       const customer = await createTestCustomer('')
       const pastDate = new Date()
-      pastDate.setDate(pastDate.getDate() - 22)
+      pastDate.setDate(pastDate.getDate() - 30)
       const plan = await createTestPlan(customer.id, pastDate.toISOString().split('T')[0])
-      await createCheckins(plan.id, 16)
+      await createCheckins(plan.id, 26)
 
       vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
 
@@ -443,9 +443,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     it('khách không tên + gửi tên hợp lệ -> tên lưu vào khách, chứng nhận có tên', async () => {
       const customer = await createTestCustomer('')
       const pastDate = new Date()
-      pastDate.setDate(pastDate.getDate() - 22)
+      pastDate.setDate(pastDate.getDate() - 30)
       const plan = await createTestPlan(customer.id, pastDate.toISOString().split('T')[0])
-      await createCheckins(plan.id, 16)
+      await createCheckins(plan.id, 26)
 
       vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
 
@@ -479,7 +479,7 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
       const customer = await createTestCustomer('')
       const todayYmd = new Date().toISOString().split('T')[0]
       await createTestPlan(customer.id, todayYmd)
-      // Chưa đủ ngày 21
+      // Chưa đủ ngày cuối
 
       vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
 
@@ -498,9 +498,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     it('khách đã có chứng nhận không tự đổi được tên qua API; admin vẫn sửa được', async () => {
       const customer = await createTestCustomer('Học viên Test Khóa Tên')
       const pastDate = new Date()
-      pastDate.setDate(pastDate.getDate() - 22)
+      pastDate.setDate(pastDate.getDate() - 30)
       const plan = await createTestPlan(customer.id, pastDate.toISOString().split('T')[0])
-      await createCheckins(plan.id, 16)
+      await createCheckins(plan.id, 26)
 
       const asCustomer = { ...customer, collection: 'customers' as const }
 
@@ -562,9 +562,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
     it('khách đã có tên gửi tên khác -> tên khách giữ nguyên', async () => {
       const customer = await createTestCustomer('Học viên Test Gốc')
       const pastDate = new Date()
-      pastDate.setDate(pastDate.getDate() - 22)
+      pastDate.setDate(pastDate.getDate() - 30)
       const plan = await createTestPlan(customer.id, pastDate.toISOString().split('T')[0])
-      await createCheckins(plan.id, 16)
+      await createCheckins(plan.id, 26)
 
       vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
 
@@ -595,9 +595,9 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
   it('unit test route ảnh: trả image/png cho 4x5 và 9x16; kiểm tra kích thước IHDR; trả 404 cho mã sai hoặc private', async () => {
     const customer = await createTestCustomer('Học viên Test Ảnh')
     const pastDate = new Date()
-    pastDate.setDate(pastDate.getDate() - 22)
+    pastDate.setDate(pastDate.getDate() - 30)
     const plan = await createTestPlan(customer.id, pastDate.toISOString().split('T')[0])
-    await createCheckins(plan.id, 15)
+    await createCheckins(plan.id, 26)
 
     const cert = await issueCertificate(customer.id, { payload })
     track('certificates', cert)

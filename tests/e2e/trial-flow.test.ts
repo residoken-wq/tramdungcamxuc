@@ -129,8 +129,8 @@ test.describe('Trial Flow (T2-04)', () => {
         timeout: 15000,
       })
 
-      // 7. Bấm nút "Bắt đầu dùng thử 21 ngày"
-      const startButton = guestPage.locator('button', { hasText: /Bắt đầu dùng thử 21 ngày/i })
+      // 7. Bấm nút "Bắt đầu dùng thử"
+      const startButton = guestPage.locator('button', { hasText: /Bắt đầu dùng thử (21|28) ngày/i })
       await expect(startButton).toBeVisible()
       await startButton.click()
 

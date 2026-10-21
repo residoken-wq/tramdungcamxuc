@@ -109,7 +109,7 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
           type: 'digital_tool',
           price: 250000,
           salePrice: 178000,
-          trialDays: 21,
+          trialDays: 28,
           saleStatus: 'on_sale',
           isSample: true,
           _status: 'published',
@@ -136,14 +136,14 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
           product: createdProductId,
           status: 'trial',
           source: 'trial',
-          expiresAt: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+          expiresAt: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
         },
       })
       expect(entRes.ok()).toBe(true)
 
-      // 5. Admin tạo sẵn kế hoạch bắt đầu từ 22 ngày trước (đạt Ngày 22 >= 21)
+      // 5. Admin tạo sẵn kế hoạch bắt đầu từ 29 ngày trước (đạt Ngày 29 >= 28)
       const pastDate = new Date()
-      pastDate.setDate(pastDate.getDate() - 22)
+      pastDate.setDate(pastDate.getDate() - 29)
       const startDate = pastDate.toISOString().split('T')[0]
 
       const planRes = await page.request.post('/api/habitPlans', {
@@ -157,8 +157,8 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
       const createdPlan = await planRes.json()
       createdPlanId = createdPlan.doc.id
 
-      // 6. Admin tạo 16 check-in hoàn thành (đạt >= 15 ngày quy định)
-      for (let day = 1; day <= 16; day++) {
+      // 6. Admin tạo 26 check-in hoàn thành (đạt >= 26 ngày quy định cho 28 ngày: ceil(28 * 90%) = 26)
+      for (let day = 1; day <= 26; day++) {
         const checkinRes = await page.request.post('/api/habitCheckins', {
           data: {
             plan: createdPlanId,
@@ -295,6 +295,190 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
         }
 
         // 5. Xóa customer
+        await page.request.delete(`/api/customers/${createdCustomerId}`).catch(() => {})
+      }
+
+      if (createdProductId) {
+        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+      }
+
+      if (adminId) {
+        await page.request.delete(`/api/users/${adminId}`).catch(() => {})
+      }
+    }
+  })
+
+  test('hoàn thành 25/28 ngày -> tải lại tracker thấy thẻ kết quả "Đã trải nghiệm", KHÔNG có nút nhận chứng nhận', async ({
+    page,
+    browser,
+  }, testInfo) => {
+    test.setTimeout(180000)
+
+    const init = await (await page.request.get('/api/users/init')).json()
+    expect(init, 'Run on a migrated DB without admin users.').toMatchObject({ initialized: false })
+
+    let adminId: number | undefined
+    let createdProductId: number | undefined
+    let createdCustomerId: number | undefined
+    let createdPlanId: number | undefined
+
+    const identityStatement = 'Tôi sẽ dành 5 phút mỗi sáng để thấu hiểu cảm xúc của chính mình.'
+    const customerEmail = `khach-experienced-${randomUUID().slice(0, 6)}@example.test`
+
+    const ownerContext = await browser.newContext({
+      extraHTTPHeaders: {
+        'x-forwarded-for': `203.0.113.${Math.floor(Math.random() * 254) + 1}`,
+      },
+    })
+    const ownerPage = await ownerContext.newPage()
+
+    try {
+      // 1. Bootstrap admin
+      adminId = await bootstrapAdmin(page)
+
+      // 2. Admin tạo sản phẩm habit-tracker-so
+      const prodRes = await page.request.post('/api/products', {
+        data: {
+          name: 'Habit Tracker Số',
+          slug: 'habit-tracker-so',
+          web: 'habit',
+          type: 'digital_tool',
+          price: 250000,
+          salePrice: 178000,
+          trialDays: 28,
+          saleStatus: 'on_sale',
+          isSample: true,
+          _status: 'published',
+        },
+      })
+      expect(prodRes.ok()).toBe(true)
+      const createdProd = await prodRes.json()
+      createdProductId = createdProd.doc.id
+
+      // 3. Admin tạo customer KHÔNG CÓ NAME
+      const custRes = await page.request.post('/api/customers', {
+        data: {
+          email: customerEmail,
+        },
+      })
+      expect(custRes.ok()).toBe(true)
+      const createdCust = await custRes.json()
+      createdCustomerId = createdCust.doc.id
+
+      // 4. Admin cấp quyền dùng thử
+      const entRes = await page.request.post('/api/entitlements', {
+        data: {
+          customer: createdCustomerId,
+          product: createdProductId,
+          status: 'trial',
+          source: 'trial',
+          expiresAt: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
+        },
+      })
+      expect(entRes.ok()).toBe(true)
+
+      // 5. Admin tạo sẵn kế hoạch bắt đầu từ 29 ngày trước (đạt Ngày 29 >= 28)
+      const pastDate = new Date()
+      pastDate.setDate(pastDate.getDate() - 29)
+      const startDate = pastDate.toISOString().split('T')[0]
+
+      const planRes = await page.request.post('/api/habitPlans', {
+        data: {
+          customer: createdCustomerId,
+          startDate,
+          identityStatement,
+        },
+      })
+      expect(planRes.ok()).toBe(true)
+      const createdPlan = await planRes.json()
+      createdPlanId = createdPlan.doc.id
+
+      // 6. Admin tạo 25 check-in hoàn thành (25/28 = 89.2% < 90% -> outcome 'experienced')
+      for (let day = 1; day <= 25; day++) {
+        const checkinRes = await page.request.post('/api/habitCheckins', {
+          data: {
+            plan: createdPlanId,
+            day,
+            done: true,
+            emotion: 'peaceful',
+            note: `Check-in ngày ${day}`,
+          },
+        })
+        expect(checkinRes.ok()).toBe(true)
+      }
+
+      // 7. Khách truy cập /habit/tracker -> chuyển hướng đăng nhập
+      await ownerPage.goto('/habit/tracker')
+      await expect(ownerPage).toHaveURL(/\/tai-khoan\/dang-nhap\?next=\/habit\/tracker$/)
+
+      // 8. Đăng nhập qua OTP
+      await ownerPage.locator('input[name="email"]').fill(customerEmail)
+      await ownerPage.locator('input[name="consentPolicy"]').check()
+      await expect(ownerPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
+      await ownerPage.locator('button[type="submit"]').click()
+
+      const codeInput = await expectCodeStep(ownerPage)
+      const otpCode = await getTestOtpCode(ownerPage, customerEmail)
+      await codeInput.fill(otpCode)
+      await ownerPage.locator('button[type="submit"]').click()
+
+      // 9. Chuyển hướng về /habit/tracker
+      await expect(ownerPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 15000 })
+
+      // 10. Xác nhận thẻ kết quả "Đã trải nghiệm" hiển thị
+      await expect(ownerPage.getByText('Đã trải nghiệm', { exact: true })).toBeVisible({
+        timeout: 15000,
+      })
+      await expect(
+        ownerPage.getByRole('heading', { name: /Hành trình đã khép lại/i }),
+      ).toBeVisible()
+
+      // 11. Xác nhận KHÔNG có nút nhận chứng nhận hay link xem chứng nhận
+      const claimCertBtn = ownerPage.getByRole('button', { name: /Nhận chứng nhận/i })
+      await expect(claimCertBtn).toBeHidden()
+      const viewCertLink = ownerPage.getByRole('link', { name: /Xem trang chứng nhận/i })
+      await expect(viewCertLink).toBeHidden()
+    } finally {
+      test.setTimeout(testInfo.timeout + 30000)
+
+      if (ownerContext) await ownerContext.close().catch(() => {})
+
+      if (createdCustomerId) {
+        if (createdPlanId) {
+          const checkinsRes = await page.request
+            .get(`/api/habitCheckins?where[plan][equals]=${createdPlanId}&limit=100`)
+            .catch(() => null)
+          if (checkinsRes && checkinsRes.ok()) {
+            const checkinsData = await checkinsRes.json().catch(() => ({ docs: [] }))
+            for (const ch of checkinsData.docs || []) {
+              await page.request.delete(`/api/habitCheckins/${ch.id}`).catch(() => {})
+            }
+          }
+          await page.request.delete(`/api/habitPlans/${createdPlanId}`).catch(() => {})
+        }
+
+        const certsRes = await page.request
+          .get(`/api/certificates?where[customer][equals]=${createdCustomerId}&limit=100`)
+          .catch(() => null)
+        if (certsRes && certsRes.ok()) {
+          const certsData = await certsRes.json().catch(() => ({ docs: [] }))
+          for (const c of certsData.docs || []) {
+            await page.request.delete(`/api/certificates/${c.id}`).catch(() => {})
+          }
+        }
+
+        const entRes = await page.request
+          .get(`/api/entitlements?where[customer][equals]=${createdCustomerId}&limit=100`)
+          .catch(() => null)
+        if (entRes && entRes.ok()) {
+          const entData = await entRes.json().catch(() => ({ docs: [] }))
+          for (const ent of entData.docs || []) {
+            await page.request.delete(`/api/entitlements/${ent.id}`).catch(() => {})
+          }
+        }
+
         await page.request.delete(`/api/customers/${createdCustomerId}`).catch(() => {})
       }
 

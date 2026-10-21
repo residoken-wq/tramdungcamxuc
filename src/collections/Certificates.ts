@@ -13,11 +13,11 @@ const assignCode: CollectionBeforeChangeHook = ({ data, operation, originalDoc }
 
 export const Certificates: CollectionConfig = {
   slug: 'certificates',
-  labels: { singular: 'Chứng nhận 21 ngày', plural: 'Chứng nhận 21 ngày' },
+  labels: { singular: 'Chứng nhận thói quen', plural: 'Chứng nhận thói quen' },
   admin: {
     group: vi.cms.nav.customers,
     useAsTitle: 'code',
-    description: 'Chứng nhận hoàn thành thử thách 21 ngày xây dựng thói quen.',
+    description: 'Chứng nhận hoàn thành thử thách xây dựng thói quen.',
     defaultColumns: ['code', 'customer', 'daysCompleted', 'issuedAt'],
     listSearchableFields: ['code'],
   },
@@ -40,7 +40,7 @@ export const Certificates: CollectionConfig = {
       index: true,
     },
     textarea('identityStatement', 'Câu định danh'),
-    { ...number('daysCompleted', 'Số ngày hoàn thành'), max: 21 },
+    { ...number('daysCompleted', 'Số ngày hoàn thành'), max: 60 },
     { ...date('issuedAt', 'Ngày cấp'), defaultValue: () => new Date().toISOString() },
     {
       name: 'code',

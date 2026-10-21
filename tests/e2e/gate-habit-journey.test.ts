@@ -209,8 +209,10 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
 
       await expectNoSeriousA11y(guestPage, 'habit-journey-dung-thu')
 
-      // Bấm nút "Bắt đầu dùng thử 21 ngày"
-      const startTrialBtn = guestPage.locator('button', { hasText: /Bắt đầu dùng thử 21 ngày/i })
+      // Bấm nút "Bắt đầu dùng thử"
+      const startTrialBtn = guestPage.locator('button', {
+        hasText: /Bắt đầu dùng thử (21|28) ngày/i,
+      })
       await expect(startTrialBtn).toBeVisible()
       await startTrialBtn.click()
 
@@ -257,7 +259,7 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       await statementInput.fill('Tôi sẽ dành 5 phút mỗi sáng để trở thành người bình an hơn')
 
       const createPlanBtn = guestPage.locator('button[type="submit"]', {
-        hasText: /Bắt đầu hành trình 21 ngày/i,
+        hasText: /Bắt đầu hành trình/i,
       })
       const day1Btn = guestPage.getByRole('button', { name: /^Ngày 1:/ })
 

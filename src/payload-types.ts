@@ -1628,7 +1628,7 @@ export interface Lead {
   createdAt: string;
 }
 /**
- * Chứng nhận hoàn thành thử thách 21 ngày xây dựng thói quen.
+ * Chứng nhận hoàn thành thử thách xây dựng thói quen.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "certificates".
@@ -1672,7 +1672,7 @@ export interface Certificate {
   createdAt: string;
 }
 /**
- * Kế hoạch vòng lặp thói quen 21 ngày do học viên thiết lập.
+ * Kế hoạch vòng lặp thói quen do học viên thiết lập.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "habitPlans".
@@ -1718,6 +1718,14 @@ export interface HabitPlan {
    * Chọn ngày và giờ áp dụng.
    */
   startDate?: string | null;
+  /**
+   * Số ngày của hành trình rèn luyện thói quen (lưu cố định khi tạo kế hoạch).
+   */
+  journeyDays?: number | null;
+  /**
+   * Kết quả của hành trình thói quen: Đang thực hành / Đã hoàn thành / Đã trải nghiệm.
+   */
+  outcome?: ('in_progress' | 'completed' | 'experienced') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1795,7 +1803,7 @@ export interface Entitlement {
   createdAt: string;
 }
 /**
- * Nhật ký check-in hành trình 21 ngày của học viên.
+ * Nhật ký check-in hành trình thói quen của học viên.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "habitCheckins".
@@ -2932,6 +2940,8 @@ export interface HabitPlansSelect<T extends boolean = true> {
         id?: T;
       };
   startDate?: T;
+  journeyDays?: T;
+  outcome?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3412,7 +3422,15 @@ export interface SiteSetting {
     email?: string | null;
   };
   /**
-   * Số ngày hoàn thành trong hành trình 21 ngày.
+   * Số ngày của một hành trình thói quen (mặc định 28 ngày). Lưu cố định vào kế hoạch lúc tạo.
+   */
+  habitJourneyDays?: number | null;
+  /**
+   * Tỷ lệ % số ngày bỏ phiếu cần check-in để được cấp chứng nhận (mặc định 90%).
+   */
+  certificateMinPercent?: number | null;
+  /**
+   * Số ngày hoàn thành trong hành trình 21 ngày (thay bằng tỷ lệ %).
    */
   certificateMinDays?: number | null;
   /**
@@ -3516,6 +3534,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         phone?: T;
         email?: T;
       };
+  habitJourneyDays?: T;
+  certificateMinPercent?: T;
   certificateMinDays?: T;
   quizCtaPath?: T;
   updatedAt?: T;

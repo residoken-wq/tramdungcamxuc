@@ -16,6 +16,7 @@ export interface TrackerSummaryCardProps {
   initialCertificate?: PublicCertificateData | null
   eligibility?: CertificateEligibility | null
   customerName?: string | null
+  journeyDays?: number
 }
 
 export function TrackerSummaryCard({
@@ -25,7 +26,9 @@ export function TrackerSummaryCard({
   initialCertificate,
   eligibility,
   customerName,
+  journeyDays: propJourneyDays,
 }: TrackerSummaryCardProps) {
+  const journeyDays = propJourneyDays ?? eligibility?.journeyDays ?? 28
   const { completedDays, mostFrequentEmotion } = stats
   const [certificate, setCertificate] = useState<PublicCertificateData | null>(
     initialCertificate ?? eligibility?.existingCertificate ?? eligibility?.certificate ?? null,
@@ -46,7 +49,8 @@ export function TrackerSummaryCard({
   )
 
   const isEligible = Boolean(eligibility?.eligible) || Boolean(certificate)
-  const minDays = eligibility?.certificateMinDays ?? eligibility?.minDays ?? 15
+  const isExperienced = eligibility?.outcome === 'experienced'
+  const minDays = eligibility?.certificateMinDays ?? eligibility?.minDays ?? 26
 
   const handleClaim = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
@@ -141,7 +145,7 @@ export function TrackerSummaryCard({
             <p className="text-2xl font-ui font-bold text-deep-navy mt-0.5">
               {completedDays}{' '}
               <span className="text-sm font-sans font-normal text-deep-navy/60">
-                {vi.tracker.summary.totalDaysSuffix}
+                / {journeyDays} ngày
               </span>
             </p>
           </div>
@@ -177,7 +181,7 @@ export function TrackerSummaryCard({
         </div>
       </div>
 
-      {/* 3. Khu vực Chứng nhận 21 ngày */}
+      {/* 3. Khu vực Chứng nhận */}
       <div className="pt-2">
         {certificate ? (
           // Đã có chứng nhận -> Hiển thị xem trước và nút thao tác
@@ -313,6 +317,22 @@ export function TrackerSummaryCard({
               </button>
             )}
           </div>
+        ) : isExperienced ? (
+          // Đã hoàn thành thời gian nhưng chưa đạt tỷ lệ % -> Trạng thái "Đã trải nghiệm", không có link công khai
+          <div className="p-5 sm:p-6 rounded-2xl border-2 border-lavender-mist bg-warm-ivory text-center space-y-3 shadow-xs">
+            <span className="inline-block px-3 py-0.5 rounded-full text-xs font-ui font-bold bg-lavender-mist text-deep-navy">
+              {vi.certificate.experienced.badge}
+            </span>
+            <h3 className="font-ui font-bold text-lg sm:text-xl text-deep-navy">
+              {vi.certificate.experienced.title}
+            </h3>
+            <p className="font-sans text-xs sm:text-sm text-deep-navy/80 max-w-md mx-auto">
+              {vi.certificate.experienced.message(minDays, journeyDays)}
+            </p>
+            <p className="font-sans text-xs italic text-bright-magenta max-w-md mx-auto">
+              {vi.certificate.experienced.encouragement}
+            </p>
+          </div>
         ) : (
           // Chưa đủ điều kiện -> Lời động viên, không cấp
           <div className="p-5 rounded-2xl border border-butter-cream bg-warm-ivory/90 text-center space-y-2">
@@ -324,7 +344,7 @@ export function TrackerSummaryCard({
             <p className="font-sans text-xs text-deep-navy/80 max-w-md mx-auto">
               {eligibility?.reason === 'before_day_21' || eligibility?.reason === 'NOT_YET_DAY_21'
                 ? vi.certificate.notEligible.notDay21Notice
-                : vi.certificate.notEligible.minDaysNotice(minDays)}
+                : vi.certificate.notEligible.minDaysNotice(minDays, journeyDays)}
             </p>
             <p className="font-sans text-xs italic text-bright-magenta">
               {vi.certificate.notEligible.keepGoing}
