@@ -428,7 +428,9 @@ test.describe('21-Day Certificate Flow (T2-07)', () => {
       await expect(ownerPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 15000 })
 
       // 10. Xác nhận thẻ kết quả "Đã trải nghiệm" hiển thị
-      await expect(ownerPage.getByText(/Đã trải nghiệm/i)).toBeVisible({ timeout: 15000 })
+      await expect(ownerPage.getByText('Đã trải nghiệm', { exact: true })).toBeVisible({
+        timeout: 15000,
+      })
       await expect(
         ownerPage.getByRole('heading', { name: /Hành trình đã khép lại/i }),
       ).toBeVisible()

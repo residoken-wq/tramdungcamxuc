@@ -155,7 +155,7 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
       await statementInput.fill('Tôi sẽ tập thở 5 phút mỗi sáng để trở thành người bình an hơn')
 
       const createPlanBtn = guestPage.locator('button[type="submit"]', {
-        hasText: /Bắt đầu hành trình 28 ngày/i,
+        hasText: /Bắt đầu hành trình/i,
       })
       const day1Btn = guestPage.getByRole('button', { name: /^Ngày 1:/ })
       const day28Btn = guestPage.getByRole('button', { name: /^Ngày 28:/ })

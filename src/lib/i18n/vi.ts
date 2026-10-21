@@ -1952,7 +1952,7 @@ export const vi = {
     },
     experienced: {
       badge: 'Đã trải nghiệm',
-      title: 'Hành trình Đã trải nghiệm',
+      title: 'Hành trình đã khép lại',
       message: (minDays: number, total: number = 28) =>
         `Bạn đã đồng hành cùng hành trình rèn luyện thói quen (${total} ngày). Dù chưa đạt tỷ lệ hoàn thành tối thiểu (${minDays}/${total} ngày) để nhận chứng nhận tốt nghiệp, mỗi ngày bạn đã bước qua đều là một trải nghiệm quý giá.`,
       encouragement:

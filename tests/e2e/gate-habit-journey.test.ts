@@ -259,7 +259,7 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       await statementInput.fill('Tôi sẽ dành 5 phút mỗi sáng để trở thành người bình an hơn')
 
       const createPlanBtn = guestPage.locator('button[type="submit"]', {
-        hasText: /Bắt đầu hành trình (21|28) ngày/i,
+        hasText: /Bắt đầu hành trình/i,
       })
       const day1Btn = guestPage.getByRole('button', { name: /^Ngày 1:/ })
 
