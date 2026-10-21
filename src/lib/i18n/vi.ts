@@ -1964,9 +1964,11 @@ export const vi = {
     errors: {
       unauthorized: 'Vui lòng đăng nhập để nhận chứng nhận.',
       noPlan: 'Không tìm thấy kế hoạch thói quen của bạn.',
-      notDay21: 'Chưa tới ngày 21 của hành trình thói quen.',
+      notDay21: 'Chưa tới ngày cuối của hành trình thói quen.',
       notEnoughDays: (minDays: number, total?: number) =>
-        `Bạn cần hoàn thành tối thiểu ${minDays} ngày để nhận chứng nhận.`,
+        total
+          ? `Bạn cần hoàn thành tối thiểu ${minDays}/${total} ngày để nhận chứng nhận.`
+          : `Bạn cần hoàn thành tối thiểu ${minDays} ngày để nhận chứng nhận.`,
       notFound: 'Không tìm thấy chứng nhận.',
       forbidden: 'Bạn không có quyền thay đổi trạng thái chứng nhận này.',
       nameRequired: 'Vui lòng nhập họ và tên để nhận chứng nhận.',

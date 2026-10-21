@@ -6,7 +6,13 @@ import type { Certificate, Customer, SiteSetting } from '@/payload-types'
 import { vi } from '@/lib/i18n/vi'
 import { findOwnTrackerPlan } from './tracker.server'
 import { getCurrentDayOfPlan } from './tracker-stats'
-import { computeOutcome, getJourneyDays, getVotingDays, requiredDays } from './journey'
+import {
+  computeOutcome,
+  countCompletedVotingDays,
+  getJourneyDays,
+  getVotingDays,
+  requiredDays,
+} from './journey'
 import type { CertificateEligibility, PublicCertificateData } from './certificate-types'
 
 const certCreationLocks = new Map<string, Promise<unknown>>()
@@ -183,7 +189,8 @@ export async function issueCertificate(
       overrideAccess: true,
     })
 
-    const completedDays = checkinsRes.docs.length
+    // REVIEW-REQUIRED: only check-ins on voting days count (rest days in a weekly rhythm do not, HB-05).
+    const completedDays = countCompletedVotingDays(ownPlan, checkinsRes.docs)
     if (completedDays < minRequired) {
       // Cập nhật outcome thành 'experienced' nếu chưa ghi nhận (ghi một lần, chạy lại không đổi)
       if (ownPlan.outcome !== 'experienced' && ownPlan.outcome !== 'completed') {
@@ -199,7 +206,7 @@ export async function issueCertificate(
           // Bỏ qua lỗi cập nhật outcome
         }
       }
-      throw new Error(vi.certificate.errors.notEnoughDays(minRequired, journeyDays))
+      throw new Error(vi.certificate.errors.notEnoughDays(minRequired, votingDays.length))
     }
 
     // 5. Tạo chứng nhận mới
@@ -326,7 +333,7 @@ export async function getCertificateEligibility(
     depth: 0,
     overrideAccess: true,
   })
-  const completedDays = checkinsRes.docs.length
+  const completedDays = countCompletedVotingDays(ownPlan, checkinsRes.docs)
 
   // Tính kết quả hành trình (outcome)
   let outcome = ownPlan.outcome as CertificateEligibility['outcome']
