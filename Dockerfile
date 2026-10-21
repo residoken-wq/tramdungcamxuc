@@ -20,7 +20,8 @@ FROM base AS runner
 ENV NODE_ENV=production \
     PORT=3000 \
     HOSTNAME=0.0.0.0
-RUN mkdir -p /app/media /app/.next && chown -R node:node /app
+# /app/private must exist so a fresh `private` volume is owned by node (paid PDF uploads, restore).
+RUN mkdir -p /app/media /app/private /app/.next && chown -R node:node /app
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
