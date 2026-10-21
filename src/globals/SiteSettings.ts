@@ -147,9 +147,35 @@ export const SiteSettings: GlobalConfig = {
           label: 'Công cụ số',
           fields: [
             {
+              ...number('habitJourneyDays', 'Số ngày hành trình Habit', 28),
+              min: 7,
+              max: 60,
+              admin: {
+                description:
+                  'Số ngày của một hành trình thói quen (mặc định 28 ngày). Lưu cố định vào kế hoạch lúc tạo.',
+              },
+            },
+            {
+              ...number(
+                'certificateMinPercent',
+                'Tỷ lệ hoàn thành tối thiểu để nhận chứng nhận (%)',
+                90,
+              ),
+              min: 50,
+              max: 100,
+              admin: {
+                description:
+                  'Tỷ lệ % số ngày bỏ phiếu cần check-in để được cấp chứng nhận (mặc định 90%).',
+              },
+            },
+            {
+              // Cũ: thay bằng tỷ lệ % (certificateMinPercent). Giữ cột để không làm hỏng dữ liệu cũ.
               ...number('certificateMinDays', 'Số ngày tối thiểu để nhận chứng nhận', 15),
               max: 21,
-              admin: { description: 'Số ngày hoàn thành trong hành trình 21 ngày.' },
+              admin: {
+                hidden: true,
+                description: 'Số ngày hoàn thành trong hành trình 21 ngày (thay bằng tỷ lệ %).',
+              },
             },
             internalOrExternalUrl('quizCtaPath', 'Nút sau kết quả quiz dẫn tới đâu', {
               admin: {

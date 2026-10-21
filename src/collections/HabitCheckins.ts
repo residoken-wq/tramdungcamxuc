@@ -54,16 +54,45 @@ const verifyPlanOwnership: CollectionBeforeChangeHook = async ({ data, req }) =>
   return data
 }
 
+// REVIEW-REQUIRED: Chặn ngày check-in vượt quá journeyDays của kế hoạch
+const validatePlanJourneyDay: CollectionBeforeChangeHook = async ({ data, req }) => {
+  if (data?.plan && typeof data.day === 'number') {
+    const planId =
+      typeof data.plan === 'object' && data.plan !== null
+        ? (data.plan as { id: number }).id
+        : Number(data.plan)
+    if (planId) {
+      const plan = await req.payload.findByID({
+        collection: 'habitPlans',
+        id: planId,
+        depth: 0,
+        overrideAccess: true,
+        req,
+      })
+      if (plan) {
+        const journeyDays = typeof plan.journeyDays === 'number' ? plan.journeyDays : 21
+        if (data.day > journeyDays) {
+          throw new APIError(
+            `Ngày check-in (${data.day}) không được vượt quá số ngày hành trình (${journeyDays}).`,
+            400,
+          )
+        }
+      }
+    }
+  }
+  return data
+}
+
 // REVIEW-REQUIRED: One check-in per plan and day (DB unique index on planDay + hook).
 // Emotion and note are sensitive: hidden from editors (field-level read access).
 export const HabitCheckins: CollectionConfig = {
   slug: 'habitCheckins',
-  labels: { singular: 'Check-in 21 ngày', plural: 'Check-in 21 ngày' },
+  labels: { singular: 'Check-in thói quen', plural: 'Check-in thói quen' },
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
     useAsTitle: 'planDay',
-    description: 'Nhật ký check-in hành trình 21 ngày của học viên.',
+    description: 'Nhật ký check-in hành trình thói quen của học viên.',
     defaultColumns: ['plan', 'day', 'done'],
   },
   access: {
@@ -75,6 +104,7 @@ export const HabitCheckins: CollectionConfig = {
   hooks: {
     beforeChange: [
       verifyPlanOwnership,
+      validatePlanJourneyDay,
       uniqueKeyHook({
         keyField: 'planDay',
         parts: ['plan', 'day'],
@@ -88,7 +118,7 @@ export const HabitCheckins: CollectionConfig = {
       required: true,
       access: { update: isEditorOrOwner },
     },
-    { ...number('day', 'Ngày thứ'), required: true, min: 1, max: 21 },
+    { ...number('day', 'Ngày thứ'), required: true, min: 1, max: 60 },
     checkbox('done', 'Đã hoàn thành'),
     {
       ...select(
