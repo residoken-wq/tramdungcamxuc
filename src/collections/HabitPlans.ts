@@ -102,6 +102,9 @@ export const HabitPlans: CollectionConfig = {
     date('startDate', 'Ngày bắt đầu'),
     {
       ...number('journeyDays', 'Số ngày hành trình'),
+      // REVIEW-REQUIRED: only admins may set it; customers creating a plan through the API
+      // get the site setting from the hook (a forged 1-day journey would earn a certificate).
+      access: { create: isEditorOrOwner, update: isEditorOrOwner },
       admin: {
         readOnly: true,
         description: 'Số ngày của hành trình rèn luyện thói quen (lưu cố định khi tạo kế hoạch).',
@@ -114,6 +117,8 @@ export const HabitPlans: CollectionConfig = {
         ['experienced', 'Đã trải nghiệm'],
       ]),
       defaultValue: 'in_progress',
+      // REVIEW-REQUIRED: written by the certificate check (overrideAccess); customers cannot set it.
+      access: { create: isEditorOrOwner, update: isEditorOrOwner },
       admin: {
         readOnly: true,
         description:

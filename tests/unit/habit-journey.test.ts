@@ -218,6 +218,7 @@ describe('HB-02: Luật hành trình 28 ngày & Luật 90% cấp chứng nhận 
             collection: item.collection,
             id: item.id,
             overrideAccess: true,
+            context: { accountDeletion: true },
           })
         } catch {
           // Bỏ qua lỗi dọn dẹp
@@ -253,6 +254,59 @@ describe('HB-02: Luật hành trình 28 ngày & Luật 90% cấp chứng nhận 
 
       expect(plan.journeyDays).toBe(28)
       expect(plan.outcome).toBe('in_progress')
+    })
+
+    it('khách tự tạo / sửa kế hoạch qua API không đặt được journeyDays hay outcome', async () => {
+      const customer = track(
+        'customers',
+        await payload.create({
+          collection: 'customers',
+          data: {
+            email: `hb02-plan-forge-${Date.now()}@example.test`,
+            name: 'Học viên Test Giả Mạo',
+          },
+          overrideAccess: true,
+        }),
+      )
+      const asCustomer = { ...customer, collection: 'customers' } as never
+
+      const plan = track(
+        'habitPlans',
+        await payload.create({
+          collection: 'habitPlans',
+          data: {
+            customer: customer.id,
+            startDate: new Date().toISOString().split('T')[0],
+            identityStatement: 'Thử đặt hành trình 1 ngày',
+            journeyDays: 1,
+            outcome: 'completed',
+          },
+          user: asCustomer,
+          overrideAccess: false,
+        }),
+      )
+      const stored = await payload.findByID({
+        collection: 'habitPlans',
+        id: plan.id,
+        overrideAccess: true,
+      })
+      expect(stored.journeyDays).toBe(28)
+      expect(stored.outcome).toBe('in_progress')
+
+      await payload.update({
+        collection: 'habitPlans',
+        id: plan.id,
+        data: { outcome: 'completed', journeyDays: 1 },
+        user: asCustomer,
+        overrideAccess: false,
+      })
+      const afterUpdate = await payload.findByID({
+        collection: 'habitPlans',
+        id: plan.id,
+        overrideAccess: true,
+      })
+      expect(afterUpdate.journeyDays).toBe(28)
+      expect(afterUpdate.outcome).toBe('in_progress')
     })
 
     it('đổi cài đặt siteSettings sau đó không làm đổi journeyDays của kế hoạch đã tạo', async () => {
@@ -326,7 +380,27 @@ describe('HB-02: Luật hành trình 28 ngày & Luật 90% cấp chứng nhận 
         overrideAccess: true,
         limit: 1,
       })
-      const product = products.docs[0]!
+      // Empty DB (CI runs unit tests unseeded): create the product and delete it afterwards.
+      const product =
+        products.docs[0] ??
+        track(
+          'products',
+          await payload.create({
+            collection: 'products',
+            data: {
+              name: '[MẪU] Habit Tracker test HB-02',
+              slug: HABIT_TRACKER_PRODUCT_SLUG,
+              isSample: true,
+              web: 'habit',
+              type: 'digital_tool',
+              price: 250000,
+              trialDays: 28,
+              saleStatus: 'on_sale',
+              _status: 'published',
+            },
+            overrideAccess: true,
+          }),
+        )
       track(
         'entitlements',
         await payload.create({
