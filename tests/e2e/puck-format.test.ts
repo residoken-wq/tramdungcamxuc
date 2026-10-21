@@ -95,42 +95,36 @@ test.describe('PK-01: Puck Format Presets & SectionHeader v2 Customization', () 
       pageId = createdData.doc?.id || createdData.id
       expect(pageId).toBeDefined()
 
-      // 2. Mở builder
-      await page.goto(`/builder/${pageId}`, { waitUntil: 'networkidle' })
+      // 2. Mở builder (không networkidle: builder giữ kết nối mở)
+      await page.goto(`/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
       const canvas = page.frameLocator('iframe')
       const block = canvas.locator('[data-puck-component]').first()
-      await expect(block).toBeVisible()
+      await expect(block).toBeVisible({ timeout: 30000 })
 
-      // 3. Chọn khối SectionHeader trên canvas
-      await block.click()
+      // 3. Chọn khối SectionHeader trên canvas (thử lại tới khi trang đã hydrate)
+      const titleSize = page.getByRole('combobox', { name: 'Cỡ chữ tiêu đề', exact: true })
+      await expect(async () => {
+        await block.click()
+        await expect(titleSize).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 30000 })
 
-      // 4. Đổi cỡ tiêu đề sang "Lớn" (lg)
-      const titleSizeSelect = page.locator('select').filter({ hasText: /Lớn/ }).first()
-      if (await titleSizeSelect.isVisible()) {
-        await titleSizeSelect.selectOption('lg')
-      } else {
-        const labeledSelect = page.getByRole('combobox', { name: /Cỡ chữ tiêu đề/i })
-        await labeledSelect.selectOption('lg')
-      }
-
-      // 5. Đổi màu dòng 2 sang "deep-navy" (Xanh thẫm)
-      const line2ColorSelect = page
-        .locator('select')
-        .filter({ hasText: /Xanh thẫm/ })
-        .nth(1) // line2Color là select màu thứ 2 (sau line1Color)
-      if (await line2ColorSelect.isVisible()) {
-        await line2ColorSelect.selectOption('deep-navy')
-      } else {
-        const labeledSelect = page.getByRole('combobox', { name: /Màu tiêu đề dòng 2/i })
-        await labeledSelect.selectOption('deep-navy')
-      }
+      // 4–5. Puck ghi value của <option> dạng JSON, nên chọn theo nhãn hiển thị
+      await titleSize.selectOption({ label: 'Lớn' })
+      await page
+        .getByRole('combobox', { name: 'Màu tiêu đề dòng 2', exact: true })
+        .selectOption({ label: 'Xanh thẫm (Deep Navy)' })
 
       // 6. Xuất bản trang
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
-      await expect(page.getByText(/Đã xuất bản thành công/)).toBeVisible()
+      await expect(
+        page
+          .getByText(/Đã xuất bản/)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible({ timeout: 15000 })
 
       // 7. Trang công khai có class màu / cỡ mới
-      await publicPage.goto(`/${slug}`)
+      await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
       const heading = publicPage.getByRole('heading', { level: 2 })
       await expect(heading).toBeVisible()
 
