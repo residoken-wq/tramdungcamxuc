@@ -289,12 +289,12 @@ export const puckConfig: Config<PageComponentsProps> = {
 
         const titleSize =
           ((data.props as Record<string, unknown>)?.titleSize as FontSizeOption) || 'md'
-        const emotionSize =
-          ((data.props as Record<string, unknown>)?.emotionSize as FontSizeOption) || 'md'
 
         const titleColors = allowedTextColors(currentBg, titleSize)
         const eyebrowColors = allowedTextColors(currentBg, 'sm')
-        const emotionColors = allowedTextColors(currentBg, emotionSize)
+        // The emotion line is Playfair italic, regular weight, at most 20px even at 'lg': WCAG
+        // treats it as normal text at every size, so accent-pink (< 4.5:1) is never offered.
+        const emotionColors = allowedTextColors(currentBg, 'md')
 
         return {
           seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)', contentEditable: true },

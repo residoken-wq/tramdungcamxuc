@@ -9,9 +9,7 @@ import {
   fontSizeClass,
   type FontSizeOption,
 } from '@/lib/brand/format-classes'
-import {
-  SECTION_BG_COLOR_OPTIONS,
-} from '@/puck/constants'
+import { SECTION_BG_COLOR_OPTIONS } from '@/puck/constants'
 import { puckConfig } from '@/puck/config'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { migrateSectionHeaderV1ToV2 } from '@/puck/migrations/v2-section-header'
@@ -255,8 +253,11 @@ describe('PK-01: SectionHeader v2 Migration & Snapshot Parity', () => {
   })
 
   it('trang cũ (v1) sau migration render HTML giống hệt trước khi nâng cấp', () => {
-    const v1Props = sampleV1Data.content[0].props as unknown as React.ComponentProps<typeof SectionHeader>
-    const v2Props = migrateSectionHeaderV1ToV2(sampleV1Data).content[0].props as unknown as React.ComponentProps<typeof SectionHeader>
+    const v1Props = sampleV1Data.content[0].props as unknown as React.ComponentProps<
+      typeof SectionHeader
+    >
+    const v2Props = migrateSectionHeaderV1ToV2(sampleV1Data).content[0]
+      .props as unknown as React.ComponentProps<typeof SectionHeader>
 
     const v1Html = renderToStaticMarkup(<SectionHeader {...v1Props} />)
     const v2Html = renderToStaticMarkup(<SectionHeader {...v2Props} />)
@@ -325,5 +326,17 @@ describe('PK-01: SectionHeader Puck Config & resolveFields', () => {
     )
     const lavenderLgOptions = resolvedLavenderLg.line1Color.options.map((o) => o.value)
     expect(lavenderLgOptions).toContain('bright-magenta')
+  })
+
+  it('dòng cảm xúc (Playfair 20px thường) không bao giờ được accent-pink, kể cả cỡ Lớn', () => {
+    type ResolveFn = (
+      data: unknown,
+      appState: unknown,
+    ) => Record<string, { options: Array<{ label: string; value: string }> }>
+    const resolve = puckConfig.components.SectionHeader.resolveFields as unknown as ResolveFn
+    const resolved = resolve({ props: { emotionSize: 'lg' } }, { parent: null })
+    const values = resolved.emotionColor.options.map((o) => o.value)
+    expect(values).not.toContain('accent-pink')
+    expect(values).toContain('deep-navy')
   })
 })
