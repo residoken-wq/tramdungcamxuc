@@ -238,16 +238,16 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 
 Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiều migration DB: **🔒 Migration: HB-02 (Laptop, tới khi PR merge)**.
 
-| Mã          | Việc                                                                              | Phụ thuộc                        | Máy      | Trạng thái                                     |
-| ----------- | --------------------------------------------------------------------------------- | -------------------------------- | -------- | ---------------------------------------------- |
-| PK-01       | Preset màu chữ / cỡ chữ + SectionHeader v2                                        | –                                | PC nhà   | Giao 20/10 – `prompts/PK-01.md`                |
-| PK-02       | Khối con Card / Stat / Step + IconCardGrid dùng slot                              | PK-01                            | PC nhà   | Chờ PK-01                                      |
-| PK-03       | StatsBar, JourneySteps dùng slot                                                  | PK-02                            | PC nhà   | –                                              |
-| PK-04       | ServiceCards, PackageCards dùng slot + ảnh từng thẻ; ImageText dùng helper        | PK-02                            | PC nhà   | –                                              |
-| PK-05       | FAQ slot, Columns nhận khối con, mẫu trang + seed, e2e, hướng dẫn                 | PK-03, PK-04                     | PC nhà   | –                                              |
-| HB-01       | Ghi quyết định Habit 28 ngày (câu 1–2 đã chốt 20/10; câu 3–10 chờ Hana)           | –                                | Planning | Câu 1–2 xong – `DECISIONS.md`                  |
-| HB-02       | Hành trình 28 ngày (cài đặt + lưu vào kế hoạch), chứng nhận 90%, "Đã trải nghiệm" | HB-01 (câu 1–2)                  | Laptop   | Giao 20/10 – `prompts/HB-02.md` (🔒 Migration) |
-| HB-03→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)         | HB-02; câu 3–10 cho HB-07 trở đi | –        | Chờ                                            |
+| Mã          | Việc                                                                              | Phụ thuộc                        | Máy      | Trạng thái                                                 |
+| ----------- | --------------------------------------------------------------------------------- | -------------------------------- | -------- | ---------------------------------------------------------- |
+| PK-01       | Preset màu chữ / cỡ chữ + SectionHeader v2                                        | –                                | PC nhà   | ĐẠT 21/10 sau PK-01c ([review](reviews/PK-01.md)), PR #176 |
+| PK-02       | Khối con Card / Stat / Step + IconCardGrid dùng slot                              | PK-01                            | PC nhà   | Prompt khi PK-01 merge                                     |
+| PK-03       | StatsBar, JourneySteps dùng slot                                                  | PK-02                            | PC nhà   | –                                                          |
+| PK-04       | ServiceCards, PackageCards dùng slot + ảnh từng thẻ; ImageText dùng helper        | PK-02                            | PC nhà   | –                                                          |
+| PK-05       | FAQ slot, Columns nhận khối con, mẫu trang + seed, e2e, hướng dẫn                 | PK-03, PK-04                     | PC nhà   | –                                                          |
+| HB-01       | Ghi quyết định Habit 28 ngày (câu 1–2 đã chốt 20/10; câu 3–10 chờ Hana)           | –                                | Planning | Câu 1–2 xong – `DECISIONS.md`                              |
+| HB-02       | Hành trình 28 ngày (cài đặt + lưu vào kế hoạch), chứng nhận 90%, "Đã trải nghiệm" | HB-01 (câu 1–2)                  | Laptop   | Giao 20/10 – `prompts/HB-02.md` (🔒 Migration)             |
+| HB-03→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)         | HB-02; câu 3–10 cho HB-07 trở đi | –        | Chờ                                                        |
 
 (Planning dùng cho mọi task)
 
