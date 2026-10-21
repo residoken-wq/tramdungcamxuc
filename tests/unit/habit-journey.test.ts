@@ -4,7 +4,7 @@ vi.mock('server-only', () => ({}))
 
 import { getPayload, type CollectionSlug, type Payload } from 'payload'
 import config from '../../src/payload.config'
-import type { Customer, HabitPlan, SiteSetting } from '../../src/payload-types'
+import type { Customer, SiteSetting } from '../../src/payload-types'
 import {
   computeOutcome,
   countCompletedVotingDays,
