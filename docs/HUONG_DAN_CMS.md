@@ -957,7 +957,7 @@ Bạn có 3 cách rất dễ dàng:
 
 Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có thể tùy chỉnh 2 thông số:
 
-1. **Độ dài hành trình thói quen (`habitJourneyDays`)**: Mặc định là **28 ngày** (tương đương 4 tuần rèn luyện thói quen theo khoa học Atomic Habits). Hana có thể điều chỉnh từ 7 đến 60 ngày nếu tổ chức các chiến dịch đặc biệt (ví dụ thử thách 14 ngày hoặc 30 ngày).
+1. **Độ dài hành trình thói quen (`habitJourneyDays`)**: Mặc định là **28 ngày** (4 tuần, chốt họp 20/10/2026). Hana có thể điều chỉnh từ 7 đến 60 ngày nếu tổ chức các chiến dịch đặc biệt (ví dụ thử thách 14 ngày hoặc 30 ngày).
 2. **Tỷ lệ ngày bỏ phiếu tối thiểu để nhận chứng nhận (`certificateMinPercent`)**: Mặc định là **90%** (cho phép nhập từ 50% đến 100%).
 
 > **Quy tắc vận hành quan trọng cần lưu ý**:
