@@ -56,7 +56,7 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
         journeyStep: 'practice',
         price: 250000,
         salePrice: 178000,
-        trialDays: 21,
+        trialDays: 28,
         saleStatus: 'coming_soon',
         _status: 'published',
       },
@@ -307,7 +307,7 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
 
       expect(checkins01.totalDocs).toBe(4) // Test 01: 4 ngày
       expect(checkins02.totalDocs).toBe(10) // Test 02: 10 ngày
-      expect(checkins03.totalDocs).toBe(21) // Test 03: 21 ngày
+      expect(checkins03.totalDocs).toBe(28) // Test 03: 28 ngày
 
       // Kiểm tra Test 02 có entitlement hết hạn
       const ent02 = (
@@ -358,7 +358,7 @@ describe('Demo Seed & Clean Flow (T2-15)', () => {
       expect(tally.orders).toBe(2)
       expect(tally.workshops).toBe(1)
       expect(tally.habitPlans).toBe(3)
-      expect(tally.habitCheckins).toBe(35) // 4 + 10 + 21 = 35
+      expect(tally.habitCheckins).toBe(42) // 4 + 10 + 28 = 42
 
       // Sau khi clean: 0 bản ghi demo còn sót lại
       const checkCustomers = await payload.find({
