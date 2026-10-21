@@ -53,10 +53,25 @@ import { NewsletterFormBlock, type NewsletterFormProps } from './blocks/Newslett
 import { ContactInfoBlock, type ContactInfoProps } from './blocks/ContactInfo'
 import { ContactFormsBlock, type ContactFormsProps } from './blocks/ContactForms'
 
-import { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from './constants'
+import {
+  SECTION_BG_COLOR_OPTIONS,
+  BRAND_COLOR_OPTIONS,
+  PADDING_OPTIONS,
+  FONT_SIZE_OPTIONS,
+  ALIGN_OPTIONS,
+  type FontSizeOption,
+} from './constants'
+import { allowedTextColors } from '@/lib/brand/format-classes'
 import { getLockedComponentPermissions } from './locks'
 
-export { SECTION_BG_COLOR_OPTIONS, BRAND_COLOR_OPTIONS, PADDING_OPTIONS }
+export {
+  SECTION_BG_COLOR_OPTIONS,
+  BRAND_COLOR_OPTIONS,
+  PADDING_OPTIONS,
+  FONT_SIZE_OPTIONS,
+  ALIGN_OPTIONS,
+}
+
 export type {
   CTAButtonBlockProps,
   LeadFormBlockProps,
@@ -212,17 +227,48 @@ export const puckConfig: Config<PageComponentsProps> = {
     SectionHeader: {
       label: 'Tiêu đề mục (Hai tầng màu)',
       fields: {
-        seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
-        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm)' },
-        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen)' },
-        emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display)' },
+        seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)', contentEditable: true },
+        eyebrowColor: {
+          type: 'select',
+          label: 'Màu nhãn series',
+          options: allowedTextColors('warm-ivory', 'sm'),
+        },
+        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1', contentEditable: true },
+        line1Color: {
+          type: 'select',
+          label: 'Màu tiêu đề dòng 1',
+          options: allowedTextColors('warm-ivory', 'md'),
+        },
+        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2', contentEditable: true },
+        line2Color: {
+          type: 'select',
+          label: 'Màu tiêu đề dòng 2',
+          options: allowedTextColors('warm-ivory', 'md'),
+        },
+        titleSize: {
+          type: 'select',
+          label: 'Cỡ chữ tiêu đề',
+          options: FONT_SIZE_OPTIONS,
+        },
+        emotionLine: {
+          type: 'textarea',
+          label: 'Dòng cảm xúc (Playfair Display)',
+          contentEditable: true,
+        },
+        emotionColor: {
+          type: 'select',
+          label: 'Màu dòng cảm xúc',
+          options: allowedTextColors('warm-ivory', 'md'),
+        },
+        emotionSize: {
+          type: 'select',
+          label: 'Cỡ chữ cảm xúc',
+          options: FONT_SIZE_OPTIONS,
+        },
         align: {
           type: 'select',
           label: 'Căn lề',
-          options: [
-            { label: 'Căn giữa', value: 'center' },
-            { label: 'Căn trái', value: 'left' },
-          ],
+          options: ALIGN_OPTIONS,
         },
         as: {
           type: 'select',
@@ -234,16 +280,106 @@ export const puckConfig: Config<PageComponentsProps> = {
           ],
         },
       },
+      resolveFields: (data, { parent }) => {
+        const bg =
+          (data.props as Record<string, unknown>)?.bgColor ||
+          (parent?.props as Record<string, unknown>)?.bgColor ||
+          'warm-ivory'
+        const currentBg = typeof bg === 'string' ? bg : 'warm-ivory'
+
+        const titleSize =
+          ((data.props as Record<string, unknown>)?.titleSize as FontSizeOption) || 'md'
+
+        const titleColors = allowedTextColors(currentBg, titleSize)
+        const eyebrowColors = allowedTextColors(currentBg, 'sm')
+        // The emotion line is Playfair italic, regular weight, at most 20px even at 'lg': WCAG
+        // treats it as normal text at every size, so accent-pink (< 4.5:1) is never offered.
+        const emotionColors = allowedTextColors(currentBg, 'md')
+
+        return {
+          seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)', contentEditable: true },
+          eyebrowColor: {
+            type: 'select',
+            label: 'Màu nhãn series',
+            options: eyebrowColors,
+          },
+          titleLine1: { type: 'text', label: 'Tiêu đề dòng 1', contentEditable: true },
+          line1Color: {
+            type: 'select',
+            label: 'Màu tiêu đề dòng 1',
+            options: titleColors,
+          },
+          titleLine2: { type: 'text', label: 'Tiêu đề dòng 2', contentEditable: true },
+          line2Color: {
+            type: 'select',
+            label: 'Màu tiêu đề dòng 2',
+            options: titleColors,
+          },
+          titleSize: {
+            type: 'select',
+            label: 'Cỡ chữ tiêu đề',
+            options: FONT_SIZE_OPTIONS,
+          },
+          emotionLine: {
+            type: 'textarea',
+            label: 'Dòng cảm xúc (Playfair Display)',
+            contentEditable: true,
+          },
+          emotionColor: {
+            type: 'select',
+            label: 'Màu dòng cảm xúc',
+            options: emotionColors,
+          },
+          emotionSize: {
+            type: 'select',
+            label: 'Cỡ chữ cảm xúc',
+            options: FONT_SIZE_OPTIONS,
+          },
+          align: {
+            type: 'select',
+            label: 'Căn lề',
+            options: ALIGN_OPTIONS,
+          },
+          as: {
+            type: 'select',
+            label: 'Thẻ ngữ nghĩa (Heading Level)',
+            options: [
+              { label: 'H1 (Tiêu đề chính trang)', value: 'h1' },
+              { label: 'H2 (Tiêu đề mục)', value: 'h2' },
+              { label: 'H3 (Tiêu đề con)', value: 'h3' },
+            ],
+          },
+        }
+      },
       defaultProps: {
-        version: 1,
+        version: 2,
         seriesLabel: '[MẪU] Series',
         titleLine1: '[MẪU] TIÊU ĐỀ DÒNG 1',
         titleLine2: '[MẪU] TIÊU ĐỀ DÒNG 2',
         emotionLine: '[MẪU] Dòng cảm xúc trích dẫn nhẹ nhàng',
         align: 'center',
         as: 'h2',
+        titleSize: 'md',
+        line1Color: 'deep-navy',
+        line2Color: 'bright-magenta',
+        eyebrowColor: 'bright-magenta',
+        emotionColor: 'deep-navy',
+        emotionSize: 'md',
       },
-      render: ({ seriesLabel, titleLine1, titleLine2, emotionLine, align, as }) => (
+      render: ({
+        seriesLabel,
+        titleLine1,
+        titleLine2,
+        emotionLine,
+        align,
+        as,
+        line1Color,
+        line2Color,
+        eyebrowColor,
+        emotionColor,
+        titleSize,
+        emotionSize,
+      }) => (
         <div className="py-6 px-4">
           <div className="mx-auto max-w-5xl">
             <SectionHeader
@@ -253,6 +389,12 @@ export const puckConfig: Config<PageComponentsProps> = {
               emotionLine={emotionLine}
               align={align}
               as={as}
+              line1Color={line1Color}
+              line2Color={line2Color}
+              eyebrowColor={eyebrowColor}
+              emotionColor={emotionColor}
+              titleSize={titleSize}
+              emotionSize={emotionSize}
             />
           </div>
         </div>

@@ -14,3 +14,28 @@ export const PADDING_OPTIONS = [
   { label: 'Vừa (M - 48px)', value: 'md' },
   { label: 'Lớn (L - 72px)', value: 'lg' },
 ] as const
+
+export const FONT_SIZE_OPTIONS = [
+  { label: 'Nhỏ', value: 'sm' },
+  { label: 'Vừa', value: 'md' },
+  { label: 'Lớn', value: 'lg' },
+] as const
+
+export type FontSizeOption = (typeof FONT_SIZE_OPTIONS)[number]['value']
+
+export const TEXT_COLOR_OPTIONS = [
+  { label: 'Xanh thẫm (Deep Navy)', value: 'deep-navy' },
+  { label: 'Hồng sen (Bright Magenta)', value: 'bright-magenta' },
+  { label: 'Hồng nhấn (Accent Pink)', value: 'accent-pink' },
+  { label: 'Trắng (White)', value: 'white' },
+  { label: 'Hồng phấn (Soft Pink)', value: 'soft-pink' },
+] as const
+
+export type TextColorOption = (typeof TEXT_COLOR_OPTIONS)[number]['value']
+
+export const ALIGN_OPTIONS = [
+  { label: 'Căn trái', value: 'left' },
+  { label: 'Căn giữa', value: 'center' },
+] as const
+
+export type AlignOption = (typeof ALIGN_OPTIONS)[number]['value']

@@ -143,7 +143,7 @@ describe('PackageComparison Puck Migration v1 -> v2', () => {
           type: 'SectionHeader',
           props: {
             id: 'sec-1',
-            version: 1,
+            version: 2,
             titleLine1: 'Tiêu đề',
           },
         },
@@ -159,7 +159,7 @@ describe('PackageComparison Puck Migration v1 -> v2', () => {
     expect(pkg.props.version).toBe(3)
     expect(pkg.props.note).toBe('Ghi chú tùy chỉnh của Hana')
     expect(pkg.props.showPaymentPolicyLink).toBe(true)
-    expect(sec.props.version).toBe(1)
+    expect(sec.props.version).toBe(2)
   })
 
   it('handles empty or malformed data gracefully', () => {

@@ -97,7 +97,7 @@ test.describe('T1-04: Puck Templates, Versions, Locked Blocks and Autosave', () 
       const sectionHeader = canvas.locator('[data-puck-component="campaign-header"]').first()
       await sectionHeader.click()
       const titleField = page.getByRole('textbox', {
-        name: 'Tiêu đề dòng 1 (Xanh thẫm)',
+        name: 'Tiêu đề dòng 1',
         exact: true,
       })
       await expect(titleField).toBeVisible()
