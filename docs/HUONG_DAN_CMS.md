@@ -48,6 +48,7 @@
    - [5.12. Trang Liên hệ & Câu hỏi thường gặp (Sitemap v2)](#512-trang-liên-hệ--câu-hỏi-thường-gặp-sitemap-v2)
    - [5.13. Mẫu trang Sitemap v2 & bản nháp](#513-mẫu-trang-sitemap-v2--bản-nháp)
    - [5.14. Trang Cộng đồng & Doanh nghiệp (Sitemap v2)](#514-trang-cộng-đồng--doanh-nghiệp-sitemap-v2)
+   - [5.15. Quản lý Thẻ con trong Lưới Thẻ Biểu Tượng / Đánh Số (IconCardGrid)](#515-quản-lý-thẻ-con-trong-lưới-thẻ-biểu-tượng--đánh-số-iconcardgrid)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -1749,6 +1750,43 @@ Trong đợt nâng cấp hoàn thiện Sitemap v2 (SM-08), website được bổ
      - Ở ô **Loại liên kết**, bạn có thể chọn **Liên kết** và dán đường dẫn `/doanh-nghiep/<slug-chuong-trinh>` của chương trình bạn vừa tạo ở trên.
      - Sửa lại **Tên mục** và **Mô tả ngắn** cho phù hợp.
   5. Bấm **Lưu thay đổi**. Menu "Sản phẩm" ngoài đời thực sẽ dẫn khách hàng doanh nghiệp thẳng tới chương trình bạn mong muốn.
+
+---
+
+### 5.15. Quản lý Thẻ con trong Lưới Thẻ Biểu Tượng / Đánh Số (IconCardGrid)
+
+Trong bản nâng cấp mới, khối **Lưới Thẻ Biểu Tượng / Đánh Số** (`IconCardGrid`) đã được cải tiến thành **dạng kéo thả trực quan** (trải nghiệm kiểu Elementor). Hana không còn phải mở popup mảng ở thanh cài đặt để sửa từng thẻ nữa, mà có thể thao tác trực tiếp trên màn hình vẽ (canvas).
+
+#### 1. Vì sao khối "Thẻ" (Card) không nằm ở menu bên trái?
+
+- Khối **Thẻ** (`Card`) là **khối con chuyên biệt**, được thiết kế để chỉ hoạt động chuẩn xác bên trong khung lưới của khối cha **Lưới Thẻ Biểu Tượng / Đánh Số**.
+- Để bảo vệ giao diện của Trạm không bao giờ bị xô lệch hay vỡ hàng cột khi xem trên điện thoại, hệ thống **ẩn khối Thẻ khỏi menu bên trái** và chỉ cho phép nó xuất hiện bên trong lưới thẻ.
+- Mỗi khi Hana kéo khối **Lưới Thẻ Biểu Tượng / Đánh Số** vào trang, hệ thống đã chuẩn bị sẵn **3 chiếc thẻ mẫu** ngay ngắn để Hana bắt đầu chỉnh sửa.
+
+#### 2. Thao tác trực tiếp với từng thẻ trên màn hình vẽ (Canvas)
+
+Hana chỉ cần rê chuột và nhấp vào bất kỳ chiếc thẻ nào trên màn hình:
+1. **Nhân bản thẻ (Duplicate)**: Khi bấm chọn một thẻ, thanh công cụ của Puck sẽ xuất hiện ngay trên thẻ đó. Bấm vào biểu tượng **hai ô vuông chồng nhau (Duplicate)** để nhân bản thêm một thẻ mới giống hệt vị trí cạnh bên.
+2. **Kéo đổi chỗ các thẻ (Reorder)**: Nhấp giữ vào thanh kéo (hoặc biểu tượng 6 chấm) của thẻ, sau đó kéo rê sang vị trí trước hoặc sau thẻ khác để đổi thứ tự hiển thị.
+3. **Xoá thẻ**: Bấm vào biểu tượng **thùng rác (Delete)** trên thanh công cụ của thẻ khi muốn bỏ bớt thẻ khỏi lưới.
+
+#### 3. Tự động đánh số thứ tự (01, 02, 03...)
+
+- Nếu ở khối cha (Lưới Thẻ), Hana chọn **Kiểu đánh dấu thẻ** là **Đánh số thứ tự (01, 02...)**:
+  - Toàn bộ các con số thứ tự `01`, `02`, `03`... sẽ được **tự động tính toán và hiển thị**.
+  - Khi Hana kéo đổi chỗ hai thẻ, hoặc nhân bản thêm thẻ mới, các con số sẽ **tự động cập nhật lại đúng thứ tự từ trái qua phải** mà Hana không cần phải sửa tay từng con số một.
+
+#### 4. Chỉnh sửa chi tiết một thẻ ở thanh bên phải
+
+Khi nhấp chọn một chiếc thẻ, cột bên phải sẽ hiển thị các ô cài đặt riêng cho thẻ đó:
+- **Biểu tượng thương hiệu**: Chọn 1 trong 16 biểu tượng độc quyền của Trạm Dừng Cảm Xúc (`target`, `spark`, `heart`, `compass`, `mirror`...).
+- **Ảnh thẻ (Thư viện media - thay thế biểu tượng)**: Nếu muốn thẻ hiển thị ảnh minh họa thay vì biểu tượng, Hana bấm chọn ảnh từ Thư viện media. _Lưu ý: Ảnh tải lên bắt buộc phải có dòng chữ mô tả (Alt text) trong thư viện Media để đảm bảo tiêu chuẩn trợ năng quốc tế WCAG._
+- **Tiêu đề thẻ & Nội dung mô tả**: Hana có thể gõ sửa trực tiếp ngay trên khung vẽ hoặc nhập vào các ô tương ứng ở thanh bên phải.
+- **Màu tiêu đề & Màu nội dung**: Hệ thống tự động lọc danh sách màu an toàn (đạt chuẩn tương phản WCAG AA dựa trên màu nền của thẻ):
+  - Khi thẻ ở nền sáng: Hệ thống gợi ý `Xanh thẫm (Deep Navy)` và `Hồng sen (Bright Magenta)`.
+  - Khi thẻ ở nền tối: Hệ thống gợi ý `Trắng` và `Hồng phấn (Soft Pink)`.
+- **Cỡ chữ tiêu đề & Cỡ chữ nội dung**: Lựa chọn linh hoạt `Nhỏ` (`sm`), `Vừa` (`md`), `Lớn` (`lg`).
+- **Căn lề**: `Căn trái` (mặc định) hoặc `Căn giữa` (phù hợp với các thẻ ngắn, trang trọng).
 
 ---
 
