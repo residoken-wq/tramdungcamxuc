@@ -60,7 +60,5 @@ export const ServiceCardsBlock: ComponentConfig<ServiceCardsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck, ...props }) => (
-    <ServiceCards {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
-  ),
+  render: ({ puck: _puck, ...props }) => <ServiceCards {...props} />,
 }

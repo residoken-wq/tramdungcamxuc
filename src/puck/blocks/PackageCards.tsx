@@ -85,7 +85,5 @@ export const PackageCardsBlock: ComponentConfig<PackageCardsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck, ...props }) => (
-    <PackageCards {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
-  ),
+  render: ({ puck: _puck, ...props }) => <PackageCards {...props} />,
 }

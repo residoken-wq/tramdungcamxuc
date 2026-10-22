@@ -1,14 +1,6 @@
-'use client'
-
 import React from 'react'
-import Image from 'next/image'
-import { Button } from '@/components/ui/Button'
-import { useClientServices, type PublicServiceSummary } from '@/puck/client-preview'
+import { ServiceCardItem } from './ServiceCardItem'
 import { vi } from '@/lib/i18n/vi'
-
-export interface ServiceCardItem {
-  serviceId?: string | number
-}
 
 export interface ResolvedService {
   id: string | number
@@ -31,7 +23,10 @@ export interface ServiceCardsProps {
   titleLine1?: string
   titleLine2?: string
   emotionLine?: string
-  services?: ServiceCardItem[]
+  columns?: 1 | 2 | 3 | '1' | '2' | '3'
+  cards?: React.ReactNode | React.ComponentType<{ className?: string }> | unknown[]
+  // Legacy v1 props:
+  services?: Array<{ serviceId?: string | number }>
   highlightServiceId?: string | number
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
@@ -64,57 +59,44 @@ export function ServiceCards({
   titleLine1,
   titleLine2,
   emotionLine,
-  services = [],
+  columns = 3,
+  cards,
+  services,
   highlightServiceId,
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
   puck,
 }: ServiceCardsProps) {
-  const isEditing = puck?.isEditing ?? false
+  const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
 
-  const serviceIds = (services || [])
-    .map((s) => s?.serviceId)
-    .filter((id): id is string | number => id != null && String(id).trim() !== '')
+  const hasCards = Boolean(cards)
+  const v1Services = (_resolved?.services || services || []) as Array<
+    ResolvedService | { serviceId?: string | number }
+  >
+  const hasV1Services = v1Services.length > 0
 
-  const { services: clientServices } = useClientServices({
-    serviceIds,
-    initialServices: _resolved?.services as PublicServiceSummary[] | undefined,
-  })
-
-  const activeServices = (_resolved?.services || clientServices || []) as ResolvedService[]
-
-  if (!isEditing && activeServices.length === 0) {
+  if (!isEditing && !hasCards && !hasV1Services) {
     return null
   }
 
-  if (isEditing && activeServices.length === 0) {
-    return (
-      <section
-        className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]}`}
-      >
-        <div className="mx-auto max-w-5xl py-8 px-4 rounded-card border-2 border-dashed border-deep-navy/20 text-center font-ui text-sm text-deep-navy/70 bg-white/50">
-          {vi.sm04.emptyServicesMessage}
-        </div>
-      </section>
-    )
-  }
+  const numCols = Number(columns) || 3
+  const gridColsClass =
+    numCols === 1
+      ? 'max-w-md mx-auto'
+      : numCols === 2
+        ? 'grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto'
+        : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto'
 
   const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
 
-  const gridColsClass =
-    activeServices.length === 1
-      ? 'max-w-md mx-auto'
-      : activeServices.length === 2
-        ? 'grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto'
-        : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto'
-
   return (
     <section
       className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+      data-bg={bgColor}
     >
       <div className="mx-auto max-w-6xl">
         {(seriesLabel || titleLine1) && (
@@ -146,137 +128,66 @@ export function ServiceCards({
           </div>
         )}
 
-        <div className={gridColsClass}>
-          {activeServices.map((service) => {
-            const isHighlighted =
-              highlightServiceId != null &&
-              String(highlightServiceId).trim() !== '' &&
-              String(highlightServiceId) === String(service.id)
-
-            return (
-              <div
-                key={service.id}
-                className={`rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 ${
-                  isHighlighted
-                    ? 'bg-deep-navy border-deep-navy/20 text-white'
-                    : 'bg-white border-deep-navy/10 text-deep-navy'
-                }`}
-              >
-                <div>
-                  {service.imageUrl ? (
-                    <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-warm-ivory/50">
-                      <Image
-                        src={service.imageUrl}
-                        alt={service.imageAlt || service.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                      {service.badge && (
-                        <span className="absolute top-3 left-3 rounded-full bg-deep-navy/90 px-3 py-1 font-ui text-xs font-bold text-white shadow-soft">
-                          {service.badge}
-                        </span>
-                      )}
-                    </div>
-                  ) : service.badge ? (
-                    <div className="px-6 pt-6">
-                      <span className="inline-block rounded-full bg-soft-pink px-3 py-1 font-ui text-xs font-bold text-deep-navy">
-                        {service.badge}
-                      </span>
-                    </div>
-                  ) : null}
-
-                  <div className="p-6 sm:p-7">
-                    {service.audienceLabel && (
-                      <p
-                        className={`font-ui text-xs font-bold uppercase tracking-wider mb-2 ${
-                          isHighlighted ? 'text-soft-pink' : 'text-bright-magenta'
-                        }`}
-                      >
-                        {service.audienceLabel}
-                      </p>
-                    )}
-
-                    <h3
-                      className={`font-display text-2xl uppercase tracking-tight mb-4 ${
-                        isHighlighted ? 'text-white' : 'text-deep-navy'
-                      }`}
-                    >
-                      {service.name}
-                    </h3>
-
-                    {service.situations && service.situations.length > 0 && (
-                      <div className="mb-4">
-                        <p
-                          className={`font-ui text-xs font-bold uppercase tracking-wider mb-2 ${
-                            isHighlighted ? 'text-soft-pink' : 'text-deep-navy/70'
-                          }`}
-                        >
-                          {vi.sm04.suitsLabel}
-                        </p>
-                        <ul className="space-y-1.5 font-ui text-sm">
-                          {service.situations.map((sit, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span
-                                className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${
-                                  isHighlighted ? 'bg-soft-pink' : 'bg-bright-magenta'
-                                }`}
-                              />
-                              <span
-                                className={isHighlighted ? 'text-white/90' : 'text-deep-navy/80'}
-                              >
-                                {sit}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {service.outcomes && service.outcomes.length > 0 && (
-                      <div className="mb-6">
-                        <p
-                          className={`font-ui text-xs font-bold uppercase tracking-wider mb-2 ${
-                            isHighlighted ? 'text-soft-pink' : 'text-deep-navy/70'
-                          }`}
-                        >
-                          {vi.sm04.outcomesLabel}
-                        </p>
-                        <ul className="space-y-1.5 font-ui text-sm">
-                          {service.outcomes.map((out, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <span
-                                className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${
-                                  isHighlighted ? 'bg-mint-haze' : 'bg-bright-magenta'
-                                }`}
-                              />
-                              <span
-                                className={isHighlighted ? 'text-white/90' : 'text-deep-navy/80'}
-                              >
-                                {out}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-6 pt-0 sm:p-7 sm:pt-0">
-                  <Button
-                    href={`/coaching/${service.slug}`}
-                    variant={isHighlighted ? 'primary' : 'secondary'}
-                    size="md"
-                    className="w-full text-center"
-                  >
-                    {service.ctaLabel || vi.sm04.defaultServiceCta}
-                  </Button>
-                </div>
-              </div>
+        {/* Slot or fallback content */}
+        {hasCards ? (
+          typeof cards === 'function' ? (
+            React.createElement(
+              cards as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+              { className: gridColsClass },
             )
-          })}
-        </div>
+          ) : React.isValidElement(cards) ? (
+            <div className={gridColsClass}>{cards}</div>
+          ) : Array.isArray(cards) ? (
+            <div className={gridColsClass}>
+              {cards.map((child: unknown, idx: number) => {
+                if (React.isValidElement(child)) return child
+                if (child && typeof child === 'object') {
+                  const item = child as { props?: Record<string, unknown> }
+                  if (item.props) {
+                    return (
+                      <ServiceCardItem
+                        key={typeof item.props.id === 'string' ? item.props.id : idx}
+                        isDeepNavy={isDeepNavy}
+                        puck={puck}
+                        {...item.props}
+                      />
+                    )
+                  }
+                }
+                return null
+              })}
+            </div>
+          ) : (
+            <div className={gridColsClass}>{cards as React.ReactNode}</div>
+          )
+        ) : hasV1Services ? (
+          <div className={gridColsClass}>
+            {v1Services.map((service, idx) => {
+              const srvObj = service as ResolvedService
+              const srvId =
+                srvObj.id || (service as { serviceId?: string | number }).serviceId || idx
+              const isHighlighted =
+                highlightServiceId != null &&
+                String(highlightServiceId).trim() !== '' &&
+                String(highlightServiceId) === String(srvId)
+
+              return (
+                <ServiceCardItem
+                  key={srvId}
+                  serviceId={srvId}
+                  highlight={isHighlighted}
+                  isDeepNavy={isDeepNavy}
+                  _resolved={{ service: srvObj.name ? srvObj : null }}
+                  puck={puck}
+                />
+              )
+            })}
+          </div>
+        ) : isEditing ? (
+          <div className="mx-auto max-w-5xl py-8 px-4 rounded-card border-2 border-dashed border-deep-navy/20 text-center font-ui text-sm text-deep-navy/70 bg-white/50">
+            {vi.sm04.emptyServicesMessage}
+          </div>
+        ) : null}
       </div>
     </section>
   )
