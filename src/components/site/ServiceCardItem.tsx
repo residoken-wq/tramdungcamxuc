@@ -43,7 +43,7 @@ export function ServiceCardItem({
   align = 'left',
   _resolved,
   puck,
-  isDeepNavy = false,
+  isDeepNavy: _isDeepNavy = false,
 }: ServiceCardItemProps) {
   const isEditing = Boolean(puck?.isEditing)
 
@@ -78,19 +78,23 @@ export function ServiceCardItem({
     return null
   }
 
-  const isCardNavy = highlight || isDeepNavy
+  // ServiceCards v1: only the highlighted card is navy; other cards stay white on any section.
+  const isCardNavy = Boolean(highlight)
 
-  const resolvedNameColorClass = nameColor
-    ? textColorClass(nameColor)
-    : isCardNavy
-      ? 'text-white'
-      : 'text-deep-navy'
+  // "deep-navy" is the stored default: treat it as automatic so a highlighted card keeps light text
+  const resolvedNameColorClass =
+    nameColor && nameColor !== 'deep-navy'
+      ? textColorClass(nameColor)
+      : isCardNavy
+        ? 'text-white'
+        : 'text-deep-navy'
 
-  const resolvedTextColorClass = textColor
-    ? textColorClass(textColor)
-    : isCardNavy
-      ? 'text-white/90'
-      : 'text-deep-navy/80'
+  const resolvedTextColorClass =
+    textColor && textColor !== 'deep-navy'
+      ? textColorClass(textColor)
+      : isCardNavy
+        ? 'text-white/90'
+        : 'text-deep-navy/80'
 
   const audienceLabel = activeService.audienceLabel
   const alignClass = ` ${textAlignClass(align)}`
@@ -100,9 +104,7 @@ export function ServiceCardItem({
       className={`rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 ${
         highlight
           ? 'bg-deep-navy border-deep-navy/20 text-white'
-          : isDeepNavy
-            ? 'bg-white/10 border-white/20 text-white'
-            : 'bg-white border-deep-navy/10 text-deep-navy'
+          : 'bg-white border-deep-navy/10 text-deep-navy'
       }${alignClass}`}
     >
       <div>

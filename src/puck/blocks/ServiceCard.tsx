@@ -2,7 +2,7 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { ServiceCardItem, type ServiceCardItemProps } from '@/components/site/ServiceCardItem'
 import { FONT_SIZE_OPTIONS, ALIGN_OPTIONS } from '../constants'
-import { allowedTextColors, getChildRealBg } from '@/lib/brand/format-classes'
+import { allowedTextColors } from '@/lib/brand/format-classes'
 import { createServiceExternalField } from '../service-field'
 import { vi } from '@/lib/i18n/vi'
 
@@ -63,7 +63,8 @@ export const ServiceCardBlock: ComponentConfig<ServiceCardItemProps> = {
   },
   resolveFields: (data, params) => {
     const isHighlight = Boolean(data?.props?.highlight)
-    const realBg = getChildRealBg(params?.parent, { highlight: isHighlight })
+    // Service cards are white unless highlighted (navy), whatever the section background
+    const realBg = isHighlight ? 'deep-navy' : 'white'
     const isNameLarge = true
     const nameColors = allowedTextColors(realBg, isNameLarge)
     const isTextLarge = data?.props?.textSize === 'lg'

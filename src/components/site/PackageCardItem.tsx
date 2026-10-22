@@ -78,25 +78,30 @@ export function PackageCardItem({
     return null
   }
 
+  // In a slot the card cannot receive isDeepNavy, so the navy look also comes from the
+  // section's data-bg (group/grid), matching PackageCards v1.
   const cardBg = highlight
     ? isDeepNavy
       ? 'bg-white/15 border-accent-pink shadow-md ring-2 ring-accent-pink'
-      : 'bg-white border-accent-pink shadow-md ring-2 ring-accent-pink'
+      : 'bg-white border-accent-pink shadow-md ring-2 ring-accent-pink group-data-[bg=deep-navy]/grid:bg-white/15'
     : isDeepNavy
       ? 'bg-white/10 border-white/20 shadow-soft'
-      : 'bg-white border-deep-navy/10 shadow-soft'
+      : 'bg-white border-deep-navy/10 shadow-soft group-data-[bg=deep-navy]/grid:bg-white/10 group-data-[bg=deep-navy]/grid:border-white/20'
 
-  const resolvedNameColor = nameColor
-    ? textColorClass(nameColor)
-    : isDeepNavy
-      ? 'text-white'
-      : 'text-deep-navy'
+  // "deep-navy" is the stored default: treat it as automatic so navy sections keep light text
+  const resolvedNameColor =
+    nameColor && nameColor !== 'deep-navy'
+      ? textColorClass(nameColor)
+      : isDeepNavy
+        ? 'text-white'
+        : 'text-deep-navy group-data-[bg=deep-navy]/grid:text-white'
 
-  const resolvedTextColor = textColor
-    ? textColorClass(textColor)
-    : isDeepNavy
-      ? 'text-white/80'
-      : 'text-deep-navy/80'
+  const resolvedTextColor =
+    textColor && textColor !== 'deep-navy'
+      ? textColorClass(textColor)
+      : isDeepNavy
+        ? 'text-white/80'
+        : 'text-deep-navy/80 group-data-[bg=deep-navy]/grid:text-white/80'
 
   return (
     <div
@@ -125,7 +130,9 @@ export function PackageCardItem({
         {activePackage.tagline && (
           <p
             className={`font-quote text-base italic mb-3 ${
-              isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+              isDeepNavy
+                ? 'text-soft-pink'
+                : 'text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink'
             }`}
           >
             {activePackage.tagline}

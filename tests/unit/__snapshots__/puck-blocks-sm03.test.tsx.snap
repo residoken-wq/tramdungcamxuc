@@ -428,7 +428,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch [counter-reset:card-counter]"
       >
         <div
-          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-deep-navy/10 shadow-soft text-left"
+          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-deep-navy/10 shadow-soft group-data-[bg=deep-navy]/grid:bg-white/10 group-data-[bg=deep-navy]/grid:border-white/20 text-left"
         >
           <div>
             <div
@@ -456,19 +456,19 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               </svg>
             </div>
             <h3
-              class="font-display uppercase tracking-tight mb-2 text-2xl text-deep-navy"
+              class="font-display uppercase tracking-tight mb-2 text-2xl text-deep-navy group-data-[bg=deep-navy]/grid:text-white"
             >
               CLEAR
             </h3>
             <p
-              class="font-ui leading-relaxed text-sm sm:text-base text-deep-navy/80"
+              class="font-ui leading-relaxed text-sm sm:text-base text-deep-navy/80 group-data-[bg=deep-navy]/grid:text-white/80"
             >
               Nhận diện và tháo gỡ điểm nghẽn cảm xúc.
             </p>
           </div>
         </div>
         <div
-          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-accent-pink shadow-md ring-2 ring-accent-pink text-left"
+          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-accent-pink shadow-md ring-2 ring-accent-pink group-data-[bg=deep-navy]/grid:bg-white/15 text-left"
         >
           <div>
             <div
@@ -496,12 +496,12 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               </svg>
             </div>
             <h3
-              class="font-display uppercase tracking-tight mb-2 text-2xl text-deep-navy"
+              class="font-display uppercase tracking-tight mb-2 text-2xl text-deep-navy group-data-[bg=deep-navy]/grid:text-white"
             >
               BUILD
             </h3>
             <p
-              class="font-ui leading-relaxed text-sm sm:text-base text-deep-navy/80"
+              class="font-ui leading-relaxed text-sm sm:text-base text-deep-navy/80 group-data-[bg=deep-navy]/grid:text-white/80"
             >
               Xây dựng thói quen và sự vững vàng.
             </p>

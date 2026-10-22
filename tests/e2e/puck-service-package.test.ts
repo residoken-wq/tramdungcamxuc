@@ -95,6 +95,7 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
       // 2. Tạo 3 gói mẫu qua REST
       const pkgRes1 = await page.request.post('/api/products', {
         data: {
+          web: 'site',
           type: 'package',
           name: `[MẪU] Gói CLEAR ${marker}`,
           slug: `clear-${marker}`,
@@ -112,6 +113,7 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
 
       const pkgRes2 = await page.request.post('/api/products', {
         data: {
+          web: 'site',
           type: 'package',
           name: `[MẪU] Gói BUILD ${marker}`,
           slug: `build-${marker}`,
@@ -129,6 +131,7 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
 
       const pkgRes3 = await page.request.post('/api/products', {
         data: {
+          web: 'site',
           type: 'package',
           name: `[MẪU] Gói SHINE ${marker}`,
           slug: `shine-${marker}`,

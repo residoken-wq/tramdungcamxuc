@@ -7,6 +7,8 @@ import { ServiceCardBlock } from '@/puck/blocks/ServiceCard'
 import { PackageCardBlock } from '@/puck/blocks/PackageCard'
 import { ServiceCards } from '@/components/site/ServiceCards'
 import { PackageCards } from '@/components/site/PackageCards'
+import { ServiceCardItem } from '@/components/site/ServiceCardItem'
+import { PackageCardItem } from '@/components/site/PackageCardItem'
 import { puckConfig } from '@/puck/config'
 import { getChildRealBg } from '@/lib/brand/format-classes'
 
@@ -362,6 +364,61 @@ describe('PK-04: ServiceCard & PackageCard Child Blocks - Unit Tests', () => {
       expect(html).toContain('Khai vấn Cảm xúc Cá nhân')
       expect(html).toContain('GROWTH MIRROR')
       expect(html).toContain('Gói CLEAR')
+    })
+  })
+  describe('PK-04c: giữ giao diện v1', () => {
+    const service = { id: 1, name: '[MẪU] Dịch vụ', slug: 'dv' }
+    const pkg = { id: 2, name: '[MẪU] Gói', slug: 'goi', type: 'package' }
+
+    it('thẻ dịch vụ nổi bật với màu mặc định đã lưu (deep-navy) vẫn có tên chữ trắng', () => {
+      const html = renderToStaticMarkup(
+        <ServiceCardItem
+          serviceId={1}
+          highlight
+          nameColor="deep-navy"
+          textColor="deep-navy"
+          _resolved={{ service } as never}
+        />,
+      )
+      expect(html).toContain('bg-deep-navy')
+      expect(html).toMatch(/<h3 class="[^"]*\btext-white\b[^"]*">\[MẪU\] Dịch vụ/)
+    })
+
+    it('thẻ dịch vụ không nổi bật luôn nền trắng như v1, kể cả section navy', () => {
+      const html = renderToStaticMarkup(
+        <ServiceCardItem serviceId={1} isDeepNavy _resolved={{ service } as never} />,
+      )
+      expect(html).toContain('bg-white border-deep-navy/10')
+      expect(html).not.toContain('bg-white/10')
+    })
+
+    it('thẻ gói trong slot đổi sang nền mờ / chữ sáng theo data-bg của section navy', () => {
+      const html = renderToStaticMarkup(
+        <PackageCardItem packageId={2} _resolved={{ package: pkg } as never} />,
+      )
+      expect(html).toContain('group-data-[bg=deep-navy]/grid:bg-white/10')
+      expect(html).toContain('group-data-[bg=deep-navy]/grid:text-white')
+    })
+
+    it('khối rỗng (visibleCardCount = 0) ẩn trên trang công khai, vẫn hiện trong builder', () => {
+      const Slot = () => null
+      const pub = renderToStaticMarkup(
+        <ServiceCards titleLine1="[MẪU] DV" cards={Slot} _resolved={{ visibleCardCount: 0 }} />,
+      )
+      expect(pub).toBe('')
+      const pubPkg = renderToStaticMarkup(
+        <PackageCards titleLine1="[MẪU] GÓI" cards={Slot} _resolved={{ visibleCardCount: 0 }} />,
+      )
+      expect(pubPkg).toBe('')
+      const editing = renderToStaticMarkup(
+        <ServiceCards
+          titleLine1="[MẪU] DV"
+          cards={Slot}
+          _resolved={{ visibleCardCount: 0 }}
+          puck={{ isEditing: true }}
+        />,
+      )
+      expect(editing).toContain('[MẪU] DV')
     })
   })
 })
