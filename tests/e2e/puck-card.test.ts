@@ -119,10 +119,8 @@ test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
 
       // 5. Chọn thẻ 1 và nhân bản
       const card1 = canvas.getByRole('heading', { name: titles[0], exact: true })
-      const duplicate = page
-        .locator('button[title="Nhân bản"]')
-        .or(canvas.locator('button[title="Nhân bản"]'))
-        .first()
+      // Thanh thao tác của Puck nằm trong iframe canvas; nút có title theo từ điển tiếng Việt
+      const duplicate = canvas.locator('button[title="Nhân bản"]').first()
       await expect(async () => {
         await card1.click()
         await expect(duplicate).toBeVisible({ timeout: 2000 })
@@ -140,8 +138,13 @@ test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
       ).toBeVisible({ timeout: 15000 })
 
       // 7. Trang công khai: 4 thẻ, thẻ 2 mang class màu / cỡ mới
-      await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
-      await expect(publicTitles).toHaveText([titles[0], titles[0], titles[1], titles[2]])
+      // Tải lại tới khi bản vừa xuất bản thay bản cũ (revalidate có thể trễ một nhịp)
+      await expect(async () => {
+        await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
+        await expect(publicTitles).toHaveText([titles[0], titles[0], titles[1], titles[2]], {
+          timeout: 2000,
+        })
+      }).toPass({ timeout: 30000 })
       const publicCard2 = publicTitles.filter({ hasText: titles[1] })
       await expect(publicCard2).toHaveClass(/text-bright-magenta/)
       await expect(publicCard2).toHaveClass(/sm:text-2xl/)
