@@ -7,7 +7,7 @@ import type { Data } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { validatePageLockedBlocks } from '@/puck/locks'
 import { generateDuplicateSlug } from '@/puck/duplicate'
-import { applyPuckMigrations } from '@/puck/migrations'
+import { applyPuckMigrations, normalizePuckData } from '@/puck/migrations'
 import { isAdminUser } from '@/lib/auth/access'
 
 export type SaveActionResult = {
@@ -74,8 +74,10 @@ export async function saveDraftAction(pageId: string, puckData: Data): Promise<S
       overrideAccess: false,
     })
 
+    const migratedData = normalizePuckData(puckData)
+
     if (existingPage?.slug) {
-      const validation = validatePageLockedBlocks(existingPage.slug, puckData)
+      const validation = validatePageLockedBlocks(existingPage.slug, migratedData)
       if (!validation.valid) {
         return {
           success: false,
@@ -84,8 +86,6 @@ export async function saveDraftAction(pageId: string, puckData: Data): Promise<S
         }
       }
     }
-
-    const migratedData = applyPuckMigrations(puckData)
 
     const updatedDoc = await payload.update({
       collection: 'pages',
@@ -138,8 +138,10 @@ export async function publishPageAction(pageId: string, puckData: Data): Promise
       overrideAccess: false,
     })
 
+    const migratedData = normalizePuckData(puckData)
+
     if (existingPage?.slug) {
-      const validation = validatePageLockedBlocks(existingPage.slug, puckData)
+      const validation = validatePageLockedBlocks(existingPage.slug, migratedData)
       if (!validation.valid) {
         return {
           success: false,
@@ -148,8 +150,6 @@ export async function publishPageAction(pageId: string, puckData: Data): Promise
         }
       }
     }
-
-    const migratedData = applyPuckMigrations(puckData)
 
     const updatedDoc = await payload.update({
       collection: 'pages',
@@ -263,7 +263,7 @@ export async function restoreVersionAction(versionId: string): Promise<RestoreVe
       success: true,
       message: vi.builder.restoredVersion,
       status: restoredDoc._status || 'draft',
-      puckData: restoredDoc.puckData as Data,
+      puckData: normalizePuckData(restoredDoc.puckData),
     }
   } catch (error) {
     console.error('Error in restoreVersionAction:', error)
@@ -323,7 +323,7 @@ export async function duplicatePageAction(pageId: string): Promise<DuplicatePage
       data: {
         title: `${originalDoc.title || 'Trang'} (Bản sao)`,
         slug: newSlug,
-        puckData: originalDoc.puckData,
+        puckData: normalizePuckData(originalDoc.puckData),
         template: originalDoc.template,
         isSample: (originalDoc as { isSample?: boolean }).isSample ?? false,
         _status: 'draft',

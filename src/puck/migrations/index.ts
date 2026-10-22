@@ -4,7 +4,6 @@ export type PuckMigration = (data: Data) => Data
 
 /**
  * Danh sách migration cho Puck data của Trạm Dừng Cảm Xúc.
- * Hiện tại là mảng rỗng (tất cả 5 khối đang ở phiên bản ban đầu: version 1).
  *
  * --- HƯỚNG DẪN THÊM MIGRATION KHI ĐỔI PROPS CỦA KHỐI (AGENTS.md §5B) ---
  *
@@ -58,6 +57,7 @@ import { migrateLogoStripV1ToV2 } from './v2-logo-strip'
 import { migrateHanaStoryV2ToV3 } from './v3-hana-story'
 import { migrateFAQV2ToV3 } from './v3-faq'
 import { migrateSectionHeaderV1ToV2 } from './v2-section-header'
+import { migrateIconCardGridV1ToV2 } from './v2-icon-card-grid'
 
 export {
   migrateJourneyStepsV1ToV2,
@@ -67,6 +67,7 @@ export {
   migrateLogoStripV1ToV2,
   migrateFAQV2ToV3,
   migrateSectionHeaderV1ToV2,
+  migrateIconCardGridV1ToV2,
 }
 
 export const puckMigrations: PuckMigration[] = [
@@ -86,6 +87,7 @@ export const puckMigrations: PuckMigration[] = [
   migrateLogoStripV1ToV2,
   migrateFAQV2ToV3,
   migrateSectionHeaderV1ToV2,
+  migrateIconCardGridV1ToV2,
 ]
 
 /**
@@ -93,4 +95,35 @@ export const puckMigrations: PuckMigration[] = [
  */
 export function applyPuckMigrations(data: Data): Data {
   return puckMigrations.reduce((acc, migration) => migration(acc), data)
+}
+
+/**
+ * Chuẩn hóa và chạy toàn bộ chuỗi migrations trên dữ liệu Puck thô (object hoặc JSON string).
+ * Dùng khi đọc dữ liệu từ DB (on read) cũng như khi lưu (on save).
+ */
+export function normalizePuckData(raw: unknown): Data {
+  if (!raw) {
+    return { content: [], root: { props: { title: '' } }, zones: {} }
+  }
+
+  let data: any = raw
+  if (typeof raw === 'string') {
+    try {
+      data = JSON.parse(raw)
+    } catch {
+      return { content: [], root: { props: { title: '' } }, zones: {} }
+    }
+  }
+
+  if (typeof data !== 'object' || data === null) {
+    return { content: [], root: { props: { title: '' } }, zones: {} }
+  }
+
+  const structured: Data = {
+    content: Array.isArray(data.content) ? data.content : [],
+    root: data.root && typeof data.root === 'object' ? data.root : { props: { title: '' } },
+    zones: data.zones && typeof data.zones === 'object' ? data.zones : {},
+  }
+
+  return applyPuckMigrations(structured)
 }

@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
+import { normalizePuckData } from '@/puck/migrations'
 import { PuckEditorClient } from './PuckEditorClient'
 
 export const dynamic = 'force-dynamic'
@@ -44,9 +45,15 @@ export default async function BuilderPage({ params }: BuilderPageProps) {
     notFound()
   }
 
-  const initialData: Data = (pageDoc.puckData as Data) || {
-    content: [],
-    root: { props: { title: pageDoc.title || '' } },
+  const initialData: Data = normalizePuckData(pageDoc.puckData)
+  if (!initialData.root?.props?.title && pageDoc.title) {
+    initialData.root = {
+      ...initialData.root,
+      props: {
+        ...(initialData.root?.props || {}),
+        title: pageDoc.title,
+      },
+    }
   }
 
   return (
