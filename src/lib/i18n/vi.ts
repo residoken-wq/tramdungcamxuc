@@ -1045,6 +1045,33 @@ export const vi = {
     align: 'Căn lề',
   },
 
+  puckStat: {
+    label: 'Ô số liệu',
+    value: 'Con số / Chỉ số (Ví dụ: [MẪU] 500+)',
+    labelField: 'Nhãn mô tả ý nghĩa',
+    description: 'Mô tả phụ (Tùy chọn)',
+    icon: 'Biểu tượng (Hiện thay cho số - Tùy chọn)',
+    valueColor: 'Màu con số',
+    valueSize: 'Cỡ con số',
+    labelColor: 'Màu nhãn mô tả',
+    labelSize: 'Cỡ nhãn mô tả',
+    align: 'Căn lề',
+  },
+
+  puckStep: {
+    label: 'Bước hành trình',
+    name: 'Tên bước (Ví dụ: Pause)',
+    subname: 'Nhãn badge (Ví dụ: Dừng lại)',
+    subtitle: 'Dòng phụ (Tùy chọn)',
+    description: 'Nội dung mô tả bước',
+    highlight: 'Bước nổi bật (Nền xanh thẫm Deep Navy)',
+    nameColor: 'Màu tên bước',
+    nameSize: 'Cỡ tên bước',
+    descColor: 'Màu mô tả',
+    descSize: 'Cỡ mô tả',
+    align: 'Căn lề',
+  },
+
   sm03: {
     recommendedLabel: 'Khuyên dùng',
     choosePackage: 'Chọn gói này',
