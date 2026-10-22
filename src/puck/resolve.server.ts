@@ -329,6 +329,10 @@ export async function resolveServerData(
           if (id) productIdsToFetch.add(id)
         }
       }
+    } else if (item.type === 'PackageCard') {
+      if (item.props.packageId) {
+        productIdsToFetch.add(item.props.packageId as string | number)
+      }
     } else if (item.type === 'CTASection') {
       needsBookingProduct = true
     } else if (item.type === 'Callout') {
@@ -365,6 +369,10 @@ export async function resolveServerData(
       }
       if (item.props.highlightServiceId) {
         serviceIdsToFetch.add(item.props.highlightServiceId as string | number)
+      }
+    } else if (item.type === 'ServiceCard') {
+      if (item.props.serviceId) {
+        serviceIdsToFetch.add(item.props.serviceId as string | number)
       }
     }
 
@@ -973,6 +981,10 @@ export async function resolveServerData(
         buttonUrl: resolvedButtonUrl,
         bookingProductId: defaultBookingProductId,
       }
+    } else if (item.type === 'PackageCard') {
+      const pId = item.props.packageId ? String(item.props.packageId) : ''
+      const pkg = pId ? productMap.get(pId) || null : null
+      item.props._resolved = { package: pkg }
     } else if (item.type === 'SolutionEcosystem') {
       const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
       const resolvedProducts: PublicProduct[] = []
@@ -1024,6 +1036,10 @@ export async function resolveServerData(
         }
       }
       item.props._resolved = { services: resolvedList }
+    } else if (item.type === 'ServiceCard') {
+      const sId = item.props.serviceId ? String(item.props.serviceId) : ''
+      const srv = sId ? serviceMap.get(sId) || null : null
+      item.props._resolved = { service: srv }
     } else if (item.type === 'TestimonialGrid') {
       const mode = item.props.mode || 'manual'
       if (mode === 'recent') {

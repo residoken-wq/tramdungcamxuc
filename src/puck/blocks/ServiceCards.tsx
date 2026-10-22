@@ -2,7 +2,6 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { ServiceCards, type ServiceCardsProps } from '@/components/site/ServiceCards'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
-import { createServiceExternalField } from '../service-field'
 
 export type { ServiceCardsProps }
 
@@ -25,19 +24,20 @@ export const ServiceCardsBlock: ComponentConfig<ServiceCardsProps> = {
       type: 'textarea',
       label: 'Dòng cảm xúc (Playfair Display Italic, tùy chọn)',
     },
-    services: {
-      type: 'array',
-      label: 'Danh sách dịch vụ (1 – 3 dịch vụ)',
-      arrayFields: {
-        serviceId: createServiceExternalField({
-          label: 'Chọn dịch vụ đồng hành',
-        }),
-      },
-      getItemSummary: (item) => (item?.serviceId ? `Dịch vụ ID: ${item.serviceId}` : 'Chưa chọn'),
+    columns: {
+      type: 'select',
+      label: 'Số cột hiển thị (Desktop)',
+      options: [
+        { label: '1 cột (Căn giữa)', value: 1 },
+        { label: '2 cột', value: 2 },
+        { label: '3 cột', value: 3 },
+      ],
     },
-    highlightServiceId: createServiceExternalField({
-      label: 'Dịch vụ nổi bật (Thẻ nền Deep Navy, tùy chọn)',
-    }),
+    cards: {
+      type: 'slot',
+      label: 'Danh sách thẻ dịch vụ',
+      allow: ['ServiceCard'],
+    },
     bgColor: {
       type: 'select',
       label: 'Màu nền',
@@ -50,13 +50,13 @@ export const ServiceCardsBlock: ComponentConfig<ServiceCardsProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
     seriesLabel: '[MẪU] DỊCH VỤ ĐỒNG HÀNH',
     titleLine1: '[MẪU] CÁC LỘ TRÌNH',
     titleLine2: '[MẪU] COACHING 1:1',
     emotionLine: '[MẪU] Lắng nghe chính mình, kiến tạo chuyển hóa bền vững từ bên trong.',
-    services: [],
-    highlightServiceId: '',
+    columns: 3,
+    cards: [],
     bgColor: 'warm-ivory',
     padding: 'md',
   },

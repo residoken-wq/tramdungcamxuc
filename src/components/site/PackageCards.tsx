@@ -183,8 +183,12 @@ export function PackageCards({
         ) : hasV1Packages ? (
           <div className={gridClasses}>
             {v1Packages.slice(0, 3).map((pkg, idx) => {
-              const pkgObj = typeof pkg === 'object' && pkg !== null ? (pkg as PublicProduct) : null
-              const pkgId = pkgObj?.id || (pkg as { packageId?: string | number })?.packageId || pkg
+              const pkgObj =
+                typeof pkg === 'object' && pkg !== null ? (pkg as PublicProduct) : null
+              const pkgId =
+                pkgObj?.id ||
+                (pkg as { packageId?: string | number })?.packageId ||
+                (typeof pkg === 'string' || typeof pkg === 'number' ? pkg : undefined)
               const isHighlighted = highlightIdStr !== '' && String(pkgId) === highlightIdStr
 
               return (

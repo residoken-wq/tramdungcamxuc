@@ -15,7 +15,7 @@ import {
 } from '@/lib/brand/format-classes'
 
 export interface PackageCardItemProps {
-  id?: string
+  version?: number
   packageId?: string | number
   highlight?: boolean
   nameColor?: TextColorOption
@@ -50,9 +50,10 @@ export function PackageCardItem({
     return packageId != null && String(packageId).trim() !== '' ? [packageId] : []
   }, [packageId])
 
+  const resolvedPackage = _resolved?.package
   const initialProducts = React.useMemo(() => {
-    return _resolved?.package ? [_resolved.package] : undefined
-  }, [_resolved?.package])
+    return resolvedPackage ? [resolvedPackage] : undefined
+  }, [resolvedPackage])
 
   const { products: loadedProducts } = useClientProducts({
     productIds: isEditing ? productIds : [],

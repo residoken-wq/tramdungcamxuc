@@ -59,7 +59,7 @@ export function ServiceCards({
   titleLine1,
   titleLine2,
   emotionLine,
-  columns = 3,
+  columns,
   cards,
   services,
   highlightServiceId,
@@ -81,7 +81,14 @@ export function ServiceCards({
     return null
   }
 
-  const numCols = Number(columns) || 3
+  const numCols =
+    columns !== undefined
+      ? Number(columns) || 3
+      : v1Services.length === 1
+        ? 1
+        : v1Services.length === 2
+          ? 2
+          : 3
   const gridColsClass =
     numCols === 1
       ? 'max-w-md mx-auto'
@@ -96,7 +103,6 @@ export function ServiceCards({
   return (
     <section
       className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
-      data-bg={bgColor}
     >
       <div className="mx-auto max-w-6xl">
         {(seriesLabel || titleLine1) && (

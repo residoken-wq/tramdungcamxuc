@@ -388,7 +388,9 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
 exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & Variants > matches snapshot for PackageCards 1`] = `
 <DocumentFragment>
   <section
-    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors group/grid"
+    data-bg="warm-ivory"
+    data-style="icon"
   >
     <div
       class="mx-auto max-w-5xl"
@@ -423,14 +425,17 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         </p>
       </div>
       <div
-        class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch"
+        class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch [counter-reset:card-counter]"
       >
         <div
-          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-deep-navy/10 shadow-soft"
+          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-deep-navy/10 shadow-soft text-left"
         >
           <div>
             <div
-              class="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4"
+              class="hidden group-data-[style=numbered]/grid:block font-display text-3xl sm:text-4xl text-bright-magenta mb-4 [counter-increment:card-counter] before:content-[counter(card-counter,decimal-leading-zero)]"
+            />
+            <div
+              class="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4 group-data-[style=numbered]/grid:hidden"
             >
               <svg
                 aria-hidden="true"
@@ -451,23 +456,26 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               </svg>
             </div>
             <h3
-              class="font-display text-2xl uppercase tracking-tight mb-2 text-deep-navy"
+              class="font-display uppercase tracking-tight mb-2 text-2xl text-deep-navy"
             >
               CLEAR
             </h3>
             <p
-              class="font-ui text-sm sm:text-base leading-relaxed text-deep-navy/80"
+              class="font-ui leading-relaxed text-sm sm:text-base text-deep-navy/80"
             >
               Nhận diện và tháo gỡ điểm nghẽn cảm xúc.
             </p>
           </div>
         </div>
         <div
-          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-accent-pink shadow-md ring-2 ring-accent-pink"
+          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-accent-pink shadow-md ring-2 ring-accent-pink text-left"
         >
           <div>
             <div
-              class="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4"
+              class="hidden group-data-[style=numbered]/grid:block font-display text-3xl sm:text-4xl text-bright-magenta mb-4 [counter-increment:card-counter] before:content-[counter(card-counter,decimal-leading-zero)]"
+            />
+            <div
+              class="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4 group-data-[style=numbered]/grid:hidden"
             >
               <svg
                 aria-hidden="true"
@@ -488,12 +496,12 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               </svg>
             </div>
             <h3
-              class="font-display text-2xl uppercase tracking-tight mb-2 text-deep-navy"
+              class="font-display uppercase tracking-tight mb-2 text-2xl text-deep-navy"
             >
               BUILD
             </h3>
             <p
-              class="font-ui text-sm sm:text-base leading-relaxed text-deep-navy/80"
+              class="font-ui leading-relaxed text-sm sm:text-base text-deep-navy/80"
             >
               Xây dựng thói quen và sự vững vàng.
             </p>

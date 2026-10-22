@@ -16,7 +16,7 @@ import {
 } from '@/lib/brand/format-classes'
 
 export interface ServiceCardItemProps {
-  id?: string
+  version?: number
   serviceId?: string | number
   highlight?: boolean
   nameColor?: TextColorOption
@@ -51,9 +51,10 @@ export function ServiceCardItem({
     return serviceId != null && String(serviceId).trim() !== '' ? [serviceId] : []
   }, [serviceId])
 
+  const resolvedService = _resolved?.service
   const initialServices = React.useMemo(() => {
-    return _resolved?.service ? [_resolved.service as unknown as PublicServiceSummary] : undefined
-  }, [_resolved?.service])
+    return resolvedService ? [resolvedService as unknown as PublicServiceSummary] : undefined
+  }, [resolvedService])
 
   const { services: clientServices } = useClientServices({
     serviceIds: isEditing ? serviceIds : [],
@@ -91,7 +92,8 @@ export function ServiceCardItem({
       ? 'text-white/90'
       : 'text-deep-navy/80'
 
-  const audienceLabel = activeService.audienceLabel || activeService.audience
+  const audienceLabel = activeService.audienceLabel
+  const alignClass = ` ${textAlignClass(align)}`
 
   return (
     <div
@@ -101,7 +103,7 @@ export function ServiceCardItem({
           : isDeepNavy
             ? 'bg-white/10 border-white/20 text-white'
             : 'bg-white border-deep-navy/10 text-deep-navy'
-      } ${textAlignClass(align)}`}
+      }${alignClass}`}
     >
       <div>
         {activeService.imageUrl ? (
@@ -139,7 +141,7 @@ export function ServiceCardItem({
           )}
 
           <h3
-            className={`font-display uppercase tracking-tight mb-4 ${fontSizeClass('service-name', nameSize)} ${resolvedNameColorClass}`}
+            className={`font-display ${fontSizeClass('service-name', nameSize)} uppercase tracking-tight mb-4 ${resolvedNameColorClass}`}
           >
             {activeService.name}
           </h3>
@@ -153,7 +155,7 @@ export function ServiceCardItem({
               >
                 {vi.sm04.suitsLabel}
               </p>
-              <ul className="space-y-1.5 font-ui">
+              <ul className={`space-y-1.5 font-ui ${fontSizeClass('service-text', textSize)}`}>
                 {activeService.situations.map((sit, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span
@@ -161,11 +163,7 @@ export function ServiceCardItem({
                         isCardNavy ? 'bg-soft-pink' : 'bg-bright-magenta'
                       }`}
                     />
-                    <span
-                      className={`${fontSizeClass('service-text', textSize)} ${resolvedTextColorClass}`}
-                    >
-                      {sit}
-                    </span>
+                    <span className={resolvedTextColorClass}>{sit}</span>
                   </li>
                 ))}
               </ul>
@@ -181,7 +179,7 @@ export function ServiceCardItem({
               >
                 {vi.sm04.outcomesLabel}
               </p>
-              <ul className="space-y-1.5 font-ui">
+              <ul className={`space-y-1.5 font-ui ${fontSizeClass('service-text', textSize)}`}>
                 {activeService.outcomes.map((out, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span
@@ -189,11 +187,7 @@ export function ServiceCardItem({
                         isCardNavy ? 'bg-mint-haze' : 'bg-bright-magenta'
                       }`}
                     />
-                    <span
-                      className={`${fontSizeClass('service-text', textSize)} ${resolvedTextColorClass}`}
-                    >
-                      {out}
-                    </span>
+                    <span className={resolvedTextColorClass}>{out}</span>
                   </li>
                 ))}
               </ul>
@@ -202,7 +196,7 @@ export function ServiceCardItem({
         </div>
       </div>
 
-      <div className="p-6 pt-0 sm:p-7 sm:pt-0 mt-auto">
+      <div className="p-6 pt-0 sm:p-7 sm:pt-0">
         <Button
           href={`/coaching/${activeService.slug}`}
           variant={highlight ? 'primary' : 'secondary'}
