@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import React from 'react'
 import { CardBlock } from '@/puck/blocks/Card'
 import { puckConfig } from '@/puck/config'
 import { getCardRealBg, allowedTextColors } from '@/lib/brand/format-classes'
@@ -136,7 +135,7 @@ describe('PK-02: Card child block - Contrast, Presets & Permissions', () => {
         props: { bgColor: 'deep-navy', cardStyle: 'outline' },
       }
       const fieldsNavy = await CardBlock.resolveFields(
-        { props: { titleSize: 'md' } },
+        { props: { id: 'test-card', titleSize: 'md' } },
         { fields: CardBlock.fields, parent: parentNavy } as any,
       )
 
@@ -150,7 +149,7 @@ describe('PK-02: Card child block - Contrast, Presets & Permissions', () => {
         props: { bgColor: 'warm-ivory', cardStyle: 'white' },
       }
       const fieldsWhite = await CardBlock.resolveFields(
-        { props: { titleSize: 'md' } },
+        { props: { id: 'test-card', titleSize: 'md' } },
         { fields: CardBlock.fields, parent: parentWhite } as any,
       )
 

@@ -60,6 +60,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     },
   },
   defaultProps: {
+    version: 1,
     icon: 'star',
     title: '[MẪU] Tiêu đề thẻ',
     text: '[MẪU] Nội dung mô tả chi tiết của thẻ giúp người học thấu hiểu rõ hơn.',

@@ -20,7 +20,9 @@ export type BrandRole = 'title' | 'body' | 'quote' | 'card-title' | 'card-text'
  *   + cardStyle 'white' (hoặc mặc định) -> nền thẻ là white.
  * - Không có parent (đang kéo, hoặc khối ở ngoài) -> coi như warm-ivory.
  */
-export function getCardRealBg(parent?: { props?: Record<string, unknown> } | null): string {
+export function getCardRealBg(
+  parent?: { type?: string; props?: Record<string, unknown> } | null,
+): string {
   if (!parent || !parent.props) {
     return 'warm-ivory'
   }

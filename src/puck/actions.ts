@@ -7,7 +7,7 @@ import type { Data } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { validatePageLockedBlocks } from '@/puck/locks'
 import { generateDuplicateSlug } from '@/puck/duplicate'
-import { applyPuckMigrations, normalizePuckData } from '@/puck/migrations'
+import { normalizePuckData } from '@/puck/migrations'
 import { isAdminUser } from '@/lib/auth/access'
 
 export type SaveActionResult = {

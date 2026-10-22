@@ -121,7 +121,24 @@ export function IconCardGrid({
               </div>
             ) : Array.isArray(cards) ? (
               <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
-                {cards}
+                {cards.map((child: any, idx: number) => {
+                  if (React.isValidElement(child)) {
+                    return child
+                  }
+                  if (child && typeof child === 'object' && child.props) {
+                    return (
+                      <IconCard
+                        key={child.props.id || idx}
+                        index={idx}
+                        marker={marker}
+                        cardStyle={cardStyle}
+                        isDeepNavy={isDeepNavy}
+                        {...child.props}
+                      />
+                    )
+                  }
+                  return null
+                })}
               </div>
             ) : null
           )}

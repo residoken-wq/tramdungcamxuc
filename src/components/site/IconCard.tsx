@@ -11,6 +11,7 @@ import {
 } from '@/lib/brand/format-classes'
 
 export interface IconCardProps {
+  version?: number
   icon?: BrandIconKey | string
   mediaId?: string | number
   imageUrl?: string
