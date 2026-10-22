@@ -242,7 +242,7 @@ Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiề
 | ----------- | --------------------------------------------------------------------------------- | -------------------------------- | -------- | ---------------------------------------------------------- |
 | PK-01       | Preset màu chữ / cỡ chữ + SectionHeader v2                                        | –                                | PC nhà   | ĐẠT 21/10 sau PK-01c ([review](reviews/PK-01.md)), PR #176 |
 | PK-02       | Khối con Card + IconCardGrid dùng slot, migration khi đọc                         | PK-01                            | PC nhà   | ĐẠT, merge 22/10 ([review](reviews/PK-02.md)), PR #180     |
-| PK-03       | Khối con Stat / Step + StatsBar, JourneySteps dùng slot                           | PK-02                            | PC nhà   | –                                                          |
+| PK-03       | Khối con Stat / Step + StatsBar, JourneySteps dùng slot                           | PK-02                            | PC nhà   | Giao 22/10 – `prompts/PK-03.md`                            |
 | PK-04       | ServiceCards, PackageCards dùng slot + ảnh từng thẻ; ImageText dùng helper        | PK-02                            | PC nhà   | –                                                          |
 | PK-05       | FAQ slot, Columns nhận khối con, mẫu trang + seed, e2e, hướng dẫn                 | PK-03, PK-04                     | PC nhà   | –                                                          |
 | HB-01       | Ghi quyết định Habit 28 ngày (câu 1–2 đã chốt 20/10; câu 3–10 chờ Hana)           | –                                | Planning | Câu 1–2 xong – `DECISIONS.md`                              |

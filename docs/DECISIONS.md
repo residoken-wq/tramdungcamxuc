@@ -354,3 +354,9 @@ Anh Nhân chốt sau họp 20/10 (`docs/plan/MEETING_2010.md` phần 2, câu 1�
 | 2c  | Không đạt → ghi trạng thái **"Đã trải nghiệm"**                                   | Hết hành trình mà dưới 90%: kế hoạch có kết quả "Đã trải nghiệm" (không cấp chứng nhận, không có link công khai). Đạt: "Đã hoàn thành" + chứng nhận như hiện tại.                                                                                                |
 
 Còn chờ Hana: câu 3–10 trong kế hoạch (chẩn đoán 8 hay 16 câu, nguồn số liệu, hướng "Dựng thương hiệu", bước nào cần đăng nhập, nút Ủng hộ, cỡ Boarding Pass, bộ cảm xúc, link đặt lịch). Câu "bản tối giản có tính vào 90%" Planning hiểu là **có** (đã check-in) – Hana xác nhận khi xem thử.
+
+## Khối "Hành trình 5 bước" kéo thả tự do – chốt 22/10/2026 (PK-03)
+
+- Anh Nhân chốt: `JourneySteps` chuyển sang kéo thả **tự do**. Mỗi bước là khối con `Step`; Hana đổi tên, thứ tự, số bước tùy ý. Không còn khóa 5 bước Pause → Feel → Name → Choose → Practice trong code.
+- 5 bước Pause → Feel → Name → Choose → Practice vẫn là **nội dung mặc định** của khối mới và của mọi trang cũ sau migration (giữ nguyên chữ đang hiện).
+- Hệ quả: giữ đúng phương pháp 5 bước là việc của người biên tập; hướng dẫn CMS ghi rõ.
