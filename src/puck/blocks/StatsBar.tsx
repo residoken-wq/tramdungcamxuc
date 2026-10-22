@@ -86,5 +86,5 @@ export const StatsBarBlock: ComponentConfig<StatsBarProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <StatsBar {...props} />,
+  render: ({ puck: _puck, ...props }) => <StatsBar {...props} />,
 }

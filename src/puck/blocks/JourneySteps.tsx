@@ -79,5 +79,5 @@ export const JourneyStepsBlock: ComponentConfig<JourneyStepsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <JourneySteps {...props} />,
+  render: ({ puck: _puck, ...props }) => <JourneySteps {...props} />,
 }

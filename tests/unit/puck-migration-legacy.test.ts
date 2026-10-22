@@ -205,14 +205,19 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
 
     const stats = migrated.content.find((item) => item.props.id === 'stats-1')
     expect(stats?.props).toMatchObject({
-      version: 2,
+      version: 3,
       bgColor: 'warm-ivory',
       padding: 'sm',
+      columns: 2,
     })
-    expect(stats?.props.stats).toEqual([
-      { value: '10+', label: 'Năm đồng hành', description: '', icon: '' },
-      { value: '500+', label: 'Giờ khai vấn', description: '', icon: '' },
-    ])
+    expect((stats?.props.stats as any)[0].props).toMatchObject({
+      value: '10+',
+      label: 'Năm đồng hành',
+    })
+    expect((stats?.props.stats as any)[1].props).toMatchObject({
+      value: '500+',
+      label: 'Giờ khai vấn',
+    })
 
     const journey = migrated.content.find((item) => item.props.id === 'journey-1')
     expect(journey?.props).toMatchObject({
@@ -220,22 +225,14 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
       titleLine1: 'HÀNH TRÌNH',
       titleLine2: 'CHUYỂN HÓA',
       emotionLine: 'Từng bước thấu hiểu bản thân',
-      step1Description: 'Bước 1 mô tả',
-      step2Description: 'Bước 2 mô tả',
-      step3Description: 'Bước 3 mô tả',
-      step4Description: 'Bước 4 mô tả',
-      step5Description: 'Bước 5 mô tả',
       bgColor: 'warm-ivory',
       padding: 'md',
-      version: 2,
+      version: 3,
       variant: 'circles',
-      highlightStep: 0,
-      step1Subtitle: '',
-      step2Subtitle: '',
-      step3Subtitle: '',
-      step4Subtitle: '',
-      step5Subtitle: '',
+      columns: 5,
     })
+    expect((journey?.props.steps as any)[0].props.description).toBe('Bước 1 mô tả')
+    expect((journey?.props.steps as any)[4].props.description).toBe('Bước 5 mô tả')
 
     const faq = migrated.content.find((item) => item.props.id === 'faq-1')
     expect(faq?.props).toMatchObject({

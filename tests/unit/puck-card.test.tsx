@@ -5,7 +5,6 @@ import { CardBlock } from '@/puck/blocks/Card'
 import { puckConfig } from '@/puck/config'
 import { getCardRealBg, allowedTextColors } from '@/lib/brand/format-classes'
 import { IconCardGrid } from '@/components/site/IconCardGrid'
-import { IconCard } from '@/components/site/IconCard'
 // Mã hex chuẩn từ Brand Book 2026 và tailwind.config.ts / styles.css
 const BRAND_HEX_MAP = {
   'deep-navy': '#280A60',

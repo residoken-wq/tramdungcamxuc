@@ -28,13 +28,9 @@ describe('SM-04: Puck Migrations on Seed Pages and Upgraded Blocks', () => {
 
       const migrated = applyPuckMigrations(puckData)
       for (const block of migrated.content) {
-        if (
-          block.type === 'JourneySteps' ||
-          block.type === 'ImageText' ||
-          block.type === 'LogoStrip'
-        ) {
+        if (block.type === 'ImageText' || block.type === 'LogoStrip') {
           expect((block.props as { version?: number }).version).toBe(2)
-        } else if (block.type === 'HanaStory') {
+        } else if (block.type === 'HanaStory' || block.type === 'JourneySteps') {
           expect((block.props as { version?: number }).version).toBe(3)
         }
       }
@@ -260,9 +256,10 @@ describe('SM-04: Puck Migrations on Seed Pages and Upgraded Blocks', () => {
     }
 
     const migrated = applyPuckMigrations(customData)
-    expect(migrated.content[0].props.version).toBe(2)
+    expect(migrated.content[0].props.version).toBe(3)
     expect(migrated.content[0].props.titleLine1).toBe('HÀNH TRÌNH TÙY BIẾN')
-    expect(migrated.content[0].props.step1Subtitle).toBe('Khởi đầu')
+    const step0 = (migrated.content[0].props.steps as any)[0]
+    expect(step0.props?.subtitle || step0.subtitle).toBe('Khởi đầu')
 
     expect(migrated.content[1].props.version).toBe(3)
     expect(migrated.content[1].props.titleLine1).toBe('LỜI BẠC TÙY BIẾN')

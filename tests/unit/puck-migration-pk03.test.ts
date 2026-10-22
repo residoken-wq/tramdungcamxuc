@@ -6,8 +6,6 @@ import type { Data } from '@puckeditor/core'
 import { migrateStatsBarV2ToV3 } from '@/puck/migrations/v3-stats-bar'
 import { migrateJourneyStepsV2ToV3 } from '@/puck/migrations/v3-journey-steps'
 import { normalizePuckData } from '@/puck/migrations'
-import { StatsBar } from '@/components/site/StatsBar'
-import { StatItem } from '@/components/site/StatItem'
 import { JourneySteps } from '@/components/site/JourneySteps'
 import { JourneyStep } from '@/components/site/JourneyStep'
 
