@@ -1,8 +1,8 @@
 import React from 'react'
-import { BrandIcon } from '@/components/brand/BrandIcon'
+import { StatItem } from './StatItem'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 
-export interface StatItem {
+export interface StatItemData {
   value?: string
   label: string
   description?: string
@@ -11,7 +11,8 @@ export interface StatItem {
 
 export interface StatsBarProps {
   version?: number
-  stats?: StatItem[]
+  columns?: 2 | 3 | 4 | '2' | '3' | '4'
+  stats?: React.ReactNode | React.ComponentType | StatItemData[] | unknown[]
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -32,64 +33,78 @@ const PADDINGS = {
   lg: 'py-16 px-6 sm:px-12',
 } as const
 
-export function StatsBar({ stats = [], bgColor = 'warm-ivory', padding = 'md' }: StatsBarProps) {
+export function StatsBar({
+  columns,
+  stats,
+  bgColor = 'warm-ivory',
+  padding = 'md',
+}: StatsBarProps) {
   const isDeepNavy = bgColor === 'deep-navy'
-  const validStats = Array.isArray(stats)
-    ? stats.filter((s) => s && (s.value || s.label || s.icon))
-    : []
 
-  if (validStats.length === 0) {
+  if (!stats) {
     return null
   }
 
+  if (Array.isArray(stats) && stats.length === 0) {
+    return null
+  }
+
+  const numCols =
+    columns !== undefined
+      ? Number(columns) || 3
+      : Array.isArray(stats) && stats.length > 0
+        ? Math.min(Math.max(stats.length, 2), 4)
+        : 3
+
   const getGridColsClass = (count: number) => {
+    // Same classes as StatsBar v2 (grid fills the max-w-5xl container)
     if (count === 2) return 'grid-cols-1 sm:grid-cols-2'
     if (count === 3) return 'grid-cols-1 sm:grid-cols-3'
     return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
   }
 
-  const cardBgClass = isDeepNavy
-    ? 'bg-white/10 border-white/20 text-white'
-    : 'bg-white border-deep-navy/10 text-deep-navy shadow-soft'
-
-  const valueColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-  const labelColorClass = isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
-  const descriptionColorClass = isDeepNavy ? 'text-white/75' : 'text-deep-navy/70'
+  const gridClasses = `mx-auto grid ${getGridColsClass(numCols)} gap-6 sm:gap-8`
 
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-5xl">
-        <div className={`grid ${getGridColsClass(validStats.length)} gap-6 sm:gap-8`}>
-          {validStats.map((item, index) => (
-            <div
-              key={index}
-              className={`flex flex-col items-center text-center p-6 sm:p-8 rounded-card border ${cardBgClass} transition-transform hover:-translate-y-0.5`}
-            >
-              {item.icon ? (
-                <div className="flex h-14 sm:h-16 items-center justify-center">
-                  <BrandIcon name={item.icon} size={44} className={valueColorClass} />
-                </div>
-              ) : (
-                <div
-                  className={`font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none ${valueColorClass}`}
-                >
-                  {item.value}
-                </div>
-              )}
-              <p
-                className={`mt-3 font-ui text-sm sm:text-base font-semibold leading-relaxed ${labelColorClass}`}
-              >
-                {item.label}
-              </p>
-              {item.description && (
-                <p
-                  className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed ${descriptionColorClass}`}
-                >
-                  {item.description}
-                </p>
-              )}
+        <div className="group/stats w-full" data-bg={bgColor}>
+          {typeof stats === 'function' ? (
+            React.createElement(
+              stats as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+              { className: gridClasses },
+            )
+          ) : React.isValidElement(stats) ? (
+            <div className={gridClasses}>{stats}</div>
+          ) : Array.isArray(stats) ? (
+            <div className={gridClasses}>
+              {stats.map((child: unknown, idx: number) => {
+                if (React.isValidElement(child)) return child
+                if (child && typeof child === 'object') {
+                  const item = child as {
+                    props?: Record<string, unknown>
+                    value?: string
+                    label?: string
+                    description?: string
+                    icon?: string
+                  }
+                  if (item.props) {
+                    return (
+                      <StatItem
+                        key={typeof item.props.id === 'string' ? item.props.id : idx}
+                        isDeepNavy={isDeepNavy}
+                        {...item.props}
+                      />
+                    )
+                  }
+                  if (item.value || item.label || item.icon) {
+                    return <StatItem key={idx} isDeepNavy={isDeepNavy} {...item} />
+                  }
+                }
+                return null
+              })}
             </div>
-          ))}
+          ) : null}
         </div>
       </div>
     </section>

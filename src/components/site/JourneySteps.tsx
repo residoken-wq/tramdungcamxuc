@@ -1,13 +1,17 @@
 import React from 'react'
+import { JourneyStep } from './JourneyStep'
 
 export interface JourneyStepsProps {
   version?: number
   variant?: 'circles' | 'cards' | 'list'
-  highlightStep?: number
+  columns?: 3 | 4 | 5 | 6 | '3' | '4' | '5' | '6'
+  steps?: React.ReactNode | React.ComponentType | unknown[]
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
   emotionLine?: string
+  // Legacy v1/v2 props (for backward compatibility):
+  highlightStep?: number
   step1Subtitle?: string
   step2Subtitle?: string
   step3Subtitle?: string
@@ -81,8 +85,25 @@ export const FIXED_JOURNEY_STEPS = [
   },
 ] as const
 
+function getGridColsClass(cols: number | string = 5) {
+  const count = Number(cols) || 5
+  switch (count) {
+    case 3:
+      return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-4xl'
+    case 4:
+      return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-5xl'
+    case 6:
+      return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 max-w-6xl'
+    case 5:
+    default:
+      return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5 max-w-5xl'
+  }
+}
+
 export function JourneySteps({
   variant = 'circles',
+  columns = 5,
+  steps,
   highlightStep = 0,
   seriesLabel,
   titleLine1 = '[MẪU] 5 BƯỚC THẤU HIỂU',
@@ -104,11 +125,14 @@ export function JourneySteps({
   const isDeepNavy = bgColor === 'deep-navy'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-  const defaultCardBgClass = isDeepNavy
-    ? 'bg-white/10 border-white/20 text-white'
-    : 'bg-white border-deep-navy/10 text-deep-navy shadow-soft'
-  const defaultStepNumberColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-  const defaultDescColorClass = isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
+
+  const hasHeader = Boolean(titleLine1 || titleLine2 || seriesLabel)
+
+  const listClasses = 'max-w-3xl mx-auto space-y-4 sm:space-y-5 [counter-reset:step-counter]'
+  const gridClasses = `mx-auto grid ${getGridColsClass(columns)} gap-4 sm:gap-6 [counter-reset:step-counter]`
+  const containerClasses = variant === 'list' ? listClasses : gridClasses
+
+  const hasSteps = Boolean(steps)
 
   const descriptions = [
     step1Description || FIXED_JOURNEY_STEPS[0].defaultDesc,
@@ -119,225 +143,108 @@ export function JourneySteps({
   ]
 
   const subtitles = [step1Subtitle, step2Subtitle, step3Subtitle, step4Subtitle, step5Subtitle]
-
   const numericHighlight = Number(highlightStep) || 0
 
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-5xl">
-        {/* Header Section */}
-        <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
-          {seriesLabel && (
-            <span
-              className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
-            >
-              {seriesLabel}
-            </span>
-          )}
+        {hasHeader && (
+          <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
+            {seriesLabel && (
+              <span
+                className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+              >
+                {seriesLabel}
+              </span>
+            )}
 
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]">
-            <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-            <span className={titleLine2ColorClass}>{titleLine2}</span>
-          </h2>
+            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]">
+              <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
+              <span className={titleLine2ColorClass}>{titleLine2}</span>
+            </h2>
 
-          {emotionLine && (
-            <p
-              className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${
-                isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
-              }`}
-            >
-              {emotionLine}
-            </p>
-          )}
-        </div>
-
-        {/* Variant: List (danh sách dọc có số) */}
-        {variant === 'list' && (
-          <div className="max-w-3xl mx-auto space-y-4 sm:space-y-5">
-            {FIXED_JOURNEY_STEPS.map((step, idx) => {
-              const isHighlighted = numericHighlight === idx + 1
-              const itemBgClass = isHighlighted
-                ? 'bg-deep-navy text-white border-deep-navy shadow-md'
-                : defaultCardBgClass
-              const nameColorClass = isHighlighted || isDeepNavy ? 'text-white' : 'text-deep-navy'
-              const subnameBadgeClass =
-                isHighlighted || isDeepNavy
-                  ? 'bg-white/15 text-soft-pink'
-                  : 'bg-soft-pink text-deep-navy'
-              const subtitleColorClass =
-                isHighlighted || isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-              const descColor = isHighlighted ? 'text-white/85' : defaultDescColorClass
-
-              return (
-                <div
-                  key={step.key}
-                  className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 p-5 sm:p-6 rounded-card border ${itemBgClass} transition-transform hover:-translate-y-0.5`}
-                >
-                  <div
-                    className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-display text-2xl sm:text-3xl border ${
-                      isHighlighted || isDeepNavy
-                        ? 'bg-white/10 border-soft-pink/30 text-soft-pink'
-                        : 'bg-soft-pink border-bright-magenta/20 text-bright-magenta'
-                    }`}
-                  >
-                    {step.step}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className={`font-ui text-lg sm:text-xl font-bold ${nameColorClass}`}>
-                        {step.name}
-                      </h3>
-                      <span
-                        className={`font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${subnameBadgeClass}`}
-                      >
-                        {step.subname}
-                      </span>
-                    </div>
-
-                    {subtitles[idx] && (
-                      <p
-                        className={`font-ui text-xs sm:text-sm font-semibold mb-1.5 ${subtitleColorClass}`}
-                      >
-                        {subtitles[idx]}
-                      </p>
-                    )}
-
-                    <p className={`font-ui text-sm leading-relaxed ${descColor}`}>
-                      {descriptions[idx]}
-                    </p>
-                  </div>
-                </div>
-              )
-            })}
+            {emotionLine && (
+              <p
+                className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${
+                  isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
+                }`}
+              >
+                {emotionLine}
+              </p>
+            )}
           </div>
         )}
 
-        {/* Variant: Cards (card nối nét đứt ngang, desktop 5 cột → mobile dọc) */}
-        {variant === 'cards' && (
-          <div className="relative">
-            {/* Desktop horizontal dashed connector line */}
+        <div className="group/journey w-full relative" data-variant={variant} data-bg={bgColor}>
+          {variant === 'cards' && (
             <div
-              className="hidden lg:block absolute top-[44px] left-10 right-10 h-0.5 border-t-2 border-dashed border-deep-navy/20 z-0"
+              className="hidden lg:block absolute top-[44px] left-10 right-10 h-0.5 border-t-2 border-dashed border-deep-navy/20 group-data-[bg=deep-navy]/journey:border-white/20 z-0"
               aria-hidden="true"
             />
+          )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 relative z-10">
-              {FIXED_JOURNEY_STEPS.map((step, idx) => {
-                const isHighlighted = numericHighlight === idx + 1
-                const cardBg = isHighlighted
-                  ? 'bg-deep-navy text-white border-deep-navy shadow-md'
-                  : defaultCardBgClass
-                const stepNumClass = isHighlighted ? 'text-soft-pink' : defaultStepNumberColorClass
-                const badgeClass =
-                  isHighlighted || isDeepNavy
-                    ? 'bg-white/15 text-soft-pink'
-                    : 'bg-soft-pink text-deep-navy'
-                const nameColor = isHighlighted || isDeepNavy ? 'text-white' : 'text-deep-navy'
-                const subtitleColor =
-                  isHighlighted || isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-                const descColor = isHighlighted ? 'text-white/85' : defaultDescColorClass
-
-                return (
-                  <div
-                    key={step.key}
-                    className={`flex flex-col p-5 sm:p-6 rounded-card border ${cardBg} transition-transform hover:-translate-y-1`}
-                  >
-                    {/* Step indicator */}
-                    <div className="flex items-baseline justify-between mb-3">
-                      <span
-                        className={`font-display text-2xl sm:text-3xl tracking-tight ${stepNumClass}`}
-                      >
-                        {step.step}
-                      </span>
-                      <span
-                        className={`font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeClass}`}
-                      >
-                        {step.subname}
-                      </span>
-                    </div>
-
-                    {/* Step Name */}
-                    <h3 className={`font-ui text-lg font-bold mb-1 ${nameColor}`}>{step.name}</h3>
-
-                    {/* Optional Subtitle */}
-                    {subtitles[idx] && (
-                      <p className={`font-ui text-xs font-semibold mb-2 ${subtitleColor}`}>
-                        {subtitles[idx]}
-                      </p>
-                    )}
-
-                    {/* Description */}
-                    <p className={`font-ui text-sm leading-relaxed mt-auto ${descColor}`}>
-                      {descriptions[idx]}
-                    </p>
-                  </div>
+          <div className="relative z-10">
+            {hasSteps ? (
+              typeof steps === 'function' ? (
+                React.createElement(
+                  steps as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+                  {
+                    className: containerClasses,
+                    style: { counterReset: 'step-counter' },
+                  },
                 )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Variant: Circles (mặc định / như cũ) */}
-        {variant === 'circles' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
-            {FIXED_JOURNEY_STEPS.map((step, idx) => {
-              const isHighlighted = numericHighlight === idx + 1
-              const cardBg = isHighlighted
-                ? 'bg-deep-navy text-white border-deep-navy shadow-md'
-                : defaultCardBgClass
-              const stepNumClass = isHighlighted ? 'text-soft-pink' : defaultStepNumberColorClass
-              const badgeClass =
-                isHighlighted || isDeepNavy
-                  ? 'bg-white/15 text-soft-pink'
-                  : 'bg-soft-pink text-deep-navy'
-              const nameColor = isHighlighted || isDeepNavy ? 'text-white' : 'text-deep-navy'
-              const subtitleColor =
-                isHighlighted || isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-              const descColor = isHighlighted ? 'text-white/85' : defaultDescColorClass
-
-              return (
-                <div
-                  key={step.key}
-                  className={`flex flex-col p-5 sm:p-6 rounded-card border ${cardBg} transition-transform hover:-translate-y-1`}
-                >
-                  {/* Step indicator */}
-                  <div className="flex items-baseline justify-between mb-3">
-                    <span
-                      className={`font-display text-2xl sm:text-3xl tracking-tight ${stepNumClass}`}
-                    >
-                      {step.step}
-                    </span>
-                    <span
-                      className={`font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeClass}`}
-                    >
-                      {step.subname}
-                    </span>
-                  </div>
-
-                  {/* Step Name */}
-                  <h3
-                    className={`font-ui text-lg font-bold ${subtitles[idx] ? 'mb-1' : 'mb-2'} ${nameColor}`}
-                  >
-                    {step.name}
-                  </h3>
-
-                  {/* Optional Subtitle */}
-                  {subtitles[idx] && (
-                    <p className={`font-ui text-xs font-semibold mb-2 ${subtitleColor}`}>
-                      {subtitles[idx]}
-                    </p>
-                  )}
-
-                  {/* Description editable by Hana */}
-                  <p className={`font-ui text-sm leading-relaxed mt-auto ${descColor}`}>
-                    {descriptions[idx]}
-                  </p>
+              ) : React.isValidElement(steps) ? (
+                <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
+                  {steps}
                 </div>
-              )
-            })}
+              ) : Array.isArray(steps) ? (
+                <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
+                  {steps.map((child: unknown, idx: number) => {
+                    if (React.isValidElement(child)) return child
+                    if (child && typeof child === 'object') {
+                      const item = child as { props?: Record<string, unknown> }
+                      if (item.props) {
+                        return (
+                          <JourneyStep
+                            key={typeof item.props.id === 'string' ? item.props.id : idx}
+                            index={idx}
+                            variant={variant}
+                            isDeepNavy={isDeepNavy}
+                            {...item.props}
+                          />
+                        )
+                      }
+                    }
+                    return null
+                  })}
+                </div>
+              ) : null
+            ) : (
+              // Legacy v1/v2 rendering fallback
+              <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
+                {FIXED_JOURNEY_STEPS.map((fixed, idx) => {
+                  const isHighlighted = numericHighlight === idx + 1
+                  const subtitle = subtitles[idx]
+                  const description = descriptions[idx]
+
+                  return (
+                    <JourneyStep
+                      key={fixed.key}
+                      index={idx}
+                      name={fixed.name}
+                      subname={fixed.subname}
+                      subtitle={subtitle}
+                      description={description}
+                      highlight={isHighlighted}
+                      variant={variant}
+                      isDeepNavy={isDeepNavy}
+                    />
+                  )
+                })}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </section>
   )

@@ -339,7 +339,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               class="mb-4 flex items-center"
             >
               <span
-                class="font-display text-3xl sm:text-4xl text-bright-magenta"
+                class="font-display text-3xl sm:text-4xl text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink"
               >
                 01
               </span>
@@ -362,7 +362,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               class="mb-4 flex items-center"
             >
               <span
-                class="font-display text-3xl sm:text-4xl text-bright-magenta"
+                class="font-display text-3xl sm:text-4xl text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink"
               >
                 02
               </span>

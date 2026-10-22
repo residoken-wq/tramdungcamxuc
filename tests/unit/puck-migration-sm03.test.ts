@@ -18,12 +18,15 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
           block.type === 'HeroTwoEntries' ||
           block.type === 'HeroImage' ||
           block.type === 'QuoteBlock' ||
-          block.type === 'StatsBar' ||
           block.type === 'TestimonialGrid'
         ) {
           expect((block.props as { version?: number }).version).toBe(2)
         }
-        if (block.type === 'PackageComparison' || block.type === 'FAQ') {
+        if (
+          block.type === 'PackageComparison' ||
+          block.type === 'FAQ' ||
+          block.type === 'StatsBar'
+        ) {
           expect((block.props as { version?: number }).version).toBe(3)
         }
       }
@@ -134,13 +137,17 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
     expect(quote?.props.quoteText).toBe('Câu nói tâm đắc của Hana')
 
     const stats = migrated.content.find((b) => b.props.id === 'stats-custom')
-    expect(stats?.props.version).toBe(2)
-    expect(
-      (stats?.props.stats as Array<{ description?: string; icon?: string }>)[0].description,
-    ).toBe('Thân chủ khai vấn')
-    expect((stats?.props.stats as Array<{ description?: string; icon?: string }>)[0].icon).toBe(
-      'heart',
-    )
+    expect(stats?.props.version).toBe(3)
+    const statItem = (
+      stats?.props.stats as Array<{
+        props?: { description?: string; icon?: string }
+        description?: string
+        icon?: string
+      }>
+    )[0]
+    const itemProps = statItem.props || statItem
+    expect(itemProps.description).toBe('Thân chủ khai vấn')
+    expect(itemProps.icon).toBe('heart')
 
     const hero = migrated.content.find((b) => b.props.id === 'hero-custom')
     expect(hero?.props.version).toBe(2)

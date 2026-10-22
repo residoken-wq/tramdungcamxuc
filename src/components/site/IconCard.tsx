@@ -30,7 +30,10 @@ export interface IconCardProps {
   isDeepNavy?: boolean
 }
 
-function getExplicitCardClasses(cardStyle: 'white' | 'soft' | 'outline' = 'white', isDeepNavy = false): string {
+function getExplicitCardClasses(
+  cardStyle: 'white' | 'soft' | 'outline' = 'white',
+  isDeepNavy = false,
+): string {
   if (isDeepNavy) {
     switch (cardStyle) {
       case 'soft':
@@ -104,7 +107,9 @@ export function IconCard({
     >
       <div className="mb-4 flex items-center">
         {marker === 'number' && index !== undefined ? (
-          <span className="font-display text-3xl sm:text-4xl text-bright-magenta">
+          <span
+            className={`font-display text-3xl sm:text-4xl ${isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink'}`}
+          >
             {String(index + 1).padStart(2, '0')}
           </span>
         ) : marker === 'icon' && index !== undefined ? (
@@ -119,7 +124,7 @@ export function IconCard({
           )
         ) : (
           <>
-            <span className="hidden group-data-[marker=number]/grid:inline-block font-display text-3xl sm:text-4xl text-bright-magenta before:content-[counter(card-counter,_decimal-leading-zero)]" />
+            <span className="hidden group-data-[marker=number]/grid:inline-block font-display text-3xl sm:text-4xl text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink before:content-[counter(card-counter,_decimal-leading-zero)]" />
             <div className="flex group-data-[marker=number]/grid:hidden items-center justify-center">
               {hasValidImage ? (
                 <div className="relative h-12 w-12 rounded-2xl overflow-hidden">

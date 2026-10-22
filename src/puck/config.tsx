@@ -27,6 +27,8 @@ import { LogoStripBlock, type LogoStripProps } from './blocks/LogoStrip'
 import { HanaStoryBlock, type HanaStoryProps } from './blocks/HanaStory'
 import { IconCardGridBlock, type IconCardGridProps } from './blocks/IconCardGrid'
 import { CardBlock, type CardProps } from './blocks/Card'
+import { StatBlock, type StatProps } from './blocks/Stat'
+import { StepBlock, type StepProps } from './blocks/Step'
 import { CalloutBlock, type CalloutProps } from './blocks/Callout'
 import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards'
 import { SolutionEcosystemBlock, type SolutionEcosystemProps } from './blocks/SolutionEcosystem'
@@ -92,6 +94,8 @@ export type {
   ContactInfoProps,
   ContactFormsProps,
   CardProps,
+  StatProps,
+  StepProps,
 }
 
 export type PageComponentsProps = {
@@ -106,6 +110,8 @@ export type PageComponentsProps = {
   StatsBar: StatsBarProps
   IconCardGrid: IconCardGridProps
   Card: CardProps
+  Stat: StatProps
+  Step: StepProps
   Callout: CalloutProps
   JourneySteps: JourneyStepsProps
   VisionMission: VisionMissionProps
@@ -588,6 +594,8 @@ export const puckConfig: Config<PageComponentsProps> = {
     StatsBar: StatsBarBlock,
     IconCardGrid: IconCardGridBlock,
     Card: CardBlock,
+    Stat: StatBlock,
+    Step: StepBlock,
     Callout: CalloutBlock,
     JourneySteps: JourneyStepsBlock,
     FAQ: FAQBlock,

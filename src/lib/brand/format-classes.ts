@@ -7,22 +7,41 @@ import {
 import type { SectionHeadingLevel } from '@/components/ui/SectionHeader'
 
 export type { FontSizeOption, TextColorOption, AlignOption }
-export type BrandRole = 'title' | 'body' | 'quote' | 'card-title' | 'card-text'
+export type BrandRole =
+  | 'title'
+  | 'body'
+  | 'quote'
+  | 'card-title'
+  | 'card-text'
+  | 'stat-value'
+  | 'stat-label'
+  | 'step-name'
+  | 'step-desc'
+
+export interface ChildBgOptions {
+  highlight?: boolean
+  cardStyle?: string
+}
 
 /**
- * Xác định màu nền thật của thẻ dựa trên cấu hình parent (IconCardGrid).
+ * Xác định màu nền thật của khối con (Card, Stat, Step) dựa trên cấu hình parent và trạng thái nổi bật.
  *
  * Quy tắc:
- * - Nền section deep-navy: mọi cardStyle đều có nền tính tương phản là deep-navy.
- * - Nền section pastel:
- *   + cardStyle 'soft' -> nền thẻ là soft-pink.
- *   + cardStyle 'outline' -> nền thẻ cùng màu với nền section.
- *   + cardStyle 'white' (hoặc mặc định) -> nền thẻ là white.
+ * - Bước nổi bật (highlight === true) -> nền thật là deep-navy.
+ * - Nền section deep-navy: mọi khối con đều có nền tính tương phản là deep-navy.
+ * - Nền section pastel / sáng:
+ *   + Card với cardStyle 'soft' -> soft-pink.
+ *   + Card với cardStyle 'outline' -> màu nền section.
+ *   + Card với cardStyle 'white', Stat (ô số liệu), Step (bước hành trình) -> white.
  * - Không có parent (đang kéo, hoặc khối ở ngoài) -> coi như warm-ivory.
  */
-export function getCardRealBg(
+export function getChildRealBg(
   parent?: { type?: string; props?: Record<string, unknown> } | null,
+  options?: ChildBgOptions,
 ): string {
+  if (options?.highlight) {
+    return 'deep-navy'
+  }
   if (!parent || !parent.props) {
     return 'warm-ivory'
   }
@@ -30,7 +49,7 @@ export function getCardRealBg(
   if (parentBg === 'deep-navy') {
     return 'deep-navy'
   }
-  const cardStyle = (parent.props.cardStyle as string) || 'white'
+  const cardStyle = options?.cardStyle ?? (parent.props.cardStyle as string)
   if (cardStyle === 'soft') {
     return 'soft-pink'
   }
@@ -38,6 +57,12 @@ export function getCardRealBg(
     return parentBg
   }
   return 'white'
+}
+
+export function getCardRealBg(
+  parent?: { type?: string; props?: Record<string, unknown> } | null,
+): string {
+  return getChildRealBg(parent)
 }
 
 /**
@@ -186,6 +211,56 @@ export function fontSizeClass(
       case 'md':
       default:
         return 'text-lg sm:text-xl'
+    }
+  }
+
+  if (role === 'stat-value') {
+    switch (size) {
+      case 'sm':
+        return 'text-3xl sm:text-4xl lg:text-5xl'
+      case 'lg':
+        return 'text-5xl sm:text-6xl lg:text-7xl'
+      case 'md':
+      default:
+        return 'text-4xl sm:text-5xl lg:text-6xl'
+    }
+  }
+
+  if (role === 'stat-label') {
+    switch (size) {
+      case 'sm':
+        return 'text-xs sm:text-sm'
+      case 'lg':
+        return 'text-base sm:text-lg'
+      case 'md':
+      default:
+        return 'text-sm sm:text-base'
+    }
+  }
+
+  // Journey step "md" keeps the JourneySteps v2 sizes: name text-lg (list adds sm:text-xl),
+  // description text-sm in every variant.
+  if (role === 'step-name') {
+    switch (size) {
+      case 'sm':
+        return 'text-base'
+      case 'lg':
+        return 'text-xl sm:text-2xl'
+      case 'md':
+      default:
+        return 'text-lg group-data-[variant=list]/journey:sm:text-xl'
+    }
+  }
+
+  if (role === 'step-desc') {
+    switch (size) {
+      case 'sm':
+        return 'text-xs'
+      case 'lg':
+        return 'text-base'
+      case 'md':
+      default:
+        return 'text-sm'
     }
   }
 

@@ -49,6 +49,8 @@
    - [5.13. Mẫu trang Sitemap v2 & bản nháp](#513-mẫu-trang-sitemap-v2--bản-nháp)
    - [5.14. Trang Cộng đồng & Doanh nghiệp (Sitemap v2)](#514-trang-cộng-đồng--doanh-nghiệp-sitemap-v2)
    - [5.15. Quản lý Thẻ con trong Lưới Thẻ Biểu Tượng / Đánh Số (IconCardGrid)](#515-quản-lý-thẻ-con-trong-lưới-thẻ-biểu-tượng--đánh-số-iconcardgrid)
+   - [5.16. Quản lý Ô số liệu trong Thanh Số Liệu (StatsBar)](#516-quản-lý-ô-số-liệu-trong-thanh-số-liệu-statsbar)
+   - [5.17. Quản lý Bước hành trình trong Hành Trình Các Bước (JourneySteps)](#517-quản-lý-bước-hành-trình-trong-hành-trình-các-bước-journeysteps)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -1791,6 +1793,85 @@ Khi nhấp chọn một chiếc thẻ, cột bên phải sẽ hiển thị các 
   - Khi thẻ ở nền tối: Hệ thống gợi ý `Trắng` và `Hồng phấn (Soft Pink)`.
 - **Cỡ chữ tiêu đề & Cỡ chữ nội dung**: Lựa chọn linh hoạt `Nhỏ` (`sm`), `Vừa` (`md`), `Lớn` (`lg`).
 - **Căn lề**: `Căn trái` (mặc định) hoặc `Căn giữa` (phù hợp với các thẻ ngắn, trang trọng).
+
+---
+
+### 5.16. Quản lý Ô số liệu trong Thanh Số Liệu (StatsBar)
+
+Khối **Thanh số liệu** (`StatsBar`) đã được nâng cấp lên dạng kéo thả trực quan: mỗi con số giờ là một khối con **Ô số liệu** (`Stat`) nằm ngay trên màn hình vẽ (canvas).
+
+#### 1. Thao tác trực tiếp với từng ô số liệu
+
+- **Nhân bản ô số liệu (Duplicate)**: Nhấp chọn một ô số liệu, bấm vào nút **Nhân bản (Duplicate)** trên thanh công cụ nổi để thêm một ô số liệu mới.
+- **Kéo đổi thứ tự (Reorder)**: Nhấp giữ vào thanh kéo (hoặc biểu tượng 6 chấm) của ô số liệu để di chuyển sang vị trí mong muốn.
+- **Xóa bớt ô số liệu**: Bấm biểu tượng **thùng rác (Delete)** trên thanh công cụ của ô để loại bỏ.
+- **Thêm ô mới = nhân bản một ô có sẵn**: Khối Ô số liệu là khối con chuyên biệt nên được ẩn khỏi thanh bên trái để bảo vệ bố cục. **Đừng xóa hết các ô số liệu**; nếu lỡ xóa hết, hãy xóa cả khối Thanh số liệu rồi kéo khối mới vào (mặc định luôn có sẵn 3 ô số liệu mẫu).
+
+#### 2. Cài đặt số cột hiển thị của khối cha (StatsBar)
+
+Khi nhấp chọn thanh viền của khối cha **Thanh số liệu**, ở cột bên phải Hana có thể chọn:
+
+- **Số cột hiển thị trên máy tính (columns)**: Chọn `2`, `3`, hoặc `4` cột tùy theo số lượng con số Hana muốn làm nổi bật (trên điện thoại luôn tự động hiển thị 1 cột thẳng hàng gọn gàng).
+- **Màu nền section**: `Vàng kem (Warm Ivory)`, `Hồng phấn (Soft Pink)`, `Tím sương (Lavender Mist)`, `Xanh hà (Mint Haze)`, `Vàng bơ (Butter Cream)`, hoặc `Xanh thẫm (Deep Navy)`.
+
+#### 3. Chỉnh sửa chi tiết một ô số liệu ở thanh bên phải
+
+Khi nhấp chọn một ô số liệu:
+
+- **Con số / Chỉ số (`value`)**: Nhập con số hoặc chỉ số (ví dụ: `[MẪU] 500+`, `10+`, `2,5 giờ`).
+- **Nhãn mô tả (`label`)**: Dòng chữ diễn giải ngắn gọn bên dưới con số (ví dụ: `Học viên`, `Năm kinh nghiệm`).
+- **Mô tả phụ (`description`)**: Dòng chú thích chi tiết thêm (tùy chọn).
+- **Biểu tượng (`icon`)**: Nếu không muốn hiển thị con số mà muốn hiển thị icon thương hiệu, Hana có thể chọn icon từ danh sách 16 biểu tượng độc quyền.
+- **Màu con số & Màu nhãn**: Tự động lọc danh sách màu an toàn theo chuẩn WCAG AA:
+  - Trên nền sáng: Gợi ý `Hồng sen (Bright Magenta)`, `Hồng đậm (Accent Pink)`, `Xanh thẫm (Deep Navy)`.
+  - Trên nền navy tối: Tự động chuyển sang `Trắng` và `Hồng phấn (Soft Pink)` để luôn sắc nét, nổi bật.
+- **Cỡ con số & Cỡ nhãn**: Chọn `Nhỏ` (`sm`), `Vừa` (`md`), hoặc `Lớn` (`lg`).
+- **Căn lề**: `Căn giữa` (khuyên dùng cho số liệu) hoặc `Căn trái`.
+
+---
+
+### 5.17. Quản lý Bước hành trình trong Hành Trình Các Bước (JourneySteps)
+
+Khối **Hành trình các bước** (`JourneySteps`) thể hiện tiến trình thấu cảm và chuyển hóa. Nay mỗi bước đã là một khối con **Bước hành trình** (`Step`) độc lập, cho phép Hana tùy biến sâu từng bước.
+
+#### 1. Tự động đánh số thứ tự (01, 02, 03...)
+
+- Số thứ tự `01`, `02`, `03`... được **hệ thống tự động đánh số bằng CSS counter**.
+- Khi Hana kéo đổi chỗ các bước hoặc nhân bản thêm bước mới, các con số sẽ **tự động cập nhật lại đúng thứ tự từ trên xuống dưới / từ trái qua phải**, không bao giờ bị nhảy sai số.
+
+#### 2. Thao tác trực tiếp trên màn hình vẽ
+
+- **Nhân bản bước**: Chọn một bước, bấm nút **Nhân bản (Duplicate)** để nhân bản thêm một bước tiếp theo.
+- **Kéo đổi thứ tự**: Nhấp giữ và kéo rê bước sang vị trí mới.
+- **Xóa bước**: Bấm nút **thùng rác (Delete)** trên bước cần xóa. Đừng xóa hết toàn bộ các bước của hành trình.
+
+#### 3. 5 bước Pause → Practice là gợi ý chuẩn phương pháp
+
+- Khung chuyển hóa 5 bước của Trạm Dừng Cảm Xúc gồm:
+  1. **Pause (Dừng lại)**: Tạo khoảng dừng cần thiết giữa kích hoạt và phản hồi.
+  2. **Feel (Cảm nhận)**: Cảm nhận trọn vẹn những rung động bên trong cơ thể.
+  3. **Name (Gọi tên)**: Gọi tên chính xác cảm xúc và nhu cầu cốt lõi.
+  4. **Choose (Lựa chọn)**: Lựa chọn phản hồi tích cực và góc nhìn đa chiều.
+  5. **Practice (Thực hành)**: Thực hành chuyển hóa bền bỉ mỗi ngày.
+- **Lưu ý chuyên môn**: 5 bước này là nội dung gợi ý chuẩn phương pháp độc bản của Trạm. Khi Hana chỉnh sửa nội dung, xin lưu ý **tự giữ đúng mạch phương pháp** để trải nghiệm của học viên luôn nhất quán.
+
+#### 4. Bật "Bước nổi bật" ở từng bước riêng biệt
+
+- Ở phiên bản trước, Hana phải nhập số thứ tự bước muốn làm nổi bật ở khối cha.
+- Nay ở bản v3, Hana **chỉ cần bấm vào bước muốn làm nổi bật**, ở thanh bên phải tìm mục **Bước nổi bật (Nền xanh thẫm Deep Navy)** và chọn **Có (Bước nổi bật - Nền Navy)**.
+- Bước đó sẽ ngay lập tức khoác lên mình màu nền xanh thẫm Deep Navy cao cấp, đồng thời màu chữ tiêu đề và mô tả sẽ tự động chuyển sang màu sáng (Trắng / Hồng phấn) đạt chuẩn tương phản cao.
+
+#### 5. Cài đặt khối cha (JourneySteps)
+
+Khi nhấp chọn thanh viền của khối cha **Hành trình các bước**:
+
+- **Kiểu hiển thị (variant)**:
+  - `Vòng tròn số (circles)`: Phong cách tối giản, hiện vòng tròn số lớn ở phía trên mỗi bước.
+  - `Thẻ hành trình (cards)`: Phong cách dạng thẻ hiện đại có viền và đường nối liền mạch.
+  - `Danh sách dọc (list)`: Phong cách danh sách dọc từng hàng trang trọng, thích hợp cho trang chi tiết dịch vụ hoặc sự kiện.
+    _(Các bước con sẽ tự động đổi kiểu hiển thị theo lựa chọn này)._
+- **Số cột hiển thị (columns)**: Chọn `3`, `4`, `5` hoặc `6` cột trên màn hình lớn (mặc định là `5` cột tương ứng 5 bước).
+- **Tiêu đề 2 tầng & Dòng cảm xúc**: Nhập `Dòng 1`, `Dòng 2`, và `Dòng cảm xúc (in nghiêng)`.
 
 ---
 
