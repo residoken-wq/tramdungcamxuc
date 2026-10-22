@@ -95,6 +95,10 @@ export function IconCardGrid({
               titleLine2={titleLine2}
               emotionLine={emotionLine}
               align="center"
+              line1Color={isDeepNavy ? 'white' : 'deep-navy'}
+              line2Color={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
+              eyebrowColor={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
+              emotionColor={isDeepNavy ? 'white' : 'deep-navy'}
             />
           </div>
         )}

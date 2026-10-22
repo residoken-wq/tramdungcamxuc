@@ -74,30 +74,36 @@ export function StatsBar({
       <div className="mx-auto max-w-6xl">
         <div className="group/stats w-full" data-bg={bgColor}>
           {typeof stats === 'function' ? (
-            React.createElement(stats as React.ComponentType<any>, {
-              className: gridClasses,
-            })
+            React.createElement(
+              stats as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+              { className: gridClasses },
+            )
           ) : React.isValidElement(stats) ? (
             <div className={gridClasses}>{stats}</div>
           ) : Array.isArray(stats) ? (
             <div className={gridClasses}>
-              {stats.map((child: any, idx: number) => {
+              {stats.map((child: unknown, idx: number) => {
                 if (React.isValidElement(child)) return child
-                if (child && typeof child === 'object' && child.props) {
-                  return (
-                    <StatItem
-                      key={child.props.id || idx}
-                      isDeepNavy={isDeepNavy}
-                      {...child.props}
-                    />
-                  )
-                }
-                if (
-                  child &&
-                  typeof child === 'object' &&
-                  (child.value || child.label || child.icon)
-                ) {
-                  return <StatItem key={idx} isDeepNavy={isDeepNavy} {...child} />
+                if (child && typeof child === 'object') {
+                  const item = child as {
+                    props?: Record<string, unknown>
+                    value?: string
+                    label?: string
+                    description?: string
+                    icon?: string
+                  }
+                  if (item.props) {
+                    return (
+                      <StatItem
+                        key={typeof item.props.id === 'string' ? item.props.id : idx}
+                        isDeepNavy={isDeepNavy}
+                        {...item.props}
+                      />
+                    )
+                  }
+                  if (item.value || item.label || item.icon) {
+                    return <StatItem key={idx} isDeepNavy={isDeepNavy} {...item} />
+                  }
                 }
                 return null
               })}

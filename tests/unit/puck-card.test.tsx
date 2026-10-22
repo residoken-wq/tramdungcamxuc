@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- fixtures read loose Puck JSON and resolveFields params */
 import { describe, expect, it } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import { CardBlock } from '@/puck/blocks/Card'
 import { puckConfig } from '@/puck/config'
 import { getCardRealBg, allowedTextColors } from '@/lib/brand/format-classes'
+import { IconCardGrid } from '@/components/site/IconCardGrid'
+import { IconCard } from '@/components/site/IconCard'
 // Mã hex chuẩn từ Brand Book 2026 và tailwind.config.ts / styles.css
 const BRAND_HEX_MAP = {
   'deep-navy': '#280A60',
@@ -205,4 +208,44 @@ describe('PK-02: Card child block - Contrast, Presets & Permissions', () => {
       expect(columnsBlock.fields.col3.disallow).toContain('Card')
     })
   })
+
+  describe('Contrast on deep-navy for IconCardGrid and IconCard', () => {
+    it('IconCardGrid on deep-navy adapts SectionHeader colors and number marker contrast', () => {
+      // Contrast of soft-pink on deep-navy >= 4.5
+      const softPinkHex = BRAND_HEX_MAP['soft-pink']
+      const navyHex = BRAND_HEX_MAP['deep-navy']
+      expect(getContrastRatio(softPinkHex, navyHex)).toBeGreaterThanOrEqual(4.5)
+
+      // Contrast of white on deep-navy >= 4.5
+      const whiteHex = BRAND_HEX_MAP['white']
+      expect(getContrastRatio(whiteHex, navyHex)).toBeGreaterThanOrEqual(4.5)
+
+      const { container } = render(
+        <IconCardGrid
+          bgColor="deep-navy"
+          titleLine1="Tiêu đề trên navy"
+          titleLine2="Dòng 2 sáng"
+          seriesLabel="Series navy"
+          emotionLine="Cảm xúc trên navy"
+          marker="number"
+          items={[{ title: 'Card 1', text: 'Nội dung 1' }]}
+        />,
+      )
+
+      // SectionHeader should receive white and soft-pink
+      const headerLine1 = container.querySelector('h2 span:first-child')
+      expect(headerLine1?.className).toContain('text-white')
+
+      const headerLine2 = container.querySelector('h2 span:last-child')
+      expect(headerLine2?.className).toContain('text-soft-pink')
+
+      const seriesSpan = container.querySelector('header span')
+      expect(seriesSpan?.className).toContain('text-soft-pink')
+
+      // Number marker should use text-soft-pink
+      const numberMarker = screen.getByText('01')
+      expect(numberMarker.className).toContain('text-soft-pink')
+    })
+  })
 })
+
