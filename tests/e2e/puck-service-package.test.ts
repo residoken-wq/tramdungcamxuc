@@ -197,14 +197,16 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
       // - gói 1 có viền nổi bật.
       await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
 
-      const serviceTitles = publicPage.locator('section[data-bg] h3')
+      const serviceTitles = publicPage.locator('section[data-block="service-cards"] h3')
       await expect(serviceTitles.first()).toContainText(`[MẪU] Khai vấn Cảm xúc Cá nhân ${marker}`)
       await expect(serviceTitles.nth(1)).toContainText(
         `[MẪU] Khai vấn Chuyển mình Sự nghiệp ${marker}`,
       )
 
       // Dịch vụ 2 nổi bật có nền deep-navy
-      const serviceCardContainers = publicPage.locator('section[data-bg] .rounded-card')
+      const serviceCardContainers = publicPage.locator(
+        'section[data-block="service-cards"] .rounded-card',
+      )
       await expect(serviceCardContainers.nth(1)).toHaveClass(/\bbg-deep-navy\b/)
 
       // 3 gói có giá từ CMS và số 01, 02, 03
@@ -240,12 +242,15 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
       const pkg1Heading = canvas
         .getByRole('heading', { name: `[MẪU] Gói CLEAR ${marker}`, exact: false })
         .first()
-      const highlightSelect = page.getByRole('combobox', { name: 'Thẻ nổi bật', exact: true })
+      const highlightSelect = page.getByRole('combobox', {
+        name: 'Gói nổi bật (Viền / bóng nhấn)',
+        exact: true,
+      })
       await expect(async () => {
         await pkg1Heading.click()
         await expect(highlightSelect).toBeVisible({ timeout: 2000 })
       }).toPass({ timeout: 30000 })
-      await highlightSelect.selectOption({ label: 'Không' })
+      await highlightSelect.selectOption({ label: 'Không (Mặc định)' })
 
       // Chọn gói 2, bật nổi bật
       const pkg2Heading = canvas.getByRole('heading', {
@@ -256,7 +261,7 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
         await pkg2Heading.click()
         await expect(highlightSelect).toBeVisible({ timeout: 2000 })
       }).toPass({ timeout: 30000 })
-      await highlightSelect.selectOption({ label: 'Có' })
+      await highlightSelect.selectOption({ label: 'Có (Gói nổi bật)' })
 
       // C. Chọn dịch vụ 1, đổi cỡ tên sang "Lớn"
       const srv1Heading = canvas.getByRole('heading', {
@@ -298,7 +303,7 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
 
       // Dịch vụ 1 có class cỡ mới: text-3xl
       const reloadedSrv1 = publicPage
-        .locator('section[data-bg] h3')
+        .locator('section[data-block="service-cards"] h3')
         .filter({ hasText: `[MẪU] Khai vấn Cảm xúc Cá nhân ${marker}` })
       await expect(reloadedSrv1).toHaveClass(/\btext-3xl\b/)
     } finally {

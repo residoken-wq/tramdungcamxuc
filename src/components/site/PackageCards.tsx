@@ -30,6 +30,8 @@ export interface PackageCardsProps {
     buttonUrl?: string | null
     pageSlug?: string | null
     bookingProductId?: number | null
+    /** Set by resolveServerData: v2 cards whose package resolves (0 → hide on public pages). */
+    visibleCardCount?: number
   }
   puck?: {
     isEditing?: boolean
@@ -84,6 +86,10 @@ export function PackageCards({
   const hasV1Packages = v1Packages.length > 0
 
   if (!isEditing && !hasCards && !hasV1Packages) {
+    return null
+  }
+  // v1 hid the block when no package was selected; keep that for an empty v2 slot on public pages
+  if (!isEditing && _resolved?.visibleCardCount === 0) {
     return null
   }
 
@@ -183,8 +189,7 @@ export function PackageCards({
         ) : hasV1Packages ? (
           <div className={gridClasses}>
             {v1Packages.slice(0, 3).map((pkg, idx) => {
-              const pkgObj =
-                typeof pkg === 'object' && pkg !== null ? (pkg as PublicProduct) : null
+              const pkgObj = typeof pkg === 'object' && pkg !== null ? (pkg as PublicProduct) : null
               const pkgId =
                 pkgObj?.id ||
                 (pkg as { packageId?: string | number })?.packageId ||

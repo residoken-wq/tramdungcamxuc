@@ -33,6 +33,8 @@ export interface ServiceCardsProps {
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     services?: ResolvedService[]
+    /** Set by resolveServerData: v2 cards whose service resolves (0 → hide on public pages). */
+    visibleCardCount?: number
   }
   puck?: {
     isEditing?: boolean
@@ -80,6 +82,10 @@ export function ServiceCards({
   if (!isEditing && !hasCards && !hasV1Services) {
     return null
   }
+  // v1 hid the block when no service was selected; keep that for an empty v2 slot on public pages
+  if (!isEditing && _resolved?.visibleCardCount === 0) {
+    return null
+  }
 
   const numCols =
     columns !== undefined
@@ -103,6 +109,8 @@ export function ServiceCards({
   return (
     <section
       className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+      data-block="service-cards"
+      data-bg={bgColor}
     >
       <div className="mx-auto max-w-6xl">
         {(seriesLabel || titleLine1) && (
