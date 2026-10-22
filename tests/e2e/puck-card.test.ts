@@ -31,7 +31,7 @@ async function bootstrapAdmin(page: Page): Promise<{ userId?: number }> {
 }
 
 test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
-  test('chọn và quản lý Card bên trong IconCardGrid, nhân bản, kiểm tra sidebar không có Card, xuất bản trang công khai', async ({
+  test('trang IconCardGrid v1 vẫn hiện đủ thẻ (migration khi đọc); trong builder chọn thẻ 2 đổi màu + cỡ, nhân bản thẻ 1, xuất bản', async ({
     page,
     browser,
   }, testInfo) => {
@@ -48,6 +48,7 @@ test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
 
     const marker = randomUUID().slice(0, 8)
     const slug = `e2e-card-${marker}`
+    const titles = ['[MẪU] Thẻ Thứ Nhất', '[MẪU] Thẻ Thứ Hai', '[MẪU] Thẻ Thứ Ba']
     let userId: number | undefined
     let pageId: number | undefined
 
@@ -58,58 +59,30 @@ test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
       const admin = await bootstrapAdmin(page)
       userId = admin.userId
 
-      // 1. Tự tạo trang qua REST với 1 IconCardGrid v2 chứa 2 thẻ Card con
-      const created = await page.request.post('/api/pages?draft=true', {
+      // 1. Trang đã xuất bản, lưu IconCardGrid **v1** (mảng items) như dữ liệu trước PK-02
+      const created = await page.request.post('/api/pages', {
         data: {
           title: `[MẪU] E2E Card ${marker}`,
           slug,
-          _status: 'draft',
+          _status: 'published',
           puckData: {
             content: [
               {
                 type: 'IconCardGrid',
                 props: {
                   id: 'grid-e2e',
-                  version: 2,
-                  seriesLabel: '[MẪU] Series PK02',
+                  version: 1,
                   titleLine1: '[MẪU] TIÊU ĐỀ LƯỚI THẺ',
-                  titleLine2: '[MẪU] ĐỒNG HÀNH CHUYỂN MÌNH',
-                  emotionLine: '[MẪU] Dòng cảm xúc nhẹ nhàng',
                   marker: 'number',
                   columns: 3,
                   cardStyle: 'white',
                   bgColor: 'warm-ivory',
                   padding: 'md',
-                  cards: [
-                    {
-                      type: 'Card',
-                      props: {
-                        id: 'grid-e2e-card-0',
-                        icon: 'target',
-                        title: '[MẪU] Thẻ Thứ Nhất',
-                        text: '[MẪU] Nội dung mô tả của thẻ đầu tiên',
-                        titleColor: 'deep-navy',
-                        textColor: 'deep-navy',
-                        titleSize: 'md',
-                        textSize: 'md',
-                        align: 'left',
-                      },
-                    },
-                    {
-                      type: 'Card',
-                      props: {
-                        id: 'grid-e2e-card-1',
-                        icon: 'heart',
-                        title: '[MẪU] Thẻ Thứ Hai',
-                        text: '[MẪU] Nội dung mô tả của thẻ thứ hai',
-                        titleColor: 'deep-navy',
-                        textColor: 'deep-navy',
-                        titleSize: 'md',
-                        textSize: 'md',
-                        align: 'left',
-                      },
-                    },
-                  ],
+                  items: titles.map((title, i) => ({
+                    icon: 'star',
+                    title,
+                    text: `[MẪU] Nội dung thẻ ${i + 1}`,
+                  })),
                 },
               },
             ],
@@ -122,38 +95,42 @@ test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
       pageId = createdData.doc?.id || createdData.id
       expect(pageId).toBeDefined()
 
-      // 2. Mở builder
+      // 2. Trang công khai (chưa mở builder) vẫn đủ 3 thẻ: migration chạy khi đọc
+      await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
+      const publicTitles = publicPage.locator('[data-marker="number"] h3')
+      await expect(publicTitles).toHaveText(titles)
+
+      // 3. Builder: 3 thẻ là khối con
       await page.goto(`/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
       const canvas = page.frameLocator('iframe')
+      const card2 = canvas.getByRole('heading', { name: titles[1], exact: true })
+      await expect(card2).toBeVisible({ timeout: 30000 })
 
-      // 3. Kiểm tra sidebar: component Card KHÔNG xuất hiện trong danh sách khối
-      const sidebarComponentList = page.locator('[data-puck-component-list], [data-testid="components"]')
-      await expect(sidebarComponentList.locator('text="Thẻ"')).toHaveCount(0)
-      await expect(sidebarComponentList.locator('text="Card"')).toHaveCount(0)
+      // 4. Chọn thẻ 2 (thử lại tới khi đã hydrate), đổi cỡ + màu tiêu đề theo nhãn
+      const titleSize = page.getByRole('combobox', { name: 'Cỡ chữ tiêu đề', exact: true })
+      await expect(async () => {
+        await card2.click()
+        await expect(titleSize).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 30000 })
+      await titleSize.selectOption({ label: 'Lớn' })
+      await page
+        .getByRole('combobox', { name: 'Màu tiêu đề', exact: true })
+        .selectOption({ label: 'Hồng sen (Bright Magenta)' })
 
-      // 4. Kiểm tra trên canvas: các thẻ bên trong IconCardGrid có thể click chọn
-      const firstCard = canvas.locator('text="[MẪU] Thẻ Thứ Nhất"').first()
-      await expect(firstCard).toBeVisible({ timeout: 30000 })
+      // 5. Chọn thẻ 1 và nhân bản
+      const card1 = canvas.getByRole('heading', { name: titles[0], exact: true })
+      const duplicate = page
+        .locator('button[title="Nhân bản"]')
+        .or(canvas.locator('button[title="Nhân bản"]'))
+        .first()
+      await expect(async () => {
+        await card1.click()
+        await expect(duplicate).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 30000 })
+      await duplicate.click()
+      await expect(canvas.getByRole('heading', { name: titles[0], exact: true })).toHaveCount(2)
 
-      // Click chọn thẻ đầu tiên
-      await firstCard.click()
-
-      // Kiểm tra toolbar của Puck hiển thị (có nút Duplicate/Nhân bản hoặc action toolbar)
-      const duplicateBtn = canvas
-        .locator('button[title*="Duplicate"], button[aria-label*="Duplicate"], button[title*="Nhân bản"]')
-        .or(page.locator('button[title*="Duplicate"], button[aria-label*="Duplicate"], button[title*="Nhân bản"]'))
-
-      if (await duplicateBtn.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-        await duplicateBtn.first().click()
-      }
-
-      // 5. Đổi tiêu đề thẻ thứ nhất thành nội dung mới
-      const titleInput = page.getByRole('textbox', { name: 'Tiêu đề thẻ' }).or(page.locator('input[name="title"]'))
-      if (await titleInput.first().isVisible({ timeout: 5000 }).catch(() => false)) {
-        await titleInput.first().fill('[MẪU] Thẻ Đã Sửa E2E')
-      }
-
-      // 6. Xuất bản trang
+      // 6. Xuất bản
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
       await expect(
         page
@@ -162,13 +139,12 @@ test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
           .first(),
       ).toBeVisible({ timeout: 15000 })
 
-      // 7. Kiểm tra trang công khai hiển thị thẻ đúng
+      // 7. Trang công khai: 4 thẻ, thẻ 2 mang class màu / cỡ mới
       await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
-      const publicCardsGrid = publicPage.locator('[data-card-style="white"][data-marker="number"]')
-      await expect(publicCardsGrid).toBeVisible()
-
-      // Thẻ thứ hai và thẻ đã sửa hiển thị trên trang công khai
-      await expect(publicPage.getByText('[MẪU] Thẻ Thứ Hai')).toBeVisible()
+      await expect(publicTitles).toHaveText([titles[0], titles[0], titles[1], titles[2]])
+      const publicCard2 = publicTitles.filter({ hasText: titles[1] })
+      await expect(publicCard2).toHaveClass(/text-bright-magenta/)
+      await expect(publicCard2).toHaveClass(/sm:text-2xl/)
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
       await publicContext.close()
