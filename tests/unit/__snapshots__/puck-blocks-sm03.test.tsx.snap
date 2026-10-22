@@ -200,74 +200,84 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         </header>
       </div>
       <div
-        class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl gap-6 sm:gap-8"
+        class="group/grid w-full"
+        data-bg="warm-ivory"
+        data-card-style="white"
+        data-card-theme="light-white"
+        data-grid-bg="warm-ivory"
+        data-marker="icon"
       >
         <div
-          class="flex flex-col p-6 sm:p-8 rounded-card border bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-0.5"
+          class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl gap-6 sm:gap-8 [counter-reset:card-counter]"
+          style="counter-reset: card-counter;"
         >
           <div
-            class="mb-4 flex items-center"
+            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
           >
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
-            />
-          </div>
-          <h3
-            class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy"
-          >
-            Thấu hiểu bản thân
-          </h3>
-          <p
-            class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75"
-          >
-            Nhận diện các tầng cảm xúc và nhu cầu cốt lõi.
-          </p>
-        </div>
-        <div
-          class="flex flex-col p-6 sm:p-8 rounded-card border bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-0.5"
-        >
-          <div
-            class="mb-4 flex items-center"
-          >
-            <div
-              class="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
+              class="mb-4 flex items-center"
             >
-              <svg
-                aria-hidden="true"
-                class="inline-block shrink-0 "
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-                <polygon
-                  points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                />
-              </svg>
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
+              />
             </div>
+            <h3
+              class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy group-data-[bg=deep-navy]/grid:text-white"
+            >
+              Thấu hiểu bản thân
+            </h3>
+            <p
+              class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
+            >
+              Nhận diện các tầng cảm xúc và nhu cầu cốt lõi.
+            </p>
           </div>
-          <h3
-            class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy"
+          <div
+            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
           >
-            Định hướng sự nghiệp
-          </h3>
-          <p
-            class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75"
-          >
-            Lựa chọn hướng đi phù hợp với giá trị cá nhân.
-          </p>
+            <div
+              class="mb-4 flex items-center"
+            >
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="inline-block shrink-0 "
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <polygon
+                    points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h3
+              class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy group-data-[bg=deep-navy]/grid:text-white"
+            >
+              Định hướng sự nghiệp
+            </h3>
+            <p
+              class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
+            >
+              Lựa chọn hướng đi phù hợp với giá trị cá nhân.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -311,53 +321,63 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         </header>
       </div>
       <div
-        class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl gap-6 sm:gap-8"
+        class="group/grid w-full"
+        data-bg="warm-ivory"
+        data-card-style="white"
+        data-card-theme="light-white"
+        data-grid-bg="warm-ivory"
+        data-marker="number"
       >
         <div
-          class="flex flex-col p-6 sm:p-8 rounded-card border bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-0.5"
+          class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl gap-6 sm:gap-8 [counter-reset:card-counter]"
+          style="counter-reset: card-counter;"
         >
           <div
-            class="mb-4 flex items-center"
+            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
           >
-            <span
-              class="font-display text-3xl sm:text-4xl text-bright-magenta"
+            <div
+              class="mb-4 flex items-center"
             >
-              01
-            </span>
+              <span
+                class="font-display text-3xl sm:text-4xl text-bright-magenta"
+              >
+                01
+              </span>
+            </div>
+            <h3
+              class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy group-data-[bg=deep-navy]/grid:text-white"
+            >
+              Lắng nghe & Khám phá
+            </h3>
+            <p
+              class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
+            >
+              Nhìn nhận bức tranh hiện tại.
+            </p>
           </div>
-          <h3
-            class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy"
-          >
-            Lắng nghe & Khám phá
-          </h3>
-          <p
-            class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75"
-          >
-            Nhìn nhận bức tranh hiện tại.
-          </p>
-        </div>
-        <div
-          class="flex flex-col p-6 sm:p-8 rounded-card border bg-white border-deep-navy/10 text-deep-navy shadow-soft transition-transform hover:-translate-y-0.5"
-        >
           <div
-            class="mb-4 flex items-center"
+            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
           >
-            <span
-              class="font-display text-3xl sm:text-4xl text-bright-magenta"
+            <div
+              class="mb-4 flex items-center"
             >
-              02
-            </span>
+              <span
+                class="font-display text-3xl sm:text-4xl text-bright-magenta"
+              >
+                02
+              </span>
+            </div>
+            <h3
+              class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy group-data-[bg=deep-navy]/grid:text-white"
+            >
+              Tháo gỡ & Chuyển hóa
+            </h3>
+            <p
+              class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
+            >
+              Thực hành các kỹ thuật điều hòa cảm xúc.
+            </p>
           </div>
-          <h3
-            class="font-ui text-lg sm:text-xl font-bold leading-snug text-deep-navy"
-          >
-            Tháo gỡ & Chuyển hóa
-          </h3>
-          <p
-            class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75"
-          >
-            Thực hành các kỹ thuật điều hòa cảm xúc.
-          </p>
         </div>
       </div>
     </div>

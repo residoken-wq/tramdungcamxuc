@@ -30,6 +30,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'JourneySteps',
         'ImageText',
         'LogoStrip',
+        'IconCardGrid',
       ]
       const expectedVersion = v3Blocks.includes(blockKey) ? 3 : v2Blocks.includes(blockKey) ? 2 : 1
       expect((blockConfig.defaultProps as { version?: number })?.version).toBe(expectedVersion)

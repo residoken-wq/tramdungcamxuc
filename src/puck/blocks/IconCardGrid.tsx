@@ -2,7 +2,6 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { IconCardGrid, type IconCardGridProps } from '@/components/site/IconCardGrid'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
-import { BRAND_ICONS } from '@/lib/brand/icons'
 
 export type { IconCardGridProps }
 
@@ -52,29 +51,10 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
         { label: 'Viền nét (Outline)', value: 'outline' },
       ],
     },
-    items: {
-      type: 'array',
-      label: 'Danh sách thẻ (1 – 8 thẻ)',
-      arrayFields: {
-        icon: {
-          type: 'select',
-          label: 'Biểu tượng (Khi dùng kiểu Icon)',
-          options: BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
-        },
-        title: {
-          type: 'text',
-          label: 'Tiêu đề thẻ',
-        },
-        text: {
-          type: 'textarea',
-          label: 'Nội dung mô tả',
-        },
-      },
-      defaultItemProps: {
-        icon: 'star',
-        title: '[MẪU] Tiêu đề thẻ',
-        text: '[MẪU] Nội dung mô tả chi tiết của thẻ giúp người học thấu hiểu rõ hơn.',
-      },
+    cards: {
+      type: 'slot',
+      label: 'Danh sách thẻ',
+      allow: ['Card'],
     },
     bgColor: {
       type: 'select',
@@ -88,7 +68,7 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
     seriesLabel: '[MẪU] DÀNH CHO BẠN',
     titleLine1: '[MẪU] BẠN ĐANG Ở GIAI ĐOẠN NÀO',
     titleLine2: '[MẪU] TRONG HÀNH TRÌNH CẢM XÚC?',
@@ -96,21 +76,45 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
     marker: 'icon',
     columns: 3,
     cardStyle: 'white',
-    items: [
+    cards: [
       {
-        icon: 'target',
-        title: '[MẪU] Nhận diện & Gọi tên',
-        text: '[MẪU] Dừng lại để nhận diện rõ cảm xúc hiện tại mà không phán xét hay né tránh.',
+        type: 'Card',
+        props: {
+          icon: 'target',
+          title: '[MẪU] Nhận diện & Gọi tên',
+          text: '[MẪU] Dừng lại để nhận diện rõ cảm xúc hiện tại mà không phán xét hay né tránh.',
+          titleColor: 'deep-navy',
+          textColor: 'deep-navy',
+          titleSize: 'md',
+          textSize: 'md',
+          align: 'left',
+        },
       },
       {
-        icon: 'layers',
-        title: '[MẪU] Thấu hiểu căn nguyên',
-        text: '[MẪU] Lắng nghe nhu cầu ẩn sau cảm xúc để tìm ra nguyên nhân sâu xa cốt lõi.',
+        type: 'Card',
+        props: {
+          icon: 'star',
+          title: '[MẪU] Thấu hiểu căn nguyên',
+          text: '[MẪU] Lắng nghe nhu cầu ẩn sau cảm xúc để tìm ra nguyên nhân sâu xa cốt lõi.',
+          titleColor: 'deep-navy',
+          textColor: 'deep-navy',
+          titleSize: 'md',
+          textSize: 'md',
+          align: 'left',
+        },
       },
       {
-        icon: 'spark',
-        title: '[MẪU] Chuyển mình bền bỉ',
-        text: '[MẪU] Thiết lập hành động nhỏ hàng ngày để nuôi dưỡng sự bình an và tự tin.',
+        type: 'Card',
+        props: {
+          icon: 'heart',
+          title: '[MẪU] Chuyển mình bền bỉ',
+          text: '[MẪU] Thiết lập hành động nhỏ hàng ngày để nuôi dưỡng sự bình an và tự tin.',
+          titleColor: 'deep-navy',
+          textColor: 'deep-navy',
+          titleSize: 'md',
+          textSize: 'md',
+          align: 'left',
+        },
       },
     ],
     bgColor: 'warm-ivory',

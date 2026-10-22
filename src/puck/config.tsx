@@ -26,6 +26,7 @@ import { TestimonialSliderBlock, type TestimonialSliderProps } from './blocks/Te
 import { LogoStripBlock, type LogoStripProps } from './blocks/LogoStrip'
 import { HanaStoryBlock, type HanaStoryProps } from './blocks/HanaStory'
 import { IconCardGridBlock, type IconCardGridProps } from './blocks/IconCardGrid'
+import { CardBlock, type CardProps } from './blocks/Card'
 import { CalloutBlock, type CalloutProps } from './blocks/Callout'
 import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards'
 import { SolutionEcosystemBlock, type SolutionEcosystemProps } from './blocks/SolutionEcosystem'
@@ -90,6 +91,7 @@ export type {
   NewsletterFormProps,
   ContactInfoProps,
   ContactFormsProps,
+  CardProps,
 }
 
 export type PageComponentsProps = {
@@ -103,6 +105,7 @@ export type PageComponentsProps = {
   QuoteBlock: QuoteBlockProps
   StatsBar: StatsBarProps
   IconCardGrid: IconCardGridProps
+  Card: CardProps
   Callout: CalloutProps
   JourneySteps: JourneyStepsProps
   VisionMission: VisionMissionProps
@@ -205,6 +208,9 @@ export const puckConfig: Config<PageComponentsProps> = {
         'NewsletterForm',
         'ContactForms',
       ],
+    },
+    other: {
+      visible: false,
     },
   },
   root: {
@@ -581,6 +587,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     QuoteBlock: QuoteBlockConfig,
     StatsBar: StatsBarBlock,
     IconCardGrid: IconCardGridBlock,
+    Card: CardBlock,
     Callout: CalloutBlock,
     JourneySteps: JourneyStepsBlock,
     FAQ: FAQBlock,

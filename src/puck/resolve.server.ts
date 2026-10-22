@@ -14,6 +14,7 @@ import type { Service, Program } from '@/payload-types'
 import type { PublicContactInfo } from '@/components/site/ContactInfo'
 
 import { walkPuckItems } from './walk'
+import { normalizePuckData } from './migrations'
 
 const PUBLIC_PRODUCT_SELECT = {
   id: true,
@@ -156,15 +157,16 @@ export async function resolveServerData(
   data: Data,
   options?: ResolveServerDataOptions,
 ): Promise<Data> {
-  if (!data || !Array.isArray(data.content)) {
-    return data
+  const normalizedData = normalizePuckData(data)
+  if (!normalizedData || !Array.isArray(normalizedData.content)) {
+    return normalizedData
   }
 
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
   // Deep clone data to avoid mutating original
-  const resolvedData: Data = JSON.parse(JSON.stringify(data))
+  const resolvedData: Data = JSON.parse(JSON.stringify(normalizedData))
   const normalizedSlug =
     options?.pageSlug !== undefined ? normalizePageSlug(options.pageSlug) : undefined
 
@@ -195,12 +197,13 @@ export async function resolveServerData(
       }
     }
 
-    // Media resolution for ImageText, HeroImage, HanaStory & HeroTwoEntries
+    // Media resolution for ImageText, HeroImage, HanaStory, HeroTwoEntries & Card
     if (
       (item.type === 'ImageText' ||
         item.type === 'HeroImage' ||
         item.type === 'HanaStory' ||
-        item.type === 'HeroTwoEntries') &&
+        item.type === 'HeroTwoEntries' ||
+        item.type === 'Card') &&
       item.props.mediaId
     ) {
       try {
