@@ -248,4 +248,3 @@ describe('PK-02: Card child block - Contrast, Presets & Permissions', () => {
     })
   })
 })
-

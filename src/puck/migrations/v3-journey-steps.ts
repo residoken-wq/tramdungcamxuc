@@ -25,12 +25,11 @@ function migrateItem(item: unknown): unknown {
         const stepNum = index + 1
         const subtitleKey = `step${stepNum}Subtitle`
         const descKey = `step${stepNum}Description`
-        const subtitle = typeof props[subtitleKey] === 'string' ? (props[subtitleKey] as string) : ''
+        const subtitle =
+          typeof props[subtitleKey] === 'string' ? (props[subtitleKey] as string) : ''
         const rawDesc = props[descKey]
         const description =
-          typeof rawDesc === 'string' && rawDesc.trim().length > 0
-            ? rawDesc
-            : fixed.defaultDesc
+          typeof rawDesc === 'string' && rawDesc.trim().length > 0 ? rawDesc : fixed.defaultDesc
         const highlight = numericHighlight === stepNum
 
         return {

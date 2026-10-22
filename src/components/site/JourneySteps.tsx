@@ -23,12 +23,7 @@ export interface JourneyStepsProps {
   step4Description?: string
   step5Description?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -180,11 +175,7 @@ export function JourneySteps({
           </div>
         )}
 
-        <div
-          className="group/journey w-full relative"
-          data-variant={variant}
-          data-bg={bgColor}
-        >
+        <div className="group/journey w-full relative" data-variant={variant} data-bg={bgColor}>
           {variant === 'cards' && (
             <div
               className="hidden lg:block absolute top-[44px] left-10 right-10 h-0.5 border-t-2 border-dashed border-deep-navy/20 group-data-[bg=deep-navy]/journey:border-white/20 z-0"

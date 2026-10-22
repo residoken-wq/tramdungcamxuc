@@ -151,7 +151,9 @@ export function JourneyStep({
           )}
         </div>
 
-        <h3 className={`font-ui ${nameSizeClass} font-bold ${subtitle ? 'mb-1' : 'mb-2'} ${nameColorClass}`}>
+        <h3
+          className={`font-ui ${nameSizeClass} font-bold ${subtitle ? 'mb-1' : 'mb-2'} ${nameColorClass}`}
+        >
           {name}
         </h3>
 

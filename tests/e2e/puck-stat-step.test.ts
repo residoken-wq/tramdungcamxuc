@@ -75,7 +75,12 @@ test.describe('PK-03: Draggable Stat & Step child blocks in StatsBar & JourneySt
                   bgColor: 'warm-ivory',
                   padding: 'md',
                   stats: [
-                    { value: '[MẪU] 10+', label: '[MẪU] Năm kinh nghiệm', description: '', icon: '' },
+                    {
+                      value: '[MẪU] 10+',
+                      label: '[MẪU] Năm kinh nghiệm',
+                      description: '',
+                      icon: '',
+                    },
                     { value: '[MẪU] 500+', label: '[MẪU] Học viên', description: '', icon: '' },
                     { value: '[MẪU] 98%', label: '[MẪU] Hài lòng', description: '', icon: '' },
                   ],

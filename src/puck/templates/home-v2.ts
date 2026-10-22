@@ -244,8 +244,7 @@ export const homeV2Template: Data = {
               id: 'home-v2-journey-step-4',
               title: 'Practice',
               subtitle: '',
-              description:
-                '[MẪU] Thực hành chuyển hóa bền bỉ qua từng hành động nhỏ mỗi ngày.',
+              description: '[MẪU] Thực hành chuyển hóa bền bỉ qua từng hành động nhỏ mỗi ngày.',
               isHighlighted: false,
               titleColor: 'deep-navy',
               textColor: 'deep-navy',

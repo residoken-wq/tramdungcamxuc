@@ -81,7 +81,9 @@ export function StatItem({
       )}
 
       {label && (
-        <p className={`mt-3 font-ui ${labelSizeClass} font-semibold leading-relaxed ${labelColorClass}`}>
+        <p
+          className={`mt-3 font-ui ${labelSizeClass} font-semibold leading-relaxed ${labelColorClass}`}
+        >
           {label}
         </p>
       )}

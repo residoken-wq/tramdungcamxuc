@@ -14,12 +14,7 @@ export interface StatsBarProps {
   columns?: 2 | 3 | 4 | '2' | '3' | '4'
   stats?: React.ReactNode | React.ComponentType | StatItemData[] | unknown[]
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 

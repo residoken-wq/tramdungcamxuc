@@ -30,7 +30,10 @@ export interface IconCardProps {
   isDeepNavy?: boolean
 }
 
-function getExplicitCardClasses(cardStyle: 'white' | 'soft' | 'outline' = 'white', isDeepNavy = false): string {
+function getExplicitCardClasses(
+  cardStyle: 'white' | 'soft' | 'outline' = 'white',
+  isDeepNavy = false,
+): string {
   if (isDeepNavy) {
     switch (cardStyle) {
       case 'soft':

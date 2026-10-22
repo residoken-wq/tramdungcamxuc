@@ -60,10 +60,7 @@ describe('PK-03: Stat & Step Child Blocks - Unit Tests', () => {
 
       // Parent deep-navy -> deep-navy
       expect(
-        getChildRealBg(
-          { type: 'StatsBar', props: { bgColor: 'deep-navy' } },
-          { highlight: false },
-        ),
+        getChildRealBg({ type: 'StatsBar', props: { bgColor: 'deep-navy' } }, { highlight: false }),
       ).toBe('deep-navy')
       expect(
         getChildRealBg(
@@ -136,14 +133,19 @@ describe('PK-03: Stat & Step Child Blocks - Unit Tests', () => {
         const textHex = BRAND_HEX_MAP[colorName as keyof typeof BRAND_HEX_MAP]
         expect(textHex).toBeDefined()
         const ratio = getContrastRatio(textHex, ivoryHex)
-        expect(ratio, `Color ${colorName} on warm-ivory (large) should meet AA 3.0`).toBeGreaterThanOrEqual(3.0)
+        expect(
+          ratio,
+          `Color ${colorName} on warm-ivory (large) should meet AA 3.0`,
+        ).toBeGreaterThanOrEqual(3.0)
       }
       // labelColor is normal UI text -> WCAG AA >= 4.5
       for (const colorName of labelColorsIvory) {
         const textHex = BRAND_HEX_MAP[colorName as keyof typeof BRAND_HEX_MAP]
         expect(textHex).toBeDefined()
         const ratio = getContrastRatio(textHex, ivoryHex)
-        expect(ratio, `Color ${colorName} on warm-ivory should meet AA 4.5`).toBeGreaterThanOrEqual(4.5)
+        expect(ratio, `Color ${colorName} on warm-ivory should meet AA 4.5`).toBeGreaterThanOrEqual(
+          4.5,
+        )
       }
     })
 
@@ -176,16 +178,18 @@ describe('PK-03: Stat & Step Child Blocks - Unit Tests', () => {
       for (const colorName of nameColorsHighlight) {
         const textHex = BRAND_HEX_MAP[colorName as keyof typeof BRAND_HEX_MAP]
         const ratio = getContrastRatio(textHex, navyHex)
-        expect(ratio, `Color ${colorName} on highlighted step should meet AA`).toBeGreaterThanOrEqual(
-          4.5,
-        )
+        expect(
+          ratio,
+          `Color ${colorName} on highlighted step should meet AA`,
+        ).toBeGreaterThanOrEqual(4.5)
       }
       for (const colorName of descColorsHighlight) {
         const textHex = BRAND_HEX_MAP[colorName as keyof typeof BRAND_HEX_MAP]
         const ratio = getContrastRatio(textHex, navyHex)
-        expect(ratio, `Color ${colorName} on highlighted step should meet AA`).toBeGreaterThanOrEqual(
-          4.5,
-        )
+        expect(
+          ratio,
+          `Color ${colorName} on highlighted step should meet AA`,
+        ).toBeGreaterThanOrEqual(4.5)
       }
 
       // Case 2: Normal step on warm-ivory JourneySteps (real bg is white)
@@ -209,16 +213,18 @@ describe('PK-03: Stat & Step Child Blocks - Unit Tests', () => {
         const textHex = BRAND_HEX_MAP[colorName as keyof typeof BRAND_HEX_MAP]
         const ratio = getContrastRatio(textHex, whiteHex)
         // name is step name heading
-        expect(ratio, `Color ${colorName} on white step card should meet AA`).toBeGreaterThanOrEqual(
-          3.0,
-        )
+        expect(
+          ratio,
+          `Color ${colorName} on white step card should meet AA`,
+        ).toBeGreaterThanOrEqual(3.0)
       }
       for (const colorName of descColorsNormal) {
         const textHex = BRAND_HEX_MAP[colorName as keyof typeof BRAND_HEX_MAP]
         const ratio = getContrastRatio(textHex, whiteHex)
-        expect(ratio, `Color ${colorName} on white step card should meet AA`).toBeGreaterThanOrEqual(
-          4.5,
-        )
+        expect(
+          ratio,
+          `Color ${colorName} on white step card should meet AA`,
+        ).toBeGreaterThanOrEqual(4.5)
       }
     })
   })
