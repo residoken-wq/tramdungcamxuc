@@ -19,17 +19,17 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
     col1: {
       type: 'slot',
       label: 'Nội dung Cột 1',
-      disallow: ['Columns', 'HeroTwoEntries', 'HeroImage'],
+      disallow: ['Columns', 'HeroTwoEntries', 'HeroImage', 'Card'],
     },
     col2: {
       type: 'slot',
       label: 'Nội dung Cột 2',
-      disallow: ['Columns', 'HeroTwoEntries', 'HeroImage'],
+      disallow: ['Columns', 'HeroTwoEntries', 'HeroImage', 'Card'],
     },
     col3: {
       type: 'slot',
       label: 'Nội dung Cột 3 (khi chọn 3 cột)',
-      disallow: ['Columns', 'HeroTwoEntries', 'HeroImage'],
+      disallow: ['Columns', 'HeroTwoEntries', 'HeroImage', 'Card'],
     },
     gap: {
       type: 'select',

@@ -1018,6 +1018,31 @@ export const vi = {
       defaultNote: '[MẪU] Các gói đồng hành được thiết kế theo lộ trình cá nhân hóa.',
       paymentPolicyLabel: 'Xem Chính sách giá & thanh toán',
     },
+    card: {
+      label: 'Thẻ',
+      icon: 'Biểu tượng thương hiệu',
+      media: 'Ảnh thẻ (Thư viện media - thay thế biểu tượng)',
+      title: 'Tiêu đề thẻ',
+      text: 'Nội dung mô tả',
+      titleColor: 'Màu tiêu đề',
+      textColor: 'Màu nội dung',
+      titleSize: 'Cỡ chữ tiêu đề',
+      textSize: 'Cỡ chữ nội dung',
+      align: 'Căn lề',
+    },
+  },
+
+  puckCard: {
+    label: 'Thẻ',
+    icon: 'Biểu tượng thương hiệu',
+    media: 'Ảnh thẻ (Thư viện media - thay thế biểu tượng)',
+    title: 'Tiêu đề thẻ',
+    text: 'Nội dung mô tả',
+    titleColor: 'Màu tiêu đề',
+    textColor: 'Màu nội dung',
+    titleSize: 'Cỡ chữ tiêu đề',
+    textSize: 'Cỡ chữ nội dung',
+    align: 'Căn lề',
   },
 
   sm03: {
