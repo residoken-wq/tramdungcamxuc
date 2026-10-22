@@ -351,4 +351,69 @@ describe('PK-03: Puck Migrations v3 (StatsBar & JourneySteps)', () => {
       })
     }
   })
+  describe('PK-03c: giữ đúng giao diện v2', () => {
+    const statsBar = (count: number): Data => ({
+      root: { props: {} },
+      content: [
+        {
+          type: 'StatsBar',
+          props: {
+            id: `stats-${count}`,
+            version: 2,
+            stats: Array.from({ length: count }, (_, i) => ({ value: `${i + 1}`, label: `L${i}` })),
+          },
+        } as unknown as Data['content'][number],
+      ],
+    })
+    const columnsOf = (data: Data) =>
+      (data.content[0] as unknown as { props: { columns: number } }).props.columns
+
+    it('columns theo đúng lưới StatsBar v2: 1 → 4, 2 → 2, 3 → 3, 4 → 4, 6 → 4', () => {
+      expect(columnsOf(migrateStatsBarV2ToV3(statsBar(1)))).toBe(4)
+      expect(columnsOf(migrateStatsBarV2ToV3(statsBar(2)))).toBe(2)
+      expect(columnsOf(migrateStatsBarV2ToV3(statsBar(3)))).toBe(3)
+      expect(columnsOf(migrateStatsBarV2ToV3(statsBar(4)))).toBe(4)
+      expect(columnsOf(migrateStatsBarV2ToV3(statsBar(6)))).toBe(4)
+    })
+
+    it('bước nổi bật giữ màu mặc định (component tự đổi sang chữ sáng), tắt nổi bật không ra chữ trắng trên thẻ trắng', () => {
+      const out = migrateJourneyStepsV2ToV3({
+        root: { props: {} },
+        content: [
+          {
+            type: 'JourneySteps',
+            props: { id: 'j', version: 2, variant: 'cards', highlightStep: 2 },
+          } as unknown as Data['content'][number],
+        ],
+      })
+      const steps = (
+        out.content[0] as unknown as { props: { steps: { props: Record<string, unknown> }[] } }
+      ).props.steps
+      expect(steps[1].props.highlight).toBe(true)
+      expect(steps[1].props.nameColor).toBe('deep-navy')
+      expect(steps[1].props.descColor).toBe('deep-navy')
+
+      const highlighted = renderToStaticMarkup(
+        React.createElement(JourneyStep, { ...steps[1].props, variant: 'cards' }),
+      )
+      expect(highlighted).toContain('text-white')
+      const off = renderToStaticMarkup(
+        React.createElement(JourneyStep, { ...steps[1].props, highlight: false, variant: 'cards' }),
+      )
+      expect(off).toContain(
+        'text-deep-navy group-data-[bg=deep-navy]/journey:text-white">Feel</h3>',
+      )
+    })
+
+    it('cỡ chữ "md" của bước giống v2: tên text-lg (list thêm sm:text-xl), mô tả text-sm', () => {
+      const html = renderToStaticMarkup(
+        React.createElement(JourneyStep, { name: 'Pause', description: 'D', variant: 'cards' }),
+      )
+      expect(html).toMatch(
+        /<h3 class="font-ui text-lg group-data-\[variant=list\]\/journey:sm:text-xl /,
+      )
+      expect(html).toContain('<p class="font-ui text-sm leading-relaxed')
+      expect(html).not.toContain('sm:text-base')
+    })
+  })
 })

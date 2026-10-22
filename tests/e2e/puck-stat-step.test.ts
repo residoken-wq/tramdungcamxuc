@@ -92,7 +92,7 @@ test.describe('PK-03: Draggable Stat & Step child blocks in StatsBar & JourneySt
                   id: 'journey-e2e',
                   version: 2,
                   variant: 'cards',
-                  highlightStep: 2, // Bước 2 (index 2: Name) nổi bật
+                  highlightStep: 2, // Bước 2 (Feel) nổi bật
                   seriesLabel: '[MẪU] Tiến trình',
                   titleLine1: '[MẪU] HÀNH TRÌNH 5 BƯỚC',
                   titleLine2: '[MẪU] CHUYỂN HÓA',
@@ -130,16 +130,18 @@ test.describe('PK-03: Draggable Stat & Step child blocks in StatsBar & JourneySt
       const statValues = publicPage.locator('.group\\/stats .font-display')
       await expect(statValues).toHaveText(['[MẪU] 10+', '[MẪU] 500+', '[MẪU] 98%'])
 
-      const stepTitles = publicPage.locator('.group\\/journey h3')
+      // Mỗi bước có 2 h3 (bố cục danh sách / thẻ), chỉ một cái hiện
+      const stepTitles = publicPage.locator('.group\\/journey h3:visible')
       await expect(stepTitles).toHaveText(['Pause', 'Feel', 'Name', 'Choose', 'Practice'])
 
       // Bước 3 (Name, index 2) hiện chữ mô tả mặc định [MẪU]...
-      const step3Desc = publicPage.locator('.group\\/journey p').nth(2)
+      const step3Desc = publicPage.locator('.group\\/journey p:visible').nth(2)
       await expect(step3Desc).toContainText('[MẪU]')
 
-      // Bước 2 (Name, index 2) có nền navy (bg-deep-navy)
-      const step3Card = publicPage.locator('.group\\/journey [data-step-card]').nth(2)
-      await expect(step3Card).toHaveClass(/bg-deep-navy/)
+      // Bước 2 (Feel) có nền navy, bước 3 thì không
+      const stepCards = publicPage.locator('.group\\/journey .rounded-card')
+      await expect(stepCards.nth(1)).toHaveClass(/\bbg-deep-navy\b/)
+      await expect(stepCards.nth(2)).not.toHaveClass(/(^|\s)bg-deep-navy(\s|$)/)
 
       // 3. Mở builder:
       await page.goto(`/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
@@ -149,7 +151,10 @@ test.describe('PK-03: Draggable Stat & Step child blocks in StatsBar & JourneySt
       const step4Heading = canvas.getByRole('heading', { name: 'Choose', exact: true })
       await expect(step4Heading).toBeVisible({ timeout: 30000 })
 
-      const stepTitleInput = page.getByRole('textbox', { name: 'Tên bước', exact: true })
+      const stepTitleInput = page.getByRole('textbox', {
+        name: 'Tên bước (Ví dụ: Pause)',
+        exact: true,
+      })
       await expect(async () => {
         await step4Heading.click()
         await expect(stepTitleInput).toBeVisible({ timeout: 2000 })
@@ -157,7 +162,7 @@ test.describe('PK-03: Draggable Stat & Step child blocks in StatsBar & JourneySt
 
       await stepTitleInput.fill('[MẪU] Bước mới')
 
-      const stepTitleSize = page.getByRole('combobox', { name: 'Cỡ chữ tên bước', exact: true })
+      const stepTitleSize = page.getByRole('combobox', { name: 'Cỡ tên bước', exact: true })
       await stepTitleSize.selectOption({ label: 'Lớn' })
 
       // Nhân bản bước 1 (chọn cách nhân bản bước 1 để đảm bảo độ ổn định trong trình duyệt tự động hóa)
@@ -197,7 +202,7 @@ test.describe('PK-03: Draggable Stat & Step child blocks in StatsBar & JourneySt
         await expect(reloadedStats).toHaveCount(4, { timeout: 2000 })
       }).toPass({ timeout: 30000 })
 
-      const updatedStepTitles = publicPage.locator('.group\\/journey h3')
+      const updatedStepTitles = publicPage.locator('.group\\/journey h3:visible')
       await expect(updatedStepTitles).toHaveText([
         'Pause',
         'Pause',

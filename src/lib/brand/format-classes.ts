@@ -238,7 +238,33 @@ export function fontSizeClass(
     }
   }
 
-  if (role === 'card-title' || role === 'step-name') {
+  // Journey step "md" keeps the JourneySteps v2 sizes: name text-lg (list adds sm:text-xl),
+  // description text-sm in every variant.
+  if (role === 'step-name') {
+    switch (size) {
+      case 'sm':
+        return 'text-base'
+      case 'lg':
+        return 'text-xl sm:text-2xl'
+      case 'md':
+      default:
+        return 'text-lg group-data-[variant=list]/journey:sm:text-xl'
+    }
+  }
+
+  if (role === 'step-desc') {
+    switch (size) {
+      case 'sm':
+        return 'text-xs'
+      case 'lg':
+        return 'text-base'
+      case 'md':
+      default:
+        return 'text-sm'
+    }
+  }
+
+  if (role === 'card-title') {
     switch (size) {
       case 'sm':
         return 'text-base sm:text-lg'
@@ -250,7 +276,7 @@ export function fontSizeClass(
     }
   }
 
-  if (role === 'card-text' || role === 'step-desc') {
+  if (role === 'card-text') {
     switch (size) {
       case 'sm':
         return 'text-xs sm:text-sm'

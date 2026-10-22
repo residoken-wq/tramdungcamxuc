@@ -41,9 +41,11 @@ function migrateItem(item: unknown): unknown {
             subtitle,
             description,
             highlight,
-            nameColor: highlight ? 'white' : 'deep-navy',
+            // Default colours; the component switches them to light text on navy / highlighted steps,
+            // so turning highlight off later does not leave white text on a white card.
+            nameColor: 'deep-navy',
             nameSize: 'md',
-            descColor: highlight ? 'white' : 'deep-navy',
+            descColor: 'deep-navy',
             descSize: 'md',
             align: 'left',
           },

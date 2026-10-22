@@ -37,9 +37,8 @@ function migrateItem(item: unknown): unknown {
         Boolean(s && (s.value || s.label || s.icon)),
       )
 
-      // columns = số ô cũ (2 / 3 / 4; nhiều hơn 4 thì 4; ít hơn 2 thì 2; mặc định 3)
-      const columnsCount =
-        validStats.length >= 4 ? 4 : validStats.length <= 2 ? 2 : validStats.length
+      // columns = the grid StatsBar v2 picked: 2 -> 2, 3 -> 3, any other count -> 4
+      const columnsCount = validStats.length === 2 ? 2 : validStats.length === 3 ? 3 : 4
 
       const stats = validStats.map((statItem: LegacyStatItem, index: number) => ({
         type: 'Stat',
