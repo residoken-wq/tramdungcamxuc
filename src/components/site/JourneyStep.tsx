@@ -182,7 +182,7 @@ export function JourneyStep({
         {stepNumberNode}
       </div>
 
-      <div className="flex-1 min-w-0 w-full">
+      <div className="flex flex-1 flex-col min-w-0 w-full">
         {/* Cards/Circles top row indicator (visible on cards/circles, hidden on list) */}
         <div className="flex group-data-[variant=list]/journey:hidden items-baseline justify-between mb-3 w-full">
           <span className={`font-display text-2xl sm:text-3xl tracking-tight ${stepNumberClass}`}>
