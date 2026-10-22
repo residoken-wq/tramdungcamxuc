@@ -27,7 +27,11 @@ function migrateItem(item: unknown): unknown {
             ? rawItem.id
             : 'stats'
 
-      const rawStats = Array.isArray(props.stats) ? props.stats : []
+      const rawStats = Array.isArray(props.stats)
+        ? props.stats
+        : Array.isArray(props.items)
+          ? props.items
+          : []
       // Bỏ ô mà component cũ bỏ qua (không value, label, icon)
       const validStats = rawStats.filter((s: LegacyStatItem) =>
         Boolean(s && (s.value || s.label || s.icon)),
@@ -53,10 +57,12 @@ function migrateItem(item: unknown): unknown {
         },
       }))
 
+      const { items: _legacyItems, ...restProps } = props
+
       newItem = {
         ...newItem,
         props: {
-          ...props,
+          ...restProps,
           version: 3,
           columns: columnsCount,
           stats,
