@@ -258,7 +258,9 @@ describe('SM-04: Puck Migrations on Seed Pages and Upgraded Blocks', () => {
     const migrated = applyPuckMigrations(customData)
     expect(migrated.content[0].props.version).toBe(3)
     expect(migrated.content[0].props.titleLine1).toBe('HÀNH TRÌNH TÙY BIẾN')
-    const step0 = (migrated.content[0].props.steps as any)[0]
+    const step0 = (
+      migrated.content[0].props.steps as Array<{ props?: { subtitle?: string }; subtitle?: string }>
+    )[0]
     expect(step0.props?.subtitle || step0.subtitle).toBe('Khởi đầu')
 
     expect(migrated.content[1].props.version).toBe(3)

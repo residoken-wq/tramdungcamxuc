@@ -139,9 +139,13 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
     const stats = migrated.content.find((b) => b.props.id === 'stats-custom')
     expect(stats?.props.version).toBe(3)
     const statItem = (
-      stats?.props.stats as Array<{ props?: { description?: string; icon?: string } }>
+      stats?.props.stats as Array<{
+        props?: { description?: string; icon?: string }
+        description?: string
+        icon?: string
+      }>
     )[0]
-    const itemProps = statItem.props || (statItem as any)
+    const itemProps = statItem.props || statItem
     expect(itemProps.description).toBe('Thân chủ khai vấn')
     expect(itemProps.icon).toBe('heart')
 

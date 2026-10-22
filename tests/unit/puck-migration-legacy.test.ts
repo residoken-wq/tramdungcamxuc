@@ -210,11 +210,12 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
       padding: 'sm',
       columns: 2,
     })
-    expect((stats?.props.stats as any)[0].props).toMatchObject({
+    const statsList = stats?.props.stats as Array<{ props: Record<string, unknown> }>
+    expect(statsList[0].props).toMatchObject({
       value: '10+',
       label: 'Năm đồng hành',
     })
-    expect((stats?.props.stats as any)[1].props).toMatchObject({
+    expect(statsList[1].props).toMatchObject({
       value: '500+',
       label: 'Giờ khai vấn',
     })
@@ -231,8 +232,9 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
       variant: 'circles',
       columns: 5,
     })
-    expect((journey?.props.steps as any)[0].props.description).toBe('Bước 1 mô tả')
-    expect((journey?.props.steps as any)[4].props.description).toBe('Bước 5 mô tả')
+    const stepList = journey?.props.steps as Array<{ props: { description?: string } }>
+    expect(stepList[0].props.description).toBe('Bước 1 mô tả')
+    expect(stepList[4].props.description).toBe('Bước 5 mô tả')
 
     const faq = migrated.content.find((item) => item.props.id === 'faq-1')
     expect(faq?.props).toMatchObject({
