@@ -1,5 +1,7 @@
 import type { Data } from '@puckeditor/core'
 
+type LegacyCardItem = { icon?: unknown; title?: unknown; text?: unknown } | null | undefined
+
 function migrateItem(item: unknown): unknown {
   if (!item || typeof item !== 'object') return item
 
@@ -10,7 +12,10 @@ function migrateItem(item: unknown): unknown {
     const props = newItem.props || {}
     const version = typeof props.version === 'number' ? props.version : 1
     if (version < 2) {
-      const items = Array.isArray(props.items) ? props.items : []
+      // Drop empty items, as the v1 component did (validItems), so no blank cards appear.
+      const items = (Array.isArray(props.items) ? props.items : []).filter(
+        (cardItem: LegacyCardItem) => Boolean(cardItem && (cardItem.title || cardItem.text)),
+      )
       const parentId =
         typeof props.id === 'string' && props.id
           ? props.id
@@ -18,7 +23,7 @@ function migrateItem(item: unknown): unknown {
             ? rawItem.id
             : 'grid'
 
-      const cards = items.map((cardItem: any, index: number) => ({
+      const cards = items.map((cardItem: LegacyCardItem, index: number) => ({
         type: 'Card',
         props: {
           id: `${parentId}-card-${index}`,

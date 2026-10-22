@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- fixtures read loose Puck JSON and resolveFields params */
 import { describe, expect, it } from 'vitest'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -178,7 +179,9 @@ describe('PK-02: IconCardGrid migration v1 -> v2', () => {
     const slotCards = React.createElement(
       React.Fragment,
       null,
-      gridProps.cards.map((c: any) => React.createElement(IconCard, { key: c.props.id, ...c.props })),
+      gridProps.cards.map((c: any) =>
+        React.createElement(IconCard, { key: c.props.id, ...c.props }),
+      ),
     )
 
     const htmlV2 = renderToStaticMarkup(
@@ -197,5 +200,28 @@ describe('PK-02: IconCardGrid migration v1 -> v2', () => {
     expect(htmlV2).toContain('data-card-style="white"')
     expect(htmlV2).toContain('data-marker="icon"')
     expect(htmlV2).toContain('data-grid-bg="warm-ivory"')
+  })
+  it('bỏ item rỗng (không tiêu đề, không nội dung) như component v1, không sinh thẻ trắng', () => {
+    const data: Data = {
+      root: { props: {} },
+      content: [
+        {
+          type: 'IconCardGrid',
+          props: {
+            id: 'grid-empty',
+            items: [
+              { icon: 'star', title: '', text: '' },
+              { icon: 'heart', title: 'Thẻ còn chữ', text: '' },
+              null,
+            ],
+          },
+        } as any,
+      ],
+    }
+    const out = migrateIconCardGridV1ToV2(data)
+    const cards = (out.content[0] as any).props.cards
+    expect(cards).toHaveLength(1)
+    expect(cards[0].props.title).toBe('Thẻ còn chữ')
+    expect(migrateIconCardGridV1ToV2(out)).toEqual(out)
   })
 })

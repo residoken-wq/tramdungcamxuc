@@ -70,7 +70,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     textSize: 'md',
     align: 'left',
   },
-  resolveFields: (data: any, params: any) => {
+  resolveFields: (data, params) => {
     const cardRealBg = getCardRealBg(params?.parent)
     const isTitleLarge = data?.props?.titleSize === 'lg'
     const titleColors = allowedTextColors(cardRealBg, isTitleLarge)

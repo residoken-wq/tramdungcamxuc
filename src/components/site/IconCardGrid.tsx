@@ -1,6 +1,6 @@
 import React from 'react'
 import { SectionHeader } from '@/components/ui/SectionHeader'
-import { IconCard } from './IconCard'
+import { IconCard, type IconCardProps } from './IconCard'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 
 export interface IconCardItem {
@@ -8,6 +8,8 @@ export interface IconCardItem {
   title: string
   text: string
 }
+
+type CardsSlotRender = React.ComponentType<{ className?: string; style?: React.CSSProperties }>
 
 export interface IconCardGridProps {
   version?: number
@@ -18,15 +20,11 @@ export interface IconCardGridProps {
   marker?: 'icon' | 'number'
   columns?: 1 | 2 | 3 | 4
   cardStyle?: 'white' | 'soft' | 'outline'
-  cards?: any
+  /** Puck slot render (v2), React nodes, or raw Card blocks `{ props }` (direct use / tests). */
+  cards?: CardsSlotRender | React.ReactNode | Array<{ type?: string; props?: IconCardProps }>
   items?: IconCardItem[]
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -109,9 +107,9 @@ export function IconCardGrid({
           data-bg={bgColor}
           data-card-theme={`${isDeepNavy ? 'navy' : 'light'}-${cardStyle}`}
         >
-          {hasCards && (
-            typeof cards === 'function' ? (
-              React.createElement(cards as React.ComponentType<any>, {
+          {hasCards &&
+            (typeof cards === 'function' ? (
+              React.createElement(cards as CardsSlotRender, {
                 className: gridClasses,
                 style: { counterReset: 'card-counter' },
               })
@@ -121,27 +119,27 @@ export function IconCardGrid({
               </div>
             ) : Array.isArray(cards) ? (
               <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
-                {cards.map((child: any, idx: number) => {
+                {(cards as unknown[]).map((child, idx: number) => {
                   if (React.isValidElement(child)) {
                     return child
                   }
-                  if (child && typeof child === 'object' && child.props) {
+                  const block = child as { props?: IconCardProps & { id?: string } } | null
+                  if (block && typeof block === 'object' && block.props) {
                     return (
                       <IconCard
-                        key={child.props.id || idx}
+                        key={block.props.id || idx}
                         index={idx}
                         marker={marker}
                         cardStyle={cardStyle}
                         isDeepNavy={isDeepNavy}
-                        {...child.props}
+                        {...block.props}
                       />
                     )
                   }
                   return null
                 })}
               </div>
-            ) : null
-          )}
+            ) : null)}
 
           {hasItems && (
             <div className={gridClasses} style={{ counterReset: 'card-counter' }}>

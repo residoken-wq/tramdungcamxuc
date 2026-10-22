@@ -1283,7 +1283,7 @@ Khối **Tiêu đề phân đoạn** (`SectionHeader`) cho phép Hana tự do đ
 
 #### 5.3.3. Cơ chế bảo vệ độ tương phản chuẩn WCAG AA (Lưới an toàn thị giác)
 
-> **Hana yên tâm**: *"Tại sao khi đổi màu nền trang hoặc cỡ chữ, danh sách màu chữ trong ô chọn lại tự động thay đổi?"*
+> **Hana yên tâm**: _"Tại sao khi đổi màu nền trang hoặc cỡ chữ, danh sách màu chữ trong ô chọn lại tự động thay đổi?"_
 
 Website Trạm Dừng Cảm Xúc tích hợp hệ thống **Lưới an toàn thị giác thông minh** tuân thủ nghiêm ngặt tiêu chuẩn trợ năng quốc tế **WCAG 2.1 AA** (độ tương phản tối thiểu ≥ 4.5:1 đối với chữ thông thường và ≥ 3.0:1 đối với chữ lớn):
 
@@ -1766,9 +1766,12 @@ Trong bản nâng cấp mới, khối **Lưới Thẻ Biểu Tượng / Đánh S
 #### 2. Thao tác trực tiếp với từng thẻ trên màn hình vẽ (Canvas)
 
 Hana chỉ cần rê chuột và nhấp vào bất kỳ chiếc thẻ nào trên màn hình:
+
 1. **Nhân bản thẻ (Duplicate)**: Khi bấm chọn một thẻ, thanh công cụ của Puck sẽ xuất hiện ngay trên thẻ đó. Bấm vào biểu tượng **hai ô vuông chồng nhau (Duplicate)** để nhân bản thêm một thẻ mới giống hệt vị trí cạnh bên.
 2. **Kéo đổi chỗ các thẻ (Reorder)**: Nhấp giữ vào thanh kéo (hoặc biểu tượng 6 chấm) của thẻ, sau đó kéo rê sang vị trí trước hoặc sau thẻ khác để đổi thứ tự hiển thị.
 3. **Xoá thẻ**: Bấm vào biểu tượng **thùng rác (Delete)** trên thanh công cụ của thẻ khi muốn bỏ bớt thẻ khỏi lưới.
+
+> **Thêm thẻ mới = nhân bản một thẻ có sẵn** rồi sửa chữ. Vì thẻ không có trong menu bên trái, **đừng xóa hết thẻ** của một lưới: nếu lỡ xóa hết, hãy xóa cả khối lưới rồi kéo lại khối **Lưới Thẻ Biểu Tượng / Đánh Số** (khối mới luôn có sẵn 3 thẻ mẫu).
 
 #### 3. Tự động đánh số thứ tự (01, 02, 03...)
 
@@ -1779,6 +1782,7 @@ Hana chỉ cần rê chuột và nhấp vào bất kỳ chiếc thẻ nào trên
 #### 4. Chỉnh sửa chi tiết một thẻ ở thanh bên phải
 
 Khi nhấp chọn một chiếc thẻ, cột bên phải sẽ hiển thị các ô cài đặt riêng cho thẻ đó:
+
 - **Biểu tượng thương hiệu**: Chọn 1 trong 16 biểu tượng độc quyền của Trạm Dừng Cảm Xúc (`target`, `spark`, `heart`, `compass`, `mirror`...).
 - **Ảnh thẻ (Thư viện media - thay thế biểu tượng)**: Nếu muốn thẻ hiển thị ảnh minh họa thay vì biểu tượng, Hana bấm chọn ảnh từ Thư viện media. _Lưu ý: Ảnh tải lên bắt buộc phải có dòng chữ mô tả (Alt text) trong thư viện Media để đảm bảo tiêu chuẩn trợ năng quốc tế WCAG._
 - **Tiêu đề thẻ & Nội dung mô tả**: Hana có thể gõ sửa trực tiếp ngay trên khung vẽ hoặc nhập vào các ô tương ứng ở thanh bên phải.

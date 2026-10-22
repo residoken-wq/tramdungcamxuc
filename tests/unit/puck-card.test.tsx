@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- fixtures read loose Puck JSON and resolveFields params */
 import { describe, expect, it } from 'vitest'
 import { CardBlock } from '@/puck/blocks/Card'
 import { puckConfig } from '@/puck/config'

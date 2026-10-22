@@ -106,7 +106,7 @@ export function normalizePuckData(raw: unknown): Data {
     return { content: [], root: { props: { title: '' } }, zones: {} }
   }
 
-  let data: any = raw
+  let data: unknown = raw
   if (typeof raw === 'string') {
     try {
       data = JSON.parse(raw)
@@ -119,10 +119,11 @@ export function normalizePuckData(raw: unknown): Data {
     return { content: [], root: { props: { title: '' } }, zones: {} }
   }
 
+  const obj = data as Partial<Data>
   const structured: Data = {
-    content: Array.isArray(data.content) ? data.content : [],
-    root: data.root && typeof data.root === 'object' ? data.root : { props: { title: '' } },
-    zones: data.zones && typeof data.zones === 'object' ? data.zones : {},
+    content: Array.isArray(obj.content) ? obj.content : [],
+    root: obj.root && typeof obj.root === 'object' ? obj.root : { props: { title: '' } },
+    zones: obj.zones && typeof obj.zones === 'object' ? obj.zones : {},
   }
 
   return applyPuckMigrations(structured)
