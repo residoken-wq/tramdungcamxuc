@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { JourneySteps } from '@/components/site/JourneySteps'
+import { JourneyStep } from '@/components/site/JourneyStep'
 import { StoryBlock } from '@/components/site'
 import { ImageText } from '@/components/site/ImageText'
 import { LogoStrip } from '@/components/site/LogoStrip'
@@ -17,16 +18,16 @@ export function Sm04BlocksDemo() {
       <div className="space-y-6">
         <div className="border-b border-deep-navy/10 pb-2">
           <h3 className="font-ui text-sm font-bold uppercase tracking-wider text-bright-magenta">
-            Khối JourneySteps v2 – Biến thể thẻ (cards) &amp; Biến thể danh sách (list)
+            Khối JourneySteps v3 – Biến thể thẻ (cards) &amp; Biến thể danh sách (list)
           </h3>
           <p className="mt-1 font-ui text-xs text-deep-navy/70">
-            Hỗ trợ 3 biến thể: circles, cards, list với bước nổi bật (highlightStep) và subtitle
+            Hỗ trợ 3 biến thể: circles, cards, list với bước con JourneyStep kéo thả tự do
           </p>
         </div>
 
         <div className="rounded-card border border-deep-navy/10 bg-white p-6 shadow-soft">
           <p className="mb-4 font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/70">
-            Biến thể Thẻ (cards) – Bước 2 được làm nổi bật (highlightStep = 2)
+            Biến thể Thẻ (cards) – Bước 2 được làm nổi bật (highlight = true)
           </p>
           <JourneySteps
             seriesLabel="[MẪU SM-04] LỘ TRÌNH CHUYỂN HÓA"
@@ -34,17 +35,49 @@ export function Sm04BlocksDemo() {
             titleLine2="VÀ ĐỒNG HÀNH"
             emotionLine="Hành trình dịu dàng đi qua từng nhịp cảm xúc tự nhiên"
             variant="cards"
-            highlightStep={2}
-            step1Subtitle="Tạo khoảng lặng"
-            step1Description="Ngừng phản xạ tức thời, hít thở sâu để đưa tâm trí về hiện tại."
-            step2Subtitle="Lắng nghe cơ thể"
-            step2Description="Nhận biết tín hiệu cơ thể và vị trí của cảm xúc đang xuất hiện."
-            step3Subtitle="Mở rộng vốn từ"
-            step3Description="Định danh chính xác cảm xúc với bảng 26 sắc thái EQ Buddy."
-            step4Subtitle="Lựa chọn phản hồi"
-            step4Description="Chọn cách ứng xử phù hợp thay vì để cảm xúc dẫn dắt."
-            step5Subtitle="Tích hợp thói quen"
-            step5Description="Lặp lại đều đặn mỗi ngày trong chuỗi 21 ngày rèn luyện."
+            steps={[
+              <JourneyStep
+                key="1"
+                index={0}
+                name="Pause"
+                subname="Dừng lại"
+                subtitle="Tạo khoảng lặng"
+                description="Ngừng phản xạ tức thời, hít thở sâu để đưa tâm trí về hiện tại."
+              />,
+              <JourneyStep
+                key="2"
+                index={1}
+                name="Feel"
+                subname="Cảm nhận"
+                subtitle="Lắng nghe cơ thể"
+                description="Nhận biết tín hiệu cơ thể và vị trí của cảm xúc đang xuất hiện."
+                highlight={true}
+              />,
+              <JourneyStep
+                key="3"
+                index={2}
+                name="Name"
+                subname="Gọi tên"
+                subtitle="Mở rộng vốn từ"
+                description="Định danh chính xác cảm xúc với bảng 26 sắc thái EQ Buddy."
+              />,
+              <JourneyStep
+                key="4"
+                index={3}
+                name="Choose"
+                subname="Lựa chọn"
+                subtitle="Lựa chọn phản hồi"
+                description="Chọn cách ứng xử phù hợp thay vì để cảm xúc dẫn dắt."
+              />,
+              <JourneyStep
+                key="5"
+                index={4}
+                name="Practice"
+                subname="Thực hành"
+                subtitle="Tích hợp thói quen"
+                description="Lặp lại đều đặn mỗi ngày trong chuỗi 21 ngày rèn luyện."
+              />,
+            ]}
           />
         </div>
 
@@ -58,12 +91,32 @@ export function Sm04BlocksDemo() {
             titleLine2="COACHING 1:1"
             emotionLine="Mỗi phiên đồng hành là một không gian an toàn để bạn giãi bày"
             variant="list"
-            step1Subtitle="Khảo sát ban đầu"
-            step1Description="Xác định mục tiêu và mong muốn chuyển hóa cảm xúc của bạn."
-            step2Subtitle="Phiên chuyên sâu 60 phút"
-            step2Description="Cùng coach bóc tách nguyên nhân gốc rễ và gọi tên cảm xúc."
-            step3Subtitle="Kế hoạch 21 ngày"
-            step3Description="Nhận bộ công cụ Habit Tracker và bài tập thực hành cụ thể."
+            steps={[
+              <JourneyStep
+                key="1"
+                index={0}
+                name="Khảo sát"
+                subname="Chuẩn bị"
+                subtitle="Khảo sát ban đầu"
+                description="Xác định mục tiêu và mong muốn chuyển hóa cảm xúc của bạn."
+              />,
+              <JourneyStep
+                key="2"
+                index={1}
+                name="Coaching 1:1"
+                subname="Chuyên sâu"
+                subtitle="Phiên chuyên sâu 60 phút"
+                description="Cùng coach bóc tách nguyên nhân gốc rễ và gọi tên cảm xúc."
+              />,
+              <JourneyStep
+                key="3"
+                index={2}
+                name="Kế hoạch"
+                subname="Đồng hành"
+                subtitle="Kế hoạch 21 ngày"
+                description="Nhận bộ công cụ Habit Tracker và bài tập thực hành cụ thể."
+              />,
+            ]}
           />
         </div>
       </div>
