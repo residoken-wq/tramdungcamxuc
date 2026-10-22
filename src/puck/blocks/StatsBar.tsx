@@ -2,44 +2,25 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { StatsBar, type StatsBarProps } from '@/components/site/StatsBar'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
-import { BRAND_ICONS } from '@/lib/brand/icons'
 
 export type { StatsBarProps }
 
 export const StatsBarBlock: ComponentConfig<StatsBarProps> = {
   label: 'Thanh Số liệu ấn tượng (Stats Bar)',
   fields: {
+    columns: {
+      type: 'select',
+      label: 'Số cột hiển thị (Desktop)',
+      options: [
+        { label: '2 cột', value: 2 },
+        { label: '3 cột', value: 3 },
+        { label: '4 cột', value: 4 },
+      ],
+    },
     stats: {
-      type: 'array',
-      label: 'Danh sách số liệu (2 – 4 ô)',
-      arrayFields: {
-        value: {
-          type: 'text',
-          label: 'Con số / Chỉ số (Ví dụ: [MẪU] 500+)',
-        },
-        label: {
-          type: 'text',
-          label: 'Nhãn mô tả ý nghĩa',
-        },
-        description: {
-          type: 'text',
-          label: 'Mô tả phụ (Tùy chọn)',
-        },
-        icon: {
-          type: 'select',
-          label: 'Biểu tượng (Hiện thay cho số - Tùy chọn)',
-          options: [
-            { label: 'Không dùng biểu tượng', value: '' },
-            ...BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
-          ],
-        },
-      },
-      defaultItemProps: {
-        value: '[MẪU] Số liệu',
-        label: '[MẪU] Nhãn mô tả số liệu',
-        description: '',
-        icon: '',
-      },
+      type: 'slot',
+      label: 'Danh sách số liệu',
+      allow: ['Stat'],
     },
     bgColor: {
       type: 'select',
@@ -53,11 +34,54 @@ export const StatsBarBlock: ComponentConfig<StatsBarProps> = {
     },
   },
   defaultProps: {
-    version: 2,
+    version: 3,
+    columns: 3,
     stats: [
-      { value: '[MẪU] Số liệu 1', label: '[MẪU] Nhãn mô tả 1', description: '', icon: '' },
-      { value: '[MẪU] Số liệu 2', label: '[MẪU] Nhãn mô tả 2', description: '', icon: '' },
-      { value: '[MẪU] Số liệu 3', label: '[MẪU] Nhãn mô tả 3', description: '', icon: '' },
+      {
+        type: 'Stat',
+        props: {
+          id: 'stat-default-1',
+          value: '[MẪU] 500+',
+          label: '[MẪU] Giờ khai vấn chuyên sâu',
+          description: '',
+          icon: '',
+          valueColor: 'bright-magenta',
+          valueSize: 'md',
+          labelColor: 'deep-navy',
+          labelSize: 'md',
+          align: 'center',
+        },
+      },
+      {
+        type: 'Stat',
+        props: {
+          id: 'stat-default-2',
+          value: '[MẪU] 10+',
+          label: '[MẪU] Năm kinh nghiệm đồng hành',
+          description: '',
+          icon: '',
+          valueColor: 'bright-magenta',
+          valueSize: 'md',
+          labelColor: 'deep-navy',
+          labelSize: 'md',
+          align: 'center',
+        },
+      },
+      {
+        type: 'Stat',
+        props: {
+          id: 'stat-default-3',
+          value: '[MẪU] 1.000+',
+          label: '[MẪU] Khách hàng chuyển hóa tích cực',
+          description: '',
+          icon: '',
+          valueColor: 'bright-magenta',
+          valueSize: 'md',
+          labelColor: 'deep-navy',
+          labelSize: 'md',
+          align: 'center',
+        },
+      },
     ],
     bgColor: 'warm-ivory',
     padding: 'md',
