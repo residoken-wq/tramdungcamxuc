@@ -360,3 +360,8 @@ Còn chờ Hana: câu 3–10 trong kế hoạch (chẩn đoán 8 hay 16 câu, ng
 - Anh Nhân chốt: `JourneySteps` chuyển sang kéo thả **tự do**. Mỗi bước là khối con `Step`; Hana đổi tên, thứ tự, số bước tùy ý. Không còn khóa 5 bước Pause → Feel → Name → Choose → Practice trong code.
 - 5 bước Pause → Feel → Name → Choose → Practice vẫn là **nội dung mặc định** của khối mới và của mọi trang cũ sau migration (giữ nguyên chữ đang hiện).
 - Hệ quả: giữ đúng phương pháp 5 bước là việc của người biên tập; hướng dẫn CMS ghi rõ.
+
+## Thẻ dịch vụ / thẻ gói kéo thả – chốt 22/10/2026 (PK-04)
+
+- `ServiceCards` và `PackageCards` chuyển sang khối con kéo thả (`ServiceCard`, `PackageCard`); mỗi thẻ chỉ lưu **ID** dịch vụ / gói.
+- Tên, giá, mô tả, **ảnh** của thẻ lấy từ form Payload (Dịch vụ / Sản phẩm). **Không** có ô chọn ảnh riêng trên trang (anh Nhân chốt 22/10), để đổi một chỗ là mọi trang cập nhật.
