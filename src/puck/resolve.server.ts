@@ -1324,10 +1324,45 @@ export async function resolveServerData(
         const allFetched = resolvedFaqGroups.get(grp) || []
         groupItems = allFetched.slice(0, lim)
       }
+
+      let visibleItemCount: number | undefined
+      if (item.props.source !== 'group') {
+        const rawItems = item.props.items
+        const parentId = typeof item.props.id === 'string' ? item.props.id : ''
+        const zoneItems =
+          parentId && resolvedData.zones && Array.isArray(resolvedData.zones[`${parentId}:items`])
+            ? (resolvedData.zones[`${parentId}:items`] as unknown[])
+            : null
+        const itemsToCount = Array.isArray(rawItems) && rawItems.length > 0 ? rawItems : zoneItems
+
+        if (Array.isArray(itemsToCount)) {
+          visibleItemCount = itemsToCount.filter((i: unknown) => {
+            if (!i || typeof i !== 'object') return false
+            const obj = i as {
+              type?: unknown
+              props?: Record<string, unknown>
+              question?: unknown
+              answer?: unknown
+            }
+            if (obj.type === 'FaqItem') {
+              const q = typeof obj.props?.question === 'string' ? obj.props.question.trim() : ''
+              const a = typeof obj.props?.answer === 'string' ? obj.props.answer.trim() : ''
+              return Boolean(q || a)
+            }
+            const q = typeof obj.question === 'string' ? obj.question.trim() : ''
+            const a = typeof obj.answer === 'string' ? obj.answer.trim() : ''
+            return Boolean(q || a)
+          }).length
+        } else {
+          visibleItemCount = 0
+        }
+      }
+
       item.props._resolved = {
         email: item.props.showEmail ? siteContactEmail : null,
         bookingProductId: item.props.aside === 'booking' ? defaultBookingProductId : null,
         groupItems,
+        ...(visibleItemCount !== undefined ? { visibleItemCount } : {}),
       }
     } else if (item.type === 'HanaStory') {
       item.props._resolved = {

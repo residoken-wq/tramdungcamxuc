@@ -4,6 +4,7 @@ import { safeHref } from '@/lib/safe-href'
 import { BOOKING_PATH, getBookingPath } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import { FaqAccordionList, type FAQItem } from './FaqAccordionList'
+import { FaqItemView } from './FaqItemView'
 
 export type { FAQItem }
 
@@ -18,7 +19,7 @@ export interface FAQProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
-  items?: FAQItem[]
+  items?: React.ReactNode | React.ComponentType<{ className?: string }> | FAQItem[] | unknown[]
   numbered?: boolean
   aside?: 'none' | 'booking'
   bookingAsideTitle?: string
@@ -93,9 +94,6 @@ export function FAQ({
   // Public page hides the entire block; editor shows a helpful placeholder note.
   const hasResolvedGroup = _resolved?.groupItems !== undefined && _resolved.groupItems !== null
   const groupItemsCount = hasResolvedGroup ? _resolved!.groupItems!.length : null
-  const validItems = Array.isArray(items)
-    ? items.filter((item) => item && (item.question || item.answer))
-    : []
 
   if (isGroupSource && groupItemsCount === 0 && !isEditing) {
     return null
@@ -103,12 +101,20 @@ export function FAQ({
 
   // When source === 'manual' on public page:
   // If explicitly counted as 0 or empty validItems and no children/slot, hide.
+  const hasSlotFunc = typeof items === 'function'
+  const hasElement = React.isValidElement(items)
+  const isItemsArray = Array.isArray(items)
+  const itemsArrayLen = isItemsArray ? (items as unknown[]).length : 0
+  const hasChildren = Boolean(children)
+
   if (
     !isGroupSource &&
     !isEditing &&
-    !children &&
-    validItems.length === 0 &&
-    _resolved?.visibleItemCount === 0
+    aside === 'none' &&
+    !hasChildren &&
+    !hasSlotFunc &&
+    !hasElement &&
+    (itemsArrayLen === 0 || _resolved?.visibleItemCount === 0)
   ) {
     return null
   }
@@ -153,13 +159,69 @@ export function FAQ({
     finalBookingHref = safeHref(bookingButtonLink)
   }
 
-  const accordionContent = (
-    <div>
-      {children ? (
-        <div className="space-y-4">{children}</div>
-      ) : (
+  let renderedItems: React.ReactNode = null
+
+  if (hasChildren) {
+    renderedItems = <div className="space-y-4">{children}</div>
+  } else if (isGroupSource) {
+    renderedItems = (
+      <FaqAccordionList
+        items={[]}
+        source="group"
+        group={group}
+        limit={limit}
+        initialGroupItems={_resolved?.groupItems}
+        isEditing={isEditing}
+        numbered={numbered}
+        isDeepNavy={isDeepNavy}
+        cardBgClass={cardBgClass}
+        questionColorClass={questionColorClass}
+        answerColorClass={answerColorClass}
+        iconColorClass={iconColorClass}
+        answerWhitespaceClass={answerWhitespaceClass}
+      />
+    )
+  } else if (hasSlotFunc) {
+    renderedItems = React.createElement(
+      items as React.ComponentType<{ className?: string }>,
+      { className: 'space-y-4' },
+    )
+  } else if (hasElement) {
+    renderedItems = <div className="space-y-4">{items as React.ReactNode}</div>
+  } else if (isItemsArray && itemsArrayLen > 0) {
+    const rawArray = items as unknown[]
+    const isChildBlockArray =
+      rawArray.length > 0 &&
+      typeof rawArray[0] === 'object' &&
+      rawArray[0] !== null &&
+      (('type' in rawArray[0] && (rawArray[0] as { type?: unknown }).type === 'FaqItem') ||
+        ('props' in rawArray[0] && typeof (rawArray[0] as { props?: unknown }).props === 'object'))
+
+    if (isChildBlockArray) {
+      renderedItems = (
+        <div className="space-y-4">
+          {rawArray.map((child: unknown, idx: number) => {
+            if (React.isValidElement(child)) return child
+            if (child && typeof child === 'object') {
+              const childObj = child as { props?: Record<string, unknown>; id?: string }
+              const childProps = childObj.props || childObj
+              return (
+                <FaqItemView
+                  key={childProps.id ? String(childProps.id) : idx}
+                  puck={puck}
+                  {...childProps}
+                />
+              )
+            }
+            return null
+          })}
+        </div>
+      )
+    } else {
+      // Legacy v1/v2/v3 FAQItem array
+      renderedItems = (
         <FaqAccordionList
-          items={items}
+          items={rawArray as FAQItem[]}
           source={source}
           group={group}
           limit={limit}
@@ -173,7 +235,13 @@ export function FAQ({
           iconColorClass={iconColorClass}
           answerWhitespaceClass={answerWhitespaceClass}
         />
-      )}
+      )
+    }
+  }
+
+  const accordionContent = (
+    <div>
+      {renderedItems}
 
       {seeAllSafeLink && (
         <div className="mt-8 text-center pt-2">
