@@ -282,15 +282,15 @@ describe('PK-03: Stat & Step Child Blocks - Unit Tests', () => {
       expect(StepBlock.permissions?.insert).toBe(false)
     })
 
-    it('Columns.col1, col2, col3 disallow Stat and Step', () => {
+    it('Columns.col1, col2, col3 allow Stat and disallow Step (PK-05)', () => {
       const columnsBlock = puckConfig.components.Columns as any
       expect(columnsBlock).toBeDefined()
 
-      expect(columnsBlock.fields.col1.disallow).toContain('Stat')
+      expect(columnsBlock.fields.col1.disallow).not.toContain('Stat')
       expect(columnsBlock.fields.col1.disallow).toContain('Step')
-      expect(columnsBlock.fields.col2.disallow).toContain('Stat')
+      expect(columnsBlock.fields.col2.disallow).not.toContain('Stat')
       expect(columnsBlock.fields.col2.disallow).toContain('Step')
-      expect(columnsBlock.fields.col3.disallow).toContain('Stat')
+      expect(columnsBlock.fields.col3.disallow).not.toContain('Stat')
       expect(columnsBlock.fields.col3.disallow).toContain('Step')
     })
   })

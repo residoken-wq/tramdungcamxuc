@@ -256,16 +256,16 @@ describe('PK-04: ServiceCard & PackageCard Child Blocks - Unit Tests', () => {
       expect(PackageCardBlock.permissions?.insert).toBe(false)
     })
 
-    it('Columns.col1, col2, col3 disallow ServiceCard and PackageCard', () => {
+    it('Columns.col1, col2, col3 allow ServiceCard and PackageCard (PK-05)', () => {
       const columnsBlock = puckConfig.components.Columns as any
       expect(columnsBlock).toBeDefined()
 
-      expect(columnsBlock.fields.col1.disallow).toContain('ServiceCard')
-      expect(columnsBlock.fields.col1.disallow).toContain('PackageCard')
-      expect(columnsBlock.fields.col2.disallow).toContain('ServiceCard')
-      expect(columnsBlock.fields.col2.disallow).toContain('PackageCard')
-      expect(columnsBlock.fields.col3.disallow).toContain('ServiceCard')
-      expect(columnsBlock.fields.col3.disallow).toContain('PackageCard')
+      expect(columnsBlock.fields.col1.disallow).not.toContain('ServiceCard')
+      expect(columnsBlock.fields.col1.disallow).not.toContain('PackageCard')
+      expect(columnsBlock.fields.col2.disallow).not.toContain('ServiceCard')
+      expect(columnsBlock.fields.col2.disallow).not.toContain('PackageCard')
+      expect(columnsBlock.fields.col3.disallow).not.toContain('ServiceCard')
+      expect(columnsBlock.fields.col3.disallow).not.toContain('PackageCard')
     })
   })
 
