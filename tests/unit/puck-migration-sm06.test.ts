@@ -24,7 +24,7 @@ describe('SM-06: Puck Migrations for FAQ v3', () => {
     const migrated = applyPuckMigrations(v1Data)
     const block = migrated.content[0]
     expect(block.props).toMatchObject({
-      version: 3,
+      version: 4,
       source: 'manual',
       group: 'general',
       limit: 5,
@@ -109,7 +109,7 @@ describe('SM-06: Puck Migrations for FAQ v3', () => {
     const nested = migrated.zones?.['col-1:col-left']?.[0]
     expect(nested).toBeDefined()
     expect(nested?.props).toMatchObject({
-      version: 3,
+      version: 4,
       source: 'manual',
       group: 'general',
       limit: 5,
@@ -185,7 +185,7 @@ describe('SM-06: Puck Migrations for FAQ v3', () => {
       const migrated = applyPuckMigrations(puckData)
       for (const block of migrated.content) {
         if (block.type === 'FAQ') {
-          expect((block.props as { version?: number }).version).toBe(3)
+          expect((block.props as { version?: number }).version).toBe(4)
           expect((block.props as { source?: string }).source).toBeDefined()
         }
       }

@@ -53,6 +53,9 @@
    - [5.17. Quản lý Bước hành trình trong Hành Trình Các Bước (JourneySteps)](#517-quản-lý-bước-hành-trình-trong-hành-trình-các-bước-journeysteps)
    - [5.18. Quản lý Thẻ dịch vụ trong Các Thẻ Dịch Vụ Coaching (ServiceCards)](#518-quản-lý-thẻ-dịch-vụ-trong-các-thẻ-dịch-vụ-coaching-servicecards)
    - [5.19. Quản lý Thẻ gói trong Khối Các Gói Growth Mirror (PackageCards)](#519-quản-lý-thẻ-gói-trong-khối-các-gói-growth-mirror-packagecards)
+   - [5.20. Quản lý Câu hỏi thường gặp trong Khối FAQ (FaqItem)](#520-quản-lý-câu-hỏi-thường-gặp-trong-khối-faq-faqitem)
+   - [5.21. Khối Cột (Columns) hỗ trợ đa dạng khối con](#521-khối-cột-columns-hỗ-trợ-đa-dạng-khối-con)
+   - [5.22. Cơ chế tự động sửa màu lệch nền (Child Color Fallback)](#522-cơ-chế-tự-động-sửa-màu-lệch-nền-child-color-fallback)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -1927,6 +1930,72 @@ Khối **Khối các gói Growth Mirror** (`PackageCards`) giới thiệu 3 gói
 
 - Hana có thể chọn bất kỳ gói nào để làm nổi bật (ví dụ chọn gói BUILD hoặc SHINE) bằng cách nhấp vào gói đó và chọn **Thẻ nổi bật (Viền / Ring Accent Pink) = Có**.
 - Gói được chọn sẽ được bao quanh bởi viền màu hồng đậm `Accent Pink` độc quyền cùng hiệu ứng bóng mềm, nổi bật rõ nét giữa các gói còn lại.
+
+---
+
+### 5.20. Quản lý Câu hỏi thường gặp trong Khối FAQ (FaqItem)
+
+Khối **Câu hỏi thường gặp** (`FAQ`) phiên bản 4 mang lại sự tự do tối đa cho Hana khi chỉnh sửa và sắp xếp các câu hỏi giải đáp:
+
+#### 1. Hai chế độ linh hoạt: Thủ công và Lấy theo nhóm từ CMS
+
+Khi chọn khối cha `FAQ` trên khung vẽ, ở thanh bên phải Hana có thể chọn **Nguồn câu hỏi (`source`)**:
+
+- **Nhập thủ công (`manual`)**: Từng câu hỏi là một khối con **Câu hỏi thường gặp (`FaqItem`)** độc lập xuất hiện ngay trên khung vẽ. Hana có thể:
+  - Bấm trực tiếp vào câu hỏi để sửa tiêu đề câu hỏi và nội dung giải đáp chi tiết ở thanh bên phải.
+  - Bấm **Nhân bản (Duplicate)** để tạo nhanh câu hỏi mới.
+  - Bấm biểu tượng thùng rác để xóa câu hỏi không cần thiết.
+  - Kéo rê thanh tay cầm để đổi thứ tự các câu hỏi.
+- **Lấy theo nhóm từ CMS (`group`)**: Hệ thống tự động tải các câu hỏi thuộc nhóm tương ứng (Chung, Lộ trình, Coaching 1:1, Sản phẩm số, Doanh nghiệp, Thanh toán) từ danh mục **Câu hỏi thường gặp** (`faqs`). Mọi thay đổi trong form quản trị `faqs` sẽ tự động hiển thị ra ngoài trang web.
+
+#### 2. Tự động đánh số thứ tự thông minh (numbered = true)
+
+- Khi Hana bật tùy chọn **Đánh số thứ tự = Có** ở khối cha, hệ thống sử dụng bộ đếm CSS hiện đại để tự động sinh ra các số thứ tự `01.`, `02.`, `03.`... màu hồng tươi `Bright Magenta` trước mỗi câu hỏi.
+- Khi Hana kéo đổi thứ tự hoặc nhân bản câu hỏi, các con số sẽ tự động nhảy lại theo đúng thứ tự mới mà không bao giờ bị trùng hay nhảy cách số.
+
+#### 3. Cỡ chữ và màu sắc an toàn chuẩn thương hiệu
+
+- Mỗi câu hỏi `FaqItem` cho phép Hana chọn cỡ chữ câu hỏi (`Nhỏ`, `Vừa`, `Lớn`) và cỡ chữ câu trả lời.
+- Màu sắc được hệ thống tự động lọc theo độ tương phản cao chuẩn WCAG AA:
+  - Trên nền sáng (`Warm Ivory`, `Soft Pink`...): chữ mang sắc xanh thẫm `Deep Navy` hoặc hồng tươi `Bright Magenta`.
+  - Trên nền tối (`Deep Navy`): chữ tự động chuyển sang sắc trắng thanh thoát hoặc hồng phấn `Soft Pink`.
+
+#### 4. Phân tách tối ưu: Tải trang nhanh & Hiệu ứng đóng mở mượt mà
+
+- Khối cha `FAQ` được xử lý tối ưu phía máy chủ (Server Component) giúp bài viết chuẩn SEO và trang tải nhanh như chớp.
+- Từng câu hỏi `FaqItem` là thành phần tương tác phía người dùng (Client Component) với hiệu ứng mũi tên xoay chuyển động mượt mà khi bấm mở/đóng và hỗ trợ đầy đủ công nghệ trợ năng cho người khiếm thị.
+
+---
+
+### 5.21. Khối Cột (Columns) hỗ trợ đa dạng khối con
+
+Khối **Cột** (`Columns`) được mở rộng toàn diện, cho phép Hana sắp đặt bố cục đa dạng và sáng tạo:
+
+#### 1. Các khối con được phép đặt vào từng Cột (`col1`, `col2`, `col3`)
+
+Hana có thể thả các khối con phong phú vào bên trong bất kỳ cột nào của khối Cột:
+- **Thẻ nội dung (`Card`)**: Tạo các thẻ giới thiệu có biểu tượng hoặc đánh số.
+- **Ô số liệu (`Stat`)**: Hiển thị các chỉ số ấn tượng (10+ năm, 500+ giờ khai vấn...).
+- **Thẻ dịch vụ (`ServiceCard`)**: Giới thiệu các lộ trình coaching kết nối dữ liệu CMS.
+- **Thẻ gói (`PackageCard`)**: Hiển thị các gói Growth Mirror tự động tính giá và ưu đãi.
+
+#### 2. Khối con tiếp tục bị chặn trong Cột: Bước hành trình (`Step`) & Câu hỏi (`FaqItem`)
+
+Để bảo vệ trải nghiệm thị giác và logic phương pháp của Trạm Dừng Cảm Xúc, hai khối con sau **tiếp tục không được phép** thả vào khối Cột:
+- **Bước hành trình (`Step`)**: Luôn phải nằm trong khối cha `JourneySteps` để giữ đúng tiến trình 5 bước chuyển hóa (Pause → Feel → Name → Choose → Practice), đường nối liên kết giữa các bước và hiệu ứng bước nổi bật.
+- **Câu hỏi (`FaqItem`)**: Luôn phải nằm trong khối cha `FAQ` để đảm bảo bộ đếm số thứ tự tự động và khối chứa câu hỏi accordion trợ năng hoạt động chuẩn xác.
+
+---
+
+### 5.22. Cơ chế tự động sửa màu lệch nền (Child Color Fallback)
+
+Khi thiết kế giao diện, Hana hoàn toàn có thể tự do thử nghiệm đổi màu nền khối cha mà không sợ văn bản bị mờ hay biến mất:
+
+- **Tự động rà soát tương phản**: Khi Hana đổi màu nền của một khối (như `IconCardGrid`, `StatsBar`, `FAQ`, hay `Columns`) từ **Nền sáng** (như `Warm Ivory`, `Soft Pink`) sang **Nền xanh thẫm Deep Navy**, hoặc ngược lại.
+- **Tự động chuyển đổi màu an toàn**:
+  - Nếu màu chữ con đang là màu sáng (`Trắng`) mà nền cha chuyển sang nền sáng: hệ thống tự động đổi chữ về màu xanh thẫm `Deep Navy` chuẩn mực.
+  - Nếu màu chữ con đang là màu tối (`Deep Navy`) mà nền cha chuyển sang xanh thẫm: hệ thống tự động chuyển chữ sang màu `Trắng` tinh khôi.
+- Mọi tiêu chuẩn tương phản đều tuân thủ nghiêm ngặt chuẩn quốc tế WCAG AA (tỷ lệ tương phản từ 4.5:1 trở lên), mang lại sự ấm áp, dễ đọc và chuyên nghiệp cho độc giả.
 
 ---
 
