@@ -123,7 +123,7 @@ export const contactTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'contact-faq',
-        version: 3,
+        version: 4,
         source: 'group',
         group: 'general',
         limit: 5,

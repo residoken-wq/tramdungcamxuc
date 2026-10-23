@@ -139,7 +139,7 @@ export const workshopTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'workshop-faq',
-        version: 3,
+        version: 4,
         seriesLabel: '[MẪU] Thắc mắc',
         titleLine1: '[MẪU] THÔNG TIN',
         titleLine2: '[MẪU] BUỔI WORKSHOP',
@@ -148,9 +148,17 @@ export const workshopTemplate: Data = {
         limit: 5,
         items: [
           {
-            question: '[MẪU] Hình thức tham gia như thế nào?',
-            answer:
-              '[MẪU] Workshop diễn ra trực tuyến qua Zoom hoặc trực tiếp tùy theo thông báo của từng đợt.',
+            type: 'FaqItem',
+            props: {
+              id: 'workshop-faq-faq-0',
+              question: '[MẪU] Hình thức tham gia như thế nào?',
+              answer:
+                '[MẪU] Workshop diễn ra trực tuyến qua Zoom hoặc trực tiếp tùy theo thông báo của từng đợt.',
+              questionColor: 'deep-navy',
+              questionSize: 'md',
+              answerColor: 'deep-navy',
+              answerSize: 'md',
+            },
           },
         ],
         numbered: false,

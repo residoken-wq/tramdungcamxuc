@@ -383,7 +383,7 @@ export const homeV2Template: Data = {
       type: 'FAQ',
       props: {
         id: 'home-v2-faq',
-        version: 3,
+        version: 4,
         source: 'group',
         group: 'general',
         limit: 5,

@@ -109,7 +109,7 @@ export const campaignTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'campaign-faq',
-        version: 3,
+        version: 4,
         seriesLabel: '[MẪU] Giải đáp',
         titleLine1: '[MẪU] CÂU HỎI',
         titleLine2: '[MẪU] THƯỜNG GẶP',
@@ -118,14 +118,30 @@ export const campaignTemplate: Data = {
         limit: 5,
         items: [
           {
-            question: '[MẪU] Hành trình này phù hợp với ai?',
-            answer:
-              '[MẪU] Chương trình dành cho bất kỳ ai đang muốn tìm lại sự cân bằng và làm chủ cảm xúc của mình.',
+            type: 'FaqItem',
+            props: {
+              id: 'campaign-faq-faq-0',
+              question: '[MẪU] Hành trình này phù hợp với ai?',
+              answer:
+                '[MẪU] Chương trình dành cho bất kỳ ai đang muốn tìm lại sự cân bằng và làm chủ cảm xúc của mình.',
+              questionColor: 'deep-navy',
+              questionSize: 'md',
+              answerColor: 'deep-navy',
+              answerSize: 'md',
+            },
           },
           {
-            question: '[MẪU] Tôi cần chuẩn bị những gì?',
-            answer:
-              '[MẪU] Bạn chỉ cần chuẩn bị một tâm thế cởi mở và sẵn sàng dành 10-15 phút mỗi ngày.',
+            type: 'FaqItem',
+            props: {
+              id: 'campaign-faq-faq-1',
+              question: '[MẪU] Tôi cần chuẩn bị những gì?',
+              answer:
+                '[MẪU] Bạn chỉ cần chuẩn bị một tâm thế cởi mở và sẵn sàng dành 10-15 phút mỗi ngày.',
+              questionColor: 'deep-navy',
+              questionSize: 'md',
+              answerColor: 'deep-navy',
+              answerSize: 'md',
+            },
           },
         ],
         numbered: false,

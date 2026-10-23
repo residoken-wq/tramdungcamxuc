@@ -142,7 +142,7 @@ export const communityTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'community-faq',
-        version: 3,
+        version: 4,
         source: 'group',
         group: 'general',
         limit: 6,
