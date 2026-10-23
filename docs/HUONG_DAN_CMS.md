@@ -905,7 +905,10 @@ Bạn có 3 cách rất dễ dàng:
    - **Khách hàng sở hữu**: Tên và email của khách hàng gắn với kế hoạch.
    - **Độ dài hành trình (`journeyDays`)**: Số ngày hành trình được khóa cố định lúc tạo (mặc định 28 ngày; các kế hoạch tạo trước đợt nâng cấp được lưu cố định 21 ngày). Trường chỉ đọc.
    - **Kết quả hành trình (`outcome`)**: Trạng thái kết quả hiện tại gồm `Đang diễn ra` (`in_progress`), `Đạt chứng nhận` (`completed`), hoặc `Đã trải nghiệm` (`experienced`). Trường chỉ đọc.
-   - **Bảng điểm thói quen (`scorecard`)**: Bảng đánh giá thói quen hiện tại (tốt, trung tính, chưa tốt).
+   - **Bảng điểm thói quen (`scorecard`)**: Bảng đánh giá thói quen hiện tại (tốt, trung tính, chưa tốt) kèm giờ làm thói quen (`time`, dạng HH:mm, ví dụ `07:30`).
+   - **Thói quen neo (`anchorHabit`)**: Thói quen gắn sau một thói quen có sẵn ("Sau khi [thói quen cũ], tôi sẽ [thói quen mới]"). Tối đa 120 ký tự.
+   - **Nhịp tuần – ngày bỏ phiếu (`rhythmDays`)**: Các ngày trong tuần học viên chọn thực hành (Thứ 2 đến Chủ nhật; để trống = mọi ngày là ngày bỏ phiếu). Học viên tự thiết lập và sửa được khi chưa có check-in nào; sau check-in đầu tiên, trường này khóa với học viên (quản trị viên vẫn có thể hỗ trợ sửa khi cần).
+   - **Hành động dưới 2 phút (`twoMinuteAction`)**: Phiên bản tối giản dưới 2 phút ("bản tối giản") giúp duy trì đà thực hành trong những ngày năng lượng thấp.
    - **Câu định danh cam kết (`identityStatement`)**: Cam kết danh tính cho hành trình ("Tôi sẽ... để trở thành...").
    - **Kỹ thuật đã chọn (`chosenTechniques`)**: Danh sách các kỹ thuật rèn luyện thói quen học viên đã lựa chọn theo từng giai đoạn.
    - **Ngày bắt đầu (`startDate`)**: Thời điểm kích hoạt hành trình theo giờ Việt Nam.
@@ -913,12 +916,12 @@ Bạn có 3 cách rất dễ dàng:
 
 **Quy tắc bảo vệ quyền riêng tư người học (Quan trọng)**:
 
-- **Cảm xúc và ghi chú riêng tư**: Khi khách hàng check-in mỗi ngày trên trang `/habit/tracker`, họ có thể chọn 1 trong 10 cảm xúc và viết suy nghĩ, tâm sự cá nhân (tối đa 500 ký tự).
-- **Phân quyền bảo mật**:
-  - Dữ liệu cảm xúc (`emotion`) và ghi chú tâm sự (`note`) là không gian an toàn riêng tư của từng người học.
-  - Tài khoản chủ dự án (`owner`) có quyền xem cảm xúc và ghi chú để đồng hành, thấu hiểu học viên khi cần thiết.
-  - Tài khoản biên tập viên (`editor`) **hoàn toàn không được phân quyền đọc hoặc can thiệp** vào các trường cảm xúc và ghi chú riêng tư này trong hệ thống.
-  - Hệ thống tự động xử lý và chỉ hiển thị đầy đủ cho chính người học khi họ đăng nhập vào tài khoản cá nhân.
+- **Cảm xúc và ghi chú check-in**: Khi khách hàng check-in mỗi ngày trên trang `/habit/tracker`, họ có thể chọn 1 trong 10 cảm xúc và viết suy nghĩ, tâm sự cá nhân (tối đa 500 ký tự). Dữ liệu này chỉ chủ sở hữu (`owner`) đọc được để đồng hành; tài khoản biên tập viên (`editor`) không được phân quyền đọc.
+- **Dữ liệu riêng tư tuyệt đối (Lý do riêng & Bạn đồng hành)**:
+  - **Lý do riêng** (`privateReason`) và **Bạn đồng hành** (`companionName` – hệ thống chỉ lưu tên gọi, không lưu số điện thoại hay email của người thứ ba theo Nghị định 13/2023) là không gian hoàn toàn riêng tư của học viên.
+  - **Quản trị viên (kể cả chủ dự án `owner` và biên tập viên `editor`) hoàn toàn không thấy nội dung này** trong trang quản trị CMS.
+  - Khi Hana hoặc quản trị viên sửa kế hoạch trong CMS (ví dụ cập nhật thói quen neo hay nhịp tuần), hệ thống giữ nguyên vẹn dữ liệu riêng tư của học viên, không làm mất hay ghi đè.
+  - Nếu Hana muốn hỗ trợ học viên về lý do riêng hoặc bạn đồng hành, Hana hãy trao đổi trực tiếp với học viên trong các phiên coaching 1:1 hoặc buổi đồng hành.
 
 ---
 
