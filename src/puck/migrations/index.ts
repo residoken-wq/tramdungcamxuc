@@ -64,6 +64,8 @@ import { migrateServiceCardsV1ToV2 } from './v2-service-cards'
 import { migratePackageCardsV1ToV2 } from './v2-package-cards'
 import { migrateFAQV3ToV4 } from './v4-faq'
 
+import { sanitizeChildColors } from './sanitize-child-colors'
+
 export {
   migrateJourneyStepsV1ToV2,
   migrateHanaStoryV1ToV2,
@@ -78,6 +80,7 @@ export {
   migrateJourneyStepsV2ToV3,
   migrateServiceCardsV1ToV2,
   migratePackageCardsV1ToV2,
+  sanitizeChildColors,
 }
 
 export const puckMigrations: PuckMigration[] = [
@@ -141,5 +144,6 @@ export function normalizePuckData(raw: unknown): Data {
     zones: obj.zones && typeof obj.zones === 'object' ? obj.zones : {},
   }
 
-  return applyPuckMigrations(structured)
+  const migrated = applyPuckMigrations(structured)
+  return sanitizeChildColors(migrated)
 }
