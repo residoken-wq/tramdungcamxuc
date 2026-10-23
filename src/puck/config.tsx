@@ -31,6 +31,7 @@ import { StatBlock, type StatProps } from './blocks/Stat'
 import { StepBlock, type StepProps } from './blocks/Step'
 import { ServiceCardBlock, type ServiceCardProps } from './blocks/ServiceCard'
 import { PackageCardBlock, type PackageCardProps } from './blocks/PackageCard'
+import { FaqItemBlock, type FaqItemProps } from './blocks/FaqItem'
 import { CalloutBlock, type CalloutProps } from './blocks/Callout'
 import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards'
 import { SolutionEcosystemBlock, type SolutionEcosystemProps } from './blocks/SolutionEcosystem'
@@ -101,6 +102,7 @@ export type {
   StepProps,
   ServiceCardProps,
   PackageCardProps,
+  FaqItemProps,
 }
 
 export type PageComponentsProps = {
@@ -119,6 +121,7 @@ export type PageComponentsProps = {
   Step: StepProps
   ServiceCard: ServiceCardProps
   PackageCard: PackageCardProps
+  FaqItem: FaqItemProps
   Callout: CalloutProps
   JourneySteps: JourneyStepsProps
   VisionMission: VisionMissionProps
@@ -566,6 +569,7 @@ export const puckConfig: Config<PageComponentsProps> = {
     Step: StepBlock,
     ServiceCard: ServiceCardBlock,
     PackageCard: PackageCardBlock,
+    FaqItem: FaqItemBlock,
     Callout: CalloutBlock,
     JourneySteps: JourneyStepsBlock,
     FAQ: FAQBlock,
