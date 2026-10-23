@@ -1,16 +1,11 @@
-'use client'
-
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { BOOKING_PATH, getBookingPath } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
-import { useClientFaqs } from '@/puck/client-preview'
+import { FaqAccordionList, type FAQItem } from './FaqAccordionList'
 
-export interface FAQItem {
-  question: string
-  answer: string
-}
+export type { FAQItem }
 
 export interface FAQProps {
   sectionId?: string
@@ -34,16 +29,18 @@ export interface FAQProps {
   email?: string
   seeAllLink?: string
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     email?: string | null
     bookingProductId?: number | null
     groupItems?: FAQItem[] | null
+    visibleItemCount?: number
   }
   puck?: {
     isEditing?: boolean
   }
+  children?: React.ReactNode
 }
 
 const BG_COLORS = {
@@ -86,55 +83,33 @@ export function FAQ({
   padding = 'md',
   _resolved,
   puck,
+  children,
 }: FAQProps) {
   const isEditing = puck?.isEditing ?? false
   const isDeepNavy = bgColor === 'deep-navy'
   const isGroupSource = source === 'group'
 
-  const { items: clientItems } = useClientFaqs({
-    group,
-    limit,
-    initialItems: _resolved?.groupItems !== undefined ? (_resolved.groupItems ?? []) : undefined,
-  })
-
-  // When source === 'group', use resolved items (from SSR) or client preview items (in Puck editor),
-  // falling back to prop items if explicitly provided (e.g. styleguide / unit tests).
-  // When source === 'manual', use items prop.
-  const activeItems: FAQItem[] = isGroupSource
-    ? _resolved?.groupItems !== undefined
-      ? (_resolved.groupItems ?? [])
-      : isEditing
-        ? clientItems
-        : items && items.length > 0
-          ? items
-          : clientItems
-    : items || []
-
-  const validItems = Array.isArray(activeItems)
-    ? activeItems.filter((item) => item && (item.question || item.answer))
-    : []
-
-  const [openIndices, setOpenIndices] = useState<Record<number, boolean>>({})
-
-  const toggleItem = (idx: number) => {
-    setOpenIndices((prev) => ({
-      ...prev,
-      [idx]: !prev[idx],
-    }))
-  }
-
   // When source === 'group' and there are no questions:
   // Public page hides the entire block; editor shows a helpful placeholder note.
-  if (isGroupSource && validItems.length === 0) {
-    if (isEditing) {
-      return (
-        <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
-          <div className="mx-auto max-w-4xl p-6 rounded-card border border-dashed border-deep-navy/30 text-center font-ui text-sm text-deep-navy/70">
-            {vi.sm06.faq.editorEmptyGroup}
-          </div>
-        </section>
-      )
-    }
+  const hasResolvedGroup = _resolved?.groupItems !== undefined && _resolved.groupItems !== null
+  const groupItemsCount = hasResolvedGroup ? _resolved!.groupItems!.length : null
+  const validItems = Array.isArray(items)
+    ? items.filter((item) => item && (item.question || item.answer))
+    : []
+
+  if (isGroupSource && groupItemsCount === 0 && !isEditing) {
+    return null
+  }
+
+  // When source === 'manual' on public page:
+  // If explicitly counted as 0 or empty validItems and no children/slot, hide.
+  if (
+    !isGroupSource &&
+    !isEditing &&
+    !children &&
+    validItems.length === 0 &&
+    _resolved?.visibleItemCount === 0
+  ) {
     return null
   }
 
@@ -179,70 +154,26 @@ export function FAQ({
   }
 
   const accordionContent = (
-    <div className="space-y-4">
-      {validItems.map((item, index) => {
-        const isOpen = Boolean(openIndices[index])
-        const questionId = `faq-q-${index}`
-        const answerId = `faq-a-${index}`
-
-        return (
-          <div
-            key={index}
-            className={`p-5 sm:p-6 rounded-card border ${cardBgClass} transition-colors`}
-          >
-            <button
-              type="button"
-              id={questionId}
-              aria-expanded={isOpen}
-              aria-controls={answerId}
-              onClick={() => toggleItem(index)}
-              className="w-full flex items-center justify-between gap-4 text-left font-ui text-base sm:text-lg font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-md transition-colors"
-            >
-              <span className="flex items-center gap-3">
-                {numbered && (
-                  <span className="font-display text-lg text-bright-magenta select-none shrink-0">
-                    {String(index + 1).padStart(2, '0')}.
-                  </span>
-                )}
-                <span className={questionColorClass}>{item.question}</span>
-              </span>
-              <span
-                className={`shrink-0 transition-transform duration-200 ${
-                  isOpen ? 'rotate-180' : ''
-                } ${iconColorClass}`}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M5 7.5L10 12.5L15 7.5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-            </button>
-            <div
-              id={answerId}
-              role="region"
-              aria-labelledby={questionId}
-              hidden={!isOpen}
-              className={`mt-4 pt-3 border-t ${
-                isDeepNavy ? 'border-white/10' : 'border-deep-navy/10'
-              } font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}${answerWhitespaceClass}`}
-            >
-              {item.answer}
-            </div>
-          </div>
-        )
-      })}
+    <div>
+      {children ? (
+        <div className="space-y-4">{children}</div>
+      ) : (
+        <FaqAccordionList
+          items={items}
+          source={source}
+          group={group}
+          limit={limit}
+          initialGroupItems={_resolved?.groupItems}
+          isEditing={isEditing}
+          numbered={numbered}
+          isDeepNavy={isDeepNavy}
+          cardBgClass={cardBgClass}
+          questionColorClass={questionColorClass}
+          answerColorClass={answerColorClass}
+          iconColorClass={iconColorClass}
+          answerWhitespaceClass={answerWhitespaceClass}
+        />
+      )}
 
       {seeAllSafeLink && (
         <div className="mt-8 text-center pt-2">
@@ -257,7 +188,9 @@ export function FAQ({
   return (
     <section
       id={sectionId}
-      className={`w-full ${sectionId ? 'scroll-mt-24 ' : ''}${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
+      data-bg={bgColor}
+      data-numbered={numbered ? 'true' : 'false'}
+      className={`w-full group/faq ${sectionId ? 'scroll-mt-24 ' : ''}${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors [counter-reset:faq-counter]`}
     >
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
