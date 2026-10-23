@@ -2587,5 +2587,7 @@ Dưới đây là bảng đối chiếu toàn bộ 33 ảnh màn hình được 
 | **31** | `images/huong-dan/31-xac-nhan-thanh-toan.png`         | `/admin/collections/orders/[id]`              | Hộp thoại Xác nhận thanh toán đơn hàng                                   | Đã có file (18/10)                 |
 | **32** | `images/huong-dan/32-wizard-bai-hoc-thoi-luong.png`   | `/admin/them-bai-hoc` (bước 3)                | Thời lượng 05:30 = 330 giây, ô cho xem thử miễn phí                      | Đã có file (18/10)                 |
 | **33** | `images/huong-dan/33-wizard-workshop-gio-vn.png`      | `/admin/len-lich-workshop` (bước 2)           | Ngày giờ Việt Nam và khung Thời gian hiển thị cho học viên               | Đã có file (18/10)                 |
+| **34** | `images/huong-dan/34-faq-keo-tha.png`                 | `/builder/[id]` (Khối FAQ)                    | Khối câu hỏi thường gặp FAQ v4 với từng câu hỏi FaqItem kéo thả          | Đã có file (PK-05)                 |
+| **35** | `images/huong-dan/35-columns-khoi-con.png`            | `/builder/[id]` (Khối Cột)                    | Khối Cột Columns chứa các khối con Card, Stat, ServiceCard, PackageCard  | Đã có file (PK-05)                 |
 
-_Ảnh 28–33 chụp tay từ buổi chạy thử 18/10 (dữ liệu MẪU), chưa có trong `scripts/cms-screenshots.mjs`._
+_Ảnh 28–33 chụp tay từ buổi chạy thử 18/10 (dữ liệu MẪU); ảnh 34–35 chụp từ đợt nâng cấp PK-05._
