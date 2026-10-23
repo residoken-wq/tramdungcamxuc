@@ -11,18 +11,21 @@ const hasFunction = (value: unknown, depth = 0): boolean => {
 }
 
 describe('Puck block renders do not forward functions', () => {
-  it.each(['ImageText', 'ContactInfo', 'ContactForms', 'FAQ'])('%s', (name) => {
-    const component = (
-      puckConfig.components as Record<
-        string,
-        { render: (p: unknown) => ReactElement; defaultProps?: object }
-      >
-    )[name]
-    const element = component.render({
-      ...component.defaultProps,
-      id: 'x',
-      puck: { renderDropZone: () => null, isEditing: false, dragRef: null },
-    })
-    expect(hasFunction(element.props)).toBe(false)
-  })
+  it.each(['ImageText', 'ContactInfo', 'ContactForms', 'FAQ', 'ServiceCards', 'PackageCards'])(
+    '%s',
+    (name) => {
+      const component = (
+        puckConfig.components as Record<
+          string,
+          { render: (p: unknown) => ReactElement; defaultProps?: object }
+        >
+      )[name]
+      const element = component.render({
+        ...component.defaultProps,
+        id: 'x',
+        puck: { renderDropZone: () => null, isEditing: false, dragRef: null },
+      })
+      expect(hasFunction(element.props)).toBe(false)
+    },
+  )
 })

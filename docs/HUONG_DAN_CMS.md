@@ -51,6 +51,8 @@
    - [5.15. Quản lý Thẻ con trong Lưới Thẻ Biểu Tượng / Đánh Số (IconCardGrid)](#515-quản-lý-thẻ-con-trong-lưới-thẻ-biểu-tượng--đánh-số-iconcardgrid)
    - [5.16. Quản lý Ô số liệu trong Thanh Số Liệu (StatsBar)](#516-quản-lý-ô-số-liệu-trong-thanh-số-liệu-statsbar)
    - [5.17. Quản lý Bước hành trình trong Hành Trình Các Bước (JourneySteps)](#517-quản-lý-bước-hành-trình-trong-hành-trình-các-bước-journeysteps)
+   - [5.18. Quản lý Thẻ dịch vụ trong Các Thẻ Dịch Vụ Coaching (ServiceCards)](#518-quản-lý-thẻ-dịch-vụ-trong-các-thẻ-dịch-vụ-coaching-servicecards)
+   - [5.19. Quản lý Thẻ gói trong Khối Các Gói Growth Mirror (PackageCards)](#519-quản-lý-thẻ-gói-trong-khối-các-gói-growth-mirror-packagecards)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -1872,6 +1874,59 @@ Khi nhấp chọn thanh viền của khối cha **Hành trình các bước**:
     _(Các bước con sẽ tự động đổi kiểu hiển thị theo lựa chọn này)._
 - **Số cột hiển thị (columns)**: Chọn `3`, `4`, `5` hoặc `6` cột trên màn hình lớn (mặc định là `5` cột tương ứng 5 bước).
 - **Tiêu đề 2 tầng & Dòng cảm xúc**: Nhập `Dòng 1`, `Dòng 2`, và `Dòng cảm xúc (in nghiêng)`.
+
+---
+
+### 5.18. Quản lý Thẻ dịch vụ trong Các Thẻ Dịch Vụ Coaching (ServiceCards)
+
+Khối **Các thẻ dịch vụ coaching** (`ServiceCards`) đã được nâng cấp lên dạng kéo thả trực quan. Giờ đây, mỗi chiếc thẻ dịch vụ là một khối con **Thẻ dịch vụ** (`ServiceCard`) độc lập trên khung vẽ (canvas).
+
+#### 1. Thao tác trực tiếp với từng thẻ dịch vụ
+
+- **Nhân bản thẻ dịch vụ (Duplicate)**: Nhấp chọn một thẻ dịch vụ, bấm nút **Nhân bản (Duplicate)** trên thanh công cụ nổi để thêm một thẻ mới.
+- **Kéo đổi thứ tự (Reorder)**: Nhấp giữ vào thanh kéo của thẻ dịch vụ để di chuyển thay đổi thứ tự ưu tiên giới thiệu.
+- **Xóa thẻ**: Bấm biểu tượng **thùng rác (Delete)** trên thanh công cụ của thẻ khi muốn ẩn hoặc bớt dịch vụ khỏi trang.
+- **Thêm thẻ mới = nhân bản một thẻ có sẵn**: Khối Thẻ dịch vụ được thiết kế chuyên biệt cho khung lưới nên được ẩn khỏi menu bên trái để bảo vệ giao diện. **Đừng xóa hết các thẻ**; nếu lỡ xóa hết, hãy kéo lại khối `ServiceCards` mới vào trang.
+
+#### 2. Dữ liệu dịch vụ lấy từ CMS, không nhập tay trên trang
+
+- **Chọn dịch vụ (`serviceId`)**: Khi bấm vào một thẻ dịch vụ, ở thanh bên phải, Hana chỉ cần bấm vào ô **Chọn dịch vụ từ CMS** để chọn đúng lộ trình coaching tương ứng trong danh mục `services`.
+- **Tên, giá, mô tả và ảnh dịch vụ**: Được quản lý tập trung tại mục **Dịch vụ (`services`)** trong trang quản trị. Mọi thay đổi về nội dung, giá hay ảnh minh họa trong form Dịch vụ sẽ **tự động đồng bộ** ra toàn bộ các trang đang hiển thị thẻ đó mà không cần Hana phải vào Puck Editor chỉnh sửa lại.
+
+#### 3. Bật "Thẻ nổi bật" ở từng thẻ dịch vụ
+
+- Mỗi thẻ dịch vụ có công tắc **Thẻ nổi bật (Nền xanh thẫm Deep Navy)** riêng biệt:
+  - Khi chọn **Có**: Thẻ sẽ mang màu nền xanh thẫm `Deep Navy` sang trọng (như dịch vụ tâm điểm thu hút học viên).
+  - Màu chữ tiêu đề và văn bản bên trong thẻ sẽ được hệ thống tự động lọc sang các tông màu sáng chuẩn trợ năng WCAG AA (`Trắng`, `Hồng phấn Soft Pink`) để đảm bảo luôn sắc nét, dễ đọc.
+
+#### 4. Cài đặt số cột ở khối cha (ServiceCards)
+
+Khi nhấp chọn thanh viền của khối cha **Các thẻ dịch vụ coaching**:
+
+- **Số cột hiển thị trên máy tính (columns)**: Chọn `1` cột (căn giữa trang trọng), `2` cột (rộng rãi, nổi bật), hoặc `3` cột (mặc định, lưới 3 dịch vụ cân đối). Trên điện thoại, bố cục luôn tự động tối ưu hiển thị 1 cột thẳng hàng mượt mà.
+
+---
+
+### 5.19. Quản lý Thẻ gói trong Khối Các Gói Growth Mirror (PackageCards)
+
+Khối **Khối các gói Growth Mirror** (`PackageCards`) giới thiệu 3 gói chuyển hóa (CLEAR, BUILD, SHINE). Nay mỗi gói là một khối con **Thẻ gói** (`PackageCard`) linh hoạt, cho phép kéo thả và sắp đặt tự do.
+
+#### 1. Thao tác kéo thả và không còn giới hạn 3 gói
+
+- **Nhân bản & Sắp xếp**: Hana có thể nhân bản một gói, kéo rê đổi thứ tự giữa các gói ngay trên khung vẽ.
+- **Không còn giới hạn 3 gói**: Nếu Hana muốn giới thiệu thêm gói thứ 4, thứ 5 (ví dụ: gói doanh nghiệp, gói quà tặng đặc biệt), Hana chỉ cần bấm nhân bản. Lưới hiển thị chuẩn 3 cột trên máy tính sẽ tự động đẩy gói thứ 4 xuống hàng tiếp theo một cách ngay ngắn và thẩm mỹ.
+- **Đừng xóa hết các thẻ**: Tương tự như thẻ dịch vụ, hãy luôn giữ lại ít nhất 1 thẻ gói để có thể nhân bản tiếp theo.
+
+#### 2. Dữ liệu gói và giá bán lấy tự động từ CMS
+
+- **Chọn gói (`packageId`)**: Bấm vào thẻ gói, ở cột bên phải chọn đúng gói trong danh mục **Sản phẩm (loại Gói)**.
+- **Giá bán, tổng giá trị, % ưu đãi và danh sách cấu phần**: Hoàn toàn do hệ thống CMS tự động tính toán từ bảng giá chuẩn (`Growth_Mirror_Pricing_Calculator.xlsx`). Trang web **hoàn toàn không có ô nhập giá thủ công**, triệt tiêu nguy cơ nhầm lẫn giá bán.
+- **Tự động đánh số thứ tự**: Khi khối cha chọn kiểu hiển thị **Đánh số thứ tự (numbered)**, các con số `01`, `02`, `03`... sẽ được tự động đánh số bằng CSS counter theo đúng vị trí của gói từ trái qua phải.
+
+#### 3. Bật "Thẻ nổi bật" ở từng thẻ gói
+
+- Hana có thể chọn bất kỳ gói nào để làm nổi bật (ví dụ chọn gói BUILD hoặc SHINE) bằng cách nhấp vào gói đó và chọn **Thẻ nổi bật (Viền / Ring Accent Pink) = Có**.
+- Gói được chọn sẽ được bao quanh bởi viền màu hồng đậm `Accent Pink` độc quyền cùng hiệu ứng bóng mềm, nổi bật rõ nét giữa các gói còn lại.
 
 ---
 

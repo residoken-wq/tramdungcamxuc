@@ -60,6 +60,8 @@ import { migrateSectionHeaderV1ToV2 } from './v2-section-header'
 import { migrateIconCardGridV1ToV2 } from './v2-icon-card-grid'
 import { migrateStatsBarV2ToV3 } from './v3-stats-bar'
 import { migrateJourneyStepsV2ToV3 } from './v3-journey-steps'
+import { migrateServiceCardsV1ToV2 } from './v2-service-cards'
+import { migratePackageCardsV1ToV2 } from './v2-package-cards'
 
 export {
   migrateJourneyStepsV1ToV2,
@@ -72,6 +74,8 @@ export {
   migrateIconCardGridV1ToV2,
   migrateStatsBarV2ToV3,
   migrateJourneyStepsV2ToV3,
+  migrateServiceCardsV1ToV2,
+  migratePackageCardsV1ToV2,
 }
 
 export const puckMigrations: PuckMigration[] = [
@@ -94,6 +98,8 @@ export const puckMigrations: PuckMigration[] = [
   migrateIconCardGridV1ToV2,
   migrateStatsBarV2ToV3,
   migrateJourneyStepsV2ToV3,
+  migrateServiceCardsV1ToV2,
+  migratePackageCardsV1ToV2,
 ]
 
 /**

@@ -1072,6 +1072,28 @@ export const vi = {
     align: 'Căn lề',
   },
 
+  puckServiceCard: {
+    label: 'Thẻ dịch vụ',
+    serviceId: 'Chọn dịch vụ đồng hành',
+    highlight: 'Dịch vụ nổi bật (Nền xanh thẫm Deep Navy)',
+    nameColor: 'Màu tên dịch vụ',
+    nameSize: 'Cỡ tên dịch vụ',
+    textColor: 'Màu nội dung mô tả',
+    textSize: 'Cỡ nội dung mô tả',
+    align: 'Căn lề',
+  },
+
+  puckPackageCard: {
+    label: 'Thẻ gói',
+    packageId: 'Chọn gói đồng hành (Growth Mirror)',
+    highlight: 'Gói nổi bật (Viền / bóng nhấn)',
+    nameColor: 'Màu tên gói',
+    nameSize: 'Cỡ tên gói',
+    textColor: 'Màu nội dung mô tả',
+    textSize: 'Cỡ nội dung mô tả',
+    align: 'Căn lề',
+  },
+
   sm03: {
     recommendedLabel: 'Khuyên dùng',
     choosePackage: 'Chọn gói này',

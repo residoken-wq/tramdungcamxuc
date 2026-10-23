@@ -153,6 +153,23 @@ export async function resolveDefaultBookingProductId(payload: Payload): Promise<
  * This ensures src/puck/config.tsx remains 100% pure isomorphic and prevents
  * Next.js server-only modules from leaking into client bundles.
  */
+/** Cards in a v2 slot (`props.cards`) whose referenced record resolves, so empty grids can hide. */
+function countSlotCards(
+  cards: unknown,
+  type: 'ServiceCard' | 'PackageCard',
+  isVisible: (id: string) => boolean,
+): number {
+  if (!Array.isArray(cards)) return 0
+  let count = 0
+  for (const child of cards) {
+    const c = child as { type?: unknown; props?: Record<string, unknown> } | null
+    if (!c || c.type !== type || !c.props) continue
+    const id = type === 'ServiceCard' ? c.props.serviceId : c.props.packageId
+    if (id && isVisible(String(id))) count++
+  }
+  return count
+}
+
 export async function resolveServerData(
   data: Data,
   options?: ResolveServerDataOptions,
@@ -329,6 +346,10 @@ export async function resolveServerData(
           if (id) productIdsToFetch.add(id)
         }
       }
+    } else if (item.type === 'PackageCard') {
+      if (item.props.packageId) {
+        productIdsToFetch.add(item.props.packageId as string | number)
+      }
     } else if (item.type === 'CTASection') {
       needsBookingProduct = true
     } else if (item.type === 'Callout') {
@@ -365,6 +386,10 @@ export async function resolveServerData(
       }
       if (item.props.highlightServiceId) {
         serviceIdsToFetch.add(item.props.highlightServiceId as string | number)
+      }
+    } else if (item.type === 'ServiceCard') {
+      if (item.props.serviceId) {
+        serviceIdsToFetch.add(item.props.serviceId as string | number)
       }
     }
 
@@ -972,7 +997,17 @@ export async function resolveServerData(
         packages: resolvedList,
         buttonUrl: resolvedButtonUrl,
         bookingProductId: defaultBookingProductId,
+        visibleCardCount: countSlotCards(item.props.cards, 'PackageCard', (id) => {
+          const p = productMap.get(id)
+          return Boolean(p && p.type === 'package')
+        }),
       }
+    } else if (item.type === 'PackageCard') {
+      const pId = item.props.packageId ? String(item.props.packageId) : ''
+      const found = pId ? productMap.get(pId) : undefined
+      // Same filter as PackageCards v1: only products of type "package" show as package cards
+      const pkg = found && found.type === 'package' ? found : null
+      item.props._resolved = { package: pkg }
     } else if (item.type === 'SolutionEcosystem') {
       const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
       const resolvedProducts: PublicProduct[] = []
@@ -1023,7 +1058,16 @@ export async function resolveServerData(
           }
         }
       }
-      item.props._resolved = { services: resolvedList }
+      item.props._resolved = {
+        services: resolvedList,
+        visibleCardCount: countSlotCards(item.props.cards, 'ServiceCard', (id) =>
+          serviceMap.has(id),
+        ),
+      }
+    } else if (item.type === 'ServiceCard') {
+      const sId = item.props.serviceId ? String(item.props.serviceId) : ''
+      const srv = sId ? serviceMap.get(sId) || null : null
+      item.props._resolved = { service: srv }
     } else if (item.type === 'TestimonialGrid') {
       const mode = item.props.mode || 'manual'
       if (mode === 'recent') {

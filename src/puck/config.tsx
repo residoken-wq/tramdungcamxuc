@@ -29,10 +29,13 @@ import { IconCardGridBlock, type IconCardGridProps } from './blocks/IconCardGrid
 import { CardBlock, type CardProps } from './blocks/Card'
 import { StatBlock, type StatProps } from './blocks/Stat'
 import { StepBlock, type StepProps } from './blocks/Step'
+import { ServiceCardBlock, type ServiceCardProps } from './blocks/ServiceCard'
+import { PackageCardBlock, type PackageCardProps } from './blocks/PackageCard'
 import { CalloutBlock, type CalloutProps } from './blocks/Callout'
 import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards'
 import { SolutionEcosystemBlock, type SolutionEcosystemProps } from './blocks/SolutionEcosystem'
 import { CTASectionBlock, type CTASectionProps } from './blocks/CTASection'
+import { createMediaExternalField } from './media-field'
 
 // Khối Chuyển đổi (Conversion Blocks)
 import { CTAButtonBlock, type CTAButtonBlockProps } from './blocks/CTAButton'
@@ -96,6 +99,8 @@ export type {
   CardProps,
   StatProps,
   StepProps,
+  ServiceCardProps,
+  PackageCardProps,
 }
 
 export type PageComponentsProps = {
@@ -112,6 +117,8 @@ export type PageComponentsProps = {
   Card: CardProps
   Stat: StatProps
   Step: StepProps
+  ServiceCard: ServiceCardProps
+  PackageCard: PackageCardProps
   Callout: CalloutProps
   JourneySteps: JourneyStepsProps
   VisionMission: VisionMissionProps
@@ -463,48 +470,9 @@ export const puckConfig: Config<PageComponentsProps> = {
           type: 'textarea',
           label: 'Câu trích dẫn (Playfair Display Italic, tùy chọn)',
         },
-        mediaId: {
-          type: 'external',
+        mediaId: createMediaExternalField({
           label: 'Ảnh minh họa (Thư viện media)',
-          placeholder: 'Chọn ảnh từ thư viện media...',
-          showSearch: true,
-          fetchList: async ({ query }) => {
-            try {
-              const searchParam = query ? `&where[alt][like]=${encodeURIComponent(query)}` : ''
-              const res = await fetch(`/api/media?limit=50&depth=0${searchParam}`, {
-                credentials: 'include',
-              })
-              if (!res.ok) return []
-              const data = await res.json()
-              const docs = (data.docs || []).filter(
-                (doc: { alt?: string }) =>
-                  doc.alt && typeof doc.alt === 'string' && doc.alt.trim().length > 0,
-              )
-              return docs
-            } catch {
-              return []
-            }
-          },
-          mapProp: (item: { id?: string }) => item?.id || '',
-          mapRow: (item: {
-            url?: string
-            thumbnailURL?: string
-            alt?: string
-            filename?: string
-          }) => ({
-            'Hình ảnh': (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={item.url || item.thumbnailURL || ''}
-                alt={item.alt || ''}
-                style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 4 }}
-              />
-            ),
-            'Mô tả (alt)': item.alt || '',
-            'Tên file': item.filename || '',
-          }),
-          getItemSummary: (id: string) => (id ? `Media ID: ${id}` : 'Chưa chọn ảnh'),
-        },
+        }),
         imageLabel: {
           type: 'text',
           label: 'Nhãn nhỏ góc ảnh (Tùy chọn)',
@@ -596,6 +564,8 @@ export const puckConfig: Config<PageComponentsProps> = {
     Card: CardBlock,
     Stat: StatBlock,
     Step: StepBlock,
+    ServiceCard: ServiceCardBlock,
+    PackageCard: PackageCardBlock,
     Callout: CalloutBlock,
     JourneySteps: JourneyStepsBlock,
     FAQ: FAQBlock,

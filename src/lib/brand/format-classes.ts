@@ -17,6 +17,10 @@ export type BrandRole =
   | 'stat-label'
   | 'step-name'
   | 'step-desc'
+  | 'service-name'
+  | 'service-text'
+  | 'package-name'
+  | 'package-text'
 
 export interface ChildBgOptions {
   highlight?: boolean
@@ -153,6 +157,19 @@ export function emotionColorClass(color: TextColorOption | string = 'deep-navy')
 }
 
 /**
+ * Trả về class Tailwind chuỗi tĩnh cho căn lề văn bản.
+ */
+export function textAlignClass(align?: AlignOption): string {
+  switch (align) {
+    case 'center':
+      return 'text-center'
+    case 'left':
+    default:
+      return 'text-left'
+  }
+}
+
+/**
  * Trả về class Tailwind chuỗi tĩnh cho kích thước chữ theo vai trò.
  *
  * - title: Anton, thang kích thước theo thẻ Heading level (h1 / h2 / h3):
@@ -273,6 +290,54 @@ export function fontSizeClass(
       case 'md':
       default:
         return 'text-lg sm:text-xl'
+    }
+  }
+
+  if (role === 'service-name') {
+    switch (size) {
+      case 'sm':
+        return 'text-xl'
+      case 'lg':
+        return 'text-3xl'
+      case 'md':
+      default:
+        return 'text-2xl'
+    }
+  }
+
+  if (role === 'service-text') {
+    switch (size) {
+      case 'sm':
+        return 'text-xs'
+      case 'lg':
+        return 'text-base'
+      case 'md':
+      default:
+        return 'text-sm'
+    }
+  }
+
+  if (role === 'package-name') {
+    switch (size) {
+      case 'sm':
+        return 'text-xl'
+      case 'lg':
+        return 'text-3xl'
+      case 'md':
+      default:
+        return 'text-2xl'
+    }
+  }
+
+  if (role === 'package-text') {
+    switch (size) {
+      case 'sm':
+        return 'text-xs sm:text-sm'
+      case 'lg':
+        return 'text-base sm:text-lg'
+      case 'md':
+      default:
+        return 'text-sm sm:text-base'
     }
   }
 
