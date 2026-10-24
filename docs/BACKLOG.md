@@ -68,5 +68,9 @@
 - (HB-03 review 24/10) Migration SM-07 / SM-08 dùng `ALTER TYPE … ADD VALUE` với `down` trống → `migrate:down` rồi `migrate` lại báo enum đã có. Đổi sang `ADD VALUE IF NOT EXISTS`.
 - (HB-03 review 24/10) `certificate.server.ts`: đọc chứng nhận `depth: 1` + `overrideAccess` kéo theo kế hoạch (có field riêng tư) – đã lọc khi trả ra, hạ `depth: 0` khi làm HB-06.
 
-- (PK-05 QA 24/10) Ô chọn dịch vụ / gói trong builder Puck hiện "Sản phẩm ID: N" thay vì tên – đổi `getItemSummary` của external field sang tên.
-- (PK-05 QA 24/10) Breadcrumb cột phải builder bị chữ chồng khi tên khối dài.
+- [x] (PK-05 QA 24/10) Ô chọn dịch vụ / gói trong builder Puck hiện "Sản phẩm ID: N" thay vì tên – đổi `getItemSummary` của external field sang tên (xong PK-06).
+- [x] (PK-05 QA 24/10) Breadcrumb cột phải builder bị chữ chồng khi tên khối dài (xong PK-06).
+- (PK-06 24/10) Kéo một khối con (Thẻ, Ô số liệu…) ra ngoài khối cha thì Puck cho thả ở cấp gốc trang → lưu một khối con đứng lẻ. Vùng gốc của Puck không nhận `disallow` qua cấu hình; cần đổi cách render vùng gốc hoặc chặn khi lưu (`normalizePuckData` / `publishPageAction`).
+- (PK-06 24/10) Kéo ngang trên canvas không đổi chỗ khi canvas thu nhỏ ≤ ~52% (khổ 1440px + 2 thanh bên, mặc định). Đo bằng Playwright; cần người kiểm tay. Nếu đúng: báo Puck / thử bản Puck mới, hoặc mở builder với cột phải thu gọn.
+- (PK-06 24/10) Tab "Cấu trúc": mọi khối con đều tên "Thẻ" / "Thẻ gói"… – khó biết thẻ nào; vùng con rỗng ghi "Chưa có khối nào trên trang" (nên là "…trong vùng này").
+- (PK-06 24/10) E2E `puck-{card,faq,format,stat-step,templates,service-package}` chờ xuất bản bằng `getByText(/Đã xuất bản/)` – khớp luôn nhãn trạng thái trên đầu trang nên không chờ thật; đang đúng nhờ `toPass` tải lại trang công khai. Đổi sang chờ thông báo "Đã xuất bản thành công" như `puck-drag.test.ts`.
