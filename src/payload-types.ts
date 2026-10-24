@@ -1843,7 +1843,11 @@ export interface HabitCheckin {
    */
   day: number;
   /**
-   * Bật để áp dụng: đã hoàn thành.
+   * Trạng thái thực hiện check-in thói quen trong ngày.
+   */
+  status: 'voted' | 'minimal' | 'missed' | 'rest';
+  /**
+   * Tự tính từ trạng thái (Bỏ phiếu / Bản tối giản = Hoàn thành).
    */
   done?: boolean | null;
   /**
@@ -3023,6 +3027,7 @@ export interface EntitlementsSelect<T extends boolean = true> {
 export interface HabitCheckinsSelect<T extends boolean = true> {
   plan?: T;
   day?: T;
+  status?: T;
   done?: T;
   emotion?: T;
   note?: T;

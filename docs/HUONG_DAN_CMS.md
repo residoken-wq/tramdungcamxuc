@@ -915,7 +915,16 @@ Bạn có 3 cách rất dễ dàng:
    - **Câu định danh cam kết (`identityStatement`)**: Cam kết danh tính cho hành trình ("Tôi sẽ... để trở thành...").
    - **Kỹ thuật đã chọn (`chosenTechniques`)**: Danh sách các kỹ thuật rèn luyện thói quen học viên đã lựa chọn theo từng giai đoạn.
    - **Ngày bắt đầu (`startDate`)**: Thời điểm kích hoạt hành trình theo giờ Việt Nam.
-   - **Danh sách ngày check-in (`habitCheckins`)**: Các ngày đã tick hoàn thành (`done = true`) cùng ngày ghi nhận tương ứng (tối đa tới `journeyDays`).
+   - **Danh sách ngày check-in (`habitCheckins`)**: Nhật ký check-in từng ngày của học viên trong hành trình, gồm các trường:
+     - **Kế hoạch (`plan`)**: Kế hoạch thói quen tương ứng.
+     - **Ngày thứ (`day`)**: Số thứ tự ngày trong hành trình (từ ngày 1 đến tối đa `journeyDays`).
+     - **Trạng thái (`status`)**: 4 trạng thái hành vi rèn luyện:
+       - `Bỏ phiếu` (`voted`): Học viên thực hiện trọn vẹn hành vi đã cam kết.
+       - `Bản tối giản` (`minimal`): Học viên thực hiện hành động dưới 2 phút trong ngày bận rộn hoặc mệt mỏi; vẫn được tính là đã hoàn thành và tính vào tỷ lệ 90% cấp chứng nhận.
+       - `Lỡ nhịp` (`missed`): Học viên chủ động ghi nhận hôm nay lỡ nhịp.
+       - `Nghỉ theo nhịp` (`rest`): Học viên ghi nhận ngày nghỉ theo nhịp tuần đã cam kết.
+     - **Đã hoàn thành (`done`)**: Ô đánh dấu chỉ đọc, **tự động tính từ trạng thái** (chọn `Bỏ phiếu` hoặc `Bản tối giản` thì hệ thống tự đánh dấu hoàn thành; chọn `Lỡ nhịp` hoặc `Nghỉ theo nhịp` thì không hoàn thành). Hana không cần tick tay ô này.
+     - **Cảm xúc (`emotion`) & Ghi chú (`note`)**: Cảm xúc trong ngày và chia sẻ cá nhân của học viên (chỉ tài khoản `owner` xem được).
 
 **Quy tắc bảo vệ quyền riêng tư người học (Quan trọng)**:
 

@@ -215,7 +215,14 @@ describe('access control (T0-07)', () => {
       'habitCheckins',
       await payload.create({
         collection: 'habitCheckins',
-        data: { plan: plan.id, day: 1, done: true, emotion: 'peaceful', note: 'riêng tư' },
+        data: {
+          plan: plan.id,
+          day: 1,
+          status: 'voted',
+          done: true,
+          emotion: 'peaceful',
+          note: 'riêng tư',
+        },
       }),
     )
     const asEditor = await payload.findByID({
@@ -234,7 +241,10 @@ describe('access control (T0-07)', () => {
     })
     expect(asOwner).toMatchObject({ emotion: 'peaceful', note: 'riêng tư' })
     await expect(
-      payload.create({ collection: 'habitCheckins', data: { plan: plan.id, day: 1, done: false } }),
+      payload.create({
+        collection: 'habitCheckins',
+        data: { plan: plan.id, day: 1, status: 'missed', done: false },
+      }),
     ).rejects.toMatchObject({
       data: { errors: [{ message: expect.stringMatching(/check-in/) }] },
     })

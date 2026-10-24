@@ -488,6 +488,7 @@ export async function seedDemoGd2(
       data: {
         plan: plan01.id,
         day,
+        status: 'voted',
         done: true,
         emotion: EMOTIONS[emotionIndex].key,
       },
@@ -565,6 +566,7 @@ export async function seedDemoGd2(
       data: {
         plan: plan02.id,
         day,
+        status: 'voted',
         done: true,
         emotion: EMOTIONS[emotionIndex].key,
       },
@@ -635,6 +637,7 @@ export async function seedDemoGd2(
       data: {
         plan: plan03.id,
         day,
+        status: 'voted',
         done: true,
         emotion: EMOTIONS[emotionIndex].key,
       },
