@@ -133,10 +133,7 @@ test.describe('PK-05: Draggable FaqItem child blocks in FAQ (v4)', () => {
       // 4. Xuất bản; trang công khai: 3 câu theo thứ tự mới
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
       await expect(
-        page
-          .getByText(/Đã xuất bản/)
-          .filter({ visible: true })
-          .first(),
+        page.getByRole('status').filter({ hasText: 'Đã xuất bản thành công' }),
       ).toBeVisible({ timeout: 15000 })
 
       await expect(async () => {

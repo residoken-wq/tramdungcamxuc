@@ -293,10 +293,7 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
       // D. Xuất bản
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
       await expect(
-        page
-          .getByText(/Đã xuất bản/)
-          .filter({ visible: true })
-          .first(),
+        page.getByRole('status').filter({ hasText: 'Đã xuất bản thành công' }),
       ).toBeVisible({ timeout: 15000 })
 
       // PK-06: dữ liệu lưu chỉ giữ ID gói, không chép tên gói vào puckData (AGENTS §5B)
