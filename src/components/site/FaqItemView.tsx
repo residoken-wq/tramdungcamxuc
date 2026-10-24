@@ -79,16 +79,17 @@ export function FaqItemView({
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between gap-4 text-left font-ui font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-md transition-colors cursor-pointer"
       >
-        <span className="flex items-center gap-1 min-w-0">
-          <span className="hidden group-data-[numbered=true]/faq:inline-block font-display text-lg text-bright-magenta group-data-[bg=deep-navy]/faq:text-soft-pink select-none shrink-0 mr-3">
+        <span className="flex items-center gap-3 min-w-0">
+          <span className="hidden group-data-[numbered=true]/faq:inline-block font-display text-lg text-bright-magenta group-data-[bg=deep-navy]/faq:text-soft-pink select-none shrink-0">
             {index !== undefined ? (
               `${String(index + 1).padStart(2, '0')}.`
             ) : (
-              <span className="before:content-[counter(faq-counter,_decimal-leading-zero)_'._']" />
+              <span className="before:content-[counter(faq-counter,_decimal-leading-zero)_'.']" />
             )}
           </span>
           <span className={`${questionSizeClass} ${questionColorClass} break-words`}>
-            {question || (isEditing ? <span className="italic opacity-60">[Nhập câu hỏi]</span> : '')}
+            {question ||
+              (isEditing ? <span className="italic opacity-60">[Nhập câu hỏi]</span> : '')}
           </span>
         </span>
         <span
