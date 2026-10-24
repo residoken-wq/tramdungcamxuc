@@ -10,7 +10,7 @@ import React, {
 } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Puck, type Data, type Viewports, usePuck } from '@puckeditor/core'
+import { Puck, type Data, type Viewports, useGetPuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { puckConfig, getPuckConfig } from '@/puck/config'
 import { puckVietnameseDictionary } from '@/puck/dictionary'
@@ -59,7 +59,9 @@ const EditorContext = createContext<EditorContextValue | null>(null)
 
 function EditorHeaderActions() {
   const context = useContext(EditorContext)
-  const { appState, dispatch } = usePuck()
+  // Read Puck state at click time. A value captured from the last render can lag behind a just
+  // committed drag-and-drop move, so Save / Publish would send the previous order (PK-06).
+  const getPuck = useGetPuck()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState<boolean>(false)
@@ -80,13 +82,13 @@ function EditorHeaderActions() {
   const previewHref = pageSlug === '/' ? '/' : `/${pageSlug}`
 
   const handleApplyTemplate = (templateData: Data) => {
-    dispatch({ type: 'setData', data: templateData })
+    getPuck().dispatch({ type: 'setData', data: templateData })
     autosaveController.setData(templateData)
     setFeedback({ type: 'saved', message: vi.builder.templateApplied })
   }
 
   const handleRestoreVersion = (restoredData: Data, newStatus: string) => {
-    dispatch({ type: 'setData', data: restoredData })
+    getPuck().dispatch({ type: 'setData', data: restoredData })
     autosaveController.markSaved(restoredData)
     onStatusChange(newStatus)
     setFeedback({ type: 'saved', message: vi.builder.restoredVersion })
@@ -96,9 +98,10 @@ function EditorHeaderActions() {
     setFeedback({ type: 'saving', message: vi.builder.saving })
     startTransition(async () => {
       try {
-        const result = await saveDraftAction(pageId, appState.data)
+        const data = getPuck().appState.data
+        const result = await saveDraftAction(pageId, data)
         if (result.success) {
-          autosaveController.markSaved(appState.data)
+          autosaveController.markSaved(data)
           const time = new Date().toLocaleTimeString('vi-VN', {
             hour: '2-digit',
             minute: '2-digit',
@@ -119,9 +122,10 @@ function EditorHeaderActions() {
     autosaveController.setPublishing(true)
     startTransition(async () => {
       try {
-        const result = await publishPageAction(pageId, appState.data)
+        const data = getPuck().appState.data
+        const result = await publishPageAction(pageId, data)
         if (result.success) {
-          autosaveController.markSaved(appState.data)
+          autosaveController.markSaved(data)
           const time = new Date().toLocaleTimeString('vi-VN', {
             hour: '2-digit',
             minute: '2-digit',

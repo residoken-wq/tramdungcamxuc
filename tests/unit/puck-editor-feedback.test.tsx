@@ -6,7 +6,10 @@ import { PuckEditorClient } from '@/app/(builder)/builder/[pageId]/PuckEditorCli
 const mocks = vi.hoisted(() => ({
   publish: vi.fn(),
   save: vi.fn(),
-  currentData: { content: [], root: { props: { title: 'Current editor data' } } },
+  currentData: { content: [], root: { props: { title: 'Current editor data' } } } as {
+    content: unknown[]
+    root: { props: { title: string } }
+  },
 }))
 vi.mock('@/puck/actions', () => ({
   publishPageAction: mocks.publish,
@@ -18,7 +21,7 @@ vi.mock('@/puck/actions', () => ({
 vi.mock('@/puck/config', () => ({ puckConfig: {}, getPuckConfig: () => ({}) }))
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 vi.mock('@puckeditor/core', () => ({
-  usePuck: () => ({ appState: { data: mocks.currentData } }),
+  useGetPuck: () => () => ({ appState: { data: mocks.currentData }, dispatch: vi.fn() }),
   Puck: ({ overrides }: { overrides: { headerActions: React.ComponentType } }) => {
     const Header = overrides.headerActions
     return <Header />
@@ -66,4 +69,27 @@ test('publish button meets WCAG AA contrast for small text per Q13 (deep-navy ba
   expect(publishButton.className).toContain('bg-deep-navy')
   expect(publishButton.className).toContain('text-white')
   expect(publishButton.className).not.toContain('bg-accent-pink')
+})
+
+test('PK-06: Lưu nháp / Xuất bản gửi dữ liệu tại lúc bấm, không phải dữ liệu của lần render trước', async () => {
+  const props = {
+    initialData: { content: [], root: {} },
+    pageId: '123',
+    pageTitle: 'Test page',
+    pageSlug: 'test-page',
+    initialStatus: 'draft',
+  }
+  render(<PuckEditorClient {...props} />)
+  // A drag-and-drop move commits to Puck's store without re-rendering the header first.
+  const moved = { content: [{ type: 'Card', props: { id: 'b' } }], root: { props: { title: 'x' } } }
+  mocks.currentData = moved
+  fireEvent.click(screen.getByRole('button', { name: 'Xuất bản' }))
+  await waitFor(() =>
+    expect(screen.getByRole('status').textContent).toContain('Đã xuất bản thành công'),
+  )
+  expect(mocks.publish).toHaveBeenLastCalledWith('123', moved)
+  const movedAgain = { content: [], root: { props: { title: 'y' } } }
+  mocks.currentData = movedAgain
+  fireEvent.click(await screen.findByRole('button', { name: 'Lưu nháp' }))
+  await waitFor(() => expect(mocks.save).toHaveBeenLastCalledWith('123', movedAgain))
 })
