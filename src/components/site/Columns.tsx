@@ -58,6 +58,8 @@ export function Columns({
     <section
       data-block="columns"
       data-bg={bgColor}
+      // Cards dropped in a column read their theme like in IconCardGrid (white card style)
+      data-card-theme={bgColor === 'deep-navy' ? 'navy-white' : 'light-white'}
       className={`w-full group/grid group/stats group/faq ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
     >
       <div className="mx-auto max-w-5xl">
