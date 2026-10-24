@@ -236,7 +236,7 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 
 ### Họp 20/10 – Puck khối con + Habit 28 ngày (kế hoạch `docs/plan/MEETING_2010.md`)
 
-Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiều migration DB: **🔒 Migration: HB-04 (tới khi PR merge)** (HB-03 đã merge 24/10).
+Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiều migration DB: **🔒 Migration: trống** (HB-04 đã merge 24/10).
 
 | Mã          | Việc                                                                                                                      | Phụ thuộc                        | Máy      | Trạng thái                                                                                           |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
@@ -248,7 +248,7 @@ Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiề
 | HB-01       | Ghi quyết định Habit 28 ngày (câu 1–2 đã chốt 20/10; câu 3–10 chờ Hana)                                                   | –                                | Planning | Câu 1–2 xong – `DECISIONS.md`                                                                        |
 | HB-02       | Hành trình 28 ngày (cài đặt + lưu vào kế hoạch), chứng nhận 90%, "Đã trải nghiệm"                                         | HB-01 (câu 1–2)                  | Laptop   | ĐẠT, merge 21/10 ([review](reviews/HB-02.md)), PR #178                                               |
 | HB-03       | `habitPlans` thêm field B3–B4 (giờ, thói quen neo, nhịp tuần, bản tối giản, lý do riêng, bạn đồng hành) + quyền chỉ khách | HB-02                            | Laptop   | ✅ Merge 24/10 – PR #190 ([review](reviews/HB-03.md)); chờ IT duyệt + Hana xác nhận 2 điểm           |
-| HB-04       | `habitCheckins.status` 4 trạng thái (bỏ phiếu / tối giản / lỡ / nghỉ) + backfill `done` cũ                                | HB-03                            | Laptop   | ĐẠT 24/10 sau HB-04c ([review](reviews/HB-04.md)); Planning mở PR; chờ CI + IT duyệt                 |
+| HB-04       | `habitCheckins.status` 4 trạng thái (bỏ phiếu / tối giản / lỡ / nghỉ) + backfill `done` cũ                                | HB-03                            | Laptop   | ✅ Merge 24/10 – PR #195 ([review](reviews/HB-04.md)); chờ IT duyệt                                  |
 | HB-05→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)                                                 | HB-04; câu 3–10 cho HB-07 trở đi | –        | Chờ                                                                                                  |
 
 (Planning dùng cho mọi task)
