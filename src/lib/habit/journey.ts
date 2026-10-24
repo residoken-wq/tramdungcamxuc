@@ -4,18 +4,16 @@
  */
 
 import { getCurrentDayOfPlan } from './tracker-stats'
+import {
+  getJourneyDays,
+  getVotingDays as rhythmGetVotingDays,
+  type CheckinLike,
+  type PlanLike,
+} from './rhythm'
 
+export type { CheckinLike, PlanLike }
+export { getJourneyDays }
 export type HabitPlanOutcome = 'in_progress' | 'completed' | 'experienced'
-
-export interface PlanLike {
-  journeyDays?: number | null
-  startDate?: string | Date | null
-}
-
-export interface CheckinLike {
-  day?: number | null
-  done?: boolean | null
-}
 
 export interface ComputeOutcomeParams {
   plan?: PlanLike | null
@@ -25,24 +23,10 @@ export interface ComputeOutcomeParams {
 }
 
 /**
- * Lấy tổng số ngày của hành trình.
- * Nếu không có trong kế hoạch (kế hoạch cũ trước HB-02), mặc định 21 ngày.
- */
-export function getJourneyDays(plan?: PlanLike | null): number {
-  if (typeof plan?.journeyDays === 'number' && plan.journeyDays > 0) {
-    return plan.journeyDays
-  }
-  return 21
-}
-
-/**
- * Danh sách các ngày bỏ phiếu trong hành trình.
- * Ở HB-02: mọi ngày đều là ngày bỏ phiếu (1..journeyDays).
- * HB-05 sẽ thay thế bằng các ngày theo nhịp tuần đã chọn.
+ * REVIEW-REQUIRED: Danh sách các ngày bỏ phiếu trong hành trình, phụ thuộc vào nhịp tuần (HB-05).
  */
 export function getVotingDays(plan?: PlanLike | null): number[] {
-  const days = getJourneyDays(plan)
-  return Array.from({ length: days }, (_, i) => i + 1)
+  return rhythmGetVotingDays(plan)
 }
 
 /**
@@ -58,7 +42,8 @@ export function requiredDays(votingDays: number[] | number, percent: number = 90
 }
 
 /**
- * Đếm số ngày bỏ phiếu đã check-in hoàn thành (done = true).
+ * REVIEW-REQUIRED: Đếm số ngày bỏ phiếu đã check-in hoàn thành (voted/minimal hoặc done=true khi thiếu status).
+ * Ngày nghỉ theo nhịp hoặc ngày ngoài hành trình không được tính điểm.
  */
 export function countCompletedVotingDays(
   plan?: PlanLike | null,
@@ -70,8 +55,12 @@ export function countCompletedVotingDays(
 
   const doneDays = new Set<number>()
   for (const c of checkins) {
-    if (Boolean(c?.done) && typeof c?.day === 'number' && votingDaysSet.has(c.day)) {
-      doneDays.add(c.day)
+    if (typeof c?.day === 'number' && votingDaysSet.has(c.day)) {
+      const isCompleted =
+        c.status === 'voted' || c.status === 'minimal' || (!c.status && Boolean(c.done))
+      if (isCompleted) {
+        doneDays.add(c.day)
+      }
     }
   }
   return doneDays.size
