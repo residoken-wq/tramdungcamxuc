@@ -1796,8 +1796,9 @@ Hana chỉ cần rê chuột và nhấp vào bất kỳ chiếc thẻ nào trên
 >
 > - **Cách dễ nhất – tab Cấu trúc**: bấm **Cấu trúc** ở cột trái, bấm mũi tên để mở khối cha, **giữ chuột khoảng nửa giây** trên tên khối con rồi kéo lên / xuống; thả khi vạch xanh nằm đúng chỗ. Cũng kéo được một thẻ vào **Nội dung Cột 1 / 2 / 3** của khối Cột.
 > - **Kéo trên màn hình vẽ**: **giữ chuột khoảng nửa giây ở vùng trống của thẻ** (không giữ lên chữ – chữ là ô sửa trực tiếp, giữ lên chữ sẽ bôi đen chữ thay vì kéo), rồi kéo sang vị trí mới.
-> - Nếu kéo sang ngang mà thẻ không chịu đổi chỗ: bấm nút ẩn cột phải (góc trên bên trái thanh công cụ) để màn hình vẽ to hơn, hoặc dùng tab **Cấu trúc**.
-> - Lỡ thả thẻ ra ngoài lưới (thẻ đứng lẻ ngoài khối): bấm **Hoàn tác** (mũi tên cong trên thanh công cụ).
+> - Kéo **từ từ**: vạch / ô xanh sẽ chạy theo chuột tới chỗ thả. Nếu ô xanh chưa nhích, kéo chậm lại một chút hoặc dùng tab **Cấu trúc**.
+> - Thả thẻ ra ngoài khối cha (VD xuống khoảng trống cuối trang) thì hệ thống **không nhận**: thẻ tự quay về chỗ cũ, trang không bị thêm thẻ lẻ.
+> - Kéo sai chỗ: bấm **Hoàn tác** (mũi tên cong trên thanh công cụ).
 > - Sau khi kéo, bấm **Lưu nháp** hoặc **Xuất bản** như bình thường.
 
 > **Thêm thẻ mới = nhân bản một thẻ có sẵn** rồi sửa chữ. Vì thẻ không có trong menu bên trái, **đừng xóa hết thẻ** của một lưới: nếu lỡ xóa hết, hãy xóa cả khối lưới rồi kéo lại khối **Lưới Thẻ Biểu Tượng / Đánh Số** (khối mới luôn có sẵn 3 thẻ mẫu).

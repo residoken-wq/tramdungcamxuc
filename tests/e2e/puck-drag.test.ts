@@ -11,9 +11,9 @@ import {
 
 // PK-06: kéo thả thật trong builder, kiểm dữ liệu đã lưu (GET /api/pages/<id>) và trang công khai.
 // - Tab "Cấu trúc" (Outline) nằm ở trang chính, không qua iframe và không bị thu nhỏ → ổn định.
-// - Canvas: Puck 0.23 không nhận vị trí thả khi kéo ngang ở mức thu nhỏ thấp (≤ ~52%, mặc định khi
-//   xem khổ 1440px với cả 2 thanh bên). Ca canvas ẩn 2 thanh bên (zoom ≈ 92%) và giữ chuột ở vùng
-//   trống của thẻ – giữ trên chữ sửa trực tiếp sẽ bôi đen chữ thay vì kéo. Chi tiết: docs/decisions/PK-06.md.
+// - Canvas: bố cục mặc định (khổ 1440px, 2 thanh bên, zoom ≈ 52%). Chuột di từng bước ~3 px như chuột
+//   thật – bước lớn (15 px) làm Puck giữ hướng cũ và không đổi chỗ (PK-07). Giữ chuột ở vùng trống của
+//   thẻ – giữ trên chữ sửa trực tiếp sẽ bôi đen chữ thay vì kéo. Chi tiết: docs/decisions/PK-06.md, PK-07.md.
 
 async function bootstrapAdmin(page: Page): Promise<{ userId?: number }> {
   await page.goto('/admin/create-first-user', { waitUntil: 'networkidle' })
@@ -82,20 +82,22 @@ type Point = { x: number; y: number }
 
 /**
  * Real pointer drag. Puck's PointerSensor (no handle) activates after a 200 ms hold within 10 px,
- * then 5 px of movement; the move is stepped so its collision detector sees each position.
+ * then 5 px of movement. The move goes in ~3 px steps like a real mouse: Puck refreshes its drag
+ * direction only after 10 px of travel, and 15 px jumps on a zoomed-out canvas left it stuck on the
+ * source slot.
  */
 async function drag(page: Page, from: Point, to: Point): Promise<void> {
   await page.mouse.move(from.x, from.y)
   await page.mouse.down()
   await page.waitForTimeout(300)
   await page.mouse.move(from.x, from.y - 6, { steps: 3 })
-  const steps = 25
+  const steps = Math.max(10, Math.ceil(Math.hypot(to.x - from.x, to.y - from.y) / 3))
   for (let i = 1; i <= steps; i++) {
     await page.mouse.move(
       from.x + ((to.x - from.x) * i) / steps,
       from.y - 6 + ((to.y - from.y + 6) * i) / steps,
     )
-    await page.waitForTimeout(25)
+    await page.waitForTimeout(8)
   }
   await page.waitForTimeout(300)
   await page.mouse.up()
@@ -281,7 +283,7 @@ test.describe('PK-06: kéo thả trong builder lưu đúng', () => {
     )
   })
 
-  test('canvas (ẩn 2 thanh bên): giữ vùng trống của thẻ 3, kéo sang trước thẻ 1 → 3, 1, 2', async ({
+  test('canvas (bố cục mặc định, zoom ≈ 52%): giữ vùng trống của thẻ 3, kéo sang trước thẻ 1 → 3, 1, 2', async ({
     page,
     browser,
   }, testInfo) => {
@@ -295,11 +297,9 @@ test.describe('PK-06: kéo thả trong builder lưu đúng', () => {
         await expect(canvas.getByRole('heading', { name: titles[2], exact: true })).toBeVisible({
           timeout: 30000,
         })
-        await page.getByRole('button', { name: 'Bật/tắt thanh bên trái' }).click()
-        await page.getByRole('button', { name: 'Bật/tắt thanh bên phải' }).click()
         await expect
           .poll(async () => Number(await page.locator('select').first().inputValue()))
-          .toBeGreaterThan(0.75)
+          .toBeLessThan(0.6)
 
         const card = (i: number) => canvas.locator(`[data-puck-component="grid-canvas-card-${i}"]`)
         await expect(async () => {
@@ -320,7 +320,6 @@ test.describe('PK-06: kéo thả trong builder lưu đúng', () => {
 
         // The canvas shows the preview order before Puck commits the move (after its drop
         // animation); the Outline reads committed state, so wait for it before publishing.
-        await page.getByRole('button', { name: 'Bật/tắt thanh bên trái' }).click()
         await openOutline(page, ['grid-canvas'])
         await expect(
           page.locator('[data-puck-layer-tree-id^="grid-canvas-card-"]').first(),
@@ -331,6 +330,44 @@ test.describe('PK-06: kéo thả trong builder lưu đúng', () => {
           'grid-canvas-card-2',
           'grid-canvas-card-0',
           'grid-canvas-card-1',
+        ])
+      },
+    )
+  })
+
+  test('PK-07: thả thẻ ra ngoài lưới không tạo thẻ lẻ ở cấp gốc trang', async ({
+    page,
+    browser,
+  }, testInfo) => {
+    await withBuilderPage(
+      { page, browser },
+      testInfo,
+      (marker) => [iconGrid('grid-root', cardTitles(marker))],
+      async ({ pageId, marker }) => {
+        const titles = cardTitles(marker)
+        const canvas = page.frameLocator('iframe')
+        await expect(canvas.getByRole('heading', { name: titles[2], exact: true })).toBeVisible({
+          timeout: 30000,
+        })
+        const source = await canvas
+          .locator('[data-puck-component="grid-root-card-2"]')
+          .boundingBox()
+        const grid = await canvas.locator('[data-puck-component="grid-root"]').boundingBox()
+        if (!source || !grid) throw new Error('Không thấy lưới thẻ trên canvas')
+        // Far below the grid section: only the page root zone is there.
+        await drag(
+          page,
+          { x: source.x + source.width - 12, y: source.y + 12 },
+          { x: grid.x + grid.width / 2, y: grid.y + grid.height + 120 },
+        )
+
+        await publish(page)
+        const content = await savedContent(page, pageId)
+        expect(content.map((block) => block.type)).toEqual(['IconCardGrid'])
+        expect(childIds(content[0], 'cards')).toEqual([
+          'grid-root-card-0',
+          'grid-root-card-1',
+          'grid-root-card-2',
         ])
       },
     )

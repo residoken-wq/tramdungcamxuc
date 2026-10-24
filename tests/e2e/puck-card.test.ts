@@ -131,10 +131,7 @@ test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
       // 6. Xuất bản
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
       await expect(
-        page
-          .getByText(/Đã xuất bản/)
-          .filter({ visible: true })
-          .first(),
+        page.getByRole('status').filter({ hasText: 'Đã xuất bản thành công' }),
       ).toBeVisible({ timeout: 15000 })
 
       // 7. Trang công khai: 4 thẻ, thẻ 2 mang class màu / cỡ mới
