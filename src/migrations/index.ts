@@ -22,6 +22,7 @@ import * as migration_20261020_031337_sm07_page_templates from './20261020_03133
 import * as migration_20261020_075400_sm08_page_templates from './20261020_075400_sm08_page_templates'
 import * as migration_20261021_012851_hb02_journey_28 from './20261021_012851_hb02_journey_28'
 import * as migration_20261023_093308_hb03_plan_fields from './20261023_093308_hb03_plan_fields'
+import * as migration_20261024_072228_hb04_checkin_status from './20261024_072228_hb04_checkin_status'
 
 export const migrations = [
   {
@@ -143,5 +144,10 @@ export const migrations = [
     up: migration_20261023_093308_hb03_plan_fields.up,
     down: migration_20261023_093308_hb03_plan_fields.down,
     name: '20261023_093308_hb03_plan_fields',
+  },
+  {
+    up: migration_20261024_072228_hb04_checkin_status.up,
+    down: migration_20261024_072228_hb04_checkin_status.down,
+    name: '20261024_072228_hb04_checkin_status',
   },
 ]
