@@ -914,7 +914,7 @@ Bạn có 3 cách rất dễ dàng:
    - **Hành động dưới 2 phút (`twoMinuteAction`)**: Phiên bản tối giản dưới 2 phút ("bản tối giản") giúp duy trì đà thực hành trong những ngày năng lượng thấp.
    - **Câu định danh cam kết (`identityStatement`)**: Cam kết danh tính cho hành trình ("Tôi sẽ... để trở thành...").
    - **Kỹ thuật đã chọn (`chosenTechniques`)**: Danh sách các kỹ thuật rèn luyện thói quen học viên đã lựa chọn theo từng giai đoạn.
-   - **Ngày bắt đầu (`startDate`)**: Thời điểm kích hoạt hành trình theo giờ Việt Nam.
+   - **Ngày bắt đầu (`startDate`)**: Thời điểm kích hoạt hành trình theo giờ Việt Nam. Trường này tự động gán là ngày tạo kế hoạch theo giờ Việt Nam; học viên không được tự ý sửa hay đặt lùi ngày để tốt nghiệp sớm. Giờ đây chỉ quản trị viên mới sửa được khi cần hỗ trợ học viên điều chỉnh lịch rèn luyện.
    - **Danh sách ngày check-in (`habitCheckins`)**: Nhật ký check-in từng ngày của học viên trong hành trình, gồm các trường:
      - **Kế hoạch (`plan`)**: Kế hoạch thói quen tương ứng.
      - **Ngày thứ (`day`)**: Số thứ tự ngày trong hành trình (từ ngày 1 đến tối đa `journeyDays`).
