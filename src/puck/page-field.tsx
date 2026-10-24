@@ -1,4 +1,6 @@
+import React from 'react'
 import type { ExternalField } from '@puckeditor/core'
+import { RecordSummary } from './record-summary'
 
 export function createPageExternalField<
   T extends string | number | undefined = string | number | undefined,
@@ -32,6 +34,7 @@ export function createPageExternalField<
       'Tiêu đề': item.title || '',
       'Đường dẫn (slug)': item.slug || '',
     }),
-    getItemSummary: (item: unknown) => (item ? `Trang ID: ${String(item)}` : 'Chưa chọn'),
+    getItemSummary: (id: unknown) =>
+      id ? <RecordSummary collection="pages" id={String(id)} /> : 'Chưa chọn',
   }
 }
