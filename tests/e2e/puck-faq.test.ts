@@ -32,7 +32,7 @@ async function bootstrapAdmin(page: Page): Promise<{ userId?: number }> {
 }
 
 test.describe('PK-05: Draggable FaqItem child blocks in FAQ (v4)', () => {
-  test('trang FAQ v4 manual hiển thị 2 câu hỏi; tương tác accordion; builder sửa câu 2, nhân bản câu 1, xuất bản thành 3 câu', async ({
+  test('trang FAQ v3 thủ công vẫn hiện đủ câu (migration khi đọc); builder sửa câu 2, nhân bản câu 1, xuất bản thành 3 câu', async ({
     page,
     browser,
   }, testInfo) => {
@@ -59,7 +59,8 @@ test.describe('PK-05: Draggable FaqItem child blocks in FAQ (v4)', () => {
       const admin = await bootstrapAdmin(page)
       userId = admin.userId
 
-      // 1. Tạo qua REST một trang đã xuất bản, chứa FAQ v4 với 2 câu hỏi
+      const q = (n: number, suffix = 'ban đầu') => `[MẪU] Câu hỏi số ${n} ${suffix} ${marker}`
+      // 1. Trang đã xuất bản lưu FAQ **v3** thủ công: 3 câu, đánh số, câu giữa rỗng (v3 bỏ qua)
       const created = await page.request.post('/api/pages', {
         data: {
           title: `[MẪU] E2E FAQ Page ${marker}`,
@@ -70,39 +71,20 @@ test.describe('PK-05: Draggable FaqItem child blocks in FAQ (v4)', () => {
               {
                 type: 'FAQ',
                 props: {
-                  id: 'faq-e2e-root',
-                  version: 4,
-                  titleLine1: 'GIẢI ĐÁP',
-                  titleLine2: 'THẮC MẮC',
+                  id: 'faq-e2e',
+                  version: 3,
+                  titleLine1: '[MẪU] GIẢI ĐÁP',
+                  titleLine2: '[MẪU] THẮC MẮC',
                   source: 'manual',
                   numbered: true,
-                  bgColor: 'warm-ivory',
+                  aside: 'none',
                   items: [
-                    {
-                      type: 'FaqItem',
-                      props: {
-                        id: 'faq-item-1',
-                        question: `[MẪU] Câu hỏi số 1 ban đầu ${marker}`,
-                        answer: `Nội dung giải đáp chi tiết cho câu hỏi 1 ${marker}`,
-                        questionColor: 'deep-navy',
-                        questionSize: 'md',
-                        answerColor: 'deep-navy',
-                        answerSize: 'md',
-                      },
-                    },
-                    {
-                      type: 'FaqItem',
-                      props: {
-                        id: 'faq-item-2',
-                        question: `[MẪU] Câu hỏi số 2 ban đầu ${marker}`,
-                        answer: `Nội dung giải đáp chi tiết cho câu hỏi 2 ${marker}`,
-                        questionColor: 'deep-navy',
-                        questionSize: 'md',
-                        answerColor: 'deep-navy',
-                        answerSize: 'md',
-                      },
-                    },
+                    { question: q(1), answer: `[MẪU] Trả lời câu 1 ${marker}` },
+                    { question: '', answer: '' },
+                    { question: q(2), answer: `[MẪU] Trả lời câu 2 ${marker}` },
                   ],
+                  bgColor: 'warm-ivory',
+                  padding: 'md',
                 },
               },
             ],
@@ -111,58 +93,44 @@ test.describe('PK-05: Draggable FaqItem child blocks in FAQ (v4)', () => {
         },
       })
       expect(created.ok()).toBe(true)
-      const pageDoc = await created.json()
-      pageId = pageDoc.doc?.id || pageDoc.id
+      pageId = (await created.json()).doc?.id
+      expect(pageId).toBeDefined()
 
-      // 2. Vào trang công khai kiểm tra hiển thị 2 câu hỏi
+      // 2. Trang công khai **trước khi mở builder**: đúng 2 câu theo thứ tự, câu 1 mở được
+      const faqButtons = publicPage.locator('section[data-numbered] button[aria-expanded]')
       await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
-      await expect(publicPage.getByText('GIẢI ĐÁP')).toBeVisible({ timeout: 15000 })
-      await expect(publicPage.getByText('THẮC MẮC')).toBeVisible({ timeout: 15000 })
+      await expect(faqButtons).toHaveCount(2)
+      await expect(faqButtons.nth(0)).toContainText(q(1))
+      await expect(faqButtons.nth(1)).toContainText(q(2))
+      await expect(faqButtons.nth(0)).toHaveAttribute('aria-expanded', 'false')
+      await faqButtons.nth(0).click()
+      await expect(faqButtons.nth(0)).toHaveAttribute('aria-expanded', 'true')
+      await expect(publicPage.getByText(`[MẪU] Trả lời câu 1 ${marker}`)).toBeVisible()
 
-      const q1Button = publicPage.getByRole('button', {
-        name: `[MẪU] Câu hỏi số 1 ban đầu ${marker}`,
-        exact: false,
-      })
-      const q2Button = publicPage.getByRole('button', {
-        name: `[MẪU] Câu hỏi số 2 ban đầu ${marker}`,
-        exact: false,
-      })
-      await expect(q1Button).toBeVisible()
-      await expect(q2Button).toBeVisible()
-      await expect(q1Button).toHaveAttribute('aria-expanded', 'false')
+      // 3. Builder: sửa câu 2 trên field (nhãn đúng vi.ts), nhân bản câu 1
+      await page.goto(`/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
+      const canvas = page.frameLocator('iframe')
+      const q2InCanvas = canvas.getByText(q(2)).first()
+      await expect(q2InCanvas).toBeVisible({ timeout: 30000 })
 
-      // Click câu hỏi 1 để mở accordion
-      await q1Button.click()
-      await expect(q1Button).toHaveAttribute('aria-expanded', 'true')
-      const answer1 = publicPage.getByText(`Nội dung giải đáp chi tiết cho câu hỏi 1 ${marker}`)
-      await expect(answer1).toBeVisible()
-      await expect(answer1).not.toHaveAttribute('hidden')
+      const questionInput = page.getByRole('textbox', { name: 'Câu hỏi thắc mắc', exact: true })
+      await expect(async () => {
+        await q2InCanvas.click()
+        await expect(questionInput).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 30000 })
+      await questionInput.fill(q(2, 'đã sửa'))
+      await expect(canvas.getByText(q(2, 'đã sửa')).first()).toBeVisible()
 
-      // 3. Vào builder Puck tại /admin/builder/[pageId]
-      await page.goto(`/admin/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
-      const iframe = page.frameLocator('iframe[data-puck-frame]').first()
-      const canvas = iframe.locator('body')
-      await expect(canvas.getByText('GIẢI ĐÁP').first()).toBeVisible({ timeout: 30000 })
+      const q1InCanvas = canvas.getByText(q(1)).first()
+      const duplicate = canvas.locator('button[title="Nhân bản"]').first()
+      await expect(async () => {
+        await q1InCanvas.click()
+        await expect(duplicate).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 30000 })
+      await duplicate.click()
+      await expect(canvas.getByText(q(1))).toHaveCount(2)
 
-      // 4. Chọn câu hỏi 2 trong canvas, sửa nội dung
-      const q2InCanvas = canvas.getByText(`[MẪU] Câu hỏi số 2 ban đầu ${marker}`).first()
-      await q2InCanvas.click()
-
-      const questionInput = page.getByRole('textbox', { name: 'Câu hỏi', exact: true })
-      await expect(questionInput).toBeVisible({ timeout: 5000 })
-      await questionInput.fill(`[MẪU] Câu hỏi số 2 đã được cập nhật ${marker}`)
-
-      // 5. Nhân bản FaqItem 1
-      const q1InCanvas = canvas.getByText(`[MẪU] Câu hỏi số 1 ban đầu ${marker}`).first()
-      await q1InCanvas.click()
-
-      // Nút Duplicate trong action bar của item
-      const duplicateBtn = page.getByRole('button', { name: /Nhân bản|Duplicate/i }).first()
-      if (await duplicateBtn.isVisible()) {
-        await duplicateBtn.click()
-      }
-
-      // 6. Xuất bản
+      // 4. Xuất bản; trang công khai: 3 câu theo thứ tự mới
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
       await expect(
         page
@@ -171,19 +139,13 @@ test.describe('PK-05: Draggable FaqItem child blocks in FAQ (v4)', () => {
           .first(),
       ).toBeVisible({ timeout: 15000 })
 
-      // 7. Kiểm tra lại trang công khai
       await expect(async () => {
         await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
-        const updatedQ2 = publicPage.getByRole('button', {
-          name: `[MẪU] Câu hỏi số 2 đã được cập nhật ${marker}`,
-          exact: false,
-        })
-        await expect(updatedQ2).toBeVisible({ timeout: 2000 })
+        await expect(faqButtons).toHaveCount(3, { timeout: 2000 })
       }).toPass({ timeout: 30000 })
-
-      const faqButtons = publicPage.locator('button[aria-controls^="faq-a-"]')
-      // Ban đầu 2 câu, nhân bản 1 câu -> 3 câu
-      await expect(faqButtons).toHaveCount(3)
+      await expect(faqButtons.nth(0)).toContainText(q(1))
+      await expect(faqButtons.nth(1)).toContainText(q(1))
+      await expect(faqButtons.nth(2)).toContainText(q(2, 'đã sửa'))
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
       await publicContext.close()
