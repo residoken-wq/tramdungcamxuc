@@ -286,16 +286,15 @@ export const HabitPlans: CollectionConfig = {
       type: 'array',
       fields: [relation('technique', 'Kỹ thuật', 'techniques'), text('action', 'Hành động cụ thể')],
     },
-    {
-      ...date('startDate', 'Ngày bắt đầu'),
-      // REVIEW-REQUIRED: only admins may set/update startDate; customers creating a plan through the API
-      // get today in Vietnam time from the hook (a forged past startDate would reach graduation early).
+    // REVIEW-REQUIRED: only admins may set/update startDate; customers creating a plan through the API
+    // get today in Vietnam time from the hook (a forged past startDate would reach graduation early).
+    // Not admin.readOnly: owner/editor must be able to adjust it in the CMS (HB-05 spec).
+    date('startDate', 'Ngày bắt đầu', {
       access: { create: isEditorOrOwner, update: isEditorOrOwner },
       admin: {
-        readOnly: true,
         description: 'Ngày bắt đầu hành trình (theo giờ Việt Nam, chỉ quản trị viên được sửa).',
       },
-    },
+    }),
     {
       ...number('journeyDays', 'Số ngày hành trình'),
       // REVIEW-REQUIRED: only admins may set it; customers creating a plan through the API

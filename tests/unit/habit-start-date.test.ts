@@ -3,12 +3,13 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import { randomUUID } from 'node:crypto'
-import { getPayload, type CollectionSlug, type Payload } from 'payload'
+import { getPayload, type CollectionSlug, type DateField, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import type { Customer, HabitPlan, User } from '../../src/payload-types'
 import { getVietnamYmd } from '../../src/lib/habit/tracker-stats'
 import { getOrCreateTrackerPlan } from '../../src/lib/habit/tracker.server'
 import { submitHabitPlan } from '../../src/lib/habit.server'
+import { HabitPlans } from '../../src/collections/HabitPlans'
 
 describe('HB-05: Khóa startDate của HabitPlans và kiểm soát quyền', () => {
   let payload: Payload
@@ -266,5 +267,13 @@ describe('HB-05: Khóa startDate của HabitPlans và kiểm soát quyền', () 
     expect(stored.startDate).toBeDefined()
     const storedYmd = getVietnamYmd(new Date(stored.startDate!))
     expect(storedYmd).toBe(getVietnamYmd(new Date()))
+  })
+  it('6. Admin CMS không khóa readOnly để owner/editor chỉnh được ngày bắt đầu', () => {
+    const field = HabitPlans.fields.find(
+      (f): f is DateField => f.type === 'date' && f.name === 'startDate',
+    )
+    expect(field).toBeDefined()
+    expect(field?.admin?.readOnly).toBeFalsy()
+    expect(field?.access?.update).toBeDefined()
   })
 })
