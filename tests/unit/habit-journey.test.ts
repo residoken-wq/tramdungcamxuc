@@ -479,6 +479,7 @@ describe('HB-02: Luật hành trình 28 ngày & Luật 90% cấp chứng nhận 
             data: {
               plan: passPlan.id,
               day,
+              status: 'voted',
               done: true,
             },
             overrideAccess: true,
@@ -533,6 +534,7 @@ describe('HB-02: Luật hành trình 28 ngày & Luật 90% cấp chứng nhận 
             data: {
               plan: failPlan.id,
               day,
+              status: 'voted',
               done: true,
             },
             overrideAccess: true,

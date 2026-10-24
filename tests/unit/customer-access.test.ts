@@ -315,6 +315,7 @@ describe('Customer Access Control & Permissions (T2-01)', () => {
         data: {
           plan: planB.id,
           day: 1,
+          status: 'voted',
           done: true,
         },
         user: userA,

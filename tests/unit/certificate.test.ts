@@ -175,6 +175,7 @@ describe('21-Day Certificate Issuance & Verification (T2-07)', () => {
           data: {
             plan: planId,
             day,
+            status: 'voted',
             done: true,
             emotion: 'peaceful',
             note: `Ghi chú ngày ${day}`,

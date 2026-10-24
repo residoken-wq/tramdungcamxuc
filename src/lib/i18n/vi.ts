@@ -2544,6 +2544,23 @@ export const vi = {
       rhythmDaysInvalid: 'Ngày trong nhịp tuần không hợp lệ.',
     },
   },
+  hb04: {
+    status: {
+      voted: 'Bỏ phiếu',
+      minimal: 'Bản tối giản',
+      missed: 'Lỡ nhịp',
+      rest: 'Nghỉ theo nhịp',
+    },
+    fields: {
+      status: 'Trạng thái',
+      statusDesc: 'Trạng thái thực hiện check-in thói quen trong ngày.',
+      doneDesc: 'Tự tính từ trạng thái (Bỏ phiếu / Bản tối giản = Hoàn thành).',
+    },
+    errors: {
+      statusRequired: 'Vui lòng chọn trạng thái check-in hợp lệ.',
+      statusOrDoneRequired: 'Vui lòng cung cấp trạng thái hoặc kết quả hoàn thành.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
