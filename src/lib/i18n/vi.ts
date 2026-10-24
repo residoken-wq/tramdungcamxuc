@@ -1094,6 +1094,16 @@ export const vi = {
     align: 'Căn lề',
   },
 
+  puckFaqItem: {
+    label: 'Câu hỏi (FaqItem)',
+    question: 'Câu hỏi thắc mắc',
+    answer: 'Nội dung trả lời chi tiết',
+    questionColor: 'Màu chữ câu hỏi',
+    questionSize: 'Cỡ chữ câu hỏi',
+    answerColor: 'Màu chữ câu trả lời',
+    answerSize: 'Cỡ chữ câu trả lời',
+  },
+
   sm03: {
     recommendedLabel: 'Khuyên dùng',
     choosePackage: 'Chọn gói này',

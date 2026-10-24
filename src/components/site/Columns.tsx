@@ -55,7 +55,13 @@ export function Columns({
   const gridColsClass = is3Cols ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'
 
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section
+      data-block="columns"
+      data-bg={bgColor}
+      // Cards dropped in a column read their theme like in IconCardGrid (white card style)
+      data-card-theme={bgColor === 'deep-navy' ? 'navy-white' : 'light-white'}
+      className={`w-full group/grid group/stats group/faq ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
+    >
       <div className="mx-auto max-w-5xl">
         <div className={`grid ${gridColsClass} ${GAPS[gap]} items-start`}>
           <div className="min-w-0 w-full flex flex-col">{renderSlotContent(col1)}</div>

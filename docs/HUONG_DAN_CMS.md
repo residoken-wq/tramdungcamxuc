@@ -53,6 +53,9 @@
    - [5.17. Quản lý Bước hành trình trong Hành Trình Các Bước (JourneySteps)](#517-quản-lý-bước-hành-trình-trong-hành-trình-các-bước-journeysteps)
    - [5.18. Quản lý Thẻ dịch vụ trong Các Thẻ Dịch Vụ Coaching (ServiceCards)](#518-quản-lý-thẻ-dịch-vụ-trong-các-thẻ-dịch-vụ-coaching-servicecards)
    - [5.19. Quản lý Thẻ gói trong Khối Các Gói Growth Mirror (PackageCards)](#519-quản-lý-thẻ-gói-trong-khối-các-gói-growth-mirror-packagecards)
+   - [5.20. Quản lý Câu hỏi thường gặp trong Khối FAQ (FaqItem)](#520-quản-lý-câu-hỏi-thường-gặp-trong-khối-faq-faqitem)
+   - [5.21. Khối Cột (Columns) hỗ trợ đa dạng khối con](#521-khối-cột-columns-hỗ-trợ-đa-dạng-khối-con)
+   - [5.22. Cơ chế tự động sửa màu lệch nền (Child Color Fallback)](#522-cơ-chế-tự-động-sửa-màu-lệch-nền-child-color-fallback)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -1764,6 +1767,8 @@ Trong đợt nâng cấp hoàn thiện Sitemap v2 (SM-08), website được bổ
 
 Trong bản nâng cấp mới, khối **Lưới Thẻ Biểu Tượng / Đánh Số** (`IconCardGrid`) đã được cải tiến thành **dạng kéo thả trực quan** (trải nghiệm kiểu Elementor). Hana không còn phải mở popup mảng ở thanh cài đặt để sửa từng thẻ nữa, mà có thể thao tác trực tiếp trên màn hình vẽ (canvas).
 
+![Chọn một thẻ trong Lưới thẻ: thanh thao tác trên thẻ, cột phải là ô cài đặt của thẻ](images/huong-dan/36-luoi-the-keo-tha.png)
+
 #### 1. Vì sao khối "Thẻ" (Card) không nằm ở menu bên trái?
 
 - Khối **Thẻ** (`Card`) là **khối con chuyên biệt**, được thiết kế để chỉ hoạt động chuẩn xác bên trong khung lưới của khối cha **Lưới Thẻ Biểu Tượng / Đánh Số**.
@@ -1805,6 +1810,8 @@ Khi nhấp chọn một chiếc thẻ, cột bên phải sẽ hiển thị các 
 
 Khối **Thanh số liệu** (`StatsBar`) đã được nâng cấp lên dạng kéo thả trực quan: mỗi con số giờ là một khối con **Ô số liệu** (`Stat`) nằm ngay trên màn hình vẽ (canvas).
 
+![Chọn một ô số liệu trong Thanh số liệu](images/huong-dan/37-thanh-so-lieu-keo-tha.png)
+
 #### 1. Thao tác trực tiếp với từng ô số liệu
 
 - **Nhân bản ô số liệu (Duplicate)**: Nhấp chọn một ô số liệu, bấm vào nút **Nhân bản (Duplicate)** trên thanh công cụ nổi để thêm một ô số liệu mới.
@@ -1838,6 +1845,8 @@ Khi nhấp chọn một ô số liệu:
 ### 5.17. Quản lý Bước hành trình trong Hành Trình Các Bước (JourneySteps)
 
 Khối **Hành trình các bước** (`JourneySteps`) thể hiện tiến trình thấu cảm và chuyển hóa. Nay mỗi bước đã là một khối con **Bước hành trình** (`Step`) độc lập, cho phép Hana tùy biến sâu từng bước.
+
+![Chọn một bước trong Hành trình các bước](images/huong-dan/38-hanh-trinh-buoc-keo-tha.png)
 
 #### 1. Tự động đánh số thứ tự (01, 02, 03...)
 
@@ -1884,6 +1893,8 @@ Khi nhấp chọn thanh viền của khối cha **Hành trình các bước**:
 
 Khối **Các thẻ dịch vụ coaching** (`ServiceCards`) đã được nâng cấp lên dạng kéo thả trực quan. Giờ đây, mỗi chiếc thẻ dịch vụ là một khối con **Thẻ dịch vụ** (`ServiceCard`) độc lập trên khung vẽ (canvas).
 
+![Chọn một thẻ dịch vụ: chọn dịch vụ, bật nổi bật ở cột phải](images/huong-dan/39-the-dich-vu-keo-tha.png)
+
 #### 1. Thao tác trực tiếp với từng thẻ dịch vụ
 
 - **Nhân bản thẻ dịch vụ (Duplicate)**: Nhấp chọn một thẻ dịch vụ, bấm nút **Nhân bản (Duplicate)** trên thanh công cụ nổi để thêm một thẻ mới.
@@ -1914,6 +1925,8 @@ Khi nhấp chọn thanh viền của khối cha **Các thẻ dịch vụ coachin
 
 Khối **Khối các gói Growth Mirror** (`PackageCards`) giới thiệu 3 gói chuyển hóa (CLEAR, BUILD, SHINE). Nay mỗi gói là một khối con **Thẻ gói** (`PackageCard`) linh hoạt, cho phép kéo thả và sắp đặt tự do.
 
+![Chọn một thẻ gói: chọn gói, bật nổi bật ở cột phải](images/huong-dan/40-the-goi-keo-tha.png)
+
 #### 1. Thao tác kéo thả và không còn giới hạn 3 gói
 
 - **Nhân bản & Sắp xếp**: Hana có thể nhân bản một gói, kéo rê đổi thứ tự giữa các gói ngay trên khung vẽ.
@@ -1930,6 +1943,78 @@ Khối **Khối các gói Growth Mirror** (`PackageCards`) giới thiệu 3 gói
 
 - Hana có thể chọn bất kỳ gói nào để làm nổi bật (ví dụ chọn gói BUILD hoặc SHINE) bằng cách nhấp vào gói đó và chọn **Thẻ nổi bật (Viền / Ring Accent Pink) = Có**.
 - Gói được chọn sẽ được bao quanh bởi viền màu hồng đậm `Accent Pink` độc quyền cùng hiệu ứng bóng mềm, nổi bật rõ nét giữa các gói còn lại.
+
+---
+
+### 5.20. Quản lý Câu hỏi thường gặp trong Khối FAQ (FaqItem)
+
+Khối **Câu hỏi thường gặp** (`FAQ`) phiên bản 4 mang lại sự tự do tối đa cho Hana khi chỉnh sửa và sắp xếp các câu hỏi giải đáp:
+
+![Chọn một câu hỏi trong khối FAQ](images/huong-dan/34-faq-keo-tha.png)
+
+#### 1. Hai chế độ linh hoạt: Thủ công và Lấy theo nhóm từ CMS
+
+Khi chọn khối cha `FAQ` trên khung vẽ, ở thanh bên phải Hana có thể chọn **Nguồn câu hỏi (`source`)**:
+
+- **Nhập thủ công (`manual`)**: Từng câu hỏi là một khối con **Câu hỏi thường gặp (`FaqItem`)** độc lập xuất hiện ngay trên khung vẽ. Hana có thể:
+  - Bấm trực tiếp vào câu hỏi để sửa tiêu đề câu hỏi và nội dung giải đáp chi tiết ở thanh bên phải.
+  - Bấm **Nhân bản (Duplicate)** để tạo nhanh câu hỏi mới.
+  - Bấm biểu tượng thùng rác để xóa câu hỏi không cần thiết.
+  - Kéo rê thanh tay cầm để đổi thứ tự các câu hỏi.
+- **Lấy theo nhóm từ CMS (`group`)**: Hệ thống tự động tải các câu hỏi thuộc nhóm tương ứng (Chung, Lộ trình, Coaching 1:1, Sản phẩm số, Doanh nghiệp, Thanh toán) từ danh mục **Câu hỏi thường gặp** (`faqs`). Mọi thay đổi trong form quản trị `faqs` sẽ tự động hiển thị ra ngoài trang web.
+
+#### 2. Tự động đánh số thứ tự thông minh (numbered = true)
+
+- Khi Hana bật tùy chọn **Đánh số thứ tự = Có** ở khối cha, hệ thống sử dụng bộ đếm CSS hiện đại để tự động sinh ra các số thứ tự `01.`, `02.`, `03.`... màu hồng tươi `Bright Magenta` trước mỗi câu hỏi.
+- Khi Hana kéo đổi thứ tự hoặc nhân bản câu hỏi, các con số sẽ tự động nhảy lại theo đúng thứ tự mới mà không bao giờ bị trùng hay nhảy cách số.
+
+#### 3. Cỡ chữ và màu sắc an toàn chuẩn thương hiệu
+
+- Mỗi câu hỏi `FaqItem` cho phép Hana chọn cỡ chữ câu hỏi (`Nhỏ`, `Vừa`, `Lớn`) và cỡ chữ câu trả lời.
+- Màu sắc được hệ thống tự động lọc theo độ tương phản cao chuẩn WCAG AA:
+  - Trên nền sáng (`Warm Ivory`, `Soft Pink`...): chữ mang sắc xanh thẫm `Deep Navy` hoặc hồng tươi `Bright Magenta`.
+  - Trên nền tối (`Deep Navy`): chữ tự động chuyển sang sắc trắng thanh thoát hoặc hồng phấn `Soft Pink`.
+
+#### 4. Phân tách tối ưu: Tải trang nhanh & Hiệu ứng đóng mở mượt mà
+
+- Khối cha `FAQ` được xử lý tối ưu phía máy chủ (Server Component) giúp bài viết chuẩn SEO và trang tải nhanh như chớp.
+- Từng câu hỏi `FaqItem` là thành phần tương tác phía người dùng (Client Component) với hiệu ứng mũi tên xoay chuyển động mượt mà khi bấm mở/đóng và hỗ trợ đầy đủ công nghệ trợ năng cho người khiếm thị.
+
+---
+
+### 5.21. Khối Cột (Columns) hỗ trợ đa dạng khối con
+
+Khối **Cột** (`Columns`) được mở rộng toàn diện, cho phép Hana sắp đặt bố cục đa dạng và sáng tạo:
+
+![Khối Cột chứa thẻ và ô số liệu](images/huong-dan/35-columns-khoi-con.png)
+
+#### 1. Các khối con được phép đặt vào từng Cột (`col1`, `col2`, `col3`)
+
+Hana có thể thả các khối con phong phú vào bên trong bất kỳ cột nào của khối Cột:
+
+- **Thẻ nội dung (`Card`)**: Tạo các thẻ giới thiệu có biểu tượng hoặc đánh số.
+- **Ô số liệu (`Stat`)**: Hiển thị các chỉ số ấn tượng (10+ năm, 500+ giờ khai vấn...).
+- **Thẻ dịch vụ (`ServiceCard`)**: Giới thiệu các lộ trình coaching kết nối dữ liệu CMS.
+- **Thẻ gói (`PackageCard`)**: Hiển thị các gói Growth Mirror tự động tính giá và ưu đãi.
+
+#### 2. Khối con tiếp tục bị chặn trong Cột: Bước hành trình (`Step`) & Câu hỏi (`FaqItem`)
+
+Để bảo vệ trải nghiệm thị giác và logic phương pháp của Trạm Dừng Cảm Xúc, hai khối con sau **tiếp tục không được phép** thả vào khối Cột:
+
+- **Bước hành trình (`Step`)**: Luôn phải nằm trong khối cha `JourneySteps` để giữ đúng tiến trình 5 bước chuyển hóa (Pause → Feel → Name → Choose → Practice), đường nối liên kết giữa các bước và hiệu ứng bước nổi bật.
+- **Câu hỏi (`FaqItem`)**: Luôn phải nằm trong khối cha `FAQ` để đảm bảo bộ đếm số thứ tự tự động và khối chứa câu hỏi accordion trợ năng hoạt động chuẩn xác.
+
+---
+
+### 5.22. Cơ chế tự động sửa màu lệch nền (Child Color Fallback)
+
+Khi thiết kế giao diện, Hana hoàn toàn có thể tự do thử nghiệm đổi màu nền khối cha mà không sợ văn bản bị mờ hay biến mất:
+
+- **Tự động rà soát tương phản**: Khi Hana đổi màu nền của một khối (như `IconCardGrid`, `StatsBar`, `FAQ`, hay `Columns`) từ **Nền sáng** (như `Warm Ivory`, `Soft Pink`) sang **Nền xanh thẫm Deep Navy**, hoặc ngược lại.
+- **Tự động chuyển đổi màu an toàn**:
+  - Nếu màu chữ con đang là màu sáng (`Trắng`) mà nền cha chuyển sang nền sáng: hệ thống tự động đổi chữ về màu xanh thẫm `Deep Navy` chuẩn mực.
+  - Nếu màu chữ con đang là màu tối (`Deep Navy`) mà nền cha chuyển sang xanh thẫm: hệ thống tự động chuyển chữ sang màu `Trắng` tinh khôi.
+- Mọi tiêu chuẩn tương phản đều tuân thủ nghiêm ngặt chuẩn quốc tế WCAG AA (tỷ lệ tương phản từ 4.5:1 trở lên), mang lại sự ấm áp, dễ đọc và chuyên nghiệp cho độc giả.
 
 ---
 
@@ -2521,5 +2606,12 @@ Dưới đây là bảng đối chiếu toàn bộ 33 ảnh màn hình được 
 | **31** | `images/huong-dan/31-xac-nhan-thanh-toan.png`         | `/admin/collections/orders/[id]`              | Hộp thoại Xác nhận thanh toán đơn hàng                                   | Đã có file (18/10)                 |
 | **32** | `images/huong-dan/32-wizard-bai-hoc-thoi-luong.png`   | `/admin/them-bai-hoc` (bước 3)                | Thời lượng 05:30 = 330 giây, ô cho xem thử miễn phí                      | Đã có file (18/10)                 |
 | **33** | `images/huong-dan/33-wizard-workshop-gio-vn.png`      | `/admin/len-lich-workshop` (bước 2)           | Ngày giờ Việt Nam và khung Thời gian hiển thị cho học viên               | Đã có file (18/10)                 |
+| **34** | `images/huong-dan/34-faq-keo-tha.png`                 | `/builder/[id]` (Khối FAQ)                    | Chọn một câu hỏi FaqItem, cột phải có field câu hỏi / màu / cỡ           | Đã có file (PK-05c, Planning chụp) |
+| **35** | `images/huong-dan/35-columns-khoi-con.png`            | `/builder/[id]` (Khối Cột)                    | Khối Cột chứa thẻ và ô số liệu                                           | Đã có file (PK-05c, Planning chụp) |
+| **36** | `images/huong-dan/36-luoi-the-keo-tha.png`            | `/builder/[id]` (Lưới thẻ)                    | Chọn một thẻ trong Lưới thẻ biểu tượng                                   | Đã có file (PK-05c, Planning chụp) |
+| **37** | `images/huong-dan/37-thanh-so-lieu-keo-tha.png`       | `/builder/[id]` (Thanh số liệu)               | Chọn một ô số liệu                                                       | Đã có file (PK-05c, Planning chụp) |
+| **38** | `images/huong-dan/38-hanh-trinh-buoc-keo-tha.png`     | `/builder/[id]` (Hành trình)                  | Chọn một bước hành trình                                                 | Đã có file (PK-05c, Planning chụp) |
+| **39** | `images/huong-dan/39-the-dich-vu-keo-tha.png`         | `/builder/[id]` (Thẻ dịch vụ)                 | Chọn một thẻ dịch vụ                                                     | Đã có file (PK-05c, Planning chụp) |
+| **40** | `images/huong-dan/40-the-goi-keo-tha.png`             | `/builder/[id]` (Thẻ gói)                     | Chọn một thẻ gói                                                         | Đã có file (PK-05c, Planning chụp) |
 
-_Ảnh 28–33 chụp tay từ buổi chạy thử 18/10 (dữ liệu MẪU), chưa có trong `scripts/cms-screenshots.mjs`._
+_Ảnh 28–33 chụp tay từ buổi chạy thử 18/10 (dữ liệu MẪU); ảnh 34–35 chụp từ đợt nâng cấp PK-05._

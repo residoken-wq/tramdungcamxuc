@@ -21,6 +21,8 @@ export type BrandRole =
   | 'service-text'
   | 'package-name'
   | 'package-text'
+  | 'faq-question'
+  | 'faq-answer'
 
 export interface ChildBgOptions {
   highlight?: boolean
@@ -342,6 +344,30 @@ export function fontSizeClass(
   }
 
   if (role === 'card-text') {
+    switch (size) {
+      case 'sm':
+        return 'text-xs sm:text-sm'
+      case 'lg':
+        return 'text-base sm:text-lg'
+      case 'md':
+      default:
+        return 'text-sm sm:text-base'
+    }
+  }
+
+  if (role === 'faq-question') {
+    switch (size) {
+      case 'sm':
+        return 'text-sm sm:text-base'
+      case 'lg':
+        return 'text-lg sm:text-xl'
+      case 'md':
+      default:
+        return 'text-base sm:text-lg'
+    }
+  }
+
+  if (role === 'faq-answer') {
     switch (size) {
       case 'sm':
         return 'text-xs sm:text-sm'

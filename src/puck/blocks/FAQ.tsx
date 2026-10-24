@@ -79,22 +79,9 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
       label: 'Liên kết "Xem toàn bộ" (Tùy chọn)',
     },
     items: {
-      type: 'array',
-      label: 'Danh sách câu hỏi & trả lời (Khi chọn nguồn thủ công)',
-      arrayFields: {
-        question: {
-          type: 'text',
-          label: 'Câu hỏi',
-        },
-        answer: {
-          type: 'textarea',
-          label: 'Câu trả lời chi tiết',
-        },
-      },
-      defaultItemProps: {
-        question: '[MẪU] Câu hỏi thắc mắc mới?',
-        answer: '[MẪU] Câu trả lời chi tiết, tận tâm và ấm áp từ Hana.',
-      },
+      type: 'slot',
+      label: 'Danh sách câu hỏi (khi chọn nguồn thủ công)',
+      allow: ['FaqItem'],
     },
     bgColor: {
       type: 'select',
@@ -108,7 +95,7 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     },
   },
   defaultProps: {
-    version: 3,
+    version: 4,
     source: 'manual',
     group: 'general',
     limit: 5,
@@ -124,20 +111,7 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     bookingButtonLink: '',
     showEmail: false,
     seeAllLink: '',
-    items: [
-      {
-        question: '[MẪU] Câu hỏi thường gặp 1',
-        answer: '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
-      },
-      {
-        question: '[MẪU] Câu hỏi thường gặp 2',
-        answer: '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
-      },
-      {
-        question: '[MẪU] Câu hỏi thường gặp 3',
-        answer: '[MẪU] Nội dung giải đáp câu hỏi thường gặp một cách chi tiết và rõ ràng.',
-      },
-    ],
+    items: [],
     bgColor: 'warm-ivory',
     padding: 'md',
   },

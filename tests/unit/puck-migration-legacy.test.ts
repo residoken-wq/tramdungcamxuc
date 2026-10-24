@@ -241,11 +241,14 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
       seriesLabel: 'Giải đáp',
       titleLine1: 'CÂU HỎI',
       titleLine2: 'THƯỜNG GẶP',
-      items: [{ question: 'Câu hỏi 1?', answer: 'Trả lời 1' }],
       bgColor: 'warm-ivory',
       padding: 'md',
-      version: 3,
+      version: 4,
     })
+    const faqItems = faq?.props.items as Array<{ type: string; props: Record<string, unknown> }>
+    expect(faqItems[0].type).toBe('FaqItem')
+    expect(faqItems[0].props.question).toBe('Câu hỏi 1?')
+    expect(faqItems[0].props.answer).toBe('Trả lời 1')
 
     const video = migrated.content.find((item) => item.props.id === 'video-1')
     expect(video?.props).toEqual(legacyPageData.content[5].props)

@@ -172,7 +172,7 @@ export const eventTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'event-faq',
-        version: 3,
+        version: 4,
         seriesLabel: '[MẪU] Giải đáp',
         titleLine1: '[MẪU] THẮC MẮC VỀ SỰ KIỆN',
         titleLine2: '[MẪU] HƯỚNG DẪN THAM GIA',
@@ -181,8 +181,16 @@ export const eventTemplate: Data = {
         limit: 5,
         items: [
           {
-            question: '[MẪU] Tôi có thể mời thêm bạn bè cùng tham gia không?',
-            answer: '[MẪU] Hoàn toàn có thể, bạn chỉ cần chia sẻ đường dẫn để bạn bè cùng đăng ký.',
+            type: 'FaqItem',
+            props: {
+              id: 'event-faq-faq-0',
+              question: '[MẪU] Tôi có thể mời thêm bạn bè cùng tham gia không?',
+              answer: '[MẪU] Hoàn toàn có thể, bạn chỉ cần chia sẻ đường dẫn để bạn bè cùng đăng ký.',
+              questionColor: 'deep-navy',
+              questionSize: 'md',
+              answerColor: 'deep-navy',
+              answerSize: 'md',
+            },
           },
         ],
         numbered: false,

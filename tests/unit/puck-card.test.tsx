@@ -198,13 +198,13 @@ describe('PK-02: Card child block - Contrast, Presets & Permissions', () => {
       expect(CardBlock.permissions?.insert).toBe(false)
     })
 
-    it('Columns.col1, col2, col3 đều cấm Card (disallow chứa Card)', () => {
+    it('Columns.col1, col2, col3 cho phép Card (PK-05: disallow không chứa Card)', () => {
       const columnsBlock = puckConfig.components.Columns as any
       expect(columnsBlock).toBeDefined()
 
-      expect(columnsBlock.fields.col1.disallow).toContain('Card')
-      expect(columnsBlock.fields.col2.disallow).toContain('Card')
-      expect(columnsBlock.fields.col3.disallow).toContain('Card')
+      expect(columnsBlock.fields.col1.disallow).not.toContain('Card')
+      expect(columnsBlock.fields.col2.disallow).not.toContain('Card')
+      expect(columnsBlock.fields.col3.disallow).not.toContain('Card')
     })
   })
 

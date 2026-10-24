@@ -183,7 +183,7 @@ export const journeyTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'journey-faq',
-        version: 3,
+        version: 4,
         source: 'group',
         group: 'journey',
         limit: 5,
