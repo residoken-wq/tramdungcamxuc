@@ -21,6 +21,7 @@ import * as migration_20261018_020000_sitemap_v2_paths from './20261018_020000_s
 import * as migration_20261020_031337_sm07_page_templates from './20261020_031337_sm07_page_templates'
 import * as migration_20261020_075400_sm08_page_templates from './20261020_075400_sm08_page_templates'
 import * as migration_20261021_012851_hb02_journey_28 from './20261021_012851_hb02_journey_28'
+import * as migration_20261023_093308_hb03_plan_fields from './20261023_093308_hb03_plan_fields'
 
 export const migrations = [
   {
@@ -137,5 +138,10 @@ export const migrations = [
     up: migration_20261021_012851_hb02_journey_28.up,
     down: migration_20261021_012851_hb02_journey_28.down,
     name: '20261021_012851_hb02_journey_28',
+  },
+  {
+    up: migration_20261023_093308_hb03_plan_fields.up,
+    down: migration_20261023_093308_hb03_plan_fields.down,
+    name: '20261023_093308_hb03_plan_fields',
   },
 ]

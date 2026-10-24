@@ -2498,6 +2498,42 @@ export const vi = {
       quote: 'Trích dẫn',
     },
   },
+  hb03: {
+    fields: {
+      scorecardTime: 'Thời gian thực hiện',
+      scorecardTimeDesc: 'Giờ làm thói quen trong ngày (định dạng HH:mm, ví dụ 07:30).',
+      anchorHabit: 'Thói quen neo',
+      anchorHabitDesc:
+        'Thói quen neo ("Sau khi [thói quen cũ], tôi sẽ [thói quen mới]"). Tối đa 120 ký tự.',
+      rhythmDays: 'Nhịp tuần (ngày bỏ phiếu)',
+      rhythmDaysDesc:
+        'Các ngày trong tuần thực hiện thói quen. Để trống = mọi ngày là ngày bỏ phiếu.',
+      rhythmDaysOptions: {
+        mon: 'Thứ 2',
+        tue: 'Thứ 3',
+        wed: 'Thứ 4',
+        thu: 'Thứ 5',
+        fri: 'Thứ 6',
+        sat: 'Thứ 7',
+        sun: 'Chủ nhật',
+      },
+      twoMinuteAction: 'Hành động dưới 2 phút',
+      twoMinuteActionDesc: 'Hành động tối giản dưới 2 phút ("bản tối giản"). Tối đa 200 ký tự.',
+      privateReason: 'Lý do riêng',
+      privateReasonDesc: 'Chỉ học viên xem được – quản trị viên không thấy nội dung này.',
+      companionName: 'Bạn đồng hành',
+      companionNameDesc: 'Chỉ học viên xem được – quản trị viên không thấy nội dung này.',
+    },
+    errors: {
+      timeInvalidFormat: 'Giờ làm thói quen phải có dạng HH:mm (từ 00:00 đến 23:59).',
+      anchorHabitTooLong: 'Thói quen neo không được vượt quá 120 ký tự.',
+      twoMinuteActionTooLong: 'Hành động dưới 2 phút không được vượt quá 200 ký tự.',
+      privateReasonTooLong: 'Lý do riêng không được vượt quá 1000 ký tự.',
+      companionNameTooLong: 'Tên bạn đồng hành không được vượt quá 100 ký tự.',
+      rhythmDaysDuplicate: 'Các ngày trong nhịp tuần không được trùng nhau.',
+      rhythmDaysInvalid: 'Ngày trong nhịp tuần không hợp lệ.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

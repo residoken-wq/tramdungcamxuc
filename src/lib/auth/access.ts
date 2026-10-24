@@ -86,4 +86,42 @@ export const ownerOrSelfCustomerField: FieldAccess = ({ req, doc }) => {
   return false
 }
 
+// REVIEW-REQUIRED: Sensitive private habit plan fields (privateReason, companionName).
+// ONLY the learner (customer) who owns the plan can read, create, or update these fields.
+// Owner / editor / other customers / anonymous users -> false.
+export const selfCustomerOnlyField: FieldAccess = ({ req, id, doc, data }) => {
+  if (!isCustomerUser(req.user)) return false
+  const customerId = req.user!.id
+
+  const hasDocId = Boolean(id || (doc as { id?: unknown })?.id)
+  const owner = (doc as { customer?: unknown } | undefined)?.customer
+
+  if (hasDocId || (owner !== undefined && owner !== null)) {
+    // Existing document (read or update)
+    if (owner !== undefined && owner !== null) {
+      const ownerId =
+        typeof owner === 'object' && owner && 'id' in (owner as { id?: unknown })
+          ? (owner as { id?: unknown }).id
+          : owner
+      return ownerId === customerId
+    }
+    // Existing doc without a customer (e.g. leadEmail plan): nobody can read/update private fields via API
+    return false
+  }
+
+  // Create operation (doc has no id and owner is not set yet)
+  const targetCustomer = (data as { customer?: unknown } | undefined)?.customer
+  if (targetCustomer !== undefined && targetCustomer !== null) {
+    const targetId =
+      typeof targetCustomer === 'object' &&
+      targetCustomer &&
+      'id' in (targetCustomer as { id?: unknown })
+        ? (targetCustomer as { id?: unknown }).id
+        : targetCustomer
+    return targetId === customerId
+  }
+
+  return true
+}
+
 export const nobody: Access & FieldAccess = () => false

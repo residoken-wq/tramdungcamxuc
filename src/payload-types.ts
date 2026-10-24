@@ -1694,6 +1694,10 @@ export interface HabitPlan {
          * Chọn một mục phù hợp.
          */
         rating?: ('good' | 'neutral' | 'bad') | null;
+        /**
+         * Giờ làm thói quen trong ngày (định dạng HH:mm, ví dụ 07:30).
+         */
+        time?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -1701,6 +1705,26 @@ export interface HabitPlan {
    * Nhập câu định danh "tôi sẽ … để trở thành …".
    */
   identityStatement?: string | null;
+  /**
+   * Thói quen neo ("Sau khi [thói quen cũ], tôi sẽ [thói quen mới]"). Tối đa 120 ký tự.
+   */
+  anchorHabit?: string | null;
+  /**
+   * Các ngày trong tuần thực hiện thói quen. Để trống = mọi ngày là ngày bỏ phiếu.
+   */
+  rhythmDays?: ('mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun')[] | null;
+  /**
+   * Hành động tối giản dưới 2 phút ("bản tối giản"). Tối đa 200 ký tự.
+   */
+  twoMinuteAction?: string | null;
+  /**
+   * Chỉ học viên xem được – quản trị viên không thấy nội dung này.
+   */
+  privateReason?: string | null;
+  /**
+   * Chỉ học viên xem được – quản trị viên không thấy nội dung này.
+   */
+  companionName?: string | null;
   chosenTechniques?:
     | {
         /**
@@ -2929,9 +2953,15 @@ export interface HabitPlansSelect<T extends boolean = true> {
     | {
         habit?: T;
         rating?: T;
+        time?: T;
         id?: T;
       };
   identityStatement?: T;
+  anchorHabit?: T;
+  rhythmDays?: T;
+  twoMinuteAction?: T;
+  privateReason?: T;
+  companionName?: T;
   chosenTechniques?:
     | T
     | {

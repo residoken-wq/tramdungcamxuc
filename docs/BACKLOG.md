@@ -65,3 +65,5 @@
 - [x] (SM-06 review 20/10) `ContactInfo` chỉ có 1 mục → căn giữa thay vì dồn trái (xong SM-08).
 - [x] (SM-06 review 20/10) `ContactForms` bố cục 2 cột ở 1440px: chữ dài trong ô chọn (dịch vụ / chương trình) bị cắt (xong SM-08).
 - (SM-08 review 20/10) Lighthouse mobile trang chủ 85/100 (mục tiêu ≥ 90, đo local): LCP 4,1 s, JS không dùng ~0,45 s, audit "redirects" ~0,6 s – đo lại trên server thật rồi tối ưu (ảnh hero `priority`, tách JS khối dưới màn hình đầu).
+- (HB-03 review 24/10) Migration SM-07 / SM-08 dùng `ALTER TYPE … ADD VALUE` với `down` trống → `migrate:down` rồi `migrate` lại báo enum đã có. Đổi sang `ADD VALUE IF NOT EXISTS`.
+- (HB-03 review 24/10) `certificate.server.ts`: đọc chứng nhận `depth: 1` + `overrideAccess` kéo theo kế hoạch (có field riêng tư) – đã lọc khi trả ra, hạ `depth: 0` khi làm HB-06.
