@@ -83,6 +83,38 @@ const validatePlanJourneyDay: CollectionBeforeChangeHook = async ({ data, req })
   return data
 }
 
+export const CHECKIN_STATUS_VALUES = ['voted', 'minimal', 'missed', 'rest'] as const
+export type CheckinStatus = (typeof CHECKIN_STATUS_VALUES)[number]
+
+// REVIEW-REQUIRED: Tự động đồng bộ field `done` từ `status` (hoặc ngược lại nếu chỉ gửi done).
+// voted / minimal -> done = true (tính vào tỷ lệ hoàn thành 90% cấp chứng nhận).
+// missed / rest -> done = false.
+export const syncDoneFromStatus: CollectionBeforeChangeHook = async ({
+  data,
+  originalDoc,
+  operation,
+}) => {
+  if (!data) return data
+
+  const status = data.status
+  if (status !== undefined && status !== null) {
+    data.done = status === 'voted' || status === 'minimal'
+  } else if (data.done !== undefined && data.done !== null) {
+    data.status = data.done ? 'voted' : 'missed'
+    data.done = Boolean(data.done)
+  } else if (operation === 'update' && originalDoc) {
+    if (originalDoc.status !== undefined && originalDoc.status !== null) {
+      data.status = originalDoc.status
+      data.done = originalDoc.status === 'voted' || originalDoc.status === 'minimal'
+    } else if (originalDoc.done !== undefined && originalDoc.done !== null) {
+      data.status = originalDoc.done ? 'voted' : 'missed'
+      data.done = Boolean(originalDoc.done)
+    }
+  }
+
+  return data
+}
+
 // REVIEW-REQUIRED: One check-in per plan and day (DB unique index on planDay + hook).
 // Emotion and note are sensitive: hidden from editors (field-level read access).
 export const HabitCheckins: CollectionConfig = {
@@ -93,7 +125,7 @@ export const HabitCheckins: CollectionConfig = {
     hidden: isHiddenFromEditor,
     useAsTitle: 'planDay',
     description: 'Nhật ký check-in hành trình thói quen của học viên.',
-    defaultColumns: ['plan', 'day', 'done'],
+    defaultColumns: ['plan', 'day', 'status', 'done'],
   },
   access: {
     read: adminOrSelfCustomerPlan,
@@ -103,6 +135,7 @@ export const HabitCheckins: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
+      syncDoneFromStatus,
       verifyPlanOwnership,
       validatePlanJourneyDay,
       uniqueKeyHook({
@@ -119,7 +152,25 @@ export const HabitCheckins: CollectionConfig = {
       access: { update: isEditorOrOwner },
     },
     { ...number('day', 'Ngày thứ'), required: true, min: 1, max: 60 },
-    checkbox('done', 'Đã hoàn thành'),
+    select(
+      'status',
+      vi.hb04.fields.status,
+      CHECKIN_STATUS_VALUES.map((s) => [s, vi.hb04.status[s]] as [string, string]),
+      {
+        required: true,
+        admin: {
+          description: vi.hb04.fields.statusDesc,
+        },
+      },
+    ),
+    {
+      ...checkbox('done', 'Đã hoàn thành', false, {
+        admin: {
+          readOnly: true,
+          description: vi.hb04.fields.doneDesc,
+        },
+      }),
+    },
     {
       ...select(
         'emotion',
