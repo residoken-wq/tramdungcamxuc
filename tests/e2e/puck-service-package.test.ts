@@ -266,6 +266,15 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
       }).toPass({ timeout: 30000 })
       await highlightSelect.selectOption({ label: 'Có (Gói nổi bật)' })
 
+      // PK-06: ô chọn gói hiện tên gói thay cho "Sản phẩm ID: …"
+      await expect(
+        page
+          .locator('[data-record-summary="ready"]')
+          .filter({ hasText: `[MẪU] Gói BUILD ${marker}`, visible: true })
+          .first(),
+      ).toBeVisible({ timeout: 10000 })
+      await expect(page.getByText(/ID: \d+/)).toHaveCount(0)
+
       // C. Chọn dịch vụ 1, đổi cỡ tên sang "Lớn"
       const srv1Heading = canvas.getByRole('heading', {
         name: `[MẪU] Khai vấn Cảm xúc Cá nhân ${marker}`,
@@ -289,6 +298,14 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
           .filter({ visible: true })
           .first(),
       ).toBeVisible({ timeout: 15000 })
+
+      // PK-06: dữ liệu lưu chỉ giữ ID gói, không chép tên gói vào puckData (AGENTS §5B)
+      await expect(async () => {
+        const saved = await (await page.request.get(`/api/pages/${pageId}?depth=0`)).json()
+        const json = JSON.stringify(saved.puckData)
+        expect(json).toMatch(new RegExp(`"packageId":"?${pkg2Id}"?[,}]`))
+        expect(json).not.toContain(`Gói BUILD ${marker}`)
+      }).toPass({ timeout: 15000 })
 
       // 6. Kiểm tra trang công khai sau khi xuất bản
       await expect(async () => {

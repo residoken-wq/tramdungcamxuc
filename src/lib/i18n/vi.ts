@@ -1014,6 +1014,11 @@ export const vi = {
     duplicateBlock: 'Nhân bản',
     deleteBlock: 'Xóa',
     noDataSelectInCms: 'Chưa có dữ liệu – chọn trong CMS',
+    // Ô chọn dữ liệu CMS: tên bản ghi thay cho ID (PK-06)
+    recordSummary: {
+      loading: 'Đang tải…',
+      notFound: (id: string) => `Không tìm thấy (ID: ${id})`,
+    },
     packageComparison: {
       defaultNote: '[MẪU] Các gói đồng hành được thiết kế theo lộ trình cá nhân hóa.',
       paymentPolicyLabel: 'Xem Chính sách giá & thanh toán',

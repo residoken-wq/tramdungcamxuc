@@ -1789,8 +1789,16 @@ Trong bản nâng cấp mới, khối **Lưới Thẻ Biểu Tượng / Đánh S
 Hana chỉ cần rê chuột và nhấp vào bất kỳ chiếc thẻ nào trên màn hình:
 
 1. **Nhân bản thẻ (Duplicate)**: Khi bấm chọn một thẻ, thanh công cụ của Puck sẽ xuất hiện ngay trên thẻ đó. Bấm vào biểu tượng **hai ô vuông chồng nhau (Duplicate)** để nhân bản thêm một thẻ mới giống hệt vị trí cạnh bên.
-2. **Kéo đổi chỗ các thẻ (Reorder)**: Nhấp giữ vào thanh kéo (hoặc biểu tượng 6 chấm) của thẻ, sau đó kéo rê sang vị trí trước hoặc sau thẻ khác để đổi thứ tự hiển thị.
+2. **Kéo đổi chỗ các thẻ (Reorder)**: xem khung **Cách kéo** ngay bên dưới.
 3. **Xoá thẻ**: Bấm vào biểu tượng **thùng rác (Delete)** trên thanh công cụ của thẻ khi muốn bỏ bớt thẻ khỏi lưới.
+
+> **Cách kéo** (áp dụng cho mọi khối con: thẻ, ô số liệu, bước, thẻ dịch vụ, thẻ gói, câu hỏi FAQ):
+>
+> - **Cách dễ nhất – tab Cấu trúc**: bấm **Cấu trúc** ở cột trái, bấm mũi tên để mở khối cha, **giữ chuột khoảng nửa giây** trên tên khối con rồi kéo lên / xuống; thả khi vạch xanh nằm đúng chỗ. Cũng kéo được một thẻ vào **Nội dung Cột 1 / 2 / 3** của khối Cột.
+> - **Kéo trên màn hình vẽ**: **giữ chuột khoảng nửa giây ở vùng trống của thẻ** (không giữ lên chữ – chữ là ô sửa trực tiếp, giữ lên chữ sẽ bôi đen chữ thay vì kéo), rồi kéo sang vị trí mới.
+> - Nếu kéo sang ngang mà thẻ không chịu đổi chỗ: bấm nút ẩn cột phải (góc trên bên trái thanh công cụ) để màn hình vẽ to hơn, hoặc dùng tab **Cấu trúc**.
+> - Lỡ thả thẻ ra ngoài lưới (thẻ đứng lẻ ngoài khối): bấm **Hoàn tác** (mũi tên cong trên thanh công cụ).
+> - Sau khi kéo, bấm **Lưu nháp** hoặc **Xuất bản** như bình thường.
 
 > **Thêm thẻ mới = nhân bản một thẻ có sẵn** rồi sửa chữ. Vì thẻ không có trong menu bên trái, **đừng xóa hết thẻ** của một lưới: nếu lỡ xóa hết, hãy xóa cả khối lưới rồi kéo lại khối **Lưới Thẻ Biểu Tượng / Đánh Số** (khối mới luôn có sẵn 3 thẻ mẫu).
 
@@ -1944,7 +1952,7 @@ Khối **Khối các gói Growth Mirror** (`PackageCards`) giới thiệu 3 gói
 
 #### 2. Dữ liệu gói và giá bán lấy tự động từ CMS
 
-- **Chọn gói (`packageId`)**: Bấm vào thẻ gói, ở cột bên phải chọn đúng gói trong danh mục **Sản phẩm (loại Gói)**.
+- **Chọn gói (`packageId`)**: Bấm vào thẻ gói, ở cột bên phải chọn đúng gói trong danh mục **Sản phẩm (loại Gói)**. Ô chọn hiện **tên gói** (VD "Gói BUILD"); trong lúc tải sẽ hiện "Đang tải…", nếu gói đã bị xóa sẽ hiện "Không tìm thấy (ID: …)" – khi đó chọn lại gói khác. Các ô chọn dịch vụ, trang, chương trình, lời chia sẻ, ảnh cũng hiện tên như vậy.
 - **Giá bán, tổng giá trị, % ưu đãi và danh sách cấu phần**: Hoàn toàn do hệ thống CMS tự động tính toán từ bảng giá chuẩn (`Growth_Mirror_Pricing_Calculator.xlsx`). Trang web **hoàn toàn không có ô nhập giá thủ công**, triệt tiêu nguy cơ nhầm lẫn giá bán.
 - **Tự động đánh số thứ tự**: Khi khối cha chọn kiểu hiển thị **Đánh số thứ tự (numbered)**, các con số `01`, `02`, `03`... sẽ được tự động đánh số bằng CSS counter theo đúng vị trí của gói từ trái qua phải.
 

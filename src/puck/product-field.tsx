@@ -1,11 +1,10 @@
+import React from 'react'
 import type { ExternalField } from '@puckeditor/core'
+import { RecordSummary } from './record-summary'
 
 export function createProductExternalField<
   T extends string | number | undefined = string | number | undefined,
->(options?: {
-  label?: string
-  filterType?: string
-}): ExternalField<T> {
+>(options?: { label?: string; filterType?: string }): ExternalField<T> {
   const { label = 'Sản phẩm', filterType } = options || {}
 
   return {
@@ -33,8 +32,7 @@ export function createProductExternalField<
         return []
       }
     },
-    mapProp: (item: { id?: string | number }): T =>
-      (item?.id != null ? String(item.id) : '') as T,
+    mapProp: (item: { id?: string | number }): T => (item?.id != null ? String(item.id) : '') as T,
     mapRow: (item: {
       id?: string | number
       name?: string
@@ -45,6 +43,7 @@ export function createProductExternalField<
       'Phân loại': item.type || '',
       'Trạng thái': item.saleStatus || '',
     }),
-    getItemSummary: (item: unknown) => (item ? `Sản phẩm ID: ${String(item)}` : 'Chưa chọn'),
+    getItemSummary: (id: unknown) =>
+      id ? <RecordSummary collection="products" id={String(id)} /> : 'Chưa chọn',
   }
 }

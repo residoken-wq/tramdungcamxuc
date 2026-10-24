@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { anton, montserrat, playfair } from '@/lib/fonts'
 import '@/app/(site)/styles.css'
 import '@puckeditor/core/dist/index.css'
+import './builder.css'
 
 export const metadata: Metadata = {
   title: 'Trình dựng trang trực quan | Trạm Dừng Cảm Xúc',
