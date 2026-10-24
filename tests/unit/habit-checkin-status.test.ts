@@ -13,10 +13,7 @@ import * as sessionServer from '../../src/lib/auth/session.server'
 import * as trackerServer from '../../src/lib/habit/tracker.server'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '../../src/lib/habit/config'
 import { computeOutcome, countCompletedVotingDays } from '../../src/lib/habit/journey'
-import {
-  BACKFILL_CHECKIN_STATUS_MISSED_SQL,
-  BACKFILL_CHECKIN_STATUS_VOTED_SQL,
-} from '../../src/migrations/20261024_072228_hb04_checkin_status'
+import { backfillCheckinStatusSql } from '../../src/migrations/20261024_072228_hb04_checkin_status'
 
 describe('HB-04: Check-in 4 trạng thái (habitCheckins.status) và đồng bộ done', () => {
   let payload: Payload
@@ -236,7 +233,7 @@ describe('HB-04: Check-in 4 trạng thái (habitCheckins.status) và đồng b�
             plan: planA.id,
             day: 5,
             done: true,
-          } as any,
+          } as never,
           overrideAccess: true,
         }),
       )
@@ -252,7 +249,7 @@ describe('HB-04: Check-in 4 trạng thái (habitCheckins.status) và đồng b�
             plan: planA.id,
             day: 6,
             done: false,
-          } as any,
+          } as never,
           overrideAccess: true,
         }),
       )
@@ -432,91 +429,28 @@ describe('HB-04: Check-in 4 trạng thái (habitCheckins.status) và đồng b�
   })
 
   describe('4. Migration Backfill từ SQL', () => {
-    it('chạy câu UPDATE của migration: done=true -> voted, NULL -> missed', async () => {
-      const suffix = randomUUID().slice(0, 6)
-      const tempPlan = track(
-        'habitPlans',
-        await payload.create({
-          collection: 'habitPlans',
-          data: {
-            customer: customerA.id,
-            identityStatement: `Kế hoạch test backfill ${suffix}`,
-            startDate: new Date().toISOString().split('T')[0],
-          },
-          overrideAccess: true,
-        }),
-      )
-
-      // Tạo 2 check-in
-      const c1 = track(
-        'habitCheckins',
-        await payload.create({
-          collection: 'habitCheckins',
-          data: { plan: tempPlan.id, day: 1, status: 'voted' },
-          overrideAccess: true,
-        }),
-      )
-      const c2 = track(
-        'habitCheckins',
-        await payload.create({
-          collection: 'habitCheckins',
-          data: { plan: tempPlan.id, day: 2, status: 'voted' },
-          overrideAccess: true,
-        }),
-      )
-
-      // Dùng SQL đặt done=false cho c2, và đặt status = NULL cho cả hai để mô phỏng dữ liệu cũ trước migration
-      await (payload.db as any).drizzle.execute(
-        sql.raw(`
-          ALTER TABLE "habit_checkins" ALTER COLUMN "status" DROP NOT NULL;
-          UPDATE "habit_checkins" SET "status" = NULL, "done" = true WHERE "id" = ${c1.id};
-          UPDATE "habit_checkins" SET "status" = NULL, "done" = false WHERE "id" = ${c2.id};
-        `),
-      )
-
-      // Kiểm tra trạng thái đã thành NULL trong DB
-      const nullCheck = await (payload.db as any).drizzle.execute(
-        sql.raw(
-          `SELECT "id", "status", "done" FROM "habit_checkins" WHERE "id" IN (${c1.id}, ${c2.id})`,
-        ),
-      )
-      const nullRows = (nullCheck.rows || nullCheck) as Array<{
-        id: number
-        status: string | null
-        done: boolean
-      }>
-      expect(nullRows.find((r) => r.id === c1.id)?.status).toBeNull()
-      expect(nullRows.find((r) => r.id === c2.id)?.status).toBeNull()
-
-      // Chạy câu UPDATE của migration
-      await (payload.db as any).drizzle.execute(sql.raw(BACKFILL_CHECKIN_STATUS_VOTED_SQL))
-      await (payload.db as any).drizzle.execute(sql.raw(BACKFILL_CHECKIN_STATUS_MISSED_SQL))
-
-      // Khôi phục NOT NULL
-      await (payload.db as any).drizzle.execute(
-        sql.raw(`ALTER TABLE "habit_checkins" ALTER COLUMN "status" SET NOT NULL;`),
-      )
-
-      // Kiểm tra kết quả: c1 (done=true) -> 'voted', c2 (done=false) -> 'missed'
-      const backfilledCheck = await (payload.db as any).drizzle.execute(
-        sql.raw(
-          `SELECT "id", "status", "done" FROM "habit_checkins" WHERE "id" IN (${c1.id}, ${c2.id})`,
-        ),
-      )
-      const rows = (backfilledCheck.rows || backfilledCheck) as Array<{
-        id: number
-        status: string
-        done: boolean
-      }>
-
-      const row1 = rows.find((r) => r.id === c1.id)
-      const row2 = rows.find((r) => r.id === c2.id)
-
-      expect(row1?.status).toBe('voted')
-      expect(row1?.done).toBe(true)
-
-      expect(row2?.status).toBe('missed')
-      expect(row2?.done).toBe(false)
+    // Runs the migration's backfill on a scratch table so the real habit_checkins rows (and its
+    // NOT NULL constraint) are never touched by this test.
+    it('chạy câu UPDATE của migration: done=true -> voted, còn lại -> missed, không đè status đã có', async () => {
+      const table = `hb04_backfill_${randomUUID().replace(/-/g, '').slice(0, 12)}`
+      const drizzle = (
+        payload.db as unknown as { drizzle: { execute: (q: unknown) => Promise<unknown> } }
+      ).drizzle
+      try {
+        await drizzle.execute(
+          sql.raw(`CREATE TABLE "${table}" ("id" integer PRIMARY KEY, "done" boolean, "status" "enum_habit_checkins_status");
+            INSERT INTO "${table}" VALUES (1, true, NULL), (2, false, NULL), (3, NULL, NULL), (4, true, 'minimal');`),
+        )
+        await drizzle.execute(sql.raw(backfillCheckinStatusSql(table)))
+        const result = (await drizzle.execute(
+          sql.raw(`SELECT "id", "status" FROM "${table}" ORDER BY "id"`),
+        )) as
+          { rows?: Array<{ id: number; status: string }> } | Array<{ id: number; status: string }>
+        const rows = Array.isArray(result) ? result : (result.rows ?? [])
+        expect(rows.map((r) => r.status)).toEqual(['voted', 'missed', 'missed', 'minimal'])
+      } finally {
+        await drizzle.execute(sql.raw(`DROP TABLE IF EXISTS "${table}"`))
+      }
     })
   })
 })
