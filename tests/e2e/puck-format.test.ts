@@ -117,10 +117,7 @@ test.describe('PK-01: Puck Format Presets & SectionHeader v2 Customization', () 
       // 6. Xuất bản trang
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
       await expect(
-        page
-          .getByText(/Đã xuất bản/)
-          .filter({ visible: true })
-          .first(),
+        page.getByRole('status').filter({ hasText: 'Đã xuất bản thành công' }),
       ).toBeVisible({ timeout: 15000 })
 
       // 7. Trang công khai có class màu / cỡ mới

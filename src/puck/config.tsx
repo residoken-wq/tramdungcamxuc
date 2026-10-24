@@ -66,6 +66,8 @@ import {
   PADDING_OPTIONS,
   FONT_SIZE_OPTIONS,
   ALIGN_OPTIONS,
+  CHILD_BLOCK_TYPES,
+  ROOT_DROP_ZONE,
   type FontSizeOption,
 } from './constants'
 import { allowedTextColors } from '@/lib/brand/format-classes'
@@ -237,11 +239,16 @@ export const puckConfig: Config<PageComponentsProps> = {
         label: vi.builder.pageTitle,
       },
     },
-    render: ({ children }) => (
-      <div className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased">
-        {children}
-      </div>
-    ),
+    render: ({ children, puck }) => {
+      // In the editor, render the root zone ourselves so it can refuse child blocks (PK-07).
+      // Puck passes its DropZone component here; the public render keeps `children`.
+      const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
+      return (
+        <div className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased">
+          {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={CHILD_BLOCK_TYPES} /> : children}
+        </div>
+      )
+    },
   },
   components: {
     HeroTwoEntries: HeroTwoEntriesBlock,

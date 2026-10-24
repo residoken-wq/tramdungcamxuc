@@ -15,7 +15,7 @@ export const puckVietnameseDictionary: DictionaryType = {
   'action-delete': 'Xóa',
   'label-page': 'Trang',
   'label-component': 'Khối',
-  'outline-empty': 'Chưa có khối nào trên trang',
+  'outline-empty': 'Chưa có khối nào',
   'outline-item-collapse': 'Thu gọn',
   'outline-item-expand': 'Mở rộng',
   'outline-header-title': 'Cấu trúc trang',

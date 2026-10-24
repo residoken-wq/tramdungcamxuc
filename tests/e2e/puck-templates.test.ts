@@ -108,13 +108,8 @@ test.describe('T1-04: Puck Templates, Versions, Locked Blocks and Autosave', () 
       )
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
       await expect(
-        page
-          .getByText(/Đã xuất bản/)
-          .filter({ visible: true })
-          .first(),
-      ).toBeVisible({
-        timeout: 15000,
-      })
+        page.getByRole('status').filter({ hasText: 'Đã xuất bản thành công' }),
+      ).toBeVisible({ timeout: 15000 })
 
       // 5. Public page shows the new title (no networkidle: the template has a form with Turnstile).
       await publicPage.goto(`/${pageSlug}`, { waitUntil: 'domcontentloaded' })

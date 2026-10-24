@@ -39,3 +39,20 @@ export const ALIGN_OPTIONS = [
 ] as const
 
 export type AlignOption = (typeof ALIGN_OPTIONS)[number]['value']
+
+/**
+ * Child blocks that only make sense inside their parent's slot (hidden from the sidebar,
+ * `permissions.insert: false`). The page root refuses them so a drag that overshoots the parent
+ * cannot leave an orphan card at the top level (PK-07).
+ */
+export const CHILD_BLOCK_TYPES = [
+  'Card',
+  'Stat',
+  'Step',
+  'ServiceCard',
+  'PackageCard',
+  'FaqItem',
+]
+
+/** Puck's id for the page-level drop zone (`root:default-zone`). */
+export const ROOT_DROP_ZONE = 'root:default-zone'
