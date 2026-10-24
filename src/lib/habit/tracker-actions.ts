@@ -12,14 +12,30 @@ import { vi } from '@/lib/i18n/vi'
 import { revalidatePath } from 'next/cache'
 import { getJourneyDays } from './journey'
 
+import { CHECKIN_STATUS_VALUES, type CheckinStatus } from '@/collections/HabitCheckins'
+
 const emotionKeys = EMOTIONS.map((e) => e.key) as [EmotionKey, ...EmotionKey[]]
 
-const checkInDaySchema = z.object({
-  day: z.number().int().min(1).max(60),
-  done: z.boolean(),
-  emotion: z.enum(emotionKeys).nullable().optional(),
-  note: z.string().max(500).nullable().optional(),
-})
+const checkInDaySchema = z
+  .object({
+    day: z.number().int().min(1).max(60),
+    done: z.boolean().optional(),
+    status: z
+      .enum(CHECKIN_STATUS_VALUES, {
+        errorMap: () => ({ message: vi.hb04.errors.statusRequired }),
+      })
+      .nullable()
+      .optional(),
+    emotion: z.enum(emotionKeys).nullable().optional(),
+    note: z.string().max(500).nullable().optional(),
+  })
+  .refine(
+    (data) => (data.status !== undefined && data.status !== null) || data.done !== undefined,
+    {
+      message: vi.hb04.errors.statusOrDoneRequired,
+      path: ['status'],
+    },
+  )
 
 const trackerPlanStatementSchema = z
   .string()
@@ -57,6 +73,7 @@ export type CheckInDayResult = {
   message?: string
   day?: number
   done?: boolean
+  status?: CheckinStatus
 }
 
 /**
@@ -73,9 +90,10 @@ export type CheckInDayResult = {
  */
 export async function checkInDay(
   day: number,
-  done: boolean,
+  done?: boolean,
   emotion?: string | null,
   note?: string | null,
+  status?: CheckinStatus | null,
 ): Promise<CheckInDayResult> {
   // 1. Xác thực khách hàng từ phiên
   const customer = await getCurrentCustomer()
@@ -91,6 +109,7 @@ export async function checkInDay(
   const validation = checkInDaySchema.safeParse({
     day,
     done,
+    status: status ?? undefined,
     emotion: emotion || null,
     note: note || null,
   })
@@ -99,9 +118,18 @@ export async function checkInDay(
     return {
       success: false,
       error: 'INVALID_INPUT',
-      message: vi.tracker.actions.invalidInput,
+      message: validation.error.issues[0]?.message || vi.tracker.actions.invalidInput,
     }
   }
+
+  const effectiveStatus: CheckinStatus =
+    validation.data.status !== undefined && validation.data.status !== null
+      ? validation.data.status
+      : validation.data.done
+        ? 'voted'
+        : 'missed'
+
+  const effectiveDone = effectiveStatus === 'voted' || effectiveStatus === 'minimal'
 
   const payload = await getPayload({ config: await config })
 
@@ -193,7 +221,8 @@ export async function checkInDay(
       collection: 'habitCheckins',
       id: existingCheckins.docs[0].id,
       data: {
-        done: validation.data.done,
+        status: effectiveStatus,
+        done: effectiveDone,
         emotion: cleanEmotion,
         note: cleanNote,
       },
@@ -206,7 +235,8 @@ export async function checkInDay(
         data: {
           plan: plan.id,
           day: validation.data.day,
-          done: validation.data.done,
+          status: effectiveStatus,
+          done: effectiveDone,
           emotion: cleanEmotion,
           note: cleanNote,
         },
@@ -233,7 +263,8 @@ export async function checkInDay(
             collection: 'habitCheckins',
             id: raceExisting.docs[0].id,
             data: {
-              done: validation.data.done,
+              status: effectiveStatus,
+              done: effectiveDone,
               emotion: cleanEmotion,
               note: cleanNote,
             },
@@ -253,7 +284,8 @@ export async function checkInDay(
   return {
     success: true,
     day: validation.data.day,
-    done: validation.data.done,
+    done: effectiveDone,
+    status: effectiveStatus,
   }
 }
 

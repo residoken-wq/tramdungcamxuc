@@ -376,7 +376,7 @@ describe('Reminder Emails Opt-Out Flow (T2-21)', () => {
         'habitCheckins',
         await payload.create({
           collection: 'habitCheckins',
-          data: { plan: planOptOut.id, day: 1, done: true, emotion: 'peaceful' },
+          data: { plan: planOptOut.id, day: 1, status: 'voted', done: true, emotion: 'peaceful' },
           overrideAccess: true,
         }),
       )
@@ -414,7 +414,7 @@ describe('Reminder Emails Opt-Out Flow (T2-21)', () => {
         'habitCheckins',
         await payload.create({
           collection: 'habitCheckins',
-          data: { plan: planActive.id, day: 1, done: true, emotion: 'joyful' },
+          data: { plan: planActive.id, day: 1, status: 'voted', done: true, emotion: 'joyful' },
           overrideAccess: true,
         }),
       )

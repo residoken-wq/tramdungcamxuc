@@ -360,6 +360,7 @@ describe('HB-03: Kế hoạch thói quen – field bước Mentor, Gọi tên & 
         data: {
           plan: planA.id,
           day: 1,
+          status: 'voted',
           done: true,
         },
         overrideAccess: true,

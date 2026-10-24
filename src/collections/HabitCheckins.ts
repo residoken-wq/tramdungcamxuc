@@ -1,6 +1,7 @@
 import {
   APIError,
   type CollectionBeforeChangeHook,
+  type CollectionBeforeValidateHook,
   type CollectionConfig,
   type Field,
 } from 'payload'
@@ -89,11 +90,8 @@ export type CheckinStatus = (typeof CHECKIN_STATUS_VALUES)[number]
 // REVIEW-REQUIRED: Tự động đồng bộ field `done` từ `status` (hoặc ngược lại nếu chỉ gửi done).
 // voted / minimal -> done = true (tính vào tỷ lệ hoàn thành 90% cấp chứng nhận).
 // missed / rest -> done = false.
-export const syncDoneFromStatus: CollectionBeforeChangeHook = async ({
-  data,
-  originalDoc,
-  operation,
-}) => {
+export const syncDoneFromStatus: CollectionBeforeValidateHook &
+  CollectionBeforeChangeHook = async ({ data, originalDoc, operation }) => {
   if (!data) return data
 
   const status = data.status
@@ -134,6 +132,7 @@ export const HabitCheckins: CollectionConfig = {
     delete: isOwner,
   },
   hooks: {
+    beforeValidate: [syncDoneFromStatus],
     beforeChange: [
       syncDoneFromStatus,
       verifyPlanOwnership,

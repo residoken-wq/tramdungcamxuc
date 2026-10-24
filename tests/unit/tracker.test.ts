@@ -458,6 +458,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
           data: {
             plan: planA.id,
             day: 1,
+            status: 'voted',
             done: true,
           },
           user: {
@@ -683,6 +684,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
           data: {
             plan: plan.id,
             day: 1,
+            status: 'voted',
             done: true,
             emotion: 'confident',
             note: 'Ghi chú tuyệt mật chỉ học viên và owner xem được',
@@ -754,6 +756,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
           data: {
             plan: plan.id,
             day: 1,
+            status: 'voted',
             done: true,
             emotion: 'peaceful',
           },
@@ -891,6 +894,7 @@ describe('21-Day Habit Tracker & Reminders (T2-06)', () => {
           data: {
             plan: plan.id,
             day: 1,
+            status: 'voted',
             done: true,
             emotion: 'joyful',
           },

@@ -358,7 +358,7 @@ describe('Account Deletion & Data Privacy (T2-16)', () => {
         'habitCheckins',
         (await payload.create({
           collection: 'habitCheckins',
-          data: { plan: planA.id, day: 1, emotion: 'joyful' },
+          data: { plan: planA.id, day: 1, status: 'voted', emotion: 'joyful' },
           overrideAccess: true,
         })) as unknown as { id: number },
       )
