@@ -29,7 +29,7 @@ describe('HB-02: Luật hành trình 28 ngày & Luật 90% cấp chứng nhận 
       expect(getJourneyDays({})).toBe(21)
     })
 
-    it('getVotingDays: trả về mảng 1..journeyDays', () => {
+    it('getVotingDays: trả về mảng 1..journeyDays khi không có rhythmDays', () => {
       const days28 = getVotingDays({ journeyDays: 28 })
       expect(days28).toHaveLength(28)
       expect(days28[0]).toBe(1)
@@ -38,6 +38,46 @@ describe('HB-02: Luật hành trình 28 ngày & Luật 90% cấp chứng nhận 
       const days21 = getVotingDays({ journeyDays: 21 })
       expect(days21).toHaveLength(21)
       expect(days21[20]).toBe(21)
+    })
+
+    it('getVotingDays với rhythmDays (HB-05): 28 ngày nhịp 5/7 ra đúng 20 ngày; 30 ngày phụ thuộc ngày bắt đầu', () => {
+      const weekdays5 = ['mon', 'tue', 'wed', 'thu', 'fri']
+
+      // 28 ngày (đúng 4 tuần): bắt đầu vào bất kỳ thứ nào đều có đúng 20 ngày bỏ phiếu
+      const startMon = {
+        journeyDays: 28,
+        startDate: '2026-10-26', // Thứ 2
+        rhythmDays: weekdays5,
+      }
+      const daysFromMon = getVotingDays(startMon)
+      expect(daysFromMon).toHaveLength(20)
+      expect(requiredDays(daysFromMon, 90)).toBe(18) // ceil(20 * 0.9) = 18
+
+      const startSat = {
+        journeyDays: 28,
+        startDate: '2026-10-24', // Thứ 7
+        rhythmDays: weekdays5,
+      }
+      const daysFromSat = getVotingDays(startSat)
+      expect(daysFromSat).toHaveLength(20)
+      expect(requiredDays(daysFromSat, 90)).toBe(18)
+
+      // 30 ngày (4 tuần + 2 ngày): số ngày bỏ phiếu phụ thuộc thứ của ngày bắt đầu
+      // Bắt đầu Thứ 2: 2 ngày dư là Thứ 2, Thứ 3 (nằm trong nhịp) -> 20 + 2 = 22 ngày
+      const plan30Mon = {
+        journeyDays: 30,
+        startDate: '2026-10-26',
+        rhythmDays: weekdays5,
+      }
+      expect(getVotingDays(plan30Mon)).toHaveLength(22)
+
+      // Bắt đầu Thứ 7: 2 ngày dư là Thứ 7, Chủ Nhật (không nằm trong nhịp) -> 20 + 0 = 20 ngày
+      const plan30Sat = {
+        journeyDays: 30,
+        startDate: '2026-10-24',
+        rhythmDays: weekdays5,
+      }
+      expect(getVotingDays(plan30Sat)).toHaveLength(20)
     })
 
     it('requiredDays: tính chuẩn trần Math.ceil(votingDays.length * percent / 100)', () => {
@@ -72,6 +112,24 @@ describe('HB-02: Luật hành trình 28 ngày & Luật 90% cấp chứng nhận 
         { day: 3, done: false },
         { day: 29, done: true }, // ngoài votingDays
       ]
+      expect(countCompletedVotingDays(plan, checkins)).toBe(2)
+    })
+
+    it('countCompletedVotingDays với nhịp tuần: chỉ đếm voted/minimal trên ngày bỏ phiếu, ngày nghỉ bị bỏ qua', () => {
+      const plan = {
+        journeyDays: 28,
+        startDate: '2026-10-26', // Thứ 2 (Day 1)
+        rhythmDays: ['mon', 'wed', 'fri'], // Day 1 (Mon), Day 2 (Tue-rest), Day 3 (Wed), Day 4 (Thu-rest)
+      }
+
+      const checkins = [
+        { day: 1, status: 'voted' as const },
+        { day: 2, status: 'voted' as const, done: true }, // Ngày nghỉ dù check-in cũng không tính
+        { day: 3, status: 'minimal' as const }, // Bản tối giản tính vào hoàn thành
+        { day: 4, status: 'rest' as const, done: false },
+        { day: 5, status: 'missed' as const, done: false },
+      ]
+      // Chỉ Day 1 và Day 3 được tính điểm hoàn thành
       expect(countCompletedVotingDays(plan, checkins)).toBe(2)
     })
 
