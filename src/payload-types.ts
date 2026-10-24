@@ -1739,7 +1739,7 @@ export interface HabitPlan {
       }[]
     | null;
   /**
-   * Chọn ngày và giờ áp dụng.
+   * Ngày bắt đầu hành trình (theo giờ Việt Nam, chỉ quản trị viên được sửa).
    */
   startDate?: string | null;
   /**
