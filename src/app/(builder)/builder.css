@@ -1,0 +1,28 @@
+/*
+ * Project overrides for Puck's editor chrome. Puck ships hashed CSS-module class names
+ * (e.g. `_Breadcrumbs-breadcrumbLabel_8c6w5_7`), so match on the stable prefix.
+ */
+
+/*
+ * PK-06: the right-column header shows "<parent block> / <block>". Puck keeps the parent label
+ * at full width (flex-shrink: 0), so a long name ("Lưới Thẻ Biểu Tượng / Đánh Số (Icon Card
+ * Grid)") ran under the block heading. Let the breadcrumb shrink and end with "…"; the heading
+ * keeps its width.
+ */
+[class*='_SidebarSection-breadcrumbs_'],
+[class*='_Breadcrumbs_'],
+[class*='_Breadcrumbs-breadcrumb_'] {
+  min-width: 0;
+}
+
+[class*='_Breadcrumbs-breadcrumbLabel_'] {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[class*='_SidebarSection-heading_'] {
+  flex-shrink: 0;
+}

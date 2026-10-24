@@ -1,4 +1,6 @@
+import React from 'react'
 import type { ExternalField } from '@puckeditor/core'
+import { RecordSummary } from './record-summary'
 
 export function createTestimonialExternalField<
   T extends string | number | undefined = string | number | undefined,
@@ -38,6 +40,7 @@ export function createTestimonialExternalField<
       'Vai trò': item.role || '',
       'Trích dẫn': item.quote ? item.quote.slice(0, 60) + '...' : '',
     }),
-    getItemSummary: (item: unknown) => (item ? `Lời chia sẻ ID: ${String(item)}` : 'Chưa chọn'),
+    getItemSummary: (id: unknown) =>
+      id ? <RecordSummary collection="testimonials" id={String(id)} /> : 'Chưa chọn',
   }
 }

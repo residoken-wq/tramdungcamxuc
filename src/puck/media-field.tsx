@@ -1,5 +1,6 @@
 import React from 'react'
 import type { ExternalField } from '@puckeditor/core'
+import { RecordSummary } from './record-summary'
 
 export function createMediaExternalField<
   T extends string | number | undefined = string | number | undefined,
@@ -42,6 +43,7 @@ export function createMediaExternalField<
       'Mô tả (alt)': item.alt || '',
       'Tên file': item.filename || '',
     }),
-    getItemSummary: (id: unknown) => (id ? `Media ID: ${String(id)}` : 'Chưa chọn ảnh'),
+    getItemSummary: (id: unknown) =>
+      id ? <RecordSummary collection="media" id={String(id)} /> : 'Chưa chọn ảnh',
   }
 }

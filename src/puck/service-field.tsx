@@ -1,4 +1,6 @@
+import React from 'react'
 import type { ExternalField } from '@puckeditor/core'
+import { RecordSummary } from './record-summary'
 
 export function createServiceExternalField<
   T extends string | number | undefined = string | number | undefined,
@@ -32,6 +34,7 @@ export function createServiceExternalField<
       'Tên dịch vụ': item.name || '',
       'Trạng thái': item.saleStatus || '',
     }),
-    getItemSummary: (item: unknown) => (item ? `Dịch vụ ID: ${String(item)}` : 'Chưa chọn'),
+    getItemSummary: (id: unknown) =>
+      id ? <RecordSummary collection="services" id={String(id)} /> : 'Chưa chọn',
   }
 }
