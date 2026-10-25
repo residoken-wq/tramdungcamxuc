@@ -926,6 +926,12 @@ Bạn có 3 cách rất dễ dàng:
      - **Đã hoàn thành (`done`)**: Ô đánh dấu chỉ đọc, **tự động tính từ trạng thái** (chọn `Bỏ phiếu` hoặc `Bản tối giản` thì hệ thống tự đánh dấu hoàn thành; chọn `Lỡ nhịp` hoặc `Nghỉ theo nhịp` thì không hoàn thành). Hana không cần tick tay ô này.
      - **Cảm xúc (`emotion`) & Ghi chú (`note`)**: Cảm xúc trong ngày và chia sẻ cá nhân của học viên (chỉ tài khoản `owner` xem được).
 
+**Quy tắc check-in theo nhịp tuần & Email nhắc lỡ nhịp tự động (HB-06)**:
+
+- **Chặn ghi 'Nghỉ theo nhịp' vào ngày bỏ phiếu**: Nếu một ngày là ngày bỏ phiếu theo nhịp tuần của học viên, học viên không thể tick chọn `Nghỉ theo nhịp` (`rest`) để tránh việc dùng trạng thái nghỉ che giấu ngày lỡ nhịp. Hệ thống sẽ hiện thông báo tiếng Việt: _"Hôm nay là ngày bỏ phiếu theo nhịp của bạn, không ghi nghỉ được."_ Quản trị viên (`editor` / `owner`) vẫn có thể điều chỉnh khi cần hỗ trợ học viên.
+- **Tự do ghi nhận vào ngày nghỉ theo nhịp**: Vào các ngày nghỉ theo nhịp tuần, học viên hoàn toàn tự do chọn bất kỳ trạng thái nào trong 4 trạng thái (`Bỏ phiếu`, `Bản tối giản`, `Lỡ nhịp`, `Nghỉ theo nhịp`) hoặc để trống không ghi gì. Check-in vào ngày nghỉ được lưu lại để học viên theo dõi hành trình, nhưng **không cộng dồn vào tỷ lệ 90%**, **không làm đứt chuỗi ngày kiên trì**, và **không ảnh hưởng tới bộ đếm lỡ nhịp**.
+- **Email nhắc lỡ nhịp tự động theo nhịp tuần**: Hệ thống cron tự động quét và gửi email nhắc nhở khi học viên lỡ từ **2 ngày bỏ phiếu liên tiếp** trở lên, hoàn toàn bỏ qua các ngày nghỉ theo nhịp. Ví dụ: với nhịp Thứ 2 đến Thứ 6, học viên lỡ Thứ 5 và Thứ 6, dù Thứ 7 và Chủ nhật là ngày nghỉ thì sáng Thứ 2 tuần sau hệ thống vẫn gửi email nhắc nhở nhẹ nhàng. Nếu học viên đã tick bản tối giản hoặc đã nhận email nhắc cho chuỗi lỡ đó thì hệ thống sẽ không gửi trùng lặp.
+
 **Quy tắc bảo vệ quyền riêng tư người học (Quan trọng)**:
 
 - **Cảm xúc và ghi chú check-in**: Khi khách hàng check-in mỗi ngày trên trang `/habit/tracker`, họ có thể chọn 1 trong 10 cảm xúc và viết suy nghĩ, tâm sự cá nhân (tối đa 500 ký tự). Dữ liệu này chỉ chủ sở hữu (`owner`) đọc được để đồng hành; tài khoản biên tập viên (`editor`) không được phân quyền đọc.
