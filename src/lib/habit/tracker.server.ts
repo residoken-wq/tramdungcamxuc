@@ -1,7 +1,7 @@
 import 'server-only'
 import { getPayload, ValidationError, type Payload } from 'payload'
 import config from '@/payload.config'
-import type { Customer, HabitCheckin, HabitPlan, Product } from '@/payload-types'
+import type { Customer, HabitPlan, Product } from '@/payload-types'
 import { getAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { getSiteUrl } from '@/lib/site-url'
@@ -9,8 +9,8 @@ import { sendTrackerNudgeEmail } from '@/lib/email/service.server'
 import type { EmailSender } from '@/lib/email/types'
 import { getReminderOptOutUrl } from '@/lib/reminders/token'
 
-import { getCurrentDayOfPlan, getVietnamYmd, vietnamTodayIso } from './tracker-stats'
-import { getJourneyDays } from './journey'
+import { getVietnamYmd, vietnamTodayIso } from './tracker-stats'
+import { missedVotingRun, shouldNudgeMissed } from './rhythm'
 export * from './tracker-stats'
 
 /**
@@ -121,13 +121,13 @@ export interface TrackerNudgeResult {
 }
 
 /**
- * REVIEW-REQUIRED: Xử lý gửi email nhắc nhở khi học viên lỡ nhịp 2 ngày liên tiếp.
+ * REVIEW-REQUIRED: Xử lý gửi email nhắc nhở khi học viên lỡ nhịp 2 ngày bỏ phiếu liên tiếp theo nhịp tuần (HB-06).
  *
  * Tiêu chí & Quy trình:
  * 1. Chỉ áp dụng cho học viên còn quyền truy cập (status trial còn hạn hoặc active đã mua).
- * 2. Chỉ áp dụng cho kế hoạch đang trong 21 ngày (currentDay >= 3 và currentDay <= 21).
- * 3. Lỡ 2 ngày liên tiếp kết thúc tại hôm qua (currentDay - 1 và currentDay - 2 đều chưa hoàn thành).
- * 4. Nhận việc trước bằng khóa duy nhất (kế hoạch, ngày bắt đầu chuỗi lỡ) trong collection ẩn trackerNudges.
+ * 2. Kế hoạch đọc depth: 0; customer đọc riêng qua findByID + select (email, name, reminderEmailsOptOut).
+ * 3. Chuỗi lỡ nhịp được tính theo luật nhịp tuần (missedVotingRun): đếm 2 ngày bỏ phiếu liên tiếp bị lỡ kết thúc trước hôm nay, bỏ qua ngày nghỉ.
+ * 4. Nhận việc trước bằng khóa duy nhất (plan + missedStartDay) trong collection ẩn trackerNudges.
  * 5. Nếu gửi email thất bại: xóa bản ghi vừa tạo để lượt cron sau thử lại.
  * 6. Bắt lỗi từng bản ghi; không làm dừng cả lượt cron.
  * 7. Link trong email dùng getSiteUrl().
@@ -160,7 +160,7 @@ export async function sendTrackerNudges(
     return { processedPlans, nudgesSent, skippedDuplicate, errors }
   }
 
-  // 2. Lấy các kế hoạch thói quen đã gắn khách hàng và có ngày bắt đầu còn trong hành trình (day 3..journeyDays)
+  // 2. Lấy các kế hoạch thói quen đã gắn khách hàng và có ngày bắt đầu còn trong hành trình
   const maxDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
   const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)
   const minStartDateIso = new Date(`${getVietnamYmd(maxDaysAgo)}T00:00:00+07:00`).toISOString()
@@ -175,7 +175,7 @@ export async function sendTrackerNudges(
         { startDate: { less_than_equal: maxStartDateIso } },
       ],
     },
-    depth: 1,
+    depth: 0,
     pagination: false,
     overrideAccess: true,
   })
@@ -185,23 +185,26 @@ export async function sendTrackerNudges(
       const plan = rawPlan as unknown as HabitPlan
       if (!plan.startDate || !plan.customer) continue
 
-      const journeyDays = getJourneyDays(plan)
-      const currentDay = getCurrentDayOfPlan(plan.startDate, now)
-      // Chỉ kiểm tra khi học viên đã ở ít nhất ngày 3 và chưa qua ngày cuối của hành trình
-      if (currentDay < 3 || currentDay > journeyDays) {
-        continue
-      }
-
-      // Đọc thông tin khách hàng
+      // Đọc thông tin khách hàng riêng bằng depth: 0 + select
       const rawCustomer = plan.customer
-      const customer =
+      const customerId =
         typeof rawCustomer === 'object' && rawCustomer !== null
-          ? (rawCustomer as Customer)
-          : ((await payload.findByID({
-              collection: 'customers',
-              id: Number(rawCustomer),
-              overrideAccess: true,
-            })) as Customer | null)
+          ? (rawCustomer as { id: number }).id
+          : Number(rawCustomer)
+
+      if (!customerId) continue
+
+      const customer = (await payload.findByID({
+        collection: 'customers',
+        id: customerId,
+        depth: 0,
+        overrideAccess: true,
+        select: {
+          email: true,
+          name: true,
+          reminderEmailsOptOut: true,
+        },
+      })) as Customer | null
 
       if (!customer?.email) continue
 
@@ -213,36 +216,30 @@ export async function sendTrackerNudges(
 
       processedPlans++
 
-      // Đọc các check-in đã có của kế hoạch trước ngày hôm nay
+      // Đọc các check-in đã có của kế hoạch (truyền đủ day, done, status)
       const checkinsRes = await payload.find({
         collection: 'habitCheckins',
         where: {
-          and: [{ plan: { equals: plan.id } }, { day: { less_than: currentDay } }],
+          plan: { equals: plan.id },
         },
         depth: 0,
         pagination: false,
         overrideAccess: true,
+        select: {
+          day: true,
+          done: true,
+          status: true,
+        },
       })
 
-      const doneDaysSet = new Set<number>()
-      for (const rawCheckin of checkinsRes.docs) {
-        const c = rawCheckin as unknown as HabitCheckin
-        if (c.done) {
-          doneDaysSet.add(c.day)
-        }
-      }
-
-      // Điều kiện: cả ngày hôm qua (currentDay - 1) và hôm kia (currentDay - 2) đều chưa tick
-      const yesterday = currentDay - 1
-      const dayBeforeYesterday = currentDay - 2
-      if (doneDaysSet.has(yesterday) || doneDaysSet.has(dayBeforeYesterday)) {
+      // Kiểm tra điều kiện nhắc lỡ nhịp theo luật nhịp tuần (>= 2 ngày bỏ phiếu lỡ, chưa qua ngày cuối hành trình)
+      if (!shouldNudgeMissed(plan, checkinsRes.docs, now)) {
         continue
       }
 
-      // Tìm ngày bắt đầu chuỗi lỡ nhịp này
-      let missedStartDay = dayBeforeYesterday
-      while (missedStartDay > 1 && !doneDaysSet.has(missedStartDay - 1)) {
-        missedStartDay--
+      const { startDay: missedStartDay } = missedVotingRun(plan, checkinsRes.docs, now)
+      if (!missedStartDay) {
+        continue
       }
 
       // 3. Nhận việc trước bằng bản ghi duy nhất trong collection trackerNudges
