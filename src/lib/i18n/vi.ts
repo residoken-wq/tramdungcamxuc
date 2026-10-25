@@ -2566,6 +2566,11 @@ export const vi = {
       statusOrDoneRequired: 'Vui lòng cung cấp trạng thái hoặc kết quả hoàn thành.',
     },
   },
+  hb06: {
+    errors: {
+      restOnVotingDay: 'Hôm nay là ngày bỏ phiếu theo nhịp của bạn, không ghi nghỉ được.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

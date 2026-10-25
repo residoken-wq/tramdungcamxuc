@@ -9,6 +9,7 @@ import { checkbox, number, relation, select, textarea } from '../fields/content'
 import { uniqueKeyField, uniqueKeyHook } from '../fields/unique-key'
 import {
   adminOrSelfCustomerPlan,
+  isAdminUser,
   isEditorOrOwner,
   isHiddenFromEditor,
   isOwner,
@@ -16,6 +17,7 @@ import {
 } from '../lib/auth/access'
 import { EMOTIONS } from '../lib/emotions'
 import { vi } from '../lib/i18n/vi'
+import { isVotingDay } from '../lib/habit/rhythm'
 
 // REVIEW-REQUIRED: Verify plan ownership on check-in creation/update.
 // Prevents customers from forging check-ins into another customer's plan.
@@ -84,6 +86,64 @@ const validatePlanJourneyDay: CollectionBeforeChangeHook = async ({ data, req })
   return data
 }
 
+// REVIEW-REQUIRED: Chặn 'rest' vào ngày bỏ phiếu theo nhịp tuần của kế hoạch (HB-06).
+// Khách không được ghi nghỉ vào ngày bỏ phiếu để tránh giấu ngày lỡ khỏi chuỗi nhắc.
+// Bỏ qua với editor/owner. Ngày nghỉ theo nhịp khách tự chọn cả 4 trạng thái (DECISIONS 2d).
+export const validateStatusForRhythm: CollectionBeforeChangeHook = async ({
+  data,
+  originalDoc,
+  req,
+}) => {
+  // Bỏ qua với quản trị viên (owner / editor)
+  if (isAdminUser(req.user)) {
+    return data
+  }
+
+  const effectiveStatus = data?.status ?? originalDoc?.status
+  if (effectiveStatus !== 'rest') {
+    return data
+  }
+
+  const day = typeof data?.day === 'number' ? data.day : originalDoc?.day
+  if (typeof day !== 'number') {
+    return data
+  }
+
+  const rawPlan = data?.plan ?? originalDoc?.plan
+  const planId =
+    typeof rawPlan === 'object' && rawPlan !== null
+      ? (rawPlan as { id: number }).id
+      : Number(rawPlan)
+
+  if (!planId) {
+    return data
+  }
+
+  const plan = await req.payload.findByID({
+    collection: 'habitPlans',
+    id: planId,
+    depth: 0,
+    overrideAccess: true,
+    req,
+    select: {
+      rhythmDays: true,
+      startDate: true,
+      journeyDays: true,
+    },
+  })
+
+  if (!plan) {
+    return data
+  }
+
+  // Kế hoạch có nhịp tuần và ngày này là ngày bỏ phiếu theo nhịp -> chặn 'rest'
+  if (plan.rhythmDays && plan.rhythmDays.length > 0 && isVotingDay(plan, day)) {
+    throw new APIError(vi.hb06.errors.restOnVotingDay, 400)
+  }
+
+  return data
+}
+
 export const CHECKIN_STATUS_VALUES = ['voted', 'minimal', 'missed', 'rest'] as const
 export type CheckinStatus = (typeof CHECKIN_STATUS_VALUES)[number]
 
@@ -137,6 +197,7 @@ export const HabitCheckins: CollectionConfig = {
       syncDoneFromStatus,
       verifyPlanOwnership,
       validatePlanJourneyDay,
+      validateStatusForRhythm,
       uniqueKeyHook({
         keyField: 'planDay',
         parts: ['plan', 'day'],
