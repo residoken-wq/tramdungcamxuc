@@ -136,8 +136,9 @@ export const validateStatusForRhythm: CollectionBeforeChangeHook = async ({
     return data
   }
 
-  // Kế hoạch có nhịp tuần và ngày này là ngày bỏ phiếu theo nhịp -> chặn 'rest'
-  if (plan.rhythmDays && plan.rhythmDays.length > 0 && isVotingDay(plan, day)) {
+  // Ngày bỏ phiếu theo nhịp -> chặn 'rest'. Kế hoạch chưa có nhịp tuần: mọi ngày là ngày bỏ phiếu
+  // (DECISIONS 2a), nên 'rest' bị chặn mọi ngày – nếu không, ghi 'rest' sẽ giấu ngày lỡ khỏi chuỗi nhắc.
+  if (isVotingDay(plan, day)) {
     throw new APIError(vi.hb06.errors.restOnVotingDay, 400)
   }
 

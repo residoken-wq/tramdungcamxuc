@@ -11,6 +11,7 @@ import { vi as viStrings } from '../../src/lib/i18n/vi'
 import { countCompletedVotingDays } from '../../src/lib/habit/journey'
 import { currentStreak, missedVotingRun } from '../../src/lib/habit/rhythm'
 import { issueCertificate } from '../../src/lib/habit/certificate.server'
+import { getVietnamYmd } from '../../src/lib/habit/tracker-stats'
 
 describe('HB-06: Chặn status rest trên ngày bỏ phiếu và luật nhịp tuần cho chứng nhận', () => {
   let payload: Payload
@@ -187,6 +188,35 @@ describe('HB-06: Chặn status rest trên ngày bỏ phiếu và luật nhịp t
             day: 1,
             status: 'rest',
           },
+          user: customerUser,
+          overrideAccess: false,
+        }),
+      ).rejects.toThrow(viStrings.hb06.errors.restOnVotingDay)
+    })
+
+    it('kế hoạch chưa có nhịp tuần: mọi ngày là ngày bỏ phiếu -> chặn status "rest" (HB-06c)', async () => {
+      const customer = await createTestCustomer()
+      const plan = track(
+        'habitPlans',
+        (await payload.create({
+          collection: 'habitPlans',
+          data: {
+            customer: customer.id,
+            identityStatement: 'Tập yoga',
+            startDate: '2026-10-12',
+            journeyDays: 28,
+          },
+          overrideAccess: true,
+        })) as HabitPlan,
+      )
+
+      const customerUser = { ...customer, collection: 'customers' as const }
+
+      // Ngày 6 = Thứ 7: với nhịp T2-T6 là ngày nghỉ, nhưng kế hoạch này chưa có nhịp
+      await expect(
+        payload.create({
+          collection: 'habitCheckins',
+          data: { plan: plan.id, day: 6, status: 'rest' },
           user: customerUser,
           overrideAccess: false,
         }),
@@ -433,12 +463,13 @@ describe('HB-06: Chặn status rest trên ngày bỏ phiếu và luật nhịp t
     it('kế hoạch 28 ngày nhịp 5/7 (20 ngày bỏ phiếu) -> đủ 18 ngày cấp chứng nhận; 17 ngày từ chối', async () => {
       const customer = await createTestCustomer('Học viên Đạt Chuẩn')
       // startDate cách đây 35 ngày (đã qua ngày cuối hành trình 28 ngày)
-      const pastStart = new Date(Date.now() - 35 * 24 * 60 * 60 * 1000)
-      // Tìm ngày Thứ 2 gần nhất trong quá khứ để startDate rơi vào Thứ 2
-      while (pastStart.getDay() !== 1) {
-        pastStart.setDate(pastStart.getDate() - 1)
+      // Tính theo lịch VN (không phụ thuộc múi giờ máy chạy test): lùi về Thứ 2 gần nhất
+      let startIso = getVietnamYmd(new Date(Date.now() - 35 * 24 * 60 * 60 * 1000))
+      while (new Date(`${startIso}T12:00:00Z`).getUTCDay() !== 1) {
+        const prev = new Date(`${startIso}T12:00:00Z`)
+        prev.setUTCDate(prev.getUTCDate() - 1)
+        startIso = prev.toISOString().slice(0, 10)
       }
-      const startIso = pastStart.toISOString().split('T')[0]
 
       const plan = track(
         'habitPlans',
