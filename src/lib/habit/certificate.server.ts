@@ -2,7 +2,7 @@ import 'server-only'
 
 import { getPayload, ValidationError, type Payload } from 'payload'
 import config from '@/payload.config'
-import type { Certificate, Customer, SiteSetting } from '@/payload-types'
+import type { Certificate, Customer, HabitPlan, SiteSetting } from '@/payload-types'
 import { vi } from '@/lib/i18n/vi'
 import { findOwnTrackerPlan } from './tracker.server'
 import { getCurrentDayOfPlan } from './tracker-stats'
@@ -84,16 +84,26 @@ export async function getSiteCertificateMinDays(payload: Payload): Promise<numbe
   return 15
 }
 
-function sanitizeCertificate(cert: Certificate): PublicCertificateData {
+export function sanitizeCertificate(
+  cert: Certificate,
+  overrides?: {
+    customerName?: string | null
+    journeyDays?: number | null
+  },
+): PublicCertificateData {
   const customerName =
-    typeof cert.customer === 'object' && cert.customer !== null
-      ? (cert.customer as Customer).name || ''
-      : ''
+    overrides?.customerName !== undefined && overrides?.customerName !== null
+      ? overrides.customerName
+      : typeof cert.customer === 'object' && cert.customer !== null
+        ? (cert.customer as Customer).name || ''
+        : ''
 
   const planJourneyDays =
-    typeof cert.plan === 'object' && cert.plan !== null && 'journeyDays' in cert.plan
-      ? ((cert.plan as { journeyDays?: number | null }).journeyDays ?? 28)
-      : 28
+    overrides?.journeyDays !== undefined && overrides?.journeyDays !== null
+      ? overrides.journeyDays
+      : typeof cert.plan === 'object' && cert.plan !== null && 'journeyDays' in cert.plan
+        ? ((cert.plan as { journeyDays?: number | null }).journeyDays ?? 28)
+        : 28
 
   return {
     code: cert.code || '',
@@ -151,14 +161,14 @@ export async function issueCertificate(
       throw new Error(vi.certificate.errors.noPlan)
     }
 
-    // 2. Nếu đã có chứng nhận cho kế hoạch này -> trả về bản ghi cũ
+    // 2. Nếu đã có chứng nhận cho kế hoạch này -> trả về bản ghi cũ (depth: 0)
     const existingCerts = await payload.find({
       collection: 'certificates',
       where: {
         plan: { equals: ownPlan.id },
       },
       limit: 1,
-      depth: 1,
+      depth: 0,
       overrideAccess: true,
     })
 
@@ -209,7 +219,7 @@ export async function issueCertificate(
       throw new Error(vi.certificate.errors.notEnoughDays(minRequired, votingDays.length))
     }
 
-    // 5. Tạo chứng nhận mới
+    // 5. Tạo chứng nhận mới (depth: 0)
     try {
       const created = await payload.create({
         collection: 'certificates',
@@ -221,7 +231,7 @@ export async function issueCertificate(
           issuedAt: now.toISOString(),
           isPublic: true,
         },
-        depth: 1,
+        depth: 0,
         overrideAccess: true,
       })
 
@@ -253,7 +263,7 @@ export async function issueCertificate(
             plan: { equals: ownPlan.id },
           },
           limit: 1,
-          depth: 1,
+          depth: 0,
           overrideAccess: true,
         })
 
@@ -310,14 +320,14 @@ export async function getCertificateEligibility(
   const votingDays = getVotingDays(ownPlan)
   const minRequired = requiredDays(votingDays, minPercent)
 
-  // Kiểm tra chứng nhận hiện có
+  // Kiểm tra chứng nhận hiện có (depth: 0)
   const existingCerts = await payload.find({
     collection: 'certificates',
     where: {
       plan: { equals: ownPlan.id },
     },
     limit: 1,
-    depth: 1,
+    depth: 0,
     overrideAccess: true,
   })
 
@@ -377,7 +387,12 @@ export async function getCertificateEligibility(
     }
   }
 
-  const sanitizedCert = existingCert ? sanitizeCertificate(existingCert) : null
+  const sanitizedCert = existingCert
+    ? sanitizeCertificate(existingCert, {
+        customerName: customerName || '',
+        journeyDays,
+      })
+    : null
 
   return {
     eligible,
@@ -400,12 +415,15 @@ export async function getCertificateEligibility(
 }
 
 /**
- * REVIEW-REQUIRED: Lấy thông tin chứng nhận công khai theo mã code.
+ * REVIEW-REQUIRED: Lấy thông tin chứng nhận công khai theo mã code (HB-06).
  *
  * Kiểm soát quyền riêng tư & bảo mật:
- * 1. Chỉ trả về các trường cần thiết: tên, câu định danh, số ngày, ngày cấp, mã xác minh.
- * 2. TUYỆT ĐỐI không trả về cảm xúc (emotion), ghi chú (note), email hoặc customer ID.
- * 3. Nếu isPublic = false: chỉ chủ sở hữu chứng nhận đã đăng nhập mới xem được (isOwner = true).
+ * 1. Đọc chứng nhận với depth: 0 để không kéo theo kế hoạch hay khách hàng vào bộ nhớ.
+ * 2. Đọc riêng tên khách qua findByID + select ({ name: true }).
+ * 3. Đọc riêng journeyDays của kế hoạch qua findByID + select ({ journeyDays: true }).
+ * 4. Chỉ trả về các trường cần thiết: mã code, tên, câu định danh, số ngày, ngày cấp, trạng thái công khai.
+ * 5. TUYỆT ĐỐI không trả về cảm xúc (emotion), ghi chú (note), lý do riêng (privateReason), bạn đồng hành (companionName), scorecard, email hoặc customer ID.
+ * 6. Nếu isPublic = false: chỉ chủ sở hữu chứng nhận đã đăng nhập mới xem được (isOwner = true).
  *    Nếu người ngoài xem khi isPublic = false -> trả về null (dẫn đến 404).
  */
 export async function getCertificateByCode(
@@ -426,7 +444,7 @@ export async function getCertificateByCode(
       code: { equals: cleanCode },
     },
     limit: 1,
-    depth: 1,
+    depth: 0,
     overrideAccess: true,
   })
 
@@ -450,7 +468,41 @@ export async function getCertificateByCode(
     return null
   }
 
-  const sanitized = sanitizeCertificate(cert)
+  // Đọc tên khách hàng riêng bằng depth: 0 + select
+  let customerName = ''
+  if (certCustomerId) {
+    const custDoc = (await payload.findByID({
+      collection: 'customers',
+      id: certCustomerId,
+      depth: 0,
+      overrideAccess: true,
+      select: { name: true },
+    })) as Customer | null
+    customerName = custDoc?.name || ''
+  }
+
+  // Đọc journeyDays của kế hoạch riêng bằng depth: 0 + select
+  const rawPlan = cert.plan
+  const planId =
+    typeof rawPlan === 'object' && rawPlan !== null
+      ? (rawPlan as { id: number }).id
+      : Number(rawPlan)
+
+  let planJourneyDays = 28
+  if (planId) {
+    const planDoc = (await payload.findByID({
+      collection: 'habitPlans',
+      id: planId,
+      depth: 0,
+      overrideAccess: true,
+      select: { journeyDays: true },
+    })) as HabitPlan | null
+    if (typeof planDoc?.journeyDays === 'number') {
+      planJourneyDays = planDoc.journeyDays
+    }
+  }
+
+  const sanitized = sanitizeCertificate(cert, { customerName, journeyDays: planJourneyDays })
   return {
     ...sanitized,
     isOwner,
