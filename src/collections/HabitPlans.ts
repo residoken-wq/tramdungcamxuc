@@ -8,6 +8,7 @@ import {
   selfCustomerOnlyField,
 } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
+import { vietnamTodayIso } from '../lib/habit/tracker-stats'
 
 const bindCustomerOnCreate: CollectionBeforeChangeHook = async ({ data, req, operation }) => {
   if (operation === 'create' && req.user && req.user.collection === 'customers') {
@@ -89,6 +90,20 @@ const lockRhythmDaysAfterCheckins: CollectionBeforeChangeHook = async ({
   return data
 }
 
+// REVIEW-REQUIRED: Gán cố định startDate là hôm nay theo giờ VN khi tạo kế hoạch nếu thiếu.
+// Khách không được tự gửi startDate (bị chặn bởi field access), hook đảm bảo startDate luôn có giá trị.
+const assignStartDateOnCreate: CollectionBeforeChangeHook = async ({ data, operation }) => {
+  if (operation === 'create') {
+    if (!data.startDate) {
+      return {
+        ...data,
+        startDate: vietnamTodayIso(),
+      }
+    }
+  }
+  return data
+}
+
 // REVIEW-REQUIRED: Learner plans are personal data; created by the Habit Loop flow (GĐ 2).
 export const HabitPlans: CollectionConfig = {
   slug: 'habitPlans',
@@ -114,7 +129,12 @@ export const HabitPlans: CollectionConfig = {
     delete: isOwner,
   },
   hooks: {
-    beforeChange: [bindCustomerOnCreate, assignJourneyDaysOnCreate, lockRhythmDaysAfterCheckins],
+    beforeChange: [
+      bindCustomerOnCreate,
+      assignJourneyDaysOnCreate,
+      assignStartDateOnCreate,
+      lockRhythmDaysAfterCheckins,
+    ],
   },
   fields: [
     { ...relation('customer', 'Khách hàng', 'customers'), access: { update: isEditorOrOwner } },
@@ -266,7 +286,15 @@ export const HabitPlans: CollectionConfig = {
       type: 'array',
       fields: [relation('technique', 'Kỹ thuật', 'techniques'), text('action', 'Hành động cụ thể')],
     },
-    date('startDate', 'Ngày bắt đầu'),
+    // REVIEW-REQUIRED: only admins may set/update startDate; customers creating a plan through the API
+    // get today in Vietnam time from the hook (a forged past startDate would reach graduation early).
+    // Not admin.readOnly: owner/editor must be able to adjust it in the CMS (HB-05 spec).
+    date('startDate', 'Ngày bắt đầu', {
+      access: { create: isEditorOrOwner, update: isEditorOrOwner },
+      admin: {
+        description: 'Ngày bắt đầu hành trình (theo giờ Việt Nam, chỉ quản trị viên được sửa).',
+      },
+    }),
     {
       ...number('journeyDays', 'Số ngày hành trình'),
       // REVIEW-REQUIRED: only admins may set it; customers creating a plan through the API
