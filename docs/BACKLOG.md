@@ -16,6 +16,7 @@
 - [ ] **Gửi bản tin tự động (Newsletter Dispatch)** (SM-05): Tự động hóa gửi bản tin định kỳ tới danh sách khách tiềm năng có gắn thẻ `newsletter` trong `leads`. Hiện tại form đăng ký lưu thông tin và cho phép xuất CSV để gửi thủ công qua các nền tảng email marketing bên ngoài.
 - [x] **Cấu hình CTA kết quả quiz trong CMS** (T1-14; xong SM-01 – `siteSettings.quizCtaPath`): Cho phép Hana tự cấu hình CTA kết quả quiz trong CMS (cần trường trong `siteSettings`, triển khai sau khi nhả khóa Migration). Tạm thời CTA đang trỏ cố định tới `GROWTH_MIRROR_PATH` ('/coaching/growth-mirror').
 - [ ] **Cấu hình liên kết hướng dẫn CMS trong SiteSettings** (CM-02): Hiện tại 5 liên kết tài liệu hướng dẫn trên Dashboard admin được cấu hình bằng hằng số trong code (`CMS_DASHBOARD_GUIDES`). Khi mở khóa migration, bổ sung mảng trường `adminGuideLinks` (title, description, url) vào global `siteSettings` để Hana có thể tự cập nhật hoặc bổ sung tài liệu mới trực tiếp từ giao diện CMS.
+- [ ] **Chờ Hana: câu 4 MEETING_2010 – nguồn số liệu / tác giả câu trích; nhập vào global `habitJourneyContent`** (HB-07): Các số liệu ("80% kế hoạch thất bại", "40% bỏ cuộc tuần 3") và câu trích dẫn tham khảo từ prototype cũ hiện chưa có nguồn kiểm chứng xác thực và chưa chốt tác giả. Sau khi Hana kiểm tra và chốt nguồn chính xác, nhập vào CMS tại mục "Nội dung hành trình Habit".
 
 ---
 

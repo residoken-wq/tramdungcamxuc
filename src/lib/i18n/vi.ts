@@ -2571,6 +2571,61 @@ export const vi = {
       restOnVotingDay: 'Hôm nay là ngày bỏ phiếu theo nhịp của bạn, không ghi nghỉ được.',
     },
   },
+  hb07: {
+    global: {
+      label: 'Nội dung hành trình Habit',
+      description: 'Cấu hình các trạm hành trình, câu hỏi suy ngẫm, câu trích dẫn và nguyên lý 1%.',
+    },
+    stations: {
+      label: 'Các trạm',
+      description: 'Hành trình chia đều số ngày cho các trạm theo thứ tự',
+      name: 'Tên chặng',
+      tagline: 'Thông điệp ngắn',
+      reflectionQuestions: 'Câu hỏi suy ngẫm cuối trạm',
+      question: 'Câu hỏi suy ngẫm',
+    },
+    quotes: {
+      label: 'Câu trích dẫn',
+      text: 'Câu trích dẫn',
+      author: 'Tác giả',
+      source: 'Nguồn trích dẫn',
+      sourceDesc: 'Bắt buộc ghi nguồn đã kiểm, không có nguồn thì không thêm',
+      sourceUrl: 'Liên kết nguồn',
+      isActive: 'Kích hoạt',
+    },
+    onePercent: {
+      label: 'Nguyên lý 1%',
+      title: 'Tiêu đề',
+      intro: 'Giới thiệu',
+      dailyPercent: 'Tỷ lệ cải thiện mỗi ngày (%)',
+      dailyPercentDesc: 'Mặc định 1%, từ 0.1% đến 10%.',
+      maxDays: 'Số ngày tối đa của biểu đồ',
+      maxDaysDesc: 'Mặc định 365 ngày, từ 7 đến 1000 ngày.',
+      facts: 'Số liệu dẫn chứng',
+      statement: 'Số liệu / Dẫn chứng',
+      sourceLabel: 'Nguồn dẫn chứng',
+      sourceLabelDesc: 'Bắt buộc ghi nguồn kiểm chứng cho số liệu',
+      sourceUrl: 'Liên kết kiểm chứng',
+    },
+    technique: {
+      exampleVideoUrl: 'Video ví dụ',
+      exampleVideoUrlDesc:
+        'Chỉ video công khai / miễn phí (YouTube, Vimeo, Bunny). Video trả phí gắn qua Bài học liên quan',
+    },
+    errors: {
+      requiredStationName: 'Vui lòng nhập tên chặng.',
+      requiredQuestion: 'Vui lòng nhập câu hỏi suy ngẫm.',
+      requiredQuoteText: 'Vui lòng nhập câu trích dẫn.',
+      requiredQuoteAuthor: 'Vui lòng nhập tác giả câu trích dẫn.',
+      requiredQuoteSource: 'Bắt buộc ghi nguồn đã kiểm, không có nguồn thì không thêm.',
+      requiredFactStatement: 'Vui lòng nhập số liệu hoặc dẫn chứng.',
+      requiredFactSource: 'Bắt buộc ghi nguồn kiểm chứng cho số liệu.',
+      invalidExampleVideoUrl:
+        'Chỉ chấp nhận liên kết video công khai từ YouTube, Vimeo hoặc Bunny Stream.',
+      invalidDailyPercent: 'Tỷ lệ cải thiện mỗi ngày phải từ 0.1% đến 10%.',
+      invalidMaxDays: 'Số ngày tối đa phải từ 7 đến 1000 ngày.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

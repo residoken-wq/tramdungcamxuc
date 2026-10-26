@@ -33,17 +33,28 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
       }
     })
 
-    it('toàn bộ globals có admin.group thuộc nhóm Trang web', async () => {
+    it('mọi global đều có admin.group thuộc danh sách 6 nhóm hợp lệ', async () => {
       const config = await configPromise
       expect(config.globals).toBeDefined()
-      expect(config.globals!.length).toBe(2)
+      expect(config.globals!.length).toBe(3)
 
       for (const gl of config.globals!) {
         expect(
           gl.admin?.group,
-          `Global "${gl.slug}" phải có admin.group thuộc nhóm Trang web`,
-        ).toBe(vi.cms.nav.website)
+          `Global "${gl.slug}" phải có admin.group thuộc danh sách 6 nhóm hợp lệ`,
+        ).toBeDefined()
+        expect(validGroups).toContain(gl.admin?.group)
       }
+
+      expect(config.globals?.find((g) => g.slug === 'navigation')?.admin?.group).toBe(
+        vi.cms.nav.website,
+      )
+      expect(config.globals?.find((g) => g.slug === 'siteSettings')?.admin?.group).toBe(
+        vi.cms.nav.website,
+      )
+      expect(config.globals?.find((g) => g.slug === 'habitJourneyContent')?.admin?.group).toBe(
+        vi.cms.nav.habit,
+      )
     })
 
     it('mảng collections trong config được sắp xếp theo đúng thứ tự 6 nhóm nghiệp vụ', async () => {
