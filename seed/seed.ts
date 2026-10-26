@@ -312,6 +312,28 @@ export async function seed(payload: Payload): Promise<SeedReport> {
     tally('siteSettings').updated++
   }
 
+  const journeyContent = (await payload.findGlobal({
+    slug: 'habitJourneyContent',
+    depth: 0,
+  })) as {
+    stations?: unknown[] | null
+  } | null
+
+  if (!journeyContent?.stations?.length) {
+    await payload.updateGlobal({
+      slug: 'habitJourneyContent',
+      data: {
+        stations: [
+          { name: '[MẪU] Trạm 1' },
+          { name: '[MẪU] Trạm 2' },
+          { name: '[MẪU] Trạm 3' },
+          { name: '[MẪU] Trạm 4' },
+        ],
+      },
+    })
+    tally('habitJourneyContent').updated++
+  }
+
   return report
 }
 
