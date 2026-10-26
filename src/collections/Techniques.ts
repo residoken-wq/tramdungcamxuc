@@ -24,9 +24,11 @@ export function isValidExampleVideoUrl(value?: string | null): boolean {
       .toLowerCase()
       .replace(/^www\./, '')
       .replace(/^m\./, '')
-    if (hostname === 'iframe.mediadelivery.net' || hostname === 'video.bunnycdn.com') {
+    // Bunny Stream: only the iframe embed URL `/embed/{libraryId}/{videoId}` – the only Bunny host
+    // allowed by CSP `frame-src` (security-headers.ts). Other Bunny hosts / paths cannot be embedded.
+    if (hostname === 'iframe.mediadelivery.net') {
       const parts = urlObj.pathname.split('/').filter(Boolean)
-      if (parts.length >= 2) {
+      if (parts.length === 3 && parts[0] === 'embed' && /^\d+$/.test(parts[1]) && parts[2]) {
         return true
       }
     }

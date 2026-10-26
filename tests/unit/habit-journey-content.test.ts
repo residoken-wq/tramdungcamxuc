@@ -284,16 +284,18 @@ describe('HB-07: Global nội dung hành trình Habit & Video ví dụ kỹ thu�
           'https://iframe.mediadelivery.net/embed/12345/a1b2c3d4-e5f6-7890-abcd-ef1234567890',
         ),
       ).toBe(true)
+      // Chỉ link nhúng /embed/ của iframe.mediadelivery.net (host duy nhất trong CSP frame-src) – HB-07c
       expect(
         isValidExampleVideoUrl(
           'https://iframe.mediadelivery.net/play/12345/a1b2c3d4-e5f6-7890-abcd-ef1234567890',
         ),
-      ).toBe(true)
+      ).toBe(false)
       expect(
         isValidExampleVideoUrl(
           'https://video.bunnycdn.com/play/12345/a1b2c3d4-e5f6-7890-abcd-ef1234567890',
         ),
-      ).toBe(true)
+      ).toBe(false)
+      expect(isValidExampleVideoUrl('https://iframe.mediadelivery.net/embed/abc/xyz')).toBe(false)
 
       // Không hợp lệ
       expect(isValidExampleVideoUrl('https://example.com/video.mp4')).toBe(false)
