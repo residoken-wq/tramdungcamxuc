@@ -236,7 +236,7 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 
 ### Họp 20/10 – Puck khối con + Habit 28 ngày (kế hoạch `docs/plan/MEETING_2010.md`)
 
-Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiều migration DB: **🔒 Migration: HB-07 (Laptop, giao 25/10)**.
+Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiều migration DB: **🔒 Migration: trống** (HB-07 đã merge 26/10).
 
 | Mã          | Việc                                                                                                                       | Phụ thuộc                        | Máy      | Trạng thái                                                                                                        |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -253,8 +253,9 @@ Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiề
 | HB-04       | `habitCheckins.status` 4 trạng thái (bỏ phiếu / tối giản / lỡ / nghỉ) + backfill `done` cũ                                 | HB-03                            | Laptop   | ✅ Merge 24/10 – PR #195 ([review](reviews/HB-04.md)); chờ IT duyệt                                               |
 | HB-05       | Bộ luật nhịp tuần `rhythm.ts` (ngày bỏ phiếu / nghỉ, chuỗi, lỡ 2 ngày) + nối `getVotingDays` + khóa `startDate`            | HB-04                            | Laptop   | ✅ Merge 25/10 – PR #202 ([review](reviews/HB-05.md)); chờ IT duyệt                                               |
 | HB-06       | Cron nhắc lỡ nhịp theo ngày bỏ phiếu + chặn `rest` vào ngày bỏ phiếu + chứng nhận theo nhịp (`depth: 0`)                   | HB-05                            | Laptop   | ✅ Merge 25/10 – PR #205 ([review](reviews/HB-06.md)); chờ IT duyệt                                               |
-| HB-07       | Global `habitJourneyContent` (trạm, câu hỏi suy ngẫm, câu trích **có nguồn**, nguyên lý 1%) + `techniques.exampleVideoUrl` | HB-06                            | Laptop   | Giao 25/10 – `prompts/HB-07.md` (🔒 Migration)                                                                    |
-| HB-08→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)                                                  | HB-07; câu 3–10 cho HB-07 trở đi | –        | Chờ                                                                                                               |
+| HB-07       | Global `habitJourneyContent` (trạm, câu hỏi suy ngẫm, câu trích **có nguồn**, nguyên lý 1%) + `techniques.exampleVideoUrl` | HB-06                            | Laptop   | ✅ Merge 26/10 – PR #207 ([review](reviews/HB-07.md))                                                             |
+| HB-08       | B2 Nguyên lý 1%: thanh kéo trên `/habit/5-phut` (chữ + nguồn từ CMS, ẩn khi chưa nhập)                                     | HB-07                            | Laptop   | Giao 26/10 – `prompts/HB-08.md` (không migration)                                                                 |
+| HB-09→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)                                                  | HB-08; câu 3–10 cho HB-07 trở đi | –        | Chờ                                                                                                               |
 
 (Planning dùng cho mọi task)
 
