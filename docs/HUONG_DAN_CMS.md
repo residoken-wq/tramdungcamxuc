@@ -27,6 +27,7 @@
    - [3.10. Quản lý Bài học và Video khóa học (Habit Hack)](#310-quản-lý-bài-học-và-video-khóa-học-habit-hack)
      - [3.10.1. Cách nhập video Bunny Stream cho bài học](#3101-cách-nhập-video-bunny-stream-cho-bài-học)
      - [3.10.2. Thêm bài học bằng Trình hướng dẫn (4 bước)](#3102-thêm-bài-học-bằng-trình-hướng-dẫn-4-bước)
+     - [3.10.3. Cấu hình Nội dung hành trình Habit](#3103-cấu-hình-nội-dung-hành-trình-habit)
    - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
    - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
    - [3.13. Quản lý 26 thẻ EQ Buddy](#313-quản-lý-26-thẻ-eq-buddy)
@@ -894,6 +895,47 @@ Bạn có 3 cách rất dễ dàng:
 - **Tự động lưu nháp vào máy**: Không lo mất nội dung khi mất điện hoặc vô tình đóng trình duyệt.
 - **Cảnh báo rời trang**: Tránh việc bấm nhầm nút quay lại khi đang nhập dở.
 - **Khôi phục dữ liệu**: Bạn có thể bấm nút **Quay lại** ở bất kỳ bước nào để chỉnh sửa thông tin mà không sợ mất các bước đã nhập.
+
+---
+
+### 3.10.3. Cấu hình Nội dung hành trình Habit
+
+**Mục đích**: Cấu hình các trạm hành trình, câu hỏi suy ngẫm, câu trích dẫn truyền cảm hứng và nguyên lý 1% Better cho toàn bộ hành trình rèn luyện thói quen.
+
+**Cách thực hiện**:
+
+1. **Truy cập màn hình cấu hình**:
+   - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Nội dung hành trình Habit**.
+
+2. **Cấu hình Các trạm hành trình (`stations`)**:
+   - Hành trình (ví dụ 28 ngày) được hệ thống tự động chia đều số ngày cho các trạm theo thứ tự (ví dụ 4 trạm = 7-7-7-7 ngày; nếu có số dư thì dồn vào các trạm đầu, ví dụ 30 ngày chia 4 trạm = 8-8-7-7 ngày).
+   - Hana có thể thêm từ 1 đến tối đa 6 trạm:
+     - **Tên chặng** (bắt buộc): Tên chặng (ví dụ: `Trạm 1: Nhận diện & Khởi động`, `Trạm 2: Vượt qua sức ỳ`...).
+     - **Thông điệp ngắn**: Câu thông điệp gợi cảm xúc đồng hành cho học viên khi bước vào trạm.
+     - **Câu hỏi suy ngẫm cuối trạm**: Thêm tối đa 5 câu hỏi suy ngẫm để học viên tự nhìn lại và đúc kết sau khi hoàn thành trạm (nhập ô _Câu hỏi suy ngẫm_, bắt buộc khi thêm dòng).
+
+3. **Cấu hình Câu trích dẫn (`quotes`)**:
+   - Dùng để hiển thị các câu danh ngôn, trích dẫn truyền cảm hứng trên giao diện học và đồng hành.
+   - Mỗi câu trích gồm:
+     - **Câu trích dẫn** (bắt buộc): Lời trích truyền cảm hứng.
+     - **Tác giả** (bắt buộc): Tên tác giả câu trích.
+     - **Nguồn trích dẫn** (BẮT BUỘC): Tên sách, bài viết hoặc tài liệu đã kiểm chứng. **Quy tắc brand & học thuật**: Bắt buộc ghi nguồn đã kiểm; nếu chưa xác thực nguồn thì tuyệt đối không thêm. Hệ thống sẽ báo lỗi và từ chối lưu nếu để trống nguồn.
+     - **Liên kết nguồn**: Đường link dẫn tới sách / bài viết kiểm chứng (tùy chọn).
+     - **Kích hoạt**: Bật/tắt để Hana chủ động chọn câu nào được hiển thị ngoài web.
+
+4. **Cấu hình Nguyên lý 1% (`onePercent`)**:
+   - Cung cấp dữ liệu cho khối giới thiệu và biểu đồ/thanh kéo nguyên lý cải thiện 1% mỗi ngày:
+     - **Tiêu đề**: Tiêu đề khối nguyên lý 1%.
+     - **Giới thiệu**: Đoạn văn bản giàu định dạng giải thích triết lý Atomic Habits và sức mạnh của 1% mỗi ngày.
+     - **Tỷ lệ cải thiện mỗi ngày (%)**: Mặc định là `1%` (cho phép điều chỉnh từ `0.1%` đến `10%`).
+     - **Số ngày tối đa của biểu đồ**: Mặc định là `365` ngày (cho phép điều chỉnh từ `7` đến `1000` ngày).
+     - **Số liệu dẫn chứng (`facts`)**: Danh sách các số liệu / dẫn chứng khoa học:
+       - **Số liệu / Dẫn chứng** (bắt buộc): Câu khẳng định hoặc số liệu (ví dụ: _Cải thiện 1% mỗi ngày sau 1 năm giúp bạn tốt hơn 37 lần_).
+       - **Nguồn dẫn chứng** (BẮT BUỘC): Tên tài liệu / công trình nghiên cứu chứng minh cho số liệu. Hệ thống bắt buộc phải có nguồn kiểm chứng mới cho lưu.
+       - **Liên kết kiểm chứng**: Đường dẫn tới tài liệu kiểm chứng (tùy chọn).
+
+5. **Bấm nút Lưu**:
+   - Bấm nút **Lưu** ở góc trên bên phải để áp dụng thay đổi.
 
 ---
 
@@ -2440,6 +2482,7 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 1. **Quản lý danh sách kỹ thuật thực chiến (`techniques`)**:
    - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Kỹ thuật thực hành**.
    - Hana có thể thêm mới hoặc sửa tên, cách thực hiện, ví dụ và gán vào 1 trong 4 giai đoạn (_Cue - Gợi ý_, _Craving - Khao khát_, _Response - Phản hồi_, _Reward - Phần thưởng_). Các kỹ thuật đã xuất bản sẽ tự động hiển thị trong Bước 3 của công cụ Habit Loop 5 phút.
+   - **Video ví dụ** (`exampleVideoUrl`): Dán liên kết video chia sẻ trực quan / minh họa cho kỹ thuật. Chỉ chấp nhận các liên kết video công khai, miễn phí từ YouTube (ví dụ: `https://www.youtube.com/watch?v=...`), Vimeo (ví dụ: `https://vimeo.com/...`) hoặc Bunny Stream (`https://iframe.mediadelivery.net/...`). Nếu video thuộc bài giảng trả phí trong lộ trình khóa học, vui lòng gắn qua ô **Bài học liên quan** (`lesson`).
 
 2. **Cập nhật giá và câu hỏi thường gặp (FAQ) cho Habit Tracker số**:
    - Vào **Bán hàng** -> **Sản phẩm**, tìm sản phẩm có tên **Habit Tracker số (Habit Hack 1% Better)** (slug cố định là `habit-tracker-so` – xin lưu ý **không thay đổi ô slug** này vì mã nguồn dùng để nhận diện).
