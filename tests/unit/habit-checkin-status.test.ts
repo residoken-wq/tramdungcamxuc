@@ -23,6 +23,9 @@ describe('HB-04: Check-in 4 trạng thái (habitCheckins.status) và đồng b�
   let customerB: Customer
   let habitProduct: Product
   let planA: HabitPlan
+  // HB-06: 'rest' chỉ ghi được vào ngày nghỉ theo nhịp → kế hoạch riêng bắt đầu Thứ 2 12/10, nhịp T2–T6
+  // (ngày 6 = T7, ngày 7 = CN là ngày nghỉ).
+  let planRest: HabitPlan
 
   const track = <T extends { id: number }>(collection: CollectionSlug, doc: T): T => {
     created.push({ collection, id: doc.id })
@@ -135,6 +138,20 @@ describe('HB-04: Check-in 4 trạng thái (habitCheckins.status) và đồng b�
         overrideAccess: true,
       }),
     )
+
+    planRest = track(
+      'habitPlans',
+      await payload.create({
+        collection: 'habitPlans',
+        data: {
+          customer: customerA.id,
+          identityStatement: 'Tập thở mỗi sáng để thấu hiểu bản thân',
+          startDate: '2026-10-12',
+          rhythmDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
+        },
+        overrideAccess: true,
+      }),
+    )
   })
 
   afterEach(() => {
@@ -212,8 +229,8 @@ describe('HB-04: Check-in 4 trạng thái (habitCheckins.status) và đồng b�
         await payload.create({
           collection: 'habitCheckins',
           data: {
-            plan: planA.id,
-            day: 4,
+            plan: planRest.id,
+            day: 6,
             status: 'rest',
           },
           overrideAccess: true,
@@ -281,8 +298,8 @@ describe('HB-04: Check-in 4 trạng thái (habitCheckins.status) và đồng b�
         await payload.create({
           collection: 'habitCheckins',
           data: {
-            plan: planA.id,
-            day: 8,
+            plan: planRest.id,
+            day: 7,
             status: 'rest',
             done: true,
           },

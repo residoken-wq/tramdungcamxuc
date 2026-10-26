@@ -66,7 +66,7 @@
 - [x] (SM-06 review 20/10) `ContactForms` bố cục 2 cột ở 1440px: chữ dài trong ô chọn (dịch vụ / chương trình) bị cắt (xong SM-08).
 - (SM-08 review 20/10) Lighthouse mobile trang chủ 85/100 (mục tiêu ≥ 90, đo local): LCP 4,1 s, JS không dùng ~0,45 s, audit "redirects" ~0,6 s – đo lại trên server thật rồi tối ưu (ảnh hero `priority`, tách JS khối dưới màn hình đầu).
 - (HB-03 review 24/10) Migration SM-07 / SM-08 dùng `ALTER TYPE … ADD VALUE` với `down` trống → `migrate:down` rồi `migrate` lại báo enum đã có. Đổi sang `ADD VALUE IF NOT EXISTS`.
-- (HB-03 review 24/10) `certificate.server.ts`: đọc chứng nhận `depth: 1` + `overrideAccess` kéo theo kế hoạch (có field riêng tư) – đã lọc khi trả ra, hạ `depth: 0` khi làm HB-06.
+- [x] (HB-03 review 24/10) `certificate.server.ts`: đọc chứng nhận `depth: 1` + `overrideAccess` kéo theo kế hoạch (có field riêng tư) – đã lọc khi trả ra, hạ `depth: 0` khi làm HB-06 (xong ở HB-06).
 
 - [x] (PK-05 QA 24/10) Ô chọn dịch vụ / gói trong builder Puck hiện "Sản phẩm ID: N" thay vì tên – đổi `getItemSummary` của external field sang tên (xong PK-06).
 - [x] (PK-05 QA 24/10) Breadcrumb cột phải builder bị chữ chồng khi tên khối dài (xong PK-06).
