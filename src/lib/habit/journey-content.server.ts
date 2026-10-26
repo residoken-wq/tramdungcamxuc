@@ -119,18 +119,16 @@ export async function getHabitJourneyContent(
 
   const rawStations = Array.isArray(content.stations) ? content.stations : []
   const stations: CleanHabitStation[] = rawStations
-    .filter(
-      (s): s is NonNullable<typeof s> =>
-        Boolean(s && typeof s.name === 'string' && s.name.trim().length > 0),
+    .filter((s): s is NonNullable<typeof s> =>
+      Boolean(s && typeof s.name === 'string' && s.name.trim().length > 0),
     )
     .map((s) => ({
       id: s.id ?? null,
       name: s.name.trim(),
       tagline: s.tagline?.trim() || null,
       reflectionQuestions: (Array.isArray(s.reflectionQuestions) ? s.reflectionQuestions : [])
-        .filter(
-          (q): q is NonNullable<typeof q> =>
-            Boolean(q && typeof q.question === 'string' && q.question.trim().length > 0),
+        .filter((q): q is NonNullable<typeof q> =>
+          Boolean(q && typeof q.question === 'string' && q.question.trim().length > 0),
         )
         .map((q) => ({
           id: q.id ?? null,

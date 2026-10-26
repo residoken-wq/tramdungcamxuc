@@ -270,7 +270,9 @@ describe('HB-07: Global nội dung hành trình Habit & Video ví dụ kỹ thu�
       // YouTube
       expect(isValidExampleVideoUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true)
       expect(isValidExampleVideoUrl('https://youtu.be/dQw4w9WgXcQ')).toBe(true)
-      expect(isValidExampleVideoUrl('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')).toBe(true)
+      expect(isValidExampleVideoUrl('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')).toBe(
+        true,
+      )
 
       // Vimeo
       expect(isValidExampleVideoUrl('https://vimeo.com/123456789')).toBe(true)
@@ -364,9 +366,7 @@ describe('HB-07: Global nội dung hành trình Habit & Video ví dụ kỹ thu�
             {
               name: 'Trạm 1: Khởi động',
               tagline: 'Bước đi đầu tiên',
-              reflectionQuestions: [
-                { question: 'Bạn cảm thấy thế nào hôm nay?' },
-              ],
+              reflectionQuestions: [{ question: 'Bạn cảm thấy thế nào hôm nay?' }],
             },
           ],
           quotes: [
@@ -423,7 +423,10 @@ describe('HB-07: Global nội dung hành trình Habit & Video ví dụ kỹ thu�
       const mockPayload = {
         findGlobal: vi.fn().mockResolvedValue({
           stations: [
-            { name: 'Trạm hợp lệ', reflectionQuestions: [{ question: 'Câu hỏi' }, { question: '   ' }] },
+            {
+              name: 'Trạm hợp lệ',
+              reflectionQuestions: [{ question: 'Câu hỏi' }, { question: '   ' }],
+            },
             { name: '   ' }, // thiếu tên
           ],
           quotes: [

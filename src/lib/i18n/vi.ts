@@ -2574,8 +2574,7 @@ export const vi = {
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',
-      description:
-        'Cấu hình các trạm hành trình, câu hỏi suy ngẫm, câu trích dẫn và nguyên lý 1%.',
+      description: 'Cấu hình các trạm hành trình, câu hỏi suy ngẫm, câu trích dẫn và nguyên lý 1%.',
     },
     stations: {
       label: 'Các trạm',

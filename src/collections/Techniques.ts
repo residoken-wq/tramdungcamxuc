@@ -20,7 +20,10 @@ export function isValidExampleVideoUrl(value?: string | null): boolean {
 
   try {
     const urlObj = new URL(trimmed)
-    const hostname = urlObj.hostname.toLowerCase().replace(/^www\./, '').replace(/^m\./, '')
+    const hostname = urlObj.hostname
+      .toLowerCase()
+      .replace(/^www\./, '')
+      .replace(/^m\./, '')
     if (hostname === 'iframe.mediadelivery.net' || hostname === 'video.bunnycdn.com') {
       const parts = urlObj.pathname.split('/').filter(Boolean)
       if (parts.length >= 2) {
