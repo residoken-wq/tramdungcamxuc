@@ -161,10 +161,12 @@ export interface Config {
   globals: {
     navigation: Navigation;
     siteSettings: SiteSetting;
+    habitJourneyContent: HabitJourneyContent;
   };
   globalsSelect: {
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    habitJourneyContent: HabitJourneyContentSelect<false> | HabitJourneyContentSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1322,6 +1324,10 @@ export interface Technique {
    * Chọn nội dung đã tạo trong hệ thống.
    */
   lesson?: (number | null) | Lesson;
+  /**
+   * Chỉ video công khai / miễn phí (YouTube, Vimeo, Bunny). Video trả phí gắn qua Bài học liên quan
+   */
+  exampleVideoUrl?: string | null;
   isSample?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -2806,6 +2812,7 @@ export interface TechniquesSelect<T extends boolean = true> {
   howTo?: T;
   example?: T;
   lesson?: T;
+  exampleVideoUrl?: T;
   isSample?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -3476,6 +3483,116 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * Cấu hình các trạm hành trình, câu hỏi suy ngẫm, câu trích dẫn và nguyên lý 1%.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitJourneyContent".
+ */
+export interface HabitJourneyContent {
+  id: number;
+  /**
+   * Hành trình chia đều số ngày cho các trạm theo thứ tự
+   */
+  stations?:
+    | {
+        /**
+         * Nhập tên chặng.
+         */
+        name: string;
+        /**
+         * Nhập thông điệp ngắn.
+         */
+        tagline?: string | null;
+        reflectionQuestions?:
+          | {
+              /**
+               * Nhập câu hỏi suy ngẫm.
+               */
+              question: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  quotes?:
+    | {
+        /**
+         * Nhập câu trích dẫn.
+         */
+        text: string;
+        /**
+         * Nhập tác giả.
+         */
+        author: string;
+        /**
+         * Bắt buộc ghi nguồn đã kiểm, không có nguồn thì không thêm
+         */
+        source: string;
+        /**
+         * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+         */
+        sourceUrl?: string | null;
+        /**
+         * Bật để áp dụng: kích hoạt.
+         */
+        isActive?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  onePercent?: {
+    /**
+     * Nhập tiêu đề.
+     */
+    title?: string | null;
+    /**
+     * Soạn giới thiệu.
+     */
+    intro?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Mặc định 1%, từ 0.1% đến 10%.
+     */
+    dailyPercent?: number | null;
+    /**
+     * Mặc định 365 ngày, từ 7 đến 1000 ngày.
+     */
+    maxDays?: number | null;
+    facts?:
+      | {
+          /**
+           * Nhập số liệu / dẫn chứng.
+           */
+          statement: string;
+          /**
+           * Bắt buộc ghi nguồn kiểm chứng cho số liệu
+           */
+          sourceLabel: string;
+          /**
+           * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+           */
+          sourceUrl?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "navigation_select".
  */
@@ -3573,6 +3690,54 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   certificateMinPercent?: T;
   certificateMinDays?: T;
   quizCtaPath?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitJourneyContent_select".
+ */
+export interface HabitJourneyContentSelect<T extends boolean = true> {
+  stations?:
+    | T
+    | {
+        name?: T;
+        tagline?: T;
+        reflectionQuestions?:
+          | T
+          | {
+              question?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  quotes?:
+    | T
+    | {
+        text?: T;
+        author?: T;
+        source?: T;
+        sourceUrl?: T;
+        isActive?: T;
+        id?: T;
+      };
+  onePercent?:
+    | T
+    | {
+        title?: T;
+        intro?: T;
+        dailyPercent?: T;
+        maxDays?: T;
+        facts?:
+          | T
+          | {
+              statement?: T;
+              sourceLabel?: T;
+              sourceUrl?: T;
+              id?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
