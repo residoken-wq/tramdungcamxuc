@@ -254,7 +254,8 @@ Track PK không cần 🔒 Migration (chỉ Puck migration). Track HB có nhiề
 | HB-05       | Bộ luật nhịp tuần `rhythm.ts` (ngày bỏ phiếu / nghỉ, chuỗi, lỡ 2 ngày) + nối `getVotingDays` + khóa `startDate`            | HB-04                            | Laptop   | ✅ Merge 25/10 – PR #202 ([review](reviews/HB-05.md)); chờ IT duyệt                                               |
 | HB-06       | Cron nhắc lỡ nhịp theo ngày bỏ phiếu + chặn `rest` vào ngày bỏ phiếu + chứng nhận theo nhịp (`depth: 0`)                   | HB-05                            | Laptop   | ✅ Merge 25/10 – PR #205 ([review](reviews/HB-06.md)); chờ IT duyệt                                               |
 | HB-07       | Global `habitJourneyContent` (trạm, câu hỏi suy ngẫm, câu trích **có nguồn**, nguyên lý 1%) + `techniques.exampleVideoUrl` | HB-06                            | Laptop   | ĐẠT sau HB-07c 26/10 – PR #207 ([review](reviews/HB-07.md)); chờ CI                                               |
-| HB-08→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)                                                  | HB-07; câu 3–10 cho HB-07 trở đi | –        | Chờ                                                                                                               |
+| HB-08       | B2 Nguyên lý 1%: thanh kéo trên `/habit/5-phut` (chữ + nguồn từ CMS, ẩn khi chưa nhập)                                     | HB-07                            | Laptop   | Giao 26/10 – `prompts/HB-08.md` (không migration)                                                                 |
+| HB-09→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)                                                  | HB-08; câu 3–10 cho HB-07 trở đi | –        | Chờ                                                                                                               |
 
 (Planning dùng cho mọi task)
 
