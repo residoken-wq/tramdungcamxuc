@@ -48,6 +48,19 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
   const emailInputId = useId()
   const consentInputId = useId()
 
+  const todayFormatted = React.useMemo(() => {
+    try {
+      return new Intl.DateTimeFormat('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }).format(new Date())
+    } catch {
+      return new Date().toLocaleDateString('vi-VN')
+    }
+  }, [])
+
   // 1. Khôi phục dữ liệu từ localStorage
   useEffect(() => {
     if (startTimeRef.current === null) {
@@ -296,6 +309,17 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     }))
   }
 
+  const handleToggleRhythmDay = (day: Weekday) => {
+    setStepError(null)
+    setDraft((prev) => {
+      const exists = prev.rhythmDays.includes(day)
+      const nextDays = exists
+        ? prev.rhythmDays.filter((d) => d !== day)
+        : [...prev.rhythmDays, day]
+      return { ...prev, rhythmDays: nextDays }
+    })
+  }
+
   // Kiểm tra chuyển bước
   const handleNextStep = () => {
     setStepError(null)
@@ -309,6 +333,10 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     } else if (draft.step === 2) {
       if (!draft.actionText.trim() || !draft.personText.trim()) {
         setStepError(vi.habit.wizard.errors.identityRequired)
+        return
+      }
+      if (draft.rhythmDays.length === 0) {
+        setStepError(vi.hb09.step2.rhythmEmptyError)
         return
       }
       setDraft((prev) => ({ ...prev, step: 3 }))
@@ -374,6 +402,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
         identityStatement:
           draft.identityStatement || formatIdentityStatement(draft.actionText, draft.personText),
         chosenTechniques: flattenedTechniques,
+        anchorHabit: draft.anchorHabit || undefined,
+        rhythmDays: draft.rhythmDays,
+        twoMinuteAction: draft.twoMinuteAction || undefined,
         name: draft.name?.trim() || undefined,
         email: cleanEmail,
         consent: true,
@@ -767,6 +798,95 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                     placeholder={vi.habit.wizard.step2.identityPlaceholder}
                     className="w-full px-4 py-3 rounded-lg border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-2 focus:ring-bright-magenta"
                   />
+                </div>
+              </div>
+
+              {/* Gợi ý công thức gắn thói quen neo (chỉ hiển thị khi đã chọn thói quen neo ở bước 1) */}
+              {draft.anchorHabit && (
+                <div className="p-4 rounded-xl bg-mint-haze/30 border border-mint-haze text-xs sm:text-sm text-deep-navy">
+                  <span className="font-semibold text-bright-magenta block mb-1">
+                    💡 {vi.hb09.step1.anchorSectionTitle}:
+                  </span>
+                  <p className="font-quote italic text-deep-navy text-sm sm:text-base">
+                    &ldquo;
+                    {vi.hb09.step2.anchorFormulaPreview(draft.anchorHabit, draft.actionText)}
+                    &rdquo;
+                  </p>
+                </div>
+              )}
+
+              {/* Nhịp tuần (ngày bỏ phiếu) */}
+              <div className="p-4 rounded-xl bg-warm-ivory border border-lavender-mist space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-semibold text-deep-navy">
+                    {vi.hb09.step2.rhythmLabel}
+                  </label>
+                  <span className="text-xs text-deep-navy/60 font-medium">
+                    {draft.rhythmDays.length}/7 ngày
+                  </span>
+                </div>
+                <p className="text-xs text-deep-navy/70">{vi.hb09.step2.rhythmDesc}</p>
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 pt-1">
+                  {DEFAULT_RHYTHM_DAYS.map((day) => {
+                    const isSelected = draft.rhythmDays.includes(day)
+                    const dayLabel = vi.hb03.fields.rhythmDaysOptions[day]
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        aria-pressed={isSelected}
+                        onClick={() => handleToggleRhythmDay(day)}
+                        className={`py-2 px-1 text-xs sm:text-sm font-semibold rounded-lg border transition-all text-center ${
+                          isSelected
+                            ? 'bg-bright-magenta text-white border-bright-magenta shadow-soft'
+                            : 'bg-white text-deep-navy/70 border-lavender-mist hover:bg-soft-pink/50 hover:border-accent-pink'
+                        }`}
+                      >
+                        {dayLabel}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Bản tối giản dưới 2 phút */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label
+                    htmlFor="field-two-minute-action"
+                    className="block text-sm font-semibold text-deep-navy"
+                  >
+                    {vi.hb09.step2.twoMinuteLabel}
+                  </label>
+                  <span className="text-xs text-deep-navy/60">
+                    {vi.hb09.step2.twoMinuteCharCount(draft.twoMinuteAction.length, 200)}
+                  </span>
+                </div>
+                <input
+                  id="field-two-minute-action"
+                  type="text"
+                  maxLength={200}
+                  value={draft.twoMinuteAction}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      twoMinuteAction: e.target.value.slice(0, 200),
+                    }))
+                  }
+                  placeholder={vi.hb09.step2.twoMinutePlaceholder}
+                  className="w-full px-4 py-3 rounded-lg border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-2 focus:ring-bright-magenta text-sm sm:text-base"
+                />
+              </div>
+
+              {/* Dòng chỉ đọc ngày bắt đầu + Nhắc nhở dữ liệu riêng tư */}
+              <div className="p-4 rounded-xl bg-warm-ivory border border-lavender-mist text-xs sm:text-sm text-deep-navy/80 space-y-1.5">
+                <div className="font-semibold text-deep-navy flex items-center gap-1.5">
+                  <span>📅</span>
+                  <span>{vi.hb09.step2.startDateReadOnly(todayFormatted)}</span>
+                </div>
+                <div className="text-deep-navy/70 italic flex items-center gap-1.5">
+                  <span>🔒</span>
+                  <span>{vi.hb09.step2.privateDataNote}</span>
                 </div>
               </div>
 
