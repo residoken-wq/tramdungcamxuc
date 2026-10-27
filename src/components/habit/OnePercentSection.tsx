@@ -55,7 +55,7 @@ export function OnePercentSection({ onePercent, className = '' }: OnePercentSect
       )}
 
       {/* Giới thiệu Lexical rich text */}
-      {hasIntro && onePercent.intro && (
+      {hasIntro && (
         <div
           data-testid="one-percent-intro"
           className="font-ui text-base text-deep-navy/85 leading-relaxed space-y-3 mb-6 sm:mb-8 max-w-2xl mx-auto text-center"
