@@ -387,7 +387,8 @@ export const habitPlanSubmissionSchema = z
     },
   )
 
-export type HabitPlanSubmissionInput = z.infer<typeof habitPlanSubmissionSchema>
+export type HabitPlanSubmissionInput = z.input<typeof habitPlanSubmissionSchema>
+export type HabitPlanSubmissionOutput = z.output<typeof habitPlanSubmissionSchema>
 
 export const newsletterSchema = z.object({
   email: z

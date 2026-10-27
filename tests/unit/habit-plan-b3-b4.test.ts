@@ -215,7 +215,6 @@ describe('HB-09: DB integration tests for Habit Plan Submission with B3-B4 field
     // 3. Gọi getOrCreateTrackerPlan để gắn kế hoạch vào customer
     const attachedPlan = await getOrCreateTrackerPlan(customer.id, {
       payload,
-      customerEmail: testEmail,
     })
 
     expect(attachedPlan).not.toBeNull()
