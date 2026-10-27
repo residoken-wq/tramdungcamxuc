@@ -924,15 +924,16 @@ Bạn có 3 cách rất dễ dàng:
      - **Kích hoạt**: Bật/tắt để Hana chủ động chọn câu nào được hiển thị ngoài web.
 
 4. **Cấu hình Nguyên lý 1% (`onePercent`)**:
-   - Cung cấp dữ liệu cho khối giới thiệu và biểu đồ/thanh kéo nguyên lý cải thiện 1% mỗi ngày:
-     - **Tiêu đề**: Tiêu đề khối nguyên lý 1%.
-     - **Giới thiệu**: Đoạn văn bản giàu định dạng giải thích triết lý Atomic Habits và sức mạnh của 1% mỗi ngày.
+   - Cung cấp dữ liệu cho khối giới thiệu và thanh kéo trực quan mô phỏng nguyên lý cải thiện 1% mỗi ngày trên trang `/habit/5-phut`:
+     - **Hiển thị ngoài trang web**: Khối sẽ **tự động ẩn hoàn toàn** nếu bạn để trống cả hai ô _Tiêu đề_ và _Giới thiệu_ (đảm bảo không bao giờ hiện khung rỗng khi chưa có nội dung chính thức). Khi bạn nhập ít nhất một trong hai ô, khối sẽ xuất hiện phía trên trình hướng dẫn 4 bước tại `/habit/5-phut`.
+     - **Tiêu đề**: Tiêu đề chính của khối. **Mẹo trình bày 2 tầng màu chuẩn Brand Book**: Bạn dùng dấu gạch đứng `|` để tách 2 dòng (ví dụ: `Nguyên lý 1% | Mỗi ngày tốt hơn một chút` -> hệ thống tự ngắt `Nguyên lý 1%` thành dòng 1 màu tím đậm `deep-navy`, và `Mỗi ngày tốt hơn một chút` thành dòng 2 màu hồng điểm nhấn `bright-magenta`). Nếu không có dấu `|`, toàn bộ tiêu đề hiển thị trên 1 dòng.
+     - **Giới thiệu**: Đoạn văn bản giàu định dạng giải thích triết lý và sức mạnh của 1% mỗi ngày (hiển thị ngay dưới tiêu đề).
      - **Tỷ lệ cải thiện mỗi ngày (%)**: Mặc định là `1%` (cho phép điều chỉnh từ `0.1%` đến `10%`).
-     - **Số ngày tối đa của biểu đồ**: Mặc định là `365` ngày (cho phép điều chỉnh từ `7` đến `1000` ngày).
+     - **Số ngày tối đa của biểu đồ**: Mặc định là `365` ngày (cho phép điều chỉnh từ `7` đến `1000` ngày trên thanh kéo).
      - **Số liệu dẫn chứng (`facts`)**: Danh sách các số liệu / dẫn chứng khoa học:
-       - **Số liệu / Dẫn chứng** (bắt buộc): Câu khẳng định hoặc số liệu (ví dụ: _Cải thiện 1% mỗi ngày sau 1 năm giúp bạn tốt hơn 37 lần_).
-       - **Nguồn dẫn chứng** (BẮT BUỘC): Tên tài liệu / công trình nghiên cứu chứng minh cho số liệu. Hệ thống bắt buộc phải có nguồn kiểm chứng mới cho lưu.
-       - **Liên kết kiểm chứng**: Đường dẫn tới tài liệu kiểm chứng (tùy chọn).
+       - **Số liệu / Dẫn chứng** (bắt buộc): Câu khẳng định hoặc số liệu khoa học (ví dụ: _Cải thiện 1% mỗi ngày sau 1 năm giúp bạn tốt hơn 37 lần_).
+       - **Nguồn dẫn chứng** (BẮT BUỘC): Tên tài liệu / công trình nghiên cứu chứng minh cho số liệu. Hệ thống bắt buộc phải có nguồn kiểm chứng mới cho lưu; không có nguồn thì không thể thêm.
+       - **Liên kết kiểm chứng**: Đường dẫn tới tài liệu kiểm chứng (tùy chọn; nếu có sẽ hiển thị link mở tab mới an toàn cho người đọc tra cứu).
 
 5. **Bấm nút Lưu**:
    - Bấm nút **Lưu** ở góc trên bên phải để áp dụng thay đổi.
