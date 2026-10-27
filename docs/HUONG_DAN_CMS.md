@@ -931,7 +931,7 @@ Bạn có 3 cách rất dễ dàng:
      - **Tỷ lệ cải thiện mỗi ngày (%)**: Mặc định là `1%` (cho phép điều chỉnh từ `0.1%` đến `10%`).
      - **Số ngày tối đa của biểu đồ**: Mặc định là `365` ngày (cho phép điều chỉnh từ `7` đến `1000` ngày trên thanh kéo).
      - **Số liệu dẫn chứng (`facts`)**: Danh sách các số liệu / dẫn chứng khoa học:
-       - **Số liệu / Dẫn chứng** (bắt buộc): Câu khẳng định hoặc số liệu khoa học (ví dụ: _Cải thiện 1% mỗi ngày sau 1 năm giúp bạn tốt hơn 37 lần_).
+       - **Số liệu / Dẫn chứng** (bắt buộc): Câu khẳng định hoặc số liệu đã kiểm chứng. Chỉ nhập khi có nguồn thật ở ô bên dưới; không có nguồn thì không thêm.
        - **Nguồn dẫn chứng** (BẮT BUỘC): Tên tài liệu / công trình nghiên cứu chứng minh cho số liệu. Hệ thống bắt buộc phải có nguồn kiểm chứng mới cho lưu; không có nguồn thì không thể thêm.
        - **Liên kết kiểm chứng**: Đường dẫn tới tài liệu kiểm chứng (tùy chọn; nếu có sẽ hiển thị link mở tab mới an toàn cho người đọc tra cứu).
 

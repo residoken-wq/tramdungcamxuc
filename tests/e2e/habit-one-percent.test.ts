@@ -62,9 +62,9 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
             maxDays: 365,
             facts: [
               {
-                statement: 'Cải thiện 1% mỗi ngày trong 1 năm giúp bạn tốt hơn 37 lần.',
-                sourceLabel: 'Atomic Habits (James Clear)',
-                sourceUrl: 'https://jamesclear.com/atomic-habits',
+                statement: '[MẪU] Số liệu kiểm thử HB-08.',
+                sourceLabel: '[MẪU] Nguồn kiểm thử',
+                sourceUrl: 'https://example.com/nguon-mau',
               },
             ],
           },
@@ -85,9 +85,9 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
 
       // Dẫn chứng và link nguồn
       await expect(guestPage.getByTestId('one-percent-facts')).toBeVisible()
-      const sourceLink = guestPage.getByRole('link', { name: 'Atomic Habits (James Clear)' })
+      const sourceLink = guestPage.getByRole('link', { name: '[MẪU] Nguồn kiểm thử' })
       await expect(sourceLink).toBeVisible()
-      expect(await sourceLink.getAttribute('href')).toBe('https://jamesclear.com/atomic-habits')
+      expect(await sourceLink.getAttribute('href')).toBe('https://example.com/nguon-mau')
 
       // Thanh kéo slider
       const slider = guestPage.getByRole('slider')
@@ -113,13 +113,16 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
       expect(hasHorizontalOverflow).toBe(false)
     } finally {
       // Dọn dẹp: khôi phục nguyên trạng global habitJourneyContent
-      if (previousJourneyContent) {
-        await page.request
-          .post('/api/globals/habitJourneyContent', {
-            data: previousJourneyContent,
-          })
-          .catch(() => {})
-      }
+      // Khôi phục cả khi bản cũ chưa có onePercent (DB trống): ghi rõ onePercent cũ hoặc rỗng,
+      // nếu không tiêu đề / số liệu test sẽ còn lại trong global (HB-08c).
+      await page.request
+        .post('/api/globals/habitJourneyContent', {
+          data: {
+            ...(previousJourneyContent || {}),
+            onePercent: previousJourneyContent?.onePercent ?? { title: '', intro: null, facts: [] },
+          },
+        })
+        .catch(() => {})
       await guestContext.close()
     }
   })
