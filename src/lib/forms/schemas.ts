@@ -262,6 +262,15 @@ export const habitScorecardItemSchema = z.object({
     .min(1, vi.habit.wizard.errors.habitRequired)
     .max(200, vi.habit.wizard.errors.habitMax),
   rating: z.enum(['good', 'neutral', 'bad']),
+  time: z
+    .string()
+    .trim()
+    .optional()
+    .nullable()
+    .transform((val) => (val && val.length > 0 ? val : undefined))
+    .refine((val) => !val || /^([01]\d|2[0-3]):[0-5]\d$/.test(val), {
+      message: vi.hb03.errors.timeInvalidFormat,
+    }),
 })
 
 export type HabitScorecardItemInput = z.infer<typeof habitScorecardItemSchema>
@@ -292,6 +301,35 @@ export const habitPlanSubmissionSchema = z
     chosenTechniques: z
       .array(habitChosenTechniqueSchema)
       .max(8, vi.habit.wizard.errors.techniquesTooMany),
+    anchorHabit: z
+      .string()
+      .trim()
+      .max(120, vi.hb03.errors.anchorHabitTooLong)
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
+    rhythmDays: z
+      .preprocess(
+        (val) => (val === null || val === undefined ? undefined : val),
+        z
+          .array(z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']), {
+            invalid_type_error: vi.hb03.errors.rhythmDaysInvalid,
+          })
+          .min(1, vi.hb09.errors.rhythmDaysEmpty)
+          .max(7)
+          .refine((days) => new Set(days).size === days.length, {
+            message: vi.hb03.errors.rhythmDaysDuplicate,
+          })
+          .optional()
+          .default(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']),
+      ),
+    twoMinuteAction: z
+      .string()
+      .trim()
+      .max(200, vi.hb03.errors.twoMinuteActionTooLong)
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
     name: z
       .string()
       .trim()
@@ -332,6 +370,19 @@ export const habitPlanSubmissionSchema = z
     {
       message: vi.forms.validation.consentRequired,
       path: ['consent'],
+    },
+  )
+  .refine(
+    (data) => {
+      if (!data.anchorHabit) return true
+      const goodHabits = data.scorecard
+        .filter((item) => item.rating === 'good')
+        .map((item) => item.habit.trim())
+      return goodHabits.includes(data.anchorHabit.trim())
+    },
+    {
+      message: vi.hb09.errors.anchorHabitNotGood,
+      path: ['anchorHabit'],
     },
   )
 
