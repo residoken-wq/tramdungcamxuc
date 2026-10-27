@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useId, useEffect, useMemo, useRef } from 'react'
-import { compoundGrowth, formatGrowth } from '@/lib/habit/one-percent'
+import { compoundGrowth, formatGrowth, formatPercent } from '@/lib/habit/one-percent'
 import { vi } from '@/lib/i18n/vi'
 
 export interface OnePercentSliderProps {
@@ -20,6 +20,8 @@ export function OnePercentSlider({
   const defaultInitial = initialDays !== undefined ? initialDays : Math.min(365, effectiveMaxDays)
 
   const [days, setDays] = useState<number>(defaultInitial)
+  // Same percent the calculation uses, formatted vi-VN – labels never show a value the maths ignored.
+  const percent = formatPercent(dailyPercent)
 
   // Tính toán lãi kép
   const growth = useMemo(
@@ -41,7 +43,7 @@ export function OnePercentSlider({
 
     debounceTimerRef.current = setTimeout(() => {
       setLiveAnnouncement(
-        vi.hb08.ariaLiveAnnouncement(days, formattedBetter, formattedWorse, dailyPercent),
+        vi.hb08.ariaLiveAnnouncement(days, formattedBetter, formattedWorse, percent),
       )
     }, 300)
 
@@ -50,7 +52,7 @@ export function OnePercentSlider({
         clearTimeout(debounceTimerRef.current)
       }
     }
-  }, [days, formattedBetter, formattedWorse, dailyPercent])
+  }, [days, formattedBetter, formattedWorse, percent])
 
   return (
     <div className="w-full bg-warm-ivory/80 rounded-2xl border border-deep-navy/10 p-5 sm:p-7 shadow-sm">
@@ -61,21 +63,19 @@ export function OnePercentSlider({
 
       {/* Thanh điều khiển số ngày */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <label
             htmlFor={sliderId}
-            className="font-ui font-bold text-sm sm:text-base text-deep-navy"
+            className="font-ui font-bold text-sm sm:text-base text-deep-navy whitespace-nowrap"
           >
             {vi.hb08.sliderLabel}
           </label>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lavender-mist/50 border border-deep-navy/10">
-            <span className="font-ui text-xs font-semibold text-deep-navy/70">
-              {vi.hb08.sliderAriaLabel}:
-            </span>
-            <span className="font-display text-lg sm:text-xl text-deep-navy tracking-tight">
-              {vi.hb08.daysCount(days)}
-            </span>
-          </div>
+          <span
+            aria-hidden="true"
+            className="inline-flex items-center px-3 py-1 rounded-full bg-lavender-mist/50 border border-deep-navy/10 font-display text-lg sm:text-xl text-deep-navy tracking-tight whitespace-nowrap"
+          >
+            {vi.hb08.daysCount(days)}
+          </span>
         </div>
 
         {/* Thanh kéo input range */}
@@ -125,7 +125,7 @@ export function OnePercentSlider({
             </div>
           </div>
           <p className="mt-3 font-ui text-xs sm:text-sm text-deep-navy/80 leading-snug">
-            {vi.hb08.betterResult(dailyPercent, formattedBetter)}
+            {vi.hb08.betterResult(percent, formattedBetter)}
           </p>
         </div>
 
@@ -145,7 +145,7 @@ export function OnePercentSlider({
             </div>
           </div>
           <p className="mt-3 font-ui text-xs sm:text-sm text-deep-navy/80 leading-snug">
-            {vi.hb08.worseResult(dailyPercent, formattedWorse)}
+            {vi.hb08.worseResult(percent, formattedWorse)}
           </p>
         </div>
       </div>

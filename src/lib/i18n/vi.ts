@@ -2632,8 +2632,8 @@ export const vi = {
     daysCount: (days: number) => `${days} ngày`,
     betterLabel: 'Tốt hơn mỗi ngày',
     worseLabel: 'Kém đi mỗi ngày',
-    betterResult: (percent: number, value: string) => `Tốt hơn ${percent}% mỗi ngày → ×${value}`,
-    worseResult: (percent: number, value: string) => `Kém đi ${percent}% mỗi ngày → ×${value}`,
+    betterResult: (percent: string, value: string) => `Tốt hơn ${percent}% mỗi ngày → ×${value}`,
+    worseResult: (percent: string, value: string) => `Kém đi ${percent}% mỗi ngày → ×${value}`,
     betterStatement: (percent: number) => `Tốt hơn ${percent}% mỗi ngày`,
     worseStatement: (percent: number) => `Kém đi ${percent}% mỗi ngày`,
     betterMultiplier: (value: string) => `×${value}`,
@@ -2643,7 +2643,7 @@ export const vi = {
     overMillion: 'hơn 1 triệu',
     factsHeading: 'Số liệu dẫn chứng',
     ariaValueText: (days: number) => `${days} ngày`,
-    ariaLiveAnnouncement: (days: number, better: string, worse: string, percent: number) =>
+    ariaLiveAnnouncement: (days: number, better: string, worse: string, percent: string) =>
       `Sau ${days} ngày: tốt hơn ${percent}% mỗi ngày tăng gấp ${better} lần; kém đi ${percent}% mỗi ngày giảm còn gấp ${worse} lần.`,
   },
 } as const

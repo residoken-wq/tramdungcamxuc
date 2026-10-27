@@ -16,18 +16,29 @@ export interface CompoundGrowthResult {
  * @param days Số ngày thực hành (làm tròn, kẹp trong [0, maxDays])
  * @param maxDays Số ngày tối đa cho phép (mặc định 365, lấy từ cấu hình CMS)
  */
+/** Tỷ lệ % mỗi ngày dùng thật: ngoài khoảng 0.1–10 (hoặc không phải số) thì lấy 1. */
+export function normalizeDailyPercent(dailyPercent: unknown): number {
+  return typeof dailyPercent === 'number' &&
+    Number.isFinite(dailyPercent) &&
+    dailyPercent >= 0.1 &&
+    dailyPercent <= 10
+    ? dailyPercent
+    : 1
+}
+
+/** Hiển thị tỷ lệ % theo kiểu Việt Nam (0,5 thay vì 0.5). */
+export function formatPercent(dailyPercent: unknown): string {
+  return new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 2 }).format(
+    normalizeDailyPercent(dailyPercent),
+  )
+}
+
 export function compoundGrowth(
   dailyPercent: number,
   days: number,
   maxDays: number = 365,
 ): CompoundGrowthResult {
-  const p =
-    typeof dailyPercent === 'number' &&
-    Number.isFinite(dailyPercent) &&
-    dailyPercent >= 0.1 &&
-    dailyPercent <= 10
-      ? dailyPercent
-      : 1
+  const p = normalizeDailyPercent(dailyPercent)
 
   const limit =
     typeof maxDays === 'number' && Number.isFinite(maxDays) && maxDays > 0 ? maxDays : 365

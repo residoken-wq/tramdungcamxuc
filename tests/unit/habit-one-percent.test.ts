@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { compoundGrowth, formatGrowth } from '@/lib/habit/one-percent'
+import {
+  compoundGrowth,
+  formatGrowth,
+  formatPercent,
+  normalizeDailyPercent,
+} from '@/lib/habit/one-percent'
 import { vi } from '@/lib/i18n/vi'
 
 describe('HB-08: One Percent Principle pure calculations (one-percent.ts)', () => {
@@ -81,6 +86,16 @@ describe('HB-08: One Percent Principle pure calculations (one-percent.ts)', () =
       expect(formatGrowth(37.7834)).toBe('37,78')
       expect(formatGrowth(0.03)).toBe('0,03')
       expect(formatGrowth(1234.56)).toBe('1.234,56')
+    })
+  })
+
+  describe('normalizeDailyPercent / formatPercent (HB-08c)', () => {
+    it('nhãn % dùng đúng tỷ lệ mà phép tính dùng', () => {
+      expect(normalizeDailyPercent(0.5)).toBe(0.5)
+      expect(normalizeDailyPercent(20)).toBe(1)
+      expect(normalizeDailyPercent(undefined)).toBe(1)
+      expect(formatPercent(0.5)).toBe('0,5')
+      expect(formatPercent(20)).toBe('1')
     })
   })
 })

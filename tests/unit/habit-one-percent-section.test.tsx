@@ -83,13 +83,13 @@ describe('HB-08: OnePercentSection & OnePercentSlider component tests', () => {
         maxDays: 365,
         facts: [
           {
-            statement: 'Cải thiện 1% mỗi ngày trong một năm giúp bạn tốt hơn 37 lần.',
-            sourceLabel: 'Atomic Habits (James Clear)',
-            sourceUrl: 'https://jamesclear.com/atomic-habits',
+            statement: '[MẪU] Số liệu kiểm thử HB-08.',
+            sourceLabel: '[MẪU] Nguồn kiểm thử',
+            sourceUrl: 'https://example.com/nguon-mau',
           },
           {
-            statement: 'Não bộ thích nghi qua những bước lặp nhỏ vi mô.',
-            sourceLabel: 'Nghiên cứu thần kinh học',
+            statement: '[MẪU] Số liệu kiểm thử thứ hai.',
+            sourceLabel: '[MẪU] Nguồn kiểm thử 2',
             sourceUrl: null,
           },
         ],
@@ -101,19 +101,17 @@ describe('HB-08: OnePercentSection & OnePercentSlider component tests', () => {
       expect(factsContainer).toBeTruthy()
 
       // Statement texts
-      expect(
-        screen.getByText('Cải thiện 1% mỗi ngày trong một năm giúp bạn tốt hơn 37 lần.'),
-      ).toBeTruthy()
-      expect(screen.getByText('Não bộ thích nghi qua những bước lặp nhỏ vi mô.')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Số liệu kiểm thử HB-08.')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Số liệu kiểm thử thứ hai.')).toBeTruthy()
 
       // Link with target="_blank" and rel="noopener noreferrer"
-      const sourceLink = screen.getByRole('link', { name: 'Atomic Habits (James Clear)' })
-      expect(sourceLink.getAttribute('href')).toBe('https://jamesclear.com/atomic-habits')
+      const sourceLink = screen.getByRole('link', { name: '[MẪU] Nguồn kiểm thử' })
+      expect(sourceLink.getAttribute('href')).toBe('https://example.com/nguon-mau')
       expect(sourceLink.getAttribute('target')).toBe('_blank')
       expect(sourceLink.getAttribute('rel')).toBe('noopener noreferrer')
 
       // Plain text source label without link
-      expect(screen.getByText('Nghiên cứu thần kinh học')).toBeTruthy()
+      expect(screen.getByText('[MẪU] Nguồn kiểm thử 2')).toBeTruthy()
     })
 
     it('does not render facts block when facts list is empty', () => {

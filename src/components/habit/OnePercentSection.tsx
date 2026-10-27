@@ -6,6 +6,8 @@ import { isRichTextEmpty } from '@/lib/legal'
 import { vi } from '@/lib/i18n/vi'
 import type { CleanHabitOnePercent } from '@/lib/habit/journey-content.server'
 
+type RichTextData = React.ComponentProps<typeof RichText>['data']
+
 export interface OnePercentSectionProps {
   onePercent?: CleanHabitOnePercent | null
   className?: string
@@ -60,8 +62,7 @@ export function OnePercentSection({ onePercent, className = '' }: OnePercentSect
           data-testid="one-percent-intro"
           className="font-ui text-base text-deep-navy/85 leading-relaxed space-y-3 mb-6 sm:mb-8 max-w-2xl mx-auto text-center"
         >
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          <RichText data={onePercent.intro as any} />
+          <RichText data={onePercent.intro as RichTextData} />
         </div>
       )}
 
@@ -90,7 +91,7 @@ export function OnePercentSection({ onePercent, className = '' }: OnePercentSect
                         href={fact.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-accent-pink underline hover:text-bright-magenta focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-pink rounded-sm"
+                        className="text-bright-magenta underline hover:text-deep-navy focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-pink rounded-sm"
                       >
                         {fact.sourceLabel}
                       </a>
