@@ -10,7 +10,8 @@ on:
 jobs:
   ci:
     name: Lint, Typecheck, Test, Build & E2E
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which Playwright 1.58 cannot install browsers on.
+    runs-on: ubuntu-24.04
     # A normal run takes ~15 min; anything far longer is a hang, not progress.
     timeout-minutes: 40
 
@@ -97,7 +98,7 @@ jobs:
   docker:
     name: Build and Push Docker image
     needs: ci
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write

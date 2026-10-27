@@ -17,6 +17,7 @@
 - [x] **Cấu hình CTA kết quả quiz trong CMS** (T1-14; xong SM-01 – `siteSettings.quizCtaPath`): Cho phép Hana tự cấu hình CTA kết quả quiz trong CMS (cần trường trong `siteSettings`, triển khai sau khi nhả khóa Migration). Tạm thời CTA đang trỏ cố định tới `GROWTH_MIRROR_PATH` ('/coaching/growth-mirror').
 - [ ] **Cấu hình liên kết hướng dẫn CMS trong SiteSettings** (CM-02): Hiện tại 5 liên kết tài liệu hướng dẫn trên Dashboard admin được cấu hình bằng hằng số trong code (`CMS_DASHBOARD_GUIDES`). Khi mở khóa migration, bổ sung mảng trường `adminGuideLinks` (title, description, url) vào global `siteSettings` để Hana có thể tự cập nhật hoặc bổ sung tài liệu mới trực tiếp từ giao diện CMS.
 - [ ] **Chờ Hana: câu 4 MEETING_2010 – nguồn số liệu / tác giả câu trích; nhập vào global `habitJourneyContent`** (HB-07): Các số liệu ("80% kế hoạch thất bại", "40% bỏ cuộc tuần 3") và câu trích dẫn tham khảo từ prototype cũ hiện chưa có nguồn kiểm chứng xác thực và chưa chốt tác giả. Sau khi Hana kiểm tra và chốt nguồn chính xác, nhập vào CMS tại mục "Nội dung hành trình Habit".
+- [ ] **Khối Puck Nguyên lý 1% (HB-08 để lại)**: Hiện tại khối `OnePercentSection` được gắn cố định tại trang `/habit/5-phut`. Khi Hana có nhu cầu đưa thanh kéo minh họa nguyên lý 1% vào các trang landing page khác qua trình dựng trang kéo thả, xây dựng khối Puck `OnePercentSliderBlock` đọc dữ liệu từ `habitJourneyContent.onePercent`.
 
 ---
 
