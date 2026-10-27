@@ -2,7 +2,9 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { vi } from '@/lib/i18n/vi'
 import { getTechniques } from '@/lib/habit.server'
+import { getHabitJourneyContent } from '@/lib/habit/journey-content.server'
 import { HabitLoopWizard } from '@/components/habit/HabitLoopWizard'
+import { OnePercentSection } from '@/components/habit/OnePercentSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,7 +18,18 @@ export const metadata: Metadata = {
 }
 
 export default async function HabitLoopPage() {
-  const techniques = await getTechniques()
+  const [techniques, journeyContent] = await Promise.all([
+    getTechniques(),
+    getHabitJourneyContent().catch((error) => {
+      console.error('[HabitLoopPage] Failed to fetch habit journey content:', error)
+      return null
+    }),
+  ])
 
-  return <HabitLoopWizard techniques={techniques} />
+  return (
+    <div className="w-full">
+      <OnePercentSection onePercent={journeyContent?.onePercent} />
+      <HabitLoopWizard techniques={techniques} />
+    </div>
+  )
 }
