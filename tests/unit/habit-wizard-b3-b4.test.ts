@@ -5,10 +5,7 @@ import {
   type HabitPlanDraft,
   type HabitScorecardItem,
 } from '@/lib/habit'
-import {
-  habitPlanSubmissionSchema,
-  habitScorecardItemSchema,
-} from '@/lib/forms/schemas'
+import { habitPlanSubmissionSchema, habitScorecardItemSchema } from '@/lib/forms/schemas'
 import { vi as viStrings } from '@/lib/i18n/vi'
 
 describe('HB-09: Unit tests for Wizard B3-B4 Draft & Schema Validation', () => {
@@ -38,16 +35,13 @@ describe('HB-09: Unit tests for Wizard B3-B4 Draft & Schema Validation', () => {
 
       const rawScorecard = Array.isArray(legacyDraft.scorecard) ? legacyDraft.scorecard : []
       const cleanedScorecard: HabitScorecardItem[] = rawScorecard
-        .filter(
-          (item): item is HabitScorecardItem =>
-            Boolean(
-              item &&
-                typeof item === 'object' &&
-                typeof (item as { habit: unknown }).habit === 'string' &&
-                ['good', 'neutral', 'bad'].includes(
-                  (item as { rating: unknown }).rating as string,
-                ),
-            ),
+        .filter((item): item is HabitScorecardItem =>
+          Boolean(
+            item &&
+            typeof item === 'object' &&
+            typeof (item as { habit: unknown }).habit === 'string' &&
+            ['good', 'neutral', 'bad'].includes((item as { rating: unknown }).rating as string),
+          ),
         )
         .map((item) => {
           const rawTime = typeof item.time === 'string' ? item.time.trim() : undefined
@@ -126,9 +120,7 @@ describe('HB-09: Unit tests for Wizard B3-B4 Draft & Schema Validation', () => {
       ]
       let anchorHabit = 'Uống nước'
 
-      const goodHabits = new Set(
-        scorecard.filter((s) => s.rating === 'good').map((s) => s.habit),
-      )
+      const goodHabits = new Set(scorecard.filter((s) => s.rating === 'good').map((s) => s.habit))
       if (!goodHabits.has(anchorHabit)) {
         anchorHabit = ''
       }
@@ -139,16 +131,36 @@ describe('HB-09: Unit tests for Wizard B3-B4 Draft & Schema Validation', () => {
 
   describe('2. Zod validation for scorecard[].time', () => {
     it('chấp nhận giờ hợp lệ (HH:mm)', () => {
-      expect(habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '07:30' }).success).toBe(true)
-      expect(habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '00:00' }).success).toBe(true)
-      expect(habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '23:59' }).success).toBe(true)
-      expect(habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '' }).success).toBe(true)
-      expect(habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: undefined }).success).toBe(true)
-      expect(habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: null }).success).toBe(true)
+      expect(
+        habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '07:30' })
+          .success,
+      ).toBe(true)
+      expect(
+        habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '00:00' })
+          .success,
+      ).toBe(true)
+      expect(
+        habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '23:59' })
+          .success,
+      ).toBe(true)
+      expect(
+        habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '' }).success,
+      ).toBe(true)
+      expect(
+        habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: undefined })
+          .success,
+      ).toBe(true)
+      expect(
+        habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: null }).success,
+      ).toBe(true)
     })
 
     it('từ chối giờ sai định dạng (24:00, 25:00, 9h, abc)', () => {
-      const r1 = habitScorecardItemSchema.safeParse({ habit: 'Thiền', rating: 'good', time: '24:00' })
+      const r1 = habitScorecardItemSchema.safeParse({
+        habit: 'Thiền',
+        rating: 'good',
+        time: '24:00',
+      })
       expect(r1.success).toBe(false)
       if (!r1.success) {
         expect(r1.error.issues[0].message).toBe(viStrings.hb03.errors.timeInvalidFormat)

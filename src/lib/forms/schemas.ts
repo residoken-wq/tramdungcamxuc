@@ -308,23 +308,22 @@ export const habitPlanSubmissionSchema = z
       .optional()
       .nullable()
       .transform((val) => (val && val.length > 0 ? val : undefined)),
-    rhythmDays: z
-      .preprocess(
-        (val) => (val === null || val === undefined ? undefined : val),
-        z
-          .array(
-            z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'], {
-              errorMap: () => ({ message: vi.hb03.errors.rhythmDaysInvalid }),
-            }),
-          )
-          .min(1, vi.hb09.errors.rhythmDaysEmpty)
-          .max(7)
-          .refine((days) => new Set(days).size === days.length, {
-            message: vi.hb03.errors.rhythmDaysDuplicate,
-          })
-          .optional()
-          .default(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']),
-      ),
+    rhythmDays: z.preprocess(
+      (val) => (val === null || val === undefined ? undefined : val),
+      z
+        .array(
+          z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'], {
+            errorMap: () => ({ message: vi.hb03.errors.rhythmDaysInvalid }),
+          }),
+        )
+        .min(1, vi.hb09.errors.rhythmDaysEmpty)
+        .max(7)
+        .refine((days) => new Set(days).size === days.length, {
+          message: vi.hb03.errors.rhythmDaysDuplicate,
+        })
+        .optional()
+        .default(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']),
+    ),
     twoMinuteAction: z
       .string()
       .trim()

@@ -108,16 +108,15 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
           if (parsed && typeof parsed === 'object') {
             const rawScorecard = Array.isArray(parsed.scorecard) ? parsed.scorecard : []
             const cleanedScorecard: HabitScorecardItem[] = rawScorecard
-              .filter(
-                (item): item is HabitScorecardItem =>
-                  Boolean(
-                    item &&
-                      typeof item === 'object' &&
-                      typeof (item as { habit: unknown }).habit === 'string' &&
-                      ['good', 'neutral', 'bad'].includes(
-                        (item as { rating: unknown }).rating as string,
-                      ),
+              .filter((item): item is HabitScorecardItem =>
+                Boolean(
+                  item &&
+                  typeof item === 'object' &&
+                  typeof (item as { habit: unknown }).habit === 'string' &&
+                  ['good', 'neutral', 'bad'].includes(
+                    (item as { rating: unknown }).rating as string,
                   ),
+                ),
               )
               .map((item) => {
                 const rawTime = typeof item.time === 'string' ? item.time.trim() : undefined
@@ -334,9 +333,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     setStepError(null)
     setDraft((prev) => {
       const exists = prev.rhythmDays.includes(day)
-      const nextDays = exists
-        ? prev.rhythmDays.filter((d) => d !== day)
-        : [...prev.rhythmDays, day]
+      const nextDays = exists ? prev.rhythmDays.filter((d) => d !== day) : [...prev.rhythmDays, day]
       return { ...prev, rhythmDays: nextDays }
     })
   }

@@ -62,9 +62,7 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
       fireEvent.click(nextBtn)
     })
 
-    expect(
-      screen.getByRole('heading', { name: viStrings.habit.wizard.step2.title }),
-    ).toBeDefined()
+    expect(screen.getByRole('heading', { name: viStrings.habit.wizard.step2.title })).toBeDefined()
   })
 
   it('bước 2: hiển thị gợi ý neo, bật/tắt ngày nhịp tuần, lỗi khi bỏ hết ngày', async () => {
@@ -139,8 +137,6 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
     await act(async () => {
       fireEvent.click(nextBtn)
     })
-    expect(
-      screen.getByRole('heading', { name: viStrings.habit.wizard.step3.title }),
-    ).toBeDefined()
+    expect(screen.getByRole('heading', { name: viStrings.habit.wizard.step3.title })).toBeDefined()
   })
 })

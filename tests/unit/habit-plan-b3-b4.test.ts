@@ -116,9 +116,7 @@ describe('HB-09: DB integration tests for Habit Plan Submission with B3-B4 field
 
     const result = await submitHabitPlan(
       {
-        scorecard: [
-          { habit: 'Đọc sách 10 trang', rating: 'good' },
-        ],
+        scorecard: [{ habit: 'Đọc sách 10 trang', rating: 'good' }],
         identityStatement: 'Tôi sẽ đọc sách để mở mang tri thức',
         anchorHabit: '',
         twoMinuteAction: '',
@@ -152,9 +150,7 @@ describe('HB-09: DB integration tests for Habit Plan Submission with B3-B4 field
 
     const result = await submitHabitPlan(
       {
-        scorecard: [
-          { habit: 'Chạy bộ 15 phút', rating: 'good' },
-        ],
+        scorecard: [{ habit: 'Chạy bộ 15 phút', rating: 'good' }],
         identityStatement: 'Tôi sẽ chạy bộ để rèn luyện sức bền',
         chosenTechniques: [],
         email: testEmail,
@@ -190,9 +186,7 @@ describe('HB-09: DB integration tests for Habit Plan Submission with B3-B4 field
     // 1. Tạo kế hoạch bằng submitHabitPlan
     const result = await submitHabitPlan(
       {
-        scorecard: [
-          { habit: 'Viết nhật ký biết ơn', rating: 'good', time: '21:30' },
-        ],
+        scorecard: [{ habit: 'Viết nhật ký biết ơn', rating: 'good', time: '21:30' }],
         identityStatement: 'Tôi sẽ viết nhật ký để trở thành người biết ơn',
         anchorHabit: 'Viết nhật ký biết ơn',
         rhythmDays: ['mon', 'wed', 'fri', 'sun'],

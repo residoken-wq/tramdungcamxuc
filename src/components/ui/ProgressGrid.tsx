@@ -184,8 +184,7 @@ export function ProgressGrid({
             !isInteractive || status === 'future' || status === 'locked' || status === 'rest'
           const emotion = emotionKey ? getEmotion(emotionKey) : undefined
 
-          const statusText =
-            status === 'rest' ? vi.hb04.status.rest : vi.habit.statuses[status]
+          const statusText = status === 'rest' ? vi.hb04.status.rest : vi.habit.statuses[status]
           const ariaLabel = vi.habit.ariaDay(day, statusText, emotion?.label)
 
           let stateStyle = ''

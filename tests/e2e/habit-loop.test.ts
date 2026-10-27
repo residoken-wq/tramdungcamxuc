@@ -104,7 +104,10 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
 
         // HB-09: Đánh giá tốt (+), nhập giờ tùy chọn và chọn làm thói quen neo
-        await guest.getByRole('button', { name: /đánh giá tốt/i }).first().click()
+        await guest
+          .getByRole('button', { name: /đánh giá tốt/i })
+          .first()
+          .click()
         await guest.locator('input[type="time"]').first().fill('06:30')
         await guest.locator('input[type="radio"][name="anchorHabit"]').first().check()
 
