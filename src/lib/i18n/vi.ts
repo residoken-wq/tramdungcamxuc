@@ -2636,6 +2636,8 @@ export const vi = {
     worseResult: (percent: number, value: string) => `Kém đi ${percent}% mỗi ngày → ×${value}`,
     betterStatement: (percent: number) => `Tốt hơn ${percent}% mỗi ngày`,
     worseStatement: (percent: number) => `Kém đi ${percent}% mỗi ngày`,
+    betterMultiplier: (value: string) => `×${value}`,
+    worseMultiplier: (value: string) => `×${value}`,
     multiplierPrefix: '×',
     sourcePrefix: 'Nguồn',
     overMillion: 'hơn 1 triệu',
