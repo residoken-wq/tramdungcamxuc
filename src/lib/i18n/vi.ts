@@ -2646,6 +2646,39 @@ export const vi = {
     ariaLiveAnnouncement: (days: number, better: string, worse: string, percent: string) =>
       `Sau ${days} ngày: tốt hơn ${percent}% mỗi ngày tăng gấp ${better} lần; kém đi ${percent}% mỗi ngày giảm còn gấp ${worse} lần.`,
   },
+  hb09: {
+    step1: {
+      timeLabel: 'Giờ làm (tùy chọn)',
+      timePlaceholder: 'HH:mm',
+      timeAriaLabel: (habit: string) => `Giờ làm cho ${habit}`,
+      anchorRadioLabel: 'Chọn làm thói quen neo',
+      anchorBadge: 'Neo',
+      anchorSectionTitle: 'Thói quen neo',
+      anchorHint: 'Thói quen neo – việc bạn đã làm đều mỗi ngày (+)',
+      noGoodHabitHint:
+        'Đánh dấu (+) cho ít nhất một thói quen bạn đã làm đều mỗi ngày để chọn làm thói quen neo.',
+      clearAnchor: 'Bỏ chọn neo',
+    },
+    step2: {
+      rhythmLabel: 'Nhịp tuần (ngày bỏ phiếu)',
+      rhythmDesc: 'Mặc định cả 7 ngày. Bấm để tắt những ngày bạn muốn nghỉ ngơi.',
+      rhythmEmptyError: 'Chọn ít nhất 1 ngày bỏ phiếu.',
+      twoMinuteLabel: 'Bản tối giản dưới 2 phút (tùy chọn)',
+      twoMinutePlaceholder: 'Ví dụ: Mở sách đọc 1 trang / Uống 1 ngụm nước',
+      twoMinuteCharCount: (current: number, max: number) => `${current}/${max}`,
+      anchorFormulaPreview: (anchor: string, action: string) =>
+        `Sau khi ${anchor}, tôi sẽ ${action || '...'}`,
+      startDateReadOnly: (dateStr: string) => `Ngày bắt đầu: hôm nay (${dateStr})`,
+      privateDataNote: 'Lý do riêng và bạn đồng hành ghi trong Tracker sau khi đăng nhập.',
+    },
+    errors: {
+      anchorHabitNotGood: 'Thói quen neo phải là một trong các thói quen được đánh dấu tốt (+).',
+      rhythmDaysEmpty: 'Chọn ít nhất 1 ngày bỏ phiếu.',
+      rhythmDaysDuplicate: 'Các ngày trong nhịp tuần không được trùng nhau.',
+      rhythmDaysInvalid: 'Ngày trong nhịp tuần không hợp lệ.',
+      timeInvalidFormat: 'Giờ làm thói quen phải có dạng HH:mm (từ 00:00 đến 23:59).',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

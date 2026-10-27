@@ -1,10 +1,20 @@
 import type { HabitStage } from './diagnostic'
 import type { HabitChosenTechniqueInput } from './forms/schemas'
+import type { Weekday } from './habit/rhythm'
 
 export const HABIT_LOOP_STORAGE_KEY = 'tdcx_habit_loop_v1'
 export const HABIT_LOOP_PATH = '/habit/5-phut'
 export const HABIT_OFFER_PATH = '/habit/1-percent-better'
 export const HABIT_STAGES: readonly HabitStage[] = ['cue', 'craving', 'response', 'reward'] as const
+export const DEFAULT_RHYTHM_DAYS: readonly Weekday[] = [
+  'mon',
+  'tue',
+  'wed',
+  'thu',
+  'fri',
+  'sat',
+  'sun',
+] as const
 
 export interface PublicTechnique {
   id: number
@@ -19,6 +29,7 @@ export type HabitScorecardRating = 'good' | 'neutral' | 'bad'
 export interface HabitScorecardItem {
   habit: string
   rating: HabitScorecardRating
+  time?: string
 }
 
 export interface HabitChosenTechnique {
@@ -29,6 +40,9 @@ export interface HabitChosenTechnique {
 export interface HabitPlanDraft {
   step: number
   scorecard: HabitScorecardItem[]
+  anchorHabit: string
+  rhythmDays: Weekday[]
+  twoMinuteAction: string
   actionText: string
   personText: string
   identityStatement: string
@@ -57,6 +71,9 @@ export function getDefaultHabitDraft(): HabitPlanDraft {
   return {
     step: 1,
     scorecard: [],
+    anchorHabit: '',
+    rhythmDays: [...DEFAULT_RHYTHM_DAYS],
+    twoMinuteAction: '',
     actionText: '',
     personText: '',
     identityStatement: '',

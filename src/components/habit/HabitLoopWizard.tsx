@@ -12,14 +12,17 @@ import {
   HABIT_LOOP_STORAGE_KEY,
   HABIT_OFFER_PATH,
   HABIT_STAGES,
+  DEFAULT_RHYTHM_DAYS,
   formatIdentityStatement,
   getDefaultHabitDraft,
   flattenChosenTechniques,
   type PublicTechnique,
   type HabitScorecardRating,
+  type HabitScorecardItem,
   type HabitPlanDraft,
 } from '@/lib/habit'
 import type { HabitStage } from '@/lib/diagnostic'
+import type { Weekday } from '@/lib/habit/rhythm'
 
 export interface HabitLoopWizardProps {
   techniques: PublicTechnique[]
@@ -61,19 +64,70 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               typeof (item as { action: unknown }).action === 'string',
           )
         : []
+    const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/
+    const VALID_WEEKDAYS = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
     const timer = setTimeout(() => {
       try {
         const stored = localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
         if (stored) {
           const parsed = JSON.parse(stored) as Partial<HabitPlanDraft>
           if (parsed && typeof parsed === 'object') {
+            const rawScorecard = Array.isArray(parsed.scorecard) ? parsed.scorecard : []
+            const cleanedScorecard: HabitScorecardItem[] = rawScorecard
+              .filter(
+                (item): item is HabitScorecardItem =>
+                  Boolean(
+                    item &&
+                      typeof item === 'object' &&
+                      typeof (item as { habit: unknown }).habit === 'string' &&
+                      ['good', 'neutral', 'bad'].includes(
+                        (item as { rating: unknown }).rating as string,
+                      ),
+                  ),
+              )
+              .map((item) => {
+                const rawTime = typeof item.time === 'string' ? item.time.trim() : undefined
+                const validTime = rawTime && TIME_REGEX.test(rawTime) ? rawTime : undefined
+                return {
+                  habit: item.habit.trim(),
+                  rating: item.rating,
+                  ...(validTime ? { time: validTime } : {}),
+                }
+              })
+
+            let cleanedAnchor =
+              typeof parsed.anchorHabit === 'string' ? parsed.anchorHabit.trim() : ''
+            const goodHabits = new Set(
+              cleanedScorecard.filter((s) => s.rating === 'good').map((s) => s.habit),
+            )
+            if (!goodHabits.has(cleanedAnchor)) {
+              cleanedAnchor = ''
+            }
+
+            let cleanedRhythm: Weekday[] = [...DEFAULT_RHYTHM_DAYS]
+            if (Array.isArray(parsed.rhythmDays)) {
+              const filtered = parsed.rhythmDays.filter(
+                (d): d is Weekday => typeof d === 'string' && VALID_WEEKDAYS.has(d),
+              )
+              const unique = Array.from(new Set(filtered))
+              if (unique.length > 0) {
+                cleanedRhythm = unique
+              }
+            }
+
+            const cleanedTwoMinuteAction =
+              typeof parsed.twoMinuteAction === 'string' ? parsed.twoMinuteAction.slice(0, 200) : ''
+
             setDraft((prev) => ({
               ...prev,
               ...parsed,
               name: '', // T2-03: Không lưu/khôi phục tên từ nháp (kể cả nháp cũ có tên)
               email: '', // T2-03: Không lưu/khôi phục email từ nháp (kể cả nháp cũ có email)
               consent: false, // B11: Nghị định 13/2023 - không bao giờ tự động tick sẵn ô đồng ý từ nháp
-              scorecard: Array.isArray(parsed.scorecard) ? parsed.scorecard : [],
+              scorecard: cleanedScorecard,
+              anchorHabit: cleanedAnchor,
+              rhythmDays: cleanedRhythm,
+              twoMinuteAction: cleanedTwoMinuteAction,
               actionText: typeof parsed.actionText === 'string' ? parsed.actionText : '',
               personText: typeof parsed.personText === 'string' ? parsed.personText : '',
               identityStatement:
