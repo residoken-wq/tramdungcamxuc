@@ -102,17 +102,30 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         await expect(guest.getByText('Bước 1 / 4')).toBeVisible()
         await guest.getByPlaceholder(/Nhập thói quen hàng ngày/i).fill('Uống 1 cốc nước ấm')
         await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
+
+        // HB-09: Đánh giá tốt (+), nhập giờ tùy chọn và chọn làm thói quen neo
+        await guest.getByRole('button', { name: /đánh giá tốt/i }).first().click()
+        await guest.locator('input[type="time"]').first().fill('06:30')
+        await guest.locator('input[type="radio"][name="anchorHabit"]').first().check()
+
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
-        // BƯỚC 2: Gọi tên thói quen & kiểm tra khôi phục nháp sau khi tải lại trang
+        // BƯỚC 2: Gọi tên thói quen, nhịp tuần, bản tối giản & kiểm tra khôi phục nháp sau khi tải lại trang
         await expect(guest.getByText('Bước 2 / 4')).toBeVisible()
         await guest.getByPlaceholder(/đọc sách 10 phút/i).fill('uống nước ấm mỗi sáng')
         await guest.getByPlaceholder(/người điềm tĩnh/i).fill('người khỏe mạnh và yêu bản thân')
+
+        // HB-09: Tắt Chủ nhật trong nhịp tuần và nhập bản tối giản dưới 2 phút
+        await guest.getByRole('button', { name: 'Chủ nhật' }).click()
+        await guest.getByPlaceholder(/Mở sách đọc 1 trang/i).fill('Rót 1 cốc nước ấm sẵn')
 
         await guest.reload()
         await expect(guest.getByText('Bước 2 / 4')).toBeVisible()
         await expect(guest.getByPlaceholder(/đọc sách 10 phút/i)).toHaveValue(
           'uống nước ấm mỗi sáng',
+        )
+        await expect(guest.getByPlaceholder(/Mở sách đọc 1 trang/i)).toHaveValue(
+          'Rót 1 cốc nước ấm sẵn',
         )
 
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()

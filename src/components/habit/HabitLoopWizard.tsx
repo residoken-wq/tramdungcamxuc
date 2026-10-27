@@ -666,7 +666,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                           <button
                             type="button"
                             onClick={() => handleSelectAnchor(draft.anchorHabit)}
-                            className="text-xs text-accent-pink hover:underline font-medium text-left"
+                            className="text-xs text-deep-navy/70 hover:text-bright-magenta underline font-medium text-left"
                           >
                             {vi.hb09.step1.clearAnchor}
                           </button>

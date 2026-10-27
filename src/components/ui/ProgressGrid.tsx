@@ -239,7 +239,7 @@ export function ProgressGrid({
               stateStyle =
                 'bg-lavender-mist/30 border-dashed border-deep-navy/20 text-deep-navy/60 cursor-not-allowed'
               indicatorIcon = (
-                <span className="text-[10px] font-semibold text-deep-navy/50 select-none">
+                <span className="text-[10px] font-semibold text-deep-navy/60 select-none">
                   {vi.hb04.status.rest}
                 </span>
               )

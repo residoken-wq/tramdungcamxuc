@@ -312,9 +312,11 @@ export const habitPlanSubmissionSchema = z
       .preprocess(
         (val) => (val === null || val === undefined ? undefined : val),
         z
-          .array(z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']), {
-            invalid_type_error: vi.hb03.errors.rhythmDaysInvalid,
-          })
+          .array(
+            z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'], {
+              errorMap: () => ({ message: vi.hb03.errors.rhythmDaysInvalid }),
+            }),
+          )
           .min(1, vi.hb09.errors.rhythmDaysEmpty)
           .max(7)
           .refine((days) => new Set(days).size === days.length, {
