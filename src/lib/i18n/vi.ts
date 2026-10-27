@@ -2658,11 +2658,14 @@ export const vi = {
       noGoodHabitHint:
         'Đánh dấu (+) cho ít nhất một thói quen bạn đã làm đều mỗi ngày để chọn làm thói quen neo.',
       clearAnchor: 'Bỏ chọn neo',
+      ratingAria: (habit: string, rating: 'good' | 'neutral' | 'bad') =>
+        `${habit} – đánh giá ${rating === 'good' ? 'tốt' : rating === 'neutral' ? 'bình thường' : 'xấu'}`,
     },
     step2: {
       rhythmLabel: 'Nhịp tuần (ngày bỏ phiếu)',
       rhythmDesc: 'Mặc định cả 7 ngày. Bấm để tắt những ngày bạn muốn nghỉ ngơi.',
       rhythmEmptyError: 'Chọn ít nhất 1 ngày bỏ phiếu.',
+      rhythmCount: (count: number) => `${count}/7 ngày`,
       twoMinuteLabel: 'Bản tối giản dưới 2 phút (tùy chọn)',
       twoMinutePlaceholder: 'Ví dụ: Mở sách đọc 1 trang / Uống 1 ngụm nước',
       twoMinuteCharCount: (current: number, max: number) => `${current}/${max}`,

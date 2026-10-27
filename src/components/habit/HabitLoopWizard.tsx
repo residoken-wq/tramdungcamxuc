@@ -47,6 +47,8 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
   const nameInputId = useId()
   const emailInputId = useId()
   const consentInputId = useId()
+  const rhythmLabelId = useId()
+  const rhythmDescId = useId()
 
   const todayFormatted = React.useMemo(() => {
     try {
@@ -688,7 +690,8 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                       className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-lg border border-lavender-mist bg-white hover:bg-warm-ivory transition-colors"
                     >
                       <div className="flex items-center gap-2 flex-1 min-w-0">
-                        {item.rating === 'good' ? (
+                        {/* anchorHabit is capped at 120 chars in habitPlans – longer habits cannot be the anchor */}
+                        {item.rating === 'good' && item.habit.length <= 120 ? (
                           <label className="flex items-center gap-1.5 cursor-pointer shrink-0 select-none">
                             <input
                               type="radio"
@@ -734,7 +737,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                                 ? 'bg-mint-haze text-deep-navy ring-2 ring-deep-navy/20'
                                 : 'bg-warm-ivory text-deep-navy/70 hover:bg-mint-haze/50'
                             }`}
-                            aria-label={`${item.habit} - đánh giá tốt`}
+                            aria-label={vi.hb09.step1.ratingAria(item.habit, 'good')}
                           >
                             +
                           </button>
@@ -746,7 +749,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                                 ? 'bg-butter-cream text-deep-navy ring-2 ring-deep-navy/20'
                                 : 'bg-warm-ivory text-deep-navy/70 hover:bg-butter-cream/50'
                             }`}
-                            aria-label={`${item.habit} - đánh giá bình thường`}
+                            aria-label={vi.hb09.step1.ratingAria(item.habit, 'neutral')}
                           >
                             =
                           </button>
@@ -758,7 +761,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                                 ? 'bg-soft-pink text-deep-navy ring-2 ring-deep-navy/20'
                                 : 'bg-warm-ivory text-deep-navy/70 hover:bg-soft-pink/50'
                             }`}
-                            aria-label={`${item.habit} - đánh giá xấu`}
+                            aria-label={vi.hb09.step1.ratingAria(item.habit, 'bad')}
                           >
                             -
                           </button>
@@ -836,15 +839,22 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               {/* Nhịp tuần (ngày bỏ phiếu) */}
               <div className="p-4 rounded-xl bg-warm-ivory border border-lavender-mist space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <label className="block text-sm font-semibold text-deep-navy">
+                  <p id={rhythmLabelId} className="block text-sm font-semibold text-deep-navy">
                     {vi.hb09.step2.rhythmLabel}
-                  </label>
+                  </p>
                   <span className="text-xs text-deep-navy/60 font-medium">
-                    {draft.rhythmDays.length}/7 ngày
+                    {vi.hb09.step2.rhythmCount(draft.rhythmDays.length)}
                   </span>
                 </div>
-                <p className="text-xs text-deep-navy/70">{vi.hb09.step2.rhythmDesc}</p>
-                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 pt-1">
+                <p id={rhythmDescId} className="text-xs text-deep-navy/70">
+                  {vi.hb09.step2.rhythmDesc}
+                </p>
+                <div
+                  role="group"
+                  aria-labelledby={rhythmLabelId}
+                  aria-describedby={rhythmDescId}
+                  className="grid grid-cols-4 sm:grid-cols-7 gap-2 pt-1"
+                >
                   {DEFAULT_RHYTHM_DAYS.map((day) => {
                     const isSelected = draft.rhythmDays.includes(day)
                     const dayLabel = vi.hb03.fields.rhythmDaysOptions[day]

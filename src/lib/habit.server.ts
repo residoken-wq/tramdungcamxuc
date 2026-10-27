@@ -11,6 +11,7 @@ import {
   type PayloadRequest,
   type Where,
 } from 'payload'
+import type { RequiredDataFromCollectionSlug } from 'payload'
 import config from '@/payload.config'
 import type { Product, SiteSetting, Technique } from '@/payload-types'
 import type { PublicTechnique } from './habit'
@@ -407,7 +408,7 @@ export async function submitHabitPlan(
     }
 
     // REVIEW-REQUIRED: Lưu kế hoạch cho khách chưa đăng nhập (leadEmail) với 4 nhóm field: scorecard.time, anchorHabit, rhythmDays, twoMinuteAction
-    const planData: Record<string, unknown> = {
+    const planData: RequiredDataFromCollectionSlug<'habitPlans'> = {
       leadEmail: cleanEmail,
       scorecard: validated.scorecard.map((item) => ({
         habit: item.habit,
@@ -433,7 +434,7 @@ export async function submitHabitPlan(
 
     habitPlanDoc = (await payload.create({
       collection: 'habitPlans',
-      data: planData as never,
+      data: planData,
       overrideAccess: true, // overrideAccess cho phép server action lưu kế hoạch của học viên chưa đăng nhập
       req,
     })) as { id: number }
