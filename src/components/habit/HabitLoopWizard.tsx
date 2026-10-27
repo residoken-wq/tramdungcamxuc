@@ -210,18 +210,43 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     setStepError(null)
   }
 
-  const handleRemoveHabit = (index: number) => {
+  const handleUpdateTime = (index: number, timeVal: string) => {
     setDraft((prev) => ({
       ...prev,
-      scorecard: prev.scorecard.filter((_, i) => i !== index),
+      scorecard: prev.scorecard.map((item, i) =>
+        i === index ? { ...item, time: timeVal.trim() || undefined } : item,
+      ),
     }))
   }
 
-  const handleUpdateRating = (index: number, rating: HabitScorecardRating) => {
+  const handleSelectAnchor = (habitText: string) => {
     setDraft((prev) => ({
       ...prev,
-      scorecard: prev.scorecard.map((item, i) => (i === index ? { ...item, rating } : item)),
+      anchorHabit: prev.anchorHabit === habitText ? '' : habitText,
     }))
+  }
+
+  const handleRemoveHabit = (index: number) => {
+    setDraft((prev) => {
+      const removed = prev.scorecard[index]
+      return {
+        ...prev,
+        scorecard: prev.scorecard.filter((_, i) => i !== index),
+        anchorHabit: removed && prev.anchorHabit === removed.habit ? '' : prev.anchorHabit,
+      }
+    })
+  }
+
+  const handleUpdateRating = (index: number, rating: HabitScorecardRating) => {
+    setDraft((prev) => {
+      const item = prev.scorecard[index]
+      const unselectAnchor = item && prev.anchorHabit === item.habit && rating !== 'good'
+      return {
+        ...prev,
+        scorecard: prev.scorecard.map((s, i) => (i === index ? { ...s, rating } : s)),
+        anchorHabit: unselectAnchor ? '' : prev.anchorHabit,
+      }
+    })
   }
 
   // Quản lý kỹ thuật (Bước 3)
@@ -574,7 +599,35 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               </div>
 
               {/* Danh sách thói quen hiện tại */}
-              <div className="space-y-2">
+              <div className="space-y-3">
+                {draft.scorecard.length > 0 && (
+                  <>
+                    {draft.scorecard.some((item) => item.rating === 'good') ? (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-warm-ivory border border-lavender-mist text-xs text-deep-navy">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-semibold text-bright-magenta">
+                            {vi.hb09.step1.anchorSectionTitle}:
+                          </span>
+                          <span>{vi.hb09.step1.anchorHint}</span>
+                        </div>
+                        {draft.anchorHabit ? (
+                          <button
+                            type="button"
+                            onClick={() => handleSelectAnchor(draft.anchorHabit)}
+                            className="text-xs text-accent-pink hover:underline font-medium text-left"
+                          >
+                            {vi.hb09.step1.clearAnchor}
+                          </button>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="p-3 rounded-xl bg-warm-ivory border border-lavender-mist text-xs text-deep-navy/80">
+                        💡 {vi.hb09.step1.noGoodHabitHint}
+                      </div>
+                    )}
+                  </>
+                )}
+
                 {draft.scorecard.length === 0 ? (
                   <p className="text-center py-8 text-deep-navy/60 italic text-sm">
                     {vi.habit.wizard.step1.emptyPrompt}
@@ -583,53 +636,92 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   draft.scorecard.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg border border-lavender-mist bg-white hover:bg-warm-ivory transition-colors"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-lg border border-lavender-mist bg-white hover:bg-warm-ivory transition-colors"
                     >
-                      <span className="text-sm font-medium text-deep-navy flex-1">
-                        {item.habit}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateRating(index, 'good')}
-                          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                            item.rating === 'good'
-                              ? 'bg-mint-haze text-deep-navy ring-2 ring-deep-navy/20'
-                              : 'bg-warm-ivory text-deep-navy/70 hover:bg-mint-haze/50'
-                          }`}
-                        >
-                          +
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateRating(index, 'neutral')}
-                          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                            item.rating === 'neutral'
-                              ? 'bg-butter-cream text-deep-navy ring-2 ring-deep-navy/20'
-                              : 'bg-warm-ivory text-deep-navy/70 hover:bg-butter-cream/50'
-                          }`}
-                        >
-                          =
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateRating(index, 'bad')}
-                          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                            item.rating === 'bad'
-                              ? 'bg-soft-pink text-deep-navy ring-2 ring-deep-navy/20'
-                              : 'bg-warm-ivory text-deep-navy/70 hover:bg-soft-pink/50'
-                          }`}
-                        >
-                          -
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveHabit(index)}
-                          className="ml-2 p-1 text-deep-navy/70 hover:text-deep-navy text-sm"
-                          aria-label={vi.habit.wizard.step1.deleteButton}
-                        >
-                          ✕
-                        </button>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {item.rating === 'good' ? (
+                          <label className="flex items-center gap-1.5 cursor-pointer shrink-0 select-none">
+                            <input
+                              type="radio"
+                              name="anchorHabit"
+                              checked={draft.anchorHabit === item.habit}
+                              onChange={() => handleSelectAnchor(item.habit)}
+                              className="w-4 h-4 text-bright-magenta focus:ring-bright-magenta cursor-pointer"
+                              aria-label={`${vi.hb09.step1.anchorRadioLabel}: ${item.habit}`}
+                            />
+                            {draft.anchorHabit === item.habit && (
+                              <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-butter-cream text-deep-navy border border-butter-cream/80">
+                                {vi.hb09.step1.anchorBadge}
+                              </span>
+                            )}
+                          </label>
+                        ) : (
+                          <div className="w-4 shrink-0" aria-hidden="true" />
+                        )}
+                        <span className="text-sm font-medium text-deep-navy break-words min-w-0 flex-1">
+                          {item.habit}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                        <div className="flex items-center gap-1">
+                          <label htmlFor={`scorecard-time-${index}`} className="sr-only">
+                            {vi.hb09.step1.timeAriaLabel(item.habit)}
+                          </label>
+                          <input
+                            id={`scorecard-time-${index}`}
+                            type="time"
+                            value={item.time || ''}
+                            onChange={(e) => handleUpdateTime(index, e.target.value)}
+                            aria-label={vi.hb09.step1.timeAriaLabel(item.habit)}
+                            className="px-2 py-1 text-xs rounded border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-1 focus:ring-bright-magenta w-24"
+                          />
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateRating(index, 'good')}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                              item.rating === 'good'
+                                ? 'bg-mint-haze text-deep-navy ring-2 ring-deep-navy/20'
+                                : 'bg-warm-ivory text-deep-navy/70 hover:bg-mint-haze/50'
+                            }`}
+                            aria-label={`${item.habit} - đánh giá tốt`}
+                          >
+                            +
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateRating(index, 'neutral')}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                              item.rating === 'neutral'
+                                ? 'bg-butter-cream text-deep-navy ring-2 ring-deep-navy/20'
+                                : 'bg-warm-ivory text-deep-navy/70 hover:bg-butter-cream/50'
+                            }`}
+                            aria-label={`${item.habit} - đánh giá bình thường`}
+                          >
+                            =
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateRating(index, 'bad')}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                              item.rating === 'bad'
+                                ? 'bg-soft-pink text-deep-navy ring-2 ring-deep-navy/20'
+                                : 'bg-warm-ivory text-deep-navy/70 hover:bg-soft-pink/50'
+                            }`}
+                            aria-label={`${item.habit} - đánh giá xấu`}
+                          >
+                            -
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveHabit(index)}
+                            className="ml-2 p-1 text-deep-navy/70 hover:text-deep-navy text-sm"
+                            aria-label={vi.habit.wizard.step1.deleteButton}
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))
