@@ -4,7 +4,7 @@ import React, { useState, useEffect, useId, useRef } from 'react'
 import Link from 'next/link'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
-import { ProgressGrid } from '@/components/habit/ProgressGrid'
+import { ProgressGrid, type ProgressDayItem } from '@/components/habit/ProgressGrid'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
@@ -22,7 +22,7 @@ import {
   type HabitPlanDraft,
 } from '@/lib/habit'
 import type { HabitStage } from '@/lib/diagnostic'
-import type { Weekday } from '@/lib/habit/rhythm'
+import { isVotingDay, type Weekday } from '@/lib/habit/rhythm'
 
 export interface HabitLoopWizardProps {
   techniques: PublicTechnique[]
@@ -60,6 +60,27 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
       return new Date().toLocaleDateString('vi-VN')
     }
   }, [])
+
+  const previewDays = React.useMemo<ProgressDayItem[]>(() => {
+    const days: ProgressDayItem[] = []
+    const today = new Date()
+    const journeyDays = 28
+    for (let d = 1; d <= journeyDays; d++) {
+      const voting = isVotingDay(
+        {
+          startDate: today,
+          journeyDays,
+          rhythmDays: draft.rhythmDays,
+        },
+        d,
+      )
+      days.push({
+        day: d,
+        status: voting ? (d === 1 ? 'today' : 'future') : 'rest',
+      })
+    }
+    return days
+  }, [draft.rhythmDays])
 
   // 1. Khôi phục dữ liệu từ localStorage
   useEffect(() => {
@@ -1052,7 +1073,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                     {vi.habit.wizard.step4.continuousDays}
                   </span>
                 </div>
-                <ProgressGrid />
+                <ProgressGrid days={previewDays} totalDays={28} />
                 <p className="text-xs text-deep-navy/60 text-center mt-3 italic">
                   {vi.habit.wizard.step4.reassurance}
                 </p>

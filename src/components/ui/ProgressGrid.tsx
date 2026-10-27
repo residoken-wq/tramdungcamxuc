@@ -4,7 +4,7 @@ import React from 'react'
 import { getEmotion } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 
-export type DayStatus = 'done' | 'missed' | 'today' | 'future' | 'locked'
+export type DayStatus = 'done' | 'missed' | 'today' | 'future' | 'locked' | 'rest'
 
 export interface ProgressDayItem {
   day: number
@@ -180,10 +180,12 @@ export function ProgressGrid({
       <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5">
         {allDays.map((item) => {
           const { day, status, emotionKey } = item
-          const isNonInteractive = !isInteractive || status === 'future' || status === 'locked'
+          const isNonInteractive =
+            !isInteractive || status === 'future' || status === 'locked' || status === 'rest'
           const emotion = emotionKey ? getEmotion(emotionKey) : undefined
 
-          const statusText = vi.habit.statuses[status]
+          const statusText =
+            status === 'rest' ? vi.hb04.status.rest : vi.habit.statuses[status]
           const ariaLabel = vi.habit.ariaDay(day, statusText, emotion?.label)
 
           let stateStyle = ''
@@ -231,6 +233,16 @@ export function ProgressGrid({
               stateStyle =
                 'bg-deep-navy/5 border-dashed border-deep-navy/15 text-deep-navy/70 cursor-not-allowed opacity-60'
               indicatorIcon = <LockIcon className="w-3 h-3 text-deep-navy/70" />
+              break
+
+            case 'rest':
+              stateStyle =
+                'bg-lavender-mist/30 border-dashed border-deep-navy/20 text-deep-navy/60 cursor-not-allowed'
+              indicatorIcon = (
+                <span className="text-[10px] font-semibold text-deep-navy/50 select-none">
+                  {vi.hb04.status.rest}
+                </span>
+              )
               break
 
             case 'future':
@@ -296,6 +308,14 @@ export function ProgressGrid({
           </span>
           <span>{vi.habit.statuses.locked} / Chưa tới</span>
         </div>
+        {allDays.some((d) => d.status === 'rest') && (
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-md bg-lavender-mist/30 border border-dashed border-deep-navy/20 flex items-center justify-center text-[9px] text-deep-navy/60 font-semibold">
+              -
+            </span>
+            <span>{vi.hb04.status.rest}</span>
+          </div>
+        )}
       </div>
     </div>
   )
