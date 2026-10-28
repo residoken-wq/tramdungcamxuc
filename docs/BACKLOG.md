@@ -25,6 +25,7 @@
 - [ ] **Hỏi Hana: cỡ Boarding Pass 4:3 / hình nền điện thoại riêng? (câu 8 MEETING_2010)**: Hiện tại hệ thống đang xuất 2 kích thước chuẩn thương hiệu: 4:5 (1080×1350) cho mạng xã hội và 9:16 (1080×1920) dùng làm hình nền điện thoại / story. Cần xác nhận với Hana xem có nhu cầu bổ sung thêm tỷ lệ 4:3 như bản tham chiếu cũ hoặc phiên bản hình nền điện thoại tối giản riêng hay không.
 - [x] **Banner "Lỡ nhịp 1 ngày là không sao cả" đếm theo ngày lịch** (HB-06 để lại): Đã chuyển sang đếm theo số ngày bỏ phiếu lỡ liên tiếp (`missedVotingRun.count === 1`) từ `rhythm.ts`, bỏ qua ngày nghỉ theo nhịp (xong ở HB-11).
 - [x] **Xem trước lưới và Boarding Pass dùng 28 ngày cố định** (HB-09 / HB-10 để lại): Đã đọc động từ `siteSettings.habitJourneyDays` và truyền qua `HabitLoopWizard` vào khối xem trước lưới và Boarding Pass (xong ở HB-11).
+- [ ] **Xuất CSV dữ liệu thói quen gồm cả câu trả lời suy ngẫm từng trạm (HB-12 để lại → HB-13)**: Hỗ trợ học viên xuất toàn bộ lịch sử check-in, cảm xúc và các bài suy ngẫm cuối trạm ra file CSV / bảng tổng kết để gửi cho Coach trước các buổi Coaching 1:1 hoặc lưu trữ cá nhân.
 
 ---
 

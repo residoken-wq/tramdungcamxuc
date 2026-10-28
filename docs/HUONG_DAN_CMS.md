@@ -913,6 +913,10 @@ Bạn có 3 cách rất dễ dàng:
      - **Tên chặng** (bắt buộc): Tên chặng (ví dụ: `Trạm 1: Nhận diện & Khởi động`, `Trạm 2: Vượt qua sức ỳ`...). **Hiển thị ngoài Tracker (HB-11)**: Tên các trạm cấu hình tại đây sẽ hiển thị trực tiếp trên giao diện `/habit/tracker` của học viên thành từng khối trạm trực quan kèm khoảng ngày (ví dụ `Ngày 1 – 7`) và tiến độ số ngày bỏ phiếu đã check-in của riêng trạm đó. Nếu trạm chưa có tên hoặc chưa cấu hình, hệ thống sẽ tự động hiển thị tên mặc định `Trạm 1`, `Trạm 2`...
      - **Thông điệp ngắn**: Câu thông điệp gợi cảm xúc đồng hành cho học viên khi bước vào trạm.
      - **Câu hỏi suy ngẫm cuối trạm**: Thêm tối đa 5 câu hỏi suy ngẫm để học viên tự nhìn lại và đúc kết sau khi hoàn thành trạm (nhập ô _Câu hỏi suy ngẫm_, bắt buộc khi thêm dòng).
+       - **Hiển thị ngoài Tracker (HB-12)**: Khi trạm có cấu hình câu hỏi suy ngẫm, trên trang `/habit/tracker` của học viên sẽ xuất hiện nút **"Suy ngẫm trạm"** ở cuối khối trạm tương ứng.
+       - **Quy tắc mở khóa**: Nút suy ngẫm chỉ mở khóa khi học viên đã đi hết số ngày của trạm (ví dụ trạm 1 gồm Ngày 1 đến Ngày 7 thì nút sẽ mở khóa từ Ngày 8; nếu chưa tới ngày mở, nút bị khóa kèm thông báo `🔒 Mở vào ngày 8`). Nếu trạm chưa cấu hình câu hỏi suy ngẫm nào, hệ thống tự động ẩn nút để giữ giao diện tinh gọn.
+       - **Bảo mật tâm lý & Quyền riêng tư tuyệt đối**: Toàn bộ câu trả lời suy ngẫm của học viên được bảo vệ bằng cơ chế phân quyền bảo mật riêng tư (`selfCustomerOnlyField`), chỉ duy nhất chính học viên đó đọc được. Kể cả ban quản trị, admin hay coach cũng không xem được nội dung này qua API hay CMS, đảm bảo học viên hoàn toàn an tâm viết ra những suy nghĩ chân thật nhất.
+       - **Trạng thái đã hoàn thành**: Sau khi học viên gửi câu trả lời, trạm sẽ hiển thị huy hiệu `✓ Đã suy ngẫm` và nút chuyển thành `Xem / sửa suy ngẫm`. Khi tài khoản hết hạn truy cập, học viên vẫn có thể mở lại để đọc suy ngẫm của mình ở chế độ chỉ đọc.
 
 3. **Cấu hình Câu trích dẫn (`quotes`)**:
    - Dùng để hiển thị các câu danh ngôn, trích dẫn truyền cảm hứng trên giao diện học và đồng hành.
