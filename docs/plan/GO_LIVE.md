@@ -1,5 +1,7 @@
 # Lên tramdungcamxuc.com và bàn giao cho Hana (kế hoạch 20/10/2026, sửa 21/10: NPM ở VPS khác; sửa 28/10: DB mới, không chuyển từ demo)
 
+> **Chạy lệnh:** bản từng lệnh theo thứ tự ở [`GO_LIVE_STEPS.md`](GO_LIVE_STEPS.md) (28/10). File này giữ lý do và chi tiết.
+
 Đã chốt với anh Nhân 20/10:
 
 - Dữ liệu: ~~chuyển DB + ảnh của bản demo~~ → **sửa 28/10: DB mới**, nạp dữ liệu thật Hana đã cung cấp (Habit Hack, 26 thẻ EQ) + khung `[MẪU]` để Hana thay (mục E2).
