@@ -21,6 +21,7 @@ describe('Habit Boarding Pass Component (HB-10)', () => {
     render(
       <BoardingPassPreview
         identityStatement="Tôi sẽ đọc sách mỗi ngày để mở mang tri thức"
+        actionText="đọc sách mỗi ngày"
         anchorHabit="Uống cà phê sáng"
         twoMinuteAction="Đọc 1 trang sách"
         rhythmDays={['mon', 'wed', 'fri']}
@@ -37,7 +38,9 @@ describe('Habit Boarding Pass Component (HB-10)', () => {
     expect(screen.getByText(/Tôi sẽ đọc sách mỗi ngày để mở mang tri thức/)).toBeDefined()
 
     // Thói quen neo & Bản tối giản
-    expect(screen.getByText(/Sau khi Uống cà phê sáng, tôi sẽ Đọc 1 trang sách/)).toBeDefined()
+    expect(screen.getByText(/Sau khi Uống cà phê sáng, tôi sẽ đọc sách mỗi ngày/)).toBeDefined()
+    // Bản tối giản là khối riêng (HB-10c)
+    expect(screen.getByText('Đọc 1 trang sách')).toBeDefined()
 
     // 7 ô nhịp tuần
     expect(screen.getByText('T2')).toBeDefined()

@@ -2704,6 +2704,7 @@ export const vi = {
     startDatePrefix: 'Bắt đầu',
     techniquesHeading: 'KỸ THUẬT THỰC HÀNH',
     footerUrl: 'tramdungcamxuc.com',
+    footerBrand: 'Trạm Dừng Cảm Xúc',
     weekdaysShort: {
       mon: 'T2',
       tue: 'T3',

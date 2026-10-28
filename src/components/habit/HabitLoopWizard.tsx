@@ -1134,6 +1134,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   draft.identityStatement ||
                   formatIdentityStatement(draft.actionText, draft.personText)
                 }
+                actionText={draft.actionText || undefined}
                 anchorHabit={draft.anchorHabit || undefined}
                 twoMinuteAction={draft.twoMinuteAction || undefined}
                 rhythmDays={draft.rhythmDays}

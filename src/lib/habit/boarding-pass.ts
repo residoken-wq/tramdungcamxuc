@@ -22,6 +22,15 @@ export const boardingPassInputSchema = z
       .trim()
       .min(1, vi.habit.wizard.errors.identityRequired)
       .max(500, vi.habit.wizard.errors.identityMax),
+    // The "Tôi sẽ [actionText]" part of the identity statement – used for the anchor formula,
+    // the same sentence the wizard shows in step 2 (HB-09).
+    actionText: z
+      .string()
+      .trim()
+      .max(500, vi.habit.wizard.errors.identityMax)
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
     anchorHabit: z
       .string()
       .trim()
@@ -132,10 +141,10 @@ export function buildBoardingPass(
     ? truncateText(input.twoMinuteAction, 140)
     : undefined
 
+  // Anchor formula only when both parts come from the learner – no filler text on the image.
   let anchorFormula: string | undefined
-  if (anchorHabit) {
-    const actionPart = twoMinuteAction || 'thực hiện hành động'
-    anchorFormula = truncateText(vi.hb10.anchorFormula(anchorHabit, actionPart), 150)
+  if (anchorHabit && input.actionText) {
+    anchorFormula = truncateText(vi.hb10.anchorFormula(anchorHabit, input.actionText), 150)
   }
 
   // Rhythm days mapping (7 days)

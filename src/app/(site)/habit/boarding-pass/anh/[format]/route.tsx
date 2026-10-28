@@ -245,8 +245,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ for
           </div>
         </div>
 
-        {/* 2. THÓI QUEN NEO / BẢN TỐI GIẢN (nếu có) */}
-        {data.anchorFormula || data.twoMinuteAction ? (
+        {/* 2. THÓI QUEN NEO và BẢN TỐI GIẢN – hai khối riêng, mỗi khối chỉ hiện khi có */}
+        {data.anchorFormula ? (
           <div
             style={{
               display: 'flex',
@@ -262,13 +262,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ for
                 fontFamily: 'Montserrat',
                 fontWeight: 700,
                 fontSize: 12,
-                color: '#EF3B83',
+                color: '#BC039E',
                 letterSpacing: 1.5,
                 marginBottom: 6,
                 textTransform: 'uppercase',
               }}
             >
-              {data.anchorFormula ? vi.hb10.anchorLabel : vi.hb10.twoMinuteLabel}
+              {vi.hb10.anchorLabel}
             </div>
 
             <div
@@ -280,7 +280,46 @@ export async function POST(request: Request, { params }: { params: Promise<{ for
                 lineHeight: 1.4,
               }}
             >
-              {data.anchorFormula ? data.anchorFormula : data.twoMinuteAction}
+              {data.anchorFormula}
+            </div>
+          </div>
+        ) : null}
+
+        {data.twoMinuteAction ? (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              backgroundColor: 'rgba(246, 233, 184, 0.45)',
+              border: '1.5px solid #F6E9B8',
+              borderRadius: 20,
+              padding: is45 ? '14px 22px' : '20px 26px',
+            }}
+          >
+            <div
+              style={{
+                fontFamily: 'Montserrat',
+                fontWeight: 700,
+                fontSize: 12,
+                color: '#BC039E',
+                letterSpacing: 1.5,
+                marginBottom: 6,
+                textTransform: 'uppercase',
+              }}
+            >
+              {vi.hb10.twoMinuteLabel}
+            </div>
+
+            <div
+              style={{
+                fontFamily: 'Montserrat',
+                fontWeight: 600,
+                fontSize: is45 ? 17 : 20,
+                color: '#280A60',
+                lineHeight: 1.4,
+              }}
+            >
+              {data.twoMinuteAction}
             </div>
           </div>
         ) : null}
@@ -335,18 +374,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ for
           <div
             style={{
               display: 'flex',
-              justifyContent: 'space-between',
               width: '100%',
             }}
           >
-            {data.rhythmDays.map((dayItem) => (
+            {data.rhythmDays.map((dayItem, index) => (
               <div
                 key={dayItem.day}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: is45 ? 124 : 124,
+                  // Share the row width instead of a fixed 124px box (7 × 124 overflowed the card).
+                  flex: 1,
+                  marginLeft: index === 0 ? 0 : 10,
                   height: is45 ? 54 : 64,
                   borderRadius: 14,
                   backgroundColor: dayItem.isActive ? '#D9F1EA' : 'rgba(233, 221, 249, 0.3)',
@@ -485,7 +525,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ for
               color: 'rgba(40, 10, 96, 0.7)',
             }}
           >
-            Trạm Dừng Cảm Xúc · Cùng bạn vững vàng thói quen
+            {vi.hb10.footerBrand}
           </span>
 
           <span

@@ -8,6 +8,7 @@ import type { Weekday } from '@/lib/habit/rhythm'
 
 export interface BoardingPassPreviewProps {
   identityStatement: string
+  actionText?: string
   anchorHabit?: string
   twoMinuteAction?: string
   rhythmDays?: Weekday[]
@@ -18,6 +19,7 @@ export interface BoardingPassPreviewProps {
 
 export function BoardingPassPreview({
   identityStatement,
+  actionText,
   anchorHabit,
   twoMinuteAction,
   rhythmDays,
@@ -30,6 +32,7 @@ export function BoardingPassPreview({
 
   const inputPayload: BoardingPassInput = {
     identityStatement: identityStatement?.trim() || '',
+    actionText: actionText?.trim() || undefined,
     anchorHabit: anchorHabit?.trim() || undefined,
     twoMinuteAction: twoMinuteAction?.trim() || undefined,
     rhythmDays:
@@ -163,14 +166,24 @@ export function BoardingPassPreview({
           </p>
         </div>
 
-        {/* 2. Thói quen neo & Bản tối giản (nếu có) */}
-        {(data.anchorFormula || data.twoMinuteAction) && (
+        {/* 2. Thói quen neo và bản tối giản – hai khối riêng, mỗi khối chỉ hiện khi có */}
+        {data.anchorFormula && (
           <div className="relative z-10 p-4 rounded-xl bg-soft-pink/40 border border-accent-pink/60 space-y-1">
-            <span className="block text-[11px] font-ui font-bold uppercase tracking-wider text-accent-pink">
-              {data.anchorFormula ? vi.hb10.anchorLabel : vi.hb10.twoMinuteLabel}
+            <span className="block text-[11px] font-ui font-bold uppercase tracking-wider text-bright-magenta">
+              {vi.hb10.anchorLabel}
             </span>
             <p className="font-ui font-semibold text-deep-navy text-sm sm:text-base">
-              {data.anchorFormula || data.twoMinuteAction}
+              {data.anchorFormula}
+            </p>
+          </div>
+        )}
+        {data.twoMinuteAction && (
+          <div className="relative z-10 p-4 rounded-xl bg-butter-cream/40 border border-butter-cream space-y-1">
+            <span className="block text-[11px] font-ui font-bold uppercase tracking-wider text-bright-magenta">
+              {vi.hb10.twoMinuteLabel}
+            </span>
+            <p className="font-ui font-semibold text-deep-navy text-sm sm:text-base">
+              {data.twoMinuteAction}
             </p>
           </div>
         )}
@@ -193,7 +206,7 @@ export function BoardingPassPreview({
                 className={`py-2 text-center rounded-lg font-ui text-xs sm:text-sm transition-colors ${
                   item.isActive
                     ? 'bg-mint-haze border-2 border-deep-navy text-deep-navy font-bold'
-                    : 'bg-lavender-mist/30 border border-dashed border-deep-navy/20 text-deep-navy/40 font-normal'
+                    : 'bg-lavender-mist/30 border border-dashed border-deep-navy/20 text-deep-navy/60 font-normal'
                 }`}
               >
                 {item.label}
@@ -217,7 +230,7 @@ export function BoardingPassPreview({
                   {stageItem.stageTitle}
                 </span>
                 {stageItem.techniqueNames.length === 0 ? (
-                  <span className="text-deep-navy/40 italic">{vi.hb10.noTechniquesForStage}</span>
+                  <span className="text-deep-navy/70 italic">{vi.hb10.noTechniquesForStage}</span>
                 ) : (
                   stageItem.techniqueNames.map((name, i) => (
                     <div key={i} className="text-deep-navy font-medium">

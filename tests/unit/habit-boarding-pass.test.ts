@@ -180,4 +180,20 @@ describe('buildBoardingPass & formatters', () => {
     expect(cravingStage?.techniqueNames).toEqual([])
     expect(rewardStage?.techniqueNames).toEqual(['Đo lường tiến độ'])
   })
+
+  it('câu neo dùng hành động trong câu định danh; bản tối giản là khối riêng (HB-10c)', () => {
+    const base = boardingPassInputSchema.parse({
+      identityStatement: '[MẪU] Tôi sẽ đọc 1 trang sách để trở thành người ham học',
+      anchorHabit: '[MẪU] Pha trà',
+      twoMinuteAction: '[MẪU] Mở sách',
+    })
+    // Không có actionText -> không có câu neo, không chèn chữ thay thế
+    const noAction = buildBoardingPass(base)
+    expect(noAction.anchorFormula).toBeUndefined()
+    expect(noAction.twoMinuteAction).toBe('[MẪU] Mở sách')
+
+    const withAction = buildBoardingPass({ ...base, actionText: 'đọc 1 trang sách' })
+    expect(withAction.anchorFormula).toBe('Sau khi [MẪU] Pha trà, tôi sẽ đọc 1 trang sách')
+    expect(withAction.twoMinuteAction).toBe('[MẪU] Mở sách')
+  })
 })
