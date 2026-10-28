@@ -11,6 +11,7 @@ import {
   type PayloadRequest,
   type Where,
 } from 'payload'
+import type { RequiredDataFromCollectionSlug } from 'payload'
 import config from '@/payload.config'
 import type { Product, SiteSetting, Technique } from '@/payload-types'
 import type { PublicTechnique } from './habit'
@@ -406,21 +407,34 @@ export async function submitHabitPlan(
       }
     }
 
+    // REVIEW-REQUIRED: Lưu kế hoạch cho khách chưa đăng nhập (leadEmail) với 4 nhóm field: scorecard.time, anchorHabit, rhythmDays, twoMinuteAction
+    const planData: RequiredDataFromCollectionSlug<'habitPlans'> = {
+      leadEmail: cleanEmail,
+      scorecard: validated.scorecard.map((item) => ({
+        habit: item.habit,
+        rating: item.rating,
+        ...(item.time ? { time: item.time } : {}),
+      })),
+      identityStatement: validated.identityStatement,
+      chosenTechniques: validated.chosenTechniques.map((item) => ({
+        technique: item.techniqueId,
+        action: item.action,
+      })),
+      startDate: vietnamTodayIso(),
+    }
+    if (validated.anchorHabit) {
+      planData.anchorHabit = validated.anchorHabit
+    }
+    if (validated.rhythmDays && validated.rhythmDays.length > 0) {
+      planData.rhythmDays = validated.rhythmDays
+    }
+    if (validated.twoMinuteAction) {
+      planData.twoMinuteAction = validated.twoMinuteAction
+    }
+
     habitPlanDoc = (await payload.create({
       collection: 'habitPlans',
-      data: {
-        leadEmail: cleanEmail,
-        scorecard: validated.scorecard.map((item) => ({
-          habit: item.habit,
-          rating: item.rating,
-        })),
-        identityStatement: validated.identityStatement,
-        chosenTechniques: validated.chosenTechniques.map((item) => ({
-          technique: item.techniqueId,
-          action: item.action,
-        })),
-        startDate: vietnamTodayIso(),
-      },
+      data: planData,
       overrideAccess: true, // overrideAccess cho phép server action lưu kế hoạch của học viên chưa đăng nhập
       req,
     })) as { id: number }
