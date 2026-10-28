@@ -2750,6 +2750,39 @@ export const vi = {
     ariaDay: (day: number, statusText: string, emotionText?: string) =>
       `Ngày ${day}: ${statusText}${emotionText ? `, cảm xúc: ${emotionText}` : ''}`,
   },
+  hb12: {
+    reflectionTitle: 'Suy ngẫm trạm',
+    reflectionDesc: 'Nhật ký suy ngẫm cuối mỗi trạm của học viên.',
+    reflectButton: 'Suy ngẫm trạm',
+    editReflectButton: 'Xem / sửa suy ngẫm',
+    reflectedBadge: 'Đã suy ngẫm',
+    openOnDay: (day: number) => `Mở vào ngày ${day}`,
+    modalTitle: (stationName: string) => `Suy ngẫm: ${stationName}`,
+    modalSubtitle:
+      'Dành vài phút nhìn lại chặng đường vừa qua. Câu trả lời của bạn là riêng tư tuyệt đối.',
+    answerPlaceholder: 'Viết suy ngẫm của bạn tại đây...',
+    charCount: (current: number, max: number) => `${current}/${max} ký tự`,
+    saveButton: 'Lưu suy ngẫm',
+    savingButton: 'Đang lưu...',
+    closeButton: 'Đóng',
+    readOnlyNotice:
+      'Quyền truy cập của bạn đã hết hạn. Bạn có thể xem lại bài suy ngẫm nhưng không thể chỉnh sửa.',
+    successToast: 'Đã lưu suy ngẫm thành công.',
+    errors: {
+      unauthenticated: 'Vui lòng đăng nhập để lưu suy ngẫm.',
+      planNotFound: 'Kế hoạch không tồn tại.',
+      planForbidden: 'Bạn không có quyền thực hiện suy ngẫm cho kế hoạch này.',
+      stationNotOpen: (day: number) =>
+        `Trạm này chưa kết thúc. Bài suy ngẫm sẽ mở vào ngày ${day}.`,
+      stationOutOfRange: 'Chỉ số trạm không hợp lệ.',
+      noQuestionsInCMS: 'Trạm này hiện chưa có câu hỏi suy ngẫm.',
+      allAnswersEmpty: 'Vui lòng trả lời ít nhất một câu hỏi trước khi lưu.',
+      answerTooLong: (max: number) => `Câu trả lời không được vượt quá ${max} ký tự.`,
+      accessExpired: 'Quyền truy cập của bạn đã hết hạn, không thể lưu bài suy ngẫm mới.',
+      alreadyReflected: 'Bạn đã lưu bài suy ngẫm cho trạm này.',
+      saveFailed: 'Không thể lưu bài suy ngẫm. Vui lòng thử lại sau.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
