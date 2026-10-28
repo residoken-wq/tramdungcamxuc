@@ -104,10 +104,7 @@ export function TrackerDashboard({
   const showMissedOneDayEncouragement = view.missedRun.count === 1 && !readOnly
 
   // Số ngày bỏ phiếu tối thiểu cần đạt để nhận chứng nhận (90%)
-  const minRequiredVotingDays = requiredDays(
-    view.votingDaysTotal,
-    eligibility?.minPercent ?? 90,
-  )
+  const minRequiredVotingDays = requiredDays(view.votingDaysTotal, eligibility?.minPercent ?? 90)
 
   // Handle day click
   const handleSelectDay = (day: number) => {
@@ -123,11 +120,7 @@ export function TrackerDashboard({
     note?: string | null,
   ) => {
     const status: CheckinStatus =
-      typeof doneOrStatus === 'string'
-        ? doneOrStatus
-        : doneOrStatus
-          ? 'voted'
-          : 'missed'
+      typeof doneOrStatus === 'string' ? doneOrStatus : doneOrStatus ? 'voted' : 'missed'
     const done = status === 'voted' || status === 'minimal'
 
     setCheckins((prev) => {
@@ -149,7 +142,9 @@ export function TrackerDashboard({
         <div className="flex flex-wrap items-center justify-center gap-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-ui font-semibold bg-lavender-mist/60 text-deep-navy">
             <span className="w-2 h-2 rounded-full bg-accent-pink" />
-            <span>{vi.tracker.currentDayBadge(Math.min(journeyDays, currentDay), journeyDays)}</span>
+            <span>
+              {vi.tracker.currentDayBadge(Math.min(journeyDays, currentDay), journeyDays)}
+            </span>
           </div>
 
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-ui font-semibold bg-mint-haze/80 text-deep-navy border border-deep-navy/10">
@@ -231,11 +226,7 @@ export function TrackerDashboard({
             {vi.tracker.pageTitle}
           </h2>
           <span className="text-xs font-sans text-deep-navy/80">
-            {vi.hb11.progress90(
-              view.votedCount,
-              view.votingDaysTotal,
-              minRequiredVotingDays,
-            )}
+            {vi.hb11.progress90(view.votedCount, view.votingDaysTotal, minRequiredVotingDays)}
           </span>
         </div>
 

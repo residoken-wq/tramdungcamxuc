@@ -66,9 +66,7 @@ describe('Habit Tracker Component Tests (HB-11)', () => {
       expect(screen.getByRole('radio', { name: /Bản tối giản/i })).toBeDefined()
       expect(screen.getByRole('radio', { name: /Lỡ nhịp/i })).toBeDefined()
       expect(screen.getByRole('radio', { name: /Nghỉ/i })).toBeDefined()
-      expect(
-        screen.getByText('Ngày nghỉ theo nhịp – ghi gì cũng không tính vào 90%'),
-      ).toBeDefined()
+      expect(screen.getByText('Ngày nghỉ theo nhịp – ghi gì cũng không tính vào 90%')).toBeDefined()
     })
 
     it('submit gửi đúng status qua checkInDay và gọi onSuccess', async () => {

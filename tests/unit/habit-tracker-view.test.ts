@@ -46,7 +46,12 @@ describe('Habit Tracker View (HB-11)', () => {
 
     it('kế hoạch 28 ngày nhịp T2–T6 bắt đầu T2 -> 4 trạm 7 ngày', () => {
       const today = '2026-10-26T12:00:00.000Z' // Day 1
-      const view = buildTrackerView(plan28MonFri, [], today, ['Chặng 1', 'Chặng 2', 'Chặng 3', 'Chặng 4'])
+      const view = buildTrackerView(plan28MonFri, [], today, [
+        'Chặng 1',
+        'Chặng 2',
+        'Chặng 3',
+        'Chặng 4',
+      ])
 
       expect(view.stations).toHaveLength(4)
       expect(view.stations[0].fromDay).toBe(1)

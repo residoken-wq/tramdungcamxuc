@@ -5,15 +5,7 @@ import { getEmotion } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 
 export type DayStatus =
-  | 'done'
-  | 'missed'
-  | 'today'
-  | 'future'
-  | 'locked'
-  | 'rest'
-  | 'voted'
-  | 'minimal'
-  | 'upcoming'
+  'done' | 'missed' | 'today' | 'future' | 'locked' | 'rest' | 'voted' | 'minimal' | 'upcoming'
 
 export interface ProgressDayItem {
   day: number
@@ -298,8 +290,7 @@ export function ProgressGrid({
         break
 
       case 'rest':
-        stateStyle =
-          'bg-warm-ivory border-dashed border-deep-navy/20 text-deep-navy/70 font-normal'
+        stateStyle = 'bg-warm-ivory border-dashed border-deep-navy/20 text-deep-navy/70 font-normal'
         if (isInteractive && !isNonInteractive) {
           stateStyle += ' hover:bg-lavender-mist/30 cursor-pointer'
         }

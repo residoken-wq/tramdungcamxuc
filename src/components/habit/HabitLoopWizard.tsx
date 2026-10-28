@@ -30,10 +30,7 @@ export interface HabitLoopWizardProps {
   journeyDays?: number
 }
 
-export function HabitLoopWizard({
-  techniques,
-  journeyDays = 28,
-}: HabitLoopWizardProps) {
+export function HabitLoopWizard({ techniques, journeyDays = 28 }: HabitLoopWizardProps) {
   const startTimeRef = useRef<number | null>(null)
   // Ghi habit_loop_completed đúng 1 lần mỗi lần mở trang (Quay lại → Tiếp tục không ghi lại)
   const completedTrackedRef = useRef(false)
