@@ -23,6 +23,8 @@
 - [ ] **B5: Hiện ví dụ + video ví dụ kỹ thuật (`exampleVideoUrl`) trong bước chọn kỹ thuật (HB-09)**: Bước 3 của trình hướng dẫn Habit Loop (chọn kỹ thuật) hiện hiển thị mô tả ngắn. Cần dựng giao diện popup/drawer xem ví dụ chi tiết và nhúng iframe Bunny Stream bảo mật cho `exampleVideoUrl` khi Hana hoàn thiện video kỹ thuật (cần tích hợp ký link Bunny Stream – HB-07c).
 - [ ] **Boarding Pass trong Tracker cho khách đã đăng nhập (đọc kế hoạch đã lưu) – HB-10 để lại**: Hiện tại Boarding Pass được sinh tại bước 4 của trình hướng dẫn Habit Loop 5 phút (`/habit/5-phut`) dựa trên dữ liệu người dùng vừa thiết kế. Cần bổ sung nút xem và tải lại Boarding Pass bên trong màn hình `/habit/tracker` cho học viên đã đăng nhập bằng cách đọc kế hoạch thói quen đã lưu trên tài khoản.
 - [ ] **Hỏi Hana: cỡ Boarding Pass 4:3 / hình nền điện thoại riêng? (câu 8 MEETING_2010)**: Hiện tại hệ thống đang xuất 2 kích thước chuẩn thương hiệu: 4:5 (1080×1350) cho mạng xã hội và 9:16 (1080×1920) dùng làm hình nền điện thoại / story. Cần xác nhận với Hana xem có nhu cầu bổ sung thêm tỷ lệ 4:3 như bản tham chiếu cũ hoặc phiên bản hình nền điện thoại tối giản riêng hay không.
+- [x] **Banner "Lỡ nhịp 1 ngày là không sao cả" đếm theo ngày lịch** (HB-06 để lại): Đã chuyển sang đếm theo số ngày bỏ phiếu lỡ liên tiếp (`missedVotingRun.count === 1`) từ `rhythm.ts`, bỏ qua ngày nghỉ theo nhịp (xong ở HB-11).
+- [x] **Xem trước lưới và Boarding Pass dùng 28 ngày cố định** (HB-09 / HB-10 để lại): Đã đọc động từ `siteSettings.habitJourneyDays` và truyền qua `HabitLoopWizard` vào khối xem trước lưới và Boarding Pass (xong ở HB-11).
 
 ---
 
