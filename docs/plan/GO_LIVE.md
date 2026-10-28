@@ -1,8 +1,8 @@
-# Lên tramdungcamxuc.com và bàn giao cho Hana (kế hoạch 20/10/2026, sửa 21/10: NPM ở VPS khác)
+# Lên tramdungcamxuc.com và bàn giao cho Hana (kế hoạch 20/10/2026, sửa 21/10: NPM ở VPS khác; sửa 28/10: DB mới, không chuyển từ demo)
 
 Đã chốt với anh Nhân 20/10:
 
-- Dữ liệu: **chuyển DB + ảnh của bản demo** sang server thật, rồi dọn dữ liệu `[MẪU]` / khách demo.
+- Dữ liệu: ~~chuyển DB + ảnh của bản demo~~ → **sửa 28/10: DB mới**, nạp dữ liệu thật Hana đã cung cấp (Habit Hack, 26 thẻ EQ) + khung `[MẪU]` để Hana thay (mục E2).
 - **Mở mềm**: lên domain thật nhưng `SITE_NOINDEX=true`, chưa quảng bá. Hana nhập nội dung thật và làm buổi thử CM-07 ngay trên bản thật. Đủ mục C mới bật index và bán.
 - DNS trỏ thẳng IP WAN `115.79.58.24`, không qua Cloudflare proxy.
 - **Sửa 21/10:** Nginx Proxy Manager (NPM) chạy bằng Docker trên **một VPS khác**, cùng lớp mạng nội bộ (LAN) với VPS production. Không phải cùng máy như bản 20/10. Bản demo ở server khác nữa.
@@ -94,37 +94,60 @@ Ngoài code, anh cần làm ở GitHub: **Settings → Secrets and variables →
 4. `git clone https://github.com/residoken-wq/tramdungcamxuc.git /opt/tdcx && cd /opt/tdcx`. Đăng nhập GHCR như RUNBOOK mục "Xác thực GitHub Container Registry".
 5. Tạo `/opt/tdcx/.env` (anh tự gõ, `chmod 600`, **không** gửi nội dung cho ai). Danh sách biến ở mục G.
 
-### E2. Chuyển dữ liệu từ demo
+### E2. DB mới + nạp dữ liệu Hana (sửa 28/10)
 
-1. Trên **server demo**, dọn trước khi sao lưu. Lệnh xóa khách demo không chạy được trên bản thật vì bị chặn với domain thật:
-   `docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm -e DEMO_SEED_ALLOW=true -e SITE_URL=https://tdcx.skoolmate.vn seed pnpm seed:demo-gd2:clean < /dev/null` (đúng lệnh trong RUNBOOK mục "Dữ liệu demo GĐ 2")
-   Lệnh này chỉ xóa 3 khách demo cố định (`hoc-vien-test-0x@example.test`), đơn / quyền / tracker của họ và workshop `[MẪU]` demo. Đơn thật ngày 15/10 không bị đụng.
-2. Vẫn trên server demo: `git pull --ff-only`, rồi sao lưu bằng script mới (DB + `media` + `private`):
-   `PROJECT=tdcx-demo COMPOSE_FILES="-f docker-compose.prod.yml" BACKUP_ROOT=/root/tdcx-move ./scripts/backup.sh`
-   Mong đợi dòng `backup OK: …`. Kiểm `SHA256SUMS`. App demo dừng vài giây rồi tự chạy lại.
-3. Chép thư mục backup sang VPS mới (`scp` / `rsync`), kiểm lại checksum trên VPS.
-4. Trên VPS production (`cd /opt/tdcx`), khôi phục bằng các lệnh dưới. **Không** làm theo nguyên mục "Phục hồi toàn diện" của RUNBOOK: mục đó có `git switch` về commit cũ và `curl 127.0.0.1:3400`, không đúng khi chuyển server.
+**Đổi phương án 28/10 (anh Nhân):** **không** chuyển DB / ảnh từ demo `tdcx.skoolmate.vn`. Bản thật dựng DB trống, rồi nạp dữ liệu thật Hana đã cung cấp. Hệ quả:
+
+- Mọi thứ chỉ có trên demo **không sang**: khách / đơn thử (kể cả đơn SePay 15/10), tài khoản admin, ảnh đã tải, nội dung Hana đã sửa trên demo (nếu có). Hana nhập lại trên bản thật.
+- Không cần `backup.sh`, `scp`, `pg_restore` hay lệnh dọn khách demo.
+- Phần khung (trang dựng từ mẫu, menu, sản phẩm + 3 gói, dịch vụ, 6 trang pháp lý trống, FAQ, Cài đặt website) do `pnpm seed` tạo, **gắn nhãn `[MẪU]`** (`isSample`). Hana thay bằng nội dung thật trong admin; `pnpm sample:report` liệt kê chỗ còn `[MẪU]`. Lệnh seed **chỉ chạy một lần lúc dựng**, chỉ tạo / sửa bản ghi `isSample`, không đụng bản ghi thật.
+
+Dữ liệu thật đã có:
+
+| Dữ liệu                                                                        | Nguồn                                                                      | Lệnh                                                                                |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Habit Hack: 16 câu chẩn đoán, 11 kỹ thuật, 7 nhóm / 20 bài học (chưa có video) | file Excel của Hana, đã chuyển vào repo (`seed/import/habit-hack-data.ts`) | `pnpm import:habit`                                                                 |
+| 26 thẻ EQ                                                                      | file JSON của Hana, **để ngoài repo** (không commit), anh giữ              | `pnpm import:eq`                                                                    |
+| Giá 3 gói Growth Mirror + công cụ số                                           | `Growth_Mirror_Pricing_Calculator.xlsx`, đã nằm trong dữ liệu seed         | có trong `pnpm seed` (vẫn gắn `[MẪU]`, Hana xác nhận giá rồi bỏ nhãn bằng cách sửa) |
+
+Các bước (trên VPS production, `cd /opt/tdcx`, sau E1):
+
+1. Kiểm `.env` đã có đủ biến mục G, `APP_TAG` = `sha-…` của image đã kéo về. Kéo luôn image `tools` cùng tag (dùng cho seed / import):
 
    ```bash
-   export B=/duong-dan/tdcx-move/<THOI-DIEM>          # thư mục backup vừa chép sang
-   (cd "$B" && sha256sum -c SHA256SUMS)
    export DC="docker compose -p tdcx -f docker-compose.prod.yml"
    $DC pull < /dev/null
-   $DC up -d postgres < /dev/null
-   $DC exec -T postgres pg_restore -U postgres -d tramdungcamxuc --no-owner --no-privileges --exit-on-error < "$B/database.dump"
-   $DC run --rm --no-deps -T --entrypoint tar app -C /app/media -xzf - < "$B/media.tar.gz"
-   $DC run --rm --no-deps -T --entrypoint tar app -C /app/private -xzf - < "$B/private.tar.gz"
+   $DC --profile tools pull seed < /dev/null
    ```
 
-   DB vừa tạo còn trống nên không cần `DROP DATABASE`. Nếu `pg_restore` báo bảng đã có (đã lỡ chạy app trước) thì dừng lại, báo Planning.
-   **Trước dòng `tar … /app/private` cuối, kiểm quyền thư mục `private`:** image hiện chỉ tạo sẵn `/app/media` cho user `node`; volume `private` mới có thể thuộc `root` nên lệnh `tar … /app/private` (chạy bằng user `node`) báo `Permission denied`, và Hana tải PDF trả phí cũng lỗi. Kiểm: `$DC run --rm --no-deps -T --entrypoint sh app -c 'ls -ld /app/private && touch /app/private/.w && rm /app/private/.w && echo OK'`. Không ra `OK` → chạy `$DC run --rm --no-deps -T -u root --entrypoint chown app -R node:node /app/private` rồi làm lại. (Kèm PR này: `Dockerfile` tạo sẵn `/app/private` cho user `node`, volume mới sẽ đúng quyền.)
+2. Chạy app trên DB trống. App tự chạy **toàn bộ migration** từ đầu (CI kiểm đường này mỗi lần build):
 
-5. `$DC up -d < /dev/null`. App tự chạy các migration còn thiếu. Xem log: `$DC logs app --tail 100`, không có dòng lỗi migration. Từ **VPS NPM** thử: `curl -s http://192.168.250.30:3000/api/users/init` → có `"initialized":true`.
-6. Dữ liệu `[MẪU]` còn lại (chỉ đọc, không xóa gì):
-   `$DC --profile tools run --rm seed pnpm sample:report < /dev/null`
-   In bảng số bản ghi mẫu theo từng bảng và danh sách `#id – trạng thái – còn chữ [MẪU] hay đã sửa`. Hana sửa thành nội dung thật hoặc xóa trong admin. 6 trang pháp lý hiện "đã sửa chữ" vì là khung trống, chỉ cần điền nội dung.
-7. **Không** chạy `pnpm seed` hay bất kỳ lệnh `seed:demo-gd2*` nào trên server thật.
-8. Tài khoản admin chuyển theo DB. Tạo tài khoản `owner` cho Hana trong admin (anh tự gửi mật khẩu). Rà danh sách Quản trị viên, xóa tài khoản test.
+   ```bash
+   $DC up -d < /dev/null
+   $DC ps < /dev/null                     # app + postgres healthy (lần đầu chờ ~1 phút)
+   $DC logs app --tail 100 < /dev/null    # không có dòng lỗi migration
+   ```
+
+   Từ **VPS NPM**: `curl -s http://192.168.250.30:3000/api/users/init` → `"initialized":false` (chưa có admin).
+
+3. Dựng khung `[MẪU]` (một lần): `$DC --profile tools run --rm seed < /dev/null`. Mong đợi bảng `created` theo từng bảng, dòng "Seed dữ liệu MẪU xong".
+4. Nạp Habit Hack thật: `$DC --profile tools run --rm seed pnpm import:habit < /dev/null`. Lệnh xóa câu quiz / kỹ thuật / bài học `[MẪU]` vừa tạo ở bước 3, thay bằng bản thật.
+5. Nạp 26 thẻ EQ thật. Chép file JSON lên VPS vào thư mục **ngoài** `/opt/tdcx` (VD `/root/eq-cards-26.json`, `chmod 600`), rồi:
+
+   ```bash
+   $DC --profile tools run --rm \
+     -v /root/eq-cards-26.json:/import/eq-cards.json:ro \
+     -e EQ_CARDS_FILE=/import/eq-cards.json \
+     seed pnpm import:eq < /dev/null
+   ```
+
+   Lệnh kiểm đủ 26 thẻ trước khi ghi, xóa thẻ `[MẪU]`, gắn sản phẩm "EQ Buddy số". Chạy lại không tạo trùng. Xong thì xóa file JSON khỏi VPS nếu không cần giữ.
+   **Thứ tự 3 → 4 → 5 là bắt buộc**: chạy seed sau import thì seed vẫn bỏ qua dữ liệu thật, nhưng import cần sản phẩm "EQ Buddy số" do seed tạo.
+
+6. Tài khoản admin đầu tiên: làm **ngay sau E3** (khi đã có HTTPS), mở `https://tramdungcamxuc.com/admin` tạo tài khoản đầu tiên (tự nhận vai trò `owner`). Trong lúc chờ, bật **Access List** trong NPM chỉ cho IP của anh vào host này, tạo xong admin mới gỡ, vì form "tạo admin đầu tiên" mở cho bất kỳ ai tới trước. Sau đó tạo tài khoản cho Hana, đổi vai trò thành `owner` (anh tự gửi mật khẩu).
+7. Kiểm thử 28/10 (Planning, DB trống ở máy QA, `main` @ `00ec145`): seed → `import:habit` chạy sạch; Habit thay đủ 16 câu / 7 nhóm / 20 bài / 11 kỹ thuật. Còn `[MẪU]`: 8 trang, 12 sản phẩm, 2 dịch vụ, 2 chương trình, 2 bài viết, 3 lời chia sẻ (nháp), 3 FAQ, 3 thẻ EQ (mất sau bước 5), 6 trang pháp lý khung trống. 8 trang đều đã xuất bản; 7 trang chính có thêm **bản nháp** dựng từ mẫu mới (SM-07) – Hana mở trình dựng trang sẽ thấy bản nháp đó, trang công khai vẫn là bản đã xuất bản.
+8. Danh sách còn `[MẪU]`: `$DC --profile tools run --rm seed pnpm sample:report < /dev/null` (chỉ đọc). Gửi bảng này cho Hana / Planning để Hana thay dần.
+9. **Không** chạy `seed:demo-gd2*` trên bản thật (đã bị chặn với domain thật). Không chạy lại `pnpm seed` sau khi Hana bắt đầu sửa, trừ khi Planning yêu cầu.
 
 ### E3. Nginx Proxy Manager
 
@@ -196,6 +219,7 @@ Rồi trên trình duyệt (điện thoại + máy tính):
 
 1. GO-01 đã làm → anh duyệt PR, merge, CI build image mới (đặt `TURNSTILE_SITE_KEY` **trước** khi merge để image mới có key thật).
 2. Anh: DNS + Resend (xác minh domain `tramdungcamxuc.com`: SPF, DKIM) + Turnstile + E1–E5 với `SITE_NOINDEX=true`, `PAYMENT_SANDBOX=` để trống (đơn thật).
+   Sửa 28/10: E2 là DB mới + `seed` khung `[MẪU]` + `import:habit` + `import:eq` (cần file JSON 26 thẻ). Không chuyển gì từ demo.
 3. Hana: mục C (logo, pháp lý, giá, ngân hàng…) + buổi thử CM-07 trên bản thật. Planning chạy lại `pnpm sample:report`, viết biên bản CM-07.
 4. Anh: duyệt mục D.
 5. Bật bán: `SITE_NOINDEX=` (trống), `CSP_ENFORCE=true` (sau khi kiểm không lỗi console), `up -d`. Thử 1 đơn thật nhỏ đi hết luồng. Báo Hana.
@@ -203,19 +227,19 @@ Rồi trên trình duyệt (điện thoại + máy tính):
 
 ## G. Biến môi trường bản thật (chỉ tên – giá trị anh tự giữ)
 
-| Biến                                                                                              | Giá trị / ghi chú                                                                                                                                           |
-| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PAYLOAD_SECRET`                                                                                  | **Tạo mới** (`openssl rand -hex 32`), không dùng lại của demo. Hệ quả: mọi người đăng nhập lại, link trong email cũ của demo hết hiệu lực – chấp nhận được. |
-| `POSTGRES_PASSWORD`                                                                               | Tạo mới (hex). Khôi phục bằng `pg_restore` nên không cần mật khẩu cũ.                                                                                       |
-| `SITE_URL`                                                                                        | `https://tramdungcamxuc.com`                                                                                                                                |
-| `SITE_NOINDEX`                                                                                    | `true` khi mở mềm, để trống khi bật bán                                                                                                                     |
-| `CSP_ENFORCE`                                                                                     | để trống khi mở mềm, `true` khi bật bán                                                                                                                     |
-| `TURNSTILE_SECRET_KEY`                                                                            | secret của widget có `tramdungcamxuc.com` (khớp `TURNSTILE_SITE_KEY` ở GitHub)                                                                              |
-| `RESEND_API_KEY`, `EMAIL_FROM`                                                                    | domain `tramdungcamxuc.com` đã xác minh trong Resend; `EMAIL_FROM` dạng `TRAM DUNG CAM XUC <no-reply@tramdungcamxuc.com>`                                   |
-| `CRON_SECRET`                                                                                     | tạo mới                                                                                                                                                     |
-| `PAYMENT_PROVIDER`                                                                                | `manual` (Hana bấm xác nhận) hoặc `sepay` + `SEPAY_WEBHOOK_API_KEY`                                                                                         |
-| `PAYMENT_SANDBOX`                                                                                 | **để trống**                                                                                                                                                |
-| `VIDEO_PROVIDER`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_TOKEN_KEY`                             | khi đã có Bunny (cần GO-01 B2)                                                                                                                              |
-| `APP_TAG`                                                                                         | `sha-<7 ký tự>` của commit đã duyệt (không dùng `latest` cho bản thật)                                                                                      |
-| `APP_PORT`                                                                                        | **`192.168.250.30:3000`** – app chỉ nghe trên IP LAN (GO-01 B3, sửa 21/10). Để trống = mở `0.0.0.0:3000` ra Internet, **không được**                        |
-| **Không bao giờ đặt** `E2E_TEST_HOOKS`, `DEMO_SEED_ALLOW`, `SEED_ALLOW_PROD`, `STYLEGUIDE_PUBLIC` |                                                                                                                                                             |
+| Biến                                                                                                            | Giá trị / ghi chú                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PAYLOAD_SECRET`                                                                                                | **Tạo mới** (`openssl rand -hex 32`), không dùng lại của demo. Hệ quả: mọi người đăng nhập lại, link trong email cũ của demo hết hiệu lực – chấp nhận được. |
+| `POSTGRES_PASSWORD`                                                                                             | Tạo mới (hex). DB mới (sửa 28/10), không dùng gì của demo.                                                                                                  |
+| `SITE_URL`                                                                                                      | `https://tramdungcamxuc.com`                                                                                                                                |
+| `SITE_NOINDEX`                                                                                                  | `true` khi mở mềm, để trống khi bật bán                                                                                                                     |
+| `CSP_ENFORCE`                                                                                                   | để trống khi mở mềm, `true` khi bật bán                                                                                                                     |
+| `TURNSTILE_SECRET_KEY`                                                                                          | secret của widget có `tramdungcamxuc.com` (khớp `TURNSTILE_SITE_KEY` ở GitHub)                                                                              |
+| `RESEND_API_KEY`, `EMAIL_FROM`                                                                                  | domain `tramdungcamxuc.com` đã xác minh trong Resend; `EMAIL_FROM` dạng `TRAM DUNG CAM XUC <no-reply@tramdungcamxuc.com>`                                   |
+| `CRON_SECRET`                                                                                                   | tạo mới                                                                                                                                                     |
+| `PAYMENT_PROVIDER`                                                                                              | `manual` (Hana bấm xác nhận) hoặc `sepay` + `SEPAY_WEBHOOK_API_KEY`                                                                                         |
+| `PAYMENT_SANDBOX`                                                                                               | **để trống**                                                                                                                                                |
+| `VIDEO_PROVIDER`, `BUNNY_STREAM_LIBRARY_ID`, `BUNNY_STREAM_TOKEN_KEY`                                           | khi đã có Bunny (cần GO-01 B2)                                                                                                                              |
+| `APP_TAG`                                                                                                       | `sha-<7 ký tự>` của commit đã duyệt (không dùng `latest` cho bản thật)                                                                                      |
+| `APP_PORT`                                                                                                      | **`192.168.250.30:3000`** – app chỉ nghe trên IP LAN (GO-01 B3, sửa 21/10). Để trống = mở `0.0.0.0:3000` ra Internet, **không được**                        |
+| **Không bao giờ đặt** trong `.env`: `E2E_TEST_HOOKS`, `DEMO_SEED_ALLOW`, `SEED_ALLOW_PROD`, `STYLEGUIDE_PUBLIC` | (`SEED_ALLOW_PROD` đã gắn sẵn cho riêng service `seed` trong compose; đặt trong `.env` cũng không cần)                                                      |     |
