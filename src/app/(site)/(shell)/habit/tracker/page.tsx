@@ -13,6 +13,7 @@ import {
   getOrCreateTrackerPlan,
 } from '@/lib/habit/tracker.server'
 import { getCertificateEligibility } from '@/lib/habit/certificate.server'
+import { getHabitJourneyContent } from '@/lib/habit/journey-content.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
@@ -88,13 +89,15 @@ export default async function HabitTrackerPage() {
     )
   }
 
-  // 6. Đọc các check-in hiện có của kế hoạch
+  // 6. Đọc các check-in hiện có của kế hoạch (đủ cho số ngày tối đa trong CMS hoặc kế hoạch)
+  const journeyDays = plan.journeyDays ?? 28
+  const maxCheckinLimit = Math.max(60, journeyDays)
   const checkinsRes = await payload.find({
     collection: 'habitCheckins',
     where: {
       plan: { equals: plan.id },
     },
-    limit: 100,
+    limit: maxCheckinLimit,
     depth: 0,
     overrideAccess: true,
   })
@@ -103,15 +106,26 @@ export default async function HabitTrackerPage() {
   const initialCheckins: InitialCheckinData[] = rawDocs.map((doc) => ({
     day: doc.day,
     done: Boolean(doc.done),
+    status: doc.status || (doc.done ? 'voted' : 'missed'),
     emotion: doc.emotion || null,
     note: doc.note || null,
   }))
+
+  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm
+  let stationNames: string[] = []
+  try {
+    const journeyContent = await getHabitJourneyContent(payload)
+    stationNames = (journeyContent.stations || []).map((s) => s.name).filter(Boolean)
+  } catch (err) {
+    // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
+    console.error('Failed to load habit journey stations for tracker:', err)
+  }
 
   const currentDay = getCurrentDayOfPlan(plan.startDate, now)
   const isReadOnly = !access.hasAccess
   const isTrialOrExpired = access.status === 'trial' || access.status === 'expired'
 
-  // Lấy điều kiện nhận chứng nhận 21 ngày
+  // Lấy điều kiện nhận chứng nhận
   const eligibility = await getCertificateEligibility(customer.id, { payload, now })
 
   return (
@@ -119,6 +133,11 @@ export default async function HabitTrackerPage() {
       <TrackerDashboard
         planId={plan.id}
         identityStatement={plan.identityStatement}
+        anchorHabit={plan.anchorHabit ?? null}
+        twoMinuteAction={plan.twoMinuteAction ?? null}
+        rhythmDays={plan.rhythmDays ?? null}
+        startDate={plan.startDate ?? null}
+        stationNames={stationNames}
         currentDay={currentDay}
         initialCheckins={initialCheckins}
         readOnly={isReadOnly}
@@ -127,7 +146,7 @@ export default async function HabitTrackerPage() {
         initialCertificate={eligibility.existingCertificate ?? null}
         eligibility={eligibility}
         customerName={customer.name ?? null}
-        journeyDays={plan.journeyDays ?? 28}
+        journeyDays={journeyDays}
       />
     </div>
   )

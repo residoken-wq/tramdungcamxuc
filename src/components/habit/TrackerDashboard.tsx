@@ -9,10 +9,12 @@ import { TrackerSummaryCard } from './TrackerSummaryCard'
 import type { EmotionKey } from '@/lib/emotions'
 import { calculateTrackerStats } from '@/lib/habit/tracker-stats'
 import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/certificate-types'
+import type { CheckinStatus } from '@/lib/habit/rhythm'
 
 export interface InitialCheckinData {
   day: number
-  done: boolean
+  done?: boolean
+  status?: CheckinStatus | null
   emotion?: string | null
   note?: string | null
 }
@@ -20,6 +22,11 @@ export interface InitialCheckinData {
 export interface TrackerDashboardProps {
   planId: number
   identityStatement?: string | null
+  anchorHabit?: string | null
+  twoMinuteAction?: string | null
+  rhythmDays?: string[] | null
+  startDate?: string | Date | null
+  stationNames?: string[] | null
   currentDay: number
   initialCheckins: InitialCheckinData[]
   readOnly?: boolean
@@ -33,6 +40,11 @@ export interface TrackerDashboardProps {
 
 export function TrackerDashboard({
   identityStatement,
+  anchorHabit: _anchorHabit,
+  twoMinuteAction: _twoMinuteAction,
+  rhythmDays: _rhythmDays,
+  startDate: _startDate,
+  stationNames: _stationNames,
   currentDay,
   initialCheckins,
   readOnly = false,
