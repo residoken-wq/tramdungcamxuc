@@ -4,7 +4,7 @@ import React, { useState, useEffect, useId, useRef } from 'react'
 import Link from 'next/link'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
-import { ProgressGrid } from '@/components/habit/ProgressGrid'
+import { ProgressGrid, type ProgressDayItem } from '@/components/habit/ProgressGrid'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
@@ -12,14 +12,17 @@ import {
   HABIT_LOOP_STORAGE_KEY,
   HABIT_OFFER_PATH,
   HABIT_STAGES,
+  DEFAULT_RHYTHM_DAYS,
   formatIdentityStatement,
   getDefaultHabitDraft,
   flattenChosenTechniques,
   type PublicTechnique,
   type HabitScorecardRating,
+  type HabitScorecardItem,
   type HabitPlanDraft,
 } from '@/lib/habit'
 import type { HabitStage } from '@/lib/diagnostic'
+import { isVotingDay, type Weekday } from '@/lib/habit/rhythm'
 
 export interface HabitLoopWizardProps {
   techniques: PublicTechnique[]
@@ -44,6 +47,42 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
   const nameInputId = useId()
   const emailInputId = useId()
   const consentInputId = useId()
+  const rhythmLabelId = useId()
+  const rhythmDescId = useId()
+
+  const todayFormatted = React.useMemo(() => {
+    try {
+      return new Intl.DateTimeFormat('vi-VN', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }).format(new Date())
+    } catch {
+      return new Date().toLocaleDateString('vi-VN')
+    }
+  }, [])
+
+  const previewDays = React.useMemo<ProgressDayItem[]>(() => {
+    const days: ProgressDayItem[] = []
+    const today = new Date()
+    const journeyDays = 28
+    for (let d = 1; d <= journeyDays; d++) {
+      const voting = isVotingDay(
+        {
+          startDate: today,
+          journeyDays,
+          rhythmDays: draft.rhythmDays,
+        },
+        d,
+      )
+      days.push({
+        day: d,
+        status: voting ? (d === 1 ? 'today' : 'future') : 'rest',
+      })
+    }
+    return days
+  }, [draft.rhythmDays])
 
   // 1. Khôi phục dữ liệu từ localStorage
   useEffect(() => {
@@ -61,19 +100,69 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               typeof (item as { action: unknown }).action === 'string',
           )
         : []
+    const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/
+    const VALID_WEEKDAYS = new Set(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
     const timer = setTimeout(() => {
       try {
         const stored = localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
         if (stored) {
           const parsed = JSON.parse(stored) as Partial<HabitPlanDraft>
           if (parsed && typeof parsed === 'object') {
+            const rawScorecard = Array.isArray(parsed.scorecard) ? parsed.scorecard : []
+            const cleanedScorecard: HabitScorecardItem[] = rawScorecard
+              .filter((item): item is HabitScorecardItem =>
+                Boolean(
+                  item &&
+                  typeof item === 'object' &&
+                  typeof (item as { habit: unknown }).habit === 'string' &&
+                  ['good', 'neutral', 'bad'].includes(
+                    (item as { rating: unknown }).rating as string,
+                  ),
+                ),
+              )
+              .map((item) => {
+                const rawTime = typeof item.time === 'string' ? item.time.trim() : undefined
+                const validTime = rawTime && TIME_REGEX.test(rawTime) ? rawTime : undefined
+                return {
+                  habit: item.habit.trim(),
+                  rating: item.rating,
+                  ...(validTime ? { time: validTime } : {}),
+                }
+              })
+
+            let cleanedAnchor =
+              typeof parsed.anchorHabit === 'string' ? parsed.anchorHabit.trim() : ''
+            const goodHabits = new Set(
+              cleanedScorecard.filter((s) => s.rating === 'good').map((s) => s.habit),
+            )
+            if (!goodHabits.has(cleanedAnchor)) {
+              cleanedAnchor = ''
+            }
+
+            let cleanedRhythm: Weekday[] = [...DEFAULT_RHYTHM_DAYS]
+            if (Array.isArray(parsed.rhythmDays)) {
+              const filtered = parsed.rhythmDays.filter(
+                (d): d is Weekday => typeof d === 'string' && VALID_WEEKDAYS.has(d),
+              )
+              const unique = Array.from(new Set(filtered))
+              if (unique.length > 0) {
+                cleanedRhythm = unique
+              }
+            }
+
+            const cleanedTwoMinuteAction =
+              typeof parsed.twoMinuteAction === 'string' ? parsed.twoMinuteAction.slice(0, 200) : ''
+
             setDraft((prev) => ({
               ...prev,
               ...parsed,
               name: '', // T2-03: Không lưu/khôi phục tên từ nháp (kể cả nháp cũ có tên)
               email: '', // T2-03: Không lưu/khôi phục email từ nháp (kể cả nháp cũ có email)
               consent: false, // B11: Nghị định 13/2023 - không bao giờ tự động tick sẵn ô đồng ý từ nháp
-              scorecard: Array.isArray(parsed.scorecard) ? parsed.scorecard : [],
+              scorecard: cleanedScorecard,
+              anchorHabit: cleanedAnchor,
+              rhythmDays: cleanedRhythm,
+              twoMinuteAction: cleanedTwoMinuteAction,
               actionText: typeof parsed.actionText === 'string' ? parsed.actionText : '',
               personText: typeof parsed.personText === 'string' ? parsed.personText : '',
               identityStatement:
@@ -156,18 +245,43 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     setStepError(null)
   }
 
-  const handleRemoveHabit = (index: number) => {
+  const handleUpdateTime = (index: number, timeVal: string) => {
     setDraft((prev) => ({
       ...prev,
-      scorecard: prev.scorecard.filter((_, i) => i !== index),
+      scorecard: prev.scorecard.map((item, i) =>
+        i === index ? { ...item, time: timeVal.trim() || undefined } : item,
+      ),
     }))
   }
 
-  const handleUpdateRating = (index: number, rating: HabitScorecardRating) => {
+  const handleSelectAnchor = (habitText: string) => {
     setDraft((prev) => ({
       ...prev,
-      scorecard: prev.scorecard.map((item, i) => (i === index ? { ...item, rating } : item)),
+      anchorHabit: prev.anchorHabit === habitText ? '' : habitText,
     }))
+  }
+
+  const handleRemoveHabit = (index: number) => {
+    setDraft((prev) => {
+      const removed = prev.scorecard[index]
+      return {
+        ...prev,
+        scorecard: prev.scorecard.filter((_, i) => i !== index),
+        anchorHabit: removed && prev.anchorHabit === removed.habit ? '' : prev.anchorHabit,
+      }
+    })
+  }
+
+  const handleUpdateRating = (index: number, rating: HabitScorecardRating) => {
+    setDraft((prev) => {
+      const item = prev.scorecard[index]
+      const unselectAnchor = item && prev.anchorHabit === item.habit && rating !== 'good'
+      return {
+        ...prev,
+        scorecard: prev.scorecard.map((s, i) => (i === index ? { ...s, rating } : s)),
+        anchorHabit: unselectAnchor ? '' : prev.anchorHabit,
+      }
+    })
   }
 
   // Quản lý kỹ thuật (Bước 3)
@@ -217,6 +331,15 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     }))
   }
 
+  const handleToggleRhythmDay = (day: Weekday) => {
+    setStepError(null)
+    setDraft((prev) => {
+      const exists = prev.rhythmDays.includes(day)
+      const nextDays = exists ? prev.rhythmDays.filter((d) => d !== day) : [...prev.rhythmDays, day]
+      return { ...prev, rhythmDays: nextDays }
+    })
+  }
+
   // Kiểm tra chuyển bước
   const handleNextStep = () => {
     setStepError(null)
@@ -230,6 +353,10 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     } else if (draft.step === 2) {
       if (!draft.actionText.trim() || !draft.personText.trim()) {
         setStepError(vi.habit.wizard.errors.identityRequired)
+        return
+      }
+      if (draft.rhythmDays.length === 0) {
+        setStepError(vi.hb09.step2.rhythmEmptyError)
         return
       }
       setDraft((prev) => ({ ...prev, step: 3 }))
@@ -295,6 +422,9 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
         identityStatement:
           draft.identityStatement || formatIdentityStatement(draft.actionText, draft.personText),
         chosenTechniques: flattenedTechniques,
+        anchorHabit: draft.anchorHabit || undefined,
+        rhythmDays: draft.rhythmDays,
+        twoMinuteAction: draft.twoMinuteAction || undefined,
         name: draft.name?.trim() || undefined,
         email: cleanEmail,
         consent: true,
@@ -520,7 +650,35 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
               </div>
 
               {/* Danh sách thói quen hiện tại */}
-              <div className="space-y-2">
+              <div className="space-y-3">
+                {draft.scorecard.length > 0 && (
+                  <>
+                    {draft.scorecard.some((item) => item.rating === 'good') ? (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-warm-ivory border border-lavender-mist text-xs text-deep-navy">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-semibold text-bright-magenta">
+                            {vi.hb09.step1.anchorSectionTitle}:
+                          </span>
+                          <span>{vi.hb09.step1.anchorHint}</span>
+                        </div>
+                        {draft.anchorHabit ? (
+                          <button
+                            type="button"
+                            onClick={() => handleSelectAnchor(draft.anchorHabit)}
+                            className="text-xs text-deep-navy/70 hover:text-bright-magenta underline font-medium text-left"
+                          >
+                            {vi.hb09.step1.clearAnchor}
+                          </button>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <div className="p-3 rounded-xl bg-warm-ivory border border-lavender-mist text-xs text-deep-navy/80">
+                        💡 {vi.hb09.step1.noGoodHabitHint}
+                      </div>
+                    )}
+                  </>
+                )}
+
                 {draft.scorecard.length === 0 ? (
                   <p className="text-center py-8 text-deep-navy/60 italic text-sm">
                     {vi.habit.wizard.step1.emptyPrompt}
@@ -529,53 +687,93 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   draft.scorecard.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg border border-lavender-mist bg-white hover:bg-warm-ivory transition-colors"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-lg border border-lavender-mist bg-white hover:bg-warm-ivory transition-colors"
                     >
-                      <span className="text-sm font-medium text-deep-navy flex-1">
-                        {item.habit}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateRating(index, 'good')}
-                          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                            item.rating === 'good'
-                              ? 'bg-mint-haze text-deep-navy ring-2 ring-deep-navy/20'
-                              : 'bg-warm-ivory text-deep-navy/70 hover:bg-mint-haze/50'
-                          }`}
-                        >
-                          +
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateRating(index, 'neutral')}
-                          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                            item.rating === 'neutral'
-                              ? 'bg-butter-cream text-deep-navy ring-2 ring-deep-navy/20'
-                              : 'bg-warm-ivory text-deep-navy/70 hover:bg-butter-cream/50'
-                          }`}
-                        >
-                          =
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateRating(index, 'bad')}
-                          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                            item.rating === 'bad'
-                              ? 'bg-soft-pink text-deep-navy ring-2 ring-deep-navy/20'
-                              : 'bg-warm-ivory text-deep-navy/70 hover:bg-soft-pink/50'
-                          }`}
-                        >
-                          -
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveHabit(index)}
-                          className="ml-2 p-1 text-deep-navy/70 hover:text-deep-navy text-sm"
-                          aria-label={vi.habit.wizard.step1.deleteButton}
-                        >
-                          ✕
-                        </button>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {/* anchorHabit is capped at 120 chars in habitPlans – longer habits cannot be the anchor */}
+                        {item.rating === 'good' && item.habit.length <= 120 ? (
+                          <label className="flex items-center gap-1.5 cursor-pointer shrink-0 select-none">
+                            <input
+                              type="radio"
+                              name="anchorHabit"
+                              checked={draft.anchorHabit === item.habit}
+                              onChange={() => handleSelectAnchor(item.habit)}
+                              className="w-4 h-4 text-bright-magenta focus:ring-bright-magenta cursor-pointer"
+                              aria-label={`${vi.hb09.step1.anchorRadioLabel}: ${item.habit}`}
+                            />
+                            {draft.anchorHabit === item.habit && (
+                              <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-butter-cream text-deep-navy border border-butter-cream/80">
+                                {vi.hb09.step1.anchorBadge}
+                              </span>
+                            )}
+                          </label>
+                        ) : (
+                          <div className="w-4 shrink-0" aria-hidden="true" />
+                        )}
+                        <span className="text-sm font-medium text-deep-navy break-words min-w-0 flex-1">
+                          {item.habit}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                        <div className="flex items-center gap-1">
+                          <label htmlFor={`scorecard-time-${index}`} className="sr-only">
+                            {vi.hb09.step1.timeAriaLabel(item.habit)}
+                          </label>
+                          <input
+                            id={`scorecard-time-${index}`}
+                            type="time"
+                            value={item.time || ''}
+                            onChange={(e) => handleUpdateTime(index, e.target.value)}
+                            aria-label={vi.hb09.step1.timeAriaLabel(item.habit)}
+                            className="px-2 py-1 text-xs rounded border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-1 focus:ring-bright-magenta w-24"
+                          />
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateRating(index, 'good')}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                              item.rating === 'good'
+                                ? 'bg-mint-haze text-deep-navy ring-2 ring-deep-navy/20'
+                                : 'bg-warm-ivory text-deep-navy/70 hover:bg-mint-haze/50'
+                            }`}
+                            aria-label={vi.hb09.step1.ratingAria(item.habit, 'good')}
+                          >
+                            +
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateRating(index, 'neutral')}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                              item.rating === 'neutral'
+                                ? 'bg-butter-cream text-deep-navy ring-2 ring-deep-navy/20'
+                                : 'bg-warm-ivory text-deep-navy/70 hover:bg-butter-cream/50'
+                            }`}
+                            aria-label={vi.hb09.step1.ratingAria(item.habit, 'neutral')}
+                          >
+                            =
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleUpdateRating(index, 'bad')}
+                            className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                              item.rating === 'bad'
+                                ? 'bg-soft-pink text-deep-navy ring-2 ring-deep-navy/20'
+                                : 'bg-warm-ivory text-deep-navy/70 hover:bg-soft-pink/50'
+                            }`}
+                            aria-label={vi.hb09.step1.ratingAria(item.habit, 'bad')}
+                          >
+                            -
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveHabit(index)}
+                            className="ml-2 p-1 text-deep-navy/70 hover:text-deep-navy text-sm"
+                            aria-label={vi.habit.wizard.step1.deleteButton}
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -621,6 +819,102 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                     placeholder={vi.habit.wizard.step2.identityPlaceholder}
                     className="w-full px-4 py-3 rounded-lg border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-2 focus:ring-bright-magenta"
                   />
+                </div>
+              </div>
+
+              {/* Gợi ý công thức gắn thói quen neo (chỉ hiển thị khi đã chọn thói quen neo ở bước 1) */}
+              {draft.anchorHabit && (
+                <div className="p-4 rounded-xl bg-mint-haze/30 border border-mint-haze text-xs sm:text-sm text-deep-navy">
+                  <span className="font-semibold text-bright-magenta block mb-1">
+                    💡 {vi.hb09.step1.anchorSectionTitle}:
+                  </span>
+                  <p className="font-quote italic text-deep-navy text-sm sm:text-base">
+                    &ldquo;
+                    {vi.hb09.step2.anchorFormulaPreview(draft.anchorHabit, draft.actionText)}
+                    &rdquo;
+                  </p>
+                </div>
+              )}
+
+              {/* Nhịp tuần (ngày bỏ phiếu) */}
+              <div className="p-4 rounded-xl bg-warm-ivory border border-lavender-mist space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <p id={rhythmLabelId} className="block text-sm font-semibold text-deep-navy">
+                    {vi.hb09.step2.rhythmLabel}
+                  </p>
+                  <span className="text-xs text-deep-navy/60 font-medium">
+                    {vi.hb09.step2.rhythmCount(draft.rhythmDays.length)}
+                  </span>
+                </div>
+                <p id={rhythmDescId} className="text-xs text-deep-navy/70">
+                  {vi.hb09.step2.rhythmDesc}
+                </p>
+                <div
+                  role="group"
+                  aria-labelledby={rhythmLabelId}
+                  aria-describedby={rhythmDescId}
+                  className="grid grid-cols-4 sm:grid-cols-7 gap-2 pt-1"
+                >
+                  {DEFAULT_RHYTHM_DAYS.map((day) => {
+                    const isSelected = draft.rhythmDays.includes(day)
+                    const dayLabel = vi.hb03.fields.rhythmDaysOptions[day]
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        aria-pressed={isSelected}
+                        onClick={() => handleToggleRhythmDay(day)}
+                        className={`py-2 px-1 text-xs sm:text-sm font-semibold rounded-lg border transition-all text-center ${
+                          isSelected
+                            ? 'bg-bright-magenta text-white border-bright-magenta shadow-soft'
+                            : 'bg-white text-deep-navy/70 border-lavender-mist hover:bg-soft-pink/50 hover:border-accent-pink'
+                        }`}
+                      >
+                        {dayLabel}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Bản tối giản dưới 2 phút */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label
+                    htmlFor="field-two-minute-action"
+                    className="block text-sm font-semibold text-deep-navy"
+                  >
+                    {vi.hb09.step2.twoMinuteLabel}
+                  </label>
+                  <span className="text-xs text-deep-navy/60">
+                    {vi.hb09.step2.twoMinuteCharCount(draft.twoMinuteAction.length, 200)}
+                  </span>
+                </div>
+                <input
+                  id="field-two-minute-action"
+                  type="text"
+                  maxLength={200}
+                  value={draft.twoMinuteAction}
+                  onChange={(e) =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      twoMinuteAction: e.target.value.slice(0, 200),
+                    }))
+                  }
+                  placeholder={vi.hb09.step2.twoMinutePlaceholder}
+                  className="w-full px-4 py-3 rounded-lg border border-lavender-mist text-deep-navy bg-white focus:outline-none focus:ring-2 focus:ring-bright-magenta text-sm sm:text-base"
+                />
+              </div>
+
+              {/* Dòng chỉ đọc ngày bắt đầu + Nhắc nhở dữ liệu riêng tư */}
+              <div className="p-4 rounded-xl bg-warm-ivory border border-lavender-mist text-xs sm:text-sm text-deep-navy/80 space-y-1.5">
+                <div className="font-semibold text-deep-navy flex items-center gap-1.5">
+                  <span>📅</span>
+                  <span>{vi.hb09.step2.startDateReadOnly(todayFormatted)}</span>
+                </div>
+                <div className="text-deep-navy/70 italic flex items-center gap-1.5">
+                  <span>🔒</span>
+                  <span>{vi.hb09.step2.privateDataNote}</span>
                 </div>
               </div>
 
@@ -786,7 +1080,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                     {vi.habit.wizard.step4.continuousDays}
                   </span>
                 </div>
-                <ProgressGrid />
+                <ProgressGrid days={previewDays} totalDays={28} />
                 <p className="text-xs text-deep-navy/60 text-center mt-3 italic">
                   {vi.habit.wizard.step4.reassurance}
                 </p>

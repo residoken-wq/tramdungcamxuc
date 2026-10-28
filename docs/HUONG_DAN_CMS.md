@@ -981,6 +981,7 @@ Bạn có 3 cách rất dễ dàng:
 - **Dữ liệu riêng tư tuyệt đối (Lý do riêng & Bạn đồng hành)**:
   - **Lý do riêng** (`privateReason`) và **Bạn đồng hành** (`companionName` – hệ thống chỉ lưu tên gọi, không lưu số điện thoại hay email của người thứ ba theo Nghị định 13/2023) là không gian hoàn toàn riêng tư của học viên.
   - **Quản trị viên (kể cả chủ dự án `owner` và biên tập viên `editor`) hoàn toàn không thấy nội dung này** trong trang quản trị CMS.
+  - **Lưu ý về nguồn nhập**: Các trường thói quen neo (`anchorHabit`), giờ thực hiện (`scorecard[].time`), nhịp tuần (`rhythmDays`) và bản tối giản (`twoMinuteAction`) được học viên điền trực tiếp từ trình hướng dẫn Habit Loop 5 phút (`/habit/5-phut`). Riêng **Lý do riêng** và **Bạn đồng hành** hiện **chưa có màn nhập ở trình hướng dẫn công khai** (do người dùng chưa đăng nhập, tránh lưu thông tin riêng tư nhạy cảm trên máy tính dùng chung); hai trường này sẽ được bổ sung màn hình nhập riêng bên trong giao diện Tracker sau khi học viên đăng nhập tài khoản.
   - Khi Hana hoặc quản trị viên sửa kế hoạch trong CMS (ví dụ cập nhật thói quen neo hay nhịp tuần), hệ thống giữ nguyên vẹn dữ liệu riêng tư của học viên, không làm mất hay ghi đè.
   - Nếu Hana muốn hỗ trợ học viên về lý do riêng hoặc bạn đồng hành, Hana hãy trao đổi trực tiếp với học viên trong các phiên coaching 1:1 hoặc buổi đồng hành.
 
