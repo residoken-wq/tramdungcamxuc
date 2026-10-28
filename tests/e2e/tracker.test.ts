@@ -174,9 +174,9 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
         await expect(modal).toBeVisible({ timeout: 3000 })
       }).toPass({ timeout: 15000 })
 
-      // Tick hoàn thành
-      const doneCheckbox = modal.locator('input[type="checkbox"]')
-      await doneCheckbox.check()
+      // Chọn trạng thái Bỏ phiếu (voted)
+      const votedRadio = modal.getByRole('radio', { name: /Bỏ phiếu/i })
+      await votedRadio.check()
 
       // Chọn cảm xúc: Bình an (peaceful)
       const peacefulRadio = modal.getByRole('radio', { name: /Bình an/i })
@@ -191,7 +191,9 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
 
       // 12. Tải lại trang -> Ngày 1 vẫn còn trạng thái hoàn thành với cảm xúc
       await guestPage.reload()
-      const day1AfterReload = guestPage.getByRole('button', { name: /^Ngày 1: Đã hoàn thành/i })
+      const day1AfterReload = guestPage.getByRole('button', {
+        name: /^Ngày 1: (Bỏ phiếu|Đã hoàn thành)/i,
+      })
       await expect(day1AfterReload).toBeVisible()
 
       // 13. Ô Ngày 2 không bấm được (chưa tới, disabled)

@@ -275,9 +275,9 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
         await expect(modal).toBeVisible({ timeout: 3000 })
       }).toPass({ timeout: 15000 })
 
-      // Tick hoàn thành + chọn cảm xúc Bình an
-      const doneCheckbox = modal.locator('input[type="checkbox"]')
-      await doneCheckbox.check()
+      // Chọn trạng thái Bỏ phiếu + chọn cảm xúc Bình an
+      const votedRadio = modal.getByRole('radio', { name: /Bỏ phiếu/i })
+      await votedRadio.check()
 
       const peacefulRadio = modal.getByRole('radio', { name: /Bình an/i })
       await peacefulRadio.click()
@@ -290,7 +290,9 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       }).toPass({ timeout: 15000 })
 
       // Kiểm tra ngày 1 đã tích hoàn thành
-      const day1Completed = guestPage.getByRole('button', { name: /^Ngày 1: Đã hoàn thành/i })
+      const day1Completed = guestPage.getByRole('button', {
+        name: /^Ngày 1: (Bỏ phiếu|Đã hoàn thành)/i,
+      })
       await expect(day1Completed).toBeVisible()
 
       // 10. Chuyển đổi từ dùng thử sang mua thật qua /thanh-toan?san-pham=habit-tracker-so
