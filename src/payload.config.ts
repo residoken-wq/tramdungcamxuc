@@ -36,6 +36,7 @@ import { DiscountCodes } from './collections/DiscountCodes'
 import { Leads } from './collections/Leads'
 import { HabitPlans } from './collections/HabitPlans'
 import { HabitCheckins } from './collections/HabitCheckins'
+import { HabitReflections } from './collections/HabitReflections'
 import { SavedCards } from './collections/SavedCards'
 import { DiagnosticResults } from './collections/DiagnosticResults'
 import { Certificates } from './collections/Certificates'
@@ -138,6 +139,7 @@ export default buildConfig({
     Users,
     Entitlements,
     HabitCheckins,
+    HabitReflections,
     LessonProgress,
     DiagnosticResults,
     SavedCards,

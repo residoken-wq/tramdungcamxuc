@@ -94,6 +94,7 @@ export interface Config {
     users: User;
     entitlements: Entitlement;
     habitCheckins: HabitCheckin;
+    habitReflections: HabitReflection;
     lessonProgress: LessonProgress;
     diagnosticResults: DiagnosticResult;
     savedCards: SavedCard;
@@ -138,6 +139,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
     habitCheckins: HabitCheckinsSelect<false> | HabitCheckinsSelect<true>;
+    habitReflections: HabitReflectionsSelect<false> | HabitReflectionsSelect<true>;
     lessonProgress: LessonProgressSelect<false> | LessonProgressSelect<true>;
     diagnosticResults: DiagnosticResultsSelect<false> | DiagnosticResultsSelect<true>;
     savedCards: SavedCardsSelect<false> | SavedCardsSelect<true>;
@@ -1882,6 +1884,43 @@ export interface HabitCheckin {
   createdAt: string;
 }
 /**
+ * Nhật ký suy ngẫm cuối mỗi trạm của học viên.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitReflections".
+ */
+export interface HabitReflection {
+  id: number;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  customer: number | Customer;
+  /**
+   * Chọn nội dung đã tạo trong hệ thống.
+   */
+  plan: number | HabitPlan;
+  /**
+   * Chỉ số trạm (0-based: 0 cho Trạm 1, 1 cho Trạm 2...)
+   */
+  stationIndex: number;
+  answers?:
+    | {
+        /**
+         * Câu hỏi suy ngẫm được chụp lại tại thời điểm trả lời
+         */
+        question: string;
+        /**
+         * Câu trả lời của học viên (tối đa 1000 ký tự)
+         */
+        answer?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  reflectionKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Tiến độ xem video bài học của từng học viên.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2315,6 +2354,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'habitCheckins';
         value: number | HabitCheckin;
+      } | null)
+    | ({
+        relationTo: 'habitReflections';
+        value: number | HabitReflection;
       } | null)
     | ({
         relationTo: 'lessonProgress';
@@ -3039,6 +3082,25 @@ export interface HabitCheckinsSelect<T extends boolean = true> {
   emotion?: T;
   note?: T;
   planDay?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "habitReflections_select".
+ */
+export interface HabitReflectionsSelect<T extends boolean = true> {
+  customer?: T;
+  plan?: T;
+  stationIndex?: T;
+  answers?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  reflectionKey?: T;
   updatedAt?: T;
   createdAt?: T;
 }
