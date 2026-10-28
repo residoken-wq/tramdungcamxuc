@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { vi } from '@/lib/i18n/vi'
-import { ProgressGrid, type ProgressDayItem } from '@/components/ui/ProgressGrid'
+import { ProgressGrid } from '@/components/ui/ProgressGrid'
 import { CheckInModal } from './CheckInModal'
 import { TrackerSummaryCard } from './TrackerSummaryCard'
 import type { EmotionKey } from '@/lib/emotions'
