@@ -3,11 +3,7 @@
 import React, { useState } from 'react'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
-import {
-  buildBoardingPass,
-  type BoardingPassInput,
-  type HabitStage,
-} from '@/lib/habit/boarding-pass'
+import { buildBoardingPass, type BoardingPassInput } from '@/lib/habit/boarding-pass'
 import type { Weekday } from '@/lib/habit/rhythm'
 
 export interface BoardingPassPreviewProps {
