@@ -71,14 +71,10 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
         await expect(guest.getByText('Bước 1 / 4')).toBeVisible({ timeout: 15000 })
 
         // BƯỚC 1: Thêm thói quen mẫu và chọn neo
-        const habitInput = guest.getByPlaceholder(/uống 1 cốc nước ấm/i)
-        await habitInput.fill('[MẪU] Uống nước ấm sáng')
-        const ratingSelect = guest.getByLabelText(/đánh giá thói quen/i)
-        await ratingSelect.selectOption('good')
-        await guest.getByRole('button', { name: /Thêm thói quen/i }).click()
-
-        const anchorRadio = guest.locator('input[type="radio"]').first()
-        await anchorRadio.check()
+        await guest.getByPlaceholder(/Nhập thói quen hàng ngày/i).fill('[MẪU] Uống nước ấm sáng')
+        await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
+        await guest.getByRole('button', { name: /đánh giá tốt/i }).first().click()
+        await guest.locator('input[type="radio"][name="anchorHabit"]').first().check()
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
         // BƯỚC 2: Nhập hành động & mục tiêu định danh, tắt Chủ Nhật
