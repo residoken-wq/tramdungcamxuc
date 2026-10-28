@@ -235,6 +235,9 @@ export function TrackerDashboard({
         <CheckInModal
           day={activeModalDay}
           initialDone={Boolean(selectedEntry?.done)}
+          initialStatus={selectedEntry?.status ?? null}
+          isVotingDay={activeDayView ? activeDayView.isVotingDay : true}
+          twoMinuteAction={twoMinuteAction}
           initialEmotion={(selectedEntry?.emotion as EmotionKey) || null}
           initialNote={selectedEntry?.note || ''}
           isOpen={true}

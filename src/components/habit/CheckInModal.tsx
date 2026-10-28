@@ -7,21 +7,33 @@ import type { EmotionKey } from '@/lib/emotions'
 import { Button } from '@/components/ui/Button'
 import { checkInDay } from '@/lib/habit/tracker-actions'
 import { track } from '@/lib/analytics/track'
+import type { CheckinStatus } from '@/lib/habit/rhythm'
 
 export interface CheckInModalProps {
   day: number
-  initialDone: boolean
+  initialDone?: boolean
+  initialStatus?: CheckinStatus | null
+  isVotingDay?: boolean
+  twoMinuteAction?: string | null
   initialEmotion?: EmotionKey | null
   initialNote?: string | null
   isOpen: boolean
   onClose: () => void
-  onSuccess: (day: number, done: boolean, emotion?: EmotionKey | null, note?: string | null) => void
+  onSuccess: (
+    day: number,
+    doneOrStatus: boolean | CheckinStatus,
+    emotion?: EmotionKey | null,
+    note?: string | null,
+  ) => void
   readOnly?: boolean
 }
 
 export function CheckInModal({
   day,
   initialDone,
+  initialStatus,
+  isVotingDay = true,
+  twoMinuteAction,
   initialEmotion,
   initialNote,
   isOpen,
@@ -29,7 +41,20 @@ export function CheckInModal({
   onSuccess,
   readOnly = false,
 }: CheckInModalProps) {
-  const [done, setDone] = useState(initialDone)
+  const resolveInitialStatus = (): CheckinStatus => {
+    if (initialStatus) {
+      if (isVotingDay && initialStatus === 'rest') {
+        return 'voted'
+      }
+      return initialStatus
+    }
+    if (initialDone !== undefined) {
+      return initialDone ? 'voted' : 'missed'
+    }
+    return isVotingDay ? 'voted' : 'rest'
+  }
+
+  const [status, setStatus] = useState<CheckinStatus>(resolveInitialStatus)
   const [emotion, setEmotion] = useState<EmotionKey | null>(initialEmotion || null)
   const [note, setNote] = useState(initialNote || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -52,13 +77,13 @@ export function CheckInModal({
     setError(null)
 
     try {
-      const res = await checkInDay(day, done, emotion, note)
+      const res = await checkInDay(day, undefined, emotion, note, status)
       if (res.success) {
         // Ghi nhận sự kiện phân tích chỉ từ client: chỉ chứa { day }
         try {
           track('tracker_day_checked', { day })
         } catch (_e) {}
-        onSuccess(day, done, emotion, note)
+        onSuccess(day, status, emotion, note)
         onClose()
       } else {
         setError(res.message || vi.tracker.dialog.errorSave)
@@ -68,6 +93,36 @@ export function CheckInModal({
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const statusOptions: Array<{
+    value: CheckinStatus
+    label: string
+    desc: string
+  }> = [
+    {
+      value: 'voted',
+      label: vi.hb04.status.voted,
+      desc: vi.hb11.statusDesc.voted,
+    },
+    {
+      value: 'minimal',
+      label: vi.hb04.status.minimal,
+      desc: twoMinuteAction?.trim() ? twoMinuteAction.trim() : vi.hb11.statusDesc.minimal,
+    },
+    {
+      value: 'missed',
+      label: vi.hb04.status.missed,
+      desc: vi.hb11.statusDesc.missed,
+    },
+  ]
+
+  if (!isVotingDay) {
+    statusOptions.push({
+      value: 'rest',
+      label: vi.hb04.status.rest,
+      desc: vi.hb11.statusDesc.rest,
+    })
   }
 
   return (
@@ -102,19 +157,57 @@ export function CheckInModal({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* 1. Tick done */}
-          <label className="flex items-center gap-3 p-3 rounded-xl border border-deep-navy/15 bg-warm-ivory/50 cursor-pointer hover:bg-soft-pink/20 transition-colors motion-reduce:transition-none">
-            <input
-              type="checkbox"
-              checked={done}
-              onChange={(e) => setDone(e.target.checked)}
-              disabled={readOnly || isSubmitting}
-              className="w-5 h-5 rounded border-deep-navy/30 text-bright-magenta focus:ring-accent-pink"
-            />
-            <span className="font-ui font-semibold text-sm text-deep-navy select-none">
-              {vi.tracker.dialog.doneLabel}
+          {/* 1. Lựa chọn trạng thái check-in (radio) */}
+          <div role="radiogroup" aria-labelledby="checkin-status-group-label" className="space-y-2">
+            <span
+              id="checkin-status-group-label"
+              className="block text-xs font-ui font-semibold text-deep-navy mb-1"
+            >
+              {vi.hb04.fields.status}
             </span>
-          </label>
+
+            <div className="space-y-2">
+              {statusOptions.map((opt) => {
+                const isSelected = status === opt.value
+                return (
+                  <label
+                    key={opt.value}
+                    className={`flex items-start gap-3 p-3 rounded-xl border transition-colors motion-reduce:transition-none cursor-pointer ${
+                      isSelected
+                        ? 'border-accent-pink bg-soft-pink/30 ring-1 ring-accent-pink/30'
+                        : 'border-deep-navy/15 bg-warm-ivory/50 hover:bg-soft-pink/10'
+                    } ${readOnly || isSubmitting ? 'cursor-not-allowed opacity-75' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="checkinStatus"
+                      value={opt.value}
+                      checked={isSelected}
+                      onChange={() => setStatus(opt.value)}
+                      disabled={readOnly || isSubmitting}
+                      className="mt-0.5 w-4 h-4 text-bright-magenta border-deep-navy/30 focus:ring-accent-pink"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="block font-ui font-semibold text-sm text-deep-navy">
+                        {opt.label}
+                      </span>
+                      {opt.desc && (
+                        <span className="block font-sans text-xs text-deep-navy/70 mt-0.5">
+                          {opt.desc}
+                        </span>
+                      )}
+                    </div>
+                  </label>
+                )
+              })}
+            </div>
+
+            {!isVotingDay && (
+              <p className="text-xs font-sans text-deep-navy/70 p-2.5 rounded-xl bg-lavender-mist/40 border border-lavender-mist italic mt-2">
+                {vi.hb11.restDayNotice}
+              </p>
+            )}
+          </div>
 
           {/* 2. Chọn cảm xúc */}
           <div>
