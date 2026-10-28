@@ -1,5 +1,7 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import { getPayload } from 'payload'
+import config from '@/payload.config'
 import { vi } from '@/lib/i18n/vi'
 import { getTechniques } from '@/lib/habit.server'
 import { getHabitJourneyContent } from '@/lib/habit/journey-content.server'
@@ -18,9 +20,25 @@ export const metadata: Metadata = {
 }
 
 export default async function HabitLoopPage() {
+  const payload = await getPayload({ config: await config })
+
+  // Đọc cài đặt số ngày hành trình từ siteSettings (mặc định 28)
+  let habitJourneyDays = 28
+  try {
+    const settings = await payload.findGlobal({
+      slug: 'siteSettings',
+      depth: 0,
+    })
+    if (typeof settings?.habitJourneyDays === 'number' && settings.habitJourneyDays > 0) {
+      habitJourneyDays = settings.habitJourneyDays
+    }
+  } catch {
+    habitJourneyDays = 28
+  }
+
   const [techniques, journeyContent] = await Promise.all([
-    getTechniques(),
-    getHabitJourneyContent().catch((error) => {
+    getTechniques(payload),
+    getHabitJourneyContent(payload).catch((error) => {
       console.error('[HabitLoopPage] Failed to fetch habit journey content:', error)
       return null
     }),
@@ -29,7 +47,7 @@ export default async function HabitLoopPage() {
   return (
     <div className="w-full">
       <OnePercentSection onePercent={journeyContent?.onePercent} />
-      <HabitLoopWizard techniques={techniques} />
+      <HabitLoopWizard techniques={techniques} journeyDays={habitJourneyDays} />
     </div>
   )
 }

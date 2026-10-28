@@ -27,9 +27,13 @@ import { isVotingDay, type Weekday } from '@/lib/habit/rhythm'
 
 export interface HabitLoopWizardProps {
   techniques: PublicTechnique[]
+  journeyDays?: number
 }
 
-export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
+export function HabitLoopWizard({
+  techniques,
+  journeyDays = 28,
+}: HabitLoopWizardProps) {
   const startTimeRef = useRef<number | null>(null)
   // Ghi habit_loop_completed đúng 1 lần mỗi lần mở trang (Quay lại → Tiếp tục không ghi lại)
   const completedTrackedRef = useRef(false)
@@ -67,7 +71,6 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
   const previewDays = React.useMemo<ProgressDayItem[]>(() => {
     const days: ProgressDayItem[] = []
     const today = new Date()
-    const journeyDays = 28
     for (let d = 1; d <= journeyDays; d++) {
       const voting = isVotingDay(
         {
@@ -83,7 +86,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
       })
     }
     return days
-  }, [draft.rhythmDays])
+  }, [draft.rhythmDays, journeyDays])
 
   const selectedTechniqueIds = React.useMemo(() => {
     const ids: number[] = []
@@ -1092,7 +1095,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                     {vi.habit.wizard.step4.continuousDays}
                   </span>
                 </div>
-                <ProgressGrid days={previewDays} totalDays={28} />
+                <ProgressGrid days={previewDays} totalDays={journeyDays} />
                 <p className="text-xs text-deep-navy/60 text-center mt-3 italic">
                   {vi.habit.wizard.step4.reassurance}
                 </p>
@@ -1139,6 +1142,7 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                 twoMinuteAction={draft.twoMinuteAction || undefined}
                 rhythmDays={draft.rhythmDays}
                 techniqueIds={selectedTechniqueIds}
+                journeyDays={journeyDays}
                 availableTechniques={techniques}
               />
 
