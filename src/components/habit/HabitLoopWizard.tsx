@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
 import { ProgressGrid, type ProgressDayItem } from '@/components/habit/ProgressGrid'
+import { BoardingPassPreview } from '@/components/habit/BoardingPassPreview'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
@@ -83,6 +84,17 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
     }
     return days
   }, [draft.rhythmDays])
+
+  const selectedTechniqueIds = React.useMemo(() => {
+    const ids: number[] = []
+    for (const stg of HABIT_STAGES) {
+      const list = draft.chosenTechniques[stg] || []
+      for (const item of list) {
+        ids.push(item.techniqueId)
+      }
+    }
+    return ids
+  }, [draft.chosenTechniques])
 
   // 1. Khôi phục dữ liệu từ localStorage
   useEffect(() => {
@@ -1115,6 +1127,20 @@ export function HabitLoopWizard({ techniques }: HabitLoopWizardProps) {
                   })}
                 </div>
               </div>
+
+              {/* Boarding Pass xem trước & Tải ảnh (HB-10) */}
+              <BoardingPassPreview
+                identityStatement={
+                  draft.identityStatement ||
+                  formatIdentityStatement(draft.actionText, draft.personText)
+                }
+                actionText={draft.actionText || undefined}
+                anchorHabit={draft.anchorHabit || undefined}
+                twoMinuteAction={draft.twoMinuteAction || undefined}
+                rhythmDays={draft.rhythmDays}
+                techniqueIds={selectedTechniqueIds}
+                availableTechniques={techniques}
+              />
 
               {/* Form lưu kế hoạch & Nhận link Zalo */}
               <form
