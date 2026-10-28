@@ -985,6 +985,16 @@ Bạn có 3 cách rất dễ dàng:
   - Khi Hana hoặc quản trị viên sửa kế hoạch trong CMS (ví dụ cập nhật thói quen neo hay nhịp tuần), hệ thống giữ nguyên vẹn dữ liệu riêng tư của học viên, không làm mất hay ghi đè.
   - Nếu Hana muốn hỗ trợ học viên về lý do riêng hoặc bạn đồng hành, Hana hãy trao đổi trực tiếp với học viên trong các phiên coaching 1:1 hoặc buổi đồng hành.
 
+**Hình ảnh Boarding Pass (Tấm vé xuất phát hành trình thói quen) (HB-10)**:
+
+- Khi học viên hoàn thành xong 3 bước thiết kế thói quen tại trình hướng dẫn `/habit/5-phut`, ở bước 4 học viên sẽ nhận được khối **Boarding Pass của bạn** cùng 2 nút tải ảnh:
+  - **Tải ảnh 4:5 (1080×1350)**: Kích thước chuẩn chia sẻ mạng xã hội.
+  - **Tải ảnh 9:16 (1080×1920)**: Kích thước dọc chuẩn Story / dùng làm hình nền điện thoại.
+- **Nguồn dữ liệu của Boarding Pass**:
+  - **Số ngày hành trình**: Được tự động lấy từ mục **Cài đặt website → Công cụ số** (`habitJourneyDays`, mặc định 28 ngày). Hana thay đổi cài đặt này thì các Boarding Pass tạo mới sẽ tự cập nhật theo số ngày mới.
+  - **Tên các kỹ thuật thực hành**: Được tự động lấy từ danh mục **Kỹ thuật thực hành** (`techniques`) đã xuất bản. Hana chỉnh sửa tên kỹ thuật trong CMS thì hình ảnh Boarding Pass của học viên sẽ hiển thị đúng tên mới nhất.
+  - **Dữ liệu riêng tư không in trên ảnh**: Tấm vé Boarding Pass hoàn toàn không in tên, email, bảng điểm thói quen cũ, lý do riêng tư hay cảm xúc cá nhân của học viên, giúp học viên an tâm chia sẻ lên mạng xã hội hoặc lưu trữ riêng.
+
 ---
 
 ### 3.12. Quản lý và Thu hồi Chứng nhận (Certificates)
