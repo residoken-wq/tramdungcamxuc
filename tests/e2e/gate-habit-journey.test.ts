@@ -364,7 +364,8 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       // 12. Quay lại /habit/tracker -> dữ liệu ngày 1 đã check-in vẫn còn nguyên vẹn
       await guestPage.goto('/habit/tracker', { waitUntil: 'load' })
       const day1Retained = guestPage.getByRole('button', {
-        name: /^Ngày 1: Đã hoàn thành, cảm xúc Bình an/i,
+        // HB-11: nhãn ô ngày theo 4 trạng thái – "Ngày 1: Bỏ phiếu, cảm xúc: Bình an"
+        name: /^Ngày 1: Bỏ phiếu, cảm xúc:? Bình an/i,
       })
       await expect(day1Retained).toBeVisible({ timeout: 15000 })
     } finally {
