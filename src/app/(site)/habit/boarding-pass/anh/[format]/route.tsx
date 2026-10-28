@@ -12,10 +12,7 @@ import { resolveBoardingPassData } from '@/lib/habit/boarding-pass.server'
 
 export const dynamic = 'force-dynamic'
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ format: string }> },
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ format: string }> }) {
   const { format } = await params
 
   if (format !== '4x5' && format !== '9x16') {
@@ -145,7 +142,8 @@ export async function POST(
                   letterSpacing: 1,
                 }}
               >
-                {vi.hb10.journeyBadge(data.journeyDays).toUpperCase()} · {vi.hb10.startDatePrefix.toUpperCase()} {data.startDateStr}
+                {vi.hb10.journeyBadge(data.journeyDays).toUpperCase()} ·{' '}
+                {vi.hb10.startDatePrefix.toUpperCase()} {data.startDateStr}
               </span>
             </div>
           </div>
@@ -248,7 +246,7 @@ export async function POST(
         </div>
 
         {/* 2. THÓI QUEN NEO / BẢN TỐI GIẢN (nếu có) */}
-        {(data.anchorFormula || data.twoMinuteAction) ? (
+        {data.anchorFormula || data.twoMinuteAction ? (
           <div
             style={{
               display: 'flex',

@@ -124,9 +124,7 @@ export function BoardingPassPreview({
         <h3 className="font-display text-lg sm:text-xl text-deep-navy mb-1">
           {vi.hb10.previewHeading}
         </h3>
-        <p className="text-xs sm:text-sm text-deep-navy/80">
-          {vi.hb10.previewSubtitle}
-        </p>
+        <p className="text-xs sm:text-sm text-deep-navy/80">{vi.hb10.previewSubtitle}</p>
       </div>
 
       {/* Khung Boarding Pass HTML xem trước theo Brand Book */}
@@ -223,9 +221,7 @@ export function BoardingPassPreview({
                   {stageItem.stageTitle}
                 </span>
                 {stageItem.techniqueNames.length === 0 ? (
-                  <span className="text-deep-navy/40 italic">
-                    {vi.hb10.noTechniquesForStage}
-                  </span>
+                  <span className="text-deep-navy/40 italic">{vi.hb10.noTechniquesForStage}</span>
                 ) : (
                   stageItem.techniqueNames.map((name, i) => (
                     <div key={i} className="text-deep-navy font-medium">
@@ -241,9 +237,7 @@ export function BoardingPassPreview({
         {/* Footer vé */}
         <div className="relative z-10 pt-4 border-t border-deep-navy/15 flex items-center justify-between text-xs text-deep-navy/70">
           <span>Trạm Dừng Cảm Xúc</span>
-          <span className="font-ui font-bold text-bright-magenta">
-            {vi.hb10.footerUrl}
-          </span>
+          <span className="font-ui font-bold text-bright-magenta">{vi.hb10.footerUrl}</span>
         </div>
       </div>
 
@@ -265,9 +259,7 @@ export function BoardingPassPreview({
           disabled={generatingFormat !== null}
           className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-deep-navy text-warm-ivory font-ui font-bold text-sm hover:bg-deep-navy/90 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-sm"
         >
-          {generatingFormat === '4x5'
-            ? vi.hb10.generatingImage
-            : vi.hb10.download45}
+          {generatingFormat === '4x5' ? vi.hb10.generatingImage : vi.hb10.download45}
         </button>
 
         <button
@@ -276,9 +268,7 @@ export function BoardingPassPreview({
           disabled={generatingFormat !== null}
           className="w-full sm:w-auto px-6 py-2.5 rounded-full border-2 border-accent-pink text-deep-navy bg-warm-ivory hover:bg-soft-pink disabled:opacity-60 disabled:cursor-not-allowed font-ui font-bold text-sm transition-all shadow-xs"
         >
-          {generatingFormat === '9x16'
-            ? vi.hb10.generatingImage
-            : vi.hb10.download916}
+          {generatingFormat === '9x16' ? vi.hb10.generatingImage : vi.hb10.download916}
         </button>
       </div>
     </div>

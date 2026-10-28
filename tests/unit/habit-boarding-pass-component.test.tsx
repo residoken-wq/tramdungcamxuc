@@ -25,9 +25,7 @@ describe('Habit Boarding Pass Component (HB-10)', () => {
         twoMinuteAction="Đọc 1 trang sách"
         rhythmDays={['mon', 'wed', 'fri']}
         techniqueIds={[1]}
-        availableTechniques={[
-          { id: 1, name: 'Đặt sách trên bàn', stage: 'cue' },
-        ]}
+        availableTechniques={[{ id: 1, name: 'Đặt sách trên bàn', stage: 'cue' }]}
       />,
     )
 
@@ -36,14 +34,10 @@ describe('Habit Boarding Pass Component (HB-10)', () => {
     expect(screen.getByText(viStrings.hb10.previewSubtitle)).toBeDefined()
 
     // Câu định danh
-    expect(
-      screen.getByText(/Tôi sẽ đọc sách mỗi ngày để mở mang tri thức/),
-    ).toBeDefined()
+    expect(screen.getByText(/Tôi sẽ đọc sách mỗi ngày để mở mang tri thức/)).toBeDefined()
 
     // Thói quen neo & Bản tối giản
-    expect(
-      screen.getByText(/Sau khi Uống cà phê sáng, tôi sẽ Đọc 1 trang sách/),
-    ).toBeDefined()
+    expect(screen.getByText(/Sau khi Uống cà phê sáng, tôi sẽ Đọc 1 trang sách/)).toBeDefined()
 
     // 7 ô nhịp tuần
     expect(screen.getByText('T2')).toBeDefined()
@@ -71,11 +65,7 @@ describe('Habit Boarding Pass Component (HB-10)', () => {
       } as unknown as Response
     })
 
-    render(
-      <BoardingPassPreview
-        identityStatement="Mục tiêu kiểm tra lỗi"
-      />,
-    )
+    render(<BoardingPassPreview identityStatement="Mục tiêu kiểm tra lỗi" />)
 
     const btn45 = screen.getByRole('button', { name: viStrings.hb10.download45 })
 
@@ -100,9 +90,7 @@ describe('Habit Boarding Pass Component (HB-10)', () => {
     // Chuẩn bị nháp ở bước 4
     const draftStep4 = {
       step: 4,
-      scorecard: [
-        { habit: 'Thói quen tốt', rating: 'good', time: '07:00' },
-      ],
+      scorecard: [{ habit: 'Thói quen tốt', rating: 'good', time: '07:00' }],
       actionText: 'chạy bộ 15 phút',
       personText: 'người khỏe mạnh',
       identityStatement: 'Tôi sẽ chạy bộ 15 phút để trở thành người khỏe mạnh',
@@ -122,13 +110,7 @@ describe('Habit Boarding Pass Component (HB-10)', () => {
 
     localStorage.setItem(HABIT_LOOP_STORAGE_KEY, JSON.stringify(draftStep4))
 
-    render(
-      <HabitLoopWizard
-        techniques={[
-          { id: 101, name: 'Để giày ngay cửa', stage: 'cue' },
-        ]}
-      />,
-    )
+    render(<HabitLoopWizard techniques={[{ id: 101, name: 'Để giày ngay cửa', stage: 'cue' }]} />)
 
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 50))

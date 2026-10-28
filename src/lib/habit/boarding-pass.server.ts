@@ -2,11 +2,7 @@ import 'server-only'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Payload } from 'payload'
-import {
-  buildBoardingPass,
-  type BoardingPassInput,
-  type BoardingPassData,
-} from './boarding-pass'
+import { buildBoardingPass, type BoardingPassInput, type BoardingPassData } from './boarding-pass'
 
 export async function resolveBoardingPassData(
   input: BoardingPassInput,
@@ -37,10 +33,7 @@ export async function resolveBoardingPassData(
       const res = await payload.find({
         collection: 'techniques',
         where: {
-          and: [
-            { id: { in: techniqueIds } },
-            { _status: { equals: 'published' } },
-          ],
+          and: [{ id: { in: techniqueIds } }, { _status: { equals: 'published' } }],
         },
         limit: 50,
         depth: 0,

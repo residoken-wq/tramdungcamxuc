@@ -77,9 +77,7 @@ describe('Habit Boarding Pass Image Route (HB-10)', () => {
       body: JSON.stringify({ identityStatement: 'Test' }),
     })
 
-    await expect(
-      POST(req, { params: Promise.resolve({ format: 'square' }) }),
-    ).rejects.toThrow()
+    await expect(POST(req, { params: Promise.resolve({ format: 'square' }) })).rejects.toThrow()
   })
 
   it('trả về 400 kèm thông báo tiếng Việt khi body sai hoặc thiếu câu định danh', async () => {
