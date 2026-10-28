@@ -203,7 +203,7 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
       test.setTimeout(testInfo.timeout + 30000)
 
       if (createdCustomerId) {
-        // Dọn dẹp checkins và habitPlans của customer
+        // Dọn dẹp habitReflections, checkins và habitPlans của customer
         const plansRes = await page.request
           .get(`/api/habitPlans?where[customer][equals]=${createdCustomerId}`)
           .catch(() => null)
@@ -219,6 +219,17 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
                 await page.request.delete(`/api/habitCheckins/${ch.id}`).catch(() => {})
               }
             }
+
+            const reflRes = await page.request
+              .get(`/api/habitReflections?where[plan][equals]=${plan.id}`)
+              .catch(() => null)
+            if (reflRes && reflRes.ok()) {
+              const reflData = await reflRes.json().catch(() => ({ docs: [] }))
+              for (const rf of reflData.docs || []) {
+                await page.request.delete(`/api/habitReflections/${rf.id}`).catch(() => {})
+              }
+            }
+
             await page.request.delete(`/api/habitPlans/${plan.id}`).catch(() => {})
           }
         }
@@ -239,6 +250,224 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
 
       if (createdProductId) {
         await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+      }
+
+      if (adminId) {
+        await page.request.delete(`/api/users/${adminId}`).catch(() => {})
+      }
+
+      await guestPage.close().catch(() => {})
+      await visitor.close().catch(() => {})
+    }
+  })
+
+  test('suy ngẫm cuối trạm: học viên trạm 1 đã kết thúc -> trả lời câu hỏi -> thấy huy hiệu "Đã suy ngẫm" (HB-12)', async ({
+    page,
+    browser,
+  }, testInfo) => {
+    test.setTimeout(180000)
+
+    let adminId: number | undefined
+    let createdProductId: number | undefined
+    let createdCustomerId: number | undefined
+    let createdPlanId: number | undefined
+    let previousJourneyContent: unknown
+
+    const customerEmail = `khach-reflections-${randomUUID().slice(0, 6)}@example.test`
+
+    const visitor = await browser.newContext({
+      extraHTTPHeaders: { 'x-forwarded-for': `203.0.113.${Math.floor(Math.random() * 254) + 1}` },
+    })
+    const guestPage = await visitor.newPage()
+
+    try {
+      // 1. Bootstrap admin
+      adminId = await bootstrapAdmin(page)
+
+      // 2. Cấu hình câu hỏi suy ngẫm cho trạm 1 trong habitJourneyContent
+      const getRes = await page.request.get('/api/globals/habitJourneyContent')
+      if (getRes.ok()) {
+        previousJourneyContent = await getRes.json()
+      }
+
+      await page.request.post('/api/globals/habitJourneyContent', {
+        data: {
+          ...((previousJourneyContent as Record<string, unknown>) || {}),
+          stations: [
+            {
+              name: 'Khởi động',
+              tagline: 'Bước đầu tạo thói quen',
+              reflectionQuestions: [{ question: 'Bạn cảm thấy thế nào sau 7 ngày đầu tiên?' }],
+            },
+            {
+              name: 'Định hình',
+              tagline: 'Gia cố nhịp điệu',
+              reflectionQuestions: [{ question: 'Khó khăn lớn nhất bạn gặp phải là gì?' }],
+            },
+          ],
+        },
+      })
+
+      // 3. Admin tạo sản phẩm habit-tracker-so
+      const prodRes = await page.request.post('/api/products', {
+        data: {
+          name: 'Habit Tracker Số',
+          slug: 'habit-tracker-so',
+          web: 'habit',
+          type: 'digital_tool',
+          price: 250000,
+          salePrice: 178000,
+          trialDays: 28,
+          saleStatus: 'on_sale',
+          isSample: true,
+          _status: 'published',
+        },
+      })
+      expect(prodRes.ok()).toBe(true)
+      const createdProd = await prodRes.json()
+      createdProductId = createdProd.doc.id
+
+      // 4. Admin tạo customer và cấp entitlement
+      const custRes = await page.request.post('/api/customers', {
+        data: {
+          email: customerEmail,
+          name: 'Khách Hàng Suy Ngẫm E2E',
+        },
+      })
+      expect(custRes.ok()).toBe(true)
+      const createdCust = await custRes.json()
+      createdCustomerId = createdCust.doc.id
+
+      const entRes = await page.request.post('/api/entitlements', {
+        data: {
+          customer: createdCustomerId,
+          product: createdProductId,
+          status: 'trial',
+          source: 'trial',
+          expiresAt: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
+        },
+      })
+      expect(entRes.ok()).toBe(true)
+
+      // 5. Admin tạo sẵn habit plan cho customer với startDate 10 ngày trước (đã qua trạm 1: ngày 1-7, ngày 8 đã mở)
+      const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+      const planRes = await page.request.post('/api/habitPlans', {
+        data: {
+          customer: createdCustomerId,
+          identityStatement: 'Tôi rèn luyện suy ngẫm để thấu hiểu bản thân',
+          rhythmDays: 7,
+          startDate: tenDaysAgo,
+          journeyDays: 28,
+        },
+      })
+      expect(planRes.ok()).toBe(true)
+      const createdPlan = await planRes.json()
+      createdPlanId = createdPlan.doc.id
+
+      // 6. Khách đăng nhập OTP qua /habit/tracker
+      await guestPage.goto('/habit/tracker')
+      await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap\?next=\/habit\/tracker$/)
+
+      await guestPage.locator('input[name="email"]').fill(customerEmail)
+      await guestPage.locator('input[name="consentPolicy"]').check()
+      await expect(guestPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
+      await guestPage.locator('button[type="submit"]').click()
+
+      const codeInput = await expectCodeStep(guestPage)
+      const code = await getTestOtpCode(guestPage, customerEmail)
+      await codeInput.fill(code)
+      await guestPage.locator('button[type="submit"]').click()
+
+      // Chờ vào trang tracker
+      await expect(guestPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 15000 })
+
+      // 7. Kiểm tra trạng thái suy ngẫm của các trạm
+      // Trạm 2 (ngày 8-14) chưa kết thúc -> hiện nhãn "Mở vào ngày 15"
+      await expect(guestPage.getByText(/Mở vào ngày 15/i)).toBeVisible()
+
+      // Trạm 1 (ngày 1-7) đã kết thúc -> nút "Suy ngẫm trạm" được kích hoạt
+      const reflectStation1Btn = guestPage.getByRole('button', { name: /^Suy ngẫm trạm$/i }).first()
+      await expect(reflectStation1Btn).toBeEnabled()
+
+      // 8. Bấm nút "Suy ngẫm trạm" -> Modal mở ra
+      await reflectStation1Btn.click()
+      const reflectionModal = guestPage.locator('div[role="dialog"]')
+      await expect(reflectionModal).toBeVisible()
+      await expect(reflectionModal.getByRole('heading', { level: 2 })).toContainText(
+        /Suy ngẫm trạm 1/i,
+      )
+      await expect(
+        reflectionModal.getByText('Bạn cảm thấy thế nào sau 7 ngày đầu tiên?'),
+      ).toBeVisible()
+
+      // 9. Điền câu trả lời và bấm "Lưu suy ngẫm"
+      const answerInput = reflectionModal.locator('textarea').first()
+      const testAnswer = 'Tôi cảm thấy rất hào hứng và tự tin sau tuần đầu tiên rèn luyện.'
+      await answerInput.fill(testAnswer)
+
+      const saveReflectionBtn = reflectionModal.getByRole('button', { name: /Lưu suy ngẫm/i })
+      await saveReflectionBtn.click()
+
+      // Chờ modal đóng
+      await expect(reflectionModal).toBeHidden({ timeout: 10000 })
+
+      // 10. Trạm 1 hiện huy hiệu "Đã suy ngẫm" và nút đổi thành "Xem / sửa suy ngẫm"
+      await expect(guestPage.getByText(/Đã suy ngẫm/i)).toBeVisible()
+      const viewReflectionBtn = guestPage.getByRole('button', { name: /Xem \/ sửa suy ngẫm/i })
+      await expect(viewReflectionBtn).toBeVisible()
+
+      // 11. Bấm "Xem / sửa suy ngẫm" -> mở lại modal và kiểm tra câu trả lời đã lưu
+      await viewReflectionBtn.click()
+      await expect(reflectionModal).toBeVisible()
+      await expect(reflectionModal.locator('textarea').first()).toHaveValue(testAnswer)
+
+      // Đóng modal
+      await reflectionModal.getByRole('button', { name: /Đóng/i }).first().click()
+      await expect(reflectionModal).toBeHidden()
+    } finally {
+      test.setTimeout(testInfo.timeout + 30000)
+
+      if (createdCustomerId) {
+        // Dọn dẹp habitReflections
+        const reflRes = await page.request
+          .get(`/api/habitReflections?where[customer][equals]=${createdCustomerId}`)
+          .catch(() => null)
+        if (reflRes && reflRes.ok()) {
+          const reflData = await reflRes.json().catch(() => ({ docs: [] }))
+          for (const doc of reflData.docs || []) {
+            await page.request.delete(`/api/habitReflections/${doc.id}`).catch(() => {})
+          }
+        }
+
+        if (createdPlanId) {
+          await page.request.delete(`/api/habitPlans/${createdPlanId}`).catch(() => {})
+        }
+
+        const entRes = await page.request
+          .get(`/api/entitlements?where[customer][equals]=${createdCustomerId}`)
+          .catch(() => null)
+        if (entRes && entRes.ok()) {
+          const entData = await entRes.json().catch(() => ({ docs: [] }))
+          for (const ent of entData.docs || []) {
+            await page.request.delete(`/api/entitlements/${ent.id}`).catch(() => {})
+          }
+        }
+
+        await page.request.delete(`/api/customers/${createdCustomerId}`).catch(() => {})
+      }
+
+      if (createdProductId) {
+        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+      }
+
+      if (previousJourneyContent) {
+        await page.request
+          .post('/api/globals/habitJourneyContent', {
+            data: previousJourneyContent,
+          })
+          .catch(() => {})
       }
 
       if (adminId) {

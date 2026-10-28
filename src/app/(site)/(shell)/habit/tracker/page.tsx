@@ -14,6 +14,7 @@ import {
 } from '@/lib/habit/tracker.server'
 import { getCertificateEligibility } from '@/lib/habit/certificate.server'
 import { getHabitJourneyContent } from '@/lib/habit/journey-content.server'
+import { getStationReflectionsForPlan } from '@/lib/habit/reflection-actions'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
@@ -111,15 +112,24 @@ export default async function HabitTrackerPage() {
     note: doc.note || null,
   }))
 
-  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm
+  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm và câu hỏi suy ngẫm (HB-12)
   let stationNames: string[] = []
+  let stationQuestions: { question: string }[][] = []
   try {
     const journeyContent = await getHabitJourneyContent(payload)
     stationNames = (journeyContent.stations || []).map((s) => s.name).filter(Boolean)
+    stationQuestions = (journeyContent.stations || []).map((s) =>
+      (s.reflectionQuestions || [])
+        .map((q) => ({ question: q.question?.trim() || '' }))
+        .filter((q) => Boolean(q.question)),
+    )
   } catch (err) {
     // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
     console.error('Failed to load habit journey stations for tracker:', err)
   }
+
+  // 7b. Đọc các bài suy ngẫm đã lưu của học viên (HB-12)
+  const initialReflections = await getStationReflectionsForPlan(plan.id, customer.id)
 
   const currentDay = getCurrentDayOfPlan(plan.startDate, now)
   const isReadOnly = !access.hasAccess
@@ -138,6 +148,8 @@ export default async function HabitTrackerPage() {
         rhythmDays={plan.rhythmDays ?? null}
         startDate={plan.startDate ?? null}
         stationNames={stationNames}
+        stationQuestions={stationQuestions}
+        initialReflections={initialReflections}
         currentDay={currentDay}
         initialCheckins={initialCheckins}
         readOnly={isReadOnly}

@@ -3,6 +3,7 @@
 import React from 'react'
 import { getEmotion } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
+import { Button } from './Button'
 
 export type DayStatus =
   'done' | 'missed' | 'today' | 'future' | 'locked' | 'rest' | 'voted' | 'minimal' | 'upcoming'
@@ -16,12 +17,17 @@ export interface ProgressDayItem {
 }
 
 export interface ProgressStationItem {
+  index?: number
   name: string | null
   fromDay: number
   toDay: number
   votedCount?: number
   votingDaysTotal?: number
   days: ProgressDayItem[]
+  reflectionQuestions?: { question: string }[]
+  hasReflection?: boolean
+  isReflectionOpen?: boolean
+  onOpenReflection?: (stationIndex: number) => void
 }
 
 export interface ProgressGridProps {
@@ -385,6 +391,36 @@ export function ProgressGrid({
               <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5">
                 {st.days.map((item) => renderDayButton(item))}
               </div>
+
+              {/* Reflection bar (HB-12) */}
+              {st.reflectionQuestions && st.reflectionQuestions.length > 0 && (
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-deep-navy/10">
+                  <div className="flex items-center gap-2">
+                    {st.hasReflection && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-ui font-semibold bg-mint-haze text-deep-navy border border-deep-navy/15">
+                        <CheckIcon className="w-3 h-3 text-deep-navy" />
+                        {vi.hb12.reflectedBadge}
+                      </span>
+                    )}
+                    {!st.isReflectionOpen && (
+                      <span className="text-xs font-sans text-deep-navy/60 italic">
+                        {vi.hb12.openOnDay(st.toDay + 1)}
+                      </span>
+                    )}
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant={st.hasReflection ? 'secondary' : 'primary'}
+                    size="sm"
+                    disabled={!st.isReflectionOpen}
+                    onClick={() => st.onOpenReflection?.(st.index ?? sIdx)}
+                    className="text-xs py-1 px-3 min-h-[36px]"
+                  >
+                    {st.hasReflection ? vi.hb12.editReflectButton : vi.hb12.reflectButton}
+                  </Button>
+                </div>
+              )}
             </div>
           )
         })}
