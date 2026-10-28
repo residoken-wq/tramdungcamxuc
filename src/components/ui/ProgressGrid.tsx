@@ -191,8 +191,9 @@ function getStatusLabel(status: DayStatus): string {
       return vi.hb11.status.upcoming
     case 'done':
       return vi.habit.statuses.done
-    case 'future':
     case 'locked':
+      return vi.habit.statuses.locked
+    case 'future':
     default:
       return vi.habit.statuses.future
   }
