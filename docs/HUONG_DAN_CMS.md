@@ -910,7 +910,7 @@ Bạn có 3 cách rất dễ dàng:
 2. **Cấu hình Các trạm hành trình (`stations`)**:
    - Hành trình (ví dụ 28 ngày) được hệ thống tự động chia đều số ngày cho các trạm theo thứ tự (ví dụ 4 trạm = 7-7-7-7 ngày; nếu có số dư thì dồn vào các trạm đầu, ví dụ 30 ngày chia 4 trạm = 8-8-7-7 ngày).
    - Hana có thể thêm từ 1 đến tối đa 6 trạm:
-     - **Tên chặng** (bắt buộc): Tên chặng (ví dụ: `Trạm 1: Nhận diện & Khởi động`, `Trạm 2: Vượt qua sức ỳ`...).
+     - **Tên chặng** (bắt buộc): Tên chặng (ví dụ: `Trạm 1: Nhận diện & Khởi động`, `Trạm 2: Vượt qua sức ỳ`...). **Hiển thị ngoài Tracker (HB-11)**: Tên các trạm cấu hình tại đây sẽ hiển thị trực tiếp trên giao diện `/habit/tracker` của học viên thành từng khối trạm trực quan kèm khoảng ngày (ví dụ `Ngày 1 – 7`) và tiến độ số ngày bỏ phiếu đã check-in của riêng trạm đó. Nếu trạm chưa có tên hoặc chưa cấu hình, hệ thống sẽ tự động hiển thị tên mặc định `Trạm 1`, `Trạm 2`...
      - **Thông điệp ngắn**: Câu thông điệp gợi cảm xúc đồng hành cho học viên khi bước vào trạm.
      - **Câu hỏi suy ngẫm cuối trạm**: Thêm tối đa 5 câu hỏi suy ngẫm để học viên tự nhìn lại và đúc kết sau khi hoàn thành trạm (nhập ô _Câu hỏi suy ngẫm_, bắt buộc khi thêm dòng).
 
@@ -974,6 +974,12 @@ Bạn có 3 cách rất dễ dàng:
 - **Chặn ghi 'Nghỉ theo nhịp' vào ngày bỏ phiếu**: Nếu một ngày là ngày bỏ phiếu theo nhịp tuần của học viên, học viên không thể tick chọn `Nghỉ theo nhịp` (`rest`) để tránh việc dùng trạng thái nghỉ che giấu ngày lỡ nhịp. Hệ thống sẽ hiện thông báo tiếng Việt: _"Hôm nay là ngày bỏ phiếu theo nhịp của bạn, không ghi nghỉ được."_ Quản trị viên (`editor` / `owner`) vẫn có thể điều chỉnh khi cần hỗ trợ học viên.
 - **Tự do ghi nhận vào ngày nghỉ theo nhịp**: Vào các ngày nghỉ theo nhịp tuần, học viên hoàn toàn tự do chọn bất kỳ trạng thái nào trong 4 trạng thái (`Bỏ phiếu`, `Bản tối giản`, `Lỡ nhịp`, `Nghỉ theo nhịp`) hoặc để trống không ghi gì. Check-in vào ngày nghỉ được lưu lại để học viên theo dõi hành trình, nhưng **không cộng dồn vào tỷ lệ 90%**, **không làm đứt chuỗi ngày kiên trì**, và **không ảnh hưởng tới bộ đếm lỡ nhịp**.
 - **Email nhắc lỡ nhịp tự động theo nhịp tuần**: Hệ thống cron tự động quét và gửi email nhắc nhở khi học viên lỡ từ **2 ngày bỏ phiếu liên tiếp** trở lên, hoàn toàn bỏ qua các ngày nghỉ theo nhịp. Ví dụ: với nhịp Thứ 2 đến Thứ 6, học viên lỡ Thứ 5 và Thứ 6, dù Thứ 7 và Chủ nhật là ngày nghỉ thì sáng Thứ 2 tuần sau hệ thống vẫn gửi email nhắc nhở nhẹ nhàng. Nếu học viên đã tick bản tối giản hoặc đã nhận email nhắc cho chuỗi lỡ đó thì hệ thống sẽ không gửi trùng lặp.
+- **Giao diện check-in 4 trạng thái thích ứng trên `/habit/tracker` (HB-11)**:
+  - Khi học viên bấm vào một ngày trên lưới hành trình:
+    - Nếu là **ngày bỏ phiếu**: Modal hiển thị 3 lựa chọn gồm `Bỏ phiếu`, `Bản tối giản` (kèm câu hành động dưới 2 phút `twoMinuteAction` đã thiết lập để nhắc bài), và `Lỡ nhịp`. Lựa chọn `Nghỉ theo nhịp` được chủ động ẩn đi. Nếu có lỗi từ server, modal hiển thị thông báo tiếng Việt trực quan và không đóng lại.
+    - Nếu là **ngày nghỉ theo nhịp**: Modal hiển thị đầy đủ 4 lựa chọn kèm dòng thông điệp dịu dàng: _"Ngày nghỉ theo nhịp – ghi gì cũng không tính vào 90%"_.
+  - **Tiến độ 90% và Chuỗi rèn luyện**: Tỷ lệ hoàn thành và chuỗi ngày rèn luyện (`currentStreak`) trên đầu trang chỉ tính dựa trên các ngày bỏ phiếu đã cam kết, không bị ảnh hưởng bởi ngày nghỉ.
+  - **Banner khích lệ "Lỡ nhịp 1 ngày"**: Banner khích lệ tinh thần _"Lỡ nhịp 1 ngày là không sao cả"_ kích hoạt tự động khi học viên lỡ đúng 1 ngày bỏ phiếu gần nhất, bỏ qua các ngày nghỉ theo nhịp.
 
 **Quy tắc bảo vệ quyền riêng tư người học (Quan trọng)**:
 

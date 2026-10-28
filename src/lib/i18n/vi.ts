@@ -2723,6 +2723,33 @@ export const vi = {
     noTechniquesForStage: 'Chưa chọn',
     anchorFormula: (anchor: string, action: string) => `Sau khi ${anchor}, tôi sẽ ${action}`,
   },
+  hb11: {
+    stationFallback: (n: number) => `Trạm ${n}`,
+    stationRange: (from: number, to: number) => `Ngày ${from} – ${to}`,
+    stationProgress: (completed: number, total: number) => `${completed}/${total} ngày bỏ phiếu`,
+    streakBadge: (count: number) => `Chuỗi bỏ phiếu: ${count} ngày`,
+    progress90: (voted: number, total: number, required: number) =>
+      `Tiến độ: ${voted}/${total} ngày bỏ phiếu (cần ${required} ngày để nhận chứng nhận)`,
+    restDayNotice: 'Ngày nghỉ theo nhịp – ghi gì cũng không tính vào 90%',
+    status: {
+      voted: 'Bỏ phiếu',
+      minimal: 'Bản tối giản',
+      missed: 'Lỡ nhịp',
+      rest: 'Nghỉ',
+      today: 'Hôm nay',
+      upcoming: 'Chưa tới',
+    },
+    statusDesc: {
+      voted: 'Làm đủ hành động cam kết',
+      minimal: 'Bản dưới 2 phút (giữ đà)',
+      missed: 'Lỡ nhịp hôm nay',
+      rest: 'Nghỉ ngơi phục hồi',
+    },
+    anchorHabitLabel: 'THÓI QUEN NEO',
+    twoMinuteLabel: 'BẢN TỐI GIẢN (< 2 PHÚT)',
+    ariaDay: (day: number, statusText: string, emotionText?: string) =>
+      `Ngày ${day}: ${statusText}${emotionText ? `, cảm xúc: ${emotionText}` : ''}`,
+  },
 } as const
 
 export type LocaleStrings = typeof vi

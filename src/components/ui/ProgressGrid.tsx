@@ -4,13 +4,24 @@ import React from 'react'
 import { getEmotion } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 
-export type DayStatus = 'done' | 'missed' | 'today' | 'future' | 'locked' | 'rest'
+export type DayStatus =
+  'done' | 'missed' | 'today' | 'future' | 'locked' | 'rest' | 'voted' | 'minimal' | 'upcoming'
 
 export interface ProgressDayItem {
   day: number
   status: DayStatus
   emotionKey?: string
   note?: string
+  disabled?: boolean
+}
+
+export interface ProgressStationItem {
+  name: string | null
+  fromDay: number
+  toDay: number
+  votedCount?: number
+  votingDaysTotal?: number
+  days: ProgressDayItem[]
 }
 
 export interface ProgressGridProps {
@@ -38,6 +49,10 @@ export interface ProgressGridProps {
    * Chế độ chỉ xem (view-only), không cho phép click. Mặc định là true nếu không truyền onSelectDay.
    */
   readOnly?: boolean
+  /**
+   * Chia lưới theo trạm (HB-11). Khi truyền vào, ProgressGrid sẽ hiển thị từng khối trạm.
+   */
+  stations?: ProgressStationItem[]
 }
 
 /**
@@ -160,6 +175,34 @@ function MissedIcon(props: React.SVGProps<SVGSVGElement>) {
  * Chuẩn Brand Book 2026: ô hoàn thành màu mint-haze, tương thích tốt trên mobile 375px.
  * Lưu ý: T2-06 sẽ mở rộng thành tracker có tick tương tác thật và chọn cảm xúc.
  */
+function getStatusLabel(status: DayStatus): string {
+  switch (status) {
+    case 'voted':
+      return vi.hb11.status.voted
+    case 'minimal':
+      return vi.hb11.status.minimal
+    case 'missed':
+      return vi.hb11.status.missed
+    case 'rest':
+      return vi.hb11.status.rest
+    case 'today':
+      return vi.hb11.status.today
+    case 'upcoming':
+      return vi.hb11.status.upcoming
+    case 'done':
+      return vi.habit.statuses.done
+    case 'locked':
+      return vi.habit.statuses.locked
+    case 'future':
+    default:
+      return vi.habit.statuses.future
+  }
+}
+
+/**
+ * ProgressGrid: Lưới hiển thị tiến trình thói quen theo ngày hoặc theo các khối trạm (HB-11).
+ * Chuẩn Brand Book 2026: các ô ngày dùng 8 màu token, tương thích tốt trên mobile 375px.
+ */
 export function ProgressGrid({
   days,
   doneDays,
@@ -167,10 +210,229 @@ export function ProgressGrid({
   onSelectDay,
   className = '',
   readOnly = false,
+  stations,
 }: ProgressGridProps) {
   const allDays = build21Days(days, doneDays, totalDays)
   const isInteractive = Boolean(onSelectDay) && !readOnly
 
+  const renderDayButton = (item: ProgressDayItem) => {
+    const { day, status, emotionKey, disabled: itemDisabled } = item
+    const isNonInteractive =
+      !isInteractive ||
+      Boolean(itemDisabled) ||
+      status === 'future' ||
+      status === 'locked' ||
+      status === 'upcoming'
+
+    const emotion = emotionKey ? getEmotion(emotionKey) : undefined
+    const statusText = getStatusLabel(status)
+    const ariaLabel = vi.hb11.ariaDay(day, statusText, emotion?.label)
+
+    let stateStyle = ''
+    let indicatorIcon: React.ReactNode = null
+
+    switch (status) {
+      case 'voted':
+      case 'done':
+        stateStyle = 'bg-mint-haze border-deep-navy/20 text-deep-navy font-bold shadow-xs'
+        if (isInteractive && !isNonInteractive) {
+          stateStyle += ' hover:border-deep-navy cursor-pointer'
+        }
+        indicatorIcon = emotion ? (
+          <span
+            className="text-xs sm:text-sm leading-none select-none"
+            role="img"
+            aria-hidden="true"
+          >
+            {emotion.emoji}
+          </span>
+        ) : (
+          <CheckIcon className="w-3.5 h-3.5 text-deep-navy" />
+        )
+        break
+
+      case 'minimal':
+        stateStyle = 'bg-soft-pink/70 border-bright-magenta/30 text-deep-navy font-bold shadow-xs'
+        if (isInteractive && !isNonInteractive) {
+          stateStyle += ' hover:border-bright-magenta cursor-pointer'
+        }
+        indicatorIcon = emotion ? (
+          <span
+            className="text-xs sm:text-sm leading-none select-none"
+            role="img"
+            aria-hidden="true"
+          >
+            {emotion.emoji}
+          </span>
+        ) : (
+          <span className="text-[10px] font-ui font-extrabold text-bright-magenta tracking-tight">
+            2m
+          </span>
+        )
+        break
+
+      case 'today':
+        stateStyle =
+          'bg-warm-ivory border-2 border-accent-pink text-deep-navy font-bold shadow-xs ring-2 ring-accent-pink/30'
+        if (isInteractive && !isNonInteractive) {
+          stateStyle += ' hover:bg-soft-pink/30 cursor-pointer'
+        }
+        indicatorIcon = (
+          <span className="w-1.5 h-1.5 rounded-full bg-accent-pink animate-pulse motion-reduce:animate-none" />
+        )
+        break
+
+      case 'missed':
+        stateStyle = 'bg-butter-cream/40 border-deep-navy/20 text-deep-navy/80 font-medium'
+        if (isInteractive && !isNonInteractive) {
+          stateStyle += ' hover:bg-butter-cream/70 cursor-pointer'
+        }
+        indicatorIcon = <MissedIcon className="w-3.5 h-3.5 text-deep-navy/70" />
+        break
+
+      case 'rest':
+        stateStyle = 'bg-warm-ivory border-dashed border-deep-navy/20 text-deep-navy/70 font-normal'
+        if (isInteractive && !isNonInteractive) {
+          stateStyle += ' hover:bg-lavender-mist/30 cursor-pointer'
+        }
+        indicatorIcon = (
+          <span className="text-[10px] font-semibold text-deep-navy/70 select-none">
+            {vi.hb11.status.rest}
+          </span>
+        )
+        break
+
+      case 'locked':
+        stateStyle =
+          'bg-deep-navy/5 border-dashed border-deep-navy/15 text-deep-navy/70 cursor-not-allowed opacity-60'
+        indicatorIcon = <LockIcon className="w-3 h-3 text-deep-navy/70" />
+        break
+
+      case 'upcoming':
+      case 'future':
+      default:
+        stateStyle =
+          'bg-deep-navy/[0.02] border-deep-navy/15 text-deep-navy/70 cursor-not-allowed opacity-75'
+        indicatorIcon = <LockIcon className="w-3 h-3 text-deep-navy/70" />
+        break
+    }
+
+    return (
+      <button
+        key={day}
+        type="button"
+        disabled={isNonInteractive}
+        onClick={() => {
+          if (!isNonInteractive && onSelectDay) {
+            onSelectDay(day)
+          }
+        }}
+        aria-label={ariaLabel}
+        className={[
+          'relative flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl border transition-all motion-reduce:transition-none duration-150',
+          'min-w-0 min-h-[46px] sm:min-h-[58px]',
+          'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
+          stateStyle,
+        ].join(' ')}
+      >
+        {/* Day Number */}
+        <span className="font-ui text-xs sm:text-sm leading-none font-bold">{day}</span>
+
+        {/* Status Indicator Slot */}
+        <div className="flex items-center justify-center h-4 w-4 mt-1" aria-hidden="true">
+          {indicatorIcon}
+        </div>
+      </button>
+    )
+  }
+
+  // Nếu có stations, hiển thị theo từng trạm
+  if (stations && stations.length > 0) {
+    return (
+      <div
+        role="region"
+        aria-label={vi.habit.progressGridLabel}
+        className={`w-full max-w-xl mx-auto space-y-6 ${className}`}
+      >
+        {stations.map((st, sIdx) => {
+          const stationVoted =
+            st.votedCount ??
+            st.days.filter(
+              (d) => d.status === 'voted' || d.status === 'minimal' || d.status === 'done',
+            ).length
+          const stationTotal =
+            st.votingDaysTotal ?? st.days.filter((d) => d.status !== 'rest').length
+
+          return (
+            <div
+              key={`station-${st.fromDay}-${st.toDay}`}
+              className="p-4 sm:p-5 rounded-2xl bg-warm-ivory/80 border border-deep-navy/10 shadow-xs space-y-3"
+            >
+              <div className="flex items-center justify-between gap-2 border-b border-deep-navy/10 pb-2.5">
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <h3 className="font-ui font-bold text-sm sm:text-base text-deep-navy">
+                    {st.name || vi.hb11.stationFallback(sIdx + 1)}
+                  </h3>
+                  <span className="text-xs font-sans text-deep-navy/70">
+                    {vi.hb11.stationRange(st.fromDay, st.toDay)}
+                  </span>
+                </div>
+                <span className="text-xs font-ui font-semibold px-2.5 py-0.5 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/15 shrink-0">
+                  {vi.hb11.stationProgress(stationVoted, stationTotal)}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5">
+                {st.days.map((item) => renderDayButton(item))}
+              </div>
+            </div>
+          )
+        })}
+
+        {/* Legend */}
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-4 text-[11px] sm:text-xs font-sans text-deep-navy/70">
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-md bg-mint-haze border border-deep-navy/20 flex items-center justify-center">
+              <CheckIcon className="w-2 h-2 text-deep-navy" />
+            </span>
+            <span>{vi.hb11.status.voted}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-md bg-soft-pink/70 border border-bright-magenta/30 flex items-center justify-center text-[9px] font-bold text-bright-magenta">
+              2m
+            </span>
+            <span>{vi.hb11.status.minimal}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-md bg-butter-cream/40 border border-deep-navy/20 flex items-center justify-center">
+              <MissedIcon className="w-2 h-2 text-deep-navy/70" />
+            </span>
+            <span>{vi.hb11.status.missed}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-md bg-warm-ivory border border-dashed border-deep-navy/20 flex items-center justify-center text-[9px] text-deep-navy/70 font-semibold">
+              -
+            </span>
+            <span>{vi.hb11.status.rest}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-md bg-warm-ivory border-2 border-accent-pink flex items-center justify-center">
+              <span className="w-1 h-1 rounded-full bg-accent-pink" />
+            </span>
+            <span>{vi.hb11.status.today}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-md bg-deep-navy/5 border border-dashed border-deep-navy/15 flex items-center justify-center">
+              <LockIcon className="w-2 h-2 text-deep-navy/70" />
+            </span>
+            <span>{vi.hb11.status.upcoming}</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Hành vi cũ phẳng khi không truyền stations (VD: bước 4 Habit Loop)
   return (
     <div
       role="region"
@@ -178,107 +440,7 @@ export function ProgressGrid({
       className={`w-full max-w-xl mx-auto ${className}`}
     >
       <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5">
-        {allDays.map((item) => {
-          const { day, status, emotionKey } = item
-          const isNonInteractive =
-            !isInteractive || status === 'future' || status === 'locked' || status === 'rest'
-          const emotion = emotionKey ? getEmotion(emotionKey) : undefined
-
-          const statusText = status === 'rest' ? vi.hb04.status.rest : vi.habit.statuses[status]
-          const ariaLabel = vi.habit.ariaDay(day, statusText, emotion?.label)
-
-          let stateStyle = ''
-          let indicatorIcon = null
-
-          switch (status) {
-            case 'done':
-              stateStyle = 'bg-mint-haze border-deep-navy/20 text-deep-navy font-bold shadow-sm'
-              if (isInteractive) {
-                stateStyle += ' hover:border-deep-navy cursor-pointer'
-              }
-              indicatorIcon = emotion ? (
-                <span
-                  className="text-xs sm:text-sm leading-none select-none"
-                  role="img"
-                  aria-hidden="true"
-                >
-                  {emotion.emoji}
-                </span>
-              ) : (
-                <CheckIcon className="w-3.5 h-3.5 text-deep-navy" />
-              )
-              break
-
-            case 'today':
-              stateStyle =
-                'bg-warm-ivory border-2 border-accent-pink text-deep-navy font-bold shadow-sm ring-2 ring-accent-pink/30'
-              if (isInteractive) {
-                stateStyle += ' hover:bg-soft-pink/30 cursor-pointer'
-              }
-              indicatorIcon = (
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-pink animate-pulse motion-reduce:animate-none" />
-              )
-              break
-
-            case 'missed':
-              stateStyle = 'bg-butter-cream/40 border-deep-navy/20 text-deep-navy/80 font-medium'
-              if (isInteractive) {
-                stateStyle += ' hover:bg-butter-cream/70 cursor-pointer'
-              }
-              indicatorIcon = <MissedIcon className="w-3.5 h-3.5 text-deep-navy/60" />
-              break
-
-            case 'locked':
-              stateStyle =
-                'bg-deep-navy/5 border-dashed border-deep-navy/15 text-deep-navy/70 cursor-not-allowed opacity-60'
-              indicatorIcon = <LockIcon className="w-3 h-3 text-deep-navy/70" />
-              break
-
-            case 'rest':
-              stateStyle =
-                'bg-lavender-mist/30 border-dashed border-deep-navy/20 text-deep-navy/60 cursor-not-allowed'
-              indicatorIcon = (
-                <span className="text-[10px] font-semibold text-deep-navy/60 select-none">
-                  {vi.hb04.status.rest}
-                </span>
-              )
-              break
-
-            case 'future':
-            default:
-              stateStyle =
-                'bg-deep-navy/[0.02] border-deep-navy/15 text-deep-navy/70 cursor-not-allowed opacity-75'
-              break
-          }
-
-          return (
-            <button
-              key={day}
-              type="button"
-              disabled={isNonInteractive}
-              onClick={() => {
-                if (!isNonInteractive && onSelectDay) {
-                  onSelectDay(day)
-                }
-              }}
-              aria-label={ariaLabel}
-              className={[
-                'relative flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl border transition-all motion-reduce:transition-none duration-150',
-                'min-w-0 min-h-[46px] sm:min-h-[58px]',
-                'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
-                stateStyle,
-              ].join(' ')}
-            >
-              {/* Day Number */}
-              <span className="font-ui text-xs sm:text-sm leading-none font-bold">{day}</span>
-
-              {/* Status Indicator Slot */}
-              <div className="flex items-center justify-center h-4 w-4 mt-1" aria-hidden="true">
-                {indicatorIcon}
-              </div>
-            </button>
-          )
-        })}
+        {allDays.map((item) => renderDayButton(item))}
       </div>
 
       {/* Legend / Chú thích trực quan */}
