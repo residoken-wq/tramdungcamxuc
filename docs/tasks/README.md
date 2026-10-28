@@ -236,7 +236,7 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 
 ### Họp 20/10 – Puck khối con + Habit 28 ngày (kế hoạch `docs/plan/MEETING_2010.md`)
 
-**Track PK đã đóng 26/10** (PK-01 → PK-07 merge; anh Nhân kéo tay trong builder đổi chỗ được). Còn 1 mục BACKLOG chờ Puck: tên riêng từng khối con ở tab Cấu trúc. Track HB có nhiều migration DB: **🔒 Migration: trống** (HB-07 đã merge 26/10).
+**Track PK đã đóng 26/10** (PK-01 → PK-07 merge; anh Nhân kéo tay trong builder đổi chỗ được). Còn 1 mục BACKLOG chờ Puck: tên riêng từng khối con ở tab Cấu trúc. Track HB có nhiều migration DB: **🔒 Migration: HB-12** (Laptop, giao 28/10).
 
 | Mã          | Việc                                                                                                                        | Phụ thuộc                        | Máy      | Trạng thái                                                                                                 |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
@@ -258,7 +258,8 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 | HB-09       | B3–B4 trong Habit Loop: giờ, thói quen neo, nhịp tuần, bản tối giản (lý do riêng / bạn đồng hành để Tracker)                | HB-08                            | Laptop   | ✅ Merge 28/10 – PR #211 ([review](reviews/HB-09.md)); chờ IT duyệt + Hana chốt 3 điểm                     |
 | HB-10       | B6 Boarding Pass: ảnh `next/og` 4:5 / 9:16 ở bước 4 Habit Loop (POST, không lưu)                                            | HB-09                            | Laptop   | ✅ Merge 28/10 – PR #213 ([review](reviews/HB-10.md)); chờ Hana chốt câu 8                                 |
 | HB-11       | Tracker chia 4 trạm, ô ngày 6 trạng thái, modal check-in 4 trạng thái theo loại ngày, chuỗi / 90% / banner theo `rhythm.ts` | HB-10                            | Laptop   | ✅ Merge 28/10 – PR #215 ([review](reviews/HB-11.md)); chờ Hana chốt câu 9                                 |
-| HB-12→HB-15 | Nhịp tuần, Mentor, Boarding Pass, tracker 4 trạng thái… (kế hoạch phần 2)                                                   | HB-11; câu 3–10 cho HB-07 trở đi | –        | Chờ                                                                                                        |
+| HB-12       | Suy ngẫm cuối mỗi trạm trên Tracker: collection `habitReflections` (chỉ khách đọc câu trả lời), câu hỏi từ CMS              | HB-11                            | Laptop   | Giao 28/10 – [`prompts/HB-12.md`](prompts/HB-12.md) (🔒 Migration)                                         |
+| HB-13→HB-15 | CSV + bắt đầu lại, nút đặt lịch coach, test / seed / hướng dẫn (kế hoạch phần 2)                                            | HB-12; câu 3–10 cho HB-07 trở đi | –        | Chờ                                                                                                        |
 
 (Planning dùng cho mọi task)
 
