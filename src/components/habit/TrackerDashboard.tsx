@@ -10,6 +10,7 @@ import type { EmotionKey } from '@/lib/emotions'
 import { calculateTrackerStats } from '@/lib/habit/tracker-stats'
 import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/certificate-types'
 import type { CheckinStatus } from '@/lib/habit/rhythm'
+import { buildTrackerView } from '@/lib/habit/tracker-view'
 
 export interface InitialCheckinData {
   day: number
@@ -40,11 +41,11 @@ export interface TrackerDashboardProps {
 
 export function TrackerDashboard({
   identityStatement,
-  anchorHabit: _anchorHabit,
-  twoMinuteAction: _twoMinuteAction,
-  rhythmDays: _rhythmDays,
-  startDate: _startDate,
-  stationNames: _stationNames,
+  anchorHabit,
+  twoMinuteAction,
+  rhythmDays,
+  startDate,
+  stationNames,
   currentDay,
   initialCheckins,
   readOnly = false,
@@ -66,31 +67,37 @@ export function TrackerDashboard({
     checkinMap.set(c.day, c)
   }
 
-  // Construct journeyDays for ProgressGrid
-  const gridDays: ProgressDayItem[] = []
-  for (let d = 1; d <= journeyDays; d++) {
-    const entry = checkinMap.get(d)
-    const isDone = Boolean(entry?.done)
-    const isFuture = d > currentDay
+  // Góc nhìn tính toán từ hàm thuần tracker-view (HB-11)
+  const view = React.useMemo(() => {
+    return buildTrackerView(
+      {
+        startDate,
+        journeyDays,
+        rhythmDays,
+      },
+      checkins,
+      new Date(),
+      stationNames,
+    )
+  }, [startDate, journeyDays, rhythmDays, checkins, stationNames])
 
-    let status: ProgressDayItem['status']
-    if (isFuture) {
-      status = 'future'
-    } else if (isDone) {
-      status = 'done'
-    } else if (d === currentDay) {
-      status = 'today'
-    } else {
-      status = 'missed'
-    }
-
-    gridDays.push({
-      day: d,
-      status,
-      emotionKey: entry?.emotion || undefined,
-      note: entry?.note || undefined,
-    })
-  }
+  // Chuyển đổi các trạm sang cấu trúc ProgressStationItem cho ProgressGrid
+  const stations = React.useMemo(() => {
+    return view.stations.map((st) => ({
+      name: st.name,
+      fromDay: st.fromDay,
+      toDay: st.toDay,
+      votedCount: st.votedCount,
+      votingDaysTotal: st.votingDaysTotal,
+      days: st.days.map((d) => ({
+        day: d.day,
+        status: d.state,
+        emotionKey: d.emotionKey,
+        note: d.note,
+        disabled: d.day > currentDay,
+      })),
+    }))
+  }, [view.stations, currentDay])
 
   // Check condition: hôm qua không tick mà hôm nay chưa tick
   // Yesterday is currentDay - 1. Today is currentDay.
@@ -112,17 +119,28 @@ export function TrackerDashboard({
   // Handle success from modal
   const handleCheckinSuccess = (
     day: number,
-    done: boolean,
+    doneOrStatus: boolean | CheckinStatus,
     emotion?: EmotionKey | null,
     note?: string | null,
   ) => {
+    const status: CheckinStatus =
+      typeof doneOrStatus === 'string'
+        ? doneOrStatus
+        : doneOrStatus
+          ? 'voted'
+          : 'missed'
+    const done = status === 'voted' || status === 'minimal'
+
     setCheckins((prev) => {
       const filtered = prev.filter((c) => c.day !== day)
-      return [...filtered, { day, done, emotion, note }]
+      return [...filtered, { day, done, status, emotion, note }]
     })
   }
 
   const selectedEntry = activeModalDay ? checkinMap.get(activeModalDay) : null
+  const activeDayView = activeModalDay
+    ? view.stations.flatMap((s) => s.days).find((d) => d.day === activeModalDay)
+    : null
   const stats = calculateTrackerStats(checkins)
 
   return (
@@ -188,7 +206,7 @@ export function TrackerDashboard({
         </div>
 
         <ProgressGrid
-          days={gridDays}
+          stations={stations}
           totalDays={journeyDays}
           onSelectDay={handleSelectDay}
           readOnly={readOnly}
