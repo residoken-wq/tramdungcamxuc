@@ -110,9 +110,11 @@ Mong đợi:
 Chặn máy LAN khác gọi thẳng cổng 3000 (chỉ NPM được vào):
 
 ```bash
-sudo iptables -I DOCKER-USER -p tcp -m conntrack --ctorigdst 192.168.250.30 --ctorigdstport 3000 ! -s 192.168.250.10 -j DROP
+sudo iptables -I DOCKER-USER -p tcp -m conntrack --ctdir ORIGINAL --ctorigdst 192.168.250.30 --ctorigdstport 3000 ! -s 192.168.250.10 -j DROP
 sudo apt-get install -y iptables-persistent && sudo netfilter-persistent save
 ```
+
+`--ctdir ORIGINAL` là bắt buộc (sửa 29/10): thiếu nó, luật chặn cả gói **trả lời** từ container (IP nguồn `172.18.x.x`) nên NPM gửi được mà không nhận được phản hồi (`curl` từ NPM hết giờ). Đã lỡ thêm luật cũ: `sudo iptables -S DOCKER-USER` → xóa dòng không có `--ctdir ORIGINAL` bằng `sudo iptables -D DOCKER-USER <số dòng>`, rồi `sudo netfilter-persistent save`.
 
 `[VPS NPM]` Mong đợi: `curl -s http://192.168.250.30:3000/api/users/init` → có `"initialized":false`.
 
