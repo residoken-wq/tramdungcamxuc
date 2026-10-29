@@ -88,7 +88,7 @@ Ngoài code, anh cần làm ở GitHub: **Settings → Secrets and variables →
    - **Lưu ý:** cổng Docker mở ra **không** đi qua luật `ufw` thường. Gắn app vào IP LAN (`APP_PORT` ở mục G) để Internet không vào được, rồi chặn các máy LAN khác (mọi máy khác trong `192.168.250.0/24` hay `192.168.1.0/24` gọi thẳng được app và giả `X-Forwarded-For` để lách giới hạn OTP / form):
 
      ```bash
-     sudo iptables -I DOCKER-USER -p tcp -m conntrack --ctorigdst 192.168.250.30 --ctorigdstport 3000 ! -s 192.168.250.10 -j DROP
+     sudo iptables -I DOCKER-USER -p tcp -m conntrack --ctdir ORIGINAL --ctorigdst 192.168.250.30 --ctorigdstport 3000 ! -s 192.168.250.10 -j DROP
      sudo apt-get install -y iptables-persistent && sudo netfilter-persistent save   # giữ luật sau khi khởi động lại
      ```
 
