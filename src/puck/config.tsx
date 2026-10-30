@@ -74,6 +74,7 @@ import {
   type FontSizeOption,
 } from './constants'
 import { allowedTextColors } from '@/lib/brand/format-classes'
+import { alignField, colorField, sizeField } from './format-fields'
 import { getLockedComponentPermissions } from './locks'
 
 export {
@@ -449,6 +450,9 @@ export const puckConfig: Config<PageComponentsProps> = {
           type: 'textarea',
           label: 'Nội dung văn bản (các đoạn phân tách bằng 2 lần xuống dòng)',
         },
+        textSize: sizeField('Cỡ chữ'),
+        textColor: colorField('Màu chữ', 'warm-ivory'),
+        align: alignField(),
         bgColor: {
           type: 'select',
           label: 'Màu nền',
@@ -460,8 +464,15 @@ export const puckConfig: Config<PageComponentsProps> = {
           options: [...PADDING_OPTIONS],
         },
       },
+      resolveFields: (data, params) => ({
+        ...params.fields,
+        textColor: colorField('Màu chữ', data.props?.bgColor || 'warm-ivory'),
+      }),
       defaultProps: {
         version: 1,
+        textSize: 'md',
+        textColor: 'deep-navy',
+        align: 'left',
         content:
           '[MẪU] Đoạn văn bản thứ nhất chia sẻ những chiêm nghiệm sâu sắc.\n\n[MẪU] Đoạn văn bản thứ hai tiếp nối câu chuyện một cách tự nhiên và ấm áp.',
         bgColor: 'warm-ivory',
@@ -481,13 +492,16 @@ export const puckConfig: Config<PageComponentsProps> = {
             { label: 'Ảnh bên phải, chữ bên trái', value: 'image-right' },
           ],
         },
-        seriesLabel: { type: 'text', label: 'Nhãn series' },
-        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1' },
-        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2' },
+        seriesLabel: { type: 'text', label: 'Nhãn series', contentEditable: true },
+        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1', contentEditable: true },
+        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2', contentEditable: true },
+        titleSize: sizeField('Cỡ chữ tiêu đề'),
         content: {
           type: 'textarea',
           label: 'Nội dung văn bản (các đoạn phân tách bằng 2 lần xuống dòng)',
         },
+        textSize: sizeField('Cỡ chữ nội dung'),
+        textColor: colorField('Màu chữ nội dung', 'warm-ivory'),
         quote: {
           type: 'textarea',
           label: 'Câu trích dẫn (Playfair Display Italic, tùy chọn)',
@@ -512,9 +526,16 @@ export const puckConfig: Config<PageComponentsProps> = {
           options: [...PADDING_OPTIONS],
         },
       },
+      resolveFields: (data, params) => ({
+        ...params.fields,
+        textColor: colorField('Màu chữ nội dung', data.props?.bgColor || 'warm-ivory'),
+      }),
       defaultProps: {
         version: 2,
         layout: 'image-left',
+        titleSize: 'md',
+        textSize: 'md',
+        textColor: 'deep-navy',
         seriesLabel: '[MẪU] Câu chuyện',
         titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
         titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
