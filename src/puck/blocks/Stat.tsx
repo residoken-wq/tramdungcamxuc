@@ -10,9 +10,6 @@ export type { StatItemProps as StatProps }
 
 export const StatBlock: ComponentConfig<StatItemProps> = {
   label: vi.puckStat?.label || 'Ô số liệu',
-  permissions: {
-    insert: false,
-  },
   fields: {
     value: {
       type: 'text',

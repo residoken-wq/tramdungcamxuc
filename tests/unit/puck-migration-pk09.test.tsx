@@ -46,7 +46,9 @@ describe('PK-09: VisionMission v1 -> v2 (cards slot of VisionCard)', () => {
 
   it('VisionCard is a child-only block allowed only in the cards slot', () => {
     expect(CHILD_BLOCK_TYPES).toContain('VisionCard')
-    expect(puckConfig.components.VisionCard.permissions?.insert).toBe(false)
+    expect(
+      (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+    ).toContain('VisionCard')
     const slot = puckConfig.components.VisionMission.fields?.cards as { allow?: string[] }
     expect(slot.allow).toEqual(['VisionCard'])
   })

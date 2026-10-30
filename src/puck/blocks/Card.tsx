@@ -11,9 +11,6 @@ export type { IconCardProps as CardProps }
 
 export const CardBlock: ComponentConfig<IconCardProps> = {
   label: vi.puckCard?.label || 'Thẻ',
-  permissions: {
-    insert: false,
-  },
   fields: {
     icon: {
       type: 'select',

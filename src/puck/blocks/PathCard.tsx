@@ -30,9 +30,6 @@ function colorFields(realBg: string, titleLarge: boolean) {
 /** Child block of TwoPathCards' `paths` slot (PK-08): one draggable path card. */
 export const PathCardBlock: ComponentConfig<PathCardProps> = {
   label: 'Thẻ lối đi',
-  permissions: {
-    insert: false,
-  },
   fields: {
     groupLabel: { type: 'text', label: 'Nhãn nhóm (VD: CHO CÁ NHÂN)', contentEditable: true },
     title: { type: 'text', label: 'Tiêu đề', contentEditable: true },

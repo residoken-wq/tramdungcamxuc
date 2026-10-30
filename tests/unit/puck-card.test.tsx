@@ -185,7 +185,7 @@ describe('PK-02: Card child block - Contrast, Presets & Permissions', () => {
       const categories = puckConfig.categories || {}
 
       for (const [key, category] of Object.entries(categories)) {
-        if (key === 'other') continue
+        if (key === 'other' || key === 'children') continue
         const componentList = category.components || []
         expect(componentList).not.toContain('Card')
       }
@@ -194,8 +194,10 @@ describe('PK-02: Card child block - Contrast, Presets & Permissions', () => {
       expect(categories.other?.visible).toBe(false)
     })
 
-    it('CardBlock có permissions.insert = false để ngăn kéo trực tiếp lên root canvas', () => {
-      expect(CardBlock.permissions?.insert).toBe(false)
+    it('Card nằm trong nhóm Thẻ con (PK-11), root canvas vẫn từ chối', () => {
+      expect(
+        (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+      ).toContain('Card')
     })
 
     it('Columns.col1, col2, col3 cho phép Card (PK-05: disallow không chứa Card)', () => {

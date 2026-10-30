@@ -85,7 +85,9 @@ describe('PK-08: HeroTwoEntries v2 -> v3 (entries slot of EntryCard)', () => {
 
   it('EntryCard is a child-only block allowed only in the hero slot', () => {
     expect(CHILD_BLOCK_TYPES).toContain('EntryCard')
-    expect(puckConfig.components.EntryCard.permissions?.insert).toBe(false)
+    expect(
+      (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+    ).toContain('EntryCard')
     const slot = puckConfig.components.HeroTwoEntries.fields?.entries as { allow?: string[] }
     expect(slot.allow).toEqual(['EntryCard'])
   })
@@ -141,7 +143,9 @@ describe('PK-08: TwoPathCards v1 -> v2 (paths slot of PathCard)', () => {
 
   it('PathCard is a child-only block allowed only in the paths slot', () => {
     expect(CHILD_BLOCK_TYPES).toContain('PathCard')
-    expect(puckConfig.components.PathCard.permissions?.insert).toBe(false)
+    expect(
+      (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+    ).toContain('PathCard')
     const slot = puckConfig.components.TwoPathCards.fields?.paths as { allow?: string[] }
     expect(slot.allow).toEqual(['PathCard'])
   })
