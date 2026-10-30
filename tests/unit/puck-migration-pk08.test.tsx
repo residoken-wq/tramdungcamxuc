@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import React from 'react'
+import { render } from '@testing-library/react'
 import type { Data } from '@puckeditor/core'
 import { migrateHeroTwoEntriesV2ToV3, normalizePuckData } from '@/puck/migrations'
 import { CHILD_BLOCK_TYPES } from '@/puck/constants'
@@ -142,5 +144,40 @@ describe('PK-08: TwoPathCards v1 -> v2 (paths slot of PathCard)', () => {
     expect(puckConfig.components.PathCard.permissions?.insert).toBe(false)
     const slot = puckConfig.components.TwoPathCards.fields?.paths as { allow?: string[] }
     expect(slot.allow).toEqual(['PathCard'])
+  })
+})
+
+describe('PK-08: child cards render inline-edited (React element) props', () => {
+  // Puck's editor replaces contentEditable string props with an editable element.
+  const el = (text: string) => React.createElement('span', null, text)
+
+  it('EntryCard and PathCard render element props without string operations', () => {
+    const entry = puckConfig.components.EntryCard
+    const path = puckConfig.components.PathCard
+    const editable = <T extends Record<string, unknown>>(props: T, keys: string[]) =>
+      Object.fromEntries(
+        Object.entries(props).map(([k, v]) => [k, keys.includes(k) ? el(String(v)) : v]),
+      ) as T
+    const { getAllByText } = render(
+      <>
+        {entry.render(
+          editable({ ...entry.defaultProps, puck: {} } as never, [
+            'groupLabel',
+            'description',
+            'buttonText',
+          ]),
+        )}
+        {path.render(
+          editable({ ...path.defaultProps, puck: {} } as never, [
+            'groupLabel',
+            'title',
+            'description',
+            'buttonLabel',
+          ]),
+        )}
+      </>,
+    )
+    expect(getAllByText(String(entry.defaultProps?.description))).toHaveLength(1)
+    expect(getAllByText(String(path.defaultProps?.title))).toHaveLength(1)
   })
 })

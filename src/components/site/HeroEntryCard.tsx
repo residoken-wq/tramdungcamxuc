@@ -69,13 +69,16 @@ export function HeroEntryCard({
         : textColorClass(textColor)
       : 'text-deep-navy/80 group-data-[bg=deep-navy]/hero:text-white/90'
   const badgeClass = badgeColor === 'lavender-mist' ? 'bg-lavender-mist' : 'bg-soft-pink'
+  // In the editor Puck passes contentEditable props as React elements, not strings.
+  const hasGroupLabel =
+    typeof groupLabel === 'string' ? groupLabel.trim().length > 0 : Boolean(groupLabel)
 
   return (
     <div
       className={`flex flex-col justify-between p-6 sm:p-8 rounded-card border shadow-soft h-full bg-white text-deep-navy border-deep-navy/10 group-data-[bg=deep-navy]/hero:bg-white/10 group-data-[bg=deep-navy]/hero:text-white group-data-[bg=deep-navy]/hero:border-white/20`}
     >
       <div className={`flex flex-col ${alignClass}`}>
-        {groupLabel && groupLabel.trim().length > 0 ? (
+        {hasGroupLabel ? (
           <span
             className={`block font-ui font-bold uppercase tracking-widest mb-4 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${groupLabelClass}`}
           >
