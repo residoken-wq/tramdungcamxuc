@@ -41,9 +41,10 @@ export const ALIGN_OPTIONS = [
 export type AlignOption = (typeof ALIGN_OPTIONS)[number]['value']
 
 /**
- * Child blocks that only make sense inside their parent's slot (hidden from the sidebar,
- * `permissions.insert: false`). The page root refuses them so a drag that overshoots the parent
- * cannot leave an orphan card at the top level (PK-07).
+ * Child blocks that only make sense inside their parent's slot. They are listed in their own
+ * sidebar group so a parent with an empty slot can still get cards (PK-11); each parent slot
+ * `allow`s only its own child, and the page root and Columns refuse them, so a drag cannot
+ * leave an orphan card outside its parent (PK-07).
  */
 export const CHILD_BLOCK_TYPES = [
   'Card',

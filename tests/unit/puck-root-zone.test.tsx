@@ -4,12 +4,29 @@ import { expect, test } from 'vitest'
 import { puckConfig } from '@/puck/config'
 import { CHILD_BLOCK_TYPES, ROOT_DROP_ZONE } from '@/puck/constants'
 
-test('PK-07: CHILD_BLOCK_TYPES lists exactly the blocks hidden from the sidebar (insert: false)', () => {
-  const childBlocks = Object.entries(puckConfig.components)
-    .filter(([, component]) => component.permissions?.insert === false)
-    .map(([type]) => type)
-    .sort()
-  expect([...CHILD_BLOCK_TYPES].sort()).toEqual(childBlocks)
+test('PK-11: CHILD_BLOCK_TYPES is the child drawer group, and each child is allowed only in its parent slot', () => {
+  const categories = puckConfig.categories as Record<string, { components?: string[] }>
+  expect([...(categories.children?.components ?? [])].sort()).toEqual([...CHILD_BLOCK_TYPES].sort())
+
+  // Every child block is draggable from the drawer (an empty parent slot can be filled)…
+  for (const type of CHILD_BLOCK_TYPES) {
+    const component = puckConfig.components[type as keyof typeof puckConfig.components]
+    expect(component, type).toBeDefined()
+    expect(component.permissions?.insert, type).not.toBe(false)
+  }
+
+  // …and is listed in exactly one parent slot's `allow`.
+  const allowedBy = new Map<string, string[]>()
+  for (const [parent, component] of Object.entries(puckConfig.components)) {
+    for (const field of Object.values(component.fields ?? {})) {
+      const slot = field as { type?: string; allow?: string[] }
+      if (slot.type !== 'slot') continue
+      for (const child of slot.allow ?? []) {
+        allowedBy.set(child, [...(allowedBy.get(child) ?? []), parent])
+      }
+    }
+  }
+  for (const type of CHILD_BLOCK_TYPES) expect(allowedBy.get(type), type).toHaveLength(1)
 })
 
 test('PK-07: in the editor the page root zone refuses child blocks; public render keeps children', () => {

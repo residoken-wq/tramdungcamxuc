@@ -25,9 +25,6 @@ function colorFields(realBg: string, titleLarge: boolean) {
 /** Child block of VisionMission's `cards` slot (PK-09): one draggable vision / mission card. */
 export const VisionCardBlock: ComponentConfig<VisionCardItemProps> = {
   label: 'Thẻ Tầm nhìn / Sứ mệnh',
-  permissions: {
-    insert: false,
-  },
   fields: {
     icon: {
       type: 'select',

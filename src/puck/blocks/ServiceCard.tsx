@@ -10,9 +10,6 @@ export type { ServiceCardItemProps as ServiceCardProps }
 
 export const ServiceCardBlock: ComponentConfig<ServiceCardItemProps> = {
   label: vi.puckServiceCard?.label || 'Thẻ dịch vụ',
-  permissions: {
-    insert: false,
-  },
   fields: {
     serviceId: createServiceExternalField({
       label: vi.puckServiceCard?.serviceId || 'Chọn dịch vụ đồng hành',

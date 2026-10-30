@@ -242,7 +242,7 @@ describe('PK-04: ServiceCard & PackageCard Child Blocks - Unit Tests', () => {
       const categories = puckConfig.categories || {}
 
       for (const [key, category] of Object.entries(categories)) {
-        if (key === 'other') continue
+        if (key === 'other' || key === 'children') continue
         const componentList = category.components || []
         expect(componentList).not.toContain('ServiceCard')
         expect(componentList).not.toContain('PackageCard')
@@ -251,9 +251,13 @@ describe('PK-04: ServiceCard & PackageCard Child Blocks - Unit Tests', () => {
       expect(categories.other?.visible).toBe(false)
     })
 
-    it('ServiceCardBlock and PackageCardBlock have permissions.insert = false', () => {
-      expect(ServiceCardBlock.permissions?.insert).toBe(false)
-      expect(PackageCardBlock.permissions?.insert).toBe(false)
+    it('ServiceCard and PackageCard are in the child-block drawer group (PK-11)', () => {
+      expect(
+        (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+      ).toContain('ServiceCard')
+      expect(
+        (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+      ).toContain('PackageCard')
     })
 
     it('Columns.col1, col2, col3 allow ServiceCard and PackageCard (PK-05)', () => {
