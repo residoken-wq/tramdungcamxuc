@@ -142,8 +142,11 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
 
       expect(HeroTwoEntries.defaultProps?.titleLine1).toContain('[MẪU]')
       expect(HeroTwoEntries.defaultProps?.titleLine2).toContain('[MẪU]')
-      expect(HeroTwoEntries.defaultProps?.entry1?.label).toContain('[MẪU]')
-      expect(HeroTwoEntries.defaultProps?.entry2?.label).toContain('[MẪU]')
+      const entries = HeroTwoEntries.defaultProps?.entries as unknown as Array<{
+        props: { label?: string }
+      }>
+      expect(entries).toHaveLength(2)
+      for (const entry of entries) expect(entry.props.label).toContain('[MẪU]')
 
       expect(SectionHeader.defaultProps?.titleLine1).toContain('[MẪU]')
       expect(SectionHeader.defaultProps?.titleLine2).toContain('[MẪU]')
@@ -160,7 +163,7 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       const { HeroTwoEntries, SectionHeader, RichText, ImageText, CTAButton } =
         puckConfig.components
 
-      expect(HeroTwoEntries.defaultProps?.version).toBe(2)
+      expect(HeroTwoEntries.defaultProps?.version).toBe(3)
       expect(SectionHeader.defaultProps?.version).toBe(2)
       expect(RichText.defaultProps?.version).toBe(1)
       expect(ImageText.defaultProps?.version).toBe(2)
@@ -300,8 +303,13 @@ describe('T0-09: Puck Editor & 5 Brand-Safe Blocks', () => {
       const { container: heroContainer } = render(
         <HeroTwoEntries
           {...heroProps}
-          entry1={{ ...heroProps.entry1, buttonLink: 'javascript:void(0)' }}
-          entry2={{ ...heroProps.entry2, buttonLink: 'data:text/html,<script>alert(1)</script>' }}
+          entries={[
+            { type: 'EntryCard', props: { buttonText: 'A', buttonLink: 'javascript:void(0)' } },
+            {
+              type: 'EntryCard',
+              props: { buttonText: 'B', buttonLink: 'data:text/html,<script>alert(1)</script>' },
+            },
+          ]}
         />,
       )
       expect(heroContainer.querySelector('a')).toBeNull()

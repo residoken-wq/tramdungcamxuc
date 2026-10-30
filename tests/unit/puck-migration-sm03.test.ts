@@ -15,7 +15,6 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
       const migrated = applyPuckMigrations(puckData)
       for (const block of migrated.content) {
         if (
-          block.type === 'HeroTwoEntries' ||
           block.type === 'HeroImage' ||
           block.type === 'QuoteBlock' ||
           block.type === 'TestimonialGrid'
@@ -24,7 +23,8 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
         }
         if (
           block.type === 'PackageComparison' ||
-          block.type === 'StatsBar'
+          block.type === 'StatsBar' ||
+          block.type === 'HeroTwoEntries'
         ) {
           expect((block.props as { version?: number }).version).toBe(3)
         }
@@ -152,7 +152,7 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
     expect(itemProps.icon).toBe('heart')
 
     const hero = migrated.content.find((b) => b.props.id === 'hero-custom')
-    expect(hero?.props.version).toBe(2)
+    expect(hero?.props.version).toBe(3)
     expect(hero?.props.entryStyle).toBe('cards')
     expect(hero?.props.entry1Title).toBe('Cá nhân tùy chỉnh')
 

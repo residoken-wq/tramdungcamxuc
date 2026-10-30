@@ -294,7 +294,8 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TeamGrid Block > matches sna
 exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TwoPathCards Block > matches snapshot with solid and outline cards 1`] = `
 <DocumentFragment>
   <section
-    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+    class="group/paths w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+    data-bg="warm-ivory"
   >
     <div
       class="mx-auto max-w-5xl"
@@ -308,7 +309,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TwoPathCards Block > matches
           Định hướng
         </span>
         <h2
-          class="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-tight"
+          class="font-display uppercase tracking-tight leading-tight text-3xl sm:text-4xl"
         >
           <span
             class="text-deep-navy"
