@@ -47,10 +47,16 @@ export function VisionCardItem({
   textSize = 'md',
   align = 'left',
 }: VisionCardItemProps) {
-  const paragraphs = (content || '')
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean)
+  // In the editor Puck passes contentEditable props as React elements: render it as one block.
+  const paragraphs: React.ReactNode[] =
+    typeof content === 'string'
+      ? content
+          .split(/\n\s*\n/)
+          .map((p) => p.trim())
+          .filter(Boolean)
+      : content
+        ? [content]
+        : []
   const alignClass = align === 'center' ? 'text-center items-center' : 'text-left items-start'
   const titleClass =
     titleColor !== 'deep-navy'

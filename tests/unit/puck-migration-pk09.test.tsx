@@ -77,3 +77,19 @@ describe('PK-09: HeroImage stats format presets', () => {
     expect(label).toContain('group-data-[bg=deep-navy]/heroimg:text-white/80')
   })
 })
+
+describe('PK-09: VisionCard renders inline-edited (React element) props', () => {
+  it('renders an element content prop without string operations', () => {
+    const block = puckConfig.components.VisionCard
+    const { getByText } = render(
+      block.render({
+        ...block.defaultProps,
+        title: <span>Tiêu đề sửa trực tiếp</span>,
+        content: <span>Nội dung sửa trực tiếp</span>,
+        puck: {},
+      } as never),
+    )
+    expect(getByText('Tiêu đề sửa trực tiếp')).toBeDefined()
+    expect(getByText('Nội dung sửa trực tiếp')).toBeDefined()
+  })
+})
