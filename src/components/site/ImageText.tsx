@@ -4,6 +4,13 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
+import type { FontSizeOption, TextColorOption } from '@/lib/brand/format-classes'
+import {
+  BODY_TEXT_SIZES,
+  SECTION_TITLE_SIZES,
+  bodyColorClass,
+  sizeClass,
+} from '@/lib/brand/text-presets'
 
 export interface ImageTextProps {
   version?: number
@@ -22,6 +29,10 @@ export interface ImageTextProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  /** PK-10 format presets (deep-navy = automatic). */
+  titleSize?: FontSizeOption
+  textSize?: FontSizeOption
+  textColor?: TextColorOption
 }
 
 const BG_COLORS = {
@@ -54,12 +65,19 @@ export function ImageText({
   buttonLink,
   bgColor = 'warm-ivory',
   padding = 'md',
+  titleSize,
+  textSize,
+  textColor,
 }: ImageTextProps) {
   const isDeepNavy = bgColor === 'deep-navy'
   const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-  const descColorClass = isDeepNavy ? 'text-white/90' : 'text-deep-navy/80'
+  const descColorClass = bodyColorClass(
+    textColor,
+    bgColor,
+    isDeepNavy ? 'text-white/90' : 'text-deep-navy/80',
+  )
 
   // Client-side preview in visual editor when imageUrl is not pre-rendered from server
   const [clientImage, setClientImage] = useState<{ url: string; alt: string } | null>(null)
@@ -140,14 +158,19 @@ export function ImageText({
               </span>
             )}
 
-            <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-tight mb-4">
+            <h2
+              className={`font-display ${sizeClass(SECTION_TITLE_SIZES, titleSize)} uppercase tracking-tight leading-tight mb-4`}
+            >
               <span className={textColorClass}>{titleLine1}</span>{' '}
               {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
             </h2>
 
             <div className="space-y-3 mb-6">
               {paragraphs.map((p, idx) => (
-                <p key={idx} className={`font-ui text-base leading-relaxed ${descColorClass}`}>
+                <p
+                  key={idx}
+                  className={`font-ui ${sizeClass(BODY_TEXT_SIZES, textSize)} leading-relaxed ${descColorClass}`}
+                >
                   {p}
                 </p>
               ))}

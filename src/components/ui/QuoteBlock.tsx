@@ -1,4 +1,6 @@
 import React from 'react'
+import type { AlignOption, FontSizeOption } from '@/lib/brand/format-classes'
+import { QUOTE_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 
 export interface QuoteBlockProps {
   quote: string
@@ -6,6 +8,9 @@ export interface QuoteBlockProps {
   roleOrContext?: string
   className?: string
   theme?: 'light' | 'dark'
+  /** PK-10 format presets. */
+  size?: FontSizeOption
+  align?: AlignOption
 }
 
 export function QuoteBlock({
@@ -14,6 +19,8 @@ export function QuoteBlock({
   roleOrContext,
   className = '',
   theme = 'light',
+  size,
+  align = 'left',
 }: QuoteBlockProps) {
   const isDark = theme === 'dark'
   const bgClass = isDark
@@ -25,16 +32,18 @@ export function QuoteBlock({
   const borderClass = isDark ? 'border-white/15' : 'border-deep-navy/10'
 
   return (
-    <figure className={`relative my-6 rounded-card ${bgClass} ${className}`}>
+    <figure
+      className={`relative my-6 rounded-card ${bgClass}${align === 'center' ? ' text-center' : ''} ${className}`}
+    >
       <blockquote
-        className={`font-quote text-xl sm:text-2xl italic leading-relaxed ${quoteTextClass}`}
+        className={`font-quote ${sizeClass(QUOTE_TEXT_SIZES, size)} italic leading-relaxed ${quoteTextClass}`}
       >
         &ldquo;{quote}&rdquo;
       </blockquote>
 
       {(cite || roleOrContext) && (
         <figcaption
-          className={`mt-4 flex flex-wrap items-baseline gap-2 border-t ${borderClass} pt-3`}
+          className={`mt-4 flex flex-wrap items-baseline gap-2 border-t ${borderClass} pt-3${align === 'center' ? ' justify-center' : ''}`}
         >
           {cite && (
             <cite className={`font-ui text-sm font-bold not-italic ${citeClass}`}>{cite}</cite>
