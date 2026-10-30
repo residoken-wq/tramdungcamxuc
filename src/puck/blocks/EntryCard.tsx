@@ -13,7 +13,9 @@ export const EntryCardBlock: ComponentConfig<HeroEntryCardProps> = {
     insert: false,
   },
   fields: {
-    groupLabel: { type: 'text', label: 'Nhãn nhóm (VD: CHO CÁ NHÂN)', contentEditable: true },
+    // Sidebar only: inline editing turns even an empty label into an element, which would hide
+    // the badge `label` fallback in the editor while the public page shows it.
+    groupLabel: { type: 'text', label: 'Nhãn nhóm (VD: CHO CÁ NHÂN)' },
     label: { type: 'text', label: 'Nhãn lối vào (hiện khi không có nhãn nhóm)' },
     description: { type: 'textarea', label: 'Mô tả ngắn', contentEditable: true },
     buttonText: { type: 'text', label: 'Chữ trên nút', contentEditable: true },
