@@ -1,8 +1,7 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { VisionMission, type VisionMissionProps } from '@/components/site/VisionMission'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
-import { BRAND_ICONS } from '@/lib/brand/icons'
+import { BRAND_COLOR_OPTIONS, FONT_SIZE_OPTIONS, PADDING_OPTIONS } from '../constants'
 
 export type { VisionMissionProps }
 
@@ -16,40 +15,27 @@ export const VisionMissionBlock: ComponentConfig<VisionMissionProps> = {
     titleLine1: {
       type: 'text',
       label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      contentEditable: true,
     },
     titleLine2: {
       type: 'text',
       label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      contentEditable: true,
     },
     quote: {
       type: 'textarea',
       label: 'Câu trích dẫn ở giữa (Playfair Display Italic, tùy chọn)',
+      contentEditable: true,
     },
-    visionTitle: {
-      type: 'text',
-      label: 'Tiêu đề thẻ Tầm nhìn',
-    },
-    visionContent: {
-      type: 'textarea',
-      label: 'Nội dung thẻ Tầm nhìn (các đoạn phân tách bằng 2 lần xuống dòng)',
-    },
-    visionIcon: {
+    titleSize: {
       type: 'select',
-      label: 'Biểu tượng thẻ Tầm nhìn',
-      options: BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
+      label: 'Cỡ chữ tiêu đề',
+      options: [...FONT_SIZE_OPTIONS],
     },
-    missionTitle: {
-      type: 'text',
-      label: 'Tiêu đề thẻ Sứ mệnh',
-    },
-    missionContent: {
-      type: 'textarea',
-      label: 'Nội dung thẻ Sứ mệnh (các đoạn phân tách bằng 2 lần xuống dòng)',
-    },
-    missionIcon: {
-      type: 'select',
-      label: 'Biểu tượng thẻ Sứ mệnh',
-      options: BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
+    cards: {
+      type: 'slot',
+      label: 'Các thẻ (kéo thả để đổi thứ tự)',
+      allow: ['VisionCard'],
     },
     bgColor: {
       type: 'select',
@@ -63,19 +49,44 @@ export const VisionMissionBlock: ComponentConfig<VisionMissionProps> = {
     },
   },
   defaultProps: {
-    version: 1,
+    version: 2,
     seriesLabel: '[MẪU] ĐỊNH HƯỚNG TƯƠNG LAI',
     titleLine1: '[MẪU] TẦM NHÌN &',
     titleLine2: '[MẪU] SỨ MỆNH',
     quote: '[MẪU] Dừng lại để lắng nghe, thấu cảm để vững vàng bước tiếp.',
-    visionTitle: '[MẪU] TẦM NHÌN',
-    visionContent:
-      '[MẪU] Trở thành điểm tựa tinh thần và người bạn đồng hành tin cậy cho hàng triệu người trẻ và tổ chức trên hành trình phát triển trí tuệ cảm xúc.',
-    visionIcon: 'compass',
-    missionTitle: '[MẪU] SỨ MỆNH',
-    missionContent:
-      '[MẪU] Giúp mỗi cá nhân nhận diện, gọi tên và chuyển hóa cảm xúc thành sức mạnh nội tại, kiến tạo cuộc sống an yên và sự nghiệp thăng hoa.',
-    missionIcon: 'heart',
+    titleSize: 'md',
+    cards: [
+      {
+        type: 'VisionCard',
+        props: {
+          version: 1,
+          icon: 'compass',
+          title: '[MẪU] TẦM NHÌN',
+          content:
+            '[MẪU] Trở thành điểm tựa tinh thần và người bạn đồng hành tin cậy cho hàng triệu người trẻ và tổ chức trên hành trình phát triển trí tuệ cảm xúc.',
+          titleColor: 'deep-navy',
+          textColor: 'deep-navy',
+          titleSize: 'md',
+          textSize: 'md',
+          align: 'left',
+        },
+      },
+      {
+        type: 'VisionCard',
+        props: {
+          version: 1,
+          icon: 'heart',
+          title: '[MẪU] SỨ MỆNH',
+          content:
+            '[MẪU] Giúp mỗi cá nhân nhận diện, gọi tên và chuyển hóa cảm xúc thành sức mạnh nội tại, kiến tạo cuộc sống an yên và sự nghiệp thăng hoa.',
+          titleColor: 'deep-navy',
+          textColor: 'deep-navy',
+          titleSize: 'md',
+          textSize: 'md',
+          align: 'left',
+        },
+      },
+    ],
     bgColor: 'warm-ivory',
     padding: 'md',
   },

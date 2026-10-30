@@ -83,6 +83,16 @@ function sanitizeChildItem(child: PuckItem, parent: PuckItem): void {
     sanitizeColorProp(childProps, 'labelColor', pathRealBg, false, 'label')
     sanitizeColorProp(childProps, 'titleColor', pathRealBg, childProps.titleSize === 'lg', 'title')
     sanitizeColorProp(childProps, 'textColor', pathRealBg, false, 'text')
+  } else if (childType === 'VisionCard') {
+    const visionRealBg = getChildRealBg(parent, { cardStyle: 'white' })
+    sanitizeColorProp(
+      childProps,
+      'titleColor',
+      visionRealBg,
+      childProps.titleSize === 'lg',
+      'title',
+    )
+    sanitizeColorProp(childProps, 'textColor', visionRealBg, false, 'text')
   } else if (childType === 'FaqItem') {
     const parentBg = typeof parent.props.bgColor === 'string' ? parent.props.bgColor : 'warm-ivory'
     const faqRealBg = parentBg === 'deep-navy' ? 'deep-navy' : 'white'
@@ -119,6 +129,7 @@ export function sanitizeChildColors(data: Data): Data {
     FAQ: ['items'],
     HeroTwoEntries: ['entries'],
     TwoPathCards: ['paths'],
+    VisionMission: ['cards'],
     Columns: ['col1', 'col2', 'col3'],
   }
 

@@ -397,7 +397,8 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TwoPathCards Block > matches
 exports[`SM-04: Puck Blocks Unit & Snapshot Tests > VisionMission Block > matches snapshot with default and custom props 1`] = `
 <DocumentFragment>
   <section
-    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+    class="group/vm w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+    data-bg="warm-ivory"
   >
     <div
       class="mx-auto max-w-5xl"
