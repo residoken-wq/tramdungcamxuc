@@ -3,6 +3,19 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { Columns, type ColumnsProps } from '@/components/site/Columns'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 
+// No nested Columns or heroes. Card, Stat, ServiceCard and PackageCard may sit in a column
+// (PK-05); the other child blocks only make sense inside their own parent.
+const COLUMNS_DISALLOW = [
+  'Columns',
+  'HeroTwoEntries',
+  'HeroImage',
+  'Step',
+  'FaqItem',
+  'EntryCard',
+  'PathCard',
+  'VisionCard',
+]
+
 export type { ColumnsProps }
 
 export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
@@ -19,44 +32,17 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
     col1: {
       type: 'slot',
       label: 'Nội dung Cột 1',
-      disallow: [
-        'Columns',
-        'HeroTwoEntries',
-        'HeroImage',
-        'Step',
-        'FaqItem',
-        'EntryCard',
-        'PathCard',
-        'VisionCard',
-      ],
+      disallow: COLUMNS_DISALLOW,
     },
     col2: {
       type: 'slot',
       label: 'Nội dung Cột 2',
-      disallow: [
-        'Columns',
-        'HeroTwoEntries',
-        'HeroImage',
-        'Step',
-        'FaqItem',
-        'EntryCard',
-        'PathCard',
-        'VisionCard',
-      ],
+      disallow: COLUMNS_DISALLOW,
     },
     col3: {
       type: 'slot',
       label: 'Nội dung Cột 3 (khi chọn 3 cột)',
-      disallow: [
-        'Columns',
-        'HeroTwoEntries',
-        'HeroImage',
-        'Step',
-        'FaqItem',
-        'EntryCard',
-        'PathCard',
-        'VisionCard',
-      ],
+      disallow: COLUMNS_DISALLOW,
     },
     gap: {
       type: 'select',

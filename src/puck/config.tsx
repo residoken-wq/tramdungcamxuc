@@ -233,6 +233,12 @@ export const puckConfig: Config<PageComponentsProps> = {
         'ContactForms',
       ],
     },
+    // PK-11: child cards, droppable only into their own parent block (slot `allow` lists).
+    children: {
+      title: 'Thẻ con (kéo vào khối cha)',
+      components: [...CHILD_BLOCK_TYPES] as (keyof PageComponentsProps)[],
+      defaultExpanded: false,
+    },
     other: {
       visible: false,
     },

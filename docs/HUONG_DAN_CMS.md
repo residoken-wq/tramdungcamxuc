@@ -1844,11 +1844,12 @@ Trong bản nâng cấp mới, khối **Lưới Thẻ Biểu Tượng / Đánh S
 
 ![Chọn một thẻ trong Lưới thẻ: thanh thao tác trên thẻ, cột phải là ô cài đặt của thẻ](images/huong-dan/36-luoi-the-keo-tha.png)
 
-#### 1. Vì sao khối "Thẻ" (Card) không nằm ở menu bên trái?
+#### 1. Nhóm "Thẻ con (kéo vào khối cha)" ở menu bên trái
 
-- Khối **Thẻ** (`Card`) là **khối con chuyên biệt**, được thiết kế để chỉ hoạt động chuẩn xác bên trong khung lưới của khối cha **Lưới Thẻ Biểu Tượng / Đánh Số**.
-- Để bảo vệ giao diện của Trạm không bao giờ bị xô lệch hay vỡ hàng cột khi xem trên điện thoại, hệ thống **ẩn khối Thẻ khỏi menu bên trái** và chỉ cho phép nó xuất hiện bên trong lưới thẻ.
-- Mỗi khi Hana kéo khối **Lưới Thẻ Biểu Tượng / Đánh Số** vào trang, hệ thống đã chuẩn bị sẵn **3 chiếc thẻ mẫu** ngay ngắn để Hana bắt đầu chỉnh sửa.
+- Khối **Thẻ** (`Card`) và các khối con khác (ô số liệu, bước, thẻ dịch vụ, **thẻ gói**, câu hỏi FAQ, thẻ lối vào, thẻ lối đi, thẻ Tầm nhìn / Sứ mệnh) nằm trong nhóm **Thẻ con (kéo vào khối cha)** ở cuối menu bên trái (bấm để mở nhóm).
+- Mỗi thẻ con **chỉ thả được vào đúng khối cha của nó**. Ví dụ: **Thẻ gói** chỉ vào được khối **gói Growth Mirror (Package Cards)**. Thả ra ngoài trang hoặc vào khối khác thì hệ thống không nhận. Thẻ, ô số liệu, thẻ dịch vụ và thẻ gói cũng vào được các cột của khối **Cột**.
+- Khối cha đang trống (VD khối gói Growth Mirror mới kéo vào): mở nhóm **Thẻ con**, kéo **Thẻ gói** thả vào khung trống của khối, rồi chọn gói ở cột phải. Lặp lại cho từng gói.
+- Khối **Lưới Thẻ Biểu Tượng / Đánh Số** mới kéo vào đã có sẵn **3 thẻ mẫu**.
 
 #### 2. Thao tác trực tiếp với từng thẻ trên màn hình vẽ (Canvas)
 
@@ -1867,7 +1868,7 @@ Hana chỉ cần rê chuột và nhấp vào bất kỳ chiếc thẻ nào trên
 > - Kéo sai chỗ: bấm **Hoàn tác** (mũi tên cong trên thanh công cụ).
 > - Sau khi kéo, bấm **Lưu nháp** hoặc **Xuất bản** như bình thường.
 
-> **Thêm thẻ mới = nhân bản một thẻ có sẵn** rồi sửa chữ. Vì thẻ không có trong menu bên trái, **đừng xóa hết thẻ** của một lưới: nếu lỡ xóa hết, hãy xóa cả khối lưới rồi kéo lại khối **Lưới Thẻ Biểu Tượng / Đánh Số** (khối mới luôn có sẵn 3 thẻ mẫu).
+> **Thêm thẻ mới**: nhân bản một thẻ có sẵn rồi sửa chữ, hoặc kéo khối con từ nhóm **Thẻ con (kéo vào khối cha)** ở menu bên trái thả vào khối cha. Lỡ xóa hết thẻ cũng không sao: kéo thẻ con mới vào lại.
 
 #### 3. Tự động đánh số thứ tự (01, 02, 03...)
 
@@ -1901,7 +1902,7 @@ Khối **Thanh số liệu** (`StatsBar`) đã được nâng cấp lên dạng 
 - **Nhân bản ô số liệu (Duplicate)**: Nhấp chọn một ô số liệu, bấm vào nút **Nhân bản (Duplicate)** trên thanh công cụ nổi để thêm một ô số liệu mới.
 - **Kéo đổi thứ tự (Reorder)**: Nhấp giữ vào thanh kéo (hoặc biểu tượng 6 chấm) của ô số liệu để di chuyển sang vị trí mong muốn.
 - **Xóa bớt ô số liệu**: Bấm biểu tượng **thùng rác (Delete)** trên thanh công cụ của ô để loại bỏ.
-- **Thêm ô mới = nhân bản một ô có sẵn**: Khối Ô số liệu là khối con chuyên biệt nên được ẩn khỏi thanh bên trái để bảo vệ bố cục. **Đừng xóa hết các ô số liệu**; nếu lỡ xóa hết, hãy xóa cả khối Thanh số liệu rồi kéo khối mới vào (mặc định luôn có sẵn 3 ô số liệu mẫu).
+- **Thêm ô mới**: nhân bản một ô có sẵn, hoặc kéo **Ô số liệu** từ nhóm **Thẻ con (kéo vào khối cha)** ở menu bên trái thả vào khối Thanh số liệu.
 
 #### 2. Cài đặt số cột hiển thị của khối cha (StatsBar)
 
@@ -1941,7 +1942,7 @@ Khối **Hành trình các bước** (`JourneySteps`) thể hiện tiến trình
 
 - **Nhân bản bước**: Chọn một bước, bấm nút **Nhân bản (Duplicate)** để nhân bản thêm một bước tiếp theo.
 - **Kéo đổi thứ tự**: Nhấp giữ và kéo rê bước sang vị trí mới.
-- **Xóa bước**: Bấm nút **thùng rác (Delete)** trên bước cần xóa. Đừng xóa hết toàn bộ các bước của hành trình.
+- **Xóa bước**: Bấm nút **thùng rác (Delete)** trên bước cần xóa. Muốn thêm bước, nhân bản một bước có sẵn hoặc kéo **Bước** từ nhóm **Thẻ con (kéo vào khối cha)** thả vào khối hành trình.
 
 #### 3. 5 bước Pause → Practice là gợi ý chuẩn phương pháp
 
@@ -1984,7 +1985,7 @@ Khối **Các thẻ dịch vụ coaching** (`ServiceCards`) đã được nâng 
 - **Nhân bản thẻ dịch vụ (Duplicate)**: Nhấp chọn một thẻ dịch vụ, bấm nút **Nhân bản (Duplicate)** trên thanh công cụ nổi để thêm một thẻ mới.
 - **Kéo đổi thứ tự (Reorder)**: Nhấp giữ vào thanh kéo của thẻ dịch vụ để di chuyển thay đổi thứ tự ưu tiên giới thiệu.
 - **Xóa thẻ**: Bấm biểu tượng **thùng rác (Delete)** trên thanh công cụ của thẻ khi muốn ẩn hoặc bớt dịch vụ khỏi trang.
-- **Thêm thẻ mới = nhân bản một thẻ có sẵn**: Khối Thẻ dịch vụ được thiết kế chuyên biệt cho khung lưới nên được ẩn khỏi menu bên trái để bảo vệ giao diện. **Đừng xóa hết các thẻ**; nếu lỡ xóa hết, hãy kéo lại khối `ServiceCards` mới vào trang.
+- **Thêm thẻ mới**: nhân bản một thẻ có sẵn, hoặc kéo **Thẻ dịch vụ** từ nhóm **Thẻ con (kéo vào khối cha)** ở menu bên trái thả vào khối.
 
 #### 2. Dữ liệu dịch vụ lấy từ CMS, không nhập tay trên trang
 
@@ -2015,7 +2016,7 @@ Khối **Khối các gói Growth Mirror** (`PackageCards`) giới thiệu 3 gói
 
 - **Nhân bản & Sắp xếp**: Hana có thể nhân bản một gói, kéo rê đổi thứ tự giữa các gói ngay trên khung vẽ.
 - **Không còn giới hạn 3 gói**: Nếu Hana muốn giới thiệu thêm gói thứ 4, thứ 5 (ví dụ: gói doanh nghiệp, gói quà tặng đặc biệt), Hana chỉ cần bấm nhân bản. Lưới hiển thị chuẩn 3 cột trên máy tính sẽ tự động đẩy gói thứ 4 xuống hàng tiếp theo một cách ngay ngắn và thẩm mỹ.
-- **Đừng xóa hết các thẻ**: Tương tự như thẻ dịch vụ, hãy luôn giữ lại ít nhất 1 thẻ gói để có thể nhân bản tiếp theo.
+- **Thêm thẻ gói**: khối gói Growth Mirror mới kéo vào có khung trống. Mở nhóm **Thẻ con (kéo vào khối cha)** ở menu bên trái, kéo **Thẻ gói** thả vào khung trống, rồi chọn gói (CLEAR / BUILD / SHINE) ở cột phải. Lặp lại cho từng gói, hoặc nhân bản một thẻ gói có sẵn.
 
 #### 2. Dữ liệu gói và giá bán lấy tự động từ CMS
 

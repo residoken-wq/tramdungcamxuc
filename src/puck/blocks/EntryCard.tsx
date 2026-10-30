@@ -9,9 +9,6 @@ export type { HeroEntryCardProps as EntryCardProps }
 /** Child block of HeroTwoEntries' `entries` slot (PK-08): one draggable entry card. */
 export const EntryCardBlock: ComponentConfig<HeroEntryCardProps> = {
   label: 'Thẻ lối vào',
-  permissions: {
-    insert: false,
-  },
   fields: {
     // Sidebar only: inline editing turns even an empty label into an element, which would hide
     // the badge `label` fallback in the editor while the public page shows it.
