@@ -1,17 +1,47 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { HeroImage, type HeroImageProps } from '@/components/site/HeroImage'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { BRAND_COLOR_OPTIONS, FONT_SIZE_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { allowedTextColors } from '@/lib/brand/format-classes'
 
 export type { HeroImageProps }
+
+// Stats sit directly on the section background: offer only colours that pass WCAG AA there.
+function statColorFields(bg: string) {
+  return {
+    statValueColor: {
+      type: 'select' as const,
+      label: 'Số liệu: màu con số',
+      options: allowedTextColors(bg, true),
+    },
+    statLabelColor: {
+      type: 'select' as const,
+      label: 'Số liệu: màu nhãn',
+      options: allowedTextColors(bg, false),
+    },
+  }
+}
 
 export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
   label: 'Hero Ảnh biểu tượng (Hero Image)',
   fields: {
     seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
-    titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
-    titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
-    emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display Italic)' },
+    titleLine1: {
+      type: 'text',
+      label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      contentEditable: true,
+    },
+    titleLine2: {
+      type: 'text',
+      label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      contentEditable: true,
+    },
+    titleSize: { type: 'select', label: 'Cỡ chữ tiêu đề', options: [...FONT_SIZE_OPTIONS] },
+    emotionLine: {
+      type: 'textarea',
+      label: 'Dòng cảm xúc (Playfair Display Italic)',
+      contentEditable: true,
+    },
     mediaId: {
       type: 'external',
       label: 'Ảnh minh họa chính (Thư viện media)',
@@ -49,9 +79,13 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       }),
       getItemSummary: (id: string) => (id ? `Media ID: ${id}` : 'Chưa chọn ảnh'),
     },
-    buttonText: { type: 'text', label: 'Chữ trên nút chính (tùy chọn)' },
+    buttonText: { type: 'text', label: 'Chữ trên nút chính (tùy chọn)', contentEditable: true },
     buttonLink: { type: 'text', label: 'Đường dẫn nút chính (tùy chọn)' },
-    secondaryButtonText: { type: 'text', label: 'Chữ trên nút thứ 2 (viền, tùy chọn)' },
+    secondaryButtonText: {
+      type: 'text',
+      label: 'Chữ trên nút thứ 2 (viền, tùy chọn)',
+      contentEditable: true,
+    },
     secondaryButtonLink: { type: 'text', label: 'Đường dẫn nút thứ 2 (tùy chọn)' },
     badges: {
       type: 'array',
@@ -74,6 +108,17 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
         value: '[MẪU] 500+',
         label: '[MẪU] Giờ khai vấn',
       },
+    },
+    ...statColorFields('warm-ivory'),
+    statValueSize: {
+      type: 'select',
+      label: 'Số liệu: cỡ con số',
+      options: [...FONT_SIZE_OPTIONS],
+    },
+    statLabelSize: {
+      type: 'select',
+      label: 'Số liệu: cỡ nhãn',
+      options: [...FONT_SIZE_OPTIONS],
     },
     bgColor: {
       type: 'select',
@@ -101,9 +146,18 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     secondaryButtonLink: '',
     badges: [],
     stats: [],
+    titleSize: 'md',
+    statValueColor: 'deep-navy',
+    statLabelColor: 'deep-navy',
+    statValueSize: 'md',
+    statLabelSize: 'md',
     bgColor: 'warm-ivory',
     padding: 'md',
   },
+  resolveFields: (data, params) => ({
+    ...params.fields,
+    ...statColorFields(data.props?.bgColor || 'warm-ivory'),
+  }),
   resolveData: async (data) => {
     const { mediaId } = data.props
     if (!mediaId) {

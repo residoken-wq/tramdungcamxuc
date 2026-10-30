@@ -60,19 +60,46 @@ export const aboutTemplate: Data = {
       type: 'VisionMission',
       props: {
         id: 'about-vision-mission',
-        version: 1,
+        version: 2,
         seriesLabel: '[MẪU] ĐỊNH HƯỚNG TƯƠNG LAI',
         titleLine1: '[MẪU] TẦM NHÌN &',
         titleLine2: '[MẪU] SỨ MỆNH',
         quote: '[MẪU] Dừng lại để lắng nghe, thấu cảm để vững vàng bước tiếp.',
-        visionTitle: '[MẪU] TẦM NHÌN',
-        visionContent:
-          '[MẪU] Trở thành điểm tựa tinh thần và người bạn đồng hành tin cậy cho hàng triệu người trẻ và tổ chức trên hành trình phát triển trí tuệ cảm xúc.',
-        visionIcon: 'compass',
-        missionTitle: '[MẪU] SỨ MỆNH',
-        missionContent:
-          '[MẪU] Giúp mỗi cá nhân nhận diện, gọi tên và chuyển hóa cảm xúc thành sức mạnh nội tại, kiến tạo cuộc sống an yên và sự nghiệp thăng hoa.',
-        missionIcon: 'heart',
+        titleSize: 'md',
+        cards: [
+          {
+            type: 'VisionCard',
+            props: {
+              id: 'about-vision-mission-card-0',
+              version: 1,
+              icon: 'compass',
+              title: '[MẪU] TẦM NHÌN',
+              content:
+                '[MẪU] Trở thành điểm tựa tinh thần và người bạn đồng hành tin cậy cho hàng triệu người trẻ và tổ chức trên hành trình phát triển trí tuệ cảm xúc.',
+              titleColor: 'deep-navy',
+              textColor: 'deep-navy',
+              titleSize: 'md',
+              textSize: 'md',
+              align: 'left',
+            },
+          },
+          {
+            type: 'VisionCard',
+            props: {
+              id: 'about-vision-mission-card-1',
+              version: 1,
+              icon: 'heart',
+              title: '[MẪU] SỨ MỆNH',
+              content:
+                '[MẪU] Giúp mỗi cá nhân nhận diện, gọi tên và chuyển hóa cảm xúc thành sức mạnh nội tại, kiến tạo cuộc sống an yên và sự nghiệp thăng hoa.',
+              titleColor: 'deep-navy',
+              textColor: 'deep-navy',
+              titleSize: 'md',
+              textSize: 'md',
+              align: 'left',
+            },
+          },
+        ],
         bgColor: 'warm-ivory',
         padding: 'md',
       },
