@@ -90,7 +90,8 @@ test.describe('T0-09: Puck publication lifecycle', () => {
       await page.mouse.move(target.x + target.width / 2, target.y + 60, { steps: 30 })
       await page.mouse.up()
       await expect(canvas.getByRole('heading', { level: 1 })).toContainText('[MẪU] DÒNG TIÊU ĐỀ 1')
-      await canvas.locator('[data-puck-component]').click()
+      // The hero holds child EntryCard blocks (PK-08): select the hero itself, not a card.
+      await canvas.getByRole('heading', { level: 1 }).click()
       const title = page.getByRole('textbox', {
         name: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
         exact: true,
@@ -112,7 +113,7 @@ test.describe('T0-09: Puck publication lifecycle', () => {
 
       await page.reload({ waitUntil: 'networkidle' })
       await expect(canvas.getByRole('heading', { level: 1 })).toContainText(draftTitle)
-      await canvas.locator('[data-puck-component]').click()
+      await canvas.getByRole('heading', { level: 1 }).click()
       await expect(title).toHaveValue(draftTitle)
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
