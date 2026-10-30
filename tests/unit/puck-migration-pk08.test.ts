@@ -88,3 +88,59 @@ describe('PK-08: HeroTwoEntries v2 -> v3 (entries slot of EntryCard)', () => {
     expect(slot.allow).toEqual(['EntryCard'])
   })
 })
+
+describe('PK-08: TwoPathCards v1 -> v2 (paths slot of PathCard)', () => {
+  const v1Paths = {
+    type: 'TwoPathCards',
+    props: {
+      id: 'tp',
+      version: 1,
+      titleLine1: 'Chọn',
+      path1GroupLabel: 'CÁ NHÂN',
+      path1Title: 'Coaching',
+      path1Description: 'Mô tả 1',
+      path1ButtonLabel: 'Nút 1',
+      path1LinkType: 'page',
+      path1PageId: 7,
+      path1Href: '',
+      path1ButtonStyle: 'solid',
+      path2GroupLabel: 'DOANH NGHIỆP',
+      path2Title: 'Workshop',
+      path2Description: 'Mô tả 2',
+      path2ButtonLabel: 'Nút 2',
+      path2LinkType: 'url',
+      path2Href: '/doanh-nghiep',
+    },
+  }
+
+  it('turns path1*/path2* into two PathCard children, keeping text and links', () => {
+    const out = normalizePuckData(data([v1Paths]))
+    const props = out.content[0].props as Record<string, unknown>
+    expect(props.version).toBe(2)
+    expect(Object.keys(props).some((k) => /^path[12]/.test(k))).toBe(false)
+    const paths = props.paths as Array<{ type: string; props: Record<string, unknown> }>
+    expect(paths.map((p) => p.type)).toEqual(['PathCard', 'PathCard'])
+    expect(paths[0].props).toMatchObject({
+      id: 'tp-path-0',
+      groupLabel: 'CÁ NHÂN',
+      title: 'Coaching',
+      linkType: 'page',
+      pageId: 7,
+      buttonStyle: 'solid',
+    })
+    expect(paths[1].props).toMatchObject({
+      id: 'tp-path-1',
+      href: '/doanh-nghiep',
+      linkType: 'url',
+      buttonStyle: 'outline',
+    })
+    expect(normalizePuckData(out)).toEqual(out)
+  })
+
+  it('PathCard is a child-only block allowed only in the paths slot', () => {
+    expect(CHILD_BLOCK_TYPES).toContain('PathCard')
+    expect(puckConfig.components.PathCard.permissions?.insert).toBe(false)
+    const slot = puckConfig.components.TwoPathCards.fields?.paths as { allow?: string[] }
+    expect(slot.allow).toEqual(['PathCard'])
+  })
+})

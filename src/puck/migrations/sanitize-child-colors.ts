@@ -78,6 +78,11 @@ function sanitizeChildItem(child: PuckItem, parent: PuckItem): void {
     const entryRealBg = getChildRealBg(parent, { cardStyle: 'white' })
     sanitizeColorProp(childProps, 'labelColor', entryRealBg, false, 'label')
     sanitizeColorProp(childProps, 'textColor', entryRealBg, false, 'text')
+  } else if (childType === 'PathCard') {
+    const pathRealBg = getChildRealBg(parent, { cardStyle: 'white' })
+    sanitizeColorProp(childProps, 'labelColor', pathRealBg, false, 'label')
+    sanitizeColorProp(childProps, 'titleColor', pathRealBg, childProps.titleSize === 'lg', 'title')
+    sanitizeColorProp(childProps, 'textColor', pathRealBg, false, 'text')
   } else if (childType === 'FaqItem') {
     const parentBg = typeof parent.props.bgColor === 'string' ? parent.props.bgColor : 'warm-ivory'
     const faqRealBg = parentBg === 'deep-navy' ? 'deep-navy' : 'white'
@@ -88,10 +93,7 @@ function sanitizeChildItem(child: PuckItem, parent: PuckItem): void {
   }
 }
 
-function sanitizeChildrenInSlot(
-  children: unknown,
-  parent: PuckItem,
-): void {
+function sanitizeChildrenInSlot(children: unknown, parent: PuckItem): void {
   if (!Array.isArray(children)) return
   for (const child of children) {
     if (child && typeof child === 'object' && 'type' in child && 'props' in child) {
@@ -116,6 +118,7 @@ export function sanitizeChildColors(data: Data): Data {
     PackageCards: ['cards'],
     FAQ: ['items'],
     HeroTwoEntries: ['entries'],
+    TwoPathCards: ['paths'],
     Columns: ['col1', 'col2', 'col3'],
   }
 
@@ -126,10 +129,7 @@ export function sanitizeChildColors(data: Data): Data {
 
     const slotNames = PARENT_SLOTS[pItem.type]
     if (slotNames) {
-      const parentId =
-        typeof pItem.props.id === 'string' && pItem.props.id
-          ? pItem.props.id
-          : ''
+      const parentId = typeof pItem.props.id === 'string' && pItem.props.id ? pItem.props.id : ''
 
       for (const slotName of slotNames) {
         // 1. Sanitize slot in props if present

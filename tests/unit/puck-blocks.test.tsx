@@ -37,6 +37,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'IconCardGrid',
         'ServiceCards',
         'PackageCards',
+        'TwoPathCards',
       ]
       const expectedVersion = v4Blocks.includes(blockKey)
         ? 4

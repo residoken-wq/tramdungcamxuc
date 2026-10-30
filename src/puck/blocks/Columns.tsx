@@ -26,6 +26,7 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
         'Step',
         'FaqItem',
         'EntryCard',
+        'PathCard',
       ],
     },
     col2: {
@@ -38,6 +39,7 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
         'Step',
         'FaqItem',
         'EntryCard',
+        'PathCard',
       ],
     },
     col3: {
@@ -50,6 +52,7 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
         'Step',
         'FaqItem',
         'EntryCard',
+        'PathCard',
       ],
     },
     gap: {

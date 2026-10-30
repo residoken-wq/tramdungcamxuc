@@ -53,6 +53,7 @@ export const CHILD_BLOCK_TYPES = [
   'PackageCard',
   'FaqItem',
   'EntryCard',
+  'PathCard',
 ]
 
 /** Puck's id for the page-level drop zone (`root:default-zone`). */
