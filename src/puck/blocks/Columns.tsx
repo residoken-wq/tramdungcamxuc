@@ -25,6 +25,7 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
         'HeroImage',
         'Step',
         'FaqItem',
+        'EntryCard',
       ],
     },
     col2: {
@@ -36,6 +37,7 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
         'HeroImage',
         'Step',
         'FaqItem',
+        'EntryCard',
       ],
     },
     col3: {
@@ -47,6 +49,7 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
         'HeroImage',
         'Step',
         'FaqItem',
+        'EntryCard',
       ],
     },
     gap: {

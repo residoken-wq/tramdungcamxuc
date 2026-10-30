@@ -73,6 +73,11 @@ function sanitizeChildItem(child: PuckItem, parent: PuckItem): void {
     sanitizeColorProp(childProps, 'nameColor', packageRealBg, true, 'title')
     const isTextLarge = childProps.textSize === 'lg'
     sanitizeColorProp(childProps, 'textColor', packageRealBg, isTextLarge, 'text')
+  } else if (childType === 'EntryCard') {
+    // Entry card text never reaches WCAG "large" size, so always check as normal text.
+    const entryRealBg = getChildRealBg(parent, { cardStyle: 'white' })
+    sanitizeColorProp(childProps, 'labelColor', entryRealBg, false, 'label')
+    sanitizeColorProp(childProps, 'textColor', entryRealBg, false, 'text')
   } else if (childType === 'FaqItem') {
     const parentBg = typeof parent.props.bgColor === 'string' ? parent.props.bgColor : 'warm-ivory'
     const faqRealBg = parentBg === 'deep-navy' ? 'deep-navy' : 'white'
@@ -110,6 +115,7 @@ export function sanitizeChildColors(data: Data): Data {
     ServiceCards: ['cards'],
     PackageCards: ['cards'],
     FAQ: ['items'],
+    HeroTwoEntries: ['entries'],
     Columns: ['col1', 'col2', 'col3'],
   }
 

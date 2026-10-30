@@ -2,13 +2,15 @@ import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
+import { fontSizeClass, type FontSizeOption } from '@/lib/brand/format-classes'
+import { HeroEntryCard, type HeroEntryCardProps } from './HeroEntryCard'
 
 export interface HeroEntry {
   groupLabel?: string
-  label: string
-  description: string
-  buttonText: string
-  buttonLink: string
+  label?: string
+  description?: string
+  buttonText?: string
+  buttonLink?: string
   buttonStyle?: 'solid' | 'outline'
 }
 
@@ -23,8 +25,15 @@ export interface HeroTwoEntriesProps {
   imageUrl?: string
   imageAlt?: string
   priority?: boolean
-  entry1: HeroEntry
-  entry2: HeroEntry
+  /** v1/v2 data (before the PK-08 migration runs). */
+  entry1?: HeroEntry
+  entry2?: HeroEntry
+  /** v3 (PK-08): draggable EntryCard children. Puck passes the slot as a component. */
+  entries?:
+    | React.ComponentType<{ className?: string }>
+    | React.ReactNode
+    | Array<{ type?: string; props?: HeroEntryCardProps & { id?: string } }>
+  titleSize?: FontSizeOption
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -56,9 +65,13 @@ export function HeroTwoEntries({
   priority,
   entry1,
   entry2,
+  entries,
+  titleSize = 'md',
   bgColor = 'warm-ivory',
   padding = 'md',
 }: HeroTwoEntriesProps) {
+  const titleClass = `font-display ${fontSizeClass('title', titleSize, 'h1')} uppercase tracking-tight leading-[1.15]`
+  const entriesGridClass = 'grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8'
   const isDeepNavy = bgColor === 'deep-navy'
   const cardBgClass = isDeepNavy
     ? 'bg-white/10 text-white border-white/20'
@@ -70,7 +83,7 @@ export function HeroTwoEntries({
   const hasValidImage = Boolean(imageUrl && imageAlt && imageAlt.trim().length > 0)
 
   const renderCard = (
-    entry: HeroEntry,
+    entry: HeroEntry | undefined,
     badgeBg: string,
     defaultVariant: 'primary' | 'secondary',
   ) => {
@@ -117,8 +130,36 @@ export function HeroTwoEntries({
     )
   }
 
+  // v3: the `entries` slot renders draggable EntryCard children; v1/v2 data keeps the two
+  // fixed cards until the read-time migration converts it.
+  const entryCards =
+    typeof entries === 'function' ? (
+      React.createElement(entries as React.ComponentType<{ className?: string }>, {
+        className: entriesGridClass,
+      })
+    ) : entries && React.isValidElement(entries) ? (
+      <div className={entriesGridClass}>{entries}</div>
+    ) : Array.isArray(entries) ? (
+      <div className={entriesGridClass}>
+        {(entries as unknown[]).map((child, idx) => {
+          const block = child as { props?: HeroEntryCardProps & { id?: string } } | null
+          return block && typeof block === 'object' && block.props ? (
+            <HeroEntryCard key={block.props.id || idx} {...block.props} />
+          ) : null
+        })}
+      </div>
+    ) : (
+      <div className={entriesGridClass}>
+        {renderCard(entry1, 'bg-soft-pink', 'primary')}
+        {renderCard(entry2, 'bg-lavender-mist', 'secondary')}
+      </div>
+    )
+
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section
+      className={`group/hero w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
+      data-bg={bgColor}
+    >
       <div className="mx-auto max-w-5xl">
         {hasValidImage ? (
           <div className="flex flex-col gap-10 sm:gap-14">
@@ -133,7 +174,7 @@ export function HeroTwoEntries({
                   </span>
                 )}
 
-                <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-[1.15]">
+                <h1 className={titleClass}>
                   <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
                   <span className={titleLine2ColorClass}>{titleLine2}</span>
                 </h1>
@@ -175,11 +216,8 @@ export function HeroTwoEntries({
               </div>
             </div>
 
-            {/* 2 Entries Cards: Mobile vertical, Desktop 2 cols */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-              {renderCard(entry1, 'bg-soft-pink', 'primary')}
-              {renderCard(entry2, 'bg-lavender-mist', 'secondary')}
-            </div>
+            {/* Entry cards: Mobile vertical, Desktop 2 cols */}
+            {entryCards}
           </div>
         ) : (
           <div className="flex flex-col">
@@ -194,7 +232,7 @@ export function HeroTwoEntries({
               )}
 
               {/* Signature Two-Tone Heading (Anton) */}
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-[1.15]">
+              <h1 className={titleClass}>
                 <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
                 <span className={titleLine2ColorClass}>{titleLine2}</span>
               </h1>
@@ -219,11 +257,8 @@ export function HeroTwoEntries({
               )}
             </div>
 
-            {/* 2 Entries Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-              {renderCard(entry1, 'bg-soft-pink', 'primary')}
-              {renderCard(entry2, 'bg-lavender-mist', 'secondary')}
-            </div>
+            {/* Entry cards */}
+            {entryCards}
           </div>
         )}
       </div>

@@ -63,6 +63,7 @@ import { migrateJourneyStepsV2ToV3 } from './v3-journey-steps'
 import { migrateServiceCardsV1ToV2 } from './v2-service-cards'
 import { migratePackageCardsV1ToV2 } from './v2-package-cards'
 import { migrateFAQV3ToV4 } from './v4-faq'
+import { migrateHeroTwoEntriesV2ToV3 } from './v3-hero-two-entries'
 
 import { sanitizeChildColors } from './sanitize-child-colors'
 
@@ -80,6 +81,7 @@ export {
   migrateJourneyStepsV2ToV3,
   migrateServiceCardsV1ToV2,
   migratePackageCardsV1ToV2,
+  migrateHeroTwoEntriesV2ToV3,
   sanitizeChildColors,
 }
 
@@ -106,6 +108,7 @@ export const puckMigrations: PuckMigration[] = [
   migrateServiceCardsV1ToV2,
   migratePackageCardsV1ToV2,
   migrateFAQV3ToV4,
+  migrateHeroTwoEntriesV2ToV3,
 ]
 
 /**

@@ -19,12 +19,17 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       expect(blockConfig).toBeDefined()
       expect(blockConfig.defaultProps).toBeDefined()
       const v4Blocks = ['FAQ']
-      const v3Blocks = ['PackageComparison', 'HanaStory', 'StatsBar', 'JourneySteps']
+      const v3Blocks = [
+        'PackageComparison',
+        'HanaStory',
+        'StatsBar',
+        'JourneySteps',
+        'HeroTwoEntries',
+      ]
       const v2Blocks = [
         'SectionHeader',
         'CTAButton',
         'QuoteBlock',
-        'HeroTwoEntries',
         'HeroImage',
         'TestimonialGrid',
         'ImageText',
