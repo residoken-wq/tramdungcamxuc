@@ -109,7 +109,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
             class="p-6 pt-0 sm:p-7 sm:pt-0"
           >
             <a
-              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
               href="/coaching/vung-vang-chuyen-minh"
             >
               <span>
@@ -186,7 +186,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
             class="p-6 pt-0 sm:p-7 sm:pt-0"
           >
             <a
-              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-deep-navy text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-deep-navy text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
               href="/coaching/huong-nghiep"
             >
               <span>
@@ -346,7 +346,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TwoPathCards Block > matches
             class="pt-2"
           >
             <a
-              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
               href="/coaching"
             >
               <span>
@@ -379,7 +379,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TwoPathCards Block > matches
             class="pt-2"
           >
             <a
-              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer border border-deep-navy/30 bg-transparent text-deep-navy hover:bg-deep-navy/5 active:bg-deep-navy/10 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer border border-deep-navy/30 bg-transparent text-deep-navy hover:bg-deep-navy/5 active:bg-deep-navy/10 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
               href="/doanh-nghiep"
             >
               <span>

@@ -72,6 +72,7 @@ Quy trình:
 - Branch: `task/<mã>-<slug>`. Commit kiểu `feat(scope): ...` tiếng Anh, nhỏ.
 - Mỗi task phải để repo ở trạng thái build được và test xanh.
 - Thay đổi schema Payload phải kèm migration (`payload migrate:create`), không dùng `push` trên DB preview/production.
+- **CI (từ 31/10):** chạy song song, PR code ~10 phút, PR chỉ sửa tài liệu ~1 phút. Push mới huỷ lượt CI cũ của cùng PR → gom commit rồi push một lần. E2E chia 2 shard, mỗi shard một DB → mỗi file e2e phải tự đủ trên DB trống. Chi tiết: `docs/DECISIONS.md` mục "CI nhanh hơn".
 
 ## 3. Bảng trạng thái
 
