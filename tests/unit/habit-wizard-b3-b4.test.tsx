@@ -15,11 +15,19 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
     localStorage.clear()
   })
 
-  it('bước 1: chọn thói quen neo, nhập giờ tùy chọn và chuyển bước 2', async () => {
+  it('bước 3 (Tìm Mentor): chọn thói quen neo, nhập giờ tùy chọn và chuyển bước 4 (Gọi tên)', async () => {
     render(<HabitLoopWizard techniques={[]} />)
 
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 50))
+    })
+
+    // Đi qua Bước 1 (Khám đúng bệnh) -> Bước 2 (Nguyên lý 1%) -> Bước 3 (Tìm Mentor)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Tiếp tục/i }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Sang giai đoạn 2/i }))
     })
 
     // 1. Thêm thói quen tốt (+)

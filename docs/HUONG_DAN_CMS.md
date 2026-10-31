@@ -925,8 +925,8 @@ Bạn có 3 cách rất dễ dàng:
      - **Kích hoạt**: Bật/tắt để Hana chủ động chọn câu nào được hiển thị ngoài web.
 
 4. **Cấu hình Nguyên lý 1% (`onePercent`)**:
-   - Cung cấp dữ liệu cho khối giới thiệu và thanh kéo trực quan mô phỏng nguyên lý cải thiện 1% mỗi ngày trên trang `/habit/5-phut`:
-     - **Hiển thị ngoài trang web**: Khối sẽ **tự động ẩn hoàn toàn** nếu bạn để trống cả hai ô _Tiêu đề_ và _Giới thiệu_ (đảm bảo không bao giờ hiện khung rỗng khi chưa có nội dung chính thức). Khi bạn nhập ít nhất một trong hai ô, khối sẽ xuất hiện phía trên trình hướng dẫn 4 bước tại `/habit/5-phut`.
+   - Cung cấp dữ liệu cho khối giới thiệu và thanh kéo trực quan mô phỏng nguyên lý cải thiện 1% mỗi ngày tại **Bước 2 (Nguyên lý 1%)** trong luồng 3 giai đoạn / 6 bước trên trang `/habit/5-phut`:
+     - **Hiển thị ngoài trang web**: Phần tiêu đề, giới thiệu và dẫn chứng từ CMS sẽ **tự động ẩn** nếu bạn để trống cả hai ô _Tiêu đề_ và _Giới thiệu_ (chỉ giữ thanh kéo mô phỏng 1% mặc định của bước 2, đảm bảo không bao giờ hiện khung chữ rỗng khi chưa có nội dung chính thức). Khi bạn nhập ít nhất một trong hai ô, toàn bộ nội dung CMS sẽ hiển thị tại Bước 2 của trình hướng dẫn 6 bước tại `/habit/5-phut`.
      - **Tiêu đề**: Tiêu đề chính của khối. **Mẹo trình bày 2 tầng màu chuẩn Brand Book**: Bạn dùng dấu gạch đứng `|` để tách 2 dòng (ví dụ: `Nguyên lý 1% | Mỗi ngày tốt hơn một chút` -> hệ thống tự ngắt `Nguyên lý 1%` thành dòng 1 màu tím đậm `deep-navy`, và `Mỗi ngày tốt hơn một chút` thành dòng 2 màu hồng điểm nhấn `bright-magenta`). Nếu không có dấu `|`, toàn bộ tiêu đề hiển thị trên 1 dòng.
      - **Giới thiệu**: Đoạn văn bản giàu định dạng giải thích triết lý và sức mạnh của 1% mỗi ngày (hiển thị ngay dưới tiêu đề).
      - **Tỷ lệ cải thiện mỗi ngày (%)**: Mặc định là `1%` (cho phép điều chỉnh từ `0.1%` đến `10%`).
@@ -997,9 +997,13 @@ Bạn có 3 cách rất dễ dàng:
   - Khi Hana hoặc quản trị viên sửa kế hoạch trong CMS (ví dụ cập nhật thói quen neo hay nhịp tuần), hệ thống giữ nguyên vẹn dữ liệu riêng tư của học viên, không làm mất hay ghi đè.
   - Nếu Hana muốn hỗ trợ học viên về lý do riêng hoặc bạn đồng hành, Hana hãy trao đổi trực tiếp với học viên trong các phiên coaching 1:1 hoặc buổi đồng hành.
 
-**Hình ảnh Boarding Pass (Tấm vé xuất phát hành trình thói quen) (HB-10)**:
+**Hình ảnh Boarding Pass (Tấm vé xuất phát hành trình thói quen) (HB-10, HB-16)**:
 
-- Khi học viên hoàn thành xong 3 bước thiết kế thói quen tại trình hướng dẫn `/habit/5-phut`, ở bước 4 học viên sẽ nhận được khối **Boarding Pass của bạn** cùng 2 nút tải ảnh:
+- Trình hướng dẫn `/habit/5-phut` được tổ chức theo **3 giai đoạn / 6 bước**:
+  - **Giai đoạn 1 · Khám**: Bước 1 (_Khám đúng bệnh_) → Bước 2 (_Nguyên lý 1%_).
+  - **Giai đoạn 2 · Xây**: Bước 3 (_Tìm Mentor – Bảng điểm thói quen_) → Bước 4 (_Gọi tên thói quen_) → Bước 5 (_Vòng lặp – Chọn kỹ thuật thực hành_) → Bước 6 (_Boarding Pass & Lưu kế hoạch_).
+  - **Giai đoạn 3 · Chuyển mình**: Mục _✦ 28 ngày_ (dẫn sang màn theo dõi `/habit/tracker` sau khi lưu kế hoạch).
+- Khi học viên hoàn thành 5 bước đầu tại `/habit/5-phut`, ở **Bước 6 (Boarding Pass)** học viên sẽ nhận được khối **Boarding Pass của bạn** cùng 2 nút tải ảnh:
   - **Tải ảnh 4:5 (1080×1350)**: Kích thước chuẩn chia sẻ mạng xã hội.
   - **Tải ảnh 9:16 (1080×1920)**: Kích thước dọc chuẩn Story / dùng làm hình nền điện thoại.
 - **Nguồn dữ liệu của Boarding Pass**:
@@ -2521,7 +2525,7 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 
 1. **Quản lý danh sách kỹ thuật thực chiến (`techniques`)**:
    - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Kỹ thuật thực hành**.
-   - Hana có thể thêm mới hoặc sửa tên, cách thực hiện, ví dụ và gán vào 1 trong 4 giai đoạn (_Cue - Gợi ý_, _Craving - Khao khát_, _Response - Phản hồi_, _Reward - Phần thưởng_). Các kỹ thuật đã xuất bản sẽ tự động hiển thị trong Bước 3 của công cụ Habit Loop 5 phút.
+   - Hana có thể thêm mới hoặc sửa tên, cách thực hiện, ví dụ và gán vào 1 trong 4 giai đoạn (_Cue - Gợi ý_, _Craving - Khao khát_, _Response - Phản hồi_, _Reward - Phần thưởng_). Các kỹ thuật đã xuất bản sẽ tự động hiển thị trong **Bước 5 (Vòng lặp)** của công cụ Habit Loop 5 phút (6 bước: _1. Khám đúng bệnh → 2. Nguyên lý 1% → 3. Tìm Mentor → 4. Gọi tên thói quen → 5. Vòng lặp → 6. Boarding Pass_).
    - **Video ví dụ** (`exampleVideoUrl`): Dán liên kết video chia sẻ trực quan / minh họa cho kỹ thuật. Chỉ chấp nhận các liên kết video công khai, miễn phí từ YouTube (ví dụ: `https://www.youtube.com/watch?v=...`), Vimeo (ví dụ: `https://vimeo.com/...`) hoặc Bunny Stream (link nhúng dạng `https://iframe.mediadelivery.net/embed/<mã thư viện>/<mã video>`, lấy ở nút "Embed" trong Bunny). Nếu video thuộc bài giảng trả phí trong lộ trình khóa học, vui lòng gắn qua ô **Bài học liên quan** (`lesson`).
 
 2. **Cập nhật giá và câu hỏi thường gặp (FAQ) cho Habit Tracker số**:
