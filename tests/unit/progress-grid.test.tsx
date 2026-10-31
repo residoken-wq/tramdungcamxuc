@@ -44,6 +44,35 @@ describe('ProgressGrid Component & Draft Resilience (T2-03)', () => {
       fireEvent.click(day1)
       expect(mockSelect).not.toHaveBeenCalled()
     })
+
+    it('hỗ trợ date: ô hiện ngày dd/MM và aria-label thêm ngày vào cuối (HB-23)', () => {
+      render(
+        <ProgressGrid
+          days={[
+            {
+              day: 1,
+              status: 'voted',
+              date: { short: '31/10', full: '31/10/2026' },
+            },
+            {
+              day: 2,
+              status: 'future',
+            },
+          ]}
+          totalDays={2}
+        />,
+      )
+
+      // Ngày 1 có date
+      expect(screen.getByText('31/10')).toBeDefined()
+      const day1Btn = screen.getByRole('button', { name: /Ngày 1:.*, ngày 31\/10\/2026$/ })
+      expect(day1Btn).toBeDefined()
+
+      // Ngày 2 không có date -> aria-label không có ngày ở cuối
+      const day2Btn = screen.getByRole('button', { name: /^Ngày 2: Chưa tới$/ })
+      expect(day2Btn).toBeDefined()
+      expect(screen.queryByText(/2026/)).toBeNull()
+    })
   })
 
   describe('Draft Resilience (localStorage parsing)', () => {

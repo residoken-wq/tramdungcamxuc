@@ -13,6 +13,7 @@ export interface ProgressDayItem {
   emotionKey?: string
   note?: string
   disabled?: boolean
+  date?: { short: string; full: string } | null
 }
 
 export interface ProgressStationItem {
@@ -226,7 +227,10 @@ export function ProgressGrid({
 
     const emotion = emotionKey ? getEmotion(emotionKey) : undefined
     const statusText = getStatusLabel(status)
-    const ariaLabel = vi.hb11.ariaDay(day, statusText, emotion?.label)
+    let ariaLabel = vi.hb11.ariaDay(day, statusText, emotion?.label)
+    if (item.date?.full) {
+      ariaLabel += vi.hb23.ariaDayDateSuffix(item.date.full)
+    }
 
     let stateStyle = ''
     let indicatorIcon: React.ReactNode = null
@@ -330,13 +334,22 @@ export function ProgressGrid({
         aria-label={ariaLabel}
         className={[
           'relative flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl border transition-all motion-reduce:transition-none duration-150',
-          'min-w-0 min-h-[46px] sm:min-h-[58px]',
+          item.date?.short
+            ? 'min-w-0 min-h-[50px] sm:min-h-[60px]'
+            : 'min-w-0 min-h-[46px] sm:min-h-[58px]',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
           stateStyle,
         ].join(' ')}
       >
         {/* Day Number */}
         <span className="font-ui text-xs sm:text-sm leading-none font-bold">{day}</span>
+
+        {/* Calendar Date (HB-23) */}
+        {item.date?.short && (
+          <span className="font-sans text-[9px] sm:text-[10px] leading-tight text-deep-navy/70 mt-0.5 select-none">
+            {item.date.short}
+          </span>
+        )}
 
         {/* Status Indicator Slot */}
         <div className="flex items-center justify-center h-4 w-4 mt-1" aria-hidden="true">
