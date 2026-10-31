@@ -103,7 +103,7 @@ export function VisionMission({
 
             {titleLine1 && (
               <h2
-                className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight leading-tight`}
+                className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight leading-[1.3]`}
               >
                 <span className={textColorClass}>{titleLine1}</span>{' '}
                 {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}

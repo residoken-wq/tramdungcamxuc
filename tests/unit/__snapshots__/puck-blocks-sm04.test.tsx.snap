@@ -14,7 +14,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
         class="text-center mb-10 sm:mb-14"
       >
         <h2
-          class="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-tight mb-3"
+          class="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-[1.3] mb-3"
         >
           <span
             class="text-deep-navy"
@@ -213,7 +213,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TeamGrid Block > matches sna
         class="flex flex-col text-center items-center mb-10 sm:mb-14"
       >
         <h2
-          class="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl"
+          class="font-display uppercase tracking-tight leading-[1.3] text-3xl sm:text-4xl lg:text-5xl"
         >
           <span
             class="block text-deep-navy"
@@ -309,7 +309,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TwoPathCards Block > matches
           Định hướng
         </span>
         <h2
-          class="font-display uppercase tracking-tight leading-tight text-3xl sm:text-4xl"
+          class="font-display uppercase tracking-tight leading-[1.3] text-3xl sm:text-4xl"
         >
           <span
             class="text-deep-navy"
@@ -412,7 +412,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > VisionMission Block > matche
           Giá trị cốt lõi
         </span>
         <h2
-          class="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-tight"
+          class="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-[1.3]"
         >
           <span
             class="text-deep-navy"

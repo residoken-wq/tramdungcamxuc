@@ -138,7 +138,7 @@ export function CTASection({
           )}
 
           <h2
-            className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight leading-[1.15]`}
+            className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight leading-[1.3]`}
           >
             <span className="text-deep-navy">{titleLine1}</span>{' '}
             <span className="text-bright-magenta">{titleLine2}</span>

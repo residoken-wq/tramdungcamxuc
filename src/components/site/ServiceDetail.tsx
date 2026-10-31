@@ -51,7 +51,7 @@ export function ServiceDetail({ service }: { service: PublicService }) {
           <span className="font-ui font-bold text-xs uppercase tracking-widest text-bright-magenta mb-3 block">
             {vi.status.consult}
           </span>
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-deep-navy mb-4 leading-[1.15]">
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-deep-navy mb-4 leading-[1.3]">
             {service.name}
           </h1>
           {hasAudience && (

@@ -129,7 +129,7 @@ export function HeroImage({
 
         {/* Signature Two-Tone Heading (Anton) */}
         <h1
-          className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight leading-[1.15]`}
+          className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight leading-[1.3]`}
         >
           <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
           <span className={titleLine2ColorClass}>{titleLine2}</span>
