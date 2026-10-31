@@ -27,6 +27,7 @@ jobs:
     outputs:
       code: ${{ steps.filter.outputs.code }}
       docker: ${{ steps.filter.outputs.docker }}
+      unit_full: ${{ steps.filter.outputs.unit_full }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,10 +44,12 @@ jobs:
           if [ "$EVENT" != "pull_request" ]; then
             echo "code=true" >> "$GITHUB_OUTPUT"
             echo "docker=true" >> "$GITHUB_OUTPUT"
+            echo "unit_full=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           code=false
           docker=false
+          unit_full=false
           while IFS= read -r f; do
             [ -z "$f" ] && continue
             case "$f" in
@@ -56,10 +59,15 @@ jobs:
             case "$f" in
               Dockerfile | .dockerignore | package.json | pnpm-lock.yaml | next.config.* | docker-compose* | .github/workflows/*) docker=true ;;
             esac
+            # Inputs outside the test import graph: these make a PR run every unit test.
+            case "$f" in
+              package.json | pnpm-lock.yaml | tsconfig.json | vitest.* | tests/unit/global-setup.ts | tests/unit/__snapshots__/* | src/migrations/* | src/payload.config.ts | .github/workflows/*) unit_full=true ;;
+            esac
           done < <(git diff --name-only "$BASE_SHA...$HEAD_SHA")
           echo "code=$code" >> "$GITHUB_OUTPUT"
           echo "docker=$docker" >> "$GITHUB_OUTPUT"
-          echo "code=$code docker=$docker"
+          echo "unit_full=$unit_full" >> "$GITHUB_OUTPUT"
+          echo "code=$code docker=$docker unit_full=$unit_full"
 
   checks:
     name: Lint, Typecheck & Unit
@@ -86,6 +94,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # --changed needs the PR base commit.
+          fetch-depth: 0
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -110,21 +121,37 @@ jobs:
       - name: Run TypeScript typecheck
         run: pnpm typecheck
 
-      - name: Run Unit Tests (Vitest)
+      # main / manual runs and PRs touching test inputs: every unit test.
+      - name: Run Unit Tests (Vitest, all)
+        if: needs.changes.outputs.unit_full == 'true'
         run: pnpm test
 
+      # Other PRs: only tests whose import graph reaches a changed file, plus the tests that
+      # read source files from disk (contrast, fonts, tokens…) since imports cannot see those.
+      - name: Run Unit Tests (Vitest, affected by this PR)
+        if: needs.changes.outputs.unit_full != 'true'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          pnpm test --changed "$BASE_SHA" --passWithNoTests
+          mapfile -t SOURCE_SCANNERS < <(grep -lE 'readFileSync|readdirSync' tests/unit/*.test.ts tests/unit/*.test.tsx)
+          if [ "${#SOURCE_SCANNERS[@]}" -gt 0 ]; then
+            echo "Source-scanning tests: ${SOURCE_SCANNERS[*]}"
+            pnpm test "${SOURCE_SCANNERS[@]}"
+          fi
+
   e2e:
-    name: Build & E2E (shard ${{ matrix.shard }}/2)
+    name: Build & E2E (shard ${{ matrix.shard }}/3)
     needs: changes
     if: needs.changes.outputs.code == 'true'
     # Pinned: ubuntu-latest moved to 26.04, which Playwright 1.58 cannot install browsers on.
     runs-on: ubuntu-24.04
-    # A shard normally takes ~7 min; anything far longer is a hang, not progress.
+    # A shard normally takes ~5 min; anything far longer is a hang, not progress.
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3]
 
     services:
       postgres:
@@ -183,7 +210,7 @@ jobs:
           E2E_TEST_HOOKS: '1'
           TURNSTILE_SECRET_KEY: 1x0000000000000000000000000000000AA
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
-        run: pnpm test:e2e --shard=${{ matrix.shard }}/2
+        run: pnpm test:e2e --shard=${{ matrix.shard }}/3
 
       - name: Upload Playwright Report
         if: failure()
