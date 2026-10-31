@@ -93,6 +93,19 @@ function sanitizeChildItem(child: PuckItem, parent: PuckItem): void {
       'title',
     )
     sanitizeColorProp(childProps, 'textColor', visionRealBg, false, 'text')
+  } else if (
+    childType === 'SeriesLabelEl' ||
+    childType === 'ParagraphEl' ||
+    childType === 'EmotionEl'
+  ) {
+    // PK-13 elements sit straight on the free section background.
+    const elementBg = getChildRealBg(parent, { cardStyle: 'outline' })
+    sanitizeColorProp(childProps, 'color', elementBg, false, 'text')
+  } else if (childType === 'HeadingEl') {
+    const elementBg = getChildRealBg(parent, { cardStyle: 'outline' })
+    sanitizeColorProp(childProps, 'line1Color', elementBg, true, 'title')
+    // Line 2 is the accent line: fall back to the accent (soft-pink on navy), not white.
+    sanitizeColorProp(childProps, 'line2Color', elementBg, true, 'value')
   } else if (childType === 'FaqItem') {
     const parentBg = typeof parent.props.bgColor === 'string' ? parent.props.bgColor : 'warm-ivory'
     const faqRealBg = parentBg === 'deep-navy' ? 'deep-navy' : 'white'
@@ -129,6 +142,7 @@ export function sanitizeChildColors(data: Data): Data {
     FAQ: ['items'],
     HeroTwoEntries: ['entries'],
     TwoPathCards: ['paths'],
+    FreeSection: ['col1', 'col2'],
     VisionMission: ['cards'],
     Columns: ['col1', 'col2', 'col3'],
   }

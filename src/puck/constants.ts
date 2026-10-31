@@ -58,5 +58,21 @@ export const CHILD_BLOCK_TYPES = [
   'VisionCard',
 ]
 
+/**
+ * PK-13: small elements of the free section (Section tự do). Droppable only into its columns;
+ * the page root and Columns refuse them.
+ */
+export const ELEMENT_BLOCK_TYPES = [
+  'SeriesLabelEl',
+  'HeadingEl',
+  'ParagraphEl',
+  'EmotionEl',
+  'ImageEl',
+  'ButtonEl',
+]
+
+/** Blocks the page root refuses: child cards and free-section elements. */
+export const ROOT_DISALLOW = [...CHILD_BLOCK_TYPES, ...ELEMENT_BLOCK_TYPES]
+
 /** Puck's id for the page-level drop zone (`root:default-zone`). */
 export const ROOT_DROP_ZONE = 'root:default-zone'
