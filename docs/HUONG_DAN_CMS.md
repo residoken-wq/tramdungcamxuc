@@ -936,7 +936,31 @@ Bạn có 3 cách rất dễ dàng:
        - **Nguồn dẫn chứng** (BẮT BUỘC): Tên tài liệu / công trình nghiên cứu chứng minh cho số liệu. Hệ thống bắt buộc phải có nguồn kiểm chứng mới cho lưu; không có nguồn thì không thể thêm.
        - **Liên kết kiểm chứng**: Đường dẫn tới tài liệu kiểm chứng (tùy chọn; nếu có sẽ hiển thị link mở tab mới an toàn cho người đọc tra cứu).
 
-5. **Bấm nút Lưu**:
+5. **Cấu hình Bước 1: Khám đúng bệnh (`diagnose`) (HB-17)**:
+   - Cung cấp toàn bộ nội dung cho **Bước 1 (Khám đúng bệnh)** trong luồng 3 giai đoạn / 6 bước trên trang `/habit/5-phut`:
+     - **Tiêu đề mở đầu (`title`) & Lời mở đầu (`intro`)**:
+       - Có thể dùng dấu gạch đứng `|` trong ô _Tiêu đề mở đầu_ để tách 2 dòng màu chuẩn thương hiệu (ví dụ: `Khám đúng bệnh | Nhận diện nút thắt thói quen`).
+     - **Câu trích dẫn mở đầu (`quote`) – Bắt buộc có nguồn nếu nhập**:
+       - Gồm _Nội dung câu trích dẫn_, _Tác giả_, _Nguồn trích dẫn_ và _Liên kết nguồn_ (tùy chọn).
+       - **Quy tắc bắt buộc**: Nếu Hana nhập nội dung câu trích dẫn, hệ thống bắt buộc phải điền đầy đủ cả **Tác giả** và **Nguồn trích dẫn** đã kiểm chứng mới cho phép lưu. Nếu chưa có nguồn xác thực thì để trống toàn bộ nhóm này (khối trích dẫn sẽ tự ẩn trên trang).
+     - **Các con số dẫn chứng (`stats`) – Tối đa 4 con số, bắt buộc kèm nguồn**:
+       - Bấm _Thêm Con số_ để thêm tối đa 4 ô số liệu dẫn chứng ở đầu bước 1.
+       - Mỗi con số gồm: **Con số** (ví dụ: `66 ngày`), **Nhãn giải thích** (ví dụ: `Thời gian trung bình hình thành thói quen mới`), **Nguồn kiểm chứng** (BẮT BUỘC, ví dụ: `Lally et al. (2009), European Journal of Social Psychology`) và **Liên kết nguồn** (tùy chọn).
+       - Nếu thiếu _Nguồn kiểm chứng_, hệ thống sẽ báo lỗi tiếng Việt và chặn không cho lưu.
+     - **Bộ câu hỏi khám thói quen (`questions`) – Khuyến nghị 8 câu (từ 4 đến 12 câu)**:
+       - Mỗi câu hỏi gồm:
+         - **Nội dung câu hỏi** (`statement`, bắt buộc): Tình huống hoặc biểu hiện trì hoãn / đứt quãng thói quen.
+         - **Giai đoạn** (`stage`, bắt buộc): Chọn 1 trong 4 giai đoạn của vòng lặp thói quen (`Tín hiệu`, `Khao khát`, `Phản hồi`, `Phần thưởng`). Khuyến nghị thiết kế 8 câu gồm 2 câu cho mỗi giai đoạn để điểm trung bình cân bằng nhất.
+         - **Kích hoạt** (`isActive`, mặc định bật): Bỏ chọn nếu muốn tạm ẩn một câu hỏi mà chưa muốn xóa hẳn.
+       - Trên trang `/habit/5-phut`, học viên tự đánh giá từng câu theo thang 1–5 (`1 · Hoàn toàn không đúng` đến `5 · Rất đúng với tôi`) kèm bộ đếm tiến độ (ví dụ `0/8` → `8/8`) và nút nhỏ _Bỏ qua phần khám_ nếu muốn đi tiếp ngay. Nếu Hana xóa hoặc tắt hết toàn bộ câu hỏi trong CMS, Bước 1 sẽ chỉ hiện phần mở đầu và nút _Tiếp tục_ luôn mở sẵn.
+     - **Kết quả & gợi ý theo giai đoạn nút thắt (`stageResults`)**:
+       - Gồm 4 nhóm con tương ứng 4 giai đoạn: **1. Tín hiệu (Cue)**, **2. Khao khát (Craving)**, **3. Phản hồi (Response)** và **4. Phần thưởng (Reward)**.
+       - Trong mỗi giai đoạn, Hana nhập:
+         - **Tiêu đề kết quả** (`title`): Ví dụ `Điểm nghẽn ở giai đoạn Phản hồi (Response)`.
+         - **Gợi ý tháo gỡ** (`suggestion`): Đoạn văn bản giải thích nguyên nhân và cách tháo gỡ nhẹ nhàng cho học viên có điểm trung bình cao nhất ở giai đoạn này.
+         - **Gợi ý bước tiếp theo** (`nextStepHint`): Câu dẫn dắt ngắn gọn (ví dụ: `Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật giảm ma sát thực hiện cho giai đoạn này`).
+
+6. **Bấm nút Lưu**:
    - Bấm nút **Lưu** ở góc trên bên phải để áp dụng thay đổi.
 
 ---
