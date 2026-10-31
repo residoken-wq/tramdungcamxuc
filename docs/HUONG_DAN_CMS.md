@@ -1373,15 +1373,27 @@ Menu trái → nhóm **Trang web** → **Đội ngũ**.
 
 **Mục đích**: Tùy biến toàn bộ nội dung và diện mạo từng khối trên trang theo ý thích của bạn.
 
-Màn hình trình dựng gồm 3 khu vực:
+Màn hình trình dựng gồm 3 khu vực theo bố cục trực quan phong cách Elementor:
 
-- **Cột bên trái**: Thư viện khối chia theo nhóm (_Mở đầu_, _Nội dung_, _Bố cục_, _Bán hàng_, _Niềm tin_, _Chuyển đổi_).
-- **Khu vực ở giữa**: Khung trang web đang hiển thị trực quan.
-- **Cột bên phải**: Bảng thuộc tính của khối đang chọn.
+- **Cột bên trái (LeftPanel ~280px)**:
+  - **Tab "Khối"**:
+    - **Ô tìm kiếm trên cùng**: Gõ từ khoá bất kỳ (ví dụ: `hero`, `anh`, `cot`, `trich dan`...) để lọc khối ngay lập tức (không phân biệt dấu tiếng Việt hay chữ hoa/thường). Có nút bấm **X** để xoá nhanh nội dung tìm kiếm.
+    - **Các nhóm khối thu gọn/mở**: Nhấp chuột vào tiêu đề nhóm (_Mở đầu_, _Nội dung_, _Bố cục_, _Bán hàng_, _Niềm tin_, _Chuyển đổi_) để đóng/mở danh mục. Hệ thống tự động ghi nhớ trạng thái các nhóm bạn đã mở.
+    - **Lưới khối 2 cột**: Mỗi ô gồm biểu tượng SVG nét mảnh chuẩn thương hiệu và tên tiếng Việt rõ ràng, chiều cao 88px, rê chuột vào sẽ nổi viền nhấn ấm áp.
+  - **Tab "Cấu trúc"**: Nhấp vào tab này để xem toàn bộ cây phân cấp các khối trên trang (Outline/Navigator). Bạn có thể bấm chọn khối, xem khối cha con và kéo thả sắp xếp lại thứ tự các phần tử.
+- **Khu vực ở giữa (Canvas)**:
+  - Khung trang web hiển thị trực quan (được mở rộng thoáng đãng hơn trên màn hình 1440px).
+  - **Thanh công cụ đáy canvas (Toolbar)**:
+    - Nút bật/tắt cột trái (thu gọn để xem trọn màn hình, đặc biệt tiện trên laptop hoặc máy tính bảng).
+    - Nút phím tắt mở tab Cấu trúc.
+    - Bộ 3 nút chuyển nhanh khổ xem trước: **Điện thoại (375px)**, **Máy tính bảng (768px)**, **Máy tính (1440px)**.
+    - Nút **Hoàn tác** (Undo, phím tắt Ctrl+Z) và **Làm lại** (Redo, phím tắt Ctrl+Shift+Z) – tự động vô hiệu hoá khi không còn bước nào để lùi.
+    - Nút **Xem trang** (mở trang ngoài web thật ở tab mới; tự động tắt và hiện nhắc nhở nếu trang chưa từng xuất bản).
+- **Cột bên phải**: Bảng thuộc tính chi tiết của khối đang được nhấp chọn.
 
 #### 5.3.1. Các thao tác cơ bản
 
-- **Thêm khối mới**: Giữ chuột trái vào khối mong muốn ở cột bên trái, kéo sang vị trí mong muốn ở giữa rồi thả tay ra.
+- **Thêm khối mới**: Trong tab "Khối" ở cột bên trái, giữ chuột trái vào ô khối mong muốn trong lưới 2 cột, kéo sang vùng canvas ở giữa rồi thả tay ra.
 - **Sửa câu chữ**: Bấm chuột vào khối cần sửa ở giữa. Nhìn sang cột bên phải và gõ lại tiêu đề, dòng cảm xúc, đoạn văn bản theo ý bạn.
 - **Soạn thảo trực tiếp trên trang (Inline Editing)**: Với các khối tiêu đề như **Tiêu đề phân đoạn** (`SectionHeader`), bạn có thể nhấp chuột trực tiếp vào dòng chữ trên màn hình xem trước ở giữa và gõ sửa chữ ngay tại chỗ mà không cần nhìn sang bảng thuộc tính bên phải.
 - **Đổi màu nền**: Trong bảng thuộc tính bên phải, bấm vào ô **Màu nền** và chọn 1 trong các màu pastel nhẹ nhàng của Brand Book 2026 (_Ngà ấm_, _Hồng phấn_, _Tím sương_, _Bạc hà_, _Kem bơ_, _Xanh thẫm_).
@@ -1458,13 +1470,13 @@ Nhờ cơ chế này, Hana và cộng sự có thể thỏa sức sáng tạo di
 
 **Cách thực hiện**:
 
-- Trên thanh công cụ trên cùng của trình dựng Puck, bấm vào 3 biểu tượng kích thước:
+- Trên thanh công cụ (Toolbar) ở dưới đáy của khung canvas, bấm vào 3 nút kích thước tiện lợi:
   - **Điện thoại (375px)**: Kiểm tra xem giao diện di động có đẹp mắt và chữ có dễ đọc không.
   - **Máy tính bảng (768px)**: Xem thử trên màn hình iPad/tablet.
   - **Máy tính (1440px)**: Xem trên màn hình máy tính để bàn hoặc laptop.
 
 ![Xem thử 3 kích thước màn hình](images/huong-dan/14-xem-thu-3-man-hinh.png)
-<!-- ẢNH 14: thanh trên cùng của Puck Editor khoanh 3 biểu tượng chuyển đổi kích thước màn hình -->
+<!-- ẢNH 14: thanh công cụ đáy canvas khoanh 3 biểu tượng chuyển đổi kích thước màn hình -->
 
 ---
 
@@ -1505,7 +1517,7 @@ Nhờ cơ chế này, Hana và cộng sự có thể thỏa sức sáng tạo di
 - **Tự động lưu (Autosave)**: Cứ mỗi 30 giây, trình dựng sẽ tự động lưu nháp công việc của bạn.
 - **Nút Lưu nháp**: Bấm khi bạn muốn chủ động lưu lại mà chưa muốn độc giả ngoài mạng nhìn thấy.
 - **Nút Xuất bản**: Bấm khi trang đã hoàn thiện. Lúc này hệ thống sẽ đưa nội dung ra website thật và hiện thông báo xanh _"Đã xuất bản thành công"_.
-- **Nút Xem trang**: Xuất hiện ngay cạnh nút Xuất bản. Bấm vào để mở một tab mới xem trang web thật ngoài đời!
+- **Nút Xem trang**: Xuất hiện ở thanh công cụ dưới đáy canvas và ở thanh điều hướng trên cùng khi trang đã xuất bản. Bấm vào để mở một tab mới xem trang web thật ngoài đời! Nếu trang chưa xuất bản lần nào, nút ở thanh công cụ đáy sẽ tắt kèm gợi ý _"Xuất bản để xem"_.
 
 ![Lưu nháp, Xuất bản và Xem trang](images/huong-dan/17-luu-nhap-va-xuat-ban.png)
 <!-- ẢNH 17: thanh trên cùng của Puck Editor với các nút Lưu nháp, Xuất bản và Xem trang -->
