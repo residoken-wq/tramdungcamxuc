@@ -11,7 +11,8 @@ import { HABIT_LOOP_PATH } from '@/lib/habit'
 import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { findOwnTrackerPlan } from './tracker.server'
 import { getJourneyDays, type CheckinStatus } from './rhythm'
-import { planDayDate } from './tracker-stats'
+import { getCurrentDayOfPlan, planDayDate } from './tracker-stats'
+import { markHabitRestart } from './restart-marker.server'
 import {
   buildCoachSummary,
   buildHabitBackup,
@@ -411,6 +412,7 @@ export async function restoreBackup(
 
   const reasons: string[] = []
   const currentJourneyDays = getJourneyDays(plan)
+  const currentDay = getCurrentDayOfPlan(plan.startDate, now)
   const currentStartFull = planDayDate(plan.startDate, 1)?.full ?? null
   const backupStartFull =
     planDayDate(backup.plan.startDate, 1)?.full ?? backup.plan.startDate ?? null
@@ -522,6 +524,14 @@ export async function restoreBackup(
     if (item.day < 1 || item.day > currentJourneyDays) {
       skipped++
       reasons.push(vi.hb13.errors.dayOutOfRange(item.day, currentJourneyDays))
+      continue
+    }
+
+    // REVIEW-REQUIRED (HB-13c): same rule as the tracker check-in – no check-in for a day that has not
+    // come yet (Vietnam time), so a file cannot pre-fill future days of the journey.
+    if (item.day > currentDay) {
+      skipped++
+      reasons.push(vi.hb13.errors.futureDaySkipped(item.day))
       continue
     }
 
@@ -749,6 +759,10 @@ export async function restartJourney(): Promise<RestartJourneyResult> {
       message: vi.hb13.errors.planNotFound,
     }
   }
+
+  // REVIEW-REQUIRED (HB-13c): mark the restart in this browser only; the tracker adopts a newer
+  // wizard plan (saved by unverified leadEmail) only while this marker is valid.
+  await markHabitRestart()
 
   return {
     success: true,

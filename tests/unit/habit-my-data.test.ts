@@ -654,6 +654,7 @@ describe('HB-13: Dữ liệu của bạn – Bản sao lưu, CSV, Khôi phục, 
       expect(verifyOldPlan.identityStatement).toBe('Kế hoạch số 1 (cũ)')
 
       // 3. Khách tạo kế hoạch mới từ /habit/5-phut (lưu theo leadEmail, chưa gắn customer)
+      const restartedAt = new Date()
       const newWizardPlan = track(
         'habitPlans',
         (await payload.create({
@@ -668,8 +669,23 @@ describe('HB-13: Dữ liệu của bạn – Bản sao lưu, CSV, Khôi phục, 
         })) as HabitPlan,
       )
 
-      // 4. Khi khách quay lại /habit/tracker, getOrCreateTrackerPlan tự gắn kế hoạch mới và chọn làm kế hoạch hiện tại
-      const currentPlan = await getOrCreateTrackerPlan(customer.id, { payload })
+      // HB-13c: không có dấu "Bắt đầu lại" của trình duyệt này -> KHÔNG gắn kế hoạch leadEmail mới
+      // (leadEmail do người dùng tự gõ, ai cũng có thể gõ email của khách khác).
+      const withoutMarker = await getOrCreateTrackerPlan(customer.id, { payload })
+      expect(withoutMarker?.id).toBe(oldPlan.id)
+
+      // Dấu "Bắt đầu lại" có từ trước khi kế hoạch mới được tạo cũng phải tính đúng thời điểm
+      const markerTooLate = await getOrCreateTrackerPlan(customer.id, {
+        payload,
+        restartSince: new Date(Date.now() + 60_000),
+      })
+      expect(markerTooLate?.id).toBe(oldPlan.id)
+
+      // 4. Khi khách quay lại /habit/tracker (có dấu "Bắt đầu lại"), getOrCreateTrackerPlan gắn kế hoạch mới
+      const currentPlan = await getOrCreateTrackerPlan(customer.id, {
+        payload,
+        restartSince: restartedAt,
+      })
       expect(currentPlan?.id).toBe(newWizardPlan.id)
       expect(currentPlan?.identityStatement).toBe('Kế hoạch số 2 (mới sau khi bắt đầu lại)')
 
@@ -683,6 +699,51 @@ describe('HB-13: Dữ liệu của bạn – Bản sao lưu, CSV, Khôi phục, 
         overrideAccess: true,
       })
       expect(allCustomerPlans.totalDocs).toBe(2)
+    })
+
+    it('HB-13c: khôi phục không ghi check-in cho ngày chưa tới (giờ Việt Nam)', async () => {
+      const customer = await createTestCustomer('restore-future')
+      await grantTrialAccess(customer.id)
+
+      const plan = track(
+        'habitPlans',
+        (await payload.create({
+          collection: 'habitPlans',
+          data: {
+            customer: customer.id,
+            identityStatement: 'Kế hoạch bắt đầu hôm nay',
+            startDate: vietnamTodayIso(),
+            journeyDays: 28,
+          },
+          overrideAccess: true,
+        })) as HabitPlan,
+      )
+
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
+
+      const backupJson = serializeHabitBackup(
+        { identityStatement: 'Kế hoạch bắt đầu hôm nay', journeyDays: 28 },
+        [
+          { day: 1, status: 'voted', emotion: null, note: null },
+          { day: 5, status: 'voted', emotion: null, note: null },
+          { day: 28, status: 'voted', emotion: null, note: null },
+        ],
+      )
+
+      const result = await restoreBackup(backupJson)
+      expect(result.success).toBe(true)
+      expect(result.restored).toBe(1)
+      expect(result.skipped).toBe(2)
+      expect(result.reasons.some((r) => r.startsWith('Ngày 5:') && r.includes('chưa tới'))).toBe(
+        true,
+      )
+
+      const saved = await payload.find({
+        collection: 'habitCheckins',
+        where: { plan: { equals: plan.id } },
+        overrideAccess: true,
+      })
+      expect(saved.docs.map((d) => d.day)).toEqual([1])
     })
 
     it('khi hết hạn dùng thử: vẫn tải được JSON/CSV và sao chép Coach, nhưng chặn khôi phục và bắt đầu lại', async () => {

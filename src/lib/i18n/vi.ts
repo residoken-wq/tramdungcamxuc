@@ -2955,6 +2955,7 @@ export const vi = {
       tooManyCheckins: 'File sao lưu có quá nhiều dòng check-in (tối đa 366 ngày).',
       dayOutOfRange: (day: number, maxDays: number) =>
         `Ngày ${day}: nằm ngoài phạm vi hành trình hiện tại (1–${maxDays} ngày).`,
+      futureDaySkipped: (day: number) => `Ngày ${day}: chưa tới ngày này nên chưa ghi được.`,
       restOnVotingDaySkipped: (day: number) =>
         `Ngày ${day}: ${'Hôm nay là ngày bỏ phiếu theo nhịp của bạn, không ghi nghỉ được.'}`,
       duplicateDaySkipped: (day: number) =>

@@ -39,6 +39,9 @@ export async function findOwnTrackerPlan(
  * (trùng leadEmail và chưa gán customer) cho khách hàng đã xác minh qua OTP.
  * Hỗ trợ bắt đầu lại hành trình (HB-13): nếu có kế hoạch leadEmail mới hơn kế hoạch cũ đã gắn customer,
  * tự động gắn kế hoạch mới làm kế hoạch hiện tại (vẫn giữ kế hoạch cũ trong DB).
+ * REVIEW-REQUIRED (HB-13c): khách đã có kế hoạch chỉ nhận kế hoạch leadEmail mới khi có `restartSince`
+ * (khách bấm "Bắt đầu lại" trên chính trình duyệt này) và kế hoạch đó tạo sau thời điểm ấy, vì leadEmail
+ * do người dùng tự gõ, không xác minh.
  * Nếu chưa có, tạo kế hoạch mới khi được cung cấp identityStatement với startDate là hôm nay theo giờ VN.
  */
 export async function getOrCreateTrackerPlan(
@@ -47,6 +50,8 @@ export async function getOrCreateTrackerPlan(
     identityStatement?: string
     payload?: Payload
     now?: Date
+    /** HB-13c: when the customer pressed "Bắt đầu lại" (see restart-marker.server.ts). */
+    restartSince?: Date | null
   },
 ): Promise<HabitPlan | null> {
   const payload = options?.payload ?? (await getPayload({ config: await config }))
@@ -79,10 +84,13 @@ export async function getOrCreateTrackerPlan(
       const planToAttach = emailPlans.docs[0] as HabitPlan
       const ownCreatedMs = ownPlan ? new Date(ownPlan.createdAt).getTime() : -1
       const attachCreatedMs = new Date(planToAttach.createdAt).getTime()
+      const restartSinceMs = options?.restartSince ? options.restartSince.getTime() : null
       const isNewerThanOwn =
         !ownPlan ||
-        attachCreatedMs > ownCreatedMs ||
-        (attachCreatedMs === ownCreatedMs && planToAttach.id > ownPlan.id)
+        (restartSinceMs !== null &&
+          attachCreatedMs >= restartSinceMs &&
+          (attachCreatedMs > ownCreatedMs ||
+            (attachCreatedMs === ownCreatedMs && planToAttach.id > ownPlan.id)))
 
       if (!planToAttach.customer && isNewerThanOwn) {
         const attached = await payload.update({
