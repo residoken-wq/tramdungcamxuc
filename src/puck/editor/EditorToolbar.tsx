@@ -309,4 +309,3 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
     </footer>
   )
 }
-

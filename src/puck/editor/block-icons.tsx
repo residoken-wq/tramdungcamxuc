@@ -330,4 +330,3 @@ export function getBlockIcon(componentType: string): React.ReactElement {
   const IconComponent = blockIconMap[componentType] || GenericBlockIcon
   return <IconComponent />
 }
-

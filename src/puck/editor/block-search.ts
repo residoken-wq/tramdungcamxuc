@@ -121,4 +121,3 @@ export function filterBlockCategories(
 
   return result
 }
-

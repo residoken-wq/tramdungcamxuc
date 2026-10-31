@@ -154,7 +154,9 @@ describe('LeftPanel component', () => {
     })
 
     expect(() => loadLeftPanelStorage()).not.toThrow()
-    expect(() => saveLeftPanelStorage({ activeTab: 'blocks', collapsedCategories: [] })).not.toThrow()
+    expect(() =>
+      saveLeftPanelStorage({ activeTab: 'blocks', collapsedCategories: [] }),
+    ).not.toThrow()
 
     // Render should still work completely fine
     expect(() => render(<LeftPanel />)).not.toThrow()
@@ -164,4 +166,3 @@ describe('LeftPanel component', () => {
     setItemSpy.mockRestore()
   })
 })
-

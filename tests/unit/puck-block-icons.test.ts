@@ -34,4 +34,3 @@ describe('getBlockIcon', () => {
     expect(rendered.props['aria-hidden']).toBe(true)
   })
 })
-

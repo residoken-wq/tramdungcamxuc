@@ -100,9 +100,7 @@ export function LeftPanel() {
   // Lookup localized block label
   const getBlockLabel = useCallback(
     (componentKey: string) => {
-      const compConfig = config?.components?.[componentKey] as
-        | { label?: string }
-        | undefined
+      const compConfig = config?.components?.[componentKey] as { label?: string } | undefined
       return compConfig?.label || componentKey
     },
     [config],
@@ -213,7 +211,14 @@ export function LeftPanel() {
                   aria-hidden="true"
                 >
                   <circle cx="11" cy="11" r="8" strokeWidth="2" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" strokeWidth="2" strokeLinecap="round" />
+                  <line
+                    x1="21"
+                    y1="21"
+                    x2="16.65"
+                    y2="16.65"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                 </svg>
               </span>
               <input
@@ -395,4 +400,3 @@ export function LeftPanel() {
     </aside>
   )
 }
-

@@ -93,7 +93,10 @@ test.describe('EB-03: Elementor-style editor frame (block library search, viewpo
         throw new Error('Hero block or root dropzone not visible for drag.')
       }
 
-      await page.mouse.move(heroSource.x + heroSource.width / 2, heroSource.y + heroSource.height / 2)
+      await page.mouse.move(
+        heroSource.x + heroSource.width / 2,
+        heroSource.y + heroSource.height / 2,
+      )
       await page.mouse.down()
       await page.mouse.move(
         heroSource.x + heroSource.width / 2 + 15,

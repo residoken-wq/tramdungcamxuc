@@ -130,4 +130,3 @@ describe('filterBlockCategories', () => {
     expect(result[0].components).toEqual(['UnassignedBlock'])
   })
 })
-
