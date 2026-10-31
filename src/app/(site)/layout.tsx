@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { SiteSetting } from '@/payload-types'
 import { anton, montserrat, playfair } from '@/lib/fonts'
+import { DesignSystemStyle } from '@/components/design/DesignSystemStyle'
 import { getSiteUrl } from '@/lib/site-url'
 import './styles.css'
 
@@ -59,6 +60,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <html lang="vi" className={`${anton.variable} ${montserrat.variable} ${playfair.variable}`}>
       <head>
+        <DesignSystemStyle />
         {shouldLoadPlausible && plausibleDomain ? (
           <script defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js" />
         ) : null}

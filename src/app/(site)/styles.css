@@ -30,7 +30,7 @@
 
   /* Border Radius & Shadow */
   --radius-card: 20px;
-  --shadow-soft: 0 4px 20px -2px rgba(40, 10, 96, 0.06);
+  --shadow-soft: 0 4px 20px -2px rgb(var(--color-deep-navy-rgb) / 0.06);
 }
 
 @layer base {
