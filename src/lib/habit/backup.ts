@@ -499,7 +499,10 @@ function toPlanLike(plan: RawBackupPlanSource | null | undefined) {
 export function buildHabitCsv(
   plan: RawBackupPlanSource | null | undefined,
   checkins: RawBackupCheckinSource[] | null | undefined,
-  options?: { today?: Date | string },
+  options?: {
+    today?: Date | string
+    reflections?: HabitBackupReflection[]
+  },
 ): string {
   const planLike = toPlanLike(plan)
   const journeyDays = getJourneyDays(planLike)
@@ -534,6 +537,29 @@ export function buildHabitCsv(
     ].join(',')
 
     lines.push(row)
+  }
+
+  // Bổ sung phần Suy ngẫm cuối trạm nếu có (HB-12)
+  const reflections = options?.reflections || []
+  if (reflections.length > 0) {
+    lines.push('') // Dòng trống ngăn cách
+    lines.push(escapeCsvCell('--- SUY NGẪM CUỐI TRẠM ---'))
+    lines.push(
+      ['Trạm', 'Câu hỏi suy ngẫm', 'Câu trả lời của bạn'].map((h) => escapeCsvCell(h)).join(','),
+    )
+    for (const ref of reflections) {
+      const stationLabel =
+        ref.stationName || `Trạm ${(typeof ref.stationIndex === 'number' ? ref.stationIndex : 0) + 1}`
+      for (const ans of ref.answers || []) {
+        lines.push(
+          [
+            escapeCsvCell(stationLabel),
+            escapeCsvCell(ans.question),
+            escapeCsvCell(ans.answer),
+          ].join(','),
+        )
+      }
+    }
   }
 
   const utf8Bom = String.fromCharCode(0xfeff)

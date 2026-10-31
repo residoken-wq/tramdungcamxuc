@@ -183,8 +183,30 @@ export async function exportBackup(): Promise<ExportBackupResult> {
   })
 
   const now = new Date()
+  let reflectionsData: any[] = []
+  try {
+    const reflectionsRes = await payload.find({
+      collection: 'habitReflections',
+      where: {
+        plan: { equals: plan.id },
+      },
+      limit: 10,
+      depth: 0,
+      overrideAccess: true,
+    })
+    reflectionsData = (reflectionsRes.docs || []).map((doc: any) => ({
+      stationIndex: Number(doc.stationIndex),
+      answers: (doc.answers || []).map((a: any) => ({
+        question: a.question,
+        answer: a.answer || '',
+      })),
+      updatedAt: doc.updatedAt,
+    }))
+  } catch (_e) {}
+
   const data = buildHabitBackup(plan, checkinsRes.docs as HabitCheckin[], {
     exportedAt: now,
+    reflections: reflectionsData,
   })
   const json = JSON.stringify(data, null, 2)
   const filename = getBackupFilename(now)
@@ -241,8 +263,30 @@ export async function exportCsv(): Promise<ExportCsvResult> {
   })
 
   const now = new Date()
+  let reflectionsData: any[] = []
+  try {
+    const reflectionsRes = await payload.find({
+      collection: 'habitReflections',
+      where: {
+        plan: { equals: plan.id },
+      },
+      limit: 10,
+      depth: 0,
+      overrideAccess: true,
+    })
+    reflectionsData = (reflectionsRes.docs || []).map((doc: any) => ({
+      stationIndex: Number(doc.stationIndex),
+      answers: (doc.answers || []).map((a: any) => ({
+        question: a.question,
+        answer: a.answer || '',
+      })),
+      updatedAt: doc.updatedAt,
+    }))
+  } catch (_e) {}
+
   const csv = buildHabitCsv(plan, checkinsRes.docs as HabitCheckin[], {
     today: now,
+    reflections: reflectionsData,
   })
   const filename = getCsvFilename(now)
 
@@ -637,6 +681,59 @@ export async function restoreBackup(
       note: doc.note || null,
     }),
   )
+
+  // 9. Khôi phục suy ngẫm cuối trạm (HB-12)
+  if (Array.isArray(backup.reflections) && backup.reflections.length > 0) {
+    for (const ref of backup.reflections) {
+      if (typeof ref.stationIndex !== 'number' || !Array.isArray(ref.answers)) continue
+      const validAnswers = ref.answers
+        .filter((a) => a && typeof a.question === 'string')
+        .map((a) => ({
+          question: a.question.trim(),
+          answer: (a.answer || '').trim(),
+        }))
+      if (validAnswers.length === 0) continue
+
+      try {
+        const existingRefRes = await payload.find({
+          collection: 'habitReflections',
+          where: {
+            and: [
+              { plan: { equals: plan.id } },
+              { stationIndex: { equals: ref.stationIndex } },
+            ],
+          },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+
+        if (existingRefRes.docs.length > 0) {
+          await payload.update({
+            collection: 'habitReflections',
+            id: existingRefRes.docs[0].id,
+            data: {
+              answers: validAnswers,
+            },
+            overrideAccess: true,
+          })
+        } else {
+          await payload.create({
+            collection: 'habitReflections',
+            data: {
+              customer: customer.id,
+              plan: plan.id,
+              stationIndex: ref.stationIndex,
+              answers: validAnswers,
+            },
+            overrideAccess: true,
+          })
+        }
+      } catch (refErr) {
+        console.error('Failed to restore habit reflection:', refErr)
+      }
+    }
+  }
 
   try {
     revalidatePath('/habit/tracker')
