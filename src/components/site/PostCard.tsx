@@ -109,7 +109,7 @@ export function PostCard({
               </span>
             )}
 
-            <h3 className="font-display uppercase text-2xl sm:text-3xl lg:text-4xl text-deep-navy leading-tight tracking-tight mb-4">
+            <h3 className="font-display uppercase text-2xl sm:text-3xl lg:text-4xl text-deep-navy leading-[1.3] tracking-tight mb-4">
               <Link
                 href={targetHref}
                 className="hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy rounded-sm"

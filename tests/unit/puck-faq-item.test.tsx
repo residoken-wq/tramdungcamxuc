@@ -100,7 +100,9 @@ describe('PK-05: FaqItem Child Block & FAQ v4 - Unit Tests', () => {
         { fields: FaqItemBlock.fields, parent: parentLight } as any,
       )
 
-      const questionColorsLight = (fieldsLight.questionColor as any).options.map((o: any) => o.value)
+      const questionColorsLight = (fieldsLight.questionColor as any).options.map(
+        (o: any) => o.value,
+      )
       const answerColorsLight = (fieldsLight.answerColor as any).options.map((o: any) => o.value)
 
       expect(questionColorsLight).toContain('deep-navy')
@@ -132,11 +134,14 @@ describe('PK-05: FaqItem Child Block & FAQ v4 - Unit Tests', () => {
       expect(fields.margin).toBeUndefined()
     })
 
-    it('FaqItem is excluded from drawer categories and has permissions.insert = false', () => {
-      expect(FaqItemBlock.permissions?.insert).toBe(false)
+    it('FaqItem is only in the child-block drawer group (PK-11)', () => {
+      expect(
+        (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+      ).toContain('FaqItem')
 
       const categories = puckConfig.categories as Record<string, { components?: string[] }>
       for (const [catName, cat] of Object.entries(categories)) {
+        if (catName === 'children') continue
         if (Array.isArray(cat.components)) {
           expect(cat.components, `Category ${catName} must not contain FaqItem`).not.toContain(
             'FaqItem',

@@ -8,6 +8,8 @@ import { useClientTestimonials } from '@/puck/client-preview'
 import { getBookingPath, BOOKING_PATH } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import type { PublicTestimonial } from '@/lib/testimonials'
+import type { FontSizeOption } from '@/lib/brand/format-classes'
+import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 
 export interface CTASectionProps {
   version?: number
@@ -25,6 +27,9 @@ export interface CTASectionProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  /** PK-10 format presets. The CTA card is always white. */
+  titleSize?: FontSizeOption
+  textSize?: FontSizeOption
   _resolved?: {
     testimonials?: PublicTestimonial[]
     buttonUrl?: string | null
@@ -43,6 +48,13 @@ const BG_COLORS = {
   'butter-cream': 'bg-butter-cream',
   'deep-navy': 'bg-deep-navy text-white',
 } as const
+
+// `md` (the default) keeps the pre-PK-10 title size.
+const TITLE_SIZES: Record<FontSizeOption, string> = {
+  sm: 'text-2xl sm:text-3xl lg:text-4xl',
+  md: 'text-3xl sm:text-4xl lg:text-5xl',
+  lg: 'text-4xl sm:text-5xl lg:text-6xl',
+}
 
 const PADDINGS = {
   sm: 'py-8 px-4 sm:px-6',
@@ -64,6 +76,8 @@ export function CTASection({
   testimonials,
   bgColor = 'soft-pink',
   padding = 'lg',
+  titleSize,
+  textSize,
   _resolved,
   puck,
 }: CTASectionProps) {
@@ -123,7 +137,9 @@ export function CTASection({
             </span>
           )}
 
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]">
+          <h2
+            className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight leading-[1.3]`}
+          >
             <span className="text-deep-navy">{titleLine1}</span>{' '}
             <span className="text-bright-magenta">{titleLine2}</span>
           </h2>
@@ -135,7 +151,9 @@ export function CTASection({
           )}
 
           {description && (
-            <p className="mt-4 font-ui text-base sm:text-lg text-deep-navy/80 max-w-2xl leading-relaxed">
+            <p
+              className={`mt-4 font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} text-deep-navy/80 max-w-2xl leading-relaxed`}
+            >
               {description}
             </p>
           )}

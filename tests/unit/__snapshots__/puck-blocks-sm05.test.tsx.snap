@@ -22,7 +22,7 @@ exports[`SM-05: Puck Blocks Unit & Snapshot Tests > LeadMagnetCarousel Block > r
             Tài nguyên nhận ngay
           </span>
           <h2
-            class="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl"
+            class="font-display uppercase tracking-tight leading-[1.3] text-3xl sm:text-4xl lg:text-5xl"
           >
             <span
               class="block text-deep-navy"

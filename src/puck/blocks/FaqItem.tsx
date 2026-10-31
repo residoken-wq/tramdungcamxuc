@@ -9,9 +9,6 @@ export type { FaqItemViewProps as FaqItemProps }
 
 export const FaqItemBlock: ComponentConfig<FaqItemViewProps> = {
   label: vi.puckFaqItem?.label || 'Câu hỏi',
-  permissions: {
-    insert: false,
-  },
   fields: {
     question: {
       type: 'text',

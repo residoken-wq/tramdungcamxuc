@@ -10,9 +10,6 @@ export type { PackageCardItemProps as PackageCardProps }
 
 export const PackageCardBlock: ComponentConfig<PackageCardItemProps> = {
   label: vi.puckPackageCard?.label || 'Thẻ gói',
-  permissions: {
-    insert: false,
-  },
   fields: {
     packageId: createProductExternalField({
       label: vi.puckPackageCard?.packageId || 'Chọn gói đồng hành (Growth Mirror)',

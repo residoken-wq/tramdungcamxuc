@@ -2,6 +2,12 @@ import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
+import {
+  allowedTextColors,
+  type FontSizeOption,
+  type TextColorOption,
+} from '@/lib/brand/format-classes'
+import { HeroStatItem } from './HeroStatItem'
 
 export interface HeroStat {
   value: string
@@ -27,6 +33,12 @@ export interface HeroImageProps {
   secondaryButtonLink?: string
   badges?: HeroBadge[]
   stats?: HeroStat[]
+  /** PK-09 format presets for the stats strip (deep-navy = automatic). */
+  statValueColor?: TextColorOption
+  statLabelColor?: TextColorOption
+  statValueSize?: FontSizeOption
+  statLabelSize?: FontSizeOption
+  titleSize?: FontSizeOption
   priority?: boolean
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
@@ -41,6 +53,15 @@ const BG_COLORS = {
   'butter-cream': 'bg-butter-cream',
   'deep-navy': 'bg-deep-navy text-white',
 } as const
+
+// `md` (the default) keeps the pre-PK-09 heading size.
+const TITLE_SIZES: Record<FontSizeOption, string> = {
+  sm: 'text-3xl sm:text-4xl lg:text-5xl',
+  md: 'text-4xl sm:text-5xl lg:text-6xl',
+  lg: 'text-5xl sm:text-6xl lg:text-7xl',
+}
+
+const STATS_ROW = 'flex flex-wrap items-center justify-center gap-8 sm:gap-12'
 
 const PADDINGS = {
   sm: 'py-8 px-4 sm:px-6',
@@ -61,6 +82,11 @@ export function HeroImage({
   secondaryButtonLink,
   badges,
   stats,
+  statValueColor,
+  statLabelColor,
+  statValueSize,
+  statLabelSize,
+  titleSize = 'md',
   priority,
   bgColor = 'warm-ivory',
   padding = 'md',
@@ -76,13 +102,22 @@ export function HeroImage({
     .map((b) => (typeof b === 'string' ? b : b?.text || ''))
     .filter(Boolean)
 
-  const normalizedStats = (stats || []).filter((s) => s && s.value)
+  // A colour picked for another background falls back to automatic (WCAG AA on the current one).
+  const safeStatColor = (color: TextColorOption | undefined, large: boolean) =>
+    color && allowedTextColors(bgColor, large).some((opt) => opt.value === color)
+      ? color
+      : undefined
+
+  const normalizedStats = (Array.isArray(stats) ? stats : []).filter((st) => st && st.value)
 
   const hasPrimaryButton = Boolean(buttonSafeHref && buttonText)
   const hasSecondaryButton = Boolean(secondaryButtonSafeHref && secondaryButtonText)
 
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section
+      className={`group/heroimg w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
+      data-bg={bgColor}
+    >
       <div className="mx-auto max-w-5xl flex flex-col items-center text-center">
         {seriesLabel && (
           <span
@@ -93,7 +128,9 @@ export function HeroImage({
         )}
 
         {/* Signature Two-Tone Heading (Anton) */}
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-[1.15]">
+        <h1
+          className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight leading-[1.3]`}
+        >
           <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
           <span className={titleLine2ColorClass}>{titleLine2}</span>
         </h1>
@@ -149,24 +186,23 @@ export function HeroImage({
         {/* Small stats strip below buttons (0-3 items) */}
         {normalizedStats.length > 0 && (
           <div
-            className={`mt-8 pt-6 border-t flex flex-wrap items-center justify-center gap-8 sm:gap-12 ${
+            className={`mt-8 pt-6 border-t w-full ${
               isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
             }`}
           >
-            {normalizedStats.map((st, idx) => (
-              <div key={idx} className="flex flex-col items-center">
-                <span
-                  className={`font-display text-2xl sm:text-3xl ${isDeepNavy ? 'text-white' : 'text-deep-navy'}`}
-                >
-                  {st.value}
-                </span>
-                <span
-                  className={`font-ui text-xs sm:text-sm font-medium mt-1 ${isDeepNavy ? 'text-white/80' : 'text-deep-navy/70'}`}
-                >
-                  {st.label}
-                </span>
-              </div>
-            ))}
+            <div className={STATS_ROW}>
+              {normalizedStats.map((st, idx) => (
+                <HeroStatItem
+                  key={idx}
+                  value={st.value}
+                  label={st.label}
+                  valueColor={safeStatColor(statValueColor, true)}
+                  labelColor={safeStatColor(statLabelColor, false)}
+                  valueSize={statValueSize}
+                  labelSize={statLabelSize}
+                />
+              ))}
+            </div>
           </div>
         )}
 

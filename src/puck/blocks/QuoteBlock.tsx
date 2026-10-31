@@ -2,6 +2,8 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { QuoteBlock as UiQuoteBlock } from '@/components/ui/QuoteBlock'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { alignField, sizeField } from '../format-fields'
+import type { AlignOption, FontSizeOption } from '@/lib/brand/format-classes'
 
 export interface QuoteBlockProps {
   version?: number
@@ -9,6 +11,8 @@ export interface QuoteBlockProps {
   cite?: string
   roleOrContext?: string
   tone?: 'light' | 'dark'
+  quoteSize?: FontSizeOption
+  align?: AlignOption
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -35,6 +39,7 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
     quote: {
       type: 'textarea',
       label: 'Câu trích dẫn (Playfair Display Italic)',
+      contentEditable: true,
     },
     cite: {
       type: 'text',
@@ -44,6 +49,8 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
       type: 'text',
       label: 'Vai trò / Ngữ cảnh (Tùy chọn)',
     },
+    quoteSize: sizeField('Cỡ chữ trích dẫn'),
+    align: alignField(),
     tone: {
       type: 'select',
       label: 'Sắc thái giao diện (Tone)',
@@ -66,6 +73,8 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
   defaultProps: {
     version: 2,
     tone: 'light',
+    quoteSize: 'md',
+    align: 'left',
     quote: '[MẪU] Câu trích dẫn cảm xúc ấm áp và sâu sắc chạm đến người đọc.',
     cite: '[MẪU] Tên người nói',
     roleOrContext: '[MẪU] Vai trò / bối cảnh',
@@ -77,6 +86,8 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
     cite,
     roleOrContext,
     tone = 'light',
+    quoteSize,
+    align,
     bgColor = 'warm-ivory',
     padding = 'md',
   }) => {
@@ -91,6 +102,8 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
             cite={cite}
             roleOrContext={roleOrContext}
             theme={isDark ? 'dark' : 'light'}
+            size={quoteSize}
+            align={align}
           />
         </div>
       </section>

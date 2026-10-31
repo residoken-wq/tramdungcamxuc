@@ -9,9 +9,6 @@ export type { JourneyStepProps as StepProps }
 
 export const StepBlock: ComponentConfig<JourneyStepProps> = {
   label: vi.puckStep?.label || 'Bước hành trình',
-  permissions: {
-    insert: false,
-  },
   fields: {
     name: {
       type: 'text',

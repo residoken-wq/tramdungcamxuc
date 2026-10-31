@@ -2,32 +2,39 @@
 
 import React from 'react'
 import { Button } from '@/components/ui/Button'
-import { safeHref } from '@/lib/safe-href'
 import { useClientPageSlug } from '@/puck/client-preview'
+import type { FontSizeOption } from '@/lib/brand/format-classes'
+import { PathCard, resolveSafeLink, type PathCardProps } from './PathCard'
 
 export interface TwoPathCardsProps {
   version?: number
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
-  path1GroupLabel: string
-  path1Title: string
-  path1Description: string
-  path1ButtonLabel: string
+  path1GroupLabel?: string
+  path1Title?: string
+  path1Description?: string
+  path1ButtonLabel?: string
   path1LinkType?: 'url' | 'page'
   path1PageId?: string | number
   path1Href?: string
   path1ButtonStyle?: 'solid' | 'outline'
 
-  path2GroupLabel: string
-  path2Title: string
-  path2Description: string
-  path2ButtonLabel: string
+  path2GroupLabel?: string
+  path2Title?: string
+  path2Description?: string
+  path2ButtonLabel?: string
   path2LinkType?: 'url' | 'page'
   path2PageId?: string | number
   path2Href?: string
   path2ButtonStyle?: 'solid' | 'outline'
 
+  /** v2 (PK-08): draggable PathCard children. Puck passes the slot as a component. */
+  paths?:
+    | React.ComponentType<{ className?: string }>
+    | React.ReactNode
+    | Array<{ type?: string; props?: PathCardProps & { id?: string } }>
+  titleSize?: FontSizeOption
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -46,27 +53,20 @@ const BG_COLORS = {
   'deep-navy': 'bg-deep-navy text-white',
 } as const
 
+// `md` (the default) keeps the pre-PK-08 heading size.
+const TITLE_SIZES: Record<FontSizeOption, string> = {
+  sm: 'text-2xl sm:text-3xl',
+  md: 'text-3xl sm:text-4xl',
+  lg: 'text-4xl sm:text-5xl',
+}
+
+const PATHS_GRID = 'grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch'
+
 const PADDINGS = {
   sm: 'py-8 px-4 sm:px-6',
   md: 'py-14 px-6 sm:px-8',
   lg: 'py-20 px-6 sm:px-12',
 } as const
-
-function resolveSafeLink(
-  linkType: 'url' | 'page' | undefined,
-  href: string | undefined,
-  slug: string | null | undefined,
-): string {
-  if (linkType === 'page') {
-    if (typeof slug === 'string' && slug.trim() !== '') {
-      const s = slug.trim()
-      const formatted = s === '/' ? '/' : s.startsWith('/') ? s : `/${s}`
-      return safeHref(formatted) || '#'
-    }
-    return '#'
-  }
-  return safeHref(href) || '#'
-}
 
 export function TwoPathCards({
   seriesLabel,
@@ -90,6 +90,8 @@ export function TwoPathCards({
   path2Href,
   path2ButtonStyle = 'outline',
 
+  paths,
+  titleSize = 'md',
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
@@ -117,7 +119,8 @@ export function TwoPathCards({
 
   return (
     <section
-      className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+      className={`group/paths w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+      data-bg={bgColor}
     >
       <div className="mx-auto max-w-5xl">
         {(seriesLabel || titleLine1) && (
@@ -131,7 +134,9 @@ export function TwoPathCards({
             )}
 
             {titleLine1 && (
-              <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-tight">
+              <h2
+                className={`font-display uppercase tracking-tight leading-[1.3] ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md}`}
+              >
                 <span className={textColorClass}>{titleLine1}</span>{' '}
                 {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
               </h2>
@@ -139,83 +144,100 @@ export function TwoPathCards({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
-          {/* Card 1: Cá nhân */}
-          <div
-            className={`rounded-card border ${cardBgClass} p-6 sm:p-8 shadow-soft flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1`}
-          >
-            <div>
-              {path1GroupLabel && (
-                <span
-                  className={`mb-3 block font-ui text-xs font-bold uppercase tracking-widest ${
-                    isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-                  }`}
+        {typeof paths === 'function' ? (
+          React.createElement(paths as React.ComponentType<{ className?: string }>, {
+            className: PATHS_GRID,
+          })
+        ) : paths && React.isValidElement(paths) ? (
+          <div className={PATHS_GRID}>{paths}</div>
+        ) : Array.isArray(paths) ? (
+          <div className={PATHS_GRID}>
+            {(paths as unknown[]).map((child, idx) => {
+              const block = child as { props?: PathCardProps & { id?: string } } | null
+              return block && typeof block === 'object' && block.props ? (
+                <PathCard key={block.props.id || idx} {...block.props} />
+              ) : null
+            })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
+            {/* Card 1: Cá nhân */}
+            <div
+              className={`rounded-card border ${cardBgClass} p-6 sm:p-8 shadow-soft flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1`}
+            >
+              <div>
+                {path1GroupLabel && (
+                  <span
+                    className={`mb-3 block font-ui text-xs font-bold uppercase tracking-widest ${
+                      isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+                    }`}
+                  >
+                    {path1GroupLabel}
+                  </span>
+                )}
+
+                <h3
+                  className={`font-display text-2xl sm:text-3xl uppercase tracking-tight mb-4 ${textColorClass}`}
                 >
-                  {path1GroupLabel}
-                </span>
-              )}
+                  {path1Title}
+                </h3>
 
-              <h3
-                className={`font-display text-2xl sm:text-3xl uppercase tracking-tight mb-4 ${textColorClass}`}
-              >
-                {path1Title}
-              </h3>
+                <p className={`font-ui text-base leading-relaxed mb-6 ${descColorClass}`}>
+                  {path1Description}
+                </p>
+              </div>
 
-              <p className={`font-ui text-base leading-relaxed mb-6 ${descColorClass}`}>
-                {path1Description}
-              </p>
+              <div className="pt-2">
+                <Button
+                  href={finalHref1}
+                  variant={path1ButtonStyle === 'outline' ? 'ghost' : 'primary'}
+                  size="md"
+                  className="w-full text-center"
+                >
+                  {path1ButtonLabel}
+                </Button>
+              </div>
             </div>
 
-            <div className="pt-2">
-              <Button
-                href={finalHref1}
-                variant={path1ButtonStyle === 'outline' ? 'ghost' : 'primary'}
-                size="md"
-                className="w-full text-center"
-              >
-                {path1ButtonLabel}
-              </Button>
+            {/* Card 2: Doanh nghiệp */}
+            <div
+              className={`rounded-card border ${cardBgClass} p-6 sm:p-8 shadow-soft flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1`}
+            >
+              <div>
+                {path2GroupLabel && (
+                  <span
+                    className={`mb-3 block font-ui text-xs font-bold uppercase tracking-widest ${
+                      isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+                    }`}
+                  >
+                    {path2GroupLabel}
+                  </span>
+                )}
+
+                <h3
+                  className={`font-display text-2xl sm:text-3xl uppercase tracking-tight mb-4 ${textColorClass}`}
+                >
+                  {path2Title}
+                </h3>
+
+                <p className={`font-ui text-base leading-relaxed mb-6 ${descColorClass}`}>
+                  {path2Description}
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <Button
+                  href={finalHref2}
+                  variant={path2ButtonStyle === 'outline' ? 'ghost' : 'primary'}
+                  size="md"
+                  className="w-full text-center"
+                >
+                  {path2ButtonLabel}
+                </Button>
+              </div>
             </div>
           </div>
-
-          {/* Card 2: Doanh nghiệp */}
-          <div
-            className={`rounded-card border ${cardBgClass} p-6 sm:p-8 shadow-soft flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1`}
-          >
-            <div>
-              {path2GroupLabel && (
-                <span
-                  className={`mb-3 block font-ui text-xs font-bold uppercase tracking-widest ${
-                    isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
-                  }`}
-                >
-                  {path2GroupLabel}
-                </span>
-              )}
-
-              <h3
-                className={`font-display text-2xl sm:text-3xl uppercase tracking-tight mb-4 ${textColorClass}`}
-              >
-                {path2Title}
-              </h3>
-
-              <p className={`font-ui text-base leading-relaxed mb-6 ${descColorClass}`}>
-                {path2Description}
-              </p>
-            </div>
-
-            <div className="pt-2">
-              <Button
-                href={finalHref2}
-                variant={path2ButtonStyle === 'outline' ? 'ghost' : 'primary'}
-                size="md"
-                className="w-full text-center"
-              >
-                {path2ButtonLabel}
-              </Button>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </section>
   )

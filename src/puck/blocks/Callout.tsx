@@ -3,6 +3,7 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { Callout, type CalloutProps } from '@/components/site/Callout'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createPageExternalField } from '../page-field'
+import { alignField, sizeField } from '../format-fields'
 
 export type { CalloutProps }
 
@@ -12,11 +13,16 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
     title: {
       type: 'text',
       label: 'Tiêu đề nổi bật (Montserrat Bold)',
+      contentEditable: true,
     },
     description: {
       type: 'textarea',
       label: 'Mô tả thông điệp',
+      contentEditable: true,
     },
+    titleSize: sizeField('Cỡ chữ tiêu đề'),
+    textSize: sizeField('Cỡ chữ mô tả'),
+    align: alignField(),
     showButton: {
       type: 'select',
       label: 'Hiển thị nút hành động',
@@ -28,6 +34,7 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
     buttonText: {
       type: 'text',
       label: 'Chữ trên nút (Tùy chọn)',
+      contentEditable: true,
     },
     buttonLinkType: {
       type: 'select',
@@ -66,6 +73,9 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
   },
   defaultProps: {
     version: 1,
+    titleSize: 'md',
+    textSize: 'md',
+    align: 'center',
     title: '[MẪU] Bạn không cần phải tự mình đối diện với những rối bời cảm xúc',
     description:
       '[MẪU] Trạm Dừng Cảm Xúc luôn sẵn sàng đồng hành cùng bạn bằng những phương pháp khoa học, nhẹ nhàng và an toàn nhất.',

@@ -268,7 +268,7 @@ describe('PK-03: Stat & Step Child Blocks - Unit Tests', () => {
       const categories = puckConfig.categories || {}
 
       for (const [key, category] of Object.entries(categories)) {
-        if (key === 'other') continue
+        if (key === 'other' || key === 'children') continue
         const componentList = category.components || []
         expect(componentList).not.toContain('Stat')
         expect(componentList).not.toContain('Step')
@@ -277,9 +277,13 @@ describe('PK-03: Stat & Step Child Blocks - Unit Tests', () => {
       expect(categories.other?.visible).toBe(false)
     })
 
-    it('StatBlock and StepBlock have permissions.insert = false', () => {
-      expect(StatBlock.permissions?.insert).toBe(false)
-      expect(StepBlock.permissions?.insert).toBe(false)
+    it('Stat and Step are in the child-block drawer group (PK-11)', () => {
+      expect(
+        (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+      ).toContain('Stat')
+      expect(
+        (puckConfig.categories as Record<string, { components?: string[] }>).children?.components,
+      ).toContain('Step')
     })
 
     it('Columns.col1, col2, col3 allow Stat and disallow Step (PK-05)', () => {

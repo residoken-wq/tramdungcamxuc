@@ -31,6 +31,25 @@ import { StatBlock, type StatProps } from './blocks/Stat'
 import { StepBlock, type StepProps } from './blocks/Step'
 import { ServiceCardBlock, type ServiceCardProps } from './blocks/ServiceCard'
 import { PackageCardBlock, type PackageCardProps } from './blocks/PackageCard'
+import { EntryCardBlock, type EntryCardProps } from './blocks/EntryCard'
+import { PathCardBlock, type PathCardProps } from './blocks/PathCard'
+import { VisionCardBlock, type VisionCardProps } from './blocks/VisionCard'
+import {
+  FreeSectionBlock,
+  SeriesLabelElBlock,
+  HeadingElBlock,
+  ParagraphElBlock,
+  EmotionElBlock,
+  ImageElBlock,
+  ButtonElBlock,
+  type FreeSectionProps,
+  type SeriesLabelElProps,
+  type HeadingElProps,
+  type ParagraphElProps,
+  type EmotionElProps,
+  type ImageElProps,
+  type ButtonElProps,
+} from './blocks/FreeSection'
 import { FaqItemBlock, type FaqItemProps } from './blocks/FaqItem'
 import { CalloutBlock, type CalloutProps } from './blocks/Callout'
 import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards'
@@ -67,10 +86,13 @@ import {
   FONT_SIZE_OPTIONS,
   ALIGN_OPTIONS,
   CHILD_BLOCK_TYPES,
+  ELEMENT_BLOCK_TYPES,
+  ROOT_DISALLOW,
   ROOT_DROP_ZONE,
   type FontSizeOption,
 } from './constants'
 import { allowedTextColors } from '@/lib/brand/format-classes'
+import { alignField, colorField, sizeField } from './format-fields'
 import { getLockedComponentPermissions } from './locks'
 
 export {
@@ -123,6 +145,16 @@ export type PageComponentsProps = {
   Step: StepProps
   ServiceCard: ServiceCardProps
   PackageCard: PackageCardProps
+  EntryCard: EntryCardProps
+  PathCard: PathCardProps
+  VisionCard: VisionCardProps
+  FreeSection: FreeSectionProps
+  SeriesLabelEl: SeriesLabelElProps
+  HeadingEl: HeadingElProps
+  ParagraphEl: ParagraphElProps
+  EmotionEl: EmotionElProps
+  ImageEl: ImageElProps
+  ButtonEl: ButtonElProps
   FaqItem: FaqItemProps
   Callout: CalloutProps
   JourneySteps: JourneyStepsProps
@@ -227,6 +259,17 @@ export const puckConfig: Config<PageComponentsProps> = {
         'ContactForms',
       ],
     },
+    // PK-13: free section + its elements (elements only drop into a free section's columns).
+    freeSection: {
+      title: 'Section tự do (kéo thả từng phần tử)',
+      components: ['FreeSection', ...ELEMENT_BLOCK_TYPES] as (keyof PageComponentsProps)[],
+    },
+    // PK-11: child cards, droppable only into their own parent block (slot `allow` lists).
+    children: {
+      title: 'Thẻ con (kéo vào khối cha)',
+      components: [...CHILD_BLOCK_TYPES] as (keyof PageComponentsProps)[],
+      defaultExpanded: false,
+    },
     other: {
       visible: false,
     },
@@ -245,7 +288,7 @@ export const puckConfig: Config<PageComponentsProps> = {
       const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
       return (
         <div className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased">
-          {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={CHILD_BLOCK_TYPES} /> : children}
+          {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={ROOT_DISALLOW} /> : children}
         </div>
       )
     },
@@ -437,6 +480,9 @@ export const puckConfig: Config<PageComponentsProps> = {
           type: 'textarea',
           label: 'Nội dung văn bản (các đoạn phân tách bằng 2 lần xuống dòng)',
         },
+        textSize: sizeField('Cỡ chữ'),
+        textColor: colorField('Màu chữ', 'warm-ivory'),
+        align: alignField(),
         bgColor: {
           type: 'select',
           label: 'Màu nền',
@@ -448,8 +494,15 @@ export const puckConfig: Config<PageComponentsProps> = {
           options: [...PADDING_OPTIONS],
         },
       },
+      resolveFields: (data, params) => ({
+        ...params.fields,
+        textColor: colorField('Màu chữ', data.props?.bgColor || 'warm-ivory'),
+      }),
       defaultProps: {
         version: 1,
+        textSize: 'md',
+        textColor: 'deep-navy',
+        align: 'left',
         content:
           '[MẪU] Đoạn văn bản thứ nhất chia sẻ những chiêm nghiệm sâu sắc.\n\n[MẪU] Đoạn văn bản thứ hai tiếp nối câu chuyện một cách tự nhiên và ấm áp.',
         bgColor: 'warm-ivory',
@@ -469,13 +522,16 @@ export const puckConfig: Config<PageComponentsProps> = {
             { label: 'Ảnh bên phải, chữ bên trái', value: 'image-right' },
           ],
         },
-        seriesLabel: { type: 'text', label: 'Nhãn series' },
-        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1' },
-        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2' },
+        seriesLabel: { type: 'text', label: 'Nhãn series', contentEditable: true },
+        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1', contentEditable: true },
+        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2', contentEditable: true },
+        titleSize: sizeField('Cỡ chữ tiêu đề'),
         content: {
           type: 'textarea',
           label: 'Nội dung văn bản (các đoạn phân tách bằng 2 lần xuống dòng)',
         },
+        textSize: sizeField('Cỡ chữ nội dung'),
+        textColor: colorField('Màu chữ nội dung', 'warm-ivory'),
         quote: {
           type: 'textarea',
           label: 'Câu trích dẫn (Playfair Display Italic, tùy chọn)',
@@ -500,9 +556,16 @@ export const puckConfig: Config<PageComponentsProps> = {
           options: [...PADDING_OPTIONS],
         },
       },
+      resolveFields: (data, params) => ({
+        ...params.fields,
+        textColor: colorField('Màu chữ nội dung', data.props?.bgColor || 'warm-ivory'),
+      }),
       defaultProps: {
         version: 2,
         layout: 'image-left',
+        titleSize: 'md',
+        textSize: 'md',
+        textColor: 'deep-navy',
         seriesLabel: '[MẪU] Câu chuyện',
         titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
         titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
@@ -576,6 +639,16 @@ export const puckConfig: Config<PageComponentsProps> = {
     Step: StepBlock,
     ServiceCard: ServiceCardBlock,
     PackageCard: PackageCardBlock,
+    EntryCard: EntryCardBlock,
+    PathCard: PathCardBlock,
+    VisionCard: VisionCardBlock,
+    FreeSection: FreeSectionBlock,
+    SeriesLabelEl: SeriesLabelElBlock,
+    HeadingEl: HeadingElBlock,
+    ParagraphEl: ParagraphElBlock,
+    EmotionEl: EmotionElBlock,
+    ImageEl: ImageElBlock,
+    ButtonEl: ButtonElBlock,
     FaqItem: FaqItemBlock,
     Callout: CalloutBlock,
     JourneySteps: JourneyStepsBlock,

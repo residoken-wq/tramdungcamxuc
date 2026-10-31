@@ -220,7 +220,8 @@ export async function resolveServerData(
         item.type === 'HeroImage' ||
         item.type === 'HanaStory' ||
         item.type === 'HeroTwoEntries' ||
-        item.type === 'Card') &&
+        item.type === 'Card' ||
+        item.type === 'ImageEl') &&
       item.props.mediaId
     ) {
       try {
@@ -403,6 +404,13 @@ export async function resolveServerData(
       item.props.buttonPageId
     ) {
       pageIdsToFetch.add(item.props.buttonPageId as string | number)
+    }
+    if (
+      (item.type === 'PathCard' || item.type === 'ButtonEl') &&
+      item.props.linkType === 'page' &&
+      item.props.pageId
+    ) {
+      pageIdsToFetch.add(item.props.pageId as string | number)
     }
     if (item.type === 'TwoPathCards') {
       if (item.props.path1LinkType === 'page' && item.props.path1PageId) {
@@ -1189,6 +1197,9 @@ export async function resolveServerData(
         path1PageSlug: p1 ? pageMap.get(p1) || null : null,
         path2PageSlug: p2 ? pageMap.get(p2) || null : null,
       }
+    } else if (item.type === 'PathCard' || item.type === 'ButtonEl') {
+      const pId = item.props.pageId ? String(item.props.pageId) : ''
+      item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
     } else if (item.type === 'TeamGrid') {
       item.props._resolved = { members: resolvedTeamMembers }
     } else if (item.type === 'Callout') {

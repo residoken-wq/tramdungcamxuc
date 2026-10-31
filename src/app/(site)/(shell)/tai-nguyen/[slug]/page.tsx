@@ -143,7 +143,7 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
                 {product.type === 'ebook' ? 'Sách điện tử miễn phí' : 'Bộ tài nguyên miễn phí'}
               </span>
 
-              <h1 className="font-display uppercase text-3xl sm:text-4xl lg:text-5xl text-deep-navy leading-tight tracking-tight mb-4">
+              <h1 className="font-display uppercase text-3xl sm:text-4xl lg:text-5xl text-deep-navy leading-[1.3] tracking-tight mb-4">
                 {product.name}
               </h1>
 

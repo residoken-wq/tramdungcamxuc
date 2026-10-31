@@ -4,18 +4,33 @@ import { CTASection, type CTASectionProps } from '@/components/site/CTASection'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createPageExternalField } from '../page-field'
 import { createTestimonialExternalField } from '../testimonial-field'
+import { sizeField } from '../format-fields'
 
 export type { CTASectionProps }
 
 export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
   label: 'Khối kêu gọi chuyển đổi lớn (CTA Section)',
   fields: {
-    seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
-    titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
-    titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
-    emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display Italic)' },
-    description: { type: 'textarea', label: 'Mô tả chi tiết' },
-    buttonText: { type: 'text', label: 'Chữ trên nút hành động' },
+    seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)', contentEditable: true },
+    titleLine1: {
+      type: 'text',
+      label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      contentEditable: true,
+    },
+    titleLine2: {
+      type: 'text',
+      label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      contentEditable: true,
+    },
+    titleSize: sizeField('Cỡ chữ tiêu đề'),
+    emotionLine: {
+      type: 'textarea',
+      label: 'Dòng cảm xúc (Playfair Display Italic)',
+      contentEditable: true,
+    },
+    description: { type: 'textarea', label: 'Mô tả chi tiết', contentEditable: true },
+    textSize: sizeField('Cỡ chữ mô tả'),
+    buttonText: { type: 'text', label: 'Chữ trên nút hành động', contentEditable: true },
     buttonLinkType: {
       type: 'select',
       label: 'Loại liên kết nút',
@@ -60,6 +75,8 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
   },
   defaultProps: {
     version: 1,
+    titleSize: 'md',
+    textSize: 'md',
     seriesLabel: '[MẪU] Sẵn sàng cho bước tiếp theo',
     titleLine1: '[MẪU] BẮT ĐẦU HÀNH TRÌNH',
     titleLine2: '[MẪU] CHUYỂN MÌNH CÙNG HANA',

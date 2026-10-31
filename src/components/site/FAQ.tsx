@@ -274,7 +274,7 @@ export function FAQ({
 
             <h2
               id={headingId}
-              className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]`}
+              className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.3]`}
             >
               <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
               <span className={titleLine2ColorClass}>{titleLine2}</span>

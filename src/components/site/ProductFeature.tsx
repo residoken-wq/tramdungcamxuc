@@ -152,7 +152,7 @@ export function ProductFeature({
               </span>
             )}
 
-            <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-tight mb-4 text-deep-navy">
+            <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-[1.3] mb-4 text-deep-navy">
               {product.name}
             </h2>
 

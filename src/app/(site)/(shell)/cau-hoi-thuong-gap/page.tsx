@@ -94,7 +94,7 @@ export default async function SharedFaqPage({ searchParams }: PageProps) {
           <span className="inline-block mb-3 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta">
             {vi.sm06.faq.pageTitle}
           </span>
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15] text-deep-navy mb-4">
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.3] text-deep-navy mb-4">
             <span>CÂU HỎI THƯỜNG GẶP</span> <span className="text-bright-magenta">VÀ GIẢI ĐÁP</span>
           </h1>
           <p className="font-ui text-base sm:text-lg text-deep-navy/80 leading-relaxed">

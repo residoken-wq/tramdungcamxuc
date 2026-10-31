@@ -11,7 +11,7 @@ export default function ShellNotFound() {
           404
         </span>
 
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-deep-navy mb-4 leading-[1.15]">
+        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight text-deep-navy mb-4 leading-[1.3]">
           {vi.notFound.title}
         </h1>
 

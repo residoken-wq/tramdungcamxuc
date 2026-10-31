@@ -12,7 +12,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         class="rounded-card bg-white border border-deep-navy/10 p-8 sm:p-12 lg:p-16 shadow-soft text-center flex flex-col items-center"
       >
         <h2
-          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.3]"
         >
           <span
             class="text-deep-navy"
@@ -61,7 +61,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         class="rounded-card bg-white border border-deep-navy/10 p-8 sm:p-12 lg:p-16 shadow-soft text-center flex flex-col items-center"
       >
         <h2
-          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.3]"
         >
           <span
             class="text-deep-navy"
@@ -179,7 +179,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
             Đặc điểm nổi bật
           </span>
           <h2
-            class="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl"
+            class="font-display uppercase tracking-tight leading-[1.3] text-3xl sm:text-4xl lg:text-5xl"
           >
             <span
               class="block text-deep-navy"
@@ -305,7 +305,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
             Tiến trình
           </span>
           <h2
-            class="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl"
+            class="font-display uppercase tracking-tight leading-[1.3] text-3xl sm:text-4xl lg:text-5xl"
           >
             <span
               class="block text-deep-navy"
@@ -404,7 +404,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           Hành trình đồng hành
         </span>
         <h2
-          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.3]"
         >
           <span
             class="text-deep-navy"
@@ -530,7 +530,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           Hệ thống giải pháp
         </span>
         <h2
-          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.3]"
         >
           <span
             class="text-deep-navy"
