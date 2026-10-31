@@ -913,7 +913,9 @@ Bạn có 3 cách rất dễ dàng:
    - Hana có thể thêm từ 1 đến tối đa 6 trạm:
      - **Tên chặng** (bắt buộc): Tên chặng (ví dụ: `Trạm 1: Nhận diện & Khởi động`, `Trạm 2: Vượt qua sức ỳ`...). **Hiển thị ngoài Tracker (HB-11)**: Tên các trạm cấu hình tại đây sẽ hiển thị trực tiếp trên giao diện `/habit/tracker` của học viên thành từng khối trạm trực quan kèm khoảng ngày (ví dụ `Ngày 1 – 7`) và tiến độ số ngày bỏ phiếu đã check-in của riêng trạm đó. Nếu trạm chưa có tên hoặc chưa cấu hình, hệ thống sẽ tự động hiển thị tên mặc định `Trạm 1`, `Trạm 2`...
      - **Thông điệp ngắn**: Câu thông điệp gợi cảm xúc đồng hành cho học viên khi bước vào trạm.
-     - **Câu hỏi suy ngẫm cuối trạm**: Thêm tối đa 5 câu hỏi suy ngẫm để học viên tự nhìn lại và đúc kết sau khi hoàn thành trạm (nhập ô _Câu hỏi suy ngẫm_, bắt buộc khi thêm dòng).
+     - **Câu hỏi suy ngẫm cuối trạm (HB-12)**: Thêm tối đa 5 câu hỏi suy ngẫm để học viên tự nhìn lại và đúc kết sau khi hoàn thành trạm (nhập ô _Câu hỏi suy ngẫm_, bắt buộc khi thêm dòng).
+       - **Hiển thị ngoài Tracker**: Khi trạm kết thúc (ngày hiện tại trong hành trình vượt qua ngày cuối cùng của trạm, hoặc trạm 4 khi đạt ngày 28), trên card trạm tương ứng ở `/habit/tracker` sẽ xuất hiện nút **"Suy ngẫm trạm"**. Khi học viên đã điền câu trả lời, card sẽ hiển thị huy hiệu **"Đã suy ngẫm"** và nút chuyển thành **"Xem / sửa suy ngẫm"**. Khi chưa tới ngày kết thúc trạm, hệ thống hiển thị nhãn nhẹ nhàng `Mở vào ngày X`. Nếu trạm không có câu hỏi nào được thêm trong CMS, hệ thống sẽ tự động không hiển thị nút suy ngẫm để giữ giao diện luôn gọn gàng.
+       - **Lưu ý bảo mật & quyền riêng tư tối thượng**: Câu trả lời suy ngẫm của học viên là dữ liệu riêng tư tuyệt đối (`selfCustomerOnlyField`). Hana và Ban quản trị **KHÔNG xem được nội dung câu trả lời** trong CMS hay qua API quản trị. Học viên tự giữ câu trả lời của mình trên Tracker, và có thể tải về máy bất kỳ lúc nào thông qua chức năng tải bản sao lưu JSON hoặc bảng CSV tại khối _Dữ liệu của bạn_.
 
 3. **Cấu hình Câu trích dẫn (`quotes`)**:
    - Dùng để hiển thị các câu danh ngôn, trích dẫn truyền cảm hứng trên giao diện học và đồng hành.
