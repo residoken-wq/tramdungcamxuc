@@ -96,11 +96,22 @@ Tổng khoảng **80 giờ**. Popup builder, form builder, theme builder cho tra
 - **Puck đổi API.** Ghim bản Puck, override bọc trong `src/puck/editor/`. Nâng Puck thì chạy e2e builder.
 - **Dùng cho nhiều khách hàng.** Track EB chỉ làm phần builder + design system. Còn mã / chữ riêng của Trạm (luồng Habit, EQ Buddy, giá, i18n) cần kế hoạch "tách lõi sản phẩm" riêng. Chưa thuộc track này.
 
-## 6. Cần anh Nhân chốt
+## 6. Đã chốt 31/10 (anh Nhân)
 
-1. **Mô hình nhiều khách hàng:**
-   - Mỗi khách **một bản cài riêng** (Docker + DB riêng như hiện tại): Planning đề xuất cách này.
-   - Hay **một app nhiều site** (multi-tenant): kéo theo sửa quyền, dữ liệu, domain.
-2. **Mặc định khoá / mở cho site khách mới.** Planning đề xuất `locked`.
-3. **Widget HTML có cho chạy script không** (VD: nhúng pixel quảng cáo). Planning đề xuất: chỉ CSS + HTML đã lọc, script qua ô "Mã theo dõi" riêng trong Cài đặt site.
-4. Track EB chạy **sau** HB-16 → HB-23 hay **song song** trên máy thứ ba. EB-01 / EB-02 có migration, nên phải xếp khoá 🔒 Migration với HB-24.
+1. Nhiều khách hàng: **mỗi khách một bản cài riêng** (Docker + DB riêng như hiện tại). Không làm multi-tenant.
+2. Site khách mới: mặc định **khoá** mọi công tắc. Site Trạm: `owner` mở trong admin sau EB-01.
+3. Widget HTML **không chạy script**. Mã theo dõi (pixel, analytics) dùng ô riêng trong Cài đặt site.
+4. Track EB chạy **song song** track HB, trên máy thứ ba. Task có migration xếp hàng 🔒 Migration chung: HB-24 → EB-01 → …
+
+## 7. Đã xem và loại: Builder.io, Plasmic (31/10)
+
+Nguồn là repo GitHub, forum và trang review. Tài liệu chính thức (`docs.plasmic.app`, `elementor.com`) bị mạng phiên Planning chặn.
+
+|                       | Builder.io                                                   | Plasmic                                                 | Puck                                    |
+| --------------------- | ------------------------------------------------------------ | ------------------------------------------------------- | --------------------------------------- |
+| Trình sửa             | Dịch vụ cloud của Builder.io; forum nói không có bản tự host | Studio tự host được (Docker), forum báo còn lỗi khi cài | Nằm trong admin Payload                 |
+| Nội dung trang        | Lưu trên cloud Builder, đọc qua CDN của họ                   | DB riêng của Plasmic                                    | Postgres của mình, có phiên bản Payload |
+| License               | SDK MIT; trình sửa trả phí theo tài khoản                    | `platform/` AGPL, phần còn lại MIT                      | MIT                                     |
+| Mỗi khách một bản cài | Mỗi khách một space trả phí, phụ thuộc mạng / giá bên ngoài  | Thêm cả app Plasmic cho mỗi khách, đăng nhập riêng      | Không phát sinh                         |
+
+Kết luận: **giữ Puck**, dựng lại giao diện editor theo track EB.
