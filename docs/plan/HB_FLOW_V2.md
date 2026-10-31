@@ -64,5 +64,5 @@ Tổng khoảng 49 giờ.
 
 ## 5. Cập nhật 31/10 (chiều)
 
-- **HB-24** (phiên Planning khác làm, Planning này tiếp quản – PR #231): đưa phần CMS của bước 1, 2, 5, 6 lên trước. HB-17 chỉ còn làm giao diện; HB-18 chỉ thêm phần CMS còn thiếu. Khoá migration: HB-24 → HB-18 → HB-12.
+- **HB-24** (phiên Planning khác làm, merge qua PR #228): đưa phần CMS của bước 1, 2, 5, 6 lên trước. HB-17 chỉ còn làm giao diện; HB-18 chỉ thêm phần CMS còn thiếu. Khoá migration: HB-24 → HB-18 → HB-12.
 - Thứ tự giao việc và quy tắc chung: `docs/tasks/prompts/HB-COMMON.md`.

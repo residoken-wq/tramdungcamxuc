@@ -15,7 +15,7 @@ Spec chung: `docs/plan/HB_FLOW_V2.md` (bảng khác biệt, quyết định 31/1
   - Dây Wizard: không sửa `src/components/ui/ProgressGrid.tsx`, `src/components/habit/{TrackerDashboard,CheckInModal,TrackerSummaryCard,StationReflectionModal}.tsx`, `src/app/(site)/(shell)/habit/tracker/**`, `src/lib/habit/tracker-*.ts`.
   - Dây Màn 28 ngày: không sửa `src/components/habit/flow/**`, `src/app/(site)/(shell)/habit/5-phut/**`.
 - **🔒 Khoá migration – chỉ một task tạo migration tại một thời điểm.**
-  - Thứ tự: **HB-24 (Planning, PR #231) → HB-18 → HB-12**. Các task khác **không** tạo migration.
+  - Thứ tự: **HB-24 (PR #228, đã merge) → HB-18 → HB-12**. Các task khác **không** tạo migration.
   - Task cần migration mà task trước trong thứ tự chưa merge thì **DỪNG** ở bước 0.
 - **`vi.ts`.** Mỗi task thêm khối riêng `hbXX` ở **cuối file**. Không sắp xếp lại khối của người khác.
 
