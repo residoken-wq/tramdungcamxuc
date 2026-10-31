@@ -366,3 +366,11 @@ Còn chờ Hana: câu 3–10 trong kế hoạch (chẩn đoán 8 hay 16 câu, ng
 
 - `ServiceCards` và `PackageCards` chuyển sang khối con kéo thả (`ServiceCard`, `PackageCard`); mỗi thẻ chỉ lưu **ID** dịch vụ / gói.
 - Tên, giá, mô tả, **ảnh** của thẻ lấy từ form Payload (Dịch vụ / Sản phẩm). **Không** có ô chọn ảnh riêng trên trang (anh Nhân chốt 22/10), để đổi một chỗ là mọi trang cập nhật.
+
+## Builder kiểu Elementor, brand thành tuỳ chọn khoá / mở – chốt 31/10/2026 (track EB)
+
+- Anh Nhân chốt: bỏ luật brand cứng trong builder để Hana tự chỉnh màu, font, cỡ chữ, CSS. CMS sẽ dùng lại cho website của nhiều khách hàng, nên mọi luật brand thành **công tắc khoá / mở theo site** (global `designSystem`, EB-01).
+- Trạm Dừng Cảm Xúc: **mở**. Site khách mới: Planning đề xuất mặc định **khoá**, chờ anh Nhân chốt.
+- Tới khi EB-01 / EB-02 merge, luật AGENTS §5B / §14 (8 màu, font theo vai trò, không color picker / CSS tự do) vẫn áp cho code hiện tại. EB-01 sửa AGENTS thành "theo `designSystem.lock`".
+- Vẫn dùng Puck. Elementor là plugin WordPress nên không dùng được; làm giống Elementor về bố cục và cách thao tác, không chép mã / icon / hình của Elementor.
+- Kế hoạch: `docs/plan/BUILDER_ELEMENTOR.md`.
