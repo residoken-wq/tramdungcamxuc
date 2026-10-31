@@ -17,7 +17,7 @@ exports[`SM-06: ContactInfo component > renders all contact items when fully pro
           [MẪU] THÔNG TIN LIÊN HỆ
         </span>
         <h2
-          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.3]"
         >
           <span
             class="text-deep-navy"
@@ -376,7 +376,7 @@ exports[`SM-06: ContactInfo component > renders partial items when some switches
           [MẪU] THÔNG TIN LIÊN HỆ
         </span>
         <h2
-          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.15]"
+          class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-[1.3]"
         >
           <span
             class="text-deep-navy"

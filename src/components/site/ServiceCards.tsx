@@ -124,7 +124,7 @@ export function ServiceCards({
             )}
 
             {titleLine1 && (
-              <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-tight mb-3">
+              <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-[1.3] mb-3">
                 <span className={textColorClass}>{titleLine1}</span>{' '}
                 {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
               </h2>

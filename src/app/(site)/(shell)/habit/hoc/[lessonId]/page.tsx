@@ -191,7 +191,7 @@ export default async function HabitLessonPage({ params, searchParams }: LessonPa
               </span>
             )}
 
-            <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl uppercase tracking-tight text-deep-navy leading-tight">
+            <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl uppercase tracking-tight text-deep-navy leading-[1.3]">
               {lesson.title}
             </h1>
 

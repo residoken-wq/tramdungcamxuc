@@ -135,7 +135,7 @@ export function TwoPathCards({
 
             {titleLine1 && (
               <h2
-                className={`font-display uppercase tracking-tight leading-tight ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md}`}
+                className={`font-display uppercase tracking-tight leading-[1.3] ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md}`}
               >
                 <span className={textColorClass}>{titleLine1}</span>{' '}
                 {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}

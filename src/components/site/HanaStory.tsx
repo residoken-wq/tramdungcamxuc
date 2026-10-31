@@ -166,7 +166,7 @@ export function HanaStory({
                     {seriesLabel}
                   </span>
                 )}
-                <h2 className="font-display uppercase tracking-tight leading-[1.15] text-3xl sm:text-4xl lg:text-5xl">
+                <h2 className="font-display uppercase tracking-tight leading-[1.3] text-3xl sm:text-4xl lg:text-5xl">
                   {titleLine1 && (
                     <span className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}>
                       {titleLine1}

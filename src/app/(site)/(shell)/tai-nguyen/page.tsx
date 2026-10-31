@@ -50,7 +50,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
           </div>
         ) : !libraryData.introData ? (
           <header className="mb-8 sm:mb-12 text-center max-w-3xl mx-auto">
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-[1.15] text-deep-navy">
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl uppercase tracking-tight leading-[1.3] text-deep-navy">
               {vi.library.heading}
             </h1>
           </header>

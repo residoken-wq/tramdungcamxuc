@@ -70,7 +70,7 @@ export function HeroTwoEntries({
   bgColor = 'warm-ivory',
   padding = 'md',
 }: HeroTwoEntriesProps) {
-  const titleClass = `font-display ${fontSizeClass('title', titleSize, 'h1')} uppercase tracking-tight leading-[1.15]`
+  const titleClass = `font-display ${fontSizeClass('title', titleSize, 'h1')} uppercase tracking-tight leading-[1.3]`
   const entriesGridClass = 'grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8'
   const isDeepNavy = bgColor === 'deep-navy'
   const cardBgClass = isDeepNavy
