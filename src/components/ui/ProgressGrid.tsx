@@ -389,6 +389,18 @@ export function ProgressGrid({
                   <span className="text-xs font-sans text-deep-navy/70">
                     {vi.hb11.stationRange(st.fromDay, st.toDay)}
                   </span>
+                  {(() => {
+                    const firstDate = st.days[0]?.date?.short
+                    const lastDate = st.days[st.days.length - 1]?.date?.short
+                    if (firstDate && lastDate) {
+                      return (
+                        <span className="text-xs font-sans text-deep-navy/70">
+                          {vi.hb23.stationDateRange(firstDate, lastDate)}
+                        </span>
+                      )
+                    }
+                    return null
+                  })()}
                 </div>
                 <span className="text-xs font-ui font-semibold px-2.5 py-0.5 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/15 shrink-0">
                   {vi.hb11.stationProgress(stationVoted, stationTotal)}

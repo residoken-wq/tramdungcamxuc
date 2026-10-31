@@ -7,7 +7,7 @@ import { ProgressGrid } from '@/components/ui/ProgressGrid'
 import { CheckInModal } from './CheckInModal'
 import { TrackerSummaryCard } from './TrackerSummaryCard'
 import type { EmotionKey } from '@/lib/emotions'
-import { calculateTrackerStats } from '@/lib/habit/tracker-stats'
+import { calculateTrackerStats, planDayDate } from '@/lib/habit/tracker-stats'
 import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/certificate-types'
 import type { CheckinStatus } from '@/lib/habit/rhythm'
 import { buildTrackerView } from '@/lib/habit/tracker-view'
@@ -96,9 +96,10 @@ export function TrackerDashboard({
         emotionKey: d.emotionKey,
         note: d.note,
         disabled: d.day > currentDay,
+        date: planDayDate(startDate, d.day),
       })),
     }))
-  }, [view.stations, currentDay])
+  }, [view.stations, currentDay, startDate])
 
   // Banner lỡ nhịp 1 ngày theo luật nhịp tuần (HB-11)
   const showMissedOneDayEncouragement = view.missedRun.count === 1 && !readOnly
