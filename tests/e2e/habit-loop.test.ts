@@ -98,9 +98,14 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         await guest.goto('/habit/5-phut')
         await expect(guest.getByRole('heading', { level: 1 })).toBeVisible()
 
-        // BƯỚC 1: Khám đúng bệnh
+        // BƯỚC 1: Khám đúng bệnh (trên DB trống CMS rỗng -> nút Tiếp tục bật sẵn; nếu có câu hỏi -> bấm Bỏ qua phần khám)
         await expect(guest.getByText('Bước 1 / 6')).toBeVisible()
-        await guest.getByRole('button', { name: /Tiếp tục/i }).click()
+        const skipDiagnoseBtn = guest.getByRole('button', { name: /Bỏ qua phần khám/i })
+        if (await skipDiagnoseBtn.isVisible()) {
+          await skipDiagnoseBtn.click()
+        } else {
+          await guest.getByRole('button', { name: /Tiếp tục/i }).click()
+        }
 
         // BƯỚC 2: Nguyên lý 1%
         await expect(guest.getByText('Bước 2 / 6')).toBeVisible()

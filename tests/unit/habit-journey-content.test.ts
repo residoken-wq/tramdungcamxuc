@@ -98,6 +98,12 @@ describe('HB-07: Global nội dung hành trình Habit & Video ví dụ kỹ thu�
               maxDays: 365,
               facts: [],
             },
+            diagnose: journeyContentBefore.diagnose ?? {
+              title: '',
+              quote: { text: '', author: '', source: '', sourceUrl: '' },
+              stats: [],
+              questions: [],
+            },
           },
           overrideAccess: true,
         })
@@ -257,6 +263,60 @@ describe('HB-07: Global nội dung hành trình Habit & Video ví dụ kỹ thu�
       })
       expect(result.quotes?.[0]?.source).toBe('The Story of Philosophy (1926)')
       expect(result.onePercent?.facts?.[0]?.sourceLabel).toBe('Atomic Habits (James Clear, 2018)')
+    })
+
+    it('HB-17: lưu con số (diagnose.stats) thiếu source -> lỗi validate tiếng Việt', async () => {
+      await expect(
+        payload.updateGlobal({
+          slug: 'habitJourneyContent',
+          data: {
+            diagnose: {
+              stats: [
+                {
+                  value: '66 ngày',
+                  label: 'Thời gian trung bình hình thành thói quen',
+                  source: '   ', // Thiếu nguồn
+                },
+              ],
+            },
+          },
+          overrideAccess: true,
+        }),
+      ).rejects.toThrow()
+    })
+
+    it('HB-17: lưu câu trích mở đầu (diagnose.quote) có text nhưng thiếu source hoặc author -> lỗi validate', async () => {
+      await expect(
+        payload.updateGlobal({
+          slug: 'habitJourneyContent',
+          data: {
+            diagnose: {
+              quote: {
+                text: 'Thói quen là lãi kép của sự tự hoàn thiện.',
+                author: 'James Clear',
+                source: '', // Thiếu nguồn
+              },
+            },
+          },
+          overrideAccess: true,
+        }),
+      ).rejects.toThrow()
+
+      await expect(
+        payload.updateGlobal({
+          slug: 'habitJourneyContent',
+          data: {
+            diagnose: {
+              quote: {
+                text: 'Thói quen là lãi kép của sự tự hoàn thiện.',
+                author: '', // Thiếu tác giả
+                source: 'Atomic Habits (2018)',
+              },
+            },
+          },
+          overrideAccess: true,
+        }),
+      ).rejects.toThrow()
     })
   })
 
@@ -489,6 +549,69 @@ describe('HB-07: Global nội dung hành trình Habit & Video ví dụ kỹ thu�
       expect(content.onePercent.dailyPercent).toBe(1)
       expect(content.onePercent.maxDays).toBe(365)
       expect(content.onePercent.facts).toEqual([])
+      expect(content.diagnose.quote).toBeNull()
+      expect(content.diagnose.stats).toEqual([])
+      expect(content.diagnose.questions).toEqual([])
+    })
+
+    it('HB-17: làm sạch diagnose – bỏ câu trích hoặc con số thiếu nguồn, chỉ lấy câu isActive, đọc lỗi trả rỗng', async () => {
+      const mockPayload = {
+        findGlobal: vi.fn().mockResolvedValue({
+          diagnose: {
+            title: '  [MẪU] Khám đúng bệnh  ',
+            quote: {
+              text: 'Câu trích thiếu nguồn',
+              author: 'Tác giả',
+              source: '   ', // Thiếu nguồn -> phải bị loại bỏ
+            },
+            stats: [
+              {
+                id: 's1',
+                value: '66 ngày',
+                label: 'Thời gian trung bình tạo thói quen mới',
+                source: 'Lally et al. (2009), European Journal of Social Psychology',
+              },
+              {
+                id: 's2',
+                value: '80%',
+                label: 'Con số không có nguồn',
+                source: '', // Thiếu nguồn -> phải bị loại bỏ
+              },
+            ],
+            questions: [
+              { id: 'q1', statement: '[MẪU] Câu hỏi 1', stage: 'cue', isActive: true },
+              { id: 'q2', statement: '[MẪU] Câu hỏi bị tắt', stage: 'craving', isActive: false },
+              { id: 'q3', statement: '   ', stage: 'response', isActive: true },
+              { id: 'q4', statement: '[MẪU] Câu hỏi 4', stage: 'reward', isActive: true },
+            ],
+            stageResults: {
+              cue: {
+                title: '  [MẪU] Điểm nghẽn Tín hiệu  ',
+                nextStepHint: '  [MẪU] Chọn kỹ thuật ở bước 5  ',
+              },
+            },
+          },
+        }),
+      } as unknown as Payload
+
+      const cleaned = await getHabitJourneyContent(mockPayload)
+      expect(cleaned.diagnose.title).toBe('[MẪU] Khám đúng bệnh')
+      expect(cleaned.diagnose.quote).toBeNull()
+      expect(cleaned.diagnose.stats).toHaveLength(1)
+      expect(cleaned.diagnose.stats[0]?.value).toBe('66 ngày')
+      expect(cleaned.diagnose.questions).toHaveLength(2)
+      expect(cleaned.diagnose.questions.map((q) => q.id)).toEqual(['q1', 'q4'])
+      expect(cleaned.diagnose.stageResults.cue.title).toBe('[MẪU] Điểm nghẽn Tín hiệu')
+      expect(cleaned.diagnose.stageResults.cue.nextStepHint).toBe('[MẪU] Chọn kỹ thuật ở bước 5')
+
+      // Khi đọc lỗi -> trả rỗng an toàn, không ném lỗi
+      const failingPayload = {
+        findGlobal: vi.fn().mockRejectedValue(new Error('DB connection error')),
+      } as unknown as Payload
+      const fallback = await getHabitJourneyContent(failingPayload)
+      expect(fallback.diagnose.questions).toEqual([])
+      expect(fallback.diagnose.stats).toEqual([])
+      expect(fallback.diagnose.quote).toBeNull()
     })
   })
 

@@ -70,8 +70,13 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
         await guest.goto('/habit/5-phut')
         await expect(guest.getByText('Bước 1 / 6')).toBeVisible({ timeout: 15000 })
 
-        // BƯỚC 1: Khám đúng bệnh -> Tiếp tục
-        await guest.getByRole('button', { name: /Tiếp tục/i }).click()
+        // BƯỚC 1: Khám đúng bệnh -> Tiếp tục (trên DB trống nút Tiếp tục bật sẵn; nếu có câu hỏi thì Bỏ qua phần khám)
+        const skipDiagnoseBtn = guest.getByRole('button', { name: /Bỏ qua phần khám/i })
+        if (await skipDiagnoseBtn.isVisible()) {
+          await skipDiagnoseBtn.click()
+        } else {
+          await guest.getByRole('button', { name: /Tiếp tục/i }).click()
+        }
 
         // BƯỚC 2: Nguyên lý 1% -> Sang giai đoạn 2
         await expect(guest.getByText('Bước 2 / 6')).toBeVisible()
