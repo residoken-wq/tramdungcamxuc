@@ -37,6 +37,10 @@ export function FlowProgressBar({
   const buildSteps = FLOW_STEPS.filter((s) => s.stage === 'build')
   const activeStepDef = FLOW_STEPS.find((s) => s.step === currentStep) ?? FLOW_STEPS[0]
   const progressPercent = isPlanSaved ? 100 : Math.round((currentStep / 6) * 100)
+  // On phones the full step list is ~500px tall and would push every step below the fold:
+  // collapse it behind a toggle there; from md up it is always shown.
+  const [showSteps, setShowSteps] = React.useState(false)
+  const stepsId = React.useId()
 
   const renderStepButton = (item: StepDefinition) => {
     const isCompleted = isPlanSaved || item.step < currentStep
@@ -123,8 +127,22 @@ export function FlowProgressBar({
         </div>
       </div>
 
+      <button
+        type="button"
+        aria-expanded={showSteps}
+        aria-controls={stepsId}
+        onClick={() => setShowSteps((v) => !v)}
+        className="md:hidden w-full min-h-[44px] px-3 py-2 rounded-xl border border-lavender-mist bg-warm-ivory font-ui text-sm font-semibold text-deep-navy flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta"
+      >
+        <span>{showSteps ? vi.hb16.progress.hideSteps : vi.hb16.progress.showSteps}</span>
+        <span aria-hidden="true">{showSteps ? '▴' : '▾'}</span>
+      </button>
+
       {/* Lưới 3 giai đoạn: Khám (1-2) · Xây (3-6) · Chuyển mình (✦ N ngày) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div
+        id={stepsId}
+        className={`${showSteps ? 'grid' : 'hidden'} md:grid grid-cols-1 md:grid-cols-3 gap-3`}
+      >
         {/* Giai đoạn 1: Khám */}
         <div className="p-3 sm:p-4 rounded-2xl bg-warm-ivory border border-lavender-mist space-y-2.5">
           <div className="flex items-center justify-between gap-2">
@@ -183,4 +201,3 @@ export function FlowProgressBar({
     </nav>
   )
 }
-

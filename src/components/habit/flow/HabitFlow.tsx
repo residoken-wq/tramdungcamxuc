@@ -43,6 +43,10 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
   const startTimeRef = useRef<number | null>(null)
   // Ghi habit_loop_completed đúng 1 lần mỗi lần mở trang (Quay lại → Tiếp tục không ghi lại)
   const completedTrackedRef = useRef(false)
+  // Moving between steps keeps the scroll position, which on phones lands mid-step or in the
+  // footer: bring the step card into view and move focus there (skip the first render).
+  const stepCardRef = useRef<HTMLDivElement>(null)
+  const previousStepRef = useRef<number | null>(null)
   const [draft, setDraft] = useState<HabitFlowDraft>(getDefaultHabitFlowDraft())
   const [isLoaded, setIsLoaded] = useState(false)
   const [stepError, setStepError] = useState<string | null>(null)
@@ -377,6 +381,21 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     setStepError(null)
   }
 
+  useEffect(() => {
+    const previous = previousStepRef.current
+    previousStepRef.current = draft.step
+    if (previous === null || previous === draft.step) return
+    const card = stepCardRef.current
+    if (!card) return
+    const reduceMotion =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (typeof card.scrollIntoView === 'function') {
+      card.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+    }
+    card.focus({ preventScroll: true })
+  }, [draft.step])
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       {/* Tiêu đề 2 tầng chuẩn Brand Book */}
@@ -461,7 +480,13 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
         </div>
       ) : (
         /* Các bước trong Flow 6 bước */
-        <div className="bg-white rounded-card shadow-soft border border-lavender-mist/60 p-6 sm:p-8">
+        <div
+          ref={stepCardRef}
+          tabIndex={-1}
+          role="region"
+          aria-label={vi.habit.wizard.stepIndicator(draft.step, 6)}
+          className="bg-white rounded-card shadow-soft border border-lavender-mist/60 p-6 sm:p-8 scroll-mt-4 focus:outline-none"
+        >
           {draft.step === 1 && <StepDiagnose />}
 
           {draft.step === 2 && <StepOnePercent onePercent={onePercent} />}
@@ -560,4 +585,3 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     </div>
   )
 }
-

@@ -290,3 +290,29 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
     })
   })
 })
+
+describe('HB-16c: mobile step list and focus on step change', () => {
+  afterEach(() => {
+    cleanup()
+    localStorage.clear()
+  })
+
+  it('the step list toggle shows and hides the stage groups (collapsed on phones)', () => {
+    render(<FlowProgressBar currentStep={1} journeyDays={28} onSelectStep={() => {}} />)
+    const toggle = screen.getByRole('button', { name: viStrings.hb16.progress.showSteps })
+    const list = document.getElementById(toggle.getAttribute('aria-controls')!)!
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(list.className).toContain('hidden')
+    expect(list.className).toContain('md:grid')
+    fireEvent.click(toggle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(list.className).not.toMatch(/(^|\s)hidden(\s|$)/)
+  })
+
+  it('moving to the next step focuses the step card', () => {
+    render(<HabitFlow techniques={[]} journeyDays={28} />)
+    fireEvent.click(screen.getAllByRole('button', { name: /Tiếp tục/ }).at(-1)!)
+    const card = screen.getByRole('region', { name: viStrings.habit.wizard.stepIndicator(2, 6) })
+    expect(document.activeElement).toBe(card)
+  })
+})

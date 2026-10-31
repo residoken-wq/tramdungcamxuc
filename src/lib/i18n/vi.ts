@@ -2759,6 +2759,8 @@ export const vi = {
     },
     progress: {
       navAria: 'Tiến trình hành trình thói quen 3 giai đoạn',
+      showSteps: 'Xem các bước',
+      hideSteps: 'Thu gọn các bước',
       stageHeader: (index: number, name: string) => `Giai đoạn ${index} · ${name}`,
       statusCompleted: 'Đã qua',
       statusCurrent: 'Bước hiện tại',
