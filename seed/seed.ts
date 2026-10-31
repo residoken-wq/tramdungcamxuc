@@ -317,19 +317,29 @@ export async function seed(payload: Payload): Promise<SeedReport> {
     depth: 0,
   })) as {
     stations?: unknown[] | null
+    diagnose?: {
+      title?: string | null
+      questions?: unknown[] | null
+    } | null
   } | null
 
+  const journeyUpdate: Record<string, unknown> = {}
   if (!journeyContent?.stations?.length) {
+    journeyUpdate.stations = [
+      { name: '[MẪU] Trạm 1' },
+      { name: '[MẪU] Trạm 2' },
+      { name: '[MẪU] Trạm 3' },
+      { name: '[MẪU] Trạm 4' },
+    ]
+  }
+  if (!journeyContent?.diagnose?.questions?.length && !journeyContent?.diagnose?.title) {
+    journeyUpdate.diagnose = data.habitJourneyDiagnose
+  }
+
+  if (Object.keys(journeyUpdate).length > 0) {
     await payload.updateGlobal({
       slug: 'habitJourneyContent',
-      data: {
-        stations: [
-          { name: '[MẪU] Trạm 1' },
-          { name: '[MẪU] Trạm 2' },
-          { name: '[MẪU] Trạm 3' },
-          { name: '[MẪU] Trạm 4' },
-        ],
-      },
+      data: journeyUpdate,
     })
     tally('habitJourneyContent').updated++
   }

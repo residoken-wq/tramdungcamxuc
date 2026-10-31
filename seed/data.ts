@@ -959,3 +959,82 @@ export const footerMenu: NavItemSeed[] = legalPages.map((p) => ({
   linkType: 'url' as const,
   url: `/${p.slug}`,
 }))
+
+export const habitJourneyDiagnose = {
+  title: `${S} Khám đúng bệnh | Nhận diện nút thắt thói quen`,
+  intro: lexical(
+    `${S} Dành 1 phút tự soi chiếu 8 biểu hiện thường gặp bên dưới để biết giai đoạn nào trong vòng lặp đang cản trở bạn duy trì thói quen.`,
+  ),
+  questions: [
+    {
+      statement: `${S} Tôi định bắt đầu một thói quen mới nhưng thường quên mất vào đúng thời điểm cần làm trong ngày.`,
+      stage: 'cue' as const,
+      isActive: true,
+    },
+    {
+      statement: `${S} Không gian xung quanh tôi chưa có dấu hiệu nhắc nhở rõ ràng cho hành động muốn duy trì.`,
+      stage: 'cue' as const,
+      isActive: true,
+    },
+    {
+      statement: `${S} Khi nghĩ đến thói quen cần rèn luyện, tôi thấy nặng nề như một nghĩa vụ hơn là điều mình mong chờ.`,
+      stage: 'craving' as const,
+      isActive: true,
+    },
+    {
+      statement: `${S} Tôi dễ bị thu hút bởi những việc giải trí tức thời hơn là bắt tay vào thói quen đã đặt ra.`,
+      stage: 'craving' as const,
+      isActive: true,
+    },
+    {
+      statement: `${S} Mục tiêu tôi đặt ra cho mỗi lần thực hiện còn khá lớn nên chỉ cần bận rộn là tôi hoãn lại.`,
+      stage: 'response' as const,
+      isActive: true,
+    },
+    {
+      statement: `${S} Để bắt đầu làm thói quen này, tôi phải chuẩn bị nhiều bước phức tạp nên dễ ngại bắt đầu.`,
+      stage: 'response' as const,
+      isActive: true,
+    },
+    {
+      statement: `${S} Sau khi hoàn thành thói quen trong ngày, tôi chưa có cách ghi nhận để cảm thấy vui và tự hào ngay.`,
+      stage: 'reward' as const,
+      isActive: true,
+    },
+    {
+      statement: `${S} Vì kết quả cần nhiều thời gian mới thấy rõ, tôi dễ nản lòng sau vài ngày đầu thực hiện.`,
+      stage: 'reward' as const,
+      isActive: true,
+    },
+  ],
+  stageResults: {
+    cue: {
+      title: `${S} Điểm nghẽn ở giai đoạn Tín hiệu (Cue)`,
+      suggestion: lexical(
+        `${S} Bạn đã có mong muốn thay đổi nhưng tín hiệu nhắc nhở trong ngày chưa đủ rõ ràng. Hãy gắn thói quen mới vào một thời điểm và địa điểm cụ thể hoặc đặt vật dụng ngay trong tầm mắt.`,
+      ),
+      nextStepHint: `${S} Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật thiết kế tín hiệu rõ ràng cho giai đoạn này.`,
+    },
+    craving: {
+      title: `${S} Điểm nghẽn ở giai đoạn Khao khát (Craving)`,
+      suggestion: lexical(
+        `${S} Não bộ của bạn chưa tìm thấy niềm vui hoặc động lực cảm xúc đủ lớn khi nghĩ về thói quen. Hãy kết hợp việc cần làm với một điều bạn yêu thích để tạo cảm giác hào hứng trước khi bắt đầu.`,
+      ),
+      nextStepHint: `${S} Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật nuôi dưỡng hứng thú cho giai đoạn này.`,
+    },
+    response: {
+      title: `${S} Điểm nghẽn ở giai đoạn Phản hồi (Response)`,
+      suggestion: lexical(
+        `${S} Rào cản bắt đầu đang còn cao khiến bạn dễ trì hoãn khi mệt hoặc bận. Hãy thu nhỏ hành động về phiên bản tối giản dưới 2 phút để việc bắt đầu trở nên nhẹ nhàng nhất.`,
+      ),
+      nextStepHint: `${S} Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật giảm ma sát thực hiện cho giai đoạn này.`,
+    },
+    reward: {
+      title: `${S} Điểm nghẽn ở giai đoạn Phần thưởng (Reward)`,
+      suggestion: lexical(
+        `${S} Sau khi thực hiện xong, bạn chưa có tín hiệu ghi nhận tức thì để não bộ muốn lặp lại vào ngày hôm sau. Hãy tự thưởng một cử chỉ khích lệ nhỏ hoặc đánh dấu tiến trình ngay khi hoàn thành.`,
+      ),
+      nextStepHint: `${S} Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật ghi nhận phần thưởng cho giai đoạn này.`,
+    },
+  },
+}
