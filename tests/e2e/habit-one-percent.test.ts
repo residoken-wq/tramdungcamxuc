@@ -72,10 +72,13 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
       })
       expect(updateRes.ok()).toBe(true)
 
-      // 3. Khách truy cập vào /habit/5-phut
+      // 3. Khách truy cập vào /habit/5-phut và chuyển sang Bước 2 (Nguyên lý 1%)
       await guestPage.goto('/habit/5-phut', { waitUntil: 'domcontentloaded' })
+      await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible()
+      await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
+      await expect(guestPage.getByText('Bước 2 / 6')).toBeVisible()
 
-      // Khối Nguyên lý 1% hiển thị trên trang
+      // Khối Nguyên lý 1% hiển thị ở Bước 2
       const section = guestPage.getByTestId('one-percent-section')
       await expect(section).toBeVisible()
 

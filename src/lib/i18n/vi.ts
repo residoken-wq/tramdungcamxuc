@@ -789,15 +789,16 @@ export const vi = {
         selectedCount: (count: number, max: number = 2) => `Đã chọn: ${count} / ${max}`,
       },
       step4: {
-        title: 'Kế hoạch Tracker 21 ngày',
-        subtitle: 'Xem trước hành trình 21 ngày và lưu lại để bắt đầu thực hành ngay hôm nay.',
+        title: (days: number = 28) => `Kế hoạch Tracker ${days} ngày`,
+        subtitle: (days: number = 28) =>
+          `Xem trước hành trình ${days} ngày và lưu lại để bắt đầu thực hành ngay hôm nay.`,
         encouragement: 'Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?',
         reassurance:
           'Lỡ nhịp 1 ngày là không sao cả. Điều quan trọng là quay lại nhịp điệu vào ngày hôm sau.',
         identityHeading: 'Cam kết định danh:',
         techniquesHeading: 'Bộ kỹ thuật đã chọn:',
-        trackerPreviewHeading: 'Lưới hành động 21 ngày:',
-        continuousDays: '21 Ngày liên tục',
+        trackerPreviewHeading: (days: number = 28) => `Lưới hành động ${days} ngày:`,
+        continuousDays: (days: number = 28) => `${days} Ngày liên tục`,
         notSelected: 'Chưa chọn',
         emailHeading: 'Lưu kế hoạch & Nhận link nhóm Zalo',
         emailSubheading:
@@ -814,13 +815,13 @@ export const vi = {
         savedSuccessMessage:
           'Chúc mừng bạn đã hoàn thành thiết kế vòng lặp thói quen. Kế hoạch đã được lưu an toàn.',
         joinZaloButton: 'Tham gia nhóm Zalo đồng hành',
-        viewOfferButton: 'Khám phá Habit Tracker 21 ngày số',
+        viewOfferButton: (days: number = 28) => `Khám phá Habit Tracker ${days} ngày số`,
         retakeButton: 'Chỉnh sửa / Làm lại vòng lặp',
       },
       controls: {
         prev: 'Quay lại',
         next: 'Tiếp tục',
-        finish: 'Xem kế hoạch 21 ngày',
+        finish: (days: number = 28) => `Xem kế hoạch ${days} ngày`,
       },
       errors: {
         scorecardEmpty: 'Vui lòng thêm ít nhất một thói quen vào bảng điểm',
@@ -2749,6 +2750,58 @@ export const vi = {
     twoMinuteLabel: 'BẢN TỐI GIẢN (< 2 PHÚT)',
     ariaDay: (day: number, statusText: string, emotionText?: string) =>
       `Ngày ${day}: ${statusText}${emotionText ? `, cảm xúc: ${emotionText}` : ''}`,
+  },
+  hb16: {
+    stages: {
+      discover: 'Khám',
+      build: 'Xây',
+      transform: 'Chuyển mình',
+    },
+    progress: {
+      navAria: 'Tiến trình hành trình thói quen 3 giai đoạn',
+      showSteps: 'Xem các bước',
+      hideSteps: 'Thu gọn các bước',
+      stageHeader: (index: number, name: string) => `Giai đoạn ${index} · ${name}`,
+      statusCompleted: 'Đã qua',
+      statusCurrent: 'Bước hiện tại',
+      statusUpcoming: 'Chưa tới',
+      journeyItem: (days: number) => `✦ ${days} ngày`,
+      journeyLockedStatus: 'Mở sau khi lưu kế hoạch',
+      journeyUnlockedStatus: 'Đã mở khóa',
+    },
+    steps: {
+      diagnose: {
+        shortTitle: 'Khám đúng bệnh',
+        title: 'Khám đúng bệnh',
+        subtitle: 'Nhận diện nút thắt thực sự khiến việc duy trì thói quen chưa bền vững.',
+        samplePlaceholder: '[MẪU] Nội dung 8 câu khám sẽ có ở HB-17',
+      },
+      onePercent: {
+        shortTitle: 'Nguyên lý 1%',
+        title: 'Nguyên lý 1%',
+        subtitle: 'Sức mạnh của những thay đổi nhỏ bé tích lũy đều đặn mỗi ngày.',
+      },
+      mentor: {
+        shortTitle: 'Tìm Mentor',
+        title: 'Bảng điểm thói quen',
+        subtitle:
+          'Liệt kê các thói quen thường nhật trong ngày và đánh giá xem chúng đang nâng đỡ hay kéo lùi bạn.',
+      },
+      name: {
+        shortTitle: 'Gọi tên thói quen',
+      },
+      loop: {
+        shortTitle: 'Vòng lặp',
+      },
+      boardingPass: {
+        shortTitle: 'Boarding Pass',
+      },
+    },
+    controls: {
+      nextStep1: 'Tiếp',
+      toStage2: 'Sang giai đoạn 2 · Xây thói quen →',
+      openTrackerButton: (days: number) => `Vào màn theo dõi ${days} ngày`,
+    },
   },
 } as const
 
