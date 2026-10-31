@@ -17,16 +17,17 @@ import {
 } from '@/lib/habit'
 import type { HabitStage } from '@/lib/diagnostic'
 import type { Weekday } from '@/lib/habit/rhythm'
-import type { CleanHabitOnePercent } from '@/lib/habit/journey-content.server'
+import type { CleanHabitDiagnose, CleanHabitOnePercent } from '@/lib/habit/journey-content.server'
 import {
   getDefaultHabitFlowDraft,
+  getDiagnoseQuestionKey,
   migrateHabitDraft,
   serializeHabitDraftForStorage,
   type HabitFlowDraft,
   type HabitFlowStep,
 } from './draft'
 import { FlowProgressBar } from './FlowProgressBar'
-import { StepDiagnose } from './StepDiagnose'
+import { StepDiagnose, computeStepDiagnoseResult } from './StepDiagnose'
 import { StepOnePercent } from './StepOnePercent'
 import { StepMentor } from './StepMentor'
 import { StepName } from './StepName'
@@ -37,12 +38,15 @@ export interface HabitFlowProps {
   techniques: PublicTechnique[]
   journeyDays?: number
   onePercent?: CleanHabitOnePercent | null
+  diagnose?: CleanHabitDiagnose | null
 }
 
-export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlowProps) {
+export function HabitFlow({ techniques, journeyDays = 28, onePercent, diagnose }: HabitFlowProps) {
   const startTimeRef = useRef<number | null>(null)
   // Ghi habit_loop_completed đúng 1 lần mỗi lần mở trang (Quay lại → Tiếp tục không ghi lại)
   const completedTrackedRef = useRef(false)
+  // Ghi diagnostic_completed đúng 1 lần khi có kết quả khám bước 1
+  const diagnoseTrackedRef = useRef(false)
   // Moving between steps keeps the scroll position, which on phones lands mid-step or in the
   // footer: bring the step card into view and move focus there (skip the first render).
   const stepCardRef = useRef<HTMLDivElement>(null)
@@ -80,18 +84,30 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     return ids
   }, [draft.chosenTechniques])
 
+  const activeQuestions = React.useMemo(() => diagnose?.questions ?? [], [diagnose?.questions])
+
+  const diagnoseResult = React.useMemo(
+    () => computeStepDiagnoseResult(diagnose, draft.diagnoseAnswers ?? {}),
+    [diagnose, draft.diagnoseAnswers],
+  )
+
+  const canProceedStep1 = activeQuestions.length === 0 || Boolean(diagnoseResult)
+
   // 1. Khôi phục dữ liệu từ localStorage (chuyển nháp v1 -> v2 nếu cần)
   useEffect(() => {
     if (startTimeRef.current === null) {
       startTimeRef.current = Date.now()
     }
     const knownIds = new Set(techniques.map((t) => t.id))
+    const knownQuestionIds = diagnose
+      ? new Set(activeQuestions.map((q, idx) => getDiagnoseQuestionKey(q, idx)))
+      : undefined
     const timer = setTimeout(() => {
       try {
         const stored = localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
         if (stored) {
           const parsed: unknown = JSON.parse(stored)
-          const migrated = migrateHabitDraft(parsed, knownIds)
+          const migrated = migrateHabitDraft(parsed, knownIds, knownQuestionIds)
           setDraft(migrated)
         }
       } catch {
@@ -102,7 +118,19 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     }, 0)
 
     return () => clearTimeout(timer)
-  }, [techniques])
+  }, [techniques, diagnose, activeQuestions])
+
+  // Ghi nhận analytics diagnostic_completed đúng 1 lần khi trả lời đủ câu hỏi khám
+  useEffect(() => {
+    if (!isLoaded || !diagnoseResult || activeQuestions.length === 0) return
+    if (!diagnoseTrackedRef.current) {
+      diagnoseTrackedRef.current = true
+      track('diagnostic_completed', {
+        stage: diagnoseResult.topStage,
+        totalQuestions: activeQuestions.length,
+      })
+    }
+  }, [isLoaded, diagnoseResult, activeQuestions.length])
 
   // 2. Tự động lưu nháp v2 vào localStorage mỗi khi thay đổi (T2-03: không lưu consent, name, email)
   useEffect(() => {
@@ -233,6 +261,27 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     })
   }
 
+  const handleSelectDiagnoseAnswer = (questionKey: string, score: number) => {
+    setStepError(null)
+    setDraft((prev) => {
+      const nextAnswers = {
+        ...(prev.diagnoseAnswers ?? {}),
+        [questionKey]: score,
+      }
+      const res = computeStepDiagnoseResult(diagnose, nextAnswers)
+      return {
+        ...prev,
+        diagnoseAnswers: nextAnswers,
+        diagnoseTopStage: res ? res.topStage : undefined,
+      }
+    })
+  }
+
+  const handleSkipDiagnose = () => {
+    setStepError(null)
+    setDraft((prev) => ({ ...prev, step: 2 }))
+  }
+
   const handleSelectStep = (targetStep: HabitFlowStep) => {
     if (submitSuccess) {
       setSubmitSuccess(false)
@@ -251,6 +300,7 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     setStepError(null)
 
     if (draft.step === 1) {
+      if (!canProceedStep1) return
       setDraft((prev) => ({ ...prev, step: 2 }))
     } else if (draft.step === 2) {
       setDraft((prev) => ({ ...prev, step: 3 }))
@@ -376,6 +426,7 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
       // noop
     }
     startTimeRef.current = Date.now()
+    diagnoseTrackedRef.current = false
     setDraft(getDefaultHabitFlowDraft())
     setSubmitSuccess(false)
     setStepError(null)
@@ -487,7 +538,14 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
           aria-label={vi.habit.wizard.stepIndicator(draft.step, 6)}
           className="bg-white rounded-card shadow-soft border border-lavender-mist/60 p-6 sm:p-8 scroll-mt-4 focus:outline-none"
         >
-          {draft.step === 1 && <StepDiagnose />}
+          {draft.step === 1 && (
+            <StepDiagnose
+              diagnose={diagnose}
+              answers={draft.diagnoseAnswers ?? {}}
+              onSelectAnswer={handleSelectDiagnoseAnswer}
+              onSkip={handleSkipDiagnose}
+            />
+          )}
 
           {draft.step === 2 && <StepOnePercent onePercent={onePercent} />}
 
@@ -575,7 +633,12 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
                 {vi.hb16.controls.toStage2}
               </Button>
             ) : draft.step < 6 ? (
-              <Button type="button" variant="primary" onClick={handleNextStep}>
+              <Button
+                type="button"
+                variant="primary"
+                disabled={draft.step === 1 && !canProceedStep1}
+                onClick={handleNextStep}
+              >
                 {vi.habit.wizard.controls.next} →
               </Button>
             ) : null}

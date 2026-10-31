@@ -49,6 +49,7 @@ export default async function HabitLoopPage() {
         techniques={techniques}
         journeyDays={habitJourneyDays}
         onePercent={journeyContent?.onePercent}
+        diagnose={journeyContent?.diagnose}
       />
     </div>
   )
