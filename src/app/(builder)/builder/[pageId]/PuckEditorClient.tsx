@@ -610,9 +610,17 @@ function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
 // Stable overrides identity: Header actions, LeftPanel (blocks & outline), Puck layout override
 const editorOverrides = {
   headerActions: EditorHeaderActions,
-  drawer: LeftPanel,
   puck: PuckLayoutOverride,
 }
+
+// EB-03c: Puck renders every left-sidebar plugin at once (inactive ones only hidden by CSS), so
+// overriding just the drawer left Puck's own Outline mounted beside ours – two outlines and two
+// copies of each layer in the DOM. Replace the "blocks" plugin with LeftPanel (blocks + outline
+// tabs) and blank out the default "outline" plugin so each item exists once.
+const editorPlugins = [
+  { name: 'blocks', label: vi.eb03.tabBlocks, render: LeftPanel },
+  { name: 'outline', label: vi.eb03.tabOutline, render: () => <></> },
+]
 
 export function PuckEditorClient({
   initialData,
@@ -730,6 +738,7 @@ export function PuckEditorClient({
               waitForStyles: true,
             }}
             overrides={editorOverrides}
+            plugins={editorPlugins}
             onChange={(data) => {
               autosaveController.setData(data)
             }}
