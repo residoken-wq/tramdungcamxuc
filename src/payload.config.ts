@@ -47,6 +47,7 @@ import { RateLimitHits } from './collections/RateLimitHits'
 import { TrialUsage } from './collections/TrialUsage'
 import { SiteSettings } from './globals/SiteSettings'
 import { Navigation } from './globals/Navigation'
+import { DesignSystem } from './globals/DesignSystem'
 import { HabitJourneyContent } from './globals/HabitJourneyContent'
 
 const filename = fileURLToPath(import.meta.url)
@@ -150,7 +151,7 @@ export default buildConfig({
     RateLimitHits,
     TrialUsage,
   ],
-  globals: [Navigation, SiteSettings, HabitJourneyContent],
+  globals: [Navigation, SiteSettings, DesignSystem, HabitJourneyContent],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
