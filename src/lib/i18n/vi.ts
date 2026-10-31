@@ -2635,6 +2635,32 @@ export const vi = {
         `Không được xoá hoặc đổi mã màu gốc: ${tokens}. Giao diện đang dùng các màu này.`,
     },
   },
+  eb03: {
+    tabBlocks: 'Khối',
+    tabOutline: 'Cấu trúc',
+    searchPlaceholder: 'Tìm khối...',
+    clearSearch: 'Xoá tìm kiếm',
+    noBlocksFound: 'Không tìm thấy khối',
+    clearSearchPrompt: 'Thử tìm với từ khoá khác hoặc xoá ô tìm kiếm',
+    collapseGroup: 'Thu gọn nhóm',
+    expandGroup: 'Mở rộng nhóm',
+    otherCategory: 'Khác',
+    lockedBlock: 'Khối này bị khoá theo cấu hình trang',
+    viewports: {
+      mobile: 'Điện thoại (375px)',
+      tablet: 'Máy tính bảng (768px)',
+      desktop: 'Máy tính (1440px)',
+    },
+    toolbar: {
+      undo: 'Hoàn tác',
+      redo: 'Làm lại',
+      structure: 'Cấu trúc',
+      viewPage: 'Xem trang',
+      publishToView: 'Xuất bản để xem',
+      collapseSidebar: 'Thu gọn thanh bên',
+      expandSidebar: 'Mở thanh bên',
+    },
+  },
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',
