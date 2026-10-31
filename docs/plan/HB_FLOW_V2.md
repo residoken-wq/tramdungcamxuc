@@ -40,24 +40,25 @@
 
 ## 4. Task (Planning viết prompt, máy làm theo thứ tự)
 
-| Mã    | Việc                                                                                                                                                              | Phụ thuộc | Ước lượng |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------- |
-| HB-16 | Khung flow mới trên `/habit/5-phut`: thanh 3 giai đoạn, 6 bước + màn 28 ngày, lưu nháp (đọc được nháp cũ), mọi nhãn "21 ngày" theo `journeyDays`                  | HB-11     | 6 h       |
-| HB-17 | Bước 1 Khám đúng bệnh: global CMS (lời mở, câu trích có nguồn, con số chỉ hiện khi có nguồn, 8 câu [MẪU] + gợi ý), đếm 0/8, kết quả nút thắt                      | HB-16     | 5 h       |
-| HB-18 | Bước 2 Nguyên lý 1%: chuyển thanh kéo HB-08 vào bước, 3 ý "chưa biết" từ CMS                                                                                      | HB-16     | 2 h       |
-| HB-19 | Bước 3 Tìm Mentor: soi lại một ngày (+ / − / =), chọn Mentor chỉ từ việc "+", giờ (dùng field HB-09)                                                              | HB-16     | 4 h       |
-| HB-20 | Bước 4 Gọi tên: tuyên ngôn, nhịp tuần (số lần + thứ), thói quen hạt nhân, lý do riêng, **ngày bắt đầu (hôm nay → +14)**, bạn đồng hành; đổi luật khoá `startDate` | HB-19     | 5 h       |
-| HB-21 | Bước 5 Vòng lặp: giải thích 4 giai đoạn + 4 quy tắc (CMS), đánh dấu kỹ thuật; chỉ kỹ thuật đánh dấu lên Boarding Pass                                             | HB-20     | 4 h       |
-| HB-22 | Bước 6 Boarding Pass: 9:16 + 4:5 (HB-10), sao chép caption (CMS), nút "Lên chuyến · Bắt đầu 28 ngày" tạo kế hoạch (email + OTP)                                   | HB-21     | 4 h       |
-| HB-23 | Màn 28 ngày: Khởi hành / Về đích, **ngày lịch thực tế trên từng ô** (dd/MM), câu "Lỡ một ngày là bình thường…", lý do riêng hiện lại khi lỡ nhịp                  | HB-22     | 4 h       |
-| HB-12 | Nhìn lại mỗi trạm (giữ như kế hoạch cũ)                                                                                                                           | HB-23     | 4 h       |
-| HB-13 | Dữ liệu của bạn: bản sao lưu JSON, CSV 28 ngày, **khôi phục từ file** (REVIEW-REQUIRED), sao chép gửi Coach, bắt đầu lại (giữ kế hoạch cũ)                        | HB-23     | 5 h       |
-| HB-14 | Đặt lịch Habit Coach từ CMS; Ủng hộ nếu Hana duyệt                                                                                                                | HB-23     | 2 h       |
-| HB-15 | Test unit / e2e cả flow, seed demo, `HUONG_DAN_CMS.md`                                                                                                            | tất cả    | 4 h       |
+| Mã    | Việc                                                                                                                                                                | Phụ thuộc | Ước lượng |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------- |
+| HB-16 | Khung flow mới trên `/habit/5-phut`: thanh 3 giai đoạn, 6 bước + màn 28 ngày, lưu nháp (đọc được nháp cũ), mọi nhãn "21 ngày" theo `journeyDays`                    | HB-11     | 6 h       |
+| HB-17 | Bước 1 Khám đúng bệnh: global CMS (lời mở, câu trích có nguồn, con số chỉ hiện khi có nguồn, 8 câu [MẪU] + gợi ý), đếm 0/8, kết quả nút thắt                        | HB-16     | 5 h       |
+| HB-18 | Bước 2 Nguyên lý 1%: chuyển thanh kéo HB-08 vào bước, 3 ý "chưa biết" từ CMS                                                                                        | HB-16     | 2 h       |
+| HB-19 | Bước 3 Tìm Mentor: soi lại một ngày (+ / − / =), chọn Mentor chỉ từ việc "+", giờ (dùng field HB-09)                                                                | HB-16     | 4 h       |
+| HB-20 | Bước 4 Gọi tên: tuyên ngôn, nhịp tuần (số lần + thứ), thói quen hạt nhân, lý do riêng, **ngày bắt đầu (hôm nay → +14)**, bạn đồng hành; đổi luật khoá `startDate`   | HB-19     | 5 h       |
+| HB-21 | Bước 5 Vòng lặp: giải thích 4 giai đoạn + 4 quy tắc (CMS), đánh dấu kỹ thuật; chỉ kỹ thuật đánh dấu lên Boarding Pass                                               | HB-20     | 4 h       |
+| HB-22 | Bước 6 Boarding Pass: 9:16 + 4:5 (HB-10), sao chép caption (CMS), nút "Lên chuyến · Bắt đầu 28 ngày" tạo kế hoạch (email + OTP)                                     | HB-21     | 4 h       |
+| HB-23 | Màn 28 ngày: Khởi hành / Về đích, **ngày lịch thực tế trên từng ô** (dd/MM), câu "Lỡ một ngày là bình thường…", lý do riêng hiện lại khi lỡ nhịp                    | HB-22     | 4 h       |
+| HB-24 | Phần CMS của HB-17 / 18 / 21 / 22 (Planning làm trước, song song HB-16 + HB-23): field CMS, migration, hàm đọc, seed [MẪU]. Sau HB-24 bốn task đó chỉ còn giao diện | HB-07     | 3 h       |
+| HB-12 | Nhìn lại mỗi trạm (giữ như kế hoạch cũ)                                                                                                                             | HB-23     | 4 h       |
+| HB-13 | Dữ liệu của bạn: bản sao lưu JSON, CSV 28 ngày, **khôi phục từ file** (REVIEW-REQUIRED), sao chép gửi Coach, bắt đầu lại (giữ kế hoạch cũ)                          | HB-23     | 5 h       |
+| HB-14 | Đặt lịch Habit Coach từ CMS; Ủng hộ nếu Hana duyệt                                                                                                                  | HB-23     | 2 h       |
+| HB-15 | Test unit / e2e cả flow, seed demo, `HUONG_DAN_CMS.md`                                                                                                              | tất cả    | 4 h       |
 
 Tổng khoảng 49 giờ.
 
-- **Thứ tự:** HB-16 → HB-23 nối tiếp nhau vì cùng sửa trình hướng dẫn. HB-12 / 13 / 14 chạy song song sau HB-23.
+- **Thứ tự:** HB-16 → HB-23 nối tiếp nhau vì cùng sửa trình hướng dẫn. HB-24 (chỉ CMS) chạy song song từ đầu. HB-12 / 13 / 14 chạy song song sau HB-23.
 - **Dữ liệu nháp:** nháp cũ trong trình duyệt (HB-09) phải đọc được ở khung mới. Kế hoạch đã lưu trên server giữ nguyên, không cần migration dữ liệu. Chỉ thêm field mới (kết quả 8 câu, Mentor) nếu cần, và khi đó phải viết migration.
 - **Không đưa dữ liệu nhạy cảm ra ngoài:** lý do riêng, suy ngẫm và cảm xúc không gửi analytics, không lên Boarding Pass hay chứng nhận (AGENTS §11, §14).
 

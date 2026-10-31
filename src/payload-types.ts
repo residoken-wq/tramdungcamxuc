@@ -3588,7 +3588,193 @@ export interface HabitJourneyContent {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Hiện ở bước 2 dưới thanh kéo. Số liệu trong đây cũng phải có nguồn.
+     */
+    unknowns?:
+      | {
+          /**
+           * Nhập tiêu đề.
+           */
+          title: string;
+          /**
+           * Nhập nội dung.
+           */
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
   };
+  /**
+   * Bước đầu tiên của Habit Loop 5 phút: lời mở, câu trích, con số, câu hỏi khảo sát và gợi ý theo kết quả.
+   */
+  diagnose?: {
+    /**
+     * Nhập tiêu đề.
+     */
+    title?: string | null;
+    /**
+     * Soạn lời mở.
+     */
+    intro?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    quote?: {
+      /**
+       * Nhập câu trích.
+       */
+      text?: string | null;
+      /**
+       * Nhập tác giả.
+       */
+      author?: string | null;
+      /**
+       * Có câu trích thì bắt buộc ghi tác giả và nguồn đã kiểm
+       */
+      source?: string | null;
+      /**
+       * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+       */
+      sourceUrl?: string | null;
+    };
+    /**
+     * Con số chỉ hiện khi có nguồn kiểm chứng. Không có nguồn thì không thêm.
+     */
+    stats?:
+      | {
+          /**
+           * Nhập con số (vd: 40%).
+           */
+          value: string;
+          /**
+           * Nhập ý nghĩa con số.
+           */
+          label: string;
+          /**
+           * Nhập nguồn.
+           */
+          sourceLabel: string;
+          /**
+           * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+           */
+          sourceUrl?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Khách chấm mỗi câu từ 1 đến 5. Giai đoạn có điểm trung bình cao nhất là nút thắt (cùng cách tính quiz chẩn đoán).
+     */
+    questions?:
+      | {
+          /**
+           * Nhập câu hỏi.
+           */
+          statement: string;
+          /**
+           * Chọn một mục phù hợp.
+           */
+          stage: 'cue' | 'craving' | 'response' | 'reward';
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Nhập nhãn mức 1.
+     */
+    scaleMinLabel?: string | null;
+    /**
+     * Nhập nhãn mức 5.
+     */
+    scaleMaxLabel?: string | null;
+    /**
+     * Mỗi giai đoạn một gợi ý, hiện khi giai đoạn đó là nút thắt.
+     */
+    results?:
+      | {
+          stage: 'cue' | 'craving' | 'response' | 'reward';
+          /**
+           * Nhập tiêu đề kết quả.
+           */
+          title: string;
+          /**
+           * Nhập gợi ý.
+           */
+          suggestion: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  loop?: {
+    /**
+     * Soạn lời mở.
+     */
+    intro?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Mỗi giai đoạn một dòng.
+     */
+    stages?:
+      | {
+          stage: 'cue' | 'craving' | 'response' | 'reward';
+          /**
+           * Nhập tiêu đề.
+           */
+          title: string;
+          /**
+           * Nhập giải thích.
+           */
+          explanation: string;
+          id?: string | null;
+        }[]
+      | null;
+    rules?:
+      | {
+          /**
+           * Nhập quy tắc.
+           */
+          title: string;
+          /**
+           * Nhập giải thích.
+           */
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  boardingPass?: {
+    /**
+     * Khách bấm "Sao chép caption" để đăng kèm ảnh. Chèn được: {tuyen_ngon} (câu "Tôi sẽ … để trở thành …"), {so_ngay} (số ngày hành trình), {ngay_bat_dau} (dd/MM/yyyy). Không chèn được lý do riêng.
+     */
+    captionTemplate?: string | null;
+  };
+  /**
+   * Hiện ở flow Habit. Phải đúng sự thật: dữ liệu lưu trên máy chủ của Trạm theo tài khoản email của khách.
+   */
+  privacyNote?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3737,7 +3923,80 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
               sourceUrl?: T;
               id?: T;
             };
+        unknowns?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
       };
+  diagnose?:
+    | T
+    | {
+        title?: T;
+        intro?: T;
+        quote?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              source?: T;
+              sourceUrl?: T;
+            };
+        stats?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              sourceLabel?: T;
+              sourceUrl?: T;
+              id?: T;
+            };
+        questions?:
+          | T
+          | {
+              statement?: T;
+              stage?: T;
+              id?: T;
+            };
+        scaleMinLabel?: T;
+        scaleMaxLabel?: T;
+        results?:
+          | T
+          | {
+              stage?: T;
+              title?: T;
+              suggestion?: T;
+              id?: T;
+            };
+      };
+  loop?:
+    | T
+    | {
+        intro?: T;
+        stages?:
+          | T
+          | {
+              stage?: T;
+              title?: T;
+              explanation?: T;
+              id?: T;
+            };
+        rules?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+      };
+  boardingPass?:
+    | T
+    | {
+        captionTemplate?: T;
+      };
+  privacyNote?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
