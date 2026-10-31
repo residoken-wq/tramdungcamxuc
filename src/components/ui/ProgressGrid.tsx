@@ -335,7 +335,7 @@ export function ProgressGrid({
         className={[
           'relative flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl border transition-all motion-reduce:transition-none duration-150',
           item.date?.short
-            ? 'min-w-0 min-h-[50px] sm:min-h-[60px]'
+            ? 'min-w-0 min-h-[56px] sm:min-h-[64px]'
             : 'min-w-0 min-h-[46px] sm:min-h-[58px]',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
           stateStyle,
@@ -346,7 +346,7 @@ export function ProgressGrid({
 
         {/* Calendar Date (HB-23) */}
         {item.date?.short && (
-          <span className="font-sans text-[9px] sm:text-[10px] leading-tight text-deep-navy/70 mt-0.5 select-none">
+          <span className="font-sans text-[10px] sm:text-[11px] leading-tight font-medium mt-0.5 select-none">
             {item.date.short}
           </span>
         )}
