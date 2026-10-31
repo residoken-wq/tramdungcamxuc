@@ -135,7 +135,7 @@ test.describe('EB-03: Elementor-style editor frame (block library search, viewpo
       await expect(canvas.locator('[data-puck-component]')).toHaveCount(0)
 
       // 9. Click tab "Cấu trúc" (Outline) in LeftPanel
-      const structureTab = page.getByText('Cấu trúc', { exact: true })
+      const structureTab = page.getByRole('tab', { name: 'Cấu trúc', exact: true })
       await expect(structureTab).toBeVisible()
       await structureTab.click()
 

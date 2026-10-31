@@ -2646,12 +2646,16 @@ export const vi = {
     expandGroup: 'Mở rộng nhóm',
     otherCategory: 'Khác',
     lockedBlock: 'Khối này bị khoá theo cấu hình trang',
+    panelLabel: 'Khung công cụ bên trái',
+    tablistLabel: 'Chuyển chế độ thanh bên',
     viewports: {
+      group: 'Chọn kích thước màn hình',
       mobile: 'Điện thoại (375px)',
       tablet: 'Máy tính bảng (768px)',
       desktop: 'Máy tính (1440px)',
     },
     toolbar: {
+      label: 'Thanh công cụ trình dựng',
       undo: 'Hoàn tác',
       redo: 'Làm lại',
       structure: 'Cấu trúc',

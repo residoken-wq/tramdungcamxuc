@@ -121,13 +121,13 @@ export function LeftPanel() {
 
   return (
     <aside
-      aria-label="Khung công cụ bên trái"
+      aria-label={vi.eb03.panelLabel}
       className="flex flex-col h-full w-full bg-warm-ivory border-r border-deep-navy/10 select-none text-deep-navy overflow-hidden"
     >
       {/* 1. Header with 2 Tabs: Khối & Cấu trúc */}
       <div
         role="tablist"
-        aria-label="Chuyển chế độ thanh bên"
+        aria-label={vi.eb03.tablistLabel}
         className="flex items-center border-b border-deep-navy/10 bg-white/70 backdrop-blur-sm shrink-0 px-2 pt-2"
       >
         <button
@@ -156,7 +156,7 @@ export function LeftPanel() {
             <rect x="3" y="14" width="7" height="7" rx="1.5" strokeWidth="2" />
             <rect x="14" y="14" width="7" height="7" rx="1.5" strokeWidth="2" />
           </svg>
-          <span>{vi.eb03?.tabBlocks || 'Khối'}</span>
+          <span>{vi.eb03.tabBlocks}</span>
         </button>
 
         <button
@@ -187,7 +187,7 @@ export function LeftPanel() {
               d="M4 6h16M4 10h16M4 14h16M4 18h16"
             />
           </svg>
-          <span>{vi.eb03?.tabOutline || 'Cấu trúc'}</span>
+          <span>{vi.eb03.tabOutline}</span>
         </button>
       </div>
 
@@ -226,7 +226,7 @@ export function LeftPanel() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={vi.eb03?.searchPlaceholder || 'Tìm khối...'}
+                placeholder={vi.eb03.searchPlaceholder}
                 className="w-full pl-8 pr-8 py-1.5 text-xs font-ui bg-white rounded-lg border border-deep-navy/15 text-deep-navy placeholder:text-deep-navy/60 focus:outline-none focus:border-bright-magenta focus:ring-1 focus:ring-bright-magenta transition"
               />
               {searchQuery && (
@@ -236,7 +236,7 @@ export function LeftPanel() {
                     setSearchQuery('')
                     searchInputRef.current?.focus()
                   }}
-                  aria-label={vi.eb03?.clearSearch || 'Xoá tìm kiếm'}
+                  aria-label={vi.eb03.clearSearch}
                   className="absolute right-2 text-deep-navy/60 hover:text-deep-navy p-0.5 rounded cursor-pointer transition"
                 >
                   <svg
@@ -281,18 +281,16 @@ export function LeftPanel() {
                     />
                   </svg>
                 </div>
-                <p className="font-ui font-bold text-xs text-deep-navy">
-                  {vi.eb03?.noBlocksFound || 'Không tìm thấy khối'}
-                </p>
+                <p className="font-ui font-bold text-xs text-deep-navy">{vi.eb03.noBlocksFound}</p>
                 <p className="text-[11px] text-deep-navy/60 mt-1 max-w-[200px] mx-auto">
-                  {vi.eb03?.clearSearchPrompt || 'Thử tìm với từ khoá khác hoặc xoá ô tìm kiếm'}
+                  {vi.eb03.clearSearchPrompt}
                 </p>
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
                   className="mt-3 inline-flex items-center px-3 py-1 text-xs font-ui font-semibold text-bright-magenta hover:text-deep-navy hover:underline cursor-pointer"
                 >
-                  {vi.eb03?.clearSearch || 'Xoá tìm kiếm'}
+                  {vi.eb03.clearSearch}
                 </button>
               </div>
             ) : (
@@ -353,17 +351,15 @@ export function LeftPanel() {
                                   isDragDisabled={!canInsert}
                                 >
                                   {({ name }) => (
+                                    // Drawer.Item already renders the focusable, draggable button
+                                    // (role, tabindex, aria): this is only its content.
                                     <div
-                                      role="button"
-                                      tabIndex={canInsert ? 0 : -1}
-                                      aria-disabled={!canInsert}
-                                      aria-label={label}
                                       className={`group flex flex-col items-center justify-center p-2 rounded-xl text-center select-none cursor-grab active:cursor-grabbing border transition h-[88px] min-h-[88px] ${
                                         canInsert
                                           ? 'bg-white text-deep-navy border-deep-navy/10 hover:border-bright-magenta hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta'
                                           : 'bg-warm-ivory/60 text-deep-navy/60 border-deep-navy/5 cursor-not-allowed opacity-60'
                                       }`}
-                                      title={canInsert ? label : vi.eb03?.lockedBlock}
+                                      title={canInsert ? label : vi.eb03.lockedBlock}
                                     >
                                       <div className="w-6 h-6 mb-1 text-deep-navy group-hover:text-bright-magenta transition-colors flex items-center justify-center">
                                         {getBlockIcon(name)}

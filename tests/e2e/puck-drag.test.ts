@@ -110,7 +110,7 @@ async function center(locator: Locator): Promise<Point> {
 }
 
 async function openOutline(page: Page, expandIds: string[]): Promise<void> {
-  await page.getByText('Cấu trúc', { exact: true }).click()
+  await page.getByRole('tab', { name: 'Cấu trúc', exact: true }).click()
   for (const id of expandIds) {
     // The caret toggles between "Mở rộng" / "Thu gọn"; a layer holding the selected block is
     // already expanded by Puck.

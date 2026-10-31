@@ -48,7 +48,7 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
 
   return (
     <footer
-      aria-label="Thanh công cụ trình dựng"
+      aria-label={vi.eb03.toolbar.label}
       className="bg-white border-t border-deep-navy/10 px-3 py-1.5 flex items-center justify-between text-xs text-deep-navy shadow-sm z-30 shrink-0 select-none"
     >
       {/* Left group: Toggle Sidebar + Navigator shortcut */}
@@ -58,14 +58,10 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
           onClick={handleToggleSidebar}
           aria-pressed={isLeftSidebarOpen}
           aria-label={
-            isLeftSidebarOpen
-              ? vi.eb03?.toolbar?.collapseSidebar || 'Thu gọn thanh bên'
-              : vi.eb03?.toolbar?.expandSidebar || 'Mở thanh bên'
+            isLeftSidebarOpen ? vi.eb03.toolbar.collapseSidebar : vi.eb03.toolbar.expandSidebar
           }
           title={
-            isLeftSidebarOpen
-              ? vi.eb03?.toolbar?.collapseSidebar || 'Thu gọn thanh bên'
-              : vi.eb03?.toolbar?.expandSidebar || 'Mở thanh bên'
+            isLeftSidebarOpen ? vi.eb03.toolbar.collapseSidebar : vi.eb03.toolbar.expandSidebar
           }
           className={`p-1.5 rounded-lg border transition cursor-pointer ${
             isLeftSidebarOpen
@@ -89,8 +85,8 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
         <button
           type="button"
           onClick={() => switchLeftPanelTab('outline')}
-          aria-label={vi.eb03?.toolbar?.structure || 'Cấu trúc'}
-          title={vi.eb03?.toolbar?.structure || 'Cấu trúc'}
+          aria-label={vi.eb03.toolbar.structure}
+          title={vi.eb03.toolbar.structure}
           className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg font-ui text-xs font-semibold border border-deep-navy/15 bg-white hover:bg-soft-pink/40 transition cursor-pointer text-deep-navy"
         >
           <svg
@@ -107,14 +103,14 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
               d="M4 6h16M4 10h16M4 14h16M4 18h16"
             />
           </svg>
-          <span className="hidden sm:inline">{vi.eb03?.toolbar?.structure || 'Cấu trúc'}</span>
+          <span className="hidden sm:inline">{vi.eb03.toolbar.structure}</span>
         </button>
       </div>
 
       {/* Center group: Device viewport switcher (375 / 768 / 1440) */}
       <div
         role="group"
-        aria-label="Chọn kích thước màn hình"
+        aria-label={vi.eb03.viewports.group}
         className="flex items-center bg-warm-ivory/80 p-0.5 rounded-lg border border-deep-navy/10 gap-0.5"
       >
         {/* Mobile 375 */}
@@ -122,8 +118,8 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
           type="button"
           onClick={() => handleSelectViewport(375)}
           aria-pressed={currentWidth === 375}
-          aria-label={vi.eb03?.viewports?.mobile || 'Điện thoại (375px)'}
-          title={vi.eb03?.viewports?.mobile || 'Điện thoại (375px)'}
+          aria-label={vi.eb03.viewports.mobile}
+          title={vi.eb03.viewports.mobile}
           className={`p-1.5 rounded-md transition cursor-pointer flex items-center justify-center ${
             currentWidth === 375
               ? 'bg-deep-navy text-white shadow-xs font-bold'
@@ -147,8 +143,8 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
           type="button"
           onClick={() => handleSelectViewport(768)}
           aria-pressed={currentWidth === 768}
-          aria-label={vi.eb03?.viewports?.tablet || 'Máy tính bảng (768px)'}
-          title={vi.eb03?.viewports?.tablet || 'Máy tính bảng (768px)'}
+          aria-label={vi.eb03.viewports.tablet}
+          title={vi.eb03.viewports.tablet}
           className={`p-1.5 rounded-md transition cursor-pointer flex items-center justify-center ${
             currentWidth === 768
               ? 'bg-deep-navy text-white shadow-xs font-bold'
@@ -172,8 +168,8 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
           type="button"
           onClick={() => handleSelectViewport(1440)}
           aria-pressed={currentWidth === 1440}
-          aria-label={vi.eb03?.viewports?.desktop || 'Máy tính (1440px)'}
-          title={vi.eb03?.viewports?.desktop || 'Máy tính (1440px)'}
+          aria-label={vi.eb03.viewports.desktop}
+          title={vi.eb03.viewports.desktop}
           className={`p-1.5 rounded-md transition cursor-pointer flex items-center justify-center ${
             currentWidth === 1440
               ? 'bg-deep-navy text-white shadow-xs font-bold'
@@ -201,8 +197,8 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
           type="button"
           onClick={() => history?.back()}
           disabled={!canUndo}
-          aria-label={vi.eb03?.toolbar?.undo || 'Hoàn tác'}
-          title={vi.eb03?.toolbar?.undo || 'Hoàn tác (Ctrl+Z)'}
+          aria-label={vi.eb03.toolbar.undo}
+          title={vi.eb03.toolbar.undo}
           className="p-1.5 rounded-lg border border-deep-navy/15 bg-white text-deep-navy hover:bg-soft-pink/40 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
         >
           <svg
@@ -226,8 +222,8 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
           type="button"
           onClick={() => history?.forward()}
           disabled={!canRedo}
-          aria-label={vi.eb03?.toolbar?.redo || 'Làm lại'}
-          title={vi.eb03?.toolbar?.redo || 'Làm lại (Ctrl+Shift+Z)'}
+          aria-label={vi.eb03.toolbar.redo}
+          title={vi.eb03.toolbar.redo}
           className="p-1.5 rounded-lg border border-deep-navy/15 bg-white text-deep-navy hover:bg-soft-pink/40 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
         >
           <svg
@@ -254,8 +250,8 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
             href={previewHref}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={vi.eb03?.toolbar?.viewPage || 'Xem trang'}
-            title={vi.eb03?.toolbar?.viewPage || 'Xem trang (mở tab mới)'}
+            aria-label={vi.eb03.toolbar.viewPage}
+            title={vi.eb03.toolbar.viewPage}
             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory text-deep-navy transition"
           >
             <svg
@@ -278,14 +274,14 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
               />
             </svg>
-            <span className="hidden sm:inline">{vi.eb03?.toolbar?.viewPage || 'Xem trang'}</span>
+            <span className="hidden sm:inline">{vi.eb03.toolbar.viewPage}</span>
           </a>
         ) : (
           <button
             type="button"
             disabled
-            aria-label={vi.eb03?.toolbar?.publishToView || 'Xuất bản để xem'}
-            title={vi.eb03?.toolbar?.publishToView || 'Xuất bản để xem'}
+            aria-label={vi.eb03.toolbar.publishToView}
+            title={vi.eb03.toolbar.publishToView}
             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold border border-deep-navy/10 bg-warm-ivory text-deep-navy/60 cursor-not-allowed opacity-60"
           >
             <svg
@@ -302,7 +298,7 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
                 d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"
               />
             </svg>
-            <span className="hidden sm:inline">{vi.eb03?.toolbar?.viewPage || 'Xem trang'}</span>
+            <span className="hidden sm:inline">{vi.eb03.toolbar.viewPage}</span>
           </button>
         )}
       </div>
