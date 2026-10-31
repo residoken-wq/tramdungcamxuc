@@ -2109,7 +2109,7 @@ Khi thiết kế giao diện, Hana hoàn toàn có thể tự do thử nghiệm 
 Các khối như Hero, CTA, Ảnh & Chữ có **bố cục cố định**: Hana sửa được chữ, cỡ và màu, nhưng không kéo đổi chỗ tiêu đề, ảnh hay nút. Khi muốn **tự xếp từng phần tử**, dùng khối **Section tự do**.
 
 1. Ở menu trái, mở nhóm **Section tự do (kéo thả từng phần tử)**, kéo khối **Section tự do** vào trang. Khối mới có sẵn: nhãn series, tiêu đề 2 tầng, dòng cảm xúc, đoạn văn, nút.
-2. Kéo thêm phần tử từ cùng nhóm thả vào **Cột 1** (hoặc **Cột 2**): **Nhãn series**, **Tiêu đề 2 tầng**, **Đoạn văn**, **Dòng cảm xúc (chữ nghiêng)**, **Ảnh**, **Nút**. Khối **Khoảng cách** cũng thả được vào cột.
+2. Kéo thêm phần tử từ cùng nhóm thả vào **Cột 1** (hoặc **Cột 2**): **Nhãn series**, **Tiêu đề 2 tầng**, **Đoạn văn**, **Dòng cảm xúc (chữ nghiêng)**, **Ảnh**, **Nút**. Khối **Khoảng đệm (Spacer)** (nhóm Bố cục) cũng thả được vào cột.
 3. **Đổi chỗ**: giữ chuột khoảng nửa giây trên vùng trống của phần tử rồi kéo lên / xuống, hoặc kéo trong tab **Cấu trúc**.
 4. **Cỡ chữ**: chọn phần tử, ở cột phải chọn **Cỡ chữ**: Nhỏ / Vừa / Lớn / Rất lớn. **Màu chữ** chỉ hiện các màu đọc rõ trên màu nền của section.
 5. **Chia 2 cột** (VD chữ bên trái, ảnh bên phải): chọn khối Section tự do, đặt **Số cột** = 2 cột, rồi kéo phần tử sang **Cột 2**. Trên điện thoại hai cột tự xếp thành một.
