@@ -182,10 +182,8 @@ export function scanContrastIssues(): ContrastViolation[] {
 }
 
 describe('a11y contrast guard test (T3-07)', () => {
-  it(
-    'detects contrast violations across all non-admin .tsx files',
-    () => {
-      const violations = scanContrastIssues()
+  it('detects contrast violations across all non-admin .tsx files', () => {
+    const violations = scanContrastIssues()
 
     if (violations.length > 0) {
       const summaryByType = violations.reduce<Record<string, number>>((acc, v) => {

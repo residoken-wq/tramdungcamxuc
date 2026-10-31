@@ -92,10 +92,7 @@ export interface PlanDayDate {
  * Trả về { short: 'dd/MM', full: 'dd/MM/yyyy' }.
  * Trả null khi startDate không hợp lệ hoặc day < 1.
  */
-export function planDayDate(
-  startDate?: Date | string | null,
-  day?: number,
-): PlanDayDate | null {
+export function planDayDate(startDate?: Date | string | null, day?: number): PlanDayDate | null {
   if (!startDate || typeof day !== 'number' || day < 1 || !Number.isFinite(day)) {
     return null
   }
