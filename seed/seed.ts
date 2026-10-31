@@ -334,7 +334,64 @@ export async function seed(payload: Payload): Promise<SeedReport> {
     tally('habitJourneyContent').updated++
   }
 
+  const flowPatch = habitFlowSeedPatch(
+    (await payload.findGlobal({ slug: 'habitJourneyContent', depth: 0 })) as StoredFlowContent,
+  )
+  if (flowPatch) {
+    await payload.updateGlobal({ slug: 'habitJourneyContent', data: flowPatch })
+    tally('habitJourneyContent').updated++
+  }
+
   return report
+}
+
+type StoredFlowContent = {
+  onePercent?: Record<string, unknown> & { unknowns?: unknown[] | null }
+  diagnose?: Record<string, unknown> & { questions?: unknown[] | null; results?: unknown[] | null }
+  loop?: Record<string, unknown> & { stages?: unknown[] | null; rules?: unknown[] | null }
+  boardingPass?: { captionTemplate?: string | null } | null
+  privacyNote?: string | null
+} | null
+
+/**
+ * HB-24: [MẪU] content for the new habit flow – only for sections that are still empty, so
+ * re-running the seed never overwrites what Hana wrote. Null when nothing is missing.
+ */
+export function habitFlowSeedPatch(existing: StoredFlowContent): Record<string, unknown> | null {
+  const sample = data.habitFlowContent
+  const patch: Record<string, unknown> = {}
+  if (!existing?.diagnose?.questions?.length) {
+    patch.diagnose = {
+      ...existing?.diagnose,
+      title: existing?.diagnose?.title || sample.diagnose.title,
+      questions: sample.diagnose.questions.map((q) => ({ ...q })),
+      scaleMinLabel: existing?.diagnose?.scaleMinLabel || sample.diagnose.scaleMinLabel,
+      scaleMaxLabel: existing?.diagnose?.scaleMaxLabel || sample.diagnose.scaleMaxLabel,
+      results: existing?.diagnose?.results?.length
+        ? existing.diagnose.results
+        : sample.diagnose.results.map((r) => ({ ...r })),
+    }
+  }
+  if (!existing?.onePercent?.unknowns?.length) {
+    patch.onePercent = {
+      ...existing?.onePercent,
+      unknowns: sample.onePercentUnknowns.map((u) => ({ ...u })),
+    }
+  }
+  if (!existing?.loop?.stages?.length) {
+    patch.loop = {
+      ...existing?.loop,
+      stages: sample.loop.stages.map((st) => ({ ...st })),
+      rules: existing?.loop?.rules?.length
+        ? existing.loop.rules
+        : sample.loop.rules.map((r) => ({ ...r })),
+    }
+  }
+  if (!existing?.boardingPass?.captionTemplate) {
+    patch.boardingPass = { captionTemplate: sample.boardingPassCaption }
+  }
+  if (!existing?.privacyNote) patch.privacyNote = sample.privacyNote
+  return Object.keys(patch).length ? patch : null
 }
 
 type StoredMenuItem = {
