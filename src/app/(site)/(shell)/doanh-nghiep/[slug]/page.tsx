@@ -1,7 +1,7 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Render } from '@puckeditor/core'
+import { StyledRender } from '@/components/design/StyledRender'
 import { puckConfig } from '@/puck/config'
 import { vi } from '@/lib/i18n/vi'
 import { getPuckPageBySlug, getProgramDetail } from '@/lib/detail-pages.server'
@@ -62,7 +62,7 @@ export default async function ProgramDetailPage({ params, searchParams }: Progra
   // 1. Ưu tiên render trang Puck nếu có bản published
   const puckPage = await getPuckPageBySlug(fullSlug)
   if (puckPage) {
-    return <Render config={puckConfig} data={puckPage.puckData} />
+    return <StyledRender config={puckConfig} data={puckPage.puckData} />
   }
 
   // 2. Nạp dữ liệu từ collection programs
