@@ -2,7 +2,8 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import { Render, type Data } from '@puckeditor/core'
+import type { Data } from '@puckeditor/core'
+import { StyledRender } from '@/components/design/StyledRender'
 import { puckConfig } from '@/puck/config'
 import { resolveServerData } from '@/puck/resolve.server'
 import { Logo, HeartLine } from '@/components/brand'
@@ -69,7 +70,7 @@ export default async function HomePage() {
 
   if (pageDoc?.puckData && (pageDoc.puckData as Data).content?.length > 0) {
     const resolvedData = await resolveServerData(pageDoc.puckData as Data, { pageSlug: '/' })
-    return <Render config={puckConfig} data={resolvedData} />
+    return <StyledRender config={puckConfig} data={resolvedData} />
   }
 
   // Temporary brand homepage fallback (from T0-03)
