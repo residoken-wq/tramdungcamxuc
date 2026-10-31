@@ -2572,6 +2572,69 @@ export const vi = {
       restOnVotingDay: 'Hôm nay là ngày bỏ phiếu theo nhịp của bạn, không ghi nghỉ được.',
     },
   },
+  eb01: {
+    global: {
+      label: 'Thiết kế & thương hiệu',
+      description:
+        'Bảng màu, font và các công tắc khoá / mở chỉnh kiểu trong trình dựng trang. Chỉ chủ sở hữu (owner) sửa được.',
+    },
+    colors: {
+      label: 'Bảng màu',
+      description:
+        '8 màu gốc (deep-navy, bright-magenta…) bắt buộc có và không đổi mã được vì giao diện đang dùng. Đổi mã màu HEX thì được. Thêm tối đa 16 màu.',
+      token: 'Mã màu (token)',
+      tokenDesc: 'Chữ thường, số, gạch nối. VD: xanh-la',
+      labelField: 'Tên gọi / công dụng',
+      hex: 'Màu (HEX)',
+      picker: 'Chọn màu',
+      swatch: 'Mẫu màu',
+      contrastWhite: (ratio: string) => `Tương phản với nền trắng: ${ratio}:1`,
+      contrastIvory: (ratio: string) => `Tương phản với nền warm-ivory: ${ratio}:1`,
+      contrastHint: 'Chữ thường cần từ 4.5:1 trở lên để dễ đọc.',
+      rowFallback: (n: number) => `Màu ${n}`,
+    },
+    fonts: {
+      label: 'Font chữ',
+      description: 'Chỉ gồm font Google có dấu tiếng Việt.',
+      heading: 'Tiêu đề lớn',
+      ui: 'Nhãn, nút, giao diện',
+      quote: 'Câu trích, dòng cảm xúc',
+      body: 'Đoạn văn',
+    },
+    radiusCard: 'Bo góc thẻ (px)',
+    spacing: {
+      label: 'Khoảng thở (px)',
+      sm: 'Nhỏ',
+      md: 'Vừa',
+      lg: 'Lớn',
+    },
+    lock: {
+      label: 'Khoá / mở chỉnh kiểu',
+      description:
+        'Khoá: người biên tập chỉ chọn trong bộ nhận diện. Mở: chỉnh tự do, trang có thể lệch bộ nhận diện.',
+      openWarning: 'Đang mở – trang có thể lệch bộ nhận diện.',
+      locked: 'Khoá',
+      open: 'Mở',
+      colors: 'Màu',
+      colorsDesc: 'Khoá: chỉ chọn màu trong bảng. Mở: thêm ô chọn màu tự do.',
+      fonts: 'Font',
+      fontsDesc: 'Khoá: font theo vai trò ở trên. Mở: chọn font cho từng phần tử.',
+      sizes: 'Cỡ chữ, khoảng cách',
+      sizesDesc: 'Khoá: chỉ các mức S / M / L. Mở: nhập số (px, rem, %).',
+      customCss: 'CSS / HTML tuỳ chỉnh',
+      customCssDesc:
+        'Khoá: không có ô CSS / HTML. Mở: chủ sở hữu thêm CSS và khối HTML (không chạy script).',
+      contrastCheck: 'Cảnh báo chữ khó đọc (tương phản dưới chuẩn WCAG AA)',
+    },
+    errors: {
+      invalidHex: 'Màu phải có dạng #RRGGBB, ví dụ #280A60.',
+      invalidFont: 'Vui lòng chọn một font trong danh sách.',
+      invalidToken: 'Mã màu chỉ gồm chữ thường, số và gạch nối, ví dụ xanh-la.',
+      duplicateToken: (tokens: string) => `Mã màu bị trùng: ${tokens}.`,
+      missingCore: (tokens: string) =>
+        `Không được xoá hoặc đổi mã màu gốc: ${tokens}. Giao diện đang dùng các màu này.`,
+    },
+  },
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',

@@ -161,11 +161,13 @@ export interface Config {
   globals: {
     navigation: Navigation;
     siteSettings: SiteSetting;
+    designSystem: DesignSystem;
     habitJourneyContent: HabitJourneyContent;
   };
   globalsSelect: {
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    designSystem: DesignSystemSelect<false> | DesignSystemSelect<true>;
     habitJourneyContent: HabitJourneyContentSelect<false> | HabitJourneyContentSelect<true>;
   };
   locale: null;
@@ -3483,6 +3485,92 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * Bảng màu, font và các công tắc khoá / mở chỉnh kiểu trong trình dựng trang. Chỉ chủ sở hữu (owner) sửa được.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "designSystem".
+ */
+export interface DesignSystem {
+  id: number;
+  /**
+   * 8 màu gốc (deep-navy, bright-magenta…) bắt buộc có và không đổi mã được vì giao diện đang dùng. Đổi mã màu HEX thì được. Thêm tối đa 16 màu.
+   */
+  colors?:
+    | {
+        /**
+         * Chữ thường, số, gạch nối. VD: xanh-la
+         */
+        token: string;
+        label?: string | null;
+        hex: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Chỉ gồm font Google có dấu tiếng Việt.
+   */
+  fonts: {
+    /**
+     * Chỉ gồm font Google có dấu tiếng Việt.
+     */
+    heading: string;
+    /**
+     * Chỉ gồm font Google có dấu tiếng Việt.
+     */
+    ui: string;
+    /**
+     * Chỉ gồm font Google có dấu tiếng Việt.
+     */
+    quote: string;
+    /**
+     * Chỉ gồm font Google có dấu tiếng Việt.
+     */
+    body: string;
+  };
+  /**
+   * 0 – 48
+   */
+  radiusCard: number;
+  spacing: {
+    /**
+     * 0 – 96
+     */
+    sm: number;
+    /**
+     * 0 – 96
+     */
+    md: number;
+    /**
+     * 0 – 96
+     */
+    lg: number;
+  };
+  /**
+   * Khoá: người biên tập chỉ chọn trong bộ nhận diện. Mở: chỉnh tự do, trang có thể lệch bộ nhận diện.
+   */
+  lock: {
+    /**
+     * Khoá: chỉ chọn màu trong bảng. Mở: thêm ô chọn màu tự do.
+     */
+    colors: 'locked' | 'open';
+    /**
+     * Khoá: font theo vai trò ở trên. Mở: chọn font cho từng phần tử.
+     */
+    fonts: 'locked' | 'open';
+    /**
+     * Khoá: chỉ các mức S / M / L. Mở: nhập số (px, rem, %).
+     */
+    sizes: 'locked' | 'open';
+    /**
+     * Khoá: không có ô CSS / HTML. Mở: chủ sở hữu thêm CSS và khối HTML (không chạy script).
+     */
+    customCss: 'locked' | 'open';
+    contrastCheck?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Cấu hình các trạm hành trình, câu hỏi suy ngẫm, câu trích dẫn và nguyên lý 1%.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3876,6 +3964,48 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   certificateMinPercent?: T;
   certificateMinDays?: T;
   quizCtaPath?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "designSystem_select".
+ */
+export interface DesignSystemSelect<T extends boolean = true> {
+  colors?:
+    | T
+    | {
+        token?: T;
+        label?: T;
+        hex?: T;
+        id?: T;
+      };
+  fonts?:
+    | T
+    | {
+        heading?: T;
+        ui?: T;
+        quote?: T;
+        body?: T;
+      };
+  radiusCard?: T;
+  spacing?:
+    | T
+    | {
+        sm?: T;
+        md?: T;
+        lg?: T;
+      };
+  lock?:
+    | T
+    | {
+        colors?: T;
+        fonts?: T;
+        sizes?: T;
+        customCss?: T;
+        contrastCheck?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

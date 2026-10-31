@@ -77,8 +77,9 @@ export function buildCspDirective(options: CspOptions = {}): string {
     `media-src 'self' data: blob:${s3OriginStr}`,
     "frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com https://iframe.mediadelivery.net",
     `script-src ${scriptSources}`,
-    "style-src 'self' 'unsafe-inline'",
-    "font-src 'self' data:",
+    // EB-02: fonts picked in the designSystem global load from Google Fonts at runtime.
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' data: https://fonts.gstatic.com",
     "connect-src 'self' https://challenges.cloudflare.com https://plausible.io",
     "frame-ancestors 'self'",
     "base-uri 'self'",

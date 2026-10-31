@@ -71,7 +71,7 @@ export function resolveButtonClasses({
   const sizeClass = BUTTON_STYLES.sizes[size]
 
   const baseClasses =
-    'relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 ' +
+    'relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none ' +
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ' +
     'select-none cursor-pointer'
 

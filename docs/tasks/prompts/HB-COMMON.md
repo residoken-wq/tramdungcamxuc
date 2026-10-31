@@ -85,6 +85,7 @@ gh pr create --draft --base main --title "<tiêu đề trong prompt>" --body "<m
    - **Xoá** customer / kế hoạch / dữ liệu thử sau khi kiểm.
 3. `git status` sạch, push, `node scripts/task-time.mjs report`. Dán dòng `THỜI GIAN THỰC …` vào mô tả PR, rồi `gh pr ready`.
 4. **KHÔNG** chạy e2e / `pnpm dev` lâu. **KHÔNG** `gh pr merge`.
+   - CI chạy song song (~10 phút). Push mới huỷ lượt CI cũ của PR → gom commit, push **một lần** khi đã kiểm xong. Mỗi file e2e phải tự đủ trên DB trống (E2E chia 3 shard, mỗi shard một DB). CI ở PR chỉ chạy unit test liên quan, nên vẫn phải chạy `pnpm test` **đủ** ở máy trước khi nộp.
 5. Báo cáo theo mẫu mục 13 AGENTS.md, gồm:
    - link PR;
    - dòng `THỜI GIAN THỰC …`;

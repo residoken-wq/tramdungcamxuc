@@ -116,10 +116,11 @@ describe('Brand Design Tokens & Tailwind Palette Lock (T0-03)', () => {
       }
     }
     const extend = theme.extend
-    expect(extend?.spacing?.['breath-sm']).toBe('16px')
-    expect(extend?.spacing?.['breath-md']).toBe('24px')
-    expect(extend?.spacing?.['breath-lg']).toBe('32px')
-    expect(extend?.borderRadius?.card).toBe('20px')
+    // EB-02: values read the designSystem CSS variables, with the Brand Book value as fallback.
+    expect(extend?.spacing?.['breath-sm']).toBe('var(--space-breath-sm, 16px)')
+    expect(extend?.spacing?.['breath-md']).toBe('var(--space-breath-md, 24px)')
+    expect(extend?.spacing?.['breath-lg']).toBe('var(--space-breath-lg, 32px)')
+    expect(extend?.borderRadius?.card).toBe('var(--radius-card, 20px)')
     expect(extend?.boxShadow?.soft).toBeDefined()
     expect(extend?.backgroundImage?.['brand-gradient']).toBeDefined()
   })

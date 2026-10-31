@@ -349,6 +349,15 @@ docker compose -p tdcx-demo -f docker-compose.prod.yml ps < /dev/null
 
 Mong đợi: lệnh `pull` báo `app  Pulled` (không còn `Skipped`); `up -d` không có dòng `Building`; `ps` thấy image `ghcr.io/residoken-wq/tramdungcamxuc:latest` và cả hai service `healthy` sau 1–2 phút (app tự chạy migration mới nếu có). Image cũ build tại chỗ (`tdcx-demo-app`) không còn dùng, có thể xóa sau khi bản mới chạy ổn: `docker image rm tdcx-demo-app`.
 
+### Cài cho khách hàng mới (EB-01)
+
+Mỗi khách hàng là **một bản cài riêng** (Docker + DB riêng, chốt 31/10). Sau khi chạy migration và tạo tài khoản Chủ sở hữu:
+
+1. Vào admin → **Trang web** → **Thiết kế & thương hiệu**.
+2. Nhập bảng màu của khách: giữ 8 mã màu gốc, chỉ đổi HEX và tên gọi, thêm màu riêng nếu cần. Chọn 4 font theo vai trò.
+3. Giữ mọi công tắc **Khoá** (mặc định cho site mới), trừ khi khách yêu cầu mở và đã được duyệt.
+4. Lưu. Global chưa lưu lần nào thì trang dùng bộ mặc định Brand Book 2026 (`src/lib/design/design-system.ts`).
+
 ### Nạp dữ liệu MẪU cho buổi demo
 
 Chạy **sau** khi app đã `healthy`. Image tools được kéo trực tiếp từ GHCR (tag `tools-latest`), không cần build trên server. Lệnh chỉ tạo/cập nhật bản ghi đánh dấu MẪU (`isSample`), không đụng dữ liệu thật, chạy nhiều lần không nhân đôi:

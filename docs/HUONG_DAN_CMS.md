@@ -2208,6 +2208,34 @@ Các khối như Hero, CTA, Ảnh & Chữ có **bố cục cố định**: Hana 
 
 ## 7. Cài đặt Website, Kênh liên hệ và Thanh toán
 
+### 7.0. Thiết kế & thương hiệu: bảng màu, font, khoá / mở chỉnh kiểu (EB-01)
+
+> **Có tác dụng ngay trên trang web (từ EB-02):** đổi màu, font, bo góc, khoảng thở rồi bấm Lưu thì mọi trang và trình dựng trang đổi theo (tải lại trang để thấy). Ảnh chia sẻ (Boarding Pass, chứng nhận, thẻ EQ) và email **chưa** đổi theo. Các ô chỉnh màu / font / cỡ tự do trong trình dựng trang có từ EB-04; các công tắc khoá / mở chưa có tác dụng tới lúc đó.
+
+**Ai sửa được**: chỉ tài khoản **Chủ sở hữu** (owner). Biên tập viên xem được nhưng không lưu được.
+
+1. Vào nhóm **Trang web** → **Thiết kế & thương hiệu**.
+2. **Bảng màu**:
+   - Bấm vào một dòng để mở. Đổi màu bằng ô chọn màu, hoặc gõ mã HEX (dạng `#280A60`).
+   - Dưới ô màu có số **tương phản** với nền trắng và nền warm-ivory. Chữ thường cần từ **4.5:1** trở lên mới dễ đọc.
+   - 8 màu gốc (`deep-navy`, `bright-magenta`, `accent-pink`, `soft-pink`, `lavender-mist`, `mint-haze`, `butter-cream`, `warm-ivory`) **không xoá và không đổi mã được**, vì giao diện đang dùng tên này. Đổi màu HEX và tên gọi thì được.
+   - Thêm màu mới: **Thêm Màu**, đặt mã bằng chữ thường, số, gạch nối (ví dụ `xanh-la`). Tối đa 16 màu.
+3. **Font chữ**: chọn font cho Tiêu đề lớn, Nhãn / nút, Câu trích, Đoạn văn. Danh sách chỉ có font Google hiển thị đúng dấu tiếng Việt. Font khác bộ mặc định được tải từ Google Fonts nên trang tải chậm hơn một chút; giữ ít font khác nhau.
+4. **Bo góc thẻ**, **Khoảng thở**: số px.
+5. **Khoá / mở chỉnh kiểu**:
+
+   | Công tắc             | Khoá                                   | Mở                                                   |
+   | -------------------- | -------------------------------------- | ---------------------------------------------------- |
+   | Màu                  | Người biên tập chỉ chọn màu trong bảng | Thêm ô chọn màu tự do                                |
+   | Font                 | Font theo vai trò ở mục 3              | Chọn font cho từng phần tử                           |
+   | Cỡ chữ, khoảng cách  | Chỉ các mức S / M / L                  | Nhập số (px, rem, %)                                 |
+   | CSS / HTML tuỳ chỉnh | Không có                               | Chủ sở hữu thêm CSS và khối HTML (không chạy script) |
+   - **Cảnh báo chữ khó đọc**: bật thì trình dựng trang báo khi chữ và nền dưới chuẩn WCAG AA.
+   - Mặc định mọi công tắc đều **Khoá**. Khi có công tắc **Mở**, màn hình hiện dòng "Đang mở – trang có thể lệch bộ nhận diện".
+   - **Site Trạm Dừng Cảm Xúc**: theo quyết định 31/10, Chủ sở hữu chuyển các công tắc sang **Mở** để Hana tự chỉnh.
+
+6. Bấm **Lưu**.
+
 ### 7.1. Cài đặt tài khoản ngân hàng chuyển khoản (VietQR)
 
 **Mục đích**: Cung cấp số tài khoản và thông tin hiển thị mã QR để khách thanh toán khóa học hoặc đặt phiên trải nghiệm.

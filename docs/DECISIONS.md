@@ -376,3 +376,19 @@ Còn chờ Hana: câu 3–10 trong kế hoạch (chẩn đoán 8 hay 16 câu, ng
 - Tới khi EB-01 / EB-02 merge, luật AGENTS §5B / §14 (8 màu, font theo vai trò, không color picker / CSS tự do) vẫn áp cho code hiện tại. EB-01 sửa AGENTS thành "theo `designSystem.lock`".
 - Vẫn dùng Puck. Elementor là plugin WordPress nên không dùng được; làm giống Elementor về bố cục và cách thao tác, không chép mã / icon / hình của Elementor.
 - Kế hoạch: `docs/plan/BUILDER_ELEMENTOR.md`.
+
+## CI nhanh hơn – chốt 31/10/2026 (anh Nhân)
+
+- Trước: một job chạy nối tiếp ~19–20 phút cho mọi PR, kể cả PR chỉ sửa tài liệu; push mới không huỷ lượt cũ; PR nào cũng build Docker image (~3 phút) rồi bỏ.
+- Nay (`.github/workflows/ci.yml`):
+  - **Huỷ lượt cũ:** push mới lên cùng PR huỷ lượt CI đang chạy của PR đó. Push lên `main` không bị huỷ (mỗi merge vẫn có image `sha-<7>`).
+  - **PR chỉ sửa tài liệu** (`docs/**`, `*.md`, `.claude/**`, `.agents/**`) bỏ qua test, xong trong ~1 phút.
+  - **Chạy song song:** job "Lint, Typecheck & Unit" và 2 job "Build & E2E" (Playwright `--shard=1/2`, `2/2`), mỗi job có Postgres riêng.
+  - **Docker image** chỉ build trên `main`, hoặc ở PR có sửa `Dockerfile`, `.dockerignore`, `package.json`, `pnpm-lock.yaml`, `next.config.*`, `docker-compose*`, workflow.
+  - Job tổng **giữ tên cũ** "Lint, Typecheck, Test, Build & E2E": xanh khi mọi job cần chạy đều xanh (job bị bỏ qua vì không cần thì tính là đạt).
+- Hệ quả cho người viết test: **mỗi file e2e phải tự chạy được trên DB trống**, không dựa vào file e2e khác chạy trước (shard chia theo file, mỗi shard một DB).
+- Hệ quả cho agent: gom commit rồi push **một lần**; mỗi lần push lại là CI chạy lại từ đầu.
+- **Bổ sung cùng ngày (anh Nhân chọn cách 1 + 4):**
+  - **Unit test ở PR chỉ chạy phần liên quan** (Vitest `--changed <base>`, dò theo chuỗi import), cộng các test đọc file nguồn từ đĩa (tương phản màu, font, token…) vì import không thấy được chúng. Sửa `package.json`, lockfile, `tsconfig.json`, config Vitest, `global-setup`, snapshot, migration, `payload.config.ts` hay workflow thì chạy **đủ**. Trên `main` luôn chạy đủ.
+  - **E2E chia 3 shard** (trước là 2), vẫn chạy **đủ** ở mọi PR code.
+  - Không dùng `--last-failed` hay Playwright `--only-changed`: cách đầu bỏ sót test bị hỏng mới; cách sau không thấy được thay đổi code trang vì E2E gọi trang qua trình duyệt.

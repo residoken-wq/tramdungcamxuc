@@ -22,19 +22,22 @@ const config: Config = {
       fontFamily: {
         display: ['var(--font-display)', 'Anton', 'sans-serif'],
         ui: ['var(--font-ui)', 'Montserrat', 'sans-serif'],
-        sans: ['var(--font-ui)', 'Montserrat', 'sans-serif'],
+        // EB-02: body text follows the design system's body font, else the UI font.
+        sans: ['var(--font-body, var(--font-ui))', 'Montserrat', 'sans-serif'],
         quote: ['var(--font-quote)', 'Playfair Display', 'serif'],
       },
+      // EB-02: values come from CSS variables (defaults in src/app/(site)/styles.css, overridden
+      // per site from the designSystem global).
       spacing: {
-        'breath-sm': '16px',
-        'breath-md': '24px',
-        'breath-lg': '32px',
+        'breath-sm': 'var(--space-breath-sm, 16px)',
+        'breath-md': 'var(--space-breath-md, 24px)',
+        'breath-lg': 'var(--space-breath-lg, 32px)',
       },
       borderRadius: {
-        card: '20px',
+        card: 'var(--radius-card, 20px)',
       },
       boxShadow: {
-        soft: '0 4px 20px -2px rgba(40, 10, 96, 0.06)',
+        soft: '0 4px 20px -2px rgb(var(--color-deep-navy-rgb) / 0.06)',
       },
       backgroundImage: {
         'brand-gradient':

@@ -31,6 +31,10 @@ import { EqQrDownloadButton as EqQrDownloadButton_182b90ea1823c05b86095b55fa616c
 import { EqQrExportButton as EqQrExportButton_3a70474255dc3ca7584dba70ddaf8a23 } from '@/components/admin/EqQrExportButton'
 import { CustomerActions as CustomerActions_9fd8238a1722f59df871ef58a48eb6c2 } from '@/components/admin/CustomerActions'
 import { ExportLeadsButton as ExportLeadsButton_dfc015e147ecca7392a50b58d946480c } from '@/components/admin/ExportLeadsButton'
+import { ColorField as ColorField_cdeeed12dc1e93093c7e2b36a126a728 } from '@/components/admin/design/ColorField'
+import { ColorRowLabel as ColorRowLabel_ef0dae42b857497dbc998ccc345329a9 } from '@/components/admin/design/ColorRowLabel'
+import { FontSelectField as FontSelectField_cc4236d93faf3642f0a4ac7bffd4fa05 } from '@/components/admin/design/FontSelectField'
+import { LockWarning as LockWarning_022fe55acfbea8b6a4241086ed693f04 } from '@/components/admin/design/LockWarning'
 import { AdminIcon as AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534 } from '@/components/admin/brand/Icon'
 import { AdminLogo as AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67 } from '@/components/admin/brand/Logo'
 import { TodayDashboard as TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd } from '@/components/admin/dashboard/TodayDashboard'
@@ -75,6 +79,10 @@ export const importMap = {
   "@/components/admin/EqQrExportButton#EqQrExportButton": EqQrExportButton_3a70474255dc3ca7584dba70ddaf8a23,
   "@/components/admin/CustomerActions#CustomerActions": CustomerActions_9fd8238a1722f59df871ef58a48eb6c2,
   "@/components/admin/ExportLeadsButton#ExportLeadsButton": ExportLeadsButton_dfc015e147ecca7392a50b58d946480c,
+  "@/components/admin/design/ColorField#ColorField": ColorField_cdeeed12dc1e93093c7e2b36a126a728,
+  "@/components/admin/design/ColorRowLabel#ColorRowLabel": ColorRowLabel_ef0dae42b857497dbc998ccc345329a9,
+  "@/components/admin/design/FontSelectField#FontSelectField": FontSelectField_cc4236d93faf3642f0a4ac7bffd4fa05,
+  "@/components/admin/design/LockWarning#LockWarning": LockWarning_022fe55acfbea8b6a4241086ed693f04,
   "@/components/admin/brand/Icon#AdminIcon": AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534,
   "@/components/admin/brand/Logo#AdminLogo": AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67,
   "@/components/admin/dashboard/TodayDashboard#TodayDashboard": TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd,
