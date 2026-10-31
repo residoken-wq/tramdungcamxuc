@@ -85,3 +85,4 @@
 - [x] (PK-06 24/10) E2E `puck-{card,faq,format,stat-step,templates,service-package}` chờ xuất bản bằng `getByText(/Đã xuất bản/)` – khớp luôn nhãn trạng thái trên đầu trang nên không chờ thật; đang đúng nhờ `toPass` tải lại trang công khai. Đổi sang chờ thông báo "Đã xuất bản thành công" như `puck-drag.test.ts`. (xong PK-07).
 - (HB-08 QA 27/10) CI ghim `runs-on: ubuntu-24.04` vì Playwright 1.58.2 không chạy trên Ubuntu 26.04 – nâng Playwright rồi bỏ ghim.
 - (EB-01 31/10) Token màu theo vai trò (`primary`, `accent`, `surface`…) thay cho tên màu riêng của Trạm (`deep-navy`…), để site khách khác không phải giữ tên màu Trạm. Cần đổi class Tailwind toàn repo + migration dữ liệu Puck.
+- (EB-02 31/10) **EB-02b**: email (`src/emails/**`) và ảnh chia sẻ `next/og` (Boarding Pass, chứng nhận, thẻ EQ) đọc màu / font từ `designSystem`. `next/og` cần file font thật: tải font Google lúc tạo ảnh hoặc giữ font tự host cho ảnh.
