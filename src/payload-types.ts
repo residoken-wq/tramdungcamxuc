@@ -3589,6 +3589,215 @@ export interface HabitJourneyContent {
         }[]
       | null;
   };
+  /**
+   * Nội dung mở đầu, câu trích dẫn có nguồn, con số có nguồn, bộ câu hỏi khám và gợi ý kết quả theo 4 giai đoạn.
+   */
+  diagnose?: {
+    /**
+     * Có thể dùng dấu "|" để tách 2 dòng màu theo chuẩn thương hiệu (VD: Khám đúng bệnh | Tìm nút thắt thói quen).
+     */
+    title?: string | null;
+    /**
+     * Soạn lời mở đầu.
+     */
+    intro?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Chỉ hiển thị khi có đủ nội dung câu trích, tác giả và nguồn đã kiểm chứng. Để trống nếu chưa có nguồn.
+     */
+    quote?: {
+      /**
+       * Nhập nội dung câu trích dẫn.
+       */
+      text?: string | null;
+      /**
+       * Nhập tác giả.
+       */
+      author?: string | null;
+      /**
+       * Bắt buộc ghi nguồn đã kiểm chứng khi nhập câu trích dẫn.
+       */
+      source?: string | null;
+      /**
+       * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+       */
+      sourceUrl?: string | null;
+    };
+    /**
+     * Tối đa 4 con số. Mỗi con số bắt buộc phải kèm nguồn kiểm chứng rõ ràng.
+     */
+    stats?:
+      | {
+          /**
+           * Nhập con số (vd: 66 ngày).
+           */
+          value: string;
+          /**
+           * Nhập nhãn giải thích.
+           */
+          label: string;
+          /**
+           * Bắt buộc ghi nguồn kiểm chứng cho con số, không có nguồn thì không thêm.
+           */
+          source: string;
+          /**
+           * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+           */
+          sourceUrl?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Khuyến nghị 8 câu, 2 câu cho mỗi giai đoạn
+     */
+    questions?:
+      | {
+          /**
+           * Nhập nội dung câu hỏi.
+           */
+          statement: string;
+          /**
+           * Chọn một mục phù hợp.
+           */
+          stage: 'cue' | 'craving' | 'response' | 'reward';
+          /**
+           * Bật để áp dụng: kích hoạt.
+           */
+          isActive?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Hiển thị ngay khi khách trả lời đủ câu hỏi, ứng với giai đoạn có điểm trung bình cao nhất.
+     */
+    stageResults?: {
+      cue?: {
+        /**
+         * Nhập tiêu đề kết quả.
+         */
+        title?: string | null;
+        /**
+         * Soạn gợi ý tháo gỡ.
+         */
+        suggestion?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Ví dụ: Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật cho giai đoạn này.
+         */
+        nextStepHint?: string | null;
+      };
+      craving?: {
+        /**
+         * Nhập tiêu đề kết quả.
+         */
+        title?: string | null;
+        /**
+         * Soạn gợi ý tháo gỡ.
+         */
+        suggestion?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Ví dụ: Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật cho giai đoạn này.
+         */
+        nextStepHint?: string | null;
+      };
+      response?: {
+        /**
+         * Nhập tiêu đề kết quả.
+         */
+        title?: string | null;
+        /**
+         * Soạn gợi ý tháo gỡ.
+         */
+        suggestion?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Ví dụ: Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật cho giai đoạn này.
+         */
+        nextStepHint?: string | null;
+      };
+      reward?: {
+        /**
+         * Nhập tiêu đề kết quả.
+         */
+        title?: string | null;
+        /**
+         * Soạn gợi ý tháo gỡ.
+         */
+        suggestion?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Ví dụ: Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật cho giai đoạn này.
+         */
+        nextStepHint?: string | null;
+      };
+    };
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3736,6 +3945,69 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
               sourceLabel?: T;
               sourceUrl?: T;
               id?: T;
+            };
+      };
+  diagnose?:
+    | T
+    | {
+        title?: T;
+        intro?: T;
+        quote?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              source?: T;
+              sourceUrl?: T;
+            };
+        stats?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              source?: T;
+              sourceUrl?: T;
+              id?: T;
+            };
+        questions?:
+          | T
+          | {
+              statement?: T;
+              stage?: T;
+              isActive?: T;
+              id?: T;
+            };
+        stageResults?:
+          | T
+          | {
+              cue?:
+                | T
+                | {
+                    title?: T;
+                    suggestion?: T;
+                    nextStepHint?: T;
+                  };
+              craving?:
+                | T
+                | {
+                    title?: T;
+                    suggestion?: T;
+                    nextStepHint?: T;
+                  };
+              response?:
+                | T
+                | {
+                    title?: T;
+                    suggestion?: T;
+                    nextStepHint?: T;
+                  };
+              reward?:
+                | T
+                | {
+                    title?: T;
+                    suggestion?: T;
+                    nextStepHint?: T;
+                  };
             };
       };
   updatedAt?: T;

@@ -24,6 +24,7 @@ import * as migration_20261021_012851_hb02_journey_28 from './20261021_012851_hb
 import * as migration_20261023_093308_hb03_plan_fields from './20261023_093308_hb03_plan_fields'
 import * as migration_20261024_072228_hb04_checkin_status from './20261024_072228_hb04_checkin_status'
 import * as migration_20261026_033511_hb07_journey_content from './20261026_033511_hb07_journey_content'
+import * as migration_20261031_080502_hb17_diagnose_content from './20261031_080502_hb17_diagnose_content'
 
 export const migrations = [
   {
@@ -155,5 +156,10 @@ export const migrations = [
     up: migration_20261026_033511_hb07_journey_content.up,
     down: migration_20261026_033511_hb07_journey_content.down,
     name: '20261026_033511_hb07_journey_content',
+  },
+  {
+    up: migration_20261031_080502_hb17_diagnose_content.up,
+    down: migration_20261031_080502_hb17_diagnose_content.down,
+    name: '20261031_080502_hb17_diagnose_content',
   },
 ]

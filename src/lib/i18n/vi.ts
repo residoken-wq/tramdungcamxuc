@@ -2803,6 +2803,104 @@ export const vi = {
       openTrackerButton: (days: number) => `Vào màn theo dõi ${days} ngày`,
     },
   },
+  hb17: {
+    diagnose: {
+      label: 'Bước 1: Khám đúng bệnh',
+      description:
+        'Nội dung mở đầu, câu trích dẫn có nguồn, con số có nguồn, bộ câu hỏi khám và gợi ý kết quả theo 4 giai đoạn.',
+      title: 'Tiêu đề mở đầu',
+      titleDesc:
+        'Có thể dùng dấu "|" để tách 2 dòng màu theo chuẩn thương hiệu (VD: Khám đúng bệnh | Tìm nút thắt thói quen).',
+      intro: 'Lời mở đầu',
+      quote: {
+        label: 'Câu trích dẫn mở đầu',
+        description:
+          'Chỉ hiển thị khi có đủ nội dung câu trích, tác giả và nguồn đã kiểm chứng. Để trống nếu chưa có nguồn.',
+        text: 'Nội dung câu trích dẫn',
+        author: 'Tác giả',
+        source: 'Nguồn trích dẫn',
+        sourceDesc: 'Bắt buộc ghi nguồn đã kiểm chứng khi nhập câu trích dẫn.',
+        sourceUrl: 'Liên kết nguồn',
+      },
+      stats: {
+        label: 'Các con số dẫn chứng',
+        singular: 'Con số',
+        plural: 'Các con số',
+        description: 'Tối đa 4 con số. Mỗi con số bắt buộc phải kèm nguồn kiểm chứng rõ ràng.',
+        value: 'Con số (VD: 66 ngày)',
+        labelField: 'Nhãn giải thích',
+        source: 'Nguồn kiểm chứng',
+        sourceDesc: 'Bắt buộc ghi nguồn kiểm chứng cho con số, không có nguồn thì không thêm.',
+        sourceUrl: 'Liên kết nguồn',
+      },
+      questions: {
+        label: 'Bộ câu hỏi khám thói quen',
+        singular: 'Câu hỏi khám',
+        plural: 'Các câu hỏi khám',
+        description: 'Khuyến nghị 8 câu, 2 câu cho mỗi giai đoạn',
+        statement: 'Nội dung câu hỏi',
+        stage: 'Giai đoạn',
+        isActive: 'Kích hoạt',
+      },
+      stageResults: {
+        label: 'Kết quả & gợi ý theo giai đoạn nút thắt',
+        description:
+          'Hiển thị ngay khi khách trả lời đủ câu hỏi, ứng với giai đoạn có điểm trung bình cao nhất.',
+        stages: {
+          cue: '1. Tín hiệu (Cue)',
+          craving: '2. Khao khát (Craving)',
+          response: '3. Phản hồi (Response)',
+          reward: '4. Phần thưởng (Reward)',
+        },
+        title: 'Tiêu đề kết quả',
+        suggestion: 'Gợi ý tháo gỡ',
+        nextStepHint: 'Gợi ý bước tiếp theo',
+        nextStepHintDesc: 'Ví dụ: Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật cho giai đoạn này.',
+      },
+    },
+    errors: {
+      requiredQuoteText: 'Vui lòng nhập nội dung câu trích dẫn.',
+      requiredQuoteAuthor: 'Vui lòng nhập tác giả câu trích dẫn.',
+      requiredQuoteSource: 'Bắt buộc ghi nguồn đã kiểm chứng cho câu trích dẫn.',
+      requiredStatValue: 'Vui lòng nhập con số dẫn chứng.',
+      requiredStatLabel: 'Vui lòng nhập nhãn giải thích cho con số.',
+      requiredStatSource:
+        'Bắt buộc ghi nguồn kiểm chứng cho con số. Không có nguồn thì không thêm.',
+      requiredQuestionStatement: 'Vui lòng nhập nội dung câu hỏi khám.',
+      requiredQuestionStage: 'Vui lòng chọn giai đoạn cho câu hỏi khám.',
+    },
+    surveyHeading: (count: number) => `Khám thói quen qua ${count} câu hỏi đơn giản`,
+    surveyCounter: (answered: number, total: number) => `${answered}/${total}`,
+    surveyCounterAria: (answered: number, total: number) =>
+      `Đã trả lời ${answered} trên ${total} câu hỏi`,
+    scaleMinLabel: 'Hoàn toàn không đúng',
+    scaleMaxLabel: 'Rất đúng với tôi',
+    scaleLabels: {
+      1: 'Hoàn toàn không đúng',
+      2: 'Chưa đúng lắm',
+      3: 'Đôi khi đúng',
+      4: 'Khá đúng với tôi',
+      5: 'Rất đúng với tôi',
+    },
+    scaleOptionAria: (score: number, label: string) => `Mức ${score}: ${label}`,
+    questionGroupAria: (index: number, statement: string) => `Câu ${index}: ${statement}`,
+    skipButton: 'Bỏ qua phần khám',
+    sourcePrefix: 'Nguồn',
+    result: {
+      badge: 'Giai đoạn nút thắt của bạn',
+      averageScore: (score: string) => `Điểm trung bình: ${score}/5`,
+      secondaryNotice: (stageName: string) =>
+        `Bạn cũng có xu hướng vướng ở giai đoạn ${stageName} (điểm trung bình sát nút giai đoạn chính).`,
+      stageNames: {
+        cue: 'Tín hiệu (Cue)',
+        craving: 'Khao khát (Craving)',
+        response: 'Phản hồi (Response)',
+        reward: 'Phần thưởng (Reward)',
+      },
+      defaultStageTitle: (stageName: string) => `Điểm nghẽn ở giai đoạn ${stageName}`,
+      defaultNextStepHint: 'Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật thực hành cho giai đoạn này.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

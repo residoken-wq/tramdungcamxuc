@@ -2,6 +2,7 @@ import 'server-only'
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { HabitJourneyContent } from '@/payload-types'
+import { HABIT_STAGES, type HabitStage } from '@/lib/diagnostic'
 
 export { splitJourneyIntoStations, type StationRange } from './stations'
 
@@ -41,10 +42,66 @@ export interface CleanHabitOnePercent {
   facts: CleanHabitFact[]
 }
 
+export interface CleanHabitDiagnoseQuote {
+  text: string
+  author: string
+  source: string
+  sourceUrl?: string | null
+}
+
+export interface CleanHabitDiagnoseStat {
+  id?: string | null
+  value: string
+  label: string
+  source: string
+  sourceUrl?: string | null
+}
+
+export interface CleanHabitDiagnoseQuestion {
+  id?: string | null
+  statement: string
+  stage: HabitStage
+  isActive?: boolean | null
+}
+
+export interface CleanHabitDiagnoseStageResult {
+  title?: string | null
+  suggestion?: unknown
+  nextStepHint?: string | null
+}
+
+export interface CleanHabitDiagnose {
+  title?: string | null
+  intro?: unknown
+  quote: CleanHabitDiagnoseQuote | null
+  stats: CleanHabitDiagnoseStat[]
+  questions: CleanHabitDiagnoseQuestion[]
+  stageResults: Record<HabitStage, CleanHabitDiagnoseStageResult>
+}
+
 export interface HabitJourneyContentResult {
   stations: CleanHabitStation[]
   quotes: CleanHabitQuote[]
   onePercent: CleanHabitOnePercent
+  diagnose: CleanHabitDiagnose
+}
+
+const VALID_STAGES = new Set<string>(HABIT_STAGES)
+
+export function getDefaultCleanHabitDiagnose(): CleanHabitDiagnose {
+  return {
+    title: null,
+    intro: null,
+    quote: null,
+    stats: [],
+    questions: [],
+    stageResults: {
+      cue: { title: null, suggestion: null, nextStepHint: null },
+      craving: { title: null, suggestion: null, nextStepHint: null },
+      response: { title: null, suggestion: null, nextStepHint: null },
+      reward: { title: null, suggestion: null, nextStepHint: null },
+    },
+  }
 }
 
 async function resolvePayload(injected?: Payload): Promise<Payload> {
@@ -59,11 +116,16 @@ async function resolvePayload(injected?: Payload): Promise<Payload> {
 export async function getHabitJourneyContent(
   payloadInstance?: Payload,
 ): Promise<HabitJourneyContentResult> {
-  const payload = await resolvePayload(payloadInstance)
-  const content = (await payload.findGlobal({
-    slug: 'habitJourneyContent',
-    depth: 0,
-  })) as HabitJourneyContent | null
+  let content: HabitJourneyContent | null = null
+  try {
+    const payload = await resolvePayload(payloadInstance)
+    content = (await payload.findGlobal({
+      slug: 'habitJourneyContent',
+      depth: 0,
+    })) as HabitJourneyContent | null
+  } catch {
+    content = null
+  }
 
   if (!content) {
     return {
@@ -76,6 +138,7 @@ export async function getHabitJourneyContent(
         maxDays: 365,
         facts: [],
       },
+      diagnose: getDefaultCleanHabitDiagnose(),
     }
   }
 
@@ -149,6 +212,74 @@ export async function getHabitJourneyContent(
       sourceUrl: f.sourceUrl?.trim() || null,
     }))
 
+  const rawDiagnose = content.diagnose
+  const rawQuote = rawDiagnose?.quote
+  const cleanQuote: CleanHabitDiagnoseQuote | null =
+    rawQuote &&
+    typeof rawQuote.text === 'string' &&
+    rawQuote.text.trim().length > 0 &&
+    typeof rawQuote.author === 'string' &&
+    rawQuote.author.trim().length > 0 &&
+    typeof rawQuote.source === 'string' &&
+    rawQuote.source.trim().length > 0
+      ? {
+          text: rawQuote.text.trim(),
+          author: rawQuote.author.trim(),
+          source: rawQuote.source.trim(),
+          sourceUrl: rawQuote.sourceUrl?.trim() || null,
+        }
+      : null
+
+  const rawStats = Array.isArray(rawDiagnose?.stats) ? rawDiagnose.stats : []
+  const stats: CleanHabitDiagnoseStat[] = rawStats
+    .filter((s): s is NonNullable<typeof s> => {
+      if (!s) return false
+      return (
+        typeof s.value === 'string' &&
+        s.value.trim().length > 0 &&
+        typeof s.label === 'string' &&
+        s.label.trim().length > 0 &&
+        typeof s.source === 'string' &&
+        s.source.trim().length > 0
+      )
+    })
+    .map((s) => ({
+      id: s.id ?? null,
+      value: s.value.trim(),
+      label: s.label.trim(),
+      source: s.source.trim(),
+      sourceUrl: s.sourceUrl?.trim() || null,
+    }))
+
+  const rawQuestions = Array.isArray(rawDiagnose?.questions) ? rawDiagnose.questions : []
+  const questions: CleanHabitDiagnoseQuestion[] = rawQuestions
+    .filter((q): q is NonNullable<typeof q> => {
+      if (!q) return false
+      if (q.isActive === false) return false
+      return (
+        typeof q.statement === 'string' &&
+        q.statement.trim().length > 0 &&
+        typeof q.stage === 'string' &&
+        VALID_STAGES.has(q.stage)
+      )
+    })
+    .map((q) => ({
+      id: q.id ?? null,
+      statement: q.statement.trim(),
+      stage: q.stage as HabitStage,
+      isActive: q.isActive ?? true,
+    }))
+
+  const stageResults = getDefaultCleanHabitDiagnose().stageResults
+  for (const stg of HABIT_STAGES) {
+    const rawStage = rawDiagnose?.stageResults?.[stg]
+    stageResults[stg] = {
+      title: rawStage?.title?.trim() || null,
+      suggestion: rawStage?.suggestion ?? null,
+      nextStepHint: rawStage?.nextStepHint?.trim() || null,
+    }
+  }
+
   return {
     stations,
     quotes,
@@ -158,6 +289,14 @@ export async function getHabitJourneyContent(
       dailyPercent,
       maxDays,
       facts,
+    },
+    diagnose: {
+      title: rawDiagnose?.title?.trim() || null,
+      intro: rawDiagnose?.intro ?? null,
+      quote: cleanQuote,
+      stats,
+      questions,
+      stageResults,
     },
   }
 }
