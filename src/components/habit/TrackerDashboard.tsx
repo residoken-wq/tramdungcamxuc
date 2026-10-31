@@ -26,6 +26,7 @@ export interface TrackerDashboardProps {
   identityStatement?: string | null
   anchorHabit?: string | null
   twoMinuteAction?: string | null
+  privateReason?: string | null
   rhythmDays?: string[] | null
   startDate?: string | Date | null
   stationNames?: string[] | null
@@ -44,6 +45,7 @@ export function TrackerDashboard({
   identityStatement,
   anchorHabit,
   twoMinuteAction,
+  privateReason,
   rhythmDays,
   startDate,
   stationNames,
@@ -136,6 +138,9 @@ export function TrackerDashboard({
     : null
   const stats = calculateTrackerStats(checkins)
 
+  const departureDate = planDayDate(startDate, 1)
+  const finishDate = planDayDate(startDate, journeyDays)
+
   return (
     <div className="w-full max-w-2xl mx-auto space-y-8">
       {/* 1. Header, Badges & Identity Commitment */}
@@ -153,6 +158,27 @@ export function TrackerDashboard({
             <span>{vi.hb11.streakBadge(view.streak)}</span>
           </div>
         </div>
+
+        {departureDate && finishDate && (
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs font-ui font-semibold text-deep-navy">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-warm-ivory border border-deep-navy/15 shadow-2xs">
+              <span className="text-bright-magenta" aria-hidden="true">
+                ✦
+              </span>
+              <span>{vi.hb23.departure(departureDate.full)}</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-warm-ivory border border-deep-navy/15 shadow-2xs">
+              <span className="text-bright-magenta" aria-hidden="true">
+                ✦
+              </span>
+              <span>{vi.hb23.finish(journeyDays, finishDate.full)}</span>
+            </span>
+          </div>
+        )}
+
+        <p className="text-xs font-sans text-deep-navy/70 italic max-w-md mx-auto">
+          {vi.hb23.encouragementRule}
+        </p>
 
         <h1 className="font-quote italic text-lg sm:text-xl text-deep-navy font-normal max-w-lg mx-auto">
           &ldquo;{vi.tracker.votingQuestion}&rdquo;
@@ -216,6 +242,18 @@ export function TrackerDashboard({
           </span>
           <p className="text-xs sm:text-sm font-sans font-medium text-deep-navy">
             {vi.tracker.missedOneDayEncouragement}
+          </p>
+        </div>
+      )}
+
+      {/* Lý do riêng hiện lại khi lỡ nhịp (HB-23) */}
+      {view.missedRun.count >= 1 && privateReason?.trim() && (
+        <div className="p-4 sm:p-5 rounded-2xl border border-bright-magenta/20 bg-soft-pink/50 space-y-1.5 text-left">
+          <p className="text-xs font-ui uppercase font-bold text-bright-magenta tracking-wide">
+            {vi.hb23.privateReasonHeading}
+          </p>
+          <p className="font-sans text-sm font-medium text-deep-navy leading-relaxed whitespace-pre-line">
+            {privateReason.trim()}
           </p>
         </div>
       )}
