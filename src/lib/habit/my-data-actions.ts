@@ -1,6 +1,6 @@
 'use server'
 
-import { getPayload, ValidationError } from 'payload'
+import { getPayload, ValidationError, type Payload } from 'payload'
 import { revalidatePath } from 'next/cache'
 import config from '@/payload.config'
 import type { HabitCheckin, HabitPlan, Product, Technique } from '@/payload-types'
@@ -13,6 +13,8 @@ import { findOwnTrackerPlan } from './tracker.server'
 import { getJourneyDays, type CheckinStatus } from './rhythm'
 import { getCurrentDayOfPlan, planDayDate } from './tracker-stats'
 import { markHabitRestart } from './restart-marker.server'
+import { getHabitJourneyContent } from './journey-content.server'
+import { loadPlanReflectionsForBackup, stationReflectionOpenDay } from './reflections.server'
 import {
   buildCoachSummary,
   buildHabitBackup,
@@ -57,6 +59,8 @@ export interface RestoreBackupResult {
   skipped: number
   reasons: string[]
   checkins?: RestoredCheckinSnapshot[]
+  /** HB-12: number of station reflections written from the file. */
+  restoredReflections?: number
 }
 
 export interface CopyForCoachResult {
@@ -72,6 +76,16 @@ export interface RestartJourneyResult {
   message?: string
   redirectTo?: string
   previousPlanId?: number
+}
+
+/** Station names from the CMS (same count rule as the tracker); [] when the CMS cannot be read. */
+async function loadStationNames(payload: Payload): Promise<string[]> {
+  try {
+    const content = await getHabitJourneyContent(payload)
+    return (content.stations || []).map((s) => s.name).filter(Boolean)
+  } catch {
+    return []
+  }
 }
 
 function getPlanCustomerId(plan: HabitPlan): number {
@@ -183,26 +197,11 @@ export async function exportBackup(): Promise<ExportBackupResult> {
   })
 
   const now = new Date()
-  let reflectionsData: any[] = []
-  try {
-    const reflectionsRes = await payload.find({
-      collection: 'habitReflections',
-      where: {
-        plan: { equals: plan.id },
-      },
-      limit: 10,
-      depth: 0,
-      overrideAccess: true,
-    })
-    reflectionsData = (reflectionsRes.docs || []).map((doc: any) => ({
-      stationIndex: Number(doc.stationIndex),
-      answers: (doc.answers || []).map((a: any) => ({
-        question: a.question,
-        answer: a.answer || '',
-      })),
-      updatedAt: doc.updatedAt,
-    }))
-  } catch (_e) {}
+  const reflectionsData = await loadPlanReflectionsForBackup(
+    payload,
+    plan.id,
+    await loadStationNames(payload),
+  )
 
   const data = buildHabitBackup(plan, checkinsRes.docs as HabitCheckin[], {
     exportedAt: now,
@@ -263,26 +262,11 @@ export async function exportCsv(): Promise<ExportCsvResult> {
   })
 
   const now = new Date()
-  let reflectionsData: any[] = []
-  try {
-    const reflectionsRes = await payload.find({
-      collection: 'habitReflections',
-      where: {
-        plan: { equals: plan.id },
-      },
-      limit: 10,
-      depth: 0,
-      overrideAccess: true,
-    })
-    reflectionsData = (reflectionsRes.docs || []).map((doc: any) => ({
-      stationIndex: Number(doc.stationIndex),
-      answers: (doc.answers || []).map((a: any) => ({
-        question: a.question,
-        answer: a.answer || '',
-      })),
-      updatedAt: doc.updatedAt,
-    }))
-  } catch (_e) {}
+  const reflectionsData = await loadPlanReflectionsForBackup(
+    payload,
+    plan.id,
+    await loadStationNames(payload),
+  )
 
   const csv = buildHabitCsv(plan, checkinsRes.docs as HabitCheckin[], {
     today: now,
@@ -554,6 +538,7 @@ export async function restoreBackup(
 
   // REVIEW-REQUIRED: Khôi phục từng dòng check-in trong phạm vi journeyDays thông qua các hook của habitCheckins
   let restored = 0
+  let restoredReflections = 0
   let skipped = 0
   const seenDays = new Set<number>()
 
@@ -682,23 +667,49 @@ export async function restoreBackup(
     }),
   )
 
-  // 9. Khôi phục suy ngẫm cuối trạm (HB-12)
-  if (Array.isArray(backup.reflections) && backup.reflections.length > 0) {
+  // 9. REVIEW-REQUIRED (HB-12/HB-12c): khôi phục suy ngẫm cuối trạm vào kế hoạch của chính khách.
+  // Cùng luật với saveStationReflection: trạm phải tồn tại và đã mở (giống luật "không ghi ngày chưa
+  // tới" của HB-13c); giữ câu hỏi đã chụp lại trong file. Dòng bị bỏ qua được đếm và báo lại.
+  if (backup.reflections.length > 0) {
+    const stationCount = Math.max(1, (await loadStationNames(payload)).length || 4)
+    const seenStations = new Set<number>()
+
     for (const ref of backup.reflections) {
-      if (typeof ref.stationIndex !== 'number' || !Array.isArray(ref.answers)) continue
-      const validAnswers = ref.answers
-        .filter((a) => a && typeof a.question === 'string')
-        .map((a) => ({
-          question: a.question.trim(),
-          answer: (a.answer || '').trim(),
-        }))
+      const stationIndex = ref.stationIndex
+      const label = typeof stationIndex === 'number' ? stationIndex + 1 : '?'
+      const validAnswers = (ref.answers || [])
+        .map((a) => ({ question: a.question.trim(), answer: a.answer.trim() }))
+        .filter((a) => a.question.length > 0)
+
       if (validAnswers.length === 0) continue
+
+      const openDay =
+        typeof stationIndex === 'number'
+          ? stationReflectionOpenDay(currentJourneyDays, stationCount, stationIndex)
+          : null
+      if (typeof stationIndex !== 'number' || openDay === null || seenStations.has(stationIndex)) {
+        skipped++
+        reasons.push(vi.hb12.errors.restoreStationOutOfRange(label))
+        continue
+      }
+      seenStations.add(stationIndex)
+
+      if (currentDay < openDay && currentDay <= currentJourneyDays) {
+        skipped++
+        reasons.push(vi.hb12.errors.restoreStationNotOpen(label, openDay))
+        continue
+      }
+      if (validAnswers.length > 10 || validAnswers.some((a) => a.answer.length > 1000)) {
+        skipped++
+        reasons.push(vi.hb12.errors.restoreStationTooLong(label))
+        continue
+      }
 
       try {
         const existingRefRes = await payload.find({
           collection: 'habitReflections',
           where: {
-            and: [{ plan: { equals: plan.id } }, { stationIndex: { equals: ref.stationIndex } }],
+            and: [{ plan: { equals: plan.id } }, { stationIndex: { equals: stationIndex } }],
           },
           limit: 1,
           depth: 0,
@@ -709,9 +720,7 @@ export async function restoreBackup(
           await payload.update({
             collection: 'habitReflections',
             id: existingRefRes.docs[0].id,
-            data: {
-              answers: validAnswers,
-            },
+            data: { answers: validAnswers },
             overrideAccess: true,
           })
         } else {
@@ -720,14 +729,17 @@ export async function restoreBackup(
             data: {
               customer: customer.id,
               plan: plan.id,
-              stationIndex: ref.stationIndex,
+              stationIndex,
               answers: validAnswers,
             },
             overrideAccess: true,
           })
         }
-      } catch (refErr) {
-        console.error('Failed to restore habit reflection:', refErr)
+        restoredReflections++
+      } catch {
+        // No content in logs (AGENTS §11): report the station only.
+        skipped++
+        reasons.push(vi.hb12.errors.restoreStationFailed(label))
       }
     }
   }
@@ -744,6 +756,7 @@ export async function restoreBackup(
     skipped,
     reasons,
     checkins: finalCheckins,
+    restoredReflections,
   }
 }
 

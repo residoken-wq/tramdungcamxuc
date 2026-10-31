@@ -19,16 +19,6 @@ export interface SaveReflectionResult {
   reflectionId?: number
 }
 
-export interface StationReflectionView {
-  id: number
-  stationIndex: number
-  answers: {
-    question: string
-    answer: string
-  }[]
-  updatedAt?: string
-}
-
 const saveReflectionSchema = z.object({
   stationIndex: z.number().int().min(0).max(10),
   answers: z.array(z.string().max(1000, vi.hb12.errors.answerTooLong(1000))),
@@ -220,7 +210,9 @@ export async function saveStationReflection(
 
     try {
       revalidatePath('/habit/tracker')
-    } catch (_e) {}
+    } catch {
+      // Outside a Next.js request (e.g. Vitest).
+    }
 
     return {
       success: true,
@@ -233,41 +225,5 @@ export async function saveStationReflection(
       error: 'SAVE_FAILED',
       message: vi.hb12.errors.saveFailed,
     }
-  }
-}
-
-/**
- * Đọc toàn bộ bài suy ngẫm đã lưu của kế hoạch cho học viên.
- * Sử dụng phiên khách hàng với overrideAccess: false để bảo đảm quyền riêng tư.
- */
-export async function getStationReflectionsForPlan(
-  planId: number,
-  customerId: number,
-): Promise<StationReflectionView[]> {
-  const payload = await getPayload({ config: await config })
-  try {
-    const res = await payload.find({
-      collection: 'habitReflections',
-      where: {
-        and: [{ plan: { equals: planId } }, { customer: { equals: customerId } }],
-      },
-      pagination: false,
-      depth: 0,
-      user: { id: customerId, collection: 'customers' } as never,
-      overrideAccess: false,
-    })
-
-    return (res.docs || []).map((doc) => ({
-      id: doc.id,
-      stationIndex: Number(doc.stationIndex),
-      answers: (doc.answers || []).map((a) => ({
-        question: a.question,
-        answer: a.answer || '',
-      })),
-      updatedAt: doc.updatedAt,
-    }))
-  } catch (err) {
-    console.error('Failed to get station reflections:', err)
-    return []
   }
 }

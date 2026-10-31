@@ -14,7 +14,7 @@ import {
 } from '@/lib/habit/tracker.server'
 import { getCertificateEligibility } from '@/lib/habit/certificate.server'
 import { getHabitJourneyContent } from '@/lib/habit/journey-content.server'
-import { getStationReflectionsForPlan } from '@/lib/habit/reflection-actions'
+import { getStationReflectionsForPlan } from '@/lib/habit/reflections.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
@@ -135,7 +135,7 @@ export default async function HabitTrackerPage() {
   }
 
   // 7b. Đọc các bài suy ngẫm đã lưu của học viên (HB-12)
-  const initialReflections = await getStationReflectionsForPlan(plan.id, customer.id)
+  const initialReflections = await getStationReflectionsForPlan(payload, plan.id, customer.id)
 
   const currentDay = getCurrentDayOfPlan(plan.startDate, now)
   const isReadOnly = !access.hasAccess

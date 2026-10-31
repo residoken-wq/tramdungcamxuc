@@ -71,6 +71,7 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
     let adminId: number | undefined
     let createdProductId: number | undefined
     let createdCustomerId: number | undefined
+    let previousStations: unknown[] | undefined
 
     const customerEmail = `khach-tracker-${randomUUID().slice(0, 6)}@example.test`
 
@@ -251,6 +252,11 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
 
       // 15. HB-12: Suy ngẫm cuối mỗi trạm trên Tracker
       // Admin cấu hình câu hỏi suy ngẫm cho Trạm 1 và Trạm 2 qua global habitJourneyContent
+      // (lưu lại danh sách trạm hiện có để khôi phục trong finally – HB-12c)
+      const journeyBeforeRes = await page.request.get('/api/globals/habitJourneyContent')
+      previousStations = journeyBeforeRes.ok()
+        ? (((await journeyBeforeRes.json()) as { stations?: unknown[] }).stations ?? [])
+        : []
       await page.request.post('/api/globals/habitJourneyContent', {
         data: {
           stations: [
@@ -335,6 +341,12 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
       await expect(guestPage.getByText(/Đã suy ngẫm/i).first()).toBeVisible()
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
+
+      if (previousStations !== undefined) {
+        await page.request
+          .post('/api/globals/habitJourneyContent', { data: { stations: previousStations } })
+          .catch(() => {})
+      }
 
       if (createdCustomerId) {
         // Dọn dẹp checkins, reflections và habitPlans của customer

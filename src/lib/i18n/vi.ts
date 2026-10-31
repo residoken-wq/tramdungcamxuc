@@ -3061,6 +3061,14 @@ export const vi = {
       accessExpired: 'Quyền truy cập của bạn đã hết hạn, không thể lưu bài suy ngẫm mới.',
       alreadyReflected: 'Bạn đã lưu bài suy ngẫm cho trạm này.',
       saveFailed: 'Không thể lưu bài suy ngẫm. Vui lòng thử lại sau.',
+      restoreStationOutOfRange: (station: number | string) =>
+        `Suy ngẫm trạm ${station}: trạm không có trong hành trình hiện tại (hoặc bị lặp).`,
+      restoreStationNotOpen: (station: number | string, openDay: number) =>
+        `Suy ngẫm trạm ${station}: trạm chưa mở (mở vào ngày ${openDay}).`,
+      restoreStationTooLong: (station: number | string) =>
+        `Suy ngẫm trạm ${station}: quá 10 câu hoặc có câu trả lời dài hơn 1000 ký tự.`,
+      restoreStationFailed: (station: number | string) =>
+        `Suy ngẫm trạm ${station}: không ghi được, vui lòng thử lại.`,
     },
   },
 } as const

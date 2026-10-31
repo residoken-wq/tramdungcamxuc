@@ -746,6 +746,79 @@ describe('HB-13: Dữ liệu của bạn – Bản sao lưu, CSV, Khôi phục, 
       expect(saved.docs.map((d) => d.day)).toEqual([1])
     })
 
+    it('HB-12c: khôi phục suy ngẫm chỉ ghi trạm đã mở, báo lý do; sao lưu / CSV mang suy ngẫm ra', async () => {
+      const customer = await createTestCustomer('restore-reflections')
+      await grantTrialAccess(customer.id)
+
+      // Hôm nay là ngày 10: trạm 1 (ngày 1–7) đã mở, trạm 2 (ngày 8–14) mở vào ngày 15.
+      const plan = track(
+        'habitPlans',
+        (await payload.create({
+          collection: 'habitPlans',
+          data: {
+            customer: customer.id,
+            identityStatement: 'Kế hoạch có suy ngẫm',
+            startDate: vietnamTodayIso(new Date(Date.now() - 9 * 24 * 60 * 60 * 1000)),
+            journeyDays: 28,
+          },
+          overrideAccess: true,
+        })) as HabitPlan,
+      )
+
+      vi.spyOn(sessionServer, 'getCurrentCustomer').mockResolvedValue(customer)
+
+      const backupJson = serializeHabitBackup(
+        { identityStatement: 'Kế hoạch có suy ngẫm', journeyDays: 28 },
+        [],
+        {
+          reflections: [
+            {
+              stationIndex: 0,
+              answers: [{ question: 'Câu hỏi [MẪU] trạm 1', answer: '=Trả lời trạm 1' }],
+            },
+            {
+              stationIndex: 1,
+              answers: [{ question: 'Câu hỏi [MẪU] trạm 2', answer: 'Chưa tới trạm 2' }],
+            },
+            {
+              stationIndex: 9,
+              answers: [{ question: 'Trạm không tồn tại', answer: 'x' }],
+            },
+          ],
+        },
+      )
+
+      const result = await restoreBackup(backupJson)
+      expect(result.success).toBe(true)
+      expect(result.restoredReflections).toBe(1)
+      expect(result.skipped).toBe(2)
+      expect(result.reasons.some((r) => r.includes('trạm 2') && r.includes('chưa mở'))).toBe(true)
+      expect(result.reasons.some((r) => r.includes('trạm 10'))).toBe(true)
+
+      const saved = await payload.find({
+        collection: 'habitReflections',
+        where: { plan: { equals: plan.id } },
+        depth: 0,
+        overrideAccess: true,
+      })
+      expect(saved.docs.map((d) => Number(d.stationIndex))).toEqual([0])
+      expect(saved.docs[0].customer).toBe(customer.id)
+
+      const exported = await exportBackup()
+      expect(exported.data?.reflections).toHaveLength(1)
+      expect(exported.data?.reflections[0].answers?.[0].answer).toBe('=Trả lời trạm 1')
+
+      const csv = await exportCsv()
+      expect(csv.csv).toContain('Câu hỏi [MẪU] trạm 1')
+      expect(csv.csv).toContain("'=Trả lời trạm 1")
+
+      await payload.delete({
+        collection: 'habitReflections',
+        where: { plan: { equals: plan.id } },
+        overrideAccess: true,
+      })
+    })
+
     it('khi hết hạn dùng thử: vẫn tải được JSON/CSV và sao chép Coach, nhưng chặn khôi phục và bắt đầu lại', async () => {
       const expiredCustomer = await createTestCustomer('expired')
       await grantTrialAccess(expiredCustomer.id, true)
