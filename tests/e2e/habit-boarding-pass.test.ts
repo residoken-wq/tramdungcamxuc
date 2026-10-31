@@ -68,9 +68,17 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
 
       try {
         await guest.goto('/habit/5-phut')
-        await expect(guest.getByText('Bước 1 / 4')).toBeVisible({ timeout: 15000 })
+        await expect(guest.getByText('Bước 1 / 6')).toBeVisible({ timeout: 15000 })
 
-        // BƯỚC 1: Thêm thói quen mẫu và chọn neo
+        // BƯỚC 1: Khám đúng bệnh -> Tiếp tục
+        await guest.getByRole('button', { name: /Tiếp tục/i }).click()
+
+        // BƯỚC 2: Nguyên lý 1% -> Sang giai đoạn 2
+        await expect(guest.getByText('Bước 2 / 6')).toBeVisible()
+        await guest.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
+
+        // BƯỚC 3: Tìm Mentor – Thêm thói quen mẫu và chọn neo
+        await expect(guest.getByText('Bước 3 / 6')).toBeVisible()
         await guest.getByPlaceholder(/Nhập thói quen hàng ngày/i).fill('[MẪU] Uống nước ấm sáng')
         await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
         await guest
@@ -80,8 +88,8 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
         await guest.locator('input[type="radio"][name="anchorHabit"]').first().check()
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
-        // BƯỚC 2: Nhập hành động & mục tiêu định danh, tắt Chủ Nhật
-        await expect(guest.getByText('Bước 2 / 4')).toBeVisible()
+        // BƯỚC 4: Gọi tên – Nhập hành động & mục tiêu định danh, tắt Chủ Nhật
+        await expect(guest.getByText('Bước 4 / 6')).toBeVisible()
         await guest.getByPlaceholder(/đọc sách 10 phút/i).fill('[MẪU] chạy bộ 15 phút')
         await guest.getByPlaceholder(/người điềm tĩnh/i).fill('[MẪU] người khỏe khoắn')
 
@@ -91,8 +99,8 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
         await guest.getByPlaceholder(/Mở sách đọc 1 trang/i).fill('[MẪU] Xỏ giày thể thao')
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
-        // BƯỚC 3: Chọn kỹ thuật
-        await expect(guest.getByText('Bước 3 / 4')).toBeVisible()
+        // BƯỚC 5: Vòng lặp – Chọn kỹ thuật
+        await expect(guest.getByText('Bước 5 / 6')).toBeVisible()
         const stageSections = guest.locator('.p-5.rounded-card')
         for (let i = 0; i < 4; i++) {
           const section = stageSections.nth(i)
@@ -103,8 +111,8 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
         }
         await guest.getByRole('button', { name: /Tiếp tục|Xem kế hoạch/i }).click()
 
-        // BƯỚC 4: Xem trước Boarding Pass và Tải ảnh 4:5
-        await expect(guest.getByText('Bước 4 / 4')).toBeVisible()
+        // BƯỚC 6: Xem trước Boarding Pass và Tải ảnh 4:5
+        await expect(guest.getByText('Bước 6 / 6')).toBeVisible()
         await expect(guest.getByText(/Boarding Pass của bạn/i)).toBeVisible()
 
         // Bấm nút Tải ảnh 4:5 và chờ sự kiện download
