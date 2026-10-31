@@ -1,7 +1,7 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { Columns, type ColumnsProps } from '@/components/site/Columns'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { BRAND_COLOR_OPTIONS, ELEMENT_BLOCK_TYPES, PADDING_OPTIONS } from '../constants'
 
 // No nested Columns or heroes. Card, Stat, ServiceCard and PackageCard may sit in a column
 // (PK-05); the other child blocks only make sense inside their own parent.
@@ -14,6 +14,9 @@ const COLUMNS_DISALLOW = [
   'EntryCard',
   'PathCard',
   'VisionCard',
+  // PK-13: a free section is itself a section; its elements only live inside it.
+  'FreeSection',
+  ...ELEMENT_BLOCK_TYPES,
 ]
 
 export type { ColumnsProps }

@@ -2,7 +2,7 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { expect, test } from 'vitest'
 import { puckConfig } from '@/puck/config'
-import { CHILD_BLOCK_TYPES, ROOT_DROP_ZONE } from '@/puck/constants'
+import { CHILD_BLOCK_TYPES, ROOT_DISALLOW, ROOT_DROP_ZONE } from '@/puck/constants'
 
 test('PK-11: CHILD_BLOCK_TYPES is the child drawer group, and each child is allowed only in its parent slot', () => {
   const categories = puckConfig.categories as Record<string, { components?: string[] }>
@@ -44,7 +44,7 @@ test('PK-07: in the editor the page root zone refuses child blocks; public rende
       <p>children</p>
     </RootRender>,
   )
-  expect(zones).toEqual([{ zone: ROOT_DROP_ZONE, disallow: CHILD_BLOCK_TYPES }])
+  expect(zones).toEqual([{ zone: ROOT_DROP_ZONE, disallow: ROOT_DISALLOW }])
   expect(editor.queryByText('children')).toBeNull()
   editor.unmount()
 
