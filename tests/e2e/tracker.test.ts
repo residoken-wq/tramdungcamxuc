@@ -199,6 +199,55 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
       // 13. Ô Ngày 2 không bấm được (chưa tới, disabled)
       const day2Btn = guestPage.getByRole('button', { name: /^Ngày 2: Chưa tới/i })
       await expect(day2Btn).toBeDisabled()
+
+      // 14. HB-13: Tải bảng CSV 28 ngày và khôi phục từ file JSON nhỏ
+      const myDataHeading = guestPage.getByRole('heading', { name: 'Dữ liệu của bạn' })
+      await expect(myDataHeading).toBeVisible()
+
+      const downloadPromise = guestPage.waitForEvent('download')
+      await guestPage.getByRole('button', { name: /Tải bảng 28 ngày \(\.csv\)/i }).click()
+      const csvDownload = await downloadPromise
+      expect(csvDownload.suggestedFilename()).toMatch(/^tram-dung-cam-xuc-habit-.*\.csv$/)
+
+      const smallBackupJson = JSON.stringify({
+        format: 'tdcx-habit-backup',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        plan: {
+          identityStatement: 'Tôi sẽ tập thở 5 phút mỗi sáng để trở thành người bình an hơn',
+          journeyDays: 28,
+        },
+        checkins: [
+          {
+            day: 1,
+            status: 'minimal',
+            emotion: 'joyful',
+            note: 'Khôi phục thành công từ JSON',
+          },
+        ],
+        reflections: [],
+      })
+
+      const fileInput = guestPage.locator('input[type="file"][accept="application/json"]')
+      await fileInput.setInputFiles({
+        name: 'backup-hb13.json',
+        mimeType: 'application/json',
+        buffer: Buffer.from(smallBackupJson, 'utf-8'),
+      })
+
+      const restoreModal = guestPage.locator('div[role="dialog"]')
+      await expect(restoreModal).toBeVisible()
+      await expect(restoreModal).toContainText(/ghi đè tối đa 1 ngày check-in/i)
+
+      await restoreModal.getByRole('button', { name: 'Xác nhận khôi phục' }).click()
+      await expect(restoreModal).toContainText(/Đã khôi phục 1 ngày check-in/i)
+      await restoreModal.getByRole('button', { name: 'Đóng' }).first().click()
+      await expect(restoreModal).toBeHidden()
+
+      const day1AfterRestore = guestPage.getByRole('button', {
+        name: /^Ngày 1: Bản tối giản, cảm xúc: Vui vẻ/i,
+      })
+      await expect(day1AfterRestore).toBeVisible()
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
 

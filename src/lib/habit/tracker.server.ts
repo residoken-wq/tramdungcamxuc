@@ -26,7 +26,7 @@ export async function findOwnTrackerPlan(
     where: {
       customer: { equals: customerId },
     },
-    sort: '-createdAt',
+    sort: ['-createdAt', '-id'],
     limit: 1,
     depth: 1,
     overrideAccess: true,
@@ -37,6 +37,11 @@ export async function findOwnTrackerPlan(
 /**
  * REVIEW-REQUIRED: Lấy kế hoạch thói quen hiện có của khách hàng, hoặc liên kết kế hoạch Habit Loop mồ côi
  * (trùng leadEmail và chưa gán customer) cho khách hàng đã xác minh qua OTP.
+ * Hỗ trợ bắt đầu lại hành trình (HB-13): nếu có kế hoạch leadEmail mới hơn kế hoạch cũ đã gắn customer,
+ * tự động gắn kế hoạch mới làm kế hoạch hiện tại (vẫn giữ kế hoạch cũ trong DB).
+ * REVIEW-REQUIRED (HB-13c): khách đã có kế hoạch chỉ nhận kế hoạch leadEmail mới khi có `restartSince`
+ * (khách bấm "Bắt đầu lại" trên chính trình duyệt này) và kế hoạch đó tạo sau thời điểm ấy, vì leadEmail
+ * do người dùng tự gõ, không xác minh.
  * Nếu chưa có, tạo kế hoạch mới khi được cung cấp identityStatement với startDate là hôm nay theo giờ VN.
  */
 export async function getOrCreateTrackerPlan(
@@ -45,17 +50,16 @@ export async function getOrCreateTrackerPlan(
     identityStatement?: string
     payload?: Payload
     now?: Date
+    /** HB-13c: when the customer pressed "Bắt đầu lại" (see restart-marker.server.ts). */
+    restartSince?: Date | null
   },
 ): Promise<HabitPlan | null> {
   const payload = options?.payload ?? (await getPayload({ config: await config }))
 
-  // 1. Khách đã có habitPlans gắn với mình -> lấy kế hoạch mới nhất
+  // 1. Tìm kế hoạch mới nhất đã gắn với customer
   const ownPlan = await findOwnTrackerPlan(customerId, payload)
-  if (ownPlan) {
-    return ownPlan
-  }
 
-  // 2. Chưa có kế hoạch gắn với customer, tìm kế hoạch Habit Loop cùng leadEmail
+  // 2. Kiểm tra kế hoạch Habit Loop cùng leadEmail chưa gắn customer (bao gồm trường hợp khách bắt đầu lại ở /habit/5-phut)
   const customer = (await payload.findByID({
     collection: 'customers',
     id: customerId,
@@ -70,7 +74,7 @@ export async function getOrCreateTrackerPlan(
       where: {
         and: [{ leadEmail: { equals: cleanEmail } }, { customer: { exists: false } }],
       },
-      sort: '-createdAt',
+      sort: ['-createdAt', '-id'],
       limit: 1,
       depth: 1,
       overrideAccess: true,
@@ -78,8 +82,17 @@ export async function getOrCreateTrackerPlan(
 
     if (emailPlans.docs.length > 0) {
       const planToAttach = emailPlans.docs[0] as HabitPlan
-      // Chỉ gắn khi customer đang thực sự trống
-      if (!planToAttach.customer) {
+      const ownCreatedMs = ownPlan ? new Date(ownPlan.createdAt).getTime() : -1
+      const attachCreatedMs = new Date(planToAttach.createdAt).getTime()
+      const restartSinceMs = options?.restartSince ? options.restartSince.getTime() : null
+      const isNewerThanOwn =
+        !ownPlan ||
+        (restartSinceMs !== null &&
+          attachCreatedMs >= restartSinceMs &&
+          (attachCreatedMs > ownCreatedMs ||
+            (attachCreatedMs === ownCreatedMs && planToAttach.id > ownPlan.id)))
+
+      if (!planToAttach.customer && isNewerThanOwn) {
         const attached = await payload.update({
           collection: 'habitPlans',
           id: planToAttach.id,
@@ -93,6 +106,10 @@ export async function getOrCreateTrackerPlan(
         return attached as HabitPlan
       }
     }
+  }
+
+  if (ownPlan) {
+    return ownPlan
   }
 
   // 3. Không có gì -> tạo mới nếu có identityStatement
@@ -193,6 +210,12 @@ export async function sendTrackerNudges(
           : Number(rawCustomer)
 
       if (!customerId) continue
+
+      // Chỉ xét kế hoạch hiện tại (mới nhất) của khách hàng; bỏ qua kế hoạch cũ nếu khách đã bắt đầu lại (HB-13)
+      const latestPlan = await findOwnTrackerPlan(customerId, payload)
+      if (!latestPlan || latestPlan.id !== plan.id) {
+        continue
+      }
 
       const customer = (await payload.findByID({
         collection: 'customers',

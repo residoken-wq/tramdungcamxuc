@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { Render } from '@puckeditor/core'
+import { StyledRender } from '@/components/design/StyledRender'
 import { puckConfig } from '@/puck/config'
 import { ResourcePostsSection } from '@/components/site/ResourcePostsSection'
 import { parseLibraryParams, splitAtPostsSlot } from '@/lib/library'
@@ -46,7 +46,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         {/* 1. Phần mở đầu Puck (trước ResourcePostsSlot) hoặc tiêu đề dự phòng */}
         {puckBefore ? (
           <div className="mb-8 md:mb-12">
-            <Render config={sectionConfig} data={puckBefore} />
+            <StyledRender config={sectionConfig} data={puckBefore} />
           </div>
         ) : !libraryData.introData ? (
           <header className="mb-8 sm:mb-12 text-center max-w-3xl mx-auto">
@@ -62,7 +62,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         {/* 3. Phần sau Puck (sau ResourcePostsSlot) */}
         {puckAfter && (
           <div className="mt-12 md:mt-16">
-            <Render config={sectionConfig} data={puckAfter} />
+            <StyledRender config={sectionConfig} data={puckAfter} />
           </div>
         )}
       </div>

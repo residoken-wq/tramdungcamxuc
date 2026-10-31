@@ -2944,6 +2944,92 @@ export const vi = {
       openTrackerButton: (days: number) => `Vào màn theo dõi ${days} ngày`,
     },
   },
+  hb13: {
+    heading: 'Dữ liệu của bạn',
+    defaultPrivacyNote:
+      'Dữ liệu hành trình được lưu trên máy chủ của Trạm Dừng Cảm Xúc theo tài khoản email của bạn và chỉ mình bạn xem được trên bảng theo dõi. Bạn có thể tải bản sao lưu về máy để lưu giữ riêng.',
+    buttons: {
+      exportBackup: 'Tải bản sao lưu',
+      exportCsv: (days: number) => `Tải bảng ${days} ngày (.csv)`,
+      restoreBackup: 'Khôi phục từ file',
+      copyForCoach: 'Sao chép kết quả gửi Coach',
+      restartJourney: 'Bắt đầu lại',
+    },
+    fileInputAriaLabel: 'Chọn file sao lưu JSON để khôi phục',
+    includeNotesLabel: 'Kèm ghi chú của tôi',
+    copiedToast: 'Đã sao chép kết quả gửi Coach!',
+    copyFailedToast: 'Không thể sao chép. Vui lòng thử lại.',
+    exportFailedToast: 'Không thể tải dữ liệu lúc này. Vui lòng thử lại.',
+    expiredHint:
+      'Quyền sử dụng đã hết hạn. Bạn vẫn có thể tải về hoặc sao chép dữ liệu; để khôi phục hoặc bắt đầu lại, vui lòng mua quyền sử dụng.',
+    restoreModal: {
+      title: 'Khôi phục dữ liệu từ bản sao lưu',
+      confirmMessage: (checkinCount: number) =>
+        `Bản sao lưu này sẽ cập nhật thông tin kế hoạch và ghi đè tối đa ${checkinCount} ngày check-in vào hành trình hiện tại của bạn. Bạn có chắc chắn muốn tiếp tục?`,
+      confirmButton: 'Xác nhận khôi phục',
+      restoringButton: 'Đang khôi phục…',
+      cancelButton: 'Hủy',
+      resultTitle: 'Kết quả khôi phục',
+      resultSummary: (restored: number, skipped: number) =>
+        `Đã khôi phục ${restored} ngày check-in${skipped > 0 ? `, bỏ qua ${skipped} dòng` : ''}.`,
+      reasonsHeading: 'Chi tiết các mục bỏ qua / lưu ý:',
+      closeButton: 'Đóng',
+    },
+    restartModal: {
+      title: 'Bắt đầu lại hành trình',
+      message:
+        'Kế hoạch hiện tại vẫn được giữ lại. Bạn sẽ được chuyển về trang thiết lập để tạo kế hoạch mới; sau khi lưu xong, kế hoạch mới sẽ trở thành hành trình hiện tại của bạn.',
+      confirmButton: 'Xác nhận bắt đầu lại',
+      restartingButton: 'Đang chuyển hướng…',
+      cancelButton: 'Hủy',
+    },
+    csv: {
+      headers: ['Ngày', 'Ngày lịch', 'Trạng thái', 'Cảm xúc', 'Ghi chú'] as const,
+      unrecordedStatus: 'Chưa ghi nhận',
+    },
+    coach: {
+      heading: '🌿 Tóm tắt hành trình Habit – Trạm Dừng Cảm Xúc',
+      identityLine: (val: string) => `• Tuyên ngôn: ${val}`,
+      rhythmLine: (val: string) => `• Nhịp tuần: ${val}`,
+      rhythmAllDays: 'Cả 7 ngày/tuần (7/7 ngày)',
+      datesLine: (start: string, finish: string) =>
+        `• Ngày bắt đầu / kết thúc: ${start} – ${finish}`,
+      datesUnknown: 'Chưa xác định',
+      progressLine: (voted: number, totalVoting: number, journeyDays: number) =>
+        `• Số ngày bỏ phiếu: ${voted}/${totalVoting} ngày (hành trình ${journeyDays} ngày)`,
+      streakLine: (streak: number) => `• Chuỗi hiện tại: ${streak} ngày`,
+      topEmotionLine: (label: string, emoji: string, count: number) =>
+        `• Cảm xúc gặp nhiều nhất: ${emoji} ${label} (${count} ngày)`,
+      noEmotionLine: '• Cảm xúc gặp nhiều nhất: Chưa ghi nhận',
+      notesHeading: '• Ghi chú của tôi:',
+      noteItem: (day: number, dateStr: string, note: string) =>
+        `  - Ngày ${day}${dateStr ? ` (${dateStr})` : ''}: ${note}`,
+    },
+    errors: {
+      unauthorized: 'Vui lòng đăng nhập để thực hiện thao tác này.',
+      accessDenied: 'Quyền sử dụng đã hết hạn. Vui lòng mua công cụ để tiếp tục.',
+      planNotFound: 'Không tìm thấy kế hoạch thói quen của bạn.',
+      forbidden: 'Bạn không có quyền thao tác trên kế hoạch này.',
+      fileTooLarge: 'File sao lưu vượt quá dung lượng tối đa 200 KB.',
+      invalidJson: 'File không đúng định dạng JSON.',
+      invalidFormat: 'File không phải bản sao lưu hợp lệ của Trạm Dừng Cảm Xúc.',
+      unsupportedVersion: 'Phiên bản bản sao lưu không được hỗ trợ.',
+      invalidSchema: 'Dữ liệu trong file sao lưu không hợp lệ hoặc vượt quá giới hạn cho phép.',
+      tooManyCheckins: 'File sao lưu có quá nhiều dòng check-in (tối đa 366 ngày).',
+      dayOutOfRange: (day: number, maxDays: number) =>
+        `Ngày ${day}: nằm ngoài phạm vi hành trình hiện tại (1–${maxDays} ngày).`,
+      futureDaySkipped: (day: number) => `Ngày ${day}: chưa tới ngày này nên chưa ghi được.`,
+      restOnVotingDaySkipped: (day: number) =>
+        `Ngày ${day}: ${'Hôm nay là ngày bỏ phiếu theo nhịp của bạn, không ghi nghỉ được.'}`,
+      duplicateDaySkipped: (day: number) =>
+        `Ngày ${day}: bị trùng lặp trong file sao lưu (đã bỏ qua dòng trùng).`,
+      startDateKeptNotice: (backupStart: string, currentStart: string) =>
+        `Giữ nguyên ngày bắt đầu của kế hoạch hiện tại (${currentStart}; file sao lưu ghi ${backupStart}).`,
+      journeyDaysKeptNotice: (backupDays: number, currentDays: number) =>
+        `Giữ nguyên số ngày hành trình của kế hoạch hiện tại (${currentDays} ngày; file sao lưu ghi ${backupDays} ngày).`,
+      rhythmLockedNotice: 'Giữ nguyên nhịp tuần hiện tại vì kế hoạch đã có check-in.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

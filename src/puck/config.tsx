@@ -6,6 +6,7 @@ import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
 import { vi } from '@/lib/i18n/vi'
 
+import { withBlockStyles } from './style/with-block-style'
 import { HeroImageBlock, type HeroImageProps } from './blocks/HeroImage'
 import { QuoteBlockConfig, type QuoteBlockProps } from './blocks/QuoteBlock'
 import { StatsBarBlock, type StatsBarProps } from './blocks/StatsBar'
@@ -198,7 +199,7 @@ export type PageComponentsProps = {
   ContactForms: ContactFormsProps
 }
 
-export const puckConfig: Config<PageComponentsProps> = {
+const basePuckConfig: Config<PageComponentsProps> = {
   categories: {
     intro: {
       title: 'Mở đầu',
@@ -679,6 +680,10 @@ export const puckConfig: Config<PageComponentsProps> = {
     TeamGrid: TeamGridBlock,
   },
 }
+
+// EB-04: every block may carry an optional `_style` (Style / Advanced tabs); blocks without it
+// render exactly as before.
+export const puckConfig: Config<PageComponentsProps> = withBlockStyles(basePuckConfig)
 
 /**
  * Lấy cấu hình Puck phù hợp với từng trang, gắn các quyền khóa khối tự động (VD: HeroTwoEntries trên trang chủ).
