@@ -237,7 +237,7 @@ exports[`SM-06: ContactForms component > renders columns layout with both B2C an
               class="pt-2"
             >
               <button
-                class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+                class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
                 type="submit"
               >
                 <span>
@@ -522,7 +522,7 @@ exports[`SM-06: ContactForms component > renders columns layout with both B2C an
               class="pt-2"
             >
               <button
-                class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+                class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
                 type="submit"
               >
                 <span>
@@ -809,7 +809,7 @@ exports[`SM-06: ContactForms component > renders tabs layout with tablist and sw
                 class="pt-2"
               >
                 <button
-                  class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+                  class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
                   type="submit"
                 >
                   <span>
@@ -1100,7 +1100,7 @@ exports[`SM-06: ContactForms component > renders tabs layout with tablist and sw
                 class="pt-2"
               >
                 <button
-                  class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
+                  class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
                   type="submit"
                 >
                   <span>
