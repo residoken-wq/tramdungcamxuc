@@ -1038,6 +1038,17 @@ Lần chạy seed đầu tiên điền sẵn chữ `[MẪU]` cho các mục còn
   - **Tên các kỹ thuật thực hành**: Được tự động lấy từ danh mục **Kỹ thuật thực hành** (`techniques`) đã xuất bản. Hana chỉnh sửa tên kỹ thuật trong CMS thì hình ảnh Boarding Pass của học viên sẽ hiển thị đúng tên mới nhất.
   - **Dữ liệu riêng tư không in trên ảnh**: Tấm vé Boarding Pass hoàn toàn không in tên, email, bảng điểm thói quen cũ, lý do riêng tư hay cảm xúc cá nhân của học viên, giúp học viên an tâm chia sẻ lên mạng xã hội hoặc lưu trữ riêng.
 
+**Khối "Dữ liệu của bạn" ở cuối màn 28 ngày (`/habit/tracker`) (HB-13)**:
+
+- Ở cuối trang theo dõi hành trình `/habit/tracker`, học viên có sẵn khối **Dữ liệu của bạn** để tự quản lý dữ liệu cá nhân hoàn toàn tự động mà **Hana không cần thao tác kỹ thuật gì thêm**:
+  1. **Tải bản sao lưu (JSON)**: Học viên tải toàn bộ kế hoạch và nhật ký check-in về máy dưới dạng file `.json` để lưu trữ cá nhân.
+  2. **Tải bảng 28 ngày (CSV)**: Học viên tải bảng theo dõi 28 ngày mở trực tiếp bằng Excel hoặc Google Sheets (hiển thị đầy đủ dấu tiếng Việt).
+  3. **Khôi phục từ file**: Học viên chọn file sao lưu `.json` đã tải trước đó để khôi phục lại kế hoạch và nhật ký check-in (yêu cầu tài khoản còn hạn dùng thử hoặc đã mua công cụ).
+  4. **Sao chép gửi Coach**: Học viên bấm một nút để sao chép bản tóm tắt tiến độ gọn gàng (tuyên ngôn, thói quen neo, bản tối giản, tỷ lệ bỏ phiếu, chuỗi ngày, cảm xúc) và dán gửi trực tiếp cho Coach Hana qua Zalo hoặc email trước buổi coaching 1:1. Mặc định không kèm ghi chú cá nhân từng ngày trừ khi học viên chủ động bật ô _"Kèm ghi chú từng ngày khi gửi Coach"_; câu trả lời **Lý do riêng** luôn được giữ kín, không bao giờ nằm trong bản sao chép này.
+  5. **Bắt đầu hành trình mới**: Khi muốn thiết lập một thói quen mới tại `/habit/5-phut`, học viên bấm nút này để khởi tạo kế hoạch mới. Kế hoạch cũ và toàn bộ lịch sử check-in cũ vẫn được giữ nguyên trong mục **Kế hoạch thói quen** (`habitPlans`) của CMS.
+- **Khi hết hạn dùng thử**: Học viên vẫn luôn tải được bản sao lưu JSON, bảng CSV và sao chép gửi Coach đúng như cam kết bảo toàn dữ liệu của Trạm; hai nút _Khôi phục từ file_ và _Bắt đầu hành trình mới_ sẽ tạm khóa kèm lời nhắc nâng cấp công cụ.
+- **Chỉnh sửa câu thông báo quyền riêng tư**: Hana có thể sửa dòng giải thích ở đầu khối này tại **Khóa Habit → Nội dung hành trình Habit → Câu về dữ liệu của bạn** (`privacyNote`). Nếu để trống, hệ thống tự động hiển thị câu mặc định chuẩn.
+
 ---
 
 ### 3.12. Quản lý và Thu hồi Chứng nhận (Certificates)
