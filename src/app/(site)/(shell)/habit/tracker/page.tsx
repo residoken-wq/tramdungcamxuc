@@ -111,11 +111,13 @@ export default async function HabitTrackerPage() {
     note: doc.note || null,
   }))
 
-  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm
+  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm và câu giải thích dữ liệu (HB-13 / HB-24)
   let stationNames: string[] = []
+  let privacyNote: string | null = null
   try {
     const journeyContent = await getHabitJourneyContent(payload)
     stationNames = (journeyContent.stations || []).map((s) => s.name).filter(Boolean)
+    privacyNote = journeyContent.privacyNote ?? null
   } catch (err) {
     // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
     console.error('Failed to load habit journey stations for tracker:', err)
@@ -148,6 +150,7 @@ export default async function HabitTrackerPage() {
         eligibility={eligibility}
         customerName={customer.name ?? null}
         journeyDays={journeyDays}
+        privacyNote={privacyNote}
       />
     </div>
   )
