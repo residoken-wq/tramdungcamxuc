@@ -388,3 +388,7 @@ Còn chờ Hana: câu 3–10 trong kế hoạch (chẩn đoán 8 hay 16 câu, ng
   - Job tổng **giữ tên cũ** "Lint, Typecheck, Test, Build & E2E": xanh khi mọi job cần chạy đều xanh (job bị bỏ qua vì không cần thì tính là đạt).
 - Hệ quả cho người viết test: **mỗi file e2e phải tự chạy được trên DB trống**, không dựa vào file e2e khác chạy trước (shard chia theo file, mỗi shard một DB).
 - Hệ quả cho agent: gom commit rồi push **một lần**; mỗi lần push lại là CI chạy lại từ đầu.
+- **Bổ sung cùng ngày (anh Nhân chọn cách 1 + 4):**
+  - **Unit test ở PR chỉ chạy phần liên quan** (Vitest `--changed <base>`, dò theo chuỗi import), cộng các test đọc file nguồn từ đĩa (tương phản màu, font, token…) vì import không thấy được chúng. Sửa `package.json`, lockfile, `tsconfig.json`, config Vitest, `global-setup`, snapshot, migration, `payload.config.ts` hay workflow thì chạy **đủ**. Trên `main` luôn chạy đủ.
+  - **E2E chia 3 shard** (trước là 2), vẫn chạy **đủ** ở mọi PR code.
+  - Không dùng `--last-failed` hay Playwright `--only-changed`: cách đầu bỏ sót test bị hỏng mới; cách sau không thấy được thay đổi code trang vì E2E gọi trang qua trình duyệt.
