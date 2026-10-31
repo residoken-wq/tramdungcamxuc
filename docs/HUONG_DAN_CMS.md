@@ -941,6 +941,33 @@ Bạn có 3 cách rất dễ dàng:
 
 ---
 
+### 3.10.4. Nội dung flow Habit mới: bước 1, 2, 5, 6 (HB-24)
+
+**Mục đích**: Nhập chữ cho các bước của Habit Loop 5 phút bản mới (3 giai đoạn / 6 bước). Chữ nằm cùng màn **Khóa Habit → Nội dung hành trình Habit**. Giao diện từng bước lên dần theo các task HB-17 (bước 1), HB-18 (bước 2), HB-21 (bước 5), HB-22 (bước 6). Trước khi các task đó xong, nhập ở đây chưa hiện ra trang.
+
+Lần chạy seed đầu tiên điền sẵn chữ `[MẪU]` cho các mục còn trống. Hana thay bằng nội dung thật. Seed không bao giờ ghi đè chữ Hana đã nhập.
+
+1. **Bước 1 – Khám đúng bệnh** (nhóm _Bước 1 – Khám đúng bệnh_):
+   - **Tiêu đề**, **Lời mở**.
+   - **Câu trích**: có câu trích thì **bắt buộc** ghi tác giả và nguồn đã kiểm, không thì hệ thống không cho lưu. Để trống cả 3 ô thì bước không hiện câu trích.
+   - **Các con số** (tối đa 6): mỗi dòng gồm con số, ý nghĩa và **nguồn (bắt buộc)**. Không có nguồn thì không thêm, để tránh đưa số liệu chưa kiểm lên web (ví dụ các con số "80% thất bại", "40% bỏ cuộc" trong bản tham chiếu chưa có nguồn).
+   - **Câu hỏi khảo sát** (tối đa 12, bản mẫu 8 câu): mỗi câu chọn 1 giai đoạn (Tín hiệu / Khao khát / Phản hồi / Phần thưởng). Khách chấm mỗi câu từ 1 đến 5. Giai đoạn có **điểm trung bình cao nhất** là nút thắt, hòa điểm thì lấy giai đoạn đứng trước. Cách tính giống quiz chẩn đoán `/habit/chan-doan`.
+   - **Nhãn mức 1** / **Nhãn mức 5**: chữ hiện ở hai đầu thang điểm.
+   - **Gợi ý theo nút thắt**: mỗi giai đoạn **một** dòng (tiêu đề + gợi ý). Nhập 2 dòng cùng giai đoạn thì hệ thống báo lỗi.
+2. **Bước 2 – 3 điều có thể bạn chưa biết** (trong nhóm _Nguyên lý 1%_, tối đa 3 dòng): tiêu đề + nội dung. Số liệu trong đây cũng phải có nguồn.
+3. **Bước 5 – Vòng lặp thói quen**: **Lời mở**, **Giải thích 4 giai đoạn** (mỗi giai đoạn một dòng), **4 quy tắc** (tiêu đề + giải thích).
+4. **Bước 6 – Boarding Pass → Caption gợi ý**: câu khách bấm "Sao chép caption" để đăng kèm ảnh. Chèn được 3 ô tự điền:
+   - `{tuyen_ngon}`: câu "Tôi sẽ … để trở thành …" của khách.
+   - `{so_ngay}`: số ngày hành trình (đang là 28).
+   - `{ngay_bat_dau}`: ngày bắt đầu, dạng dd/MM/yyyy.
+
+   Gõ sai tên ô (ví dụ `{ly_do_rieng}`) thì hệ thống báo lỗi. Lý do riêng của khách **không** chèn được vào caption. Caption tối đa 2.200 ký tự.
+
+5. **Câu về dữ liệu của bạn**: câu giải thích dữ liệu của khách được lưu ở đâu. Phải **đúng sự thật**: dữ liệu lưu trên máy chủ của Trạm theo tài khoản email của khách, **không** phải "chỉ nằm trong trình duyệt" như bản tham chiếu.
+6. Bấm **Lưu**.
+
+---
+
 ### 3.11. Theo dõi Kế hoạch Thói quen & Tracker 28 ngày
 
 **Mục đích**: Xem danh sách các kế hoạch thiết lập thói quen (`habitPlans`) và tiến độ check-in 28 ngày của khách hàng/học viên.
