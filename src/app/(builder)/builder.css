@@ -31,9 +31,29 @@
  * EB-03: Elementor-style editor frame adjustments
  */
 
+/* Constrain Puck root & layout to 100% of the flex-1 container (below top banner) so bottom toolbar stays in view */
+[class*='_Puck_'],
+[class*='_PuckLayout_'] {
+  height: 100% !important;
+}
+
+/* Collapse Puck's 68px outer plugin rail and set left panel width to 280px */
+[class*='_PuckLayout-inner_'] {
+  --puck-pluginbar-width: 0px !important;
+  --puck-sidebar-left-width: 280px !important;
+}
+
+[class*='_PuckHeader_'] {
+  padding-left: 0 !important;
+}
+
+[class*='_PuckHeader-inner_'] {
+  border-left: 0 !important;
+}
+
 /* Left sidebar width: ~280px (wider canvas on 1440px) */
 [class*='_Sidebar--left_'] {
-  width: var(--puck-user-sidebar-left-width, 280px) !important;
+  width: var(--puck-sidebar-left-width, 280px) !important;
   min-width: 280px !important;
   max-width: 320px;
 }
