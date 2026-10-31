@@ -959,3 +959,62 @@ export const footerMenu: NavItemSeed[] = legalPages.map((p) => ({
   linkType: 'url' as const,
   url: `/${p.slug}`,
 }))
+
+// HB-24: [MẪU] content for the new habit flow (steps 1, 2, 5, 6). Hana replaces it in the CMS.
+// No stats or quotes here: they need a checked source (AGENTS §14).
+export const habitFlowContent = {
+  diagnose: {
+    title: '[MẪU] Khám đúng bệnh',
+    questions: [
+      { statement: '[MẪU] Câu khảo sát 1', stage: 'cue' },
+      { statement: '[MẪU] Câu khảo sát 2', stage: 'cue' },
+      { statement: '[MẪU] Câu khảo sát 3', stage: 'craving' },
+      { statement: '[MẪU] Câu khảo sát 4', stage: 'craving' },
+      { statement: '[MẪU] Câu khảo sát 5', stage: 'response' },
+      { statement: '[MẪU] Câu khảo sát 6', stage: 'response' },
+      { statement: '[MẪU] Câu khảo sát 7', stage: 'reward' },
+      { statement: '[MẪU] Câu khảo sát 8', stage: 'reward' },
+    ],
+    scaleMinLabel: '[MẪU] Không đúng với tôi',
+    scaleMaxLabel: '[MẪU] Rất đúng với tôi',
+    results: [
+      { stage: 'cue', title: '[MẪU] Nút thắt ở Tín hiệu', suggestion: '[MẪU] Gợi ý cho Tín hiệu' },
+      {
+        stage: 'craving',
+        title: '[MẪU] Nút thắt ở Khao khát',
+        suggestion: '[MẪU] Gợi ý cho Khao khát',
+      },
+      {
+        stage: 'response',
+        title: '[MẪU] Nút thắt ở Phản hồi',
+        suggestion: '[MẪU] Gợi ý cho Phản hồi',
+      },
+      {
+        stage: 'reward',
+        title: '[MẪU] Nút thắt ở Phần thưởng',
+        suggestion: '[MẪU] Gợi ý cho Phần thưởng',
+      },
+    ],
+  },
+  onePercentUnknowns: [
+    { title: '[MẪU] Điều chưa biết 1', body: '[MẪU] Nội dung 1' },
+    { title: '[MẪU] Điều chưa biết 2', body: '[MẪU] Nội dung 2' },
+    { title: '[MẪU] Điều chưa biết 3', body: '[MẪU] Nội dung 3' },
+  ],
+  loop: {
+    stages: [
+      { stage: 'cue', title: '[MẪU] Tín hiệu', explanation: '[MẪU] Giải thích Tín hiệu' },
+      { stage: 'craving', title: '[MẪU] Khao khát', explanation: '[MẪU] Giải thích Khao khát' },
+      { stage: 'response', title: '[MẪU] Phản hồi', explanation: '[MẪU] Giải thích Phản hồi' },
+      { stage: 'reward', title: '[MẪU] Phần thưởng', explanation: '[MẪU] Giải thích Phần thưởng' },
+    ],
+    rules: [
+      { title: '[MẪU] Quy tắc 1', body: '[MẪU] Giải thích quy tắc 1' },
+      { title: '[MẪU] Quy tắc 2', body: '[MẪU] Giải thích quy tắc 2' },
+      { title: '[MẪU] Quy tắc 3', body: '[MẪU] Giải thích quy tắc 3' },
+      { title: '[MẪU] Quy tắc 4', body: '[MẪU] Giải thích quy tắc 4' },
+    ],
+  },
+  boardingPassCaption: '[MẪU] {tuyen_ngon} – hành trình {so_ngay} ngày bắt đầu {ngay_bat_dau}.',
+  privacyNote: '[MẪU] Câu về nơi lưu dữ liệu của bạn – Hana soạn.',
+} as const
