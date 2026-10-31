@@ -16,6 +16,8 @@ export type HabitFlowStep = 1 | 2 | 3 | 4 | 5 | 6
 export interface HabitFlowDraft extends HabitPlanDraft {
   version: typeof HABIT_FLOW_DRAFT_VERSION
   step: HabitFlowStep
+  diagnoseAnswers?: Record<string, number>
+  diagnoseTopStage?: HabitStage
 }
 
 export const LEGACY_STEP_MAP: Readonly<Record<1 | 2 | 3 | 4, HabitFlowStep>> = {
@@ -27,12 +29,20 @@ export const LEGACY_STEP_MAP: Readonly<Record<1 | 2 | 3 | 4, HabitFlowStep>> = {
 
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/
 const VALID_WEEKDAYS = new Set<string>(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
+const VALID_STAGES = new Set<string>(['cue', 'craving', 'response', 'reward'])
+
+export function getDiagnoseQuestionKey(question: { id?: string | null }, index: number): string {
+  return typeof question.id === 'string' && question.id.trim().length > 0
+    ? question.id.trim()
+    : `q-${index}`
+}
 
 export function getDefaultHabitFlowDraft(): HabitFlowDraft {
   return {
     ...getDefaultHabitDraft(),
     version: HABIT_FLOW_DRAFT_VERSION,
     step: 1,
+    diagnoseAnswers: {},
   }
 }
 
@@ -63,13 +73,14 @@ export function mapLegacyStepToFlowStep(rawStep: unknown, rawVersion: unknown): 
 export function migrateHabitDraft(
   raw: unknown,
   knownTechniqueIds?: ReadonlySet<number>,
+  knownDiagnoseQuestionIds?: ReadonlySet<string>,
 ): HabitFlowDraft {
   const base = getDefaultHabitFlowDraft()
   if (!raw || typeof raw !== 'object') {
     return base
   }
 
-  const parsed = raw as Partial<HabitPlanDraft> & { version?: unknown }
+  const parsed = raw as Partial<HabitFlowDraft> & { version?: unknown }
 
   const rawScorecard = Array.isArray(parsed.scorecard) ? parsed.scorecard : []
   const cleanedScorecard: HabitScorecardItem[] = rawScorecard
@@ -146,6 +157,36 @@ export function migrateHabitDraft(
 
   const step = mapLegacyStepToFlowStep(parsed.step, parsed.version)
 
+  const cleanedDiagnoseAnswers: Record<string, number> = {}
+  if (parsed.diagnoseAnswers && typeof parsed.diagnoseAnswers === 'object') {
+    for (const [key, val] of Object.entries(parsed.diagnoseAnswers)) {
+      if (
+        typeof key === 'string' &&
+        key.trim().length > 0 &&
+        typeof val === 'number' &&
+        Number.isInteger(val) &&
+        val >= 1 &&
+        val <= 5 &&
+        (!knownDiagnoseQuestionIds || knownDiagnoseQuestionIds.has(key))
+      ) {
+        cleanedDiagnoseAnswers[key] = val
+      }
+    }
+  }
+
+  let cleanedDiagnoseTopStage: HabitStage | undefined =
+    typeof parsed.diagnoseTopStage === 'string' && VALID_STAGES.has(parsed.diagnoseTopStage)
+      ? (parsed.diagnoseTopStage as HabitStage)
+      : undefined
+
+  if (
+    knownDiagnoseQuestionIds &&
+    (knownDiagnoseQuestionIds.size === 0 ||
+      Object.keys(cleanedDiagnoseAnswers).length < knownDiagnoseQuestionIds.size)
+  ) {
+    cleanedDiagnoseTopStage = undefined
+  }
+
   return {
     version: HABIT_FLOW_DRAFT_VERSION,
     step,
@@ -157,6 +198,8 @@ export function migrateHabitDraft(
     personText,
     identityStatement,
     chosenTechniques,
+    diagnoseAnswers: cleanedDiagnoseAnswers,
+    ...(cleanedDiagnoseTopStage ? { diagnoseTopStage: cleanedDiagnoseTopStage } : {}),
     name: '',
     email: '',
     consent: false,
