@@ -9,46 +9,51 @@ export interface DesignFontOption {
   value: string
   label: string
   category: FontCategory
+  /** Weights among 400 / 600 / 700 that Google serves for this family (EB-02 font request). */
+  weights: readonly number[]
+  /** Google serves an italic style. */
+  italic: boolean
 }
 
-const font = (value: string, category: FontCategory): DesignFontOption => ({
-  value,
-  label: value,
-  category,
-})
+const font = (
+  value: string,
+  category: FontCategory,
+  weights: readonly number[],
+  italic: boolean,
+): DesignFontOption => ({ value, label: value, category, weights, italic })
 
 export const DESIGN_FONT_OPTIONS: readonly DesignFontOption[] = [
   // Brand Book 2026 (Trạm Dừng Cảm Xúc) defaults first.
-  font('Anton', 'display'),
-  font('Montserrat', 'sans-serif'),
-  font('Playfair Display', 'serif'),
-  font('Inter', 'sans-serif'),
-  font('Be Vietnam Pro', 'sans-serif'),
-  font('Roboto', 'sans-serif'),
-  font('Open Sans', 'sans-serif'),
-  font('Noto Sans', 'sans-serif'),
-  font('Nunito', 'sans-serif'),
-  font('Mulish', 'sans-serif'),
-  font('Manrope', 'sans-serif'),
-  font('Lexend', 'sans-serif'),
-  font('Work Sans', 'sans-serif'),
-  font('Source Sans 3', 'sans-serif'),
-  font('Raleway', 'sans-serif'),
-  font('Josefin Sans', 'sans-serif'),
-  font('Quicksand', 'sans-serif'),
-  font('Barlow', 'sans-serif'),
-  font('Arimo', 'sans-serif'),
-  font('Oswald', 'display'),
-  font('Comfortaa', 'display'),
-  font('Lora', 'serif'),
-  font('Merriweather', 'serif'),
-  font('Noto Serif', 'serif'),
-  font('Roboto Slab', 'serif'),
-  font('EB Garamond', 'serif'),
-  font('Cormorant Garamond', 'serif'),
-  font('Prata', 'serif'),
-  font('Dancing Script', 'handwriting'),
-  font('Pacifico', 'handwriting'),
+  font('Anton', 'display', [400], false),
+  font('Montserrat', 'sans-serif', [400, 600, 700], true),
+  font('Playfair Display', 'serif', [400, 600, 700], true),
+  font('Inter', 'sans-serif', [400, 600, 700], true),
+  font('Be Vietnam Pro', 'sans-serif', [400, 600, 700], true),
+  font('Roboto', 'sans-serif', [400, 600, 700], true),
+  font('Open Sans', 'sans-serif', [400, 600, 700], true),
+  font('Noto Sans', 'sans-serif', [400, 600, 700], true),
+  font('Nunito', 'sans-serif', [400, 600, 700], true),
+  font('Mulish', 'sans-serif', [400, 600, 700], true),
+  font('Manrope', 'sans-serif', [400, 600, 700], false),
+  font('Lexend', 'sans-serif', [400, 600, 700], false),
+  font('Work Sans', 'sans-serif', [400, 600, 700], true),
+  font('Source Sans 3', 'sans-serif', [400, 600, 700], true),
+  font('Raleway', 'sans-serif', [400, 600, 700], true),
+  font('Josefin Sans', 'sans-serif', [400, 600, 700], true),
+  font('Quicksand', 'sans-serif', [400, 600, 700], false),
+  font('Barlow', 'sans-serif', [400, 600, 700], true),
+  font('Arimo', 'sans-serif', [400, 600, 700], true),
+  font('Oswald', 'display', [400, 600, 700], false),
+  font('Comfortaa', 'display', [400, 600, 700], false),
+  font('Lora', 'serif', [400, 600, 700], true),
+  font('Merriweather', 'serif', [400, 600, 700], true),
+  font('Noto Serif', 'serif', [400, 600, 700], true),
+  font('Roboto Slab', 'serif', [400, 600, 700], false),
+  font('EB Garamond', 'serif', [400, 600, 700], true),
+  font('Cormorant Garamond', 'serif', [400, 600, 700], true),
+  font('Prata', 'serif', [400], false),
+  font('Dancing Script', 'handwriting', [400, 600, 700], false),
+  font('Pacifico', 'handwriting', [400], false),
 ]
 
 export const DESIGN_FONT_VALUES: readonly string[] = DESIGN_FONT_OPTIONS.map((f) => f.value)
