@@ -80,6 +80,7 @@ export const HabitReflections: CollectionConfig = {
   admin: {
     group: vi.cms.nav.system,
     hidden: isHiddenFromEditor,
+    useAsTitle: 'reflectionKey',
     description: vi.hb12.reflectionDesc,
     defaultColumns: ['customer', 'plan', 'stationIndex', 'createdAt'],
   },

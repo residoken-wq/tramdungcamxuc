@@ -698,10 +698,7 @@ export async function restoreBackup(
         const existingRefRes = await payload.find({
           collection: 'habitReflections',
           where: {
-            and: [
-              { plan: { equals: plan.id } },
-              { stationIndex: { equals: ref.stationIndex } },
-            ],
+            and: [{ plan: { equals: plan.id } }, { stationIndex: { equals: ref.stationIndex } }],
           },
           limit: 1,
           depth: 0,

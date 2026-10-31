@@ -21,8 +21,8 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
     it('mọi collection đều có admin.group thuộc danh sách 6 nhóm hợp lệ', async () => {
       const config = await configPromise
       const projectCollections = config.collections.filter((col) => isProjectCollection(col.slug))
-      // 35 + faqs, teamMembers (SM-01)
-      expect(projectCollections.length).toBe(37)
+      // 35 + faqs, teamMembers (SM-01) + habitReflections (HB-12)
+      expect(projectCollections.length).toBe(38)
 
       for (const col of projectCollections) {
         expect(
@@ -104,13 +104,13 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
       ).toBe(true)
     })
 
-    it('tất cả 14 collections thuộc nhóm Hệ thống có admin.hidden là hàm ẩn với editor', async () => {
+    it('tất cả 15 collections thuộc nhóm Hệ thống có admin.hidden là hàm ẩn với editor', async () => {
       const config = await configPromise
       const systemCollections = config.collections.filter(
         (col) => isProjectCollection(col.slug) && col.admin?.group === vi.cms.nav.system,
       )
 
-      expect(systemCollections.length).toBe(14)
+      expect(systemCollections.length).toBe(15)
 
       const editorUser = {
         id: 2,

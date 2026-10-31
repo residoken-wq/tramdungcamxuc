@@ -549,7 +549,8 @@ export function buildHabitCsv(
     )
     for (const ref of reflections) {
       const stationLabel =
-        ref.stationName || `Trạm ${(typeof ref.stationIndex === 'number' ? ref.stationIndex : 0) + 1}`
+        ref.stationName ||
+        `Trạm ${(typeof ref.stationIndex === 'number' ? ref.stationIndex : 0) + 1}`
       for (const ans of ref.answers || []) {
         lines.push(
           [
