@@ -6,16 +6,16 @@ Spec chung: `docs/plan/HB_FLOW_V2.md` (bảng khác biệt, quyết định 31/1
 
 ## Hai dây việc chạy song song
 
-| Dây                              | Máy    | Thứ tự                                                                 |
-| -------------------------------- | ------ | ---------------------------------------------------------------------- |
-| **Wizard** `/habit/5-phut`       | Laptop | (HB-24 CMS – Planning) → HB-17 → HB-18 → HB-19 → HB-20 → HB-21 → HB-22 |
-| **Màn 28 ngày** `/habit/tracker` | PC nhà | HB-23 → HB-13 → HB-12 → HB-14 → HB-15                                  |
+| Dây                              | Máy    | Thứ tự                                                                             |
+| -------------------------------- | ------ | ---------------------------------------------------------------------------------- |
+| **Wizard** `/habit/5-phut`       | Laptop | (HB-24 CMS – Planning) → HB-17 → (chờ HB-12) HB-18 → HB-19 → HB-20 → HB-21 → HB-22 |
+| **Màn 28 ngày** `/habit/tracker` | PC nhà | HB-23 → HB-13 → HB-12 → HB-14 → HB-15                                              |
 
 - **Ranh giới file giữa hai dây.**
   - Dây Wizard: không sửa `src/components/ui/ProgressGrid.tsx`, `src/components/habit/{TrackerDashboard,CheckInModal,TrackerSummaryCard,StationReflectionModal}.tsx`, `src/app/(site)/(shell)/habit/tracker/**`, `src/lib/habit/tracker-*.ts`.
   - Dây Màn 28 ngày: không sửa `src/components/habit/flow/**`, `src/app/(site)/(shell)/habit/5-phut/**`.
 - **🔒 Khoá migration – chỉ một task tạo migration tại một thời điểm.**
-  - Thứ tự: **HB-24 (PR #228, đã merge) → HB-18 → HB-12**. Các task khác **không** tạo migration.
+  - Thứ tự (đảo 31/10, anh Nhân): **HB-24 (PR #228, đã merge) → HB-12 → HB-18**. Các task khác **không** tạo migration.
   - Task cần migration mà task trước trong thứ tự chưa merge thì **DỪNG** ở bước 0.
 - **`vi.ts`.** Mỗi task thêm khối riêng `hbXX` ở **cuối file**. Không sắp xếp lại khối của người khác.
 
@@ -85,7 +85,7 @@ gh pr create --draft --base main --title "<tiêu đề trong prompt>" --body "<m
    - **Xoá** customer / kế hoạch / dữ liệu thử sau khi kiểm.
 3. `git status` sạch, push, `node scripts/task-time.mjs report`. Dán dòng `THỜI GIAN THỰC …` vào mô tả PR, rồi `gh pr ready`.
 4. **KHÔNG** chạy e2e / `pnpm dev` lâu. **KHÔNG** `gh pr merge`.
-   - CI chạy song song (~10 phút). Push mới huỷ lượt CI cũ của PR → gom commit, push **một lần** khi đã kiểm xong. Mỗi file e2e phải tự đủ trên DB trống (E2E chia 2 shard, mỗi shard một DB).
+   - CI chạy song song (~10 phút). Push mới huỷ lượt CI cũ của PR → gom commit, push **một lần** khi đã kiểm xong. Mỗi file e2e phải tự đủ trên DB trống (E2E chia 3 shard, mỗi shard một DB). CI ở PR chỉ chạy unit test liên quan, nên vẫn phải chạy `pnpm test` **đủ** ở máy trước khi nộp.
 5. Báo cáo theo mẫu mục 13 AGENTS.md, gồm:
    - link PR;
    - dòng `THỜI GIAN THỰC …`;
