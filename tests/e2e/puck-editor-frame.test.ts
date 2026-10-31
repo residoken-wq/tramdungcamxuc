@@ -126,7 +126,9 @@ test.describe('EB-03: Elementor-style editor frame (block library search, viewpo
       await expect(mobileViewportBtn).toHaveAttribute('aria-pressed', 'true')
 
       // 8. Undo via EditorToolbar -> Block should disappear
-      const undoBtn = page.getByRole('button', { name: /Hoàn tác/i })
+      // Puck's own header also has an undo button: use the one in the EB-03 bottom toolbar.
+      const toolbar = page.locator('footer[aria-label="Thanh công cụ trình dựng"]')
+      const undoBtn = toolbar.getByRole('button', { name: 'Hoàn tác', exact: true })
       await expect(undoBtn).toBeVisible()
       await expect(undoBtn).toBeEnabled()
       await undoBtn.click()
