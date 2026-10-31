@@ -2821,6 +2821,14 @@ export const vi = {
     ariaDay: (day: number, statusText: string, emotionText?: string) =>
       `Ngày ${day}: ${statusText}${emotionText ? `, cảm xúc: ${emotionText}` : ''}`,
   },
+  hb23: {
+    departure: (dateStr: string) => `Khởi hành: ${dateStr}`,
+    finish: (day: number, dateStr: string) => `Ngày ${day} · Về đích: ${dateStr}`,
+    encouragementRule: 'Lỡ một ngày là bình thường. Chỉ cần đừng lỡ hai ngày bỏ phiếu liền.',
+    privateReasonHeading: 'Vì sao điều này quan trọng với bạn?',
+    ariaDayDateSuffix: (dateStr: string) => `, ngày ${dateStr}`,
+    stationDateRange: (startShort: string, endShort: string) => `(${startShort} – ${endShort})`,
+  },
   hb16: {
     stages: {
       discover: 'Khám',
