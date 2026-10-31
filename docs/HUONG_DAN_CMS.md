@@ -1008,6 +1008,11 @@ Lần chạy seed đầu tiên điền sẵn chữ `[MẪU]` cho các mục còn
     - Nếu là **ngày nghỉ theo nhịp**: Modal hiển thị đầy đủ 4 lựa chọn kèm dòng thông điệp dịu dàng: _"Ngày nghỉ theo nhịp – ghi gì cũng không tính vào 90%"_.
   - **Tiến độ 90% và Chuỗi rèn luyện**: Tỷ lệ hoàn thành và chuỗi ngày rèn luyện (`currentStreak`) trên đầu trang chỉ tính dựa trên các ngày bỏ phiếu đã cam kết, không bị ảnh hưởng bởi ngày nghỉ.
   - **Banner khích lệ "Lỡ nhịp 1 ngày"**: Banner khích lệ tinh thần _"Lỡ nhịp 1 ngày là không sao cả"_ kích hoạt tự động khi học viên lỡ đúng 1 ngày bỏ phiếu gần nhất, bỏ qua các ngày nghỉ theo nhịp.
+- **Hiển thị ngày lịch thực tế và nhắc lại Lý do riêng trên Tracker (HB-23)**:
+  - **Ngày lịch thực tế trên từng ô ngày**: Giao diện Tracker `/habit/tracker` tự động tính toán và hiển thị ngày tháng thực tế dạng `dd/MM` ngay dưới số ngày của từng ô trong lưới, tính toán theo trường Ngày bắt đầu (`startDate`) của kế hoạch theo giờ Việt Nam.
+  - **Khoảng ngày lịch từng trạm**: Cạnh tiêu đề từng trạm (ví dụ `Trạm 1  Ngày 1 – 7`), hệ thống hiển thị thêm khoảng ngày lịch `(dd/MM – dd/MM)`.
+  - **Khởi hành & Về đích**: Đầu trang Tracker hiển thị rõ ràng ngày **Khởi hành: dd/MM/yyyy** (ngày 1) và **Ngày [journeyDays] · Về đích: dd/MM/yyyy** (ngày cuối hành trình), kèm câu nhắc nhở đồng hành chuẩn thương hiệu: _"Lỡ một ngày là bình thường. Chỉ cần đừng lỡ hai ngày bỏ phiếu liền."_
+  - **Tự động nhắc lại Lý do riêng khi lỡ nhịp**: Khi học viên lỡ từ 1 ngày bỏ phiếu trở lên (`missedVotingRun.count >= 1`) và kế hoạch có câu trả lời lý do riêng (`privateReason`), hệ thống tự động hiển thị khối _"Vì sao điều này quan trọng với bạn?"_ với đúng nguyên văn câu của học viên. Nội dung này chỉ hiển thị riêng cho chính học viên đó, không gửi analytics hay ra ngoài.
 
 **Quy tắc bảo vệ quyền riêng tư người học (Quan trọng)**:
 

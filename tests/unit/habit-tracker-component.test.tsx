@@ -15,6 +15,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import * as trackerActions from '@/lib/habit/tracker-actions'
 import { CheckInModal } from '@/components/habit/CheckInModal'
 import { ProgressGrid, type ProgressStationItem } from '@/components/ui/ProgressGrid'
+import { TrackerDashboard } from '@/components/habit/TrackerDashboard'
+import { getVietnamYmd, addVietnamDays } from '@/lib/habit/tracker-stats'
+import { vi as i18nVi } from '@/lib/i18n/vi'
 
 describe('Habit Tracker Component Tests (HB-11)', () => {
   describe('1. CheckInModal với 4 trạng thái', () => {
@@ -194,6 +197,83 @@ describe('Habit Tracker Component Tests (HB-11)', () => {
       expect((day4 as HTMLButtonElement).disabled).toBe(true)
       fireEvent.click(day4)
       expect(mockSelect).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('3. TrackerDashboard HB-23 Real Dates & Private Reason', () => {
+    it('hiển thị header Khởi hành / Về đích đúng theo startDate và câu nhắc lỡ 1 ngày', () => {
+      // 2026-10-30T17:00:00.000Z = 31/10/2026 VN
+      const startDate = '2026-10-30T17:00:00.000Z'
+
+      render(
+        <TrackerDashboard
+          planId={101}
+          currentDay={1}
+          journeyDays={28}
+          startDate={startDate}
+          initialCheckins={[]}
+          buyUrl="/thanh-toan"
+        />,
+      )
+
+      expect(screen.getByText(/Khởi hành: 31\/10\/2026/i)).toBeDefined()
+      expect(screen.getByText(/Ngày 28 · Về đích: 27\/11\/2026/i)).toBeDefined()
+      expect(screen.getByText(i18nVi.hb23.encouragementRule)).toBeDefined()
+    })
+
+    it('không hiển thị khối lý do riêng khi không lỡ nhịp', () => {
+      render(
+        <TrackerDashboard
+          planId={101}
+          currentDay={1}
+          journeyDays={28}
+          startDate="2026-10-30T17:00:00.000Z"
+          privateReason="Vì sức khỏe và con gái"
+          initialCheckins={[{ day: 1, done: true, status: 'voted' }]}
+          buyUrl="/thanh-toan"
+        />,
+      )
+
+      expect(screen.queryByText(i18nVi.hb23.privateReasonHeading)).toBeNull()
+      expect(screen.queryByText('Vì sức khỏe và con gái')).toBeNull()
+    })
+
+    it('hiển thị khối lý do riêng khi lỡ nhịp và có privateReason', () => {
+      // startDate từ hôm qua -> hôm nay là ngày 2, ngày 1 bị lỡ -> missedRun.count >= 1
+      const startDateYesterday = addVietnamDays(getVietnamYmd(new Date()), -1)
+
+      render(
+        <TrackerDashboard
+          planId={101}
+          currentDay={2}
+          journeyDays={28}
+          startDate={startDateYesterday}
+          privateReason="Vì sức khỏe và con gái"
+          initialCheckins={[{ day: 1, done: false, status: 'missed' }]}
+          buyUrl="/thanh-toan"
+        />,
+      )
+
+      expect(screen.getByText(i18nVi.hb23.privateReasonHeading)).toBeDefined()
+      expect(screen.getByText('Vì sức khỏe và con gái')).toBeDefined()
+    })
+
+    it('không hiển thị khối lý do riêng khi lỡ nhịp nhưng privateReason rỗng hoặc chỉ có khoảng trắng', () => {
+      const startDateYesterday = addVietnamDays(getVietnamYmd(new Date()), -1)
+
+      render(
+        <TrackerDashboard
+          planId={101}
+          currentDay={2}
+          journeyDays={28}
+          startDate={startDateYesterday}
+          privateReason="   "
+          initialCheckins={[{ day: 1, done: false, status: 'missed' }]}
+          buyUrl="/thanh-toan"
+        />,
+      )
+
+      expect(screen.queryByText(i18nVi.hb23.privateReasonHeading)).toBeNull()
     })
   })
 })

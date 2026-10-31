@@ -13,6 +13,7 @@ export interface ProgressDayItem {
   emotionKey?: string
   note?: string
   disabled?: boolean
+  date?: { short: string; full: string } | null
 }
 
 export interface ProgressStationItem {
@@ -226,7 +227,10 @@ export function ProgressGrid({
 
     const emotion = emotionKey ? getEmotion(emotionKey) : undefined
     const statusText = getStatusLabel(status)
-    const ariaLabel = vi.hb11.ariaDay(day, statusText, emotion?.label)
+    let ariaLabel = vi.hb11.ariaDay(day, statusText, emotion?.label)
+    if (item.date?.full) {
+      ariaLabel += vi.hb23.ariaDayDateSuffix(item.date.full)
+    }
 
     let stateStyle = ''
     let indicatorIcon: React.ReactNode = null
@@ -330,13 +334,22 @@ export function ProgressGrid({
         aria-label={ariaLabel}
         className={[
           'relative flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl border transition-all motion-reduce:transition-none duration-150',
-          'min-w-0 min-h-[46px] sm:min-h-[58px]',
+          item.date?.short
+            ? 'min-w-0 min-h-[56px] sm:min-h-[64px]'
+            : 'min-w-0 min-h-[46px] sm:min-h-[58px]',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy',
           stateStyle,
         ].join(' ')}
       >
         {/* Day Number */}
         <span className="font-ui text-xs sm:text-sm leading-none font-bold">{day}</span>
+
+        {/* Calendar Date (HB-23) */}
+        {item.date?.short && (
+          <span className="font-sans text-[10px] sm:text-[11px] leading-tight font-medium mt-0.5 select-none">
+            {item.date.short}
+          </span>
+        )}
 
         {/* Status Indicator Slot */}
         <div className="flex items-center justify-center h-4 w-4 mt-1" aria-hidden="true">
@@ -376,6 +389,18 @@ export function ProgressGrid({
                   <span className="text-xs font-sans text-deep-navy/70">
                     {vi.hb11.stationRange(st.fromDay, st.toDay)}
                   </span>
+                  {(() => {
+                    const firstDate = st.days[0]?.date?.short
+                    const lastDate = st.days[st.days.length - 1]?.date?.short
+                    if (firstDate && lastDate) {
+                      return (
+                        <span className="text-xs font-sans text-deep-navy/70">
+                          {vi.hb23.stationDateRange(firstDate, lastDate)}
+                        </span>
+                      )
+                    }
+                    return null
+                  })()}
                 </div>
                 <span className="text-xs font-ui font-semibold px-2.5 py-0.5 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/15 shrink-0">
                   {vi.hb11.stationProgress(stationVoted, stationTotal)}

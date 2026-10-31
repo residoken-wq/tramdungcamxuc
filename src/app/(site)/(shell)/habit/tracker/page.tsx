@@ -135,6 +135,7 @@ export default async function HabitTrackerPage() {
         identityStatement={plan.identityStatement}
         anchorHabit={plan.anchorHabit ?? null}
         twoMinuteAction={plan.twoMinuteAction ?? null}
+        privateReason={plan.privateReason ?? null}
         rhythmDays={plan.rhythmDays ?? null}
         startDate={plan.startDate ?? null}
         stationNames={stationNames}

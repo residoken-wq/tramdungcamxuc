@@ -61,3 +61,8 @@ Tổng khoảng 49 giờ.
 - **Thứ tự:** HB-16 → HB-23 nối tiếp nhau vì cùng sửa trình hướng dẫn. HB-24 (chỉ CMS) chạy song song từ đầu. HB-12 / 13 / 14 chạy song song sau HB-23.
 - **Dữ liệu nháp:** nháp cũ trong trình duyệt (HB-09) phải đọc được ở khung mới. Kế hoạch đã lưu trên server giữ nguyên, không cần migration dữ liệu. Chỉ thêm field mới (kết quả 8 câu, Mentor) nếu cần, và khi đó phải viết migration.
 - **Không đưa dữ liệu nhạy cảm ra ngoài:** lý do riêng, suy ngẫm và cảm xúc không gửi analytics, không lên Boarding Pass hay chứng nhận (AGENTS §11, §14).
+
+## 5. Cập nhật 31/10 (chiều)
+
+- **HB-24** (phiên Planning khác làm, merge qua PR #228): đưa phần CMS của bước 1, 2, 5, 6 lên trước. HB-17 chỉ còn làm giao diện; HB-18 chỉ thêm phần CMS còn thiếu. Khoá migration: HB-24 → HB-18 → HB-12.
+- Thứ tự giao việc và quy tắc chung: `docs/tasks/prompts/HB-COMMON.md`.

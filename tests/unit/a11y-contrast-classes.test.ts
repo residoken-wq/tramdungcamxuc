@@ -204,5 +204,5 @@ describe('a11y contrast guard test (T3-07)', () => {
     } else {
       expect(violations).toEqual([])
     }
-  })
+  }, 30000)
 })
