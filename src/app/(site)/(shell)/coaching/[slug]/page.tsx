@@ -1,7 +1,7 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { Render } from '@puckeditor/core'
+import { StyledRender } from '@/components/design/StyledRender'
 import { puckConfig } from '@/puck/config'
 import { vi } from '@/lib/i18n/vi'
 import { getPuckPageBySlug, getServiceDetail } from '@/lib/detail-pages.server'
@@ -78,7 +78,7 @@ export default async function CoachingDetailPage({
     return (
       <>
         {adminUser && <RefreshOnSave />}
-        <Render config={puckConfig} data={puckPage.puckData} />
+        <StyledRender config={puckConfig} data={puckPage.puckData} />
       </>
     )
   }

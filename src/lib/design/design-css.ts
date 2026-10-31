@@ -47,15 +47,30 @@ export function googleFontsHref(ds: CleanDesignSystem): string | null {
     if (role === 'quote' && option.italic) entry.italic = true
     wanted.set(name, entry)
   }
-  if (wanted.size === 0) return null
+  return googleFontsHrefFor(wanted)
+}
 
-  const families = [...wanted.entries()].map(([name, { italic }]) => {
-    const weights = fontOption(name)?.weights ?? [400]
+/** Fonts the designSystem already loads from Google (roles changed from the defaults). */
+export function designSystemGoogleFonts(ds: CleanDesignSystem): string[] {
+  return changedFontRoles(ds).map((role) => ds.fonts[role])
+}
+
+/**
+ * Google Fonts CSS2 URL for the given families (EB-02 roles, EB-04 per-block fonts). Unknown
+ * names are skipped; null when nothing is left.
+ */
+export function googleFontsHrefFor(
+  wanted: ReadonlyMap<string, { italic: boolean }>,
+): string | null {
+  const families = [...wanted.entries()].flatMap(([name, { italic }]) => {
+    const option = fontOption(name)
+    if (!option) return []
     const family = name.replace(/ /g, '+')
-    if (!italic) return `family=${family}:wght@${weights.join(';')}`
-    const tuples = [...weights.map((w) => `0,${w}`), '1,400']
-    return `family=${family}:ital,wght@${tuples.join(';')}`
+    if (!italic) return [`family=${family}:wght@${option.weights.join(';')}`]
+    const tuples = [...option.weights.map((w) => `0,${w}`), '1,400']
+    return [`family=${family}:ital,wght@${tuples.join(';')}`]
   })
+  if (families.length === 0) return null
   return `${GOOGLE_FONTS_CSS_ORIGIN}/css2?${families.join('&')}&display=swap`
 }
 

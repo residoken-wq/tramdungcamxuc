@@ -3,7 +3,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import { Render, type Data } from '@puckeditor/core'
+import type { Data } from '@puckeditor/core'
+import { StyledRender } from '@/components/design/StyledRender'
 import { puckConfig } from '@/puck/config'
 import { resolveServerData } from '@/puck/resolve.server'
 
@@ -86,5 +87,5 @@ export default async function CatchAllPage({ params }: CatchAllPageProps) {
 
   const resolvedData = await resolveServerData(initialData, { pageSlug })
 
-  return <Render config={puckConfig} data={resolvedData} />
+  return <StyledRender config={puckConfig} data={resolvedData} />
 }
