@@ -539,6 +539,19 @@ describe('HB-07: Global nội dung hành trình Habit & Video ví dụ kỹ thu�
             maxDays: null,
             facts: [],
           },
+          diagnose: {
+            title: '',
+            intro: null,
+            quote: { text: '', author: '', source: '', sourceUrl: '' },
+            stats: [],
+            questions: [],
+            stageResults: {
+              cue: { title: '', suggestion: null, nextStepHint: '' },
+              craving: { title: '', suggestion: null, nextStepHint: '' },
+              response: { title: '', suggestion: null, nextStepHint: '' },
+              reward: { title: '', suggestion: null, nextStepHint: '' },
+            },
+          },
         },
         overrideAccess: true,
       })

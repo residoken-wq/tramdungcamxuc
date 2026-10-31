@@ -83,6 +83,22 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
       expect(productRes.status(), await productRes.text()).toBe(201)
       createdProductId = (await productRes.json()).doc.id
 
+      // HB-17: Seed 4 câu hỏi khám [MẪU] (1 câu mỗi giai đoạn) vào habitJourneyContent
+      const globalRes = await page.request.post('/api/globals/habitJourneyContent', {
+        data: {
+          diagnose: {
+            title: '[MẪU] Khám đúng bệnh – Tìm điểm nghẽn thói quen',
+            questions: [
+              { statement: '[MẪU] Tôi hay quên thời điểm làm thói quen.', stage: 'cue', isActive: true },
+              { statement: '[MẪU] Tôi thấy việc này nặng nề như nghĩa vụ.', stage: 'craving', isActive: true },
+              { statement: '[MẪU] Mục tiêu quá lớn nên ngày bận dễ bỏ.', stage: 'response', isActive: true },
+              { statement: '[MẪU] Làm xong không thấy niềm vui tức thì.', stage: 'reward', isActive: true },
+            ],
+          },
+        },
+      })
+      expect(globalRes.ok(), await globalRes.text()).toBe(true)
+
       // Khởi tạo ngữ cảnh khách vãng lai (không đăng nhập) với màn hình mobile 375px
       // IP giả riêng (dải tài liệu 203.0.113.0/24): giới hạn tần suất form dùng chung 127.0.0.1 trên CI
       const visitor = await browser.newContext({
@@ -229,6 +245,25 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
       if (createdProductId) {
         await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
       }
+      await page.request
+        .post('/api/globals/habitJourneyContent', {
+          data: {
+            diagnose: {
+              title: '',
+              intro: null,
+              quote: { text: '', author: '', source: '', sourceUrl: '' },
+              stats: [],
+              questions: [],
+              stageResults: {
+                cue: { title: '', suggestion: null, nextStepHint: '' },
+                craving: { title: '', suggestion: null, nextStepHint: '' },
+                response: { title: '', suggestion: null, nextStepHint: '' },
+                reward: { title: '', suggestion: null, nextStepHint: '' },
+              },
+            },
+          },
+        })
+        .catch(() => {})
       if (userId) {
         await page.request.delete(`/api/users/${userId}`).catch(() => {})
       }
