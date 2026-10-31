@@ -18,6 +18,7 @@ import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
 import { ToolPaywall } from '@/components/site/trial/ToolPaywall'
+import { readHabitRestartSince } from '@/lib/habit/restart-marker.server'
 
 export const metadata: Metadata = {
   title: `${vi.tracker.pageTitle} | Trạm Dừng Cảm Xúc`,
@@ -63,7 +64,10 @@ export default async function HabitTrackerPage() {
   // REVIEW-REQUIRED: Chỉ khách còn quyền mới được gắn kế hoạch Habit Loop; khách không có quyền
   // chỉ xem kế hoạch đã là của mình (chỉ đọc), không gắn, không tạo.
   const plan = access.hasAccess
-    ? await getOrCreateTrackerPlan(customer.id, { payload })
+    ? await getOrCreateTrackerPlan(customer.id, {
+        payload,
+        restartSince: await readHabitRestartSince(),
+      })
     : await findOwnTrackerPlan(customer.id, payload)
 
   // 4. Nếu khách hàng không có quyền truy cập (chưa dùng thử hoặc đã hết hạn) và chưa có kế hoạch
@@ -111,11 +115,13 @@ export default async function HabitTrackerPage() {
     note: doc.note || null,
   }))
 
-  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm
+  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm và câu giải thích dữ liệu (HB-13 / HB-24)
   let stationNames: string[] = []
+  let privacyNote: string | null = null
   try {
     const journeyContent = await getHabitJourneyContent(payload)
     stationNames = (journeyContent.stations || []).map((s) => s.name).filter(Boolean)
+    privacyNote = journeyContent.privacyNote ?? null
   } catch (err) {
     // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
     console.error('Failed to load habit journey stations for tracker:', err)
@@ -148,6 +154,7 @@ export default async function HabitTrackerPage() {
         eligibility={eligibility}
         customerName={customer.name ?? null}
         journeyDays={journeyDays}
+        privacyNote={privacyNote}
       />
     </div>
   )

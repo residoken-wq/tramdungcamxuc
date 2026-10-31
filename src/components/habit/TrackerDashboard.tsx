@@ -6,6 +6,7 @@ import { vi } from '@/lib/i18n/vi'
 import { ProgressGrid } from '@/components/ui/ProgressGrid'
 import { CheckInModal } from './CheckInModal'
 import { TrackerSummaryCard } from './TrackerSummaryCard'
+import { MyDataPanel } from './MyDataPanel'
 import type { EmotionKey } from '@/lib/emotions'
 import { calculateTrackerStats, planDayDate } from '@/lib/habit/tracker-stats'
 import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/certificate-types'
@@ -39,6 +40,7 @@ export interface TrackerDashboardProps {
   eligibility?: CertificateEligibility | null
   customerName?: string | null
   journeyDays?: number
+  privacyNote?: string | null
 }
 
 export function TrackerDashboard({
@@ -58,6 +60,7 @@ export function TrackerDashboard({
   eligibility,
   customerName,
   journeyDays: propJourneyDays,
+  privacyNote,
 }: TrackerDashboardProps) {
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
   const [activeModalDay, setActiveModalDay] = useState<number | null>(null)
@@ -294,7 +297,18 @@ export function TrackerDashboard({
         </div>
       )}
 
-      {/* 5. Modal Check-in */}
+      {/* 5. Khối Dữ liệu của bạn (HB-13) */}
+      <MyDataPanel
+        journeyDays={journeyDays}
+        privacyNote={privacyNote}
+        readOnly={readOnly}
+        buyUrl={buyUrl}
+        onRestored={(restoredCheckins) => {
+          setCheckins(restoredCheckins)
+        }}
+      />
+
+      {/* 6. Modal Check-in */}
       {activeModalDay !== null && (
         <CheckInModal
           day={activeModalDay}
