@@ -94,12 +94,20 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
       try {
         const guest = await visitor.newPage()
 
-        // ===== 1. Luồng Habit Loop 5 phút (/habit/5-phut) =====
+        // ===== 1. Luồng Habit Loop 5 phút (/habit/5-phut) – 3 giai đoạn / 6 bước (HB-16) =====
         await guest.goto('/habit/5-phut')
         await expect(guest.getByRole('heading', { level: 1 })).toBeVisible()
 
-        // BƯỚC 1: Bảng điểm thói quen
-        await expect(guest.getByText('Bước 1 / 4')).toBeVisible()
+        // BƯỚC 1: Khám đúng bệnh
+        await expect(guest.getByText('Bước 1 / 6')).toBeVisible()
+        await guest.getByRole('button', { name: /Tiếp tục/i }).click()
+
+        // BƯỚC 2: Nguyên lý 1%
+        await expect(guest.getByText('Bước 2 / 6')).toBeVisible()
+        await guest.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
+
+        // BƯỚC 3: Tìm Mentor (Bảng điểm thói quen)
+        await expect(guest.getByText('Bước 3 / 6')).toBeVisible()
         await guest.getByPlaceholder(/Nhập thói quen hàng ngày/i).fill('Uống 1 cốc nước ấm')
         await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
 
@@ -113,8 +121,8 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
 
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
-        // BƯỚC 2: Gọi tên thói quen, nhịp tuần, bản tối giản & kiểm tra khôi phục nháp sau khi tải lại trang
-        await expect(guest.getByText('Bước 2 / 4')).toBeVisible()
+        // BƯỚC 4: Gọi tên thói quen, nhịp tuần, bản tối giản & kiểm tra khôi phục nháp sau khi tải lại trang
+        await expect(guest.getByText('Bước 4 / 6')).toBeVisible()
         await guest.getByPlaceholder(/đọc sách 10 phút/i).fill('uống nước ấm mỗi sáng')
         await guest.getByPlaceholder(/người điềm tĩnh/i).fill('người khỏe mạnh và yêu bản thân')
 
@@ -123,7 +131,7 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         await guest.getByPlaceholder(/Mở sách đọc 1 trang/i).fill('Rót 1 cốc nước ấm sẵn')
 
         await guest.reload()
-        await expect(guest.getByText('Bước 2 / 4')).toBeVisible()
+        await expect(guest.getByText('Bước 4 / 6')).toBeVisible()
         await expect(guest.getByPlaceholder(/đọc sách 10 phút/i)).toHaveValue(
           'uống nước ấm mỗi sáng',
         )
@@ -133,8 +141,8 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
 
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
-        // BƯỚC 3: Chọn kỹ thuật (mỗi giai đoạn chọn 1 kỹ thuật và nhập hành động cụ thể)
-        await expect(guest.getByText('Bước 3 / 4')).toBeVisible()
+        // BƯỚC 5: Vòng lặp – Chọn kỹ thuật (mỗi giai đoạn chọn 1 kỹ thuật và nhập hành động cụ thể)
+        await expect(guest.getByText('Bước 5 / 6')).toBeVisible()
         const stageSections = guest.locator('.p-5.rounded-card')
         const stageCount = await stageSections.count()
         expect(stageCount).toBeGreaterThanOrEqual(4)
@@ -149,9 +157,9 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
 
         await guest.getByRole('button', { name: /Tiếp tục|Xem kế hoạch/i }).click()
 
-        // BƯỚC 4: Xem trước kế hoạch, nhập email, consent và chờ Turnstile
-        await expect(guest.getByText('Bước 4 / 4')).toBeVisible()
-        await expect(guest.getByRole('region').first()).toBeVisible() // ProgressGrid
+        // BƯỚC 6: Boarding Pass & Lưu kế hoạch, nhập email, consent và chờ Turnstile
+        await expect(guest.getByText('Bước 6 / 6')).toBeVisible()
+        await expect(guest.getByText(/Boarding Pass của bạn/i)).toBeVisible()
 
         await guest.getByPlaceholder('email@example.com').fill(leadEmail)
         const consentBox = guest.locator('input[type="checkbox"]').last()

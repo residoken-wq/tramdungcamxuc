@@ -5,8 +5,7 @@ import config from '@/payload.config'
 import { vi } from '@/lib/i18n/vi'
 import { getTechniques } from '@/lib/habit.server'
 import { getHabitJourneyContent } from '@/lib/habit/journey-content.server'
-import { HabitLoopWizard } from '@/components/habit/HabitLoopWizard'
-import { OnePercentSection } from '@/components/habit/OnePercentSection'
+import { HabitFlow } from '@/components/habit/flow/HabitFlow'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,8 +45,11 @@ export default async function HabitLoopPage() {
 
   return (
     <div className="w-full">
-      <OnePercentSection onePercent={journeyContent?.onePercent} />
-      <HabitLoopWizard techniques={techniques} journeyDays={habitJourneyDays} />
+      <HabitFlow
+        techniques={techniques}
+        journeyDays={habitJourneyDays}
+        onePercent={journeyContent?.onePercent}
+      />
     </div>
   )
 }
