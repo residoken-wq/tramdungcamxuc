@@ -26,3 +26,44 @@
 [class*='_SidebarSection-heading_'] {
   flex-shrink: 0;
 }
+
+/*
+ * EB-03: Elementor-style editor frame adjustments
+ */
+
+/* Left sidebar width: ~280px (wider canvas on 1440px) */
+[class*='_Sidebar--left_'] {
+  width: var(--puck-user-sidebar-left-width, 280px) !important;
+  min-width: 280px !important;
+  max-width: 320px;
+}
+
+/* Hide Puck's redundant outer icon strip (Nav) */
+[class*='_PuckLayout-nav_'],
+[class*='_Nav_'] {
+  display: none !important;
+}
+
+/* Hide Puck's default top ViewportControls bar */
+[class*='_PuckCanvas-controls_'],
+[class*='_Canvas-controls_'],
+[class*='_ViewportControls_'] {
+  display: none !important;
+}
+
+/* Canvas flex layout with bottom toolbar */
+[class*='_PuckCanvas_'] {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+[class*='_PuckCanvas-inner_'] {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  padding: var(--puck-space-chrome-gutter) !important;
+  overflow: auto !important;
+}
+

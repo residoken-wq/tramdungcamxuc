@@ -8,6 +8,7 @@ import React, {
   useMemo,
   useEffect,
 } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Puck, type Data, type Viewports, useGetPuck } from '@puckeditor/core'
@@ -24,6 +25,8 @@ import {
 } from '@/puck/actions'
 import { pageTemplateList, getTemplateData, type PageTemplateKey } from '@/puck/templates'
 import { AutosaveController } from '@/puck/autosave'
+import { LeftPanel } from '@/puck/editor/LeftPanel'
+import { EditorToolbar } from '@/puck/editor/EditorToolbar'
 
 export const brandViewports: Viewports = [
   { width: 375, height: 'auto', label: 'Điện thoại (375px)', icon: 'Smartphone' },
@@ -563,8 +566,53 @@ function HistoryModal({
   )
 }
 
-// Stable overrides identity
-const editorOverrides = { headerActions: EditorHeaderActions }
+// Elementor-style Puck layout override with docked canvas bottom toolbar
+function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
+  const context = useContext(EditorContext)
+  const [canvasEl, setCanvasEl] = useState<HTMLElement | null>(null)
+
+  useEffect(() => {
+    const findCanvas = () => {
+      const el = document.querySelector<HTMLElement>('[class*="_PuckCanvas_"]')
+      if (el) {
+        setCanvasEl(el)
+        return true
+      }
+      return false
+    }
+
+    if (findCanvas()) return
+
+    const timer = setInterval(() => {
+      if (findCanvas()) {
+        clearInterval(timer)
+      }
+    }, 50)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <>
+      {children}
+      {canvasEl &&
+        createPortal(
+          <EditorToolbar
+            pageSlug={context?.pageSlug || ''}
+            currentStatus={context?.currentStatus || 'draft'}
+          />,
+          canvasEl,
+        )}
+    </>
+  )
+}
+
+// Stable overrides identity: Header actions, LeftPanel (blocks & outline), Puck layout override
+const editorOverrides = {
+  headerActions: EditorHeaderActions,
+  drawer: LeftPanel,
+  puck: PuckLayoutOverride,
+}
 
 export function PuckEditorClient({
   initialData,
@@ -652,9 +700,7 @@ export function PuckEditorClient({
               <span>Quản trị CMS</span>
             </Link>
             <span className="text-white/30">|</span>
-            <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">
-              Trạm Dừng Cảm Xúc · {pageTitle}
-            </span>
+            <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">{pageTitle}</span>
             <span
               className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
                 docStatus === 'published'

@@ -286,7 +286,7 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
             disabled
             aria-label={vi.eb03?.toolbar?.publishToView || 'Xuất bản để xem'}
             title={vi.eb03?.toolbar?.publishToView || 'Xuất bản để xem'}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold border border-deep-navy/10 bg-warm-ivory text-deep-navy/40 cursor-not-allowed opacity-60"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold border border-deep-navy/10 bg-warm-ivory text-deep-navy/60 cursor-not-allowed opacity-60"
           >
             <svg
               className="w-3.5 h-3.5"
@@ -309,3 +309,4 @@ export function EditorToolbar({ pageSlug, currentStatus }: EditorToolbarProps) {
     </footer>
   )
 }
+

@@ -204,7 +204,7 @@ export function LeftPanel() {
           {/* Search Box */}
           <div className="p-3 bg-white/50 border-b border-deep-navy/5 shrink-0">
             <div className="relative flex items-center">
-              <span className="absolute left-2.5 text-deep-navy/40 pointer-events-none">
+              <span className="absolute left-2.5 text-deep-navy/60 pointer-events-none">
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -222,7 +222,7 @@ export function LeftPanel() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={vi.eb03?.searchPlaceholder || 'Tìm khối...'}
-                className="w-full pl-8 pr-8 py-1.5 text-xs font-ui bg-white rounded-lg border border-deep-navy/15 text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:border-bright-magenta focus:ring-1 focus:ring-bright-magenta transition"
+                className="w-full pl-8 pr-8 py-1.5 text-xs font-ui bg-white rounded-lg border border-deep-navy/15 text-deep-navy placeholder:text-deep-navy/60 focus:outline-none focus:border-bright-magenta focus:ring-1 focus:ring-bright-magenta transition"
               />
               {searchQuery && (
                 <button
@@ -232,7 +232,7 @@ export function LeftPanel() {
                     searchInputRef.current?.focus()
                   }}
                   aria-label={vi.eb03?.clearSearch || 'Xoá tìm kiếm'}
-                  className="absolute right-2 text-deep-navy/40 hover:text-deep-navy p-0.5 rounded cursor-pointer transition"
+                  className="absolute right-2 text-deep-navy/60 hover:text-deep-navy p-0.5 rounded cursor-pointer transition"
                 >
                   <svg
                     className="w-3.5 h-3.5"
@@ -257,7 +257,7 @@ export function LeftPanel() {
           <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-4">
             {filteredCategories.length === 0 ? (
               <div className="text-center py-10 px-4">
-                <div className="w-10 h-10 mx-auto mb-2 text-deep-navy/30 flex items-center justify-center">
+                <div className="w-10 h-10 mx-auto mb-2 text-deep-navy/60 flex items-center justify-center">
                   <svg
                     className="w-8 h-8"
                     fill="none"
@@ -307,12 +307,12 @@ export function LeftPanel() {
                     >
                       <div className="flex items-center gap-1.5">
                         <span>{category.title}</span>
-                        <span className="text-[10px] text-deep-navy/40 font-normal">
+                        <span className="text-[10px] text-deep-navy/60 font-normal">
                           ({category.components.length})
                         </span>
                       </div>
                       <svg
-                        className={`w-3.5 h-3.5 text-deep-navy/40 group-hover:text-bright-magenta transition-transform ${
+                        className={`w-3.5 h-3.5 text-deep-navy/60 group-hover:text-bright-magenta transition-transform ${
                           isCollapsed ? '-rotate-90' : 'rotate-0'
                         }`}
                         fill="none"
@@ -356,7 +356,7 @@ export function LeftPanel() {
                                       className={`group flex flex-col items-center justify-center p-2 rounded-xl text-center select-none cursor-grab active:cursor-grabbing border transition h-[88px] min-h-[88px] ${
                                         canInsert
                                           ? 'bg-white text-deep-navy border-deep-navy/10 hover:border-bright-magenta hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta'
-                                          : 'bg-warm-ivory/60 text-deep-navy/40 border-deep-navy/5 cursor-not-allowed opacity-60'
+                                          : 'bg-warm-ivory/60 text-deep-navy/60 border-deep-navy/5 cursor-not-allowed opacity-60'
                                       }`}
                                       title={canInsert ? label : vi.eb03?.lockedBlock}
                                     >

@@ -12,7 +12,11 @@ describe('getBlockIcon', () => {
       const icon = getBlockIcon(key)
       expect(icon).toBeDefined()
       expect(React.isValidElement(icon)).toBe(true)
-      const rendered = typeof icon.type === 'function' ? (icon.type as React.FC)({}) : icon
+      const rendered =
+        typeof icon.type === 'function'
+          ? (icon.type as () => React.ReactElement<React.SVGProps<SVGSVGElement>>)()
+          : (icon as React.ReactElement<React.SVGProps<SVGSVGElement>>)
+      expect(React.isValidElement(rendered)).toBe(true)
       expect(rendered.props['aria-hidden']).toBe(true)
       expect(rendered.props.viewBox).toBe('0 0 24 24')
     }
@@ -24,8 +28,9 @@ describe('getBlockIcon', () => {
     expect(React.isValidElement(fallbackIcon)).toBe(true)
     const rendered =
       typeof fallbackIcon.type === 'function'
-        ? (fallbackIcon.type as React.FC)({})
-        : fallbackIcon
+        ? (fallbackIcon.type as () => React.ReactElement<React.SVGProps<SVGSVGElement>>)()
+        : (fallbackIcon as React.ReactElement<React.SVGProps<SVGSVGElement>>)
+    expect(React.isValidElement(rendered)).toBe(true)
     expect(rendered.props['aria-hidden']).toBe(true)
   })
 })
