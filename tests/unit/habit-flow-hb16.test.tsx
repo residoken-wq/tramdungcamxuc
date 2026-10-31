@@ -52,7 +52,9 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
       const migrated = migrateHabitDraft(legacyStep3, new Set([10]))
       expect(migrated.version).toBe(HABIT_FLOW_DRAFT_VERSION)
       expect(migrated.step).toBe(5)
-      expect(migrated.scorecard).toEqual([{ habit: 'Đọc sách sáng', rating: 'good', time: '06:30' }])
+      expect(migrated.scorecard).toEqual([
+        { habit: 'Đọc sách sáng', rating: 'good', time: '06:30' },
+      ])
       expect(migrated.anchorHabit).toBe('Đọc sách sáng')
       expect(migrated.rhythmDays).toEqual(['mon', 'wed', 'fri'])
       expect(migrated.twoMinuteAction).toBe('Đọc 1 trang sách')
@@ -202,7 +204,9 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
       const habitInput = screen.getByPlaceholderText(viStrings.habit.wizard.step1.addPlaceholder)
       await act(async () => {
         fireEvent.change(habitInput, { target: { value: '[MẪU] Thiền buổi sáng' } })
-        fireEvent.click(screen.getByRole('button', { name: viStrings.habit.wizard.step1.addButton }))
+        fireEvent.click(
+          screen.getByRole('button', { name: viStrings.habit.wizard.step1.addButton }),
+        )
       })
       expect(screen.getByText('[MẪU] Thiền buổi sáng')).toBeDefined()
 
@@ -245,11 +249,12 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
 
       // Thêm thói quen ở Bước 3 -> sang Bước 4
       await act(async () => {
-        fireEvent.change(
-          screen.getByPlaceholderText(viStrings.habit.wizard.step1.addPlaceholder),
-          { target: { value: '[MẪU] Đọc sách' } },
+        fireEvent.change(screen.getByPlaceholderText(viStrings.habit.wizard.step1.addPlaceholder), {
+          target: { value: '[MẪU] Đọc sách' },
+        })
+        fireEvent.click(
+          screen.getByRole('button', { name: viStrings.habit.wizard.step1.addButton }),
         )
-        fireEvent.click(screen.getByRole('button', { name: viStrings.habit.wizard.step1.addButton }))
       })
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: /Tiếp tục/i }))
@@ -281,9 +286,7 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
       expect(container.textContent).toContain('28 ngày')
 
       // B6 không còn lưới xem trước 28 ngày (ProgressGrid)
-      expect(
-        screen.queryByRole('region', { name: viStrings.habit.progressGridLabel }),
-      ).toBeNull()
+      expect(screen.queryByRole('region', { name: viStrings.habit.progressGridLabel })).toBeNull()
     })
   })
 })

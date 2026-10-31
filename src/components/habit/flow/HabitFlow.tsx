@@ -560,3 +560,4 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     </div>
   )
 }
+

@@ -38,12 +38,7 @@ export function getDefaultHabitFlowDraft(): HabitFlowDraft {
 
 export function mapLegacyStepToFlowStep(rawStep: unknown, rawVersion: unknown): HabitFlowStep {
   if (rawVersion === HABIT_FLOW_DRAFT_VERSION) {
-    if (
-      typeof rawStep === 'number' &&
-      Number.isInteger(rawStep) &&
-      rawStep >= 1 &&
-      rawStep <= 6
-    ) {
+    if (typeof rawStep === 'number' && Number.isInteger(rawStep) && rawStep >= 1 && rawStep <= 6) {
       return rawStep as HabitFlowStep
     }
     return 1

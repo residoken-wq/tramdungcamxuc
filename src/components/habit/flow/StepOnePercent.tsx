@@ -37,3 +37,4 @@ export function StepOnePercent({ onePercent }: StepOnePercentProps) {
     </div>
   )
 }
+
