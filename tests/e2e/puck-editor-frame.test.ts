@@ -74,7 +74,7 @@ test.describe('EB-03: Elementor-style editor frame (block library search, viewpo
       await expect(dropzone).toBeVisible()
 
       // 4. Search for "hero" in LeftPanel
-      const searchInput = page.getByPlaceholderText(/Tìm khối/i)
+      const searchInput = page.getByPlaceholder(/Tìm khối/i)
       await expect(searchInput).toBeVisible()
       await searchInput.fill('hero')
 
