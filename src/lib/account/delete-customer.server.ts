@@ -198,6 +198,22 @@ export async function deleteCustomerData(
       tally.habitCheckins = 0
     }
 
+    // 3b. Xóa habitReflections (HB-12)
+    {
+      const resReflections = await payload.delete({
+        collection: 'habitReflections',
+        where: { customer: { equals: customerId } },
+        req: txReq(),
+        overrideAccess: true,
+      })
+      if (resReflections.errors && resReflections.errors.length > 0) {
+        throw new Error(
+          `Lỗi khi xóa habitReflections: ${resReflections.errors.map((e) => e.message).join(', ')}`,
+        )
+      }
+      tally.habitReflections = resReflections.docs?.length ?? 0
+    }
+
     // 4. Xóa trackerNudges
     if (planIds.length > 0) {
       const resNudges = await payload.delete({
