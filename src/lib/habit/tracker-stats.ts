@@ -81,6 +81,43 @@ export function addVietnamDays(
   return `${nextYmd}T${timeSuffix}`
 }
 
+export interface PlanDayDate {
+  short: string
+  full: string
+}
+
+/**
+ * Tính ngày lịch theo giờ Việt Nam cho ngày thứ N của kế hoạch (HB-23).
+ * Ngày 1 = startDate.
+ * Trả về { short: 'dd/MM', full: 'dd/MM/yyyy' }.
+ * Trả null khi startDate không hợp lệ hoặc day < 1.
+ */
+export function planDayDate(
+  startDate?: Date | string | null,
+  day?: number,
+): PlanDayDate | null {
+  if (!startDate || typeof day !== 'number' || day < 1 || !Number.isFinite(day)) {
+    return null
+  }
+  const start = typeof startDate === 'string' ? new Date(startDate) : startDate
+  if (isNaN(start.getTime())) {
+    return null
+  }
+
+  const startYmd = getVietnamYmd(start)
+  const [y, m, d] = startYmd.split('-').map(Number)
+  const utc = Date.UTC(y, m - 1, d) + (day - 1) * 86_400_000
+  const target = new Date(utc)
+  const ty = target.getUTCFullYear()
+  const tm = String(target.getUTCMonth() + 1).padStart(2, '0')
+  const td = String(target.getUTCDate()).padStart(2, '0')
+
+  return {
+    short: `${td}/${tm}`,
+    full: `${td}/${tm}/${ty}`,
+  }
+}
+
 /**
  * Tính toán thống kê hoàn thành và cảm xúc thường gặp nhất từ danh sách check-in.
  */
