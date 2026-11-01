@@ -1,3 +1,4 @@
+import React from 'react'
 import { describe, it, expect, beforeEach, vi as vitestVi } from 'vitest'
 import {
   copyBlock,
@@ -5,19 +6,20 @@ import {
   clearClipboard,
   prepareForPaste,
   isAllowedInZone,
-  CLIPBOARD_STORAGE_KEY,
   MAX_CLIPBOARD_BYTES,
 } from '@/puck/editor/context-menu/clipboard'
 import type { Config, ComponentData } from '@puckeditor/core'
 
+const dummyRender = () => React.createElement('div')
+
 const mockConfig: Config = {
   components: {
-    HeadingWidget: { render: () => null },
-    Container: { render: () => null },
-    TabsWidget: { render: () => null },
-    Card: { render: () => null },
-    IconCardGrid: { render: () => null },
-    ButtonWidget: { render: () => null },
+    HeadingWidget: { render: dummyRender },
+    Container: { render: dummyRender },
+    TabsWidget: { render: dummyRender },
+    Card: { render: dummyRender },
+    IconCardGrid: { render: dummyRender },
+    ButtonWidget: { render: dummyRender },
   },
 }
 

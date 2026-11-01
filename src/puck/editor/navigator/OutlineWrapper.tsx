@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useLayoutEffect, useEffect } from 'react'
+import React, { useRef, useState, useLayoutEffect, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useContextMenu } from '@/puck/editor/context-menu/context-menu-context'
 import { NavigatorRowContent } from './NavigatorRowContent'
@@ -15,7 +15,7 @@ export function OutlineWrapper({ children }: { children?: React.ReactNode }) {
   const { openMenu } = useContextMenu()
   const [targets, setTargets] = useState<PortalTarget[]>([])
 
-  const updateTargets = () => {
+  const updateTargets = useCallback(() => {
     if (!containerRef.current) return
     const root = containerRef.current
     const listItems = root.querySelectorAll<HTMLElement>('li[data-puck-layer-tree-id]')
@@ -52,7 +52,7 @@ export function OutlineWrapper({ children }: { children?: React.ReactNode }) {
       }
       return newTargets
     })
-  }
+  }, [openMenu])
 
   useLayoutEffect(() => {
     updateTargets()
@@ -70,7 +70,7 @@ export function OutlineWrapper({ children }: { children?: React.ReactNode }) {
     })
 
     return () => observer.disconnect()
-  }, [])
+  }, [updateTargets])
 
   return (
     <div ref={containerRef} className="w-full h-full relative">

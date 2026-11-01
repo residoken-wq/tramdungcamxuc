@@ -311,3 +311,4 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
     }
   })
 })
+

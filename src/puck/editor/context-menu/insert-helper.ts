@@ -39,8 +39,10 @@ export function insertBlockIntoData(
     return items.map((item) => {
       if (item.props?.id === parentId) {
         const props = { ...(item.props || {}) }
-        if (slotName && Array.isArray(props[slotName])) {
-          const slotArr = [...(props[slotName] as ComponentData[])]
+        if (slotName) {
+          const slotArr = Array.isArray(props[slotName])
+            ? [...(props[slotName] as ComponentData[])]
+            : []
           const subClamped = Math.max(0, Math.min(targetIndex, slotArr.length))
           slotArr.splice(subClamped, 0, newItem)
           props[slotName] = slotArr

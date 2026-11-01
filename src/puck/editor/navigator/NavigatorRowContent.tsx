@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useEffect, useCallback } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { usePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { cleanBlockLabel } from '@/puck/style/block-label'
@@ -15,7 +15,6 @@ export function NavigatorRowContent({ componentId }: { componentId: string }) {
   const isRenaming = renamingId === componentId
 
   const item = getItemById(componentId)
-  const selector = getSelectorForId(componentId)
 
   const type = item?.type || 'Block'
   const compConfig = config?.components?.[type] as { label?: string } | undefined
@@ -37,31 +36,30 @@ export function NavigatorRowContent({ componentId }: { componentId: string }) {
     }
   }, [isRenaming])
 
-  const saveRename = useCallback(
-    (value: string) => {
-      setRenamingId(null)
-      const cleaned = cleanBlockLabel(value)
-      if (cleaned === cleanLabel) return
-      if (!item || !selector) return
+  const saveRename = (value: string) => {
+    setRenamingId(null)
+    const cleaned = cleanBlockLabel(value)
+    if (cleaned === cleanLabel) return
+    const currentItem = getItemById(componentId)
+    const currentSelector = getSelectorForId(componentId)
+    if (!currentItem || !currentSelector) return
 
-      const updatedItem = {
-        ...item,
-        props: {
-          ...item.props,
-          _label: cleaned,
-        },
-      }
+    const updatedItem = {
+      ...currentItem,
+      props: {
+        ...currentItem.props,
+        _label: cleaned,
+      },
+    }
 
-      dispatch({
-        type: 'replace',
-        destinationIndex: selector.index,
-        destinationZone: selector.zone,
-        data: updatedItem,
-      })
-      showToast(vi.eb07.toast.renamed)
-    },
-    [cleanLabel, item, selector, dispatch, setRenamingId, showToast],
-  )
+    dispatch({
+      type: 'replace',
+      destinationIndex: currentSelector.index,
+      destinationZone: currentSelector.zone,
+      data: updatedItem,
+    })
+    showToast(vi.eb07.toast.renamed)
+  }
 
   if (!item) return null
 

@@ -1,6 +1,6 @@
 import type { ComponentData, Config } from '@puckeditor/core'
 import { isPuckItem } from '@/puck/walk'
-import { ROOT_DISALLOW, CONTAINER_ALLOWED_BLOCKS, CHILD_BLOCK_TYPES } from '@/puck/constants'
+import { ROOT_DISALLOW, CHILD_BLOCK_TYPES } from '@/puck/constants'
 
 export const CLIPBOARD_STORAGE_KEY = 'eb07:clipboard'
 export const MAX_CLIPBOARD_BYTES = 200 * 1024 // 200 KB
@@ -166,7 +166,7 @@ export function prepareForPaste(
 
   let blockCount = 0
 
-  function cloneWithNewIds(item: ComponentData, currentParentType?: string): ComponentData {
+  function cloneWithNewIds(item: ComponentData, _currentParentType?: string): ComponentData {
     blockCount++
     if (blockCount > MAX_PASTE_BLOCKS) {
       throw new Error('TOO_MANY_BLOCKS')

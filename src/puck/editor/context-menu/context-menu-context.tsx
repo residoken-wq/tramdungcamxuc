@@ -50,6 +50,9 @@ export function ContextMenuProvider({ children }: { children: React.ReactNode })
 
   const showToast = useCallback((message: string) => {
     setToastMessage(message)
+    setTimeout(() => {
+      setToastMessage((current) => (current === message ? null : current))
+    }, 3000)
   }, [])
 
   const value = useMemo(
