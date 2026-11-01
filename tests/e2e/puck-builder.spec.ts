@@ -79,6 +79,8 @@ test.describe('T0-09: Puck publication lifecycle', () => {
         name: 'Hero 2 Lối vào (Cá nhân & Tổ chức)',
         exact: true,
       })
+      // EB-06: the "Cơ bản" group now sits above "Mở đầu", so the Hero item may be below the fold.
+      await hero.scrollIntoViewIfNeeded()
       const source = await hero.boundingBox()
       const target = await dropzone.boundingBox()
       if (!source || !target) throw new Error('Hero drawer or canvas has no visible bounds.')

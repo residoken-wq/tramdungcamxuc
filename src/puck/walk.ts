@@ -56,6 +56,9 @@ export async function walkPuckItems(data: unknown, visit: WalkVisitor): Promise<
         for (const element of value) {
           if (isPuckItem(element)) {
             await walkItem(element)
+          } else if (element && typeof element === 'object' && !Array.isArray(element)) {
+            // EB-06b: array fields whose items hold slots (Tabs / Accordion `items[].content`).
+            await walkProps(element as Record<string, unknown>)
           }
         }
       } else if (value && typeof value === 'object' && !isPuckItem(value)) {

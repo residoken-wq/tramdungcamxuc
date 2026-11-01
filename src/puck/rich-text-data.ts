@@ -30,8 +30,22 @@ function cleanItems(items: unknown): unknown {
       if (keys.includes(key) && typeof value === 'string') {
         // REVIEW-REQUIRED: every stored rich text string goes through the allow-list sanitizer.
         props[key] = sanitizeRichText(value)
-      } else if (isItemArray(value)) {
-        props[key] = cleanItems(value) // slots (Container, Columns…)
+      } else if (Array.isArray(value)) {
+        if (isItemArray(value)) {
+          props[key] = cleanItems(value) // slots (Container, Columns…)
+        } else {
+          // Array of objects (e.g. tabs / accordion items) that might contain slot contents
+          props[key] = value.map((el) => {
+            if (el && typeof el === 'object') {
+              const sub: Record<string, unknown> = {}
+              for (const [k, v] of Object.entries(el)) {
+                sub[k] = isItemArray(v) ? cleanItems(v) : v
+              }
+              return sub
+            }
+            return el
+          })
+        }
       } else {
         props[key] = value
       }

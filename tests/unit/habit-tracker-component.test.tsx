@@ -222,13 +222,15 @@ describe('Habit Tracker Component Tests (HB-11)', () => {
     })
 
     it('không hiển thị khối lý do riêng khi không lỡ nhịp', () => {
-      const todayYmd = getVietnamYmd(new Date())
+      // Fixed clock on day 1 (31/10/2026 VN): with the real clock, later days count as missed.
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-10-31T05:00:00.000Z'))
       render(
         <TrackerDashboard
           planId={101}
           currentDay={1}
           journeyDays={28}
-          startDate={todayYmd}
+          startDate="2026-10-30T17:00:00.000Z"
           privateReason="Vì sức khỏe và con gái"
           initialCheckins={[{ day: 1, done: true, status: 'voted' }]}
           buyUrl="/thanh-toan"
@@ -237,6 +239,7 @@ describe('Habit Tracker Component Tests (HB-11)', () => {
 
       expect(screen.queryByText(i18nVi.hb23.privateReasonHeading)).toBeNull()
       expect(screen.queryByText('Vì sức khỏe và con gái')).toBeNull()
+      vi.useRealTimers()
     })
 
     it('hiển thị khối lý do riêng khi lỡ nhịp và có privateReason', () => {
