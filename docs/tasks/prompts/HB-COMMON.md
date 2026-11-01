@@ -6,10 +6,10 @@ Spec chung: `docs/plan/HB_FLOW_V2.md` (bảng khác biệt, quyết định 31/1
 
 ## Hai dây việc chạy song song
 
-| Dây                              | Máy    | Thứ tự                                                                             |
-| -------------------------------- | ------ | ---------------------------------------------------------------------------------- |
-| **Wizard** `/habit/5-phut`       | Laptop | (HB-24 CMS – Planning) → HB-17 → (chờ HB-12) HB-18 → HB-19 → HB-20 → HB-21 → HB-22 |
-| **Màn 28 ngày** `/habit/tracker` | PC nhà | HB-23 → HB-13 → HB-12 → HB-14 → HB-15                                              |
+| Dây                              | Máy    | Thứ tự                                                                                     |
+| -------------------------------- | ------ | ------------------------------------------------------------------------------------------ |
+| **Wizard** `/habit/5-phut`       | Laptop | (HB-24 CMS – Planning) → HB-17 → (chờ HB-12) HB-18 → HB-19 → HB-20 → HB-21 → HB-22 → HB-25 |
+| **Màn 28 ngày** `/habit/tracker` | PC nhà | HB-23 → HB-13 → HB-12 → HB-14 → HB-15                                                      |
 
 - **Ranh giới file giữa hai dây.**
   - Dây Wizard: không sửa `src/components/ui/ProgressGrid.tsx`, `src/components/habit/{TrackerDashboard,CheckInModal,TrackerSummaryCard,StationReflectionModal}.tsx`, `src/app/(site)/(shell)/habit/tracker/**`, `src/lib/habit/tracker-*.ts`.
