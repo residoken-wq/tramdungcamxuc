@@ -99,9 +99,10 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
         await guest.getByPlaceholder(/người điềm tĩnh/i).fill('[MẪU] người khỏe khoắn')
 
         // Tắt Chủ nhật
+        await guest.getByRole('button', { name: 'Chọn nhịp 6 lần mỗi tuần' }).click()
         await guest.getByRole('button', { name: 'Chủ nhật' }).click()
         // Nhập bản tối giản
-        await guest.getByPlaceholder(/Mở sách đọc 1 trang/i).fill('[MẪU] Xỏ giày thể thao')
+        await guest.getByPlaceholder(/Mở sách đọc đúng 1 trang/i).fill('[MẪU] Xỏ giày thể thao')
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
         // BƯỚC 5: Vòng lặp – Chọn kỹ thuật
