@@ -22,6 +22,15 @@ const withStyleField = (fields: Fields | undefined): Fields => ({
  * (`collectPageStyles`) targets. Blocks without `_style` – every page built before EB-04 – return
  * their output untouched: same DOM, no wrapper, no class.
  */
+/**
+ * EB-05: components that put `data-eb-id` (and the anchor id) on their own root set this flag, so
+ * `withBlockStyle` does not add a second wrapper.
+ */
+export const STYLES_IN_PLACE = 'ebStylesInPlace'
+const stylesInPlace = (type: unknown) =>
+  typeof type === 'function' &&
+  (type as unknown as Record<string, unknown>)[STYLES_IN_PLACE] === true
+
 export function withBlockStyle(component: ComponentConfig): ComponentConfig {
   const render = component.render
   const resolveFields = component.resolveFields
@@ -43,6 +52,14 @@ export function withBlockStyle(component: ComponentConfig): ComponentConfig {
       const raw = (props as { _style?: unknown })._style
       if (!hasStyleKeys(raw) || !isSafeBlockId(props.id)) return output
       const anchorId = cleanAnchorId(raw.anchorId)
+
+      // EB-05: a block that styles itself in place (Container) gets the anchor id, no wrapper.
+      if (React.isValidElement(output) && stylesInPlace(output.type)) {
+        return anchorId
+          ? React.cloneElement(output as React.ReactElement<{ anchorId?: string }>, { anchorId })
+          : output
+      }
+
       return (
         <div {...{ [STYLE_ATTR]: props.id }} id={anchorId}>
           {output}

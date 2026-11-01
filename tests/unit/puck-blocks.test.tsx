@@ -296,6 +296,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
 
       expect(categories?.layout?.title).toBe('Bố cục')
       expect(categories?.layout?.components).toEqual([
+        'Container',
         'Columns',
         'Spacer',
         'Divider',

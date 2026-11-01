@@ -74,5 +74,60 @@ export const ELEMENT_BLOCK_TYPES = [
 /** Blocks the page root refuses: child cards and free-section elements. */
 export const ROOT_DISALLOW = [...CHILD_BLOCK_TYPES, ...ELEMENT_BLOCK_TYPES]
 
+/**
+ * EB-05: Allowed blocks inside a Container's slot.
+ * Accepts everything droppable at page root + ELEMENT_BLOCK_TYPES + Container itself.
+ * Forbids CHILD_BLOCK_TYPES (which belong exclusively inside their dedicated parent card grids).
+ */
+export const CONTAINER_ALLOWED_BLOCKS = [
+  'HeroTwoEntries',
+  'HeroImage',
+  'SectionHeader',
+  'RichText',
+  'ImageText',
+  'QuoteBlock',
+  'StatsBar',
+  'IconCardGrid',
+  'Callout',
+  'JourneySteps',
+  'VisionMission',
+  'FAQ',
+  'VideoEmbed',
+  'ContactInfo',
+  'Container',
+  'Columns',
+  'Spacer',
+  'Divider',
+  'ResourcePostsSlot',
+  'FreeSection',
+  ...ELEMENT_BLOCK_TYPES,
+  'ProductGrid',
+  'ProductFeature',
+  'PackageCards',
+  'PackageComparison',
+  'ServiceCards',
+  'SolutionEcosystem',
+  'PriceTag',
+  'TrialCTA',
+  'TestimonialSlider',
+  'TestimonialGrid',
+  'LogoStrip',
+  'HanaStory',
+  'TeamGrid',
+  'CTAButton',
+  'CTASection',
+  'TwoPathCards',
+  'LeadForm',
+  'BookingCTA',
+  'B2BBriefForm',
+  'QuizCTA',
+  'ShopeeButton',
+  'ZaloButton',
+  'LibraryPreview',
+  'LeadMagnetCarousel',
+  'NewsletterForm',
+  'ContactForms',
+]
+
 /** Puck's id for the page-level drop zone (`root:default-zone`). */
 export const ROOT_DROP_ZONE = 'root:default-zone'

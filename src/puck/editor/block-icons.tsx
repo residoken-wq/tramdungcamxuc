@@ -26,6 +26,13 @@ const GenericBlockIcon = () => (
   </svg>
 )
 
+const ContainerIcon = () => (
+  <svg {...baseSvgProps}>
+    <rect x="3" y="3" width="18" height="18" rx="2" strokeDasharray="3 3" />
+    <rect x="7" y="7" width="10" height="10" rx="1.5" />
+  </svg>
+)
+
 const LayoutColumnsIcon = () => (
   <svg {...baseSvgProps}>
     <rect x="3" y="4" width="18" height="16" rx="2" />
@@ -275,6 +282,7 @@ const blockIconMap: Record<string, React.ComponentType> = {
   ContactInfo: ChatMessageIcon,
 
   // Bố cục
+  Container: ContainerIcon,
   Columns: LayoutColumnsIcon,
   Spacer: SpacerIcon,
   Divider: DividerIcon,

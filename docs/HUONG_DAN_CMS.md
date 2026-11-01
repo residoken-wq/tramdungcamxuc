@@ -58,6 +58,8 @@
    - [5.21. Khối Cột (Columns) hỗ trợ đa dạng khối con](#521-khối-cột-columns-hỗ-trợ-đa-dạng-khối-con)
    - [5.22. Cơ chế tự động sửa màu lệch nền (Child Color Fallback)](#522-cơ-chế-tự-động-sửa-màu-lệch-nền-child-color-fallback)
    - [5.23. Section tự do: kéo thả từng phần tử](#523-section-tự-do-kéo-thả-từng-phần-tử)
+   - [5.24. Chỉnh kiểu từng khối: tab Nội dung / Kiểu / Nâng cao (EB-04)](#524-chỉnh-kiểu-từng-khối-tab-nội-dung--kiểu--nâng-cao-eb-04)
+   - [5.25. Khung chứa linh hoạt (Container): hộp flexbox lồng nhau kiểu Elementor (EB-05)](#525-khung-chứa-linh-hoạt-container-hộp-flexbox-lồng-nhau-kiểu-elementor-eb-05)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2208,6 +2210,30 @@ Tab đang chọn được giữ nguyên khi bấm sang khối khác.
 - Chữ và nền khó đọc (tương phản dưới 4.5:1) thì hiện cảnh báo màu vàng. Nên đổi màu.
 - **Đặt lại kiểu** xoá mọi chỉnh sửa ở tab đang mở, khối quay về như mặc định.
 - Khối chưa chỉnh kiểu nào thì trang công khai giữ y hệt như trước.
+
+### 5.25. Khung chứa linh hoạt (Container): hộp flexbox lồng nhau kiểu Elementor (EB-05)
+
+Khối **Container** nằm ở đầu nhóm **Bố cục** trong bảng thư viện khối bên trái (có thể tìm nhanh bằng từ khoá: `container`, `hop`, `khung`).
+
+**Cách sử dụng:**
+
+1. **Kéo Container vào trang:** Thả vào vị trí bất kỳ trên trang hoặc thả vào bên trong một Container khác.
+2. **Kéo khối vào trong Container:** Thả các khối chữ, ảnh, nút bấm, trích dẫn... vào vùng trống bên trong Container. Các khối bên trong tự sắp xếp theo bố cục của Container. Thẻ con (thẻ gói, câu hỏi FAQ, ô số liệu…) không thả vào Container được: chúng chỉ nằm trong khối cha của mình.
+3. **Đổi hàng / cột theo thiết bị (Tab Nội dung):**
+   - **Hướng sắp xếp**: Bấm chọn giữa **Hàng ngang** (Row), **Cột dọc** (Column), hoặc đảo chiều.
+   - **Chỉnh riêng cho Điện thoại / Máy tính bảng**: Chọn biểu tượng thiết bị ở đầu bảng. Ví dụ: Trên **Máy tính** để _Hàng ngang_ để các khối nằm cạnh nhau; chuyển sang **Điện thoại** bấm chọn _Cột dọc_ để các khối tự xếp chồng ngay ngắn.
+   - **Khoảng cách (Gap)**: Chọn độ giãn giữa các khối con (Nhỏ, Vừa, Lớn...).
+   - **Chiều rộng**: Chọn **Đóng khung (Boxed)** (nội dung gọn ở giữa trang, độ rộng chọn ở **Độ rộng khung nội dung**) hoặc **Tràn màn hình (Full width)**. Nền của Container luôn trải hết chiều ngang, kể cả khi đóng khung.
+   - **Chiều cao tối thiểu** và **Thẻ HTML** (chọn `section` khi Container là một phần riêng của trang, có tiêu đề).
+   - Hướng, căn, khoảng cách và xuống dòng chỉnh riêng được theo thiết bị. Chiều rộng, chiều cao và thẻ HTML áp cho mọi thiết bị.
+4. **Ảnh nền & Chuyển màu nâng cao (Tab Kiểu):**
+   - Chuyển sang tab **Kiểu** -> nhóm **Nền nâng cao**:
+     - **Ảnh nền**: Bấm _Chọn ảnh từ thư viện media_, chọn kích thước (_Bao phủ / Vừa vặn_) và bấm chọn vị trí trong lưới 9 ô (chính giữa, góc trên, góc dưới...).
+     - **Chuyển màu (Gradient)**: Chọn màu bắt đầu, màu kết thúc từ bảng màu thương hiệu và góc xoay chuyển màu (0° đến 315°).
+5. **Container lồng nhau:** Bạn có thể kéo một Container con thả vào bên trong một Container cha để chia các phân khu phức tạp.
+
+> [!WARNING]
+> **Khuyến nghị bố cục:** Chỉ nên lồng tối đa 2 đến 3 tầng Container. Việc lồng Container quá sâu (từ 4 tầng trở lên) sẽ làm cấu trúc trang bị rối, khó chọn đúng khối khi thao tác và làm chậm tốc độ hiển thị.
 
 ## 6. Quản lý Trang pháp lý và Thông tin người bán
 
