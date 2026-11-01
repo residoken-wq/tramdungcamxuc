@@ -346,15 +346,21 @@ export async function seed(payload: Payload): Promise<SeedReport> {
 }
 
 type StoredFlowContent = {
-  onePercent?: Record<string, unknown> & { unknowns?: unknown[] | null }
+  onePercent?: Record<string, unknown> & { unknowns?: unknown[] | null; closing?: string | null }
   diagnose?: Record<string, unknown> & { questions?: unknown[] | null; results?: unknown[] | null }
-  loop?: Record<string, unknown> & { stages?: unknown[] | null; rules?: unknown[] | null }
+  loop?: Record<string, unknown> & {
+    stages?: unknown[] | null
+    rules?: unknown[] | null
+    note?: string | null
+    techniqueHint?: string | null
+  }
+  tracker?: { afterJourneyTitle?: string | null; afterJourneyText?: string | null } | null
   boardingPass?: { captionTemplate?: string | null } | null
   privacyNote?: string | null
 } | null
 
 /**
- * HB-24: [MẪU] content for the new habit flow – only for sections that are still empty, so
+ * HB-24 / HB-18: [MẪU] content for the new habit flow – only for sections that are still empty, so
  * re-running the seed never overwrites what Hana wrote. Null when nothing is missing.
  */
 export function habitFlowSeedPatch(existing: StoredFlowContent): Record<string, unknown> | null {
@@ -372,19 +378,39 @@ export function habitFlowSeedPatch(existing: StoredFlowContent): Record<string, 
         : sample.diagnose.results.map((r) => ({ ...r })),
     }
   }
-  if (!existing?.onePercent?.unknowns?.length) {
+  if (!existing?.onePercent?.unknowns?.length || !existing?.onePercent?.closing) {
     patch.onePercent = {
       ...existing?.onePercent,
-      unknowns: sample.onePercentUnknowns.map((u) => ({ ...u })),
+      ...(!existing?.onePercent?.unknowns?.length
+        ? { unknowns: sample.onePercentUnknowns.map((u) => ({ ...u })) }
+        : {}),
+      ...(!existing?.onePercent?.closing ? { closing: sample.onePercentClosing } : {}),
     }
   }
-  if (!existing?.loop?.stages?.length) {
+  if (!existing?.loop?.stages?.length || !existing?.loop?.note || !existing?.loop?.techniqueHint) {
     patch.loop = {
       ...existing?.loop,
-      stages: sample.loop.stages.map((st) => ({ ...st })),
-      rules: existing?.loop?.rules?.length
-        ? existing.loop.rules
-        : sample.loop.rules.map((r) => ({ ...r })),
+      ...(!existing?.loop?.stages?.length
+        ? {
+            stages: sample.loop.stages.map((st) => ({ ...st })),
+            rules: existing?.loop?.rules?.length
+              ? existing.loop.rules
+              : sample.loop.rules.map((r) => ({ ...r })),
+          }
+        : {}),
+      ...(!existing?.loop?.note ? { note: sample.loop.note } : {}),
+      ...(!existing?.loop?.techniqueHint ? { techniqueHint: sample.loop.techniqueHint } : {}),
+    }
+  }
+  if (!existing?.tracker?.afterJourneyTitle || !existing?.tracker?.afterJourneyText) {
+    patch.tracker = {
+      ...existing?.tracker,
+      ...(!existing?.tracker?.afterJourneyTitle
+        ? { afterJourneyTitle: sample.tracker.afterJourneyTitle }
+        : {}),
+      ...(!existing?.tracker?.afterJourneyText
+        ? { afterJourneyText: sample.tracker.afterJourneyText }
+        : {}),
     }
   }
   if (!existing?.boardingPass?.captionTemplate) {

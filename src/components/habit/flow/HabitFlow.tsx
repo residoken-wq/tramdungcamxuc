@@ -17,7 +17,12 @@ import {
 } from '@/lib/habit'
 import type { HabitStage } from '@/lib/diagnostic'
 import type { Weekday } from '@/lib/habit/rhythm'
-import type { CleanHabitOnePercent, CleanHabitDiagnose } from '@/lib/habit/journey-content.server'
+import type {
+  CleanHabitOnePercent,
+  CleanHabitDiagnose,
+  CleanTitledText,
+  CleanHabitStepQuotes,
+} from '@/lib/habit/journey-content.server'
 import { scoreFlowDiagnose } from '@/lib/habit/flow-content'
 import {
   getDefaultHabitFlowDraft,
@@ -38,6 +43,8 @@ export interface HabitFlowProps {
   techniques: PublicTechnique[]
   journeyDays?: number
   onePercent?: CleanHabitOnePercent | null
+  onePercentUnknowns?: CleanTitledText[]
+  stepQuotes?: CleanHabitStepQuotes
   diagnose?: CleanHabitDiagnose | null
   privacyNote?: string | null
 }
@@ -46,6 +53,8 @@ export function HabitFlow({
   techniques,
   journeyDays = 28,
   onePercent,
+  onePercentUnknowns,
+  stepQuotes,
   diagnose,
   privacyNote,
 }: HabitFlowProps) {
@@ -127,7 +136,7 @@ export function HabitFlow({
     }, 0)
 
     return () => clearTimeout(timer)
-  }, [techniques, diagnose?.questions?.length])
+  }, [techniques, diagnose?.questions?.length, questions])
 
   // Analytics: gửi diagnostic_completed đúng 1 lần khi hoàn thành khám (không gửi khi F5 khôi phục)
   useEffect(() => {
@@ -555,7 +564,13 @@ export function HabitFlow({
             />
           )}
 
-          {draft.step === 2 && <StepOnePercent onePercent={onePercent} />}
+          {draft.step === 2 && (
+            <StepOnePercent
+              onePercent={onePercent}
+              unknowns={onePercentUnknowns}
+              quote={stepQuotes?.onePercent}
+            />
+          )}
 
           {draft.step === 3 && (
             <StepMentor

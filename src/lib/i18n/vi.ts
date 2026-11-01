@@ -3213,6 +3213,56 @@ export const vi = {
       defaultNextStepHint: 'Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật thực hành cho giai đoạn này.',
     },
   },
+  hb18: {
+    stepQuotes: {
+      label: 'Câu trích dẫn từng bước',
+      description: 'Câu trích dẫn ngắn tạo cảm hứng tại các bước của wizard và màn hình tracker.',
+      text: 'Nội dung câu trích',
+      author: 'Tác giả',
+      source: 'Nguồn',
+      sourceDesc:
+        'Sách, bài viết hoặc tài liệu nghiên cứu gốc (bắt buộc khi có nội dung câu trích)',
+      sourceUrl: 'Đường dẫn nguồn (tùy chọn)',
+      steps: {
+        onePercent: 'Bước 2 – 1% Better',
+        mentor: 'Bước 3 – Tìm Mentor',
+        name: 'Bước 4 – Gọi tên',
+        loop: 'Bước 5 – Vòng lặp',
+        boardingPass: 'Bước 6 – Boarding Pass',
+        tracker: 'Màn hình theo dõi 28 ngày (Tracker)',
+      },
+    },
+    onePercent: {
+      closing: 'Câu kết bước 2',
+      closingDesc: 'Ví dụ: "Lời giải không nằm ở cố gắng nhiều hơn..."',
+      unknownsTitle: 'Ba điều có thể bạn chưa biết về 1% Better',
+    },
+    loop: {
+      note: 'Ghi chú hai giai đoạn đầu',
+      noteDesc: 'Ví dụ: "Hai giai đoạn đầu là vấn đề của nhận thức..."',
+      techniqueHint: 'Gợi ý chọn kỹ thuật',
+      techniqueHintDesc: 'Ví dụ: "Đánh dấu kỹ thuật bạn sẽ dùng để vượt qua giai đoạn nút thắt."',
+    },
+    tracker: {
+      label: 'Đồng hành sau 28 ngày',
+      description: 'Nội dung khối đồng hành hiển thị sau khi hoàn thành hành trình 28 ngày.',
+      afterJourneyTitle: 'Tiêu đề khối đồng hành sau 28 ngày',
+      afterJourneyText: 'Nội dung khối đồng hành sau 28 ngày',
+    },
+    siteSettings: {
+      habitCoachBookingUrl: 'Liên kết đặt lịch Coach (Habit)',
+      habitCoachBookingUrlDesc:
+        'Đường dẫn đặt lịch coaching riêng cho thói quen (Cal.com, Google Calendar...).',
+      habitDonationEnabled: 'Bật mục ủng hộ (Habit Donation)',
+      habitDonationEnabledDesc: 'Chỉ bật khi Hana đã duyệt.',
+      habitDonationUrl: 'Liên kết ủng hộ / đóng góp',
+      habitDonationUrlDesc: 'Trang ủng hộ hoặc tài khoản nhận đóng góp.',
+    },
+    errors: {
+      requiredQuoteAuthor: 'Vui lòng nhập tên tác giả cho câu trích dẫn.',
+      requiredQuoteSource: 'Vui lòng ghi rõ nguồn dẫn chứng (sách, bài viết...).',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

@@ -27,6 +27,7 @@ import * as migration_20261026_033511_hb07_journey_content from './20261026_0335
 import * as migration_20261031_073042_hb24_flow_content from './20261031_073042_hb24_flow_content'
 import * as migration_20261031_080633_eb01_design_system from './20261031_080633_eb01_design_system'
 import * as migration_20261031_102521_hb12_station_reflections from './20261031_102521_hb12_station_reflections'
+import * as migration_20261101_040756_hb18_flow_content_extra from './20261101_040756_hb18_flow_content_extra'
 
 export const migrations = [
   {
@@ -173,5 +174,10 @@ export const migrations = [
     up: migration_20261031_102521_hb12_station_reflections.up,
     down: migration_20261031_102521_hb12_station_reflections.down,
     name: '20261031_102521_hb12_station_reflections',
+  },
+  {
+    up: migration_20261101_040756_hb18_flow_content_extra.up,
+    down: migration_20261101_040756_hb18_flow_content_extra.down,
+    name: '20261101_040756_hb18_flow_content_extra',
   },
 ]

@@ -89,13 +89,41 @@ describe('HB-24: seed [MẪU] for the new flow', () => {
 
   it('never overwrites content Hana already wrote', () => {
     const patch = habitFlowSeedPatch({
-      onePercent: { title: 'x', unknowns: [{ title: 'Của Hana' }] },
+      onePercent: { title: 'x', unknowns: [{ title: 'Của Hana' }], closing: 'Của Hana' },
       diagnose: { questions: [{ statement: 'Của Hana', stage: 'cue' }] },
-      loop: { stages: [{ stage: 'cue', title: 'a', explanation: 'b' }] },
+      loop: {
+        stages: [{ stage: 'cue', title: 'a', explanation: 'b' }],
+        note: 'Của Hana',
+        techniqueHint: 'Của Hana',
+      },
+      tracker: { afterJourneyTitle: 'Của Hana', afterJourneyText: 'Của Hana' },
       boardingPass: { captionTemplate: 'Của Hana' },
       privacyNote: 'Của Hana',
     })
     expect(patch).toBeNull()
+  })
+
+  it('HB-18: fills onePercent.closing, loop.note, loop.techniqueHint and tracker when empty, without seeding stepQuotes', () => {
+    const patch = habitFlowSeedPatch({
+      onePercent: { unknowns: [{ title: 'Của Hana' }] },
+      diagnose: { questions: [{ statement: 'Của Hana', stage: 'cue' }] },
+      loop: { stages: [{ stage: 'cue', title: 'a', explanation: 'b' }] },
+      tracker: null,
+      boardingPass: { captionTemplate: 'Của Hana' },
+      privacyNote: 'Của Hana',
+    })
+    expect(patch).not.toBeNull()
+    const pOnePercent = patch?.onePercent as { closing?: string }
+    expect(pOnePercent?.closing).toContain('[MẪU]')
+    const pLoop = patch?.loop as { note?: string; techniqueHint?: string }
+    expect(pLoop?.note).toContain('[MẪU]')
+    expect(pLoop?.techniqueHint).toContain('[MẪU]')
+    const pTracker = patch?.tracker as { afterJourneyTitle?: string; afterJourneyText?: string }
+    expect(pTracker?.afterJourneyTitle).toContain('[MẪU]')
+    expect(pTracker?.afterJourneyText).toContain('[MẪU]')
+
+    // Never seed stepQuotes (HB-18 rule)
+    expect(patch).not.toHaveProperty('stepQuotes')
   })
 
   it('keeps existing results / rules when only questions / stages are missing', () => {

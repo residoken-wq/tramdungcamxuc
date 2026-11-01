@@ -56,6 +56,31 @@ const validateCaption: Validate<string> = (value) => {
   return unknown.length === 0 || vi.hb24.errors.unknownPlaceholder(unknown.join(', '))
 }
 
+const stepQuoteSubGroup = (name: string, label: string): Field => ({
+  name,
+  type: 'group',
+  label,
+  fields: [
+    textarea('text', vi.hb18.stepQuotes.text),
+    {
+      ...text('author', vi.hb18.stepQuotes.author),
+      validate: ((value, { siblingData }) =>
+        !hasText(siblingData?.text) ||
+        hasText(value) ||
+        vi.hb18.errors.requiredQuoteAuthor) satisfies Validate<string, unknown, { text?: string }>,
+    },
+    {
+      ...text('source', vi.hb18.stepQuotes.source),
+      admin: { description: vi.hb18.stepQuotes.sourceDesc },
+      validate: ((value, { siblingData }) =>
+        !hasText(siblingData?.text) ||
+        hasText(value) ||
+        vi.hb18.errors.requiredQuoteSource) satisfies Validate<string, unknown, { text?: string }>,
+    },
+    url('sourceUrl', vi.hb18.stepQuotes.sourceUrl),
+  ],
+})
+
 export const HabitJourneyContent: GlobalConfig = {
   slug: 'habitJourneyContent',
   label: vi.hb07.global.label,
@@ -224,6 +249,10 @@ export const HabitJourneyContent: GlobalConfig = {
             textarea('body', vi.hb24.onePercent.unknownBody),
           ],
         },
+        {
+          ...text('closing', vi.hb18.onePercent.closing),
+          admin: { description: vi.hb18.onePercent.closingDesc },
+        },
       ],
     },
     {
@@ -359,6 +388,38 @@ export const HabitJourneyContent: GlobalConfig = {
             textarea('body', vi.hb24.loop.ruleBody),
           ],
         },
+        {
+          ...text('note', vi.hb18.loop.note),
+          admin: { description: vi.hb18.loop.noteDesc },
+        },
+        {
+          ...text('techniqueHint', vi.hb18.loop.techniqueHint),
+          admin: { description: vi.hb18.loop.techniqueHintDesc },
+        },
+      ],
+    },
+    {
+      name: 'stepQuotes',
+      type: 'group',
+      label: vi.hb18.stepQuotes.label,
+      admin: { description: vi.hb18.stepQuotes.description },
+      fields: [
+        stepQuoteSubGroup('onePercent', vi.hb18.stepQuotes.steps.onePercent),
+        stepQuoteSubGroup('mentor', vi.hb18.stepQuotes.steps.mentor),
+        stepQuoteSubGroup('name', vi.hb18.stepQuotes.steps.name),
+        stepQuoteSubGroup('loop', vi.hb18.stepQuotes.steps.loop),
+        stepQuoteSubGroup('boardingPass', vi.hb18.stepQuotes.steps.boardingPass),
+        stepQuoteSubGroup('tracker', vi.hb18.stepQuotes.steps.tracker),
+      ],
+    },
+    {
+      name: 'tracker',
+      type: 'group',
+      label: vi.hb18.tracker.label,
+      admin: { description: vi.hb18.tracker.description },
+      fields: [
+        text('afterJourneyTitle', vi.hb18.tracker.afterJourneyTitle),
+        textarea('afterJourneyText', vi.hb18.tracker.afterJourneyText),
       ],
     },
     {

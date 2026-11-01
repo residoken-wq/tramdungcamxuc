@@ -1001,6 +1001,8 @@ export const habitFlowContent = {
     { title: '[MẪU] Điều chưa biết 2', body: '[MẪU] Nội dung 2' },
     { title: '[MẪU] Điều chưa biết 3', body: '[MẪU] Nội dung 3' },
   ],
+  onePercentClosing:
+    '[MẪU] Lời giải không nằm ở cố gắng nhiều hơn, mà ở việc thiết kế môi trường và làm cho thói quen trở nên dễ dàng.',
   loop: {
     stages: [
       { stage: 'cue', title: '[MẪU] Tín hiệu', explanation: '[MẪU] Giải thích Tín hiệu' },
@@ -1014,6 +1016,13 @@ export const habitFlowContent = {
       { title: '[MẪU] Quy tắc 3', body: '[MẪU] Giải thích quy tắc 3' },
       { title: '[MẪU] Quy tắc 4', body: '[MẪU] Giải thích quy tắc 4' },
     ],
+    note: '[MẪU] Hai giai đoạn đầu là vấn đề của nhận thức; hai giai đoạn sau là vấn đề của hành động.',
+    techniqueHint: '[MẪU] Đánh dấu kỹ thuật bạn sẽ dùng để vượt qua giai đoạn nút thắt.',
+  },
+  tracker: {
+    afterJourneyTitle: '[MẪU] Đồng hành sau 28 ngày',
+    afterJourneyText:
+      '[MẪU] Bạn đã hoàn thành hành trình 28 ngày xây dựng thói quen. Hãy tiếp tục duy trì đà tiến bộ hoặc bắt đầu một thói quen mới.',
   },
   boardingPassCaption: '[MẪU] {tuyen_ngon} – hành trình {so_ngay} ngày bắt đầu {ngay_bat_dau}.',
   privacyNote: '[MẪU] Câu về nơi lưu dữ liệu của bạn – Hana soạn.',
