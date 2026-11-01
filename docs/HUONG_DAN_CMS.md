@@ -961,12 +961,17 @@ Lần chạy seed đầu tiên điền sẵn chữ `[MẪU]` cho các mục còn
    - **Gợi ý theo nút thắt**: mỗi giai đoạn **một** dòng (tiêu đề + gợi ý). Nhập 2 dòng cùng giai đoạn thì hệ thống báo lỗi.
 2. **Bước 2 – 3 điều có thể bạn chưa biết** (trong nhóm _Nguyên lý 1%_, tối đa 3 dòng): tiêu đề + nội dung. Số liệu trong đây cũng phải có nguồn.
 3. **Bước 5 – Vòng lặp thói quen**: **Lời mở**, **Giải thích 4 giai đoạn** (mỗi giai đoạn một dòng), **4 quy tắc** (tiêu đề + giải thích).
-4. **Bước 6 – Boarding Pass → Caption gợi ý**: câu khách bấm "Sao chép caption" để đăng kèm ảnh. Chèn được 3 ô tự điền:
-   - `{tuyen_ngon}`: câu "Tôi sẽ … để trở thành …" của khách.
-   - `{so_ngay}`: số ngày hành trình (đang là 28).
-   - `{ngay_bat_dau}`: ngày bắt đầu, dạng dd/MM/yyyy.
-
-   Gõ sai tên ô (ví dụ `{ly_do_rieng}`) thì hệ thống báo lỗi. Lý do riêng của khách **không** chèn được vào caption. Caption tối đa 2.200 ký tự.
+4. **Bước 6 – Boarding Pass & Lên chuyến (HB-22)**:
+   - **Câu trích dẫn (`stepQuotes.boardingPass`)**: Câu danh ngôn truyền cảm hứng trước giờ khởi hành kèm tác giả và nguồn kiểm chứng.
+   - **Lời dặn trước giờ khởi hành (`boardingPass.intro`)**: Khối văn bản dặn dò tâm thế và nhắc nhở học viên lưu vé.
+   - **Caption gợi ý (`boardingPassCaption`)**: Câu gợi ý khi học viên bấm nút "Sao chép caption gợi ý" để đăng mạng xã hội kèm ảnh vé. Chèn được đúng 3 ô tự điền:
+     - `{tuyen_ngon}`: Tuyên ngôn định danh thói quen của học viên ("Tôi sẽ … để trở thành …").
+     - `{so_ngay}`: Số ngày hành trình (mặc định 28 ngày).
+     - `{ngay_bat_dau}`: Ngày khởi hành (định dạng `dd/MM/yyyy` theo giờ Việt Nam).
+     - _Bảo mật riêng tư_: Lý do riêng tư (`privateReason`) và bạn đồng hành (`companionName`) **tuyệt đối không** xuất hiện trên caption. Các biến lạ ngoài 3 ô trên sẽ được giữ nguyên chữ mẫu mà không gây lỗi.
+   - **Giao diện học viên**:
+     - 3 nút thao tác: "Tải ảnh Cover điện thoại" (9:16), "Tải ảnh đăng bài" (4:5), "Sao chép caption gợi ý" (tự ẩn nếu không có caption trong CMS). Nếu máy không hỗ trợ Clipboard API, hệ thống tự mở khung sao chép thủ công.
+     - Nút chính **"Lên chuyến · Bắt đầu 28 ngày →"**: Lưu thông tin email, đồng thuận dữ liệu và tự động điều hướng: học viên đã đăng nhập được kích hoạt trial vào thẳng `/habit/tracker`; học viên chưa đăng nhập được chuyển hướng an toàn tới trang đăng nhập. Màn hình chúc mừng có nút chính dẫn vào Tracker cùng các liên kết Zalo và ưu đãi gói.
 
 5. **Câu về dữ liệu của bạn**: câu giải thích dữ liệu của khách được lưu ở đâu. Phải **đúng sự thật**: dữ liệu lưu trên máy chủ của Trạm theo tài khoản email của khách, **không** phải "chỉ nằm trong trình duyệt" như bản tham chiếu.
 6. Bấm **Lưu**.

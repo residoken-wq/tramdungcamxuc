@@ -174,7 +174,7 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
           timeout: 20000,
         })
 
-        const submitBtn = guest.getByRole('button', { name: /Lưu kế hoạch/i })
+        const submitBtn = guest.getByRole('button', { name: /Lên chuyến|Lưu kế hoạch/i })
         await submitBtn.click()
 
         await expect(guest.getByText('Kế hoạch đã sẵn sàng!')).toBeVisible({

@@ -9,6 +9,7 @@ export interface FlowProgressBarProps {
   currentStep: HabitFlowStep
   journeyDays?: number
   isPlanSaved?: boolean
+  trackerUrl?: string
   onSelectStep: (step: HabitFlowStep) => void
 }
 
@@ -31,6 +32,7 @@ export function FlowProgressBar({
   currentStep,
   journeyDays = 28,
   isPlanSaved = false,
+  trackerUrl,
   onSelectStep,
 }: FlowProgressBarProps) {
   const discoverSteps = FLOW_STEPS.filter((s) => s.stage === 'discover')
@@ -174,7 +176,7 @@ export function FlowProgressBar({
 
             {isPlanSaved ? (
               <Link
-                href="/habit/tracker"
+                href={trackerUrl || '/habit/tracker'}
                 data-testid="journey-tracker-link"
                 className="w-full min-h-[44px] px-3 py-2.5 rounded-xl bg-mint-haze border-2 border-deep-navy text-deep-navy font-ui font-bold text-xs sm:text-sm flex items-center justify-between gap-2 hover:bg-soft-pink transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta"
               >

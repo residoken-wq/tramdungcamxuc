@@ -121,9 +121,9 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
         await expect(guest.getByText('Bước 6 / 6')).toBeVisible()
         await expect(guest.getByText(/Boarding Pass của bạn/i)).toBeVisible()
 
-        // Bấm nút Tải ảnh 4:5 và chờ sự kiện download
+        // Bấm nút Tải ảnh đăng bài (4:5) và chờ sự kiện download
         const downloadPromise = guest.waitForEvent('download', { timeout: 30000 })
-        const download45Btn = guest.getByRole('button', { name: /Tải ảnh 4:5/i })
+        const download45Btn = guest.getByRole('button', { name: /Tải ảnh đăng bài|Tải ảnh 4:5/i })
         await download45Btn.click()
 
         const download = await downloadPromise
