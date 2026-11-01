@@ -208,19 +208,42 @@ describe('HB-24: habitJourneyContent – nội dung flow mới (bước 1, 2, 5,
     })
     expect(content.stepQuotes.mentor).toBeNull()
 
-    // Test getHabitSiteSettings
-    await payload.updateGlobal({
-      slug: 'siteSettings',
-      data: {
-        habitCoachBookingUrl: 'https://cal.com/coach',
-        habitDonationEnabled: true,
-        habitDonationUrl: 'https://donate.example.com',
-      },
-      overrideAccess: true,
-    })
-    const siteSettings = await getHabitSiteSettings(payload)
-    expect(siteSettings.habitCoachBookingUrl).toBe('https://cal.com/coach')
-    expect(siteSettings.habitDonationEnabled).toBe(true)
-    expect(siteSettings.habitDonationUrl).toBe('https://donate.example.com')
+    // Test getHabitSiteSettings (khôi phục 3 field siteSettings sau khi test – HB-18c)
+    const settingsBefore = await payload.findGlobal({ slug: 'siteSettings', depth: 0 })
+    try {
+      await payload.updateGlobal({
+        slug: 'siteSettings',
+        data: {
+          habitCoachBookingUrl: 'https://cal.com/coach',
+          habitDonationEnabled: true,
+          habitDonationUrl: 'https://donate.example.com',
+        },
+        overrideAccess: true,
+      })
+      const siteSettings = await getHabitSiteSettings(payload)
+      expect(siteSettings.habitCoachBookingUrl).toBe('https://cal.com/coach')
+      expect(siteSettings.habitDonationEnabled).toBe(true)
+      expect(siteSettings.habitDonationUrl).toBe('https://donate.example.com')
+
+      // Công tắc tắt (Hana chưa duyệt) -> không trả link Ủng hộ dù đã nhập URL
+      await payload.updateGlobal({
+        slug: 'siteSettings',
+        data: { habitDonationEnabled: false },
+        overrideAccess: true,
+      })
+      const disabled = await getHabitSiteSettings(payload)
+      expect(disabled.habitDonationEnabled).toBe(false)
+      expect(disabled.habitDonationUrl).toBeNull()
+    } finally {
+      await payload.updateGlobal({
+        slug: 'siteSettings',
+        data: {
+          habitCoachBookingUrl: settingsBefore.habitCoachBookingUrl ?? null,
+          habitDonationEnabled: settingsBefore.habitDonationEnabled ?? false,
+          habitDonationUrl: settingsBefore.habitDonationUrl ?? null,
+        },
+        overrideAccess: true,
+      })
+    }
   })
 })

@@ -372,6 +372,8 @@ export async function getHabitJourneyContent(
 
 /**
  * Đọc 3 cấu hình liên kết coaching và ủng hộ từ SiteSettings.
+ * HB-18c: link Ủng hộ chỉ trả về khi công tắc đang bật (Hana đã duyệt), để nơi hiển thị
+ * không thể vô tình hiện link khi mới chỉ nhập URL.
  */
 export async function getHabitSiteSettings(
   payloadInstance?: Payload,
@@ -382,9 +384,10 @@ export async function getHabitSiteSettings(
     depth: 0,
   })) as SiteSetting | null
 
+  const habitDonationEnabled = Boolean(settings?.habitDonationEnabled)
   return {
     habitCoachBookingUrl: trimmed(settings?.habitCoachBookingUrl),
-    habitDonationEnabled: Boolean(settings?.habitDonationEnabled),
-    habitDonationUrl: trimmed(settings?.habitDonationUrl),
+    habitDonationEnabled,
+    habitDonationUrl: habitDonationEnabled ? trimmed(settings?.habitDonationUrl) : null,
   }
 }
