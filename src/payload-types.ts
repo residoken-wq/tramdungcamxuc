@@ -463,6 +463,14 @@ export interface Product {
         | 'spark'
         | 'shield'
         | 'mirror'
+        | 'check'
+        | 'arrow-right'
+        | 'phone'
+        | 'email'
+        | 'location'
+        | 'clock'
+        | 'calendar'
+        | 'user'
       )
     | null;
   /**

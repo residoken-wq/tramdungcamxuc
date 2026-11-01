@@ -53,6 +53,15 @@ const DividerIcon = () => (
   </svg>
 )
 
+const IconListIcon = () => (
+  <svg {...baseSvgProps}>
+    <circle cx="5" cy="7" r="1.5" />
+    <path d="M10 7h10M10 12h10M10 17h10" />
+    <circle cx="5" cy="12" r="1.5" />
+    <circle cx="5" cy="17" r="1.5" />
+  </svg>
+)
+
 const TextIcon = () => (
   <svg {...baseSvgProps}>
     <path d="M4 6h16M4 12h10M4 18h14" />
@@ -254,6 +263,14 @@ const FreeSectionIcon = () => (
 
 // Map component keys to dedicated micro-icons
 const blockIconMap: Record<string, React.ComponentType> = {
+  // EB-06a Cơ bản
+  HeadingWidget: HeadingIcon,
+  TextWidget: TextIcon,
+  ImageWidget: ImageIcon,
+  ButtonWidget: ButtonIcon,
+  IconWidget: StarIcon,
+  IconListWidget: IconListIcon,
+
   // Mở đầu
   HeroTwoEntries: HeroTwoEntriesIcon,
   HeroImage: ImageIcon,
