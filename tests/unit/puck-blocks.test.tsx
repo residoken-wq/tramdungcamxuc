@@ -268,9 +268,22 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
   })
 
   describe('Sidebar categories per AGENTS.md 5B', () => {
-    it('groups all blocks into Mở đầu, Nội dung, Bố cục, and Chuyển đổi with Vietnamese titles', () => {
+    it('groups all blocks into Cơ bản, Mở đầu, Nội dung, Bố cục, and Chuyển đổi with Vietnamese titles', () => {
       const { categories } = puckConfig
       expect(categories).toBeDefined()
+
+      expect(categories?.basic?.title).toBe('Cơ bản')
+      expect(categories?.basic?.components).toEqual([
+        'HeadingWidget',
+        'TextWidget',
+        'ImageWidget',
+        'ButtonWidget',
+        'IconWidget',
+        'IconListWidget',
+        'Divider',
+        'Spacer',
+        'VideoEmbed',
+      ])
 
       expect(categories?.intro?.title).toBe('Mở đầu')
       expect(categories?.intro?.components).toEqual([
@@ -290,18 +303,11 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'JourneySteps',
         'VisionMission',
         'FAQ',
-        'VideoEmbed',
         'ContactInfo',
       ])
 
       expect(categories?.layout?.title).toBe('Bố cục')
-      expect(categories?.layout?.components).toEqual([
-        'Container',
-        'Columns',
-        'Spacer',
-        'Divider',
-        'ResourcePostsSlot',
-      ])
+      expect(categories?.layout?.components).toEqual(['Container', 'Columns', 'ResourcePostsSlot'])
 
       expect(categories?.conversion?.title).toBe('Chuyển đổi')
       expect(categories?.conversion?.components).toEqual([

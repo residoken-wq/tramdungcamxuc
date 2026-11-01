@@ -2,6 +2,7 @@ import React from 'react'
 import { Render } from '@puckeditor/core'
 import { designSystemGoogleFonts, googleFontsHrefFor } from '@/lib/design/design-css'
 import { getDesignSystem } from '@/lib/design/design-system.server'
+import { sanitizePageRichText } from '@/puck/rich-text-data'
 import { collectPageStyles } from '@/puck/style/style-css'
 
 /**
@@ -9,7 +10,9 @@ import { collectPageStyles } from '@/puck/style/style-css'
  * `_style` into one <style>, and loads the Google fonts those blocks use (minus the ones the
  * designSystem already loads). A page without `_style` renders exactly as `<Render>` alone.
  */
-export async function StyledRender({ config, data }: React.ComponentProps<typeof Render>) {
+export async function StyledRender({ config, data: rawData }: React.ComponentProps<typeof Render>) {
+  // EB-06a: rich text is cleaned before Puck renders it (see rich-text-data.ts).
+  const data = sanitizePageRichText(rawData)
   const ds = await getDesignSystem()
   const { css, fonts } = collectPageStyles(data, ds)
   const alreadyLoaded = new Set(designSystemGoogleFonts(ds))

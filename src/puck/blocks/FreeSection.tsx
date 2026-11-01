@@ -218,7 +218,7 @@ export const EmotionElBlock: ComponentConfig<EmotionElProps> = {
 }
 
 export const ImageElBlock: ComponentConfig<ImageElProps> = {
-  label: 'Ảnh',
+  label: 'Ảnh (phần tử Section tự do)',
   fields: {
     mediaId: createMediaExternalField({ label: 'Ảnh (Thư viện media, bắt buộc có mô tả alt)' }),
     width: {
@@ -257,7 +257,7 @@ export const ImageElBlock: ComponentConfig<ImageElProps> = {
 }
 
 export const ButtonElBlock: ComponentConfig<ButtonElProps> = {
-  label: 'Nút',
+  label: 'Nút (phần tử Section tự do)',
   fields: {
     text: { type: 'text', label: 'Chữ trên nút', contentEditable: true },
     linkType: {

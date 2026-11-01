@@ -13,6 +13,12 @@ import { StatsBarBlock, type StatsBarProps } from './blocks/StatsBar'
 import { JourneyStepsBlock, type JourneyStepsProps } from './blocks/JourneySteps'
 import { FAQBlock, type FAQProps } from './blocks/FAQ'
 import { VideoEmbedBlock, type VideoEmbedProps } from './blocks/VideoEmbed'
+import { HeadingWidgetBlock, type HeadingWidgetProps } from './blocks/widgets/HeadingWidget'
+import { TextWidgetBlock, type TextWidgetProps } from './blocks/widgets/TextWidget'
+import { ImageWidgetBlock, type ImageWidgetProps } from './blocks/widgets/ImageWidget'
+import { ButtonWidgetBlock, type ButtonWidgetProps } from './blocks/widgets/ButtonWidget'
+import { IconWidgetBlock, type IconWidgetProps } from './blocks/widgets/IconWidget'
+import { IconListWidgetBlock, type IconListWidgetProps } from './blocks/widgets/IconListWidget'
 import { ContainerBlock, type ContainerProps } from './blocks/Container'
 import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
 import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
@@ -119,6 +125,12 @@ export type {
   TwoPathCardsProps,
   TeamGridProps,
   ResourcePostsSlotProps,
+  HeadingWidgetProps,
+  TextWidgetProps,
+  ImageWidgetProps,
+  ButtonWidgetProps,
+  IconWidgetProps,
+  IconListWidgetProps,
   ContainerProps,
   LeadMagnetCarouselProps,
   NewsletterFormProps,
@@ -133,6 +145,13 @@ export type {
 }
 
 export type PageComponentsProps = {
+  // Cơ bản (EB-06a)
+  HeadingWidget: HeadingWidgetProps
+  TextWidget: TextWidgetProps
+  ImageWidget: ImageWidgetProps
+  ButtonWidget: ButtonWidgetProps
+  IconWidget: IconWidgetProps
+  IconListWidget: IconListWidgetProps
   // Mở đầu
   HeroTwoEntries: HeroTwoEntriesProps
   HeroImage: HeroImageProps
@@ -204,6 +223,20 @@ export type PageComponentsProps = {
 
 const basePuckConfig: Config<PageComponentsProps> = {
   categories: {
+    basic: {
+      title: 'Cơ bản',
+      components: [
+        'HeadingWidget',
+        'TextWidget',
+        'ImageWidget',
+        'ButtonWidget',
+        'IconWidget',
+        'IconListWidget',
+        'Divider',
+        'Spacer',
+        'VideoEmbed',
+      ],
+    },
     intro: {
       title: 'Mở đầu',
       components: ['HeroTwoEntries', 'HeroImage', 'SectionHeader'],
@@ -220,13 +253,12 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'JourneySteps',
         'VisionMission',
         'FAQ',
-        'VideoEmbed',
         'ContactInfo',
       ],
     },
     layout: {
       title: 'Bố cục',
-      components: ['Container', 'Columns', 'Spacer', 'Divider', 'ResourcePostsSlot'],
+      components: ['Container', 'Columns', 'ResourcePostsSlot'],
     },
     sales: {
       title: 'Bán hàng',
@@ -633,6 +665,14 @@ const basePuckConfig: Config<PageComponentsProps> = {
     LeadMagnetCarousel: LeadMagnetCarouselBlock,
     NewsletterForm: NewsletterFormBlock,
     ContactForms: ContactFormsBlock,
+
+    // Cơ bản (EB-06a)
+    HeadingWidget: HeadingWidgetBlock,
+    TextWidget: TextWidgetBlock,
+    ImageWidget: ImageWidgetBlock,
+    ButtonWidget: ButtonWidgetBlock,
+    IconWidget: IconWidgetBlock,
+    IconListWidget: IconListWidgetBlock,
 
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
