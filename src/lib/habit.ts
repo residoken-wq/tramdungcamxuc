@@ -22,6 +22,7 @@ export interface PublicTechnique {
   stage: HabitStage
   howTo?: unknown
   example?: unknown
+  exampleVideoUrl?: string | null
 }
 
 export type HabitScorecardRating = 'good' | 'neutral' | 'bad'

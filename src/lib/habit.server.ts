@@ -102,6 +102,10 @@ export async function getTechniques(payloadInstance?: Payload): Promise<PublicTe
           stage: doc.stage as PublicTechnique['stage'],
           howTo: doc.howTo,
           example: doc.example,
+          exampleVideoUrl:
+            typeof doc.exampleVideoUrl === 'string' && doc.exampleVideoUrl.trim().length > 0
+              ? doc.exampleVideoUrl.trim()
+              : null,
         })
       }
     }
