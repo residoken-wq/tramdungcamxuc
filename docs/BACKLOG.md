@@ -86,3 +86,4 @@
 - (HB-08 QA 27/10) CI ghim `runs-on: ubuntu-24.04` vì Playwright 1.58.2 không chạy trên Ubuntu 26.04 – nâng Playwright rồi bỏ ghim.
 - (EB-01 31/10) Token màu theo vai trò (`primary`, `accent`, `surface`…) thay cho tên màu riêng của Trạm (`deep-navy`…), để site khách khác không phải giữ tên màu Trạm. Cần đổi class Tailwind toàn repo + migration dữ liệu Puck.
 - (EB-02 31/10) **EB-02b**: email (`src/emails/**`) và ảnh chia sẻ `next/og` (Boarding Pass, chứng nhận, thẻ EQ) đọc màu / font từ `designSystem`. `next/og` cần file font thật: tải font Google lúc tạo ảnh hoặc giữ font tự host cho ảnh.
+- (EB-03 QA 31/10) Builder phụ thuộc class băm nội bộ của Puck (`[class*="_PuckCanvas_"]` trong `PuckLayoutOverride` + `setInterval`, và các `[class*='_…_']` trong `builder.css`). Nâng Puck có thể gãy: chuyển sang `overrides.preview` / `plugins` khi Puck có API, giữ e2e `puck-editor-frame` để bắt lỗi.
