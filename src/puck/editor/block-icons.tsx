@@ -261,15 +261,41 @@ const FreeSectionIcon = () => (
   </svg>
 )
 
+const TabsIcon = () => (
+  <svg {...baseSvgProps}>
+    <path d="M3 7h5v3H3zM8 7h5v3H8z" />
+    <path d="M3 10h18v10H3z" />
+  </svg>
+)
+
+const AccordionIcon = () => (
+  <svg {...baseSvgProps}>
+    <rect x="3" y="4" width="18" height="6" rx="1.5" />
+    <path d="M7 7h6M17 6.5l1.5 1-1.5 1" />
+    <rect x="3" y="14" width="18" height="6" rx="1.5" />
+    <path d="M7 17h6M17 16.5l1.5 1-1.5 1" />
+  </svg>
+)
+
+const CounterIcon = () => (
+  <svg {...baseSvgProps}>
+    <path d="M4 19h16M12 5v14M8 8l4-3 4 3" />
+    <path d="M6 15l2-2m8 0l2 2" />
+  </svg>
+)
+
 // Map component keys to dedicated micro-icons
 const blockIconMap: Record<string, React.ComponentType> = {
-  // EB-06a Cơ bản
+  // EB-06 Cơ bản
   HeadingWidget: HeadingIcon,
   TextWidget: TextIcon,
   ImageWidget: ImageIcon,
   ButtonWidget: ButtonIcon,
   IconWidget: StarIcon,
   IconListWidget: IconListIcon,
+  TabsWidget: TabsIcon,
+  AccordionWidget: AccordionIcon,
+  CounterWidget: CounterIcon,
 
   // Mở đầu
   HeroTwoEntries: HeroTwoEntriesIcon,

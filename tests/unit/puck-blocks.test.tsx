@@ -283,6 +283,9 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'Divider',
         'Spacer',
         'VideoEmbed',
+        'TabsWidget',
+        'AccordionWidget',
+        'CounterWidget',
       ])
 
       expect(categories?.intro?.title).toBe('Mở đầu')
@@ -325,6 +328,21 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'NewsletterForm',
         'ContactForms',
       ])
+    })
+
+    it('ensures no two blocks in puckConfig share the exact same label (QA EB-06 lesson 3)', () => {
+      const labels = Object.entries(puckConfig.components).map(([key, comp]) => ({
+        key,
+        label: comp.label || key,
+      }))
+      const seen = new Map<string, string>()
+      for (const { key, label } of labels) {
+        expect(
+          seen.has(label),
+          `Duplicate block label "${label}" found on blocks "${seen.get(label)}" and "${key}"`,
+        ).toBe(false)
+        seen.set(label, key)
+      }
     })
   })
 })
