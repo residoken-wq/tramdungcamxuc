@@ -108,9 +108,7 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
       })
 
       expect(screen.getByText('Bước 5 / 6')).toBeDefined()
-      expect(
-        screen.getByRole('heading', { name: viStrings.habit.wizard.step3.title }),
-      ).toBeDefined()
+      expect(screen.getByRole('heading', { name: viStrings.hb21.stepTitle })).toBeDefined()
       expect(screen.getByDisplayValue('Ngồi ngay ngắn trên ghế')).toBeDefined()
 
       // Nháp lưu lại trong localStorage đã được nâng lên version 2, step 5

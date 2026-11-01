@@ -153,6 +153,6 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
     await act(async () => {
       fireEvent.click(nextBtn)
     })
-    expect(screen.getByRole('heading', { name: viStrings.habit.wizard.step3.title })).toBeDefined()
+    expect(screen.getByRole('heading', { name: viStrings.hb21.stepTitle })).toBeDefined()
   })
 })

@@ -22,6 +22,7 @@ import type {
   CleanHabitDiagnose,
   CleanTitledText,
   CleanHabitStepQuotes,
+  CleanHabitLoop,
 } from '@/lib/habit/journey-content.server'
 import { scoreFlowDiagnose } from '@/lib/habit/flow-content'
 import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
@@ -47,6 +48,7 @@ export interface HabitFlowProps {
   onePercentUnknowns?: CleanTitledText[]
   stepQuotes?: CleanHabitStepQuotes
   diagnose?: CleanHabitDiagnose | null
+  loop?: CleanHabitLoop | null
   privacyNote?: string | null
 }
 
@@ -57,6 +59,7 @@ export function HabitFlow({
   onePercentUnknowns,
   stepQuotes,
   diagnose,
+  loop,
   privacyNote,
 }: HabitFlowProps) {
   const startTimeRef = useRef<number | null>(null)
@@ -351,19 +354,15 @@ export function HabitFlow({
       }
       setDraft((prev) => ({ ...prev, step: 5 }))
     } else if (draft.step === 5) {
-      for (const stg of HABIT_STAGES) {
-        const stageTechs = techniques.filter((t) => t.stage === stg)
-        const list = draft.chosenTechniques[stg] || []
-
-        if (stageTechs.length > 0 && list.length === 0) {
-          setStepError(
-            `${vi.habit.wizard.errors.techniquesEmpty} (${vi.habit.wizard.step3.stages[stg].title})`,
-          )
+      if (techniques.length > 0) {
+        const allChosen = HABIT_STAGES.flatMap((stage) => draft.chosenTechniques[stage] || [])
+        if (allChosen.length === 0) {
+          setStepError(vi.hb21.errors.atLeastOneTechnique)
           return
         }
-        for (const item of list) {
+        for (const item of allChosen) {
           if (!item.action.trim()) {
-            setStepError(vi.habit.wizard.errors.actionRequired)
+            setStepError(vi.hb21.errors.actionRequired)
             return
           }
         }
@@ -658,6 +657,9 @@ export function HabitFlow({
               chosenTechniques={draft.chosenTechniques}
               onToggleTechnique={handleToggleTechnique}
               onUpdateTechniqueAction={handleUpdateTechniqueAction}
+              loop={loop}
+              quote={stepQuotes?.loop}
+              error={draft.step === 5 ? stepError : null}
             />
           )}
 

@@ -3506,6 +3506,50 @@ export const vi = {
       companionNameTooLong: 'Tên bạn đồng hành không được vượt quá 100 ký tự.',
     },
   },
+  hb21: {
+    stepTitle: 'Vòng lặp thói quen',
+    stepSubtitle:
+      'Hiểu rõ 4 giai đoạn và 4 quy tắc hình thành hành vi, sau đó đánh dấu các kỹ thuật bạn muốn áp dụng',
+    explanation: {
+      heading: '4 giai đoạn hình thành thói quen',
+      cycleHint: 'Vòng lặp diễn ra liên tục theo chiều kim đồng hồ',
+      stages: {
+        cue: {
+          badge: 'Giai đoạn 1',
+          name: 'Gợi ý (Cue)',
+        },
+        craving: {
+          badge: 'Giai đoạn 2',
+          name: 'Khao khát (Craving)',
+        },
+        response: {
+          badge: 'Giai đoạn 3',
+          name: 'Phản hồi (Response)',
+        },
+        reward: {
+          badge: 'Giai đoạn 4',
+          name: 'Phần thưởng (Reward)',
+        },
+      },
+    },
+    rules: {
+      heading: '4 quy tắc vàng thay đổi hành vi',
+    },
+    techniques: {
+      heading: 'Đánh dấu kỹ thuật thực hành',
+      defaultHint: 'Chỉ những kỹ thuật được đánh dấu mới xuất hiện trên Boarding Pass của bạn.',
+      maxPerStageNotice: 'Tối đa 2 kỹ thuật mỗi giai đoạn',
+      selectedCount: (count: number, max = 2) => `Đã chọn: ${count} / ${max}`,
+      actionLabel: 'Hành động cụ thể của bạn',
+      actionPlaceholder: 'Ví dụ: Sau khi đánh răng sáng, tôi sẽ ngồi xuống đệm...',
+      viewExampleVideo: 'Xem ví dụ',
+      stageMaxReached: 'Đã chọn tối đa 2 kỹ thuật cho giai đoạn này',
+    },
+    errors: {
+      atLeastOneTechnique: 'Vui lòng đánh dấu ít nhất 1 kỹ thuật thực hành.',
+      actionRequired: 'Vui lòng nhập hành động cụ thể cho kỹ thuật đã chọn.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
