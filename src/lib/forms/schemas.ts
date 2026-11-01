@@ -331,6 +331,28 @@ export const habitPlanSubmissionSchema = z
       .optional()
       .nullable()
       .transform((val) => (val && val.length > 0 ? val : undefined)),
+    // REVIEW-REQUIRED: HB-20 privateReason bảo mật tối đa 500 ký tự, chỉ khách đọc
+    privateReason: z
+      .string()
+      .trim()
+      .max(500, vi.hb20.errors.privateReasonTooLong)
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
+    companionName: z
+      .string()
+      .trim()
+      .max(100, vi.hb20.errors.companionNameTooLong)
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
+    // REVIEW-REQUIRED: HB-20 startDate nhận dạng string YYYY-MM-DD hoặc ISO string, sẽ kiểm tra phạm vi ở server
+    startDate: z
+      .string()
+      .trim()
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
     name: z
       .string()
       .trim()

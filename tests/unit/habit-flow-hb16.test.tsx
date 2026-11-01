@@ -271,11 +271,11 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
       // Điền câu định danh ở Bước 4 -> sang Bước 5
       await act(async () => {
         fireEvent.change(
-          screen.getByPlaceholderText(viStrings.habit.wizard.step2.actionPlaceholder),
+          screen.getByPlaceholderText(viStrings.hb20.declaration.actionPlaceholder),
           { target: { value: 'đọc sách 10 phút' } },
         )
         fireEvent.change(
-          screen.getByPlaceholderText(viStrings.habit.wizard.step2.identityPlaceholder),
+          screen.getByPlaceholderText(viStrings.hb20.declaration.personPlaceholder),
           { target: { value: 'người ham học hỏi' } },
         )
       })

@@ -25,6 +25,7 @@ export interface StepBoardingPassProps {
   chosenTechniques: Record<HabitStage, HabitChosenTechnique[]>
   selectedTechniqueIds: number[]
   journeyDays: number
+  startDate?: string
   techniques: PublicTechnique[]
   name: string
   email: string
@@ -50,6 +51,7 @@ export function StepBoardingPass({
   chosenTechniques,
   selectedTechniqueIds,
   journeyDays,
+  startDate,
   techniques,
   name,
   email,
@@ -133,6 +135,7 @@ export function StepBoardingPass({
         rhythmDays={rhythmDays}
         techniqueIds={selectedTechniqueIds}
         journeyDays={journeyDays}
+        startDate={startDate}
         availableTechniques={techniques}
       />
 

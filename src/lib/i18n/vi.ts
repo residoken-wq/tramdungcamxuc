@@ -3440,6 +3440,72 @@ export const vi = {
       timeInvalidFormat: 'Giờ làm thói quen phải có dạng HH:mm (từ 00:00 đến 23:59).',
     },
   },
+  hb20: {
+    stepTitle: 'Gọi tên thói quen',
+    stepSubtitle:
+      'Xác định nhịp tuần, thói quen hạt nhân, lý do riêng, ngày bắt đầu và bạn đồng hành',
+    declaration: {
+      title: 'Tuyên ngôn danh tính',
+      actionLabel: 'Hành động cụ thể bạn sẽ thực hiện',
+      actionPlaceholder: 'Ví dụ: thiền 5 phút, uống 1 ly nước ấm...',
+      personLabel: 'Mẫu hình con người bạn muốn trở thành',
+      personPlaceholder: 'Ví dụ: người điềm tĩnh, người khỏe mạnh...',
+      previewHeading: 'Tuyên ngôn cam kết',
+      anchorFormulaTitle: 'Công thức gắn với Mentor:',
+    },
+    rhythm: {
+      title: 'Nhịp điệu thói quen',
+      frequencyLabel: 'Số lần mỗi tuần bạn muốn thực hành',
+      frequencyHint: 'Chọn từ 1 đến 7 lần/tuần trước, sau đó chọn đúng các thứ tương ứng bên dưới',
+      frequencyButtonAria: (count: number) => `Chọn nhịp ${count} lần mỗi tuần`,
+      frequencySuffix: 'lần / tuần',
+      daysLabel: 'Chọn các thứ thực hành trong tuần',
+      countStatus: (target: number, current: number) => `Đã chọn ${current} / ${target} ngày`,
+      plannedRestNote: 'Ngày không nằm trong nhịp là ngày nghỉ có kế hoạch, không phải ngày bỏ lỡ.',
+    },
+    coreHabit: {
+      title: 'Thói quen hạt nhân (dưới 2 phút)',
+      subtitle:
+        'Phiên bản tối giản nhất để bạn vẫn hoàn thành ngay cả vào ngày mệt mỏi, bận rộn hay ít năng lượng nhất.',
+      label: 'Hành động tối giản dưới 2 phút',
+      placeholder: 'Ví dụ: Ngồi xuống đệm thở 3 hơi, Mở sách đọc đúng 1 trang...',
+      charCount: (current: number, max: number) => `${current}/${max}`,
+    },
+    privateReason: {
+      title: 'Vì sao điều này quan trọng với bạn?',
+      subtitle: 'Câu này chỉ mình bạn đọc. Nó sẽ hiện lại vào đúng ngày bạn muốn bỏ cuộc.',
+      label: 'Lý do sâu kín của riêng bạn (tùy chọn)',
+      placeholder: 'Viết ra điều thôi thúc bạn từ bên trong, lý do bạn quyết định bắt đầu...',
+      charCount: (current: number, max: number) => `${current}/${max}`,
+      privateBadge: '🔒 Riêng tư tuyệt đối · Chỉ mình bạn đọc',
+    },
+    startDate: {
+      title: 'Ngày bắt đầu hành trình',
+      subtitle: 'Bạn có thể bắt đầu ngay hôm nay hoặc lên lịch trước tối đa 14 ngày',
+      label: 'Chọn ngày bắt đầu',
+      endDateHint: (dateStr: string) => `Kết thúc ngày ${dateStr}`,
+      todayBadge: 'Hôm nay',
+    },
+    companion: {
+      title: 'Bạn đồng hành',
+      subtitle:
+        'Chia sẻ cam kết cùng một người bạn tin tưởng để cùng nhắc nhở và nâng đỡ nhau (không bắt buộc)',
+      label: 'Tên người bạn đồng hành',
+      placeholder: 'Ví dụ: Mai, Chồng, Bạn thân...',
+      note: 'Hệ thống chỉ lưu tên gọi để hiển thị nhắc nhở bạn, không thu thập bất kỳ thông tin liên lạc nào.',
+    },
+    errors: {
+      identityRequired: 'Vui lòng điền đầy đủ cả hành động và mẫu người bạn muốn trở thành.',
+      rhythmEmpty: 'Vui lòng chọn ít nhất một ngày trong tuần.',
+      rhythmCountMismatch: (target: number, current: number) =>
+        `Bạn đã chọn ${target} lần/tuần nhưng đang chọn ${current} thứ. Vui lòng chọn đúng ${target} thứ trong tuần.`,
+      startDateOutOfRange:
+        'Ngày bắt đầu phải nằm trong khoảng từ hôm nay đến tối đa 14 ngày tới theo giờ Việt Nam.',
+      startDateInvalid: 'Ngày bắt đầu không hợp lệ.',
+      privateReasonTooLong: 'Lý do riêng tư không được vượt quá 500 ký tự.',
+      companionNameTooLong: 'Tên bạn đồng hành không được vượt quá 100 ký tự.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

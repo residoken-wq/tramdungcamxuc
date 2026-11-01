@@ -95,13 +95,14 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
 
         // BƯỚC 4: Gọi tên – Nhập hành động & mục tiêu định danh, tắt Chủ Nhật
         await expect(guest.getByText('Bước 4 / 6')).toBeVisible()
-        await guest.getByPlaceholder(/đọc sách 10 phút/i).fill('[MẪU] chạy bộ 15 phút')
+        await guest.getByPlaceholder(/thiền 5 phút/i).fill('[MẪU] chạy bộ 15 phút')
         await guest.getByPlaceholder(/người điềm tĩnh/i).fill('[MẪU] người khỏe khoắn')
 
         // Tắt Chủ nhật
+        await guest.getByRole('button', { name: 'Chọn nhịp 6 lần mỗi tuần' }).click()
         await guest.getByRole('button', { name: 'Chủ nhật' }).click()
         // Nhập bản tối giản
-        await guest.getByPlaceholder(/Mở sách đọc 1 trang/i).fill('[MẪU] Xỏ giày thể thao')
+        await guest.getByPlaceholder(/Mở sách đọc đúng 1 trang/i).fill('[MẪU] Xỏ giày thể thao')
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 
         // BƯỚC 5: Vòng lặp – Chọn kỹ thuật

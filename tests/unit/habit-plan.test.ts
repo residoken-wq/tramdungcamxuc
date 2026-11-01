@@ -519,47 +519,33 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     await expect(getHabitProduct(brokenPayload)).rejects.toThrow('PostgreSQL connection terminated')
   })
 
-  it('B9: server luôn tự đặt startDate là ngày hôm nay, không nhận startDate từ client', async () => {
+  it('B9 (HB-20): ngày bắt đầu khách gửi phải nằm trong hôm nay → +14; ngày quá khứ bị từ chối, không lưu kế hoạch', async () => {
     const email = `test-b9-${randomUUID().slice(0, 8)}@example.test`
     trackedEmails.push(email)
-    const fakeClientStartDate = '2020-01-01T00:00:00.000Z'
 
-    const result = await submitHabitPlan(
-      {
-        scorecard: [{ habit: 'Đi bộ', rating: 'good' }],
-        identityStatement: 'Tôi sẽ đi bộ để trở thành người năng động',
-        chosenTechniques: [{ techniqueId: validCueTechId, stage: 'cue', action: 'Chuẩn bị giày' }],
-        email,
-        consent: true,
-        startDate: fakeClientStartDate,
-      },
-      { ip: `192.168.2.${Math.floor(Math.random() * 200) + 10}` },
-      { payload, emailSender },
-    )
+    await expect(
+      submitHabitPlan(
+        {
+          scorecard: [{ habit: 'Đi bộ', rating: 'good' }],
+          identityStatement: 'Tôi sẽ đi bộ để trở thành người năng động',
+          chosenTechniques: [
+            { techniqueId: validCueTechId, stage: 'cue', action: 'Chuẩn bị giày' },
+          ],
+          email,
+          consent: true,
+          startDate: '2020-01-01T00:00:00.000Z',
+        },
+        { ip: `192.168.2.${Math.floor(Math.random() * 200) + 10}` },
+        { payload, emailSender },
+      ),
+    ).rejects.toThrow()
 
-    expect(result.success).toBe(true)
-    expect(result.planId).toBeDefined()
-    if (result.planId) createdPlans.push(result.planId)
-
-    const doc = await payload.findByID({
+    const saved = await payload.find({
       collection: 'habitPlans',
-      id: result.planId!,
+      where: { leadEmail: { equals: email } },
       overrideAccess: true,
     })
-    expect(doc).toBeDefined()
-    expect(doc.startDate).toBeDefined()
-
-    const savedDate = new Date(doc.startDate!)
-    const today = new Date()
-    // Ngày bắt đầu tính theo giờ Việt Nam
-    const vnDay = (d: Date) =>
-      new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Asia/Ho_Chi_Minh',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).format(d)
-    expect(vnDay(savedDate)).toBe(vnDay(today))
+    expect(saved.totalDocs).toBe(0)
   })
 
   it('B10: cho phép gửi họ và tên tùy chọn và lưu chính xác vào lead', async () => {

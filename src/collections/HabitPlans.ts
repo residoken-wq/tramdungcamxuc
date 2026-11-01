@@ -289,6 +289,8 @@ export const HabitPlans: CollectionConfig = {
     // REVIEW-REQUIRED: only admins may set/update startDate; customers creating a plan through the API
     // get today in Vietnam time from the hook (a forged past startDate would reach graduation early).
     // Not admin.readOnly: owner/editor must be able to adjust it in the CMS (HB-05 spec).
+    // HB-20: Learners creating via the Habit Flow use submitHabitPlanAction which verifies startDate is within
+    // [today, today+14 days] in Vietnam time. Direct REST API calls from customers are still blocked by isEditorOrOwner.
     date('startDate', 'Ngày bắt đầu', {
       access: { create: isEditorOrOwner, update: isEditorOrOwner },
       admin: {

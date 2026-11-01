@@ -8,6 +8,7 @@ import {
 } from '@/lib/habit'
 import type { HabitStage } from '@/lib/diagnostic'
 import type { Weekday } from '@/lib/habit/rhythm'
+import { getVietnamYmd } from '@/lib/habit/tracker-stats'
 
 export const HABIT_FLOW_DRAFT_VERSION = 2 as const
 
@@ -18,6 +19,10 @@ export interface HabitFlowDraft extends HabitPlanDraft {
   step: HabitFlowStep
   diagnoseAnswers?: (number | null)[]
   diagnoseQuestionCount?: number
+  privateReason?: string
+  companionName?: string
+  startDate?: string
+  rhythmFrequency?: number
 }
 
 export const LEGACY_STEP_MAP: Readonly<Record<1 | 2 | 3 | 4, HabitFlowStep>> = {
@@ -35,6 +40,10 @@ export function getDefaultHabitFlowDraft(): HabitFlowDraft {
     ...getDefaultHabitDraft(),
     version: HABIT_FLOW_DRAFT_VERSION,
     step: 1,
+    privateReason: '',
+    companionName: '',
+    startDate: getVietnamYmd(),
+    rhythmFrequency: 7,
   }
 }
 
@@ -176,17 +185,45 @@ export function migrateHabitDraft(
     }
   }
 
+  const todayYmd = getVietnamYmd()
+  let cleanedStartDate = todayYmd
+  if (typeof parsed.startDate === 'string') {
+    const trimmed = parsed.startDate.trim()
+    const match = trimmed.match(/^(\d{4}-\d{2}-\d{2})/)
+    if (match) {
+      const ymd = match[1]
+      cleanedStartDate = ymd < todayYmd ? todayYmd : ymd
+    }
+  }
+
+  const cleanedPrivateReason =
+    typeof parsed.privateReason === 'string' ? parsed.privateReason.slice(0, 500) : ''
+  const cleanedCompanionName =
+    typeof parsed.companionName === 'string' ? parsed.companionName.slice(0, 100) : ''
+
+  const cleanedRhythmFrequency =
+    typeof parsed.rhythmFrequency === 'number' &&
+    Number.isInteger(parsed.rhythmFrequency) &&
+    parsed.rhythmFrequency >= 1 &&
+    parsed.rhythmFrequency <= 7
+      ? parsed.rhythmFrequency
+      : cleanedRhythm.length || 7
+
   return {
     version: HABIT_FLOW_DRAFT_VERSION,
     step,
     scorecard: cleanedScorecard,
     anchorHabit: cleanedAnchor,
     rhythmDays: cleanedRhythm,
+    rhythmFrequency: cleanedRhythmFrequency,
     twoMinuteAction: cleanedTwoMinuteAction,
     actionText,
     personText,
     identityStatement,
     chosenTechniques,
+    privateReason: cleanedPrivateReason,
+    companionName: cleanedCompanionName,
+    startDate: cleanedStartDate,
     ...(cleanedDiagnoseAnswers ? { diagnoseAnswers: cleanedDiagnoseAnswers } : {}),
     ...(cleanedDiagnoseQuestionCount !== undefined
       ? { diagnoseQuestionCount: cleanedDiagnoseQuestionCount }
