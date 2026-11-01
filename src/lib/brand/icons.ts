@@ -17,6 +17,15 @@ export const BRAND_ICONS = [
   { value: 'spark', label: 'Tia sáng' },
   { value: 'shield', label: 'Khiên' },
   { value: 'mirror', label: 'Tấm gương' },
+  // EB-06a: common utility icons for IconWidget & IconListWidget
+  { value: 'check', label: 'Dấu tích' },
+  { value: 'arrow-right', label: 'Mũi tên phải' },
+  { value: 'phone', label: 'Điện thoại' },
+  { value: 'email', label: 'Hòm thư (Email)' },
+  { value: 'location', label: 'Vị trí' },
+  { value: 'clock', label: 'Đồng hồ' },
+  { value: 'calendar', label: 'Lịch' },
+  { value: 'user', label: 'Người dùng' },
 ] as const
 
 export type BrandIcon = (typeof BRAND_ICONS)[number]['value']

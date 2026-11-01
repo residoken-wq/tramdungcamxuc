@@ -60,6 +60,7 @@
    - [5.23. Section tự do: kéo thả từng phần tử](#523-section-tự-do-kéo-thả-từng-phần-tử)
    - [5.24. Chỉnh kiểu từng khối: tab Nội dung / Kiểu / Nâng cao (EB-04)](#524-chỉnh-kiểu-từng-khối-tab-nội-dung--kiểu--nâng-cao-eb-04)
    - [5.25. Khung chứa linh hoạt (Container): hộp flexbox lồng nhau kiểu Elementor (EB-05)](#525-khung-chứa-linh-hoạt-container-hộp-flexbox-lồng-nhau-kiểu-elementor-eb-05)
+   - [5.26. Widget cơ bản: Tiêu đề, Văn bản, Ảnh, Nút, Biểu tượng, Danh sách (EB-06a)](#526-widget-cơ-bản-tiêu-đề-văn-bản-ảnh-nút-biểu-tượng-danh-sách-eb-06a)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2239,6 +2240,54 @@ Khối **Container** nằm ở đầu nhóm **Bố cục** trong bảng thư vi�
 
 > [!WARNING]
 > **Khuyến nghị bố cục:** Chỉ nên lồng tối đa 2 đến 3 tầng Container. Việc lồng Container quá sâu (từ 4 tầng trở lên) sẽ làm cấu trúc trang bị rối, khó chọn đúng khối khi thao tác và làm chậm tốc độ hiển thị.
+
+### 5.26. Widget cơ bản: Tiêu đề, Văn bản, Ảnh, Nút, Biểu tượng, Danh sách (EB-06a)
+
+Nhóm **Cơ bản** đứng ở vị trí đầu tiên trong thư viện khối của trình dựng trang (trên cùng cột bên trái). Đây là tập hợp các widget linh hoạt kiểu Elementor, gồm 6 widget cơ bản mới và 3 khối tiện ích quen thuộc (`Đường kẻ`, `Khoảng trống`, `Nhúng Video`):
+
+#### Phân biệt Widget cơ bản với các loại khối khác
+
+- **Khối thương hiệu (Brand Blocks):** Ví dụ như `HeroHaiLoiVao`, `CacGoiGrowthMirror`, `CauHoiThuongGap`... là các khối được thiết kế sẵn theo đúng nghiệp vụ và cấu trúc của Trạm Dừng Cảm Xúc.
+- **Phần tử Section tự do (Element Blocks):** Ví dụ `HeadingEl`, `ParagraphEl`, `ImageEl`, `ButtonEl`... chỉ có thể đặt bên trong khối `Section tự do (FreeSection)`, không thể thả ở cấp gốc của trang hay bên trong `Container`.
+- **Widget cơ bản (Basic Widgets):** Là các khối độc lập một chức năng (`HeadingWidget`, `TextWidget`, `ImageWidget`, `ButtonWidget`, `IconWidget`, `IconListWidget`). Bạn có thể thả chúng ở bất kỳ đâu trên trang: ở cấp gốc hoặc thả vào bên trong khối `Container`. Khi kết hợp với tab **Kiểu** và **Nâng cao** (EB-04), bạn có thể tùy biến màu sắc, cỡ chữ, căn lề và khoảng cách theo từng thiết bị.
+
+---
+
+#### Hướng dẫn chi tiết từng Widget
+
+1. **Tiêu đề (HeadingWidget):**
+   - **Nội dung:** Nhập chữ trực tiếp trên khung hiển thị hoặc ở ô "Nội dung tiêu đề". Chọn cấp thẻ HTML từ `H1` đến `H6` (mặc định là `H2`).
+   - **Lưu ý SEO:** Mỗi trang chỉ nên có duy nhất một thẻ `H1` (thường nằm ở phần đầu trang) để công cụ tìm kiếm hiểu rõ chủ đề trang.
+   - **Liên kết:** Gắn liên kết tới trang nội bộ của website hoặc dán một địa chỉ URL bất kỳ (có tuỳ chọn mở tab mới an toàn).
+   - **Hình thức:** Chuyển sang tab **Kiểu** để chọn cỡ chữ, màu sắc theo bảng màu thương hiệu hoặc căn lề (trái/giữa/phải) cho từng thiết bị (Máy tính / Điện thoại).
+
+2. **Văn bản (TextWidget):**
+   - **Soạn thảo phong phú:** Khung soạn thảo văn bản cho phép in đậm, in nghiêng, gạch chân, tạo danh sách gạch đầu dòng, danh sách đánh số hoặc gắn liên kết trực tiếp vào từng đoạn chữ.
+   - **Bảo mật tuyệt đối:** Mọi mã HTML đều được hệ thống tự động lọc sạch và kiểm tra an toàn trước khi hiển thị ra trang công khai.
+
+3. **Ảnh (ImageWidget):**
+   - **Chọn ảnh:** Bấm "Chọn ảnh từ thư viện media" để chọn hình ảnh đã tải lên website.
+   - **Mô tả ảnh (Alt):** Bắt buộc ảnh phải có dòng mô tả ngắn để hỗ trợ người khiếm thị đọc màn hình và tối ưu SEO. Nếu ảnh chưa có dòng mô tả alt, hệ thống sẽ ẩn để bạn bổ sung trước.
+   - **Kích thước & Bố cục:** Chọn độ rộng hiển thị (25%, 50%, 75%, 100%), thêm chú thích dưới ảnh (Caption) và tuỳ chọn gắn liên kết mở trang mới. Bo góc ảnh được chỉnh dễ dàng ở tab **Kiểu**.
+
+4. **Nút bấm (ButtonWidget):**
+   - **Nội dung & Liên kết:** Nhập chữ hiển thị trên nút và chọn liên kết (trang nội bộ hoặc URL ngoài). Mọi liên kết không an toàn (như mã script giả mạo) sẽ tự động bị hệ thống vô hiệu hoá.
+   - **Kiểu dáng & Kích thước:** Chọn kiểu nút (Chính - Nền đậm, Phụ - Nền hồng nhạt, Viền - Trong suốt có viền...) và kích thước nút (Nhỏ / Vừa / Lớn).
+   - **Biểu tượng:** Thêm biểu tượng thương hiệu vào trước hoặc sau chữ của nút để tăng điểm nhấn thị giác.
+   - **Căn lề:** Chọn căn trái, căn giữa, căn phải hoặc kéo dài tràn viền (Full width).
+
+5. **Biểu tượng (IconWidget):**
+   - **Chọn biểu tượng:** Chọn từ bộ 15 biểu tượng thương hiệu (có ô tìm kiếm nhanh).
+   - **Màu sắc & Kích thước:** Chọn màu sắc theo bảng màu chuẩn hoặc màu tự do; chọn kích cỡ từ Nhỏ (S) đến Rất lớn (XL).
+   - **Kiểu hiển thị:** Chọn hiển thị dạng Trơn (Plain), Nền tròn (Circle Background) hoặc Viền tròn (Circle Border).
+   - **Trợ năng:** Có ô nhập "Mô tả cho người khiếm thị" (`aria-label`) khi biểu tượng mang ý nghĩa điều hướng. Nếu chỉ là biểu tượng trang trí, hệ thống sẽ tự động ẩn với trình đọc màn hình.
+
+6. **Danh sách biểu tượng (IconListWidget):**
+   - **Danh sách mục:** Thêm không giới hạn các dòng danh sách (dùng thẻ `<ul>`/`<li>` chuẩn ngữ nghĩa). Mỗi mục gồm chữ hiển thị và liên kết tuỳ chọn.
+   - **Biểu tượng chung & riêng:** Thiết lập biểu tượng và màu sắc mặc định cho toàn bộ danh sách, đồng thời có thể đổi biểu tượng riêng biệt cho từng dòng nếu muốn nhấn mạnh.
+   - **Bố cục:** Chọn hiển thị theo Cột dọc (danh sách truyền thống) hoặc Hàng ngang (dùng làm thanh tính năng, tiện ích).
+
+---
 
 ## 6. Quản lý Trang pháp lý và Thông tin người bán
 
