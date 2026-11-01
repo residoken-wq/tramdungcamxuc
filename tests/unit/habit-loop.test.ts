@@ -352,6 +352,7 @@ describe('getTechniques() and getHabitProduct() (T2-03)', () => {
       stage: 'cue',
       howTo: undefined,
       example: undefined,
+      exampleVideoUrl: null,
     })
   })
 

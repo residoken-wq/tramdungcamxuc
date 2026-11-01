@@ -52,6 +52,7 @@ export default async function HabitLoopPage() {
         onePercentUnknowns={journeyContent?.onePercentUnknowns}
         stepQuotes={journeyContent?.stepQuotes}
         diagnose={journeyContent?.diagnose}
+        loop={journeyContent?.loop}
         privacyNote={journeyContent?.privacyNote}
       />
     </div>
