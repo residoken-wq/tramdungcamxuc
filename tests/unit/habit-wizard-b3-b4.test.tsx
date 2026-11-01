@@ -31,9 +31,9 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
     })
 
     // 1. Thêm thói quen tốt (+)
-    const input = screen.getByPlaceholderText(viStrings.habit.wizard.step1.addPlaceholder)
+    const input = screen.getByPlaceholderText(viStrings.hb19.part1.addInputPlaceholder)
     const ratingSelect = screen.getByLabelText(viStrings.habit.wizard.errors.ratingAria)
-    const addBtn = screen.getByRole('button', { name: viStrings.habit.wizard.step1.addButton })
+    const addBtn = screen.getByRole('button', { name: viStrings.hb19.part1.addButton })
 
     await act(async () => {
       fireEvent.change(input, { target: { value: 'Uống 1 cốc nước ấm' } })
@@ -53,11 +53,11 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
       fireEvent.click(anchorRadio)
     })
     expect(anchorRadio.checked).toBe(true)
-    expect(screen.getByText(viStrings.hb09.step1.anchorBadge)).toBeDefined()
+    expect(screen.getAllByText(viStrings.hb19.part2.selectedBadge).length).toBeGreaterThan(0)
 
     // Nhập giờ tùy chọn
     const timeInput = screen.getByLabelText(
-      viStrings.hb09.step1.timeAriaLabel('Uống 1 cốc nước ấm'),
+      viStrings.hb19.part2.timeAriaLabel('Uống 1 cốc nước ấm'),
     ) as HTMLInputElement
     await act(async () => {
       fireEvent.change(timeInput, { target: { value: '06:30' } })

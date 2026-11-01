@@ -203,12 +203,10 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
 
       // B3: thêm thói quen
       expect(screen.getByText('Bước 3 / 6')).toBeDefined()
-      const habitInput = screen.getByPlaceholderText(viStrings.habit.wizard.step1.addPlaceholder)
+      const habitInput = screen.getByPlaceholderText(viStrings.hb19.part1.addInputPlaceholder)
       await act(async () => {
         fireEvent.change(habitInput, { target: { value: '[MẪU] Thiền buổi sáng' } })
-        fireEvent.click(
-          screen.getByRole('button', { name: viStrings.habit.wizard.step1.addButton }),
-        )
+        fireEvent.click(screen.getByRole('button', { name: viStrings.hb19.part1.addButton }))
       })
       expect(screen.getByText('[MẪU] Thiền buổi sáng')).toBeDefined()
 
@@ -249,14 +247,21 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
       })
       expect(container.textContent).not.toContain('21 ngày')
 
-      // Thêm thói quen ở Bước 3 -> sang Bước 4
+      // Thêm thói quen ở Bước 3, đánh dấu có ích (+), chọn Mentor -> sang Bước 4
       await act(async () => {
-        fireEvent.change(screen.getByPlaceholderText(viStrings.habit.wizard.step1.addPlaceholder), {
+        fireEvent.change(screen.getByPlaceholderText(viStrings.hb19.part1.addInputPlaceholder), {
           target: { value: '[MẪU] Đọc sách' },
         })
-        fireEvent.click(
-          screen.getByRole('button', { name: viStrings.habit.wizard.step1.addButton }),
-        )
+        fireEvent.click(screen.getByRole('button', { name: viStrings.hb19.part1.addButton }))
+      })
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /Có ích \(\+\)/i }))
+      })
+      await act(async () => {
+        const mentorRadio = container.querySelector(
+          'input[type="radio"][name="anchorHabit"]',
+        ) as HTMLInputElement
+        fireEvent.click(mentorRadio)
       })
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: /Tiếp tục/i }))

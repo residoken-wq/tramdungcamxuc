@@ -82,12 +82,12 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
         await expect(guest.getByText('Bước 2 / 6')).toBeVisible()
         await guest.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
 
-        // BƯỚC 3: Tìm Mentor – Thêm thói quen mẫu và chọn neo
+        // BƯỚC 3: Tìm Mentor – Thêm việc mẫu, đánh dấu (+) và chọn Mentor
         await expect(guest.getByText('Bước 3 / 6')).toBeVisible()
-        await guest.getByPlaceholder(/Nhập thói quen hàng ngày/i).fill('[MẪU] Uống nước ấm sáng')
-        await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
+        await guest.getByPlaceholder(/Đánh răng|thói quen/i).fill('[MẪU] Uống nước ấm sáng')
+        await guest.getByRole('button', { name: /Thêm một việc|Thêm thói quen/i }).click()
         await guest
-          .getByRole('button', { name: /đánh giá tốt/i })
+          .getByRole('button', { name: /Có ích \(\+\)|đánh giá tốt/i })
           .first()
           .click()
         await guest.locator('input[type="radio"][name="anchorHabit"]').first().check()
