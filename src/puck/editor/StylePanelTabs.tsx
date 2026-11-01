@@ -70,12 +70,15 @@ const FIELD_TYPES = [
   'array',
   'object',
   'external',
-  'custom',
   'slot',
   'richtext',
 ] as const
 
-/** EB-04b `overrides.fieldTypes`: same wrapper for every field type. */
+/**
+ * EB-04b `overrides.fieldTypes`: same wrapper for every field type. `custom` is left out on purpose:
+ * overriding it replaces the field's own `render` (Puck passes no children for custom fields). The only
+ * custom field is `_style`, and StyleField picks its own groups from the active tab.
+ */
 export const tabFieldTypes = Object.fromEntries(
   FIELD_TYPES.map((type) => [type, TabFilteredField]),
 ) as Record<(typeof FIELD_TYPES)[number], typeof TabFilteredField>

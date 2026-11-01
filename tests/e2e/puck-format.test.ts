@@ -103,10 +103,14 @@ test.describe('PK-01: Puck Format Presets & SectionHeader v2 Customization', () 
 
       // 3. Chọn khối SectionHeader trên canvas (thử lại tới khi trang đã hydrate)
       const titleSize = page.getByRole('combobox', { name: 'Cỡ chữ tiêu đề', exact: true })
+      // EB-04b: màu / cỡ chữ nằm ở tab "Kiểu" của bảng thuộc tính
+      const styleTab = page.getByRole('tab', { name: 'Kiểu', exact: true })
       await expect(async () => {
         await block.click()
-        await expect(titleSize).toBeVisible({ timeout: 2000 })
+        await expect(styleTab).toBeVisible({ timeout: 2000 })
       }).toPass({ timeout: 30000 })
+      await styleTab.click()
+      await expect(titleSize).toBeVisible()
 
       // 4–5. Puck ghi value của <option> dạng JSON, nên chọn theo nhãn hiển thị
       await titleSize.selectOption({ label: 'Lớn' })

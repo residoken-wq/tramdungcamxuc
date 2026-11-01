@@ -98,8 +98,15 @@ test.describe('EB-04: Style / Advanced tabs', () => {
       // 5. Advanced tab, phone: top padding XL; hide on tablet.
       await page.getByRole('tab', { name: 'Nâng cao', exact: true }).click()
       await page.getByRole('button', { name: 'Điện thoại', exact: true }).first().click()
-      await expect(page.getByText('Đang chỉnh cho: Điện thoại').first()).toBeVisible()
-      await page.getByLabel('Trên', { exact: true }).first().selectOption('xl')
+      // Puck also mounts the fields in a hidden plugin tab: only use the visible copy.
+      await expect(
+        page.getByText('Đang chỉnh cho: Điện thoại').filter({ visible: true }),
+      ).toBeVisible()
+      await page
+        .getByLabel('Trên', { exact: true })
+        .filter({ visible: true })
+        .first()
+        .selectOption('xl')
       await page.getByRole('checkbox', { name: 'Máy tính bảng', exact: true }).check()
 
       // 6. Publish.
