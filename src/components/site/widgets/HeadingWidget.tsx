@@ -3,6 +3,7 @@
 import React from 'react'
 import { useClientPageSlug } from '@/puck/client-preview'
 import { getSafeLink, type WidgetLinkProps } from './link-helper'
+import { typographyClasses, type TypographyDefaults } from './style-defaults'
 
 export type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 
@@ -12,14 +13,22 @@ export interface HeadingWidgetProps extends WidgetLinkProps {
   level?: HeadingLevel
 }
 
-const DEFAULT_LEVEL_CLASSES: Record<HeadingLevel, string> = {
-  h1: 'text-3xl sm:text-4xl md:text-5xl font-bold font-display text-deep-navy leading-tight',
-  h2: 'text-2xl sm:text-3xl md:text-4xl font-bold font-display text-deep-navy leading-tight',
-  h3: 'text-xl sm:text-2xl font-bold font-display text-deep-navy leading-snug',
-  h4: 'text-lg sm:text-xl font-bold font-display text-deep-navy leading-snug',
-  h5: 'text-base sm:text-lg font-bold font-display text-deep-navy leading-normal',
-  h6: 'text-sm sm:text-base font-bold font-display text-deep-navy leading-normal',
+const SIZE: Record<HeadingLevel, string> = {
+  h1: 'text-3xl sm:text-4xl md:text-5xl',
+  h2: 'text-2xl sm:text-3xl md:text-4xl',
+  h3: 'text-xl sm:text-2xl',
+  h4: 'text-lg sm:text-xl',
+  h5: 'text-base sm:text-lg',
+  h6: 'text-sm sm:text-base',
 }
+
+const defaultsFor = (level: HeadingLevel): TypographyDefaults => ({
+  textColor: 'text-deep-navy',
+  fontSize: SIZE[level],
+  fontFamily: 'font-display',
+  fontWeight: 'font-bold',
+  lineHeight: level === 'h1' || level === 'h2' ? 'leading-tight' : 'leading-snug',
+})
 
 export function HeadingWidget({
   text = 'Tiêu đề',
@@ -29,10 +38,11 @@ export function HeadingWidget({
   href,
   newTab = false,
   _resolved,
-}: HeadingWidgetProps) {
+  _style,
+}: HeadingWidgetProps & { _style?: unknown }) {
   const { slug: clientSlug } = useClientPageSlug(pageId, _resolved?.pageSlug)
-  const Tag = level && /^h[1-6]$/.test(level) ? level : 'h2'
-  const defaultClass = DEFAULT_LEVEL_CLASSES[Tag] || DEFAULT_LEVEL_CLASSES.h2
+  const Tag: HeadingLevel = level && /^h[1-6]$/.test(level) ? level : 'h2'
+  const defaultClass = typographyClasses(defaultsFor(Tag), _style)
 
   const linkProps = getSafeLink(linkType, href, _resolved?.pageSlug ?? clientSlug, newTab)
 

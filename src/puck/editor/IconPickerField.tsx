@@ -3,6 +3,7 @@
 import React, { useId, useState } from 'react'
 import { BrandIcon } from '@/components/brand/BrandIcon'
 import { BRAND_ICONS } from '@/lib/brand/icons'
+import { vi } from '@/lib/i18n/vi'
 import { normalizeVi } from './block-search'
 import { useStylePanel } from './style-context'
 import { FieldLabel, Group } from './style-controls'
@@ -16,7 +17,7 @@ interface IconPickerFieldProps {
 export function IconPickerField({
   value = 'star',
   onChange,
-  label = 'Chọn biểu tượng',
+  label = vi.eb06.icon.icon,
 }: IconPickerFieldProps) {
   const { tab } = useStylePanel()
   const searchId = useId()
@@ -36,12 +37,12 @@ export function IconPickerField({
     <Group title={label}>
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-1">
-          <FieldLabel htmlFor={searchId}>Tìm biểu tượng</FieldLabel>
+          <FieldLabel htmlFor={searchId}>{vi.eb06.icon.search}</FieldLabel>
           <input
             id={searchId}
             type="search"
             value={query}
-            placeholder="Gõ tên biểu tượng (sao, check, tim...)"
+            placeholder={vi.eb06.icon.searchPlaceholder}
             onChange={(e) => setQuery(e.target.value)}
             className="h-8 w-full rounded-md border border-deep-navy/20 bg-white px-2.5 text-xs text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:outline-none"
           />
@@ -77,7 +78,7 @@ export function IconPickerField({
           })}
           {filtered.length === 0 ? (
             <div className="col-span-4 p-3 text-center text-xs text-deep-navy/60">
-              Không tìm thấy biểu tượng phù hợp
+              {vi.eb06.icon.noResults}
             </div>
           ) : null}
         </div>

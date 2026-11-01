@@ -16,6 +16,7 @@ test.describe('EB-06a: Basic widgets (Heading, Text, Image, Button, Icon, IconLi
     const headingId = `eb06-h-${randomUUID().slice(0, 8)}`
     const buttonId = `eb06-b-${randomUUID().slice(0, 8)}`
     const iconListId = `eb06-il-${randomUUID().slice(0, 8)}`
+    const textId = `eb06-t-${randomUUID().slice(0, 8)}`
     const headingText = `[MẪU] Tiêu đề kiểm thử EB-06a - ${randomUUID().slice(0, 6)}`
     const buttonText = `[MẪU] Nút bấm EB-06a`
     const mediaAlt = `[MẪU] Ảnh cơ bản E2E - ${randomUUID().slice(0, 8)}`
@@ -106,9 +107,19 @@ test.describe('EB-06a: Basic widgets (Heading, Text, Image, Button, Icon, IconLi
                       type: 'ButtonWidget',
                       props: {
                         id: buttonId,
-                        label: buttonText,
+                        text: buttonText,
+                        linkType: 'url',
                         href: 'https://example.com',
                         variant: 'primary',
+                      },
+                    },
+                    {
+                      type: 'TextWidget',
+                      props: {
+                        id: textId,
+                        // Stored HTML with an injection attempt: only the safe markup may reach the page.
+                        content:
+                          '<p>[MẪU] Đoạn <strong>đậm</strong> an toàn</p><img src="x" onerror="window.__ebXss=1"><p><a href="javascript:window.__ebXss=2">liên kết xấu</a></p>',
                       },
                     },
                     {
@@ -143,7 +154,7 @@ test.describe('EB-06a: Basic widgets (Heading, Text, Image, Button, Icon, IconLi
       // 5. Drag ImageWidget from "Cơ bản" group into Container.
       await page.getByPlaceholder(/Tìm khối/i).fill('anh')
       const imageItem = page.getByRole('button', {
-        name: 'Ảnh (Image Widget)',
+        name: 'Ảnh',
         exact: true,
       })
       await expect(imageItem).toBeVisible()
@@ -157,18 +168,25 @@ test.describe('EB-06a: Basic widgets (Heading, Text, Image, Button, Icon, IconLi
       await page.mouse.move(source.x + source.width / 2 + 15, source.y + source.height / 2, {
         steps: 5,
       })
-      // Drag inside Container slot
-      await page.mouse.move(target.x + target.width / 2, target.y + target.height - 15, {
+      // Drop just below the heading (first block of the slot, always on screen).
+      const headingBox = await heading.boundingBox()
+      if (!headingBox) throw new Error('Heading not visible.')
+      await page.mouse.move(target.x + target.width / 2, headingBox.y + headingBox.height - 4, {
         steps: 30,
       })
       await page.mouse.up()
 
       // Verify ImageWidget is dropped into the container
-      await expect(slot.locator(':scope > [data-puck-component]')).toHaveCount(4)
+      await expect(slot.locator(':scope > [data-puck-component]')).toHaveCount(5)
 
       // 6. Select the dropped ImageWidget to choose uploaded media.
-      const droppedImage = slot.locator(':scope > [data-puck-component]').last()
-      await droppedImage.click()
+      const droppedImage = canvas.getByText('Chưa chọn ảnh', { exact: false })
+      await expect(async () => {
+        await droppedImage.click()
+        await expect(page.getByRole('button', { name: /Chọn ảnh từ thư viện/i })).toBeVisible({
+          timeout: 1000,
+        })
+      }).toPass({ timeout: 15000 })
 
       const contentTab = page.getByRole('tab', { name: 'Nội dung', exact: true })
       await expect(contentTab).toBeVisible()
@@ -182,7 +200,7 @@ test.describe('EB-06a: Basic widgets (Heading, Text, Image, Button, Icon, IconLi
       await chooseMediaButton.click()
 
       // Select our uploaded media from the modal table
-      const mediaRow = page.locator('tbody tr').filter({ hasText: mediaAlt })
+      const mediaRow = page.locator('tbody tr').filter({ hasText: mediaAlt, visible: true })
       await expect(mediaRow.first()).toBeVisible({ timeout: 10000 })
       await mediaRow.first().click()
 
@@ -208,8 +226,17 @@ test.describe('EB-06a: Basic widgets (Heading, Text, Image, Button, Icon, IconLi
       // Verify heading: h2 tag with text and magenta color
       const headingEl = publicPage.locator('h2', { hasText: headingText })
       await expect(headingEl).toBeVisible()
-      const headingWrapper = publicPage.locator(`[data-eb-id="${headingId}"]`)
-      await expect(headingWrapper).toHaveCSS('color', 'rgb(188, 3, 158)')
+      // The colour set in the Style tab must reach the heading itself, not only its wrapper.
+      await expect(headingEl).toHaveCSS('color', 'rgb(188, 3, 158)')
+
+      // Rich text: safe markup shown, injection removed.
+      await expect(publicPage.getByText('[MẪU] Đoạn')).toBeVisible()
+      await expect(publicPage.locator('strong', { hasText: 'đậm' })).toBeVisible()
+      await expect(publicPage.locator('img[src="x"]')).toHaveCount(0)
+      await expect(publicPage.locator('a[href^="javascript:"]')).toHaveCount(0)
+      expect(
+        await publicPage.evaluate(() => (window as { __ebXss?: number }).__ebXss),
+      ).toBeUndefined()
 
       // Verify button: href is https://example.com and text matches
       const buttonEl = publicPage.locator(`a[href="https://example.com"]`, { hasText: buttonText })
@@ -250,4 +277,3 @@ test.describe('EB-06a: Basic widgets (Heading, Text, Image, Button, Icon, IconLi
     }
   })
 })
-

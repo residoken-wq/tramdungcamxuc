@@ -4,6 +4,7 @@ import React from 'react'
 import { BrandIcon } from '@/components/brand/BrandIcon'
 import { useClientPageSlug } from '@/puck/client-preview'
 import { getSafeLink, type WidgetLinkProps } from './link-helper'
+import { widgetColor } from './style-defaults'
 
 export type IconSize = 'sm' | 'md' | 'lg' | 'xl'
 export type IconStyle = 'plain' | 'circle-bg' | 'circle-border'
@@ -31,21 +32,8 @@ const CONTAINER_SIZES: Record<IconSize, string> = {
   xl: 'w-28 h-28',
 }
 
-const BRAND_TOKEN_HEX: Record<string, string> = {
-  'deep-navy': '#280A60',
-  'bright-magenta': '#BC039E',
-  'accent-pink': '#EF3B83',
-  'soft-pink': '#FDE6F6',
-  'lavender-mist': '#E9DDF9',
-  'mint-haze': '#D9F1EA',
-  'butter-cream': '#F6E9B8',
-  'warm-ivory': '#FAF7F4',
-}
-
-export function resolveIconColor(color: string | undefined): string {
-  if (!color) return BRAND_TOKEN_HEX['deep-navy']
-  return BRAND_TOKEN_HEX[color] || color
-}
+/** Icon colour from a palette token (follows the designSystem) or a hex value. */
+export const resolveIconColor = (color: string | undefined) => widgetColor(color)
 
 export function IconWidget({
   icon = 'star',

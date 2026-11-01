@@ -2889,7 +2889,8 @@ export const vi = {
       href: 'Đường dẫn liên kết',
       newTab: 'Mở tab mới',
       emptyHint: 'Chưa chọn ảnh. Nhấp vào để chọn ảnh từ thư viện media.',
-      noAltWarning: 'Ảnh này chưa có văn bản thay thế (alt). Vui lòng cập nhật alt trong thư viện media trước khi dùng.',
+      noAltWarning:
+        'Ảnh này chưa có văn bản thay thế (alt). Vui lòng cập nhật alt trong thư viện media trước khi dùng.',
     },
     button: {
       label: 'Nút',
@@ -2925,6 +2926,9 @@ export const vi = {
       href: 'Đường dẫn liên kết',
       newTab: 'Mở tab mới',
       ariaLabel: 'Nhãn mô tả trợ năng (khi có liên kết)',
+      search: 'Tìm biểu tượng',
+      searchPlaceholder: 'Gõ tên biểu tượng (sao, check, tim…)',
+      noResults: 'Không tìm thấy biểu tượng phù hợp',
     },
     iconList: {
       label: 'Danh sách icon',

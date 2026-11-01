@@ -3,8 +3,8 @@
 import React from 'react'
 import { BrandIcon } from '@/components/brand/BrandIcon'
 import { useClientPageSlug } from '@/puck/client-preview'
-import { resolveIconColor } from './IconWidget'
 import { getSafeLink, type WidgetLinkProps } from './link-helper'
+import { typographyClasses, widgetColor } from './style-defaults'
 
 export interface IconListItem extends WidgetLinkProps {
   text: string
@@ -31,7 +31,7 @@ function IconListItemView({
 }) {
   const { slug: clientSlug } = useClientPageSlug(item.pageId, item._resolved?.pageSlug)
   const iconName = item.icon && item.icon.trim() ? item.icon : defaultIcon
-  const color = resolveIconColor(item.iconColor || defaultColor)
+  const color = widgetColor(item.iconColor || defaultColor, 'accent-pink')
 
   const linkProps = getSafeLink(
     item.linkType,
@@ -41,15 +41,18 @@ function IconListItemView({
   )
 
   const textNode = linkProps ? (
-    <a {...linkProps} className="text-deep-navy transition-colors hover:text-bright-magenta">
+    <a
+      {...linkProps}
+      className="underline-offset-2 transition-opacity hover:underline hover:opacity-80"
+    >
       {item.text}
     </a>
   ) : (
-    <span className="text-deep-navy">{item.text}</span>
+    <span>{item.text}</span>
   )
 
   return (
-    <li className="flex items-center gap-2.5 font-body text-sm sm:text-base">
+    <li className="flex items-center gap-2.5">
       <BrandIcon
         name={iconName}
         size={18}
@@ -67,16 +70,21 @@ export function IconListWidget({
   defaultIcon = 'check',
   iconColor = 'accent-pink',
   items = [],
-}: IconListWidgetProps) {
+  _style,
+}: IconListWidgetProps & { _style?: unknown }) {
   if (!items || items.length === 0) return null
 
   const listClass =
     layout === 'horizontal'
       ? 'flex flex-wrap items-center gap-4 sm:gap-6 list-none m-0 p-0'
       : 'flex flex-col gap-3 list-none m-0 p-0'
+  const textClass = typographyClasses(
+    { textColor: 'text-deep-navy', fontFamily: 'font-body', fontSize: 'text-sm sm:text-base' },
+    _style,
+  )
 
   return (
-    <ul className={listClass}>
+    <ul className={`${listClass} ${textClass}`}>
       {items.map((item, idx) => (
         <IconListItemView
           key={idx}
