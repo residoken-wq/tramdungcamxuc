@@ -5,6 +5,8 @@
  */
 import { DESIGN_FONT_OPTIONS, type FontCategory } from '@/lib/design/fonts'
 import type { CleanDesignSystem } from '@/lib/design/design-system'
+import { containerCss } from './container-css'
+import { sanitizeContainer } from './container-schema'
 import {
   DEVICE_MEDIA,
   DEVICES,
@@ -155,13 +157,22 @@ export function collectPageStyles(
   const fonts = new Set<string>()
   for (const source of sources) {
     for (const item of walkItems(source)) {
-      const style = sanitizeBlockStyle(item.props?._style, ds)
-      if (!style) continue
       const id = item.props?.id
       if (!isSafeBlockId(id)) continue
-      const rule = blockStyleCss(id, style)
-      if (rule) css.push(rule)
-      if (style.fontFamily) fonts.add(style.fontFamily)
+
+      // EB-05: Container layout rules run before _style so user overrides win
+      if (item.type === 'Container') {
+        const sanitized = sanitizeContainer(item.props, ds)
+        const containerRule = containerCss(id, sanitized.layout, sanitized.background)
+        if (containerRule) css.push(containerRule)
+      }
+
+      const style = sanitizeBlockStyle(item.props?._style, ds)
+      if (style) {
+        const rule = blockStyleCss(id, style)
+        if (rule) css.push(rule)
+        if (style.fontFamily) fonts.add(style.fontFamily)
+      }
     }
   }
   return { css: css.join(''), fonts: [...fonts] }
