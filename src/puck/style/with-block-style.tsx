@@ -43,6 +43,29 @@ export function withBlockStyle(component: ComponentConfig): ComponentConfig {
       const raw = (props as { _style?: unknown })._style
       if (!hasStyleKeys(raw) || !isSafeBlockId(props.id)) return output
       const anchorId = cleanAnchorId(raw.anchorId)
+
+      // Avoid double wrapper if output root or direct child already handles STYLE_ATTR (e.g. Container)
+      if (React.isValidElement(output)) {
+        const rootProps = output.props as Record<string, unknown>
+        if (rootProps[STYLE_ATTR]) {
+          return anchorId && !rootProps.id
+            ? React.cloneElement(output, { id: anchorId } as never)
+            : output
+        }
+        const children = React.Children.toArray(
+          (output.props as { children?: React.ReactNode }).children,
+        )
+        const hasChildStyle = children.some(
+          (c) =>
+            React.isValidElement(c) && Boolean((c.props as Record<string, unknown>)[STYLE_ATTR]),
+        )
+        if (hasChildStyle) {
+          return anchorId && !rootProps.id
+            ? React.cloneElement(output, { id: anchorId } as never)
+            : output
+        }
+      }
+
       return (
         <div {...{ [STYLE_ATTR]: props.id }} id={anchorId}>
           {output}

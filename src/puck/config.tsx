@@ -13,6 +13,7 @@ import { StatsBarBlock, type StatsBarProps } from './blocks/StatsBar'
 import { JourneyStepsBlock, type JourneyStepsProps } from './blocks/JourneySteps'
 import { FAQBlock, type FAQProps } from './blocks/FAQ'
 import { VideoEmbedBlock, type VideoEmbedProps } from './blocks/VideoEmbed'
+import { ContainerBlock, type ContainerProps } from './blocks/Container'
 import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
 import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
 import { DividerBlock, type DividerProps } from './blocks/Divider'
@@ -118,6 +119,7 @@ export type {
   TwoPathCardsProps,
   TeamGridProps,
   ResourcePostsSlotProps,
+  ContainerProps,
   LeadMagnetCarouselProps,
   NewsletterFormProps,
   ContactInfoProps,
@@ -164,6 +166,7 @@ export type PageComponentsProps = {
   VideoEmbed: VideoEmbedProps
   ContactInfo: ContactInfoProps
   // Bố cục
+  Container: ContainerProps
   Columns: ColumnsProps
   Spacer: SpacerProps
   Divider: DividerProps
@@ -223,7 +226,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
     },
     layout: {
       title: 'Bố cục',
-      components: ['Columns', 'Spacer', 'Divider', 'ResourcePostsSlot'],
+      components: ['Container', 'Columns', 'Spacer', 'Divider', 'ResourcePostsSlot'],
     },
     sales: {
       title: 'Bán hàng',
@@ -656,6 +659,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
     FAQ: FAQBlock,
     VideoEmbed: VideoEmbedBlock,
     ContactInfo: ContactInfoBlock,
+    Container: ContainerBlock,
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,
     Divider: DividerBlock,

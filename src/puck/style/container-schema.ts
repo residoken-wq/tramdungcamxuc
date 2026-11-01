@@ -43,6 +43,21 @@ export type ContainerContentWidth = (typeof CONTAINER_CONTENT_WIDTH)[number]
 export const CONTAINER_MIN_HEIGHT = ['none', 'sm', 'md', 'lg', 'screen'] as const
 export type ContainerMinHeight = (typeof CONTAINER_MIN_HEIGHT)[number]
 
+export const MIN_HEIGHT_CLASSES: Record<ContainerMinHeight, string> = {
+  none: '',
+  sm: 'min-h-[200px]',
+  md: 'min-h-[350px]',
+  lg: 'min-h-[500px]',
+  screen: 'min-h-screen',
+}
+
+export const CONTENT_WIDTH_CLASSES: Record<ContainerContentWidth, string> = {
+  sm: 'max-w-3xl',
+  md: 'max-w-5xl',
+  lg: 'max-w-6xl',
+  xl: 'max-w-7xl',
+}
+
 export const CONTAINER_TAG = ['div', 'section'] as const
 export type ContainerTag = (typeof CONTAINER_TAG)[number]
 
