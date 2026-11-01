@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { createUsePuck } from '@puckeditor/core'
+import React, { useState } from 'react'
 import { vi } from '@/lib/i18n/vi'
 import {
   CONTAINER_BG_POSITIONS,
@@ -9,16 +8,12 @@ import {
   CONTAINER_BG_TYPES,
   CONTAINER_GRADIENT_ANGLES,
   type ContainerBackground,
-  type ContainerBgPosition,
   type ContainerBgSize,
-  type ContainerBgType,
   type ContainerGradientAngle,
-  type ContainerProps,
 } from '@/puck/style/container-schema'
 import { useStylePanel } from './style-context'
 import { ColorControl, FieldLabel, Group } from './style-controls'
 
-const usePuckSelector = createUsePuck()
 const t = vi.eb05.background
 
 type MediaItem = {
@@ -29,23 +24,13 @@ type MediaItem = {
 }
 
 export function ContainerBackgroundField({
-  value: _val,
-  onChange: _onCh,
+  value,
+  onChange,
 }: {
   value?: unknown
   onChange?: (val: unknown) => void
 }) {
   const { tab } = useStylePanel()
-  const dispatch = usePuckSelector((s) => s.dispatch)
-  const selectedItem = usePuckSelector((s) => {
-    const itemSelector = s.appState.ui.itemSelector
-    if (!itemSelector) return null
-    return (
-      (s.appState.data.content as Array<{ props?: ContainerProps }> | undefined)?.find(
-        (it) => it.props?.id === itemSelector.index,
-      ) ?? null
-    )
-  })
 
   // State for media picker modal / dropdown
   const [mediaList, setMediaList] = useState<MediaItem[]>([])
@@ -56,40 +41,11 @@ export function ContainerBackgroundField({
   // EB-05 Lỗi 1: Custom field must self-filter and only render on Style tab
   if (tab !== 'style') return <></>
 
-  const updateProps = (patch: Partial<ContainerProps>) => {
-    dispatch({
-      type: 'setData',
-      data: (prev) => {
-        const updateTree = (items: unknown[]): unknown[] =>
-          items.map((it) => {
-            if (!it || typeof it !== 'object') return it
-            const node = it as { type?: string; props?: ContainerProps }
-            if (node.props?.id === selectedItem?.props?.id) {
-              return { ...node, props: { ...node.props, ...patch } }
-            }
-            const nextProps: Record<string, unknown> = { ...(node.props ?? {}) }
-            let mutated = false
-            for (const [key, val] of Object.entries(nextProps)) {
-              if (Array.isArray(val) && val.some((x) => x && typeof x === 'object' && 'type' in x)) {
-                nextProps[key] = updateTree(val)
-                mutated = true
-              }
-            }
-            return mutated ? { ...node, props: nextProps } : node
-          })
-
-        const content = Array.isArray(prev.content) ? updateTree(prev.content) : prev.content
-        return { ...prev, content }
-      },
-    })
-  }
-
-  const props: ContainerProps = selectedItem?.props ?? {}
-  const bg: ContainerBackground = props.background ?? { type: 'none' }
+  const bg: ContainerBackground = (value as ContainerBackground) ?? { type: 'none' }
 
   const updateBg = (patch: Partial<ContainerBackground>) => {
     const nextBg: ContainerBackground = { ...bg, ...patch }
-    updateProps({ background: nextBg })
+    onChange?.(nextBg)
   }
 
   const fetchMedia = async (query = '') => {

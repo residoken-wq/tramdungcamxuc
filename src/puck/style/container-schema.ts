@@ -3,14 +3,12 @@
  * Pure and client-safe. All values coming from the editor are untrusted user input:
  * `sanitizeContainer` drops anything malformed or outside brand locks.
  */
-import { isOpen, isValidHex, type CleanDesignSystem } from '@/lib/design/design-system'
+import type { CleanDesignSystem } from '@/lib/design/design-system'
 import {
   cleanColor,
   cleanLength,
   DEVICES,
-  resolveDevice,
   SPACING_PRESETS,
-  type Device,
   type Length,
   type Responsive,
 } from './style-schema'
@@ -18,14 +16,7 @@ import {
 export const CONTAINER_DIRECTIONS = ['row', 'column', 'row-reverse', 'column-reverse'] as const
 export type ContainerDirection = (typeof CONTAINER_DIRECTIONS)[number]
 
-export const CONTAINER_JUSTIFY = [
-  'start',
-  'center',
-  'end',
-  'between',
-  'around',
-  'evenly',
-] as const
+export const CONTAINER_JUSTIFY = ['start', 'center', 'end', 'between', 'around', 'evenly'] as const
 export type ContainerJustify = (typeof CONTAINER_JUSTIFY)[number]
 
 export const CONTAINER_ALIGN = ['start', 'center', 'end', 'stretch'] as const
@@ -106,7 +97,6 @@ export interface ContainerBackground {
 }
 
 export interface ContainerProps {
-  id?: string
   version?: number
   items?: unknown
   tag?: ContainerTag
@@ -116,7 +106,6 @@ export interface ContainerProps {
   layout?: ContainerLayout
   background?: ContainerBackground
   _style?: Record<string, unknown>
-  puck?: { isEditing?: boolean }
 }
 
 const includes = <T extends string | number>(list: readonly T[], value: unknown): value is T =>
@@ -211,9 +200,7 @@ export function sanitizeContainer(
     justify: cleanResponsive(rawLayout.justify, (v) =>
       includes(CONTAINER_JUSTIFY, v) ? v : undefined,
     ),
-    align: cleanResponsive(rawLayout.align, (v) =>
-      includes(CONTAINER_ALIGN, v) ? v : undefined,
-    ),
+    align: cleanResponsive(rawLayout.align, (v) => (includes(CONTAINER_ALIGN, v) ? v : undefined)),
     gap: cleanResponsive(rawLayout.gap, (v) => cleanLength(v, 'spacing', SPACING_PRESETS, ds)),
     wrap: cleanResponsive(rawLayout.wrap, (v) => (includes(CONTAINER_WRAP, v) ? v : undefined)),
   }

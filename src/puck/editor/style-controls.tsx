@@ -3,11 +3,7 @@
 import React, { useId, useState } from 'react'
 import { isOpen, isValidHex } from '@/lib/design/design-system'
 import { vi } from '@/lib/i18n/vi'
-import {
-  cleanLength,
-  type Device,
-  type LengthKind,
-} from '@/puck/style/style-schema'
+import { cleanLength, type Device, type LengthKind } from '@/puck/style/style-schema'
 import { useStylePanel } from './style-context'
 
 export const t4 = vi.eb04
@@ -20,8 +16,7 @@ export function deviceForWidth(width: number | undefined): Device {
   return width >= 768 ? 'tablet' : 'mobile'
 }
 
-export const presetLabel = (value: string) =>
-  (t4.presets as Record<string, string>)[value] ?? value
+export const presetLabel = (value: string) => (t4.presets as Record<string, string>)[value] ?? value
 
 export function Group({
   title,
@@ -42,13 +37,7 @@ export function Group({
   )
 }
 
-export function FieldLabel({
-  htmlFor,
-  children,
-}: {
-  htmlFor?: string
-  children: React.ReactNode
-}) {
+export function FieldLabel({ htmlFor, children }: { htmlFor?: string; children: React.ReactNode }) {
   return (
     <label htmlFor={htmlFor} className="font-ui text-xs font-semibold text-deep-navy">
       {children}

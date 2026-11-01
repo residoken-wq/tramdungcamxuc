@@ -2,22 +2,14 @@
  * EB-05: CSS generation for Container flexbox and advanced background.
  * Output is clean, minified CSS with media queries only when child devices differ from their parent.
  */
-import {
-  isSafeBlockId,
-  STYLE_ATTR,
-} from './style-css'
-import {
-  DEVICE_MEDIA,
-  resolveDevice,
-  type Length,
-} from './style-schema'
+import { isSafeBlockId, STYLE_ATTR } from './style-css'
+import { DEVICE_MEDIA, resolveDevice, type Length } from './style-schema'
 import type {
   ContainerAlign,
   ContainerBackground,
   ContainerDirection,
   ContainerJustify,
   ContainerLayout,
-  ContainerWrap,
 } from './container-schema'
 
 const SPACING: Record<string, string> = {

@@ -13,10 +13,7 @@ import {
 
 export type { ContainerProps }
 
-function renderSlotItems(
-  items: ContainerProps['items'],
-  isEditing: boolean,
-) {
+function renderSlotItems(items: ContainerProps['items'], isEditing: boolean) {
   if (typeof items === 'function') {
     const SlotComponent = items as React.ComponentType<{ className?: string }>
     return (
@@ -46,8 +43,9 @@ function renderSlotItems(
         {items.map((child: unknown, idx: number) => {
           if (React.isValidElement(child)) return child
           const item = child as { type?: string; props?: Record<string, unknown> } | null
+          const key = (item?.props?.id as React.Key | undefined) ?? idx
           return (
-            <div key={item?.props?.id || idx} data-item-type={item?.type}>
+            <div key={key} data-item-type={item?.type}>
               {/* Fallback item wrapper */}
             </div>
           )
@@ -74,7 +72,12 @@ function renderSlotItems(
   return null
 }
 
-export const ContainerView: React.FC<ContainerProps> = ({
+export type ContainerViewProps = ContainerProps & {
+  id?: string
+  puck?: { isEditing?: boolean }
+}
+
+export const ContainerView: React.FC<ContainerViewProps> = ({
   id,
   tag = 'div',
   width = 'boxed',
@@ -92,10 +95,7 @@ export const ContainerView: React.FC<ContainerProps> = ({
 
   return (
     <Tag className={`w-full ${minHeightClass}`}>
-      <div
-        {...(id ? { [STYLE_ATTR]: id } : {})}
-        className={`w-full min-w-0 ${contentClass}`}
-      >
+      <div {...(id ? { [STYLE_ATTR]: id } : {})} className={`w-full min-w-0 ${contentClass}`}>
         {renderSlotItems(items, isEditing)}
       </div>
     </Tag>
@@ -113,12 +113,16 @@ export const ContainerBlock: ComponentConfig<ContainerProps> = {
     layout: {
       type: 'custom',
       label: vi.eb05.layout.title,
-      render: (props) => <ContainerLayoutField {...props} />,
+      render: ({ value, onChange }) => (
+        <ContainerLayoutField value={value} onChange={onChange as (val: unknown) => void} />
+      ),
     },
     background: {
       type: 'custom',
       label: vi.eb05.background.title,
-      render: (props) => <ContainerBackgroundField {...props} />,
+      render: ({ value, onChange }) => (
+        <ContainerBackgroundField value={value} onChange={onChange as (val: unknown) => void} />
+      ),
     },
   },
   defaultProps: {
@@ -138,13 +142,14 @@ export const ContainerBlock: ComponentConfig<ContainerProps> = {
   },
   resolveData: async (data) => {
     const mediaId = data.props.background?.mediaId
+    const currentBg = data.props.background ?? { type: 'none' }
     if (!mediaId) {
-      if (data.props.background?.imageUrl) {
+      if (currentBg.imageUrl) {
         return {
           props: {
             ...data.props,
             background: {
-              ...data.props.background,
+              ...currentBg,
               imageUrl: '',
               imageAlt: '',
             },
@@ -166,7 +171,7 @@ export const ContainerBlock: ComponentConfig<ContainerProps> = {
               props: {
                 ...data.props,
                 background: {
-                  ...data.props.background,
+                  ...currentBg,
                   imageUrl: json.url,
                   imageAlt: json.alt && typeof json.alt === 'string' ? json.alt.trim() : '',
                 },

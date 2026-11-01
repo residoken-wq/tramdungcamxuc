@@ -13,7 +13,6 @@ import {
 import {
   CONTAINER_ALIGN,
   CONTAINER_CONTENT_WIDTH,
-  CONTAINER_DIRECTIONS,
   CONTAINER_JUSTIFY,
   CONTAINER_MIN_HEIGHT,
   CONTAINER_TAG,
@@ -106,8 +105,8 @@ const ArrowUpIcon = () => (
 )
 
 export function ContainerLayoutField({
-  value: _val,
-  onChange: _onCh,
+  value,
+  onChange,
 }: {
   value?: unknown
   onChange?: (val: unknown) => void
@@ -118,11 +117,8 @@ export function ContainerLayoutField({
   const selectedItem = usePuckSelector((s) => {
     const itemSelector = s.appState.ui.itemSelector
     if (!itemSelector) return null
-    return (
-      (s.appState.data.content as Array<{ props?: ContainerProps }> | undefined)?.find(
-        (it) => it.props?.id === itemSelector.index,
-      ) ?? null
-    )
+    const content = s.appState.data.content as Array<{ props?: ContainerProps & { id?: string } }> | undefined
+    return content?.[itemSelector.index] ?? null
   })
 
   // EB-05 Lỗi 1: Custom field must self-filter and only render on Content tab
@@ -132,21 +128,27 @@ export function ContainerLayoutField({
 
   // Direct read/update from puck data
   const updateProps = (patch: Partial<ContainerProps>) => {
+    if (patch.layout) {
+      onChange?.(patch.layout)
+    }
     dispatch({
       type: 'setData',
       data: (prev) => {
         const updateTree = (items: unknown[]): unknown[] =>
           items.map((it) => {
             if (!it || typeof it !== 'object') return it
-            const node = it as { type?: string; props?: ContainerProps }
-            if (node.props?.id === selectedItem?.props?.id) {
+            const node = it as { type?: string; props?: ContainerProps & { id?: string } }
+            if (node.props?.id && node.props.id === selectedItem?.props?.id) {
               return { ...node, props: { ...node.props, ...patch } }
             }
             // Recurse into slots
             const nextProps: Record<string, unknown> = { ...(node.props ?? {}) }
             let mutated = false
             for (const [key, val] of Object.entries(nextProps)) {
-              if (Array.isArray(val) && val.some((x) => x && typeof x === 'object' && 'type' in x)) {
+              if (
+                Array.isArray(val) &&
+                val.some((x) => x && typeof x === 'object' && 'type' in x)
+              ) {
                 nextProps[key] = updateTree(val)
                 mutated = true
               }
@@ -155,13 +157,13 @@ export function ContainerLayoutField({
           })
 
         const content = Array.isArray(prev.content) ? updateTree(prev.content) : prev.content
-        return { ...prev, content }
+        return { ...prev, content } as any
       },
     })
   }
 
   const props: ContainerProps = selectedItem?.props ?? {}
-  const layout: ContainerLayout = props.layout ?? {}
+  const layout: ContainerLayout = (value as ContainerLayout) ?? props.layout ?? {}
 
   const updateLayoutResponsive = <K extends keyof ContainerLayout>(
     key: K,
@@ -183,12 +185,13 @@ export function ContainerLayoutField({
   const currentDir = resolveDevice(layout.direction, device) || 'column'
   const currentJustify = resolveDevice(layout.justify, device)
   const currentAlign = resolveDevice(layout.align, device)
-  const currentGap = resolveDevice(layout.gap, device)
   const currentWrap = resolveDevice(layout.wrap, device) || 'nowrap'
 
   const deviceBar = (
     <div className="mb-3 flex items-center justify-between gap-2">
-      <span className="text-[11px] text-deep-navy font-ui">{t4.devices.editing(t4.devices[device])}</span>
+      <span className="text-[11px] text-deep-navy font-ui">
+        {t4.devices.editing(t4.devices[device])}
+      </span>
       <div role="group" aria-label={t4.devices.editing(t4.devices[device])} className="flex gap-1">
         {DEVICES.map((d) => (
           <button
@@ -209,7 +212,9 @@ export function ContainerLayoutField({
               })
             }
             className={`rounded-md px-2 py-1 text-[11px] font-semibold transition-colors ${
-              device === d ? 'bg-deep-navy text-white' : 'bg-warm-ivory text-deep-navy hover:bg-lavender-mist'
+              device === d
+                ? 'bg-deep-navy text-white'
+                : 'bg-warm-ivory text-deep-navy hover:bg-lavender-mist'
             }`}
           >
             {t4.devices[d]}
@@ -369,7 +374,9 @@ export function ContainerLayoutField({
             <select
               id="container-content-width"
               value={props.contentWidth ?? 'lg'}
-              onChange={(e) => updateProps({ contentWidth: e.target.value as ContainerContentWidth })}
+              onChange={(e) =>
+                updateProps({ contentWidth: e.target.value as ContainerContentWidth })
+              }
               className="h-8 rounded-md border border-deep-navy/20 bg-white px-2 text-xs text-deep-navy"
             >
               {CONTAINER_CONTENT_WIDTH.map((cw) => (

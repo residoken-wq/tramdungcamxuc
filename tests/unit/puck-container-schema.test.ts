@@ -140,3 +140,4 @@ describe('EB-05: sanitizeContainer', () => {
     expect(resolveDevice(layout.gap, 'mobile')).toBe('sm')
   })
 })
+

@@ -4,10 +4,6 @@ import { containerCss } from '@/puck/style/container-css'
 import { collectPageStyles } from '@/puck/style/style-css'
 
 const locked = cleanDesignSystem(null)
-const open: CleanDesignSystem = {
-  ...locked,
-  lock: { ...locked.lock, colors: 'open', fonts: 'open', sizes: 'open' },
-}
 
 describe('EB-05: containerCss', () => {
   it('generates base flex rules on desktop', () => {
@@ -33,7 +29,9 @@ describe('EB-05: containerCss', () => {
       direction: { desktop: 'column', tablet: 'column', mobile: 'column' },
       gap: { desktop: 'md', tablet: 'md' },
     })
-    expect(identical).toContain('[data-eb-id="con-same"]{display:flex;flex-direction:column;gap:var(--space-breath-md, 24px)}')
+    expect(identical).toContain(
+      '[data-eb-id="con-same"]{display:flex;flex-direction:column;gap:var(--space-breath-md, 24px)}',
+    )
     expect(identical).not.toContain('@media')
 
     // When tablet is different, emit tablet media query. When mobile is different from tablet, emit mobile.
