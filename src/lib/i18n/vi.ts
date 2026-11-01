@@ -2635,6 +2635,36 @@ export const vi = {
         `Không được xoá hoặc đổi mã màu gốc: ${tokens}. Giao diện đang dùng các màu này.`,
     },
   },
+  eb03: {
+    tabBlocks: 'Khối',
+    tabOutline: 'Cấu trúc',
+    searchPlaceholder: 'Tìm khối...',
+    clearSearch: 'Xoá tìm kiếm',
+    noBlocksFound: 'Không tìm thấy khối',
+    clearSearchPrompt: 'Thử tìm với từ khoá khác hoặc xoá ô tìm kiếm',
+    collapseGroup: 'Thu gọn nhóm',
+    expandGroup: 'Mở rộng nhóm',
+    otherCategory: 'Khác',
+    lockedBlock: 'Khối này bị khoá theo cấu hình trang',
+    panelLabel: 'Khung công cụ bên trái',
+    tablistLabel: 'Chuyển chế độ thanh bên',
+    viewports: {
+      group: 'Chọn kích thước màn hình',
+      mobile: 'Điện thoại (375px)',
+      tablet: 'Máy tính bảng (768px)',
+      desktop: 'Máy tính (1440px)',
+    },
+    toolbar: {
+      label: 'Thanh công cụ trình dựng',
+      undo: 'Hoàn tác',
+      redo: 'Làm lại',
+      structure: 'Cấu trúc',
+      viewPage: 'Xem trang',
+      publishToView: 'Xuất bản để xem',
+      collapseSidebar: 'Thu gọn thanh bên',
+      expandSidebar: 'Mở thanh bên',
+    },
+  },
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',
@@ -3028,6 +3058,47 @@ export const vi = {
       journeyDaysKeptNotice: (backupDays: number, currentDays: number) =>
         `Giữ nguyên số ngày hành trình của kế hoạch hiện tại (${currentDays} ngày; file sao lưu ghi ${backupDays} ngày).`,
       rhythmLockedNotice: 'Giữ nguyên nhịp tuần hiện tại vì kế hoạch đã có check-in.',
+    },
+  },
+  hb12: {
+    reflectionTitle: 'Suy ngẫm trạm',
+    reflectionDesc: 'Nhật ký suy ngẫm cuối mỗi trạm của học viên.',
+    reflectButton: 'Suy ngẫm trạm',
+    editReflectButton: 'Xem / sửa suy ngẫm',
+    reflectedBadge: 'Đã suy ngẫm',
+    openOnDay: (day: number) => `Mở vào ngày ${day}`,
+    modalTitle: (stationName: string) => `Suy ngẫm: ${stationName}`,
+    modalSubtitle:
+      'Dành vài phút nhìn lại chặng đường vừa qua. Câu trả lời của bạn là riêng tư tuyệt đối.',
+    answerPlaceholder: 'Viết suy ngẫm của bạn tại đây...',
+    charCount: (current: number, max: number) => `${current}/${max} ký tự`,
+    saveButton: 'Lưu suy ngẫm',
+    savingButton: 'Đang lưu...',
+    closeButton: 'Đóng',
+    readOnlyNotice:
+      'Quyền truy cập của bạn đã hết hạn. Bạn có thể xem lại bài suy ngẫm nhưng không thể chỉnh sửa.',
+    successToast: 'Đã lưu suy ngẫm thành công.',
+    errors: {
+      unauthenticated: 'Vui lòng đăng nhập để lưu suy ngẫm.',
+      planNotFound: 'Kế hoạch không tồn tại.',
+      planForbidden: 'Bạn không có quyền thực hiện suy ngẫm cho kế hoạch này.',
+      stationNotOpen: (day: number) =>
+        `Trạm này chưa kết thúc. Bài suy ngẫm sẽ mở vào ngày ${day}.`,
+      stationOutOfRange: 'Chỉ số trạm không hợp lệ.',
+      noQuestionsInCMS: 'Trạm này hiện chưa có câu hỏi suy ngẫm.',
+      allAnswersEmpty: 'Vui lòng trả lời ít nhất một câu hỏi trước khi lưu.',
+      answerTooLong: (max: number) => `Câu trả lời không được vượt quá ${max} ký tự.`,
+      accessExpired: 'Quyền truy cập của bạn đã hết hạn, không thể lưu bài suy ngẫm mới.',
+      alreadyReflected: 'Bạn đã lưu bài suy ngẫm cho trạm này.',
+      saveFailed: 'Không thể lưu bài suy ngẫm. Vui lòng thử lại sau.',
+      restoreStationOutOfRange: (station: number | string) =>
+        `Suy ngẫm trạm ${station}: trạm không có trong hành trình hiện tại (hoặc bị lặp).`,
+      restoreStationNotOpen: (station: number | string, openDay: number) =>
+        `Suy ngẫm trạm ${station}: trạm chưa mở (mở vào ngày ${openDay}).`,
+      restoreStationTooLong: (station: number | string) =>
+        `Suy ngẫm trạm ${station}: quá 10 câu hoặc có câu trả lời dài hơn 1000 ký tự.`,
+      restoreStationFailed: (station: number | string) =>
+        `Suy ngẫm trạm ${station}: không ghi được, vui lòng thử lại.`,
     },
   },
   hb17: {

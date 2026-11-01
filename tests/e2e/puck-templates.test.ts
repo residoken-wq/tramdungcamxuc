@@ -95,12 +95,16 @@ test.describe('T1-04: Puck Templates, Versions, Locked Blocks and Autosave', () 
 
       // 4. Edit the section title (mandatory) and publish.
       const sectionHeader = canvas.locator('[data-puck-component="campaign-header"]').first()
-      await sectionHeader.click()
       const titleField = page.getByRole('textbox', {
         name: 'Tiêu đề dòng 1',
         exact: true,
       })
-      await expect(titleField).toBeVisible()
+      // Puck ignores clicks on the canvas until it is ready (~300 ms after the blocks are
+      // visible), so a click right after load can be lost: click again until the fields open.
+      await expect(async () => {
+        await sectionHeader.click()
+        await expect(titleField).toBeVisible({ timeout: 1000 })
+      }).toPass({ timeout: 15000 })
       await titleField.fill(updatedTitle)
       await expect(canvas.locator('[data-puck-component="campaign-header"]')).toContainText(
         updatedTitle.toUpperCase(),
