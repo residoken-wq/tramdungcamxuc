@@ -108,10 +108,14 @@ test.describe('PK-02: Draggable Card child blocks in IconCardGrid', () => {
 
       // 4. Chọn thẻ 2 (thử lại tới khi đã hydrate), đổi cỡ + màu tiêu đề theo nhãn
       const titleSize = page.getByRole('combobox', { name: 'Cỡ chữ tiêu đề', exact: true })
+      // EB-04b: màu / cỡ chữ nằm ở tab "Kiểu" của bảng thuộc tính
+      const styleTab = page.getByRole('tab', { name: 'Kiểu', exact: true })
       await expect(async () => {
         await card2.click()
-        await expect(titleSize).toBeVisible({ timeout: 2000 })
+        await expect(styleTab).toBeVisible({ timeout: 2000 })
       }).toPass({ timeout: 30000 })
+      await styleTab.click()
+      await expect(titleSize).toBeVisible()
       await titleSize.selectOption({ label: 'Lớn' })
       await page
         .getByRole('combobox', { name: 'Màu tiêu đề', exact: true })

@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi, beforeAll } from 'vitest'
+import { afterAll, describe, expect, it, vi, beforeAll } from 'vitest'
 import { PuckEditorClient } from '@/app/(builder)/builder/[pageId]/PuckEditorClient'
 import { campaignTemplate } from '@/puck/templates'
 import type { Data } from '@puckeditor/core'
@@ -41,6 +41,12 @@ beforeAll(() => {
         disconnect() {}
       }
   }
+})
+
+// Puck's canvas starts an uncancelled 500 ms loader timer on mount. Let it fire while jsdom still
+// exists; otherwise its setState runs after the environment is torn down ("window is not defined").
+afterAll(async () => {
+  await new Promise((resolve) => setTimeout(resolve, 700))
 })
 
 // Mounting the full Puck editor in jsdom is slow when the whole suite runs in parallel.
