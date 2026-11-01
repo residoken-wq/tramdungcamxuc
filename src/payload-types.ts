@@ -3543,6 +3543,18 @@ export interface SiteSetting {
    * Để trống thì dẫn tới trang lộ trình. Khi Habit Tracker số đang mở dùng thử, nút luôn dẫn tới dùng thử.
    */
   quizCtaPath?: string | null;
+  /**
+   * Đường dẫn đặt lịch coaching riêng cho thói quen (Cal.com, Google Calendar...).
+   */
+  habitCoachBookingUrl?: string | null;
+  /**
+   * Chỉ bật khi Hana đã duyệt.
+   */
+  habitDonationEnabled?: boolean | null;
+  /**
+   * Trang ủng hộ hoặc tài khoản nhận đóng góp.
+   */
+  habitDonationUrl?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3754,6 +3766,10 @@ export interface HabitJourneyContent {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Ví dụ: "Lời giải không nằm ở cố gắng nhiều hơn..."
+     */
+    closing?: string | null;
   };
   /**
    * Bước đầu tiên của Habit Loop 5 phút: lời mở, câu trích, con số, câu hỏi khảo sát và gợi ý theo kết quả.
@@ -3914,6 +3930,140 @@ export interface HabitJourneyContent {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Ví dụ: "Hai giai đoạn đầu là vấn đề của nhận thức..."
+     */
+    note?: string | null;
+    /**
+     * Ví dụ: "Đánh dấu kỹ thuật bạn sẽ dùng để vượt qua giai đoạn nút thắt."
+     */
+    techniqueHint?: string | null;
+  };
+  /**
+   * Câu trích dẫn ngắn tạo cảm hứng tại các bước của wizard và màn hình tracker.
+   */
+  stepQuotes?: {
+    onePercent?: {
+      /**
+       * Nhập nội dung câu trích.
+       */
+      text?: string | null;
+      /**
+       * Nhập tác giả.
+       */
+      author?: string | null;
+      /**
+       * Sách, bài viết hoặc tài liệu nghiên cứu gốc (bắt buộc khi có nội dung câu trích)
+       */
+      source?: string | null;
+      /**
+       * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+       */
+      sourceUrl?: string | null;
+    };
+    mentor?: {
+      /**
+       * Nhập nội dung câu trích.
+       */
+      text?: string | null;
+      /**
+       * Nhập tác giả.
+       */
+      author?: string | null;
+      /**
+       * Sách, bài viết hoặc tài liệu nghiên cứu gốc (bắt buộc khi có nội dung câu trích)
+       */
+      source?: string | null;
+      /**
+       * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+       */
+      sourceUrl?: string | null;
+    };
+    name?: {
+      /**
+       * Nhập nội dung câu trích.
+       */
+      text?: string | null;
+      /**
+       * Nhập tác giả.
+       */
+      author?: string | null;
+      /**
+       * Sách, bài viết hoặc tài liệu nghiên cứu gốc (bắt buộc khi có nội dung câu trích)
+       */
+      source?: string | null;
+      /**
+       * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+       */
+      sourceUrl?: string | null;
+    };
+    loop?: {
+      /**
+       * Nhập nội dung câu trích.
+       */
+      text?: string | null;
+      /**
+       * Nhập tác giả.
+       */
+      author?: string | null;
+      /**
+       * Sách, bài viết hoặc tài liệu nghiên cứu gốc (bắt buộc khi có nội dung câu trích)
+       */
+      source?: string | null;
+      /**
+       * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+       */
+      sourceUrl?: string | null;
+    };
+    boardingPass?: {
+      /**
+       * Nhập nội dung câu trích.
+       */
+      text?: string | null;
+      /**
+       * Nhập tác giả.
+       */
+      author?: string | null;
+      /**
+       * Sách, bài viết hoặc tài liệu nghiên cứu gốc (bắt buộc khi có nội dung câu trích)
+       */
+      source?: string | null;
+      /**
+       * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+       */
+      sourceUrl?: string | null;
+    };
+    tracker?: {
+      /**
+       * Nhập nội dung câu trích.
+       */
+      text?: string | null;
+      /**
+       * Nhập tác giả.
+       */
+      author?: string | null;
+      /**
+       * Sách, bài viết hoặc tài liệu nghiên cứu gốc (bắt buộc khi có nội dung câu trích)
+       */
+      source?: string | null;
+      /**
+       * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+       */
+      sourceUrl?: string | null;
+    };
+  };
+  /**
+   * Nội dung khối đồng hành hiển thị sau khi hoàn thành hành trình 28 ngày.
+   */
+  tracker?: {
+    /**
+     * Nhập tiêu đề khối đồng hành sau 28 ngày.
+     */
+    afterJourneyTitle?: string | null;
+    /**
+     * Nhập nội dung khối đồng hành sau 28 ngày.
+     */
+    afterJourneyText?: string | null;
   };
   boardingPass?: {
     /**
@@ -4026,6 +4176,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   certificateMinPercent?: T;
   certificateMinDays?: T;
   quizCtaPath?: T;
+  habitCoachBookingUrl?: T;
+  habitDonationEnabled?: T;
+  habitDonationUrl?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -4122,6 +4275,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
               body?: T;
               id?: T;
             };
+        closing?: T;
       };
   diagnose?:
     | T
@@ -4182,6 +4336,66 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
               body?: T;
               id?: T;
             };
+        note?: T;
+        techniqueHint?: T;
+      };
+  stepQuotes?:
+    | T
+    | {
+        onePercent?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              source?: T;
+              sourceUrl?: T;
+            };
+        mentor?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              source?: T;
+              sourceUrl?: T;
+            };
+        name?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              source?: T;
+              sourceUrl?: T;
+            };
+        loop?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              source?: T;
+              sourceUrl?: T;
+            };
+        boardingPass?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              source?: T;
+              sourceUrl?: T;
+            };
+        tracker?:
+          | T
+          | {
+              text?: T;
+              author?: T;
+              source?: T;
+              sourceUrl?: T;
+            };
+      };
+  tracker?:
+    | T
+    | {
+        afterJourneyTitle?: T;
+        afterJourneyText?: T;
       };
   boardingPass?:
     | T

@@ -183,6 +183,18 @@ export const SiteSettings: GlobalConfig = {
                   'Để trống thì dẫn tới trang lộ trình. Khi Habit Tracker số đang mở dùng thử, nút luôn dẫn tới dùng thử.',
               },
             }),
+            {
+              ...url('habitCoachBookingUrl', vi.hb18.siteSettings.habitCoachBookingUrl),
+              admin: { description: vi.hb18.siteSettings.habitCoachBookingUrlDesc },
+            },
+            {
+              ...checkbox('habitDonationEnabled', vi.hb18.siteSettings.habitDonationEnabled, false),
+              admin: { description: vi.hb18.siteSettings.habitDonationEnabledDesc },
+            },
+            {
+              ...url('habitDonationUrl', vi.hb18.siteSettings.habitDonationUrl),
+              admin: { description: vi.hb18.siteSettings.habitDonationUrlDesc },
+            },
           ],
         },
       ],

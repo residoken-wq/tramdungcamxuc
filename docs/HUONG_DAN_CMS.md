@@ -2317,6 +2317,28 @@ Tab **Chung** có thêm **Ảnh chữ ký nhà sáng lập** (PNG nền trong) c
 
 **Cài đặt website** → tab **Công cụ số** → **Nút sau kết quả quiz dẫn tới đâu**: nhập đường dẫn trong web (bắt đầu bằng `/`) hoặc liên kết `https://`. Để trống thì nút dẫn tới trang lộ trình. Khi Habit Tracker số đang mở dùng thử, nút luôn mời dùng thử.
 
+### 7.3e. Liên kết Coach và mục Ủng hộ (Habit Donation – HB-18)
+
+**Cài đặt website** → tab **Công cụ số**:
+
+1. **Liên kết đặt lịch Coach (Habit)**: Dán đường dẫn đặt lịch coaching 1:1 chuyên biệt về thói quen (Cal.com, Google Calendar... bắt đầu bằng `https://`).
+2. **Bật mục ủng hộ (Habit Donation)**: Mặc định tắt. Chỉ bật công tắc này khi Hana đã duyệt cho phép học viên gửi đóng góp / ủng hộ công cụ thói quen.
+3. **Liên kết ủng hộ / đóng góp**: Đường dẫn trang đóng góp hoặc trang thông tin ủng hộ.
+
+### 7.3f. Nội dung hành trình Habit & Câu trích từng bước (HB-18)
+
+Vào nhóm **Habit** → **Nội dung hành trình thói quen** (`Habit Journey Content`):
+
+1. **Câu trích dẫn từng bước (`stepQuotes`)**:
+   - Gồm 6 vị trí: Bước 2 (1% Better), Bước 3 (Tìm Mentor), Bước 4 (Gọi tên), Bước 5 (Vòng lặp), Bước 6 (Boarding Pass), và Màn hình theo dõi 28 ngày (Tracker).
+   - **Quy tắc bắt buộc**: Khi nhập **Nội dung câu trích**, bắt buộc phải điền đầy đủ **Tác giả** và **Nguồn** (sách, tài liệu khoa học gốc). Có thể thêm **Đường dẫn nguồn** để người đọc bấm vào kiểm chứng. Nếu thiếu tác giả hoặc nguồn, hệ thống sẽ từ chối lưu (luật HB-07 / AGENTS §14).
+2. **Câu kết Bước 2 (`onePercent.closing`)**:
+   - Câu đúc kết ngắn hiển thị ở cuối khối "3 điều chưa biết" tại bước 2.
+3. **Ghi chú và gợi ý kỹ thuật ở Bước 5 (`loop.note`, `loop.techniqueHint`)**:
+   - Giúp học viên hiểu rõ hai giai đoạn đầu (Cue, Craving) thuộc về nhận thức, hai giai đoạn sau (Response, Reward) thuộc về hành động.
+4. **Đồng hành sau 28 ngày (`tracker.afterJourneyTitle`, `afterJourneyText`)**:
+   - Tiêu đề và lời nhắn gửi khích lệ dành cho học viên khi hoàn thành 28 ngày rèn luyện thói quen.
+
 ### 7.3d. Menu con (menu "Sản phẩm", "Tài nguyên"…)
 
 **Menu điều hướng** → **Menu chính** → mở một mục:

@@ -1,7 +1,7 @@
 import 'server-only'
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
-import type { HabitJourneyContent } from '@/payload-types'
+import type { HabitJourneyContent, SiteSetting } from '@/payload-types'
 import type { HabitStage } from '../diagnostic'
 import { HABIT_STAGES } from '../diagnostic'
 import { isHabitStage, type FlowDiagnoseQuestion } from './flow-content'
@@ -41,12 +41,40 @@ export interface CleanTitledText {
   body: string | null
 }
 
+export interface CleanStepQuote {
+  text: string
+  author: string
+  source: string
+  sourceUrl?: string | null
+}
+
+export interface CleanHabitStepQuotes {
+  onePercent: CleanStepQuote | null
+  mentor: CleanStepQuote | null
+  name: CleanStepQuote | null
+  loop: CleanStepQuote | null
+  boardingPass: CleanStepQuote | null
+  tracker: CleanStepQuote | null
+}
+
+export interface CleanHabitTrackerContent {
+  afterJourneyTitle: string | null
+  afterJourneyText: string | null
+}
+
+export interface CleanHabitSiteSettings {
+  habitCoachBookingUrl: string | null
+  habitDonationEnabled: boolean
+  habitDonationUrl: string | null
+}
+
 export interface CleanHabitOnePercent {
   title?: string | null
   intro?: unknown
   dailyPercent: number
   maxDays: number
   facts: CleanHabitFact[]
+  closing?: string | null
 }
 
 /** HB-24: step 1 "Khám đúng bệnh". */
@@ -70,16 +98,20 @@ export interface CleanHabitLoop {
   /** At most one explanation per stage, in Cue → Reward order. */
   stages: { stage: HabitStage; title: string; explanation: string }[]
   rules: CleanTitledText[]
+  note: string | null
+  techniqueHint: string | null
 }
 
 export interface HabitJourneyContentResult {
   stations: CleanHabitStation[]
   quotes: CleanHabitQuote[]
+  stepQuotes: CleanHabitStepQuotes
   onePercent: CleanHabitOnePercent
   /** HB-24: "3 điều có thể bạn chưa biết" (step 2), stored under `onePercent.unknowns`. */
   onePercentUnknowns: CleanTitledText[]
   diagnose: CleanHabitDiagnose
   loop: CleanHabitLoop
+  tracker: CleanHabitTrackerContent
   /** HB-24: step 6 caption template; null when empty. */
   boardingPassCaption: string | null
   /** HB-24: data/privacy sentence written by Hana; null when empty. */
@@ -145,6 +177,51 @@ function cleanDiagnose(raw: HabitJourneyContent['diagnose'] | null): CleanHabitD
   }
 }
 
+function cleanStepQuote(
+  raw:
+    | {
+        text?: string | null
+        author?: string | null
+        source?: string | null
+        sourceUrl?: string | null
+      }
+    | null
+    | undefined,
+): CleanStepQuote | null {
+  const text = trimmed(raw?.text)
+  const author = trimmed(raw?.author)
+  const source = trimmed(raw?.source)
+  if (!text || !author || !source) return null
+  return {
+    text,
+    author,
+    source,
+    sourceUrl: trimmed(raw?.sourceUrl),
+  }
+}
+
+function cleanStepQuotes(
+  raw: HabitJourneyContent['stepQuotes'] | null | undefined,
+): CleanHabitStepQuotes {
+  return {
+    onePercent: cleanStepQuote(raw?.onePercent),
+    mentor: cleanStepQuote(raw?.mentor),
+    name: cleanStepQuote(raw?.name),
+    loop: cleanStepQuote(raw?.loop),
+    boardingPass: cleanStepQuote(raw?.boardingPass),
+    tracker: cleanStepQuote(raw?.tracker),
+  }
+}
+
+function cleanTrackerContent(
+  raw: HabitJourneyContent['tracker'] | null | undefined,
+): CleanHabitTrackerContent {
+  return {
+    afterJourneyTitle: trimmed(raw?.afterJourneyTitle),
+    afterJourneyText: trimmed(raw?.afterJourneyText),
+  }
+}
+
 function cleanLoop(raw: HabitJourneyContent['loop'] | null): CleanHabitLoop {
   const stages = (Array.isArray(raw?.stages) ? raw.stages : []).flatMap((row) => {
     const title = trimmed(row?.title)
@@ -157,6 +234,8 @@ function cleanLoop(raw: HabitJourneyContent['loop'] | null): CleanHabitLoop {
     intro: raw?.intro ?? null,
     stages: onePerStage(stages),
     rules: cleanTitledRows(raw?.rules),
+    note: trimmed(raw?.note),
+    techniqueHint: trimmed(raw?.techniqueHint),
   }
 }
 
@@ -182,16 +261,19 @@ export async function getHabitJourneyContent(
     return {
       stations: [],
       quotes: [],
+      stepQuotes: cleanStepQuotes(null),
       onePercent: {
         title: null,
         intro: null,
         dailyPercent: 1,
         maxDays: 365,
         facts: [],
+        closing: null,
       },
       onePercentUnknowns: [],
       diagnose: cleanDiagnose(null),
       loop: cleanLoop(null),
+      tracker: cleanTrackerContent(null),
       boardingPassCaption: null,
       privacyNote: null,
     }
@@ -270,17 +352,39 @@ export async function getHabitJourneyContent(
   return {
     stations,
     quotes,
+    stepQuotes: cleanStepQuotes(content.stepQuotes),
     onePercent: {
       title: rawOnePercent?.title?.trim() || null,
       intro: rawOnePercent?.intro ?? null,
       dailyPercent,
       maxDays,
       facts,
+      closing: trimmed(rawOnePercent?.closing),
     },
     onePercentUnknowns: cleanTitledRows(rawOnePercent?.unknowns).slice(0, 3),
     diagnose: cleanDiagnose(content.diagnose),
     loop: cleanLoop(content.loop),
+    tracker: cleanTrackerContent(content.tracker),
     boardingPassCaption: trimmed(content.boardingPass?.captionTemplate),
     privacyNote: trimmed(content.privacyNote),
+  }
+}
+
+/**
+ * Đọc 3 cấu hình liên kết coaching và ủng hộ từ SiteSettings.
+ */
+export async function getHabitSiteSettings(
+  payloadInstance?: Payload,
+): Promise<CleanHabitSiteSettings> {
+  const payload = await resolvePayload(payloadInstance)
+  const settings = (await payload.findGlobal({
+    slug: 'siteSettings',
+    depth: 0,
+  })) as SiteSetting | null
+
+  return {
+    habitCoachBookingUrl: trimmed(settings?.habitCoachBookingUrl),
+    habitDonationEnabled: Boolean(settings?.habitDonationEnabled),
+    habitDonationUrl: trimmed(settings?.habitDonationUrl),
   }
 }

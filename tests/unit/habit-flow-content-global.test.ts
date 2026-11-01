@@ -5,7 +5,10 @@ vi.mock('server-only', () => ({}))
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import type { HabitJourneyContent } from '../../src/payload-types'
-import { getHabitJourneyContent } from '../../src/lib/habit/journey-content.server'
+import {
+  getHabitJourneyContent,
+  getHabitSiteSettings,
+} from '../../src/lib/habit/journey-content.server'
 
 type GlobalData = Omit<HabitJourneyContent, 'id' | 'updatedAt' | 'createdAt'>
 
@@ -147,5 +150,77 @@ describe('HB-24: habitJourneyContent – nội dung flow mới (bước 1, 2, 5,
         },
       }),
     ).rejects.toThrow()
+  })
+
+  it('HB-18: rejects a stepQuote without author or source when text is present', async () => {
+    await expect(
+      write({
+        stepQuotes: {
+          onePercent: { text: 'Quote', author: 'Author', source: null },
+        },
+      }),
+    ).rejects.toThrow()
+    await expect(
+      write({
+        stepQuotes: {
+          tracker: { text: 'Quote', author: null, source: 'Source' },
+        },
+      }),
+    ).rejects.toThrow()
+  })
+
+  it('HB-18: stores and cleans stepQuotes, closing, note, techniqueHint, tracker, and reads siteSettings', async () => {
+    await write({
+      onePercent: {
+        ...before?.onePercent,
+        closing: '  [MẪU] Câu kết  ',
+      },
+      loop: {
+        ...before?.loop,
+        note: '  [MẪU] Ghi chú loop  ',
+        techniqueHint: '  [MẪU] Gợi ý kỹ thuật  ',
+      },
+      stepQuotes: {
+        onePercent: {
+          text: '  [MẪU] Câu trích B2  ',
+          author: '  [MẪU] Tác giả B2  ',
+          source: '  [MẪU] Nguồn B2  ',
+          sourceUrl: 'https://example.com/b2',
+        },
+      },
+      tracker: {
+        afterJourneyTitle: '  [MẪU] Đồng hành sau 28 ngày  ',
+        afterJourneyText: '  [MẪU] Nội dung đồng hành  ',
+      },
+    })
+
+    const content = await getHabitJourneyContent(payload)
+    expect(content.onePercent.closing).toBe('[MẪU] Câu kết')
+    expect(content.loop.note).toBe('[MẪU] Ghi chú loop')
+    expect(content.loop.techniqueHint).toBe('[MẪU] Gợi ý kỹ thuật')
+    expect(content.tracker.afterJourneyTitle).toBe('[MẪU] Đồng hành sau 28 ngày')
+    expect(content.tracker.afterJourneyText).toBe('[MẪU] Nội dung đồng hành')
+    expect(content.stepQuotes.onePercent).toEqual({
+      text: '[MẪU] Câu trích B2',
+      author: '[MẪU] Tác giả B2',
+      source: '[MẪU] Nguồn B2',
+      sourceUrl: 'https://example.com/b2',
+    })
+    expect(content.stepQuotes.mentor).toBeNull()
+
+    // Test getHabitSiteSettings
+    await payload.updateGlobal({
+      slug: 'siteSettings',
+      data: {
+        habitCoachBookingUrl: 'https://cal.com/coach',
+        habitDonationEnabled: true,
+        habitDonationUrl: 'https://donate.example.com',
+      },
+      overrideAccess: true,
+    })
+    const siteSettings = await getHabitSiteSettings(payload)
+    expect(siteSettings.habitCoachBookingUrl).toBe('https://cal.com/coach')
+    expect(siteSettings.habitDonationEnabled).toBe(true)
+    expect(siteSettings.habitDonationUrl).toBe('https://donate.example.com')
   })
 })
