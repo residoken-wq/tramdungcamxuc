@@ -111,18 +111,18 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         await expect(guest.getByText('Bước 2 / 6')).toBeVisible()
         await guest.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
 
-        // BƯỚC 3: Tìm Mentor (Bảng điểm thói quen)
+        // BƯỚC 3: Tìm Mentor (Soi lại một ngày & chọn Mentor)
         await expect(guest.getByText('Bước 3 / 6')).toBeVisible()
-        await guest.getByPlaceholder(/Nhập thói quen hàng ngày/i).fill('Uống 1 cốc nước ấm')
-        await guest.getByRole('button', { name: 'Thêm thói quen' }).click()
+        await guest.getByPlaceholder(/Đánh răng|thói quen/i).fill('Uống 1 cốc nước ấm')
+        await guest.getByRole('button', { name: /Thêm một việc|Thêm thói quen/i }).click()
 
-        // HB-09: Đánh giá tốt (+), nhập giờ tùy chọn và chọn làm thói quen neo
+        // HB-19: Đánh dấu có ích (+), chọn Mentor và nhập giờ tùy chọn
         await guest
-          .getByRole('button', { name: /đánh giá tốt/i })
+          .getByRole('button', { name: /Có ích \(\+\)|đánh giá tốt/i })
           .first()
           .click()
-        await guest.locator('input[type="time"]').first().fill('06:30')
         await guest.locator('input[type="radio"][name="anchorHabit"]').first().check()
+        await guest.locator('input[type="time"]').first().fill('06:30')
 
         await guest.getByRole('button', { name: /Tiếp tục/i }).click()
 

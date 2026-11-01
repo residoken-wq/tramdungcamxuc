@@ -3263,6 +3263,71 @@ export const vi = {
       requiredQuoteSource: 'Vui lòng ghi rõ nguồn dẫn chứng (sách, bài viết...).',
     },
   },
+  hb19: {
+    stepTitle: 'Tìm Mentor',
+    stepSubtitle: 'Soi lại một ngày & chọn một việc có ích (+) làm điểm tựa vững vàng',
+    part1: {
+      title: 'Soi lại một ngày của bạn',
+      subtitle:
+        'Liệt kê những việc bạn thật sự làm mỗi ngày và đánh dấu xem chúng có ích (+), không có ích (−) hay trung tính (=).',
+      addInputPlaceholder: 'Ví dụ: Đánh răng, Uống cà phê, Lướt điện thoại...',
+      addButton: '+ Thêm một việc',
+      samplesPrompt: 'Hoặc chọn nhanh từ gợi ý:',
+      sampleHabits: [
+        'Thức dậy',
+        'Đánh răng',
+        'Uống một cốc nước',
+        'Pha cà phê',
+        'Ăn sáng',
+        'Mở máy tính làm việc',
+        'Ăn trưa',
+        'Tắm buổi tối',
+      ],
+      emptyPrompt: 'Chưa có việc nào. Hãy thêm các việc bạn thường làm trong ngày.',
+      ratings: {
+        good: {
+          symbol: '+',
+          label: 'Có ích (+)',
+          ariaLabel: (habit: string) => `${habit} – đánh dấu Có ích (+)`,
+        },
+        neutral: {
+          symbol: '=',
+          label: 'Trung tính (=)',
+          ariaLabel: (habit: string) => `${habit} – đánh dấu Trung tính (=)`,
+        },
+        bad: {
+          symbol: '−',
+          label: 'Không có ích (−)',
+          ariaLabel: (habit: string) => `${habit} – đánh dấu Không có ích (−)`,
+        },
+      },
+      deleteButtonAria: (habit: string) => `Xóa việc: ${habit}`,
+    },
+    part2: {
+      title: 'Chọn Mentor',
+      subtitle:
+        'Mentor là một việc bạn đã làm đều đặn và vững vàng mỗi ngày (được đánh dấu có ích +). Bạn sẽ gắn thói quen mới vào ngay sau Mentor này.',
+      explanation:
+        'Mentor là thói quen có ích bạn đã làm vững vàng mỗi ngày. Đây là điểm tựa tự nhiên giúp bạn không bao giờ quên thói quen mới.',
+      noGoodHabitsPrompt: 'Đánh dấu ít nhất một việc có ích (+) để chọn Mentor',
+      selectPrompt: 'Chọn một việc làm Mentor cho thói quen mới:',
+      selectedBadge: 'Mentor',
+      timeLabel: 'Việc này thường diễn ra lúc mấy giờ?',
+      timePlaceholder: '07:00',
+      timeHint: 'Không bắt buộc. Giúp bạn định hình khung giờ trong ngày.',
+      timeAriaLabel: (habit: string) => `Việc ${habit} thường diễn ra lúc mấy giờ?`,
+      unselectedMentorNotice:
+        'Đã bỏ chọn Mentor vì việc này không còn được đánh dấu là việc có ích (+).',
+      deletedMentorNotice: 'Đã bỏ chọn Mentor vì việc này vừa bị xóa khỏi danh sách.',
+      clearMentor: 'Bỏ chọn Mentor',
+    },
+    errors: {
+      habitRequired: 'Vui lòng nhập tên việc cần thêm.',
+      scorecardEmpty: 'Vui lòng thêm ít nhất một việc trong ngày của bạn.',
+      anchorRequired: 'Vui lòng chọn một việc có ích (+) làm Mentor trước khi tiếp tục.',
+      timeInvalidFormat: 'Giờ làm thói quen phải có dạng HH:mm (từ 00:00 đến 23:59).',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
