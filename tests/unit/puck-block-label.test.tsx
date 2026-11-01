@@ -67,7 +67,8 @@ describe('EB-07: withBlockStyle strips _label on render', () => {
       id: 'test-1',
       title: 'Hello',
       _label: 'Custom Block Name',
-    } as any)
+      puck: {} as unknown as Parameters<typeof wrapped.render>[0]['puck'],
+    } as unknown as Parameters<typeof wrapped.render>[0])
 
     expect(capturedProps).not.toBeNull()
     expect(capturedProps).not.toHaveProperty('_label')

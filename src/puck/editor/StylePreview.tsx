@@ -1,11 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { createUsePuck } from '@puckeditor/core'
 import { designSystemGoogleFonts, googleFontsHrefFor } from '@/lib/design/design-css'
 import { collectPageStyles } from '@/puck/style/style-css'
 import { useStylePanel } from './style-context'
+import { useContextMenu } from './context-menu/context-menu-context'
 
 const usePuckSelector = createUsePuck()
 
@@ -21,7 +22,30 @@ export function StylePreview({
   document?: Document
 }) {
   const { ds } = useStylePanel()
+  const { openMenu } = useContextMenu()
   const data = usePuckSelector((s) => s.appState.data)
+
+  useEffect(() => {
+    if (!frameDocument) return
+    const handleContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const compEl = target.closest<HTMLElement>('[data-puck-component]')
+      if (!compEl) return
+      const id = compEl.getAttribute('data-puck-component')
+      if (!id) return
+      e.preventDefault()
+      e.stopPropagation()
+      const iframe = window.document.querySelector('iframe')
+      const rect = iframe?.getBoundingClientRect() ?? { left: 0, top: 0 }
+      openMenu({
+        componentId: id,
+        x: e.clientX + rect.left,
+        y: e.clientY + rect.top,
+      })
+    }
+    frameDocument.addEventListener('contextmenu', handleContextMenu)
+    return () => frameDocument.removeEventListener('contextmenu', handleContextMenu)
+  }, [frameDocument, openMenu])
   const { css, fonts } = collectPageStyles(data, ds)
   const loaded = new Set(designSystemGoogleFonts(ds))
   const fontsHref = googleFontsHrefFor(

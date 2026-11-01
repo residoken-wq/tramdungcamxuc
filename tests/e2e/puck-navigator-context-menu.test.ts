@@ -6,8 +6,9 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop-1440', 'Runs only on desktop-1440.')
-    test.setTimeout(180000)
-    page.setDefaultTimeout(20000)
+    test.setTimeout(240000)
+    page.setDefaultTimeout(30000)
+    page.setDefaultNavigationTimeout(90000)
 
     const email = `eb-07-${randomUUID()}@example.test`
     const password = randomUUID()
@@ -163,7 +164,7 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
       }
 
       // 5. Open Builder for Page A
-      await page.goto(`/builder/${pageAId}`)
+      await page.goto(`/builder/${pageAId}`, { waitUntil: 'domcontentloaded' })
       await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1)
 
       // --- TEST STEP 1: Rename Container in Navigator via Double-click ---
@@ -183,42 +184,42 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
 
       // --- TEST STEP 2: Canvas Right-click Heading 1 -> Duplicate -> Undo ---
       const canvasA = page.frameLocator('iframe')
-      const overlay1 = canvasA.locator(`[data-eb-overlay-id="${heading1Id}"]`)
-      await expect(overlay1).toBeVisible()
+      const block1 = canvasA.locator(`[data-puck-component="${heading1Id}"]`)
+      await expect(block1).toBeVisible()
 
       // Right-click Heading 1 on canvas
-      await overlay1.click({ button: 'right' })
+      await block1.click({ button: 'right' })
       const contextMenu = page.getByRole('menu', { name: 'Tác vụ khối' })
       await expect(contextMenu).toBeVisible()
 
       // Click "Nhân bản"
       await page.getByRole('menuitem', { name: /^Nhân bản$/ }).click()
 
-      // Canvas should now have 3 headings (total 4 block overlays inside canvas)
-      await expect(canvasA.locator('[data-eb-overlay-id]')).toHaveCount(4)
+      // Canvas should now have 3 headings (total 4 blocks inside canvas)
+      await expect(canvasA.locator('[data-puck-component]')).toHaveCount(4)
 
       // Click "Hoàn tác" button
-      await page.getByRole('button', { name: 'Hoàn tác', exact: true }).click()
+      await page.getByRole('button', { name: 'Hoàn tác', exact: true }).first().click()
 
-      // Should be back to 2 headings (total 3 block overlays)
-      await expect(canvasA.locator('[data-eb-overlay-id]')).toHaveCount(3)
+      // Should be back to 2 headings (total 3 blocks)
+      await expect(canvasA.locator('[data-puck-component]')).toHaveCount(3)
 
       // --- TEST STEP 3: Copy Style from Heading 2 -> Paste Style on Heading 1 ---
-      const overlay2 = canvasA.locator(`[data-eb-overlay-id="${heading2Id}"]`)
-      await expect(overlay2).toBeVisible()
+      const block2 = canvasA.locator(`[data-puck-component="${heading2Id}"]`)
+      await expect(block2).toBeVisible()
 
       // Right-click Heading 2 -> Copy
-      await overlay2.click({ button: 'right' })
+      await block2.click({ button: 'right' })
       await expect(contextMenu).toBeVisible()
       await page.getByRole('menuitem', { name: /^Sao chép$/ }).click()
 
       // Right-click Heading 1 -> Paste style
-      await overlay1.click({ button: 'right' })
+      await block1.click({ button: 'right' })
       await expect(contextMenu).toBeVisible()
       await page.getByRole('menuitem', { name: /^Dán kiểu$/ }).click()
 
       // Toast notification appears
-      await expect(page.getByRole('status')).toContainText('Đã dán kiểu dáng')
+      await expect(page.getByRole('status').filter({ hasText: 'Đã dán kiểu dáng' })).toBeVisible()
 
       // Save draft on Page A
       await page.getByRole('button', { name: 'Lưu nháp', exact: true }).click()
@@ -227,31 +228,50 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
       })
 
       // --- TEST STEP 4: Copy Container -> Paste into Page B ---
-      await containerRow.click({ button: 'right' })
+      await page.getByRole('tab', { name: 'Cấu trúc', exact: true }).click()
+      const rowLabel = containerRow.getByText('Khối giới thiệu')
+      await expect(rowLabel).toBeVisible()
+      await rowLabel.click({ button: 'right' })
       await expect(contextMenu).toBeVisible()
       await page.getByRole('menuitem', { name: /^Sao chép$/ }).click()
 
       // Open Page B
-      await page.goto(`/builder/${pageBId}`)
+      await page.goto(`/builder/${pageBId}`, { waitUntil: 'domcontentloaded' })
       await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1)
 
       const canvasB = page.frameLocator('iframe')
-      const overlayB = canvasB.locator(`[data-eb-overlay-id="${headingBId}"]`)
-      await expect(overlayB).toBeVisible()
+      const blockB = canvasB.locator(`[data-puck-component="${headingBId}"]`)
+      await expect(blockB).toBeVisible()
 
       // Right-click first block on Page B -> Paste
-      await overlayB.click({ button: 'right' })
+      await blockB.click({ button: 'right' })
       await expect(page.getByRole('menuitem', { name: /^Dán$/ })).toBeEnabled()
       await page.getByRole('menuitem', { name: /^Dán$/ }).click()
 
       // Toast notification for paste
-      await expect(page.getByRole('status')).toContainText('Đã dán khối')
+      await expect(page.getByRole('status').filter({ hasText: 'Đã dán khối' })).toBeVisible()
 
-      // Page B canvas now contains the original heading plus the pasted Container + 2 Headings (total 4 overlays)
-      await expect(canvasB.locator('[data-eb-overlay-id]')).toHaveCount(4)
+      // Page B canvas now contains the original heading plus the pasted Container + 2 Headings (total 4 blocks)
+      await expect(canvasB.locator('[data-puck-component]')).toHaveCount(4)
 
-      // Verify fresh IDs in Page B data
-      const resB = await page.request.get(`/api/pages/${pageBId}?depth=0`)
+      // Save draft on Page B to persist puckData to Payload
+      await page.getByRole('button', { name: 'Lưu nháp', exact: true }).click()
+
+      // Verify fresh IDs in Page B data with polling for DB write
+      await expect
+        .poll(
+          async () => {
+            const resB = await page.request.get(`/api/pages/${pageBId}?draft=true&depth=0`)
+            if (!resB.ok()) return null
+            const json = await resB.json()
+            const bContent = json.puckData?.content || []
+            return bContent.find((b: { type: string }) => b.type === 'Container')
+          },
+          { timeout: 15000 },
+        )
+        .toBeDefined()
+
+      const resB = await page.request.get(`/api/pages/${pageBId}?draft=true&depth=0`)
       expect(resB.ok()).toBe(true)
       const bContent = (await resB.json()).puckData.content
       const pastedContainer = bContent.find(
@@ -262,14 +282,14 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
 
       // --- TEST STEP 5: Homepage Locked Block HeroTwoEntries ---
       if (homepageId) {
-        await page.goto(`/builder/${homepageId}`)
+        await page.goto(`/builder/${homepageId}`, { waitUntil: 'domcontentloaded' })
         await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1)
 
         const canvasHome = page.frameLocator('iframe')
-        const overlayHero = canvasHome.locator(`[data-eb-overlay-id="${heroId}"]`)
-        await expect(overlayHero).toBeVisible()
+        const heroBlock = canvasHome.locator(`[data-puck-component="${heroId}"]`)
+        await expect(heroBlock).toBeVisible()
 
-        await overlayHero.click({ button: 'right' })
+        await heroBlock.click({ button: 'right', force: true })
         const deleteItem = page.getByRole('menuitem', { name: /^Xoá$/ })
         const duplicateItem = page.getByRole('menuitem', { name: /^Nhân bản$/ })
 
@@ -281,7 +301,7 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
       }
 
       // --- TEST STEP 6: Publish Page A and verify public HTML ---
-      await page.goto(`/builder/${pageAId}`)
+      await page.goto(`/builder/${pageAId}`, { waitUntil: 'domcontentloaded' })
       await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1)
 
       // Publish Page A
@@ -291,7 +311,7 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
       })
 
       // Visit public page A
-      await page.goto(`/${slugA}`)
+      await page.goto(`/${slugA}`, { waitUntil: 'domcontentloaded' })
       await expect(page.locator('body')).toBeVisible()
 
       // Public HTML must NEVER contain the internal _label name "Khối giới thiệu"

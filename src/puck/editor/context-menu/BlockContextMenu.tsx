@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useLayoutEffect, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import { usePuck } from '@puckeditor/core'
+import { usePuck, type ComponentData } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { useContextMenu } from './context-menu-context'
 import { copyBlock, readClipboard, prepareForPaste } from './clipboard'
@@ -39,9 +39,17 @@ export function BlockContextMenu() {
   const [focusedIndex, setFocusedIndex] = useState<number>(0)
 
   const componentId = menuState.componentId
-  const item = componentId ? getItemById(componentId) : null
-  const selector = componentId ? getSelectorForId(componentId) : null
-  const parent = componentId ? getParentById(componentId) : null
+  let item: ComponentData | null | undefined = null
+  let selector: { zone: string; index: number } | null | undefined = null
+  let parent: ComponentData | null | undefined = null
+
+  try {
+    item = componentId && getItemById ? (getItemById(componentId) as ComponentData) : null
+    selector = componentId && getSelectorForId ? getSelectorForId(componentId) : null
+    parent = componentId && getParentById ? (getParentById(componentId) as ComponentData) : null
+  } catch {
+    // Component might not be indexed yet
+  }
 
   // Calculate permissions
   const permissions = item && getPermissions ? getPermissions({ item }) : undefined
@@ -128,7 +136,7 @@ export function BlockContextMenu() {
       },
     })
     showToast(vi.eb07.toast.pasted)
-  }, [closeMenu, selector, clipboardItem, config, parent?.type, dispatch, showToast])
+  }, [closeMenu, selector, clipboardItem, config, parent, dispatch, showToast])
 
   const handlePasteStyle = useCallback(() => {
     closeMenu()

@@ -614,6 +614,7 @@ function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
           />,
           canvasEl,
         )}
+      <BlockContextMenu />
     </>
   )
 }
@@ -769,7 +770,6 @@ export function PuckEditorClient({
               />
             </div>
           </div>
-          <BlockContextMenu />
           <ToastNotification />
         </EditorContext.Provider>
       </ContextMenuProvider>
