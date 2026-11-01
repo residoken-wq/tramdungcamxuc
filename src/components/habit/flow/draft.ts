@@ -16,6 +16,8 @@ export type HabitFlowStep = 1 | 2 | 3 | 4 | 5 | 6
 export interface HabitFlowDraft extends HabitPlanDraft {
   version: typeof HABIT_FLOW_DRAFT_VERSION
   step: HabitFlowStep
+  diagnoseAnswers?: (number | null)[]
+  diagnoseQuestionCount?: number
 }
 
 export const LEGACY_STEP_MAP: Readonly<Record<1 | 2 | 3 | 4, HabitFlowStep>> = {
@@ -63,13 +65,14 @@ export function mapLegacyStepToFlowStep(rawStep: unknown, rawVersion: unknown): 
 export function migrateHabitDraft(
   raw: unknown,
   knownTechniqueIds?: ReadonlySet<number>,
+  currentQuestionCount?: number,
 ): HabitFlowDraft {
   const base = getDefaultHabitFlowDraft()
   if (!raw || typeof raw !== 'object') {
     return base
   }
 
-  const parsed = raw as Partial<HabitPlanDraft> & { version?: unknown }
+  const parsed = raw as Partial<HabitFlowDraft> & { version?: unknown }
 
   const rawScorecard = Array.isArray(parsed.scorecard) ? parsed.scorecard : []
   const cleanedScorecard: HabitScorecardItem[] = rawScorecard
@@ -146,6 +149,32 @@ export function migrateHabitDraft(
 
   const step = mapLegacyStepToFlowStep(parsed.step, parsed.version)
 
+  let cleanedDiagnoseAnswers: (number | null)[] | undefined = undefined
+  let cleanedDiagnoseQuestionCount: number | undefined = undefined
+
+  if (Array.isArray(parsed.diagnoseAnswers)) {
+    const rawAnswers = parsed.diagnoseAnswers
+    const rawCount =
+      typeof parsed.diagnoseQuestionCount === 'number' &&
+      Number.isInteger(parsed.diagnoseQuestionCount) &&
+      parsed.diagnoseQuestionCount >= 0
+        ? parsed.diagnoseQuestionCount
+        : rawAnswers.length
+
+    const countMismatch =
+      typeof currentQuestionCount === 'number' && currentQuestionCount !== rawCount
+
+    if (!countMismatch) {
+      cleanedDiagnoseAnswers = rawAnswers.map((val) => {
+        if (typeof val === 'number' && Number.isInteger(val) && val >= 1 && val <= 5) {
+          return val
+        }
+        return null
+      })
+      cleanedDiagnoseQuestionCount = rawCount
+    }
+  }
+
   return {
     version: HABIT_FLOW_DRAFT_VERSION,
     step,
@@ -157,6 +186,10 @@ export function migrateHabitDraft(
     personText,
     identityStatement,
     chosenTechniques,
+    ...(cleanedDiagnoseAnswers ? { diagnoseAnswers: cleanedDiagnoseAnswers } : {}),
+    ...(cleanedDiagnoseQuestionCount !== undefined
+      ? { diagnoseQuestionCount: cleanedDiagnoseQuestionCount }
+      : {}),
     name: '',
     email: '',
     consent: false,

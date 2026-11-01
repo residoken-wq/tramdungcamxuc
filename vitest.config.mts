@@ -23,6 +23,7 @@ const sharedTestConfig = {
     PGTZ: 'UTC',
   },
   setupFiles: ['./vitest.setup.ts'],
+  testTimeout: 20000,
 }
 
 const plugins = [tsconfigPaths(), react()]

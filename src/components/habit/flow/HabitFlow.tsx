@@ -17,7 +17,8 @@ import {
 } from '@/lib/habit'
 import type { HabitStage } from '@/lib/diagnostic'
 import type { Weekday } from '@/lib/habit/rhythm'
-import type { CleanHabitOnePercent } from '@/lib/habit/journey-content.server'
+import type { CleanHabitOnePercent, CleanHabitDiagnose } from '@/lib/habit/journey-content.server'
+import { scoreFlowDiagnose } from '@/lib/habit/flow-content'
 import {
   getDefaultHabitFlowDraft,
   migrateHabitDraft,
@@ -37,12 +38,22 @@ export interface HabitFlowProps {
   techniques: PublicTechnique[]
   journeyDays?: number
   onePercent?: CleanHabitOnePercent | null
+  diagnose?: CleanHabitDiagnose | null
+  privacyNote?: string | null
 }
 
-export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlowProps) {
+export function HabitFlow({
+  techniques,
+  journeyDays = 28,
+  onePercent,
+  diagnose,
+  privacyNote,
+}: HabitFlowProps) {
   const startTimeRef = useRef<number | null>(null)
   // Ghi habit_loop_completed đúng 1 lần mỗi lần mở trang (Quay lại → Tiếp tục không ghi lại)
   const completedTrackedRef = useRef(false)
+  // Ghi diagnostic_completed đúng 1 lần khi hoàn thành khám (F5 khôi phục không ghi lại)
+  const diagnosticTrackedRef = useRef(false)
   // Moving between steps keeps the scroll position, which on phones lands mid-step or in the
   // footer: bring the step card into view and move focus there (skip the first render).
   const stepCardRef = useRef<HTMLDivElement>(null)
@@ -80,6 +91,12 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     return ids
   }, [draft.chosenTechniques])
 
+  const questions = React.useMemo(() => diagnose?.questions ?? [], [diagnose?.questions])
+  const flowScore = React.useMemo(
+    () => scoreFlowDiagnose(draft.diagnoseAnswers ?? [], questions),
+    [draft.diagnoseAnswers, questions],
+  )
+
   // 1. Khôi phục dữ liệu từ localStorage (chuyển nháp v1 -> v2 nếu cần)
   useEffect(() => {
     if (startTimeRef.current === null) {
@@ -91,8 +108,16 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
         const stored = localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
         if (stored) {
           const parsed: unknown = JSON.parse(stored)
-          const migrated = migrateHabitDraft(parsed, knownIds)
+          const migrated = migrateHabitDraft(parsed, knownIds, diagnose?.questions?.length)
           setDraft(migrated)
+
+          // Nếu nháp đã trả lời đủ hết câu hỏi từ trước (F5 khôi phục), đánh dấu đã track để không gửi lại
+          if (questions.length > 0 && Array.isArray(migrated.diagnoseAnswers)) {
+            const restoredScore = scoreFlowDiagnose(migrated.diagnoseAnswers, questions)
+            if (restoredScore.isComplete) {
+              diagnosticTrackedRef.current = true
+            }
+          }
         }
       } catch {
         // Bỏ qua nếu localStorage bị tắt hoặc lỗi parse
@@ -102,7 +127,19 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     }, 0)
 
     return () => clearTimeout(timer)
-  }, [techniques])
+  }, [techniques, diagnose?.questions?.length])
+
+  // Analytics: gửi diagnostic_completed đúng 1 lần khi hoàn thành khám (không gửi khi F5 khôi phục)
+  useEffect(() => {
+    if (!isLoaded) return
+    if (flowScore.isComplete && flowScore.topStage && !diagnosticTrackedRef.current) {
+      diagnosticTrackedRef.current = true
+      track('diagnostic_completed', {
+        stage: flowScore.topStage,
+        totalQuestions: questions.length,
+      })
+    }
+  }, [flowScore.isComplete, flowScore.topStage, isLoaded, questions.length])
 
   // 2. Tự động lưu nháp v2 vào localStorage mỗi khi thay đổi (T2-03: không lưu consent, name, email)
   useEffect(() => {
@@ -233,6 +270,25 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     })
   }
 
+  const handleSelectDiagnoseAnswer = (questionIndex: number, score: number) => {
+    setStepError(null)
+    setDraft((prev) => {
+      const qCount = questions.length
+      const current = Array.isArray(prev.diagnoseAnswers)
+        ? [...prev.diagnoseAnswers]
+        : new Array<number | null>(qCount).fill(null)
+      while (current.length < qCount) {
+        current.push(null)
+      }
+      current[questionIndex] = score
+      return {
+        ...prev,
+        diagnoseAnswers: current,
+        diagnoseQuestionCount: qCount,
+      }
+    })
+  }
+
   const handleSelectStep = (targetStep: HabitFlowStep) => {
     if (submitSuccess) {
       setSubmitSuccess(false)
@@ -251,6 +307,9 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
     setStepError(null)
 
     if (draft.step === 1) {
+      if (questions.length > 0 && !flowScore.isComplete) {
+        return
+      }
       setDraft((prev) => ({ ...prev, step: 2 }))
     } else if (draft.step === 2) {
       setDraft((prev) => ({ ...prev, step: 3 }))
@@ -487,7 +546,14 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
           aria-label={vi.habit.wizard.stepIndicator(draft.step, 6)}
           className="bg-white rounded-card shadow-soft border border-lavender-mist/60 p-6 sm:p-8 scroll-mt-4 focus:outline-none"
         >
-          {draft.step === 1 && <StepDiagnose />}
+          {draft.step === 1 && (
+            <StepDiagnose
+              diagnose={diagnose}
+              answers={draft.diagnoseAnswers ?? []}
+              onSelectAnswer={handleSelectDiagnoseAnswer}
+              onSkip={() => setDraft((prev) => ({ ...prev, step: 2 }))}
+            />
+          )}
 
           {draft.step === 2 && <StepOnePercent onePercent={onePercent} />}
 
@@ -550,6 +616,7 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
               email={draft.email || ''}
               consent={Boolean(draft.consent)}
               honeypot={honeypot}
+              privacyNote={privacyNote}
               isSubmitting={isSubmitting}
               onNameChange={(val) => setDraft((prev) => ({ ...prev, name: val }))}
               onEmailChange={(val) => setDraft((prev) => ({ ...prev, email: val }))}
@@ -575,7 +642,12 @@ export function HabitFlow({ techniques, journeyDays = 28, onePercent }: HabitFlo
                 {vi.hb16.controls.toStage2}
               </Button>
             ) : draft.step < 6 ? (
-              <Button type="button" variant="primary" onClick={handleNextStep}>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={handleNextStep}
+                disabled={draft.step === 1 && questions.length > 0 && !flowScore.isComplete}
+              >
                 {vi.habit.wizard.controls.next} →
               </Button>
             ) : null}

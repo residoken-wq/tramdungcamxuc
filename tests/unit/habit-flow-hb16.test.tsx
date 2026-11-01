@@ -188,7 +188,9 @@ describe('HB-16: Khung flow 3 giai đoạn / 6 bước & chuyển nháp v2', () 
       })
 
       // B1 -> B2
-      expect(screen.getByText(viStrings.hb16.steps.diagnose.samplePlaceholder)).toBeDefined()
+      expect(
+        screen.getByRole('heading', { name: viStrings.hb16.steps.diagnose.title }),
+      ).toBeDefined()
       await act(async () => {
         fireEvent.click(screen.getByRole('button', { name: /Tiếp tục/i }))
       })

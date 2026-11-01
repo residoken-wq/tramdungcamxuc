@@ -3030,6 +3030,42 @@ export const vi = {
       rhythmLockedNotice: 'Giữ nguyên nhịp tuần hiện tại vì kế hoạch đã có check-in.',
     },
   },
+  hb17: {
+    diagnoseDefaultTitle: 'Khám đúng bệnh',
+    diagnoseDefaultSubtitle:
+      'Nhận diện nút thắt thực sự khiến việc duy trì thói quen chưa bền vững.',
+    surveyHeading: (count: number) => `Khám thói quen qua ${count} câu hỏi đơn giản`,
+    surveyCounter: (answered: number, total: number) => `${answered}/${total}`,
+    surveyCounterAria: (answered: number, total: number) =>
+      `Đã trả lời ${answered} trên ${total} câu hỏi`,
+    scaleMinLabel: 'Hoàn toàn không đúng',
+    scaleMaxLabel: 'Rất đúng với tôi',
+    scaleLabels: {
+      1: 'Hoàn toàn không đúng',
+      2: 'Chưa đúng lắm',
+      3: 'Đôi khi đúng',
+      4: 'Khá đúng với tôi',
+      5: 'Rất đúng với tôi',
+    },
+    scaleOptionAria: (score: number, label: string) => `Mức ${score}: ${label}`,
+    questionGroupAria: (index: number, statement: string) => `Câu ${index}: ${statement}`,
+    skipButton: 'Bỏ qua phần khám',
+    sourcePrefix: 'Nguồn',
+    result: {
+      badge: 'Giai đoạn nút thắt của bạn',
+      averageScore: (score: string) => `Điểm trung bình: ${score}/5`,
+      secondaryNotice: (stageName: string) =>
+        `Bạn cũng có xu hướng vướng ở giai đoạn ${stageName} (điểm trung bình sát nút giai đoạn chính).`,
+      stageNames: {
+        cue: 'Tín hiệu (Cue)',
+        craving: 'Khao khát (Craving)',
+        response: 'Phản hồi (Response)',
+        reward: 'Phần thưởng (Reward)',
+      },
+      defaultStageTitle: (stageName: string) => `Điểm nghẽn ở giai đoạn ${stageName}`,
+      defaultNextStepHint: 'Ở bước 5 Vòng lặp, bạn sẽ chọn kỹ thuật thực hành cho giai đoạn này.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi
