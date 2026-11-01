@@ -274,6 +274,12 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
 
       expect(categories?.basic?.title).toBe('Cơ bản')
       expect(categories?.basic?.components).toEqual([
+        'HeadingWidget',
+        'TextWidget',
+        'ImageWidget',
+        'ButtonWidget',
+        'IconWidget',
+        'IconListWidget',
         'Divider',
         'Spacer',
         'VideoEmbed',
@@ -301,11 +307,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       ])
 
       expect(categories?.layout?.title).toBe('Bố cục')
-      expect(categories?.layout?.components).toEqual([
-        'Container',
-        'Columns',
-        'ResourcePostsSlot',
-      ])
+      expect(categories?.layout?.components).toEqual(['Container', 'Columns', 'ResourcePostsSlot'])
 
       expect(categories?.conversion?.title).toBe('Chuyển đổi')
       expect(categories?.conversion?.components).toEqual([
