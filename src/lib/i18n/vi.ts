@@ -3665,6 +3665,14 @@ export const vi = {
     successSubtitle: (days: number = 28) =>
       `Chúc mừng bạn đã hoàn thành thiết kế vòng lặp thói quen. Hãy bước vào hành trình ${days} ngày thực hành ngay bây giờ!`,
   },
+  hb14: {
+    badge: 'Đồng hành dài hạn',
+    title: (days: number = 28) => `Đồng hành sau ${days} ngày`,
+    defaultText: (days: number = 28) =>
+      `Hành trình ${days} ngày là bước khởi đầu để bạn thấu hiểu và rèn luyện bản thân. Tiếp tục vững vàng cùng Coach hoặc đồng hành lan tỏa năng lượng tích cực.`,
+    coachButton: 'Đặt lịch với Habit Coach',
+    donateButton: 'Ủng hộ Trạm Dừng Cảm Xúc',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

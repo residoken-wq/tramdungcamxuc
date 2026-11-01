@@ -7,6 +7,7 @@ import { ProgressGrid } from '@/components/ui/ProgressGrid'
 import { CheckInModal } from './CheckInModal'
 import { StationReflectionModal } from './StationReflectionModal'
 import { TrackerSummaryCard } from './TrackerSummaryCard'
+import { AfterJourneyPanel } from './AfterJourneyPanel'
 import { MyDataPanel } from './MyDataPanel'
 import type { EmotionKey } from '@/lib/emotions'
 import { calculateTrackerStats, planDayDate } from '@/lib/habit/tracker-stats'
@@ -51,6 +52,10 @@ export interface TrackerDashboardProps {
   customerName?: string | null
   journeyDays?: number
   privacyNote?: string | null
+  afterJourneyTitle?: string | null
+  afterJourneyText?: string | null
+  coachBookingUrl?: string | null
+  donationUrl?: string | null
 }
 
 export function TrackerDashboard({
@@ -73,6 +78,10 @@ export function TrackerDashboard({
   customerName,
   journeyDays: propJourneyDays,
   privacyNote,
+  afterJourneyTitle,
+  afterJourneyText,
+  coachBookingUrl,
+  donationUrl,
 }: TrackerDashboardProps) {
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
   const [reflections, setReflections] = useState<InitialReflectionData[]>(initialReflections || [])
@@ -172,6 +181,11 @@ export function TrackerDashboard({
     ? view.stations.flatMap((s) => s.days).find((d) => d.day === activeModalDay)
     : null
   const stats = calculateTrackerStats(checkins)
+  const isJourneyEndedOrLastDay =
+    currentDay >= journeyDays ||
+    Boolean(initialCertificate) ||
+    eligibility?.outcome === 'completed' ||
+    eligibility?.outcome === 'experienced'
 
   const departureDate = planDayDate(startDate, 1)
   const finishDate = planDayDate(startDate, journeyDays)
@@ -349,6 +363,30 @@ export function TrackerDashboard({
         </div>
       )}
 
+      {/* 2b. Tổng kết & Đồng hành sau hành trình (khi là ngày cuối hoặc đã kết thúc, đưa lên trên lưới) */}
+      {isJourneyEndedOrLastDay && (
+        <div className="space-y-6 pt-2">
+          <TrackerSummaryCard
+            stats={stats}
+            isTrialOrExpired={isTrialOrExpired}
+            buyUrl={buyUrl}
+            initialCertificate={initialCertificate}
+            eligibility={eligibility}
+            customerName={customerName}
+            journeyDays={journeyDays}
+            hideBookingButton={Boolean(coachBookingUrl)}
+          />
+          <AfterJourneyPanel
+            title={afterJourneyTitle}
+            text={afterJourneyText}
+            coachBookingUrl={coachBookingUrl}
+            donationUrl={donationUrl}
+            journeyDays={journeyDays}
+            variant="highlighted"
+          />
+        </div>
+      )}
+
       {/* 3. Lưới hành trình theo trạm */}
       <div className="bg-warm-ivory rounded-card border border-deep-navy/10 p-6 sm:p-8 shadow-soft space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-deep-navy/10 pb-3">
@@ -368,24 +406,7 @@ export function TrackerDashboard({
         />
       </div>
 
-      {/* 4. Tổng kết từ ngày cuối trở đi, khi đã có chứng nhận hoặc khi đã trải nghiệm */}
-      {(currentDay >= journeyDays ||
-        Boolean(initialCertificate) ||
-        eligibility?.outcome === 'experienced') && (
-        <div className="pt-4">
-          <TrackerSummaryCard
-            stats={stats}
-            isTrialOrExpired={isTrialOrExpired}
-            buyUrl={buyUrl}
-            initialCertificate={initialCertificate}
-            eligibility={eligibility}
-            customerName={customerName}
-            journeyDays={journeyDays}
-          />
-        </div>
-      )}
-
-      {/* 5. Khối Dữ liệu của bạn (HB-13) */}
+      {/* 4. Khối Dữ liệu của bạn (HB-13) */}
       <MyDataPanel
         journeyDays={journeyDays}
         privacyNote={privacyNote}
@@ -395,6 +416,17 @@ export function TrackerDashboard({
           setCheckins(restoredCheckins)
         }}
       />
+
+      {/* 5. Đồng hành sau hành trình (khi đang diễn ra, nằm cuối dưới Dữ liệu của bạn) */}
+      {!isJourneyEndedOrLastDay && (
+        <AfterJourneyPanel
+          title={afterJourneyTitle}
+          text={afterJourneyText}
+          coachBookingUrl={coachBookingUrl}
+          donationUrl={donationUrl}
+          journeyDays={journeyDays}
+        />
+      )}
 
       {/* 6. Modal Check-in */}
       {activeModalDay !== null && (

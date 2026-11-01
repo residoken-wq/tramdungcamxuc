@@ -2426,15 +2426,23 @@ Tab **Chung** có thêm **Ảnh chữ ký nhà sáng lập** (PNG nền trong) c
 
 **Cài đặt website** → tab **Công cụ số** → **Nút sau kết quả quiz dẫn tới đâu**: nhập đường dẫn trong web (bắt đầu bằng `/`) hoặc liên kết `https://`. Để trống thì nút dẫn tới trang lộ trình. Khi Habit Tracker số đang mở dùng thử, nút luôn mời dùng thử.
 
-### 7.3e. Liên kết Coach và mục Ủng hộ (Habit Donation – HB-18)
+### 7.3e. Liên kết Coach và mục Ủng hộ (Habit Donation – HB-14 / HB-18)
 
 **Cài đặt website** → tab **Công cụ số**:
 
-1. **Liên kết đặt lịch Coach (Habit)**: Dán đường dẫn đặt lịch coaching 1:1 chuyên biệt về thói quen (Cal.com, Google Calendar... bắt đầu bằng `https://`).
-2. **Bật mục ủng hộ (Habit Donation)**: Mặc định tắt. Chỉ bật công tắc này khi Hana đã duyệt cho phép học viên gửi đóng góp / ủng hộ công cụ thói quen.
-3. **Liên kết ủng hộ / đóng góp**: Đường dẫn trang đóng góp hoặc trang thông tin ủng hộ.
+1. **Liên kết đặt lịch Coach (Habit)** (`habitCoachBookingUrl`): Dán đường dẫn đặt lịch coaching 1:1 chuyên biệt về thói quen (Cal.com, Google Calendar... bắt đầu bằng `https://`).
+   - **Vị trí hiển thị trên màn hình Tracker (`/habit/tracker`)**:
+     - Nút **"Đặt lịch với Habit Coach"** hiển thị tại khối _Đồng hành sau 28 ngày_.
+     - Khi học viên đang trong hành trình (từ ngày 1 đến ngày 27), khối nằm gọn gàng ở cuối trang, bên dưới khối _Dữ liệu của bạn_.
+     - Khi học viên đến ngày cuối (ngày 28) hoặc đã kết thúc hành trình / nhận chứng nhận, khối sẽ tự động được đưa lên vị trí trang trọng **TRÊN** lưới các trạm để khích lệ bước tiếp theo.
+     - **Tối ưu trải nghiệm**: Khi có link đặt lịch Habit Coach, nút đặt lịch phiên trải nghiệm 149.000đ ở thẻ tổng kết sẽ tự động ẩn đi để tránh trùng lặp nút bấm (CTA).
+     - Nếu để trống ô này, nút đặt lịch coach sẽ tự động ẩn.
+2. **Bật mục ủng hộ (Habit Donation)** (`habitDonationEnabled`): Mặc định tắt. Chỉ bật công tắc này khi Hana đã duyệt cho phép học viên gửi đóng góp / ủng hộ công cụ thói quen.
+3. **Liên kết ủng hộ / đóng góp** (`habitDonationUrl`): Đường dẫn trang đóng góp hoặc trang thông tin ủng hộ (bắt đầu bằng `https://`).
+   - Khi công tắc đang bật và có đường dẫn, nút **"Ủng hộ Trạm Dừng Cảm Xúc"** sẽ xuất hiện cạnh nút đặt lịch coach.
+   - Khi tắt công tắc, nút này tự động ẩn hoàn toàn trên giao diện học viên mà không cần xóa đường dẫn đã lưu.
 
-### 7.3f. Nội dung hành trình Habit & Câu trích từng bước (HB-18)
+### 7.3f. Nội dung hành trình Habit & Câu trích từng bước (HB-14 / HB-18)
 
 Vào nhóm **Habit** → **Nội dung hành trình thói quen** (`Habit Journey Content`):
 
@@ -2445,8 +2453,9 @@ Vào nhóm **Habit** → **Nội dung hành trình thói quen** (`Habit Journey 
    - Câu đúc kết ngắn hiển thị ở cuối khối "3 điều chưa biết" tại bước 2.
 3. **Ghi chú và gợi ý kỹ thuật ở Bước 5 (`loop.note`, `loop.techniqueHint`)**:
    - Giúp học viên hiểu rõ hai giai đoạn đầu (Cue, Craving) thuộc về nhận thức, hai giai đoạn sau (Response, Reward) thuộc về hành động.
-4. **Đồng hành sau 28 ngày (`tracker.afterJourneyTitle`, `afterJourneyText`)**:
-   - Tiêu đề và lời nhắn gửi khích lệ dành cho học viên khi hoàn thành 28 ngày rèn luyện thói quen.
+4. **Đồng hành sau 28 ngày (`tracker.afterJourneyTitle`, `tracker.afterJourneyText`)**:
+   - **Tiêu đề** (`afterJourneyTitle`): Tiêu đề của khối (mặc định: `Đồng hành sau 28 ngày`).
+   - **Lời nhắn gửi** (`afterJourneyText`): Lời khích lệ, chia sẻ từ Coach Hana về chặng đường tiếp theo. Nếu để trống, hệ thống sử dụng lời nhắn mặc định truyền cảm hứng từ Trạm.
 
 ### 7.3d. Menu con (menu "Sản phẩm", "Tài nguyên"…)
 

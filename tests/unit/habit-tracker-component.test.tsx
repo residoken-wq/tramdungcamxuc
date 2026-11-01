@@ -222,12 +222,13 @@ describe('Habit Tracker Component Tests (HB-11)', () => {
     })
 
     it('không hiển thị khối lý do riêng khi không lỡ nhịp', () => {
+      const todayYmd = getVietnamYmd(new Date())
       render(
         <TrackerDashboard
           planId={101}
           currentDay={1}
           journeyDays={28}
-          startDate="2026-10-30T17:00:00.000Z"
+          startDate={todayYmd}
           privateReason="Vì sức khỏe và con gái"
           initialCheckins={[{ day: 1, done: true, status: 'voted' }]}
           buyUrl="/thanh-toan"
