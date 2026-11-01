@@ -2744,7 +2744,6 @@ export const vi = {
   eb05: {
     container: 'Container',
     containerLabel: 'Container (Hộp / Khung chứa)',
-    emptyHint: 'Kéo khối vào đây',
     layout: {
       title: 'Bố cục',
       direction: 'Hướng sắp xếp',
@@ -2781,12 +2780,12 @@ export const vi = {
         boxed: 'Đóng khung (Boxed)',
         full: 'Tràn màn hình (Full width)',
       },
-      contentWidth: 'Độ rộng khung nội dung',
+      contentWidth: 'Độ rộng khung nội dung (khi Đóng khung)',
       contentWidthOptions: {
-        sm: 'Nhỏ (max-w-3xl)',
-        md: 'Vừa (max-w-5xl)',
-        lg: 'Lớn (max-w-6xl)',
-        xl: 'Rất lớn (max-w-7xl)',
+        sm: 'Hẹp (768px)',
+        md: 'Vừa (1024px)',
+        lg: 'Rộng (1152px)',
+        xl: 'Rất rộng (1280px)',
       },
       minHeight: 'Chiều cao tối thiểu',
       minHeightOptions: {
@@ -2796,6 +2795,8 @@ export const vi = {
         lg: 'Lớn (500px)',
         screen: 'Toàn màn hình (100vh)',
       },
+      groupAlign: 'Căn chỉnh',
+      groupSpacing: 'Khoảng cách & Xuống dòng',
       tag: 'Thẻ HTML',
       tagOptions: {
         div: 'div (Hộp chung)',
@@ -2814,6 +2815,12 @@ export const vi = {
       noMediaSelected: 'Chưa chọn ảnh nền',
       changeMedia: 'Đổi ảnh',
       removeMedia: 'Xoá ảnh',
+      image: 'Ảnh nền đang dùng',
+      searchPlaceholder: 'Tìm theo mô tả ảnh (alt)…',
+      loading: 'Đang tải…',
+      noResults: 'Không tìm thấy ảnh có mô tả',
+      closePicker: 'Đóng danh sách ảnh',
+      mediaId: (id: string) => `Ảnh #${id}`,
       size: 'Kích thước ảnh',
       sizes: {
         cover: 'Bao phủ (Cover)',

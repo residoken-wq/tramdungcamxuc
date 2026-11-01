@@ -2216,15 +2216,17 @@ Khối **Container** nằm ở đầu nhóm **Bố cục** trong bảng thư vi�
 **Cách sử dụng:**
 
 1. **Kéo Container vào trang:** Thả vào vị trí bất kỳ trên trang hoặc thả vào bên trong một Container khác.
-2. **Kéo khối vào trong Container:** Thả các khối chữ, ảnh, nút bấm, trích dẫn... vào vùng trống có chữ *"Kéo khối vào đây"*. Các khối bên trong sẽ tự động sắp xếp theo bố cục của Container.
+2. **Kéo khối vào trong Container:** Thả các khối chữ, ảnh, nút bấm, trích dẫn... vào vùng trống bên trong Container. Các khối bên trong tự sắp xếp theo bố cục của Container. Thẻ con (thẻ gói, câu hỏi FAQ, ô số liệu…) không thả vào Container được: chúng chỉ nằm trong khối cha của mình.
 3. **Đổi hàng / cột theo thiết bị (Tab Nội dung):**
    - **Hướng sắp xếp**: Bấm chọn giữa **Hàng ngang** (Row), **Cột dọc** (Column), hoặc đảo chiều.
-   - **Chỉnh riêng cho Điện thoại / Máy tính bảng**: Chọn biểu tượng thiết bị ở đầu bảng. Ví dụ: Trên **Máy tính** để *Hàng ngang* để các khối nằm cạnh nhau; chuyển sang **Điện thoại** bấm chọn *Cột dọc* để các khối tự xếp chồng ngay ngắn.
+   - **Chỉnh riêng cho Điện thoại / Máy tính bảng**: Chọn biểu tượng thiết bị ở đầu bảng. Ví dụ: Trên **Máy tính** để _Hàng ngang_ để các khối nằm cạnh nhau; chuyển sang **Điện thoại** bấm chọn _Cột dọc_ để các khối tự xếp chồng ngay ngắn.
    - **Khoảng cách (Gap)**: Chọn độ giãn giữa các khối con (Nhỏ, Vừa, Lớn...).
-   - **Chiều rộng**: Chọn **Đóng khung (Boxed)** (giới hạn độ rộng nội dung gọn gàng ở giữa trang) hoặc **Tràn màn hình (Full width)**.
+   - **Chiều rộng**: Chọn **Đóng khung (Boxed)** (nội dung gọn ở giữa trang, độ rộng chọn ở **Độ rộng khung nội dung**) hoặc **Tràn màn hình (Full width)**. Nền của Container luôn trải hết chiều ngang, kể cả khi đóng khung.
+   - **Chiều cao tối thiểu** và **Thẻ HTML** (chọn `section` khi Container là một phần riêng của trang, có tiêu đề).
+   - Hướng, căn, khoảng cách và xuống dòng chỉnh riêng được theo thiết bị. Chiều rộng, chiều cao và thẻ HTML áp cho mọi thiết bị.
 4. **Ảnh nền & Chuyển màu nâng cao (Tab Kiểu):**
    - Chuyển sang tab **Kiểu** -> nhóm **Nền nâng cao**:
-     - **Ảnh nền**: Bấm *Chọn ảnh từ thư viện media*, chọn kích thước (*Bao phủ / Vừa vặn*) và bấm chọn vị trí trong lưới 9 ô (chính giữa, góc trên, góc dưới...).
+     - **Ảnh nền**: Bấm _Chọn ảnh từ thư viện media_, chọn kích thước (_Bao phủ / Vừa vặn_) và bấm chọn vị trí trong lưới 9 ô (chính giữa, góc trên, góc dưới...).
      - **Chuyển màu (Gradient)**: Chọn màu bắt đầu, màu kết thúc từ bảng màu thương hiệu và góc xoay chuyển màu (0° đến 315°).
 5. **Container lồng nhau:** Bạn có thể kéo một Container con thả vào bên trong một Container cha để chia các phân khu phức tạp.
 

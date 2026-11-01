@@ -1,24 +1,21 @@
 /**
- * EB-05: CSS generation for Container flexbox and advanced background.
- * Output is clean, minified CSS with media queries only when child devices differ from their parent.
+ * EB-05: CSS for the Container block. Input comes from `sanitizeContainer`, so only enum values,
+ * validated lengths, palette tokens / hex colours and media URLs reach the strings built here.
+ *
+ * - The background (image or gradient) goes on the outer element (`[data-eb-id]`) so it covers the
+ *   full width even when the content is boxed.
+ * - The flex layout goes on the slot element (`.eb-c-<id>`), whose direct children are the blocks
+ *   dropped into the container. Per-device values only emit a media query when they differ from
+ *   the next larger device.
  */
-import { isSafeBlockId, STYLE_ATTR } from './style-css'
-import { DEVICE_MEDIA, resolveDevice, type Length } from './style-schema'
+import { cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
+import { DEVICE_MEDIA, resolveDevice, type Device } from './style-schema'
 import type {
   ContainerAlign,
   ContainerBackground,
-  ContainerDirection,
   ContainerJustify,
   ContainerLayout,
 } from './container-schema'
-
-const SPACING: Record<string, string> = {
-  none: '0',
-  sm: 'var(--space-breath-sm, 16px)',
-  md: 'var(--space-breath-md, 24px)',
-  lg: 'var(--space-breath-lg, 32px)',
-  xl: 'calc(var(--space-breath-lg, 32px) * 2)',
-}
 
 const JUSTIFY_CSS: Record<ContainerJustify, string> = {
   start: 'flex-start',
@@ -36,111 +33,70 @@ const ALIGN_CSS: Record<ContainerAlign, string> = {
   stretch: 'stretch',
 }
 
-const gapValue = (val: Length) => SPACING[val] ?? val
-const colorValue = (colorStr: string) =>
-  colorStr.startsWith('#') ? colorStr : `rgb(var(--color-${colorStr}-rgb))`
+/** Class of the slot element that holds the container's blocks. `id` must be a safe block id. */
+export const containerItemsClass = (id: string) => `eb-c-${id}`
 
-/**
- * Builds CSS for a Container block: flex layout + responsive overrides + background.
- * Returns empty string if id is unsafe or no styles apply.
- */
+function layoutDeclarations(layout: ContainerLayout | undefined, device: Device): string[] {
+  const direction = resolveDevice(layout?.direction, device) ?? 'column'
+  const justify = resolveDevice(layout?.justify, device)
+  const align = resolveDevice(layout?.align, device)
+  const gap = resolveDevice(layout?.gap, device)
+  const wrap = resolveDevice(layout?.wrap, device)
+  return [
+    `flex-direction:${direction}`,
+    ...(justify ? [`justify-content:${JUSTIFY_CSS[justify]}`] : []),
+    ...(align ? [`align-items:${ALIGN_CSS[align]}`] : []),
+    ...(gap ? [`gap:${SPACING_CSS[gap] ?? gap}`] : []),
+    ...(wrap ? [`flex-wrap:${wrap}`] : []),
+  ]
+}
+
+/** URL inside `url("…")`: already filtered by `cleanImageUrl`, encoded again as a second guard. */
+// REVIEW-REQUIRED: the only place a user-chosen URL is written into CSS.
+const cssUrl = (url: string) =>
+  `url("${encodeURI(url).replace(/["'()\\]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)}")`
+
+function backgroundDeclarations(background: ContainerBackground | undefined): string[] {
+  if (background?.type === 'image' && background.imageUrl) {
+    return [
+      `background-image:${cssUrl(background.imageUrl)}`,
+      `background-size:${background.size ?? 'cover'}`,
+      `background-position:${background.position ?? 'center'}`,
+      'background-repeat:no-repeat',
+    ]
+  }
+  if (background?.type === 'gradient' && background.from && background.to) {
+    // REVIEW-REQUIRED: colours are palette tokens or validated hex values (`cleanColor`).
+    const angle = background.angle ?? 180
+    return [
+      `background-image:linear-gradient(${angle}deg,${cssColor(background.from)},${cssColor(background.to)})`,
+    ]
+  }
+  return []
+}
+
 export function containerCss(
   id: string,
   layout?: ContainerLayout,
   background?: ContainerBackground,
 ): string {
   if (!isSafeBlockId(id)) return ''
-  const selector = `[${STYLE_ATTR}="${id}"]`
-
-  // Desktop values (base rule)
-  const desktopDir: ContainerDirection = resolveDevice(layout?.direction, 'desktop') || 'column'
-  const desktopJustify = resolveDevice(layout?.justify, 'desktop')
-  const desktopAlign = resolveDevice(layout?.align, 'desktop')
-  const desktopGap = resolveDevice(layout?.gap, 'desktop')
-  const desktopWrap = resolveDevice(layout?.wrap, 'desktop')
-
-  const baseDecls: string[] = ['display:flex', `flex-direction:${desktopDir}`]
-  if (desktopJustify) baseDecls.push(`justify-content:${JUSTIFY_CSS[desktopJustify]}`)
-  if (desktopAlign) baseDecls.push(`align-items:${ALIGN_CSS[desktopAlign]}`)
-  if (desktopGap) baseDecls.push(`gap:${gapValue(desktopGap)}`)
-  if (desktopWrap) baseDecls.push(`flex-wrap:${desktopWrap}`)
-
-  // Background rules
-  if (background?.type === 'image' && background.imageUrl) {
-    // REVIEW-REQUIRED: Build safe background-image url string
-    const safeUrl = encodeURI(background.imageUrl).replace(/["'();\\]/g, '')
-    baseDecls.push(`background-image:url("${safeUrl}")`)
-    baseDecls.push(`background-size:${background.size || 'cover'}`)
-    baseDecls.push(`background-position:${background.position || 'center'}`)
-    baseDecls.push('background-repeat:no-repeat')
-  } else if (background?.type === 'gradient' && background.from && background.to) {
-    // REVIEW-REQUIRED: Build safe linear-gradient string
-    const angle = background.angle ?? 180
-    const fromColor = colorValue(background.from)
-    const toColor = colorValue(background.to)
-    baseDecls.push(`background-image:linear-gradient(${angle}deg, ${fromColor}, ${toColor})`)
-  }
-
   const rules: string[] = []
-  if (baseDecls.length) rules.push(`${selector}{${baseDecls.join(';')}}`)
 
-  // Tablet overrides (only when different from desktop)
-  const tabletDir = resolveDevice(layout?.direction, 'tablet')
-  const tabletJustify = resolveDevice(layout?.justify, 'tablet')
-  const tabletAlign = resolveDevice(layout?.align, 'tablet')
-  const tabletGap = resolveDevice(layout?.gap, 'tablet')
-  const tabletWrap = resolveDevice(layout?.wrap, 'tablet')
+  const bg = backgroundDeclarations(background)
+  if (bg.length) rules.push(`[${STYLE_ATTR}="${id}"]{${bg.join(';')}}`)
 
-  const tabletDecls: string[] = []
-  if (tabletDir && tabletDir !== desktopDir) tabletDecls.push(`flex-direction:${tabletDir}`)
-  if (tabletJustify && tabletJustify !== desktopJustify) {
-    tabletDecls.push(`justify-content:${JUSTIFY_CSS[tabletJustify]}`)
-  }
-  if (tabletAlign && tabletAlign !== desktopAlign) {
-    tabletDecls.push(`align-items:${ALIGN_CSS[tabletAlign]}`)
-  }
-  if (tabletGap && tabletGap !== desktopGap) {
-    tabletDecls.push(`gap:${gapValue(tabletGap)}`)
-  }
-  if (tabletWrap && tabletWrap !== desktopWrap) {
-    tabletDecls.push(`flex-wrap:${tabletWrap}`)
-  }
+  const items = `.${containerItemsClass(id)}`
+  const desktop = layoutDeclarations(layout, 'desktop')
+  rules.push(`${items}{${desktop.join(';')}}`)
 
-  if (tabletDecls.length && DEVICE_MEDIA.tablet) {
-    rules.push(`@media ${DEVICE_MEDIA.tablet}{${selector}{${tabletDecls.join(';')}}}`)
+  let previous = desktop
+  for (const device of ['tablet', 'mobile'] as const) {
+    const current = layoutDeclarations(layout, device)
+    const changed = current.filter((decl) => !previous.includes(decl))
+    // A property that disappears falls back to the larger device's value, which is what we want.
+    if (changed.length) rules.push(`@media ${DEVICE_MEDIA[device]}{${items}{${changed.join(';')}}}`)
+    previous = current
   }
-
-  // Mobile overrides (only when different from effective tablet value)
-  const effTabletDir = tabletDir ?? desktopDir
-  const effTabletJustify = tabletJustify ?? desktopJustify
-  const effTabletAlign = tabletAlign ?? desktopAlign
-  const effTabletGap = tabletGap ?? desktopGap
-  const effTabletWrap = tabletWrap ?? desktopWrap
-
-  const mobileDir = resolveDevice(layout?.direction, 'mobile')
-  const mobileJustify = resolveDevice(layout?.justify, 'mobile')
-  const mobileAlign = resolveDevice(layout?.align, 'mobile')
-  const mobileGap = resolveDevice(layout?.gap, 'mobile')
-  const mobileWrap = resolveDevice(layout?.wrap, 'mobile')
-
-  const mobileDecls: string[] = []
-  if (mobileDir && mobileDir !== effTabletDir) mobileDecls.push(`flex-direction:${mobileDir}`)
-  if (mobileJustify && mobileJustify !== effTabletJustify) {
-    mobileDecls.push(`justify-content:${JUSTIFY_CSS[mobileJustify]}`)
-  }
-  if (mobileAlign && mobileAlign !== effTabletAlign) {
-    mobileDecls.push(`align-items:${ALIGN_CSS[mobileAlign]}`)
-  }
-  if (mobileGap && mobileGap !== effTabletGap) {
-    mobileDecls.push(`gap:${gapValue(mobileGap)}`)
-  }
-  if (mobileWrap && mobileWrap !== effTabletWrap) {
-    mobileDecls.push(`flex-wrap:${mobileWrap}`)
-  }
-
-  if (mobileDecls.length && DEVICE_MEDIA.mobile) {
-    rules.push(`@media ${DEVICE_MEDIA.mobile}{${selector}{${mobileDecls.join(';')}}}`)
-  }
-
   return rules.join('')
 }

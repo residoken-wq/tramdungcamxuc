@@ -22,6 +22,15 @@ const withStyleField = (fields: Fields | undefined): Fields => ({
  * (`collectPageStyles`) targets. Blocks without `_style` – every page built before EB-04 – return
  * their output untouched: same DOM, no wrapper, no class.
  */
+/**
+ * EB-05: components that put `data-eb-id` (and the anchor id) on their own root set this flag, so
+ * `withBlockStyle` does not add a second wrapper.
+ */
+export const STYLES_IN_PLACE = 'ebStylesInPlace'
+const stylesInPlace = (type: unknown) =>
+  typeof type === 'function' &&
+  (type as unknown as Record<string, unknown>)[STYLES_IN_PLACE] === true
+
 export function withBlockStyle(component: ComponentConfig): ComponentConfig {
   const render = component.render
   const resolveFields = component.resolveFields
@@ -44,26 +53,11 @@ export function withBlockStyle(component: ComponentConfig): ComponentConfig {
       if (!hasStyleKeys(raw) || !isSafeBlockId(props.id)) return output
       const anchorId = cleanAnchorId(raw.anchorId)
 
-      // Avoid double wrapper if output root or direct child already handles STYLE_ATTR (e.g. Container)
-      if (React.isValidElement(output)) {
-        const rootProps = output.props as Record<string, unknown>
-        if (rootProps[STYLE_ATTR]) {
-          return anchorId && !rootProps.id
-            ? React.cloneElement(output, { id: anchorId } as never)
-            : output
-        }
-        const children = React.Children.toArray(
-          (output.props as { children?: React.ReactNode }).children,
-        )
-        const hasChildStyle = children.some(
-          (c) =>
-            React.isValidElement(c) && Boolean((c.props as Record<string, unknown>)[STYLE_ATTR]),
-        )
-        if (hasChildStyle) {
-          return anchorId && !rootProps.id
-            ? React.cloneElement(output, { id: anchorId } as never)
-            : output
-        }
+      // EB-05: a block that styles itself in place (Container) gets the anchor id, no wrapper.
+      if (React.isValidElement(output) && stylesInPlace(output.type)) {
+        return anchorId
+          ? React.cloneElement(output as React.ReactElement<{ anchorId?: string }>, { anchorId })
+          : output
       }
 
       return (

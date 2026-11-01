@@ -112,35 +112,17 @@ const includes = <T extends string | number>(list: readonly T[], value: unknown)
   (list as readonly unknown[]).includes(value)
 
 /**
- * REVIEW-REQUIRED: URL sanitization for background images to prevent CSS injection
- * (closing url string, breaking style tags, or executing javascript: pseudo-protocols).
- * Only relative media paths `/api/media/file/...` or secure HTTP/HTTPS origins without quotes/parens.
+ * REVIEW-REQUIRED: background image URL that ends up inside CSS `url("…")`.
+ * Only Payload media files served by this site (`/api/media/file/<name>`, relative) are accepted.
+ * Quotes, parentheses, backslashes, semicolons, whitespace breaks and `..` are refused, so the value
+ * cannot close the string, break out of the declaration or point elsewhere.
  */
+const MEDIA_FILE_URL = /^\/api\/media\/file\/[^"'()\\;\s<>]+$/
+
 export function cleanImageUrl(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined
-  // Forbid characters that break out of CSS `url("...")` or trigger injections
-  if (/["'()\\;\r\n]/.test(value)) return undefined
-  const trimmed = value.trim()
-  if (!trimmed) return undefined
-  if (/^javascript:/i.test(trimmed)) return undefined
-  if (/^data:/i.test(trimmed)) return undefined
-
-  // Standard Payload local media path
-  if (trimmed.startsWith('/api/media/file/')) return trimmed
-
-  // In case of full URL, only allow http / https with safe pathname
-  try {
-    const parsed = new URL(trimmed, 'http://localhost')
-    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-      if (parsed.pathname.startsWith('/api/media/file/')) {
-        return trimmed
-      }
-    }
-  } catch {
-    return undefined
-  }
-
-  return undefined
+  if (value.length > 500 || value.includes('..') || !MEDIA_FILE_URL.test(value)) return undefined
+  return value
 }
 
 function cleanResponsive<T>(

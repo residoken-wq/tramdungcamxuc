@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useId, useState } from 'react'
 import { vi } from '@/lib/i18n/vi'
 import {
   CONTAINER_BG_POSITIONS,
@@ -27,10 +27,11 @@ export function ContainerBackgroundField({
   value,
   onChange,
 }: {
-  value?: unknown
-  onChange?: (val: unknown) => void
+  value?: ContainerBackground
+  onChange: (value: ContainerBackground) => void
 }) {
   const { tab } = useStylePanel()
+  const uid = useId()
 
   // State for media picker modal / dropdown
   const [mediaList, setMediaList] = useState<MediaItem[]>([])
@@ -41,11 +42,11 @@ export function ContainerBackgroundField({
   // EB-05 Lỗi 1: Custom field must self-filter and only render on Style tab
   if (tab !== 'style') return <></>
 
-  const bg: ContainerBackground = (value as ContainerBackground) ?? { type: 'none' }
+  const bg: ContainerBackground = value ?? { type: 'none' }
 
   const updateBg = (patch: Partial<ContainerBackground>) => {
     const nextBg: ContainerBackground = { ...bg, ...patch }
-    onChange?.(nextBg)
+    onChange(nextBg)
   }
 
   const fetchMedia = async (query = '') => {
@@ -55,7 +56,9 @@ export function ContainerBackgroundField({
       const res = await fetch(`/api/media?limit=50&depth=0${q}`, { credentials: 'include' })
       if (res.ok) {
         const data = await res.json()
-        setMediaList(data.docs || [])
+        // Every image needs alt text (AGENTS §5B): files without it are not offered.
+        const docs: MediaItem[] = Array.isArray(data.docs) ? data.docs : []
+        setMediaList(docs.filter((d) => typeof d.alt === 'string' && d.alt.trim().length > 0))
       }
     } catch {
       setMediaList([])
@@ -106,7 +109,7 @@ export function ContainerBackgroundField({
           <div className="flex flex-col gap-3 pt-1">
             {/* Selected media preview */}
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>{t.title}</FieldLabel>
+              <FieldLabel>{t.image}</FieldLabel>
               {bg.imageUrl ? (
                 <div className="flex items-center gap-2 rounded-lg border border-deep-navy/15 bg-white p-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -117,7 +120,7 @@ export function ContainerBackgroundField({
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-xs font-semibold text-deep-navy">
-                      {bg.imageAlt || `Media ID: ${bg.mediaId}`}
+                      {bg.imageAlt || t.mediaId(String(bg.mediaId ?? ''))}
                     </p>
                     <p className="truncate text-[10px] text-deep-navy/60">{bg.imageUrl}</p>
                   </div>
@@ -126,8 +129,9 @@ export function ContainerBackgroundField({
                     onClick={() => {
                       updateBg({ mediaId: undefined, imageUrl: undefined, imageAlt: undefined })
                     }}
-                    className="rounded p-1 text-xs text-accent-pink hover:bg-soft-pink"
+                    className="rounded p-1 text-xs text-bright-magenta hover:bg-soft-pink"
                     title={t.removeMedia}
+                    aria-label={t.removeMedia}
                   >
                     ✕
                   </button>
@@ -156,6 +160,8 @@ export function ContainerBackgroundField({
                   <button
                     type="button"
                     onClick={() => setShowPicker(false)}
+                    aria-label={t.closePicker}
+                    title={t.closePicker}
                     className="text-xs text-deep-navy/60 hover:text-deep-navy"
                   >
                     ✕
@@ -163,7 +169,8 @@ export function ContainerBackgroundField({
                 </div>
                 <input
                   type="text"
-                  placeholder="Tìm theo mô tả (alt)..."
+                  placeholder={t.searchPlaceholder}
+                  aria-label={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value)
@@ -173,9 +180,9 @@ export function ContainerBackgroundField({
                 />
                 <div className="max-h-48 overflow-y-auto flex flex-col gap-1">
                   {loadingMedia ? (
-                    <p className="p-2 text-center text-xs text-deep-navy/60">Đang tải...</p>
+                    <p className="p-2 text-center text-xs text-deep-navy/60">{t.loading}</p>
                   ) : mediaList.length === 0 ? (
-                    <p className="p-2 text-center text-xs text-deep-navy/60">Không tìm thấy ảnh</p>
+                    <p className="p-2 text-center text-xs text-deep-navy/60">{t.noResults}</p>
                   ) : (
                     mediaList.map((m) => (
                       <button
@@ -190,9 +197,7 @@ export function ContainerBackgroundField({
                           alt={m.alt || ''}
                           className="h-8 w-8 rounded object-cover"
                         />
-                        <span className="truncate text-xs text-deep-navy">
-                          {m.alt || m.filename || `ID: ${m.id}`}
-                        </span>
+                        <span className="truncate text-xs text-deep-navy">{m.alt}</span>
                       </button>
                     ))
                   )}
@@ -202,9 +207,9 @@ export function ContainerBackgroundField({
 
             {/* Size */}
             <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor="container-bg-size">{t.size}</FieldLabel>
+              <FieldLabel htmlFor={`${uid}-size`}>{t.size}</FieldLabel>
               <select
-                id="container-bg-size"
+                id={`${uid}-size`}
                 value={bg.size ?? 'cover'}
                 onChange={(e) => updateBg({ size: e.target.value as ContainerBgSize })}
                 className="h-8 rounded-md border border-deep-navy/20 bg-white px-2 text-xs text-deep-navy"
@@ -266,9 +271,9 @@ export function ContainerBackgroundField({
 
             {/* Angle select */}
             <div className="flex flex-col gap-1">
-              <FieldLabel htmlFor="container-gradient-angle">{t.gradientAngle}</FieldLabel>
+              <FieldLabel htmlFor={`${uid}-angle`}>{t.gradientAngle}</FieldLabel>
               <select
-                id="container-gradient-angle"
+                id={`${uid}-angle`}
                 value={bg.angle ?? 180}
                 onChange={(e) =>
                   updateBg({ angle: Number(e.target.value) as ContainerGradientAngle })

@@ -35,6 +35,11 @@ describe('EB-05: cleanImageUrl (REVIEW-REQUIRED)', () => {
 
   it('rejects random external domains not in local media path', () => {
     expect(cleanImageUrl('https://evil.com/malicious.png')).toBeUndefined()
+    // Only this site's media files: an absolute URL on another host is refused even with the path.
+    expect(cleanImageUrl('https://evil.com/api/media/file/x.png')).toBeUndefined()
+    expect(cleanImageUrl('//evil.com/api/media/file/x.png')).toBeUndefined()
+    expect(cleanImageUrl('/api/media/file/../../users/me')).toBeUndefined()
+    expect(cleanImageUrl(' /api/media/file/x.png')).toBeUndefined()
     expect(cleanImageUrl('ftp://example.com/test.jpg')).toBeUndefined()
   })
 
@@ -140,4 +145,3 @@ describe('EB-05: sanitizeContainer', () => {
     expect(resolveDevice(layout.gap, 'mobile')).toBe('sm')
   })
 })
-

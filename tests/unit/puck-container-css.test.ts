@@ -1,87 +1,85 @@
 import { describe, expect, it } from 'vitest'
-import { cleanDesignSystem, type CleanDesignSystem } from '@/lib/design/design-system'
-import { containerCss } from '@/puck/style/container-css'
+import { cleanDesignSystem } from '@/lib/design/design-system'
+import { containerCss, containerItemsClass } from '@/puck/style/container-css'
 import { collectPageStyles } from '@/puck/style/style-css'
 
 const locked = cleanDesignSystem(null)
 
 describe('EB-05: containerCss', () => {
-  it('generates base flex rules on desktop', () => {
-    const css = containerCss(
-      'con-1',
-      {
-        direction: { desktop: 'row' },
-        justify: { desktop: 'center' },
-        align: { desktop: 'stretch' },
-        gap: { desktop: 'md' },
-        wrap: { desktop: 'wrap' },
-      },
-      undefined,
-    )
+  it('puts the flex layout on the slot element of the container', () => {
+    const css = containerCss('con-1', {
+      direction: { desktop: 'row' },
+      justify: { desktop: 'center' },
+      align: { desktop: 'stretch' },
+      gap: { desktop: 'md' },
+      wrap: { desktop: 'wrap' },
+    })
+    expect(containerItemsClass('con-1')).toBe('eb-c-con-1')
     expect(css).toBe(
-      '[data-eb-id="con-1"]{display:flex;flex-direction:row;justify-content:center;align-items:stretch;gap:var(--space-breath-md, 24px);flex-wrap:wrap}',
+      '.eb-c-con-1{flex-direction:row;justify-content:center;align-items:stretch;gap:var(--space-breath-md, 24px);flex-wrap:wrap}',
     )
   })
 
-  it('only emits media query when device values differ from parent device', () => {
-    // When tablet and mobile are identical to desktop, NO media queries are emitted
+  it('defaults to a column and emits media queries only for values that change', () => {
     const identical = containerCss('con-same', {
       direction: { desktop: 'column', tablet: 'column', mobile: 'column' },
       gap: { desktop: 'md', tablet: 'md' },
     })
-    expect(identical).toContain(
-      '[data-eb-id="con-same"]{display:flex;flex-direction:column;gap:var(--space-breath-md, 24px)}',
-    )
-    expect(identical).not.toContain('@media')
+    expect(identical).toBe('.eb-c-con-same{flex-direction:column;gap:var(--space-breath-md, 24px)}')
+    expect(containerCss('con-empty')).toBe('.eb-c-con-empty{flex-direction:column}')
 
-    // When tablet is different, emit tablet media query. When mobile is different from tablet, emit mobile.
     const differing = containerCss('con-diff', {
       direction: { desktop: 'row', tablet: 'column', mobile: 'column-reverse' },
       gap: { desktop: 'lg', mobile: 'sm' },
     })
-    expect(differing).toContain(
-      '[data-eb-id="con-diff"]{display:flex;flex-direction:row;gap:var(--space-breath-lg, 32px)}',
-    )
-    expect(differing).toContain(
-      '@media (max-width: 1023px){[data-eb-id="con-diff"]{flex-direction:column}}',
-    )
-    expect(differing).toContain(
-      '@media (max-width: 767px){[data-eb-id="con-diff"]{flex-direction:column-reverse;gap:var(--space-breath-sm, 16px)}}',
+    expect(differing).toBe(
+      '.eb-c-con-diff{flex-direction:row;gap:var(--space-breath-lg, 32px)}' +
+        '@media (max-width: 1023px){.eb-c-con-diff{flex-direction:column}}' +
+        '@media (max-width: 767px){.eb-c-con-diff{flex-direction:column-reverse;gap:var(--space-breath-sm, 16px)}}',
     )
   })
 
-  it('formats gradient colors with token rgb variables', () => {
+  it('puts a gradient on the outer element with palette tokens', () => {
     const css = containerCss('con-grad', undefined, {
       type: 'gradient',
       from: 'bright-magenta',
-      to: 'deep-navy',
+      to: '#123456',
       angle: 90,
     })
     expect(css).toContain(
-      'background-image:linear-gradient(90deg, rgb(var(--color-bright-magenta-rgb)), rgb(var(--color-deep-navy-rgb)))',
+      '[data-eb-id="con-grad"]{background-image:linear-gradient(90deg,rgb(var(--color-bright-magenta-rgb)),#123456)}',
     )
   })
 
-  it('formats background image with clean url, size and position', () => {
+  it('puts a background image on the outer element and encodes the URL', () => {
     const css = containerCss('con-img', undefined, {
       type: 'image',
-      imageUrl: '/api/media/file/banner.png',
-      size: 'cover',
-      position: 'center',
+      imageUrl: '/api/media/file/banner hero.png',
+      size: 'contain',
+      position: 'top left',
     })
-    expect(css).toContain('background-image:url("/api/media/file/banner.png")')
-    expect(css).toContain('background-size:cover')
-    expect(css).toContain('background-position:center')
-    expect(css).toContain('background-repeat:no-repeat')
+    expect(css).toContain(
+      '[data-eb-id="con-img"]{background-image:url("/api/media/file/banner%20hero.png");background-size:contain;background-position:top left;background-repeat:no-repeat}',
+    )
+    // Defence in depth: characters that could leave url("…") are encoded even if they slip through.
+    const forced = containerCss('con-x', undefined, { type: 'image', imageUrl: '/a")(\\' })
+    expect(forced).toContain('url("/a%22%29%28%5C")')
   })
 
-  it('rejects unsafe block IDs', () => {
+  it('skips an image background without URL and a gradient missing a colour', () => {
+    expect(containerCss('a', undefined, { type: 'image' })).not.toContain('data-eb-id')
+    expect(containerCss('a', undefined, { type: 'gradient', from: 'deep-navy' })).not.toContain(
+      'data-eb-id',
+    )
+  })
+
+  it('rejects unsafe block ids', () => {
     expect(containerCss('"><script>alert(1)</script>')).toBe('')
   })
 })
 
 describe('EB-05: collectPageStyles with Container', () => {
-  it('places Container layout rules BEFORE _style rules of the same block', () => {
+  it('emits the Container rules before the _style rules of the same block', () => {
     const data = {
       content: [
         {
@@ -89,59 +87,64 @@ describe('EB-05: collectPageStyles with Container', () => {
           props: {
             id: 'Container-hero',
             layout: { direction: { desktop: 'row' } },
+            background: { type: 'gradient', from: 'soft-pink', to: 'lavender-mist' },
             _style: { background: 'mint-haze', padding: { desktop: { top: 'lg' } } },
           },
         },
       ],
     }
-
     const { css } = collectPageStyles(data, locked)
-    const layoutIndex = css.indexOf('display:flex;flex-direction:row')
+    const layoutIndex = css.indexOf('.eb-c-Container-hero{flex-direction:row')
+    const gradientIndex = css.indexOf('linear-gradient')
     const styleIndex = css.indexOf('background-color:rgb(var(--color-mint-haze-rgb))')
-
     expect(layoutIndex).toBeGreaterThan(-1)
-    expect(styleIndex).toBeGreaterThan(-1)
-    expect(layoutIndex).toBeLessThan(styleIndex) // layout rule comes first!
+    expect(gradientIndex).toBeGreaterThan(-1)
+    expect(styleIndex).toBeGreaterThan(Math.max(layoutIndex, gradientIndex))
   })
 
-  it('traverses 3 levels of nested Containers inside slots and generates rules for all 3', () => {
+  it('drops a free hex gradient colour while colours are locked', () => {
     const data = {
       content: [
         {
           type: 'Container',
           props: {
-            id: 'Container-level-1',
-            layout: { direction: { desktop: 'column' } },
-            items: [
-              {
-                type: 'Container',
-                props: {
-                  id: 'Container-level-2',
-                  layout: { direction: { desktop: 'row' } },
-                  items: [
-                    {
-                      type: 'Container',
-                      props: {
-                        id: 'Container-level-3',
-                        layout: { direction: { desktop: 'row-reverse' } },
-                        items: [],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
+            id: 'c-hex',
+            background: { type: 'gradient', from: '#ff0000', to: 'deep-navy' },
           },
         },
       ],
     }
+    expect(collectPageStyles(data, locked).css).not.toContain('linear-gradient')
+  })
 
+  it('walks three levels of nested Containers in slots', () => {
+    const level3 = {
+      type: 'Container',
+      props: {
+        id: 'Container-level-3',
+        layout: { direction: { desktop: 'row-reverse' } },
+        items: [],
+      },
+    }
+    const level2 = {
+      type: 'Container',
+      props: {
+        id: 'Container-level-2',
+        layout: { direction: { desktop: 'row' } },
+        items: [level3],
+      },
+    }
+    const data = {
+      content: [
+        {
+          type: 'Container',
+          props: { id: 'Container-level-1', items: [level2] },
+        },
+      ],
+    }
     const { css } = collectPageStyles(data, locked)
-    expect(css).toContain('[data-eb-id="Container-level-1"]')
-    expect(css).toContain('[data-eb-id="Container-level-2"]')
-    expect(css).toContain('[data-eb-id="Container-level-3"]')
-    expect(css).toContain('flex-direction:column')
-    expect(css).toContain('flex-direction:row')
-    expect(css).toContain('flex-direction:row-reverse')
+    expect(css).toContain('.eb-c-Container-level-1{flex-direction:column}')
+    expect(css).toContain('.eb-c-Container-level-2{flex-direction:row}')
+    expect(css).toContain('.eb-c-Container-level-3{flex-direction:row-reverse}')
   })
 })
