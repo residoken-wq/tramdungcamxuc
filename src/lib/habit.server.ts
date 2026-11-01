@@ -17,6 +17,7 @@ import type { Product, SiteSetting, Technique } from '@/payload-types'
 import type { PublicTechnique } from './habit'
 import { HABIT_LOOP_PATH } from './habit'
 import { HABIT_TRACKER_PRODUCT_SLUG } from './habit/config'
+import { addVietnamDays, getVietnamYmd, vietnamTodayIso } from './habit/tracker-stats'
 import { resolveProductCta, type ProductCta } from './products'
 import { sendHabitPlanEmail } from './email/service.server'
 import { habitPlanSubmissionSchema, type HabitPlanSubmissionInput } from './forms/schemas'
@@ -60,15 +61,9 @@ function techniqueError(message: string): ZodError {
   return new ZodError([{ code: 'custom', path: ['chosenTechniques'], message }])
 }
 
-/** Ngày hôm nay theo giờ Việt Nam (00:00 +07:00): lưu lúc 0h–7h sáng không bị lùi về hôm qua. */
-function vietnamTodayIso(now: Date = new Date()): string {
-  const ymd = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Ho_Chi_Minh',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(now)
-  return new Date(`${ymd}T00:00:00+07:00`).toISOString()
+/** Lỗi ngày bắt đầu dạng ZodError để action trả câu tiếng Việt cho người dùng. */
+function startDateError(message: string): ZodError {
+  return new ZodError([{ code: 'custom', path: ['startDate'], message }])
 }
 
 async function resolvePayload(injected?: Payload): Promise<Payload> {
@@ -266,6 +261,35 @@ export async function submitHabitPlan(
   // 2. Validate dữ liệu qua Zod
   const validated = habitPlanSubmissionSchema.parse(input)
 
+  // REVIEW-REQUIRED: HB-20 Kiểm tra startDate: hôm nay -> hôm nay + 14 ngày theo giờ Việt Nam
+  let planStartDate = vietnamTodayIso()
+  if (validated.startDate) {
+    const todayYmd = getVietnamYmd()
+    const maxStartDayYmd = getVietnamYmd(new Date(addVietnamDays(todayYmd, 14)))
+    let candidateYmd = validated.startDate
+    if (candidateYmd.length > 10) {
+      const parsedDate = new Date(candidateYmd)
+      if (Number.isNaN(parsedDate.getTime())) {
+        throw startDateError(vi.hb20.errors.startDateInvalid)
+      }
+      candidateYmd = getVietnamYmd(parsedDate)
+    } else {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(candidateYmd)) {
+        throw startDateError(vi.hb20.errors.startDateInvalid)
+      }
+      const parsedDate = new Date(`${candidateYmd}T00:00:00+07:00`)
+      if (Number.isNaN(parsedDate.getTime())) {
+        throw startDateError(vi.hb20.errors.startDateInvalid)
+      }
+    }
+
+    if (candidateYmd < todayYmd || candidateYmd > maxStartDayYmd) {
+      throw startDateError(vi.hb20.errors.startDateOutOfRange)
+    }
+
+    planStartDate = new Date(`${candidateYmd}T00:00:00+07:00`).toISOString()
+  }
+
   if (validated.honeypot && validated.honeypot.trim().length > 0) {
     return {
       success: true,
@@ -407,7 +431,7 @@ export async function submitHabitPlan(
       }
     }
 
-    // REVIEW-REQUIRED: Lưu kế hoạch cho khách chưa đăng nhập (leadEmail) với 4 nhóm field: scorecard.time, anchorHabit, rhythmDays, twoMinuteAction
+    // REVIEW-REQUIRED: Lưu kế hoạch cho khách chưa đăng nhập (leadEmail) với các nhóm field scorecard, anchorHabit, rhythmDays, twoMinuteAction, startDate, privateReason, companionName
     const planData: RequiredDataFromCollectionSlug<'habitPlans'> = {
       leadEmail: cleanEmail,
       scorecard: validated.scorecard.map((item) => ({
@@ -420,7 +444,7 @@ export async function submitHabitPlan(
         technique: item.techniqueId,
         action: item.action,
       })),
-      startDate: vietnamTodayIso(),
+      startDate: planStartDate,
     }
     if (validated.anchorHabit) {
       planData.anchorHabit = validated.anchorHabit
@@ -430,6 +454,14 @@ export async function submitHabitPlan(
     }
     if (validated.twoMinuteAction) {
       planData.twoMinuteAction = validated.twoMinuteAction
+    }
+    // REVIEW-REQUIRED: HB-20 privateReason bảo mật, chỉ học viên đọc, tối đa 500 ký tự
+    if (validated.privateReason) {
+      planData.privateReason = validated.privateReason
+    }
+    // REVIEW-REQUIRED: HB-20 companionName chỉ dùng để nhắc nhở học viên
+    if (validated.companionName) {
+      planData.companionName = validated.companionName
     }
 
     habitPlanDoc = (await payload.create({
