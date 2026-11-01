@@ -9,7 +9,7 @@ import { sendTrackerNudgeEmail } from '@/lib/email/service.server'
 import type { EmailSender } from '@/lib/email/types'
 import { getReminderOptOutUrl } from '@/lib/reminders/token'
 
-import { getVietnamYmd, vietnamTodayIso } from './tracker-stats'
+import { addVietnamDays, getVietnamYmd, vietnamTodayIso } from './tracker-stats'
 import { missedVotingRun, shouldNudgeMissed } from './rhythm'
 export * from './tracker-stats'
 
@@ -93,12 +93,22 @@ export async function getOrCreateTrackerPlan(
             (attachCreatedMs === ownCreatedMs && planToAttach.id > ownPlan.id)))
 
       if (!planToAttach.customer && isNewerThanOwn) {
+        // REVIEW-REQUIRED (HB-20c): keep the start date the learner picked in step 4 when it is still
+        // within [today, today + 14] in Vietnam time (the range submitHabitPlan enforces). An older
+        // orphan plan whose date has already passed restarts today, as before HB-20.
+        const todayIso = vietnamTodayIso(options?.now)
+        const latestIso = addVietnamDays(getVietnamYmd(options?.now), 14)
+        const chosenMs = planToAttach.startDate ? new Date(planToAttach.startDate).getTime() : NaN
+        const keepChosen =
+          Number.isFinite(chosenMs) &&
+          chosenMs >= new Date(todayIso).getTime() &&
+          chosenMs <= new Date(latestIso).getTime()
         const attached = await payload.update({
           collection: 'habitPlans',
           id: planToAttach.id,
           data: {
             customer: customerId,
-            startDate: vietnamTodayIso(options?.now),
+            startDate: keepChosen ? (planToAttach.startDate as string) : todayIso,
           },
           depth: 1,
           overrideAccess: true,

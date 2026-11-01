@@ -95,7 +95,7 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
 
         // BƯỚC 4: Gọi tên – Nhập hành động & mục tiêu định danh, tắt Chủ Nhật
         await expect(guest.getByText('Bước 4 / 6')).toBeVisible()
-        await guest.getByPlaceholder(/đọc sách 10 phút/i).fill('[MẪU] chạy bộ 15 phút')
+        await guest.getByPlaceholder(/thiền 5 phút/i).fill('[MẪU] chạy bộ 15 phút')
         await guest.getByPlaceholder(/người điềm tĩnh/i).fill('[MẪU] người khỏe khoắn')
 
         // Tắt Chủ nhật

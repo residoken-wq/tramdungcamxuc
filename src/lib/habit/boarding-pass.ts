@@ -72,6 +72,7 @@ export const boardingPassInputSchema = z
     startDate: z
       .string()
       .trim()
+      .max(40)
       .optional()
       .nullable()
       .transform((val) => (val && val.length > 0 ? val : undefined)),
