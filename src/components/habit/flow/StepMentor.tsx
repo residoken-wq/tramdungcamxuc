@@ -82,6 +82,8 @@ export function StepMentor({
     error === vi.hb19.errors.anchorRequired ||
     error === vi.hb09.errors.anchorHabitNotGood ||
     error === vi.hb19.errors.timeInvalidFormat
+  // HB-19c: HabitFlow hides its own alert on step 3, so any other message must still show here.
+  const showPart1Error = Boolean(error) && (isPart1Error || !isPart2Error)
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -90,7 +92,7 @@ export function StepMentor({
         <span className="font-ui font-semibold text-xs text-bright-magenta uppercase tracking-wider block mb-1">
           {vi.hb16.steps.mentor.shortTitle}
         </span>
-        <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-1.5">
+        <h2 className="font-display text-2xl sm:text-3xl leading-[1.3] text-deep-navy mb-1.5">
           {vi.hb19.stepTitle}
         </h2>
         <p className="font-body text-sm sm:text-base text-deep-navy/80">{vi.hb19.stepSubtitle}</p>
@@ -286,7 +288,7 @@ export function StepMentor({
         </div>
 
         {/* Lỗi Phần 1 hiện ngay dưới phần 1 với role="alert" */}
-        {isPart1Error && error && (
+        {showPart1Error && (
           <div
             role="alert"
             className="p-3.5 rounded-xl bg-accent-pink/10 border border-accent-pink/20 text-deep-navy text-xs sm:text-sm font-medium flex items-center gap-2.5 animate-fade-in"
