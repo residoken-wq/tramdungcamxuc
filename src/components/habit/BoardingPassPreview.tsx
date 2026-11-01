@@ -14,6 +14,7 @@ export interface BoardingPassPreviewProps {
   rhythmDays?: Weekday[]
   techniqueIds?: number[]
   journeyDays?: number
+  startDate?: string | Date
   availableTechniques?: Array<{ id: number; name: string; stage?: string }>
 }
 
@@ -25,10 +26,18 @@ export function BoardingPassPreview({
   rhythmDays,
   techniqueIds = [],
   journeyDays = 28,
+  startDate,
   availableTechniques = [],
 }: BoardingPassPreviewProps) {
   const [generatingFormat, setGeneratingFormat] = useState<'4x5' | '9x16' | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const startDateStr =
+    typeof startDate === 'string'
+      ? startDate
+      : startDate instanceof Date
+        ? startDate.toISOString()
+        : undefined
 
   const inputPayload: BoardingPassInput = {
     identityStatement: identityStatement?.trim() || '',
@@ -40,12 +49,13 @@ export function BoardingPassPreview({
         ? rhythmDays
         : ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
     techniqueIds,
+    startDate: startDateStr,
   }
 
   // Dựng dữ liệu hiển thị xem trước thuần client (không gọi server)
   const data = buildBoardingPass(inputPayload, {
     journeyDays,
-    startDate: new Date(),
+    startDate: startDate ?? new Date(),
     techniques: availableTechniques,
   })
 

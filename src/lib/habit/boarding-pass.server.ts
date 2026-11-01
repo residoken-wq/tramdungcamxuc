@@ -60,7 +60,7 @@ export async function resolveBoardingPassData(
 
   return buildBoardingPass(input, {
     journeyDays,
-    startDate: new Date(),
+    startDate: input.startDate ?? new Date(),
     techniques: publishedTechniques,
   })
 }

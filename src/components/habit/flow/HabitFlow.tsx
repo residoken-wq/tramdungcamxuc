@@ -24,6 +24,7 @@ import type {
   CleanHabitStepQuotes,
 } from '@/lib/habit/journey-content.server'
 import { scoreFlowDiagnose } from '@/lib/habit/flow-content'
+import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
 import {
   getDefaultHabitFlowDraft,
   migrateHabitDraft,
@@ -75,19 +76,6 @@ export function HabitFlow({
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [zaloGroupUrl, setZaloGroupUrl] = useState<string>('')
   const [honeypot, setHoneypot] = useState('')
-
-  const todayFormatted = React.useMemo(() => {
-    try {
-      return new Intl.DateTimeFormat('vi-VN', {
-        timeZone: 'Asia/Ho_Chi_Minh',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }).format(new Date())
-    } catch {
-      return new Date().toLocaleDateString('vi-VN')
-    }
-  }, [])
 
   const selectedTechniqueIds = React.useMemo(() => {
     const ids: number[] = []
@@ -338,7 +326,27 @@ export function HabitFlow({
         return
       }
       if (draft.rhythmDays.length === 0) {
-        setStepError(vi.hb09.step2.rhythmEmptyError)
+        setStepError(vi.hb20.errors.rhythmEmpty)
+        return
+      }
+      const targetFreq = draft.rhythmFrequency ?? draft.rhythmDays.length
+      if (draft.rhythmDays.length !== targetFreq) {
+        setStepError(vi.hb20.errors.rhythmCountMismatch(targetFreq, draft.rhythmDays.length))
+        return
+      }
+      const todayYmd = getVietnamYmd()
+      const maxStartDayYmd = getVietnamYmd(new Date(addVietnamDays(todayYmd, 14)))
+      const selectedDate = draft.startDate?.trim() || todayYmd
+      if (selectedDate < todayYmd || selectedDate > maxStartDayYmd) {
+        setStepError(vi.hb20.errors.startDateOutOfRange)
+        return
+      }
+      if (draft.privateReason && draft.privateReason.length > 500) {
+        setStepError(vi.hb20.errors.privateReasonTooLong)
+        return
+      }
+      if (draft.companionName && draft.companionName.length > 100) {
+        setStepError(vi.hb20.errors.companionNameTooLong)
         return
       }
       setDraft((prev) => ({ ...prev, step: 5 }))
@@ -409,6 +417,9 @@ export function HabitFlow({
         anchorHabit: draft.anchorHabit || undefined,
         rhythmDays: draft.rhythmDays,
         twoMinuteAction: draft.twoMinuteAction || undefined,
+        privateReason: draft.privateReason?.trim() || undefined,
+        companionName: draft.companionName?.trim() || undefined,
+        startDate: draft.startDate?.trim() || undefined,
         name: draft.name?.trim() || undefined,
         email: cleanEmail,
         consent: true,
@@ -598,15 +609,44 @@ export function HabitFlow({
               identityStatement={draft.identityStatement}
               anchorHabit={draft.anchorHabit}
               rhythmDays={draft.rhythmDays}
+              rhythmFrequency={draft.rhythmFrequency}
               twoMinuteAction={draft.twoMinuteAction}
-              todayFormatted={todayFormatted}
+              privateReason={draft.privateReason}
+              companionName={draft.companionName}
+              startDate={draft.startDate}
+              journeyDays={journeyDays}
+              error={draft.step === 4 ? stepError : null}
               onActionChange={handleActionChange}
               onPersonChange={handlePersonChange}
               onToggleRhythmDay={handleToggleRhythmDay}
+              onRhythmFrequencyChange={(val) =>
+                setDraft((prev) => ({
+                  ...prev,
+                  rhythmFrequency: val,
+                }))
+              }
               onTwoMinuteChange={(val) =>
                 setDraft((prev) => ({
                   ...prev,
                   twoMinuteAction: val,
+                }))
+              }
+              onPrivateReasonChange={(val) =>
+                setDraft((prev) => ({
+                  ...prev,
+                  privateReason: val,
+                }))
+              }
+              onCompanionChange={(val) =>
+                setDraft((prev) => ({
+                  ...prev,
+                  companionName: val,
+                }))
+              }
+              onStartDateChange={(val) =>
+                setDraft((prev) => ({
+                  ...prev,
+                  startDate: val,
                 }))
               }
             />
@@ -632,6 +672,7 @@ export function HabitFlow({
               chosenTechniques={draft.chosenTechniques}
               selectedTechniqueIds={selectedTechniqueIds}
               journeyDays={journeyDays}
+              startDate={draft.startDate}
               techniques={techniques}
               name={draft.name || ''}
               email={draft.email || ''}

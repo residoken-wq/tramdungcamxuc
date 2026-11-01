@@ -69,6 +69,12 @@ export const boardingPassInputSchema = z
         .optional()
         .default([]),
     ),
+    startDate: z
+      .string()
+      .trim()
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
   })
   .strip()
 
@@ -132,7 +138,7 @@ export function buildBoardingPass(
   const journeyDays =
     typeof options.journeyDays === 'number' && options.journeyDays > 0 ? options.journeyDays : 28
 
-  const startDateStr = formatStartDateVN(options.startDate ?? new Date())
+  const startDateStr = formatStartDateVN(options.startDate ?? input.startDate ?? new Date())
 
   // Truncate fields for visual balance on the image card
   const identityStatement = truncateText(input.identityStatement, 240)
