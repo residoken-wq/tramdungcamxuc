@@ -61,7 +61,7 @@ export function StepDiagnose({ diagnose, answers, onSelectAnswer, onSkip }: Step
           />
         ) : (
           <div>
-            <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+            <h2 className="font-display text-xl sm:text-2xl leading-[1.3] text-deep-navy mb-1">
               {vi.hb16.steps.diagnose.title}
             </h2>
             {!hasCmsIntro && (
@@ -237,7 +237,9 @@ export function StepDiagnose({ diagnose, answers, onSelectAnswer, onSkip }: Step
                 </span>
               </div>
 
-              <h3 className="font-display text-xl sm:text-2xl text-deep-navy">{topStageTitle}</h3>
+              <h3 className="font-display text-xl sm:text-2xl leading-[1.3] text-deep-navy">
+                {topStageTitle}
+              </h3>
 
               {matchedResult?.suggestion && (
                 <p className="font-ui text-sm sm:text-base text-deep-navy/85 leading-relaxed">

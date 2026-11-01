@@ -153,7 +153,8 @@ export function migrateHabitDraft(
   let cleanedDiagnoseQuestionCount: number | undefined = undefined
 
   if (Array.isArray(parsed.diagnoseAnswers)) {
-    const rawAnswers = parsed.diagnoseAnswers
+    // Cap: the CMS allows at most 12 questions; never trust the stored array length.
+    const rawAnswers = parsed.diagnoseAnswers.slice(0, 50)
     const rawCount =
       typeof parsed.diagnoseQuestionCount === 'number' &&
       Number.isInteger(parsed.diagnoseQuestionCount) &&
