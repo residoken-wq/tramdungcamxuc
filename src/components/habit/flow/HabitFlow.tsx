@@ -49,6 +49,8 @@ export interface HabitFlowProps {
   stepQuotes?: CleanHabitStepQuotes
   diagnose?: CleanHabitDiagnose | null
   loop?: CleanHabitLoop | null
+  boardingPassCaption?: string | null
+  boardingPassIntro?: string | null
   privacyNote?: string | null
 }
 
@@ -60,6 +62,8 @@ export function HabitFlow({
   stepQuotes,
   diagnose,
   loop,
+  boardingPassCaption,
+  boardingPassIntro,
   privacyNote,
 }: HabitFlowProps) {
   const startTimeRef = useRef<number | null>(null)
@@ -78,6 +82,7 @@ export function HabitFlow({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [zaloGroupUrl, setZaloGroupUrl] = useState<string>('')
+  const [trackerDestination, setTrackerDestination] = useState<string>('/habit/tracker')
   const [honeypot, setHoneypot] = useState('')
 
   const selectedTechniqueIds = React.useMemo(() => {
@@ -435,6 +440,18 @@ export function HabitFlow({
         return
       }
 
+      if (res.trackerDestination) {
+        setTrackerDestination(res.trackerDestination)
+      }
+
+      if (res.trialStarted) {
+        const { HABIT_TRACKER_PRODUCT_SLUG } = await import('@/lib/habit/config')
+        track('trial_started', {
+          productSlug: HABIT_TRACKER_PRODUCT_SLUG,
+          days: res.trialDays ?? journeyDays,
+        })
+      }
+
       // Xóa nháp sau khi lưu thành công
       try {
         localStorage.removeItem(HABIT_LOOP_STORAGE_KEY)
@@ -495,6 +512,7 @@ export function HabitFlow({
         currentStep={draft.step}
         journeyDays={journeyDays}
         isPlanSaved={submitSuccess}
+        trackerUrl={trackerDestination}
         onSelectStep={handleSelectStep}
       />
 
@@ -518,10 +536,10 @@ export function HabitFlow({
             ✓
           </div>
           <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-3">
-            {vi.habit.wizard.step4.savedSuccessTitle}
+            {vi.hb22.successTitle}
           </h2>
           <p className="text-deep-navy/80 text-base mb-6 max-w-lg mx-auto">
-            {vi.habit.wizard.step4.savedSuccessMessage}
+            {vi.hb22.successSubtitle(journeyDays)}
           </p>
 
           <div className="p-4 rounded-xl bg-warm-ivory border border-lavender-mist mb-8 max-w-md mx-auto text-left">
@@ -534,19 +552,31 @@ export function HabitFlow({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* Nút chính dẫn vào tracker */}
+            <Link
+              href={trackerDestination}
+              data-testid="success-tracker-link"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors"
+            >
+              {vi.hb22.goToTracker(journeyDays)}
+            </Link>
+
+            {/* Nút phụ: Zalo & Offer */}
             {zaloGroupUrl && (
               <a
                 href={zaloGroupUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors"
+                data-testid="success-zalo-link"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-lavender-mist text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors"
               >
                 {vi.habit.wizard.step4.joinZaloButton}
               </a>
             )}
             <Link
               href={HABIT_OFFER_PATH}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-lavender-mist text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors"
+              data-testid="success-offer-link"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-warm-ivory border border-lavender-mist text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors"
             >
               {vi.habit.wizard.step4.viewOfferButton(journeyDays)}
             </Link>
@@ -555,7 +585,7 @@ export function HabitFlow({
           <button
             type="button"
             onClick={handleReset}
-            className="mt-6 text-sm text-deep-navy/60 hover:text-deep-navy underline"
+            className="mt-6 text-sm text-deep-navy/70 hover:text-deep-navy underline"
           >
             {vi.habit.wizard.step4.retakeButton}
           </button>
@@ -681,6 +711,9 @@ export function HabitFlow({
               consent={Boolean(draft.consent)}
               honeypot={honeypot}
               privacyNote={privacyNote}
+              quote={stepQuotes?.boardingPass}
+              captionTemplate={boardingPassCaption}
+              intro={boardingPassIntro}
               isSubmitting={isSubmitting}
               onNameChange={(val) => setDraft((prev) => ({ ...prev, name: val }))}
               onEmailChange={(val) => setDraft((prev) => ({ ...prev, email: val }))}

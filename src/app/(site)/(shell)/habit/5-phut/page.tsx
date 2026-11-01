@@ -53,6 +53,7 @@ export default async function HabitLoopPage() {
         stepQuotes={journeyContent?.stepQuotes}
         diagnose={journeyContent?.diagnose}
         loop={journeyContent?.loop}
+        boardingPassCaption={journeyContent?.boardingPassCaption}
         privacyNote={journeyContent?.privacyNote}
       />
     </div>

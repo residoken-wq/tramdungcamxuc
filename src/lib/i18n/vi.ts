@@ -3040,8 +3040,8 @@ export const vi = {
     titleLine2: 'Boarding Pass',
     previewHeading: 'Boarding Pass của bạn',
     previewSubtitle: 'Tấm vé xuất phát cho hành trình rèn luyện bạn vừa thiết kế',
-    download45: 'Tải ảnh 4:5',
-    download916: 'Tải ảnh 9:16',
+    download45: 'Tải ảnh đăng bài',
+    download916: 'Tải ảnh Cover điện thoại',
     generatingImage: 'Đang tạo ảnh…',
     errorGenerating: 'Không thể tạo ảnh Boarding Pass lúc này. Vui lòng thử lại sau.',
     rateLimited: 'Bạn đã tạo ảnh nhiều lần. Vui lòng đợi ít phút trước khi thử lại.',
@@ -3549,6 +3549,24 @@ export const vi = {
       atLeastOneTechnique: 'Vui lòng đánh dấu ít nhất 1 kỹ thuật thực hành.',
       actionRequired: 'Vui lòng nhập hành động cụ thể cho kỹ thuật đã chọn.',
     },
+  },
+  hb22: {
+    stepTitle: (days: number = 28) => `Boarding Pass hành trình ${days} ngày`,
+    stepSubtitle: (days: number = 28) =>
+      `Tấm vé khởi hành cho con người bạn muốn trở thành. Tải ảnh, sao chép caption và bắt đầu hành trình ${days} ngày ngay hôm nay.`,
+    introHeading: 'Lời dặn trước giờ khởi hành',
+    downloadCover: 'Tải ảnh Cover điện thoại',
+    downloadPost: 'Tải ảnh đăng bài',
+    copyCaption: 'Sao chép caption gợi ý',
+    copiedToast: 'Đã sao chép caption thành công!',
+    captionFallbackLabel: 'Không thể tự động sao chép. Bạn hãy sao chép đoạn văn bên dưới:',
+    captionFallbackHint: 'Bôi đen toàn bộ và nhấn Ctrl+C (hoặc Cmd+C trên Mac) để sao chép.',
+    startJourneyButton: (days: number = 28) => `Lên chuyến · Bắt đầu ${days} ngày →`,
+    savingButton: 'Đang lưu kế hoạch & chuẩn bị hành trình...',
+    goToTracker: (days: number = 28) => `Bắt đầu hành trình ${days} ngày →`,
+    successTitle: 'Kế hoạch đã sẵn sàng!',
+    successSubtitle: (days: number = 28) =>
+      `Chúc mừng bạn đã hoàn thành thiết kế vòng lặp thói quen. Hãy bước vào hành trình ${days} ngày thực hành ngay bây giờ!`,
   },
 } as const
 

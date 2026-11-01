@@ -16,6 +16,9 @@ export interface BoardingPassPreviewProps {
   journeyDays?: number
   startDate?: string | Date
   availableTechniques?: Array<{ id: number; name: string; stage?: string }>
+  caption?: string | null
+  onCopyCaption?: () => void
+  isCopied?: boolean
 }
 
 export function BoardingPassPreview({
@@ -28,6 +31,9 @@ export function BoardingPassPreview({
   journeyDays = 28,
   startDate,
   availableTechniques = [],
+  caption: _caption,
+  onCopyCaption,
+  isCopied,
 }: BoardingPassPreviewProps) {
   const [generatingFormat, setGeneratingFormat] = useState<'4x5' | '9x16' | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -270,25 +276,38 @@ export function BoardingPassPreview({
         </div>
       )}
 
-      {/* 2 nút Tải ảnh 4:5 và Tải ảnh 9:16 */}
+      {/* 3 nút: Cover điện thoại (9:16), Tải ảnh đăng bài (4:5), Sao chép caption */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-        <button
-          type="button"
-          onClick={() => handleDownload('4x5')}
-          disabled={generatingFormat !== null}
-          className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-deep-navy text-warm-ivory font-ui font-bold text-sm hover:bg-deep-navy/90 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-sm"
-        >
-          {generatingFormat === '4x5' ? vi.hb10.generatingImage : vi.hb10.download45}
-        </button>
-
         <button
           type="button"
           onClick={() => handleDownload('9x16')}
           disabled={generatingFormat !== null}
-          className="w-full sm:w-auto px-6 py-2.5 rounded-full border-2 border-accent-pink text-deep-navy bg-warm-ivory hover:bg-soft-pink disabled:opacity-60 disabled:cursor-not-allowed font-ui font-bold text-sm transition-all shadow-xs"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-deep-navy text-warm-ivory font-ui font-bold text-xs sm:text-sm hover:bg-deep-navy/90 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-sm flex items-center justify-center gap-1.5"
         >
-          {generatingFormat === '9x16' ? vi.hb10.generatingImage : vi.hb10.download916}
+          <span aria-hidden="true">📱</span>
+          <span>{generatingFormat === '9x16' ? vi.hb10.generatingImage : vi.hb10.download916}</span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => handleDownload('4x5')}
+          disabled={generatingFormat !== null}
+          className="w-full sm:w-auto px-5 py-2.5 rounded-full border-2 border-deep-navy/30 text-deep-navy bg-warm-ivory hover:bg-soft-pink disabled:opacity-60 disabled:cursor-not-allowed font-ui font-bold text-xs sm:text-sm transition-all shadow-xs flex items-center justify-center gap-1.5"
+        >
+          <span aria-hidden="true">🖼️</span>
+          <span>{generatingFormat === '4x5' ? vi.hb10.generatingImage : vi.hb10.download45}</span>
+        </button>
+
+        {Boolean(onCopyCaption) && (
+          <button
+            type="button"
+            onClick={onCopyCaption}
+            className="w-full sm:w-auto px-5 py-2.5 rounded-full border-2 border-bright-magenta text-bright-magenta bg-white hover:bg-soft-pink font-ui font-bold text-xs sm:text-sm transition-all shadow-xs flex items-center justify-center gap-1.5"
+          >
+            <span aria-hidden="true">📋</span>
+            <span>{isCopied ? vi.hb22.copiedToast : vi.hb22.copyCaption}</span>
+          </button>
+        )}
       </div>
     </div>
   )
