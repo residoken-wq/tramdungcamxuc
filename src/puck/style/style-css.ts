@@ -5,6 +5,9 @@
  */
 import { DESIGN_FONT_OPTIONS, type FontCategory } from '@/lib/design/fonts'
 import type { CleanDesignSystem } from '@/lib/design/design-system'
+import { containerCss } from './container-css'
+import { cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
+import { sanitizeContainer } from './container-schema'
 import {
   DEVICE_MEDIA,
   DEVICES,
@@ -16,20 +19,9 @@ import {
   type Length,
 } from './style-schema'
 
-/** Attribute a styled block's wrapper carries; the CSS selects on it. */
-export const STYLE_ATTR = 'data-eb-id'
-const SAFE_ID = /^[A-Za-z0-9_-]{1,100}$/
+export { STYLE_ATTR, isSafeBlockId }
 
-export const isSafeBlockId = (id: unknown): id is string =>
-  typeof id === 'string' && SAFE_ID.test(id)
-
-const SPACING: Record<string, string> = {
-  none: '0',
-  sm: 'var(--space-breath-sm, 16px)',
-  md: 'var(--space-breath-md, 24px)',
-  lg: 'var(--space-breath-lg, 32px)',
-  xl: 'calc(var(--space-breath-lg, 32px) * 2)',
-}
+const SPACING = SPACING_CSS
 const FONT_SIZE: Record<string, string> = {
   xs: '0.75rem',
   sm: '0.875rem',
@@ -64,7 +56,7 @@ const HIDE_MEDIA: Record<Device, string> = {
 }
 
 const length = (value: Length, presets: Record<string, string>) => presets[value] ?? value
-const color = (value: string) => (value.startsWith('#') ? value : `rgb(var(--color-${value}-rgb))`)
+const color = cssColor
 
 function boxDeclarations(property: 'padding' | 'margin', box: Box | undefined): string[] {
   if (!box) return []
@@ -155,13 +147,22 @@ export function collectPageStyles(
   const fonts = new Set<string>()
   for (const source of sources) {
     for (const item of walkItems(source)) {
-      const style = sanitizeBlockStyle(item.props?._style, ds)
-      if (!style) continue
       const id = item.props?.id
       if (!isSafeBlockId(id)) continue
-      const rule = blockStyleCss(id, style)
-      if (rule) css.push(rule)
-      if (style.fontFamily) fonts.add(style.fontFamily)
+
+      // EB-05: Container layout rules run before _style so user overrides win
+      if (item.type === 'Container') {
+        const sanitized = sanitizeContainer(item.props, ds)
+        const containerRule = containerCss(id, sanitized.layout, sanitized.background)
+        if (containerRule) css.push(containerRule)
+      }
+
+      const style = sanitizeBlockStyle(item.props?._style, ds)
+      if (style) {
+        const rule = blockStyleCss(id, style)
+        if (rule) css.push(rule)
+        if (style.fontFamily) fonts.add(style.fontFamily)
+      }
     }
   }
   return { css: css.join(''), fonts: [...fonts] }

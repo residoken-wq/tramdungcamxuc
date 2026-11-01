@@ -20,6 +20,8 @@ exports[`T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục > Snapshot r
 
 exports[`T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục > Snapshot rendering of all 14 blocks with defaultProps > renders ContactInfo matching static HTML snapshot 1`] = `""`;
 
+exports[`T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục > Snapshot rendering of all 14 blocks with defaultProps > renders Container matching static HTML snapshot 1`] = `"<div class="flex w-full flex-col"><div class="flex w-full min-w-0 flex-1 flex-col mx-auto max-w-6xl"><div class="flex min-h-[48px] w-full min-w-0 flex-1 flex-col"></div></div></div>"`;
+
 exports[`T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục > Snapshot rendering of all 14 blocks with defaultProps > renders Divider matching static HTML snapshot 1`] = `"<div class="w-full bg-warm-ivory py-6 flex justify-center"><svg width="160" height="2" viewBox="0 0 200 8" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true" class="block text-deep-navy/15"><line x1="0" y1="4" x2="200" y2="4" stroke="currentColor" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="4 4"></line><circle cx="100" cy="4" r="2" fill="currentColor"></circle></svg></div>"`;
 
 exports[`T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục > Snapshot rendering of all 14 blocks with defaultProps > renders EmotionEl matching static HTML snapshot 1`] = `"<p class="font-quote italic leading-relaxed text-lg sm:text-xl text-deep-navy/85 group-data-[bg=deep-navy]/fs:text-white/90">[MẪU] Dòng cảm xúc ấm áp</p>"`;
