@@ -204,6 +204,10 @@ export type PageComponentsProps = {
 
 const basePuckConfig: Config<PageComponentsProps> = {
   categories: {
+    basic: {
+      title: 'Cơ bản',
+      components: ['Divider', 'Spacer', 'VideoEmbed'],
+    },
     intro: {
       title: 'Mở đầu',
       components: ['HeroTwoEntries', 'HeroImage', 'SectionHeader'],
@@ -220,13 +224,12 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'JourneySteps',
         'VisionMission',
         'FAQ',
-        'VideoEmbed',
         'ContactInfo',
       ],
     },
     layout: {
       title: 'Bố cục',
-      components: ['Container', 'Columns', 'Spacer', 'Divider', 'ResourcePostsSlot'],
+      components: ['Container', 'Columns', 'ResourcePostsSlot'],
     },
     sales: {
       title: 'Bán hàng',
