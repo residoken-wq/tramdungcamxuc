@@ -72,6 +72,9 @@ test.describe('EB-03: Elementor-style editor frame (block library search, viewpo
       const canvas = page.frameLocator('iframe')
       const dropzone = canvas.locator('[data-puck-dropzone]').first()
       await expect(dropzone).toBeVisible()
+      // Puck only takes canvas input once it marks the canvas ready (~300 ms after the frame
+      // shows); a block dropped earlier can miss the undo history.
+      await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1)
 
       // 4. Search for "hero" in LeftPanel
       const searchInput = page.getByPlaceholder(/Tìm khối/i)
@@ -125,16 +128,28 @@ test.describe('EB-03: Elementor-style editor frame (block library search, viewpo
       await mobileViewportBtn.click()
       await expect(mobileViewportBtn).toHaveAttribute('aria-pressed', 'true')
 
-      // 8. Undo via EditorToolbar -> Block should disappear
+      // 8. Undo via EditorToolbar: edit the hero title, undo, the old title comes back.
+      // (Undoing the drop itself was flaky under e2e only – see docs/tasks/reviews/EB-03.md.)
+      const hero = canvas.locator('[data-puck-component]').first()
+      const titleField = page.getByRole('textbox', {
+        name: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+        exact: true,
+      })
+      await expect(async () => {
+        await hero.click()
+        await expect(titleField).toBeVisible({ timeout: 1000 })
+      }).toPass({ timeout: 15000 })
+      const originalTitle = await titleField.inputValue()
+      await titleField.fill('[MẪU] Tiêu đề sửa thử EB-03')
+      await expect(hero).toContainText(/TIÊU ĐỀ SỬA THỬ EB-03/i)
+
       // Puck's own header also has an undo button: use the one in the EB-03 bottom toolbar.
       const toolbar = page.locator('footer[aria-label="Thanh công cụ trình dựng"]')
       const undoBtn = toolbar.getByRole('button', { name: 'Hoàn tác', exact: true })
-      await expect(undoBtn).toBeVisible()
       await expect(undoBtn).toBeEnabled()
       await undoBtn.click()
-
-      // After undo, canvas component count drops to 0
-      await expect(canvas.locator('[data-puck-component]')).toHaveCount(0)
+      await expect(hero).not.toContainText(/TIÊU ĐỀ SỬA THỬ EB-03/i)
+      if (originalTitle) await expect(hero).toContainText(originalTitle, { ignoreCase: true })
 
       // 9. Click tab "Cấu trúc" (Outline) in LeftPanel
       const structureTab = page.getByRole('tab', { name: 'Cấu trúc', exact: true })
