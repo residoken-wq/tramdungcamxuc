@@ -653,13 +653,34 @@ describe('HB-13: Dữ liệu của bạn – Bản sao lưu, CSV, Khôi phục, 
       expect(verifyOldPlan.id).toBe(oldPlan.id)
       expect(verifyOldPlan.identityStatement).toBe('Kế hoạch số 1 (cũ)')
 
-      // 3. Khách tạo kế hoạch mới từ /habit/5-phut (lưu theo leadEmail, chưa gắn customer)
-      const restartedAt = new Date()
-      const newWizardPlan = track(
+      // 3. Người lạ / khách vãng lai gõ email của khách ở /habit/5-phut (lưu theo leadEmail, chưa gắn customer)
+      const orphanPlan = track(
         'habitPlans',
         (await payload.create({
           collection: 'habitPlans',
           data: {
+            leadEmail: customer.email,
+            identityStatement: 'Kế hoạch người khác gõ email của tôi',
+            startDate: vietnamTodayIso(),
+            journeyDays: 28,
+          },
+          overrideAccess: true,
+        })) as HabitPlan,
+      )
+
+      // HB-25: Khách đã có kế hoạch -> getOrCreateTrackerPlan KHÔNG BAO GIỜ gắn kế hoạch leadEmail mồ côi
+      // (đã bỏ restartSince, đóng hoàn toàn lỗ hổng người khác chen kế hoạch vào tài khoản).
+      const planStillOld = await getOrCreateTrackerPlan(customer.id, { payload })
+      expect(planStillOld?.id).toBe(oldPlan.id)
+      expect(planStillOld?.id).not.toBe(orphanPlan.id)
+
+      // 4. Khách đã đăng nhập lưu kế hoạch mới từ wizard (submitHabitPlan lưu thẳng customer: customer.id)
+      const newPlan = track(
+        'habitPlans',
+        (await payload.create({
+          collection: 'habitPlans',
+          data: {
+            customer: customer.id,
             leadEmail: customer.email,
             identityStatement: 'Kế hoạch số 2 (mới sau khi bắt đầu lại)',
             startDate: vietnamTodayIso(),
@@ -669,28 +690,13 @@ describe('HB-13: Dữ liệu của bạn – Bản sao lưu, CSV, Khôi phục, 
         })) as HabitPlan,
       )
 
-      // HB-13c: không có dấu "Bắt đầu lại" của trình duyệt này -> KHÔNG gắn kế hoạch leadEmail mới
-      // (leadEmail do người dùng tự gõ, ai cũng có thể gõ email của khách khác).
-      const withoutMarker = await getOrCreateTrackerPlan(customer.id, { payload })
-      expect(withoutMarker?.id).toBe(oldPlan.id)
-
-      // Dấu "Bắt đầu lại" có từ trước khi kế hoạch mới được tạo cũng phải tính đúng thời điểm
-      const markerTooLate = await getOrCreateTrackerPlan(customer.id, {
-        payload,
-        restartSince: new Date(Date.now() + 60_000),
-      })
-      expect(markerTooLate?.id).toBe(oldPlan.id)
-
-      // 4. Khi khách quay lại /habit/tracker (có dấu "Bắt đầu lại"), getOrCreateTrackerPlan gắn kế hoạch mới
-      const currentPlan = await getOrCreateTrackerPlan(customer.id, {
-        payload,
-        restartSince: restartedAt,
-      })
-      expect(currentPlan?.id).toBe(newWizardPlan.id)
+      // Khi vào tracker, getOrCreateTrackerPlan trả về kế hoạch mới nhất của khách
+      const currentPlan = await getOrCreateTrackerPlan(customer.id, { payload })
+      expect(currentPlan?.id).toBe(newPlan.id)
       expect(currentPlan?.identityStatement).toBe('Kế hoạch số 2 (mới sau khi bắt đầu lại)')
 
       const ownPlanNow = await findOwnTrackerPlan(customer.id, payload)
-      expect(ownPlanNow?.id).toBe(newWizardPlan.id)
+      expect(ownPlanNow?.id).toBe(newPlan.id)
 
       // 5. Và kế hoạch cũ vẫn còn nguyên trong DB (tổng cộng 2 kế hoạch của khách)
       const allCustomerPlans = await payload.find({

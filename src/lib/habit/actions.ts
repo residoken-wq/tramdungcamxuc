@@ -29,17 +29,26 @@ async function getClientContext(): Promise<{ ip?: string; page?: string }> {
   }
 }
 
-// REVIEW-REQUIRED: submitHabitPlan thực thi lưu kế hoạch và tạo lead trong cùng 1 transaction (T2-17, HB-22)
+// REVIEW-REQUIRED: submitHabitPlan thực thi lưu kế hoạch và tạo lead trong cùng 1 transaction (T2-17, HB-22, HB-25)
+// HB-25: Lấy customer từ phiên qua getCurrentCustomer(), truyền customerId qua options xuống submitHabitPlan (không tin dữ liệu client).
 export async function submitHabitPlanAction(
   data: Record<string, unknown>,
   extra?: { utm?: string },
 ): Promise<HabitPlanActionResponse> {
   try {
     const ctx = await getClientContext()
-    const res: HabitPlanSubmissionResult = await submitHabitPlan(data, {
-      ...ctx,
-      utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
-    })
+    const customer = await getCurrentCustomer()
+
+    const res: HabitPlanSubmissionResult = await submitHabitPlan(
+      data,
+      {
+        ...ctx,
+        utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
+      },
+      {
+        customerId: customer ? customer.id : undefined,
+      },
+    )
 
     if (!res.success) {
       return { success: false }
@@ -53,7 +62,6 @@ export async function submitHabitPlanAction(
     let trialDays: number | undefined
 
     try {
-      const customer = await getCurrentCustomer()
       if (customer) {
         const trialRes = await startTrialAction(HABIT_TRACKER_PRODUCT_SLUG)
         if (trialRes.success && trialRes.code === 'TRIAL_STARTED') {

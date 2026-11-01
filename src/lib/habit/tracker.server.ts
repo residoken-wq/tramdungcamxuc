@@ -36,13 +36,14 @@ export async function findOwnTrackerPlan(
 
 /**
  * REVIEW-REQUIRED: Lấy kế hoạch thói quen hiện có của khách hàng, hoặc liên kết kế hoạch Habit Loop mồ côi
- * (trùng leadEmail và chưa gán customer) cho khách hàng đã xác minh qua OTP.
- * Hỗ trợ bắt đầu lại hành trình (HB-13): nếu có kế hoạch leadEmail mới hơn kế hoạch cũ đã gắn customer,
- * tự động gắn kế hoạch mới làm kế hoạch hiện tại (vẫn giữ kế hoạch cũ trong DB).
- * REVIEW-REQUIRED (HB-13c): khách đã có kế hoạch chỉ nhận kế hoạch leadEmail mới khi có `restartSince`
- * (khách bấm "Bắt đầu lại" trên chính trình duyệt này) và kế hoạch đó tạo sau thời điểm ấy, vì leadEmail
- * do người dùng tự gõ, không xác minh.
- * Nếu chưa có, tạo kế hoạch mới khi được cung cấp identityStatement với startDate là hôm nay theo giờ VN.
+ * (trùng leadEmail và chưa gán customer) cho khách hàng lần đầu xác minh qua OTP (HB-25).
+ * HB-25:
+ * - Khách ĐÃ CÓ kế hoạch (ownPlan): không gắn thêm bất kỳ kế hoạch leadEmail nào nữa (đã bỏ restartSince).
+ *   Kế hoạch mới của khách đã đăng nhập được lưu trực tiếp vào tài khoản qua customerId tại submitHabitPlanAction.
+ * - Khách CHƯA CÓ kế hoạch: gắn kế hoạch leadEmail mới nhất (khách vãng lai làm wizard rồi mới đăng nhập OTP).
+ *   Giữ luật ngày bắt đầu của HB-20c: nếu startDate đã chọn còn trong [hôm nay, hôm nay + 14 ngày] thì giữ nguyên,
+ *   ngược lại đặt lại về hôm nay theo giờ VN.
+ * - Nếu không có kế hoạch nào: tạo kế hoạch mới khi được cung cấp identityStatement với startDate là hôm nay theo giờ VN.
  */
 export async function getOrCreateTrackerPlan(
   customerId: number,
@@ -50,16 +51,17 @@ export async function getOrCreateTrackerPlan(
     identityStatement?: string
     payload?: Payload
     now?: Date
-    /** HB-13c: when the customer pressed "Bắt đầu lại" (see restart-marker.server.ts). */
-    restartSince?: Date | null
   },
 ): Promise<HabitPlan | null> {
   const payload = options?.payload ?? (await getPayload({ config: await config }))
 
   // 1. Tìm kế hoạch mới nhất đã gắn với customer
   const ownPlan = await findOwnTrackerPlan(customerId, payload)
+  if (ownPlan) {
+    return ownPlan
+  }
 
-  // 2. Kiểm tra kế hoạch Habit Loop cùng leadEmail chưa gắn customer (bao gồm trường hợp khách bắt đầu lại ở /habit/5-phut)
+  // 2. Khách CHƯA CÓ kế hoạch: Kiểm tra kế hoạch Habit Loop cùng leadEmail chưa gắn customer (khách vãng lai đăng nhập OTP lần đầu)
   const customer = (await payload.findByID({
     collection: 'customers',
     id: customerId,
@@ -82,17 +84,8 @@ export async function getOrCreateTrackerPlan(
 
     if (emailPlans.docs.length > 0) {
       const planToAttach = emailPlans.docs[0] as HabitPlan
-      const ownCreatedMs = ownPlan ? new Date(ownPlan.createdAt).getTime() : -1
-      const attachCreatedMs = new Date(planToAttach.createdAt).getTime()
-      const restartSinceMs = options?.restartSince ? options.restartSince.getTime() : null
-      const isNewerThanOwn =
-        !ownPlan ||
-        (restartSinceMs !== null &&
-          attachCreatedMs >= restartSinceMs &&
-          (attachCreatedMs > ownCreatedMs ||
-            (attachCreatedMs === ownCreatedMs && planToAttach.id > ownPlan.id)))
 
-      if (!planToAttach.customer && isNewerThanOwn) {
+      if (!planToAttach.customer) {
         // REVIEW-REQUIRED (HB-20c): keep the start date the learner picked in step 4 when it is still
         // within [today, today + 14] in Vietnam time (the range submitHabitPlan enforces). An older
         // orphan plan whose date has already passed restarts today, as before HB-20.
