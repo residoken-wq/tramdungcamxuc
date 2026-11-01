@@ -46,6 +46,14 @@ describe('HB-14: Đồng hành sau 28 ngày & Đặt lịch Habit Coach / Ủng 
       expect(screen.getByText(viStrings.hb14.badge)).toBeDefined()
     })
 
+    it('HB-14c: CMS chưa có chữ -> không hiện đoạn giới thiệu viết sẵn trong code', () => {
+      const { container } = render(
+        <AfterJourneyPanel coachBookingUrl="https://example.com/dat-lich" journeyDays={28} />,
+      )
+      expect(screen.getByTestId('after-journey-coach-button')).toBeDefined()
+      expect(container.querySelectorAll('p').length).toBe(0)
+    })
+
     it('không có link -> không hiển thị nút nào', () => {
       render(
         <AfterJourneyPanel

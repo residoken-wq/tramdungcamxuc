@@ -28,7 +28,8 @@ export function AfterJourneyPanel({
   const safeDonationUrl = donationUrl ? safeHref(donationUrl) : null
 
   const displayTitle = title?.trim() || vi.hb14.title(journeyDays)
-  const displayText = text?.trim() || vi.hb14.defaultText(journeyDays)
+  // HB-14c: no hard-coded copy (AGENTS §2) – the paragraph comes only from the CMS
+  const displayText = text?.trim() || null
 
   // Nếu không có cả 2 link và không có cả tiêu đề/nội dung tùy biến, vẫn hiển thị theo bản dịch mặc định
   // nếu ít nhất 1 link có thật. Nếu hoàn toàn không có link nào và không có chữ từ CMS -> không hiện khối rỗng.
@@ -63,9 +64,11 @@ export function AfterJourneyPanel({
         <h2 className="font-ui font-bold text-lg sm:text-xl text-deep-navy">{displayTitle}</h2>
       </div>
 
-      <p className="font-sans text-xs sm:text-sm text-deep-navy/80 leading-relaxed max-w-2xl whitespace-pre-line">
-        {displayText}
-      </p>
+      {displayText && (
+        <p className="font-sans text-xs sm:text-sm text-deep-navy/80 leading-relaxed max-w-2xl whitespace-pre-line">
+          {displayText}
+        </p>
+      )}
 
       {hasButtons && (
         <div className="flex flex-wrap items-center gap-3 pt-2">
