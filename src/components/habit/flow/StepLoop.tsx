@@ -41,7 +41,7 @@ export function StepLoop({
     <div className="space-y-8 animate-fade-in">
       {/* Tiêu đề chính của Bước 5 */}
       <div>
-        <h2 className="font-display text-xl sm:text-2xl text-deep-navy mb-1">
+        <h2 className="font-display text-xl sm:text-2xl leading-[1.3] text-deep-navy mb-1">
           {vi.hb21.stepTitle}
         </h2>
         <p className="text-sm sm:text-base text-deep-navy/80">{vi.hb21.stepSubtitle}</p>
@@ -68,7 +68,7 @@ export function StepLoop({
           {hasStages && (
             <div className="space-y-3" data-testid="loop-stages-container">
               <div className="flex items-center justify-between gap-2">
-                <h3 className="font-display text-base sm:text-lg text-deep-navy">
+                <h3 className="font-display text-base sm:text-lg leading-[1.3] text-deep-navy">
                   {vi.hb21.explanation.heading}
                 </h3>
                 <span className="text-xs font-medium text-bright-magenta flex items-center gap-1">
@@ -112,7 +112,10 @@ export function StepLoop({
 
                       {/* SVG Mũi tên dẫn dòng chảy ở mobile */}
                       {index < loop!.stages.length - 1 && (
-                        <div className="sm:hidden flex justify-center pt-2 text-bright-magenta/60">
+                        <div
+                          className="sm:hidden flex justify-center pt-2 text-bright-magenta"
+                          aria-hidden="true"
+                        >
                           <svg
                             className="w-4 h-4"
                             fill="none"
@@ -151,7 +154,7 @@ export function StepLoop({
           {/* loop.rules (4 quy tắc vàng thay đổi hành vi) */}
           {hasRules && (
             <div className="space-y-3" data-testid="loop-rules-container">
-              <h3 className="font-display text-base sm:text-lg text-deep-navy">
+              <h3 className="font-display text-base sm:text-lg leading-[1.3] text-deep-navy">
                 {vi.hb21.rules.heading}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -204,7 +207,7 @@ export function StepLoop({
       {/* PHẦN 2: ĐÁNH DẤU KỸ THUẬT THEO 4 GIAI ĐOẠN */}
       <section aria-label={vi.hb21.techniques.heading} className="space-y-6">
         <div>
-          <h3 className="font-display text-lg sm:text-xl text-deep-navy mb-1">
+          <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy mb-1">
             {vi.hb21.techniques.heading}
           </h3>
           <p className="text-xs sm:text-sm text-deep-navy/75">
@@ -289,7 +292,7 @@ export function StepLoop({
                               href={safeVideoUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="shrink-0 text-[11px] font-semibold text-bright-magenta hover:underline inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-soft-pink/50 hover:bg-soft-pink"
+                              className="shrink-0 min-h-[32px] text-[11px] font-semibold text-bright-magenta hover:underline inline-flex items-center gap-0.5 px-2 py-1 rounded-md bg-soft-pink/50 hover:bg-soft-pink"
                             >
                               <span>{vi.hb21.techniques.viewExampleVideo}</span>
                               <span aria-hidden="true">↗</span>
@@ -300,10 +303,14 @@ export function StepLoop({
                         {/* Ô nhập hành động cụ thể nếu được chọn */}
                         {isSelected && chosenItem && (
                           <div className="mt-3 pt-2.5 border-t border-lavender-mist/50">
-                            <label className="block text-xs font-semibold text-deep-navy mb-1">
+                            <label
+                              htmlFor={`loop-action-${stage}-${tech.id}`}
+                              className="block text-xs font-semibold text-deep-navy mb-1"
+                            >
                               {vi.hb21.techniques.actionLabel}
                             </label>
                             <input
+                              id={`loop-action-${stage}-${tech.id}`}
                               type="text"
                               value={chosenItem.action}
                               onChange={(e) =>
