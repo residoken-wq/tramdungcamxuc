@@ -284,10 +284,19 @@ test.describe('PK-04: Draggable ServiceCard & PackageCard in ServiceCards & Pack
         name: 'Cỡ tên dịch vụ',
         exact: true,
       })
+      // EB-04b: cỡ chữ nằm ở tab "Kiểu" của bảng thuộc tính
+      const styleTab = page.getByRole('tab', { name: 'Kiểu', exact: true })
       await expect(async () => {
         await srv1Heading.click()
-        await expect(srvNameSizeSelect).toBeVisible({ timeout: 2000 })
+        await expect(
+          page.getByRole('combobox', {
+            name: 'Dịch vụ nổi bật (Nền xanh thẫm Deep Navy)',
+            exact: true,
+          }),
+        ).toBeVisible({ timeout: 2000 })
       }).toPass({ timeout: 30000 })
+      await styleTab.click()
+      await expect(srvNameSizeSelect).toBeVisible()
       await srvNameSizeSelect.selectOption({ label: 'Lớn' })
 
       // D. Xuất bản

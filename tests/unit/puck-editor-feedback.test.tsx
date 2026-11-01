@@ -22,6 +22,7 @@ vi.mock('@/puck/config', () => ({ puckConfig: {}, getPuckConfig: () => ({}) }))
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 vi.mock('@puckeditor/core', () => ({
   useGetPuck: () => () => ({ appState: { data: mocks.currentData }, dispatch: vi.fn() }),
+  createUsePuck: () => () => undefined,
   Puck: ({ overrides }: { overrides: { headerActions: React.ComponentType } }) => {
     const Header = overrides.headerActions
     return <Header />

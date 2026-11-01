@@ -61,7 +61,7 @@ export const LENGTH_RANGES = {
   fontSize: { px: [10, 96], rem: [0.625, 6], '%': [50, 400] },
   radius: { px: [0, 200], rem: [0, 12], '%': [0, 50] },
 } as const
-type LengthKind = keyof typeof LENGTH_RANGES
+export type LengthKind = keyof typeof LENGTH_RANGES
 
 const FREE_LENGTH = /^(-?\d{1,4}(?:\.\d{1,3})?)(px|rem|%)$/
 const ANCHOR_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
@@ -70,7 +70,7 @@ export const MAX_BORDER_WIDTH = 16
 const includes = <T extends string | number>(list: readonly T[], value: unknown): value is T =>
   (list as readonly unknown[]).includes(value)
 
-function cleanLength(
+export function cleanLength(
   value: unknown,
   kind: LengthKind,
   presets: readonly string[],

@@ -5,6 +5,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
 import { normalizePuckData } from '@/puck/migrations'
+import { getDesignSystem } from '@/lib/design/design-system.server'
 import { PuckEditorClient } from './PuckEditorClient'
 
 export const dynamic = 'force-dynamic'
@@ -56,8 +57,11 @@ export default async function BuilderPage({ params }: BuilderPageProps) {
     }
   }
 
+  const designSystem = await getDesignSystem(payload)
+
   return (
     <PuckEditorClient
+      designSystem={designSystem}
       initialData={initialData}
       pageId={pageId}
       pageTitle={pageDoc.title || pageId}

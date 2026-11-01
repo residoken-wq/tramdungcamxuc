@@ -2180,6 +2180,33 @@ Các khối như Hero, CTA, Ảnh & Chữ có **bố cục cố định**: Hana 
 > - **Tiêu đề 2 tầng** có ô **Cấp tiêu đề**: mỗi trang chỉ nên có **một** H1 (tiêu đề chính); các tiêu đề còn lại để H2.
 > - **Ảnh** phải có mô tả (alt) trong thư viện media mới hiện lên trang.
 
+### 5.24. Chỉnh kiểu từng khối: tab Nội dung / Kiểu / Nâng cao (EB-04)
+
+Bấm vào một khối trên trang. Cột phải hiện 3 tab:
+
+- **Nội dung**: chữ, ảnh, đường dẫn… của khối, như trước đây.
+- **Kiểu**:
+  - các ô định dạng có sẵn của khối (màu chữ, cỡ chữ, căn lề, nền…);
+  - **Nền**, **Chữ** (màu, font, cỡ, độ đậm, giãn dòng, căn lề), **Viền & bo góc**, **Bóng**.
+- **Nâng cao**:
+  - **Cách lề** trong / ngoài cho 4 cạnh; tick "Đặt cùng giá trị cho 4 cạnh" để đặt nhanh;
+  - **Ẩn trên** máy tính / máy tính bảng / điện thoại;
+  - **ID neo**, để làm link nhảy tới khối, ví dụ nút trỏ tới `#dang-ky`.
+
+Tab đang chọn được giữ nguyên khi bấm sang khối khác.
+
+**Chỉnh riêng cho điện thoại / máy tính bảng:**
+
+1. Bấm nút thiết bị ở đầu tab (hoặc thanh dưới cùng): khung xem trước đổi khổ, và dòng "Đang chỉnh cho: …" cho biết đang sửa cho thiết bị nào.
+2. Cách lề, cỡ chữ, căn lề đặt lúc này chỉ áp cho thiết bị đó.
+3. Ô có nhãn **"Kế thừa"** là chưa đặt riêng: đang dùng giá trị của khổ lớn hơn (điện thoại lấy của máy tính bảng, máy tính bảng lấy của máy tính).
+
+**Vì sao có lúc không thấy ô chọn màu tự do / ô nhập số / chọn font?** Các ô đó chỉ hiện khi công tắc tương ứng ở **Trang web → Thiết kế & thương hiệu** đang **Mở** (mục 7.0). Khi Khoá, chỉ chọn được màu trong bảng màu và các mức S / M / L.
+
+- Chữ và nền khó đọc (tương phản dưới 4.5:1) thì hiện cảnh báo màu vàng. Nên đổi màu.
+- **Đặt lại kiểu** xoá mọi chỉnh sửa ở tab đang mở, khối quay về như mặc định.
+- Khối chưa chỉnh kiểu nào thì trang công khai giữ y hệt như trước.
+
 ## 6. Quản lý Trang pháp lý và Thông tin người bán
 
 ### 6.1. Chỉnh sửa nội dung một trang pháp lý

@@ -162,6 +162,8 @@ test.describe('PK-03: Draggable Stat & Step child blocks in StatsBar & JourneySt
 
       await stepTitleInput.fill('[MẪU] Bước mới')
 
+      // EB-04b: cỡ chữ nằm ở tab "Kiểu" của bảng thuộc tính
+      await page.getByRole('tab', { name: 'Kiểu', exact: true }).click()
       const stepTitleSize = page.getByRole('combobox', { name: 'Cỡ tên bước', exact: true })
       await stepTitleSize.selectOption({ label: 'Lớn' })
 

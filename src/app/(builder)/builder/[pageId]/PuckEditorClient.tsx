@@ -27,6 +27,10 @@ import { pageTemplateList, getTemplateData, type PageTemplateKey } from '@/puck/
 import { AutosaveController } from '@/puck/autosave'
 import { LeftPanel } from '@/puck/editor/LeftPanel'
 import { EditorToolbar } from '@/puck/editor/EditorToolbar'
+import { StylePanelProvider } from '@/puck/editor/style-context'
+import { FieldsWithTabs, tabFieldTypes } from '@/puck/editor/StylePanelTabs'
+import { StylePreview } from '@/puck/editor/StylePreview'
+import { DEFAULT_DESIGN_SYSTEM, type CleanDesignSystem } from '@/lib/design/design-system'
 
 export const brandViewports: Viewports = [
   { width: 375, height: 'auto', label: 'Điện thoại (375px)', icon: 'Smartphone' },
@@ -40,6 +44,8 @@ type PuckEditorClientProps = {
   pageTitle: string
   pageSlug: string
   initialStatus: string
+  /** EB-04b: brand locks + palette, loaded on the server (Brand Book defaults when absent). */
+  designSystem?: CleanDesignSystem
 }
 
 type Feedback = {
@@ -611,6 +617,10 @@ function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
 const editorOverrides = {
   headerActions: EditorHeaderActions,
   puck: PuckLayoutOverride,
+  // EB-04b: Content / Style / Advanced tabs and live block styles in the preview.
+  fields: FieldsWithTabs,
+  fieldTypes: tabFieldTypes,
+  iframe: StylePreview,
 }
 
 // EB-03c: Puck renders every left-sidebar plugin at once (inactive ones only hidden by CSS), so
@@ -628,6 +638,7 @@ export function PuckEditorClient({
   pageTitle,
   pageSlug,
   initialStatus,
+  designSystem = DEFAULT_DESIGN_SYSTEM,
 }: PuckEditorClientProps) {
   const [feedback, setFeedback] = useState<Feedback>({ type: 'idle', message: '' })
   const [docStatus, setDocStatus] = useState<string>(initialStatus)
@@ -677,77 +688,79 @@ export function PuckEditorClient({
   }, [autosaveController])
 
   return (
-    <EditorContext.Provider
-      value={{
-        pageId,
-        pageTitle,
-        pageSlug,
-        currentStatus: docStatus,
-        onStatusChange: setDocStatus,
-        feedback,
-        setFeedback,
-        autosaveController,
-      }}
-    >
-      <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
-        {/* Top Banner Navigation */}
-        <header className="bg-deep-navy text-white px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm shadow-md z-20">
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/admin/collections/pages/${pageId}`}
-              className="inline-flex items-center gap-1 text-white/80 hover:text-white transition font-ui font-semibold"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              <span>Quản trị CMS</span>
-            </Link>
-            <span className="text-white/30">|</span>
-            <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">{pageTitle}</span>
-            <span
-              className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
-                docStatus === 'published'
-                  ? 'bg-mint-haze text-deep-navy'
-                  : 'bg-soft-pink text-deep-navy'
-              }`}
-            >
-              {docStatus === 'published' ? 'Đã xuất bản' : 'Bản nháp'}
-            </span>
-          </div>
+    <StylePanelProvider ds={designSystem}>
+      <EditorContext.Provider
+        value={{
+          pageId,
+          pageTitle,
+          pageSlug,
+          currentStatus: docStatus,
+          onStatusChange: setDocStatus,
+          feedback,
+          setFeedback,
+          autosaveController,
+        }}
+      >
+        <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
+          {/* Top Banner Navigation */}
+          <header className="bg-deep-navy text-white px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm shadow-md z-20">
+            <div className="flex items-center gap-3">
+              <Link
+                href={`/admin/collections/pages/${pageId}`}
+                className="inline-flex items-center gap-1 text-white/80 hover:text-white transition font-ui font-semibold"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                <span>Quản trị CMS</span>
+              </Link>
+              <span className="text-white/30">|</span>
+              <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">{pageTitle}</span>
+              <span
+                className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
+                  docStatus === 'published'
+                    ? 'bg-mint-haze text-deep-navy'
+                    : 'bg-soft-pink text-deep-navy'
+                }`}
+              >
+                {docStatus === 'published' ? 'Đã xuất bản' : 'Bản nháp'}
+              </span>
+            </div>
 
-          <div className="text-white/70 font-ui text-xs hidden sm:block">
-            Đường dẫn:{' '}
-            <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
-          </div>
-        </header>
+            <div className="text-white/70 font-ui text-xs hidden sm:block">
+              Đường dẫn:{' '}
+              <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
+            </div>
+          </header>
 
-        {/* Puck Editor Container */}
-        <div className="flex-1 min-h-0 relative">
-          <Puck
-            config={config}
-            data={initialData}
-            viewports={brandViewports}
-            dictionary={puckVietnameseDictionary}
-            iframe={{
-              enabled: true,
-              waitForStyles: true,
-            }}
-            overrides={editorOverrides}
-            plugins={editorPlugins}
-            onChange={(data) => {
-              autosaveController.setData(data)
-            }}
-            onAction={(_action) => {
-              // Action handler hook if needed
-            }}
-          />
+          {/* Puck Editor Container */}
+          <div className="flex-1 min-h-0 relative">
+            <Puck
+              config={config}
+              data={initialData}
+              viewports={brandViewports}
+              dictionary={puckVietnameseDictionary}
+              iframe={{
+                enabled: true,
+                waitForStyles: true,
+              }}
+              overrides={editorOverrides}
+              plugins={editorPlugins}
+              onChange={(data) => {
+                autosaveController.setData(data)
+              }}
+              onAction={(_action) => {
+                // Action handler hook if needed
+              }}
+            />
+          </div>
         </div>
-      </div>
-    </EditorContext.Provider>
+      </EditorContext.Provider>
+    </StylePanelProvider>
   )
 }
