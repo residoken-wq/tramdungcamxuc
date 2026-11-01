@@ -86,3 +86,28 @@
   padding: var(--puck-space-chrome-gutter) !important;
   overflow: auto !important;
 }
+
+/* EB-07: Customize Puck Outline rows to show custom label, icon, and device-hidden badge */
+[data-puck-layer-tree-id] [class*='_Layer-icon_'],
+[data-puck-layer-tree-id] [class*='_Layer-name_'],
+[data-puck-layer-tree-id] [class*='Layer-icon'],
+[data-puck-layer-tree-id] [class*='Layer-name'],
+[data-puck-layer-tree-id] [class*='_Layer-actions_'],
+[data-puck-layer-tree-id] [class*='Layer-actions'] {
+  display: none !important;
+}
+
+[data-puck-layer-tree-id] [class*='_Layer-clickable_'],
+[data-puck-layer-tree-id] [class*='Layer-clickable'] {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+[data-puck-layer-tree-id] [class*='_Layer-title_'],
+[data-puck-layer-tree-id] [class*='Layer-title'] {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  min-width: 0 !important;
+}
