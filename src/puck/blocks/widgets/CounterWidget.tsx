@@ -67,5 +67,5 @@ export const CounterWidgetBlock: ComponentConfig<CounterWidgetProps> = {
       ],
     },
   },
-  render: (props) => <CounterWidget {...props} />,
+  render: ({ puck, ...props }) => <CounterWidget {...props} isEditing={Boolean(puck?.isEditing)} />,
 }

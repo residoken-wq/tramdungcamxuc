@@ -2957,6 +2957,9 @@ export const vi = {
       items: 'Danh sách thẻ (Tabs)',
       itemTitle: 'Tiêu đề thẻ',
       itemContent: 'Nội dung thẻ',
+      editorPanel: (n: number, title: string) => `Tab ${n}: ${title}`,
+      editorHint:
+        'Trong trình dựng, mọi tab hiện xếp chồng để kéo khối vào. Trang công khai hiện dạng tab.',
     },
     accordion: {
       label: 'Accordion',
@@ -2970,6 +2973,8 @@ export const vi = {
       items: 'Danh sách mục',
       itemTitle: 'Tiêu đề mục',
       itemContent: 'Nội dung mục',
+      editorHint:
+        'Trong trình dựng, mọi mục mở sẵn để kéo khối vào. Trang công khai đóng / mở theo cài đặt.',
     },
     counter: {
       label: 'Bộ đếm số',

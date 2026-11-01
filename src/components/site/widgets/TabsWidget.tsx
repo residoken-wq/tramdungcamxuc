@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useId, useRef, useState } from 'react'
+import { vi } from '@/lib/i18n/vi'
 import { typographyClasses, type TypographyDefaults } from './style-defaults'
 
 export interface TabItem {
@@ -26,8 +27,8 @@ function renderSlot(slot: unknown, className?: string): React.ReactNode {
   return null
 }
 
+// Colour sits on the tab button (active / inactive), so it is not part of the title defaults.
 const TAB_DEFAULTS: TypographyDefaults = {
-  textColor: 'text-deep-navy',
   fontFamily: 'font-ui',
   fontWeight: 'font-semibold',
   fontSize: 'text-sm sm:text-base',
@@ -38,13 +39,19 @@ export function TabsWidget({
   items = [{ title: 'Tab 1' }, { title: 'Tab 2' }],
   orientation = 'horizontal',
   _style,
-}: TabsWidgetProps & { id?: string; _style?: unknown; puck?: { isEditing?: boolean } }) {
+  isEditing = false,
+}: TabsWidgetProps & { id?: string; _style?: unknown; isEditing?: boolean }) {
+  // Puck's drag overlay swallows clicks on the tab buttons in the editor, so the editor shows
+  // every panel stacked (with its tab title) to let blocks be dropped into any tab.
   const generatedId = useId()
   const baseId = id || `tabs-${generatedId.replace(/:/g, '')}`
   const [activeTab, setActiveTab] = useState(0)
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
 
   const titleClass = typographyClasses(TAB_DEFAULTS, _style)
+  // Inactive tabs follow the Style tab text colour when one is set.
+  const inactiveColor =
+    typographyClasses({ textColor: 'text-deep-navy/70' }, _style) || 'opacity-75'
   const isVertical = orientation === 'vertical'
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
@@ -110,9 +117,9 @@ export function TabsWidget({
               className={`px-4 py-2.5 rounded-lg text-left transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-accent-pink ${
                 isActive
                   ? isVertical
-                    ? 'bg-soft-pink/50 text-accent-pink font-bold border-l-4 border-accent-pink'
-                    : 'border-b-2 border-accent-pink text-accent-pink font-bold'
-                  : 'text-deep-navy/70 hover:text-deep-navy hover:bg-black/5'
+                    ? 'bg-soft-pink/50 text-bright-magenta border-l-4 border-bright-magenta'
+                    : 'border-b-2 border-bright-magenta text-bright-magenta'
+                  : `${inactiveColor} hover:bg-lavender-mist/40`
               }`}
             >
               <span className={titleClass}>{item.title}</span>
@@ -124,6 +131,19 @@ export function TabsWidget({
       <div className="flex-1 w-full min-w-0">
         {items.map((item, idx) => {
           const isActive = activeTab === idx
+          if (isEditing) {
+            return (
+              <div
+                key={idx}
+                className="mb-4 rounded-lg border border-dashed border-deep-navy/20 p-3"
+              >
+                <p className="mb-2 font-ui text-xs font-semibold text-deep-navy/70">
+                  {vi.eb06.tabs.editorPanel(idx + 1, item.title)}
+                </p>
+                {renderSlot(item.content, 'min-h-[48px] w-full flex flex-col gap-3')}
+              </div>
+            )
+          }
           return (
             <div
               key={idx}

@@ -2290,11 +2290,12 @@ Nhóm **Cơ bản** đứng ở vị trí đầu tiên trong thư viện khối 
 7. **Tabs (TabsWidget):**
    - **Danh sách tab:** Thêm/xoá không giới hạn số lượng tab. Mỗi tab có tiêu đề riêng và một vùng thả khối nội dung (slot).
    - **Bố cục tab:** Chọn hiển thị thẻ theo **Hàng ngang** (mặc định) hoặc **Cột dọc** (phù hợp với các trang tài liệu, lộ trình chi tiết).
-   - **Thao tác trong trình dựng trang:** Bấm trực tiếp vào từng tab trên khung hiển thị để chuyển tab đang xem và kéo thả các khối con vào bên trong tab đó.
+   - **Thao tác trong trình dựng trang:** Trong trình dựng, mọi tab hiện **xếp chồng** từ trên xuống, mỗi phần có dòng "Tab 1: …", "Tab 2: …" để chị kéo khối vào đúng tab. Trang công khai mới hiện dạng tab bấm chuyển. Khi kéo khối vào một tab đã có nội dung, giữ chuột trên khối cuối của tab một chút rồi mới thả.
    - **Trợ năng:** Hỗ trợ đầy đủ phím mũi tên bàn phím để chuyển đổi qua lại giữa các tab theo tiêu chuẩn WAI-ARIA.
 
 8. **Hộp mở rộng (AccordionWidget):**
    - **Mục nội dung linh hoạt:** Khác với khối câu hỏi FAQ thông thường chỉ chứa chữ thuần, mỗi mục trong Accordion là một vùng thả khối tự do (bạn có thể thả tiêu đề, đoạn văn, ảnh, nút bấm hay danh sách vào bên trong).
+   - **Trong trình dựng:** mọi mục đều mở sẵn để kéo khối vào; trang công khai đóng / mở theo cài đặt bên dưới.
    - **Chế độ mở:** Chọn **Chỉ mở một mục** (khi mở một mục thì mục khác tự đóng lại) hoặc **Mở nhiều mục** (cho phép mở đồng thời nhiều mục cùng lúc).
    - **Mục mở sẵn ban đầu:** Chọn mở sẵn mục đầu tiên, đóng toàn bộ hoặc mở sẵn tất cả các mục khi tải trang.
    - **Trợ năng:** Tự động điều chỉnh trạng thái thu phóng và tôn trọng chế độ giảm chuyển động trên thiết bị của khách hàng.

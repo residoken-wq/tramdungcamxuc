@@ -7,6 +7,7 @@ import {
 } from '@/components/site/widgets/AccordionWidget'
 import { CHILD_BLOCK_TYPES } from '../../constants'
 import { vi } from '@/lib/i18n/vi'
+import { renderItemSlots, SLOT_CLASS } from './slot-items'
 
 export type { AccordionWidgetProps, AccordionItem }
 
@@ -57,5 +58,11 @@ export const AccordionWidgetBlock: ComponentConfig<AccordionWidgetProps> = {
       },
     },
   },
-  render: (props) => <AccordionWidget {...props} />,
+  render: ({ puck, items, ...props }) => (
+    <AccordionWidget
+      {...props}
+      items={renderItemSlots(items, SLOT_CLASS)}
+      isEditing={Boolean(puck?.isEditing)}
+    />
+  ),
 }

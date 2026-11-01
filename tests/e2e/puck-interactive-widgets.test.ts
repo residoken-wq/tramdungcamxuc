@@ -85,6 +85,8 @@ test.describe('EB-06b: Interactive widgets (Tabs, Accordion, Counter)', () => {
                             id: heading1Id,
                             text: tab1HeadingText,
                             level: 'h3',
+                            // Style of a block inside a tab must reach the public page too.
+                            _style: { textColor: 'bright-magenta' },
                           },
                         },
                       ],
@@ -166,11 +168,8 @@ test.describe('EB-06b: Interactive widgets (Tabs, Accordion, Counter)', () => {
       const canvas = page.frameLocator('iframe')
       await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1)
 
-      // 4. Click Tab 2 in canvas to view its slot and panel.
-      const tab2Button = canvas.getByRole('tab', { name: 'Tab Thứ Hai', exact: true })
-      await expect(tab2Button).toBeVisible()
-      await tab2Button.click()
-      await expect(tab2Button).toHaveAttribute('aria-selected', 'true')
+      // 4. In the editor every tab panel is shown stacked (Puck's overlay swallows tab clicks).
+      await expect(canvas.getByText('Tab 2: Tab Thứ Hai')).toBeVisible()
 
       // Verify Tab 2 heading is visible
       const tab2Heading = canvas.locator(`[data-puck-component="${heading2Id}"]`)
@@ -179,7 +178,7 @@ test.describe('EB-06b: Interactive widgets (Tabs, Accordion, Counter)', () => {
       // 5. Drag TextWidget from "Cơ bản" group into Tab 2's panel slot.
       await page.getByPlaceholder(/Tìm khối/i).fill('van ban')
       const textItem = page.getByRole('button', {
-        name: 'Văn bản (Text Widget)',
+        name: 'Văn bản',
         exact: true,
       })
       await expect(textItem).toBeVisible()
@@ -194,11 +193,21 @@ test.describe('EB-06b: Interactive widgets (Tabs, Accordion, Counter)', () => {
       await page.mouse.move(source.x + source.width / 2 + 15, source.y + source.height / 2, {
         steps: 5,
       })
-      // Drop immediately below the heading in Tab 2
-      await page.mouse.move(target.x + target.width / 2, target.y + target.height + 20, {
+      // Drop on the lower edge of the Tab 2 heading: inside Tab 2's slot, after the heading.
+      await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, {
         steps: 30,
       })
+      await page.mouse.move(target.x + target.width / 2, target.y + target.height - 3, {
+        steps: 10,
+      })
+      // Let Puck settle the drop target inside the nested (array item) slot before releasing.
+      await page.waitForTimeout(400)
       await page.mouse.up()
+      const tab2Panel = canvas
+        .locator('div')
+        .filter({ has: canvas.getByText('Tab 2: Tab Thứ Hai', { exact: true }) })
+        .last()
+      await expect(tab2Panel.getByText('Nhập đoạn văn bản của bạn tại đây...')).toBeVisible()
 
       // 6. Publish the page.
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
@@ -211,8 +220,14 @@ test.describe('EB-06b: Interactive widgets (Tabs, Accordion, Counter)', () => {
       await publicPage.goto(`/${slug}`)
 
       // A. Verify Counter: displays 500+ and label
-      const counterEl = publicPage.locator(`[data-eb-id="${counterId}"]`)
-      await expect(counterEl).toContainText('500+')
+      // No _style → no data-eb-id wrapper: find the counter by its label. It animates 0 → 500 on view.
+      const counterEl = publicPage
+        .locator('div', { hasText: '[MẪU] Khách hàng đồng hành' })
+        .filter({ has: publicPage.locator('p') })
+        .last()
+      await counterEl.scrollIntoViewIfNeeded()
+      // Counts up over ~2 s once in view; the final value must be reached.
+      await expect(counterEl).toContainText('500+', { timeout: 10000 })
       await expect(counterEl).toContainText('[MẪU] Khách hàng đồng hành')
 
       // B. Verify Tabs: initially Tab 1 is active, Tab 2 is hidden
@@ -220,6 +235,10 @@ test.describe('EB-06b: Interactive widgets (Tabs, Accordion, Counter)', () => {
       const publicTab2Heading = publicPage.getByText(tab2HeadingText)
       await expect(publicTab1Heading).toBeVisible()
       await expect(publicTab2Heading).not.toBeVisible()
+      await expect(publicPage.locator('h3', { hasText: tab1HeadingText })).toHaveCSS(
+        'color',
+        'rgb(188, 3, 158)',
+      )
 
       // Click Tab 2 on public page
       const publicTab2Btn = publicPage.getByRole('tab', { name: 'Tab Thứ Hai', exact: true })

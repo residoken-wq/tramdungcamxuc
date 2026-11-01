@@ -41,15 +41,15 @@ export function CounterWidget({
   label = 'Chỉ số thống kê',
   align = 'center',
   _style,
-  puck,
-}: CounterWidgetProps & { id?: string; _style?: unknown; puck?: { isEditing?: boolean } }) {
+  isEditing = false,
+}: CounterWidgetProps & { id?: string; _style?: unknown; isEditing?: boolean }) {
   const elementRef = useRef<HTMLDivElement>(null)
   // SSR and initial client state always display the final endNumber
   const [currentVal, setCurrentVal] = useState<number>(endNumber)
-  const [hasAnimated, setHasAnimated] = useState<boolean>(false)
+  // A ref, not state: setting state here re-ran the effect, whose cleanup cancelled the animation.
+  const hasAnimated = useRef(false)
 
   const numberClass = typographyClasses(COUNTER_DEFAULTS(align), _style)
-  const isEditing = puck?.isEditing ?? false
 
   useEffect(() => {
     // In editor or if reduced motion is preferred, keep endNumber without animation
@@ -72,8 +72,8 @@ export function CounterWidget({
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
-        if (entry?.isIntersecting && !hasAnimated) {
-          setHasAnimated(true)
+        if (entry?.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
           observer.disconnect()
 
           const startTime = performance.now()
@@ -109,7 +109,7 @@ export function CounterWidget({
         cancelAnimationFrame(frameId)
       }
     }
-  }, [duration, endNumber, hasAnimated, isEditing, startNumber])
+  }, [duration, endNumber, isEditing, startNumber])
 
   const alignContainerClass =
     align === 'center'

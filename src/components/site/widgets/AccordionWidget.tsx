@@ -55,7 +55,10 @@ export function AccordionWidget({
   expandMode = 'single',
   defaultExpanded = 'first',
   _style,
-}: AccordionWidgetProps & { id?: string; _style?: unknown; puck?: { isEditing?: boolean } }) {
+  isEditing = false,
+}: AccordionWidgetProps & { id?: string; _style?: unknown; isEditing?: boolean }) {
+  // Puck's drag overlay swallows clicks in the editor: every item is open there so blocks can be
+  // dropped into any of them.
   const generatedId = useId()
   const baseId = id || `acc-${generatedId.replace(/:/g, '')}`
 
@@ -80,7 +83,7 @@ export function AccordionWidget({
   return (
     <div className="w-full flex flex-col gap-3">
       {items.map((item, idx) => {
-        const isOpen = openIndices.includes(idx)
+        const isOpen = isEditing || openIndices.includes(idx)
         return (
           <div
             key={idx}

@@ -7,6 +7,7 @@ import {
 } from '@/components/site/widgets/TabsWidget'
 import { CHILD_BLOCK_TYPES } from '../../constants'
 import { vi } from '@/lib/i18n/vi'
+import { renderItemSlots, SLOT_CLASS } from './slot-items'
 
 export type { TabsWidgetProps, TabItem }
 
@@ -46,5 +47,11 @@ export const TabsWidgetBlock: ComponentConfig<TabsWidgetProps> = {
       },
     },
   },
-  render: (props) => <TabsWidget {...props} />,
+  render: ({ puck, items, ...props }) => (
+    <TabsWidget
+      {...props}
+      items={renderItemSlots(items, SLOT_CLASS)}
+      isEditing={Boolean(puck?.isEditing)}
+    />
+  ),
 }
