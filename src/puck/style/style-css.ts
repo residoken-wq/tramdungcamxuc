@@ -125,11 +125,19 @@ function* walkItems(value: unknown): Generator<PuckItem> {
     if (!item || typeof item !== 'object') continue
     const node = item as PuckItem
     yield node
-    // Slot fields hold nested arrays of blocks inside props.
-    for (const prop of Object.values(node.props ?? {})) {
-      if (Array.isArray(prop) && prop.some((p) => p && typeof p === 'object' && 'type' in p)) {
-        yield* walkItems(prop)
-      }
+    yield* walkNested(node.props)
+  }
+}
+
+/** Slot arrays inside props, also inside array items (Tabs / Accordion `items[].content`). */
+function* walkNested(props: unknown): Generator<PuckItem> {
+  if (!props || typeof props !== 'object') return
+  for (const prop of Object.values(props)) {
+    if (!Array.isArray(prop)) continue
+    if (prop.some((p) => p && typeof p === 'object' && 'type' in p)) {
+      yield* walkItems(prop)
+    } else {
+      for (const element of prop) yield* walkNested(element)
     }
   }
 }

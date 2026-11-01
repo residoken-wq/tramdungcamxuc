@@ -19,6 +19,9 @@ import { ImageWidgetBlock, type ImageWidgetProps } from './blocks/widgets/ImageW
 import { ButtonWidgetBlock, type ButtonWidgetProps } from './blocks/widgets/ButtonWidget'
 import { IconWidgetBlock, type IconWidgetProps } from './blocks/widgets/IconWidget'
 import { IconListWidgetBlock, type IconListWidgetProps } from './blocks/widgets/IconListWidget'
+import { TabsWidgetBlock, type TabsWidgetProps } from './blocks/widgets/TabsWidget'
+import { AccordionWidgetBlock, type AccordionWidgetProps } from './blocks/widgets/AccordionWidget'
+import { CounterWidgetBlock, type CounterWidgetProps } from './blocks/widgets/CounterWidget'
 import { ContainerBlock, type ContainerProps } from './blocks/Container'
 import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
 import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
@@ -152,6 +155,9 @@ export type PageComponentsProps = {
   ButtonWidget: ButtonWidgetProps
   IconWidget: IconWidgetProps
   IconListWidget: IconListWidgetProps
+  TabsWidget: TabsWidgetProps
+  AccordionWidget: AccordionWidgetProps
+  CounterWidget: CounterWidgetProps
   // Mở đầu
   HeroTwoEntries: HeroTwoEntriesProps
   HeroImage: HeroImageProps
@@ -235,6 +241,9 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'Divider',
         'Spacer',
         'VideoEmbed',
+        'TabsWidget',
+        'AccordionWidget',
+        'CounterWidget',
       ],
     },
     intro: {
@@ -666,13 +675,16 @@ const basePuckConfig: Config<PageComponentsProps> = {
     NewsletterForm: NewsletterFormBlock,
     ContactForms: ContactFormsBlock,
 
-    // Cơ bản (EB-06a)
+    // Cơ bản (EB-06)
     HeadingWidget: HeadingWidgetBlock,
     TextWidget: TextWidgetBlock,
     ImageWidget: ImageWidgetBlock,
     ButtonWidget: ButtonWidgetBlock,
     IconWidget: IconWidgetBlock,
     IconListWidget: IconListWidgetBlock,
+    TabsWidget: TabsWidgetBlock,
+    AccordionWidget: AccordionWidgetBlock,
+    CounterWidget: CounterWidgetBlock,
 
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
