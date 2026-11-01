@@ -31,6 +31,7 @@ export interface StepBoardingPassProps {
   consent: boolean
   honeypot: string
   isSubmitting: boolean
+  privacyNote?: string | null
   onNameChange: (val: string) => void
   onEmailChange: (val: string) => void
   onConsentChange: (val: boolean) => void
@@ -55,6 +56,7 @@ export function StepBoardingPass({
   consent,
   honeypot,
   isSubmitting,
+  privacyNote,
   onNameChange,
   onEmailChange,
   onConsentChange,
@@ -233,8 +235,16 @@ export function StepBoardingPass({
         >
           {isSubmitting ? vi.habit.wizard.step4.savingButton : vi.habit.wizard.step4.saveButton}
         </Button>
+
+        {privacyNote && (
+          <p
+            data-testid="boarding-pass-privacy-note"
+            className="font-ui text-xs text-deep-navy/70 text-center leading-relaxed pt-2"
+          >
+            {privacyNote}
+          </p>
+        )}
       </form>
     </div>
   )
 }
-
