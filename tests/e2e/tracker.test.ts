@@ -71,6 +71,7 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
     let adminId: number | undefined
     let createdProductId: number | undefined
     let createdCustomerId: number | undefined
+    let previousStations: unknown[] | undefined
 
     const customerEmail = `khach-tracker-${randomUUID().slice(0, 6)}@example.test`
 
@@ -248,11 +249,107 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
         name: /^Ngày 1: Bản tối giản, cảm xúc: Vui vẻ/i,
       })
       await expect(day1AfterRestore).toBeVisible()
+
+      // 15. HB-12: Suy ngẫm cuối mỗi trạm trên Tracker
+      // Admin cấu hình câu hỏi suy ngẫm cho Trạm 1 và Trạm 2 qua global habitJourneyContent
+      // (lưu lại danh sách trạm hiện có để khôi phục trong finally – HB-12c)
+      const journeyBeforeRes = await page.request.get('/api/globals/habitJourneyContent')
+      previousStations = journeyBeforeRes.ok()
+        ? (((await journeyBeforeRes.json()) as { stations?: unknown[] }).stations ?? [])
+        : []
+      await page.request.post('/api/globals/habitJourneyContent', {
+        data: {
+          stations: [
+            {
+              name: 'Khởi động & Nhận diện',
+              reflectionQuestions: [
+                { question: 'Điều gì đã giúp bạn duy trì đều đặn 7 ngày qua?' },
+                { question: 'Cảm xúc chủ đạo của bạn khi hoàn thành trạm 1 là gì?' },
+              ],
+            },
+            {
+              name: 'Định hình & Vượt dốc',
+              reflectionQuestions: [
+                { question: 'Thử thách lớn nhất bạn gặp phải ở trạm 2 là gì?' },
+              ],
+            },
+            {
+              name: 'Củng cố & Lan tỏa',
+              reflectionQuestions: [],
+            },
+            {
+              name: 'Về đích & Tự hào',
+              reflectionQuestions: [],
+            },
+          ],
+        },
+      })
+
+      // Admin dời ngày bắt đầu của kế hoạch lùi 8 ngày để Trạm 1 (ngày 1-7) kết thúc, hiện đang ở ngày 9 (Trạm 2)
+      const customerPlansRes = await page.request.get(
+        `/api/habitPlans?where[customer][equals]=${createdCustomerId}`,
+      )
+      const customerPlans = await customerPlansRes.json()
+      const planId = customerPlans.docs[0].id
+
+      const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0]
+      await page.request.patch(`/api/habitPlans/${planId}`, {
+        data: {
+          startDate: eightDaysAgo,
+        },
+      })
+
+      // Reload trang để tải lại kế hoạch và trạm
+      await guestPage.reload()
+
+      // Card Trạm 1 kết thúc -> hiện nút "Suy ngẫm trạm"
+      const station1ReflectBtn = guestPage.getByRole('button', { name: /Suy ngẫm trạm/i }).first()
+      await expect(station1ReflectBtn).toBeVisible()
+
+      // Trạm 2 chưa kết thúc -> hiện label "Mở vào ngày 15"
+      await expect(guestPage.getByText(/Mở vào ngày 15/i)).toBeVisible()
+
+      // Bấm "Suy ngẫm trạm" -> modal mở ra
+      await station1ReflectBtn.click()
+      const reflectionModal = guestPage.locator('div[role="dialog"]')
+      await expect(reflectionModal).toBeVisible()
+      await expect(reflectionModal).toContainText('Điều gì đã giúp bạn duy trì đều đặn 7 ngày qua?')
+
+      // Điền câu trả lời
+      const textareas = reflectionModal.locator('textarea')
+      await textareas.nth(0).fill('Sự kiên trì và nhắc nhở mỗi sáng.')
+      await textareas.nth(1).fill('Cảm giác nhẹ nhõm và tự tin hơn.')
+
+      // Bấm Lưu suy ngẫm
+      const saveReflectionBtn = reflectionModal.getByRole('button', { name: /Lưu suy ngẫm/i })
+      await saveReflectionBtn.click()
+
+      // Modal đóng lại
+      await expect(reflectionModal).toBeHidden()
+
+      // Card Trạm 1 hiện badge "Đã suy ngẫm" + nút chuyển thành "Xem / sửa suy ngẫm"
+      await expect(guestPage.getByText(/Đã suy ngẫm/i).first()).toBeVisible()
+      const editReflectionBtn = guestPage
+        .getByRole('button', { name: /Xem \/ sửa suy ngẫm/i })
+        .first()
+      await expect(editReflectionBtn).toBeVisible()
+
+      // Tải lại trang (reload) -> badge "Đã suy ngẫm" vẫn còn
+      await guestPage.reload()
+      await expect(guestPage.getByText(/Đã suy ngẫm/i).first()).toBeVisible()
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
 
+      if (previousStations !== undefined) {
+        await page.request
+          .post('/api/globals/habitJourneyContent', { data: { stations: previousStations } })
+          .catch(() => {})
+      }
+
       if (createdCustomerId) {
-        // Dọn dẹp checkins và habitPlans của customer
+        // Dọn dẹp checkins, reflections và habitPlans của customer
         const plansRes = await page.request
           .get(`/api/habitPlans?where[customer][equals]=${createdCustomerId}`)
           .catch(() => null)
@@ -268,6 +365,17 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
                 await page.request.delete(`/api/habitCheckins/${ch.id}`).catch(() => {})
               }
             }
+
+            const reflectionsRes = await page.request
+              .get(`/api/habitReflections?where[plan][equals]=${plan.id}`)
+              .catch(() => null)
+            if (reflectionsRes && reflectionsRes.ok()) {
+              const reflectionsData = await reflectionsRes.json().catch(() => ({ docs: [] }))
+              for (const ref of reflectionsData.docs || []) {
+                await page.request.delete(`/api/habitReflections/${ref.id}`).catch(() => {})
+              }
+            }
+
             await page.request.delete(`/api/habitPlans/${plan.id}`).catch(() => {})
           }
         }

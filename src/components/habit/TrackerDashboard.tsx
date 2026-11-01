@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { vi } from '@/lib/i18n/vi'
 import { ProgressGrid } from '@/components/ui/ProgressGrid'
 import { CheckInModal } from './CheckInModal'
+import { StationReflectionModal } from './StationReflectionModal'
 import { TrackerSummaryCard } from './TrackerSummaryCard'
 import { MyDataPanel } from './MyDataPanel'
 import type { EmotionKey } from '@/lib/emotions'
@@ -22,6 +23,13 @@ export interface InitialCheckinData {
   note?: string | null
 }
 
+export interface InitialReflectionData {
+  id: number
+  stationIndex: number
+  answers: { question: string; answer: string }[]
+  updatedAt?: string
+}
+
 export interface TrackerDashboardProps {
   planId: number
   identityStatement?: string | null
@@ -31,6 +39,8 @@ export interface TrackerDashboardProps {
   rhythmDays?: string[] | null
   startDate?: string | Date | null
   stationNames?: string[] | null
+  stationQuestions?: { question: string }[][] | null
+  initialReflections?: InitialReflectionData[] | null
   currentDay: number
   initialCheckins: InitialCheckinData[]
   readOnly?: boolean
@@ -51,6 +61,8 @@ export function TrackerDashboard({
   rhythmDays,
   startDate,
   stationNames,
+  stationQuestions,
+  initialReflections,
   currentDay,
   initialCheckins,
   readOnly = false,
@@ -63,7 +75,11 @@ export function TrackerDashboard({
   privacyNote,
 }: TrackerDashboardProps) {
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
+  const [reflections, setReflections] = useState<InitialReflectionData[]>(initialReflections || [])
   const [activeModalDay, setActiveModalDay] = useState<number | null>(null)
+  const [activeReflectionStationIndex, setActiveReflectionStationIndex] = useState<number | null>(
+    null,
+  )
 
   const journeyDays = propJourneyDays ?? eligibility?.journeyDays ?? 28
 
@@ -89,22 +105,38 @@ export function TrackerDashboard({
 
   // Chuyển đổi các trạm sang cấu trúc ProgressStationItem cho ProgressGrid
   const stations = React.useMemo(() => {
-    return view.stations.map((st) => ({
-      name: st.name,
-      fromDay: st.fromDay,
-      toDay: st.toDay,
-      votedCount: st.votedCount,
-      votingDaysTotal: st.votingDaysTotal,
-      days: st.days.map((d) => ({
-        day: d.day,
-        status: d.state,
-        emotionKey: d.emotionKey,
-        note: d.note,
-        disabled: d.day > currentDay,
-        date: planDayDate(startDate, d.day),
-      })),
-    }))
-  }, [view.stations, currentDay, startDate])
+    return view.stations.map((st, sIdx) => {
+      const qList = stationQuestions?.[sIdx] || []
+      const reflection = reflections.find((r) => r.stationIndex === sIdx)
+      const hasReflection = Boolean(
+        reflection && reflection.answers && reflection.answers.length > 0,
+      )
+      const isReflectionOpen = currentDay > st.toDay || currentDay > journeyDays
+
+      return {
+        index: sIdx,
+        name: st.name,
+        fromDay: st.fromDay,
+        toDay: st.toDay,
+        votedCount: st.votedCount,
+        votingDaysTotal: st.votingDaysTotal,
+        days: st.days.map((d) => ({
+          day: d.day,
+          status: d.state,
+          emotionKey: d.emotionKey,
+          note: d.note,
+          disabled: d.day > currentDay,
+          date: planDayDate(startDate, d.day),
+        })),
+        reflectionQuestions: qList,
+        hasReflection,
+        isReflectionOpen,
+        onOpenReflection: (idx: number) => {
+          setActiveReflectionStationIndex(idx)
+        },
+      }
+    })
+  }, [view.stations, currentDay, startDate, stationQuestions, reflections, journeyDays])
 
   // Banner lỡ nhịp 1 ngày theo luật nhịp tuần (HB-11)
   const showMissedOneDayEncouragement = view.missedRun.count === 1 && !readOnly
@@ -143,6 +175,62 @@ export function TrackerDashboard({
 
   const departureDate = planDayDate(startDate, 1)
   const finishDate = planDayDate(startDate, journeyDays)
+
+  // Dữ liệu cho modal suy ngẫm trạm đang mở
+  const activeReflection =
+    activeReflectionStationIndex !== null
+      ? reflections.find((r) => r.stationIndex === activeReflectionStationIndex)
+      : null
+
+  const activeStationName =
+    activeReflectionStationIndex !== null
+      ? view.stations[activeReflectionStationIndex]?.name ||
+        vi.hb11.stationFallback(activeReflectionStationIndex + 1)
+      : ''
+
+  // Nếu đã lưu suy ngẫm trước đó: các câu hỏi được lấy từ snapshot đã chụp lại (reflection.answers).
+  // Nếu chưa lưu: lấy từ CMS (station.reflectionQuestions).
+  const initialQuestionsForActiveModal = React.useMemo(() => {
+    if (activeReflection && activeReflection.answers.length > 0) {
+      return activeReflection.answers.map((a) => ({
+        question: a.question,
+        answer: a.answer,
+      }))
+    }
+    const questionsFromCms =
+      activeReflectionStationIndex !== null
+        ? stationQuestions?.[activeReflectionStationIndex] || []
+        : []
+    return questionsFromCms.map((q) => ({
+      question: q.question,
+      answer: '',
+    }))
+  }, [activeReflection, activeReflectionStationIndex, stationQuestions])
+
+  const handleReflectionSuccess = (savedData: {
+    stationIndex: number
+    answers: { question: string; answer: string }[]
+  }) => {
+    setReflections((prev) => {
+      const idx = prev.findIndex((r) => r.stationIndex === savedData.stationIndex)
+      if (idx >= 0) {
+        const next = [...prev]
+        next[idx] = {
+          ...next[idx],
+          answers: savedData.answers,
+        }
+        return next
+      }
+      return [
+        ...prev,
+        {
+          id: 0,
+          stationIndex: savedData.stationIndex,
+          answers: savedData.answers,
+        },
+      ]
+    })
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-8">
@@ -322,6 +410,20 @@ export function TrackerDashboard({
           onClose={() => setActiveModalDay(null)}
           onSuccess={handleCheckinSuccess}
           readOnly={readOnly}
+        />
+      )}
+
+      {/* 7. Modal Suy ngẫm trạm (HB-12) */}
+      {activeReflectionStationIndex !== null && (
+        <StationReflectionModal
+          key={activeReflectionStationIndex}
+          isOpen={true}
+          onClose={() => setActiveReflectionStationIndex(null)}
+          stationName={activeStationName}
+          stationIndex={activeReflectionStationIndex}
+          initialQuestions={initialQuestionsForActiveModal}
+          readOnly={readOnly}
+          onSuccess={handleReflectionSuccess}
         />
       )}
     </div>
