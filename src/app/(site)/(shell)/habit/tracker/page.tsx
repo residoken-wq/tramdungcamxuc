@@ -19,7 +19,6 @@ import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
 import { ToolPaywall } from '@/components/site/trial/ToolPaywall'
-import { readHabitRestartSince } from '@/lib/habit/restart-marker.server'
 
 export const metadata: Metadata = {
   title: `${vi.tracker.pageTitle} | Trạm Dừng Cảm Xúc`,
@@ -65,10 +64,7 @@ export default async function HabitTrackerPage() {
   // REVIEW-REQUIRED: Chỉ khách còn quyền mới được gắn kế hoạch Habit Loop; khách không có quyền
   // chỉ xem kế hoạch đã là của mình (chỉ đọc), không gắn, không tạo.
   const plan = access.hasAccess
-    ? await getOrCreateTrackerPlan(customer.id, {
-        payload,
-        restartSince: await readHabitRestartSince(),
-      })
+    ? await getOrCreateTrackerPlan(customer.id, { payload })
     : await findOwnTrackerPlan(customer.id, payload)
 
   // 4. Nếu khách hàng không có quyền truy cập (chưa dùng thử hoặc đã hết hạn) và chưa có kế hoạch

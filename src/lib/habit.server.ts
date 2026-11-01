@@ -35,6 +35,7 @@ export interface HabitPlanSubmissionResult {
 export type HabitPlanSubmissionOptions = SubmissionOptions & {
   req?: Partial<PayloadRequest>
   disableTransaction?: boolean
+  customerId?: number
 }
 
 export interface HabitProductData {
@@ -404,19 +405,33 @@ export async function submitHabitPlan(
           }
         ).sessions?.[String(txId)]?.db
       : undefined
+    const lockKey = options.customerId
+      ? `habit-plan:customer:${options.customerId}`
+      : `habit-plan:${cleanEmail}`
     if (txDb) {
-      await txDb.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${'habit-plan:' + cleanEmail}))`)
+      await txDb.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`)
     }
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+    // REVIEW-REQUIRED: HB-25 So trùng 10 phút: khách đã đăng nhập so theo customer + identityStatement,
+    // khách vãng lai so theo leadEmail + identityStatement.
+    const duplicateWhere: Where = options.customerId
+      ? {
+          and: [
+            { customer: { equals: options.customerId } },
+            { identityStatement: { equals: validated.identityStatement } },
+            { createdAt: { greater_than_equal: tenMinutesAgo } },
+          ],
+        }
+      : {
+          and: [
+            { leadEmail: { equals: cleanEmail } },
+            { identityStatement: { equals: validated.identityStatement } },
+            { createdAt: { greater_than_equal: tenMinutesAgo } },
+          ],
+        }
     const existing = await payload.find({
       collection: 'habitPlans',
-      where: {
-        and: [
-          { leadEmail: { equals: cleanEmail } },
-          { identityStatement: { equals: validated.identityStatement } },
-          { createdAt: { greater_than_equal: tenMinutesAgo } },
-        ],
-      },
+      where: duplicateWhere,
       sort: '-createdAt',
       limit: 1,
       depth: 0,
@@ -435,7 +450,8 @@ export async function submitHabitPlan(
       }
     }
 
-    // REVIEW-REQUIRED: Lưu kế hoạch cho khách chưa đăng nhập (leadEmail) với các nhóm field scorecard, anchorHabit, rhythmDays, twoMinuteAction, startDate, privateReason, companionName
+    // REVIEW-REQUIRED: HB-25 Lưu kế hoạch. Nếu có customerId (lấy từ phiên đăng nhập), gắn thẳng customer = customerId.
+    // Vẫn ghi leadEmail = cleanEmail để giữ lead / email xác nhận. Không nhận customer hay customerId từ client input.
     const planData: RequiredDataFromCollectionSlug<'habitPlans'> = {
       leadEmail: cleanEmail,
       scorecard: validated.scorecard.map((item) => ({
@@ -449,6 +465,9 @@ export async function submitHabitPlan(
         action: item.action,
       })),
       startDate: planStartDate,
+    }
+    if (options.customerId) {
+      planData.customer = options.customerId
     }
     if (validated.anchorHabit) {
       planData.anchorHabit = validated.anchorHabit

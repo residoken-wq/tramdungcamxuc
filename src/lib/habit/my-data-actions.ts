@@ -12,7 +12,6 @@ import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { findOwnTrackerPlan } from './tracker.server'
 import { getJourneyDays, type CheckinStatus } from './rhythm'
 import { getCurrentDayOfPlan, planDayDate } from './tracker-stats'
-import { markHabitRestart } from './restart-marker.server'
 import { getHabitJourneyContent } from './journey-content.server'
 import { loadPlanReflectionsForBackup, stationReflectionOpenDay } from './reflections.server'
 import {
@@ -867,10 +866,8 @@ export async function restartJourney(): Promise<RestartJourneyResult> {
     }
   }
 
-  // REVIEW-REQUIRED (HB-13c): mark the restart in this browser only; the tracker adopts a newer
-  // wizard plan (saved by unverified leadEmail) only while this marker is valid.
-  await markHabitRestart()
-
+  // REVIEW-REQUIRED: HB-25: Kế hoạch cũ vẫn giữ nguyên trong DB. Khách được chuyển về HABIT_LOOP_PATH;
+  // vì khách đã đăng nhập, kế hoạch mới tạo sẽ lưu thẳng vào tài khoản qua customerId tại submitHabitPlanAction.
   return {
     success: true,
     redirectTo: HABIT_LOOP_PATH,
