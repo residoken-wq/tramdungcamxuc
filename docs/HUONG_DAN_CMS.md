@@ -987,7 +987,9 @@ Lần chạy seed đầu tiên điền sẵn chữ `[MẪU]` cho các mục còn
    - **Hành động dưới 2 phút (`twoMinuteAction`)**: Phiên bản tối giản dưới 2 phút ("bản tối giản") giúp duy trì đà thực hành trong những ngày năng lượng thấp.
    - **Câu định danh cam kết (`identityStatement`)**: Cam kết danh tính cho hành trình ("Tôi sẽ... để trở thành...").
    - **Kỹ thuật đã chọn (`chosenTechniques`)**: Danh sách các kỹ thuật rèn luyện thói quen học viên đã lựa chọn theo từng giai đoạn.
-   - **Ngày bắt đầu (`startDate`)**: Thời điểm kích hoạt hành trình theo giờ Việt Nam. Trường này tự động gán là ngày tạo kế hoạch theo giờ Việt Nam; học viên không được tự ý sửa hay đặt lùi ngày để tốt nghiệp sớm. Giờ đây chỉ quản trị viên mới sửa được khi cần hỗ trợ học viên điều chỉnh lịch rèn luyện.
+   - **Lý do riêng tư (`privateReason`)**: Lý do cá nhân sâu kín của học viên ("Vì sao điều này quan trọng với bạn?"). Để đảm bảo quyền riêng tư theo thiết kế, trường này bảo mật tuyệt đối: chỉ học viên sở hữu tài khoản mới đọc được; quản trị viên (`editor` / `owner`) không đọc được trong CMS và hệ thống không bao giờ đưa trường này lên Boarding Pass hay gửi ra analytics.
+   - **Bạn đồng hành (`companionName`)**: Tên người bạn cùng đồng hành do học viên đặt để hiển thị nhắc nhở (không lưu trữ thông tin liên lạc).
+   - **Ngày bắt đầu (`startDate`)**: Thời điểm kích hoạt hành trình theo giờ Việt Nam. Học viên được tự chọn ngày bắt đầu khi tạo kế hoạch ở Bước 4 "Gọi tên thói quen" (từ hôm nay đến tối đa 14 ngày tới theo giờ Việt Nam; mặc định là hôm nay). Sau khi kế hoạch được tạo, trường này khóa với học viên (không tự ý sửa hay đặt lùi ngày để tốt nghiệp sớm). Quản trị viên (`editor` / `owner`) vẫn xem và sửa được trong CMS khi cần hỗ trợ học viên điều chỉnh lịch rèn luyện.
    - **Danh sách ngày check-in (`habitCheckins`)**: Nhật ký check-in từng ngày của học viên trong hành trình, gồm các trường:
      - **Kế hoạch (`plan`)**: Kế hoạch thói quen tương ứng.
      - **Ngày thứ (`day`)**: Số thứ tự ngày trong hành trình (từ ngày 1 đến tối đa `journeyDays`).
