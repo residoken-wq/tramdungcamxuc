@@ -111,7 +111,7 @@ export function HabitFlow({
     if (startTimeRef.current === null) {
       startTimeRef.current = Date.now()
     }
-    const knownIds = new Set(techniques.map((t) => t.id))
+    const knownIds = new Set((techniques || []).map((t) => t.id))
     const timer = setTimeout(() => {
       try {
         const stored = localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
@@ -324,7 +324,11 @@ export function HabitFlow({
       setDraft((prev) => ({ ...prev, step: 3 }))
     } else if (draft.step === 3) {
       if (draft.scorecard.length === 0) {
-        setStepError(vi.habit.wizard.errors.scorecardEmpty)
+        setStepError(vi.hb19.errors.scorecardEmpty)
+        return
+      }
+      if (!draft.anchorHabit) {
+        setStepError(vi.hb19.errors.anchorRequired)
         return
       }
       setDraft((prev) => ({ ...prev, step: 4 }))
@@ -485,7 +489,7 @@ export function HabitFlow({
       />
 
       {/* Thông báo lỗi nếu có */}
-      {stepError && (
+      {stepError && draft.step !== 3 && (
         <div
           role="alert"
           className="mb-6 p-4 rounded-card bg-accent-pink/10 border border-accent-pink/20 text-deep-navy text-sm font-medium flex items-center gap-3 animate-fade-in"
@@ -582,6 +586,8 @@ export function HabitFlow({
               onRemoveHabit={handleRemoveHabit}
               onUpdateRating={handleUpdateRating}
               onError={setStepError}
+              error={stepError}
+              quote={stepQuotes?.mentor}
             />
           )}
 
@@ -661,7 +667,10 @@ export function HabitFlow({
                 type="button"
                 variant="primary"
                 onClick={handleNextStep}
-                disabled={draft.step === 1 && questions.length > 0 && !flowScore.isComplete}
+                disabled={
+                  (draft.step === 1 && questions.length > 0 && !flowScore.isComplete) ||
+                  (draft.step === 3 && !draft.scorecard.some((item) => item.rating === 'good'))
+                }
               >
                 {vi.habit.wizard.controls.next} →
               </Button>
