@@ -144,8 +144,8 @@ describe('HB-09: DB integration tests for Habit Plan Submission with B3-B4 field
     expect(storedPlan.scorecard?.[0]?.time).toBeFalsy()
   })
 
-  it('privateReason, companionName, startDate gửi kèm trong input không được lưu', async () => {
-    const testEmail = `hb09-strip-${randomUUID().slice(0, 8)}@example.test`
+  it('HB-20: privateReason, companionName, startDate hợp lệ gửi kèm trong input được lưu', async () => {
+    const testEmail = `hb20-save-${randomUUID().slice(0, 8)}@example.test`
     trackedEmails.push(testEmail)
 
     const result = await submitHabitPlan(
@@ -155,9 +155,8 @@ describe('HB-09: DB integration tests for Habit Plan Submission with B3-B4 field
         chosenTechniques: [],
         email: testEmail,
         consent: true,
-        privateReason: 'Lý do bí mật không được lưu khi chưa đăng nhập',
-        companionName: 'Bạn đồng hành bí mật',
-        startDate: '2099-01-01T00:00:00.000Z',
+        privateReason: 'Lý do riêng tư của tôi để không bỏ cuộc',
+        companionName: 'Bạn đồng hành tin cậy',
       },
       { ip: `192.168.99.${Math.floor(Math.random() * 200) + 10}` },
       { payload, emailSender },
@@ -173,10 +172,28 @@ describe('HB-09: DB integration tests for Habit Plan Submission with B3-B4 field
     })) as unknown as HabitPlan
 
     expect(storedPlan).toBeDefined()
-    expect(storedPlan.privateReason).toBeFalsy()
-    expect(storedPlan.companionName).toBeFalsy()
-    // startDate phải là ngày hôm nay do server tự gán, không phải ngày 2099
-    expect(storedPlan.startDate).not.toContain('2099')
+    expect(storedPlan.privateReason).toBe('Lý do riêng tư của tôi để không bỏ cuộc')
+    expect(storedPlan.companionName).toBe('Bạn đồng hành tin cậy')
+    expect(storedPlan.startDate).toBeDefined()
+  })
+
+  it('HB-20: startDate vượt quá 14 ngày bị từ chối với lỗi tiếng Việt', async () => {
+    const testEmail = `hb20-invalid-date-${randomUUID().slice(0, 8)}@example.test`
+
+    await expect(
+      submitHabitPlan(
+        {
+          scorecard: [{ habit: 'Chạy bộ 15 phút', rating: 'good' }],
+          identityStatement: 'Tôi sẽ chạy bộ để rèn luyện sức bền',
+          chosenTechniques: [],
+          email: testEmail,
+          consent: true,
+          startDate: '2099-01-01',
+        },
+        { ip: `192.168.99.${Math.floor(Math.random() * 200) + 10}` },
+        { payload, emailSender },
+      ),
+    ).rejects.toThrow()
   })
 
   it('getOrCreateTrackerPlan gắn kế hoạch leadEmail vào customer vẫn giữ nguyên các field mới', async () => {

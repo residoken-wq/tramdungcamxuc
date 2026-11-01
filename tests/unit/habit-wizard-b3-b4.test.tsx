@@ -97,8 +97,9 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
     // Kiểm tra câu gợi ý công thức neo xuất hiện
     expect(screen.getByText(/Sau khi Thức dậy 6h, tôi sẽ uống nước ấm/i)).toBeDefined()
 
-    // Kiểm tra dòng chỉ đọc ngày bắt đầu & dòng nhắc dữ liệu riêng tư
-    expect(screen.getByText(new RegExp(viStrings.hb09.step2.privateDataNote, 'i'))).toBeDefined()
+    // Kiểm tra các phần mới HB-20: lý do riêng tư & ngày bắt đầu
+    expect(screen.getByText(new RegExp(viStrings.hb20.privateReason.title, 'i'))).toBeDefined()
+    expect(screen.getByText(new RegExp(viStrings.hb20.startDate.title, 'i'))).toBeDefined()
 
     // Kiểm tra 7 nút nhịp tuần đang bật (aria-pressed = true)
     const rhythmOptions = viStrings.hb03.fields.rhythmDaysOptions
@@ -110,7 +111,7 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
 
     // Nhập hành động dưới 2 phút (20 ký tự: 'Rót một cốc nước sẵn')
     const twoMinInput = screen.getByPlaceholderText(
-      viStrings.hb09.step2.twoMinutePlaceholder,
+      viStrings.hb20.coreHabit.placeholder,
     ) as HTMLInputElement
     await act(async () => {
       fireEvent.change(twoMinInput, { target: { value: 'Rót một cốc nước sẵn' } })
@@ -132,16 +133,23 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
       fireEvent.click(nextBtn)
     })
 
-    expect(screen.getByText(viStrings.hb09.step2.rhythmEmptyError)).toBeDefined()
+    expect(screen.getAllByText(viStrings.hb20.errors.rhythmEmpty).length).toBeGreaterThan(0)
 
-    // Bật lại Thứ 2
+    // Chọn nhịp 1 lần/tuần và bật lại Thứ 2
+    const freq1Btn = screen.getByRole('button', {
+      name: viStrings.hb20.rhythm.frequencyButtonAria(1),
+    })
+    await act(async () => {
+      fireEvent.click(freq1Btn)
+    })
+
     const monBtn = screen.getByRole('button', { name: rhythmOptions.mon })
     await act(async () => {
       fireEvent.click(monBtn)
     })
     expect(monBtn.getAttribute('aria-pressed')).toBe('true')
 
-    // Bấm Tiếp tục -> chuyển bước 3 thành công
+    // Bấm Tiếp tục -> chuyển bước tiếp theo thành công
     await act(async () => {
       fireEvent.click(nextBtn)
     })

@@ -300,19 +300,19 @@ describe('HB-09: Unit tests for Wizard B3-B4 Draft & Schema Validation', () => {
       }
     })
 
-    it('bỏ qua (strip) privateReason, companionName, startDate gửi kèm trong input', () => {
+    it('HB-20: chấp nhận privateReason, companionName, startDate gửi kèm trong input', () => {
       const res = habitPlanSubmissionSchema.safeParse({
         ...baseValidInput,
         privateReason: 'Lý do thầm kín cố tình gửi',
         companionName: 'Bạn đồng hành bí mật',
-        startDate: '2099-01-01T00:00:00.000Z',
+        startDate: '2026-11-05',
       })
       expect(res.success).toBe(true)
       if (res.success) {
         const data = res.data as Record<string, unknown>
-        expect(data.privateReason).toBeUndefined()
-        expect(data.companionName).toBeUndefined()
-        expect(data.startDate).toBeUndefined()
+        expect(data.privateReason).toBe('Lý do thầm kín cố tình gửi')
+        expect(data.companionName).toBe('Bạn đồng hành bí mật')
+        expect(data.startDate).toBe('2026-11-05')
       }
     })
   })
