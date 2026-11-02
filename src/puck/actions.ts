@@ -1,7 +1,7 @@
 'use server'
 
 import { headers as getHeaders } from 'next/headers'
-import { getPayload } from 'payload'
+import { APIError, getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
@@ -11,7 +11,10 @@ import { normalizePuckData } from '@/puck/migrations'
 import { isAdminUser, isOwnerUser } from '@/lib/auth/access'
 import { validateTemplatePuckData } from '@/puck/template-validation'
 import { puckConfig } from '@/puck/config'
-import { extractCustomCode, hasCustomCodeChanged } from './custom-code-guard'
+import { hasCustomCode, hasCustomCodeChanged } from './custom-code-guard'
+
+/** EB-09c: the collection hook refused custom CSS / HTML from a non-owner (403). */
+const isCustomCodeRefusal = (error: unknown) => error instanceof APIError && error.status === 403
 
 export type SaveActionResult = {
   success: boolean
@@ -339,7 +342,7 @@ export async function restoreVersionAction(versionId: string): Promise<RestoreVe
     return {
       success: false,
       code: 'RESTORE_FAILED',
-      message: vi.builder.restoreFailed,
+      message: isCustomCodeRefusal(error) ? vi.eb09.onlyOwnerAllowed : vi.builder.restoreFailed,
     }
   }
 }
@@ -412,7 +415,9 @@ export async function duplicatePageAction(pageId: string): Promise<DuplicatePage
     return {
       success: false,
       code: 'DUPLICATE_FAILED',
-      message: vi.builder.duplicatePageFailed,
+      message: isCustomCodeRefusal(error)
+        ? vi.eb09.onlyOwnerAllowed
+        : vi.builder.duplicatePageFailed,
     }
   }
 }
@@ -530,8 +535,7 @@ export async function saveTemplateAction(params: {
     // REVIEW-REQUIRED: Non-owners cannot create templates containing custom CSS or HtmlWidget content
     const isOwner = isOwnerUser(user)
     if (!isOwner) {
-      const code = extractCustomCode(params.puckData)
-      if (code.rootCss || code.blockCss.size > 0 || code.widgetHtml.size > 0) {
+      if (hasCustomCode(params.puckData)) {
         return {
           success: false,
           code: 'FORBIDDEN',

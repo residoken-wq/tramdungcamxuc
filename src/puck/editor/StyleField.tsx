@@ -311,9 +311,7 @@ export function StyleField({
                 { value: 'normal', label: vi.pk13.titleSpacing.blockLevels.normal },
                 { value: 'airy', label: vi.pk13.titleSpacing.gapLevels.airy },
               ]}
-              onChange={(v) =>
-                update({ eyebrowGap: v ? (v as EyebrowGapPreset) : undefined })
-              }
+              onChange={(v) => update({ eyebrowGap: v ? (v as EyebrowGapPreset) : undefined })}
             />
             <SelectControl
               label={vi.pk13.titleSpacing.emotionGap}
@@ -324,9 +322,7 @@ export function StyleField({
                 { value: 'normal', label: vi.pk13.titleSpacing.blockLevels.normal },
                 { value: 'airy', label: vi.pk13.titleSpacing.gapLevels.airy },
               ]}
-              onChange={(v) =>
-                update({ emotionGap: v ? (v as EmotionGapPreset) : undefined })
-              }
+              onChange={(v) => update({ emotionGap: v ? (v as EmotionGapPreset) : undefined })}
             />
           </Group>
           <Group title={t.groups.border}>
@@ -410,13 +406,9 @@ export function StyleField({
           <Group title={vi.eb09.classesZIndexGroup}>
             <div className="flex flex-col gap-1">
               <FieldLabel>{vi.eb09.cssClassesLabel}</FieldLabel>
-              <input
-                type="text"
-                aria-label={vi.eb09.cssClassesLabel}
-                placeholder={vi.eb09.cssClassesPlaceholder}
-                value={style.cssClasses?.join(' ') ?? ''}
-                onChange={(e) => update({ cssClasses: cleanCssClasses(e.target.value) })}
-                className="h-8 rounded-md border border-deep-navy/20 bg-warm-ivory/50 px-2 text-xs text-deep-navy focus:border-deep-navy focus:outline-none"
+              <CssClassesInput
+                value={style.cssClasses}
+                onCommit={(cssClasses) => update({ cssClasses })}
               />
               <span className="text-[11px] text-deep-navy/80">{vi.eb09.cssClassesHelp}</span>
             </div>
@@ -534,5 +526,39 @@ function AnchorControl({
       />
       <span className="text-[11px] text-deep-navy/80">{t.fields.anchorHint}</span>
     </div>
+  )
+}
+
+/**
+ * EB-09c: the class list is cleaned when the field loses focus (or on Enter). Cleaning on every
+ * keystroke trimmed the trailing space right away, so a second class could not be typed.
+ */
+function CssClassesInput({
+  value,
+  onCommit,
+}: {
+  value: string[] | undefined
+  onCommit: (value: string[] | undefined) => void
+}) {
+  const saved = value?.join(' ') ?? ''
+  const [draft, setDraft] = useState<string | null>(null)
+  const commit = () => {
+    if (draft === null) return
+    onCommit(cleanCssClasses(draft))
+    setDraft(null)
+  }
+  return (
+    <input
+      type="text"
+      aria-label={vi.eb09.cssClassesLabel}
+      placeholder={vi.eb09.cssClassesPlaceholder}
+      value={draft ?? saved}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') commit()
+      }}
+      className="h-8 rounded-md border border-deep-navy/20 bg-warm-ivory/50 px-2 text-xs text-deep-navy focus:border-deep-navy focus:outline-none"
+    />
   )
 }

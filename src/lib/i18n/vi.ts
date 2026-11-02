@@ -3108,6 +3108,7 @@ export const vi = {
     htmlContentPlaceholder: '<p class="text-center">Nội dung HTML...</p>',
     htmlContentWarning: 'Mã này hiện trên trang công khai',
     htmlLockedNotice: 'Tính năng mã HTML đang bị khoá trong Thiết kế hệ thống.',
+    htmlEmpty: 'Chưa có nội dung HTML',
     onlyOwnerAllowed: 'Chỉ chủ site được sửa CSS / HTML tuỳ chỉnh',
   },
   hb07: {

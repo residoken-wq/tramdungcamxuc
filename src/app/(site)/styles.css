@@ -4,14 +4,14 @@
 
 :root {
   /* Brand Book 2026 Colors (Hex) */
-  --color-deep-navy: #280a60;
-  --color-bright-magenta: #bc039e;
-  --color-accent-pink: #ef3b83;
-  --color-soft-pink: #fde6f6;
-  --color-lavender-mist: #e9ddf9;
-  --color-mint-haze: #d9f1ea;
-  --color-butter-cream: #f6e9b8;
-  --color-warm-ivory: #faf7f4;
+  --color-deep-navy: #280A60;
+  --color-bright-magenta: #BC039E;
+  --color-accent-pink: #EF3B83;
+  --color-soft-pink: #FDE6F6;
+  --color-lavender-mist: #E9DDF9;
+  --color-mint-haze: #D9F1EA;
+  --color-butter-cream: #F6E9B8;
+  --color-warm-ivory: #FAF7F4;
 
   /* Brand Book 2026 Colors (RGB Triplet for Tailwind Opacity) */
   --color-deep-navy-rgb: 40 10 96;
@@ -102,13 +102,13 @@ html.eb-anim-ready [data-eb-entrance='zoom-in']:not(.eb-in-view) {
 }
 
 html.eb-anim-ready [data-eb-entrance='fade-in'].eb-in-view {
-  animation: eb-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: eb-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 html.eb-anim-ready [data-eb-entrance='fade-up'].eb-in-view {
-  animation: eb-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: eb-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 html.eb-anim-ready [data-eb-entrance='zoom-in'].eb-in-view {
-  animation: eb-zoom-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: eb-zoom-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 html.eb-anim-ready [data-eb-entrance-delay='150'] {

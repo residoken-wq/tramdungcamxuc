@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto'
 import { test, expect, type Response } from './fixtures'
-import { vi } from '@/lib/i18n/vi'
 
 test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
   test('enforces locking, owner-only authorization, safe HTML sanitization, and entrance animation progressive enhancement', async ({

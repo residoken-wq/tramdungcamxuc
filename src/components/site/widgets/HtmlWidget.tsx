@@ -33,7 +33,7 @@ export function HtmlWidget({ html, isEditing, isLocked }: HtmlWidgetProps) {
     if (isEditing) {
       return (
         <div className="rounded border border-dashed border-deep-navy/20 p-3 text-center text-xs text-deep-navy/60">
-          Chưa có nội dung HTML
+          {vi.eb09.htmlEmpty}
         </div>
       )
     }

@@ -782,23 +782,27 @@ export function getPuckConfig(options?: {
       }
     : puckConfig.root
 
-  if (!heroPermissions && !canEditCustomCss) {
+  // EB-09c: with custom code locked, the editor canvas shows the "locked" notice instead of the
+  // stored HTML (the public page already renders nothing: rich-text-data.ts empties it).
+  const htmlLocked = Boolean(options?.designSystem && !isOpen(options.designSystem, 'customCss'))
+
+  if (!heroPermissions && !canEditCustomCss && !htmlLocked) {
     return puckConfig
   }
 
-  return {
-    ...puckConfig,
-    root: rootConfig,
-    components: heroPermissions
-      ? {
-          ...puckConfig.components,
-          HeroTwoEntries: {
-            ...puckConfig.components.HeroTwoEntries,
-            permissions: heroPermissions,
-          },
-        }
-      : puckConfig.components,
+  const components = { ...puckConfig.components }
+  if (heroPermissions) {
+    components.HeroTwoEntries = { ...components.HeroTwoEntries, permissions: heroPermissions }
   }
+  if (htmlLocked) {
+    const htmlBlock = components.HtmlWidget
+    components.HtmlWidget = {
+      ...htmlBlock,
+      render: (props) => htmlBlock.render({ ...props, isLocked: true }),
+    }
+  }
+
+  return { ...puckConfig, root: rootConfig, components }
 }
 
 export default puckConfig

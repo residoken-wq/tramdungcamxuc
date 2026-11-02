@@ -266,14 +266,24 @@ function cleanCustomHtmlAttributes(
   }
 }
 
-/**
- * Pure whitelist-based HTML sanitizer for standard rich text (TextWidget).
- */
-export function sanitizeRichText(rawHtml: string | null | undefined): string {
-  if (!rawHtml || typeof rawHtml !== 'string') return ''
+// A tag starts like the browser reads one: `<` or `</` directly followed by a letter.
+const TAG_REGEX = /<(\/)?([a-zA-Z][a-zA-Z0-9-]*)([^>]*)>/g
 
-  // 1. Remove dangerous elements including their inner text/code
-  let html = rawHtml
+/** Text between rebuilt tags never carries markup: a stray `<` would let a browser read it as a tag. */
+const escapeText = (text: string) => text.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+/**
+ * REVIEW-REQUIRED: shared allow-list pass. Comments and dangerous elements are removed, every
+ * complete tag is rebuilt by `rebuildTag` (which returns '' to drop it), and everything else is
+ * escaped as text. EB-09c: before this, an unterminated tag at the end of the input
+ * (`<img src=x onerror=alert(1) `) was copied unchanged and became a live tag once the page
+ * markup that follows closed it.
+ */
+function rebuildHtml(
+  rawHtml: string,
+  rebuildTag: (isClosing: boolean, tag: string, rawAttrs: string) => string,
+): string {
+  let html = rawHtml.replace(/<!--[\s\S]*?(?:-->|$)/g, '')
   let prev = ''
   while (prev !== html) {
     prev = html
@@ -281,25 +291,27 @@ export function sanitizeRichText(rawHtml: string | null | undefined): string {
   }
   html = html.replace(DANGEROUS_SELF_CLOSING, '')
 
-  // 2. Parse and filter all remaining HTML tags
-  const tagRegex = /<\s*(\/)?\s*([a-zA-Z0-9_-]+)([^>]*)>/g
+  let out = ''
+  let last = 0
+  for (const match of html.matchAll(TAG_REGEX)) {
+    out += escapeText(html.slice(last, match.index))
+    out += rebuildTag(Boolean(match[1]), match[2].toLowerCase(), match[3] || '')
+    last = match.index + match[0].length
+  }
+  return out + escapeText(html.slice(last))
+}
 
-  const sanitized = html.replace(tagRegex, (_fullMatch, isClosing, rawTagName, rawAttrs) => {
-    const tag = rawTagName.toLowerCase()
+/**
+ * Pure whitelist-based HTML sanitizer for standard rich text (TextWidget).
+ */
+export function sanitizeRichText(rawHtml: string | null | undefined): string {
+  if (!rawHtml || typeof rawHtml !== 'string') return ''
 
-    if (!TEXT_ALLOWED_TAGS.has(tag)) {
-      return ''
-    }
-
-    if (isClosing) {
-      return `</${tag}>`
-    }
-
-    const cleanAttrs = cleanTextTagAttributes(tag, rawAttrs || '')
-    return `<${tag}${cleanAttrs}>`
+  return rebuildHtml(rawHtml, (isClosing, tag, rawAttrs) => {
+    if (!TEXT_ALLOWED_TAGS.has(tag)) return ''
+    if (isClosing) return `</${tag}>`
+    return `<${tag}${cleanTextTagAttributes(tag, rawAttrs)}>`
   })
-
-  return sanitized
 }
 
 /**
@@ -314,36 +326,18 @@ export function sanitizeCustomHtml(rawHtml: string | null | undefined): string {
   if (!rawHtml || typeof rawHtml !== 'string') return ''
   if (rawHtml.length > 20000) return ''
 
-  // 1. Remove dangerous elements including inner content
-  let html = rawHtml
-  let prev = ''
-  while (prev !== html) {
-    prev = html
-    html = html.replace(DANGEROUS_TAG_CONTENTS, '')
-  }
-  html = html.replace(DANGEROUS_SELF_CLOSING, '')
-
-  // 2. Parse and filter all tags
-  const tagRegex = /<\s*(\/)?\s*([a-zA-Z0-9_-]+)([^>]*)>/g
-
-  const sanitized = html.replace(tagRegex, (_fullMatch, isClosing, rawTagName, rawAttrs) => {
-    const tag = rawTagName.toLowerCase()
-
-    if (!CUSTOM_HTML_ALLOWED_TAGS.has(tag)) {
-      return ''
-    }
+  return rebuildHtml(rawHtml, (isClosing, tag, rawAttrs) => {
+    if (!CUSTOM_HTML_ALLOWED_TAGS.has(tag)) return ''
 
     if (isClosing) {
-      if (tag === 'img' || tag === 'br' || tag === 'hr') {
-        return ''
-      }
+      if (tag === 'img' || tag === 'br' || tag === 'hr') return ''
       return `</${tag}>`
     }
 
     if (tag === 'br') return '<br />'
     if (tag === 'hr') return '<hr />'
 
-    const { attrsStr, hasValidSrc } = cleanCustomHtmlAttributes(tag, rawAttrs || '')
+    const { attrsStr, hasValidSrc } = cleanCustomHtmlAttributes(tag, rawAttrs)
 
     // For <img>, drop the tag entirely if it does not have a safe, validated src
     if (tag === 'img') {
@@ -353,6 +347,4 @@ export function sanitizeCustomHtml(rawHtml: string | null | undefined): string {
 
     return `<${tag}${attrsStr}>`
   })
-
-  return sanitized
 }

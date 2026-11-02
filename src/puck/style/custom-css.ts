@@ -9,13 +9,21 @@
  * 1. Hard character limits (block: 5,000 chars; page: 20,000 chars).
  * 2. Absolute rejection of dangerous tokens (<, </style, @import, @charset, @namespace,
  *    @font-face, expression(, javascript:, vbscript:, behavior, -moz-binding, \ backslash).
- * 3. Strict comment validation: unclosed or orphaned comments trigger complete rejection.
- * 4. Balanced braces {} validation.
- * 5. url(...) only allows relative /api/media/file/... via cleanImageUrl. Invalid url(...) drops
- *    the entire declaration.
- * 6. Block custom CSS requires `selector` keyword at the beginning of each selector part.
- *    Any rule without `selector` is dropped. `selector` is replaced with [data-eb-id="<id>"].
- * 7. Page custom CSS is scoped under [data-eb-page] to prevent leaking into header/footer/admin.
+ * 3. The input is scanned the way a browser tokenizes it (comments, quoted strings). Unclosed
+ *    comments / strings, and strings holding `{`, `}`, `;` or a line break, reject the whole
+ *    input: otherwise the splitter below and the browser would disagree on where a rule ends
+ *    (EB-09c: `selector[x="{"], footer { … } }` reached the footer).
+ * 4. Balanced braces {} (at most `@media { rule { … } }`); a plain rule with a nested block
+ *    (CSS nesting) is dropped, since `& ~ *` inside it would reach other blocks.
+ * 5. Selector lists and declaration lists are split outside strings / brackets, and every
+ *    part must have balanced () [] – an open `(` would swallow the rules that follow.
+ * 6. url(...) only allows relative /api/media/file/... via cleanImageUrl; image-set(), image(),
+ *    cross-fade() and src() (which take bare string URLs) are not allowed. A failing
+ *    declaration is dropped.
+ * 7. Block custom CSS: every selector must start with `selector`, replaced with
+ *    [data-eb-id="<id>"]. Page custom CSS: every selector is put under [data-eb-page].
+ *    In both, the scoped element may not be followed by a `+` / `~` combinator, which would
+ *    style its siblings (other blocks, or the site footer next to the page).
  */
 
 import { cleanImageUrl } from './container-schema'
@@ -26,7 +34,6 @@ export const MAX_PAGE_CUSTOM_CSS_LENGTH = 20000
 export const PAGE_ATTR = 'data-eb-page'
 
 const FORBIDDEN_PATTERNS = [
-  /<[a-zA-Z!/]/, // HTML opening/closing tags or comments
   /<\s*\/\s*style/i,
   /@\s*import/i,
   /@\s*charset/i,
@@ -35,9 +42,12 @@ const FORBIDDEN_PATTERNS = [
   /expression\s*\(/i,
   /javascript\s*:/i,
   /vbscript\s*:/i,
-  /behavior/i,
+  /(?<![\w-])behavior/i, // IE `behavior:`; `scroll-behavior` stays allowed
   /-moz-binding/i,
 ]
+
+/** Functions that load a resource from a bare string, bypassing the url() check. */
+const STRING_URL_FUNCTIONS = /(?:image-set|\bimage|cross-fade|\bsrc)\s*\(/i
 
 interface ParsedRule {
   preamble: string
@@ -46,37 +56,60 @@ interface ParsedRule {
 }
 
 /**
- * Validates the raw CSS string against dangerous tokens, unclosed comments, and mismatched braces.
- * Returns the cleaned string (with valid comments removed) if valid, or null if rejected.
+ * Removes comments while tracking quoted strings exactly like the CSS tokenizer.
+ * Returns null when the input must be rejected as a whole.
+ */
+function stripComments(css: string): string | null {
+  let out = ''
+  let i = 0
+  while (i < css.length) {
+    const ch = css[i]
+    if (ch === '/' && css[i + 1] === '*') {
+      const end = css.indexOf('*/', i + 2)
+      if (end === -1) return null
+      i = end + 2 // removed entirely, so `java/**/script:` is caught as `javascript:`
+      continue
+    }
+    if (ch === '"' || ch === "'") {
+      const end = css.indexOf(ch, i + 1)
+      if (end === -1) return null
+      const inner = css.slice(i + 1, end)
+      if (/[{};\n\r\f]/.test(inner)) return null
+      out += css.slice(i, end + 1)
+      i = end + 1
+      continue
+    }
+    if (ch === '*' && css[i + 1] === '/') return null // orphaned */
+    out += ch
+    i++
+  }
+  return out
+}
+
+/**
+ * Validates the raw CSS string against dangerous tokens, unclosed comments / strings and
+ * mismatched braces. Returns the string without comments, or null if rejected.
  */
 function validateAndStripComments(raw: string, maxLength: number): string | null {
   if (typeof raw !== 'string') return null
   if (raw.length > maxLength) return null
 
-  // Immediately reject dangerous literal characters:
   // - '<' prevents breaking out of <style> or injecting HTML
   // - '\' prevents CSS escape sequences (\3c, \6a\61\76\61, etc.)
   if (raw.includes('<') || raw.includes('\\')) return null
 
-  // Validate comments: check for unclosed comments and strip valid comments
-  const stripped = raw.replace(/\/\*[\s\S]*?\*\//g, '')
-  if (stripped.includes('/*') || stripped.includes('*/')) {
-    // Unclosed /* or orphaned */ found
-    return null
-  }
+  const stripped = stripComments(raw)
+  if (stripped === null) return null
 
   // Check forbidden patterns in BOTH raw and stripped text
   // (stripping comments prevents keyword splitting like @im/**/port or java/* */script:)
   for (const pattern of FORBIDDEN_PATTERNS) {
-    if (pattern.test(raw) || pattern.test(stripped)) {
-      return null
-    }
+    if (pattern.test(raw) || pattern.test(stripped)) return null
   }
 
-  // Validate balanced braces {}
+  // Braces never sit inside strings here (rejected above), so counting them is exact.
   let depth = 0
-  for (let i = 0; i < stripped.length; i++) {
-    const ch = stripped[i]
+  for (const ch of stripped) {
     if (ch === '{') {
       depth++
       if (depth > 2) return null // At most @media { rule { ... } }
@@ -90,6 +123,50 @@ function validateAndStripComments(raw: string, maxLength: number): string | null
   return stripped
 }
 
+/** Splits on `sep` outside quoted strings, () and []. */
+function splitTopLevel(text: string, sep: string): string[] {
+  const parts: string[] = []
+  let depth = 0
+  let quote = ''
+  let current = ''
+  for (const ch of text) {
+    if (quote) {
+      if (ch === quote) quote = ''
+    } else if (ch === '"' || ch === "'") {
+      quote = ch
+    } else if (ch === '(' || ch === '[') {
+      depth++
+    } else if (ch === ')' || ch === ']') {
+      depth--
+    } else if (ch === sep && depth === 0) {
+      parts.push(current)
+      current = ''
+      continue
+    }
+    current += ch
+  }
+  parts.push(current)
+  return parts
+}
+
+/** True when () and [] outside strings are balanced and correctly nested. */
+function isBalanced(text: string): boolean {
+  const stack: string[] = []
+  let quote = ''
+  for (const ch of text) {
+    if (quote) {
+      if (ch === quote) quote = ''
+    } else if (ch === '"' || ch === "'") {
+      quote = ch
+    } else if (ch === '(' || ch === '[') {
+      stack.push(ch === '(' ? ')' : ']')
+    } else if (ch === ')' || ch === ']') {
+      if (stack.pop() !== ch) return false
+    }
+  }
+  return stack.length === 0 && !quote
+}
+
 /**
  * Tokenizes CSS into top-level rules and @media queries.
  */
@@ -99,41 +176,30 @@ function parseCssBlocks(css: string): ParsedRule[] {
   let currentPreamble = ''
   let currentBody = ''
 
-  for (let i = 0; i < css.length; i++) {
-    const ch = css[i]
+  for (const ch of css) {
     if (ch === '{') {
-      if (depth === 0) {
-        depth = 1
-      } else {
-        depth++
-        currentBody += ch
-      }
+      if (depth > 0) currentBody += ch
+      depth++
     } else if (ch === '}') {
       depth--
       if (depth === 0) {
-        const preambleTrimmed = currentPreamble.trim()
-        if (preambleTrimmed) {
-          const isMedia = /^@media\b/i.test(preambleTrimmed)
-          // Drop non-media @-rules for safety
-          if (!preambleTrimmed.startsWith('@') || isMedia) {
-            blocks.push({
-              preamble: preambleTrimmed,
-              body: currentBody.trim(),
-              isMedia,
-            })
-          }
+        const preamble = currentPreamble.trim()
+        const isMedia = /^@media\b/i.test(preamble)
+        // Drop non-media @-rules, and plain rules holding a nested block (CSS nesting).
+        const keep =
+          preamble && (isMedia || (!preamble.startsWith('@') && !currentBody.includes('{')))
+        if (keep && isBalanced(preamble)) {
+          blocks.push({ preamble, body: currentBody.trim(), isMedia })
         }
         currentPreamble = ''
         currentBody = ''
       } else {
         currentBody += ch
       }
+    } else if (depth === 0) {
+      currentPreamble += ch
     } else {
-      if (depth === 0) {
-        currentPreamble += ch
-      } else {
-        currentBody += ch
-      }
+      currentBody += ch
     }
   }
 
@@ -144,35 +210,27 @@ function parseCssBlocks(css: string): ParsedRule[] {
  * Filters a declaration list: verifies any url(...) references, dropping declarations that fail.
  */
 function filterDeclarations(body: string): string[] {
-  const declarations = body.split(';')
   const validDecls: string[] = []
 
-  for (const decl of declarations) {
+  for (const decl of splitTopLevel(body, ';')) {
     const d = decl.trim()
-    if (!d) continue
+    if (!d || !isBalanced(d)) continue
 
     const colonIdx = d.indexOf(':')
     if (colonIdx <= 0) continue
+    if (STRING_URL_FUNCTIONS.test(d)) continue
 
-    // Check url(...) usages
     if (/url\s*\(/i.test(d)) {
       const urlMatches = [...d.matchAll(/url\s*\(\s*(['"]?)(.*?)\1\s*\)/gi)]
-      if (urlMatches.length === 0) {
-        // Malformed url(
-        continue
-      }
-      let allValid = true
-      for (const m of urlMatches) {
-        const urlArg = m[2]?.trim()
-        if (!urlArg || !cleanImageUrl(urlArg)) {
-          allValid = false
-          break
-        }
-      }
-      if (!allValid) {
-        // Drop this declaration
-        continue
-      }
+      // Every url( must be one of the matches, and every match must point at our media.
+      const urlCount = d.match(/url\s*\(/gi)?.length ?? 0
+      const allValid =
+        urlMatches.length === urlCount &&
+        urlMatches.every((m) => {
+          const urlArg = m[2]?.trim()
+          return Boolean(urlArg && cleanImageUrl(urlArg))
+        })
+      if (!allValid) continue
     }
 
     validDecls.push(d)
@@ -182,6 +240,93 @@ function filterDeclarations(body: string): string[] {
 }
 
 const SELECTOR_KEYWORD = /^selector(?![a-zA-Z0-9_-])/i
+
+/**
+ * `rest` is what follows the scoped element in a selector. Returns false when the first
+ * combinator after the element's own compound selector is `+` or `~` (a sibling, outside the
+ * scope).
+ */
+function staysInside(rest: string): boolean {
+  let depth = 0
+  let quote = ''
+  let i = 0
+  for (; i < rest.length; i++) {
+    const ch = rest[i]
+    if (quote) {
+      if (ch === quote) quote = ''
+      continue
+    }
+    if (ch === '"' || ch === "'") quote = ch
+    else if (ch === '(' || ch === '[') depth++
+    else if (ch === ')' || ch === ']') depth--
+    else if (depth === 0 && /[\s>+~]/.test(ch)) break
+  }
+  const next = rest.slice(i).trimStart()[0]
+  return next !== '+' && next !== '~'
+}
+
+/** Replaces the leading `selector` keyword with the block's attribute selector. */
+function scopeBlockSelector(part: string, blockSelector: string): string | null {
+  if (!SELECTOR_KEYWORD.test(part)) return null
+  const rest = part.replace(SELECTOR_KEYWORD, '')
+  return staysInside(rest) ? blockSelector + rest : null
+}
+
+/** Puts a page-level selector under the builder's page wrapper. */
+function scopePageSelector(part: string): string | null {
+  const pageRoot = `[${PAGE_ATTR}]`
+  let rest: string
+  if (SELECTOR_KEYWORD.test(part)) rest = part.replace(SELECTOR_KEYWORD, '')
+  else if (part.startsWith(pageRoot)) rest = part.slice(pageRoot.length)
+  else return /^[+~]/.test(part) ? null : `${pageRoot} ${part}`
+  return staysInside(rest) ? pageRoot + rest : null
+}
+
+function sanitizeScopedCss(
+  rawCss: string,
+  maxLength: number,
+  scope: (selectorPart: string) => string | null,
+): string {
+  const validated = validateAndStripComments(rawCss, maxLength)
+  if (!validated) return ''
+
+  function processRule(preamble: string, body: string): string | null {
+    const validSelectors: string[] = []
+    for (const part of splitTopLevel(preamble, ',')) {
+      const s = part.trim()
+      if (!s || !isBalanced(s)) continue
+      const scoped = scope(s)
+      if (scoped) validSelectors.push(scoped)
+    }
+    if (validSelectors.length === 0) return null
+
+    const decls = filterDeclarations(body)
+    if (decls.length === 0) return null
+
+    return `${validSelectors.join(', ')}{${decls.join(';')}}`
+  }
+
+  const result: string[] = []
+  for (const block of parseCssBlocks(validated)) {
+    if (block.isMedia) {
+      // Parse nested rules inside @media
+      const innerResults: string[] = []
+      for (const inner of parseCssBlocks(block.body)) {
+        if (inner.isMedia) continue
+        const ruleCss = processRule(inner.preamble, inner.body)
+        if (ruleCss) innerResults.push(ruleCss)
+      }
+      if (innerResults.length > 0) {
+        result.push(`${block.preamble}{${innerResults.join('')}}`)
+      }
+    } else {
+      const ruleCss = processRule(block.preamble, block.body)
+      if (ruleCss) result.push(ruleCss)
+    }
+  }
+
+  return result.join('')
+}
 
 /**
  * Sanitizes and scopes block-level custom CSS (_style.customCss).
@@ -201,58 +346,10 @@ export function sanitizeBlockCustomCss(rawCss: unknown, blockId: string): string
     cssText = `selector { ${cssText} }`
   }
 
-  const validated = validateAndStripComments(cssText, MAX_BLOCK_CUSTOM_CSS_LENGTH)
-  if (!validated) return ''
-
-  const blocks = parseCssBlocks(validated)
-  const result: string[] = []
   const blockSelector = `[${STYLE_ATTR}="${blockId}"]`
-
-  function processRule(preamble: string, body: string): string | null {
-    const selectorParts = preamble.split(',')
-    const validSelectors: string[] = []
-
-    for (const part of selectorParts) {
-      const s = part.trim()
-      if (!s) continue
-      if (!SELECTOR_KEYWORD.test(s)) {
-        // Drop any selector that does not start with `selector`
-        continue
-      }
-      // Replace the leading selector keyword
-      const transformed = s.replace(SELECTOR_KEYWORD, blockSelector)
-      validSelectors.push(transformed)
-    }
-
-    if (validSelectors.length === 0) return null
-
-    const decls = filterDeclarations(body)
-    if (decls.length === 0) return null
-
-    return `${validSelectors.join(', ')}{${decls.join(';')}}`
-  }
-
-  for (const block of blocks) {
-    if (block.isMedia) {
-      // Parse nested rules inside @media
-      const innerBlocks = parseCssBlocks(block.body)
-      const innerResults: string[] = []
-      for (const inner of innerBlocks) {
-        if (!inner.isMedia) {
-          const ruleCss = processRule(inner.preamble, inner.body)
-          if (ruleCss) innerResults.push(ruleCss)
-        }
-      }
-      if (innerResults.length > 0) {
-        result.push(`${block.preamble}{${innerResults.join('')}}`)
-      }
-    } else {
-      const ruleCss = processRule(block.preamble, block.body)
-      if (ruleCss) result.push(ruleCss)
-    }
-  }
-
-  return result.join('')
+  return sanitizeScopedCss(cssText, MAX_BLOCK_CUSTOM_CSS_LENGTH, (part) =>
+    scopeBlockSelector(part, blockSelector),
+  )
 }
 
 /**
@@ -265,60 +362,5 @@ export function sanitizePageCustomCss(rawCss: unknown): string {
   if (typeof rawCss !== 'string') return ''
   const cssText = rawCss.trim()
   if (!cssText) return ''
-
-  const validated = validateAndStripComments(cssText, MAX_PAGE_CUSTOM_CSS_LENGTH)
-  if (!validated) return ''
-
-  const blocks = parseCssBlocks(validated)
-  const result: string[] = []
-  const pageRoot = `[${PAGE_ATTR}]`
-
-  function processPageRule(preamble: string, body: string): string | null {
-    const selectorParts = preamble.split(',')
-    const validSelectors: string[] = []
-
-    for (const part of selectorParts) {
-      const s = part.trim()
-      if (!s) continue
-
-      if (SELECTOR_KEYWORD.test(s)) {
-        // Replace selector keyword with [data-eb-page]
-        const replaced = s.replace(SELECTOR_KEYWORD, pageRoot)
-        validSelectors.push(replaced)
-      } else if (s.startsWith(pageRoot)) {
-        validSelectors.push(s)
-      } else {
-        // Scope under [data-eb-page]
-        validSelectors.push(`${pageRoot} ${s}`)
-      }
-    }
-
-    if (validSelectors.length === 0) return null
-
-    const decls = filterDeclarations(body)
-    if (decls.length === 0) return null
-
-    return `${validSelectors.join(', ')}{${decls.join(';')}}`
-  }
-
-  for (const block of blocks) {
-    if (block.isMedia) {
-      const innerBlocks = parseCssBlocks(block.body)
-      const innerResults: string[] = []
-      for (const inner of innerBlocks) {
-        if (!inner.isMedia) {
-          const ruleCss = processPageRule(inner.preamble, inner.body)
-          if (ruleCss) innerResults.push(ruleCss)
-        }
-      }
-      if (innerResults.length > 0) {
-        result.push(`${block.preamble}{${innerResults.join('')}}`)
-      }
-    } else {
-      const ruleCss = processPageRule(block.preamble, block.body)
-      if (ruleCss) result.push(ruleCss)
-    }
-  }
-
-  return result.join('')
+  return sanitizeScopedCss(cssText, MAX_PAGE_CUSTOM_CSS_LENGTH, scopePageSelector)
 }
