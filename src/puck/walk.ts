@@ -90,3 +90,65 @@ export async function walkPuckItems(data: unknown, visit: WalkVisitor): Promise<
     }
   }
 }
+
+/**
+ * Synchronous version of walkPuckItems for fast validation without Promises.
+ */
+export function walkPuckItemsSync(data: unknown, visit: (item: PuckItem) => void): void {
+  if (!data || typeof data !== 'object') {
+    return
+  }
+
+  const visitedItems = new Set<object>()
+
+  function walkItem(item: PuckItem): void {
+    if (visitedItems.has(item)) {
+      return
+    }
+    visitedItems.add(item)
+
+    visit(item)
+
+    if (item.props && typeof item.props === 'object') {
+      walkProps(item.props)
+    }
+  }
+
+  function walkProps(props: Record<string, unknown>): void {
+    for (const value of Object.values(props)) {
+      if (Array.isArray(value)) {
+        for (const element of value) {
+          if (isPuckItem(element)) {
+            walkItem(element)
+          } else if (element && typeof element === 'object' && !Array.isArray(element)) {
+            walkProps(element as Record<string, unknown>)
+          }
+        }
+      } else if (value && typeof value === 'object' && !isPuckItem(value)) {
+        walkProps(value as Record<string, unknown>)
+      }
+    }
+  }
+
+  const d = data as { content?: unknown; zones?: Record<string, unknown> }
+
+  if (Array.isArray(d.content)) {
+    for (const item of d.content) {
+      if (isPuckItem(item)) {
+        walkItem(item)
+      }
+    }
+  }
+
+  if (d.zones && typeof d.zones === 'object') {
+    for (const zoneContent of Object.values(d.zones)) {
+      if (Array.isArray(zoneContent)) {
+        for (const item of zoneContent) {
+          if (isPuckItem(item)) {
+            walkItem(item)
+          }
+        }
+      }
+    }
+  }
+}

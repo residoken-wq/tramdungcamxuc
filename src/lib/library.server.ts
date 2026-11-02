@@ -56,7 +56,11 @@ export async function getLibraryData(params: LibraryQueryParams): Promise<Librar
       const pageResult = await payload.find({
         collection: 'pages',
         where: {
-          and: [{ slug: { equals: 'tai-nguyen' } }, { _status: { equals: 'published' } }],
+          and: [
+            { slug: { equals: 'tai-nguyen' } },
+            { _status: { equals: 'published' } },
+            { kind: { equals: 'page' } },
+          ],
         },
         limit: 1,
         draft: false,

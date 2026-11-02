@@ -31,6 +31,7 @@ import * as migration_20261101_040756_hb18_flow_content_extra from './20261101_0
 import * as migration_20261102_034312_eb08_block_templates from './20261102_034312_eb08_block_templates'
 import * as migration_20261102_080246_cf01_coffee_donation from './20261102_080246_cf01_coffee_donation'
 import * as migration_20261102_100526_pk13_title_spacing from './20261102_100526_pk13_title_spacing'
+import * as migration_20261102_133742_eb10_header_footer from './20261102_133742_eb10_header_footer'
 
 export const migrations = [
   {
@@ -197,5 +198,10 @@ export const migrations = [
     up: migration_20261102_100526_pk13_title_spacing.up,
     down: migration_20261102_100526_pk13_title_spacing.down,
     name: '20261102_100526_pk13_title_spacing',
+  },
+  {
+    up: migration_20261102_133742_eb10_header_footer.up,
+    down: migration_20261102_133742_eb10_header_footer.down,
+    name: '20261102_133742_eb10_header_footer',
   },
 ]

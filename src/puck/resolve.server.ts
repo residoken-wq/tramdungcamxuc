@@ -12,6 +12,7 @@ import type {
 import type { PublicTeamMember } from '@/puck/client-preview'
 import type { Service, Program } from '@/payload-types'
 import type { PublicContactInfo } from '@/components/site/ContactInfo'
+import { buildSiteShellFromPayloadData, type SiteShellData } from '@/lib/site-shell.server'
 
 import { walkPuckItems } from './walk'
 import { normalizePuckData } from './migrations'
@@ -196,6 +197,7 @@ export async function resolveServerData(
   const programIdsToFetch = new Set<string | number>()
   const faqGroupsToFetch = new Map<string, number>()
   let needsSiteSettings = false
+  let needsSiteShell = false
   let needsTeamMembers = false
   let needsBookingProduct = false
   let needsContactFormsData = false
@@ -458,6 +460,17 @@ export async function resolveServerData(
       needsSiteSettings = true
     }
 
+    if (
+      item.type === 'SiteLogo' ||
+      item.type === 'NavMenu' ||
+      item.type === 'HeaderCTA' ||
+      item.type === 'LegalFooter' ||
+      item.type === 'SocialLinks' ||
+      item.type === 'Tagline'
+    ) {
+      needsSiteShell = true
+    }
+
     if (item.type === 'FAQ') {
       if (item.props.aside === 'booking') {
         needsBookingProduct = true
@@ -588,7 +601,9 @@ export async function resolveServerData(
     try {
       const pageDocs = await payload.find({
         collection: 'pages',
-        where: { id: { in: numericOrStrPids } },
+        where: {
+          and: [{ id: { in: numericOrStrPids } }, { kind: { equals: 'page' } }],
+        },
         depth: 0,
         limit: numericOrStrPids.length + 10,
       })
@@ -897,9 +912,63 @@ export async function resolveServerData(
     }
   }
 
+  let siteShellData: SiteShellData | null = null
+  if (needsSiteShell) {
+    try {
+      const [navigationDoc, siteSettingsDoc, legalPagesDoc] = await Promise.all([
+        payload.findGlobal({ slug: 'navigation', depth: 1 }).catch(() => null),
+        payload.findGlobal({ slug: 'siteSettings', depth: 1 }).catch(() => null),
+        payload
+          .find({
+            collection: 'legalPages',
+            where: { _status: { equals: 'published' } },
+            sort: 'order',
+            limit: 100,
+            draft: false,
+          })
+          .catch(() => ({ docs: [] })),
+      ])
+      siteShellData = buildSiteShellFromPayloadData({
+        navigation: navigationDoc as any,
+        siteSettings: siteSettingsDoc as any,
+        legalPages: (legalPagesDoc?.docs || []) as any,
+      })
+    } catch {
+      siteShellData = null
+    }
+  }
+
   // Phase 3: Attach _resolved to each block (including blocks inside Columns slots)
   await walkPuckItems(resolvedData, async (item) => {
     if (!item || !item.props) return
+
+    // Site header & footer blocks resolution (EB-10)
+    if (item.type === 'SiteLogo' && siteShellData?.logo) {
+      item.props.src = siteShellData.logo.src || ''
+      item.props.alt = siteShellData.logo.alt || ''
+    }
+
+    if (item.type === 'NavMenu' && siteShellData?.navbar?.items) {
+      item.props.items = siteShellData.navbar.items
+    }
+
+    if (item.type === 'HeaderCTA' && siteShellData?.navbar?.cta) {
+      item.props.label = siteShellData.navbar.cta.label || ''
+      item.props.href = siteShellData.navbar.cta.href || ''
+    }
+
+    if (item.type === 'LegalFooter' && siteShellData?.footer) {
+      item.props.legalLinks = siteShellData.footer.legalLinks || []
+      item.props.sellerInfo = siteShellData.footer.sellerInfo
+    }
+
+    if (item.type === 'SocialLinks' && siteShellData?.footer?.socialLinks) {
+      item.props.socialLinks = siteShellData.footer.socialLinks
+    }
+
+    if (item.type === 'Tagline' && siteShellData?.footer?.tagline) {
+      item.props.tagline = siteShellData.footer.tagline
+    }
 
     if (item.type === 'ProductGrid') {
       const mode = item.props.mode || 'manual'

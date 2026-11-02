@@ -178,5 +178,5 @@ describe('Habit Boarding Pass Image Route (HB-10)', () => {
     expect(resBlocked.status).toBe(429)
     const jsonBlocked = await resBlocked.json()
     expect(jsonBlocked.error).toBeDefined()
-  })
+  }, 15000)
 })

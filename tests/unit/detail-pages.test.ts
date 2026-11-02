@@ -44,7 +44,11 @@ describe('Detail Pages Pure Logic & DTOs (T1-10)', () => {
     it('buildPublishedPuckPageWhere queries pages by slug and published status', () => {
       const where = buildPublishedPuckPageWhere('coaching/growth-mirror')
       expect(where).toEqual({
-        and: [{ slug: { equals: 'coaching/growth-mirror' } }, { _status: { equals: 'published' } }],
+        and: [
+          { slug: { equals: 'coaching/growth-mirror' } },
+          { _status: { equals: 'published' } },
+          { kind: { equals: 'page' } },
+        ],
       })
     })
 

@@ -233,9 +233,13 @@ export interface Page {
    */
   title: string;
   /**
+   * Chỉ chọn khi tạo mới. Đầu trang và chân trang được dùng trong Menu điều hướng.
+   */
+  kind?: ('page' | 'header' | 'footer') | null;
+  /**
    * Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.
    */
-  slug: string;
+  slug?: string | null;
   /**
    * Dữ liệu bố cục lưu từ trình dựng trang Puck.
    */
@@ -248,9 +252,6 @@ export interface Page {
     | number
     | boolean
     | null;
-  /**
-   * Chọn một mục phù hợp.
-   */
   template?:
     | (
         | 'home-v2'
@@ -2501,6 +2502,7 @@ export interface PayloadMigration {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
+  kind?: T;
   slug?: T;
   puckData?: T;
   template?: T;
@@ -3347,6 +3349,10 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Navigation {
   id: number;
+  headerSource: 'code' | 'builder';
+  headerPage?: (number | null) | Page;
+  footerSource: 'code' | 'builder';
+  footerPage?: (number | null) | Page;
   /**
    * Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.
    */
@@ -4176,6 +4182,10 @@ export interface HabitJourneyContent {
  * via the `definition` "navigation_select".
  */
 export interface NavigationSelect<T extends boolean = true> {
+  headerSource?: T;
+  headerPage?: T;
+  footerSource?: T;
+  footerPage?: T;
   mainMenu?:
     | T
     | {
