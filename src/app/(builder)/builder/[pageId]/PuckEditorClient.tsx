@@ -36,6 +36,7 @@ import { BlockContextMenu } from '@/puck/editor/context-menu/BlockContextMenu'
 import { ContextMenuOverlay } from '@/puck/editor/context-menu/ContextMenuOverlay'
 import { ToastNotification } from '@/puck/editor/context-menu/ToastNotification'
 import { OutlineWrapper } from '@/puck/editor/navigator/OutlineWrapper'
+import { SaveTemplateModal } from '@/puck/editor/SaveTemplateModal'
 
 export const brandViewports: Viewports = [
   { width: 375, height: 'auto', label: 'Điện thoại (375px)', icon: 'Smartphone' },
@@ -79,6 +80,7 @@ function EditorHeaderActions() {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState<boolean>(false)
+  const [isSavePageModalOpen, setIsSavePageModalOpen] = useState<boolean>(false)
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false)
 
   if (!context) throw new Error('EditorHeaderActions requires EditorContext')
@@ -202,7 +204,7 @@ function EditorHeaderActions() {
           type="button"
           onClick={() => setIsTemplateModalOpen(true)}
           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 transition cursor-pointer"
-          title="Áp dụng một trong 4 mẫu trang dựng sẵn"
+          title="Áp dụng một trong 4 mẫu trang dựng sẵn hoặc mẫu đã lưu"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -213,6 +215,24 @@ function EditorHeaderActions() {
             />
           </svg>
           <span>{vi.builder.useTemplate}</span>
+        </button>
+
+        {/* Button: Lưu trang thành mẫu */}
+        <button
+          type="button"
+          onClick={() => setIsSavePageModalOpen(true)}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 transition cursor-pointer"
+          title={vi.eb08.savePageTemplateDesc}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+            />
+          </svg>
+          <span>{vi.eb08.savePageAsTemplate}</span>
         </button>
 
         {/* Button: Lịch sử */}
@@ -299,6 +319,19 @@ function EditorHeaderActions() {
         onClose={() => setIsTemplateModalOpen(false)}
         pageTitle={pageTitle}
         onApplyTemplate={handleApplyTemplate}
+      />
+
+      {/* Save Page Template Modal */}
+      <SaveTemplateModal
+        isOpen={isSavePageModalOpen}
+        onClose={() => setIsSavePageModalOpen(false)}
+        kind="page"
+        puckData={getPuck().appState.data}
+        defaultName={pageTitle ? `${pageTitle} (Mẫu)` : 'Mẫu trang mới'}
+        onSaved={() => {
+          setFeedback({ type: 'saved', message: vi.eb08.savedSuccess })
+          setIsSavePageModalOpen(false)
+        }}
       />
 
       {/* Version History Modal */}

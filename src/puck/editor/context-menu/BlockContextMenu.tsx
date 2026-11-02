@@ -8,9 +8,17 @@ import { useContextMenu } from './context-menu-context'
 import { copyBlock, readClipboard, prepareForPaste } from './clipboard'
 import { hasStyleKeys } from '@/puck/style/style-schema'
 import { switchLeftPanelTab } from '@/puck/editor/LeftPanel'
+import { SaveTemplateModal } from '@/puck/editor/SaveTemplateModal'
 
 export type MenuItemId =
-  'rename' | 'duplicate' | 'copy' | 'paste' | 'pasteStyle' | 'resetStyle' | 'delete'
+  | 'rename'
+  | 'duplicate'
+  | 'copy'
+  | 'paste'
+  | 'pasteStyle'
+  | 'resetStyle'
+  | 'saveTemplate'
+  | 'delete'
 
 export type MenuItemDef = {
   id: MenuItemId
@@ -30,6 +38,7 @@ export function BlockContextMenu() {
   const menuRef = useRef<HTMLDivElement>(null)
   const [position, setPosition] = useState<{ left: number; top: number }>({ left: 0, top: 0 })
   const [focusedIndex, setFocusedIndex] = useState<number>(0)
+  const [templateModalItem, setTemplateModalItem] = useState<ComponentData | null>(null)
 
   const componentId = menuState.componentId
   let item: ComponentData | null | undefined = null
@@ -181,6 +190,13 @@ export function BlockContextMenu() {
     showToast(vi.eb07.toast.styleReset)
   }, [closeMenu, item, selector, itemHasStyle, dispatch, showToast])
 
+  const handleSaveAsTemplate = useCallback(() => {
+    if (item) {
+      setTemplateModalItem(item)
+    }
+    closeMenu()
+  }, [closeMenu, item])
+
   const handleDelete = useCallback(() => {
     closeMenu()
     if (!selector || !canDelete) return
@@ -320,6 +336,22 @@ export function BlockContextMenu() {
         action: handleResetStyle,
       },
       {
+        id: 'saveTemplate',
+        label: vi.eb08.saveAsTemplate,
+        icon: (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+            />
+          </svg>
+        ),
+        disabled: !item,
+        action: handleSaveAsTemplate,
+      },
+      {
         id: 'delete',
         label: vi.eb07.delete,
         icon: (
@@ -352,7 +384,9 @@ export function BlockContextMenu() {
       handlePaste,
       handlePasteStyle,
       handleResetStyle,
+      handleSaveAsTemplate,
       handleDelete,
+      item,
     ],
   )
 
@@ -488,75 +522,101 @@ export function BlockContextMenu() {
     }
   }, [menuState.isOpen, closeMenu])
 
-  if (!menuState.isOpen || typeof document === 'undefined') return null
+  if ((!menuState.isOpen && !templateModalItem) || typeof document === 'undefined') return null
 
-  return createPortal(
-    <div
-      ref={menuRef}
-      role="menu"
-      aria-label="Tác vụ khối"
-      tabIndex={-1}
-      style={{
-        position: 'fixed',
-        left: `${position.left}px`,
-        top: `${position.top}px`,
-        zIndex: 99999,
-      }}
-      className="min-w-[200px] w-max bg-white/95 backdrop-blur-md border border-deep-navy/15 rounded-xl shadow-2xl py-1.5 px-1 select-none animate-in fade-in zoom-in-95 duration-100"
-    >
-      {menuItems.map((itemDef, idx) => {
-        const isFocused = focusedIndex === idx
-        const isDelete = itemDef.id === 'delete'
+  return (
+    <>
+      {menuState.isOpen &&
+        createPortal(
+          <div
+            ref={menuRef}
+            role="menu"
+            aria-label="Tác vụ khối"
+            tabIndex={-1}
+            style={{
+              position: 'fixed',
+              left: `${position.left}px`,
+              top: `${position.top}px`,
+              zIndex: 99999,
+            }}
+            className="min-w-[200px] w-max bg-white/95 backdrop-blur-md border border-deep-navy/15 rounded-xl shadow-2xl py-1.5 px-1 select-none animate-in fade-in zoom-in-95 duration-100"
+          >
+            {menuItems.map((itemDef, idx) => {
+              const isFocused = focusedIndex === idx
+              const isDelete = itemDef.id === 'delete'
 
-        return (
-          <React.Fragment key={itemDef.id}>
-            {/* Divider before delete */}
-            {isDelete && <div className="border-t border-deep-navy/10 my-1" role="separator" />}
+              return (
+                <React.Fragment key={itemDef.id}>
+                  {/* Divider before delete */}
+                  {isDelete && (
+                    <div className="border-t border-deep-navy/10 my-1" role="separator" />
+                  )}
 
-            <div className="relative group">
-              <button
-                type="button"
-                role="menuitem"
-                aria-disabled={itemDef.disabled}
-                tabIndex={isFocused ? 0 : -1}
-                disabled={itemDef.disabled}
-                onClick={() => {
-                  if (!itemDef.disabled) itemDef.action()
-                }}
-                onMouseEnter={() => setFocusedIndex(idx)}
-                className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-ui text-left transition cursor-pointer ${
-                  itemDef.disabled
-                    ? 'opacity-40 cursor-not-allowed text-deep-navy/40'
-                    : itemDef.danger
-                      ? isFocused
-                        ? 'bg-soft-pink text-bright-magenta font-semibold'
-                        : 'text-accent-pink hover:bg-soft-pink/50'
-                      : isFocused
-                        ? 'bg-soft-pink/60 text-deep-navy font-semibold'
-                        : 'text-deep-navy hover:bg-soft-pink/40'
-                }`}
-              >
-                <span className="w-4 h-4 shrink-0 flex items-center justify-center opacity-80">
-                  {itemDef.icon}
-                </span>
-                <span className="flex-1 truncate">{itemDef.label}</span>
-              </button>
+                  <div className="relative group">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      aria-disabled={itemDef.disabled}
+                      tabIndex={isFocused ? 0 : -1}
+                      disabled={itemDef.disabled}
+                      onClick={() => {
+                        if (!itemDef.disabled) itemDef.action()
+                      }}
+                      onMouseEnter={() => setFocusedIndex(idx)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-ui text-left transition cursor-pointer ${
+                        itemDef.disabled
+                          ? 'opacity-40 cursor-not-allowed text-deep-navy/40'
+                          : itemDef.danger
+                            ? isFocused
+                              ? 'bg-soft-pink text-bright-magenta font-semibold'
+                              : 'text-accent-pink hover:bg-soft-pink/50'
+                            : isFocused
+                              ? 'bg-soft-pink/60 text-deep-navy font-semibold'
+                              : 'text-deep-navy hover:bg-soft-pink/40'
+                      }`}
+                    >
+                      <span className="w-4 h-4 shrink-0 flex items-center justify-center opacity-80">
+                        {itemDef.icon}
+                      </span>
+                      <span className="flex-1 truncate">{itemDef.label}</span>
+                    </button>
 
-              {/* Tooltip for disabled reason */}
-              {itemDef.disabled && itemDef.tooltip && (
-                <div
-                  role="tooltip"
-                  className="hidden group-hover:block absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 bg-deep-navy text-white text-[11px] rounded-md shadow-lg pointer-events-none whitespace-nowrap z-50 font-ui"
-                >
-                  {itemDef.tooltip}
-                  <div className="absolute top-1/2 -left-1 -translate-y-1/2 border-4 border-transparent border-r-deep-navy" />
-                </div>
-              )}
-            </div>
-          </React.Fragment>
-        )
-      })}
-    </div>,
-    document.body,
+                    {/* Tooltip for disabled reason */}
+                    {itemDef.disabled && itemDef.tooltip && (
+                      <div
+                        role="tooltip"
+                        className="hidden group-hover:block absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 bg-deep-navy text-white text-[11px] rounded-md shadow-lg pointer-events-none whitespace-nowrap z-50 font-ui"
+                      >
+                        {itemDef.tooltip}
+                        <div className="absolute top-1/2 -left-1 -translate-y-1/2 border-4 border-transparent border-r-deep-navy" />
+                      </div>
+                    )}
+                  </div>
+                </React.Fragment>
+              )
+            })}
+          </div>,
+          document.body,
+        )}
+
+      {templateModalItem && (
+        <SaveTemplateModal
+          isOpen={Boolean(templateModalItem)}
+          onClose={() => setTemplateModalItem(null)}
+          kind="section"
+          puckData={templateModalItem}
+          defaultName={
+            typeof templateModalItem?.props?._label === 'string' &&
+            templateModalItem.props._label.trim()
+              ? templateModalItem.props._label.trim()
+              : templateModalItem?.type || 'Section'
+          }
+          onSaved={() => {
+            showToast(vi.eb08.savedSuccess)
+            setTemplateModalItem(null)
+          }}
+        />
+      )}
+    </>
   )
 }
