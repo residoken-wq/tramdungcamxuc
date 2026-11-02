@@ -193,11 +193,12 @@ export function NavMenuView({
         </button>
       </div>
 
-      {/* Mobile Drawer Navigation */}
+      {/* Mobile Drawer Navigation – an overlay under the (sticky) header. EB-10c: it scrolls
+          inside itself, otherwise items below the screen could never be reached. */}
       {isOpen && (
         <div
           id="mobile-nav-drawer"
-          className={`absolute left-0 right-0 top-full w-full ${drawerClass} border-t border-deep-navy/10 bg-warm-ivory/98 backdrop-blur-md px-4 pt-4 pb-6 space-y-3 shadow-lg z-50`}
+          className={`absolute left-0 right-0 top-full w-full max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain ${drawerClass} border-t border-deep-navy/10 bg-warm-ivory/98 backdrop-blur-md px-4 pt-4 pb-6 space-y-3 shadow-lg z-50`}
         >
           <nav aria-label={vi.navbar.mobileNav} className="space-y-1">
             {items.map((item, index) =>
