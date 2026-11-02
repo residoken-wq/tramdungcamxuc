@@ -53,7 +53,7 @@ export function ContextMenuOverlay({
   return (
     // Right-click is handled once for the whole canvas (StylePreview), which picks the innermost
     // block under the pointer; a handler here would answer for the outer block (Container) first.
-    <div className="w-full h-full pointer-events-auto" data-eb-overlay-id={componentId}>
+    <div className="contents" data-eb-overlay-id={componentId}>
       {children}
     </div>
   )
