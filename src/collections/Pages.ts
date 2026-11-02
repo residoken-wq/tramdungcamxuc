@@ -9,6 +9,7 @@ import {
 import { contentCollection, image, select, slug, text, textarea } from '../fields/content'
 import { getTemplateData } from '@/puck/templates'
 import { validatePageLockedBlocks } from '@/puck/locks'
+import { guardCustomCodeHook } from '@/puck/custom-code-guard'
 import { vi } from '../lib/i18n/vi'
 
 export function normalizePageSlug(value: string, req?: Partial<PayloadRequest>): string {
@@ -129,7 +130,7 @@ export const Pages = {
   ]),
   hooks: {
     beforeValidate: [normalizeSlug, validateLockedBlocksHook],
-    beforeChange: [applyTemplateOnCreate],
+    beforeChange: [applyTemplateOnCreate, guardCustomCodeHook],
     afterChange: [revalidatePage],
   },
   versions: { drafts: { autosave: { interval: 30000 } } },

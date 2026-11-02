@@ -66,7 +66,8 @@
    - [5.27. Cấu trúc và menu chuột phải (EB-07)](#527-cấu-trúc-và-menu-chuột-phải-eb-07)
    - [5.28. Mẫu đã lưu và Lịch sử phiên bản (EB-08)](#528-mẫu-đã-lưu-và-lịch-sử-phiên-bản-eb-08)
    - [5.29. Tự chỉnh khoảng cách tiêu đề và giãn dòng Anton (PK-13)](#529-tự-chỉnh-khoảng-cách-tiêu-đề-và-giãn-dòng-anton-pk-13)
-   - [5.30. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)](#530-thêm-thẻ-vào-khối-gói-dịch-vụ-số-liệu-bước-câu-hỏi-bằng-một-nút-bấm-pk-14)
+   - [5.30. Nâng cao: CSS / HTML tuỳ chỉnh và hiệu ứng (EB-09)](#530-nâng-cao-css--html-tuỳ-chỉnh-và-hiệu-ứng-eb-09)
+   - [5.31. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)](#531-thêm-thẻ-vào-khối-gói-dịch-vụ-số-liệu-bước-câu-hỏi-bằng-một-nút-bấm-pk-14)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2472,15 +2473,80 @@ Dưới đây là hình ảnh so sánh thực tế giữa mức mặc định (_
 - _Chế độ Thoáng (1.45 / 24px / 24px):_
   ![Chế độ Rất thoáng (giãn dòng 1.6, nhãn và dòng cảm xúc Thoáng) trên màn hình điện thoại 375px](screenshots/pk13/02-very-airy-375.png)
 
+### 5.30. Nâng cao: CSS / HTML tuỳ chỉnh và hiệu ứng (EB-09)
+
+Tính năng **CSS tuỳ chỉnh, widget HTML, class / z-index và hiệu ứng vào khung hình** giúp bạn tuỳ biến giao diện sâu hơn mà không làm ảnh hưởng đến độ an toàn và tốc độ tải trang của website.
+
+> [!IMPORTANT]
+> **Quyền hạn và Khóa an toàn:**
+>
+> - Các ô nhập CSS và widget HTML **chỉ hiển thị cho tài khoản Chủ sở hữu (Owner)**. Biên tập viên (`editor`) không nhìn thấy và không thể sửa các đoạn mã này.
+> - **Mặc định tính năng này bị khoá** trong hệ thống để bảo vệ an toàn thương hiệu.
+> - **Cách mở khoá:** Vào trang quản trị CMS (`/admin`) → Tìm mục **Hệ thống** → Chọn **Thiết kế hệ thống** (`designSystem`) → Tại nhóm _Khoá thương hiệu_, tìm dòng **CSS tuỳ chỉnh** (`customCss`) và chuyển từ **Khoá** sang **Mở** → Bấm **Lưu thay đổi**.
+
+> [!NOTE]
+> **Biên tập viên làm việc trên trang có mã của chủ site:** vẫn sửa chữ, ảnh, khoảng cách… và lưu bình thường. Hệ thống từ chối (thông báo "Chỉ chủ site được sửa CSS / HTML tuỳ chỉnh") khi biên tập viên thêm, sửa hoặc xoá mã CSS / HTML. Việc này gồm cả xoá hay nhân bản khối có mã, khôi phục một phiên bản cũ có mã khác, và lưu mẫu chứa mã. Luật áp dụng cả khi sửa qua trang quản trị lẫn qua API, không chỉ trong trình dựng trang. Khi tính năng đang khoá, khối HTML trên canvas chỉ hiện dòng "đang khoá" và trang công khai không hiện gì.
+
+#### 1. CSS tuỳ chỉnh cho từng khối (Block Custom CSS)
+
+- Chọn bất kỳ khối nào trên canvas hoặc cây Cấu trúc.
+- Chuyển sang tab **Nâng cao** ở bảng bên phải → Cuộn xuống nhóm **CSS tuỳ chỉnh**.
+- Nhập các quy tắc CSS bạn muốn:
+  - Bắt buộc dùng từ khóa `selector` để trỏ vào chính khối đó. Ví dụ:
+    ```css
+    selector {
+      outline: 3px solid #bc039e;
+      border-radius: 16px;
+    }
+    selector:hover {
+      opacity: 0.95;
+    }
+    ```
+  - Nếu chỉ viết các thuộc tính ngắn (không có ngoặc `{}`), hệ thống sẽ tự động bọc vào khối hiện tại.
+  - Bộ lọc thông minh của hệ thống sẽ tự động loại bỏ các đoạn mã độc hại, bảo vệ website khỏi nguy cơ tấn công hoặc vỡ giao diện.
+  - Một số cách viết bị bỏ qua để CSS của khối không chạm khối khác: `selector ~ …` và `selector + …` (khối bên cạnh), quy tắc lồng trong quy tắc, `image-set(...)`. Có chuỗi chứa `{` `}` `;` thì cả ô CSS bị bỏ qua. Ảnh nền chỉ dùng `url(/api/media/file/...)` từ thư viện ảnh.
+
+#### 2. CSS tuỳ chỉnh cho toàn trang (Page Custom CSS)
+
+- Khi không chọn khối nào trên canvas (hoặc bấm chọn nút Cài đặt trang), bảng bên phải sẽ hiển thị các thiết lập trang.
+- Bạn có thể viết CSS áp dụng cho toàn bộ trang trong ô **CSS tuỳ chỉnh**. Hệ thống sẽ tự động giới hạn phạm vi áp dụng bên trong vùng nội dung trang của bạn, không làm ảnh hưởng đến phần Menu đầu trang (Header), Chân trang (Footer) hay khu vực quản trị.
+
+#### 3. Widget HTML an toàn (HtmlWidget)
+
+- Trong thanh công cụ bên trái, tìm nhóm **Cơ bản** và kéo khối **HTML** vào canvas.
+- Chọn khối HTML vừa kéo vào, bảng bên phải sẽ hiện ô nhập mã HTML (tối đa 20 000 ký tự).
+- Cho phép sử dụng các thẻ khối và văn bản thông dụng (`div`, `p`, `span`, `h2`–`h6`, `table`, `ul`, `ol`, `li`, `a`, `img`...).
+- **Quy tắc an toàn tuyệt đối:**
+  - Hệ thống tự động ngăn chặn việc chạy mã JavaScript (`<script>`, các sự kiện `onclick`, `onerror`...).
+  - Không cho phép nhúng `<iframe>`, `<form>` hoặc thẻ `<style>` trực tiếp.
+  - Mọi hình ảnh trong thẻ `<img>` chỉ được phép sử dụng từ thư viện ảnh đã tải lên của website (`/api/media/file/...`).
+
+#### 4. Class CSS và Thứ tự hiển thị (z-index)
+
+- Trong tab **Nâng cao** của bất kỳ khối nào, tìm nhóm **Class / z-index**:
+  - **Class CSS:** Nhập tên class tùy biến (tối đa 5 class, viết chữ thường và cách nhau bởi dấu cách, ví dụ: `my-card highlight-box`). Class được lưu khi bạn rời ô hoặc bấm Enter.
+  - **Thứ tự hiển thị (z-index):** Nhập số nguyên từ `-10` đến `100` để điều chỉnh lớp hiển thị trên/dưới khi các khối xếp đè lên nhau (hệ thống tự động thiết lập thuộc tính định vị tương đối `position: relative`).
+
+#### 5. Hiệu ứng vào khung hình (Entrance Animations)
+
+- Trong tab **Nâng cao**, tìm nhóm **Hiệu ứng vào khung hình**:
+  - **Hiệu ứng:** Lựa chọn giữa _Hiện dần (Fade in)_, _Hiện dần trượt lên (Fade up)_, hoặc _Phóng to nhẹ (Zoom in)_.
+  - **Độ trễ:** Chọn thời gian chờ trước khi chạy hiệu ứng (0ms, 150ms, 300ms, 500ms).
+- **Thân thiện và Tinh tế:**
+  - Trang web áp dụng kỹ thuật tăng cường lũy tiến: Nếu người đọc tắt JavaScript, toàn bộ nội dung vẫn hiển thị bình thường 100%, không bao giờ bị ẩn mất chữ.
+  - Tự động nhận diện cài đặt giảm chuyển động (_Reduce Motion_) của thiết bị người dùng để tắt hiệu ứng, đảm bảo khả năng tiếp cận (Accessibility WCAG).
+  - Trong màn hình chỉnh sửa trực quan của bạn (Canvas editor), hiệu ứng được tắt để bạn thao tác nhấp chọn và kéo thả dễ dàng nhất.
+
 ---
 
-### 5.30. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)
+### 5.31. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)
 
 **Mục đích**: Giúp Hana và người biên tập nội dung thêm các thẻ con vào khối (như các gói sản phẩm Growth Mirror, các dịch vụ coaching, ô số liệu, các bước hành trình, câu hỏi thường gặp FAQ...) một cách dễ dàng và trực quan nhất chỉ với một nút bấm, không cần phải tìm kiếm và kéo thả phức tạp.
 
 #### 1. Hướng dẫn trực quan ngay trong khung trống (Empty Slot Hint)
 
 Khi bạn kéo một khối cha vào trang (ví dụ khối **Các gói Growth Mirror**, **Thanh số liệu**, **Hành trình các bước**, **Câu hỏi thường gặp**...) mà khối đó chưa có thẻ con nào:
+
 - Trên màn hình soạn thảo (Canvas) sẽ hiển thị ngay một khung viền nét đứt tinh tế với dòng chữ hướng dẫn rõ ràng:
   `Chưa có {nhãn thẻ con}. Bấm "+ Thêm {nhãn}" ở cột phải, hoặc kéo "{nhãn}" từ Khối → Thẻ con vào đây.`
 - Dòng gợi ý này **chỉ hiển thị trong lúc chỉnh sửa**, hoàn toàn không hiển thị trên trang web công khai của khách hàng.
@@ -2499,23 +2565,24 @@ Khi bạn kéo một khối cha vào trang (ví dụ khối **Các gói Growth M
 #### 3. Nhóm Thẻ con bên trái tự mở và làm nổi bật
 
 Khi bạn bấm chọn một khối cha:
+
 - Nhóm **Thẻ con (kéo vào khối cha)** ở cột Thư viện khối bên trái sẽ tự động mở bung ra.
 - Ô thẻ con tương ứng với khối cha đó sẽ được **viền nổi bật màu hồng sen (bright-magenta)** và tự động cuộn vào tầm nhìn để bạn nhận biết ngay lập tức.
 - Khi bạn bỏ chọn khối cha, nhóm thẻ con sẽ trở lại trạng thái đóng/mở bình thường.
 
 #### 4. Danh sách 9 khối cha hỗ trợ nút thêm thẻ con
 
-| Khối cha                                | Nút bấm ở cột phải       | Thẻ con tương ứng |
-| --------------------------------------- | ------------------------ | ----------------- |
-| **Các gói Growth Mirror** (`PackageCards`) | `+ Thêm Thẻ gói`         | Thẻ gói (`PackageCard`) |
-| **Các dịch vụ Coaching** (`ServiceCards`) | `+ Thêm Thẻ dịch vụ`     | Thẻ dịch vụ (`ServiceCard`) |
-| **Lưới thẻ biểu tượng** (`IconCardGrid`) | `+ Thêm Thẻ biểu tượng`  | Thẻ biểu tượng (`Card`) |
-| **Thanh số liệu ấn tượng** (`StatsBar`)  | `+ Thêm Ô số liệu`       | Ô số liệu (`Stat`) |
-| **Hành trình các bước** (`JourneySteps`)| `+ Thêm Bước hành trình` | Bước (`Step`) |
-| **Câu hỏi thường gặp** (`FAQ`)         | `+ Thêm Câu hỏi FAQ`     | Câu hỏi FAQ (`FaqItem`) |
-| **Hero 2 Lối vào** (`HeroTwoEntries`)   | `+ Thêm Thẻ lối vào`     | Thẻ lối vào (`EntryCard`) |
-| **Hai lối đi** (`TwoPathCards`)         | `+ Thêm Thẻ lối đi`      | Thẻ lối đi (`PathCard`) |
-| **Tầm nhìn & Sứ mệnh** (`VisionMission`)| `+ Thêm Thẻ giá trị`     | Thẻ giá trị (`VisionCard`) |
+| Khối cha                                   | Nút bấm ở cột phải       | Thẻ con tương ứng           |
+| ------------------------------------------ | ------------------------ | --------------------------- |
+| **Các gói Growth Mirror** (`PackageCards`) | `+ Thêm Thẻ gói`         | Thẻ gói (`PackageCard`)     |
+| **Các dịch vụ Coaching** (`ServiceCards`)  | `+ Thêm Thẻ dịch vụ`     | Thẻ dịch vụ (`ServiceCard`) |
+| **Lưới thẻ biểu tượng** (`IconCardGrid`)   | `+ Thêm Thẻ biểu tượng`  | Thẻ biểu tượng (`Card`)     |
+| **Thanh số liệu ấn tượng** (`StatsBar`)    | `+ Thêm Ô số liệu`       | Ô số liệu (`Stat`)          |
+| **Hành trình các bước** (`JourneySteps`)   | `+ Thêm Bước hành trình` | Bước (`Step`)               |
+| **Câu hỏi thường gặp** (`FAQ`)             | `+ Thêm Câu hỏi FAQ`     | Câu hỏi FAQ (`FaqItem`)     |
+| **Hero 2 Lối vào** (`HeroTwoEntries`)      | `+ Thêm Thẻ lối vào`     | Thẻ lối vào (`EntryCard`)   |
+| **Hai lối đi** (`TwoPathCards`)            | `+ Thêm Thẻ lối đi`      | Thẻ lối đi (`PathCard`)     |
+| **Tầm nhìn & Sứ mệnh** (`VisionMission`)   | `+ Thêm Thẻ giá trị`     | Thẻ giá trị (`VisionCard`)  |
 
 #### 5. Hình ảnh minh họa thực tế [MẪU] trên trình dựng trang (Desktop - 1440px)
 

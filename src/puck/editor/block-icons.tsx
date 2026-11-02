@@ -284,6 +284,13 @@ const CounterIcon = () => (
   </svg>
 )
 
+const HtmlIcon = () => (
+  <svg {...baseSvgProps}>
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </svg>
+)
+
 // Map component keys to dedicated micro-icons
 const blockIconMap: Record<string, React.ComponentType> = {
   // EB-06 Cơ bản
@@ -296,6 +303,7 @@ const blockIconMap: Record<string, React.ComponentType> = {
   TabsWidget: TabsIcon,
   AccordionWidget: AccordionIcon,
   CounterWidget: CounterIcon,
+  HtmlWidget: HtmlIcon,
 
   // Mở đầu
   HeroTwoEntries: HeroTwoEntriesIcon,

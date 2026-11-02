@@ -1,7 +1,7 @@
 'use server'
 
 import { headers as getHeaders } from 'next/headers'
-import { getPayload } from 'payload'
+import { APIError, getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
@@ -11,10 +11,14 @@ import { normalizePuckData } from '@/puck/migrations'
 import { isAdminUser, isOwnerUser } from '@/lib/auth/access'
 import { validateTemplatePuckData } from '@/puck/template-validation'
 import { puckConfig } from '@/puck/config'
+import { hasCustomCode, hasCustomCodeChanged } from './custom-code-guard'
+
+/** EB-09c: the collection hook refused custom CSS / HTML from a non-owner (403). */
+const isCustomCodeRefusal = (error: unknown) => error instanceof APIError && error.status === 403
 
 export type SaveActionResult = {
   success: boolean
-  code?: 'UNAUTHORIZED' | 'SAVE_FAILED' | 'VALIDATION_FAILED'
+  code?: 'UNAUTHORIZED' | 'SAVE_FAILED' | 'VALIDATION_FAILED' | 'FORBIDDEN'
   message?: string
   status?: string
 }
@@ -55,7 +59,7 @@ export type TemplateSummary = {
 
 export type SaveTemplateActionResult = {
   success: boolean
-  code?: 'UNAUTHORIZED' | 'VALIDATION_FAILED' | 'SAVE_FAILED'
+  code?: 'UNAUTHORIZED' | 'VALIDATION_FAILED' | 'SAVE_FAILED' | 'FORBIDDEN'
   message?: string
   template?: TemplateSummary
 }
@@ -127,6 +131,16 @@ export async function saveDraftAction(pageId: string, puckData: Data): Promise<S
       }
     }
 
+    // REVIEW-REQUIRED: Non-owners cannot modify or introduce custom CSS or HtmlWidget content
+    const isOwner = isOwnerUser(user)
+    if (!isOwner && hasCustomCodeChanged(existingPage?.puckData, migratedData)) {
+      return {
+        success: false,
+        code: 'FORBIDDEN',
+        message: vi.eb09.onlyOwnerAllowed,
+      }
+    }
+
     const updatedDoc = await payload.update({
       collection: 'pages',
       id: pageId,
@@ -188,6 +202,16 @@ export async function publishPageAction(pageId: string, puckData: Data): Promise
           code: 'VALIDATION_FAILED',
           message: validation.error,
         }
+      }
+    }
+
+    // REVIEW-REQUIRED: Non-owners cannot modify or introduce custom CSS or HtmlWidget content
+    const isOwner = isOwnerUser(user)
+    if (!isOwner && hasCustomCodeChanged(existingPage?.puckData, migratedData)) {
+      return {
+        success: false,
+        code: 'FORBIDDEN',
+        message: vi.eb09.onlyOwnerAllowed,
       }
     }
 
@@ -318,7 +342,7 @@ export async function restoreVersionAction(versionId: string): Promise<RestoreVe
     return {
       success: false,
       code: 'RESTORE_FAILED',
-      message: vi.builder.restoreFailed,
+      message: isCustomCodeRefusal(error) ? vi.eb09.onlyOwnerAllowed : vi.builder.restoreFailed,
     }
   }
 }
@@ -391,7 +415,9 @@ export async function duplicatePageAction(pageId: string): Promise<DuplicatePage
     return {
       success: false,
       code: 'DUPLICATE_FAILED',
-      message: vi.builder.duplicatePageFailed,
+      message: isCustomCodeRefusal(error)
+        ? vi.eb09.onlyOwnerAllowed
+        : vi.builder.duplicatePageFailed,
     }
   }
 }
@@ -503,6 +529,18 @@ export async function saveTemplateAction(params: {
         success: false,
         code: 'VALIDATION_FAILED',
         message: validation.message,
+      }
+    }
+
+    // REVIEW-REQUIRED: Non-owners cannot create templates containing custom CSS or HtmlWidget content
+    const isOwner = isOwnerUser(user)
+    if (!isOwner) {
+      if (hasCustomCode(params.puckData)) {
+        return {
+          success: false,
+          code: 'FORBIDDEN',
+          message: vi.eb09.onlyOwnerAllowed,
+        }
       }
     }
 
