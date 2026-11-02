@@ -2328,6 +2328,40 @@ Nhóm **Cơ bản** đứng ở vị trí đầu tiên trong thư viện khối 
 
 ---
 
+### 5.27. Cấu trúc và menu chuột phải (EB-07)
+
+Trình dựng trang cung cấp hai công cụ đắc lực giúp bạn quản lý các trang có nhiều nội dung một cách dễ dàng và trực quan giống như Elementor: **Cây Cấu trúc (Navigator)** và **Menu chuột phải**.
+
+#### 1. Cây Cấu trúc (Navigator)
+
+- **Mở cây Cấu trúc:** Nhấp vào tab **Cấu trúc** ở trên đầu cột bên trái, hoặc bấm vào biểu tượng các dòng kẻ trên thanh công cụ ở chân trang canvas.
+- **Xem cây phân cấp:** Toàn bộ bố cục trang được hiển thị dạng cây phân cấp (Khung chứa Container, Cột, Tabs, các widget con bên trong). Mỗi dòng đều có biểu tượng nhận diện riêng giúp bạn phân biệt nhanh từng loại khối.
+- **Đặt tên gợi nhớ cho khối:**
+  - Để phân biệt các khối cùng loại (ví dụ trang có 10 khối Tiêu đề hoặc 5 Container), bạn có thể đặt tên riêng cho từng khối (ví dụ: _"Khối mở đầu"_, _"Bảng so sánh 3 gói"_, _"Tiêu đề giới thiệu"_...).
+  - **Cách 1:** Nhấp đúp chuột vào tên dòng khối trong tab Cấu trúc (hoặc chuột phải chọn "Đổi tên"). Một ô nhập liệu sẽ mở ra tại chỗ: nhập tên (tối đa 60 ký tự) rồi bấm phím **Enter** để lưu (hoặc phím **Esc** để huỷ).
+  - **Cách 2:** Chọn khối, chuyển sang tab **Nâng cao** ở bảng điều khiển bên phải và nhập vào ô _"Tên khối trong Cấu trúc"_.
+  - _Lưu ý an toàn:_ Tên gợi nhớ này chỉ phục vụ cho việc quản lý nội bộ của bạn trong trình biên tập, hoàn toàn không hiển thị ra ngoài trang công khai và không ảnh hưởng đến SEO hay giao diện người xem.
+- **Nhận diện khối ẩn theo thiết bị:** Khi bạn cài đặt một khối bị ẩn trên Điện thoại hoặc Máy tính bảng (trong tab Nâng cao), dòng khối đó trong cây Cấu trúc sẽ hiển thị biểu tượng con mắt gạch chéo kèm chú thích (ví dụ: _"Ẩn trên: Điện thoại"_).
+- **Kéo thả sắp xếp:** Bạn có thể kéo thả các dòng khối trực tiếp trong cây Cấu trúc để đổi thứ tự trên trang một cách chính xác mà không sợ bị lệch vị trí chuột trên canvas.
+
+#### 2. Menu chuột phải trên Canvas và Cấu trúc
+
+Bạn có thể nhấp chuột phải trực tiếp vào bất kỳ khối nào trên khung thiết kế (Canvas) hoặc nhấp chuột phải vào từng dòng trong cây Cấu trúc để mở menu thao tác nhanh:
+
+1. **Đổi tên:** Tự động mở ô chỉnh sửa tên gợi nhớ tại chỗ cho khối trong cây Cấu trúc.
+2. **Nhân bản:** Tạo ngay một bản sao y hệt của khối ở vị trí liền kề phía sau.
+3. **Sao chép:** Lưu khối vào bộ nhớ tạm. Bạn có thể dán khối này vào vị trí khác trên cùng trang hoặc mở một trang biên tập khác và dán sang.
+4. **Dán:** Dán khối trong bộ nhớ tạm vào vị trí ngay sau khối bạn đang chọn trong cùng vùng hoặc khung chứa Container (các mã định danh nội bộ sẽ được hệ thống cấp mới tự động, tránh xung đột).
+5. **Dán kiểu:** Chỉ áp dụng kiểu dáng (màu sắc, cỡ chữ, khoảng cách đệm, viền, bo góc...) từ khối đã sao chép sang khối đang chọn mà không làm thay đổi nội dung chữ của khối đó.
+6. **Đặt lại kiểu:** Xoá sạch các tuỳ chỉnh kiểu dáng và đưa khối về kiểu dáng mặc định ban đầu.
+7. **Xoá:** Xoá khối khỏi trang.
+
+- **Bảo vệ khối bị khóa:** Với các khối đặc thù không được phép xoá hoặc nhân bản (ví dụ: khối _Hero 2 lối vào_ bắt buộc trên trang chủ), các mục thao tác tương ứng sẽ tự động làm mờ và hiển thị thông báo lý do khi bạn rê chuột vào.
+- **Hoàn tác tiện lợi:** Mỗi thao tác thực hiện qua menu chuột phải (nhân bản, dán, dán kiểu, xoá...) đều được ghi nhận là một bước riêng biệt trong lịch sử, bạn có thể bấm nút **Hoàn tác (Undo)** trên thanh công cụ để khôi phục lại bất kỳ lúc nào.
+- **Phím tắt nhanh:** Khi một khối đang được chọn, bạn có thể nhấn tổ hợp phím **Shift + F10** (hoặc phím Menu chuyên dụng trên bàn phím) để mở menu chuột phải mà không cần dùng chuột. Dùng phím mũi tên Lên/Xuống để duyệt và phím **Enter** để chọn.
+
+---
+
 ## 6. Quản lý Trang pháp lý và Thông tin người bán
 
 ### 6.1. Chỉnh sửa nội dung một trang pháp lý

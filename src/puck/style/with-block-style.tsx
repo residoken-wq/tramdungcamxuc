@@ -1,9 +1,16 @@
 import React from 'react'
-import type { ComponentConfig, Config, CustomField, Fields } from '@puckeditor/core'
+import type { ComponentConfig, Config, CustomField, Fields, TextField } from '@puckeditor/core'
 import { StyleField } from '../editor/StyleField'
-import { STYLE_FIELD } from './field-groups'
+import { STYLE_FIELD, LABEL_FIELD } from './field-groups'
 import { cleanAnchorId, hasStyleKeys, type BlockStyle } from './style-schema'
 import { isSafeBlockId, STYLE_ATTR } from './style-css'
+import { vi } from '@/lib/i18n/vi'
+
+/** EB-07: the `_label` field shown in the Advanced tab of every block. */
+export const labelField: TextField = {
+  type: 'text',
+  label: vi.eb07.labelField,
+}
 
 /** EB-04b: the `_style` field shown in the Style / Advanced tabs of every block. */
 export const styleField: CustomField<BlockStyle | undefined> = {
@@ -12,8 +19,9 @@ export const styleField: CustomField<BlockStyle | undefined> = {
   render: ({ value, onChange }) => <StyleField value={value} onChange={onChange} />,
 }
 
-const withStyleField = (fields: Fields | undefined): Fields => ({
+const withExtraFields = (fields: Fields | undefined): Fields => ({
   ...fields,
+  [LABEL_FIELD]: labelField as Fields[string],
   [STYLE_FIELD]: styleField as Fields[string],
 })
 
@@ -36,19 +44,23 @@ export function withBlockStyle(component: ComponentConfig): ComponentConfig {
   const resolveFields = component.resolveFields
   return {
     ...component,
-    fields: withStyleField(component.fields),
-    // Blocks that compute their fields keep the `_style` field too.
+    fields: withExtraFields(component.fields),
+    // Blocks that compute their fields keep both `_label` and `_style` fields too.
     ...(resolveFields
       ? {
-          // Keep sync resolvers sync (callers and tests rely on it); add `_style` either way.
+          // Keep sync resolvers sync (callers and tests rely on it); add fields either way.
           resolveFields: (data, params) => {
             const result = resolveFields(data, params)
-            return result instanceof Promise ? result.then(withStyleField) : withStyleField(result)
+            return result instanceof Promise
+              ? result.then(withExtraFields)
+              : withExtraFields(result)
           },
         }
       : {}),
     render: (props) => {
-      const output = render(props)
+      // EB-07: strip _label so it is editor-only and never leaks into public HTML attributes
+      const { [LABEL_FIELD]: _label, ...cleanProps } = props as Record<string, unknown>
+      const output = render(cleanProps as typeof props)
       const raw = (props as { _style?: unknown })._style
       if (!hasStyleKeys(raw) || !isSafeBlockId(props.id)) return output
       const anchorId = cleanAnchorId(raw.anchorId)
