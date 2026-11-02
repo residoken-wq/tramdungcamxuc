@@ -159,7 +159,7 @@ export function ImageText({
             )}
 
             <h2
-              className={`font-display ${sizeClass(SECTION_TITLE_SIZES, titleSize)} uppercase tracking-tight leading-[var(--tdcx-title-lh,1.3)] mb-4`}
+              className={`font-display ${sizeClass(SECTION_TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-4`}
             >
               <span className={textColorClass}>{titleLine1}</span>{' '}
               {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}

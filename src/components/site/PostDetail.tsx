@@ -64,7 +64,7 @@ export function PostDetail({ post }: { post: PublicPost }) {
             )}
           </div>
 
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-deep-navy leading-[var(--tdcx-title-lh,1.3)]">
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight text-deep-navy !leading-[var(--tdcx-title-lh,1.3)]">
             {post.title}
           </h1>
         </header>

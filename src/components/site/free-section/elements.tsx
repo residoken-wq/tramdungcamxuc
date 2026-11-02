@@ -69,7 +69,7 @@ export function HeadingEl({
       : colorClass(line2Color, 'text-deep-navy group-data-[bg=deep-navy]/fs:text-white')
   return (
     <Tag
-      className={`font-display ${pick(HEADING_SIZES, size)} uppercase tracking-tight leading-[var(--tdcx-title-lh,1.3)]`}
+      className={`font-display ${pick(HEADING_SIZES, size)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
     >
       {line1 ? <span className={line1Class}>{line1}</span> : null}
       {line1 && line2 ? ' ' : null}

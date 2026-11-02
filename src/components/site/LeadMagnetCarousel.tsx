@@ -217,7 +217,7 @@ export function LeadMagnetCarousel({
 
                     {/* Content and delivery form */}
                     <div className="p-5 sm:p-6 flex flex-col flex-1">
-                      <h3 className="font-display uppercase text-xl sm:text-2xl text-deep-navy tracking-tight leading-[var(--tdcx-title-lh,1.3)] line-clamp-2 mb-2">
+                      <h3 className="font-display uppercase text-xl sm:text-2xl text-deep-navy tracking-tight !leading-[var(--tdcx-title-lh,1.3)] line-clamp-2 mb-2">
                         {item.name}
                       </h3>
                       {item.shortDescription && (

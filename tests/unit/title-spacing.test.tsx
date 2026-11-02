@@ -139,3 +139,23 @@ describe('PK-13: Component render classes with CSS variable fallbacks', () => {
     expect(emotion?.className).toContain('mt-[var(--tdcx-emotion-gap,1rem)]')
   })
 })
+
+describe('PK-13c: tiêu đề Anton giữ giãn dòng ở mọi cỡ màn hình', () => {
+  it('mọi class đọc --tdcx-title-lh đều có ! (Tailwind 3: sm:/lg:text-* đặt lại line-height = 1)', async () => {
+    const { readdirSync, readFileSync, statSync } = await import('node:fs')
+    const { join } = await import('node:path')
+    const files: string[] = []
+    const walk = (dir: string) => {
+      for (const name of readdirSync(dir)) {
+        const full = join(dir, name)
+        if (statSync(full).isDirectory()) walk(full)
+        else if (/\.(tsx|ts)$/.test(name)) files.push(full)
+      }
+    }
+    walk(join(process.cwd(), 'src'))
+    const offenders = files.filter((f) =>
+      /(^|[^!])leading-\[var\(--tdcx-title-lh/m.test(readFileSync(f, 'utf8')),
+    )
+    expect(offenders).toEqual([])
+  })
+})

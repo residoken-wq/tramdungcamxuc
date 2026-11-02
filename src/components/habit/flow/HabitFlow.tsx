@@ -535,7 +535,7 @@ export function HabitFlow({
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-mint-haze flex items-center justify-center text-deep-navy text-2xl font-bold">
             ✓
           </div>
-          <h2 className="font-display text-2xl sm:text-3xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-3">
+          <h2 className="font-display text-2xl sm:text-3xl !leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-3">
             {vi.hb22.successTitle}
           </h2>
           <p className="text-deep-navy/80 text-base mb-6 max-w-lg mx-auto">

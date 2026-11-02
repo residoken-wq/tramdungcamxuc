@@ -5,6 +5,8 @@ test.describe('PK-13: title line height and heading gaps', () => {
   test('global default very-airy (1.6) and per-block override normal (1.3) reach the public page', async ({
     page,
   }, testInfo) => {
+    // Builder runs at 1440; the public page is checked at both 1440 and 375 inside the test.
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Bootstrap runs once per database.')
     test.setTimeout(180000)
     page.setDefaultTimeout(20000)
 
@@ -112,7 +114,9 @@ test.describe('PK-13: title line height and heading gaps', () => {
       await expect(styleTab).toHaveAttribute('aria-selected', 'true')
 
       // Select 'Vừa' for Giãn dòng tiêu đề on the Hero block
-      const lhSelect = page.getByLabel('Giãn dòng tiêu đề', { exact: true })
+      const lhSelect = page
+        .getByRole('group', { name: 'Khoảng cách tiêu đề', exact: true })
+        .getByLabel('Giãn dòng tiêu đề', { exact: true })
       await lhSelect.selectOption('normal')
 
       // 5. Publish the page.
@@ -181,4 +185,3 @@ test.describe('PK-13: title line height and heading gaps', () => {
     }
   })
 })
-

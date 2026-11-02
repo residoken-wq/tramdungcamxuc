@@ -27,7 +27,7 @@ const defaultsFor = (level: HeadingLevel): TypographyDefaults => ({
   fontSize: SIZE[level],
   fontFamily: 'font-display',
   fontWeight: 'font-bold',
-  lineHeight: 'leading-[var(--tdcx-title-lh,1.3)]',
+  lineHeight: '!leading-[var(--tdcx-title-lh,1.3)]',
 })
 
 export function HeadingWidget({
