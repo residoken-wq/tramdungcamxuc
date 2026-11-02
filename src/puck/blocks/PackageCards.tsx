@@ -72,5 +72,8 @@ export const PackageCardsBlock: ComponentConfig<PackageCardsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck: _puck, ...props }) => <PackageCards {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <PackageCards {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

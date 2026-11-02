@@ -128,5 +128,8 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
 
     return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
   },
-  render: (props) => <HeroTwoEntries {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <HeroTwoEntries {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

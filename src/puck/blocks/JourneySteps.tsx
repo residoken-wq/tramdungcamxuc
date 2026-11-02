@@ -79,5 +79,8 @@ export const JourneyStepsBlock: ComponentConfig<JourneyStepsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck: _puck, ...props }) => <JourneySteps {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <JourneySteps {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

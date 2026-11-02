@@ -1,5 +1,6 @@
 import React from 'react'
 import { ServiceCardItem } from './ServiceCardItem'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { vi } from '@/lib/i18n/vi'
 
 export interface ResolvedService {
@@ -57,6 +58,7 @@ const PADDINGS = {
 } as const
 
 export function ServiceCards({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -69,7 +71,7 @@ export function ServiceCards({
   padding = 'md',
   _resolved,
   puck,
-}: ServiceCardsProps) {
+}: ServiceCardsProps & { id?: string }) {
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
 
@@ -145,10 +147,19 @@ export function ServiceCards({
         {/* Slot or fallback content */}
         {hasCards ? (
           typeof cards === 'function' ? (
-            React.createElement(
-              cards as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-              { className: gridColsClass },
-            )
+            <>
+              {React.createElement(
+                cards as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+                { className: gridColsClass },
+              )}
+              <EmptySlotHint
+                parentId={id}
+                slotName="cards"
+                childLabel="Thẻ dịch vụ"
+                isEditing={isEditing}
+                isDeepNavy={isDeepNavy}
+              />
+            </>
           ) : React.isValidElement(cards) ? (
             <div className={gridColsClass}>{cards}</div>
           ) : Array.isArray(cards) ? (

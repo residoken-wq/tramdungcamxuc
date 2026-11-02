@@ -5,6 +5,7 @@ import { BOOKING_PATH, getBookingPath } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import { FaqAccordionList, type FAQItem } from './FaqAccordionList'
 import { FaqItemView } from './FaqItemView'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 
 export type { FAQItem }
 
@@ -60,6 +61,7 @@ const PADDINGS = {
 } as const
 
 export function FAQ({
+  id,
   sectionId,
   headingId,
   version: _version,
@@ -85,7 +87,7 @@ export function FAQ({
   _resolved,
   puck,
   children,
-}: FAQProps) {
+}: FAQProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
   const isDeepNavy = bgColor === 'deep-navy'
   const isGroupSource = source === 'group'
@@ -182,9 +184,20 @@ export function FAQ({
       />
     )
   } else if (hasSlotFunc) {
-    renderedItems = React.createElement(
-      items as React.ComponentType<{ className?: string }>,
-      { className: 'space-y-4' },
+    renderedItems = (
+      <>
+        {React.createElement(
+          items as React.ComponentType<{ className?: string }>,
+          { className: 'space-y-4' },
+        )}
+        <EmptySlotHint
+          parentId={id}
+          slotName="items"
+          childLabel="Câu hỏi thường gặp"
+          isEditing={isEditing}
+          isDeepNavy={isDeepNavy}
+        />
+      </>
     )
   } else if (hasElement) {
     renderedItems = <div className="space-y-4">{items as React.ReactNode}</div>

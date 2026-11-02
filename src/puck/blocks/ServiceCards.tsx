@@ -60,5 +60,8 @@ export const ServiceCardsBlock: ComponentConfig<ServiceCardsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck: _puck, ...props }) => <ServiceCards {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <ServiceCards {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

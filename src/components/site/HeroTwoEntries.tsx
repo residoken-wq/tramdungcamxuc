@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { fontSizeClass, type FontSizeOption } from '@/lib/brand/format-classes'
 import { HeroEntryCard, type HeroEntryCardProps } from './HeroEntryCard'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 
 export interface HeroEntry {
   groupLabel?: string
@@ -37,6 +38,9 @@ export interface HeroTwoEntriesProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 const BG_COLORS = {
@@ -55,6 +59,7 @@ const PADDINGS = {
 } as const
 
 export function HeroTwoEntries({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -69,7 +74,9 @@ export function HeroTwoEntries({
   titleSize = 'md',
   bgColor = 'warm-ivory',
   padding = 'md',
-}: HeroTwoEntriesProps) {
+  puck,
+}: HeroTwoEntriesProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
   const titleClass = `font-display ${fontSizeClass('title', titleSize, 'h1')} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`
   const entriesGridClass = 'grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8'
   const isDeepNavy = bgColor === 'deep-navy'
@@ -134,9 +141,18 @@ export function HeroTwoEntries({
   // fixed cards until the read-time migration converts it.
   const entryCards =
     typeof entries === 'function' ? (
-      React.createElement(entries as React.ComponentType<{ className?: string }>, {
-        className: entriesGridClass,
-      })
+      <>
+        {React.createElement(entries as React.ComponentType<{ className?: string }>, {
+          className: entriesGridClass,
+        })}
+        <EmptySlotHint
+          parentId={id}
+          slotName="entries"
+          childLabel="Thẻ lối vào"
+          isEditing={isEditing}
+          isDeepNavy={isDeepNavy}
+        />
+      </>
     ) : entries && React.isValidElement(entries) ? (
       <div className={entriesGridClass}>{entries}</div>
     ) : Array.isArray(entries) ? (

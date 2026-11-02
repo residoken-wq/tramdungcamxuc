@@ -1,5 +1,6 @@
 import React from 'react'
 import { StatItem } from './StatItem'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 
 export interface StatItemData {
@@ -16,6 +17,9 @@ export interface StatsBarProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 const BG_COLORS = {
@@ -34,11 +38,14 @@ const PADDINGS = {
 } as const
 
 export function StatsBar({
+  id,
   columns,
   stats,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: StatsBarProps) {
+  puck,
+}: StatsBarProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
 
   if (!stats) {
@@ -70,10 +77,19 @@ export function StatsBar({
       <div className="mx-auto max-w-5xl">
         <div className="group/stats w-full" data-bg={bgColor}>
           {typeof stats === 'function' ? (
-            React.createElement(
-              stats as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-              { className: gridClasses },
-            )
+            <>
+              {React.createElement(
+                stats as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+                { className: gridClasses },
+              )}
+              <EmptySlotHint
+                parentId={id}
+                slotName="stats"
+                childLabel="Ô số liệu"
+                isEditing={isEditing}
+                isDeepNavy={isDeepNavy}
+              />
+            </>
           ) : React.isValidElement(stats) ? (
             <div className={gridClasses}>{stats}</div>
           ) : Array.isArray(stats) ? (

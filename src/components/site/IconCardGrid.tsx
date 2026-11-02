@@ -1,6 +1,7 @@
 import React from 'react'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { IconCard, type IconCardProps } from './IconCard'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 
 export interface IconCardItem {
@@ -26,6 +27,9 @@ export interface IconCardGridProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 const BG_COLORS = {
@@ -44,6 +48,7 @@ const PADDINGS = {
 } as const
 
 export function IconCardGrid({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -55,7 +60,9 @@ export function IconCardGrid({
   items = [],
   bgColor = 'warm-ivory',
   padding = 'md',
-}: IconCardGridProps) {
+  puck,
+}: IconCardGridProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
   const validItems = Array.isArray(items)
     ? items.filter((item) => item && (item.title || item.text))
@@ -113,10 +120,19 @@ export function IconCardGrid({
         >
           {hasCards &&
             (typeof cards === 'function' ? (
-              React.createElement(cards as CardsSlotRender, {
-                className: gridClasses,
-                style: { counterReset: 'card-counter' },
-              })
+              <>
+                {React.createElement(cards as CardsSlotRender, {
+                  className: gridClasses,
+                  style: { counterReset: 'card-counter' },
+                })}
+                <EmptySlotHint
+                  parentId={id}
+                  slotName="cards"
+                  childLabel="Thẻ"
+                  isEditing={isEditing}
+                  isDeepNavy={isDeepNavy}
+                />
+              </>
             ) : React.isValidElement(cards) ? (
               <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
                 {cards}

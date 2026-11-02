@@ -90,5 +90,8 @@ export const VisionMissionBlock: ComponentConfig<VisionMissionProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck: _puck, ...props }) => <VisionMission {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <VisionMission {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }
