@@ -8,7 +8,7 @@ import {
 } from 'payload'
 import { contentCollection, image, select, slug, text, textarea } from '../fields/content'
 import { getTemplateData } from '@/puck/templates'
-import { validatePageLockedBlocks } from '@/puck/locks'
+import { validatePageLockedBlocks, validatePageKindBlocks } from '@/puck/locks'
 import { guardCustomCodeHook } from '@/puck/custom-code-guard'
 import { vi } from '../lib/i18n/vi'
 
@@ -66,21 +66,40 @@ const normalizeSlug: CollectionBeforeValidateHook = ({ data, originalDoc, req })
   return data
 }
 
-const validateLockedBlocksHook: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
+// REVIEW-REQUIRED: Validate page locked blocks and theme builder kind block rules at collection level
+const validateLockedBlocksHook: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
   const effectiveSlug = data?.slug ?? originalDoc?.slug
+  const effectiveKind = data?.kind ?? originalDoc?.kind ?? 'page'
   const effectivePuckData = data?.puckData ?? originalDoc?.puckData
-  if (effectiveSlug && effectivePuckData) {
-    const result = validatePageLockedBlocks(effectiveSlug, effectivePuckData)
-    if (!result.valid) {
+
+  if (effectivePuckData) {
+    // 1. Validate block rules according to page kind (header / footer / page)
+    const kindResult = await validatePageKindBlocks(effectiveKind, effectivePuckData)
+    if (!kindResult.valid) {
       throw new ValidationError(
         {
-          errors: [{ path: 'puckData', message: result.error || 'Dữ liệu trang không hợp lệ.' }],
+          errors: [{ path: 'puckData', message: kindResult.error || 'Dữ liệu trang không hợp lệ.' }],
           req,
         },
         req?.t,
       )
     }
+
+    // 2. Validate locked blocks on homepage
+    if (effectiveSlug && effectiveKind === 'page') {
+      const lockedResult = await validatePageLockedBlocks(effectiveSlug, effectivePuckData)
+      if (!lockedResult.valid) {
+        throw new ValidationError(
+          {
+            errors: [{ path: 'puckData', message: lockedResult.error || 'Dữ liệu trang không hợp lệ.' }],
+            req,
+          },
+          req?.t,
+        )
+      }
+    }
   }
+
   return data
 }
 
