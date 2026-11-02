@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import type { PayloadRequest } from 'payload'
+import { vi } from '../../src/lib/i18n/vi'
 import {
   blockTemplateAdminAccess,
   blockTemplateDeleteAccess,
@@ -28,7 +29,7 @@ describe('EB-08: BlockTemplates access control', () => {
     email: 'editor-a@example.test',
   } as unknown as MockUser
 
-  const editorUserB: MockUser = {
+  const _editorUserB: MockUser = {
     id: 3,
     collection: 'users',
     role: 'editor',
@@ -135,9 +136,9 @@ describe('EB-08: BlockTemplates access control', () => {
   })
 
   describe('Collection schema configuration', () => {
-    it('has the slug blockTemplates and belongs to Trình dựng trang admin group', () => {
+    it('has the slug blockTemplates and belongs to Trang web admin group', () => {
       expect(BlockTemplates.slug).toBe('blockTemplates')
-      expect(BlockTemplates.admin?.group).toBe('Trình dựng trang')
+      expect(BlockTemplates.admin?.group).toBe(vi.cms.nav.website)
     })
 
     it('has required name, kind, puckData fields, and readOnly createdBy', () => {
