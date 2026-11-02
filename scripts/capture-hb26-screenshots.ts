@@ -51,13 +51,13 @@ async function run() {
     where: { email: { equals: testEmail } },
     limit: 1,
   })
-  let customer = customerRes.docs[0]
+  let customer: any = customerRes.docs[0]
   if (!customer) {
-    customer = await payload.create({
+    customer = await (payload as any).create({
       collection: 'customers',
       data: {
         email: testEmail,
-        fullName: 'Học viên HB26',
+        name: 'Học viên HB26',
         consentPolicy: true,
       },
     })
@@ -69,7 +69,7 @@ async function run() {
     where: { slug: { equals: 'habit-tracker-so' } },
     limit: 1,
   })
-  const product = prodRes.docs[0]
+  const product: any = prodRes.docs[0]
 
   // Cấp quyền entitlement active cho customer nếu có product
   if (product) {
@@ -84,14 +84,13 @@ async function run() {
       limit: 1,
     })
     if (existingEnt.docs.length === 0) {
-      await payload.create({
+      await (payload as any).create({
         collection: 'entitlements',
         data: {
           customer: customer.id,
           product: product.id,
           source: 'trial',
           status: 'active',
-          startsAt: new Date().toISOString(),
           expiresAt: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
         },
       })
@@ -105,12 +104,11 @@ async function run() {
     limit: 1,
   })
   if (existingPlan.docs.length === 0) {
-    await payload.create({
+    await (payload as any).create({
       collection: 'habitPlans',
       data: {
         customer: customer.id,
         leadEmail: testEmail,
-        leadName: 'Học viên HB26',
         habitName: 'Uống 1 ly nước ấm mỗi sáng',
         identityStatement: 'người trân quý sức khỏe',
         rhythmDays: ['mon', 'tue', 'wed', 'thu', 'fri'],
