@@ -89,6 +89,12 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
     const img = screen.getByAltText(sampleCoffee.qrAlt)
     expect(img).toBeDefined()
     expect(img.getAttribute('src')).toContain('sample-qr.png')
+    // CF-03: QR is served as the original file (no /_next/image resize or re-encode) and shown large
+    expect(img.getAttribute('src')).toBe(sampleCoffee.qrSrc)
+    expect(img.getAttribute('src')).not.toContain('/_next/image')
+    const fullQr = screen.getByRole('link', { name: vi.cf01.floatingCoffee.openFullQr })
+    expect(fullQr.getAttribute('href')).toBe(sampleCoffee.qrSrc)
+    expect(fullQr.getAttribute('target')).toBe('_blank')
     // Dòng hướng dẫn quét
     expect(screen.getByText(vi.cf01.floatingCoffee.scanGuide)).toBeDefined()
   })

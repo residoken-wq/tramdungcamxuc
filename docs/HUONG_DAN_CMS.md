@@ -2696,7 +2696,7 @@ Khi bạn bấm chọn một khối cha:
 1. Mở ứng dụng MoMo trên điện thoại cá nhân.
 2. Chọn mục **Nhận tiền** (hoặc biểu tượng QR cá nhân để nhận tiền).
 3. Bấm **Lưu hình ảnh mã QR** về thư viện ảnh điện thoại.
-4. Cắt gọn ảnh vừa vặn khung mã QR và tên người nhận.
+4. **Cắt sát mã QR** (chỉ giữ khung mã QR, có thể để tên người nhận ngay bên dưới) bằng công cụ cắt ảnh của điện thoại. **Không** tải nguyên ảnh chụp màn hình: khi đó mã QR chỉ chiếm khoảng 1/3 ảnh, hiện trên web còn rất nhỏ và **điện thoại khác không quét được** (lỗi gặp ngày 02/11). Ảnh cắt sát nên rộng ít nhất 600 px.
 5. ⚠️ **LƯU Ý BẢO MẬT:** Tuyệt đối **không** tải lên ảnh chụp màn hình có chứa số dư ví, lịch sử chuyển tiền hay thông tin tài khoản riêng tư nào khác ngoài khung mã QR.
 
 **Cấu hình trên CMS** _(Chỉ tài khoản Chủ sở hữu mới được sửa)_:
@@ -2715,6 +2715,8 @@ Khi bạn bấm chọn một khối cha:
 - Mở trang chủ hoặc các trang giới thiệu, bạn sẽ thấy icon ly cà phê nổi màu trắng, viền tím nhạt, icon tím hoa cà xinh xắn nằm ngay phía trên nút Zalo.
 - Khi tắt nút Zalo, nút ly cà phê sẽ tự động hạ sát đáy màn hình.
 - Bấm vào ly cà phê: khung hiển thị mã QR cùng lời nhắn sẽ hiện lên. Người dùng trên điện thoại có thể chụp màn hình để quét trong MoMo; người dùng trên máy tính quét trực tiếp bằng camera điện thoại.
+- Mã QR hiện to tối đa 340 px, giữ nguyên độ nét của ảnh gốc (CF-03). Dưới mã có link **"Mở ảnh QR cỡ lớn"** để khách phóng to hoặc lưu ảnh.
+- **Tự kiểm**: dùng một điện thoại khác quét mã QR trên màn hình máy tính – phải ra đúng tên người nhận.
 - Bấm phím **Esc** hoặc bấm vùng ngoài để đóng khung.
 - Widget hiện ở **mọi trang** (chốt 02/11, CF-02), kể cả trang học, tracker 28 ngày, rút thẻ EQ, thanh toán và dùng thử. Nút Zalo vẫn ẩn ở trang học, tracker và rút thẻ như cũ – khi đó ly cà phê nằm sát đáy.
 

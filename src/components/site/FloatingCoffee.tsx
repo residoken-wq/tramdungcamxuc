@@ -66,15 +66,27 @@ export function CoffeeDonationModal({
           </p>
         ) : null}
 
-        <div className="relative my-2 w-full max-w-[260px] aspect-square rounded-2xl overflow-hidden border border-lavender-mist/80 bg-white p-2 shadow-sm flex items-center justify-center">
+        {/* CF-03: a QR must stay pixel-sharp to scan – shown large (up to 340 px, natural aspect
+            ratio, no square crop) and served as the original file (`unoptimized`: no resize /
+            lossy re-encode by the image optimizer). */}
+        <div className="my-2 w-full max-w-[340px] rounded-2xl border border-lavender-mist/80 bg-white p-2 shadow-sm">
           <Image
             src={coffeeDonation.qrSrc}
             alt={coffeeDonation.qrAlt || modalTitle}
-            width={coffeeDonation.qrWidth || 260}
-            height={coffeeDonation.qrHeight || 260}
-            className="w-full h-full object-contain rounded-xl"
+            width={coffeeDonation.qrWidth || 340}
+            height={coffeeDonation.qrHeight || 340}
+            unoptimized
+            className="block w-full h-auto rounded-xl"
           />
         </div>
+        <a
+          href={coffeeDonation.qrSrc}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 text-xs font-semibold text-bright-magenta underline underline-offset-2 hover:text-accent-pink focus-visible:outline-2 focus-visible:outline-deep-navy"
+        >
+          {vi.cf01.floatingCoffee.openFullQr}
+        </a>
 
         <p className="text-xs sm:text-sm text-deep-navy/70 mt-3 mb-4 leading-relaxed">
           {vi.cf01.floatingCoffee.scanGuide}
