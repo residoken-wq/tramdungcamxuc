@@ -154,7 +154,11 @@ export function buildPostWhere(slug: string) {
 
 export function buildPublishedPuckPageWhere(pageSlug: string) {
   return {
-    and: [{ slug: { equals: pageSlug } }, { _status: { equals: 'published' } }],
+    and: [
+      { slug: { equals: pageSlug } },
+      { _status: { equals: 'published' } },
+      { kind: { equals: 'page' } },
+    ],
   }
 }
 

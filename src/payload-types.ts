@@ -233,9 +233,13 @@ export interface Page {
    */
   title: string;
   /**
+   * Chỉ chọn khi tạo mới. Đầu trang và chân trang được dùng trong Menu điều hướng.
+   */
+  kind: 'page' | 'header' | 'footer';
+  /**
    * Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.
    */
-  slug: string;
+  slug?: string | null;
   /**
    * Dữ liệu bố cục lưu từ trình dựng trang Puck.
    */
@@ -248,9 +252,6 @@ export interface Page {
     | number
     | boolean
     | null;
-  /**
-   * Chọn một mục phù hợp.
-   */
   template?:
     | (
         | 'home-v2'
@@ -2501,6 +2502,7 @@ export interface PayloadMigration {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
+  kind?: T;
   slug?: T;
   puckData?: T;
   template?: T;

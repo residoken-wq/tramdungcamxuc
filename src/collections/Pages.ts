@@ -27,8 +27,42 @@ export function normalizePageSlug(value: string, req?: Partial<PayloadRequest>):
   return normalized
 }
 
-const normalizeSlug: CollectionBeforeValidateHook = ({ data, req }) => {
-  if (typeof data?.slug === 'string') data.slug = normalizePageSlug(data.slug, req)
+const guardKindImmutabilityHook: CollectionBeforeValidateHook = ({
+  data,
+  originalDoc,
+  req,
+  operation,
+}) => {
+  if (
+    operation === 'update' &&
+    originalDoc?.kind &&
+    data?.kind &&
+    data.kind !== originalDoc.kind
+  ) {
+    throw new ValidationError(
+      {
+        errors: [{ path: 'kind', message: vi.eb10.errorKindImmutable }],
+        req,
+      },
+      req?.t,
+    )
+  }
+  return data
+}
+
+const normalizeSlug: CollectionBeforeValidateHook = ({ data, originalDoc, req }) => {
+  const effectiveKind = data?.kind ?? originalDoc?.kind ?? 'page'
+  if (effectiveKind === 'header' || effectiveKind === 'footer') {
+    if (!data?.slug && !originalDoc?.slug) {
+      const prefix = effectiveKind === 'header' ? '__dau-trang' : '__chan-trang'
+      const suffix = Math.random().toString(36).slice(2, 10)
+      if (data) data.slug = `${prefix}-${suffix}`
+    } else if (originalDoc?.slug && data && !data.slug) {
+      data.slug = originalDoc.slug
+    }
+  } else if (typeof data?.slug === 'string') {
+    data.slug = normalizePageSlug(data.slug, req)
+  }
   return data
 }
 
@@ -87,7 +121,48 @@ export const revalidatePage: CollectionAfterChangeHook = ({ doc, previousDoc }) 
 export const Pages = {
   ...contentCollection('pages', 'Trang nội dung', vi.cms.nav.website, 'title', [
     text('title', 'Tên trang', true),
-    slug(true),
+    {
+      name: 'kind',
+      label: vi.eb10.kindLabel,
+      type: 'select',
+      required: true,
+      defaultValue: 'page',
+      options: [
+        { label: vi.eb10.kindOptions.page, value: 'page' },
+        { label: vi.eb10.kindOptions.header, value: 'header' },
+        { label: vi.eb10.kindOptions.footer, value: 'footer' },
+      ],
+      access: {
+        update: () => false,
+      },
+      admin: {
+        description: vi.eb10.kindDesc,
+      },
+    },
+    {
+      ...slug(true),
+      required: false,
+      validate: (
+        value: string | null | undefined,
+        { siblingData }: { siblingData?: { kind?: string } },
+      ) => {
+        const kind = siblingData?.kind ?? 'page'
+        if (kind === 'header' || kind === 'footer') {
+          return true
+        }
+        if (!value || typeof value !== 'string' || value.trim().length === 0) {
+          return 'Vui lòng điền thông tin này.'
+        }
+        return (
+          /^[a-z0-9/-]+$/.test(value) ||
+          'Đường dẫn chỉ dùng chữ thường không dấu, số, dấu - và /.'
+        )
+      },
+      admin: {
+        condition: (_, siblingData) => !siblingData?.kind || siblingData?.kind === 'page',
+        description: 'Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.',
+      },
+    },
     {
       name: 'visualEditor',
       type: 'ui',
@@ -104,23 +179,31 @@ export const Pages = {
       type: 'json',
       admin: { description: 'Dữ liệu bố cục lưu từ trình dựng trang Puck.' },
     },
-    select('template', 'Mẫu trang', [
-      ['home-v2', 'Trang chủ v2'],
-      ['journey', 'Trang lộ trình'],
-      ['about', 'Trang Về Trạm'],
-      ['coach', 'Trang Coach 1:1'],
-      ['contact', 'Trang Liên hệ'],
-      ['community', 'Trang Cộng đồng'],
-      ['business', 'Trang Doanh nghiệp'],
-      ['campaign', 'Landing chiến dịch'],
-      ['service', 'Trang dịch vụ'],
-      ['workshop', 'Trang workshop'],
-      ['event', 'Trang sự kiện'],
-    ]),
+    {
+      ...select('template', 'Mẫu trang', [
+        ['home-v2', 'Trang chủ v2'],
+        ['journey', 'Trang lộ trình'],
+        ['about', 'Trang Về Trạm'],
+        ['coach', 'Trang Coach 1:1'],
+        ['contact', 'Trang Liên hệ'],
+        ['community', 'Trang Cộng đồng'],
+        ['business', 'Trang Doanh nghiệp'],
+        ['campaign', 'Landing chiến dịch'],
+        ['service', 'Trang dịch vụ'],
+        ['workshop', 'Trang workshop'],
+        ['event', 'Trang sự kiện'],
+      ]),
+      admin: {
+        condition: (_, siblingData) => !siblingData?.kind || siblingData?.kind === 'page',
+      },
+    },
     {
       name: 'seo',
       label: 'Hiển thị trên công cụ tìm kiếm',
       type: 'group',
+      admin: {
+        condition: (_, siblingData) => !siblingData?.kind || siblingData?.kind === 'page',
+      },
       fields: [
         text('title', 'Tiêu đề tìm kiếm'),
         textarea('description', 'Mô tả tìm kiếm'),
@@ -129,7 +212,7 @@ export const Pages = {
     },
   ]),
   hooks: {
-    beforeValidate: [normalizeSlug, validateLockedBlocksHook],
+    beforeValidate: [guardKindImmutabilityHook, normalizeSlug, validateLockedBlocksHook],
     beforeChange: [applyTemplateOnCreate, guardCustomCodeHook],
     afterChange: [revalidatePage],
   },
@@ -139,6 +222,6 @@ export const Pages = {
 Pages.admin = {
   ...Pages.admin,
   description: 'Trang tĩnh và landing page dựng bằng kéo thả trực quan Puck.',
-  defaultColumns: ['title', 'slug', 'template', '_status', 'updatedAt'],
-  listSearchableFields: ['title', 'slug'],
+  defaultColumns: ['title', 'kind', 'slug', 'template', '_status', 'updatedAt'],
+  listSearchableFields: ['title', 'slug', 'kind'],
 }

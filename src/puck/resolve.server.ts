@@ -588,7 +588,9 @@ export async function resolveServerData(
     try {
       const pageDocs = await payload.find({
         collection: 'pages',
-        where: { id: { in: numericOrStrPids } },
+        where: {
+          and: [{ id: { in: numericOrStrPids } }, { kind: { equals: 'page' } }],
+        },
         depth: 0,
         limit: numericOrStrPids.length + 10,
       })

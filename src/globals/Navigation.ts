@@ -18,6 +18,9 @@ function linkFields(allowNone: boolean): Field[] {
     select('linkType', 'Loại liên kết', options, { required: true, defaultValue: 'page' }),
     {
       ...relation('page', 'Trang đích', 'pages'),
+      filterOptions: {
+        kind: { equals: 'page' },
+      },
       admin: { condition: (_, siblingData) => siblingData.linkType === 'page' },
       validate: (value: unknown, { siblingData }: { siblingData: LinkSibling }) =>
         siblingData?.linkType !== 'page' || Boolean(value) || 'Vui lòng chọn trang đích.',
