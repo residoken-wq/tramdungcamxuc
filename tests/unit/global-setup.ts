@@ -22,6 +22,25 @@ export async function setup() {
       })),
     })
   } finally {
+    const pool = payload.db.pool
     await payload.destroy()
+    await closePool(pool)
   }
+}
+
+// Payload's Postgres adapter checks out one pool client on connect and never releases it,
+// and payload.destroy() does not end the pool. That open socket keeps the Vitest main
+// process alive after the run: Linux exits only after Vitest's 10s close timeout, Windows
+// hangs forever after "Tests closed successfully but something prevents the main process
+// from exiting". End the pool (closes idle clients) and the leaked client directly.
+// pool.end() is not awaited: it only settles once the leaked client is released, which
+// never happens, and awaiting a promise that never settles lets Node exit mid-setup.
+type PayloadPool = Awaited<ReturnType<typeof getPayload>>['db']['pool']
+type PoolWithClients = PayloadPool & { _clients?: Array<{ end: () => Promise<void> }> }
+
+async function closePool(pool: PayloadPool | undefined) {
+  if (!pool) return
+  const clients = [...((pool as PoolWithClients)._clients ?? [])]
+  pool.end().catch(() => undefined)
+  await Promise.all(clients.map((client) => client.end().catch(() => undefined)))
 }
