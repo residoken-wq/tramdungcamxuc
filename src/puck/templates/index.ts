@@ -10,6 +10,9 @@ import { campaignTemplate } from './campaign'
 import { serviceTemplate } from './service'
 import { workshopTemplate } from './workshop'
 import { eventTemplate } from './event'
+import { headerDefaultTemplate } from './header-default'
+import { footerDefaultTemplate } from './footer-default'
+import { vi } from '@/lib/i18n/vi'
 
 export type PageTemplateKey =
   | 'home-v2'
@@ -23,6 +26,8 @@ export type PageTemplateKey =
   | 'service'
   | 'workshop'
   | 'event'
+  | 'header-default'
+  | 'footer-default'
 
 export type PageTemplateItem = {
   key: PageTemplateKey
@@ -106,6 +111,18 @@ export const pageTemplates: Record<PageTemplateKey, PageTemplateItem> = {
     description: 'Trang sự kiện kết nối cộng đồng, lịch trình chi tiết, giải đáp và đăng ký.',
     data: eventTemplate,
   },
+  'header-default': {
+    key: 'header-default',
+    label: vi.eb10.headerDefaultTemplate,
+    description: vi.eb10.headerDefaultDesc,
+    data: headerDefaultTemplate,
+  },
+  'footer-default': {
+    key: 'footer-default',
+    label: vi.eb10.footerDefaultTemplate,
+    description: vi.eb10.footerDefaultDesc,
+    data: footerDefaultTemplate,
+  },
 }
 
 export const pageTemplateList = Object.values(pageTemplates)
@@ -120,6 +137,7 @@ export function getTemplateData(key: string, pageTitle?: string): Data | null {
   if (pageTitle && pageTitle.trim().length > 0) {
     clone.root = {
       props: {
+        ...(clone.root?.props || {}),
         title: pageTitle.trim(),
       },
     }
@@ -139,4 +157,6 @@ export {
   serviceTemplate,
   workshopTemplate,
   eventTemplate,
+  headerDefaultTemplate,
+  footerDefaultTemplate,
 }

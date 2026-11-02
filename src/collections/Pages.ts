@@ -103,17 +103,25 @@ const validateLockedBlocksHook: CollectionBeforeValidateHook = async ({ data, or
   return data
 }
 
-// REVIEW-REQUIRED: Initialize page puckData from selected template on create
+// REVIEW-REQUIRED: Initialize page puckData from selected template on create (auto-loads default header/footer)
 const applyTemplateOnCreate: CollectionBeforeChangeHook = ({ data, operation }) => {
   if (operation === 'create' && data) {
     const isPuckDataEmpty =
       !data.puckData ||
       !data.puckData.content ||
       (Array.isArray(data.puckData.content) && data.puckData.content.length === 0)
-    if (isPuckDataEmpty && typeof data.template === 'string') {
-      const templateData = getTemplateData(data.template, data.title)
-      if (templateData) {
-        data.puckData = templateData
+    if (isPuckDataEmpty) {
+      if (data.kind === 'header') {
+        const headerTpl = getTemplateData('header-default', data.title)
+        if (headerTpl) data.puckData = headerTpl
+      } else if (data.kind === 'footer') {
+        const footerTpl = getTemplateData('footer-default', data.title)
+        if (footerTpl) data.puckData = footerTpl
+      } else if (typeof data.template === 'string') {
+        const templateData = getTemplateData(data.template, data.title)
+        if (templateData) {
+          data.puckData = templateData
+        }
       }
     }
   }
