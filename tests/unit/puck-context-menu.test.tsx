@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
-import { insertBlockIntoData } from '@/puck/editor/context-menu/insert-helper'
 import { BlockContextMenu } from '@/puck/editor/context-menu/BlockContextMenu'
 import {
   ContextMenuProvider,
@@ -29,62 +28,6 @@ vi.mock('@puckeditor/core', async () => {
       getParentById: mockGetParentById,
     }),
   }
-})
-
-describe('EB-07: insertBlockIntoData helper', () => {
-  it('inserts a block into root content at target index', () => {
-    const data: Data = {
-      content: [
-        { type: 'HeadingWidget', props: { id: 'h-1', text: 'One' } },
-        { type: 'HeadingWidget', props: { id: 'h-2', text: 'Two' } },
-      ],
-      root: { props: { title: 'Test' } },
-    }
-    const newItem: ComponentData = {
-      type: 'ButtonWidget',
-      props: { id: 'btn-new', text: 'New Button' },
-    }
-
-    const updated = insertBlockIntoData(data, 'root:default-zone', 1, newItem)
-    expect(updated.content).toHaveLength(3)
-    expect(updated.content[0].props.id).toBe('h-1')
-    expect(updated.content[1].props.id).toBe('btn-new')
-    expect(updated.content[2].props.id).toBe('h-2')
-  })
-
-  it('inserts a block into a container slot zone and updates parent props', () => {
-    const data: Data = {
-      content: [
-        {
-          type: 'Container',
-          props: {
-            id: 'cnt-1',
-            content: [{ type: 'HeadingWidget', props: { id: 'h-1', text: 'Old In Container' } }],
-          },
-        },
-      ],
-      root: { props: { title: 'Test' } },
-      zones: {
-        'cnt-1:content': [
-          { type: 'HeadingWidget', props: { id: 'h-1', text: 'Old In Container' } },
-        ],
-      },
-    }
-    const newItem: ComponentData = {
-      type: 'TextWidget',
-      props: { id: 'text-new', content: 'New Text' },
-    }
-
-    const updated = insertBlockIntoData(data, 'cnt-1:content', 1, newItem)
-    const zoneContent = updated.zones?.['cnt-1:content'] as ComponentData[]
-    expect(zoneContent).toHaveLength(2)
-    expect(zoneContent[0].props.id).toBe('h-1')
-    expect(zoneContent[1].props.id).toBe('text-new')
-
-    const parentContent = updated.content[0].props.content as ComponentData[]
-    expect(parentContent).toHaveLength(2)
-    expect(parentContent[1].props.id).toBe('text-new')
-  })
 })
 
 function MenuOpener({ componentId }: { componentId: string }) {

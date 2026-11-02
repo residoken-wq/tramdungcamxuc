@@ -28,8 +28,15 @@ export function StylePreview({
   useEffect(() => {
     if (!frameDocument) return
     const handleContextMenu = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      const compEl = target.closest<HTMLElement>('[data-puck-component]')
+      // Innermost block under the pointer (overlays of parent blocks sit on top of their children).
+      const blocks = new Set<HTMLElement>()
+      for (const el of frameDocument.elementsFromPoint(e.clientX, e.clientY)) {
+        const block = (el as HTMLElement).closest<HTMLElement>('[data-puck-component]')
+        if (block) blocks.add(block)
+      }
+      const compEl = [...blocks].find(
+        (block) => ![...blocks].some((other) => other !== block && block.contains(other)),
+      )
       if (!compEl) return
       const id = compEl.getAttribute('data-puck-component')
       if (!id) return

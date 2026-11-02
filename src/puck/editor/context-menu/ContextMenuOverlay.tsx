@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect } from 'react'
 import { useContextMenu } from './context-menu-context'
 
 export function ContextMenuOverlay({
@@ -17,36 +17,6 @@ export function ContextMenuOverlay({
   children: React.ReactNode
 }) {
   const { openMenu } = useContextMenu()
-
-  const handleContextMenu = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-
-      let clientX = e.clientX
-      let clientY = e.clientY
-
-      if (typeof window !== 'undefined') {
-        try {
-          const iframe = window.parent?.document.querySelector('iframe')
-          if (iframe) {
-            const rect = iframe.getBoundingClientRect()
-            clientX += rect.left
-            clientY += rect.top
-          }
-        } catch {
-          // Keep raw coordinates if unavailable
-        }
-      }
-
-      openMenu({
-        componentId,
-        x: clientX,
-        y: clientY,
-      })
-    },
-    [componentId, openMenu],
-  )
 
   useEffect(() => {
     if (!isSelected) return
@@ -81,11 +51,9 @@ export function ContextMenuOverlay({
   }, [isSelected, componentId, openMenu])
 
   return (
-    <div
-      onContextMenu={handleContextMenu}
-      className="w-full h-full pointer-events-auto"
-      data-eb-overlay-id={componentId}
-    >
+    // Right-click is handled once for the whole canvas (StylePreview), which picks the innermost
+    // block under the pointer; a handler here would answer for the outer block (Container) first.
+    <div className="w-full h-full pointer-events-auto" data-eb-overlay-id={componentId}>
       {children}
     </div>
   )

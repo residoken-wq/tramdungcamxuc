@@ -198,7 +198,9 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
       // Canvas should now have 3 headings (total 4 blocks inside canvas)
       await expect(canvasA.locator('[data-puck-component]')).toHaveCount(4)
 
-      // Click "Hoàn tác" button
+      // Puck records history 250 ms after an action (debounced): an undo sooner than that goes one
+      // step further back (here it would also undo the rename). Wait like a person would.
+      await page.waitForTimeout(600)
       await page.getByRole('button', { name: 'Hoàn tác', exact: true }).first().click()
 
       // Should be back to 2 headings (total 3 blocks)
@@ -279,6 +281,42 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
       )
       expect(pastedContainer).toBeDefined()
       expect(pastedContainer.props.id).not.toBe(containerAId)
+      const pastedChildIds = (pastedContainer.props.items ?? []).map(
+        (b: { props: { id: string } }) => b.props.id,
+      )
+      expect(pastedChildIds).toHaveLength(2)
+      expect(pastedChildIds).not.toContain(heading1Id)
+
+      // QA EB-07c: paste INTO a slot (after a heading inside the pasted Container).
+      await blockB.click({ button: 'right' })
+      await page.getByRole('menuitem', { name: /^Sao chép$/ }).click()
+      const innerHeading = canvasB.locator(`[data-puck-component="${pastedChildIds[0]}"]`)
+      await innerHeading.click({ button: 'right', force: true })
+      await page.getByRole('menuitem', { name: /^Dán$/ }).click()
+      await expect(
+        canvasB.locator(`.eb-c-${pastedContainer.props.id} > [data-puck-component]`),
+      ).toHaveCount(3)
+      await page.waitForTimeout(600)
+      await page.getByRole('button', { name: 'Lưu nháp', exact: true }).click()
+      await expect
+        .poll(
+          async () => {
+            const json = await (
+              await page.request.get(`/api/pages/${pageBId}?draft=true&depth=0`)
+            ).json()
+            const c = (json.puckData?.content || []).find(
+              (b: { type: string }) => b.type === 'Container',
+            )
+            return [
+              json.puckData?.content?.length,
+              c?.props?.items?.length,
+              Object.keys(json.puckData?.zones ?? {}).length,
+            ]
+          },
+          { timeout: 15000 },
+        )
+        // Root unchanged (heading + container), 3 blocks in the slot, no stray legacy zones.
+        .toEqual([2, 3, 0])
 
       // --- TEST STEP 5: Homepage Locked Block HeroTwoEntries ---
       if (homepageId) {
@@ -331,4 +369,3 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
     }
   })
 })
-

@@ -1,6 +1,6 @@
 import type { ComponentData, Config } from '@puckeditor/core'
 import { isPuckItem } from '@/puck/walk'
-import { ROOT_DISALLOW, CHILD_BLOCK_TYPES } from '@/puck/constants'
+import { ROOT_DISALLOW } from '@/puck/constants'
 
 export const CLIPBOARD_STORAGE_KEY = 'eb07:clipboard'
 export const MAX_CLIPBOARD_BYTES = 200 * 1024 // 200 KB
@@ -92,43 +92,44 @@ export function clearClipboard(): void {
   }
 }
 
+type SlotRules = { allow?: string[]; disallow?: string[] }
+
 /**
- * Checks whether a given block type is allowed inside a target zone.
+ * The slot field a zone points to. Zones are `root:default-zone` or `<parentId>:<slot path>`, the
+ * slot path being a prop name (`items`, `col1`) or a path into an array field (`items[1].content`).
+ */
+function slotRules(config: Config, parentType: string | undefined, zone: string): SlotRules | null {
+  if (!parentType) return null
+  const component = config.components?.[parentType] as
+    { fields?: Record<string, unknown> } | undefined
+  const path = zone.slice(zone.indexOf(':') + 1)
+  const arrayMatch = /^([A-Za-z0-9_]+)\[\d+\]\.([A-Za-z0-9_]+)$/.exec(path)
+  const field = arrayMatch
+    ? (component?.fields?.[arrayMatch[1]] as { arrayFields?: Record<string, unknown> } | undefined)
+        ?.arrayFields?.[arrayMatch[2]]
+    : component?.fields?.[path]
+  if (!field || (field as { type?: string }).type !== 'slot') return null
+  return field as SlotRules
+}
+
+/**
+ * Whether a block type may be dropped into a zone, using the same rules as dragging: the page root
+ * refuses `ROOT_DISALLOW`; a slot follows its own `allow` / `disallow`. A zone whose slot cannot be
+ * found refuses everything (safer than guessing).
  */
 export function isAllowedInZone(
   blockType: string,
   targetZone: string,
   parentType?: string,
+  config?: Config,
 ): boolean {
-  const isRoot =
-    !targetZone ||
-    targetZone === 'root:default-zone' ||
-    targetZone === 'default-zone' ||
-    targetZone.startsWith('root:')
-
-  if (isRoot) {
-    return !ROOT_DISALLOW.includes(blockType)
-  }
-
-  // Child card blocks can only be inside their dedicated parent grid
-  if (CHILD_BLOCK_TYPES.includes(blockType)) {
-    if (blockType === 'Card' && parentType === 'IconCardGrid') return true
-    if (blockType === 'Stat' && parentType === 'StatsBar') return true
-    if (blockType === 'Step' && parentType === 'JourneySteps') return true
-    if (blockType === 'FaqItem' && parentType === 'FAQ') return true
-    if (blockType === 'EntryCard' && parentType === 'HeroTwoEntries') return true
-    if (blockType === 'ServiceCard' && parentType === 'ServiceCards') return true
-    if (blockType === 'PackageCard' && parentType === 'PackageCards') return true
-    if (blockType === 'PathCard' && parentType === 'TwoPathCards') return true
-    if (blockType === 'VisionCard' && parentType === 'VisionMission') return true
-    return false
-  }
-
-  // If inside a Container: Container allows all blocks except CHILD_BLOCK_TYPES
-  if (parentType === 'Container') {
-    return !CHILD_BLOCK_TYPES.includes(blockType)
-  }
-
+  const isRoot = !targetZone || targetZone.startsWith('root:') || targetZone === 'default-zone'
+  if (isRoot) return !ROOT_DISALLOW.includes(blockType)
+  if (!config) return false
+  const rules = slotRules(config, parentType, targetZone)
+  if (!rules) return false
+  if (rules.allow && !rules.allow.includes(blockType)) return false
+  if (rules.disallow && rules.disallow.includes(blockType)) return false
   return true
 }
 
@@ -160,7 +161,7 @@ export function prepareForPaste(
     return { success: false, reason: 'unknown-type' }
   }
 
-  if (!isAllowedInZone(rootType, targetZone, parentType)) {
+  if (!isAllowedInZone(rootType, targetZone, parentType, config)) {
     return { success: false, reason: 'not-allowed-here' }
   }
 

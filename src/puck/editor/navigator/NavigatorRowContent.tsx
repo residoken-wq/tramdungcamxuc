@@ -120,7 +120,7 @@ export function NavigatorRowContent({ componentId }: { componentId: string }) {
       {cleanLabel ? (
         <div className="flex items-baseline gap-1.5 min-w-0 flex-1 truncate">
           <span className="font-bold text-xs text-deep-navy truncate">{cleanLabel}</span>
-          <span className="text-[10px] text-deep-navy/50 truncate shrink-0">({typeLabel})</span>
+          <span className="text-[10px] text-deep-navy/70 truncate shrink-0">({typeLabel})</span>
         </div>
       ) : (
         <span className="font-medium text-xs text-deep-navy truncate flex-1">{typeLabel}</span>
@@ -129,7 +129,7 @@ export function NavigatorRowContent({ componentId }: { componentId: string }) {
       {hasHideOn && (
         <span
           title={`${vi.eb07.hiddenOn}: ${hiddenDeviceNames}`}
-          className="text-deep-navy/50 hover:text-deep-navy shrink-0 ml-auto flex items-center"
+          className="text-deep-navy/70 hover:text-deep-navy shrink-0 ml-auto flex items-center"
           aria-label={`${vi.eb07.hiddenOn}: ${hiddenDeviceNames}`}
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

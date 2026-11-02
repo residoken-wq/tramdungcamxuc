@@ -1,3 +1,4 @@
+import { puckConfig } from '@/puck/config'
 import React from 'react'
 import { describe, it, expect, beforeEach, vi as vitestVi } from 'vitest'
 import {
@@ -62,22 +63,38 @@ describe('EB-07: clipboard operations', () => {
   })
 })
 
-describe('EB-07: isAllowedInZone', () => {
-  it('disallows ROOT_DISALLOW blocks at root', () => {
+describe('EB-07: isAllowedInZone follows the slot rules of the real config', () => {
+  const config = puckConfig as unknown as Config
+
+  it('page root refuses child cards and free-section elements', () => {
     expect(isAllowedInZone('Card', 'root:default-zone')).toBe(false)
+    expect(isAllowedInZone('HeadingEl', 'root:default-zone')).toBe(false)
     expect(isAllowedInZone('HeadingWidget', 'root:default-zone')).toBe(true)
     expect(isAllowedInZone('Container', 'root:default-zone')).toBe(true)
   })
 
-  it('allows Card inside IconCardGrid', () => {
-    expect(isAllowedInZone('Card', 'grid-1:cards', 'IconCardGrid')).toBe(true)
-    expect(isAllowedInZone('Card', 'cnt-1:content', 'Container')).toBe(false)
+  it('Container slot accepts blocks and nested Containers, not child cards', () => {
+    expect(isAllowedInZone('HeadingWidget', 'cnt-1:items', 'Container', config)).toBe(true)
+    expect(isAllowedInZone('Container', 'cnt-1:items', 'Container', config)).toBe(true)
+    expect(isAllowedInZone('Card', 'cnt-1:items', 'Container', config)).toBe(false)
   })
 
-  it('allows container allowed blocks inside Container', () => {
-    expect(isAllowedInZone('HeadingWidget', 'cnt-1:content', 'Container')).toBe(true)
-    expect(isAllowedInZone('Container', 'cnt-1:content', 'Container')).toBe(true)
-    expect(isAllowedInZone('Card', 'cnt-1:content', 'Container')).toBe(false)
+  it('slot inside an array item (Tabs) uses that field', () => {
+    expect(isAllowedInZone('TextWidget', 'tabs-1:items[1].content', 'TabsWidget', config)).toBe(
+      true,
+    )
+    expect(isAllowedInZone('Card', 'tabs-1:items[1].content', 'TabsWidget', config)).toBe(false)
+  })
+
+  it('a parent with an allow list only takes those blocks', () => {
+    expect(isAllowedInZone('Card', 'grid-1:cards', 'IconCardGrid', config)).toBe(true)
+    expect(isAllowedInZone('HeroTwoEntries', 'grid-1:cards', 'IconCardGrid', config)).toBe(false)
+  })
+
+  it('unknown slot or parent refuses (no guessing)', () => {
+    expect(isAllowedInZone('HeadingWidget', 'x:nope', 'Container', config)).toBe(false)
+    expect(isAllowedInZone('HeadingWidget', 'x:items', 'NoSuchBlock', config)).toBe(false)
+    expect(isAllowedInZone('HeadingWidget', 'x:items', 'Container')).toBe(false)
   })
 })
 

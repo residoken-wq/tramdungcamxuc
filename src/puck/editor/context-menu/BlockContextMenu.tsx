@@ -6,7 +6,6 @@ import { usePuck, type ComponentData } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { useContextMenu } from './context-menu-context'
 import { copyBlock, readClipboard, prepareForPaste } from './clipboard'
-import { insertBlockIntoData } from './insert-helper'
 import { hasStyleKeys } from '@/puck/style/style-schema'
 import { switchLeftPanelTab } from '@/puck/editor/LeftPanel'
 
@@ -25,14 +24,8 @@ export type MenuItemDef = {
 
 export function BlockContextMenu() {
   const { menuState, closeMenu, setRenamingId, showToast } = useContextMenu()
-  const {
-    config,
-    dispatch,
-    getPermissions,
-    getItemById,
-    getSelectorForId,
-    getParentById,
-  } = usePuck()
+  const { config, dispatch, getPermissions, getItemById, getSelectorForId, getParentById } =
+    usePuck()
 
   const menuRef = useRef<HTMLDivElement>(null)
   const [position, setPosition] = useState<{ left: number; top: number }>({ left: 0, top: 0 })
@@ -125,9 +118,20 @@ export function BlockContextMenu() {
     const insertIndex = selector.index + 1
     const newItem = pasteValidation.item
 
+    // Puck's own actions place the block in any zone (root, slot, slot inside an array item) and
+    // keep its indexes in sync; both land in one history step (Puck debounces recording).
     dispatch({
-      type: 'setData',
-      data: (prevData) => insertBlockIntoData(prevData, selector.zone, insertIndex, newItem),
+      type: 'insert',
+      componentType: newItem.type,
+      destinationIndex: insertIndex,
+      destinationZone: selector.zone,
+      id: String(newItem.props.id),
+    })
+    dispatch({
+      type: 'replace',
+      destinationIndex: insertIndex,
+      destinationZone: selector.zone,
+      data: newItem,
     })
     dispatch({
       type: 'setUi',
