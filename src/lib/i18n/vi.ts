@@ -706,8 +706,6 @@ export const vi = {
       future: 'Chưa tới',
       locked: 'Đã khóa',
     },
-    ariaDay: (day: number, statusText: string, emotionText?: string) =>
-      `Ngày ${day}: ${statusText}${emotionText ? `, cảm xúc: ${emotionText}` : ''}`,
     wizard: {
       badge: 'Habit Loop 5 phút',
       titleLine1: 'Thiết kế vòng lặp',
@@ -856,7 +854,7 @@ export const vi = {
       offerPage: {
         title: 'Habit Hack – 1% Better Mỗi Ngày | Habit Tracker số',
         description:
-          'Bộ công cụ và khóa học Habit Hack 1% Better: bài giảng video, kỹ thuật thực chiến, tracker 28 ngày với 10 cảm xúc. Trải nghiệm dùng thử miễn phí không cần thẻ tín dụng.',
+          'Bộ công cụ và khóa học Habit Hack 1% Better: bài giảng video, kỹ thuật thực chiến, tracker theo dõi hành trình với 10 cảm xúc. Có dùng thử miễn phí.',
         ogTitle: 'Habit Hack – 1% Better Mỗi Ngày | Trạm Dừng Cảm Xúc',
         ogDescription:
           'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng. Trải nghiệm hành trình xây dựng thói quen cùng Hana Lương.',
@@ -874,8 +872,8 @@ export const vi = {
       stats: {
         videos: 'Video thực chiến',
         techniques: 'Kỹ thuật Atomic Habits',
-        tracker: 'Tracker 28 ngày & 10 Cảm xúc',
-        trackerValue: '28',
+        // HB-15c: the number follows siteSettings.habitJourneyDays
+        tracker: (days: number) => `Tracker ${days} ngày & 10 Cảm xúc`,
         modules: 'Module lộ trình tinh gọn',
         modulesValue: '4',
       },
@@ -920,7 +918,7 @@ export const vi = {
         ],
       },
       includesHeading: 'Bao gồm trong bộ công cụ:',
-      bottomTitle: 'Bắt đầu hành trình 28 ngày của bạn',
+      bottomTitle: (days: number) => `Bắt đầu hành trình ${days} ngày của bạn`,
       bottomDesc: (videos: number, techniques: number) =>
         `Khám phá ${videos > 0 ? `${videos} video bài giảng, ` : ''}${techniques > 0 ? `${techniques} kỹ thuật thực chiến và ` : ''}bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.`,
       faq: {

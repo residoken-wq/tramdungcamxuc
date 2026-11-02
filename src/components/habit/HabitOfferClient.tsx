@@ -11,9 +11,11 @@ import type { HabitProductData } from '@/lib/habit.server'
 
 export interface HabitOfferClientProps {
   product: HabitProductData | null
+  /** HB-15c: siteSettings.habitJourneyDays (default 28) */
+  journeyDays?: number
 }
 
-export function HabitOfferClient({ product }: HabitOfferClientProps) {
+export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClientProps) {
   const effectivePricing = product
     ? getEffectivePrice(
         {
@@ -158,10 +160,10 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
             )}
             <div className="p-4 rounded-xl bg-warm-ivory">
               <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                {vi.habit.offer.stats.trackerValue}
+                {journeyDays}
               </span>
               <span className="text-xs sm:text-sm font-semibold text-deep-navy">
-                {vi.habit.offer.stats.tracker}
+                {vi.habit.offer.stats.tracker(journeyDays)}
               </span>
             </div>
             <div className="p-4 rounded-xl bg-warm-ivory">
@@ -267,7 +269,7 @@ export function HabitOfferClient({ product }: HabitOfferClientProps) {
       <section className="py-16 bg-brand-gradient border-t border-lavender-mist">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h2 className="font-display text-3xl sm:text-4xl text-deep-navy mb-4">
-            {vi.habit.offer.bottomTitle}
+            {vi.habit.offer.bottomTitle(journeyDays)}
           </h2>
           <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">
             {vi.habit.offer.bottomDesc(videoCount, techniqueCount)}

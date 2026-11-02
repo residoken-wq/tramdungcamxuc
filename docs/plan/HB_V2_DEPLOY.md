@@ -6,18 +6,30 @@
 
 ---
 
-## 1. Danh sách Migration & Thứ tự thực thi
+## 1. Migration
 
-Bộ nâng cấp HB v2 bao gồm 3 migration schema cơ sở dữ liệu Postgres (theo thứ tự timestamp tự động):
+> HB-15c (Planning): app **tự chạy migration khi khởi động** (`prodMigrations` trong `payload.config.ts`, xem `docs/RUNBOOK.md`). **Không chạy `pnpm migrate` bằng tay** trên VPS.
 
-| STT | File Migration                                | Nguồn Task | Nội dung thay đổi trong Database                                                                                                                                                                                                                       |
-| :-: | :-------------------------------------------- | :--------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  1  | `20261031_073042_hb24_flow_content.ts`        |   HB-24    | Bổ sung các nhóm trường cấu hình flow mới trong global `habitJourneyContent`: `diagnose` (8 câu khảo sát, thang điểm, kết quả), `onePercent` (3 điều chưa biết, câu chốt), `loop` (giải thích 4 giai đoạn, 4 quy tắc), `boardingPass` (caption gợi ý). |
-|  2  | `20261031_102521_hb12_station_reflections.ts` |   HB-12    | Tạo bảng mới `habitStationReflections` (lưu bài suy ngẫm trạm của học viên với phân quyền `selfCustomerOnlyField`) và bổ sung mảng `reflectionQuestions` vào các trạm trong `habitJourneyContent`.                                                     |
-|  3  | `20261101_040756_hb18_flow_content_extra.ts`  |   HB-18    | Bổ sung trường `stepQuotes` (câu trích dẫn 6 bước), trường liên kết trong `siteSettings` (`habitCoachBookingUrl`, `habitDonationEnabled`, `habitDonationUrl`), và khối đồng hành trong `tracker` (`afterJourneyTitle`, `afterJourneyText`).            |
+Migration chạy theo thứ tự tên file, mọi file **chưa có** trong bảng `payload_migrations` của bản thật đều được chạy. Riêng bộ HB v2 có các file sau (prod đang ở bản trước HB thì chạy đủ cả danh sách):
 
-> [!NOTE]
-> Khi chạy qua lệnh `pnpm migrate`, hệ thống Payload sẽ tự động quét thư mục `src/migrations/`, so khớp với bảng `payload_migrations` trong cơ sở dữ liệu và áp dụng chính xác theo thứ tự thời gian.
+| File                                          | Task  | Nội dung                                                                    |
+| :-------------------------------------------- | :---- | :-------------------------------------------------------------------------- |
+| `20261021_012851_hb02_journey_28.ts`          | HB-02 | Hành trình 28 ngày, ngưỡng 90%                                              |
+| `20261023_093308_hb03_plan_fields.ts`         | HB-03 | Trường mới của kế hoạch (nhịp tuần, ngày bắt đầu…)                          |
+| `20261024_072228_hb04_checkin_status.ts`      | HB-04 | Trạng thái check-in (đủ / bản tối giản / lỡ nhịp / nghỉ)                    |
+| `20261026_033511_hb07_journey_content.ts`     | HB-07 | Global `habitJourneyContent` (trạm, câu chữ hành trình)                     |
+| `20261031_073042_hb24_flow_content.ts`        | HB-24 | Nội dung 6 bước: khám, 1%, vòng lặp, Boarding Pass                          |
+| `20261031_080633_eb01_design_system.ts`       | EB-01 | (bộ EB, đã merge vào `main`, lên cùng lần deploy này)                       |
+| `20261031_102521_hb12_station_reflections.ts` | HB-12 | Bảng `habitStationReflections`, câu hỏi suy ngẫm mỗi trạm                   |
+| `20261101_040756_hb18_flow_content_extra.ts`  | HB-18 | `stepQuotes`, link Coach / ủng hộ trong `siteSettings`, khối sau hành trình |
+
+Xem bản thật đang ở migration nào (chỉ đọc tên migration, không đọc dữ liệu khách):
+
+```bash
+cd /opt/tdcx
+export DC="docker compose -p tdcx -f docker-compose.prod.yml"
+$DC exec -T postgres psql -U postgres -d tramdungcamxuc -c "select name from payload_migrations order by id desc limit 5" < /dev/null
+```
 
 ---
 
@@ -44,59 +56,39 @@ Trước khi công bố chính thức hành trình thói quen 28 ngày đến h�
 
 ## 3. Quy trình Deploy trên VPS Production
 
-Thực hiện trên VPS production (`/opt/tdcx`):
+Làm theo `docs/RUNBOOK.md` mục cập nhật bản mới. Tóm tắt (anh tự chạy trên VPS):
 
-### Bước 3.1: Chuẩn bị & Cập nhật mã nguồn
+### Bước 3.1: Chọn image
+
+Vào GitHub → **Actions**: run CI của commit mới nhất trên `main` phải xanh **cả** job "Build and Push Docker image". Ghi 7 ký tự commit → tag `sha-xxxxxxx`.
+
+### Bước 3.2: Backup trước (bắt buộc – bản này có migration)
 
 ```bash
 cd /opt/tdcx
-
-# Kiểm tra trạng thái git
-git status
-
-# Kéo mã nguồn mới nhất từ nhánh main
-git fetch origin
-git pull --ff-only origin main
-
-# Thiết lập biến tắt cho docker compose
-export DC="docker compose -p tdcx -f docker-compose.prod.yml"
+./scripts/backup.sh
+git rev-parse --short=7 HEAD > previous-release.txt   # để rollback
 ```
 
-### Bước 3.2: Cập nhật Tag Image trong `.env` & Kéo Image mới
+_Mong đợi: dòng `backup OK: …`. Lỗi → **dừng**, không cập nhật._
+
+### Bước 3.3: Cập nhật và khởi động
 
 ```bash
-# Sửa APP_TAG trong .env sang bản release mới (ví dụ: v2.1.0 hoặc sha commit)
-nano .env
-
-# Kéo image ứng dụng và image tools mới nhất từ GitHub Container Registry
+cd /opt/tdcx
+export DC="docker compose -p tdcx -f docker-compose.prod.yml"
+git pull --ff-only origin main < /dev/null
+nano .env          # anh tự sửa APP_TAG=sha-xxxxxxx (bước 3.1)
 $DC pull < /dev/null
 $DC --profile tools pull seed < /dev/null
-```
-
-### Bước 3.3: Chạy Database Migration
-
-```bash
-# Thực thi migration an toàn qua container seed độc lập
-$DC --profile tools run --rm seed pnpm migrate < /dev/null
-```
-
-_Mong đợi: Terminal thông báo thành công cho 3 migration HB-24, HB-12, HB-18._
-
-### Bước 3.4: Khởi động Ứng dụng & Kiểm tra Sức khỏe
-
-```bash
-# Khởi động dịch vụ nền
 $DC up -d < /dev/null
-
-# Đợi 30 giây để container sẵn sàng và kiểm tra trạng thái
-sleep 30
 $DC ps < /dev/null
-
-# Xem log khởi động để đảm bảo không có ngoại lệ
-$DC logs app --tail 100 < /dev/null
+$DC logs app --tail 200 < /dev/null | grep -i migrat
 ```
 
-_Mong đợi: Container `app` và `postgres` đều ở trạng thái `healthy`._
+_Mong đợi: `app` và `postgres` `healthy` (chờ khoảng 1 phút); log có các migration ở mục 1; câu lệnh ở cuối mục 1 trả `20261101_040756_hb18_flow_content_extra` ở dòng đầu._
+
+**Không chạy `pnpm seed`** trên bản thật (GO_LIVE_STEPS mục 9). Nội dung mục 2 Hana tự nhập trong `/admin`.
 
 ---
 
@@ -119,24 +111,7 @@ Thực hiện kiểm thử thực tế trên điện thoại (khung hình 375px)
 
 ---
 
-## 5. Quy trình Quay lại Bản cũ (Rollback Plan)
+## 5. Quay lại bản cũ (Rollback)
 
-Trong trường hợp phát sinh sự cố nghiêm trọng không thể khắc phục ngay:
-
-```bash
-cd /opt/tdcx
-export DC="docker compose -p tdcx -f docker-compose.prod.yml"
-
-# 1. Đổi APP_TAG trong .env về tag ổn định trước đó
-nano .env
-
-# 2. Nếu cần rollback migration schema (chỉ khi có lỗi cấu trúc bảng):
-$DC --profile tools run --rm seed pnpm migrate:down < /dev/null
-
-# 3. Khởi động lại container ứng dụng với bản tag cũ
-$DC pull app < /dev/null
-$DC up -d < /dev/null
-
-# 4. Kiểm tra log hoạt động
-$DC logs app --tail 50 < /dev/null
-```
+1. **Lỗi giao diện / logic, dữ liệu không hỏng:** sửa `.env` `APP_TAG=sha-<nội dung previous-release.txt>`, rồi `$DC pull && $DC up -d`. Các cột / bảng mới của migration vẫn nằm trong DB, bản cũ không dùng tới. **Không** chạy `migrate:down` (mỗi lần chỉ lùi 1 migration, có thể xoá bảng suy ngẫm của học viên).
+2. **Dữ liệu hỏng:** khôi phục bản backup ở bước 3.2 theo `docs/RUNBOOK.md` mục "Khôi phục backup / Rollback" (đọc kỹ cảnh báo xoá dữ liệu), rồi làm như ý 1.
