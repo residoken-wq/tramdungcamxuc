@@ -223,4 +223,18 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
 
     expect(container.firstChild).toBeNull()
   })
+
+  it('CF-01c: hộp thoại QR nằm NGOÀI cột nút nổi (fixed z-30) để không bị navbar z-40 đè', () => {
+    const { container } = render(
+      <FloatingActions
+        floatingCoffee={sampleCoffee}
+        showFloatingChat={true}
+        zaloChatUrl="https://zalo.me/0900000000"
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: vi.cf01.floatingCoffee.ariaLabel }))
+    const dialog = screen.getByRole('dialog')
+    const aside = container.querySelector('aside')
+    expect(aside?.contains(dialog)).toBe(false)
+  })
 })
