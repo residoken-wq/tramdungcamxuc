@@ -21,6 +21,7 @@ test.describe('EB-10: Header and Footer Visual Builder', () => {
     let editorUserId: number | string | undefined
     let headerPageId: number | string | undefined
     let footerPageId: number | string | undefined
+    let createdLegalId: number | string | undefined
     let draftHeaderPageId: number | string | undefined
     let previousNavigation: Record<string, unknown> | undefined
 
@@ -183,6 +184,23 @@ test.describe('EB-10: Header and Footer Visual Builder', () => {
       // -------------------------------------------------------------
       // 5. Scenario 3: Footer builder: 6 legal links, LegalFooter deletion rejected, slug returns 404
       // -------------------------------------------------------------
+      // EB-10c: self-contained on an empty DB – the legal link checked below must exist.
+      const existingLegal = await (
+        await page.request.get('/api/legalPages?where[slug][equals]=dieu-khoan-su-dung&depth=0')
+      ).json()
+      if (existingLegal.docs.length === 0) {
+        const createdLegal = await page.request.post('/api/legalPages', {
+          data: {
+            title: '[MẪU] Điều khoản sử dụng',
+            slug: 'dieu-khoan-su-dung',
+            order: 2,
+            _status: 'published',
+          },
+        })
+        expect(createdLegal.ok()).toBe(true)
+        createdLegalId = (await createdLegal.json()).doc.id
+      }
+
       const createFooterRes = await page.request.post('/api/pages', {
         data: {
           title: '[MẪU] E2E Footer Builder',
@@ -309,6 +327,9 @@ test.describe('EB-10: Header and Footer Visual Builder', () => {
       }
       if (footerPageId) {
         await page.request.delete(`/api/pages/${footerPageId}`).catch(() => {})
+      }
+      if (createdLegalId) {
+        await page.request.delete(`/api/legalPages/${createdLegalId}`).catch(() => {})
       }
       if (draftHeaderPageId) {
         await page.request.delete(`/api/pages/${draftHeaderPageId}`).catch(() => {})
