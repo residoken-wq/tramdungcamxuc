@@ -1,3 +1,4 @@
+import React from 'react'
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import type { ComponentData, Config, Data } from '@puckeditor/core'
@@ -12,16 +13,16 @@ import {
 const mockConfig: Config = {
   components: {
     Container: {
-      render: () => null as any,
+      render: () => React.createElement(React.Fragment),
     },
     HeadingWidget: {
-      render: () => null as any,
+      render: () => React.createElement(React.Fragment),
     },
     TextWidget: {
-      render: () => null as any,
+      render: () => React.createElement(React.Fragment),
     },
     TabsWidget: {
-      render: () => null as any,
+      render: () => React.createElement(React.Fragment),
     },
   },
 }

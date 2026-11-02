@@ -26,7 +26,6 @@ export type VersionSummary = {
   status: 'draft' | 'published'
   autosave: boolean
   title?: string
-  authorName?: string | null
 }
 
 export type GetVersionsActionResult = {
@@ -265,7 +264,6 @@ export async function getVersionsAction(
         status: versionDoc?._status === 'published' ? 'published' : 'draft',
         autosave: Boolean((doc as { autosave?: boolean }).autosave),
         title: versionDoc?.title,
-        authorName: (user as { name?: string }).name || user.email || null,
       }
     })
 

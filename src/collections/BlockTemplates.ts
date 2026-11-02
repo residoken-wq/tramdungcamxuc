@@ -26,7 +26,8 @@ export const BlockTemplates: CollectionConfig = {
   },
   admin: {
     group: vi.cms.nav.website,
-    description: 'Quản lý các mẫu khối và mẫu trang đã lưu để tái sử dụng trong trình dựng trang Puck.',
+    description:
+      'Quản lý các mẫu khối và mẫu trang đã lưu để tái sử dụng trong trình dựng trang Puck.',
     useAsTitle: 'name',
     defaultColumns: ['name', 'kind', 'createdBy', 'createdAt'],
   },
@@ -35,16 +36,6 @@ export const BlockTemplates: CollectionConfig = {
     create: blockTemplateAdminAccess,
     update: blockTemplateAdminAccess,
     delete: blockTemplateDeleteAccess,
-  },
-  hooks: {
-    beforeChange: [
-      ({ req, operation, data }) => {
-        if (operation === 'create' && req.user && data && !data.createdBy) {
-          data.createdBy = req.user.id
-        }
-        return data
-      },
-    ],
   },
   fields: [
     {
@@ -83,9 +74,20 @@ export const BlockTemplates: CollectionConfig = {
         readOnly: true,
         position: 'sidebar',
       },
+      // REVIEW-REQUIRED: set by the server only. Taken from the signed-in user on create and kept on
+      // update, whatever the request sends – otherwise an editor could claim an owner's template and
+      // then delete it (delete access depends on this field).
+      hooks: {
+        beforeChange: [
+          ({ operation, req, originalDoc }) => {
+            if (operation === 'create') return req.user?.id ?? null
+            const previous = originalDoc?.createdBy
+            return previous && typeof previous === 'object' ? previous.id : (previous ?? null)
+          },
+        ],
+      },
       label: vi.eb08.createdBy,
     },
   ],
   timestamps: true,
 }
-

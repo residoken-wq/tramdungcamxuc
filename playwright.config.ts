@@ -14,7 +14,6 @@ const baseURL = process.env.NEXT_PUBLIC_SITE_URL || `http://localhost:${PORT}`
 
 export default defineConfig({
   testDir: './tests/e2e',
-  expect: { timeout: 15_000 },
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only – once: a real failure repeated twice more only cost time. */

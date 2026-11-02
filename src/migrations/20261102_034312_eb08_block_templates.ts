@@ -41,9 +41,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
-   ALTER TABLE "block_templates" DISABLE ROW LEVEL SECURITY;
+   ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_block_templates_fk";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_block_templates_id_idx";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "block_templates_id";
   DROP TABLE "block_templates" CASCADE;
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_block_templates_fk";
   
   ALTER TABLE "products" ALTER COLUMN "icon" SET DATA TYPE text;
   DROP TYPE "public"."enum_products_icon";
@@ -53,7 +54,5 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."enum__products_v_version_icon";
   CREATE TYPE "public"."enum__products_v_version_icon" AS ENUM('target', 'layers', 'star', 'heart', 'butterfly', 'leaf', 'valve', 'compass', 'mask', 'signpost', 'team', 'chat', 'book', 'spark', 'shield', 'mirror');
   ALTER TABLE "_products_v" ALTER COLUMN "version_icon" SET DATA TYPE "public"."enum__products_v_version_icon" USING "version_icon"::"public"."enum__products_v_version_icon";
-  DROP INDEX "payload_locked_documents_rels_block_templates_id_idx";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "block_templates_id";
   DROP TYPE "public"."enum_block_templates_kind";`)
 }

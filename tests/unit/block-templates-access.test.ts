@@ -166,4 +166,31 @@ describe('EB-08: BlockTemplates access control', () => {
       expect(createdByField?.admin?.readOnly).toBe(true)
     })
   })
+
+  describe('createdBy is set by the server only (QA EB-08c)', () => {
+    type Hook = (args: {
+      operation: 'create' | 'update'
+      req: PayloadRequest
+      originalDoc?: { createdBy?: unknown }
+    }) => unknown
+    const field = BlockTemplates.fields.find(
+      (f) => 'name' in f && f.name === 'createdBy',
+    ) as unknown as { hooks?: { beforeChange?: Hook[] } }
+    const hook = field.hooks?.beforeChange?.[0] as Hook
+
+    it('takes the signed-in user on create, ignoring the request value', () => {
+      const editor = { id: 7, collection: 'users', role: 'editor' } as unknown as MockUser
+      expect(hook({ operation: 'create', req: makeReq(editor) })).toBe(7)
+    })
+
+    it('keeps the original author on update (an editor cannot claim an owner template)', () => {
+      const editor = { id: 7, collection: 'users', role: 'editor' } as unknown as MockUser
+      expect(
+        hook({ operation: 'update', req: makeReq(editor), originalDoc: { createdBy: 1 } }),
+      ).toBe(1)
+      expect(
+        hook({ operation: 'update', req: makeReq(editor), originalDoc: { createdBy: { id: 1 } } }),
+      ).toBe(1)
+    })
+  })
 })

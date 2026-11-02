@@ -3069,7 +3069,6 @@ export const vi = {
     statusDraft: 'Bản nháp',
     statusAutosave: 'Tự lưu',
     loadMore: 'Xem thêm',
-    versionAuthor: 'Người lưu',
     unknownUser: 'Hệ thống',
     invalidData: 'Dữ liệu mẫu không hợp lệ',
     tooLarge: 'Dữ liệu mẫu vượt quá dung lượng cho phép',

@@ -11,7 +11,7 @@ import React, {
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Puck, type Data, type Viewports, useGetPuck, usePuck } from '@puckeditor/core'
+import { Puck, type Config, type Data, type Viewports, useGetPuck, usePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { puckConfig, getPuckConfig } from '@/puck/config'
 import { puckVietnameseDictionary } from '@/puck/dictionary'
@@ -28,11 +28,8 @@ import {
   type TemplateSummary,
 } from '@/puck/actions'
 import { formatVietnamDateTime, getVersionBadgeInfo } from '@/puck/version-history'
-import { remapPageBlockIds } from '@/puck/template-validation'
-import {
-  SaveTemplateModal,
-  notifyTemplatesChanged,
-} from '@/puck/editor/SaveTemplateModal'
+import { remapPageBlockIds, validateTemplatePuckData } from '@/puck/template-validation'
+import { SaveTemplateModal, notifyTemplatesChanged } from '@/puck/editor/SaveTemplateModal'
 import { pageTemplateList, getTemplateData, type PageTemplateKey } from '@/puck/templates'
 import { AutosaveController } from '@/puck/autosave'
 import { LeftPanel } from '@/puck/editor/LeftPanel'
@@ -430,6 +427,16 @@ function TemplateModal({
     if (!confirmed) return
 
     if (template.puckData && typeof template.puckData === 'object') {
+      // Stored data is untrusted (any admin can write it through the REST API): same checks as on save.
+      const check = validateTemplatePuckData(
+        template.puckData,
+        'page',
+        puckConfig as unknown as Config,
+      )
+      if (!check.success) {
+        setErrorMsg(check.message ?? vi.eb08.invalidData)
+        return
+      }
       const remapped = remapPageBlockIds(template.puckData as Data)
       onApplyTemplate(remapped)
       onClose()
@@ -791,7 +798,6 @@ function HistoryModal({
               {versions.map((ver) => {
                 const dateStr = formatVietnamDateTime(ver.updatedAt)
                 const badge = getVersionBadgeInfo({ status: ver.status, autosave: ver.autosave })
-                const author = ver.authorName || vi.eb08.unknownUser
                 const isRestoring = restoringId === ver.id
                 const isViewing = previewingId === ver.id
                 const isBusy = isRestoring || isViewing
@@ -811,13 +817,6 @@ function HistoryModal({
                         >
                           {badge.label}
                         </span>
-                      </div>
-                      <div className="text-[11px] text-deep-navy/60 flex items-center gap-2">
-                        <span>
-                          {vi.eb08.versionAuthor}: {author}
-                        </span>
-                        <span>•</span>
-                        <span>Mã: {ver.id}</span>
                       </div>
                     </div>
 
@@ -941,9 +940,7 @@ function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
             role="status"
             className="absolute top-3 left-1/2 -translate-x-1/2 z-40 bg-bright-magenta text-white py-2 px-4 rounded-xl shadow-xl flex items-center gap-3 text-xs font-ui font-semibold animate-in fade-in slide-in-from-top-2 select-none"
           >
-            <span>
-              {vi.eb08.previewingVersion(context.previewVersion.dateFormatted)}
-            </span>
+            <span>{vi.eb08.previewingVersion(context.previewVersion.dateFormatted)}</span>
             <div className="flex items-center gap-1.5 border-l border-white/30 pl-3">
               <button
                 type="button"
