@@ -707,11 +707,15 @@ export const vi = {
       locked: 'Đã khóa',
     },
     wizard: {
-      badge: 'Habit Loop 5 phút',
-      titleLine1: 'Thiết kế vòng lặp',
-      titleLine2: 'Thói quen bền vững',
-      emotionalLine:
-        'Chỉ 5 phút để gọi tên, gỡ rối và đặt nền móng cho con người bạn muốn trở thành',
+      badge: 'Form Habit · Build Identity',
+      topLine: (siteName: string = 'Trạm Dừng Cảm Xúc', days: number = 28) =>
+        `${siteName} · Hành trình ${days} ngày`,
+      titleLine1: 'Xây Thói Quen',
+      titleLine2: 'Dựng Thương Hiệu',
+      emotionalLine: 'Đều đặn một điều — mọi điều đều đặn',
+      intro: (days: number = 28) =>
+        `Đây không phải một hành động giúp bạn thành công chỉ sau một đêm, nhưng nó cũng không kéo dài từ năm này qua năm khác. Bạn chỉ cần đi theo từng hướng dẫn sau đây trong ${days} ngày để có một bước chuyển rõ nét cho thói quen của mình, qua 3 giai đoạn:`,
+      stagesPills: ['Khám', 'Xây', 'Chuyển mình'] as const,
       stepIndicator: (current: number, total: number) => `Bước ${current} / ${total}`,
       step1: {
         title: 'Bảng điểm thói quen',
@@ -844,12 +848,12 @@ export const vi = {
     emailSubject: 'Trạm Dừng Cảm Xúc – Kế hoạch Habit Loop 5 phút của bạn',
     metadata: {
       loop5min: {
-        title: 'Habit Loop 5 phút – Thiết kế vòng lặp thói quen',
+        title: 'Xây Thói Quen — Dựng Thương Hiệu | Trạm Dừng Cảm Xúc',
         description:
-          'Chỉ 5 phút để gọi tên, gỡ rối và thiết kế vòng lặp thói quen bền vững với các kỹ thuật Atomic Habits cá nhân hóa.',
-        ogTitle: 'Habit Loop 5 phút | Trạm Dừng Cảm Xúc',
+          'Đều đặn một điều — mọi điều đều đặn. Hành trình 28 ngày qua 3 giai đoạn: Khám, Xây, Chuyển mình cùng Trạm Dừng Cảm Xúc.',
+        ogTitle: 'Xây Thói Quen — Dựng Thương Hiệu | Trạm Dừng Cảm Xúc',
         ogDescription:
-          'Chỉ 5 phút để gọi tên, gỡ rối và thiết kế vòng lặp thói quen bền vững cùng Hana Lương.',
+          'Đều đặn một điều — mọi điều đều đặn. Hành trình 28 ngày qua 3 giai đoạn: Khám, Xây, Chuyển mình cùng Hana Lương.',
       },
       offerPage: {
         title: 'Habit Hack – 1% Better Mỗi Ngày | Habit Tracker số',
@@ -1892,10 +1896,10 @@ export const vi = {
     },
   },
   tracker: {
-    pageTitle: 'Habit Tracker',
-    subtitle: 'Đồng hành xây dựng thói quen bền vững cùng Trạm Dừng Cảm Xúc',
+    pageTitle: '28 ngày của bạn',
+    subtitle: 'Thói quen là lãi kép của sự tự hoàn thiện.',
     productNotFound: 'Chưa tìm thấy cấu hình sản phẩm Habit Tracker số.',
-    identityCommitmentLabel: 'Cam kết danh tính của bạn',
+    identityCommitmentLabel: 'Thói quen bạn đang xây',
     navLink: 'Habit Tracker',
     daysCompletedSuffix: 'ngày xong',
     votingQuestion: 'Ngày hôm nay, bạn đã bỏ phiếu cho con người bạn muốn trở thành?',
@@ -3370,9 +3374,9 @@ export const vi = {
   },
   hb16: {
     stages: {
-      discover: 'Khám',
-      build: 'Xây',
-      transform: 'Chuyển mình',
+      discover: 'Khám thói quen',
+      build: 'Xây thói quen',
+      transform: 'Chuyển mình cùng thói quen',
     },
     progress: {
       navAria: 'Tiến trình hành trình thói quen 3 giai đoạn',
@@ -3400,18 +3404,18 @@ export const vi = {
       },
       mentor: {
         shortTitle: 'Tìm Mentor',
-        title: 'Bảng điểm thói quen',
+        title: 'Tìm Mentor cho thói quen mới',
         subtitle:
-          'Liệt kê các thói quen thường nhật trong ngày và đánh giá xem chúng đang nâng đỡ hay kéo lùi bạn.',
+          'Một thói quen mới không tự đứng được. Nó cần một thói quen cũ đã vững dìu đi — và thói quen cũ đó đã nằm sẵn trong ngày của bạn. Việc của bạn chỉ là tìm ra nó.',
       },
       name: {
         shortTitle: 'Gọi tên thói quen',
       },
       loop: {
-        shortTitle: 'Vòng lặp',
+        shortTitle: 'Thiết kế vòng lặp',
       },
       boardingPass: {
-        shortTitle: 'Boarding Pass',
+        shortTitle: 'Habit Boarding Pass',
       },
     },
     controls: {
@@ -3423,7 +3427,7 @@ export const vi = {
   hb13: {
     heading: 'Dữ liệu của bạn',
     defaultPrivacyNote:
-      'Dữ liệu hành trình được lưu trên máy chủ của Trạm Dừng Cảm Xúc theo tài khoản email của bạn và chỉ mình bạn xem được trên bảng theo dõi. Bạn có thể tải bản sao lưu về máy để lưu giữ riêng.',
+      'Mọi thứ bạn nhập nằm trong trình duyệt của chính bạn. Không ai khác đọc được, kể cả Hana. Đổi máy hoặc xoá dữ liệu trình duyệt là mất, nên hãy tải một bản sao lưu.',
     buttons: {
       exportBackup: 'Tải bản sao lưu',
       exportCsv: (days: number) => `Tải bảng ${days} ngày (.csv)`,
@@ -3634,12 +3638,13 @@ export const vi = {
     },
   },
   hb19: {
-    stepTitle: 'Tìm Mentor',
-    stepSubtitle: 'Soi lại một ngày & chọn một việc có ích (+) làm điểm tựa vững vàng',
+    stepTitle: 'Tìm Mentor cho thói quen mới',
+    stepSubtitle:
+      'Một thói quen mới không tự đứng được. Nó cần một thói quen cũ đã vững dìu đi — và thói quen cũ đó đã nằm sẵn trong ngày của bạn. Việc của bạn chỉ là tìm ra nó.',
     part1: {
       title: 'Soi lại một ngày của bạn',
       subtitle:
-        'Liệt kê những việc bạn thật sự làm mỗi ngày và đánh dấu xem chúng có ích (+), không có ích (−) hay trung tính (=).',
+        'Liệt kê những việc bạn thật sự làm mỗi ngày, từ lúc mở mắt đến lúc đi ngủ. Đánh dấu có ích +, không có ích −, trung tính =.',
       addInputPlaceholder: 'Ví dụ: Đánh răng, Uống cà phê, Lướt điện thoại...',
       addButton: '+ Thêm một việc',
       samplesPrompt: 'Hoặc chọn nhanh từ gợi ý:',
@@ -3676,15 +3681,15 @@ export const vi = {
     part2: {
       title: 'Chọn Mentor',
       subtitle:
-        'Mentor là một việc bạn đã làm đều đặn và vững vàng mỗi ngày (được đánh dấu có ích +). Bạn sẽ gắn thói quen mới vào ngay sau Mentor này.',
+        'Mentor là một việc bạn làm gần như mỗi ngày mà không cần nghĩ. Nó sẽ là tín hiệu kéo thói quen mới đi theo. Chọn một việc bạn đã đánh dấu +.',
       explanation:
         'Mentor là thói quen có ích bạn đã làm vững vàng mỗi ngày. Đây là điểm tựa tự nhiên giúp bạn không bao giờ quên thói quen mới.',
       noGoodHabitsPrompt: 'Đánh dấu ít nhất một việc có ích (+) để chọn Mentor',
       selectPrompt: 'Chọn một việc làm Mentor cho thói quen mới:',
       selectedBadge: 'Mentor',
-      timeLabel: 'Việc này thường diễn ra lúc mấy giờ?',
+      timeLabel: 'Việc này thường diễn ra lúc mấy giờ? — không bắt buộc',
       timePlaceholder: '07:00',
-      timeHint: 'Không bắt buộc. Giúp bạn định hình khung giờ trong ngày.',
+      timeHint: 'Thói quen mới sẽ đi ngay sau Mentor, nên nó cần rơi vào lúc bạn còn làm được.',
       timeAriaLabel: (habit: string) => `Việc ${habit} thường diễn ra lúc mấy giờ?`,
       unselectedMentorNotice:
         'Đã bỏ chọn Mentor vì việc này không còn được đánh dấu là việc có ích (+).',
@@ -3701,9 +3706,9 @@ export const vi = {
   hb20: {
     stepTitle: 'Gọi tên thói quen',
     stepSubtitle:
-      'Xác định nhịp tuần, thói quen hạt nhân, lý do riêng, ngày bắt đầu và bạn đồng hành',
+      'Bắt đầu từ con người bạn muốn trở thành, rồi mới đến hành động. Thương hiệu cá nhân không phải việc làm thêm — nó là kết quả của hành động bạn lặp lại mỗi ngày.',
     declaration: {
-      title: 'Tuyên ngôn danh tính',
+      title: 'Tuyên ngôn về thói quen',
       actionLabel: 'Hành động cụ thể bạn sẽ thực hiện',
       actionPlaceholder: 'Ví dụ: thiền 5 phút, uống 1 ly nước ấm...',
       personLabel: 'Mẫu hình con người bạn muốn trở thành',
@@ -3714,7 +3719,7 @@ export const vi = {
     rhythm: {
       title: 'Nhịp điệu thói quen',
       frequencyLabel: 'Số lần mỗi tuần bạn muốn thực hành',
-      frequencyHint: 'Chọn từ 1 đến 7 lần/tuần trước, sau đó chọn đúng các thứ tương ứng bên dưới',
+      frequencyHint: 'Mỗi tuần bạn sẽ bỏ phiếu bao nhiêu lần? Chọn số lần, rồi chọn thứ.',
       frequencyButtonAria: (count: number) => `Chọn nhịp ${count} lần mỗi tuần`,
       frequencySuffix: 'lần / tuần',
       daysLabel: 'Chọn các thứ thực hành trong tuần',
@@ -3722,7 +3727,7 @@ export const vi = {
       plannedRestNote: 'Ngày không nằm trong nhịp là ngày nghỉ có kế hoạch, không phải ngày bỏ lỡ.',
     },
     coreHabit: {
-      title: 'Thói quen hạt nhân (dưới 2 phút)',
+      title: 'Để thực hiện được tuyên ngôn này, thói quen hạt nhân tôi sẽ làm là… — dưới 2 phút',
       subtitle:
         'Phiên bản tối giản nhất để bạn vẫn hoàn thành ngay cả vào ngày mệt mỏi, bận rộn hay ít năng lượng nhất.',
       label: 'Hành động tối giản dưới 2 phút',
@@ -3738,14 +3743,14 @@ export const vi = {
       privateBadge: '🔒 Riêng tư tuyệt đối · Chỉ mình bạn đọc',
     },
     startDate: {
-      title: 'Ngày bắt đầu hành trình',
+      title: 'Ngày bắt đầu',
       subtitle: 'Bạn có thể bắt đầu ngay hôm nay hoặc lên lịch trước tối đa 14 ngày',
       label: 'Chọn ngày bắt đầu',
       endDateHint: (dateStr: string) => `Kết thúc ngày ${dateStr}`,
       todayBadge: 'Hôm nay',
     },
     companion: {
-      title: 'Bạn đồng hành',
+      title: 'Bạn đồng hành — không bắt buộc',
       subtitle:
         'Chia sẻ cam kết cùng một người bạn tin tưởng để cùng nhắc nhở và nâng đỡ nhau (không bắt buộc)',
       label: 'Tên người bạn đồng hành',
@@ -3765,9 +3770,10 @@ export const vi = {
     },
   },
   hb21: {
-    stepTitle: 'Vòng lặp thói quen',
+    stepTitle: 'Thiết kế vòng lặp',
     stepSubtitle:
-      'Hiểu rõ 4 giai đoạn và 4 quy tắc hình thành hành vi, sau đó đánh dấu các kỹ thuật bạn muốn áp dụng',
+      'Mọi thói quen, tốt hay xấu, đều chạy qua đúng bốn giai đoạn này — dù bạn có nhận ra hay không.',
+    stagesHeading: 'Vòng lặp thói quen · The Habit Loop',
     explanation: {
       heading: '4 giai đoạn hình thành thói quen',
       cycleHint: 'Vòng lặp diễn ra liên tục theo chiều kim đồng hồ',
@@ -3795,7 +3801,8 @@ export const vi = {
     },
     techniques: {
       heading: 'Đánh dấu kỹ thuật thực hành',
-      defaultHint: 'Chỉ những kỹ thuật được đánh dấu mới xuất hiện trên Boarding Pass của bạn.',
+      defaultHint:
+        'Đánh dấu kỹ thuật bạn sẽ dùng — chỉ những kỹ thuật được đánh dấu mới hiện trên Habit Boarding Pass.',
       maxPerStageNotice: 'Tối đa 2 kỹ thuật mỗi giai đoạn',
       selectedCount: (count: number, max = 2) => `Đã chọn: ${count} / ${max}`,
       actionLabel: 'Hành động cụ thể của bạn',
@@ -3809,9 +3816,9 @@ export const vi = {
     },
   },
   hb22: {
-    stepTitle: (days: number = 28) => `Boarding Pass hành trình ${days} ngày`,
+    stepTitle: (days: number = 28) => 'Habit Boarding Pass',
     stepSubtitle: (days: number = 28) =>
-      `Tấm vé khởi hành cho con người bạn muốn trở thành. Tải ảnh, sao chép caption và bắt đầu hành trình ${days} ngày ngay hôm nay.`,
+      `Tấm vé lên chuyến ${days} ngày của bạn. Tải về làm hình nền điện thoại, hoặc đăng lên mạng xã hội — đó vừa là lời tuyên bố, vừa là cách khó quay đầu nhất.`,
     introHeading: 'Lời dặn trước giờ khởi hành',
     downloadCover: 'Tải ảnh Cover điện thoại',
     downloadPost: 'Tải ảnh đăng bài',

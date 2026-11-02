@@ -497,15 +497,36 @@ export function HabitFlow({
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      {/* Tiêu đề 2 tầng chuẩn Brand Book */}
-      <SectionHeader
-        seriesLabel={vi.habit.wizard.badge}
-        titleLine1={vi.habit.wizard.titleLine1}
-        titleLine2={vi.habit.wizard.titleLine2}
-        as="h1"
-        emotionLine={vi.habit.wizard.emotionalLine}
-        className="mb-8 text-center"
-      />
+      {/* Hero: Dòng nhỏ trên cùng + Tiêu đề 2 tầng + Nhãn + Dòng cảm xúc + Đoạn mở đầu + 3 nhãn giai đoạn */}
+      <div className="mb-8 text-center space-y-4">
+        <p className="text-xs sm:text-sm font-ui font-semibold text-deep-navy/70 tracking-wide uppercase">
+          {vi.habit.wizard.topLine(vi.footerBrand, journeyDays)}
+        </p>
+
+        <SectionHeader
+          seriesLabel={vi.habit.wizard.badge}
+          titleLine1={vi.habit.wizard.titleLine1}
+          titleLine2={vi.habit.wizard.titleLine2}
+          as="h1"
+          emotionLine={vi.habit.wizard.emotionalLine}
+          className="text-center"
+        />
+
+        <p className="font-ui text-xs sm:text-sm text-deep-navy/80 leading-relaxed max-w-2xl mx-auto">
+          {vi.habit.wizard.intro(journeyDays)}
+        </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+          {vi.habit.wizard.stagesPills.map((pill) => (
+            <span
+              key={pill}
+              className="px-3.5 py-1 rounded-full text-xs font-ui font-bold bg-soft-pink text-bright-magenta border border-bright-magenta/20 shadow-2xs"
+            >
+              {pill}
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* Thanh tiến trình 3 giai đoạn / 6 bước */}
       <FlowProgressBar
