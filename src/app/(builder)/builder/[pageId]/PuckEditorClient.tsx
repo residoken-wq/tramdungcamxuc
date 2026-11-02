@@ -7,6 +7,7 @@ import React, {
   useTransition,
   useMemo,
   useEffect,
+  useRef,
 } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
@@ -325,7 +326,8 @@ function EditorHeaderActions() {
         <button
           type="button"
           onClick={handleSaveDraft}
-          disabled={isSaving}
+          // QA EB-08c: never save the version being previewed by mistake.
+          disabled={isSaving || Boolean(context.previewVersion)}
           className="inline-flex items-center justify-center px-3.5 py-1.5 rounded-lg font-ui text-xs font-bold bg-white text-deep-navy border border-deep-navy/30 hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
         >
           {isSaving ? vi.builder.processing : vi.builder.saveDraft}
@@ -335,7 +337,7 @@ function EditorHeaderActions() {
         <button
           type="button"
           onClick={handlePublish}
-          disabled={isSaving}
+          disabled={isSaving || Boolean(context.previewVersion)}
           className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg font-ui text-xs font-bold bg-deep-navy text-white hover:opacity-90 disabled:opacity-50 transition shadow-sm cursor-pointer"
         >
           {isSaving ? vi.builder.processing : vi.builder.publish}
@@ -1006,6 +1008,10 @@ export function PuckEditorClient({
   const [feedback, setFeedback] = useState<Feedback>({ type: 'idle', message: '' })
   const [docStatus, setDocStatus] = useState<string>(initialStatus)
   const [previewVersion, setPreviewVersion] = useState<PreviewVersionState | null>(null)
+  // QA EB-08c: while a version is previewed its data must not reach autosave (it would overwrite
+  // the draft being edited 30 s later).
+  const previewingRef = useRef(false)
+  previewingRef.current = Boolean(previewVersion)
 
   // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage)
   const config = useMemo(() => {
@@ -1119,6 +1125,7 @@ export function PuckEditorClient({
                 overrides={editorOverrides}
                 plugins={editorPlugins}
                 onChange={(data) => {
+                  if (previewingRef.current) return
                   autosaveController.setData(data)
                 }}
                 onAction={(_action) => {

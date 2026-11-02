@@ -126,7 +126,9 @@ test.describe('EB-08: Block templates and version history', () => {
       // Kịch bản 1: Mở builder trang A -> Chuột phải Container -> "Lưu thành mẫu" -> Nhập tên -> Lưu
       // -----------------------------------------------------------------------
       await page.goto(`/builder/${pageAId}`, { waitUntil: 'domcontentloaded' })
-      await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1, { timeout: 30000 })
+      await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1, {
+        timeout: 30000,
+      })
 
       const canvasA = page.frameLocator('iframe')
       const containerBlock = canvasA.locator(`[data-puck-component="${containerAId}"]`)
@@ -158,7 +160,9 @@ test.describe('EB-08: Block templates and version history', () => {
       // Kịch bản 2: Mở builder trang B -> Mở tab "Mẫu" -> Thấy mẫu -> Bấm Chèn
       // -----------------------------------------------------------------------
       await page.goto(`/builder/${pageBId}`, { waitUntil: 'domcontentloaded' })
-      await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1, { timeout: 30000 })
+      await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1, {
+        timeout: 30000,
+      })
 
       // Click tab "Mẫu" in LeftPanel
       const templatesTab = page.locator('button[data-tab="templates"]')
@@ -215,7 +219,10 @@ test.describe('EB-08: Block templates and version history', () => {
 
       // Click "Áp dụng mẫu này" on the saved page template
       page.once('dialog', (dialog) => dialog.accept())
-      await templateModal.getByRole('button', { name: /Áp dụng mẫu này/ }).first().click()
+      await templateModal
+        .getByRole('button', { name: /Áp dụng mẫu này/ })
+        .first()
+        .click()
 
       // Canvas should have received the applied template data
       await expect(canvasB.locator('[data-puck-component]')).toHaveCount(2, { timeout: 10000 })
@@ -243,6 +250,10 @@ test.describe('EB-08: Block templates and version history', () => {
       // History modal closes, preview banner appears on canvas
       const previewBanner = page.locator('div[role="status"]').filter({ hasText: 'Thoát' })
       await expect(previewBanner).toBeVisible({ timeout: 5000 })
+
+      // QA EB-08c: while previewing, saving is blocked (the old version must not overwrite the draft).
+      await expect(page.getByRole('button', { name: 'Lưu nháp', exact: true })).toBeDisabled()
+      await expect(page.getByRole('button', { name: 'Xuất bản', exact: true })).toBeDisabled()
 
       // Click "Thoát" on preview banner
       const exitBtn = previewBanner.getByRole('button', { name: 'Thoát' })

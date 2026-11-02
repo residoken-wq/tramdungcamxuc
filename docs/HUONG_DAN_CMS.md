@@ -2379,7 +2379,7 @@ Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng
   - Ở cột bên trái của trình dựng trang, nhấp vào tab **Mẫu** (nằm cạnh tab _Khối_ và tab _Cấu trúc_).
   - Danh sách các mẫu khối bạn đã lưu sẽ hiển thị kèm ô tìm kiếm nhanh (tìm kiếm thông minh không phân biệt chữ hoa, chữ thường hay dấu tiếng Việt).
   - Bấm nút **"Chèn"** ở mẫu bạn muốn: Khối sẽ xuất hiện ngay lập tức trên canvas phía sau khối bạn đang chọn (hoặc ở cuối trang nếu chưa chọn khối nào).
-  - *Đặc điểm an toàn:* Mọi mã định danh (ID) của khối và các widget con bên trong đều được hệ thống cấp mới tự động, đảm bảo bạn có thể chèn cùng một mẫu nhiều lần mà không bao giờ bị xung đột dữ liệu.
+  - _Đặc điểm an toàn:_ Mọi mã định danh (ID) của khối và các widget con bên trong đều được hệ thống cấp mới tự động, đảm bảo bạn có thể chèn cùng một mẫu nhiều lần mà không bao giờ bị xung đột dữ liệu.
 - **Xóa mẫu:** Bạn có thể bấm nút thùng rác nhỏ bên cạnh tên mẫu trong tab Mẫu để xóa mẫu không còn dùng nữa (hệ thống sẽ hỏi xác nhận để tránh bấm nhầm).
 
 #### 2. Lưu toàn bộ trang thành mẫu và Áp dụng (Page Templates)
@@ -2397,7 +2397,7 @@ Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng
 
 - **Mở lịch sử phiên bản:**
   - Bấm nút **"Lịch sử phiên bản"** trên thanh tiêu đề.
-  - Danh sách các lần lưu xuất hiện với thời gian được ghi rõ theo giờ Việt Nam dạng `Ngày/Tháng/Năm Giờ:Phút` (ví dụ: `02/11/2026 14:05`), tên người lưu và các huy hiệu nhận diện rõ ràng:
+  - Danh sách các lần lưu xuất hiện với thời gian được ghi rõ theo giờ Việt Nam dạng `Ngày/Tháng/Năm Giờ:Phút` (ví dụ: `02/11/2026 14:05`) và các huy hiệu nhận diện rõ ràng:
     - **Đã xuất bản** (màu xanh bạc hà): Phiên bản đã được phát hành cho người đọc xem.
     - **Bản nháp** (màu hồng phấn): Bản lưu thủ công của bạn.
     - **Tự lưu** (màu kem bơ): Bản được hệ thống tự động lưu mỗi 30 giây khi bạn đang sửa.
