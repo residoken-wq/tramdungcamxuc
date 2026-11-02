@@ -2421,25 +2421,27 @@ Hệ thống hỗ trợ 2 cấp độ thiết lập linh hoạt:
 #### 1. Đổi mặc định chung cho toàn trang web (áp dụng xuyên suốt tất cả các trang)
 
 Chỉ tài khoản **Chủ sở hữu** mới có quyền chỉnh thiết lập chung này:
+
 1. Vào menu bên trái: nhóm **Trang web** → **Thiết kế & thương hiệu**.
 2. Cuộn xuống nhóm **Khoảng cách tiêu đề & Giãn dòng**:
    - **Giãn dòng tiêu đề Anton**:
-     - *Vừa (1.3)*: Chuẩn thương hiệu, gọn gàng, là mức tối thiểu an toàn để chữ hoa có dấu chồng tiếng Việt không chạm nét.
-     - *Thoáng (1.45)*: Thoải mái, dễ thở hơn cho các tiêu đề nhiều dòng.
-     - *Rất thoáng (1.6)*: Tạo khoảng không rộng rãi tối đa giữa các dòng tiêu đề lớn.
+     - _Vừa (1.3)_: Chuẩn thương hiệu, gọn gàng, là mức tối thiểu an toàn để chữ hoa có dấu chồng tiếng Việt không chạm nét.
+     - _Thoáng (1.45)_: Thoải mái, dễ thở hơn cho các tiêu đề nhiều dòng.
+     - _Rất thoáng (1.6)_: Tạo khoảng không rộng rãi tối đa giữa các dòng tiêu đề lớn.
    - **Khoảng cách nhãn → tiêu đề**:
-     - *Sát (8px)*: Nhãn series nằm gần sát dòng tiêu đề chính bên dưới.
-     - *Vừa (16px)*: Chuẩn thương hiệu, phân tách vừa phải.
-     - *Thoáng (24px)*: Tách biệt rõ ràng nhãn phía trên.
+     - _Sát (8px)_: Nhãn series nằm gần sát dòng tiêu đề chính bên dưới.
+     - _Vừa (16px)_: Chuẩn thương hiệu, phân tách vừa phải.
+     - _Thoáng (24px)_: Tách biệt rõ ràng nhãn phía trên.
    - **Khoảng cách tiêu đề → dòng cảm xúc**:
-     - *Sát (8px)*: Dòng cảm xúc chữ nghiêng áp sát đáy tiêu đề.
-     - *Vừa (14px)*: Chuẩn thương hiệu, thanh thoát tự nhiên.
-     - *Thoáng (24px)*: Khoảng thở rộng rãi trước khi bước vào câu cảm xúc.
+     - _Sát (8px)_: Dòng cảm xúc chữ nghiêng áp sát đáy tiêu đề.
+     - _Vừa (14px)_: Chuẩn thương hiệu, thanh thoát tự nhiên.
+     - _Thoáng (24px)_: Khoảng thở rộng rãi trước khi bước vào câu cảm xúc.
 3. Bấm **Lưu**. Toàn bộ website và các khối trong trình dựng trang sẽ tự động áp dụng các thông số mới này.
 
 #### 2. Đổi riêng cho từng khối trong trình dựng trang (Puck Editor)
 
 Khi bạn muốn một khối tiêu đề đặc biệt (ví dụ: khối Hero đầu trang, hoặc một khối SectionHeader nổi bật) có khoảng thở khác với mặc định của trang web:
+
 1. Mở trang trong trình dựng trang trực quan (Puck Editor).
 2. Bấm chuột vào khối cần chỉnh (hoặc bấm chọn khung **Container** / **Cột** bao ngoài nếu muốn tất cả khối con bên trong cùng nhận khoảng cách này).
 3. Ở bảng thuộc tính bên phải, chuyển sang tab **Kiểu** (biểu tượng cọ vẽ).
@@ -2451,23 +2453,23 @@ Khi bạn muốn một khối tiêu đề đặc biệt (ví dụ: khối Hero �
 
 #### 3. Minh họa so sánh Trước và Sau (Dữ liệu [MẪU] chữ có dấu chồng)
 
-Dưới đây là hình ảnh so sánh thực tế giữa mức mặc định (*Vừa 1.3 / Nhãn 16px / Cảm xúc 14px*) và mức thoáng (*Thoáng 1.45 / Nhãn 24px / Cảm xúc 24px*), đặc biệt với các chữ in hoa tiếng Việt dấu chồng: `Ở ĐÂY CÓ SỰ BÌNH YÊN`, `KHỞI ĐẦU CHẶNG ĐƯỜNG MỚI`.
+Dưới đây là hình ảnh so sánh thực tế giữa mức mặc định (_Vừa 1.3 / Nhãn 16px / Cảm xúc 14px_) và mức thoáng (_Thoáng 1.45 / Nhãn 24px / Cảm xúc 24px_), đặc biệt với các chữ in hoa tiếng Việt dấu chồng: `Ở ĐÂY CÓ SỰ BÌNH YÊN`, `KHỞI ĐẦU CHẶNG ĐƯỜNG MỚI`.
 
 **Trên màn hình máy tính (Desktop - 1440px):**
 
-- *Chế độ Mặc định (Vừa 1.3 / 16px / 14px):*
-![Mặc định trên màn hình máy tính 1440px](screenshots/pk13/01-title-spacing-default-1440.png)
+- _Chế độ Mặc định (Vừa 1.3 / 16px / 14px):_
+  ![Mặc định trên màn hình máy tính 1440px](screenshots/pk13/01-default-1440.png)
 
-- *Chế độ Thoáng (1.45 / 24px / 24px):*
-![Chế độ thoáng trên màn hình máy tính 1440px](screenshots/pk13/02-title-spacing-airy-1440.png)
+- _Chế độ Thoáng (1.45 / 24px / 24px):_
+  ![Chế độ Rất thoáng (giãn dòng 1.6, nhãn và dòng cảm xúc Thoáng) trên màn hình máy tính 1440px](screenshots/pk13/02-very-airy-1440.png)
 
 **Trên màn hình điện thoại di động (Mobile - 375px):**
 
-- *Chế độ Mặc định (Vừa 1.3 / 16px / 14px):*
-![Mặc định trên màn hình điện thoại 375px](screenshots/pk13/03-title-spacing-default-375.png)
+- _Chế độ Mặc định (Vừa 1.3 / 16px / 14px):_
+  ![Mặc định trên màn hình điện thoại 375px](screenshots/pk13/01-default-375.png)
 
-- *Chế độ Thoáng (1.45 / 24px / 24px):*
-![Chế độ thoáng trên màn hình điện thoại 375px](screenshots/pk13/04-title-spacing-airy-375.png)
+- _Chế độ Thoáng (1.45 / 24px / 24px):_
+  ![Chế độ Rất thoáng (giãn dòng 1.6, nhãn và dòng cảm xúc Thoáng) trên màn hình điện thoại 375px](screenshots/pk13/02-very-airy-375.png)
 
 ---
 
