@@ -1011,7 +1011,11 @@ export function PuckEditorClient({
   // QA EB-08c: while a version is previewed its data must not reach autosave (it would overwrite
   // the draft being edited 30 s later).
   const previewingRef = useRef(false)
-  previewingRef.current = Boolean(previewVersion)
+  // Set the flag synchronously, before the version data is dispatched to Puck.
+  const setPreviewVersionTracked = (preview: PreviewVersionState | null) => {
+    previewingRef.current = Boolean(preview)
+    setPreviewVersion(preview)
+  }
 
   // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage)
   const config = useMemo(() => {
@@ -1071,7 +1075,7 @@ export function PuckEditorClient({
             setFeedback,
             autosaveController,
             previewVersion,
-            setPreviewVersion,
+            setPreviewVersion: setPreviewVersionTracked,
           }}
         >
           <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
