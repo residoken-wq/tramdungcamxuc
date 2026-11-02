@@ -292,6 +292,7 @@ Quy tắc chung, thứ tự 2 dây (Laptop: HB-17 → 22, PC nhà: HB-23 → 13 
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- | ------ | ----------------------------------------------------- |
 | CF-01           | Widget ly cà phê nổi: mã QR MoMo ủng hộ, cấu hình ở Cài đặt website → Thanh toán ([prompt](prompts/CF-01.md))                              | 🔒 Migration sau EB-08 (tạo migration cuối) | PC nhà | ✅ Merge 02/11 – PR #264 ([review](reviews/CF-01.md)) |
 | PK-13 (tiêu đề) | Hana tự chỉnh giãn dòng tiêu đề Anton + khoảng cách nhãn / tiêu đề / dòng cảm xúc: mặc định chung + từng khối ([prompt](prompts/PK-13.md)) | 🔒 Migration (tạo cuối)                     | PC nhà | ✅ Merge 02/11 – PR #269 ([review](reviews/PK-13.md)) |
+| PK-14           | Builder: nút "+ Thêm Thẻ gói / dịch vụ / số liệu…" ở cột phải, gợi ý trong khung trống, nhóm Thẻ con tự mở ([prompt](prompts/PK-14.md))    | – (không migration)                         | PC nhà | Prompt 02/11                                          |
 
 (Planning dùng cho mọi task)
 
