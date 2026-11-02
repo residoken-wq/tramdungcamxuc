@@ -181,6 +181,8 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
 
       // Row should now prominently show "Khối giới thiệu"
       await expect(containerRow).toContainText('Khối giới thiệu')
+      // Let Puck record the rename as its own history step (recording is debounced 250 ms).
+      await page.waitForTimeout(600)
 
       // --- TEST STEP 2: Canvas Right-click Heading 1 -> Duplicate -> Undo ---
       const canvasA = page.frameLocator('iframe')
