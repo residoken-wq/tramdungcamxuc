@@ -17,16 +17,6 @@ export const HIDE_FLOATING_CHAT_PREFIXES = [
 ] as const
 
 /**
- * Path prefixes where the floating coffee widget should be hidden.
- * Includes all floating chat prefixes plus checkout and trial routes.
- */
-export const HIDE_FLOATING_COFFEE_PREFIXES = [
-  ...HIDE_FLOATING_CHAT_PREFIXES,
-  '/thanh-toan',
-  '/dung-thu',
-] as const
-
-/**
  * Kiểm tra chung một đường dẫn có bắt đầu bằng bất kỳ tiền tố nào trong danh sách không.
  */
 export function shouldHidePathWithPrefixes(
@@ -43,16 +33,6 @@ export function shouldHidePathWithPrefixes(
 export function shouldHideFloatingChat(
   pathname: string | null | undefined,
   prefixes: readonly string[] = HIDE_FLOATING_CHAT_PREFIXES,
-): boolean {
-  return shouldHidePathWithPrefixes(pathname, prefixes)
-}
-
-/**
- * Kiểm tra xem một pathname có thuộc danh sách cần ẩn FloatingCoffee không.
- */
-export function shouldHideFloatingCoffee(
-  pathname: string | null | undefined,
-  prefixes: readonly string[] = HIDE_FLOATING_COFFEE_PREFIXES,
 ): boolean {
   return shouldHidePathWithPrefixes(pathname, prefixes)
 }

@@ -2,14 +2,12 @@
 
 import React, { useRef, useState } from 'react'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
 import { safeHref } from '@/lib/safe-href'
 import { CoffeeCupIcon } from '@/components/brand/CoffeeCupIcon'
 import { Modal } from '@/components/ui/Modal'
 import type { FloatingCoffeeData } from '@/lib/site-shell.server'
-import { shouldHideFloatingCoffee } from './FloatingChat'
 
 interface CoffeeButtonProps {
   onOpen: () => void
@@ -117,11 +115,10 @@ export interface FloatingCoffeeProps {
 
 /** Standalone coffee widget (own fixed column). The site shell uses FloatingActions instead. */
 export function FloatingCoffee({ coffeeDonation, className = '' }: FloatingCoffeeProps) {
-  const pathname = usePathname()
   const modal = useCoffeeModal()
 
-  // Ẩn khi không có cấu hình hoặc thiếu ảnh QR, hoặc trên route học / rút thẻ / thanh toán / dùng thử
-  if (!coffeeDonation || !coffeeDonation.qrSrc || shouldHideFloatingCoffee(pathname)) {
+  // CF-02: hiện ở mọi trang (Hana 02/11); chỉ ẩn khi chưa bật hoặc thiếu ảnh QR
+  if (!coffeeDonation || !coffeeDonation.qrSrc) {
     return null
   }
 

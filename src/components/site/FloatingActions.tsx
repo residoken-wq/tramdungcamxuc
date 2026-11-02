@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { vi } from '@/lib/i18n/vi'
 import type { FloatingCoffeeData } from '@/lib/site-shell.server'
 import { CoffeeButton, CoffeeDonationModal, useCoffeeModal } from './FloatingCoffee'
-import { FloatingChat, shouldHideFloatingChat, shouldHideFloatingCoffee } from './FloatingChat'
+import { FloatingChat, shouldHideFloatingChat } from './FloatingChat'
 
 export interface FloatingActionsProps {
   floatingCoffee?: FloatingCoffeeData | null
@@ -23,9 +23,8 @@ export function FloatingActions({
   const pathname = usePathname()
   const coffeeModal = useCoffeeModal()
 
-  const isCoffeeVisible = Boolean(
-    floatingCoffee && floatingCoffee.qrSrc && !shouldHideFloatingCoffee(pathname),
-  )
+  // CF-02: coffee shows on every page (Hana 02/11); Zalo keeps its hide list
+  const isCoffeeVisible = Boolean(floatingCoffee && floatingCoffee.qrSrc)
 
   const isChatVisible = Boolean(
     showFloatingChat && zaloChatUrl && !shouldHideFloatingChat(pathname),

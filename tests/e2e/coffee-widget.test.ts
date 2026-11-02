@@ -30,7 +30,7 @@ async function getGlobal(request: APIRequestContext, slug: string) {
 }
 
 test.describe('CF-01: Floating coffee widget with MoMo QR modal', () => {
-  test('admin activates coffee widget, public sees it at 1440 and 375, modal opens and closes with Esc, hidden on /eq-buddy/rut-the', async ({
+  test('admin activates coffee widget, public sees it at 1440 and 375, modal opens and closes with Esc, also shown on /eq-buddy/rut-the (CF-02)', async ({
     page,
     browser,
   }, testInfo) => {
@@ -133,11 +133,11 @@ test.describe('CF-01: Floating coffee widget with MoMo QR modal', () => {
           // Focus must be returned to the coffee button
           await expect(coffeeBtn).toBeFocused()
 
-          // Verify widget is hidden on /eq-buddy/rut-the
+          // CF-02: widget shows on every page, including the card-draw flow
           await pub.goto('/eq-buddy/rut-the')
           await expect(
             pub.getByRole('button', { name: vi.cf01.floatingCoffee.ariaLabel }),
-          ).not.toBeVisible()
+          ).toBeVisible()
         } finally {
           await ctx.close()
         }

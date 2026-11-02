@@ -293,11 +293,12 @@ export const SiteSettings: GlobalConfig = {
             },
             {
               ...checkbox('habitDonationEnabled', vi.hb18.siteSettings.habitDonationEnabled, false),
-              admin: { description: vi.hb18.siteSettings.habitDonationEnabledDesc },
+              // CF-02: no longer used (support moved to the coffee widget). Column kept, hidden.
+              admin: { hidden: true, description: vi.hb18.siteSettings.habitDonationEnabledDesc },
             },
             {
               ...url('habitDonationUrl', vi.hb18.siteSettings.habitDonationUrl),
-              admin: { description: vi.hb18.siteSettings.habitDonationUrlDesc },
+              admin: { hidden: true, description: vi.hb18.siteSettings.habitDonationUrlDesc },
             },
           ],
         },

@@ -55,7 +55,6 @@ export interface TrackerDashboardProps {
   afterJourneyTitle?: string | null
   afterJourneyText?: string | null
   coachBookingUrl?: string | null
-  donationUrl?: string | null
 }
 
 export function TrackerDashboard({
@@ -81,7 +80,6 @@ export function TrackerDashboard({
   afterJourneyTitle,
   afterJourneyText,
   coachBookingUrl,
-  donationUrl,
 }: TrackerDashboardProps) {
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
   const [reflections, setReflections] = useState<InitialReflectionData[]>(initialReflections || [])
@@ -380,7 +378,6 @@ export function TrackerDashboard({
             title={afterJourneyTitle}
             text={afterJourneyText}
             coachBookingUrl={coachBookingUrl}
-            donationUrl={donationUrl}
             journeyDays={journeyDays}
             variant="highlighted"
           />
@@ -423,7 +420,6 @@ export function TrackerDashboard({
           title={afterJourneyTitle}
           text={afterJourneyText}
           coachBookingUrl={coachBookingUrl}
-          donationUrl={donationUrl}
           journeyDays={journeyDays}
         />
       )}

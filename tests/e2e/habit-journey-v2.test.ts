@@ -36,9 +36,9 @@ import { vi } from '@/lib/i18n/vi'
  *     - Card Trạm 1 hiện nút 'Suy ngẫm trạm' -> bấm mở modal, điền 2 câu trả lời, bấm 'Lưu suy ngẫm'.
  *     - Trạm 1 hiện huy hiệu 'Đã suy ngẫm' và nút 'Xem / sửa suy ngẫm'.
  * 11. Khối "Đồng hành sau 28 ngày" (HB-14):
- *     - Cấu hình link coach và bật link ủng hộ trong siteSettings.
+ *     - Cấu hình link coach trong siteSettings.
  *     - Reload trang -> Khối "Đồng hành sau 28 ngày" xuất hiện với nút 'Đặt lịch với Habit Coach'
- *       và 'Ủng hộ Trạm Dừng Cảm Xúc'.
+ *       (CF-02: không còn nút Ủng hộ – đã chuyển sang widget ly cà phê).
  * 12. Dọn dẹp an toàn trong finally: xóa dữ liệu test đã tạo, khôi phục globals.
  */
 
@@ -441,8 +441,6 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await page.request.post('/api/globals/siteSettings', {
         data: {
           habitCoachBookingUrl: 'https://cal.com/tramdungcamxuc/habit-coach',
-          habitDonationEnabled: true,
-          habitDonationUrl: 'https://tramdungcamxuc.com/ung-ho',
         },
       })
 
@@ -461,11 +459,8 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
         'https://cal.com/tramdungcamxuc/habit-coach',
       )
 
-      const donationLink = guestPage.getByRole('link', {
-        name: /Ủng hộ Trạm Dừng Cảm Xúc/i,
-      })
-      await expect(donationLink).toBeVisible()
-      expect(await donationLink.getAttribute('href')).toBe('https://tramdungcamxuc.com/ung-ho')
+      // CF-02: khối không còn nút Ủng hộ
+      await expect(afterJourneyPanel.getByRole('link', { name: /Ủng hộ/i })).toHaveCount(0)
     } finally {
       await visitor.close()
 

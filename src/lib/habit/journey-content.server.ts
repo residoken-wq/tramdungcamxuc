@@ -64,8 +64,6 @@ export interface CleanHabitTrackerContent {
 
 export interface CleanHabitSiteSettings {
   habitCoachBookingUrl: string | null
-  habitDonationEnabled: boolean
-  habitDonationUrl: string | null
 }
 
 export interface CleanHabitOnePercent {
@@ -371,9 +369,8 @@ export async function getHabitJourneyContent(
 }
 
 /**
- * Đọc 3 cấu hình liên kết coaching và ủng hộ từ SiteSettings.
- * HB-18c: link Ủng hộ chỉ trả về khi công tắc đang bật (Hana đã duyệt), để nơi hiển thị
- * không thể vô tình hiện link khi mới chỉ nhập URL.
+ * Đọc link đặt lịch Habit Coach từ SiteSettings.
+ * CF-02: nút Ủng hộ ở tracker đã bỏ (Hana 02/11) – ủng hộ đi qua widget ly cà phê ở mọi trang.
  */
 export async function getHabitSiteSettings(
   payloadInstance?: Payload,
@@ -384,10 +381,7 @@ export async function getHabitSiteSettings(
     depth: 0,
   })) as SiteSetting | null
 
-  const habitDonationEnabled = Boolean(settings?.habitDonationEnabled)
   return {
     habitCoachBookingUrl: trimmed(settings?.habitCoachBookingUrl),
-    habitDonationEnabled,
-    habitDonationUrl: habitDonationEnabled ? trimmed(settings?.habitDonationUrl) : null,
   }
 }
