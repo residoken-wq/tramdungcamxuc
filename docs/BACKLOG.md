@@ -8,6 +8,7 @@
 ## 1. Tính năng sản phẩm & nghiệp vụ
 
 - [ ] **B2B Tracker cho đội ngũ**: Phiên bản mở rộng của Habit Tracker cho doanh nghiệp (dự kiến GĐ 4).
+- [ ] **Đưa hero `/habit/5-phut` vào CMS** (HB-26): Hiện tại dòng nhỏ trên cùng, tiêu đề 2 tầng, nhãn, dòng cảm xúc, đoạn mở đầu và 3 nhãn giai đoạn của Hero `/habit/5-phut` đang nằm trong `vi.ts`. Cần bổ sung các trường tương ứng vào global `habitJourneyContent` để Hana có thể chỉnh sửa trực tiếp trên CMS mà không cần sửa code.
 - [ ] **Đa ngôn ngữ (Song ngữ Anh - Việt)**: Tùy chọn mở rộng cho khách hàng nước ngoài.
 - [ ] **Mobile App PWA / Native**: Nghiên cứu sau khi bản web đạt traction ổn định.
 - [ ] **Tự động đối soát ngân hàng**: Kết nối API ngân hàng sâu hơn khi khối lượng giao dịch lớn.

@@ -13,7 +13,11 @@ import {
   getOrCreateTrackerPlan,
 } from '@/lib/habit/tracker.server'
 import { getCertificateEligibility } from '@/lib/habit/certificate.server'
-import { getHabitJourneyContent, getHabitSiteSettings } from '@/lib/habit/journey-content.server'
+import {
+  getHabitJourneyContent,
+  getHabitSiteSettings,
+  type CleanStepQuote,
+} from '@/lib/habit/journey-content.server'
 import { getStationReflectionsForPlan } from '@/lib/habit/reflections.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
@@ -119,6 +123,7 @@ export default async function HabitTrackerPage() {
   let afterJourneyTitle: string | null = null
   let afterJourneyText: string | null = null
   let coachBookingUrl: string | null = null
+  let quote: CleanStepQuote | null = null
 
   try {
     const [journeyContent, habitSiteSettings] = await Promise.all([
@@ -135,6 +140,7 @@ export default async function HabitTrackerPage() {
     afterJourneyTitle = journeyContent.tracker?.afterJourneyTitle ?? null
     afterJourneyText = journeyContent.tracker?.afterJourneyText ?? null
     coachBookingUrl = habitSiteSettings.habitCoachBookingUrl ?? null
+    quote = journeyContent.stepQuotes?.tracker ?? null
   } catch (err) {
     // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
     console.error('Failed to load habit journey stations/settings for tracker:', err)
@@ -176,6 +182,7 @@ export default async function HabitTrackerPage() {
         afterJourneyTitle={afterJourneyTitle}
         afterJourneyText={afterJourneyText}
         coachBookingUrl={coachBookingUrl}
+        quote={quote}
       />
     </div>
   )

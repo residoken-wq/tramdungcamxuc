@@ -279,5 +279,44 @@ describe('Habit Tracker Component Tests (HB-11)', () => {
 
       expect(screen.queryByText(i18nVi.hb23.privateReasonHeading)).toBeNull()
     })
+
+    it('(HB-26) hiển thị tracker quote khi có dữ liệu và ẩn khi rỗng/null', () => {
+      const { unmount } = render(
+        <TrackerDashboard
+          planId={101}
+          currentDay={1}
+          journeyDays={28}
+          initialCheckins={[]}
+          buyUrl="/thanh-toan"
+          quote={{
+            text: 'Thói quen là lãi kép của sự tự hoàn thiện.',
+            author: 'James Clear',
+            source: 'Atomic Habits',
+            sourceUrl: 'https://jamesclear.com',
+          }}
+        />,
+      )
+
+      const quoteEl = screen.getByTestId('tracker-quote')
+      expect(quoteEl).toBeDefined()
+      expect(quoteEl.textContent).toContain('Thói quen là lãi kép của sự tự hoàn thiện.')
+      expect(quoteEl.textContent).toContain('James Clear')
+      expect(quoteEl.textContent).toContain('Atomic Habits')
+
+      unmount()
+
+      render(
+        <TrackerDashboard
+          planId={101}
+          currentDay={1}
+          journeyDays={28}
+          initialCheckins={[]}
+          buyUrl="/thanh-toan"
+          quote={null}
+        />,
+      )
+
+      expect(screen.queryByTestId('tracker-quote')).toBeNull()
+    })
   })
 })

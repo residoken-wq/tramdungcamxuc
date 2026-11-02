@@ -73,8 +73,8 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
       expect(updateRes.ok()).toBe(true)
 
       // 3. Khách truy cập vào /habit/5-phut và chuyển sang Bước 2 (Nguyên lý 1%)
-      await guestPage.goto('/habit/5-phut', { waitUntil: 'domcontentloaded' })
-      await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible()
+      await guestPage.goto('/habit/5-phut')
+      await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible({ timeout: 15000 })
       const skipDiagnoseBtn = guestPage.getByRole('button', { name: /Bỏ qua phần khám/i })
       if (await skipDiagnoseBtn.isVisible()) {
         await skipDiagnoseBtn.click()
@@ -91,11 +91,8 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
       await expect(guestPage.getByText(titleLine1)).toBeVisible()
       await expect(guestPage.getByText(titleLine2)).toBeVisible()
 
-      // Dẫn chứng và link nguồn
-      await expect(guestPage.getByTestId('one-percent-facts')).toBeVisible()
-      const sourceLink = guestPage.getByRole('link', { name: '[MẪU] Nguồn kiểm thử' })
-      await expect(sourceLink).toBeVisible()
-      expect(await sourceLink.getAttribute('href')).toBe('https://example.com/nguon-mau')
+      // HB-26: facts không còn render trong flow StepOnePercent
+      await expect(guestPage.getByTestId('one-percent-facts')).not.toBeVisible()
 
       // Thanh kéo slider
       const slider = guestPage.getByRole('slider')

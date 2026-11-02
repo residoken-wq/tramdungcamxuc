@@ -358,6 +358,32 @@ Mỗi khách hàng là **một bản cài riêng** (Docker + DB riêng, chốt 3
 3. Giữ mọi công tắc **Khoá** (mặc định cho site mới), trừ khi khách yêu cầu mở và đã được duyệt.
 4. Lưu. Global chưa lưu lần nào thì trang dùng bộ mặc định Brand Book 2026 (`src/lib/design/design-system.ts`).
 
+### HB-26 – Nạp nội dung Habit Loop bản mới
+
+Ghi nội dung bản mới (`docs/content/habit-v2-ban-moi.md`) vào **Khóa Habit → Nội dung hành trình Habit**. Lệnh chỉ ghi các mục có trong bản mới, xoá rỗng 2 mục cũ đã ẩn (`quotes`, `onePercent.facts`). Lệnh không đụng: câu hỏi / gợi ý bước 1, con số dẫn chứng, 4 quy tắc vòng lặp, caption Boarding Pass, câu trích Boarding Pass, câu về dữ liệu (`privacyNote`), các trạm. Chạy lại nhiều lần không đổi thêm.
+
+1. Backup DB (mục Sao lưu ở trên).
+2. Kéo image tools của bản đã deploy, chạy **xem trước** (không ghi), gửi phần in ra cho Hana duyệt:
+
+```bash
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools pull seed < /dev/null
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm seed \
+  pnpm payload run scripts/hb26-habit-content.ts < /dev/null
+```
+
+3. Hana duyệt xong mới **ghi**. File backup của global nằm ở `./backups/` trên server:
+
+```bash
+mkdir -p backups
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm \
+  -e APPLY=true -v "$PWD/backups:/app/backups" seed \
+  pnpm payload run scripts/hb26-habit-content.ts < /dev/null
+```
+
+4. Chạy lại lệnh ở bước 2: phải in "0 diff". Mở `/habit/5-phut` kiểm bước 1, 2, 4 và `/habit/tracker`.
+
+Không dùng cờ `--apply`: `payload run` không chuyển cờ vào script, lệnh sẽ chỉ chạy xem trước.
+
 ### Nạp dữ liệu MẪU cho buổi demo
 
 Chạy **sau** khi app đã `healthy`. Image tools được kéo trực tiếp từ GHCR (tag `tools-latest`), không cần build trên server. Lệnh chỉ tạo/cập nhật bản ghi đánh dấu MẪU (`isSample`), không đụng dữ liệu thật, chạy nhiều lần không nhân đôi:

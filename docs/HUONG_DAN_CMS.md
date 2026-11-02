@@ -930,7 +930,7 @@ Trình hướng dẫn thiết kế thói quen 5 phút được cấu trúc khoa 
 - **Mục tiêu**: Giúp học viên tự chẩn đoán điểm nghẽn hành vi chính trong 4 mắt xích (Tín hiệu, Khao khát, Phản hồi, Phần thưởng).
 - **Cấu hình trong CMS**:
   - **Tiêu đề & Lời mở**: Lời dẫn nhập dịu dàng, khích lệ.
-  - **Câu trích dẫn (`stepQuotes.discover`)**: Bắt buộc có đủ Tác giả và Nguồn đã kiểm chứng (luật HB-07 / AGENTS §14).
+  - **Câu trích dẫn (`diagnose.quote`)**: Bắt buộc có đủ Tác giả và Nguồn đã kiểm chứng (luật HB-07 / AGENTS §14).
   - **Các con số dẫn chứng** (tối đa 6): Mỗi con số bắt buộc đi kèm ý nghĩa và **Nguồn kiểm chứng**.
   - **Câu hỏi khảo sát** (8 câu mẫu, tối đa 12 câu): Chia đều cho 4 giai đoạn, thang điểm 1–5. Điểm trung bình cao nhất sẽ xác định nút thắt.
   - **Nhập ở đâu:** `/admin` → nhóm **Khóa Habit** → **Nội dung hành trình Habit** → mục **Bước 1 – Khám đúng bệnh** → **Câu hỏi khảo sát** → bấm **Lưu**.
@@ -945,9 +945,10 @@ Trình hướng dẫn thiết kế thói quen 5 phút được cấu trúc khoa 
 - **Mục tiêu**: Làm rõ triết lý cải thiện 1% mỗi ngày thay vì nỗ lực cực đoan.
 - **Cấu hình trong CMS**:
   - **Tiêu đề & Giới thiệu**: Hỗ trợ tiêu đề 2 tầng màu qua ký tự gạch đứng `|` (dòng 1 `deep-navy`, dòng 2 `bright-magenta`).
+  - **Câu trích dẫn Bước 2**: Nằm ở mục **Câu trích từng bước → Bước 2 (1% Better)** (`stepQuotes.onePercent`).
   - **3 điều có thể bạn chưa biết (`onePercent.unknowns`)**: 3 góc nhìn khoa học hành vi giải phóng áp lực tâm lý.
   - **Câu đúc kết (`onePercent.closing`)**: Thông điệp chốt lại ở cuối khối.
-  - **Thanh kéo mô phỏng**: Cho phép học viên kéo xem sự tăng trưởng lũy tiến 1% mỗi ngày.
+  - **Thanh kéo mô phỏng**: Cho phép học viên kéo xem sự tăng trưởng lũy tiến 1% mỗi ngày. (Lưu ý: mục số liệu dẫn chứng cũ `facts` đã ẩn và không còn hiển thị trong flow).
 
 ![Bước 2 – Nguyên lý 1%](screenshots/hb16/02-step2-one-percent-375.png)
 
@@ -2783,12 +2784,14 @@ Tab **Chung** có thêm **Ảnh chữ ký nhà sáng lập** (PNG nền trong) c
 
 > Mục ủng hộ (Habit Donation) cũ ở tab này đã ẩn từ 02/11 (CF-02). Ủng hộ đi qua **Ly cà phê ủng hộ (MoMo)** ở tab Thanh toán (mục 7.1b).
 
-### 7.3f. Nội dung hành trình Habit & Câu trích từng bước (HB-14 / HB-18)
+### 7.3f. Nội dung hành trình Habit & Câu trích từng bước (HB-14 / HB-18 / HB-26)
 
 Vào nhóm **Habit** → **Nội dung hành trình thói quen** (`Habit Journey Content`):
 
+> **Lưu ý cập nhật HB-26:** Danh sách "Câu trích dẫn" chung (`quotes`) và mục "Số liệu dẫn chứng" của 1% (`onePercent.facts`) cũ đã được ẩn trong giao diện admin để tránh trùng lặp. Toàn bộ câu trích dẫn hiển thị trên trang được quản lý tập trung tại **Câu trích từng bước (`stepQuotes`)** và **Câu trích Bước 1 (`diagnose.quote`)**.
+
 1. **Câu trích dẫn từng bước (`stepQuotes`)**:
-   - Gồm 6 vị trí: Bước 2 (1% Better), Bước 3 (Tìm Mentor), Bước 4 (Gọi tên), Bước 5 (Vòng lặp), Bước 6 (Boarding Pass), và Màn hình theo dõi 28 ngày (Tracker).
+   - Gồm 6 vị trí: Bước 2 (1% Better), Bước 3 (Tìm Mentor), Bước 4 (Gọi tên thói quen), Bước 5 (Vòng lặp), Bước 6 (Boarding Pass), và Màn hình theo dõi 28 ngày (Tracker).
    - **Quy tắc bắt buộc**: Khi nhập **Nội dung câu trích**, bắt buộc phải điền đầy đủ **Tác giả** và **Nguồn** (sách, tài liệu khoa học gốc). Có thể thêm **Đường dẫn nguồn** để người đọc bấm vào kiểm chứng. Nếu thiếu tác giả hoặc nguồn, hệ thống sẽ từ chối lưu (luật HB-07 / AGENTS §14).
 2. **Câu kết Bước 2 (`onePercent.closing`)**:
    - Câu đúc kết ngắn hiển thị ở cuối khối "3 điều chưa biết" tại bước 2.
