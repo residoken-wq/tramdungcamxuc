@@ -8,7 +8,9 @@ import { vi } from '@/lib/i18n/vi'
 import { validatePageLockedBlocks } from '@/puck/locks'
 import { generateDuplicateSlug } from '@/puck/duplicate'
 import { normalizePuckData } from '@/puck/migrations'
-import { isAdminUser } from '@/lib/auth/access'
+import { isAdminUser, isOwnerUser } from '@/lib/auth/access'
+import { validateTemplatePuckData } from '@/puck/template-validation'
+import { puckConfig } from '@/puck/config'
 
 export type SaveActionResult = {
   success: boolean
@@ -24,6 +26,7 @@ export type VersionSummary = {
   status: 'draft' | 'published'
   autosave: boolean
   title?: string
+  authorName?: string | null
 }
 
 export type GetVersionsActionResult = {
@@ -31,6 +34,44 @@ export type GetVersionsActionResult = {
   code?: 'UNAUTHORIZED' | 'FETCH_FAILED'
   message?: string
   versions?: VersionSummary[]
+  hasMore?: boolean
+  totalDocs?: number
+  page?: number
+}
+
+export type TemplateSummary = {
+  id: string
+  name: string
+  kind: 'section' | 'page'
+  description?: string | null
+  createdAt: string
+  updatedAt: string
+  createdBy?: {
+    id: number | string
+    name?: string | null
+    email: string
+  } | null
+  puckData: unknown
+}
+
+export type SaveTemplateActionResult = {
+  success: boolean
+  code?: 'UNAUTHORIZED' | 'VALIDATION_FAILED' | 'SAVE_FAILED'
+  message?: string
+  template?: TemplateSummary
+}
+
+export type ListTemplatesActionResult = {
+  success: boolean
+  code?: 'UNAUTHORIZED' | 'FETCH_FAILED'
+  message?: string
+  templates?: TemplateSummary[]
+}
+
+export type DeleteTemplateActionResult = {
+  success: boolean
+  code?: 'UNAUTHORIZED' | 'FORBIDDEN' | 'DELETE_FAILED' | 'NOT_FOUND'
+  message?: string
 }
 
 export type RestoreVersionActionResult = {
@@ -179,7 +220,11 @@ export async function publishPageAction(pageId: string, puckData: Data): Promise
 }
 
 // REVIEW-REQUIRED: Server action for fetching page versions list with strict user authentication
-export async function getVersionsAction(pageId: string): Promise<GetVersionsActionResult> {
+export async function getVersionsAction(
+  pageId: string,
+  page = 1,
+  limit = 25,
+): Promise<GetVersionsActionResult> {
   try {
     const headers = await getHeaders()
     const payloadConfig = await config
@@ -202,7 +247,8 @@ export async function getVersionsAction(pageId: string): Promise<GetVersionsActi
         },
       },
       sort: '-updatedAt',
-      limit: 25,
+      page,
+      limit,
       user,
       overrideAccess: false,
     })
@@ -219,12 +265,16 @@ export async function getVersionsAction(pageId: string): Promise<GetVersionsActi
         status: versionDoc?._status === 'published' ? 'published' : 'draft',
         autosave: Boolean((doc as { autosave?: boolean }).autosave),
         title: versionDoc?.title,
+        authorName: (user as { name?: string }).name || user.email || null,
       }
     })
 
     return {
       success: true,
       versions: summaries,
+      hasMore: Boolean(versionsRes.hasNextPage),
+      totalDocs: versionsRes.totalDocs,
+      page,
     }
   } catch (error) {
     console.error('Error in getVersionsAction:', error)
@@ -344,6 +394,285 @@ export async function duplicatePageAction(pageId: string): Promise<DuplicatePage
       success: false,
       code: 'DUPLICATE_FAILED',
       message: vi.builder.duplicatePageFailed,
+    }
+  }
+}
+
+// REVIEW-REQUIRED: Server action for loading version snapshot without restoring/mutating DB
+export async function getVersionDataAction(versionId: string): Promise<{
+  success: boolean
+  code?: 'UNAUTHORIZED' | 'FETCH_FAILED'
+  message?: string
+  puckData?: Data
+  status?: string
+  updatedAt?: string
+}> {
+  try {
+    const headers = await getHeaders()
+    const payloadConfig = await config
+    const payload = await getPayload({ config: payloadConfig })
+
+    const { user } = await payload.auth({ headers })
+    if (!user || !isAdminUser(user)) {
+      return {
+        success: false,
+        code: 'UNAUTHORIZED',
+        message: vi.builder.unauthorized,
+      }
+    }
+
+    const versionDoc = await payload.findVersionByID({
+      collection: 'pages',
+      id: versionId,
+      user,
+      overrideAccess: false,
+    })
+
+    if (!versionDoc || !versionDoc.version) {
+      return {
+        success: false,
+        code: 'FETCH_FAILED',
+        message: vi.builder.error,
+      }
+    }
+
+    const v = versionDoc.version as { puckData?: Data; _status?: string }
+    return {
+      success: true,
+      puckData: normalizePuckData(v.puckData),
+      status: v._status || 'draft',
+      updatedAt: versionDoc.updatedAt,
+    }
+  } catch (error) {
+    console.error('Error in getVersionDataAction:', error)
+    return {
+      success: false,
+      code: 'FETCH_FAILED',
+      message: vi.builder.error,
+    }
+  }
+}
+
+// REVIEW-REQUIRED: Server action for saving section/page template with strict admin auth and puckData validation
+export async function saveTemplateAction(params: {
+  name: string
+  kind: 'section' | 'page'
+  puckData: unknown
+  description?: string
+}): Promise<SaveTemplateActionResult> {
+  try {
+    const headers = await getHeaders()
+    const payloadConfig = await config
+    const payload = await getPayload({ config: payloadConfig })
+
+    const { user } = await payload.auth({ headers })
+    if (!user || !isAdminUser(user)) {
+      return {
+        success: false,
+        code: 'UNAUTHORIZED',
+        message: vi.builder.unauthorized,
+      }
+    }
+
+    const trimmedName = (params.name || '').trim()
+    if (!trimmedName) {
+      return {
+        success: false,
+        code: 'VALIDATION_FAILED',
+        message: vi.eb08.templateNameRequired,
+      }
+    }
+
+    if (trimmedName.length > 80) {
+      return {
+        success: false,
+        code: 'VALIDATION_FAILED',
+        message: vi.eb08.templateNameTooLong,
+      }
+    }
+
+    if (params.kind !== 'section' && params.kind !== 'page') {
+      return {
+        success: false,
+        code: 'VALIDATION_FAILED',
+        message: vi.eb08.invalidData,
+      }
+    }
+
+    const validation = validateTemplatePuckData(params.puckData, params.kind, puckConfig)
+    if (!validation.success) {
+      return {
+        success: false,
+        code: 'VALIDATION_FAILED',
+        message: validation.message,
+      }
+    }
+
+    const doc = await payload.create({
+      collection: 'blockTemplates',
+      data: {
+        name: trimmedName,
+        kind: params.kind,
+        description: params.description?.trim() || null,
+        puckData: params.puckData as Record<string, unknown>,
+        createdBy: user.id,
+      },
+      user,
+      overrideAccess: false,
+    })
+
+    return {
+      success: true,
+      message: vi.eb08.savedSuccess,
+      template: {
+        id: String(doc.id),
+        name: doc.name,
+        kind: doc.kind,
+        description: doc.description || null,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+        createdBy: {
+          id: user.id,
+          name: (user as { name?: string }).name || null,
+          email: user.email,
+        },
+        puckData: doc.puckData,
+      },
+    }
+  } catch (error) {
+    console.error('Error in saveTemplateAction:', error)
+    return {
+      success: false,
+      code: 'SAVE_FAILED',
+      message: vi.eb08.saveFailed,
+    }
+  }
+}
+
+// REVIEW-REQUIRED: Server action for listing templates filtered by kind with strict admin auth
+export async function listTemplatesAction(
+  kind?: 'section' | 'page',
+): Promise<ListTemplatesActionResult> {
+  try {
+    const headers = await getHeaders()
+    const payloadConfig = await config
+    const payload = await getPayload({ config: payloadConfig })
+
+    const { user } = await payload.auth({ headers })
+    if (!user || !isAdminUser(user)) {
+      return {
+        success: false,
+        code: 'UNAUTHORIZED',
+        message: vi.builder.unauthorized,
+      }
+    }
+
+    const res = await payload.find({
+      collection: 'blockTemplates',
+      where: kind ? { kind: { equals: kind } } : undefined,
+      sort: '-createdAt',
+      limit: 100,
+      depth: 1,
+      user,
+      overrideAccess: false,
+    })
+
+    const templates: TemplateSummary[] = res.docs.map((doc) => {
+      const creator = doc.createdBy as { id: number; name?: string; email: string } | undefined
+      return {
+        id: String(doc.id),
+        name: doc.name,
+        kind: doc.kind,
+        description: doc.description || null,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+        createdBy: creator
+          ? { id: creator.id, name: creator.name || null, email: creator.email }
+          : null,
+        puckData: doc.puckData,
+      }
+    })
+
+    return {
+      success: true,
+      templates,
+    }
+  } catch (error) {
+    console.error('Error in listTemplatesAction:', error)
+    return {
+      success: false,
+      code: 'FETCH_FAILED',
+      message: vi.builder.error,
+    }
+  }
+}
+
+// REVIEW-REQUIRED: Server action for deleting template with strict admin auth and ownership enforcement
+export async function deleteTemplateAction(
+  templateId: string,
+): Promise<DeleteTemplateActionResult> {
+  try {
+    const headers = await getHeaders()
+    const payloadConfig = await config
+    const payload = await getPayload({ config: payloadConfig })
+
+    const { user } = await payload.auth({ headers })
+    if (!user || !isAdminUser(user)) {
+      return {
+        success: false,
+        code: 'UNAUTHORIZED',
+        message: vi.builder.unauthorized,
+      }
+    }
+
+    const existing = await payload.findByID({
+      collection: 'blockTemplates',
+      id: templateId,
+      depth: 0,
+      user,
+      overrideAccess: false,
+    })
+
+    if (!existing) {
+      return {
+        success: false,
+        code: 'NOT_FOUND',
+        message: vi.eb08.deleteFailed,
+      }
+    }
+
+    const isOwner = isOwnerUser(user)
+    const creatorId =
+      typeof existing.createdBy === 'object' && existing.createdBy
+        ? (existing.createdBy as { id: unknown }).id
+        : existing.createdBy
+    const isCreator = String(creatorId) === String(user.id)
+
+    if (!isOwner && !isCreator) {
+      return {
+        success: false,
+        code: 'FORBIDDEN',
+        message: vi.eb08.cannotDeleteNotOwner,
+      }
+    }
+
+    await payload.delete({
+      collection: 'blockTemplates',
+      id: templateId,
+      user,
+      overrideAccess: false,
+    })
+
+    return {
+      success: true,
+      message: vi.eb08.deleteSuccess,
+    }
+  } catch (error) {
+    console.error('Error in deleteTemplateAction:', error)
+    return {
+      success: false,
+      code: 'DELETE_FAILED',
+      message: vi.eb08.deleteFailed,
     }
   }
 }
