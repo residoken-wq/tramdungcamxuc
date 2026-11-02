@@ -101,6 +101,11 @@ test.describe('PK-14: One-click add child card & empty-slot hint', () => {
       // 6. Click "+ Thêm Thẻ gói" twice.
       const addChildBtn = page.getByRole('button', { name: '+ Thêm Thẻ gói' })
       await addChildBtn.click()
+      const childCards = canvas.locator(`[data-puck-component="${blockId}"] [data-puck-component]`)
+      await expect(childCards).toHaveCount(1)
+      // Puck records undo history with a 300 ms debounce: two changes closer than that become one
+      // undo step. Wait past it so each "+ Thêm" is its own step (as for a real user).
+      await page.waitForTimeout(600)
 
       // After first click, re-select the parent block to click again.
       await block.click()
@@ -108,9 +113,8 @@ test.describe('PK-14: One-click add child card & empty-slot hint', () => {
       await addChildBtn.click()
 
       // Canvas should now contain 2 PackageCard items in the slot zone.
-      // Child cards are Puck components nested inside the parent block on the canvas.
-      const childCards = canvas.locator(`[data-puck-component="${blockId}"] [data-puck-component]`)
       await expect(childCards).toHaveCount(2)
+      await page.waitForTimeout(600)
 
       // Right panel should now show fields of the newly added card.
       await expect(page.getByRole('heading', { name: 'Thẻ gói', level: 2 })).toBeVisible()
