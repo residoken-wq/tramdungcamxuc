@@ -3187,7 +3187,7 @@ export const vi = {
       statSourceUrl: 'Liên kết nguồn',
       questions: 'Câu hỏi khảo sát',
       questionsDesc:
-        'Khách chấm mỗi câu từ 1 đến 5. Giai đoạn có điểm trung bình cao nhất là nút thắt (cùng cách tính quiz chẩn đoán).',
+        'Khách chấm mỗi câu từ 1 đến 5. Giai đoạn có điểm trung bình cao nhất là nút thắt (cùng cách tính quiz chẩn đoán). Để trống thì bước 1 dùng các câu đã xuất bản trong "Khóa Habit → Câu hỏi chẩn đoán".',
       statement: 'Câu hỏi',
       stage: 'Giai đoạn',
       scaleMinLabel: 'Nhãn mức 1',

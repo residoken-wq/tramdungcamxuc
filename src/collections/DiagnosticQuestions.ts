@@ -16,7 +16,8 @@ export const DiagnosticQuestions = contentCollection(
 
 DiagnosticQuestions.admin = {
   ...DiagnosticQuestions.admin,
-  description: 'Bộ câu hỏi trắc nghiệm chẩn đoán điểm nghẽn thói quen 5 phút.',
+  description:
+    'Câu hỏi cho quiz chẩn đoán /habit/chan-doan. Bước 1 "Khám đúng bệnh" của Habit Loop 5 phút cũng dùng bộ này khi mục "Câu hỏi khảo sát" trong Nội dung hành trình Habit còn trống.',
   defaultColumns: ['statement', 'stage', 'order', 'updatedAt'],
   listSearchableFields: ['statement'],
 }
