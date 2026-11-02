@@ -139,6 +139,10 @@ export const HabitJourneyContent: GlobalConfig = {
       name: 'quotes',
       type: 'array',
       label: vi.hb07.quotes.label,
+      admin: {
+        // HB-26: thay bằng stepQuotes / unknowns
+        hidden: true,
+      },
       labels: {
         singular: 'Câu trích dẫn',
         plural: 'Các câu trích dẫn',
@@ -213,6 +217,10 @@ export const HabitJourneyContent: GlobalConfig = {
           name: 'facts',
           type: 'array',
           label: vi.hb07.onePercent.facts,
+          admin: {
+            // HB-26: thay bằng stepQuotes / unknowns
+            hidden: true,
+          },
           labels: {
             singular: 'Dẫn chứng',
             plural: 'Các số liệu dẫn chứng',

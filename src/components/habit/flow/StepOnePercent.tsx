@@ -39,7 +39,12 @@ export function StepOnePercent({ onePercent, unknowns, quote }: StepOnePercentPr
         </div>
       )}
 
-      <OnePercentSection onePercent={onePercent} className="!px-0 !pt-0 !pb-0" />
+      {/* HB-26: Bỏ render facts trong flow – chỉ render slider + 3 điều unknowns + closing */}
+      <OnePercentSection
+        onePercent={onePercent}
+        showFacts={false}
+        className="!px-0 !pt-0 !pb-0"
+      />
 
       {!hasCmsSection && (
         <OnePercentSlider dailyPercent={onePercent?.dailyPercent} maxDays={onePercent?.maxDays} />

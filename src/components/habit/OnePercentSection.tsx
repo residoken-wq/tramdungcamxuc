@@ -11,9 +11,14 @@ type RichTextData = React.ComponentProps<typeof RichText>['data']
 export interface OnePercentSectionProps {
   onePercent?: CleanHabitOnePercent | null
   className?: string
+  showFacts?: boolean
 }
 
-export function OnePercentSection({ onePercent, className = '' }: OnePercentSectionProps) {
+export function OnePercentSection({
+  onePercent,
+  className = '',
+  showFacts = true,
+}: OnePercentSectionProps) {
   if (!onePercent) {
     return null
   }
@@ -37,7 +42,7 @@ export function OnePercentSection({ onePercent, className = '' }: OnePercentSect
     line2 = parts.slice(1).join('|').trim() || undefined
   }
 
-  const hasFacts = Array.isArray(onePercent.facts) && onePercent.facts.length > 0
+  const hasFacts = showFacts && Array.isArray(onePercent.facts) && onePercent.facts.length > 0
 
   return (
     <section

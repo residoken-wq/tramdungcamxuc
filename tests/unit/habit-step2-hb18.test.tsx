@@ -115,4 +115,25 @@ describe('HB-18: StepOnePercent (Bước 2 – 1% Better)', () => {
     expect(quoteBlock.textContent).toContain('Tiny Habits')
     expect(screen.queryByRole('link', { name: 'Tiny Habits' })).toBeNull()
   })
+
+  it('5. (HB-26) Không render facts trong StepOnePercent ngay cả khi onePercent.facts có dữ liệu', () => {
+    const onePercentWithFacts: CleanHabitOnePercent = {
+      title: 'Nguyên lý 1% tốt hơn mỗi ngày',
+      dailyPercent: 1,
+      maxDays: 365,
+      facts: [
+        {
+          statement: 'Số liệu cũ không nên hiện ở flow bản mới',
+          sourceLabel: 'Nguồn cũ',
+          sourceUrl: null,
+        },
+      ],
+      closing: 'Lời giải không nằm ở cố gắng nhiều hơn.',
+    }
+
+    render(<StepOnePercent onePercent={onePercentWithFacts} unknowns={[]} quote={null} />)
+
+    expect(screen.queryByTestId('one-percent-facts')).toBeNull()
+    expect(screen.queryByText('Số liệu cũ không nên hiện ở flow bản mới')).toBeNull()
+  })
 })
