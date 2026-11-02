@@ -69,6 +69,7 @@ export interface Config {
   blocks: {};
   collections: {
     pages: Page;
+    blockTemplates: BlockTemplate;
     posts: Post;
     testimonials: Testimonial;
     faqs: Faq;
@@ -114,6 +115,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
+    blockTemplates: BlockTemplatesSelect<false> | BlockTemplatesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
@@ -309,6 +311,60 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blockTemplates".
+ */
+export interface BlockTemplate {
+  id: number;
+  name: string;
+  kind: 'section' | 'page';
+  description?: string | null;
+  puckData:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Tài khoản quản trị viên và biên tập viên nội dung.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  /**
+   * Chủ sở hữu: toàn quyền, gồm thanh toán và đơn hàng. Biên tập: chỉ sửa nội dung. Người tạo đầu tiên tự là chủ sở hữu.
+   */
+  role: 'owner' | 'editor';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
 }
 /**
  * Bài viết chuyên môn và video truyền cảm hứng trong thư viện.
@@ -1772,38 +1828,6 @@ export interface HabitPlan {
   createdAt: string;
 }
 /**
- * Tài khoản quản trị viên và biên tập viên nội dung.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  /**
-   * Chủ sở hữu: toàn quyền, gồm thanh toán và đơn hàng. Biên tập: chỉ sửa nội dung. Người tạo đầu tiên tự là chủ sở hữu.
-   */
-  role: 'owner' | 'editor';
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
-}
-/**
  * Quyền sử dụng công cụ số trả phí hoặc dùng thử.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2266,6 +2290,10 @@ export interface PayloadLockedDocument {
         value: number | Page;
       } | null)
     | ({
+        relationTo: 'blockTemplates';
+        value: number | BlockTemplate;
+      } | null)
+    | ({
         relationTo: 'posts';
         value: number | Post;
       } | null)
@@ -2485,6 +2513,19 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blockTemplates_select".
+ */
+export interface BlockTemplatesSelect<T extends boolean = true> {
+  name?: T;
+  kind?: T;
+  description?: T;
+  puckData?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
