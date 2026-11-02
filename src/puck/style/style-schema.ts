@@ -52,7 +52,20 @@ export interface BlockStyle {
   margin?: Responsive<Box>
   hideOn?: Device[]
   anchorId?: string
+  cssClasses?: string[]
+  zIndex?: number
+  entrance?: EntrancePreset
+  entranceDelay?: EntranceDelay
+  customCss?: string
 }
+
+export const ENTRANCE_PRESETS = ['none', 'fade-in', 'fade-up', 'zoom-in'] as const
+export type EntrancePreset = (typeof ENTRANCE_PRESETS)[number]
+
+export const ENTRANCE_DELAYS = [0, 150, 300, 500] as const
+export type EntranceDelay = (typeof ENTRANCE_DELAYS)[number]
+
+export const CSS_CLASS_NAME = /^[a-z][a-z0-9-]{0,39}$/
 
 /** Free-value ranges when `lock.sizes` is open. */
 export const LENGTH_RANGES = {
@@ -118,6 +131,50 @@ function cleanBox(value: unknown, kind: LengthKind, ds: CleanDesignSystem): Box 
   return Object.keys(out).length ? out : undefined
 }
 
+export function cleanCssClasses(value: unknown): string[] | undefined {
+  let list: string[] = []
+  if (Array.isArray(value)) {
+    list = value.filter((v): v is string => typeof v === 'string')
+  } else if (typeof value === 'string') {
+    list = value.trim().split(/\s+/)
+  } else {
+    return undefined
+  }
+  const unique = [
+    ...new Set(list.map((c) => c.trim().toLowerCase()).filter((c) => CSS_CLASS_NAME.test(c))),
+  ].slice(0, 5)
+  return unique.length ? unique : undefined
+}
+
+export function cleanZIndex(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isInteger(value) && value >= -10 && value <= 100) {
+    return value
+  }
+  if (typeof value === 'string' && value.trim()) {
+    const num = Number(value.trim())
+    if (Number.isInteger(num) && num >= -10 && num <= 100) {
+      return num
+    }
+  }
+  return undefined
+}
+
+export function cleanEntrance(value: unknown): EntrancePreset | undefined {
+  return includes(ENTRANCE_PRESETS, value) && value !== 'none' ? value : undefined
+}
+
+export function cleanEntranceDelay(value: unknown): EntranceDelay | undefined {
+  const num = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : NaN
+  return includes(ENTRANCE_DELAYS, num) && num !== 0 ? (num as EntranceDelay) : undefined
+}
+
+export function cleanCustomCss(value: unknown, ds: CleanDesignSystem): string | undefined {
+  if (!isOpen(ds, 'customCss')) return undefined
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim()
+  return trimmed && trimmed.length <= 5000 ? trimmed : undefined
+}
+
 /**
  * Keeps only valid values that the current brand locks allow. Returns null when nothing is
  * left, so blocks without a meaningful `_style` render exactly as before.
@@ -152,6 +209,11 @@ export function sanitizeBlockStyle(raw: unknown, ds: CleanDesignSystem): BlockSt
       typeof r.anchorId === 'string' && r.anchorId.length <= 64 && ANCHOR_ID.test(r.anchorId)
         ? r.anchorId
         : undefined,
+    cssClasses: cleanCssClasses(r.cssClasses),
+    zIndex: cleanZIndex(r.zIndex),
+    entrance: cleanEntrance(r.entrance),
+    entranceDelay: cleanEntranceDelay(r.entranceDelay),
+    customCss: cleanCustomCss(r.customCss, ds),
   }
   if (style.hideOn && style.hideOn.length === 0) style.hideOn = undefined
   const entries = Object.entries(style).filter(([, v]) => v !== undefined)

@@ -2,7 +2,14 @@ import React from 'react'
 import type { ComponentConfig, Config, CustomField, Fields, TextField } from '@puckeditor/core'
 import { StyleField } from '../editor/StyleField'
 import { STYLE_FIELD, LABEL_FIELD } from './field-groups'
-import { cleanAnchorId, hasStyleKeys, type BlockStyle } from './style-schema'
+import {
+  cleanAnchorId,
+  cleanCssClasses,
+  cleanEntrance,
+  cleanEntranceDelay,
+  hasStyleKeys,
+  type BlockStyle,
+} from './style-schema'
 import { isSafeBlockId, STYLE_ATTR } from './style-css'
 import { vi } from '@/lib/i18n/vi'
 
@@ -64,16 +71,28 @@ export function withBlockStyle(component: ComponentConfig): ComponentConfig {
       const raw = (props as { _style?: unknown })._style
       if (!hasStyleKeys(raw) || !isSafeBlockId(props.id)) return output
       const anchorId = cleanAnchorId(raw.anchorId)
+      const cssClasses = cleanCssClasses(raw.cssClasses)?.join(' ')
+      const entrance = cleanEntrance(raw.entrance)
+      const entranceDelay = cleanEntranceDelay(raw.entranceDelay)
 
       // EB-05: a block that styles itself in place (Container) gets the anchor id, no wrapper.
       if (React.isValidElement(output) && stylesInPlace(output.type)) {
-        return anchorId
-          ? React.cloneElement(output as React.ReactElement<{ anchorId?: string }>, { anchorId })
-          : output
+        return React.cloneElement(output as React.ReactElement<Record<string, unknown>>, {
+          ...(anchorId ? { anchorId } : {}),
+          ...(cssClasses ? { extraClassName: cssClasses } : {}),
+          ...(entrance ? { 'data-eb-entrance': entrance } : {}),
+          ...(entranceDelay ? { 'data-eb-entrance-delay': entranceDelay } : {}),
+        })
       }
 
       return (
-        <div {...{ [STYLE_ATTR]: props.id }} id={anchorId}>
+        <div
+          {...{ [STYLE_ATTR]: props.id }}
+          id={anchorId}
+          className={cssClasses || undefined}
+          data-eb-entrance={entrance}
+          data-eb-entrance-delay={entranceDelay}
+        >
           {output}
         </div>
       )

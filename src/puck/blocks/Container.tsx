@@ -27,7 +27,10 @@ export type ContainerViewProps = Omit<ContainerProps, 'items'> & {
   id?: string
   /** `_style.anchorId`, passed in by `withBlockStyle`. */
   anchorId?: string
+  extraClassName?: string
   items?: SlotComponent | Slot | unknown
+  'data-eb-entrance'?: string
+  'data-eb-entrance-delay'?: number
 }
 
 /**
@@ -44,11 +47,13 @@ export const ContainerView: React.FC<ContainerViewProps> = ({
   minHeight = 'none',
   items,
   anchorId,
+  extraClassName,
+  ...rest
 }) => {
   const Tag = tag === 'section' ? 'section' : 'div'
   const safeId = isSafeBlockId(id) ? id : undefined
   const cx = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).join(' ')
-  const outerClass = cx('flex w-full flex-col', MIN_HEIGHT_CLASSES[minHeight])
+  const outerClass = cx('flex w-full flex-col', MIN_HEIGHT_CLASSES[minHeight], extraClassName)
   const innerClass = cx(
     'flex w-full min-w-0 flex-1 flex-col',
     width !== 'full' && 'mx-auto',
@@ -65,6 +70,8 @@ export const ContainerView: React.FC<ContainerViewProps> = ({
       {...(safeId ? { [STYLE_ATTR]: safeId } : {})}
       id={anchorId}
       className={outerClass}
+      data-eb-entrance={rest['data-eb-entrance']}
+      data-eb-entrance-delay={rest['data-eb-entrance-delay']}
     >
       <div className={innerClass}>
         {Items ? <Items className={itemsClass} /> : <div className={itemsClass} />}
