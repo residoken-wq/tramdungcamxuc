@@ -33,9 +33,19 @@ describe('HB-24: habitJourneyContent – nội dung flow mới (bước 1, 2, 5,
     await write(rest)
   })
 
+  const emptyQuote = { text: null, author: null, source: null, sourceUrl: null }
+
   it('returns empty, safe defaults when nothing is entered', async () => {
     await write({
-      diagnose: { questions: [], results: [], stats: [] },
+      diagnose: { questions: [], results: [], stats: [], quote: emptyQuote },
+      stepQuotes: {
+        onePercent: emptyQuote,
+        mentor: emptyQuote,
+        name: emptyQuote,
+        loop: emptyQuote,
+        boardingPass: emptyQuote,
+        tracker: emptyQuote,
+      },
       loop: { stages: [], rules: [] },
       boardingPass: { captionTemplate: null },
       privacyNote: null,
@@ -181,6 +191,11 @@ describe('HB-24: habitJourneyContent – nội dung flow mới (bước 1, 2, 5,
         techniqueHint: '  [MẪU] Gợi ý kỹ thuật  ',
       },
       stepQuotes: {
+        mentor: emptyQuote,
+        name: emptyQuote,
+        loop: emptyQuote,
+        boardingPass: emptyQuote,
+        tracker: emptyQuote,
         onePercent: {
           text: '  [MẪU] Câu trích B2  ',
           author: '  [MẪU] Tác giả B2  ',

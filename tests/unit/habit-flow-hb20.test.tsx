@@ -261,5 +261,54 @@ describe('HB-20: Step 4 "Gọi tên thói quen" - Unit & Flow Tests', () => {
 
       expect(screen.getByText(viStrings.hb20.errors.startDateOutOfRange)).toBeDefined()
     })
+
+    it('(HB-26) hiển thị quote khi có dữ liệu và ẩn hoàn toàn khi quote rỗng/null', () => {
+      const { unmount } = render(
+        <StepName
+          actionText="chạy bộ"
+          personText="người dẻo dai"
+          identityStatement="Tôi sẽ chạy bộ để trở thành người dẻo dai"
+          rhythmDays={['mon']}
+          rhythmFrequency={1}
+          twoMinuteAction="Xỏ giày"
+          quote={{
+            text: 'Mỗi hành động bạn thực hiện là một lá phiếu cho con người mà bạn muốn trở thành.',
+            author: 'James Clear',
+            source: 'Atomic Habits',
+            sourceUrl: 'https://jamesclear.com',
+          }}
+          onActionChange={vi.fn()}
+          onPersonChange={vi.fn()}
+          onToggleRhythmDay={vi.fn()}
+          onTwoMinuteChange={vi.fn()}
+        />,
+      )
+
+      const quoteEl = screen.getByTestId('name-quote')
+      expect(quoteEl).toBeDefined()
+      expect(quoteEl.textContent).toContain('Mỗi hành động bạn thực hiện là một lá phiếu')
+      expect(quoteEl.textContent).toContain('James Clear')
+      expect(quoteEl.textContent).toContain('Atomic Habits')
+
+      unmount()
+
+      render(
+        <StepName
+          actionText="chạy bộ"
+          personText="người dẻo dai"
+          identityStatement="Tôi sẽ chạy bộ để trở thành người dẻo dai"
+          rhythmDays={['mon']}
+          rhythmFrequency={1}
+          twoMinuteAction="Xỏ giày"
+          quote={null}
+          onActionChange={vi.fn()}
+          onPersonChange={vi.fn()}
+          onToggleRhythmDay={vi.fn()}
+          onTwoMinuteChange={vi.fn()}
+        />,
+      )
+
+      expect(screen.queryByTestId('name-quote')).toBeNull()
+    })
   })
 })

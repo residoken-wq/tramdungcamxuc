@@ -99,7 +99,7 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
 
     // Kiểm tra các phần mới HB-20: lý do riêng tư & ngày bắt đầu
     expect(screen.getByText(new RegExp(viStrings.hb20.privateReason.title, 'i'))).toBeDefined()
-    expect(screen.getByText(new RegExp(viStrings.hb20.startDate.title, 'i'))).toBeDefined()
+    expect(screen.getByText(viStrings.hb20.startDate.title, { exact: true })).toBeDefined()
 
     // Kiểm tra 7 nút nhịp tuần đang bật (aria-pressed = true)
     const rhythmOptions = viStrings.hb03.fields.rhythmDaysOptions
