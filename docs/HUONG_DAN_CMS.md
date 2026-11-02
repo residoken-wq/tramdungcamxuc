@@ -61,6 +61,8 @@
    - [5.24. Chỉnh kiểu từng khối: tab Nội dung / Kiểu / Nâng cao (EB-04)](#524-chỉnh-kiểu-từng-khối-tab-nội-dung--kiểu--nâng-cao-eb-04)
    - [5.25. Khung chứa linh hoạt (Container): hộp flexbox lồng nhau kiểu Elementor (EB-05)](#525-khung-chứa-linh-hoạt-container-hộp-flexbox-lồng-nhau-kiểu-elementor-eb-05)
    - [5.26. Widget cơ bản & tương tác: Tiêu đề, Văn bản, Ảnh, Nút, Icon, Tabs, Accordion, Bộ đếm (EB-06)](#526-widget-cơ-bản--tương-tác-tiêu-đề-văn-bản-ảnh-nút-icon-tabs-accordion-bộ-đếm-eb-06)
+   - [5.27. Cấu trúc và menu chuột phải (EB-07)](#527-cấu-trúc-và-menu-chuột-phải-eb-07)
+   - [5.28. Mẫu đã lưu và Lịch sử phiên bản (EB-08)](#528-mẫu-đã-lưu-và-lịch-sử-phiên-bản-eb-08)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2339,6 +2341,53 @@ Bạn có thể nhấp chuột phải trực tiếp vào bất kỳ khối nào 
 - **Bảo vệ khối bị khóa:** Với các khối đặc thù không được phép xoá hoặc nhân bản (ví dụ: khối _Hero 2 lối vào_ bắt buộc trên trang chủ), các mục thao tác tương ứng sẽ tự động làm mờ và hiển thị thông báo lý do khi bạn rê chuột vào.
 - **Hoàn tác tiện lợi:** Mỗi thao tác thực hiện qua menu chuột phải (nhân bản, dán, dán kiểu, xoá...) đều được ghi nhận là một bước riêng biệt trong lịch sử, bạn có thể bấm nút **Hoàn tác (Undo)** trên thanh công cụ để khôi phục lại bất kỳ lúc nào.
 - **Phím tắt nhanh:** Khi một khối đang được chọn, bạn có thể nhấn tổ hợp phím **Shift + F10** (hoặc phím Menu chuyên dụng trên bàn phím) để mở menu chuột phải mà không cần dùng chuột. Dùng phím mũi tên Lên/Xuống để duyệt và phím **Enter** để chọn.
+
+---
+
+### 5.28. Mẫu đã lưu và Lịch sử phiên bản (EB-08)
+
+Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng cao (Version History)** giúp Hana tái sử dụng các khối hoặc toàn bộ trang đẹp mắt một cách linh hoạt mà không cần thiết kế lại từ đầu, đồng thời yên tâm tuyệt đối khi thử nghiệm nhờ khả năng xem trước phiên bản cũ an toàn.
+
+#### 1. Lưu khối thành mẫu và Chèn mẫu (Section Templates)
+
+- **Lưu khối thành mẫu:**
+  - Nhấp chuột phải vào bất kỳ khối nào trên canvas hoặc trong cây Cấu trúc (đặc biệt là khung chứa **Container** đã xếp sẵn nhiều widget đẹp).
+  - Chọn **"Lưu thành mẫu"** từ menu chuột phải.
+  - Hộp thoại mở ra: Nhập tên gợi nhớ (ví dụ: _"Khung 3 cột giới thiệu coaching"_, tối đa 80 ký tự) và mô tả tùy chọn, sau đó bấm **"Lưu mẫu"**.
+  - Hệ thống sẽ hiển thị thông báo lưu thành công và lưu trữ mẫu vào hệ thống CMS.
+- **Tìm kiếm và Chèn mẫu vào trang:**
+  - Ở cột bên trái của trình dựng trang, nhấp vào tab **Mẫu** (nằm cạnh tab _Khối_ và tab _Cấu trúc_).
+  - Danh sách các mẫu khối bạn đã lưu sẽ hiển thị kèm ô tìm kiếm nhanh (tìm kiếm thông minh không phân biệt chữ hoa, chữ thường hay dấu tiếng Việt).
+  - Bấm nút **"Chèn"** ở mẫu bạn muốn: Khối sẽ xuất hiện ngay lập tức trên canvas phía sau khối bạn đang chọn (hoặc ở cuối trang nếu chưa chọn khối nào).
+  - *Đặc điểm an toàn:* Mọi mã định danh (ID) của khối và các widget con bên trong đều được hệ thống cấp mới tự động, đảm bảo bạn có thể chèn cùng một mẫu nhiều lần mà không bao giờ bị xung đột dữ liệu.
+- **Xóa mẫu:** Bạn có thể bấm nút thùng rác nhỏ bên cạnh tên mẫu trong tab Mẫu để xóa mẫu không còn dùng nữa (hệ thống sẽ hỏi xác nhận để tránh bấm nhầm).
+
+#### 2. Lưu toàn bộ trang thành mẫu và Áp dụng (Page Templates)
+
+- **Lưu cả trang thành mẫu:**
+  - Khi đã dựng xong một trang chiến dịch hoặc trang dịch vụ ưng ý, bấm nút **"Lưu trang thành mẫu"** trên thanh tiêu đề màu xanh đậm (Header) ở đầu màn hình.
+  - Nhập tên mẫu trang (ví dụ: _"Mẫu trang sự kiện ra mắt sách"_) rồi bấm **"Lưu mẫu"**.
+- **Áp dụng mẫu đã lưu cho trang mới:**
+  - Khi tạo hoặc mở một trang mới, bấm nút **"Mẫu có sẵn"** trên thanh tiêu đề.
+  - Hộp thoại chọn mẫu mở ra: Chuyển sang tab **"Mẫu đã lưu"**.
+  - Bạn sẽ thấy tất cả các mẫu trang mà mình đã từng lưu. Bấm **"Áp dụng"** ở mẫu mong muốn.
+  - Hệ thống sẽ hiện cảnh báo xác nhận vì thao tác này sẽ thay thế nội dung hiện tại của trang bằng toàn bộ bố cục của mẫu đã chọn (mọi mã khối đều được cấp mới tự động).
+
+#### 3. Lịch sử phiên bản: Xem trước an toàn & Khôi phục
+
+- **Mở lịch sử phiên bản:**
+  - Bấm nút **"Lịch sử phiên bản"** trên thanh tiêu đề.
+  - Danh sách các lần lưu xuất hiện với thời gian được ghi rõ theo giờ Việt Nam dạng `Ngày/Tháng/Năm Giờ:Phút` (ví dụ: `02/11/2026 14:05`), tên người lưu và các huy hiệu nhận diện rõ ràng:
+    - **Đã xuất bản** (màu xanh bạc hà): Phiên bản đã được phát hành cho người đọc xem.
+    - **Bản nháp** (màu hồng phấn): Bản lưu thủ công của bạn.
+    - **Tự lưu** (màu kem bơ): Bản được hệ thống tự động lưu mỗi 30 giây khi bạn đang sửa.
+- **Xem trước phiên bản cũ an toàn (không sợ mất bản đang làm):**
+  - Bấm nút **"Xem"** ở bất kỳ phiên bản nào trong danh sách.
+  - Hộp thoại lịch sử sẽ đóng lại và trang canvas sẽ tạm thời hiển thị đúng nội dung của phiên bản đó.
+  - Một thanh thông báo màu hồng tím nổi bật sẽ xuất hiện cố định ở đầu canvas: _"Đang xem phiên bản [Ngày Giờ]. Bản này chưa được khôi phục."_
+  - **Thoát xem trước:** Nếu bạn chỉ muốn xem lại xem trước đây mình viết gì rồi quay về tiếp tục làm bản nháp hiện tại, bấm nút **"Thoát"**. Canvas sẽ ngay lập tức quay về trạng thái bạn đang làm dở dang mà không mất một chữ nào!
+  - **Khôi phục phiên bản:** Nếu bạn quyết định muốn lấy lại hoàn toàn phiên bản cũ này, bấm nút **"Khôi phục"** (kèm hộp thoại xác nhận) để hệ thống khôi phục chính thức.
+- **Xem thêm phiên bản cũ hơn:** Danh sách hiển thị 10 bản ghi gần nhất. Nếu muốn xem các bản cũ hơn nữa, bạn chỉ cần bấm nút **"Xem thêm"** ở cuối danh sách.
 
 ---
 
