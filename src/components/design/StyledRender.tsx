@@ -4,6 +4,7 @@ import { designSystemGoogleFonts, googleFontsHrefFor } from '@/lib/design/design
 import { getDesignSystem } from '@/lib/design/design-system.server'
 import { sanitizePageRichText } from '@/puck/rich-text-data'
 import { collectPageStyles } from '@/puck/style/style-css'
+import { EntranceAnimator } from './EntranceAnimator'
 
 /**
  * EB-04: `<Render>` plus the page's block styles. Collects the CSS of every block with a valid
@@ -21,6 +22,7 @@ export async function StyledRender({ config, data: rawData }: React.ComponentPro
   )
   return (
     <>
+      <EntranceAnimator />
       {fontsHref ? (
         <link rel="stylesheet" href={fontsHref} data-design-system="block-fonts" />
       ) : null}
