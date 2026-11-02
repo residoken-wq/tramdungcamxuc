@@ -328,7 +328,7 @@ export const vi = {
         salePricePlaceholder: '178000',
         saleEndsAt: 'Hạn ưu đãi (tùy chọn)',
         trialDays: 'Số ngày dùng thử miễn phí',
-        trialDaysPlaceholder: '28',
+        trialDaysPlaceholder: '21',
         accessDurationDays: 'Thời hạn truy cập sau mua (ngày)',
         accessDurationPlaceholder: 'Để trống = vĩnh viễn',
         externalUrl: 'Đường dẫn liên kết ngoài',

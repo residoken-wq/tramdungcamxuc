@@ -275,6 +275,9 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await expect(emailInput).toBeVisible()
       await emailInput.fill(customerEmail)
       await guestPage.locator('input[name="consentPolicy"]').check()
+      await expect(guestPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
       await guestPage.getByRole('button', { name: vi.auth.sendOtpButton }).click()
 
       // Đợi bước nhập mã OTP
