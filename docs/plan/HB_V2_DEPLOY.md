@@ -24,6 +24,7 @@ Migration chạy theo thứ tự tên file, mọi file **chưa có** trong bản
 | `20261101_040756_hb18_flow_content_extra.ts`  | HB-18 | `stepQuotes`, link Coach / ủng hộ trong `siteSettings`, khối sau hành trình |
 | `20261102_034312_eb08_block_templates.ts`     | EB-08 | Collection `blockTemplates` (mẫu đã lưu của builder)                        |
 | `20261102_080246_cf01_coffee_donation.ts`     | CF-01 | Ly cà phê ủng hộ (MoMo) trong `siteSettings` – tab Thanh toán               |
+| `20261102_100526_pk13_title_spacing.ts`       | PK-13 | Giãn dòng / khoảng cách tiêu đề trong `designSystem`                        |
 
 Xem bản thật đang ở migration nào (chỉ đọc tên migration, không đọc dữ liệu khách):
 
@@ -88,7 +89,7 @@ $DC ps < /dev/null
 $DC logs app --tail 200 < /dev/null | grep -i migrat
 ```
 
-_Mong đợi: `app` và `postgres` `healthy` (chờ khoảng 1 phút); log có các migration ở mục 1; câu lệnh ở cuối mục 1 trả migration mới nhất trên `main` ở dòng đầu (02/11: `20261102_080246_cf01_coffee_donation`)._
+_Mong đợi: `app` và `postgres` `healthy` (chờ khoảng 1 phút); log có các migration ở mục 1; câu lệnh ở cuối mục 1 trả migration mới nhất trên `main` ở dòng đầu (02/11: `20261102_100526_pk13_title_spacing`)._
 
 **Không chạy `pnpm seed`** trên bản thật (GO_LIVE_STEPS mục 9). Nội dung mục 2 Hana tự nhập trong `/admin`.
 
