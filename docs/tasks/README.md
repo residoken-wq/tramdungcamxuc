@@ -285,6 +285,12 @@ Không task nào cần 🔒 Migration / Package. Song song được: CM-01 ‖ C
 
 Quy tắc chung, thứ tự 2 dây (Laptop: HB-17 → 22, PC nhà: HB-23 → 13 → 12 → 14 → 15) và khoá migration HB-24 → HB-12 → HB-18: [`prompts/HB-COMMON.md`](prompts/HB-COMMON.md). **Deploy sau HB-15.**
 
+### Yêu cầu thêm 02/11
+
+| Mã    | Việc                                                                                                          | Phụ thuộc                                   | Máy    | Trạng thái   |
+| ----- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ------ | ------------ |
+| CF-01 | Widget ly cà phê nổi: mã QR MoMo ủng hộ, cấu hình ở Cài đặt website → Thanh toán ([prompt](prompts/CF-01.md)) | 🔒 Migration sau EB-08 (tạo migration cuối) | PC nhà | Prompt 02/11 |
+
 (Planning dùng cho mọi task)
 
 - [ ] Báo cáo đủ 6 mục theo mẫu AGENTS.md mục 13
