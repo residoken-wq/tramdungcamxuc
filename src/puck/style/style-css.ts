@@ -4,13 +4,14 @@
  * reach the strings built here.
  */
 import { DESIGN_FONT_OPTIONS, type FontCategory } from '@/lib/design/fonts'
-import type { CleanDesignSystem } from '@/lib/design/design-system'
 import {
   CSS_VARS,
   EMOTION_GAP_VALUES,
   EYEBROW_GAP_VALUES,
   TITLE_LINE_HEIGHT_VALUES,
 } from '@/lib/design/title-spacing'
+import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
+import { sanitizeBlockCustomCss, sanitizePageCustomCss } from './custom-css'
 import { containerCss } from './container-css'
 import { cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
 import { sanitizeContainer } from './container-schema'
@@ -104,6 +105,7 @@ function baseDeclarations(style: BlockStyle): string[] {
       : []),
     ...(style.eyebrowGap ? [`${CSS_VARS.eyebrowGap}:${EYEBROW_GAP_VALUES[style.eyebrowGap]}`] : []),
     ...(style.emotionGap ? [`${CSS_VARS.emotionGap}:${EMOTION_GAP_VALUES[style.emotionGap]}`] : []),
+    ...(style.zIndex !== undefined ? [`z-index:${style.zIndex}`, 'position:relative'] : []),
     // Rounded corners need clipping so a background does not spill out.
     ...(style.radius && style.radius !== 'none' ? ['overflow:hidden'] : []),
   ]
@@ -124,6 +126,10 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   }
   for (const device of style.hideOn ?? []) {
     rules.push(`@media ${HIDE_MEDIA[device]}{${selector}{display:none}}`)
+  }
+  if (style.customCss) {
+    const custom = sanitizeBlockCustomCss(style.customCss, id)
+    if (custom) rules.push(custom)
   }
   return rules.join('')
 }
@@ -158,12 +164,30 @@ function* walkNested(props: unknown): Generator<PuckItem> {
  * Google fonts those blocks use. Blocks without a valid `_style` add nothing.
  */
 export function collectPageStyles(
-  data: { content?: unknown; zones?: Record<string, unknown> } | null | undefined,
+  data:
+    | {
+        content?: unknown
+        zones?: Record<string, unknown>
+        root?: { props?: Record<string, unknown>; [key: string]: unknown }
+      }
+    | null
+    | undefined,
   ds: CleanDesignSystem,
 ): { css: string; fonts: string[] } {
   const sources = [data?.content, ...Object.values(data?.zones ?? {})]
   const css: string[] = []
   const fonts = new Set<string>()
+
+  // EB-09: Page-level custom CSS (when customCss lock is open)
+  if (isOpen(ds, 'customCss')) {
+    const rawPageCss =
+      (data?.root?.props?.customCss as unknown) ?? (data?.root?.customCss as unknown)
+    if (typeof rawPageCss === 'string' && rawPageCss.trim()) {
+      const pageCss = sanitizePageCustomCss(rawPageCss)
+      if (pageCss) css.push(pageCss)
+    }
+  }
+
   for (const source of sources) {
     for (const item of walkItems(source)) {
       const id = item.props?.id

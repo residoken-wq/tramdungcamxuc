@@ -5,6 +5,8 @@ import { ImageText, type ImageTextProps } from '@/components/site/ImageText'
 import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
 import { vi } from '@/lib/i18n/vi'
+import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
+import { PageCustomCssControl } from './editor/PageCustomCssControl'
 
 import { withBlockStyles } from './style/with-block-style'
 import { HeroImageBlock, type HeroImageProps } from './blocks/HeroImage'
@@ -22,6 +24,7 @@ import { IconListWidgetBlock, type IconListWidgetProps } from './blocks/widgets/
 import { TabsWidgetBlock, type TabsWidgetProps } from './blocks/widgets/TabsWidget'
 import { AccordionWidgetBlock, type AccordionWidgetProps } from './blocks/widgets/AccordionWidget'
 import { CounterWidgetBlock, type CounterWidgetProps } from './blocks/widgets/CounterWidget'
+import { HtmlWidgetBlock, type HtmlWidgetProps } from './blocks/widgets/HtmlWidget'
 import { ContainerBlock, type ContainerProps } from './blocks/Container'
 import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
 import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
@@ -130,6 +133,7 @@ export type {
   ResourcePostsSlotProps,
   HeadingWidgetProps,
   TextWidgetProps,
+  HtmlWidgetProps,
   ImageWidgetProps,
   ButtonWidgetProps,
   IconWidgetProps,
@@ -151,6 +155,7 @@ export type PageComponentsProps = {
   // Cơ bản (EB-06a)
   HeadingWidget: HeadingWidgetProps
   TextWidget: TextWidgetProps
+  HtmlWidget: HtmlWidgetProps
   ImageWidget: ImageWidgetProps
   ButtonWidget: ButtonWidgetProps
   IconWidget: IconWidgetProps
@@ -244,6 +249,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'TabsWidget',
         'AccordionWidget',
         'CounterWidget',
+        'HtmlWidget',
       ],
     },
     intro: {
@@ -332,7 +338,10 @@ const basePuckConfig: Config<PageComponentsProps> = {
       // Puck passes its DropZone component here; the public render keeps `children`.
       const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
       return (
-        <div className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased">
+        <div
+          data-eb-page=""
+          className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased"
+        >
           {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={ROOT_DISALLOW} /> : children}
         </div>
       )
@@ -685,6 +694,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
     TabsWidget: TabsWidgetBlock,
     AccordionWidget: AccordionWidgetBlock,
     CounterWidget: CounterWidgetBlock,
+    HtmlWidget: HtmlWidgetBlock,
 
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
@@ -742,26 +752,57 @@ const basePuckConfig: Config<PageComponentsProps> = {
 export const puckConfig: Config<PageComponentsProps> = withBlockStyles(basePuckConfig)
 
 /**
- * Lấy cấu hình Puck phù hợp với từng trang, gắn các quyền khóa khối tự động (VD: HeroTwoEntries trên trang chủ).
+ * Lấy cấu hình Puck phù hợp với từng trang, gắn các quyền khóa khối tự động (VD: HeroTwoEntries trên trang chủ)
+ * và quyền chỉnh sửa CSS tuỳ chỉnh (khi lock mở và user là owner).
  */
-export function getPuckConfig(options?: { pageSlug?: string }): Config<PageComponentsProps> {
+export function getPuckConfig(options?: {
+  pageSlug?: string
+  isOwner?: boolean
+  designSystem?: CleanDesignSystem
+}): Config<PageComponentsProps> {
   const pageSlug = options?.pageSlug || '/'
   const heroPermissions = getLockedComponentPermissions('HeroTwoEntries', pageSlug)
+  const canEditCustomCss = Boolean(
+    options?.isOwner && options?.designSystem && isOpen(options.designSystem, 'customCss'),
+  )
 
-  if (!heroPermissions) {
+  const rootConfig = canEditCustomCss
+    ? {
+        ...puckConfig.root,
+        fields: {
+          ...puckConfig.root?.fields,
+          customCss: {
+            type: 'custom' as const,
+            label: vi.eb09.customCssLabel,
+            render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+              <PageCustomCssControl value={value} onChange={onChange} />
+            ),
+          },
+        },
+      }
+    : puckConfig.root
+
+  // EB-09c: with custom code locked, the editor canvas shows the "locked" notice instead of the
+  // stored HTML (the public page already renders nothing: rich-text-data.ts empties it).
+  const htmlLocked = Boolean(options?.designSystem && !isOpen(options.designSystem, 'customCss'))
+
+  if (!heroPermissions && !canEditCustomCss && !htmlLocked) {
     return puckConfig
   }
 
-  return {
-    ...puckConfig,
-    components: {
-      ...puckConfig.components,
-      HeroTwoEntries: {
-        ...puckConfig.components.HeroTwoEntries,
-        permissions: heroPermissions,
-      },
-    },
+  const components = { ...puckConfig.components }
+  if (heroPermissions) {
+    components.HeroTwoEntries = { ...components.HeroTwoEntries, permissions: heroPermissions }
   }
+  if (htmlLocked) {
+    const htmlBlock = components.HtmlWidget
+    components.HtmlWidget = {
+      ...htmlBlock,
+      render: (props) => htmlBlock.render({ ...props, isLocked: true }),
+    }
+  }
+
+  return { ...puckConfig, root: rootConfig, components }
 }
 
 export default puckConfig

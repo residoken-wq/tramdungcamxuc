@@ -6,6 +6,7 @@ import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
 import { normalizePuckData } from '@/puck/migrations'
 import { getDesignSystem } from '@/lib/design/design-system.server'
+import { isOwnerUser } from '@/lib/auth/access'
 import { PuckEditorClient } from './PuckEditorClient'
 
 export const dynamic = 'force-dynamic'
@@ -58,10 +59,12 @@ export default async function BuilderPage({ params }: BuilderPageProps) {
   }
 
   const designSystem = await getDesignSystem(payload)
+  const isOwner = isOwnerUser(user)
 
   return (
     <PuckEditorClient
       designSystem={designSystem}
+      isOwner={isOwner}
       initialData={initialData}
       pageId={pageId}
       pageTitle={pageDoc.title || pageId}

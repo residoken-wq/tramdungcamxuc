@@ -66,6 +66,8 @@
    - [5.27. Cấu trúc và menu chuột phải (EB-07)](#527-cấu-trúc-và-menu-chuột-phải-eb-07)
    - [5.28. Mẫu đã lưu và Lịch sử phiên bản (EB-08)](#528-mẫu-đã-lưu-và-lịch-sử-phiên-bản-eb-08)
    - [5.29. Tự chỉnh khoảng cách tiêu đề và giãn dòng Anton (PK-13)](#529-tự-chỉnh-khoảng-cách-tiêu-đề-và-giãn-dòng-anton-pk-13)
+
+   - [5.30. Nâng cao: CSS / HTML tuỳ chỉnh và hiệu ứng (EB-09)](#530-nâng-cao-css--html-tuỳ-chỉnh-và-hiệu-ứng-eb-09)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2470,6 +2472,70 @@ Dưới đây là hình ảnh so sánh thực tế giữa mức mặc định (_
 
 - _Chế độ Thoáng (1.45 / 24px / 24px):_
   ![Chế độ Rất thoáng (giãn dòng 1.6, nhãn và dòng cảm xúc Thoáng) trên màn hình điện thoại 375px](screenshots/pk13/02-very-airy-375.png)
+
+### 5.30. Nâng cao: CSS / HTML tuỳ chỉnh và hiệu ứng (EB-09)
+
+Tính năng **CSS tuỳ chỉnh, widget HTML, class / z-index và hiệu ứng vào khung hình** giúp bạn tuỳ biến giao diện sâu hơn mà không làm ảnh hưởng đến độ an toàn và tốc độ tải trang của website.
+
+> [!IMPORTANT]
+> **Quyền hạn và Khóa an toàn:**
+>
+> - Các ô nhập CSS và widget HTML **chỉ hiển thị cho tài khoản Chủ sở hữu (Owner)**. Biên tập viên (`editor`) không nhìn thấy và không thể sửa các đoạn mã này.
+> - **Mặc định tính năng này bị khoá** trong hệ thống để bảo vệ an toàn thương hiệu.
+> - **Cách mở khoá:** Vào trang quản trị CMS (`/admin`) → Tìm mục **Hệ thống** → Chọn **Thiết kế hệ thống** (`designSystem`) → Tại nhóm _Khoá thương hiệu_, tìm dòng **CSS tuỳ chỉnh** (`customCss`) và chuyển từ **Khoá** sang **Mở** → Bấm **Lưu thay đổi**.
+
+> [!NOTE]
+> **Biên tập viên làm việc trên trang có mã của chủ site:** vẫn sửa chữ, ảnh, khoảng cách… và lưu bình thường. Hệ thống từ chối (thông báo "Chỉ chủ site được sửa CSS / HTML tuỳ chỉnh") khi biên tập viên thêm, sửa hoặc xoá mã CSS / HTML. Việc này gồm cả xoá hay nhân bản khối có mã, khôi phục một phiên bản cũ có mã khác, và lưu mẫu chứa mã. Luật áp dụng cả khi sửa qua trang quản trị lẫn qua API, không chỉ trong trình dựng trang. Khi tính năng đang khoá, khối HTML trên canvas chỉ hiện dòng "đang khoá" và trang công khai không hiện gì.
+
+#### 1. CSS tuỳ chỉnh cho từng khối (Block Custom CSS)
+
+- Chọn bất kỳ khối nào trên canvas hoặc cây Cấu trúc.
+- Chuyển sang tab **Nâng cao** ở bảng bên phải → Cuộn xuống nhóm **CSS tuỳ chỉnh**.
+- Nhập các quy tắc CSS bạn muốn:
+  - Bắt buộc dùng từ khóa `selector` để trỏ vào chính khối đó. Ví dụ:
+    ```css
+    selector {
+      outline: 3px solid #bc039e;
+      border-radius: 16px;
+    }
+    selector:hover {
+      opacity: 0.95;
+    }
+    ```
+  - Nếu chỉ viết các thuộc tính ngắn (không có ngoặc `{}`), hệ thống sẽ tự động bọc vào khối hiện tại.
+  - Bộ lọc thông minh của hệ thống sẽ tự động loại bỏ các đoạn mã độc hại, bảo vệ website khỏi nguy cơ tấn công hoặc vỡ giao diện.
+  - Một số cách viết bị bỏ qua để CSS của khối không chạm khối khác: `selector ~ …` và `selector + …` (khối bên cạnh), quy tắc lồng trong quy tắc, `image-set(...)`. Có chuỗi chứa `{` `}` `;` thì cả ô CSS bị bỏ qua. Ảnh nền chỉ dùng `url(/api/media/file/...)` từ thư viện ảnh.
+
+#### 2. CSS tuỳ chỉnh cho toàn trang (Page Custom CSS)
+
+- Khi không chọn khối nào trên canvas (hoặc bấm chọn nút Cài đặt trang), bảng bên phải sẽ hiển thị các thiết lập trang.
+- Bạn có thể viết CSS áp dụng cho toàn bộ trang trong ô **CSS tuỳ chỉnh**. Hệ thống sẽ tự động giới hạn phạm vi áp dụng bên trong vùng nội dung trang của bạn, không làm ảnh hưởng đến phần Menu đầu trang (Header), Chân trang (Footer) hay khu vực quản trị.
+
+#### 3. Widget HTML an toàn (HtmlWidget)
+
+- Trong thanh công cụ bên trái, tìm nhóm **Cơ bản** và kéo khối **HTML** vào canvas.
+- Chọn khối HTML vừa kéo vào, bảng bên phải sẽ hiện ô nhập mã HTML (tối đa 20 000 ký tự).
+- Cho phép sử dụng các thẻ khối và văn bản thông dụng (`div`, `p`, `span`, `h2`–`h6`, `table`, `ul`, `ol`, `li`, `a`, `img`...).
+- **Quy tắc an toàn tuyệt đối:**
+  - Hệ thống tự động ngăn chặn việc chạy mã JavaScript (`<script>`, các sự kiện `onclick`, `onerror`...).
+  - Không cho phép nhúng `<iframe>`, `<form>` hoặc thẻ `<style>` trực tiếp.
+  - Mọi hình ảnh trong thẻ `<img>` chỉ được phép sử dụng từ thư viện ảnh đã tải lên của website (`/api/media/file/...`).
+
+#### 4. Class CSS và Thứ tự hiển thị (z-index)
+
+- Trong tab **Nâng cao** của bất kỳ khối nào, tìm nhóm **Class / z-index**:
+  - **Class CSS:** Nhập tên class tùy biến (tối đa 5 class, viết chữ thường và cách nhau bởi dấu cách, ví dụ: `my-card highlight-box`). Class được lưu khi bạn rời ô hoặc bấm Enter.
+  - **Thứ tự hiển thị (z-index):** Nhập số nguyên từ `-10` đến `100` để điều chỉnh lớp hiển thị trên/dưới khi các khối xếp đè lên nhau (hệ thống tự động thiết lập thuộc tính định vị tương đối `position: relative`).
+
+#### 5. Hiệu ứng vào khung hình (Entrance Animations)
+
+- Trong tab **Nâng cao**, tìm nhóm **Hiệu ứng vào khung hình**:
+  - **Hiệu ứng:** Lựa chọn giữa _Hiện dần (Fade in)_, _Hiện dần trượt lên (Fade up)_, hoặc _Phóng to nhẹ (Zoom in)_.
+  - **Độ trễ:** Chọn thời gian chờ trước khi chạy hiệu ứng (0ms, 150ms, 300ms, 500ms).
+- **Thân thiện và Tinh tế:**
+  - Trang web áp dụng kỹ thuật tăng cường lũy tiến: Nếu người đọc tắt JavaScript, toàn bộ nội dung vẫn hiển thị bình thường 100%, không bao giờ bị ẩn mất chữ.
+  - Tự động nhận diện cài đặt giảm chuyển động (_Reduce Motion_) của thiết bị người dùng để tắt hiệu ứng, đảm bảo khả năng tiếp cận (Accessibility WCAG).
+  - Trong màn hình chỉnh sửa trực quan của bạn (Canvas editor), hiệu ứng được tắt để bạn thao tác nhấp chọn và kéo thả dễ dàng nhất.
 
 ---
 

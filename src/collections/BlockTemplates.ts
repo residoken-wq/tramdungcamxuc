@@ -1,6 +1,7 @@
 import type { Access, CollectionConfig } from 'payload'
 import { isAdminUser, isOwnerUser } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
+import { guardCustomCodeHook } from '@/puck/custom-code-guard'
 
 // REVIEW-REQUIRED: Delete permission: owner can delete any template, editor can only delete their own template.
 export const blockTemplateDeleteAccess: Access = ({ req }) => {
@@ -37,6 +38,8 @@ export const BlockTemplates: CollectionConfig = {
     update: blockTemplateAdminAccess,
     delete: blockTemplateDeleteAccess,
   },
+  // EB-09: only the owner adds or changes custom CSS / HTML in a template (REST included).
+  hooks: { beforeChange: [guardCustomCodeHook] },
   fields: [
     {
       name: 'name',
