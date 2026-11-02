@@ -54,3 +54,7 @@ docs/sources/*.rar
 
 # production deploy state (scripts/deploy.sh)
 /.deploy/
+
+# Backups
+backups/
+
