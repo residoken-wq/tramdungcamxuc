@@ -27,9 +27,11 @@
    - [3.10. Quản lý Bài học và Video khóa học (Habit Hack)](#310-quản-lý-bài-học-và-video-khóa-học-habit-hack)
      - [3.10.1. Cách nhập video Bunny Stream cho bài học](#3101-cách-nhập-video-bunny-stream-cho-bài-học)
      - [3.10.2. Thêm bài học bằng Trình hướng dẫn (4 bước)](#3102-thêm-bài-học-bằng-trình-hướng-dẫn-4-bước)
-     - [3.10.3. Cấu hình Nội dung hành trình Habit](#3103-cấu-hình-nội-dung-hành-trình-habit)
-   - [3.11. Theo dõi Kế hoạch Thói quen & Tracker 21 ngày](#311-theo-dõi-kế-hoạch-thói-quen--tracker-21-ngày)
-   - [3.12. Quản lý và Thu hồi Chứng nhận 21 ngày (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-21-ngày-certificates)
+   - [3.11. Habit Hack – Hành trình 28 ngày: 6 bước thiết kế & Tracker đồng hành](#311-habit-hack--hành-trình-28-ngày-6-bước-thiết-kế--tracker-đồng-hành)
+     - [3.11.1. Sáu bước thiết kế vòng lặp thói quen (/habit/5-phut)](#3111-sáu-bước-thiết-kế-vòng-lặp-thói-quen-habit5-phut)
+     - [3.11.2. Màn hình Tracker theo dõi 28 ngày (/habit/tracker)](#3112-màn-hình-tracker-theo-dõi-28-ngày-habittracker)
+     - [3.11.3. Theo dõi Kế hoạch trong trang quản trị (habitPlans)](#3113-theo-dõi-kế-hoạch-trong-trang-quản-trị-habitplans)
+   - [3.12. Quản lý và Thu hồi Chứng nhận (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-certificates)
    - [3.13. Quản lý 26 thẻ EQ Buddy](#313-quản-lý-26-thẻ-eq-buddy)
      - [3.13b. Sửa câu chuyện của một thẻ và xem trước](#313b-sửa-câu-chuyện-của-một-thẻ-và-xem-trước)
    - [3.14. In QR cho bộ thẻ EQ Buddy (EqCards)](#314-in-qr-cho-bộ-thẻ-eq-buddy-eqcards)
@@ -902,83 +904,153 @@ Bạn có 3 cách rất dễ dàng:
 
 ---
 
-### 3.10.3. Cấu hình Nội dung hành trình Habit
+### 3.11. Habit Hack – Hành trình 28 ngày: 6 bước thiết kế & Tracker đồng hành
 
-**Mục đích**: Cấu hình các trạm hành trình, câu hỏi suy ngẫm, câu trích dẫn truyền cảm hứng và nguyên lý 1% Better cho toàn bộ hành trình rèn luyện thói quen.
+**Mục đích**: Hướng dẫn toàn diện cách quản trị và cấu hình toàn bộ hệ sinh thái thói quen Habit Hack 28 ngày, bao gồm trình hướng dẫn 3 giai đoạn / 6 bước tại `/habit/5-phut` và màn hình theo dõi đồng hành tại `/habit/tracker`.
 
-**Cách thực hiện**:
-
-1. **Truy cập màn hình cấu hình**:
-   - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Nội dung hành trình Habit**.
-
-2. **Cấu hình Các trạm hành trình (`stations`)**:
-   - Hành trình (ví dụ 28 ngày) được hệ thống tự động chia đều số ngày cho các trạm theo thứ tự (ví dụ 4 trạm = 7-7-7-7 ngày; nếu có số dư thì dồn vào các trạm đầu, ví dụ 30 ngày chia 4 trạm = 8-8-7-7 ngày).
-   - Hana có thể thêm từ 1 đến tối đa 6 trạm:
-     - **Tên chặng** (bắt buộc): Tên chặng (ví dụ: `Trạm 1: Nhận diện & Khởi động`, `Trạm 2: Vượt qua sức ỳ`...). **Hiển thị ngoài Tracker (HB-11)**: Tên các trạm cấu hình tại đây sẽ hiển thị trực tiếp trên giao diện `/habit/tracker` của học viên thành từng khối trạm trực quan kèm khoảng ngày (ví dụ `Ngày 1 – 7`) và tiến độ số ngày bỏ phiếu đã check-in của riêng trạm đó. Nếu trạm chưa có tên hoặc chưa cấu hình, hệ thống sẽ tự động hiển thị tên mặc định `Trạm 1`, `Trạm 2`...
-     - **Thông điệp ngắn**: Câu thông điệp gợi cảm xúc đồng hành cho học viên khi bước vào trạm.
-     - **Câu hỏi suy ngẫm cuối trạm (HB-12)**: Thêm tối đa 5 câu hỏi suy ngẫm để học viên tự nhìn lại và đúc kết sau khi hoàn thành trạm (nhập ô _Câu hỏi suy ngẫm_, bắt buộc khi thêm dòng).
-       - **Hiển thị ngoài Tracker**: Khi trạm kết thúc (ngày hiện tại trong hành trình vượt qua ngày cuối cùng của trạm, hoặc trạm 4 khi đạt ngày 28), trên card trạm tương ứng ở `/habit/tracker` sẽ xuất hiện nút **"Suy ngẫm trạm"**. Khi học viên đã điền câu trả lời, card sẽ hiển thị huy hiệu **"Đã suy ngẫm"** và nút chuyển thành **"Xem / sửa suy ngẫm"**. Khi chưa tới ngày kết thúc trạm, hệ thống hiển thị nhãn nhẹ nhàng `Mở vào ngày X`. Nếu trạm không có câu hỏi nào được thêm trong CMS, hệ thống sẽ tự động không hiển thị nút suy ngẫm để giữ giao diện luôn gọn gàng.
-       - **Lưu ý bảo mật & quyền riêng tư tối thượng**: Câu trả lời suy ngẫm của học viên là dữ liệu riêng tư tuyệt đối (`selfCustomerOnlyField`). Hana và Ban quản trị **KHÔNG xem được nội dung câu trả lời** trong CMS hay qua API quản trị. Học viên tự giữ câu trả lời của mình trên Tracker, và có thể tải về máy bất kỳ lúc nào thông qua chức năng tải bản sao lưu JSON hoặc bảng CSV tại khối _Dữ liệu của bạn_.
-
-3. **Cấu hình Câu trích dẫn (`quotes`)**:
-   - Dùng để hiển thị các câu danh ngôn, trích dẫn truyền cảm hứng trên giao diện học và đồng hành.
-   - Mỗi câu trích gồm:
-     - **Câu trích dẫn** (bắt buộc): Lời trích truyền cảm hứng.
-     - **Tác giả** (bắt buộc): Tên tác giả câu trích.
-     - **Nguồn trích dẫn** (BẮT BUỘC): Tên sách, bài viết hoặc tài liệu đã kiểm chứng. **Quy tắc brand & học thuật**: Bắt buộc ghi nguồn đã kiểm; nếu chưa xác thực nguồn thì tuyệt đối không thêm. Hệ thống sẽ báo lỗi và từ chối lưu nếu để trống nguồn.
-     - **Liên kết nguồn**: Đường link dẫn tới sách / bài viết kiểm chứng (tùy chọn).
-     - **Kích hoạt**: Bật/tắt để Hana chủ động chọn câu nào được hiển thị ngoài web.
-
-4. **Cấu hình Nguyên lý 1% (`onePercent`)**:
-   - Cung cấp dữ liệu cho khối giới thiệu và thanh kéo trực quan mô phỏng nguyên lý cải thiện 1% mỗi ngày tại **Bước 2 (Nguyên lý 1%)** trong luồng 3 giai đoạn / 6 bước trên trang `/habit/5-phut`:
-     - **Hiển thị ngoài trang web**: Phần tiêu đề, giới thiệu và dẫn chứng từ CMS sẽ **tự động ẩn** nếu bạn để trống cả hai ô _Tiêu đề_ và _Giới thiệu_ (chỉ giữ thanh kéo mô phỏng 1% mặc định của bước 2, đảm bảo không bao giờ hiện khung chữ rỗng khi chưa có nội dung chính thức). Khi bạn nhập ít nhất một trong hai ô, toàn bộ nội dung CMS sẽ hiển thị tại Bước 2 của trình hướng dẫn 6 bước tại `/habit/5-phut`.
-     - **Tiêu đề**: Tiêu đề chính của khối. **Mẹo trình bày 2 tầng màu chuẩn Brand Book**: Bạn dùng dấu gạch đứng `|` để tách 2 dòng (ví dụ: `Nguyên lý 1% | Mỗi ngày tốt hơn một chút` -> hệ thống tự ngắt `Nguyên lý 1%` thành dòng 1 màu tím đậm `deep-navy`, và `Mỗi ngày tốt hơn một chút` thành dòng 2 màu hồng điểm nhấn `bright-magenta`). Nếu không có dấu `|`, toàn bộ tiêu đề hiển thị trên 1 dòng.
-     - **Giới thiệu**: Đoạn văn bản giàu định dạng giải thích triết lý và sức mạnh của 1% mỗi ngày (hiển thị ngay dưới tiêu đề).
-     - **Tỷ lệ cải thiện mỗi ngày (%)**: Mặc định là `1%` (cho phép điều chỉnh từ `0.1%` đến `10%`).
-     - **Số ngày tối đa của biểu đồ**: Mặc định là `365` ngày (cho phép điều chỉnh từ `7` đến `1000` ngày trên thanh kéo).
-     - **Số liệu dẫn chứng (`facts`)**: Danh sách các số liệu / dẫn chứng khoa học:
-       - **Số liệu / Dẫn chứng** (bắt buộc): Câu khẳng định hoặc số liệu đã kiểm chứng. Chỉ nhập khi có nguồn thật ở ô bên dưới; không có nguồn thì không thêm.
-       - **Nguồn dẫn chứng** (BẮT BUỘC): Tên tài liệu / công trình nghiên cứu chứng minh cho số liệu. Hệ thống bắt buộc phải có nguồn kiểm chứng mới cho lưu; không có nguồn thì không thể thêm.
-       - **Liên kết kiểm chứng**: Đường dẫn tới tài liệu kiểm chứng (tùy chọn; nếu có sẽ hiển thị link mở tab mới an toàn cho người đọc tra cứu).
-
-5. **Bấm nút Lưu**:
-   - Bấm nút **Lưu** ở góc trên bên phải để áp dụng thay đổi.
+Toàn bộ nội dung chữ được quản trị tập trung tại menu bên trái: **Khóa Habit → Nội dung hành trình Habit** (`habitJourneyContent`) và danh mục **Kế hoạch thói quen** (`habitPlans`).
 
 ---
 
-### 3.10.4. Nội dung flow Habit mới: bước 1, 2, 5, 6 (HB-24)
+#### 3.11.1. Sáu bước thiết kế vòng lặp thói quen (`/habit/5-phut`)
 
-**Mục đích**: Nhập chữ cho các bước của Habit Loop 5 phút bản mới (3 giai đoạn / 6 bước). Chữ nằm cùng màn **Khóa Habit → Nội dung hành trình Habit**. Giao diện từng bước lên dần theo các task HB-17 (bước 1), HB-18 (bước 2), HB-21 (bước 5), HB-22 (bước 6). Trước khi các task đó xong, nhập ở đây chưa hiện ra trang.
+Trình hướng dẫn thiết kế thói quen 5 phút được cấu trúc khoa học theo 3 giai đoạn:
 
-Lần chạy seed đầu tiên điền sẵn chữ `[MẪU]` cho các mục còn trống. Hana thay bằng nội dung thật. Seed không bao giờ ghi đè chữ Hana đã nhập.
+1. **Giai đoạn 1 · Khám & Thấu cảm**: Bước 1 (_Khám đúng bệnh_) → Bước 2 (_Nguyên lý 1%_).
+2. **Giai đoạn 2 · Neo & Định danh**: Bước 3 (_Tìm Mentor – Bảng điểm thói quen_) → Bước 4 (_Gọi tên thói quen_).
+3. **Giai đoạn 3 · Vòng lặp & Lên chuyến**: Bước 5 (_Vòng lặp thói quen – Kỹ thuật thực hành_) → Bước 6 (_Boarding Pass & Bắt đầu hành trình_).
 
-1. **Bước 1 – Khám đúng bệnh** (nhóm _Bước 1 – Khám đúng bệnh_):
-   - **Tiêu đề**, **Lời mở**.
-   - **Câu trích**: có câu trích thì **bắt buộc** ghi tác giả và nguồn đã kiểm, không thì hệ thống không cho lưu. Để trống cả 3 ô thì bước không hiện câu trích.
-   - **Các con số** (tối đa 6): mỗi dòng gồm con số, ý nghĩa và **nguồn (bắt buộc)**. Không có nguồn thì không thêm, để tránh đưa số liệu chưa kiểm lên web (ví dụ các con số "80% thất bại", "40% bỏ cuộc" trong bản tham chiếu chưa có nguồn).
-   - **Câu hỏi khảo sát** (tối đa 12, bản mẫu 8 câu): mỗi câu chọn 1 giai đoạn (Tín hiệu / Khao khát / Phản hồi / Phần thưởng). Khách chấm mỗi câu từ 1 đến 5. Giai đoạn có **điểm trung bình cao nhất** là nút thắt, hòa điểm thì lấy giai đoạn đứng trước. Cách tính giống quiz chẩn đoán `/habit/chan-doan`.
-   - **Nhãn mức 1** / **Nhãn mức 5**: chữ hiện ở hai đầu thang điểm.
-   - **Gợi ý theo nút thắt**: mỗi giai đoạn **một** dòng (tiêu đề + gợi ý). Nhập 2 dòng cùng giai đoạn thì hệ thống báo lỗi.
-2. **Bước 2 – 3 điều có thể bạn chưa biết** (trong nhóm _Nguyên lý 1%_, tối đa 3 dòng): tiêu đề + nội dung. Số liệu trong đây cũng phải có nguồn.
-3. **Bước 5 – Vòng lặp thói quen**: **Lời mở**, **Giải thích 4 giai đoạn** (mỗi giai đoạn một dòng), **4 quy tắc** (tiêu đề + giải thích).
-4. **Bước 6 – Boarding Pass & Lên chuyến (HB-22)**:
-   - **Câu trích dẫn (`stepQuotes.boardingPass`)**: Câu danh ngôn truyền cảm hứng trước giờ khởi hành kèm tác giả và nguồn kiểm chứng.
-   - **Lời dặn trước giờ khởi hành (`boardingPass.intro`)**: Khối văn bản dặn dò tâm thế và nhắc nhở học viên lưu vé.
-   - **Caption gợi ý (`boardingPassCaption`)**: Câu gợi ý khi học viên bấm nút "Sao chép caption gợi ý" để đăng mạng xã hội kèm ảnh vé. Chèn được đúng 3 ô tự điền:
-     - `{tuyen_ngon}`: Tuyên ngôn định danh thói quen của học viên ("Tôi sẽ … để trở thành …").
-     - `{so_ngay}`: Số ngày hành trình (mặc định 28 ngày).
-     - `{ngay_bat_dau}`: Ngày khởi hành (định dạng `dd/MM/yyyy` theo giờ Việt Nam).
-     - _Bảo mật riêng tư_: Lý do riêng tư (`privateReason`) và bạn đồng hành (`companionName`) **tuyệt đối không** xuất hiện trên caption. Các biến lạ ngoài 3 ô trên sẽ được giữ nguyên chữ mẫu mà không gây lỗi.
-   - **Giao diện học viên**:
-     - 3 nút thao tác: "Tải ảnh Cover điện thoại" (9:16), "Tải ảnh đăng bài" (4:5), "Sao chép caption gợi ý" (tự ẩn nếu không có caption trong CMS). Nếu máy không hỗ trợ Clipboard API, hệ thống tự mở khung sao chép thủ công.
-     - Nút chính **"Lên chuyến · Bắt đầu 28 ngày →"**: Lưu thông tin email, đồng thuận dữ liệu và tự động điều hướng: học viên đã đăng nhập được kích hoạt trial vào thẳng `/habit/tracker`; học viên chưa đăng nhập được chuyển hướng an toàn tới trang đăng nhập. Màn hình chúc mừng có nút chính dẫn vào Tracker cùng các liên kết Zalo và ưu đãi gói.
+##### 1. Bước 1 – Khám đúng bệnh
 
-5. **Câu về dữ liệu của bạn**: câu giải thích dữ liệu của khách được lưu ở đâu. Phải **đúng sự thật**: dữ liệu lưu trên máy chủ của Trạm theo tài khoản email của khách, **không** phải "chỉ nằm trong trình duyệt" như bản tham chiếu.
-6. Bấm **Lưu**.
+- **Mục tiêu**: Giúp học viên tự chẩn đoán điểm nghẽn hành vi chính trong 4 mắt xích (Tín hiệu, Khao khát, Phản hồi, Phần thưởng).
+- **Cấu hình trong CMS**:
+  - **Tiêu đề & Lời mở**: Lời dẫn nhập dịu dàng, khích lệ.
+  - **Câu trích dẫn (`stepQuotes.discover`)**: Bắt buộc có đủ Tác giả và Nguồn đã kiểm chứng (luật HB-07 / AGENTS §14).
+  - **Các con số dẫn chứng** (tối đa 6): Mỗi con số bắt buộc đi kèm ý nghĩa và **Nguồn kiểm chứng**.
+  - **Câu hỏi khảo sát** (8 câu mẫu, tối đa 12 câu): Chia đều cho 4 giai đoạn, thang điểm 1–5. Điểm trung bình cao nhất sẽ xác định nút thắt.
+  - **Nhãn mức 1 / 5** và **Gợi ý theo nút thắt**: 4 giải pháp tương ứng cho 4 giai đoạn.
+- **Trải nghiệm học viên**: Có nút "Bỏ qua phần khám" cho học viên muốn vào thẳng bước 2; thanh tiến trình hiển thị rõ `Bước 1 / 6`.
+
+![Bước 1 – Khám đúng bệnh](screenshots/hb16/01-progress-bar-step1-375.png)
+
+##### 2. Bước 2 – Nguyên lý 1%
+
+- **Mục tiêu**: Làm rõ triết lý cải thiện 1% mỗi ngày thay vì nỗ lực cực đoan.
+- **Cấu hình trong CMS**:
+  - **Tiêu đề & Giới thiệu**: Hỗ trợ tiêu đề 2 tầng màu qua ký tự gạch đứng `|` (dòng 1 `deep-navy`, dòng 2 `bright-magenta`).
+  - **3 điều có thể bạn chưa biết (`onePercent.unknowns`)**: 3 góc nhìn khoa học hành vi giải phóng áp lực tâm lý.
+  - **Câu đúc kết (`onePercent.closing`)**: Thông điệp chốt lại ở cuối khối.
+  - **Thanh kéo mô phỏng**: Cho phép học viên kéo xem sự tăng trưởng lũy tiến 1% mỗi ngày.
+
+![Bước 2 – Nguyên lý 1%](screenshots/hb16/02-step2-one-percent-375.png)
+
+##### 3. Bước 3 – Tìm Mentor (Bảng điểm thói quen)
+
+- **Mục tiêu**: Học viên soi lại lịch trình một ngày, nhận diện các việc hiện tại và chọn ra một "thói quen neo" (Anchor Habit) vững chắc để ghép thói quen mới vào sau.
+- **Trải nghiệm học viên**:
+  - Thêm các việc thường làm trong ngày (kèm giờ thực hiện tùy chọn).
+  - Gắn nhãn thói quen: **Có ích (+)**, **Chưa tốt (-)**, **Trung tính (=)**.
+  - Chọn 1 việc có ích (+) làm Thói quen neo qua nút radio. Nút "Tiếp tục" chỉ bật khi học viên đã chọn được Thói quen neo.
+
+![Bước 3 – Tìm Mentor](screenshots/hb19/01-step3-mentor-selected-375.png)
+![Bước 3 – Trên máy tính](screenshots/hb19/03-step3-desktop-1440.png)
+
+##### 4. Bước 4 – Gọi tên thói quen
+
+- **Mục tiêu**: Thiết lập định danh, cam kết nhịp tuần rèn luyện và chọn ngày xuất phát.
+- **Nội dung học viên điền**:
+  - **Hành động cụ thể** và **Con người muốn trở thành**: Ghép thành câu Tuyên ngôn định danh chuẩn Atomic Habits: _"Tôi sẽ [hành động] để trở thành [con người mới]"_.
+  - **Nhịp tuần rèn luyện (`rhythmDays`)**: Học viên chọn tần suất (ví dụ 5 ngày/tuần, 6 ngày/tuần hoặc trọn vẹn 7 ngày/tuần).
+  - **Bản tối giản dưới 2 phút (`twoMinuteAction`)**: Hành động siêu nhỏ dưới 2 phút giúp giữ đà trong những ngày kiệt sức.
+  - **Ngày bắt đầu (`startDate`)**: Học viên tự chọn ngày xuất phát qua bộ chọn ngày (từ hôm nay đến tối đa 14 ngày tới). Hệ thống tự tính ngày về đích chính xác theo giờ Việt Nam.
+
+##### 5. Bước 5 – Vòng lặp thói quen
+
+- **Mục tiêu**: Lựa chọn kỹ thuật Atomic Habits thực chiến cho từng mắt xích và ghi hành động cụ thể.
+- **Cấu hình trong CMS**:
+  - **Lời mở**, **Ghi chú (`loop.note`)**: Giải thích hai giai đoạn đầu (Cue, Craving) thuộc về nhận thức; hai giai đoạn sau (Response, Reward) thuộc về hành động.
+  - **Gợi ý kỹ thuật (`loop.techniqueHint`)**: Nhắc nhở tập trung kỹ thuật vào giai đoạn nút thắt đã tìm thấy ở Bước 1.
+  - **Kỹ thuật thực hành**: Lấy tự động từ danh mục `techniques`.
+- **Trải nghiệm học viên**: Chọn ít nhất 1 kỹ thuật và viết cam kết hành động tương ứng cho từng giai đoạn đã chọn.
+
+##### 6. Bước 6 – Boarding Pass & Lên chuyến
+
+- **Mục tiêu**: Trao tấm vé Boarding Pass khởi hành và lưu kế hoạch vào tài khoản.
+- **Cấu hình trong CMS**:
+  - **Câu trích dẫn trước giờ xuất phát (`stepQuotes.boardingPass`)**: Kèm tác giả và nguồn gốc.
+  - **Lời dặn trước giờ khởi hành (`boardingPass.intro`)**.
+  - **Caption gợi ý chia sẻ (`boardingPassCaption`)**: Điền tự động qua 3 biến: `{tuyen_ngon}`, `{so_ngay}`, `{ngay_bat_dau}`.
+- **Trải nghiệm học viên**:
+  - Tải ảnh vé dọc (9:16) làm hình nền điện thoại hoặc ảnh vuông/ngang (4:5) đăng mạng xã hội.
+  - Bấm "Sao chép caption gợi ý" để dán kèm ảnh chia sẻ.
+  - Điền Họ tên, Email, tick đồng thuận bảo mật và bấm **"Lên chuyến · Bắt đầu 28 ngày →"**.
+  - Sau khi lưu, màn hình chúc mừng xuất hiện dẫn học viên vào thẳng Tracker đồng hành.
+
+![Bước 6 – Boarding Pass](screenshots/hb16/03-step6-boarding-pass-375.png)
+![Tấm vé mẫu 4:5](screenshots/hb10/sample-4x5.png)
 
 ---
 
-### 3.11. Theo dõi Kế hoạch Thói quen & Tracker 28 ngày
+#### 3.11.2. Màn hình Tracker theo dõi 28 ngày (`/habit/tracker`)
+
+Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, được đồng bộ trực tiếp với các thiết lập kế hoạch và nội dung CMS.
+
+##### 1. Hiển thị ngày lịch thực tế & Lời nhắc lý do riêng (HB-23)
+
+- **Ngày lịch thực tế**: Mỗi ô ngày hiển thị ngày tháng thực tế dạng `dd/MM` tính theo trường `startDate` của kế hoạch theo giờ Việt Nam.
+- **Khoảng ngày từng trạm**: Tiêu đề mỗi trạm hiển thị khoảng ngày lịch `(dd/MM – dd/MM)`.
+- **Khởi hành & Về đích**: Đầu trang hiển thị rõ ràng ngày **Khởi hành: dd/MM/yyyy** và **Ngày 28 · Về đích: dd/MM/yyyy**, kèm nguyên tắc động viên: _"Lỡ một ngày là bình thường. Chỉ cần đừng lỡ hai ngày bỏ phiếu liền."_
+- **Nhắc lại lý do riêng tư**: Khi học viên lỡ từ 1 ngày bỏ phiếu trở lên, hệ thống tự động hiển thị khối _"Vì sao điều này quan trọng với bạn?"_ kèm nguyên văn lý do học viên đã viết. Nội dung này hoàn toàn riêng tư cho riêng học viên.
+
+![Tracker trên máy tính](screenshots/hb23/1440px.png)
+![Tracker trên điện thoại](screenshots/hb23/375px.png)
+
+##### 2. Check-in 4 trạng thái theo nhịp tuần (HB-11)
+
+- Học viên bấm vào ngày hiện tại để mở modal check-in với 4 trạng thái thích ứng:
+  - `Bỏ phiếu` (`voted`): Thực hiện đủ hành động cam kết.
+  - `Bản tối giản` (`minimal`): Làm phiên bản dưới 2 phút (được tính là hoàn thành và tính vào 90%).
+  - `Lỡ nhịp` (`missed`): Chủ động ghi nhận hôm nay lỡ nhịp.
+  - `Nghỉ theo nhịp` (`rest`): Ghi nhận ngày nghỉ.
+- **Quy tắc an toàn**: Không thể chọn "Nghỉ theo nhịp" vào ngày bỏ phiếu. Vào ngày nghỉ, học viên tự do ghi nhận cảm xúc và không bị phạt đứt chuỗi hay trừ điểm 90%.
+
+![Modal ngày bỏ phiếu](screenshots/hb11/modal-voting-day.png)
+![Modal ngày nghỉ](screenshots/hb11/modal-rest-day.png)
+
+##### 3. Suy ngẫm cuối mỗi trạm (HB-12)
+
+- Hành trình được chia thành 4 trạm. Tại CMS, Hana thêm tối đa 5 câu hỏi suy ngẫm cho từng trạm.
+- Khi ngày hiện tại vượt qua ngày cuối cùng của trạm, trên card trạm sẽ xuất hiện nút **"Suy ngẫm trạm"**.
+- Học viên điền suy ngẫm và lưu lại. Card chuyển sang huy hiệu **"Đã suy ngẫm"** và cho phép xem lại hoặc chỉnh sửa bất kỳ lúc nào.
+- Dữ liệu suy ngẫm được bảo vệ nghiêm ngặt (`selfCustomerOnlyField`), chỉ học viên sở hữu tài khoản mới đọc được.
+
+![Nút suy ngẫm trên trạm](screenshots/hb12/desktop-tracker-station-reflection.png)
+![Modal suy ngẫm cuối trạm](screenshots/hb12/desktop-reflection-modal.png)
+
+##### 4. Khối "Dữ liệu của bạn" (HB-13)
+
+- Nằm ở cuối trang Tracker, trao toàn quyền làm chủ dữ liệu cho học viên:
+  - **Tải bản sao lưu (JSON)**: Xuất toàn bộ kế hoạch và lịch sử check-in về máy.
+  - **Tải bảng 28 ngày (CSV)**: Mở trực tiếp bằng Excel / Google Sheets với tiếng Việt chuẩn UTF-8 BOM.
+  - **Khôi phục từ file**: Tải file JSON lên để phục hồi dữ liệu khi cần.
+  - **Sao chép gửi Coach**: Tạo nhanh văn bản tóm tắt tiến độ để gửi Coach Hana qua Zalo/email.
+  - **Bắt đầu hành trình mới**: Bắt đầu thiết kế thói quen mới tại `/habit/5-phut` trong khi vẫn bảo tồn 100% dữ liệu kế hoạch cũ trong CMS.
+
+![Khối Dữ liệu của bạn](screenshots/hb13/my-data-1440px.png)
+![Modal khôi phục dữ liệu](screenshots/hb13/my-data-restore-modal-1440px.png)
+
+##### 5. Khối "Đồng hành sau 28 ngày" (HB-14)
+
+- **Nội dung thông điệp**: Lấy từ CMS (`tracker.afterJourneyTitle` và `tracker.afterJourneyText`).
+- **Nút "Đặt lịch với Habit Coach"**: Gắn link booking coach từ **Cài đặt website → Công cụ số → habitCoachBookingUrl**. Tự ẩn nếu không có link.
+- **Nút "Ủng hộ Trạm Dừng Cảm Xúc"**: Quản lý qua công tắc **habitDonationEnabled** và link **habitDonationUrl** trong CMS.
+- **Vị trí hiển thị thông minh**:
+  - Khi đang trong hành trình: Nằm gọn gàng ở cuối trang, dưới khối _Dữ liệu của bạn_.
+  - Khi đến ngày cuối (ngày 28) hoặc khi đã hoàn thành/nhận chứng nhận: Đưa lên vị trí trang trọng **TRÊN** lưới các trạm, đồng thời tự ẩn nút đặt lịch phiên 149k để tránh trùng lặp CTA.
+
+---
+
+#### 3.11.3. Theo dõi Kế hoạch trong trang quản trị (`habitPlans`)
 
 **Mục đích**: Xem danh sách các kế hoạch thiết lập thói quen (`habitPlans`) và tiến độ check-in 28 ngày của khách hàng/học viên.
 
@@ -1001,65 +1073,13 @@ Lần chạy seed đầu tiên điền sẵn chữ `[MẪU]` cho các mục còn
    - **Danh sách ngày check-in (`habitCheckins`)**: Nhật ký check-in từng ngày của học viên trong hành trình, gồm các trường:
      - **Kế hoạch (`plan`)**: Kế hoạch thói quen tương ứng.
      - **Ngày thứ (`day`)**: Số thứ tự ngày trong hành trình (từ ngày 1 đến tối đa `journeyDays`).
-     - **Trạng thái (`status`)**: 4 trạng thái hành vi rèn luyện:
-       - `Bỏ phiếu` (`voted`): Học viên thực hiện trọn vẹn hành vi đã cam kết.
-       - `Bản tối giản` (`minimal`): Học viên thực hiện hành động dưới 2 phút trong ngày bận rộn hoặc mệt mỏi; vẫn được tính là đã hoàn thành và tính vào tỷ lệ 90% cấp chứng nhận.
-       - `Lỡ nhịp` (`missed`): Học viên chủ động ghi nhận hôm nay lỡ nhịp.
-       - `Nghỉ theo nhịp` (`rest`): Học viên ghi nhận ngày nghỉ theo nhịp tuần đã cam kết.
-     - **Đã hoàn thành (`done`)**: Ô đánh dấu chỉ đọc, **tự động tính từ trạng thái** (chọn `Bỏ phiếu` hoặc `Bản tối giản` thì hệ thống tự đánh dấu hoàn thành; chọn `Lỡ nhịp` hoặc `Nghỉ theo nhịp` thì không hoàn thành). Hana không cần tick tay ô này.
+     - **Trạng thái (`status`)**: 4 trạng thái hành vi rèn luyện (`voted`, `minimal`, `missed`, `rest`).
+     - **Đã hoàn thành (`done`)**: Ô đánh dấu chỉ đọc, tự động tính từ trạng thái.
      - **Cảm xúc (`emotion`) & Ghi chú (`note`)**: Cảm xúc trong ngày và chia sẻ cá nhân của học viên (chỉ tài khoản `owner` xem được).
 
-**Quy tắc check-in theo nhịp tuần & Email nhắc lỡ nhịp tự động (HB-06)**:
+**Email nhắc lỡ nhịp tự động theo nhịp tuần (HB-06)**:
 
-- **Chặn ghi 'Nghỉ theo nhịp' vào ngày bỏ phiếu**: Nếu một ngày là ngày bỏ phiếu theo nhịp tuần của học viên, học viên không thể tick chọn `Nghỉ theo nhịp` (`rest`) để tránh việc dùng trạng thái nghỉ che giấu ngày lỡ nhịp. Hệ thống sẽ hiện thông báo tiếng Việt: _"Hôm nay là ngày bỏ phiếu theo nhịp của bạn, không ghi nghỉ được."_ Quản trị viên (`editor` / `owner`) vẫn có thể điều chỉnh khi cần hỗ trợ học viên.
-- **Tự do ghi nhận vào ngày nghỉ theo nhịp**: Vào các ngày nghỉ theo nhịp tuần, học viên hoàn toàn tự do chọn bất kỳ trạng thái nào trong 4 trạng thái (`Bỏ phiếu`, `Bản tối giản`, `Lỡ nhịp`, `Nghỉ theo nhịp`) hoặc để trống không ghi gì. Check-in vào ngày nghỉ được lưu lại để học viên theo dõi hành trình, nhưng **không cộng dồn vào tỷ lệ 90%**, **không làm đứt chuỗi ngày kiên trì**, và **không ảnh hưởng tới bộ đếm lỡ nhịp**.
-- **Email nhắc lỡ nhịp tự động theo nhịp tuần**: Hệ thống cron tự động quét và gửi email nhắc nhở khi học viên lỡ từ **2 ngày bỏ phiếu liên tiếp** trở lên, hoàn toàn bỏ qua các ngày nghỉ theo nhịp. Ví dụ: với nhịp Thứ 2 đến Thứ 6, học viên lỡ Thứ 5 và Thứ 6, dù Thứ 7 và Chủ nhật là ngày nghỉ thì sáng Thứ 2 tuần sau hệ thống vẫn gửi email nhắc nhở nhẹ nhàng. Nếu học viên đã tick bản tối giản hoặc đã nhận email nhắc cho chuỗi lỡ đó thì hệ thống sẽ không gửi trùng lặp.
-- **Giao diện check-in 4 trạng thái thích ứng trên `/habit/tracker` (HB-11)**:
-  - Khi học viên bấm vào một ngày trên lưới hành trình:
-    - Nếu là **ngày bỏ phiếu**: Modal hiển thị 3 lựa chọn gồm `Bỏ phiếu`, `Bản tối giản` (kèm câu hành động dưới 2 phút `twoMinuteAction` đã thiết lập để nhắc bài), và `Lỡ nhịp`. Lựa chọn `Nghỉ theo nhịp` được chủ động ẩn đi. Nếu có lỗi từ server, modal hiển thị thông báo tiếng Việt trực quan và không đóng lại.
-    - Nếu là **ngày nghỉ theo nhịp**: Modal hiển thị đầy đủ 4 lựa chọn kèm dòng thông điệp dịu dàng: _"Ngày nghỉ theo nhịp – ghi gì cũng không tính vào 90%"_.
-  - **Tiến độ 90% và Chuỗi rèn luyện**: Tỷ lệ hoàn thành và chuỗi ngày rèn luyện (`currentStreak`) trên đầu trang chỉ tính dựa trên các ngày bỏ phiếu đã cam kết, không bị ảnh hưởng bởi ngày nghỉ.
-  - **Banner khích lệ "Lỡ nhịp 1 ngày"**: Banner khích lệ tinh thần _"Lỡ nhịp 1 ngày là không sao cả"_ kích hoạt tự động khi học viên lỡ đúng 1 ngày bỏ phiếu gần nhất, bỏ qua các ngày nghỉ theo nhịp.
-- **Hiển thị ngày lịch thực tế và nhắc lại Lý do riêng trên Tracker (HB-23)**:
-  - **Ngày lịch thực tế trên từng ô ngày**: Giao diện Tracker `/habit/tracker` tự động tính toán và hiển thị ngày tháng thực tế dạng `dd/MM` ngay dưới số ngày của từng ô trong lưới, tính toán theo trường Ngày bắt đầu (`startDate`) của kế hoạch theo giờ Việt Nam.
-  - **Khoảng ngày lịch từng trạm**: Cạnh tiêu đề từng trạm (ví dụ `Trạm 1  Ngày 1 – 7`), hệ thống hiển thị thêm khoảng ngày lịch `(dd/MM – dd/MM)`.
-  - **Khởi hành & Về đích**: Đầu trang Tracker hiển thị rõ ràng ngày **Khởi hành: dd/MM/yyyy** (ngày 1) và **Ngày [journeyDays] · Về đích: dd/MM/yyyy** (ngày cuối hành trình), kèm câu nhắc nhở đồng hành chuẩn thương hiệu: _"Lỡ một ngày là bình thường. Chỉ cần đừng lỡ hai ngày bỏ phiếu liền."_
-  - **Tự động nhắc lại Lý do riêng khi lỡ nhịp**: Khi học viên lỡ từ 1 ngày bỏ phiếu trở lên (`missedVotingRun.count >= 1`) và kế hoạch có câu trả lời lý do riêng (`privateReason`), hệ thống tự động hiển thị khối _"Vì sao điều này quan trọng với bạn?"_ với đúng nguyên văn câu của học viên. Nội dung này chỉ hiển thị riêng cho chính học viên đó, không gửi analytics hay ra ngoài.
-
-**Quy tắc bảo vệ quyền riêng tư người học (Quan trọng)**:
-
-- **Cảm xúc và ghi chú check-in**: Khi khách hàng check-in mỗi ngày trên trang `/habit/tracker`, họ có thể chọn 1 trong 10 cảm xúc và viết suy nghĩ, tâm sự cá nhân (tối đa 500 ký tự). Dữ liệu này chỉ chủ sở hữu (`owner`) đọc được để đồng hành; tài khoản biên tập viên (`editor`) không được phân quyền đọc.
-- **Dữ liệu riêng tư tuyệt đối (Lý do riêng & Bạn đồng hành)**:
-  - **Lý do riêng** (`privateReason`) và **Bạn đồng hành** (`companionName` – hệ thống chỉ lưu tên gọi, không lưu số điện thoại hay email của người thứ ba theo Nghị định 13/2023) là không gian hoàn toàn riêng tư của học viên.
-  - **Quản trị viên (kể cả chủ dự án `owner` và biên tập viên `editor`) hoàn toàn không thấy nội dung này** trong trang quản trị CMS.
-  - **Lưu ý về nguồn nhập**: Các trường thói quen neo (`anchorHabit`), giờ thực hiện (`scorecard[].time`), nhịp tuần (`rhythmDays`) và bản tối giản (`twoMinuteAction`) được học viên điền trực tiếp từ trình hướng dẫn Habit Loop 5 phút (`/habit/5-phut`). Riêng **Lý do riêng** và **Bạn đồng hành** hiện **chưa có màn nhập ở trình hướng dẫn công khai** (do người dùng chưa đăng nhập, tránh lưu thông tin riêng tư nhạy cảm trên máy tính dùng chung); hai trường này sẽ được bổ sung màn hình nhập riêng bên trong giao diện Tracker sau khi học viên đăng nhập tài khoản.
-  - Khi Hana hoặc quản trị viên sửa kế hoạch trong CMS (ví dụ cập nhật thói quen neo hay nhịp tuần), hệ thống giữ nguyên vẹn dữ liệu riêng tư của học viên, không làm mất hay ghi đè.
-  - Nếu Hana muốn hỗ trợ học viên về lý do riêng hoặc bạn đồng hành, Hana hãy trao đổi trực tiếp với học viên trong các phiên coaching 1:1 hoặc buổi đồng hành.
-
-**Hình ảnh Boarding Pass (Tấm vé xuất phát hành trình thói quen) (HB-10, HB-16)**:
-
-- Trình hướng dẫn `/habit/5-phut` được tổ chức theo **3 giai đoạn / 6 bước**:
-  - **Giai đoạn 1 · Khám**: Bước 1 (_Khám đúng bệnh_) → Bước 2 (_Nguyên lý 1%_).
-  - **Giai đoạn 2 · Xây**: Bước 3 (_Tìm Mentor – Bảng điểm thói quen_) → Bước 4 (_Gọi tên thói quen_) → Bước 5 (_Vòng lặp – Chọn kỹ thuật thực hành_) → Bước 6 (_Boarding Pass & Lưu kế hoạch_).
-  - **Giai đoạn 3 · Chuyển mình**: Mục _✦ 28 ngày_ (dẫn sang màn theo dõi `/habit/tracker` sau khi lưu kế hoạch).
-- Khi học viên hoàn thành 5 bước đầu tại `/habit/5-phut`, ở **Bước 6 (Boarding Pass)** học viên sẽ nhận được khối **Boarding Pass của bạn** cùng 2 nút tải ảnh:
-  - **Tải ảnh 4:5 (1080×1350)**: Kích thước chuẩn chia sẻ mạng xã hội.
-  - **Tải ảnh 9:16 (1080×1920)**: Kích thước dọc chuẩn Story / dùng làm hình nền điện thoại.
-- **Nguồn dữ liệu của Boarding Pass**:
-  - **Số ngày hành trình**: Được tự động lấy từ mục **Cài đặt website → Công cụ số** (`habitJourneyDays`, mặc định 28 ngày). Hana thay đổi cài đặt này thì các Boarding Pass tạo mới sẽ tự cập nhật theo số ngày mới.
-  - **Tên các kỹ thuật thực hành**: Được tự động lấy từ danh mục **Kỹ thuật thực hành** (`techniques`) đã xuất bản. Hana chỉnh sửa tên kỹ thuật trong CMS thì hình ảnh Boarding Pass của học viên sẽ hiển thị đúng tên mới nhất.
-  - **Dữ liệu riêng tư không in trên ảnh**: Tấm vé Boarding Pass hoàn toàn không in tên, email, bảng điểm thói quen cũ, lý do riêng tư hay cảm xúc cá nhân của học viên, giúp học viên an tâm chia sẻ lên mạng xã hội hoặc lưu trữ riêng.
-
-**Khối "Dữ liệu của bạn" ở cuối màn 28 ngày (`/habit/tracker`) (HB-13)**:
-
-- Ở cuối trang theo dõi hành trình `/habit/tracker`, học viên có sẵn khối **Dữ liệu của bạn** để tự quản lý dữ liệu cá nhân hoàn toàn tự động mà **Hana không cần thao tác kỹ thuật gì thêm**:
-  1. **Tải bản sao lưu (JSON)**: Học viên tải toàn bộ kế hoạch và nhật ký check-in về máy dưới dạng file `.json` để lưu trữ cá nhân.
-  2. **Tải bảng 28 ngày (CSV)**: Học viên tải bảng theo dõi 28 ngày mở trực tiếp bằng Excel hoặc Google Sheets (hiển thị đầy đủ dấu tiếng Việt).
-  3. **Khôi phục từ file**: Học viên chọn file sao lưu `.json` đã tải trước đó để khôi phục lại kế hoạch và nhật ký check-in (yêu cầu tài khoản còn hạn dùng thử hoặc đã mua công cụ).
-  4. **Sao chép gửi Coach**: Học viên bấm một nút để sao chép bản tóm tắt tiến độ gọn gàng (tuyên ngôn, thói quen neo, bản tối giản, tỷ lệ bỏ phiếu, chuỗi ngày, cảm xúc) và dán gửi trực tiếp cho Coach Hana qua Zalo hoặc email trước buổi coaching 1:1. Mặc định không kèm ghi chú cá nhân từng ngày trừ khi học viên chủ động bật ô _"Kèm ghi chú từng ngày khi gửi Coach"_; câu trả lời **Lý do riêng** luôn được giữ kín, không bao giờ nằm trong bản sao chép này.
-  5. **Bắt đầu hành trình mới**: Khi muốn thiết lập một thói quen mới tại `/habit/5-phut`, học viên bấm nút này để khởi tạo kế hoạch mới. Kế hoạch cũ và toàn bộ lịch sử check-in cũ vẫn được giữ nguyên trong mục **Kế hoạch thói quen** (`habitPlans`) của CMS.
-- **Khi hết hạn dùng thử**: Học viên vẫn luôn tải được bản sao lưu JSON, bảng CSV và sao chép gửi Coach đúng như cam kết bảo toàn dữ liệu của Trạm; hai nút _Khôi phục từ file_ và _Bắt đầu hành trình mới_ sẽ tạm khóa kèm lời nhắc nâng cấp công cụ.
-- **Chỉnh sửa câu thông báo quyền riêng tư**: Hana có thể sửa dòng giải thích ở đầu khối này tại **Khóa Habit → Nội dung hành trình Habit → Câu về dữ liệu của bạn** (`privacyNote`). Nếu để trống, hệ thống tự động hiển thị câu mặc định chuẩn.
+- Hệ thống cron tự động quét và gửi email nhắc nhở khi học viên lỡ từ **2 ngày bỏ phiếu liên tiếp** trở lên, hoàn toàn bỏ qua các ngày nghỉ theo nhịp.
 
 ---
 

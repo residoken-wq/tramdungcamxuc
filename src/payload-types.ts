@@ -502,7 +502,7 @@ export interface Product {
    */
   saleEndsAt?: string | null;
   /**
-   * Số ngày trải nghiệm miễn phí không cần thẻ (vd 21 ngày). Hiện trên nút dùng thử và email nhắc ngày 18.
+   * Số ngày trải nghiệm miễn phí không cần thẻ (mặc định theo sản phẩm). Hiện trên nút dùng thử và email nhắc.
    */
   trialDays?: number | null;
   /**

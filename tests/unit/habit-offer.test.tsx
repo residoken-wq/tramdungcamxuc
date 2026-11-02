@@ -67,4 +67,25 @@ describe('HabitOfferClient (T2-03b / A4)', () => {
     // Trial badge 14 ngày thật từ CMS hiển thị
     expect(screen.getByText(/✨ 14/)).toBeDefined()
   })
+
+  it('HB-15c: số ngày hành trình lấy từ siteSettings, không viết cứng 21/28', () => {
+    const product: HabitProductData = {
+      id: 98,
+      name: 'Habit Tracker số',
+      slug: 'habit-tracker-so',
+      price: null,
+      salePrice: null,
+      trialDays: null,
+      saleStatus: 'coming_soon',
+      includes: [],
+      faq: [],
+      cta: null,
+      videoCount: 0,
+      techniqueCount: 0,
+    }
+    render(<HabitOfferClient product={product} journeyDays={30} />)
+    expect(screen.getByText('Tracker 30 ngày & 10 Cảm xúc')).toBeDefined()
+    expect(screen.getByText('Bắt đầu hành trình 30 ngày của bạn')).toBeDefined()
+    expect(screen.queryByText(/28 ngày|21 ngày/)).toBeNull()
+  })
 })

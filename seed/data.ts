@@ -1026,4 +1026,38 @@ export const habitFlowContent = {
   },
   boardingPassCaption: '[MẪU] {tuyen_ngon} – hành trình {so_ngay} ngày bắt đầu {ngay_bat_dau}.',
   privacyNote: '[MẪU] Câu về nơi lưu dữ liệu của bạn – Hana soạn.',
+  stations: [
+    {
+      name: '[MẪU] Trạm 1: Khởi động & Nhận diện',
+      tagline: '[MẪU] Làm quen với nhịp mới',
+      reflectionQuestions: [
+        { question: '[MẪU] Điều gì đã giúp bạn duy trì đều đặn những ngày đầu tiên?' },
+        { question: '[MẪU] Cảm xúc chủ đạo của bạn khi hoàn thành trạm 1 là gì?' },
+      ],
+    },
+    {
+      name: '[MẪU] Trạm 2: Vượt dốc & Định hình',
+      tagline: '[MẪU] Vượt qua lực cản quán tính',
+      reflectionQuestions: [
+        { question: '[MẪU] Thử thách lớn nhất bạn gặp phải ở trạm 2 là gì?' },
+        { question: '[MẪU] Bạn đã áp dụng kỹ thuật nào để vượt qua sự trì hoãn?' },
+      ],
+    },
+    {
+      name: '[MẪU] Trạm 3: Củng cố & Bền bỉ',
+      tagline: '[MẪU] Biến hành động thành bản năng',
+      reflectionQuestions: [
+        { question: '[MẪU] Thói quen này đã bắt đầu tự nhiên hơn với bạn như thế nào?' },
+        { question: '[MẪU] Bạn cảm nhận sự thay đổi tích cực nào trong tâm trí?' },
+      ],
+    },
+    {
+      name: '[MẪU] Trạm 4: Về đích & Tự hào',
+      tagline: '[MẪU] Tự hào ghi nhận hành trình',
+      reflectionQuestions: [
+        { question: '[MẪU] Bài học quý giá nhất sau hành trình này là gì?' },
+        { question: '[MẪU] Bạn muốn gửi lời cảm ơn nào đến chính bản thân mình?' },
+      ],
+    },
+  ],
 } as const

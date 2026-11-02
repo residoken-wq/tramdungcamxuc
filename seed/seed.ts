@@ -316,22 +316,51 @@ export async function seed(payload: Payload): Promise<SeedReport> {
     slug: 'habitJourneyContent',
     depth: 0,
   })) as {
-    stations?: unknown[] | null
+    stations?: Array<{
+      name?: string | null
+      tagline?: string | null
+      reflectionQuestions?: Array<{ question?: string | null }> | null
+    }> | null
   } | null
 
-  if (!journeyContent?.stations?.length) {
+  const sampleStations = data.habitFlowContent.stations
+  const existingStations = journeyContent?.stations ?? []
+  const hasRealStations = existingStations.some((s) => s.name && !s.name.startsWith('[MẪU]'))
+
+  if (!existingStations.length) {
     await payload.updateGlobal({
       slug: 'habitJourneyContent',
       data: {
-        stations: [
-          { name: '[MẪU] Trạm 1' },
-          { name: '[MẪU] Trạm 2' },
-          { name: '[MẪU] Trạm 3' },
-          { name: '[MẪU] Trạm 4' },
-        ],
+        stations: sampleStations.map((st) => ({
+          name: st.name,
+          tagline: st.tagline,
+          reflectionQuestions: st.reflectionQuestions.map((q) => ({ ...q })),
+        })),
       },
     })
     tally('habitJourneyContent').updated++
+  } else if (!hasRealStations) {
+    const missingQuestions = existingStations.some(
+      (s) => !s.reflectionQuestions || s.reflectionQuestions.length === 0,
+    )
+    if (missingQuestions) {
+      await payload.updateGlobal({
+        slug: 'habitJourneyContent',
+        data: {
+          stations: existingStations.map((st, idx) => ({
+            name: (st.name || sampleStations[idx]?.name) ?? undefined,
+            tagline: (st.tagline || sampleStations[idx]?.tagline) ?? undefined,
+            reflectionQuestions:
+              st.reflectionQuestions && st.reflectionQuestions.length > 0
+                ? st.reflectionQuestions.map((q) => ({ question: q.question ?? undefined }))
+                : (sampleStations[idx]?.reflectionQuestions ?? []).map((q) => ({
+                    question: q.question,
+                  })),
+          })),
+        },
+      })
+      tally('habitJourneyContent').updated++
+    }
   }
 
   const flowPatch = habitFlowSeedPatch(

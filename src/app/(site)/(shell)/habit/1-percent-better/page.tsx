@@ -1,6 +1,8 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
+import config from '@/payload.config'
 import { vi } from '@/lib/i18n/vi'
 import { getHabitProduct } from '@/lib/habit.server'
 import { HabitOfferClient } from '@/components/habit/HabitOfferClient'
@@ -39,10 +41,22 @@ export default async function HabitOfferPage({ searchParams }: HabitOfferPagePro
     notFound()
   }
 
+  // HB-15c: the journey length shown on the offer page follows siteSettings (default 28)
+  let journeyDays = 28
+  try {
+    const payload = await getPayload({ config })
+    const settings = await payload.findGlobal({ slug: 'siteSettings', depth: 0 })
+    if (typeof settings?.habitJourneyDays === 'number' && settings.habitJourneyDays > 0) {
+      journeyDays = settings.habitJourneyDays
+    }
+  } catch {
+    journeyDays = 28
+  }
+
   return (
     <>
       {adminUser && <RefreshOnSave />}
-      <HabitOfferClient product={product} />
+      <HabitOfferClient product={product} journeyDays={journeyDays} />
     </>
   )
 }

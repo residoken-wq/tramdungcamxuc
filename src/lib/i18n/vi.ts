@@ -138,7 +138,7 @@ export const vi = {
           'Giá ưu đãi (VND). Hiện nổi bật kèm giá gốc gạch ngang trên thẻ và trang chi tiết.',
         saleEndsAt: 'Hạn ưu đãi. Hiện đồng hồ đếm ngược hoặc nhãn thời hạn trên trang chi tiết.',
         trialDays:
-          'Số ngày trải nghiệm miễn phí không cần thẻ (vd 21 ngày). Hiện trên nút dùng thử và email nhắc ngày 18.',
+          'Số ngày trải nghiệm miễn phí không cần thẻ (mặc định theo sản phẩm). Hiện trên nút dùng thử và email nhắc.',
         accessDurationDays:
           'Thời hạn sử dụng tính bằng ngày sau khi mua. Để trống nếu sở hữu vĩnh viễn (hiện trong tài khoản học viên).',
         ctaLabel:
@@ -239,7 +239,7 @@ export const vi = {
           label: 'Công cụ số',
           tag: 'Phổ biến',
           description:
-            'Mở dùng thử 21 ngày tự do, sau đó bán bản quyền sử dụng vĩnh viễn (như Habit Tracker số, EQ Buddy số).',
+            'Mở dùng thử tự do, sau đó bán bản quyền sử dụng vĩnh viễn (như Habit Tracker số, EQ Buddy số).',
         },
         ebook: {
           label: 'Sách điện tử (Ebook)',
@@ -336,7 +336,7 @@ export const vi = {
         externalLabel: 'Chữ trên nút liên kết ngoài',
         externalLabelPlaceholder: 'Mua trên Shopee',
         includesTitle: 'Cấu phần bao gồm ("Bao gồm")',
-        includesPlaceholder: 'Ví dụ: Bảng theo dõi 21 ngày kèm 10 cảm xúc mỗi ngày',
+        includesPlaceholder: 'Ví dụ: Bảng theo dõi 28 ngày kèm 10 cảm xúc mỗi ngày',
         painPoint: 'Khó khăn của học viên / khách hàng',
         painPointPlaceholder: 'Thường xuyên trì hoãn, không duy trì được thói quen quá 3 ngày...',
         outcome: 'Kết quả học viên sẽ đạt được',
@@ -706,10 +706,6 @@ export const vi = {
       future: 'Chưa tới',
       locked: 'Đã khóa',
     },
-    ariaDay: (day: number, statusText: string, emotionText?: string) =>
-      emotionText
-        ? `Ngày ${day}: ${statusText}, cảm xúc ${emotionText}`
-        : `Ngày ${day}: ${statusText}`,
     wizard: {
       badge: 'Habit Loop 5 phút',
       titleLine1: 'Thiết kế vòng lặp',
@@ -858,10 +854,10 @@ export const vi = {
       offerPage: {
         title: 'Habit Hack – 1% Better Mỗi Ngày | Habit Tracker số',
         description:
-          'Bộ công cụ và khóa học Habit Hack 1% Better: bài giảng video, kỹ thuật thực chiến, tracker 21 ngày với 10 cảm xúc. Dùng thử miễn phí 21 ngày.',
+          'Bộ công cụ và khóa học Habit Hack 1% Better: bài giảng video, kỹ thuật thực chiến, tracker theo dõi hành trình với 10 cảm xúc. Có dùng thử miễn phí.',
         ogTitle: 'Habit Hack – 1% Better Mỗi Ngày | Trạm Dừng Cảm Xúc',
         ogDescription:
-          'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng. Trải nghiệm 21 ngày dùng thử miễn phí cùng Hana Lương.',
+          'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng. Trải nghiệm hành trình xây dựng thói quen cùng Hana Lương.',
       },
     },
     offer: {
@@ -876,8 +872,8 @@ export const vi = {
       stats: {
         videos: 'Video thực chiến',
         techniques: 'Kỹ thuật Atomic Habits',
-        tracker: 'Tracker 21 ngày & 10 Cảm xúc',
-        trackerValue: '21',
+        // HB-15c: the number follows siteSettings.habitJourneyDays
+        tracker: (days: number) => `Tracker ${days} ngày & 10 Cảm xúc`,
         modules: 'Module lộ trình tinh gọn',
         modulesValue: '4',
       },
@@ -922,15 +918,15 @@ export const vi = {
         ],
       },
       includesHeading: 'Bao gồm trong bộ công cụ:',
-      bottomTitle: 'Bắt đầu hành trình 21 ngày của bạn',
+      bottomTitle: (days: number) => `Bắt đầu hành trình ${days} ngày của bạn`,
       bottomDesc: (videos: number, techniques: number) =>
         `Khám phá ${videos > 0 ? `${videos} video bài giảng, ` : ''}${techniques > 0 ? `${techniques} kỹ thuật thực chiến và ` : ''}bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.`,
       faq: {
         heading: 'Câu hỏi thường gặp',
         items: [
           {
-            q: '[MẪU] Sau 21 ngày dùng thử thì sao?',
-            a: '[MẪU] Dữ liệu hành trình 21 ngày của bạn vẫn được lưu giữ an toàn. Bạn có thể mở khóa sử dụng vĩnh viễn bất kỳ lúc nào với mức giá ưu đãi từ CMS.',
+            q: '[MẪU] Sau khi hết thời gian dùng thử thì sao?',
+            a: '[MẪU] Dữ liệu hành trình của bạn vẫn được lưu giữ an toàn. Bạn có thể mở khóa sử dụng vĩnh viễn bất kỳ lúc nào với mức giá ưu đãi từ CMS.',
           },
           {
             q: '[MẪU] Tôi có cần nhập thẻ ngân hàng khi bắt đầu dùng thử không?',
@@ -1246,15 +1242,15 @@ export const vi = {
     seriesLabel: 'Sắp ra mắt',
     trialSeriesLabel: 'Trải nghiệm miễn phí',
     saleSubtitle: 'Sắp chính thức mở bán',
-    trialSubtitle: 'Dùng thử 21 ngày',
+    trialSubtitle: 'Dùng thử miễn phí',
     saleEmotion: 'Trạm đang hoàn thiện những chi tiết cuối cùng để gửi trao đến bạn.',
-    trialEmotion: 'Hãy là một trong những người đầu tiên nhận 21 ngày trải nghiệm trọn vẹn.',
+    trialEmotion: 'Hãy là một trong những người đầu tiên nhận trải nghiệm trọn vẹn.',
     saleLeadTitle: 'Báo cho tôi khi mở bán',
     saleLeadDesc:
       'Để lại email để nhận thông báo ưu đãi và là người đầu tiên trải nghiệm ngay khi sản phẩm chính thức mở bán.',
-    trialLeadTitle: 'Báo cho tôi khi mở dùng thử 21 ngày',
+    trialLeadTitle: 'Báo cho tôi khi mở dùng thử',
     trialLeadDesc:
-      'Để lại email để nhận quyền kích hoạt phiên bản dùng thử 21 ngày hoàn toàn miễn phí ngay khi ra mắt.',
+      'Để lại email để nhận quyền kích hoạt phiên bản dùng thử hoàn toàn miễn phí ngay khi ra mắt.',
     submitSale: 'Nhận thông báo mở bán',
     submitTrial: 'Đăng ký nhận dùng thử',
     metaTitle: (name: string) => `${name} (Sắp ra mắt) – Trạm Dừng Cảm Xúc`,
@@ -1783,8 +1779,7 @@ export const vi = {
       simulating: 'Đang ghi nhận...',
       simulatedSuccess: 'Đã giả lập xem hết và hoàn thành bài học!',
       lockedTitle: 'Nội dung này chưa được mở khóa',
-      lockedDesc:
-        'Bạn cần kích hoạt dùng thử 21 ngày hoặc sở hữu Habit Tracker số để xem bài học này.',
+      lockedDesc: 'Bạn cần kích hoạt dùng thử hoặc sở hữu Habit Tracker số để xem bài học này.',
       unauthenticatedPrompt:
         'Vui lòng đăng nhập vào tài khoản của bạn để kiểm tra quyền truy cập bài học này.',
       unlockButton: 'Nhận ưu đãi 1% Better ngay',
