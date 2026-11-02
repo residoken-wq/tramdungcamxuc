@@ -6,11 +6,13 @@
  * `dangerouslySetInnerHTML` unchanged. Cleaning inside the block is therefore too late: the stored
  * HTML has to be cleaned in the data handed to `<Render>`.
  */
-import { sanitizeRichText } from '@/lib/html/sanitize-rich-text'
+import { sanitizeCustomHtml, sanitizeRichText } from '@/lib/html/sanitize-rich-text'
+import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
 
 /** Block type → its `richtext` props. */
 export const RICH_TEXT_PROPS: Record<string, readonly string[]> = {
   TextWidget: ['content'],
+  HtmlWidget: ['html'],
 }
 
 type Item = { type?: unknown; props?: Record<string, unknown> }
@@ -18,7 +20,7 @@ type Item = { type?: unknown; props?: Record<string, unknown> }
 const isItemArray = (value: unknown): value is Item[] =>
   Array.isArray(value) && value.some((v) => v && typeof v === 'object' && 'type' in v)
 
-function cleanItems(items: unknown): unknown {
+function cleanItems(items: unknown, ds?: CleanDesignSystem): unknown {
   if (!Array.isArray(items)) return items
   return items.map((raw) => {
     if (!raw || typeof raw !== 'object') return raw
@@ -28,18 +30,22 @@ function cleanItems(items: unknown): unknown {
     const props: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(item.props)) {
       if (keys.includes(key) && typeof value === 'string') {
-        // REVIEW-REQUIRED: every stored rich text string goes through the allow-list sanitizer.
-        props[key] = sanitizeRichText(value)
+        // REVIEW-REQUIRED: every stored rich text / custom HTML string goes through allow-list sanitizers.
+        if (item.type === 'HtmlWidget') {
+          props[key] = ds && !isOpen(ds, 'customCss') ? '' : sanitizeCustomHtml(value)
+        } else {
+          props[key] = sanitizeRichText(value)
+        }
       } else if (Array.isArray(value)) {
         if (isItemArray(value)) {
-          props[key] = cleanItems(value) // slots (Container, Columns…)
+          props[key] = cleanItems(value, ds) // slots (Container, Columns…)
         } else {
           // Array of objects (e.g. tabs / accordion items) that might contain slot contents
           props[key] = value.map((el) => {
             if (el && typeof el === 'object') {
               const sub: Record<string, unknown> = {}
               for (const [k, v] of Object.entries(el)) {
-                sub[k] = isItemArray(v) ? cleanItems(v) : v
+                sub[k] = isItemArray(v) ? cleanItems(v, ds) : v
               }
               return sub
             }
@@ -57,10 +63,10 @@ function cleanItems(items: unknown): unknown {
 /** Returns a copy of the page data with every rich text prop sanitized (content, zones, slots). */
 export function sanitizePageRichText<
   T extends { content?: unknown; zones?: Record<string, unknown> },
->(data: T): T {
+>(data: T, ds?: CleanDesignSystem): T {
   if (!data || typeof data !== 'object') return data
   const zones = data.zones
-    ? Object.fromEntries(Object.entries(data.zones).map(([k, v]) => [k, cleanItems(v)]))
+    ? Object.fromEntries(Object.entries(data.zones).map(([k, v]) => [k, cleanItems(v, ds)]))
     : data.zones
-  return { ...data, content: cleanItems(data.content), ...(zones ? { zones } : {}) }
+  return { ...data, content: cleanItems(data.content, ds), ...(zones ? { zones } : {}) }
 }

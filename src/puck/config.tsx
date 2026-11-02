@@ -24,6 +24,7 @@ import { IconListWidgetBlock, type IconListWidgetProps } from './blocks/widgets/
 import { TabsWidgetBlock, type TabsWidgetProps } from './blocks/widgets/TabsWidget'
 import { AccordionWidgetBlock, type AccordionWidgetProps } from './blocks/widgets/AccordionWidget'
 import { CounterWidgetBlock, type CounterWidgetProps } from './blocks/widgets/CounterWidget'
+import { HtmlWidgetBlock, type HtmlWidgetProps } from './blocks/widgets/HtmlWidget'
 import { ContainerBlock, type ContainerProps } from './blocks/Container'
 import { ColumnsBlock, type ColumnsProps } from './blocks/Columns'
 import { SpacerBlock, type SpacerProps } from './blocks/Spacer'
@@ -132,6 +133,7 @@ export type {
   ResourcePostsSlotProps,
   HeadingWidgetProps,
   TextWidgetProps,
+  HtmlWidgetProps,
   ImageWidgetProps,
   ButtonWidgetProps,
   IconWidgetProps,
@@ -153,6 +155,7 @@ export type PageComponentsProps = {
   // Cơ bản (EB-06a)
   HeadingWidget: HeadingWidgetProps
   TextWidget: TextWidgetProps
+  HtmlWidget: HtmlWidgetProps
   ImageWidget: ImageWidgetProps
   ButtonWidget: ButtonWidgetProps
   IconWidget: IconWidgetProps
@@ -246,6 +249,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'TabsWidget',
         'AccordionWidget',
         'CounterWidget',
+        'HtmlWidget',
       ],
     },
     intro: {
@@ -690,6 +694,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
     TabsWidget: TabsWidgetBlock,
     AccordionWidget: AccordionWidgetBlock,
     CounterWidget: CounterWidgetBlock,
+    HtmlWidget: HtmlWidgetBlock,
 
     HeroImage: HeroImageBlock,
     QuoteBlock: QuoteBlockConfig,
