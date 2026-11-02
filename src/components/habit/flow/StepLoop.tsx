@@ -41,7 +41,7 @@ export function StepLoop({
     <div className="space-y-8 animate-fade-in">
       {/* Tiêu đề chính của Bước 5 */}
       <div>
-        <h2 className="font-display text-xl sm:text-2xl leading-[1.3] text-deep-navy mb-1">
+        <h2 className="font-display text-xl sm:text-2xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
           {vi.hb21.stepTitle}
         </h2>
         <p className="text-sm sm:text-base text-deep-navy/80">{vi.hb21.stepSubtitle}</p>
@@ -68,7 +68,7 @@ export function StepLoop({
           {hasStages && (
             <div className="space-y-3" data-testid="loop-stages-container">
               <div className="flex items-center justify-between gap-2">
-                <h3 className="font-display text-base sm:text-lg leading-[1.3] text-deep-navy">
+                <h3 className="font-display text-base sm:text-lg leading-[var(--tdcx-title-lh,1.3)] text-deep-navy">
                   {vi.hb21.explanation.heading}
                 </h3>
                 <span className="text-xs font-medium text-bright-magenta flex items-center gap-1">
@@ -154,7 +154,7 @@ export function StepLoop({
           {/* loop.rules (4 quy tắc vàng thay đổi hành vi) */}
           {hasRules && (
             <div className="space-y-3" data-testid="loop-rules-container">
-              <h3 className="font-display text-base sm:text-lg leading-[1.3] text-deep-navy">
+              <h3 className="font-display text-base sm:text-lg leading-[var(--tdcx-title-lh,1.3)] text-deep-navy">
                 {vi.hb21.rules.heading}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -207,7 +207,7 @@ export function StepLoop({
       {/* PHẦN 2: ĐÁNH DẤU KỸ THUẬT THEO 4 GIAI ĐOẠN */}
       <section aria-label={vi.hb21.techniques.heading} className="space-y-6">
         <div>
-          <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy mb-1">
+          <h3 className="font-display text-lg sm:text-xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
             {vi.hb21.techniques.heading}
           </h3>
           <p className="text-xs sm:text-sm text-deep-navy/75">

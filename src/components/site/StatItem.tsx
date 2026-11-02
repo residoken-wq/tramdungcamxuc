@@ -73,7 +73,7 @@ export function StatItem({
       ) : (
         value && (
           <div
-            className={`font-display ${valueSizeClass} tracking-tight leading-none ${valueColorClass}`}
+            className={`font-display ${valueSizeClass} tracking-tight leading-[var(--tdcx-title-lh,1.3)] ${valueColorClass}`}
           >
             {value}
           </div>

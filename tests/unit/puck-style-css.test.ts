@@ -31,6 +31,24 @@ describe('EB-04: blockStyleCss', () => {
   it('refuses unsafe block ids', () => {
     expect(blockStyleCss('a"]{x}', { background: 'soft-pink' })).toBe('')
   })
+
+  it('PK-13: emits title spacing variables on block selector, ignores unknown values', () => {
+    const css = blockStyleCss('Hero-1', {
+      titleLineHeight: 'airy',
+      eyebrowGap: 'tight',
+      emotionGap: 'airy',
+    })
+    expect(css).toContain('[data-eb-id="Hero-1"]{--tdcx-title-lh:1.45;--tdcx-eyebrow-gap:8px;--tdcx-emotion-gap:24px}')
+
+    // Invalid/unrecognized values are not emitted
+    const raw = { titleLineHeight: 'invalid-val' } as any
+    const sanitized = cleanDesignSystem(null)
+    const { css: pageCss } = collectPageStyles(
+      { content: [{ type: 'HeroImage', props: { id: 'Hero-2', _style: raw } }] },
+      sanitized,
+    )
+    expect(pageCss).not.toContain('--tdcx-title-lh')
+  })
 })
 
 const injection = ';}body{display:none'

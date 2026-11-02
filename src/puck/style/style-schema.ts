@@ -6,6 +6,14 @@
  */
 import { isOpen, isValidHex, type CleanDesignSystem } from '@/lib/design/design-system'
 import { isDesignFont } from '@/lib/design/fonts'
+import {
+  cleanEmotionGap,
+  cleanEyebrowGap,
+  cleanTitleLineHeight,
+  type EmotionGapPreset,
+  type EyebrowGapPreset,
+  type TitleLineHeightPreset,
+} from '@/lib/design/title-spacing'
 
 export const DEVICES = ['desktop', 'tablet', 'mobile'] as const
 export type Device = (typeof DEVICES)[number]
@@ -47,6 +55,9 @@ export interface BlockStyle {
   borderWidth?: number
   borderColor?: string
   shadow?: string
+  titleLineHeight?: TitleLineHeightPreset
+  eyebrowGap?: EyebrowGapPreset
+  emotionGap?: EmotionGapPreset
   // Advanced tab
   padding?: Responsive<Box>
   margin?: Responsive<Box>
@@ -143,6 +154,9 @@ export function sanitizeBlockStyle(raw: unknown, ds: CleanDesignSystem): BlockSt
         : undefined,
     borderColor: cleanColor(r.borderColor, ds),
     shadow: includes(SHADOWS, r.shadow) ? r.shadow : undefined,
+    titleLineHeight: cleanTitleLineHeight(r.titleLineHeight),
+    eyebrowGap: cleanEyebrowGap(r.eyebrowGap),
+    emotionGap: cleanEmotionGap(r.emotionGap),
     padding: cleanResponsive(r.padding, (v) => cleanBox(v, 'spacing', ds)),
     margin: cleanResponsive(r.margin, (v) => cleanBox(v, 'margin', ds)),
     hideOn: Array.isArray(r.hideOn)

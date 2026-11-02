@@ -50,7 +50,7 @@ describe('PK-13: Section tự do', () => {
     )
     const h2 = container.querySelector('h2')!
     expect(h2.className).toContain('text-5xl')
-    expect(h2.className).toContain('leading-[1.3]')
+    expect(h2.className).toContain('leading-[var(--tdcx-title-lh,1.3)]')
     expect(container.querySelector('section')?.getAttribute('data-bg')).toBe('warm-ivory')
   })
 

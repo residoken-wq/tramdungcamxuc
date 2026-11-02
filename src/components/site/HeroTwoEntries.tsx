@@ -70,7 +70,7 @@ export function HeroTwoEntries({
   bgColor = 'warm-ivory',
   padding = 'md',
 }: HeroTwoEntriesProps) {
-  const titleClass = `font-display ${fontSizeClass('title', titleSize, 'h1')} uppercase tracking-tight leading-[1.3]`
+  const titleClass = `font-display ${fontSizeClass('title', titleSize, 'h1')} uppercase tracking-tight leading-[var(--tdcx-title-lh,1.3)]`
   const entriesGridClass = 'grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8'
   const isDeepNavy = bgColor === 'deep-navy'
   const cardBgClass = isDeepNavy
@@ -168,7 +168,7 @@ export function HeroTwoEntries({
               <div className="order-1 lg:col-span-7 flex flex-col items-start text-left">
                 {seriesLabel && (
                   <span
-                    className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                    className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                   >
                     {seriesLabel}
                   </span>
@@ -181,7 +181,7 @@ export function HeroTwoEntries({
 
                 {emotionLine && (
                   <p
-                    className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${
+                    className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                       isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                     }`}
                   >
@@ -225,7 +225,7 @@ export function HeroTwoEntries({
             <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
               {seriesLabel && (
                 <span
-                  className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                  className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                 >
                   {seriesLabel}
                 </span>
@@ -240,7 +240,7 @@ export function HeroTwoEntries({
               {/* Emotional Quote (Playfair Display Italic) */}
               {emotionLine && (
                 <p
-                  className={`mt-4 font-quote text-lg sm:text-xl italic max-w-2xl ${
+                  className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                     isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                   }`}
                 >

@@ -5,6 +5,11 @@ import { createUsePuck } from '@puckeditor/core'
 import { contrastRatio, isOpen, isValidHex } from '@/lib/design/design-system'
 import { DESIGN_FONT_OPTIONS } from '@/lib/design/fonts'
 import { vi } from '@/lib/i18n/vi'
+import type {
+  EmotionGapPreset,
+  EyebrowGapPreset,
+  TitleLineHeightPreset,
+} from '@/lib/design/title-spacing'
 import {
   DEVICES,
   FONT_SIZE_PRESETS,
@@ -50,6 +55,9 @@ export const STYLE_TAB_KEYS: (keyof BlockStyle)[] = [
   'borderWidth',
   'borderColor',
   'shadow',
+  'titleLineHeight',
+  'eyebrowGap',
+  'emotionGap',
 ]
 export const ADVANCED_TAB_KEYS: (keyof BlockStyle)[] = ['padding', 'margin', 'hideOn', 'anchorId']
 
@@ -263,6 +271,47 @@ export function StyleField({
               options={TEXT_ALIGNS}
               inherited={inheritedFrom(style.textAlign) !== undefined}
               onChange={(v) => setResponsive('textAlign', v)}
+            />
+          </Group>
+          <Group title={vi.pk13.titleSpacing.groupLabel}>
+            <SelectControl
+              label={vi.pk13.titleSpacing.titleLineHeight}
+              value={style.titleLineHeight}
+              defaultLabel={vi.pk13.titleSpacing.byGlobalDefault}
+              options={[
+                { value: 'normal', label: vi.pk13.titleSpacing.blockLevels.normal },
+                { value: 'airy', label: vi.pk13.titleSpacing.lineHeightLevels.airy },
+                { value: 'very-airy', label: vi.pk13.titleSpacing.lineHeightLevels.veryAiry },
+              ]}
+              onChange={(v) =>
+                update({ titleLineHeight: v ? (v as TitleLineHeightPreset) : undefined })
+              }
+            />
+            <SelectControl
+              label={vi.pk13.titleSpacing.eyebrowGap}
+              value={style.eyebrowGap}
+              defaultLabel={vi.pk13.titleSpacing.byGlobalDefault}
+              options={[
+                { value: 'tight', label: vi.pk13.titleSpacing.gapLevels.tight },
+                { value: 'normal', label: vi.pk13.titleSpacing.blockLevels.normal },
+                { value: 'airy', label: vi.pk13.titleSpacing.gapLevels.airy },
+              ]}
+              onChange={(v) =>
+                update({ eyebrowGap: v ? (v as EyebrowGapPreset) : undefined })
+              }
+            />
+            <SelectControl
+              label={vi.pk13.titleSpacing.emotionGap}
+              value={style.emotionGap}
+              defaultLabel={vi.pk13.titleSpacing.byGlobalDefault}
+              options={[
+                { value: 'tight', label: vi.pk13.titleSpacing.gapLevels.tight },
+                { value: 'normal', label: vi.pk13.titleSpacing.blockLevels.normal },
+                { value: 'airy', label: vi.pk13.titleSpacing.gapLevels.airy },
+              ]}
+              onChange={(v) =>
+                update({ emotionGap: v ? (v as EmotionGapPreset) : undefined })
+              }
             />
           </Group>
           <Group title={t.groups.border}>

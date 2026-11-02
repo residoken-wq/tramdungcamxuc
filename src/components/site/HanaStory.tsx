@@ -159,14 +159,14 @@ export function HanaStory({
               <header className="mb-6 flex flex-col text-left items-start">
                 {seriesLabel && (
                   <span
-                    className={`mb-4 font-ui text-xs font-bold uppercase tracking-widest ${
+                    className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${
                       isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
                     }`}
                   >
                     {seriesLabel}
                   </span>
                 )}
-                <h2 className="font-display uppercase tracking-tight leading-[1.3] text-3xl sm:text-4xl lg:text-5xl">
+                <h2 className="font-display uppercase tracking-tight leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
                   {titleLine1 && (
                     <span className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}>
                       {titleLine1}

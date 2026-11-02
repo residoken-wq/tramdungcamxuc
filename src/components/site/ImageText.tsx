@@ -152,14 +152,14 @@ export function ImageText({
           >
             {seriesLabel && (
               <span
-                className={`mb-3 font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
               </span>
             )}
 
             <h2
-              className={`font-display ${sizeClass(SECTION_TITLE_SIZES, titleSize)} uppercase tracking-tight leading-[1.3] mb-4`}
+              className={`font-display ${sizeClass(SECTION_TITLE_SIZES, titleSize)} uppercase tracking-tight leading-[var(--tdcx-title-lh,1.3)] mb-4`}
             >
               <span className={textColorClass}>{titleLine1}</span>{' '}
               {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}

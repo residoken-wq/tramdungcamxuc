@@ -93,7 +93,7 @@ export function StepName({
         <span className="font-ui font-semibold text-xs text-bright-magenta uppercase tracking-wider block mb-1">
           {vi.hb16.steps.name.shortTitle}
         </span>
-        <h2 className="font-display text-2xl sm:text-3xl leading-[1.3] text-deep-navy mb-1.5">
+        <h2 className="font-display text-2xl sm:text-3xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1.5">
           {vi.hb20.stepTitle}
         </h2>
         <p className="font-body text-sm sm:text-base text-deep-navy/80">{vi.hb20.stepSubtitle}</p>
@@ -104,7 +104,7 @@ export function StepName({
       {/* ============================================================== */}
       <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-white border border-lavender-mist shadow-xs">
         <div className="border-b border-lavender-mist/50 pb-3">
-          <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy mb-1">
+          <h3 className="font-display text-lg sm:text-xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
             {vi.hb20.declaration.title}
           </h3>
           <p className="font-body text-xs sm:text-sm text-deep-navy/80">
@@ -190,7 +190,7 @@ export function StepName({
       {/* ============================================================== */}
       <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-white border border-lavender-mist shadow-xs">
         <div className="border-b border-lavender-mist/50 pb-3">
-          <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy mb-1">
+          <h3 className="font-display text-lg sm:text-xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
             {vi.hb20.rhythm.title}
           </h3>
           <p className="font-body text-xs sm:text-sm text-deep-navy/80">
@@ -304,7 +304,7 @@ export function StepName({
       {/* ============================================================== */}
       <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-white border border-lavender-mist shadow-xs">
         <div className="border-b border-lavender-mist/50 pb-3">
-          <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy mb-1">
+          <h3 className="font-display text-lg sm:text-xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
             {vi.hb20.coreHabit.title}
           </h3>
           <p className="font-body text-xs sm:text-sm text-deep-navy/80">
@@ -342,7 +342,7 @@ export function StepName({
       <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-white border border-lavender-mist shadow-xs">
         <div className="border-b border-lavender-mist/50 pb-3">
           <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
-            <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy">
+            <h3 className="font-display text-lg sm:text-xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy">
               {vi.hb20.privateReason.title}
             </h3>
             <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/20">
@@ -399,7 +399,7 @@ export function StepName({
       {/* ============================================================== */}
       <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-white border border-lavender-mist shadow-xs">
         <div className="border-b border-lavender-mist/50 pb-3">
-          <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy mb-1">
+          <h3 className="font-display text-lg sm:text-xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
             {vi.hb20.startDate.title}
           </h3>
           <p className="font-body text-xs sm:text-sm text-deep-navy/80">
@@ -455,7 +455,7 @@ export function StepName({
       {/* ============================================================== */}
       <section className="space-y-4 p-5 sm:p-6 rounded-2xl bg-white border border-lavender-mist shadow-xs">
         <div className="border-b border-lavender-mist/50 pb-3">
-          <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy mb-1">
+          <h3 className="font-display text-lg sm:text-xl leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
             {vi.hb20.companion.title}
           </h3>
           <p className="font-body text-xs sm:text-sm text-deep-navy/80">
