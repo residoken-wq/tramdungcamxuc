@@ -69,6 +69,7 @@ export default async function BuilderPage({ params }: BuilderPageProps) {
       pageId={pageId}
       pageTitle={pageDoc.title || pageId}
       pageSlug={pageDoc.slug || '/'}
+      pageKind={pageDoc.kind || 'page'}
       initialStatus={pageDoc._status || 'draft'}
     />
   )

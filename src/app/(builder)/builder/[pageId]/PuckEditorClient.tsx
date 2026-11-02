@@ -14,7 +14,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Puck, type Config, type Data, type Viewports, useGetPuck, usePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
-import { puckConfig, getPuckConfig } from '@/puck/config'
+import { puckConfig, getPuckConfig, type PageKind } from '@/puck/config'
 import { puckVietnameseDictionary } from '@/puck/dictionary'
 import {
   saveDraftAction,
@@ -56,6 +56,7 @@ type PuckEditorClientProps = {
   pageId: string
   pageTitle: string
   pageSlug: string
+  pageKind?: PageKind
   initialStatus: string
   /** EB-04b: brand locks + palette, loaded on the server (Brand Book defaults when absent). */
   designSystem?: CleanDesignSystem
@@ -1004,6 +1005,7 @@ export function PuckEditorClient({
   pageId,
   pageTitle,
   pageSlug,
+  pageKind = 'page',
   initialStatus,
   designSystem = DEFAULT_DESIGN_SYSTEM,
   isOwner = false,
@@ -1020,12 +1022,12 @@ export function PuckEditorClient({
     setPreviewVersion(preview)
   }
 
-  // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage, owner checks)
+  // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage, owner checks, kind)
   const config = useMemo(() => {
     return typeof getPuckConfig === 'function'
-      ? getPuckConfig({ pageSlug, isOwner, designSystem })
+      ? getPuckConfig({ pageSlug, isOwner, designSystem, kind: pageKind })
       : puckConfig
-  }, [pageSlug, isOwner, designSystem])
+  }, [pageSlug, isOwner, designSystem, pageKind])
 
   // Setup Autosave Controller with useState initializer (pure, runs once, stable instance)
   const [autosaveController] = useState(() => {
@@ -1103,6 +1105,11 @@ export function PuckEditorClient({
                 </Link>
                 <span className="text-white/30">|</span>
                 <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">{pageTitle}</span>
+                {pageKind !== 'page' && (
+                  <span className="px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider bg-lavender-mist text-deep-navy border border-bright-magenta/20">
+                    {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge}
+                  </span>
+                )}
                 <span
                   className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
                     docStatus === 'published'
@@ -1114,10 +1121,16 @@ export function PuckEditorClient({
                 </span>
               </div>
 
-              <div className="text-white/70 font-ui text-xs hidden sm:block">
-                Đường dẫn:{' '}
-                <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
-              </div>
+              {pageKind === 'page' ? (
+                <div className="text-white/70 font-ui text-xs hidden sm:block">
+                  Đường dẫn:{' '}
+                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
+                </div>
+              ) : (
+                <div className="text-white/70 font-ui text-xs hidden sm:block">
+                  {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge} toàn site
+                </div>
+              )}
             </header>
 
             {/* Puck Editor Container */}

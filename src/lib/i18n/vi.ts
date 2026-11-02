@@ -3150,6 +3150,7 @@ export const vi = {
     legalFooterLabel: 'Chân trang pháp lý',
     socialLinksLabel: 'Mạng xã hội',
     taglineLabel: 'Câu khẩu hiệu (Tagline)',
+    dummyPageCanvas: 'Nội dung trang xem trước trong trình soạn thảo',
     headerDefaultTemplate: 'Đầu trang mặc định',
     headerDefaultDesc: 'Mẫu đầu trang chuẩn nhận diện thương hiệu: Logo, Menu, Tài khoản và Nút CTA.',
     footerDefaultTemplate: 'Chân trang mặc định',
