@@ -2484,6 +2484,9 @@ Tính năng **CSS tuỳ chỉnh, widget HTML, class / z-index và hiệu ứng v
 > - **Mặc định tính năng này bị khoá** trong hệ thống để bảo vệ an toàn thương hiệu.
 > - **Cách mở khoá:** Vào trang quản trị CMS (`/admin`) → Tìm mục **Hệ thống** → Chọn **Thiết kế hệ thống** (`designSystem`) → Tại nhóm _Khoá thương hiệu_, tìm dòng **CSS tuỳ chỉnh** (`customCss`) và chuyển từ **Khoá** sang **Mở** → Bấm **Lưu thay đổi**.
 
+> [!NOTE]
+> **Biên tập viên làm việc trên trang có mã của chủ site:** vẫn sửa chữ, ảnh, khoảng cách… và lưu bình thường. Hệ thống từ chối (thông báo "Chỉ chủ site được sửa CSS / HTML tuỳ chỉnh") khi biên tập viên thêm, sửa hoặc xoá mã CSS / HTML. Việc này gồm cả xoá hay nhân bản khối có mã, khôi phục một phiên bản cũ có mã khác, và lưu mẫu chứa mã. Luật áp dụng cả khi sửa qua trang quản trị lẫn qua API, không chỉ trong trình dựng trang. Khi tính năng đang khoá, khối HTML trên canvas chỉ hiện dòng "đang khoá" và trang công khai không hiện gì.
+
 #### 1. CSS tuỳ chỉnh cho từng khối (Block Custom CSS)
 
 - Chọn bất kỳ khối nào trên canvas hoặc cây Cấu trúc.
@@ -2501,6 +2504,7 @@ Tính năng **CSS tuỳ chỉnh, widget HTML, class / z-index và hiệu ứng v
     ```
   - Nếu chỉ viết các thuộc tính ngắn (không có ngoặc `{}`), hệ thống sẽ tự động bọc vào khối hiện tại.
   - Bộ lọc thông minh của hệ thống sẽ tự động loại bỏ các đoạn mã độc hại, bảo vệ website khỏi nguy cơ tấn công hoặc vỡ giao diện.
+  - Một số cách viết bị bỏ qua để CSS của khối không chạm khối khác: `selector ~ …` và `selector + …` (khối bên cạnh), quy tắc lồng trong quy tắc, `image-set(...)`. Có chuỗi chứa `{` `}` `;` thì cả ô CSS bị bỏ qua. Ảnh nền chỉ dùng `url(/api/media/file/...)` từ thư viện ảnh.
 
 #### 2. CSS tuỳ chỉnh cho toàn trang (Page Custom CSS)
 
@@ -2520,7 +2524,7 @@ Tính năng **CSS tuỳ chỉnh, widget HTML, class / z-index và hiệu ứng v
 #### 4. Class CSS và Thứ tự hiển thị (z-index)
 
 - Trong tab **Nâng cao** của bất kỳ khối nào, tìm nhóm **Class / z-index**:
-  - **Class CSS:** Nhập tên class tùy biến (tối đa 5 class, viết chữ thường và cách nhau bởi dấu cách, ví dụ: `my-card highlight-box`).
+  - **Class CSS:** Nhập tên class tùy biến (tối đa 5 class, viết chữ thường và cách nhau bởi dấu cách, ví dụ: `my-card highlight-box`). Class được lưu khi bạn rời ô hoặc bấm Enter.
   - **Thứ tự hiển thị (z-index):** Nhập số nguyên từ `-10` đến `100` để điều chỉnh lớp hiển thị trên/dưới khi các khối xếp đè lên nhau (hệ thống tự động thiết lập thuộc tính định vị tương đối `position: relative`).
 
 #### 5. Hiệu ứng vào khung hình (Entrance Animations)

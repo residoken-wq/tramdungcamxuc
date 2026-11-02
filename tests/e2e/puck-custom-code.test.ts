@@ -301,6 +301,47 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
         editorPage.getByRole('status').filter({ hasText: 'Đã lưu bản nháp' }),
       ).toBeVisible({ timeout: 20000 })
 
+      // EB-09c: the REST API is guarded too (collection hook), not only the builder actions.
+      const currentRes = await editorPage.request.get(`/api/pages/${pageId}?draft=true&depth=0`)
+      expect(currentRes.ok()).toBe(true)
+      const currentPuck = (await currentRes.json()).puckData
+      const withRootCss = {
+        ...currentPuck,
+        root: {
+          ...currentPuck.root,
+          props: { ...currentPuck.root?.props, customCss: 'p{color:red}' },
+        },
+      }
+      const withTabsHtml = {
+        ...currentPuck,
+        content: [
+          ...currentPuck.content,
+          {
+            type: 'TabsWidget',
+            props: {
+              id: `TabsWidget-${randomUUID()}`,
+              items: [
+                {
+                  title: 'A',
+                  content: [
+                    {
+                      type: 'HtmlWidget',
+                      props: { id: `HtmlWidget-${randomUUID()}`, html: '<p>editor</p>' },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      }
+      for (const puckData of [withRootCss, withTabsHtml]) {
+        const restRes = await editorPage.request.patch(`/api/pages/${pageId}?draft=true`, {
+          data: { puckData },
+        })
+        expect(restRes.status()).toBe(403)
+      }
+
       await editorContext.close()
 
       // -------------------------------------------------------------
