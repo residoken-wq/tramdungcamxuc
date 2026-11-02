@@ -3797,6 +3797,42 @@ export const vi = {
     coachButton: 'Đặt lịch với Habit Coach',
     donateButton: 'Ủng hộ Trạm Dừng Cảm Xúc',
   },
+  cf01: {
+    siteSettings: {
+      groupLabel: 'Ly cà phê ủng hộ (MoMo)',
+      groupDesc:
+        'Cấu hình icon ly cà phê nổi trên trang web để người đọc có thể ủng hộ tùy tâm qua mã QR MoMo.',
+      enabled: 'Hiện nút ly cà phê',
+      enabledDesc: 'Bật để hiển thị icon ly cà phê nổi ở góc dưới bên phải màn hình.',
+      qrImage: 'Mã QR MoMo',
+      qrImageDesc:
+        'Tải lên ảnh mã QR nhận tiền từ MoMo. Bắt buộc có khi bật nút ly cà phê. Alt bắt buộc.',
+      title: 'Tiêu đề',
+      titleDesc: 'Tiêu đề hiện trong khung ủng hộ (tối đa 80 ký tự).',
+      message: 'Lời nhắn',
+      messageDesc: 'Lời nhắn gửi tới người đọc (tối đa 300 ký tự).',
+      momoUrl: 'Liên kết MoMo (không bắt buộc)',
+      momoUrlDesc: 'Liên kết chuyển tiền MoMo trực tiếp (nếu có), bắt đầu bằng https://.',
+    },
+    floatingCoffee: {
+      ariaLabel: 'Mời Trạm một ly cà phê',
+      defaultTitle: 'Mời Trạm một ly cà phê',
+      scanGuide:
+        'Mở ứng dụng MoMo để quét mã QR. Trên điện thoại, bạn có thể chụp màn hình rồi chọn ảnh trong MoMo.',
+      openMomo: 'Mở MoMo',
+      close: 'Đóng',
+    },
+    floatingActions: {
+      ariaLabel: 'Tiện ích hỗ trợ và ủng hộ',
+    },
+    errors: {
+      requiredQrImage: 'Vui lòng tải lên ảnh mã QR khi bật nút ly cà phê.',
+      invalidMomoUrl: 'Liên kết MoMo phải bắt đầu bằng https://.',
+      invalidUrl: 'Vui lòng nhập liên kết hợp lệ.',
+      titleTooLong: 'Tiêu đề tối đa 80 ký tự.',
+      messageTooLong: 'Lời nhắn tối đa 300 ký tự.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

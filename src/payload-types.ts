@@ -3505,6 +3505,31 @@ export interface SiteSetting {
    */
   trialCreditApplies?: boolean | null;
   /**
+   * Cấu hình icon ly cà phê nổi trên trang web để người đọc có thể ủng hộ tùy tâm qua mã QR MoMo.
+   */
+  coffeeDonation?: {
+    /**
+     * Bật để hiển thị icon ly cà phê nổi ở góc dưới bên phải màn hình.
+     */
+    enabled?: boolean | null;
+    /**
+     * Tải lên ảnh mã QR nhận tiền từ MoMo. Bắt buộc có khi bật nút ly cà phê. Alt bắt buộc.
+     */
+    qrImage?: (number | null) | Media;
+    /**
+     * Tiêu đề hiện trong khung ủng hộ (tối đa 80 ký tự).
+     */
+    title?: string | null;
+    /**
+     * Lời nhắn gửi tới người đọc (tối đa 300 ký tự).
+     */
+    message?: string | null;
+    /**
+     * Liên kết chuyển tiền MoMo trực tiếp (nếu có), bắt đầu bằng https://.
+     */
+    momoUrl?: string | null;
+  };
+  /**
    * Email nhận liên hệ từ khách hàng.
    */
   email?: string | null;
@@ -4198,6 +4223,15 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   transferPrefix?: T;
   experienceBookingUrl?: T;
   trialCreditApplies?: T;
+  coffeeDonation?:
+    | T
+    | {
+        enabled?: T;
+        qrImage?: T;
+        title?: T;
+        message?: T;
+        momoUrl?: T;
+      };
   email?: T;
   hotline?: T;
   officeAddress?: T;
