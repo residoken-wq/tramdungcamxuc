@@ -287,9 +287,9 @@ Quy tắc chung, thứ tự 2 dây (Laptop: HB-17 → 22, PC nhà: HB-23 → 13 
 
 ### Yêu cầu thêm 02/11
 
-| Mã    | Việc                                                                                                          | Phụ thuộc                                   | Máy    | Trạng thái   |
-| ----- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ------ | ------------ |
-| CF-01 | Widget ly cà phê nổi: mã QR MoMo ủng hộ, cấu hình ở Cài đặt website → Thanh toán ([prompt](prompts/CF-01.md)) | 🔒 Migration sau EB-08 (tạo migration cuối) | PC nhà | Prompt 02/11 |
+| Mã    | Việc                                                                                                          | Phụ thuộc                                   | Máy    | Trạng thái                                            |
+| ----- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ------ | ----------------------------------------------------- |
+| CF-01 | Widget ly cà phê nổi: mã QR MoMo ủng hộ, cấu hình ở Cài đặt website → Thanh toán ([prompt](prompts/CF-01.md)) | 🔒 Migration sau EB-08 (tạo migration cuối) | PC nhà | ✅ Merge 02/11 – PR #264 ([review](reviews/CF-01.md)) |
 
 (Planning dùng cho mọi task)
 
