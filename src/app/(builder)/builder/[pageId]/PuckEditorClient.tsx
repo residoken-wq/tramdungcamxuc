@@ -21,8 +21,17 @@ import {
   getVersionsAction,
   restoreVersionAction,
   duplicatePageAction,
+  listTemplatesAction,
+  deleteTemplateAction,
   type VersionSummary,
+  type TemplateSummary,
 } from '@/puck/actions'
+import { remapPageBlockIds } from '@/puck/template-validation'
+import {
+  SaveTemplateModal,
+  TEMPLATES_CHANGED_EVENT,
+  notifyTemplatesChanged,
+} from '@/puck/editor/SaveTemplateModal'
 import { pageTemplateList, getTemplateData, type PageTemplateKey } from '@/puck/templates'
 import { AutosaveController } from '@/puck/autosave'
 import { LeftPanel } from '@/puck/editor/LeftPanel'
@@ -36,7 +45,6 @@ import { BlockContextMenu } from '@/puck/editor/context-menu/BlockContextMenu'
 import { ContextMenuOverlay } from '@/puck/editor/context-menu/ContextMenuOverlay'
 import { ToastNotification } from '@/puck/editor/context-menu/ToastNotification'
 import { OutlineWrapper } from '@/puck/editor/navigator/OutlineWrapper'
-import { SaveTemplateModal } from '@/puck/editor/SaveTemplateModal'
 
 export const brandViewports: Viewports = [
   { width: 375, height: 'auto', label: 'Điện thoại (375px)', icon: 'Smartphone' },
@@ -356,9 +364,36 @@ function TemplateModal({
   pageTitle: string
   onApplyTemplate: (templateData: Data) => void
 }) {
+  const [activeTab, setActiveTab] = useState<'builtin' | 'saved'>('builtin')
+  const [savedTemplates, setSavedTemplates] = useState<TemplateSummary[]>([])
+  const [loadingSaved, setLoadingSaved] = useState<boolean>(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string>('')
+
+  const fetchSaved = useCallback(async () => {
+    setLoadingSaved(true)
+    try {
+      const res = await listTemplatesAction('page')
+      if (res.success && res.templates) {
+        setSavedTemplates(res.templates)
+      }
+    } catch {
+      // Ignore
+    } finally {
+      setLoadingSaved(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchSaved()
+      setErrorMsg('')
+    }
+  }, [isOpen, fetchSaved])
+
   if (!isOpen) return null
 
-  const handleSelect = (key: PageTemplateKey) => {
+  const handleSelectBuiltin = (key: PageTemplateKey) => {
     const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
     if (!confirmed) return
 
@@ -366,6 +401,38 @@ function TemplateModal({
     if (data) {
       onApplyTemplate(data)
       onClose()
+    }
+  }
+
+  const handleSelectSaved = (template: TemplateSummary) => {
+    const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
+    if (!confirmed) return
+
+    if (template.puckData && typeof template.puckData === 'object') {
+      const remapped = remapPageBlockIds(template.puckData as Data)
+      onApplyTemplate(remapped)
+      onClose()
+    }
+  }
+
+  const handleDeleteSaved = async (template: TemplateSummary) => {
+    const confirmed = window.confirm(vi.eb08.confirmDeleteNamed(template.name))
+    if (!confirmed) return
+
+    setDeletingId(template.id)
+    setErrorMsg('')
+    try {
+      const res = await deleteTemplateAction(template.id)
+      if (res.success) {
+        setSavedTemplates((prev) => prev.filter((t) => t.id !== template.id))
+        notifyTemplatesChanged()
+      } else {
+        setErrorMsg(res.message || vi.eb08.deleteFailed)
+      }
+    } catch {
+      setErrorMsg(vi.eb08.deleteFailed)
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -377,7 +444,7 @@ function TemplateModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-deep-navy/60 backdrop-blur-sm p-4 animate-in fade-in duration-150"
     >
       <div className="bg-warm-ivory rounded-2xl border border-deep-navy/15 shadow-2xl max-w-2xl w-full p-6 text-deep-navy flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between pb-4 border-b border-deep-navy/10">
+        <div className="flex items-center justify-between pb-3 border-b border-deep-navy/10">
           <h2 id="template-modal-title" className="text-lg font-bold font-ui text-deep-navy">
             {vi.builder.selectTemplateTitle}
           </h2>
@@ -397,32 +464,146 @@ function TemplateModal({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 overflow-y-auto">
-          {pageTemplateList.map((tpl) => (
-            <div
-              key={tpl.key}
-              className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between"
-            >
-              <div>
-                <h3 className="font-bold text-sm text-deep-navy mb-1.5">{tpl.label}</h3>
-                <p className="text-xs text-deep-navy/70 leading-relaxed mb-4">{tpl.description}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleSelect(tpl.key)}
-                className="w-full py-2 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition"
-              >
-                Áp dụng mẫu này
-              </button>
-            </div>
-          ))}
+        {/* Tab switch: Mẫu có sẵn / Mẫu đã lưu */}
+        <div className="flex items-center gap-2 border-b border-deep-navy/10 pt-2 pb-0 px-1">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'builtin'}
+            onClick={() => setActiveTab('builtin')}
+            className={`pb-2 px-3 text-xs font-ui font-bold border-b-2 transition cursor-pointer ${
+              activeTab === 'builtin'
+                ? 'border-bright-magenta text-deep-navy'
+                : 'border-transparent text-deep-navy/60 hover:text-deep-navy'
+            }`}
+          >
+            {vi.eb08.groupBuiltin} ({pageTemplateList.length})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'saved'}
+            onClick={() => setActiveTab('saved')}
+            className={`pb-2 px-3 text-xs font-ui font-bold border-b-2 transition cursor-pointer ${
+              activeTab === 'saved'
+                ? 'border-bright-magenta text-deep-navy'
+                : 'border-transparent text-deep-navy/60 hover:text-deep-navy'
+            }`}
+          >
+            {vi.eb08.groupSaved} ({savedTemplates.length})
+          </button>
         </div>
+
+        {errorMsg && (
+          <div
+            role="alert"
+            className="p-3 rounded-lg bg-soft-pink text-bright-magenta text-xs font-semibold my-2"
+          >
+            {errorMsg}
+          </div>
+        )}
+
+        {/* Tab contents */}
+        {activeTab === 'builtin' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 overflow-y-auto">
+            {pageTemplateList.map((tpl) => (
+              <div
+                key={tpl.key}
+                className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between"
+              >
+                <div>
+                  <h3 className="font-bold text-sm text-deep-navy mb-1.5">{tpl.label}</h3>
+                  <p className="text-xs text-deep-navy/70 leading-relaxed mb-4">
+                    {tpl.description}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleSelectBuiltin(tpl.key)}
+                  className="w-full py-2 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition cursor-pointer shadow-sm"
+                >
+                  {vi.eb08.useThisTemplate}
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="py-4 overflow-y-auto flex-1 min-h-[180px]">
+            {loadingSaved && (
+              <div className="py-12 text-center text-xs text-deep-navy/60 font-ui">
+                {vi.common.loading}
+              </div>
+            )}
+
+            {!loadingSaved && savedTemplates.length === 0 && (
+              <div className="py-12 text-center text-xs text-deep-navy/60 font-ui">
+                {vi.eb08.noTemplates}
+              </div>
+            )}
+
+            {!loadingSaved && savedTemplates.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {savedTemplates.map((template) => {
+                  const isDeleting = deletingId === template.id
+                  const dateStr = new Date(template.createdAt).toLocaleDateString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })
+                  const author =
+                    template.createdBy?.name || template.createdBy?.email || vi.eb08.unknownUser
+
+                  return (
+                    <div
+                      key={template.id}
+                      className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between gap-3"
+                    >
+                      <div>
+                        <h3 className="font-bold text-sm text-deep-navy mb-1 line-clamp-1">
+                          {template.name}
+                        </h3>
+                        {template.description && (
+                          <p className="text-xs text-deep-navy/70 leading-relaxed mb-2 line-clamp-2">
+                            {template.description}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-2 text-[10px] text-deep-navy/50">
+                          <span>{dateStr}</span>
+                          <span>•</span>
+                          <span className="truncate max-w-[140px]">{author}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2 border-t border-deep-navy/10">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSaved(template)}
+                          disabled={isDeleting}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-ui font-semibold text-accent-pink hover:bg-soft-pink/40 transition disabled:opacity-50 cursor-pointer"
+                        >
+                          {isDeleting ? '…' : vi.eb08.delete}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectSaved(template)}
+                          className="flex-1 py-1.5 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition cursor-pointer shadow-sm text-center"
+                        >
+                          {vi.eb08.useThisTemplate}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="pt-3 border-t border-deep-navy/10 flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition"
+            className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition cursor-pointer"
           >
             {vi.common.close}
           </button>

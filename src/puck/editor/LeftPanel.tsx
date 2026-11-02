@@ -5,11 +5,12 @@ import { Drawer, Puck, usePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { normalizeVi, filterBlockCategories } from './block-search'
 import { getBlockIcon } from './block-icons'
+import { TemplatesTab } from './TemplatesTab'
 
 const LOCAL_STORAGE_KEY = 'eb03:left-panel'
 export const SWITCH_TAB_EVENT = 'eb03:switch-tab'
 
-export type LeftPanelTab = 'blocks' | 'outline'
+export type LeftPanelTab = 'blocks' | 'outline' | 'templates'
 
 type LeftPanelState = {
   activeTab: LeftPanelTab
@@ -23,7 +24,10 @@ export function loadLeftPanelStorage(): LeftPanelState {
       if (raw) {
         const parsed = JSON.parse(raw)
         return {
-          activeTab: parsed.activeTab === 'outline' ? 'outline' : 'blocks',
+          activeTab:
+            parsed.activeTab === 'outline' || parsed.activeTab === 'templates'
+              ? parsed.activeTab
+              : 'blocks',
           collapsedCategories: Array.isArray(parsed.collapsedCategories)
             ? parsed.collapsedCategories
             : [],
@@ -69,7 +73,11 @@ export function LeftPanel() {
   useEffect(() => {
     const handleSwitch = (e: Event) => {
       const customEvent = e as CustomEvent<LeftPanelTab>
-      if (customEvent.detail === 'blocks' || customEvent.detail === 'outline') {
+      if (
+        customEvent.detail === 'blocks' ||
+        customEvent.detail === 'outline' ||
+        customEvent.detail === 'templates'
+      ) {
         setActiveTab(customEvent.detail)
         // Ensure sidebar is visible
         if (appState?.ui && !appState.ui.leftSideBarVisible) {
@@ -188,6 +196,37 @@ export function LeftPanel() {
             />
           </svg>
           <span>{vi.eb03.tabOutline}</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          id="tab-templates"
+          aria-selected={activeTab === 'templates'}
+          aria-controls="panel-templates"
+          tabIndex={0}
+          onClick={() => setActiveTab('templates')}
+          className={`flex-1 py-2 text-xs font-ui font-bold text-center border-b-2 transition cursor-pointer flex items-center justify-center gap-1.5 ${
+            activeTab === 'templates'
+              ? 'border-bright-magenta text-deep-navy bg-white shadow-[0_2px_4px_rgba(0,0,0,0.02)] rounded-t-lg'
+              : 'border-transparent text-deep-navy/60 hover:text-deep-navy hover:bg-soft-pink/30 rounded-t-lg'
+          }`}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+            />
+          </svg>
+          <span>{vi.eb08.tabTemplates}</span>
         </button>
       </div>
 
@@ -382,7 +421,7 @@ export function LeftPanel() {
             )}
           </div>
         </div>
-      ) : (
+      ) : activeTab === 'outline' ? (
         /* Outline Panel */
         <div
           role="tabpanel"
@@ -392,6 +431,9 @@ export function LeftPanel() {
         >
           <Puck.Outline />
         </div>
+      ) : (
+        /* Templates Panel */
+        <TemplatesTab />
       )}
     </aside>
   )
