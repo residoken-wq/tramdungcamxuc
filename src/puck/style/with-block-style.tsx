@@ -67,7 +67,7 @@ export function withBlockStyle(component: ComponentConfig): ComponentConfig {
     render: (props) => {
       // EB-07: strip _label so it is editor-only and never leaks into public HTML attributes
       const { [LABEL_FIELD]: _label, ...cleanProps } = props as Record<string, unknown>
-      const output = render(cleanProps as typeof props)
+      const output = typeof render === 'function' ? render(cleanProps as typeof props) : <></>
       const raw = (props as { _style?: unknown })._style
       if (!hasStyleKeys(raw) || !isSafeBlockId(props.id)) return output
       const anchorId = cleanAnchorId(raw.anchorId)

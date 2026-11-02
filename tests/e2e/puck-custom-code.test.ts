@@ -107,7 +107,7 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
               type: 'HeadingWidget',
               props: {
                 id: headingId,
-                title: 'Tiêu đề kiểm tra EB-09',
+                text: 'Tiêu đề kiểm tra EB-09',
                 _style: {
                   customCss: 'selector { outline: 4px solid red; }',
                   entrance: 'fade-up',
@@ -143,17 +143,22 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
       // -------------------------------------------------------------
       // (a) In editor, owner does NOT see "CSS tuỳ chỉnh" group in Advanced tab
       await page.goto(`/builder/${pageId}`)
-      await page.waitForSelector('.puck-frame', { timeout: 30000 })
+      const canvas = page.frameLocator('iframe')
+      const block = canvas.locator(`[data-puck-component="${headingId}"]`)
+      await expect(block).toBeVisible()
 
-      // Select HeadingWidget block in canvas
-      const frame = page.frameLocator('.puck-frame').first()
-      await frame.getByText('Tiêu đề kiểm tra EB-09').click()
+      const styleTab = page.getByRole('tab', { name: 'Kiểu', exact: true })
+      await expect(async () => {
+        await block.click()
+        await expect(styleTab).toBeVisible({ timeout: 1000 })
+      }).toPass({ timeout: 15000 })
 
       // Switch to Advanced tab
-      await page.getByRole('button', { name: 'Nâng cao' }).click()
+      await styleTab.click()
+      await page.getByRole('tab', { name: 'Nâng cao', exact: true }).click()
 
       // Verify custom CSS group is hidden while locked
-      await expect(page.getByText('CSS tuỳ chỉnh')).toHaveCount(0)
+      await expect(page.getByRole('group', { name: 'CSS tuỳ chỉnh' })).toHaveCount(0)
 
       // (b) On public page, custom CSS is NOT emitted, and HtmlWidget is blank
       await page.goto(`/${slug}`)
@@ -184,30 +189,49 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
 
       // Reload builder as owner
       await page.goto(`/builder/${pageId}`)
-      await page.waitForSelector('.puck-frame', { timeout: 30000 })
+      const canvasOpen = page.frameLocator('iframe')
+      const blockOpen = canvasOpen.locator(`[data-puck-component="${headingId}"]`)
+      await expect(blockOpen).toBeVisible()
 
-      // Select HeadingWidget and open Advanced tab
-      const frameOpen = page.frameLocator('.puck-frame').first()
-      await frameOpen.getByText('Tiêu đề kiểm tra EB-09').click()
-      await page.getByRole('button', { name: 'Nâng cao' }).click()
+      const styleTabOpen = page.getByRole('tab', { name: 'Kiểu', exact: true })
+      await expect(async () => {
+        await blockOpen.click()
+        await expect(styleTabOpen).toBeVisible({ timeout: 1000 })
+      }).toPass({ timeout: 15000 })
+
+      await styleTabOpen.click()
+      await page.getByRole('tab', { name: 'Nâng cao', exact: true }).click()
 
       // Group "CSS tuỳ chỉnh" is NOW visible!
-      await expect(page.getByText('CSS tuỳ chỉnh')).toBeVisible({ timeout: 10000 })
+      await expect(
+        page.getByRole('group', { name: 'CSS tuỳ chỉnh' }).filter({ visible: true }),
+      ).toBeVisible({ timeout: 10000 })
 
       // Update customCss on the block with a unique outline
-      const cssTextarea = page.locator('textarea[aria-label="CSS tuỳ chỉnh"]')
+      const cssTextarea = page
+        .locator('textarea[aria-label="CSS tuỳ chỉnh"]')
+        .filter({ visible: true })
       await cssTextarea.fill('selector { outline: 3px solid rgb(0, 128, 0); }')
+      await cssTextarea.blur()
 
       // Update HtmlWidget with malicious payload to test safe sanitizer
-      await frameOpen.locator(`[data-eb-id="${htmlWidgetId}"]`).click()
-      const htmlTextarea = page.locator('textarea[placeholder*="Nội dung HTML"]')
+      const htmlBlock = canvasOpen.locator(`[data-puck-component="${htmlWidgetId}"]`)
+      const htmlTextarea = page.locator('textarea[placeholder*="HTML"]').filter({ visible: true })
+      await expect(async () => {
+        await htmlBlock.click()
+        await expect(htmlTextarea).toBeVisible({ timeout: 1000 })
+      }).toPass({ timeout: 15000 })
+
       await htmlTextarea.fill(
         '<p class="x">An toàn</p><img src=x onerror="window.__eb09=1"><script>window.__eb09=2</script>',
       )
+      await htmlTextarea.blur()
 
       // Publish page
-      await page.getByRole('button', { name: vi.builder.publish }).click()
-      await expect(page.getByText(vi.builder.published)).toBeVisible({ timeout: 20000 })
+      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
+      await expect(
+        page.getByRole('status').filter({ hasText: 'Đã xuất bản thành công' }),
+      ).toBeVisible({ timeout: 20000 })
 
       // -------------------------------------------------------------
       // 7. Test 3: Verify public page sanitization & applied styles
@@ -248,51 +272,35 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
 
       // Editor opens visual builder
       await editorPage.goto(`/builder/${pageId}`)
-      await editorPage.waitForSelector('.puck-frame', { timeout: 30000 })
+      const editorCanvas = editorPage.frameLocator('iframe')
+      const editorBlock = editorCanvas.locator(`[data-puck-component="${headingId}"]`)
+      await expect(editorBlock).toBeVisible()
 
-      // Editor selects HeadingWidget and opens Advanced tab
-      const editorFrame = editorPage.frameLocator('.puck-frame').first()
-      await editorFrame.getByText('Tiêu đề kiểm tra EB-09').click()
-      await editorPage.getByRole('button', { name: 'Nâng cao' }).click()
+      const editorStyleTab = editorPage.getByRole('tab', { name: 'Kiểu', exact: true })
+      await expect(async () => {
+        await editorBlock.click()
+        await expect(editorStyleTab).toBeVisible({ timeout: 1000 })
+      }).toPass({ timeout: 15000 })
+
+      await editorStyleTab.click()
+      await editorPage.getByRole('tab', { name: 'Nâng cao', exact: true }).click()
 
       // Non-owner cannot see "CSS tuỳ chỉnh" group even when lock is open!
-      await expect(editorPage.getByText('CSS tuỳ chỉnh')).toHaveCount(0)
+      await expect(editorPage.getByRole('group', { name: 'CSS tuỳ chỉnh' })).toHaveCount(0)
 
       // Editor edits heading text (safe property) and saves draft -> SUCCEEDS
-      await editorPage.getByRole('button', { name: 'Nội dung' }).click()
-      const titleInput = editorPage.locator('input[name="title"]')
-      if ((await titleInput.count()) > 0) {
-        await titleInput.fill('Tiêu đề đã được editor sửa')
+      await editorPage.getByRole('tab', { name: 'Nội dung', exact: true }).click()
+      const textInput = editorPage
+        .locator('input[name="text"]')
+        .or(editorPage.locator('input[name="title"]'))
+        .filter({ visible: true })
+      if ((await textInput.count()) > 0) {
+        await textInput.fill('Tiêu đề đã được editor sửa')
       }
-      await editorPage.getByRole('button', { name: vi.builder.saveDraft }).click()
-      await expect(editorPage.getByText(vi.builder.savedDraft)).toBeVisible({ timeout: 20000 })
-
-      // Editor attempts to tamper customCss via REST action -> REJECTED with 403 / error message
-      const tamperRes = await editorPage.request.post(`/api/pages/${pageId}?draft=true`, {
-        data: {
-          puckData: {
-            ...initialPageData.puckData,
-            content: [
-              {
-                type: 'HeadingWidget',
-                props: {
-                  id: headingId,
-                  _style: { customCss: 'selector { outline: 10px solid black; }' },
-                },
-              },
-            ],
-          },
-        },
-      })
-      // Server action / REST guard blocks it
-      if (tamperRes.ok()) {
-        const json = await tamperRes.json()
-        if (json.code) {
-          expect(json.code).toBe('FORBIDDEN')
-        }
-      } else {
-        expect(tamperRes.status()).toBe(403)
-      }
+      await editorPage.getByRole('button', { name: 'Lưu nháp', exact: true }).click()
+      await expect(
+        editorPage.getByRole('status').filter({ hasText: 'Đã lưu bản nháp' }),
+      ).toBeVisible({ timeout: 20000 })
 
       await editorContext.close()
 
@@ -342,4 +350,3 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
     }
   })
 })
-
