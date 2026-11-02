@@ -482,6 +482,130 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.block_templates": {
+      "name": "block_templates",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "enum_block_templates_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "puck_data": {
+          "name": "puck_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by_id": {
+          "name": "created_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "block_templates_created_by_idx": {
+          "name": "block_templates_created_by_idx",
+          "columns": [
+            {
+              "expression": "created_by_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "block_templates_updated_at_idx": {
+          "name": "block_templates_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "block_templates_created_at_idx": {
+          "name": "block_templates_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "block_templates_created_by_id_users_id_fk": {
+          "name": "block_templates_created_by_id_users_id_fk",
+          "tableFrom": "block_templates",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.posts": {
       "name": "posts",
       "schema": "",
@@ -15555,6 +15679,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "block_templates_id": {
+          "name": "block_templates_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "posts_id": {
           "name": "posts_id",
           "type": "integer",
@@ -15829,6 +15959,21 @@
           "columns": [
             {
               "expression": "pages_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_block_templates_id_idx": {
+          "name": "payload_locked_documents_rels_block_templates_id_idx",
+          "columns": [
+            {
+              "expression": "block_templates_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -16415,6 +16560,19 @@
           "tableTo": "pages",
           "columnsFrom": [
             "pages_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_block_templates_fk": {
+          "name": "payload_locked_documents_rels_block_templates_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "block_templates",
+          "columnsFrom": [
+            "block_templates_id"
           ],
           "columnsTo": [
             "id"
@@ -17953,37 +18111,6 @@
           "notNull": false,
           "default": false
         },
-        "coffee_donation_enabled": {
-          "name": "coffee_donation_enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "coffee_donation_qr_image_id": {
-          "name": "coffee_donation_qr_image_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "coffee_donation_title": {
-          "name": "coffee_donation_title",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "coffee_donation_message": {
-          "name": "coffee_donation_message",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "coffee_donation_momo_url": {
-          "name": "coffee_donation_momo_url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
         "email": {
           "name": "email",
           "type": "varchar",
@@ -18164,21 +18291,6 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "site_settings_coffee_donation_coffee_donation_qr_image_idx": {
-          "name": "site_settings_coffee_donation_coffee_donation_qr_image_idx",
-          "columns": [
-            {
-              "expression": "coffee_donation_qr_image_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
@@ -18201,19 +18313,6 @@
           "tableTo": "media",
           "columnsFrom": [
             "founder_signature_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "site_settings_coffee_donation_qr_image_id_media_id_fk": {
-          "name": "site_settings_coffee_donation_qr_image_id_media_id_fk",
-          "tableFrom": "site_settings",
-          "tableTo": "media",
-          "columnsFrom": [
-            "coffee_donation_qr_image_id"
           ],
           "columnsTo": [
             "id"
@@ -19723,6 +19822,14 @@
         "published"
       ]
     },
+    "public.enum_block_templates_kind": {
+      "name": "enum_block_templates_kind",
+      "schema": "public",
+      "values": [
+        "section",
+        "page"
+      ]
+    },
     "public.enum_posts_topic": {
       "name": "enum_posts_topic",
       "schema": "public",
@@ -20676,6 +20783,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "de27c2e8-b56b-4485-acb0-0766a392f70e",
+  "id": "37f887df-e24d-4028-9dd7-5400992b597f",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
