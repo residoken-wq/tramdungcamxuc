@@ -313,6 +313,8 @@ export interface Media {
   focalY?: number | null;
 }
 /**
+ * Quản lý các mẫu khối và mẫu trang đã lưu để tái sử dụng trong trình dựng trang Puck.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "blockTemplates".
  */

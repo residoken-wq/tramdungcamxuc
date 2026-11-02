@@ -62,3 +62,4 @@ export function getVersionBadgeInfo(version: {
     className: 'bg-soft-pink text-deep-navy font-semibold',
   }
 }
+

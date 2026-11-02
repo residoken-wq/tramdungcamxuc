@@ -548,9 +548,7 @@ export function BlockContextMenu() {
               return (
                 <React.Fragment key={itemDef.id}>
                   {/* Divider before delete */}
-                  {isDelete && (
-                    <div className="border-t border-deep-navy/10 my-1" role="separator" />
-                  )}
+                  {isDelete && <div className="border-t border-deep-navy/10 my-1" role="separator" />}
 
                   <div className="relative group">
                     <button

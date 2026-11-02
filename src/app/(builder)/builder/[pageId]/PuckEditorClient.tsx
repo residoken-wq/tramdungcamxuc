@@ -7,7 +7,6 @@ import React, {
   useTransition,
   useMemo,
   useEffect,
-  useCallback,
 } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
@@ -32,7 +31,6 @@ import { formatVietnamDateTime, getVersionBadgeInfo } from '@/puck/version-histo
 import { remapPageBlockIds } from '@/puck/template-validation'
 import {
   SaveTemplateModal,
-  TEMPLATES_CHANGED_EVENT,
   notifyTemplatesChanged,
 } from '@/puck/editor/SaveTemplateModal'
 import { pageTemplateList, getTemplateData, type PageTemplateKey } from '@/puck/templates'
@@ -348,12 +346,13 @@ function EditorHeaderActions() {
       </div>
 
       {/* Template Modal */}
-      <TemplateModal
-        isOpen={isTemplateModalOpen}
-        onClose={() => setIsTemplateModalOpen(false)}
-        pageTitle={pageTitle}
-        onApplyTemplate={handleApplyTemplate}
-      />
+      {isTemplateModalOpen && (
+        <TemplateModal
+          onClose={() => setIsTemplateModalOpen(false)}
+          pageTitle={pageTitle}
+          onApplyTemplate={handleApplyTemplate}
+        />
+      )}
 
       {/* Save Page Template Modal */}
       <SaveTemplateModal
@@ -369,56 +368,51 @@ function EditorHeaderActions() {
       />
 
       {/* Version History Modal */}
-      <HistoryModal
-        isOpen={isHistoryModalOpen}
-        onClose={() => setIsHistoryModalOpen(false)}
-        pageId={pageId}
-        onRestore={handleRestoreVersion}
-        onPreview={handlePreviewVersion}
-      />
+      {isHistoryModalOpen && (
+        <HistoryModal
+          onClose={() => setIsHistoryModalOpen(false)}
+          pageId={pageId}
+          onRestore={handleRestoreVersion}
+          onPreview={handlePreviewVersion}
+        />
+      )}
     </>
   )
 }
 
 function TemplateModal({
-  isOpen,
   onClose,
   pageTitle,
   onApplyTemplate,
 }: {
-  isOpen: boolean
   onClose: () => void
   pageTitle: string
   onApplyTemplate: (templateData: Data) => void
 }) {
   const [activeTab, setActiveTab] = useState<'builtin' | 'saved'>('builtin')
   const [savedTemplates, setSavedTemplates] = useState<TemplateSummary[]>([])
-  const [loadingSaved, setLoadingSaved] = useState<boolean>(false)
+  const [loadingSaved, setLoadingSaved] = useState<boolean>(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string>('')
 
-  const fetchSaved = useCallback(async () => {
-    setLoadingSaved(true)
-    try {
-      const res = await listTemplatesAction('page')
-      if (res.success && res.templates) {
-        setSavedTemplates(res.templates)
-      }
-    } catch {
-      // Ignore
-    } finally {
-      setLoadingSaved(false)
+  useEffect(() => {
+    let active = true
+    listTemplatesAction('page')
+      .then((res) => {
+        if (!active) return
+        if (res.success && res.templates) {
+          setSavedTemplates(res.templates)
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setLoadingSaved(false)
+      })
+
+    return () => {
+      active = false
     }
   }, [])
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchSaved()
-      setErrorMsg('')
-    }
-  }, [isOpen, fetchSaved])
-
-  if (!isOpen) return null
 
   const handleSelectBuiltin = (key: PageTemplateKey) => {
     const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
@@ -594,7 +588,7 @@ function TemplateModal({
                             {template.description}
                           </p>
                         )}
-                        <div className="flex items-center gap-2 text-[10px] text-deep-navy/50">
+                        <div className="flex items-center gap-2 text-[10px] text-deep-navy/60">
                           <span>{dateStr}</span>
                           <span>•</span>
                           <span className="truncate max-w-[140px]">{author}</span>
@@ -606,7 +600,7 @@ function TemplateModal({
                           type="button"
                           onClick={() => handleDeleteSaved(template)}
                           disabled={isDeleting}
-                          className="px-2.5 py-1.5 rounded-lg text-xs font-ui font-semibold text-accent-pink hover:bg-soft-pink/40 transition disabled:opacity-50 cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-ui font-semibold text-bright-magenta hover:bg-soft-pink/40 transition disabled:opacity-50 cursor-pointer"
                         >
                           {isDeleting ? '…' : vi.eb08.delete}
                         </button>
@@ -641,13 +635,11 @@ function TemplateModal({
 }
 
 function HistoryModal({
-  isOpen,
   onClose,
   pageId,
   onRestore,
   onPreview,
 }: {
-  isOpen: boolean
   onClose: () => void
   pageId: string
   onRestore: (restoredData: Data, status: string) => void
@@ -664,11 +656,6 @@ function HistoryModal({
 
   useEffect(() => {
     let active = true
-    if (!isOpen) return
-    setPage(1)
-    setLoading(true)
-    setErrorMsg('')
-
     getVersionsAction(pageId, 1, 25)
       .then((res) => {
         if (!active) return
@@ -678,20 +665,19 @@ function HistoryModal({
         } else {
           setErrorMsg(res.message || vi.builder.error)
         }
-        setLoading(false)
       })
       .catch(() => {
         if (!active) return
         setErrorMsg(vi.builder.error)
-        setLoading(false)
+      })
+      .finally(() => {
+        if (active) setLoading(false)
       })
 
     return () => {
       active = false
     }
-  }, [isOpen, pageId])
-
-  if (!isOpen) return null
+  }, [pageId])
 
   const handleLoadMore = async () => {
     setLoadingMore(true)

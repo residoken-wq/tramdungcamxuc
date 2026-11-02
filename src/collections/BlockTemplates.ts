@@ -25,7 +25,8 @@ export const BlockTemplates: CollectionConfig = {
     plural: vi.eb08.collectionPlural,
   },
   admin: {
-    group: vi.eb08.adminGroup,
+    group: vi.cms.nav.website,
+    description: 'Quản lý các mẫu khối và mẫu trang đã lưu để tái sử dụng trong trình dựng trang Puck.',
     useAsTitle: 'name',
     defaultColumns: ['name', 'kind', 'createdBy', 'createdAt'],
   },
@@ -87,3 +88,4 @@ export const BlockTemplates: CollectionConfig = {
   ],
   timestamps: true,
 }
+

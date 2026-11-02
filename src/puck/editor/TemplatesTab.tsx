@@ -10,7 +10,7 @@ import { TEMPLATES_CHANGED_EVENT, notifyTemplatesChanged } from './SaveTemplateM
 import { useContextMenu } from './context-menu/context-menu-context'
 
 export function TemplatesTab() {
-  const { config, dispatch, appState, getParentById, getItemById } = usePuck()
+  const { config, dispatch, appState, getItemById } = usePuck()
   const { showToast } = useContextMenu()
 
   const [templates, setTemplates] = useState<TemplateSummary[]>([])
@@ -19,29 +19,36 @@ export function TemplatesTab() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string>('')
 
-  const fetchTemplates = useCallback(async () => {
-    try {
-      const res = await listTemplatesAction('section')
-      if (res.success && res.templates) {
-        setTemplates(res.templates)
-      }
-    } catch {
-      // Ignore background fetch error
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
   useEffect(() => {
-    fetchTemplates()
+    let active = true
+    listTemplatesAction('section')
+      .then((res) => {
+        if (!active) return
+        if (res.success && res.templates) {
+          setTemplates(res.templates)
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setLoading(false)
+      })
 
     const handleTemplatesChanged = () => {
-      fetchTemplates()
+      listTemplatesAction('section')
+        .then((res) => {
+          if (res.success && res.templates) {
+            setTemplates(res.templates)
+          }
+        })
+        .catch(() => {})
     }
 
     window.addEventListener(TEMPLATES_CHANGED_EVENT, handleTemplatesChanged)
-    return () => window.removeEventListener(TEMPLATES_CHANGED_EVENT, handleTemplatesChanged)
-  }, [fetchTemplates])
+    return () => {
+      active = false
+      window.removeEventListener(TEMPLATES_CHANGED_EVENT, handleTemplatesChanged)
+    }
+  }, [])
 
   const filteredTemplates = useMemo(() => {
     const q = normalizeVi(searchQuery.trim())
@@ -149,7 +156,7 @@ export function TemplatesTab() {
           className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-deep-navy/15 bg-white text-deep-navy placeholder:text-deep-navy/40 focus:outline-none focus:ring-2 focus:ring-bright-magenta focus:border-transparent font-ui"
         />
         <svg
-          className="w-4 h-4 text-deep-navy/40 absolute left-2.5 top-1/2 -translate-y-1/2"
+          className="w-4 h-4 text-deep-navy/60 absolute left-2.5 top-1/2 -translate-y-1/2"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -218,7 +225,7 @@ export function TemplatesTab() {
                       {template.description}
                     </p>
                   )}
-                  <div className="flex items-center gap-2 mt-1.5 text-[10px] text-deep-navy/50">
+                  <div className="flex items-center gap-2 mt-1.5 text-[10px] text-deep-navy/60">
                     <span>{dateStr}</span>
                     <span>•</span>
                     <span className="truncate max-w-[120px]">{author}</span>
@@ -230,7 +237,7 @@ export function TemplatesTab() {
                     type="button"
                     onClick={() => handleDelete(template)}
                     disabled={isDeleting}
-                    className="px-2 py-1 rounded-md text-[11px] font-ui font-semibold text-accent-pink hover:bg-soft-pink/40 transition disabled:opacity-50"
+                    className="px-2 py-1 rounded-md text-[11px] font-ui font-semibold text-bright-magenta hover:bg-soft-pink/40 transition disabled:opacity-50"
                   >
                     {isDeleting ? '…' : vi.eb08.delete}
                   </button>

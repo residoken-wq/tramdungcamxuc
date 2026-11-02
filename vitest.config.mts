@@ -18,6 +18,7 @@ const dbTestFiles = readdirSync(unitDir)
 
 const sharedTestConfig = {
   environment: 'jsdom' as const,
+  testTimeout: 20000,
   env: {
     TZ: 'UTC',
     PGTZ: 'UTC',

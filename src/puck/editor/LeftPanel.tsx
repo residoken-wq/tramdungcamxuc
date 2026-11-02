@@ -142,6 +142,7 @@ export function LeftPanel() {
           type="button"
           role="tab"
           id="tab-blocks"
+          data-tab="blocks"
           aria-selected={activeTab === 'blocks'}
           aria-controls="panel-blocks"
           tabIndex={0}
@@ -171,6 +172,7 @@ export function LeftPanel() {
           type="button"
           role="tab"
           id="tab-outline"
+          data-tab="outline"
           aria-selected={activeTab === 'outline'}
           aria-controls="panel-outline"
           tabIndex={0}
@@ -202,6 +204,7 @@ export function LeftPanel() {
           type="button"
           role="tab"
           id="tab-templates"
+          data-tab="templates"
           aria-selected={activeTab === 'templates'}
           aria-controls="panel-templates"
           tabIndex={0}

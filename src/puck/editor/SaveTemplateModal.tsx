@@ -29,7 +29,7 @@ export function SaveTemplateModal({
   defaultName = '',
   onSaved,
 }: SaveTemplateModalProps) {
-  const [name, setName] = useState<string>('')
+  const [name, setName] = useState<string>(defaultName || '')
   const [description, setDescription] = useState<string>('')
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [errorMsg, setErrorMsg] = useState<string>('')
@@ -40,10 +40,6 @@ export function SaveTemplateModal({
   useEffect(() => {
     if (isOpen) {
       previousActiveElementRef.current = document.activeElement as HTMLElement | null
-      setName(defaultName || '')
-      setDescription('')
-      setErrorMsg('')
-      setIsSaving(false)
 
       const timer = setTimeout(() => {
         nameInputRef.current?.focus()
@@ -58,7 +54,7 @@ export function SaveTemplateModal({
         previousActiveElementRef.current.focus()
       }
     }
-  }, [isOpen, defaultName])
+  }, [isOpen])
 
   // Handle Escape key
   useEffect(() => {
@@ -178,7 +174,7 @@ export function SaveTemplateModal({
               htmlFor="template-name-input"
               className="block text-xs font-bold font-ui text-deep-navy mb-1"
             >
-              {vi.eb08.name} <span className="text-accent-pink">*</span>
+              {vi.eb08.name} <span className="text-bright-magenta">*</span>
             </label>
             <input
               ref={nameInputRef}
@@ -191,7 +187,7 @@ export function SaveTemplateModal({
               disabled={isSaving}
               className="w-full px-3 py-2 text-xs rounded-lg border border-deep-navy/20 bg-white text-deep-navy focus:outline-none focus:ring-2 focus:ring-bright-magenta font-ui"
             />
-            <div className="text-[10px] text-deep-navy/50 text-right mt-1">{name.length}/80</div>
+            <div className="text-[10px] text-deep-navy/60 text-right mt-1">{name.length}/80</div>
           </div>
 
           <div>
