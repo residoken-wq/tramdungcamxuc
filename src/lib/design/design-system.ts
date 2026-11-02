@@ -11,6 +11,11 @@ import {
   type BrandColorToken,
 } from '../brand/tokens'
 import { DEFAULT_FONTS, isDesignFont, type FontRole } from './fonts'
+import {
+  cleanTitleSpacing,
+  DEFAULT_TITLE_SPACING,
+  type TitleSpacing,
+} from './title-spacing'
 
 /** Tokens the code base uses as Tailwind classes – they must always exist. */
 export const CORE_COLOR_TOKENS = Object.keys(BRAND_COLORS_HEX) as BrandColorToken[]
@@ -34,6 +39,7 @@ export interface CleanDesignSystem {
   fonts: Record<FontRole, string>
   radiusCard: number
   spacing: { sm: number; md: number; lg: number }
+  titleSpacing: TitleSpacing
   lock: Record<LockKey, LockState> & { contrastCheck: boolean }
 }
 
@@ -55,6 +61,7 @@ export const DEFAULT_DESIGN_SYSTEM: CleanDesignSystem = {
     md: px(BRAND_SPACING['breath-md']),
     lg: px(BRAND_SPACING['breath-lg']),
   },
+  titleSpacing: { ...DEFAULT_TITLE_SPACING },
   // Product default for every new customer site: everything locked (decision 31/10).
   lock: {
     colors: 'locked',
@@ -120,6 +127,7 @@ type RawDesignSystem = {
   fonts?: Partial<Record<FontRole, string | null>> | null
   radiusCard?: number | null
   spacing?: { sm?: number | null; md?: number | null; lg?: number | null } | null
+  titleSpacing?: Partial<Record<keyof TitleSpacing, string | null>> | null
   lock?: (Partial<Record<LockKey, string | null>> & { contrastCheck?: boolean | null }) | null
 } | null
 
@@ -156,6 +164,7 @@ export function cleanDesignSystem(raw: RawDesignSystem | undefined): CleanDesign
       md: clampNumber(raw?.spacing?.md, 0, 96, spacing.md),
       lg: clampNumber(raw?.spacing?.lg, 0, 96, spacing.lg),
     },
+    titleSpacing: cleanTitleSpacing(raw?.titleSpacing),
     lock: {
       colors: lockState(raw?.lock?.colors),
       fonts: lockState(raw?.lock?.fonts),

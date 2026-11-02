@@ -156,6 +156,73 @@ export const DesignSystem: GlobalConfig = {
       fields: [{ type: 'row', fields: (['sm', 'md', 'lg'] as const).map(spacingNumber) }],
     },
     {
+      name: 'titleSpacing',
+      type: 'group',
+      label: vi.pk13.titleSpacing.groupLabel,
+      admin: { description: vi.pk13.titleSpacing.groupDesc },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            select(
+              'titleLineHeight',
+              vi.pk13.titleSpacing.titleLineHeight,
+              [
+                ['normal', vi.pk13.titleSpacing.lineHeightLevels.normal],
+                ['airy', vi.pk13.titleSpacing.lineHeightLevels.airy],
+                ['very-airy', vi.pk13.titleSpacing.lineHeightLevels.veryAiry],
+              ],
+              {
+                required: true,
+                defaultValue: DEFAULT_DESIGN_SYSTEM.titleSpacing.titleLineHeight,
+                admin: {
+                  description: vi.pk13.titleSpacing.titleLineHeightDesc,
+                  isClearable: false,
+                  width: '33.33%',
+                },
+              },
+            ),
+            select(
+              'eyebrowGap',
+              vi.pk13.titleSpacing.eyebrowGap,
+              [
+                ['tight', vi.pk13.titleSpacing.gapLevels.tight],
+                ['normal', vi.pk13.titleSpacing.gapLevels.normal],
+                ['airy', vi.pk13.titleSpacing.gapLevels.airy],
+              ],
+              {
+                required: true,
+                defaultValue: DEFAULT_DESIGN_SYSTEM.titleSpacing.eyebrowGap,
+                admin: {
+                  description: vi.pk13.titleSpacing.eyebrowGapDesc,
+                  isClearable: false,
+                  width: '33.33%',
+                },
+              },
+            ),
+            select(
+              'emotionGap',
+              vi.pk13.titleSpacing.emotionGap,
+              [
+                ['tight', vi.pk13.titleSpacing.gapLevels.tight],
+                ['normal', vi.pk13.titleSpacing.gapLevels.normal],
+                ['airy', vi.pk13.titleSpacing.gapLevels.airy],
+              ],
+              {
+                required: true,
+                defaultValue: DEFAULT_DESIGN_SYSTEM.titleSpacing.emotionGap,
+                admin: {
+                  description: vi.pk13.titleSpacing.emotionGapDesc,
+                  isClearable: false,
+                  width: '33.33%',
+                },
+              },
+            ),
+          ],
+        },
+      ],
+    },
+    {
       name: 'lock',
       type: 'group',
       label: t.lock.label,

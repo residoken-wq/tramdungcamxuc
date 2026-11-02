@@ -65,6 +65,7 @@
    - [5.26. Widget cơ bản & tương tác: Tiêu đề, Văn bản, Ảnh, Nút, Icon, Tabs, Accordion, Bộ đếm (EB-06)](#526-widget-cơ-bản--tương-tác-tiêu-đề-văn-bản-ảnh-nút-icon-tabs-accordion-bộ-đếm-eb-06)
    - [5.27. Cấu trúc và menu chuột phải (EB-07)](#527-cấu-trúc-và-menu-chuột-phải-eb-07)
    - [5.28. Mẫu đã lưu và Lịch sử phiên bản (EB-08)](#528-mẫu-đã-lưu-và-lịch-sử-phiên-bản-eb-08)
+   - [5.29. Tự chỉnh khoảng cách tiêu đề và giãn dòng Anton (PK-13)](#529-tự-chỉnh-khoảng-cách-tiêu-đề-và-giãn-dòng-anton-pk-13)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2411,6 +2412,67 @@ Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng
 
 ---
 
+### 5.29. Tự chỉnh khoảng cách tiêu đề và giãn dòng Anton (PK-13)
+
+**Mục đích**: Cho phép Hana chủ động tùy chỉnh giãn dòng của tiêu đề lớn (font Anton) và khoảng cách giữa nhãn series, tiêu đề 2 tầng và dòng cảm xúc để trang web luôn thoáng đẹp, hài hòa và đảm bảo các chữ hoa tiếng Việt có dấu mũ / móc chồng (như `Ỏ`, `Ằ`, `Ộ`, `Ễ`) không bao giờ bị dính dấu hay chồng đè lên nhau.
+
+Hệ thống hỗ trợ 2 cấp độ thiết lập linh hoạt:
+
+#### 1. Đổi mặc định chung cho toàn trang web (áp dụng xuyên suốt tất cả các trang)
+
+Chỉ tài khoản **Chủ sở hữu** mới có quyền chỉnh thiết lập chung này:
+
+1. Vào menu bên trái: nhóm **Trang web** → **Thiết kế & thương hiệu**.
+2. Cuộn xuống nhóm **Khoảng cách tiêu đề & Giãn dòng**:
+   - **Giãn dòng tiêu đề Anton**:
+     - _Vừa (1.3)_: Chuẩn thương hiệu, gọn gàng, là mức tối thiểu an toàn để chữ hoa có dấu chồng tiếng Việt không chạm nét.
+     - _Thoáng (1.45)_: Thoải mái, dễ thở hơn cho các tiêu đề nhiều dòng.
+     - _Rất thoáng (1.6)_: Tạo khoảng không rộng rãi tối đa giữa các dòng tiêu đề lớn.
+   - **Khoảng cách nhãn → tiêu đề**:
+     - _Sát (8px)_: Nhãn series nằm gần sát dòng tiêu đề chính bên dưới.
+     - _Vừa (16px)_: Chuẩn thương hiệu, phân tách vừa phải.
+     - _Thoáng (24px)_: Tách biệt rõ ràng nhãn phía trên.
+   - **Khoảng cách tiêu đề → dòng cảm xúc**:
+     - _Sát (8px)_: Dòng cảm xúc chữ nghiêng áp sát đáy tiêu đề.
+     - _Vừa (14px)_: Chuẩn thương hiệu, thanh thoát tự nhiên.
+     - _Thoáng (24px)_: Khoảng thở rộng rãi trước khi bước vào câu cảm xúc.
+3. Bấm **Lưu**. Toàn bộ website và các khối trong trình dựng trang sẽ tự động áp dụng các thông số mới này.
+
+#### 2. Đổi riêng cho từng khối trong trình dựng trang (Puck Editor)
+
+Khi bạn muốn một khối tiêu đề đặc biệt (ví dụ: khối Hero đầu trang, hoặc một khối SectionHeader nổi bật) có khoảng thở khác với mặc định của trang web:
+
+1. Mở trang trong trình dựng trang trực quan (Puck Editor).
+2. Bấm chuột vào khối cần chỉnh (hoặc bấm chọn khung **Container** / **Cột** bao ngoài nếu muốn tất cả khối con bên trong cùng nhận khoảng cách này).
+3. Ở bảng thuộc tính bên phải, chuyển sang tab **Kiểu** (biểu tượng cọ vẽ).
+4. Mở nhóm **Khoảng cách tiêu đề**:
+   - **Giãn dòng tiêu đề**: Mặc định là `Mặc định (theo trang)` (sẽ tự nhận từ Cài đặt thiết kế chung). Bạn có thể bấm chọn `Vừa (1.3)`, `Thoáng (1.45)` hoặc `Rất thoáng (1.6)`.
+   - **Khoảng cách nhãn → tiêu đề**: Mặc định là `Mặc định (theo trang)`. Có thể chọn `Sát (8px)`, `Vừa (16px)` hoặc `Thoáng (24px)`.
+   - **Khoảng cách tiêu đề → dòng cảm xúc**: Mặc định là `Mặc định (theo trang)`. Có thể chọn `Sát (8px)`, `Vừa (14px)` hoặc `Thoáng (24px)`.
+5. Bấm **Lưu nháp** hoặc **Xuất bản** để lưu thay đổi.
+
+#### 3. Minh họa so sánh Trước và Sau (Dữ liệu [MẪU] chữ có dấu chồng)
+
+Dưới đây là hình ảnh so sánh thực tế giữa mức mặc định (_Vừa 1.3 / Nhãn 16px / Cảm xúc 14px_) và mức thoáng (_Thoáng 1.45 / Nhãn 24px / Cảm xúc 24px_), đặc biệt với các chữ in hoa tiếng Việt dấu chồng: `Ở ĐÂY CÓ SỰ BÌNH YÊN`, `KHỞI ĐẦU CHẶNG ĐƯỜNG MỚI`.
+
+**Trên màn hình máy tính (Desktop - 1440px):**
+
+- _Chế độ Mặc định (Vừa 1.3 / 16px / 14px):_
+  ![Mặc định trên màn hình máy tính 1440px](screenshots/pk13/01-default-1440.png)
+
+- _Chế độ Thoáng (1.45 / 24px / 24px):_
+  ![Chế độ Rất thoáng (giãn dòng 1.6, nhãn và dòng cảm xúc Thoáng) trên màn hình máy tính 1440px](screenshots/pk13/02-very-airy-1440.png)
+
+**Trên màn hình điện thoại di động (Mobile - 375px):**
+
+- _Chế độ Mặc định (Vừa 1.3 / 16px / 14px):_
+  ![Mặc định trên màn hình điện thoại 375px](screenshots/pk13/01-default-375.png)
+
+- _Chế độ Thoáng (1.45 / 24px / 24px):_
+  ![Chế độ Rất thoáng (giãn dòng 1.6, nhãn và dòng cảm xúc Thoáng) trên màn hình điện thoại 375px](screenshots/pk13/02-very-airy-375.png)
+
+---
+
 ## 6. Quản lý Trang pháp lý và Thông tin người bán
 
 ### 6.1. Chỉnh sửa nội dung một trang pháp lý
@@ -2467,7 +2529,8 @@ Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng
    - Thêm màu mới: **Thêm Màu**, đặt mã bằng chữ thường, số, gạch nối (ví dụ `xanh-la`). Tối đa 16 màu.
 3. **Font chữ**: chọn font cho Tiêu đề lớn, Nhãn / nút, Câu trích, Đoạn văn. Danh sách chỉ có font Google hiển thị đúng dấu tiếng Việt. Font khác bộ mặc định được tải từ Google Fonts nên trang tải chậm hơn một chút; giữ ít font khác nhau.
 4. **Bo góc thẻ**, **Khoảng thở**: số px.
-5. **Khoá / mở chỉnh kiểu**:
+5. **Khoảng cách tiêu đề & Giãn dòng (PK-13)**: chỉnh giãn dòng tiêu đề Anton, khoảng cách nhãn → tiêu đề, tiêu đề → dòng cảm xúc mặc định cho toàn trang web (xem chi tiết tại mục [5.29](#529-tự-chỉnh-khoảng-cách-tiêu-đề-và-giãn-dòng-anton-pk-13)).
+6. **Khoá / mở chỉnh kiểu**:
 
    | Công tắc             | Khoá                                   | Mở                                                   |
    | -------------------- | -------------------------------------- | ---------------------------------------------------- |
@@ -2479,7 +2542,7 @@ Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng
    - Mặc định mọi công tắc đều **Khoá**. Khi có công tắc **Mở**, màn hình hiện dòng "Đang mở – trang có thể lệch bộ nhận diện".
    - **Site Trạm Dừng Cảm Xúc**: theo quyết định 31/10, Chủ sở hữu chuyển các công tắc sang **Mở** để Hana tự chỉnh.
 
-6. Bấm **Lưu**.
+7. Bấm **Lưu**.
 
 ### 7.1. Cài đặt tài khoản ngân hàng chuyển khoản (VietQR)
 

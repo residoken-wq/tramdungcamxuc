@@ -63,6 +63,40 @@ describe('EB-02: buildDesignCss', () => {
     expect(css).toContain('--space-breath-lg: 40px')
     expect(css).not.toContain('--space-breath-sm')
   })
+
+  it('PK-13: titleSpacing emits nothing for defaults and emits custom CSS variables when changed', () => {
+    // Defaults emit nothing
+    expect(buildDesignCss(DEFAULT_DESIGN_SYSTEM)).not.toContain('--tdcx-title-lh')
+    expect(buildDesignCss(DEFAULT_DESIGN_SYSTEM)).not.toContain('--tdcx-eyebrow-gap')
+    expect(buildDesignCss(DEFAULT_DESIGN_SYSTEM)).not.toContain('--tdcx-emotion-gap')
+
+    // Changed to airy (Thoáng)
+    const airyCss = buildDesignCss(
+      withChanges({
+        titleSpacing: {
+          titleLineHeight: 'airy',
+          eyebrowGap: 'airy',
+          emotionGap: 'airy',
+        },
+      }),
+    )
+    expect(airyCss).toContain('--tdcx-title-lh: 1.45')
+    expect(airyCss).toContain('--tdcx-eyebrow-gap: 24px')
+    expect(airyCss).toContain('--tdcx-emotion-gap: 24px')
+
+    // Changed only titleLineHeight to very-airy (Rất thoáng)
+    const veryAiryCss = buildDesignCss(
+      withChanges({
+        titleSpacing: {
+          ...DEFAULT_DESIGN_SYSTEM.titleSpacing,
+          titleLineHeight: 'very-airy',
+        },
+      }),
+    )
+    expect(veryAiryCss).toContain('--tdcx-title-lh: 1.6')
+    expect(veryAiryCss).not.toContain('--tdcx-eyebrow-gap')
+    expect(veryAiryCss).not.toContain('--tdcx-emotion-gap')
+  })
 })
 
 describe('EB-02: googleFontsHref', () => {

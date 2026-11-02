@@ -5,6 +5,12 @@
  */
 import { DEFAULT_DESIGN_SYSTEM, hexToRgbTriplet, type CleanDesignSystem } from './design-system'
 import { DEFAULT_FONTS, DESIGN_FONT_OPTIONS, type FontCategory, type FontRole } from './fonts'
+import {
+  CSS_VARS,
+  EMOTION_GAP_VALUES,
+  EYEBROW_GAP_VALUES,
+  TITLE_LINE_HEIGHT_VALUES,
+} from './title-spacing'
 
 export const GOOGLE_FONTS_CSS_ORIGIN = 'https://fonts.googleapis.com'
 export const GOOGLE_FONTS_FILE_ORIGIN = 'https://fonts.gstatic.com'
@@ -109,6 +115,18 @@ export function buildDesignCss(ds: CleanDesignSystem): string {
     if (ds.spacing[size] !== DEFAULT_DESIGN_SYSTEM.spacing[size]) {
       declarations.push(`--space-breath-${size}: ${ds.spacing[size]}px`)
     }
+  }
+
+  if (ds.titleSpacing.titleLineHeight !== DEFAULT_DESIGN_SYSTEM.titleSpacing.titleLineHeight) {
+    declarations.push(
+      `${CSS_VARS.titleLineHeight}: ${TITLE_LINE_HEIGHT_VALUES[ds.titleSpacing.titleLineHeight]}`,
+    )
+  }
+  if (ds.titleSpacing.eyebrowGap !== DEFAULT_DESIGN_SYSTEM.titleSpacing.eyebrowGap) {
+    declarations.push(`${CSS_VARS.eyebrowGap}: ${EYEBROW_GAP_VALUES[ds.titleSpacing.eyebrowGap]}`)
+  }
+  if (ds.titleSpacing.emotionGap !== DEFAULT_DESIGN_SYSTEM.titleSpacing.emotionGap) {
+    declarations.push(`${CSS_VARS.emotionGap}: ${EMOTION_GAP_VALUES[ds.titleSpacing.emotionGap]}`)
   }
 
   return declarations.length ? `html:root{${declarations.join(';')}}` : ''

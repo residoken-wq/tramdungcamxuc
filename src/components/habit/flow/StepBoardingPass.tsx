@@ -130,7 +130,7 @@ export function StepBoardingPass({
     <div className="space-y-8 animate-fade-in">
       {/* 1. Tiêu đề, câu trích stepQuotes.boardingPass và boardingPass.intro */}
       <div>
-        <h2 className="font-display text-xl sm:text-2xl leading-[1.3] text-deep-navy mb-1">
+        <h2 className="font-display text-xl sm:text-2xl !leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
           {vi.hb22.stepTitle(journeyDays)}
         </h2>
         <p className="text-sm sm:text-base text-deep-navy/80">
@@ -235,7 +235,7 @@ export function StepBoardingPass({
         className="p-6 rounded-card bg-soft-pink/40 border border-soft-pink space-y-4"
       >
         <div>
-          <h3 className="font-display text-lg leading-[1.3] text-deep-navy mb-1">
+          <h3 className="font-display text-lg !leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1">
             {vi.habit.wizard.step4.emailHeading}
           </h3>
           <p className="text-xs sm:text-sm text-deep-navy/80">

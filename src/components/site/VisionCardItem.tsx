@@ -81,7 +81,7 @@ export function VisionCardItem({
         </div>
         {title && (
           <h3
-            className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight mb-3 ${titleClass}`}
+            className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-3 ${titleClass}`}
           >
             {title}
           </h3>

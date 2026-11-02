@@ -3832,6 +3832,33 @@ export const vi = {
       messageTooLong: 'Lời nhắn tối đa 300 ký tự.',
     },
   },
+  pk13: {
+    titleSpacing: {
+      groupLabel: 'Khoảng cách tiêu đề',
+      groupDesc:
+        'Chỉnh giãn dòng tiêu đề lớn và khoảng cách giữa nhãn series, tiêu đề và dòng cảm xúc.',
+      byGlobalDefault: 'Theo mặc định chung',
+      titleLineHeight: 'Giãn dòng tiêu đề',
+      titleLineHeightDesc: 'Khoảng cách giữa các dòng của tiêu đề lớn (Anton).',
+      eyebrowGap: 'Nhãn → tiêu đề',
+      eyebrowGapDesc: 'Khoảng cách từ nhãn series tới tiêu đề chính.',
+      emotionGap: 'Tiêu đề → dòng cảm xúc',
+      emotionGapDesc: 'Khoảng cách từ tiêu đề chính tới dòng cảm xúc bên dưới.',
+      lineHeightLevels: {
+        normal: 'Vừa (mặc định)',
+        airy: 'Thoáng',
+        veryAiry: 'Rất thoáng',
+      },
+      gapLevels: {
+        tight: 'Sát',
+        normal: 'Vừa (mặc định)',
+        airy: 'Thoáng',
+      },
+      blockLevels: {
+        normal: 'Vừa',
+      },
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

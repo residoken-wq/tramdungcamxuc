@@ -196,12 +196,14 @@ export function SelectControl({
   options,
   onChange,
   inherited = false,
+  defaultLabel,
 }: {
   label: string
   value: string | undefined
   options: readonly { label: string; value: string }[] | readonly string[]
   onChange: (value: string | undefined) => void
   inherited?: boolean
+  defaultLabel?: string
 }) {
   const id = useId()
   return (
@@ -216,7 +218,7 @@ export function SelectControl({
         onChange={(e) => onChange(e.target.value || undefined)}
         className="h-8 rounded-md border border-deep-navy/20 bg-white px-2 text-xs text-deep-navy"
       >
-        <option value="">{t4.fields.defaultValue}</option>
+        <option value="">{defaultLabel ?? t4.fields.defaultValue}</option>
         {options.map((opt) => {
           const val = typeof opt === 'string' ? opt : opt.value
           const lbl = typeof opt === 'string' ? presetLabel(opt) : opt.label

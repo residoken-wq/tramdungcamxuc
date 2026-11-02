@@ -5,6 +5,12 @@
  */
 import { DESIGN_FONT_OPTIONS, type FontCategory } from '@/lib/design/fonts'
 import type { CleanDesignSystem } from '@/lib/design/design-system'
+import {
+  CSS_VARS,
+  EMOTION_GAP_VALUES,
+  EYEBROW_GAP_VALUES,
+  TITLE_LINE_HEIGHT_VALUES,
+} from '@/lib/design/title-spacing'
 import { containerCss } from './container-css'
 import { cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
 import { sanitizeContainer } from './container-schema'
@@ -93,6 +99,11 @@ function baseDeclarations(style: BlockStyle): string[] {
         ]
       : []),
     ...(style.shadow ? [`box-shadow:${SHADOW[style.shadow]}`] : []),
+    ...(style.titleLineHeight
+      ? [`${CSS_VARS.titleLineHeight}:${TITLE_LINE_HEIGHT_VALUES[style.titleLineHeight]}`]
+      : []),
+    ...(style.eyebrowGap ? [`${CSS_VARS.eyebrowGap}:${EYEBROW_GAP_VALUES[style.eyebrowGap]}`] : []),
+    ...(style.emotionGap ? [`${CSS_VARS.emotionGap}:${EMOTION_GAP_VALUES[style.emotionGap]}`] : []),
     // Rounded corners need clipping so a background does not spill out.
     ...(style.radius && style.radius !== 'none' ? ['overflow:hidden'] : []),
   ]

@@ -3696,6 +3696,23 @@ export interface DesignSystem {
     lg: number;
   };
   /**
+   * Chỉnh giãn dòng tiêu đề lớn và khoảng cách giữa nhãn series, tiêu đề và dòng cảm xúc.
+   */
+  titleSpacing: {
+    /**
+     * Khoảng cách giữa các dòng của tiêu đề lớn (Anton).
+     */
+    titleLineHeight: 'normal' | 'airy' | 'very-airy';
+    /**
+     * Khoảng cách từ nhãn series tới tiêu đề chính.
+     */
+    eyebrowGap: 'tight' | 'normal' | 'airy';
+    /**
+     * Khoảng cách từ tiêu đề chính tới dòng cảm xúc bên dưới.
+     */
+    emotionGap: 'tight' | 'normal' | 'airy';
+  };
+  /**
    * Khoá: người biên tập chỉ chọn trong bộ nhận diện. Mở: chỉnh tự do, trang có thể lệch bộ nhận diện.
    */
   lock: {
@@ -4296,6 +4313,13 @@ export interface DesignSystemSelect<T extends boolean = true> {
         sm?: T;
         md?: T;
         lg?: T;
+      };
+  titleSpacing?:
+    | T
+    | {
+        titleLineHeight?: T;
+        eyebrowGap?: T;
+        emotionGap?: T;
       };
   lock?:
     | T

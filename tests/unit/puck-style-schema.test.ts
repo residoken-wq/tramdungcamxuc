@@ -43,6 +43,9 @@ describe('EB-04: sanitizeBlockStyle', () => {
           radius: 'card',
           shadow: 'soft',
           fontWeight: 700,
+          titleLineHeight: 'airy',
+          eyebrowGap: 'tight',
+          emotionGap: 'normal',
         },
         locked,
       ),
@@ -54,6 +57,9 @@ describe('EB-04: sanitizeBlockStyle', () => {
       radius: 'card',
       shadow: 'soft',
       fontWeight: 700,
+      titleLineHeight: 'airy',
+      eyebrowGap: 'tight',
+      emotionGap: 'normal',
     })
   })
 
@@ -87,6 +93,9 @@ describe('EB-04: sanitizeBlockStyle', () => {
           shadow: 'huge',
           borderWidth: 99,
           textAlign: { desktop: 'middle' },
+          titleLineHeight: 'huge',
+          eyebrowGap: 'infinite',
+          emotionGap: 'none',
           hideOn: ['phone'],
           anchorId: 'Có Dấu',
         },

@@ -92,7 +92,7 @@ export function StepMentor({
         <span className="font-ui font-semibold text-xs text-bright-magenta uppercase tracking-wider block mb-1">
           {vi.hb16.steps.mentor.shortTitle}
         </span>
-        <h2 className="font-display text-2xl sm:text-3xl leading-[1.3] text-deep-navy mb-1.5">
+        <h2 className="font-display text-2xl sm:text-3xl !leading-[var(--tdcx-title-lh,1.3)] text-deep-navy mb-1.5">
           {vi.hb19.stepTitle}
         </h2>
         <p className="font-body text-sm sm:text-base text-deep-navy/80">{vi.hb19.stepSubtitle}</p>

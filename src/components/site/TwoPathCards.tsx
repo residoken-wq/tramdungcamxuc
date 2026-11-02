@@ -127,7 +127,7 @@ export function TwoPathCards({
           <div className="text-center mb-10 sm:mb-14">
             {seriesLabel && (
               <span
-                className={`mb-3 block font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] block font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
               </span>
@@ -135,7 +135,7 @@ export function TwoPathCards({
 
             {titleLine1 && (
               <h2
-                className={`font-display uppercase tracking-tight leading-[1.3] ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md}`}
+                className={`font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md}`}
               >
                 <span className={textColorClass}>{titleLine1}</span>{' '}
                 {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}

@@ -55,7 +55,7 @@ export function SectionHeader({
       {/* Series Label (Montserrat SemiBold/Bold, WCAG AA compliant on light background) */}
       {seriesLabel && (
         <span
-          className={`mb-4 font-ui text-xs font-bold uppercase tracking-widest ${eyebrowColorClass}`}
+          className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${eyebrowColorClass}`}
         >
           {seriesLabel}
         </span>
@@ -63,7 +63,7 @@ export function SectionHeader({
 
       {/* Signature Two-Tone Heading (Anton: line 1 deep-navy, line 2 bright-magenta by default) */}
       <HeadingTag
-        className={`font-display uppercase tracking-tight leading-[1.3] ${headingSizeClasses}`}
+        className={`font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
       >
         <span className={`block ${line1ColorClass}`}>{titleLine1}</span>
         {titleLine2 && <span className={`block ${line2ColorClass}`}>{titleLine2}</span>}
@@ -72,7 +72,7 @@ export function SectionHeader({
       {/* Emotion Line (Playfair Display Italic) */}
       {emotionLine && (
         <p
-          className={`mt-3.5 font-quote ${emotionSizeStyle} italic ${emotionColorStyle} max-w-2xl`}
+          className={`mt-[var(--tdcx-emotion-gap,0.875rem)] font-quote ${emotionSizeStyle} italic ${emotionColorStyle} max-w-2xl`}
         >
           {emotionLine}
         </p>

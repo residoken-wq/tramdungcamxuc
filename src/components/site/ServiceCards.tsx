@@ -117,14 +117,14 @@ export function ServiceCards({
           <div className="text-center mb-10 sm:mb-14">
             {seriesLabel && (
               <span
-                className={`mb-3 block font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] block font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
               </span>
             )}
 
             {titleLine1 && (
-              <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight leading-[1.3] mb-3">
+              <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-3">
                 <span className={textColorClass}>{titleLine1}</span>{' '}
                 {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
               </h2>

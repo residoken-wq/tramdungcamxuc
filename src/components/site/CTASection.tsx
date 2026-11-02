@@ -132,20 +132,20 @@ export function CTASection({
       <div className="mx-auto max-w-4xl">
         <div className="rounded-card bg-white border border-deep-navy/10 p-8 sm:p-12 lg:p-16 shadow-soft text-center flex flex-col items-center">
           {seriesLabel && (
-            <span className="mb-3 font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta">
+            <span className="mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta">
               {seriesLabel}
             </span>
           )}
 
           <h2
-            className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight leading-[1.3]`}
+            className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
           >
             <span className="text-deep-navy">{titleLine1}</span>{' '}
             <span className="text-bright-magenta">{titleLine2}</span>
           </h2>
 
           {emotionLine && (
-            <p className="mt-4 font-quote text-lg sm:text-xl italic text-deep-navy/85 max-w-2xl">
+            <p className="mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic text-deep-navy/85 max-w-2xl">
               {emotionLine}
             </p>
           )}

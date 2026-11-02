@@ -52,7 +52,7 @@ export function StepOnePercent({ onePercent, unknowns, quote }: StepOnePercentPr
           aria-label={vi.hb18.onePercent.unknownsTitle}
           className="rounded-2xl bg-warm-ivory border border-deep-navy/10 p-5 sm:p-6 space-y-4"
         >
-          <h3 className="font-display text-lg sm:text-xl leading-[1.3] text-deep-navy tracking-wide">
+          <h3 className="font-display text-lg sm:text-xl !leading-[var(--tdcx-title-lh,1.3)] text-deep-navy tracking-wide">
             {vi.hb18.onePercent.unknownsTitle}
           </h3>
 
