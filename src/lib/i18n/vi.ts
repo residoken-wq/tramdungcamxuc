@@ -3148,6 +3148,11 @@ export const vi = {
     headerCtaLabel: 'Nút kêu gọi hành động (CTA)',
     accountLinkLabel: 'Liên kết tài khoản',
     legalFooterLabel: 'Chân trang pháp lý',
+    legalFooterEditorEmpty:
+      'Chưa có trang pháp lý nào đã xuất bản – trang công khai sẽ hiện danh sách khi có.',
+    sellerInfoEditorEmpty: 'Thông tin người bán lấy từ Cài đặt website (chưa nhập).',
+    errorLegalFooterHidden:
+      'Khối Chân trang pháp lý và các khối chứa nó không được ẩn theo thiết bị (bắt buộc hiện trên mọi trang).',
     socialLinksLabel: 'Mạng xã hội',
     taglineLabel: 'Câu khẩu hiệu (Tagline)',
     dummyPageCanvas: 'Nội dung trang xem trước trong trình soạn thảo',

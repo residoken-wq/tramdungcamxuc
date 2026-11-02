@@ -68,7 +68,11 @@ describe('EB-10 Step 6: Default Header & Footer Templates', () => {
       operation: 'create',
     })
     expect(headerResult.puckData).toBeDefined()
-    expect(headerResult.puckData.zones?.['header-container:items']).toBeDefined()
+    // Templates put their blocks in the Container slot `items` (EB-05), not in legacy zones.
+    const headerTypes = headerResult.puckData.content[0].props.items.map(
+      (item: { type: string }) => item.type,
+    )
+    expect(headerTypes).toEqual(expect.arrayContaining(['SiteLogo', 'NavMenu']))
 
     // Create footer page without puckData
     const footerResult = hook({
@@ -76,7 +80,10 @@ describe('EB-10 Step 6: Default Header & Footer Templates', () => {
       operation: 'create',
     })
     expect(footerResult.puckData).toBeDefined()
-    expect(footerResult.puckData.zones?.['footer-container:items']).toBeDefined()
+    const footerTypes = footerResult.puckData.content[0].props.items.map(
+      (item: { type: string }) => item.type,
+    )
+    expect(footerTypes).toContain('LegalFooter')
 
     // Preserves existing puckData if provided
     const customContent = [{ type: 'HeadingWidget', props: { text: 'Custom' } }]

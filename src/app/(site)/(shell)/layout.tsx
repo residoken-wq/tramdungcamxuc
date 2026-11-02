@@ -42,8 +42,6 @@ export default async function SiteShellLayout({ children }: { children: React.Re
           />
           {!shellData.footerHasLegal && (
             <LegalFooterView
-              showLegalLinks={true}
-              showSellerInfo={true}
               legalLinks={shellData.footer.legalLinks}
               sellerInfo={shellData.footer.sellerInfo}
             />

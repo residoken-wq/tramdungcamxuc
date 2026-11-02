@@ -47,8 +47,6 @@ export const footerDefaultTemplate: Data = {
             type: 'LegalFooter',
             props: {
               id: 'footer-legal',
-              showLegalLinks: true,
-              showSellerInfo: true,
             },
           },
         ],

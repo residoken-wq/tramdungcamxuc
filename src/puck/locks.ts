@@ -173,6 +173,10 @@ export function validatePageKindBlocks(
       }
     }
 
+    if (isLegalFooterHidden(data)) {
+      return { valid: false, error: vi.eb10.errorLegalFooterHidden }
+    }
+
     return { valid: true }
   }
 
@@ -188,4 +192,43 @@ export function validatePageKindBlocks(
   }
 
   return { valid: true }
+}
+
+const hidesOnSomeDevice = (props: Record<string, unknown>) => {
+  const style = props._style
+  if (!style || typeof style !== 'object') return false
+  const hideOn = (style as { hideOn?: unknown }).hideOn
+  return Array.isArray(hideOn) && hideOn.length > 0
+}
+
+/**
+ * REVIEW-REQUIRED: EB-10c – true when a LegalFooter block, or any block containing it, is hidden on
+ * some device through `_style.hideOn`. The legal links must show on every page and screen, so the
+ * footer save is refused and the public layout adds the code legal strip.
+ */
+export function isLegalFooterHidden(data: unknown): boolean {
+  let hidden = false
+  const walk = (value: unknown, ancestorHidden: boolean): void => {
+    if (hidden || !value || typeof value !== 'object') return
+    if (Array.isArray(value)) {
+      for (const el of value) walk(el, ancestorHidden)
+      return
+    }
+    const node = value as { type?: unknown; props?: unknown }
+    if (typeof node.type === 'string' && node.props && typeof node.props === 'object') {
+      const props = node.props as Record<string, unknown>
+      const here = ancestorHidden || hidesOnSomeDevice(props)
+      if (node.type === 'LegalFooter' && here) {
+        hidden = true
+        return
+      }
+      for (const child of Object.values(props)) walk(child, here)
+      return
+    }
+    for (const child of Object.values(value)) walk(child, ancestorHidden)
+  }
+  const d = data as { content?: unknown; zones?: unknown }
+  walk(d?.content, false)
+  walk(d?.zones, false)
+  return hidden
 }

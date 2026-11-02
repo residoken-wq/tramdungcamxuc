@@ -1,4 +1,5 @@
 import 'server-only'
+import { isLegalFooterHidden } from '@/puck/locks'
 import { cache } from 'react'
 import { getPayload, type Where } from 'payload'
 import config from '@/payload.config'
@@ -385,12 +386,13 @@ export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
           footerSource = 'builder'
           footerData = resolvedFooter
 
-          // Verify if footer has LegalFooter
+          // Verify the footer shows a LegalFooter on every device; otherwise the layout adds the
+          // code legal strip (EB-10c: a hidden LegalFooter does not count).
           let hasLegal = false
           await walkPuckItems(resolvedFooter, (item) => {
             if (item.type === 'LegalFooter') hasLegal = true
           })
-          footerHasLegal = hasLegal
+          footerHasLegal = hasLegal && !isLegalFooterHidden(resolvedFooter)
         } else {
           console.warn(
             '[SiteShell] Footer builder page is missing, not published, or invalid. Falling back to code Footer.',

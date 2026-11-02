@@ -12,24 +12,20 @@ export interface LegalFooterProps {
   sellerInfo?: SellerInfo
 }
 
+/**
+ * REVIEW-REQUIRED: EB-10c – the legal links and the seller information are mandatory on every
+ * page (AGENTS §8.1, e-commerce disclosure), so this block always shows both. `showLegalLinks` /
+ * `showSellerInfo` from older data are ignored. Only the editor shows a placeholder when there is
+ * nothing to list; the public page never shows invented links.
+ */
 export const LegalFooterView: React.FC<LegalFooterProps & { isEditing?: boolean }> = ({
-  showLegalLinks = true,
-  showSellerInfo = true,
   legalLinks = [],
   sellerInfo,
   isEditing = false,
 }) => {
-  // Sort legal links by order if provided
+  const showLegalLinks = true
+  const showSellerInfo = true
   const sortedLegalLinks = [...legalLinks].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-
-  const sampleLegalLinks: LegalLink[] =
-    sortedLegalLinks.length > 0
-      ? sortedLegalLinks
-      : [
-          { title: 'Điều khoản dịch vụ', slug: '/dieu-khoan-dich-vu', order: 1 },
-          { title: 'Chính sách bảo mật', slug: '/chinh-sach-bao-mat', order: 2 },
-          { title: 'Thông tin pháp lý', slug: '/thong-tin-phap-ly', order: 3 },
-        ]
 
   const hasSellerDetails = Boolean(
     sellerInfo &&
@@ -42,13 +38,16 @@ export const LegalFooterView: React.FC<LegalFooterProps & { isEditing?: boolean 
 
   return (
     <div className="w-full space-y-6 pt-4 border-t border-deep-navy/10 text-sm font-sans">
-      {showLegalLinks && sampleLegalLinks.length > 0 && (
+      {showLegalLinks && sortedLegalLinks.length === 0 && isEditing && (
+        <p className="italic text-deep-navy/70">{vi.eb10.legalFooterEditorEmpty}</p>
+      )}
+      {showLegalLinks && sortedLegalLinks.length > 0 && (
         <div className="space-y-3">
           <h2 className="font-ui font-bold text-xs uppercase tracking-wider text-deep-navy/70">
             {vi.footer.legalHeading}
           </h2>
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            {sampleLegalLinks.map((item) => (
+            {sortedLegalLinks.map((item) => (
               <li key={item.slug}>
                 <Link
                   href={item.slug.startsWith('/') ? item.slug : `/${item.slug}`}
@@ -103,7 +102,7 @@ export const LegalFooterView: React.FC<LegalFooterProps & { isEditing?: boolean 
               </p>
             )}
             {!hasSellerDetails && isEditing && (
-              <p className="italic text-deep-navy/70">[MẪU THÔNG TIN NGƯỜI BÁN TỪ SITE SETTINGS]</p>
+              <p className="italic text-deep-navy/70">{vi.eb10.sellerInfoEditorEmpty}</p>
             )}
           </div>
         </div>
@@ -118,28 +117,10 @@ export const LegalFooterBlock: ComponentConfig<LegalFooterProps> = {
     delete: false,
     duplicate: false,
   },
-  fields: {
-    showLegalLinks: {
-      type: 'radio',
-      label: 'Hiển thị liên kết pháp lý (6 trang bắt buộc)',
-      options: [
-        { label: 'Hiện', value: true },
-        { label: 'Ẩn', value: false },
-      ],
-    },
-    showSellerInfo: {
-      type: 'radio',
-      label: 'Hiển thị thông tin người bán',
-      options: [
-        { label: 'Hiện', value: true },
-        { label: 'Ẩn', value: false },
-      ],
-    },
-  },
+  // EB-10c: nothing to switch off – the legal links and seller info always show.
+  fields: {},
   defaultProps: {
     version: 1,
-    showLegalLinks: true,
-    showSellerInfo: true,
     legalLinks: [],
   },
   render: ({ puck, ...props }) => {
