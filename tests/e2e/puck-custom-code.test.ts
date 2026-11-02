@@ -80,11 +80,16 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
         previousDesignSystem = await dsGetRes.json()
       }
 
+      const prevLock =
+        previousDesignSystem?.lock && typeof previousDesignSystem.lock === 'object'
+          ? (previousDesignSystem.lock as Record<string, unknown>)
+          : {}
+
       const lockRes = await page.request.post('/api/globals/designSystem', {
         data: {
           ...(previousDesignSystem || {}),
           lock: {
-            ...((previousDesignSystem as any)?.lock || {}),
+            ...prevLock,
             customCss: 'locked',
           },
         },
@@ -170,7 +175,7 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
         data: {
           ...(previousDesignSystem || {}),
           lock: {
-            ...((previousDesignSystem as any)?.lock || {}),
+            ...prevLock,
             customCss: 'open',
           },
         },
@@ -223,7 +228,9 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
       await expect(page.locator('script:has-text("__eb09")')).toHaveCount(0)
 
       // Window global injection variable must NOT be defined
-      const windowEb09 = await page.evaluate(() => (window as any).__eb09)
+      const windowEb09 = await page.evaluate(
+        () => (window as unknown as Record<string, unknown>).__eb09,
+      )
       expect(windowEb09).toBeUndefined()
 
       // -------------------------------------------------------------
@@ -335,3 +342,4 @@ test.describe('EB-09: Custom CSS, HTML widget, and entrance animations', () => {
     }
   })
 })
+
