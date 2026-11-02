@@ -29,6 +29,7 @@ import { WorkshopReminders } from './collections/WorkshopReminders'
 import { TrialReminders } from './collections/TrialReminders'
 import { TrackerNudges } from './collections/TrackerNudges'
 import { Pages } from './collections/Pages'
+import { BlockTemplates } from './collections/BlockTemplates'
 import { Customers } from './collections/Customers'
 import { Entitlements } from './collections/Entitlements'
 import { Orders } from './collections/Orders'
@@ -105,6 +106,7 @@ export default buildConfig({
   collections: [
     // Trang web
     Pages,
+    BlockTemplates,
     Posts,
     Testimonials,
     Faqs,
