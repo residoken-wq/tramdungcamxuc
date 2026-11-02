@@ -116,16 +116,18 @@ describe('PK-14: AddChildField component', () => {
     vi.clearAllMocks()
     mockCanInsert = true
     mockSelectedId = 'parent-123'
+    // PK-14c: Puck 0.23 keeps slot children in the parent's props, not in data.zones.
     mockSelectedItem = {
       type: 'PackageCards',
-      props: { id: mockSelectedId },
+      props: {
+        id: mockSelectedId,
+        cards: [
+          { type: 'PackageCard', props: { id: 'c1' } },
+          { type: 'PackageCard', props: { id: 'c2' } },
+        ],
+      },
     }
-    mockZones = {
-      [`${mockSelectedId}:cards`]: [
-        { type: 'PackageCard', props: { id: 'c1' } },
-        { type: 'PackageCard', props: { id: 'c2' } },
-      ],
-    }
+    mockZones = {}
   })
 
   it('renders button with child label and card count', () => {

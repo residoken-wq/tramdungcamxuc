@@ -22,11 +22,13 @@ function EmptySlotHintInternal({
   isDeepNavy,
   className,
 }: Omit<EmptySlotHintProps, 'isEditing'>) {
+  // PK-14c: Puck 0.23 keeps slot children in the parent's props (not data.zones).
   const count = usePuckSelector((s) => {
     if (!parentId) return 0
-    const zone = `${parentId}:${slotName}`
-    const zoneItems = s.appState?.data?.zones?.[zone]
-    return Array.isArray(zoneItems) ? zoneItems.length : 0
+    const items = (s.getItemById(parentId)?.props as Record<string, unknown> | undefined)?.[
+      slotName
+    ]
+    return Array.isArray(items) ? items.length : 0
   })
 
   if (count > 0) return null
@@ -38,6 +40,7 @@ function EmptySlotHintInternal({
   return (
     <div
       data-eb-empty-hint
+      data-empty-slot-hint={`${parentId}:${slotName}`}
       className={`w-full flex items-center justify-center p-6 my-4 border-2 border-dashed rounded-2xl text-center pointer-events-none select-none transition-colors ${borderClass} ${textClass} ${bgClass} ${className || ''}`}
     >
       <p className="font-ui text-xs sm:text-sm leading-relaxed max-w-lg">

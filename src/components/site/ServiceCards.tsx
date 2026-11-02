@@ -71,7 +71,8 @@ export function ServiceCards({
   padding = 'md',
   _resolved,
   puck,
-}: ServiceCardsProps & { id?: string }) {
+  _editingHint,
+}: ServiceCardsProps & { id?: string; _editingHint?: boolean }) {
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
 
@@ -156,7 +157,7 @@ export function ServiceCards({
                 parentId={id}
                 slotName="cards"
                 childLabel="Thẻ dịch vụ"
-                isEditing={isEditing}
+                isEditing={_editingHint}
                 isDeepNavy={isDeepNavy}
               />
             </>

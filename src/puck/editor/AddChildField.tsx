@@ -32,12 +32,11 @@ export function AddChildField({
   const dispatch = usePuckSelector((s) => s.dispatch)
   const getPermissions = usePuckSelector((s) => s.getPermissions)
   const selectedItem = usePuckSelector((s) => s.selectedItem)
-  const zones = usePuckSelector((s) => s.appState.data.zones)
-
   const parentId = selectedItem?.props?.id ? String(selectedItem.props.id) : undefined
   const zone = parentId ? `${parentId}:${slotName}` : undefined
-  const zoneItems = zone && zones && Array.isArray(zones[zone]) ? zones[zone] : []
-  const childCount = zoneItems.length
+  // PK-14c: Puck 0.23 keeps slot children in the parent's props (not data.zones).
+  const slotItems = (selectedItem?.props as Record<string, unknown> | undefined)?.[slotName]
+  const childCount = Array.isArray(slotItems) ? slotItems.length : 0
 
   const childComponent = config?.components?.[childType]
   const childLabel = childComponent?.label || childType
@@ -58,7 +57,7 @@ export function AddChildField({
         ? crypto.randomUUID()
         : `${childType}-${Date.now()}`
 
-    const destinationIndex = zoneItems.length
+    const destinationIndex = childCount
 
     // 1. Insert new child block with defaultProps into zone
     dispatch({
@@ -76,7 +75,7 @@ export function AddChildField({
         itemSelector: { index: destinationIndex, zone },
       },
     })
-  }, [isLocked, parentId, zone, childType, zoneItems.length, dispatch])
+  }, [isLocked, parentId, zone, childType, childCount, dispatch])
 
   return (
     <div className="flex flex-col gap-1.5 pt-3 border-t border-deep-navy/10 mt-2">

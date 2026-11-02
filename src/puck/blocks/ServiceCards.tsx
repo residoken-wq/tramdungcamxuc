@@ -60,8 +60,9 @@ export const ServiceCardsBlock: ComponentConfig<ServiceCardsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  // PK-14c: keep `puck` out (as before PK-14) so the builder renders the block exactly like the
+  // public page (v1 packages resolve their names); only the empty-slot hint knows it is editing.
   render: ({ puck, ...props }) => (
-    <ServiceCards {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+    <ServiceCards {...props} _editingHint={Boolean(puck?.isEditing)} />
   ),
 }

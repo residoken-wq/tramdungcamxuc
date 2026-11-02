@@ -74,7 +74,8 @@ export function PackageCards({
   padding = 'md',
   _resolved,
   puck,
-}: PackageCardsProps & { id?: string }) {
+  _editingHint,
+}: PackageCardsProps & { id?: string; _editingHint?: boolean }) {
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -168,7 +169,7 @@ export function PackageCards({
                 parentId={id}
                 slotName="cards"
                 childLabel="Thẻ gói"
-                isEditing={isEditing}
+                isEditing={_editingHint}
                 isDeepNavy={isDeepNavy}
               />
             </>

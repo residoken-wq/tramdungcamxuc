@@ -108,29 +108,44 @@ test.describe('PK-14: One-click add child card & empty-slot hint', () => {
       await addChildBtn.click()
 
       // Canvas should now contain 2 PackageCard items in the slot zone.
-      const cardSlotZone = canvas.locator(`[id="${blockId}:cards"], [data-puck-zone="${blockId}:cards"]`)
-      await expect(cardSlotZone.locator('> *')).toHaveCount(2)
+      // Child cards are Puck components nested inside the parent block on the canvas.
+      const childCards = canvas.locator(`[data-puck-component="${blockId}"] [data-puck-component]`)
+      await expect(childCards).toHaveCount(2)
 
       // Right panel should now show fields of the newly added card.
-      await expect(page.getByText(/Gói sản phẩm|Chọn gói đồng hành/i)).toBeVisible()
+      await expect(page.getByRole('heading', { name: 'Thẻ gói', level: 2 })).toBeVisible()
+      await expect(page.getByRole('button', { name: 'Chọn sản phẩm từ hệ thống...' })).toBeVisible()
 
       // 7. Click Undo once.
-      const undoBtn = page.getByRole('button', { name: /Hoàn tác/i })
+      const undoBtn = page
+        .getByRole('contentinfo', { name: 'Thanh công cụ trình dựng' })
+        .getByRole('button', { name: 'Hoàn tác' })
       await undoBtn.click()
 
       // Canvas now has 1 card.
-      await expect(cardSlotZone.locator('> *')).toHaveCount(1)
+      await expect(childCards).toHaveCount(1)
 
       // 8. Save draft and verify JSON via API has no `_addChild`.
-      const saveDraftBtn = page.getByRole('button', { name: /Lưu nháp/i })
+      const saveDraftBtn = page.getByRole('button', { name: 'Lưu nháp', exact: true })
       await saveDraftBtn.click()
-      await expect(page.getByText(/Đã lưu nháp/i)).toBeVisible({ timeout: 15000 })
 
-      const savedRes = await page.request.get(`/api/pages/${pageId}?draft=true`)
-      expect(savedRes.ok()).toBe(true)
-      const savedPage = await savedRes.json()
-      const serializedPuckData = JSON.stringify(savedPage.puckData || {})
-      expect(serializedPuckData).not.toContain('_addChild')
+      // Poll the saved draft: 1 card in the slot, and no `_addChild` anywhere in the page data.
+      await expect
+        .poll(
+          async () => {
+            const res = await page.request.get(`/api/pages/${pageId}?draft=true&depth=0`)
+            if (!res.ok()) return 'error'
+            const doc = await res.json()
+            const json = JSON.stringify(doc.puckData || {})
+            const block = (doc.puckData?.content || []).find(
+              (b: { props?: { id?: string } }) => b.props?.id === blockId,
+            )
+            const cards = Array.isArray(block?.props?.cards) ? block.props.cards.length : -1
+            return `${cards}:${json.includes('_addChild')}`
+          },
+          { timeout: 20000 },
+        )
+        .toBe('1:false')
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
       try {
