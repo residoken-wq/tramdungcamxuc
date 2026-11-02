@@ -5,6 +5,7 @@ import type { HabitJourneyContent, SiteSetting } from '@/payload-types'
 import type { HabitStage } from '../diagnostic'
 import { HABIT_STAGES } from '../diagnostic'
 import { isHabitStage, type FlowDiagnoseQuestion } from './flow-content'
+import { getDiagnosticQuestions } from '../diagnostic.server'
 
 export { splitJourneyIntoStations, type StationRange } from './stations'
 
@@ -172,6 +173,26 @@ function cleanDiagnose(raw: HabitJourneyContent['diagnose'] | null): CleanHabitD
     scaleMinLabel: trimmed(raw?.scaleMinLabel),
     scaleMaxLabel: trimmed(raw?.scaleMaxLabel),
     results: onePerStage(results),
+  }
+}
+
+/**
+ * Step 1 of the Habit Loop flow reads its survey from `habitJourneyContent.diagnose.questions`.
+ * While that list is empty it falls back to the published `diagnosticQuestions` collection (the
+ * statements Hana already keeps for the `/habit/chan-doan` quiz), so the step is never shown
+ * without questions. Questions entered in the global always win.
+ */
+export async function withDiagnoseFallback(
+  diagnose: CleanHabitDiagnose | null | undefined,
+  payloadInstance?: Payload,
+): Promise<CleanHabitDiagnose> {
+  const base = diagnose ?? cleanDiagnose(null)
+  if (base.questions.length > 0) return base
+  const legacy = await getDiagnosticQuestions(await resolvePayload(payloadInstance))
+  if (legacy.length === 0) return base
+  return {
+    ...base,
+    questions: legacy.map(({ statement, stage }) => ({ statement: statement.trim(), stage })),
   }
 }
 

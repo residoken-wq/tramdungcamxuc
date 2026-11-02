@@ -1404,7 +1404,7 @@ export interface Technique {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Bộ câu hỏi trắc nghiệm chẩn đoán điểm nghẽn thói quen 5 phút.
+ * Câu hỏi cho quiz chẩn đoán /habit/chan-doan. Bước 1 "Khám đúng bệnh" của Habit Loop 5 phút cũng dùng bộ này khi mục "Câu hỏi khảo sát" trong Nội dung hành trình Habit còn trống.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "diagnosticQuestions".
@@ -3933,7 +3933,7 @@ export interface HabitJourneyContent {
         }[]
       | null;
     /**
-     * Khách chấm mỗi câu từ 1 đến 5. Giai đoạn có điểm trung bình cao nhất là nút thắt (cùng cách tính quiz chẩn đoán).
+     * Khách chấm mỗi câu từ 1 đến 5. Giai đoạn có điểm trung bình cao nhất là nút thắt (cùng cách tính quiz chẩn đoán). Để trống thì bước 1 dùng các câu đã xuất bản trong "Khóa Habit → Câu hỏi chẩn đoán".
      */
     questions?:
       | {

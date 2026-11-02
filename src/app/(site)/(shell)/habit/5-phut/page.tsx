@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { vi } from '@/lib/i18n/vi'
 import { getTechniques } from '@/lib/habit.server'
-import { getHabitJourneyContent } from '@/lib/habit/journey-content.server'
+import { getHabitJourneyContent, withDiagnoseFallback } from '@/lib/habit/journey-content.server'
 import { HabitFlow } from '@/components/habit/flow/HabitFlow'
 
 export const dynamic = 'force-dynamic'
@@ -42,6 +42,8 @@ export default async function HabitLoopPage() {
       return null
     }),
   ])
+  // Step 1 falls back to the "Câu hỏi chẩn đoán" collection while its own survey is empty.
+  const diagnose = await withDiagnoseFallback(journeyContent?.diagnose, payload)
 
   return (
     <div className="w-full">
@@ -51,7 +53,7 @@ export default async function HabitLoopPage() {
         onePercent={journeyContent?.onePercent}
         onePercentUnknowns={journeyContent?.onePercentUnknowns}
         stepQuotes={journeyContent?.stepQuotes}
-        diagnose={journeyContent?.diagnose}
+        diagnose={diagnose}
         loop={journeyContent?.loop}
         boardingPassCaption={journeyContent?.boardingPassCaption}
         privacyNote={journeyContent?.privacyNote}

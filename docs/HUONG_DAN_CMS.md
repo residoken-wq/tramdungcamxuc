@@ -933,6 +933,8 @@ Trình hướng dẫn thiết kế thói quen 5 phút được cấu trúc khoa 
   - **Câu trích dẫn (`stepQuotes.discover`)**: Bắt buộc có đủ Tác giả và Nguồn đã kiểm chứng (luật HB-07 / AGENTS §14).
   - **Các con số dẫn chứng** (tối đa 6): Mỗi con số bắt buộc đi kèm ý nghĩa và **Nguồn kiểm chứng**.
   - **Câu hỏi khảo sát** (8 câu mẫu, tối đa 12 câu): Chia đều cho 4 giai đoạn, thang điểm 1–5. Điểm trung bình cao nhất sẽ xác định nút thắt.
+  - **Nhập ở đâu:** `/admin` → nhóm **Khóa Habit** → **Nội dung hành trình Habit** → mục **Bước 1 – Khám đúng bệnh** → **Câu hỏi khảo sát** → bấm **Lưu**.
+  - **Để trống mục Câu hỏi khảo sát** thì bước 1 tự dùng các câu đã xuất bản trong **Khóa Habit → Câu hỏi chẩn đoán**, xếp theo cột Thứ tự (cùng bộ câu với quiz `/habit/chan-doan`, xem mục 9). Khi bạn nhập câu riêng ở mục Câu hỏi khảo sát, bước 1 chỉ dùng câu riêng đó.
   - **Nhãn mức 1 / 5** và **Gợi ý theo nút thắt**: 4 giải pháp tương ứng cho 4 giai đoạn.
 - **Trải nghiệm học viên**: Có nút "Bỏ qua phần khám" cho học viên muốn vào thẳng bước 2; thanh tiến trình hiển thị rõ `Bước 1 / 6`.
 
@@ -3003,6 +3005,9 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 ## 9. Quản lý Câu hỏi Quiz chẩn đoán thói quen
 
 **Mục đích**: Thay đổi 16 tình huống trì hoãn và các gợi ý cảm xúc cho bài chẩn đoán 5 phút ngoài website (`/habit/chan-doan`).
+
+> [!NOTE]
+> Bộ câu này còn được **bước 1 "Khám đúng bệnh" của Habit Loop 5 phút** (`/habit/5-phut`) dùng khi mục **Câu hỏi khảo sát** trong **Nội dung hành trình Habit** còn trống. Gợi ý (rich text) của từng câu chỉ hiện ở quiz `/habit/chan-doan`; kết quả của bước 1 lấy từ mục **Gợi ý theo nút thắt** của bước 1.
 
 **Cách thực hiện**:
 
