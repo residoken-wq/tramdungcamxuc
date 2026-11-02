@@ -403,6 +403,23 @@ for p in /thu-vien /ve-hana /coaching/growth-mirror; do curl -s -o /dev/null -w 
 
 Mong đợi: cả ba trả `308` về `/tai-nguyen`, `/ve-tram`, `/lo-trinh-chuyen-minh`. Container mới không giữ cache trang cũ nên không cần revalidate. Muốn có menu mới mẫu: chạy lại seed MẪU (chỉ thay menu khi menu vẫn đúng bản seed cũ, menu Hana đã sửa được giữ nguyên).
 
+### Deploy một lệnh – không cần nhập APP_TAG (bản thật, từ 02/11)
+
+`scripts/deploy.sh` (chạy trong thư mục repo trên server, VD `/opt/tdcx`):
+
+| Lệnh                           | Việc                                                                                                                                                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `./scripts/deploy.sh`          | backup (`scripts/backup.sh`, lỗi → dừng) → ghi commit đang chạy vào `.deploy/previous` → `git pull --ff-only` → kéo image `latest` → `up -d` → chờ `healthy` → in commit đang chạy + migration mới nhất |
+| `./scripts/deploy.sh rollback` | quay về commit ở `.deploy/previous` (`APP_TAG=sha-…` truyền qua lệnh), chờ `healthy`                                                                                                                    |
+| `./scripts/deploy.sh status`   | commit đang chạy, `origin/main`, migration mới nhất, mốc rollback                                                                                                                                       |
+
+- **Vì sao `latest` an toàn:** mỗi lần push lên `main`, CI chạy lint, unit test, e2e rồi mới build và đẩy `latest`. Run đỏ thì không đẩy gì, nên `latest` luôn là commit mới nhất trên `main` đã qua hết test.
+- **Biết đang chạy bản nào:** image mang nhãn `org.opencontainers.image.revision` (do `docker/metadata-action` gắn); script đọc nhãn này từ container `tdcx-app-1`.
+- `APP_TAG` truyền qua dòng lệnh (biến môi trường của shell thắng `.env` trong docker compose) – script **không đọc, không sửa** `.env`. Để `APP_TAG=` trống trong `.env`.
+- Thư mục có file đã sửa (`git status`) → script dừng, không tự xoá thay đổi.
+- Lịch sử deploy / rollback: `.deploy/history.log` (đã có trong `.gitignore`).
+- Đổi tên project / file compose: `PROJECT=… COMPOSE_FILES="-f …" ./scripts/deploy.sh`. Thời gian chờ `healthy`: `HEALTH_TIMEOUT` (mặc định 240 giây).
+
 ### Backup DB và media cùng thời điểm
 
 Tạm dừng app để không có upload/ghi DB chen giữa hai bản sao. Lưu `.env` ở nơi bảo mật riêng; bản DB chứa tài khoản nhưng không thay thế secret cấu hình. Thư mục backup phải nằm ngoài Git và được chép sang máy/lưu trữ khác sau khi hoàn tất.
