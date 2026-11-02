@@ -41,6 +41,8 @@ const mockPuckState = {
 vi.mock('@puckeditor/core', () => {
   return {
     usePuck: () => mockPuckState,
+    createUsePuck: () => (selector?: (s: unknown) => unknown) =>
+      selector ? selector(mockPuckState) : mockPuckState,
     Drawer: Object.assign(
       ({ children }: { children: React.ReactNode }) => (
         <div data-testid="puck-drawer">{children}</div>

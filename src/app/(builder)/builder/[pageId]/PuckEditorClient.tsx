@@ -7,11 +7,12 @@ import React, {
   useTransition,
   useMemo,
   useEffect,
+  useRef,
 } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Puck, type Data, type Viewports, useGetPuck } from '@puckeditor/core'
+import { Puck, type Config, type Data, type Viewports, useGetPuck, usePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { puckConfig, getPuckConfig } from '@/puck/config'
 import { puckVietnameseDictionary } from '@/puck/dictionary'
@@ -19,10 +20,17 @@ import {
   saveDraftAction,
   publishPageAction,
   getVersionsAction,
+  getVersionDataAction,
   restoreVersionAction,
   duplicatePageAction,
+  listTemplatesAction,
+  deleteTemplateAction,
   type VersionSummary,
+  type TemplateSummary,
 } from '@/puck/actions'
+import { formatVietnamDateTime, getVersionBadgeInfo } from '@/puck/version-history'
+import { remapPageBlockIds, validateTemplatePuckData } from '@/puck/template-validation'
+import { SaveTemplateModal, notifyTemplatesChanged } from '@/puck/editor/SaveTemplateModal'
 import { pageTemplateList, getTemplateData, type PageTemplateKey } from '@/puck/templates'
 import { AutosaveController } from '@/puck/autosave'
 import { LeftPanel } from '@/puck/editor/LeftPanel'
@@ -58,6 +66,12 @@ type Feedback = {
   message: string
 }
 
+export type PreviewVersionState = {
+  id: string
+  dateFormatted: string
+  originalData: Data
+}
+
 type EditorContextValue = {
   pageId: string
   pageTitle: string
@@ -67,6 +81,8 @@ type EditorContextValue = {
   feedback: Feedback
   setFeedback: (feedback: Feedback) => void
   autosaveController: AutosaveController
+  previewVersion: PreviewVersionState | null
+  setPreviewVersion: (preview: PreviewVersionState | null) => void
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
@@ -79,6 +95,7 @@ function EditorHeaderActions() {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState<boolean>(false)
+  const [isSavePageModalOpen, setIsSavePageModalOpen] = useState<boolean>(false)
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false)
 
   if (!context) throw new Error('EditorHeaderActions requires EditorContext')
@@ -105,7 +122,22 @@ function EditorHeaderActions() {
     getPuck().dispatch({ type: 'setData', data: restoredData })
     autosaveController.markSaved(restoredData)
     onStatusChange(newStatus)
+    context.setPreviewVersion(null)
     setFeedback({ type: 'saved', message: vi.builder.restoredVersion })
+  }
+
+  const handlePreviewVersion = (versionId: string, dateFormatted: string, versionData: Data) => {
+    const currentData = getPuck().appState.data
+    context.setPreviewVersion({
+      id: versionId,
+      dateFormatted,
+      originalData: currentData,
+    })
+    getPuck().dispatch({ type: 'setData', data: versionData })
+    setFeedback({
+      type: 'saved',
+      message: vi.eb08.previewingVersion(dateFormatted),
+    })
   }
 
   const handleSaveDraft = () => {
@@ -202,7 +234,7 @@ function EditorHeaderActions() {
           type="button"
           onClick={() => setIsTemplateModalOpen(true)}
           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 transition cursor-pointer"
-          title="Áp dụng một trong 4 mẫu trang dựng sẵn"
+          title="Áp dụng một trong 4 mẫu trang dựng sẵn hoặc mẫu đã lưu"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -213,6 +245,24 @@ function EditorHeaderActions() {
             />
           </svg>
           <span>{vi.builder.useTemplate}</span>
+        </button>
+
+        {/* Button: Lưu trang thành mẫu */}
+        <button
+          type="button"
+          onClick={() => setIsSavePageModalOpen(true)}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-ui text-xs font-semibold bg-white text-deep-navy border border-deep-navy/20 hover:bg-soft-pink/40 transition cursor-pointer"
+          title={vi.eb08.savePageTemplateDesc}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+            />
+          </svg>
+          <span>{vi.eb08.savePageAsTemplate}</span>
         </button>
 
         {/* Button: Lịch sử */}
@@ -276,7 +326,8 @@ function EditorHeaderActions() {
         <button
           type="button"
           onClick={handleSaveDraft}
-          disabled={isSaving}
+          // QA EB-08c: never save the version being previewed by mistake.
+          disabled={isSaving || Boolean(context.previewVersion)}
           className="inline-flex items-center justify-center px-3.5 py-1.5 rounded-lg font-ui text-xs font-bold bg-white text-deep-navy border border-deep-navy/30 hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
         >
           {isSaving ? vi.builder.processing : vi.builder.saveDraft}
@@ -286,7 +337,7 @@ function EditorHeaderActions() {
         <button
           type="button"
           onClick={handlePublish}
-          disabled={isSaving}
+          disabled={isSaving || Boolean(context.previewVersion)}
           className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg font-ui text-xs font-bold bg-deep-navy text-white hover:opacity-90 disabled:opacity-50 transition shadow-sm cursor-pointer"
         >
           {isSaving ? vi.builder.processing : vi.builder.publish}
@@ -294,38 +345,75 @@ function EditorHeaderActions() {
       </div>
 
       {/* Template Modal */}
-      <TemplateModal
-        isOpen={isTemplateModalOpen}
-        onClose={() => setIsTemplateModalOpen(false)}
-        pageTitle={pageTitle}
-        onApplyTemplate={handleApplyTemplate}
+      {isTemplateModalOpen && (
+        <TemplateModal
+          onClose={() => setIsTemplateModalOpen(false)}
+          pageTitle={pageTitle}
+          onApplyTemplate={handleApplyTemplate}
+        />
+      )}
+
+      {/* Save Page Template Modal */}
+      <SaveTemplateModal
+        isOpen={isSavePageModalOpen}
+        onClose={() => setIsSavePageModalOpen(false)}
+        kind="page"
+        puckData={getPuck().appState.data}
+        defaultName={pageTitle ? `${pageTitle} (Mẫu)` : 'Mẫu trang mới'}
+        onSaved={() => {
+          setFeedback({ type: 'saved', message: vi.eb08.savedSuccess })
+          setIsSavePageModalOpen(false)
+        }}
       />
 
       {/* Version History Modal */}
-      <HistoryModal
-        isOpen={isHistoryModalOpen}
-        onClose={() => setIsHistoryModalOpen(false)}
-        pageId={pageId}
-        onRestore={handleRestoreVersion}
-      />
+      {isHistoryModalOpen && (
+        <HistoryModal
+          onClose={() => setIsHistoryModalOpen(false)}
+          pageId={pageId}
+          onRestore={handleRestoreVersion}
+          onPreview={handlePreviewVersion}
+        />
+      )}
     </>
   )
 }
 
 function TemplateModal({
-  isOpen,
   onClose,
   pageTitle,
   onApplyTemplate,
 }: {
-  isOpen: boolean
   onClose: () => void
   pageTitle: string
   onApplyTemplate: (templateData: Data) => void
 }) {
-  if (!isOpen) return null
+  const [activeTab, setActiveTab] = useState<'builtin' | 'saved'>('builtin')
+  const [savedTemplates, setSavedTemplates] = useState<TemplateSummary[]>([])
+  const [loadingSaved, setLoadingSaved] = useState<boolean>(true)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string>('')
 
-  const handleSelect = (key: PageTemplateKey) => {
+  useEffect(() => {
+    let active = true
+    listTemplatesAction('page')
+      .then((res) => {
+        if (!active) return
+        if (res.success && res.templates) {
+          setSavedTemplates(res.templates)
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setLoadingSaved(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const handleSelectBuiltin = (key: PageTemplateKey) => {
     const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
     if (!confirmed) return
 
@@ -333,6 +421,48 @@ function TemplateModal({
     if (data) {
       onApplyTemplate(data)
       onClose()
+    }
+  }
+
+  const handleSelectSaved = (template: TemplateSummary) => {
+    const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
+    if (!confirmed) return
+
+    if (template.puckData && typeof template.puckData === 'object') {
+      // Stored data is untrusted (any admin can write it through the REST API): same checks as on save.
+      const check = validateTemplatePuckData(
+        template.puckData,
+        'page',
+        puckConfig as unknown as Config,
+      )
+      if (!check.success) {
+        setErrorMsg(check.message ?? vi.eb08.invalidData)
+        return
+      }
+      const remapped = remapPageBlockIds(template.puckData as Data)
+      onApplyTemplate(remapped)
+      onClose()
+    }
+  }
+
+  const handleDeleteSaved = async (template: TemplateSummary) => {
+    const confirmed = window.confirm(vi.eb08.confirmDeleteNamed(template.name))
+    if (!confirmed) return
+
+    setDeletingId(template.id)
+    setErrorMsg('')
+    try {
+      const res = await deleteTemplateAction(template.id)
+      if (res.success) {
+        setSavedTemplates((prev) => prev.filter((t) => t.id !== template.id))
+        notifyTemplatesChanged()
+      } else {
+        setErrorMsg(res.message || vi.eb08.deleteFailed)
+      }
+    } catch {
+      setErrorMsg(vi.eb08.deleteFailed)
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -344,7 +474,7 @@ function TemplateModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-deep-navy/60 backdrop-blur-sm p-4 animate-in fade-in duration-150"
     >
       <div className="bg-warm-ivory rounded-2xl border border-deep-navy/15 shadow-2xl max-w-2xl w-full p-6 text-deep-navy flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between pb-4 border-b border-deep-navy/10">
+        <div className="flex items-center justify-between pb-3 border-b border-deep-navy/10">
           <h2 id="template-modal-title" className="text-lg font-bold font-ui text-deep-navy">
             {vi.builder.selectTemplateTitle}
           </h2>
@@ -364,32 +494,146 @@ function TemplateModal({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 overflow-y-auto">
-          {pageTemplateList.map((tpl) => (
-            <div
-              key={tpl.key}
-              className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between"
-            >
-              <div>
-                <h3 className="font-bold text-sm text-deep-navy mb-1.5">{tpl.label}</h3>
-                <p className="text-xs text-deep-navy/70 leading-relaxed mb-4">{tpl.description}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleSelect(tpl.key)}
-                className="w-full py-2 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition"
-              >
-                Áp dụng mẫu này
-              </button>
-            </div>
-          ))}
+        {/* Tab switch: Mẫu có sẵn / Mẫu đã lưu */}
+        <div className="flex items-center gap-2 border-b border-deep-navy/10 pt-2 pb-0 px-1">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'builtin'}
+            onClick={() => setActiveTab('builtin')}
+            className={`pb-2 px-3 text-xs font-ui font-bold border-b-2 transition cursor-pointer ${
+              activeTab === 'builtin'
+                ? 'border-bright-magenta text-deep-navy'
+                : 'border-transparent text-deep-navy/60 hover:text-deep-navy'
+            }`}
+          >
+            {vi.eb08.groupBuiltin} ({pageTemplateList.length})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'saved'}
+            onClick={() => setActiveTab('saved')}
+            className={`pb-2 px-3 text-xs font-ui font-bold border-b-2 transition cursor-pointer ${
+              activeTab === 'saved'
+                ? 'border-bright-magenta text-deep-navy'
+                : 'border-transparent text-deep-navy/60 hover:text-deep-navy'
+            }`}
+          >
+            {vi.eb08.groupSaved} ({savedTemplates.length})
+          </button>
         </div>
+
+        {errorMsg && (
+          <div
+            role="alert"
+            className="p-3 rounded-lg bg-soft-pink text-bright-magenta text-xs font-semibold my-2"
+          >
+            {errorMsg}
+          </div>
+        )}
+
+        {/* Tab contents */}
+        {activeTab === 'builtin' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 overflow-y-auto">
+            {pageTemplateList.map((tpl) => (
+              <div
+                key={tpl.key}
+                className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between"
+              >
+                <div>
+                  <h3 className="font-bold text-sm text-deep-navy mb-1.5">{tpl.label}</h3>
+                  <p className="text-xs text-deep-navy/70 leading-relaxed mb-4">
+                    {tpl.description}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleSelectBuiltin(tpl.key)}
+                  className="w-full py-2 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition cursor-pointer shadow-sm"
+                >
+                  {vi.eb08.useThisTemplate}
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="py-4 overflow-y-auto flex-1 min-h-[180px]">
+            {loadingSaved && (
+              <div className="py-12 text-center text-xs text-deep-navy/60 font-ui">
+                {vi.common.loading}
+              </div>
+            )}
+
+            {!loadingSaved && savedTemplates.length === 0 && (
+              <div className="py-12 text-center text-xs text-deep-navy/60 font-ui">
+                {vi.eb08.noTemplates}
+              </div>
+            )}
+
+            {!loadingSaved && savedTemplates.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {savedTemplates.map((template) => {
+                  const isDeleting = deletingId === template.id
+                  const dateStr = new Date(template.createdAt).toLocaleDateString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })
+                  const author =
+                    template.createdBy?.name || template.createdBy?.email || vi.eb08.unknownUser
+
+                  return (
+                    <div
+                      key={template.id}
+                      className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between gap-3"
+                    >
+                      <div>
+                        <h3 className="font-bold text-sm text-deep-navy mb-1 line-clamp-1">
+                          {template.name}
+                        </h3>
+                        {template.description && (
+                          <p className="text-xs text-deep-navy/70 leading-relaxed mb-2 line-clamp-2">
+                            {template.description}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-2 text-[10px] text-deep-navy/60">
+                          <span>{dateStr}</span>
+                          <span>•</span>
+                          <span className="truncate max-w-[140px]">{author}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2 border-t border-deep-navy/10">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSaved(template)}
+                          disabled={isDeleting}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-ui font-semibold text-bright-magenta hover:bg-soft-pink/40 transition disabled:opacity-50 cursor-pointer"
+                        >
+                          {isDeleting ? '…' : vi.eb08.delete}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectSaved(template)}
+                          className="flex-1 py-1.5 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition cursor-pointer shadow-sm text-center"
+                        >
+                          {vi.eb08.useThisTemplate}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="pt-3 border-t border-deep-navy/10 flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition"
+            className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition cursor-pointer"
           >
             {vi.common.close}
           </button>
@@ -400,63 +644,102 @@ function TemplateModal({
 }
 
 function HistoryModal({
-  isOpen,
   onClose,
   pageId,
   onRestore,
+  onPreview,
 }: {
-  isOpen: boolean
   onClose: () => void
   pageId: string
   onRestore: (restoredData: Data, status: string) => void
+  onPreview: (versionId: string, dateFormatted: string, data: Data) => void
 }) {
   const [versions, setVersions] = useState<VersionSummary[]>([])
+  const [page, setPage] = useState<number>(1)
+  const [hasMore, setHasMore] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
+  const [loadingMore, setLoadingMore] = useState<boolean>(false)
+  const [previewingId, setPreviewingId] = useState<string | null>(null)
   const [restoringId, setRestoringId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string>('')
 
   useEffect(() => {
     let active = true
-    if (!isOpen) return
-
-    getVersionsAction(pageId)
+    getVersionsAction(pageId, 1, 25)
       .then((res) => {
         if (!active) return
         if (res.success && res.versions) {
           setVersions(res.versions)
+          setHasMore(Boolean(res.hasMore))
         } else {
           setErrorMsg(res.message || vi.builder.error)
         }
-        setLoading(false)
       })
       .catch(() => {
         if (!active) return
         setErrorMsg(vi.builder.error)
-        setLoading(false)
+      })
+      .finally(() => {
+        if (active) setLoading(false)
       })
 
     return () => {
       active = false
     }
-  }, [isOpen, pageId])
+  }, [pageId])
 
-  if (!isOpen) return null
+  const handleLoadMore = async () => {
+    setLoadingMore(true)
+    const nextPage = page + 1
+    try {
+      const res = await getVersionsAction(pageId, nextPage, 25)
+      if (res.success && res.versions) {
+        setVersions((prev) => [...prev, ...res.versions!])
+        setHasMore(Boolean(res.hasMore))
+        setPage(nextPage)
+      }
+    } catch {
+      setErrorMsg(vi.builder.error)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
+  const handleView = async (ver: VersionSummary) => {
+    setPreviewingId(ver.id)
+    setErrorMsg('')
+    try {
+      const res = await getVersionDataAction(ver.id)
+      if (res.success && res.puckData) {
+        const dateFormatted = formatVietnamDateTime(ver.updatedAt)
+        onPreview(ver.id, dateFormatted, res.puckData)
+        onClose()
+      } else {
+        setErrorMsg(res.message || vi.builder.error)
+      }
+    } catch {
+      setErrorMsg(vi.builder.error)
+    } finally {
+      setPreviewingId(null)
+    }
+  }
 
   const handleRestore = async (versionId: string) => {
     const confirmed = window.confirm(vi.builder.confirmRestoreVersion)
     if (!confirmed) return
 
     setRestoringId(versionId)
+    setErrorMsg('')
     try {
       const res = await restoreVersionAction(versionId)
       if (res.success && res.puckData) {
         onRestore(res.puckData, res.status || 'draft')
         onClose()
       } else {
-        alert(res.message || vi.builder.restoreFailed)
+        setErrorMsg(res.message || vi.builder.restoreFailed)
       }
     } catch {
-      alert(vi.builder.restoreFailed)
+      setErrorMsg(vi.builder.restoreFailed)
     } finally {
       setRestoringId(null)
     }
@@ -498,13 +781,16 @@ function HistoryModal({
           )}
 
           {errorMsg && (
-            <div className="p-3 rounded-lg bg-soft-pink text-bright-magenta text-xs font-semibold mb-3">
+            <div
+              role="alert"
+              className="p-3 rounded-lg bg-soft-pink text-bright-magenta text-xs font-semibold mb-3"
+            >
               {errorMsg}
             </div>
           )}
 
           {!loading && versions.length === 0 && !errorMsg && (
-            <div className="py-12 text-center text-sm text-deep-navy/60">
+            <div className="py-12 text-center text-sm text-deep-navy/60 font-ui">
               {vi.builder.noVersions}
             </div>
           )}
@@ -512,11 +798,11 @@ function HistoryModal({
           {!loading && versions.length > 0 && (
             <div className="space-y-2.5">
               {versions.map((ver) => {
-                const dateStr = new Date(ver.updatedAt).toLocaleString('vi-VN', {
-                  dateStyle: 'short',
-                  timeStyle: 'medium',
-                })
+                const dateStr = formatVietnamDateTime(ver.updatedAt)
+                const badge = getVersionBadgeInfo({ status: ver.status, autosave: ver.autosave })
                 const isRestoring = restoringId === ver.id
+                const isViewing = previewingId === ver.id
+                const isBusy = isRestoring || isViewing
 
                 return (
                   <div
@@ -529,36 +815,47 @@ function HistoryModal({
                           {dateStr}
                         </span>
                         <span
-                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                            ver.status === 'published'
-                              ? 'bg-mint-haze text-deep-navy'
-                              : 'bg-soft-pink text-deep-navy'
-                          }`}
+                          className={`text-[10px] px-2 py-0.5 rounded-full uppercase ${badge.className}`}
                         >
-                          {ver.status === 'published'
-                            ? vi.builder.publishedStatus
-                            : vi.builder.draftStatus}
+                          {badge.label}
                         </span>
-                        {ver.autosave && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-butter-cream text-deep-navy font-semibold">
-                            Tự lưu
-                          </span>
-                        )}
                       </div>
-                      <div className="text-[11px] text-deep-navy/60">Mã phiên bản: {ver.id}</div>
                     </div>
 
-                    <button
-                      type="button"
-                      disabled={isRestoring}
-                      onClick={() => handleRestore(ver.id)}
-                      className="px-3 py-1.5 rounded-lg bg-white border border-deep-navy/25 text-deep-navy text-xs font-bold hover:bg-soft-pink/40 disabled:opacity-50 transition"
-                    >
-                      {isRestoring ? vi.builder.restoringVersion : vi.builder.restoreVersion}
-                    </button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => handleView(ver)}
+                        className="px-2.5 py-1.5 rounded-lg bg-white border border-deep-navy/20 text-deep-navy text-xs font-bold hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
+                      >
+                        {isViewing ? '…' : vi.eb08.viewVersion}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => handleRestore(ver.id)}
+                        className="px-2.5 py-1.5 rounded-lg bg-white border border-deep-navy/20 text-deep-navy text-xs font-bold hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
+                      >
+                        {isRestoring ? vi.builder.restoringVersion : vi.builder.restoreVersion}
+                      </button>
+                    </div>
                   </div>
                 )
               })}
+
+              {hasMore && (
+                <div className="pt-2 text-center">
+                  <button
+                    type="button"
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="px-4 py-1.5 text-xs font-ui font-semibold text-deep-navy bg-white border border-deep-navy/20 rounded-lg hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
+                  >
+                    {loadingMore ? vi.common.loading : vi.eb08.loadMore}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -567,7 +864,7 @@ function HistoryModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition"
+            className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition cursor-pointer"
           >
             {vi.common.close}
           </button>
@@ -577,9 +874,10 @@ function HistoryModal({
   )
 }
 
-// Elementor-style Puck layout override with docked canvas bottom toolbar
+// Elementor-style Puck layout override with docked canvas bottom toolbar and version preview banner
 function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
   const context = useContext(EditorContext)
+  const { dispatch } = usePuck()
   const [canvasEl, setCanvasEl] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -603,9 +901,67 @@ function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
     return () => clearInterval(timer)
   }, [])
 
+  const handleExitPreview = () => {
+    if (context?.previewVersion) {
+      dispatch({ type: 'setData', data: context.previewVersion.originalData })
+      context.setPreviewVersion(null)
+      context.setFeedback({ type: 'idle', message: '' })
+    }
+  }
+
+  const handleRestoreFromPreview = async () => {
+    if (!context?.previewVersion) return
+    const confirmed = window.confirm(vi.builder.confirmRestoreVersion)
+    if (!confirmed) return
+
+    const versionId = context.previewVersion.id
+    context.setFeedback({ type: 'saving', message: vi.builder.restoringVersion })
+    try {
+      const res = await restoreVersionAction(versionId)
+      if (res.success && res.puckData) {
+        dispatch({ type: 'setData', data: res.puckData })
+        context.autosaveController.markSaved(res.puckData)
+        context.onStatusChange(res.status || 'draft')
+        context.setPreviewVersion(null)
+        context.setFeedback({ type: 'saved', message: vi.builder.restoredVersion })
+      } else {
+        context.setFeedback({ type: 'error', message: res.message || vi.builder.restoreFailed })
+      }
+    } catch {
+      context.setFeedback({ type: 'error', message: vi.builder.restoreFailed })
+    }
+  }
+
   return (
     <>
       {children}
+      {context?.previewVersion &&
+        canvasEl &&
+        createPortal(
+          <div
+            role="status"
+            className="absolute top-3 left-1/2 -translate-x-1/2 z-40 bg-bright-magenta text-white py-2 px-4 rounded-xl shadow-xl flex items-center gap-3 text-xs font-ui font-semibold animate-in fade-in slide-in-from-top-2 select-none"
+          >
+            <span>{vi.eb08.previewingVersion(context.previewVersion.dateFormatted)}</span>
+            <div className="flex items-center gap-1.5 border-l border-white/30 pl-3">
+              <button
+                type="button"
+                onClick={handleExitPreview}
+                className="px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold transition cursor-pointer"
+              >
+                {vi.eb08.previewExit}
+              </button>
+              <button
+                type="button"
+                onClick={handleRestoreFromPreview}
+                className="px-2.5 py-1 rounded-lg bg-white text-deep-navy hover:bg-mint-haze font-bold transition cursor-pointer shadow-sm"
+              >
+                {vi.eb08.previewRestore}
+              </button>
+            </div>
+          </div>,
+          canvasEl,
+        )}
       {canvasEl &&
         createPortal(
           <EditorToolbar
@@ -651,6 +1007,15 @@ export function PuckEditorClient({
 }: PuckEditorClientProps) {
   const [feedback, setFeedback] = useState<Feedback>({ type: 'idle', message: '' })
   const [docStatus, setDocStatus] = useState<string>(initialStatus)
+  const [previewVersion, setPreviewVersion] = useState<PreviewVersionState | null>(null)
+  // QA EB-08c: while a version is previewed its data must not reach autosave (it would overwrite
+  // the draft being edited 30 s later).
+  const previewingRef = useRef(false)
+  // Set the flag synchronously, before the version data is dispatched to Puck.
+  const setPreviewVersionTracked = (preview: PreviewVersionState | null) => {
+    previewingRef.current = Boolean(preview)
+    setPreviewVersion(preview)
+  }
 
   // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage)
   const config = useMemo(() => {
@@ -709,6 +1074,8 @@ export function PuckEditorClient({
             feedback,
             setFeedback,
             autosaveController,
+            previewVersion,
+            setPreviewVersion: setPreviewVersionTracked,
           }}
         >
           <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
@@ -762,6 +1129,7 @@ export function PuckEditorClient({
                 overrides={editorOverrides}
                 plugins={editorPlugins}
                 onChange={(data) => {
+                  if (previewingRef.current) return
                   autosaveController.setData(data)
                 }}
                 onAction={(_action) => {
