@@ -5,6 +5,7 @@
 export type PanelTab = 'content' | 'style' | 'advanced'
 
 export const STYLE_FIELD = '_style'
+export const LABEL_FIELD = '_label'
 
 /** Existing format fields of the blocks (PK-01 / PK-10) that move to the Style tab. */
 const STYLE_NAMES = new Set(['align', 'padding', 'bgColor', 'variant', 'tone'])
@@ -17,6 +18,7 @@ export function isTopLevelField(name: string): boolean {
 /** Tab of a top-level field; `_style` returns null because it draws both Style and Advanced. */
 export function fieldTab(name: string): PanelTab | null {
   if (name === STYLE_FIELD) return null
+  if (name === LABEL_FIELD) return 'advanced'
   if (STYLE_NAMES.has(name) || STYLE_SUFFIX.test(name)) return 'style'
   return 'content'
 }
