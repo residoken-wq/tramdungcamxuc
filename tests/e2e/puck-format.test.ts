@@ -126,7 +126,7 @@ test.describe('PK-01: Puck Format Presets & SectionHeader v2 Customization', () 
 
       // 7. Trang công khai có class màu / cỡ mới
       await publicPage.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
-      const heading = publicPage.getByRole('heading', { level: 2 })
+      const heading = publicPage.locator('main').getByRole('heading', { level: 2 })
       await expect(heading).toBeVisible()
 
       // H2 + titleSize "lg" tịnh tiến lên thang: text-4xl sm:text-5xl lg:text-6xl

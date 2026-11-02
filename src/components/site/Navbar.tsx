@@ -1,4 +1,6 @@
 'use client'
+// EB-10c: the code Navbar keeps its own in-flow mobile drawer (pre-EB-10 markup). The builder
+// NavMenu block uses nav/NavMenuView, whose drawer is an overlay. BACKLOG: share one drawer.
 
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'

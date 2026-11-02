@@ -11,7 +11,7 @@ import {
   TITLE_LINE_HEIGHT_VALUES,
 } from '@/lib/design/title-spacing'
 import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
-import { sanitizeBlockCustomCss, sanitizePageCustomCss } from './custom-css'
+import { sanitizeBlockCustomCss, sanitizePageCustomCss, PAGE_ATTR } from './custom-css'
 import { containerCss } from './container-css'
 import { cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
 import { sanitizeContainer } from './container-schema'
@@ -173,17 +173,18 @@ export function collectPageStyles(
     | null
     | undefined,
   ds: CleanDesignSystem,
+  scopeAttr: string = PAGE_ATTR,
 ): { css: string; fonts: string[] } {
   const sources = [data?.content, ...Object.values(data?.zones ?? {})]
   const css: string[] = []
   const fonts = new Set<string>()
 
-  // EB-09: Page-level custom CSS (when customCss lock is open)
+  // EB-09 / EB-10: Page / header / footer custom CSS (when customCss lock is open)
   if (isOpen(ds, 'customCss')) {
     const rawPageCss =
       (data?.root?.props?.customCss as unknown) ?? (data?.root?.customCss as unknown)
     if (typeof rawPageCss === 'string' && rawPageCss.trim()) {
-      const pageCss = sanitizePageCustomCss(rawPageCss)
+      const pageCss = sanitizePageCustomCss(rawPageCss, scopeAttr)
       if (pageCss) css.push(pageCss)
     }
   }

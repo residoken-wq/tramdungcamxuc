@@ -379,22 +379,30 @@ export async function duplicatePageAction(pageId: string): Promise<DuplicatePage
       }
     }
 
+    const originalKind = ((originalDoc as { kind?: 'header' | 'footer' | 'page' }).kind ??
+      'page') as 'header' | 'footer' | 'page'
+    const isPublicPage = originalKind === 'page'
+
     const allPages = await payload.find({
       collection: 'pages',
       pagination: false,
       select: { slug: true },
+      where: isPublicPage ? { kind: { equals: 'page' } } : undefined,
       user,
       overrideAccess: false,
     })
 
     const existingSlugs = allPages.docs.map((d) => d.slug).filter(Boolean) as string[]
-    const newSlug = generateDuplicateSlug(originalDoc.slug || '', existingSlugs)
+    const newSlug = isPublicPage
+      ? generateDuplicateSlug(originalDoc.slug || '', existingSlugs)
+      : undefined
 
     const newDoc = await payload.create({
       collection: 'pages',
       data: {
         title: `${originalDoc.title || 'Trang'} (Bản sao)`,
-        slug: newSlug,
+        kind: originalKind,
+        ...(newSlug ? { slug: newSlug } : {}),
         puckData: normalizePuckData(originalDoc.puckData),
         template: originalDoc.template,
         isSample: (originalDoc as { isSample?: boolean }).isSample ?? false,
@@ -408,7 +416,7 @@ export async function duplicatePageAction(pageId: string): Promise<DuplicatePage
     return {
       success: true,
       newPageId: String(newDoc.id),
-      newSlug,
+      newSlug: newSlug || (newDoc.slug as string) || '',
     }
   } catch (error) {
     console.error('Error in duplicatePageAction:', error)
