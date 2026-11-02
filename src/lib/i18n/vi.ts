@@ -3703,6 +3703,12 @@ export const vi = {
     successSubtitle: (days: number = 28) =>
       `Chúc mừng bạn đã hoàn thành thiết kế vòng lặp thói quen. Hãy bước vào hành trình ${days} ngày thực hành ngay bây giờ!`,
   },
+  hb14: {
+    badge: 'Đồng hành dài hạn',
+    title: (days: number = 28) => `Đồng hành sau ${days} ngày`,
+    coachButton: 'Đặt lịch với Habit Coach',
+    donateButton: 'Ủng hộ Trạm Dừng Cảm Xúc',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

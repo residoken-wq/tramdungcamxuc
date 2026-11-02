@@ -13,7 +13,7 @@ import {
   getOrCreateTrackerPlan,
 } from '@/lib/habit/tracker.server'
 import { getCertificateEligibility } from '@/lib/habit/certificate.server'
-import { getHabitJourneyContent } from '@/lib/habit/journey-content.server'
+import { getHabitJourneyContent, getHabitSiteSettings } from '@/lib/habit/journey-content.server'
 import { getStationReflectionsForPlan } from '@/lib/habit/reflections.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
@@ -112,12 +112,20 @@ export default async function HabitTrackerPage() {
     note: doc.note || null,
   }))
 
-  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm và câu giải thích dữ liệu (HB-13 / HB-24)
+  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm, câu giải thích dữ liệu, nội dung đồng hành sau 28 ngày và liên kết coach/ủng hộ (HB-13 / HB-14 / HB-24)
   let stationNames: string[] = []
   let stationQuestions: { question: string }[][] = []
   let privacyNote: string | null = null
+  let afterJourneyTitle: string | null = null
+  let afterJourneyText: string | null = null
+  let coachBookingUrl: string | null = null
+  let donationUrl: string | null = null
+
   try {
-    const journeyContent = await getHabitJourneyContent(payload)
+    const [journeyContent, habitSiteSettings] = await Promise.all([
+      getHabitJourneyContent(payload),
+      getHabitSiteSettings(payload),
+    ])
     stationNames = (journeyContent.stations || []).map((s) => s.name).filter(Boolean)
     stationQuestions = (journeyContent.stations || []).map((s) =>
       (s.reflectionQuestions || [])
@@ -125,9 +133,13 @@ export default async function HabitTrackerPage() {
         .filter((q) => Boolean(q.question)),
     )
     privacyNote = journeyContent.privacyNote ?? null
+    afterJourneyTitle = journeyContent.tracker?.afterJourneyTitle ?? null
+    afterJourneyText = journeyContent.tracker?.afterJourneyText ?? null
+    coachBookingUrl = habitSiteSettings.habitCoachBookingUrl ?? null
+    donationUrl = habitSiteSettings.habitDonationUrl ?? null
   } catch (err) {
     // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
-    console.error('Failed to load habit journey stations for tracker:', err)
+    console.error('Failed to load habit journey stations/settings for tracker:', err)
   }
 
   // 7b. Đọc các bài suy ngẫm đã lưu của học viên (HB-12)
@@ -163,6 +175,10 @@ export default async function HabitTrackerPage() {
         customerName={customer.name ?? null}
         journeyDays={journeyDays}
         privacyNote={privacyNote}
+        afterJourneyTitle={afterJourneyTitle}
+        afterJourneyText={afterJourneyText}
+        coachBookingUrl={coachBookingUrl}
+        donationUrl={donationUrl}
       />
     </div>
   )
