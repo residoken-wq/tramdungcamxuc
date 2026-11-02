@@ -3854,6 +3854,7 @@ export const vi = {
       scanGuide:
         'Mở ứng dụng MoMo để quét mã QR. Trên điện thoại, bạn có thể chụp màn hình rồi chọn ảnh trong MoMo.',
       openMomo: 'Mở MoMo',
+      openFullQr: 'Mở ảnh QR cỡ lớn (để phóng to hoặc lưu)',
       close: 'Đóng',
     },
     floatingActions: {
