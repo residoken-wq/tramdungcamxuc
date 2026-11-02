@@ -1,6 +1,6 @@
 import type { Field, GlobalConfig } from 'payload'
 import { checkbox, relation, select, text, url } from '../fields/content'
-import { authenticated } from '../lib/auth/access'
+import { authenticated, isOwner } from '../lib/auth/access'
 import { vi } from '../lib/i18n/vi'
 import { globalLivePreview } from '../lib/live-preview'
 
@@ -117,5 +117,89 @@ export const Navigation: GlobalConfig = {
     livePreview: globalLivePreview('navigation'),
   },
   access: { read: () => true, update: authenticated },
-  fields: [menu('mainMenu', 'Menu chính', true), menu('footerMenu', 'Menu chân trang', false)],
+  fields: [
+    {
+      type: 'collapsible',
+      label: vi.eb10.navigationThemeBuilder,
+      admin: {
+        initCollapsed: false,
+      },
+      fields: [
+        // REVIEW-REQUIRED: Only owner can switch header source or select builder header page
+        {
+          name: 'headerSource',
+          label: vi.eb10.headerSourceLabel,
+          type: 'select',
+          defaultValue: 'code',
+          required: true,
+          options: [
+            { label: vi.eb10.sourceCode, value: 'code' },
+            { label: vi.eb10.sourceBuilder, value: 'builder' },
+          ],
+          access: { update: isOwner },
+        },
+        {
+          name: 'headerPage',
+          label: vi.eb10.headerPageLabel,
+          type: 'relationship',
+          relationTo: 'pages',
+          filterOptions: {
+            kind: { equals: 'header' },
+          },
+          admin: {
+            condition: (_, siblingData) => siblingData?.headerSource === 'builder',
+          },
+          access: { update: isOwner },
+        },
+        {
+          name: 'headerBuilderUi',
+          type: 'ui',
+          admin: {
+            condition: (_, siblingData) => siblingData?.headerSource === 'builder',
+            components: {
+              Field: '@/components/admin/NavigationBuilderButton#HeaderBuilderButton',
+            },
+          },
+        },
+        // REVIEW-REQUIRED: Only owner can switch footer source or select builder footer page
+        {
+          name: 'footerSource',
+          label: vi.eb10.footerSourceLabel,
+          type: 'select',
+          defaultValue: 'code',
+          required: true,
+          options: [
+            { label: vi.eb10.sourceCode, value: 'code' },
+            { label: vi.eb10.sourceBuilder, value: 'builder' },
+          ],
+          access: { update: isOwner },
+        },
+        {
+          name: 'footerPage',
+          label: vi.eb10.footerPageLabel,
+          type: 'relationship',
+          relationTo: 'pages',
+          filterOptions: {
+            kind: { equals: 'footer' },
+          },
+          admin: {
+            condition: (_, siblingData) => siblingData?.footerSource === 'builder',
+          },
+          access: { update: isOwner },
+        },
+        {
+          name: 'footerBuilderUi',
+          type: 'ui',
+          admin: {
+            condition: (_, siblingData) => siblingData?.footerSource === 'builder',
+            components: {
+              Field: '@/components/admin/NavigationBuilderButton#FooterBuilderButton',
+            },
+          },
+        },
+      ],
+    },
+    menu('mainMenu', 'Menu chính', true),
+    menu('footerMenu', 'Menu chân trang', false),
+  ],
 }

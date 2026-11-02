@@ -3349,6 +3349,10 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Navigation {
   id: number;
+  headerSource: 'code' | 'builder';
+  headerPage?: (number | null) | Page;
+  footerSource: 'code' | 'builder';
+  footerPage?: (number | null) | Page;
   /**
    * Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.
    */
@@ -4178,6 +4182,10 @@ export interface HabitJourneyContent {
  * via the `definition` "navigation_select".
  */
 export interface NavigationSelect<T extends boolean = true> {
+  headerSource?: T;
+  headerPage?: T;
+  footerSource?: T;
+  footerPage?: T;
   mainMenu?:
     | T
     | {

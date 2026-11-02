@@ -9,6 +9,9 @@ import type { NavGroup, NavItem, NavbarCta } from '@/components/site/Navbar'
 import { PATHS } from '@/lib/paths'
 import type { LegalLink, SellerInfo, SocialLink } from '@/components/site/Footer'
 import type { SiteLogo } from '@/components/brand/Logo'
+import type { Data } from '@puckeditor/core'
+import { walkPuckItems } from '@/puck/walk'
+import { resolveServerData } from '@/puck/resolve.server'
 
 export interface FloatingCoffeeData {
   qrSrc: string
@@ -37,6 +40,12 @@ export interface SiteShellData {
     zaloChatUrl?: string | null
   }
   floatingCoffee: FloatingCoffeeData | null
+  headerSource: 'code' | 'builder'
+  headerData: Data | null
+  headerSticky?: boolean
+  footerSource: 'code' | 'builder'
+  footerData: Data | null
+  footerHasLegal: boolean
 }
 
 export const DEFAULT_SITE_SHELL_DATA: SiteShellData = {
@@ -55,6 +64,12 @@ export const DEFAULT_SITE_SHELL_DATA: SiteShellData = {
     zaloChatUrl: null,
   },
   floatingCoffee: null,
+  headerSource: 'code',
+  headerData: null,
+  headerSticky: false,
+  footerSource: 'code',
+  footerData: null,
+  footerHasLegal: false,
 }
 
 function resolveMenuHref(item: {
@@ -107,8 +122,24 @@ export function buildSiteShellFromPayloadData(args: {
   navigation?: Navigation | null
   siteSettings?: SiteSetting | null
   legalPages?: LegalPage[]
+  headerSource?: 'code' | 'builder'
+  headerData?: Data | null
+  headerSticky?: boolean
+  footerSource?: 'code' | 'builder'
+  footerData?: Data | null
+  footerHasLegal?: boolean
 }): SiteShellData {
-  const { navigation, siteSettings, legalPages = [] } = args
+  const {
+    navigation,
+    siteSettings,
+    legalPages = [],
+    headerSource = 'code',
+    headerData = null,
+    headerSticky = false,
+    footerSource = 'code',
+    footerData = null,
+    footerHasLegal = false,
+  } = args
 
   // 1. Navbar Items & CTA mapping
   let cta: NavbarCta = { label: '', href: '' }
@@ -233,14 +264,21 @@ export function buildSiteShellFromPayloadData(args: {
     },
     floatingChat,
     floatingCoffee,
+    headerSource,
+    headerData,
+    headerSticky,
+    footerSource,
+    footerData,
+    footerHasLegal,
   }
 }
 
 /**
  * Đọc dữ liệu khung site phía server (Navbar, Footer, FloatingChat).
  * Khi DB lỗi hoặc Payload ném lỗi -> trả về dữ liệu an toàn rỗng, không 500 trang.
+ * Đã bọc React cache() để dùng lại trong cùng request giữa layout và metadata.
  */
-export async function getSiteShellData(): Promise<SiteShellData> {
+export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
   try {
     const payloadConfig = await config
     const payload = await getPayload({ config: payloadConfig })
@@ -261,16 +299,125 @@ export async function getSiteShellData(): Promise<SiteShellData> {
         .catch(() => ({ docs: [] })),
     ])
 
+    const nav = navigation as (Navigation & {
+      headerSource?: 'code' | 'builder'
+      headerPage?: (number | string | null) | Page
+      footerSource?: 'code' | 'builder'
+      footerPage?: (number | string | null) | Page
+    }) | null
+
+    // Check themeBuilder header
+    let headerSource: 'code' | 'builder' = 'code'
+    let headerData: Data | null = null
+    let headerSticky = false
+
+    if (nav?.headerSource === 'builder' && nav.headerPage) {
+      try {
+        const headerPageId =
+          typeof nav.headerPage === 'object' && nav.headerPage !== null && 'id' in nav.headerPage
+            ? nav.headerPage.id
+            : nav.headerPage
+
+        const headerPageDoc = await payload.findByID({
+          collection: 'pages',
+          id: String(headerPageId),
+          draft: false,
+        })
+
+        if (
+          headerPageDoc &&
+          headerPageDoc._status === 'published' &&
+          headerPageDoc.kind === 'header' &&
+          headerPageDoc.puckData &&
+          typeof headerPageDoc.puckData === 'object'
+        ) {
+          const resolvedHeader = await resolveServerData(headerPageDoc.puckData as Data, {
+            pageSlug: headerPageDoc.slug,
+          })
+          headerSource = 'builder'
+          headerData = resolvedHeader
+          headerSticky =
+            (headerPageDoc.puckData as { root?: { props?: { sticky?: string } } })?.root?.props
+              ?.sticky === 'sticky'
+        } else {
+          console.warn(
+            '[SiteShell] Header builder page is missing, not published, or invalid. Falling back to code Navbar.',
+          )
+        }
+      } catch (err) {
+        console.error(
+          '[SiteShell] Error loading header builder page, falling back to code Navbar:',
+          err,
+        )
+      }
+    }
+
+    // Check themeBuilder footer
+    let footerSource: 'code' | 'builder' = 'code'
+    let footerData: Data | null = null
+    let footerHasLegal = false
+
+    if (nav?.footerSource === 'builder' && nav.footerPage) {
+      try {
+        const footerPageId =
+          typeof nav.footerPage === 'object' && nav.footerPage !== null && 'id' in nav.footerPage
+            ? nav.footerPage.id
+            : nav.footerPage
+
+        const footerPageDoc = await payload.findByID({
+          collection: 'pages',
+          id: String(footerPageId),
+          draft: false,
+        })
+
+        if (
+          footerPageDoc &&
+          footerPageDoc._status === 'published' &&
+          footerPageDoc.kind === 'footer' &&
+          footerPageDoc.puckData &&
+          typeof footerPageDoc.puckData === 'object'
+        ) {
+          const resolvedFooter = await resolveServerData(footerPageDoc.puckData as Data, {
+            pageSlug: footerPageDoc.slug,
+          })
+          footerSource = 'builder'
+          footerData = resolvedFooter
+
+          // Verify if footer has LegalFooter
+          let hasLegal = false
+          await walkPuckItems(resolvedFooter, (item) => {
+            if (item.type === 'LegalFooter') hasLegal = true
+          })
+          footerHasLegal = hasLegal
+        } else {
+          console.warn(
+            '[SiteShell] Footer builder page is missing, not published, or invalid. Falling back to code Footer.',
+          )
+        }
+      } catch (err) {
+        console.error(
+          '[SiteShell] Error loading footer builder page, falling back to code Footer:',
+          err,
+        )
+      }
+    }
+
     return buildSiteShellFromPayloadData({
-      navigation: navigation as Navigation | null,
+      navigation: nav,
       siteSettings: siteSettings as SiteSetting | null,
       legalPages: (legalPagesResult?.docs || []) as LegalPage[],
+      headerSource,
+      headerData,
+      headerSticky,
+      footerSource,
+      footerData,
+      footerHasLegal,
     })
   } catch {
     // Lỗi DB -> trả giá trị an toàn rỗng, không gây lỗi 500 cho trang
     return DEFAULT_SITE_SHELL_DATA
   }
-}
+})
 
 /**
  * Lấy nội dung chi tiết của một trang pháp lý theo slug (bọc cache React để tái dùng truy vấn trong cùng request).
