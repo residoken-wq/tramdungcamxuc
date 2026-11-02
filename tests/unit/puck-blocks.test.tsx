@@ -286,6 +286,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'TabsWidget',
         'AccordionWidget',
         'CounterWidget',
+        'HtmlWidget',
       ])
 
       expect(categories?.intro?.title).toBe('Mở đầu')

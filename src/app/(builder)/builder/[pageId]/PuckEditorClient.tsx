@@ -59,6 +59,8 @@ type PuckEditorClientProps = {
   initialStatus: string
   /** EB-04b: brand locks + palette, loaded on the server (Brand Book defaults when absent). */
   designSystem?: CleanDesignSystem
+  /** EB-09: owner flag verified on the server for custom code editing. */
+  isOwner?: boolean
 }
 
 type Feedback = {
@@ -1004,6 +1006,7 @@ export function PuckEditorClient({
   pageSlug,
   initialStatus,
   designSystem = DEFAULT_DESIGN_SYSTEM,
+  isOwner = false,
 }: PuckEditorClientProps) {
   const [feedback, setFeedback] = useState<Feedback>({ type: 'idle', message: '' })
   const [docStatus, setDocStatus] = useState<string>(initialStatus)
@@ -1017,10 +1020,12 @@ export function PuckEditorClient({
     setPreviewVersion(preview)
   }
 
-  // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage)
+  // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage, owner checks)
   const config = useMemo(() => {
-    return typeof getPuckConfig === 'function' ? getPuckConfig({ pageSlug }) : puckConfig
-  }, [pageSlug])
+    return typeof getPuckConfig === 'function'
+      ? getPuckConfig({ pageSlug, isOwner, designSystem })
+      : puckConfig
+  }, [pageSlug, isOwner, designSystem])
 
   // Setup Autosave Controller with useState initializer (pure, runs once, stable instance)
   const [autosaveController] = useState(() => {
@@ -1062,7 +1067,7 @@ export function PuckEditorClient({
   }, [autosaveController])
 
   return (
-    <StylePanelProvider ds={designSystem}>
+    <StylePanelProvider ds={designSystem} isOwner={isOwner}>
       <ContextMenuProvider>
         <EditorContext.Provider
           value={{

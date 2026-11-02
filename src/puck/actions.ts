@@ -11,10 +11,11 @@ import { normalizePuckData } from '@/puck/migrations'
 import { isAdminUser, isOwnerUser } from '@/lib/auth/access'
 import { validateTemplatePuckData } from '@/puck/template-validation'
 import { puckConfig } from '@/puck/config'
+import { extractCustomCode, hasCustomCodeChanged } from './custom-code-guard'
 
 export type SaveActionResult = {
   success: boolean
-  code?: 'UNAUTHORIZED' | 'SAVE_FAILED' | 'VALIDATION_FAILED'
+  code?: 'UNAUTHORIZED' | 'SAVE_FAILED' | 'VALIDATION_FAILED' | 'FORBIDDEN'
   message?: string
   status?: string
 }
@@ -55,7 +56,7 @@ export type TemplateSummary = {
 
 export type SaveTemplateActionResult = {
   success: boolean
-  code?: 'UNAUTHORIZED' | 'VALIDATION_FAILED' | 'SAVE_FAILED'
+  code?: 'UNAUTHORIZED' | 'VALIDATION_FAILED' | 'SAVE_FAILED' | 'FORBIDDEN'
   message?: string
   template?: TemplateSummary
 }
@@ -127,6 +128,16 @@ export async function saveDraftAction(pageId: string, puckData: Data): Promise<S
       }
     }
 
+    // REVIEW-REQUIRED: Non-owners cannot modify or introduce custom CSS or HtmlWidget content
+    const isOwner = isOwnerUser(user)
+    if (!isOwner && hasCustomCodeChanged(existingPage?.puckData, migratedData)) {
+      return {
+        success: false,
+        code: 'FORBIDDEN',
+        message: vi.eb09.onlyOwnerAllowed,
+      }
+    }
+
     const updatedDoc = await payload.update({
       collection: 'pages',
       id: pageId,
@@ -188,6 +199,16 @@ export async function publishPageAction(pageId: string, puckData: Data): Promise
           code: 'VALIDATION_FAILED',
           message: validation.error,
         }
+      }
+    }
+
+    // REVIEW-REQUIRED: Non-owners cannot modify or introduce custom CSS or HtmlWidget content
+    const isOwner = isOwnerUser(user)
+    if (!isOwner && hasCustomCodeChanged(existingPage?.puckData, migratedData)) {
+      return {
+        success: false,
+        code: 'FORBIDDEN',
+        message: vi.eb09.onlyOwnerAllowed,
       }
     }
 
@@ -503,6 +524,19 @@ export async function saveTemplateAction(params: {
         success: false,
         code: 'VALIDATION_FAILED',
         message: validation.message,
+      }
+    }
+
+    // REVIEW-REQUIRED: Non-owners cannot create templates containing custom CSS or HtmlWidget content
+    const isOwner = isOwnerUser(user)
+    if (!isOwner) {
+      const code = extractCustomCode(params.puckData)
+      if (code.rootCss || code.blockCss.size > 0 || code.widgetHtml.size > 0) {
+        return {
+          success: false,
+          code: 'FORBIDDEN',
+          message: vi.eb09.onlyOwnerAllowed,
+        }
       }
     }
 
