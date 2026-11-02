@@ -59,37 +59,28 @@ Trước khi công bố chính thức hành trình thói quen 28 ngày đến h�
 
 ## 3. Quy trình Deploy trên VPS Production
 
-Làm theo `docs/RUNBOOK.md` mục cập nhật bản mới. Tóm tắt (anh tự chạy trên VPS):
+Từ 02/11 dùng **`scripts/deploy.sh`**, không cần nhập `APP_TAG` (chi tiết: `docs/RUNBOOK.md` mục "Deploy một lệnh"). Anh tự chạy trên VPS.
 
-### Bước 3.1: Chọn image
+### Bước 3.0 (chỉ lần đầu dùng script)
 
-Vào GitHub → **Actions**: run CI của commit mới nhất trên `main` phải xanh **cả** job "Build and Push Docker image". Ghi 7 ký tự commit → tag `sha-xxxxxxx`.
+Mở `.env`, để **trống** `APP_TAG` (dòng `APP_TAG=`). Script luôn truyền `APP_TAG` qua lệnh nên giá trị trong `.env` không còn tác dụng, nhưng để trống cho đỡ nhầm. Lần đầu chạy, script chưa có bản đang chạy làm mốc rollback nếu image cũ chưa có nhãn commit – khi đó ghi lại `git rev-parse --short=7 HEAD` để rollback tay.
 
-### Bước 3.2: Backup trước (bắt buộc – bản này có migration)
+### Bước 3.1: Chờ CI xanh
 
-```bash
-cd /opt/tdcx
-./scripts/backup.sh
-git rev-parse --short=7 HEAD > previous-release.txt   # để rollback
-```
+GitHub → **Actions**: run CI của commit mới nhất trên `main` xanh **cả** job "Build and Push Docker image". (CI chỉ đẩy `latest` khi mọi bước qua.)
 
-_Mong đợi: dòng `backup OK: …`. Lỗi → **dừng**, không cập nhật._
-
-### Bước 3.3: Cập nhật và khởi động
+### Bước 3.2: Deploy
 
 ```bash
 cd /opt/tdcx
-export DC="docker compose -p tdcx -f docker-compose.prod.yml"
-git pull --ff-only origin main < /dev/null
-nano .env          # anh tự sửa APP_TAG=sha-xxxxxxx (bước 3.1)
-$DC pull < /dev/null
-$DC --profile tools pull seed < /dev/null
-$DC up -d < /dev/null
-$DC ps < /dev/null
-$DC logs app --tail 200 < /dev/null | grep -i migrat
+./scripts/deploy.sh
 ```
 
-_Mong đợi: `app` và `postgres` `healthy` (chờ khoảng 1 phút); log có các migration ở mục 1; câu lệnh ở cuối mục 1 trả migration mới nhất trên `main` ở dòng đầu (02/11: `20261102_100526_pk13_title_spacing`)._
+Script làm theo thứ tự: backup (lỗi → dừng) → ghi commit đang chạy vào `.deploy/previous` → `git pull --ff-only` → kéo image `latest` → `up -d` → chờ `healthy` → in commit đang chạy + migration mới nhất. App tự chạy migration khi khởi động.
+
+_Mong đợi: dòng `backup OK`, `app healthy`, "Migration mới nhất" = migration cuối ở mục 1 (02/11: `20261102_100526_pk13_title_spacing`)._
+
+Xem lại bất cứ lúc nào: `./scripts/deploy.sh status`.
 
 **Không chạy `pnpm seed`** trên bản thật (GO_LIVE_STEPS mục 9). Nội dung mục 2 Hana tự nhập trong `/admin`.
 
@@ -117,5 +108,5 @@ Thực hiện kiểm thử thực tế trên điện thoại (khung hình 375px)
 
 ## 5. Quay lại bản cũ (Rollback)
 
-1. **Lỗi giao diện / logic, dữ liệu không hỏng:** sửa `.env` `APP_TAG=sha-<nội dung previous-release.txt>`, rồi `$DC pull && $DC up -d`. Các cột / bảng mới của migration vẫn nằm trong DB, bản cũ không dùng tới. **Không** chạy `migrate:down` (mỗi lần chỉ lùi 1 migration, có thể xoá bảng suy ngẫm của học viên).
+1. **Lỗi giao diện / logic, dữ liệu không hỏng:** `./scripts/deploy.sh rollback` – quay về commit đã ghi ở `.deploy/previous`, chờ `healthy`. Các cột / bảng mới của migration vẫn nằm trong DB, bản cũ không dùng tới. **Không** chạy `migrate:down` (mỗi lần chỉ lùi 1 migration, có thể xoá bảng suy ngẫm của học viên). Lần `./scripts/deploy.sh` sau lại lên `latest`.
 2. **Dữ liệu hỏng:** khôi phục bản backup ở bước 3.2 theo `docs/RUNBOOK.md` mục "Khôi phục backup / Rollback" (đọc kỹ cảnh báo xoá dữ liệu), rồi làm như ý 1.

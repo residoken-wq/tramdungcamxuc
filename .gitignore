@@ -51,3 +51,6 @@ next-env.d.ts
 
 # Large source archives from Hana (reference only, kept on the Local machine)
 docs/sources/*.rar
+
+# production deploy state (scripts/deploy.sh)
+/.deploy/
