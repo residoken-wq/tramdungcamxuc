@@ -3816,7 +3816,7 @@ export const vi = {
     },
   },
   hb22: {
-    stepTitle: (days: number = 28) => 'Habit Boarding Pass',
+    stepTitle: (_days: number = 28) => 'Habit Boarding Pass',
     stepSubtitle: (days: number = 28) =>
       `Tấm vé lên chuyến ${days} ngày của bạn. Tải về làm hình nền điện thoại, hoặc đăng lên mạng xã hội — đó vừa là lời tuyên bố, vừa là cách khó quay đầu nhất.`,
     introHeading: 'Lời dặn trước giờ khởi hành',

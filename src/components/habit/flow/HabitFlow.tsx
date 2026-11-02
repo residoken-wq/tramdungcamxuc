@@ -500,7 +500,7 @@ export function HabitFlow({
       {/* Hero: Dòng nhỏ trên cùng + Tiêu đề 2 tầng + Nhãn + Dòng cảm xúc + Đoạn mở đầu + 3 nhãn giai đoạn */}
       <div className="mb-8 text-center space-y-4">
         <p className="text-xs sm:text-sm font-ui font-semibold text-deep-navy/70 tracking-wide uppercase">
-          {vi.habit.wizard.topLine(vi.footerBrand, journeyDays)}
+          {vi.habit.wizard.topLine('Trạm Dừng Cảm Xúc', journeyDays)}
         </p>
 
         <SectionHeader
