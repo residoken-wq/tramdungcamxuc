@@ -10,6 +10,16 @@ import { PATHS } from '@/lib/paths'
 import type { LegalLink, SellerInfo, SocialLink } from '@/components/site/Footer'
 import type { SiteLogo } from '@/components/brand/Logo'
 
+export interface FloatingCoffeeData {
+  qrSrc: string
+  qrAlt: string
+  qrWidth?: number
+  qrHeight?: number
+  title?: string | null
+  message?: string | null
+  momoUrl?: string | null
+}
+
 export interface SiteShellData {
   logo?: SiteLogo
   navbar: {
@@ -26,6 +36,7 @@ export interface SiteShellData {
     showFloatingChat: boolean
     zaloChatUrl?: string | null
   }
+  floatingCoffee: FloatingCoffeeData | null
 }
 
 export const DEFAULT_SITE_SHELL_DATA: SiteShellData = {
@@ -43,6 +54,7 @@ export const DEFAULT_SITE_SHELL_DATA: SiteShellData = {
     showFloatingChat: false,
     zaloChatUrl: null,
   },
+  floatingCoffee: null,
 }
 
 function resolveMenuHref(item: {
@@ -190,6 +202,26 @@ export function buildSiteShellFromPayloadData(args: {
     zaloChatUrl: siteSettings?.zaloChatUrl?.trim() || null,
   }
 
+  // 4. FloatingCoffee mapping
+  let floatingCoffee: FloatingCoffeeData | null = null
+  const coffee = siteSettings?.coffeeDonation
+  if (coffee?.enabled) {
+    const qrDoc = coffee.qrImage
+    if (qrDoc && typeof qrDoc === 'object' && typeof qrDoc.url === 'string' && qrDoc.url) {
+      const rawMomo = coffee.momoUrl?.trim()
+      const safeMomo = rawMomo ? safeHref(rawMomo) : null
+      floatingCoffee = {
+        qrSrc: qrDoc.url,
+        qrAlt: qrDoc.alt?.trim() || '',
+        qrWidth: typeof qrDoc.width === 'number' ? qrDoc.width : undefined,
+        qrHeight: typeof qrDoc.height === 'number' ? qrDoc.height : undefined,
+        title: coffee.title?.trim() || null,
+        message: coffee.message?.trim() || null,
+        momoUrl: safeMomo && safeMomo.startsWith('https://') ? safeMomo : null,
+      }
+    }
+  }
+
   return {
     logo,
     navbar: { items, cta },
@@ -200,6 +232,7 @@ export function buildSiteShellFromPayloadData(args: {
       tagline,
     },
     floatingChat,
+    floatingCoffee,
   }
 }
 

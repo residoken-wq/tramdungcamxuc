@@ -2452,6 +2452,39 @@ Bạn có thể nhấp chuột phải trực tiếp vào bất kỳ khối nào 
 
 ---
 
+### 7.1b. Cài đặt widget "Ly cà phê" ủng hộ qua mã QR MoMo (CF-01)
+
+**Mục đích**: Cho phép độc giả quý mến Trạm có thể tùy tâm mời Hana một ly cà phê ấm áp qua mã QR MoMo, xuất hiện dưới dạng icon ly cà phê nổi ở góc dưới bên phải màn hình.
+
+**Cách lấy ảnh QR nhận tiền trong app MoMo**:
+
+1. Mở ứng dụng MoMo trên điện thoại cá nhân.
+2. Chọn mục **Nhận tiền** (hoặc biểu tượng QR cá nhân để nhận tiền).
+3. Bấm **Lưu hình ảnh mã QR** về thư viện ảnh điện thoại.
+4. Cắt gọn ảnh vừa vặn khung mã QR và tên người nhận.
+5. ⚠️ **LƯU Ý BẢO MẬT:** Tuyệt đối **không** tải lên ảnh chụp màn hình có chứa số dư ví, lịch sử chuyển tiền hay thông tin tài khoản riêng tư nào khác ngoài khung mã QR.
+
+**Cấu hình trên CMS** _(Chỉ tài khoản Chủ sở hữu mới được sửa)_:
+
+1. Vào nhóm **Hệ thống** -> **Cài đặt website** -> chọn tab **Thanh toán**.
+2. Cuộn xuống phần **Ly cà phê ủng hộ (MoMo)** ở cuối tab:
+   - **Hiện nút ly cà phê**: Tick chọn để bật widget nổi trên website (bỏ tick để tắt).
+   - **Mã QR MoMo**: Bấm chọn/tải lên ảnh mã QR vừa lưu. Khi tải lên, bắt buộc điền mô tả ảnh (Alt) như `Mã QR MoMo ủng hộ Trạm Dừng Cảm Xúc`. _Lưu ý: Nếu bật nút mà chưa chọn ảnh, hệ thống sẽ báo lỗi và không cho lưu._
+   - **Tiêu đề**: Nhập tiêu đề hiện trong khung ủng hộ (tối đa 80 ký tự, ví dụ: _Mời Trạm một ly cà phê_). Nếu để trống, hệ thống tự lấy tiêu đề mặc định.
+   - **Lời nhắn**: Lời nhắn gửi tới bạn đọc (tối đa 300 ký tự).
+   - **Liên kết MoMo (không bắt buộc)**: Nếu có đường link nhận tiền MoMo trực tiếp dạng `https://me.momo.vn/...`, hãy dán vào đây để hiện thêm nút "Mở MoMo". Bắt buộc phải bắt đầu bằng `https://`.
+3. Bấm **Lưu thay đổi** (hoặc Save).
+
+**Xem thử & tự kiểm tra**:
+
+- Mở trang chủ hoặc các trang giới thiệu, bạn sẽ thấy icon ly cà phê nổi màu trắng, viền tím nhạt, icon tím hoa cà xinh xắn nằm ngay phía trên nút Zalo.
+- Khi tắt nút Zalo, nút ly cà phê sẽ tự động hạ sát đáy màn hình.
+- Bấm vào ly cà phê: khung hiển thị mã QR cùng lời nhắn sẽ hiện lên. Người dùng trên điện thoại có thể chụp màn hình để quét trong MoMo; người dùng trên máy tính quét trực tiếp bằng camera điện thoại.
+- Bấm phím **Esc** hoặc bấm vùng ngoài để đóng khung.
+- Widget tự động được ẩn trên các trang cần tập trung cao độ (trang học bài, trang theo dõi thói quen 28 ngày, trang rút thẻ EQ, trang thanh toán gói và trang kích hoạt dùng thử).
+
+---
+
 ### 7.2. Cài đặt liên kết Zalo và bật nút trò chuyện nổi (FloatingChat)
 
 **Mục đích**: Cho phép độc giả bấm nút trò chuyện nổi ở góc màn hình để nhắn tin trực tiếp qua Zalo với Hana.

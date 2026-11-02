@@ -1,7 +1,7 @@
 import React from 'react'
 import { getSiteShellData } from '@/lib/site-shell.server'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
-import { Navbar, Footer, FloatingChat } from '@/components/site'
+import { Navbar, Footer, FloatingActions } from '@/components/site'
 
 export default async function SiteShellLayout({ children }: { children: React.ReactNode }) {
   const [shellData, customer] = await Promise.all([getSiteShellData(), getCurrentCustomer()])
@@ -24,7 +24,8 @@ export default async function SiteShellLayout({ children }: { children: React.Re
         tagline={shellData.footer.tagline}
         logo={shellData.logo}
       />
-      <FloatingChat
+      <FloatingActions
+        floatingCoffee={shellData.floatingCoffee}
         showFloatingChat={shellData.floatingChat.showFloatingChat}
         zaloChatUrl={shellData.floatingChat.zaloChatUrl}
       />

@@ -6,6 +6,7 @@ import {
   number,
   select,
   text,
+  textarea,
   url,
 } from '../fields/content'
 import { authenticated, isOwner } from '../lib/auth/access'
@@ -65,20 +66,123 @@ export const SiteSettings: GlobalConfig = {
           // REVIEW-REQUIRED: Payment settings are owner-only (read and update). Public payment
           // pages read them through server code with overrideAccess.
           fields: [
-            text('bankBin', 'Mã ngân hàng VietQR'),
-            text('bankName', 'Tên ngân hàng'),
-            text('accountNumber', 'Số tài khoản'),
-            text('accountName', 'Tên chủ tài khoản'),
-            { ...text('transferPrefix', 'Đầu mã chuyển khoản'), defaultValue: 'TDCX' },
-            {
-              ...url('experienceBookingUrl', 'Liên kết đặt lịch phiên trải nghiệm'),
-              admin: {
-                description:
-                  'Liên kết đặt lịch (Cal.com, Google Calendar...) gửi qua email cho khách sau khi xác nhận thanh toán.',
+            ...[
+              text('bankBin', 'Mã ngân hàng VietQR'),
+              text('bankName', 'Tên ngân hàng'),
+              text('accountNumber', 'Số tài khoản'),
+              text('accountName', 'Tên chủ tài khoản'),
+              { ...text('transferPrefix', 'Đầu mã chuyển khoản'), defaultValue: 'TDCX' },
+              {
+                ...url('experienceBookingUrl', 'Liên kết đặt lịch phiên trải nghiệm'),
+                admin: {
+                  description:
+                    'Liên kết đặt lịch (Cal.com, Google Calendar...) gửi qua email cho khách sau khi xác nhận thanh toán.',
+                },
               },
+              checkbox('trialCreditApplies', 'Trừ phí trải nghiệm vào giá gói'),
+            ].map((field) => ({ ...field, access: { read: isOwner, update: isOwner } }) as Field),
+            // REVIEW-REQUIRED: Coffee donation settings (MoMo QR) are read publicly so visitors
+            // can see the donation widget and QR, but update is restricted to owner only.
+            {
+              name: 'coffeeDonation',
+              label: vi.cf01.siteSettings.groupLabel,
+              type: 'group',
+              admin: {
+                description: vi.cf01.siteSettings.groupDesc,
+              },
+              access: {
+                read: () => true,
+                update: isOwner,
+              },
+              fields: [
+                {
+                  ...checkbox('enabled', vi.cf01.siteSettings.enabled, false, {
+                    admin: { description: vi.cf01.siteSettings.enabledDesc },
+                  }),
+                  validate: (
+                    value: unknown,
+                    {
+                      siblingData,
+                      data,
+                    }: {
+                      siblingData?: { qrImage?: unknown }
+                      data?: { coffeeDonation?: { qrImage?: unknown } }
+                    },
+                  ) => {
+                    if (value && !siblingData?.qrImage && !data?.coffeeDonation?.qrImage) {
+                      return vi.cf01.errors.requiredQrImage
+                    }
+                    return true
+                  },
+                },
+                {
+                  ...image('qrImage', vi.cf01.siteSettings.qrImage, {
+                    admin: { description: vi.cf01.siteSettings.qrImageDesc },
+                  }),
+                  validate: (
+                    value: unknown,
+                    {
+                      siblingData,
+                      data,
+                    }: {
+                      siblingData?: { enabled?: boolean }
+                      data?: { coffeeDonation?: { enabled?: boolean } }
+                    },
+                  ) => {
+                    const isEnabled = Boolean(siblingData?.enabled ?? data?.coffeeDonation?.enabled)
+                    if (isEnabled && !value) {
+                      return vi.cf01.errors.requiredQrImage
+                    }
+                    return true
+                  },
+                },
+                {
+                  ...text('title', vi.cf01.siteSettings.title, false, {
+                    maxLength: 80,
+                    admin: { description: vi.cf01.siteSettings.titleDesc },
+                  }),
+                  validate: (value: string | null | undefined) => {
+                    if (value && typeof value === 'string' && value.length > 80) {
+                      return vi.cf01.errors.titleTooLong
+                    }
+                    return true
+                  },
+                },
+                {
+                  ...textarea('message', vi.cf01.siteSettings.message, {
+                    maxLength: 300,
+                    admin: { description: vi.cf01.siteSettings.messageDesc },
+                  }),
+                  validate: (value: string | null | undefined) => {
+                    if (value && typeof value === 'string' && value.length > 300) {
+                      return vi.cf01.errors.messageTooLong
+                    }
+                    return true
+                  },
+                },
+                {
+                  ...url('momoUrl', vi.cf01.siteSettings.momoUrl),
+                  admin: { description: vi.cf01.siteSettings.momoUrlDesc },
+                  // REVIEW-REQUIRED: MoMo donation URL must be HTTPS only.
+                  validate: (value: string | null | undefined) => {
+                    if (!value || typeof value !== 'string' || value.trim().length === 0) {
+                      return true
+                    }
+                    const trimmed = value.trim()
+                    try {
+                      const parsed = new URL(trimmed)
+                      if (parsed.protocol !== 'https:') {
+                        return vi.cf01.errors.invalidMomoUrl
+                      }
+                      return true
+                    } catch {
+                      return vi.cf01.errors.invalidUrl
+                    }
+                  },
+                },
+              ],
             },
-            checkbox('trialCreditApplies', 'Trừ phí trải nghiệm vào giá gói'),
-          ].map((field) => ({ ...field, access: { read: isOwner, update: isOwner } }) as Field),
+          ],
         },
         {
           label: 'Liên hệ & Zalo',

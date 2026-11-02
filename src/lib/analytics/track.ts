@@ -26,6 +26,8 @@ export type AnalyticsEvent =
   | 'booking_clicked'
   | 'b2b_brief_submitted'
   | 'boarding_pass_downloaded'
+  | 'coffee_opened'
+  | 'coffee_momo_clicked'
 
 /**
  * Danh sách trắng (whitelist) các trường thuộc tính (props) được phép gửi cho từng sự kiện.
@@ -57,6 +59,8 @@ export const EVENT_ALLOWED_PROPS: Record<AnalyticsEvent, readonly string[]> = {
   booking_clicked: ['productId', 'slug', 'pageSlug'],
   b2b_brief_submitted: ['pageSlug'],
   boarding_pass_downloaded: ['format', 'method'],
+  coffee_opened: [],
+  coffee_momo_clicked: [],
 }
 
 /**
