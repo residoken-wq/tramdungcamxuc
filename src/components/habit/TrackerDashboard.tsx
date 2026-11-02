@@ -15,6 +15,8 @@ import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/
 import type { CheckinStatus } from '@/lib/habit/rhythm'
 import { buildTrackerView } from '@/lib/habit/tracker-view'
 import { requiredDays } from '@/lib/habit/journey'
+import { safeHref } from '@/lib/safe-href'
+import type { CleanStepQuote } from '@/lib/habit/journey-content.server'
 
 export interface InitialCheckinData {
   day: number
@@ -55,6 +57,7 @@ export interface TrackerDashboardProps {
   afterJourneyTitle?: string | null
   afterJourneyText?: string | null
   coachBookingUrl?: string | null
+  quote?: CleanStepQuote | null
 }
 
 export function TrackerDashboard({
@@ -80,6 +83,7 @@ export function TrackerDashboard({
   afterJourneyTitle,
   afterJourneyText,
   coachBookingUrl,
+  quote,
 }: TrackerDashboardProps) {
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
   const [reflections, setReflections] = useState<InitialReflectionData[]>(initialReflections || [])
@@ -246,6 +250,34 @@ export function TrackerDashboard({
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-8">
+      {/* HB-26: Câu trích dẫn trang Tracker nếu có từ CMS */}
+      {quote && quote.text && (
+        <blockquote
+          data-testid="tracker-quote"
+          className="rounded-2xl bg-lavender-mist/40 border border-lavender-mist p-4 sm:p-5 space-y-2 text-left"
+        >
+          <p className="font-quote italic text-base sm:text-lg text-deep-navy leading-relaxed">
+            &ldquo;{quote.text}&rdquo;
+          </p>
+          <footer className="font-ui text-xs sm:text-sm text-deep-navy/80 font-medium">
+            <span>— {quote.author}</span>
+            <span> · </span>
+            {quote.sourceUrl && safeHref(quote.sourceUrl) ? (
+              <a
+                href={safeHref(quote.sourceUrl)!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-bright-magenta focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-magenta rounded"
+              >
+                {quote.source}
+              </a>
+            ) : (
+              <span>{quote.source}</span>
+            )}
+          </footer>
+        </blockquote>
+      )}
+
       {/* 1. Header, Badges & Identity Commitment */}
       <div className="bg-warm-ivory rounded-card border border-deep-navy/10 p-6 sm:p-8 shadow-soft text-center space-y-4">
         <div className="flex flex-wrap items-center justify-center gap-2">

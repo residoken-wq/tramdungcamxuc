@@ -633,6 +633,7 @@ export function HabitFlow({
 
           {draft.step === 4 && (
             <StepName
+              quote={stepQuotes?.name}
               actionText={draft.actionText}
               personText={draft.personText}
               identityStatement={draft.identityStatement}

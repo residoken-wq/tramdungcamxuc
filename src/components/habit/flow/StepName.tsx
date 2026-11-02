@@ -5,6 +5,8 @@ import { vi } from '@/lib/i18n/vi'
 import { DEFAULT_RHYTHM_DAYS } from '@/lib/habit'
 import type { Weekday } from '@/lib/habit/rhythm'
 import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
+import { safeHref } from '@/lib/safe-href'
+import type { CleanStepQuote } from '@/lib/habit/journey-content.server'
 
 export interface StepNameProps {
   actionText: string
@@ -19,6 +21,7 @@ export interface StepNameProps {
   startDate?: string
   journeyDays?: number
   error?: string | null
+  quote?: CleanStepQuote | null
   onActionChange: (val: string) => void
   onPersonChange: (val: string) => void
   onToggleRhythmDay: (day: Weekday) => void
@@ -42,6 +45,7 @@ export function StepName({
   startDate,
   journeyDays = 28,
   error,
+  quote,
   onActionChange,
   onPersonChange,
   onToggleRhythmDay,
@@ -98,6 +102,34 @@ export function StepName({
         </h2>
         <p className="font-body text-sm sm:text-base text-deep-navy/80">{vi.hb20.stepSubtitle}</p>
       </div>
+
+      {/* HB-26: Câu trích dẫn bước 4 từ CMS nếu có */}
+      {quote && quote.text && (
+        <blockquote
+          data-testid="name-quote"
+          className="rounded-2xl bg-lavender-mist/40 border border-lavender-mist p-4 sm:p-5 space-y-2"
+        >
+          <p className="font-quote italic text-base sm:text-lg text-deep-navy leading-relaxed">
+            &ldquo;{quote.text}&rdquo;
+          </p>
+          <footer className="font-ui text-xs sm:text-sm text-deep-navy/80 font-medium">
+            <span>— {quote.author}</span>
+            <span> · </span>
+            {quote.sourceUrl && safeHref(quote.sourceUrl) ? (
+              <a
+                href={safeHref(quote.sourceUrl)!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-bright-magenta focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-magenta rounded"
+              >
+                {quote.source}
+              </a>
+            ) : (
+              <span>{quote.source}</span>
+            )}
+          </footer>
+        </blockquote>
+      )}
 
       {/* ============================================================== */}
       {/* 1. Tuyên ngôn danh tính                                         */}
