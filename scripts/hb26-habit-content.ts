@@ -1,25 +1,19 @@
-// Usage:
-// Dry-run (mặc định - chỉ in diff):
+// HB-26: nạp nội dung Habit Loop bản mới vào global habitJourneyContent.
+// Dry-run (mặc định – chỉ in diff):
 //   pnpm payload run scripts/hb26-habit-content.ts
-// Ghi vào database (kèm tạo file backup trong backups/):
-//   pnpm payload run scripts/hb26-habit-content.ts apply
-//   (hoặc pnpm payload run scripts/hb26-habit-content.ts -- --apply hoặc cross-env APPLY=true ...)
+// Ghi vào database (kèm file backup trong backups/):
+//   APPLY=true pnpm payload run scripts/hb26-habit-content.ts
+// `payload run` KHÔNG chuyển cờ dòng lệnh (--apply) vào script (HB-26c), nên chỉ dùng biến APPLY=true.
+// Trên server: docs/RUNBOOK.md mục "HB-26 – Nạp nội dung Habit Loop bản mới".
 import fs from 'node:fs'
 import path from 'node:path'
 import { getPayload } from 'payload'
 import config from '../src/payload.config'
-import {
-  buildHabitContentPatch,
-  formatHabitContentDiff,
-} from '../src/lib/habit/hb26-content-patch'
+import { buildHabitContentPatch, formatHabitContentDiff } from '../src/lib/habit/hb26-content-patch'
 
 export { buildHabitContentPatch } from '../src/lib/habit/hb26-content-patch'
 
-const isApply =
-  process.argv.includes('--apply') ||
-  process.argv.includes('apply') ||
-  process.env.APPLY === 'true' ||
-  process.env.npm_config_apply === 'true'
+const isApply = process.env.APPLY === 'true'
 const payload = await getPayload({ config })
 
 try {
@@ -31,7 +25,9 @@ try {
   const patch = buildHabitContentPatch(current)
 
   if (!patch) {
-    console.log('✅ Dữ liệu habitJourneyContent đã hoàn toàn khớp bản mới v2 (0 diff). Không cần cập nhật.')
+    console.log(
+      '✅ Dữ liệu habitJourneyContent đã hoàn toàn khớp bản mới v2 (0 diff). Không cần cập nhật.',
+    )
   } else {
     const diffOutput = formatHabitContentDiff(current, patch)
 
@@ -41,8 +37,8 @@ try {
       console.log('======================================================================\n')
       console.log(diffOutput)
       console.log('\n======================================================================')
-      console.log('👉 Để ghi bản vá này vào database, chạy lại kèm cờ --apply:')
-      console.log('   pnpm payload run scripts/hb26-habit-content.ts --apply')
+      console.log('👉 Để ghi bản vá này vào database, chạy lại với biến APPLY=true:')
+      console.log('   APPLY=true pnpm payload run scripts/hb26-habit-content.ts')
       console.log('======================================================================')
     } else {
       // 1. Sao lưu bản global hiện tại vào backups/

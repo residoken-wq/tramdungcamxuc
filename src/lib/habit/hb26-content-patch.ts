@@ -109,12 +109,6 @@ export const TARGET_HABIT_CONTENT = {
       source: 'Atomic Habits',
       sourceUrl: null as string | null,
     },
-    boardingPass: {
-      text: '',
-      author: '',
-      source: '',
-      sourceUrl: null as string | null,
-    },
     tracker: {
       text: 'Thói quen là lãi kép của sự tự hoàn thiện.',
       author: 'James Clear',
@@ -155,8 +149,6 @@ export const TARGET_HABIT_CONTENT = {
     afterJourneyText:
       'Nếu cần một Habit Coach đồng hành cùng bạn sau hành trình 28 ngày này, đặt một buổi trò chuyện với Hana.',
   },
-  privacyNote:
-    'Mọi thứ bạn nhập nằm trong trình duyệt của chính bạn. Không ai khác đọc được, kể cả Hana. Đổi máy hoặc xoá dữ liệu trình duyệt là mất, nên hãy tải một bản sao lưu.',
   quotes: [] as unknown[],
 }
 
@@ -223,7 +215,6 @@ export function buildHabitContentPatch(
     checkQuote('mentor') ||
     checkQuote('name') ||
     checkQuote('loop') ||
-    checkQuote('boardingPass') ||
     checkQuote('tracker')
 
   // 4. Check if loop needs update
@@ -248,9 +239,8 @@ export function buildHabitContentPatch(
       TARGET_HABIT_CONTENT.tracker.afterJourneyTitle ||
     (cur.tracker?.afterJourneyText?.trim() || '') !== TARGET_HABIT_CONTENT.tracker.afterJourneyText
 
-  // 6. Check privacyNote
-  const isPrivacyNoteChanged =
-    (cur.privacyNote?.trim() || '') !== TARGET_HABIT_CONTENT.privacyNote
+  // 6. privacyNote is NOT patched (HB-26c): the new copy says data stays in the browser, which is
+  // false here (the tracker is saved on the server per account). Hana writes the sentence herself.
 
   // 7. Check quotes (legacy)
   const isQuotesChanged = Array.isArray(cur.quotes) && cur.quotes.length > 0
@@ -261,7 +251,6 @@ export function buildHabitContentPatch(
     isStepQuotesChanged ||
     isLoopChanged ||
     isTrackerChanged ||
-    isPrivacyNoteChanged ||
     isQuotesChanged
 
   if (!hasAnyChanges) {
@@ -302,7 +291,6 @@ export function buildHabitContentPatch(
       mentor: { ...TARGET_HABIT_CONTENT.stepQuotes.mentor },
       name: { ...TARGET_HABIT_CONTENT.stepQuotes.name },
       loop: { ...TARGET_HABIT_CONTENT.stepQuotes.loop },
-      boardingPass: { ...TARGET_HABIT_CONTENT.stepQuotes.boardingPass },
       tracker: { ...TARGET_HABIT_CONTENT.stepQuotes.tracker },
     }
   }
@@ -322,10 +310,6 @@ export function buildHabitContentPatch(
       afterJourneyTitle: TARGET_HABIT_CONTENT.tracker.afterJourneyTitle,
       afterJourneyText: TARGET_HABIT_CONTENT.tracker.afterJourneyText,
     }
-  }
-
-  if (isPrivacyNoteChanged) {
-    patch.privacyNote = TARGET_HABIT_CONTENT.privacyNote
   }
 
   if (isQuotesChanged) {
@@ -382,12 +366,21 @@ export function formatHabitContentDiff(current: any, patch: Record<string, any> 
       )
     }
     if (patch.onePercent.unknowns) {
-      lines.push(`- onePercent.unknowns (3 điều):\n    Mới: 3 mục theo bản mới`)
+      const oldUnknowns = (current?.onePercent?.unknowns ?? [])
+        .map((u: { title?: string }) => `"${u?.title ?? ''}"`)
+        .join(', ')
+      const newUnknowns = TARGET_HABIT_CONTENT.onePercent.unknowns
+        .map((u) => `"${u.title}"`)
+        .join(', ')
+      lines.push(
+        `- onePercent.unknowns (3 điều):\n    Cũ: [${oldUnknowns}]\n    Mới: [${newUnknowns}]`,
+      )
     }
   }
 
   if (patch.stepQuotes) {
-    const keys = ['onePercent', 'mentor', 'name', 'loop', 'boardingPass', 'tracker'] as const
+    // stepQuotes.boardingPass is left untouched (HB-26c): the new version has no source for it.
+    const keys = ['onePercent', 'mentor', 'name', 'loop', 'tracker'] as const
     for (const k of keys) {
       const oldQ = current?.stepQuotes?.[k]
       const newQ = patch.stepQuotes[k]
@@ -401,7 +394,18 @@ export function formatHabitContentDiff(current: any, patch: Record<string, any> 
 
   if (patch.loop) {
     if (patch.loop.stages) {
-      lines.push(`- loop.stages (4 giai đoạn):\n    Mới: Cue, Craving, Response, Reward theo bản mới`)
+      const oldStages = (current?.loop?.stages ?? [])
+        .map(
+          (st: { title?: string; explanation?: string }) =>
+            `"${st?.title ?? ''}: ${st?.explanation ?? ''}"`,
+        )
+        .join(' | ')
+      const newStages = TARGET_HABIT_CONTENT.loop.stages
+        .map((st) => `"${st.title}: ${st.explanation}"`)
+        .join(' | ')
+      lines.push(
+        `- loop.stages (4 giai đoạn):\n    Cũ: ${oldStages || '(trống)'}\n    Mới: ${newStages}`,
+      )
     }
     if (patch.loop.note !== current?.loop?.note) {
       lines.push(
@@ -428,16 +432,8 @@ export function formatHabitContentDiff(current: any, patch: Record<string, any> 
     }
   }
 
-  if (patch.privacyNote && patch.privacyNote !== current?.privacyNote) {
-    lines.push(
-      `- privacyNote:\n    Cũ: "${current?.privacyNote || ''}"\n    Mới: "${patch.privacyNote}"`,
-    )
-  }
-
   if (Array.isArray(current?.quotes) && current.quotes.length > 0) {
-    lines.push(
-      `- quotes (ẩn & xóa rỗng):\n    Cũ: [${current.quotes.length} câu]\n    Mới: []`,
-    )
+    lines.push(`- quotes (ẩn & xóa rỗng):\n    Cũ: [${current.quotes.length} câu]\n    Mới: []`)
   }
 
   return lines.join('\n\n')

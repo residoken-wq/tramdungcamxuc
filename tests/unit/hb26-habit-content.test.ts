@@ -35,6 +35,7 @@ describe('HB-26: buildHabitContentPatch unit tests', () => {
       },
       stepQuotes: {
         onePercent: { text: 'Quote cũ', author: 'Author', source: 'Source' },
+        boardingPass: { text: 'Câu Boarding Pass Hana nhập', author: 'Tác giả', source: 'Nguồn' },
       },
       tracker: {
         afterJourneyTitle: 'Title cũ',
@@ -84,7 +85,12 @@ describe('HB-26: buildHabitContentPatch unit tests', () => {
     expect(sq.loop.text).toBe(
       'Bạn không vươn tới tầm mục tiêu của mình. Bạn rơi xuống tầm hệ thống của mình.',
     )
-    expect(sq.boardingPass.text).toBe('')
+    // HB-26c: Boarding Pass quote has no source in the new version – left exactly as stored.
+    expect(sq.boardingPass).toEqual({
+      text: 'Câu Boarding Pass Hana nhập',
+      author: 'Tác giả',
+      source: 'Nguồn',
+    })
     expect(sq.tracker.text).toBe('Thói quen là lãi kép của sự tự hoàn thiện.')
 
     // 4. loop
@@ -108,9 +114,8 @@ describe('HB-26: buildHabitContentPatch unit tests', () => {
     expect((patch.tracker as any).afterJourneyText).toBe(
       'Nếu cần một Habit Coach đồng hành cùng bạn sau hành trình 28 ngày này, đặt một buổi trò chuyện với Hana.',
     )
-    expect(patch.privacyNote).toBe(
-      'Mọi thứ bạn nhập nằm trong trình duyệt của chính bạn. Không ai khác đọc được, kể cả Hana. Đổi máy hoặc xoá dữ liệu trình duyệt là mất, nên hãy tải một bản sao lưu.',
-    )
+    // HB-26c: privacyNote is never patched (the new copy is false for this site).
+    expect(patch).not.toHaveProperty('privacyNote')
 
     // 6. quotes cũ bị xóa rỗng
     expect(patch.quotes).toEqual([])
@@ -153,7 +158,7 @@ describe('HB-26: buildHabitContentPatch unit tests', () => {
         rules: [{ title: 'R1' }],
       },
       tracker: TARGET_HABIT_CONTENT.tracker,
-      privacyNote: TARGET_HABIT_CONTENT.privacyNote,
+      privacyNote: 'Câu Hana tự viết',
       quotes: [],
     }
 

@@ -3426,8 +3426,10 @@ export const vi = {
   },
   hb13: {
     heading: 'Dữ liệu của bạn',
+    // HB-26c: bản mới viết "dữ liệu chỉ nằm trong trình duyệt" – sai với site này (tracker lưu trên
+    // máy chủ theo tài khoản, HB-25). Giữ câu đúng cho tới khi Hana duyệt câu mới.
     defaultPrivacyNote:
-      'Mọi thứ bạn nhập nằm trong trình duyệt của chính bạn. Không ai khác đọc được, kể cả Hana. Đổi máy hoặc xoá dữ liệu trình duyệt là mất, nên hãy tải một bản sao lưu.',
+      'Dữ liệu hành trình được lưu trên máy chủ của Trạm Dừng Cảm Xúc theo tài khoản email của bạn và chỉ mình bạn xem được trên bảng theo dõi. Bạn có thể tải bản sao lưu về máy để lưu giữ riêng.',
     buttons: {
       exportBackup: 'Tải bản sao lưu',
       exportCsv: (days: number) => `Tải bảng ${days} ngày (.csv)`,
