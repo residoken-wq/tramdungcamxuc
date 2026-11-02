@@ -68,6 +68,7 @@
    - [5.29. Tự chỉnh khoảng cách tiêu đề và giãn dòng Anton (PK-13)](#529-tự-chỉnh-khoảng-cách-tiêu-đề-và-giãn-dòng-anton-pk-13)
    - [5.30. Nâng cao: CSS / HTML tuỳ chỉnh và hiệu ứng (EB-09)](#530-nâng-cao-css--html-tuỳ-chỉnh-và-hiệu-ứng-eb-09)
    - [5.31. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)](#531-thêm-thẻ-vào-khối-gói-dịch-vụ-số-liệu-bước-câu-hỏi-bằng-một-nút-bấm-pk-14)
+   - [5.32. Đầu trang và chân trang dựng bằng trình soạn thảo (EB-10)](#532-đầu-trang-và-chân-trang-dựng-bằng-trình-soạn-thảo-eb-10)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2593,6 +2594,51 @@ Khi bạn bấm chọn một khối cha:
 
 - _Ba thẻ gói đã được thêm nhanh vào khối Các gói Growth Mirror:_
   ![Ba thẻ gói đã được thêm nhanh vào khối trong trình dựng trang thật](screenshots/pk14/02-cards-added-1440.png)
+
+### 5.32. Đầu trang và chân trang dựng bằng trình soạn thảo (EB-10)
+
+Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang (Header)** và **Chân trang (Footer)** toàn website bằng trình soạn thảo trực quan Puck mà không cần nhờ can thiệp vào code:
+
+#### 1. Cách tạo Đầu trang hoặc Chân trang mới
+1. Vào mục **Trang web** -> **Trang nội dung** -> bấm **Tạo mới**.
+2. Đặt tiêu đề (ví dụ: `Đầu trang chiến dịch hè` hoặc `Chân trang chính`).
+3. Ở cột bên phải (Sidebar), tìm ô **Loại trang**:
+   - Chọn **Đầu trang** nếu muốn tạo thanh menu trên cùng.
+   - Chọn **Chân trang** nếu muốn tạo phần chân trang dưới cùng.
+   - _Lưu ý:_ Loại trang chỉ được chọn lúc tạo mới và không thể đổi sau khi đã lưu để đảm bảo an toàn cấu trúc.
+4. Bấm **Lưu nháp** hoặc **Xuất bản**:
+   - Hệ thống sẽ **tự động nạp mẫu chuẩn**: Mẫu Đầu trang sẽ có sẵn Logo, Menu chính, Nút tài khoản và Nút CTA; mẫu Chân trang sẽ có Logo, Câu khẩu hiệu, Mạng xã hội và Chân trang pháp lý.
+5. Bấm nút **Chỉnh sửa trực quan** để mở trình kéo thả.
+
+#### 2. Chỉnh sửa trong trình soạn thảo trực quan
+- **Khung xem trước:** Trong trình soạn thảo, bên dưới Đầu trang (hoặc bên trên Chân trang) sẽ có một khung trang giả mờ để Hana dễ quan sát khoảng cách thực tế khi gắn vào website. Khung này hoàn toàn vô hình đối với độc giả.
+- **Cố định đầu trang khi cuộn (Sticky):** Nhấp chuột ra ngoài cùng (hoặc chọn tab Trang ở cột phải), trong mục **Cố định khi cuộn**, Hana có thể chọn:
+  - _Không (cuộn bình thường)_: Thanh đầu trang trôi đi khi khách cuộn xuống.
+  - _Dính ở đầu trang (Sticky)_: Thanh đầu trang luôn dính chặt ở mép trên cùng khi khách cuộn trang.
+- **Thêm/sửa nút CTA và Menu:** Hana có thể thêm các nút bấm, widget ảnh, hoặc đổi màu nền của khung chứa Container.
+
+#### 3. Chuyển sang dùng trên toàn website
+Sau khi đã thiết kế xong và bấm **Xuất bản** trang đầu/chân trang:
+1. Vào menu bên trái: **Hệ thống** -> **Menu điều hướng**.
+2. Cuộn xuống nhóm **Đầu trang / chân trang** (ở dưới cùng):
+   - **Nguồn đầu trang:** Chọn _Dựng bằng Builder_.
+   - **Trang đầu trang (Builder):** Chọn đúng trang đầu trang Hana vừa xuất bản.
+   - Bấm vào nút **Chỉnh sửa trực quan** màu tím bên dưới để xem lại nhanh nếu muốn.
+   - Tương tự cho **Nguồn chân trang**.
+3. Bấm **Lưu thay đổi**. Ngay lập tức toàn bộ website sẽ chuyển sang hiển thị Đầu trang/Chân trang mới!
+
+#### 4. Quay lại bản code mặc định an toàn
+Nếu muốn quay lại giao diện lập trình mặc định ban đầu:
+- Trong **Menu điều hướng**, chuyển **Nguồn đầu trang** hoặc **Nguồn chân trang** về lại **Giao diện mặc định (Code)**.
+- Bấm **Lưu thay đổi**.
+- Nếu trang Builder được chọn bị chuyển về bản nháp (Draft) hoặc có lỗi dữ liệu, website cũng sẽ **tự động quay về bản code mặc định** để không bao giờ làm gián đoạn trải nghiệm của khách.
+
+#### 5. Vì sao không thể xoá khối "Chân trang pháp lý"?
+- Theo quy định bắt buộc của Bộ Công Thương Việt Nam và quy chuẩn thương hiệu Trạm Dừng Cảm Xúc, mọi trang web thương mại đều bắt buộc phải hiển thị công khai **6 liên kết pháp lý** (Điều khoản, Chính sách bảo mật, Giao hàng, Hoàn tiền, Đổi trả, Pháp lý) và thông tin đăng ký của Hana.
+- Do đó, khối **Chân trang pháp lý (LegalFooter)** trong Chân trang được cài đặt khóa bảo vệ vĩnh viễn:
+  - Nút **Xoá** và nút **Nhân bản** của khối này bị vô hiệu hoá.
+  - Trình soạn thảo và máy chủ sẽ tự động từ chối nếu trang Chân trang thiếu khối này.
+  - Nhờ vậy, Hana có thể thoải mái kéo thả thay đổi vị trí mà không bao giờ sợ sơ suất làm mất thông tin pháp lý bắt buộc.
 
 ---
 

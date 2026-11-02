@@ -95,6 +95,15 @@ import { NewsletterFormBlock, type NewsletterFormProps } from './blocks/Newslett
 import { ContactInfoBlock, type ContactInfoProps } from './blocks/ContactInfo'
 import { ContactFormsBlock, type ContactFormsProps } from './blocks/ContactForms'
 
+// EB-10: Khối đầu trang / chân trang (Site Theme Blocks)
+import { SiteLogoBlock, type SiteLogoProps } from './blocks/site/SiteLogo'
+import { NavMenuBlock, type NavMenuProps } from './blocks/site/NavMenu'
+import { HeaderCTABlock, type HeaderCTAProps } from './blocks/site/HeaderCTA'
+import { AccountLinkBlock, type AccountLinkProps } from './blocks/site/AccountLink'
+import { LegalFooterBlock, type LegalFooterProps } from './blocks/site/LegalFooter'
+import { SocialLinksBlock, type SocialLinksProps } from './blocks/site/SocialLinks'
+import { TaglineBlock, type TaglineProps } from './blocks/site/Tagline'
+
 import {
   SECTION_BG_COLOR_OPTIONS,
   BRAND_COLOR_OPTIONS,
@@ -151,9 +160,24 @@ export type {
   ServiceCardProps,
   PackageCardProps,
   FaqItemProps,
+  SiteLogoProps,
+  NavMenuProps,
+  HeaderCTAProps,
+  AccountLinkProps,
+  LegalFooterProps,
+  SocialLinksProps,
+  TaglineProps,
 }
 
 export type PageComponentsProps = {
+  // EB-10: Thành phần đầu trang & chân trang
+  SiteLogo: SiteLogoProps
+  NavMenu: NavMenuProps
+  HeaderCTA: HeaderCTAProps
+  AccountLink: AccountLinkProps
+  LegalFooter: LegalFooterProps
+  SocialLinks: SocialLinksProps
+  Tagline: TaglineProps
   // Cơ bản (EB-06a)
   HeadingWidget: HeadingWidgetProps
   TextWidget: TextWidgetProps
@@ -746,6 +770,15 @@ const basePuckConfig: Config<PageComponentsProps> = {
     ServiceCards: ServiceCardsBlock,
     TwoPathCards: TwoPathCardsBlock,
     TeamGrid: TeamGridBlock,
+
+    // EB-10: Site theme blocks
+    SiteLogo: SiteLogoBlock,
+    NavMenu: NavMenuBlock,
+    HeaderCTA: HeaderCTABlock,
+    AccountLink: AccountLinkBlock,
+    LegalFooter: LegalFooterBlock,
+    SocialLinks: SocialLinksBlock,
+    Tagline: TaglineBlock,
   },
 }
 
@@ -795,20 +828,289 @@ export const puckConfig: Config<PageComponentsProps> = withAddChildFields(
   withBlockStyles(basePuckConfig),
 )
 
+export type PageKind = 'page' | 'header' | 'footer'
+
 /**
  * Lấy cấu hình Puck phù hợp với từng trang, gắn các quyền khóa khối tự động (VD: HeroTwoEntries trên trang chủ)
  * và quyền chỉnh sửa CSS tuỳ chỉnh (khi lock mở và user là owner).
+ * EB-10: hỗ trợ kind ('page' | 'header' | 'footer') với danh mục và root riêng biệt.
  */
 export function getPuckConfig(options?: {
   pageSlug?: string
   isOwner?: boolean
   designSystem?: CleanDesignSystem
+  kind?: PageKind
 }): Config<PageComponentsProps> {
-  const pageSlug = options?.pageSlug || '/'
-  const heroPermissions = getLockedComponentPermissions('HeroTwoEntries', pageSlug)
+  const kind = options?.kind || 'page'
   const canEditCustomCss = Boolean(
     options?.isOwner && options?.designSystem && isOpen(options.designSystem, 'customCss'),
   )
+  const htmlLocked = Boolean(options?.designSystem && !isOpen(options.designSystem, 'customCss'))
+
+  if (kind === 'header') {
+    const rootConfig = {
+      label: vi.eb10.headerRootLabel,
+      fields: {
+        sticky: {
+          type: 'radio' as const,
+          label: vi.eb10.stickyHeaderLabel,
+          options: [
+            { label: vi.eb10.stickyNone, value: 'none' },
+            { label: vi.eb10.stickySticky, value: 'sticky' },
+          ],
+        },
+        ...(canEditCustomCss
+          ? {
+              customCss: {
+                type: 'custom' as const,
+                label: vi.eb09.customCssLabel,
+                render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+                  <PageCustomCssControl value={value} onChange={onChange} />
+                ),
+              },
+            }
+          : {}),
+      },
+      render: ({
+        children,
+        puck,
+        sticky,
+      }: {
+        children: React.ReactNode
+        puck?: {
+          isEditing?: boolean
+          renderDropZone?: React.ComponentType<{
+            zone: string
+            disallow?: readonly string[] | string[]
+          }>
+        }
+        sticky?: 'none' | 'sticky'
+      }) => {
+        const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
+        const isSticky = sticky === 'sticky'
+        return (
+          <div className="w-full">
+            <header data-eb-header="" className={isSticky ? 'sticky top-0 z-30' : undefined}>
+              {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={ROOT_DISALLOW} /> : children}
+            </header>
+            {puck?.isEditing && (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none select-none opacity-40 p-8 space-y-4 max-w-5xl mx-auto border-t border-dashed border-gray-300 mt-6"
+              >
+                <div className="h-8 bg-gray-200 rounded w-1/3" />
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+                <div className="h-4 bg-gray-200 rounded w-1/2" />
+                <div className="h-32 bg-gray-100 rounded border border-gray-200 flex items-center justify-center text-xs text-gray-400">
+                  {vi.eb10.dummyPageCanvas}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      },
+    }
+
+    const categories = {
+      site: {
+        title: vi.eb10.siteBlocksCategory,
+        components: [
+          'SiteLogo',
+          'NavMenu',
+          'HeaderCTA',
+          'AccountLink',
+        ] as (keyof PageComponentsProps)[],
+      },
+      layout: {
+        title: 'Bố cục',
+        components: ['Container', 'Spacer', 'Divider'] as (keyof PageComponentsProps)[],
+      },
+      basic: {
+        title: 'Cơ bản',
+        components: [
+          'HeadingWidget',
+          'TextWidget',
+          'ImageWidget',
+          'ButtonWidget',
+          'IconWidget',
+          'IconListWidget',
+          'HtmlWidget',
+        ] as (keyof PageComponentsProps)[],
+      },
+    }
+
+    const allowedKeys = new Set<string>([
+      'SiteLogo',
+      'NavMenu',
+      'HeaderCTA',
+      'AccountLink',
+      'Container',
+      'Spacer',
+      'Divider',
+      'HeadingWidget',
+      'TextWidget',
+      'ImageWidget',
+      'ButtonWidget',
+      'IconWidget',
+      'IconListWidget',
+      'HtmlWidget',
+    ])
+    const components = {} as Config<PageComponentsProps>['components']
+    for (const key of allowedKeys) {
+      const compKey = key as keyof PageComponentsProps
+      if (puckConfig.components[compKey]) {
+        ;(components as Record<string, unknown>)[compKey] = puckConfig.components[compKey]
+      }
+    }
+
+    if (htmlLocked && components.HtmlWidget) {
+      const htmlBlock = components.HtmlWidget
+      components.HtmlWidget = {
+        ...htmlBlock,
+        render: (props) => htmlBlock.render({ ...props, isLocked: true }),
+      }
+    }
+
+    return {
+      ...puckConfig,
+      root: rootConfig as unknown as Config<PageComponentsProps>['root'],
+      categories,
+      components,
+    }
+  }
+
+  if (kind === 'footer') {
+    const rootConfig = {
+      label: vi.eb10.footerRootLabel,
+      fields: {
+        ...(canEditCustomCss
+          ? {
+              customCss: {
+                type: 'custom' as const,
+                label: vi.eb09.customCssLabel,
+                render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+                  <PageCustomCssControl value={value} onChange={onChange} />
+                ),
+              },
+            }
+          : {}),
+      },
+      render: ({
+        children,
+        puck,
+      }: {
+        children: React.ReactNode
+        puck?: {
+          isEditing?: boolean
+          renderDropZone?: React.ComponentType<{
+            zone: string
+            disallow?: readonly string[] | string[]
+          }>
+        }
+      }) => {
+        const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
+        return (
+          <div className="w-full">
+            {puck?.isEditing && (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none select-none opacity-40 p-8 space-y-4 max-w-5xl mx-auto border-b border-dashed border-gray-300 mb-6"
+              >
+                <div className="h-8 bg-gray-200 rounded w-1/3" />
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+                <div className="h-4 bg-gray-200 rounded w-1/2" />
+                <div className="h-32 bg-gray-100 rounded border border-gray-200 flex items-center justify-center text-xs text-gray-400">
+                  {vi.eb10.dummyPageCanvas}
+                </div>
+              </div>
+            )}
+            <footer data-eb-footer="">
+              {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={ROOT_DISALLOW} /> : children}
+            </footer>
+          </div>
+        )
+      },
+    }
+
+    const categories = {
+      site: {
+        title: vi.eb10.siteBlocksCategory,
+        components: [
+          'SiteLogo',
+          'Tagline',
+          'SocialLinks',
+          'LegalFooter',
+        ] as (keyof PageComponentsProps)[],
+      },
+      layout: {
+        title: 'Bố cục',
+        components: ['Container', 'Spacer', 'Divider'] as (keyof PageComponentsProps)[],
+      },
+      basic: {
+        title: 'Cơ bản',
+        components: [
+          'HeadingWidget',
+          'TextWidget',
+          'ImageWidget',
+          'ButtonWidget',
+          'IconWidget',
+          'IconListWidget',
+          'HtmlWidget',
+        ] as (keyof PageComponentsProps)[],
+      },
+    }
+
+    const allowedKeys = new Set<string>([
+      'SiteLogo',
+      'Tagline',
+      'SocialLinks',
+      'LegalFooter',
+      'Container',
+      'Spacer',
+      'Divider',
+      'HeadingWidget',
+      'TextWidget',
+      'ImageWidget',
+      'ButtonWidget',
+      'IconWidget',
+      'IconListWidget',
+      'HtmlWidget',
+    ])
+    const components = {} as Config<PageComponentsProps>['components']
+    for (const key of allowedKeys) {
+      const compKey = key as keyof PageComponentsProps
+      if (puckConfig.components[compKey]) {
+        ;(components as Record<string, unknown>)[compKey] = puckConfig.components[compKey]
+      }
+    }
+
+    // Ensure LegalFooter has locked permissions
+    if (components.LegalFooter) {
+      components.LegalFooter = {
+        ...components.LegalFooter,
+        permissions: { delete: false, duplicate: false },
+      }
+    }
+
+    if (htmlLocked && components.HtmlWidget) {
+      const htmlBlock = components.HtmlWidget
+      components.HtmlWidget = {
+        ...htmlBlock,
+        render: (props) => htmlBlock.render({ ...props, isLocked: true }),
+      }
+    }
+
+    return {
+      ...puckConfig,
+      root: rootConfig as unknown as Config<PageComponentsProps>['root'],
+      categories,
+      components,
+    }
+  }
+
+  // Regular page: kind === 'page'
+  const pageSlug = options?.pageSlug || '/'
+  const heroPermissions = getLockedComponentPermissions('HeroTwoEntries', pageSlug)
 
   const rootConfig = canEditCustomCss
     ? {
@@ -826,15 +1128,21 @@ export function getPuckConfig(options?: {
       }
     : puckConfig.root
 
-  // EB-09c: with custom code locked, the editor canvas shows the "locked" notice instead of the
-  // stored HTML (the public page already renders nothing: rich-text-data.ts empties it).
-  const htmlLocked = Boolean(options?.designSystem && !isOpen(options.designSystem, 'customCss'))
-
-  if (!heroPermissions && !canEditCustomCss && !htmlLocked) {
-    return puckConfig
-  }
-
   const components = { ...puckConfig.components }
+  // Exclude site blocks from regular page components
+  const compRecord = components as Record<string, unknown>
+  delete compRecord.SiteLogo
+  delete compRecord.NavMenu
+  delete compRecord.HeaderCTA
+  delete compRecord.AccountLink
+  delete compRecord.LegalFooter
+  delete compRecord.SocialLinks
+  delete compRecord.Tagline
+  delete (components as any).AccountLink
+  delete (components as any).LegalFooter
+  delete (components as any).SocialLinks
+  delete (components as any).Tagline
+
   if (heroPermissions) {
     components.HeroTwoEntries = { ...components.HeroTwoEntries, permissions: heroPermissions }
   }
@@ -848,5 +1156,8 @@ export function getPuckConfig(options?: {
 
   return { ...puckConfig, root: rootConfig, components }
 }
+
+export const headerPuckConfig: Config<PageComponentsProps> = getPuckConfig({ kind: 'header' })
+export const footerPuckConfig: Config<PageComponentsProps> = getPuckConfig({ kind: 'footer' })
 
 export default puckConfig

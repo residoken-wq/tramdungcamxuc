@@ -27,7 +27,11 @@ export async function generateMetadata({ params }: CatchAllPageProps): Promise<M
     const result = await payload.find({
       collection: 'pages',
       where: {
-        and: [{ slug: { equals: pageSlug } }, { _status: { equals: 'published' } }],
+        and: [
+          { slug: { equals: pageSlug } },
+          { _status: { equals: 'published' } },
+          { kind: { equals: 'page' } },
+        ],
       },
       limit: 1,
       draft: false,
@@ -66,7 +70,11 @@ export default async function CatchAllPage({ params }: CatchAllPageProps) {
     const result = await payload.find({
       collection: 'pages',
       where: {
-        and: [{ slug: { equals: pageSlug } }, { _status: { equals: 'published' } }],
+        and: [
+          { slug: { equals: pageSlug } },
+          { _status: { equals: 'published' } },
+          { kind: { equals: 'page' } },
+        ],
       },
       limit: 1,
       draft: false,

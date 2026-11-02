@@ -32,6 +32,8 @@ import { isSafeBlockId, STYLE_ATTR } from './css-shared'
 export const MAX_BLOCK_CUSTOM_CSS_LENGTH = 5000
 export const MAX_PAGE_CUSTOM_CSS_LENGTH = 20000
 export const PAGE_ATTR = 'data-eb-page'
+export const HEADER_ATTR = 'data-eb-header'
+export const FOOTER_ATTR = 'data-eb-footer'
 
 const FORBIDDEN_PATTERNS = [
   /<\s*\/\s*style/i,
@@ -272,9 +274,9 @@ function scopeBlockSelector(part: string, blockSelector: string): string | null 
   return staysInside(rest) ? blockSelector + rest : null
 }
 
-/** Puts a page-level selector under the builder's page wrapper. */
-function scopePageSelector(part: string): string | null {
-  const pageRoot = `[${PAGE_ATTR}]`
+/** Puts a page/header/footer selector under the builder's wrapper. */
+function scopePageSelector(part: string, scopeAttr: string = PAGE_ATTR): string | null {
+  const pageRoot = `[${scopeAttr}]`
   let rest: string
   if (SELECTOR_KEYWORD.test(part)) rest = part.replace(SELECTOR_KEYWORD, '')
   else if (part.startsWith(pageRoot)) rest = part.slice(pageRoot.length)
@@ -354,13 +356,16 @@ export function sanitizeBlockCustomCss(rawCss: unknown, blockId: string): string
 
 /**
  * Sanitizes and scopes page-level custom CSS (root.customCss).
- * All rules are scoped under `[data-eb-page] ...` to prevent affecting outer layout/admin.
+ * All rules are scoped under `[scopeAttr] ...` (defaults to `data-eb-page`) to prevent
+ * affecting outer layout/admin.
  *
  * REVIEW-REQUIRED:
  */
-export function sanitizePageCustomCss(rawCss: unknown): string {
+export function sanitizePageCustomCss(rawCss: unknown, scopeAttr: string = PAGE_ATTR): string {
   if (typeof rawCss !== 'string') return ''
   const cssText = rawCss.trim()
   if (!cssText) return ''
-  return sanitizeScopedCss(cssText, MAX_PAGE_CUSTOM_CSS_LENGTH, scopePageSelector)
+  return sanitizeScopedCss(cssText, MAX_PAGE_CUSTOM_CSS_LENGTH, (part) =>
+    scopePageSelector(part, scopeAttr),
+  )
 }

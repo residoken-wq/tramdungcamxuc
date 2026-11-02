@@ -14,7 +14,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Puck, type Config, type Data, type Viewports, useGetPuck, usePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
-import { puckConfig, getPuckConfig } from '@/puck/config'
+import { puckConfig, getPuckConfig, type PageKind } from '@/puck/config'
 import { puckVietnameseDictionary } from '@/puck/dictionary'
 import {
   saveDraftAction,
@@ -31,7 +31,7 @@ import {
 import { formatVietnamDateTime, getVersionBadgeInfo } from '@/puck/version-history'
 import { remapPageBlockIds, validateTemplatePuckData } from '@/puck/template-validation'
 import { SaveTemplateModal, notifyTemplatesChanged } from '@/puck/editor/SaveTemplateModal'
-import { pageTemplateList, getTemplateData, type PageTemplateKey } from '@/puck/templates'
+import { getTemplatesForKind, getTemplateData, type AnyTemplateKey } from '@/puck/templates'
 import { AutosaveController } from '@/puck/autosave'
 import { LeftPanel } from '@/puck/editor/LeftPanel'
 import { EditorToolbar } from '@/puck/editor/EditorToolbar'
@@ -56,6 +56,7 @@ type PuckEditorClientProps = {
   pageId: string
   pageTitle: string
   pageSlug: string
+  pageKind?: PageKind
   initialStatus: string
   /** EB-04b: brand locks + palette, loaded on the server (Brand Book defaults when absent). */
   designSystem?: CleanDesignSystem
@@ -78,6 +79,7 @@ type EditorContextValue = {
   pageId: string
   pageTitle: string
   pageSlug: string
+  pageKind?: 'page' | 'header' | 'footer'
   currentStatus: string
   onStatusChange: (status: string) => void
   feedback: Feedback
@@ -105,6 +107,7 @@ function EditorHeaderActions() {
     pageId,
     pageTitle,
     pageSlug,
+    pageKind,
     currentStatus,
     onStatusChange,
     feedback,
@@ -351,6 +354,7 @@ function EditorHeaderActions() {
         <TemplateModal
           onClose={() => setIsTemplateModalOpen(false)}
           pageTitle={pageTitle}
+          pageKind={pageKind}
           onApplyTemplate={handleApplyTemplate}
         />
       )}
@@ -384,10 +388,12 @@ function EditorHeaderActions() {
 function TemplateModal({
   onClose,
   pageTitle,
+  pageKind,
   onApplyTemplate,
 }: {
   onClose: () => void
   pageTitle: string
+  pageKind?: 'page' | 'header' | 'footer'
   onApplyTemplate: (templateData: Data) => void
 }) {
   const [activeTab, setActiveTab] = useState<'builtin' | 'saved'>('builtin')
@@ -395,6 +401,7 @@ function TemplateModal({
   const [loadingSaved, setLoadingSaved] = useState<boolean>(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string>('')
+  const availableTemplates = getTemplatesForKind(pageKind)
 
   useEffect(() => {
     let active = true
@@ -415,7 +422,7 @@ function TemplateModal({
     }
   }, [])
 
-  const handleSelectBuiltin = (key: PageTemplateKey) => {
+  const handleSelectBuiltin = (key: AnyTemplateKey) => {
     const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
     if (!confirmed) return
 
@@ -509,7 +516,7 @@ function TemplateModal({
                 : 'border-transparent text-deep-navy/60 hover:text-deep-navy'
             }`}
           >
-            {vi.eb08.groupBuiltin} ({pageTemplateList.length})
+            {vi.eb08.groupBuiltin} ({availableTemplates.length})
           </button>
           <button
             type="button"
@@ -538,7 +545,7 @@ function TemplateModal({
         {/* Tab contents */}
         {activeTab === 'builtin' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 overflow-y-auto">
-            {pageTemplateList.map((tpl) => (
+            {availableTemplates.map((tpl) => (
               <div
                 key={tpl.key}
                 className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between"
@@ -1004,6 +1011,7 @@ export function PuckEditorClient({
   pageId,
   pageTitle,
   pageSlug,
+  pageKind = 'page',
   initialStatus,
   designSystem = DEFAULT_DESIGN_SYSTEM,
   isOwner = false,
@@ -1020,12 +1028,12 @@ export function PuckEditorClient({
     setPreviewVersion(preview)
   }
 
-  // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage, owner checks)
+  // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage, owner checks, kind)
   const config = useMemo(() => {
     return typeof getPuckConfig === 'function'
-      ? getPuckConfig({ pageSlug, isOwner, designSystem })
+      ? getPuckConfig({ pageSlug, isOwner, designSystem, kind: pageKind })
       : puckConfig
-  }, [pageSlug, isOwner, designSystem])
+  }, [pageSlug, isOwner, designSystem, pageKind])
 
   // Setup Autosave Controller with useState initializer (pure, runs once, stable instance)
   const [autosaveController] = useState(() => {
@@ -1074,6 +1082,7 @@ export function PuckEditorClient({
             pageId,
             pageTitle,
             pageSlug,
+            pageKind,
             currentStatus: docStatus,
             onStatusChange: setDocStatus,
             feedback,
@@ -1103,6 +1112,11 @@ export function PuckEditorClient({
                 </Link>
                 <span className="text-white/30">|</span>
                 <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">{pageTitle}</span>
+                {pageKind !== 'page' && (
+                  <span className="px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider bg-lavender-mist text-deep-navy border border-bright-magenta/20">
+                    {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge}
+                  </span>
+                )}
                 <span
                   className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
                     docStatus === 'published'
@@ -1114,10 +1128,16 @@ export function PuckEditorClient({
                 </span>
               </div>
 
-              <div className="text-white/70 font-ui text-xs hidden sm:block">
-                Đường dẫn:{' '}
-                <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
-              </div>
+              {pageKind === 'page' ? (
+                <div className="text-white/70 font-ui text-xs hidden sm:block">
+                  Đường dẫn:{' '}
+                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
+                </div>
+              ) : (
+                <div className="text-white/70 font-ui text-xs hidden sm:block">
+                  {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge} toàn site
+                </div>
+              )}
             </header>
 
             {/* Puck Editor Container */}

@@ -19,7 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
     const result = await payload.find({
       collection: 'pages',
       where: {
-        and: [{ slug: { equals: '/' } }, { _status: { equals: 'published' } }],
+        and: [
+          { slug: { equals: '/' } },
+          { _status: { equals: 'published' } },
+          { kind: { equals: 'page' } },
+        ],
       },
       limit: 1,
       draft: false,
@@ -58,7 +62,11 @@ export default async function HomePage() {
     const result = await payload.find({
       collection: 'pages',
       where: {
-        and: [{ slug: { equals: '/' } }, { _status: { equals: 'published' } }],
+        and: [
+          { slug: { equals: '/' } },
+          { _status: { equals: 'published' } },
+          { kind: { equals: 'page' } },
+        ],
       },
       limit: 1,
       draft: false,
