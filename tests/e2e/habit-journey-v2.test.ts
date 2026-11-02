@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import { vi } from '@/lib/i18n/vi'
 
 /**
  * HB-15: E2E toàn bộ hành trình Habit v2 (6 bước + tracker + check-in + CSV + suy ngẫm + đồng hành).
@@ -110,6 +111,10 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
     const visitor = await browser.newContext({
       baseURL: testInfo.project.use.baseURL,
       viewport: testInfo.project.use.viewport,
+      // IP riêng mỗi lần chạy để không dính rate limit form (như gate-habit-journey)
+      extraHTTPHeaders: {
+        'x-forwarded-for': `203.0.113.${Math.floor(Math.random() * 200) + 10}`,
+      },
     })
     const guestPage = await visitor.newPage()
 
@@ -139,19 +144,20 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       if (!existingProduct.docs?.length) {
         const prodRes = await page.request.post('/api/products', {
           data: {
-            name: 'Habit Tracker số (28 ngày)',
+            name: '[TEST] Habit Tracker (HB-15 E2E)',
             slug: productSlug,
-            productType: 'digital_tool',
-            toolAccessType: 'habit',
+            web: 'habit',
+            type: 'digital_tool',
             trialDays: 28,
             price: 250000,
             salePrice: 178000,
-            status: 'active',
+            saleStatus: 'on_sale',
             isSample: true,
+            _status: 'published',
           },
         })
-        const prodDoc = await prodRes.json()
-        createdProductId = prodDoc.doc.id
+        expect(prodRes.status()).toBe(201)
+        createdProductId = (await prodRes.json()).doc.id
       }
 
       // 4. Khách vãng lai truy cập /habit/5-phut
@@ -206,9 +212,8 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       const plusTwoDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000)
       const plusTwoYmd = plusTwoDate.toISOString().split('T')[0]
       const startDateInput = guestPage.locator('#field-start-date')
-      if (await startDateInput.isVisible()) {
-        await startDateInput.fill(plusTwoYmd)
-      }
+      await expect(startDateInput).toBeVisible()
+      await startDateInput.fill(plusTwoYmd)
 
       await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
 
@@ -241,6 +246,11 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       const consentCheckbox = guestPage.locator('input[type="checkbox"][required]')
       await consentCheckbox.check()
 
+      // Chờ token Turnstile sẵn sàng trước khi gửi (như habit-loop.test.ts)
+      await expect(guestPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
+
       // Bấm nút chính "Lên chuyến · Bắt đầu 28 ngày →"
       const startJourneyBtn = guestPage.getByRole('button', {
         name: /Lên chuyến · Bắt đầu 28 ngày/i,
@@ -248,7 +258,7 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await startJourneyBtn.click()
 
       // Màn hình chúc mừng xuất hiện
-      await expect(guestPage.getByText(/Chúc mừng bạn đã khởi hành/i)).toBeVisible({
+      await expect(guestPage.getByRole('heading', { name: vi.hb22.successTitle })).toBeVisible({
         timeout: 20000,
       })
 
@@ -260,15 +270,12 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       // Chuyển tới trang đăng nhập OTP
       await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap/, { timeout: 15000 })
 
-      // Nếu ô email chưa điền, điền customerEmail
+      // Nhập email, đồng ý chính sách (ND 13: mặc định chưa tick), gửi mã
       const emailInput = guestPage.locator('input[name="email"]')
-      if (await emailInput.isVisible()) {
-        const currentEmailVal = await emailInput.inputValue()
-        if (!currentEmailVal) {
-          await emailInput.fill(customerEmail)
-        }
-        await guestPage.locator('button[type="submit"]', { hasText: /Gửi mã|Tiếp tục/i }).click()
-      }
+      await expect(emailInput).toBeVisible()
+      await emailInput.fill(customerEmail)
+      await guestPage.locator('input[name="consentPolicy"]').check()
+      await guestPage.getByRole('button', { name: vi.auth.sendOtpButton }).click()
 
       // Đợi bước nhập mã OTP
       const codeInput = await expectCodeStep(guestPage)
@@ -278,6 +285,13 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
 
       // Chuyển hướng tới /habit/tracker
       await expect(guestPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 25000 })
+
+      // Khách mới chưa có quyền dùng: tracker mời dùng thử -> /dung-thu -> kích hoạt -> quay lại tracker
+      await guestPage.getByRole('link', { name: /Bắt đầu dùng thử 28 ngày/i }).click()
+      await expect(guestPage).toHaveURL(/\/dung-thu\?san-pham=habit-tracker-so/, { timeout: 15000 })
+      await guestPage.locator('button', { hasText: /Bắt đầu dùng thử 28 ngày/i }).click()
+      await expect(guestPage).toHaveURL(/\/habit\/hoc\/?$/, { timeout: 15000 })
+      await guestPage.goto('/habit/tracker')
       await expect(guestPage.getByRole('heading', { name: /Habit Tracker/i })).toBeVisible()
 
       // Ghi nhận customer ID của học viên vừa tạo
@@ -453,6 +467,39 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await visitor.close()
 
       test.setTimeout(testInfo.timeout + 30000)
+
+      // HB-15c: dọn dữ liệu của khách thử (suy ngẫm, check-in, kế hoạch, quyền dùng, lead).
+      // Khách hàng không xoá được qua REST (Customers.beforeDelete) – như gate-habit-journey.
+      const q = encodeURIComponent(customerEmail)
+      const plansRes = await page.request
+        .get(`/api/habitPlans?where[leadEmail][equals]=${q}&limit=50&depth=0`)
+        .catch(() => null)
+      const planIds = new Set<number>(
+        plansRes?.ok() ? ((await plansRes.json()).docs ?? []).map((d: { id: number }) => d.id) : [],
+      )
+      if (createdCustomerId) {
+        const ownRes = await page.request
+          .get(`/api/habitPlans?where[customer][equals]=${createdCustomerId}&limit=50&depth=0`)
+          .catch(() => null)
+        if (ownRes?.ok()) {
+          for (const d of (await ownRes.json()).docs ?? []) planIds.add(d.id)
+        }
+      }
+      for (const planId of planIds) {
+        await page.request
+          .delete(`/api/habitReflections?where[plan][equals]=${planId}`)
+          .catch(() => {})
+        await page.request
+          .delete(`/api/habitCheckins?where[plan][equals]=${planId}`)
+          .catch(() => {})
+        await page.request.delete(`/api/habitPlans/${planId}`).catch(() => {})
+      }
+      if (createdCustomerId) {
+        await page.request
+          .delete(`/api/entitlements?where[customer][equals]=${createdCustomerId}`)
+          .catch(() => {})
+      }
+      await page.request.delete(`/api/leads?where[email][equals]=${q}`).catch(() => {})
 
       // Dọn dẹp kỹ thuật test
       for (const id of createdTechniqueIds) {
