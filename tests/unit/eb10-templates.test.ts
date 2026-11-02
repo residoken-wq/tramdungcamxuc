@@ -8,31 +8,37 @@ import { Pages } from '@/collections/Pages'
 vitest.mock('server-only', () => ({}))
 
 describe('EB-10 Step 6: Default Header & Footer Templates', () => {
-  it('headerDefaultTemplate is valid and passes kind verification', async () => {
-    const kindValidation = await validatePageKindBlocks('header', headerDefaultTemplate)
+  it('headerDefaultTemplate is valid and passes kind verification', () => {
+    const kindValidation = validatePageKindBlocks('header', headerDefaultTemplate)
     expect(kindValidation.valid).toBe(true)
 
     const templateValidation = validateTemplatePuckData(headerDefaultTemplate, 'page', puckConfig)
     expect(templateValidation.success).toBe(true)
 
-    expect(headerDefaultTemplate.root?.props?.sticky).toBe('sticky')
-    expect(headerDefaultTemplate.zones?.['header-container:items']).toBeDefined()
-    const itemTypes = headerDefaultTemplate.zones?.['header-container:items']?.map((i) => i.type)
+    expect((headerDefaultTemplate.root?.props as { sticky?: string })?.sticky).toBe('sticky')
+    const container = headerDefaultTemplate.content?.[0]
+    expect(container).toBeDefined()
+    const containerItems = (container?.props as any)?.items as any[]
+    expect(containerItems).toBeDefined()
+    const itemTypes = containerItems.map((i) => i.type)
     expect(itemTypes).toContain('SiteLogo')
     expect(itemTypes).toContain('NavMenu')
     expect(itemTypes).toContain('HeaderCTA')
     expect(itemTypes).toContain('AccountLink')
   })
 
-  it('footerDefaultTemplate is valid and contains exactly 1 LegalFooter', async () => {
-    const kindValidation = await validatePageKindBlocks('footer', footerDefaultTemplate)
+  it('footerDefaultTemplate is valid and contains exactly 1 LegalFooter', () => {
+    const kindValidation = validatePageKindBlocks('footer', footerDefaultTemplate)
     expect(kindValidation.valid).toBe(true)
 
     const templateValidation = validateTemplatePuckData(footerDefaultTemplate, 'page', puckConfig)
     expect(templateValidation.success).toBe(true)
 
-    expect(footerDefaultTemplate.zones?.['footer-container:items']).toBeDefined()
-    const itemTypes = footerDefaultTemplate.zones?.['footer-container:items']?.map((i) => i.type)
+    const container = footerDefaultTemplate.content?.[0]
+    expect(container).toBeDefined()
+    const containerItems = (container?.props as any)?.items as any[]
+    expect(containerItems).toBeDefined()
+    const itemTypes = containerItems.map((i) => i.type)
     expect(itemTypes).toContain('SiteLogo')
     expect(itemTypes).toContain('Tagline')
     expect(itemTypes).toContain('SocialLinks')
@@ -43,7 +49,7 @@ describe('EB-10 Step 6: Default Header & Footer Templates', () => {
     const headerData = getTemplateData('header-default', 'Đầu trang tùy biến')
     expect(headerData).not.toBeNull()
     expect(headerData?.root?.props?.title).toBe('Đầu trang tùy biến')
-    expect(headerData?.root?.props?.sticky).toBe('sticky')
+    expect((headerData?.root?.props as { sticky?: string })?.sticky).toBe('sticky')
 
     const footerData = getTemplateData('footer-default', 'Chân trang tùy biến')
     expect(footerData).not.toBeNull()

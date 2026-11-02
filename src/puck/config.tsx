@@ -833,17 +833,20 @@ export function getPuckConfig(options?: {
         sticky,
       }: {
         children: React.ReactNode
-        puck?: { isEditing?: boolean; renderDropZone?: any }
+        puck?: {
+          isEditing?: boolean
+          renderDropZone?: React.ComponentType<{
+            zone: string
+            disallow?: readonly string[] | string[]
+          }>
+        }
         sticky?: 'none' | 'sticky'
       }) => {
         const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
         const isSticky = sticky === 'sticky'
         return (
           <div className="w-full">
-            <header
-              data-eb-header=""
-              className={isSticky ? 'sticky top-0 z-30' : undefined}
-            >
+            <header data-eb-header="" className={isSticky ? 'sticky top-0 z-30' : undefined}>
               {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={ROOT_DISALLOW} /> : children}
             </header>
             {puck?.isEditing && (
@@ -867,11 +870,16 @@ export function getPuckConfig(options?: {
     const categories = {
       site: {
         title: vi.eb10.siteBlocksCategory,
-        components: ['SiteLogo', 'NavMenu', 'HeaderCTA', 'AccountLink'],
+        components: [
+          'SiteLogo',
+          'NavMenu',
+          'HeaderCTA',
+          'AccountLink',
+        ] as (keyof PageComponentsProps)[],
       },
       layout: {
         title: 'Bố cục',
-        components: ['Container', 'Spacer', 'Divider'],
+        components: ['Container', 'Spacer', 'Divider'] as (keyof PageComponentsProps)[],
       },
       basic: {
         title: 'Cơ bản',
@@ -883,11 +891,11 @@ export function getPuckConfig(options?: {
           'IconWidget',
           'IconListWidget',
           'HtmlWidget',
-        ],
+        ] as (keyof PageComponentsProps)[],
       },
     }
 
-    const allowedKeys = new Set([
+    const allowedKeys = new Set<string>([
       'SiteLogo',
       'NavMenu',
       'HeaderCTA',
@@ -903,10 +911,11 @@ export function getPuckConfig(options?: {
       'IconListWidget',
       'HtmlWidget',
     ])
-    const components: Record<string, any> = {}
+    const components = {} as Config<PageComponentsProps>['components']
     for (const key of allowedKeys) {
-      if (puckConfig.components[key as keyof PageComponentsProps]) {
-        components[key] = puckConfig.components[key as keyof PageComponentsProps]
+      const compKey = key as keyof PageComponentsProps
+      if (puckConfig.components[compKey]) {
+        ;(components as Record<string, unknown>)[compKey] = puckConfig.components[compKey]
       }
     }
 
@@ -914,11 +923,16 @@ export function getPuckConfig(options?: {
       const htmlBlock = components.HtmlWidget
       components.HtmlWidget = {
         ...htmlBlock,
-        render: (props: any) => htmlBlock.render({ ...props, isLocked: true }),
+        render: (props) => htmlBlock.render({ ...props, isLocked: true }),
       }
     }
 
-    return { ...puckConfig, root: rootConfig as any, categories, components: components as any }
+    return {
+      ...puckConfig,
+      root: rootConfig as unknown as Config<PageComponentsProps>['root'],
+      categories,
+      components,
+    }
   }
 
   if (kind === 'footer') {
@@ -942,7 +956,13 @@ export function getPuckConfig(options?: {
         puck,
       }: {
         children: React.ReactNode
-        puck?: { isEditing?: boolean; renderDropZone?: any }
+        puck?: {
+          isEditing?: boolean
+          renderDropZone?: React.ComponentType<{
+            zone: string
+            disallow?: readonly string[] | string[]
+          }>
+        }
       }) => {
         const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
         return (
@@ -971,11 +991,16 @@ export function getPuckConfig(options?: {
     const categories = {
       site: {
         title: vi.eb10.siteBlocksCategory,
-        components: ['SiteLogo', 'Tagline', 'SocialLinks', 'LegalFooter'],
+        components: [
+          'SiteLogo',
+          'Tagline',
+          'SocialLinks',
+          'LegalFooter',
+        ] as (keyof PageComponentsProps)[],
       },
       layout: {
         title: 'Bố cục',
-        components: ['Container', 'Spacer', 'Divider'],
+        components: ['Container', 'Spacer', 'Divider'] as (keyof PageComponentsProps)[],
       },
       basic: {
         title: 'Cơ bản',
@@ -987,11 +1012,11 @@ export function getPuckConfig(options?: {
           'IconWidget',
           'IconListWidget',
           'HtmlWidget',
-        ],
+        ] as (keyof PageComponentsProps)[],
       },
     }
 
-    const allowedKeys = new Set([
+    const allowedKeys = new Set<string>([
       'SiteLogo',
       'Tagline',
       'SocialLinks',
@@ -1007,10 +1032,11 @@ export function getPuckConfig(options?: {
       'IconListWidget',
       'HtmlWidget',
     ])
-    const components: Record<string, any> = {}
+    const components = {} as Config<PageComponentsProps>['components']
     for (const key of allowedKeys) {
-      if (puckConfig.components[key as keyof PageComponentsProps]) {
-        components[key] = puckConfig.components[key as keyof PageComponentsProps]
+      const compKey = key as keyof PageComponentsProps
+      if (puckConfig.components[compKey]) {
+        ;(components as Record<string, unknown>)[compKey] = puckConfig.components[compKey]
       }
     }
 
@@ -1026,11 +1052,16 @@ export function getPuckConfig(options?: {
       const htmlBlock = components.HtmlWidget
       components.HtmlWidget = {
         ...htmlBlock,
-        render: (props: any) => htmlBlock.render({ ...props, isLocked: true }),
+        render: (props) => htmlBlock.render({ ...props, isLocked: true }),
       }
     }
 
-    return { ...puckConfig, root: rootConfig as any, categories, components: components as any }
+    return {
+      ...puckConfig,
+      root: rootConfig as unknown as Config<PageComponentsProps>['root'],
+      categories,
+      components,
+    }
   }
 
   // Regular page: kind === 'page'
@@ -1055,9 +1086,14 @@ export function getPuckConfig(options?: {
 
   const components = { ...puckConfig.components }
   // Exclude site blocks from regular page components
-  delete (components as any).SiteLogo
-  delete (components as any).NavMenu
-  delete (components as any).HeaderCTA
+  const compRecord = components as Record<string, unknown>
+  delete compRecord.SiteLogo
+  delete compRecord.NavMenu
+  delete compRecord.HeaderCTA
+  delete compRecord.AccountLink
+  delete compRecord.LegalFooter
+  delete compRecord.SocialLinks
+  delete compRecord.Tagline
   delete (components as any).AccountLink
   delete (components as any).LegalFooter
   delete (components as any).SocialLinks

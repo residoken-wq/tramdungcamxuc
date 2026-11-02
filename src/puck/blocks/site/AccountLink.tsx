@@ -5,6 +5,7 @@ import { vi } from '@/lib/i18n/vi'
 import type { NavbarCustomer } from '@/components/site/Navbar'
 
 export interface AccountLinkProps {
+  version?: number
   showIcon?: boolean
 }
 
@@ -21,6 +22,7 @@ export const AccountLinkBlock: ComponentConfig<AccountLinkProps> = {
     },
   },
   defaultProps: {
+    version: 1,
     showIcon: true,
   },
   render: ({ showIcon = true, puck }) => {
@@ -29,8 +31,7 @@ export const AccountLinkBlock: ComponentConfig<AccountLinkProps> = {
 
     const href = customer ? '/tai-khoan' : '/tai-khoan/dang-nhap'
     const label =
-      customer?.name?.trim() ||
-      (customer ? customer.email.split('@')[0] : vi.auth.accountNavLabel)
+      customer?.name?.trim() || (customer ? customer.email.split('@')[0] : vi.auth.accountNavLabel)
 
     return (
       <div className="flex items-center">

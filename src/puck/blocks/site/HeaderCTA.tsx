@@ -1,11 +1,12 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
-import { Button } from '@/components/ui/Button'
+import { Button, type ButtonVariant, type ButtonSize } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
 
 export interface HeaderCTAProps {
-  variant?: 'primary' | 'secondary' | 'outline'
-  size?: 'sm' | 'md' | 'lg'
+  version?: number
+  variant?: ButtonVariant
+  size?: ButtonSize
   label?: string
   href?: string
 }
@@ -19,7 +20,7 @@ export const HeaderCTABlock: ComponentConfig<HeaderCTAProps> = {
       options: [
         { label: 'Chính (Primary)', value: 'primary' },
         { label: 'Phụ (Secondary)', value: 'secondary' },
-        { label: 'Viền (Outline)', value: 'outline' },
+        { label: 'Trong suốt (Ghost)', value: 'ghost' },
       ],
     },
     size: {
@@ -33,6 +34,7 @@ export const HeaderCTABlock: ComponentConfig<HeaderCTAProps> = {
     },
   },
   defaultProps: {
+    version: 1,
     variant: 'primary',
     size: 'md',
     label: '',
@@ -44,7 +46,7 @@ export const HeaderCTABlock: ComponentConfig<HeaderCTAProps> = {
     const displayHref = href || '#'
 
     if (!displayLabel) {
-      return null
+      return <></>
     }
 
     return (

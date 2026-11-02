@@ -85,9 +85,7 @@ export function NavMenuView({
       >
         {items.map((item, index) => {
           if (item.groups?.length) {
-            return (
-              <DesktopSubmenu key={`${item.label}-${index}`} item={item} pathname={pathname} />
-            )
+            return <DesktopSubmenu key={`${item.label}-${index}`} item={item} pathname={pathname} />
           }
           const isFeatured = Boolean(item.featured)
           const current = isCurrentPath(pathname, item.href)
@@ -154,9 +152,7 @@ export function NavMenuView({
             href={featuredItem.href}
             className="inline-flex items-center justify-center min-h-[44px] min-w-0 max-w-[130px] sm:max-w-xs px-2.5 py-1 sm:px-3.5 sm:py-2 rounded-full bg-soft-pink text-deep-navy border border-bright-magenta/25 font-ui text-xs sm:text-sm font-bold hover:bg-bright-magenta hover:text-white transition-all shadow-sm focus-visible:outline-2 focus-visible:outline-deep-navy text-center leading-tight"
           >
-            <span className="line-clamp-2">
-              {featuredItem.shortLabel ?? featuredItem.label}
-            </span>
+            <span className="line-clamp-2">{featuredItem.shortLabel ?? featuredItem.label}</span>
           </Link>
         )}
 

@@ -31,7 +31,7 @@ import {
 import { formatVietnamDateTime, getVersionBadgeInfo } from '@/puck/version-history'
 import { remapPageBlockIds, validateTemplatePuckData } from '@/puck/template-validation'
 import { SaveTemplateModal, notifyTemplatesChanged } from '@/puck/editor/SaveTemplateModal'
-import { pageTemplateList, getTemplateData, type PageTemplateKey } from '@/puck/templates'
+import { getTemplatesForKind, getTemplateData, type AnyTemplateKey } from '@/puck/templates'
 import { AutosaveController } from '@/puck/autosave'
 import { LeftPanel } from '@/puck/editor/LeftPanel'
 import { EditorToolbar } from '@/puck/editor/EditorToolbar'
@@ -79,6 +79,7 @@ type EditorContextValue = {
   pageId: string
   pageTitle: string
   pageSlug: string
+  pageKind?: 'page' | 'header' | 'footer'
   currentStatus: string
   onStatusChange: (status: string) => void
   feedback: Feedback
@@ -106,6 +107,7 @@ function EditorHeaderActions() {
     pageId,
     pageTitle,
     pageSlug,
+    pageKind,
     currentStatus,
     onStatusChange,
     feedback,
@@ -352,6 +354,7 @@ function EditorHeaderActions() {
         <TemplateModal
           onClose={() => setIsTemplateModalOpen(false)}
           pageTitle={pageTitle}
+          pageKind={pageKind}
           onApplyTemplate={handleApplyTemplate}
         />
       )}
@@ -385,10 +388,12 @@ function EditorHeaderActions() {
 function TemplateModal({
   onClose,
   pageTitle,
+  pageKind,
   onApplyTemplate,
 }: {
   onClose: () => void
   pageTitle: string
+  pageKind?: 'page' | 'header' | 'footer'
   onApplyTemplate: (templateData: Data) => void
 }) {
   const [activeTab, setActiveTab] = useState<'builtin' | 'saved'>('builtin')
@@ -396,6 +401,7 @@ function TemplateModal({
   const [loadingSaved, setLoadingSaved] = useState<boolean>(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string>('')
+  const availableTemplates = getTemplatesForKind(pageKind)
 
   useEffect(() => {
     let active = true
@@ -416,7 +422,7 @@ function TemplateModal({
     }
   }, [])
 
-  const handleSelectBuiltin = (key: PageTemplateKey) => {
+  const handleSelectBuiltin = (key: AnyTemplateKey) => {
     const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
     if (!confirmed) return
 
@@ -510,7 +516,7 @@ function TemplateModal({
                 : 'border-transparent text-deep-navy/60 hover:text-deep-navy'
             }`}
           >
-            {vi.eb08.groupBuiltin} ({pageTemplateList.length})
+            {vi.eb08.groupBuiltin} ({availableTemplates.length})
           </button>
           <button
             type="button"
@@ -539,7 +545,7 @@ function TemplateModal({
         {/* Tab contents */}
         {activeTab === 'builtin' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 overflow-y-auto">
-            {pageTemplateList.map((tpl) => (
+            {availableTemplates.map((tpl) => (
               <div
                 key={tpl.key}
                 className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between"
@@ -1076,6 +1082,7 @@ export function PuckEditorClient({
             pageId,
             pageTitle,
             pageSlug,
+            pageKind,
             currentStatus: docStatus,
             onStatusChange: setDocStatus,
             feedback,

@@ -32,14 +32,15 @@ describe('EB-10 Step 5: Puck Config by Kind & CSS Scoping', () => {
 
     it('renders header root with sticky class and dummy page canvas only in editing mode', () => {
       const config = getPuckConfig({ kind: 'header' })
-      const Root = config.root?.render as any
+      const Root = config.root?.render as React.ComponentType<Record<string, unknown>>
 
       // Public render (not editing)
       const publicHtml = renderToStaticMarkup(
-        React.createElement(Root, {
-          children: React.createElement('div', { id: 'test-header' }, 'Header Content'),
-          sticky: 'sticky',
-        }),
+        React.createElement(
+          Root,
+          { sticky: 'sticky' },
+          React.createElement('div', { id: 'test-header' }, 'Header Content'),
+        ),
       )
       expect(publicHtml).toContain('data-eb-header')
       expect(publicHtml).toContain('sticky top-0 z-30')
@@ -48,11 +49,11 @@ describe('EB-10 Step 5: Puck Config by Kind & CSS Scoping', () => {
 
       // Editor render (isEditing: true)
       const editorHtml = renderToStaticMarkup(
-        React.createElement(Root, {
-          children: React.createElement('div', { id: 'test-header' }, 'Header Content'),
-          puck: { isEditing: true },
-          sticky: 'none',
-        }),
+        React.createElement(
+          Root,
+          { puck: { isEditing: true }, sticky: 'none' },
+          React.createElement('div', { id: 'test-header' }, 'Header Content'),
+        ),
       )
       expect(editorHtml).toContain('data-eb-header')
       expect(editorHtml).not.toContain('sticky top-0 z-30')
@@ -84,13 +85,15 @@ describe('EB-10 Step 5: Puck Config by Kind & CSS Scoping', () => {
 
     it('renders footer root with data-eb-footer and dummy canvas above only in editing mode', () => {
       const config = getPuckConfig({ kind: 'footer' })
-      const Root = config.root?.render as any
+      const Root = config.root?.render as React.ComponentType<Record<string, unknown>>
 
       // Public render
       const publicHtml = renderToStaticMarkup(
-        React.createElement(Root, {
-          children: React.createElement('div', { id: 'test-footer' }, 'Footer Content'),
-        }),
+        React.createElement(
+          Root,
+          {},
+          React.createElement('div', { id: 'test-footer' }, 'Footer Content'),
+        ),
       )
       expect(publicHtml).toContain('data-eb-footer')
       expect(publicHtml).toContain('Footer Content')
@@ -98,10 +101,11 @@ describe('EB-10 Step 5: Puck Config by Kind & CSS Scoping', () => {
 
       // Editor render
       const editorHtml = renderToStaticMarkup(
-        React.createElement(Root, {
-          children: React.createElement('div', { id: 'test-footer' }, 'Footer Content'),
-          puck: { isEditing: true },
-        }),
+        React.createElement(
+          Root,
+          { puck: { isEditing: true } },
+          React.createElement('div', { id: 'test-footer' }, 'Footer Content'),
+        ),
       )
       expect(editorHtml).toContain('data-eb-footer')
       expect(editorHtml).toContain(vi.eb10.dummyPageCanvas)

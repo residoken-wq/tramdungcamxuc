@@ -5,6 +5,7 @@ import type { NavItem } from '@/components/site/Navbar'
 import { vi } from '@/lib/i18n/vi'
 
 export interface NavMenuProps {
+  version?: number
   align?: 'left' | 'center' | 'right'
   breakpoint?: 'md' | 'lg'
   items?: NavItem[]
@@ -32,6 +33,7 @@ export const NavMenuBlock: ComponentConfig<NavMenuProps> = {
     },
   },
   defaultProps: {
+    version: 1,
     align: 'center',
     breakpoint: 'lg',
     items: [],

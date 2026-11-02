@@ -299,12 +299,14 @@ export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
         .catch(() => ({ docs: [] })),
     ])
 
-    const nav = navigation as (Navigation & {
-      headerSource?: 'code' | 'builder'
-      headerPage?: (number | string | null) | Page
-      footerSource?: 'code' | 'builder'
-      footerPage?: (number | string | null) | Page
-    }) | null
+    const nav = navigation as
+      | (Navigation & {
+          headerSource?: 'code' | 'builder'
+          headerPage?: (number | string | null) | Page
+          footerSource?: 'code' | 'builder'
+          footerPage?: (number | string | null) | Page
+        })
+      | null
 
     // Check themeBuilder header
     let headerSource: 'code' | 'builder' = 'code'
@@ -332,7 +334,7 @@ export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
           typeof headerPageDoc.puckData === 'object'
         ) {
           const resolvedHeader = await resolveServerData(headerPageDoc.puckData as Data, {
-            pageSlug: headerPageDoc.slug,
+            pageSlug: headerPageDoc.slug ?? undefined,
           })
           headerSource = 'builder'
           headerData = resolvedHeader
@@ -378,7 +380,7 @@ export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
           typeof footerPageDoc.puckData === 'object'
         ) {
           const resolvedFooter = await resolveServerData(footerPageDoc.puckData as Data, {
-            pageSlug: footerPageDoc.slug,
+            pageSlug: footerPageDoc.slug ?? undefined,
           })
           footerSource = 'builder'
           footerData = resolvedFooter

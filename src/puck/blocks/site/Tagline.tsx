@@ -4,6 +4,7 @@ import { HeartLine } from '@/components/brand/HeartLine'
 import { vi } from '@/lib/i18n/vi'
 
 export interface TaglineProps {
+  version?: number
   align?: 'left' | 'center' | 'right'
   showHeartLine?: boolean
   tagline?: string
@@ -31,6 +32,7 @@ export const TaglineBlock: ComponentConfig<TaglineProps> = {
     },
   },
   defaultProps: {
+    version: 1,
     align: 'left',
     showHeartLine: true,
     tagline: '',
@@ -41,7 +43,7 @@ export const TaglineBlock: ComponentConfig<TaglineProps> = {
       (puck?.isEditing ? 'Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.' : '')
 
     if (!text) {
-      return null
+      return <></>
     }
 
     const alignClass =
@@ -58,6 +60,7 @@ export const TaglineBlock: ComponentConfig<TaglineProps> = {
         </p>
         {showHeartLine && (
           <div className="pt-1">
+            {/* a11y-contrast-ok: SVG trang trí HeartLine ở footer */}
             <HeartLine className="w-20 h-3 text-accent-pink/40" />
           </div>
         )}

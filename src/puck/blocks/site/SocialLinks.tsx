@@ -4,6 +4,7 @@ import type { SocialLink } from '@/components/site/Footer'
 import { vi } from '@/lib/i18n/vi'
 
 export interface SocialLinksProps {
+  version?: number
   align?: 'left' | 'center' | 'right'
   socialLinks?: SocialLink[]
 }
@@ -22,16 +23,13 @@ export const SocialLinksBlock: ComponentConfig<SocialLinksProps> = {
     },
   },
   defaultProps: {
+    version: 1,
     align: 'left',
     socialLinks: [],
   },
   render: ({ align = 'left', socialLinks = [], puck }) => {
     const alignClass =
-      align === 'center'
-        ? 'justify-center'
-        : align === 'right'
-          ? 'justify-end'
-          : 'justify-start'
+      align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'
 
     const sampleSocials: SocialLink[] =
       puck?.isEditing && socialLinks.length === 0
@@ -43,7 +41,7 @@ export const SocialLinksBlock: ComponentConfig<SocialLinksProps> = {
         : socialLinks
 
     if (sampleSocials.length === 0) {
-      return null
+      return <></>
     }
 
     return (

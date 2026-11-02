@@ -5,40 +5,7 @@ export const headerDefaultTemplate: Data = {
     props: {
       title: 'Đầu trang mặc định',
       sticky: 'sticky',
-    },
-  },
-  zones: {
-    'header-container:items': [
-      {
-        type: 'SiteLogo',
-        props: {
-          id: 'header-logo',
-          width: 140,
-        },
-      },
-      {
-        type: 'NavMenu',
-        props: {
-          id: 'header-nav',
-          align: 'center',
-          breakpoint: 'lg',
-        },
-      },
-      {
-        type: 'AccountLink',
-        props: {
-          id: 'header-account',
-          showAvatar: true,
-        },
-      },
-      {
-        type: 'HeaderCTA',
-        props: {
-          id: 'header-cta',
-          variant: 'primary',
-        },
-      },
-    ],
+    } as { title: string; sticky: string },
   },
   content: [
     {
@@ -55,6 +22,37 @@ export const headerDefaultTemplate: Data = {
           wrap: 'nowrap',
           gap: 'md',
         },
+        items: [
+          {
+            type: 'SiteLogo',
+            props: {
+              id: 'header-logo',
+              size: 'md',
+            },
+          },
+          {
+            type: 'NavMenu',
+            props: {
+              id: 'header-nav',
+              align: 'center',
+              breakpoint: 'lg',
+            },
+          },
+          {
+            type: 'AccountLink',
+            props: {
+              id: 'header-account',
+              showIcon: true,
+            },
+          },
+          {
+            type: 'HeaderCTA',
+            props: {
+              id: 'header-cta',
+              variant: 'primary',
+            },
+          },
+        ],
       },
     },
   ],

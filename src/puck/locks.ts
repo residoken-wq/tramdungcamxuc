@@ -1,13 +1,8 @@
 import type { Data, Permissions } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
-import { walkPuckItems } from './walk'
+import { walkPuckItemsSync } from './walk'
 
-export const SITE_HEADER_BLOCKS = [
-  'SiteLogo',
-  'NavMenu',
-  'HeaderCTA',
-  'AccountLink',
-] as const
+export const SITE_HEADER_BLOCKS = ['SiteLogo', 'NavMenu', 'HeaderCTA', 'AccountLink'] as const
 
 export const SITE_FOOTER_BLOCKS = [
   'SiteLogo',
@@ -66,11 +61,10 @@ export function getLockedComponentPermissions(
     }
   }
 
-  // Khối chân trang pháp lý không được xóa và không được nhân bản (EB-10)
+  // Khối chân trang pháp lý không được xóa (EB-10 & T1-04)
   if (componentType === 'Footer' || componentType === 'LegalFooter') {
     return {
       delete: false,
-      duplicate: false,
     }
   }
 
@@ -81,10 +75,10 @@ export function getLockedComponentPermissions(
  * Xác thực dữ liệu bố cục trang trên server:
  * Trang chủ ('/' hoặc 'trang-chu') bắt buộc phải có ít nhất một khối HeroTwoEntries.
  */
-export async function validatePageLockedBlocks(
+export function validatePageLockedBlocks(
   slug: string,
   data: unknown,
-): Promise<{ valid: boolean; error?: string }> {
+): { valid: boolean; error?: string } {
   if (!isHomepageSlug(slug)) {
     return { valid: true }
   }
@@ -99,7 +93,7 @@ export async function validatePageLockedBlocks(
   }
 
   let hasHero = false
-  await walkPuckItems(data, (item) => {
+  walkPuckItemsSync(data, (item) => {
     if (item?.type === 'HeroTwoEntries') hasHero = true
   })
 
@@ -121,16 +115,16 @@ export async function validatePageLockedBlocks(
  * - header: chỉ chứa khối theme cho phép (không chứa khối bán hàng/form/footer).
  * - page: không chứa các khối dành riêng cho đầu trang/chân trang.
  */
-export async function validatePageKindBlocks(
+export function validatePageKindBlocks(
   kind: string = 'page',
   data: unknown,
-): Promise<{ valid: boolean; error?: string }> {
+): { valid: boolean; error?: string } {
   if (!data || typeof data !== 'object') {
     return { valid: true }
   }
 
   const blockTypes: string[] = []
-  await walkPuckItems(data, (item) => {
+  walkPuckItemsSync(data, (item) => {
     if (item?.type) {
       blockTypes.push(item.type)
     }

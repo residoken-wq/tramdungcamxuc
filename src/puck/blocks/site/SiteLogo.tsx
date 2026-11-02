@@ -5,6 +5,7 @@ import { Logo } from '@/components/brand/Logo'
 import { vi } from '@/lib/i18n/vi'
 
 export interface SiteLogoProps {
+  version?: number
   size?: 'sm' | 'md' | 'lg'
   align?: 'left' | 'center' | 'right'
   src?: string
@@ -34,6 +35,7 @@ export const SiteLogoBlock: ComponentConfig<SiteLogoProps> = {
     },
   },
   defaultProps: {
+    version: 1,
     size: 'md',
     align: 'left',
   },

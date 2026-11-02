@@ -235,7 +235,7 @@ export interface Page {
   /**
    * Chỉ chọn khi tạo mới. Đầu trang và chân trang được dùng trong Menu điều hướng.
    */
-  kind: 'page' | 'header' | 'footer';
+  kind?: ('page' | 'header' | 'footer') | null;
   /**
    * Dùng chữ thường không dấu, số, dấu - và /. Trang chủ dùng /.
    */

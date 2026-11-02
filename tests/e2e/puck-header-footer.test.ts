@@ -105,24 +105,33 @@ test.describe('EB-10: Header and Footer Visual Builder', () => {
       headerPageId = headerDoc.id
 
       // Update header puckData to add custom button
+      const existingContainer = headerDoc.puckData?.content?.[0] || {
+        type: 'Container',
+        props: { id: 'header-container', items: [] },
+      }
       const customHeaderData = {
         ...headerDoc.puckData,
-        zones: {
-          ...(headerDoc.puckData?.zones || {}),
-          'header-container:items': [
-            ...(headerDoc.puckData?.zones?.['header-container:items'] || []),
-            {
-              type: 'ButtonWidget',
-              props: {
-                id: 'custom-e2e-cta-btn',
-                text: customCtaText,
-                href: '#custom-connect',
-                variant: 'primary',
-                size: 'sm',
-              },
+        content: [
+          {
+            ...existingContainer,
+            props: {
+              ...existingContainer.props,
+              items: [
+                ...(existingContainer.props?.items || []),
+                {
+                  type: 'ButtonWidget',
+                  props: {
+                    id: 'custom-e2e-cta-btn',
+                    text: customCtaText,
+                    href: '#custom-connect',
+                    variant: 'primary',
+                    size: 'sm',
+                  },
+                },
+              ],
             },
-          ],
-        },
+          },
+        ],
       }
 
       const updateHeaderRes = await page.request.patch(`/api/pages/${headerPageId}`, {
@@ -154,12 +163,14 @@ test.describe('EB-10: Header and Footer Visual Builder', () => {
 
       // Verify mobile responsiveness at 375px
       await page.setViewportSize({ width: 375, height: 667 })
-      const mobileMenuBtn = page.locator('[data-eb-header] button[aria-label="Mở menu"]')
+      const mobileMenuBtn = page.locator(
+        '[data-eb-header] #mobile-nav-toggle, [data-eb-header] button[aria-label*="Mở menu"]',
+      )
       await expect(mobileMenuBtn).toBeVisible()
 
       // Open mobile drawer
       await mobileMenuBtn.click()
-      const mobileDrawer = page.locator('div[role="dialog"][aria-modal="true"]')
+      const mobileDrawer = page.locator('#mobile-nav-drawer')
       await expect(mobileDrawer).toBeVisible()
 
       // Close mobile drawer using Escape
@@ -200,7 +211,7 @@ test.describe('EB-10: Header and Footer Visual Builder', () => {
       await page.goto('/')
       const footerLocator = page.locator('[data-eb-footer]')
       await expect(footerLocator).toBeVisible()
-      await expect(page.locator('[data-eb-footer] a[href*="dieu-khoan-dich-vu"]')).toBeVisible()
+      await expect(page.locator('[data-eb-footer] a[href*="dieu-khoan-su-dung"]')).toBeVisible()
 
       // Attempting to delete LegalFooter from footer page via REST is rejected
       const invalidFooterData = {
@@ -258,13 +269,15 @@ test.describe('EB-10: Header and Footer Visual Builder', () => {
       await editorPage.locator('button[type="submit"]').click()
       await expect(editorPage).toHaveURL(/\/admin\/?$/, { timeout: 20000 })
 
-      // Editor tries to modify navigation headerSource -> REJECTED (403)
+      // Editor tries to modify navigation headerSource -> field is protected by isOwner and stripped
       const editorUpdateNavRes = await editorPage.request.post('/api/globals/navigation', {
         data: {
           headerSource: 'code',
         },
       })
-      expect(editorUpdateNavRes.status()).toBe(403)
+      expect(editorUpdateNavRes.ok()).toBe(true)
+      const checkNav = await (await page.request.get('/api/globals/navigation')).json()
+      expect(checkNav.headerSource).toBe('builder')
 
       // Editor can edit header page content -> SUCCEEDS (200)
       const editorUpdatePageRes = await editorPage.request.patch(`/api/pages/${headerPageId}`, {
@@ -309,3 +322,4 @@ test.describe('EB-10: Header and Footer Visual Builder', () => {
     }
   })
 })
+

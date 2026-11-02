@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { Pages, normalizePageSlug } from '@/collections/Pages'
+import { Pages } from '@/collections/Pages'
 import { buildPublishedPuckPageWhere } from '@/lib/detail-pages'
 import { Navigation } from '@/globals/Navigation'
 import { vi } from '@/lib/i18n/vi'

@@ -26,11 +26,12 @@ export type PageTemplateKey =
   | 'service'
   | 'workshop'
   | 'event'
-  | 'header-default'
-  | 'footer-default'
+
+export type ThemeTemplateKey = 'header-default' | 'footer-default'
+export type AnyTemplateKey = PageTemplateKey | ThemeTemplateKey
 
 export type PageTemplateItem = {
-  key: PageTemplateKey
+  key: AnyTemplateKey
   label: string
   description: string
   data: Data
@@ -111,6 +112,9 @@ export const pageTemplates: Record<PageTemplateKey, PageTemplateItem> = {
     description: 'Trang sự kiện kết nối cộng đồng, lịch trình chi tiết, giải đáp và đăng ký.',
     data: eventTemplate,
   },
+}
+
+export const themeTemplates: Record<ThemeTemplateKey, PageTemplateItem> = {
   'header-default': {
     key: 'header-default',
     label: vi.eb10.headerDefaultTemplate,
@@ -126,12 +130,27 @@ export const pageTemplates: Record<PageTemplateKey, PageTemplateItem> = {
 }
 
 export const pageTemplateList = Object.values(pageTemplates)
+export const themeTemplateList = Object.values(themeTemplates)
+export const allTemplates: Record<AnyTemplateKey, PageTemplateItem> = {
+  ...pageTemplates,
+  ...themeTemplates,
+}
+
+export function getTemplatesForKind(kind?: 'page' | 'header' | 'footer'): PageTemplateItem[] {
+  if (kind === 'header') {
+    return [themeTemplates['header-default']]
+  }
+  if (kind === 'footer') {
+    return [themeTemplates['footer-default']]
+  }
+  return pageTemplateList
+}
 
 /**
  * Lấy bản sao dữ liệu mẫu theo mã mẫu (key), có thể tùy chỉnh tiêu đề trang root.
  */
 export function getTemplateData(key: string, pageTitle?: string): Data | null {
-  const template = pageTemplates[key as PageTemplateKey]
+  const template = allTemplates[key as AnyTemplateKey]
   if (!template) return null
   const clone: Data = JSON.parse(JSON.stringify(template.data))
   if (pageTitle && pageTitle.trim().length > 0) {

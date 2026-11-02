@@ -3,9 +3,8 @@ import { describe, it, expect, vi as vitest } from 'vitest'
 vitest.mock('server-only', () => ({}))
 
 import { Navigation } from '@/globals/Navigation'
-import { buildSiteShellFromPayloadData, DEFAULT_SITE_SHELL_DATA } from '@/lib/site-shell.server'
+import { buildSiteShellFromPayloadData } from '@/lib/site-shell.server'
 import { vi as i18nVi } from '@/lib/i18n/vi'
-import { isOwnerUser } from '@/lib/auth/access'
 
 describe('EB-10: navigation theme builder fields and site shell data', () => {
   it('defines themeBuilder fields with default code and isOwner access', () => {

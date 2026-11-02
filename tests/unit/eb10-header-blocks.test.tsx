@@ -67,6 +67,7 @@ describe('EB-10: Header blocks and NavMenuView', () => {
     // When image src is provided
     const { container: smContainer } = render(
       SiteLogoBlock.render({
+        id: 'logo-sm',
         size: 'sm',
         align: 'left',
         src: '/api/media/file/logo.png',
@@ -80,6 +81,7 @@ describe('EB-10: Header blocks and NavMenuView', () => {
     // When no src (placeholder brand box with minimum width)
     const { container: placeholderContainer } = render(
       SiteLogoBlock.render({
+        id: 'logo-ph',
         size: 'sm',
         align: 'left',
         puck: {} as any,
@@ -93,12 +95,28 @@ describe('EB-10: Header blocks and NavMenuView', () => {
   })
 
   it('NavMenuBlock renders NavMenuView with provided items', () => {
-    render(NavMenuBlock.render({ items: sampleItems, align: 'center', breakpoint: 'lg', puck: {} as any }))
+    render(
+      NavMenuBlock.render({
+        id: 'nav-menu-1',
+        items: sampleItems,
+        align: 'center',
+        breakpoint: 'lg',
+        puck: {} as any,
+      }),
+    )
     expect(screen.getByRole('navigation', { name: i18nVi.navbar.mainNav })).toBeTruthy()
   })
 
   it('HeaderCTABlock renders button with label and href', () => {
-    render(HeaderCTABlock.render({ label: 'Đăng ký ngay', href: '/dang-ky', variant: 'primary', puck: {} as any }))
+    render(
+      HeaderCTABlock.render({
+        id: 'header-cta-1',
+        label: 'Đăng ký ngay',
+        href: '/dang-ky',
+        variant: 'primary',
+        puck: {} as any,
+      }),
+    )
     const btn = screen.getByRole('link', { name: 'Đăng ký ngay' })
     expect(btn).toBeTruthy()
     expect(btn.getAttribute('href')).toBe('/dang-ky')
@@ -106,7 +124,13 @@ describe('EB-10: Header blocks and NavMenuView', () => {
 
   it('AccountLinkBlock reads customer strictly from puck.metadata', () => {
     // Anonymous
-    const { unmount } = render(AccountLinkBlock.render({ showIcon: true, puck: { metadata: {} } as any }))
+    const { unmount } = render(
+      AccountLinkBlock.render({
+        id: 'account-link-anon',
+        showIcon: true,
+        puck: { metadata: {} } as any,
+      }),
+    )
     const anonLink = screen.getByRole('link', { name: i18nVi.auth.accountNavLabel })
     expect(anonLink.getAttribute('href')).toBe('/tai-khoan/dang-nhap')
     unmount()
@@ -114,6 +138,7 @@ describe('EB-10: Header blocks and NavMenuView', () => {
     // Logged in
     render(
       AccountLinkBlock.render({
+        id: 'account-link-auth',
         showIcon: true,
         puck: {
           metadata: {

@@ -33,12 +33,7 @@ const guardKindImmutabilityHook: CollectionBeforeValidateHook = ({
   req,
   operation,
 }) => {
-  if (
-    operation === 'update' &&
-    originalDoc?.kind &&
-    data?.kind &&
-    data.kind !== originalDoc.kind
-  ) {
+  if (operation === 'update' && originalDoc?.kind && data?.kind && data.kind !== originalDoc.kind) {
     throw new ValidationError(
       {
         errors: [{ path: 'kind', message: vi.eb10.errorKindImmutable }],
@@ -67,18 +62,24 @@ const normalizeSlug: CollectionBeforeValidateHook = ({ data, originalDoc, req })
 }
 
 // REVIEW-REQUIRED: Validate page locked blocks and theme builder kind block rules at collection level
-const validateLockedBlocksHook: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
+const validateLockedBlocksHook: CollectionBeforeValidateHook = async ({
+  data,
+  originalDoc,
+  req,
+}) => {
   const effectiveSlug = data?.slug ?? originalDoc?.slug
   const effectiveKind = data?.kind ?? originalDoc?.kind ?? 'page'
   const effectivePuckData = data?.puckData ?? originalDoc?.puckData
 
   if (effectivePuckData) {
     // 1. Validate block rules according to page kind (header / footer / page)
-    const kindResult = await validatePageKindBlocks(effectiveKind, effectivePuckData)
+    const kindResult = validatePageKindBlocks(effectiveKind, effectivePuckData)
     if (!kindResult.valid) {
       throw new ValidationError(
         {
-          errors: [{ path: 'puckData', message: kindResult.error || 'Dữ liệu trang không hợp lệ.' }],
+          errors: [
+            { path: 'puckData', message: kindResult.error || 'Dữ liệu trang không hợp lệ.' },
+          ],
           req,
         },
         req?.t,
@@ -87,11 +88,13 @@ const validateLockedBlocksHook: CollectionBeforeValidateHook = async ({ data, or
 
     // 2. Validate locked blocks on homepage
     if (effectiveSlug && effectiveKind === 'page') {
-      const lockedResult = await validatePageLockedBlocks(effectiveSlug, effectivePuckData)
+      const lockedResult = validatePageLockedBlocks(effectiveSlug, effectivePuckData)
       if (!lockedResult.valid) {
         throw new ValidationError(
           {
-            errors: [{ path: 'puckData', message: lockedResult.error || 'Dữ liệu trang không hợp lệ.' }],
+            errors: [
+              { path: 'puckData', message: lockedResult.error || 'Dữ liệu trang không hợp lệ.' },
+            ],
             req,
           },
           req?.t,
@@ -152,7 +155,6 @@ export const Pages = {
       name: 'kind',
       label: vi.eb10.kindLabel,
       type: 'select',
-      required: true,
       defaultValue: 'page',
       options: [
         { label: vi.eb10.kindOptions.page, value: 'page' },
@@ -181,8 +183,7 @@ export const Pages = {
           return 'Vui lòng điền thông tin này.'
         }
         return (
-          /^[a-z0-9/-]+$/.test(value) ||
-          'Đường dẫn chỉ dùng chữ thường không dấu, số, dấu - và /.'
+          /^[a-z0-9/-]+$/.test(value) || 'Đường dẫn chỉ dùng chữ thường không dấu, số, dấu - và /.'
         )
       },
       admin: {

@@ -6,38 +6,6 @@ export const footerDefaultTemplate: Data = {
       title: 'Chân trang mặc định',
     },
   },
-  zones: {
-    'footer-container:items': [
-      {
-        type: 'SiteLogo',
-        props: {
-          id: 'footer-logo',
-          width: 140,
-        },
-      },
-      {
-        type: 'Tagline',
-        props: {
-          id: 'footer-tagline',
-        },
-      },
-      {
-        type: 'SocialLinks',
-        props: {
-          id: 'footer-social',
-          align: 'left',
-        },
-      },
-      {
-        type: 'LegalFooter',
-        props: {
-          id: 'footer-legal',
-          showLegalLinks: true,
-          showSellerInfo: true,
-        },
-      },
-    ],
-  },
   content: [
     {
       type: 'Container',
@@ -52,6 +20,38 @@ export const footerDefaultTemplate: Data = {
           align: 'stretch',
           gap: 'md',
         },
+        items: [
+          {
+            type: 'SiteLogo',
+            props: {
+              id: 'footer-logo',
+              size: 'md',
+            },
+          },
+          {
+            type: 'Tagline',
+            props: {
+              id: 'footer-tagline',
+              align: 'left',
+              showHeartLine: true,
+            },
+          },
+          {
+            type: 'SocialLinks',
+            props: {
+              id: 'footer-social',
+              align: 'left',
+            },
+          },
+          {
+            type: 'LegalFooter',
+            props: {
+              id: 'footer-legal',
+              showLegalLinks: true,
+              showSellerInfo: true,
+            },
+          },
+        ],
       },
     },
   ],

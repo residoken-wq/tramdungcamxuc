@@ -379,7 +379,8 @@ export async function duplicatePageAction(pageId: string): Promise<DuplicatePage
       }
     }
 
-    const originalKind = (originalDoc as { kind?: string }).kind ?? 'page'
+    const originalKind = ((originalDoc as { kind?: 'header' | 'footer' | 'page' }).kind ??
+      'page') as 'header' | 'footer' | 'page'
     const isPublicPage = originalKind === 'page'
 
     const allPages = await payload.find({

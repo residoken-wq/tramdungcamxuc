@@ -4,7 +4,7 @@ import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { Navbar, Footer, FloatingActions } from '@/components/site'
 import { StyledRender } from '@/components/design/StyledRender'
 import { headerPuckConfig, footerPuckConfig } from '@/puck/config'
-import { LegalFooterBlock } from '@/puck/blocks/site/LegalFooter'
+import { LegalFooterView } from '@/puck/blocks/site/LegalFooter'
 
 export default async function SiteShellLayout({ children }: { children: React.ReactNode }) {
   const [shellData, customer] = await Promise.all([getSiteShellData(), getCurrentCustomer()])
@@ -41,7 +41,7 @@ export default async function SiteShellLayout({ children }: { children: React.Re
             metadata={{ customer: customerMeta }}
           />
           {!shellData.footerHasLegal && (
-            <LegalFooterBlock.render
+            <LegalFooterView
               showLegalLinks={true}
               showSellerInfo={true}
               legalLinks={shellData.footer.legalLinks}
