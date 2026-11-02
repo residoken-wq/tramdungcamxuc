@@ -6,6 +6,10 @@ import { contrastRatio, isOpen, isValidHex } from '@/lib/design/design-system'
 import { DESIGN_FONT_OPTIONS } from '@/lib/design/fonts'
 import { vi } from '@/lib/i18n/vi'
 import {
+  cleanCssClasses,
+  cleanEntrance,
+  cleanEntranceDelay,
+  cleanZIndex,
   DEVICES,
   FONT_SIZE_PRESETS,
   FONT_WEIGHTS,
@@ -22,6 +26,7 @@ import {
   type LengthKind,
   type Responsive,
 } from '@/puck/style/style-schema'
+import { MAX_BLOCK_CUSTOM_CSS_LENGTH } from '@/puck/style/custom-css'
 import { useStylePanel } from './style-context'
 import {
   ColorControl,
@@ -51,7 +56,17 @@ export const STYLE_TAB_KEYS: (keyof BlockStyle)[] = [
   'borderColor',
   'shadow',
 ]
-export const ADVANCED_TAB_KEYS: (keyof BlockStyle)[] = ['padding', 'margin', 'hideOn', 'anchorId']
+export const ADVANCED_TAB_KEYS: (keyof BlockStyle)[] = [
+  'padding',
+  'margin',
+  'hideOn',
+  'anchorId',
+  'cssClasses',
+  'zIndex',
+  'entrance',
+  'entranceDelay',
+  'customCss',
+]
 
 /** Drops empty values so `_style` stays small (and absent when nothing is set). */
 export function compactStyle(style: BlockStyle): BlockStyle | undefined {
@@ -128,7 +143,7 @@ export function StyleField({
   value: unknown
   onChange: (value: BlockStyle | undefined) => void
 }) {
-  const { ds, tab } = useStylePanel()
+  const { ds, tab, isOwner } = useStylePanel()
   const width = usePuckSelector((s) => s.appState.ui.viewports.current.width)
   const dispatch = usePuckSelector((s) => s.dispatch)
   const device = deviceForWidth(typeof width === 'number' ? width : undefined)
@@ -343,6 +358,98 @@ export function StyleField({
           <Group title={t.groups.anchor}>
             <AnchorControl value={style.anchorId} onChange={(v) => update({ anchorId: v })} />
           </Group>
+          <Group title={vi.eb09.classesZIndexGroup}>
+            <div className="flex flex-col gap-1">
+              <FieldLabel>{vi.eb09.cssClassesLabel}</FieldLabel>
+              <input
+                type="text"
+                aria-label={vi.eb09.cssClassesLabel}
+                placeholder={vi.eb09.cssClassesPlaceholder}
+                value={style.cssClasses?.join(' ') ?? ''}
+                onChange={(e) => update({ cssClasses: cleanCssClasses(e.target.value) })}
+                className="h-8 rounded-md border border-deep-navy/20 bg-warm-ivory/50 px-2 text-xs text-deep-navy focus:border-deep-navy focus:outline-none"
+              />
+              <span className="text-[11px] text-deep-navy/80">{vi.eb09.cssClassesHelp}</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <FieldLabel>{vi.eb09.zIndexLabel}</FieldLabel>
+              <input
+                type="number"
+                min={-10}
+                max={100}
+                aria-label={vi.eb09.zIndexLabel}
+                placeholder="0"
+                value={style.zIndex ?? ''}
+                onChange={(e) =>
+                  update({
+                    zIndex: e.target.value === '' ? undefined : cleanZIndex(Number(e.target.value)),
+                  })
+                }
+                className="h-8 rounded-md border border-deep-navy/20 bg-warm-ivory/50 px-2 text-xs text-deep-navy focus:border-deep-navy focus:outline-none"
+              />
+              <span className="text-[11px] text-deep-navy/80">{vi.eb09.zIndexHelp}</span>
+            </div>
+          </Group>
+          <Group title={vi.eb09.entranceGroup}>
+            <div className="flex flex-col gap-1">
+              <FieldLabel>{vi.eb09.entranceLabel}</FieldLabel>
+              <select
+                aria-label={vi.eb09.entranceLabel}
+                value={style.entrance ?? 'none'}
+                onChange={(e) => update({ entrance: cleanEntrance(e.target.value) })}
+                className="h-8 rounded-md border border-deep-navy/20 bg-warm-ivory/50 px-2 text-xs text-deep-navy focus:border-deep-navy focus:outline-none"
+              >
+                <option value="none">{vi.eb09.entranceNone}</option>
+                <option value="fade-in">{vi.eb09.entranceFadeIn}</option>
+                <option value="fade-up">{vi.eb09.entranceFadeUp}</option>
+                <option value="zoom-in">{vi.eb09.entranceZoomIn}</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <FieldLabel>{vi.eb09.entranceDelayLabel}</FieldLabel>
+              <select
+                aria-label={vi.eb09.entranceDelayLabel}
+                value={String(style.entranceDelay ?? 0)}
+                onChange={(e) =>
+                  update({ entranceDelay: cleanEntranceDelay(Number(e.target.value)) })
+                }
+                className="h-8 rounded-md border border-deep-navy/20 bg-warm-ivory/50 px-2 text-xs text-deep-navy focus:border-deep-navy focus:outline-none"
+              >
+                <option value="0">{vi.eb09.delayNone}</option>
+                <option value="150">{vi.eb09.delay150}</option>
+                <option value="300">{vi.eb09.delay300}</option>
+                <option value="500">{vi.eb09.delay500}</option>
+              </select>
+            </div>
+          </Group>
+          {isOpen(ds, 'customCss') && isOwner ? (
+            <Group title={vi.eb09.customCssGroup}>
+              <div
+                role="note"
+                className="rounded-md bg-butter-cream/60 px-2 py-1.5 text-[11px] font-semibold text-deep-navy"
+              >
+                ⚠️ {vi.eb09.customCssWarning}
+              </div>
+              <p className="text-[11px] text-deep-navy/80">{vi.eb09.customCssHelp}</p>
+              <div className="flex flex-col gap-1">
+                <textarea
+                  rows={6}
+                  maxLength={MAX_BLOCK_CUSTOM_CSS_LENGTH}
+                  placeholder={vi.eb09.customCssPlaceholder}
+                  aria-label={vi.eb09.customCssLabel}
+                  value={style.customCss ?? ''}
+                  onChange={(e) => update({ customCss: e.target.value })}
+                  className="w-full rounded-md border border-deep-navy/20 bg-warm-ivory/50 p-2 font-mono text-xs text-deep-navy focus:border-deep-navy focus:outline-none"
+                />
+                <div className="text-right text-[11px] text-deep-navy/70">
+                  {vi.eb09.customCssCharCount(
+                    (style.customCss ?? '').length,
+                    MAX_BLOCK_CUSTOM_CSS_LENGTH,
+                  )}
+                </div>
+              </div>
+            </Group>
+          ) : null}
         </>
       )}
 

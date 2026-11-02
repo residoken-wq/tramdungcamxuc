@@ -5,6 +5,8 @@ import { ImageText, type ImageTextProps } from '@/components/site/ImageText'
 import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
 import { vi } from '@/lib/i18n/vi'
+import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
+import { PageCustomCssControl } from './editor/PageCustomCssControl'
 
 import { withBlockStyles } from './style/with-block-style'
 import { HeroImageBlock, type HeroImageProps } from './blocks/HeroImage'
@@ -332,7 +334,10 @@ const basePuckConfig: Config<PageComponentsProps> = {
       // Puck passes its DropZone component here; the public render keeps `children`.
       const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
       return (
-        <div className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased">
+        <div
+          data-eb-page=""
+          className="min-h-screen bg-warm-ivory font-sans text-deep-navy antialiased"
+        >
           {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={ROOT_DISALLOW} /> : children}
         </div>
       )
@@ -742,25 +747,52 @@ const basePuckConfig: Config<PageComponentsProps> = {
 export const puckConfig: Config<PageComponentsProps> = withBlockStyles(basePuckConfig)
 
 /**
- * Lấy cấu hình Puck phù hợp với từng trang, gắn các quyền khóa khối tự động (VD: HeroTwoEntries trên trang chủ).
+ * Lấy cấu hình Puck phù hợp với từng trang, gắn các quyền khóa khối tự động (VD: HeroTwoEntries trên trang chủ)
+ * và quyền chỉnh sửa CSS tuỳ chỉnh (khi lock mở và user là owner).
  */
-export function getPuckConfig(options?: { pageSlug?: string }): Config<PageComponentsProps> {
+export function getPuckConfig(options?: {
+  pageSlug?: string
+  isOwner?: boolean
+  designSystem?: CleanDesignSystem
+}): Config<PageComponentsProps> {
   const pageSlug = options?.pageSlug || '/'
   const heroPermissions = getLockedComponentPermissions('HeroTwoEntries', pageSlug)
+  const canEditCustomCss = Boolean(
+    options?.isOwner && options?.designSystem && isOpen(options.designSystem, 'customCss'),
+  )
 
-  if (!heroPermissions) {
+  const rootConfig = canEditCustomCss
+    ? {
+        ...puckConfig.root,
+        fields: {
+          ...puckConfig.root?.fields,
+          customCss: {
+            type: 'custom' as const,
+            label: vi.eb09.customCssLabel,
+            render: ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+              <PageCustomCssControl value={value} onChange={onChange} />
+            ),
+          },
+        },
+      }
+    : puckConfig.root
+
+  if (!heroPermissions && !canEditCustomCss) {
     return puckConfig
   }
 
   return {
     ...puckConfig,
-    components: {
-      ...puckConfig.components,
-      HeroTwoEntries: {
-        ...puckConfig.components.HeroTwoEntries,
-        permissions: heroPermissions,
-      },
-    },
+    root: rootConfig,
+    components: heroPermissions
+      ? {
+          ...puckConfig.components,
+          HeroTwoEntries: {
+            ...puckConfig.components.HeroTwoEntries,
+            permissions: heroPermissions,
+          },
+        }
+      : puckConfig.components,
   }
 }
 
