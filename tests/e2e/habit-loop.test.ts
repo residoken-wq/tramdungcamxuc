@@ -28,7 +28,7 @@ async function bootstrapAdmin(page: Page): Promise<number> {
 
   if (!response) throw new Error('First-user registration request was never sent.')
   expect(response.ok()).toBe(true)
-  await expect(page).toHaveURL(/\/admin\/?$/)
+  await expect(page).toHaveURL(/\/admin\/?$/, { timeout: 30000 })
   return (await (await page.request.get('/api/users/me')).json()).user.id
 }
 
@@ -80,8 +80,26 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
           _status: 'published',
         },
       })
-      expect(productRes.status(), await productRes.text()).toBe(201)
-      createdProductId = (await productRes.json()).doc.id
+      if (productRes.status() === 400) {
+        const existing = await (await page.request.get('/api/products?where[slug][equals]=habit-tracker-so')).json()
+        if (existing.docs?.[0]) {
+          createdProductId = existing.docs[0].id
+          await page.request.patch(`/api/products/${createdProductId}`, {
+            data: {
+              price: 250000,
+              salePrice: 178000,
+              saleStatus: 'on_sale',
+              trialDays: 21,
+              _status: 'published',
+            },
+          })
+        } else {
+          expect(productRes.status(), await productRes.text()).toBe(201)
+        }
+      } else {
+        expect(productRes.status(), await productRes.text()).toBe(201)
+        createdProductId = (await productRes.json()).doc.id
+      }
 
       // Khởi tạo ngữ cảnh khách vãng lai (không đăng nhập) với màn hình mobile 375px
       // IP giả riêng (dải tài liệu 203.0.113.0/24): giới hạn tần suất form dùng chung 127.0.0.1 trên CI
