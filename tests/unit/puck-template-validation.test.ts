@@ -12,16 +12,16 @@ import {
 const mockConfig: Config = {
   components: {
     Container: {
-      render: () => null,
+      render: () => null as any,
     },
     HeadingWidget: {
-      render: () => null,
+      render: () => null as any,
     },
     TextWidget: {
-      render: () => null,
+      render: () => null as any,
     },
     TabsWidget: {
-      render: () => null,
+      render: () => null as any,
     },
   },
 }

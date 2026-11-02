@@ -7,11 +7,12 @@ import React, {
   useTransition,
   useMemo,
   useEffect,
+  useCallback,
 } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Puck, type Data, type Viewports, useGetPuck } from '@puckeditor/core'
+import { Puck, type Data, type Viewports, useGetPuck, usePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { puckConfig, getPuckConfig } from '@/puck/config'
 import { puckVietnameseDictionary } from '@/puck/dictionary'
@@ -19,6 +20,7 @@ import {
   saveDraftAction,
   publishPageAction,
   getVersionsAction,
+  getVersionDataAction,
   restoreVersionAction,
   duplicatePageAction,
   listTemplatesAction,
@@ -26,6 +28,7 @@ import {
   type VersionSummary,
   type TemplateSummary,
 } from '@/puck/actions'
+import { formatVietnamDateTime, getVersionBadgeInfo } from '@/puck/version-history'
 import { remapPageBlockIds } from '@/puck/template-validation'
 import {
   SaveTemplateModal,
@@ -67,6 +70,12 @@ type Feedback = {
   message: string
 }
 
+export type PreviewVersionState = {
+  id: string
+  dateFormatted: string
+  originalData: Data
+}
+
 type EditorContextValue = {
   pageId: string
   pageTitle: string
@@ -76,6 +85,8 @@ type EditorContextValue = {
   feedback: Feedback
   setFeedback: (feedback: Feedback) => void
   autosaveController: AutosaveController
+  previewVersion: PreviewVersionState | null
+  setPreviewVersion: (preview: PreviewVersionState | null) => void
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
@@ -115,7 +126,22 @@ function EditorHeaderActions() {
     getPuck().dispatch({ type: 'setData', data: restoredData })
     autosaveController.markSaved(restoredData)
     onStatusChange(newStatus)
+    context.setPreviewVersion(null)
     setFeedback({ type: 'saved', message: vi.builder.restoredVersion })
+  }
+
+  const handlePreviewVersion = (versionId: string, dateFormatted: string, versionData: Data) => {
+    const currentData = getPuck().appState.data
+    context.setPreviewVersion({
+      id: versionId,
+      dateFormatted,
+      originalData: currentData,
+    })
+    getPuck().dispatch({ type: 'setData', data: versionData })
+    setFeedback({
+      type: 'saved',
+      message: vi.eb08.previewingVersion(dateFormatted),
+    })
   }
 
   const handleSaveDraft = () => {
@@ -348,6 +374,7 @@ function EditorHeaderActions() {
         onClose={() => setIsHistoryModalOpen(false)}
         pageId={pageId}
         onRestore={handleRestoreVersion}
+        onPreview={handlePreviewVersion}
       />
     </>
   )
@@ -618,26 +645,36 @@ function HistoryModal({
   onClose,
   pageId,
   onRestore,
+  onPreview,
 }: {
   isOpen: boolean
   onClose: () => void
   pageId: string
   onRestore: (restoredData: Data, status: string) => void
+  onPreview: (versionId: string, dateFormatted: string, data: Data) => void
 }) {
   const [versions, setVersions] = useState<VersionSummary[]>([])
+  const [page, setPage] = useState<number>(1)
+  const [hasMore, setHasMore] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
+  const [loadingMore, setLoadingMore] = useState<boolean>(false)
+  const [previewingId, setPreviewingId] = useState<string | null>(null)
   const [restoringId, setRestoringId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string>('')
 
   useEffect(() => {
     let active = true
     if (!isOpen) return
+    setPage(1)
+    setLoading(true)
+    setErrorMsg('')
 
-    getVersionsAction(pageId)
+    getVersionsAction(pageId, 1, 25)
       .then((res) => {
         if (!active) return
         if (res.success && res.versions) {
           setVersions(res.versions)
+          setHasMore(Boolean(res.hasMore))
         } else {
           setErrorMsg(res.message || vi.builder.error)
         }
@@ -656,21 +693,58 @@ function HistoryModal({
 
   if (!isOpen) return null
 
+  const handleLoadMore = async () => {
+    setLoadingMore(true)
+    const nextPage = page + 1
+    try {
+      const res = await getVersionsAction(pageId, nextPage, 25)
+      if (res.success && res.versions) {
+        setVersions((prev) => [...prev, ...res.versions!])
+        setHasMore(Boolean(res.hasMore))
+        setPage(nextPage)
+      }
+    } catch {
+      setErrorMsg(vi.builder.error)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
+  const handleView = async (ver: VersionSummary) => {
+    setPreviewingId(ver.id)
+    setErrorMsg('')
+    try {
+      const res = await getVersionDataAction(ver.id)
+      if (res.success && res.puckData) {
+        const dateFormatted = formatVietnamDateTime(ver.updatedAt)
+        onPreview(ver.id, dateFormatted, res.puckData)
+        onClose()
+      } else {
+        setErrorMsg(res.message || vi.builder.error)
+      }
+    } catch {
+      setErrorMsg(vi.builder.error)
+    } finally {
+      setPreviewingId(null)
+    }
+  }
+
   const handleRestore = async (versionId: string) => {
     const confirmed = window.confirm(vi.builder.confirmRestoreVersion)
     if (!confirmed) return
 
     setRestoringId(versionId)
+    setErrorMsg('')
     try {
       const res = await restoreVersionAction(versionId)
       if (res.success && res.puckData) {
         onRestore(res.puckData, res.status || 'draft')
         onClose()
       } else {
-        alert(res.message || vi.builder.restoreFailed)
+        setErrorMsg(res.message || vi.builder.restoreFailed)
       }
     } catch {
-      alert(vi.builder.restoreFailed)
+      setErrorMsg(vi.builder.restoreFailed)
     } finally {
       setRestoringId(null)
     }
@@ -712,13 +786,16 @@ function HistoryModal({
           )}
 
           {errorMsg && (
-            <div className="p-3 rounded-lg bg-soft-pink text-bright-magenta text-xs font-semibold mb-3">
+            <div
+              role="alert"
+              className="p-3 rounded-lg bg-soft-pink text-bright-magenta text-xs font-semibold mb-3"
+            >
               {errorMsg}
             </div>
           )}
 
           {!loading && versions.length === 0 && !errorMsg && (
-            <div className="py-12 text-center text-sm text-deep-navy/60">
+            <div className="py-12 text-center text-sm text-deep-navy/60 font-ui">
               {vi.builder.noVersions}
             </div>
           )}
@@ -726,11 +803,12 @@ function HistoryModal({
           {!loading && versions.length > 0 && (
             <div className="space-y-2.5">
               {versions.map((ver) => {
-                const dateStr = new Date(ver.updatedAt).toLocaleString('vi-VN', {
-                  dateStyle: 'short',
-                  timeStyle: 'medium',
-                })
+                const dateStr = formatVietnamDateTime(ver.updatedAt)
+                const badge = getVersionBadgeInfo({ status: ver.status, autosave: ver.autosave })
+                const author = ver.authorName || vi.eb08.unknownUser
                 const isRestoring = restoringId === ver.id
+                const isViewing = previewingId === ver.id
+                const isBusy = isRestoring || isViewing
 
                 return (
                   <div
@@ -743,36 +821,54 @@ function HistoryModal({
                           {dateStr}
                         </span>
                         <span
-                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                            ver.status === 'published'
-                              ? 'bg-mint-haze text-deep-navy'
-                              : 'bg-soft-pink text-deep-navy'
-                          }`}
+                          className={`text-[10px] px-2 py-0.5 rounded-full uppercase ${badge.className}`}
                         >
-                          {ver.status === 'published'
-                            ? vi.builder.publishedStatus
-                            : vi.builder.draftStatus}
+                          {badge.label}
                         </span>
-                        {ver.autosave && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-butter-cream text-deep-navy font-semibold">
-                            Tự lưu
-                          </span>
-                        )}
                       </div>
-                      <div className="text-[11px] text-deep-navy/60">Mã phiên bản: {ver.id}</div>
+                      <div className="text-[11px] text-deep-navy/60 flex items-center gap-2">
+                        <span>
+                          {vi.eb08.versionAuthor}: {author}
+                        </span>
+                        <span>•</span>
+                        <span>Mã: {ver.id}</span>
+                      </div>
                     </div>
 
-                    <button
-                      type="button"
-                      disabled={isRestoring}
-                      onClick={() => handleRestore(ver.id)}
-                      className="px-3 py-1.5 rounded-lg bg-white border border-deep-navy/25 text-deep-navy text-xs font-bold hover:bg-soft-pink/40 disabled:opacity-50 transition"
-                    >
-                      {isRestoring ? vi.builder.restoringVersion : vi.builder.restoreVersion}
-                    </button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => handleView(ver)}
+                        className="px-2.5 py-1.5 rounded-lg bg-white border border-deep-navy/20 text-deep-navy text-xs font-bold hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
+                      >
+                        {isViewing ? '…' : vi.eb08.viewVersion}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => handleRestore(ver.id)}
+                        className="px-2.5 py-1.5 rounded-lg bg-white border border-deep-navy/20 text-deep-navy text-xs font-bold hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
+                      >
+                        {isRestoring ? vi.builder.restoringVersion : vi.builder.restoreVersion}
+                      </button>
+                    </div>
                   </div>
                 )
               })}
+
+              {hasMore && (
+                <div className="pt-2 text-center">
+                  <button
+                    type="button"
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="px-4 py-1.5 text-xs font-ui font-semibold text-deep-navy bg-white border border-deep-navy/20 rounded-lg hover:bg-soft-pink/40 disabled:opacity-50 transition cursor-pointer"
+                  >
+                    {loadingMore ? vi.common.loading : vi.eb08.loadMore}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -781,7 +877,7 @@ function HistoryModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition"
+            className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition cursor-pointer"
           >
             {vi.common.close}
           </button>
@@ -791,9 +887,10 @@ function HistoryModal({
   )
 }
 
-// Elementor-style Puck layout override with docked canvas bottom toolbar
+// Elementor-style Puck layout override with docked canvas bottom toolbar and version preview banner
 function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
   const context = useContext(EditorContext)
+  const { dispatch } = usePuck()
   const [canvasEl, setCanvasEl] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -817,9 +914,69 @@ function PuckLayoutOverride({ children }: { children?: React.ReactNode }) {
     return () => clearInterval(timer)
   }, [])
 
+  const handleExitPreview = () => {
+    if (context?.previewVersion) {
+      dispatch({ type: 'setData', data: context.previewVersion.originalData })
+      context.setPreviewVersion(null)
+      context.setFeedback({ type: 'idle', message: '' })
+    }
+  }
+
+  const handleRestoreFromPreview = async () => {
+    if (!context?.previewVersion) return
+    const confirmed = window.confirm(vi.builder.confirmRestoreVersion)
+    if (!confirmed) return
+
+    const versionId = context.previewVersion.id
+    context.setFeedback({ type: 'saving', message: vi.builder.restoringVersion })
+    try {
+      const res = await restoreVersionAction(versionId)
+      if (res.success && res.puckData) {
+        dispatch({ type: 'setData', data: res.puckData })
+        context.autosaveController.markSaved(res.puckData)
+        context.onStatusChange(res.status || 'draft')
+        context.setPreviewVersion(null)
+        context.setFeedback({ type: 'saved', message: vi.builder.restoredVersion })
+      } else {
+        context.setFeedback({ type: 'error', message: res.message || vi.builder.restoreFailed })
+      }
+    } catch {
+      context.setFeedback({ type: 'error', message: vi.builder.restoreFailed })
+    }
+  }
+
   return (
     <>
       {children}
+      {context?.previewVersion &&
+        canvasEl &&
+        createPortal(
+          <div
+            role="status"
+            className="absolute top-3 left-1/2 -translate-x-1/2 z-40 bg-bright-magenta text-white py-2 px-4 rounded-xl shadow-xl flex items-center gap-3 text-xs font-ui font-semibold animate-in fade-in slide-in-from-top-2 select-none"
+          >
+            <span>
+              {vi.eb08.previewingVersion(context.previewVersion.dateFormatted)}
+            </span>
+            <div className="flex items-center gap-1.5 border-l border-white/30 pl-3">
+              <button
+                type="button"
+                onClick={handleExitPreview}
+                className="px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold transition cursor-pointer"
+              >
+                {vi.eb08.previewExit}
+              </button>
+              <button
+                type="button"
+                onClick={handleRestoreFromPreview}
+                className="px-2.5 py-1 rounded-lg bg-white text-deep-navy hover:bg-mint-haze font-bold transition cursor-pointer shadow-sm"
+              >
+                {vi.eb08.previewRestore}
+              </button>
+            </div>
+          </div>,
+          canvasEl,
+        )}
       {canvasEl &&
         createPortal(
           <EditorToolbar
@@ -865,6 +1022,7 @@ export function PuckEditorClient({
 }: PuckEditorClientProps) {
   const [feedback, setFeedback] = useState<Feedback>({ type: 'idle', message: '' })
   const [docStatus, setDocStatus] = useState<string>(initialStatus)
+  const [previewVersion, setPreviewVersion] = useState<PreviewVersionState | null>(null)
 
   // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage)
   const config = useMemo(() => {
@@ -923,6 +1081,8 @@ export function PuckEditorClient({
             feedback,
             setFeedback,
             autosaveController,
+            previewVersion,
+            setPreviewVersion,
           }}
         >
           <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">

@@ -220,7 +220,7 @@ export function SaveTemplateModal({
               disabled={isSaving}
               className="px-4 py-2 rounded-lg font-ui text-xs font-semibold border border-deep-navy/20 bg-white hover:bg-warm-ivory transition disabled:opacity-50"
             >
-              {vi.eb08.cancel}
+              {vi.common.cancel}
             </button>
             <button
               type="submit"
