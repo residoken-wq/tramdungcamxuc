@@ -5,7 +5,6 @@ import React from 'react'
 import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import { AfterJourneyPanel } from '@/components/habit/AfterJourneyPanel'
 import { TrackerDashboard } from '@/components/habit/TrackerDashboard'
-import { getHabitSiteSettings } from '@/lib/habit/journey-content.server'
 import { vi as viStrings } from '@/lib/i18n/vi'
 import * as analyticsModule from '@/lib/analytics/track'
 
@@ -55,17 +54,9 @@ describe('HB-14: Đồng hành sau 28 ngày & Đặt lịch Habit Coach / Ủng 
     })
 
     it('không có link -> không hiển thị nút nào', () => {
-      render(
-        <AfterJourneyPanel
-          title="Tiêu đề mẫu"
-          text="Nội dung mẫu"
-          coachBookingUrl={null}
-          donationUrl={null}
-        />,
-      )
+      render(<AfterJourneyPanel title="Tiêu đề mẫu" text="Nội dung mẫu" coachBookingUrl={null} />)
 
       expect(screen.queryByTestId('after-journey-coach-button')).toBeNull()
-      expect(screen.queryByTestId('after-journey-donation-button')).toBeNull()
     })
 
     it('nút Đặt lịch với Habit Coach: có link hợp lệ -> hiện nút, mở tab mới, rel đúng, bắn sự kiện booking_clicked', () => {
@@ -87,77 +78,18 @@ describe('HB-14: Đồng hành sau 28 ngày & Đặt lịch Habit Coach / Ủng 
       })
     })
 
-    it('nút Ủng hộ: có link hợp lệ -> hiện nút, mở tab mới, rel đúng, KHÔNG bắn sự kiện analytics', () => {
-      render(<AfterJourneyPanel donationUrl="https://example.com/ung-ho" journeyDays={28} />)
-
-      const donateBtn = screen.getByTestId('after-journey-donation-button')
-      expect(donateBtn).toBeDefined()
-      expect(donateBtn.textContent).toContain(viStrings.hb14.donateButton)
-      expect(donateBtn.getAttribute('href')).toBe('https://example.com/ung-ho')
-      expect(donateBtn.getAttribute('target')).toBe('_blank')
-      expect(donateBtn.getAttribute('rel')).toBe('noopener noreferrer')
-
-      fireEvent.click(donateBtn)
-      expect(analyticsModule.track).not.toHaveBeenCalled()
+    it('CF-02: khối không còn nút Ủng hộ (đã chuyển sang widget ly cà phê)', () => {
+      render(<AfterJourneyPanel coachBookingUrl="https://example.com/coach" journeyDays={28} />)
+      expect(screen.queryByTestId('after-journey-donation-button')).toBeNull()
+      expect(screen.queryByText(/Ủng hộ/)).toBeNull()
     })
 
     it('chặn URL độc hại (javascript:) qua safeHref -> không hiện nút', () => {
       render(
-        <AfterJourneyPanel
-          title="Kiểm tra bảo mật"
-          coachBookingUrl="javascript:alert('xss')"
-          donationUrl="javascript:alert('hack')"
-        />,
+        <AfterJourneyPanel title="Kiểm tra bảo mật" coachBookingUrl="javascript:alert('xss')" />,
       )
 
       expect(screen.queryByTestId('after-journey-coach-button')).toBeNull()
-      expect(screen.queryByTestId('after-journey-donation-button')).toBeNull()
-    })
-  })
-
-  describe('2. getHabitSiteSettings: logic bật/tắt công tắc Ủng hộ', () => {
-    it('công tắc tắt (habitDonationEnabled = false): luôn trả về habitDonationUrl = null ngay cả khi có URL', async () => {
-      const mockPayload = {
-        findGlobal: vi.fn().mockResolvedValue({
-          habitCoachBookingUrl: 'https://example.com/coach',
-          habitDonationEnabled: false,
-          habitDonationUrl: 'https://example.com/donate',
-        }),
-      }
-
-      const settings = await getHabitSiteSettings(mockPayload as any)
-      expect(settings.habitCoachBookingUrl).toBe('https://example.com/coach')
-      expect(settings.habitDonationEnabled).toBe(false)
-      expect(settings.habitDonationUrl).toBeNull()
-    })
-
-    it('công tắc bật (habitDonationEnabled = true) nhưng link rỗng: trả về habitDonationUrl = null', async () => {
-      const mockPayload = {
-        findGlobal: vi.fn().mockResolvedValue({
-          habitCoachBookingUrl: null,
-          habitDonationEnabled: true,
-          habitDonationUrl: '   ',
-        }),
-      }
-
-      const settings = await getHabitSiteSettings(mockPayload as any)
-      expect(settings.habitDonationEnabled).toBe(true)
-      expect(settings.habitDonationUrl).toBeNull()
-    })
-
-    it('công tắc bật và có link: trả về habitDonationUrl đã trim', async () => {
-      const mockPayload = {
-        findGlobal: vi.fn().mockResolvedValue({
-          habitCoachBookingUrl: ' https://example.com/coach  ',
-          habitDonationEnabled: true,
-          habitDonationUrl: ' https://example.com/donate  ',
-        }),
-      }
-
-      const settings = await getHabitSiteSettings(mockPayload as any)
-      expect(settings.habitCoachBookingUrl).toBe('https://example.com/coach')
-      expect(settings.habitDonationEnabled).toBe(true)
-      expect(settings.habitDonationUrl).toBe('https://example.com/donate')
     })
   })
 
@@ -170,7 +102,6 @@ describe('HB-14: Đồng hành sau 28 ngày & Đặt lịch Habit Coach / Ủng 
       initialCheckins: [],
       buyUrl: '/thanh-toan',
       coachBookingUrl: 'https://example.com/coach',
-      donationUrl: 'https://example.com/donate',
       afterJourneyTitle: 'Đồng hành cùng Trạm',
       afterJourneyText: 'Tiếp tục vững bước.',
     }

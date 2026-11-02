@@ -1045,7 +1045,7 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 
 - **Nội dung thông điệp**: Lấy từ CMS (`tracker.afterJourneyTitle` và `tracker.afterJourneyText`).
 - **Nút "Đặt lịch với Habit Coach"**: Gắn link booking coach từ **Cài đặt website → Công cụ số → habitCoachBookingUrl**. Tự ẩn nếu không có link.
-- **Nút "Ủng hộ Trạm Dừng Cảm Xúc"**: Quản lý qua công tắc **habitDonationEnabled** và link **habitDonationUrl** trong CMS.
+- Khối không còn nút "Ủng hộ" (CF-02, 02/11): học viên ủng hộ qua **nút ly cà phê** hiện ở mọi trang (mục 7.1b).
 - **Vị trí hiển thị thông minh**:
   - Khi đang trong hành trình: Nằm gọn gàng ở cuối trang, dưới khối _Dữ liệu của bạn_.
   - Khi đến ngày cuối (ngày 28) hoặc khi đã hoàn thành/nhận chứng nhận: Đưa lên vị trí trang trọng **TRÊN** lưới các trạm, đồng thời tự ẩn nút đặt lịch phiên 149k để tránh trùng lặp CTA.
@@ -2530,7 +2530,7 @@ Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng
 - Khi tắt nút Zalo, nút ly cà phê sẽ tự động hạ sát đáy màn hình.
 - Bấm vào ly cà phê: khung hiển thị mã QR cùng lời nhắn sẽ hiện lên. Người dùng trên điện thoại có thể chụp màn hình để quét trong MoMo; người dùng trên máy tính quét trực tiếp bằng camera điện thoại.
 - Bấm phím **Esc** hoặc bấm vùng ngoài để đóng khung.
-- Widget tự động được ẩn trên các trang cần tập trung cao độ (trang học bài, trang theo dõi thói quen 28 ngày, trang rút thẻ EQ, trang thanh toán gói và trang kích hoạt dùng thử).
+- Widget hiện ở **mọi trang** (chốt 02/11, CF-02), kể cả trang học, tracker 28 ngày, rút thẻ EQ, thanh toán và dùng thử. Nút Zalo vẫn ẩn ở trang học, tracker và rút thẻ như cũ – khi đó ly cà phê nằm sát đáy.
 
 ---
 
@@ -2581,7 +2581,7 @@ Tab **Chung** có thêm **Ảnh chữ ký nhà sáng lập** (PNG nền trong) c
 
 **Cài đặt website** → tab **Công cụ số** → **Nút sau kết quả quiz dẫn tới đâu**: nhập đường dẫn trong web (bắt đầu bằng `/`) hoặc liên kết `https://`. Để trống thì nút dẫn tới trang lộ trình. Khi Habit Tracker số đang mở dùng thử, nút luôn mời dùng thử.
 
-### 7.3e. Liên kết Coach và mục Ủng hộ (Habit Donation – HB-14 / HB-18)
+### 7.3e. Liên kết Coach (HB-14 / HB-18)
 
 **Cài đặt website** → tab **Công cụ số**:
 
@@ -2592,10 +2592,8 @@ Tab **Chung** có thêm **Ảnh chữ ký nhà sáng lập** (PNG nền trong) c
      - Khi học viên đến ngày cuối (ngày 28) hoặc đã kết thúc hành trình / nhận chứng nhận, khối sẽ tự động được đưa lên vị trí trang trọng **TRÊN** lưới các trạm để khích lệ bước tiếp theo.
      - **Tối ưu trải nghiệm**: Khi có link đặt lịch Habit Coach, nút đặt lịch phiên trải nghiệm 149.000đ ở thẻ tổng kết sẽ tự động ẩn đi để tránh trùng lặp nút bấm (CTA).
      - Nếu để trống ô này, nút đặt lịch coach sẽ tự động ẩn.
-2. **Bật mục ủng hộ (Habit Donation)** (`habitDonationEnabled`): Mặc định tắt. Chỉ bật công tắc này khi Hana đã duyệt cho phép học viên gửi đóng góp / ủng hộ công cụ thói quen.
-3. **Liên kết ủng hộ / đóng góp** (`habitDonationUrl`): Đường dẫn trang đóng góp hoặc trang thông tin ủng hộ (bắt đầu bằng `https://`).
-   - Khi công tắc đang bật và có đường dẫn, nút **"Ủng hộ Trạm Dừng Cảm Xúc"** sẽ xuất hiện cạnh nút đặt lịch coach.
-   - Khi tắt công tắc, nút này tự động ẩn hoàn toàn trên giao diện học viên mà không cần xóa đường dẫn đã lưu.
+
+> Mục ủng hộ (Habit Donation) cũ ở tab này đã ẩn từ 02/11 (CF-02). Ủng hộ đi qua **Ly cà phê ủng hộ (MoMo)** ở tab Thanh toán (mục 7.1b).
 
 ### 7.3f. Nội dung hành trình Habit & Câu trích từng bước (HB-14 / HB-18)
 

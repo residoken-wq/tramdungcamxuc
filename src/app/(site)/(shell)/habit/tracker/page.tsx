@@ -112,14 +112,13 @@ export default async function HabitTrackerPage() {
     note: doc.note || null,
   }))
 
-  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm, câu giải thích dữ liệu, nội dung đồng hành sau 28 ngày và liên kết coach/ủng hộ (HB-13 / HB-14 / HB-24)
+  // 7. Đọc cấu hình nội dung hành trình để lấy tên các trạm, câu giải thích dữ liệu, nội dung đồng hành sau 28 ngày và liên kết coach (HB-13 / HB-14 / HB-24)
   let stationNames: string[] = []
   let stationQuestions: { question: string }[][] = []
   let privacyNote: string | null = null
   let afterJourneyTitle: string | null = null
   let afterJourneyText: string | null = null
   let coachBookingUrl: string | null = null
-  let donationUrl: string | null = null
 
   try {
     const [journeyContent, habitSiteSettings] = await Promise.all([
@@ -136,7 +135,6 @@ export default async function HabitTrackerPage() {
     afterJourneyTitle = journeyContent.tracker?.afterJourneyTitle ?? null
     afterJourneyText = journeyContent.tracker?.afterJourneyText ?? null
     coachBookingUrl = habitSiteSettings.habitCoachBookingUrl ?? null
-    donationUrl = habitSiteSettings.habitDonationUrl ?? null
   } catch (err) {
     // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
     console.error('Failed to load habit journey stations/settings for tracker:', err)
@@ -178,7 +176,6 @@ export default async function HabitTrackerPage() {
         afterJourneyTitle={afterJourneyTitle}
         afterJourneyText={afterJourneyText}
         coachBookingUrl={coachBookingUrl}
-        donationUrl={donationUrl}
       />
     </div>
   )

@@ -3795,7 +3795,6 @@ export const vi = {
     badge: 'Đồng hành dài hạn',
     title: (days: number = 28) => `Đồng hành sau ${days} ngày`,
     coachButton: 'Đặt lịch với Habit Coach',
-    donateButton: 'Ủng hộ Trạm Dừng Cảm Xúc',
   },
   cf01: {
     siteSettings: {

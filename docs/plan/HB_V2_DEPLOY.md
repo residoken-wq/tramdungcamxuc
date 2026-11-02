@@ -49,7 +49,7 @@ Trước khi công bố chính thức hành trình thói quen 28 ngày đến h�
 
 2. **Cài đặt Website (`siteSettings`) → Tab Công cụ số**:
    - **Liên kết đặt lịch Coach (Habit)** (`habitCoachBookingUrl`): Dán link Cal.com hoặc Google Calendar đặt lịch 1:1 cá nhân của Hana.
-   - **Mục ủng hộ (Habit Donation)**: Bật công tắc `habitDonationEnabled` (nếu sẵn sàng nhận ủng hộ) và dán link trang ủng hộ/VietQR vào `habitDonationUrl`.
+   - **Ủng hộ:** tab **Thanh toán** → **Ly cà phê ủng hộ (MoMo)**: tải ảnh QR (chỉ phần mã, có mô tả ảnh), bật công tắc. Chỉ `owner` sửa được. (Mục Habit Donation cũ đã ẩn – CF-02.)
 
 3. **Quy tắc trích dẫn học thuật (Bắt buộc)**:
    - Mọi câu danh ngôn hoặc số liệu khoa học đưa vào `stepQuotes` và `facts` **bắt buộc** phải ghi rõ Tác giả và Nguồn tài liệu đã kiểm chứng.
@@ -109,7 +109,8 @@ Thực hiện kiểm thử thực tế trên điện thoại (khung hình 375px)
    - Mỗi ô ngày trên lưới trạm có hiển thị ngày lịch thực tế dạng `dd/MM`.
    - Thử check-in 1 ngày hợp lệ: Modal mở mượt mà với 4 trạng thái, chọn cảm xúc và lưu thành công.
    - Kéo xuống cuối trang: Khối "Dữ liệu của bạn" có đủ 5 nút (Tải bản sao lưu JSON, Tải CSV, Khôi phục, Gửi Coach, Bắt đầu mới).
-   - Khối "Đồng hành sau 28 ngày": Hiển thị nút "Đặt lịch với Habit Coach" mở đúng link và nút "Ủng hộ Trạm Dừng Cảm Xúc".
+   - Khối "Đồng hành sau 28 ngày": Hiển thị nút "Đặt lịch với Habit Coach" mở đúng link (không còn nút Ủng hộ).
+3. **Ly cà phê:** bật trong CMS → thấy nút ở góc phải dưới trên mọi trang (cả tracker); bấm mở QR, Esc đóng.
 
 ---
 

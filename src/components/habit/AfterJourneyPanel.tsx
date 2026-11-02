@@ -9,7 +9,6 @@ export interface AfterJourneyPanelProps {
   title?: string | null
   text?: string | null
   coachBookingUrl?: string | null
-  donationUrl?: string | null
   journeyDays?: number
   variant?: 'default' | 'highlighted'
   className?: string
@@ -19,22 +18,21 @@ export function AfterJourneyPanel({
   title,
   text,
   coachBookingUrl,
-  donationUrl,
   journeyDays = 28,
   variant = 'default',
   className = '',
 }: AfterJourneyPanelProps) {
   const safeCoachUrl = coachBookingUrl ? safeHref(coachBookingUrl) : null
-  const safeDonationUrl = donationUrl ? safeHref(donationUrl) : null
 
   const displayTitle = title?.trim() || vi.hb14.title(journeyDays)
   // HB-14c: no hard-coded copy (AGENTS §2) – the paragraph comes only from the CMS
   const displayText = text?.trim() || null
 
-  // Nếu không có cả 2 link và không có cả tiêu đề/nội dung tùy biến, vẫn hiển thị theo bản dịch mặc định
+  // Nếu không có link coach và không có cả tiêu đề/nội dung tùy biến, vẫn hiển thị theo bản dịch mặc định
   // nếu ít nhất 1 link có thật. Nếu hoàn toàn không có link nào và không có chữ từ CMS -> không hiện khối rỗng.
   const hasCustomContent = Boolean(title?.trim() || text?.trim())
-  const hasButtons = Boolean(safeCoachUrl || safeDonationUrl)
+  // CF-02: the support button moved to the site-wide coffee widget (Hana 02/11)
+  const hasButtons = Boolean(safeCoachUrl)
 
   if (!hasCustomContent && !hasButtons) {
     return null
@@ -82,18 +80,6 @@ export function AfterJourneyPanel({
               className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-bright-magenta text-warm-ivory font-ui font-bold text-sm hover:bg-bright-magenta/90 shadow-sm transition-all motion-reduce:transition-none"
             >
               {vi.hb14.coachButton}
-            </a>
-          )}
-
-          {safeDonationUrl && (
-            <a
-              href={safeDonationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="after-journey-donation-button"
-              className="inline-flex items-center justify-center px-6 py-2.5 rounded-full border-2 border-accent-pink text-deep-navy bg-warm-ivory hover:bg-soft-pink font-ui font-bold text-sm transition-all motion-reduce:transition-none shadow-xs"
-            >
-              {vi.hb14.donateButton}
             </a>
           )}
         </div>

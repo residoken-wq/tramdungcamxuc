@@ -1,12 +1,7 @@
 import React from 'react'
 import { describe, expect, it, vi as vitest, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import {
-  FloatingCoffee,
-  FloatingActions,
-  shouldHideFloatingCoffee,
-  HIDE_FLOATING_COFFEE_PREFIXES,
-} from '@/components/site'
+import { FloatingCoffee, FloatingActions } from '@/components/site'
 import { vi } from '@/lib/i18n/vi'
 import * as trackModule from '@/lib/analytics/track'
 
@@ -30,36 +25,6 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
     vitest.clearAllMocks()
   })
 
-  it('danh sách prefix ẩn chứa đầy đủ các route yêu cầu (T1-05, T3-01, /thanh-toan, /dung-thu)', () => {
-    expect([...HIDE_FLOATING_COFFEE_PREFIXES]).toEqual([
-      '/habit/hoc',
-      '/habit/tracker',
-      '/eq-buddy/the',
-      '/eq-buddy/rut-the',
-      '/thanh-toan',
-      '/dung-thu',
-    ])
-  })
-
-  it('hàm shouldHideFloatingCoffee xác định chính xác các route cần ẩn', () => {
-    expect(shouldHideFloatingCoffee('/thanh-toan')).toBe(true)
-    expect(shouldHideFloatingCoffee('/thanh-toan/don-hang-123')).toBe(true)
-    expect(shouldHideFloatingCoffee('/dung-thu')).toBe(true)
-    expect(shouldHideFloatingCoffee('/dung-thu/kich-hoat')).toBe(true)
-    expect(shouldHideFloatingCoffee('/habit/hoc')).toBe(true)
-    expect(shouldHideFloatingCoffee('/habit/tracker')).toBe(true)
-    expect(shouldHideFloatingCoffee('/eq-buddy/the')).toBe(true)
-    expect(shouldHideFloatingCoffee('/eq-buddy/rut-the')).toBe(true)
-
-    // Route hiển thị bình thường
-    expect(shouldHideFloatingCoffee('/')).toBe(false)
-    expect(shouldHideFloatingCoffee('/ve-hana')).toBe(false)
-    expect(shouldHideFloatingCoffee('/coaching')).toBe(false)
-    expect(shouldHideFloatingCoffee(null)).toBe(false)
-    expect(shouldHideFloatingCoffee(undefined)).toBe(false)
-    expect(shouldHideFloatingCoffee('')).toBe(false)
-  })
-
   it('ẩn FloatingCoffee khi disabled hoặc không có ảnh qrSrc', () => {
     const { container: c1 } = render(<FloatingCoffee coffeeDonation={null} />)
     expect(c1.firstChild).toBeNull()
@@ -70,14 +35,35 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
     expect(c2.firstChild).toBeNull()
   })
 
-  it('ẩn FloatingCoffee khi nằm trên route thuộc danh sách ẩn', () => {
-    currentPathname = '/thanh-toan'
-    const { container: c1 } = render(<FloatingCoffee coffeeDonation={sampleCoffee} />)
-    expect(c1.firstChild).toBeNull()
-
-    currentPathname = '/dung-thu/bat-dau'
-    const { container: c2 } = render(<FloatingCoffee coffeeDonation={sampleCoffee} />)
-    expect(c2.firstChild).toBeNull()
+  it('CF-02: ly cà phê hiện ở mọi trang (kể cả học, tracker, rút thẻ, thanh toán, dùng thử); Zalo vẫn ẩn theo danh sách cũ', () => {
+    for (const path of [
+      '/',
+      '/habit/hoc',
+      '/habit/tracker',
+      '/eq-buddy/the/abc',
+      '/eq-buddy/rut-the',
+      '/thanh-toan',
+      '/dung-thu',
+    ]) {
+      currentPathname = path
+      const { unmount } = render(
+        <FloatingActions
+          floatingCoffee={sampleCoffee}
+          showFloatingChat={true}
+          zaloChatUrl="https://zalo.me/0900000000"
+        />,
+      )
+      expect(
+        screen.getByRole('button', { name: vi.cf01.floatingCoffee.ariaLabel }),
+        path,
+      ).toBeDefined()
+      const zaloHidden = ['/habit/hoc', '/habit/tracker', '/eq-buddy/the/abc', '/eq-buddy/rut-the']
+      expect(
+        screen.queryByRole('link', { name: vi.site.floatingChat.ariaLabel }) === null,
+        path,
+      ).toBe(zaloHidden.includes(path))
+      unmount()
+    }
   })
 
   it('mở modal hiển thị đúng tiêu đề, lời nhắn, ảnh có alt và kích hoạt track không có props', () => {
