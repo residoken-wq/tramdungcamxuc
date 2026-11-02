@@ -72,5 +72,9 @@ export const PackageCardsBlock: ComponentConfig<PackageCardsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck: _puck, ...props }) => <PackageCards {...props} />,
+  // PK-14c: keep `puck` out (as before PK-14) so the builder renders the block exactly like the
+  // public page (v1 packages resolve their names); only the empty-slot hint knows it is editing.
+  render: ({ puck, ...props }) => (
+    <PackageCards {...props} _editingHint={Boolean(puck?.isEditing)} />
+  ),
 }

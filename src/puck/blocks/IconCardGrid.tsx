@@ -120,5 +120,8 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: (props) => <IconCardGrid {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <IconCardGrid {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { useClientPageSlug } from '@/puck/client-preview'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { PathCard, resolveSafeLink, type PathCardProps } from './PathCard'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 
 export interface TwoPathCardsProps {
   version?: number
@@ -42,6 +43,9 @@ export interface TwoPathCardsProps {
     path1PageSlug?: string | null
     path2PageSlug?: string | null
   }
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 const BG_COLORS = {
@@ -69,6 +73,7 @@ const PADDINGS = {
 } as const
 
 export function TwoPathCards({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -95,7 +100,9 @@ export function TwoPathCards({
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
-}: TwoPathCardsProps) {
+  puck,
+}: TwoPathCardsProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
   const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -145,9 +152,18 @@ export function TwoPathCards({
         )}
 
         {typeof paths === 'function' ? (
-          React.createElement(paths as React.ComponentType<{ className?: string }>, {
-            className: PATHS_GRID,
-          })
+          <>
+            {React.createElement(paths as React.ComponentType<{ className?: string }>, {
+              className: PATHS_GRID,
+            })}
+            <EmptySlotHint
+              parentId={id}
+              slotName="paths"
+              childLabel="Thẻ lối đi"
+              isEditing={isEditing}
+              isDeepNavy={isDeepNavy}
+            />
+          </>
         ) : paths && React.isValidElement(paths) ? (
           <div className={PATHS_GRID}>{paths}</div>
         ) : Array.isArray(paths) ? (

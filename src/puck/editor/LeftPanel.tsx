@@ -6,6 +6,7 @@ import { vi } from '@/lib/i18n/vi'
 import { normalizeVi, filterBlockCategories } from './block-search'
 import { getBlockIcon } from './block-icons'
 import { TemplatesTab } from './TemplatesTab'
+import { getChildSlotForParent } from '../child-slots'
 
 const LOCAL_STORAGE_KEY = 'eb03:left-panel'
 export const SWITCH_TAB_EVENT = 'eb03:switch-tab'
@@ -60,7 +61,7 @@ export function switchLeftPanelTab(tab: LeftPanelTab) {
 }
 
 export function LeftPanel() {
-  const { config, getPermissions, dispatch, appState } = usePuck()
+  const { config, getPermissions, dispatch, appState, selectedItem } = usePuck()
 
   const [activeTab, setActiveTab] = useState<LeftPanelTab>(() => loadLeftPanelStorage().activeTab)
   const [collapsedCategories, setCollapsedCategories] = useState<string[]>(
@@ -68,6 +69,28 @@ export function LeftPanel() {
   )
   const [searchQuery, setSearchQuery] = useState<string>('')
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // PK-14: detect if currently selected item is a single-child parent block
+  const selectedItemType = selectedItem?.type
+  const childSlot = useMemo(() => {
+    if (!config || !selectedItemType) return undefined
+    return getChildSlotForParent(config, selectedItemType)
+  }, [config, selectedItemType])
+  const targetChildType = childSlot?.childType
+
+  // Auto-scroll the target child block into view when a parent block is selected
+  useEffect(() => {
+    if (!targetChildType) return
+    const timer = setTimeout(() => {
+      if (typeof document !== 'undefined') {
+        const el = document.querySelector(`[data-block-drawer-item="${targetChildType}"]`)
+        if (el && typeof el.scrollIntoView === 'function') {
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
+      }
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [targetChildType])
 
   // Listen for tab switch events from EditorToolbar
   useEffect(() => {
@@ -337,7 +360,11 @@ export function LeftPanel() {
               </div>
             ) : (
               filteredCategories.map((category) => {
-                const isCollapsed = !isSearching && collapsedCategories.includes(category.id)
+                const isAutoExpanded = Boolean(
+                  targetChildType && category.components.includes(targetChildType),
+                )
+                const isCollapsed =
+                  !isSearching && !isAutoExpanded && collapsedCategories.includes(category.id)
                 const categoryContentId = `cat-content-${category.id}`
 
                 return (
@@ -384,6 +411,7 @@ export function LeftPanel() {
                               const canInsert = getPermissions
                                 ? getPermissions({ type: compKey }).insert !== false
                                 : true
+                              const isHighlighted = compKey === targetChildType
 
                               return (
                                 <Drawer.Item
@@ -396,9 +424,13 @@ export function LeftPanel() {
                                     // Drawer.Item already renders the focusable, draggable button
                                     // (role, tabindex, aria): this is only its content.
                                     <div
+                                      data-block-drawer-item={compKey}
+                                      data-highlighted={isHighlighted ? 'true' : undefined}
                                       className={`group flex flex-col items-center justify-center p-2 rounded-xl text-center select-none cursor-grab active:cursor-grabbing border transition h-[88px] min-h-[88px] ${
                                         canInsert
-                                          ? 'bg-white text-deep-navy border-deep-navy/10 hover:border-bright-magenta hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta'
+                                          ? isHighlighted
+                                            ? 'bg-soft-pink/40 text-deep-navy border-bright-magenta ring-2 ring-bright-magenta shadow-md'
+                                            : 'bg-white text-deep-navy border-deep-navy/10 hover:border-bright-magenta hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta'
                                           : 'bg-warm-ivory/60 text-deep-navy/60 border-deep-navy/5 cursor-not-allowed opacity-60'
                                       }`}
                                       title={canInsert ? label : vi.eb03.lockedBlock}

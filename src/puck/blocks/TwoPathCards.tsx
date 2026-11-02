@@ -100,5 +100,8 @@ export const TwoPathCardsBlock: ComponentConfig<TwoPathCardsProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck: _puck, ...props }) => <TwoPathCards {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <TwoPathCards {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

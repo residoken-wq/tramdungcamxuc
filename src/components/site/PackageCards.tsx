@@ -1,6 +1,7 @@
 import React from 'react'
 import { PackageCardItem } from './PackageCardItem'
 import { PackageCardsCTA } from './PackageCardsCTA'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import type { PublicProduct } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 
@@ -54,6 +55,7 @@ const PADDINGS = {
 } as const
 
 export function PackageCards({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -72,7 +74,8 @@ export function PackageCards({
   padding = 'md',
   _resolved,
   puck,
-}: PackageCardsProps) {
+  _editingHint,
+}: PackageCardsProps & { id?: string; _editingHint?: boolean }) {
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -157,10 +160,19 @@ export function PackageCards({
         {/* Cards Grid: 1 col on mobile, 3 cols on desktop (slot or v1 fallback) */}
         {hasCards ? (
           typeof cards === 'function' ? (
-            React.createElement(
-              cards as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-              { className: gridClasses },
-            )
+            <>
+              {React.createElement(
+                cards as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+                { className: gridClasses },
+              )}
+              <EmptySlotHint
+                parentId={id}
+                slotName="cards"
+                childLabel="Thẻ gói"
+                isEditing={_editingHint}
+                isDeepNavy={isDeepNavy}
+              />
+            </>
           ) : React.isValidElement(cards) ? (
             <div className={gridClasses}>{cards}</div>
           ) : Array.isArray(cards) ? (

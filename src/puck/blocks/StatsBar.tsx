@@ -86,5 +86,8 @@ export const StatsBarBlock: ComponentConfig<StatsBarProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  render: ({ puck: _puck, ...props }) => <StatsBar {...props} />,
+  // `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <StatsBar {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

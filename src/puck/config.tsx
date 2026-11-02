@@ -9,6 +9,8 @@ import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
 import { PageCustomCssControl } from './editor/PageCustomCssControl'
 
 import { withBlockStyles } from './style/with-block-style'
+import { getSingleChildSlots } from './child-slots'
+import { AddChildField } from './editor/AddChildField'
 import { HeroImageBlock, type HeroImageProps } from './blocks/HeroImage'
 import { QuoteBlockConfig, type QuoteBlockProps } from './blocks/QuoteBlock'
 import { StatsBarBlock, type StatsBarProps } from './blocks/StatsBar'
@@ -747,9 +749,51 @@ const basePuckConfig: Config<PageComponentsProps> = {
   },
 }
 
+/**
+ * PK-14: Automatically appends an `_addChild` custom field to the 9 parent blocks
+ * that take a single child card type.
+ *
+ * The field renders a "+ Thêm {childLabel}" button and count indicator, never calls
+ * onChange, and therefore writes nothing to page data and requires no migrations.
+ */
+export function withAddChildFields<C extends Config>(config: C): C {
+  const singleChildSlots = getSingleChildSlots(config)
+  if (!singleChildSlots.length) return config
+
+  const updatedComponents = { ...config.components }
+
+  for (const { parentType, slotName, childType } of singleChildSlots) {
+    const comp = updatedComponents[parentType]
+    if (!comp) continue
+
+    const addChildCustomField = {
+      type: 'custom' as const,
+      render: () => (
+        <AddChildField parentType={parentType} slotName={slotName} childType={childType} />
+      ),
+    }
+
+    updatedComponents[parentType] = {
+      ...comp,
+      fields: {
+        ...comp.fields,
+        _addChild: addChildCustomField,
+      },
+    }
+  }
+
+  return {
+    ...config,
+    components: updatedComponents as C['components'],
+  }
+}
+
 // EB-04: every block may carry an optional `_style` (Style / Advanced tabs); blocks without it
 // render exactly as before.
-export const puckConfig: Config<PageComponentsProps> = withBlockStyles(basePuckConfig)
+// PK-14: single-child parent blocks carry an `_addChild` field at the end of fields.
+export const puckConfig: Config<PageComponentsProps> = withAddChildFields(
+  withBlockStyles(basePuckConfig),
+)
 
 /**
  * Lấy cấu hình Puck phù hợp với từng trang, gắn các quyền khóa khối tự động (VD: HeroTwoEntries trên trang chủ)

@@ -3894,6 +3894,14 @@ export const vi = {
       },
     },
   },
+  pk14: {
+    addChildButton: (childLabel: string) => `+ Thêm ${childLabel}`,
+    childCount: (count: number) => `Đã có ${count} thẻ`,
+    emptySlotHint: (childLabel: string) =>
+      `Chưa có ${childLabel}. Bấm "+ Thêm ${childLabel}" ở cột phải, hoặc kéo "${childLabel}" từ Khối → Thẻ con vào đây.`,
+    lockedReason: 'Khối hoặc thẻ đang bị khóa, không thể thêm mới',
+    addChildFieldLabel: 'Thêm thẻ',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

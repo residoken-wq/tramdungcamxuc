@@ -1,5 +1,6 @@
 import React from 'react'
 import { JourneyStep } from './JourneyStep'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 
 export interface JourneyStepsProps {
   version?: number
@@ -25,6 +26,9 @@ export interface JourneyStepsProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 const BG_COLORS = {
@@ -101,6 +105,7 @@ function getGridColsClass(cols: number | string = 5) {
 }
 
 export function JourneySteps({
+  id,
   variant = 'circles',
   columns = 5,
   steps,
@@ -121,7 +126,9 @@ export function JourneySteps({
   step5Description,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: JourneyStepsProps) {
+  puck,
+}: JourneyStepsProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -186,13 +193,22 @@ export function JourneySteps({
           <div className="relative z-10">
             {hasSteps ? (
               typeof steps === 'function' ? (
-                React.createElement(
-                  steps as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-                  {
-                    className: containerClasses,
-                    style: { counterReset: 'step-counter' },
-                  },
-                )
+                <>
+                  {React.createElement(
+                    steps as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+                    {
+                      className: containerClasses,
+                      style: { counterReset: 'step-counter' },
+                    },
+                  )}
+                  <EmptySlotHint
+                    parentId={id}
+                    slotName="steps"
+                    childLabel="Bước hành trình"
+                    isEditing={isEditing}
+                    isDeepNavy={isDeepNavy}
+                  />
+                </>
               ) : React.isValidElement(steps) ? (
                 <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
                   {steps}

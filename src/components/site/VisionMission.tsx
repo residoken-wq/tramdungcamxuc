@@ -3,6 +3,7 @@ import { BrandIcon } from '@/components/brand/BrandIcon'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { VisionCardItem, type VisionCardItemProps } from './VisionCardItem'
+import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 
 export interface VisionMissionProps {
   version?: number
@@ -25,6 +26,9 @@ export interface VisionMissionProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 const BG_COLORS = {
@@ -52,6 +56,7 @@ const PADDINGS = {
 } as const
 
 export function VisionMission({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -66,7 +71,9 @@ export function VisionMission({
   titleSize = 'md',
   bgColor = 'warm-ivory',
   padding = 'md',
-}: VisionMissionProps) {
+  puck,
+}: VisionMissionProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
   const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -128,9 +135,18 @@ export function VisionMission({
         )}
 
         {typeof cards === 'function' ? (
-          React.createElement(cards as React.ComponentType<{ className?: string }>, {
-            className: CARDS_GRID,
-          })
+          <>
+            {React.createElement(cards as React.ComponentType<{ className?: string }>, {
+              className: CARDS_GRID,
+            })}
+            <EmptySlotHint
+              parentId={id}
+              slotName="cards"
+              childLabel="Thẻ sứ mệnh"
+              isEditing={isEditing}
+              isDeepNavy={isDeepNavy}
+            />
+          </>
         ) : cards && React.isValidElement(cards) ? (
           <div className={CARDS_GRID}>{cards}</div>
         ) : Array.isArray(cards) ? (

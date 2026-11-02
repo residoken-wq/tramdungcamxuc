@@ -66,8 +66,8 @@
    - [5.27. Cấu trúc và menu chuột phải (EB-07)](#527-cấu-trúc-và-menu-chuột-phải-eb-07)
    - [5.28. Mẫu đã lưu và Lịch sử phiên bản (EB-08)](#528-mẫu-đã-lưu-và-lịch-sử-phiên-bản-eb-08)
    - [5.29. Tự chỉnh khoảng cách tiêu đề và giãn dòng Anton (PK-13)](#529-tự-chỉnh-khoảng-cách-tiêu-đề-và-giãn-dòng-anton-pk-13)
-
    - [5.30. Nâng cao: CSS / HTML tuỳ chỉnh và hiệu ứng (EB-09)](#530-nâng-cao-css--html-tuỳ-chỉnh-và-hiệu-ứng-eb-09)
+   - [5.31. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)](#531-thêm-thẻ-vào-khối-gói-dịch-vụ-số-liệu-bước-câu-hỏi-bằng-một-nút-bấm-pk-14)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2536,6 +2536,61 @@ Tính năng **CSS tuỳ chỉnh, widget HTML, class / z-index và hiệu ứng v
   - Trang web áp dụng kỹ thuật tăng cường lũy tiến: Nếu người đọc tắt JavaScript, toàn bộ nội dung vẫn hiển thị bình thường 100%, không bao giờ bị ẩn mất chữ.
   - Tự động nhận diện cài đặt giảm chuyển động (_Reduce Motion_) của thiết bị người dùng để tắt hiệu ứng, đảm bảo khả năng tiếp cận (Accessibility WCAG).
   - Trong màn hình chỉnh sửa trực quan của bạn (Canvas editor), hiệu ứng được tắt để bạn thao tác nhấp chọn và kéo thả dễ dàng nhất.
+
+---
+
+### 5.31. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)
+
+**Mục đích**: Giúp Hana và người biên tập nội dung thêm các thẻ con vào khối (như các gói sản phẩm Growth Mirror, các dịch vụ coaching, ô số liệu, các bước hành trình, câu hỏi thường gặp FAQ...) một cách dễ dàng và trực quan nhất chỉ với một nút bấm, không cần phải tìm kiếm và kéo thả phức tạp.
+
+#### 1. Hướng dẫn trực quan ngay trong khung trống (Empty Slot Hint)
+
+Khi bạn kéo một khối cha vào trang (ví dụ khối **Các gói Growth Mirror**, **Thanh số liệu**, **Hành trình các bước**, **Câu hỏi thường gặp**...) mà khối đó chưa có thẻ con nào:
+
+- Trên màn hình soạn thảo (Canvas) sẽ hiển thị ngay một khung viền nét đứt tinh tế với dòng chữ hướng dẫn rõ ràng:
+  `Chưa có {nhãn thẻ con}. Bấm "+ Thêm {nhãn}" ở cột phải, hoặc kéo "{nhãn}" từ Khối → Thẻ con vào đây.`
+- Dòng gợi ý này **chỉ hiển thị trong lúc chỉnh sửa**, hoàn toàn không hiển thị trên trang web công khai của khách hàng.
+
+#### 2. Thêm thẻ bằng nút bấm một chạm ở cột phải (+ Thêm ...)
+
+1. Bấm chuột vào khối cha trên trang soạn thảo để chọn khối.
+2. Nhìn sang bảng thuộc tính bên phải (tab **Nội dung**), cuộn xuống dưới cùng bạn sẽ thấy:
+   - Dòng nhỏ ghi số lượng: **Đã có N thẻ**.
+   - Nút bấm nổi bật: **+ Thêm {nhãn thẻ con}** (ví dụ: `+ Thêm Thẻ gói`, `+ Thêm Thẻ dịch vụ`, `+ Thêm Ô số liệu`, `+ Thêm Bước hành trình`...).
+3. Bấm vào nút này:
+   - Hệ thống sẽ tự động tạo ngay một thẻ mới đặt vào cuối danh sách.
+   - Đồng thời, cột bên phải lập tức chuyển sang chế độ chọn dữ liệu cho thẻ vừa thêm (ví dụ chọn gói sản phẩm, nhập số liệu, chọn câu hỏi...).
+   - Nếu bạn bấm nhầm, chỉ cần bấm nút **Hoàn tác** trên thanh công cụ trên cùng để hủy thao tác.
+
+#### 3. Nhóm Thẻ con bên trái tự mở và làm nổi bật
+
+Khi bạn bấm chọn một khối cha:
+
+- Nhóm **Thẻ con (kéo vào khối cha)** ở cột Thư viện khối bên trái sẽ tự động mở bung ra.
+- Ô thẻ con tương ứng với khối cha đó sẽ được **viền nổi bật màu hồng sen (bright-magenta)** và tự động cuộn vào tầm nhìn để bạn nhận biết ngay lập tức.
+- Khi bạn bỏ chọn khối cha, nhóm thẻ con sẽ trở lại trạng thái đóng/mở bình thường.
+
+#### 4. Danh sách 9 khối cha hỗ trợ nút thêm thẻ con
+
+| Khối cha                                   | Nút bấm ở cột phải       | Thẻ con tương ứng           |
+| ------------------------------------------ | ------------------------ | --------------------------- |
+| **Các gói Growth Mirror** (`PackageCards`) | `+ Thêm Thẻ gói`         | Thẻ gói (`PackageCard`)     |
+| **Các dịch vụ Coaching** (`ServiceCards`)  | `+ Thêm Thẻ dịch vụ`     | Thẻ dịch vụ (`ServiceCard`) |
+| **Lưới thẻ biểu tượng** (`IconCardGrid`)   | `+ Thêm Thẻ biểu tượng`  | Thẻ biểu tượng (`Card`)     |
+| **Thanh số liệu ấn tượng** (`StatsBar`)    | `+ Thêm Ô số liệu`       | Ô số liệu (`Stat`)          |
+| **Hành trình các bước** (`JourneySteps`)   | `+ Thêm Bước hành trình` | Bước (`Step`)               |
+| **Câu hỏi thường gặp** (`FAQ`)             | `+ Thêm Câu hỏi FAQ`     | Câu hỏi FAQ (`FaqItem`)     |
+| **Hero 2 Lối vào** (`HeroTwoEntries`)      | `+ Thêm Thẻ lối vào`     | Thẻ lối vào (`EntryCard`)   |
+| **Hai lối đi** (`TwoPathCards`)            | `+ Thêm Thẻ lối đi`      | Thẻ lối đi (`PathCard`)     |
+| **Tầm nhìn & Sứ mệnh** (`VisionMission`)   | `+ Thêm Thẻ giá trị`     | Thẻ giá trị (`VisionCard`)  |
+
+#### 5. Hình ảnh minh họa thực tế [MẪU] trên trình dựng trang (Desktop - 1440px)
+
+- _Khung nét đứt gợi ý trong khối trống và nút "+ Thêm Thẻ gói" ở cột phải khi chọn khối:_
+  ![Khung nét đứt gợi ý và nút thêm thẻ con ở cột phải](screenshots/pk14/01-empty-slot-hint-1440.png)
+
+- _Ba thẻ gói đã được thêm nhanh vào khối Các gói Growth Mirror:_
+  ![Ba thẻ gói đã được thêm nhanh vào khối trong trình dựng trang thật](screenshots/pk14/02-cards-added-1440.png)
 
 ---
 
