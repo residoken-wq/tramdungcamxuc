@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { usePuck, type ComponentData } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { useContextMenu } from '@/puck/editor/context-menu/context-menu-context'
-import { isLastRequiredBlock } from '@/puck/locks'
+import { canDoBlockAction, isLastRequiredBlock } from '@/puck/locks'
 import { useLockContext } from '@/puck/editor/lock/lock-context'
 import {
   getMoveStatus,
@@ -93,15 +93,11 @@ export function useBlockShortcuts() {
         currentItem && currentGetPermissions
           ? currentGetPermissions({ item: currentItem })
           : undefined
-      const canDrag = isLocked ? false : unlocked ? true : permissions ? permissions.drag !== false : true
-      const canDuplicate = isLocked ? false : unlocked ? true : permissions ? permissions.duplicate !== false : true
-      const canDelete = isLocked ? false : unlocked ? true : permissions ? permissions.delete !== false : true
+      const canDrag = canDoBlockAction('drag', lockInfo, unlocked, permissions)
+      const canDuplicate = canDoBlockAction('duplicate', lockInfo, unlocked, permissions)
+      const canDelete = canDoBlockAction('delete', lockInfo, unlocked, permissions)
 
-      const moveStatus = getMoveStatus(
-        currentAppState.data,
-        selector,
-        canDrag,
-      )
+      const moveStatus = getMoveStatus(currentAppState.data, selector, canDrag)
 
       // 1. Alt+ArrowUp: Move Up
       if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.key === 'ArrowUp') {

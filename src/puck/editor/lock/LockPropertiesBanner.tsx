@@ -81,15 +81,11 @@ export function LockPropertiesBanner() {
       </div>
 
       {info.canUnlock && !isOwner && (
-        <p className="text-[11px] italic text-deep-navy/70">
-          {vi.eb14b.editorOnlyOwnerCanUnlock}
-        </p>
+        <p className="text-[11px] italic text-deep-navy/70">{vi.eb14b.editorOnlyOwnerCanUnlock}</p>
       )}
 
       {!info.canUnlock && selectedItem.type === 'HtmlWidget' && (
-        <p className="text-[11px] font-medium text-bright-magenta">
-          {vi.eb14b.htmlLockedGuide}
-        </p>
+        <p className="text-[11px] font-medium text-bright-magenta">{vi.eb14b.htmlLockedGuide}</p>
       )}
     </div>
   )

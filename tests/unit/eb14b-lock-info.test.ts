@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
+  canDoBlockAction,
   getBlockLockInfo,
   getLockedComponentPermissions,
   isLastRequiredBlock,
@@ -89,9 +90,7 @@ describe('EB-14b: Lock Info & Resolution Rules', () => {
     })
 
     it('returns edit: false for HtmlWidget when htmlLocked is true', () => {
-      expect(
-        getLockedComponentPermissions('HtmlWidget', '/', { htmlLocked: true }),
-      ).toEqual({
+      expect(getLockedComponentPermissions('HtmlWidget', '/', { htmlLocked: true })).toEqual({
         edit: false,
       })
     })
@@ -216,3 +215,36 @@ describe('EB-14b: Lock Info & Resolution Rules', () => {
   })
 })
 
+describe('QA EB-14bc: actions after a manual unlock', () => {
+  const footerInfo = getBlockLockInfo({ type: 'LegalFooter', kind: 'footer' })
+  const heroInfo = getBlockLockInfo({ type: 'HeroTwoEntries', pageSlug: 'trang-chu' })
+
+  it('an unlocked LegalFooter in the footer still cannot be duplicated (exactly one allowed)', () => {
+    expect(canDoBlockAction('duplicate', footerInfo, true, undefined)).toBe(false)
+    expect(canDoBlockAction('delete', footerInfo, true, undefined)).toBe(true)
+    const perms = resolveComponentPermissions({
+      type: 'LegalFooter',
+      id: 'lf-1',
+      kind: 'footer',
+      isOwner: true,
+      unlockedBlockIds: ['lf-1'],
+    })
+    expect(perms?.duplicate).toBe(false)
+    expect(perms?.delete).toBe(true)
+  })
+
+  it('locked blocks only block their listed actions; unlocked Hero allows all three', () => {
+    expect(canDoBlockAction('drag', footerInfo, false, undefined)).toBe(true)
+    expect(canDoBlockAction('delete', footerInfo, false, undefined)).toBe(false)
+    for (const a of ['drag', 'duplicate', 'delete'] as const) {
+      expect(canDoBlockAction(a, heroInfo, false, undefined)).toBe(false)
+      expect(canDoBlockAction(a, heroInfo, true, undefined)).toBe(true)
+    }
+  })
+
+  it('unlocked blocks fall back to Puck permissions', () => {
+    const none = getBlockLockInfo({ type: 'TextWidget' })
+    expect(canDoBlockAction('delete', none, false, { delete: false })).toBe(false)
+    expect(canDoBlockAction('delete', none, false, undefined)).toBe(true)
+  })
+})

@@ -3161,9 +3161,11 @@ export const vi = {
     taglineLabel: 'Câu khẩu hiệu (Tagline)',
     dummyPageCanvas: 'Nội dung trang xem trước trong trình soạn thảo',
     headerDefaultTemplate: 'Đầu trang mặc định',
-    headerDefaultDesc: 'Mẫu đầu trang chuẩn nhận diện thương hiệu: Logo, Menu, Tài khoản và Nút CTA.',
+    headerDefaultDesc:
+      'Mẫu đầu trang chuẩn nhận diện thương hiệu: Logo, Menu, Tài khoản và Nút CTA.',
     footerDefaultTemplate: 'Chân trang mặc định',
-    footerDefaultDesc: 'Mẫu chân trang chuẩn: Logo, Tagline, Mạng xã hội và 6 liên kết pháp lý bắt buộc.',
+    footerDefaultDesc:
+      'Mẫu chân trang chuẩn: Logo, Tagline, Mạng xã hội và 6 liên kết pháp lý bắt buộc.',
   },
   eb13a: {
     moveUp: 'Di chuyển lên',

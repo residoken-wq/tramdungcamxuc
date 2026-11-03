@@ -1108,7 +1108,9 @@ export function getPuckConfig(options?: {
               htmlLocked,
               isOwner: options?.isOwner,
               unlockedBlockIds: id && options?.isBlockUnlocked?.(id) ? [id] : [],
-            }) ?? legalFooterPerms ?? {}
+            }) ??
+            legalFooterPerms ??
+            {}
           )
         },
       }
@@ -1185,7 +1187,9 @@ export function getPuckConfig(options?: {
             htmlLocked,
             isOwner: options?.isOwner,
             unlockedBlockIds: id && options?.isBlockUnlocked?.(id) ? [id] : [],
-          }) ?? heroPermissions ?? {}
+          }) ??
+          heroPermissions ??
+          {}
         )
       },
     }

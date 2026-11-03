@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useMemo, useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { usePuck, type ComponentData } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { cleanBlockLabel } from '@/puck/style/block-label'
 import { useContextMenu } from '@/puck/editor/context-menu/context-menu-context'
 import { puckVietnameseDictionary } from '@/puck/dictionary'
-import { isLastRequiredBlock } from '@/puck/locks'
+import { canDoBlockAction, isLastRequiredBlock } from '@/puck/locks'
 import { useLockContext } from '@/puck/editor/lock/lock-context'
 import { getMoveStatus, getMoveUpIndex, getMoveDownIndex } from './actions-pure'
 import { useBlockShortcuts } from './useBlockShortcuts'
@@ -68,15 +68,12 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
   // Block permissions
   const permissions =
     selectedItem && getPermissions ? getPermissions({ item: selectedItem }) : undefined
-  const canDrag = isLocked ? false : unlocked ? true : permissions ? permissions.drag !== false : true
+  const canDrag = canDoBlockAction('drag', lockInfo, unlocked, permissions)
 
   // Calculate move capabilities (EB-13ac: locked blocks cannot move)
-  const moveStatus = useMemo(
-    () => getMoveStatus(appState.data, selector, canDrag),
-    [appState.data, selector, canDrag],
-  )
-  const canDuplicate = isLocked ? false : unlocked ? true : permissions ? permissions.duplicate !== false : true
-  const canDelete = isLocked ? false : unlocked ? true : permissions ? permissions.delete !== false : true
+  const moveStatus = getMoveStatus(appState.data, selector, canDrag)
+  const canDuplicate = canDoBlockAction('duplicate', lockInfo, unlocked, permissions)
+  const canDelete = canDoBlockAction('delete', lockInfo, unlocked, permissions)
 
   // Display label: prioritize custom _label, then passed label, then config label, then type
   const compConfig = selectedItem?.type ? config?.components?.[selectedItem.type] : undefined
@@ -359,7 +356,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
         disabled={canDrag && !moveStatus.canMoveUp}
         aria-disabled={!canDrag ? 'true' : undefined}
         aria-label={vi.eb13a.moveUp}
-        title={!canDrag ? (lockInfo?.reason || vi.eb13a.moveUp) : vi.eb13a.moveUp}
+        title={!canDrag ? lockInfo?.reason || vi.eb13a.moveUp : vi.eb13a.moveUp}
         className={`min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui ${
           canDrag && moveStatus.canMoveUp
             ? 'text-white hover:bg-white/15 active:bg-white/25 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta'
@@ -385,7 +382,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
         disabled={canDrag && !moveStatus.canMoveDown}
         aria-disabled={!canDrag ? 'true' : undefined}
         aria-label={vi.eb13a.moveDown}
-        title={!canDrag ? (lockInfo?.reason || vi.eb13a.moveDown) : vi.eb13a.moveDown}
+        title={!canDrag ? lockInfo?.reason || vi.eb13a.moveDown : vi.eb13a.moveDown}
         className={`min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui ${
           canDrag && moveStatus.canMoveDown
             ? 'text-white hover:bg-white/15 active:bg-white/25 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta'
@@ -420,7 +417,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
         aria-disabled={!canDuplicate ? 'true' : undefined}
         aria-label={vi.eb13a.duplicate}
         title={
-          !canDuplicate ? (lockInfo?.reason || vi.eb13a.cannotDuplicateLocked) : vi.eb13a.duplicate
+          !canDuplicate ? lockInfo?.reason || vi.eb13a.cannotDuplicateLocked : vi.eb13a.duplicate
         }
         className={`min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui ${
           canDuplicate
@@ -451,7 +448,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
         onClick={handleDelete}
         aria-disabled={!canDelete ? 'true' : undefined}
         aria-label={vi.eb13a.delete}
-        title={!canDelete ? (lockInfo?.reason || vi.eb13a.cannotDeleteLocked) : vi.eb13a.delete}
+        title={!canDelete ? lockInfo?.reason || vi.eb13a.cannotDeleteLocked : vi.eb13a.delete}
         className={`min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui ${
           canDelete
             ? 'text-white/90 hover:bg-accent-pink/30 hover:text-white active:bg-accent-pink/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink cursor-pointer'

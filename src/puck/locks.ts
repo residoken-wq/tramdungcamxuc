@@ -59,6 +59,8 @@ export type BlockLockInfo = {
   blocked: BlockAction[]
   reason: string
   canUnlock: boolean
+  /** QA EB-14bc: actions that stay blocked even after a manual unlock (server rules). */
+  keepWhenUnlocked?: BlockAction[]
 }
 
 /**
@@ -89,6 +91,9 @@ export function getBlockLockInfo({
         blocked: ['delete', 'duplicate'],
         reason: vi.eb14b.reasonLegalFooter,
         canUnlock: true,
+        // The footer must keep exactly one LegalFooter (validatePageKindBlocks): a copy could
+        // never be saved.
+        keepWhenUnlocked: ['duplicate'],
       }
     }
     return {
@@ -179,22 +184,19 @@ export function resolveComponentPermissions(params: {
 
   const isUnlocked = Boolean(
     isOwner &&
-      lockInfo.canUnlock &&
-      id &&
-      (unlockedBlockIds instanceof Set
-        ? unlockedBlockIds.has(id)
-        : Array.isArray(unlockedBlockIds)
-          ? unlockedBlockIds.includes(id)
-          : false),
+    lockInfo.canUnlock &&
+    id &&
+    (unlockedBlockIds instanceof Set
+      ? unlockedBlockIds.has(id)
+      : Array.isArray(unlockedBlockIds)
+        ? unlockedBlockIds.includes(id)
+        : false),
   )
 
   if (isUnlocked) {
-    return {
-      drag: true,
-      duplicate: true,
-      delete: true,
-      edit: true,
-    }
+    const perms: Partial<Permissions> = { drag: true, duplicate: true, delete: true, edit: true }
+    for (const b of lockInfo.keepWhenUnlocked ?? []) perms[b] = false
+    return perms
   }
 
   const perms: Partial<Permissions> = {}
@@ -205,6 +207,23 @@ export function resolveComponentPermissions(params: {
     perms.edit = true
   }
   return perms
+}
+
+/**
+ * REVIEW-REQUIRED: QA EB-14bc – the one rule the action bar, shortcuts and context menu use to
+ * decide whether an action is allowed on the selected block.
+ */
+export function canDoBlockAction(
+  action: Exclude<BlockAction, 'edit'>,
+  lockInfo: BlockLockInfo | undefined,
+  unlocked: boolean,
+  permissions: Partial<Permissions> | undefined,
+): boolean {
+  if (lockInfo?.locked) {
+    if (!unlocked) return !lockInfo.blocked.includes(action)
+    return !(lockInfo.keepWhenUnlocked ?? []).includes(action)
+  }
+  return permissions ? permissions[action] !== false : true
 }
 
 /**

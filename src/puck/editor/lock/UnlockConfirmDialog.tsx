@@ -63,7 +63,10 @@ export function UnlockConfirmDialog({
           </h2>
         </div>
 
-        <div id="unlock-dialog-desc" className="text-xs sm:text-sm text-deep-navy/90 font-ui space-y-2">
+        <div
+          id="unlock-dialog-desc"
+          className="text-xs sm:text-sm text-deep-navy/90 font-ui space-y-2"
+        >
           <p>{vi.eb14b.confirmMessage}</p>
           {isHeroHomepage && (
             <p className="text-xs text-bright-magenta font-semibold">
@@ -100,4 +103,3 @@ export function UnlockConfirmDialog({
     </div>
   )
 }
-

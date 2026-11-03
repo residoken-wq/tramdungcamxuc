@@ -1098,95 +1098,97 @@ export function PuckEditorClient({
           setUnlockedBlockIds={setUnlockedBlockIds}
         >
           <EditorContext.Provider
-          value={{
-            pageId,
-            pageTitle,
-            pageSlug,
-            pageKind,
-            currentStatus: docStatus,
-            onStatusChange: setDocStatus,
-            feedback,
-            setFeedback,
-            autosaveController,
-            previewVersion,
-            setPreviewVersion: setPreviewVersionTracked,
-          }}
-        >
-          <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
-            {/* Top Banner Navigation */}
-            <header className="bg-deep-navy text-white px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm shadow-md z-20">
-              <div className="flex items-center gap-3">
-                <Link
-                  href={`/admin/collections/pages/${pageId}`}
-                  className="inline-flex items-center gap-1 text-white/80 hover:text-white transition font-ui font-semibold"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                  <span>Quản trị CMS</span>
-                </Link>
-                <span className="text-white/30">|</span>
-                <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">{pageTitle}</span>
-                {pageKind !== 'page' && (
-                  <span className="px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider bg-lavender-mist text-deep-navy border border-bright-magenta/20">
-                    {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge}
+            value={{
+              pageId,
+              pageTitle,
+              pageSlug,
+              pageKind,
+              currentStatus: docStatus,
+              onStatusChange: setDocStatus,
+              feedback,
+              setFeedback,
+              autosaveController,
+              previewVersion,
+              setPreviewVersion: setPreviewVersionTracked,
+            }}
+          >
+            <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
+              {/* Top Banner Navigation */}
+              <header className="bg-deep-navy text-white px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm shadow-md z-20">
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={`/admin/collections/pages/${pageId}`}
+                    className="inline-flex items-center gap-1 text-white/80 hover:text-white transition font-ui font-semibold"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                    <span>Quản trị CMS</span>
+                  </Link>
+                  <span className="text-white/30">|</span>
+                  <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">
+                    {pageTitle}
                   </span>
+                  {pageKind !== 'page' && (
+                    <span className="px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider bg-lavender-mist text-deep-navy border border-bright-magenta/20">
+                      {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge}
+                    </span>
+                  )}
+                  <span
+                    className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
+                      docStatus === 'published'
+                        ? 'bg-mint-haze text-deep-navy'
+                        : 'bg-soft-pink text-deep-navy'
+                    }`}
+                  >
+                    {docStatus === 'published' ? 'Đã xuất bản' : 'Bản nháp'}
+                  </span>
+                </div>
+
+                {pageKind === 'page' ? (
+                  <div className="text-white/70 font-ui text-xs hidden sm:block">
+                    Đường dẫn:{' '}
+                    <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
+                  </div>
+                ) : (
+                  <div className="text-white/70 font-ui text-xs hidden sm:block">
+                    {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge} toàn site
+                  </div>
                 )}
-                <span
-                  className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
-                    docStatus === 'published'
-                      ? 'bg-mint-haze text-deep-navy'
-                      : 'bg-soft-pink text-deep-navy'
-                  }`}
-                >
-                  {docStatus === 'published' ? 'Đã xuất bản' : 'Bản nháp'}
-                </span>
+              </header>
+
+              {/* Puck Editor Container */}
+              <div className="flex-1 min-h-0 relative">
+                <Puck
+                  config={config}
+                  data={initialData}
+                  viewports={brandViewports}
+                  dictionary={puckVietnameseDictionary}
+                  iframe={{
+                    enabled: true,
+                    waitForStyles: true,
+                  }}
+                  overrides={editorOverrides}
+                  plugins={editorPlugins}
+                  onChange={(data) => {
+                    if (previewingRef.current) return
+                    autosaveController.setData(data)
+                  }}
+                  onAction={(_action) => {
+                    // Action handler hook if needed
+                  }}
+                />
               </div>
-
-              {pageKind === 'page' ? (
-                <div className="text-white/70 font-ui text-xs hidden sm:block">
-                  Đường dẫn:{' '}
-                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
-                </div>
-              ) : (
-                <div className="text-white/70 font-ui text-xs hidden sm:block">
-                  {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge} toàn site
-                </div>
-              )}
-            </header>
-
-            {/* Puck Editor Container */}
-            <div className="flex-1 min-h-0 relative">
-              <Puck
-                config={config}
-                data={initialData}
-                viewports={brandViewports}
-                dictionary={puckVietnameseDictionary}
-                iframe={{
-                  enabled: true,
-                  waitForStyles: true,
-                }}
-                overrides={editorOverrides}
-                plugins={editorPlugins}
-                onChange={(data) => {
-                  if (previewingRef.current) return
-                  autosaveController.setData(data)
-                }}
-                onAction={(_action) => {
-                  // Action handler hook if needed
-                }}
-              />
             </div>
-          </div>
-          <ToastNotification />
-        </EditorContext.Provider>
-      </LockProvider>
-    </ContextMenuProvider>
-  </StylePanelProvider>
+            <ToastNotification />
+          </EditorContext.Provider>
+        </LockProvider>
+      </ContextMenuProvider>
+    </StylePanelProvider>
   )
 }

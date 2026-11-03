@@ -9,7 +9,7 @@ import { copyBlock, readClipboard, prepareForPaste } from './clipboard'
 import { hasStyleKeys } from '@/puck/style/style-schema'
 import { switchLeftPanelTab } from '@/puck/editor/left-panel-tab'
 import { SaveTemplateModal } from '@/puck/editor/SaveTemplateModal'
-import { isLastRequiredBlock } from '@/puck/locks'
+import { canDoBlockAction, isLastRequiredBlock } from '@/puck/locks'
 import { useLockContext } from '@/puck/editor/lock/lock-context'
 
 export type MenuItemId =
@@ -34,8 +34,15 @@ export type MenuItemDef = {
 
 export function BlockContextMenu() {
   const { menuState, closeMenu, setRenamingId, showToast } = useContextMenu()
-  const { config, dispatch, getPermissions, getItemById, getSelectorForId, getParentById, appState } =
-    usePuck()
+  const {
+    config,
+    dispatch,
+    getPermissions,
+    getItemById,
+    getSelectorForId,
+    getParentById,
+    appState,
+  } = usePuck()
   const { getBlockInfo, pageSlug, pageKind, isUnlocked } = useLockContext()
 
   const menuRef = useRef<HTMLDivElement>(null)
@@ -61,8 +68,8 @@ export function BlockContextMenu() {
   const lockInfo = item?.type ? getBlockInfo(item.type) : undefined
   const unlocked = componentId ? isUnlocked(componentId) : false
   const isLocked = Boolean(lockInfo?.locked && !unlocked)
-  const canDuplicate = isLocked ? false : unlocked ? true : permissions ? permissions.duplicate !== false : true
-  const canDelete = isLocked ? false : unlocked ? true : permissions ? permissions.delete !== false : true
+  const canDuplicate = canDoBlockAction('duplicate', lockInfo, unlocked, permissions)
+  const canDelete = canDoBlockAction('delete', lockInfo, unlocked, permissions)
 
   // Clipboard checking
   const clipboard = readClipboard()
@@ -271,7 +278,7 @@ export function BlockContextMenu() {
           </svg>
         ),
         disabled: !canDuplicate,
-        tooltip: !canDuplicate ? (lockInfo?.reason || vi.eb07.cannotDuplicateLocked) : undefined,
+        tooltip: !canDuplicate ? lockInfo?.reason || vi.eb07.cannotDuplicateLocked : undefined,
         action: handleDuplicate,
       },
       {
@@ -386,7 +393,7 @@ export function BlockContextMenu() {
         ),
         danger: true,
         disabled: !canDelete,
-        tooltip: !canDelete ? (lockInfo?.reason || vi.eb07.cannotDeleteLocked) : undefined,
+        tooltip: !canDelete ? lockInfo?.reason || vi.eb07.cannotDeleteLocked : undefined,
         action: handleDelete,
       },
     ],

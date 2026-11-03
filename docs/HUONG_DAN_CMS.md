@@ -2710,6 +2710,7 @@ Giờ đây, Hana chỉ cần **bấm một cái (click)** vào bất kỳ khố
 ### 5.36. Khối bị khoá và cách mở khoá
 
 Trên website Trạm Dừng Cảm Xúc, một số khối đặc thù được hệ thống tự động khoá một phần hoặc toàn bộ thao tác nhằm bảo vệ tính toàn vẹn của nhận diện thương hiệu và quy chuẩn bắt buộc:
+
 - **Hero 2 lối vào (`HeroTwoEntries`) trên trang chủ:** Khối cửa ngõ đón khách của trang chủ, mặc định không thể kéo đổi chỗ, nhân bản hay xoá.
 - **Chân trang pháp lý (`LegalFooter`):** Khối điều khoản và liên kết pháp lý bắt buộc phải có ở cuối mọi trang, không thể xoá.
 - **Khối HTML tuỳ chỉnh (`HtmlWidget`):** Khi tính năng "Mở khoá CSS / HTML" trong Thiết kế hệ thống đang tắt, khối này không thể chỉnh sửa mã HTML trực tiếp.
@@ -2717,6 +2718,7 @@ Trên website Trạm Dừng Cảm Xúc, một số khối đặc thù được h
 #### 1. Nhận biết khối đang bị khoá
 
 Khi Hana bấm chọn một khối đang bị khoá trong trình soạn thảo:
+
 1. **Trên thanh thao tác nhanh nổi (Action Bar):** Xuất hiện nhãn **🔒 Đã khoá**. Rà chuột hoặc chạm vào nhãn sẽ hiển thị lý do khối bị giới hạn.
 2. **Các nút thao tác bị giới hạn (Đổi chỗ, Nhân bản, Xoá):** Vẫn hiển thị đầy đủ trên thanh công cụ nhưng ở trạng thái mờ (`aria-disabled`). Khi Hana bấm vào nút mờ, hệ thống sẽ hiện thông báo nổi (toast) giải thích rõ lý do thay vì im lặng.
 3. **Cây cấu trúc (thẻ Cấu trúc bên trái):** Xuất hiện biểu tượng ổ khoá 🔒 ngay cạnh tên khối.
@@ -2725,7 +2727,7 @@ Khi Hana bấm chọn một khối đang bị khoá trong trình soạn thảo:
 #### 2. Ai được quyền mở khoá?
 
 - **Chỉ Chủ tài khoản (`owner`):** Mới có quyền bấm nút **"Mở khoá"** để chủ động di chuyển hoặc sắp xếp lại bố cục khối.
-- **Người biên tập (`editor`):** Chỉ thấy thông báo *"Chỉ chủ tài khoản mở khoá được khối này"* và không thể bấm mở khoá.
+- **Người biên tập (`editor`):** Chỉ thấy thông báo _"Chỉ chủ tài khoản mở khoá được khối này"_ và không thể bấm mở khoá.
 
 #### 3. Cách mở khoá và xác nhận an toàn
 
@@ -2734,7 +2736,7 @@ Khi Hana bấm chọn một khối đang bị khoá trong trình soạn thảo:
 3. Một hộp thoại xác nhận an toàn sẽ hiện ra, giải thích rõ:
    - Thao tác mở khoá **chỉ có hiệu lực tạm thời trong phiên chỉnh sửa hiện tại**.
    - Khi tải lại trang (reload) hoặc đóng trình duyệt, khối sẽ tự động khoá bảo vệ trở lại.
-   - Nhắc nhở quy tắc bắt buộc: *"Trang chủ vẫn phải còn ít nhất 1 Hero 2 lối vào khi lưu."*
+   - Nhắc nhở quy tắc bắt buộc: _"Trang chủ vẫn phải còn ít nhất 1 Hero 2 lối vào khi lưu."_
 4. Bấm **"Mở khoá"** trong hộp thoại:
    - Khối chuyển sang trạng thái **🔓 Đang mở khoá**.
    - Hana có thể dùng phím tắt `Alt + ↓` / `Alt + ↑` hoặc các nút mũi tên để đổi vị trí khối theo ý muốn (ví dụ: đưa khối Hero xuống dưới một khối khác khi sắp đặt lại chiến dịch).
