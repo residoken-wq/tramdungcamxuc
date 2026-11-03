@@ -40,15 +40,16 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
     }
   }
 
-  // Calculate move capabilities
-  const moveStatus = useMemo(
-    () => getMoveStatus(appState.data, selector),
-    [appState.data, selector],
-  )
-
   // Block permissions
   const permissions =
     selectedItem && getPermissions ? getPermissions({ item: selectedItem }) : undefined
+  const canDrag = permissions ? permissions.drag !== false : true
+
+  // Calculate move capabilities (EB-13ac: locked blocks cannot move)
+  const moveStatus = useMemo(
+    () => getMoveStatus(appState.data, selector, canDrag),
+    [appState.data, selector, canDrag],
+  )
   const canDuplicate = permissions ? permissions.duplicate !== false : true
   const canDelete = permissions ? permissions.delete !== false : true
 
@@ -56,7 +57,12 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
   const compConfig = selectedItem?.type ? config?.components?.[selectedItem.type] : undefined
   const customLabel = cleanBlockLabel(selectedItem?.props?._label)
   const displayLabel =
-    customLabel || label || compConfig?.label || selectedItem?.type || puckVietnameseDictionary['label-component'] || 'Khối'
+    customLabel ||
+    label ||
+    compConfig?.label ||
+    selectedItem?.type ||
+    puckVietnameseDictionary['label-component'] ||
+    'Khối'
 
   // Move Up
   const handleMoveUp = useCallback(() => {
@@ -117,8 +123,9 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
       e.stopPropagation()
 
       if (React.isValidElement(parentAction)) {
-        const parentOnClick = (parentAction.props as { onClick?: (event: React.MouseEvent) => void })
-          ?.onClick
+        const parentOnClick = (
+          parentAction.props as { onClick?: (event: React.MouseEvent) => void }
+        )?.onClick
         if (typeof parentOnClick === 'function') {
           parentOnClick(e)
           return
@@ -201,7 +208,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
   return (
     <div
       role="toolbar"
-      aria-label="Thanh công cụ khối"
+      aria-label={vi.eb13a.toolbarLabel}
       className="inline-flex items-center bg-deep-navy text-white rounded-lg shadow-xl border border-white/10 px-1 py-1 gap-1 select-none pointer-events-auto"
     >
       {/* 1. Select Parent Action (Hidden for root blocks) */}
@@ -266,12 +273,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
           viewBox="0 0 24 24"
           aria-hidden="true"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2.5"
-            d="M5 15l7-7 7 7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7" />
         </svg>
       </button>
 
@@ -296,12 +298,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
           viewBox="0 0 24 24"
           aria-hidden="true"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2.5"
-            d="M19 9l-7 7-7-7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 

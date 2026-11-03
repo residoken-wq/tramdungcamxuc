@@ -12,14 +12,8 @@ import {
 } from './actions-pure'
 
 export function useBlockShortcuts() {
-  const {
-    appState,
-    dispatch,
-    selectedItem,
-    getPermissions,
-    getSelectorForId,
-    getParentById,
-  } = usePuck()
+  const { appState, dispatch, selectedItem, getPermissions, getSelectorForId, getParentById } =
+    usePuck()
   const { showToast } = useContextMenu()
 
   // Keep latest references for event listener without re-attaching listeners
@@ -83,7 +77,11 @@ export function useBlockShortcuts() {
       const canDuplicate = permissions ? permissions.duplicate !== false : true
       const canDelete = permissions ? permissions.delete !== false : true
 
-      const moveStatus = getMoveStatus(currentAppState.data, selector)
+      const moveStatus = getMoveStatus(
+        currentAppState.data,
+        selector,
+        permissions ? permissions.drag !== false : true,
+      )
 
       // 1. Alt+ArrowUp: Move Up
       if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.key === 'ArrowUp') {
@@ -166,7 +164,12 @@ export function useBlockShortcuts() {
       }
 
       // 4. Ctrl+D / Cmd+D: Duplicate
-      if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key === 'd' || e.key === 'D')) {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        !e.altKey &&
+        !e.shiftKey &&
+        (e.key === 'd' || e.key === 'D')
+      ) {
         e.preventDefault()
         e.stopPropagation()
 

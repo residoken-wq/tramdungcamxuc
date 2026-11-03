@@ -60,7 +60,10 @@ export function resolvePropPath(
  * Supports root zone, data.zones, nested slot props (e.g. Container.items),
  * and array-item slots (e.g. Tabs.items[0].content).
  */
-export function getZoneItems(data: Data | null | undefined, zoneCompound?: string | null): ComponentData[] {
+export function getZoneItems(
+  data: Data | null | undefined,
+  zoneCompound?: string | null,
+): ComponentData[] {
   if (!data) return []
 
   if (isRootZone(zoneCompound)) {
@@ -103,6 +106,8 @@ export function getZoneItems(data: Data | null | undefined, zoneCompound?: strin
 export function getMoveStatus(
   data: Data | null | undefined,
   selector: { index: number; zone?: string } | null | undefined,
+  /** EB-13ac: `permissions.drag` of the block – a locked block (e.g. homepage Hero) never moves. */
+  canDrag = true,
 ): MoveStatus {
   if (!selector || selector.index < 0 || !data) {
     return {
@@ -120,8 +125,8 @@ export function getMoveStatus(
   const currentIndex = selector.index
 
   return {
-    canMoveUp: currentIndex > 0,
-    canMoveDown: currentIndex >= 0 && currentIndex < totalItems - 1,
+    canMoveUp: canDrag && currentIndex > 0,
+    canMoveDown: canDrag && currentIndex >= 0 && currentIndex < totalItems - 1,
     totalItems,
     currentIndex,
     zone,
@@ -170,7 +175,9 @@ export function shouldHandleBlockShortcut(
     // Check ancestors for editable containers or rich text editors
     if (
       item.closest(
-        'input, textarea, select, [contenteditable="true"], .ProseMirror, [data-lexical-editor], [role="textbox"], [role="searchbox"], [role="combobox"]',
+        // EB-13ac: also dialogs / menus – Esc must close them and Delete must not remove the block
+        // while focus sits on a dialog button.
+        'input, textarea, select, [contenteditable="true"], .ProseMirror, [data-lexical-editor], [role="textbox"], [role="searchbox"], [role="combobox"], [role="dialog"], [role="alertdialog"], [aria-modal="true"], [role="menu"]',
       )
     ) {
       return false

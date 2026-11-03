@@ -294,3 +294,36 @@ describe('EB-13a: Pure actions & zone calculations', () => {
     })
   })
 })
+
+describe('EB-13ac: locked blocks and dialogs', () => {
+  it('a block with drag: false cannot move up or down', async () => {
+    const { getMoveStatus } = await import('@/puck/editor/action-bar/actions-pure')
+    const data = {
+      root: { props: {} },
+      content: [
+        { type: 'HeroTwoEntries', props: { id: 'h1' } },
+        { type: 'HeadingWidget', props: { id: 'x1' } },
+        { type: 'HeadingWidget', props: { id: 'x2' } },
+      ],
+    }
+    const locked = getMoveStatus(
+      data as unknown as Data,
+      { index: 1, zone: 'root:default-zone' },
+      false,
+    )
+    expect(locked.canMoveUp).toBe(false)
+    expect(locked.canMoveDown).toBe(false)
+    const free = getMoveStatus(data as unknown as Data, { index: 1, zone: 'root:default-zone' })
+    expect(free.canMoveUp).toBe(true)
+    expect(free.canMoveDown).toBe(true)
+  })
+
+  it('ignores shortcuts while focus is inside a dialog or menu', async () => {
+    const { shouldHandleBlockShortcut } = await import('@/puck/editor/action-bar/actions-pure')
+    document.body.innerHTML =
+      '<div role="dialog"><button id="d">Lưu</button></div><div role="menu"><button id="m">Xoá</button></div><button id="free">x</button>'
+    expect(shouldHandleBlockShortcut(document.getElementById('d'))).toBe(false)
+    expect(shouldHandleBlockShortcut(document.getElementById('m'))).toBe(false)
+    expect(shouldHandleBlockShortcut(document.getElementById('free'))).toBe(true)
+  })
+})

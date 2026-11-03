@@ -3178,6 +3178,7 @@ export const vi = {
     movedUp: 'Đã chuyển khối lên trên',
     movedDown: 'Đã chuyển khối xuống dưới',
     deleted: 'Đã xoá khối',
+    toolbarLabel: 'Thanh công cụ khối',
   },
   hb07: {
     global: {
