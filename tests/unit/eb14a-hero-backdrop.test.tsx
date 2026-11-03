@@ -96,6 +96,8 @@ describe('EB-14a: Hero Backdrop Unit Tests', () => {
       expect(props.titleLine1).toBe('Dòng 1')
       expect(props.titleLine2).toBe('Dòng 2')
       expect(props.bgColor).toBe('warm-ivory')
+      expect(props.entriesLayout).toBe('columns')
+      expect(props.entriesPlacement).toBe('below')
 
       // Idempotency: run twice
       const migratedAgain = migrateHeroTwoEntriesV3ToV4(migrated)
@@ -341,6 +343,9 @@ describe('EB-14a: Hero Backdrop Unit Tests', () => {
       expect(resolvedBackdrop?.imagePosition).toBeDefined()
       expect(resolvedBackdrop?.contentAlign).toBeDefined()
       expect(resolvedBackdrop?.minHeight).toBeDefined()
+      // entriesPlacement is hidden in backdrop mode
+      expect(resolvedBackdrop?.entriesPlacement).toBeUndefined()
+      expect(resolvedSplit?.entriesPlacement).toBeDefined()
     })
 
     it('HeroImageBlock adapts statColor options based on overlay tone when in backdrop mode', () => {
@@ -382,6 +387,63 @@ describe('EB-14a: Hero Backdrop Unit Tests', () => {
       // warm-ivory allows deep-navy, bright-magenta, accent-pink
       expect(lightOptions).toContain('deep-navy')
       expect(lightOptions).toContain('bright-magenta')
+    })
+  })
+
+  describe('7. Section 1.6: entriesLayout and entriesPlacement in HeroTwoEntries', () => {
+    it('renders with data-entries-layout="rows" when entriesLayout is rows', () => {
+      const { container } = render(
+        <HeroTwoEntries
+          titleLine1="TIÊU ĐỀ 1"
+          titleLine2="TIÊU ĐỀ 2"
+          entriesLayout="rows"
+          entriesPlacement="below"
+          entry1={{ label: 'Cá nhân', description: 'Mô tả 1', buttonText: 'Xem', buttonLink: '#' }}
+          entry2={{ label: 'Doanh nghiệp', description: 'Mô tả 2', buttonText: 'Xem', buttonLink: '#' }}
+        />,
+      )
+
+      const wrapper = container.querySelector('[data-entries-layout]')
+      expect(wrapper).not.toBeNull()
+      expect(wrapper?.getAttribute('data-entries-layout')).toBe('rows')
+    })
+
+    it('renders with data-entries-layout="columns" by default', () => {
+      const { container } = render(
+        <HeroTwoEntries
+          titleLine1="TIÊU ĐỀ 1"
+          titleLine2="TIÊU ĐỀ 2"
+          entry1={{ label: 'Cá nhân', description: 'Mô tả 1', buttonText: 'Xem', buttonLink: '#' }}
+          entry2={{ label: 'Doanh nghiệp', description: 'Mô tả 2', buttonText: 'Xem', buttonLink: '#' }}
+        />,
+      )
+
+      const wrapper = container.querySelector('[data-entries-layout]')
+      expect(wrapper).not.toBeNull()
+      expect(wrapper?.getAttribute('data-entries-layout')).toBe('columns')
+    })
+
+    it('renders entries inside text column when layout=split, has image, and entriesPlacement=textColumn', () => {
+      const { container } = render(
+        <HeroTwoEntries
+          layout="split"
+          imageUrl="https://example.com/hero.jpg"
+          imageAlt="[MẪU] Hero"
+          titleLine1="TIÊU ĐỀ 1"
+          titleLine2="TIÊU ĐỀ 2"
+          entriesLayout="rows"
+          entriesPlacement="textColumn"
+          entry1={{ label: 'Cá nhân', description: 'Mô tả 1', buttonText: 'Xem', buttonLink: '#' }}
+          entry2={{ label: 'Doanh nghiệp', description: 'Mô tả 2', buttonText: 'Xem', buttonLink: '#' }}
+        />,
+      )
+
+      // The left column has order-1 lg:col-span-7
+      const leftCol = container.querySelector('.order-1.lg\\:col-span-7')
+      expect(leftCol).not.toBeNull()
+
+      const entriesWrapper = leftCol?.querySelector('[data-entries-layout="rows"]')
+      expect(entriesWrapper).not.toBeNull()
     })
   })
 })

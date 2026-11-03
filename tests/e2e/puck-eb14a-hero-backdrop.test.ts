@@ -434,6 +434,124 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
         path: path.join(screenshotsDir, 'split-cu-1440.png'),
         fullPage: false,
       })
+
+      // --- PUBLIC PAGE VERIFICATION: SECTION 1.6 (ROWS & TEXT-COLUMN) ---
+      const slugRows = `e2e-hero-rows-${randomUUID().slice(0, 8)}`
+      const rowsHeroId = `eb14a-rows-${randomUUID().slice(0, 8)}`
+      await page.request.post('/api/pages', {
+        data: {
+          title: '[MẪU] E2E Hero Rows Page',
+          slug: slugRows,
+          _status: 'published',
+          puckData: {
+            content: [
+              {
+                type: 'HeroTwoEntries',
+                props: {
+                  id: rowsHeroId,
+                  version: 4,
+                  layout: 'split',
+                  entriesLayout: 'rows',
+                  entriesPlacement: 'textColumn',
+                  titleLine1: '[MẪU] HÀNG TRÊN DƯỚI',
+                  titleLine2: 'TRONG CỘT CHỮ',
+                  description: '[MẪU] Mô tả cột chữ bên trái',
+                  imageUrl: mediaUrl || 'https://example.com/sample.png',
+                  imageAlt: mediaAlt,
+                  bgColor: 'warm-ivory',
+                  entries: [
+                    {
+                      type: 'EntryCard',
+                      props: {
+                        id: 'row-card-1',
+                        groupLabel: 'CHO CÁ NHÂN',
+                        description: 'Phát triển Năng lực & Sự nghiệp',
+                        buttonText: 'KHÁM PHÁ CÁC LỘ TRÌNH',
+                        buttonLink: '/ca-nhan',
+                        buttonStyle: 'solid',
+                      },
+                    },
+                    {
+                      type: 'EntryCard',
+                      props: {
+                        id: 'row-card-2',
+                        groupLabel: 'CHO DOANH NGHIỆP',
+                        description: 'Giải pháp EQ cho đội ngũ',
+                        buttonText: 'TÌM HIỂU THÊM',
+                        buttonLink: '/doanh-nghiep',
+                        buttonStyle: 'outline',
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            root: { props: { title: 'E2E Hero Rows Page' } },
+            zones: {},
+          },
+        },
+      })
+
+      // 12. Rows & text-column at 1440
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.goto(`/${slugRows}`, { waitUntil: 'domcontentloaded' })
+
+      const rowsSection = page.locator('section').first()
+      await expect(rowsSection).toBeVisible()
+
+      const cards = rowsSection.locator(
+        '[data-entries-layout="rows"] > * > div, [data-entries-layout="rows"] .rounded-card',
+      )
+      const card1 = cards.first()
+      const card2 = cards.nth(1)
+
+      const box1 = await card1.boundingBox()
+      const box2 = await card2.boundingBox()
+      const img1440 = rowsSection.locator('img').first()
+      const imgBox1440 = await img1440.boundingBox()
+
+      if (box1 && box2 && imgBox1440) {
+        // thẻ 2 nằm dưới thẻ 1 (box2.y >= box1.y + box1.height - tolerance), cùng x (within 5px)
+        expect(box2.y).toBeGreaterThanOrEqual(box1.y + box1.height - 5)
+        expect(Math.abs(box2.x - box1.x)).toBeLessThanOrEqual(5)
+
+        // 2 thẻ nằm bên trái ảnh (card.x + card.width <= image.x + tolerance)
+        expect(box1.x + box1.width).toBeLessThanOrEqual(imgBox1440.x + 5)
+        expect(box2.x + box2.width).toBeLessThanOrEqual(imgBox1440.x + 5)
+
+        // nút của thẻ nằm bên phải chữ của thẻ, cùng hàng (btn.x > text.x)
+        const btn1 = card1.locator('a, button').first()
+        const text1 = card1.locator('p').first()
+        const btnBox1 = await btn1.boundingBox()
+        const textBox1 = await text1.boundingBox()
+        if (btnBox1 && textBox1) {
+          expect(btnBox1.x).toBeGreaterThan(textBox1.x)
+        }
+      }
+
+      await page.screenshot({
+        path: path.join(screenshotsDir, 'rows-text-column-1440.png'),
+        fullPage: false,
+      })
+
+      // 13. Rows & text-column at 375: nút nằm dưới chữ
+      await page.setViewportSize({ width: 375, height: 667 })
+      await page.reload({ waitUntil: 'domcontentloaded' })
+
+      const mobileCard1 = rowsSection.locator('.rounded-card').first()
+      const mobileBtn1 = mobileCard1.locator('a, button').first()
+      const mobileText1 = mobileCard1.locator('p').first()
+      const mobileBtnBox = await mobileBtn1.boundingBox()
+      const mobileTextBox = await mobileText1.boundingBox()
+      if (mobileBtnBox && mobileTextBox) {
+        // nút nằm dưới chữ
+        expect(mobileBtnBox.y).toBeGreaterThan(mobileTextBox.y)
+      }
+
+      await page.screenshot({
+        path: path.join(screenshotsDir, 'rows-text-column-375.png'),
+        fullPage: false,
+      })
     } finally {
       // Clean up test pages and media
       if (pageId) {
