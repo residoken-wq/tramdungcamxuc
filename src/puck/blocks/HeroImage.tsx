@@ -3,6 +3,16 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { HeroImage, type HeroImageProps } from '@/components/site/HeroImage'
 import { BRAND_COLOR_OPTIONS, FONT_SIZE_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { allowedTextColors } from '@/lib/brand/format-classes'
+import { vi } from '@/lib/i18n/vi'
+import {
+  HERO_LAYOUT_OPTIONS,
+  HERO_OVERLAY_TONE_OPTIONS,
+  HERO_OVERLAY_STRENGTH_OPTIONS,
+  HERO_IMAGE_BLUR_OPTIONS,
+  HERO_IMAGE_POSITION_OPTIONS,
+  HERO_CONTENT_ALIGN_OPTIONS,
+  HERO_MIN_HEIGHT_OPTIONS,
+} from '@/lib/brand/hero-backdrop'
 
 export type { HeroImageProps }
 
@@ -130,9 +140,44 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
+    layout: {
+      type: 'select',
+      label: vi.eb14a.layout,
+      options: [...HERO_LAYOUT_OPTIONS],
+    },
+    overlayTone: {
+      type: 'select',
+      label: vi.eb14a.overlayTone,
+      options: [...HERO_OVERLAY_TONE_OPTIONS],
+    },
+    overlayStrength: {
+      type: 'select',
+      label: vi.eb14a.overlayStrength,
+      options: [...HERO_OVERLAY_STRENGTH_OPTIONS],
+    },
+    imageBlur: {
+      type: 'select',
+      label: vi.eb14a.imageBlur,
+      options: [...HERO_IMAGE_BLUR_OPTIONS],
+    },
+    imagePosition: {
+      type: 'select',
+      label: vi.eb14a.imagePosition,
+      options: [...HERO_IMAGE_POSITION_OPTIONS],
+    },
+    contentAlign: {
+      type: 'select',
+      label: vi.eb14a.contentAlign,
+      options: [...HERO_CONTENT_ALIGN_OPTIONS],
+    },
+    minHeight: {
+      type: 'select',
+      label: vi.eb14a.minHeight,
+      options: [...HERO_MIN_HEIGHT_OPTIONS],
+    },
   },
   defaultProps: {
-    version: 2,
+    version: 3,
     seriesLabel: '[MẪU] Khởi đầu hành trình',
     titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
     titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
@@ -151,13 +196,40 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     statLabelColor: 'deep-navy',
     statValueSize: 'md',
     statLabelSize: 'md',
+    layout: 'split',
+    overlayTone: 'dark',
+    overlayStrength: 'lg',
+    imageBlur: 'none',
+    imagePosition: 'center',
+    contentAlign: 'center',
+    minHeight: 'lg',
     bgColor: 'warm-ivory',
     padding: 'md',
   },
-  resolveFields: (data, params) => ({
-    ...params.fields,
-    ...statColorFields(data.props?.bgColor || 'warm-ivory'),
-  }),
+  resolveFields: (data, params) => {
+    const isBackdrop = data?.props?.layout === 'backdrop'
+    const effectiveBg = isBackdrop
+      ? data?.props?.overlayTone === 'light'
+        ? 'warm-ivory'
+        : 'deep-navy'
+      : data?.props?.bgColor || 'warm-ivory'
+
+    const fields = {
+      ...params.fields,
+      ...statColorFields(effectiveBg),
+    }
+
+    if (!isBackdrop) {
+      delete fields.overlayTone
+      delete fields.overlayStrength
+      delete fields.imageBlur
+      delete fields.imagePosition
+      delete fields.contentAlign
+      delete fields.minHeight
+    }
+
+    return fields
+  },
   resolveData: async (data) => {
     const { mediaId } = data.props
     if (!mediaId) {

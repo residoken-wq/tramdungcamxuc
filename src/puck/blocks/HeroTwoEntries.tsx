@@ -3,6 +3,16 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { HeroTwoEntries, type HeroTwoEntriesProps } from '@/components/site/HeroTwoEntries'
 import { BRAND_COLOR_OPTIONS, FONT_SIZE_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createMediaExternalField } from '../media-field'
+import { vi } from '@/lib/i18n/vi'
+import {
+  HERO_LAYOUT_OPTIONS,
+  HERO_OVERLAY_TONE_OPTIONS,
+  HERO_OVERLAY_STRENGTH_OPTIONS,
+  HERO_IMAGE_BLUR_OPTIONS,
+  HERO_IMAGE_POSITION_OPTIONS,
+  HERO_CONTENT_ALIGN_OPTIONS,
+  HERO_MIN_HEIGHT_OPTIONS,
+} from '@/lib/brand/hero-backdrop'
 
 export type { HeroTwoEntriesProps }
 
@@ -45,9 +55,44 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
+    layout: {
+      type: 'select',
+      label: vi.eb14a.layout,
+      options: [...HERO_LAYOUT_OPTIONS],
+    },
+    overlayTone: {
+      type: 'select',
+      label: vi.eb14a.overlayTone,
+      options: [...HERO_OVERLAY_TONE_OPTIONS],
+    },
+    overlayStrength: {
+      type: 'select',
+      label: vi.eb14a.overlayStrength,
+      options: [...HERO_OVERLAY_STRENGTH_OPTIONS],
+    },
+    imageBlur: {
+      type: 'select',
+      label: vi.eb14a.imageBlur,
+      options: [...HERO_IMAGE_BLUR_OPTIONS],
+    },
+    imagePosition: {
+      type: 'select',
+      label: vi.eb14a.imagePosition,
+      options: [...HERO_IMAGE_POSITION_OPTIONS],
+    },
+    contentAlign: {
+      type: 'select',
+      label: vi.eb14a.contentAlign,
+      options: [...HERO_CONTENT_ALIGN_OPTIONS],
+    },
+    minHeight: {
+      type: 'select',
+      label: vi.eb14a.minHeight,
+      options: [...HERO_MIN_HEIGHT_OPTIONS],
+    },
   },
   defaultProps: {
-    version: 3,
+    version: 4,
     seriesLabel: '[MẪU] Series nhãn',
     titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
     titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
@@ -56,6 +101,13 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
     mediaId: '',
     imageUrl: '',
     imageAlt: '',
+    layout: 'split',
+    overlayTone: 'dark',
+    overlayStrength: 'lg',
+    imageBlur: 'none',
+    imagePosition: 'center',
+    contentAlign: 'center',
+    minHeight: 'lg',
     bgColor: 'warm-ivory',
     padding: 'md',
     titleSize: 'md',
@@ -97,6 +149,18 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
         },
       },
     ],
+  },
+  resolveFields: (data, params) => {
+    const fields = { ...params.fields }
+    if (data?.props?.layout !== 'backdrop') {
+      delete fields.overlayTone
+      delete fields.overlayStrength
+      delete fields.imageBlur
+      delete fields.imagePosition
+      delete fields.contentAlign
+      delete fields.minHeight
+    }
+    return fields
   },
   resolveData: async (data) => {
     const { mediaId } = data.props
