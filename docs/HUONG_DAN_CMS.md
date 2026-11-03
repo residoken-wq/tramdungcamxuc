@@ -69,6 +69,7 @@
    - [5.30. Nâng cao: CSS / HTML tuỳ chỉnh và hiệu ứng (EB-09)](#530-nâng-cao-css--html-tuỳ-chỉnh-và-hiệu-ứng-eb-09)
    - [5.31. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)](#531-thêm-thẻ-vào-khối-gói-dịch-vụ-số-liệu-bước-câu-hỏi-bằng-một-nút-bấm-pk-14)
    - [5.32. Đầu trang và chân trang dựng bằng trình soạn thảo (EB-10)](#532-đầu-trang-và-chân-trang-dựng-bằng-trình-soạn-thảo-eb-10)
+   - [5.33. Thanh thao tác nhanh và phím tắt (EB-13a)](#533-thanh-thao-tác-nhanh-và-phím-tắt-eb-13a)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2640,6 +2641,30 @@ Nếu muốn quay lại giao diện lập trình mặc định ban đầu:
   - Nút **Xoá** và nút **Nhân bản** của khối này bị vô hiệu hoá.
   - Trình soạn thảo và máy chủ sẽ tự động từ chối nếu trang Chân trang thiếu khối này.
   - Nhờ vậy, Hana có thể thoải mái kéo thả thay đổi vị trí mà không bao giờ sợ sơ suất làm mất thông tin pháp lý bắt buộc.
+
+---
+
+### 5.33. Thanh thao tác nhanh và phím tắt (EB-13a)
+
+Khi Hana nhấp chuột chọn bất kỳ khối nào trên khung soạn thảo (canvas), một **thanh thao tác nhanh nổi** (Action Bar) màu tím than thương hiệu sẽ hiện ngay trên mép khối giúp Hana sắp xếp và thao tác tức thì mà không cần kéo chuột vất vả:
+
+#### 1. Các nút trên thanh thao tác nổi
+- **Chọn khối cha**: Hiện ra khi Hana đang chọn một phần tử con (như Tiêu đề, Văn bản hoặc Nút bên trong Khung chứa Container / Cột). Nhấp nút này để lập tức chuyển vùng chọn sang Khung chứa cha bên ngoài để chỉnh lề hoặc đổi màu nền. Khối ngoài cùng (gốc trang) sẽ tự động ẩn nút này.
+- **Tên khối**: Hiển thị tên loại khối (hoặc tên gợi nhớ Hana đã đặt trong tab Nâng cao).
+- **↑ Lên / ↓ Xuống**: Đổi thứ tự khối lên trên hoặc xuống dưới trong cùng khung/vùng. Nếu khối đang nằm ở đầu hàng thì nút **↑** sẽ mờ đi; nếu đang ở cuối hàng thì nút **↓** sẽ mờ đi.
+- **Nhân bản (Biểu tượng hai trang giấy)**: Tạo nhanh một bản sao giống hệt ngay bên dưới. (Khối bị khoá như Hero trang chủ hoặc Chân trang pháp lý sẽ ẩn nút này).
+- **Xoá (Biểu tượng thùng rác)**: Xoá khối đang chọn khỏi trang. (Khối bị khoá sẽ không có nút này).
+
+#### 2. Bộ phím tắt tiện lợi (khi đang chọn khối)
+Hana có thể dùng bàn phím để thao tác cực nhanh (khi con trỏ không nằm trong ô nhập chữ hoặc khung viết bài):
+- **Alt + ↑** (hoặc Option + ↑ trên Mac): Đổi chỗ khối lên trên.
+- **Alt + ↓** (hoặc Option + ↓ trên Mac): Đổi chỗ khối xuống dưới.
+- **Esc**: Chọn ngay khung cha bên ngoài (tương đương nút *Chọn khối cha*).
+- **Ctrl + D** (hoặc Cmd + D trên Mac): Nhân bản khối đang chọn.
+- **Delete**: Xoá khối đang chọn.
+
+#### 3. Chuột phải chính xác vào khối đang chọn
+Khi Hana đã chọn một khung chứa (ví dụ Container lớn có nhiều ảnh, chữ con bên trong), Hana chỉ cần nhấp chuột phải **ở bất kỳ đâu trong khung** (kể cả nhấp trúng ảnh hay chữ con) thì bảng menu tác vụ vẫn ưu tiên mở cho **chính Khung chứa đang chọn**, giúp Hana sao chép kiểu dáng hoặc lưu mẫu khung nhanh chóng mà không bị chọn nhầm sang khối con.
 
 ---
 
