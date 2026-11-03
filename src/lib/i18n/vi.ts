@@ -3207,6 +3207,7 @@ export const vi = {
   eb14b: {
     lockedBadge: '🔒 Đã khoá',
     unlockedBadge: '🔓 Đang mở khoá',
+    unlockedSessionNote: 'Đang mở khoá trong phiên này. Tải lại trang sẽ tự khoá lại.',
     lockedAria: 'Đã khoá',
     unlockedAria: 'Đang mở khoá',
     unlockButton: 'Mở khoá',

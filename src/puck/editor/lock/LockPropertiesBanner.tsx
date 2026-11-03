@@ -27,7 +27,7 @@ export function LockPropertiesBanner() {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 font-bold text-bright-magenta">
             <span aria-hidden="true">🔓</span>
-            <span>{vi.eb14b.unlockedBadge}</span>
+            <span>{vi.eb14b.unlockedAria}</span>
           </div>
           {itemId && (
             <button
@@ -40,9 +40,7 @@ export function LockPropertiesBanner() {
             </button>
           )}
         </div>
-        <p className="text-[11px] text-deep-navy/80">
-          Đang mở khoá trong phiên này. Tải lại trang sẽ tự khoá lại.
-        </p>
+        <p className="text-[11px] text-deep-navy/80">{vi.eb14b.unlockedSessionNote}</p>
       </div>
     )
   }
@@ -56,7 +54,7 @@ export function LockPropertiesBanner() {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 font-bold text-deep-navy">
           <span aria-hidden="true">🔒</span>
-          <span>{vi.eb14b.lockedBadge}</span>
+          <span>{vi.eb14b.lockedAria}</span>
         </div>
         {info.canUnlock && isOwner && (
           <button

@@ -140,6 +140,7 @@ export function NavigatorRowContent({ componentId }: { componentId: string }) {
       {isBlockLocked && (
         <span
           title={lockInfo.reason}
+          role="img"
           aria-label={vi.eb14b.lockedAria}
           className="text-deep-navy/80 shrink-0 flex items-center ml-1"
         >
@@ -163,6 +164,7 @@ export function NavigatorRowContent({ componentId }: { componentId: string }) {
       {lockInfo.locked && isBlockUnlocked && (
         <span
           title={vi.eb14b.unlockedBadge}
+          role="img"
           aria-label={vi.eb14b.unlockedAria}
           className="text-bright-magenta shrink-0 flex items-center ml-1"
         >
