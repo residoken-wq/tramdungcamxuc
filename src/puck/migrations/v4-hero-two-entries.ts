@@ -29,6 +29,10 @@ export function migrateHeroTwoEntriesV3ToV4(data: Data): Data {
           contentAlign:
             typeof props.contentAlign === 'string' ? props.contentAlign : 'center',
           minHeight: typeof props.minHeight === 'string' ? props.minHeight : 'lg',
+          entriesLayout:
+            typeof props.entriesLayout === 'string' ? props.entriesLayout : 'columns',
+          entriesPlacement:
+            typeof props.entriesPlacement === 'string' ? props.entriesPlacement : 'below',
         }
       }
     }

@@ -90,6 +90,22 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
       label: vi.eb14a.minHeight,
       options: [...HERO_MIN_HEIGHT_OPTIONS],
     },
+    entriesLayout: {
+      type: 'select',
+      label: vi.eb14a.entriesLayoutLabel,
+      options: [
+        { label: vi.eb14a.entriesLayoutColumns, value: 'columns' },
+        { label: vi.eb14a.entriesLayoutRows, value: 'rows' },
+      ],
+    },
+    entriesPlacement: {
+      type: 'select',
+      label: vi.eb14a.entriesPlacementLabel,
+      options: [
+        { label: vi.eb14a.entriesPlacementBelow, value: 'below' },
+        { label: vi.eb14a.entriesPlacementTextColumn, value: 'textColumn' },
+      ],
+    },
   },
   defaultProps: {
     version: 4,
@@ -108,6 +124,8 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
     imagePosition: 'center',
     contentAlign: 'center',
     minHeight: 'lg',
+    entriesLayout: 'columns',
+    entriesPlacement: 'below',
     bgColor: 'warm-ivory',
     padding: 'md',
     titleSize: 'md',
@@ -159,6 +177,8 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
       delete fields.imagePosition
       delete fields.contentAlign
       delete fields.minHeight
+    } else {
+      delete fields.entriesPlacement
     }
     return fields
   },

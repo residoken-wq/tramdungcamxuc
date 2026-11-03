@@ -14,6 +14,8 @@ export const homeV2Template: Data = {
         id: 'home-v2-hero',
         version: 4,
         layout: 'split',
+        entriesLayout: 'columns',
+        entriesPlacement: 'below',
         seriesLabel: '[MẪU] Trạm Dừng Cảm Xúc',
         titleLine1: '[MẪU] HIỂU MÌNH RÕ. HÀNH ĐỘNG BỀN BỈ.',
         titleLine2: '[MẪU] TỎA SÁNG BẰNG THẾ MẠNH RIÊNG.',

@@ -3248,6 +3248,12 @@ export const vi = {
       lg: 'Lớn (640px)',
       screen: 'Toàn màn hình (trừ header)',
     },
+    entriesLayoutLabel: 'Bố cục thẻ lối vào',
+    entriesLayoutColumns: '2 cột cạnh nhau',
+    entriesLayoutRows: 'Xếp hàng trên – dưới',
+    entriesPlacementLabel: 'Vị trí thẻ lối vào',
+    entriesPlacementBelow: 'Dưới cả ảnh và chữ',
+    entriesPlacementTextColumn: 'Trong cột chữ, dưới đoạn mô tả',
   },
   hb07: {
     global: {
