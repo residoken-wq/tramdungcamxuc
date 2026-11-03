@@ -44,6 +44,7 @@ import { BlockContextMenu } from '@/puck/editor/context-menu/BlockContextMenu'
 import { ContextMenuOverlay } from '@/puck/editor/context-menu/ContextMenuOverlay'
 import { ToastNotification } from '@/puck/editor/context-menu/ToastNotification'
 import { OutlineWrapper } from '@/puck/editor/navigator/OutlineWrapper'
+import { BlockActionBar } from '@/puck/editor/action-bar/BlockActionBar'
 
 export const brandViewports: Viewports = [
   { width: 375, height: 'auto', label: 'Điện thoại (375px)', icon: 'Smartphone' },
@@ -995,6 +996,7 @@ const editorOverrides = {
   // EB-07: Canvas context menu overlay and custom Navigator outline
   componentOverlay: ContextMenuOverlay,
   outline: OutlineWrapper,
+  actionBar: BlockActionBar,
 }
 
 // EB-03c: Puck renders every left-sidebar plugin at once (inactive ones only hidden by CSS), so

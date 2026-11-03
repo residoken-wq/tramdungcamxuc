@@ -3165,6 +3165,20 @@ export const vi = {
     footerDefaultTemplate: 'Chân trang mặc định',
     footerDefaultDesc: 'Mẫu chân trang chuẩn: Logo, Tagline, Mạng xã hội và 6 liên kết pháp lý bắt buộc.',
   },
+  eb13a: {
+    moveUp: 'Di chuyển lên',
+    moveDown: 'Di chuyển xuống',
+    selectParent: 'Chọn khối cha',
+    duplicate: 'Nhân bản',
+    delete: 'Xoá',
+    alreadyAtTop: 'Khối đang ở đầu vùng',
+    alreadyAtBottom: 'Khối đang ở cuối vùng',
+    cannotDeleteLocked: 'Khối này bị khoá, không thể xoá',
+    cannotDuplicateLocked: 'Khối này bị khoá, không thể nhân bản',
+    movedUp: 'Đã chuyển khối lên trên',
+    movedDown: 'Đã chuyển khối xuống dưới',
+    deleted: 'Đã xoá khối',
+  },
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',

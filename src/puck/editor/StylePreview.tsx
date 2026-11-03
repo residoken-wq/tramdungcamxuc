@@ -24,19 +24,42 @@ export function StylePreview({
   const { ds } = useStylePanel()
   const { openMenu } = useContextMenu()
   const data = usePuckSelector((s) => s.appState.data)
+  const selectedId = usePuckSelector((s) => {
+    if (s.selectedItem?.props?.id) return String(s.selectedItem.props.id)
+    const sel = s.appState.ui.itemSelector
+    if (sel && s.getItemBySelector) {
+      const item = s.getItemBySelector(sel)
+      if (item?.props?.id) return String(item.props.id)
+    }
+    return null
+  })
 
   useEffect(() => {
     if (!frameDocument) return
     const handleContextMenu = (e: MouseEvent) => {
-      // Innermost block under the pointer (overlays of parent blocks sit on top of their children).
+      // Collect all blocks under the pointer
       const blocks = new Set<HTMLElement>()
       for (const el of frameDocument.elementsFromPoint(e.clientX, e.clientY)) {
         const block = (el as HTMLElement).closest<HTMLElement>('[data-puck-component]')
         if (block) blocks.add(block)
       }
-      const compEl = [...blocks].find(
-        (block) => ![...blocks].some((other) => other !== block && block.contains(other)),
-      )
+
+      // EB-13a: Right-click anywhere in the currently selected block (even over child widgets)
+      // targets the selected block itself, not the innermost child under the pointer.
+      let compEl: HTMLElement | undefined
+      if (selectedId) {
+        compEl = [...blocks].find(
+          (block) => block.getAttribute('data-puck-component') === selectedId,
+        )
+      }
+
+      // Fallback: pick the innermost block under the pointer
+      if (!compEl) {
+        compEl = [...blocks].find(
+          (block) => ![...blocks].some((other) => other !== block && block.contains(other)),
+        )
+      }
+
       if (!compEl) return
       const id = compEl.getAttribute('data-puck-component')
       if (!id) return
@@ -52,7 +75,7 @@ export function StylePreview({
     }
     frameDocument.addEventListener('contextmenu', handleContextMenu)
     return () => frameDocument.removeEventListener('contextmenu', handleContextMenu)
-  }, [frameDocument, openMenu])
+  }, [frameDocument, openMenu, selectedId])
   const { css, fonts } = collectPageStyles(data, ds)
   const loaded = new Set(designSystemGoogleFonts(ds))
   const fontsHref = googleFontsHrefFor(
