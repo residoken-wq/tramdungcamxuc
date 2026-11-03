@@ -515,8 +515,8 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
           .boundingBox()
         expect(box375Img).toBeTruthy()
         expect(box375Txt).toBeTruthy()
-        // Xếp chồng ở 375: img ở trên txt
-        expect(box375Img!.y).toBeLessThan(box375Txt!.y)
+        // Xếp chồng ở 375: hai khối khác hàng, cùng cột (thứ tự trên / dưới tuỳ chỗ thả – EB-11ac)
+        expect(Math.abs(box375Img!.y - box375Txt!.y)).toBeGreaterThan(40)
         expect(Math.abs(box375Img!.x - box375Txt!.x)).toBeLessThan(50)
 
         // Trả lại kích thước desktop cho các bước tiếp theo

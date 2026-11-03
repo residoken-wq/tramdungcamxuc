@@ -208,7 +208,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
   return (
     <div
       role="toolbar"
-      aria-label={vi.eb13a.toolbarLabel}
+      aria-label={`${vi.eb13a.toolbarLabel}: ${displayLabel}`}
       className="inline-flex items-center bg-deep-navy text-white rounded-lg shadow-xl border border-white/10 px-1 py-1 gap-1 select-none pointer-events-auto"
     >
       {/* 1. Select Parent Action (Hidden for root blocks) */}
@@ -242,15 +242,9 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
         </>
       )}
 
-      {/* 2. Block Label */}
-      <span
-        title={displayLabel}
-        className="px-2 py-1 text-xs font-ui font-bold text-white/90 truncate max-w-[140px] sm:max-w-[180px]"
-      >
-        {displayLabel}
-      </span>
-
-      <div className="w-[1px] h-4 bg-white/20 my-auto" />
+      {/* EB-13ac: no block-name label here – the name is already in the right panel and the
+          Structure tab, and the wider bar covered the block right above the selected one
+          (it could not be clicked). */}
 
       {/* 3. Reorder: Move Up (↑) */}
       <button
