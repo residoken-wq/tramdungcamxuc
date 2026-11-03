@@ -69,6 +69,8 @@
    - [5.30. Nâng cao: CSS / HTML tuỳ chỉnh và hiệu ứng (EB-09)](#530-nâng-cao-css--html-tuỳ-chỉnh-và-hiệu-ứng-eb-09)
    - [5.31. Thêm thẻ vào khối (gói, dịch vụ, số liệu, bước, câu hỏi…) bằng một nút bấm (PK-14)](#531-thêm-thẻ-vào-khối-gói-dịch-vụ-số-liệu-bước-câu-hỏi-bằng-một-nút-bấm-pk-14)
    - [5.32. Đầu trang và chân trang dựng bằng trình soạn thảo (EB-10)](#532-đầu-trang-và-chân-trang-dựng-bằng-trình-soạn-thảo-eb-10)
+   - [5.33. Thanh thao tác nhanh và phím tắt (EB-13a)](#533-thanh-thao-tác-nhanh-và-phím-tắt-eb-13a)
+   - [5.34. Bấm để chèn khối (EB-13b)](#534-bấm-để-chèn-khối-eb-13b)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2206,6 +2208,9 @@ Khi thiết kế giao diện, Hana hoàn toàn có thể tự do thử nghiệm 
 
 ### 5.23. Section tự do: kéo thả từng phần tử
 
+> [!NOTE]
+> **Section tự do đã thay bằng Khung 2 cột / Container:** Nhóm Section tự do trong thư viện khối hiện được ẩn đi để Hana thao tác bố cục nhanh và trực quan hơn bằng **Khung chứa (Container)** và mẫu sẵn **Khung 2 cột (ảnh + chữ)**. Các trang cũ đã dựng bằng Section tự do vẫn được lưu giữ và hiển thị hoàn toàn bình thường.
+
 Các khối như Hero, CTA, Ảnh & Chữ có **bố cục cố định**: Hana sửa được chữ, cỡ và màu, nhưng không kéo đổi chỗ tiêu đề, ảnh hay nút. Khi muốn **tự xếp từng phần tử**, dùng khối **Section tự do**.
 
 1. Ở menu trái, mở nhóm **Section tự do (kéo thả từng phần tử)**, kéo khối **Section tự do** vào trang. Khối mới có sẵn: nhãn series, tiêu đề 2 tầng, dòng cảm xúc, đoạn văn, nút.
@@ -2601,6 +2606,7 @@ Khi bạn bấm chọn một khối cha:
 Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang (Header)** và **Chân trang (Footer)** toàn website bằng trình soạn thảo trực quan Puck mà không cần nhờ can thiệp vào code:
 
 #### 1. Cách tạo Đầu trang hoặc Chân trang mới
+
 1. Vào mục **Trang web** -> **Trang nội dung** -> bấm **Tạo mới**.
 2. Đặt tiêu đề (ví dụ: `Đầu trang chiến dịch hè` hoặc `Chân trang chính`).
 3. Ở cột bên phải (Sidebar), tìm ô **Loại trang**:
@@ -2612,6 +2618,7 @@ Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang
 5. Bấm nút **Chỉnh sửa trực quan** để mở trình kéo thả.
 
 #### 2. Chỉnh sửa trong trình soạn thảo trực quan
+
 - **Khung xem trước:** Trong trình soạn thảo, bên dưới Đầu trang (hoặc bên trên Chân trang) sẽ có một khung trang giả mờ để Hana dễ quan sát khoảng cách thực tế khi gắn vào website. Khung này hoàn toàn vô hình đối với độc giả.
 - **Cố định đầu trang khi cuộn (Sticky):** Nhấp chuột ra ngoài cùng (hoặc chọn tab Trang ở cột phải), trong mục **Cố định khi cuộn**, Hana có thể chọn:
   - _Không (cuộn bình thường)_: Thanh đầu trang trôi đi khi khách cuộn xuống.
@@ -2619,7 +2626,9 @@ Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang
 - **Thêm/sửa nút CTA và Menu:** Hana có thể thêm các nút bấm, widget ảnh, hoặc đổi màu nền của khung chứa Container.
 
 #### 3. Chuyển sang dùng trên toàn website
+
 Sau khi đã thiết kế xong và bấm **Xuất bản** trang đầu/chân trang:
+
 1. Vào menu bên trái: **Hệ thống** -> **Menu điều hướng**.
 2. Cuộn xuống nhóm **Đầu trang / chân trang** (ở dưới cùng):
    - **Nguồn đầu trang:** Chọn _Dựng bằng Builder_.
@@ -2629,17 +2638,73 @@ Sau khi đã thiết kế xong và bấm **Xuất bản** trang đầu/chân tra
 3. Bấm **Lưu thay đổi**. Ngay lập tức toàn bộ website sẽ chuyển sang hiển thị Đầu trang/Chân trang mới!
 
 #### 4. Quay lại bản code mặc định an toàn
+
 Nếu muốn quay lại giao diện lập trình mặc định ban đầu:
+
 - Trong **Menu điều hướng**, chuyển **Nguồn đầu trang** hoặc **Nguồn chân trang** về lại **Giao diện mặc định (Code)**.
 - Bấm **Lưu thay đổi**.
 - Nếu trang Builder được chọn bị chuyển về bản nháp (Draft) hoặc có lỗi dữ liệu, website cũng sẽ **tự động quay về bản code mặc định** để không bao giờ làm gián đoạn trải nghiệm của khách.
 
 #### 5. Vì sao không thể xoá khối "Chân trang pháp lý"?
+
 - Theo quy định bắt buộc của Bộ Công Thương Việt Nam và quy chuẩn thương hiệu Trạm Dừng Cảm Xúc, mọi trang web thương mại đều bắt buộc phải hiển thị công khai **6 liên kết pháp lý** (Điều khoản, Chính sách bảo mật, Giao hàng, Hoàn tiền, Đổi trả, Pháp lý) và thông tin đăng ký của Hana.
 - Do đó, khối **Chân trang pháp lý (LegalFooter)** trong Chân trang được cài đặt khóa bảo vệ vĩnh viễn:
   - Nút **Xoá** và nút **Nhân bản** của khối này bị vô hiệu hoá.
   - Trình soạn thảo và máy chủ sẽ tự động từ chối nếu trang Chân trang thiếu khối này.
   - Nhờ vậy, Hana có thể thoải mái kéo thả thay đổi vị trí mà không bao giờ sợ sơ suất làm mất thông tin pháp lý bắt buộc.
+
+---
+
+### 5.33. Thanh thao tác nhanh và phím tắt (EB-13a)
+
+Khi Hana nhấp chuột chọn bất kỳ khối nào trên khung soạn thảo (canvas), một **thanh thao tác nhanh nổi** (Action Bar) màu tím than thương hiệu sẽ hiện ngay trên mép khối giúp Hana sắp xếp và thao tác tức thì mà không cần kéo chuột vất vả:
+
+#### 1. Các nút trên thanh thao tác nổi
+
+- **Chọn khối cha**: Hiện ra khi Hana đang chọn một phần tử con (như Tiêu đề, Văn bản hoặc Nút bên trong Khung chứa Container / Cột). Nhấp nút này để lập tức chuyển vùng chọn sang Khung chứa cha bên ngoài để chỉnh lề hoặc đổi màu nền. Khối ngoài cùng (gốc trang) sẽ tự động ẩn nút này.
+- **Tên khối**: Hiển thị tên loại khối (hoặc tên gợi nhớ Hana đã đặt trong tab Nâng cao).
+- **↑ Lên / ↓ Xuống**: Đổi thứ tự khối lên trên hoặc xuống dưới trong cùng khung/vùng. Nếu khối đang nằm ở đầu hàng thì nút **↑** sẽ mờ đi; nếu đang ở cuối hàng thì nút **↓** sẽ mờ đi.
+- **Nhân bản (Biểu tượng hai trang giấy)**: Tạo nhanh một bản sao giống hệt ngay bên dưới. (Khối bị khoá như Hero trang chủ hoặc Chân trang pháp lý sẽ ẩn nút này).
+- **Xoá (Biểu tượng thùng rác)**: Xoá khối đang chọn khỏi trang. (Khối bị khoá sẽ không có nút này).
+
+#### 2. Bộ phím tắt tiện lợi (khi đang chọn khối)
+
+Hana có thể dùng bàn phím để thao tác cực nhanh (khi con trỏ không nằm trong ô nhập chữ hoặc khung viết bài):
+
+- **Alt + ↑** (hoặc Option + ↑ trên Mac): Đổi chỗ khối lên trên.
+- **Alt + ↓** (hoặc Option + ↓ trên Mac): Đổi chỗ khối xuống dưới.
+- **Esc**: Chọn ngay khung cha bên ngoài (tương đương nút _Chọn khối cha_).
+- **Ctrl + D** (hoặc Cmd + D trên Mac): Nhân bản khối đang chọn.
+- **Delete**: Xoá khối đang chọn.
+
+#### 3. Chuột phải chính xác vào khối đang chọn
+
+Khi Hana đã chọn một khung chứa (ví dụ Container lớn có nhiều ảnh, chữ con bên trong), Hana chỉ cần nhấp chuột phải **ở bất kỳ đâu trong khung** (kể cả nhấp trúng ảnh hay chữ con) thì bảng menu tác vụ vẫn ưu tiên mở cho **chính Khung chứa đang chọn**, giúp Hana sao chép kiểu dáng hoặc lưu mẫu khung nhanh chóng mà không bị chọn nhầm sang khối con.
+
+Muốn mở menu cho **một khối con** bên trong (ví dụ dán vào ngay sau một đoạn chữ trong khung): bấm chuột trái chọn khối con đó trước, rồi mới nhấp chuột phải.
+
+### 5.34. Bấm để chèn khối (EB-13b)
+
+Trước đây, để thêm một khối hoặc widget vào trang, Hana phải giữ chuột và kéo thả chính xác vào vị trí mong muốn. Việc này có thể khó thao tác trên màn hình nhỏ hoặc khi cần căn thả chuẩn xác vào bên trong một khung chứa.
+
+Giờ đây, Hana chỉ cần **bấm một cái (click)** vào bất kỳ khối nào trong menu bên trái để chèn ngay lập tức mà không cần kéo thả:
+
+1. **Khi đang chọn một Khung chứa (Container, Cột, Tab...):**
+   - Bấm vào khối bất kỳ trong thư viện bên trái, khối mới sẽ tự động được **chèn vào cuối khung chứa** đó.
+   - Trình dựng sẽ tự động chọn khối mới vừa chèn và cuộn màn hình đến đúng vị trí để Hana tiếp tục chỉnh sửa.
+2. **Khi đang chọn một khối thường (Tiêu đề, Văn bản, Ảnh, Nút...):**
+   - Bấm vào khối mới trong thư viện, khối đó sẽ được **chèn ngay phía dưới** khối đang chọn trong cùng một hàng/vùng.
+3. **Khi không chọn khối nào:**
+   - Khối mới sẽ được **chèn vào cuối trang**.
+4. **Nút "+ Thêm phần tử" trong Khung chứa trống:**
+   - Mỗi khi kéo hoặc tạo một Khung chứa (Container) mới chưa có nội dung, giữa khung sẽ xuất hiện nút **"+ Thêm phần tử"**.
+   - Bấm nút này: thanh thư viện bên trái sẽ tự động mở ra và Khung chứa được chọn sẵn.
+   - Bấm tiếp bất kỳ khối nào ở menu trái, khối đó sẽ nằm ngay ngắn bên trong Khung chứa. Nút này chỉ xuất hiện trong trình soạn thảo, không bao giờ hiện ở trang công khai.
+5. **Mẫu sẵn "Khung 2 cột (ảnh + chữ)":**
+   - Ở ngay đầu nhóm **Bố cục** tại thư viện bên trái, Hana sẽ thấy mẫu sẵn **Khung 2 cột (ảnh + chữ)**.
+   - Bấm vào mục này, một khung chứa chuẩn 2 cột responsive (ngang trên máy tính, dọc trên điện thoại) gồm sẵn khối Ảnh và khối Chữ mẫu sẽ được tạo ngay lập tức.
+6. **Bảo vệ quy tắc thương hiệu:**
+   - Nếu Hana bấm chọn một khối không phù hợp với vị trí hiện tại (ví dụ: cố tình đặt khối gốc lớn vào trong một thẻ con), hệ thống sẽ từ chối và hiện thông báo giải thích rõ ràng, giúp trang web luôn giữ đúng quy chuẩn thiết kế.
 
 ---
 

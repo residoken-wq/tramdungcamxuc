@@ -3,7 +3,7 @@
 import React from 'react'
 import { usePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
-import { switchLeftPanelTab } from './LeftPanel'
+import { switchLeftPanelTab } from './left-panel-tab'
 
 export type EditorToolbarProps = {
   pageSlug: string

@@ -1,17 +1,25 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import { Drawer, Puck, usePuck } from '@puckeditor/core'
+import { Drawer, Puck, usePuck, type ComponentData } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { normalizeVi, filterBlockCategories } from './block-search'
 import { getBlockIcon } from './block-icons'
 import { TemplatesTab } from './TemplatesTab'
 import { getChildSlotForParent } from '../child-slots'
+import { useContextMenu } from './context-menu/context-menu-context'
+import { prepareForPaste } from './context-menu/clipboard'
+import {
+  getInsertTarget,
+  createTwoColumnContainerPattern,
+  scrollToCanvasBlock,
+} from './insert/insert-target'
+
+import { SWITCH_TAB_EVENT, switchLeftPanelTab, type LeftPanelTab } from './left-panel-tab'
+
+export { SWITCH_TAB_EVENT, switchLeftPanelTab, type LeftPanelTab }
 
 const LOCAL_STORAGE_KEY = 'eb03:left-panel'
-export const SWITCH_TAB_EVENT = 'eb03:switch-tab'
-
-export type LeftPanelTab = 'blocks' | 'outline' | 'templates'
 
 type LeftPanelState = {
   activeTab: LeftPanelTab
@@ -51,17 +59,9 @@ export function saveLeftPanelStorage(state: LeftPanelState) {
   }
 }
 
-/**
- * Dispatches a global event to switch the LeftPanel tab (e.g. from the bottom toolbar).
- */
-export function switchLeftPanelTab(tab: LeftPanelTab) {
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent(SWITCH_TAB_EVENT, { detail: tab }))
-  }
-}
-
 export function LeftPanel() {
-  const { config, getPermissions, dispatch, appState, selectedItem } = usePuck()
+  const { config, getPermissions, dispatch, appState, selectedItem, getItemById } = usePuck()
+  const { showToast } = useContextMenu()
 
   const [activeTab, setActiveTab] = useState<LeftPanelTab>(() => loadLeftPanelStorage().activeTab)
   const [collapsedCategories, setCollapsedCategories] = useState<string[]>(
@@ -69,6 +69,7 @@ export function LeftPanel() {
   )
   const [searchQuery, setSearchQuery] = useState<string>('')
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const pointerPosRef = useRef<{ x: number; y: number; time: number } | null>(null)
 
   // PK-14: detect if currently selected item is a single-child parent block
   const selectedItemType = selectedItem?.type
@@ -137,11 +138,19 @@ export function LeftPanel() {
     [config],
   )
 
-  // Filter categories based on search query
-  const allComponentKeys = useMemo(
-    () => (config?.components ? Object.keys(config.components) : []),
-    [config],
-  )
+  // Filter categories based on search query (excluding components from hidden categories like freeSection)
+  const allComponentKeys = useMemo(() => {
+    if (!config?.components) return []
+    const hiddenComponents = new Set<string>()
+    if (config?.categories) {
+      for (const cat of Object.values(config.categories)) {
+        if (cat.visible === false && Array.isArray(cat.components)) {
+          cat.components.forEach((c) => hiddenComponents.add(c as string))
+        }
+      }
+    }
+    return Object.keys(config.components).filter((k) => !hiddenComponents.has(k))
+  }, [config])
 
   const filteredCategories = useMemo(() => {
     const categories = config?.categories || {}
@@ -149,6 +158,102 @@ export function LeftPanel() {
   }, [config, getBlockLabel, searchQuery, allComponentKeys])
 
   const isSearching = normalizeVi(searchQuery).length > 0
+
+  const matchesTwoColumnPattern = useMemo(() => {
+    if (!isSearching) return true
+    const norm = normalizeVi(searchQuery)
+    return (
+      normalizeVi(vi.eb13b.twoColumnsPattern.title).includes(norm) ||
+      'khung 2 cot hai cot anh chu layout bo cuc'.includes(norm)
+    )
+  }, [isSearching, searchQuery])
+
+  // EB-13b item 1: Click to insert handler
+  const handleInsertBlock = useCallback(
+    (blockInput: string | ComponentData) => {
+      const isPattern = typeof blockInput !== 'string'
+      const blockType = isPattern ? blockInput.type : blockInput
+
+      const target = getInsertTarget({
+        blockType,
+        data: appState.data,
+        config,
+        itemSelector: appState.ui.itemSelector,
+        selectedItem,
+        getItemById,
+      })
+
+      if (!target.allowed) {
+        showToast(vi.eb13b.toast.cannotInsertDisallowed)
+        return
+      }
+
+      if (isPattern) {
+        const validation = prepareForPaste(
+          blockInput,
+          config,
+          target.destinationZone,
+          target.parentType,
+        )
+        if (!validation.success) {
+          showToast(vi.eb13b.toast.cannotInsertDisallowed)
+          return
+        }
+        const newItem = validation.item
+        dispatch({
+          type: 'insert',
+          componentType: newItem.type,
+          destinationIndex: target.destinationIndex,
+          destinationZone: target.destinationZone,
+          id: String(newItem.props.id),
+        })
+        dispatch({
+          type: 'replace',
+          destinationIndex: target.destinationIndex,
+          destinationZone: target.destinationZone,
+          data: newItem,
+        })
+        dispatch({
+          type: 'setUi',
+          ui: {
+            itemSelector: { index: target.destinationIndex, zone: target.destinationZone },
+          },
+        })
+        scrollToCanvasBlock(String(newItem.props.id))
+        showToast(vi.eb13b.toast.inserted)
+      } else {
+        const newId =
+          typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+            ? crypto.randomUUID()
+            : `${blockType}-${Date.now()}`
+
+        dispatch({
+          type: 'insert',
+          componentType: blockType,
+          destinationIndex: target.destinationIndex,
+          destinationZone: target.destinationZone,
+          id: newId,
+        })
+        dispatch({
+          type: 'setUi',
+          ui: {
+            itemSelector: { index: target.destinationIndex, zone: target.destinationZone },
+          },
+        })
+        scrollToCanvasBlock(newId)
+        showToast(vi.eb13b.toast.inserted)
+      }
+    },
+    [
+      appState.data,
+      appState.ui.itemSelector,
+      selectedItem,
+      config,
+      getItemById,
+      dispatch,
+      showToast,
+    ],
+  )
 
   return (
     <aside
@@ -406,6 +511,67 @@ export function LeftPanel() {
                       <div id={categoryContentId} className="pt-1">
                         <Drawer>
                           <div className="grid grid-cols-2 gap-2">
+                            {/* EB-13b item 4: Mẫu sẵn "Khung 2 cột (ảnh + chữ)" ở đầu nhóm Bố cục */}
+                            {category.id === 'layout' && matchesTwoColumnPattern && (
+                              <Drawer.Item
+                                key="pattern-two-columns"
+                                name="Container"
+                                label={vi.eb13b.twoColumnsPattern.title}
+                                isDragDisabled={false}
+                              >
+                                {() => (
+                                  <div
+                                    data-block-drawer-item="pattern-two-columns"
+                                    data-testid="pattern-two-columns"
+                                    onPointerDown={(e) => {
+                                      pointerPosRef.current = {
+                                        x: e.clientX,
+                                        y: e.clientY,
+                                        time: Date.now(),
+                                      }
+                                    }}
+                                    onClick={(e) => {
+                                      if (pointerPosRef.current) {
+                                        const dx = Math.abs(e.clientX - pointerPosRef.current.x)
+                                        const dy = Math.abs(e.clientY - pointerPosRef.current.y)
+                                        const dt = Date.now() - pointerPosRef.current.time
+                                        if (dx > 5 || dy > 5 || dt > 1000) return
+                                      }
+                                      handleInsertBlock(createTwoColumnContainerPattern())
+                                    }}
+                                    className="group flex flex-col items-center justify-center p-2 rounded-xl text-center select-none cursor-grab active:cursor-grabbing border transition h-[88px] min-h-[88px] bg-white text-deep-navy border-deep-navy/10 hover:border-bright-magenta hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta"
+                                    title={vi.eb13b.twoColumnsPattern.description}
+                                  >
+                                    <div className="w-6 h-6 mb-1 text-deep-navy group-hover:text-bright-magenta transition-colors flex items-center justify-center">
+                                      <svg
+                                        className="w-5 h-5 shrink-0"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.75"
+                                        aria-hidden="true"
+                                      >
+                                        <rect
+                                          x="3"
+                                          y="4"
+                                          width="8"
+                                          height="16"
+                                          rx="2"
+                                          strokeDasharray="2 2"
+                                        />
+                                        <rect x="13" y="4" width="8" height="16" rx="2" />
+                                        <path d="M5 8h4M5 12h4" strokeLinecap="round" />
+                                        <rect x="15" y="8" width="4" height="4" rx="1" />
+                                      </svg>
+                                    </div>
+                                    <span className="text-[11px] font-ui font-semibold line-clamp-2 leading-tight text-deep-navy/90 group-hover:text-deep-navy">
+                                      {vi.eb13b.twoColumnsPattern.title}
+                                    </span>
+                                  </div>
+                                )}
+                              </Drawer.Item>
+                            )}
+
                             {category.components.map((compKey) => {
                               const label = getBlockLabel(compKey)
                               const canInsert = getPermissions
@@ -426,6 +592,24 @@ export function LeftPanel() {
                                     <div
                                       data-block-drawer-item={compKey}
                                       data-highlighted={isHighlighted ? 'true' : undefined}
+                                      onPointerDown={(e) => {
+                                        pointerPosRef.current = {
+                                          x: e.clientX,
+                                          y: e.clientY,
+                                          time: Date.now(),
+                                        }
+                                      }}
+                                      onClick={(e) => {
+                                        if (pointerPosRef.current) {
+                                          const dx = Math.abs(e.clientX - pointerPosRef.current.x)
+                                          const dy = Math.abs(e.clientY - pointerPosRef.current.y)
+                                          const dt = Date.now() - pointerPosRef.current.time
+                                          if (dx > 5 || dy > 5 || dt > 1000) return
+                                        }
+                                        if (canInsert) {
+                                          handleInsertBlock(compKey)
+                                        }
+                                      }}
                                       className={`group flex flex-col items-center justify-center p-2 rounded-xl text-center select-none cursor-grab active:cursor-grabbing border transition h-[88px] min-h-[88px] ${
                                         canInsert
                                           ? isHighlighted
