@@ -71,6 +71,8 @@
    - [5.32. Đầu trang và chân trang dựng bằng trình soạn thảo (EB-10)](#532-đầu-trang-và-chân-trang-dựng-bằng-trình-soạn-thảo-eb-10)
    - [5.33. Thanh thao tác nhanh và phím tắt (EB-13a)](#533-thanh-thao-tác-nhanh-và-phím-tắt-eb-13a)
    - [5.34. Bấm để chèn khối (EB-13b)](#534-bấm-để-chèn-khối-eb-13b)
+   - [5.35. Hero ảnh nền (EB-14a)](#535-hero-ảnh-nền-eb-14a)
+   - [5.36. Khối bị khoá và cách mở khoá (EB-14b)](#536-khối-bị-khoá-và-cách-mở-khoá)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2705,6 +2707,78 @@ Giờ đây, Hana chỉ cần **bấm một cái (click)** vào bất kỳ khố
    - Bấm vào mục này, một khung chứa chuẩn 2 cột responsive (ngang trên máy tính, dọc trên điện thoại) gồm sẵn khối Ảnh và khối Chữ mẫu sẽ được tạo ngay lập tức.
 6. **Bảo vệ quy tắc thương hiệu:**
    - Nếu Hana bấm chọn một khối không phù hợp với vị trí hiện tại (ví dụ: cố tình đặt khối gốc lớn vào trong một thẻ con), hệ thống sẽ từ chối và hiện thông báo giải thích rõ ràng, giúp trang web luôn giữ đúng quy chuẩn thiết kế.
+
+### 5.35. Hero ảnh nền (EB-14a)
+
+Hana có thể biến khối Hero đầu trang (`Hero 2 Lối vào` hoặc `Hero Ảnh biểu tượng`) thành một màn chào ấn tượng với hình ảnh phủ trọn màn hình, được làm mờ nhẹ và phủ lớp màu tinh tế, tiêu đề cùng các nút bấm nằm nổi bật ngay trên ảnh.
+
+#### Các bước thực hiện:
+
+1. **Chọn khối Hero trên trang:**
+   - Trong trình soạn thảo Puck, bấm chuột chọn khối Hero (trên trang chủ là khối `Hero 2 Lối vào`, hoặc các trang khác là khối `Hero Ảnh biểu tượng`).
+2. **Đổi kiểu bố cục:**
+   - Ở cột cài đặt bên phải, tìm mục **Kiểu bố cục**.
+   - Bấm chuyển từ _Ảnh bên cạnh chữ_ sang **Ảnh làm nền, chữ nằm trên ảnh**.
+3. **Chọn ảnh minh họa Hero:**
+   - Chọn ảnh từ Thư viện media (bắt buộc ảnh phải có mô tả alt).
+4. **Tùy chỉnh lớp phủ và hiệu ứng:**
+   - **Tông phủ nền:** Chọn _Phủ tối (chữ trắng)_ (màu xanh thẫm `deep-navy`) hoặc _Phủ sáng (chữ tím than)_ (màu ngà ấm `warm-ivory`). Chữ và các nút sẽ tự động đổi màu tương phản chuẩn WCAG AA để luôn dễ đọc.
+   - **Độ đậm lớp phủ:** Chọn _Vừa (60%)_, _Đậm (75%)_ hoặc _Rất đậm (85%)_. Muốn chữ đọc rõ hơn thì tăng độ đậm lớp phủ; hệ thống không có lựa chọn nhạt hơn 60% để đảm bảo luôn đọc được chữ trên mọi loại ảnh nền.
+   - **Độ mờ ảnh:** Chọn _Không mờ_, _Mờ nhẹ (4px)_ hoặc _Mờ vừa (8px)_ để tạo chiều sâu dịu mắt cho hậu cảnh.
+   - **Vị trí trọng tâm ảnh:** Chọn 1 trong 9 vị trí căn chỉnh ảnh (Chính giữa, Trên – giữa, Dưới – giữa...).
+   - **Căn lề nội dung:** Chọn _Căn giữa_ hoặc _Căn trái_.
+   - **Chiều cao tối thiểu:** Chọn _Vừa (480px)_, _Lớn (640px)_ hoặc _Toàn màn hình (trừ header)_.
+5. **Xem trước trên điện thoại:**
+   - Bấm nút xem trước màn hình 375px ở góc trên bên phải để kiểm tra bố cục hiển thị hoàn hảo trên thiết bị di động.
+
+#### Xếp thẻ lối vào trên – dưới (`Hero 2 Lối vào`):
+
+Hana có thể linh hoạt sắp đặt 2 thẻ lối vào của `Hero 2 Lối vào` theo thiết kế mới:
+
+1. **Bố cục thẻ lối vào:** Chọn _2 cột cạnh nhau_ (mặc định) hoặc _Xếp hàng trên – dưới_. Khi chọn xếp hàng trên – dưới, mỗi thẻ sẽ trải dài dạng thanh ngang: bên trái là nhãn và mô tả in đậm, bên phải là nút bấm gọn gàng cùng hàng trên máy tính; trên điện thoại thẻ tự động chuyển về dạng dọc dễ thao tác.
+2. **Vị trí thẻ lối vào:** (Chỉ áp dụng khi chọn kiểu bố cục _Ảnh bên cạnh chữ_ và có ảnh):
+   - _Dưới cả ảnh và chữ_: Thẻ nằm rộng phía dưới như trước.
+   - _Trong cột chữ, dưới đoạn mô tả_: 2 thẻ sẽ được đưa thẳng vào cột bên trái ngay dưới phần giới thiệu, tạo bố cục cân đối và ảnh bên phải sẽ tự mở rộng chiều cao bằng trọn vẹn cột chữ.
+
+### 5.36. Khối bị khoá và cách mở khoá
+
+Trên website Trạm Dừng Cảm Xúc, một số khối đặc thù được hệ thống tự động khoá một phần hoặc toàn bộ thao tác nhằm bảo vệ tính toàn vẹn của nhận diện thương hiệu và quy chuẩn bắt buộc:
+
+- **Hero 2 lối vào (`HeroTwoEntries`) trên trang chủ:** Khối cửa ngõ đón khách của trang chủ, mặc định không thể kéo đổi chỗ, nhân bản hay xoá.
+- **Chân trang pháp lý (`LegalFooter`):** Khối điều khoản và liên kết pháp lý bắt buộc phải có ở cuối mọi trang, không thể xoá.
+- **Khối HTML tuỳ chỉnh (`HtmlWidget`):** Khi tính năng "Mở khoá CSS / HTML" trong Thiết kế hệ thống đang tắt, khối này không thể chỉnh sửa mã HTML trực tiếp.
+
+#### 1. Nhận biết khối đang bị khoá
+
+Khi Hana bấm chọn một khối đang bị khoá trong trình soạn thảo:
+
+1. **Trên thanh thao tác nhanh nổi (Action Bar):** Xuất hiện nhãn **🔒 Đã khoá**. Rà chuột hoặc chạm vào nhãn sẽ hiển thị lý do khối bị giới hạn.
+2. **Các nút thao tác bị giới hạn (Đổi chỗ, Nhân bản, Xoá):** Vẫn hiển thị đầy đủ trên thanh công cụ nhưng ở trạng thái mờ (`aria-disabled`). Khi Hana bấm vào nút mờ, hệ thống sẽ hiện thông báo nổi (toast) giải thích rõ lý do thay vì im lặng.
+3. **Cây cấu trúc (thẻ Cấu trúc bên trái):** Xuất hiện biểu tượng ổ khoá 🔒 ngay cạnh tên khối.
+4. **Bảng thuộc tính bên phải:** Trên cùng bảng thuộc tính luôn có dải thông báo màu be (`butter-cream`) nêu rõ khối đang bị khoá những thao tác gì (không xoá / không đổi chỗ / không nhân bản) cùng lý do cụ thể.
+
+#### 2. Ai được quyền mở khoá?
+
+- **Chỉ Chủ tài khoản (`owner`):** Mới có quyền bấm nút **"Mở khoá"** để chủ động di chuyển hoặc sắp xếp lại bố cục khối.
+- **Người biên tập (`editor`):** Chỉ thấy thông báo _"Chỉ chủ tài khoản mở khoá được khối này"_ và không thể bấm mở khoá.
+
+#### 3. Cách mở khoá và xác nhận an toàn
+
+1. Chọn khối đang khoá (ví dụ khối Hero 2 lối vào trên trang chủ).
+2. Bấm nút **"Mở khoá"** trên thanh thao tác nổi hoặc trên dải thông báo màu be bên phải.
+3. Một hộp thoại xác nhận an toàn sẽ hiện ra, giải thích rõ:
+   - Thao tác mở khoá **chỉ có hiệu lực tạm thời trong phiên chỉnh sửa hiện tại**.
+   - Khi tải lại trang (reload) hoặc đóng trình duyệt, khối sẽ tự động khoá bảo vệ trở lại.
+   - Nhắc nhở quy tắc bắt buộc: _"Trang chủ vẫn phải còn ít nhất 1 Hero 2 lối vào khi lưu."_
+4. Bấm **"Mở khoá"** trong hộp thoại:
+   - Khối chuyển sang trạng thái **🔓 Đang mở khoá**.
+   - Hana có thể dùng phím tắt `Alt + ↓` / `Alt + ↑` hoặc các nút mũi tên để đổi vị trí khối theo ý muốn (ví dụ: đưa khối Hero xuống dưới một khối khác khi sắp đặt lại chiến dịch).
+   - Nếu muốn khoá lại ngay lập tức mà không cần chờ tải lại trang, Hana bấm nút **"Khoá lại"**.
+
+#### 4. Quy tắc an toàn bắt buộc khi mở khoá
+
+- **Bảo vệ khối bắt buộc duy nhất:** Dù đang trong trạng thái mở khoá, nếu Hana cố tình xoá khối Hero 2 lối vào **duy nhất** trên trang chủ (hoặc khối Chân trang pháp lý duy nhất ở chân trang), trình soạn thảo sẽ lập tức chặn lại và hiện thông báo nhắc nhở, ngăn không để trang chủ bị mất cửa ngõ đón khách.
+- **Khối HTML khoá bởi Thiết kế hệ thống:** Không thể mở khoá tạm thời trong trình soạn thảo. Muốn chỉnh sửa khối này, Chủ tài khoản cần vào **Admin → Thiết kế hệ thống** để bật công tắc cho phép.
 
 ---
 

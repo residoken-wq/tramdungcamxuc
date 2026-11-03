@@ -14,21 +14,17 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
 
       const migrated = applyPuckMigrations(puckData)
       for (const block of migrated.content) {
-        if (
-          block.type === 'HeroImage' ||
-          block.type === 'QuoteBlock' ||
-          block.type === 'TestimonialGrid'
-        ) {
+        if (block.type === 'QuoteBlock' || block.type === 'TestimonialGrid') {
           expect((block.props as { version?: number }).version).toBe(2)
         }
         if (
           block.type === 'PackageComparison' ||
           block.type === 'StatsBar' ||
-          block.type === 'HeroTwoEntries'
+          block.type === 'HeroImage'
         ) {
           expect((block.props as { version?: number }).version).toBe(3)
         }
-        if (block.type === 'FAQ') {
+        if (block.type === 'HeroTwoEntries' || block.type === 'FAQ') {
           expect((block.props as { version?: number }).version).toBe(4)
         }
       }
@@ -152,12 +148,12 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
     expect(itemProps.icon).toBe('heart')
 
     const hero = migrated.content.find((b) => b.props.id === 'hero-custom')
-    expect(hero?.props.version).toBe(3)
+    expect(hero?.props.version).toBe(4)
     expect(hero?.props.entryStyle).toBe('cards')
     expect(hero?.props.entry1Title).toBe('Cá nhân tùy chỉnh')
 
     const heroImg = migrated.content.find((b) => b.props.id === 'hero-img-custom')
-    expect(heroImg?.props.version).toBe(2)
+    expect(heroImg?.props.version).toBe(3)
     expect(heroImg?.props.secondaryButtonText).toBe('Khám phá ngay')
     expect(heroImg?.props.secondaryButtonLink).toBe('/kham-pha')
     expect((heroImg?.props.badges as Array<{ text?: string }>)[0].text).toBe('Mới')

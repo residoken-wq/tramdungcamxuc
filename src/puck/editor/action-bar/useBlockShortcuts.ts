@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react'
 import { usePuck, type ComponentData } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { useContextMenu } from '@/puck/editor/context-menu/context-menu-context'
+import { canDoBlockAction, isLastRequiredBlock } from '@/puck/locks'
+import { useLockContext } from '@/puck/editor/lock/lock-context'
 import {
   getMoveStatus,
   getMoveUpIndex,
@@ -15,6 +17,7 @@ export function useBlockShortcuts() {
   const { appState, dispatch, selectedItem, getPermissions, getSelectorForId, getParentById } =
     usePuck()
   const { showToast } = useContextMenu()
+  const { pageSlug, pageKind, getBlockInfo, isUnlocked } = useLockContext()
 
   // Keep latest references for event listener without re-attaching listeners
   const stateRef = useRef({
@@ -25,6 +28,10 @@ export function useBlockShortcuts() {
     getSelectorForId,
     getParentById,
     showToast,
+    pageSlug,
+    pageKind,
+    getBlockInfo,
+    isUnlocked,
   })
 
   useEffect(() => {
@@ -36,6 +43,10 @@ export function useBlockShortcuts() {
       getSelectorForId,
       getParentById,
       showToast,
+      pageSlug,
+      pageKind,
+      getBlockInfo,
+      isUnlocked,
     }
   })
 
@@ -49,6 +60,10 @@ export function useBlockShortcuts() {
         getSelectorForId: currentGetSelectorForId,
         getParentById: currentGetParentById,
         showToast: currentShowToast,
+        pageSlug: currentPageSlug,
+        pageKind: currentPageKind,
+        getBlockInfo: currentGetBlockInfo,
+        isUnlocked: currentIsUnlocked,
       } = stateRef.current
 
       if (!currentItem) return
@@ -70,23 +85,29 @@ export function useBlockShortcuts() {
         }
       }
 
+      const lockInfo = currentGetBlockInfo(currentItem.type)
+      const unlocked = itemId ? currentIsUnlocked(itemId) : false
+      const isLocked = Boolean(lockInfo.locked && !unlocked)
+
       const permissions =
         currentItem && currentGetPermissions
           ? currentGetPermissions({ item: currentItem })
           : undefined
-      const canDuplicate = permissions ? permissions.duplicate !== false : true
-      const canDelete = permissions ? permissions.delete !== false : true
+      const canDrag = canDoBlockAction('drag', lockInfo, unlocked, permissions)
+      const canDuplicate = canDoBlockAction('duplicate', lockInfo, unlocked, permissions)
+      const canDelete = canDoBlockAction('delete', lockInfo, unlocked, permissions)
 
-      const moveStatus = getMoveStatus(
-        currentAppState.data,
-        selector,
-        permissions ? permissions.drag !== false : true,
-      )
+      const moveStatus = getMoveStatus(currentAppState.data, selector, canDrag)
 
       // 1. Alt+ArrowUp: Move Up
       if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.key === 'ArrowUp') {
         e.preventDefault()
         e.stopPropagation()
+
+        if (!canDrag) {
+          currentShowToast(lockInfo.reason || vi.eb13a.alreadyAtTop)
+          return
+        }
 
         if (!selector || !moveStatus.canMoveUp) {
           currentShowToast(vi.eb13a.alreadyAtTop)
@@ -117,6 +138,11 @@ export function useBlockShortcuts() {
       if (e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.key === 'ArrowDown') {
         e.preventDefault()
         e.stopPropagation()
+
+        if (!canDrag) {
+          currentShowToast(lockInfo.reason || vi.eb13a.alreadyAtBottom)
+          return
+        }
 
         if (!selector || !moveStatus.canMoveDown) {
           currentShowToast(vi.eb13a.alreadyAtBottom)
@@ -174,7 +200,7 @@ export function useBlockShortcuts() {
         e.stopPropagation()
 
         if (!canDuplicate) {
-          currentShowToast(vi.eb13a.cannotDuplicateLocked)
+          currentShowToast(lockInfo.reason || vi.eb13a.cannotDuplicateLocked)
           return
         }
 
@@ -195,11 +221,30 @@ export function useBlockShortcuts() {
         e.stopPropagation()
 
         if (!canDelete) {
-          currentShowToast(vi.eb13a.cannotDeleteLocked)
+          currentShowToast(lockInfo.reason || vi.eb13a.cannotDeleteLocked)
           return
         }
 
         if (!selector) return
+
+        // REVIEW-REQUIRED: Chặn xoá khối bắt buộc cuối cùng ngay ở editor
+        if (
+          isLastRequiredBlock(
+            currentAppState.data,
+            currentItem.type,
+            currentPageSlug,
+            currentPageKind,
+          )
+        ) {
+          if (currentItem.type === 'HeroTwoEntries') {
+            currentShowToast(vi.eb14b.cannotDeleteLastHero)
+          } else if (currentItem.type === 'LegalFooter') {
+            currentShowToast(vi.eb14b.cannotDeleteLastLegalFooter)
+          } else {
+            currentShowToast(vi.eb14b.cannotDeleteLastRequired)
+          }
+          return
+        }
 
         currentDispatch({
           type: 'remove',

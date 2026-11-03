@@ -38,8 +38,9 @@ import { EditorToolbar } from '@/puck/editor/EditorToolbar'
 import { StylePanelProvider } from '@/puck/editor/style-context'
 import { FieldsWithTabs, tabFieldTypes } from '@/puck/editor/StylePanelTabs'
 import { StylePreview } from '@/puck/editor/StylePreview'
-import { DEFAULT_DESIGN_SYSTEM, type CleanDesignSystem } from '@/lib/design/design-system'
+import { DEFAULT_DESIGN_SYSTEM, isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
 import { ContextMenuProvider } from '@/puck/editor/context-menu/context-menu-context'
+import { LockProvider } from '@/puck/editor/lock/lock-context'
 import { BlockContextMenu } from '@/puck/editor/context-menu/BlockContextMenu'
 import { ContextMenuOverlay } from '@/puck/editor/context-menu/ContextMenuOverlay'
 import { ToastNotification } from '@/puck/editor/context-menu/ToastNotification'
@@ -1021,6 +1022,7 @@ export function PuckEditorClient({
   const [feedback, setFeedback] = useState<Feedback>({ type: 'idle', message: '' })
   const [docStatus, setDocStatus] = useState<string>(initialStatus)
   const [previewVersion, setPreviewVersion] = useState<PreviewVersionState | null>(null)
+  const [unlockedBlockIds, setUnlockedBlockIds] = useState<Set<string>>(() => new Set())
   // QA EB-08c: while a version is previewed its data must not reach autosave (it would overwrite
   // the draft being edited 30 s later).
   const previewingRef = useRef(false)
@@ -1033,9 +1035,15 @@ export function PuckEditorClient({
   // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage, owner checks, kind)
   const config = useMemo(() => {
     return typeof getPuckConfig === 'function'
-      ? getPuckConfig({ pageSlug, isOwner, designSystem, kind: pageKind })
+      ? getPuckConfig({
+          pageSlug,
+          isOwner,
+          designSystem,
+          kind: pageKind,
+          isBlockUnlocked: (id) => unlockedBlockIds.has(id),
+        })
       : puckConfig
-  }, [pageSlug, isOwner, designSystem, pageKind])
+  }, [pageSlug, isOwner, designSystem, pageKind, unlockedBlockIds])
 
   // Setup Autosave Controller with useState initializer (pure, runs once, stable instance)
   const [autosaveController] = useState(() => {
@@ -1076,97 +1084,110 @@ export function PuckEditorClient({
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [autosaveController])
 
+  const htmlLocked = Boolean(designSystem && !isOpen(designSystem, 'customCss'))
+
   return (
     <StylePanelProvider ds={designSystem} isOwner={isOwner}>
       <ContextMenuProvider>
-        <EditorContext.Provider
-          value={{
-            pageId,
-            pageTitle,
-            pageSlug,
-            pageKind,
-            currentStatus: docStatus,
-            onStatusChange: setDocStatus,
-            feedback,
-            setFeedback,
-            autosaveController,
-            previewVersion,
-            setPreviewVersion: setPreviewVersionTracked,
-          }}
+        <LockProvider
+          pageSlug={pageSlug}
+          pageKind={pageKind}
+          isOwner={isOwner}
+          htmlLocked={htmlLocked}
+          unlockedBlockIds={unlockedBlockIds}
+          setUnlockedBlockIds={setUnlockedBlockIds}
         >
-          <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
-            {/* Top Banner Navigation */}
-            <header className="bg-deep-navy text-white px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm shadow-md z-20">
-              <div className="flex items-center gap-3">
-                <Link
-                  href={`/admin/collections/pages/${pageId}`}
-                  className="inline-flex items-center gap-1 text-white/80 hover:text-white transition font-ui font-semibold"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                  <span>Quản trị CMS</span>
-                </Link>
-                <span className="text-white/30">|</span>
-                <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">{pageTitle}</span>
-                {pageKind !== 'page' && (
-                  <span className="px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider bg-lavender-mist text-deep-navy border border-bright-magenta/20">
-                    {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge}
+          <EditorContext.Provider
+            value={{
+              pageId,
+              pageTitle,
+              pageSlug,
+              pageKind,
+              currentStatus: docStatus,
+              onStatusChange: setDocStatus,
+              feedback,
+              setFeedback,
+              autosaveController,
+              previewVersion,
+              setPreviewVersion: setPreviewVersionTracked,
+            }}
+          >
+            <div className="h-screen w-screen flex flex-col overflow-hidden bg-warm-ivory">
+              {/* Top Banner Navigation */}
+              <header className="bg-deep-navy text-white px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm shadow-md z-20">
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={`/admin/collections/pages/${pageId}`}
+                    className="inline-flex items-center gap-1 text-white/80 hover:text-white transition font-ui font-semibold"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                    <span>Quản trị CMS</span>
+                  </Link>
+                  <span className="text-white/30">|</span>
+                  <span className="font-ui font-bold truncate max-w-xs sm:max-w-md">
+                    {pageTitle}
                   </span>
+                  {pageKind !== 'page' && (
+                    <span className="px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider bg-lavender-mist text-deep-navy border border-bright-magenta/20">
+                      {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge}
+                    </span>
+                  )}
+                  <span
+                    className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
+                      docStatus === 'published'
+                        ? 'bg-mint-haze text-deep-navy'
+                        : 'bg-soft-pink text-deep-navy'
+                    }`}
+                  >
+                    {docStatus === 'published' ? 'Đã xuất bản' : 'Bản nháp'}
+                  </span>
+                </div>
+
+                {pageKind === 'page' ? (
+                  <div className="text-white/70 font-ui text-xs hidden sm:block">
+                    Đường dẫn:{' '}
+                    <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
+                  </div>
+                ) : (
+                  <div className="text-white/70 font-ui text-xs hidden sm:block">
+                    {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge} toàn site
+                  </div>
                 )}
-                <span
-                  className={`px-2 py-0.5 rounded text-[11px] font-ui font-bold uppercase tracking-wider ${
-                    docStatus === 'published'
-                      ? 'bg-mint-haze text-deep-navy'
-                      : 'bg-soft-pink text-deep-navy'
-                  }`}
-                >
-                  {docStatus === 'published' ? 'Đã xuất bản' : 'Bản nháp'}
-                </span>
+              </header>
+
+              {/* Puck Editor Container */}
+              <div className="flex-1 min-h-0 relative">
+                <Puck
+                  config={config}
+                  data={initialData}
+                  viewports={brandViewports}
+                  dictionary={puckVietnameseDictionary}
+                  iframe={{
+                    enabled: true,
+                    waitForStyles: true,
+                  }}
+                  overrides={editorOverrides}
+                  plugins={editorPlugins}
+                  onChange={(data) => {
+                    if (previewingRef.current) return
+                    autosaveController.setData(data)
+                  }}
+                  onAction={(_action) => {
+                    // Action handler hook if needed
+                  }}
+                />
               </div>
-
-              {pageKind === 'page' ? (
-                <div className="text-white/70 font-ui text-xs hidden sm:block">
-                  Đường dẫn:{' '}
-                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-white">{pageSlug}</code>
-                </div>
-              ) : (
-                <div className="text-white/70 font-ui text-xs hidden sm:block">
-                  {pageKind === 'header' ? vi.eb10.headerBadge : vi.eb10.footerBadge} toàn site
-                </div>
-              )}
-            </header>
-
-            {/* Puck Editor Container */}
-            <div className="flex-1 min-h-0 relative">
-              <Puck
-                config={config}
-                data={initialData}
-                viewports={brandViewports}
-                dictionary={puckVietnameseDictionary}
-                iframe={{
-                  enabled: true,
-                  waitForStyles: true,
-                }}
-                overrides={editorOverrides}
-                plugins={editorPlugins}
-                onChange={(data) => {
-                  if (previewingRef.current) return
-                  autosaveController.setData(data)
-                }}
-                onAction={(_action) => {
-                  // Action handler hook if needed
-                }}
-              />
             </div>
-          </div>
-          <ToastNotification />
-        </EditorContext.Provider>
+            <ToastNotification />
+          </EditorContext.Provider>
+        </LockProvider>
       </ContextMenuProvider>
     </StylePanelProvider>
   )

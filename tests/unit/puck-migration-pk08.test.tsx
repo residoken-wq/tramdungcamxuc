@@ -70,10 +70,10 @@ describe('PK-08: HeroTwoEntries v2 -> v3 (entries slot of EntryCard)', () => {
     const out = normalizePuckData(data([columns], { 'x:zone': [v1] }))
     const nested = (out.content[0].props as { col1: Array<{ props: Record<string, unknown> }> })
       .col1[0].props
-    expect(nested.version).toBe(3)
+    expect(nested.version).toBe(4)
     expect(Array.isArray(nested.entries)).toBe(true)
     const zoned = (out.zones?.['x:zone']?.[0]?.props ?? {}) as Record<string, unknown>
-    expect(zoned.version).toBe(3)
+    expect(zoned.version).toBe(4)
   })
 
   it('drops empty legacy entries and is idempotent', () => {

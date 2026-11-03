@@ -1,4 +1,4 @@
-import type { Data, Permissions } from '@puckeditor/core'
+import type { Permissions } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { walkPuckItemsSync } from './walk'
 
@@ -45,30 +45,215 @@ export function isHomepageSlug(slug: string): boolean {
   return normalized === '' || normalized === 'trang-chu'
 }
 
+export type BlockAction = 'drag' | 'duplicate' | 'delete' | 'edit'
+
+export type BlockLockInfoParams = {
+  type?: string
+  pageSlug?: string
+  kind?: string
+  htmlLocked?: boolean
+}
+
+export type BlockLockInfo = {
+  locked: boolean
+  blocked: BlockAction[]
+  reason: string
+  canUnlock: boolean
+  /** QA EB-14bc: actions that stay blocked even after a manual unlock (server rules). */
+  keepWhenUnlocked?: BlockAction[]
+}
+
+/**
+ * Nguồn luật khoá duy nhất cho các khối trong hệ thống:
+ * - Hero 2 lối vào trên trang chủ: không xoá, không đổi chỗ, không nhân bản (có thể mở khoá thủ công).
+ * - Chân trang pháp lý: không xoá, ở footer không nhân bản (có thể mở khoá thủ công).
+ * - Khối HTML khi Thiết kế hệ thống đang khoá: không sửa (không thể mở khoá ở đây).
+ */
+export function getBlockLockInfo({
+  type,
+  pageSlug = '',
+  kind = 'page',
+  htmlLocked = false,
+}: BlockLockInfoParams): BlockLockInfo {
+  if (type === 'HeroTwoEntries' && isHomepageSlug(pageSlug)) {
+    return {
+      locked: true,
+      blocked: ['drag', 'duplicate', 'delete'],
+      reason: vi.eb14b.reasonHeroHomepage,
+      canUnlock: true,
+    }
+  }
+
+  if (type === 'Footer' || type === 'LegalFooter') {
+    if (kind === 'footer') {
+      return {
+        locked: true,
+        blocked: ['delete', 'duplicate'],
+        reason: vi.eb14b.reasonLegalFooter,
+        canUnlock: true,
+        // The footer must keep exactly one LegalFooter (validatePageKindBlocks): a copy could
+        // never be saved.
+        keepWhenUnlocked: ['duplicate'],
+      }
+    }
+    return {
+      locked: true,
+      blocked: ['delete'],
+      reason: vi.eb14b.reasonLegalFooter,
+      canUnlock: true,
+    }
+  }
+
+  if (type === 'HtmlWidget' && htmlLocked) {
+    return {
+      locked: true,
+      blocked: ['edit'],
+      reason: vi.eb14b.reasonHtmlLocked,
+      canUnlock: false,
+    }
+  }
+
+  return {
+    locked: false,
+    blocked: [],
+    reason: '',
+    canUnlock: false,
+  }
+}
+
 /**
  * Kiểm tra xem một khối có bị khóa quyền trong Puck editor dựa trên component type và slug trang không.
  */
 export function getLockedComponentPermissions(
   componentType: string,
-  pageSlug: string,
+  pageSlug: string = '',
+  options?: { kind?: string; htmlLocked?: boolean },
 ): Partial<Permissions> | undefined {
+  const info = getBlockLockInfo({
+    type: componentType,
+    pageSlug,
+    kind: options?.kind,
+    htmlLocked: options?.htmlLocked,
+  })
+
+  if (!info.locked) {
+    return undefined
+  }
+
+  const perms: Partial<Permissions> = {}
+  for (const b of info.blocked) {
+    perms[b] = false
+  }
+
   if (isHomepageSlug(pageSlug) && componentType === 'HeroTwoEntries') {
-    return {
-      drag: false,
-      duplicate: false,
-      delete: false,
-      edit: true,
-    }
+    perms.edit = true
   }
 
-  // Khối chân trang pháp lý không được xóa (EB-10 & T1-04)
-  if (componentType === 'Footer' || componentType === 'LegalFooter') {
-    return {
-      delete: false,
-    }
+  return perms
+}
+
+/**
+ * REVIEW-REQUIRED: Quyết định quyền thao tác khối trong Puck editor dựa trên quyền khoá và trạng thái mở khoá thủ công của owner.
+ * - id trong danh sách mở khoá → quyền mở;
+ * - không có → quyền khoá;
+ * - owner = false thì luôn khoá.
+ */
+export function resolveComponentPermissions(params: {
+  type: string
+  id?: string
+  pageSlug?: string
+  kind?: string
+  htmlLocked?: boolean
+  isOwner?: boolean
+  unlockedBlockIds?: ReadonlySet<string> | string[]
+}): Partial<Permissions> | undefined {
+  const {
+    type,
+    id,
+    pageSlug = '',
+    kind = 'page',
+    htmlLocked = false,
+    isOwner = false,
+    unlockedBlockIds,
+  } = params
+
+  const lockInfo = getBlockLockInfo({ type, pageSlug, kind, htmlLocked })
+  if (!lockInfo.locked) {
+    return undefined
   }
 
-  return undefined
+  const isUnlocked = Boolean(
+    isOwner &&
+    lockInfo.canUnlock &&
+    id &&
+    (unlockedBlockIds instanceof Set
+      ? unlockedBlockIds.has(id)
+      : Array.isArray(unlockedBlockIds)
+        ? unlockedBlockIds.includes(id)
+        : false),
+  )
+
+  if (isUnlocked) {
+    const perms: Partial<Permissions> = { drag: true, duplicate: true, delete: true, edit: true }
+    for (const b of lockInfo.keepWhenUnlocked ?? []) perms[b] = false
+    return perms
+  }
+
+  const perms: Partial<Permissions> = {}
+  for (const b of lockInfo.blocked) {
+    perms[b] = false
+  }
+  if (isHomepageSlug(pageSlug) && type === 'HeroTwoEntries') {
+    perms.edit = true
+  }
+  return perms
+}
+
+/**
+ * REVIEW-REQUIRED: QA EB-14bc – the one rule the action bar, shortcuts and context menu use to
+ * decide whether an action is allowed on the selected block.
+ */
+export function canDoBlockAction(
+  action: Exclude<BlockAction, 'edit'>,
+  lockInfo: BlockLockInfo | undefined,
+  unlocked: boolean,
+  permissions: Partial<Permissions> | undefined,
+): boolean {
+  if (lockInfo?.locked) {
+    if (!unlocked) return !lockInfo.blocked.includes(action)
+    return !(lockInfo.keepWhenUnlocked ?? []).includes(action)
+  }
+  return permissions ? permissions[action] !== false : true
+}
+
+/**
+ * REVIEW-REQUIRED: Kiểm tra xem một khối có phải là khối bắt buộc duy nhất còn lại không.
+ * - Trang chủ: HeroTwoEntries (bắt buộc ít nhất 1)
+ * - Chân trang (kind='footer'): LegalFooter (bắt buộc đúng 1)
+ */
+export function isLastRequiredBlock(
+  data: unknown,
+  type: string,
+  pageSlug: string = '',
+  kind: string = 'page',
+): boolean {
+  if (isHomepageSlug(pageSlug) && type === 'HeroTwoEntries') {
+    let count = 0
+    walkPuckItemsSync(data, (item) => {
+      if (item?.type === 'HeroTwoEntries') count++
+    })
+    return count <= 1
+  }
+
+  if (kind === 'footer' && type === 'LegalFooter') {
+    let count = 0
+    walkPuckItemsSync(data, (item) => {
+      if (item?.type === 'LegalFooter') count++
+    })
+    return count <= 1
+  }
+
+  return false
 }
 
 /**

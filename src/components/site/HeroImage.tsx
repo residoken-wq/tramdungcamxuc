@@ -8,6 +8,17 @@ import {
   type TextColorOption,
 } from '@/lib/brand/format-classes'
 import { HeroStatItem } from './HeroStatItem'
+import { HeroBackdrop } from './HeroBackdrop'
+import {
+  heroBackdropColors,
+  type HeroLayout,
+  type HeroOverlayTone,
+  type HeroOverlayStrength,
+  type HeroImageBlur,
+  type HeroImagePosition,
+  type HeroContentAlign,
+  type HeroMinHeight,
+} from '@/lib/brand/hero-backdrop'
 
 export interface HeroStat {
   value: string
@@ -40,6 +51,13 @@ export interface HeroImageProps {
   statLabelSize?: FontSizeOption
   titleSize?: FontSizeOption
   priority?: boolean
+  layout?: HeroLayout
+  overlayTone?: HeroOverlayTone
+  overlayStrength?: HeroOverlayStrength
+  imageBlur?: HeroImageBlur
+  imagePosition?: HeroImagePosition
+  contentAlign?: HeroContentAlign
+  minHeight?: HeroMinHeight
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -88,9 +106,17 @@ export function HeroImage({
   statLabelSize,
   titleSize = 'md',
   priority,
+  layout = 'split',
+  overlayTone = 'dark',
+  overlayStrength = 'lg',
+  imageBlur = 'none',
+  imagePosition = 'center',
+  contentAlign = 'center',
+  minHeight = 'lg',
   bgColor = 'warm-ivory',
   padding = 'md',
 }: HeroImageProps) {
+  const isBackdrop = layout === 'backdrop'
   const isDeepNavy = bgColor === 'deep-navy'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -98,13 +124,21 @@ export function HeroImage({
   const secondaryButtonSafeHref = safeHref(secondaryButtonLink)
   const hasValidImage = Boolean(imageUrl && imageAlt && imageAlt.trim().length > 0)
 
+  const effectiveBg = isBackdrop
+    ? hasValidImage
+      ? overlayTone === 'light'
+        ? 'warm-ivory'
+        : 'deep-navy'
+      : bgColor
+    : bgColor
+
   const normalizedBadges = (badges || [])
     .map((b) => (typeof b === 'string' ? b : b?.text || ''))
     .filter(Boolean)
 
   // A colour picked for another background falls back to automatic (WCAG AA on the current one).
   const safeStatColor = (color: TextColorOption | undefined, large: boolean) =>
-    color && allowedTextColors(bgColor, large).some((opt) => opt.value === color)
+    color && allowedTextColors(effectiveBg, large).some((opt) => opt.value === color)
       ? color
       : undefined
 
@@ -112,6 +146,142 @@ export function HeroImage({
 
   const hasPrimaryButton = Boolean(buttonSafeHref && buttonText)
   const hasSecondaryButton = Boolean(secondaryButtonSafeHref && secondaryButtonText)
+
+  if (isBackdrop) {
+    const backdropColors = hasValidImage ? heroBackdropColors(overlayTone) : null
+    const bSeriesLabelColor = backdropColors
+      ? backdropColors.seriesLabel
+      : isDeepNavy
+        ? 'text-soft-pink'
+        : 'text-bright-magenta'
+    const bTitle1Color = backdropColors
+      ? backdropColors.titleLine1
+      : isDeepNavy
+        ? 'text-white'
+        : 'text-deep-navy'
+    const bTitle2Color = backdropColors
+      ? backdropColors.titleLine2
+      : isDeepNavy
+        ? 'text-soft-pink'
+        : 'text-bright-magenta'
+    const bEmotionColor = backdropColors
+      ? backdropColors.emotionLine
+      : isDeepNavy
+        ? 'text-white/90'
+        : 'text-deep-navy/85'
+    const bChipClass = backdropColors
+      ? backdropColors.chip
+      : isDeepNavy
+        ? 'bg-white/10 text-white border border-white/20'
+        : 'bg-soft-pink text-deep-navy border border-soft-pink'
+    const bSecondaryBtnClass = backdropColors
+      ? backdropColors.secondaryButton
+      : isDeepNavy
+        ? 'text-white border-white/40 hover:bg-white/10'
+        : ''
+
+    const alignClass =
+      contentAlign === 'left' ? 'text-left items-start' : 'text-center items-center'
+    const alignJustifyClass = contentAlign === 'left' ? 'justify-start' : 'justify-center'
+
+    return (
+      <HeroBackdrop
+        imageUrl={imageUrl}
+        imageAlt={imageAlt}
+        overlayTone={overlayTone}
+        overlayStrength={overlayStrength}
+        imageBlur={imageBlur}
+        imagePosition={imagePosition}
+        contentAlign={contentAlign}
+        minHeight={minHeight}
+        bgColor={bgColor}
+        padding={padding}
+        priority={priority}
+      >
+        <div className={`flex flex-col ${alignClass} w-full`}>
+          {seriesLabel && (
+            <span
+              className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
+            >
+              {seriesLabel}
+            </span>
+          )}
+
+          <h1
+            className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+          >
+            <span className={bTitle1Color}>{titleLine1}</span>{' '}
+            <span className={bTitle2Color}>{titleLine2}</span>
+          </h1>
+
+          {emotionLine && (
+            <p
+              className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
+            >
+              {emotionLine}
+            </p>
+          )}
+
+          {normalizedBadges.length > 0 && (
+            <div className={`mt-6 flex flex-wrap ${alignJustifyClass} gap-2 w-full`}>
+              {normalizedBadges.map((badge, idx) => (
+                <span
+                  key={idx}
+                  className={`inline-flex items-center px-3.5 py-1 rounded-full font-ui text-xs font-semibold ${bChipClass}`}
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {(hasPrimaryButton || hasSecondaryButton) && (
+            <div
+              className={`mt-8 flex flex-col sm:flex-row items-center ${alignJustifyClass} gap-4 w-full sm:w-auto`}
+            >
+              {hasPrimaryButton && (
+                <Button href={buttonSafeHref!} variant="primary" size="md">
+                  {buttonText}
+                </Button>
+              )}
+              {hasSecondaryButton && (
+                <Button
+                  href={secondaryButtonSafeHref!}
+                  variant="ghost"
+                  size="md"
+                  className={bSecondaryBtnClass}
+                >
+                  {secondaryButtonText}
+                </Button>
+              )}
+            </div>
+          )}
+
+          {normalizedStats.length > 0 && (
+            <div
+              className={`mt-8 pt-6 border-t w-full ${
+                effectiveBg === 'deep-navy' ? 'border-white/20' : 'border-deep-navy/10'
+              }`}
+            >
+              <div className={`flex flex-wrap items-center ${alignJustifyClass} gap-8 sm:gap-12`}>
+                {normalizedStats.map((st, idx) => (
+                  <HeroStatItem
+                    key={idx}
+                    value={st.value}
+                    label={st.label}
+                    valueColor={safeStatColor(statValueColor, true)}
+                    labelColor={safeStatColor(statLabelColor, false)}
+                    valueSize={statValueSize}
+                    labelSize={statLabelSize}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </HeroBackdrop>
+    )
+  }
 
   return (
     <section
