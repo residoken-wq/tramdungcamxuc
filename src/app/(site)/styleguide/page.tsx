@@ -18,6 +18,7 @@ import { Sm03BlocksDemo } from './Sm03BlocksDemo'
 import { Sm04BlocksDemo } from './Sm04BlocksDemo'
 import { Sm05BlocksDemo } from './Sm05BlocksDemo'
 import { Sm06BlocksDemo } from './Sm06BlocksDemo'
+import { Eb14Demo } from './Eb14Demo'
 
 export const dynamic = 'force-dynamic'
 
@@ -484,6 +485,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <Sm06BlocksDemo />
+        </section>
+
+        {/* Section 13: EB-14a Hero Backdrop & Layout Demos */}
+        <section aria-labelledby="heading-eb14-blocks">
+          <h2
+            id="heading-eb14-blocks"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            13. Hero Ảnh Nền &amp; Bố Cục Thẻ Lối Vào (EB-14a [MẪU])
+          </h2>
+
+          <Eb14Demo />
         </section>
       </main>
 
