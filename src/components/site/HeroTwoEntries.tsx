@@ -5,6 +5,17 @@ import { safeHref } from '@/lib/safe-href'
 import { fontSizeClass, type FontSizeOption } from '@/lib/brand/format-classes'
 import { HeroEntryCard, type HeroEntryCardProps } from './HeroEntryCard'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
+import { HeroBackdrop } from './HeroBackdrop'
+import {
+  heroBackdropColors,
+  type HeroLayout,
+  type HeroOverlayTone,
+  type HeroOverlayStrength,
+  type HeroImageBlur,
+  type HeroImagePosition,
+  type HeroContentAlign,
+  type HeroMinHeight,
+} from '@/lib/brand/hero-backdrop'
 
 export interface HeroEntry {
   groupLabel?: string
@@ -26,6 +37,13 @@ export interface HeroTwoEntriesProps {
   imageUrl?: string
   imageAlt?: string
   priority?: boolean
+  layout?: HeroLayout
+  overlayTone?: HeroOverlayTone
+  overlayStrength?: HeroOverlayStrength
+  imageBlur?: HeroImageBlur
+  imagePosition?: HeroImagePosition
+  contentAlign?: HeroContentAlign
+  minHeight?: HeroMinHeight
   /** v1/v2 data (before the PK-08 migration runs). */
   entry1?: HeroEntry
   entry2?: HeroEntry
@@ -68,6 +86,13 @@ export function HeroTwoEntries({
   imageUrl,
   imageAlt,
   priority,
+  layout = 'split',
+  overlayTone = 'dark',
+  overlayStrength = 'lg',
+  imageBlur = 'none',
+  imagePosition = 'center',
+  contentAlign = 'center',
+  minHeight = 'lg',
   entry1,
   entry2,
   entries,
@@ -170,6 +195,88 @@ export function HeroTwoEntries({
         {renderCard(entry2, 'bg-lavender-mist', 'secondary')}
       </div>
     )
+
+  if (layout === 'backdrop') {
+    const backdropColors = hasValidImage ? heroBackdropColors(overlayTone) : null
+    const bSeriesLabelColor = backdropColors
+      ? backdropColors.seriesLabel
+      : isDeepNavy
+        ? 'text-soft-pink'
+        : 'text-bright-magenta'
+    const bTitle1Color = backdropColors
+      ? backdropColors.titleLine1
+      : isDeepNavy
+        ? 'text-white'
+        : 'text-deep-navy'
+    const bTitle2Color = backdropColors
+      ? backdropColors.titleLine2
+      : isDeepNavy
+        ? 'text-soft-pink'
+        : 'text-bright-magenta'
+    const bEmotionColor = backdropColors
+      ? backdropColors.emotionLine
+      : isDeepNavy
+        ? 'text-white/90'
+        : 'text-deep-navy/85'
+    const bDescColor = backdropColors
+      ? backdropColors.description
+      : isDeepNavy
+        ? 'text-white/90'
+        : 'text-deep-navy/80'
+
+    const alignClass =
+      contentAlign === 'left' ? 'text-left items-start' : 'text-center items-center'
+
+    return (
+      <HeroBackdrop
+        id={id}
+        imageUrl={imageUrl}
+        imageAlt={imageAlt}
+        overlayTone={overlayTone}
+        overlayStrength={overlayStrength}
+        imageBlur={imageBlur}
+        imagePosition={imagePosition}
+        contentAlign={contentAlign}
+        minHeight={minHeight}
+        bgColor={bgColor}
+        padding={padding}
+        priority={priority}
+      >
+        <div className={`flex flex-col ${alignClass} w-full`}>
+          {seriesLabel && (
+            <span
+              className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
+            >
+              {seriesLabel}
+            </span>
+          )}
+
+          <h1 className={titleClass}>
+            <span className={bTitle1Color}>{titleLine1}</span>{' '}
+            <span className={bTitle2Color}>{titleLine2}</span>
+          </h1>
+
+          {emotionLine && (
+            <p
+              className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
+            >
+              {emotionLine}
+            </p>
+          )}
+
+          {description && (
+            <p
+              className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${bDescColor}`}
+            >
+              {description}
+            </p>
+          )}
+        </div>
+
+        <div className="w-full mt-10 sm:mt-14">{entryCards}</div>
+      </HeroBackdrop>
+    )
+  }
 
   return (
     <section
