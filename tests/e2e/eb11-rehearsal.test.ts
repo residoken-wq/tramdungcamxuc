@@ -37,6 +37,11 @@ async function dragElement(
   await page.waitForTimeout(500)
 }
 
+/** EB-11ac: screenshots go to docs/ only when asked (EB11_SCREENSHOTS=1), so test runs leave the repo clean. */
+const shot = async (target: import('@playwright/test').Page, path: string) => {
+  if (process.env.EB11_SCREENSHOTS === '1') await target.screenshot({ path })
+}
+
 test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () => {
   test('Laptop đóng vai Hana: thực hiện đủ 8 việc qua giao diện builder, kiểm chứng trên trang công khai', async ({
     page,
@@ -210,9 +215,11 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         if (await createLink.isVisible().catch(() => false)) {
           await createLink.click()
         }
-        await page.waitForURL(/\/admin\/collections\/pages\/create/, { timeout: 10000 }).catch(async () => {
-          await page.goto('/admin/collections/pages/create')
-        })
+        await page
+          .waitForURL(/\/admin\/collections\/pages\/create/, { timeout: 10000 })
+          .catch(async () => {
+            await page.goto('/admin/collections/pages/create')
+          })
         await expect(page).toHaveURL(/\/admin\/collections\/pages\/create/)
         actions++
 
@@ -268,7 +275,9 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         // Tìm thẻ "Landing chiến dịch"
         const campaignHeading = templateModal.getByRole('heading', { name: 'Landing chiến dịch' })
         await expect(campaignHeading).toBeVisible()
-        const campaignTplCard = campaignHeading.locator('xpath=ancestor::div[contains(@class, "rounded-xl")][1]')
+        const campaignTplCard = campaignHeading.locator(
+          'xpath=ancestor::div[contains(@class, "rounded-xl")][1]',
+        )
         await expect(campaignTplCard).toBeVisible()
 
         page.once('dialog', (d) => d.accept())
@@ -291,7 +300,7 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         actions++
 
         // Chụp ảnh lại màn hình chỗ sửa tiêu đề
-        await page.screenshot({ path: 'docs/screenshots/eb11/viec-1-doi-tieu-de.png' })
+        await shot(page, 'docs/screenshots/eb11/viec-1-doi-tieu-de.png')
 
         // 10. Bấm "Xuất bản"
         const publishBtn = page.getByRole('button', { name: 'Xuất bản', exact: true })
@@ -299,9 +308,9 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await publishBtn.click()
         actions++
 
-        await expect(
-          page.getByRole('status').filter({ hasText: /Đã xuất bản/ }),
-        ).toBeVisible({ timeout: 15000 })
+        await expect(page.getByRole('status').filter({ hasText: /Đã xuất bản/ })).toBeVisible({
+          timeout: 15000,
+        })
 
         // 11. Kiểm tra thật trên trang công khai: tiêu đề mới hiển thị
         await page.goto(`/${landingSlug}`)
@@ -378,7 +387,9 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         actions++
 
         // Chuyển sang chỉnh cho Điện thoại (375): Cột dọc
-        const phoneViewportBtn = page.getByRole('button', { name: 'Điện thoại', exact: true }).first()
+        const phoneViewportBtn = page
+          .getByRole('button', { name: 'Điện thoại', exact: true })
+          .first()
         await phoneViewportBtn.click()
         actions++
 
@@ -388,7 +399,9 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         actions++
 
         // Chuyển lại máy tính
-        const desktopViewportBtn = page.getByRole('button', { name: 'Máy tính', exact: true }).first()
+        const desktopViewportBtn = page
+          .getByRole('button', { name: 'Máy tính', exact: true })
+          .first()
         await desktopViewportBtn.click()
         actions++
 
@@ -418,7 +431,9 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await chooseMediaBtn.click()
         actions++
 
-        const mediaRow = page.locator('tbody tr').filter({ hasText: sampleMedia1Alt, visible: true })
+        const mediaRow = page
+          .locator('tbody tr')
+          .filter({ hasText: sampleMedia1Alt, visible: true })
         await expect(mediaRow.first()).toBeVisible({ timeout: 10000 })
         await mediaRow.first().click()
         actions++
@@ -448,23 +463,29 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         }
 
         // 9. Xem trước trên điện thoại trong builder bằng nút ở thanh dưới
-        const toolbarMobileBtn = page.getByRole('button', { name: 'Điện thoại (375px)', exact: true })
+        const toolbarMobileBtn = page.getByRole('button', {
+          name: 'Điện thoại (375px)',
+          exact: true,
+        })
         await toolbarMobileBtn.click()
         actions++
         await page.waitForTimeout(500)
-        await page.screenshot({ path: 'docs/screenshots/eb11/viec-2-hai-cot-mobile.png' })
+        await shot(page, 'docs/screenshots/eb11/viec-2-hai-cot-mobile.png')
 
         // Quay lại desktop
-        const toolbarDesktopBtn = page.getByRole('button', { name: 'Máy tính (1440px)', exact: true })
+        const toolbarDesktopBtn = page.getByRole('button', {
+          name: 'Máy tính (1440px)',
+          exact: true,
+        })
         await toolbarDesktopBtn.click()
         actions++
 
         // 10. Xuất bản
         await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
         actions++
-        await expect(
-          page.getByRole('status').filter({ hasText: /Đã xuất bản/ }),
-        ).toBeVisible({ timeout: 15000 })
+        await expect(page.getByRole('status').filter({ hasText: /Đã xuất bản/ })).toBeVisible({
+          timeout: 15000,
+        })
 
         // 11. Kiểm tra thật trên trang công khai: 1440 cạnh nhau, 375 xếp chồng
         const pubContext = page
@@ -480,15 +501,18 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         const box1440Txt = await txtEl.boundingBox()
         expect(box1440Img).toBeTruthy()
         expect(box1440Txt).toBeTruthy()
-        // Cạnh nhau ở 1440: img ở bên trái txt, trục Y gần tương đương
-        expect(box1440Img!.x).toBeLessThan(box1440Txt!.x)
+        // Cạnh nhau ở 1440: hai cột lệch nhau theo X, cùng hàng theo Y. EB-11ac: thứ tự trái / phải
+        // tuỳ chỗ thả chuột (đề bài chỉ đòi 2 cột), nên không ép ảnh phải nằm bên trái.
+        expect(Math.abs(box1440Img!.x - box1440Txt!.x)).toBeGreaterThan(100)
         expect(Math.abs(box1440Img!.y - box1440Txt!.y)).toBeLessThan(60)
 
         // Đổi sang 375: xếp chồng dọc
         await pubContext.setViewportSize({ width: 375, height: 900 })
         await pubContext.reload()
         const box375Img = await pubContext.locator(`img[alt="${sampleMedia1Alt}"]`).boundingBox()
-        const box375Txt = await pubContext.getByText(/Nhập đoạn văn bản|Không gian lắng nghe/i).boundingBox()
+        const box375Txt = await pubContext
+          .getByText(/Nhập đoạn văn bản|Không gian lắng nghe/i)
+          .boundingBox()
         expect(box375Img).toBeTruthy()
         expect(box375Txt).toBeTruthy()
         // Xếp chồng ở 375: img ở trên txt
@@ -573,23 +597,29 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         actions++
 
         // 7. Giảm khoảng cách Trên / Dưới sang "sm" (Nhỏ / 16px)
-        const padTopSelect = page.getByLabel('Trên', { exact: true }).filter({ visible: true }).first()
+        const padTopSelect = page
+          .getByLabel('Trên', { exact: true })
+          .filter({ visible: true })
+          .first()
         await expect(padTopSelect).toBeVisible()
         await padTopSelect.selectOption('sm')
         actions++
 
-        const padBottomSelect = page.getByLabel('Dưới', { exact: true }).filter({ visible: true }).first()
+        const padBottomSelect = page
+          .getByLabel('Dưới', { exact: true })
+          .filter({ visible: true })
+          .first()
         await padBottomSelect.selectOption('sm')
         actions++
 
-        await page.screenshot({ path: 'docs/screenshots/eb11/viec-3-kieu-nang-cao.png' })
+        await shot(page, 'docs/screenshots/eb11/viec-3-kieu-nang-cao.png')
 
         // 8. Bấm "Xuất bản"
         await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
         actions++
-        await expect(
-          page.getByRole('status').filter({ hasText: /Đã xuất bản/ }),
-        ).toBeVisible({ timeout: 15000 })
+        await expect(page.getByRole('status').filter({ hasText: /Đã xuất bản/ })).toBeVisible({
+          timeout: 15000,
+        })
 
         // 9. Kiểm tra trang công khai: nền soft-pink, bo góc lớn, padding 375 khác 1440
         const wrapper = page.locator(`[data-eb-id="${containerComponentId}"]`)
@@ -680,7 +710,10 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await tab1Button.click()
         actions++
 
-        const tab1TitleInput = page.locator('input[name*="title"], input[id*="title"]').filter({ visible: true }).first()
+        const tab1TitleInput = page
+          .locator('input[name*="title"], input[id*="title"]')
+          .filter({ visible: true })
+          .first()
         await expect(tab1TitleInput).toBeVisible({ timeout: 5000 })
         await tab1TitleInput.fill('Cá nhân')
         hardSelectors.push('input[name="items.0.title"]')
@@ -691,7 +724,10 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await tab2Button.click()
         actions++
 
-        const tab2TitleInput = page.locator('input[name*="title"], input[id*="title"]').filter({ visible: true }).first()
+        const tab2TitleInput = page
+          .locator('input[name*="title"], input[id*="title"]')
+          .filter({ visible: true })
+          .first()
         await expect(tab2TitleInput).toBeVisible({ timeout: 5000 })
         await tab2TitleInput.fill('Doanh nghiệp')
         hardSelectors.push('input[name="items.1.title"]')
@@ -707,7 +743,10 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await expect(tab1Panel).toBeVisible({ timeout: 10000 })
         const t1Box = await tab1Panel.boundingBox()
         if (t1Box) {
-          await dragElement(page, textItem, { x: t1Box.x + t1Box.width / 2, y: t1Box.y + t1Box.height + 15 })
+          await dragElement(page, textItem, {
+            x: t1Box.x + t1Box.width / 2,
+            y: t1Box.y + t1Box.height + 15,
+          })
           actions++
         }
 
@@ -716,16 +755,19 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await expect(tab2Panel).toBeVisible({ timeout: 10000 })
         const t2Box = await tab2Panel.boundingBox()
         if (t2Box) {
-          await dragElement(page, textItem, { x: t2Box.x + t2Box.width / 2, y: t2Box.y + t2Box.height + 15 })
+          await dragElement(page, textItem, {
+            x: t2Box.x + t2Box.width / 2,
+            y: t2Box.y + t2Box.height + 15,
+          })
           actions++
         }
 
         // 6. Xuất bản
         await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
         actions++
-        await expect(
-          page.getByRole('status').filter({ hasText: /Đã xuất bản/ }),
-        ).toBeVisible({ timeout: 15000 })
+        await expect(page.getByRole('status').filter({ hasText: /Đã xuất bản/ })).toBeVisible({
+          timeout: 15000,
+        })
 
         // 7. Kiểm tra thật trên trang công khai: bấm tab đổi được nội dung
         await page.goto(`/${landingSlug}`)
@@ -745,7 +787,7 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await expect(tabBusiness).toHaveAttribute('aria-selected', 'true')
         await expect(tabIndividual).toHaveAttribute('aria-selected', 'false')
 
-        await page.screenshot({ path: 'docs/screenshots/eb11/viec-4-tabs-public.png' })
+        await shot(page, 'docs/screenshots/eb11/viec-4-tabs-public.png')
 
         testInfo.annotations.push({
           type: 'viec-4',
@@ -815,14 +857,14 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         // Kiểm tra cây Cấu trúc hiện tên mới
         await expect(tabRow).toContainText('Tab khách hàng')
 
-        await page.screenshot({ path: 'docs/screenshots/eb11/viec-5-navigator-rename.png' })
+        await shot(page, 'docs/screenshots/eb11/viec-5-navigator-rename.png')
 
         // 6. Xuất bản
         await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
         actions++
-        await expect(
-          page.getByRole('status').filter({ hasText: /Đã xuất bản/ }),
-        ).toBeVisible({ timeout: 15000 })
+        await expect(page.getByRole('status').filter({ hasText: /Đã xuất bản/ })).toBeVisible({
+          timeout: 15000,
+        })
 
         // 7. Kiểm tra thật trên trang công khai: 1440 hiện, 375 ẩn
         const tabWrapper = page.locator(`[data-eb-id="${tabsComponentId}"]`)
@@ -862,20 +904,24 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         actions++
 
         // 2. Mở toàn bộ bảng màu để thấy các trường HEX
-        const expandAllBtn = page.getByRole('button', { name: 'Hiển thị toàn bộ' })
-        if (await expandAllBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-          await expandAllBtn.click()
-          actions++
-        }
+        // EB-11ac: luôn mở đủ 8 hàng rồi mới chọn ô theo thứ tự – trước đây bước mở là tuỳ chọn, nên khi
+        // nút chưa kịp hiện thì `nth(2)` trỏ nhầm ô và test đỏ ngẫu nhiên.
+        const hexInputs = page.getByRole('textbox', { name: 'Màu (HEX) *' })
+        await expect(async () => {
+          const expandAllBtn = page.getByRole('button', { name: 'Hiển thị toàn bộ' })
+          if (await expandAllBtn.isVisible()) await expandAllBtn.click()
+          await expect(hexInputs).toHaveCount(8, { timeout: 1500 })
+        }).toPass({ timeout: 20000 })
+        actions++
 
         // 3. Nhập mã HEX #280A60 (tím đậm / deep-navy) cho token accent-pink (hàng thứ 3, index 2)
-        const pinkHexInput = page.getByRole('textbox', { name: 'Màu (HEX) *' }).nth(2)
+        const pinkHexInput = hexInputs.nth(2)
         await expect(pinkHexInput).toBeVisible({ timeout: 10000 })
         await pinkHexInput.fill('#280A60')
         hardSelectors.push('getByRole("textbox", { name: "Màu (HEX) *" }).nth(2)')
         actions++
 
-        await page.screenshot({ path: 'docs/screenshots/eb11/viec-6-doi-mau-nut.png' })
+        await shot(page, 'docs/screenshots/eb11/viec-6-doi-mau-nut.png')
 
         // 4. Bấm Lưu
         const saveDsBtn = page.getByRole('button', { name: 'Lưu', exact: true })
@@ -923,14 +969,18 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         const canvasLanding = page.frameLocator('iframe')
 
         // 2. Nhấp chuột phải vào Container 2 cột trên canvas
-        const containerBlock = canvasLanding.locator(`[data-puck-component="${containerComponentId}"]`)
+        const containerBlock = canvasLanding.locator(
+          `[data-puck-component="${containerComponentId}"]`,
+        )
         await expect(containerBlock).toBeVisible()
-        await containerBlock.click({ button: 'right', position: { x: 5, y: 5 } })
-        actions++
-
-        // 3. Chọn "Lưu thành mẫu" trong menu ngữ cảnh
+        // 3. Chọn "Lưu thành mẫu" trong menu ngữ cảnh. EB-11ac: menu chuột phải chỉ gắn sau khi canvas
+        // dựng xong (bài học EB-07) – thử lại thay vì bấm một lần ngay khi canvas vừa sẵn sàng.
         const contextMenu = page.getByRole('menu', { name: 'Tác vụ khối' })
-        await expect(contextMenu).toBeVisible()
+        await expect(async () => {
+          await containerBlock.click({ button: 'right', position: { x: 5, y: 5 } })
+          await expect(contextMenu).toBeVisible({ timeout: 1500 })
+        }).toPass({ timeout: 20000 })
+        actions++
         const saveTplItem = page.getByRole('menuitem', { name: 'Lưu thành mẫu' })
         await saveTplItem.click()
         actions++
@@ -958,13 +1008,18 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         })
 
         // 6. Mở tab "Mẫu" trên bảng bên trái
-        const templatesTab = page.getByRole('tab', { name: 'Mẫu', exact: true }).or(page.locator('button[data-tab="templates"]'))
+        const templatesTab = page
+          .getByRole('tab', { name: 'Mẫu', exact: true })
+          .or(page.locator('button[data-tab="templates"]'))
         await expect(templatesTab).toBeVisible()
         await templatesTab.click()
         actions++
 
         // 7. Tìm mẫu "[MẪU] Khung ảnh chữ" và bấm "Chèn"
-        const savedTemplateCard = page.locator('div').filter({ hasText: '[MẪU] Khung ảnh chữ' }).first()
+        const savedTemplateCard = page
+          .locator('div')
+          .filter({ hasText: '[MẪU] Khung ảnh chữ' })
+          .first()
         await expect(savedTemplateCard).toBeVisible({ timeout: 15000 })
 
         const insertBtn = savedTemplateCard.getByRole('button', { name: 'Chèn' })
@@ -972,19 +1027,21 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await insertBtn.click()
         actions++
 
-        await page.screenshot({ path: 'docs/screenshots/eb11/viec-7-chen-mau-khoi.png' })
+        await shot(page, 'docs/screenshots/eb11/viec-7-chen-mau-khoi.png')
 
         // 8. Bấm Xuất bản trang thử
         await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
         actions++
-        await expect(
-          page.getByRole('status').filter({ hasText: /Đã xuất bản/ }),
-        ).toBeVisible({ timeout: 15000 })
+        await expect(page.getByRole('status').filter({ hasText: /Đã xuất bản/ })).toBeVisible({
+          timeout: 15000,
+        })
 
         // 9. Kiểm tra thật trên trang công khai: có ảnh và đoạn văn từ mẫu chèn vào
         await page.goto(`/${samplePageSlug}`)
         await expect(page.locator(`img[alt="${sampleMedia1Alt}"]`)).toBeVisible({ timeout: 15000 })
-        await expect(page.getByText(/Nhập đoạn văn bản|Không gian lắng nghe/i)).toBeVisible({ timeout: 15000 })
+        await expect(page.getByText(/Nhập đoạn văn bản|Không gian lắng nghe/i)).toBeVisible({
+          timeout: 15000,
+        })
 
         testInfo.annotations.push({
           type: 'viec-7',
@@ -1038,7 +1095,7 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await expect(page.getByRole('button', { name: 'Lưu nháp', exact: true })).toBeDisabled()
         await expect(page.getByRole('button', { name: 'Xuất bản', exact: true })).toBeDisabled()
 
-        await page.screenshot({ path: 'docs/screenshots/eb11/viec-8-lich-su-phien-ban.png' })
+        await shot(page, 'docs/screenshots/eb11/viec-8-lich-su-phien-ban.png')
 
         // 6. Bấm "Thoát" trên banner để quay về bản mới nhất
         const exitPreviewBtn = previewBanner.getByRole('button', { name: 'Thoát' })
@@ -1070,9 +1127,11 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
 
       // Khôi phục designSystem nếu đã bị đổi
       if (initialDesignSystem) {
-        await page.request.post('/api/globals/designSystem', {
-          data: initialDesignSystem,
-        }).catch(() => {})
+        await page.request
+          .post('/api/globals/designSystem', {
+            data: initialDesignSystem,
+          })
+          .catch(() => {})
       }
 
       // Xóa các trang test đã tạo
