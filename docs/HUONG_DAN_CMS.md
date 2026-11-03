@@ -2606,6 +2606,7 @@ Khi bạn bấm chọn một khối cha:
 Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang (Header)** và **Chân trang (Footer)** toàn website bằng trình soạn thảo trực quan Puck mà không cần nhờ can thiệp vào code:
 
 #### 1. Cách tạo Đầu trang hoặc Chân trang mới
+
 1. Vào mục **Trang web** -> **Trang nội dung** -> bấm **Tạo mới**.
 2. Đặt tiêu đề (ví dụ: `Đầu trang chiến dịch hè` hoặc `Chân trang chính`).
 3. Ở cột bên phải (Sidebar), tìm ô **Loại trang**:
@@ -2617,6 +2618,7 @@ Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang
 5. Bấm nút **Chỉnh sửa trực quan** để mở trình kéo thả.
 
 #### 2. Chỉnh sửa trong trình soạn thảo trực quan
+
 - **Khung xem trước:** Trong trình soạn thảo, bên dưới Đầu trang (hoặc bên trên Chân trang) sẽ có một khung trang giả mờ để Hana dễ quan sát khoảng cách thực tế khi gắn vào website. Khung này hoàn toàn vô hình đối với độc giả.
 - **Cố định đầu trang khi cuộn (Sticky):** Nhấp chuột ra ngoài cùng (hoặc chọn tab Trang ở cột phải), trong mục **Cố định khi cuộn**, Hana có thể chọn:
   - _Không (cuộn bình thường)_: Thanh đầu trang trôi đi khi khách cuộn xuống.
@@ -2624,7 +2626,9 @@ Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang
 - **Thêm/sửa nút CTA và Menu:** Hana có thể thêm các nút bấm, widget ảnh, hoặc đổi màu nền của khung chứa Container.
 
 #### 3. Chuyển sang dùng trên toàn website
+
 Sau khi đã thiết kế xong và bấm **Xuất bản** trang đầu/chân trang:
+
 1. Vào menu bên trái: **Hệ thống** -> **Menu điều hướng**.
 2. Cuộn xuống nhóm **Đầu trang / chân trang** (ở dưới cùng):
    - **Nguồn đầu trang:** Chọn _Dựng bằng Builder_.
@@ -2634,12 +2638,15 @@ Sau khi đã thiết kế xong và bấm **Xuất bản** trang đầu/chân tra
 3. Bấm **Lưu thay đổi**. Ngay lập tức toàn bộ website sẽ chuyển sang hiển thị Đầu trang/Chân trang mới!
 
 #### 4. Quay lại bản code mặc định an toàn
+
 Nếu muốn quay lại giao diện lập trình mặc định ban đầu:
+
 - Trong **Menu điều hướng**, chuyển **Nguồn đầu trang** hoặc **Nguồn chân trang** về lại **Giao diện mặc định (Code)**.
 - Bấm **Lưu thay đổi**.
 - Nếu trang Builder được chọn bị chuyển về bản nháp (Draft) hoặc có lỗi dữ liệu, website cũng sẽ **tự động quay về bản code mặc định** để không bao giờ làm gián đoạn trải nghiệm của khách.
 
 #### 5. Vì sao không thể xoá khối "Chân trang pháp lý"?
+
 - Theo quy định bắt buộc của Bộ Công Thương Việt Nam và quy chuẩn thương hiệu Trạm Dừng Cảm Xúc, mọi trang web thương mại đều bắt buộc phải hiển thị công khai **6 liên kết pháp lý** (Điều khoản, Chính sách bảo mật, Giao hàng, Hoàn tiền, Đổi trả, Pháp lý) và thông tin đăng ký của Hana.
 - Do đó, khối **Chân trang pháp lý (LegalFooter)** trong Chân trang được cài đặt khóa bảo vệ vĩnh viễn:
   - Nút **Xoá** và nút **Nhân bản** của khối này bị vô hiệu hoá.
@@ -2653,6 +2660,7 @@ Nếu muốn quay lại giao diện lập trình mặc định ban đầu:
 Khi Hana nhấp chuột chọn bất kỳ khối nào trên khung soạn thảo (canvas), một **thanh thao tác nhanh nổi** (Action Bar) màu tím than thương hiệu sẽ hiện ngay trên mép khối giúp Hana sắp xếp và thao tác tức thì mà không cần kéo chuột vất vả:
 
 #### 1. Các nút trên thanh thao tác nổi
+
 - **Chọn khối cha**: Hiện ra khi Hana đang chọn một phần tử con (như Tiêu đề, Văn bản hoặc Nút bên trong Khung chứa Container / Cột). Nhấp nút này để lập tức chuyển vùng chọn sang Khung chứa cha bên ngoài để chỉnh lề hoặc đổi màu nền. Khối ngoài cùng (gốc trang) sẽ tự động ẩn nút này.
 - **Tên khối**: Hiển thị tên loại khối (hoặc tên gợi nhớ Hana đã đặt trong tab Nâng cao).
 - **↑ Lên / ↓ Xuống**: Đổi thứ tự khối lên trên hoặc xuống dưới trong cùng khung/vùng. Nếu khối đang nằm ở đầu hàng thì nút **↑** sẽ mờ đi; nếu đang ở cuối hàng thì nút **↓** sẽ mờ đi.
@@ -2660,15 +2668,20 @@ Khi Hana nhấp chuột chọn bất kỳ khối nào trên khung soạn thảo 
 - **Xoá (Biểu tượng thùng rác)**: Xoá khối đang chọn khỏi trang. (Khối bị khoá sẽ không có nút này).
 
 #### 2. Bộ phím tắt tiện lợi (khi đang chọn khối)
+
 Hana có thể dùng bàn phím để thao tác cực nhanh (khi con trỏ không nằm trong ô nhập chữ hoặc khung viết bài):
+
 - **Alt + ↑** (hoặc Option + ↑ trên Mac): Đổi chỗ khối lên trên.
 - **Alt + ↓** (hoặc Option + ↓ trên Mac): Đổi chỗ khối xuống dưới.
-- **Esc**: Chọn ngay khung cha bên ngoài (tương đương nút *Chọn khối cha*).
+- **Esc**: Chọn ngay khung cha bên ngoài (tương đương nút _Chọn khối cha_).
 - **Ctrl + D** (hoặc Cmd + D trên Mac): Nhân bản khối đang chọn.
 - **Delete**: Xoá khối đang chọn.
 
 #### 3. Chuột phải chính xác vào khối đang chọn
+
 Khi Hana đã chọn một khung chứa (ví dụ Container lớn có nhiều ảnh, chữ con bên trong), Hana chỉ cần nhấp chuột phải **ở bất kỳ đâu trong khung** (kể cả nhấp trúng ảnh hay chữ con) thì bảng menu tác vụ vẫn ưu tiên mở cho **chính Khung chứa đang chọn**, giúp Hana sao chép kiểu dáng hoặc lưu mẫu khung nhanh chóng mà không bị chọn nhầm sang khối con.
+
+Muốn mở menu cho **một khối con** bên trong (ví dụ dán vào ngay sau một đoạn chữ trong khung): bấm chuột trái chọn khối con đó trước, rồi mới nhấp chuột phải.
 
 ### 5.34. Bấm để chèn khối (EB-13b)
 

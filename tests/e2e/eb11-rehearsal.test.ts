@@ -1016,10 +1016,13 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         actions++
 
         // 7. Tìm mẫu "[MẪU] Khung ảnh chữ" và bấm "Chèn"
+        // Innermost box holding both the name and a "Chèn" button: other tests'
+        // templates may share the list, so the outer wrapper has several buttons.
         const savedTemplateCard = page
           .locator('div')
           .filter({ hasText: '[MẪU] Khung ảnh chữ' })
-          .first()
+          .filter({ has: page.getByRole('button', { name: 'Chèn' }) })
+          .last()
         await expect(savedTemplateCard).toBeVisible({ timeout: 15000 })
 
         const insertBtn = savedTemplateCard.getByRole('button', { name: 'Chèn' })
