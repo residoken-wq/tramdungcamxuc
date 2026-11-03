@@ -2718,26 +2718,27 @@ Hana có thể biến khối Hero đầu trang (`Hero 2 Lối vào` hoặc `Hero
    - Trong trình soạn thảo Puck, bấm chuột chọn khối Hero (trên trang chủ là khối `Hero 2 Lối vào`, hoặc các trang khác là khối `Hero Ảnh biểu tượng`).
 2. **Đổi kiểu bố cục:**
    - Ở cột cài đặt bên phải, tìm mục **Kiểu bố cục**.
-   - Bấm chuyển từ *Ảnh bên cạnh chữ* sang **Ảnh làm nền, chữ nằm trên ảnh**.
+   - Bấm chuyển từ _Ảnh bên cạnh chữ_ sang **Ảnh làm nền, chữ nằm trên ảnh**.
 3. **Chọn ảnh minh họa Hero:**
    - Chọn ảnh từ Thư viện media (bắt buộc ảnh phải có mô tả alt).
 4. **Tùy chỉnh lớp phủ và hiệu ứng:**
-   - **Tông phủ nền:** Chọn *Phủ tối (chữ trắng)* (màu xanh thẫm `deep-navy`) hoặc *Phủ sáng (chữ tím than)* (màu ngà ấm `warm-ivory`). Chữ và các nút sẽ tự động đổi màu tương phản chuẩn WCAG AA để luôn dễ đọc.
-   - **Độ đậm lớp phủ:** Chọn *Vừa (60%)*, *Đậm (75%)* hoặc *Rất đậm (85%)*. Muốn chữ đọc rõ hơn thì tăng độ đậm lớp phủ; hệ thống không có lựa chọn nhạt hơn 60% để đảm bảo luôn đọc được chữ trên mọi loại ảnh nền.
-   - **Độ mờ ảnh:** Chọn *Không mờ*, *Mờ nhẹ (4px)* hoặc *Mờ vừa (8px)* để tạo chiều sâu dịu mắt cho hậu cảnh.
+   - **Tông phủ nền:** Chọn _Phủ tối (chữ trắng)_ (màu xanh thẫm `deep-navy`) hoặc _Phủ sáng (chữ tím than)_ (màu ngà ấm `warm-ivory`). Chữ và các nút sẽ tự động đổi màu tương phản chuẩn WCAG AA để luôn dễ đọc.
+   - **Độ đậm lớp phủ:** Chọn _Vừa (60%)_, _Đậm (75%)_ hoặc _Rất đậm (85%)_. Muốn chữ đọc rõ hơn thì tăng độ đậm lớp phủ; hệ thống không có lựa chọn nhạt hơn 60% để đảm bảo luôn đọc được chữ trên mọi loại ảnh nền.
+   - **Độ mờ ảnh:** Chọn _Không mờ_, _Mờ nhẹ (4px)_ hoặc _Mờ vừa (8px)_ để tạo chiều sâu dịu mắt cho hậu cảnh.
    - **Vị trí trọng tâm ảnh:** Chọn 1 trong 9 vị trí căn chỉnh ảnh (Chính giữa, Trên – giữa, Dưới – giữa...).
-   - **Căn lề nội dung:** Chọn *Căn giữa* hoặc *Căn trái*.
-   - **Chiều cao tối thiểu:** Chọn *Vừa (480px)*, *Lớn (640px)* hoặc *Toàn màn hình (trừ header)*.
+   - **Căn lề nội dung:** Chọn _Căn giữa_ hoặc _Căn trái_.
+   - **Chiều cao tối thiểu:** Chọn _Vừa (480px)_, _Lớn (640px)_ hoặc _Toàn màn hình (trừ header)_.
 5. **Xem trước trên điện thoại:**
    - Bấm nút xem trước màn hình 375px ở góc trên bên phải để kiểm tra bố cục hiển thị hoàn hảo trên thiết bị di động.
 
 #### Xếp thẻ lối vào trên – dưới (`Hero 2 Lối vào`):
 
 Hana có thể linh hoạt sắp đặt 2 thẻ lối vào của `Hero 2 Lối vào` theo thiết kế mới:
-1. **Bố cục thẻ lối vào:** Chọn *2 cột cạnh nhau* (mặc định) hoặc *Xếp hàng trên – dưới*. Khi chọn xếp hàng trên – dưới, mỗi thẻ sẽ trải dài dạng thanh ngang: bên trái là nhãn và mô tả in đậm, bên phải là nút bấm gọn gàng cùng hàng trên máy tính; trên điện thoại thẻ tự động chuyển về dạng dọc dễ thao tác.
-2. **Vị trí thẻ lối vào:** (Chỉ áp dụng khi chọn kiểu bố cục *Ảnh bên cạnh chữ* và có ảnh):
-   - *Dưới cả ảnh và chữ*: Thẻ nằm rộng phía dưới như trước.
-   - *Trong cột chữ, dưới đoạn mô tả*: 2 thẻ sẽ được đưa thẳng vào cột bên trái ngay dưới phần giới thiệu, tạo bố cục cân đối và ảnh bên phải sẽ tự mở rộng chiều cao bằng trọn vẹn cột chữ.
+
+1. **Bố cục thẻ lối vào:** Chọn _2 cột cạnh nhau_ (mặc định) hoặc _Xếp hàng trên – dưới_. Khi chọn xếp hàng trên – dưới, mỗi thẻ sẽ trải dài dạng thanh ngang: bên trái là nhãn và mô tả in đậm, bên phải là nút bấm gọn gàng cùng hàng trên máy tính; trên điện thoại thẻ tự động chuyển về dạng dọc dễ thao tác.
+2. **Vị trí thẻ lối vào:** (Chỉ áp dụng khi chọn kiểu bố cục _Ảnh bên cạnh chữ_ và có ảnh):
+   - _Dưới cả ảnh và chữ_: Thẻ nằm rộng phía dưới như trước.
+   - _Trong cột chữ, dưới đoạn mô tả_: 2 thẻ sẽ được đưa thẳng vào cột bên trái ngay dưới phần giới thiệu, tạo bố cục cân đối và ảnh bên phải sẽ tự mở rộng chiều cao bằng trọn vẹn cột chữ.
 
 ### 5.36. Khối bị khoá và cách mở khoá
 

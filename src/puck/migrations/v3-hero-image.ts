@@ -21,13 +21,10 @@ export function migrateHeroImageV2ToV3(data: Data): Data {
           version: 3,
           layout: typeof props.layout === 'string' ? props.layout : 'split',
           overlayTone: typeof props.overlayTone === 'string' ? props.overlayTone : 'dark',
-          overlayStrength:
-            typeof props.overlayStrength === 'string' ? props.overlayStrength : 'lg',
+          overlayStrength: typeof props.overlayStrength === 'string' ? props.overlayStrength : 'lg',
           imageBlur: typeof props.imageBlur === 'string' ? props.imageBlur : 'none',
-          imagePosition:
-            typeof props.imagePosition === 'string' ? props.imagePosition : 'center',
-          contentAlign:
-            typeof props.contentAlign === 'string' ? props.contentAlign : 'center',
+          imagePosition: typeof props.imagePosition === 'string' ? props.imagePosition : 'center',
+          contentAlign: typeof props.contentAlign === 'string' ? props.contentAlign : 'center',
           minHeight: typeof props.minHeight === 'string' ? props.minHeight : 'lg',
         }
       }

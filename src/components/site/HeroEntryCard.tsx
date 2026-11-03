@@ -95,7 +95,7 @@ export function HeroEntryCard({
         ) : null}
         {description ? (
           <p
-            className={`font-ui leading-relaxed mb-6 group-data-[entries-layout=rows]/entries:sm:mb-0 group-data-[entries-layout=rows]/entries:sm:font-semibold group-data-[entries-layout=rows]/entries:sm:text-deep-navy group-data-[entries-layout=rows]/entries:group-data-[bg=deep-navy]/hero:sm:text-white group-data-[entries-layout=rows]/entries:sm:text-sm md:group-data-[entries-layout=rows]/entries:sm:text-base ${TEXT_SIZES[textSize] ?? TEXT_SIZES.md} ${textClass}`}
+            className={`font-ui leading-relaxed mb-6 group-data-[entries-layout=rows]/entries:sm:mb-0 group-data-[entries-layout=rows]/entries:sm:font-semibold group-data-[entries-layout=rows]/entries:group-data-[bg=deep-navy]/hero:sm:text-white group-data-[entries-layout=rows]/entries:sm:text-sm md:group-data-[entries-layout=rows]/entries:sm:text-base ${TEXT_SIZES[textSize] ?? TEXT_SIZES.md} ${textClass}`}
           >
             {description}
           </p>

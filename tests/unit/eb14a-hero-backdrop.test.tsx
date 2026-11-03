@@ -399,7 +399,12 @@ describe('EB-14a: Hero Backdrop Unit Tests', () => {
           entriesLayout="rows"
           entriesPlacement="below"
           entry1={{ label: 'Cá nhân', description: 'Mô tả 1', buttonText: 'Xem', buttonLink: '#' }}
-          entry2={{ label: 'Doanh nghiệp', description: 'Mô tả 2', buttonText: 'Xem', buttonLink: '#' }}
+          entry2={{
+            label: 'Doanh nghiệp',
+            description: 'Mô tả 2',
+            buttonText: 'Xem',
+            buttonLink: '#',
+          }}
         />,
       )
 
@@ -414,7 +419,12 @@ describe('EB-14a: Hero Backdrop Unit Tests', () => {
           titleLine1="TIÊU ĐỀ 1"
           titleLine2="TIÊU ĐỀ 2"
           entry1={{ label: 'Cá nhân', description: 'Mô tả 1', buttonText: 'Xem', buttonLink: '#' }}
-          entry2={{ label: 'Doanh nghiệp', description: 'Mô tả 2', buttonText: 'Xem', buttonLink: '#' }}
+          entry2={{
+            label: 'Doanh nghiệp',
+            description: 'Mô tả 2',
+            buttonText: 'Xem',
+            buttonLink: '#',
+          }}
         />,
       )
 
@@ -434,7 +444,12 @@ describe('EB-14a: Hero Backdrop Unit Tests', () => {
           entriesLayout="rows"
           entriesPlacement="textColumn"
           entry1={{ label: 'Cá nhân', description: 'Mô tả 1', buttonText: 'Xem', buttonLink: '#' }}
-          entry2={{ label: 'Doanh nghiệp', description: 'Mô tả 2', buttonText: 'Xem', buttonLink: '#' }}
+          entry2={{
+            label: 'Doanh nghiệp',
+            description: 'Mô tả 2',
+            buttonText: 'Xem',
+            buttonLink: '#',
+          }}
         />,
       )
 

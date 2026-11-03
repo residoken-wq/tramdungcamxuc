@@ -14,10 +14,7 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
 
       const migrated = applyPuckMigrations(puckData)
       for (const block of migrated.content) {
-        if (
-          block.type === 'QuoteBlock' ||
-          block.type === 'TestimonialGrid'
-        ) {
+        if (block.type === 'QuoteBlock' || block.type === 'TestimonialGrid') {
           expect((block.props as { version?: number }).version).toBe(2)
         }
         if (

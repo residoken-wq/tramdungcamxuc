@@ -21,16 +21,12 @@ export function migrateHeroTwoEntriesV3ToV4(data: Data): Data {
           version: 4,
           layout: typeof props.layout === 'string' ? props.layout : 'split',
           overlayTone: typeof props.overlayTone === 'string' ? props.overlayTone : 'dark',
-          overlayStrength:
-            typeof props.overlayStrength === 'string' ? props.overlayStrength : 'lg',
+          overlayStrength: typeof props.overlayStrength === 'string' ? props.overlayStrength : 'lg',
           imageBlur: typeof props.imageBlur === 'string' ? props.imageBlur : 'none',
-          imagePosition:
-            typeof props.imagePosition === 'string' ? props.imagePosition : 'center',
-          contentAlign:
-            typeof props.contentAlign === 'string' ? props.contentAlign : 'center',
+          imagePosition: typeof props.imagePosition === 'string' ? props.imagePosition : 'center',
+          contentAlign: typeof props.contentAlign === 'string' ? props.contentAlign : 'center',
           minHeight: typeof props.minHeight === 'string' ? props.minHeight : 'lg',
-          entriesLayout:
-            typeof props.entriesLayout === 'string' ? props.entriesLayout : 'columns',
+          entriesLayout: typeof props.entriesLayout === 'string' ? props.entriesLayout : 'columns',
           entriesPlacement:
             typeof props.entriesPlacement === 'string' ? props.entriesPlacement : 'below',
         }
