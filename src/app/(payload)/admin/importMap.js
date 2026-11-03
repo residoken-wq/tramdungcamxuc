@@ -31,6 +31,8 @@ import { EqQrDownloadButton as EqQrDownloadButton_182b90ea1823c05b86095b55fa616c
 import { EqQrExportButton as EqQrExportButton_3a70474255dc3ca7584dba70ddaf8a23 } from '@/components/admin/EqQrExportButton'
 import { CustomerActions as CustomerActions_9fd8238a1722f59df871ef58a48eb6c2 } from '@/components/admin/CustomerActions'
 import { ExportLeadsButton as ExportLeadsButton_dfc015e147ecca7392a50b58d946480c } from '@/components/admin/ExportLeadsButton'
+import { HeaderBuilderButton as HeaderBuilderButton_c7cff7bfd58a789eaa7b7099e18ba2f0 } from '@/components/admin/NavigationBuilderButton'
+import { FooterBuilderButton as FooterBuilderButton_c7cff7bfd58a789eaa7b7099e18ba2f0 } from '@/components/admin/NavigationBuilderButton'
 import { ColorField as ColorField_cdeeed12dc1e93093c7e2b36a126a728 } from '@/components/admin/design/ColorField'
 import { ColorRowLabel as ColorRowLabel_ef0dae42b857497dbc998ccc345329a9 } from '@/components/admin/design/ColorRowLabel'
 import { FontSelectField as FontSelectField_cc4236d93faf3642f0a4ac7bffd4fa05 } from '@/components/admin/design/FontSelectField'
@@ -79,6 +81,8 @@ export const importMap = {
   "@/components/admin/EqQrExportButton#EqQrExportButton": EqQrExportButton_3a70474255dc3ca7584dba70ddaf8a23,
   "@/components/admin/CustomerActions#CustomerActions": CustomerActions_9fd8238a1722f59df871ef58a48eb6c2,
   "@/components/admin/ExportLeadsButton#ExportLeadsButton": ExportLeadsButton_dfc015e147ecca7392a50b58d946480c,
+  "@/components/admin/NavigationBuilderButton#HeaderBuilderButton": HeaderBuilderButton_c7cff7bfd58a789eaa7b7099e18ba2f0,
+  "@/components/admin/NavigationBuilderButton#FooterBuilderButton": FooterBuilderButton_c7cff7bfd58a789eaa7b7099e18ba2f0,
   "@/components/admin/design/ColorField#ColorField": ColorField_cdeeed12dc1e93093c7e2b36a126a728,
   "@/components/admin/design/ColorRowLabel#ColorRowLabel": ColorRowLabel_ef0dae42b857497dbc998ccc345329a9,
   "@/components/admin/design/FontSelectField#FontSelectField": FontSelectField_cc4236d93faf3642f0a4ac7bffd4fa05,
