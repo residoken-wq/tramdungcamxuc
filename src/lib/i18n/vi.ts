@@ -3202,6 +3202,53 @@ export const vi = {
       hint: 'Bấm vào khối để chèn nhanh vào trang mà không cần kéo thả',
     },
   },
+  eb14a: {
+    layout: 'Kiểu bố cục',
+    layoutOptions: {
+      split: 'Ảnh bên cạnh chữ',
+      backdrop: 'Ảnh làm nền, chữ nằm trên ảnh',
+    },
+    overlayTone: 'Tông phủ nền',
+    overlayToneOptions: {
+      dark: 'Phủ tối (chữ trắng)',
+      light: 'Phủ sáng (chữ tím than)',
+    },
+    overlayStrength: 'Độ đậm lớp phủ',
+    overlayStrengthOptions: {
+      md: 'Vừa (60%)',
+      lg: 'Đậm (75%)',
+      xl: 'Rất đậm (85%)',
+    },
+    imageBlur: 'Độ mờ ảnh',
+    imageBlurOptions: {
+      none: 'Không mờ',
+      sm: 'Mờ nhẹ (4px)',
+      md: 'Mờ vừa (8px)',
+    },
+    imagePosition: 'Vị trí trọng tâm ảnh',
+    imagePositions: {
+      'top left': 'Trên – trái',
+      'top center': 'Trên – giữa',
+      'top right': 'Trên – phải',
+      'center left': 'Giữa – trái',
+      center: 'Giữa',
+      'center right': 'Giữa – phải',
+      'bottom left': 'Dưới – trái',
+      'bottom center': 'Dưới – giữa',
+      'bottom right': 'Dưới – phải',
+    },
+    contentAlign: 'Căn lề nội dung',
+    contentAlignOptions: {
+      left: 'Căn trái',
+      center: 'Căn giữa',
+    },
+    minHeight: 'Chiều cao tối thiểu',
+    minHeightOptions: {
+      md: 'Vừa (480px)',
+      lg: 'Lớn (640px)',
+      screen: 'Toàn màn hình (trừ header)',
+    },
+  },
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',
