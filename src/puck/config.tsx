@@ -337,8 +337,10 @@ const basePuckConfig: Config<PageComponentsProps> = {
       ],
     },
     // PK-13: free section + its elements (elements only drop into a free section's columns).
+    // EB-13b: Hidden from library drawer, but blocks stay registered so existing pages render normally.
     freeSection: {
       title: 'Section tự do (kéo thả từng phần tử)',
+      visible: false,
       components: ['FreeSection', ...ELEMENT_BLOCK_TYPES] as (keyof PageComponentsProps)[],
     },
     // PK-11: child cards, droppable only into their own parent block (slot `allow` lists).
