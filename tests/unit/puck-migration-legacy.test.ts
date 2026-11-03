@@ -190,7 +190,7 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
       buttonLink: '/about',
       bgColor: 'lavender-mist',
       padding: 'lg',
-      version: 2,
+      version: 3,
     })
 
     const quote = migrated.content.find((item) => item.props.id === 'quote-1')

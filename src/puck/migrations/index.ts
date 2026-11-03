@@ -66,6 +66,8 @@ import { migrateFAQV3ToV4 } from './v4-faq'
 import { migrateHeroTwoEntriesV2ToV3 } from './v3-hero-two-entries'
 import { migrateTwoPathCardsV1ToV2 } from './v2-two-path-cards'
 import { migrateVisionMissionV1ToV2 } from './v2-vision-mission'
+import { migrateHeroTwoEntriesV3ToV4 } from './v4-hero-two-entries'
+import { migrateHeroImageV2ToV3 } from './v3-hero-image'
 
 import { sanitizeChildColors } from './sanitize-child-colors'
 
@@ -86,6 +88,8 @@ export {
   migrateHeroTwoEntriesV2ToV3,
   migrateTwoPathCardsV1ToV2,
   migrateVisionMissionV1ToV2,
+  migrateHeroTwoEntriesV3ToV4,
+  migrateHeroImageV2ToV3,
   sanitizeChildColors,
 }
 
@@ -115,6 +119,8 @@ export const puckMigrations: PuckMigration[] = [
   migrateHeroTwoEntriesV2ToV3,
   migrateTwoPathCardsV1ToV2,
   migrateVisionMissionV1ToV2,
+  migrateHeroTwoEntriesV3ToV4,
+  migrateHeroImageV2ToV3,
 ]
 
 /**

@@ -75,37 +75,39 @@ export function HeroEntryCard({
 
   return (
     <div
-      className={`flex flex-col justify-between p-6 sm:p-8 rounded-card border shadow-soft h-full bg-white text-deep-navy border-deep-navy/10 group-data-[bg=deep-navy]/hero:bg-white/10 group-data-[bg=deep-navy]/hero:text-white group-data-[bg=deep-navy]/hero:border-white/20`}
+      className={`flex flex-col justify-between p-6 sm:p-8 rounded-card border shadow-soft h-full bg-white text-deep-navy border-deep-navy/10 group-data-[bg=deep-navy]/hero:bg-white/10 group-data-[bg=deep-navy]/hero:text-white group-data-[bg=deep-navy]/hero:border-white/20 group-data-[entries-layout=rows]/entries:sm:flex-row group-data-[entries-layout=rows]/entries:sm:items-center group-data-[entries-layout=rows]/entries:sm:justify-between group-data-[entries-layout=rows]/entries:gap-4 group-data-[entries-layout=rows]/entries:px-5 group-data-[entries-layout=rows]/entries:py-4 group-data-[entries-layout=rows]/entries:h-auto`}
     >
-      <div className={`flex flex-col ${alignClass}`}>
+      <div
+        className={`flex flex-col ${alignClass} group-data-[entries-layout=rows]/entries:sm:items-start group-data-[entries-layout=rows]/entries:flex-1`}
+      >
         {hasGroupLabel ? (
           <span
-            className={`block font-ui font-bold uppercase tracking-widest mb-4 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${groupLabelClass}`}
+            className={`block font-ui font-bold uppercase tracking-widest mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${groupLabelClass}`}
           >
             {groupLabel}
           </span>
         ) : label ? (
           <span
-            className={`inline-block px-3 py-1 rounded-full font-ui font-bold uppercase tracking-wider text-deep-navy mb-4 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${badgeClass}`}
+            className={`inline-block px-3 py-1 rounded-full font-ui font-bold uppercase tracking-wider text-deep-navy mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${badgeClass}`}
           >
             {label}
           </span>
         ) : null}
         {description ? (
           <p
-            className={`font-ui leading-relaxed mb-6 ${TEXT_SIZES[textSize] ?? TEXT_SIZES.md} ${textClass}`}
+            className={`font-ui leading-relaxed mb-6 group-data-[entries-layout=rows]/entries:sm:mb-0 group-data-[entries-layout=rows]/entries:sm:font-semibold group-data-[entries-layout=rows]/entries:sm:text-deep-navy group-data-[entries-layout=rows]/entries:group-data-[bg=deep-navy]/hero:sm:text-white group-data-[entries-layout=rows]/entries:sm:text-sm md:group-data-[entries-layout=rows]/entries:sm:text-base ${TEXT_SIZES[textSize] ?? TEXT_SIZES.md} ${textClass}`}
           >
             {description}
           </p>
         ) : null}
       </div>
       {href && buttonText ? (
-        <div>
+        <div className="group-data-[entries-layout=rows]/entries:sm:shrink-0">
           <Button
             href={href}
             variant={buttonStyle === 'outline' ? 'secondary' : 'primary'}
             size="md"
-            className="w-full"
+            className="w-full group-data-[entries-layout=rows]/entries:sm:w-auto"
           >
             {buttonText}
           </Button>
