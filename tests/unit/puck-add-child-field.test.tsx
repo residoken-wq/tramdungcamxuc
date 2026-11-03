@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { AddChildField } from '@/puck/editor/AddChildField'
 import { LeftPanel } from '@/puck/editor/LeftPanel'
+import { ContextMenuProvider } from '@/puck/editor/context-menu/context-menu-context'
 import { vi as viLabels } from '@/lib/i18n/vi'
 
 let mockSelectedId = 'parent-123'
@@ -131,13 +132,7 @@ describe('PK-14: AddChildField component', () => {
   })
 
   it('renders button with child label and card count', () => {
-    render(
-      <AddChildField
-        parentType="PackageCards"
-        slotName="cards"
-        childType="PackageCard"
-      />,
-    )
+    render(<AddChildField parentType="PackageCards" slotName="cards" childType="PackageCard" />)
 
     const expectedBtnText = viLabels.pk14.addChildButton('Thẻ gói')
     const button = screen.getByRole('button', { name: expectedBtnText })
@@ -190,13 +185,7 @@ describe('PK-14: AddChildField component', () => {
   it('disables the button when permissions forbid insertion', () => {
     mockCanInsert = false
 
-    render(
-      <AddChildField
-        parentType="PackageCards"
-        slotName="cards"
-        childType="PackageCard"
-      />,
-    )
+    render(<AddChildField parentType="PackageCards" slotName="cards" childType="PackageCard" />)
 
     const expectedBtnText = viLabels.pk14.addChildButton('Thẻ gói')
     const button = screen.getByRole('button', { name: expectedBtnText })
@@ -245,7 +234,11 @@ describe('PK-14: LeftPanel child auto-expansion and highlight', () => {
   })
 
   it('auto-expands children category and highlights the target child card when parent is selected', () => {
-    render(<LeftPanel />)
+    render(
+      <ContextMenuProvider>
+        <LeftPanel />
+      </ContextMenuProvider>,
+    )
 
     // When PackageCards is selected, targetChildType is PackageCard.
     // Category "children" should be expanded.

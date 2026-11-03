@@ -7,7 +7,7 @@ import { vi } from '@/lib/i18n/vi'
 import { useContextMenu } from './context-menu-context'
 import { copyBlock, readClipboard, prepareForPaste } from './clipboard'
 import { hasStyleKeys } from '@/puck/style/style-schema'
-import { switchLeftPanelTab } from '@/puck/editor/LeftPanel'
+import { switchLeftPanelTab } from '@/puck/editor/left-panel-tab'
 import { SaveTemplateModal } from '@/puck/editor/SaveTemplateModal'
 
 export type MenuItemId =
@@ -548,7 +548,9 @@ export function BlockContextMenu() {
               return (
                 <React.Fragment key={itemDef.id}>
                   {/* Divider before delete */}
-                  {isDelete && <div className="border-t border-deep-navy/10 my-1" role="separator" />}
+                  {isDelete && (
+                    <div className="border-t border-deep-navy/10 my-1" role="separator" />
+                  )}
 
                   <div className="relative group">
                     <button

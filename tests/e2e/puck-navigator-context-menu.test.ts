@@ -293,6 +293,10 @@ test.describe('EB-07: Navigator custom labels and right-click context menu', () 
       await blockB.click({ button: 'right' })
       await page.getByRole('menuitem', { name: /^Sao chép$/ }).click()
       const innerHeading = canvasB.locator(`[data-puck-component="${pastedChildIds[0]}"]`)
+      // EB-13a: right-click inside the selected block targets that block, so
+      // select the inner heading first to paste after it inside the slot.
+      await innerHeading.click({ force: true })
+      await page.waitForTimeout(300)
       await innerHeading.click({ button: 'right', force: true })
       await page.getByRole('menuitem', { name: /^Dán$/ }).click()
       await expect(

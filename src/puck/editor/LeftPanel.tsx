@@ -15,10 +15,11 @@ import {
   scrollToCanvasBlock,
 } from './insert/insert-target'
 
-const LOCAL_STORAGE_KEY = 'eb03:left-panel'
-export const SWITCH_TAB_EVENT = 'eb03:switch-tab'
+import { SWITCH_TAB_EVENT, switchLeftPanelTab, type LeftPanelTab } from './left-panel-tab'
 
-export type LeftPanelTab = 'blocks' | 'outline' | 'templates'
+export { SWITCH_TAB_EVENT, switchLeftPanelTab, type LeftPanelTab }
+
+const LOCAL_STORAGE_KEY = 'eb03:left-panel'
 
 type LeftPanelState = {
   activeTab: LeftPanelTab
@@ -55,18 +56,6 @@ export function saveLeftPanelStorage(state: LeftPanelState) {
     }
   } catch {
     // Fail silently
-  }
-}
-
-/**
- * Dispatches a global event to switch the LeftPanel tab (e.g. from the bottom toolbar or container).
- */
-export function switchLeftPanelTab(tab: LeftPanelTab) {
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent(SWITCH_TAB_EVENT, { detail: tab }))
-    if (window.parent && window.parent !== window) {
-      window.parent.dispatchEvent(new CustomEvent(SWITCH_TAB_EVENT, { detail: tab }))
-    }
   }
 }
 

@@ -5,6 +5,7 @@ import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { LeftPanel, loadLeftPanelStorage, saveLeftPanelStorage } from '@/puck/editor/LeftPanel'
+import { ContextMenuProvider } from '@/puck/editor/context-menu/context-menu-context'
 
 // Mock minimal Puck context
 const mockDispatch = vi.fn()
@@ -76,7 +77,11 @@ describe('LeftPanel component', () => {
   })
 
   it('renders with tabs and has correct aria-selected attributes', () => {
-    render(<LeftPanel />)
+    render(
+      <ContextMenuProvider>
+        <LeftPanel />
+      </ContextMenuProvider>,
+    )
 
     const blocksTab = screen.getByRole('tab', { name: /Khối/i })
     const outlineTab = screen.getByRole('tab', { name: /Cấu trúc/i })
@@ -88,7 +93,11 @@ describe('LeftPanel component', () => {
   })
 
   it('switches between "Khối" and "Cấu trúc" tabs on click', () => {
-    render(<LeftPanel />)
+    render(
+      <ContextMenuProvider>
+        <LeftPanel />
+      </ContextMenuProvider>,
+    )
 
     const outlineTab = screen.getByRole('tab', { name: /Cấu trúc/i })
     fireEvent.click(outlineTab)
@@ -104,7 +113,11 @@ describe('LeftPanel component', () => {
   })
 
   it('filters blocks as user types in search input', () => {
-    render(<LeftPanel />)
+    render(
+      <ContextMenuProvider>
+        <LeftPanel />
+      </ContextMenuProvider>,
+    )
 
     const searchInput = screen.getByPlaceholderText(/Tìm khối/i)
     expect(screen.getByText('Hero Hai lối vào')).toBeDefined()
@@ -120,7 +133,11 @@ describe('LeftPanel component', () => {
   })
 
   it('shows empty state when no blocks match query', () => {
-    render(<LeftPanel />)
+    render(
+      <ContextMenuProvider>
+        <LeftPanel />
+      </ContextMenuProvider>,
+    )
 
     const searchInput = screen.getByPlaceholderText(/Tìm khối/i)
     fireEvent.change(searchInput, { target: { value: 'nonexistent-block' } })
@@ -129,7 +146,11 @@ describe('LeftPanel component', () => {
   })
 
   it('toggles category expansion when clicking category header', () => {
-    render(<LeftPanel />)
+    render(
+      <ContextMenuProvider>
+        <LeftPanel />
+      </ContextMenuProvider>,
+    )
 
     const introHeader = screen.getByRole('button', { name: /Mở đầu/i })
     expect(introHeader.getAttribute('aria-expanded')).toBe('true')
@@ -161,7 +182,13 @@ describe('LeftPanel component', () => {
     ).not.toThrow()
 
     // Render should still work completely fine
-    expect(() => render(<LeftPanel />)).not.toThrow()
+    expect(() =>
+      render(
+        <ContextMenuProvider>
+          <LeftPanel />
+        </ContextMenuProvider>,
+      ),
+    ).not.toThrow()
     expect(screen.getByRole('tab', { name: /Khối/i })).toBeDefined()
 
     getItemSpy.mockRestore()

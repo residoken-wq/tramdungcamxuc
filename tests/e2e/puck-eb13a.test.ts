@@ -142,15 +142,25 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
       await page.waitForTimeout(300)
 
       // Floating action bar appears
-      const moveUpBtn = page.getByTestId('block-action-move-up')
+      const moveUpBtn = canvas.getByTestId('block-action-move-up')
       await expect(moveUpBtn).toBeVisible()
 
       // Click "↑" (Move Up)
       await moveUpBtn.click()
       await page.waitForTimeout(600)
 
+      // Widget 2 now sits above widget 1 on the canvas.
+      const w1Block = canvas.locator(`[data-puck-component="${widget1Id}"]`)
+      await expect
+        .poll(async () => {
+          const a = await w1Block.boundingBox()
+          const b = await w2Block.boundingBox()
+          return a && b ? b.y < a.y : false
+        })
+        .toBe(true)
+
       // --- TEST SCENARIO 2: Select child widget -> "Chọn khối cha" -> Container selected ---
-      const selectParentBtn = page.getByTestId('block-action-select-parent')
+      const selectParentBtn = canvas.getByTestId('block-action-select-parent')
       await expect(selectParentBtn).toBeVisible()
       await expect(selectParentBtn).toContainText('Chọn khối cha')
 
@@ -172,6 +182,8 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
       // Press Alt+ArrowDown to move it back down
       await page.keyboard.press('Alt+ArrowDown')
       await page.waitForTimeout(600)
+      await page.keyboard.press('Alt+ArrowUp')
+      await page.waitForTimeout(600)
 
       // Publish page and verify public DOM
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
@@ -188,6 +200,10 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
       const el2 = page.locator(`[data-eb-id="${widget2Id}"]`)
       await expect(el1).toBeVisible()
       await expect(el2).toBeVisible()
+      // Up, then Alt+Down, then Alt+Up: widget 2 is published above widget 1.
+      const box1 = await el1.boundingBox()
+      const box2 = await el2.boundingBox()
+      expect(box1 && box2 && box2.y < box1.y).toBe(true)
 
       // --- TEST SCENARIO 4: Hero locked on homepage has no Delete button ---
       if (homepageId) {
@@ -202,7 +218,8 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
           await page.waitForTimeout(300)
 
           // Delete button must NOT be present on locked Hero
-          const deleteBtn = page.getByTestId('block-action-delete')
+          await expect(homeCanvas.getByTestId('block-action-move-up')).toBeVisible()
+          const deleteBtn = homeCanvas.getByTestId('block-action-delete')
           await expect(deleteBtn).toHaveCount(0)
         }
       }

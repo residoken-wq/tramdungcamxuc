@@ -78,7 +78,7 @@ test.describe('EB-13b: Click to insert blocks & 2-column pattern', () => {
       await expect(freeSectionGroup).toHaveCount(0)
 
       // 5. Click the 2-column pattern item at top of "Bố cục"
-      const patternItem = page.locator('[data-testid="pattern-two-columns"]')
+      const patternItem = page.locator('[data-testid="pattern-two-columns"]').first()
       await expect(patternItem).toBeVisible({ timeout: 10000 })
       await patternItem.click()
       await page.waitForTimeout(600)

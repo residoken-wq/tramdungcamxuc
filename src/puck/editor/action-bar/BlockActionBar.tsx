@@ -345,7 +345,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
           className="min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui text-white/90 hover:bg-accent-pink/30 hover:text-white active:bg-accent-pink/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink cursor-pointer"
         >
           <svg
-            className="w-4 h-4 text-accent-pink/90 hover:text-white"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

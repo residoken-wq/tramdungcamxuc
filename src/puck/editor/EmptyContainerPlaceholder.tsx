@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react'
 import { createUsePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
-import { switchLeftPanelTab } from './LeftPanel'
+import { switchLeftPanelTab } from './left-panel-tab'
 import { findItemById } from './insert/insert-target'
 
 const usePuckSelector = createUsePuck()
