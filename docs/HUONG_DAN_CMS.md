@@ -71,6 +71,7 @@
    - [5.32. Đầu trang và chân trang dựng bằng trình soạn thảo (EB-10)](#532-đầu-trang-và-chân-trang-dựng-bằng-trình-soạn-thảo-eb-10)
    - [5.33. Thanh thao tác nhanh và phím tắt (EB-13a)](#533-thanh-thao-tác-nhanh-và-phím-tắt-eb-13a)
    - [5.34. Bấm để chèn khối (EB-13b)](#534-bấm-để-chèn-khối-eb-13b)
+   - [5.35. Hero ảnh nền (EB-14a)](#535-hero-ảnh-nền-eb-14a)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2705,6 +2706,29 @@ Giờ đây, Hana chỉ cần **bấm một cái (click)** vào bất kỳ khố
    - Bấm vào mục này, một khung chứa chuẩn 2 cột responsive (ngang trên máy tính, dọc trên điện thoại) gồm sẵn khối Ảnh và khối Chữ mẫu sẽ được tạo ngay lập tức.
 6. **Bảo vệ quy tắc thương hiệu:**
    - Nếu Hana bấm chọn một khối không phù hợp với vị trí hiện tại (ví dụ: cố tình đặt khối gốc lớn vào trong một thẻ con), hệ thống sẽ từ chối và hiện thông báo giải thích rõ ràng, giúp trang web luôn giữ đúng quy chuẩn thiết kế.
+
+### 5.35. Hero ảnh nền (EB-14a)
+
+Hana có thể biến khối Hero đầu trang (`Hero 2 Lối vào` hoặc `Hero Ảnh biểu tượng`) thành một màn chào ấn tượng với hình ảnh phủ trọn màn hình, được làm mờ nhẹ và phủ lớp màu tinh tế, tiêu đề cùng các nút bấm nằm nổi bật ngay trên ảnh.
+
+#### Các bước thực hiện:
+
+1. **Chọn khối Hero trên trang:**
+   - Trong trình soạn thảo Puck, bấm chuột chọn khối Hero (trên trang chủ là khối `Hero 2 Lối vào`, hoặc các trang khác là khối `Hero Ảnh biểu tượng`).
+2. **Đổi kiểu bố cục:**
+   - Ở cột cài đặt bên phải, tìm mục **Kiểu bố cục**.
+   - Bấm chuyển từ *Ảnh bên cạnh chữ* sang **Ảnh làm nền, chữ nằm trên ảnh**.
+3. **Chọn ảnh minh họa Hero:**
+   - Chọn ảnh từ Thư viện media (bắt buộc ảnh phải có mô tả alt).
+4. **Tùy chỉnh lớp phủ và hiệu ứng:**
+   - **Tông phủ nền:** Chọn *Phủ tối (chữ trắng)* (màu xanh thẫm `deep-navy`) hoặc *Phủ sáng (chữ tím than)* (màu ngà ấm `warm-ivory`). Chữ và các nút sẽ tự động đổi màu tương phản chuẩn WCAG AA để luôn dễ đọc.
+   - **Độ đậm lớp phủ:** Chọn *Vừa (60%)*, *Đậm (75%)* hoặc *Rất đậm (85%)*. Muốn chữ đọc rõ hơn thì tăng độ đậm lớp phủ; hệ thống không có lựa chọn nhạt hơn 60% để đảm bảo luôn đọc được chữ trên mọi loại ảnh nền.
+   - **Độ mờ ảnh:** Chọn *Không mờ*, *Mờ nhẹ (4px)* hoặc *Mờ vừa (8px)* để tạo chiều sâu dịu mắt cho hậu cảnh.
+   - **Vị trí trọng tâm ảnh:** Chọn 1 trong 9 vị trí căn chỉnh ảnh (Chính giữa, Trên – giữa, Dưới – giữa...).
+   - **Căn lề nội dung:** Chọn *Căn giữa* hoặc *Căn trái*.
+   - **Chiều cao tối thiểu:** Chọn *Vừa (480px)*, *Lớn (640px)* hoặc *Toàn màn hình (trừ header)*.
+5. **Xem trước trên điện thoại:**
+   - Bấm nút xem trước màn hình 375px ở góc trên bên phải để kiểm tra bố cục hiển thị hoàn hảo trên thiết bị di động.
 
 ---
 
