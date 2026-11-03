@@ -118,7 +118,7 @@ import {
 } from './constants'
 import { allowedTextColors } from '@/lib/brand/format-classes'
 import { alignField, colorField, sizeField } from './format-fields'
-import { getLockedComponentPermissions } from './locks'
+import { getLockedComponentPermissions, resolveComponentPermissions } from './locks'
 
 export {
   SECTION_BG_COLOR_OPTIONS,
@@ -842,6 +842,7 @@ export function getPuckConfig(options?: {
   isOwner?: boolean
   designSystem?: CleanDesignSystem
   kind?: PageKind
+  isBlockUnlocked?: (id: string) => boolean
 }): Config<PageComponentsProps> {
   const kind = options?.kind || 'page'
   const canEditCustomCss = Boolean(
@@ -969,6 +970,10 @@ export function getPuckConfig(options?: {
       const htmlBlock = components.HtmlWidget
       components.HtmlWidget = {
         ...htmlBlock,
+        permissions: getLockedComponentPermissions('HtmlWidget', '', {
+          kind: 'header',
+          htmlLocked,
+        }),
         render: (props) => htmlBlock.render({ ...props, isLocked: true }),
       }
     }
@@ -1086,11 +1091,26 @@ export function getPuckConfig(options?: {
       }
     }
 
-    // Ensure LegalFooter has locked permissions
+    // REVIEW-REQUIRED: Quyền thao tác khối LegalFooter trong chân trang
     if (components.LegalFooter) {
+      const legalFooterPerms = getLockedComponentPermissions('LegalFooter', '', { kind: 'footer' })
       components.LegalFooter = {
         ...components.LegalFooter,
-        permissions: { delete: false, duplicate: false },
+        permissions: legalFooterPerms,
+        resolvePermissions: (data) => {
+          const id = data?.props?.id ? String(data.props.id) : undefined
+          return (
+            resolveComponentPermissions({
+              type: 'LegalFooter',
+              id,
+              pageSlug: '',
+              kind: 'footer',
+              htmlLocked,
+              isOwner: options?.isOwner,
+              unlockedBlockIds: id && options?.isBlockUnlocked?.(id) ? [id] : [],
+            }) ?? legalFooterPerms ?? {}
+          )
+        },
       }
     }
 
@@ -1098,6 +1118,10 @@ export function getPuckConfig(options?: {
       const htmlBlock = components.HtmlWidget
       components.HtmlWidget = {
         ...htmlBlock,
+        permissions: getLockedComponentPermissions('HtmlWidget', '', {
+          kind: 'footer',
+          htmlLocked,
+        }),
         render: (props) => htmlBlock.render({ ...props, isLocked: true }),
       }
     }
@@ -1145,13 +1169,35 @@ export function getPuckConfig(options?: {
   delete (components as any).SocialLinks
   delete (components as any).Tagline
 
+  // REVIEW-REQUIRED: Quyền thao tác khối HeroTwoEntries trên trang chủ
   if (heroPermissions) {
-    components.HeroTwoEntries = { ...components.HeroTwoEntries, permissions: heroPermissions }
+    components.HeroTwoEntries = {
+      ...components.HeroTwoEntries,
+      permissions: heroPermissions,
+      resolvePermissions: (data) => {
+        const id = data?.props?.id ? String(data.props.id) : undefined
+        return (
+          resolveComponentPermissions({
+            type: 'HeroTwoEntries',
+            id,
+            pageSlug,
+            kind: 'page',
+            htmlLocked,
+            isOwner: options?.isOwner,
+            unlockedBlockIds: id && options?.isBlockUnlocked?.(id) ? [id] : [],
+          }) ?? heroPermissions ?? {}
+        )
+      },
+    }
   }
   if (htmlLocked) {
     const htmlBlock = components.HtmlWidget
     components.HtmlWidget = {
       ...htmlBlock,
+      permissions: getLockedComponentPermissions('HtmlWidget', pageSlug, {
+        kind: 'page',
+        htmlLocked,
+      }),
       render: (props) => htmlBlock.render({ ...props, isLocked: true }),
     }
   }

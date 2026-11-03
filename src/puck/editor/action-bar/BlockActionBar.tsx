@@ -1,11 +1,13 @@
 'use client'
 
-import React, { useMemo, useCallback } from 'react'
+import React, { useMemo, useCallback, useEffect } from 'react'
 import { usePuck, type ComponentData } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { cleanBlockLabel } from '@/puck/style/block-label'
 import { useContextMenu } from '@/puck/editor/context-menu/context-menu-context'
 import { puckVietnameseDictionary } from '@/puck/dictionary'
+import { isLastRequiredBlock } from '@/puck/locks'
+import { useLockContext } from '@/puck/editor/lock/lock-context'
 import { getMoveStatus, getMoveUpIndex, getMoveDownIndex } from './actions-pure'
 import { useBlockShortcuts } from './useBlockShortcuts'
 
@@ -27,8 +29,26 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
     getSelectorForId,
     getParentById,
     config,
+    refreshPermissions,
   } = usePuck()
   const { showToast } = useContextMenu()
+  const {
+    isOwner,
+    pageSlug,
+    pageKind,
+    getBlockInfo,
+    isUnlocked,
+    requestUnlock,
+    relock,
+    registerRefreshPermissions,
+  } = useLockContext()
+
+  // Register refreshPermissions with LockContext
+  useEffect(() => {
+    if (refreshPermissions) {
+      return registerRefreshPermissions(refreshPermissions)
+    }
+  }, [refreshPermissions, registerRefreshPermissions])
 
   const itemId = selectedItem?.props?.id ? String(selectedItem.props.id) : undefined
 
@@ -40,18 +60,23 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
     }
   }
 
+  // Block lock info
+  const lockInfo = selectedItem?.type ? getBlockInfo(selectedItem.type) : undefined
+  const unlocked = itemId ? isUnlocked(itemId) : false
+  const isLocked = Boolean(lockInfo?.locked && !unlocked)
+
   // Block permissions
   const permissions =
     selectedItem && getPermissions ? getPermissions({ item: selectedItem }) : undefined
-  const canDrag = permissions ? permissions.drag !== false : true
+  const canDrag = isLocked ? false : unlocked ? true : permissions ? permissions.drag !== false : true
 
   // Calculate move capabilities (EB-13ac: locked blocks cannot move)
   const moveStatus = useMemo(
     () => getMoveStatus(appState.data, selector, canDrag),
     [appState.data, selector, canDrag],
   )
-  const canDuplicate = permissions ? permissions.duplicate !== false : true
-  const canDelete = permissions ? permissions.delete !== false : true
+  const canDuplicate = isLocked ? false : unlocked ? true : permissions ? permissions.duplicate !== false : true
+  const canDelete = isLocked ? false : unlocked ? true : permissions ? permissions.delete !== false : true
 
   // Display label: prioritize custom _label, then passed label, then config label, then type
   const compConfig = selectedItem?.type ? config?.components?.[selectedItem.type] : undefined
@@ -66,6 +91,10 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
 
   // Move Up
   const handleMoveUp = useCallback(() => {
+    if (!canDrag) {
+      showToast(lockInfo?.reason || vi.eb13a.alreadyAtTop)
+      return
+    }
     if (!selector || !moveStatus.canMoveUp) {
       showToast(vi.eb13a.alreadyAtTop)
       return
@@ -88,10 +117,14 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
       },
     })
     showToast(vi.eb13a.movedUp)
-  }, [selector, moveStatus, dispatch, showToast])
+  }, [canDrag, lockInfo, selector, moveStatus, dispatch, showToast])
 
   // Move Down
   const handleMoveDown = useCallback(() => {
+    if (!canDrag) {
+      showToast(lockInfo?.reason || vi.eb13a.alreadyAtBottom)
+      return
+    }
     if (!selector || !moveStatus.canMoveDown) {
       showToast(vi.eb13a.alreadyAtBottom)
       return
@@ -114,7 +147,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
       },
     })
     showToast(vi.eb13a.movedDown)
-  }, [selector, moveStatus, dispatch, showToast])
+  }, [canDrag, lockInfo, selector, moveStatus, dispatch, showToast])
 
   // Select Parent
   const handleSelectParent = useCallback(
@@ -151,7 +184,7 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
   // Duplicate Block
   const handleDuplicate = useCallback(() => {
     if (!canDuplicate) {
-      showToast(vi.eb13a.cannotDuplicateLocked)
+      showToast(lockInfo?.reason || vi.eb13a.cannotDuplicateLocked)
       return
     }
     if (!selector) return
@@ -162,15 +195,27 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
       sourceZone: selector.zone,
     })
     showToast(vi.eb07.toast.duplicated)
-  }, [canDuplicate, selector, dispatch, showToast])
+  }, [canDuplicate, lockInfo, selector, dispatch, showToast])
 
   // Delete Block
   const handleDelete = useCallback(() => {
     if (!canDelete) {
-      showToast(vi.eb13a.cannotDeleteLocked)
+      showToast(lockInfo?.reason || vi.eb13a.cannotDeleteLocked)
       return
     }
-    if (!selector) return
+    if (!selector || !selectedItem) return
+
+    // REVIEW-REQUIRED: Chặn xoá khối bắt buộc cuối cùng ngay ở editor
+    if (isLastRequiredBlock(appState.data, selectedItem.type, pageSlug, pageKind)) {
+      if (selectedItem.type === 'HeroTwoEntries') {
+        showToast(vi.eb14b.cannotDeleteLastHero)
+      } else if (selectedItem.type === 'LegalFooter') {
+        showToast(vi.eb14b.cannotDeleteLastLegalFooter)
+      } else {
+        showToast(vi.eb14b.cannotDeleteLastRequired)
+      }
+      return
+    }
 
     dispatch({
       type: 'remove',
@@ -182,10 +227,19 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
       ui: { itemSelector: null },
     })
     showToast(vi.eb13a.deleted)
-  }, [canDelete, selector, dispatch, showToast])
+  }, [
+    canDelete,
+    lockInfo,
+    selector,
+    selectedItem,
+    appState.data,
+    pageSlug,
+    pageKind,
+    dispatch,
+    showToast,
+  ])
 
-  // Filter out Puck's default Duplicate / Delete from children to avoid duplicate rendering,
-  // while preserving rich text menus or other extension items.
+  // Filter out Puck's default Duplicate / Delete from children to avoid duplicate rendering
   const extraChildren = React.Children.toArray(children).filter((child) => {
     if (React.isValidElement(child)) {
       const lbl = (child.props as { label?: string })?.label
@@ -211,6 +265,61 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
       aria-label={`${vi.eb13a.toolbarLabel}: ${displayLabel}`}
       className="inline-flex items-center bg-deep-navy text-white rounded-lg shadow-xl border border-white/10 px-1 py-1 gap-1 select-none pointer-events-auto"
     >
+      {/* Lock status indicator: 🔒 Đã khoá or 🔓 Đang mở khoá */}
+      {isLocked && (
+        <>
+          <div
+            data-testid="block-lock-badge"
+            title={lockInfo?.reason}
+            tabIndex={0}
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white/10 text-white font-ui text-xs font-semibold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-magenta"
+          >
+            <span aria-hidden="true">🔒</span>
+            <span>{vi.eb14b.lockedAria}</span>
+            {lockInfo?.canUnlock && isOwner && (
+              <button
+                type="button"
+                data-testid="block-action-unlock"
+                onClick={() => selectedItem && requestUnlock(selectedItem)}
+                title={vi.eb14b.unlockButton}
+                className="ml-1 px-1.5 py-0.5 rounded bg-bright-magenta hover:bg-bright-magenta/90 text-white font-bold text-[11px] transition cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+              >
+                {vi.eb14b.unlockButton}
+              </button>
+            )}
+            {lockInfo?.canUnlock && !isOwner && (
+              <span className="sr-only">{vi.eb14b.editorOnlyOwnerCanUnlock}</span>
+            )}
+          </div>
+          <div className="w-[1px] h-4 bg-white/20 my-auto" />
+        </>
+      )}
+
+      {lockInfo?.locked && unlocked && (
+        <>
+          <div
+            data-testid="block-unlocked-badge"
+            tabIndex={0}
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white/10 text-white font-ui text-xs font-semibold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-bright-magenta"
+          >
+            <span aria-hidden="true">🔓</span>
+            <span className="text-white font-bold">{vi.eb14b.unlockedAria}</span>
+            {itemId && (
+              <button
+                type="button"
+                data-testid="block-action-relock"
+                onClick={() => relock(itemId)}
+                title={vi.eb14b.relockButton}
+                className="ml-1 px-1.5 py-0.5 rounded bg-white/20 hover:bg-white/30 text-white font-semibold text-[11px] transition cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white"
+              >
+                {vi.eb14b.relockButton}
+              </button>
+            )}
+          </div>
+          <div className="w-[1px] h-4 bg-white/20 my-auto" />
+        </>
+      )}
+
       {/* 1. Select Parent Action (Hidden for root blocks) */}
       {hasParent && (
         <>
@@ -242,20 +351,17 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
         </>
       )}
 
-      {/* EB-13ac: no block-name label here – the name is already in the right panel and the
-          Structure tab, and the wider bar covered the block right above the selected one
-          (it could not be clicked). */}
-
       {/* 3. Reorder: Move Up (↑) */}
       <button
         type="button"
         data-testid="block-action-move-up"
         onClick={handleMoveUp}
-        disabled={!moveStatus.canMoveUp}
+        disabled={canDrag && !moveStatus.canMoveUp}
+        aria-disabled={!canDrag ? 'true' : undefined}
         aria-label={vi.eb13a.moveUp}
-        title={vi.eb13a.moveUp}
+        title={!canDrag ? (lockInfo?.reason || vi.eb13a.moveUp) : vi.eb13a.moveUp}
         className={`min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui ${
-          moveStatus.canMoveUp
+          canDrag && moveStatus.canMoveUp
             ? 'text-white hover:bg-white/15 active:bg-white/25 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta'
             : 'text-white/30 cursor-not-allowed opacity-40'
         }`}
@@ -276,11 +382,12 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
         type="button"
         data-testid="block-action-move-down"
         onClick={handleMoveDown}
-        disabled={!moveStatus.canMoveDown}
+        disabled={canDrag && !moveStatus.canMoveDown}
+        aria-disabled={!canDrag ? 'true' : undefined}
         aria-label={vi.eb13a.moveDown}
-        title={vi.eb13a.moveDown}
+        title={!canDrag ? (lockInfo?.reason || vi.eb13a.moveDown) : vi.eb13a.moveDown}
         className={`min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui ${
-          moveStatus.canMoveDown
+          canDrag && moveStatus.canMoveDown
             ? 'text-white hover:bg-white/15 active:bg-white/25 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta'
             : 'text-white/30 cursor-not-allowed opacity-40'
         }`}
@@ -304,62 +411,68 @@ export function BlockActionBar({ label, children, parentAction }: BlockActionBar
         </>
       )}
 
-      {/* 5. Duplicate Action */}
-      {canDuplicate && (
-        <>
-          <div className="w-[1px] h-4 bg-white/20 my-auto" />
-          <button
-            type="button"
-            data-testid="block-action-duplicate"
-            onClick={handleDuplicate}
-            aria-label={vi.eb13a.duplicate}
-            title={vi.eb13a.duplicate}
-            className="min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui text-white hover:bg-white/15 active:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta cursor-pointer"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-              />
-            </svg>
-          </button>
-        </>
-      )}
-
-      {/* 6. Delete Action */}
-      {canDelete && (
-        <button
-          type="button"
-          data-testid="block-action-delete"
-          onClick={handleDelete}
-          aria-label={vi.eb13a.delete}
-          title={vi.eb13a.delete}
-          className="min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui text-white/90 hover:bg-accent-pink/30 hover:text-white active:bg-accent-pink/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink cursor-pointer"
+      {/* 5. Duplicate Action: Always visible, aria-disabled if locked */}
+      <div className="w-[1px] h-4 bg-white/20 my-auto" />
+      <button
+        type="button"
+        data-testid="block-action-duplicate"
+        onClick={handleDuplicate}
+        aria-disabled={!canDuplicate ? 'true' : undefined}
+        aria-label={vi.eb13a.duplicate}
+        title={
+          !canDuplicate ? (lockInfo?.reason || vi.eb13a.cannotDuplicateLocked) : vi.eb13a.duplicate
+        }
+        className={`min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui ${
+          canDuplicate
+            ? 'text-white hover:bg-white/15 active:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta cursor-pointer'
+            : 'text-white/30 cursor-not-allowed opacity-40'
+        }`}
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            />
-          </svg>
-        </button>
-      )}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+          />
+        </svg>
+      </button>
+
+      {/* 6. Delete Action: Always visible, aria-disabled if locked */}
+      <button
+        type="button"
+        data-testid="block-action-delete"
+        onClick={handleDelete}
+        aria-disabled={!canDelete ? 'true' : undefined}
+        aria-label={vi.eb13a.delete}
+        title={!canDelete ? (lockInfo?.reason || vi.eb13a.cannotDeleteLocked) : vi.eb13a.delete}
+        className={`min-h-[32px] min-w-[32px] px-2 py-1 rounded inline-flex items-center justify-center transition text-xs font-ui ${
+          canDelete
+            ? 'text-white/90 hover:bg-accent-pink/30 hover:text-white active:bg-accent-pink/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink cursor-pointer'
+            : 'text-white/30 cursor-not-allowed opacity-40'
+        }`}
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
+        </svg>
+      </button>
     </div>
   )
 }

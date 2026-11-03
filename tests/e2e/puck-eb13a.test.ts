@@ -215,10 +215,11 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
           await heroBlock.click({ force: true })
           await page.waitForTimeout(300)
 
-          // Delete button must NOT be present on locked Hero
+          // EB-14b: Delete button is present on locked Hero but aria-disabled
           await expect(homeCanvas.getByTestId('block-action-move-up')).toBeVisible()
           const deleteBtn = homeCanvas.getByTestId('block-action-delete')
-          await expect(deleteBtn).toHaveCount(0)
+          await expect(deleteBtn).toBeVisible()
+          await expect(deleteBtn).toHaveAttribute('aria-disabled', 'true')
         }
       }
     } finally {

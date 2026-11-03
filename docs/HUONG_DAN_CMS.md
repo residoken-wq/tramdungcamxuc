@@ -71,6 +71,7 @@
    - [5.32. Đầu trang và chân trang dựng bằng trình soạn thảo (EB-10)](#532-đầu-trang-và-chân-trang-dựng-bằng-trình-soạn-thảo-eb-10)
    - [5.33. Thanh thao tác nhanh và phím tắt (EB-13a)](#533-thanh-thao-tác-nhanh-và-phím-tắt-eb-13a)
    - [5.34. Bấm để chèn khối (EB-13b)](#534-bấm-để-chèn-khối-eb-13b)
+   - [5.36. Khối bị khoá và cách mở khoá (EB-14b)](#536-khối-bị-khoá-và-cách-mở-khoá)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2705,6 +2706,44 @@ Giờ đây, Hana chỉ cần **bấm một cái (click)** vào bất kỳ khố
    - Bấm vào mục này, một khung chứa chuẩn 2 cột responsive (ngang trên máy tính, dọc trên điện thoại) gồm sẵn khối Ảnh và khối Chữ mẫu sẽ được tạo ngay lập tức.
 6. **Bảo vệ quy tắc thương hiệu:**
    - Nếu Hana bấm chọn một khối không phù hợp với vị trí hiện tại (ví dụ: cố tình đặt khối gốc lớn vào trong một thẻ con), hệ thống sẽ từ chối và hiện thông báo giải thích rõ ràng, giúp trang web luôn giữ đúng quy chuẩn thiết kế.
+
+### 5.36. Khối bị khoá và cách mở khoá
+
+Trên website Trạm Dừng Cảm Xúc, một số khối đặc thù được hệ thống tự động khoá một phần hoặc toàn bộ thao tác nhằm bảo vệ tính toàn vẹn của nhận diện thương hiệu và quy chuẩn bắt buộc:
+- **Hero 2 lối vào (`HeroTwoEntries`) trên trang chủ:** Khối cửa ngõ đón khách của trang chủ, mặc định không thể kéo đổi chỗ, nhân bản hay xoá.
+- **Chân trang pháp lý (`LegalFooter`):** Khối điều khoản và liên kết pháp lý bắt buộc phải có ở cuối mọi trang, không thể xoá.
+- **Khối HTML tuỳ chỉnh (`HtmlWidget`):** Khi tính năng "Mở khoá CSS / HTML" trong Thiết kế hệ thống đang tắt, khối này không thể chỉnh sửa mã HTML trực tiếp.
+
+#### 1. Nhận biết khối đang bị khoá
+
+Khi Hana bấm chọn một khối đang bị khoá trong trình soạn thảo:
+1. **Trên thanh thao tác nhanh nổi (Action Bar):** Xuất hiện nhãn **🔒 Đã khoá**. Rà chuột hoặc chạm vào nhãn sẽ hiển thị lý do khối bị giới hạn.
+2. **Các nút thao tác bị giới hạn (Đổi chỗ, Nhân bản, Xoá):** Vẫn hiển thị đầy đủ trên thanh công cụ nhưng ở trạng thái mờ (`aria-disabled`). Khi Hana bấm vào nút mờ, hệ thống sẽ hiện thông báo nổi (toast) giải thích rõ lý do thay vì im lặng.
+3. **Cây cấu trúc (thẻ Cấu trúc bên trái):** Xuất hiện biểu tượng ổ khoá 🔒 ngay cạnh tên khối.
+4. **Bảng thuộc tính bên phải:** Trên cùng bảng thuộc tính luôn có dải thông báo màu be (`butter-cream`) nêu rõ khối đang bị khoá những thao tác gì (không xoá / không đổi chỗ / không nhân bản) cùng lý do cụ thể.
+
+#### 2. Ai được quyền mở khoá?
+
+- **Chỉ Chủ tài khoản (`owner`):** Mới có quyền bấm nút **"Mở khoá"** để chủ động di chuyển hoặc sắp xếp lại bố cục khối.
+- **Người biên tập (`editor`):** Chỉ thấy thông báo *"Chỉ chủ tài khoản mở khoá được khối này"* và không thể bấm mở khoá.
+
+#### 3. Cách mở khoá và xác nhận an toàn
+
+1. Chọn khối đang khoá (ví dụ khối Hero 2 lối vào trên trang chủ).
+2. Bấm nút **"Mở khoá"** trên thanh thao tác nổi hoặc trên dải thông báo màu be bên phải.
+3. Một hộp thoại xác nhận an toàn sẽ hiện ra, giải thích rõ:
+   - Thao tác mở khoá **chỉ có hiệu lực tạm thời trong phiên chỉnh sửa hiện tại**.
+   - Khi tải lại trang (reload) hoặc đóng trình duyệt, khối sẽ tự động khoá bảo vệ trở lại.
+   - Nhắc nhở quy tắc bắt buộc: *"Trang chủ vẫn phải còn ít nhất 1 Hero 2 lối vào khi lưu."*
+4. Bấm **"Mở khoá"** trong hộp thoại:
+   - Khối chuyển sang trạng thái **🔓 Đang mở khoá**.
+   - Hana có thể dùng phím tắt `Alt + ↓` / `Alt + ↑` hoặc các nút mũi tên để đổi vị trí khối theo ý muốn (ví dụ: đưa khối Hero xuống dưới một khối khác khi sắp đặt lại chiến dịch).
+   - Nếu muốn khoá lại ngay lập tức mà không cần chờ tải lại trang, Hana bấm nút **"Khoá lại"**.
+
+#### 4. Quy tắc an toàn bắt buộc khi mở khoá
+
+- **Bảo vệ khối bắt buộc duy nhất:** Dù đang trong trạng thái mở khoá, nếu Hana cố tình xoá khối Hero 2 lối vào **duy nhất** trên trang chủ (hoặc khối Chân trang pháp lý duy nhất ở chân trang), trình soạn thảo sẽ lập tức chặn lại và hiện thông báo nhắc nhở, ngăn không để trang chủ bị mất cửa ngõ đón khách.
+- **Khối HTML khoá bởi Thiết kế hệ thống:** Không thể mở khoá tạm thời trong trình soạn thảo. Muốn chỉnh sửa khối này, Chủ tài khoản cần vào **Admin → Thiết kế hệ thống** để bật công tắc cho phép.
 
 ---
 

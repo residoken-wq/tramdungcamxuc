@@ -9,6 +9,8 @@ import { copyBlock, readClipboard, prepareForPaste } from './clipboard'
 import { hasStyleKeys } from '@/puck/style/style-schema'
 import { switchLeftPanelTab } from '@/puck/editor/left-panel-tab'
 import { SaveTemplateModal } from '@/puck/editor/SaveTemplateModal'
+import { isLastRequiredBlock } from '@/puck/locks'
+import { useLockContext } from '@/puck/editor/lock/lock-context'
 
 export type MenuItemId =
   | 'rename'
@@ -32,8 +34,9 @@ export type MenuItemDef = {
 
 export function BlockContextMenu() {
   const { menuState, closeMenu, setRenamingId, showToast } = useContextMenu()
-  const { config, dispatch, getPermissions, getItemById, getSelectorForId, getParentById } =
+  const { config, dispatch, getPermissions, getItemById, getSelectorForId, getParentById, appState } =
     usePuck()
+  const { getBlockInfo, pageSlug, pageKind, isUnlocked } = useLockContext()
 
   const menuRef = useRef<HTMLDivElement>(null)
   const [position, setPosition] = useState<{ left: number; top: number }>({ left: 0, top: 0 })
@@ -55,8 +58,11 @@ export function BlockContextMenu() {
 
   // Calculate permissions
   const permissions = item && getPermissions ? getPermissions({ item }) : undefined
-  const canDuplicate = permissions ? permissions.duplicate !== false : true
-  const canDelete = permissions ? permissions.delete !== false : true
+  const lockInfo = item?.type ? getBlockInfo(item.type) : undefined
+  const unlocked = componentId ? isUnlocked(componentId) : false
+  const isLocked = Boolean(lockInfo?.locked && !unlocked)
+  const canDuplicate = isLocked ? false : unlocked ? true : permissions ? permissions.duplicate !== false : true
+  const canDelete = isLocked ? false : unlocked ? true : permissions ? permissions.delete !== false : true
 
   // Clipboard checking
   const clipboard = readClipboard()
@@ -200,13 +206,27 @@ export function BlockContextMenu() {
   const handleDelete = useCallback(() => {
     closeMenu()
     if (!selector || !canDelete) return
+    if (!item) return
+
+    // REVIEW-REQUIRED: Chặn xoá khối bắt buộc cuối cùng
+    if (isLastRequiredBlock(appState.data, item.type, pageSlug, pageKind)) {
+      if (item.type === 'HeroTwoEntries') {
+        showToast(vi.eb14b.cannotDeleteLastHero)
+      } else if (item.type === 'LegalFooter') {
+        showToast(vi.eb14b.cannotDeleteLastLegalFooter)
+      } else {
+        showToast(vi.eb14b.cannotDeleteLastRequired)
+      }
+      return
+    }
+
     dispatch({
       type: 'remove',
       index: selector.index,
       zone: selector.zone,
     })
     showToast(vi.eb07.toast.deleted)
-  }, [closeMenu, selector, canDelete, dispatch, showToast])
+  }, [closeMenu, selector, canDelete, item, appState.data, pageSlug, pageKind, dispatch, showToast])
 
   // Build menu item list
   const menuItems = useMemo<MenuItemDef[]>(
@@ -251,7 +271,7 @@ export function BlockContextMenu() {
           </svg>
         ),
         disabled: !canDuplicate,
-        tooltip: !canDuplicate ? vi.eb07.cannotDuplicateLocked : undefined,
+        tooltip: !canDuplicate ? (lockInfo?.reason || vi.eb07.cannotDuplicateLocked) : undefined,
         action: handleDuplicate,
       },
       {
@@ -366,7 +386,7 @@ export function BlockContextMenu() {
         ),
         danger: true,
         disabled: !canDelete,
-        tooltip: !canDelete ? vi.eb07.cannotDeleteLocked : undefined,
+        tooltip: !canDelete ? (lockInfo?.reason || vi.eb07.cannotDeleteLocked) : undefined,
         action: handleDelete,
       },
     ],
@@ -387,6 +407,7 @@ export function BlockContextMenu() {
       handleSaveAsTemplate,
       handleDelete,
       item,
+      lockInfo,
     ],
   )
 

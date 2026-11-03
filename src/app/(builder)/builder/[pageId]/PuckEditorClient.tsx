@@ -38,8 +38,9 @@ import { EditorToolbar } from '@/puck/editor/EditorToolbar'
 import { StylePanelProvider } from '@/puck/editor/style-context'
 import { FieldsWithTabs, tabFieldTypes } from '@/puck/editor/StylePanelTabs'
 import { StylePreview } from '@/puck/editor/StylePreview'
-import { DEFAULT_DESIGN_SYSTEM, type CleanDesignSystem } from '@/lib/design/design-system'
+import { DEFAULT_DESIGN_SYSTEM, isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
 import { ContextMenuProvider } from '@/puck/editor/context-menu/context-menu-context'
+import { LockProvider } from '@/puck/editor/lock/lock-context'
 import { BlockContextMenu } from '@/puck/editor/context-menu/BlockContextMenu'
 import { ContextMenuOverlay } from '@/puck/editor/context-menu/ContextMenuOverlay'
 import { ToastNotification } from '@/puck/editor/context-menu/ToastNotification'
@@ -1021,6 +1022,7 @@ export function PuckEditorClient({
   const [feedback, setFeedback] = useState<Feedback>({ type: 'idle', message: '' })
   const [docStatus, setDocStatus] = useState<string>(initialStatus)
   const [previewVersion, setPreviewVersion] = useState<PreviewVersionState | null>(null)
+  const [unlockedBlockIds, setUnlockedBlockIds] = useState<Set<string>>(() => new Set())
   // QA EB-08c: while a version is previewed its data must not reach autosave (it would overwrite
   // the draft being edited 30 s later).
   const previewingRef = useRef(false)
@@ -1033,9 +1035,15 @@ export function PuckEditorClient({
   // Memoized config tailored for pageSlug (with locked permissions for Hero on homepage, owner checks, kind)
   const config = useMemo(() => {
     return typeof getPuckConfig === 'function'
-      ? getPuckConfig({ pageSlug, isOwner, designSystem, kind: pageKind })
+      ? getPuckConfig({
+          pageSlug,
+          isOwner,
+          designSystem,
+          kind: pageKind,
+          isBlockUnlocked: (id) => unlockedBlockIds.has(id),
+        })
       : puckConfig
-  }, [pageSlug, isOwner, designSystem, pageKind])
+  }, [pageSlug, isOwner, designSystem, pageKind, unlockedBlockIds])
 
   // Setup Autosave Controller with useState initializer (pure, runs once, stable instance)
   const [autosaveController] = useState(() => {
@@ -1076,10 +1084,20 @@ export function PuckEditorClient({
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [autosaveController])
 
+  const htmlLocked = Boolean(designSystem && !isOpen(designSystem, 'customCss'))
+
   return (
     <StylePanelProvider ds={designSystem} isOwner={isOwner}>
       <ContextMenuProvider>
-        <EditorContext.Provider
+        <LockProvider
+          pageSlug={pageSlug}
+          pageKind={pageKind}
+          isOwner={isOwner}
+          htmlLocked={htmlLocked}
+          unlockedBlockIds={unlockedBlockIds}
+          setUnlockedBlockIds={setUnlockedBlockIds}
+        >
+          <EditorContext.Provider
           value={{
             pageId,
             pageTitle,
@@ -1167,7 +1185,8 @@ export function PuckEditorClient({
           </div>
           <ToastNotification />
         </EditorContext.Provider>
-      </ContextMenuProvider>
-    </StylePanelProvider>
+      </LockProvider>
+    </ContextMenuProvider>
+  </StylePanelProvider>
   )
 }
