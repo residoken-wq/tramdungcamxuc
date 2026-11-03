@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { test, expect, type Response } from './fixtures'
+import { vi } from '@/lib/i18n/vi'
 
 test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () => {
   test('configures backdrop layout in Puck editor, verifies WCAG AA contrast, bounding boxes, clickability, and legacy split layout', async ({
@@ -20,6 +21,9 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
     const slugLight = `e2e-hero-light-${randomUUID().slice(0, 8)}`
 
     const heroId = `eb14a-hero-${randomUUID().slice(0, 8)}`
+    const editedTitle = `[MẪU] THỬ ẢNH NỀN ${randomUUID().slice(0, 4).toUpperCase()}`
+    const extraPageIds: number[] = []
+    const shoot = process.env.EB14_SCREENSHOTS === '1'
     const legacyHeroId = `eb14a-legacy-${randomUUID().slice(0, 8)}`
     const lightHeroId = `eb14a-light-${randomUUID().slice(0, 8)}`
 
@@ -32,7 +36,7 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
     let mediaUrl: string = ''
 
     const screenshotsDir = path.resolve(process.cwd(), 'docs/screenshots/eb14')
-    if (!fs.existsSync(screenshotsDir)) {
+    if (process.env.EB14_SCREENSHOTS === '1' && !fs.existsSync(screenshotsDir)) {
       fs.mkdirSync(screenshotsDir, { recursive: true })
     }
 
@@ -199,6 +203,7 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
         },
       })
       expect(createLegacy.ok()).toBe(true)
+      extraPageIds.push((await createLegacy.json()).doc.id)
 
       // 5. Create a published Light Backdrop page for screenshots & assertions
       const createLight = await page.request.post('/api/pages', {
@@ -250,6 +255,7 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
         },
       })
       expect(createLight.ok()).toBe(true)
+      extraPageIds.push((await createLight.json()).doc.id)
 
       // --- IN-EDITOR INTERACTION ---
       // 6. Open builder for the draft page
@@ -272,9 +278,9 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
       }
 
       // Change layout to "Ảnh làm nền, chữ nằm trên ảnh" (backdrop)
-      const layoutSelect = page.locator('select[name="layout"]')
+      const layoutSelect = page.getByRole('combobox', { name: vi.eb14a.layout, exact: true })
       await expect(layoutSelect).toBeVisible()
-      await layoutSelect.selectOption('backdrop')
+      await layoutSelect.selectOption({ label: vi.eb14a.layoutOptions.backdrop })
 
       // Select media via media modal
       const chooseMediaButton = page.getByRole('button', {
@@ -288,22 +294,29 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
       await mediaRow.first().click()
 
       // Select "Phủ tối", "Đậm", "Mờ nhẹ"
-      const overlayToneSelect = page.locator('select[name="overlayTone"]')
+      const overlayToneSelect = page.getByRole('combobox', {
+        name: vi.eb14a.overlayTone,
+        exact: true,
+      })
       await expect(overlayToneSelect).toBeVisible()
-      await overlayToneSelect.selectOption('dark')
+      await overlayToneSelect.selectOption({ label: vi.eb14a.overlayToneOptions.dark })
 
-      const overlayStrengthSelect = page.locator('select[name="overlayStrength"]')
+      const overlayStrengthSelect = page.getByRole('combobox', {
+        name: vi.eb14a.overlayStrength,
+        exact: true,
+      })
       await expect(overlayStrengthSelect).toBeVisible()
-      await overlayStrengthSelect.selectOption('lg')
+      await overlayStrengthSelect.selectOption({ label: vi.eb14a.overlayStrengthOptions.lg })
 
-      const imageBlurSelect = page.locator('select[name="imageBlur"]')
+      const imageBlurSelect = page.getByRole('combobox', { name: vi.eb14a.imageBlur, exact: true })
       await expect(imageBlurSelect).toBeVisible()
-      await imageBlurSelect.selectOption('sm')
+      await imageBlurSelect.selectOption({ label: vi.eb14a.imageBlurOptions.sm })
 
-      // Edit title on canvas (contentEditable check)
-      const titleLine1Span = canvas.locator('h1 span').first()
-      await expect(titleLine1Span).toBeVisible()
-      await titleLine1Span.click()
+      // Edit title line 1 (QA EB-14ac: the step only clicked it before)
+      const titleField = page.getByRole('textbox', { name: /Tiêu đề dòng 1/i })
+      await expect(titleField).toBeVisible()
+      await titleField.fill(editedTitle)
+      await expect(canvas.locator('h1').first()).toContainText(editedTitle)
 
       // Publish the page
       const publishBtn = page.getByRole('button', { name: 'Xuất bản', exact: true })
@@ -324,6 +337,7 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
 
       const heroImg = darkSection.locator('img').first()
       const titleH1 = darkSection.locator('h1').first()
+      await expect(titleH1).toContainText(editedTitle)
 
       const imgBox = await heroImg.boundingBox()
       const titleBox = await titleH1.boundingBox()
@@ -355,10 +369,11 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
       expect(isClickable).toBe(true)
 
       // Screenshot 1: Dark backdrop 1440
-      await page.screenshot({
-        path: path.join(screenshotsDir, 'backdrop-toi-1440.png'),
-        fullPage: false,
-      })
+      if (shoot)
+        await page.screenshot({
+          path: path.join(screenshotsDir, 'backdrop-toi-1440.png'),
+          fullPage: false,
+        })
 
       // 8. Verify at 375 mobile
       await page.setViewportSize({ width: 375, height: 667 })
@@ -368,10 +383,11 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
       await expect(mobileDarkSection).toBeVisible()
 
       // Screenshot 2: Dark backdrop 375
-      await page.screenshot({
-        path: path.join(screenshotsDir, 'backdrop-toi-375.png'),
-        fullPage: false,
-      })
+      if (shoot)
+        await page.screenshot({
+          path: path.join(screenshotsDir, 'backdrop-toi-375.png'),
+          fullPage: false,
+        })
 
       // --- PUBLIC PAGE VERIFICATION: LIGHT BACKDROP (1440 & 375) ---
       // 9. Light backdrop at 1440
@@ -390,20 +406,22 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
       expect(lightTitleColor).toBe('rgb(40, 10, 96)')
 
       // Screenshot 3: Light backdrop 1440
-      await page.screenshot({
-        path: path.join(screenshotsDir, 'backdrop-sang-1440.png'),
-        fullPage: false,
-      })
+      if (shoot)
+        await page.screenshot({
+          path: path.join(screenshotsDir, 'backdrop-sang-1440.png'),
+          fullPage: false,
+        })
 
       // 10. Light backdrop at 375
       await page.setViewportSize({ width: 375, height: 667 })
       await page.reload({ waitUntil: 'domcontentloaded' })
 
       // Screenshot 4: Light backdrop 375
-      await page.screenshot({
-        path: path.join(screenshotsDir, 'backdrop-sang-375.png'),
-        fullPage: false,
-      })
+      if (shoot)
+        await page.screenshot({
+          path: path.join(screenshotsDir, 'backdrop-sang-375.png'),
+          fullPage: false,
+        })
 
       // --- PUBLIC PAGE VERIFICATION: LEGACY SPLIT HERO (1440) ---
       // 11. Legacy page renders split layout (image beside text)
@@ -430,132 +448,73 @@ test.describe('EB-14a: Hero Backdrop Layout (HeroTwoEntries & HeroImage)', () =>
       expect(legacyImgBox!.x).toBeGreaterThan(legacyTitleBox!.x)
 
       // Screenshot 5: Legacy split 1440
-      await page.screenshot({
-        path: path.join(screenshotsDir, 'split-cu-1440.png'),
-        fullPage: false,
-      })
+      if (shoot)
+        await page.screenshot({
+          path: path.join(screenshotsDir, 'split-cu-1440.png'),
+          fullPage: false,
+        })
 
-      // --- PUBLIC PAGE VERIFICATION: SECTION 1.6 (ROWS & TEXT-COLUMN) ---
-      const slugRows = `e2e-hero-rows-${randomUUID().slice(0, 8)}`
-      const rowsHeroId = `eb14a-rows-${randomUUID().slice(0, 8)}`
-      await page.request.post('/api/pages', {
-        data: {
-          title: '[MẪU] E2E Hero Rows Page',
-          slug: slugRows,
-          _status: 'published',
-          puckData: {
-            content: [
-              {
-                type: 'HeroTwoEntries',
-                props: {
-                  id: rowsHeroId,
-                  version: 4,
-                  layout: 'split',
-                  entriesLayout: 'rows',
-                  entriesPlacement: 'textColumn',
-                  titleLine1: '[MẪU] HÀNG TRÊN DƯỚI',
-                  titleLine2: 'TRONG CỘT CHỮ',
-                  description: '[MẪU] Mô tả cột chữ bên trái',
-                  imageUrl: mediaUrl || 'https://example.com/sample.png',
-                  imageAlt: mediaAlt,
-                  bgColor: 'warm-ivory',
-                  entries: [
-                    {
-                      type: 'EntryCard',
-                      props: {
-                        id: 'row-card-1',
-                        groupLabel: 'CHO CÁ NHÂN',
-                        description: 'Phát triển Năng lực & Sự nghiệp',
-                        buttonText: 'KHÁM PHÁ CÁC LỘ TRÌNH',
-                        buttonLink: '/ca-nhan',
-                        buttonStyle: 'solid',
-                      },
-                    },
-                    {
-                      type: 'EntryCard',
-                      props: {
-                        id: 'row-card-2',
-                        groupLabel: 'CHO DOANH NGHIỆP',
-                        description: 'Giải pháp EQ cho đội ngũ',
-                        buttonText: 'TÌM HIỂU THÊM',
-                        buttonLink: '/doanh-nghiep',
-                        buttonStyle: 'outline',
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-            root: { props: { title: 'E2E Hero Rows Page' } },
-            zones: {},
-          },
-        },
-      })
-
-      // 12. Rows & text-column at 1440
+      // --- SECTION 1.6 THROUGH THE EDITOR: split + rows + text column (QA EB-14ac) ---
       await page.setViewportSize({ width: 1440, height: 900 })
-      await page.goto(`/${slugRows}`, { waitUntil: 'domcontentloaded' })
-
-      const rowsSection = page.locator('section').first()
-      await expect(rowsSection).toBeVisible()
-
-      const cards = rowsSection.locator(
-        '[data-entries-layout="rows"] > * > div, [data-entries-layout="rows"] .rounded-card',
-      )
-      const card1 = cards.first()
-      const card2 = cards.nth(1)
-
-      const box1 = await card1.boundingBox()
-      const box2 = await card2.boundingBox()
-      const img1440 = rowsSection.locator('img').first()
-      const imgBox1440 = await img1440.boundingBox()
-
-      if (box1 && box2 && imgBox1440) {
-        // thẻ 2 nằm dưới thẻ 1 (box2.y >= box1.y + box1.height - tolerance), cùng x (within 5px)
-        expect(box2.y).toBeGreaterThanOrEqual(box1.y + box1.height - 5)
-        expect(Math.abs(box2.x - box1.x)).toBeLessThanOrEqual(5)
-
-        // 2 thẻ nằm bên trái ảnh (card.x + card.width <= image.x + tolerance)
-        expect(box1.x + box1.width).toBeLessThanOrEqual(imgBox1440.x + 5)
-        expect(box2.x + box2.width).toBeLessThanOrEqual(imgBox1440.x + 5)
-
-        // nút của thẻ nằm bên phải chữ của thẻ, cùng hàng (btn.x > text.x)
-        const btn1 = card1.locator('a, button').first()
-        const text1 = card1.locator('p').first()
-        const btnBox1 = await btn1.boundingBox()
-        const textBox1 = await text1.boundingBox()
-        if (btnBox1 && textBox1) {
-          expect(btnBox1.x).toBeGreaterThan(textBox1.x)
-        }
-      }
-
-      await page.screenshot({
-        path: path.join(screenshotsDir, 'rows-text-column-1440.png'),
-        fullPage: false,
+      await page.goto(`/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
+      await expect(page.locator('[class*="_PuckCanvas--ready_"]')).toHaveCount(1)
+      await page.waitForTimeout(600)
+      const canvasRows = page.frameLocator('iframe')
+      await canvasRows.locator(`[data-puck-component="${heroId}"]`).click()
+      await page.waitForTimeout(400)
+      await page
+        .getByRole('combobox', { name: vi.eb14a.layout, exact: true })
+        .selectOption({ label: vi.eb14a.layoutOptions.split })
+      await page
+        .getByRole('combobox', { name: vi.eb14a.entriesLayoutLabel, exact: true })
+        .selectOption({ label: vi.eb14a.entriesLayoutRows })
+      await page
+        .getByRole('combobox', { name: vi.eb14a.entriesPlacementLabel, exact: true })
+        .selectOption({ label: vi.eb14a.entriesPlacementTextColumn })
+      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
+      await expect(page.getByRole('status').filter({ hasText: 'Đã xuất bản' })).toBeVisible({
+        timeout: 20000,
       })
 
-      // 13. Rows & text-column at 375: nút nằm dưới chữ
+      // 1440: cards stacked, inside the text column left of the image, button right of text
+      await page.goto(`/${slugBackdrop}`, { waitUntil: 'domcontentloaded' })
+      const rowsHero = page.locator('section[data-bg]').filter({ hasText: editedTitle }).first()
+      await expect(rowsHero.locator('[data-entries-layout="rows"]')).toBeVisible()
+      const rowCards = rowsHero.locator('[data-entries-layout="rows"] .rounded-card')
+      await expect(rowCards).toHaveCount(2)
+      const box1 = await rowCards.nth(0).boundingBox()
+      const box2 = await rowCards.nth(1).boundingBox()
+      const rowsImgBox = await rowsHero.locator('img').first().boundingBox()
+      expect(box1 && box2 && rowsImgBox).toBeTruthy()
+      expect(box2!.y).toBeGreaterThanOrEqual(box1!.y + box1!.height - 1)
+      expect(Math.abs(box2!.x - box1!.x)).toBeLessThanOrEqual(2)
+      expect(box1!.x + box1!.width).toBeLessThanOrEqual(rowsImgBox!.x + 1)
+      const btnBox = await rowCards.nth(0).locator('a').first().boundingBox()
+      const textBox = await rowCards.nth(0).locator('p').first().boundingBox()
+      expect(btnBox && textBox).toBeTruthy()
+      expect(btnBox!.x).toBeGreaterThanOrEqual(textBox!.x + textBox!.width - 1)
+      expect(
+        Math.abs(btnBox!.y + btnBox!.height / 2 - (textBox!.y + textBox!.height / 2)),
+      ).toBeLessThan(24)
+      if (shoot)
+        await page.screenshot({ path: path.join(screenshotsDir, 'rows-text-column-1440.png') })
+
+      // 375: the button drops below the text
       await page.setViewportSize({ width: 375, height: 667 })
       await page.reload({ waitUntil: 'domcontentloaded' })
-
-      const mobileCard1 = rowsSection.locator('.rounded-card').first()
-      const mobileBtn1 = mobileCard1.locator('a, button').first()
-      const mobileText1 = mobileCard1.locator('p').first()
-      const mobileBtnBox = await mobileBtn1.boundingBox()
-      const mobileTextBox = await mobileText1.boundingBox()
-      if (mobileBtnBox && mobileTextBox) {
-        // nút nằm dưới chữ
-        expect(mobileBtnBox.y).toBeGreaterThan(mobileTextBox.y)
-      }
-
-      await page.screenshot({
-        path: path.join(screenshotsDir, 'rows-text-column-375.png'),
-        fullPage: false,
-      })
+      const mBtn = await rowCards.nth(0).locator('a').first().boundingBox()
+      const mText = await rowCards.nth(0).locator('p').first().boundingBox()
+      expect(mBtn && mText).toBeTruthy()
+      expect(mBtn!.y).toBeGreaterThanOrEqual(mText!.y + mText!.height - 1)
+      if (shoot)
+        await page.screenshot({ path: path.join(screenshotsDir, 'rows-text-column-375.png') })
     } finally {
       // Clean up test pages and media
       if (pageId) {
         await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
+      }
+      for (const id of extraPageIds) {
+        await page.request.delete(`/api/pages/${id}`).catch(() => {})
       }
       if (mediaId) {
         await page.request.delete(`/api/media/${mediaId}`).catch(() => {})

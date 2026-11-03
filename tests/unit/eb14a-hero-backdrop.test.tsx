@@ -14,6 +14,7 @@ import { HeroTwoEntries } from '@/components/site/HeroTwoEntries'
 import { HeroImage } from '@/components/site/HeroImage'
 import { HeroTwoEntriesBlock } from '@/puck/blocks/HeroTwoEntries'
 import { HeroImageBlock } from '@/puck/blocks/HeroImage'
+import { HeroEntryCard } from '@/components/site/HeroEntryCard'
 
 describe('EB-14a: Hero Backdrop Unit Tests', () => {
   describe('1. heroBackdropColors and color tokens', () => {
@@ -460,5 +461,21 @@ describe('EB-14a: Hero Backdrop Unit Tests', () => {
       const entriesWrapper = leftCol?.querySelector('[data-entries-layout="rows"]')
       expect(entriesWrapper).not.toBeNull()
     })
+  })
+})
+
+describe('QA EB-14ac: row-mode card text keeps the colour rule of the card', () => {
+  it('never forces navy text in row mode (it would be navy on a navy hero)', () => {
+    const { container } = render(
+      <HeroEntryCard
+        groupLabel="[MẪU] CHO CÁ NHÂN"
+        description="[MẪU] Phát triển Năng lực"
+        buttonText="[MẪU] Khám phá"
+        buttonLink="/"
+      />,
+    )
+    const p = container.querySelector('p')
+    expect(p?.className).not.toMatch(/entries-layout=rows\]\/entries:sm:text-deep-navy/)
+    expect(p?.className).toContain('group-data-[bg=deep-navy]/hero:text-white/90')
   })
 })
