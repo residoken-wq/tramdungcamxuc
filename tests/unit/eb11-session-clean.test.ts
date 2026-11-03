@@ -68,11 +68,13 @@ describe('EB-11: Chọn bản ghi dọn dẹp buổi thử builder', () => {
       }
     })
 
-    it('hoạt động chính xác khi không truyền sessionStartedAt (chỉ xét tiền tố [MẪU])', () => {
+    it('không chọn gì khi thiếu mốc buổi thử (EB-11ac: không xoá [MẪU] của demo seed)', () => {
       expect(isSessionSampleRecord({ id: 1, title: 'Trang thật' })).toBe(false)
-      expect(isSessionSampleRecord({ id: 2, title: '[MẪU] Trang bất kỳ' })).toBe(true)
-      expect(isSessionSampleRecord({ id: 3, name: '[MẪU] Mẫu bất kỳ' })).toBe(true)
-      expect(isSessionSampleRecord({ id: 4, alt: '[MẪU] Ảnh bất kỳ' })).toBe(true)
+      expect(isSessionSampleRecord({ id: 2, title: '[MẪU] Trang chủ', createdAt: timeAfter })).toBe(
+        false,
+      )
+      expect(isSessionSampleRecord({ id: 3, name: '[MẪU] Mẫu bất kỳ' }, null)).toBe(false)
+      expect(filterRecordsToDelete([{ id: 4, alt: '[MẪU] Ảnh', createdAt: timeAfter }])).toEqual([])
     })
 
     it('xử lý an toàn khi createdAt không hợp lệ hoặc thiếu', () => {
@@ -126,4 +128,3 @@ describe('EB-11: Chọn bản ghi dọn dẹp buổi thử builder', () => {
     })
   })
 })
-

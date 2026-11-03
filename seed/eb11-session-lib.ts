@@ -65,7 +65,8 @@ export interface SessionMeta {
  * Kiểm tra xem một bản ghi có phải là dữ liệu [MẪU] do buổi thử tạo ra không.
  * Điều kiện bắt buộc:
  * 1. Tiêu đề / tên / alt BẮT ĐẦU bằng "[MẪU]". Không bao giờ chọn bản ghi thiếu "[MẪU]".
- * 2. Nếu có mốc thời gian sessionStartedAt, bản ghi phải được tạo từ mốc này trở đi (cho phép độ trễ 1000ms).
+ * 2. Bắt buộc có mốc sessionStartedAt; bản ghi phải được tạo từ mốc này trở đi (cho phép độ trễ 1000ms).
+ *    Thiếu mốc → không chọn gì (EB-11ac).
  */
 export function isSessionSampleRecord(
   record: DeletableRecord,
@@ -76,16 +77,15 @@ export function isSessionSampleRecord(
   const trimmed = nameOrTitle.trim()
   if (!trimmed.startsWith(EB11_SAMPLE_PREFIX)) return false
 
-  if (sessionStartedAt) {
-    if (!record.createdAt) return false
-    const recordTime = new Date(record.createdAt).getTime()
-    const sessionTime = new Date(sessionStartedAt).getTime()
-    if (isNaN(recordTime) || isNaN(sessionTime)) return false
-    // 1000ms margin for clock resolution
-    if (recordTime < sessionTime - 1000) return false
-  }
-
-  return true
+  // EB-11ac: without the session start mark nothing is selected. The demo already holds many
+  // [MẪU] records from `pnpm seed`; deleting every [MẪU] record would wipe the demo content.
+  if (!sessionStartedAt) return false
+  if (!record.createdAt) return false
+  const recordTime = new Date(record.createdAt).getTime()
+  const sessionTime = new Date(sessionStartedAt).getTime()
+  if (isNaN(recordTime) || isNaN(sessionTime)) return false
+  // 1000ms margin for clock resolution
+  return recordTime >= sessionTime - 1000
 }
 
 /**
@@ -332,6 +332,12 @@ export async function cleanEb11Session(payload: Payload): Promise<CleanEb11Sessi
 
   const meta = readSessionMeta()
   const startedAt = meta?.startedAt
+  if (!startedAt) {
+    // EB-11ac: refuse instead of deleting every [MẪU] record of the demo.
+    throw new Error(
+      `Không tìm thấy mốc buổi thử (${EB11_SESSION_META_FILE}). Lệnh dọn chỉ xoá dữ liệu tạo sau lệnh chuẩn bị; chạy lại pnpm seed:eb11 trước, hoặc dọn tay trong admin.`,
+    )
+  }
 
   // 1. Quét và lọc pages
   const allPages = await payload.find({
@@ -419,4 +425,3 @@ export async function cleanEb11Session(payload: Payload): Promise<CleanEb11Sessi
     restoredBackup,
   }
 }
-

@@ -75,21 +75,41 @@ Hiện tại **không còn bất kỳ lỗi P1 nào tồn đọng**.
 
 ---
 
-## 5. Hướng dẫn kỹ thuật cho anh Nhân (Chạy trên Demo / Staging)
+## 5. Hướng dẫn cho anh Nhân (chạy trên **demo**, không chạy trên `tramdungcamxuc.com`)
 
-Trước và sau buổi thử với chị Hana, anh Nhân chạy các lệnh sau trên môi trường kiểm thử (laptop):
+_Planning sửa EB-11ac: bản trước ghi sai. Lệnh **không** tạo tài khoản và **không** tạo trang `[MẪU] Landing thử`, vì Hana tự tạo trang này ở việc 1._
 
-### 1. Chuẩn bị trước buổi thử (Seed dữ liệu mẫu):
+Lệnh chạy qua image `tools` giống seed MẪU (`docs/RUNBOOK.md`). Cần thêm 3 thứ:
+- `-e DEMO_SEED_ALLOW=true`: bật tay, script không tự bật;
+- `-e SITE_URL=<địa chỉ demo>`: guard từ chối khi thiếu biến này hoặc khi nó là tên miền thật;
+- mount `./backups`: giữ file mốc buổi thử và bản sao `designSystem` giữa lệnh chuẩn bị và lệnh dọn. Container `--rm` tự xoá khi chạy xong, không mount là mất 2 file này.
+
+### 1. Trước buổi thử
+
 ```bash
-# Nạp tài khoản Hana thử nghiệm, 2 trang mẫu, 2 ảnh mẫu và token hệ thống
-pnpm seed:eb11
+mkdir -p backups
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools pull seed < /dev/null
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm \
+  -e DEMO_SEED_ALLOW=true -e SITE_URL=<địa chỉ demo> -v "$PWD/backups:/app/backups" \
+  seed pnpm seed:eb11 < /dev/null
 ```
-*Kết quả:* Tạo tài khoản `hana-session@example.test` (hoặc email hiển thị trên màn hình lệnh), tạo sẵn trang `[MẪU] Landing thử` và `[MẪU] Trang thử builder`. Lệnh có tính idempotent (chạy lại không tạo trùng).
 
-### 2. Dọn dẹp sau buổi thử (Clean dữ liệu mẫu):
+Lệnh này:
+- tạo trang `[MẪU] Trang thử builder` (đích của việc 7) và 2 ảnh `[MẪU]` trong Thư viện ảnh;
+- lưu bản sao `designSystem` và mốc thời gian vào `./backups/`.
+
+Chạy lại không tạo trùng. Tài khoản `owner` của Hana do anh Nhân tự tạo trong admin, tự gửi mật khẩu. Sau đó mở khoá màu / font / kích thước theo `docs/plan/EB-11.md` mục 1.
+
+### 2. Sau buổi thử
+
 ```bash
-# Xoá toàn bộ các trang, ảnh, mẫu khối có tiền tố [MẪU] sinh ra trong buổi thử, khôi phục Design System
-pnpm seed:eb11:clean
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm \
+  -e DEMO_SEED_ALLOW=true -e SITE_URL=<địa chỉ demo> -v "$PWD/backups:/app/backups" \
+  seed pnpm seed:eb11:clean < /dev/null
 ```
-*Kết quả:* Cơ sở dữ liệu sạch sẽ hoàn toàn, không sót rác mẫu nào trên hệ thống.
 
+Lệnh này:
+- chỉ xoá trang / mẫu khối / ảnh có `[MẪU]` **tạo sau lệnh chuẩn bị**;
+- trả `designSystem` về bản sao, gồm màu nút ở việc 6 và các khoá.
+
+Thiếu file mốc trong `./backups/` thì lệnh **từ chối**, không xoá gì. Dữ liệu `[MẪU]` của seed demo vẫn giữ.
