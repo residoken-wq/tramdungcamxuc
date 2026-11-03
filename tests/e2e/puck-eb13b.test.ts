@@ -78,41 +78,58 @@ test.describe('EB-13b: Click to insert blocks & 2-column pattern', () => {
       await expect(freeSectionGroup).toHaveCount(0)
 
       // 5. Click the 2-column pattern item at top of "Bố cục"
-      const patternItem = page.locator('[data-testid="pattern-two-columns"]').first()
+      const patternItem = page
+        .getByRole('button', { name: 'Khung 2 cột (ảnh + chữ)' })
+        .getByTestId('pattern-two-columns')
       await expect(patternItem).toBeVisible({ timeout: 10000 })
       await patternItem.click()
       await page.waitForTimeout(600)
 
-      // Verify Container with ImageWidget and TextWidget exists on canvas
-      const containerOnCanvas = canvas.locator('[data-puck-component]')
-      await expect(containerOnCanvas.first()).toBeVisible({ timeout: 10000 })
+      // The pattern inserted a Container (image + text) and selected it.
+      await expect(canvas.getByRole('button', { name: /^Chưa chọn ảnh/ }).first()).toBeVisible({
+        timeout: 10000,
+      })
+      await expect(canvas.locator('p:has-text("[MẪU]")').first()).toBeVisible()
+      await expect(canvas.getByRole('toolbar', { name: /Container/ })).toBeVisible()
 
-      const imageOnCanvas = canvas.locator('img, [data-testid="image-widget"]')
-      const textOnCanvas = canvas.locator('p:has-text("[MẪU]")')
-      await expect(imageOnCanvas.first()).toBeVisible()
-      await expect(textOnCanvas.first()).toBeVisible()
-
-      // 6. With Container selected, click "Tiêu đề" in LeftPanel
-      const headingItem = page.locator('[data-block-drawer-item="HeadingWidget"]')
-      if (await headingItem.isVisible()) {
-        await headingItem.click()
-        await page.waitForTimeout(600)
-      }
+      // 6. With the Container selected, click "Tiêu đề": it goes to the end of the Container slot.
+      await page.getByRole('button', { name: 'Tiêu đề', exact: true }).click()
+      await page.waitForTimeout(600)
 
       // 7. Publish page
-      const publishBtn = page.getByRole('button', { name: 'Xuất bản', exact: true })
-      await publishBtn.click()
-      await page.waitForTimeout(1000)
+      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
+      await expect(page.getByRole('status').filter({ hasText: 'Đã xuất bản' })).toBeVisible({
+        timeout: 15000,
+      })
 
-      // 8. Public page check at 1440 and 375
+      const res = await page.request.get(`/api/pages/${pageId}?depth=0`)
+      expect(res.ok()).toBe(true)
+      const content = (await res.json()).puckData.content as Array<{
+        type: string
+        props: { id: string; items?: Array<{ type: string; props: { id: string } }> }
+      }>
+      const container = content.find((b) => b.type === 'Container')
+      expect(container).toBeDefined()
+      const childTypes = (container?.props.items ?? []).map((b) => b.type)
+      expect(childTypes).toEqual(['ImageWidget', 'TextWidget', 'HeadingWidget'])
+
+      // 8. Public page: side by side at 1440, stacked at 375.
       await page.setViewportSize({ width: 1440, height: 900 })
       await page.goto(`/${slug}`)
-      await expect(page.locator('p:has-text("[MẪU]")').first()).toBeVisible()
+      const textEl = page.locator('p:has-text("[MẪU] Tiêu đề nội dung")').first()
+      const headingEl = page.getByRole('heading', { name: 'Tiêu đề mới' })
+      await expect(textEl).toBeVisible()
+      await expect(headingEl).toBeVisible()
+      const t1440 = await textEl.boundingBox()
+      const h1440 = await headingEl.boundingBox()
+      expect(t1440 && h1440 && h1440.x > t1440.x + 40).toBe(true)
 
-      // Verify mobile viewport 375
       await page.setViewportSize({ width: 375, height: 667 })
       await page.reload()
-      await expect(page.locator('p:has-text("[MẪU]")').first()).toBeVisible()
+      await expect(textEl).toBeVisible()
+      const t375 = await textEl.boundingBox()
+      const h375 = await headingEl.boundingBox()
+      expect(t375 && h375 && h375.y >= t375.y + t375.height - 1).toBe(true)
     } finally {
       if (pageId) {
         await page.request.delete(`/api/pages/${pageId}`).catch(() => {})

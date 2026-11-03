@@ -81,14 +81,14 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
                       type: 'TextWidget',
                       props: {
                         id: widget1Id,
-                        text: widget1Text,
+                        content: `<p>${widget1Text}</p>`,
                       },
                     },
                     {
                       type: 'TextWidget',
                       props: {
                         id: widget2Id,
-                        text: widget2Text,
+                        content: `<p>${widget2Text}</p>`,
                       },
                     },
                   ],
@@ -170,9 +170,7 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
 
       // Right-side panel now inspects Container
       // Container layout field label or tab should be active
-      await expect(
-        page.getByText('Bố cục khung').or(page.getByText('Khung chứa (Container)')),
-      ).toBeVisible()
+      await expect(canvas.getByRole('toolbar', { name: /Container/ })).toBeVisible()
 
       // --- TEST SCENARIO 3: Alt+↓ keyboard shortcut moves widget down ---
       // Click widget 2 (which is now at index 0 after move up)
@@ -196,8 +194,8 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
       await expect(page.locator('body')).toBeVisible()
 
       // Verify both text widgets exist on public page
-      const el1 = page.locator(`[data-eb-id="${widget1Id}"]`)
-      const el2 = page.locator(`[data-eb-id="${widget2Id}"]`)
+      const el1 = page.getByText(widget1Text, { exact: true })
+      const el2 = page.getByText(widget2Text, { exact: true })
       await expect(el1).toBeVisible()
       await expect(el2).toBeVisible()
       // Up, then Alt+Down, then Alt+Up: widget 2 is published above widget 1.
@@ -214,7 +212,7 @@ test.describe('EB-13a: Canvas floating action bar & block shortcuts', () => {
         const homeCanvas = page.frameLocator('iframe')
         const heroBlock = homeCanvas.locator(`[data-puck-component="${heroId}"]`)
         if ((await heroBlock.count()) > 0) {
-          await heroBlock.click()
+          await heroBlock.click({ force: true })
           await page.waitForTimeout(300)
 
           // Delete button must NOT be present on locked Hero
