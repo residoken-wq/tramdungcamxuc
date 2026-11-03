@@ -5,6 +5,7 @@ import { createUsePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import { isFieldVisible, type PanelTab } from '@/puck/style/field-groups'
 import { useStylePanel } from './style-context'
+import { LockPropertiesBanner } from './lock/LockPropertiesBanner'
 
 const usePuckSelector = createUsePuck()
 
@@ -26,6 +27,7 @@ export function FieldsWithTabs({
   if (!itemSelector) return <>{children}</>
   return (
     <div className="flex flex-col">
+      <LockPropertiesBanner />
       <div
         role="tablist"
         aria-label={vi.eb04.tabs.label}
