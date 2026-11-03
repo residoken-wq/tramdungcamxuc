@@ -4,6 +4,7 @@ import { vi } from '@/lib/i18n/vi'
 import { CHILD_BLOCK_TYPES } from '../constants'
 import { ContainerBackgroundField } from '../editor/ContainerBackgroundField'
 import { ContainerLayoutField } from '../editor/ContainerLayoutField'
+import { EmptyContainerPlaceholder } from '../editor/EmptyContainerPlaceholder'
 import { isSafeBlockId, STYLE_ATTR } from '../style/style-css'
 import { containerItemsClass } from '../style/container-css'
 import { STYLES_IN_PLACE } from '../style/with-block-style'
@@ -29,6 +30,8 @@ export type ContainerViewProps = Omit<ContainerProps, 'items'> & {
   anchorId?: string
   extraClassName?: string
   items?: SlotComponent | Slot | unknown
+  /** EB-13b: true only in Puck editor mode, false on public pages. */
+  isEditing?: boolean
   'data-eb-entrance'?: string
   'data-eb-entrance-delay'?: number
 }
@@ -48,6 +51,7 @@ export const ContainerView: React.FC<ContainerViewProps> = ({
   items,
   anchorId,
   extraClassName,
+  isEditing = false,
   ...rest
 }) => {
   const Tag = tag === 'section' ? 'section' : 'div'
@@ -75,6 +79,7 @@ export const ContainerView: React.FC<ContainerViewProps> = ({
     >
       <div className={innerClass}>
         {Items ? <Items className={itemsClass} /> : <div className={itemsClass} />}
+        {isEditing && safeId ? <EmptyContainerPlaceholder containerId={safeId} /> : null}
       </div>
     </Tag>
   )
@@ -161,5 +166,7 @@ export const ContainerBlock: ComponentConfig<ContainerProps> = {
       return { props: data.props }
     }
   },
-  render: ({ puck: _puck, ...props }) => <ContainerView {...props} />,
+  render: ({ puck, ...props }) => (
+    <ContainerView {...props} isEditing={Boolean(puck?.isEditing)} />
+  ),
 }

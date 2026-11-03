@@ -3180,6 +3180,28 @@ export const vi = {
     deleted: 'Đã xoá khối',
     toolbarLabel: 'Thanh công cụ khối',
   },
+  eb13b: {
+    toast: {
+      inserted: 'Đã chèn khối vào trang',
+      cannotInsertDisallowed: 'Khối không được phép đặt tại vị trí này',
+      cannotInsertUnknown: 'Không tìm thấy cấu hình cho loại khối này',
+    },
+    emptyContainer: {
+      addBlock: '+ Thêm phần tử',
+      emptyNotice: 'Khung chưa có nội dung. Bấm để chọn phần tử từ thư viện bên trái.',
+    },
+    twoColumnsPattern: {
+      title: 'Khung 2 cột (ảnh + chữ)',
+      description: 'Mẫu bố cục 2 cột cạnh nhau trên máy tính, xếp chồng trên điện thoại',
+      imageCaption: '[MẪU] Hình ảnh minh họa',
+      headingText: '[MẪU] Tiêu đề nội dung',
+      bodyText:
+        '<p><strong>[MẪU] Tiêu đề nội dung</strong></p><p>[MẪU] Nhập văn bản giới thiệu hoặc mô tả chi tiết tại đây...</p>',
+    },
+    clickToInsert: {
+      hint: 'Bấm vào khối để chèn nhanh vào trang mà không cần kéo thả',
+    },
+  },
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',
