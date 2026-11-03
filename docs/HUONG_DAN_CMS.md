@@ -2730,6 +2730,14 @@ Hana có thể biến khối Hero đầu trang (`Hero 2 Lối vào` hoặc `Hero
 5. **Xem trước trên điện thoại:**
    - Bấm nút xem trước màn hình 375px ở góc trên bên phải để kiểm tra bố cục hiển thị hoàn hảo trên thiết bị di động.
 
+#### Xếp thẻ lối vào trên – dưới (`Hero 2 Lối vào`):
+
+Hana có thể linh hoạt sắp đặt 2 thẻ lối vào của `Hero 2 Lối vào` theo thiết kế mới:
+1. **Bố cục thẻ lối vào:** Chọn *2 cột cạnh nhau* (mặc định) hoặc *Xếp hàng trên – dưới*. Khi chọn xếp hàng trên – dưới, mỗi thẻ sẽ trải dài dạng thanh ngang: bên trái là nhãn và mô tả in đậm, bên phải là nút bấm gọn gàng cùng hàng trên máy tính; trên điện thoại thẻ tự động chuyển về dạng dọc dễ thao tác.
+2. **Vị trí thẻ lối vào:** (Chỉ áp dụng khi chọn kiểu bố cục *Ảnh bên cạnh chữ* và có ảnh):
+   - *Dưới cả ảnh và chữ*: Thẻ nằm rộng phía dưới như trước.
+   - *Trong cột chữ, dưới đoạn mô tả*: 2 thẻ sẽ được đưa thẳng vào cột bên trái ngay dưới phần giới thiệu, tạo bố cục cân đối và ảnh bên phải sẽ tự mở rộng chiều cao bằng trọn vẹn cột chữ.
+
 ---
 
 ## 6. Quản lý Trang pháp lý và Thông tin người bán
