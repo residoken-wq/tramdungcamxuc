@@ -20,6 +20,8 @@
     "seed:demo-gd2": "cross-env NODE_OPTIONS=--no-deprecation payload run seed/demo-gd2.ts",
     "seed:demo-gd2:clean": "cross-env NODE_OPTIONS=--no-deprecation payload run seed/demo-gd2-clean.ts",
     "seed:demo-gd2:otp": "cross-env NODE_OPTIONS=--no-deprecation payload run seed/demo-gd2-otp.ts",
+    "seed:eb11": "cross-env DEMO_SEED_ALLOW=true NODE_OPTIONS=--no-deprecation payload run seed/eb11-session.ts",
+    "seed:eb11:clean": "cross-env DEMO_SEED_ALLOW=true NODE_OPTIONS=--no-deprecation payload run seed/eb11-session-clean.ts",
     "sample:report": "cross-env NODE_OPTIONS=--no-deprecation payload run seed/sample-report.ts",
     "import:habit": "cross-env NODE_OPTIONS=--no-deprecation payload run seed/import-habit.ts",
     "import:eq": "cross-env NODE_OPTIONS=--no-deprecation payload run seed/import-eq.ts",

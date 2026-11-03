@@ -134,7 +134,7 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   return rules.join('')
 }
 
-type PuckItem = { type?: unknown; props?: Record<string, unknown> }
+type PuckItem = { type?: unknown; props?: Record<string, unknown>; id?: string }
 
 function* walkItems(value: unknown): Generator<PuckItem> {
   if (!Array.isArray(value)) return
@@ -191,7 +191,7 @@ export function collectPageStyles(
 
   for (const source of sources) {
     for (const item of walkItems(source)) {
-      const id = item.props?.id
+      const id = (item.props?.id as string) || (item.id as string)
       if (!isSafeBlockId(id)) continue
 
       // EB-05: Container layout rules run before _style so user overrides win
