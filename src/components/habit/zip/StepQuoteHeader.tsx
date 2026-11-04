@@ -48,7 +48,14 @@ export function StepQuoteHeader({
       )}
       {title && (
         <h2 className="font-display text-xl sm:text-2xl text-deep-navy uppercase tracking-wide mb-3">
-          {title}
+          {title.includes('|') ? (
+            <>
+              <span className="block text-deep-navy">{title.split('|')[0].trim()}</span>
+              <span className="block text-bright-magenta">{title.split('|')[1].trim()}</span>
+            </>
+          ) : (
+            title
+          )}
         </h2>
       )}
       <blockquote className="font-quote italic text-base sm:text-lg md:text-xl text-deep-navy max-w-2xl mx-auto leading-relaxed">

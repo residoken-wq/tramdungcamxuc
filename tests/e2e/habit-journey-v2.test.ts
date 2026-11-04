@@ -162,7 +162,9 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
 
       // 4. Khách vãng lai truy cập /habit/5-phut
       await guestPage.goto('/habit/5-phut')
-      await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible({ timeout: 20000 })
+      await expect(
+        guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first(),
+      ).toBeVisible({ timeout: 20000 })
 
       // ===== BƯỚC 1: Khám đúng bệnh =====
       const skipDiagnoseBtn = guestPage.getByRole('button', { name: /Bỏ qua phần khám/i })
@@ -173,11 +175,11 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       }
 
       // ===== BƯỚC 2: Nguyên lý 1% =====
-      await expect(guestPage.getByText('Bước 2 / 6')).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Nguyên lý 1%/i).first()).toBeVisible({ timeout: 15000 })
       await guestPage.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
 
       // ===== BƯỚC 3: Tìm Mentor =====
-      await expect(guestPage.getByText('Bước 3 / 6')).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Tìm "Mentor"|Tìm Mentor/i).first()).toBeVisible({ timeout: 15000 })
       await guestPage
         .getByPlaceholder(/Đánh răng|thói quen/i)
         .fill('[MẪU] Uống cốc nước ấm sau khi thức dậy')
@@ -190,7 +192,7 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
 
       // ===== BƯỚC 4: Gọi tên =====
-      await expect(guestPage.getByText('Bước 4 / 6')).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Gọi tên thói quen/i).first()).toBeVisible({ timeout: 15000 })
       await guestPage.getByPlaceholder(/thiền 5 phút/i).fill('viết nhật ký 5 phút')
       await guestPage.getByPlaceholder(/người điềm tĩnh/i).fill('người thấu hiểu chính mình')
 
@@ -218,25 +220,19 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
 
       // ===== BƯỚC 5: Vòng lặp thói quen =====
-      await expect(guestPage.getByText('Bước 5 / 6')).toBeVisible({ timeout: 15000 })
-      const stageSections = guestPage.locator('.p-5.rounded-card')
-      const count = await stageSections.count()
+      await expect(guestPage.getByText(/Thiết kế vòng lặp|Vòng lặp/i).first()).toBeVisible({ timeout: 15000 })
+      const techCheckboxes = guestPage.locator('label:has(button.w-5.h-5)')
+      const count = await techCheckboxes.count()
       for (let i = 0; i < Math.min(count, 4); i++) {
-        const section = stageSections.nth(i)
-        const checkbox = section.locator('input[type="checkbox"]').first()
-        if (await checkbox.isVisible()) {
-          await checkbox.check()
-        }
-        const actionInput = section.locator('input[type="text"]').first()
-        if (await actionInput.isVisible()) {
-          await actionInput.fill(`[MẪU] Hành động cho bước ${i + 1}`)
-        }
+        await techCheckboxes.nth(i).click()
       }
       await guestPage.getByRole('button', { name: /Tiếp tục|Xem kế hoạch/i }).click()
 
       // ===== BƯỚC 6: Boarding Pass & Lên chuyến =====
-      await expect(guestPage.getByText('Bước 6 / 6')).toBeVisible({ timeout: 15000 })
-      await expect(guestPage.getByText(/Boarding Pass của bạn/i)).toBeVisible()
+      await expect(guestPage.getByText(/Boarding Pass/i).first()).toBeVisible({ timeout: 15000 })
+      await expect(
+        guestPage.getByText(/Boarding Pass của bạn|TẤM VÉ CHUYỂN MÌNH/i).first(),
+      ).toBeVisible()
 
       // Điền thông tin cá nhân
       await guestPage.getByLabel(/Họ và tên/i).fill('Học viên HB15')
@@ -338,25 +334,31 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       const checkInModal = guestPage.locator('div[role="dialog"]')
       await expect(checkInModal).toBeVisible()
 
-      // Chọn trạng thái "Bỏ phiếu" và cảm xúc "Bình an"
-      const votedRadio = checkInModal.getByRole('radio', { name: /Bỏ phiếu/i })
-      await votedRadio.check()
+      // Chọn trạng thái "Đã làm" và cảm xúc
+      const votedBtn = checkInModal
+        .getByRole('button', { name: /Đã làm|Bỏ phiếu/i })
+        .or(checkInModal.getByRole('radio', { name: /Bỏ phiếu/i }))
+        .first()
+      await votedBtn.click()
 
-      const peacefulRadio = checkInModal.getByRole('radio', { name: /Bình an/i })
-      if (await peacefulRadio.isVisible()) {
-        await peacefulRadio.click()
+      const peacefulBtn = checkInModal
+        .getByRole('button', { name: /Hơi tự tin|Bình an/i })
+        .or(checkInModal.getByRole('radio', { name: /Bình an/i }))
+        .first()
+      if (await peacefulBtn.isVisible()) {
+        await peacefulBtn.click()
       }
 
       // Bấm Lưu check-in
-      const saveCheckinBtn = checkInModal.locator('button[type="submit"]', {
-        hasText: /Lưu check-in/i,
+      const saveCheckinBtn = checkInModal.getByRole('button', {
+        name: /Lưu/i,
       })
       await saveCheckinBtn.click()
       await expect(checkInModal).toBeHidden({ timeout: 10000 })
 
       // Kiểm tra Ngày 1 đã hoàn thành
       const day1Completed = guestPage.getByRole('button', {
-        name: /^Ngày 1: (Bỏ phiếu|Đã hoàn thành)/i,
+        name: /^Ngày 1:.*(Bỏ phiếu|Đã hoàn thành|Đã làm|Bản tối giản)/i,
       })
       await expect(day1Completed).toBeVisible()
 

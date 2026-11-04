@@ -22,8 +22,8 @@ export function Step2PercentPrinciple({
   onNext,
   onPrev,
 }: Step2PercentPrincipleProps) {
-  // Slider days (7 to 365) - khởi tạo ở mốc 21 ngày
-  const [days, setDays] = useState<number>(21)
+  // Slider days (0 to 365) - khởi tạo theo CMS maxDays nếu có hoặc mặc định 21 ngày
+  const [days, setDays] = useState<number>(() => onePercent?.maxDays ?? 21)
 
   const unknownItems =
     onePercentUnknowns && onePercentUnknowns.length > 0
@@ -47,11 +47,11 @@ export function Step2PercentPrinciple({
         ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-testid="one-percent-section">
       {/* 1. Quote Block */}
       <StepQuoteHeader
         stage="GIAI ĐOẠN 1 · KHÁM THÓI QUEN"
-        title="Nguyên lý 1% tốt hơn mỗi ngày"
+        title={onePercent?.title || 'Nguyên lý 1% tốt hơn mỗi ngày'}
         quote="“Thay đổi thói quen thực ra là thay đổi tư duy.”"
         author="— Robert Kiyosaki, Cha giàu Cha nghèo —"
       />
@@ -260,10 +260,11 @@ export function Step2PercentPrinciple({
         <div className="space-y-2">
           <input
             type="range"
-            min={7}
-            max={365}
+            min={0}
+            max={onePercent?.maxDays ?? 365}
             step={1}
             value={days}
+            aria-valuenow={days}
             onChange={(e) => setDays(Number(e.target.value))}
             className="w-full h-2.5 bg-lavender-mist rounded-lg appearance-none cursor-pointer accent-bright-magenta"
           />

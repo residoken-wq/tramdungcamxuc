@@ -74,14 +74,18 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
 
       // 3. Khách truy cập vào /habit/5-phut và chuyển sang Bước 2 (Nguyên lý 1%)
       await guestPage.goto('/habit/5-phut')
-      await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible({ timeout: 15000 })
+      await expect(
+        guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first(),
+      ).toBeVisible({ timeout: 15000 })
       const skipDiagnoseBtn = guestPage.getByRole('button', { name: /Bỏ qua phần khám/i })
       if (await skipDiagnoseBtn.isVisible()) {
         await skipDiagnoseBtn.click()
       } else {
         await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
       }
-      await expect(guestPage.getByText('Bước 2 / 6')).toBeVisible()
+      await expect(
+        guestPage.getByText(/Nguyên lý 1%/i).first(),
+      ).toBeVisible()
 
       // Khối Nguyên lý 1% hiển thị ở Bước 2
       const section = guestPage.getByTestId('one-percent-section')

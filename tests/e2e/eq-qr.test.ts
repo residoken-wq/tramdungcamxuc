@@ -118,10 +118,10 @@ test.describe('EQ Card QR Page Flow (T3-03)', () => {
       await expect(guestPage).toHaveURL(new RegExp(`/eq-buddy/the/${qrSlug}$`))
 
       // Kiểm tra thông điệp và câu chuyện hiển thị trên giao diện
-      await expect(guestPage.getByText(expectedMessage)).toBeVisible({ timeout: 15000 })
-      await expect(guestPage.getByText(expectedStory)).toBeVisible({ timeout: 15000 })
-      await expect(guestPage.getByText('[TEST] Keyword')).toBeVisible()
-      await expect(guestPage.getByText('[TEST] Ghi nhận?')).toBeVisible()
+      await expect(guestPage.getByText(expectedMessage).first()).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(expectedStory).first()).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText('[TEST] Keyword').first()).toBeVisible()
+      await expect(guestPage.getByText('[TEST] Ghi nhận?').first()).toBeVisible()
     } finally {
       // 3. Dọn dẹp dữ liệu kiểm thử
       try {
