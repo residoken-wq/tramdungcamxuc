@@ -202,6 +202,13 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(guestPage).toHaveURL(/\/habit\/hoc\/?$/, { timeout: 15000 })
       await guestPage.goto('/habit/tracker')
       await expect(guestPage.getByText('Lưới 28 ngày theo dõi')).toBeVisible({ timeout: 15000 })
+      // Z1: Tiêu đề tracker là "28 NGÀY THÀNH {personText}"
+      await expect(
+        guestPage.getByRole('heading', {
+          level: 2,
+          name: /28 ngày thành người khỏe mạnh và kỷ luật/i,
+        }),
+      ).toBeVisible({ timeout: 15000 })
 
       // Ghi nhận customer ID
       const custQuery = await (
@@ -291,6 +298,43 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
           .getByRole('button', { name: /^Ngày 1:.*(Bỏ phiếu|Đã hoàn thành|Đã làm)/i })
           .first(),
       ).toBeVisible({ timeout: 15000 })
+
+      // ===== KHÔI PHỤC TỪ FILE (CÓ HỘP THOẠI XÁC NHẬN - DP-02) =====
+      const backupPayload = JSON.stringify({
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        habitPlan: {
+          identityStatement: 'Tôi sẽ tập thể dục 15 phút để trở thành người khỏe mạnh và kỷ luật',
+          rhythm: '5_per_week',
+        },
+        checkins: [
+          {
+            dayNumber: 1,
+            status: 'minimal',
+            emotion: 'confident',
+            emotionLabel: 'Tự tin',
+            note: 'Khôi phục từ file backup zip',
+          },
+        ],
+      })
+
+      await guestPage.locator('input[type="file"][accept*="application/json"]').setInputFiles({
+        name: 'backup-dp02.json',
+        mimeType: 'application/json',
+        buffer: Buffer.from(backupPayload, 'utf-8'),
+      })
+
+      const restoreModal = guestPage.locator('div[role="dialog"]').filter({
+        hasText: vi.hb13.restoreModal.title,
+      })
+      await expect(restoreModal).toBeVisible({ timeout: 10000 })
+      await expect(restoreModal).toContainText('ghi đè tối đa 1 ngày check-in')
+
+      const confirmRestoreBtn = restoreModal.getByRole('button', {
+        name: vi.hb13.restoreModal.confirmButton,
+      })
+      await confirmRestoreBtn.click()
+      await expect(restoreModal).toBeHidden({ timeout: 10000 })
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
       for (const id of createdTechniqueIds) {

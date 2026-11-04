@@ -194,8 +194,9 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
 
       await guestPage2.getByRole('button', { name: /Xem tất cả thẻ/i }).click()
       await expect(guestPage2.getByRole('heading', { name: 'Tất cả thẻ Trạm Dừng' })).toBeVisible()
+      // DP-02 (Z4): mỗi ô thẻ là một nút
       const otherTile = guestPage2
-        .locator('div.cursor-pointer')
+        .locator('button')
         .filter({ has: guestPage2.getByRole('heading', { level: 4, name: otherKeyword }) })
       await expect(otherTile).toContainText('Dùng thử hoặc mua để mở trọn vẹn')
       await expect(guestPage2.getByText(otherMessage)).toHaveCount(0)

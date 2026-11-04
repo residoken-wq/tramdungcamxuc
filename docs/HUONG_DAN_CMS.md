@@ -1117,6 +1117,7 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 2. **Bước 1 – Khám thói quen** (`step1`):
    - **Lời dẫn mở đầu bước 1** (`leadIn`).
    - **Bộ 8 câu hỏi khảo sát** (`diagnose.questions`): Đã được nạp chuẩn nguyên văn từ bản zip.
+   - **Lời chẩn đoán 4 giai đoạn nút thắt**: `cueDiagnosis` (Tín hiệu), `cravingDiagnosis` (Khao khát), `responseDiagnosis` (Phản hồi), `rewardDiagnosis` (Phần thưởng) hiển thị khi giai đoạn tương ứng có điểm trung bình cao nhất.
 
 3. **Bước 2 – Nguyên lý 1%** (`step2`):
    - **Lời dẫn mở đầu bước 2** (`leadIn`).
@@ -1131,6 +1132,7 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 
 5. **Bước 4 – Gọi tên thói quen** (`step4`):
    - **Lời dẫn mở đầu bước 4** (`leadIn`).
+   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: *Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày.*).
    - **Tiêu đề & Mô tả tuyên ngôn** (`statementTitle`, `statementDesc`).
    - **Gợi ý vai trò** (`suggestedRoles`): Nhập mỗi dòng 1 vai trò gợi ý (hiển thị thành các nút chip).
    - **Tiêu đề, Mô tả, Lưu ý ngày nghỉ của Nhịp điệu** (`rhythmTitle`, `rhythmDesc`, `rhythmNote`).
@@ -1140,6 +1142,9 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 
 6. **Bước 5 – Thiết kế vòng lặp** (`step5` & `loop`):
    - **Lời dẫn mở đầu bước 5** (`leadIn`).
+   - **Lý thuyết 4 giai đoạn**: `theoryCue`, `theoryCraving`, `theoryResponse`, `theoryReward` giải thích cơ chế tâm lý của từng góc vòng lặp.
+   - **Tên 4 quy tắc vàng**: `ruleCue`, `ruleCraving`, `ruleResponse`, `ruleReward`.
+   - **Lời gợi ý chọn kỹ thuật**: `techniqueHintCue`, `techniqueHintCraving`, `techniqueHintResponse`, `techniqueHintReward`.
    - **Placeholder khi ghi chú áp dụng** (`customActionPlaceholder`).
    - **4 quy luật hành vi** (`loop.laws`): Gồm chip luật, tiêu đề, subLabel, câu hỏi khơi gợi và link video bài giảng.
    - **Khối lưu ý riêng cho Quy luật 1 Cue** (`loop.cueBox`): Chữ in đậm, đoạn văn và nhãn nút xem lại bước 3.
@@ -1150,12 +1155,16 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
    - **Tiêu đề lớn & Tiêu đề phụ trên thẻ** (`passTitle`, `passSubtitle`).
    - **Lời xác nhận cam kết / điều khoản** (`termsText`).
 
-8. **Hộp thoại Check-in ngày** (`checkIn`):
+8. **Bảng theo dõi 28 ngày (Tracker / Dashboard)**:
+   - **Tiêu đề kế hoạch**: Tự động hiển thị `28 NGÀY THÀNH {personText}` theo mẫu người học viên đã chọn tại bước 4.
+   - **Giải thích khối Dữ liệu của bạn** (`myDataNotice`): Đoạn ghi chú về sao lưu và lưu trữ dữ liệu an toàn.
+
+9. **Hộp thoại Check-in ngày** (`checkIn`):
    - **Lời dẫn ngày cần check-in** (`postDayHint`).
    - **Lời dẫn ngày nghỉ theo nhịp** (`restDayHint`).
    - **Placeholder ô ghi chú cảm xúc** (`notePlaceholder`).
 
-9. **Chân trang (Footer)** (`footer`):
+10. **Chân trang (Footer)** (`footer`):
    - **Khẩu hiệu thương hiệu** (`slogan`).
    - **Thông tin tác giả / Coach** (`authorInfo`).
    - **Đoạn ghi nhận nguồn sách** (`bookCredits`).

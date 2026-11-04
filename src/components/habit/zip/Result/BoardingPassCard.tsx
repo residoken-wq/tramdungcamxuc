@@ -386,7 +386,7 @@ export function BoardingPassCard({
           >
             <Download className="w-3.5 h-3.5 text-bright-magenta" />
             <span>
-              {downloadingFormat === '9x16' ? 'Đang tạo ảnh...' : vi.dp01.downloadCover916}
+              {downloadingFormat === '9x16' ? vi.dp01.generatingImage : vi.dp01.downloadCover916}
             </span>
           </button>
 
@@ -397,7 +397,9 @@ export function BoardingPassCard({
             className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-white hover:bg-warm-ivory text-deep-navy border border-lavender-mist hover:border-bright-magenta text-xs font-ui font-semibold transition-all active:scale-95 shadow-soft cursor-pointer disabled:opacity-50"
           >
             <Download className="w-3.5 h-3.5 text-bright-magenta" />
-            <span>{downloadingFormat === '4x5' ? 'Đang tạo ảnh...' : vi.dp01.downloadShare45}</span>
+            <span>
+              {downloadingFormat === '4x5' ? vi.dp01.generatingImage : vi.dp01.downloadShare45}
+            </span>
           </button>
 
           <button
@@ -428,11 +430,10 @@ export function BoardingPassCard({
           </div>
           <div className="space-y-1">
             <h3 className="font-display text-xl sm:text-2xl text-deep-navy uppercase">
-              Chúc mừng bạn đã lên chuyến thành công!
+              {vi.dp01.boardSuccessTitle}
             </h3>
             <p className="text-xs sm:text-sm text-deep-navy/80 font-ui max-w-md mx-auto leading-relaxed">
-              Bản kế hoạch 28 ngày đã được gửi về email của bạn. Bây giờ hãy bước vào Trạm theo dõi
-              để bắt đầu ngày đầu tiên nhé.
+              {vi.dp01.boardSuccessDesc}
             </p>
           </div>
 
@@ -441,7 +442,7 @@ export function BoardingPassCard({
               href={trackerDestination}
               className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta text-white font-ui font-bold text-sm shadow-soft hover:shadow-soft-md transition-all active:scale-95 w-full sm:w-auto"
             >
-              <span>Vào bảng theo dõi 28 ngày</span>
+              <span>{vi.dp01.enterTrackerButton}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -452,7 +453,7 @@ export function BoardingPassCard({
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-full border border-lavender-mist bg-white hover:bg-warm-ivory text-deep-navy font-ui font-semibold text-xs transition-all active:scale-95 w-full sm:w-auto"
               >
-                <span>Tham gia cộng đồng Zalo</span>
+                <span>{vi.dp01.joinZaloButton}</span>
                 <ExternalLink className="w-3.5 h-3.5 text-deep-navy/60" />
               </a>
             )}
@@ -465,11 +466,10 @@ export function BoardingPassCard({
         >
           <div>
             <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase tracking-wide">
-              Lên chuyến · Nhận kế hoạch qua email
+              {vi.dp01.boardingPassLeadTitle}
             </h3>
             <p className="text-xs sm:text-sm text-deep-navy/70 mt-0.5 leading-relaxed">
-              Để lại tên và email để nhận bản kế hoạch 28 ngày chi tiết và mở khóa bảng theo dõi
-              tiến độ.
+              {vi.dp01.boardingPassLeadDesc}
             </p>
           </div>
 
@@ -489,14 +489,14 @@ export function BoardingPassCard({
                 htmlFor={nameId}
                 className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 mb-1"
               >
-                Tên của bạn
+                {vi.dp01.nameFieldLabel}
               </label>
               <input
                 id={nameId}
                 type="text"
                 value={name}
                 onChange={(e) => onNameChange && onNameChange(e.target.value)}
-                placeholder="Ví dụ: Minh Châu"
+                placeholder={vi.dp01.namePlaceholder}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-lavender-mist focus:border-bright-magenta outline-none text-xs sm:text-sm text-deep-navy font-ui transition-all shadow-xs"
               />
             </div>
@@ -506,7 +506,7 @@ export function BoardingPassCard({
                 htmlFor={emailId}
                 className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 mb-1"
               >
-                Email nhận kế hoạch <span className="text-bright-magenta">*</span>
+                {vi.dp01.emailFieldLabel} <span className="text-bright-magenta">*</span>
               </label>
               <input
                 id={emailId}
@@ -552,7 +552,7 @@ export function BoardingPassCard({
                 target="_blank"
                 className="text-bright-magenta underline font-semibold"
               >
-                Chính sách bảo mật
+                {vi.dp01.privacyPolicyLink}
               </Link>
               .
             </label>
@@ -567,7 +567,7 @@ export function BoardingPassCard({
             disabled={isSubmitting}
             className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-bright-magenta hover:bg-bright-magenta text-white font-ui font-bold text-sm sm:text-base shadow-soft hover:shadow-soft-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
           >
-            <span>{isSubmitting ? 'Đang lên chuyến...' : 'Lên chuyến · Bắt đầu 28 ngày →'}</span>
+            <span>{isSubmitting ? vi.dp01.submittingPlan : vi.dp01.start28DaysButton}</span>
           </button>
 
           {privacyNote && (
@@ -583,7 +583,7 @@ export function BoardingPassCard({
             onClick={onStartTracking}
             className="inline-flex items-center gap-2 px-7 sm:px-9 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta text-white text-sm sm:text-base font-ui font-semibold shadow-soft hover:shadow-soft-md transition-all active:scale-95 cursor-pointer"
           >
-            <span>Lên chuyến · Bắt đầu 28 ngày →</span>
+            <span>{vi.dp01.start28DaysButton}</span>
           </button>
         </div>
       ) : null}

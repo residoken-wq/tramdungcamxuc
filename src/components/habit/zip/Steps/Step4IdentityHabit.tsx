@@ -96,7 +96,10 @@ export function Step4IdentityHabit({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        {step4Content.leadIn}
+        {step4Content.leadIn}{' '}
+        {step4Content.leadInEmphasis && (
+          <strong className="text-deep-navy font-bold">{step4Content.leadInEmphasis}</strong>
+        )}
       </p>
 
       {/* 2. Khối 1: Tuyên ngôn về thói quen */}
@@ -409,8 +412,10 @@ export function Step4IdentityHabit({
               htmlFor="field-companion"
               className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5"
             >
-              BẠN ĐỒNG HÀNH{' '}
-              <span className="font-normal lowercase text-deep-navy/70">(không bắt buộc)</span>
+              {vi.dp01.companionLabel.toUpperCase()}{' '}
+              <span className="font-normal lowercase text-deep-navy/70">
+                ({vi.dp01.optionalLabel})
+              </span>
             </label>
             <input
               id="field-companion"

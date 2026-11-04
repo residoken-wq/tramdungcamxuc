@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import confetti from 'canvas-confetti'
 import {
   Flame,
@@ -16,12 +16,15 @@ import {
 } from 'lucide-react'
 import type { TrackerDayItem, WeeklyReflections } from '../types'
 import { DayCheckInModal } from './DayCheckInModal'
+import { Modal } from '@/components/ui/Modal'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TimelineProgress } from '../Timeline/TimelineProgress'
 import { checkInDay, deleteCheckInDay } from '@/lib/habit/tracker-actions'
 import { saveStationReflection } from '@/lib/habit/reflection-actions'
 import { exportBackup, exportCsv, restoreBackup, restartJourney } from '@/lib/habit/my-data-actions'
 import { planDayDate } from '@/lib/habit/tracker-stats'
+import { weekdayOfDay, type Weekday } from '@/lib/habit/rhythm'
+import { weekdaysToDays } from '../draft-adapter'
 import { TrackerSummaryCard } from '@/components/habit/TrackerSummaryCard'
 import { CertificateShareButtons } from '@/components/habit/CertificateShareButtons'
 import { CertificatePublicToggle } from '@/components/habit/CertificatePublicToggle'
@@ -138,10 +141,32 @@ export function Dashboard28Days({
   const [savingStation, setSavingStation] = useState<number | null>(null)
   const [savedStationSuccess, setSavedStationSuccess] = useState<number | null>(null)
 
+  // Restore and Restart modal & notification states (Section 2)
+  const [pendingBackupText, setPendingBackupText] = useState<string | null>(null)
+  const [pendingCheckinCount, setPendingCheckinCount] = useState<number>(28)
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false)
+  const [isRestoring, setIsRestoring] = useState(false)
+  const [isRestartModalOpen, setIsRestartModalOpen] = useState(false)
+  const [isRestarting, setIsRestarting] = useState(false)
+  const [inAppToast, setInAppToast] = useState<{ text: string; type: 'error' | 'success' } | null>(
+    null,
+  )
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!inAppToast) return
+    const timer = setTimeout(() => {
+      setInAppToast(null)
+    }, 4000)
+    return () => clearTimeout(timer)
+  }, [inAppToast])
+
   // Days list calculation
+  // QA DP-02c: plans store the rhythm as weekday keys ("mon"…); the grid compares zip labels
+  // ("T2"…). Without this every day counted as a rest day (stats, missed days, "nghỉ theo nhịp").
   const selectedDaysList =
     propSelectedDays && propSelectedDays.length > 0
-      ? propSelectedDays
+      ? propSelectedDays.map((d) => weekdaysToDays([d as Weekday])[0] || d)
       : ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 
   const DAY_NAME_MAP: Record<number, string> = {
@@ -160,7 +185,10 @@ export function Dashboard28Days({
   for (let i = 1; i <= journeyDays; i++) {
     const dDate = new Date(start)
     dDate.setDate(start.getDate() + (i - 1))
-    const dayOfWeek = DAY_NAME_MAP[dDate.getDay()] || 'T2'
+    // Weekday in Vietnam time (same rule as the server), not the browser's time zone
+    const dayOfWeek = startDate
+      ? weekdaysToDays([weekdayOfDay(startDate, i)])[0] || 'T2'
+      : DAY_NAME_MAP[dDate.getDay()] || 'T2'
     const isPostDay = selectedDaysList.includes(dayOfWeek)
     const checkin = checkins.find((c) => c.day === i)
     const dateInfo = planDayDate(startDate, i)
@@ -213,12 +241,21 @@ export function Dashboard28Days({
   const todayItem = trackerDays[currentDayIndex - 1]
   const isTodayRest = todayItem ? !todayItem.isPostDay : false
 
-  // Stations configuration
+  // Stations configuration (Z2: tiền tố Trạm N: theo zip)
+  const formatStationTitle = (id: number, rawName?: string | null) => {
+    const fallbackNames = ['Khởi hành', 'Tạo đà', 'Vượt dốc', 'Về đích']
+    const base = (rawName && rawName.trim()) || fallbackNames[id - 1] || `Trạm ${id}`
+    if (/^Trạm\s+\d+:/i.test(base)) {
+      return base
+    }
+    return `Trạm ${id}: ${base}`
+  }
+
   const STATIONS = [
-    { id: 1, range: 'Ngày 1 - 7', name: stationNames?.[0] || 'Khởi hành' },
-    { id: 2, range: 'Ngày 8 - 14', name: stationNames?.[1] || 'Tạo đà' },
-    { id: 3, range: 'Ngày 15 - 21', name: stationNames?.[2] || 'Vượt dốc' },
-    { id: 4, range: 'Ngày 22 - 28', name: stationNames?.[3] || 'Về đích' },
+    { id: 1, range: 'Ngày 1 - 7', name: formatStationTitle(1, stationNames?.[0]) },
+    { id: 2, range: 'Ngày 8 - 14', name: formatStationTitle(2, stationNames?.[1]) },
+    { id: 3, range: 'Ngày 15 - 21', name: formatStationTitle(3, stationNames?.[2]) },
+    { id: 4, range: 'Ngày 22 - 28', name: formatStationTitle(4, stationNames?.[3]) },
   ]
 
   const getCurrentStationName = () => {
@@ -229,11 +266,11 @@ export function Dashboard28Days({
   }
   const currentStationName = getCurrentStationName()
 
-  let rateText = 'Chưa chọn nhịp'
+  let rateText: string = vi.dp01.noRhythmSelected
   if (selectedDaysList.length === 7) {
-    rateText = 'Mỗi ngày (cả tuần)'
+    rateText = vi.dp01.everyDayFullWeek
   } else if (selectedDaysList.length > 0) {
-    rateText = `${selectedDaysList.length} lần/tuần (${selectedDaysList.join(' · ')})`
+    rateText = vi.dp01.timesPerWeek(selectedDaysList.length, selectedDaysList.join(' · '))
   }
 
   // Handle Day Click
@@ -350,10 +387,11 @@ export function Dashboard28Days({
         a.click()
         URL.revokeObjectURL(url)
       } else {
-        alert(res.message || 'Không thể tạo bản sao lưu. Vui lòng thử lại!')
+        setInAppToast({ text: res.message || vi.dp01.backupExportError, type: 'error' })
       }
     } catch (err) {
       console.error('Export error:', err)
+      setInAppToast({ text: vi.dp01.backupExportError, type: 'error' })
     }
   }
 
@@ -370,10 +408,11 @@ export function Dashboard28Days({
         a.click()
         URL.revokeObjectURL(url)
       } else {
-        alert(res.message || 'Không thể xuất file CSV. Vui lòng thử lại!')
+        setInAppToast({ text: res.message || vi.dp01.csvExportError, type: 'error' })
       }
     } catch (err) {
       console.error('CSV export error:', err)
+      setInAppToast({ text: vi.dp01.csvExportError, type: 'error' })
     }
   }
 
@@ -381,17 +420,71 @@ export function Dashboard28Days({
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const text = await file.text()
     try {
-      const res = await restoreBackup(text)
+      const text = await file.text()
+      let checkinCount = 28
+      try {
+        const parsed = JSON.parse(text)
+        if (Array.isArray(parsed?.checkins)) {
+          checkinCount = parsed.checkins.length
+        }
+      } catch {
+        setInAppToast({ text: vi.dp01.backupRestoreJsonError, type: 'error' })
+        if (fileInputRef.current) fileInputRef.current.value = ''
+        return
+      }
+
+      setPendingBackupText(text)
+      setPendingCheckinCount(checkinCount)
+      setIsRestoreModalOpen(true)
+    } catch {
+      setInAppToast({ text: vi.dp01.backupRestoreError, type: 'error' })
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleConfirmRestore = async () => {
+    if (!pendingBackupText) return
+    setIsRestoring(true)
+    try {
+      const res = await restoreBackup(pendingBackupText)
       if (res.success) {
-        alert(`Khôi phục thành công ${res.restored} ngày check-in!`)
-        window.location.reload()
+        setIsRestoreModalOpen(false)
+        setInAppToast({
+          text: vi.dp01.backupRestoreSuccess(res.restored),
+          type: 'success',
+        })
+        setTimeout(() => {
+          window.location.reload()
+        }, 800)
       } else {
-        alert(res.message || 'Tệp sao lưu không hợp lệ.')
+        setInAppToast({ text: res.message || vi.dp01.backupRestoreError, type: 'error' })
+        setIsRestoreModalOpen(false)
       }
     } catch {
-      alert('Tệp sao lưu không đúng định dạng JSON.')
+      setInAppToast({ text: vi.dp01.backupRestoreError, type: 'error' })
+      setIsRestoreModalOpen(false)
+    } finally {
+      setIsRestoring(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleConfirmRestart = async () => {
+    setIsRestarting(true)
+    try {
+      const res = await restartJourney()
+      if (res.success && res.redirectTo) {
+        window.location.href = res.redirectTo
+      } else {
+        setInAppToast({ text: res.message || vi.dp01.restartFailedError, type: 'error' })
+        setIsRestartModalOpen(false)
+      }
+    } catch {
+      setInAppToast({ text: vi.dp01.restartGeneralError, type: 'error' })
+      setIsRestartModalOpen(false)
+    } finally {
+      setIsRestarting(false)
     }
   }
 
@@ -418,21 +511,48 @@ Nhịp điệu: ${rateText}
 
   const startDateInfo = planDayDate(startDate, 1)
   const endDateInfo = planDayDate(startDate, journeyDays)
-  const startDateLabel = startDateInfo ? `Bắt đầu ${startDateInfo.short}` : 'Bắt đầu'
-  const endDateLabel = endDateInfo ? `Về đích ${endDateInfo.short}` : 'Về đích'
+  const startDateLabel = startDateInfo
+    ? `${vi.dp01.startDatePrefix} ${startDateInfo.short}`
+    : vi.dp01.startDatePrefix
+  const endDateLabel = endDateInfo
+    ? `${vi.dp01.endDatePrefix} ${endDateInfo.short}`
+    : vi.dp01.endDatePrefix
 
   return (
     <div className="space-y-8 pt-2" id="dashboard-28days">
+      {/* In-app Toast / Notification Banner */}
+      {inAppToast && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className={`p-3.5 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-semibold font-ui ${
+            inAppToast.type === 'error'
+              ? 'bg-soft-pink border border-accent-pink/40 text-deep-navy'
+              : 'bg-mint-haze border border-[#2E7D32]/40 text-[#2E7D32]'
+          }`}
+        >
+          <span>{inAppToast.text}</span>
+          <button
+            type="button"
+            onClick={() => setInAppToast(null)}
+            className="p-1 text-deep-navy/70 hover:text-deep-navy cursor-pointer"
+            aria-label={vi.common.close}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* 1. Header Quote Block */}
       <StepQuoteHeader
-        stage="GIAI ĐOẠN 3 · CHUYỂN MÌNH CÙNG THÓI QUEN"
+        stage={vi.dp01.defaultStage3QuoteHeader}
         title={
           propIdentityRole && propIdentityRole.trim() !== ''
             ? `28 ngày thành ${propIdentityRole}`
-            : '28 ngày của bạn'
+            : vi.dp01.defaultIdentityTitle
         }
-        quote={quote?.quoteText || '“Thói quen là lãi kép của sự tự hoàn thiện.”'}
-        author={quote?.quoteAuthor || '— James Clear, Atomic Habits —'}
+        quote={quote?.quoteText || vi.dp01.defaultQuoteText}
+        author={quote?.quoteAuthor || vi.dp01.defaultQuoteAuthor}
       />
 
       {/* 2. Thanh tiến trình 4 trạm */}
@@ -447,25 +567,29 @@ Nhịp điệu: ${rateText}
         <summary className="p-4 sm:p-5 font-ui font-bold text-sm sm:text-base text-deep-navy flex items-center justify-between cursor-pointer list-none hover:bg-warm-ivory/50 transition-colors">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-bright-magenta" />
-            <span>Thói quen bạn đang xây</span>
+            <span>{vi.dp01.habitYouAreBuilding}</span>
           </div>
           <ChevronDown className="w-4 h-4 text-deep-navy/60 transition-transform group-open:rotate-180" />
         </summary>
         <div className="px-5 pb-5 pt-2 space-y-2.5 text-xs sm:text-sm font-ui border-t border-lavender-mist/60">
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">Tuyên ngôn:</span>
+            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">
+              {vi.dp01.statementLabel}
+            </span>
             <span className="text-deep-navy font-semibold">
               Tôi sẽ {propIdentityAction || '...'} để trở thành {propIdentityRole || '...'}
             </span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
             <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">
-              Thói quen hạt nhân:
+              {vi.dp01.atomicHabitLabel}
             </span>
             <span className="text-deep-navy font-semibold">{propAtomicHabit || '...'}</span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">Mentor:</span>
+            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">
+              {vi.dp01.mentorLabel}
+            </span>
             <span className="text-deep-navy font-semibold">
               {propMentor
                 ? `Sau khi ${propMentor}${propMentorTime ? ` · lúc ${propMentorTime}` : ''}`
@@ -473,7 +597,9 @@ Nhịp điệu: ${rateText}
             </span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">Nhịp điệu:</span>
+            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">
+              {vi.dp01.rhythmLabel}
+            </span>
             <span className="text-deep-navy font-semibold">{rateText}</span>
           </div>
         </div>
@@ -483,14 +609,14 @@ Nhịp điệu: ${rateText}
       <div>
         <p className="text-sm text-deep-navy/60 mb-4 font-ui">
           {isTodayRest
-            ? `Hôm nay là ngày ${currentDayIndex} — ngày nghỉ theo nhịp. Chạm vào ô để ghi lại.`
-            : `Hôm nay là ngày ${currentDayIndex} — ngày bỏ phiếu. Chạm vào ô để ghi lại.`}
+            ? vi.dp01.todayRestNotice(currentDayIndex)
+            : vi.dp01.todayVoteNotice(currentDayIndex)}
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {/* Thẻ 1: Lá phiếu đã bỏ */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md">
             <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 font-ui block">
-              Lá phiếu đã bỏ
+              {vi.dp01.votesCast}
             </span>
             <div className="flex items-baseline gap-1.5 my-1.5">
               <span className="font-display text-3xl sm:text-4xl text-deep-navy">{votes}</span>
@@ -510,7 +636,7 @@ Nhịp điệu: ${rateText}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md">
             <div className="flex items-center justify-between">
               <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 font-ui">
-                Chuỗi hiện tại
+                {vi.dp01.currentStreak}
               </span>
               {/* a11y-contrast-ok: SVG icon trang trí */}
               <Flame className="w-4 h-4 text-accent-pink" />
@@ -519,17 +645,19 @@ Nhịp điệu: ${rateText}
               <span className="font-display text-3xl sm:text-4xl text-bright-magenta">
                 {currentStreak}
               </span>
-              <span className="text-xs font-ui font-semibold text-deep-navy/70">ngày</span>
+              <span className="text-xs font-ui font-semibold text-deep-navy/70">
+                {vi.dp01.daysUnit}
+              </span>
             </div>
             <p className="text-[11px] font-ui text-deep-navy/60 truncate">
-              {currentStreak > 0 ? 'Giữ nhịp đều đặn' : 'Khởi đầu hành trình'}
+              {currentStreak > 0 ? vi.dp01.streakKeepRhythm : vi.dp01.streakStartJourney}
             </p>
           </div>
 
           {/* Thẻ 3: Đúng nhịp tới hôm nay */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md">
             <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 font-ui block">
-              Đúng nhịp tới hôm nay
+              {vi.dp01.onBeatSoFar}
             </span>
             <div className="flex items-baseline gap-1.5 my-1.5">
               <span className="font-display text-3xl sm:text-4xl text-deep-navy">{onBeat}</span>
@@ -538,14 +666,14 @@ Nhịp điệu: ${rateText}
               </span>
             </div>
             <p className="text-[11px] font-ui text-deep-navy/60 truncate">
-              {onBeat >= plannedSoFar ? 'Đạt chuẩn nhịp cam kết' : 'Tiếp tục tạo đà'}
+              {onBeat >= plannedSoFar ? vi.dp01.onBeatTargetReached : vi.dp01.onBeatKeepMomentum}
             </p>
           </div>
 
           {/* Thẻ 4: Trạm hiện tại */}
           <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md flex flex-col justify-between">
             <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 font-ui block">
-              Trạm hiện tại
+              {vi.dp01.currentStation}
             </span>
             <div className="my-1.5">
               <span className="font-display text-2xl sm:text-3xl text-bright-magenta">
@@ -553,7 +681,7 @@ Nhịp điệu: ${rateText}
               </span>
             </div>
             <p className="text-[11px] font-ui text-deep-navy/60">
-              Ngày {currentDayIndex}/{journeyDays}
+              {vi.dp01.dayCounter(currentDayIndex, journeyDays)}
             </p>
           </div>
         </div>
@@ -567,11 +695,11 @@ Nhịp điệu: ${rateText}
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-bright-magenta" />
               <h2 className="font-ui font-bold text-lg sm:text-xl text-deep-navy">
-                Lưới 28 ngày theo dõi
+                {vi.dp01.gridTitle}
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-              Click vào từng ngày để check-in cảm xúc và ghi nhận lá phiếu của bạn
+              {vi.dp01.gridSubtitle}
             </p>
           </div>
 
@@ -580,23 +708,23 @@ Nhịp điệu: ${rateText}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               <div className="flex items-center gap-2 text-deep-navy/80 font-medium">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#2E7D32] shrink-0" />
-                <span>Đã bỏ phiếu</span>
+                <span>{vi.dp01.legendVoted}</span>
               </div>
               <div className="flex items-center gap-2 text-deep-navy/80 font-medium">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#FBC02D] shrink-0" />
-                <span>Bản tối giản</span>
+                <span>{vi.dp01.legendMinimal}</span>
               </div>
               <div className="flex items-center gap-2 text-deep-navy/80 font-medium">
                 <span className="w-2.5 h-2.5 rounded-full bg-warm-ivory border border-accent-pink shrink-0" />
-                <span>Lỡ nhịp</span>
+                <span>{vi.dp01.legendMissed}</span>
               </div>
               <div className="flex items-center gap-2 text-deep-navy/80 font-medium">
                 <span className="w-2.5 h-2.5 rounded-full bg-deep-navy/20 shrink-0" />
-                <span>Ngày nghỉ theo nhịp</span>
+                <span>{vi.dp01.legendRestDay}</span>
               </div>
             </div>
             <p className="text-xs text-deep-navy/60 mt-2 italic pt-1 border-t border-lavender-mist/40">
-              Lỡ một ngày là bình thường. Chỉ cần đừng lỡ hai ngày bỏ phiếu liền.
+              {vi.dp01.legendQuote}
             </p>
           </div>
         </div>
@@ -639,11 +767,11 @@ Nhịp điệu: ${rateText}
                   {isLocked ? (
                     <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-deep-navy/70 bg-white/90 border border-lavender-mist px-3 py-1 rounded-full font-ui shadow-soft-md">
                       <Lock className="w-3 h-3 text-bright-magenta" />
-                      <span>Mở vào ngày {openDateFormatted}</span>
+                      <span>{vi.dp01.stationOpenOnDay(openDateFormatted)}</span>
                     </span>
                   ) : (
                     <span className="font-bold text-bright-magenta text-xs px-2.5 py-1 rounded-full bg-soft-pink">
-                      {stationCompleted}/{stationPlanned} lá phiếu
+                      {stationCompleted}/{stationPlanned} {vi.dp01.votesLabel}
                     </span>
                   )}
                 </div>
@@ -652,7 +780,7 @@ Nhịp điệu: ${rateText}
                   <div className="py-2 px-3.5 rounded-2xl bg-white/80 border border-lavender-mist/70 flex items-center gap-2 text-xs font-ui text-deep-navy/70">
                     <Lock className="w-3.5 h-3.5 text-bright-magenta shrink-0" />
                     <span>
-                      Trạm tuần tương lai chưa tới. Thời gian mở trạm:{' '}
+                      {vi.dp01.stationFutureNotice}{' '}
                       <strong className="text-deep-navy">{openDateFormatted}</strong>.
                     </span>
                   </div>
@@ -677,18 +805,16 @@ Nhịp điệu: ${rateText}
                       (day.emotion ? getEmotion(day.emotion)?.label : undefined) ||
                       day.moodLabel ||
                       ''
-                    const emotionPart = emotionName ? `, cảm xúc: ${emotionName}` : ''
-                    const dayAriaLabel = `Ngày ${day.dayNumber}: ${
-                      isDone
-                        ? isMinimal
-                          ? `Bản tối giản${emotionPart}`
-                          : `Đã hoàn thành${emotionPart}`
-                        : isFuture || isLocked
-                          ? 'Chưa tới'
-                          : isMissed
-                            ? 'Lỡ nhịp'
-                            : 'Bỏ phiếu'
-                    }`
+                    const statusText = isDone
+                      ? isMinimal
+                        ? vi.dp01.dayAriaMinimal
+                        : vi.dp01.dayAriaCompleted
+                      : isFuture || isLocked
+                        ? vi.dp01.dayAriaFuture
+                        : isMissed
+                          ? vi.dp01.dayAriaMissed
+                          : vi.dp01.dayAriaVote
+                    const dayAriaLabel = vi.dp01.dayCardAria(day.dayNumber, statusText, emotionName)
 
                     return (
                       <button
@@ -748,7 +874,7 @@ Nhịp điệu: ${rateText}
                         <div className="w-full flex items-center justify-center">
                           {!isDone && isRestDay ? (
                             <span className="text-[10px] font-ui italic text-deep-navy/70">
-                              nghỉ
+                              {vi.dp01.restDayIndicator}
                             </span>
                           ) : (
                             <span
@@ -776,11 +902,11 @@ Nhịp điệu: ${rateText}
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-bright-magenta" />
             <h2 className="font-ui font-bold text-lg sm:text-xl text-deep-navy">
-              Nhìn lại mỗi trạm
+              {vi.dp01.stationReflectionSectionTitle}
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-            Dành 5 phút cuối mỗi trạm để lắng nghe chính mình và tinh chỉnh hệ thống
+            {vi.dp01.stationReflectionSectionSubtitle}
           </p>
         </div>
 
@@ -825,13 +951,13 @@ Nhịp điệu: ${rateText}
                   </div>
 
                   <span className="text-xs font-semibold text-deep-navy/60 font-ui">
-                    {stationCompleted}/7 ngày hoàn thành
+                    {stationCompleted}/7 {vi.dp01.stationCompletedDays}
                   </span>
                 </div>
 
                 {isLocked ? (
                   <div className="p-4 rounded-2xl bg-white border border-deep-navy/10 text-center text-xs text-deep-navy/60 font-ui">
-                    Trạm này sẽ mở khi tới thời gian: <strong>{openDateFormatted}</strong>.
+                    {vi.dp01.stationLockedPrefix} <strong>{openDateFormatted}</strong>.
                   </div>
                 ) : (
                   <div className="space-y-4 font-ui">
@@ -849,7 +975,7 @@ Nhịp điệu: ${rateText}
                           value={answers[qIdx] || ''}
                           disabled={readOnly}
                           onChange={(e) => handleUpdateReflectionField(stIdx, qIdx, e.target.value)}
-                          placeholder="Ghi lại chiêm nghiệm..."
+                          placeholder={vi.dp01.reflectionInputPlaceholder}
                           className="w-full p-3 rounded-2xl bg-white border border-lavender-mist text-xs sm:text-sm text-deep-navy focus:border-bright-magenta focus:outline-none resize-y"
                         />
                       </div>
@@ -863,14 +989,14 @@ Nhịp điệu: ${rateText}
                         className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs font-bold shadow-soft-md transition-all active:scale-95 cursor-pointer disabled:opacity-50"
                       >
                         {isSaving ? (
-                          <span>Đang lưu...</span>
+                          <span>{vi.dp01.saving}</span>
                         ) : isSaved ? (
                           <>
                             <Check className="w-3.5 h-3.5" />
-                            <span>Đã lưu!</span>
+                            <span>{vi.dp01.saved}</span>
                           </>
                         ) : (
-                          <span>Lưu bài suy ngẫm</span>
+                          <span>{vi.dp01.saveReflection}</span>
                         )}
                       </button>
                     </div>
@@ -885,7 +1011,9 @@ Nhịp điệu: ${rateText}
       {/* 7. KHỐI QUẢN LÝ DỮ LIỆU CỦA BẠN (5 NÚT CHỨC NĂNG) */}
       <div className="p-6 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-4">
         <div className="space-y-1">
-          <h3 className="font-ui font-bold text-base sm:text-lg text-deep-navy">Dữ liệu của bạn</h3>
+          <h3 className="font-ui font-bold text-base sm:text-lg text-deep-navy">
+            {vi.dp01.myDataTitle}
+          </h3>
           <p className="text-xs sm:text-sm text-deep-navy/70 font-ui leading-relaxed">
             {privacyNote ||
               'Dữ liệu hành trình của bạn được lưu an toàn trên máy chủ của Trạm Dừng Cảm Xúc gắn với tài khoản của bạn. Bạn có thể xuất bản sao lưu bất kỳ lúc nào để lưu trữ riêng.'}
@@ -901,7 +1029,7 @@ Nhịp điệu: ${rateText}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border border-deep-navy/20 hover:border-deep-navy text-deep-navy font-semibold bg-warm-ivory hover:bg-white transition-all active:scale-95 cursor-pointer shadow-soft-md"
             >
               <Download className="w-3.5 h-3.5 text-bright-magenta" />
-              <span>Tải bản sao lưu (.json)</span>
+              <span>{vi.dp01.exportBackupJson}</span>
             </button>
 
             {/* 2. Nút Tải bảng 28 ngày (.csv) */}
@@ -911,14 +1039,15 @@ Nhịp điệu: ${rateText}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border border-deep-navy/20 hover:border-deep-navy text-deep-navy font-semibold bg-warm-ivory hover:bg-white transition-all active:scale-95 cursor-pointer shadow-soft-md"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-deep-navy" />
-              <span>Tải bảng 28 ngày (.csv)</span>
+              <span>{vi.dp01.exportTrackerCsv}</span>
             </button>
 
             {/* 3. Nút Khôi phục từ file */}
             <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border border-deep-navy/20 hover:border-deep-navy text-deep-navy font-semibold bg-warm-ivory hover:bg-white transition-all active:scale-95 cursor-pointer shadow-soft-md">
               <Upload className="w-3.5 h-3.5 text-deep-navy/70" />
-              <span>Khôi phục từ file</span>
+              <span>{vi.dp01.restoreFromFile}</span>
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="application/json,.json"
                 onChange={handleFileInput}
@@ -937,28 +1066,97 @@ Nhịp điệu: ${rateText}
               ) : (
                 <Share2 className="w-3.5 h-3.5 text-bright-magenta" />
               )}
-              <span>{copiedSummary ? 'Đã sao chép!' : 'Sao chép kết quả gửi Coach'}</span>
+              <span>{copiedSummary ? vi.dp01.copiedCoachSummary : vi.dp01.copyCoachSummary}</span>
             </button>
           </div>
 
           {/* 5. Nút Bắt đầu lại */}
           <button
             type="button"
-            onClick={async () => {
-              if (window.confirm('Bạn có chắc chắn muốn bắt đầu lại hành trình 28 ngày?')) {
-                const res = await restartJourney()
-                if (res.success && res.redirectTo) {
-                  window.location.href = res.redirectTo
-                }
-              }
-            }}
+            onClick={() => setIsRestartModalOpen(true)}
             className="inline-flex items-center gap-1.5 text-deep-navy/70 hover:text-accent-pink px-2 py-1 transition-colors cursor-pointer text-xs font-semibold"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Bắt đầu lại</span>
+            <span>{vi.dp01.restartJourneyButton}</span>
           </button>
         </div>
       </div>
+
+      {/* Modal xác nhận khôi phục từ file (Section 2) */}
+      <Modal
+        isOpen={isRestoreModalOpen}
+        onClose={() => {
+          if (!isRestoring) {
+            setIsRestoreModalOpen(false)
+            if (fileInputRef.current) fileInputRef.current.value = ''
+          }
+        }}
+        title={vi.hb13.restoreModal.title}
+      >
+        <div className="space-y-4 font-ui text-left">
+          <p className="text-xs sm:text-sm text-deep-navy/80 leading-relaxed">
+            {vi.hb13.restoreModal.confirmMessage(pendingCheckinCount)}
+          </p>
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-lavender-mist">
+            <button
+              type="button"
+              disabled={isRestoring}
+              onClick={() => {
+                setIsRestoreModalOpen(false)
+                if (fileInputRef.current) fileInputRef.current.value = ''
+              }}
+              className="px-4 py-2 rounded-2xl border border-deep-navy/20 text-deep-navy hover:bg-warm-ivory text-xs font-semibold cursor-pointer"
+            >
+              {vi.hb13.restoreModal.cancelButton}
+            </button>
+            <button
+              type="button"
+              disabled={isRestoring}
+              onClick={handleConfirmRestore}
+              className="px-4 py-2 rounded-2xl bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs font-semibold cursor-pointer shadow-soft-md disabled:opacity-50"
+            >
+              {isRestoring
+                ? vi.hb13.restoreModal.restoringButton
+                : vi.hb13.restoreModal.confirmButton}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal xác nhận bắt đầu lại hành trình (Section 2) */}
+      <Modal
+        isOpen={isRestartModalOpen}
+        onClose={() => !isRestarting && setIsRestartModalOpen(false)}
+        title={vi.hb13.restartModal.title}
+      >
+        <div className="space-y-4 font-ui text-left">
+          <p className="text-xs sm:text-sm text-deep-navy/80 leading-relaxed">
+            {vi.dp01.restartConfirmMessage}
+          </p>
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-lavender-mist">
+            <button
+              type="button"
+              disabled={isRestarting}
+              onClick={() => setIsRestartModalOpen(false)}
+              className="px-4 py-2 rounded-2xl border border-deep-navy/20 text-deep-navy hover:bg-warm-ivory text-xs font-semibold cursor-pointer"
+            >
+              {vi.hb13.restartModal.cancelButton}
+            </button>
+            <button
+              type="button"
+              disabled={isRestarting}
+              onClick={handleConfirmRestart}
+              className="px-4 py-2 rounded-2xl bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs font-semibold cursor-pointer shadow-soft-md disabled:opacity-50"
+            >
+              {isRestarting
+                ? vi.hb13.restartModal.restartingButton
+                : vi.hb13.restartModal.confirmButton}
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* 8. KHỐI CHỨNG NHẬN (NẾU ĐỦ ĐIỀU KIỆN HOẶC ĐÃ CÓ CHỨNG NHẬN) */}
       {/* QA DP-01e: also once the journey has ended without reaching the goal ("Đã trải nghiệm"). */}
@@ -986,7 +1184,9 @@ Nhịp điệu: ${rateText}
               />
               <CertificateShareButtons
                 code={initialCertificate.code}
-                customerName={customerName || initialCertificate.customerName || 'Người đồng hành'}
+                customerName={
+                  customerName || initialCertificate.customerName || vi.dp01.defaultCompanionName
+                }
                 isPublic={initialCertificate.isPublic}
               />
             </div>
@@ -1052,7 +1252,7 @@ Nhịp điệu: ${rateText}
           dayItem={
             trackerDays.find((d) => d.dayNumber === selectedDayItem.dayNumber) || selectedDayItem
           }
-          atomicHabitTitle={propAtomicHabit || 'Thói quen hạt nhân'}
+          atomicHabitTitle={propAtomicHabit || vi.dp01.defaultAtomicHabitTitle}
           checkInContent={checkInContent}
           onClose={() => setSelectedDayItem(null)}
           onSave={handleSaveDay}

@@ -1,0 +1,185 @@
+{
+  "totalSizeMb": "0.60",
+  "records": [
+    {
+      "name": "habit-step3",
+      "title": "Habit Bước 3 (3 việc, 1 Mentor)",
+      "viewport": "390px",
+      "zipMd5": "cb27cdcc82a7a2b868b388bfcc8e1566",
+      "repoMd5": "b1ec947165d0df729814c9fc9949161f",
+      "repoFile": "habit-step3-390.png",
+      "notes": "Khớp layout bảng đánh giá thói quen, chọn Mentor và giờ neo"
+    },
+    {
+      "name": "eq-intro-step1",
+      "title": "EQ Intro Bước 1 (Màn đầu)",
+      "viewport": "390px",
+      "zipMd5": "50d7a9cfa44adaf845f7bc96ca17337d",
+      "repoMd5": "31649a2363a51c9117342946699ee54b",
+      "repoFile": "eq-intro-step1-390.png",
+      "notes": "Thẻ giới thiệu bộ thẻ 26 thông điệp và triết lý"
+    },
+    {
+      "name": "eq-intro-step2",
+      "title": "EQ Intro Bước 2 (Cách thức sử dụng)",
+      "viewport": "390px",
+      "zipMd5": "c02b95b83538288e98a403e5840cfe0b",
+      "repoMd5": "e85ab1e7cbe7e20cbc424f39ed050469",
+      "repoFile": "eq-intro-step2-390.png",
+      "notes": "4 bước tĩnh lặng và các chế độ một mình / nhiều người"
+    },
+    {
+      "name": "eq-draw-screen",
+      "title": "EQ Màn Rút thẻ",
+      "viewport": "390px",
+      "zipMd5": "100ef25cbfc91ff09dae7b3a906288f1",
+      "repoMd5": "3360f30f38e7dc9cd58024f1ee069375",
+      "repoFile": "eq-draw-screen-390.png",
+      "notes": "Chọn tâm trạng gợi ý hoặc rút ngẫu nhiên"
+    },
+    {
+      "name": "eq-card-front",
+      "title": "EQ Mặt trước thẻ 3D",
+      "viewport": "390px",
+      "zipMd5": "570dc40e4e50ef5ba78f066a2bdd3437",
+      "repoMd5": "090807ba572b21fc23fe7f7c611f69c6",
+      "repoFile": "eq-card-front-390.png",
+      "notes": "Mặt trước thẻ có thông điệp, hình minh họa, tải ảnh 4:5/9:16"
+    },
+    {
+      "name": "eq-card-back",
+      "title": "EQ Mặt sau thẻ 3D",
+      "viewport": "390px",
+      "zipMd5": "100ef25cbfc91ff09dae7b3a906288f1",
+      "repoMd5": "d497e9eb1df99d4000527fdc7076637b",
+      "repoFile": "eq-card-back-390.png",
+      "notes": "Mặt sau với 3 câu hỏi suy ngẫm (Gợi nhớ, Gói ghém, Ghi nhận)"
+    },
+    {
+      "name": "eq-all-cards",
+      "title": "EQ Tất cả thẻ (Z4)",
+      "viewport": "390px",
+      "zipMd5": "d6e3d9b1a5ee40c279dc9f9761a044db",
+      "repoMd5": "c7ef250803f10f64433566bd9c0a3dee",
+      "repoFile": "eq-all-cards-390.png",
+      "notes": "Lưới tất cả thẻ, mỗi thẻ là button có aria-label hỗ trợ phím"
+    },
+    {
+      "name": "eq-guide-modal",
+      "title": "EQ Hộp thoại Hướng dẫn sử dụng",
+      "viewport": "390px",
+      "zipMd5": "6d80cd79d8c2c3e8108c7106c2ed7374",
+      "repoMd5": "fab95267d39cee1009b8371dacd6db2e",
+      "repoFile": "eq-guide-modal-390.png",
+      "notes": "Modal hướng dẫn 4 bước tĩnh lặng và câu châm ngôn"
+    },
+    {
+      "name": "eq-qr-page",
+      "title": "EQ Trang xem qua mã QR (Z5)",
+      "viewport": "390px",
+      "zipMd5": "4bafed8a5a77921c81c817cb4d57c3c3",
+      "repoMd5": "(Planning chụp lại – xem file)",
+      "repoFile": "eq-qr-page-390.png",
+      "notes": "QA DP-02c: ảnh của PC nhà là trang đăng nhập / 404, Planning chụp lại từ e2e đã đăng nhập."
+    },
+    {
+      "name": "habit-step3",
+      "title": "Habit Bước 3 (3 việc, 1 Mentor)",
+      "viewport": "1440px",
+      "zipMd5": "b86c52d174173d6bf79e5979ff0890ab",
+      "repoMd5": "21098d421c9acce9d9ad2c15d68c5e64",
+      "repoFile": "habit-step3-1440.png",
+      "notes": "Khớp layout bảng đánh giá thói quen, chọn Mentor và giờ neo"
+    },
+    {
+      "name": "habit-step7-tracker",
+      "title": "Habit Bước 7 Tracker (Z1-Z2)",
+      "viewport": "1440px",
+      "zipMd5": "2f11aa8c1ef11f545b7a0f7865930091",
+      "repoMd5": "(Planning chụp lại – xem file)",
+      "repoFile": "habit-step7-tracker-1440.png",
+      "notes": "QA DP-02c: ảnh của PC nhà là trang đăng nhập / 404, Planning chụp lại từ e2e đã đăng nhập."
+    },
+    {
+      "name": "habit-checkin-modal",
+      "title": "Hộp thoại Check-in ngày",
+      "viewport": "1440px",
+      "zipMd5": "3ed653f87834d7f4f2e84684a521d148",
+      "repoMd5": "(Planning chụp lại – xem file)",
+      "repoFile": "habit-checkin-modal-1440.png",
+      "notes": "QA DP-02c: ảnh của PC nhà là trang đăng nhập / 404, Planning chụp lại từ e2e đã đăng nhập."
+    },
+    {
+      "name": "eq-intro-step1",
+      "title": "EQ Intro Bước 1 (Màn đầu)",
+      "viewport": "1440px",
+      "zipMd5": "80f76630f0d036aebd6b6f549b00fe48",
+      "repoMd5": "457bf0329ad6fe351cbb12b7bc1e8d47",
+      "repoFile": "eq-intro-step1-1440.png",
+      "notes": "Thẻ giới thiệu bộ thẻ 26 thông điệp và triết lý"
+    },
+    {
+      "name": "eq-intro-step2",
+      "title": "EQ Intro Bước 2 (Cách thức sử dụng)",
+      "viewport": "1440px",
+      "zipMd5": "613cbe6e65f789e0a0e9babb89e44316",
+      "repoMd5": "bfb3d52bc78ff2201de5b2609e5a9967",
+      "repoFile": "eq-intro-step2-1440.png",
+      "notes": "4 bước tĩnh lặng và các chế độ một mình / nhiều người"
+    },
+    {
+      "name": "eq-draw-screen",
+      "title": "EQ Màn Rút thẻ",
+      "viewport": "1440px",
+      "zipMd5": "1a9d833588a2daed4e6cbc9d03f901da",
+      "repoMd5": "e2fbae8bb62ac4d3d6f70f60a10938d8",
+      "repoFile": "eq-draw-screen-1440.png",
+      "notes": "Chọn tâm trạng gợi ý hoặc rút ngẫu nhiên"
+    },
+    {
+      "name": "eq-card-front",
+      "title": "EQ Mặt trước thẻ 3D",
+      "viewport": "1440px",
+      "zipMd5": "51b2797a289a5065556ba0365b71afce",
+      "repoMd5": "973149458f5aac12f5612f32a4ccbd2d",
+      "repoFile": "eq-card-front-1440.png",
+      "notes": "Mặt trước thẻ có thông điệp, hình minh họa, tải ảnh 4:5/9:16"
+    },
+    {
+      "name": "eq-card-back",
+      "title": "EQ Mặt sau thẻ 3D",
+      "viewport": "1440px",
+      "zipMd5": "48c67a73e5a24639f6c1342214deebd0",
+      "repoMd5": "8bac92b9d573a91d68ebebd6ad18a62a",
+      "repoFile": "eq-card-back-1440.png",
+      "notes": "Mặt sau với 3 câu hỏi suy ngẫm (Gợi nhớ, Gói ghém, Ghi nhận)"
+    },
+    {
+      "name": "eq-all-cards",
+      "title": "EQ Tất cả thẻ (Z4)",
+      "viewport": "1440px",
+      "zipMd5": "e4c484c9b537d319c928180eb09b29c9",
+      "repoMd5": "2d9b052176f15efbea14e1f0d3c3e381",
+      "repoFile": "eq-all-cards-1440.png",
+      "notes": "Lưới tất cả thẻ, mỗi thẻ là button có aria-label hỗ trợ phím"
+    },
+    {
+      "name": "eq-guide-modal",
+      "title": "EQ Hộp thoại Hướng dẫn sử dụng",
+      "viewport": "1440px",
+      "zipMd5": "158ff2ed9d1a0077041c6f40571d2147",
+      "repoMd5": "004737d42ceeb743ff1dda1185157098",
+      "repoFile": "eq-guide-modal-1440.png",
+      "notes": "Modal hướng dẫn 4 bước tĩnh lặng và câu châm ngôn"
+    },
+    {
+      "name": "eq-qr-page",
+      "title": "EQ Trang xem qua mã QR (Z5)",
+      "viewport": "1440px",
+      "zipMd5": "2149be791658d9e31d3d0a060d8d693a",
+      "repoMd5": "(Planning chụp lại – xem file)",
+      "repoFile": "eq-qr-page-1440.png",
+      "notes": "QA DP-02c: ảnh của PC nhà là trang đăng nhập / 404, Planning chụp lại từ e2e đã đăng nhập."
+    }
+  ]
+}

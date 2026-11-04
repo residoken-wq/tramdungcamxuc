@@ -70,6 +70,59 @@ export function formatIdentityStatement(actionText: string, personText: string):
 }
 
 /**
+ * Tách hành động cụ thể và con người muốn trở thành từ câu định danh (Z1).
+ * Hỗ trợ kế hoạch cũ chưa lưu riêng trường personText / actionText trong habitPlans.
+ */
+export function extractIdentityParts(identityStatement?: string | null): {
+  actionText: string
+  personText: string
+} {
+  if (!identityStatement || typeof identityStatement !== 'string') {
+    return { actionText: '', personText: '' }
+  }
+
+  const trimmed = identityStatement.trim()
+  if (!trimmed) {
+    return { actionText: '', personText: '' }
+  }
+
+  // 1. Khớp chỉ có "Để trở thành [con người]" hoặc "Trở thành [con người]"
+  const deTroThanhOnlyRegex = /^(?:để trở thành|trở thành)\s+(.+)$/i
+  const matchPersonOnly = trimmed.match(deTroThanhOnlyRegex)
+  if (matchPersonOnly) {
+    return {
+      actionText: '',
+      personText: matchPersonOnly[1].trim(),
+    }
+  }
+
+  // 2. Khớp: [Tôi sẽ ...] để trở thành [con người ...]
+  const deTroThanhRegex = /^(?:tôi sẽ\s+)?(.*?)(?:\s+để trở thành\s+|\s+trở thành\s+)(.+)$/i
+  const match = trimmed.match(deTroThanhRegex)
+  if (match) {
+    return {
+      actionText: match[1].trim(),
+      personText: match[2].trim(),
+    }
+  }
+
+  // Khớp chỉ có "Tôi sẽ [hành động]"
+  const toiSeOnlyRegex = /^tôi sẽ\s+(.+)$/i
+  const matchActionOnly = trimmed.match(toiSeOnlyRegex)
+  if (matchActionOnly) {
+    return {
+      actionText: matchActionOnly[1].trim(),
+      personText: '',
+    }
+  }
+
+  return {
+    actionText: trimmed,
+    personText: '',
+  }
+}
+
+/**
  * Khởi tạo dữ liệu nháp mặc định cho Habit Loop
  */
 export function getDefaultHabitDraft(): HabitPlanDraft {

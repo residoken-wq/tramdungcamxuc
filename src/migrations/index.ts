@@ -36,6 +36,7 @@ import * as migration_20261104_080000_dp01_confidence_emotions from './20261104_
 import * as migration_20261104_090000_dp01_eq_schema from './20261104_090000_dp01_eq_schema'
 import * as migration_20261104_100000_dp01d_techniques_and_loop from './20261104_100000_dp01d_techniques_and_loop'
 import * as migration_20261104_110000_dp01d_habit_text_fields from './20261104_110000_dp01d_habit_text_fields'
+import * as migration_20261104_180000_dp02_polish_fields from './20261104_180000_dp02_polish_fields'
 
 export const migrations = [
   {
@@ -227,5 +228,10 @@ export const migrations = [
     up: migration_20261104_110000_dp01d_habit_text_fields.up,
     down: migration_20261104_110000_dp01d_habit_text_fields.down,
     name: '20261104_110000_dp01d_habit_text_fields',
+  },
+  {
+    up: migration_20261104_180000_dp02_polish_fields.up,
+    down: migration_20261104_180000_dp02_polish_fields.down,
+    name: '20261104_180000_dp02_polish_fields',
   },
 ]

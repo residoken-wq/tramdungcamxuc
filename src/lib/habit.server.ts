@@ -15,7 +15,7 @@ import type { RequiredDataFromCollectionSlug } from 'payload'
 import config from '@/payload.config'
 import type { Product, SiteSetting, Technique } from '@/payload-types'
 import type { PublicTechnique } from './habit'
-import { HABIT_LOOP_PATH } from './habit'
+import { extractIdentityParts, HABIT_LOOP_PATH } from './habit'
 import { HABIT_TRACKER_PRODUCT_SLUG } from './habit/config'
 import { addVietnamDays, getVietnamYmd, vietnamTodayIso } from './habit/tracker-stats'
 import { resolveProductCta, type ProductCta } from './products'
@@ -498,6 +498,17 @@ export async function submitHabitPlan(
     // REVIEW-REQUIRED: HB-20 companionName chỉ dùng để nhắc nhở học viên
     if (validated.companionName) {
       planData.companionName = validated.companionName
+    }
+
+    // REVIEW-REQUIRED: Z1 Lưu actionText và personText vào habitPlans; fallback tách từ identityStatement
+    const extractedParts = extractIdentityParts(validated.identityStatement)
+    const finalActionText = validated.actionText || extractedParts.actionText
+    if (finalActionText) {
+      planData.actionText = finalActionText
+    }
+    const finalPersonText = validated.personText || extractedParts.personText
+    if (finalPersonText) {
+      planData.personText = finalPersonText
     }
 
     habitPlanDoc = (await payload.create({

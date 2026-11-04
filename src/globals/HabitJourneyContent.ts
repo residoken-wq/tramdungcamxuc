@@ -453,6 +453,8 @@ export const HabitJourneyContent: GlobalConfig = {
       fields: [
         text('afterJourneyTitle', vi.hb18.tracker.afterJourneyTitle),
         textarea('afterJourneyText', vi.hb18.tracker.afterJourneyText),
+        text('myDataTitle', 'Tiêu đề khối Dữ liệu của bạn'),
+        textarea('myDataDesc', 'Mô tả khối Dữ liệu của bạn'),
       ],
     },
     {
@@ -495,7 +497,13 @@ export const HabitJourneyContent: GlobalConfig = {
       name: 'step1',
       type: 'group',
       label: 'Bước 1: Khám thói quen',
-      fields: [textarea('leadIn', 'Lời dẫn mở đầu bước 1')],
+      fields: [
+        textarea('leadIn', 'Lời dẫn mở đầu bước 1'),
+        textarea('cueDiagnosis', 'Chẩn đoán mắt xích hở: Tín hiệu (Cue)'),
+        textarea('cravingDiagnosis', 'Chẩn đoán mắt xích hở: Khao khát (Craving)'),
+        textarea('responseDiagnosis', 'Chẩn đoán mắt xích hở: Phản hồi (Response)'),
+        textarea('rewardDiagnosis', 'Chẩn đoán mắt xích hở: Phần thưởng (Reward)'),
+      ],
     },
     {
       name: 'step2',
@@ -528,6 +536,7 @@ export const HabitJourneyContent: GlobalConfig = {
       label: 'Bước 4: Gọi tên thói quen',
       fields: [
         textarea('leadIn', 'Lời dẫn mở đầu bước 4'),
+        textarea('leadInEmphasis', 'Lời dẫn in đậm bước 4 (Z3)'),
         text('statementTitle', 'Tiêu đề tuyên ngôn'),
         text('statementDesc', 'Mô tả tuyên ngôn'),
         textarea('suggestedRoles', 'Gợi ý vai trò (mỗi dòng 1 gợi ý)'),
@@ -549,6 +558,8 @@ export const HabitJourneyContent: GlobalConfig = {
       label: 'Bước 5: Thiết kế vòng lặp',
       fields: [
         textarea('leadIn', 'Lời dẫn mở đầu bước 5'),
+        text('theoryTitle', 'Tiêu đề khối lý thuyết vòng lặp'),
+        textarea('theoryDesc', 'Mô tả khối lý thuyết vòng lặp'),
         text('customActionPlaceholder', 'Placeholder khi ghi chú áp dụng'),
       ],
     },

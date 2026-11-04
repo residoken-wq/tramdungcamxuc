@@ -295,6 +295,20 @@ export const habitPlanSubmissionSchema = z
       .trim()
       .min(1, vi.habit.wizard.errors.identityRequired)
       .max(500, vi.habit.wizard.errors.identityMax),
+    actionText: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
+    personText: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.length > 0 ? val : undefined)),
     // REVIEW-REQUIRED: Nâng giới hạn techniques từ 8 lên 20 để hỗ trợ chọn nhiều kỹ thuật theo zip (DP-01d)
     chosenTechniques: z
       .array(habitChosenTechniqueSchema)
