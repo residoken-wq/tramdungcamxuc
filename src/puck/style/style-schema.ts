@@ -6,6 +6,7 @@
  */
 import { isOpen, isValidHex, type CleanDesignSystem } from '@/lib/design/design-system'
 import { isDesignFont } from '@/lib/design/fonts'
+import { TEXT_TARGETS } from './text-targets'
 import {
   cleanEmotionGap,
   cleanEyebrowGap,
@@ -30,6 +31,7 @@ export const DEVICE_MEDIA: Record<Device, string | null> = {
 
 export const SPACING_PRESETS = ['none', 'sm', 'md', 'lg', 'xl'] as const
 export const FONT_SIZE_PRESETS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const
+export type FontSizePreset = (typeof FONT_SIZE_PRESETS)[number]
 export const RADIUS_PRESETS = ['none', 'sm', 'card', 'full'] as const
 export const SHADOWS = ['none', 'soft', 'strong'] as const
 export const FONT_WEIGHTS = [400, 600, 700] as const
@@ -41,6 +43,14 @@ export type Side = (typeof SIDES)[number]
 /** Spacing / size value: a preset name, or (sizes open) a number + unit such as `12px`. */
 export type Length = string
 export type Box = Partial<Record<Side, Length>>
+
+/** EB-15a: custom styling for individual text targets in a block */
+export interface TextTargetStyle {
+  color?: string // token màu của designSystem
+  size?: Responsive<FontSizePreset> // theo thiết bị như fontSize khối
+  weight?: 400 | 600 | 700
+  align?: Responsive<'left' | 'center' | 'right'>
+}
 
 export interface BlockStyle {
   // Style tab
@@ -58,6 +68,8 @@ export interface BlockStyle {
   titleLineHeight?: TitleLineHeightPreset
   eyebrowGap?: EyebrowGapPreset
   emotionGap?: EmotionGapPreset
+  // EB-15a: Individual text target styles
+  texts?: Record<string, TextTargetStyle>
   // Advanced tab
   padding?: Responsive<Box>
   margin?: Responsive<Box>
@@ -186,11 +198,73 @@ export function cleanCustomCss(value: unknown, ds: CleanDesignSystem): string | 
   return trimmed && trimmed.length <= 5000 ? trimmed : undefined
 }
 
+function cleanTextTargetStyle(raw: unknown, ds: CleanDesignSystem): TextTargetStyle | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined
+  const r = raw as Record<string, unknown>
+
+  let color: string | undefined
+  if (typeof r.color === 'string') {
+    if (ds.colors.some((c) => c.token === r.color)) {
+      color = r.color
+    } else if (isOpen(ds, 'colors') && isValidHex(r.color)) {
+      color = r.color.toUpperCase()
+    }
+  }
+
+  const size = cleanResponsive(
+    r.size,
+    (v) => cleanLength(v, 'fontSize', FONT_SIZE_PRESETS, ds) as FontSizePreset | undefined,
+  )
+  const weight =
+    r.weight === 400 || r.weight === 600 || r.weight === 700
+      ? (r.weight as 400 | 600 | 700)
+      : undefined
+  const align = cleanResponsive(r.align, (v) =>
+    v === 'left' || v === 'center' || v === 'right' ? v : undefined,
+  )
+
+  if (!color && !size && !weight && !align) return undefined
+  return {
+    ...(color ? { color } : {}),
+    ...(size ? { size } : {}),
+    ...(weight ? { weight } : {}),
+    ...(align ? { align } : {}),
+  }
+}
+
+export function cleanTexts(
+  raw: unknown,
+  ds: CleanDesignSystem,
+  blockType?: string,
+): Record<string, TextTargetStyle> | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined
+  if (!blockType) return undefined
+  const targetDefs = TEXT_TARGETS[blockType]
+  if (!targetDefs || !targetDefs.length) return undefined
+  const allowedKeys = new Set(targetDefs.map((d) => d.key))
+
+  const entries: [string, TextTargetStyle][] = []
+  for (const [key, val] of Object.entries(raw as Record<string, unknown>)) {
+    if (!allowedKeys.has(key)) continue
+    const cleaned = cleanTextTargetStyle(val, ds)
+    if (cleaned) {
+      entries.push([key, cleaned])
+    }
+  }
+
+  const limited = entries.slice(0, 20)
+  return limited.length ? Object.fromEntries(limited) : undefined
+}
+
 /**
  * Keeps only valid values that the current brand locks allow. Returns null when nothing is
  * left, so blocks without a meaningful `_style` render exactly as before.
  */
-export function sanitizeBlockStyle(raw: unknown, ds: CleanDesignSystem): BlockStyle | null {
+export function sanitizeBlockStyle(
+  raw: unknown,
+  ds: CleanDesignSystem,
+  blockType?: string,
+): BlockStyle | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
   const r = raw as Record<string, unknown>
   const style: BlockStyle = {
@@ -214,6 +288,7 @@ export function sanitizeBlockStyle(raw: unknown, ds: CleanDesignSystem): BlockSt
     titleLineHeight: cleanTitleLineHeight(r.titleLineHeight),
     eyebrowGap: cleanEyebrowGap(r.eyebrowGap),
     emotionGap: cleanEmotionGap(r.emotionGap),
+    texts: cleanTexts(r.texts, ds, blockType),
     padding: cleanResponsive(r.padding, (v) => cleanBox(v, 'spacing', ds)),
     margin: cleanResponsive(r.margin, (v) => cleanBox(v, 'margin', ds)),
     hideOn: Array.isArray(r.hideOn)

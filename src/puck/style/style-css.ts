@@ -15,6 +15,7 @@ import { sanitizeBlockCustomCss, sanitizePageCustomCss, PAGE_ATTR } from './cust
 import { containerCss } from './container-css'
 import { cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
 import { sanitizeContainer } from './container-schema'
+import { TEXT_TARGET_ATTR } from './text-target'
 import {
   DEVICE_MEDIA,
   DEVICES,
@@ -24,6 +25,7 @@ import {
   type Box,
   type Device,
   type Length,
+  type TextTargetStyle,
 } from './style-schema'
 
 export { STYLE_ATTR, isSafeBlockId }
@@ -60,6 +62,28 @@ const HIDE_MEDIA: Record<Device, string> = {
   desktop: '(min-width: 1024px)',
   tablet: '(min-width: 768px) and (max-width: 1023px)',
   mobile: '(max-width: 767px)',
+}
+
+const SAFE_TEXT_KEY = /^[A-Za-z0-9_-]{1,64}$/
+function isSafeTextKey(key: unknown): key is string {
+  return typeof key === 'string' && SAFE_TEXT_KEY.test(key)
+}
+
+function textDeclarations(textStyle: TextTargetStyle, device: Device): string[] {
+  const size = textStyle.size?.[device]
+  const align = textStyle.align?.[device]
+  return [
+    ...(size ? [`font-size:${length(size, FONT_SIZE)}`] : []),
+    ...(align ? [`text-align:${align}`] : []),
+  ]
+}
+
+function textBaseDeclarations(textStyle: TextTargetStyle): string[] {
+  return [
+    ...(textStyle.color ? [`color:${color(textStyle.color)}`] : []),
+    ...(textStyle.weight ? [`font-weight:${textStyle.weight}`] : []),
+    ...textDeclarations(textStyle, 'desktop'),
+  ]
 }
 
 const length = (value: Length, presets: Record<string, string>) => presets[value] ?? value
@@ -126,6 +150,25 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   }
   for (const device of style.hideOn ?? []) {
     rules.push(`@media ${HIDE_MEDIA[device]}{${selector}{display:none}}`)
+  }
+  // EB-15a: Individual text target styles
+  if (style.texts && typeof style.texts === 'object') {
+    for (const [key, textStyle] of Object.entries(style.texts)) {
+      if (!isSafeTextKey(key) || !textStyle) continue
+      const targetSelector = `[${TEXT_TARGET_ATTR}="${id}:${key}"][${TEXT_TARGET_ATTR}]`
+      const baseText = textBaseDeclarations(textStyle)
+      if (baseText.length) {
+        rules.push(`${targetSelector}{${baseText.join(';')}}`)
+      }
+      for (const device of ['tablet', 'mobile'] as const) {
+        const media = DEVICE_MEDIA[device]
+        if (!media) continue
+        const devText = textDeclarations(textStyle, device)
+        if (devText.length) {
+          rules.push(`@media ${media}{${targetSelector}{${devText.join(';')}}}`)
+        }
+      }
+    }
   }
   if (style.customCss) {
     const custom = sanitizeBlockCustomCss(style.customCss, id)
@@ -201,7 +244,11 @@ export function collectPageStyles(
         if (containerRule) css.push(containerRule)
       }
 
-      const style = sanitizeBlockStyle(item.props?._style, ds)
+      const style = sanitizeBlockStyle(
+        item.props?._style,
+        ds,
+        typeof item.type === 'string' ? item.type : undefined,
+      )
       if (style) {
         const rule = blockStyleCss(id, style)
         if (rule) css.push(rule)

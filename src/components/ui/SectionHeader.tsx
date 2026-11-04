@@ -6,6 +6,7 @@ import {
   type TextColorOption,
   type FontSizeOption,
 } from '@/lib/brand/format-classes'
+import { textTarget } from '@/puck/style/text-target'
 
 export type SectionHeadingLevel = 'h1' | 'h2' | 'h3'
 
@@ -27,6 +28,7 @@ export interface SectionHeaderProps {
 }
 
 export function SectionHeader({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -40,7 +42,7 @@ export function SectionHeader({
   emotionColor = 'deep-navy',
   titleSize = 'md',
   emotionSize = 'md',
-}: SectionHeaderProps) {
+}: SectionHeaderProps & { id?: string }) {
   const alignClass = align === 'center' ? 'text-center items-center' : 'text-left items-start'
 
   const headingSizeClasses = fontSizeClass('title', titleSize, HeadingTag)
@@ -55,6 +57,7 @@ export function SectionHeader({
       {/* Series Label (Montserrat SemiBold/Bold, WCAG AA compliant on light background) */}
       {seriesLabel && (
         <span
+          {...textTarget(id, 'seriesLabel')}
           className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${eyebrowColorClass}`}
         >
           {seriesLabel}
@@ -65,13 +68,20 @@ export function SectionHeader({
       <HeadingTag
         className={`font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
       >
-        <span className={`block ${line1ColorClass}`}>{titleLine1}</span>
-        {titleLine2 && <span className={`block ${line2ColorClass}`}>{titleLine2}</span>}
+        <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
+          {titleLine1}
+        </span>
+        {titleLine2 && (
+          <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>
+            {titleLine2}
+          </span>
+        )}
       </HeadingTag>
 
       {/* Emotion Line (Playfair Display Italic) */}
       {emotionLine && (
         <p
+          {...textTarget(id, 'emotionLine')}
           className={`mt-[var(--tdcx-emotion-gap,0.875rem)] font-quote ${emotionSizeStyle} italic ${emotionColorStyle} max-w-2xl`}
         >
           {emotionLine}

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { HeartLine } from '@/components/brand/HeartLine'
 import { safeHref } from '@/lib/safe-href'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface HanaStoryChipItem {
   text?: string
@@ -57,6 +58,7 @@ const PADDINGS = {
 } as const
 
 export function HanaStory({
+  id,
   tone = 'light',
   jobTitle,
   greeting,
@@ -78,7 +80,7 @@ export function HanaStory({
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
-}: HanaStoryProps) {
+}: HanaStoryProps & { id?: string }) {
   const isDarkTone = tone === 'dark'
   const isDarkOrNavy = isDarkTone || bgColor === 'deep-navy'
   const safeButtonHref = buttonLink ? safeHref(buttonLink) : null
@@ -159,6 +161,7 @@ export function HanaStory({
               <header className="mb-6 flex flex-col text-left items-start">
                 {seriesLabel && (
                   <span
+                    {...textTarget(id, 'seriesLabel')}
                     className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${
                       isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
                     }`}
@@ -168,12 +171,16 @@ export function HanaStory({
                 )}
                 <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
                   {titleLine1 && (
-                    <span className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}>
+                    <span
+                      {...textTarget(id, 'titleLine1')}
+                      className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}
+                    >
                       {titleLine1}
                     </span>
                   )}
                   {titleLine2 && (
                     <span
+                      {...textTarget(id, 'titleLine2')}
                       className={`block ${isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}`}
                     >
                       {titleLine2}
@@ -186,6 +193,7 @@ export function HanaStory({
             {/* Job Title under heading in standard story layout */}
             {layout === 'story' && jobTitle && (
               <p
+                {...textTarget(id, 'jobTitle')}
                 className={`font-ui text-xs sm:text-sm font-semibold uppercase tracking-wider -mt-3 mb-5 ${
                   isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
                 }`}
@@ -197,6 +205,7 @@ export function HanaStory({
             {/* Greeting in letter layout (Playfair Italic) */}
             {layout === 'letter' && greeting && (
               <p
+                {...textTarget(id, 'greeting')}
                 className={`font-quote italic text-xl sm:text-2xl mb-5 ${
                   isDarkOrNavy ? 'text-white' : 'text-deep-navy'
                 }`}
@@ -208,6 +217,7 @@ export function HanaStory({
             {/* Story Paragraphs */}
             {paragraphs.length > 0 && (
               <div
+                {...textTarget(id, 'storyContent')}
                 className={`space-y-4 font-sans text-base sm:text-lg leading-relaxed ${descColorClass}`}
               >
                 {paragraphs.map((p, idx) => (
@@ -220,6 +230,7 @@ export function HanaStory({
             {quoteLine && (
               <div className={`mt-6 p-5 sm:p-6 rounded-card border shadow-sm ${quoteBgClass}`}>
                 <p
+                  {...textTarget(id, 'quoteLine')}
                   className={`font-quote italic text-lg sm:text-xl leading-relaxed ${quoteTextClass}`}
                 >
                   &ldquo;{quoteLine}&rdquo;
@@ -260,6 +271,7 @@ export function HanaStory({
                   </div>
                 ) : signatureName ? (
                   <p
+                    {...textTarget(id, 'signatureName')}
                     className={`font-quote italic text-2xl sm:text-3xl mb-1 ${
                       isDarkOrNavy ? 'text-white' : 'text-deep-navy'
                     }`}
@@ -270,6 +282,7 @@ export function HanaStory({
 
                 {jobTitle && (
                   <p
+                    {...textTarget(id, 'jobTitle')}
                     className={`font-ui text-xs sm:text-sm font-semibold uppercase tracking-wider ${
                       isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
                     }`}

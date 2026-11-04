@@ -19,19 +19,19 @@ export type { HeroTwoEntriesProps }
 export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
   label: 'Hero 2 Lối vào (Cá nhân & Tổ chức)',
   fields: {
-    seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
+    seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel },
     titleLine1: {
       type: 'text',
-      label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      label: vi.eb15a.titleLine1,
       contentEditable: true,
     },
     titleLine2: {
       type: 'text',
-      label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      label: vi.eb15a.titleLine2,
       contentEditable: true,
     },
-    emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display Italic)' },
-    description: { type: 'textarea', label: 'Đoạn mô tả ngắn dưới tiêu đề' },
+    emotionLine: { type: 'textarea', label: vi.eb15a.emotionLine },
+    description: { type: 'textarea', label: vi.eb15a.description },
     mediaId: createMediaExternalField({
       label: 'Ảnh chân dung / minh họa Hero (Thư viện media)',
     }),
