@@ -95,4 +95,3 @@ export function ItemTitlesField({ type }: ItemTitlesFieldProps) {
     </div>
   )
 }
-

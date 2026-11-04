@@ -2369,11 +2369,11 @@ Khối **Container** nằm ở đầu nhóm **Bố cục** trong bảng thư vi�
 1. **Kéo Container vào trang:** Thả vào vị trí bất kỳ trên trang hoặc thả vào bên trong một Container khác.
 2. **Kéo khối vào trong Container:** Thả các khối chữ, ảnh, nút bấm, trích dẫn... vào vùng trống bên trong Container. Các khối bên trong tự sắp xếp theo bố cục của Container. Thẻ con (thẻ gói, câu hỏi FAQ, ô số liệu…) không thả vào Container được: chúng chỉ nằm trong khối cha của mình.
 3. **Đổi hàng / cột theo thiết bị (Tab Nội dung):**
-   - **Hướng sắp xếp**: Bấm chọn giữa **Hàng ngang**, **Cột dọc**, **Hàng ngang đảo ngược**, hoặc **Cột dọc đảo ngược**.
+   - **Hướng sắp xếp**: Bấm chọn giữa **Hàng ngang**, **Cột dọc**, **Đảo hàng** hoặc **Đảo cột**.
    - **Chỉnh riêng cho Điện thoại / Máy tính bảng**: Chọn biểu tượng thiết bị ở đầu bảng. Ví dụ: Trên **Máy tính** để _Hàng ngang_ để các khối nằm cạnh nhau; chuyển sang **Điện thoại** bấm chọn _Cột dọc_ để các khối tự xếp chồng ngay ngắn.
-   - **Căn theo trục chính**: Căn đầu, Căn giữa, Căn cuối, Giãn đều hai đầu, Giãn đều xung quanh, Giãn cách đều.
-   - **Căn theo trục phụ**: Căn đầu, Căn giữa, Căn cuối, Kéo giãn.
-   - **Khoảng cách**: Chọn độ giãn giữa các khối con (Nhỏ, Vừa, Lớn...).
+   - **Căn theo chiều sắp xếp**: Bắt đầu, Ở giữa, Kết thúc, Cách đều hai đầu, Cách đều xung quanh, Cách đều nhau.
+   - **Căn theo chiều còn lại**: Bắt đầu, Ở giữa, Kết thúc, Kéo giãn.
+   - **Khoảng cách giữa các khối**: Chọn độ giãn giữa các khối con (Nhỏ, Vừa, Lớn...).
    - **Chiều rộng**: Chọn **Đóng khung** (nội dung gọn ở giữa trang, độ rộng chọn ở **Độ rộng khung nội dung**) hoặc **Tràn màn hình**. Nền của Container luôn trải hết chiều ngang, kể cả khi đóng khung.
    - **Chiều cao tối thiểu** và **Thẻ HTML**: chọn **Khối nội dung độc lập (section)** khi Container là một phần riêng của trang có tiêu đề, hoặc **Hộp chung (div)** cho các khung chứa thông thường.
    - Hướng, căn, khoảng cách và xuống dòng chỉnh riêng được theo thiết bị. Chiều rộng, chiều cao và thẻ HTML áp cho mọi thiết bị.
@@ -2441,7 +2441,7 @@ Nhóm **Cơ bản** đứng ở vị trí đầu tiên trong thư viện khối 
 
 8. **Hộp mở rộng (AccordionWidget):**
    - **Mục nội dung linh hoạt:** Khác với khối câu hỏi FAQ thông thường chỉ chứa chữ thuần, mỗi mục trong Accordion là một vùng thả khối tự do (bạn có thể thả tiêu đề, đoạn văn, ảnh, nút bấm hay danh sách vào bên trong).
-   - **Đổi tên mục nhanh:** Ở ngay đầu tab **Nội dung**, bạn có thể đổi tên trực tiếp từng mục tại các ô "Tên mục 1", "Tên mục 2"... một cách nhanh chóng mà không cần mở rộng từng dòng.
+   - **Đổi tên mục nhanh:** Ở ngay đầu tab **Nội dung**, bạn có thể đổi tên trực tiếp từng mục tại các ô "Tên câu hỏi 1", "Tên câu hỏi 2"... một cách nhanh chóng mà không cần mở rộng từng dòng.
    - **Trong trình dựng:** mọi mục đều mở sẵn để kéo khối vào; trang công khai đóng / mở theo cài đặt bên dưới.
    - **Chế độ mở:** Chọn **Chỉ mở một mục** (khi mở một mục thì mục khác tự đóng lại) hoặc **Mở nhiều mục** (cho phép mở đồng thời nhiều mục cùng lúc).
    - **Mục mở sẵn ban đầu:** Chọn mở sẵn mục đầu tiên, đóng toàn bộ hoặc mở sẵn tất cả các mục khi tải trang.
