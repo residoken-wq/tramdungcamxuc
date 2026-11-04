@@ -4280,6 +4280,224 @@ export interface HabitJourneyContent {
    * Hiện ở flow Habit. Phải đúng sự thật: dữ liệu lưu trên máy chủ của Trạm theo tài khoản email của khách.
    */
   privacyNote?: string | null;
+  header?: {
+    /**
+     * Nhập huy hiệu trên cùng (vd: content creator hub).
+     */
+    badgeText?: string | null;
+    /**
+     * Nhập dòng tiêu đề 1 (navy - vd: xây thói quen).
+     */
+    titleLine1?: string | null;
+    /**
+     * Nhập dòng tiêu đề 2 (magenta - vd: dựng thương hiệu).
+     */
+    titleLine2?: string | null;
+    /**
+     * Nhập huy hiệu chuỗi (vd: form habit · build identity).
+     */
+    seriesBadge?: string | null;
+    /**
+     * Nhập dòng cảm xúc / khẩu hiệu.
+     */
+    tagline?: string | null;
+    /**
+     * Nhập đoạn văn dẫn nhập 3 giai đoạn.
+     */
+    introText?: string | null;
+    /**
+     * Nhập tiêu đề giai đoạn 1.
+     */
+    stage1Title?: string | null;
+    /**
+     * Nhập mô tả giai đoạn 1.
+     */
+    stage1Desc?: string | null;
+    /**
+     * Nhập tiêu đề giai đoạn 2.
+     */
+    stage2Title?: string | null;
+    /**
+     * Nhập mô tả giai đoạn 2.
+     */
+    stage2Desc?: string | null;
+    /**
+     * Nhập tiêu đề giai đoạn 3.
+     */
+    stage3Title?: string | null;
+    /**
+     * Nhập mô tả giai đoạn 3.
+     */
+    stage3Desc?: string | null;
+  };
+  step1?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 1.
+     */
+    leadIn?: string | null;
+  };
+  step2?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 2.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập tiêu đề biểu đồ.
+     */
+    chartTitle?: string | null;
+    /**
+     * Nhập mô tả dưới tiêu đề biểu đồ.
+     */
+    chartSubtitle?: string | null;
+  };
+  step3?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 3.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập tiêu đề bảng soi một ngày.
+     */
+    scorecardTitle?: string | null;
+    /**
+     * Nhập mô tả bảng soi một ngày.
+     */
+    scorecardDesc?: string | null;
+    /**
+     * Nhập tiêu đề chọn mentor.
+     */
+    mentorTitle?: string | null;
+    /**
+     * Nhập mô tả chọn mentor.
+     */
+    mentorDesc?: string | null;
+    /**
+     * Nhập gợi ý khi chưa đánh dấu việc có ích.
+     */
+    emptyMentorHint?: string | null;
+    /**
+     * Nhập nhãn câu hỏi thời gian.
+     */
+    mentorTimeLabel?: string | null;
+    /**
+     * Nhập gợi ý xác nhận khi đã chọn mentor.
+     */
+    mentorSuccessHint?: string | null;
+  };
+  step4?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 4.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập tiêu đề tuyên ngôn.
+     */
+    statementTitle?: string | null;
+    /**
+     * Nhập mô tả tuyên ngôn.
+     */
+    statementDesc?: string | null;
+    /**
+     * Nhập gợi ý vai trò (mỗi dòng 1 gợi ý).
+     */
+    suggestedRoles?: string | null;
+    /**
+     * Nhập tiêu đề nhịp điệu thói quen.
+     */
+    rhythmTitle?: string | null;
+    /**
+     * Nhập mô tả nhịp điệu.
+     */
+    rhythmDesc?: string | null;
+    /**
+     * Nhập lưu ý về ngày nghỉ theo nhịp.
+     */
+    rhythmNote?: string | null;
+    /**
+     * Nhập tiêu đề thói quen hạt nhân.
+     */
+    atomicHabitTitle?: string | null;
+    /**
+     * Nhập mô tả thói quen hạt nhân.
+     */
+    atomicHabitDesc?: string | null;
+    /**
+     * Nhập gợi ý thói quen hạt nhân (mỗi dòng 1 gợi ý).
+     */
+    suggestedAtomicHabits?: string | null;
+    /**
+     * Nhập tiêu đề phần lý do & cam kết.
+     */
+    commitmentTitle?: string | null;
+    /**
+     * Nhập câu hỏi vì sao điều này quan trọng.
+     */
+    whyImportantLabel?: string | null;
+    /**
+     * Nhập placeholder ô nhập lý do.
+     */
+    whyImportantPlaceholder?: string | null;
+    /**
+     * Nhập lưu ý bên dưới ô nhập lý do.
+     */
+    whyImportantNote?: string | null;
+  };
+  step5?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 5.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập placeholder khi ghi chú áp dụng.
+     */
+    customActionPlaceholder?: string | null;
+  };
+  step6?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 6.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập tiêu đề lớn trên thẻ.
+     */
+    passTitle?: string | null;
+    /**
+     * Nhập tiêu đề phụ trên thẻ.
+     */
+    passSubtitle?: string | null;
+    /**
+     * Nhập lời xác nhận cam kết / điều khoản.
+     */
+    termsText?: string | null;
+  };
+  checkIn?: {
+    /**
+     * Nhập lời dẫn ngày cần check-in.
+     */
+    postDayHint?: string | null;
+    /**
+     * Nhập lời dẫn ngày nghỉ theo nhịp.
+     */
+    restDayHint?: string | null;
+    /**
+     * Nhập placeholder ô ghi chú cảm xúc.
+     */
+    notePlaceholder?: string | null;
+  };
+  footer?: {
+    /**
+     * Nhập khẩu hiệu thương hiệu.
+     */
+    slogan?: string | null;
+    /**
+     * Nhập thông tin tác giả / coach.
+     */
+    authorInfo?: string | null;
+    /**
+     * Nhập đoạn ghi nhận nguồn sách tham khảo.
+     */
+    bookCredits?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -4693,6 +4911,92 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
         captionTemplate?: T;
       };
   privacyNote?: T;
+  header?:
+    | T
+    | {
+        badgeText?: T;
+        titleLine1?: T;
+        titleLine2?: T;
+        seriesBadge?: T;
+        tagline?: T;
+        introText?: T;
+        stage1Title?: T;
+        stage1Desc?: T;
+        stage2Title?: T;
+        stage2Desc?: T;
+        stage3Title?: T;
+        stage3Desc?: T;
+      };
+  step1?:
+    | T
+    | {
+        leadIn?: T;
+      };
+  step2?:
+    | T
+    | {
+        leadIn?: T;
+        chartTitle?: T;
+        chartSubtitle?: T;
+      };
+  step3?:
+    | T
+    | {
+        leadIn?: T;
+        scorecardTitle?: T;
+        scorecardDesc?: T;
+        mentorTitle?: T;
+        mentorDesc?: T;
+        emptyMentorHint?: T;
+        mentorTimeLabel?: T;
+        mentorSuccessHint?: T;
+      };
+  step4?:
+    | T
+    | {
+        leadIn?: T;
+        statementTitle?: T;
+        statementDesc?: T;
+        suggestedRoles?: T;
+        rhythmTitle?: T;
+        rhythmDesc?: T;
+        rhythmNote?: T;
+        atomicHabitTitle?: T;
+        atomicHabitDesc?: T;
+        suggestedAtomicHabits?: T;
+        commitmentTitle?: T;
+        whyImportantLabel?: T;
+        whyImportantPlaceholder?: T;
+        whyImportantNote?: T;
+      };
+  step5?:
+    | T
+    | {
+        leadIn?: T;
+        customActionPlaceholder?: T;
+      };
+  step6?:
+    | T
+    | {
+        leadIn?: T;
+        passTitle?: T;
+        passSubtitle?: T;
+        termsText?: T;
+      };
+  checkIn?:
+    | T
+    | {
+        postDayHint?: T;
+        restDayHint?: T;
+        notePlaceholder?: T;
+      };
+  footer?:
+    | T
+    | {
+        slogan?: T;
+        authorInfo?: T;
+        bookCredits?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

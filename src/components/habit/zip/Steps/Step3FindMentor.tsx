@@ -4,11 +4,14 @@ import React from 'react'
 import { ArrowLeft, ArrowRight, Plus, Trash2, Check, Anchor, ArrowUp } from 'lucide-react'
 import type { DailyRoutineItem } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
+import { DEFAULT_DP01_CONTENT, type Dp01Step3Content } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 export interface Step3FindMentorProps {
   routines: DailyRoutineItem[]
   selectedMentor: string
   mentorTime?: string
+  step3Content?: Dp01Step3Content
   onRoutinesChange: (routines: DailyRoutineItem[]) => void
   onMentorSelect: (mentor: string) => void
   onMentorTimeChange?: (time: string) => void
@@ -20,6 +23,7 @@ export function Step3FindMentor({
   routines,
   selectedMentor,
   mentorTime = '',
+  step3Content = DEFAULT_DP01_CONTENT.step3,
   onRoutinesChange,
   onMentorSelect,
   onMentorTimeChange,
@@ -72,8 +76,7 @@ export function Step3FindMentor({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Một thói quen mới không tự đứng được. Nó cần một thói quen cũ đã vững dìu đi — và thói quen
-        cũ đó đã nằm sẵn trong ngày của bạn. Việc của bạn chỉ là tìm ra nó.
+        {step3Content.leadIn}
       </p>
 
       {/* 2. Khối 1: Soi lại một ngày của bạn (Habit Scorecard) */}
@@ -85,11 +88,10 @@ export function Step3FindMentor({
           <div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-              <h2 className="font-ui font-bold text-lg text-deep-navy">Soi lại một ngày của bạn</h2>
+              <h2 className="font-ui font-bold text-lg text-deep-navy">{step3Content.scorecardTitle}</h2>
             </div>
             <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-              Liệt kê những việc bạn thật sự làm mỗi ngày, từ lúc mở mắt đến lúc đi ngủ. Đánh dấu có
-              ích +, không có ích −, trung tính =.
+              {step3Content.scorecardDesc}
             </p>
           </div>
 
@@ -197,7 +199,7 @@ export function Step3FindMentor({
             className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl border border-dashed border-bright-magenta/40 hover:border-bright-magenta text-bright-magenta text-xs sm:text-sm font-ui font-semibold bg-soft-pink/30 hover:bg-soft-pink/60 transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Thêm một việc</span>
+            <span>{vi.dp01.addRoutine}</span>
           </button>
         </div>
       </div>
@@ -207,11 +209,10 @@ export function Step3FindMentor({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2 mb-1">
             <Anchor className="w-5 h-5 text-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">Chọn Mentor</h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">{step3Content.mentorTitle}</h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/70 font-ui leading-relaxed">
-            Mentor là một việc bạn làm gần như mỗi ngày mà không cần nghĩ. Nó sẽ là tín hiệu kéo
-            thói quen mới đi theo. Chọn một việc bạn đã đánh dấu +.
+            {step3Content.mentorDesc}
           </p>
         </div>
 
@@ -219,7 +220,7 @@ export function Step3FindMentor({
         {positiveRoutines.length === 0 ? (
           <div className="p-5 sm:p-6 rounded-2xl bg-warm-ivory/80 border border-dashed border-lavender-mist text-center space-y-3">
             <p className="text-xs sm:text-sm italic text-deep-navy/70 font-ui">
-              Chưa có việc nào được đánh dấu + ở bảng trên.
+              {step3Content.emptyMentorHint}
             </p>
             <div>
               <button
@@ -235,7 +236,7 @@ export function Step3FindMentor({
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-soft-pink text-bright-magenta hover:bg-bright-magenta hover:text-white border border-bright-magenta/30 text-xs sm:text-sm font-ui font-semibold transition-all active:scale-95 shadow-soft cursor-pointer"
               >
                 <ArrowUp className="w-3.5 h-3.5" />
-                <span>↑ Lên đánh dấu việc có ích</span>
+                <span>{vi.dp01.markUsefulRoutine}</span>
               </button>
             </div>
           </div>
@@ -275,7 +276,7 @@ export function Step3FindMentor({
                     htmlFor="mentor-time-input"
                     className="block text-xs font-bold text-deep-navy/70 font-ui"
                   >
-                    Việc này thường diễn ra lúc mấy giờ? — không bắt buộc
+                    {step3Content.mentorTimeLabel}
                   </label>
                   <input
                     id="mentor-time-input"
@@ -300,7 +301,7 @@ export function Step3FindMentor({
                     </h4>
                   </div>
                   <p className="text-xs text-deep-navy/75 font-ui leading-relaxed pl-7">
-                    Thói quen mới sẽ đi ngay sau việc này.
+                    {step3Content.mentorSuccessHint}
                   </p>
                 </div>
               </div>
@@ -317,7 +318,7 @@ export function Step3FindMentor({
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-deep-navy/30 hover:border-deep-navy text-deep-navy text-sm font-ui font-semibold bg-white hover:bg-warm-ivory transition-all active:scale-95 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Quay lại</span>
+          <span>{vi.dp01.back}</span>
         </button>
 
         <button
@@ -325,7 +326,7 @@ export function Step3FindMentor({
           onClick={onNext}
           className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white text-sm sm:text-base font-ui font-semibold shadow-soft hover:shadow-soft-md transition-all active:scale-95 group cursor-pointer"
         >
-          <span>Tiếp • Gọi tên thói quen</span>
+          <span>{vi.dp01.nextMentor}</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>

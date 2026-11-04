@@ -31,6 +31,7 @@
      - [3.11.1. Sáu bước thiết kế vòng lặp thói quen (/habit/5-phut)](#3111-sáu-bước-thiết-kế-vòng-lặp-thói-quen-habit5-phut)
      - [3.11.2. Màn hình Tracker theo dõi 28 ngày (/habit/tracker)](#3112-màn-hình-tracker-theo-dõi-28-ngày-habittracker)
      - [3.11.3. Theo dõi Kế hoạch trong trang quản trị (habitPlans)](#3113-theo-dõi-kế-hoạch-trong-trang-quản-trị-habitplans)
+     - [3.11.4. Quản trị câu chữ giao diện Habit Journey & Script nạp DP-01d](#3114-quản-trị-câu-chữ-giao-diện-habit-journey--script-nạp-dp-01d)
    - [3.12. Quản lý và Thu hồi Chứng nhận (Certificates)](#312-quản-lý-và-thu-hồi-chứng-nhận-certificates)
    - [3.13. Quản lý 26 thẻ EQ Buddy](#313-quản-lý-26-thẻ-eq-buddy)
      - [3.13b. Sửa câu chuyện của một thẻ và xem trước](#313b-sửa-câu-chuyện-của-một-thẻ-và-xem-trước)
@@ -1093,6 +1094,82 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 **Email nhắc lỡ nhịp tự động theo nhịp tuần (HB-06)**:
 
 - Hệ thống cron tự động quét và gửi email nhắc nhở khi học viên lỡ từ **2 ngày bỏ phiếu liên tiếp** trở lên, hoàn toàn bỏ qua các ngày nghỉ theo nhịp.
+
+---
+
+### 3.11.4. Quản trị câu chữ giao diện Habit Journey & Script nạp DP-01d
+
+**Mục đích**: Giúp Hana tự sửa đổi toàn bộ câu chữ hiển thị trên trình hướng dẫn 6 bước `/habit/5-phut`, chân trang, hộp check-in và bảng điều khiển `/habit/tracker` ngay trong CMS mà không cần đụng đến lập trình.
+
+**Các nhóm trường mới trong `habitJourneyContent`**:
+
+1. **Đầu trang (Header)**:
+   - **Huy hiệu trên cùng** (`badgeText`): Ví dụ `CONTENT CREATOR HUB • TRẠM DỪNG CẢM XÚC`.
+   - **Dòng tiêu đề 1 (Navy)** (`titleLine1`): Ví dụ `Xây Thói Quen`.
+   - **Dòng tiêu đề 2 (Magenta)** (`titleLine2`): Ví dụ `Dựng Thương Hiệu`.
+   - **Huy hiệu chuỗi** (`seriesBadge`): Ví dụ `FORM HABIT · BUILD IDENTITY`.
+   - **Dòng cảm xúc / Khẩu hiệu** (`tagline`): Ví dụ `Đều đặn một điều — mọi điều đều đặn`.
+   - **Đoạn văn dẫn nhập** (`introText`): Lời dặn 3 giai đoạn 28 ngày.
+   - **Tiêu đề & Mô tả cho 3 giai đoạn**: `stage1Title`, `stage1Desc`, `stage2Title`, `stage2Desc`, `stage3Title`, `stage3Desc`.
+
+2. **Bước 1 – Khám thói quen** (`step1`):
+   - **Lời dẫn mở đầu bước 1** (`leadIn`).
+   - **Bộ 8 câu hỏi khảo sát** (`diagnose.questions`): Đã được nạp chuẩn nguyên văn từ bản zip.
+
+3. **Bước 2 – Nguyên lý 1%** (`step2`):
+   - **Lời dẫn mở đầu bước 2** (`leadIn`).
+   - **Tiêu đề biểu đồ** (`chartTitle`) & **Mô tả dưới tiêu đề biểu đồ** (`chartSubtitle`).
+
+4. **Bước 3 – Tìm Mentor** (`step3`):
+   - **Lời dẫn mở đầu bước 3** (`leadIn`).
+   - **Tiêu đề & Mô tả bảng soi một ngày** (`scorecardTitle`, `scorecardDesc`).
+   - **Tiêu đề & Mô tả chọn Mentor** (`mentorTitle`, `mentorDesc`).
+   - **Gợi ý khi chưa đánh dấu việc có ích** (`emptyMentorHint`).
+   - **Nhãn câu hỏi giờ & Gợi ý xác nhận** (`mentorTimeLabel`, `mentorSuccessHint`).
+
+5. **Bước 4 – Gọi tên thói quen** (`step4`):
+   - **Lời dẫn mở đầu bước 4** (`leadIn`).
+   - **Tiêu đề & Mô tả tuyên ngôn** (`statementTitle`, `statementDesc`).
+   - **Gợi ý vai trò** (`suggestedRoles`): Nhập mỗi dòng 1 vai trò gợi ý (hiển thị thành các nút chip).
+   - **Tiêu đề, Mô tả, Lưu ý ngày nghỉ của Nhịp điệu** (`rhythmTitle`, `rhythmDesc`, `rhythmNote`).
+   - **Tiêu đề, Mô tả thói quen hạt nhân** (`atomicHabitTitle`, `atomicHabitDesc`).
+   - **Gợi ý thói quen hạt nhân** (`suggestedAtomicHabits`): Nhập mỗi dòng 1 thói quen gợi ý.
+   - **Tiêu đề, Nhãn, Placeholder & Lưu ý vì sao quan trọng** (`commitmentTitle`, `whyImportantLabel`, `whyImportantPlaceholder`, `whyImportantNote`).
+
+6. **Bước 5 – Thiết kế vòng lặp** (`step5` & `loop`):
+   - **Lời dẫn mở đầu bước 5** (`leadIn`).
+   - **Placeholder khi ghi chú áp dụng** (`customActionPlaceholder`).
+   - **4 quy luật hành vi** (`loop.laws`): Gồm chip luật, tiêu đề, subLabel, câu hỏi khơi gợi và link video bài giảng.
+   - **Khối lưu ý riêng cho Quy luật 1 Cue** (`loop.cueBox`): Chữ in đậm, đoạn văn và nhãn nút xem lại bước 3.
+   - **11 kỹ thuật Atomic Habits** (quản trị tại danh mục **Kỹ thuật thói quen** `techniques`): Đã nạp đủ thứ tự, tên, mô tả, 2 ví dụ, mẫu gợi ý và video reel.
+
+7. **Bước 6 – Thẻ lên tàu (Boarding Pass)** (`step6`):
+   - **Lời dẫn mở đầu bước 6** (`leadIn`).
+   - **Tiêu đề lớn & Tiêu đề phụ trên thẻ** (`passTitle`, `passSubtitle`).
+   - **Lời xác nhận cam kết / điều khoản** (`termsText`).
+
+8. **Hộp thoại Check-in ngày** (`checkIn`):
+   - **Lời dẫn ngày cần check-in** (`postDayHint`).
+   - **Lời dẫn ngày nghỉ theo nhịp** (`restDayHint`).
+   - **Placeholder ô ghi chú cảm xúc** (`notePlaceholder`).
+
+9. **Chân trang (Footer)** (`footer`):
+   - **Khẩu hiệu thương hiệu** (`slogan`).
+   - **Thông tin tác giả / Coach** (`authorInfo`).
+   - **Đoạn ghi nhận nguồn sách** (`bookCredits`).
+
+**Cách chạy script nạp tự động nội dung chuẩn zip (`dp01d-habit-content.ts`)**:
+
+- Script này được thiết kế để nạp/cập nhật 11 kỹ thuật, 4 quy luật, 8 câu hỏi khảo sát và toàn bộ câu chữ mặc định của các màn vào database một cách an toàn và không trùng lặp.
+- **Chế độ kiểm tra (Dry-run - Mặc định, không ghi vào database)**:
+  ```bash
+  pnpm payload run scripts/dp01d-habit-content.ts < /dev/null
+  ```
+- **Chế độ áp dụng (Apply - Ghi vào database và tự sao lưu bản dự phòng)**:
+  ```bash
+  APPLY=true pnpm payload run scripts/dp01d-habit-content.ts < /dev/null
+  ```
+  Khi chạy với `APPLY=true`, script sẽ tự động tạo một file sao lưu JSON trong thư mục `backups/` trước khi ghi, bảo toàn mọi dữ liệu hiện có. Các trường mà Hana đã tùy chỉnh khác với mặc định sẽ được giữ nguyên, không bị ghi đè.
 
 ---
 

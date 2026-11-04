@@ -3,9 +3,11 @@
 import React from 'react'
 import { ArrowRight } from 'lucide-react'
 import type { CleanHabitDiagnose } from '@/lib/habit/journey-content.server'
+import type { Dp01Step1Content } from '@/lib/habit/dp01-content'
 
 export interface Step1DiagnoseProps {
   diagnose?: CleanHabitDiagnose | null
+  step1Content?: Dp01Step1Content
   answers: Record<number, number>
   onAnswerChange: (questionId: number, score: number) => void
   onNext: () => void

@@ -4,10 +4,13 @@ import React, { useState, useEffect } from 'react'
 import { X, Trash2 } from 'lucide-react'
 import type { TrackerDayItem } from '../types'
 import { CONFIDENCE_EMOTIONS, type EmotionKey } from '@/lib/emotions'
+import { DEFAULT_DP01_CONTENT, type Dp01CheckInContent } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 interface DayCheckInModalProps {
   dayItem: TrackerDayItem | null
   atomicHabitTitle?: string
+  checkInContent?: Dp01CheckInContent
   onClose: () => void
   onSave: (updated: TrackerDayItem) => void
   onDelete?: (dayNumber: number) => void
@@ -24,6 +27,7 @@ const CONFIDENCE_MOODS = [
 export function DayCheckInModal({
   dayItem,
   atomicHabitTitle = 'Thói quen hạt nhân',
+  checkInContent = DEFAULT_DP01_CONTENT.checkIn,
   onClose,
   onSave,
   onDelete,
@@ -135,9 +139,7 @@ export function DayCheckInModal({
           {/* Câu dẫn và tên Thói quen hạt nhân */}
           <div className="space-y-1.5 p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist/70">
             <p className="text-xs text-deep-navy/70 leading-relaxed">
-              {dayItem.isPostDay
-                ? 'Hôm nay là ngày bạn bỏ phiếu cho con người bạn muốn trở thành — bằng thói quen hạt nhân:'
-                : 'Hôm nay là ngày nghỉ theo nhịp bạn chọn. Nếu vẫn làm, ghi lại cũng được:'}
+              {dayItem.isPostDay ? checkInContent.postDayHint : checkInContent.restDayHint}
             </p>
             <p className="text-sm sm:text-base font-bold text-deep-navy">
               {atomicHabitTitle || 'Thói quen hạt nhân'}
@@ -159,7 +161,7 @@ export function DayCheckInModal({
                   : 'bg-white border-lavender-mist text-deep-navy/70 hover:bg-warm-ivory'
               }`}
             >
-              <span>✓ Đã làm</span>
+              <span>{vi.dp01.statusDone}</span>
             </button>
 
             <button
@@ -175,7 +177,7 @@ export function DayCheckInModal({
                   : 'bg-white border-lavender-mist text-deep-navy/70 hover:bg-warm-ivory'
               }`}
             >
-              <span>◐ Tối giản</span>
+              <span>{vi.dp01.statusMinimal}</span>
             </button>
 
             <button
@@ -191,7 +193,7 @@ export function DayCheckInModal({
                   : 'bg-white border-lavender-mist text-deep-navy/70 hover:bg-warm-ivory'
               }`}
             >
-              <span>· Lỡ nhịp</span>
+              <span>{vi.dp01.statusMissed}</span>
             </button>
 
             {!dayItem.isPostDay && (
@@ -208,7 +210,7 @@ export function DayCheckInModal({
                     : 'bg-white border-lavender-mist text-deep-navy/70 hover:bg-warm-ivory'
                 }`}
               >
-                <span>Nghỉ nhịp</span>
+                <span>{vi.dp01.statusRest}</span>
               </button>
             )}
           </div>
@@ -254,7 +256,7 @@ export function DayCheckInModal({
               maxLength={500}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Ghi lại cảm xúc hoặc chiêm nghiệm nhỏ..."
+              placeholder={checkInContent.notePlaceholder}
               className="w-full px-3.5 py-2.5 rounded-2xl bg-warm-ivory border border-lavender-mist focus:border-bright-magenta outline-none text-xs text-deep-navy"
             />
           </div>
@@ -268,7 +270,7 @@ export function DayCheckInModal({
             className="text-xs text-deep-navy/70 hover:text-accent-pink font-ui transition-colors flex items-center gap-1 cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span>Xoá ngày này</span>
+            <span>{vi.dp01.deleteCheckinButton}</span>
           </button>
 
           <div className="flex items-center gap-2">
@@ -277,14 +279,14 @@ export function DayCheckInModal({
               onClick={onClose}
               className="px-4 py-2 rounded-2xl text-xs font-ui font-medium text-deep-navy/70 hover:bg-white cursor-pointer"
             >
-              Đóng
+              {vi.dp01.close}
             </button>
             <button
               type="button"
               onClick={handleSave}
               className="px-5 py-2 rounded-2xl bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs font-ui font-bold shadow-soft-md transition-all active:scale-95 cursor-pointer"
             >
-              Lưu
+              {vi.dp01.save}
             </button>
           </div>
         </div>

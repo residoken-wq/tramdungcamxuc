@@ -14,6 +14,7 @@ import {
   ZIP_CUE_BOX,
   ZIP_8_DIAGNOSE_QUESTIONS,
 } from '../src/lib/habit/dp01d-content-patch'
+import { DEFAULT_DP01_CONTENT } from '../src/lib/habit/dp01-content'
 
 const isApply = process.env.APPLY === 'true'
 const payload = await getPayload({ config })
@@ -136,6 +137,29 @@ try {
     }
 
     // 5. Ghi global habitJourneyContent
+    function patchGroup<T extends object>(
+      current: Record<string, unknown> | undefined | null,
+      defaults: T,
+    ): T {
+      const res: Record<string, unknown> = { ...(current || {}) }
+      for (const [k, v] of Object.entries(defaults as Record<string, unknown>)) {
+        if (res[k] === undefined || res[k] === null || res[k] === '') {
+          res[k] = v
+        }
+      }
+      return res as T
+    }
+
+    const currentHeader = (currentGlobal?.header || {}) as Record<string, unknown>
+    const currentStep1 = (currentGlobal?.step1 || {}) as Record<string, unknown>
+    const currentStep2 = (currentGlobal?.step2 || {}) as Record<string, unknown>
+    const currentStep3 = (currentGlobal?.step3 || {}) as Record<string, unknown>
+    const currentStep4 = (currentGlobal?.step4 || {}) as Record<string, unknown>
+    const currentStep5 = (currentGlobal?.step5 || {}) as Record<string, unknown>
+    const currentStep6 = (currentGlobal?.step6 || {}) as Record<string, unknown>
+    const currentCheckIn = (currentGlobal?.checkIn || {}) as Record<string, unknown>
+    const currentFooter = (currentGlobal?.footer || {}) as Record<string, unknown>
+
     const updatedGlobalData: Record<string, unknown> = {
       ...currentGlobal,
       loop: {
@@ -151,13 +175,28 @@ try {
           : {}),
         questions: ZIP_8_DIAGNOSE_QUESTIONS,
       },
+      header: patchGroup(currentHeader, DEFAULT_DP01_CONTENT.header),
+      step1: patchGroup(currentStep1, DEFAULT_DP01_CONTENT.step1),
+      step2: patchGroup(currentStep2, DEFAULT_DP01_CONTENT.step2),
+      step3: patchGroup(currentStep3, DEFAULT_DP01_CONTENT.step3),
+      step4: patchGroup(currentStep4, {
+        ...DEFAULT_DP01_CONTENT.step4,
+        suggestedRoles: DEFAULT_DP01_CONTENT.step4.suggestedRoles.join('\n'),
+        suggestedAtomicHabits: DEFAULT_DP01_CONTENT.step4.suggestedAtomicHabits.join('\n'),
+      }),
+      step5: patchGroup(currentStep5, DEFAULT_DP01_CONTENT.step5),
+      step6: patchGroup(currentStep6, DEFAULT_DP01_CONTENT.step6),
+      checkIn: patchGroup(currentCheckIn, DEFAULT_DP01_CONTENT.checkIn),
+      footer: patchGroup(currentFooter, DEFAULT_DP01_CONTENT.footer),
     }
 
     await payload.updateGlobal({
       slug: 'habitJourneyContent',
       data: updatedGlobalData,
     })
-    console.log('  ✅ Đã cập nhật global habitJourneyContent (laws, cueBox, 8 câu hỏi zip)!')
+    console.log(
+      '  ✅ Đã cập nhật global habitJourneyContent (laws, cueBox, 8 câu hỏi zip, và toàn bộ chữ các màn)!',
+    )
 
     console.log('\n======================================================================')
     console.log('🎉 ĐÃ HOÀN TẤT NẠP NỘI DUNG DP-01D VÀO DATABASE!')

@@ -6,6 +6,7 @@ import type { HabitStage } from '../diagnostic'
 import { HABIT_STAGES } from '../diagnostic'
 import { isHabitStage, type FlowDiagnoseQuestion } from './flow-content'
 import { getDiagnosticQuestions } from '../diagnostic.server'
+import { withDp01Defaults, type Dp01AllContent } from './dp01-content'
 
 export { splitJourneyIntoStations, type StationRange } from './stations'
 
@@ -132,6 +133,8 @@ export interface HabitJourneyContentResult {
   boardingPassCaption: string | null
   /** HB-24: data/privacy sentence written by Hana; null when empty. */
   privacyNote: string | null
+  /** DP-01d: Full UI copy for habit journey screens from CMS with zip defaults. */
+  dp01Content: Dp01AllContent
 }
 
 const trimmed = (value: unknown): string | null =>
@@ -346,6 +349,7 @@ export async function getHabitJourneyContent(
       tracker: cleanTrackerContent(null),
       boardingPassCaption: null,
       privacyNote: null,
+      dp01Content: withDp01Defaults(null),
     }
   }
 
@@ -437,6 +441,7 @@ export async function getHabitJourneyContent(
     tracker: cleanTrackerContent(content.tracker),
     boardingPassCaption: trimmed(content.boardingPass?.captionTemplate),
     privacyNote: trimmed(content.privacyNote),
+    dp01Content: withDp01Defaults(content as unknown as Record<string, unknown>),
   }
 }
 

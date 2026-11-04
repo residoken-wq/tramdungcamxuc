@@ -4,10 +4,13 @@ import React, { useState } from 'react'
 import { ArrowLeft, ArrowRight, Info } from 'lucide-react'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import type { CleanHabitOnePercent, CleanTitledText } from '@/lib/habit/journey-content.server'
+import { DEFAULT_DP01_CONTENT, type Dp01Step2Content } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 export interface Step2PercentPrincipleProps {
   onePercent?: CleanHabitOnePercent | null
   onePercentUnknowns?: CleanTitledText[]
+  step2Content?: Dp01Step2Content
   onNext: () => void
   onPrev: () => void
 }
@@ -15,6 +18,7 @@ export interface Step2PercentPrincipleProps {
 export function Step2PercentPrinciple({
   onePercent,
   onePercentUnknowns,
+  step2Content = DEFAULT_DP01_CONTENT.step2,
   onNext,
   onPrev,
 }: Step2PercentPrincipleProps) {
@@ -54,8 +58,7 @@ export function Step2PercentPrinciple({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Hầu hết mọi người nghe câu “1% mỗi ngày” rồi gật đầu bỏ qua. Nhưng hiểu đúng nguyên lý này
-        là thứ quyết định bạn có đi qua nổi tuần thứ ba hay không.
+        {step2Content.leadIn}
       </p>
 
       {/* 2. Biểu đồ "Vùng năng lực tiềm ẩn" */}
@@ -65,11 +68,11 @@ export function Step2PercentPrinciple({
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-bright-magenta" />
               <h2 className="font-ui font-bold text-lg text-deep-navy">
-                Biểu đồ: Vùng năng lực tiềm ẩn
+                {step2Content.chartTitle}
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-              Đường cong bứt phá (Thực tế vs Tôi nghĩ sẽ là)
+              {step2Content.chartSubtitle}
             </p>
           </div>
 

@@ -27,6 +27,7 @@ import { CertificateShareButtons } from '@/components/habit/CertificateShareButt
 import { CertificatePublicToggle } from '@/components/habit/CertificatePublicToggle'
 import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/certificate-types'
 import type { CheckinStatus } from '@/lib/habit/rhythm'
+import type { Dp01CheckInContent } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
 
 export interface InitialCheckinData {
@@ -71,6 +72,7 @@ export interface Dashboard28DaysProps {
   afterJourneyText?: string | null
   coachBookingUrl?: string | null
   quote?: { quoteText?: string | null; quoteAuthor?: string | null } | null
+  checkInContent?: Dp01CheckInContent
 }
 
 export function Dashboard28Days({
@@ -100,6 +102,7 @@ export function Dashboard28Days({
   afterJourneyText,
   coachBookingUrl,
   quote,
+  checkInContent,
 }: Dashboard28DaysProps) {
   // Checkins state
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
@@ -1031,6 +1034,7 @@ Nhịp điệu: ${rateText}
             trackerDays.find((d) => d.dayNumber === selectedDayItem.dayNumber) || selectedDayItem
           }
           atomicHabitTitle={propAtomicHabit || 'Thói quen hạt nhân'}
+          checkInContent={checkInContent}
           onClose={() => setSelectedDayItem(null)}
           onSave={handleSaveDay}
           onDelete={handleDeleteDay}

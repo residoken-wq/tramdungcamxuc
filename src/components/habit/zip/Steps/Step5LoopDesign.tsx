@@ -18,6 +18,8 @@ import { LoopTechniques, IdentityFormData, HabitStep } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import type { PublicTechnique } from '@/lib/habit'
 import type { CleanHabitLoop } from '@/lib/habit/journey-content.server'
+import { DEFAULT_DP01_CONTENT, type Dp01Step5Content } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 export interface Step5LoopDesignProps {
   loopTechniques: LoopTechniques
@@ -25,6 +27,7 @@ export interface Step5LoopDesignProps {
   identity?: IdentityFormData
   techniques?: PublicTechnique[]
   loopContent?: CleanHabitLoop | null
+  step5Content?: Dp01Step5Content
   onGoToStep?: (step: HabitStep) => void
   onTechniquesChange: (updated: LoopTechniques) => void
   onNext: () => void
@@ -297,6 +300,7 @@ export function Step5LoopDesign({
   identity,
   techniques = [],
   loopContent,
+  step5Content = DEFAULT_DP01_CONTENT.step5,
   onGoToStep,
   onTechniquesChange,
   onNext,
@@ -724,9 +728,13 @@ export function Step5LoopDesign({
 
       {/* Dòng hướng dẫn trên 4 quy luật */}
       <div className="p-4 rounded-2xl bg-warm-ivory border border-lavender-mist text-xs sm:text-sm text-deep-navy/80 font-ui leading-relaxed">
-        Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là lỗ
-        hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ thuật
-        được đánh dấu mới hiện trên Habit Boarding Pass.
+        {step5Content.leadIn || (
+          <>
+            Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là lỗ
+            hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ thuật
+            được đánh dấu mới hiện trên Habit Boarding Pass.
+          </>
+        )}
       </div>
 
       {/* 3. BỐN KHỐI QUY LUẬT (HIỂN THỊ MỞ CẢ 4 KHỐI) */}
@@ -944,7 +952,7 @@ export function Step5LoopDesign({
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-deep-navy/30 hover:border-deep-navy text-deep-navy text-sm font-ui font-semibold bg-white hover:bg-warm-ivory transition-all active:scale-95 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Quay lại</span>
+          <span>{vi.dp01.back}</span>
         </button>
 
         <button
@@ -952,7 +960,7 @@ export function Step5LoopDesign({
           onClick={onNext}
           className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta text-white text-sm sm:text-base font-ui font-semibold shadow-soft hover:shadow-soft-md transition-all active:scale-95 group cursor-pointer"
         >
-          <span>Tiếp · Habit Boarding Pass</span>
+          <span>{vi.dp01.nextLoop}</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
