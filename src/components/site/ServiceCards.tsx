@@ -2,6 +2,7 @@ import React from 'react'
 import { ServiceCardItem } from './ServiceCardItem'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { vi } from '@/lib/i18n/vi'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface ResolvedService {
   id: string | number
@@ -25,6 +26,7 @@ export interface ServiceCardsProps {
   titleLine2?: string
   emotionLine?: string
   columns?: 1 | 2 | 3 | '1' | '2' | '3'
+  cardAlign?: 'inherit' | 'left' | 'center'
   cards?: React.ReactNode | React.ComponentType<{ className?: string }> | unknown[]
   // Legacy v1 props:
   services?: Array<{ serviceId?: string | number }>
@@ -64,6 +66,7 @@ export function ServiceCards({
   titleLine2,
   emotionLine,
   columns,
+  cardAlign = 'inherit',
   cards,
   services,
   highlightServiceId,
@@ -111,15 +114,17 @@ export function ServiceCards({
 
   return (
     <section
-      className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+      className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors group/grid`}
       data-block="service-cards"
       data-bg={bgColor}
+      data-card-align={cardAlign || 'inherit'}
     >
       <div className="mx-auto max-w-6xl">
         {(seriesLabel || titleLine1) && (
           <div className="text-center mb-10 sm:mb-14">
             {seriesLabel && (
               <span
+                {...textTarget(id, 'seriesLabel')}
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] block font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
@@ -128,13 +133,20 @@ export function ServiceCards({
 
             {titleLine1 && (
               <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-3">
-                <span className={textColorClass}>{titleLine1}</span>{' '}
-                {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
+                <span {...textTarget(id, 'titleLine1')} className={textColorClass}>
+                  {titleLine1}
+                </span>{' '}
+                {titleLine2 && (
+                  <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+                    {titleLine2}
+                  </span>
+                )}
               </h2>
             )}
 
             {emotionLine && (
               <p
+                {...textTarget(id, 'emotionLine')}
                 className={`font-quote text-lg sm:text-xl italic max-w-2xl mx-auto leading-relaxed ${
                   isDeepNavy ? 'text-soft-pink' : 'text-deep-navy/80'
                 }`}

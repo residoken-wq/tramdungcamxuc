@@ -4,6 +4,7 @@ import { PackageCardsCTA } from './PackageCardsCTA'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import type { PublicProduct } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface PackageCardsProps {
   version?: number
@@ -13,6 +14,7 @@ export interface PackageCardsProps {
   emotionLine?: string
   description?: string
   style?: 'icon' | 'numbered'
+  cardAlign?: 'inherit' | 'left' | 'center'
   cards?: React.ReactNode | React.ComponentType<{ className?: string }> | unknown[]
   // Legacy v1 props:
   packages?: Array<{ packageId?: string | number }>
@@ -62,6 +64,7 @@ export function PackageCards({
   emotionLine,
   description,
   style = 'icon',
+  cardAlign = 'inherit',
   cards,
   packages: rawPackages,
   packageIds,
@@ -117,6 +120,7 @@ export function PackageCards({
       className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors group/grid`}
       data-style={style}
       data-bg={bgColor}
+      data-card-align={cardAlign || 'inherit'}
     >
       <div className="mx-auto max-w-5xl">
         {/* Optional Header */}
@@ -124,6 +128,7 @@ export function PackageCards({
           <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
             {seriesLabel && (
               <span
+                {...textTarget(id, 'seriesLabel')}
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
@@ -132,13 +137,23 @@ export function PackageCards({
 
             {titleLine1 && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
-                <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-                {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
+                <span
+                  {...textTarget(id, 'titleLine1')}
+                  className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                >
+                  {titleLine1}
+                </span>{' '}
+                {titleLine2 && (
+                  <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+                    {titleLine2}
+                  </span>
+                )}
               </h2>
             )}
 
             {emotionLine && (
               <p
+                {...textTarget(id, 'emotionLine')}
                 className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                   isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                 }`}
@@ -149,6 +164,7 @@ export function PackageCards({
 
             {description && (
               <p
+                {...textTarget(id, 'description')}
                 className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${descColorClass}`}
               >
                 {description}
@@ -228,6 +244,7 @@ export function PackageCards({
 
         {/* Optional Action Button below cards */}
         <PackageCardsCTA
+          id={id}
           buttonText={buttonText}
           targetHref={targetHref}
           bookingProductId={_resolved?.bookingProductId}

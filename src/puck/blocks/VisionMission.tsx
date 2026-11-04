@@ -1,7 +1,13 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { VisionMission, type VisionMissionProps } from '@/components/site/VisionMission'
-import { BRAND_COLOR_OPTIONS, FONT_SIZE_OPTIONS, PADDING_OPTIONS } from '../constants'
+import {
+  BRAND_COLOR_OPTIONS,
+  FONT_SIZE_OPTIONS,
+  PADDING_OPTIONS,
+  GRID_CARD_ALIGN_OPTIONS,
+} from '../constants'
+import { vi } from '@/lib/i18n/vi'
 
 export type { VisionMissionProps }
 
@@ -10,16 +16,16 @@ export const VisionMissionBlock: ComponentConfig<VisionMissionProps> = {
   fields: {
     seriesLabel: {
       type: 'text',
-      label: 'Nhãn series (Tùy chọn)',
+      label: vi.eb15a?.seriesLabel || 'Nhãn series',
     },
     titleLine1: {
       type: 'text',
-      label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      label: vi.eb15a?.titleLine1 || 'Tiêu đề dòng 1',
       contentEditable: true,
     },
     titleLine2: {
       type: 'text',
-      label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      label: vi.eb15a?.titleLine2 || 'Tiêu đề dòng 2',
       contentEditable: true,
     },
     quote: {
@@ -31,6 +37,11 @@ export const VisionMissionBlock: ComponentConfig<VisionMissionProps> = {
       type: 'select',
       label: 'Cỡ chữ tiêu đề',
       options: [...FONT_SIZE_OPTIONS],
+    },
+    cardAlign: {
+      type: 'select',
+      label: vi.eb15b?.gridCardAlign || 'Căn lề tất cả thẻ',
+      options: [...GRID_CARD_ALIGN_OPTIONS],
     },
     cards: {
       type: 'slot',
@@ -54,6 +65,7 @@ export const VisionMissionBlock: ComponentConfig<VisionMissionProps> = {
     titleLine1: '[MẪU] TẦM NHÌN &',
     titleLine2: '[MẪU] SỨ MỆNH',
     quote: '[MẪU] Dừng lại để lắng nghe, thấu cảm để vững vàng bước tiếp.',
+    cardAlign: 'inherit',
     titleSize: 'md',
     cards: [
       {

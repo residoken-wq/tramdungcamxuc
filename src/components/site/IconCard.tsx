@@ -9,6 +9,7 @@ import {
   type FontSizeOption,
   type AlignOption,
 } from '@/lib/brand/format-classes'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface IconCardProps {
   version?: number
@@ -72,7 +73,8 @@ export function IconCard({
   marker,
   cardStyle,
   isDeepNavy = false,
-}: IconCardProps) {
+  id,
+}: IconCardProps & { id?: string }) {
   const hasValidImage = Boolean(imageUrl && imageAlt && imageAlt.trim().length > 0)
   const alignClass = align === 'center' ? 'text-center items-center' : 'text-left items-start'
 
@@ -103,31 +105,31 @@ export function IconCard({
 
   return (
     <div
-      className={`flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full ${alignClass} ${explicitThemeClass} group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft`}
+      className={`flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left ${explicitThemeClass} group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft`}
     >
-      <div className="mb-4 flex items-center">
+      <div className="mb-4 w-full self-stretch text-[inherit]">
         {marker === 'number' && index !== undefined ? (
           <span
-            className={`font-display text-3xl sm:text-4xl ${isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink'}`}
+            className={`inline-block font-display text-3xl sm:text-4xl ${isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink'}`}
           >
             {String(index + 1).padStart(2, '0')}
           </span>
         ) : marker === 'icon' && index !== undefined ? (
           hasValidImage ? (
-            <div className="relative h-12 w-12 rounded-2xl overflow-hidden">
+            <div className="relative inline-block h-12 w-12 rounded-2xl overflow-hidden align-middle">
               <Image src={imageUrl!} alt={imageAlt!} fill className="object-cover" />
             </div>
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta">
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta">
               <BrandIcon name={(icon as BrandIconKey) || 'star'} size={24} />
             </div>
           )
         ) : (
           <>
             <span className="hidden group-data-[marker=number]/grid:inline-block font-display text-3xl sm:text-4xl text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink before:content-[counter(card-counter,_decimal-leading-zero)]" />
-            <div className="flex group-data-[marker=number]/grid:hidden items-center justify-center">
+            <div className="inline-flex group-data-[marker=number]/grid:!hidden items-center justify-center">
               {hasValidImage ? (
-                <div className="relative h-12 w-12 rounded-2xl overflow-hidden">
+                <div className="relative inline-block h-12 w-12 rounded-2xl overflow-hidden align-middle">
                   <Image src={imageUrl!} alt={imageAlt!} fill className="object-cover" />
                 </div>
               ) : (
@@ -141,13 +143,19 @@ export function IconCard({
       </div>
 
       {title && (
-        <h3 className={`font-ui ${titleSizeClass} font-bold leading-snug ${titleColorClass}`}>
+        <h3
+          {...textTarget(id, 'title')}
+          className={`font-ui ${titleSizeClass} font-bold leading-snug ${titleColorClass}`}
+        >
           {title}
         </h3>
       )}
 
       {text && (
-        <p className={`mt-2 font-ui ${textSizeClass} leading-relaxed ${textColorStyleClass}`}>
+        <p
+          {...textTarget(id, 'text')}
+          className={`mt-2 font-ui ${textSizeClass} leading-relaxed ${textColorStyleClass}`}
+        >
           {text}
         </p>
       )}

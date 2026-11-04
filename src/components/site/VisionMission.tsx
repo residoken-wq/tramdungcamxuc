@@ -4,6 +4,7 @@ import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { VisionCardItem, type VisionCardItemProps } from './VisionCardItem'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface VisionMissionProps {
   version?: number
@@ -22,6 +23,7 @@ export interface VisionMissionProps {
     | React.ComponentType<{ className?: string }>
     | React.ReactNode
     | Array<{ type?: string; props?: VisionCardItemProps & { id?: string } }>
+  cardAlign?: 'inherit' | 'left' | 'center'
   titleSize?: FontSizeOption
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
@@ -68,6 +70,7 @@ export function VisionMission({
   missionContent,
   missionIcon = 'heart',
   cards,
+  cardAlign = 'inherit',
   titleSize = 'md',
   bgColor = 'warm-ivory',
   padding = 'md',
@@ -94,14 +97,16 @@ export function VisionMission({
 
   return (
     <section
-      className={`group/vm w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+      className={`group/vm group/grid w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
       data-bg={bgColor}
+      data-card-align={cardAlign || 'inherit'}
     >
       <div className="mx-auto max-w-5xl">
         {(seriesLabel || titleLine1) && (
           <div className="text-center mb-8 sm:mb-12">
             {seriesLabel && (
               <span
+                {...textTarget(id, 'seriesLabel')}
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] block font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
@@ -112,8 +117,14 @@ export function VisionMission({
               <h2
                 className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
               >
-                <span className={textColorClass}>{titleLine1}</span>{' '}
-                {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
+                <span {...textTarget(id, 'titleLine1')} className={textColorClass}>
+                  {titleLine1}
+                </span>{' '}
+                {titleLine2 && (
+                  <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+                    {titleLine2}
+                  </span>
+                )}
               </h2>
             )}
           </div>
@@ -122,6 +133,7 @@ export function VisionMission({
         {quote && (
           <div className="mb-10 max-w-2xl mx-auto text-center">
             <blockquote
+              {...textTarget(id, 'quote')}
               className={`font-quote text-lg sm:text-xl italic leading-relaxed ${
                 isDeepNavy ? 'text-soft-pink' : 'text-deep-navy'
               }`}

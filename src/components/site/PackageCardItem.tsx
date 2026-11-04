@@ -43,7 +43,8 @@ export function PackageCardItem({
   _resolved,
   puck,
   isDeepNavy = false,
-}: PackageCardItemProps) {
+  id: _id,
+}: PackageCardItemProps & { id?: string }) {
   const isEditing = Boolean(puck?.isEditing)
 
   const productIds = React.useMemo(() => {
@@ -105,18 +106,20 @@ export function PackageCardItem({
 
   return (
     <div
-      className={`relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all ${cardBg} ${textAlignClass(align)}`}
+      className={`relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all ${cardBg} ${textAlignClass(align)} group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left`}
     >
       <div>
         {/* Style: Icon or Numbered (CSS counter controlled via parent [counter-reset:card-counter] and data-style) */}
-        <div className="hidden group-data-[style=numbered]/grid:block font-display text-3xl sm:text-4xl text-bright-magenta mb-4 [counter-increment:card-counter] before:content-[counter(card-counter,decimal-leading-zero)]" />
+        <div className="w-full self-stretch mb-4 text-[inherit]">
+          <div className="hidden group-data-[style=numbered]/grid:inline-block font-display text-3xl sm:text-4xl text-bright-magenta [counter-increment:card-counter] before:content-[counter(card-counter,decimal-leading-zero)]" />
 
-        <div className="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4 group-data-[style=numbered]/grid:hidden">
-          {activePackage.icon ? (
-            <BrandIcon name={activePackage.icon} className="w-6 h-6 text-deep-navy" />
-          ) : (
-            <BrandIcon name="star" className="w-6 h-6 text-deep-navy" />
-          )}
+          <div className="inline-flex w-12 h-12 rounded-xl bg-soft-pink items-center justify-center text-deep-navy group-data-[style=numbered]/grid:!hidden">
+            {activePackage.icon ? (
+              <BrandIcon name={activePackage.icon} className="w-6 h-6 text-deep-navy" />
+            ) : (
+              <BrandIcon name="star" className="w-6 h-6 text-deep-navy" />
+            )}
+          </div>
         </div>
 
         {/* Package Name */}

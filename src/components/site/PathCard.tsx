@@ -10,6 +10,7 @@ import {
   type TextColorOption,
 } from '@/lib/brand/format-classes'
 import { safeHref } from '@/lib/safe-href'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface PathCardProps {
   version?: number
@@ -79,7 +80,8 @@ export function PathCard({
   textSize = 'md',
   align = 'left',
   _resolved,
-}: PathCardProps) {
+  id,
+}: PathCardProps & { id?: string }) {
   const { slug: clientSlug } = useClientPageSlug(pageId, _resolved?.pageSlug)
   const finalHref = resolveSafeLink(linkType, href, _resolved?.pageSlug ?? clientSlug)
   const alignClass = align === 'center' ? 'text-center' : 'text-left'
@@ -100,17 +102,21 @@ export function PathCard({
       : 'text-deep-navy/80 group-data-[bg=deep-navy]/paths:text-white/90'
 
   return (
-    <div className="rounded-card border bg-white border-deep-navy/10 group-data-[bg=deep-navy]/paths:bg-white/10 group-data-[bg=deep-navy]/paths:border-white/15 p-6 sm:p-8 shadow-soft flex flex-col justify-between h-full transition-transform duration-300 hover:-translate-y-1">
-      <div className={alignClass}>
+    <div
+      className={`rounded-card border bg-white border-deep-navy/10 group-data-[bg=deep-navy]/paths:bg-white/10 group-data-[bg=deep-navy]/paths:border-white/15 p-6 sm:p-8 shadow-soft flex flex-col justify-between h-full transition-transform duration-300 hover:-translate-y-1 ${alignClass} group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/paths:text-center group-data-[card-align=left]/paths:text-left`}
+    >
+      <div className="w-full self-stretch text-[inherit]">
         {groupLabel && (
           <span
-            className={`mb-3 block font-ui text-xs font-bold uppercase tracking-widest ${labelClass}`}
+            {...textTarget(id, 'groupLabel')}
+            className={`mb-3 inline-block font-ui text-xs font-bold uppercase tracking-widest ${labelClass}`}
           >
             {groupLabel}
           </span>
         )}
         {title && (
           <h3
+            {...textTarget(id, 'title')}
             className={`font-display uppercase tracking-tight mb-4 ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} ${titleClass}`}
           >
             {title}
@@ -118,6 +124,7 @@ export function PathCard({
         )}
         {description && (
           <p
+            {...textTarget(id, 'description')}
             className={`font-ui leading-relaxed mb-6 ${TEXT_SIZES[textSize] ?? TEXT_SIZES.md} ${descClass}`}
           >
             {description}
@@ -125,14 +132,14 @@ export function PathCard({
         )}
       </div>
       {buttonLabel && (
-        <div className="pt-2">
+        <div className="pt-2 w-full self-stretch text-[inherit]">
           <Button
             href={finalHref}
             variant={buttonStyle === 'outline' ? 'ghost' : 'primary'}
             size="md"
             className="w-full text-center"
           >
-            {buttonLabel}
+            <span {...textTarget(id, 'buttonLabel')}>{buttonLabel}</span>
           </Button>
         </div>
       )}

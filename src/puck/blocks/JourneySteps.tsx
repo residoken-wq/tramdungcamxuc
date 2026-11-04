@@ -5,7 +5,8 @@ import {
   type JourneyStepsProps,
   FIXED_JOURNEY_STEPS,
 } from '@/components/site/JourneySteps'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS, GRID_CARD_ALIGN_OPTIONS } from '../constants'
+import { vi } from '@/lib/i18n/vi'
 
 export type { JourneyStepsProps }
 
@@ -31,15 +32,20 @@ export const JourneyStepsBlock: ComponentConfig<JourneyStepsProps> = {
         { label: '6 cột', value: 6 },
       ],
     },
+    cardAlign: {
+      type: 'select',
+      label: vi.eb15b?.gridCardAlign || 'Căn lề tất cả thẻ',
+      options: [...GRID_CARD_ALIGN_OPTIONS],
+    },
     steps: {
       type: 'slot',
       label: 'Các bước hành trình',
       allow: ['Step'],
     },
-    seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
-    titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
-    titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
-    emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display Italic)' },
+    seriesLabel: { type: 'text', label: vi.eb15a?.seriesLabel || 'Nhãn series' },
+    titleLine1: { type: 'text', label: vi.eb15a?.titleLine1 || 'Tiêu đề dòng 1' },
+    titleLine2: { type: 'text', label: vi.eb15a?.titleLine2 || 'Tiêu đề dòng 2' },
+    emotionLine: { type: 'textarea', label: vi.eb15a?.emotionLine || 'Dòng cảm xúc' },
     bgColor: {
       type: 'select',
       label: 'Màu nền',
@@ -55,6 +61,7 @@ export const JourneyStepsBlock: ComponentConfig<JourneyStepsProps> = {
     version: 3,
     variant: 'circles',
     columns: 5,
+    cardAlign: 'inherit',
     seriesLabel: '[MẪU] 5 Bước chuyển hóa',
     titleLine1: '[MẪU] HÀNH TRÌNH THẤU HIỂU',
     titleLine2: '[MẪU] VÀ LÀM CHỦ CẢM XÚC',

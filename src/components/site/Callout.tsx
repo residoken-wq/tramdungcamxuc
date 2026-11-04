@@ -5,6 +5,7 @@ import { getBookingPath, BOOKING_PATH } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import type { AlignOption, FontSizeOption } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface CalloutProps {
   version?: number
@@ -71,7 +72,8 @@ export function Callout({
   align = 'center',
   _resolved,
   puck,
-}: CalloutProps) {
+  id,
+}: CalloutProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
   const isLeft = align === 'left'
   const bookingProductId = _resolved?.bookingProductId ?? null
@@ -112,6 +114,7 @@ export function Callout({
         >
           {title && (
             <h2
+              {...textTarget(id, 'title')}
               className={`font-ui ${sizeClass(TITLE_SIZES, titleSize)} font-bold tracking-tight text-white leading-snug`}
             >
               {title}
@@ -120,6 +123,7 @@ export function Callout({
 
           {description && (
             <p
+              {...textTarget(id, 'description')}
               className={`${isLeft ? '' : 'mx-auto '}mt-4 max-w-2xl font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} leading-relaxed text-white/90`}
             >
               {description}
@@ -129,22 +133,26 @@ export function Callout({
           {showButton &&
             buttonText &&
             (finalSafeLink ? (
-              <div className={`mt-8 flex ${isLeft ? 'justify-start' : 'justify-center'}`}>
-                <Button href={finalSafeLink} variant={buttonVariant} size={buttonSize}>
-                  {buttonText}
-                </Button>
+              <div className="mt-8 w-full self-stretch text-[inherit]">
+                <div className={`inline-block ${isLeft ? 'text-left' : 'text-center'}`}>
+                  <Button href={finalSafeLink} variant={buttonVariant} size={buttonSize}>
+                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                  </Button>
+                </div>
               </div>
             ) : isEditing && isBookingUnavailable ? (
-              <div className={`mt-8 flex flex-col ${isLeft ? 'items-start' : 'items-center'}`}>
-                <Button
-                  href="#"
-                  variant={buttonVariant}
-                  size={buttonSize}
-                  className="opacity-60 pointer-events-none"
-                >
-                  {buttonText}
-                </Button>
-                <p className="text-xs text-soft-pink mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
+              <div className="mt-8 w-full self-stretch text-[inherit]">
+                <div className={`inline-flex flex-col ${isLeft ? 'items-start' : 'items-center'}`}>
+                  <Button
+                    href="#"
+                    variant={buttonVariant}
+                    size={buttonSize}
+                    className="opacity-60 pointer-events-none"
+                  >
+                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                  </Button>
+                  <p className="text-xs text-soft-pink mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
+                </div>
               </div>
             ) : null)}
         </div>

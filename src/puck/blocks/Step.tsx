@@ -84,9 +84,19 @@ export const StepBlock: ComponentConfig<JourneyStepProps> = {
     const isNameLarge = data?.props?.nameSize === 'lg'
     const nameColors = allowedTextColors(realBg, isNameLarge)
     const descColors = allowedTextColors(realBg, false)
+    const isFollowingGrid =
+      params?.parent?.props?.cardAlign === 'left' || params?.parent?.props?.cardAlign === 'center'
+    const alignLabel = isFollowingGrid
+      ? `${vi.puckStep?.align || 'Căn lề'} (${vi.eb15b?.cardAlignFollowingGrid || 'Đang theo khung'})`
+      : vi.puckStep?.align || 'Căn lề'
 
     return {
       ...params.fields,
+      align: {
+        type: 'select',
+        label: alignLabel,
+        options: [...ALIGN_OPTIONS],
+      },
       nameColor: {
         type: 'select',
         label: vi.puckStep?.nameColor || 'Màu tên bước',

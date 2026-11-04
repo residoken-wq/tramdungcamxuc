@@ -8,6 +8,7 @@ import {
   type FontSizeOption,
   type AlignOption,
 } from '@/lib/brand/format-classes'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface StatItemProps {
   version?: number
@@ -34,7 +35,8 @@ export function StatItem({
   labelSize = 'md',
   align = 'center',
   isDeepNavy = false,
-}: StatItemProps) {
+  id,
+}: StatItemProps & { id?: string }) {
   const alignClass = align === 'left' ? 'items-start text-left' : 'items-center text-center'
 
   const valueSizeClass = fontSizeClass('stat-value', valueSize)
@@ -64,15 +66,18 @@ export function StatItem({
 
   return (
     <div
-      className={`flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 w-full ${alignClass} ${cardBgClass}`}
+      className={`flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/stats:items-center group-data-[card-align=center]/stats:text-center group-data-[card-align=left]/stats:items-start group-data-[card-align=left]/stats:text-left ${cardBgClass}`}
     >
       {icon ? (
-        <div className="flex h-14 sm:h-16 items-center justify-center">
-          <BrandIcon name={icon as BrandIconKey} size={44} className={valueColorClass} />
+        <div className="w-full self-stretch text-[inherit]">
+          <div className="inline-flex h-14 sm:h-16 items-center justify-center">
+            <BrandIcon name={icon as BrandIconKey} size={44} className={valueColorClass} />
+          </div>
         </div>
       ) : (
         value && (
           <div
+            {...textTarget(id, 'value')}
             className={`font-display ${valueSizeClass} tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${valueColorClass}`}
           >
             {value}
@@ -82,6 +87,7 @@ export function StatItem({
 
       {label && (
         <p
+          {...textTarget(id, 'label')}
           className={`mt-3 font-ui ${labelSizeClass} font-semibold leading-relaxed ${labelColorClass}`}
         >
           {label}
@@ -89,7 +95,10 @@ export function StatItem({
       )}
 
       {description && (
-        <p className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed ${descriptionColorClass}`}>
+        <p
+          {...textTarget(id, 'description')}
+          className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed ${descriptionColorClass}`}
+        >
           {description}
         </p>
       )}

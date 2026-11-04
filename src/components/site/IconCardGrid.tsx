@@ -21,6 +21,7 @@ export interface IconCardGridProps {
   marker?: 'icon' | 'number'
   columns?: 1 | 2 | 3 | 4
   cardStyle?: 'white' | 'soft' | 'outline'
+  cardAlign?: 'inherit' | 'left' | 'center'
   /** Puck slot render (v2), React nodes, or raw Card blocks `{ props }` (direct use / tests). */
   cards?: CardsSlotRender | React.ReactNode | Array<{ type?: string; props?: IconCardProps }>
   items?: IconCardItem[]
@@ -56,6 +57,7 @@ export function IconCardGrid({
   marker = 'icon',
   columns = 3,
   cardStyle = 'white',
+  cardAlign = 'inherit',
   cards,
   items = [],
   bgColor = 'warm-ivory',
@@ -97,6 +99,7 @@ export function IconCardGrid({
         {hasHeader && (
           <div className="mb-8 sm:mb-12">
             <SectionHeader
+              id={id}
               seriesLabel={seriesLabel}
               titleLine1={titleLine1 || ''}
               titleLine2={titleLine2}
@@ -117,6 +120,7 @@ export function IconCardGrid({
           data-grid-bg={bgColor}
           data-bg={bgColor}
           data-card-theme={`${isDeepNavy ? 'navy' : 'light'}-${cardStyle}`}
+          data-card-align={cardAlign || 'inherit'}
         >
           {hasCards &&
             (typeof cards === 'function' ? (

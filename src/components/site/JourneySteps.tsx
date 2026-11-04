@@ -1,11 +1,13 @@
 import React from 'react'
 import { JourneyStep } from './JourneyStep'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface JourneyStepsProps {
   version?: number
   variant?: 'circles' | 'cards' | 'list'
   columns?: 3 | 4 | 5 | 6 | '3' | '4' | '5' | '6'
+  cardAlign?: 'inherit' | 'left' | 'center'
   steps?: React.ReactNode | React.ComponentType | unknown[]
   seriesLabel?: string
   titleLine1?: string
@@ -108,6 +110,7 @@ export function JourneySteps({
   id,
   variant = 'circles',
   columns = 5,
+  cardAlign = 'inherit',
   steps,
   highlightStep = 0,
   seriesLabel,
@@ -159,6 +162,7 @@ export function JourneySteps({
           <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
             {seriesLabel && (
               <span
+                {...textTarget(id, 'seriesLabel')}
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
@@ -166,12 +170,20 @@ export function JourneySteps({
             )}
 
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
-              <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-              <span className={titleLine2ColorClass}>{titleLine2}</span>
+              <span
+                {...textTarget(id, 'titleLine1')}
+                className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+              >
+                {titleLine1}
+              </span>{' '}
+              <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+                {titleLine2}
+              </span>
             </h2>
 
             {emotionLine && (
               <p
+                {...textTarget(id, 'emotionLine')}
                 className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                   isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                 }`}
@@ -182,7 +194,12 @@ export function JourneySteps({
           </div>
         )}
 
-        <div className="group/journey w-full relative" data-variant={variant} data-bg={bgColor}>
+        <div
+          className="group/journey group/grid w-full relative"
+          data-variant={variant}
+          data-bg={bgColor}
+          data-card-align={cardAlign || 'inherit'}
+        >
           {variant === 'cards' && (
             <div
               className="hidden lg:block absolute top-[44px] left-10 right-10 h-0.5 border-t-2 border-dashed border-deep-navy/20 group-data-[bg=deep-navy]/journey:border-white/20 z-0"
@@ -195,7 +212,10 @@ export function JourneySteps({
               typeof steps === 'function' ? (
                 <>
                   {React.createElement(
-                    steps as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+                    steps as React.ComponentType<{
+                      className?: string
+                      style?: React.CSSProperties
+                    }>,
                     {
                       className: containerClasses,
                       style: { counterReset: 'step-counter' },

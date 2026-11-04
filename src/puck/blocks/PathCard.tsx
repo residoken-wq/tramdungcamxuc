@@ -4,6 +4,7 @@ import { PathCard, type PathCardProps } from '@/components/site/PathCard'
 import { FONT_SIZE_OPTIONS, ALIGN_OPTIONS } from '../constants'
 import { createPageExternalField } from '../page-field'
 import { allowedTextColors, getChildRealBg } from '@/lib/brand/format-classes'
+import { vi } from '@/lib/i18n/vi'
 
 export type { PathCardProps }
 
@@ -78,7 +79,21 @@ export const PathCardBlock: ComponentConfig<PathCardProps> = {
   resolveFields: (data, params) => {
     // Cards sit on white (navy section → navy): offer only colours that pass WCAG AA there.
     const realBg = getChildRealBg(params?.parent, { cardStyle: 'white' })
-    return { ...params.fields, ...colorFields(realBg, data.props?.titleSize === 'lg') }
+    const isFollowingGrid =
+      params?.parent?.props?.cardAlign === 'left' || params?.parent?.props?.cardAlign === 'center'
+    const alignLabel = isFollowingGrid
+      ? `${vi.eb15b?.cardAlignLabel || 'Căn lề'} (${vi.eb15b?.cardAlignFollowingGrid || 'Đang theo khung'})`
+      : vi.eb15b?.cardAlignLabel || 'Căn lề'
+
+    return {
+      ...params.fields,
+      align: {
+        type: 'select',
+        label: alignLabel,
+        options: [...ALIGN_OPTIONS],
+      },
+      ...colorFields(realBg, data.props?.titleSize === 'lg'),
+    }
   },
   render: ({ puck: _puck, ...props }) => <PathCard {...props} />,
 }
