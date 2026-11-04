@@ -233,19 +233,27 @@ test.describe('Habit Tracker Flow (T2-06)', () => {
         reflections: [],
       })
 
-      // Bản zip: khôi phục ngay khi chọn tệp, báo bằng hộp thoại của trình duyệt rồi tải lại trang
-      const restoreDialog = guestPage.waitForEvent('dialog')
+      // Khôi phục từ file: hiện modal xác nhận ghi đè tối đa N ngày, bấm xác nhận (DP-02)
       await guestPage.locator('input[type="file"][accept*="application/json"]').setInputFiles({
         name: 'backup-hb13.json',
         mimeType: 'application/json',
         buffer: Buffer.from(smallBackupJson, 'utf-8'),
       })
-      const dialog = await restoreDialog
-      expect(dialog.message()).toMatch(/Khôi phục thành công 1 ngày check-in/)
-      await dialog.accept()
+
+      const restoreModal = guestPage.locator('div[role="dialog"]').filter({
+        hasText: vi.hb13.restoreModal.title,
+      })
+      await expect(restoreModal).toBeVisible({ timeout: 10000 })
+      await expect(restoreModal).toContainText('ghi đè tối đa 1 ngày check-in')
+
+      const confirmRestoreBtn = restoreModal.getByRole('button', {
+        name: vi.hb13.restoreModal.confirmButton,
+      })
+      await confirmRestoreBtn.click()
+      await expect(restoreModal).toBeHidden({ timeout: 10000 })
 
       const day1AfterRestore = guestPage.getByRole('button', {
-        name: /^Ngày 1: Bản tối giản, cảm xúc: Vui vẻ/i,
+        name: /^Ngày 1:.*(Bản tối giản|Đã hoàn thành|Đã làm)/i,
       })
       await expect(day1AfterRestore).toBeVisible({ timeout: 15000 })
 

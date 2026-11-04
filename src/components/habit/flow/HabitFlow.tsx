@@ -417,6 +417,8 @@ export function HabitFlow({
         scorecard: draft.scorecard,
         identityStatement:
           draft.identityStatement || formatIdentityStatement(draft.actionText, draft.personText),
+        actionText: draft.actionText?.trim() || undefined,
+        personText: draft.personText?.trim() || undefined,
         chosenTechniques: flattenedTechniques,
         anchorHabit: draft.anchorHabit || undefined,
         rhythmDays: draft.rhythmDays,

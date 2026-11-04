@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react'
 import { Check } from 'lucide-react'
 import type { HabitStep } from './types'
+import { vi } from '@/lib/i18n/vi'
 
 export interface StepNavigationProps {
   currentStep: HabitStep
@@ -108,7 +109,7 @@ export function StepNavigation({
                   isPassed ||
                   (typeof step.id === 'number' && step.id <= maxReachedStep)
 
-              const tooltipText = isStep7 && !isAccessible ? 'Mở sau khi lên chuyến' : undefined
+              const tooltipText = isStep7 && !isAccessible ? vi.dp01.openAfterBoarding : undefined
 
               return (
                 <button

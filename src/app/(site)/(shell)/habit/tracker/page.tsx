@@ -13,6 +13,7 @@ import {
   getOrCreateTrackerPlan,
 } from '@/lib/habit/tracker.server'
 import { getCertificateEligibility } from '@/lib/habit/certificate.server'
+import { extractIdentityParts } from '@/lib/habit'
 import {
   getHabitJourneyContent,
   getHabitSiteSettings,
@@ -23,10 +24,7 @@ import { getStationReflectionsForPlan } from '@/lib/habit/reflections.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { ToolPaywall } from '@/components/site/trial/ToolPaywall'
-import {
-  Dashboard28Days,
-  type InitialCheckinData,
-} from '@/components/habit/zip/Result/Dashboard28Days'
+import { Dashboard28Days, type InitialCheckinData } from '@/components/habit/zip/Result/Dashboard28Days'
 import { HabitTrackerHeader } from '@/components/habit/zip/HabitTrackerHeader'
 import { StepNavigation } from '@/components/habit/zip/StepNavigation'
 import { HabitTrackerFooter } from '@/components/habit/zip/HabitTrackerFooter'
@@ -139,17 +137,17 @@ export default async function HabitTrackerPage() {
       getHabitSiteSettings(payload),
     ])
     journeyContent = jc
-    stationNames = (jc.stations || []).map((s) => s.name).filter(Boolean)
-    stationQuestions = (jc.stations || []).map((s) =>
+    stationNames = (journeyContent.stations || []).map((s) => s.name).filter(Boolean)
+    stationQuestions = (journeyContent.stations || []).map((s) =>
       (s.reflectionQuestions || [])
         .map((q) => ({ question: q.question?.trim() || '' }))
         .filter((q) => Boolean(q.question)),
     )
-    privacyNote = jc.privacyNote ?? null
-    afterJourneyTitle = jc.tracker?.afterJourneyTitle ?? null
-    afterJourneyText = jc.tracker?.afterJourneyText ?? null
+    privacyNote = journeyContent.privacyNote ?? null
+    afterJourneyTitle = journeyContent.tracker?.afterJourneyTitle ?? null
+    afterJourneyText = journeyContent.tracker?.afterJourneyText ?? null
     coachBookingUrl = habitSiteSettings.habitCoachBookingUrl ?? null
-    quote = jc.stepQuotes?.tracker ?? null
+    quote = journeyContent.stepQuotes?.tracker ?? null
   } catch (err) {
     // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
     console.error('Failed to load habit journey stations/settings for tracker:', err)
@@ -165,15 +163,28 @@ export default async function HabitTrackerPage() {
   // Lấy điều kiện nhận chứng nhận
   const eligibility = await getCertificateEligibility(customer.id, { payload, now })
 
+  // Z1: Tách căn tính từ plan hoặc identityStatement
+  const extracted = extractIdentityParts(plan.identityStatement)
+  const planAny = plan as unknown as Record<string, unknown>
+  const identityRole =
+    (typeof planAny.personText === 'string' && planAny.personText.trim()) ||
+    extracted.personText ||
+    null
+  const identityAction =
+    (typeof planAny.actionText === 'string' && planAny.actionText.trim()) ||
+    extracted.actionText ||
+    null
+
   return (
     <div className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-warm-ivory/80 to-lavender-mist/20">
       <div className="w-full max-w-4xl mx-auto space-y-6">
         <HabitTrackerHeader currentStep={7} headerContent={journeyContent?.dp01Content?.header} />
-        {/* QA DP-01e: no function props from this server page (it crashed the tracker). */}
-        <StepNavigation currentStep={7} hasSavedPlan={true} />
+        <StepNavigation currentStep={7} hasSavedPlan={true} onStepChange={() => {}} />
         <Dashboard28Days
           planId={plan.id}
           identityStatement={plan.identityStatement}
+          identityRole={identityRole}
+          identityAction={identityAction}
           atomicHabit={plan.twoMinuteAction || plan.anchorHabit || null}
           selectedMentor={plan.anchorHabit || null}
           selectedDays={plan.rhythmDays ?? null}
