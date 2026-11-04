@@ -73,6 +73,7 @@
    - [5.34. Bấm để chèn khối (EB-13b)](#534-bấm-để-chèn-khối-eb-13b)
    - [5.35. Hero ảnh nền (EB-14a)](#535-hero-ảnh-nền-eb-14a)
    - [5.36. Khối bị khoá và cách mở khoá (EB-14b)](#536-khối-bị-khoá-và-cách-mở-khoá)
+   - [5.37. Đổi màu, cỡ chữ từng dòng chữ (EB-15a)](#537-đổi-màu-cỡ-chữ-từng-dòng-chữ)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2779,6 +2780,35 @@ Khi Hana bấm chọn một khối đang bị khoá trong trình soạn thảo:
 
 - **Bảo vệ khối bắt buộc duy nhất:** Dù đang trong trạng thái mở khoá, nếu Hana cố tình xoá khối Hero 2 lối vào **duy nhất** trên trang chủ (hoặc khối Chân trang pháp lý duy nhất ở chân trang), trình soạn thảo sẽ lập tức chặn lại và hiện thông báo nhắc nhở, ngăn không để trang chủ bị mất cửa ngõ đón khách.
 - **Khối HTML khoá bởi Thiết kế hệ thống:** Không thể mở khoá tạm thời trong trình soạn thảo. Muốn chỉnh sửa khối này, Chủ tài khoản cần vào **Admin → Thiết kế hệ thống** để bật công tắc cho phép.
+
+### 5.37. Đổi màu, cỡ chữ từng dòng chữ
+
+Trong các khối hiển thị văn bản (như Hero 2 lối vào, Hero ảnh biểu tượng, Tiêu đề phân đoạn, Câu chuyện Hana, Trích dẫn, Khối kêu gọi chuyển đổi lớn, Ảnh & Chữ, và các widget Tiêu đề / Đoạn văn / Nút bấm), Hana có thể tuỳ chỉnh màu sắc, cỡ chữ, độ đậm và căn lề cho **từng ô chữ riêng biệt** mà không ảnh hưởng đến các dòng chữ khác trong khối.
+
+#### 1. Nhận biết nút "Aa" cạnh ô chữ
+
+Khi bấm chọn khối trong trình soạn thảo trực quan:
+1. Nhìn vào bảng thuộc tính bên phải, cạnh nhãn của các ô chữ (ví dụ: "Tiêu đề dòng 1", "Tiêu đề dòng 2", "Dòng cảm xúc", "Nhãn series", "Chữ trên nút"), Hana sẽ thấy một nút nhỏ hình chữ **"Aa"**.
+2. **Chấm hồng báo hiệu:** Nếu ô chữ đó đang có kiểu dáng tuỳ chỉnh riêng, góc nút "Aa" sẽ có một chấm tròn màu hồng (`accent-pink`) và nút có viền nổi bật để dễ dàng nhận biết.
+
+#### 2. Các tuỳ chọn trong bảng kiểu chữ (Popover)
+
+Bấm vào nút **"Aa"**, một bảng popover nhỏ gọn sẽ mở ra ngay cạnh nút:
+
+1. **Màu chữ:**
+   - Chỉ gồm 8 màu nhận diện thương hiệu trong Brand Book 2026 (Xanh thẫm, Hồng sen, Hồng đậm CTA, Hồng phấn, Tím nhạt, Xanh bạc hà, Be ấm, Trắng).
+   - **Tự động bảo vệ độ tương phản (WCAG AA):** Hệ thống tự động phân tích màu nền của khối. Những màu không đạt độ tương phản chuẩn (khó đọc, gây chói mắt người xem) sẽ bị làm mờ, không cho chọn và hiện cảnh báo _"Khó đọc trên nền này (chưa đạt chuẩn tương phản AA)"_.
+2. **Cỡ chữ theo từng thiết bị (Đáp ứng đa thiết bị):**
+   - Có 3 thẻ thiết bị: **Máy tính** (Desktop), **Máy tính bảng** (Tablet), và **Điện thoại** (Mobile).
+   - Hana có thể chọn cỡ chữ khác nhau cho từng thiết bị (ví dụ: trên máy tính chọn chữ lớn "XL", trên điện thoại chọn vừa "MD" để không bị tràn dòng).
+3. **Độ đậm chữ:**
+   - Gồm 3 mức: _Thường (400)_, _Đậm vừa (600)_, và _Đậm (700)_.
+4. **Căn lề chữ:**
+   - Trái, Giữa, Phải.
+5. **Nút "Về mặc định":**
+   - Khi muốn bỏ toàn bộ tuỳ chỉnh riêng của dòng chữ này để quay về kiểu chữ mặc định theo thiết kế chuẩn của khối, Hana chỉ cần bấm nút **"Về mặc định"**.
+6. **Đóng bảng:**
+   - Bấm nút **"Đóng"**, bấm chuột ra ngoài vùng bảng, hoặc nhấn phím **Escape** trên bàn phím.
 
 ---
 
