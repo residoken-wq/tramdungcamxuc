@@ -108,7 +108,13 @@ export function zipStateToFlowDraft(
   const draft = { ...baseDraft }
 
   draft.diagnoseAnswers = recordAnswersToArray(zipState.diagnoseAnswers, 8)
-  draft.scorecard = routineItemsToScorecard(zipState.routines)
+  draft.scorecard = routineItemsToScorecard(zipState.routines).map((item) =>
+    // QA DP-01c: the Mentor time lives on the anchor item of the scorecard.
+    item.habit === (zipState.identity.selectedMentor || '').trim() && zipState.identity.mentorTime
+      ? { ...item, time: zipState.identity.mentorTime }
+      : item,
+  )
+  draft.privateReason = zipState.identity.whyImportant || ''
 
   draft.actionText = zipState.identity.identityAction || ''
   draft.personText = zipState.identity.identityRole || ''
@@ -158,12 +164,12 @@ export function flowDraftToZipState(draft: HabitFlowDraft): ZipState {
     creatorName: '',
     identityAction: draft.actionText || '',
     identityRole: draft.personText || '',
-    postsPerWeek: draft.rhythmDays?.length || 3,
+    postsPerWeek: draft.rhythmDays?.length || null,
     selectedDays: weekdaysToDays(draft.rhythmDays || []),
     atomicHabit: draft.twoMinuteAction || '',
     selectedMentor: draft.anchorHabit || '',
-    mentorTime: '',
-    whyImportant: '',
+    mentorTime: draft.scorecard?.find((i) => i.habit === draft.anchorHabit)?.time || '',
+    whyImportant: draft.privateReason || '',
     startDate: draft.startDate || '',
     endDate: '',
     partnerName: '',

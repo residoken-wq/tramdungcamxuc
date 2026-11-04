@@ -696,7 +696,7 @@ export function Step5LoopDesign({
                     </span>
                   </div>
 
-                  <h3 className="font-heading text-xl sm:text-2xl text-deep-navy uppercase tracking-wide">
+                  <h3 className="font-display text-xl sm:text-2xl text-deep-navy uppercase tracking-wide">
                     {section.title}
                   </h3>
 

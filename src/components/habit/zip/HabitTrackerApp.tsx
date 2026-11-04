@@ -66,17 +66,19 @@ export function HabitTrackerApp({
   const [hasSavedPlan, setHasSavedPlan] = useState(false)
 
   // Calculate current date in Vietnam time for Step 4 defaults if empty
+  // QA DP-01c: the end date always follows the start date (a restored draft had none, so the
+  // ticket fell back to a fixed '06/11').
   useEffect(() => {
-    if (!identity.startDate) {
-      const todayYmd = getVietnamYmd()
-      const endYmd = getVietnamYmd(new Date(addVietnamDays(todayYmd, journeyDays - 1)))
+    const startYmd = identity.startDate || getVietnamYmd()
+    const endYmd = getVietnamYmd(new Date(addVietnamDays(startYmd, journeyDays - 1)))
+    if (identity.startDate !== startYmd || identity.endDate !== endYmd) {
       setIdentity((prev) => ({
         ...prev,
-        startDate: todayYmd,
+        startDate: startYmd,
         endDate: endYmd,
       }))
     }
-  }, [identity.startDate, journeyDays])
+  }, [identity.startDate, identity.endDate, journeyDays])
 
   // 1. Restore from localStorage (using tdcx_habit_loop_v1 key via draft adapter)
   useEffect(() => {
@@ -388,6 +390,7 @@ export function HabitTrackerApp({
 
           {currentStep === 6 && (
             <BoardingPassCard
+              journeyDays={journeyDays}
               identity={identity}
               loopTechniques={loopTechniques}
               name={name}

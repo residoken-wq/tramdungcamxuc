@@ -8,6 +8,8 @@ import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 
 interface BoardingPassCardProps {
+  /** Journey length stored in site settings (default 28). */
+  journeyDays?: number
   identity: IdentityFormData
   loopTechniques: LoopTechniques
   onPrev: () => void
@@ -32,6 +34,7 @@ interface BoardingPassCardProps {
 }
 
 export function BoardingPassCard({
+  journeyDays = 28,
   identity,
   loopTechniques,
   onPrev,
@@ -116,18 +119,18 @@ export function BoardingPassCard({
                 <Plane className="w-5 h-5 text-bright-magenta rotate-45" />
               </div>
               <div>
-                <h2 className="font-heading text-lg sm:text-2xl text-deep-navy uppercase tracking-wider">
+                <h2 className="font-display text-lg sm:text-2xl text-deep-navy uppercase tracking-wider">
                   HABIT BOARDING PASS
                 </h2>
                 <span className="font-mono text-xs text-deep-navy/70 font-semibold">
-                  {identity.startDate ? formatShortDate(identity.startDate) : '10/10'} →{' '}
-                  {identity.endDate ? formatShortDate(identity.endDate) : '06/11'} - 28 ngày
+                  {identity.startDate ? formatShortDate(identity.startDate) : ''} →{' '}
+                  {identity.endDate ? formatShortDate(identity.endDate) : ''} - {journeyDays} ngày
                 </span>
               </div>
             </div>
 
             <div className="text-right flex items-center gap-1.5 justify-end">
-              <span className="font-playfair italic text-lg sm:text-2xl text-deep-navy block">
+              <span className="font-quote italic text-lg sm:text-2xl text-deep-navy block">
                 Trạm Dừng Cảm Xúc
               </span>
               <span
@@ -173,7 +176,7 @@ export function BoardingPassCard({
               <span className="text-[10px] uppercase font-bold tracking-wider text-bright-magenta font-ui block">
                 NHỊP ĐIỆU
               </span>
-              <div className="font-heading text-base sm:text-lg text-deep-navy">{rateText}</div>
+              <div className="font-display text-base sm:text-lg text-deep-navy">{rateText}</div>
               <p className="text-xs text-deep-navy/70 font-ui font-medium">
                 {identity.selectedDays.length > 0 ? 'Theo kế hoạch cam kết' : 'Chưa chọn ngày'}
               </p>
@@ -209,7 +212,7 @@ export function BoardingPassCard({
                 BẠN ĐỒNG HÀNH
               </span>
               <div className="font-ui font-bold text-sm sm:text-base text-deep-navy truncate">
-                {identity.partnerName || '—'}
+                {identity.companionName || identity.partnerName || '—'}
               </div>
               <p className="text-xs text-deep-navy/60 font-ui">Người soi chiếu & cổ vũ</p>
             </div>
@@ -281,7 +284,7 @@ export function BoardingPassCard({
 
           {/* Ticket Footer Bar */}
           <div className="pt-4 border-t border-dashed border-lavender-mist flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs text-deep-navy/70 font-playfair italic">
+            <div className="flex items-center gap-2 text-xs text-deep-navy/70 font-quote italic">
               <span
                 className="text-bright-magenta text-base font-normal select-none"
                 aria-hidden="true"
@@ -326,7 +329,7 @@ export function BoardingPassCard({
             <Check className="w-6 h-6 stroke-[3]" />
           </div>
           <div className="space-y-1">
-            <h3 className="font-heading text-xl sm:text-2xl text-deep-navy uppercase">
+            <h3 className="font-display text-xl sm:text-2xl text-deep-navy uppercase">
               Chúc mừng bạn đã lên chuyến thành công!
             </h3>
             <p className="text-xs sm:text-sm text-deep-navy/80 font-ui max-w-md mx-auto leading-relaxed">
@@ -363,7 +366,7 @@ export function BoardingPassCard({
           className="p-6 sm:p-7 rounded-[20px] bg-white border border-lavender-mist shadow-soft space-y-4 font-ui"
         >
           <div>
-            <h3 className="font-heading text-lg sm:text-xl text-deep-navy uppercase tracking-wide">
+            <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase tracking-wide">
               Lên chuyến · Nhận kế hoạch qua email
             </h3>
             <p className="text-xs sm:text-sm text-deep-navy/70 mt-0.5 leading-relaxed">
