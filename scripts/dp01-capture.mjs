@@ -100,81 +100,164 @@ async function run() {
       const zipBuf1 = await zipPage.screenshot()
       const repoBuf1 = await repoPage.screenshot()
       fs.writeFileSync(path.join(OUT_REPO_DIR, `habit-step1-${vpSuffix}.png`), repoBuf1)
-      await stitchSideBySide(zipBuf1, repoBuf1, path.join(OUT_COMPARE_DIR, `habit-step1-${vpSuffix}.png`), 'Habit Bước 1: Khám')
+      await stitchSideBySide(
+        zipBuf1,
+        repoBuf1,
+        path.join(OUT_COMPARE_DIR, `habit-step1-${vpSuffix}.png`),
+        'Habit Bước 1: Khám',
+      )
 
       // Màn 2: Nguyên lý 1% (Step 2)
-      await zipPage.getByRole('button', { name: /Nguyên lý 1%|2/i }).first().click().catch(() => {})
-      await repoPage.getByRole('button', { name: /Nguyên lý 1%|2/i }).first().click().catch(() => {})
+      await zipPage
+        .getByRole('button', { name: /Nguyên lý 1%|2/i })
+        .first()
+        .click()
+        .catch(() => {})
+      await repoPage
+        .getByRole('button', { name: /Nguyên lý 1%|2/i })
+        .first()
+        .click()
+        .catch(() => {})
       await zipPage.waitForTimeout(500)
       await repoPage.waitForTimeout(500)
 
       const zipBuf2 = await zipPage.screenshot()
       const repoBuf2 = await repoPage.screenshot()
       fs.writeFileSync(path.join(OUT_REPO_DIR, `habit-step2-${vpSuffix}.png`), repoBuf2)
-      await stitchSideBySide(zipBuf2, repoBuf2, path.join(OUT_COMPARE_DIR, `habit-step2-${vpSuffix}.png`), 'Habit Bước 2: 1% Better')
+      await stitchSideBySide(
+        zipBuf2,
+        repoBuf2,
+        path.join(OUT_COMPARE_DIR, `habit-step2-${vpSuffix}.png`),
+        'Habit Bước 2: 1% Better',
+      )
 
       // Màn 3: Tìm Mentor (Step 3)
-      await zipPage.getByRole('button', { name: /Tìm Mentor|3/i }).first().click().catch(() => {})
-      await repoPage.getByRole('button', { name: /Tìm Mentor|3/i }).first().click().catch(() => {})
+      await zipPage
+        .getByRole('button', { name: /Tìm Mentor|3/i })
+        .first()
+        .click()
+        .catch(() => {})
+      await repoPage
+        .getByRole('button', { name: /Tìm Mentor|3/i })
+        .first()
+        .click()
+        .catch(() => {})
       await zipPage.waitForTimeout(500)
       await repoPage.waitForTimeout(500)
 
       const zipBuf3 = await zipPage.screenshot()
       const repoBuf3 = await repoPage.screenshot()
       fs.writeFileSync(path.join(OUT_REPO_DIR, `habit-step3-${vpSuffix}.png`), repoBuf3)
-      await stitchSideBySide(zipBuf3, repoBuf3, path.join(OUT_COMPARE_DIR, `habit-step3-${vpSuffix}.png`), 'Habit Bước 3: Tìm Mentor')
+      await stitchSideBySide(
+        zipBuf3,
+        repoBuf3,
+        path.join(OUT_COMPARE_DIR, `habit-step3-${vpSuffix}.png`),
+        'Habit Bước 3: Tìm Mentor',
+      )
 
       // Màn 4: Gọi tên thói quen (Step 4)
-      await zipPage.getByRole('button', { name: /Gọi tên|4/i }).first().click().catch(() => {})
-      await repoPage.getByRole('button', { name: /Gọi tên|4/i }).first().click().catch(() => {})
+      await zipPage
+        .getByRole('button', { name: /Gọi tên|4/i })
+        .first()
+        .click()
+        .catch(() => {})
+      await repoPage
+        .getByRole('button', { name: /Gọi tên|4/i })
+        .first()
+        .click()
+        .catch(() => {})
       await zipPage.waitForTimeout(500)
       await repoPage.waitForTimeout(500)
 
       const zipBuf4 = await zipPage.screenshot()
       const repoBuf4 = await repoPage.screenshot()
       fs.writeFileSync(path.join(OUT_REPO_DIR, `habit-step4-${vpSuffix}.png`), repoBuf4)
-      await stitchSideBySide(zipBuf4, repoBuf4, path.join(OUT_COMPARE_DIR, `habit-step4-${vpSuffix}.png`), 'Habit Bước 4: Gọi tên')
+      await stitchSideBySide(
+        zipBuf4,
+        repoBuf4,
+        path.join(OUT_COMPARE_DIR, `habit-step4-${vpSuffix}.png`),
+        'Habit Bước 4: Gọi tên',
+      )
 
       // Màn 5: Vòng lặp (Step 5)
-      await zipPage.getByRole('button', { name: /Vòng lặp|5/i }).first().click().catch(() => {})
-      await repoPage.getByRole('button', { name: /Vòng lặp|5/i }).first().click().catch(() => {})
+      await zipPage
+        .getByRole('button', { name: /Vòng lặp|5/i })
+        .first()
+        .click()
+        .catch(() => {})
+      await repoPage
+        .getByRole('button', { name: /Vòng lặp|5/i })
+        .first()
+        .click()
+        .catch(() => {})
       await zipPage.waitForTimeout(500)
       await repoPage.waitForTimeout(500)
 
       const zipBuf5 = await zipPage.screenshot()
       const repoBuf5 = await repoPage.screenshot()
       fs.writeFileSync(path.join(OUT_REPO_DIR, `habit-step5-${vpSuffix}.png`), repoBuf5)
-      await stitchSideBySide(zipBuf5, repoBuf5, path.join(OUT_COMPARE_DIR, `habit-step5-${vpSuffix}.png`), 'Habit Bước 5: Vòng lặp')
+      await stitchSideBySide(
+        zipBuf5,
+        repoBuf5,
+        path.join(OUT_COMPARE_DIR, `habit-step5-${vpSuffix}.png`),
+        'Habit Bước 5: Vòng lặp',
+      )
 
       // Màn 6: Boarding Pass (Step 6)
-      await zipPage.getByRole('button', { name: /Boarding Pass|6/i }).first().click().catch(() => {})
-      await repoPage.getByRole('button', { name: /Boarding Pass|6/i }).first().click().catch(() => {})
+      await zipPage
+        .getByRole('button', { name: /Boarding Pass|6/i })
+        .first()
+        .click()
+        .catch(() => {})
+      await repoPage
+        .getByRole('button', { name: /Boarding Pass|6/i })
+        .first()
+        .click()
+        .catch(() => {})
       await zipPage.waitForTimeout(500)
       await repoPage.waitForTimeout(500)
 
       const zipBuf6 = await zipPage.screenshot()
       const repoBuf6 = await repoPage.screenshot()
       fs.writeFileSync(path.join(OUT_REPO_DIR, `habit-step6-${vpSuffix}.png`), repoBuf6)
-      await stitchSideBySide(zipBuf6, repoBuf6, path.join(OUT_COMPARE_DIR, `habit-step6-${vpSuffix}.png`), 'Habit Bước 6: Boarding Pass')
+      await stitchSideBySide(
+        zipBuf6,
+        repoBuf6,
+        path.join(OUT_COMPARE_DIR, `habit-step6-${vpSuffix}.png`),
+        'Habit Bước 6: Boarding Pass',
+      )
 
       // Màn 7: Tracker 28 ngày
       console.log('2. Habit Tracker (Step 7 / 28 Days)...')
-      await zipPage.getByRole('button', { name: /28 ngày|Chuyển mình|7/i }).first().click().catch(() => {})
-      await repoPage.goto(`${REPO_URL}/habit/tracker`, { waitUntil: 'domcontentloaded' }).catch(() => {})
+      await zipPage
+        .getByRole('button', { name: /28 ngày|Chuyển mình|7/i })
+        .first()
+        .click()
+        .catch(() => {})
+      await repoPage
+        .goto(`${REPO_URL}/habit/tracker`, { waitUntil: 'domcontentloaded' })
+        .catch(() => {})
       await zipPage.waitForTimeout(800)
       await repoPage.waitForTimeout(800)
 
       const zipBuf7 = await zipPage.screenshot()
       const repoBuf7 = await repoPage.screenshot()
       fs.writeFileSync(path.join(OUT_REPO_DIR, `habit-step7-tracker-${vpSuffix}.png`), repoBuf7)
-      await stitchSideBySide(zipBuf7, repoBuf7, path.join(OUT_COMPARE_DIR, `habit-step7-tracker-${vpSuffix}.png`), 'Habit Bước 7: Tracker 28 Ngày')
+      await stitchSideBySide(
+        zipBuf7,
+        repoBuf7,
+        path.join(OUT_COMPARE_DIR, `habit-step7-tracker-${vpSuffix}.png`),
+        'Habit Bước 7: Tracker 28 Ngày',
+      )
 
       // Hộp thoại Check-in ngày
       console.log('3. Habit Day Check-in Modal...')
       const zipDay1 = zipPage.locator('button[aria-label*="Ngày 1"], button:has-text("1")').first()
       if (await zipDay1.isVisible()) await zipDay1.click()
 
-      const repoDay1 = repoPage.locator('button[aria-label*="Ngày 1"], button:has-text("1")').first()
+      const repoDay1 = repoPage
+        .locator('button[aria-label*="Ngày 1"], button:has-text("1")')
+        .first()
       if (await repoDay1.isVisible()) await repoDay1.click()
       await zipPage.waitForTimeout(500)
       await repoPage.waitForTimeout(500)
@@ -182,7 +265,12 @@ async function run() {
       const zipModal = await zipPage.screenshot()
       const repoModal = await repoPage.screenshot()
       fs.writeFileSync(path.join(OUT_REPO_DIR, `habit-checkin-modal-${vpSuffix}.png`), repoModal)
-      await stitchSideBySide(zipModal, repoModal, path.join(OUT_COMPARE_DIR, `habit-checkin-modal-${vpSuffix}.png`), 'Habit Hộp thoại Check-in')
+      await stitchSideBySide(
+        zipModal,
+        repoModal,
+        path.join(OUT_COMPARE_DIR, `habit-checkin-modal-${vpSuffix}.png`),
+        'Habit Hộp thoại Check-in',
+      )
 
       // Đóng modal
       await zipPage.keyboard.press('Escape').catch(() => {})
@@ -201,13 +289,22 @@ async function run() {
       // EQ Màn Rút thẻ
       const zipEqDraw = await zipPage.screenshot()
       const repoEqDraw = await repoPage.screenshot()
-      await stitchSideBySide(zipEqDraw, repoEqDraw, path.join(OUT_COMPARE_DIR, `eq-draw-screen-${vpSuffix}.png`), 'EQ Buddy Rút thẻ')
+      await stitchSideBySide(
+        zipEqDraw,
+        repoEqDraw,
+        path.join(OUT_COMPARE_DIR, `eq-draw-screen-${vpSuffix}.png`),
+        'EQ Buddy Rút thẻ',
+      )
 
       // Rút một thẻ ngẫu nhiên
-      const zipDrawBtn = zipPage.getByRole('button', { name: /Rút ngẫu nhiên|Chọn cảm xúc/i }).first()
+      const zipDrawBtn = zipPage
+        .getByRole('button', { name: /Rút ngẫu nhiên|Chọn cảm xúc/i })
+        .first()
       if (await zipDrawBtn.isVisible()) await zipDrawBtn.click()
 
-      const repoDrawBtn = repoPage.getByRole('button', { name: /Rút ngẫu nhiên|Chọn cảm xúc/i }).first()
+      const repoDrawBtn = repoPage
+        .getByRole('button', { name: /Rút ngẫu nhiên|Chọn cảm xúc/i })
+        .first()
       if (await repoDrawBtn.isVisible()) await repoDrawBtn.click()
       await zipPage.waitForTimeout(1000)
       await repoPage.waitForTimeout(1000)
@@ -215,7 +312,12 @@ async function run() {
       // Mặt trước thẻ
       const zipCardFront = await zipPage.screenshot()
       const repoCardFront = await repoPage.screenshot()
-      await stitchSideBySide(zipCardFront, repoCardFront, path.join(OUT_COMPARE_DIR, `eq-card-front-${vpSuffix}.png`), 'EQ Mặt trước 3D')
+      await stitchSideBySide(
+        zipCardFront,
+        repoCardFront,
+        path.join(OUT_COMPARE_DIR, `eq-card-front-${vpSuffix}.png`),
+        'EQ Mặt trước 3D',
+      )
 
       // Mặt sau thẻ (lật)
       const zipFlip = zipPage.getByRole('button', { name: /Lật thẻ|Mặt sau/i }).first()
@@ -228,7 +330,12 @@ async function run() {
 
       const zipCardBack = await zipPage.screenshot()
       const repoCardBack = await repoPage.screenshot()
-      await stitchSideBySide(zipCardBack, repoCardBack, path.join(OUT_COMPARE_DIR, `eq-card-back-${vpSuffix}.png`), 'EQ Mặt sau 3D')
+      await stitchSideBySide(
+        zipCardBack,
+        repoCardBack,
+        path.join(OUT_COMPARE_DIR, `eq-card-back-${vpSuffix}.png`),
+        'EQ Mặt sau 3D',
+      )
 
       // Tab "Tất cả thẻ"
       const zipAllTab = zipPage.getByRole('button', { name: /Tất cả thẻ/i }).first()
@@ -241,7 +348,12 @@ async function run() {
 
       const zipAllCards = await zipPage.screenshot()
       const repoAllCards = await repoPage.screenshot()
-      await stitchSideBySide(zipAllCards, repoAllCards, path.join(OUT_COMPARE_DIR, `eq-all-cards-${vpSuffix}.png`), 'EQ Tất cả thẻ')
+      await stitchSideBySide(
+        zipAllCards,
+        repoAllCards,
+        path.join(OUT_COMPARE_DIR, `eq-all-cards-${vpSuffix}.png`),
+        'EQ Tất cả thẻ',
+      )
     } catch (err) {
       console.error(`Lỗi khi chụp viewport ${vp.name}:`, err)
     } finally {
@@ -260,4 +372,3 @@ run().catch((e) => {
   console.error(e)
   process.exit(1)
 })
-

@@ -730,9 +730,9 @@ export function Step5LoopDesign({
       <div className="p-4 rounded-2xl bg-warm-ivory border border-lavender-mist text-xs sm:text-sm text-deep-navy/80 font-ui leading-relaxed">
         {step5Content.leadIn || (
           <>
-            Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là lỗ
-            hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ thuật
-            được đánh dấu mới hiện trên Habit Boarding Pass.
+            Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là
+            lỗ hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ
+            thuật được đánh dấu mới hiện trên Habit Boarding Pass.
           </>
         )}
       </div>

@@ -279,11 +279,7 @@ export type HabitScorecardItemInput = z.infer<typeof habitScorecardItemSchema>
 export const habitChosenTechniqueSchema = z.object({
   techniqueId: z.number().int().positive(),
   stage: z.enum(['cue', 'craving', 'response', 'reward']),
-  action: z
-    .string()
-    .trim()
-    .max(300, vi.habit.wizard.errors.actionMax)
-    .default(''),
+  action: z.string().trim().max(300, vi.habit.wizard.errors.actionMax).default(''),
 })
 
 export type HabitChosenTechniqueInput = z.infer<typeof habitChosenTechniqueSchema>

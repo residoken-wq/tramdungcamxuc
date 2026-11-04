@@ -3,7 +3,11 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import { habitChosenTechniqueSchema, habitPlanSubmissionSchema } from '@/lib/forms/schemas'
-import { zipStateToFlowDraft, flowDraftToZipState, type ZipState } from '@/components/habit/zip/draft-adapter'
+import {
+  zipStateToFlowDraft,
+  flowDraftToZipState,
+  type ZipState,
+} from '@/components/habit/zip/draft-adapter'
 import { ZIP_11_TECHNIQUES } from '@/lib/habit/dp01d-content-patch'
 import { getDefaultHabitFlowDraft } from '@/components/habit/flow/draft'
 
@@ -98,11 +102,20 @@ describe('DP-01d: Unit tests for Techniques, Adapter & Submission Schema', () =>
     const flowDraft = zipStateToFlowDraft(initialZipState, getDefaultHabitFlowDraft())
 
     expect(flowDraft.chosenTechniques.cue).toHaveLength(3)
-    expect(flowDraft.chosenTechniques.cue[0]).toEqual({ techniqueId: 1, action: 'Nhịp sinh học sáng' })
+    expect(flowDraft.chosenTechniques.cue[0]).toEqual({
+      techniqueId: 1,
+      action: 'Nhịp sinh học sáng',
+    })
     expect(flowDraft.chosenTechniques.cue[1]).toEqual({ techniqueId: 2, action: '' })
     expect(flowDraft.chosenTechniques.cue[2]).toEqual({ techniqueId: 3, action: 'Hẹn lúc 6h15' })
-    expect(flowDraft.chosenTechniques.craving[0]).toEqual({ techniqueId: 4, action: 'Để cốc nước gần giường' })
-    expect(flowDraft.chosenTechniques.response[0]).toEqual({ techniqueId: 7, action: 'Chỉ cần rót nửa cốc' })
+    expect(flowDraft.chosenTechniques.craving[0]).toEqual({
+      techniqueId: 4,
+      action: 'Để cốc nước gần giường',
+    })
+    expect(flowDraft.chosenTechniques.response[0]).toEqual({
+      techniqueId: 7,
+      action: 'Chỉ cần rót nửa cốc',
+    })
     expect(flowDraft.chosenTechniques.reward[0]).toEqual({ techniqueId: 10, action: '' })
 
     // Convert flowDraft back -> restoredZipState

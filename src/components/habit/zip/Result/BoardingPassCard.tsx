@@ -2,7 +2,16 @@
 
 import React, { useState, useId } from 'react'
 import Link from 'next/link'
-import { Copy, Check, Plane, AlertCircle, ArrowLeft, ArrowRight, ExternalLink, Download } from 'lucide-react'
+import {
+  Copy,
+  Check,
+  Plane,
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  Download,
+} from 'lucide-react'
 import { IdentityFormData, LoopTechniques } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
@@ -388,9 +397,7 @@ export function BoardingPassCard({
             className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-white hover:bg-warm-ivory text-deep-navy border border-lavender-mist hover:border-bright-magenta text-xs font-ui font-semibold transition-all active:scale-95 shadow-soft cursor-pointer disabled:opacity-50"
           >
             <Download className="w-3.5 h-3.5 text-bright-magenta" />
-            <span>
-              {downloadingFormat === '4x5' ? 'Đang tạo ảnh...' : vi.dp01.downloadShare45}
-            </span>
+            <span>{downloadingFormat === '4x5' ? 'Đang tạo ảnh...' : vi.dp01.downloadShare45}</span>
           </button>
 
           <button
@@ -537,7 +544,6 @@ export function BoardingPassCard({
               className="text-xs text-deep-navy/75 leading-relaxed cursor-pointer select-none"
             >
               {step6Content.termsText}{' '}
-              Xem{' '}
               <Link
                 href="/chinh-sach-bao-mat"
                 target="_blank"

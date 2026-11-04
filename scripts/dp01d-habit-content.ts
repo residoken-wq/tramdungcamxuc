@@ -59,6 +59,23 @@ try {
     console.log(`  * [Cập nhật ID: ${id}] #${t.order} ${t.name} (${t.stage})`)
   }
 
+  // QA DP-01d: older techniques with other names stay published and would show next to the
+  // 11 zip techniques in step 5. The script never unpublishes them (existing plans may point to
+  // them); it only lists them so the owner can switch them to draft in the CMS.
+  const zipNames = new Set(ZIP_11_TECHNIQUES.map((t) => t.name.trim()))
+  const otherPublished = existingTechs.filter(
+    (t) => t._status === 'published' && !zipNames.has(t.name?.trim() ?? ''),
+  )
+  if (otherPublished.length > 0) {
+    console.log(
+      `\n⚠️  Còn ${otherPublished.length} kỹ thuật cũ đang xuất bản, sẽ hiện cùng 11 kỹ thuật zip ở bước 5.`,
+    )
+    console.log('   Vào CMS → Kỹ thuật, chuyển các bản dưới đây sang nháp nếu không dùng nữa:')
+    for (const t of otherPublished) {
+      console.log(`  - ID ${t.id}: ${t.name} (${t.stage})`)
+    }
+  }
+
   // 2. GLOBAL HABIT JOURNEY CONTENT (loop.laws, loop.cueBox, diagnose.questions)
   console.log('\n--- 2. Kiểm tra global habitJourneyContent (4 quy luật, cue box, 8 câu hỏi) ---')
   const currentGlobal = await payload.findGlobal({

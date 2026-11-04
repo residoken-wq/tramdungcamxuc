@@ -147,9 +147,9 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
 
       // 3. Khách truy cập /habit/5-phut
       await guestPage.goto('/habit/5-phut')
-      await expect(
-        guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first(),
-      ).toBeVisible({ timeout: 20000 })
+      await expect(guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
+        timeout: 20000,
+      })
 
       // ===== BƯỚC 1: Trả lời 8 câu hỏi chẩn đoán =====
       // Mỗi câu có thang điểm từ 1 đến 5 (nút 1..5)
@@ -169,10 +169,10 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await guestPage.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
 
       // ===== BƯỚC 3: Tìm Mentor =====
-      await expect(guestPage.getByText(/Tìm "Mentor"|Tìm Mentor/i).first()).toBeVisible({ timeout: 15000 })
-      await guestPage
-        .getByPlaceholder(/Đánh răng|thói quen/i)
-        .fill('[TEST] Uống nước ấm sáng')
+      await expect(guestPage.getByText(/Tìm "Mentor"|Tìm Mentor/i).first()).toBeVisible({
+        timeout: 15000,
+      })
+      await guestPage.getByPlaceholder(/Đánh răng|thói quen/i).fill('[TEST] Uống nước ấm sáng')
       await guestPage.getByRole('button', { name: /Thêm một việc|Thêm thói quen/i }).click()
       await guestPage
         .getByRole('button', { name: /Có ích \(\+\)|đánh giá tốt/i })
@@ -182,14 +182,18 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
 
       // ===== BƯỚC 4: Gọi tên thói quen =====
-      await expect(guestPage.getByText(/Gọi tên thói quen/i).first()).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Gọi tên thói quen/i).first()).toBeVisible({
+        timeout: 15000,
+      })
       await guestPage.getByPlaceholder(/thiền 5 phút/i).fill('tập thể dục 15 phút')
       await guestPage.getByPlaceholder(/người điềm tĩnh/i).fill('người khỏe mạnh và kỷ luật')
       await guestPage.getByPlaceholder(/Mở sách đọc đúng 1 trang/i).fill('Xỏ giày thể thao')
       await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
 
       // ===== BƯỚC 5: Thiết kế vòng lặp =====
-      await expect(guestPage.getByText(/Thiết kế vòng lặp|Vòng lặp/i).first()).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Thiết kế vòng lặp|Vòng lặp/i).first()).toBeVisible({
+        timeout: 15000,
+      })
 
       // Chọn 3 kỹ thuật Cue:
       // Kỹ thuật 1: chỉ tick chọn (appliedNotes rỗng)
@@ -205,7 +209,9 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       const expandBtn2 = guestPage.getByRole('button', { name: 'Xem' }).first()
       if (await expandBtn2.isVisible()) {
         await expandBtn2.click()
-        const noteInput2 = guestPage.locator('input[placeholder*="Ví dụ"], input[placeholder*="áp dụng"]').first()
+        const noteInput2 = guestPage
+          .locator('input[placeholder*="Ví dụ"], input[placeholder*="áp dụng"]')
+          .first()
         if (await noteInput2.isVisible()) {
           await noteInput2.fill('[TEST] Ghi chú áp dụng kỹ thuật 2')
         }
@@ -216,7 +222,9 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       const expandBtn3 = guestPage.getByRole('button', { name: 'Xem' }).first()
       if (await expandBtn3.isVisible()) {
         await expandBtn3.click()
-        const noteInputs = guestPage.locator('input[placeholder*="Ví dụ"], input[placeholder*="áp dụng"]')
+        const noteInputs = guestPage.locator(
+          'input[placeholder*="Ví dụ"], input[placeholder*="áp dụng"]',
+        )
         const count = await noteInputs.count()
         if (count > 0) {
           await noteInputs.last().fill('[TEST] Ghi chú áp dụng kỹ thuật 3')
@@ -272,7 +280,9 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
 
       // Ghi nhận customer ID
       const custQuery = await (
-        await page.request.get(`/api/customers?where[email][equals]=${encodeURIComponent(customerEmail)}`)
+        await page.request.get(
+          `/api/customers?where[email][equals]=${encodeURIComponent(customerEmail)}`,
+        )
       ).json()
       createdCustomerId = custQuery.docs?.[0]?.id
 
@@ -305,9 +315,7 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         .first()
       await doneBtn.click()
 
-      const moodBtn = checkInModal
-        .getByRole('button', { name: /Hơi tự tin|Bình an/i })
-        .first()
+      const moodBtn = checkInModal.getByRole('button', { name: /Hơi tự tin|Bình an/i }).first()
       if (await moodBtn.isVisible()) {
         await moodBtn.click()
       }
@@ -318,11 +326,16 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
 
       // Kiểm tra Ngày 1 đã hoàn thành
       await expect(
-        guestPage.getByRole('button', { name: /^Ngày 1:.*(Bỏ phiếu|Đã hoàn thành|Đã làm)/i }).first(),
+        guestPage
+          .getByRole('button', { name: /^Ngày 1:.*(Bỏ phiếu|Đã hoàn thành|Đã làm)/i })
+          .first(),
       ).toBeVisible()
 
       // ===== RESET / XÓA NGÀY 1 =====
-      await guestPage.getByRole('button', { name: /^Ngày 1:/ }).first().click()
+      await guestPage
+        .getByRole('button', { name: /^Ngày 1:/ })
+        .first()
+        .click()
       await expect(checkInModal).toBeVisible({ timeout: 10000 })
 
       const deleteBtn = checkInModal.getByRole('button', { name: /Xóa check-in này|Xoá/i })
@@ -335,7 +348,10 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       ).toBeVisible({ timeout: 10000 })
 
       // Check-in lại Ngày 1
-      await guestPage.getByRole('button', { name: /^Ngày 1: Bỏ phiếu/i }).first().click()
+      await guestPage
+        .getByRole('button', { name: /^Ngày 1: Bỏ phiếu/i })
+        .first()
+        .click()
       await expect(checkInModal).toBeVisible({ timeout: 10000 })
       await doneBtn.click()
       await saveModalBtn.click()
@@ -353,7 +369,9 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       // ===== TẢI LẠI TRANG (RELOAD) CÒN DỮ LIỆU =====
       await guestPage.reload()
       await expect(
-        guestPage.getByRole('button', { name: /^Ngày 1:.*(Bỏ phiếu|Đã hoàn thành|Đã làm)/i }).first(),
+        guestPage
+          .getByRole('button', { name: /^Ngày 1:.*(Bỏ phiếu|Đã hoàn thành|Đã làm)/i })
+          .first(),
       ).toBeVisible({ timeout: 15000 })
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
@@ -370,4 +388,3 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
     }
   })
 })
-

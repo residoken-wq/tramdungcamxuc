@@ -537,7 +537,9 @@ export function EQDrawApp({
                       </p>
                     ) : (
                       <p className="font-ui text-xs text-deep-navy/70 italic mt-1.5">
-                        {isUnlockedAll || isFreeMode ? 'Chạm để mở thẻ' : 'Dùng thử hoặc mua để mở trọn vẹn'}
+                        {isUnlockedAll || isFreeMode
+                          ? 'Chạm để mở thẻ'
+                          : 'Dùng thử hoặc mua để mở trọn vẹn'}
                       </p>
                     )}
 

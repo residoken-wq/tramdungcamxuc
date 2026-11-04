@@ -171,7 +171,10 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
 
       // Thấy thông điệp hoặc từ khóa
       await expect(
-        guestPage1.locator('div, h2, h3').filter({ hasText: new RegExp(`${suffix}`) }).first(),
+        guestPage1
+          .locator('div, h2, h3')
+          .filter({ hasText: new RegExp(`${suffix}`) })
+          .first(),
       ).toBeVisible({ timeout: 15000 })
 
       // Bấm lật thẻ sang mặt sau
@@ -227,7 +230,10 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
       await freeDrawBtn.click()
 
       await expect(
-        guestPage2.locator('div, h2, h3').filter({ hasText: new RegExp(`${suffix}`) }).first(),
+        guestPage2
+          .locator('div, h2, h3')
+          .filter({ hasText: new RegExp(`${suffix}`) })
+          .first(),
       ).toBeVisible({ timeout: 15000 })
 
       // Trong free mode, nút "Rút thẻ khác" bấm được nhiều lần mà không bị paywall
@@ -244,9 +250,9 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
       const allCardsTab = guestPage2.getByRole('button', { name: /Tất cả thẻ/i })
       if (await allCardsTab.isVisible()) {
         await allCardsTab.click()
-        await expect(
-          guestPage2.getByText(/Chạm để mở thẻ/i).first(),
-        ).toBeVisible({ timeout: 10000 })
+        await expect(guestPage2.getByText(/Chạm để mở thẻ/i).first()).toBeVisible({
+          timeout: 10000,
+        })
       }
 
       await visitor2.close()
@@ -270,4 +276,3 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
     }
   })
 })
-

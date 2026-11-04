@@ -162,9 +162,9 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
 
       // 4. Khách vãng lai truy cập /habit/5-phut
       await guestPage.goto('/habit/5-phut')
-      await expect(
-        guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first(),
-      ).toBeVisible({ timeout: 20000 })
+      await expect(guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
+        timeout: 20000,
+      })
 
       // ===== BƯỚC 1: Khám đúng bệnh =====
       const skipDiagnoseBtn = guestPage.getByRole('button', { name: /Bỏ qua phần khám/i })
@@ -179,7 +179,9 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await guestPage.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
 
       // ===== BƯỚC 3: Tìm Mentor =====
-      await expect(guestPage.getByText(/Tìm "Mentor"|Tìm Mentor/i).first()).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Tìm "Mentor"|Tìm Mentor/i).first()).toBeVisible({
+        timeout: 15000,
+      })
       await guestPage
         .getByPlaceholder(/Đánh răng|thói quen/i)
         .fill('[MẪU] Uống cốc nước ấm sau khi thức dậy')
@@ -192,7 +194,9 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
 
       // ===== BƯỚC 4: Gọi tên =====
-      await expect(guestPage.getByText(/Gọi tên thói quen/i).first()).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Gọi tên thói quen/i).first()).toBeVisible({
+        timeout: 15000,
+      })
       await guestPage.getByPlaceholder(/thiền 5 phút/i).fill('viết nhật ký 5 phút')
       await guestPage.getByPlaceholder(/người điềm tĩnh/i).fill('người thấu hiểu chính mình')
 
@@ -220,7 +224,9 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
 
       // ===== BƯỚC 5: Vòng lặp thói quen =====
-      await expect(guestPage.getByText(/Thiết kế vòng lặp|Vòng lặp/i).first()).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Thiết kế vòng lặp|Vòng lặp/i).first()).toBeVisible({
+        timeout: 15000,
+      })
       const techCheckboxes = guestPage.locator('label:has(button.w-5.h-5)')
       const count = await techCheckboxes.count()
       for (let i = 0; i < Math.min(count, 4); i++) {

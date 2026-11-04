@@ -291,8 +291,7 @@ function cleanLoop(raw: HabitJourneyContent['loop'] | null): CleanHabitLoop {
   })
 
   const rawCueBox = (raw as Record<string, unknown> | null)?.cueBox as
-    | Record<string, unknown>
-    | undefined
+    Record<string, unknown> | undefined
   const cueBox: CleanCueBox | null = rawCueBox
     ? {
         boldText: trimmed(rawCueBox.boldText),

@@ -88,7 +88,9 @@ export function Step3FindMentor({
           <div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-              <h2 className="font-ui font-bold text-lg text-deep-navy">{step3Content.scorecardTitle}</h2>
+              <h2 className="font-ui font-bold text-lg text-deep-navy">
+                {step3Content.scorecardTitle}
+              </h2>
             </div>
             <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
               {step3Content.scorecardDesc}

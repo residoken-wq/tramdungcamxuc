@@ -136,10 +136,10 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     statementTitle: 'Tuyên ngôn về thói quen',
     statementDesc: 'Điền câu khẳng định căn tính và hành động cốt lõi của bạn',
     suggestedRoles: [
-      'người kể chuyện chân thành',
-      'người viết đều đặn',
-      'người khỏe mạnh và kỷ luật',
       'người luôn học hỏi',
+      'người giữ lời với chính mình',
+      'người chia sẻ đều đặn',
+      'người sống khỏe và đầy năng lượng',
     ],
     rhythmTitle: 'Nhịp điệu thói quen',
     rhythmDesc: 'Mỗi tuần bạn sẽ bỏ phiếu bao nhiêu lần? Chọn số lần, rồi chọn thứ.',
@@ -148,10 +148,10 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     atomicHabitDesc:
       'Để thực hiện được tuyên ngôn này, thói quen hạt nhân tôi sẽ làm là… — dưới 2 phút',
     suggestedAtomicHabits: [
-      'viết 1 ý tưởng vào sổ',
       'đọc 1 trang sách',
-      'hít đất 2 cái',
-      'uống 1 ly nước ấm',
+      'ghi 1 ý tưởng vào sổ',
+      'mặc đồ tập và ra khỏi cửa',
+      'viết 3 dòng nháp',
     ],
     commitmentTitle: 'Vì sao điều này quan trọng & Cam kết',
     whyImportantLabel: 'Vì sao điều này quan trọng với bạn?',
@@ -159,22 +159,23 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     whyImportantNote: 'Câu này chỉ mình bạn đọc. Nó sẽ hiện lại vào đúng ngày bạn muốn bỏ cuộc.',
   },
   step5: {
-    leadIn:
-      'Bốn quy luật hành vi từ James Clear, gắn trực tiếp vào các kỹ thuật đã lọc riêng cho bạn. Chọn kỹ thuật bạn thấy khả thi nhất ở mỗi bước.',
-    customActionPlaceholder: 'Ghi chú cách áp dụng của riêng bạn…',
+    // Empty: Step5LoopDesign falls back to the zip lead-in (with its inline emphasis).
+    leadIn: '',
+    customActionPlaceholder: '',
   },
   step6: {
-    leadIn: 'Tấm vé này là hợp đồng giữa bạn và chính bạn. Giữ nó lại, và mang nó theo suốt 28 ngày tới.',
-    passTitle: 'VÉ LÊN CHUYẾN 28 NGÀY',
-    passSubtitle: 'HÀNH TRÌNH ĐỀU ĐẶN MỘT ĐIỀU',
-    termsText:
-      'Tôi hiểu rằng đây là cam kết với chính tôi. Tôi đồng ý nhận email đồng hành từ Trạm Dừng Cảm Xúc trong suốt hành trình 28 ngày.',
+    leadIn:
+      'Tấm vé lên chuyến 28 ngày của bạn. Tải về làm hình nền điện thoại, hoặc đăng lên mạng xã hội — đó vừa là lời tuyên bố, vừa là cách khó quay đầu nhất.',
+    passTitle: 'HABIT BOARDING PASS',
+    passSubtitle: '',
+    // Not in the zip: the repo's approved consent wording (vi.habit.wizard.step4.consentLabel).
+    termsText: 'Tôi đồng ý lưu kế hoạch và nhận thông tin từ Trạm Dừng Cảm Xúc theo',
   },
   checkIn: {
     postDayHint:
       'Hôm nay là ngày bạn bỏ phiếu cho con người bạn muốn trở thành — bằng thói quen hạt nhân:',
     restDayHint: 'Hôm nay là ngày nghỉ theo nhịp bạn chọn. Nếu vẫn làm, ghi lại cũng được:',
-    notePlaceholder: 'Ghi chú ngắn về cảm giác hoặc điều bạn nhận ra hôm nay…',
+    notePlaceholder: 'Ghi lại cảm xúc hoặc chiêm nghiệm nhỏ...',
   },
   footer: {
     slogan: 'Dừng lại • Lắng nghe • Sống trọn vẹn hơn',
@@ -186,7 +187,15 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
 
 function parseLines(val: unknown, fallback: string[]): string[] {
   if (Array.isArray(val)) {
-    const list = val.map((x) => (typeof x === 'string' ? x.trim() : typeof x === 'object' && x && 'text' in x ? String((x as { text: unknown }).text).trim() : '')).filter(Boolean)
+    const list = val
+      .map((x) =>
+        typeof x === 'string'
+          ? x.trim()
+          : typeof x === 'object' && x && 'text' in x
+            ? String((x as { text: unknown }).text).trim()
+            : '',
+      )
+      .filter(Boolean)
     return list.length > 0 ? list : fallback
   }
   if (typeof val === 'string' && val.trim().length > 0) {
@@ -251,9 +260,18 @@ export function withDp01Defaults(
       scorecardDesc: pickString(step3.scorecardDesc, DEFAULT_DP01_CONTENT.step3.scorecardDesc),
       mentorTitle: pickString(step3.mentorTitle, DEFAULT_DP01_CONTENT.step3.mentorTitle),
       mentorDesc: pickString(step3.mentorDesc, DEFAULT_DP01_CONTENT.step3.mentorDesc),
-      emptyMentorHint: pickString(step3.emptyMentorHint, DEFAULT_DP01_CONTENT.step3.emptyMentorHint),
-      mentorTimeLabel: pickString(step3.mentorTimeLabel, DEFAULT_DP01_CONTENT.step3.mentorTimeLabel),
-      mentorSuccessHint: pickString(step3.mentorSuccessHint, DEFAULT_DP01_CONTENT.step3.mentorSuccessHint),
+      emptyMentorHint: pickString(
+        step3.emptyMentorHint,
+        DEFAULT_DP01_CONTENT.step3.emptyMentorHint,
+      ),
+      mentorTimeLabel: pickString(
+        step3.mentorTimeLabel,
+        DEFAULT_DP01_CONTENT.step3.mentorTimeLabel,
+      ),
+      mentorSuccessHint: pickString(
+        step3.mentorSuccessHint,
+        DEFAULT_DP01_CONTENT.step3.mentorSuccessHint,
+      ),
     },
     step4: {
       leadIn: pickString(step4.leadIn, DEFAULT_DP01_CONTENT.step4.leadIn),
@@ -263,19 +281,34 @@ export function withDp01Defaults(
       rhythmTitle: pickString(step4.rhythmTitle, DEFAULT_DP01_CONTENT.step4.rhythmTitle),
       rhythmDesc: pickString(step4.rhythmDesc, DEFAULT_DP01_CONTENT.step4.rhythmDesc),
       rhythmNote: pickString(step4.rhythmNote, DEFAULT_DP01_CONTENT.step4.rhythmNote),
-      atomicHabitTitle: pickString(step4.atomicHabitTitle, DEFAULT_DP01_CONTENT.step4.atomicHabitTitle),
-      atomicHabitDesc: pickString(step4.atomicHabitDesc, DEFAULT_DP01_CONTENT.step4.atomicHabitDesc),
+      atomicHabitTitle: pickString(
+        step4.atomicHabitTitle,
+        DEFAULT_DP01_CONTENT.step4.atomicHabitTitle,
+      ),
+      atomicHabitDesc: pickString(
+        step4.atomicHabitDesc,
+        DEFAULT_DP01_CONTENT.step4.atomicHabitDesc,
+      ),
       suggestedAtomicHabits: parseLines(
         step4.suggestedAtomicHabits,
         DEFAULT_DP01_CONTENT.step4.suggestedAtomicHabits,
       ),
-      commitmentTitle: pickString(step4.commitmentTitle, DEFAULT_DP01_CONTENT.step4.commitmentTitle),
-      whyImportantLabel: pickString(step4.whyImportantLabel, DEFAULT_DP01_CONTENT.step4.whyImportantLabel),
+      commitmentTitle: pickString(
+        step4.commitmentTitle,
+        DEFAULT_DP01_CONTENT.step4.commitmentTitle,
+      ),
+      whyImportantLabel: pickString(
+        step4.whyImportantLabel,
+        DEFAULT_DP01_CONTENT.step4.whyImportantLabel,
+      ),
       whyImportantPlaceholder: pickString(
         step4.whyImportantPlaceholder,
         DEFAULT_DP01_CONTENT.step4.whyImportantPlaceholder,
       ),
-      whyImportantNote: pickString(step4.whyImportantNote, DEFAULT_DP01_CONTENT.step4.whyImportantNote),
+      whyImportantNote: pickString(
+        step4.whyImportantNote,
+        DEFAULT_DP01_CONTENT.step4.whyImportantNote,
+      ),
     },
     step5: {
       leadIn: pickString(step5.leadIn, DEFAULT_DP01_CONTENT.step5.leadIn),
@@ -293,7 +326,10 @@ export function withDp01Defaults(
     checkIn: {
       postDayHint: pickString(checkIn.postDayHint, DEFAULT_DP01_CONTENT.checkIn.postDayHint),
       restDayHint: pickString(checkIn.restDayHint, DEFAULT_DP01_CONTENT.checkIn.restDayHint),
-      notePlaceholder: pickString(checkIn.notePlaceholder, DEFAULT_DP01_CONTENT.checkIn.notePlaceholder),
+      notePlaceholder: pickString(
+        checkIn.notePlaceholder,
+        DEFAULT_DP01_CONTENT.checkIn.notePlaceholder,
+      ),
     },
     footer: {
       slogan: pickString(footer.slogan, DEFAULT_DP01_CONTENT.footer.slogan),
@@ -302,4 +338,3 @@ export function withDp01Defaults(
     },
   }
 }
-

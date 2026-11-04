@@ -71,9 +71,9 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
 
       try {
         await guest.goto('/habit/5-phut')
-        await expect(
-          guest.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first(),
-        ).toBeVisible({ timeout: 15000 })
+        await expect(guest.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
+          timeout: 15000,
+        })
 
         // BƯỚC 1: Khám đúng bệnh -> Tiếp tục (DB trống: Tiếp tục bật sẵn; DB có câu: bấm Bỏ qua phần khám)
         const skipDiagnoseBtn = guest.getByRole('button', { name: /Bỏ qua phần khám/i })

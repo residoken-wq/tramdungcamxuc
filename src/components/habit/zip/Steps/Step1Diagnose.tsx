@@ -13,55 +13,43 @@ export interface Step1DiagnoseProps {
   onNext: () => void
 }
 
+// QA DP-01e: fallback = the 8 questions of the approved zip, verbatim (constants.ts).
 export const DEFAULT_DIAGNOSE_QUESTIONS = [
   {
     id: 1,
-    text: 'Bạn thường quên bẵng đi thói quen mới nếu không có ai nhắc hoặc lịch báo?',
+    text: 'Tôi không có giờ cố định cho thói quen mới, cứ lúc nào rảnh thì làm.',
     category: 'cue',
   },
   {
     id: 2,
-    text: 'Không gian sống hoặc làm việc của bạn không có dấu hiệu trực quan nào nhắc bạn làm việc này?',
+    text: 'Có hôm đến tối muộn tôi mới sực nhớ ra là hôm nay mình định làm.',
     category: 'cue',
   },
   {
     id: 3,
-    text: 'Nghĩ đến việc bắt đầu, bạn thấy chán ngắt và muốn lướt mạng thêm một chút?',
+    text: 'Tôi biết việc này tốt cho mình, nhưng cứ nghĩ đến là thấy ngại bắt đầu.',
     category: 'craving',
   },
   {
     id: 4,
-    text: 'Bạn không thấy có động lực tức thì hoặc sự thôi thúc nào để bắt tay vào làm?',
+    text: 'Tôi lo người khác sẽ nhìn mình thế nào khi thấy mình làm việc này.',
     category: 'craving',
   },
   {
     id: 5,
-    text: 'Mỗi lần làm đòi hỏi quá nhiều khâu chuẩn bị, dụng cụ phức tạp hoặc công sức?',
+    text: 'Mỗi lần làm, tôi phải chuẩn bị quá nhiều thứ trước khi bắt đầu được.',
     category: 'response',
   },
   {
     id: 6,
-    text: 'Bạn đặt mục tiêu quá lớn ngay từ đầu (ví dụ: viết 1 bài dài, tập 60 phút) khiến não ngại?',
+    text: 'Tôi chờ đến khi có đủ thời gian hoặc đủ hứng mới chịu làm.',
     category: 'response',
   },
-  {
-    id: 7,
-    text: 'Làm xong bạn thấy trống rỗng, không có cảm giác chiến thắng hay thỏa mãn nào?',
-    category: 'reward',
-  },
+  { id: 7, text: 'Làm được mấy hôm mà chưa thấy kết quả là tôi mất hứng.', category: 'reward' },
   {
     id: 8,
-    text: 'Bạn không hề có bất kỳ phần thưởng nhỏ hay sự ghi nhận nào cho bản thân sau khi hoàn thành?',
+    text: 'Tôi không nhớ nổi tuần vừa rồi mình đã làm được bao nhiêu lần.',
     category: 'reward',
-  },
-]
-
-export const STAT_CARDS_STEP1 = [
-  { stat: '92%', text: 'người từ bỏ mục tiêu năm mới trước khi bước sang tháng Hai.' },
-  { stat: '1/3', text: 'thói quen thất bại vì không có thời gian và địa điểm kích hoạt cụ thể.' },
-  {
-    stat: '28 ngày',
-    text: 'là khoảng thời gian tối thiểu để não bộ ghi nhận một phản xạ quen thuộc.',
   },
 ]
 

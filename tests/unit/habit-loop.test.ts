@@ -150,7 +150,11 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
       })
 
       it('cho phép action rỗng hoặc trắng (DP-01d)', () => {
-        const parsed = habitChosenTechniqueSchema.parse({ techniqueId: 1, stage: 'cue', action: '   ' })
+        const parsed = habitChosenTechniqueSchema.parse({
+          techniqueId: 1,
+          stage: 'cue',
+          action: '   ',
+        })
         expect(parsed.action).toBe('')
       })
     })

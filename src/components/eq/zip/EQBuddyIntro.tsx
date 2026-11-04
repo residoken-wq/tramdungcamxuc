@@ -215,8 +215,10 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                     content.card4Desc
                   ) : (
                     <>
-                      <strong className="text-deep-navy font-bold">Mặt trước:</strong> Từ khóa EQ + Thông điệp cảm hứng dẫn dắt. <br />
-                      <strong className="text-deep-navy font-bold">Mặt sau:</strong> 3 câu hỏi gợi mở suy ngẫm theo cấu trúc{' '}
+                      <strong className="text-deep-navy font-bold">Mặt trước:</strong> Từ khóa EQ +
+                      Thông điệp cảm hứng dẫn dắt. <br />
+                      <strong className="text-deep-navy font-bold">Mặt sau:</strong> 3 câu hỏi gợi
+                      mở suy ngẫm theo cấu trúc{' '}
                       <em className="italic">Gợi nhớ - Gói ghém - Ghi nhận</em>.
                     </>
                   )}

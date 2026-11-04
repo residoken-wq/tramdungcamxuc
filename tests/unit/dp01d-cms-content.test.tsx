@@ -74,9 +74,7 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
   })
 
   it('Step2PercentPrinciple: renders default chart title and custom chart title when provided', () => {
-    const { rerender } = render(
-      <Step2PercentPrinciple onNext={() => {}} onPrev={() => {}} />,
-    )
+    const { rerender } = render(<Step2PercentPrinciple onNext={() => {}} onPrev={() => {}} />)
     expect(screen.getByText(DEFAULT_DP01_CONTENT.step2.chartTitle)).toBeDefined()
 
     const customStep2 = {
@@ -84,11 +82,7 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
       chartTitle: 'Biểu đồ: Sức mạnh lãi kép hành vi',
     }
     rerender(
-      <Step2PercentPrinciple
-        step2Content={customStep2}
-        onNext={() => {}}
-        onPrev={() => {}}
-      />,
+      <Step2PercentPrinciple step2Content={customStep2} onNext={() => {}} onPrev={() => {}} />,
     )
     expect(screen.getByText('Biểu đồ: Sức mạnh lãi kép hành vi')).toBeDefined()
   })
@@ -134,7 +128,7 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
         onPrev={() => {}}
       />,
     )
-    expect(screen.getByText(/người kể chuyện chân thành/)).toBeDefined()
+    expect(screen.getByText(/người giữ lời với chính mình/)).toBeDefined()
 
     const customStep4 = {
       ...DEFAULT_DP01_CONTENT.step4,
@@ -177,7 +171,9 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
         onPrev={() => {}}
       />,
     )
-    expect(screen.getByText('Thiết kế hệ thống 4 bước vững chắc cho thói quen của bạn.')).toBeDefined()
+    expect(
+      screen.getByText('Thiết kế hệ thống 4 bước vững chắc cho thói quen của bạn.'),
+    ).toBeDefined()
   })
 
   it('BoardingPassCard: renders 2 download buttons (B4) and custom pass title when provided', () => {
@@ -240,11 +236,7 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
     }
 
     const { rerender } = render(
-      <DayCheckInModal
-        dayItem={dayItem}
-        onClose={() => {}}
-        onSave={() => {}}
-      />,
+      <DayCheckInModal dayItem={dayItem} onClose={() => {}} onSave={() => {}} />,
     )
     expect(screen.getByText(DEFAULT_DP01_CONTENT.checkIn.postDayHint)).toBeDefined()
 
@@ -275,4 +267,3 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
     expect(screen.getByText('Lắng nghe từng nhịp thở • Chuyển hóa mỗi ngày')).toBeDefined()
   })
 })
-

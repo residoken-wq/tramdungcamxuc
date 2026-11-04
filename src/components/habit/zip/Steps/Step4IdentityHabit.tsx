@@ -104,7 +104,9 @@ export function Step4IdentityHabit({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">{step4Content.statementTitle}</h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">
+              {step4Content.statementTitle}
+            </h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
             {step4Content.statementDesc}
@@ -261,7 +263,9 @@ export function Step4IdentityHabit({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">{step4Content.atomicHabitTitle}</h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">
+              {step4Content.atomicHabitTitle}
+            </h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
             {step4Content.atomicHabitDesc}

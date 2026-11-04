@@ -84,7 +84,9 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         },
       })
       if (productRes.status() === 400) {
-        const existing = await (await page.request.get('/api/products?where[slug][equals]=habit-tracker-so')).json()
+        const existing = await (
+          await page.request.get('/api/products?where[slug][equals]=habit-tracker-so')
+        ).json()
         if (existing.docs?.[0]) {
           createdProductId = existing.docs[0].id
           await page.request.patch(`/api/products/${createdProductId}`, {
@@ -120,9 +122,7 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         await expect(guest.getByRole('heading', { level: 1 })).toBeVisible()
 
         // BƯỚC 1: Khám đúng bệnh (DB trống: Tiếp tục bật sẵn; DB có câu: bấm Bỏ qua phần khám)
-        await expect(
-          guest.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first(),
-        ).toBeVisible()
+        await expect(guest.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible()
         const skipDiagnoseBtn = guest.getByRole('button', { name: /Bỏ qua phần khám/i })
         if (await skipDiagnoseBtn.isVisible()) {
           await skipDiagnoseBtn.click()

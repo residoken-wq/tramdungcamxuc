@@ -23,7 +23,10 @@ import { getStationReflectionsForPlan } from '@/lib/habit/reflections.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
 import { ToolPaywall } from '@/components/site/trial/ToolPaywall'
-import { Dashboard28Days, type InitialCheckinData } from '@/components/habit/zip/Result/Dashboard28Days'
+import {
+  Dashboard28Days,
+  type InitialCheckinData,
+} from '@/components/habit/zip/Result/Dashboard28Days'
 import { HabitTrackerHeader } from '@/components/habit/zip/HabitTrackerHeader'
 import { StepNavigation } from '@/components/habit/zip/StepNavigation'
 import { HabitTrackerFooter } from '@/components/habit/zip/HabitTrackerFooter'

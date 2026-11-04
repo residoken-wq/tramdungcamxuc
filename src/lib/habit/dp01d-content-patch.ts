@@ -21,8 +21,12 @@ export const ZIP_11_TECHNIQUES: PatchTechnique[] = [
     stage: 'cue',
     description: 'Gắn thói quen mới vào đúng thời điểm bạn còn năng lượng, thay vì lúc đã cạn.',
     examples: [
-      { text: 'Nhận ra mình tỉnh táo nhất lúc 6h30, đặt việc quan trọng vào đó thay vì 10h tối khi đã cạn' },
-      { text: 'Thấy mình hay trống 15 phút lúc chờ cơm trưa, dùng đúng khoảng đó cho thói quen mới' },
+      {
+        text: 'Nhận ra mình tỉnh táo nhất lúc 6h30, đặt việc quan trọng vào đó thay vì 10h tối khi đã cạn',
+      },
+      {
+        text: 'Thấy mình hay trống 15 phút lúc chờ cơm trưa, dùng đúng khoảng đó cho thói quen mới',
+      },
     ],
     applyTemplate: 'Thói quen của tôi sẽ rơi vào khoảng {gio}, lúc tôi còn năng lượng.',
     exampleVideoUrl: 'https://www.facebook.com/reel/1346424584229031',
@@ -237,4 +241,3 @@ export const ZIP_8_DIAGNOSE_QUESTIONS = [
     stage: 'reward' as const,
   },
 ]
-
