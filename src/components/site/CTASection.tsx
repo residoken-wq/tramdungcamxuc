@@ -145,8 +145,12 @@ export function CTASection({
           <h2
             className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
           >
-            <span {...textTarget(id, 'titleLine1')} className="text-deep-navy">{titleLine1}</span>{' '}
-            <span {...textTarget(id, 'titleLine2')} className="text-bright-magenta">{titleLine2}</span>
+            <span {...textTarget(id, 'titleLine1')} className="text-deep-navy">
+              {titleLine1}
+            </span>{' '}
+            <span {...textTarget(id, 'titleLine2')} className="text-bright-magenta">
+              {titleLine2}
+            </span>
           </h2>
 
           {emotionLine && (

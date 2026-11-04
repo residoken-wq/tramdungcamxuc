@@ -56,14 +56,7 @@ export const LAPTOP_TEXT_TARGETS: Record<string, TextTargetDef[]> = {
     { key: 'proofText', label: 'Dòng chữ bảo chứng' },
   ],
   StatsBar: [],
-  HeadingWidget: [
-    { key: 'text', label: 'Nội dung tiêu đề' },
-  ],
-  TextWidget: [
-    { key: 'content', label: 'Nội dung đoạn văn' },
-  ],
-  ButtonWidget: [
-    { key: 'text', label: 'Chữ trên nút' },
-  ],
+  HeadingWidget: [{ key: 'text', label: 'Nội dung tiêu đề' }],
+  TextWidget: [{ key: 'content', label: 'Nội dung đoạn văn' }],
+  ButtonWidget: [{ key: 'text', label: 'Chữ trên nút' }],
 }
-

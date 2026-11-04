@@ -197,4 +197,3 @@ describe('EB-15a: Component rendering with textTarget', () => {
     expect(textTargets.length).toBe(0)
   })
 })
-

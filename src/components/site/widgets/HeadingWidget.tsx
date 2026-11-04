@@ -56,5 +56,9 @@ export function HeadingWidget({
     text
   )
 
-  return <Tag className={defaultClass} {...textTarget(id, 'text')}>{content}</Tag>
+  return (
+    <Tag className={defaultClass} {...textTarget(id, 'text')}>
+      {content}
+    </Tag>
+  )
 }

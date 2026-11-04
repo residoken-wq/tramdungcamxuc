@@ -7,4 +7,3 @@ export const TEXT_TARGETS: Record<string, TextTargetDef[]> = {
   ...LAPTOP_TEXT_TARGETS,
   ...PC_TEXT_TARGETS,
 }
-

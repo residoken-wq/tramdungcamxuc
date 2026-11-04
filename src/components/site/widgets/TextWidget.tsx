@@ -16,7 +16,11 @@ export interface TextWidgetProps {
 const PROSE =
   'max-w-none [&_p]:my-3 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-bright-magenta [&_a]:underline'
 
-export function TextWidget({ id, content, _style }: TextWidgetProps & { id?: string; _style?: unknown }) {
+export function TextWidget({
+  id,
+  content,
+  _style,
+}: TextWidgetProps & { id?: string; _style?: unknown }) {
   const className = `${PROSE} ${typographyClasses(
     { textColor: 'text-deep-navy', fontFamily: 'font-body', lineHeight: 'leading-relaxed' },
     _style,

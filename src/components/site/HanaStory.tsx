@@ -171,7 +171,10 @@ export function HanaStory({
                 )}
                 <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
                   {titleLine1 && (
-                    <span {...textTarget(id, 'titleLine1')} className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}>
+                    <span
+                      {...textTarget(id, 'titleLine1')}
+                      className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}
+                    >
                       {titleLine1}
                     </span>
                   )}

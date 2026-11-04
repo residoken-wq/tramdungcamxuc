@@ -49,10 +49,17 @@ export function QuoteBlock({
           className={`mt-4 flex flex-wrap items-baseline gap-2 border-t ${borderClass} pt-3${align === 'center' ? ' justify-center' : ''}`}
         >
           {cite && (
-            <cite {...textTarget(id, 'cite')} className={`font-ui text-sm font-bold not-italic ${citeClass}`}>{cite}</cite>
+            <cite
+              {...textTarget(id, 'cite')}
+              className={`font-ui text-sm font-bold not-italic ${citeClass}`}
+            >
+              {cite}
+            </cite>
           )}
           {roleOrContext && (
-            <span {...textTarget(id, 'roleOrContext')} className={`font-ui text-xs ${roleClass}`}>· {roleOrContext}</span>
+            <span {...textTarget(id, 'roleOrContext')} className={`font-ui text-xs ${roleClass}`}>
+              · {roleOrContext}
+            </span>
           )}
         </figcaption>
       )}

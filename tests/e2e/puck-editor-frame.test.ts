@@ -132,7 +132,7 @@ test.describe('EB-03: Elementor-style editor frame (block library search, viewpo
       // (Undoing the drop itself was flaky under e2e only – see docs/tasks/reviews/EB-03.md.)
       const hero = canvas.locator('[data-puck-component]').first()
       const titleField = page.getByRole('textbox', {
-        name: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+        name: 'Tiêu đề dòng 1',
         exact: true,
       })
       await expect(async () => {

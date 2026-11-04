@@ -273,8 +273,12 @@ export function HeroTwoEntries({
           )}
 
           <h1 className={titleClass}>
-            <span {...textTarget(id, 'titleLine1')} className={bTitle1Color}>{titleLine1}</span>{' '}
-            <span {...textTarget(id, 'titleLine2')} className={bTitle2Color}>{titleLine2}</span>
+            <span {...textTarget(id, 'titleLine1')} className={bTitle1Color}>
+              {titleLine1}
+            </span>{' '}
+            <span {...textTarget(id, 'titleLine2')} className={bTitle2Color}>
+              {titleLine2}
+            </span>
           </h1>
 
           {emotionLine && (
@@ -329,10 +333,15 @@ export function HeroTwoEntries({
                     )}
 
                     <h1 className={titleClass}>
-                      <span {...textTarget(id, 'titleLine1')} className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>
+                      <span
+                        {...textTarget(id, 'titleLine1')}
+                        className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                      >
                         {titleLine1}
                       </span>{' '}
-                      <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>{titleLine2}</span>
+                      <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+                        {titleLine2}
+                      </span>
                     </h1>
 
                     {emotionLine && (
@@ -400,8 +409,15 @@ export function HeroTwoEntries({
 
               {/* Signature Two-Tone Heading (Anton) */}
               <h1 className={titleClass}>
-                <span {...textTarget(id, 'titleLine1')} className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-                <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>{titleLine2}</span>
+                <span
+                  {...textTarget(id, 'titleLine1')}
+                  className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                >
+                  {titleLine1}
+                </span>{' '}
+                <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+                  {titleLine2}
+                </span>
               </h1>
 
               {/* Emotional Quote (Playfair Display Italic) */}

@@ -62,11 +62,7 @@ function TabFilteredField({ name, children }: { name: string; children: React.Re
   const hasSelection = usePuckSelector((s) => Boolean(s.selectedItem))
   if (!hasSelection) return <>{children}</>
   if (!isFieldVisible(name, tab)) return null
-  return (
-    <CurrentFieldContext.Provider value={name}>
-      {children}
-    </CurrentFieldContext.Provider>
-  )
+  return <CurrentFieldContext.Provider value={name}>{children}</CurrentFieldContext.Provider>
 }
 
 const FIELD_TYPES = [

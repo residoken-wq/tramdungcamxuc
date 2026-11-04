@@ -40,10 +40,17 @@ test.describe('EB-15a: Kiểu chữ cho từng ô chữ (Nút "Aa")', () => {
       await page.locator('#field-email').fill(email)
       await page.locator('#field-password').fill(password)
       await page.locator('#field-confirm-password').fill(password)
-      await page.locator('button[type="submit"]').click()
-      await page.waitForURL((url) => !url.pathname.includes('/create-first-user'), {
-        timeout: 45000,
-      })
+      // QA EB-15ac: same retry as the other builder e2e – the first click can land before hydration.
+      await expect(async () => {
+        const registration = page.waitForResponse(
+          (res) =>
+            res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
+          { timeout: 5000 },
+        )
+        await page.locator('button[type="submit"]').click()
+        expect((await registration).ok()).toBe(true)
+      }).toPass({ timeout: 60000 })
+      await expect(page).toHaveURL(/\/admin\/?$/)
 
       // Fetch current user id
       const meRes = await page.request.get('/api/users/me')
@@ -126,22 +133,22 @@ test.describe('EB-15a: Kiểu chữ cho từng ô chữ (Nút "Aa")', () => {
       }
 
       // Pick accent-pink swatch
-      const pinkSwatch = popover.getByRole('button', { name: 'Hồng đậm (Accent Pink)' })
+      const pinkSwatch = popover.getByRole('button', { name: 'Hồng nhấn (Accent Pink)' })
       await expect(pinkSwatch).toBeVisible()
       await pinkSwatch.click()
 
       // Set desktop size to XL
-      const xlSizeBtn = popover.getByRole('button', { name: 'XL' })
-      await xlSizeBtn.click()
+      // QA EB-15ac: a colour that fails AA on this background (ivory on ivory) cannot be picked.
+      await expect(popover.getByRole('button', { name: 'Ngà ấm (Warm Ivory)' })).toBeDisabled()
+      await popover.getByRole('combobox', { name: /Cỡ chữ/ }).selectOption('xl')
 
       // Switch to Mobile tab and set size to SM
-      const mobileTab = popover.getByRole('tab', { name: vi.eb15a.deviceMobile })
+      const mobileTab = popover.getByRole('button', { name: vi.eb15a.deviceMobile, exact: true })
       await mobileTab.click()
-      const smSizeBtn = popover.getByRole('button', { name: 'SM' })
-      await smSizeBtn.click()
+      await popover.getByRole('combobox', { name: /Cỡ chữ/ }).selectOption('sm')
 
       // Close popover
-      const closeBtn = popover.getByRole('button', { name: vi.eb15a.closeButton })
+      const closeBtn = popover.getByRole('button', { name: vi.eb15a.closeButton }).last()
       await closeBtn.click()
       await expect(popover).not.toBeVisible()
 
@@ -150,9 +157,10 @@ test.describe('EB-15a: Kiểu chữ cho từng ô chữ (Nút "Aa")', () => {
       await expect(dot).toBeVisible()
 
       // 7. Publish page
-      const publishBtn = page.getByRole('button', { name: /Xuất bản/i })
-      await publishBtn.click()
-      await page.waitForTimeout(2000)
+      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
+      await expect(page.getByRole('status').filter({ hasText: 'Đã xuất bản' })).toBeVisible({
+        timeout: 15000,
+      })
 
       // 8. Visit public page at 1440
       await page.setViewportSize({ width: 1440, height: 900 })
@@ -211,4 +219,3 @@ test.describe('EB-15a: Kiểu chữ cho từng ô chữ (Nút "Aa")', () => {
     }
   })
 })
-

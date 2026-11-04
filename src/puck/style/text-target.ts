@@ -7,4 +7,3 @@ export const TEXT_TARGET_ATTR = 'data-eb-text'
 export function textTarget(blockId: string | undefined, key: string): Record<string, string> {
   return blockId ? { [TEXT_TARGET_ATTR]: `${blockId}:${key}` } : {}
 }
-

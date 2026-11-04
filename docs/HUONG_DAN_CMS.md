@@ -2788,6 +2788,7 @@ Trong các khối hiển thị văn bản (như Hero 2 lối vào, Hero ảnh bi
 #### 1. Nhận biết nút "Aa" cạnh ô chữ
 
 Khi bấm chọn khối trong trình soạn thảo trực quan:
+
 1. Nhìn vào bảng thuộc tính bên phải, cạnh nhãn của các ô chữ (ví dụ: "Tiêu đề dòng 1", "Tiêu đề dòng 2", "Dòng cảm xúc", "Nhãn series", "Chữ trên nút"), Hana sẽ thấy một nút nhỏ hình chữ **"Aa"**.
 2. **Chấm hồng báo hiệu:** Nếu ô chữ đó đang có kiểu dáng tuỳ chỉnh riêng, góc nút "Aa" sẽ có một chấm tròn màu hồng (`accent-pink`) và nút có viền nổi bật để dễ dàng nhận biết.
 

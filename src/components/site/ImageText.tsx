@@ -167,8 +167,14 @@ export function ImageText({
             <h2
               className={`font-display ${sizeClass(SECTION_TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-4`}
             >
-              <span {...textTarget(id, 'titleLine1')} className={textColorClass}>{titleLine1}</span>{' '}
-              {titleLine2 && <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>{titleLine2}</span>}
+              <span {...textTarget(id, 'titleLine1')} className={textColorClass}>
+                {titleLine1}
+              </span>{' '}
+              {titleLine2 && (
+                <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+                  {titleLine2}
+                </span>
+              )}
             </h2>
 
             <div {...textTarget(id, 'content')} className="space-y-3 mb-6">

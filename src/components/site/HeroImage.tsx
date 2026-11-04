@@ -213,8 +213,12 @@ export function HeroImage({
           <h1
             className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
           >
-            <span {...textTarget(id, 'titleLine1')} className={bTitle1Color}>{titleLine1}</span>{' '}
-            <span {...textTarget(id, 'titleLine2')} className={bTitle2Color}>{titleLine2}</span>
+            <span {...textTarget(id, 'titleLine1')} className={bTitle1Color}>
+              {titleLine1}
+            </span>{' '}
+            <span {...textTarget(id, 'titleLine2')} className={bTitle2Color}>
+              {titleLine2}
+            </span>
           </h1>
 
           {emotionLine && (
@@ -306,8 +310,15 @@ export function HeroImage({
         <h1
           className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
         >
-          <span {...textTarget(id, 'titleLine1')} className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-          <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>{titleLine2}</span>
+          <span
+            {...textTarget(id, 'titleLine1')}
+            className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+          >
+            {titleLine1}
+          </span>{' '}
+          <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+            {titleLine2}
+          </span>
         </h1>
 
         {/* Emotional Quote (Playfair Display Italic) */}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useId, useRef, useState } from 'react'
 import { createUsePuck } from '@puckeditor/core'
 import { vi } from '@/lib/i18n/vi'
 import {
@@ -13,6 +13,14 @@ import {
 } from '@/puck/style/style-schema'
 import { useStylePanel } from '../style-context'
 import { getBlockBackground, getContrastInfo } from './contrast-helper'
+import { SECTION_BG_COLOR_OPTIONS, TEXT_COLOR_OPTIONS } from '@/puck/constants'
+
+// QA EB-15ac: headings are large text by default (WCAG 3:1), not only after picking XL+.
+const LARGE_TEXT_KEYS = new Set(['titleLine1', 'titleLine2', 'title', 'mainTitle'])
+const LARGE_TEXT_BLOCKS = new Set(['HeadingWidget'])
+const COLOR_NAMES: Record<string, string> = Object.fromEntries(
+  [...SECTION_BG_COLOR_OPTIONS, ...TEXT_COLOR_OPTIONS].map((o) => [o.value, o.label]),
+)
 
 const usePuckSelector = createUsePuck()
 
@@ -61,6 +69,7 @@ export function TextStylePopover({
   targetKey,
   targetLabel,
 }: TextStylePopoverProps) {
+  const sizeSelectId = useId()
   const popoverRef = useRef<HTMLDivElement>(null)
   const { ds } = useStylePanel()
   const [device, setDevice] = useState<Device>('desktop')
@@ -104,8 +113,10 @@ export function TextStylePopover({
   const targetStyle: TextTargetStyle = textStyles[targetKey] || {}
 
   const bgToken = getBlockBackground(selectedItem)
-  const currentSize = targetStyle.size?.desktop || 'md'
-  const isLarge = currentSize === 'xl' || currentSize === '2xl' || currentSize === '3xl'
+  const pickedSize = targetStyle.size?.desktop
+  const isLarge = pickedSize
+    ? pickedSize === 'xl' || pickedSize === '2xl' || pickedSize === '3xl'
+    : LARGE_TEXT_KEYS.has(targetKey) || LARGE_TEXT_BLOCKS.has(String(selectedItem.type))
 
   const updateStyle = (patch: Partial<TextTargetStyle>) => {
     const updatedTarget: TextTargetStyle = {
@@ -213,9 +224,7 @@ export function TextStylePopover({
       {/* Header */}
       <div className="flex items-center justify-between pb-3 mb-3 border-b border-deep-navy/10">
         <div>
-          <h4 className="font-ui font-bold text-deep-navy">
-            {vi.eb15a.popoverTitle(targetLabel)}
-          </h4>
+          <h4 className="font-ui font-bold text-deep-navy">{vi.eb15a.popoverTitle(targetLabel)}</h4>
           <p className="text-[11px] text-deep-navy/60 leading-tight">
             {vi.eb15a.popoverDescription}
           </p>
@@ -266,13 +275,9 @@ export function TextStylePopover({
                 key={c.token}
                 type="button"
                 data-token={c.token}
-                aria-label={`${c.label} (${c.token})`}
+                aria-label={COLOR_NAMES[c.token] || `${c.label} (${c.token})`}
                 disabled={isDisabled}
-                title={
-                  isDisabled
-                    ? vi.eb15a.contrastWarning
-                    : `${c.label} (${c.token})`
-                }
+                title={isDisabled ? vi.eb15a.contrastWarning : `${c.label} (${c.token})`}
                 onClick={() => updateStyle({ color: isSelected ? undefined : c.token })}
                 className={`flex flex-col items-center gap-1 p-1 rounded border transition ${
                   isSelected
@@ -285,7 +290,7 @@ export function TextStylePopover({
                   style={{ backgroundColor: c.hex }}
                 />
                 <span className="text-[10px] leading-tight truncate w-full text-center">
-                  {c.label.split(' ')[0]}
+                  {(COLOR_NAMES[c.token] || c.label).split(' (')[0]}
                 </span>
               </button>
             )
@@ -301,11 +306,12 @@ export function TextStylePopover({
       {/* 3. Cỡ chữ (Font size, per-device) */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1.5">
-          <label className="font-ui font-semibold text-deep-navy">
+          <label htmlFor={sizeSelectId} className="font-ui font-semibold text-deep-navy">
             {vi.eb15a.sizeLabel} ({DEVICE_LABELS[device]})
           </label>
         </div>
         <select
+          id={sizeSelectId}
           value={targetStyle.size?.[device] || ''}
           onChange={(e) => {
             const val = e.target.value as FontSizePreset | ''
@@ -353,8 +359,9 @@ export function TextStylePopover({
                 ? 'bg-deep-navy text-white border-deep-navy'
                 : 'border-deep-navy/15 text-deep-navy hover:bg-deep-navy/5'
             }`}
+            aria-pressed={targetStyle.weight === 400}
           >
-            400
+            {vi.eb15a.weightNormal}
           </button>
           <button
             type="button"
@@ -364,8 +371,9 @@ export function TextStylePopover({
                 ? 'bg-deep-navy text-white border-deep-navy'
                 : 'border-deep-navy/15 text-deep-navy hover:bg-deep-navy/5'
             }`}
+            aria-pressed={targetStyle.weight === 600}
           >
-            600
+            {vi.eb15a.weightMedium}
           </button>
           <button
             type="button"
@@ -375,8 +383,9 @@ export function TextStylePopover({
                 ? 'bg-deep-navy text-white border-deep-navy'
                 : 'border-deep-navy/15 text-deep-navy hover:bg-deep-navy/5'
             }`}
+            aria-pressed={targetStyle.weight === 700}
           >
-            700
+            {vi.eb15a.weightBold}
           </button>
         </div>
       </div>

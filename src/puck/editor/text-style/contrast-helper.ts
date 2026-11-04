@@ -55,4 +55,3 @@ export function getContrastInfo(
   const threshold = isLargeText ? 3.0 : 4.5
   return { allowed: ratio >= threshold, ratio, isUnknownBg: false }
 }
-

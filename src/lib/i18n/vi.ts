@@ -3290,6 +3290,7 @@ export const vi = {
     toastRelocked: 'Đã khoá lại khối',
   },
   eb15a: {
+    readOnlySuffix: '(Khoá)',
     titleLine1: 'Tiêu đề dòng 1',
     titleLine2: 'Tiêu đề dòng 2',
     seriesLabel: 'Nhãn series',

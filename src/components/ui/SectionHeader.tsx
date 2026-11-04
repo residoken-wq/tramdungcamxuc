@@ -68,8 +68,14 @@ export function SectionHeader({
       <HeadingTag
         className={`font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
       >
-        <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>{titleLine1}</span>
-        {titleLine2 && <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>{titleLine2}</span>}
+        <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
+          {titleLine1}
+        </span>
+        {titleLine2 && (
+          <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>
+            {titleLine2}
+          </span>
+        )}
       </HeadingTag>
 
       {/* Emotion Line (Playfair Display Italic) */}
