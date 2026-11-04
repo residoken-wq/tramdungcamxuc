@@ -835,8 +835,15 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await expect(tabRow).toBeVisible()
         hardSelectors.push(`[data-puck-layer-tree-id="${tabsComponentId}"]`)
 
-        // EB-16: nhấp đúp TRÚNG mũi tên mở rộng vẫn vào chế độ đổi tên
-        await tabRow.locator('[class*="Layer-caret"] button').first().dblclick()
+        // EB-16: nhấp đúp TRÚNG vùng mũi tên mở rộng (đầu dòng) vẫn vào chế độ đổi tên.
+        // Puck ẩn mũi tên (visibility: hidden) khi không nhận ra vùng con, nhưng vùng đó vẫn chiếm chỗ:
+        // nhấp theo toạ độ, đúng như người dùng bấm vào đầu dòng.
+        const caretBox = await tabRow.locator('[class*="Layer-caret"]').first().boundingBox()
+        expect(caretBox).toBeTruthy()
+        await page.mouse.dblclick(
+          caretBox!.x + caretBox!.width / 2,
+          caretBox!.y + caretBox!.height / 2,
+        )
         actions += 2
 
         const renameInput = tabRow.locator('input[type="text"]')
