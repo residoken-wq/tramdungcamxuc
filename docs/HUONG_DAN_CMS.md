@@ -74,6 +74,7 @@
    - [5.35. Hero ảnh nền (EB-14a)](#535-hero-ảnh-nền-eb-14a)
    - [5.36. Khối bị khoá và cách mở khoá (EB-14b)](#536-khối-bị-khoá-và-cách-mở-khoá)
    - [5.37. Đổi màu, cỡ chữ từng dòng chữ (EB-15a)](#537-đổi-màu-cỡ-chữ-từng-dòng-chữ)
+   - [5.38. Căn lề thẻ và icon (EB-15b)](#538-căn-lề-thẻ-và-icon)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -2810,6 +2811,35 @@ Bấm vào nút **"Aa"**, một bảng popover nhỏ gọn sẽ mở ra ngay c�
    - Khi muốn bỏ toàn bộ tuỳ chỉnh riêng của dòng chữ này để quay về kiểu chữ mặc định theo thiết kế chuẩn của khối, Hana chỉ cần bấm nút **"Về mặc định"**.
 6. **Đóng bảng:**
    - Bấm nút **"Đóng"**, bấm chuột ra ngoài vùng bảng, hoặc nhấn phím **Escape** trên bàn phím.
+
+---
+
+### 5.38. Căn lề thẻ và icon
+
+Hana có thể linh hoạt căn chỉnh bố cục của các thẻ (icon, số thứ tự, hình ảnh, tiêu đề, mô tả và nút bấm) sang **Trái** hoặc **Giữa** mà không lo biểu tượng bị lệch vị trí.
+
+#### 1. Căn lề đồng loạt cho cả khung lưới thẻ ("Căn lề tất cả thẻ")
+
+Khi chỉnh sửa một khối dạng lưới chứa nhiều thẻ con (như **Lưới thẻ biểu tượng / đánh số**, **Khối các gói Growth Mirror**, **Các thẻ dịch vụ coaching**, **Hai lối đi Cá nhân / Doanh nghiệp**, **Tầm nhìn & Sứ mệnh**, **Hành trình các bước chuyển hóa**):
+
+1. Bấm chọn vào khối lưới bên ngoài.
+2. Tại cột bên phải, tìm trường **Căn lề tất cả thẻ**:
+   - **Theo từng thẻ (Mặc định):** Mỗi thẻ con sẽ tự quyết định căn trái hay căn giữa theo cài đặt riêng của nó.
+   - **Căn trái:** Toàn bộ các thẻ con trong lưới lập tức căn lề trái.
+   - **Căn giữa:** Toàn bộ các thẻ con trong lưới lập tức căn đều vào giữa.
+3. Khi chọn **Căn trái** hoặc **Căn giữa** ở khung lưới, nếu Hana bấm vào từng thẻ con bên trong, trường "Căn lề" của thẻ con sẽ hiển thị dòng chữ nhắc nhở: **Căn lề (Đang theo khung)** để Hana biết thẻ đang chịu sự điều khiển của khung lưới cha.
+
+#### 2. Căn lề cho từng thẻ riêng lẻ
+
+Nếu khung lưới đang để chế độ _Theo từng thẻ (Mặc định)_, Hana có thể bấm trực tiếp vào từng thẻ con để chỉnh trường **Căn lề** của thẻ đó thành _Căn trái_ hoặc _Căn giữa_.
+
+#### 3. Biểu tượng, số thứ tự và nút luôn căn chuẩn xác
+
+Trước đây, khi căn giữa thẻ, biểu tượng thương hiệu (icon) hoặc số thứ tự đôi khi vẫn bị giữ ở góc trái khiến thẻ bị lệch mắt. Phiên bản mới đã xử lý hoàn toàn:
+
+- Biểu tượng thương hiệu, ảnh đại diện nhỏ, số thứ tự (01, 02...), nhãn huy hiệu (badge) và nút bấm sẽ **luôn di chuyển đồng điệu** cùng với tiêu đề và đoạn văn bản.
+- Khi căn giữa, tâm ngang của icon và tâm ngang của tiêu đề luôn thẳng hàng tuyệt đối.
+- Khi dùng tab **Kiểu → Căn chữ** (áp dụng cho cả khối), toàn bộ icon và thẻ cũng tự động căn đều theo bố cục đã chọn, đảm bảo hiển thị hoàn hảo trên cả máy tính (1440px) và điện thoại di động (375px).
 
 ---
 
