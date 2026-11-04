@@ -46,6 +46,7 @@ import { ContextMenuOverlay } from '@/puck/editor/context-menu/ContextMenuOverla
 import { ToastNotification } from '@/puck/editor/context-menu/ToastNotification'
 import { OutlineWrapper } from '@/puck/editor/navigator/OutlineWrapper'
 import { BlockActionBar } from '@/puck/editor/action-bar/BlockActionBar'
+import { FieldLabelWithAa } from '@/puck/editor/text-style/FieldLabelWithAa'
 
 export const brandViewports: Viewports = [
   { width: 375, height: 'auto', label: 'Điện thoại (375px)', icon: 'Smartphone' },
@@ -993,6 +994,8 @@ const editorOverrides = {
   // EB-04b: Content / Style / Advanced tabs and live block styles in the preview.
   fields: FieldsWithTabs,
   fieldTypes: tabFieldTypes,
+  // EB-15a: Text style "Aa" button next to field labels
+  fieldLabel: FieldLabelWithAa,
   iframe: StylePreview,
   // EB-07: Canvas context menu overlay and custom Navigator outline
   componentOverlay: ContextMenuOverlay,

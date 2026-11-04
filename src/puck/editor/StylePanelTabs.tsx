@@ -6,6 +6,7 @@ import { vi } from '@/lib/i18n/vi'
 import { isFieldVisible, type PanelTab } from '@/puck/style/field-groups'
 import { useStylePanel } from './style-context'
 import { LockPropertiesBanner } from './lock/LockPropertiesBanner'
+import { CurrentFieldContext } from './text-style/current-field-context'
 
 const usePuckSelector = createUsePuck()
 
@@ -60,7 +61,12 @@ function TabFilteredField({ name, children }: { name: string; children: React.Re
   const { tab } = useStylePanel()
   const hasSelection = usePuckSelector((s) => Boolean(s.selectedItem))
   if (!hasSelection) return <>{children}</>
-  return isFieldVisible(name, tab) ? <>{children}</> : null
+  if (!isFieldVisible(name, tab)) return null
+  return (
+    <CurrentFieldContext.Provider value={name}>
+      {children}
+    </CurrentFieldContext.Provider>
+  )
 }
 
 const FIELD_TYPES = [
