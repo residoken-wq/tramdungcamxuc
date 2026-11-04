@@ -6,12 +6,14 @@ import { Copy, Check, Plane, AlertCircle, ArrowLeft, ArrowRight, ExternalLink } 
 import { IdentityFormData, LoopTechniques } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
+import type { PublicTechnique } from '@/lib/habit'
 
 interface BoardingPassCardProps {
   /** Journey length stored in site settings (default 28). */
   journeyDays?: number
   identity: IdentityFormData
   loopTechniques: LoopTechniques
+  techniques?: PublicTechnique[]
   onPrev: () => void
   // Submission fields
   name?: string
@@ -37,6 +39,7 @@ export function BoardingPassCard({
   journeyDays = 28,
   identity,
   loopTechniques,
+  techniques = [],
   onPrev,
   name = '',
   email = '',
@@ -88,6 +91,20 @@ export function BoardingPassCard({
       setTimeout(() => setCopied(false), 2500)
     }
   }
+
+  const resolveTechNames = (ids: string[]) => {
+    return ids
+      .map((id) => {
+        const match = techniques?.find((t) => String(t.id) === String(id) || t.name === id)
+        return match ? match.name : id
+      })
+      .filter(Boolean)
+  }
+
+  const cueNames = resolveTechNames(loopTechniques.cues)
+  const cravingNames = resolveTechNames(loopTechniques.cravings)
+  const responseNames = resolveTechNames(loopTechniques.responses)
+  const rewardNames = resolveTechNames(loopTechniques.rewards)
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -230,8 +247,8 @@ export function BoardingPassCard({
                   1 · CUE · TÍN HIỆU
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {loopTechniques.cues.length > 0 ? (
-                    loopTechniques.cues.join(', ')
+                  {cueNames.length > 0 ? (
+                    cueNames.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -244,8 +261,8 @@ export function BoardingPassCard({
                   2 · CRAVING · KHAO KHÁT
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {loopTechniques.cravings.length > 0 ? (
-                    loopTechniques.cravings.join(', ')
+                  {cravingNames.length > 0 ? (
+                    cravingNames.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -258,8 +275,8 @@ export function BoardingPassCard({
                   3 · RESPONSE · PHẢN HỒI
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {loopTechniques.responses.length > 0 ? (
-                    loopTechniques.responses.join(', ')
+                  {responseNames.length > 0 ? (
+                    responseNames.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -272,8 +289,8 @@ export function BoardingPassCard({
                   4 · REWARD · PHẦN THƯỞNG
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {loopTechniques.rewards.length > 0 ? (
-                    loopTechniques.rewards.join(', ')
+                  {rewardNames.length > 0 ? (
+                    rewardNames.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}

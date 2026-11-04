@@ -1358,6 +1358,30 @@ export interface Technique {
    */
   stage?: ('cue' | 'craving' | 'response' | 'reward') | null;
   /**
+   * Nhập mô tả ngắn.
+   */
+  description?: string | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  examples?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập mẫu gợi ý áp dụng ({mentor}, {thoi_quen}, {gio}).
+   */
+  applyTemplate?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  /**
    * Soạn cách thực hiện.
    */
   howTo?: {
@@ -2935,6 +2959,15 @@ export interface LessonsSelect<T extends boolean = true> {
 export interface TechniquesSelect<T extends boolean = true> {
   name?: T;
   stage?: T;
+  description?: T;
+  examples?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  applyTemplate?: T;
+  order?: T;
   howTo?: T;
   example?: T;
   lesson?: T;
@@ -4067,6 +4100,49 @@ export interface HabitJourneyContent {
      * Ví dụ: "Đánh dấu kỹ thuật bạn sẽ dùng để vượt qua giai đoạn nút thắt."
      */
     techniqueHint?: string | null;
+    laws?:
+      | {
+          /**
+           * Chọn một mục phù hợp.
+           */
+          stage: 'cue' | 'craving' | 'response' | 'reward';
+          /**
+           * Nhập nhãn luật (vd: 1 · make it obvious).
+           */
+          lawChip?: string | null;
+          /**
+           * Nhập tiêu đề quy luật.
+           */
+          title: string;
+          /**
+           * Nhập nhãn phụ (vd: cue · tín hiệu).
+           */
+          subLabel?: string | null;
+          /**
+           * Nhập câu hỏi gợi mở.
+           */
+          question?: string | null;
+          /**
+           * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+           */
+          videoUrl?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    cueBox?: {
+      /**
+       * Nhập chữ in đậm mở đầu.
+       */
+      boldText?: string | null;
+      /**
+       * Nhập đoạn văn lưu ý.
+       */
+      text?: string | null;
+      /**
+       * Nhập nhãn nút xem lại.
+       */
+      buttonLabel?: string | null;
+    };
   };
   /**
    * Câu trích dẫn ngắn tạo cảm hứng tại các bước của wizard và màn hình tracker.
@@ -4534,6 +4610,24 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
             };
         note?: T;
         techniqueHint?: T;
+        laws?:
+          | T
+          | {
+              stage?: T;
+              lawChip?: T;
+              title?: T;
+              subLabel?: T;
+              question?: T;
+              videoUrl?: T;
+              id?: T;
+            };
+        cueBox?:
+          | T
+          | {
+              boldText?: T;
+              text?: T;
+              buttonLabel?: T;
+            };
       };
   stepQuotes?:
     | T

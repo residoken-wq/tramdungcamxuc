@@ -23,13 +23,18 @@ import {
 import { zipStateToFlowDraft, flowDraftToZipState, type ZipState } from './draft-adapter'
 import { track } from '@/lib/analytics/track'
 import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
-import type { CleanHabitDiagnose, CleanHabitStepQuotes } from '@/lib/habit/journey-content.server'
+import type {
+  CleanHabitDiagnose,
+  CleanHabitLoop,
+  CleanHabitStepQuotes,
+} from '@/lib/habit/journey-content.server'
 
 export interface HabitTrackerAppProps {
   techniques?: PublicTechnique[]
   journeyDays?: number
   diagnose?: CleanHabitDiagnose | null
   stepQuotes?: CleanHabitStepQuotes
+  loopContent?: CleanHabitLoop | null
   privacyNote?: string | null
 }
 
@@ -37,6 +42,7 @@ export function HabitTrackerApp({
   techniques = [],
   journeyDays = 28,
   diagnose,
+  loopContent,
   privacyNote,
 }: HabitTrackerAppProps) {
   const startTimeRef = useRef<number | null>(null)
@@ -381,6 +387,8 @@ export function HabitTrackerApp({
               loopTechniques={loopTechniques}
               prescribedCategory={prescribedCategory}
               identity={identity}
+              techniques={techniques}
+              loopContent={loopContent}
               onGoToStep={(step) => goToStep(step)}
               onTechniquesChange={setLoopTechniques}
               onNext={() => handleStepTransition(6)}
@@ -393,6 +401,7 @@ export function HabitTrackerApp({
               journeyDays={journeyDays}
               identity={identity}
               loopTechniques={loopTechniques}
+              techniques={techniques}
               name={name}
               email={email}
               consent={consent}

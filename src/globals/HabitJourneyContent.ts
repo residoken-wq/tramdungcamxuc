@@ -404,6 +404,31 @@ export const HabitJourneyContent: GlobalConfig = {
           ...text('techniqueHint', vi.hb18.loop.techniqueHint),
           admin: { description: vi.hb18.loop.techniqueHintDesc },
         },
+        {
+          name: 'laws',
+          type: 'array',
+          label: '4 quy luật',
+          maxRows: 4,
+          labels: { singular: 'Quy luật', plural: '4 quy luật' },
+          fields: [
+            select('stage', 'Giai đoạn', stageOptions, { required: true }),
+            text('lawChip', 'Nhãn luật (VD: 1 · MAKE IT OBVIOUS)'),
+            text('title', 'Tiêu đề quy luật', true),
+            text('subLabel', 'Nhãn phụ (VD: Cue · Tín hiệu)'),
+            textarea('question', 'Câu hỏi gợi mở'),
+            url('videoUrl', 'Link video bài giảng'),
+          ],
+        },
+        {
+          name: 'cueBox',
+          type: 'group',
+          label: 'Khối lưu ý riêng cho Quy luật 1 (Cue)',
+          fields: [
+            text('boldText', 'Chữ in đậm mở đầu'),
+            textarea('text', 'Đoạn văn lưu ý'),
+            text('buttonLabel', 'Nhãn nút xem lại'),
+          ],
+        },
       ],
     },
     {

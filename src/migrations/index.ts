@@ -34,6 +34,7 @@ import * as migration_20261102_100526_pk13_title_spacing from './20261102_100526
 import * as migration_20261102_133742_eb10_header_footer from './20261102_133742_eb10_header_footer'
 import * as migration_20261104_080000_dp01_confidence_emotions from './20261104_080000_dp01_confidence_emotions'
 import * as migration_20261104_090000_dp01_eq_schema from './20261104_090000_dp01_eq_schema'
+import * as migration_20261104_100000_dp01d_techniques_and_loop from './20261104_100000_dp01d_techniques_and_loop'
 
 export const migrations = [
   {
@@ -215,5 +216,10 @@ export const migrations = [
     up: migration_20261104_090000_dp01_eq_schema.up,
     down: migration_20261104_090000_dp01_eq_schema.down,
     name: '20261104_090000_dp01_eq_schema',
+  },
+  {
+    up: migration_20261104_100000_dp01d_techniques_and_loop.up,
+    down: migration_20261104_100000_dp01d_techniques_and_loop.down,
+    name: '20261104_100000_dp01d_techniques_and_loop',
   },
 ]

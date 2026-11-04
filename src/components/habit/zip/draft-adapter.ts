@@ -124,8 +124,8 @@ export function zipStateToFlowDraft(
   draft.startDate = zipState.identity.startDate || ''
   draft.rhythmDays = daysToWeekdays(zipState.identity.selectedDays || [])
 
-  // Map chosen techniques
-  const stageMap: Record<'cue' | 'craving' | 'response' | 'reward', string[]> = {
+  // Map chosen techniques using real technique IDs
+  const stageMap: Record<'cue' | 'craving' | 'response' | 'reward', (string | number)[]> = {
     cue: zipState.loopTechniques.cues || [],
     craving: zipState.loopTechniques.cravings || [],
     response: zipState.loopTechniques.responses || [],
@@ -142,12 +142,16 @@ export function zipStateToFlowDraft(
     reward: [],
   }
 
-  let techCounter = 1
   for (const stage of ['cue', 'craving', 'response', 'reward'] as const) {
-    for (const title of stageMap[stage]) {
-      const note = zipState.loopTechniques.appliedNotes?.[`tech-${techCounter}`] || title
-      chosen[stage].push({ techniqueId: techCounter, action: note })
-      techCounter++
+    for (const rawId of stageMap[stage]) {
+      const techId = typeof rawId === 'number' ? rawId : parseInt(String(rawId), 10)
+      if (!isNaN(techId) && techId > 0) {
+        const note =
+          zipState.loopTechniques.appliedNotes?.[String(techId)] ??
+          zipState.loopTechniques.appliedNotes?.[String(rawId)] ??
+          ''
+        chosen[stage].push({ techniqueId: techId, action: note.trim() })
+      }
     }
   }
 
@@ -184,20 +188,20 @@ export function flowDraftToZipState(draft: HabitFlowDraft): ZipState {
 
   if (draft.chosenTechniques) {
     draft.chosenTechniques.cue?.forEach((t) => {
-      cues.push(t.action)
-      appliedNotes[`tech-${t.techniqueId}`] = t.action
+      cues.push(String(t.techniqueId))
+      appliedNotes[String(t.techniqueId)] = t.action || ''
     })
     draft.chosenTechniques.craving?.forEach((t) => {
-      cravings.push(t.action)
-      appliedNotes[`tech-${t.techniqueId}`] = t.action
+      cravings.push(String(t.techniqueId))
+      appliedNotes[String(t.techniqueId)] = t.action || ''
     })
     draft.chosenTechniques.response?.forEach((t) => {
-      responses.push(t.action)
-      appliedNotes[`tech-${t.techniqueId}`] = t.action
+      responses.push(String(t.techniqueId))
+      appliedNotes[String(t.techniqueId)] = t.action || ''
     })
     draft.chosenTechniques.reward?.forEach((t) => {
-      rewards.push(t.action)
-      appliedNotes[`tech-${t.techniqueId}`] = t.action
+      rewards.push(String(t.techniqueId))
+      appliedNotes[String(t.techniqueId)] = t.action || ''
     })
   }
 

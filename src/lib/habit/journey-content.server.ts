@@ -91,6 +91,21 @@ export interface CleanHabitDiagnose {
   results: { stage: HabitStage; title: string; suggestion: string }[]
 }
 
+export interface CleanHabitLaw {
+  stage: HabitStage
+  lawChip: string | null
+  title: string
+  subLabel: string | null
+  question: string | null
+  videoUrl: string | null
+}
+
+export interface CleanCueBox {
+  boldText: string | null
+  text: string | null
+  buttonLabel: string | null
+}
+
 /** HB-24: step 5 "Vòng lặp". */
 export interface CleanHabitLoop {
   intro: unknown
@@ -99,6 +114,8 @@ export interface CleanHabitLoop {
   rules: CleanTitledText[]
   note: string | null
   techniqueHint: string | null
+  laws?: CleanHabitLaw[]
+  cueBox?: CleanCueBox | null
 }
 
 export interface HabitJourneyContentResult {
@@ -249,12 +266,46 @@ function cleanLoop(raw: HabitJourneyContent['loop'] | null): CleanHabitLoop {
       ? [{ stage: row.stage, title, explanation }]
       : []
   })
+  const rawLaws = Array.isArray((raw as Record<string, unknown> | null)?.laws)
+    ? ((raw as Record<string, unknown>).laws as unknown[])
+    : []
+  const laws: CleanHabitLaw[] = rawLaws.flatMap((row) => {
+    if (!row || typeof row !== 'object') return []
+    const r = row as Record<string, unknown>
+    const title = trimmed(r.title)
+    return title && isHabitStage(r.stage)
+      ? [
+          {
+            stage: r.stage,
+            lawChip: trimmed(r.lawChip),
+            title,
+            subLabel: trimmed(r.subLabel),
+            question: trimmed(r.question),
+            videoUrl: trimmed(r.videoUrl),
+          },
+        ]
+      : []
+  })
+
+  const rawCueBox = (raw as Record<string, unknown> | null)?.cueBox as
+    | Record<string, unknown>
+    | undefined
+  const cueBox: CleanCueBox | null = rawCueBox
+    ? {
+        boldText: trimmed(rawCueBox.boldText),
+        text: trimmed(rawCueBox.text),
+        buttonLabel: trimmed(rawCueBox.buttonLabel),
+      }
+    : null
+
   return {
     intro: raw?.intro ?? null,
     stages: onePerStage(stages),
     rules: cleanTitledRows(raw?.rules),
     note: trimmed(raw?.note),
     techniqueHint: trimmed(raw?.techniqueHint),
+    laws: laws.length > 0 ? laws : undefined,
+    cueBox,
   }
 }
 
