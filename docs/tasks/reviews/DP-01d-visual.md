@@ -37,3 +37,4 @@
   2. Đã thêm 2 nút tải ảnh 9:16 và 4:5 trên Boarding Pass.
   3. Đã căn chỉnh định dạng thẻ tương tác 3D với chữ đậm và xuống dòng cho Mặt trước / Mặt sau.
   4. Hệ thống CMS và fallback `withDp01Defaults()` đảm bảo trang web luôn hiển thị đúng nội dung chuẩn zip ngay cả khi cơ sở dữ liệu trống.
+
