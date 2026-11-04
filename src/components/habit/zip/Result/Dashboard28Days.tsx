@@ -146,7 +146,9 @@ export function Dashboard28Days({
   const [isRestoring, setIsRestoring] = useState(false)
   const [isRestartModalOpen, setIsRestartModalOpen] = useState(false)
   const [isRestarting, setIsRestarting] = useState(false)
-  const [inAppToast, setInAppToast] = useState<{ text: string; type: 'error' | 'success' } | null>(null)
+  const [inAppToast, setInAppToast] = useState<{ text: string; type: 'error' | 'success' } | null>(
+    null,
+  )
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -502,8 +504,12 @@ Nhịp điệu: ${rateText}
 
   const startDateInfo = planDayDate(startDate, 1)
   const endDateInfo = planDayDate(startDate, journeyDays)
-  const startDateLabel = startDateInfo ? `${vi.dp01.startDatePrefix} ${startDateInfo.short}` : vi.dp01.startDatePrefix
-  const endDateLabel = endDateInfo ? `${vi.dp01.endDatePrefix} ${endDateInfo.short}` : vi.dp01.endDatePrefix
+  const startDateLabel = startDateInfo
+    ? `${vi.dp01.startDatePrefix} ${startDateInfo.short}`
+    : vi.dp01.startDatePrefix
+  const endDateLabel = endDateInfo
+    ? `${vi.dp01.endDatePrefix} ${endDateInfo.short}`
+    : vi.dp01.endDatePrefix
 
   return (
     <div className="space-y-8 pt-2" id="dashboard-28days">
@@ -560,7 +566,9 @@ Nhịp điệu: ${rateText}
         </summary>
         <div className="px-5 pb-5 pt-2 space-y-2.5 text-xs sm:text-sm font-ui border-t border-lavender-mist/60">
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">{vi.dp01.statementLabel}</span>
+            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">
+              {vi.dp01.statementLabel}
+            </span>
             <span className="text-deep-navy font-semibold">
               Tôi sẽ {propIdentityAction || '...'} để trở thành {propIdentityRole || '...'}
             </span>
@@ -572,7 +580,9 @@ Nhịp điệu: ${rateText}
             <span className="text-deep-navy font-semibold">{propAtomicHabit || '...'}</span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">{vi.dp01.mentorLabel}</span>
+            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">
+              {vi.dp01.mentorLabel}
+            </span>
             <span className="text-deep-navy font-semibold">
               {propMentor
                 ? `Sau khi ${propMentor}${propMentorTime ? ` · lúc ${propMentorTime}` : ''}`
@@ -580,7 +590,9 @@ Nhịp điệu: ${rateText}
             </span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">{vi.dp01.rhythmLabel}</span>
+            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">
+              {vi.dp01.rhythmLabel}
+            </span>
             <span className="text-deep-navy font-semibold">{rateText}</span>
           </div>
         </div>
@@ -626,7 +638,9 @@ Nhịp điệu: ${rateText}
               <span className="font-display text-3xl sm:text-4xl text-bright-magenta">
                 {currentStreak}
               </span>
-              <span className="text-xs font-ui font-semibold text-deep-navy/70">{vi.dp01.daysUnit}</span>
+              <span className="text-xs font-ui font-semibold text-deep-navy/70">
+                {vi.dp01.daysUnit}
+              </span>
             </div>
             <p className="text-[11px] font-ui text-deep-navy/60 truncate">
               {currentStreak > 0 ? vi.dp01.streakKeepRhythm : vi.dp01.streakStartJourney}
@@ -990,7 +1004,9 @@ Nhịp điệu: ${rateText}
       {/* 7. KHỐI QUẢN LÝ DỮ LIỆU CỦA BẠN (5 NÚT CHỨC NĂNG) */}
       <div className="p-6 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-4">
         <div className="space-y-1">
-          <h3 className="font-ui font-bold text-base sm:text-lg text-deep-navy">{vi.dp01.myDataTitle}</h3>
+          <h3 className="font-ui font-bold text-base sm:text-lg text-deep-navy">
+            {vi.dp01.myDataTitle}
+          </h3>
           <p className="text-xs sm:text-sm text-deep-navy/70 font-ui leading-relaxed">
             {privacyNote ||
               'Dữ liệu hành trình của bạn được lưu an toàn trên máy chủ của Trạm Dừng Cảm Xúc gắn với tài khoản của bạn. Bạn có thể xuất bản sao lưu bất kỳ lúc nào để lưu trữ riêng.'}
@@ -1125,7 +1141,7 @@ Nhịp điệu: ${rateText}
               type="button"
               disabled={isRestarting}
               onClick={handleConfirmRestart}
-              className="px-4 py-2 rounded-2xl bg-accent-pink hover:bg-accent-pink/90 text-white text-xs font-semibold cursor-pointer shadow-soft-md disabled:opacity-50"
+              className="px-4 py-2 rounded-2xl bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs font-semibold cursor-pointer shadow-soft-md disabled:opacity-50"
             >
               {isRestarting
                 ? vi.hb13.restartModal.restartingButton
@@ -1161,7 +1177,9 @@ Nhịp điệu: ${rateText}
               />
               <CertificateShareButtons
                 code={initialCertificate.code}
-                customerName={customerName || initialCertificate.customerName || vi.dp01.defaultCompanionName}
+                customerName={
+                  customerName || initialCertificate.customerName || vi.dp01.defaultCompanionName
+                }
                 isPublic={initialCertificate.isPublic}
               />
             </div>

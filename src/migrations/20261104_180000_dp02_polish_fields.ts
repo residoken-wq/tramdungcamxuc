@@ -19,6 +19,14 @@ export async function up({ db, payload: _payload, req: _req }: MigrateUpArgs): P
     ALTER TABLE "habit_journey_content" ADD COLUMN IF NOT EXISTS "tracker_my_data_title" varchar;
     ALTER TABLE "habit_journey_content" ADD COLUMN IF NOT EXISTS "tracker_my_data_desc" varchar;
   `)
+
+  // QA DP-02c: step 4 lead-in is now split in two (plain + bold). A lead-in still holding the
+  // full DP-01d default would show the bold sentence twice, so trim it to the plain half.
+  await db.execute(sql`
+    UPDATE "habit_journey_content"
+    SET "step4_lead_in" = 'Bắt đầu từ con người bạn muốn trở thành, rồi mới đến hành động.'
+    WHERE "step4_lead_in" = 'Bắt đầu từ con người bạn muốn trở thành, rồi mới đến hành động. Thương hiệu cá nhân không phải việc làm thêm — nó là kết quả của hành động bạn lặp lại mỗi ngày.';
+  `)
 }
 
 export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs): Promise<void> {
@@ -40,4 +48,3 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
     ALTER TABLE "habit_journey_content" DROP COLUMN IF EXISTS "tracker_my_data_desc";
   `)
 }
-

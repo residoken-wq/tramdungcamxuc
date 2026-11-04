@@ -198,7 +198,9 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
   },
   tracker: {
     myDataTitle: 'Dữ liệu của bạn',
-    myDataDesc: 'Lưu trữ cục bộ trên trình duyệt này & đồng bộ về tài khoản khi đăng nhập.',
+    // Not the zip text (zip keeps data in the browser): the approved server-side wording.
+    myDataDesc:
+      'Dữ liệu hành trình của bạn được lưu an toàn trên máy chủ của Trạm Dừng Cảm Xúc gắn với tài khoản của bạn. Bạn có thể xuất bản sao lưu bất kỳ lúc nào để lưu trữ riêng.',
   },
   checkIn: {
     postDayHint:
@@ -259,7 +261,8 @@ export function withDp01Defaults(
   const step6 = c.step6 || {}
   const checkIn = c.checkIn || {}
   const footer = c.footer || {}
-  const tracker = ((c as Record<string, unknown>).tracker as Record<string, unknown> | undefined) || {}
+  const tracker =
+    ((c as Record<string, unknown>).tracker as Record<string, unknown> | undefined) || {}
 
   return {
     header: {
@@ -318,10 +321,7 @@ export function withDp01Defaults(
     },
     step4: {
       leadIn: pickString(step4.leadIn, DEFAULT_DP01_CONTENT.step4.leadIn),
-      leadInEmphasis: pickString(
-        step4.leadInEmphasis,
-        DEFAULT_DP01_CONTENT.step4.leadInEmphasis,
-      ),
+      leadInEmphasis: pickString(step4.leadInEmphasis, DEFAULT_DP01_CONTENT.step4.leadInEmphasis),
       statementTitle: pickString(step4.statementTitle, DEFAULT_DP01_CONTENT.step4.statementTitle),
       statementDesc: pickString(step4.statementDesc, DEFAULT_DP01_CONTENT.step4.statementDesc),
       suggestedRoles: parseLines(step4.suggestedRoles, DEFAULT_DP01_CONTENT.step4.suggestedRoles),

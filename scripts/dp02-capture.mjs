@@ -85,8 +85,12 @@ async function run() {
     const vpSuffix = vp.width === 390 ? '390' : '1440'
     console.log(`\n=== CHỤP VIEWPORT ${vp.width}px (${vp.name}) ===`)
 
-    const zipContext = await browser.newContext({ viewport: { width: vp.width, height: vp.height } })
-    const repoContext = await browser.newContext({ viewport: { width: vp.width, height: vp.height } })
+    const zipContext = await browser.newContext({
+      viewport: { width: vp.width, height: vp.height },
+    })
+    const repoContext = await browser.newContext({
+      viewport: { width: vp.width, height: vp.height },
+    })
 
     const zipPage = await zipContext.newPage()
     const repoPage = await repoContext.newPage()
@@ -102,7 +106,9 @@ async function run() {
       await repoPage.waitForTimeout(600)
 
       // Chuyển sang tab Habit Tracker nếu cần
-      const zipHabitTab = zipPage.getByRole('button', { name: /Xây thói quen|habit-tracker/i }).first()
+      const zipHabitTab = zipPage
+        .getByRole('button', { name: /Xây thói quen|habit-tracker/i })
+        .first()
       if (await zipHabitTab.isVisible()) await zipHabitTab.click()
 
       // Điều hướng đến Bước 3 trên cả 2 trang
@@ -186,7 +192,9 @@ async function run() {
       const zipDay1 = zipPage.locator('button[aria-label*="Ngày 1"], button:has-text("1")').first()
       if (await zipDay1.isVisible()) await zipDay1.click().catch(() => {})
 
-      const repoDay1 = repoPage.locator('button[aria-label*="Ngày 1"], button:has-text("1")').first()
+      const repoDay1 = repoPage
+        .locator('button[aria-label*="Ngày 1"], button:has-text("1")')
+        .first()
       if (await repoDay1.isVisible()) await repoDay1.click().catch(() => {})
       await zipPage.waitForTimeout(400)
       await repoPage.waitForTimeout(400)
@@ -249,10 +257,14 @@ async function run() {
       // 5. EQ BUDDY INTRO STEP 2 (Giới thiệu bước 2)
       // ----------------------------------------------------
       console.log('5. EQ Intro Step 2...')
-      const zipNextIntro = zipPage.getByRole('button', { name: /Cách thức sử dụng|Tiếp|2/i }).first()
+      const zipNextIntro = zipPage
+        .getByRole('button', { name: /Cách thức sử dụng|Tiếp|2/i })
+        .first()
       if (await zipNextIntro.isVisible()) await zipNextIntro.click().catch(() => {})
 
-      const repoNextIntro = repoPage.getByRole('button', { name: /Cách thức sử dụng|Tiếp|2/i }).first()
+      const repoNextIntro = repoPage
+        .getByRole('button', { name: /Cách thức sử dụng|Tiếp|2/i })
+        .first()
       if (await repoNextIntro.isVisible()) await repoNextIntro.click().catch(() => {})
       await zipPage.waitForTimeout(400)
       await repoPage.waitForTimeout(400)
@@ -309,10 +321,14 @@ async function run() {
       // 7. EQ CARD FRONT (Mặt trước)
       // ----------------------------------------------------
       console.log('7. EQ Card Front...')
-      const zipDrawBtn = zipPage.getByRole('button', { name: /Rút ngẫu nhiên|Chọn cảm xúc|Rút thẻ/i }).first()
+      const zipDrawBtn = zipPage
+        .getByRole('button', { name: /Rút ngẫu nhiên|Chọn cảm xúc|Rút thẻ/i })
+        .first()
       if (await zipDrawBtn.isVisible()) await zipDrawBtn.click().catch(() => {})
 
-      const repoDrawBtn = repoPage.getByRole('button', { name: /Rút ngẫu nhiên|Chọn cảm xúc|Rút thẻ/i }).first()
+      const repoDrawBtn = repoPage
+        .getByRole('button', { name: /Rút ngẫu nhiên|Chọn cảm xúc|Rút thẻ/i })
+        .first()
       if (await repoDrawBtn.isVisible()) await repoDrawBtn.click().catch(() => {})
       await zipPage.waitForTimeout(1000)
       await repoPage.waitForTimeout(1000)
@@ -340,10 +356,14 @@ async function run() {
       // 8. EQ CARD BACK (Mặt sau)
       // ----------------------------------------------------
       console.log('8. EQ Card Back...')
-      const zipFlip = zipPage.getByRole('button', { name: /Lật xem câu hỏi|Lật thẻ|Mặt sau/i }).first()
+      const zipFlip = zipPage
+        .getByRole('button', { name: /Lật xem câu hỏi|Lật thẻ|Mặt sau/i })
+        .first()
       if (await zipFlip.isVisible()) await zipFlip.click().catch(() => {})
 
-      const repoFlip = repoPage.getByRole('button', { name: /Lật xem câu hỏi|Lật thẻ|Mặt sau/i }).first()
+      const repoFlip = repoPage
+        .getByRole('button', { name: /Lật xem câu hỏi|Lật thẻ|Mặt sau/i })
+        .first()
       if (await repoFlip.isVisible()) await repoFlip.click().catch(() => {})
       await zipPage.waitForTimeout(600)
       await repoPage.waitForTimeout(600)
@@ -374,7 +394,9 @@ async function run() {
       const zipAllTab = zipPage.getByRole('button', { name: /Xem tất cả thẻ|Tất cả thẻ/i }).first()
       if (await zipAllTab.isVisible()) await zipAllTab.click().catch(() => {})
 
-      const repoAllTab = repoPage.getByRole('button', { name: /Xem tất cả thẻ|Tất cả thẻ/i }).first()
+      const repoAllTab = repoPage
+        .getByRole('button', { name: /Xem tất cả thẻ|Tất cả thẻ/i })
+        .first()
       if (await repoAllTab.isVisible()) await repoAllTab.click().catch(() => {})
       await zipPage.waitForTimeout(600)
       await repoPage.waitForTimeout(600)
@@ -402,10 +424,14 @@ async function run() {
       // 10. EQ GUIDE MODAL (Hộp hướng dẫn)
       // ----------------------------------------------------
       console.log('10. EQ Guide Modal...')
-      const zipGuideBtn = zipPage.getByRole('button', { name: /Hướng dẫn|Khám phá cách dùng/i }).first()
+      const zipGuideBtn = zipPage
+        .getByRole('button', { name: /Hướng dẫn|Khám phá cách dùng/i })
+        .first()
       if (await zipGuideBtn.isVisible()) await zipGuideBtn.click().catch(() => {})
 
-      const repoGuideBtn = repoPage.getByRole('button', { name: /Hướng dẫn|Khám phá cách dùng/i }).first()
+      const repoGuideBtn = repoPage
+        .getByRole('button', { name: /Hướng dẫn|Khám phá cách dùng/i })
+        .first()
       if (await repoGuideBtn.isVisible()) await repoGuideBtn.click().catch(() => {})
       await zipPage.waitForTimeout(400)
       await repoPage.waitForTimeout(400)
@@ -437,7 +463,9 @@ async function run() {
       // 11. EQ QR PAGE (Z5: h1 sr-only)
       // ----------------------------------------------------
       console.log('11. EQ QR Page...')
-      await repoPage.goto(`${REPO_URL}/eq-buddy/the/the-01`, { waitUntil: 'domcontentloaded' }).catch(() => {})
+      await repoPage
+        .goto(`${REPO_URL}/eq-buddy/the/the-01`, { waitUntil: 'domcontentloaded' })
+        .catch(() => {})
       await zipPage.waitForTimeout(400)
       await repoPage.waitForTimeout(400)
 
@@ -459,7 +487,6 @@ async function run() {
         repoFile: repoQrMeta.filename,
         notes: 'Trang thẻ xem qua QR code có h1 sr-only chuẩn a11y',
       })
-
     } catch (err) {
       console.error(`Lỗi khi chụp viewport ${vp.name}:`, err)
     } finally {
@@ -478,10 +505,14 @@ async function run() {
 
   // In bảng Markdown tổng kết
   console.log('\n### Bảng đối chiếu ảnh chụp và MD5 Checksums\n')
-  console.log('| Màn hình | Khung nhìn | MD5 Zip (:3100) | MD5 Repo (:3000) | File Repo | Ghi chú so sánh |')
+  console.log(
+    '| Màn hình | Khung nhìn | MD5 Zip (:3100) | MD5 Repo (:3000) | File Repo | Ghi chú so sánh |',
+  )
   console.log('|---|---|---|---|---|---|')
   for (const r of captureRecords) {
-    console.log(`| ${r.title} | ${r.viewport} | \`${r.zipMd5.slice(0, 12)}…\` | \`${r.repoMd5.slice(0, 12)}…\` | \`${r.repoFile}\` | ${r.notes} |`)
+    console.log(
+      `| ${r.title} | ${r.viewport} | \`${r.zipMd5.slice(0, 12)}…\` | \`${r.repoMd5.slice(0, 12)}…\` | \`${r.repoFile}\` | ${r.notes} |`,
+    )
   }
 
   // Tính tổng dung lượng thư mục docs/screenshots/dp02/
@@ -490,11 +521,17 @@ async function run() {
   for (const f of files) {
     totalSize += fs.statSync(path.join(OUT_REPO_DIR, f)).size
   }
-  console.log(`\nTổng dung lượng ảnh repo: ${(totalSize / 1024 / 1024).toFixed(2)} MB (< 3 MB chuẩn yêu cầu)`)
+  console.log(
+    `\nTổng dung lượng ảnh repo: ${(totalSize / 1024 / 1024).toFixed(2)} MB (< 3 MB chuẩn yêu cầu)`,
+  )
 
   fs.writeFileSync(
     path.join(OUT_REPO_DIR, 'summary.json'),
-    JSON.stringify({ totalSizeMb: (totalSize / 1024 / 1024).toFixed(2), records: captureRecords }, null, 2),
+    JSON.stringify(
+      { totalSizeMb: (totalSize / 1024 / 1024).toFixed(2), records: captureRecords },
+      null,
+      2,
+    ),
   )
 }
 

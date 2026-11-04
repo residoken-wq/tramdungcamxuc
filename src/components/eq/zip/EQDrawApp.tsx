@@ -69,7 +69,10 @@ export function EQDrawApp({
   const [reflectionSavedMessage, setReflectionSavedMessage] = useState<string | null>(null)
   const [copiedLink, setCopiedLink] = useState(false)
   const [isDrawing, setIsDrawing] = useState(false)
-  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'error' | 'success' } | null>(null)
+  const [toastMessage, setToastMessage] = useState<{
+    text: string
+    type: 'error' | 'success'
+  } | null>(null)
 
   React.useEffect(() => {
     if (!toastMessage) return
@@ -267,7 +270,8 @@ export function EQDrawApp({
                 </h2>
 
                 <p className="text-xs sm:text-sm text-deep-navy/70 leading-relaxed">
-                  {vi.dp01eq.tellMePrompt}
+                  {vi.dp01eq.tellMePrompt}{' '}
+                  <strong className="text-deep-navy">{vi.dp01eq.tellMePromptStrong}</strong>.
                 </p>
               </div>
 
@@ -358,9 +362,7 @@ export function EQDrawApp({
                 )}
               </p>
 
-              <span className="text-[11px] text-deep-navy/70 block">
-                {vi.dp01eq.flipCardTip}
-              </span>
+              <span className="text-[11px] text-deep-navy/70 block">{vi.dp01eq.flipCardTip}</span>
             </div>
 
             {/* Thẻ lật 3D */}
@@ -532,9 +534,7 @@ export function EQDrawApp({
               </button>
             </div>
 
-            <p className="text-xs text-deep-navy/70">
-              {vi.dp01eq.allCardsSubtitle}
-            </p>
+            <p className="text-xs text-deep-navy/70">{vi.dp01eq.allCardsSubtitle}</p>
 
             {/* Grid thẻ */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 max-h-[480px] overflow-y-auto pr-1">

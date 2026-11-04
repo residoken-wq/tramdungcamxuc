@@ -34,9 +34,7 @@ export function EQCardQrView({ card, children }: EQCardQrViewProps) {
           className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-soft-pink text-bright-magenta font-ui text-xs font-bold hover:bg-bright-magenta hover:text-white transition-colors"
         >
           <RotateCw className="w-3.5 h-3.5" />
-          <span>
-            {isFlipped ? vi.dp01eq.seeFront : vi.dp01eq.flipCard}
-          </span>
+          <span>{isFlipped ? vi.dp01eq.seeFrontHint : vi.dp01eq.seeBackHint}</span>
         </button>
       </div>
 

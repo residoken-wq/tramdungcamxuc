@@ -42,12 +42,14 @@ const ALLOWLIST_RULES: AllowRule[] = [
   },
   {
     filePattern: /EQDrawApp\.tsx$/,
-    linePattern: /suggestedEmotions\s*=\s*\[|['"]Mông lung['"]|['"]Căng thẳng['"]|['"]Biết ơn['"]|['"]Bình an['"]|['"]Tò mò['"]|['"]Cần dẫn lối['"]|['"]Hơi mệt['"]|['"]Bối rối['"]|EQ Buddy • Thẻ Trạm Dừng Cảm Xúc|Trạm dừng để lắng nghe ♡|card\.keywordVi\s*\|\|\s*'Việt'/,
+    linePattern:
+      /suggestedEmotions\s*=\s*\[|['"]Mông lung['"]|['"]Căng thẳng['"]|['"]Biết ơn['"]|['"]Bình an['"]|['"]Tò mò['"]|['"]Cần dẫn lối['"]|['"]Hơi mệt['"]|['"]Bối rối['"]|EQ Buddy • Thẻ Trạm Dừng Cảm Xúc|Trạm dừng để lắng nghe ♡|card\.keywordVi\s*\|\|\s*'Việt'/,
     reason: 'Category 1 & 3: CMS default suggested emotions and brand series bar/card signature',
   },
   {
     filePattern: /EQCardFlip\.tsx$/,
-    linePattern: /card\.keywordVi\s*\|\|\s*'Việt'|Trạm Dừng Cảm Xúc ♡|Dừng là cách trở về với chính mình ♡/,
+    linePattern:
+      /card\.keywordVi\s*\|\|\s*'Việt'|Trạm Dừng Cảm Xúc ♡|Dừng là cách trở về với chính mình ♡/,
     reason: 'Category 1 & 3: Card keywordVi default and brand card signature',
   },
   {
@@ -72,12 +74,14 @@ const ALLOWLIST_RULES: AllowRule[] = [
   },
   {
     filePattern: /StepNavigation\.tsx$/,
-    linePattern: /groupLabel:\s*'(?:KHÁM|XÂY|CHUYỂN MÌNH)'|title:\s*'(?:Khám đúng bệnh|Nguyên lý 1%|Tìm Mentor|Gọi tên thói quen|Vòng lặp|28 ngày)'/,
+    linePattern:
+      /groupLabel:\s*'(?:KHÁM|XÂY|CHUYỂN MÌNH)'|title:\s*'(?:Khám đúng bệnh|Nguyên lý 1%|Tìm Mentor|Gọi tên thói quen|Vòng lặp|28 ngày)'/,
     reason: 'Category 3: Step wizard navigation structure and group labels',
   },
   {
     filePattern: /Step1Diagnose\.tsx$/,
-    reason: 'Category 1 & 3: Step 1 8 diagnostic survey questions, category map, and visual score breakdown',
+    reason:
+      'Category 1 & 3: Step 1 8 diagnostic survey questions, category map, and visual score breakdown',
     matchFile: true,
   },
   {
@@ -92,23 +96,29 @@ const ALLOWLIST_RULES: AllowRule[] = [
   },
   {
     filePattern: /Step4IdentityHabit\.tsx$/,
-    reason: 'Category 1 & 3: Step 4 identity statements, suggested roles/habits, and rhythm instructions',
+    reason:
+      'Category 1 & 3: Step 4 identity statements, suggested roles/habits, and rhythm instructions',
     matchFile: true,
   },
   {
     filePattern: /Step5LoopDesign\.tsx$/,
-    reason: 'Category 1 & 3: Step 5 habit loop SVG quadrant labels, theory breakdown, and technique cards',
+    reason:
+      'Category 1 & 3: Step 5 habit loop SVG quadrant labels, theory breakdown, and technique cards',
     matchFile: true,
   },
   {
     filePattern: /BoardingPassCard\.tsx$/,
-    linePattern: /identityStatement:|Tôi sẽ|để trở thành|Chưa chọn nhịp|Mỗi ngày \(cả tuần\)|lần một tuần|Mình vừa lên chuyến 28 ngày|Đều đặn một điều — mọi điều đều đặn|GIAI ĐOẠN 2|Chúng ta là kết quả của những hành động|Trạm Dừng Cảm Xúc|TUYÊN NGÔN VỀ THÓI QUEN|NHỊP ĐIỆU|THÓI QUEN HẠT NHÂN|MENTOR|BẠN ĐỒNG HÀNH|Theo kế hoạch cam kết|Chưa chọn ngày|Phiên bản dưới 2 phút|Thói quen neo đã vững|Người soi chiếu & cổ vũ|4 Quy luật đã chọn|1 · CUE · TÍN HIỆU|2 · CRAVING · KHAO KHÁT|3 · RESPONSE · PHẢN HỒI|4 · REWARD · PHẦN THƯỞNG|chưa chọn|Dừng lại • Lắng nghe • Sống trọn vẹn hơn|Lên chuyến · Bắt đầu 28 ngày|Đang lên chuyến|ngày/,
-    reason: 'Category 1 & 3: Boarding pass ticket layout, caption generation template, and card sections',
+    linePattern:
+      /identityStatement:|Tôi sẽ|để trở thành|Chưa chọn nhịp|Mỗi ngày \(cả tuần\)|lần một tuần|Mình vừa lên chuyến 28 ngày|Đều đặn một điều — mọi điều đều đặn|GIAI ĐOẠN 2|Chúng ta là kết quả của những hành động|Trạm Dừng Cảm Xúc|TUYÊN NGÔN VỀ THÓI QUEN|NHỊP ĐIỆU|THÓI QUEN HẠT NHÂN|MENTOR|BẠN ĐỒNG HÀNH|Theo kế hoạch cam kết|Chưa chọn ngày|Phiên bản dưới 2 phút|Thói quen neo đã vững|Người soi chiếu & cổ vũ|4 Quy luật đã chọn|1 · CUE · TÍN HIỆU|2 · CRAVING · KHAO KHÁT|3 · RESPONSE · PHẢN HỒI|4 · REWARD · PHẦN THƯỞNG|chưa chọn|Dừng lại • Lắng nghe • Sống trọn vẹn hơn|Lên chuyến · Bắt đầu 28 ngày|Đang lên chuyến|ngày/,
+    reason:
+      'Category 1 & 3: Boarding pass ticket layout, caption generation template, and card sections',
   },
   {
     filePattern: /Dashboard28Days\.tsx$/,
-    linePattern: /TIẾN TRÌNH 28 NGÀY|Căn tính:|Thói quen hạt nhân:|Nhịp điệu:|Lá phiếu đã bỏ:|Chuỗi liên tiếp:|Đúng nhịp tới hôm nay:|Trạm hiện tại:|Đều đặn một điều|Điều gì đã diễn ra tốt trong trạm này|Nút thắt hoặc lực cản lớn nhất bạn gặp phải|Chặng tới bạn chỉnh quy tắc nào|Một lời ghi nhận cho chính mình|Khởi hành|Tạo đà|Vượt dốc|Về đích|Trạm \d+:|Trạm|range:\s*'Ngày|Tôi sẽ .* để trở thành|Sau khi .* lúc|Ngày \d+:|cảm xúc:|Dữ liệu hành trình của bạn được lưu an toàn|Đồng hành cùng Trạm Dừng|Nếu cần một Habit Coach|Đặt lịch với Habit Coach|Thấy công cụ này hữu ích|28 ngày thành|Bạn có chắc chắn muốn bắt đầu lại|Khôi phục thành công|Không thể tạo bản sao lưu|Không thể xuất file CSV/,
-    reason: 'Category 1 & 4: Dashboard coach summary clipboard format, station defaults, dynamic day counters, and fallback notes',
+    linePattern:
+      /TIẾN TRÌNH 28 NGÀY|Căn tính:|Thói quen hạt nhân:|Nhịp điệu:|Lá phiếu đã bỏ:|Chuỗi liên tiếp:|Đúng nhịp tới hôm nay:|Trạm hiện tại:|Đều đặn một điều|Điều gì đã diễn ra tốt trong trạm này|Nút thắt hoặc lực cản lớn nhất bạn gặp phải|Chặng tới bạn chỉnh quy tắc nào|Một lời ghi nhận cho chính mình|Khởi hành|Tạo đà|Vượt dốc|Về đích|Trạm \d+:|Trạm|range:\s*'Ngày|Tôi sẽ .* để trở thành|Sau khi .* lúc|Ngày \d+:|cảm xúc:|Dữ liệu hành trình của bạn được lưu an toàn|Đồng hành cùng Trạm Dừng|Nếu cần một Habit Coach|Đặt lịch với Habit Coach|Thấy công cụ này hữu ích|28 ngày thành|Bạn có chắc chắn muốn bắt đầu lại|Khôi phục thành công|Không thể tạo bản sao lưu|Không thể xuất file CSV/,
+    reason:
+      'Category 1 & 4: Dashboard coach summary clipboard format, station defaults, dynamic day counters, and fallback notes',
   },
   {
     filePattern: /DayCheckInModal\.tsx$/,
@@ -117,7 +127,8 @@ const ALLOWLIST_RULES: AllowRule[] = [
   },
   {
     filePattern: /TimelineProgress\.tsx$/,
-    linePattern: /Trạm \d+:|Đã hoàn thành \d+\/28 lá phiếu|Khởi hành|Tạo đà|Vượt dốc|Về đích|Bắt đầu|Về đích/,
+    linePattern:
+      /Trạm \d+:|Đã hoàn thành \d+\/28 lá phiếu|Khởi hành|Tạo đà|Vượt dốc|Về đích|Bắt đầu|Về đích/,
     reason: 'Category 4: Timeline progress dynamic counter text and station step labels',
   },
 ]
@@ -194,9 +205,7 @@ describe('DP-02: No Unapproved Hardcoded Vietnamese Copy in Zip Components', () 
     }
 
     if (unapproved.length > 0) {
-      const report = unapproved
-        .map((u) => `${u.file}:${u.line} -> ${u.text}`)
-        .join('\n')
+      const report = unapproved.map((u) => `${u.file}:${u.line} -> ${u.text}`).join('\n')
       expect.fail(
         `Found ${unapproved.length} unapproved lines with inline Vietnamese copy:\n${report}\n\nMove fixed UI text to vi.ts, CMS copy to global with defaults, or add to ALLOWLIST_RULES with clear justification.`,
       )

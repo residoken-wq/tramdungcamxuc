@@ -39,7 +39,7 @@ export function EQCardFlip({
     <div
       role="button"
       tabIndex={0}
-      aria-label={`${vi.dp01eq.cardIndexPrefix} ${cardNum}: ${card.keywordEn || ''}. ${isFlipped ? 'Đang ở mặt sau' : 'Đang ở mặt trước'}. Bấm để lật.`}
+      aria-label={`${vi.dp01eq.cardIndexAria} ${cardNum}: ${card.keywordEn || ''}. ${isFlipped ? 'Đang ở mặt sau' : 'Đang ở mặt trước'}. Bấm để lật.`}
       onClick={onToggleFlip}
       onKeyDown={handleKeyDown}
       className="perspective-1000 w-[290px] h-[400px] sm:w-[330px] sm:h-[450px] cursor-pointer group outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta rounded-3xl"
@@ -93,7 +93,9 @@ export function EQCardFlip({
 
           {/* Bottom thẻ */}
           <div className="flex items-center justify-between text-[10px] text-deep-navy/70 relative z-10 border-t border-deep-navy/5 pt-2 font-ui">
-            <span className="font-quote italic text-bright-magenta">{vi.dp01eq.brandSignature}</span>
+            <span className="font-quote italic text-bright-magenta">
+              {vi.dp01eq.brandSignature}
+            </span>
             <span className="flex items-center gap-1 font-medium group-hover:text-bright-magenta transition-colors">
               <span>{vi.dp01eq.touchToFlip}</span>
               <RotateCw className="w-3 h-3" />

@@ -413,7 +413,9 @@ export function Step4IdentityHabit({
               className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5"
             >
               {vi.dp01.companionLabel.toUpperCase()}{' '}
-              <span className="font-normal lowercase text-deep-navy/70">({vi.dp01.optionalLabel})</span>
+              <span className="font-normal lowercase text-deep-navy/70">
+                ({vi.dp01.optionalLabel})
+              </span>
             </label>
             <input
               id="field-companion"
