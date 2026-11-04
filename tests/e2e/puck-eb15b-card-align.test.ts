@@ -1,33 +1,87 @@
 import { randomUUID } from 'node:crypto'
-import fs from 'node:fs'
-import path from 'node:path'
-import { test, expect, type Response } from './fixtures'
+import { test, expect, type Page, type Response } from './fixtures'
 import { vi } from '@/lib/i18n/vi'
 
-test.describe('EB-15b: Căn lề icon / nút / nhãn trong thẻ và khung lưới', () => {
-  test('căn lề icon và văn bản đồng nhất khi dùng tab Kiểu hoặc field Căn lề của khung lưới', async ({
+/**
+ * EB-15b / EB-15bc: icons and text inside cards follow both ways of centring:
+ * 1. tab "Kiểu" → "Căn lề" (text-align) on the grid block,
+ * 2. the grid field "Căn lề tất cả thẻ".
+ * A grid left on defaults keeps its icons on the left.
+ */
+
+type Measure = { card: number; cardLeft: number; icon: number; iconLeft: number; title: number }
+
+const card = (id: string, i: number) => ({
+  type: 'Card',
+  props: {
+    id: `${id}-card-${i}`,
+    version: 1,
+    icon: 'heart',
+    title: `[MẪU] Thẻ ${i + 1}`,
+    text: '[MẪU] Mô tả ngắn để kiểm căn lề.',
+    align: 'left',
+  },
+})
+
+const grid = (id: string, title: string) => ({
+  type: 'IconCardGrid',
+  props: {
+    id,
+    version: 2,
+    titleLine1: title,
+    marker: 'icon',
+    columns: 3,
+    cardStyle: 'white',
+    cardAlign: 'inherit',
+    cards: [0, 1, 2].map((i) => card(id, i)),
+  },
+})
+
+/** Horizontal centres of each card, its visible icon and the title's text (not its box). */
+async function measureGrid(page: Page, gridTitle: string): Promise<Measure[]> {
+  const section = page.locator('section').filter({ hasText: gridTitle }).first()
+  await expect(section.locator('[data-eb-card]')).toHaveCount(3)
+  return section.evaluate((root) =>
+    [...root.querySelectorAll<HTMLElement>('[data-eb-card]')].map((cardEl) => {
+      const centre = (r: DOMRect) => r.x + r.width / 2
+      const svg = [...cardEl.querySelectorAll('svg')].find((s) => s.getBoundingClientRect().width)
+      const h3 = cardEl.querySelector('h3')
+      if (!svg || !h3) throw new Error('Card without icon or title')
+      const range = document.createRange()
+      range.selectNodeContents(h3)
+      const box = cardEl.getBoundingClientRect()
+      return {
+        card: centre(box),
+        cardLeft: box.x,
+        icon: centre(svg.getBoundingClientRect()),
+        iconLeft: svg.getBoundingClientRect().x,
+        title: centre(range.getBoundingClientRect()),
+      }
+    }),
+  )
+}
+
+test.describe('EB-15b: căn lề icon / chữ trong thẻ', () => {
+  test('tab Kiểu "Căn lề: Giữa" và "Căn lề tất cả thẻ: Căn giữa" đều đưa icon + chữ vào giữa', async ({
     page,
   }, testInfo) => {
-    test.skip(testInfo.project.name !== 'desktop-1440', 'Runs on desktop-1440 project.')
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Bootstrap runs once per database.')
     test.setTimeout(240000)
-    page.setDefaultTimeout(30000)
-    page.setDefaultNavigationTimeout(90000)
+    page.setDefaultTimeout(20000)
 
     const email = `eb15b-${randomUUID()}@example.test`
     const password = randomUUID()
-    const pageSlug = `e2e-card-align-${randomUUID().slice(0, 8)}`
-    const gridId = `eb15b-grid-${randomUUID().slice(0, 8)}`
+    const slug = `e2e-eb15b-${randomUUID().slice(0, 8)}`
+    const suffix = randomUUID().slice(0, 6)
+    const styleGrid = { id: `eb15b-style-${suffix}`, title: '[MẪU] Lưới căn bằng tab Kiểu' }
+    const fieldGrid = { id: `eb15b-field-${suffix}`, title: '[MẪU] Lưới căn tất cả thẻ' }
+    const plainGrid = { id: `eb15b-plain-${suffix}`, title: '[MẪU] Lưới để mặc định' }
 
     let userId: number | undefined
     let pageId: number | undefined
 
-    const screenshotsDir = path.resolve(process.cwd(), 'docs/screenshots/eb15')
-    if (process.env.EB15_SCREENSHOTS === '1' && !fs.existsSync(screenshotsDir)) {
-      fs.mkdirSync(screenshotsDir, { recursive: true })
-    }
-
     try {
-      // 1. Admin bootstrap with retry
+      // 1. First admin on a clean DB (self-contained).
       const init = await page.request.get('/api/users/init')
       expect(init.ok()).toBe(true)
       const initData = await init.json()
@@ -35,13 +89,11 @@ test.describe('EB-15b: Căn lề icon / nút / nhãn trong thẻ và khung lư�
         !process.env.CI && initData.initialized === true,
         'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
       )
-
       await page.goto('/admin/create-first-user')
       await page.locator('#field-email').fill(email)
       await page.locator('#field-password').fill(password)
       await page.locator('#field-confirm-password').fill(password)
-
-      let regResponse: Response | undefined
+      let response: Response | undefined
       await expect(async () => {
         const registration = page.waitForResponse(
           (res) =>
@@ -49,232 +101,108 @@ test.describe('EB-15b: Căn lề icon / nút / nhãn trong thẻ và khung lư�
           { timeout: 5000 },
         )
         await page.locator('button[type="submit"]').click()
-        regResponse = await registration
+        response = await registration
       }).toPass({ timeout: 60000 })
-
-      if (!regResponse) throw new Error('First-user registration request was never sent.')
-      expect(regResponse.ok()).toBe(true)
+      if (!response) throw new Error('First-user registration request was never sent.')
+      expect(response.ok()).toBe(true)
       await expect(page).toHaveURL(/\/admin\/?$/)
+      userId = (await (await page.request.get('/api/users/me')).json()).user?.id
 
-      const meRes = await page.request.get('/api/users/me')
-      if (meRes.ok()) {
-        const meJson = await meRes.json()
-        userId = meJson?.user?.id
-      }
-
-      // 2. Create test page with IconCardGrid containing 3 cards:
-      // Card 0: align='left' (default)
-      // Card 1: align='center'
-      // Card 2: align='left'
-      const initialPuckData = {
-        root: { props: { title: 'EB-15b Card Alignment Test' } },
-        content: [
-          {
-            type: 'IconCardGrid',
-            props: {
-              id: gridId,
-              seriesLabel: '[MẪU] BỘ CÔNG CỤ',
-              titleLine1: '[MẪU] RÈN LUYỆN CẢM XÚC',
-              titleLine2: '[MẪU] MỖI NGÀY MỘT BƯỚC',
-              cardAlign: 'inherit',
-              cards: [
-                {
-                  icon: 'heart',
-                  title: 'Thẻ 1 Mặc định Trái',
-                  text: 'Nội dung mô tả thẻ một để kiểm tra căn lề trái.',
-                  align: 'left',
-                },
-                {
-                  icon: 'sparkles',
-                  title: 'Thẻ 2 Căn Giữa Riêng',
-                  text: 'Nội dung mô tả thẻ hai để kiểm tra căn lề giữa riêng.',
-                  align: 'center',
-                },
-                {
-                  icon: 'leaf',
-                  title: 'Thẻ 3 Mặc định Trái',
-                  text: 'Nội dung mô tả thẻ ba để kiểm tra căn lề trái.',
-                  align: 'left',
-                },
-              ],
-            },
-          },
-        ],
-        zones: {},
-      }
-
-      const createRes = await page.request.post('/api/pages', {
+      // 2. Draft page: three grids, every card on its default "Căn trái".
+      const created = await page.request.post('/api/pages?draft=true', {
         data: {
-          title: 'EB-15b Card Alignment Test',
-          slug: pageSlug,
-          kind: 'page',
+          title: '[MẪU] E2E EB-15b',
+          slug,
           _status: 'draft',
-          puckData: initialPuckData,
+          puckData: {
+            root: { props: { title: '[MẪU] E2E EB-15b' } },
+            content: [
+              grid(styleGrid.id, styleGrid.title),
+              grid(fieldGrid.id, fieldGrid.title),
+              grid(plainGrid.id, plainGrid.title),
+            ],
+            zones: {},
+          },
         },
       })
-      expect(createRes.ok()).toBe(true)
-      const createJson = await createRes.json()
-      pageId = createJson.doc.id
+      expect(created.ok()).toBe(true)
+      pageId = (await created.json()).doc.id
 
-      // 3. Open Puck editor
       await page.goto(`/builder/${pageId}`)
-      await page.locator('[class*="_PuckCanvas--ready_"]').waitFor({ timeout: 45000 })
-      await page.waitForTimeout(600)
-
-      // -------------------------------------------------------------
-      // CÁCH 1: Tab Kiểu -> Căn chữ: Giữa trên IconCardGrid
-      // -------------------------------------------------------------
       const canvas = page.frameLocator('iframe')
-      const gridOnCanvas = canvas.locator(`[data-puck-component="${gridId}"]`).first()
-      await gridOnCanvas.click()
+      const gridAlignSelect = page
+        .getByRole('combobox', { name: vi.eb15b.gridCardAlign, exact: true })
+        .filter({ visible: true })
 
-      // Switch to tab "Kiểu" in Puck sidebar
-      const styleTab = page
-        .getByRole('tab', { name: /Kiểu|Style/i })
-        .or(page.locator('button').filter({ hasText: /^Kiểu$/ }))
-      if (await styleTab.isVisible()) {
-        await styleTab.click()
-        // Find text align center option in Style tab
-        const alignCenterBtn = page
-          .getByRole('button', { name: /Giữa|Center/i })
-          .or(page.locator('[data-testid="text-align-center"]'))
-        if (await alignCenterBtn.first().isVisible()) {
-          await alignCenterBtn.first().click()
+      /** Clicking the grid heading selects the grid itself, not one of its cards. */
+      const selectGrid = async (title: string) => {
+        const heading = canvas.getByText(title, { exact: true })
+        await expect(heading).toBeVisible()
+        await expect(async () => {
+          await heading.click()
+          // The selected tab is kept between blocks: come back to "Nội dung".
+          await page.getByRole('tab', { name: 'Nội dung', exact: true }).click({ timeout: 1000 })
+          await expect(gridAlignSelect).toBeVisible({ timeout: 1000 })
+        }).toPass({ timeout: 15000 })
+      }
+
+      // 3. Way 1: tab "Kiểu" → "Căn lề: center" on the first grid.
+      await selectGrid(styleGrid.title)
+      await page.getByRole('tab', { name: 'Kiểu', exact: true }).click()
+      await page
+        .getByRole('combobox', { name: vi.eb04.fields.textAlign, exact: true })
+        .filter({ visible: true })
+        .first()
+        .selectOption('center')
+      await expect(canvas.locator(`[data-eb-id="${styleGrid.id}"]`)).toHaveCSS(
+        'text-align',
+        'center',
+      )
+
+      // 4. Way 2: "Căn lề tất cả thẻ: Căn giữa" on the second grid.
+      await selectGrid(fieldGrid.title)
+      await gridAlignSelect.selectOption({ label: 'Căn giữa' })
+      await expect(
+        canvas.locator(`[data-puck-component="${fieldGrid.id}"] [data-card-align="center"]`),
+      ).toHaveCount(1)
+
+      // 5. Publish.
+      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
+      await expect(page.getByRole('status').filter({ hasText: 'Đã xuất bản' })).toBeVisible({
+        timeout: 15000,
+      })
+
+      // 6. Public page at 1440 and 375.
+      const publicPage = await page.context().newPage()
+      for (const width of [1440, 375]) {
+        await publicPage.setViewportSize({ width, height: 900 })
+        await publicPage.goto(`/${slug}`)
+
+        for (const g of [styleGrid, fieldGrid]) {
+          for (const m of await measureGrid(publicPage, g.title)) {
+            expect(
+              Math.abs(m.icon - m.title),
+              `${g.title} @${width}: icon vs title`,
+            ).toBeLessThanOrEqual(2)
+            expect(
+              Math.abs(m.title - m.card),
+              `${g.title} @${width}: title vs card`,
+            ).toBeLessThanOrEqual(2)
+          }
+        }
+
+        // Defaults unchanged: icon near the card's left edge, not centred.
+        for (const m of await measureGrid(publicPage, plainGrid.title)) {
+          expect(m.iconLeft - m.cardLeft, `default @${width}: icon on the left`).toBeLessThan(48)
+          expect(Math.abs(m.icon - m.card), `default @${width}: icon not centred`).toBeGreaterThan(
+            40,
+          )
         }
       }
-
-      // Publish page
-      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
-      await expect(page.getByRole('status').filter({ hasText: 'Đã xuất bản' })).toBeVisible({
-        timeout: 15000,
-      })
-
-      // Check on public page at 1440 desktop
-      await page.setViewportSize({ width: 1440, height: 900 })
-      await page.goto(`/${pageSlug}`)
-      await page.waitForLoadState('networkidle')
-
-      // Card 1 (align='center') verification:
-      // The icon and title must be centered with each other (delta <= 2px)
-      // and centered within card (delta <= 2px)
-      const cards = page.locator('article, .rounded-2xl')
-      const cardCenter = cards.nth(1)
-      const iconWrap = cardCenter.locator('.w-full.self-stretch').first()
-      const icon = iconWrap.locator('svg').first()
-      const title = cardCenter.locator('h3').first()
-
-      const iconBox = await icon.boundingBox()
-      const titleBox = await title.boundingBox()
-      const cardBox = await cardCenter.boundingBox()
-
-      expect(iconBox).toBeTruthy()
-      expect(titleBox).toBeTruthy()
-      expect(cardBox).toBeTruthy()
-
-      if (iconBox && titleBox && cardBox) {
-        const iconCenterX = iconBox.x + iconBox.width / 2
-        const titleCenterX = titleBox.x + titleBox.width / 2
-        const cardCenterX = cardBox.x + cardBox.width / 2
-
-        expect(Math.abs(iconCenterX - titleCenterX)).toBeLessThanOrEqual(2)
-        expect(Math.abs(titleCenterX - cardCenterX)).toBeLessThanOrEqual(2)
-      }
-
-      // Card 0 (align='left') verification:
-      // When align='left', icon stays left-aligned
-      const cardLeft = cards.nth(0)
-      const leftIconWrap = cardLeft.locator('.w-full.self-stretch').first()
-      const leftIcon = leftIconWrap.locator('svg').first()
-      const leftCardBox = await cardLeft.boundingBox()
-      const leftIconBox = await leftIcon.boundingBox()
-
-      expect(leftCardBox).toBeTruthy()
-      expect(leftIconBox).toBeTruthy()
-      if (leftCardBox && leftIconBox) {
-        // Left icon should be positioned near left edge of card (accounting for card padding)
-        expect(leftIconBox.x - leftCardBox.x).toBeLessThan(50)
-      }
-
-      // Check on public page at 375 mobile
-      await page.setViewportSize({ width: 375, height: 667 })
-      await page.waitForTimeout(400)
-
-      const mobileCardBox = await cardCenter.boundingBox()
-      const mobileIconBox = await icon.boundingBox()
-      const mobileTitleBox = await title.boundingBox()
-
-      if (mobileCardBox && mobileIconBox && mobileTitleBox) {
-        const mobileIconCenterX = mobileIconBox.x + mobileIconBox.width / 2
-        const mobileTitleCenterX = mobileTitleBox.x + mobileTitleBox.width / 2
-        const mobileCardCenterX = mobileCardBox.x + mobileCardBox.width / 2
-
-        expect(Math.abs(mobileIconCenterX - mobileTitleCenterX)).toBeLessThanOrEqual(2)
-        expect(Math.abs(mobileTitleCenterX - mobileCardCenterX)).toBeLessThanOrEqual(2)
-      }
-
-      // -------------------------------------------------------------
-      // CÁCH 2: Khung lưới "Căn lề tất cả thẻ: Giữa"
-      // -------------------------------------------------------------
-      await page.setViewportSize({ width: 1440, height: 900 })
-      await page.goto(`/builder/${pageId}`)
-      await page.locator('[class*="_PuckCanvas--ready_"]').waitFor({ timeout: 45000 })
-      await page.waitForTimeout(600)
-
-      const gridBlock = canvas.locator(`[data-puck-component="${gridId}"]`).first()
-      await gridBlock.click()
-
-      // Switch back to Content tab if in Style tab
-      const contentTab = page
-        .getByRole('tab', { name: /Nội dung|Content/i })
-        .or(page.locator('button').filter({ hasText: /^Nội dung$/ }))
-      if (await contentTab.isVisible()) {
-        await contentTab.click()
-      }
-
-      // Set "Căn lề tất cả thẻ" to "Giữa"
-      const gridAlignSelect = page.getByRole('combobox', {
-        name: vi.eb15b.gridCardAlign,
-      })
-      if (await gridAlignSelect.isVisible()) {
-        await gridAlignSelect.selectOption('center')
-      }
-
-      // Publish page
-      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
-      await expect(page.getByRole('status').filter({ hasText: 'Đã xuất bản' })).toBeVisible({
-        timeout: 15000,
-      })
-
-      // Verify on public page at 1440 - all 3 cards should now be centered
-      await page.goto(`/${pageSlug}`)
-      await page.waitForLoadState('networkidle')
-
-      const allCards = page.locator('article, .rounded-2xl')
-      const firstCard = allCards.nth(0)
-      const firstIconWrap = firstCard.locator('.w-full.self-stretch').first()
-      const firstIcon = firstIconWrap.locator('svg').first()
-      const firstTitle = firstCard.locator('h3').first()
-
-      const firstIconBox = await firstIcon.boundingBox()
-      const firstTitleBox = await firstTitle.boundingBox()
-      const firstCardBox = await firstCard.boundingBox()
-
-      if (firstIconBox && firstTitleBox && firstCardBox) {
-        const cX1 = firstIconBox.x + firstIconBox.width / 2
-        const cX2 = firstTitleBox.x + firstTitleBox.width / 2
-        const cXCard = firstCardBox.x + firstCardBox.width / 2
-
-        expect(Math.abs(cX1 - cX2)).toBeLessThanOrEqual(2)
-        expect(Math.abs(cX2 - cXCard)).toBeLessThanOrEqual(2)
-      }
+      await publicPage.close()
     } finally {
-      // Cleanup
-      if (pageId) {
-        await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
-      }
-      if (userId) {
-        await page.request.delete(`/api/users/${userId}`).catch(() => {})
-      }
+      if (pageId) await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
+      if (userId) await page.request.delete(`/api/users/${userId}`).catch(() => {})
     }
   })
 })
