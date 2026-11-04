@@ -1910,6 +1910,11 @@ export interface HabitCheckin {
         | 'tired'
         | 'discouraged'
         | 'stressed'
+        | 'insecure'
+        | 'unconfident'
+        | 'somewhat_confident'
+        | 'very_confident'
+        | 'wonderful'
       )
     | null;
   /**

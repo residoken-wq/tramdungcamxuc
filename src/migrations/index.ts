@@ -32,6 +32,7 @@ import * as migration_20261102_034312_eb08_block_templates from './20261102_0343
 import * as migration_20261102_080246_cf01_coffee_donation from './20261102_080246_cf01_coffee_donation'
 import * as migration_20261102_100526_pk13_title_spacing from './20261102_100526_pk13_title_spacing'
 import * as migration_20261102_133742_eb10_header_footer from './20261102_133742_eb10_header_footer'
+import * as migration_20261104_080000_dp01_confidence_emotions from './20261104_080000_dp01_confidence_emotions'
 
 export const migrations = [
   {
@@ -203,5 +204,10 @@ export const migrations = [
     up: migration_20261102_133742_eb10_header_footer.up,
     down: migration_20261102_133742_eb10_header_footer.down,
     name: '20261102_133742_eb10_header_footer',
+  },
+  {
+    up: migration_20261104_080000_dp01_confidence_emotions.up,
+    down: migration_20261104_080000_dp01_confidence_emotions.down,
+    name: '20261104_080000_dp01_confidence_emotions',
   },
 ]

@@ -21,8 +21,11 @@ import {
 import { getStationReflectionsForPlan } from '@/lib/habit/reflections.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
-import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
 import { ToolPaywall } from '@/components/site/trial/ToolPaywall'
+import { Dashboard28Days, type InitialCheckinData } from '@/components/habit/zip/Result/Dashboard28Days'
+import { HabitTrackerHeader } from '@/components/habit/zip/HabitTrackerHeader'
+import { StepNavigation } from '@/components/habit/zip/StepNavigation'
+import { HabitTrackerFooter } from '@/components/habit/zip/HabitTrackerFooter'
 
 export const metadata: Metadata = {
   title: `${vi.tracker.pageTitle} | Trạm Dừng Cảm Xúc`,
@@ -158,32 +161,36 @@ export default async function HabitTrackerPage() {
 
   return (
     <div className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-warm-ivory/80 to-lavender-mist/20">
-      <TrackerDashboard
-        planId={plan.id}
-        identityStatement={plan.identityStatement}
-        anchorHabit={plan.anchorHabit ?? null}
-        twoMinuteAction={plan.twoMinuteAction ?? null}
-        privateReason={plan.privateReason ?? null}
-        rhythmDays={plan.rhythmDays ?? null}
-        startDate={plan.startDate ?? null}
-        stationNames={stationNames}
-        stationQuestions={stationQuestions}
-        initialReflections={initialReflections}
-        currentDay={currentDay}
-        initialCheckins={initialCheckins}
-        readOnly={isReadOnly}
-        isTrialOrExpired={isTrialOrExpired}
-        buyUrl={buyUrl}
-        initialCertificate={eligibility.existingCertificate ?? null}
-        eligibility={eligibility}
-        customerName={customer.name ?? null}
-        journeyDays={journeyDays}
-        privacyNote={privacyNote}
-        afterJourneyTitle={afterJourneyTitle}
-        afterJourneyText={afterJourneyText}
-        coachBookingUrl={coachBookingUrl}
-        quote={quote}
-      />
+      <div className="w-full max-w-4xl mx-auto space-y-6">
+        <HabitTrackerHeader currentStep={7} />
+        <StepNavigation currentStep={7} hasSavedPlan={true} onStepChange={() => {}} />
+        <Dashboard28Days
+          planId={plan.id}
+          identityStatement={plan.identityStatement}
+          atomicHabit={plan.twoMinuteAction || plan.anchorHabit || null}
+          selectedMentor={plan.anchorHabit || null}
+          selectedDays={plan.rhythmDays ?? null}
+          startDate={plan.startDate ?? null}
+          stationNames={stationNames}
+          stationQuestions={stationQuestions}
+          initialReflections={initialReflections}
+          currentDay={currentDay}
+          initialCheckins={initialCheckins}
+          readOnly={isReadOnly}
+          isTrialOrExpired={isTrialOrExpired}
+          buyUrl={buyUrl}
+          initialCertificate={eligibility.existingCertificate ?? null}
+          eligibility={eligibility}
+          customerName={customer.name ?? null}
+          journeyDays={journeyDays}
+          privacyNote={privacyNote}
+          afterJourneyTitle={afterJourneyTitle}
+          afterJourneyText={afterJourneyText}
+          coachBookingUrl={coachBookingUrl}
+          quote={quote ? { quoteText: quote.text, quoteAuthor: quote.author } : null}
+        />
+        <HabitTrackerFooter />
+      </div>
     </div>
   )
 }

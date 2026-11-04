@@ -6,15 +6,15 @@ import config from '@/payload.config'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
-import { getCurrentDayOfPlan, getOrCreateTrackerPlan } from './tracker.server'
-import { EMOTIONS, type EmotionKey } from '@/lib/emotions'
+import { getCurrentDayOfPlan, getOrCreateTrackerPlan, findOwnTrackerPlan } from './tracker.server'
+import { ALL_CHECKIN_EMOTIONS, type EmotionKey } from '@/lib/emotions'
 import { vi } from '@/lib/i18n/vi'
 import { revalidatePath } from 'next/cache'
 import { getJourneyDays } from './journey'
 
 import { CHECKIN_STATUS_VALUES, type CheckinStatus } from '@/collections/HabitCheckins'
 
-const emotionKeys = EMOTIONS.map((e) => e.key) as [EmotionKey, ...EmotionKey[]]
+const emotionKeys = ALL_CHECKIN_EMOTIONS.map((e) => e.key) as [EmotionKey, ...EmotionKey[]]
 
 const checkInDaySchema = z
   .object({
@@ -385,3 +385,66 @@ export async function createTrackerPlanAction(identityStatement: string): Promis
     }
   })
 }
+
+/**
+ * REVIEW-REQUIRED: Server action cho học viên xóa check-in một ngày của chính mình (H5 / DP-01).
+ *
+ * Kiểm soát bảo mật:
+ * 1. Khách hàng lấy từ phiên đăng nhập (getCurrentCustomer).
+ * 2. Kế hoạch phải thuộc chính khách hàng (findOwnTrackerPlan).
+ * 3. Chỉ xóa bản ghi check-in thuộc kế hoạch của chính khách.
+ */
+export async function deleteCheckInDay(day: number): Promise<{
+  success: boolean
+  error?: string
+  message?: string
+  day?: number
+}> {
+  const customer = await getCurrentCustomer()
+  if (!customer) {
+    return {
+      success: false,
+      error: 'UNAUTHORIZED',
+      message: vi.tracker.actions.unauthorized,
+    }
+  }
+
+  const payload = await getPayload({ config: await config })
+  const plan = await findOwnTrackerPlan(customer.id, payload)
+  if (!plan) {
+    return {
+      success: false,
+      error: 'PLAN_NOT_FOUND',
+      message: vi.tracker.actions.planNotFound,
+    }
+  }
+
+  // REVIEW-REQUIRED: Khách hàng chỉ xóa bản ghi check-in thuộc kế hoạch của chính mình
+  const existing = await payload.find({
+    collection: 'habitCheckins',
+    where: {
+      and: [{ plan: { equals: plan.id } }, { day: { equals: day } }],
+    },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  if (existing.docs.length > 0) {
+    await payload.delete({
+      collection: 'habitCheckins',
+      id: existing.docs[0].id,
+      overrideAccess: true,
+    })
+  }
+
+  try {
+    revalidatePath('/habit/tracker')
+  } catch (_e) {}
+
+  return {
+    success: true,
+    day,
+  }
+}
+
