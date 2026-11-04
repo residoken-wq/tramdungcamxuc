@@ -1,0 +1,330 @@
+'use client'
+
+import React from 'react'
+import { ArrowLeft, ArrowRight, Plus, Trash2, Check, Anchor, ArrowUp } from 'lucide-react'
+import type { DailyRoutineItem } from '../types'
+import { StepQuoteHeader } from '../StepQuoteHeader'
+
+export interface Step3FindMentorProps {
+  routines: DailyRoutineItem[]
+  selectedMentor: string
+  mentorTime?: string
+  onRoutinesChange: (routines: DailyRoutineItem[]) => void
+  onMentorSelect: (mentor: string) => void
+  onMentorTimeChange?: (time: string) => void
+  onNext: () => void
+  onPrev: () => void
+}
+
+export function Step3FindMentor({
+  routines,
+  selectedMentor,
+  mentorTime = '',
+  onRoutinesChange,
+  onMentorSelect,
+  onMentorTimeChange,
+  onNext,
+  onPrev,
+}: Step3FindMentorProps) {
+  // Update activity text
+  const handleActivityChange = (id: string, text: string) => {
+    onRoutinesChange(
+      routines.map((r) => (r.id === id ? { ...r, activity: text } : r)),
+    )
+  }
+
+  // Update score
+  const handleScoreChange = (id: string, score: '+' | '-' | '=') => {
+    onRoutinesChange(
+      routines.map((r) => (r.id === id ? { ...r, score: r.score === score ? null : score } : r)),
+    )
+  }
+
+  // Add routine
+  const handleAddRoutine = () => {
+    const newRoutine: DailyRoutineItem = {
+      id: `r-${Date.now()}`,
+      activity: '',
+      score: null,
+    }
+    onRoutinesChange([...routines, newRoutine])
+  }
+
+  // Delete routine
+  const handleDeleteRoutine = (id: string) => {
+    if (routines.length <= 1) return
+    onRoutinesChange(routines.filter((r) => r.id !== id))
+  }
+
+  // Lọc ra các thói quen có score là "+" và có text
+  const positiveRoutines = routines.filter(
+    (r) => r.score === '+' && r.activity.trim().length > 0,
+  )
+
+  // Mentor chỉ hợp lệ khi nằm trong danh sách các việc [+]
+  const isMentorValid = positiveRoutines.some((r) => r.activity === selectedMentor)
+
+  return (
+    <div className="space-y-8">
+      {/* 1. Quote Block */}
+      <StepQuoteHeader
+        stage="GIAI ĐOẠN 2 · XÂY THÓI QUEN"
+        title="Tìm Mentor cho thói quen mới"
+        quote="“Môi trường là bàn tay vô hình định hình hành vi của con người.”"
+        author="— James Clear, Atomic Habits —"
+      />
+
+      {/* Lead-in Text */}
+      <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
+        Một thói quen mới không tự đứng được. Nó cần một thói quen cũ đã vững dìu đi — và thói quen cũ đó đã nằm sẵn trong ngày của bạn. Việc của bạn chỉ là tìm ra nó.
+      </p>
+
+      {/* 2. Khối 1: Soi lại một ngày của bạn (Habit Scorecard) */}
+      <div id="soi-lai-mot-ngay-section" className="bg-white rounded-[20px] border border-lavender-mist shadow-soft p-5 sm:p-7 space-y-6 scroll-mt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-lavender-mist/80 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-bright-magenta" />
+              <h2 className="font-ui font-bold text-lg text-deep-navy">
+                Soi lại một ngày của bạn
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
+              Liệt kê những việc bạn thật sự làm mỗi ngày, từ lúc mở mắt đến lúc đi ngủ. Đánh dấu có ích +, không có ích −, trung tính =.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs font-ui">
+            <span className="px-2 py-0.5 rounded bg-mint-haze text-deep-navy font-bold">[+] Có ích</span>
+            <span className="px-2 py-0.5 rounded bg-soft-pink text-bright-magenta font-bold">[-] Không có ích</span>
+            <span className="px-2 py-0.5 rounded bg-lavender-mist/60 text-deep-navy/70 font-bold">[=] Trung tính</span>
+          </div>
+        </div>
+
+        {/* List of routine items */}
+        <div className="space-y-3">
+          {routines.map((item, index) => (
+            <div
+              key={item.id}
+              className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-warm-ivory/60 border border-lavender-mist/70 transition-all hover:border-bright-magenta/30"
+            >
+              <span className="w-6 text-center text-xs font-bold text-deep-navy/70 font-ui">
+                #{index + 1}
+              </span>
+
+              {/* Text input */}
+              <input
+                type="text"
+                value={item.activity}
+                onChange={(e) => handleActivityChange(item.id, e.target.value)}
+                placeholder={
+                  index === 0
+                    ? 'Thức dậy, uống một ly nước'
+                    : index === 1
+                      ? 'Đánh răng, rửa mặt'
+                      : index === 2
+                        ? 'Ăn sáng'
+                        : 'Nhập việc bạn làm...'
+                }
+                className="flex-1 px-3 py-2 rounded-lg bg-white border border-lavender-mist focus:border-bright-magenta focus:ring-2 focus:ring-soft-pink outline-none text-xs sm:text-sm font-ui text-deep-navy transition-all"
+              />
+
+              {/* Score selector [+ / - / =] */}
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => handleScoreChange(item.id, '+')}
+                  title="Có ích (+)"
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
+                    item.score === '+'
+                      ? 'bg-mint-haze text-deep-navy border border-deep-navy/40'
+                      : 'bg-white text-deep-navy/70 border border-lavender-mist hover:bg-mint-haze/30'
+                  }`}
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleScoreChange(item.id, '-')}
+                  title="Không có ích (-)"
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
+                    item.score === '-'
+                      ? 'bg-soft-pink text-bright-magenta border border-bright-magenta'
+                      : 'bg-white text-deep-navy/70 border border-lavender-mist hover:bg-soft-pink/40'
+                  }`}
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleScoreChange(item.id, '=')}
+                  title="Trung tính (=)"
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
+                    item.score === '='
+                      ? 'bg-lavender-mist text-deep-navy border border-deep-navy/40'
+                      : 'bg-white text-deep-navy/70 border border-lavender-mist hover:bg-lavender-mist/40'
+                  }`}
+                >
+                  =
+                </button>
+              </div>
+
+              {/* Delete button */}
+              {routines.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleDeleteRoutine(item.id)}
+                  title="Xoá dòng"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-deep-navy/70 hover:text-accent-pink hover:bg-white transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Nút [+ Thêm một việc] */}
+        <div className="pt-1">
+          <button
+            type="button"
+            onClick={handleAddRoutine}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl border border-dashed border-bright-magenta/40 hover:border-bright-magenta text-bright-magenta text-xs sm:text-sm font-ui font-semibold bg-soft-pink/30 hover:bg-soft-pink/60 transition-all active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Thêm một việc</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Khối 2: "Chọn Mentor" */}
+      <div className="bg-white rounded-[20px] border border-lavender-mist shadow-soft p-5 sm:p-7 space-y-5">
+        <div className="border-b border-lavender-mist/80 pb-4">
+          <div className="flex items-center gap-2 mb-1">
+            <Anchor className="w-5 h-5 text-bright-magenta" />
+            <h2 className="font-ui font-bold text-lg text-deep-navy">
+              Chọn Mentor
+            </h2>
+          </div>
+          <p className="text-xs sm:text-sm text-deep-navy/70 font-ui leading-relaxed">
+            Mentor là một việc bạn làm gần như mỗi ngày mà không cần nghĩ. Nó sẽ là tín hiệu kéo thói quen mới đi theo. Chọn một việc bạn đã đánh dấu +.
+          </p>
+        </div>
+
+        {/* Khi chưa có việc [+] */}
+        {positiveRoutines.length === 0 ? (
+          <div className="p-5 sm:p-6 rounded-2xl bg-warm-ivory/80 border border-dashed border-lavender-mist text-center space-y-3">
+            <p className="text-xs sm:text-sm italic text-deep-navy/70 font-ui">
+              Chưa có việc nào được đánh dấu + ở bảng trên.
+            </p>
+            <div>
+              <button
+                type="button"
+                onClick={() => {
+                  const scorecardEl = document.getElementById('soi-lai-mot-ngay-section')
+                  if (scorecardEl) {
+                    scorecardEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  } else {
+                    window.scrollTo({ top: 100, behavior: 'smooth' })
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-soft-pink text-bright-magenta hover:bg-bright-magenta hover:text-white border border-bright-magenta/30 text-xs sm:text-sm font-ui font-semibold transition-all active:scale-95 shadow-soft cursor-pointer"
+              >
+                <ArrowUp className="w-3.5 h-3.5" />
+                <span>↑ Lên đánh dấu việc có ích</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* Khi đã có việc [+]: Hiển thị thành các nút Chip */
+          <div className="space-y-4">
+            <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/60 font-ui">
+              Chọn 1 việc từ các việc có ích [+] của bạn:
+            </label>
+
+            <div className="flex flex-wrap gap-2.5">
+              {positiveRoutines.map((routine) => {
+                const isSelected = isMentorValid && selectedMentor === routine.activity
+                return (
+                  <button
+                    key={routine.id}
+                    type="button"
+                    onClick={() => onMentorSelect(routine.activity)}
+                    className={`px-4 py-2 rounded-full font-ui text-xs sm:text-sm font-semibold border transition-all active:scale-95 flex items-center gap-2 cursor-pointer ${
+                      isSelected
+                        ? 'bg-bright-magenta text-white border-bright-magenta shadow-sm'
+                        : 'bg-white text-deep-navy/80 border-lavender-mist hover:border-bright-magenta/40 hover:bg-soft-pink/30'
+                    }`}
+                  >
+                    <span>{routine.activity}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Khi đã chọn 1 Chip Mentor */}
+            {isMentorValid && (
+              <div className="space-y-4 pt-2">
+                <div className="p-4 rounded-2xl bg-warm-ivory/60 border border-lavender-mist/80 space-y-1.5">
+                  <label
+                    htmlFor="mentor-time-input"
+                    className="block text-xs font-bold text-deep-navy/70 font-ui"
+                  >
+                    Việc này thường diễn ra lúc mấy giờ? — không bắt buộc
+                  </label>
+                  <input
+                    id="mentor-time-input"
+                    type="time"
+                    value={mentorTime}
+                    onChange={(e) => onMentorTimeChange?.(e.target.value)}
+                    className="px-3 py-2 text-xs sm:text-sm font-ui font-semibold text-deep-navy bg-white border border-lavender-mist rounded-xl focus:border-bright-magenta focus:ring-1 focus:ring-bright-magenta outline-none cursor-pointer shadow-sm"
+                  />
+                </div>
+
+                {/* Hộp xanh xác nhận */}
+                <div className="p-4 sm:p-5 rounded-[20px] bg-mint-haze/40 border border-deep-navy/20 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">⚓</span>
+                    <h4 className="text-sm sm:text-base font-bold text-deep-navy font-ui">
+                      Mentor của bạn: <span className="text-bright-magenta">{selectedMentor}</span>
+                      {mentorTime ? (
+                        <span className="text-deep-navy/70 font-normal"> · lúc {mentorTime}</span>
+                      ) : (
+                        ''
+                      )}
+                    </h4>
+                  </div>
+                  <p className="text-xs text-deep-navy/75 font-ui leading-relaxed pl-7">
+                    Thói quen mới sẽ đi ngay sau việc này.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex items-center justify-between pt-2">
+        <button
+          type="button"
+          onClick={onPrev}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-deep-navy/30 hover:border-deep-navy text-deep-navy text-sm font-ui font-semibold bg-white hover:bg-warm-ivory transition-all active:scale-95 cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Quay lại</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onNext}
+          className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white text-sm sm:text-base font-ui font-semibold shadow-soft hover:shadow-soft-md transition-all active:scale-95 group cursor-pointer"
+        >
+          <span>Tiếp • Gọi tên thói quen</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </button>
+      </div>
+    </div>
+  )
+}

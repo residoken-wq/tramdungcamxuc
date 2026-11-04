@@ -4,12 +4,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Product } from '@/payload-types'
 import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
-import { RichText } from '@payloadcms/richtext-lexical/react'
-import { isRichTextEmpty } from '@/lib/legal'
-import { TrialBanner } from '@/components/habit/TrialBanner'
-import { Button } from '@/components/ui/Button'
-import { PhysicalDeckButton } from '@/components/eq/PhysicalDeckButton'
-import { HeartLine } from '@/components/brand/HeartLine'
+import { EQBuddyIntro } from '@/components/eq/zip/EQBuddyIntro'
 import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
@@ -41,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function EqBuddyIntroPage() {
   const payload = await getPayload({ config: await config })
-  const [res, physicalRes] = await Promise.all([
+  const [res, physicalRes, eqContent] = await Promise.all([
     payload.find({
       collection: 'products',
       where: { slug: { equals: EQ_BUDDY_PRODUCT_SLUG } },
@@ -61,71 +56,33 @@ export default async function EqBuddyIntroPage() {
       limit: 1,
       overrideAccess: true,
     }),
+    payload
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .findGlobal({ slug: 'eq-buddy-content' as any, overrideAccess: true })
+      .catch(() => null),
   ])
   const product = res.docs[0] as Product | undefined
   const physicalProduct = physicalRes.docs[0] as Product | undefined
 
-  const title = product?.name || vi.eqBuddy.intro.defaultTitle
-  const shortDesc = product?.shortDescription || vi.eqBuddy.intro.defaultDescription
-  const hasDescription = Boolean(product?.description && !isRichTextEmpty(product.description))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rawContent = (eqContent || {}) as any
+  const isFreeMode = rawContent?.eqAccessMode === 'free'
+  const shopeeUrl =
+    rawContent?.shopeeUrl ||
+    physicalProduct?.externalUrl ||
+    'https://shopee.vn/search?keyword=tr%E1%BA%A1m%20d%E1%BB%ABng%20c%E1%BA%A3m%20x%C3%BAc'
+
+  const contentProps = {
+    ...rawContent,
+    badge: rawContent.badge || vi.eqBuddy.intro.badge,
+    mainTitle: rawContent.mainTitle || product?.name || vi.eqBuddy.intro.defaultTitle,
+    subtitle: rawContent.subtitle || product?.shortDescription || vi.eqBuddy.intro.defaultDescription,
+    shopeeUrl,
+  }
 
   return (
-    <div className="w-full">
-      {/* Trial banner when customer is logged in */}
-      <TrialBanner productSlug={EQ_BUDDY_PRODUCT_SLUG} />
-
-      <div className="max-w-4xl mx-auto py-12 sm:py-16 px-6 sm:px-8">
-        <header className="text-center max-w-2xl mx-auto space-y-4">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-soft-pink text-bright-magenta font-ui text-xs font-bold uppercase tracking-wider">
-            {vi.eqBuddy.intro.badge}
-          </span>
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-deep-navy tracking-tight">
-            {title}
-          </h1>
-          {shortDesc && (
-            <p className="font-quote italic text-lg sm:text-xl text-deep-navy/80 leading-relaxed pt-2">
-              {shortDesc}
-            </p>
-          )}
-
-          {/* Primary CTA & Shopee Physical Deck */}
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              href="/eq-buddy/rut-the"
-              variant="primary"
-              size="lg"
-              className="shadow-md hover:shadow-lg transition-all motion-reduce:transition-none"
-            >
-              {vi.eqBuddy.intro.drawButton}
-            </Button>
-            {physicalProduct && (
-              <PhysicalDeckButton
-                product={physicalProduct}
-                campaign="eq_intro_page"
-                variant="ghost"
-              />
-            )}
-          </div>
-        </header>
-
-        <div
-          // a11y-contrast-ok: SVG trang trí HeartLine có aria-hidden, không chứa chữ
-          className="flex items-center justify-center my-10 sm:my-14 text-accent-pink/40"
-          aria-hidden="true"
-        >
-          <HeartLine width={100} height={32} />
-        </div>
-
-        {/* Rich text detailed description from CMS */}
-        {hasDescription && (
-          <section className="bg-warm-ivory rounded-3xl border border-lavender-mist shadow-soft p-6 sm:p-10 md:p-12">
-            <div className="prose prose-purple max-w-none font-sans text-deep-navy/90 leading-relaxed space-y-4">
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-              <RichText data={product?.description as any} />
-            </div>
-          </section>
-        )}
-      </div>
+    <div className="w-full py-6 sm:py-10 px-4 sm:px-6">
+      <EQBuddyIntro content={contentProps} showTrialBanner={!isFreeMode} />
     </div>
   )
 }

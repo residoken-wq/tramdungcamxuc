@@ -13,7 +13,7 @@ export type PreviewCollection =
   | 'legalPages'
   | 'workshops'
 
-export type PreviewGlobal = 'siteSettings' | 'navigation'
+export type PreviewGlobal = 'siteSettings' | 'navigation' | 'eqBuddyContent'
 
 export type PreviewTarget = PreviewCollection | PreviewGlobal
 
@@ -75,9 +75,12 @@ export function buildPreviewUrl(
   target: PreviewTarget,
   data?: Record<string, unknown> | null,
 ): string | null {
-  // Global settings luôn trỏ về trang chủ
+  // Global settings luôn trỏ về trang chủ hoặc landing page tương ứng
   if (target === 'siteSettings' || target === 'navigation') {
     return appendPreviewQuery('/')
+  }
+  if (target === 'eqBuddyContent') {
+    return appendPreviewQuery('/eq-buddy')
   }
 
   if (!data || typeof data !== 'object') {

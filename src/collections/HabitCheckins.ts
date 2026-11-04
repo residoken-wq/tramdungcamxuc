@@ -15,7 +15,7 @@ import {
   isOwner,
   ownerOrSelfCustomerField,
 } from '../lib/auth/access'
-import { EMOTIONS } from '../lib/emotions'
+import { ALL_CHECKIN_EMOTIONS } from '../lib/emotions'
 import { vi } from '../lib/i18n/vi'
 import { isVotingDay } from '../lib/habit/rhythm'
 
@@ -236,7 +236,7 @@ export const HabitCheckins: CollectionConfig = {
       ...select(
         'emotion',
         'Cảm xúc',
-        EMOTIONS.map((emotion) => [emotion.key, emotion.label] as [string, string]),
+        ALL_CHECKIN_EMOTIONS.map((emotion) => [emotion.key, emotion.label] as [string, string]),
       ),
       access: { read: ownerOrSelfCustomerField },
     },

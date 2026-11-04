@@ -13,6 +13,19 @@ import { EMOTIONS } from '../lib/emotions'
 import { vi } from '../lib/i18n/vi'
 import { collectionLivePreview } from '../lib/live-preview'
 
+export const EQ_GRADIENT_THEME_OPTIONS: [string, string][] = [
+  ['from-[#FDE6F6] via-[#FAF7F4] to-[#E9DDF9]', 'Hồng nhạt – Ngà ấm – Oải hương'],
+  ['from-[#D9F1EA] via-[#FAF7F4] to-[#F6E9B8]', 'Bạc hà – Ngà ấm – Bơ kem'],
+  ['from-[#E9DDF9] via-[#FAF7F4] to-[#FDE6F6]', 'Oải hương – Ngà ấm – Hồng nhạt'],
+  ['from-[#F6E9B8] via-[#FAF7F4] to-[#D9F1EA]', 'Bơ kem – Ngà ấm – Bạc hà'],
+  ['from-[#FDE6F6] via-[#FAF7F4] to-[#D9F1EA]', 'Hồng nhạt – Ngà ấm – Bạc hà'],
+  ['from-[#D9F1EA] via-[#FAF7F4] to-[#E9DDF9]', 'Bạc hà – Ngà ấm – Oải hương'],
+  ['from-[#FAF7F4] via-[#E9DDF9] to-[#F6E9B8]', 'Ngà ấm – Oải hương – Bơ kem'],
+  ['from-[#FDE6F6] via-[#FAF7F4] to-[#F6E9B8]', 'Hồng nhạt – Ngà ấm – Bơ kem'],
+  ['from-[#E9DDF9] via-[#FAF7F4] to-[#D9F1EA]', 'Oải hương – Ngà ấm – Bạc hà'],
+  ['from-[#F6E9B8] via-[#FAF7F4] to-[#FDE6F6]', 'Bơ kem – Ngà ấm – Hồng nhạt'],
+]
+
 const lockPrintedQR: CollectionBeforeChangeHook = ({ data, originalDoc, req }) => {
   if (originalDoc?.printedAt) {
     const errors: { path: string; message: string }[] = []
@@ -86,6 +99,21 @@ const baseCollection = contentCollection('eqCards', 'Thẻ EQ Buddy', vi.cms.nav
     },
     validate: validateRequiredOnPublish('Thông điệp (mặt trước)'),
   },
+  {
+    name: 'category',
+    label: 'Nhóm thẻ (Category)',
+    type: 'text',
+    maxLength: 60,
+    admin: {
+      description: 'Nhóm thẻ hiển thị ở góc trên mặt trước (ví dụ: Biết ơn & Đong đầy, Thấu cảm & Vỗ về). Tối đa 60 ký tự.',
+    },
+  },
+  select('gradientTheme', 'Nền chuyển sắc thẻ', EQ_GRADIENT_THEME_OPTIONS, {
+    admin: {
+      description: 'Tổ hợp màu nền chuyển sắc từ bộ màu Brand Book 2026.',
+    },
+    defaultValue: 'from-[#FDE6F6] via-[#FAF7F4] to-[#E9DDF9]',
+  }),
   {
     type: 'collapsible',
     label: 'Mặt sau – 3 câu hỏi',
