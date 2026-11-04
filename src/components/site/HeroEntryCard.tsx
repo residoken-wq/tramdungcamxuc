@@ -87,14 +87,14 @@ export function HeroEntryCard({
           {hasGroupLabel ? (
             <span
               {...textTarget(id, 'groupLabel')}
-              className={`inline-block font-ui font-bold uppercase tracking-widest mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${groupLabelClass}`}
+              className={`inline-block align-top font-ui font-bold uppercase tracking-widest mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${groupLabelClass}`}
             >
               {groupLabel}
             </span>
           ) : label ? (
             <span
               {...textTarget(id, 'label')}
-              className={`inline-block px-3 py-1 rounded-full font-ui font-bold uppercase tracking-wider text-deep-navy mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${badgeClass}`}
+              className={`inline-block align-top px-3 py-1 rounded-full font-ui font-bold uppercase tracking-wider text-deep-navy mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${badgeClass}`}
             >
               {label}
             </span>
