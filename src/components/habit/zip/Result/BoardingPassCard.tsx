@@ -139,7 +139,7 @@ export function BoardingPassCard({
         <div className="p-6 sm:p-8 space-y-6 relative z-10">
           {/* Row 1: TUYÊN NGÔN VỀ THÓI QUEN */}
           <div className="p-5 rounded-2xl bg-white/75 backdrop-blur-sm border border-lavender-mist shadow-xs space-y-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-accent-pink font-ui">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-bright-magenta font-ui">
               TUYÊN NGÔN VỀ THÓI QUEN
             </span>
             <p className="font-ui text-base sm:text-lg text-deep-navy font-medium leading-relaxed">
@@ -150,7 +150,7 @@ export function BoardingPassCard({
                     {identity.identityAction || "..."}
                   </span>{" "}
                   để trở thành{" "}
-                  <span className="text-accent-pink font-bold underline decoration-accent-pink/50 underline-offset-4">
+                  <span className="text-bright-magenta font-bold underline decoration-accent-pink/50 underline-offset-4">
                     {identity.identityRole || "..."}
                   </span>
                   .&rdquo;
@@ -165,7 +165,7 @@ export function BoardingPassCard({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* 1. NHỊP ĐIỆU */}
             <div className="p-4 rounded-xl bg-white/75 backdrop-blur-sm border border-lavender-mist shadow-xs space-y-1">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-accent-pink font-ui block">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-bright-magenta font-ui block">
                 NHỊP ĐIỆU
               </span>
               <div className="font-heading text-base sm:text-lg text-deep-navy">
@@ -191,7 +191,7 @@ export function BoardingPassCard({
 
             {/* 3. MENTOR */}
             <div className="p-4 rounded-xl bg-white/75 backdrop-blur-sm border border-lavender-mist shadow-xs space-y-1">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-accent-pink font-ui block">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-bright-magenta font-ui block">
                 MENTOR
               </span>
               <div className="font-ui font-bold text-sm sm:text-base text-deep-navy truncate">
@@ -240,7 +240,7 @@ export function BoardingPassCard({
 
               {/* Craving */}
               <div className="p-2.5 rounded-xl bg-white/75 backdrop-blur-sm border border-lavender-mist shadow-xs">
-                <span className="text-accent-pink font-bold block text-[10px] uppercase">
+                <span className="text-bright-magenta font-bold block text-[10px] uppercase">
                   2 · CRAVING · KHAO KHÁT
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
@@ -314,7 +314,7 @@ export function BoardingPassCard({
           )}
         </button>
 
-        <p className="text-xs text-deep-navy/50 font-ui">
+        <p className="text-xs text-deep-navy/70 font-ui">
           Trình duyệt này không tải file được. Bạn có thể chụp màn hình tấm thẻ.
         </p>
       </div>
@@ -394,7 +394,7 @@ export function BoardingPassCard({
 
             <div>
               <label htmlFor={emailId} className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 mb-1">
-                Email nhận kế hoạch <span className="text-accent-pink">*</span>
+                Email nhận kế hoạch <span className="text-bright-magenta">*</span>
               </label>
               <input
                 id={emailId}

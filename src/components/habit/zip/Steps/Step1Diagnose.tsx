@@ -80,7 +80,7 @@ export function Step1Diagnose({
   const questions = diagnose?.questions && diagnose.questions.length > 0
     ? diagnose.questions.map((q, idx) => ({
         id: idx + 1,
-        text: q.text,
+        text: q.statement,
         category: (q.stage || 'cue').toLowerCase(),
       }))
     : DEFAULT_DIAGNOSE_QUESTIONS
@@ -125,8 +125,8 @@ export function Step1Diagnose({
   }
 
   // H4: Chỉ hiện thẻ số liệu khi có nguồn
-  const statCards = diagnose?.statCards
-    ? diagnose.statCards.filter((c) => Boolean(c.sourceLabel?.trim()))
+  const statCards = diagnose?.stats
+    ? diagnose.stats.filter((c) => Boolean(c.sourceLabel?.trim()))
     : []
 
   return (
@@ -182,7 +182,7 @@ export function Step1Diagnose({
                   </p>
                 </div>
                 {item.sourceLabel && (
-                  <p className="text-[10px] text-deep-navy/40 font-ui mt-3 pt-2 border-t border-lavender-mist/60">
+                  <p className="text-[10px] text-deep-navy/70 font-ui mt-3 pt-2 border-t border-lavender-mist/60">
                     {item.sourceLabel}
                   </p>
                 )}
@@ -263,7 +263,7 @@ export function Step1Diagnose({
 
                 {/* Dòng chú giải 2 đầu dưới câu 1 */}
                 {q.id === 1 && (
-                  <div className="flex justify-between text-xs text-deep-navy/55 mt-1.5 max-w-md px-0.5 font-ui">
+                  <div className="flex justify-between text-xs text-deep-navy/70 mt-1.5 max-w-md px-0.5 font-ui">
                     <span>1 · Không bao giờ</span>
                     <span>5 · Rất thường xuyên</span>
                   </div>
@@ -348,7 +348,7 @@ export function Step1Diagnose({
               })}
             </div>
 
-            <p className="text-xs text-deep-navy/55 font-ui italic pt-2 border-t border-lavender-mist/60">
+            <p className="text-xs text-deep-navy/70 font-ui italic pt-2 border-t border-lavender-mist/60">
               Điểm càng cao, bạn càng hay vướng ở giai đoạn đó của vòng lặp.
             </p>
           </div>

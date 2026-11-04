@@ -108,7 +108,7 @@ export function Step3FindMentor({
               key={item.id}
               className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-warm-ivory/60 border border-lavender-mist/70 transition-all hover:border-bright-magenta/30"
             >
-              <span className="w-6 text-center text-xs font-bold text-deep-navy/40 font-ui">
+              <span className="w-6 text-center text-xs font-bold text-deep-navy/70 font-ui">
                 #{index + 1}
               </span>
 
@@ -138,7 +138,7 @@ export function Step3FindMentor({
                   className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
                     item.score === '+'
                       ? 'bg-mint-haze text-deep-navy border border-deep-navy/40'
-                      : 'bg-white text-deep-navy/40 border border-lavender-mist hover:bg-mint-haze/30'
+                      : 'bg-white text-deep-navy/70 border border-lavender-mist hover:bg-mint-haze/30'
                   }`}
                 >
                   +
@@ -150,7 +150,7 @@ export function Step3FindMentor({
                   className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
                     item.score === '-'
                       ? 'bg-soft-pink text-bright-magenta border border-bright-magenta'
-                      : 'bg-white text-deep-navy/40 border border-lavender-mist hover:bg-soft-pink/40'
+                      : 'bg-white text-deep-navy/70 border border-lavender-mist hover:bg-soft-pink/40'
                   }`}
                 >
                   −
@@ -162,7 +162,7 @@ export function Step3FindMentor({
                   className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
                     item.score === '='
                       ? 'bg-lavender-mist text-deep-navy border border-deep-navy/40'
-                      : 'bg-white text-deep-navy/40 border border-lavender-mist hover:bg-lavender-mist/40'
+                      : 'bg-white text-deep-navy/70 border border-lavender-mist hover:bg-lavender-mist/40'
                   }`}
                 >
                   =
@@ -175,7 +175,7 @@ export function Step3FindMentor({
                   type="button"
                   onClick={() => handleDeleteRoutine(item.id)}
                   title="Xoá dòng"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-deep-navy/30 hover:text-accent-pink hover:bg-white transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-deep-navy/70 hover:text-accent-pink hover:bg-white transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

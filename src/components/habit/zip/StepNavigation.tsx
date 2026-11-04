@@ -83,7 +83,7 @@ export function StepNavigation({
             {groupIdx > 0 && <div className="w-px h-5 bg-lavender-mist shrink-0 mx-1" />}
 
             {/* Nhãn phân nhóm nhỏ in hoa */}
-            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-deep-navy/55 font-ui px-2 py-1 rounded-md bg-lavender-mist/40 shrink-0 whitespace-nowrap select-none">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-deep-navy/70 font-ui px-2 py-1 rounded-md bg-lavender-mist/40 shrink-0 whitespace-nowrap select-none">
               {group.groupLabel}
             </span>
 
@@ -134,7 +134,7 @@ export function StepNavigation({
                         ? 'bg-soft-pink/50 text-deep-navy border-lavender-mist hover:bg-soft-pink hover:border-bright-magenta/30 cursor-pointer'
                         : isAccessible
                           ? 'bg-white text-deep-navy/80 border-lavender-mist hover:bg-warm-ivory hover:text-deep-navy cursor-pointer'
-                          : 'bg-white/40 text-deep-navy/30 border-lavender-mist/40 cursor-not-allowed opacity-60'
+                          : 'bg-white/40 text-deep-navy/70 border-lavender-mist/40 cursor-not-allowed opacity-60'
                   }`}
                 >
                   <span

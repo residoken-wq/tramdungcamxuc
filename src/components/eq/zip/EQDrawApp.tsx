@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import confetti from 'canvas-confetti'
 import {
   Flower2,
@@ -54,6 +55,7 @@ export function EQDrawApp({
   guideModalQuote,
   paywall,
 }: EQDrawAppProps) {
+  const router = useRouter()
   const [step, setStep] = useState<'draw' | 'result' | 'all-cards' | 'paywall'>(initialStep)
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
   const [isFlipped, setIsFlipped] = useState(false)
@@ -151,7 +153,7 @@ export function EQDrawApp({
   const handleSaveReflection = async () => {
     if (!selectedCard) return
     if (!isLoggedIn) {
-      window.location.href = `/tai-khoan/dang-nhap?next=${encodeURIComponent(window.location.pathname)}`
+      router.push(`/tai-khoan/dang-nhap?next=${encodeURIComponent(window.location.pathname)}`)
       return
     }
 
@@ -222,7 +224,8 @@ export function EQDrawApp({
             <div className="p-6 sm:p-8 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-5 text-center sm:text-left">
               <div className="space-y-1.5">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
-                  <Flower2 className="w-3.5 h-3.5 text-accent-pink" />
+                  {/* a11y-contrast-ok: SVG icon trang trí */}
+<Flower2 className="w-3.5 h-3.5 text-accent-pink" />
                   <span>Bước 2: Lắng nghe tiếng lòng</span>
                 </div>
 
@@ -269,7 +272,7 @@ export function EQDrawApp({
                     if (e.key === 'Enter') handleDrawCard()
                   }}
                   placeholder="VD: Mình đang thấy hơi mông lung và phân vân trước quyết định mới..."
-                  className="w-full px-4 py-3 rounded-2xl border border-lavender-mist text-xs sm:text-sm text-deep-navy placeholder:text-deep-navy/40 focus:border-bright-magenta focus:ring-2 focus:ring-bright-magenta/20 focus:outline-none transition-all bg-warm-ivory/50 focus:bg-white"
+                  className="w-full px-4 py-3 rounded-2xl border border-lavender-mist text-xs sm:text-sm text-deep-navy placeholder:text-deep-navy/70 focus:border-bright-magenta focus:ring-2 focus:ring-bright-magenta/20 focus:outline-none transition-all bg-warm-ivory/50 focus:bg-white"
                 />
 
                 <button
@@ -323,7 +326,7 @@ export function EQDrawApp({
                 )}
               </p>
 
-              <span className="text-[11px] text-deep-navy/50 block">
+              <span className="text-[11px] text-deep-navy/70 block">
                 (Chạm vào thẻ hoặc bấm nút Lật thẻ để đọc câu hỏi suy ngẫm)
               </span>
             </div>
@@ -376,7 +379,7 @@ export function EQDrawApp({
                 <button
                   type="button"
                   onClick={() => setStep('draw')}
-                  className="text-deep-navy/50 hover:text-deep-navy transition-colors cursor-pointer"
+                  className="text-deep-navy/70 hover:text-deep-navy transition-colors cursor-pointer"
                 >
                   Đổi cảm xúc khác
                 </button>
@@ -476,7 +479,8 @@ export function EQDrawApp({
             <div className="flex items-center justify-between">
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold mb-1">
-                  <BookOpen className="w-3.5 h-3.5 text-accent-pink" />
+                  {/* a11y-contrast-ok: SVG icon trang trí */}
+<BookOpen className="w-3.5 h-3.5 text-accent-pink" />
                   <span>Bộ sưu tập 26 thông điệp</span>
                 </div>
                 <h3 className="font-display text-xl sm:text-2xl text-deep-navy uppercase">
@@ -514,7 +518,7 @@ export function EQDrawApp({
                         : 'bg-white hover:bg-warm-ivory border-lavender-mist'
                     }`}
                   >
-                    <div className="flex items-center justify-between text-[10px] text-deep-navy/50 mb-2">
+                    <div className="flex items-center justify-between text-[10px] text-deep-navy/70 mb-2">
                       <span className="font-bold">THẺ #{String(card.code || card.order || card.id).padStart(2, '0')}</span>
                       <span className="px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta font-semibold">
                         {card.keywordVi || 'Việt'}
@@ -530,7 +534,7 @@ export function EQDrawApp({
                         &ldquo;{card.message}&rdquo;
                       </p>
                     ) : (
-                      <p className="font-ui text-xs text-deep-navy/40 italic mt-1.5">
+                      <p className="font-ui text-xs text-deep-navy/70 italic mt-1.5">
                         {isUnlockedAll ? 'Chạm để mở thẻ' : 'Dùng thử hoặc mua để mở trọn vẹn'}
                       </p>
                     )}

@@ -155,14 +155,19 @@ export function flowDraftToZipState(draft: HabitFlowDraft): ZipState {
   const routines = scorecardToRoutineItems(draft.scorecard)
 
   const identity: IdentityFormData = {
+    creatorName: '',
     identityAction: draft.actionText || '',
     identityRole: draft.personText || '',
-    postsPerWeek: String(draft.rhythmDays?.length || 3),
+    postsPerWeek: draft.rhythmDays?.length || 3,
     selectedDays: weekdaysToDays(draft.rhythmDays || []),
     atomicHabit: draft.twoMinuteAction || '',
     selectedMentor: draft.anchorHabit || '',
-    companionName: draft.companionName || '',
+    mentorTime: '',
+    whyImportant: '',
     startDate: draft.startDate || '',
+    endDate: '',
+    partnerName: '',
+    companionName: draft.companionName || '',
   }
 
   const cues: string[] = []

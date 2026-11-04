@@ -656,7 +656,7 @@ export function Step5LoopDesign({
               <div className="p-5 sm:p-6 border-b border-lavender-mist/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider font-ui text-deep-navy/55 px-2 py-0.5 rounded bg-lavender-mist/40">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider font-ui text-deep-navy/70 px-2 py-0.5 rounded bg-lavender-mist/40">
                       {section.lawNumber}
                     </span>
 
@@ -688,7 +688,7 @@ export function Step5LoopDesign({
                 >
                   <PlayCircle className="w-3.5 h-3.5 text-bright-magenta flex-shrink-0" />
                   <span>Video bài giảng</span>
-                  <ExternalLink className="w-3 h-3 text-deep-navy/40" />
+                  <ExternalLink className="w-3 h-3 text-deep-navy/70" />
                 </button>
               </div>
 
@@ -776,7 +776,7 @@ export function Step5LoopDesign({
                         <div className="mt-4 pt-4 border-t border-lavender-mist/60 space-y-3.5 font-ui animate-fadeIn">
                           {/* Ví dụ thực tế */}
                           <div className="p-3.5 rounded-2xl bg-white border border-lavender-mist/70 space-y-1.5">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/55 block">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 block">
                               Ví dụ:
                             </span>
                             <ul className="space-y-1 text-xs text-deep-navy/80">
@@ -819,7 +819,7 @@ export function Step5LoopDesign({
                             >
                               <PlayCircle className="w-3.5 h-3.5" />
                               <span>Xem video hướng dẫn kỹ thuật này</span>
-                              <ExternalLink className="w-3 h-3 text-deep-navy/40 group-hover:text-bright-magenta transition-colors" />
+                              <ExternalLink className="w-3 h-3 text-deep-navy/70 group-hover:text-bright-magenta transition-colors" />
                             </button>
                           </div>
                         </div>

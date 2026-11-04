@@ -92,20 +92,23 @@ describe('DP-01 Habit Flow Components & Logic', () => {
     const zipState: ZipState = {
       diagnoseAnswers: { 1: 5, 2: 4, 3: 1 },
       routines: [
-        { id: 1, time: '07:00', activity: 'Uống nước', score: '+' },
-        { id: 2, time: '07:30', activity: 'Lướt tin tức', score: '-' },
+        { id: '1', activity: 'Uống nước', score: '+' },
+        { id: '2', activity: 'Lướt tin tức', score: '-' },
       ],
       identity: {
+        creatorName: '',
         identityAction: 'viết bài',
         identityRole: 'người viết sâu sắc',
-        postsPerWeek: '3',
+        postsPerWeek: 3,
         selectedDays: ['T2', 'T4', 'T6'],
         atomicHabit: 'mở Notion gõ 3 dòng',
         selectedMentor: 'Uống nước',
         mentorTime: '07:00',
+        whyImportant: '',
         companionName: 'Hana',
         startDate: '2026-11-04',
         endDate: '2026-12-01',
+        partnerName: '',
       },
       loopTechniques: {
         cues: ['Soi lại nhịp sinh học', 'Ghép thói quen mới'],

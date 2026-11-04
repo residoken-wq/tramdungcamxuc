@@ -40,6 +40,8 @@ const sampleCard: PublicEqCard = {
   smallAction: 'Hít 3 hơi thở sâu.',
   story: null,
   qrSlug: 'the-01-acceptance',
+  printedAt: null,
+  _status: 'published',
 }
 
 describe('DP-01b: EQ Buddy Zip UI & Components', () => {

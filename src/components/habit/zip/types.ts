@@ -25,6 +25,7 @@ export interface IdentityFormData {
   startDate: string
   endDate: string
   partnerName: string
+  companionName?: string
 }
 
 export interface LoopTechniques {
@@ -32,10 +33,10 @@ export interface LoopTechniques {
   cravings: string[]
   responses: string[]
   rewards: string[]
-  customCues: string[]
-  customCravings: string[]
-  customResponses: string[]
-  customRewards: string[]
+  customCues?: string[]
+  customCravings?: string[]
+  customResponses?: string[]
+  customRewards?: string[]
   appliedNotes?: Record<string, string>
 }
 
@@ -51,7 +52,9 @@ export interface TrackerDayItem {
   postPublished: boolean
   emoji?: string
   moodLabel?: string
-  note?: string
+  emotion?: string | null
+  emotionLabel?: string | null
+  note?: string | null
 }
 
 export interface WeeklyReflections {
@@ -60,4 +63,3 @@ export interface WeeklyReflections {
   station3: string
   station4: string
 }
-

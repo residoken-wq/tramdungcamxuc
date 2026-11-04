@@ -81,7 +81,7 @@ export function EQCardFlip({
 
             {/* Front Quote */}
             <div className="p-3 sm:p-4 rounded-2xl bg-white/60 border border-white/80 shadow-soft-md backdrop-blur-sm">
-              <Quote className="w-4 h-4 text-bright-magenta/50 mb-1 mx-auto" />
+              <Quote className="w-4 h-4 text-bright-magenta mb-1 mx-auto" />
               <p className="font-quote italic text-sm sm:text-base text-deep-navy leading-relaxed">
                 &ldquo;{card.message}&rdquo;
               </p>
@@ -89,7 +89,7 @@ export function EQCardFlip({
           </div>
 
           {/* Bottom thẻ */}
-          <div className="flex items-center justify-between text-[10px] text-deep-navy/50 relative z-10 border-t border-deep-navy/5 pt-2 font-ui">
+          <div className="flex items-center justify-between text-[10px] text-deep-navy/70 relative z-10 border-t border-deep-navy/5 pt-2 font-ui">
             <span className="font-quote italic text-bright-magenta">
               Trạm Dừng Cảm Xúc ♡
             </span>
@@ -113,7 +113,7 @@ export function EQCardFlip({
               <RotateCw className="w-3 h-3" />
               <span>LỜI GỢI MỞ SUY NGẪM</span>
             </span>
-            <span className="text-deep-navy/50 font-bold">
+            <span className="text-deep-navy/70 font-bold">
               #{cardNum} • {card.keywordEn || card.code}
             </span>
           </div>

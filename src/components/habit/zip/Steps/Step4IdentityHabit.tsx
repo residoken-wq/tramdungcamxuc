@@ -157,7 +157,7 @@ export function Step4IdentityHabit({
 
           {/* 4 Chip gợi ý vai trò */}
           <div className="pt-2 border-t border-lavender-mist/60">
-            <span className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/50 font-ui mb-2">
+            <span className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 font-ui mb-2">
               Gợi ý vai trò:
             </span>
             <div className="flex flex-wrap gap-2">
@@ -297,7 +297,7 @@ export function Step4IdentityHabit({
 
           {/* 4 Chip gợi ý */}
           <div>
-            <span className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/50 font-ui mb-2">
+            <span className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 font-ui mb-2">
               Gợi ý thói quen:
             </span>
             <div className="flex flex-wrap gap-2">
@@ -369,7 +369,7 @@ export function Step4IdentityHabit({
               placeholder="Lắng nghe bên trong một chút. Điều gì thật sự thôi thúc bạn?"
               className="w-full p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist focus:border-bright-magenta outline-none text-xs sm:text-sm text-deep-navy transition-all leading-relaxed"
             />
-            <p className="text-xs text-deep-navy/50 font-ui mt-1.5 leading-relaxed">
+            <p className="text-xs text-deep-navy/70 font-ui mt-1.5 leading-relaxed">
               Câu này chỉ mình bạn đọc. Nó sẽ hiện lại vào đúng ngày bạn muốn bỏ cuộc.
             </p>
           </div>
@@ -387,7 +387,7 @@ export function Step4IdentityHabit({
                 onChange={(e) => onDraftChange({ ...draft, startDate: e.target.value })}
                 className="w-full h-11 px-3.5 py-2.5 rounded-2xl bg-white border border-lavender-mist focus:border-bright-magenta text-xs sm:text-sm font-ui text-deep-navy outline-none transition-all shadow-sm"
               />
-              <p className="text-xs text-deep-navy/50 font-ui mt-1.5">
+              <p className="text-xs text-deep-navy/70 font-ui mt-1.5">
                 Bạn sẽ về đích ngày {formatFinishDate(endDate)}.
               </p>
             </div>

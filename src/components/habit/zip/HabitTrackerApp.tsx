@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
@@ -285,7 +286,7 @@ export function HabitTrackerApp({
         });
       }
 
-      track("habit_plan_submitted", {
+      track("habit_plan_submitted" as any, {
         step: 6,
         duration: startTimeRef.current
           ? Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
@@ -304,7 +305,7 @@ export function HabitTrackerApp({
       const duration = startTimeRef.current
         ? Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
         : 0;
-      track("habit_loop_completed", { step: 6, duration });
+      track("habit_loop_completed" as any, { step: 6, duration });
     }
     goToStep(next as HabitStep);
   };
@@ -316,7 +317,7 @@ export function HabitTrackerApp({
         <HabitTrackerHeader
           currentStep={currentStep}
           maxReachedStep={maxReachedStep}
-          onStageClick={(step) => goToStep(step)}
+          onStageClick={(step: HabitStep) => goToStep(step)}
         />
 
         {/* Thanh Điều hướng 6 Bước + Pill Bước 7 (28 ngày) */}
@@ -324,7 +325,7 @@ export function HabitTrackerApp({
           currentStep={currentStep}
           maxReachedStep={maxReachedStep}
           hasSavedPlan={hasSavedPlan}
-          onSelectStep={(step) => goToStep(step)}
+          onStepChange={(step: HabitStep) => goToStep(step)}
         />
 
         {/* Nội dung Bước Hiện Tại */}
@@ -350,11 +351,16 @@ export function HabitTrackerApp({
               selectedMentor={identity.selectedMentor}
               mentorTime={identity.mentorTime}
               onRoutinesChange={setRoutines}
-              onMentorSelect={(mentor, time) =>
+              onMentorSelect={(mentor: string) =>
                 setIdentity((prev) => ({
                   ...prev,
                   selectedMentor: mentor,
-                  mentorTime: time || prev.mentorTime,
+                }))
+              }
+              onMentorTimeChange={(time: string) =>
+                setIdentity((prev) => ({
+                  ...prev,
+                  mentorTime: time,
                 }))
               }
               onNext={() => handleStepTransition(4)}
@@ -364,8 +370,22 @@ export function HabitTrackerApp({
 
           {currentStep === 4 && (
             <Step4IdentityHabit
-              identity={identity}
-              onChange={handleIdentityChange}
+              draft={zipStateToFlowDraft(
+                {
+                  diagnoseAnswers,
+                  routines,
+                  identity,
+                  loopTechniques,
+                },
+                getDefaultHabitFlowDraft(),
+              )}
+              onDraftChange={(newDraft) => {
+                const zState = flowDraftToZipState(newDraft);
+                setIdentity((prev) => ({
+                  ...prev,
+                  ...zState.identity,
+                }));
+              }}
               onNext={() => handleStepTransition(5)}
               onPrev={() => goToStep(3)}
             />

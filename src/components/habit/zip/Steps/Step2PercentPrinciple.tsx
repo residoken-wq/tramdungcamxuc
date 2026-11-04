@@ -167,7 +167,7 @@ export function Step2PercentPrinciple({
         </div>
 
         {/* Bottom axis labels */}
-        <div className="flex justify-between text-[11px] font-ui text-deep-navy/50 pt-2 border-t border-lavender-mist/40">
+        <div className="flex justify-between text-[11px] font-ui text-deep-navy/70 pt-2 border-t border-lavender-mist/40">
           <span>Ngày 1 (Khởi hành)</span>
           <span>Ngày 14 (Tạo đà)</span>
           <span className="font-semibold text-bright-magenta">Ngày 28 (Vượt ngưỡng)</span>
@@ -206,7 +206,7 @@ export function Step2PercentPrinciple({
             onChange={(e) => setDays(Number(e.target.value))}
             className="w-full h-2.5 bg-lavender-mist rounded-lg appearance-none cursor-pointer accent-bright-magenta"
           />
-          <div className="flex justify-between text-[11px] font-ui text-deep-navy/50">
+          <div className="flex justify-between text-[11px] font-ui text-deep-navy/70">
             <span>7 ngày</span>
             <span className="text-bright-magenta font-semibold">28 ngày</span>
             <span>90 ngày</span>
@@ -290,7 +290,9 @@ export function Step2PercentPrinciple({
           {unknownItems.map((item, idx) => (
             <div key={idx} className="p-4 rounded-2xl bg-warm-ivory/60 border border-lavender-mist/70 space-y-1.5">
               <div className="font-bold text-bright-magenta">{item.title}</div>
-              <p className="text-deep-navy/75 leading-relaxed text-xs">{item.content}</p>
+              <p className="text-deep-navy/75 leading-relaxed text-xs">
+                {'body' in item ? item.body : (item as any).content}
+              </p>
             </div>
           ))}
         </div>

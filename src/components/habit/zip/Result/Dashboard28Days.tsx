@@ -16,15 +16,15 @@ import {
 } from 'lucide-react'
 import type { TrackerDayItem, WeeklyReflections } from '../types'
 import { DayCheckInModal } from './DayCheckInModal'
-import { StepQuoteHeader } from '../Common/StepQuoteHeader'
+import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TimelineProgress } from '../Timeline/TimelineProgress'
 import { checkInDay, deleteCheckInDay } from '@/lib/habit/tracker-actions'
 import { saveStationReflection } from '@/lib/habit/reflection-actions'
 import {
-  exportBackupAction,
-  exportCsvAction,
-  restoreBackupAction,
-  restartJourneyAction,
+  exportBackup,
+  exportCsv,
+  restoreBackup,
+  restartJourney,
 } from '@/lib/habit/my-data-actions'
 import { planDayDate } from '@/lib/habit/tracker-stats'
 import { TrackerSummaryCard } from '@/components/habit/TrackerSummaryCard'
@@ -338,7 +338,7 @@ export function Dashboard28Days({
   // Export JSON file
   const handleExportJSON = async () => {
     try {
-      const res = await exportBackupAction()
+      const res = await exportBackup()
       if (res.success && res.json) {
         const blob = new Blob([res.json], { type: 'application/json' })
         const url = URL.createObjectURL(blob)
@@ -358,7 +358,7 @@ export function Dashboard28Days({
   // Export CSV file
   const handleExportCSV = async () => {
     try {
-      const res = await exportCsvAction()
+      const res = await exportCsv()
       if (res.success && res.csv) {
         const blob = new Blob([res.csv], { type: 'text/csv;charset=utf-8;' })
         const url = URL.createObjectURL(blob)
@@ -381,7 +381,7 @@ export function Dashboard28Days({
     if (!file) return
     const text = await file.text()
     try {
-      const res = await restoreBackupAction(text)
+      const res = await restoreBackup(text)
       if (res.success) {
         alert(`Khôi phục thành công ${res.restored} ngày check-in!`)
         window.location.reload()
@@ -492,7 +492,7 @@ Nhịp điệu: ${rateText}
               <span className="font-display text-3xl sm:text-4xl text-deep-navy">
                 {votes}
               </span>
-              <span className="text-xs font-ui font-semibold text-deep-navy/50">
+              <span className="text-xs font-ui font-semibold text-deep-navy/70">
                 / {plannedAll}
               </span>
             </div>
@@ -510,13 +510,14 @@ Nhịp điệu: ${rateText}
               <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 font-ui">
                 Chuỗi hiện tại
               </span>
-              <Flame className="w-4 h-4 text-accent-pink" />
+              {/* a11y-contrast-ok: SVG icon trang trí */}
+<Flame className="w-4 h-4 text-accent-pink" />
             </div>
             <div className="flex items-baseline gap-1.5 my-1.5">
-              <span className="font-display text-3xl sm:text-4xl text-accent-pink">
+              <span className="font-display text-3xl sm:text-4xl text-bright-magenta">
                 {currentStreak}
               </span>
-              <span className="text-xs font-ui font-semibold text-deep-navy/50">
+              <span className="text-xs font-ui font-semibold text-deep-navy/70">
                 ngày
               </span>
             </div>
@@ -534,7 +535,7 @@ Nhịp điệu: ${rateText}
               <span className="font-display text-3xl sm:text-4xl text-deep-navy">
                 {onBeat}
               </span>
-              <span className="text-xs font-ui font-semibold text-deep-navy/50">
+              <span className="text-xs font-ui font-semibold text-deep-navy/70">
                 / {plannedSoFar}
               </span>
             </div>
@@ -633,7 +634,7 @@ Nhịp điệu: ${rateText}
                     </span>
                     <h3 className="font-ui font-bold text-sm sm:text-base text-deep-navy flex items-center gap-1.5">
                       <span>{station.name}</span>
-                      {isLocked && <Lock className="w-3.5 h-3.5 text-deep-navy/40" />}
+                      {isLocked && <Lock className="w-3.5 h-3.5 text-deep-navy/70" />}
                     </h3>
                   </div>
 
@@ -700,7 +701,7 @@ Nhịp điệu: ${rateText}
                               : 'bg-[#E8F5E9] border-[#2E7D32] text-[#2E7D32]'
                             : isMissed
                               ? 'bg-warm-ivory border-accent-pink text-deep-navy/70'
-                              : 'bg-white border-deep-navy/10 hover:border-bright-magenta/60 hover:bg-soft-pink/20 text-deep-navy/40'
+                              : 'bg-white border-deep-navy/10 hover:border-bright-magenta/60 hover:bg-soft-pink/20 text-deep-navy/70'
                         }`}
                       >
                         {/* Day indicator */}
@@ -712,7 +713,7 @@ Nhịp điệu: ${rateText}
                                 ? 'text-[#F57F17]'
                                 : isMissed
                                   ? 'text-accent-pink'
-                                  : 'text-deep-navy/40'
+                                  : 'text-deep-navy/70'
                           }`}
                         >
                           <span>N{day.dayNumber}</span>
@@ -732,7 +733,7 @@ Nhịp điệu: ${rateText}
                               {day.emoji || '🌧️'}
                             </span>
                           ) : (
-                            <span className="w-5 h-5 rounded-full border border-dashed border-deep-navy/20 flex items-center justify-center text-[10px] text-deep-navy/40 group-hover:border-bright-magenta group-hover:text-bright-magenta transition-colors">
+                            <span className="w-5 h-5 rounded-full border border-dashed border-deep-navy/20 flex items-center justify-center text-[10px] text-deep-navy/70 group-hover:border-bright-magenta group-hover:text-bright-magenta transition-colors">
                               +
                             </span>
                           )}
@@ -741,13 +742,13 @@ Nhịp điệu: ${rateText}
                         {/* Bottom Label */}
                         <div className="w-full flex items-center justify-center">
                           {!isDone && isRestDay ? (
-                            <span className="text-[10px] font-ui italic text-deep-navy/40">
+                            <span className="text-[10px] font-ui italic text-deep-navy/70">
                               nghỉ
                             </span>
                           ) : (
                             <span
                               className={`text-[9px] font-ui hidden sm:inline ${
-                                isDone || isMissed ? 'opacity-60' : 'text-deep-navy/30'
+                                isDone || isMissed ? 'opacity-60' : 'text-deep-navy/70'
                               }`}
                             >
                               {day.dateStr}
@@ -812,7 +813,7 @@ Nhịp điệu: ${rateText}
                     </span>
                     <h3 className="font-ui font-bold text-sm sm:text-base text-deep-navy flex items-center gap-1.5">
                       <span>{station.name}</span>
-                      {isLocked && <Lock className="w-3.5 h-3.5 text-deep-navy/40" />}
+                      {isLocked && <Lock className="w-3.5 h-3.5 text-deep-navy/70" />}
                     </h3>
                   </div>
 
@@ -938,13 +939,13 @@ Nhịp điệu: ${rateText}
             type="button"
             onClick={async () => {
               if (window.confirm('Bạn có chắc chắn muốn bắt đầu lại hành trình 28 ngày?')) {
-                const res = await restartJourneyAction()
+                const res = await restartJourney()
                 if (res.success && res.redirectTo) {
                   window.location.href = res.redirectTo
                 }
               }
             }}
-            className="inline-flex items-center gap-1.5 text-deep-navy/40 hover:text-accent-pink px-2 py-1 transition-colors cursor-pointer text-xs font-semibold"
+            className="inline-flex items-center gap-1.5 text-deep-navy/70 hover:text-accent-pink px-2 py-1 transition-colors cursor-pointer text-xs font-semibold"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Bắt đầu lại</span>
@@ -960,7 +961,9 @@ Nhịp điệu: ${rateText}
               completedDays: votes,
               mostFrequentEmotion: null,
             }}
-            totalDays={plannedAll}
+            journeyDays={plannedAll}
+            isTrialOrExpired={false}
+            buyUrl="/#growth-mirror"
             eligibility={eligibility}
             initialCertificate={initialCertificate}
             customerName={customerName}
@@ -968,10 +971,14 @@ Nhịp điệu: ${rateText}
           {initialCertificate && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-lavender-mist/60">
               <CertificatePublicToggle
+                code={initialCertificate.code}
                 initialIsPublic={initialCertificate.isPublic}
-                verifyPath={initialCertificate.verifyPath}
               />
-              <CertificateShareButtons certificate={initialCertificate} />
+              <CertificateShareButtons
+                code={initialCertificate.code}
+                customerName={customerName || initialCertificate.customerName || 'Người đồng hành'}
+                isPublic={initialCertificate.isPublic}
+              />
             </div>
           )}
         </div>
@@ -989,7 +996,7 @@ Nhịp điệu: ${rateText}
               <button
                 type="button"
                 onClick={() => setIsFabOpen(false)}
-                className="text-deep-navy/40 hover:text-deep-navy text-xs font-bold cursor-pointer p-1"
+                className="text-deep-navy/70 hover:text-deep-navy text-xs font-bold cursor-pointer p-1"
               >
                 ✕
               </button>

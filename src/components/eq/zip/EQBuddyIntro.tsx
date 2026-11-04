@@ -102,7 +102,8 @@ export function EQBuddyIntro({
         <div className="space-y-2 mb-6 text-center sm:text-left font-ui">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-accent-pink" />
+              {/* a11y-contrast-ok: SVG icon trang trí */}
+<Sparkles className="w-3.5 h-3.5 text-accent-pink" />
               <span>{content?.badge || 'Bộ thẻ chánh niệm & Trí tuệ cảm xúc (EQ)'}</span>
             </div>
 
@@ -122,7 +123,7 @@ export function EQBuddyIntro({
           <p className="text-sm sm:text-base text-deep-navy/80 font-medium">
             26 thông điệp cùng bạn.{' '}
             <strong className="text-bright-magenta">Gọi tên</strong> -{' '}
-            <strong className="text-accent-pink">Ghi nhận</strong> -{' '}
+            <strong className="text-bright-magenta">Ghi nhận</strong> -{' '}
             <strong className="text-deep-navy">Gợi nhớ</strong>.
           </p>
         </div>
@@ -225,7 +226,7 @@ export function EQBuddyIntro({
             <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-lavender-mist font-ui">
               <Link
                 href="/eq-buddy/rut-the"
-                className="text-xs text-deep-navy/50 hover:text-deep-navy underline underline-offset-4 transition-colors order-2 sm:order-1"
+                className="text-xs text-deep-navy/70 hover:text-deep-navy underline underline-offset-4 transition-colors order-2 sm:order-1"
               >
                 Bỏ qua hướng dẫn và rút thẻ ngay →
               </Link>

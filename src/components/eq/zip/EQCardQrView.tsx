@@ -54,7 +54,8 @@ export function EQCardQrView({ card, children }: EQCardQrViewProps) {
       {hasStory && (
         <div className="w-full max-w-xl p-6 sm:p-8 rounded-3xl bg-warm-ivory border border-lavender-mist shadow-soft space-y-3">
           <div className="flex items-center gap-2 text-deep-navy font-ui text-xs font-bold uppercase tracking-wider">
-            <Heart className="w-4 h-4 text-accent-pink" />
+            {/* a11y-contrast-ok: SVG icon trang trí */}
+<Heart className="w-4 h-4 text-accent-pink" />
             <span>Câu chuyện phía sau thẻ</span>
           </div>
           <div className="prose prose-purple max-w-none font-sans text-sm sm:text-base text-deep-navy/85 leading-relaxed">

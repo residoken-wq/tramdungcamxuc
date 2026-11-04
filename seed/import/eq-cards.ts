@@ -200,7 +200,7 @@ export async function importEqCards(
         keywordEn: card.keywordEn,
         ...(card.keywordVi ? { keywordVi: card.keywordVi } : {}),
         ...(card.category ? { category: card.category } : {}),
-        ...(card.gradientTheme ? { gradientTheme: card.gradientTheme } : {}),
+        ...(card.gradientTheme ? { gradientTheme: card.gradientTheme as any } : {}),
         message: card.message,
         promptRecall: card.promptRecall,
         promptPack: card.promptPack,

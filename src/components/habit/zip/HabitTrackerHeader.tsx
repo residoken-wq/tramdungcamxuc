@@ -8,14 +8,18 @@ export interface HabitTrackerHeaderProps {
   onOpenToolkit?: () => void
   hasVideos?: boolean
   currentStep?: HabitStep
+  maxReachedStep?: number
   onNavigateStep?: (step: HabitStep) => void
+  onStageClick?: (step: HabitStep) => void
 }
 
 export function HabitTrackerHeader({
   onOpenToolkit,
   hasVideos = false,
   currentStep = 1,
+  maxReachedStep = 1,
   onNavigateStep,
+  onStageClick,
 }: HabitTrackerHeaderProps) {
   // Tính % tiến trình cho từng giai đoạn
   const stepNum = typeof currentStep === 'number' ? currentStep : 7
@@ -70,16 +74,16 @@ export function HabitTrackerHeader({
       <div className="space-y-1.5 text-left">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black tracking-wide uppercase leading-tight">
           <span className="text-deep-navy">Xây Thói Quen</span>
-          <span className="text-deep-navy/50 mx-2 font-black">—</span>
+          <span className="text-deep-navy/70 mx-2 font-black">—</span>
           <span className="text-bright-magenta">Dựng Thương Hiệu</span>
         </h1>
 
         {/* Subtitle: FORM HABIT · BUILD IDENTITY badge + tagline Playfair Italic */}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="bg-soft-pink/60 px-2.5 py-0.5 rounded-md inline-block font-semibold text-xs border border-accent-pink/20 shadow-sm font-ui uppercase tracking-wider text-accent-pink">
+          <span className="bg-soft-pink/60 px-2.5 py-0.5 rounded-md inline-block font-semibold text-xs border border-accent-pink/20 shadow-sm font-ui uppercase tracking-wider text-bright-magenta">
             FORM HABIT · BUILD IDENTITY
           </span>
-          <span className="text-deep-navy/30 text-xs">|</span>
+          <span className="text-deep-navy/70 text-xs">|</span>
           <span className="font-quote italic text-deep-navy/85 text-xs sm:text-sm">
             Đều đặn một điều — mọi điều đều đặn
           </span>
@@ -103,7 +107,7 @@ export function HabitTrackerHeader({
             }`}
           >
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider font-ui text-deep-navy/50">
+              <span className="text-[10px] font-bold uppercase tracking-wider font-ui text-deep-navy/70">
                 GIAI ĐOẠN 1
               </span>
               {progressStage1 === 100 && (
@@ -137,7 +141,7 @@ export function HabitTrackerHeader({
             }`}
           >
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider font-ui text-deep-navy/50">
+              <span className="text-[10px] font-bold uppercase tracking-wider font-ui text-deep-navy/70">
                 GIAI ĐOẠN 2
               </span>
               {progressStage2 === 100 && (
@@ -171,7 +175,7 @@ export function HabitTrackerHeader({
             }`}
           >
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider font-ui text-deep-navy/50">
+              <span className="text-[10px] font-bold uppercase tracking-wider font-ui text-deep-navy/70">
                 GIAI ĐOẠN 3
               </span>
               {progressStage3 === 100 && (

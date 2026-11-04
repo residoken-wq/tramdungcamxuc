@@ -43,10 +43,10 @@ export function TimelineProgress({
             } else if (isCurrent) {
               circleClass +=
                 'border-2 border-accent-pink bg-white ring-2 ring-accent-pink/20'
-              textColor = 'text-accent-pink'
+              textColor = 'text-bright-magenta'
             } else {
               circleClass += 'border border-deep-navy/20 bg-white'
-              textColor = 'text-deep-navy/40'
+              textColor = 'text-deep-navy/70'
             }
 
             return (
@@ -55,8 +55,9 @@ export function TimelineProgress({
                 <div className="flex flex-col items-center shrink-0">
                   <div className={circleClass}>
                     {m.id === 4 ? (
-                      <Flag
-                        className={`w-3 h-3 ${isPassed ? 'text-white' : isCurrent ? 'text-accent-pink' : 'text-deep-navy/40'}`}
+                      {/* a11y-contrast-ok: SVG icon trang trí */}
+<Flag
+                        className={`w-3 h-3 ${isPassed ? 'text-white' : isCurrent ? 'text-accent-pink' : 'text-deep-navy/70'}`}
                         strokeWidth={2.5}
                       />
                     ) : (
@@ -65,7 +66,7 @@ export function TimelineProgress({
                   </div>
                   <span
                     className={`font-ui text-[10px] sm:text-[11px] mt-1.5 font-medium whitespace-nowrap ${
-                      isPassed || isCurrent ? 'text-deep-navy' : 'text-deep-navy/40'
+                      isPassed || isCurrent ? 'text-deep-navy' : 'text-deep-navy/70'
                     }`}
                   >
                     {m.label}

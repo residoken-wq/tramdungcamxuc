@@ -28,28 +28,26 @@ export function DayCheckInModal({
   onSave,
   onDelete,
 }: DayCheckInModalProps) {
-  if (!dayItem) return null
-
-  const isAlreadyRecorded = Boolean(dayItem.completed || dayItem.isMissed)
+  const isAlreadyRecorded = Boolean(dayItem?.completed || dayItem?.isMissed)
   const [completed, setCompleted] = useState<boolean>(
-    isAlreadyRecorded ? Boolean(dayItem.completed) : true,
+    isAlreadyRecorded ? Boolean(dayItem?.completed) : true,
   )
-  const [isMinimal, setIsMinimal] = useState<boolean>(Boolean(dayItem.isMinimal))
+  const [isMinimal, setIsMinimal] = useState<boolean>(Boolean(dayItem?.isMinimal))
   const [isRest, setIsRest] = useState<boolean>(
-    !dayItem.isPostDay && !dayItem.completed && !dayItem.isMissed,
+    Boolean(!dayItem?.isPostDay && !dayItem?.completed && !dayItem?.isMissed),
   )
 
   // Map existing emotion key to confidence mood or default to somewhat_confident (😊)
-  const initialMoodKey = dayItem.emotion || 'somewhat_confident'
+  const initialMoodKey = dayItem?.emotion || 'somewhat_confident'
   const matchedMood =
     CONFIDENCE_MOODS.find((m) => m.key === initialMoodKey) ||
-    CONFIDENCE_MOODS.find((m) => m.emoji === dayItem.emoji) ||
+    CONFIDENCE_MOODS.find((m) => m.emoji === dayItem?.emoji) ||
     CONFIDENCE_MOODS[2]
 
   const [selectedKey, setSelectedKey] = useState<string>(matchedMood.key)
   const [selectedEmoji, setSelectedEmoji] = useState<string>(matchedMood.emoji)
   const [selectedMoodLabel, setSelectedMoodLabel] = useState<string>(matchedMood.label)
-  const [note, setNote] = useState<string>(dayItem.note || '')
+  const [note, setNote] = useState<string>(dayItem?.note || '')
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,6 +58,8 @@ export function DayCheckInModal({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
+
+  if (!dayItem) return null
 
   const handleSave = () => {
     onSave({
@@ -262,7 +262,7 @@ export function DayCheckInModal({
           <button
             type="button"
             onClick={handleResetDay}
-            className="text-xs text-deep-navy/50 hover:text-accent-pink font-ui transition-colors flex items-center gap-1 cursor-pointer"
+            className="text-xs text-deep-navy/70 hover:text-accent-pink font-ui transition-colors flex items-center gap-1 cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>Xoá ngày này</span>
