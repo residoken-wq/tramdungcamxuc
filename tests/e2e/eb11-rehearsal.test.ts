@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
+import { vi } from '@/lib/i18n/vi'
 import { test, expect, type Page, type Locator, type Response } from './fixtures'
 
 /**
@@ -280,8 +281,11 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         )
         await expect(campaignTplCard).toBeVisible()
 
-        page.once('dialog', (d) => d.accept())
+        // EB-16: xác nhận ngay trong hộp chọn mẫu (không còn hộp thoại của trình duyệt)
         await campaignTplCard.getByRole('button', { name: /Áp dụng mẫu này/i }).click()
+        await expect(campaignTplCard.getByText(vi.builder.confirmApplyTemplate)).toBeVisible()
+        await expect(campaignTplCard.getByRole('button', { name: vi.eb16.back })).toBeFocused()
+        await campaignTplCard.getByRole('button', { name: vi.eb16.replaceEntirePage }).click()
         actions += 2
 
         // Canvas đã nạp mẫu Landing chiến dịch
@@ -704,34 +708,21 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         }
 
         // 4. Đổi tên Tab 1 thành "Cá nhân", Tab 2 thành "Doanh nghiệp"
-        // Trong Puck, các mục mảng hiển thị dạng button "Tab 1...", click để mở rộng các trường con
-        const tab1Button = page.getByRole('button', { name: /^Tab 1/ }).first()
-        await expect(tab1Button).toBeVisible({ timeout: 10000 })
-        await tab1Button.click()
-        actions++
-
+        // EB-16: ô "Tên tab N" nằm sẵn đầu tab Nội dung, không phải mở từng dòng
         const tab1TitleInput = page
-          .locator('input[name*="title"], input[id*="title"]')
+          .getByRole('textbox', { name: vi.eb16.tabTitleItem(1), exact: true })
           .filter({ visible: true })
-          .first()
-        await expect(tab1TitleInput).toBeVisible({ timeout: 5000 })
+        await expect(tab1TitleInput).toBeVisible({ timeout: 10000 })
         await tab1TitleInput.fill('Cá nhân')
-        hardSelectors.push('input[name="items.0.title"]')
-        actions++
-
-        const tab2Button = page.getByRole('button', { name: /^Tab 2/ }).first()
-        await expect(tab2Button).toBeVisible({ timeout: 10000 })
-        await tab2Button.click()
         actions++
 
         const tab2TitleInput = page
-          .locator('input[name*="title"], input[id*="title"]')
+          .getByRole('textbox', { name: vi.eb16.tabTitleItem(2), exact: true })
           .filter({ visible: true })
-          .first()
-        await expect(tab2TitleInput).toBeVisible({ timeout: 5000 })
         await tab2TitleInput.fill('Doanh nghiệp')
-        hardSelectors.push('input[name="items.1.title"]')
         actions++
+        await expect(tab2TitleInput).toHaveValue('Doanh nghiệp')
+        await expect(tab1TitleInput).toHaveValue('Cá nhân')
 
         // 5. Thêm câu ngắn cho Tab 1 và Tab 2
         // Kéo TextWidget vào slot Tab 1
@@ -844,8 +835,8 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         await expect(tabRow).toBeVisible()
         hardSelectors.push(`[data-puck-layer-tree-id="${tabsComponentId}"]`)
 
-        // Double click text "Tabs" hiển thị trong row để kích hoạt inline rename
-        await tabRow.getByText('Tabs', { exact: true }).last().dblclick()
+        // EB-16: nhấp đúp TRÚNG mũi tên mở rộng vẫn vào chế độ đổi tên
+        await tabRow.locator('[class*="Layer-caret"] button').first().dblclick()
         actions += 2
 
         const renameInput = tabRow.locator('input[type="text"]')
