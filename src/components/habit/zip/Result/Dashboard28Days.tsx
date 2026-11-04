@@ -20,12 +20,7 @@ import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TimelineProgress } from '../Timeline/TimelineProgress'
 import { checkInDay, deleteCheckInDay } from '@/lib/habit/tracker-actions'
 import { saveStationReflection } from '@/lib/habit/reflection-actions'
-import {
-  exportBackup,
-  exportCsv,
-  restoreBackup,
-  restartJourney,
-} from '@/lib/habit/my-data-actions'
+import { exportBackup, exportCsv, restoreBackup, restartJourney } from '@/lib/habit/my-data-actions'
 import { planDayDate } from '@/lib/habit/tracker-stats'
 import { TrackerSummaryCard } from '@/components/habit/TrackerSummaryCard'
 import { CertificateShareButtons } from '@/components/habit/CertificateShareButtons'
@@ -134,14 +129,16 @@ export function Dashboard28Days({
     return map
   }
 
-  const [reflectionsData, setReflectionsData] = useState<Record<number, string[]>>(initReflectionsMap)
+  const [reflectionsData, setReflectionsData] =
+    useState<Record<number, string[]>>(initReflectionsMap)
   const [savingStation, setSavingStation] = useState<number | null>(null)
   const [savedStationSuccess, setSavedStationSuccess] = useState<number | null>(null)
 
   // Days list calculation
-  const selectedDaysList = propSelectedDays && propSelectedDays.length > 0
-    ? propSelectedDays
-    : ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
+  const selectedDaysList =
+    propSelectedDays && propSelectedDays.length > 0
+      ? propSelectedDays
+      : ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 
   const DAY_NAME_MAP: Record<number, string> = {
     0: 'CN',
@@ -166,7 +163,8 @@ export function Dashboard28Days({
 
     const isDone = Boolean(checkin?.done)
     const isMinimal = checkin?.status === 'minimal'
-    const isMissed = !isDone && (checkin?.status === 'missed' || (i < currentDay && isPostDay && !checkin))
+    const isMissed =
+      !isDone && (checkin?.status === 'missed' || (i < currentDay && isPostDay && !checkin))
 
     trackerDays.push({
       dayNumber: i,
@@ -457,7 +455,9 @@ Nhịp điệu: ${rateText}
             </span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">Thói quen hạt nhân:</span>
+            <span className="font-bold text-deep-navy/60 sm:w-36 shrink-0">
+              Thói quen hạt nhân:
+            </span>
             <span className="text-deep-navy font-semibold">{propAtomicHabit || '...'}</span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
@@ -489,9 +489,7 @@ Nhịp điệu: ${rateText}
               Lá phiếu đã bỏ
             </span>
             <div className="flex items-baseline gap-1.5 my-1.5">
-              <span className="font-display text-3xl sm:text-4xl text-deep-navy">
-                {votes}
-              </span>
+              <span className="font-display text-3xl sm:text-4xl text-deep-navy">{votes}</span>
               <span className="text-xs font-ui font-semibold text-deep-navy/70">
                 / {plannedAll}
               </span>
@@ -511,15 +509,13 @@ Nhịp điệu: ${rateText}
                 Chuỗi hiện tại
               </span>
               {/* a11y-contrast-ok: SVG icon trang trí */}
-<Flame className="w-4 h-4 text-accent-pink" />
+              <Flame className="w-4 h-4 text-accent-pink" />
             </div>
             <div className="flex items-baseline gap-1.5 my-1.5">
               <span className="font-display text-3xl sm:text-4xl text-bright-magenta">
                 {currentStreak}
               </span>
-              <span className="text-xs font-ui font-semibold text-deep-navy/70">
-                ngày
-              </span>
+              <span className="text-xs font-ui font-semibold text-deep-navy/70">ngày</span>
             </div>
             <p className="text-[11px] font-ui text-deep-navy/60 truncate">
               {currentStreak > 0 ? 'Giữ nhịp đều đặn' : 'Khởi đầu hành trình'}
@@ -532,9 +528,7 @@ Nhịp điệu: ${rateText}
               Đúng nhịp tới hôm nay
             </span>
             <div className="flex items-baseline gap-1.5 my-1.5">
-              <span className="font-display text-3xl sm:text-4xl text-deep-navy">
-                {onBeat}
-              </span>
+              <span className="font-display text-3xl sm:text-4xl text-deep-navy">{onBeat}</span>
               <span className="text-xs font-ui font-semibold text-deep-navy/70">
                 / {plannedSoFar}
               </span>
@@ -693,7 +687,9 @@ Nhịp điệu: ${rateText}
                         onClick={() => !isLocked && !isFuture && handleDayClick(day)}
                         aria-label={dayAriaLabel}
                         className={`aspect-square sm:aspect-auto sm:h-20 p-1.5 sm:p-2 rounded-2xl border flex flex-col justify-between items-center text-center transition-all duration-200 relative group cursor-pointer ${
-                          isLocked || isFuture || readOnly ? 'cursor-not-allowed opacity-60' : 'active:scale-95'
+                          isLocked || isFuture || readOnly
+                            ? 'cursor-not-allowed opacity-60'
+                            : 'active:scale-95'
                         } ${
                           isDone
                             ? isMinimal
@@ -725,9 +721,7 @@ Nhịp điệu: ${rateText}
                         {/* Mood Emoji or Icon */}
                         <div className="my-0.5">
                           {isDone ? (
-                            <span className="text-base sm:text-xl">
-                              {day.emoji || '✨'}
-                            </span>
+                            <span className="text-base sm:text-xl">{day.emoji || '✨'}</span>
                           ) : isMissed ? (
                             <span className="text-base sm:text-xl opacity-75">
                               {day.emoji || '🌧️'}
@@ -803,7 +797,9 @@ Nhịp điệu: ${rateText}
               <div
                 key={station.id}
                 className={`p-5 rounded-2xl border transition-all ${
-                  isLocked ? 'bg-warm-ivory/60 border-deep-navy/10' : 'bg-warm-ivory/50 border-lavender-mist'
+                  isLocked
+                    ? 'bg-warm-ivory/60 border-deep-navy/10'
+                    : 'bg-warm-ivory/50 border-lavender-mist'
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
@@ -837,9 +833,7 @@ Nhịp điệu: ${rateText}
                           rows={2}
                           value={answers[qIdx] || ''}
                           disabled={readOnly}
-                          onChange={(e) =>
-                            handleUpdateReflectionField(stIdx, qIdx, e.target.value)
-                          }
+                          onChange={(e) => handleUpdateReflectionField(stIdx, qIdx, e.target.value)}
                           placeholder="Ghi lại chiêm nghiệm..."
                           className="w-full p-3 rounded-2xl bg-white border border-lavender-mist text-xs sm:text-sm text-deep-navy focus:border-bright-magenta focus:outline-none resize-y"
                         />
@@ -876,9 +870,7 @@ Nhịp điệu: ${rateText}
       {/* 7. KHỐI QUẢN LÝ DỮ LIỆU CỦA BẠN (5 NÚT CHỨC NĂNG) */}
       <div className="p-6 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-4">
         <div className="space-y-1">
-          <h3 className="font-ui font-bold text-base sm:text-lg text-deep-navy">
-            Dữ liệu của bạn
-          </h3>
+          <h3 className="font-ui font-bold text-base sm:text-lg text-deep-navy">Dữ liệu của bạn</h3>
           <p className="text-xs sm:text-sm text-deep-navy/70 font-ui leading-relaxed">
             {privacyNote ||
               'Dữ liệu hành trình của bạn được lưu an toàn trên máy chủ của Trạm Dừng Cảm Xúc gắn với tài khoản của bạn. Bạn có thể xuất bản sao lưu bất kỳ lúc nào để lưu trữ riêng.'}
@@ -1036,8 +1028,7 @@ Nhịp điệu: ${rateText}
         <DayCheckInModal
           key={selectedDayItem.dayNumber}
           dayItem={
-            trackerDays.find((d) => d.dayNumber === selectedDayItem.dayNumber) ||
-            selectedDayItem
+            trackerDays.find((d) => d.dayNumber === selectedDayItem.dayNumber) || selectedDayItem
           }
           atomicHabitTitle={propAtomicHabit || 'Thói quen hạt nhân'}
           onClose={() => setSelectedDayItem(null)}

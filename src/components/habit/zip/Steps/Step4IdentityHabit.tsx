@@ -105,7 +105,8 @@ export function Step4IdentityHabit({
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
         Bắt đầu từ con người bạn muốn trở thành, rồi mới đến hành động.{' '}
         <strong className="text-deep-navy font-bold">
-          Thương hiệu cá nhân không phải việc làm thêm — nó là kết quả của hành động bạn lặp lại mỗi ngày.
+          Thương hiệu cá nhân không phải việc làm thêm — nó là kết quả của hành động bạn lặp lại mỗi
+          ngày.
         </strong>
       </p>
 
@@ -114,9 +115,7 @@ export function Step4IdentityHabit({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">
-              Tuyên ngôn về thói quen
-            </h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">Tuyên ngôn về thói quen</h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
             Điền câu khẳng định căn tính và hành động cốt lõi của bạn
@@ -185,9 +184,7 @@ export function Step4IdentityHabit({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">
-              Nhịp điệu thói quen
-            </h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">Nhịp điệu thói quen</h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
             Mỗi tuần bạn sẽ bỏ phiếu bao nhiêu lần? Chọn số lần, rồi chọn thứ.
@@ -275,9 +272,7 @@ export function Step4IdentityHabit({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">
-              Thói quen hạt nhân
-            </h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">Thói quen hạt nhân</h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
             Để thực hiện được tuyên ngôn này, thói quen hạt nhân tôi sẽ làm là… — dưới 2 phút
@@ -406,7 +401,8 @@ export function Step4IdentityHabit({
           {/* Bạn đồng hành */}
           <div className="pt-1">
             <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5">
-              BẠN ĐỒNG HÀNH <span className="font-normal lowercase text-deep-navy/70">(không bắt buộc)</span>
+              BẠN ĐỒNG HÀNH{' '}
+              <span className="font-normal lowercase text-deep-navy/70">(không bắt buộc)</span>
             </label>
             <input
               type="text"

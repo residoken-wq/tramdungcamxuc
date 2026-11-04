@@ -28,9 +28,7 @@ export function Step3FindMentor({
 }: Step3FindMentorProps) {
   // Update activity text
   const handleActivityChange = (id: string, text: string) => {
-    onRoutinesChange(
-      routines.map((r) => (r.id === id ? { ...r, activity: text } : r)),
-    )
+    onRoutinesChange(routines.map((r) => (r.id === id ? { ...r, activity: text } : r)))
   }
 
   // Update score
@@ -57,9 +55,7 @@ export function Step3FindMentor({
   }
 
   // Lọc ra các thói quen có score là "+" và có text
-  const positiveRoutines = routines.filter(
-    (r) => r.score === '+' && r.activity.trim().length > 0,
-  )
+  const positiveRoutines = routines.filter((r) => r.score === '+' && r.activity.trim().length > 0)
 
   // Mentor chỉ hợp lệ khi nằm trong danh sách các việc [+]
   const isMentorValid = positiveRoutines.some((r) => r.activity === selectedMentor)
@@ -76,28 +72,37 @@ export function Step3FindMentor({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Một thói quen mới không tự đứng được. Nó cần một thói quen cũ đã vững dìu đi — và thói quen cũ đó đã nằm sẵn trong ngày của bạn. Việc của bạn chỉ là tìm ra nó.
+        Một thói quen mới không tự đứng được. Nó cần một thói quen cũ đã vững dìu đi — và thói quen
+        cũ đó đã nằm sẵn trong ngày của bạn. Việc của bạn chỉ là tìm ra nó.
       </p>
 
       {/* 2. Khối 1: Soi lại một ngày của bạn (Habit Scorecard) */}
-      <div id="soi-lai-mot-ngay-section" className="bg-white rounded-[20px] border border-lavender-mist shadow-soft p-5 sm:p-7 space-y-6 scroll-mt-6">
+      <div
+        id="soi-lai-mot-ngay-section"
+        className="bg-white rounded-[20px] border border-lavender-mist shadow-soft p-5 sm:p-7 space-y-6 scroll-mt-6"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-lavender-mist/80 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-              <h2 className="font-ui font-bold text-lg text-deep-navy">
-                Soi lại một ngày của bạn
-              </h2>
+              <h2 className="font-ui font-bold text-lg text-deep-navy">Soi lại một ngày của bạn</h2>
             </div>
             <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-              Liệt kê những việc bạn thật sự làm mỗi ngày, từ lúc mở mắt đến lúc đi ngủ. Đánh dấu có ích +, không có ích −, trung tính =.
+              Liệt kê những việc bạn thật sự làm mỗi ngày, từ lúc mở mắt đến lúc đi ngủ. Đánh dấu có
+              ích +, không có ích −, trung tính =.
             </p>
           </div>
 
           <div className="flex items-center gap-2 text-xs font-ui">
-            <span className="px-2 py-0.5 rounded bg-mint-haze text-deep-navy font-bold">[+] Có ích</span>
-            <span className="px-2 py-0.5 rounded bg-soft-pink text-bright-magenta font-bold">[-] Không có ích</span>
-            <span className="px-2 py-0.5 rounded bg-lavender-mist/60 text-deep-navy/70 font-bold">[=] Trung tính</span>
+            <span className="px-2 py-0.5 rounded bg-mint-haze text-deep-navy font-bold">
+              [+] Có ích
+            </span>
+            <span className="px-2 py-0.5 rounded bg-soft-pink text-bright-magenta font-bold">
+              [-] Không có ích
+            </span>
+            <span className="px-2 py-0.5 rounded bg-lavender-mist/60 text-deep-navy/70 font-bold">
+              [=] Trung tính
+            </span>
           </div>
         </div>
 
@@ -202,12 +207,11 @@ export function Step3FindMentor({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2 mb-1">
             <Anchor className="w-5 h-5 text-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">
-              Chọn Mentor
-            </h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">Chọn Mentor</h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/70 font-ui leading-relaxed">
-            Mentor là một việc bạn làm gần như mỗi ngày mà không cần nghĩ. Nó sẽ là tín hiệu kéo thói quen mới đi theo. Chọn một việc bạn đã đánh dấu +.
+            Mentor là một việc bạn làm gần như mỗi ngày mà không cần nghĩ. Nó sẽ là tín hiệu kéo
+            thói quen mới đi theo. Chọn một việc bạn đã đánh dấu +.
           </p>
         </div>
 

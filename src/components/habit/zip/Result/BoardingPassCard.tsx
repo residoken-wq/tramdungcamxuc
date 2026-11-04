@@ -1,49 +1,49 @@
-"use client";
+'use client'
 
-import React, { useState, useId } from "react";
-import Link from "next/link";
-import { Copy, Check, Plane, AlertCircle, ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
-import { IdentityFormData, LoopTechniques } from "../types";
-import { StepQuoteHeader } from "../StepQuoteHeader";
-import { TurnstileWidget } from "@/components/site/forms/TurnstileWidget";
+import React, { useState, useId } from 'react'
+import Link from 'next/link'
+import { Copy, Check, Plane, AlertCircle, ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react'
+import { IdentityFormData, LoopTechniques } from '../types'
+import { StepQuoteHeader } from '../StepQuoteHeader'
+import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 
 interface BoardingPassCardProps {
-  identity: IdentityFormData;
-  loopTechniques: LoopTechniques;
-  onPrev: () => void;
+  identity: IdentityFormData
+  loopTechniques: LoopTechniques
+  onPrev: () => void
   // Submission fields
-  name?: string;
-  email?: string;
-  consent?: boolean;
-  honeypot?: string;
-  isSubmitting?: boolean;
-  submitError?: string | null;
-  submitSuccess?: boolean;
-  trackerDestination?: string;
-  zaloGroupUrl?: string;
-  privacyNote?: string | null;
-  onNameChange?: (val: string) => void;
-  onEmailChange?: (val: string) => void;
-  onConsentChange?: (val: boolean) => void;
-  onHoneypotChange?: (val: string) => void;
-  onTurnstileVerify?: (token: string) => void;
-  onSubmitPlan?: (e: React.FormEvent) => void;
-  onStartTracking?: () => void;
+  name?: string
+  email?: string
+  consent?: boolean
+  honeypot?: string
+  isSubmitting?: boolean
+  submitError?: string | null
+  submitSuccess?: boolean
+  trackerDestination?: string
+  zaloGroupUrl?: string
+  privacyNote?: string | null
+  onNameChange?: (val: string) => void
+  onEmailChange?: (val: string) => void
+  onConsentChange?: (val: boolean) => void
+  onHoneypotChange?: (val: string) => void
+  onTurnstileVerify?: (token: string) => void
+  onSubmitPlan?: (e: React.FormEvent) => void
+  onStartTracking?: () => void
 }
 
 export function BoardingPassCard({
   identity,
   loopTechniques,
   onPrev,
-  name = "",
-  email = "",
+  name = '',
+  email = '',
   consent = false,
-  honeypot = "",
+  honeypot = '',
   isSubmitting = false,
   submitError = null,
   submitSuccess = false,
-  trackerDestination = "/habit/tracker",
-  zaloGroupUrl = "",
+  trackerDestination = '/habit/tracker',
+  zaloGroupUrl = '',
   privacyNote,
   onNameChange,
   onEmailChange,
@@ -53,38 +53,38 @@ export function BoardingPassCard({
   onSubmitPlan,
   onStartTracking,
 }: BoardingPassCardProps) {
-  const [copied, setCopied] = useState(false);
-  const nameId = useId();
-  const emailId = useId();
-  const consentId = useId();
+  const [copied, setCopied] = useState(false)
+  const nameId = useId()
+  const emailId = useId()
+  const consentId = useId()
 
   const formatShortDate = (dateStr: string) => {
-    if (!dateStr) return "";
-    const parts = dateStr.split("-");
+    if (!dateStr) return ''
+    const parts = dateStr.split('-')
     if (parts.length === 3) {
-      return `${parts[2]}/${parts[1]}`;
+      return `${parts[2]}/${parts[1]}`
     }
-    return dateStr;
-  };
+    return dateStr
+  }
 
   // Tính chuỗi hiển thị nhịp điệu
-  let rateText = "Chưa chọn nhịp";
+  let rateText = 'Chưa chọn nhịp'
   if (identity.selectedDays.length === 7) {
-    rateText = "Mỗi ngày (cả tuần)";
+    rateText = 'Mỗi ngày (cả tuần)'
   } else if (identity.selectedDays.length > 0) {
-    rateText = `${identity.selectedDays.length} lần một tuần · ${identity.selectedDays.join(" · ")}`;
+    rateText = `${identity.selectedDays.length} lần một tuần · ${identity.selectedDays.join(' · ')}`
   }
 
   // Social caption template theo đúng yêu cầu
   const handleCopyCaption = () => {
-    const text = `Mình vừa lên chuyến 28 ngày: tôi sẽ ${identity.identityAction || "…"}, để trở thành ${identity.identityRole || "…"}.\n\nNhịp điệu: ${rateText}.\nThói quen hạt nhân: ${identity.atomicHabit || "…"}.\n\nĐều đặn một điều — mọi điều đều đặn. Ai muốn đi cùng thì nhắn mình nhé.`;
+    const text = `Mình vừa lên chuyến 28 ngày: tôi sẽ ${identity.identityAction || '…'}, để trở thành ${identity.identityRole || '…'}.\n\nNhịp điệu: ${rateText}.\nThói quen hạt nhân: ${identity.atomicHabit || '…'}.\n\nĐều đặn một điều — mọi điều đều đặn. Ai muốn đi cùng thì nhắn mình nhé.`
 
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
     }
-  };
+  }
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -98,7 +98,8 @@ export function BoardingPassCard({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/70 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Tấm vé lên chuyến 28 ngày của bạn. Tải về làm hình nền điện thoại, hoặc đăng lên mạng xã hội — đó vừa là lời tuyên bố, vừa là cách khó quay đầu nhất.
+        Tấm vé lên chuyến 28 ngày của bạn. Tải về làm hình nền điện thoại, hoặc đăng lên mạng xã hội
+        — đó vừa là lời tuyên bố, vừa là cách khó quay đầu nhất.
       </p>
 
       {/* 2. Boarding Pass Ticket Container */}
@@ -119,7 +120,8 @@ export function BoardingPassCard({
                   HABIT BOARDING PASS
                 </h2>
                 <span className="font-mono text-xs text-deep-navy/70 font-semibold">
-                  {identity.startDate ? formatShortDate(identity.startDate) : "10/10"} → {identity.endDate ? formatShortDate(identity.endDate) : "06/11"} - 28 ngày
+                  {identity.startDate ? formatShortDate(identity.startDate) : '10/10'} →{' '}
+                  {identity.endDate ? formatShortDate(identity.endDate) : '06/11'} - 28 ngày
                 </span>
               </div>
             </div>
@@ -128,7 +130,10 @@ export function BoardingPassCard({
               <span className="font-playfair italic text-lg sm:text-2xl text-deep-navy block">
                 Trạm Dừng Cảm Xúc
               </span>
-              <span className="text-bright-magenta text-lg sm:text-2xl font-serif leading-none select-none font-normal" aria-hidden="true">
+              <span
+                className="text-bright-magenta text-lg sm:text-2xl font-quote leading-none select-none font-normal"
+                aria-hidden="true"
+              >
                 ♡
               </span>
             </div>
@@ -145,13 +150,13 @@ export function BoardingPassCard({
             <p className="font-ui text-base sm:text-lg text-deep-navy font-medium leading-relaxed">
               {identity.identityAction || identity.identityRole ? (
                 <>
-                  &ldquo;Tôi sẽ{" "}
+                  &ldquo;Tôi sẽ{' '}
                   <span className="text-bright-magenta font-bold underline decoration-bright-magenta/50 underline-offset-4">
-                    {identity.identityAction || "..."}
-                  </span>{" "}
-                  để trở thành{" "}
+                    {identity.identityAction || '...'}
+                  </span>{' '}
+                  để trở thành{' '}
                   <span className="text-bright-magenta font-bold underline decoration-accent-pink/50 underline-offset-4">
-                    {identity.identityRole || "..."}
+                    {identity.identityRole || '...'}
                   </span>
                   .&rdquo;
                 </>
@@ -168,11 +173,9 @@ export function BoardingPassCard({
               <span className="text-[10px] uppercase font-bold tracking-wider text-bright-magenta font-ui block">
                 NHỊP ĐIỆU
               </span>
-              <div className="font-heading text-base sm:text-lg text-deep-navy">
-                {rateText}
-              </div>
+              <div className="font-heading text-base sm:text-lg text-deep-navy">{rateText}</div>
               <p className="text-xs text-deep-navy/70 font-ui font-medium">
-                {identity.selectedDays.length > 0 ? "Theo kế hoạch cam kết" : "Chưa chọn ngày"}
+                {identity.selectedDays.length > 0 ? 'Theo kế hoạch cam kết' : 'Chưa chọn ngày'}
               </p>
             </div>
 
@@ -182,11 +185,9 @@ export function BoardingPassCard({
                 THÓI QUEN HẠT NHÂN
               </span>
               <div className="font-ui font-bold text-sm sm:text-base text-deep-navy truncate">
-                {identity.atomicHabit || "—"}
+                {identity.atomicHabit || '—'}
               </div>
-              <p className="text-xs text-deep-navy/60 font-ui">
-                Phiên bản dưới 2 phút
-              </p>
+              <p className="text-xs text-deep-navy/60 font-ui">Phiên bản dưới 2 phút</p>
             </div>
 
             {/* 3. MENTOR */}
@@ -196,12 +197,10 @@ export function BoardingPassCard({
               </span>
               <div className="font-ui font-bold text-sm sm:text-base text-deep-navy truncate">
                 {identity.selectedMentor
-                  ? `Sau khi ${identity.selectedMentor}${identity.mentorTime ? ` · ${identity.mentorTime}` : ""}`
-                  : "—"}
+                  ? `Sau khi ${identity.selectedMentor}${identity.mentorTime ? ` · ${identity.mentorTime}` : ''}`
+                  : '—'}
               </div>
-              <p className="text-xs text-deep-navy/60 font-ui">
-                Thói quen neo đã vững
-              </p>
+              <p className="text-xs text-deep-navy/60 font-ui">Thói quen neo đã vững</p>
             </div>
 
             {/* 4. BẠN ĐỒNG HÀNH */}
@@ -210,11 +209,9 @@ export function BoardingPassCard({
                 BẠN ĐỒNG HÀNH
               </span>
               <div className="font-ui font-bold text-sm sm:text-base text-deep-navy truncate">
-                {identity.partnerName || "—"}
+                {identity.partnerName || '—'}
               </div>
-              <p className="text-xs text-deep-navy/60 font-ui">
-                Người soi chiếu & cổ vũ
-              </p>
+              <p className="text-xs text-deep-navy/60 font-ui">Người soi chiếu & cổ vũ</p>
             </div>
           </div>
 
@@ -231,7 +228,7 @@ export function BoardingPassCard({
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
                   {loopTechniques.cues.length > 0 ? (
-                    loopTechniques.cues.join(", ")
+                    loopTechniques.cues.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -245,7 +242,7 @@ export function BoardingPassCard({
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
                   {loopTechniques.cravings.length > 0 ? (
-                    loopTechniques.cravings.join(", ")
+                    loopTechniques.cravings.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -259,7 +256,7 @@ export function BoardingPassCard({
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
                   {loopTechniques.responses.length > 0 ? (
-                    loopTechniques.responses.join(", ")
+                    loopTechniques.responses.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -273,7 +270,7 @@ export function BoardingPassCard({
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
                   {loopTechniques.rewards.length > 0 ? (
-                    loopTechniques.rewards.join(", ")
+                    loopTechniques.rewards.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -285,7 +282,10 @@ export function BoardingPassCard({
           {/* Ticket Footer Bar */}
           <div className="pt-4 border-t border-dashed border-lavender-mist flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-xs text-deep-navy/70 font-playfair italic">
-              <span className="text-bright-magenta text-base font-normal select-none" aria-hidden="true">
+              <span
+                className="text-bright-magenta text-base font-normal select-none"
+                aria-hidden="true"
+              >
                 ♡
               </span>
               <span>Dừng lại • Lắng nghe • Sống trọn vẹn hơn</span>
@@ -330,7 +330,8 @@ export function BoardingPassCard({
               Chúc mừng bạn đã lên chuyến thành công!
             </h3>
             <p className="text-xs sm:text-sm text-deep-navy/80 font-ui max-w-md mx-auto leading-relaxed">
-              Bản kế hoạch 28 ngày đã được gửi về email của bạn. Bây giờ hãy bước vào Trạm theo dõi để bắt đầu ngày đầu tiên nhé.
+              Bản kế hoạch 28 ngày đã được gửi về email của bạn. Bây giờ hãy bước vào Trạm theo dõi
+              để bắt đầu ngày đầu tiên nhé.
             </p>
           </div>
 
@@ -366,7 +367,8 @@ export function BoardingPassCard({
               Lên chuyến · Nhận kế hoạch qua email
             </h3>
             <p className="text-xs sm:text-sm text-deep-navy/70 mt-0.5 leading-relaxed">
-              Để lại tên và email để nhận bản kế hoạch 28 ngày chi tiết và mở khóa bảng theo dõi tiến độ.
+              Để lại tên và email để nhận bản kế hoạch 28 ngày chi tiết và mở khóa bảng theo dõi
+              tiến độ.
             </p>
           </div>
 
@@ -379,7 +381,10 @@ export function BoardingPassCard({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label htmlFor={nameId} className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 mb-1">
+              <label
+                htmlFor={nameId}
+                className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 mb-1"
+              >
                 Tên của bạn
               </label>
               <input
@@ -393,7 +398,10 @@ export function BoardingPassCard({
             </div>
 
             <div>
-              <label htmlFor={emailId} className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 mb-1">
+              <label
+                htmlFor={emailId}
+                className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 mb-1"
+              >
                 Email nhận kế hoạch <span className="text-bright-magenta">*</span>
               </label>
               <input
@@ -430,9 +438,17 @@ export function BoardingPassCard({
               onChange={(e) => onConsentChange && onConsentChange(e.target.checked)}
               className="mt-0.5 w-4 h-4 rounded text-bright-magenta focus:ring-bright-magenta cursor-pointer"
             />
-            <label htmlFor={consentId} className="text-xs text-deep-navy/75 leading-relaxed cursor-pointer select-none">
-              Tôi đồng ý nhận email kế hoạch 28 ngày và hướng dẫn thực hành từ Trạm Dừng Cảm Xúc. Xem{" "}
-              <Link href="/chinh-sach-bao-mat" target="_blank" className="text-bright-magenta underline font-semibold">
+            <label
+              htmlFor={consentId}
+              className="text-xs text-deep-navy/75 leading-relaxed cursor-pointer select-none"
+            >
+              Tôi đồng ý nhận email kế hoạch 28 ngày và hướng dẫn thực hành từ Trạm Dừng Cảm Xúc.
+              Xem{' '}
+              <Link
+                href="/chinh-sach-bao-mat"
+                target="_blank"
+                className="text-bright-magenta underline font-semibold"
+              >
                 Chính sách bảo mật
               </Link>
               .
@@ -448,7 +464,7 @@ export function BoardingPassCard({
             disabled={isSubmitting}
             className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-bright-magenta hover:bg-bright-magenta text-white font-ui font-bold text-sm sm:text-base shadow-soft hover:shadow-soft-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
           >
-            <span>{isSubmitting ? "Đang lên chuyến..." : "Lên chuyến · Bắt đầu 28 ngày →"}</span>
+            <span>{isSubmitting ? 'Đang lên chuyến...' : 'Lên chuyến · Bắt đầu 28 ngày →'}</span>
           </button>
 
           {privacyNote && (
@@ -481,5 +497,5 @@ export function BoardingPassCard({
         </button>
       </div>
     </div>
-  );
+  )
 }

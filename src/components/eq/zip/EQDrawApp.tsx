@@ -225,7 +225,7 @@ export function EQDrawApp({
               <div className="space-y-1.5">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
                   {/* a11y-contrast-ok: SVG icon trang trí */}
-<Flower2 className="w-3.5 h-3.5 text-accent-pink" />
+                  <Flower2 className="w-3.5 h-3.5 text-accent-pink" />
                   <span>Bước 2: Lắng nghe tiếng lòng</span>
                 </div>
 
@@ -480,7 +480,7 @@ export function EQDrawApp({
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold mb-1">
                   {/* a11y-contrast-ok: SVG icon trang trí */}
-<BookOpen className="w-3.5 h-3.5 text-accent-pink" />
+                  <BookOpen className="w-3.5 h-3.5 text-accent-pink" />
                   <span>Bộ sưu tập 26 thông điệp</span>
                 </div>
                 <h3 className="font-display text-xl sm:text-2xl text-deep-navy uppercase">
@@ -519,7 +519,9 @@ export function EQDrawApp({
                     }`}
                   >
                     <div className="flex items-center justify-between text-[10px] text-deep-navy/70 mb-2">
-                      <span className="font-bold">THẺ #{String(card.code || card.order || card.id).padStart(2, '0')}</span>
+                      <span className="font-bold">
+                        THẺ #{String(card.code || card.order || card.id).padStart(2, '0')}
+                      </span>
                       <span className="px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta font-semibold">
                         {card.keywordVi || 'Việt'}
                       </span>

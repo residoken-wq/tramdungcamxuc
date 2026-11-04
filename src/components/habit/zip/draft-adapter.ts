@@ -6,11 +6,7 @@ import {
 } from '@/components/habit/flow/draft'
 import type { Weekday } from '@/lib/habit/rhythm'
 import type { HabitScorecardItem, HabitScorecardRating } from '@/lib/habit'
-import type {
-  DailyRoutineItem,
-  IdentityFormData,
-  LoopTechniques,
-} from './types'
+import type { DailyRoutineItem, IdentityFormData, LoopTechniques } from './types'
 
 export const DAY_TO_WEEKDAY: Record<string, Weekday> = {
   T2: 'mon',
@@ -69,16 +65,17 @@ export function scorecardToRoutineItems(scorecard: HabitScorecardItem[]): DailyR
 }
 
 export function daysToWeekdays(days: string[]): Weekday[] {
-  return days
-    .map((d) => DAY_TO_WEEKDAY[d])
-    .filter((w): w is Weekday => Boolean(w))
+  return days.map((d) => DAY_TO_WEEKDAY[d]).filter((w): w is Weekday => Boolean(w))
 }
 
 export function weekdaysToDays(weekdays: Weekday[]): string[] {
   return weekdays.map((w) => WEEKDAY_TO_DAY[w]).filter(Boolean)
 }
 
-export function recordAnswersToArray(record: Record<number, number>, totalQuestions = 8): (number | null)[] {
+export function recordAnswersToArray(
+  record: Record<number, number>,
+  totalQuestions = 8,
+): (number | null)[] {
   const result: (number | null)[] = []
   for (let i = 1; i <= totalQuestions; i++) {
     result.push(typeof record[i] === 'number' ? record[i] : null)
@@ -106,7 +103,7 @@ export interface ZipState {
 
 export function zipStateToFlowDraft(
   zipState: ZipState,
-  baseDraft: HabitFlowDraft = getDefaultHabitFlowDraft()
+  baseDraft: HabitFlowDraft = getDefaultHabitFlowDraft(),
 ): HabitFlowDraft {
   const draft = { ...baseDraft }
 
@@ -129,7 +126,10 @@ export function zipStateToFlowDraft(
     reward: zipState.loopTechniques.rewards || [],
   }
 
-  const chosen: Record<'cue' | 'craving' | 'response' | 'reward', Array<{ techniqueId: number; action: string }>> = {
+  const chosen: Record<
+    'cue' | 'craving' | 'response' | 'reward',
+    Array<{ techniqueId: number; action: string }>
+  > = {
     cue: [],
     craving: [],
     response: [],
@@ -208,5 +208,3 @@ export function flowDraftToZipState(draft: HabitFlowDraft): ZipState {
     },
   }
 }
-
-

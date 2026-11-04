@@ -14,8 +14,6 @@ import {
   ShoppingBag,
 } from 'lucide-react'
 import { GuideModal } from './GuideModal'
-import { TrialBanner } from '@/components/habit/TrialBanner'
-import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
 
 export interface EQBuddyIntroProps {
   content?: {
@@ -51,13 +49,11 @@ export interface EQBuddyIntroProps {
     step4Desc?: string | null
     guideModalQuote?: string | null
   } | null
-  showTrialBanner?: boolean
+  /** QA DP-01c: rendered by the server page (TrialBanner is an async Server Component). */
+  trialBanner?: React.ReactNode
 }
 
-export function EQBuddyIntro({
-  content,
-  showTrialBanner = false,
-}: EQBuddyIntroProps) {
+export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
   const [introStep, setIntroStep] = useState<1 | 2>(1)
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
 
@@ -68,7 +64,7 @@ export function EQBuddyIntro({
   return (
     <div className="w-full space-y-8">
       {/* Trial banner: chỉ hiển thị khi chế độ yêu cầu đăng ký dùng thử */}
-      {showTrialBanner && <TrialBanner productSlug={EQ_BUDDY_PRODUCT_SLUG} />}
+      {trialBanner}
 
       {/* Khung zip chính */}
       <div className="w-full max-w-3xl mx-auto bg-warm-ivory rounded-2xl sm:rounded-3xl border border-lavender-mist p-4 sm:p-6 md:p-8 shadow-soft-md transition-all relative">
@@ -103,7 +99,7 @@ export function EQBuddyIntro({
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
               {/* a11y-contrast-ok: SVG icon trang trí */}
-<Sparkles className="w-3.5 h-3.5 text-accent-pink" />
+              <Sparkles className="w-3.5 h-3.5 text-accent-pink" />
               <span>{content?.badge || 'Bộ thẻ chánh niệm & Trí tuệ cảm xúc (EQ)'}</span>
             </div>
 
@@ -121,8 +117,7 @@ export function EQBuddyIntro({
           </h1>
 
           <p className="text-sm sm:text-base text-deep-navy/80 font-medium">
-            26 thông điệp cùng bạn.{' '}
-            <strong className="text-bright-magenta">Gọi tên</strong> -{' '}
+            26 thông điệp cùng bạn. <strong className="text-bright-magenta">Gọi tên</strong> -{' '}
             <strong className="text-bright-magenta">Ghi nhận</strong> -{' '}
             <strong className="text-deep-navy">Gợi nhớ</strong>.
           </p>

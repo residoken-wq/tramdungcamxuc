@@ -33,7 +33,9 @@ export function EQCardQrView({ card, children }: EQCardQrViewProps) {
           className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-soft-pink text-bright-magenta font-ui text-xs font-bold hover:bg-bright-magenta hover:text-white transition-colors"
         >
           <RotateCw className="w-3.5 h-3.5" />
-          <span>{isFlipped ? 'Xem mặt trước (Lời trích dẫn)' : 'Xem mặt sau (3 câu hỏi suy ngẫm)'}</span>
+          <span>
+            {isFlipped ? 'Xem mặt trước (Lời trích dẫn)' : 'Xem mặt sau (3 câu hỏi suy ngẫm)'}
+          </span>
         </button>
       </div>
 
@@ -55,7 +57,7 @@ export function EQCardQrView({ card, children }: EQCardQrViewProps) {
         <div className="w-full max-w-xl p-6 sm:p-8 rounded-3xl bg-warm-ivory border border-lavender-mist shadow-soft space-y-3">
           <div className="flex items-center gap-2 text-deep-navy font-ui text-xs font-bold uppercase tracking-wider">
             {/* a11y-contrast-ok: SVG icon trang trí */}
-<Heart className="w-4 h-4 text-accent-pink" />
+            <Heart className="w-4 h-4 text-accent-pink" />
             <span>Câu chuyện phía sau thẻ</span>
           </div>
           <div className="prose prose-purple max-w-none font-sans text-sm sm:text-base text-deep-navy/85 leading-relaxed">

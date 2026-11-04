@@ -21,22 +21,26 @@ export function Step2PercentPrinciple({
   // Slider days (7 to 365) - khởi tạo ở mốc 21 ngày
   const [days, setDays] = useState<number>(21)
 
-  const unknownItems = onePercentUnknowns && onePercentUnknowns.length > 0
-    ? onePercentUnknowns
-    : [
-        {
-          title: '1. Giai đoạn thất vọng',
-          content: 'Bạn chỉ phát huy được tiềm năng của mình sau khi đi qua giai đoạn thất vọng — quãng mà kết quả thấp hơn hẳn công sức bỏ ra.',
-        },
-        {
-          title: '2. Tin vào tiến trình',
-          content: 'Bí quyết đi qua giai đoạn đó là tin vào tiến trình thay vì kết quả. Tiến trình là số lần bạn đã làm, không phải kết quả bạn đã thấy.',
-        },
-        {
-          title: '3. Tư duy phù hợp',
-          content: 'Tiến trình dễ hơn rất nhiều khi bạn có tư duy và phương pháp hợp với mình — chứ không phải phương pháp hợp với người bạn đang ngưỡng mộ.',
-        },
-      ]
+  const unknownItems =
+    onePercentUnknowns && onePercentUnknowns.length > 0
+      ? onePercentUnknowns
+      : [
+          {
+            title: '1. Giai đoạn thất vọng',
+            content:
+              'Bạn chỉ phát huy được tiềm năng của mình sau khi đi qua giai đoạn thất vọng — quãng mà kết quả thấp hơn hẳn công sức bỏ ra.',
+          },
+          {
+            title: '2. Tin vào tiến trình',
+            content:
+              'Bí quyết đi qua giai đoạn đó là tin vào tiến trình thay vì kết quả. Tiến trình là số lần bạn đã làm, không phải kết quả bạn đã thấy.',
+          },
+          {
+            title: '3. Tư duy phù hợp',
+            content:
+              'Tiến trình dễ hơn rất nhiều khi bạn có tư duy và phương pháp hợp với mình — chứ không phải phương pháp hợp với người bạn đang ngưỡng mộ.',
+          },
+        ]
 
   return (
     <div className="space-y-8">
@@ -50,7 +54,8 @@ export function Step2PercentPrinciple({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Hầu hết mọi người nghe câu “1% mỗi ngày” rồi gật đầu bỏ qua. Nhưng hiểu đúng nguyên lý này là thứ quyết định bạn có đi qua nổi tuần thứ ba hay không.
+        Hầu hết mọi người nghe câu “1% mỗi ngày” rồi gật đầu bỏ qua. Nhưng hiểu đúng nguyên lý này
+        là thứ quyết định bạn có đi qua nổi tuần thứ ba hay không.
       </p>
 
       {/* 2. Biểu đồ "Vùng năng lực tiềm ẩn" */}
@@ -97,10 +102,24 @@ export function Step2PercentPrinciple({
             </text>
             <line x1="100" y1="40" x2="100" y2="290" stroke="#e2e8f0" strokeWidth="1.5" />
             <line x1="100" y1="290" x2="510" y2="290" stroke="#e2e8f0" strokeWidth="1" />
-            <text x="80" y="295" fill="#2d3748" fontSize="14" fontWeight="bold" fontFamily="Montserrat, sans-serif">
+            <text
+              x="80"
+              y="295"
+              fill="#2d3748"
+              fontSize="14"
+              fontWeight="bold"
+              fontFamily="Montserrat, sans-serif"
+            >
               1
             </text>
-            <text x="475" y="312" fill="#718096" fontSize="12" fontWeight="500" fontFamily="Montserrat, sans-serif">
+            <text
+              x="475"
+              y="312"
+              fill="#718096"
+              fontSize="12"
+              fontWeight="500"
+              fontFamily="Montserrat, sans-serif"
+            >
               1 năm
             </text>
 
@@ -120,13 +139,33 @@ export function Step2PercentPrinciple({
 
             {/* 3. VÙNG RÂM GIAI ĐOẠN THẤT VỌNG */}
             <path d="M 100 290 Q 250 282 355 210 L 100 290 Z" fill="#3b5998" opacity="0.1" />
-            <text x="130" y="276" fill="#2B4C7E" fontSize="11" fontWeight="bold" fontFamily="Montserrat, sans-serif">
+            <text
+              x="130"
+              y="276"
+              fill="#2B4C7E"
+              fontSize="11"
+              fontWeight="bold"
+              fontFamily="Montserrat, sans-serif"
+            >
               Giai đoạn thất vọng
             </text>
 
             {/* 4. ĐƯỜNG NÉT ĐỨT "Tôi nghĩ sẽ là" */}
-            <path d="M 100 290 L 510 160" stroke="#4a5568" strokeDasharray="4 4" strokeWidth="1.5" fill="none" />
-            <text x="415" y="152" fill="#4a5568" fontSize="12" fontWeight="bold" fontFamily="Montserrat, sans-serif">
+            <path
+              d="M 100 290 L 510 160"
+              stroke="#4a5568"
+              strokeDasharray="4 4"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <text
+              x="415"
+              y="152"
+              fill="#4a5568"
+              fontSize="12"
+              fontWeight="bold"
+              fontFamily="Montserrat, sans-serif"
+            >
               Tôi nghĩ sẽ là
             </text>
 
@@ -138,13 +177,27 @@ export function Step2PercentPrinciple({
               fill="none"
               strokeLinecap="round"
             />
-            <text x="445" y="58" fill="#2B4C7E" fontSize="12" fontWeight="bold" fontFamily="Montserrat, sans-serif">
+            <text
+              x="445"
+              y="58"
+              fill="#2B4C7E"
+              fontSize="12"
+              fontWeight="bold"
+              fontFamily="Montserrat, sans-serif"
+            >
               Thực tế là
             </text>
 
             {/* 6. ĐƯỜNG ĐỎ MẬN "Tệ hơn 1% mỗi ngày" */}
             <line x1="100" y1="290" x2="510" y2="320" stroke="#a73a52" strokeWidth="2.5" />
-            <text x="370" y="345" fill="#a73a52" fontSize="12" fontWeight="bold" fontFamily="Montserrat, sans-serif">
+            <text
+              x="370"
+              y="345"
+              fill="#a73a52"
+              fontSize="12"
+              fontWeight="bold"
+              fontFamily="Montserrat, sans-serif"
+            >
               Tệ hơn 1% mỗi ngày
             </text>
 
@@ -160,7 +213,14 @@ export function Step2PercentPrinciple({
               strokeDasharray="3 2"
               opacity="0.6"
             />
-            <text x="190" y="192" fill="#a73a52" fontSize="13" fontWeight="bold" fontFamily="Montserrat, sans-serif">
+            <text
+              x="190"
+              y="192"
+              fill="#a73a52"
+              fontSize="13"
+              fontWeight="bold"
+              fontFamily="Montserrat, sans-serif"
+            >
               Điểm bứt phá
             </text>
           </svg>
@@ -181,9 +241,7 @@ export function Step2PercentPrinciple({
           <div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-              <h2 className="font-ui font-bold text-lg text-deep-navy">
-                Kéo thử: sau {days} ngày
-              </h2>
+              <h2 className="font-ui font-bold text-lg text-deep-navy">Kéo thử: sau {days} ngày</h2>
             </div>
             <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
               Mô phỏng sức mạnh của việc tốt hơn hoặc tệ hơn 1% mỗi ngày
@@ -219,9 +277,7 @@ export function Step2PercentPrinciple({
           {/* Card Tốt hơn: 1,01^n */}
           <div className="p-5 rounded-[20px] bg-white border border-mint-haze shadow-soft">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono font-bold text-deep-navy/70">
-                1,01^{days}
-              </span>
+              <span className="text-xs font-mono font-bold text-deep-navy/70">1,01^{days}</span>
               <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mint-haze text-deep-navy">
                 +1%
               </span>
@@ -231,17 +287,13 @@ export function Step2PercentPrinciple({
                 {(1.01 ** days).toFixed(2).replace('.', ',')}
               </span>
             </div>
-            <p className="text-xs text-deep-navy/70 font-ui font-medium">
-              tốt hơn 1% mỗi ngày
-            </p>
+            <p className="text-xs text-deep-navy/70 font-ui font-medium">tốt hơn 1% mỗi ngày</p>
           </div>
 
           {/* Card Tệ hơn: 0,99^n */}
           <div className="p-5 rounded-[20px] bg-white border border-bright-magenta/20 shadow-soft">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono font-bold text-deep-navy/70">
-                0,99^{days}
-              </span>
+              <span className="text-xs font-mono font-bold text-deep-navy/70">0,99^{days}</span>
               <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
                 -1%
               </span>
@@ -251,9 +303,7 @@ export function Step2PercentPrinciple({
                 {(0.99 ** days).toFixed(2).replace('.', ',')}
               </span>
             </div>
-            <p className="text-xs text-deep-navy/70 font-ui font-medium">
-              tệ hơn 1% mỗi ngày
-            </p>
+            <p className="text-xs text-deep-navy/70 font-ui font-medium">tệ hơn 1% mỗi ngày</p>
           </div>
         </div>
 
@@ -262,18 +312,24 @@ export function Step2PercentPrinciple({
           {days <= 30 && (
             <p>
               Sau {days} ngày đều đặn, bạn mới tốt hơn{' '}
-              <strong className="text-deep-navy">{Math.round((1.01 ** days - 1) * 100)}%</strong>. Gần như không cảm thấy gì — đó chính là lý do tuần thứ ba ai cũng muốn bỏ. Giờ kéo tiếp tới 365.
+              <strong className="text-deep-navy">{Math.round((1.01 ** days - 1) * 100)}%</strong>.
+              Gần như không cảm thấy gì — đó chính là lý do tuần thứ ba ai cũng muốn bỏ. Giờ kéo
+              tiếp tới 365.
             </p>
           )}
           {days > 30 && days < 300 && (
             <p>
-              Đường cong bắt đầu bẻ lên. Người bỏ cuộc ở tuần thứ ba không bao giờ thấy được đoạn này.
+              Đường cong bắt đầu bẻ lên. Người bỏ cuộc ở tuần thứ ba không bao giờ thấy được đoạn
+              này.
             </p>
           )}
           {days >= 300 && (
             <p>
               Giữ đủ một năm: tốt hơn{' '}
-              <strong className="text-deep-navy">{(1.01 ** days).toFixed(2).replace('.', ',')}</strong> lần. Cùng điểm xuất phát, chỉ khác ở việc có lặp lại hay không.
+              <strong className="text-deep-navy">
+                {(1.01 ** days).toFixed(2).replace('.', ',')}
+              </strong>{' '}
+              lần. Cùng điểm xuất phát, chỉ khác ở việc có lặp lại hay không.
             </p>
           )}
         </div>
@@ -288,7 +344,10 @@ export function Step2PercentPrinciple({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm font-ui">
           {unknownItems.map((item, idx) => (
-            <div key={idx} className="p-4 rounded-2xl bg-warm-ivory/60 border border-lavender-mist/70 space-y-1.5">
+            <div
+              key={idx}
+              className="p-4 rounded-2xl bg-warm-ivory/60 border border-lavender-mist/70 space-y-1.5"
+            >
               <div className="font-bold text-bright-magenta">{item.title}</div>
               <p className="text-deep-navy/75 leading-relaxed text-xs">
                 {'body' in item ? item.body : (item as any).content}

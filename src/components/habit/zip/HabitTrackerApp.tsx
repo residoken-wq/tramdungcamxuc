@@ -1,53 +1,36 @@
+'use client'
 /* eslint-disable react-hooks/set-state-in-effect */
-"use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import {
-  HabitStep,
-  DailyRoutineItem,
-  IdentityFormData,
-  LoopTechniques,
-} from "./types";
-import {
-  INITIAL_ROUTINES,
-  INITIAL_IDENTITY_DATA,
-  INITIAL_LOOP_TECHNIQUES,
-} from "./constants";
-import { HabitTrackerHeader } from "./HabitTrackerHeader";
-import StepNavigation from "./StepNavigation";
-import { Step1Diagnose } from "./Steps/Step1Diagnose";
-import { Step2PercentPrinciple } from "./Steps/Step2PercentPrinciple";
-import { Step3FindMentor } from "./Steps/Step3FindMentor";
-import { Step4IdentityHabit } from "./Steps/Step4IdentityHabit";
-import { Step5LoopDesign } from "./Steps/Step5LoopDesign";
-import { BoardingPassCard } from "./Result/BoardingPassCard";
-import { HabitTrackerFooter } from "./HabitTrackerFooter";
-import {
-  HABIT_LOOP_STORAGE_KEY,
-  flattenChosenTechniques,
-  type PublicTechnique,
-} from "@/lib/habit";
+import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { HabitStep, DailyRoutineItem, IdentityFormData, LoopTechniques } from './types'
+import { INITIAL_ROUTINES, INITIAL_IDENTITY_DATA, INITIAL_LOOP_TECHNIQUES } from './constants'
+import { HabitTrackerHeader } from './HabitTrackerHeader'
+import StepNavigation from './StepNavigation'
+import { Step1Diagnose } from './Steps/Step1Diagnose'
+import { Step2PercentPrinciple } from './Steps/Step2PercentPrinciple'
+import { Step3FindMentor } from './Steps/Step3FindMentor'
+import { Step4IdentityHabit } from './Steps/Step4IdentityHabit'
+import { Step5LoopDesign } from './Steps/Step5LoopDesign'
+import { BoardingPassCard } from './Result/BoardingPassCard'
+import { HabitTrackerFooter } from './HabitTrackerFooter'
+import { HABIT_LOOP_STORAGE_KEY, flattenChosenTechniques, type PublicTechnique } from '@/lib/habit'
 import {
   getDefaultHabitFlowDraft,
   migrateHabitDraft,
   serializeHabitDraftForStorage,
   type HabitFlowDraft,
-} from "@/components/habit/flow/draft";
-import {
-  zipStateToFlowDraft,
-  flowDraftToZipState,
-  type ZipState,
-} from "./draft-adapter";
-import { track } from "@/lib/analytics/track";
-import { addVietnamDays, getVietnamYmd } from "@/lib/habit/tracker-stats";
-import type { CleanHabitDiagnose, CleanHabitStepQuotes } from "@/lib/habit/journey-content.server";
+} from '@/components/habit/flow/draft'
+import { zipStateToFlowDraft, flowDraftToZipState, type ZipState } from './draft-adapter'
+import { track } from '@/lib/analytics/track'
+import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
+import type { CleanHabitDiagnose, CleanHabitStepQuotes } from '@/lib/habit/journey-content.server'
 
 export interface HabitTrackerAppProps {
-  techniques?: PublicTechnique[];
-  journeyDays?: number;
-  diagnose?: CleanHabitDiagnose | null;
-  stepQuotes?: CleanHabitStepQuotes;
-  privacyNote?: string | null;
+  techniques?: PublicTechnique[]
+  journeyDays?: number
+  diagnose?: CleanHabitDiagnose | null
+  stepQuotes?: CleanHabitStepQuotes
+  privacyNote?: string | null
 }
 
 export function HabitTrackerApp({
@@ -56,104 +39,104 @@ export function HabitTrackerApp({
   diagnose,
   privacyNote,
 }: HabitTrackerAppProps) {
-  const startTimeRef = useRef<number | null>(null);
-  const completedTrackedRef = useRef(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const startTimeRef = useRef<number | null>(null)
+  const completedTrackedRef = useRef(false)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   // Core navigation state
-  const [currentStep, setCurrentStep] = useState<HabitStep>(1);
-  const [maxReachedStep, setMaxReachedStep] = useState<number>(1);
+  const [currentStep, setCurrentStep] = useState<HabitStep>(1)
+  const [maxReachedStep, setMaxReachedStep] = useState<number>(1)
 
   // Form State
-  const [diagnoseAnswers, setDiagnoseAnswers] = useState<Record<number, number>>({});
-  const [routines, setRoutines] = useState<DailyRoutineItem[]>(INITIAL_ROUTINES);
-  const [identity, setIdentity] = useState<IdentityFormData>(INITIAL_IDENTITY_DATA);
-  const [loopTechniques, setLoopTechniques] = useState<LoopTechniques>(INITIAL_LOOP_TECHNIQUES);
+  const [diagnoseAnswers, setDiagnoseAnswers] = useState<Record<number, number>>({})
+  const [routines, setRoutines] = useState<DailyRoutineItem[]>(INITIAL_ROUTINES)
+  const [identity, setIdentity] = useState<IdentityFormData>(INITIAL_IDENTITY_DATA)
+  const [loopTechniques, setLoopTechniques] = useState<LoopTechniques>(INITIAL_LOOP_TECHNIQUES)
 
   // Submission Form State for Step 6
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [consent, setConsent] = useState(false);
-  const [honeypot, setHoneypot] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [trackerDestination, setTrackerDestination] = useState<string>("/habit/tracker");
-  const [hasSavedPlan, setHasSavedPlan] = useState(false);
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [trackerDestination, setTrackerDestination] = useState<string>('/habit/tracker')
+  const [hasSavedPlan, setHasSavedPlan] = useState(false)
 
   // Calculate current date in Vietnam time for Step 4 defaults if empty
   useEffect(() => {
     if (!identity.startDate) {
-      const todayYmd = getVietnamYmd();
-      const endYmd = getVietnamYmd(new Date(addVietnamDays(todayYmd, journeyDays - 1)));
+      const todayYmd = getVietnamYmd()
+      const endYmd = getVietnamYmd(new Date(addVietnamDays(todayYmd, journeyDays - 1)))
       setIdentity((prev) => ({
         ...prev,
         startDate: todayYmd,
         endDate: endYmd,
-      }));
+      }))
     }
-  }, [identity.startDate, journeyDays]);
+  }, [identity.startDate, journeyDays])
 
   // 1. Restore from localStorage (using tdcx_habit_loop_v1 key via draft adapter)
   useEffect(() => {
     if (startTimeRef.current === null) {
-      startTimeRef.current = Date.now();
+      startTimeRef.current = Date.now()
     }
     try {
-      if (typeof window !== "undefined") {
-        const stored = window.localStorage.getItem(HABIT_LOOP_STORAGE_KEY);
+      if (typeof window !== 'undefined') {
+        const stored = window.localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
         if (stored) {
-          const parsed = JSON.parse(stored);
-          const knownIds = new Set((techniques || []).map((t) => t.id));
-          const migrated = migrateHabitDraft(parsed, knownIds, diagnose?.questions?.length);
-          const restoredZip = flowDraftToZipState(migrated);
+          const parsed = JSON.parse(stored)
+          const knownIds = new Set((techniques || []).map((t) => t.id))
+          const migrated = migrateHabitDraft(parsed, knownIds, diagnose?.questions?.length)
+          const restoredZip = flowDraftToZipState(migrated)
 
           if (Object.keys(restoredZip.diagnoseAnswers).length > 0) {
-            setDiagnoseAnswers(restoredZip.diagnoseAnswers);
+            setDiagnoseAnswers(restoredZip.diagnoseAnswers)
           }
           if (restoredZip.routines.length > 0) {
-            setRoutines(restoredZip.routines);
+            setRoutines(restoredZip.routines)
           }
           setIdentity((prev) => ({
             ...prev,
             ...restoredZip.identity,
-          }));
-          setLoopTechniques(restoredZip.loopTechniques);
+          }))
+          setLoopTechniques(restoredZip.loopTechniques)
 
           if (migrated.step && migrated.step >= 1 && migrated.step <= 6) {
-            setCurrentStep(migrated.step as HabitStep);
-            setMaxReachedStep((prev) => Math.max(prev, migrated.step));
+            setCurrentStep(migrated.step as HabitStep)
+            setMaxReachedStep((prev) => Math.max(prev, migrated.step))
           }
         }
       }
     } catch {
       // Ignore localStorage errors
     } finally {
-      setIsLoaded(true);
+      setIsLoaded(true)
     }
-  }, [techniques, diagnose?.questions?.length]);
+  }, [techniques, diagnose?.questions?.length])
 
   // 2. Auto-save to localStorage whenever state changes
   useEffect(() => {
-    if (!isLoaded || submitSuccess) return;
+    if (!isLoaded || submitSuccess) return
     try {
       const zipState: ZipState = {
         diagnoseAnswers,
         routines,
         identity,
         loopTechniques,
-      };
-      const baseDraft = getDefaultHabitFlowDraft();
-      baseDraft.step = (typeof currentStep === "number" ? currentStep : 6) as any;
-      const adaptedDraft = zipStateToFlowDraft(zipState, baseDraft);
-      adaptedDraft.name = name;
-      adaptedDraft.email = email;
+      }
+      const baseDraft = getDefaultHabitFlowDraft()
+      baseDraft.step = (typeof currentStep === 'number' ? currentStep : 6) as any
+      const adaptedDraft = zipStateToFlowDraft(zipState, baseDraft)
+      adaptedDraft.name = name
+      adaptedDraft.email = email
 
       window.localStorage.setItem(
         HABIT_LOOP_STORAGE_KEY,
-        serializeHabitDraftForStorage(adaptedDraft)
-      );
+        serializeHabitDraftForStorage(adaptedDraft),
+      )
     } catch {
       // Ignore QuotaExceeded
     }
@@ -167,71 +150,71 @@ export function HabitTrackerApp({
     loopTechniques,
     name,
     email,
-  ]);
+  ])
 
   // Track max step reached and scroll to top on step change
   const goToStep = (step: HabitStep) => {
-    setCurrentStep(step);
-    if (typeof step === "number") {
-      setMaxReachedStep((prev) => Math.max(prev, step));
+    setCurrentStep(step)
+    if (typeof step === 'number') {
+      setMaxReachedStep((prev) => Math.max(prev, step))
     }
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-  };
+  }
 
   // Step 1: diagnose answer change (toggle on/off)
   const handleDiagnoseChange = (id: number, score: number) => {
     setDiagnoseAnswers((prev) => {
-      const next = { ...prev };
+      const next = { ...prev }
       if (next[id] === score) {
-        delete next[id];
+        delete next[id]
       } else {
-        next[id] = score;
+        next[id] = score
       }
-      return next;
-    });
-  };
+      return next
+    })
+  }
 
   // Step 4 field change
   const handleIdentityChange = (field: keyof IdentityFormData, value: any) => {
-    setIdentity((prev) => ({ ...prev, [field]: value }));
-  };
+    setIdentity((prev) => ({ ...prev, [field]: value }))
+  }
 
   // Prescribed category calculated from Step 1 answers
-  const prescribedCategory = useMemo((): "cue" | "craving" | "response" | "reward" | null => {
-    if (!diagnoseAnswers || Object.keys(diagnoseAnswers).length === 0) return null;
-    const scoreCue = (diagnoseAnswers[1] || 0) + (diagnoseAnswers[2] || 0);
-    const scoreCraving = (diagnoseAnswers[3] || 0) + (diagnoseAnswers[4] || 0);
-    const scoreResponse = (diagnoseAnswers[5] || 0) + (diagnoseAnswers[6] || 0);
-    const scoreReward = (diagnoseAnswers[7] || 0) + (diagnoseAnswers[8] || 0);
+  const prescribedCategory = useMemo((): 'cue' | 'craving' | 'response' | 'reward' | null => {
+    if (!diagnoseAnswers || Object.keys(diagnoseAnswers).length === 0) return null
+    const scoreCue = (diagnoseAnswers[1] || 0) + (diagnoseAnswers[2] || 0)
+    const scoreCraving = (diagnoseAnswers[3] || 0) + (diagnoseAnswers[4] || 0)
+    const scoreResponse = (diagnoseAnswers[5] || 0) + (diagnoseAnswers[6] || 0)
+    const scoreReward = (diagnoseAnswers[7] || 0) + (diagnoseAnswers[8] || 0)
 
     const categories = [
-      { id: "cue" as const, score: scoreCue },
-      { id: "craving" as const, score: scoreCraving },
-      { id: "response" as const, score: scoreResponse },
-      { id: "reward" as const, score: scoreReward },
-    ];
-    categories.sort((a, b) => b.score - a.score);
-    return categories[0].score > 0 ? categories[0].id : null;
-  }, [diagnoseAnswers]);
+      { id: 'cue' as const, score: scoreCue },
+      { id: 'craving' as const, score: scoreCraving },
+      { id: 'response' as const, score: scoreResponse },
+      { id: 'reward' as const, score: scoreReward },
+    ]
+    categories.sort((a, b) => b.score - a.score)
+    return categories[0].score > 0 ? categories[0].id : null
+  }, [diagnoseAnswers])
 
   // Step 6: Submit habit plan action
   const handleSubmitPlan = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError(null);
+    e.preventDefault()
+    setSubmitError(null)
 
-    const cleanEmail = email.trim();
+    const cleanEmail = email.trim()
     if (!cleanEmail) {
-      setSubmitError("Vui lòng nhập địa chỉ email để nhận kế hoạch.");
-      return;
+      setSubmitError('Vui lòng nhập địa chỉ email để nhận kế hoạch.')
+      return
     }
     if (!consent) {
-      setSubmitError("Vui lòng đồng ý với điều khoản để nhận kế hoạch qua email.");
-      return;
+      setSubmitError('Vui lòng đồng ý với điều khoản để nhận kế hoạch qua email.')
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
       // Build draft to flatten chosen techniques
@@ -240,9 +223,9 @@ export function HabitTrackerApp({
         routines,
         identity,
         loopTechniques,
-      };
-      const draft = zipStateToFlowDraft(zipState, getDefaultHabitFlowDraft());
-      const flattenedTechniques = flattenChosenTechniques(draft.chosenTechniques);
+      }
+      const draft = zipStateToFlowDraft(zipState, getDefaultHabitFlowDraft())
+      const flattenedTechniques = flattenChosenTechniques(draft.chosenTechniques)
 
       const payload = {
         scorecard: draft.scorecard,
@@ -259,56 +242,56 @@ export function HabitTrackerApp({
         consent: true,
         turnstileToken: turnstileToken || undefined,
         honeypot: honeypot || undefined,
-      };
+      }
 
-      const { submitHabitPlanAction } = await import("@/lib/habit/actions");
+      const { submitHabitPlanAction } = await import('@/lib/habit/actions')
       // REVIEW-REQUIRED: Plan creation & trial unlock
-      const res = await submitHabitPlanAction(payload);
+      const res = await submitHabitPlanAction(payload)
 
       if (!res.success) {
-        setSubmitError(res.error || "Gửi kế hoạch chưa thành công. Vui lòng thử lại.");
-        setIsSubmitting(false);
-        return;
+        setSubmitError(res.error || 'Gửi kế hoạch chưa thành công. Vui lòng thử lại.')
+        setIsSubmitting(false)
+        return
       }
 
       if (res.trackerDestination) {
-        setTrackerDestination(res.trackerDestination);
+        setTrackerDestination(res.trackerDestination)
       }
-      setHasSavedPlan(true);
-      setSubmitSuccess(true);
+      setHasSavedPlan(true)
+      setSubmitSuccess(true)
 
       if (res.trialStarted) {
-        const { HABIT_TRACKER_PRODUCT_SLUG } = await import("@/lib/habit/config");
-        track("trial_started", {
+        const { HABIT_TRACKER_PRODUCT_SLUG } = await import('@/lib/habit/config')
+        track('trial_started', {
           productSlug: HABIT_TRACKER_PRODUCT_SLUG,
           email: cleanEmail,
-          source: "habit_loop_5phut",
-        });
+          source: 'habit_loop_5phut',
+        })
       }
 
-      track("habit_plan_submitted" as any, {
+      track('habit_plan_submitted' as any, {
         step: 6,
         duration: startTimeRef.current
           ? Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
           : 0,
-      });
+      })
     } catch (err: any) {
-      setSubmitError(err?.message || "Đã xảy ra lỗi khi nộp kế hoạch.");
+      setSubmitError(err?.message || 'Đã xảy ra lỗi khi nộp kế hoạch.')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleStepTransition = (next: number) => {
     if (next === 6 && !completedTrackedRef.current) {
-      completedTrackedRef.current = true;
+      completedTrackedRef.current = true
       const duration = startTimeRef.current
         ? Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
-        : 0;
-      track("habit_loop_completed" as any, { step: 6, duration });
+        : 0
+      track('habit_loop_completed' as any, { step: 6, duration })
     }
-    goToStep(next as HabitStep);
-  };
+    goToStep(next as HabitStep)
+  }
 
   return (
     <div className="min-h-screen bg-warm-ivory text-deep-navy font-ui flex flex-col justify-between">
@@ -380,11 +363,11 @@ export function HabitTrackerApp({
                 getDefaultHabitFlowDraft(),
               )}
               onDraftChange={(newDraft) => {
-                const zState = flowDraftToZipState(newDraft);
+                const zState = flowDraftToZipState(newDraft)
                 setIdentity((prev) => ({
                   ...prev,
                   ...zState.identity,
-                }));
+                }))
               }}
               onNext={() => handleStepTransition(5)}
               onPrev={() => goToStep(3)}
@@ -431,5 +414,5 @@ export function HabitTrackerApp({
       {/* Footer */}
       <HabitTrackerFooter />
     </div>
-  );
+  )
 }

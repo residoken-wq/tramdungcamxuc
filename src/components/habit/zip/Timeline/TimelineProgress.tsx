@@ -41,8 +41,7 @@ export function TimelineProgress({
               circleClass += 'border-2 border-bright-magenta bg-bright-magenta'
               textColor = 'text-white'
             } else if (isCurrent) {
-              circleClass +=
-                'border-2 border-accent-pink bg-white ring-2 ring-accent-pink/20'
+              circleClass += 'border-2 border-accent-pink bg-white ring-2 ring-accent-pink/20'
               textColor = 'text-bright-magenta'
             } else {
               circleClass += 'border border-deep-navy/20 bg-white'
@@ -55,8 +54,8 @@ export function TimelineProgress({
                 <div className="flex flex-col items-center shrink-0">
                   <div className={circleClass}>
                     {m.id === 4 ? (
-                      {/* a11y-contrast-ok: SVG icon trang trí */}
-<Flag
+                      // a11y-contrast-ok: icon cờ trang trí, có số mốc / nhãn chữ bên dưới
+                      <Flag
                         className={`w-3 h-3 ${isPassed ? 'text-white' : isCurrent ? 'text-accent-pink' : 'text-deep-navy/70'}`}
                         strokeWidth={2.5}
                       />

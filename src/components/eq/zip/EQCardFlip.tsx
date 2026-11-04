@@ -59,7 +59,9 @@ export function EQCardFlip({
           <div className="flex items-center justify-between text-deep-navy/60 text-[10px] uppercase font-bold tracking-widest relative z-10 font-ui">
             <span className="flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-bright-magenta" />
-              <span>THẺ SỐ {cardNum} / {totalPublishedCards}</span>
+              <span>
+                THẺ SỐ {cardNum} / {totalPublishedCards}
+              </span>
             </span>
             {card.category && (
               <span className="font-semibold text-bright-magenta bg-soft-pink px-2 py-0.5 rounded-full">
@@ -90,9 +92,7 @@ export function EQCardFlip({
 
           {/* Bottom thẻ */}
           <div className="flex items-center justify-between text-[10px] text-deep-navy/70 relative z-10 border-t border-deep-navy/5 pt-2 font-ui">
-            <span className="font-quote italic text-bright-magenta">
-              Trạm Dừng Cảm Xúc ♡
-            </span>
+            <span className="font-quote italic text-bright-magenta">Trạm Dừng Cảm Xúc ♡</span>
             <span className="flex items-center gap-1 font-medium group-hover:text-bright-magenta transition-colors">
               <span>Chạm để lật</span>
               <RotateCw className="w-3 h-3" />
@@ -101,9 +101,7 @@ export function EQCardFlip({
         </div>
 
         {/* =================== MẶT SAU (LẬT 180 ĐỘ) =================== */}
-        <div
-          className="absolute inset-0 w-full h-full rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-warm-ivory via-white to-soft-pink border-2 border-bright-magenta/40 backface-hidden rotate-y-180 flex flex-col justify-between shadow-soft-md text-left"
-        >
+        <div className="absolute inset-0 w-full h-full rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-warm-ivory via-white to-soft-pink border-2 border-bright-magenta/40 backface-hidden rotate-y-180 flex flex-col justify-between shadow-soft-md text-left">
           {/* Viền mảnh */}
           <div className="absolute inset-2.5 rounded-2xl border border-bright-magenta/15 pointer-events-none" />
 
@@ -135,9 +133,7 @@ export function EQCardFlip({
                       {pIdx + 1}
                     </span>
                     <p className="text-[11px] sm:text-xs text-deep-navy/90 leading-snug font-medium">
-                      <strong className="text-bright-magenta font-semibold mr-1">
-                        {p.label}:
-                      </strong>
+                      <strong className="text-bright-magenta font-semibold mr-1">{p.label}:</strong>
                       {p.text}
                     </p>
                   </div>

@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
+import React, { useState } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,277 +13,279 @@ import {
   CheckCircle2,
   Gift,
   ExternalLink,
-} from "lucide-react";
-import { LoopTechniques, IdentityFormData, HabitStep } from "../types";
-import { StepQuoteHeader } from "../StepQuoteHeader";
+} from 'lucide-react'
+import { LoopTechniques, IdentityFormData, HabitStep } from '../types'
+import { StepQuoteHeader } from '../StepQuoteHeader'
 
 interface Step5LoopDesignProps {
-  loopTechniques: LoopTechniques;
-  prescribedCategory?: "cue" | "craving" | "response" | "reward" | null;
-  identity?: IdentityFormData;
-  onGoToStep?: (step: HabitStep) => void;
-  onTechniquesChange: (updated: LoopTechniques) => void;
-  onNext: () => void;
-  onPrev: () => void;
+  loopTechniques: LoopTechniques
+  prescribedCategory?: 'cue' | 'craving' | 'response' | 'reward' | null
+  identity?: IdentityFormData
+  onGoToStep?: (step: HabitStep) => void
+  onTechniquesChange: (updated: LoopTechniques) => void
+  onNext: () => void
+  onPrev: () => void
 }
 
 interface TechniqueItem {
-  id: string;
-  title: string;
-  description: string;
-  examples: string[];
-  placeholderGenerator: (identity?: IdentityFormData) => string;
-  videoUrl: string;
+  id: string
+  title: string
+  description: string
+  examples: string[]
+  placeholderGenerator: (identity?: IdentityFormData) => string
+  videoUrl: string
 }
 
 interface LawSection {
-  id: "cue" | "craving" | "response" | "reward";
-  categoryKey: "cues" | "cravings" | "responses" | "rewards";
-  lawNumber: string;
-  lawEnTitle: string;
-  title: string;
-  subLabel: string;
-  question: string;
-  icon: React.ComponentType<{ className?: string }>;
-  videoUrl: string;
-  totalTechs: number;
-  borderClass: string;
-  prescribedBorderClass: string;
-  prescribedBgClass: string;
-  pillClass: string;
-  iconBoxClass: string;
-  videoBtnClass: string;
-  checkboxActiveClass: string;
-  techniques: TechniqueItem[];
+  id: 'cue' | 'craving' | 'response' | 'reward'
+  categoryKey: 'cues' | 'cravings' | 'responses' | 'rewards'
+  lawNumber: string
+  lawEnTitle: string
+  title: string
+  subLabel: string
+  question: string
+  icon: React.ComponentType<{ className?: string }>
+  videoUrl: string
+  totalTechs: number
+  borderClass: string
+  prescribedBorderClass: string
+  prescribedBgClass: string
+  pillClass: string
+  iconBoxClass: string
+  videoBtnClass: string
+  checkboxActiveClass: string
+  techniques: TechniqueItem[]
 }
 
 const LAW_SECTIONS: LawSection[] = [
   // 1. QUY LUẬT 1: MAKE IT OBVIOUS (TÍN HIỆU)
   {
-    id: "cue",
-    categoryKey: "cues",
-    lawNumber: "1 · MAKE IT OBVIOUS",
-    lawEnTitle: "Cue · Tín hiệu",
-    title: "Tín hiệu đủ rõ ràng",
-    subLabel: "Cue · Tín hiệu",
-    question: "Điều gì sẽ nhắc bạn bắt đầu? Lúc nào, ở đâu, sau việc gì?",
+    id: 'cue',
+    categoryKey: 'cues',
+    lawNumber: '1 · MAKE IT OBVIOUS',
+    lawEnTitle: 'Cue · Tín hiệu',
+    title: 'Tín hiệu đủ rõ ràng',
+    subLabel: 'Cue · Tín hiệu',
+    question: 'Điều gì sẽ nhắc bạn bắt đầu? Lúc nào, ở đâu, sau việc gì?',
     icon: Zap,
-    videoUrl: "https://www.facebook.com/61577262321239/videos/a.122201322500908744/1692428401853478",
+    videoUrl:
+      'https://www.facebook.com/61577262321239/videos/a.122201322500908744/1692428401853478',
     totalTechs: 3,
-    borderClass: "border-blue-200/90",
-    prescribedBorderClass: "border-[#3b4991] ring-2 ring-[#3b4991]/20 shadow-md",
-    prescribedBgClass: "bg-[#3b4991]",
-    pillClass: "bg-[#EEF2FF] text-deep-navy border border-blue-200/60",
-    iconBoxClass: "bg-[#EEF2FF] text-deep-navy border border-blue-200/60",
-    videoBtnClass: "border-deep-navy text-deep-navy hover:bg-deep-navy/10",
-    checkboxActiveClass: "bg-[#3b4991] border-[#3b4991] text-white",
+    borderClass: 'border-blue-200/90',
+    prescribedBorderClass: 'border-[#3b4991] ring-2 ring-[#3b4991]/20 shadow-md',
+    prescribedBgClass: 'bg-[#3b4991]',
+    pillClass: 'bg-[#EEF2FF] text-deep-navy border border-blue-200/60',
+    iconBoxClass: 'bg-[#EEF2FF] text-deep-navy border border-blue-200/60',
+    videoBtnClass: 'border-deep-navy text-deep-navy hover:bg-deep-navy/10',
+    checkboxActiveClass: 'bg-[#3b4991] border-[#3b4991] text-white',
     techniques: [
       {
-        id: "tech-1",
-        title: "Soi lại nhịp sinh học",
-        description: "Gắn thói quen mới vào đúng thời điểm bạn còn năng lượng, thay vì lúc đã cạn.",
+        id: 'tech-1',
+        title: 'Soi lại nhịp sinh học',
+        description: 'Gắn thói quen mới vào đúng thời điểm bạn còn năng lượng, thay vì lúc đã cạn.',
         examples: [
-          "Nhận ra mình tỉnh táo nhất lúc 6h30, đặt việc quan trọng vào đó thay vì 10h tối khi đã cạn",
-          "Thấy mình hay trống 15 phút lúc chờ cơm trưa, dùng đúng khoảng đó cho thói quen mới",
+          'Nhận ra mình tỉnh táo nhất lúc 6h30, đặt việc quan trọng vào đó thay vì 10h tối khi đã cạn',
+          'Thấy mình hay trống 15 phút lúc chờ cơm trưa, dùng đúng khoảng đó cho thói quen mới',
         ],
         placeholderGenerator: (id) =>
           id?.mentorTime
             ? `Thói quen của tôi sẽ rơi vào khoảng ${id.mentorTime}, lúc tôi còn năng lượng.`
-            : "Khoảng thời gian trong ngày tôi còn năng lượng nhất là…",
-        videoUrl: "https://www.facebook.com/reel/1346424584229031",
+            : 'Khoảng thời gian trong ngày tôi còn năng lượng nhất là…',
+        videoUrl: 'https://www.facebook.com/reel/1346424584229031',
       },
       {
-        id: "tech-2",
-        title: "Ghép thói quen mới",
+        id: 'tech-2',
+        title: 'Ghép thói quen mới',
         description:
-          "Gắn việc mới vào ngay sau một việc bạn đã làm ổn định. Việc cũ chính là Mentor, và nó trở thành tín hiệu cho việc mới.",
+          'Gắn việc mới vào ngay sau một việc bạn đã làm ổn định. Việc cũ chính là Mentor, và nó trở thành tín hiệu cho việc mới.',
         examples: [
-          "Sau khi pha cà phê sáng, tôi đọc 1 trang sách",
-          "Sau khi đóng laptop cuối ngày, tôi viết 3 dòng nháp",
+          'Sau khi pha cà phê sáng, tôi đọc 1 trang sách',
+          'Sau khi đóng laptop cuối ngày, tôi viết 3 dòng nháp',
         ],
         placeholderGenerator: (id) =>
           id?.selectedMentor
-            ? `Sau khi ${id.selectedMentor}, tôi sẽ ${id.atomicHabit || "[thói quen hạt nhân]"}.`
-            : "Sau khi [Mentor], tôi sẽ [thói quen hạt nhân].",
-        videoUrl: "https://www.facebook.com/reel/2074993686432772",
+            ? `Sau khi ${id.selectedMentor}, tôi sẽ ${id.atomicHabit || '[thói quen hạt nhân]'}.`
+            : 'Sau khi [Mentor], tôi sẽ [thói quen hạt nhân].',
+        videoUrl: 'https://www.facebook.com/reel/2074993686432772',
       },
       {
-        id: "tech-3",
-        title: "Hẹn thói quen cụ thể",
-        description: "Khi nào, ở đâu, với ai. Một lời hẹn mơ hồ là một lời hẹn sẽ bị hoãn.",
+        id: 'tech-3',
+        title: 'Hẹn thói quen cụ thể',
+        description: 'Khi nào, ở đâu, với ai. Một lời hẹn mơ hồ là một lời hẹn sẽ bị hoãn.',
         examples: [
-          "Thứ Hai, Tư, Sáu lúc 6h, ở công viên gần nhà, tôi chạy bộ 10 phút",
-          "Mỗi tối 21h, ở bàn làm việc, tôi viết 3 dòng nháp",
+          'Thứ Hai, Tư, Sáu lúc 6h, ở công viên gần nhà, tôi chạy bộ 10 phút',
+          'Mỗi tối 21h, ở bàn làm việc, tôi viết 3 dòng nháp',
         ],
-        placeholderGenerator: () => "Tôi sẽ [hành động] vào [thời gian] tại [địa điểm].",
-        videoUrl: "https://www.facebook.com/reel/1397759535662307",
+        placeholderGenerator: () => 'Tôi sẽ [hành động] vào [thời gian] tại [địa điểm].',
+        videoUrl: 'https://www.facebook.com/reel/1397759535662307',
       },
     ],
   },
 
   // 2. QUY LUẬT 2: MAKE IT ATTRACTIVE (KHAO KHÁT)
   {
-    id: "craving",
-    categoryKey: "cravings",
-    lawNumber: "2 · MAKE IT ATTRACTIVE",
-    lawEnTitle: "Craving · Khao khát",
-    title: "Khao khát thực hiện đủ lớn",
-    subLabel: "Craving · Khao khát",
-    question: "Làm sao để bạn mong chờ việc này thay vì né nó?",
+    id: 'craving',
+    categoryKey: 'cravings',
+    lawNumber: '2 · MAKE IT ATTRACTIVE',
+    lawEnTitle: 'Craving · Khao khát',
+    title: 'Khao khát thực hiện đủ lớn',
+    subLabel: 'Craving · Khao khát',
+    question: 'Làm sao để bạn mong chờ việc này thay vì né nó?',
     icon: Flame,
-    videoUrl: "https://www.facebook.com/61577262321239/videos/a.122201322500908744/1563757661881940",
+    videoUrl:
+      'https://www.facebook.com/61577262321239/videos/a.122201322500908744/1563757661881940',
     totalTechs: 3,
-    borderClass: "border-pink-200/90",
-    prescribedBorderClass: "border-[#a8325d] ring-2 ring-[#a8325d]/20 shadow-md",
-    prescribedBgClass: "bg-[#a8325d]",
-    pillClass: "bg-soft-pink text-bright-magenta border border-bright-magenta/20",
-    iconBoxClass: "bg-soft-pink text-bright-magenta border border-bright-magenta/20",
-    videoBtnClass: "border-bright-magenta text-bright-magenta hover:bg-bright-magenta/10",
-    checkboxActiveClass: "bg-[#a8325d] border-[#a8325d] text-white",
+    borderClass: 'border-pink-200/90',
+    prescribedBorderClass: 'border-[#a8325d] ring-2 ring-[#a8325d]/20 shadow-md',
+    prescribedBgClass: 'bg-[#a8325d]',
+    pillClass: 'bg-soft-pink text-bright-magenta border border-bright-magenta/20',
+    iconBoxClass: 'bg-soft-pink text-bright-magenta border border-bright-magenta/20',
+    videoBtnClass: 'border-bright-magenta text-bright-magenta hover:bg-bright-magenta/10',
+    checkboxActiveClass: 'bg-[#a8325d] border-[#a8325d] text-white',
     techniques: [
       {
-        id: "tech-4",
-        title: "Môi trường ảnh hưởng",
+        id: 'tech-4',
+        title: 'Môi trường ảnh hưởng',
         description:
-          "Cái gì muốn giữ thì để gần, cái gì muốn bỏ thì để xa. Môi trường làm thay phần lớn việc của ý chí.",
+          'Cái gì muốn giữ thì để gần, cái gì muốn bỏ thì để xa. Môi trường làm thay phần lớn việc của ý chí.',
         examples: [
-          "Để sách ngay trên gối, để điện thoại sạc ngoài phòng ngủ",
-          "Đặt giày chạy ngay cửa, đẩy app mạng xã hội ra khỏi màn hình chính",
+          'Để sách ngay trên gối, để điện thoại sạc ngoài phòng ngủ',
+          'Đặt giày chạy ngay cửa, đẩy app mạng xã hội ra khỏi màn hình chính',
         ],
-        placeholderGenerator: () => "Tôi sẽ thay đổi không gian bằng cách…",
-        videoUrl: "https://www.facebook.com/reel/4513469222272397",
+        placeholderGenerator: () => 'Tôi sẽ thay đổi không gian bằng cách…',
+        videoUrl: 'https://www.facebook.com/reel/4513469222272397',
       },
       {
-        id: "tech-5",
-        title: "Nghi thức tạo động lực",
+        id: 'tech-5',
+        title: 'Nghi thức tạo động lực',
         description:
-          "Một hành động dạo đầu dễ chịu, lặp lại mỗi lần, giúp bạn vào việc mà không phải tranh luận với chính mình.",
+          'Một hành động dạo đầu dễ chịu, lặp lại mỗi lần, giúp bạn vào việc mà không phải tranh luận với chính mình.',
         examples: [
-          "Mở đúng một playlist 10 phút rồi mới bắt đầu; hết nhạc là xong phiên",
-          "Rót một tách trà, bật đèn bàn, hít thở ba lần rồi mới vào việc",
+          'Mở đúng một playlist 10 phút rồi mới bắt đầu; hết nhạc là xong phiên',
+          'Rót một tách trà, bật đèn bàn, hít thở ba lần rồi mới vào việc',
         ],
-        placeholderGenerator: () => "Trước khi bắt đầu, tôi sẽ…",
-        videoUrl: "https://www.facebook.com/reel/4682982545357599",
+        placeholderGenerator: () => 'Trước khi bắt đầu, tôi sẽ…',
+        videoUrl: 'https://www.facebook.com/reel/4682982545357599',
       },
       {
-        id: "tech-6",
-        title: "Bộ đôi thói quen",
+        id: 'tech-6',
+        title: 'Bộ đôi thói quen',
         description:
-          "Ghép việc cần làm với một điều bạn thật sự thích, và chỉ cho phép mình điều đó khi đang làm việc kia.",
+          'Ghép việc cần làm với một điều bạn thật sự thích, và chỉ cho phép mình điều đó khi đang làm việc kia.',
         examples: [
-          "Chỉ nghe podcast yêu thích khi đang đi bộ",
-          "Chỉ uống ly cà phê ngon của ngày khi đang ngồi viết",
+          'Chỉ nghe podcast yêu thích khi đang đi bộ',
+          'Chỉ uống ly cà phê ngon của ngày khi đang ngồi viết',
         ],
-        placeholderGenerator: () => "Tôi chỉ [điều tôi thích] khi đang [việc cần làm].",
-        videoUrl: "https://www.facebook.com/reel/1962615811412992",
+        placeholderGenerator: () => 'Tôi chỉ [điều tôi thích] khi đang [việc cần làm].',
+        videoUrl: 'https://www.facebook.com/reel/1962615811412992',
       },
     ],
   },
 
   // 3. QUY LUẬT 3: MAKE IT EASY (PHẢN HỒI)
   {
-    id: "response",
-    categoryKey: "responses",
-    lawNumber: "3 · MAKE IT EASY",
-    lawEnTitle: "Response · Phản hồi",
-    title: "Phản hồi đủ dễ dàng",
-    subLabel: "Response · Phản hồi",
-    question: "Phiên bản nhỏ nhất của việc này là gì?",
+    id: 'response',
+    categoryKey: 'responses',
+    lawNumber: '3 · MAKE IT EASY',
+    lawEnTitle: 'Response · Phản hồi',
+    title: 'Phản hồi đủ dễ dàng',
+    subLabel: 'Response · Phản hồi',
+    question: 'Phiên bản nhỏ nhất của việc này là gì?',
     icon: CheckCircle2,
-    videoUrl: "https://www.facebook.com/reel/1980547615969349",
+    videoUrl: 'https://www.facebook.com/reel/1980547615969349',
     totalTechs: 2,
-    borderClass: "border-amber-200/90",
-    prescribedBorderClass: "border-[#b87614] ring-2 ring-[#b87614]/20 shadow-md",
-    prescribedBgClass: "bg-[#b87614]",
-    pillClass: "bg-butter-cream/60 text-[#B45309] border border-amber-200",
-    iconBoxClass: "bg-butter-cream/60 text-[#B45309] border border-amber-200/60",
-    videoBtnClass: "border-[#B45309] text-[#B45309] hover:bg-amber-100",
-    checkboxActiveClass: "bg-[#b87614] border-[#b87614] text-white",
+    borderClass: 'border-amber-200/90',
+    prescribedBorderClass: 'border-[#b87614] ring-2 ring-[#b87614]/20 shadow-md',
+    prescribedBgClass: 'bg-[#b87614]',
+    pillClass: 'bg-butter-cream/60 text-[#B45309] border border-amber-200',
+    iconBoxClass: 'bg-butter-cream/60 text-[#B45309] border border-amber-200/60',
+    videoBtnClass: 'border-[#B45309] text-[#B45309] hover:bg-amber-100',
+    checkboxActiveClass: 'bg-[#b87614] border-[#b87614] text-white',
     techniques: [
       {
-        id: "tech-7",
-        title: "Quy tắc 2 phút",
+        id: 'tech-7',
+        title: 'Quy tắc 2 phút',
         description:
-          "Phiên bản mở đầu phải nhỏ đến mức không thể từ chối. Mục tiêu của hai phút đầu là xuất hiện, không phải hoàn thành.",
+          'Phiên bản mở đầu phải nhỏ đến mức không thể từ chối. Mục tiêu của hai phút đầu là xuất hiện, không phải hoàn thành.',
         examples: [
-          "Đọc sách → chỉ cần mở sách và đọc 1 trang",
-          "Tập thể dục → chỉ cần mặc đồ tập và ra khỏi cửa",
+          'Đọc sách → chỉ cần mở sách và đọc 1 trang',
+          'Tập thể dục → chỉ cần mặc đồ tập và ra khỏi cửa',
         ],
-        placeholderGenerator: () => "Phiên bản hai phút của tôi là…",
-        videoUrl: "https://www.facebook.com/reel/2178394586406770",
+        placeholderGenerator: () => 'Phiên bản hai phút của tôi là…',
+        videoUrl: 'https://www.facebook.com/reel/2178394586406770',
       },
       {
-        id: "tech-8",
-        title: "Tự động hóa cam kết",
-        description: "Một quyết định làm một lần, loại bỏ hàng chục quyết định sau đó.",
+        id: 'tech-8',
+        title: 'Tự động hóa cam kết',
+        description: 'Một quyết định làm một lần, loại bỏ hàng chục quyết định sau đó.',
         examples: [
-          "Đăng ký lớp tập trả trước một tháng, để chỉ phải quyết định một lần",
-          "Tối Chủ nhật hẹn giờ sẵn ba bài viết cho cả tuần",
+          'Đăng ký lớp tập trả trước một tháng, để chỉ phải quyết định một lần',
+          'Tối Chủ nhật hẹn giờ sẵn ba bài viết cho cả tuần',
         ],
-        placeholderGenerator: () => "Việc tôi làm một lần để khỏi phải quyết định lại là…",
-        videoUrl: "https://www.facebook.com/reel/1985523752130697",
+        placeholderGenerator: () => 'Việc tôi làm một lần để khỏi phải quyết định lại là…',
+        videoUrl: 'https://www.facebook.com/reel/1985523752130697',
       },
     ],
   },
 
   // 4. QUY LUẬT 4: MAKE IT SATISFYING (PHẦN THƯỞNG)
   {
-    id: "reward",
-    categoryKey: "rewards",
-    lawNumber: "4 · MAKE IT SATISFYING",
-    lawEnTitle: "Reward · Phần thưởng",
-    title: "Phần thưởng đủ khích lệ ngay",
-    subLabel: "Reward · Phần thưởng",
-    question: "Ngay sau khi làm xong, bạn ghi nhận mình thế nào?",
+    id: 'reward',
+    categoryKey: 'rewards',
+    lawNumber: '4 · MAKE IT SATISFYING',
+    lawEnTitle: 'Reward · Phần thưởng',
+    title: 'Phần thưởng đủ khích lệ ngay',
+    subLabel: 'Reward · Phần thưởng',
+    question: 'Ngay sau khi làm xong, bạn ghi nhận mình thế nào?',
     icon: Gift,
-    videoUrl: "https://www.facebook.com/reel/1064718299619776",
+    videoUrl: 'https://www.facebook.com/reel/1064718299619776',
     totalTechs: 3,
-    borderClass: "border-emerald-200/90",
-    prescribedBorderClass: "border-[#23684a] ring-2 ring-[#23684a]/20 shadow-md",
-    prescribedBgClass: "bg-[#23684a]",
-    pillClass: "bg-mint-haze text-[#065F46] border border-emerald-200",
-    iconBoxClass: "bg-mint-haze text-[#065F46] border border-emerald-200/60",
-    videoBtnClass: "border-[#065F46] text-[#065F46] hover:bg-emerald-100",
-    checkboxActiveClass: "bg-[#23684a] border-[#23684a] text-white",
+    borderClass: 'border-emerald-200/90',
+    prescribedBorderClass: 'border-[#23684a] ring-2 ring-[#23684a]/20 shadow-md',
+    prescribedBgClass: 'bg-[#23684a]',
+    pillClass: 'bg-mint-haze text-[#065F46] border border-emerald-200',
+    iconBoxClass: 'bg-mint-haze text-[#065F46] border border-emerald-200/60',
+    videoBtnClass: 'border-[#065F46] text-[#065F46] hover:bg-emerald-100',
+    checkboxActiveClass: 'bg-[#23684a] border-[#23684a] text-white',
     techniques: [
       {
-        id: "tech-9",
-        title: "Chọn phần thưởng theo gu",
+        id: 'tech-9',
+        title: 'Chọn phần thưởng theo gu',
         description:
-          "Phần thưởng chỉ có tác dụng khi đúng ngôn ngữ ghi nhận của bạn. Có người cần một món ngon, có người cần một lời khen, có người cần nửa giờ yên tĩnh.",
+          'Phần thưởng chỉ có tác dụng khi đúng ngôn ngữ ghi nhận của bạn. Có người cần một món ngon, có người cần một lời khen, có người cần nửa giờ yên tĩnh.',
         examples: [
-          "Làm xong thì tự cho phép mình nửa giờ đọc truyện không làm gì khác",
-          "Làm xong thì nhắn cho một người bạn: mình vừa làm được rồi đó",
+          'Làm xong thì tự cho phép mình nửa giờ đọc truyện không làm gì khác',
+          'Làm xong thì nhắn cho một người bạn: mình vừa làm được rồi đó',
         ],
-        placeholderGenerator: () => "Ngay sau khi làm xong, tôi sẽ tự thưởng…",
-        videoUrl: "https://www.facebook.com/reel/1348980047032173",
+        placeholderGenerator: () => 'Ngay sau khi làm xong, tôi sẽ tự thưởng…',
+        videoUrl: 'https://www.facebook.com/reel/1348980047032173',
       },
       {
-        id: "tech-10",
-        title: "Ghi nhận mình mỗi lần thực hiện",
+        id: 'tech-10',
+        title: 'Ghi nhận mình mỗi lần thực hiện',
         description:
-          "Kết quả thật thường đến muộn. Bạn phải tự trả thưởng cho mình ngay lúc vừa làm xong, trước khi đi tìm kết quả.",
+          'Kết quả thật thường đến muộn. Bạn phải tự trả thưởng cho mình ngay lúc vừa làm xong, trước khi đi tìm kết quả.',
         examples: [
-          "Tick ô trên tracker ngay khi vừa làm xong",
-          "Viết một dòng cho mình: hôm nay mình đã giữ lời",
+          'Tick ô trên tracker ngay khi vừa làm xong',
+          'Viết một dòng cho mình: hôm nay mình đã giữ lời',
         ],
-        placeholderGenerator: () => "Ngay khi làm xong, tôi sẽ…",
-        videoUrl: "https://www.facebook.com/reel/1106447762337619",
+        placeholderGenerator: () => 'Ngay khi làm xong, tôi sẽ…',
+        videoUrl: 'https://www.facebook.com/reel/1106447762337619',
       },
       {
-        id: "tech-11",
-        title: "Đôi bạn cùng tiến",
-        description: "Trách nhiệm với một người cụ thể giữ bạn lại đúng lúc bạn muốn buông.",
+        id: 'tech-11',
+        title: 'Đôi bạn cùng tiến',
+        description: 'Trách nhiệm với một người cụ thể giữ bạn lại đúng lúc bạn muốn buông.',
         examples: [
-          "Tối Chủ nhật gửi ảnh chụp tracker cho một người bạn",
-          "Rủ một người cùng chạy 28 ngày, mỗi tuần kể nhau nghe một lần",
+          'Tối Chủ nhật gửi ảnh chụp tracker cho một người bạn',
+          'Rủ một người cùng chạy 28 ngày, mỗi tuần kể nhau nghe một lần',
         ],
-        placeholderGenerator: () => "Tôi sẽ rủ [tên] và hẹn nhau…",
-        videoUrl: "https://www.facebook.com/reel/1108792161728354",
+        placeholderGenerator: () => 'Tôi sẽ rủ [tên] và hẹn nhau…',
+        videoUrl: 'https://www.facebook.com/reel/1108792161728354',
       },
     ],
   },
-];
+]
 
 export function Step5LoopDesign({
   loopTechniques,
@@ -295,51 +297,51 @@ export function Step5LoopDesign({
   onPrev,
 }: Step5LoopDesignProps) {
   const [openTechniques, setOpenTechniques] = useState<Record<string, boolean>>({
-    "tech-1": true,
-    "tech-2": true,
-  });
+    'tech-1': true,
+    'tech-2': true,
+  })
 
   const toggleTechnique = (techId: string) => {
-    setOpenTechniques((prev) => ({ ...prev, [techId]: !prev[techId] }));
-  };
+    setOpenTechniques((prev) => ({ ...prev, [techId]: !prev[techId] }))
+  }
 
   const handleToggleTechnique = (
-    category: "cues" | "cravings" | "responses" | "rewards",
+    category: 'cues' | 'cravings' | 'responses' | 'rewards',
     techTitle: string,
-    techId: string
+    techId: string,
   ) => {
-    const currentList = loopTechniques[category] || [];
-    const isChecked = currentList.includes(techTitle);
+    const currentList = loopTechniques[category] || []
+    const isChecked = currentList.includes(techTitle)
     const updatedList = isChecked
       ? currentList.filter((t) => t !== techTitle)
-      : [...currentList, techTitle];
+      : [...currentList, techTitle]
 
     if (!isChecked) {
-      setOpenTechniques((prev) => ({ ...prev, [techId]: true }));
+      setOpenTechniques((prev) => ({ ...prev, [techId]: true }))
     }
 
     onTechniquesChange({
       ...loopTechniques,
       [category]: updatedList,
-    });
-  };
+    })
+  }
 
   const handleNoteChange = (techId: string, text: string) => {
-    const currentNotes = loopTechniques.appliedNotes || {};
+    const currentNotes = loopTechniques.appliedNotes || {}
     onTechniquesChange({
       ...loopTechniques,
       appliedNotes: {
         ...currentNotes,
         [techId]: text,
       },
-    });
-  };
+    })
+  }
 
   const handleOpenVideo = (url: string) => {
-    if (typeof window !== "undefined") {
-      window.open(url, "_blank", "noopener,noreferrer");
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer')
     }
-  };
+  }
 
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -361,7 +363,8 @@ export function Step5LoopDesign({
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/70 font-ui mt-1 leading-relaxed">
-            Mọi thói quen, tốt hay xấu, đều chạy qua bốn giai đoạn khép kín này — lặp đi lặp lại thành một vòng tròn.
+            Mọi thói quen, tốt hay xấu, đều chạy qua bốn giai đoạn khép kín này — lặp đi lặp lại
+            thành một vòng tròn.
           </p>
         </div>
 
@@ -547,8 +550,24 @@ export function Step5LoopDesign({
                 </text>
 
                 {/* Đường chia chữ thập sắc nét và điểm giao trung tâm */}
-                <line x1="50" y1="150" x2="250" y2="150" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="150" y1="50" x2="150" y2="250" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+                <line
+                  x1="50"
+                  y1="150"
+                  x2="250"
+                  y2="150"
+                  stroke="#FFFFFF"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1="150"
+                  y1="50"
+                  x2="150"
+                  y2="250"
+                  stroke="#FFFFFF"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
                 <circle cx="150" cy="150" r="3" fill="#FFFFFF" />
               </svg>
             </div>
@@ -560,7 +579,7 @@ export function Step5LoopDesign({
             <div className="flex items-stretch gap-3 sm:gap-4">
               <div className="w-7 sm:w-8 flex-shrink-0 flex items-center justify-center rounded-2xl bg-[#2C4A9A]/10 border border-[#2C4A9A]/20 select-none py-2">
                 <span
-                  style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                   className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#2C4A9A]"
                 >
                   VẤN ĐỀ
@@ -573,7 +592,8 @@ export function Step5LoopDesign({
                     CUE
                   </span>
                   <p className="text-xs sm:text-sm text-deep-navy/90 leading-relaxed font-ui">
-                    <strong className="text-deep-navy font-bold">Tín hiệu</strong> kích hoạt khao khát
+                    <strong className="text-deep-navy font-bold">Tín hiệu</strong> kích hoạt khao
+                    khát
                   </p>
                 </div>
 
@@ -582,7 +602,8 @@ export function Step5LoopDesign({
                     CRAVING
                   </span>
                   <p className="text-xs sm:text-sm text-deep-navy/90 leading-relaxed font-ui">
-                    <strong className="text-deep-navy font-bold">Khao khát</strong> thúc đẩy phản hồi
+                    <strong className="text-deep-navy font-bold">Khao khát</strong> thúc đẩy phản
+                    hồi
                   </p>
                 </div>
               </div>
@@ -594,7 +615,7 @@ export function Step5LoopDesign({
             <div className="flex items-stretch gap-3 sm:gap-4">
               <div className="w-7 sm:w-8 flex-shrink-0 flex items-center justify-center rounded-2xl bg-[#D69A12]/10 border border-[#D69A12]/25 select-none py-2">
                 <span
-                  style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                   className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#B45309]"
                 >
                   GIẢI PHÁP
@@ -607,7 +628,8 @@ export function Step5LoopDesign({
                     RESPONSE
                   </span>
                   <p className="text-xs sm:text-sm text-deep-navy/90 leading-relaxed font-ui">
-                    <strong className="text-deep-navy font-bold">Phản hồi</strong> đưa đến phần thưởng
+                    <strong className="text-deep-navy font-bold">Phản hồi</strong> đưa đến phần
+                    thưởng
                   </p>
                 </div>
 
@@ -616,7 +638,9 @@ export function Step5LoopDesign({
                     REWARD
                   </span>
                   <p className="text-xs sm:text-sm text-deep-navy/90 leading-relaxed font-ui">
-                    <strong className="text-deep-navy font-bold">Phần thưởng</strong> thỏa mãn khao khát — và gắn ngược lại với tín hiệu, để lần sau não tự đoán trước cách phản hồi.
+                    <strong className="text-deep-navy font-bold">Phần thưởng</strong> thỏa mãn khao
+                    khát — và gắn ngược lại với tín hiệu, để lần sau não tự đoán trước cách phản
+                    hồi.
                   </p>
                 </div>
               </div>
@@ -624,7 +648,8 @@ export function Step5LoopDesign({
 
             <div className="pt-2 border-t border-lavender-mist/70">
               <p className="text-xs sm:text-[13px] text-deep-navy/80 font-ui leading-relaxed italic">
-                Hai giai đoạn đầu là vấn đề, hai giai đoạn sau là giải pháp. Đứt đoạn ở đâu thì sửa cách bạn thiết kế lại từng mắt xích.
+                Hai giai đoạn đầu là vấn đề, hai giai đoạn sau là giải pháp. Đứt đoạn ở đâu thì sửa
+                cách bạn thiết kế lại từng mắt xích.
               </p>
             </div>
           </div>
@@ -633,23 +658,23 @@ export function Step5LoopDesign({
 
       {/* Dòng hướng dẫn trên 4 quy luật */}
       <div className="p-4 rounded-2xl bg-warm-ivory border border-lavender-mist text-xs sm:text-sm text-deep-navy/80 font-ui leading-relaxed">
-        Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là lỗ hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ thuật được đánh dấu mới hiện trên Habit Boarding Pass.
+        Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là lỗ
+        hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ thuật
+        được đánh dấu mới hiện trên Habit Boarding Pass.
       </div>
 
       {/* 3. BỐN KHỐI QUY LUẬT (HIỂN THỊ MỞ CẢ 4 KHỐI) */}
       <div className="space-y-6">
         {LAW_SECTIONS.map((section) => {
-          const isPrescribed = prescribedCategory === section.id;
-          const selectedInLaw = loopTechniques[section.categoryKey] || [];
-          const selectedCount = selectedInLaw.length;
+          const isPrescribed = prescribedCategory === section.id
+          const selectedInLaw = loopTechniques[section.categoryKey] || []
+          const selectedCount = selectedInLaw.length
 
           return (
             <div
               key={section.id}
               className={`rounded-[20px] border transition-all duration-300 overflow-hidden bg-white shadow-soft ${
-                isPrescribed
-                  ? section.prescribedBorderClass
-                  : "border-lavender-mist"
+                isPrescribed ? section.prescribedBorderClass : 'border-lavender-mist'
               }`}
             >
               {/* Header của Khối Quy Luật */}
@@ -693,11 +718,12 @@ export function Step5LoopDesign({
               </div>
 
               {/* BỔ SUNG HỘP LƯU Ý RIÊNG CHO QUY LUẬT 1 */}
-              {section.id === "cue" && (
+              {section.id === 'cue' && (
                 <div className="mx-5 sm:mx-6 mt-4 p-4 rounded-2xl bg-[#EBF5FB] border border-[#AED6F1] text-xs sm:text-sm text-[#1B4F72] font-ui leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <strong className="font-bold">Quy tắc này cần đủ cả 3 kỹ thuật.</strong>{" "}
-                    Tín hiệu chỉ thật sự rõ khi có đủ thời điểm hợp năng lượng, việc cũ làm điểm tựa và lời hẹn cụ thể. Hai kỹ thuật đầu lấy từ bước <em>Tìm Mentor</em>:
+                    <strong className="font-bold">Quy tắc này cần đủ cả 3 kỹ thuật.</strong> Tín
+                    hiệu chỉ thật sự rõ khi có đủ thời điểm hợp năng lượng, việc cũ làm điểm tựa và
+                    lời hẹn cụ thể. Hai kỹ thuật đầu lấy từ bước <em>Tìm Mentor</em>:
                   </div>
                   <button
                     type="button"
@@ -712,18 +738,18 @@ export function Step5LoopDesign({
               {/* Danh sách các kỹ thuật bên trong */}
               <div className="p-5 sm:p-6 space-y-4">
                 {section.techniques.map((tech) => {
-                  const isChecked = selectedInLaw.includes(tech.title);
-                  const isDetailsOpen = !!openTechniques[tech.id];
-                  const noteText = loopTechniques.appliedNotes?.[tech.id] || "";
-                  const placeholder = tech.placeholderGenerator(identity);
+                  const isChecked = selectedInLaw.includes(tech.title)
+                  const isDetailsOpen = !!openTechniques[tech.id]
+                  const noteText = loopTechniques.appliedNotes?.[tech.id] || ''
+                  const placeholder = tech.placeholderGenerator(identity)
 
                   return (
                     <div
                       key={tech.id}
                       className={`p-4 rounded-2xl border transition-all ${
                         isChecked
-                          ? "bg-white border-bright-magenta/40 shadow-soft ring-1 ring-bright-magenta/20"
-                          : "bg-warm-ivory/50 border-lavender-mist/80 hover:border-lavender-mist"
+                          ? 'bg-white border-bright-magenta/40 shadow-soft ring-1 ring-bright-magenta/20'
+                          : 'bg-warm-ivory/50 border-lavender-mist/80 hover:border-lavender-mist'
                       }`}
                     >
                       {/* Technique Row Header */}
@@ -738,7 +764,7 @@ export function Step5LoopDesign({
                             className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all flex-shrink-0 mt-0.5 cursor-pointer ${
                               isChecked
                                 ? section.checkboxActiveClass
-                                : "border-lavender-mist bg-white hover:border-bright-magenta"
+                                : 'border-lavender-mist bg-white hover:border-bright-magenta'
                             }`}
                           >
                             {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -761,7 +787,7 @@ export function Step5LoopDesign({
                             onClick={() => toggleTechnique(tech.id)}
                             className="text-xs font-semibold text-bright-magenta hover:text-bright-magenta font-ui flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-soft-pink/50 transition-colors cursor-pointer"
                           >
-                            <span>{isDetailsOpen ? "Thu gọn" : "Xem"}</span>
+                            <span>{isDetailsOpen ? 'Thu gọn' : 'Xem'}</span>
                             {isDetailsOpen ? (
                               <ChevronUp className="w-3.5 h-3.5" />
                             ) : (
@@ -803,9 +829,12 @@ export function Step5LoopDesign({
                             />
 
                             {/* Lời nhắc nếu đã nhập text nhưng chưa tick chọn ô vuông */}
-                            {noteText.trim() !== "" && !isChecked && (
+                            {noteText.trim() !== '' && !isChecked && (
                               <p className="text-[11px] text-[#D97706] font-ui flex items-center gap-1 font-medium mt-1">
-                                <span>⚠️ Đánh dấu ô vuông bên trái để kỹ thuật này hiện trên Boarding Pass.</span>
+                                <span>
+                                  ⚠️ Đánh dấu ô vuông bên trái để kỹ thuật này hiện trên Boarding
+                                  Pass.
+                                </span>
                               </p>
                             )}
                           </div>
@@ -825,11 +854,11 @@ export function Step5LoopDesign({
                         </div>
                       )}
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
@@ -854,5 +883,5 @@ export function Step5LoopDesign({
         </button>
       </div>
     </div>
-  );
+  )
 }

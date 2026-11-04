@@ -12,20 +12,55 @@ export interface Step1DiagnoseProps {
 }
 
 export const DEFAULT_DIAGNOSE_QUESTIONS = [
-  { id: 1, text: 'Bạn thường quên bẵng đi thói quen mới nếu không có ai nhắc hoặc lịch báo?', category: 'cue' },
-  { id: 2, text: 'Không gian sống hoặc làm việc của bạn không có dấu hiệu trực quan nào nhắc bạn làm việc này?', category: 'cue' },
-  { id: 3, text: 'Nghĩ đến việc bắt đầu, bạn thấy chán ngắt và muốn lướt mạng thêm một chút?', category: 'craving' },
-  { id: 4, text: 'Bạn không thấy có động lực tức thì hoặc sự thôi thúc nào để bắt tay vào làm?', category: 'craving' },
-  { id: 5, text: 'Mỗi lần làm đòi hỏi quá nhiều khâu chuẩn bị, dụng cụ phức tạp hoặc công sức?', category: 'response' },
-  { id: 6, text: 'Bạn đặt mục tiêu quá lớn ngay từ đầu (ví dụ: viết 1 bài dài, tập 60 phút) khiến não ngại?', category: 'response' },
-  { id: 7, text: 'Làm xong bạn thấy trống rỗng, không có cảm giác chiến thắng hay thỏa mãn nào?', category: 'reward' },
-  { id: 8, text: 'Bạn không hề có bất kỳ phần thưởng nhỏ hay sự ghi nhận nào cho bản thân sau khi hoàn thành?', category: 'reward' },
+  {
+    id: 1,
+    text: 'Bạn thường quên bẵng đi thói quen mới nếu không có ai nhắc hoặc lịch báo?',
+    category: 'cue',
+  },
+  {
+    id: 2,
+    text: 'Không gian sống hoặc làm việc của bạn không có dấu hiệu trực quan nào nhắc bạn làm việc này?',
+    category: 'cue',
+  },
+  {
+    id: 3,
+    text: 'Nghĩ đến việc bắt đầu, bạn thấy chán ngắt và muốn lướt mạng thêm một chút?',
+    category: 'craving',
+  },
+  {
+    id: 4,
+    text: 'Bạn không thấy có động lực tức thì hoặc sự thôi thúc nào để bắt tay vào làm?',
+    category: 'craving',
+  },
+  {
+    id: 5,
+    text: 'Mỗi lần làm đòi hỏi quá nhiều khâu chuẩn bị, dụng cụ phức tạp hoặc công sức?',
+    category: 'response',
+  },
+  {
+    id: 6,
+    text: 'Bạn đặt mục tiêu quá lớn ngay từ đầu (ví dụ: viết 1 bài dài, tập 60 phút) khiến não ngại?',
+    category: 'response',
+  },
+  {
+    id: 7,
+    text: 'Làm xong bạn thấy trống rỗng, không có cảm giác chiến thắng hay thỏa mãn nào?',
+    category: 'reward',
+  },
+  {
+    id: 8,
+    text: 'Bạn không hề có bất kỳ phần thưởng nhỏ hay sự ghi nhận nào cho bản thân sau khi hoàn thành?',
+    category: 'reward',
+  },
 ]
 
 export const STAT_CARDS_STEP1 = [
   { stat: '92%', text: 'người từ bỏ mục tiêu năm mới trước khi bước sang tháng Hai.' },
   { stat: '1/3', text: 'thói quen thất bại vì không có thời gian và địa điểm kích hoạt cụ thể.' },
-  { stat: '28 ngày', text: 'là khoảng thời gian tối thiểu để não bộ ghi nhận một phản xạ quen thuộc.' },
+  {
+    stat: '28 ngày',
+    text: 'là khoảng thời gian tối thiểu để não bộ ghi nhận một phản xạ quen thuộc.',
+  },
 ]
 
 export const CATEGORY_MAP = {
@@ -71,19 +106,15 @@ export const CATEGORY_MAP = {
   },
 }
 
-export function Step1Diagnose({
-  diagnose,
-  answers,
-  onAnswerChange,
-  onNext,
-}: Step1DiagnoseProps) {
-  const questions = diagnose?.questions && diagnose.questions.length > 0
-    ? diagnose.questions.map((q, idx) => ({
-        id: idx + 1,
-        text: q.statement,
-        category: (q.stage || 'cue').toLowerCase(),
-      }))
-    : DEFAULT_DIAGNOSE_QUESTIONS
+export function Step1Diagnose({ diagnose, answers, onAnswerChange, onNext }: Step1DiagnoseProps) {
+  const questions =
+    diagnose?.questions && diagnose.questions.length > 0
+      ? diagnose.questions.map((q, idx) => ({
+          id: idx + 1,
+          text: q.statement,
+          category: (q.stage || 'cue').toLowerCase(),
+        }))
+      : DEFAULT_DIAGNOSE_QUESTIONS
 
   const answeredCount = Object.values(answers).filter((v) => typeof v === 'number' && v > 0).length
   const isAllAnswered = answeredCount === questions.length
@@ -141,7 +172,8 @@ export function Step1Diagnose({
           Khám đúng “bệnh” — Kê đúng “toa”
         </h2>
         <blockquote className="font-quote italic text-lg sm:text-xl md:text-2xl text-deep-navy max-w-2xl mx-auto leading-relaxed">
-          &ldquo;Chúng ta chỉ đang thay đổi thói quen bằng hành động đơn lẻ. Trong khi thứ chúng ta cần là một hệ thống — một vòng lặp — cho thói quen.&rdquo;
+          &ldquo;Chúng ta chỉ đang thay đổi thói quen bằng hành động đơn lẻ. Trong khi thứ chúng ta
+          cần là một hệ thống — một vòng lặp — cho thói quen.&rdquo;
         </blockquote>
         <p className="mt-2 font-ui font-semibold text-xs sm:text-sm text-bright-magenta tracking-wide">
           — James Clear, Atomic Habits.
@@ -150,7 +182,8 @@ export function Step1Diagnose({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Bạn đã đọc sách, đã lập kế hoạch, đã bắt đầu vài lần. Vấn đề không nằm ở việc bạn thiếu kỷ luật.
+        Bạn đã đọc sách, đã lập kế hoạch, đã bắt đầu vài lần. Vấn đề không nằm ở việc bạn thiếu kỷ
+        luật.
       </p>
 
       {/* 2. Thẻ số liệu (chỉ hiện khi có nguồn per H4) */}
@@ -204,7 +237,8 @@ export function Step1Diagnose({
                 </h2>
               </div>
               <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-                Khám thói quen của bạn thông qua khảo sát nhanh sau đây. Chọn mức độ bạn thấy đúng với mình — khoảng hai phút.
+                Khám thói quen của bạn thông qua khảo sát nhanh sau đây. Chọn mức độ bạn thấy đúng
+                với mình — khoảng hai phút.
               </p>
             </div>
 
@@ -253,9 +287,7 @@ export function Step1Diagnose({
                             : 'bg-white text-deep-navy/70 border-lavender-mist/80 hover:border-bright-magenta/50 hover:bg-soft-pink/30'
                         }`}
                       >
-                        <span className="text-xs sm:text-sm font-bold font-ui">
-                          {score}
-                        </span>
+                        <span className="text-xs sm:text-sm font-bold font-ui">{score}</span>
                       </button>
                     )
                   })}
@@ -276,7 +308,8 @@ export function Step1Diagnose({
         {/* Khi chưa trả lời đủ: dòng chữ nghiêng */}
         {!isAllAnswered && (
           <p className="text-xs sm:text-sm italic text-deep-navy/60 font-ui text-center pt-2">
-            Đã trả lời {answeredCount}/{questions.length} câu. Trả lời hết để thấy lỗ hổng trong hệ thống thói quen của bạn.
+            Đã trả lời {answeredCount}/{questions.length} câu. Trả lời hết để thấy lỗ hổng trong hệ
+            thống thói quen của bạn.
           </p>
         )}
       </div>
@@ -305,9 +338,24 @@ export function Step1Diagnose({
             <div className="space-y-3.5 pt-2 font-ui">
               {[
                 { id: 'cue', label: 'Tín hiệu · Cue', score: avgCue, color: 'bg-[#3b4991]' },
-                { id: 'craving', label: 'Khao khát · Craving', score: avgCraving, color: 'bg-[#a8325d]' },
-                { id: 'response', label: 'Phản hồi · Response', score: avgResponse, color: 'bg-[#b87614]' },
-                { id: 'reward', label: 'Phần thưởng · Reward', score: avgReward, color: 'bg-[#23684a]' },
+                {
+                  id: 'craving',
+                  label: 'Khao khát · Craving',
+                  score: avgCraving,
+                  color: 'bg-[#a8325d]',
+                },
+                {
+                  id: 'response',
+                  label: 'Phản hồi · Response',
+                  score: avgResponse,
+                  color: 'bg-[#b87614]',
+                },
+                {
+                  id: 'reward',
+                  label: 'Phần thưởng · Reward',
+                  score: avgReward,
+                  color: 'bg-[#23684a]',
+                },
               ].map((item, idx) => {
                 const percent = Math.min(100, Math.max(0, (item.score / 5) * 100))
                 const isWeakest = item.id === topCategory.id
@@ -356,8 +404,8 @@ export function Step1Diagnose({
           {/* Hộp dẫn dắt */}
           <div className="p-5 sm:p-6 rounded-[20px] bg-soft-pink/60 border border-bright-magenta/25 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <p className="text-xs sm:text-sm text-deep-navy/85 font-ui leading-relaxed">
-              <strong className="text-deep-navy font-bold">Làm sao để lấp lỗ hổng này?</strong>{' '}
-              Câu trả lời bắt đầu từ một nguyên lý mà hầu hết mọi người đều nghĩ là mình đã hiểu.
+              <strong className="text-deep-navy font-bold">Làm sao để lấp lỗ hổng này?</strong> Câu
+              trả lời bắt đầu từ một nguyên lý mà hầu hết mọi người đều nghĩ là mình đã hiểu.
             </p>
 
             <button

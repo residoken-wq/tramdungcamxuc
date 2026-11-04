@@ -5,6 +5,7 @@ import config from '@/payload.config'
 import type { Product } from '@/payload-types'
 import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
 import { EQBuddyIntro } from '@/components/eq/zip/EQBuddyIntro'
+import { TrialBanner } from '@/components/habit/TrialBanner'
 import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
@@ -56,10 +57,7 @@ export default async function EqBuddyIntroPage() {
       limit: 1,
       overrideAccess: true,
     }),
-    payload
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .findGlobal({ slug: 'eq-buddy-content' as any, overrideAccess: true })
-      .catch(() => null),
+    payload.findGlobal({ slug: 'eqBuddyContent', overrideAccess: true }).catch(() => null),
   ])
   const product = res.docs[0] as Product | undefined
   const physicalProduct = physicalRes.docs[0] as Product | undefined
@@ -76,13 +74,17 @@ export default async function EqBuddyIntroPage() {
     ...rawContent,
     badge: rawContent.badge || vi.eqBuddy.intro.badge,
     mainTitle: rawContent.mainTitle || product?.name || vi.eqBuddy.intro.defaultTitle,
-    subtitle: rawContent.subtitle || product?.shortDescription || vi.eqBuddy.intro.defaultDescription,
+    subtitle:
+      rawContent.subtitle || product?.shortDescription || vi.eqBuddy.intro.defaultDescription,
     shopeeUrl,
   }
 
   return (
     <div className="w-full py-6 sm:py-10 px-4 sm:px-6">
-      <EQBuddyIntro content={contentProps} showTrialBanner={!isFreeMode} />
+      <EQBuddyIntro
+        content={contentProps}
+        trialBanner={isFreeMode ? null : <TrialBanner productSlug={EQ_BUDDY_PRODUCT_SLUG} />}
+      />
     </div>
   )
 }

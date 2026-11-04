@@ -44,7 +44,10 @@ export function GuideModal({
               <BookOpen className="w-4 h-4 text-soft-pink" />
             </div>
             <div>
-              <h3 id="guide-modal-title" className="font-display text-lg sm:text-xl text-deep-navy uppercase">
+              <h3
+                id="guide-modal-title"
+                className="font-display text-lg sm:text-xl text-deep-navy uppercase"
+              >
                 Hướng Dẫn Sử Dụng Bộ Thẻ
               </h3>
               <p className="text-[11px] text-deep-navy/60 font-medium font-ui">
@@ -72,15 +75,14 @@ export function GuideModal({
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
-                  1. Mở đầu
-                </h4>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">1. Mở đầu</h4>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-mint-haze text-deep-navy">
                   Đặt ý định
                 </span>
               </div>
               <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Đặt ý định cho điều gì trong cuộc sống hay công việc hôm nay? Dành 30 giây thả lỏng và thở sâu.
+                Đặt ý định cho điều gì trong cuộc sống hay công việc hôm nay? Dành 30 giây thả lỏng
+                và thở sâu.
               </p>
             </div>
           </div>
@@ -92,15 +94,14 @@ export function GuideModal({
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
-                  2. Chọn thẻ
-                </h4>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">2. Chọn thẻ</h4>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
                   Gọi tên
                 </span>
               </div>
               <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Chia sẻ cảm xúc bạn đang gặp — hoặc để trống và rút ngẫu nhiên thông điệp phù hợp cho khoảnh khắc này.
+                Chia sẻ cảm xúc bạn đang gặp — hoặc để trống và rút ngẫu nhiên thông điệp phù hợp
+                cho khoảnh khắc này.
               </p>
             </div>
           </div>
@@ -112,15 +113,14 @@ export function GuideModal({
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
-                  3. Thực hiện
-                </h4>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">3. Thực hiện</h4>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-butter-cream text-deep-navy">
                   Mặt trước
                 </span>
               </div>
               <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Đọc từ khóa kèm câu diễn giải ở mặt trước → kết nối cảm nhận và lắng nghe phản hồi của cơ thể và tâm trí.
+                Đọc từ khóa kèm câu diễn giải ở mặt trước → kết nối cảm nhận và lắng nghe phản hồi
+                của cơ thể và tâm trí.
               </p>
             </div>
           </div>
@@ -132,15 +132,14 @@ export function GuideModal({
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
-                  4. Khám phá
-                </h4>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">4. Khám phá</h4>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-lavender-mist text-deep-navy">
                   Mặt sau
                 </span>
               </div>
               <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Lật thẻ sang mặt sau, trả lời 3 câu hỏi ở mặt sau để đào sâu và kết nối, gói ghém bài học và ghi nhận bản thân.
+                Lật thẻ sang mặt sau, trả lời 3 câu hỏi ở mặt sau để đào sâu và kết nối, gói ghém
+                bài học và ghi nhận bản thân.
               </p>
             </div>
           </div>
@@ -148,9 +147,7 @@ export function GuideModal({
 
         {/* Note châm ngôn vỗ về */}
         <div className="p-3 rounded-2xl bg-soft-pink/50 border border-soft-pink text-center">
-          <p className="font-quote italic text-xs text-bright-magenta">
-            {quote}
-          </p>
+          <p className="font-quote italic text-xs text-bright-magenta">{quote}</p>
         </div>
 
         {/* Modal Footer */}

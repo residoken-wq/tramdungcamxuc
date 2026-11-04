@@ -21,12 +21,13 @@ export function HabitTrackerFooter() {
           Nội dung chia sẻ có vay mượn chất xám từ bốn cuốn sách nổi tiếng về thói quen —{' '}
           <em className="italic font-medium text-deep-navy/90">Atomic Habits</em>,{' '}
           <em className="italic font-medium text-deep-navy/90">The Power of Habit</em>,{' '}
-          <em className="italic font-medium text-deep-navy/90">The 7 Habits of Highly Effective People</em>,{' '}
-          <em className="italic font-medium text-deep-navy/90">Hooked</em> —{' '}
-          kết hợp với hành trình “đập đi, xây lại” nhiều lần của chính mình.
+          <em className="italic font-medium text-deep-navy/90">
+            The 7 Habits of Highly Effective People
+          </em>
+          , <em className="italic font-medium text-deep-navy/90">Hooked</em> — kết hợp với hành
+          trình “đập đi, xây lại” nhiều lần của chính mình.
         </p>
       </div>
     </footer>
   )
 }
-

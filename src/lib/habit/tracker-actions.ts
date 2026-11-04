@@ -409,7 +409,41 @@ export async function deleteCheckInDay(day: number): Promise<{
     }
   }
 
+  // QA DP-01c: the day must be a whole number inside the journey (no NaN / negative ids).
+  if (!Number.isInteger(day) || day < 1 || day > 366) {
+    return {
+      success: false,
+      error: 'INVALID_INPUT',
+      message: vi.tracker.actions.invalidInput,
+    }
+  }
+
   const payload = await getPayload({ config: await config })
+
+  // QA DP-01c: same access rule as checkInDay – an expired (read-only) tracker cannot change.
+  const products = await payload.find({
+    collection: 'products',
+    where: { slug: { equals: HABIT_TRACKER_PRODUCT_SLUG } },
+    overrideAccess: true,
+    limit: 1,
+  })
+  const product = products.docs[0]
+  if (!product) {
+    return {
+      success: false,
+      error: 'PRODUCT_NOT_FOUND',
+      message: vi.tracker.actions.productNotFound,
+    }
+  }
+  const access = await getAccess(customer.id, product.id, { payload, now: new Date() })
+  if (!access.hasAccess) {
+    return {
+      success: false,
+      error: 'ACCESS_DENIED',
+      message: vi.tracker.actions.accessDenied,
+    }
+  }
+
   const plan = await findOwnTrackerPlan(customer.id, payload)
   if (!plan) {
     return {
@@ -447,4 +481,3 @@ export async function deleteCheckInDay(day: number): Promise<{
     day,
   }
 }
-

@@ -108,7 +108,10 @@ export function DayCheckInModal({
         {/* Header */}
         <div className="p-5 bg-gradient-to-r from-deep-navy to-deep-navy/90 text-white flex items-center justify-between">
           <div>
-            <h3 id="checkin-modal-title" className="font-ui font-bold text-base sm:text-lg text-white">
+            <h3
+              id="checkin-modal-title"
+              className="font-ui font-bold text-base sm:text-lg text-white"
+            >
               Ngày {dayItem.dayNumber}
               {dayItem.dayNumber % 7 === 0 ? ' · tới trạm' : ''}
             </h3>

@@ -155,7 +155,7 @@ describe('DP-01b: EQ Buddy Zip UI & Components', () => {
             mainTitle: 'Trạm EQ Buddy',
             shopeeUrl: 'https://shopee.vn/test-shop',
           }}
-          showTrialBanner={true}
+          trialBanner={<div data-testid="trial-banner" />}
         />
       )
 
@@ -178,13 +178,13 @@ describe('DP-01b: EQ Buddy Zip UI & Components', () => {
       expect(screen.getByText(/Bộ thẻ là gì\?/i)).toBeDefined()
     })
 
-    it('hides trial banner when showTrialBanner is false (free mode)', () => {
+    it('renders no trial banner when the page passes none (free mode)', () => {
       render(
         <EQBuddyIntro
           content={{
             mainTitle: 'Trạm EQ Buddy Free',
           }}
-          showTrialBanner={false}
+          trialBanner={null}
         />
       )
 

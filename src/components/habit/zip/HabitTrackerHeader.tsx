@@ -91,7 +91,9 @@ export function HabitTrackerHeader({
 
         {/* Đoạn văn dẫn */}
         <p className="text-xs sm:text-sm text-deep-navy/75 font-ui leading-relaxed pt-1.5 max-w-3xl">
-          Đây không phải một hành động giúp bạn thành công chỉ sau một đêm, nhưng nó cũng không kéo dài từ năm này qua năm khác. Bạn chỉ cần đi theo từng hướng dẫn sau đây trong 28 ngày để có một bước chuyển rõ nét cho thói quen của mình, qua 3 giai đoạn:
+          Đây không phải một hành động giúp bạn thành công chỉ sau một đêm, nhưng nó cũng không kéo
+          dài từ năm này qua năm khác. Bạn chỉ cần đi theo từng hướng dẫn sau đây trong 28 ngày để
+          có một bước chuyển rõ nét cho thói quen của mình, qua 3 giai đoạn:
         </p>
 
         {/* 3 Thẻ Giai Đoạn (grid 3 cột) */}
@@ -150,9 +152,7 @@ export function HabitTrackerHeader({
                 </span>
               )}
             </div>
-            <h3 className="font-ui font-bold text-sm sm:text-base text-deep-navy">
-              Xây thói quen
-            </h3>
+            <h3 className="font-ui font-bold text-sm sm:text-base text-deep-navy">Xây thói quen</h3>
             <p className="text-xs text-deep-navy/65 font-ui mt-1 leading-relaxed">
               Tìm Mentor · Gọi tên · Thiết kế vòng lặp
             </p>
@@ -184,9 +184,7 @@ export function HabitTrackerHeader({
                 </span>
               )}
             </div>
-            <h3 className="font-ui font-bold text-sm sm:text-base text-deep-navy">
-              Chuyển mình
-            </h3>
+            <h3 className="font-ui font-bold text-sm sm:text-base text-deep-navy">Chuyển mình</h3>
             <p className="text-xs text-deep-navy/65 font-ui mt-1 leading-relaxed">
               28 ngày theo dõi cùng thói quen
             </p>
@@ -202,4 +200,3 @@ export function HabitTrackerHeader({
     </header>
   )
 }
-

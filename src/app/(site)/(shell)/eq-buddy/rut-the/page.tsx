@@ -22,16 +22,14 @@ export default async function EqRutThePage() {
   // 1. Kiểm tra quyền truy cập (free mode / khách rút 1 thẻ / thành viên có trial hoặc active)
   const [access, eqContent] = await Promise.all([
     checkEqDrawAccess(),
-    payload
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .findGlobal({ slug: 'eq-buddy-content' as any, overrideAccess: true })
-      .catch(() => null),
+    payload.findGlobal({ slug: 'eqBuddyContent', overrideAccess: true }).catch(() => null),
   ])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const rawContent = (eqContent || {}) as any
   const isFreeMode = access.accessStatus === 'free' || rawContent?.eqAccessMode === 'free'
-  const isUnlockedAll = isFreeMode || access.accessStatus === 'paid' || access.accessStatus === 'trial'
+  const isUnlockedAll =
+    isFreeMode || access.accessStatus === 'active' || access.accessStatus === 'trial'
 
   // 2. Lấy danh sách toàn bộ thẻ đã xuất bản (server-side redaction nếu chưa unlock)
   const allCards = await getAllPublishedCards(isUnlockedAll)

@@ -59,8 +59,9 @@ export function StepQuoteHeader({
           {sourceText}
         </p>
       )}
-      {description && <div className="mt-3 text-xs sm:text-sm text-deep-navy/70 font-ui">{description}</div>}
+      {description && (
+        <div className="mt-3 text-xs sm:text-sm text-deep-navy/70 font-ui">{description}</div>
+      )}
     </div>
   )
 }
-

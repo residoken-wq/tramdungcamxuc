@@ -100,9 +100,7 @@ export default async function EqCardQrPage({ params, searchParams }: CardPagePro
         {adminUser ? (
           <EqCardLivePreview initialCard={card}>{cardActions}</EqCardLivePreview>
         ) : (
-          <EQCardQrView card={card}>
-            {cardActions}
-          </EQCardQrView>
+          <EQCardQrView card={card}>{cardActions}</EQCardQrView>
         )}
       </div>
 
