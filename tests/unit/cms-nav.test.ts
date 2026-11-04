@@ -36,7 +36,7 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
     it('mọi global đều có admin.group thuộc danh sách 6 nhóm hợp lệ', async () => {
       const config = await configPromise
       expect(config.globals).toBeDefined()
-      expect(config.globals!.length).toBe(4)
+      expect(config.globals!.length).toBe(5)
 
       for (const gl of config.globals!) {
         expect(
@@ -54,6 +54,9 @@ describe('CMS Admin Navigation & Access (CM-01)', () => {
       )
       expect(config.globals?.find((g) => g.slug === 'designSystem')?.admin?.group).toBe(
         vi.cms.nav.website,
+      )
+      expect(config.globals?.find((g) => g.slug === 'eqBuddyContent')?.admin?.group).toBe(
+        vi.cms.nav.eq,
       )
       expect(config.globals?.find((g) => g.slug === 'habitJourneyContent')?.admin?.group).toBe(
         vi.cms.nav.habit,

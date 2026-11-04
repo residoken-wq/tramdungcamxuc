@@ -116,6 +116,11 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
     try {
       // 1. Bootstrap admin
       adminId = await bootstrapAdmin(page)
+      // DP-01: luồng này kiểm chế độ "dùng thử"; trả công tắc về mặc định phòng khi test khác để "free"
+      const modeRes = await page.request.post('/api/globals/eqBuddyContent', {
+        data: { eqAccessMode: 'trial' },
+      })
+      expect(modeRes.ok()).toBe(true)
 
       // 2. Tạo 2 thẻ EQ Buddy mẫu qua REST /api/eqCards
       const cardRes1 = await page.request.post('/api/eqCards', {
@@ -215,10 +220,12 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
 
       // 5. Khách vãng lai quét QR: truy cập /eq-buddy/the/[qrSlug1]
       await guestPage.goto(`/eq-buddy/the/${qrSlug1}`, { waitUntil: 'load' })
-      await expect(guestPage.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15000 })
-      await expect(guestPage.getByText(keyword1)).toBeVisible()
-      await expect(guestPage.getByText(message1)).toBeVisible()
-      await expect(guestPage.getByText(story1)).toBeVisible()
+      // DP-01: trang QR dùng thẻ lật 3D của zip; từ khóa là tiêu đề của thẻ
+      await expect(guestPage.getByRole('heading', { name: keyword1 }).first()).toBeVisible({
+        timeout: 15000,
+      })
+      await expect(guestPage.getByText(message1).first()).toBeVisible()
+      await expect(guestPage.getByText(story1).first()).toBeVisible()
 
       // Chạy a11y audit tại thẻ chi tiết
       await expectNoSeriousA11y(guestPage, 'eq-journey-card')
@@ -241,19 +248,15 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
 
       // Lật sang mặt sau
       await guestPage.getByRole('button', { name: /Lật thẻ sang mặt sau/i }).click()
-      await expect(guestPage.locator('dt', { hasText: 'Gợi nhớ' })).toBeVisible({ timeout: 10000 })
+      await expect(guestPage.getByText('Gợi nhớ:', { exact: true }).first()).toBeVisible({
+        timeout: 10000,
+      })
 
       // a11y tại giao diện rút thẻ sau khi đã lật thẻ (GD3.md T3-06)
       await expectNoSeriousA11y(guestPage, 'eq-journey-draw-flipped')
 
-      // Bấm tiếp tục qua bước suy ngẫm
-      await guestPage.getByRole('button', { name: /Viết suy ngẫm/i }).click()
-      await expect(guestPage.getByText(/Ghi chú chỉ ở trên máy bạn/i).first()).toBeVisible({
-        timeout: 10000,
-      })
-
-      // Bấm đi tiếp qua bước 5
-      await guestPage.getByRole('button', { name: /Đi tiếp/i }).click()
+      // Khối suy ngẫm nằm ngay dưới thẻ (zip, E2 = B)
+      await expect(guestPage.getByText(/Ghi suy ngẫm · Lưu giữ khoảnh khắc/)).toBeVisible()
 
       // Lượt 2: Bấm rút thẻ khác -> bị chặn bởi paywall dùng thử 21 ngày
       await expect(async () => {
@@ -319,11 +322,10 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
       })
       await guestPage.getByRole('button', { name: /Lật thẻ sang mặt sau/i }).click()
 
-      // Đi tới bước viết suy ngẫm
-      await guestPage.getByRole('button', { name: /Viết suy ngẫm/i }).click()
-
       // Khách đã đăng nhập: ô textarea suy ngẫm và nút lưu suy ngẫm xuất hiện
-      const reflectionTextarea = guestPage.locator('#reflection-input')
+      const reflectionTextarea = guestPage.getByPlaceholder(
+        'Viết suy ngẫm của bạn về thông điệp này...',
+      )
       await expect(reflectionTextarea).toBeVisible({ timeout: 10000 })
       const reflectionNote = `Suy ngẫm E2E Gate EQ ${suffix}: Hôm nay tôi đã dừng lại và hít thở sâu.`
       await reflectionTextarea.fill(reflectionNote)

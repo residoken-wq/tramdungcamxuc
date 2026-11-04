@@ -17,12 +17,19 @@ import {
   getHabitJourneyContent,
   getHabitSiteSettings,
   type CleanStepQuote,
+  type HabitJourneyContentResult,
 } from '@/lib/habit/journey-content.server'
 import { getStationReflectionsForPlan } from '@/lib/habit/reflections.server'
 import { vi } from '@/lib/i18n/vi'
 import { PlanSetupForm } from '@/components/habit/PlanSetupForm'
-import { TrackerDashboard, type InitialCheckinData } from '@/components/habit/TrackerDashboard'
 import { ToolPaywall } from '@/components/site/trial/ToolPaywall'
+import {
+  Dashboard28Days,
+  type InitialCheckinData,
+} from '@/components/habit/zip/Result/Dashboard28Days'
+import { HabitTrackerHeader } from '@/components/habit/zip/HabitTrackerHeader'
+import { StepNavigation } from '@/components/habit/zip/StepNavigation'
+import { HabitTrackerFooter } from '@/components/habit/zip/HabitTrackerFooter'
 
 export const metadata: Metadata = {
   title: `${vi.tracker.pageTitle} | Trạm Dừng Cảm Xúc`,
@@ -124,23 +131,25 @@ export default async function HabitTrackerPage() {
   let afterJourneyText: string | null = null
   let coachBookingUrl: string | null = null
   let quote: CleanStepQuote | null = null
+  let journeyContent: HabitJourneyContentResult | null = null
 
   try {
-    const [journeyContent, habitSiteSettings] = await Promise.all([
+    const [jc, habitSiteSettings] = await Promise.all([
       getHabitJourneyContent(payload),
       getHabitSiteSettings(payload),
     ])
-    stationNames = (journeyContent.stations || []).map((s) => s.name).filter(Boolean)
-    stationQuestions = (journeyContent.stations || []).map((s) =>
+    journeyContent = jc
+    stationNames = (jc.stations || []).map((s) => s.name).filter(Boolean)
+    stationQuestions = (jc.stations || []).map((s) =>
       (s.reflectionQuestions || [])
         .map((q) => ({ question: q.question?.trim() || '' }))
         .filter((q) => Boolean(q.question)),
     )
-    privacyNote = journeyContent.privacyNote ?? null
-    afterJourneyTitle = journeyContent.tracker?.afterJourneyTitle ?? null
-    afterJourneyText = journeyContent.tracker?.afterJourneyText ?? null
+    privacyNote = jc.privacyNote ?? null
+    afterJourneyTitle = jc.tracker?.afterJourneyTitle ?? null
+    afterJourneyText = jc.tracker?.afterJourneyText ?? null
     coachBookingUrl = habitSiteSettings.habitCoachBookingUrl ?? null
-    quote = journeyContent.stepQuotes?.tracker ?? null
+    quote = jc.stepQuotes?.tracker ?? null
   } catch (err) {
     // Lỗi đọc -> trang vẫn chạy bình thường, không có tên trạm
     console.error('Failed to load habit journey stations/settings for tracker:', err)
@@ -158,32 +167,38 @@ export default async function HabitTrackerPage() {
 
   return (
     <div className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-warm-ivory/80 to-lavender-mist/20">
-      <TrackerDashboard
-        planId={plan.id}
-        identityStatement={plan.identityStatement}
-        anchorHabit={plan.anchorHabit ?? null}
-        twoMinuteAction={plan.twoMinuteAction ?? null}
-        privateReason={plan.privateReason ?? null}
-        rhythmDays={plan.rhythmDays ?? null}
-        startDate={plan.startDate ?? null}
-        stationNames={stationNames}
-        stationQuestions={stationQuestions}
-        initialReflections={initialReflections}
-        currentDay={currentDay}
-        initialCheckins={initialCheckins}
-        readOnly={isReadOnly}
-        isTrialOrExpired={isTrialOrExpired}
-        buyUrl={buyUrl}
-        initialCertificate={eligibility.existingCertificate ?? null}
-        eligibility={eligibility}
-        customerName={customer.name ?? null}
-        journeyDays={journeyDays}
-        privacyNote={privacyNote}
-        afterJourneyTitle={afterJourneyTitle}
-        afterJourneyText={afterJourneyText}
-        coachBookingUrl={coachBookingUrl}
-        quote={quote}
-      />
+      <div className="w-full max-w-4xl mx-auto space-y-6">
+        <HabitTrackerHeader currentStep={7} headerContent={journeyContent?.dp01Content?.header} />
+        {/* QA DP-01e: no function props from this server page (it crashed the tracker). */}
+        <StepNavigation currentStep={7} hasSavedPlan={true} />
+        <Dashboard28Days
+          planId={plan.id}
+          identityStatement={plan.identityStatement}
+          atomicHabit={plan.twoMinuteAction || plan.anchorHabit || null}
+          selectedMentor={plan.anchorHabit || null}
+          selectedDays={plan.rhythmDays ?? null}
+          startDate={plan.startDate ?? null}
+          stationNames={stationNames}
+          stationQuestions={stationQuestions}
+          initialReflections={initialReflections}
+          currentDay={currentDay}
+          initialCheckins={initialCheckins}
+          readOnly={isReadOnly}
+          isTrialOrExpired={isTrialOrExpired}
+          buyUrl={buyUrl}
+          initialCertificate={eligibility.existingCertificate ?? null}
+          eligibility={eligibility}
+          customerName={customer.name ?? null}
+          journeyDays={journeyDays}
+          privacyNote={privacyNote}
+          afterJourneyTitle={afterJourneyTitle}
+          afterJourneyText={afterJourneyText}
+          coachBookingUrl={coachBookingUrl}
+          quote={quote ? { quoteText: quote.text, quoteAuthor: quote.author } : null}
+          checkInContent={journeyContent?.dp01Content?.checkIn}
+        />
+        <HabitTrackerFooter footerContent={journeyContent?.dp01Content?.footer} />
+      </div>
     </div>
   )
 }

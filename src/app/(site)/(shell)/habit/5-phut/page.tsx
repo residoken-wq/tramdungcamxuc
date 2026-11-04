@@ -5,7 +5,7 @@ import config from '@/payload.config'
 import { vi } from '@/lib/i18n/vi'
 import { getTechniques } from '@/lib/habit.server'
 import { getHabitJourneyContent, withDiagnoseFallback } from '@/lib/habit/journey-content.server'
-import { HabitFlow } from '@/components/habit/flow/HabitFlow'
+import { HabitTrackerApp } from '@/components/habit/zip/HabitTrackerApp'
 
 export const dynamic = 'force-dynamic'
 
@@ -47,16 +47,14 @@ export default async function HabitLoopPage() {
 
   return (
     <div className="w-full">
-      <HabitFlow
+      <HabitTrackerApp
         techniques={techniques}
         journeyDays={habitJourneyDays}
-        onePercent={journeyContent?.onePercent}
-        onePercentUnknowns={journeyContent?.onePercentUnknowns}
-        stepQuotes={journeyContent?.stepQuotes}
         diagnose={diagnose}
-        loop={journeyContent?.loop}
-        boardingPassCaption={journeyContent?.boardingPassCaption}
+        stepQuotes={journeyContent?.stepQuotes}
+        loopContent={journeyContent?.loop}
         privacyNote={journeyContent?.privacyNote}
+        dp01Content={journeyContent?.dp01Content}
       />
     </div>
   )

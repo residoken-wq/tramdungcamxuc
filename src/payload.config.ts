@@ -51,6 +51,7 @@ import { SiteSettings } from './globals/SiteSettings'
 import { Navigation } from './globals/Navigation'
 import { DesignSystem } from './globals/DesignSystem'
 import { HabitJourneyContent } from './globals/HabitJourneyContent'
+import { EqBuddyContent } from './globals/EqBuddyContent'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -155,7 +156,7 @@ export default buildConfig({
     RateLimitHits,
     TrialUsage,
   ],
-  globals: [Navigation, SiteSettings, DesignSystem, HabitJourneyContent],
+  globals: [Navigation, SiteSettings, DesignSystem, HabitJourneyContent, EqBuddyContent],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
