@@ -5,6 +5,7 @@ import { BrandIcon } from '@/components/brand/BrandIcon'
 import { Button, type ButtonSize, type ButtonVariant } from '@/components/ui/Button'
 import { useClientPageSlug } from '@/puck/client-preview'
 import { getSafeLink, type WidgetLinkProps } from './link-helper'
+import { textTarget } from '@/puck/style/text-target'
 
 export type ButtonAlign = 'left' | 'center' | 'right' | 'justify'
 
@@ -26,6 +27,7 @@ const ALIGN_WRAPPER: Record<ButtonAlign, string> = {
 }
 
 export function ButtonWidget({
+  id,
   text = 'Bấm vào đây',
   linkType = 'url',
   pageId,
@@ -37,7 +39,7 @@ export function ButtonWidget({
   iconPosition = 'after',
   align = 'left',
   _resolved,
-}: ButtonWidgetProps) {
+}: ButtonWidgetProps & { id?: string }) {
   const { slug: clientSlug } = useClientPageSlug(pageId, _resolved?.pageSlug)
 
   if (!text) return null
@@ -59,7 +61,7 @@ export function ButtonWidget({
   const innerContent = (
     <span className="inline-flex items-center justify-center">
       {iconPosition === 'before' ? iconElement : null}
-      <span>{text}</span>
+      <span {...textTarget(id, 'text')}>{text}</span>
       {iconPosition === 'after' ? iconElement : null}
     </span>
   )

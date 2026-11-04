@@ -1,6 +1,7 @@
 import React from 'react'
 import type { AlignOption, FontSizeOption } from '@/lib/brand/format-classes'
 import { QUOTE_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface QuoteBlockProps {
   quote: string
@@ -14,6 +15,7 @@ export interface QuoteBlockProps {
 }
 
 export function QuoteBlock({
+  id,
   quote,
   cite,
   roleOrContext,
@@ -21,7 +23,7 @@ export function QuoteBlock({
   theme = 'light',
   size,
   align = 'left',
-}: QuoteBlockProps) {
+}: QuoteBlockProps & { id?: string }) {
   const isDark = theme === 'dark'
   const bgClass = isDark
     ? 'border-l-4 border-accent-pink bg-white/10 p-6 sm:p-8 backdrop-blur-sm'
@@ -36,6 +38,7 @@ export function QuoteBlock({
       className={`relative my-6 rounded-card ${bgClass}${align === 'center' ? ' text-center' : ''} ${className}`}
     >
       <blockquote
+        {...textTarget(id, 'quote')}
         className={`font-quote ${sizeClass(QUOTE_TEXT_SIZES, size)} italic leading-relaxed ${quoteTextClass}`}
       >
         &ldquo;{quote}&rdquo;
@@ -46,10 +49,17 @@ export function QuoteBlock({
           className={`mt-4 flex flex-wrap items-baseline gap-2 border-t ${borderClass} pt-3${align === 'center' ? ' justify-center' : ''}`}
         >
           {cite && (
-            <cite className={`font-ui text-sm font-bold not-italic ${citeClass}`}>{cite}</cite>
+            <cite
+              {...textTarget(id, 'cite')}
+              className={`font-ui text-sm font-bold not-italic ${citeClass}`}
+            >
+              {cite}
+            </cite>
           )}
           {roleOrContext && (
-            <span className={`font-ui text-xs ${roleClass}`}>· {roleOrContext}</span>
+            <span {...textTarget(id, 'roleOrContext')} className={`font-ui text-xs ${roleClass}`}>
+              · {roleOrContext}
+            </span>
           )}
         </figcaption>
       )}

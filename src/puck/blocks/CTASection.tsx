@@ -5,32 +5,33 @@ import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createPageExternalField } from '../page-field'
 import { createTestimonialExternalField } from '../testimonial-field'
 import { sizeField } from '../format-fields'
+import { vi } from '@/lib/i18n/vi'
 
 export type { CTASectionProps }
 
 export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
   label: 'Khối kêu gọi chuyển đổi lớn (CTA Section)',
   fields: {
-    seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)', contentEditable: true },
+    seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
     titleLine1: {
       type: 'text',
-      label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      label: vi.eb15a.titleLine1,
       contentEditable: true,
     },
     titleLine2: {
       type: 'text',
-      label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      label: vi.eb15a.titleLine2,
       contentEditable: true,
     },
     titleSize: sizeField('Cỡ chữ tiêu đề'),
     emotionLine: {
       type: 'textarea',
-      label: 'Dòng cảm xúc (Playfair Display Italic)',
+      label: vi.eb15a.emotionLine,
       contentEditable: true,
     },
-    description: { type: 'textarea', label: 'Mô tả chi tiết', contentEditable: true },
+    description: { type: 'textarea', label: vi.eb15a.description, contentEditable: true },
     textSize: sizeField('Cỡ chữ mô tả'),
-    buttonText: { type: 'text', label: 'Chữ trên nút hành động', contentEditable: true },
+    buttonText: { type: 'text', label: vi.eb15a.buttonText, contentEditable: true },
     buttonLinkType: {
       type: 'select',
       label: 'Loại liên kết nút',
@@ -48,7 +49,7 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     },
     proofText: {
       type: 'text',
-      label: 'Dòng chữ bảo chứng (Dưới nút, tùy chọn)',
+      label: vi.eb15a.proofText,
     },
     testimonials: {
       type: 'array',

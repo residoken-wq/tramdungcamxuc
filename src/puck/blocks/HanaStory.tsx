@@ -3,6 +3,7 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { HanaStory, type HanaStoryProps } from '@/components/site/HanaStory'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createMediaExternalField } from '../media-field'
+import { vi } from '@/lib/i18n/vi'
 
 export type { HanaStoryProps }
 
@@ -33,9 +34,9 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
         { label: 'Bên phải', value: 'right' },
       ],
     },
-    seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
-    titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
-    titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
+    seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel },
+    titleLine1: { type: 'text', label: vi.eb15a.titleLine1 },
+    titleLine2: { type: 'text', label: vi.eb15a.titleLine2 },
     jobTitle: {
       type: 'text',
       label: 'Chức danh / Vai trò (tùy chọn)',
@@ -50,11 +51,11 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     },
     storyContent: {
       type: 'textarea',
-      label: 'Đoạn kể câu chuyện (các đoạn phân tách bằng 2 lần xuống dòng)',
+      label: vi.eb15a.storyContent,
     },
     quoteLine: {
       type: 'textarea',
-      label: 'Dòng cảm xúc trích dẫn (Playfair Display Italic)',
+      label: vi.eb15a.quoteLine,
     },
     chips: {
       type: 'array',

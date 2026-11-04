@@ -39,7 +39,9 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
             href="/coaching#booking"
           >
             <span>
-              Đặt phiên trải nghiệm 149.000đ
+              <span>
+                Đặt phiên trải nghiệm 149.000đ
+              </span>
             </span>
           </a>
         </div>
@@ -83,7 +85,9 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
             href="/coaching"
           >
             <span>
-              Bắt đầu ngay
+              <span>
+                Bắt đầu ngay
+              </span>
             </span>
           </a>
         </div>

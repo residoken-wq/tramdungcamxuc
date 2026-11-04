@@ -95,7 +95,7 @@ test.describe('T0-09: Puck publication lifecycle', () => {
       // The hero holds child EntryCard blocks (PK-08): select the hero itself, not a card.
       await canvas.getByRole('heading', { level: 1 }).click()
       const title = page.getByRole('textbox', {
-        name: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+        name: 'Tiêu đề dòng 1',
         exact: true,
       })
       await title.fill(publishedTitle)
