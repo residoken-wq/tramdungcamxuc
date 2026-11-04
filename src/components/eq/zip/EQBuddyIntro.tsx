@@ -17,6 +17,7 @@ import { GuideModal } from './GuideModal'
 import { appendUtmParams } from '@/lib/utm'
 import { safeHref } from '@/lib/safe-href'
 import { track } from '@/lib/analytics/track'
+import { vi } from '@/lib/i18n/vi'
 
 export interface EQBuddyIntroProps {
   content?: {
@@ -97,7 +98,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink hover:bg-bright-magenta hover:text-white text-bright-magenta text-xs font-semibold border border-bright-magenta/30 shadow-soft-md transition-all active:scale-95 group cursor-pointer"
             >
               <BookOpen className="w-3.5 h-3.5 text-bright-magenta group-hover:text-white transition-colors" />
-              <span>📖 Hướng dẫn</span>
+              <span>📖 {vi.dp01eq.guide}</span>
             </button>
 
             <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
@@ -118,9 +119,9 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
             {/* Progress step badge 1/2 */}
             <div className="flex items-center gap-1.5 text-xs text-deep-navy/60 font-medium">
               <span className="px-2 py-0.5 rounded-full bg-lavender-mist/60 text-deep-navy font-semibold text-[11px]">
-                Bước {introStep}/2
+                {vi.dp01eq.stepPrefix} {introStep}/2
               </span>
-              <span>{introStep === 1 ? 'Giới thiệu bộ thẻ' : 'Cách thức sử dụng'}</span>
+              <span>{introStep === 1 ? vi.dp01eq.introCard1Title : vi.dp01eq.introCard2Title}</span>
             </div>
           </div>
 
@@ -159,7 +160,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                     <Heart className="w-4 h-4 text-bright-magenta" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
-                    Mục đích
+                    {vi.dp01eq.purpose}
                   </span>
                 </div>
                 <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
@@ -178,7 +179,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                     <Compass className="w-4 h-4 text-deep-navy" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mint-haze text-deep-navy">
-                    Dùng một mình
+                    {vi.dp01eq.useAlone}
                   </span>
                 </div>
                 <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
@@ -197,7 +198,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                     <Users className="w-4 h-4 text-deep-navy" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-butter-cream text-deep-navy">
-                    Dùng nhiều người
+                    {vi.dp01eq.useGroup}
                   </span>
                 </div>
                 <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
@@ -216,7 +217,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                     <Layers className="w-4 h-4 text-deep-navy" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-lavender-mist text-deep-navy">
-                    Cấu trúc thẻ
+                    {vi.dp01eq.cardStructure}
                   </span>
                 </div>
                 <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
@@ -244,7 +245,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                 href="/eq-buddy/rut-the"
                 className="text-xs text-deep-navy/70 hover:text-deep-navy underline underline-offset-4 transition-colors order-2 sm:order-1"
               >
-                Bỏ qua hướng dẫn và rút thẻ ngay →
+                {vi.dp01eq.skipToDraw}
               </Link>
 
               <button
@@ -252,7 +253,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                 onClick={() => setIntroStep(2)}
                 className="w-full sm:w-auto px-7 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-semibold text-sm shadow-soft-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 group order-1 sm:order-2 cursor-pointer"
               >
-                <span>Tiếp tục</span>
+                <span>{vi.dp01.continue}</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
@@ -369,14 +370,14 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                 className="px-5 py-2.5 rounded-full bg-white hover:bg-soft-pink/40 border border-lavender-mist text-deep-navy text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-soft-md cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Quay lại bước 1</span>
+                <span>{vi.dp01eq.backToStep1}</span>
               </button>
 
               <Link
                 href="/eq-buddy/rut-the"
                 className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-semibold text-sm sm:text-base shadow-soft-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 group"
               >
-                <span>✨ Bắt đầu hành trình</span>
+                <span>✨ {vi.dp01eq.drawNow}</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -394,7 +395,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta text-xs sm:text-sm font-semibold shadow-soft-md transition-all"
         >
           <ShoppingBag className="w-4 h-4 text-bright-magenta" />
-          <span>Đặt mua bộ thẻ vật lý trên Shopee →</span>
+          <span>{vi.dp01eq.buyPhysicalDeck} →</span>
         </a>
       </div>
 

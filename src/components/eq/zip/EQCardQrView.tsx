@@ -6,6 +6,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { PublicEqCard } from '@/lib/eq/cards.server'
 import { EQCardFlip } from './EQCardFlip'
 import { isRichTextEmpty } from '@/lib/legal'
+import { vi } from '@/lib/i18n/vi'
 
 export interface EQCardQrViewProps {
   card: PublicEqCard
@@ -33,9 +34,7 @@ export function EQCardQrView({ card, children }: EQCardQrViewProps) {
           className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-soft-pink text-bright-magenta font-ui text-xs font-bold hover:bg-bright-magenta hover:text-white transition-colors"
         >
           <RotateCw className="w-3.5 h-3.5" />
-          <span>
-            {isFlipped ? 'Xem mặt trước (Lời trích dẫn)' : 'Xem mặt sau (3 câu hỏi suy ngẫm)'}
-          </span>
+          <span>{isFlipped ? vi.dp01eq.seeFrontHint : vi.dp01eq.seeBackHint}</span>
         </button>
       </div>
 
@@ -44,7 +43,7 @@ export function EQCardQrView({ card, children }: EQCardQrViewProps) {
         <div className="w-full max-w-xl p-5 rounded-2xl bg-butter-cream/40 border border-butter-cream shadow-soft">
           <div className="flex items-center gap-2 mb-2 text-deep-navy font-ui text-xs font-bold uppercase tracking-wider">
             <Sparkles className="w-4 h-4 text-bright-magenta" />
-            <span>Hành động nhỏ hôm nay</span>
+            <span>{vi.dp01eq.smallActionToday}</span>
           </div>
           <p className="font-sans text-sm sm:text-base text-deep-navy/90 leading-relaxed font-medium">
             {card.smallAction}
@@ -58,7 +57,7 @@ export function EQCardQrView({ card, children }: EQCardQrViewProps) {
           <div className="flex items-center gap-2 text-deep-navy font-ui text-xs font-bold uppercase tracking-wider">
             {/* a11y-contrast-ok: SVG icon trang trí */}
             <Heart className="w-4 h-4 text-accent-pink" />
-            <span>Câu chuyện phía sau thẻ</span>
+            <span>{vi.dp01eq.storyBehindCard}</span>
           </div>
           <div className="prose prose-purple max-w-none font-sans text-sm sm:text-base text-deep-navy/85 leading-relaxed">
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}

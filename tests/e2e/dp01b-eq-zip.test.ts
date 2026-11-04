@@ -235,6 +235,15 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
       }
       await expect(guestPage2.getByText('Dùng thử hoặc mua để mở trọn vẹn')).toHaveCount(0)
 
+      // Z4: Mỗi thẻ trong "Tất cả thẻ" là button có aria-label, có thể focus và bấm bằng bàn phím (DP-02)
+      const firstCardBtn = guestPage2.getByRole('button', { name: new RegExp(cardCode1) })
+      await expect(firstCardBtn).toBeVisible()
+      await firstCardBtn.focus()
+      await guestPage2.keyboard.press('Enter')
+      await expect(guestPage2.getByRole('button', { name: /Lật thẻ sang mặt sau/i })).toBeVisible({
+        timeout: 15000,
+      })
+
       await visitor2.close()
     } finally {
       test.setTimeout(testInfo.timeout + 30000)

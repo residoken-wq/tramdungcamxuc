@@ -96,7 +96,13 @@ export const CATEGORY_MAP = {
   },
 }
 
-export function Step1Diagnose({ diagnose, answers, onAnswerChange, onNext }: Step1DiagnoseProps) {
+export function Step1Diagnose({
+  diagnose,
+  step1Content,
+  answers,
+  onAnswerChange,
+  onNext,
+}: Step1DiagnoseProps) {
   const questions =
     diagnose?.questions && diagnose.questions.length > 0
       ? diagnose.questions.map((q, idx) => ({
@@ -131,10 +137,26 @@ export function Step1Diagnose({ diagnose, answers, onAnswerChange, onNext }: Ste
   const avgReward = getStageAverage('reward')
 
   const categories = [
-    { ...CATEGORY_MAP.cue, score: avgCue },
-    { ...CATEGORY_MAP.craving, score: avgCraving },
-    { ...CATEGORY_MAP.response, score: avgResponse },
-    { ...CATEGORY_MAP.reward, score: avgReward },
+    {
+      ...CATEGORY_MAP.cue,
+      diagnosis: step1Content?.cueDiagnosis || CATEGORY_MAP.cue.diagnosis,
+      score: avgCue,
+    },
+    {
+      ...CATEGORY_MAP.craving,
+      diagnosis: step1Content?.cravingDiagnosis || CATEGORY_MAP.craving.diagnosis,
+      score: avgCraving,
+    },
+    {
+      ...CATEGORY_MAP.response,
+      diagnosis: step1Content?.responseDiagnosis || CATEGORY_MAP.response.diagnosis,
+      score: avgResponse,
+    },
+    {
+      ...CATEGORY_MAP.reward,
+      diagnosis: step1Content?.rewardDiagnosis || CATEGORY_MAP.reward.diagnosis,
+      score: avgReward,
+    },
   ]
 
   // Tìm nhóm có điểm cao nhất

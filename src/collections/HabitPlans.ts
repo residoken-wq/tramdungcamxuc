@@ -173,6 +173,8 @@ export const HabitPlans: CollectionConfig = {
       ],
     },
     textarea('identityStatement', 'Câu định danh "Tôi sẽ … để trở thành …"'),
+    text('actionText', 'Hành động cụ thể (trong câu định danh)'),
+    text('personText', 'Con người muốn trở thành (trong câu định danh)'),
     {
       name: 'anchorHabit',
       label: vi.hb03.fields.anchorHabit,
