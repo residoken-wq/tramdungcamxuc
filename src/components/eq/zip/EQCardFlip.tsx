@@ -3,6 +3,7 @@
 import React from 'react'
 import { Sparkles, RotateCw, Quote } from 'lucide-react'
 import type { PublicEqCard } from '@/lib/eq/cards.server'
+import { vi } from '@/lib/i18n/vi'
 
 export interface EQCardFlipProps {
   card: PublicEqCard
@@ -29,16 +30,16 @@ export function EQCardFlip({
   }
 
   const prompts = [
-    { label: 'Gợi nhớ', text: card.promptRecall },
-    { label: 'Gói ghém', text: card.promptPack },
-    { label: 'Ghi nhận', text: card.promptAcknowledge },
+    { label: vi.dp01eq.recallLabel, text: card.promptRecall },
+    { label: vi.dp01eq.packLabel, text: card.promptPack },
+    { label: vi.dp01eq.acknowledgeLabel, text: card.promptAcknowledge },
   ].filter((p) => Boolean(p.text))
 
   return (
     <div
       role="button"
       tabIndex={0}
-      aria-label={`Thẻ số ${cardNum}: ${card.keywordEn || ''}. ${isFlipped ? 'Đang ở mặt sau' : 'Đang ở mặt trước'}. Bấm để lật.`}
+      aria-label={`${vi.dp01eq.cardIndexPrefix} ${cardNum}: ${card.keywordEn || ''}. ${isFlipped ? 'Đang ở mặt sau' : 'Đang ở mặt trước'}. Bấm để lật.`}
       onClick={onToggleFlip}
       onKeyDown={handleKeyDown}
       className="perspective-1000 w-[290px] h-[400px] sm:w-[330px] sm:h-[450px] cursor-pointer group outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta rounded-3xl"
@@ -60,7 +61,7 @@ export function EQCardFlip({
             <span className="flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5 text-bright-magenta" />
               <span>
-                THẺ SỐ {cardNum} / {totalPublishedCards}
+                {vi.dp01eq.cardIndexPrefix} {cardNum} / {totalPublishedCards}
               </span>
             </span>
             {card.category && (
@@ -92,9 +93,9 @@ export function EQCardFlip({
 
           {/* Bottom thẻ */}
           <div className="flex items-center justify-between text-[10px] text-deep-navy/70 relative z-10 border-t border-deep-navy/5 pt-2 font-ui">
-            <span className="font-quote italic text-bright-magenta">Trạm Dừng Cảm Xúc ♡</span>
+            <span className="font-quote italic text-bright-magenta">{vi.dp01eq.brandSignature}</span>
             <span className="flex items-center gap-1 font-medium group-hover:text-bright-magenta transition-colors">
-              <span>Chạm để lật</span>
+              <span>{vi.dp01eq.touchToFlip}</span>
               <RotateCw className="w-3 h-3" />
             </span>
           </div>
@@ -109,7 +110,7 @@ export function EQCardFlip({
           <div className="flex items-center justify-between text-deep-navy/70 text-[10px] uppercase font-bold tracking-widest relative z-10 font-ui">
             <span className="text-bright-magenta flex items-center gap-1">
               <RotateCw className="w-3 h-3" />
-              <span>LỜI GỢI MỞ SUY NGẪM</span>
+              <span>{vi.dp01eq.reflectionPromptHeading}</span>
             </span>
             <span className="text-deep-navy/70 font-bold">
               #{cardNum} • {card.keywordEn || card.code}
@@ -119,7 +120,7 @@ export function EQCardFlip({
           {/* Danh sách 3 câu hỏi Reflection */}
           <div className="space-y-2 my-auto relative z-10 overflow-y-auto max-h-[290px] pr-0.5 font-ui">
             <span className="text-[10px] sm:text-[11px] text-deep-navy/60 font-semibold uppercase tracking-wider block">
-              Hãy tự vấn dịu dàng cùng bản thân:
+              {vi.dp01eq.gentleReflectionIntro}
             </span>
 
             <div className="space-y-1.5 sm:space-y-2">
@@ -145,7 +146,7 @@ export function EQCardFlip({
           {/* Bottom mặt sau */}
           <div className="text-[11px] text-deep-navy/70 text-center relative z-10 border-t border-deep-navy/5 pt-2">
             <span className="font-quote italic text-bright-magenta font-semibold block">
-              Dừng là cách trở về với chính mình ♡
+              {vi.dp01eq.pauseReturnQuote}
             </span>
           </div>
         </div>

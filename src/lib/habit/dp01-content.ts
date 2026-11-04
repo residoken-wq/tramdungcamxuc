@@ -20,6 +20,10 @@ export interface Dp01HeaderContent {
 
 export interface Dp01Step1Content {
   leadIn: string
+  cueDiagnosis: string
+  cravingDiagnosis: string
+  responseDiagnosis: string
+  rewardDiagnosis: string
 }
 
 export interface Dp01Step2Content {
@@ -41,6 +45,7 @@ export interface Dp01Step3Content {
 
 export interface Dp01Step4Content {
   leadIn: string
+  leadInEmphasis: string
   statementTitle: string
   statementDesc: string
   suggestedRoles: string[]
@@ -58,7 +63,14 @@ export interface Dp01Step4Content {
 
 export interface Dp01Step5Content {
   leadIn: string
+  theoryTitle: string
+  theoryDesc: string
   customActionPlaceholder: string
+}
+
+export interface Dp01TrackerContent {
+  myDataTitle: string
+  myDataDesc: string
 }
 
 export interface Dp01Step6Content {
@@ -88,6 +100,7 @@ export interface Dp01AllContent {
   step4: Dp01Step4Content
   step5: Dp01Step5Content
   step6: Dp01Step6Content
+  tracker: Dp01TrackerContent
   checkIn: Dp01CheckInContent
   footer: Dp01FooterContent
 }
@@ -110,6 +123,14 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
   },
   step1: {
     leadIn: '',
+    cueDiagnosis:
+      'Thói quen của bạn chưa có tín hiệu rõ ràng. Nó đang chờ bạn tự nhớ ra — mà trí nhớ thì luôn bận.',
+    cravingDiagnosis:
+      'Việc này chưa đủ hấp dẫn với bạn, nên bạn né nó một cách rất tự nhiên — không phải vì lười.',
+    responseDiagnosis:
+      'Mỗi lần bắt đầu đang tốn quá nhiều công sức. Không ai duy trì nổi một việc nặng trong 28 ngày.',
+    rewardDiagnosis:
+      'Bạn chưa nhận được sự ghi nhận nào ngay sau khi làm, nên não chưa thấy việc này đáng để lặp lại.',
   },
   step2: {
     leadIn:
@@ -131,8 +152,9 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     mentorSuccessHint: 'Thói quen mới sẽ đi ngay sau việc này.',
   },
   step4: {
-    leadIn:
-      'Bắt đầu từ con người bạn muốn trở thành, rồi mới đến hành động. Thương hiệu cá nhân không phải việc làm thêm — nó là kết quả của hành động bạn lặp lại mỗi ngày.',
+    leadIn: 'Bắt đầu từ con người bạn muốn trở thành, rồi mới đến hành động.',
+    leadInEmphasis:
+      'Thương hiệu cá nhân không phải việc làm thêm — nó là kết quả của hành động bạn lặp lại mỗi ngày.',
     statementTitle: 'Tuyên ngôn về thói quen',
     statementDesc: 'Điền câu khẳng định căn tính và hành động cốt lõi của bạn',
     suggestedRoles: [
@@ -161,6 +183,9 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
   step5: {
     // Empty: Step5LoopDesign falls back to the zip lead-in (with its inline emphasis).
     leadIn: '',
+    theoryTitle: 'Vòng lặp thói quen · The Habit Loop',
+    theoryDesc:
+      'Mọi thói quen, tốt hay xấu, đều chạy qua bốn giai đoạn khép kín này — lặp đi lặp lại thành một vòng tròn.',
     customActionPlaceholder: '',
   },
   step6: {
@@ -170,6 +195,10 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     passSubtitle: '',
     // Not in the zip: the repo's approved consent wording (vi.habit.wizard.step4.consentLabel).
     termsText: 'Tôi đồng ý lưu kế hoạch và nhận thông tin từ Trạm Dừng Cảm Xúc theo',
+  },
+  tracker: {
+    myDataTitle: 'Dữ liệu của bạn',
+    myDataDesc: 'Lưu trữ cục bộ trên trình duyệt này & đồng bộ về tài khoản khi đăng nhập.',
   },
   checkIn: {
     postDayHint:
@@ -230,6 +259,7 @@ export function withDp01Defaults(
   const step6 = c.step6 || {}
   const checkIn = c.checkIn || {}
   const footer = c.footer || {}
+  const tracker = ((c as Record<string, unknown>).tracker as Record<string, unknown> | undefined) || {}
 
   return {
     header: {
@@ -248,6 +278,19 @@ export function withDp01Defaults(
     },
     step1: {
       leadIn: pickString(step1.leadIn, DEFAULT_DP01_CONTENT.step1.leadIn),
+      cueDiagnosis: pickString(step1.cueDiagnosis, DEFAULT_DP01_CONTENT.step1.cueDiagnosis),
+      cravingDiagnosis: pickString(
+        step1.cravingDiagnosis,
+        DEFAULT_DP01_CONTENT.step1.cravingDiagnosis,
+      ),
+      responseDiagnosis: pickString(
+        step1.responseDiagnosis,
+        DEFAULT_DP01_CONTENT.step1.responseDiagnosis,
+      ),
+      rewardDiagnosis: pickString(
+        step1.rewardDiagnosis,
+        DEFAULT_DP01_CONTENT.step1.rewardDiagnosis,
+      ),
     },
     step2: {
       leadIn: pickString(step2.leadIn, DEFAULT_DP01_CONTENT.step2.leadIn),
@@ -275,6 +318,10 @@ export function withDp01Defaults(
     },
     step4: {
       leadIn: pickString(step4.leadIn, DEFAULT_DP01_CONTENT.step4.leadIn),
+      leadInEmphasis: pickString(
+        step4.leadInEmphasis,
+        DEFAULT_DP01_CONTENT.step4.leadInEmphasis,
+      ),
       statementTitle: pickString(step4.statementTitle, DEFAULT_DP01_CONTENT.step4.statementTitle),
       statementDesc: pickString(step4.statementDesc, DEFAULT_DP01_CONTENT.step4.statementDesc),
       suggestedRoles: parseLines(step4.suggestedRoles, DEFAULT_DP01_CONTENT.step4.suggestedRoles),
@@ -312,6 +359,8 @@ export function withDp01Defaults(
     },
     step5: {
       leadIn: pickString(step5.leadIn, DEFAULT_DP01_CONTENT.step5.leadIn),
+      theoryTitle: pickString(step5.theoryTitle, DEFAULT_DP01_CONTENT.step5.theoryTitle),
+      theoryDesc: pickString(step5.theoryDesc, DEFAULT_DP01_CONTENT.step5.theoryDesc),
       customActionPlaceholder: pickString(
         step5.customActionPlaceholder,
         DEFAULT_DP01_CONTENT.step5.customActionPlaceholder,
@@ -322,6 +371,16 @@ export function withDp01Defaults(
       passTitle: pickString(step6.passTitle, DEFAULT_DP01_CONTENT.step6.passTitle),
       passSubtitle: pickString(step6.passSubtitle, DEFAULT_DP01_CONTENT.step6.passSubtitle),
       termsText: pickString(step6.termsText, DEFAULT_DP01_CONTENT.step6.termsText),
+    },
+    tracker: {
+      myDataTitle: pickString(
+        tracker.myDataTitle as string | undefined,
+        DEFAULT_DP01_CONTENT.tracker.myDataTitle,
+      ),
+      myDataDesc: pickString(
+        tracker.myDataDesc as string | undefined,
+        DEFAULT_DP01_CONTENT.tracker.myDataDesc,
+      ),
     },
     checkIn: {
       postDayHint: pickString(checkIn.postDayHint, DEFAULT_DP01_CONTENT.checkIn.postDayHint),

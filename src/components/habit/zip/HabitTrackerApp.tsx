@@ -27,6 +27,7 @@ import type {
   CleanHabitStepQuotes,
 } from '@/lib/habit/journey-content.server'
 import { withDp01Defaults, type Dp01AllContent } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 export interface HabitTrackerAppProps {
   techniques?: PublicTechnique[]
@@ -219,11 +220,11 @@ export function HabitTrackerApp({
 
     const cleanEmail = email.trim()
     if (!cleanEmail) {
-      setSubmitError('Vui lòng nhập địa chỉ email để nhận kế hoạch.')
+      setSubmitError(vi.dp01.emailRequiredError)
       return
     }
     if (!consent) {
-      setSubmitError('Vui lòng đồng ý với điều khoản để nhận kế hoạch qua email.')
+      setSubmitError(vi.dp01.termsRequiredError)
       return
     }
 
@@ -243,6 +244,8 @@ export function HabitTrackerApp({
       const payload = {
         scorecard: draft.scorecard,
         identityStatement: draft.identityStatement,
+        actionText: draft.actionText?.trim() || undefined,
+        personText: draft.personText?.trim() || undefined,
         chosenTechniques: flattenedTechniques,
         anchorHabit: draft.anchorHabit || undefined,
         rhythmDays: draft.rhythmDays,
@@ -262,7 +265,7 @@ export function HabitTrackerApp({
       const res = await submitHabitPlanAction(payload)
 
       if (!res.success) {
-        setSubmitError(res.error || 'Gửi kế hoạch chưa thành công. Vui lòng thử lại.')
+        setSubmitError(res.error || vi.dp01.submitGeneralError)
         setIsSubmitting(false)
         return
       }
@@ -289,7 +292,7 @@ export function HabitTrackerApp({
           : 0,
       })
     } catch (err: any) {
-      setSubmitError(err?.message || 'Đã xảy ra lỗi khi nộp kế hoạch.')
+      setSubmitError(err?.message || vi.dp01.submitGeneralError)
     } finally {
       setIsSubmitting(false)
     }

@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { BookOpen, X } from 'lucide-react'
+import { vi } from '@/lib/i18n/vi'
 
 export interface GuideModalProps {
   isOpen: boolean
@@ -48,10 +49,10 @@ export function GuideModal({
                 id="guide-modal-title"
                 className="font-display text-lg sm:text-xl text-deep-navy uppercase"
               >
-                Hướng Dẫn Sử Dụng Bộ Thẻ
+                {vi.dp01eq.guideModalTitle}
               </h3>
               <p className="text-[11px] text-deep-navy/60 font-medium font-ui">
-                4 bước tĩnh lặng để lắng nghe và kết nối nội tâm
+                {vi.dp01eq.guideModalSubtitle}
               </p>
             </div>
           </div>
@@ -59,7 +60,7 @@ export function GuideModal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Đóng hướng dẫn"
+            aria-label={vi.dp01eq.closeGuideAria}
             className="w-8 h-8 rounded-full bg-warm-ivory hover:bg-soft-pink text-deep-navy/60 hover:text-deep-navy flex items-center justify-center transition-colors border border-lavender-mist cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -157,7 +158,7 @@ export function GuideModal({
             onClick={onClose}
             className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs sm:text-sm font-semibold shadow-soft-md transition-all active:scale-95 cursor-pointer font-ui"
           >
-            Đã hiểu & Tiếp tục trải nghiệm
+            {vi.dp01eq.guideModalUnderstood}
           </button>
         </div>
       </div>

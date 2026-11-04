@@ -22,6 +22,7 @@ import { EQCardFlip } from './EQCardFlip'
 import type { PublicEqCard } from '@/lib/eq/cards.server'
 import { drawEqCardAction } from '@/lib/eq/actions'
 import { saveEqCardAction } from '@/lib/eq/saved-actions'
+import { vi } from '@/lib/i18n/vi'
 
 export interface EQDrawAppProps {
   allCards: PublicEqCard[]
@@ -68,6 +69,15 @@ export function EQDrawApp({
   const [reflectionSavedMessage, setReflectionSavedMessage] = useState<string | null>(null)
   const [copiedLink, setCopiedLink] = useState(false)
   const [isDrawing, setIsDrawing] = useState(false)
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'error' | 'success' } | null>(null)
+
+  React.useEffect(() => {
+    if (!toastMessage) return
+    const timer = setTimeout(() => {
+      setToastMessage(null)
+    }, 4000)
+    return () => clearTimeout(timer)
+  }, [toastMessage])
 
   // Rút thẻ
   const triggerConfetti = () => {
@@ -106,7 +116,7 @@ export function EQDrawApp({
       } else if (res.code === 'PAYWALL') {
         setStep('paywall')
       } else {
-        alert(res.message || 'Không thể rút thẻ. Vui lòng thử lại!')
+        setToastMessage({ text: res.message || vi.dp01eq.drawError, type: 'error' })
       }
     } catch (err) {
       console.error('Error drawing card:', err)
@@ -164,10 +174,10 @@ export function EQDrawApp({
         reflection: reflectionText.trim() || null,
       })
       if (res.success) {
-        setReflectionSavedMessage('Đã lưu vào bộ thẻ của bạn!')
+        setReflectionSavedMessage(vi.dp01eq.saveCardSuccess)
         setTimeout(() => setReflectionSavedMessage(null), 3000)
       } else {
-        alert(res.message || 'Không thể lưu thẻ. Vui lòng thử lại!')
+        setToastMessage({ text: res.message || vi.dp01eq.saveCardError, type: 'error' })
       }
     } catch (err) {
       console.error('Error saving reflection:', err)
@@ -207,7 +217,7 @@ export function EQDrawApp({
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink hover:bg-bright-magenta hover:text-white text-bright-magenta text-xs font-semibold border border-bright-magenta/30 shadow-soft-md transition-all active:scale-95 group cursor-pointer"
             >
               <BookOpen className="w-3.5 h-3.5 text-bright-magenta group-hover:text-white transition-colors" />
-              <span>📖 Hướng dẫn</span>
+              <span>📖 {vi.dp01eq.guide}</span>
             </button>
 
             <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
@@ -215,6 +225,29 @@ export function EQDrawApp({
             </span>
           </div>
         </div>
+
+        {/* In-app Toast / Notification banner */}
+        {toastMessage && (
+          <div
+            role="alert"
+            aria-live="polite"
+            className={`mb-4 p-3 rounded-2xl flex items-center justify-between text-xs font-semibold font-ui ${
+              toastMessage.type === 'error'
+                ? 'bg-soft-pink border border-accent-pink/40 text-deep-navy'
+                : 'bg-mint-haze border border-[#2E7D32]/40 text-[#2E7D32]'
+            }`}
+          >
+            <span>{toastMessage.text}</span>
+            <button
+              type="button"
+              onClick={() => setToastMessage(null)}
+              className="p-1 text-deep-navy/70 hover:text-deep-navy cursor-pointer"
+              aria-label={vi.common.close}
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {/* ==================================================== */}
         {/* BƯỚC 1: MÀN HÌNH NHẬP CẢM XÚC (DRAW) */}
@@ -226,23 +259,22 @@ export function EQDrawApp({
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
                   {/* a11y-contrast-ok: SVG icon trang trí */}
                   <Flower2 className="w-3.5 h-3.5 text-accent-pink" />
-                  <span>Bước 2: Lắng nghe tiếng lòng</span>
+                  <span>{vi.dp01eq.listenHeart}</span>
                 </div>
 
                 <h2 className="font-semibold text-lg sm:text-xl md:text-2xl text-deep-navy">
-                  🌸 Hôm nay bạn đang cảm thấy thế nào?
+                  {vi.dp01eq.howAreYouToday}
                 </h2>
 
                 <p className="text-xs sm:text-sm text-deep-navy/70 leading-relaxed">
-                  Kể cho mình nghe một cảm xúc, tình huống bạn đang gặp... Hoặc để trống và bấm{' '}
-                  <strong className="text-deep-navy">Rút thẻ ngẫu nhiên</strong>.
+                  {vi.dp01eq.tellMePrompt}
                 </p>
               </div>
 
               {/* Gợi ý cảm xúc nhanh */}
               <div className="space-y-1.5 text-left">
                 <span className="text-[11px] text-deep-navy/60 font-medium">
-                  Gợi ý chọn nhanh tâm trạng:
+                  {vi.dp01eq.quickMoodSuggestions}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {suggestedEmotions.map((em, idx) => (
@@ -261,7 +293,7 @@ export function EQDrawApp({
               {/* Ô Input và Nút Rút thẻ */}
               <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
                 <label htmlFor="emotion-input" className="sr-only">
-                  Cảm xúc hôm nay
+                  {vi.dp01eq.todayEmotionLabel}
                 </label>
                 <input
                   id="emotion-input"
@@ -271,7 +303,7 @@ export function EQDrawApp({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleDrawCard()
                   }}
-                  placeholder="VD: Mình đang thấy hơi mông lung và phân vân trước quyết định mới..."
+                  placeholder={vi.dp01eq.emotionInputPlaceholder}
                   className="w-full px-4 py-3 rounded-2xl border border-lavender-mist text-xs sm:text-sm text-deep-navy placeholder:text-deep-navy/70 focus:border-bright-magenta focus:ring-2 focus:ring-bright-magenta/20 focus:outline-none transition-all bg-warm-ivory/50 focus:bg-white"
                 />
 
@@ -279,10 +311,10 @@ export function EQDrawApp({
                   type="button"
                   disabled={isDrawing}
                   onClick={handleDrawCard}
-                  aria-label="Rút ngẫu nhiên một thẻ"
+                  aria-label={vi.dp01eq.drawRandomCardAria}
                   className="w-full sm:w-auto shrink-0 px-6 py-3 rounded-2xl bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs sm:text-sm font-semibold transition-all shadow-soft-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  <span>{isDrawing ? 'Đang lắng nghe...' : '✨ Rút thẻ'}</span>
+                  <span>{isDrawing ? vi.dp01eq.drawing : vi.dp01eq.drawCardButton}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -295,10 +327,10 @@ export function EQDrawApp({
                 className="inline-flex items-center gap-1.5 hover:text-bright-magenta transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Quay lại hướng dẫn</span>
+                <span>{vi.dp01eq.backToGuide}</span>
               </Link>
               <span className="font-quote italic text-bright-magenta">
-                Mỗi cảm xúc đều xứng đáng được lắng nghe ♡
+                {vi.dp01eq.everyEmotionMatters}
               </span>
             </div>
           </div>
@@ -312,22 +344,22 @@ export function EQDrawApp({
             {/* Header Kết quả: Lời lắng nghe vỗ về */}
             <div className="space-y-1.5 max-w-lg">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-butter-cream/60 text-deep-navy text-xs font-semibold">
-                <span>Mình đã lắng nghe bạn 💛</span>
+                <span>{vi.dp01eq.listenedToYou}</span>
               </div>
 
               <p className="text-xs sm:text-sm text-deep-navy/80 font-medium leading-relaxed">
                 {emotionInput.trim() ? (
                   <>
-                    Bạn đang chia sẻ về:{' '}
+                    {vi.dp01eq.sharingAbout}{' '}
                     <strong className="text-bright-magenta">&ldquo;{emotionInput}&rdquo;</strong>
                   </>
                 ) : (
-                  'Bạn đã dành cho mình một khoảng lặng dịu êm để đón nhận thông điệp ♡'
+                  vi.dp01eq.quietMomentMessage
                 )}
               </p>
 
               <span className="text-[11px] text-deep-navy/70 block">
-                (Chạm vào thẻ hoặc bấm nút Lật thẻ để đọc câu hỏi suy ngẫm)
+                {vi.dp01eq.flipCardTip}
               </span>
             </div>
 
@@ -346,11 +378,11 @@ export function EQDrawApp({
                 <button
                   type="button"
                   onClick={() => setIsFlipped((prev) => !prev)}
-                  aria-label={isFlipped ? 'Lật về mặt trước' : 'Lật thẻ sang mặt sau'}
+                  aria-label={isFlipped ? vi.dp01eq.flipToFrontAria : vi.dp01eq.flipToBackAria}
                   className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-deep-navy to-bright-magenta hover:from-bright-magenta hover:to-accent-pink text-white text-xs sm:text-sm font-semibold transition-all shadow-soft-md active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <RotateCw className="w-4 h-4" />
-                  <span>{isFlipped ? 'Mặt trước' : 'Lật thẻ'}</span>
+                  <span>{isFlipped ? vi.dp01eq.seeFront : vi.dp01eq.flipCard}</span>
                 </button>
 
                 {/* Nút Rút thẻ khác */}
@@ -361,7 +393,7 @@ export function EQDrawApp({
                   className="px-5 py-2.5 rounded-2xl bg-white hover:bg-soft-pink/30 border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta text-xs sm:text-sm font-semibold transition-all shadow-soft-md active:scale-95 flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <RefreshCw className="w-4 h-4 text-bright-magenta" />
-                  <span>Rút thẻ khác</span>
+                  <span>{vi.dp01eq.drawAnotherCard}</span>
                 </button>
               </div>
 
@@ -373,7 +405,7 @@ export function EQDrawApp({
                   className="inline-flex items-center gap-1.5 text-deep-navy/70 hover:text-bright-magenta font-semibold underline underline-offset-4 transition-colors cursor-pointer"
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  <span>👁️ Xem tất cả thẻ</span>
+                  <span>{vi.dp01eq.viewAllCards}</span>
                 </button>
 
                 <button
@@ -381,7 +413,7 @@ export function EQDrawApp({
                   onClick={() => setStep('draw')}
                   className="text-deep-navy/70 hover:text-deep-navy transition-colors cursor-pointer"
                 >
-                  Đổi cảm xúc khác
+                  {vi.dp01eq.changeEmotion}
                 </button>
               </div>
             </div>
@@ -393,21 +425,21 @@ export function EQDrawApp({
               <div className="border-b border-lavender-mist pb-2">
                 <h4 className="font-semibold text-sm text-deep-navy flex items-center gap-1.5">
                   <Bookmark className="w-4 h-4 text-bright-magenta" />
-                  <span>Ghi suy ngẫm · Lưu giữ khoảnh khắc</span>
+                  <span>{vi.dp01eq.reflectionCardTitle}</span>
                 </h4>
                 <p className="text-[11px] text-deep-navy/60 mt-0.5">
-                  Ghi lại suy ngẫm từ 3 câu hỏi mặt sau để lưu vào hành trình phát triển bản thân.
+                  {vi.dp01eq.reflectionCardDesc}
                 </p>
               </div>
 
               <div className="space-y-1.5">
                 <textarea
                   id="reflection-input"
-                  aria-label="Suy ngẫm của bạn về thông điệp này"
+                  aria-label={vi.dp01eq.reflectionPlaceholder}
                   rows={3}
                   value={reflectionText}
                   onChange={(e) => setReflectionText(e.target.value)}
-                  placeholder="Viết suy ngẫm của bạn về thông điệp này..."
+                  placeholder={vi.dp01eq.reflectionPlaceholder}
                   className="w-full p-3 rounded-2xl bg-warm-ivory border border-lavender-mist text-xs text-deep-navy focus:border-bright-magenta focus:outline-none resize-y"
                 />
               </div>
@@ -420,7 +452,7 @@ export function EQDrawApp({
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs font-semibold shadow-soft-md transition-all active:scale-95 cursor-pointer disabled:opacity-50"
                 >
                   {isSavingReflection ? (
-                    <span>Đang lưu...</span>
+                    <span>{vi.dp01.saving}</span>
                   ) : reflectionSavedMessage ? (
                     <>
                       <Check className="w-3.5 h-3.5" />
@@ -429,7 +461,7 @@ export function EQDrawApp({
                   ) : (
                     <>
                       <Bookmark className="w-3.5 h-3.5" />
-                      <span>Lưu thẻ & Suy ngẫm</span>
+                      <span>{vi.dp01eq.saveReflectionButton}</span>
                     </>
                   )}
                 </button>
@@ -438,7 +470,7 @@ export function EQDrawApp({
                   <button
                     type="button"
                     onClick={handleCopyLink}
-                    title="Sao chép link thẻ"
+                    title={vi.dp01eq.copyCardLink}
                     className="p-2 rounded-xl border border-lavender-mist text-deep-navy/70 hover:text-bright-magenta hover:border-bright-magenta transition-colors cursor-pointer"
                   >
                     {copiedLink ? (
@@ -451,21 +483,21 @@ export function EQDrawApp({
                   <a
                     href={`/eq-buddy/the/${selectedCard.qrSlug}/anh/4x5`}
                     download
-                    title="Tải ảnh 4:5"
+                    title={vi.dp01eq.download45Title}
                     className="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl border border-lavender-mist text-deep-navy/70 hover:text-bright-magenta hover:border-bright-magenta text-[11px] font-semibold transition-colors"
                   >
                     <Download className="w-3 h-3" />
-                    <span>4:5</span>
+                    <span>{vi.dp01eq.download45}</span>
                   </a>
 
                   <a
                     href={`/eq-buddy/the/${selectedCard.qrSlug}/anh/9x16`}
                     download
-                    title="Tải ảnh 9:16"
+                    title={vi.dp01eq.download916Title}
                     className="inline-flex items-center gap-1 px-2.5 py-2 rounded-xl border border-lavender-mist text-deep-navy/70 hover:text-bright-magenta hover:border-bright-magenta text-[11px] font-semibold transition-colors"
                   >
                     <Download className="w-3 h-3" />
-                    <span>9:16</span>
+                    <span>{vi.dp01eq.download916}</span>
                   </a>
                 </div>
               </div>
@@ -483,10 +515,10 @@ export function EQDrawApp({
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold mb-1">
                   {/* a11y-contrast-ok: SVG icon trang trí */}
                   <BookOpen className="w-3.5 h-3.5 text-accent-pink" />
-                  <span>Bộ sưu tập 26 thông điệp</span>
+                  <span>{vi.dp01eq.collectionBadge}</span>
                 </div>
                 <h3 className="font-display text-xl sm:text-2xl text-deep-navy uppercase">
-                  Tất cả thẻ Trạm Dừng
+                  {vi.dp01eq.allCardsTitle}
                 </h3>
               </div>
 
@@ -496,12 +528,12 @@ export function EQDrawApp({
                 className="px-4 py-2 rounded-xl bg-white hover:bg-soft-pink/40 border border-lavender-mist text-deep-navy text-xs font-semibold flex items-center gap-1.5 transition-all shadow-soft-md cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Quay lại thẻ</span>
+                <span>{vi.dp01eq.backToCard}</span>
               </button>
             </div>
 
             <p className="text-xs text-deep-navy/70">
-              Bấm vào bất kỳ thẻ nào để mở lời gợi mở chi tiết và thực hành suy ngẫm:
+              {vi.dp01eq.allCardsSubtitle}
             </p>
 
             {/* Grid thẻ */}
@@ -509,12 +541,16 @@ export function EQDrawApp({
               {allCards.map((card) => {
                 const isCurrent = selectedCard?.id === card.id
                 const isCardUnlocked = isUnlockedAll || isFreeMode || Boolean(card.message)
+                const cardCodeStr = String(card.code || card.order || card.id).padStart(2, '0')
+                const cardLabel = `${vi.dp01eq.cardPrefix} #${cardCodeStr} - ${card.keywordVi || card.keywordEn || card.code || ''} - ${isCardUnlocked ? vi.dp01eq.cardUnlocked : vi.dp01eq.cardLocked}`
 
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={card.id}
                     onClick={() => handleSelectSpecificCard(card)}
-                    className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group hover:shadow-soft-md ${
+                    aria-label={cardLabel}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group hover:shadow-soft-md text-left w-full ${
                       isCurrent
                         ? 'bg-soft-pink/50 border-bright-magenta ring-2 ring-bright-magenta/20'
                         : 'bg-white hover:bg-warm-ivory border-lavender-mist'
@@ -522,7 +558,7 @@ export function EQDrawApp({
                   >
                     <div className="flex items-center justify-between text-[10px] text-deep-navy/70 mb-2">
                       <span className="font-bold">
-                        THẺ #{String(card.code || card.order || card.id).padStart(2, '0')}
+                        {vi.dp01eq.cardPrefix} #{cardCodeStr}
                       </span>
                       <span className="px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta font-semibold">
                         {card.keywordVi || 'Việt'}
@@ -540,16 +576,16 @@ export function EQDrawApp({
                     ) : (
                       <p className="font-ui text-xs text-deep-navy/70 italic mt-1.5">
                         {isUnlockedAll || isFreeMode
-                          ? 'Chạm để mở thẻ'
-                          : 'Dùng thử hoặc mua để mở trọn vẹn'}
+                          ? vi.dp01eq.touchToOpen
+                          : vi.dp01eq.trialOrBuyToUnlock}
                       </p>
                     )}
 
                     <div className="mt-3 pt-2 border-t border-deep-navy/5 flex items-center justify-between text-[10px] text-bright-magenta font-semibold">
-                      <span>{isCardUnlocked ? 'Xem & Lật 3D' : 'Mở khóa thẻ'}</span>
+                      <span>{isCardUnlocked ? vi.dp01eq.viewAndFlip3D : vi.dp01eq.unlockCard}</span>
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                     </div>
-                  </div>
+                  </button>
                 )
               })}
             </div>
@@ -568,7 +604,7 @@ export function EQDrawApp({
                 className="inline-flex items-center gap-1.5 text-xs text-deep-navy/70 hover:text-bright-magenta font-semibold transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Quay lại</span>
+                <span>{vi.dp01eq.back}</span>
               </button>
             </div>
             {paywall}

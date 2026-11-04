@@ -86,6 +86,13 @@ export default async function EqCardQrPage({ params, searchParams }: CardPagePro
   return (
     <div className="w-full py-10 sm:py-16 px-6 sm:px-8">
       <div className="max-w-2xl mx-auto">
+        {/* Z5: h1 trợ năng cho trang thẻ QR */}
+        <h1 className="sr-only">
+          {card.code
+            ? `Thẻ EQ ${card.code}: ${card.keywordVi || card.keywordEn || ''}`
+            : vi.eqBuddy.cardPage.defaultMetaTitle}
+        </h1>
+
         {/* Điều hướng quay lại */}
         <div className="mb-6 sm:mb-8">
           <Link

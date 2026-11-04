@@ -1830,6 +1830,14 @@ export interface HabitPlan {
    */
   identityStatement?: string | null;
   /**
+   * Nhập hành động cụ thể (trong câu định danh).
+   */
+  actionText?: string | null;
+  /**
+   * Nhập con người muốn trở thành (trong câu định danh).
+   */
+  personText?: string | null;
+  /**
    * Thói quen neo ("Sau khi [thói quen cũ], tôi sẽ [thói quen mới]"). Tối đa 120 ký tự.
    */
   anchorHabit?: string | null;
@@ -3129,6 +3137,8 @@ export interface HabitPlansSelect<T extends boolean = true> {
         id?: T;
       };
   identityStatement?: T;
+  actionText?: T;
+  personText?: T;
   anchorHabit?: T;
   rhythmDays?: T;
   twoMinuteAction?: T;
@@ -4269,6 +4279,14 @@ export interface HabitJourneyContent {
      * Nhập nội dung khối đồng hành sau 28 ngày.
      */
     afterJourneyText?: string | null;
+    /**
+     * Nhập tiêu đề khối dữ liệu của bạn.
+     */
+    myDataTitle?: string | null;
+    /**
+     * Nhập mô tả khối dữ liệu của bạn.
+     */
+    myDataDesc?: string | null;
   };
   boardingPass?: {
     /**
@@ -4335,6 +4353,22 @@ export interface HabitJourneyContent {
      * Nhập lời dẫn mở đầu bước 1.
      */
     leadIn?: string | null;
+    /**
+     * Nhập chẩn đoán mắt xích hở: tín hiệu (cue).
+     */
+    cueDiagnosis?: string | null;
+    /**
+     * Nhập chẩn đoán mắt xích hở: khao khát (craving).
+     */
+    cravingDiagnosis?: string | null;
+    /**
+     * Nhập chẩn đoán mắt xích hở: phản hồi (response).
+     */
+    responseDiagnosis?: string | null;
+    /**
+     * Nhập chẩn đoán mắt xích hở: phần thưởng (reward).
+     */
+    rewardDiagnosis?: string | null;
   };
   step2?: {
     /**
@@ -4389,6 +4423,10 @@ export interface HabitJourneyContent {
      * Nhập lời dẫn mở đầu bước 4.
      */
     leadIn?: string | null;
+    /**
+     * Nhập lời dẫn in đậm bước 4 (z3).
+     */
+    leadInEmphasis?: string | null;
     /**
      * Nhập tiêu đề tuyên ngôn.
      */
@@ -4447,6 +4485,14 @@ export interface HabitJourneyContent {
      * Nhập lời dẫn mở đầu bước 5.
      */
     leadIn?: string | null;
+    /**
+     * Nhập tiêu đề khối lý thuyết vòng lặp.
+     */
+    theoryTitle?: string | null;
+    /**
+     * Nhập mô tả khối lý thuyết vòng lặp.
+     */
+    theoryDesc?: string | null;
     /**
      * Nhập placeholder khi ghi chú áp dụng.
      */
@@ -4904,6 +4950,8 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
     | {
         afterJourneyTitle?: T;
         afterJourneyText?: T;
+        myDataTitle?: T;
+        myDataDesc?: T;
       };
   boardingPass?:
     | T
@@ -4931,6 +4979,10 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
     | T
     | {
         leadIn?: T;
+        cueDiagnosis?: T;
+        cravingDiagnosis?: T;
+        responseDiagnosis?: T;
+        rewardDiagnosis?: T;
       };
   step2?:
     | T
@@ -4955,6 +5007,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
     | T
     | {
         leadIn?: T;
+        leadInEmphasis?: T;
         statementTitle?: T;
         statementDesc?: T;
         suggestedRoles?: T;
@@ -4973,6 +5026,8 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
     | T
     | {
         leadIn?: T;
+        theoryTitle?: T;
+        theoryDesc?: T;
         customActionPlaceholder?: T;
       };
   step6?:

@@ -13,6 +13,7 @@ import {
   getOrCreateTrackerPlan,
 } from '@/lib/habit/tracker.server'
 import { getCertificateEligibility } from '@/lib/habit/certificate.server'
+import { extractIdentityParts } from '@/lib/habit'
 import {
   getHabitJourneyContent,
   getHabitSiteSettings,
@@ -165,6 +166,18 @@ export default async function HabitTrackerPage() {
   // Lấy điều kiện nhận chứng nhận
   const eligibility = await getCertificateEligibility(customer.id, { payload, now })
 
+  // Z1: Tách căn tính từ plan hoặc identityStatement
+  const extracted = extractIdentityParts(plan.identityStatement)
+  const planAny = plan as Record<string, unknown>
+  const identityRole =
+    (typeof planAny.personText === 'string' && planAny.personText.trim()) ||
+    extracted.personText ||
+    null
+  const identityAction =
+    (typeof planAny.actionText === 'string' && planAny.actionText.trim()) ||
+    extracted.actionText ||
+    null
+
   return (
     <div className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-warm-ivory/80 to-lavender-mist/20">
       <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -174,6 +187,8 @@ export default async function HabitTrackerPage() {
         <Dashboard28Days
           planId={plan.id}
           identityStatement={plan.identityStatement}
+          identityRole={identityRole}
+          identityAction={identityAction}
           atomicHabit={plan.twoMinuteAction || plan.anchorHabit || null}
           selectedMentor={plan.anchorHabit || null}
           selectedDays={plan.rhythmDays ?? null}

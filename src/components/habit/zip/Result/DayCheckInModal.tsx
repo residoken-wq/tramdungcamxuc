@@ -17,11 +17,11 @@ interface DayCheckInModalProps {
 }
 
 const CONFIDENCE_MOODS = [
-  { key: 'insecure', emoji: '😫', label: 'Tự ti' },
-  { key: 'unconfident', emoji: '😣', label: 'Chưa tự tin' },
-  { key: 'somewhat_confident', emoji: '😊', label: 'Hơi tự tin' },
-  { key: 'very_confident', emoji: '🥰', label: 'Rất tự tin' },
-  { key: 'wonderful', emoji: '😍', label: 'Tuyệt vời' },
+  { key: 'insecure', emoji: '😫', label: vi.dp01.checkinEmotions.insecure },
+  { key: 'unconfident', emoji: '😣', label: vi.dp01.checkinEmotions.unconfident },
+  { key: 'somewhat_confident', emoji: '😊', label: vi.dp01.checkinEmotions.somewhat_confident },
+  { key: 'very_confident', emoji: '🥰', label: vi.dp01.checkinEmotions.very_confident },
+  { key: 'wonderful', emoji: '😍', label: vi.dp01.checkinEmotions.wonderful },
 ] as const
 
 export function DayCheckInModal({
@@ -127,7 +127,7 @@ export function DayCheckInModal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Đóng"
+            aria-label={vi.dp01.close}
             className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors text-white cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -218,7 +218,7 @@ export function DayCheckInModal({
           {/* 5 nút cảm xúc */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/60 mb-2">
-              Cảm xúc hôm nay
+              {vi.dp01eq.todayEmotionLabel}
             </label>
             <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
               {CONFIDENCE_MOODS.map((m) => {
@@ -249,7 +249,7 @@ export function DayCheckInModal({
           {/* Ghi chú — không bắt buộc */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/60 mb-1.5">
-              Ghi chú — không bắt buộc
+              {vi.dp01.noteOptionalLabel}
             </label>
             <input
               type="text"
