@@ -2833,13 +2833,23 @@ Khi chỉnh sửa một khối dạng lưới chứa nhiều thẻ con (như **L
 
 Nếu khung lưới đang để chế độ _Theo từng thẻ (Mặc định)_, Hana có thể bấm trực tiếp vào từng thẻ con để chỉnh trường **Căn lề** của thẻ đó thành _Căn trái_ hoặc _Căn giữa_.
 
-#### 3. Biểu tượng, số thứ tự và nút luôn căn chuẩn xác
+#### 3. Căn bằng tab Kiểu
 
-Trước đây, khi căn giữa thẻ, biểu tượng thương hiệu (icon) hoặc số thứ tự đôi khi vẫn bị giữ ở góc trái khiến thẻ bị lệch mắt. Phiên bản mới đã xử lý hoàn toàn:
+Bấm khối lưới (hoặc một thẻ) → tab **Kiểu** → nhóm **Chữ** → ô **Căn lề**: chọn _Giữa_ (hoặc _Trái_ / _Phải_). Mọi thẻ bên trong khối đó đi theo: chữ, icon, số thứ tự, nhãn, nút. Có thể đặt riêng cho điện thoại / máy tính bảng như các ô khác ở tab Kiểu.
 
-- Biểu tượng thương hiệu, ảnh đại diện nhỏ, số thứ tự (01, 02...), nhãn huy hiệu (badge) và nút bấm sẽ **luôn di chuyển đồng điệu** cùng với tiêu đề và đoạn văn bản.
-- Khi căn giữa, tâm ngang của icon và tâm ngang của tiêu đề luôn thẳng hàng tuyệt đối.
-- Khi dùng tab **Kiểu → Căn chữ** (áp dụng cho cả khối), toàn bộ icon và thẻ cũng tự động căn đều theo bố cục đã chọn, đảm bảo hiển thị hoàn hảo trên cả máy tính (1440px) và điện thoại di động (375px).
+#### 4. Icon, số thứ tự, nhãn và nút đi cùng chữ
+
+Trước đây chữ căn giữa nhưng icon vẫn nằm bên trái. Nay icon, ảnh nhỏ, số thứ tự (01, 02…), nhãn và nút luôn đi cùng tiêu đề, cả ở máy tính lẫn điện thoại.
+
+#### 5. Khi nhiều cách căn cùng được đặt
+
+Thứ tự ưu tiên, từ cao xuống thấp:
+
+1. **Căn lề tất cả thẻ** của khung lưới (Căn trái / Căn giữa).
+2. **Căn lề** ở tab Kiểu của khối bao ngoài hoặc của chính thẻ.
+3. Field **Căn lề** của từng thẻ.
+
+Ví dụ: khung lưới để _Căn trái_ thì thẻ con vẫn căn trái, dù tab Kiểu chọn _Giữa_.
 
 ---
 
