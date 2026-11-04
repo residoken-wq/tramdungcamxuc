@@ -438,7 +438,7 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
 
       // Dọn dẹp sản phẩm test nếu tạo mới
       if (createdProductId) {
-        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+        await zip.deleteTestProduct(page, createdProductId)
       }
 
       // Khôi phục siteSettings và habitJourneyContent

@@ -297,7 +297,7 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         await page.request.delete(`/api/techniques/${id}`).catch(() => {})
       }
       if (createdProductId) {
-        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+        await zip.deleteTestProduct(page, createdProductId)
       }
       if (adminId) {
         await page.request.delete(`/api/users/${adminId}`).catch(() => {})

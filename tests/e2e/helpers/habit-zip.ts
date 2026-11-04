@@ -117,3 +117,20 @@ export async function submitBoarding(page: Page) {
     throw new Error(`Submit plan failed: ${await error.first().innerText()}`)
   }
 }
+
+/**
+ * Delete a test product together with what points at it (entitlements first: their product
+ * column is NOT NULL, so the product delete fails otherwise and later tests find a duplicate slug).
+ */
+export async function deleteTestProduct(page: Page, productId: number) {
+  const res = await page.request
+    .get(`/api/entitlements?where[product][equals]=${productId}&limit=200&depth=0`)
+    .catch(() => null)
+  if (res?.ok()) {
+    const docs = ((await res.json()).docs ?? []) as Array<{ id: number }>
+    for (const doc of docs) {
+      await page.request.delete(`/api/entitlements/${doc.id}`).catch(() => {})
+    }
+  }
+  await page.request.delete(`/api/products/${productId}`).catch(() => {})
+}

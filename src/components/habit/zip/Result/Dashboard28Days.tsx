@@ -29,6 +29,7 @@ import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/
 import type { CheckinStatus } from '@/lib/habit/rhythm'
 import type { Dp01CheckInContent } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
+import { getEmotion } from '@/lib/emotions'
 
 export interface InitialCheckinData {
   day: number
@@ -670,11 +671,18 @@ Nhịp điệu: ${rateText}
                     const isMissed = !isDone && Boolean(day.isMissed)
                     const isRestDay = !day.isPostDay
 
+                    // QA DP-01e: read the saved emotion (the label used to always say "Bình an").
+                    const emotionName =
+                      day.emotionLabel ||
+                      (day.emotion ? getEmotion(day.emotion)?.label : undefined) ||
+                      day.moodLabel ||
+                      ''
+                    const emotionPart = emotionName ? `, cảm xúc: ${emotionName}` : ''
                     const dayAriaLabel = `Ngày ${day.dayNumber}: ${
                       isDone
                         ? isMinimal
-                          ? `Bản tối giản, cảm xúc: ${day.emotionLabel || 'Bình an'}`
-                          : `Đã hoàn thành, cảm xúc: ${day.emotionLabel || 'Bình an'}`
+                          ? `Bản tối giản${emotionPart}`
+                          : `Đã hoàn thành${emotionPart}`
                         : isFuture || isLocked
                           ? 'Chưa tới'
                           : isMissed
