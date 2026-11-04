@@ -332,7 +332,6 @@ export function HabitTrackerApp({
         <main className="transition-all duration-300">
           {currentStep === 1 && (
             <Step1Diagnose
-              diagnose={diagnose}
               answers={diagnoseAnswers}
               step1Content={resolvedDp01.step1}
               onAnswerChange={handleDiagnoseChange}

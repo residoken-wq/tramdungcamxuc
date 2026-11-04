@@ -40,3 +40,4 @@ export async function down({ db, payload: _payload, req: _req }: MigrateDownArgs
     ALTER TABLE "habit_journey_content" DROP COLUMN IF EXISTS "tracker_my_data_desc";
   `)
 }
+

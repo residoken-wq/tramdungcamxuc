@@ -257,7 +257,7 @@ export function Dashboard28Days({
   }
   const currentStationName = getCurrentStationName()
 
-  let rateText = vi.dp01.noRhythmSelected
+  let rateText: string = vi.dp01.noRhythmSelected
   if (selectedDaysList.length === 7) {
     rateText = vi.dp01.everyDayFullWeek
   } else if (selectedDaysList.length > 0) {

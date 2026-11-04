@@ -96,7 +96,13 @@ export const CATEGORY_MAP = {
   },
 }
 
-export function Step1Diagnose({ diagnose, answers, onAnswerChange, onNext }: Step1DiagnoseProps) {
+export function Step1Diagnose({
+  diagnose,
+  step1Content,
+  answers,
+  onAnswerChange,
+  onNext,
+}: Step1DiagnoseProps) {
   const questions =
     diagnose?.questions && diagnose.questions.length > 0
       ? diagnose.questions.map((q, idx) => ({
