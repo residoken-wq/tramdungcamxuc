@@ -276,6 +276,7 @@ export function EQDrawApp({
                   type="button"
                   disabled={isDrawing}
                   onClick={handleDrawCard}
+                  aria-label="Rút ngẫu nhiên một thẻ"
                   className="w-full sm:w-auto shrink-0 px-6 py-3 rounded-2xl bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs sm:text-sm font-semibold transition-all shadow-soft-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <span>{isDrawing ? 'Đang lắng nghe...' : '✨ Rút thẻ'}</span>
@@ -342,6 +343,7 @@ export function EQDrawApp({
                 <button
                   type="button"
                   onClick={() => setIsFlipped((prev) => !prev)}
+                  aria-label={isFlipped ? 'Lật về mặt trước' : 'Lật thẻ sang mặt sau'}
                   className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-deep-navy to-bright-magenta hover:from-bright-magenta hover:to-accent-pink text-white text-xs sm:text-sm font-semibold transition-all shadow-soft-md active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <RotateCw className="w-4 h-4" />

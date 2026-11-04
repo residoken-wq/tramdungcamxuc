@@ -666,19 +666,33 @@ Nhịp điệu: ${rateText}
                   }`}
                 >
                   {stationDays.map((day) => {
+                    const isFuture = day.dayNumber > currentDayIndex
                     const isDone = Boolean(day.completed)
                     const isMinimal = Boolean(day.isMinimal)
                     const isMissed = !isDone && Boolean(day.isMissed)
                     const isRestDay = !day.isPostDay
 
+                    const dayAriaLabel = `Ngày ${day.dayNumber}: ${
+                      isDone
+                        ? isMinimal
+                          ? `Bản tối giản, cảm xúc: ${day.emotionLabel || 'Bình an'}`
+                          : `Đã hoàn thành, cảm xúc: ${day.emotionLabel || 'Bình an'}`
+                        : isFuture || isLocked
+                          ? 'Chưa tới'
+                          : isMissed
+                            ? 'Lỡ nhịp'
+                            : 'Bỏ phiếu'
+                    }`
+
                     return (
                       <button
                         key={day.dayNumber}
                         type="button"
-                        disabled={isLocked || readOnly}
-                        onClick={() => !isLocked && handleDayClick(day)}
+                        disabled={isLocked || isFuture || readOnly}
+                        onClick={() => !isLocked && !isFuture && handleDayClick(day)}
+                        aria-label={dayAriaLabel}
                         className={`aspect-square sm:aspect-auto sm:h-20 p-1.5 sm:p-2 rounded-2xl border flex flex-col justify-between items-center text-center transition-all duration-200 relative group cursor-pointer ${
-                          isLocked || readOnly ? 'cursor-not-allowed' : 'active:scale-95'
+                          isLocked || isFuture || readOnly ? 'cursor-not-allowed opacity-60' : 'active:scale-95'
                         } ${
                           isDone
                             ? isMinimal
@@ -898,7 +912,7 @@ Nhịp điệu: ${rateText}
               <span>Khôi phục từ file</span>
               <input
                 type="file"
-                accept=".json"
+                accept="application/json,.json"
                 onChange={handleFileInput}
                 className="hidden"
               />

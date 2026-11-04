@@ -41,9 +41,16 @@ export function HabitTrackerHeader({
     <header className="w-full mb-6 pt-1">
       {/* Top Bar with Badge "CONTENT CREATOR HUB" on left and "Cẩm nang video" on right */}
       <div className="flex items-center justify-between gap-3 mb-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-soft-pink/70 border border-bright-magenta/20 text-deep-navy text-[11px] sm:text-xs font-semibold tracking-wider uppercase font-ui">
-          <span className="w-2 h-2 rounded-full bg-bright-magenta animate-pulse" />
-          <span>CONTENT CREATOR HUB • TRẠM DỪNG CẢM XÚC</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-soft-pink/70 border border-bright-magenta/20 text-deep-navy text-[11px] sm:text-xs font-semibold tracking-wider uppercase font-ui">
+            <span className="w-2 h-2 rounded-full bg-bright-magenta animate-pulse" />
+            <span>CONTENT CREATOR HUB • TRẠM DỪNG CẢM XÚC</span>
+          </div>
+          {typeof currentStep === 'number' && currentStep <= 6 && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-lavender-mist/70 text-deep-navy font-semibold text-xs font-ui">
+              Bước {currentStep} / 6
+            </span>
+          )}
         </div>
 
         {hasVideos && onOpenToolkit && (
