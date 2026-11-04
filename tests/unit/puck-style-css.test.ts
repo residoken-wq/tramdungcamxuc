@@ -23,7 +23,7 @@ describe('EB-04: blockStyleCss', () => {
       '@media (max-width: 1023px){[data-eb-id="Hero-1"]{padding-top:var(--space-breath-md, 24px)}}',
     )
     expect(css).toContain(
-      '@media (max-width: 767px){[data-eb-id="Hero-1"]{padding-top:8px;text-align:center}}',
+      '@media (max-width: 767px){[data-eb-id="Hero-1"]{padding-top:8px;text-align:center}[data-eb-id="Hero-1"] [data-eb-card]{text-align:center;align-items:center}',
     )
     expect(css).toContain('@media (min-width: 1024px){[data-eb-id="Hero-1"]{display:none}}')
   })
@@ -38,7 +38,9 @@ describe('EB-04: blockStyleCss', () => {
       eyebrowGap: 'tight',
       emotionGap: 'airy',
     })
-    expect(css).toContain('[data-eb-id="Hero-1"]{--tdcx-title-lh:1.45;--tdcx-eyebrow-gap:8px;--tdcx-emotion-gap:24px}')
+    expect(css).toContain(
+      '[data-eb-id="Hero-1"]{--tdcx-title-lh:1.45;--tdcx-eyebrow-gap:8px;--tdcx-emotion-gap:24px}',
+    )
 
     // Invalid/unrecognized values are not emitted
     const raw = { titleLineHeight: 'invalid-val' } as any

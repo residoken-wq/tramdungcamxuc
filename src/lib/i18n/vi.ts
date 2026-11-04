@@ -3325,6 +3325,16 @@ export const vi = {
     toastStyleUpdated: 'Đã cập nhật kiểu chữ',
     toastStyleReset: 'Đã đưa kiểu chữ về mặc định',
   },
+  eb15b: {
+    gridCardAlign: 'Căn lề tất cả thẻ',
+    gridCardAlignInherit: 'Theo từng thẻ (Mặc định)',
+    gridCardAlignLeft: 'Căn trái',
+    gridCardAlignCenter: 'Căn giữa',
+    cardAlignLabel: 'Căn lề',
+    cardAlignFollowingGrid: 'Đang theo khung',
+    alignLeft: 'Căn trái',
+    alignCenter: 'Căn giữa',
+  },
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',

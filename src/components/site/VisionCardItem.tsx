@@ -7,6 +7,7 @@ import {
   type FontSizeOption,
   type TextColorOption,
 } from '@/lib/brand/format-classes'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface VisionCardItemProps {
   version?: number
@@ -46,7 +47,8 @@ export function VisionCardItem({
   titleSize = 'md',
   textSize = 'md',
   align = 'left',
-}: VisionCardItemProps) {
+  id,
+}: VisionCardItemProps & { id?: string }) {
   // In the editor Puck passes contentEditable props as React elements: render it as one block.
   const paragraphs: React.ReactNode[] =
     typeof content === 'string'
@@ -70,23 +72,32 @@ export function VisionCardItem({
       : 'text-deep-navy/80 group-data-[bg=deep-navy]/vm:text-white/90'
 
   return (
-    <div className="rounded-card border bg-white border-deep-navy/10 group-data-[bg=deep-navy]/vm:bg-white/10 group-data-[bg=deep-navy]/vm:border-white/15 p-6 sm:p-8 shadow-soft flex flex-col justify-between h-full">
-      <div className={`flex flex-col ${alignClass}`}>
-        <div className="mb-4 inline-flex items-center justify-center p-3 rounded-full bg-soft-pink/40">
-          <BrandIcon
-            name={icon}
-            className="w-8 h-8 text-bright-magenta group-data-[bg=deep-navy]/vm:text-soft-pink"
-            aria-hidden="true"
-          />
+    <div
+      data-eb-card=""
+      className={`rounded-card border bg-white border-deep-navy/10 group-data-[bg=deep-navy]/vm:bg-white/10 group-data-[bg=deep-navy]/vm:border-white/15 p-6 sm:p-8 shadow-soft flex flex-col justify-between h-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/vm:items-center group-data-[card-align=center]/vm:text-center group-data-[card-align=left]/vm:items-start group-data-[card-align=left]/vm:text-left`}
+    >
+      <div
+        data-eb-card=""
+        className={`flex flex-col ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/vm:items-center group-data-[card-align=center]/vm:text-center group-data-[card-align=left]/vm:items-start group-data-[card-align=left]/vm:text-left`}
+      >
+        <div className="mb-4 w-full self-stretch text-[inherit]">
+          <div className="inline-flex items-center justify-center p-3 rounded-full bg-soft-pink/40">
+            <BrandIcon
+              name={icon}
+              className="w-8 h-8 text-bright-magenta group-data-[bg=deep-navy]/vm:text-soft-pink"
+              aria-hidden="true"
+            />
+          </div>
         </div>
         {title && (
           <h3
+            {...textTarget(id, 'title')}
             className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-3 ${titleClass}`}
           >
             {title}
           </h3>
         )}
-        <div className="space-y-3">
+        <div {...textTarget(id, 'content')} className="space-y-3">
           {paragraphs.map((p, idx) => (
             <p
               key={idx}

@@ -1,7 +1,13 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { TwoPathCards, type TwoPathCardsProps } from '@/components/site/TwoPathCards'
-import { BRAND_COLOR_OPTIONS, FONT_SIZE_OPTIONS, PADDING_OPTIONS } from '../constants'
+import {
+  BRAND_COLOR_OPTIONS,
+  FONT_SIZE_OPTIONS,
+  PADDING_OPTIONS,
+  GRID_CARD_ALIGN_OPTIONS,
+} from '../constants'
+import { vi } from '@/lib/i18n/vi'
 
 export type { TwoPathCardsProps }
 
@@ -10,16 +16,16 @@ export const TwoPathCardsBlock: ComponentConfig<TwoPathCardsProps> = {
   fields: {
     seriesLabel: {
       type: 'text',
-      label: 'Nhãn series (Tùy chọn)',
+      label: vi.eb15a?.seriesLabel || 'Nhãn series',
     },
     titleLine1: {
       type: 'text',
-      label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      label: vi.eb15a?.titleLine1 || 'Tiêu đề dòng 1',
       contentEditable: true,
     },
     titleLine2: {
       type: 'text',
-      label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      label: vi.eb15a?.titleLine2 || 'Tiêu đề dòng 2',
       contentEditable: true,
     },
 
@@ -27,6 +33,11 @@ export const TwoPathCardsBlock: ComponentConfig<TwoPathCardsProps> = {
       type: 'select',
       label: 'Cỡ chữ tiêu đề',
       options: [...FONT_SIZE_OPTIONS],
+    },
+    cardAlign: {
+      type: 'select',
+      label: vi.eb15b?.gridCardAlign || 'Căn lề tất cả thẻ',
+      options: [...GRID_CARD_ALIGN_OPTIONS],
     },
     paths: {
       type: 'slot',
@@ -50,7 +61,7 @@ export const TwoPathCardsBlock: ComponentConfig<TwoPathCardsProps> = {
     seriesLabel: '[MẪU] ĐỒNG HÀNH',
     titleLine1: '[MẪU] CHỌN LỘ TRÌNH',
     titleLine2: '[MẪU] PHÙ HỢP VỚI BẠN',
-
+    cardAlign: 'inherit',
     titleSize: 'md',
     paths: [
       {

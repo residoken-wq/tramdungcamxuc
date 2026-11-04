@@ -6,6 +6,7 @@ import { useClientPageSlug } from '@/puck/client-preview'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { PathCard, resolveSafeLink, type PathCardProps } from './PathCard'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface TwoPathCardsProps {
   version?: number
@@ -35,6 +36,7 @@ export interface TwoPathCardsProps {
     | React.ComponentType<{ className?: string }>
     | React.ReactNode
     | Array<{ type?: string; props?: PathCardProps & { id?: string } }>
+  cardAlign?: 'inherit' | 'left' | 'center'
   titleSize?: FontSizeOption
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
@@ -96,6 +98,7 @@ export function TwoPathCards({
   path2ButtonStyle = 'outline',
 
   paths,
+  cardAlign = 'inherit',
   titleSize = 'md',
   bgColor = 'warm-ivory',
   padding = 'md',
@@ -126,14 +129,16 @@ export function TwoPathCards({
 
   return (
     <section
-      className={`group/paths w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+      className={`group/paths group/grid w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
       data-bg={bgColor}
+      data-card-align={cardAlign || 'inherit'}
     >
       <div className="mx-auto max-w-5xl">
         {(seriesLabel || titleLine1) && (
           <div className="text-center mb-10 sm:mb-14">
             {seriesLabel && (
               <span
+                {...textTarget(id, 'seriesLabel')}
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] block font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
@@ -144,8 +149,14 @@ export function TwoPathCards({
               <h2
                 className={`font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md}`}
               >
-                <span className={textColorClass}>{titleLine1}</span>{' '}
-                {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
+                <span {...textTarget(id, 'titleLine1')} className={textColorClass}>
+                  {titleLine1}
+                </span>{' '}
+                {titleLine2 && (
+                  <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
+                    {titleLine2}
+                  </span>
+                )}
               </h2>
             )}
           </div>

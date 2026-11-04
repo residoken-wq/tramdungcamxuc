@@ -4,6 +4,7 @@ import { VisionCardItem, type VisionCardItemProps } from '@/components/site/Visi
 import { BRAND_ICONS } from '@/lib/brand/icons'
 import { FONT_SIZE_OPTIONS, ALIGN_OPTIONS } from '../constants'
 import { allowedTextColors, getChildRealBg } from '@/lib/brand/format-classes'
+import { vi } from '@/lib/i18n/vi'
 
 export type { VisionCardItemProps as VisionCardProps }
 
@@ -56,7 +57,21 @@ export const VisionCardBlock: ComponentConfig<VisionCardItemProps> = {
   resolveFields: (data, params) => {
     // Cards sit on white (navy section → navy): offer only colours that pass WCAG AA there.
     const realBg = getChildRealBg(params?.parent, { cardStyle: 'white' })
-    return { ...params.fields, ...colorFields(realBg, data.props?.titleSize === 'lg') }
+    const isFollowingGrid =
+      params?.parent?.props?.cardAlign === 'left' || params?.parent?.props?.cardAlign === 'center'
+    const alignLabel = isFollowingGrid
+      ? `${vi.eb15b?.cardAlignLabel || 'Căn lề'} (${vi.eb15b?.cardAlignFollowingGrid || 'Đang theo khung'})`
+      : vi.eb15b?.cardAlignLabel || 'Căn lề'
+
+    return {
+      ...params.fields,
+      align: {
+        type: 'select',
+        label: alignLabel,
+        options: [...ALIGN_OPTIONS],
+      },
+      ...colorFields(realBg, data.props?.titleSize === 'lg'),
+    }
   },
   render: ({ puck: _puck, ...props }) => <VisionCardItem {...props} />,
 }

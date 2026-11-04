@@ -66,9 +66,19 @@ export const PackageCardBlock: ComponentConfig<PackageCardItemProps> = {
     const nameColors = allowedTextColors(realBg, isNameLarge)
     const isTextLarge = data?.props?.textSize === 'lg'
     const textColors = allowedTextColors(realBg, isTextLarge)
+    const isFollowingGrid =
+      params?.parent?.props?.cardAlign === 'left' || params?.parent?.props?.cardAlign === 'center'
+    const alignLabel = isFollowingGrid
+      ? `${vi.puckPackageCard?.align || 'Căn lề'} (${vi.eb15b?.cardAlignFollowingGrid || 'Đang theo khung'})`
+      : vi.puckPackageCard?.align || 'Căn lề'
 
     return {
       ...params.fields,
+      align: {
+        type: 'select',
+        label: alignLabel,
+        options: [...ALIGN_OPTIONS],
+      },
       nameColor: {
         type: 'select',
         label: vi.puckPackageCard?.nameColor || 'Màu tên gói',
