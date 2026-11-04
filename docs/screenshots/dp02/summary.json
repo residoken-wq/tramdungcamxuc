@@ -11,24 +11,6 @@
       "notes": "Khớp layout bảng đánh giá thói quen, chọn Mentor và giờ neo"
     },
     {
-      "name": "habit-step7-tracker",
-      "title": "Habit Bước 7 Tracker (Z1-Z2)",
-      "viewport": "390px",
-      "zipMd5": "e48a672c6b2a8b9db20b0b960b7b6e84",
-      "repoMd5": "26d0914a1b20fffcac9a7e71c476c00b",
-      "repoFile": "habit-step7-tracker-390.png",
-      "notes": "Tiêu đề 28 NGÀY THÀNH ..., Trạm N: {tên}, badge x/7 lá phiếu"
-    },
-    {
-      "name": "habit-checkin-modal",
-      "title": "Hộp thoại Check-in ngày",
-      "viewport": "390px",
-      "zipMd5": "2da79559f90cf66bb64315886e344e18",
-      "repoMd5": "be9f8e818ff98ba4d4ee3ec3fd63dd3c",
-      "repoFile": "habit-checkin-modal-390.png",
-      "notes": "Modal check-in cảm xúc và trạng thái bỏ phiếu"
-    },
-    {
       "name": "eq-intro-step1",
       "title": "EQ Intro Bước 1 (Màn đầu)",
       "viewport": "390px",
@@ -96,9 +78,9 @@
       "title": "EQ Trang xem qua mã QR (Z5)",
       "viewport": "390px",
       "zipMd5": "4bafed8a5a77921c81c817cb4d57c3c3",
-      "repoMd5": "c10436b3ab4de3eedf7b12c7137caa8e",
+      "repoMd5": "(Planning chụp lại – xem file)",
       "repoFile": "eq-qr-page-390.png",
-      "notes": "Trang thẻ xem qua QR code có h1 sr-only chuẩn a11y"
+      "notes": "QA DP-02c: ảnh của PC nhà là trang đăng nhập / 404, Planning chụp lại từ e2e đã đăng nhập."
     },
     {
       "name": "habit-step3",
@@ -114,18 +96,18 @@
       "title": "Habit Bước 7 Tracker (Z1-Z2)",
       "viewport": "1440px",
       "zipMd5": "2f11aa8c1ef11f545b7a0f7865930091",
-      "repoMd5": "b807c0a668bbab45eb4f852959a215a2",
+      "repoMd5": "(Planning chụp lại – xem file)",
       "repoFile": "habit-step7-tracker-1440.png",
-      "notes": "Tiêu đề 28 NGÀY THÀNH ..., Trạm N: {tên}, badge x/7 lá phiếu"
+      "notes": "QA DP-02c: ảnh của PC nhà là trang đăng nhập / 404, Planning chụp lại từ e2e đã đăng nhập."
     },
     {
       "name": "habit-checkin-modal",
       "title": "Hộp thoại Check-in ngày",
       "viewport": "1440px",
       "zipMd5": "3ed653f87834d7f4f2e84684a521d148",
-      "repoMd5": "6432fdff0778cd39b59971f414127065",
+      "repoMd5": "(Planning chụp lại – xem file)",
       "repoFile": "habit-checkin-modal-1440.png",
-      "notes": "Modal check-in cảm xúc và trạng thái bỏ phiếu"
+      "notes": "QA DP-02c: ảnh của PC nhà là trang đăng nhập / 404, Planning chụp lại từ e2e đã đăng nhập."
     },
     {
       "name": "eq-intro-step1",
@@ -195,9 +177,9 @@
       "title": "EQ Trang xem qua mã QR (Z5)",
       "viewport": "1440px",
       "zipMd5": "2149be791658d9e31d3d0a060d8d693a",
-      "repoMd5": "1c7e61dae180df7bc1611e9e0aec8618",
+      "repoMd5": "(Planning chụp lại – xem file)",
       "repoFile": "eq-qr-page-1440.png",
-      "notes": "Trang thẻ xem qua QR code có h1 sr-only chuẩn a11y"
+      "notes": "QA DP-02c: ảnh của PC nhà là trang đăng nhập / 404, Planning chụp lại từ e2e đã đăng nhập."
     }
   ]
 }

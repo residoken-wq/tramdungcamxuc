@@ -234,7 +234,10 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await guestPage.locator('button', { hasText: /Bắt đầu dùng thử 28 ngày/i }).click()
       await expect(guestPage).toHaveURL(/\/habit\/hoc\/?$/, { timeout: 15000 })
       await guestPage.goto('/habit/tracker')
-      await expect(guestPage.getByRole('heading', { name: vi.tracker.pageTitle })).toBeVisible()
+      // DP-02 (Z1): tiêu đề tracker theo "con người bạn muốn trở thành"
+      await expect(
+        guestPage.getByRole('heading', { name: /28 ngày thành người thấu hiểu chính mình/i }),
+      ).toBeVisible()
 
       // Ghi nhận customer ID của học viên vừa tạo
       const custQuery = await page.request.get(

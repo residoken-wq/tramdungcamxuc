@@ -23,6 +23,8 @@ import { checkInDay, deleteCheckInDay } from '@/lib/habit/tracker-actions'
 import { saveStationReflection } from '@/lib/habit/reflection-actions'
 import { exportBackup, exportCsv, restoreBackup, restartJourney } from '@/lib/habit/my-data-actions'
 import { planDayDate } from '@/lib/habit/tracker-stats'
+import { weekdayOfDay, type Weekday } from '@/lib/habit/rhythm'
+import { weekdaysToDays } from '../draft-adapter'
 import { TrackerSummaryCard } from '@/components/habit/TrackerSummaryCard'
 import { CertificateShareButtons } from '@/components/habit/CertificateShareButtons'
 import { CertificatePublicToggle } from '@/components/habit/CertificatePublicToggle'
@@ -160,9 +162,11 @@ export function Dashboard28Days({
   }, [inAppToast])
 
   // Days list calculation
+  // QA DP-02c: plans store the rhythm as weekday keys ("mon"…); the grid compares zip labels
+  // ("T2"…). Without this every day counted as a rest day (stats, missed days, "nghỉ theo nhịp").
   const selectedDaysList =
     propSelectedDays && propSelectedDays.length > 0
-      ? propSelectedDays
+      ? propSelectedDays.map((d) => weekdaysToDays([d as Weekday])[0] || d)
       : ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 
   const DAY_NAME_MAP: Record<number, string> = {
@@ -181,7 +185,10 @@ export function Dashboard28Days({
   for (let i = 1; i <= journeyDays; i++) {
     const dDate = new Date(start)
     dDate.setDate(start.getDate() + (i - 1))
-    const dayOfWeek = DAY_NAME_MAP[dDate.getDay()] || 'T2'
+    // Weekday in Vietnam time (same rule as the server), not the browser's time zone
+    const dayOfWeek = startDate
+      ? weekdaysToDays([weekdayOfDay(startDate, i)])[0] || 'T2'
+      : DAY_NAME_MAP[dDate.getDay()] || 'T2'
     const isPostDay = selectedDaysList.includes(dayOfWeek)
     const checkin = checkins.find((c) => c.day === i)
     const dateInfo = planDayDate(startDate, i)

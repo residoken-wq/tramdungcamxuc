@@ -205,8 +205,8 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       // Z1: Tiêu đề tracker là "28 NGÀY THÀNH {personText}"
       await expect(
         guestPage.getByRole('heading', {
-          level: 1,
-          name: /28 NGÀY THÀNH người khỏe mạnh và kỷ luật/i,
+          level: 2,
+          name: /28 ngày thành người khỏe mạnh và kỷ luật/i,
         }),
       ).toBeVisible({ timeout: 15000 })
 
