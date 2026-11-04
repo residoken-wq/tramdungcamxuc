@@ -106,6 +106,7 @@ export function NavigatorRowContent({ componentId }: { componentId: string }) {
 
   return (
     <div
+      title={vi.eb16.renameTooltip}
       className="flex items-center gap-2 w-full min-w-0 pr-1 select-none"
       // This row is portaled into Puck's layer button: React delivers its clicks to the portal's
       // React parent, not to Puck's button, so selecting the block has to happen here.
