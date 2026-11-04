@@ -167,12 +167,14 @@ export interface Config {
     siteSettings: SiteSetting;
     designSystem: DesignSystem;
     habitJourneyContent: HabitJourneyContent;
+    eqBuddyContent: EqBuddyContent;
   };
   globalsSelect: {
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     designSystem: DesignSystemSelect<false> | DesignSystemSelect<true>;
     habitJourneyContent: HabitJourneyContentSelect<false> | HabitJourneyContentSelect<true>;
+    eqBuddyContent: EqBuddyContentSelect<false> | EqBuddyContentSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1508,6 +1510,27 @@ export interface EqCard {
    * Câu thông điệp mặt trước thẻ. Bắt buộc khi xuất bản.
    */
   message?: string | null;
+  /**
+   * Nhóm thẻ hiển thị ở góc trên mặt trước (ví dụ: Biết ơn & Đong đầy, Thấu cảm & Vỗ về). Tối đa 60 ký tự.
+   */
+  category?: string | null;
+  /**
+   * Tổ hợp màu nền chuyển sắc từ bộ màu Brand Book 2026.
+   */
+  gradientTheme?:
+    | (
+        | 'from-[#FDE6F6] via-[#FAF7F4] to-[#E9DDF9]'
+        | 'from-[#D9F1EA] via-[#FAF7F4] to-[#F6E9B8]'
+        | 'from-[#E9DDF9] via-[#FAF7F4] to-[#FDE6F6]'
+        | 'from-[#F6E9B8] via-[#FAF7F4] to-[#D9F1EA]'
+        | 'from-[#FDE6F6] via-[#FAF7F4] to-[#D9F1EA]'
+        | 'from-[#D9F1EA] via-[#FAF7F4] to-[#E9DDF9]'
+        | 'from-[#FAF7F4] via-[#E9DDF9] to-[#F6E9B8]'
+        | 'from-[#FDE6F6] via-[#FAF7F4] to-[#F6E9B8]'
+        | 'from-[#E9DDF9] via-[#FAF7F4] to-[#D9F1EA]'
+        | 'from-[#F6E9B8] via-[#FAF7F4] to-[#FDE6F6]'
+      )
+    | null;
   /**
    * Câu hỏi gợi nhớ trên mặt sau thẻ. Bắt buộc khi xuất bản.
    */
@@ -2960,6 +2983,8 @@ export interface EqCardsSelect<T extends boolean = true> {
   keywordEn?: T;
   keywordVi?: T;
   message?: T;
+  category?: T;
+  gradientTheme?: T;
   promptRecall?: T;
   promptPack?: T;
   promptAcknowledge?: T;
@@ -4183,6 +4208,53 @@ export interface HabitJourneyContent {
   createdAt?: string | null;
 }
 /**
+ * Cấu hình chế độ truy cập (Owner), hướng dẫn 2 bước, và nội dung giao diện EQ Buddy.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eqBuddyContent".
+ */
+export interface EqBuddyContent {
+  id: number;
+  /**
+   * Chỉ chủ sở hữu (Owner) mới có quyền đổi. "Miễn phí hoàn toàn": khách rút không giới hạn, không cần đăng nhập, mở toàn bộ 26 thẻ và câu hỏi suy ngẫm, không hiển thị paywall. "Cần đăng ký dùng thử": khách rút 1 thẻ rồi phải dùng thử.
+   */
+  eqAccessMode?: ('trial' | 'free') | null;
+  tagline?: string | null;
+  quoteTop?: string | null;
+  badge?: string | null;
+  mainTitle?: string | null;
+  subtitle?: string | null;
+  suggestedEmotions?: string | null;
+  shopeeUrl?: string | null;
+  intro1Heading?: string | null;
+  intro1Description?: string | null;
+  card1Title?: string | null;
+  card1Desc?: string | null;
+  card2Title?: string | null;
+  card2Desc?: string | null;
+  card3Title?: string | null;
+  card3Desc?: string | null;
+  card4Title?: string | null;
+  card4Desc?: string | null;
+  intro2Heading?: string | null;
+  intro2Description?: string | null;
+  step1Title?: string | null;
+  step1Tag?: string | null;
+  step1Desc?: string | null;
+  step2Title?: string | null;
+  step2Tag?: string | null;
+  step2Desc?: string | null;
+  step3Title?: string | null;
+  step3Tag?: string | null;
+  step3Desc?: string | null;
+  step4Title?: string | null;
+  step4Tag?: string | null;
+  step4Desc?: string | null;
+  guideModalQuote?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "navigation_select".
  */
@@ -4527,6 +4599,48 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
         captionTemplate?: T;
       };
   privacyNote?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eqBuddyContent_select".
+ */
+export interface EqBuddyContentSelect<T extends boolean = true> {
+  eqAccessMode?: T;
+  tagline?: T;
+  quoteTop?: T;
+  badge?: T;
+  mainTitle?: T;
+  subtitle?: T;
+  suggestedEmotions?: T;
+  shopeeUrl?: T;
+  intro1Heading?: T;
+  intro1Description?: T;
+  card1Title?: T;
+  card1Desc?: T;
+  card2Title?: T;
+  card2Desc?: T;
+  card3Title?: T;
+  card3Desc?: T;
+  card4Title?: T;
+  card4Desc?: T;
+  intro2Heading?: T;
+  intro2Description?: T;
+  step1Title?: T;
+  step1Tag?: T;
+  step1Desc?: T;
+  step2Title?: T;
+  step2Tag?: T;
+  step2Desc?: T;
+  step3Title?: T;
+  step3Tag?: T;
+  step3Desc?: T;
+  step4Title?: T;
+  step4Tag?: T;
+  step4Desc?: T;
+  guideModalQuote?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

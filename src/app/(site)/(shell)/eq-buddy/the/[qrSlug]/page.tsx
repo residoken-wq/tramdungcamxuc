@@ -8,6 +8,7 @@ import { getSavedCardStatus } from '@/lib/eq/saved.server'
 import { vi } from '@/lib/i18n/vi'
 import { Button } from '@/components/ui/Button'
 import { EqCardFace } from '@/components/eq/EqCardFace'
+import { EQCardQrView } from '@/components/eq/zip/EQCardQrView'
 import { EqCardLivePreview } from '@/components/eq/EqCardLivePreview'
 import { SaveCardButton } from '@/components/eq/SaveCardButton'
 import { QrOpenedTracker } from '@/components/eq/QrOpenedTracker'
@@ -100,9 +101,9 @@ export default async function EqCardQrPage({ params, searchParams }: CardPagePro
         {adminUser ? (
           <EqCardLivePreview initialCard={card}>{cardActions}</EqCardLivePreview>
         ) : (
-          <EqCardFace card={card} face="both">
+          <EQCardQrView card={card}>
             {cardActions}
-          </EqCardFace>
+          </EQCardQrView>
         )}
       </div>
 

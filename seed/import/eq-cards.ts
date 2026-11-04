@@ -11,6 +11,9 @@ export const eqCardInputSchema = z.object({
     .trim()
     .min(1, 'Từ khóa tiếng Anh không được rỗng')
     .max(40, 'Từ khóa tiếng Anh không được vượt quá 40 ký tự'),
+  keywordVi: z.string().trim().optional(),
+  category: z.string().trim().optional(),
+  gradientTheme: z.string().trim().optional(),
   qrSlug: z
     .string({ required_error: 'Mã QR là bắt buộc' })
     .trim()
@@ -195,6 +198,9 @@ export async function importEqCards(
 
       const content = {
         keywordEn: card.keywordEn,
+        ...(card.keywordVi ? { keywordVi: card.keywordVi } : {}),
+        ...(card.category ? { category: card.category } : {}),
+        ...(card.gradientTheme ? { gradientTheme: card.gradientTheme } : {}),
         message: card.message,
         promptRecall: card.promptRecall,
         promptPack: card.promptPack,

@@ -7,10 +7,13 @@ export interface PublicEqCard {
   id: number | string
   code: string
   keywordEn: string | null
+  keywordVi?: string | null
   message: string | null
   promptRecall: string | null
   promptPack: string | null
   promptAcknowledge: string | null
+  category?: string | null
+  gradientTheme?: string | null
   story: unknown | null
   qrSlug: string
   printedAt: string | null
@@ -57,6 +60,9 @@ export const getPublishedEqCardByQrSlug = cache(
           id: true,
           code: true,
           keywordEn: true,
+          keywordVi: true,
+          category: true,
+          gradientTheme: true,
           message: true,
           promptRecall: true,
           promptPack: true,
@@ -83,6 +89,9 @@ export const getPublishedEqCardByQrSlug = cache(
         id: doc.id,
         code: doc.code || '',
         keywordEn: doc.keywordEn || null,
+        keywordVi: (doc as any).keywordVi || null,
+        category: (doc as any).category || null,
+        gradientTheme: (doc as any).gradientTheme || null,
         message: doc.message || null,
         promptRecall: doc.promptRecall || null,
         promptPack: doc.promptPack || null,
@@ -148,3 +157,67 @@ export const getPublishedEqKeywords = cache(async (): Promise<PublicEqCardKeywor
     throw err
   }
 })
+
+/**
+ * REVIEW-REQUIRED: E3 - Lấy danh sách toàn bộ thẻ cho màn "Tất cả thẻ" với kiểm soát nội dung tại server:
+ * - isUnlockedAll = true (khi chế độ freeMode hoặc tài khoản có trial/active): trả đủ thông điệp và câu hỏi.
+ * - isUnlockedAll = false: chỉ trả code, order, keywordEn, keywordVi, category, gradientTheme, qrSlug;
+ *   ẩn message và promptRecall/promptPack/promptAcknowledge (tránh lộ qua response payload).
+ */
+export const getAllPublishedCards = cache(
+  async (isUnlockedAll = false): Promise<PublicEqCard[]> => {
+    try {
+      const payloadConfig = await config
+      const payload = await getPayload({ config: payloadConfig })
+
+      const result = await payload.find({
+        collection: 'eqCards',
+        where: {
+          _status: { equals: 'published' },
+        },
+        select: {
+          id: true,
+          code: true,
+          keywordEn: true,
+          keywordVi: true,
+          category: true,
+          gradientTheme: true,
+          message: isUnlockedAll,
+          promptRecall: isUnlockedAll,
+          promptPack: isUnlockedAll,
+          promptAcknowledge: isUnlockedAll,
+          qrSlug: true,
+          printedAt: true,
+          order: true,
+          _status: true,
+        },
+        sort: 'order',
+        limit: 100,
+        draft: false,
+      })
+
+      return result.docs.map((doc) => ({
+        id: doc.id,
+        code: doc.code || '',
+        keywordEn: doc.keywordEn || null,
+        keywordVi: (doc as any).keywordVi || null,
+        category: (doc as any).category || null,
+        gradientTheme: (doc as any).gradientTheme || null,
+        message: isUnlockedAll ? doc.message || null : null,
+        promptRecall: isUnlockedAll ? doc.promptRecall || null : null,
+        promptPack: isUnlockedAll ? doc.promptPack || null : null,
+        promptAcknowledge: isUnlockedAll ? doc.promptAcknowledge || null : null,
+        story: null,
+        smallAction: null,
+        topic: null,
+        qrSlug: doc.qrSlug || '',
+        printedAt: doc.printedAt ? String(doc.printedAt) : null,
+        order: typeof doc.order === 'number' ? doc.order : null,
+        _status: (doc as any)._status ? String((doc as any)._status) : null,
+      }))
+    } catch (err) {
+      if ((err as { status?: number })?.status === 404) return []
+      throw err
+    }
+  },
+)
