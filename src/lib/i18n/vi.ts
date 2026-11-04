@@ -3335,6 +3335,17 @@ export const vi = {
     alignLeft: 'Căn trái',
     alignCenter: 'Căn giữa',
   },
+  eb16: {
+    replaceEntirePage: 'Thay toàn bộ trang',
+    back: 'Quay lại',
+    templateIncludes: (blocks: string) => `Gồm: ${blocks}`,
+    moreBlocks: (count: number) => `+${count} khối`,
+    tabTitlesLabel: 'Tên các tab',
+    accordionTitlesLabel: 'Tên các câu hỏi',
+    tabTitleItem: (index: number) => `Tên tab ${index}`,
+    accordionTitleItem: (index: number) => `Tên câu hỏi ${index}`,
+    renameTooltip: 'Nhấp đúp hoặc F2 để đổi tên',
+  },
   hb07: {
     global: {
       label: 'Nội dung hành trình Habit',
