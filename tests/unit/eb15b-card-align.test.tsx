@@ -26,6 +26,8 @@ import { StatBlock } from '@/puck/blocks/Stat'
 import { EntryCardBlock } from '@/puck/blocks/EntryCard'
 import { PC_TEXT_TARGETS } from '@/puck/style/text-targets/pc'
 import { TEXT_TARGET_ATTR } from '@/puck/style/text-target'
+import { CARD_ATTR } from '@/puck/style/css-shared'
+import { blockStyleCss } from '@/puck/style/style-css'
 
 describe('EB-15b: Card alignment and text targets', () => {
   describe('1. Decorative elements self-stretch and inline-flex/inline-block markup', () => {
@@ -389,6 +391,63 @@ describe('EB-15b: Card alignment and text targets', () => {
         'description',
         'buttonText',
       ])
+    })
+  })
+
+  describe('5. EB-15bc: tab Kiểu "Căn chữ" reaches the cards', () => {
+    it('every card root carries data-eb-card', () => {
+      const cards: Array<[string, React.ReactElement]> = [
+        ['IconCard', <IconCard key="a" id="c1" title="Thẻ" text="Mô tả" />],
+        [
+          'PackageCardItem',
+          <PackageCardItem
+            key="b"
+            id="p1"
+            _resolved={{ package: { id: 1, name: 'Gói', shortDescription: 'Mô tả' } as never }}
+          />,
+        ],
+        [
+          'ServiceCardItem',
+          <ServiceCardItem
+            key="c"
+            id="s1"
+            _resolved={{ service: { id: 1, name: 'Dịch vụ', slug: 'dv' } as never }}
+          />,
+        ],
+        ['PathCard', <PathCard key="d" id="pa1" title="Lối đi" buttonLabel="Đi" />],
+        ['VisionCardItem', <VisionCardItem key="e" id="v1" title="Tầm nhìn" content="Nội dung" />],
+        ['JourneyStep', <JourneyStep key="f" id="st1" name="Pause" variant="cards" />],
+        ['StatItem', <StatItem key="g" id="sa1" icon="star" label="Khách" />],
+        ['HeroEntryCard', <HeroEntryCard key="h" id="en1" label="Cá nhân" description="Mô tả" />],
+        ['Callout', <Callout key="i" id="ca1" title="Điểm nhấn" description="Mô tả" />],
+      ]
+      for (const [name, element] of cards) {
+        const { container, unmount } = render(element)
+        expect(container.querySelector(`[${CARD_ATTR}]`), name).not.toBeNull()
+        unmount()
+      }
+    })
+
+    it('Step marks its number + badge row so it can be centred', () => {
+      const { container } = render(
+        <JourneyStep id="st2" name="Pause" subname="Dừng lại" variant="cards" />,
+      )
+      expect(container.querySelector(`[${CARD_ATTR}-row]`)).not.toBeNull()
+    })
+
+    it('textAlign per device also aligns the cards inside, after the block rule', () => {
+      const css = blockStyleCss('grid-1', { textAlign: { desktop: 'center', mobile: 'left' } })
+      expect(css).toContain(
+        '[data-eb-id="grid-1"] [data-eb-card]{text-align:center;align-items:center}',
+      )
+      expect(css).toContain('[data-eb-id="grid-1"] [data-eb-card-row]{justify-content:center')
+      expect(css).toContain(
+        '@media (max-width: 767px){[data-eb-id="grid-1"]{text-align:left}[data-eb-id="grid-1"] [data-eb-card]{text-align:left;align-items:flex-start}[data-eb-id="grid-1"] [data-eb-card-row]{justify-content:space-between}}',
+      )
+    })
+
+    it('no card rule without textAlign', () => {
+      expect(blockStyleCss('grid-2', { background: 'mint-haze' })).not.toContain(CARD_ATTR)
     })
   })
 })

@@ -107,6 +107,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
     >
       <div
         class="rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 text-center text-white shadow-soft"
+        data-eb-card=""
       >
         <h2
           class="font-ui text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug"
@@ -134,6 +135,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
     >
       <div
         class="rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 text-center text-white shadow-soft"
+        data-eb-card=""
       >
         <h2
           class="font-ui text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug"
@@ -224,6 +226,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         >
           <div
             class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            data-eb-card=""
           >
             <div
               class="mb-4 w-full self-stretch text-[inherit]"
@@ -245,6 +248,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           </div>
           <div
             class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            data-eb-card=""
           >
             <div
               class="mb-4 w-full self-stretch text-[inherit]"
@@ -346,6 +350,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         >
           <div
             class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            data-eb-card=""
           >
             <div
               class="mb-4 w-full self-stretch text-[inherit]"
@@ -369,6 +374,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           </div>
           <div
             class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            data-eb-card=""
           >
             <div
               class="mb-4 w-full self-stretch text-[inherit]"
@@ -442,6 +448,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
       >
         <div
           class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-deep-navy/10 shadow-soft group-data-[bg=deep-navy]/grid:bg-white/10 group-data-[bg=deep-navy]/grid:border-white/20 text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
+          data-eb-card=""
         >
           <div>
             <div
@@ -486,6 +493,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         </div>
         <div
           class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-accent-pink shadow-md ring-2 ring-accent-pink group-data-[bg=deep-navy]/grid:bg-white/15 text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
+          data-eb-card=""
         >
           <div>
             <div
