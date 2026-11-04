@@ -107,6 +107,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
     >
       <div
         class="rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 text-center text-white shadow-soft"
+        data-eb-card=""
       >
         <h2
           class="font-ui text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug"
@@ -134,6 +135,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
     >
       <div
         class="rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 text-center text-white shadow-soft"
+        data-eb-card=""
       >
         <h2
           class="font-ui text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug"
@@ -146,16 +148,22 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           Mọi chia sẻ của bạn đều được lắng nghe trung tính và bảo mật hoàn toàn.
         </p>
         <div
-          class="mt-8 flex justify-center"
+          class="mt-8 w-full self-stretch text-[inherit]"
         >
-          <a
-            class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight"
-            href="/coaching#booking"
+          <div
+            class="inline-block text-center"
           >
-            <span>
-              Đặt lịch kết nối
-            </span>
-          </a>
+            <a
+              class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight"
+              href="/coaching#booking"
+            >
+              <span>
+                <span>
+                  Đặt lịch kết nối
+                </span>
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -206,6 +214,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
       <div
         class="group/grid w-full"
         data-bg="warm-ivory"
+        data-card-align="inherit"
         data-card-style="white"
         data-card-theme="light-white"
         data-grid-bg="warm-ivory"
@@ -216,13 +225,14 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           style="counter-reset: card-counter;"
         >
           <div
-            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            data-eb-card=""
           >
             <div
-              class="mb-4 flex items-center"
+              class="mb-4 w-full self-stretch text-[inherit]"
             >
               <div
-                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
+                class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
               />
             </div>
             <h3
@@ -237,13 +247,14 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
             </p>
           </div>
           <div
-            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            data-eb-card=""
           >
             <div
-              class="mb-4 flex items-center"
+              class="mb-4 w-full self-stretch text-[inherit]"
             >
               <div
-                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
+                class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-pink text-bright-magenta"
               >
                 <svg
                   aria-hidden="true"
@@ -327,6 +338,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
       <div
         class="group/grid w-full"
         data-bg="warm-ivory"
+        data-card-align="inherit"
         data-card-style="white"
         data-card-theme="light-white"
         data-grid-bg="warm-ivory"
@@ -337,13 +349,14 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           style="counter-reset: card-counter;"
         >
           <div
-            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            data-eb-card=""
           >
             <div
-              class="mb-4 flex items-center"
+              class="mb-4 w-full self-stretch text-[inherit]"
             >
               <span
-                class="font-display text-3xl sm:text-4xl text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink"
+                class="inline-block font-display text-3xl sm:text-4xl text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink"
               >
                 01
               </span>
@@ -360,13 +373,14 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
             </p>
           </div>
           <div
-            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            class="flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 [counter-increment:card-counter] w-full text-left items-start group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[card-theme=navy-soft]/grid:bg-soft-pink/15 group-data-[card-theme=navy-soft]/grid:border-soft-pink/30 group-data-[card-theme=navy-soft]/grid:text-white group-data-[card-theme=navy-soft]/grid:shadow-none group-data-[card-theme=navy-outline]/grid:bg-transparent group-data-[card-theme=navy-outline]/grid:border-2 group-data-[card-theme=navy-outline]/grid:border-white/30 group-data-[card-theme=navy-outline]/grid:text-white group-data-[card-theme=navy-outline]/grid:shadow-none group-data-[card-theme=navy-white]/grid:bg-white/10 group-data-[card-theme=navy-white]/grid:border group-data-[card-theme=navy-white]/grid:border-white/20 group-data-[card-theme=navy-white]/grid:text-white group-data-[card-theme=navy-white]/grid:shadow-none group-data-[card-theme=light-soft]/grid:bg-soft-pink group-data-[card-theme=light-soft]/grid:border-accent-pink/20 group-data-[card-theme=light-soft]/grid:text-deep-navy group-data-[card-theme=light-soft]/grid:shadow-soft group-data-[card-theme=light-outline]/grid:bg-transparent group-data-[card-theme=light-outline]/grid:border-2 group-data-[card-theme=light-outline]/grid:border-deep-navy/20 group-data-[card-theme=light-outline]/grid:text-deep-navy group-data-[card-theme=light-outline]/grid:shadow-none group-data-[card-theme=light-white]/grid:bg-white group-data-[card-theme=light-white]/grid:border-deep-navy/10 group-data-[card-theme=light-white]/grid:text-deep-navy group-data-[card-theme=light-white]/grid:shadow-soft"
+            data-eb-card=""
           >
             <div
-              class="mb-4 flex items-center"
+              class="mb-4 w-full self-stretch text-[inherit]"
             >
               <span
-                class="font-display text-3xl sm:text-4xl text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink"
+                class="inline-block font-display text-3xl sm:text-4xl text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink"
               >
                 02
               </span>
@@ -394,6 +408,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
   <section
     class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors group/grid"
     data-bg="warm-ivory"
+    data-card-align="inherit"
     data-style="icon"
   >
     <div
@@ -432,32 +447,37 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
         class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch [counter-reset:card-counter]"
       >
         <div
-          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-deep-navy/10 shadow-soft group-data-[bg=deep-navy]/grid:bg-white/10 group-data-[bg=deep-navy]/grid:border-white/20 text-left"
+          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-deep-navy/10 shadow-soft group-data-[bg=deep-navy]/grid:bg-white/10 group-data-[bg=deep-navy]/grid:border-white/20 text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
+          data-eb-card=""
         >
           <div>
             <div
-              class="hidden group-data-[style=numbered]/grid:block font-display text-3xl sm:text-4xl text-bright-magenta mb-4 [counter-increment:card-counter] before:content-[counter(card-counter,decimal-leading-zero)]"
-            />
-            <div
-              class="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4 group-data-[style=numbered]/grid:hidden"
+              class="w-full self-stretch mb-4 text-[inherit]"
             >
-              <svg
-                aria-hidden="true"
-                class="inline-block shrink-0 w-6 h-6 text-deep-navy"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <div
+                class="hidden group-data-[style=numbered]/grid:inline-block font-display text-3xl sm:text-4xl text-bright-magenta [counter-increment:card-counter] before:content-[counter(card-counter,decimal-leading-zero)]"
+              />
+              <div
+                class="inline-flex w-12 h-12 rounded-xl bg-soft-pink items-center justify-center text-deep-navy group-data-[style=numbered]/grid:!hidden"
               >
-                <polygon
-                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                />
-              </svg>
+                <svg
+                  aria-hidden="true"
+                  class="inline-block shrink-0 w-6 h-6 text-deep-navy"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                  />
+                </svg>
+              </div>
             </div>
             <h3
               class="font-display uppercase tracking-tight mb-2 text-2xl text-deep-navy group-data-[bg=deep-navy]/grid:text-white"
@@ -472,32 +492,37 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           </div>
         </div>
         <div
-          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-accent-pink shadow-md ring-2 ring-accent-pink group-data-[bg=deep-navy]/grid:bg-white/15 text-left"
+          class="relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all bg-white border-accent-pink shadow-md ring-2 ring-accent-pink group-data-[bg=deep-navy]/grid:bg-white/15 text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
+          data-eb-card=""
         >
           <div>
             <div
-              class="hidden group-data-[style=numbered]/grid:block font-display text-3xl sm:text-4xl text-bright-magenta mb-4 [counter-increment:card-counter] before:content-[counter(card-counter,decimal-leading-zero)]"
-            />
-            <div
-              class="w-12 h-12 rounded-xl bg-soft-pink flex items-center justify-center text-deep-navy mb-4 group-data-[style=numbered]/grid:hidden"
+              class="w-full self-stretch mb-4 text-[inherit]"
             >
-              <svg
-                aria-hidden="true"
-                class="inline-block shrink-0 w-6 h-6 text-deep-navy"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
+              <div
+                class="hidden group-data-[style=numbered]/grid:inline-block font-display text-3xl sm:text-4xl text-bright-magenta [counter-increment:card-counter] before:content-[counter(card-counter,decimal-leading-zero)]"
+              />
+              <div
+                class="inline-flex w-12 h-12 rounded-xl bg-soft-pink items-center justify-center text-deep-navy group-data-[style=numbered]/grid:!hidden"
               >
-                <polygon
-                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                />
-              </svg>
+                <svg
+                  aria-hidden="true"
+                  class="inline-block shrink-0 w-6 h-6 text-deep-navy"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                  />
+                </svg>
+              </div>
             </div>
             <h3
               class="font-display uppercase tracking-tight mb-2 text-2xl text-deep-navy group-data-[bg=deep-navy]/grid:text-white"

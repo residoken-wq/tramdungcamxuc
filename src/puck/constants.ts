@@ -40,6 +40,14 @@ export const ALIGN_OPTIONS = [
 
 export type AlignOption = (typeof ALIGN_OPTIONS)[number]['value']
 
+export const GRID_CARD_ALIGN_OPTIONS = [
+  { label: 'Theo từng thẻ', value: 'inherit' },
+  { label: 'Căn trái', value: 'left' },
+  { label: 'Căn giữa', value: 'center' },
+] as const
+
+export type GridCardAlignOption = (typeof GRID_CARD_ALIGN_OPTIONS)[number]['value']
+
 /**
  * Child blocks that only make sense inside their parent's slot. They are listed in their own
  * sidebar group so a parent with an empty slot can still get cards (PK-11); each parent slot

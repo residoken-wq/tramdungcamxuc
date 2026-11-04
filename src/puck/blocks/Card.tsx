@@ -72,9 +72,19 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     const isTitleLarge = data?.props?.titleSize === 'lg'
     const titleColors = allowedTextColors(cardRealBg, isTitleLarge)
     const textColors = allowedTextColors(cardRealBg, false)
+    const isFollowingGrid =
+      params?.parent?.props?.cardAlign === 'left' || params?.parent?.props?.cardAlign === 'center'
+    const alignLabel = isFollowingGrid
+      ? `${vi.puckCard?.align || 'Căn lề'} (${vi.eb15b?.cardAlignFollowingGrid || 'Đang theo khung'})`
+      : vi.puckCard?.align || 'Căn lề'
 
     return {
       ...params.fields,
+      align: {
+        type: 'select',
+        label: alignLabel,
+        options: [...ALIGN_OPTIONS],
+      },
       titleColor: {
         type: 'select',
         label: vi.puckCard?.titleColor || 'Màu tiêu đề',

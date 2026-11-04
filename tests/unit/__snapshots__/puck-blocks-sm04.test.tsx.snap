@@ -3,9 +3,10 @@
 exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches snapshot with resolved services and highlighted card 1`] = `
 <DocumentFragment>
   <section
-    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+    class="w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors group/grid"
     data-bg="warm-ivory"
     data-block="service-cards"
+    data-card-align="inherit"
   >
     <div
       class="mx-auto max-w-6xl"
@@ -33,11 +34,12 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
         class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
       >
         <div
-          class="rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 bg-deep-navy border-deep-navy/20 text-white text-left"
+          class="rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 bg-deep-navy border-deep-navy/20 text-white text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
+          data-eb-card=""
         >
           <div>
             <div
-              class="px-6 pt-6"
+              class="w-full self-stretch px-6 pt-6 text-[inherit]"
             >
               <span
                 class="inline-block rounded-full bg-soft-pink px-3 py-1 font-ui text-xs font-bold text-deep-navy"
@@ -106,7 +108,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
             </div>
           </div>
           <div
-            class="p-6 pt-0 sm:p-7 sm:pt-0"
+            class="p-6 pt-0 sm:p-7 sm:pt-0 w-full self-stretch text-[inherit]"
           >
             <a
               class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-accent-pink text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
@@ -119,7 +121,8 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
           </div>
         </div>
         <div
-          class="rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 bg-white border-deep-navy/10 text-deep-navy text-left"
+          class="rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 bg-white border-deep-navy/10 text-deep-navy text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
+          data-eb-card=""
         >
           <div>
             <div
@@ -183,7 +186,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
             </div>
           </div>
           <div
-            class="p-6 pt-0 sm:p-7 sm:pt-0"
+            class="p-6 pt-0 sm:p-7 sm:pt-0 w-full self-stretch text-[inherit]"
           >
             <a
               class="relative inline-flex items-center justify-center rounded-xl font-ui transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy select-none cursor-pointer bg-deep-navy text-white hover:opacity-95 active:opacity-90 min-h-[48px] min-w-[48px] px-6 py-2.5 text-[19px] font-bold tracking-tight w-full text-center"
@@ -294,8 +297,9 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TeamGrid Block > matches sna
 exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TwoPathCards Block > matches snapshot with solid and outline cards 1`] = `
 <DocumentFragment>
   <section
-    class="group/paths w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+    class="group/paths group/grid w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
     data-bg="warm-ivory"
+    data-card-align="inherit"
   >
     <div
       class="mx-auto max-w-5xl"
@@ -397,8 +401,9 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > TwoPathCards Block > matches
 exports[`SM-04: Puck Blocks Unit & Snapshot Tests > VisionMission Block > matches snapshot with default and custom props 1`] = `
 <DocumentFragment>
   <section
-    class="group/vm w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
+    class="group/vm group/grid w-full bg-warm-ivory py-14 px-6 sm:px-8 transition-colors"
     data-bg="warm-ivory"
+    data-card-align="inherit"
   >
     <div
       class="mx-auto max-w-5xl"

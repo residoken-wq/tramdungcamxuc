@@ -1,19 +1,28 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { PackageCards, type PackageCardsProps } from '@/components/site/PackageCards'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS, GRID_CARD_ALIGN_OPTIONS } from '../constants'
 import { createPageExternalField } from '../page-field'
+import { vi } from '@/lib/i18n/vi'
 
 export type { PackageCardsProps }
 
 export const PackageCardsBlock: ComponentConfig<PackageCardsProps> = {
   label: 'Khối các gói Growth Mirror (Package Cards)',
   fields: {
-    seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
-    titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
-    titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
-    emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display Italic)' },
-    description: { type: 'textarea', label: 'Mô tả ngắn gọn dưới tiêu đề' },
+    seriesLabel: { type: 'text', label: vi.eb15a?.seriesLabel || 'Nhãn series' },
+    titleLine1: { type: 'text', label: vi.eb15a?.titleLine1 || 'Tiêu đề dòng 1' },
+    titleLine2: { type: 'text', label: vi.eb15a?.titleLine2 || 'Tiêu đề dòng 2' },
+    emotionLine: { type: 'textarea', label: vi.eb15a?.emotionLine || 'Dòng cảm xúc' },
+    description: {
+      type: 'textarea',
+      label: vi.eb15a?.description || 'Mô tả ngắn gọn dưới tiêu đề',
+    },
+    cardAlign: {
+      type: 'select',
+      label: vi.eb15b?.gridCardAlign || 'Căn lề tất cả thẻ',
+      options: [...GRID_CARD_ALIGN_OPTIONS],
+    },
     cards: {
       type: 'slot',
       label: 'Danh sách gói đồng hành',
@@ -66,6 +75,7 @@ export const PackageCardsBlock: ComponentConfig<PackageCardsProps> = {
     description: '',
     cards: [],
     style: 'icon',
+    cardAlign: 'inherit',
     buttonText: '[MẪU] Khám phá chi tiết lộ trình',
     buttonLinkType: 'url',
     buttonLink: '#',

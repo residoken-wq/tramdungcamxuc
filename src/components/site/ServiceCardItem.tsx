@@ -44,7 +44,8 @@ export function ServiceCardItem({
   _resolved,
   puck,
   isDeepNavy: _isDeepNavy = false,
-}: ServiceCardItemProps) {
+  id: _id,
+}: ServiceCardItemProps & { id?: string }) {
   const isEditing = Boolean(puck?.isEditing)
 
   const serviceIds = React.useMemo(() => {
@@ -101,11 +102,12 @@ export function ServiceCardItem({
 
   return (
     <div
+      data-eb-card=""
       className={`rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 ${
         highlight
           ? 'bg-deep-navy border-deep-navy/20 text-white'
           : 'bg-white border-deep-navy/10 text-deep-navy'
-      }${alignClass}`}
+      }${alignClass} group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left`}
     >
       <div>
         {activeService.imageUrl ? (
@@ -124,7 +126,7 @@ export function ServiceCardItem({
             )}
           </div>
         ) : activeService.badge ? (
-          <div className="px-6 pt-6">
+          <div className="w-full self-stretch px-6 pt-6 text-[inherit]">
             <span className="inline-block rounded-full bg-soft-pink px-3 py-1 font-ui text-xs font-bold text-deep-navy">
               {activeService.badge}
             </span>
@@ -198,7 +200,7 @@ export function ServiceCardItem({
         </div>
       </div>
 
-      <div className="p-6 pt-0 sm:p-7 sm:pt-0">
+      <div className="p-6 pt-0 sm:p-7 sm:pt-0 w-full self-stretch text-[inherit]">
         <Button
           href={`/coaching/${activeService.slug}`}
           variant={highlight ? 'primary' : 'secondary'}

@@ -5,6 +5,12 @@
 
 /** Attribute a styled block's wrapper carries; the CSS selects on it. */
 export const STYLE_ATTR = 'data-eb-id'
+/**
+ * EB-15bc: marks the root of a card (IconCard, Step, Stat, PackageCard…). The tab "Kiểu" text
+ * alignment of any ancestor block is also applied to these roots, because a card sets its own
+ * `text-left` / `items-start` and would otherwise ignore the inherited value.
+ */
+export const CARD_ATTR = 'data-eb-card'
 const SAFE_ID = /^[A-Za-z0-9_-]{1,100}$/
 
 export const isSafeBlockId = (id: unknown): id is string =>

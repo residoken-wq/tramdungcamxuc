@@ -12,7 +12,7 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
   fields: {
     title: {
       type: 'text',
-      label: 'Tiêu đề nổi bật (Montserrat Bold)',
+      label: 'Tiêu đề nổi bật',
       contentEditable: true,
     },
     description: {

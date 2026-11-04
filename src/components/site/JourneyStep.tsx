@@ -6,6 +6,7 @@ import {
   type FontSizeOption,
   type AlignOption,
 } from '@/lib/brand/format-classes'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface JourneyStepProps {
   version?: number
@@ -38,7 +39,8 @@ export function JourneyStep({
   index,
   variant,
   isDeepNavy = false,
-}: JourneyStepProps) {
+  id,
+}: JourneyStepProps & { id?: string }) {
   const isHighlighted = Boolean(highlight)
   const isNavy = isHighlighted || isDeepNavy
 
@@ -136,33 +138,51 @@ export function JourneyStep({
   if (variant === 'cards' || variant === 'circles') {
     return (
       <div
-        className={`flex flex-col p-5 sm:p-6 rounded-card border transition-transform hover:-translate-y-1 [counter-increment:step-counter] w-full ${alignClass} ${cardBgClass}`}
+        data-eb-card=""
+        className={`flex flex-col p-5 sm:p-6 rounded-card border transition-transform hover:-translate-y-1 [counter-increment:step-counter] w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/journey:items-center group-data-[card-align=center]/journey:text-center group-data-[card-align=left]/journey:items-start group-data-[card-align=left]/journey:text-left ${cardBgClass}`}
       >
-        <div className="flex items-baseline justify-between mb-3 w-full">
-          <span className={`font-display text-2xl sm:text-3xl tracking-tight ${stepNumberClass}`}>
-            {stepNumberNode}
-          </span>
-          {subname && (
+        <div className="w-full self-stretch mb-3 text-[inherit]">
+          <div
+            data-eb-card-row=""
+            className={`flex items-baseline ${align === 'center' ? 'justify-center gap-2' : 'justify-between'} group-data-[card-align=center]/grid:justify-center group-data-[card-align=center]/grid:gap-2 group-data-[card-align=center]/journey:justify-center group-data-[card-align=center]/journey:gap-2 group-data-[card-align=left]/grid:justify-between group-data-[card-align=left]/journey:justify-between`}
+          >
             <span
-              className={`font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeClass}`}
+              className={`inline-block font-display text-2xl sm:text-3xl tracking-tight ${stepNumberClass}`}
             >
-              {subname}
+              {stepNumberNode}
             </span>
-          )}
+            {subname && (
+              <span
+                {...textTarget(id, 'subname')}
+                className={`inline-block font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeClass}`}
+              >
+                {subname}
+              </span>
+            )}
+          </div>
         </div>
 
         <h3
+          {...textTarget(id, 'name')}
           className={`font-ui ${nameSizeClass} font-bold ${subtitle ? 'mb-1' : 'mb-2'} ${nameColorClass}`}
         >
           {name}
         </h3>
 
         {subtitle && (
-          <p className={`font-ui text-xs font-semibold mb-2 ${subtitleColorClass}`}>{subtitle}</p>
+          <p
+            {...textTarget(id, 'subtitle')}
+            className={`font-ui text-xs font-semibold mb-2 ${subtitleColorClass}`}
+          >
+            {subtitle}
+          </p>
         )}
 
         {description && (
-          <p className={`font-ui ${descSizeClass} leading-relaxed mt-auto ${descColorClass}`}>
+          <p
+            {...textTarget(id, 'description')}
+            className={`font-ui ${descSizeClass} leading-relaxed mt-auto ${descColorClass}`}
+          >
             {description}
           </p>
         )}
@@ -173,7 +193,8 @@ export function JourneyStep({
   // Layout 3: Slot mode (switches between list and card using group-data-[variant=list]/journey)
   return (
     <div
-      className={`flex flex-col group-data-[variant=list]/journey:sm:flex-row group-data-[variant=list]/journey:items-start group-data-[variant=list]/journey:sm:items-center group-data-[variant=list]/journey:gap-4 group-data-[variant=list]/journey:sm:gap-6 p-5 sm:p-6 rounded-card border transition-transform hover:-translate-y-1 [counter-increment:step-counter] w-full ${alignClass} ${cardBgClass}`}
+      data-eb-card=""
+      className={`flex flex-col group-data-[variant=list]/journey:sm:flex-row group-data-[variant=list]/journey:items-start group-data-[variant=list]/journey:sm:items-center group-data-[variant=list]/journey:gap-4 group-data-[variant=list]/journey:sm:gap-6 p-5 sm:p-6 rounded-card border transition-transform hover:-translate-y-1 [counter-increment:step-counter] w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/journey:items-center group-data-[card-align=center]/journey:text-center group-data-[card-align=left]/journey:items-start group-data-[card-align=left]/journey:text-left ${cardBgClass}`}
     >
       {/* List circular badge (hidden on cards/circles, visible on list) */}
       <div
@@ -184,24 +205,38 @@ export function JourneyStep({
 
       <div className="flex flex-1 flex-col min-w-0 w-full">
         {/* Cards/Circles top row indicator (visible on cards/circles, hidden on list) */}
-        <div className="flex group-data-[variant=list]/journey:hidden items-baseline justify-between mb-3 w-full">
-          <span className={`font-display text-2xl sm:text-3xl tracking-tight ${stepNumberClass}`}>
-            {stepNumberNode}
-          </span>
-          {subname && (
+        <div className="w-full self-stretch mb-3 text-[inherit] group-data-[variant=list]/journey:!hidden">
+          <div
+            data-eb-card-row=""
+            className={`flex items-baseline ${align === 'center' ? 'justify-center gap-2' : 'justify-between'} group-data-[card-align=center]/grid:justify-center group-data-[card-align=center]/grid:gap-2 group-data-[card-align=center]/journey:justify-center group-data-[card-align=center]/journey:gap-2 group-data-[card-align=left]/grid:justify-between group-data-[card-align=left]/journey:justify-between`}
+          >
             <span
-              className={`font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeClass}`}
+              className={`inline-block font-display text-2xl sm:text-3xl tracking-tight ${stepNumberClass}`}
             >
-              {subname}
+              {stepNumberNode}
             </span>
-          )}
+            {subname && (
+              <span
+                {...textTarget(id, 'subname')}
+                className={`inline-block font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeClass}`}
+              >
+                {subname}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* List top row (hidden on cards/circles, visible on list) */}
         <div className="hidden group-data-[variant=list]/journey:flex flex-wrap items-center gap-2 mb-1">
-          <h3 className={`font-ui ${nameSizeClass} font-bold ${nameColorClass}`}>{name}</h3>
+          <h3
+            {...textTarget(id, 'name')}
+            className={`font-ui ${nameSizeClass} font-bold ${nameColorClass}`}
+          >
+            {name}
+          </h3>
           {subname && (
             <span
+              {...textTarget(id, 'subname')}
               className={`font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeClass}`}
             >
               {subname}
@@ -211,6 +246,7 @@ export function JourneyStep({
 
         {/* Card step name (visible on cards/circles, hidden on list) */}
         <h3
+          {...textTarget(id, 'name')}
           className={`flex group-data-[variant=list]/journey:hidden font-ui ${nameSizeClass} font-bold ${
             subtitle ? 'mb-1' : 'mb-2'
           } ${nameColorClass}`}
@@ -221,6 +257,7 @@ export function JourneyStep({
         {/* Optional Subtitle */}
         {subtitle && (
           <p
+            {...textTarget(id, 'subtitle')}
             className={`font-ui text-xs ${
               variant === 'list' ? 'sm:text-sm font-semibold mb-1.5' : 'font-semibold mb-2'
             } group-data-[variant=list]/journey:sm:text-sm group-data-[variant=list]/journey:mb-1.5 ${subtitleColorClass}`}
@@ -232,6 +269,7 @@ export function JourneyStep({
         {/* Description */}
         {description && (
           <p
+            {...textTarget(id, 'description')}
             className={`font-ui ${descSizeClass} leading-relaxed group-data-[variant=list]/journey:mt-0 mt-auto ${descColorClass}`}
           >
             {description}

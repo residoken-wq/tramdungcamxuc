@@ -7,6 +7,7 @@ import {
   type FontSizeOption,
   type TextColorOption,
 } from '@/lib/brand/format-classes'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface HeroEntryCardProps {
   version?: number
@@ -54,7 +55,8 @@ export function HeroEntryCard({
   labelSize = 'md',
   textSize = 'md',
   align = 'left',
-}: HeroEntryCardProps) {
+  id,
+}: HeroEntryCardProps & { id?: string }) {
   const href = safeHref(buttonLink)
   const alignClass = align === 'center' ? 'text-center items-center' : 'text-left items-start'
 
@@ -78,23 +80,29 @@ export function HeroEntryCard({
       className={`flex flex-col justify-between p-6 sm:p-8 rounded-card border shadow-soft h-full bg-white text-deep-navy border-deep-navy/10 group-data-[bg=deep-navy]/hero:bg-white/10 group-data-[bg=deep-navy]/hero:text-white group-data-[bg=deep-navy]/hero:border-white/20 group-data-[entries-layout=rows]/entries:sm:flex-row group-data-[entries-layout=rows]/entries:sm:items-center group-data-[entries-layout=rows]/entries:sm:justify-between group-data-[entries-layout=rows]/entries:gap-4 group-data-[entries-layout=rows]/entries:px-5 group-data-[entries-layout=rows]/entries:py-4 group-data-[entries-layout=rows]/entries:h-auto`}
     >
       <div
+        data-eb-card=""
         className={`flex flex-col ${alignClass} group-data-[entries-layout=rows]/entries:sm:items-start group-data-[entries-layout=rows]/entries:flex-1`}
       >
-        {hasGroupLabel ? (
-          <span
-            className={`block font-ui font-bold uppercase tracking-widest mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${groupLabelClass}`}
-          >
-            {groupLabel}
-          </span>
-        ) : label ? (
-          <span
-            className={`inline-block px-3 py-1 rounded-full font-ui font-bold uppercase tracking-wider text-deep-navy mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${badgeClass}`}
-          >
-            {label}
-          </span>
-        ) : null}
+        <div className="w-full self-stretch text-[inherit]">
+          {hasGroupLabel ? (
+            <span
+              {...textTarget(id, 'groupLabel')}
+              className={`inline-block align-top font-ui font-bold uppercase tracking-widest mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${groupLabelClass}`}
+            >
+              {groupLabel}
+            </span>
+          ) : label ? (
+            <span
+              {...textTarget(id, 'label')}
+              className={`inline-block align-top px-3 py-1 rounded-full font-ui font-bold uppercase tracking-wider text-deep-navy mb-4 group-data-[entries-layout=rows]/entries:sm:mb-1 ${LABEL_SIZES[labelSize] ?? LABEL_SIZES.md} ${badgeClass}`}
+            >
+              {label}
+            </span>
+          ) : null}
+        </div>
         {description ? (
           <p
+            {...textTarget(id, 'description')}
             className={`font-ui leading-relaxed mb-6 group-data-[entries-layout=rows]/entries:sm:mb-0 group-data-[entries-layout=rows]/entries:sm:font-semibold group-data-[entries-layout=rows]/entries:group-data-[bg=deep-navy]/hero:sm:text-white group-data-[entries-layout=rows]/entries:sm:text-sm md:group-data-[entries-layout=rows]/entries:sm:text-base ${TEXT_SIZES[textSize] ?? TEXT_SIZES.md} ${textClass}`}
           >
             {description}
@@ -102,14 +110,14 @@ export function HeroEntryCard({
         ) : null}
       </div>
       {href && buttonText ? (
-        <div className="group-data-[entries-layout=rows]/entries:sm:shrink-0">
+        <div className="w-full self-stretch text-[inherit] group-data-[entries-layout=rows]/entries:sm:shrink-0 group-data-[entries-layout=rows]/entries:sm:w-auto">
           <Button
             href={href}
             variant={buttonStyle === 'outline' ? 'secondary' : 'primary'}
             size="md"
             className="w-full group-data-[entries-layout=rows]/entries:sm:w-auto"
           >
-            {buttonText}
+            <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
           </Button>
         </div>
       ) : null}

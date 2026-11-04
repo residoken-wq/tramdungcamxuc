@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
 import { getBookingPath, BOOKING_PATH } from '@/lib/products'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface PackageCardsCTAProps {
+  id?: string
   buttonText?: string
   targetHref?: string
   bookingProductId?: number | null
@@ -14,6 +16,7 @@ export interface PackageCardsCTAProps {
 }
 
 export function PackageCardsCTA({
+  id,
   buttonText,
   targetHref = '',
   bookingProductId,
@@ -40,21 +43,25 @@ export function PackageCardsCTA({
 
   if (finalButtonHref) {
     return (
-      <div className="mt-10 sm:mt-12 text-center">
-        <Button href={finalButtonHref} variant="primary" size="md">
-          {buttonText}
-        </Button>
+      <div className="mt-10 sm:mt-12 w-full self-stretch text-center">
+        <div className="inline-block">
+          <Button href={finalButtonHref} variant="primary" size="md">
+            <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+          </Button>
+        </div>
       </div>
     )
   }
 
   if (isEditing && isBookingUnavailable) {
     return (
-      <div className="mt-10 sm:mt-12 text-center">
-        <Button href="#" variant="primary" size="md" className="opacity-60 pointer-events-none">
-          {buttonText}
-        </Button>
-        <p className="text-xs text-bright-magenta mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
+      <div className="mt-10 sm:mt-12 w-full self-stretch text-center">
+        <div className="inline-block">
+          <Button href="#" variant="primary" size="md" className="opacity-60 pointer-events-none">
+            <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+          </Button>
+          <p className="text-xs text-bright-magenta mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
+        </div>
       </div>
     )
   }

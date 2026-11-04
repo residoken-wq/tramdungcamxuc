@@ -1,7 +1,8 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { IconCardGrid, type IconCardGridProps } from '@/components/site/IconCardGrid'
-import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS, GRID_CARD_ALIGN_OPTIONS } from '../constants'
+import { vi } from '@/lib/i18n/vi'
 
 export type { IconCardGridProps }
 
@@ -10,19 +11,19 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
   fields: {
     seriesLabel: {
       type: 'text',
-      label: 'Nhãn series (Tùy chọn)',
+      label: vi.eb15a?.seriesLabel || 'Nhãn series',
     },
     titleLine1: {
       type: 'text',
-      label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      label: vi.eb15a?.titleLine1 || 'Tiêu đề dòng 1',
     },
     titleLine2: {
       type: 'text',
-      label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      label: vi.eb15a?.titleLine2 || 'Tiêu đề dòng 2',
     },
     emotionLine: {
       type: 'textarea',
-      label: 'Dòng cảm xúc (Playfair Display Italic)',
+      label: vi.eb15a?.emotionLine || 'Dòng cảm xúc',
     },
     marker: {
       type: 'select',
@@ -51,6 +52,11 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
         { label: 'Viền nét (Outline)', value: 'outline' },
       ],
     },
+    cardAlign: {
+      type: 'select',
+      label: vi.eb15b?.gridCardAlign || 'Căn lề tất cả thẻ',
+      options: [...GRID_CARD_ALIGN_OPTIONS],
+    },
     cards: {
       type: 'slot',
       label: 'Danh sách thẻ',
@@ -76,6 +82,7 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
     marker: 'icon',
     columns: 3,
     cardStyle: 'white',
+    cardAlign: 'inherit',
     cards: [
       {
         type: 'Card',

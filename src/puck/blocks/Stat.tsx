@@ -77,9 +77,19 @@ export const StatBlock: ComponentConfig<StatItemProps> = {
     const valueColors = allowedTextColors(realBg, true)
     const isLabelLarge = data?.props?.labelSize === 'lg'
     const labelColors = allowedTextColors(realBg, isLabelLarge)
+    const isFollowingGrid =
+      params?.parent?.props?.cardAlign === 'left' || params?.parent?.props?.cardAlign === 'center'
+    const alignLabel = isFollowingGrid
+      ? `${vi.puckStat?.align || 'Căn lề'} (${vi.eb15b?.cardAlignFollowingGrid || 'Đang theo khung'})`
+      : vi.puckStat?.align || 'Căn lề'
 
     return {
       ...params.fields,
+      align: {
+        type: 'select',
+        label: alignLabel,
+        options: [...ALIGN_OPTIONS],
+      },
       valueColor: {
         type: 'select',
         label: vi.puckStat?.valueColor || 'Màu con số',
