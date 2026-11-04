@@ -9,6 +9,7 @@ import {
 } from '@/lib/brand/format-classes'
 import { HeroStatItem } from './HeroStatItem'
 import { HeroBackdrop } from './HeroBackdrop'
+import { textTarget } from '@/puck/style/text-target'
 import {
   heroBackdropColors,
   type HeroLayout,
@@ -88,6 +89,7 @@ const PADDINGS = {
 } as const
 
 export function HeroImage({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -115,7 +117,7 @@ export function HeroImage({
   minHeight = 'lg',
   bgColor = 'warm-ivory',
   padding = 'md',
-}: HeroImageProps) {
+}: HeroImageProps & { id?: string }) {
   const isBackdrop = layout === 'backdrop'
   const isDeepNavy = bgColor === 'deep-navy'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -201,6 +203,7 @@ export function HeroImage({
         <div className={`flex flex-col ${alignClass} w-full`}>
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
             >
               {seriesLabel}
@@ -210,12 +213,13 @@ export function HeroImage({
           <h1
             className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
           >
-            <span className={bTitle1Color}>{titleLine1}</span>{' '}
-            <span className={bTitle2Color}>{titleLine2}</span>
+            <span {...textTarget(id, 'titleLine1')} className={bTitle1Color}>{titleLine1}</span>{' '}
+            <span {...textTarget(id, 'titleLine2')} className={bTitle2Color}>{titleLine2}</span>
           </h1>
 
           {emotionLine && (
             <p
+              {...textTarget(id, 'emotionLine')}
               className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
             >
               {emotionLine}
@@ -241,7 +245,7 @@ export function HeroImage({
             >
               {hasPrimaryButton && (
                 <Button href={buttonSafeHref!} variant="primary" size="md">
-                  {buttonText}
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
                 </Button>
               )}
               {hasSecondaryButton && (
@@ -251,7 +255,7 @@ export function HeroImage({
                   size="md"
                   className={bSecondaryBtnClass}
                 >
-                  {secondaryButtonText}
+                  <span {...textTarget(id, 'secondaryButtonText')}>{secondaryButtonText}</span>
                 </Button>
               )}
             </div>
@@ -291,6 +295,7 @@ export function HeroImage({
       <div className="mx-auto max-w-5xl flex flex-col items-center text-center">
         {seriesLabel && (
           <span
+            {...textTarget(id, 'seriesLabel')}
             className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
           >
             {seriesLabel}
@@ -301,13 +306,14 @@ export function HeroImage({
         <h1
           className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
         >
-          <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-          <span className={titleLine2ColorClass}>{titleLine2}</span>
+          <span {...textTarget(id, 'titleLine1')} className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
+          <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>{titleLine2}</span>
         </h1>
 
         {/* Emotional Quote (Playfair Display Italic) */}
         {emotionLine && (
           <p
+            {...textTarget(id, 'emotionLine')}
             className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}
           >
             {emotionLine}
@@ -337,7 +343,7 @@ export function HeroImage({
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
             {hasPrimaryButton && (
               <Button href={buttonSafeHref!} variant="primary" size="md">
-                {buttonText}
+                <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
               </Button>
             )}
             {hasSecondaryButton && (
@@ -347,7 +353,7 @@ export function HeroImage({
                 size="md"
                 className={isDeepNavy ? 'text-white border-white/40 hover:bg-white/10' : ''}
               >
-                {secondaryButtonText}
+                <span {...textTarget(id, 'secondaryButtonText')}>{secondaryButtonText}</span>
               </Button>
             )}
           </div>

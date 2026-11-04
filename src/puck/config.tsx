@@ -381,19 +381,19 @@ const basePuckConfig: Config<PageComponentsProps> = {
     SectionHeader: {
       label: 'Tiêu đề mục (Hai tầng màu)',
       fields: {
-        seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)', contentEditable: true },
+        seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
         eyebrowColor: {
           type: 'select',
           label: 'Màu nhãn series',
           options: allowedTextColors('warm-ivory', 'sm'),
         },
-        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1', contentEditable: true },
+        titleLine1: { type: 'text', label: vi.eb15a.titleLine1, contentEditable: true },
         line1Color: {
           type: 'select',
           label: 'Màu tiêu đề dòng 1',
           options: allowedTextColors('warm-ivory', 'md'),
         },
-        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2', contentEditable: true },
+        titleLine2: { type: 'text', label: vi.eb15a.titleLine2, contentEditable: true },
         line2Color: {
           type: 'select',
           label: 'Màu tiêu đề dòng 2',
@@ -406,7 +406,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         },
         emotionLine: {
           type: 'textarea',
-          label: 'Dòng cảm xúc (Playfair Display)',
+          label: vi.eb15a.emotionLine,
           contentEditable: true,
         },
         emotionColor: {
@@ -451,19 +451,19 @@ const basePuckConfig: Config<PageComponentsProps> = {
         const emotionColors = allowedTextColors(currentBg, 'md')
 
         return {
-          seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)', contentEditable: true },
+          seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
           eyebrowColor: {
             type: 'select',
             label: 'Màu nhãn series',
             options: eyebrowColors,
           },
-          titleLine1: { type: 'text', label: 'Tiêu đề dòng 1', contentEditable: true },
+          titleLine1: { type: 'text', label: vi.eb15a.titleLine1, contentEditable: true },
           line1Color: {
             type: 'select',
             label: 'Màu tiêu đề dòng 1',
             options: titleColors,
           },
-          titleLine2: { type: 'text', label: 'Tiêu đề dòng 2', contentEditable: true },
+          titleLine2: { type: 'text', label: vi.eb15a.titleLine2, contentEditable: true },
           line2Color: {
             type: 'select',
             label: 'Màu tiêu đề dòng 2',
@@ -476,7 +476,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
           },
           emotionLine: {
             type: 'textarea',
-            label: 'Dòng cảm xúc (Playfair Display)',
+            label: vi.eb15a.emotionLine,
             contentEditable: true,
           },
           emotionColor: {
@@ -521,6 +521,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         emotionSize: 'md',
       },
       render: ({
+        id,
         seriesLabel,
         titleLine1,
         titleLine2,
@@ -537,6 +538,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         <div className="py-6 px-4">
           <div className="mx-auto max-w-5xl">
             <SectionHeader
+              id={id}
               seriesLabel={seriesLabel}
               titleLine1={titleLine1}
               titleLine2={titleLine2}
@@ -604,9 +606,9 @@ const basePuckConfig: Config<PageComponentsProps> = {
             { label: 'Ảnh bên phải, chữ bên trái', value: 'image-right' },
           ],
         },
-        seriesLabel: { type: 'text', label: 'Nhãn series', contentEditable: true },
-        titleLine1: { type: 'text', label: 'Tiêu đề dòng 1', contentEditable: true },
-        titleLine2: { type: 'text', label: 'Tiêu đề dòng 2', contentEditable: true },
+        seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
+        titleLine1: { type: 'text', label: vi.eb15a.titleLine1, contentEditable: true },
+        titleLine2: { type: 'text', label: vi.eb15a.titleLine2, contentEditable: true },
         titleSize: sizeField('Cỡ chữ tiêu đề'),
         content: {
           type: 'textarea',
@@ -625,7 +627,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
           type: 'text',
           label: 'Nhãn nhỏ góc ảnh (Tùy chọn)',
         },
-        buttonText: { type: 'text', label: 'Chữ trên nút (tùy chọn)' },
+        buttonText: { type: 'text', label: vi.eb15a.buttonText },
         buttonLink: { type: 'text', label: 'Đường dẫn liên kết (tùy chọn)' },
         bgColor: {
           type: 'select',

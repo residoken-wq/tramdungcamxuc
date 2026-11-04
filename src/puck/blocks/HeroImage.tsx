@@ -35,21 +35,21 @@ function statColorFields(bg: string) {
 export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
   label: 'Hero Ảnh biểu tượng (Hero Image)',
   fields: {
-    seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
+    seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel },
     titleLine1: {
       type: 'text',
-      label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)',
+      label: vi.eb15a.titleLine1,
       contentEditable: true,
     },
     titleLine2: {
       type: 'text',
-      label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)',
+      label: vi.eb15a.titleLine2,
       contentEditable: true,
     },
     titleSize: { type: 'select', label: 'Cỡ chữ tiêu đề', options: [...FONT_SIZE_OPTIONS] },
     emotionLine: {
       type: 'textarea',
-      label: 'Dòng cảm xúc (Playfair Display Italic)',
+      label: vi.eb15a.emotionLine,
       contentEditable: true,
     },
     mediaId: {
@@ -89,11 +89,11 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       }),
       getItemSummary: (id: string) => (id ? `Media ID: ${id}` : 'Chưa chọn ảnh'),
     },
-    buttonText: { type: 'text', label: 'Chữ trên nút chính (tùy chọn)', contentEditable: true },
+    buttonText: { type: 'text', label: vi.eb15a.buttonText, contentEditable: true },
     buttonLink: { type: 'text', label: 'Đường dẫn nút chính (tùy chọn)' },
     secondaryButtonText: {
       type: 'text',
-      label: 'Chữ trên nút thứ 2 (viền, tùy chọn)',
+      label: vi.eb15a.secondaryButtonText,
       contentEditable: true,
     },
     secondaryButtonLink: { type: 'text', label: 'Đường dẫn nút thứ 2 (tùy chọn)' },

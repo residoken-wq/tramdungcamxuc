@@ -10,6 +10,7 @@ import { vi } from '@/lib/i18n/vi'
 import type { PublicTestimonial } from '@/lib/testimonials'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface CTASectionProps {
   version?: number
@@ -63,6 +64,7 @@ const PADDINGS = {
 } as const
 
 export function CTASection({
+  id,
   seriesLabel,
   titleLine1 = '[MẪU] BẮT ĐẦU HÀNH TRÌNH',
   titleLine2 = '[MẪU] CHUYỂN MÌNH CÙNG HANA',
@@ -80,7 +82,7 @@ export function CTASection({
   textSize,
   _resolved,
   puck,
-}: CTASectionProps) {
+}: CTASectionProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
   const bookingProductId = _resolved?.bookingProductId ?? null
 
@@ -132,7 +134,10 @@ export function CTASection({
       <div className="mx-auto max-w-4xl">
         <div className="rounded-card bg-white border border-deep-navy/10 p-8 sm:p-12 lg:p-16 shadow-soft text-center flex flex-col items-center">
           {seriesLabel && (
-            <span className="mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta">
+            <span
+              {...textTarget(id, 'seriesLabel')}
+              className="mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest text-bright-magenta"
+            >
               {seriesLabel}
             </span>
           )}
@@ -140,18 +145,22 @@ export function CTASection({
           <h2
             className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
           >
-            <span className="text-deep-navy">{titleLine1}</span>{' '}
-            <span className="text-bright-magenta">{titleLine2}</span>
+            <span {...textTarget(id, 'titleLine1')} className="text-deep-navy">{titleLine1}</span>{' '}
+            <span {...textTarget(id, 'titleLine2')} className="text-bright-magenta">{titleLine2}</span>
           </h2>
 
           {emotionLine && (
-            <p className="mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic text-deep-navy/85 max-w-2xl">
+            <p
+              {...textTarget(id, 'emotionLine')}
+              className="mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic text-deep-navy/85 max-w-2xl"
+            >
               {emotionLine}
             </p>
           )}
 
           {description && (
             <p
+              {...textTarget(id, 'description')}
               className={`mt-4 font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} text-deep-navy/80 max-w-2xl leading-relaxed`}
             >
               {description}
@@ -162,7 +171,7 @@ export function CTASection({
             (finalButtonHref ? (
               <div className="mt-8">
                 <Button href={finalButtonHref} variant="primary" size="lg">
-                  {buttonText}
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
                 </Button>
               </div>
             ) : isEditing && isBookingUnavailable ? (
@@ -173,7 +182,7 @@ export function CTASection({
                   size="lg"
                   className="opacity-60 pointer-events-none"
                 >
-                  {buttonText}
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
                 </Button>
                 <p className="text-xs text-bright-magenta mt-2 font-ui">
                   {vi.sm04.noBookingProduct}
@@ -203,7 +212,10 @@ export function CTASection({
                 </div>
               )}
               {hasProofText && (
-                <span className="font-ui text-xs sm:text-sm font-medium text-deep-navy/75">
+                <span
+                  {...textTarget(id, 'proofText')}
+                  className="font-ui text-xs sm:text-sm font-medium text-deep-navy/75"
+                >
                   {proofText}
                 </span>
               )}

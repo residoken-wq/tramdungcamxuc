@@ -82,6 +82,7 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
     padding: 'md',
   },
   render: ({
+    id,
     quote,
     cite,
     roleOrContext,
@@ -98,6 +99,7 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
       <section className={`w-full ${sectionBg} ${PADDINGS[padding]} transition-colors`}>
         <div className="mx-auto max-w-4xl">
           <UiQuoteBlock
+            id={id}
             quote={quote}
             cite={cite}
             roleOrContext={roleOrContext}

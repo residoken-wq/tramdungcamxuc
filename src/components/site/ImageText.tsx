@@ -11,6 +11,7 @@ import {
   bodyColorClass,
   sizeClass,
 } from '@/lib/brand/text-presets'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface ImageTextProps {
   version?: number
@@ -51,6 +52,7 @@ const PADDINGS = {
 } as const
 
 export function ImageText({
+  id,
   layout = 'image-left',
   seriesLabel,
   titleLine1,
@@ -68,7 +70,7 @@ export function ImageText({
   titleSize,
   textSize,
   textColor,
-}: ImageTextProps) {
+}: ImageTextProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
   const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -138,7 +140,10 @@ export function ImageText({
                   unoptimized={activeUrl?.startsWith('data:') || activeUrl?.startsWith('blob:')}
                 />
                 {imageLabel && (
-                  <span className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-deep-navy/90 px-3 py-1 font-ui text-xs font-semibold text-white shadow-soft">
+                  <span
+                    {...textTarget(id, 'imageLabel')}
+                    className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-deep-navy/90 px-3 py-1 font-ui text-xs font-semibold text-white shadow-soft"
+                  >
                     {imageLabel}
                   </span>
                 )}
@@ -152,6 +157,7 @@ export function ImageText({
           >
             {seriesLabel && (
               <span
+                {...textTarget(id, 'seriesLabel')}
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
@@ -161,11 +167,11 @@ export function ImageText({
             <h2
               className={`font-display ${sizeClass(SECTION_TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-4`}
             >
-              <span className={textColorClass}>{titleLine1}</span>{' '}
-              {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
+              <span {...textTarget(id, 'titleLine1')} className={textColorClass}>{titleLine1}</span>{' '}
+              {titleLine2 && <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>{titleLine2}</span>}
             </h2>
 
-            <div className="space-y-3 mb-6">
+            <div {...textTarget(id, 'content')} className="space-y-3 mb-6">
               {paragraphs.map((p, idx) => (
                 <p
                   key={idx}
@@ -178,6 +184,7 @@ export function ImageText({
 
             {quote && (
               <blockquote
+                {...textTarget(id, 'quote')}
                 className={`mb-6 border-l-2 border-accent-pink pl-4 font-quote text-lg sm:text-xl italic leading-relaxed ${
                   isDeepNavy ? 'text-soft-pink' : 'text-deep-navy'
                 }`}
@@ -193,7 +200,7 @@ export function ImageText({
                   variant={isDeepNavy ? 'secondary' : 'primary'}
                   size="md"
                 >
-                  {buttonText}
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
                 </Button>
               </div>
             )}

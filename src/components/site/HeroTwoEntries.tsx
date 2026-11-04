@@ -6,6 +6,7 @@ import { fontSizeClass, type FontSizeOption } from '@/lib/brand/format-classes'
 import { HeroEntryCard, type HeroEntryCardProps } from './HeroEntryCard'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { HeroBackdrop } from './HeroBackdrop'
+import { textTarget } from '@/puck/style/text-target'
 import {
   heroBackdropColors,
   type HeroLayout,
@@ -264,6 +265,7 @@ export function HeroTwoEntries({
         <div className={`flex flex-col ${alignClass} w-full`}>
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
             >
               {seriesLabel}
@@ -271,12 +273,13 @@ export function HeroTwoEntries({
           )}
 
           <h1 className={titleClass}>
-            <span className={bTitle1Color}>{titleLine1}</span>{' '}
-            <span className={bTitle2Color}>{titleLine2}</span>
+            <span {...textTarget(id, 'titleLine1')} className={bTitle1Color}>{titleLine1}</span>{' '}
+            <span {...textTarget(id, 'titleLine2')} className={bTitle2Color}>{titleLine2}</span>
           </h1>
 
           {emotionLine && (
             <p
+              {...textTarget(id, 'emotionLine')}
               className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
             >
               {emotionLine}
@@ -285,6 +288,7 @@ export function HeroTwoEntries({
 
           {description && (
             <p
+              {...textTarget(id, 'description')}
               className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${bDescColor}`}
             >
               {description}
@@ -317,6 +321,7 @@ export function HeroTwoEntries({
                   <div className="order-1 lg:col-span-7 flex flex-col items-start text-left">
                     {seriesLabel && (
                       <span
+                        {...textTarget(id, 'seriesLabel')}
                         className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                       >
                         {seriesLabel}
@@ -324,14 +329,15 @@ export function HeroTwoEntries({
                     )}
 
                     <h1 className={titleClass}>
-                      <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>
+                      <span {...textTarget(id, 'titleLine1')} className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>
                         {titleLine1}
                       </span>{' '}
-                      <span className={titleLine2ColorClass}>{titleLine2}</span>
+                      <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>{titleLine2}</span>
                     </h1>
 
                     {emotionLine && (
                       <p
+                        {...textTarget(id, 'emotionLine')}
                         className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                           isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                         }`}
@@ -342,6 +348,7 @@ export function HeroTwoEntries({
 
                     {description && (
                       <p
+                        {...textTarget(id, 'description')}
                         className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${descColorClass}`}
                       >
                         {description}
@@ -384,6 +391,7 @@ export function HeroTwoEntries({
             <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
               {seriesLabel && (
                 <span
+                  {...textTarget(id, 'seriesLabel')}
                   className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                 >
                   {seriesLabel}
@@ -392,13 +400,14 @@ export function HeroTwoEntries({
 
               {/* Signature Two-Tone Heading (Anton) */}
               <h1 className={titleClass}>
-                <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-                <span className={titleLine2ColorClass}>{titleLine2}</span>
+                <span {...textTarget(id, 'titleLine1')} className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
+                <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>{titleLine2}</span>
               </h1>
 
               {/* Emotional Quote (Playfair Display Italic) */}
               {emotionLine && (
                 <p
+                  {...textTarget(id, 'emotionLine')}
                   className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                     isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                   }`}
@@ -409,6 +418,7 @@ export function HeroTwoEntries({
 
               {description && (
                 <p
+                  {...textTarget(id, 'description')}
                   className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${descColorClass}`}
                 >
                   {description}
