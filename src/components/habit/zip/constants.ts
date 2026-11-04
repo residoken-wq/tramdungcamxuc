@@ -1,17 +1,19 @@
 import type { DailyRoutineItem, IdentityFormData, LoopTechniques } from './types'
 
+// QA DP-01c: the zip starts with 3 empty rows (placeholders only), not pre-scored samples.
 export const INITIAL_ROUTINES: DailyRoutineItem[] = [
-  { id: '1', activity: 'Thức dậy & uống 1 cốc nước ấm', score: '+' },
-  { id: '2', activity: 'Mở điện thoại lướt mạng xã hội', score: '-' },
-  { id: '3', activity: 'Đánh răng & rửa mặt', score: '=' },
+  { id: 'r-1', activity: '', score: null },
+  { id: 'r-2', activity: '', score: null },
+  { id: 'r-3', activity: '', score: null },
 ]
 
 export const INITIAL_IDENTITY_DATA: IdentityFormData = {
   creatorName: '',
   identityAction: '',
   identityRole: '',
-  postsPerWeek: 3,
-  selectedDays: ['Thứ 2', 'Thứ 4', 'Thứ 6'],
+  // QA DP-01c: no rhythm chosen yet, as in the zip ('Thứ 2' labels never matched the T2 keys).
+  postsPerWeek: null,
+  selectedDays: [],
   atomicHabit: '',
   selectedMentor: '',
   mentorTime: '',
