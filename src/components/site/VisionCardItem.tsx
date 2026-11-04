@@ -73,9 +73,11 @@ export function VisionCardItem({
 
   return (
     <div
+      data-eb-card=""
       className={`rounded-card border bg-white border-deep-navy/10 group-data-[bg=deep-navy]/vm:bg-white/10 group-data-[bg=deep-navy]/vm:border-white/15 p-6 sm:p-8 shadow-soft flex flex-col justify-between h-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/vm:items-center group-data-[card-align=center]/vm:text-center group-data-[card-align=left]/vm:items-start group-data-[card-align=left]/vm:text-left`}
     >
       <div
+        data-eb-card=""
         className={`flex flex-col ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/vm:items-center group-data-[card-align=center]/vm:text-center group-data-[card-align=left]/vm:items-start group-data-[card-align=left]/vm:text-left`}
       >
         <div className="mb-4 w-full self-stretch text-[inherit]">

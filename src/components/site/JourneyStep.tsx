@@ -138,10 +138,12 @@ export function JourneyStep({
   if (variant === 'cards' || variant === 'circles') {
     return (
       <div
+        data-eb-card=""
         className={`flex flex-col p-5 sm:p-6 rounded-card border transition-transform hover:-translate-y-1 [counter-increment:step-counter] w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/journey:items-center group-data-[card-align=center]/journey:text-center group-data-[card-align=left]/journey:items-start group-data-[card-align=left]/journey:text-left ${cardBgClass}`}
       >
         <div className="w-full self-stretch mb-3 text-[inherit]">
           <div
+            data-eb-card-row=""
             className={`flex items-baseline ${align === 'center' ? 'justify-center gap-2' : 'justify-between'} group-data-[card-align=center]/grid:justify-center group-data-[card-align=center]/grid:gap-2 group-data-[card-align=center]/journey:justify-center group-data-[card-align=center]/journey:gap-2 group-data-[card-align=left]/grid:justify-between group-data-[card-align=left]/journey:justify-between`}
           >
             <span
@@ -191,6 +193,7 @@ export function JourneyStep({
   // Layout 3: Slot mode (switches between list and card using group-data-[variant=list]/journey)
   return (
     <div
+      data-eb-card=""
       className={`flex flex-col group-data-[variant=list]/journey:sm:flex-row group-data-[variant=list]/journey:items-start group-data-[variant=list]/journey:sm:items-center group-data-[variant=list]/journey:gap-4 group-data-[variant=list]/journey:sm:gap-6 p-5 sm:p-6 rounded-card border transition-transform hover:-translate-y-1 [counter-increment:step-counter] w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/journey:items-center group-data-[card-align=center]/journey:text-center group-data-[card-align=left]/journey:items-start group-data-[card-align=left]/journey:text-left ${cardBgClass}`}
     >
       {/* List circular badge (hidden on cards/circles, visible on list) */}
@@ -204,6 +207,7 @@ export function JourneyStep({
         {/* Cards/Circles top row indicator (visible on cards/circles, hidden on list) */}
         <div className="w-full self-stretch mb-3 text-[inherit] group-data-[variant=list]/journey:!hidden">
           <div
+            data-eb-card-row=""
             className={`flex items-baseline ${align === 'center' ? 'justify-center gap-2' : 'justify-between'} group-data-[card-align=center]/grid:justify-center group-data-[card-align=center]/grid:gap-2 group-data-[card-align=center]/journey:justify-center group-data-[card-align=center]/journey:gap-2 group-data-[card-align=left]/grid:justify-between group-data-[card-align=left]/journey:justify-between`}
           >
             <span

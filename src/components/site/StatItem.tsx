@@ -66,6 +66,7 @@ export function StatItem({
 
   return (
     <div
+      data-eb-card=""
       className={`flex flex-col p-6 sm:p-8 rounded-card border transition-transform hover:-translate-y-0.5 w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/stats:items-center group-data-[card-align=center]/stats:text-center group-data-[card-align=left]/stats:items-start group-data-[card-align=left]/stats:text-left ${cardBgClass}`}
     >
       {icon ? (

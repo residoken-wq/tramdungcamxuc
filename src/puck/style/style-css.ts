@@ -13,7 +13,7 @@ import {
 import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
 import { sanitizeBlockCustomCss, sanitizePageCustomCss, PAGE_ATTR } from './custom-css'
 import { containerCss } from './container-css'
-import { cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
+import { CARD_ATTR, cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
 import { sanitizeContainer } from './container-schema'
 import { TEXT_TARGET_ATTR } from './text-target'
 import {
@@ -135,6 +135,26 @@ function baseDeclarations(style: BlockStyle): string[] {
   ]
 }
 
+const CARD_ITEMS: Record<string, string> = {
+  left: 'flex-start',
+  center: 'center',
+  right: 'flex-end',
+  justify: 'flex-start',
+}
+
+/**
+ * EB-15bc: cards inside the block follow its "Căn chữ" (text and decorative row). Specificity
+ * 0,2,0: beats the card's own align classes, loses to the grid's "Căn lề tất cả thẻ" variants.
+ */
+function cardAlignRule(selector: string, align: string | undefined): string {
+  const items = align ? CARD_ITEMS[align] : undefined
+  if (!items) return ''
+  const rule = `${selector} [${CARD_ATTR}]{text-align:${align};align-items:${items}}`
+  // Step: the number + badge row is `justify-between` unless centred (also resets a wider device).
+  const justify = align === 'center' ? 'center;gap:0.5rem' : 'space-between'
+  return `${rule}${selector} [${CARD_ATTR}-row]{justify-content:${justify}}`
+}
+
 /** CSS for one block (already sanitized). Empty string when nothing applies. */
 export function blockStyleCss(id: string, style: BlockStyle): string {
   if (!isSafeBlockId(id)) return ''
@@ -142,11 +162,17 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   const rules: string[] = []
   const base = [...baseDeclarations(style), ...deviceDeclarations(style, 'desktop')]
   if (base.length) rules.push(`${selector}{${base.join(';')}}`)
+  const desktopCards = cardAlignRule(selector, style.textAlign?.desktop)
+  if (desktopCards) rules.push(desktopCards)
   for (const device of DEVICES) {
     const media = DEVICE_MEDIA[device]
     if (!media) continue
     const declarations = deviceDeclarations(style, device)
-    if (declarations.length) rules.push(`@media ${media}{${selector}{${declarations.join(';')}}}`)
+    const cards = cardAlignRule(selector, style.textAlign?.[device])
+    if (declarations.length || cards) {
+      const own = declarations.length ? `${selector}{${declarations.join(';')}}` : ''
+      rules.push(`@media ${media}{${own}${cards}}`)
+    }
   }
   for (const device of style.hideOn ?? []) {
     rules.push(`@media ${HIDE_MEDIA[device]}{${selector}{display:none}}`)

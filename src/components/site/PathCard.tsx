@@ -103,6 +103,7 @@ export function PathCard({
 
   return (
     <div
+      data-eb-card=""
       className={`rounded-card border bg-white border-deep-navy/10 group-data-[bg=deep-navy]/paths:bg-white/10 group-data-[bg=deep-navy]/paths:border-white/15 p-6 sm:p-8 shadow-soft flex flex-col justify-between h-full transition-transform duration-300 hover:-translate-y-1 ${alignClass} group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/paths:text-center group-data-[card-align=left]/paths:text-left`}
     >
       <div className="w-full self-stretch text-[inherit]">
