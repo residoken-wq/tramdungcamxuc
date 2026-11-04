@@ -2,16 +2,22 @@
 
 import React, { useState, useId } from 'react'
 import Link from 'next/link'
-import { Copy, Check, Plane, AlertCircle, ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react'
+import { Copy, Check, Plane, AlertCircle, ArrowLeft, ArrowRight, ExternalLink, Download } from 'lucide-react'
 import { IdentityFormData, LoopTechniques } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
+import type { PublicTechnique } from '@/lib/habit'
+import { daysToWeekdays } from '../draft-adapter'
+import { DEFAULT_DP01_CONTENT, type Dp01Step6Content } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 interface BoardingPassCardProps {
   /** Journey length stored in site settings (default 28). */
   journeyDays?: number
   identity: IdentityFormData
   loopTechniques: LoopTechniques
+  techniques?: PublicTechnique[]
+  step6Content?: Dp01Step6Content
   onPrev: () => void
   // Submission fields
   name?: string
@@ -37,6 +43,8 @@ export function BoardingPassCard({
   journeyDays = 28,
   identity,
   loopTechniques,
+  techniques = [],
+  step6Content = DEFAULT_DP01_CONTENT.step6,
   onPrev,
   name = '',
   email = '',
@@ -57,9 +65,57 @@ export function BoardingPassCard({
   onStartTracking,
 }: BoardingPassCardProps) {
   const [copied, setCopied] = useState(false)
+  const [downloadingFormat, setDownloadingFormat] = useState<'4x5' | '9x16' | null>(null)
   const nameId = useId()
   const emailId = useId()
   const consentId = useId()
+
+  const handleDownloadImage = async (format: '4x5' | '9x16') => {
+    setDownloadingFormat(format)
+    try {
+      const allTechIds = [
+        ...loopTechniques.cues,
+        ...loopTechniques.cravings,
+        ...loopTechniques.responses,
+        ...loopTechniques.rewards,
+      ]
+        .map((id) => Number(id))
+        .filter((n) => !isNaN(n))
+
+      const payload = {
+        identityStatement: `Tôi sẽ ${identity.identityAction || ''} để trở thành ${identity.identityRole || ''}`,
+        actionText: identity.identityAction || undefined,
+        anchorHabit: identity.selectedMentor || undefined,
+        twoMinuteAction: identity.atomicHabit || undefined,
+        rhythmDays: daysToWeekdays(identity.selectedDays),
+        techniqueIds: allTechIds,
+        startDate: identity.startDate || undefined,
+      }
+
+      const res = await fetch(`/habit/boarding-pass/anh/${format}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (res.ok) {
+        const blob = await res.blob()
+        const fileName = `tdcx-boarding-pass-${format}.png`
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = fileName
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      }
+    } catch {
+      // Ignore download error
+    } finally {
+      setDownloadingFormat(null)
+    }
+  }
 
   const formatShortDate = (dateStr: string) => {
     if (!dateStr) return ''
@@ -89,6 +145,20 @@ export function BoardingPassCard({
     }
   }
 
+  const resolveTechNames = (ids: string[]) => {
+    return ids
+      .map((id) => {
+        const match = techniques?.find((t) => String(t.id) === String(id) || t.name === id)
+        return match ? match.name : id
+      })
+      .filter(Boolean)
+  }
+
+  const cueNames = resolveTechNames(loopTechniques.cues)
+  const cravingNames = resolveTechNames(loopTechniques.cravings)
+  const responseNames = resolveTechNames(loopTechniques.responses)
+  const rewardNames = resolveTechNames(loopTechniques.rewards)
+
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* 1. Quote Block chuẩn hóa cho HABIT BOARDING PASS */}
@@ -101,8 +171,7 @@ export function BoardingPassCard({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/70 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Tấm vé lên chuyến 28 ngày của bạn. Tải về làm hình nền điện thoại, hoặc đăng lên mạng xã hội
-        — đó vừa là lời tuyên bố, vừa là cách khó quay đầu nhất.
+        {step6Content.leadIn}
       </p>
 
       {/* 2. Boarding Pass Ticket Container */}
@@ -120,7 +189,7 @@ export function BoardingPassCard({
               </div>
               <div>
                 <h2 className="font-display text-lg sm:text-2xl text-deep-navy uppercase tracking-wider">
-                  HABIT BOARDING PASS
+                  {step6Content.passTitle}
                 </h2>
                 <span className="font-mono text-xs text-deep-navy/70 font-semibold">
                   {identity.startDate ? formatShortDate(identity.startDate) : ''} →{' '}
@@ -230,8 +299,8 @@ export function BoardingPassCard({
                   1 · CUE · TÍN HIỆU
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {loopTechniques.cues.length > 0 ? (
-                    loopTechniques.cues.join(', ')
+                  {cueNames.length > 0 ? (
+                    cueNames.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -244,8 +313,8 @@ export function BoardingPassCard({
                   2 · CRAVING · KHAO KHÁT
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {loopTechniques.cravings.length > 0 ? (
-                    loopTechniques.cravings.join(', ')
+                  {cravingNames.length > 0 ? (
+                    cravingNames.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -258,8 +327,8 @@ export function BoardingPassCard({
                   3 · RESPONSE · PHẢN HỒI
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {loopTechniques.responses.length > 0 ? (
-                    loopTechniques.responses.join(', ')
+                  {responseNames.length > 0 ? (
+                    responseNames.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -272,8 +341,8 @@ export function BoardingPassCard({
                   4 · REWARD · PHẦN THƯỞNG
                 </span>
                 <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {loopTechniques.rewards.length > 0 ? (
-                    loopTechniques.rewards.join(', ')
+                  {rewardNames.length > 0 ? (
+                    rewardNames.join(', ')
                   ) : (
                     <span className="opacity-40 italic">chưa chọn</span>
                   )}
@@ -297,29 +366,51 @@ export function BoardingPassCard({
         </div>
       </div>
 
-      {/* 3. Các nút sao chép caption */}
+      {/* 3. Các nút tải ảnh & sao chép caption */}
       <div className="text-center pt-2 space-y-2">
-        <button
-          type="button"
-          onClick={handleCopyCaption}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-warm-ivory text-deep-navy border border-lavender-mist hover:border-bright-magenta text-xs font-ui font-semibold transition-all active:scale-95 shadow-soft cursor-pointer"
-        >
-          {copied ? (
-            <>
-              <Check className="w-3.5 h-3.5 text-[#065F46]" />
-              <span className="text-[#065F46] font-bold">Đã sao chép caption!</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-3.5 h-3.5 text-bright-magenta" />
-              <span>Sao chép caption gợi ý để đăng kèm ảnh</span>
-            </>
-          )}
-        </button>
+        <div className="flex flex-wrap items-center justify-center gap-2.5">
+          <button
+            type="button"
+            disabled={downloadingFormat !== null}
+            onClick={() => handleDownloadImage('9x16')}
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-white hover:bg-warm-ivory text-deep-navy border border-lavender-mist hover:border-bright-magenta text-xs font-ui font-semibold transition-all active:scale-95 shadow-soft cursor-pointer disabled:opacity-50"
+          >
+            <Download className="w-3.5 h-3.5 text-bright-magenta" />
+            <span>
+              {downloadingFormat === '9x16' ? 'Đang tạo ảnh...' : vi.dp01.downloadCover916}
+            </span>
+          </button>
 
-        <p className="text-xs text-deep-navy/70 font-ui">
-          Trình duyệt này không tải file được. Bạn có thể chụp màn hình tấm thẻ.
-        </p>
+          <button
+            type="button"
+            disabled={downloadingFormat !== null}
+            onClick={() => handleDownloadImage('4x5')}
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-white hover:bg-warm-ivory text-deep-navy border border-lavender-mist hover:border-bright-magenta text-xs font-ui font-semibold transition-all active:scale-95 shadow-soft cursor-pointer disabled:opacity-50"
+          >
+            <Download className="w-3.5 h-3.5 text-bright-magenta" />
+            <span>
+              {downloadingFormat === '4x5' ? 'Đang tạo ảnh...' : vi.dp01.downloadShare45}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleCopyCaption}
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-white hover:bg-warm-ivory text-deep-navy border border-lavender-mist hover:border-bright-magenta text-xs font-ui font-semibold transition-all active:scale-95 shadow-soft cursor-pointer"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-[#065F46]" />
+                <span className="text-[#065F46] font-bold">{vi.dp01.copied}</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 text-bright-magenta" />
+                <span>{vi.dp01.copyCaption}</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* 4. Form Lên Chuyến (Quyết định H1: lưu kế hoạch máy chủ) */}
@@ -445,7 +536,7 @@ export function BoardingPassCard({
               htmlFor={consentId}
               className="text-xs text-deep-navy/75 leading-relaxed cursor-pointer select-none"
             >
-              Tôi đồng ý nhận email kế hoạch 28 ngày và hướng dẫn thực hành từ Trạm Dừng Cảm Xúc.
+              {step6Content.termsText}{' '}
               Xem{' '}
               <Link
                 href="/chinh-sach-bao-mat"
@@ -496,7 +587,7 @@ export function BoardingPassCard({
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-deep-navy/30 hover:border-deep-navy text-deep-navy text-sm font-ui font-semibold bg-white hover:bg-warm-ivory transition-all active:scale-95 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Quay lại</span>
+          <span>{vi.dp01.back}</span>
         </button>
       </div>
     </div>

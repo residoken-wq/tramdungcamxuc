@@ -6,32 +6,25 @@ import { StepQuoteHeader } from '../StepQuoteHeader'
 import type { HabitFlowDraft } from '@/components/habit/flow/draft'
 import { daysToWeekdays, weekdaysToDays } from '../draft-adapter'
 import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
+import { DEFAULT_DP01_CONTENT, type Dp01Step4Content } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 export interface Step4IdentityHabitProps {
   draft: HabitFlowDraft
+  step4Content?: Dp01Step4Content
   onDraftChange: (draft: HabitFlowDraft) => void
   onNext: () => void
   onPrev: () => void
 }
 
-export const SUGGESTED_ROLE_PILLS = [
-  'người kể chuyện chân thành',
-  'người viết đều đặn',
-  'người khỏe mạnh và kỷ luật',
-  'người luôn học hỏi',
-]
-
-export const SUGGESTED_ATOMIC_HABIT_PILLS = [
-  'viết 1 ý tưởng vào sổ',
-  'đọc 1 trang sách',
-  'hít đất 2 cái',
-  'uống 1 ly nước ấm',
-]
+export const SUGGESTED_ROLE_PILLS = DEFAULT_DP01_CONTENT.step4.suggestedRoles
+export const SUGGESTED_ATOMIC_HABIT_PILLS = DEFAULT_DP01_CONTENT.step4.suggestedAtomicHabits
 
 const DAYS_OF_WEEK = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 
 export function Step4IdentityHabit({
   draft,
+  step4Content = DEFAULT_DP01_CONTENT.step4,
   onDraftChange,
   onNext,
   onPrev,
@@ -103,11 +96,7 @@ export function Step4IdentityHabit({
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Bắt đầu từ con người bạn muốn trở thành, rồi mới đến hành động.{' '}
-        <strong className="text-deep-navy font-bold">
-          Thương hiệu cá nhân không phải việc làm thêm — nó là kết quả của hành động bạn lặp lại mỗi
-          ngày.
-        </strong>
+        {step4Content.leadIn}
       </p>
 
       {/* 2. Khối 1: Tuyên ngôn về thói quen */}
@@ -115,10 +104,10 @@ export function Step4IdentityHabit({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">Tuyên ngôn về thói quen</h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">{step4Content.statementTitle}</h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-            Điền câu khẳng định căn tính và hành động cốt lõi của bạn
+            {step4Content.statementDesc}
           </p>
         </div>
 
@@ -160,7 +149,7 @@ export function Step4IdentityHabit({
               Gợi ý vai trò:
             </span>
             <div className="flex flex-wrap gap-2">
-              {SUGGESTED_ROLE_PILLS.map((role, idx) => (
+              {step4Content.suggestedRoles.map((role, idx) => (
                 <button
                   key={idx}
                   type="button"
@@ -184,10 +173,10 @@ export function Step4IdentityHabit({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">Nhịp điệu thói quen</h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">{step4Content.rhythmTitle}</h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-            Mỗi tuần bạn sẽ bỏ phiếu bao nhiêu lần? Chọn số lần, rồi chọn thứ.
+            {step4Content.rhythmDesc}
           </p>
         </div>
 
@@ -262,7 +251,7 @@ export function Step4IdentityHabit({
           </div>
 
           <p className="text-xs text-deep-navy/60 font-ui italic pt-1 leading-relaxed">
-            Ngày không nằm trong nhịp là ngày nghỉ có kế hoạch, không phải ngày bỏ lỡ.
+            {step4Content.rhythmNote}
           </p>
         </div>
       </div>
@@ -272,10 +261,10 @@ export function Step4IdentityHabit({
         <div className="border-b border-lavender-mist/80 pb-4">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg text-deep-navy">Thói quen hạt nhân</h2>
+            <h2 className="font-ui font-bold text-lg text-deep-navy">{step4Content.atomicHabitTitle}</h2>
           </div>
           <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-            Để thực hiện được tuyên ngôn này, thói quen hạt nhân tôi sẽ làm là… — dưới 2 phút
+            {step4Content.atomicHabitDesc}
           </p>
         </div>
 
@@ -296,7 +285,7 @@ export function Step4IdentityHabit({
               Gợi ý thói quen:
             </span>
             <div className="flex flex-wrap gap-2">
-              {SUGGESTED_ATOMIC_HABIT_PILLS.map((pill, idx) => (
+              {step4Content.suggestedAtomicHabits.map((pill, idx) => (
                 <button
                   key={idx}
                   type="button"
@@ -346,7 +335,7 @@ export function Step4IdentityHabit({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta" />
             <h2 className="font-ui font-bold text-lg text-deep-navy">
-              Vì sao điều này quan trọng & Cam kết
+              {step4Content.commitmentTitle}
             </h2>
           </div>
         </div>
@@ -355,17 +344,17 @@ export function Step4IdentityHabit({
           {/* Textarea */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5">
-              Vì sao điều này quan trọng với bạn?
+              {step4Content.whyImportantLabel}
             </label>
             <textarea
               rows={3}
               value={draft.privateReason || ''}
               onChange={(e) => onDraftChange({ ...draft, privateReason: e.target.value })}
-              placeholder="Lắng nghe bên trong một chút. Điều gì thật sự thôi thúc bạn?"
+              placeholder={step4Content.whyImportantPlaceholder}
               className="w-full p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist focus:border-bright-magenta outline-none text-xs sm:text-sm text-deep-navy transition-all leading-relaxed"
             />
             <p className="text-xs text-deep-navy/70 font-ui mt-1.5 leading-relaxed">
-              Câu này chỉ mình bạn đọc. Nó sẽ hiện lại vào đúng ngày bạn muốn bỏ cuộc.
+              {step4Content.whyImportantNote}
             </p>
           </div>
 
@@ -423,7 +412,7 @@ export function Step4IdentityHabit({
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-deep-navy/30 hover:border-deep-navy text-deep-navy text-sm font-ui font-semibold bg-white hover:bg-warm-ivory transition-all active:scale-95 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Quay lại</span>
+          <span>{vi.dp01.back}</span>
         </button>
 
         <button
@@ -431,7 +420,7 @@ export function Step4IdentityHabit({
           onClick={onNext}
           className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white text-sm sm:text-base font-ui font-semibold shadow-soft hover:shadow-soft-md transition-all active:scale-95 group cursor-pointer"
         >
-          <span>Tiếp • Thiết kế vòng lặp</span>
+          <span>{vi.dp01.nextIdentity}</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>

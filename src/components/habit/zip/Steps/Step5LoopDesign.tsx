@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -16,11 +16,18 @@ import {
 } from 'lucide-react'
 import { LoopTechniques, IdentityFormData, HabitStep } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
+import type { PublicTechnique } from '@/lib/habit'
+import type { CleanHabitLoop } from '@/lib/habit/journey-content.server'
+import { DEFAULT_DP01_CONTENT, type Dp01Step5Content } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
-interface Step5LoopDesignProps {
+export interface Step5LoopDesignProps {
   loopTechniques: LoopTechniques
   prescribedCategory?: 'cue' | 'craving' | 'response' | 'reward' | null
   identity?: IdentityFormData
+  techniques?: PublicTechnique[]
+  loopContent?: CleanHabitLoop | null
+  step5Content?: Dp01Step5Content
   onGoToStep?: (step: HabitStep) => void
   onTechniquesChange: (updated: LoopTechniques) => void
   onNext: () => void
@@ -57,7 +64,7 @@ interface LawSection {
   techniques: TechniqueItem[]
 }
 
-const LAW_SECTIONS: LawSection[] = [
+const DEFAULT_LAW_SECTIONS: LawSection[] = [
   // 1. QUY LUẬT 1: MAKE IT OBVIOUS (TÍN HIỆU)
   {
     id: 'cue',
@@ -291,14 +298,78 @@ export function Step5LoopDesign({
   loopTechniques,
   prescribedCategory,
   identity,
+  techniques = [],
+  loopContent,
+  step5Content = DEFAULT_DP01_CONTENT.step5,
   onGoToStep,
   onTechniquesChange,
   onNext,
   onPrev,
 }: Step5LoopDesignProps) {
-  const [openTechniques, setOpenTechniques] = useState<Record<string, boolean>>({
-    'tech-1': true,
-    'tech-2': true,
+  const lawSections = useMemo(() => {
+    return DEFAULT_LAW_SECTIONS.map((section) => {
+      // Find custom law content from CMS if provided
+      const customLaw = loopContent?.laws?.find((l) => l.stage === section.id)
+      const lawNumber = customLaw?.lawChip || section.lawNumber
+      const title = customLaw?.title || section.title
+      const subLabel = customLaw?.subLabel || section.subLabel
+      const question = customLaw?.question || section.question
+      const videoUrl = customLaw?.videoUrl || section.videoUrl
+
+      // Filter techniques for this section from CMS if provided
+      const stageTechniques = techniques.filter((t) => t.stage === section.id)
+      const techniqueItems: TechniqueItem[] =
+        stageTechniques.length > 0
+          ? stageTechniques.map((tech) => ({
+              id: String(tech.id),
+              title: tech.name,
+              description: tech.description || '',
+              examples: tech.examples || [],
+              placeholderGenerator: (id?: IdentityFormData) => {
+                if (tech.applyTemplate) {
+                  let tpl = tech.applyTemplate
+                  if (tpl.includes('{mentor}')) {
+                    tpl = tpl.replace('{mentor}', id?.selectedMentor || '[Mentor]')
+                  }
+                  if (tpl.includes('{thoi_quen}')) {
+                    tpl = tpl.replace('{thoi_quen}', id?.atomicHabit || '[thói quen hạt nhân]')
+                  }
+                  if (tpl.includes('{gio}')) {
+                    if (id?.mentorTime) {
+                      tpl = tpl.replace('{gio}', id.mentorTime)
+                    } else {
+                      return 'Khoảng thời gian trong ngày tôi còn năng lượng nhất là…'
+                    }
+                  }
+                  return tpl
+                }
+                return 'Cách tôi áp dụng kỹ thuật này…'
+              },
+              videoUrl: tech.exampleVideoUrl || '',
+            }))
+          : section.techniques
+
+      return {
+        ...section,
+        lawNumber,
+        title,
+        subLabel,
+        question,
+        videoUrl,
+        totalTechs: techniqueItems.length,
+        techniques: techniqueItems,
+      }
+    })
+  }, [techniques, loopContent])
+
+  const [openTechniques, setOpenTechniques] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = { 'tech-1': true, 'tech-2': true }
+    if (techniques.length > 0) {
+      const cueTechs = techniques.filter((t) => t.stage === 'cue')
+      if (cueTechs[0]) initial[String(cueTechs[0].id)] = true
+      if (cueTechs[1]) initial[String(cueTechs[1].id)] = true
+    }
+    return initial
   })
 
   const toggleTechnique = (techId: string) => {
@@ -307,14 +378,13 @@ export function Step5LoopDesign({
 
   const handleToggleTechnique = (
     category: 'cues' | 'cravings' | 'responses' | 'rewards',
-    techTitle: string,
     techId: string,
   ) => {
     const currentList = loopTechniques[category] || []
-    const isChecked = currentList.includes(techTitle)
+    const isChecked = currentList.includes(techId)
     const updatedList = isChecked
-      ? currentList.filter((t) => t !== techTitle)
-      : [...currentList, techTitle]
+      ? currentList.filter((t) => t !== techId)
+      : [...currentList, techId]
 
     if (!isChecked) {
       setOpenTechniques((prev) => ({ ...prev, [techId]: true }))
@@ -658,14 +728,18 @@ export function Step5LoopDesign({
 
       {/* Dòng hướng dẫn trên 4 quy luật */}
       <div className="p-4 rounded-2xl bg-warm-ivory border border-lavender-mist text-xs sm:text-sm text-deep-navy/80 font-ui leading-relaxed">
-        Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là lỗ
-        hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ thuật
-        được đánh dấu mới hiện trên Habit Boarding Pass.
+        {step5Content.leadIn || (
+          <>
+            Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là lỗ
+            hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ thuật
+            được đánh dấu mới hiện trên Habit Boarding Pass.
+          </>
+        )}
       </div>
 
       {/* 3. BỐN KHỐI QUY LUẬT (HIỂN THỊ MỞ CẢ 4 KHỐI) */}
       <div className="space-y-6">
-        {LAW_SECTIONS.map((section) => {
+        {lawSections.map((section) => {
           const isPrescribed = prescribedCategory === section.id
           const selectedInLaw = loopTechniques[section.categoryKey] || []
           const selectedCount = selectedInLaw.length
@@ -706,31 +780,35 @@ export function Step5LoopDesign({
                 </div>
 
                 {/* Nút xem video quy luật */}
-                <button
-                  type="button"
-                  onClick={() => handleOpenVideo(section.videoUrl)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-lavender-mist bg-white hover:bg-soft-pink/40 text-deep-navy font-semibold text-xs font-ui transition-all active:scale-95 shadow-xs flex-shrink-0 self-start md:self-auto cursor-pointer"
-                >
-                  <PlayCircle className="w-3.5 h-3.5 text-bright-magenta flex-shrink-0" />
-                  <span>Video bài giảng</span>
-                  <ExternalLink className="w-3 h-3 text-deep-navy/70" />
-                </button>
+                {section.videoUrl && (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenVideo(section.videoUrl)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-lavender-mist bg-white hover:bg-soft-pink/40 text-deep-navy font-semibold text-xs font-ui transition-all active:scale-95 shadow-xs flex-shrink-0 self-start md:self-auto cursor-pointer"
+                  >
+                    <PlayCircle className="w-3.5 h-3.5 text-bright-magenta flex-shrink-0" />
+                    <span>Video bài giảng</span>
+                    <ExternalLink className="w-3 h-3 text-deep-navy/70" />
+                  </button>
+                )}
               </div>
 
               {/* BỔ SUNG HỘP LƯU Ý RIÊNG CHO QUY LUẬT 1 */}
               {section.id === 'cue' && (
                 <div className="mx-5 sm:mx-6 mt-4 p-4 rounded-2xl bg-[#EBF5FB] border border-[#AED6F1] text-xs sm:text-sm text-[#1B4F72] font-ui leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <strong className="font-bold">Quy tắc này cần đủ cả 3 kỹ thuật.</strong> Tín
-                    hiệu chỉ thật sự rõ khi có đủ thời điểm hợp năng lượng, việc cũ làm điểm tựa và
-                    lời hẹn cụ thể. Hai kỹ thuật đầu lấy từ bước <em>Tìm Mentor</em>:
+                    <strong className="font-bold">
+                      {loopContent?.cueBox?.boldText || 'Quy tắc này cần đủ cả 3 kỹ thuật.'}
+                    </strong>{' '}
+                    {loopContent?.cueBox?.text ||
+                      'Tín hiệu chỉ thật sự rõ khi có đủ thời điểm hợp năng lượng, việc cũ làm điểm tựa và lời hẹn cụ thể. Hai kỹ thuật đầu lấy từ bước Tìm Mentor:'}
                   </div>
                   <button
                     type="button"
                     onClick={() => (onGoToStep ? onGoToStep(3) : onPrev())}
                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-[#AED6F1] text-xs font-bold text-[#1B4F72] hover:bg-[#D4E6F1] transition-all flex-shrink-0 cursor-pointer shadow-xs self-start sm:self-auto"
                   >
-                    <span>Xem lại bước 3 →</span>
+                    <span>{loopContent?.cueBox?.buttonLabel || 'Xem lại bước 3 →'}</span>
                   </button>
                 </div>
               )}
@@ -738,9 +816,13 @@ export function Step5LoopDesign({
               {/* Danh sách các kỹ thuật bên trong */}
               <div className="p-5 sm:p-6 space-y-4">
                 {section.techniques.map((tech) => {
-                  const isChecked = selectedInLaw.includes(tech.title)
+                  const isChecked =
+                    selectedInLaw.includes(tech.id) || selectedInLaw.includes(tech.title)
                   const isDetailsOpen = !!openTechniques[tech.id]
-                  const noteText = loopTechniques.appliedNotes?.[tech.id] || ''
+                  const noteText =
+                    loopTechniques.appliedNotes?.[tech.id] ||
+                    loopTechniques.appliedNotes?.[tech.title] ||
+                    ''
                   const placeholder = tech.placeholderGenerator(identity)
 
                   return (
@@ -758,9 +840,7 @@ export function Step5LoopDesign({
                         <label className="flex items-start gap-3 cursor-pointer flex-1">
                           <button
                             type="button"
-                            onClick={() =>
-                              handleToggleTechnique(section.categoryKey, tech.title, tech.id)
-                            }
+                            onClick={() => handleToggleTechnique(section.categoryKey, tech.id)}
                             className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all flex-shrink-0 mt-0.5 cursor-pointer ${
                               isChecked
                                 ? section.checkboxActiveClass
@@ -840,17 +920,19 @@ export function Step5LoopDesign({
                           </div>
 
                           {/* Nút xem video reel của kỹ thuật */}
-                          <div className="pt-1 flex justify-end">
-                            <button
-                              type="button"
-                              onClick={() => handleOpenVideo(tech.videoUrl)}
-                              className="inline-flex items-center gap-1.5 text-xs text-bright-magenta hover:text-bright-magenta font-semibold font-ui transition-colors group cursor-pointer"
-                            >
-                              <PlayCircle className="w-3.5 h-3.5" />
-                              <span>Xem video hướng dẫn kỹ thuật này</span>
-                              <ExternalLink className="w-3 h-3 text-deep-navy/70 group-hover:text-bright-magenta transition-colors" />
-                            </button>
-                          </div>
+                          {tech.videoUrl && (
+                            <div className="pt-1 flex justify-end">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenVideo(tech.videoUrl)}
+                                className="inline-flex items-center gap-1.5 text-xs text-bright-magenta hover:text-bright-magenta font-semibold font-ui transition-colors group cursor-pointer"
+                              >
+                                <PlayCircle className="w-3.5 h-3.5" />
+                                <span>Xem video hướng dẫn kỹ thuật này</span>
+                                <ExternalLink className="w-3 h-3 text-deep-navy/70 group-hover:text-bright-magenta transition-colors" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -870,7 +952,7 @@ export function Step5LoopDesign({
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-deep-navy/30 hover:border-deep-navy text-deep-navy text-sm font-ui font-semibold bg-white hover:bg-warm-ivory transition-all active:scale-95 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Quay lại</span>
+          <span>{vi.dp01.back}</span>
         </button>
 
         <button
@@ -878,7 +960,7 @@ export function Step5LoopDesign({
           onClick={onNext}
           className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta text-white text-sm sm:text-base font-ui font-semibold shadow-soft hover:shadow-soft-md transition-all active:scale-95 group cursor-pointer"
         >
-          <span>Tiếp · Habit Boarding Pass</span>
+          <span>{vi.dp01.nextLoop}</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>

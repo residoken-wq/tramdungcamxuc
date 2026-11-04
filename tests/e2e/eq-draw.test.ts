@@ -199,8 +199,8 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
       }).toPass({ timeout: 15000 })
 
       // Kiểm tra đúng thẻ 2 đã được rút
-      await expect(guestPage2.getByText(keyword2)).toBeVisible({ timeout: 15000 })
-      await expect(guestPage2.getByText(message2)).toBeVisible({ timeout: 15000 })
+      await expect(guestPage2.getByText(keyword2).first()).toBeVisible({ timeout: 15000 })
+      await expect(guestPage2.getByText(message2).first()).toBeVisible({ timeout: 15000 })
     } finally {
       // 4. Dọn dẹp dữ liệu kiểm thử
       try {

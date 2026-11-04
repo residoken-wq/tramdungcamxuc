@@ -83,7 +83,7 @@ export async function getTechniques(payloadInstance?: Payload): Promise<PublicTe
       where: {
         _status: { equals: 'published' },
       },
-      sort: 'id',
+      sort: ['order', 'id'],
       limit: 100,
       depth: 0,
       draft: false,
@@ -97,10 +97,32 @@ export async function getTechniques(payloadInstance?: Payload): Promise<PublicTe
         doc.stage &&
         ['cue', 'craving', 'response', 'reward'].includes(doc.stage)
       ) {
+        const docRecord = doc as unknown as Record<string, unknown>
+        const rawExamples = Array.isArray(docRecord.examples)
+          ? (docRecord.examples as unknown[])
+          : []
+        const examples = rawExamples
+          .map((item) =>
+            typeof item === 'string'
+              ? item
+              : typeof item === 'object' && item !== null && 'text' in item
+                ? String((item as { text?: unknown }).text || '')
+                : '',
+          )
+          .filter((t) => t.trim().length > 0)
+
         techniques.push({
           id: doc.id,
           name: doc.name,
           stage: doc.stage as PublicTechnique['stage'],
+          description:
+            typeof docRecord.description === 'string' ? (docRecord.description as string) : null,
+          examples,
+          applyTemplate:
+            typeof docRecord.applyTemplate === 'string'
+              ? (docRecord.applyTemplate as string)
+              : null,
+          order: typeof docRecord.order === 'number' ? (docRecord.order as number) : null,
           howTo: doc.howTo,
           example: doc.example,
           exampleVideoUrl:
@@ -314,21 +336,12 @@ export async function submitHabitPlan(
     email: cleanEmail || undefined,
   })
 
-  // 3. Kiểm tra technique: không trùng lặp, tối đa 2 kỹ thuật mỗi stage, có thật và đúng stage đã xuất bản
+  // 3. Kiểm tra technique: không trùng lặp, có thật và đúng stage đã xuất bản
+  // REVIEW-REQUIRED: Bỏ giới hạn 2 / giai đoạn theo DP-01d (H6 = A, cho phép chọn cả 3 kỹ thuật Cue)
   const techniqueIds = validated.chosenTechniques.map((t) => t.techniqueId)
   const uniqueIds = new Set(techniqueIds)
   if (uniqueIds.size !== techniqueIds.length) {
     throw techniqueError(vi.habit.wizard.errors.techniqueDuplicate)
-  }
-
-  const stageCounts: Record<string, number> = {}
-  for (const item of validated.chosenTechniques) {
-    stageCounts[item.stage] = (stageCounts[item.stage] || 0) + 1
-  }
-  for (const count of Object.values(stageCounts)) {
-    if (count > 2) {
-      throw techniqueError(vi.habit.wizard.errors.techniquesTooMany)
-    }
   }
 
   const techMap = new Map<number, Technique>()

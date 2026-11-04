@@ -4,10 +4,13 @@ import React, { useState } from 'react'
 import { ArrowLeft, ArrowRight, Info } from 'lucide-react'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import type { CleanHabitOnePercent, CleanTitledText } from '@/lib/habit/journey-content.server'
+import { DEFAULT_DP01_CONTENT, type Dp01Step2Content } from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 export interface Step2PercentPrincipleProps {
   onePercent?: CleanHabitOnePercent | null
   onePercentUnknowns?: CleanTitledText[]
+  step2Content?: Dp01Step2Content
   onNext: () => void
   onPrev: () => void
 }
@@ -15,11 +18,12 @@ export interface Step2PercentPrincipleProps {
 export function Step2PercentPrinciple({
   onePercent,
   onePercentUnknowns,
+  step2Content = DEFAULT_DP01_CONTENT.step2,
   onNext,
   onPrev,
 }: Step2PercentPrincipleProps) {
-  // Slider days (7 to 365) - khởi tạo ở mốc 21 ngày
-  const [days, setDays] = useState<number>(21)
+  // Slider days (0 to 365) - khởi tạo theo CMS maxDays nếu có hoặc mặc định 21 ngày
+  const [days, setDays] = useState<number>(() => onePercent?.maxDays ?? 21)
 
   const unknownItems =
     onePercentUnknowns && onePercentUnknowns.length > 0
@@ -43,19 +47,18 @@ export function Step2PercentPrinciple({
         ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-testid="one-percent-section">
       {/* 1. Quote Block */}
       <StepQuoteHeader
         stage="GIAI ĐOẠN 1 · KHÁM THÓI QUEN"
-        title="Nguyên lý 1% tốt hơn mỗi ngày"
+        title={onePercent?.title || 'Nguyên lý 1% tốt hơn mỗi ngày'}
         quote="“Thay đổi thói quen thực ra là thay đổi tư duy.”"
         author="— Robert Kiyosaki, Cha giàu Cha nghèo —"
       />
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Hầu hết mọi người nghe câu “1% mỗi ngày” rồi gật đầu bỏ qua. Nhưng hiểu đúng nguyên lý này
-        là thứ quyết định bạn có đi qua nổi tuần thứ ba hay không.
+        {step2Content.leadIn}
       </p>
 
       {/* 2. Biểu đồ "Vùng năng lực tiềm ẩn" */}
@@ -65,11 +68,11 @@ export function Step2PercentPrinciple({
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-bright-magenta" />
               <h2 className="font-ui font-bold text-lg text-deep-navy">
-                Biểu đồ: Vùng năng lực tiềm ẩn
+                {step2Content.chartTitle}
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-              Đường cong bứt phá (Thực tế vs Tôi nghĩ sẽ là)
+              {step2Content.chartSubtitle}
             </p>
           </div>
 
@@ -257,10 +260,11 @@ export function Step2PercentPrinciple({
         <div className="space-y-2">
           <input
             type="range"
-            min={7}
-            max={365}
+            min={0}
+            max={onePercent?.maxDays ?? 365}
             step={1}
             value={days}
+            aria-valuenow={days}
             onChange={(e) => setDays(Number(e.target.value))}
             className="w-full h-2.5 bg-lavender-mist rounded-lg appearance-none cursor-pointer accent-bright-magenta"
           />

@@ -1,5 +1,4 @@
 'use client'
-/* eslint-disable react-hooks/set-state-in-effect */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { HabitStep, DailyRoutineItem, IdentityFormData, LoopTechniques } from './types'
@@ -18,27 +17,36 @@ import {
   getDefaultHabitFlowDraft,
   migrateHabitDraft,
   serializeHabitDraftForStorage,
-  type HabitFlowDraft,
 } from '@/components/habit/flow/draft'
 import { zipStateToFlowDraft, flowDraftToZipState, type ZipState } from './draft-adapter'
 import { track } from '@/lib/analytics/track'
 import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
-import type { CleanHabitDiagnose, CleanHabitStepQuotes } from '@/lib/habit/journey-content.server'
+import type {
+  CleanHabitDiagnose,
+  CleanHabitLoop,
+  CleanHabitStepQuotes,
+} from '@/lib/habit/journey-content.server'
+import { withDp01Defaults, type Dp01AllContent } from '@/lib/habit/dp01-content'
 
 export interface HabitTrackerAppProps {
   techniques?: PublicTechnique[]
   journeyDays?: number
   diagnose?: CleanHabitDiagnose | null
   stepQuotes?: CleanHabitStepQuotes
+  loopContent?: CleanHabitLoop | null
   privacyNote?: string | null
+  dp01Content?: Dp01AllContent
 }
 
 export function HabitTrackerApp({
   techniques = [],
   journeyDays = 28,
   diagnose,
+  loopContent,
   privacyNote,
+  dp01Content,
 }: HabitTrackerAppProps) {
+  const resolvedDp01 = useMemo(() => withDp01Defaults(dp01Content), [dp01Content])
   const startTimeRef = useRef<number | null>(null)
   const completedTrackedRef = useRef(false)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -72,6 +80,7 @@ export function HabitTrackerApp({
     const startYmd = identity.startDate || getVietnamYmd()
     const endYmd = getVietnamYmd(new Date(addVietnamDays(startYmd, journeyDays - 1)))
     if (identity.startDate !== startYmd || identity.endDate !== endYmd) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- DP-01c: synchronize computed end date with start date
       setIdentity((prev) => ({
         ...prev,
         startDate: startYmd,
@@ -94,6 +103,7 @@ export function HabitTrackerApp({
           const migrated = migrateHabitDraft(parsed, knownIds, diagnose?.questions?.length)
           const restoredZip = flowDraftToZipState(migrated)
 
+          /* eslint-disable react-hooks/set-state-in-effect -- Safe initial hydration from localStorage on mount */
           if (Object.keys(restoredZip.diagnoseAnswers).length > 0) {
             setDiagnoseAnswers(restoredZip.diagnoseAnswers)
           }
@@ -110,6 +120,7 @@ export function HabitTrackerApp({
             setCurrentStep(migrated.step as HabitStep)
             setMaxReachedStep((prev) => Math.max(prev, migrated.step))
           }
+          /* eslint-enable react-hooks/set-state-in-effect */
         }
       }
     } catch {
@@ -302,6 +313,7 @@ export function HabitTrackerApp({
         <HabitTrackerHeader
           currentStep={currentStep}
           maxReachedStep={maxReachedStep}
+          headerContent={resolvedDp01.header}
           onStageClick={(step: HabitStep) => goToStep(step)}
         />
 
@@ -318,6 +330,7 @@ export function HabitTrackerApp({
           {currentStep === 1 && (
             <Step1Diagnose
               answers={diagnoseAnswers}
+              step1Content={resolvedDp01.step1}
               onAnswerChange={handleDiagnoseChange}
               onNext={() => handleStepTransition(2)}
             />
@@ -325,6 +338,7 @@ export function HabitTrackerApp({
 
           {currentStep === 2 && (
             <Step2PercentPrinciple
+              step2Content={resolvedDp01.step2}
               onNext={() => handleStepTransition(3)}
               onPrev={() => goToStep(1)}
             />
@@ -335,6 +349,7 @@ export function HabitTrackerApp({
               routines={routines}
               selectedMentor={identity.selectedMentor}
               mentorTime={identity.mentorTime}
+              step3Content={resolvedDp01.step3}
               onRoutinesChange={setRoutines}
               onMentorSelect={(mentor: string) =>
                 setIdentity((prev) => ({
@@ -364,6 +379,7 @@ export function HabitTrackerApp({
                 },
                 getDefaultHabitFlowDraft(),
               )}
+              step4Content={resolvedDp01.step4}
               onDraftChange={(newDraft) => {
                 const zState = flowDraftToZipState(newDraft)
                 setIdentity((prev) => ({
@@ -381,6 +397,9 @@ export function HabitTrackerApp({
               loopTechniques={loopTechniques}
               prescribedCategory={prescribedCategory}
               identity={identity}
+              techniques={techniques}
+              loopContent={loopContent}
+              step5Content={resolvedDp01.step5}
               onGoToStep={(step) => goToStep(step)}
               onTechniquesChange={setLoopTechniques}
               onNext={() => handleStepTransition(6)}
@@ -393,6 +412,8 @@ export function HabitTrackerApp({
               journeyDays={journeyDays}
               identity={identity}
               loopTechniques={loopTechniques}
+              techniques={techniques}
+              step6Content={resolvedDp01.step6}
               name={name}
               email={email}
               consent={consent}
@@ -415,7 +436,7 @@ export function HabitTrackerApp({
       </div>
 
       {/* Footer */}
-      <HabitTrackerFooter />
+      <HabitTrackerFooter footerContent={resolvedDp01.footer} />
     </div>
   )
 }

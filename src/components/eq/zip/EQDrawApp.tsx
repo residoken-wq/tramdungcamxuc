@@ -126,7 +126,7 @@ export function EQDrawApp({
   // Chọn thẻ cụ thể từ danh sách tất cả thẻ
   const handleSelectSpecificCard = async (card: PublicEqCard) => {
     // Nếu thẻ chưa mở nội dung và không ở freeMode
-    if (!isUnlockedAll && !card.message) {
+    if (!isUnlockedAll && !isFreeMode && !card.message) {
       // Thử gọi server action để rút/xem theo slug
       const res = await drawEqCardAction({
         mode: 'keyword',
@@ -506,7 +506,7 @@ export function EQDrawApp({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 max-h-[480px] overflow-y-auto pr-1">
               {allCards.map((card) => {
                 const isCurrent = selectedCard?.id === card.id
-                const isCardUnlocked = isUnlockedAll || Boolean(card.message)
+                const isCardUnlocked = isUnlockedAll || isFreeMode || Boolean(card.message)
 
                 return (
                   <div
@@ -537,7 +537,7 @@ export function EQDrawApp({
                       </p>
                     ) : (
                       <p className="font-ui text-xs text-deep-navy/70 italic mt-1.5">
-                        {isUnlockedAll ? 'Chạm để mở thẻ' : 'Dùng thử hoặc mua để mở trọn vẹn'}
+                        {isUnlockedAll || isFreeMode ? 'Chạm để mở thẻ' : 'Dùng thử hoặc mua để mở trọn vẹn'}
                       </p>
                     )}
 
