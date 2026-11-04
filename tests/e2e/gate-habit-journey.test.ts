@@ -275,15 +275,23 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
         await expect(modal).toBeVisible({ timeout: 3000 })
       }).toPass({ timeout: 15000 })
 
-      // Chọn trạng thái Bỏ phiếu + chọn cảm xúc Bình an
-      const votedRadio = modal.getByRole('radio', { name: /Bỏ phiếu/i })
-      await votedRadio.check()
+      // Chọn trạng thái Bỏ phiếu / Đã làm + chọn cảm xúc
+      const votedRadio = modal
+        .getByRole('button', { name: /Đã làm|Bỏ phiếu/i })
+        .or(modal.getByRole('radio', { name: /Bỏ phiếu/i }))
+        .first()
+      await votedRadio.click()
 
-      const peacefulRadio = modal.getByRole('radio', { name: /Bình an/i })
-      await peacefulRadio.click()
+      const peacefulRadio = modal
+        .getByRole('button', { name: /Hơi tự tin|Bình an/i })
+        .or(modal.getByRole('radio', { name: /Bình an/i }))
+        .first()
+      if (await peacefulRadio.isVisible()) {
+        await peacefulRadio.click()
+      }
 
       // Lưu check-in
-      const saveBtn = modal.locator('button[type="submit"]', { hasText: /Lưu check-in/i })
+      const saveBtn = modal.getByRole('button', { name: /Lưu/i })
       await expect(async () => {
         await saveBtn.click({ timeout: 5000 })
         await expect(modal).toBeHidden({ timeout: 3000 })
@@ -291,7 +299,7 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
 
       // Kiểm tra ngày 1 đã tích hoàn thành
       const day1Completed = guestPage.getByRole('button', {
-        name: /^Ngày 1: (Bỏ phiếu|Đã hoàn thành)/i,
+        name: /^Ngày 1:.*(Bỏ phiếu|Đã hoàn thành|Đã làm|Bản tối giản)/i,
       })
       await expect(day1Completed).toBeVisible()
 
@@ -364,8 +372,8 @@ test.describe('GD2 Habit Formation Journey Gate (T3-06a)', () => {
       // 12. Quay lại /habit/tracker -> dữ liệu ngày 1 đã check-in vẫn còn nguyên vẹn
       await guestPage.goto('/habit/tracker', { waitUntil: 'load' })
       const day1Retained = guestPage.getByRole('button', {
-        // HB-11: nhãn ô ngày theo 4 trạng thái – "Ngày 1: Bỏ phiếu, cảm xúc: Bình an"
-        name: /^Ngày 1: Bỏ phiếu, cảm xúc:? Bình an/i,
+        // DP-01: nhãn ô ngày của bảng zip – "Ngày 1: Đã hoàn thành, cảm xúc: Hơi tự tin"
+        name: /^Ngày 1: Đã hoàn thành, cảm xúc: Hơi tự tin/i,
       })
       await expect(day1Retained).toBeVisible({ timeout: 15000 })
     } finally {

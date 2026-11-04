@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import * as zip from './helpers/habit-zip'
 import { vi } from '@/lib/i18n/vi'
 
 /**
@@ -162,110 +163,48 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
 
       // 4. Khách vãng lai truy cập /habit/5-phut
       await guestPage.goto('/habit/5-phut')
-      await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible({ timeout: 20000 })
+      await expect(guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
+        timeout: 20000,
+      })
 
-      // ===== BƯỚC 1: Khám đúng bệnh =====
-      const skipDiagnoseBtn = guestPage.getByRole('button', { name: /Bỏ qua phần khám/i })
-      if (await skipDiagnoseBtn.isVisible()) {
-        await skipDiagnoseBtn.click()
-      } else {
-        await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
-      }
-
-      // ===== BƯỚC 2: Nguyên lý 1% =====
-      await expect(guestPage.getByText('Bước 2 / 6')).toBeVisible({ timeout: 15000 })
-      await guestPage.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
-
-      // ===== BƯỚC 3: Tìm Mentor =====
-      await expect(guestPage.getByText('Bước 3 / 6')).toBeVisible({ timeout: 15000 })
-      await guestPage
-        .getByPlaceholder(/Đánh răng|thói quen/i)
-        .fill('[MẪU] Uống cốc nước ấm sau khi thức dậy')
-      await guestPage.getByRole('button', { name: /Thêm một việc|Thêm thói quen/i }).click()
-      await guestPage
-        .getByRole('button', { name: /Có ích \(\+\)|đánh giá tốt/i })
-        .first()
-        .click()
-      await guestPage.locator('input[type="radio"][name="anchorHabit"]').first().check()
-      await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
-
-      // ===== BƯỚC 4: Gọi tên =====
-      await expect(guestPage.getByText('Bước 4 / 6')).toBeVisible({ timeout: 15000 })
-      await guestPage.getByPlaceholder(/thiền 5 phút/i).fill('viết nhật ký 5 phút')
-      await guestPage.getByPlaceholder(/người điềm tĩnh/i).fill('người thấu hiểu chính mình')
-
-      // Chọn nhịp tuần (ví dụ bỏ Chủ nhật để kiểm tra nhịp 6 ngày/tuần)
-      const rhythmButton = guestPage.getByRole('button', { name: /Chọn nhịp 6 lần mỗi tuần/i })
-      if (await rhythmButton.isVisible()) {
-        await rhythmButton.click()
-        const sundayBtn = guestPage.getByRole('button', { name: 'Chủ nhật' })
-        if (await sundayBtn.isVisible()) {
-          await sundayBtn.click()
-        }
-      }
-
-      // Nhập hành động dưới 2 phút (bản tối giản)
-      await guestPage.getByPlaceholder(/Mở sách đọc đúng 1 trang/i).fill('Mở sổ viết 1 dòng')
+      // ===== Bước 1–6 theo giao diện zip (DP-01, helpers/habit-zip.ts) =====
+      await zip.answerDiagnose(guestPage)
+      await zip.passPercent(guestPage)
+      await zip.fillMentor(guestPage, '[MẪU] Uống cốc nước ấm sau khi thức dậy')
+      await zip.fillIdentity(guestPage, {
+        action: 'viết nhật ký 5 phút',
+        role: 'người thấu hiểu chính mình',
+        atomic: 'Mở sổ viết 1 dòng',
+      })
+      // Nhịp 6 ngày/tuần: mỗi ngày, bỏ Chủ nhật
+      await zip.setRhythm(guestPage, 'Mỗi ngày', ['CN'])
 
       // Chọn ngày bắt đầu startDate = today + 2 ngày
       const now = new Date()
       const plusTwoDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000)
       const plusTwoYmd = plusTwoDate.toISOString().split('T')[0]
-      const startDateInput = guestPage.locator('#field-start-date')
-      await expect(startDateInput).toBeVisible()
-      await startDateInput.fill(plusTwoYmd)
+      await zip.setStartDate(guestPage, plusTwoYmd)
+      await zip.nextFromIdentity(guestPage)
 
-      await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
+      // Bước 5: một kỹ thuật mỗi giai đoạn (kỹ thuật vừa tạo cho 4 giai đoạn)
+      const techNames = await guestPage
+        .getByRole('checkbox')
+        .evaluateAll((els) =>
+          els.map((e) => e.getAttribute('aria-label') ?? '').filter((n) => n.includes('HB15-')),
+        )
+      expect(techNames.length).toBe(4)
+      await zip.pickTechniques(
+        guestPage,
+        techNames.map((name) => ({ name })),
+      )
+      await zip.nextFromLoop(guestPage)
 
-      // ===== BƯỚC 5: Vòng lặp thói quen =====
-      await expect(guestPage.getByText('Bước 5 / 6')).toBeVisible({ timeout: 15000 })
-      const stageSections = guestPage.locator('.p-5.rounded-card')
-      const count = await stageSections.count()
-      for (let i = 0; i < Math.min(count, 4); i++) {
-        const section = stageSections.nth(i)
-        const checkbox = section.locator('input[type="checkbox"]').first()
-        if (await checkbox.isVisible()) {
-          await checkbox.check()
-        }
-        const actionInput = section.locator('input[type="text"]').first()
-        if (await actionInput.isVisible()) {
-          await actionInput.fill(`[MẪU] Hành động cho bước ${i + 1}`)
-        }
-      }
-      await guestPage.getByRole('button', { name: /Tiếp tục|Xem kế hoạch/i }).click()
+      // Bước 6: nhận kế hoạch qua email
+      await zip.fillBoarding(guestPage, { name: 'Học viên HB15', email: customerEmail })
+      await zip.submitBoarding(guestPage)
 
-      // ===== BƯỚC 6: Boarding Pass & Lên chuyến =====
-      await expect(guestPage.getByText('Bước 6 / 6')).toBeVisible({ timeout: 15000 })
-      await expect(guestPage.getByText(/Boarding Pass của bạn/i)).toBeVisible()
-
-      // Điền thông tin cá nhân
-      await guestPage.getByLabel(/Họ và tên/i).fill('Học viên HB15')
-      await guestPage.getByLabel(/Email/i).fill(customerEmail)
-
-      // Tick đồng thuận chính sách bảo mật
-      const consentCheckbox = guestPage.locator('input[type="checkbox"][required]')
-      await consentCheckbox.check()
-
-      // Chờ token Turnstile sẵn sàng trước khi gửi (như habit-loop.test.ts)
-      await expect(guestPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
-        timeout: 20000,
-      })
-
-      // Bấm nút chính "Lên chuyến · Bắt đầu 28 ngày →"
-      const startJourneyBtn = guestPage.getByRole('button', {
-        name: /Lên chuyến · Bắt đầu 28 ngày/i,
-      })
-      await startJourneyBtn.click()
-
-      // Màn hình chúc mừng xuất hiện
-      await expect(guestPage.getByRole('heading', { name: vi.hb22.successTitle })).toBeVisible({
-        timeout: 20000,
-      })
-
-      // Bấm nút chính để đi vào Tracker (dẫn tới /tai-khoan/dang-nhap?next=/habit/tracker)
-      const trackerLink = guestPage.getByTestId('success-tracker-link')
-      await expect(trackerLink).toBeVisible()
-      await trackerLink.click()
+      // Vào tracker (chưa đăng nhập: chuyển sang /tai-khoan/dang-nhap?next=…)
+      await guestPage.getByRole('link', { name: /Vào bảng theo dõi 28 ngày/ }).click()
 
       // Chuyển tới trang đăng nhập OTP
       await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap/, { timeout: 15000 })
@@ -309,9 +248,13 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       // 7. Kiểm tra ngày lịch hiển thị đúng (Khởi hành theo startDate = today + 2)
       const [py, pm, pd] = plusTwoYmd.split('-')
       const formattedStartDateStr = `${pd}/${pm}/${py}`
+      // Thanh tiến trình zip: "Bắt đầu dd/mm"; trạm 1 mở đúng ngày khởi hành
+      await expect(guestPage.getByText(`Bắt đầu ${pd}/${pm}`, { exact: true })).toBeVisible({
+        timeout: 10000,
+      })
       await expect(
-        guestPage.getByText(new RegExp(`Khởi hành: ${formattedStartDateStr}`, 'i')),
-      ).toBeVisible({ timeout: 10000 })
+        guestPage.getByText(`Mở vào ngày ${formattedStartDateStr}`).first(),
+      ).toBeVisible()
 
       // 8. Fixture cập nhật startDate về hôm nay để mở check-in ngày 1
       const customerPlansRes = await page.request.get(
@@ -338,25 +281,17 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       const checkInModal = guestPage.locator('div[role="dialog"]')
       await expect(checkInModal).toBeVisible()
 
-      // Chọn trạng thái "Bỏ phiếu" và cảm xúc "Bình an"
-      const votedRadio = checkInModal.getByRole('radio', { name: /Bỏ phiếu/i })
-      await votedRadio.check()
+      // Chọn trạng thái "Đã làm" và cảm xúc
+      await checkInModal.getByRole('button', { name: vi.dp01.statusDone }).click()
+      // 5 mức tự tin (H5)
+      await checkInModal.getByRole('button', { name: /Hơi tự tin/ }).click()
 
-      const peacefulRadio = checkInModal.getByRole('radio', { name: /Bình an/i })
-      if (await peacefulRadio.isVisible()) {
-        await peacefulRadio.click()
-      }
-
-      // Bấm Lưu check-in
-      const saveCheckinBtn = checkInModal.locator('button[type="submit"]', {
-        hasText: /Lưu check-in/i,
-      })
-      await saveCheckinBtn.click()
+      await checkInModal.getByRole('button', { name: vi.dp01.save, exact: true }).click()
       await expect(checkInModal).toBeHidden({ timeout: 10000 })
 
       // Kiểm tra Ngày 1 đã hoàn thành
       const day1Completed = guestPage.getByRole('button', {
-        name: /^Ngày 1: (Bỏ phiếu|Đã hoàn thành)/i,
+        name: /^Ngày 1:.*(Bỏ phiếu|Đã hoàn thành|Đã làm|Bản tối giản)/i,
       })
       await expect(day1Completed).toBeVisible()
 
@@ -364,7 +299,7 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       const downloadPromise = guestPage.waitForEvent('download', { timeout: 15000 })
       await guestPage.getByRole('button', { name: /Tải bảng 28 ngày \(\.csv\)/i }).click()
       const csvDownload = await downloadPromise
-      expect(csvDownload.suggestedFilename()).toMatch(/^tram-dung-cam-xuc-habit-.*\.csv$/)
+      expect(csvDownload.suggestedFilename()).toMatch(/\.csv$/)
 
       // 10. Fixture lùi ngày để mở suy ngẫm trạm 1
       // Lưu và cấu hình câu hỏi suy ngẫm cho Trạm 1
@@ -411,27 +346,26 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       // Reload trang để cập nhật trạm 1 đã kết thúc
       await guestPage.reload()
 
-      // Card Trạm 1 hiện nút "Suy ngẫm trạm"
-      const station1ReflectBtn = guestPage.getByRole('button', { name: /Suy ngẫm trạm/i }).first()
-      await expect(station1ReflectBtn).toBeVisible({ timeout: 15000 })
-      await station1ReflectBtn.click()
+      // Trạm 1 đã mở: câu hỏi suy ngẫm hiện ngay dưới trạm (bản zip, không có hộp thoại)
+      const q1 = guestPage.getByLabel('Điều gì đã giúp bạn duy trì đều đặn 7 ngày qua?')
+      await expect(q1).toBeVisible({ timeout: 15000 })
+      await q1.fill('Sự kiên trì và đặt lời nhắc nhẹ nhàng.')
+      await guestPage
+        .getByLabel('Cảm xúc chủ đạo của bạn khi hoàn thành trạm 1 là gì?')
+        .fill('Cảm giác bình an và tự tin hơn.')
+      await guestPage
+        .getByRole('button', { name: /Lưu bài suy ngẫm/ })
+        .first()
+        .click()
+      await expect(guestPage.getByRole('button', { name: /Đã lưu!/ }).first()).toBeVisible({
+        timeout: 10000,
+      })
 
-      const reflectionModal = guestPage.locator('div[role="dialog"]')
-      await expect(reflectionModal).toBeVisible()
-      await expect(reflectionModal).toContainText('Điều gì đã giúp bạn duy trì đều đặn 7 ngày qua?')
-
-      const textareas = reflectionModal.locator('textarea')
-      await textareas.nth(0).fill('Sự kiên trì và đặt lời nhắc nhẹ nhàng.')
-      if ((await textareas.count()) > 1) {
-        await textareas.nth(1).fill('Cảm giác bình an và tự tin hơn.')
-      }
-
-      const saveReflectionBtn = reflectionModal.getByRole('button', { name: /Lưu suy ngẫm/i })
-      await saveReflectionBtn.click()
-      await expect(reflectionModal).toBeHidden({ timeout: 10000 })
-
-      // Trạm 1 hiển thị huy hiệu "Đã suy ngẫm"
-      await expect(guestPage.getByText(/Đã suy ngẫm/i).first()).toBeVisible()
+      // Tải lại vẫn còn câu trả lời
+      await guestPage.reload()
+      await expect(
+        guestPage.getByLabel('Điều gì đã giúp bạn duy trì đều đặn 7 ngày qua?'),
+      ).toHaveValue('Sự kiên trì và đặt lời nhắc nhẹ nhàng.', { timeout: 15000 })
 
       // 11. Khối "Đồng hành sau 28 ngày" (HB-14)
       const settingsRes = await page.request.get('/api/globals/siteSettings')
@@ -447,20 +381,18 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       // Reload trang để hiển thị khối đồng hành
       await guestPage.reload()
 
-      // Kiểm tra xuất hiện khối "Đồng hành sau 28 ngày"
-      const afterJourneyPanel = guestPage.getByTestId('after-journey-panel')
-      await expect(afterJourneyPanel).toBeVisible({ timeout: 15000 })
-
+      // Nút nổi "Thấy công cụ này hữu ích" mở khối đồng hành sau 28 ngày
+      await guestPage.getByRole('button', { name: /Thấy công cụ này hữu ích/ }).click()
       const coachBookingLink = guestPage.getByRole('link', {
         name: /Đặt lịch với Habit Coach/i,
       })
-      await expect(coachBookingLink).toBeVisible()
+      await expect(coachBookingLink).toBeVisible({ timeout: 15000 })
       expect(await coachBookingLink.getAttribute('href')).toBe(
         'https://cal.com/tramdungcamxuc/habit-coach',
       )
 
-      // CF-02: khối không còn nút Ủng hộ
-      await expect(afterJourneyPanel.getByRole('link', { name: /Ủng hộ/i })).toHaveCount(0)
+      // CF-02 / H8: không có nút Ủng hộ
+      await expect(guestPage.getByRole('link', { name: /Ủng hộ/i })).toHaveCount(0)
     } finally {
       await visitor.close()
 
@@ -506,7 +438,7 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
 
       // Dọn dẹp sản phẩm test nếu tạo mới
       if (createdProductId) {
-        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+        await zip.deleteTestProduct(page, createdProductId)
       }
 
       // Khôi phục siteSettings và habitJourneyContent

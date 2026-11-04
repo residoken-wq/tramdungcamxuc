@@ -97,6 +97,25 @@ export async function checkEqDrawAccess(options?: CheckAccessOptions): Promise<{
 
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
+
+  // REVIEW-REQUIRED: E3 - Kiểm tra chế độ truy cập EQ Buddy từ CMS global eqBuddyContent
+  try {
+    const eqContent = await payload.findGlobal({
+      slug: 'eqBuddyContent',
+      depth: 0,
+    })
+    if (eqContent && (eqContent as any).eqAccessMode === 'free') {
+      return {
+        allowed: true,
+        customerState: customer ? 'logged_in' : 'guest',
+        accessStatus: 'free',
+        trialDays: 21,
+      }
+    }
+  } catch (_e) {
+    // Nếu global chưa tồn tại hoặc lỗi đọc, tiếp tục theo logic mặc định
+  }
+
   const products = await payload.find({
     collection: 'products',
     where: { slug: { equals: EQ_BUDDY_PRODUCT_SLUG } },
@@ -318,6 +337,9 @@ export async function drawEqCardCore(
     id: selectedDoc.id as number | string,
     code: (selectedDoc.code as string) || '',
     keywordEn: (selectedDoc.keywordEn as string) || null,
+    keywordVi: (selectedDoc as any).keywordVi || null,
+    category: (selectedDoc as any).category || null,
+    gradientTheme: (selectedDoc as any).gradientTheme || null,
     message: (selectedDoc.message as string) || null,
     promptRecall: (selectedDoc.promptRecall as string) || null,
     promptPack: (selectedDoc.promptPack as string) || null,

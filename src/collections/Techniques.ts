@@ -1,11 +1,14 @@
 import { parseVideoUrl } from '../components/site/VideoEmbed'
 import {
   contentCollection,
+  lines,
+  number,
   relation,
   richText,
   select,
   stageOptions,
   text,
+  textarea,
   url,
 } from '../fields/content'
 import { vi } from '../lib/i18n/vi'
@@ -32,6 +35,18 @@ export function isValidExampleVideoUrl(value?: string | null): boolean {
         return true
       }
     }
+
+    // Facebook / YouTube / Web video links (mở tab mới theo zip DP-01)
+    if (
+      hostname === 'facebook.com' ||
+      hostname.endsWith('.facebook.com') ||
+      hostname === 'fb.watch' ||
+      hostname === 'youtube.com' ||
+      hostname.endsWith('.youtube.com') ||
+      hostname === 'youtu.be'
+    ) {
+      return true
+    }
   } catch {
     return false
   }
@@ -52,6 +67,10 @@ export const Techniques = contentCollection(
   [
     text('name', 'Tên kỹ thuật', true),
     select('stage', 'Giai đoạn', stageOptions),
+    textarea('description', 'Mô tả ngắn'),
+    lines('examples', 'Ví dụ', { maxRows: 2 }),
+    text('applyTemplate', 'Mẫu gợi ý áp dụng ({mentor}, {thoi_quen}, {gio})'),
+    number('order', 'Thứ tự hiển thị', 0),
     richText('howTo', 'Cách thực hiện'),
     richText('example', 'Ví dụ'),
     relation('lesson', 'Bài học liên quan', 'lessons'),
@@ -68,6 +87,6 @@ export const Techniques = contentCollection(
 Techniques.admin = {
   ...Techniques.admin,
   description: 'Kỹ thuật Atomic Habits thực chiến ứng dụng vào 4 mắt xích thói quen.',
-  defaultColumns: ['name', 'stage', 'lesson', 'updatedAt'],
+  defaultColumns: ['order', 'name', 'stage', 'lesson', 'updatedAt'],
   listSearchableFields: ['name'],
 }

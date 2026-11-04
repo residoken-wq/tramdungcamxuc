@@ -384,6 +384,36 @@ docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm 
 
 Không dùng cờ `--apply`: `payload run` không chuyển cờ vào script, lệnh sẽ chỉ chạy xem trước.
 
+### DP-01d – Nạp nội dung chuẩn ZIP cho Habit và chạy Migration kỹ thuật
+
+Bản cập nhật DP-01d mang toàn bộ 11 kỹ thuật Habit chuẩn, 8 câu hỏi chẩn đoán và toàn bộ nhãn copy từ ZIP vào CMS (qua 2 migration DB và script nạp an toàn không ghi đè nội dung Hana đã tùy chỉnh).
+
+#### 1. Danh sách migration database cần chạy:
+- `20261104_100000_dp01d_techniques_and_loop`: thêm các cột `description`, `examples`, `applyTemplate`, `order` cho collection `techniques`, thêm các cột `loop_laws`, `loop_cue_box` cho `habit_journey_content`.
+- `20261104_110000_dp01d_habit_text_fields`: thêm các trường copy CMS cho `header`, `step1`, `step2`, `step3`, `step4`, `step5`, `step6`, `checkIn`, `footer` trong `habit_journey_content`.
+
+Lệnh chạy migration:
+```bash
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm seed \
+  pnpm migrate < /dev/null
+```
+*(Trên local dev: `pnpm migrate`)*
+
+#### 2. Nạp dữ liệu kỹ thuật & copy CMS (`scripts/dp01d-habit-content.ts`):
+- Luôn chạy **thử nghiệm (dry-run)** trước trên môi trường demo:
+```bash
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm seed \
+  pnpm payload run scripts/dp01d-habit-content.ts < /dev/null
+```
+- Khi kiểm tra danh sách kỹ thuật và các trường cần nạp đã chuẩn, tiến hành **ghi thật (apply)** (tự động tạo backup JSON trong `./backups/`):
+```bash
+mkdir -p backups
+docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm \
+  -e APPLY=true -v "$PWD/backups:/app/backups" seed \
+  pnpm payload run scripts/dp01d-habit-content.ts < /dev/null
+```
+*(Trên local PowerShell: `$env:APPLY="true"; $null | pnpm payload run scripts/dp01d-habit-content.ts`)*
+
 ### Nạp dữ liệu MẪU cho buổi demo
 
 Chạy **sau** khi app đã `healthy`. Image tools được kéo trực tiếp từ GHCR (tag `tools-latest`), không cần build trên server. Lệnh chỉ tạo/cập nhật bản ghi đánh dấu MẪU (`isSample`), không đụng dữ liệu thật, chạy nhiều lần không nhân đôi:

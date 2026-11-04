@@ -1,6 +1,10 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
+vi.mock('@/lib/forms/turnstile.server', () => ({
+  verifyTurnstile: vi.fn().mockResolvedValue({ success: true }),
+  TurnstileError: class TurnstileError extends Error {},
+}))
 
 import {
   formatIdentityStatement,
@@ -51,22 +55,23 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
   })
 
   describe('flattenChosenTechniques()', () => {
-    it('gom phẳng danh sách kỹ thuật từ 4 giai đoạn và bỏ qua hành động rỗng', () => {
+    it('gom phẳng danh sách kỹ thuật từ 4 giai đoạn và giữ cả kỹ thuật có hành động rỗng (DP-01d)', () => {
       const byStage: Record<'cue' | 'craving' | 'response' | 'reward', HabitChosenTechnique[]> = {
         cue: [{ techniqueId: 1, action: 'Đặt sách cạnh gối' }],
         craving: [
           { techniqueId: 2, action: 'Pha trà thảo mộc' },
-          { techniqueId: 3, action: '   ' }, // Rỗng -> bỏ qua
+          { techniqueId: 3, action: '   ' }, // Rỗng -> vẫn giữ với action rỗng
         ],
         response: [{ techniqueId: 4, action: 'Quy tắc 2 phút' }],
         reward: [{ techniqueId: 5, action: 'Tick vào ô hoàn thành' }],
       }
 
       const flattened = flattenChosenTechniques(byStage)
-      expect(flattened).toHaveLength(4)
+      expect(flattened).toHaveLength(5)
       expect(flattened).toEqual([
         { techniqueId: 1, stage: 'cue', action: 'Đặt sách cạnh gối' },
         { techniqueId: 2, stage: 'craving', action: 'Pha trà thảo mộc' },
+        { techniqueId: 3, stage: 'craving', action: '' },
         { techniqueId: 4, stage: 'response', action: 'Quy tắc 2 phút' },
         { techniqueId: 5, stage: 'reward', action: 'Tick vào ô hoàn thành' },
       ])
@@ -144,10 +149,13 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
         ).toThrow()
       })
 
-      it('từ chối khi action trống', () => {
-        expect(() =>
-          habitChosenTechniqueSchema.parse({ techniqueId: 1, stage: 'cue', action: '   ' }),
-        ).toThrow()
+      it('cho phép action rỗng hoặc trắng (DP-01d)', () => {
+        const parsed = habitChosenTechniqueSchema.parse({
+          techniqueId: 1,
+          stage: 'cue',
+          action: '   ',
+        })
+        expect(parsed.action).toBe('')
       })
     })
 
@@ -209,8 +217,8 @@ describe('Habit Loop Pure Functions & Schemas (T2-03)', () => {
         ).not.toThrow()
       })
 
-      it('từ chối khi chosenTechniques vượt quá 8 kỹ thuật', () => {
-        const tooMany = Array.from({ length: 9 }, (_, i) => ({
+      it('từ chối khi chosenTechniques vượt quá 20 kỹ thuật (DP-01d)', () => {
+        const tooMany = Array.from({ length: 21 }, (_, i) => ({
           techniqueId: i + 1,
           stage: 'cue' as const,
           action: `Kỹ thuật ${i + 1}`,
@@ -350,6 +358,10 @@ describe('getTechniques() and getHabitProduct() (T2-03)', () => {
       id: 1,
       name: 'Kỹ thuật 1',
       stage: 'cue',
+      description: null,
+      examples: [],
+      applyTemplate: null,
+      order: null,
       howTo: undefined,
       example: undefined,
       exampleVideoUrl: null,

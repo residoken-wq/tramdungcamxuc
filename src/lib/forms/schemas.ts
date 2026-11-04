@@ -275,14 +275,11 @@ export const habitScorecardItemSchema = z.object({
 
 export type HabitScorecardItemInput = z.infer<typeof habitScorecardItemSchema>
 
+// REVIEW-REQUIRED: action cho phép rỗng theo DP-01d (H6 = A)
 export const habitChosenTechniqueSchema = z.object({
   techniqueId: z.number().int().positive(),
   stage: z.enum(['cue', 'craving', 'response', 'reward']),
-  action: z
-    .string()
-    .trim()
-    .min(1, vi.habit.wizard.errors.actionRequired)
-    .max(300, vi.habit.wizard.errors.actionMax),
+  action: z.string().trim().max(300, vi.habit.wizard.errors.actionMax).default(''),
 })
 
 export type HabitChosenTechniqueInput = z.infer<typeof habitChosenTechniqueSchema>
@@ -298,9 +295,10 @@ export const habitPlanSubmissionSchema = z
       .trim()
       .min(1, vi.habit.wizard.errors.identityRequired)
       .max(500, vi.habit.wizard.errors.identityMax),
+    // REVIEW-REQUIRED: Nâng giới hạn techniques từ 8 lên 20 để hỗ trợ chọn nhiều kỹ thuật theo zip (DP-01d)
     chosenTechniques: z
       .array(habitChosenTechniqueSchema)
-      .max(8, vi.habit.wizard.errors.techniquesTooMany),
+      .max(20, vi.habit.wizard.errors.techniquesTooMany),
     anchorHabit: z
       .string()
       .trim()

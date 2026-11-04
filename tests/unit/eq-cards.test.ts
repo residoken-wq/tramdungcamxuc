@@ -233,7 +233,7 @@ describe('EQ Cards schema, migration helpers, and seed protection', () => {
             promptRecall: 'Gợi nhớ',
             promptPack: 'Gói ghém',
             promptAcknowledge: 'Ghi nhận',
-            emotionTags: ['invalid-emotion' as EmotionKey],
+            emotionTags: ['invalid-emotion' as any],
           },
         }),
       ).rejects.toThrow(ValidationError)

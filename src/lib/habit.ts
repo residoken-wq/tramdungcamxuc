@@ -20,6 +20,10 @@ export interface PublicTechnique {
   id: number
   name: string
   stage: HabitStage
+  description?: string | null
+  examples?: string[]
+  applyTemplate?: string | null
+  order?: number | null
   howTo?: unknown
   example?: unknown
   exampleVideoUrl?: string | null
@@ -92,6 +96,7 @@ export function getDefaultHabitDraft(): HabitPlanDraft {
 
 /**
  * Gom danh sách kỹ thuật đã chọn thành mảng phẳng để gửi lên Server
+ * // REVIEW-REQUIRED: Giữ kỹ thuật khi action rỗng theo DP-01d (H6 = A)
  */
 export function flattenChosenTechniques(
   byStage: Record<HabitStage, HabitChosenTechnique[]>,
@@ -100,11 +105,11 @@ export function flattenChosenTechniques(
   for (const stage of HABIT_STAGES) {
     const list = byStage[stage] || []
     for (const item of list) {
-      if (item.techniqueId && item.action.trim()) {
+      if (typeof item.techniqueId === 'number' && item.techniqueId > 0) {
         result.push({
           techniqueId: item.techniqueId,
           stage,
-          action: item.action.trim(),
+          action: (item.action || '').trim(),
         })
       }
     }

@@ -35,7 +35,11 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
   let validCravingTechId: number
   let draftTechId: number
 
+  let originalTurnstileSecret: string | undefined
+
   beforeAll(async () => {
+    originalTurnstileSecret = process.env.TURNSTILE_SECRET_KEY
+    process.env.TURNSTILE_SECRET_KEY = ''
     payload = await getPayload({ config })
     emailSender = new MockEmailSender()
 
@@ -81,6 +85,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
   const trackedEmails: string[] = []
 
   afterAll(async () => {
+    process.env.TURNSTILE_SECRET_KEY = originalTurnstileSecret
     if (trackedEmails.length > 0) {
       await payload.delete({
         collection: 'leads',
@@ -240,7 +245,7 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     ).rejects.toThrow(/không còn trong danh sách/)
   })
 
-  it('A1: từ chối khi một giai đoạn có nhiều hơn 2 kỹ thuật', async () => {
+  it('A1: cho phép một giai đoạn có 3 kỹ thuật theo DP-01d (H6: zip cho phép chọn cả 3 Cue)', async () => {
     // Tạo thêm 2 kỹ thuật cue nữa để có tổng cộng 3 kỹ thuật cue
     const cue2 = await payload.create({
       collection: 'techniques',
@@ -254,23 +259,23 @@ describe('Habit Plan Submission Flow (T2-03)', () => {
     })
     createdTechniques.push(cue2.id, cue3.id)
 
-    await expect(
-      submitHabitPlan(
-        {
-          scorecard: [{ habit: 'Uống nước', rating: 'good' }],
-          identityStatement: 'Tôi sẽ uống nước để khỏe mạnh',
-          chosenTechniques: [
-            { techniqueId: validCueTechId, stage: 'cue', action: 'Hành động 1' },
-            { techniqueId: cue2.id, stage: 'cue', action: 'Hành động 2' },
-            { techniqueId: cue3.id, stage: 'cue', action: 'Hành động 3' },
-          ],
-          email: `habit-${randomUUID().slice(0, 8)}@example.test`,
-          consent: true,
-        },
-        {},
-        { payload, emailSender },
-      ),
-    ).rejects.toThrow(/tối đa 2/i)
+    const res = await submitHabitPlan(
+      {
+        scorecard: [{ habit: 'Uống nước', rating: 'good' }],
+        identityStatement: 'Tôi sẽ uống nước để khỏe mạnh',
+        chosenTechniques: [
+          { techniqueId: validCueTechId, stage: 'cue', action: 'Hành động 1' },
+          { techniqueId: cue2.id, stage: 'cue', action: 'Hành động 2' },
+          { techniqueId: cue3.id, stage: 'cue', action: 'Hành động 3' },
+        ],
+        email: `habit-${randomUUID().slice(0, 8)}@example.test`,
+        consent: true,
+      },
+      {},
+      { payload, emailSender },
+    )
+    expect(res.success).toBe(true)
+    if (res.planId) createdPlans.push(res.planId)
   })
 
   it('A1: từ chối khi thiếu stage trong chosenTechniques', async () => {

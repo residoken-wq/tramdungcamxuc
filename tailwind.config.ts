@@ -37,7 +37,9 @@ const config: Config = {
         card: 'var(--radius-card, 20px)',
       },
       boxShadow: {
-        soft: '0 4px 20px -2px rgb(var(--color-deep-navy-rgb) / 0.06)',
+        soft: '0 4px 20px -2px rgba(40, 10, 96, 0.04), 0 2px 6px -1px rgba(40, 10, 96, 0.02)',
+        'soft-md': '0 10px 30px -4px rgba(40, 10, 96, 0.06), 0 4px 12px -2px rgba(40, 10, 96, 0.03)',
+        'soft-lg': '0 20px 40px -6px rgba(40, 10, 96, 0.08), 0 8px 16px -4px rgba(40, 10, 96, 0.04)',
       },
       backgroundImage: {
         'brand-gradient':

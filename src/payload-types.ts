@@ -167,12 +167,14 @@ export interface Config {
     siteSettings: SiteSetting;
     designSystem: DesignSystem;
     habitJourneyContent: HabitJourneyContent;
+    eqBuddyContent: EqBuddyContent;
   };
   globalsSelect: {
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     designSystem: DesignSystemSelect<false> | DesignSystemSelect<true>;
     habitJourneyContent: HabitJourneyContentSelect<false> | HabitJourneyContentSelect<true>;
+    eqBuddyContent: EqBuddyContentSelect<false> | EqBuddyContentSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1356,6 +1358,30 @@ export interface Technique {
    */
   stage?: ('cue' | 'craving' | 'response' | 'reward') | null;
   /**
+   * Nhập mô tả ngắn.
+   */
+  description?: string | null;
+  /**
+   * Thêm từng mục, kéo để đổi thứ tự.
+   */
+  examples?:
+    | {
+        /**
+         * Nhập nội dung.
+         */
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Nhập mẫu gợi ý áp dụng ({mentor}, {thoi_quen}, {gio}).
+   */
+  applyTemplate?: string | null;
+  /**
+   * Nhập số không âm. Giá tiền tính bằng đồng.
+   */
+  order?: number | null;
+  /**
    * Soạn cách thực hiện.
    */
   howTo?: {
@@ -1508,6 +1534,27 @@ export interface EqCard {
    * Câu thông điệp mặt trước thẻ. Bắt buộc khi xuất bản.
    */
   message?: string | null;
+  /**
+   * Nhóm thẻ hiển thị ở góc trên mặt trước (ví dụ: Biết ơn & Đong đầy, Thấu cảm & Vỗ về). Tối đa 60 ký tự.
+   */
+  category?: string | null;
+  /**
+   * Tổ hợp màu nền chuyển sắc từ bộ màu Brand Book 2026.
+   */
+  gradientTheme?:
+    | (
+        | 'from-[#FDE6F6] via-[#FAF7F4] to-[#E9DDF9]'
+        | 'from-[#D9F1EA] via-[#FAF7F4] to-[#F6E9B8]'
+        | 'from-[#E9DDF9] via-[#FAF7F4] to-[#FDE6F6]'
+        | 'from-[#F6E9B8] via-[#FAF7F4] to-[#D9F1EA]'
+        | 'from-[#FDE6F6] via-[#FAF7F4] to-[#D9F1EA]'
+        | 'from-[#D9F1EA] via-[#FAF7F4] to-[#E9DDF9]'
+        | 'from-[#FAF7F4] via-[#E9DDF9] to-[#F6E9B8]'
+        | 'from-[#FDE6F6] via-[#FAF7F4] to-[#F6E9B8]'
+        | 'from-[#E9DDF9] via-[#FAF7F4] to-[#D9F1EA]'
+        | 'from-[#F6E9B8] via-[#FAF7F4] to-[#FDE6F6]'
+      )
+    | null;
   /**
    * Câu hỏi gợi nhớ trên mặt sau thẻ. Bắt buộc khi xuất bản.
    */
@@ -1910,6 +1957,11 @@ export interface HabitCheckin {
         | 'tired'
         | 'discouraged'
         | 'stressed'
+        | 'insecure'
+        | 'unconfident'
+        | 'somewhat_confident'
+        | 'very_confident'
+        | 'wonderful'
       )
     | null;
   /**
@@ -2907,6 +2959,15 @@ export interface LessonsSelect<T extends boolean = true> {
 export interface TechniquesSelect<T extends boolean = true> {
   name?: T;
   stage?: T;
+  description?: T;
+  examples?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  applyTemplate?: T;
+  order?: T;
   howTo?: T;
   example?: T;
   lesson?: T;
@@ -2955,6 +3016,8 @@ export interface EqCardsSelect<T extends boolean = true> {
   keywordEn?: T;
   keywordVi?: T;
   message?: T;
+  category?: T;
+  gradientTheme?: T;
   promptRecall?: T;
   promptPack?: T;
   promptAcknowledge?: T;
@@ -4037,6 +4100,49 @@ export interface HabitJourneyContent {
      * Ví dụ: "Đánh dấu kỹ thuật bạn sẽ dùng để vượt qua giai đoạn nút thắt."
      */
     techniqueHint?: string | null;
+    laws?:
+      | {
+          /**
+           * Chọn một mục phù hợp.
+           */
+          stage: 'cue' | 'craving' | 'response' | 'reward';
+          /**
+           * Nhập nhãn luật (vd: 1 · make it obvious).
+           */
+          lawChip?: string | null;
+          /**
+           * Nhập tiêu đề quy luật.
+           */
+          title: string;
+          /**
+           * Nhập nhãn phụ (vd: cue · tín hiệu).
+           */
+          subLabel?: string | null;
+          /**
+           * Nhập câu hỏi gợi mở.
+           */
+          question?: string | null;
+          /**
+           * Nhập liên kết bắt đầu bằng https:// hoặc http://.
+           */
+          videoUrl?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    cueBox?: {
+      /**
+       * Nhập chữ in đậm mở đầu.
+       */
+      boldText?: string | null;
+      /**
+       * Nhập đoạn văn lưu ý.
+       */
+      text?: string | null;
+      /**
+       * Nhập nhãn nút xem lại.
+       */
+      buttonLabel?: string | null;
+    };
   };
   /**
    * Câu trích dẫn ngắn tạo cảm hứng tại các bước của wizard và màn hình tracker.
@@ -4174,6 +4280,271 @@ export interface HabitJourneyContent {
    * Hiện ở flow Habit. Phải đúng sự thật: dữ liệu lưu trên máy chủ của Trạm theo tài khoản email của khách.
    */
   privacyNote?: string | null;
+  header?: {
+    /**
+     * Nhập huy hiệu trên cùng (vd: content creator hub).
+     */
+    badgeText?: string | null;
+    /**
+     * Nhập dòng tiêu đề 1 (navy - vd: xây thói quen).
+     */
+    titleLine1?: string | null;
+    /**
+     * Nhập dòng tiêu đề 2 (magenta - vd: dựng thương hiệu).
+     */
+    titleLine2?: string | null;
+    /**
+     * Nhập huy hiệu chuỗi (vd: form habit · build identity).
+     */
+    seriesBadge?: string | null;
+    /**
+     * Nhập dòng cảm xúc / khẩu hiệu.
+     */
+    tagline?: string | null;
+    /**
+     * Nhập đoạn văn dẫn nhập 3 giai đoạn.
+     */
+    introText?: string | null;
+    /**
+     * Nhập tiêu đề giai đoạn 1.
+     */
+    stage1Title?: string | null;
+    /**
+     * Nhập mô tả giai đoạn 1.
+     */
+    stage1Desc?: string | null;
+    /**
+     * Nhập tiêu đề giai đoạn 2.
+     */
+    stage2Title?: string | null;
+    /**
+     * Nhập mô tả giai đoạn 2.
+     */
+    stage2Desc?: string | null;
+    /**
+     * Nhập tiêu đề giai đoạn 3.
+     */
+    stage3Title?: string | null;
+    /**
+     * Nhập mô tả giai đoạn 3.
+     */
+    stage3Desc?: string | null;
+  };
+  step1?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 1.
+     */
+    leadIn?: string | null;
+  };
+  step2?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 2.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập tiêu đề biểu đồ.
+     */
+    chartTitle?: string | null;
+    /**
+     * Nhập mô tả dưới tiêu đề biểu đồ.
+     */
+    chartSubtitle?: string | null;
+  };
+  step3?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 3.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập tiêu đề bảng soi một ngày.
+     */
+    scorecardTitle?: string | null;
+    /**
+     * Nhập mô tả bảng soi một ngày.
+     */
+    scorecardDesc?: string | null;
+    /**
+     * Nhập tiêu đề chọn mentor.
+     */
+    mentorTitle?: string | null;
+    /**
+     * Nhập mô tả chọn mentor.
+     */
+    mentorDesc?: string | null;
+    /**
+     * Nhập gợi ý khi chưa đánh dấu việc có ích.
+     */
+    emptyMentorHint?: string | null;
+    /**
+     * Nhập nhãn câu hỏi thời gian.
+     */
+    mentorTimeLabel?: string | null;
+    /**
+     * Nhập gợi ý xác nhận khi đã chọn mentor.
+     */
+    mentorSuccessHint?: string | null;
+  };
+  step4?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 4.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập tiêu đề tuyên ngôn.
+     */
+    statementTitle?: string | null;
+    /**
+     * Nhập mô tả tuyên ngôn.
+     */
+    statementDesc?: string | null;
+    /**
+     * Nhập gợi ý vai trò (mỗi dòng 1 gợi ý).
+     */
+    suggestedRoles?: string | null;
+    /**
+     * Nhập tiêu đề nhịp điệu thói quen.
+     */
+    rhythmTitle?: string | null;
+    /**
+     * Nhập mô tả nhịp điệu.
+     */
+    rhythmDesc?: string | null;
+    /**
+     * Nhập lưu ý về ngày nghỉ theo nhịp.
+     */
+    rhythmNote?: string | null;
+    /**
+     * Nhập tiêu đề thói quen hạt nhân.
+     */
+    atomicHabitTitle?: string | null;
+    /**
+     * Nhập mô tả thói quen hạt nhân.
+     */
+    atomicHabitDesc?: string | null;
+    /**
+     * Nhập gợi ý thói quen hạt nhân (mỗi dòng 1 gợi ý).
+     */
+    suggestedAtomicHabits?: string | null;
+    /**
+     * Nhập tiêu đề phần lý do & cam kết.
+     */
+    commitmentTitle?: string | null;
+    /**
+     * Nhập câu hỏi vì sao điều này quan trọng.
+     */
+    whyImportantLabel?: string | null;
+    /**
+     * Nhập placeholder ô nhập lý do.
+     */
+    whyImportantPlaceholder?: string | null;
+    /**
+     * Nhập lưu ý bên dưới ô nhập lý do.
+     */
+    whyImportantNote?: string | null;
+  };
+  step5?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 5.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập placeholder khi ghi chú áp dụng.
+     */
+    customActionPlaceholder?: string | null;
+  };
+  step6?: {
+    /**
+     * Nhập lời dẫn mở đầu bước 6.
+     */
+    leadIn?: string | null;
+    /**
+     * Nhập tiêu đề lớn trên thẻ.
+     */
+    passTitle?: string | null;
+    /**
+     * Nhập tiêu đề phụ trên thẻ.
+     */
+    passSubtitle?: string | null;
+    /**
+     * Nhập lời xác nhận cam kết / điều khoản.
+     */
+    termsText?: string | null;
+  };
+  checkIn?: {
+    /**
+     * Nhập lời dẫn ngày cần check-in.
+     */
+    postDayHint?: string | null;
+    /**
+     * Nhập lời dẫn ngày nghỉ theo nhịp.
+     */
+    restDayHint?: string | null;
+    /**
+     * Nhập placeholder ô ghi chú cảm xúc.
+     */
+    notePlaceholder?: string | null;
+  };
+  footer?: {
+    /**
+     * Nhập khẩu hiệu thương hiệu.
+     */
+    slogan?: string | null;
+    /**
+     * Nhập thông tin tác giả / coach.
+     */
+    authorInfo?: string | null;
+    /**
+     * Nhập đoạn ghi nhận nguồn sách tham khảo.
+     */
+    bookCredits?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Cấu hình chế độ truy cập (Owner), hướng dẫn 2 bước, và nội dung giao diện EQ Buddy.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eqBuddyContent".
+ */
+export interface EqBuddyContent {
+  id: number;
+  /**
+   * Chỉ chủ sở hữu (Owner) mới có quyền đổi. "Miễn phí hoàn toàn": khách rút không giới hạn, không cần đăng nhập, mở toàn bộ 26 thẻ và câu hỏi suy ngẫm, không hiển thị paywall. "Cần đăng ký dùng thử": khách rút 1 thẻ rồi phải dùng thử.
+   */
+  eqAccessMode?: ('trial' | 'free') | null;
+  tagline?: string | null;
+  quoteTop?: string | null;
+  badge?: string | null;
+  mainTitle?: string | null;
+  subtitle?: string | null;
+  suggestedEmotions?: string | null;
+  shopeeUrl?: string | null;
+  intro1Heading?: string | null;
+  intro1Description?: string | null;
+  card1Title?: string | null;
+  card1Desc?: string | null;
+  card2Title?: string | null;
+  card2Desc?: string | null;
+  card3Title?: string | null;
+  card3Desc?: string | null;
+  card4Title?: string | null;
+  card4Desc?: string | null;
+  intro2Heading?: string | null;
+  intro2Description?: string | null;
+  step1Title?: string | null;
+  step1Tag?: string | null;
+  step1Desc?: string | null;
+  step2Title?: string | null;
+  step2Tag?: string | null;
+  step2Desc?: string | null;
+  step3Title?: string | null;
+  step3Tag?: string | null;
+  step3Desc?: string | null;
+  step4Title?: string | null;
+  step4Tag?: string | null;
+  step4Desc?: string | null;
+  guideModalQuote?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -4457,6 +4828,24 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
             };
         note?: T;
         techniqueHint?: T;
+        laws?:
+          | T
+          | {
+              stage?: T;
+              lawChip?: T;
+              title?: T;
+              subLabel?: T;
+              question?: T;
+              videoUrl?: T;
+              id?: T;
+            };
+        cueBox?:
+          | T
+          | {
+              boldText?: T;
+              text?: T;
+              buttonLabel?: T;
+            };
       };
   stepQuotes?:
     | T
@@ -4522,6 +4911,134 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
         captionTemplate?: T;
       };
   privacyNote?: T;
+  header?:
+    | T
+    | {
+        badgeText?: T;
+        titleLine1?: T;
+        titleLine2?: T;
+        seriesBadge?: T;
+        tagline?: T;
+        introText?: T;
+        stage1Title?: T;
+        stage1Desc?: T;
+        stage2Title?: T;
+        stage2Desc?: T;
+        stage3Title?: T;
+        stage3Desc?: T;
+      };
+  step1?:
+    | T
+    | {
+        leadIn?: T;
+      };
+  step2?:
+    | T
+    | {
+        leadIn?: T;
+        chartTitle?: T;
+        chartSubtitle?: T;
+      };
+  step3?:
+    | T
+    | {
+        leadIn?: T;
+        scorecardTitle?: T;
+        scorecardDesc?: T;
+        mentorTitle?: T;
+        mentorDesc?: T;
+        emptyMentorHint?: T;
+        mentorTimeLabel?: T;
+        mentorSuccessHint?: T;
+      };
+  step4?:
+    | T
+    | {
+        leadIn?: T;
+        statementTitle?: T;
+        statementDesc?: T;
+        suggestedRoles?: T;
+        rhythmTitle?: T;
+        rhythmDesc?: T;
+        rhythmNote?: T;
+        atomicHabitTitle?: T;
+        atomicHabitDesc?: T;
+        suggestedAtomicHabits?: T;
+        commitmentTitle?: T;
+        whyImportantLabel?: T;
+        whyImportantPlaceholder?: T;
+        whyImportantNote?: T;
+      };
+  step5?:
+    | T
+    | {
+        leadIn?: T;
+        customActionPlaceholder?: T;
+      };
+  step6?:
+    | T
+    | {
+        leadIn?: T;
+        passTitle?: T;
+        passSubtitle?: T;
+        termsText?: T;
+      };
+  checkIn?:
+    | T
+    | {
+        postDayHint?: T;
+        restDayHint?: T;
+        notePlaceholder?: T;
+      };
+  footer?:
+    | T
+    | {
+        slogan?: T;
+        authorInfo?: T;
+        bookCredits?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "eqBuddyContent_select".
+ */
+export interface EqBuddyContentSelect<T extends boolean = true> {
+  eqAccessMode?: T;
+  tagline?: T;
+  quoteTop?: T;
+  badge?: T;
+  mainTitle?: T;
+  subtitle?: T;
+  suggestedEmotions?: T;
+  shopeeUrl?: T;
+  intro1Heading?: T;
+  intro1Description?: T;
+  card1Title?: T;
+  card1Desc?: T;
+  card2Title?: T;
+  card2Desc?: T;
+  card3Title?: T;
+  card3Desc?: T;
+  card4Title?: T;
+  card4Desc?: T;
+  intro2Heading?: T;
+  intro2Description?: T;
+  step1Title?: T;
+  step1Tag?: T;
+  step1Desc?: T;
+  step2Title?: T;
+  step2Tag?: T;
+  step2Desc?: T;
+  step3Title?: T;
+  step3Tag?: T;
+  step3Desc?: T;
+  step4Title?: T;
+  step4Tag?: T;
+  step4Desc?: T;
+  guideModalQuote?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
