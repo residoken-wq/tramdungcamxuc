@@ -402,6 +402,8 @@ export function EQDrawApp({
 
               <div className="space-y-1.5">
                 <textarea
+                  id="reflection-input"
+                  aria-label="Suy ngẫm của bạn về thông điệp này"
                   rows={3}
                   value={reflectionText}
                   onChange={(e) => setReflectionText(e.target.value)}

@@ -5,6 +5,7 @@ import {
   serializeHabitDraftForStorage,
 } from '@/components/habit/flow/draft'
 import type { Weekday } from '@/lib/habit/rhythm'
+import { formatIdentityStatement } from '@/lib/habit'
 import type { HabitScorecardItem, HabitScorecardRating } from '@/lib/habit'
 import type { DailyRoutineItem, IdentityFormData, LoopTechniques } from './types'
 
@@ -118,6 +119,8 @@ export function zipStateToFlowDraft(
 
   draft.actionText = zipState.identity.identityAction || ''
   draft.personText = zipState.identity.identityRole || ''
+  // QA DP-01e: the server needs the full statement; without it every plan save was refused.
+  draft.identityStatement = formatIdentityStatement(draft.actionText, draft.personText)
   draft.anchorHabit = zipState.identity.selectedMentor || ''
   draft.twoMinuteAction = zipState.identity.atomicHabit || ''
   draft.companionName = zipState.identity.companionName || ''

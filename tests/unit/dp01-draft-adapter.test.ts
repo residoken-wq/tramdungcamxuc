@@ -6,7 +6,9 @@ import {
   weekdaysToDays,
   recordAnswersToArray,
   arrayAnswersToRecord,
+  zipStateToFlowDraft,
 } from '@/components/habit/zip/draft-adapter'
+import { INITIAL_IDENTITY_DATA } from '@/components/habit/zip/constants'
 
 describe('DP-01 draft adapter', () => {
   it('converts routine items to scorecard and back', () => {
@@ -42,5 +44,20 @@ describe('DP-01 draft adapter', () => {
     expect(arr).toEqual([5, 3, 4, null])
     expect(arrayAnswersToRecord(arr)).toEqual(rec)
   })
-})
 
+  it('QA DP-01e: builds the identity statement the server requires', () => {
+    const draft = zipStateToFlowDraft({
+      diagnoseAnswers: {},
+      routines: [],
+      identity: {
+        ...INITIAL_IDENTITY_DATA,
+        identityAction: 'viết 3 dòng mỗi tối',
+        identityRole: 'người viết đều đặn',
+      },
+      loopTechniques: { cues: [], cravings: [], responses: [], rewards: [] },
+    })
+    expect(draft.identityStatement).toBe(
+      'Tôi sẽ viết 3 dòng mỗi tối để trở thành người viết đều đặn',
+    )
+  })
+})

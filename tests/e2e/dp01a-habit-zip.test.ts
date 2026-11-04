@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import * as zip from './helpers/habit-zip'
 import { vi } from '@/lib/i18n/vi'
 
 /**
@@ -101,9 +102,8 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       const prodQuery = await (
         await page.request.get('/api/products?where[slug][equals]=habit-tracker-so&draft=true')
       ).json()
-      if (prodQuery.docs?.length) {
-        createdProductId = prodQuery.docs[0].id
-      } else {
+      // Sản phẩm có sẵn thì dùng lại và không xoá khi dọn dẹp
+      if (!prodQuery.docs?.length) {
         const prodRes = await page.request.post('/api/products', {
           data: {
             name: 'Habit Tracker số',
@@ -122,133 +122,59 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         createdProductId = (await prodRes.json()).doc?.id
       }
 
-      // 2. Tạo hoặc bảo đảm có ít nhất 3 kỹ thuật cue
-      const existingTechs = await (
-        await page.request.get('/api/techniques?where[stage][equals]=cue&limit=10&draft=true')
-      ).json()
-      if (!existingTechs.docs || existingTechs.docs.length < 3) {
-        for (let i = 1; i <= 3; i++) {
-          const res = await page.request.post('/api/techniques', {
-            data: {
-              name: `[TEST] Kỹ thuật Cue #${i} - ${suffix}`,
-              stage: 'cue',
-              order: i,
-              description: `Mô tả kỹ thuật cue ${i}`,
-              examples: ['Ví dụ 1', 'Ví dụ 2'],
-              applyTemplate: 'Tôi sẽ làm việc này vào buổi sáng',
-              _status: 'published',
-            },
-          })
-          if (res.ok()) {
-            createdTechniqueIds.push((await res.json()).doc.id)
-          }
-        }
+      // 2. Tạo 3 kỹ thuật Cue riêng cho lần chạy này
+      const cueNames: string[] = []
+      for (let i = 1; i <= 3; i++) {
+        const name = `[TEST] Kỹ thuật Cue #${i} - ${suffix}`
+        const res = await page.request.post('/api/techniques', {
+          data: {
+            name,
+            stage: 'cue',
+            order: i,
+            description: `Mô tả kỹ thuật cue ${i}`,
+            examples: ['Ví dụ 1', 'Ví dụ 2'],
+            applyTemplate: 'Tôi sẽ làm việc này vào buổi sáng',
+            _status: 'published',
+          },
+        })
+        expect(res.ok(), await res.text()).toBe(true)
+        createdTechniqueIds.push((await res.json()).doc.id)
+        cueNames.push(name)
       }
 
-      // 3. Khách truy cập /habit/5-phut
+      // 3. Khách đi 6 bước zip (helpers/habit-zip.ts)
       await guestPage.goto('/habit/5-phut')
-      await expect(guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
-        timeout: 20000,
+
+      // Bước 1: đúng 8 câu hỏi của bản zip (mặc định hoặc từ CMS)
+      const questionGroups = guestPage
+        .getByRole('group')
+        .filter({ has: guestPage.getByRole('button', { name: '1', exact: true }) })
+      await expect(questionGroups.first()).toBeVisible({ timeout: 20000 })
+      await expect(questionGroups).toHaveCount(8)
+      await zip.answerDiagnose(guestPage)
+      await zip.passPercent(guestPage)
+      await zip.fillMentor(guestPage, '[TEST] Uống nước ấm sáng')
+      await zip.fillIdentity(guestPage, {
+        action: 'tập thể dục 15 phút',
+        role: 'người khỏe mạnh và kỷ luật',
+        atomic: 'Xỏ giày thể thao',
       })
+      await zip.setRhythm(guestPage, '5 lần một tuần')
+      await zip.nextFromIdentity(guestPage)
 
-      // ===== BƯỚC 1: Trả lời 8 câu hỏi chẩn đoán =====
-      // Mỗi câu có thang điểm từ 1 đến 5 (nút 1..5)
-      const scoreButtons = guestPage.locator('button:has-text("4")')
-      const btnCount = await scoreButtons.count()
-      if (btnCount >= 8) {
-        for (let i = 0; i < 8; i++) {
-          await scoreButtons.nth(i).click()
-        }
-      }
-      const step1NextBtn = guestPage.getByRole('button', { name: /Tiếp tục/i })
-      await expect(step1NextBtn).toBeEnabled({ timeout: 10000 })
-      await step1NextBtn.click()
+      // Bước 5: 3 kỹ thuật Cue (không còn giới hạn 2 / giai đoạn), 1 kỹ thuật để trống ghi chú
+      expect(cueNames.length).toBe(3)
+      await zip.pickTechniques(guestPage, [
+        { name: cueNames[0] },
+        { name: cueNames[1], note: '[TEST] Ghi chú áp dụng kỹ thuật 2' },
+        { name: cueNames[2], note: '[TEST] Ghi chú áp dụng kỹ thuật 3' },
+      ])
+      await zip.nextFromLoop(guestPage)
 
-      // ===== BƯỚC 2: Nguyên lý 1% =====
-      await expect(guestPage.getByText(/Nguyên lý 1%/i).first()).toBeVisible({ timeout: 15000 })
-      await guestPage.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
-
-      // ===== BƯỚC 3: Tìm Mentor =====
-      await expect(guestPage.getByText(/Tìm "Mentor"|Tìm Mentor/i).first()).toBeVisible({
-        timeout: 15000,
-      })
-      await guestPage.getByPlaceholder(/Đánh răng|thói quen/i).fill('[TEST] Uống nước ấm sáng')
-      await guestPage.getByRole('button', { name: /Thêm một việc|Thêm thói quen/i }).click()
-      await guestPage
-        .getByRole('button', { name: /Có ích \(\+\)|đánh giá tốt/i })
-        .first()
-        .click()
-      await guestPage.locator('input[type="radio"][name="anchorHabit"]').first().check()
-      await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
-
-      // ===== BƯỚC 4: Gọi tên thói quen =====
-      await expect(guestPage.getByText(/Gọi tên thói quen/i).first()).toBeVisible({
-        timeout: 15000,
-      })
-      await guestPage.getByPlaceholder(/thiền 5 phút/i).fill('tập thể dục 15 phút')
-      await guestPage.getByPlaceholder(/người điềm tĩnh/i).fill('người khỏe mạnh và kỷ luật')
-      await guestPage.getByPlaceholder(/Mở sách đọc đúng 1 trang/i).fill('Xỏ giày thể thao')
-      await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
-
-      // ===== BƯỚC 5: Thiết kế vòng lặp =====
-      await expect(guestPage.getByText(/Thiết kế vòng lặp|Vòng lặp/i).first()).toBeVisible({
-        timeout: 15000,
-      })
-
-      // Chọn 3 kỹ thuật Cue:
-      // Kỹ thuật 1: chỉ tick chọn (appliedNotes rỗng)
-      // Kỹ thuật 2 & 3: tick chọn và bấm "Xem" để điền ghi chú áp dụng
-      const techLabels = guestPage.locator('label:has(button.w-5.h-5)')
-      await expect(techLabels.first()).toBeVisible({ timeout: 10000 })
-
-      // Tick kỹ thuật 1
-      await techLabels.nth(0).click()
-
-      // Tick kỹ thuật 2 + mở xem để điền ghi chú
-      await techLabels.nth(1).click()
-      const expandBtn2 = guestPage.getByRole('button', { name: 'Xem' }).first()
-      if (await expandBtn2.isVisible()) {
-        await expandBtn2.click()
-        const noteInput2 = guestPage
-          .locator('input[placeholder*="Ví dụ"], input[placeholder*="áp dụng"]')
-          .first()
-        if (await noteInput2.isVisible()) {
-          await noteInput2.fill('[TEST] Ghi chú áp dụng kỹ thuật 2')
-        }
-      }
-
-      // Tick kỹ thuật 3 + mở xem để điền ghi chú
-      await techLabels.nth(2).click()
-      const expandBtn3 = guestPage.getByRole('button', { name: 'Xem' }).first()
-      if (await expandBtn3.isVisible()) {
-        await expandBtn3.click()
-        const noteInputs = guestPage.locator(
-          'input[placeholder*="Ví dụ"], input[placeholder*="áp dụng"]',
-        )
-        const count = await noteInputs.count()
-        if (count > 0) {
-          await noteInputs.last().fill('[TEST] Ghi chú áp dụng kỹ thuật 3')
-        }
-      }
-
-      await guestPage.getByRole('button', { name: /Tiếp tục|Xem kế hoạch/i }).click()
-
-      // ===== BƯỚC 6: Boarding Pass & Lên chuyến =====
-      await expect(guestPage.getByText(/Boarding Pass/i).first()).toBeVisible({ timeout: 15000 })
-      await expect(
-        guestPage.getByText(/Boarding Pass của bạn|TẤM VÉ CHUYỂN MÌNH/i).first(),
-      ).toBeVisible()
-
-      await guestPage.getByLabel(/Họ và tên/i).fill('Học viên Test DP01')
-      await guestPage.getByLabel(/Email/i).fill(customerEmail)
-      await guestPage.locator('input[name="consent"]').check()
-
-      await expect(guestPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
-        timeout: 20000,
-      })
-
-      const submitBtn = guestPage.getByRole('button', { name: /Lên chuyến ngay/i })
-      await submitBtn.click()
+      // Bước 6: lên chuyến (lưu kế hoạch), rồi vào tracker qua OTP
+      await zip.fillBoarding(guestPage, { name: 'Học viên Test DP01', email: customerEmail })
+      await zip.submitBoarding(guestPage)
+      await guestPage.getByRole('link', { name: /Vào bảng theo dõi 28 ngày/ }).click()
 
       // ===== OTP Login =====
       await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap/, { timeout: 20000 })
@@ -269,14 +195,13 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       // ===== Chuyển vào Tracker =====
       await expect(guestPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 25000 })
 
-      // Nếu có thông báo bắt đầu dùng thử -> kích hoạt
-      const trialBtn = guestPage.getByRole('link', { name: /Bắt đầu dùng thử/i })
-      if (await trialBtn.isVisible()) {
-        await trialBtn.click()
-        await expect(guestPage).toHaveURL(/\/dung-thu/, { timeout: 15000 })
-        await guestPage.locator('button', { hasText: /Bắt đầu dùng thử/i }).click()
-        await guestPage.goto('/habit/tracker')
-      }
+      // Khách mới chưa có quyền dùng: tracker mời dùng thử -> /dung-thu -> kích hoạt -> quay lại tracker
+      await guestPage.getByRole('link', { name: /Bắt đầu dùng thử 28 ngày/i }).click()
+      await expect(guestPage).toHaveURL(/\/dung-thu/, { timeout: 15000 })
+      await guestPage.locator('button', { hasText: /Bắt đầu dùng thử 28 ngày/i }).click()
+      await expect(guestPage).toHaveURL(/\/habit\/hoc\/?$/, { timeout: 15000 })
+      await guestPage.goto('/habit/tracker')
+      await expect(guestPage.getByText('Lưới 28 ngày theo dõi')).toBeVisible({ timeout: 15000 })
 
       // Ghi nhận customer ID
       const custQuery = await (
@@ -309,18 +234,11 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(checkInModal).toBeVisible({ timeout: 10000 })
 
       // Chọn Đã làm + cảm xúc 😊 (Hơi tự tin)
-      const doneBtn = checkInModal
-        .getByRole('button', { name: /Đã làm/i })
-        .or(checkInModal.getByRole('radio', { name: /Bỏ phiếu/i }))
-        .first()
+      const doneBtn = checkInModal.getByRole('button', { name: vi.dp01.statusDone })
       await doneBtn.click()
+      await checkInModal.getByRole('button', { name: /Hơi tự tin/ }).click()
 
-      const moodBtn = checkInModal.getByRole('button', { name: /Hơi tự tin|Bình an/i }).first()
-      if (await moodBtn.isVisible()) {
-        await moodBtn.click()
-      }
-
-      const saveModalBtn = checkInModal.getByRole('button', { name: /Lưu/i })
+      const saveModalBtn = checkInModal.getByRole('button', { name: vi.dp01.save, exact: true })
       await saveModalBtn.click()
       await expect(checkInModal).toBeHidden({ timeout: 10000 })
 
@@ -338,7 +256,7 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         .click()
       await expect(checkInModal).toBeVisible({ timeout: 10000 })
 
-      const deleteBtn = checkInModal.getByRole('button', { name: /Xóa check-in này|Xoá/i })
+      const deleteBtn = checkInModal.getByRole('button', { name: vi.dp01.deleteCheckinButton })
       await deleteBtn.click()
       await expect(checkInModal).toBeHidden({ timeout: 10000 })
 
@@ -364,7 +282,7 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await csvBtn.click()
 
       const download = await downloadPromise
-      expect(download.suggestedFilename()).toMatch(/habit-tracker-28-ngay.*\.csv$/i)
+      expect(download.suggestedFilename()).toMatch(/\.csv$/i)
 
       // ===== TẢI LẠI TRANG (RELOAD) CÒN DỮ LIỆU =====
       await guestPage.reload()

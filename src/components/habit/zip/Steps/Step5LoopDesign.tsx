@@ -837,9 +837,12 @@ export function Step5LoopDesign({
                       {/* Technique Row Header */}
                       <div className="flex items-start justify-between gap-3">
                         {/* Checkbox + Title */}
-                        <label className="flex items-start gap-3 cursor-pointer flex-1">
+                        <div className="flex items-start gap-3 flex-1">
                           <button
                             type="button"
+                            role="checkbox"
+                            aria-checked={isChecked}
+                            aria-label={tech.title}
                             onClick={() => handleToggleTechnique(section.categoryKey, tech.id)}
                             className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all flex-shrink-0 mt-0.5 cursor-pointer ${
                               isChecked
@@ -858,7 +861,7 @@ export function Step5LoopDesign({
                               {tech.description}
                             </p>
                           </div>
-                        </label>
+                        </div>
 
                         {/* Nút Xem / Thu gọn */}
                         <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -897,10 +900,14 @@ export function Step5LoopDesign({
 
                           {/* Ô nhập "Cách tôi áp dụng" */}
                           <div className="space-y-1">
-                            <label className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 block">
+                            <label
+                              htmlFor={`technique-note-${tech.id}`}
+                              className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 block"
+                            >
                               Cách tôi áp dụng:
                             </label>
                             <input
+                              id={`technique-note-${tech.id}`}
                               type="text"
                               value={noteText}
                               onChange={(e) => handleNoteChange(tech.id, e.target.value)}

@@ -14,6 +14,9 @@ import {
   ShoppingBag,
 } from 'lucide-react'
 import { GuideModal } from './GuideModal'
+import { appendUtmParams } from '@/lib/utm'
+import { safeHref } from '@/lib/safe-href'
+import { track } from '@/lib/analytics/track'
 
 export interface EQBuddyIntroProps {
   content?: {
@@ -57,9 +60,18 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
   const [introStep, setIntroStep] = useState<1 | 2>(1)
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
 
-  const shopeeUrl =
+  const rawShopeeUrl =
     content?.shopeeUrl ||
     'https://shopee.vn/search?keyword=tr%E1%BA%A1m%20d%E1%BB%ABng%20c%E1%BA%A3m%20x%C3%BAc'
+  // Same UTM + event as ShopeeButton (AGENTS §8.3, §9: Shopee link carries UTM, logs external_clicked)
+  const shopeeUrl =
+    safeHref(
+      appendUtmParams(rawShopeeUrl, {
+        source: 'tramdungcamxuc',
+        medium: 'website',
+        campaign: 'eq-buddy',
+      }),
+    ) || rawShopeeUrl
 
   return (
     <div className="w-full space-y-8">
@@ -378,6 +390,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
           href={shopeeUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => track('external_clicked', { url: shopeeUrl, type: 'shopee' })}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta text-xs sm:text-sm font-semibold shadow-soft-md transition-all"
         >
           <ShoppingBag className="w-4 h-4 text-bright-magenta" />

@@ -132,6 +132,8 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
           keywordVi: 'Bình an',
           message: `Thông điệp bình an B2 (${suffix})`,
           promptRecall: 'Khi nào bạn thấy lòng an?',
+          promptPack: 'Bạn muốn gói ghém điều gì?',
+          promptAcknowledge: 'Bạn ghi nhận điều gì ở bản thân?',
           _status: 'published',
         },
         {
@@ -141,16 +143,17 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
           keywordVi: 'Can đảm',
           message: `Thông điệp can đảm B3 (${suffix})`,
           promptRecall: 'Bạn can đảm bước tiếp?',
+          promptPack: 'Bạn muốn gói ghém điều gì?',
+          promptAcknowledge: 'Bạn ghi nhận điều gì ở bản thân?',
           _status: 'published',
         },
       ]
 
       for (const cs of cardSeeds) {
         const cRes = await page.request.post('/api/eqCards', { data: cs })
-        if (cRes.ok()) {
-          const doc = await cRes.json()
-          createdCardIds.push(doc.doc?.id || doc.id)
-        }
+        expect(cRes.ok(), `tạo thẻ ${cs.code}: ${cRes.status()}`).toBe(true)
+        const doc = await cRes.json()
+        createdCardIds.push(doc.doc?.id || doc.id)
       }
 
       // 3. Đảm bảo chế độ ban đầu là trial
@@ -169,39 +172,22 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
         await drawBtn.click()
       }).toPass({ timeout: 15000 })
 
-      // Thấy thông điệp hoặc từ khóa
+      // Kết quả: thẻ lật 3D hiện ra (DB có thể có thẻ của test khác nên không ép đúng thẻ nào)
+      await expect(guestPage1.getByRole('button', { name: /^Thẻ số .*Bấm để lật\.$/ })).toBeVisible(
+        {
+          timeout: 15000,
+        },
+      )
+
+      // Lật thẻ sang mặt sau rồi lật về
+      await guestPage1.getByRole('button', { name: /Lật thẻ sang mặt sau/i }).click()
+      await expect(guestPage1.getByRole('button', { name: /Lật về mặt trước/i })).toBeVisible()
+
+      // Thẻ thứ 2 ở chế độ dùng thử -> màn dùng thử 21 ngày
+      await guestPage1.getByRole('button', { name: /Rút thẻ khác/i }).click()
       await expect(
-        guestPage1
-          .locator('div, h2, h3')
-          .filter({ hasText: new RegExp(`${suffix}`) })
-          .first(),
+        guestPage1.getByRole('link', { name: /Bắt đầu dùng thử 21 ngày/i }).first(),
       ).toBeVisible({ timeout: 15000 })
-
-      // Bấm lật thẻ sang mặt sau
-      const flipBtn = guestPage1.getByRole('button', { name: /Lật thẻ sang mặt sau/i })
-      if (await flipBtn.isVisible()) {
-        await flipBtn.click()
-      }
-
-      // Đi tiếp qua các bước suy ngẫm
-      const reflectBtn = guestPage1.getByRole('button', { name: /Viết suy ngẫm/i })
-      if (await reflectBtn.isVisible()) {
-        await reflectBtn.click()
-      }
-
-      const nextBtn = guestPage1.getByRole('button', { name: /Đi tiếp/i })
-      if (await nextBtn.isVisible()) {
-        await nextBtn.click()
-      }
-
-      // Thử rút lần thứ 2 -> Gặp màn hình Paywall dùng thử 21 ngày
-      const drawAgainBtn = guestPage1.getByRole('button', { name: /Rút thẻ khác/i })
-      if (await drawAgainBtn.isVisible()) {
-        await drawAgainBtn.click()
-        await expect(
-          guestPage1.getByRole('link', { name: /Bắt đầu dùng thử 21 ngày/i }).first(),
-        ).toBeVisible({ timeout: 15000 })
-      }
 
       // Kiểm tra trang QR của thẻ 1 mở trực tiếp được mà không cần đăng nhập
       const qrContext = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
@@ -229,40 +215,33 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
       await expect(freeDrawBtn).toBeVisible()
       await freeDrawBtn.click()
 
-      await expect(
-        guestPage2
-          .locator('div, h2, h3')
-          .filter({ hasText: new RegExp(`${suffix}`) })
-          .first(),
-      ).toBeVisible({ timeout: 15000 })
+      const flipFree = guestPage2.getByRole('button', { name: /Lật thẻ sang mặt sau/i })
+      await expect(flipFree).toBeVisible({ timeout: 15000 })
 
-      // Trong free mode, nút "Rút thẻ khác" bấm được nhiều lần mà không bị paywall
-      const freeDrawAgain = guestPage2.getByRole('button', { name: /Rút thẻ khác/i })
-      if (await freeDrawAgain.isVisible()) {
-        await freeDrawAgain.click()
-        // Vẫn thấy thẻ mới hoặc màn rút thẻ, không hiện paywall
+      // Chế độ miễn phí: rút tiếp nhiều lần, không gặp màn dùng thử
+      for (let i = 0; i < 2; i++) {
+        await guestPage2.getByRole('button', { name: /Rút thẻ khác/i }).click()
+        await expect(flipFree).toBeVisible({ timeout: 15000 })
         await expect(
           guestPage2.getByRole('link', { name: /Bắt đầu dùng thử 21 ngày/i }),
-        ).not.toBeVisible()
+        ).toHaveCount(0)
       }
 
-      // Kiểm tra tab "Tất cả thẻ": các thẻ đều mở, có chữ "Chạm để mở thẻ" thay vì paywall
-      const allCardsTab = guestPage2.getByRole('button', { name: /Tất cả thẻ/i })
-      if (await allCardsTab.isVisible()) {
-        await allCardsTab.click()
-        await expect(guestPage2.getByText(/Chạm để mở thẻ/i).first()).toBeVisible({
-          timeout: 10000,
-        })
+      // "Xem tất cả thẻ": mọi thẻ đều mở, thấy thông điệp, không còn nhãn khoá
+      await guestPage2.getByRole('button', { name: /Xem tất cả thẻ/i }).click()
+      await expect(guestPage2.getByRole('heading', { name: 'Tất cả thẻ Trạm Dừng' })).toBeVisible()
+      for (const cs of cardSeeds) {
+        await expect(guestPage2.getByText(cs.message).first()).toBeVisible()
       }
+      await expect(guestPage2.getByText('Dùng thử hoặc mua để mở trọn vẹn')).toHaveCount(0)
 
       await visitor2.close()
-
-      // Khôi phục lại chế độ trial
-      await page.request.post('/api/globals/eqBuddyContent', {
-        data: { eqAccessMode: 'trial' },
-      })
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
+      // Khôi phục lại chế độ trial (kể cả khi test đỏ giữa chừng)
+      await page.request
+        .post('/api/globals/eqBuddyContent', { data: { eqAccessMode: 'trial' } })
+        .catch(() => {})
       for (const id of createdCardIds) {
         await page.request.delete(`/api/eqCards/${id}`).catch(() => {})
       }

@@ -40,7 +40,7 @@ async function bootstrapAdmin(page: Page): Promise<number> {
 }
 
 test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
-  test('khách mới rút ngẫu nhiên -> lật thấy Gợi nhớ -> rút lần 2 bị chặn dùng thử; chọn theo từ khóa đúng thẻ', async ({
+  test('khách mới rút ngẫu nhiên -> lật thấy Gợi nhớ -> rút lần 2 bị chặn dùng thử; xem tất cả thẻ, thẻ khác bị khoá', async ({
     page,
     browser,
   }, testInfo) => {
@@ -74,6 +74,11 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
 
     try {
       adminId = await bootstrapAdmin(page)
+      // DP-01: luồng này kiểm chế độ "dùng thử"; trả công tắc về mặc định phòng khi test khác để "free"
+      const modeRes = await page.request.post('/api/globals/eqBuddyContent', {
+        data: { eqAccessMode: 'trial' },
+      })
+      expect(modeRes.ok()).toBe(true)
 
       // The paywall reads the EQ Buddy product; create it when the DB has none
       const existingProduct = await (
@@ -155,52 +160,49 @@ test.describe('EQ Card Draw Flow & Trial Limits (T3-02)', () => {
         await flipBtn.click()
       }).toPass({ timeout: 15000 })
 
-      // Thấy câu hỏi Gợi nhớ ở mặt sau
-      await expect(guestPage1.locator('dt', { hasText: 'Gợi nhớ' })).toBeVisible({ timeout: 10000 })
+      // Thấy câu hỏi Gợi nhớ ở mặt sau (DP-01: nhãn "Gợi nhớ:" in đậm trong thẻ lật 3D)
+      await expect(guestPage1.getByText('Gợi nhớ:', { exact: true })).toBeVisible({
+        timeout: 10000,
+      })
+      await expect(
+        guestPage1.getByText(new RegExp(`Gợi nhớ về .*\\(${suffix}\\)`)).first(),
+      ).toBeVisible()
 
-      // Tiếp tục qua bước suy ngẫm
-      await expect(async () => {
-        const continueBtn = guestPage1.getByRole('button', { name: /Viết suy ngẫm/i })
-        await expect(continueBtn).toBeVisible()
-        await continueBtn.click()
-      }).toPass({ timeout: 10000 })
-
-      // Thấy dòng chữ "Ghi chú chỉ ở trên máy bạn"
-      await expect(guestPage1.getByText(/Ghi chú chỉ ở trên máy bạn/i).first()).toBeVisible()
-
-      // Tiếp tục qua bước 5
-      await expect(async () => {
-        const nextBtn = guestPage1.getByRole('button', { name: /Đi tiếp/i })
-        await expect(nextBtn).toBeVisible()
-        await nextBtn.click()
-      }).toPass({ timeout: 10000 })
+      // Khối suy ngẫm nằm ngay dưới thẻ (zip, E2 = B); khách chưa đăng nhập vẫn thấy ô ghi
+      await expect(guestPage1.getByText(/Ghi suy ngẫm · Lưu giữ khoảnh khắc/)).toBeVisible()
 
       // Thử rút lần thứ 2 -> Bị chặn bởi Paywall dùng thử 21 ngày
-      await expect(async () => {
-        const drawAnotherBtn = guestPage1.getByRole('button', { name: /Rút thẻ khác/i })
-        await expect(drawAnotherBtn).toBeVisible()
-        await drawAnotherBtn.click()
-      }).toPass({ timeout: 15000 })
-
-      // Màn hình dùng thử hiển thị
+      await guestPage1.getByRole('button', { name: /Rút thẻ khác/i }).click()
       await expect(guestPage1.getByRole('link', { name: /Bắt đầu dùng thử 21 ngày/i })).toBeVisible(
         { timeout: 15000 },
       )
 
-      // 3. Kịch bản 2: Khách mới chọn theo từ khóa đúng thẻ
+      // 3. Kịch bản 2: giao diện zip không có ô chọn theo từ khóa; khách chọn đúng thẻ ở
+      // "Xem tất cả thẻ". Khách mới: thẻ đầu tiên rút tự do, các thẻ khác bị khoá và bấm vào
+      // thì gặp màn dùng thử.
       await guestPage2.goto('/eq-buddy/rut-the')
       await expect(guestPage2).toHaveURL(/\/eq-buddy\/rut-the$/)
+      await guestPage2.getByRole('button', { name: /Rút ngẫu nhiên một thẻ/i }).click()
+      // Kết quả rút: thẻ lật 3D hiện ra (DB có thể có thẻ của test khác nên không ép đúng thẻ nào)
+      await expect(guestPage2.getByRole('button', { name: /Lật thẻ sang mặt sau/i })).toBeVisible({
+        timeout: 15000,
+      })
+      const drawnIsCard1 = await guestPage2.getByText(message1).first().isVisible()
+      const [otherKeyword, otherMessage] = drawnIsCard1
+        ? [keyword2, message2]
+        : [keyword1, message1]
 
-      // Chọn thẻ 2 theo từ khóa keyword2
-      await expect(async () => {
-        const kwBtn = guestPage2.getByRole('button', { name: new RegExp(keyword2, 'i') })
-        await expect(kwBtn).toBeVisible()
-        await kwBtn.click()
-      }).toPass({ timeout: 15000 })
-
-      // Kiểm tra đúng thẻ 2 đã được rút
-      await expect(guestPage2.getByText(keyword2).first()).toBeVisible({ timeout: 15000 })
-      await expect(guestPage2.getByText(message2).first()).toBeVisible({ timeout: 15000 })
+      await guestPage2.getByRole('button', { name: /Xem tất cả thẻ/i }).click()
+      await expect(guestPage2.getByRole('heading', { name: 'Tất cả thẻ Trạm Dừng' })).toBeVisible()
+      const otherTile = guestPage2
+        .locator('div.cursor-pointer')
+        .filter({ has: guestPage2.getByRole('heading', { level: 4, name: otherKeyword }) })
+      await expect(otherTile).toContainText('Dùng thử hoặc mua để mở trọn vẹn')
+      await expect(guestPage2.getByText(otherMessage)).toHaveCount(0)
+      await otherTile.click()
+      await expect(guestPage2.getByRole('link', { name: /Bắt đầu dùng thử 21 ngày/i })).toBeVisible(
+        { timeout: 15000 },
+      )
     } finally {
       // 4. Dọn dẹp dữ liệu kiểm thử
       try {

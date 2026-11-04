@@ -829,10 +829,14 @@ Nhịp điệu: ${rateText}
                   <div className="space-y-4 font-ui">
                     {questions.map((qText, qIdx) => (
                       <div key={qIdx} className="space-y-1">
-                        <label className="text-xs sm:text-sm font-semibold text-deep-navy block">
+                        <label
+                          htmlFor={`station-${stIdx}-q-${qIdx}`}
+                          className="text-xs sm:text-sm font-semibold text-deep-navy block"
+                        >
                           {qText}
                         </label>
                         <textarea
+                          id={`station-${stIdx}-q-${qIdx}`}
                           rows={2}
                           value={answers[qIdx] || ''}
                           disabled={readOnly}
@@ -949,7 +953,10 @@ Nhịp điệu: ${rateText}
       </div>
 
       {/* 8. KHỐI CHỨNG NHẬN (NẾU ĐỦ ĐIỀU KIỆN HOẶC ĐÃ CÓ CHỨNG NHẬN) */}
-      {(initialCertificate || eligibility?.eligible) && (
+      {/* QA DP-01e: also once the journey has ended without reaching the goal ("Đã trải nghiệm"). */}
+      {(initialCertificate ||
+        eligibility?.eligible ||
+        (eligibility?.outcome && eligibility.outcome !== 'in_progress')) && (
         <div className="p-6 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-4">
           <TrackerSummaryCard
             stats={{
@@ -990,6 +997,7 @@ Nhịp điệu: ${rateText}
               </h4>
               <button
                 type="button"
+                aria-label={vi.dp01.close}
                 onClick={() => setIsFabOpen(false)}
                 className="text-deep-navy/70 hover:text-deep-navy text-xs font-bold cursor-pointer p-1"
               >
@@ -1003,15 +1011,18 @@ Nhịp điệu: ${rateText}
                 {afterJourneyText ||
                   'Nếu cần một Habit Coach đồng hành cùng bạn sau hành trình 28 ngày này, đặt một buổi trò chuyện với Hana.'}
               </p>
-              <a
-                href={coachBookingUrl || 'https://calendar.app.google/xJDug6VNGQUucMhM8'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-deep-navy text-white text-xs font-semibold hover:bg-deep-navy/90 transition-all shadow-soft-md"
-              >
-                <span>Đặt lịch với Habit Coach</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+              {/* QA DP-01e: link only from CMS (siteSettings.habitCoachBookingUrl), no hardcoded URL. */}
+              {coachBookingUrl && (
+                <a
+                  href={coachBookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-deep-navy text-white text-xs font-semibold hover:bg-deep-navy/90 transition-all shadow-soft-md"
+                >
+                  <span>Đặt lịch với Habit Coach</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
             </div>
           </div>
         )}

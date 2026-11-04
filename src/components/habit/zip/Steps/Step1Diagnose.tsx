@@ -257,19 +257,27 @@ export function Step1Diagnose({ diagnose, answers, onAnswerChange, onNext }: Ste
                   <span className="w-5 h-5 rounded-full bg-soft-pink text-bright-magenta flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5 font-ui">
                     {q.id}
                   </span>
-                  <p className="font-ui text-xs sm:text-sm text-deep-navy font-medium leading-relaxed">
+                  <p
+                    id={`diagnose-q-${q.id}`}
+                    className="font-ui text-xs sm:text-sm text-deep-navy font-medium leading-relaxed"
+                  >
                     {q.text}
                   </p>
                 </div>
 
                 {/* Dãy 5 nút: số 1, 2, 3, 4, 5 (bấm lại thì bỏ chọn theo H3) */}
-                <div className="grid grid-cols-5 gap-1.5 sm:gap-2 pt-1 max-w-md">
+                <div
+                  role="group"
+                  aria-labelledby={`diagnose-q-${q.id}`}
+                  className="grid grid-cols-5 gap-1.5 sm:gap-2 pt-1 max-w-md"
+                >
                   {[1, 2, 3, 4, 5].map((score) => {
                     const isSelected = hasAnswered && currentScore === score
                     return (
                       <button
                         key={score}
                         type="button"
+                        aria-pressed={isSelected}
                         onClick={() => onAnswerChange(q.id, isSelected ? 0 : score)}
                         className={`flex items-center justify-center py-2 rounded-lg border text-center transition-all cursor-pointer ${
                           isSelected

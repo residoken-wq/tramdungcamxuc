@@ -186,6 +186,7 @@ export function Step4IdentityHabit({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
+            aria-pressed={is3Selected}
             onClick={() => handleSelectFrequency(3)}
             className={`py-3.5 px-3 rounded-2xl border text-center transition-all cursor-pointer ${
               is3Selected
@@ -200,6 +201,7 @@ export function Step4IdentityHabit({
 
           <button
             type="button"
+            aria-pressed={is5Selected}
             onClick={() => handleSelectFrequency(5)}
             className={`py-3.5 px-3 rounded-2xl border text-center transition-all cursor-pointer ${
               is5Selected
@@ -214,6 +216,7 @@ export function Step4IdentityHabit({
 
           <button
             type="button"
+            aria-pressed={isAllSelected}
             onClick={() => handleSelectFrequency(7)}
             className={`py-3.5 px-3 rounded-2xl border text-center transition-all cursor-pointer ${
               isAllSelected
@@ -239,6 +242,7 @@ export function Step4IdentityHabit({
                 <button
                   key={day}
                   type="button"
+                  aria-pressed={isChecked}
                   onClick={() => handleToggleDay(day)}
                   className={`py-2.5 rounded-2xl border font-ui font-bold text-xs sm:text-sm transition-all cursor-pointer ${
                     isChecked
@@ -347,10 +351,14 @@ export function Step4IdentityHabit({
         <div className="space-y-4 font-ui">
           {/* Textarea */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5">
+            <label
+              htmlFor="field-private-reason"
+              className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5"
+            >
               {step4Content.whyImportantLabel}
             </label>
             <textarea
+              id="field-private-reason"
               rows={3}
               value={draft.privateReason || ''}
               onChange={(e) => onDraftChange({ ...draft, privateReason: e.target.value })}
@@ -366,10 +374,14 @@ export function Step4IdentityHabit({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1">
             {/* Cột 1: NGÀY BẮT ĐẦU */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5">
+              <label
+                htmlFor="field-start-date"
+                className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5"
+              >
                 Ngày bắt đầu
               </label>
               <input
+                id="field-start-date"
                 type="date"
                 value={startDate}
                 onChange={(e) => onDraftChange({ ...draft, startDate: e.target.value })}
@@ -393,11 +405,15 @@ export function Step4IdentityHabit({
 
           {/* Bạn đồng hành */}
           <div className="pt-1">
-            <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5">
+            <label
+              htmlFor="field-companion"
+              className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5"
+            >
               BẠN ĐỒNG HÀNH{' '}
               <span className="font-normal lowercase text-deep-navy/70">(không bắt buộc)</span>
             </label>
             <input
+              id="field-companion"
               type="text"
               value={draft.companionName || ''}
               onChange={(e) => onDraftChange({ ...draft, companionName: e.target.value })}

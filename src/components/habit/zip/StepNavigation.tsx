@@ -6,7 +6,8 @@ import type { HabitStep } from './types'
 
 export interface StepNavigationProps {
   currentStep: HabitStep
-  onStepChange: (step: HabitStep) => void
+  /** Omitted on the server-rendered tracker page: steps 1–6 then open the 5-minute flow. */
+  onStepChange?: (step: HabitStep) => void
   maxReachedStep?: number
   hasSavedPlan?: boolean
 }
@@ -122,8 +123,11 @@ export function StepNavigation({
                       window.location.assign('/habit/tracker')
                       return
                     }
-                    if (isAccessible) {
+                    if (!isAccessible) return
+                    if (onStepChange) {
                       onStepChange(step.id)
+                    } else if (typeof window !== 'undefined') {
+                      window.location.assign('/habit/5-phut')
                     }
                   }}
                   disabled={!isAccessible}

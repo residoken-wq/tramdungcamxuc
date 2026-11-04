@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import * as zip from './helpers/habit-zip'
 
 async function bootstrapAdmin(page: Page): Promise<number> {
   await page.goto('/admin/create-first-user', { waitUntil: 'domcontentloaded' })
@@ -50,12 +51,17 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
         previousJourneyContent = await getRes.json()
       }
 
-      // 2. Cập nhật khối onePercent với tiêu đề 2 tầng và 1 fact có nguồn
+      // 2. Cập nhật khối onePercent (số ngày) và tiêu đề / dòng phụ biểu đồ bước 2 (DP-01: step2)
       const titleLine1 = `Nguyên lý 1% ${randomUUID().slice(0, 4)}`
       const titleLine2 = 'Mỗi ngày tốt hơn một chút'
       const updateRes = await page.request.post('/api/globals/habitJourneyContent', {
         data: {
           ...(previousJourneyContent || {}),
+          step2: {
+            ...((previousJourneyContent?.step2 as Record<string, unknown>) || {}),
+            chartTitle: titleLine1,
+            chartSubtitle: titleLine2,
+          },
           onePercent: {
             title: `${titleLine1} | ${titleLine2}`,
             dailyPercent: 1,
@@ -74,22 +80,14 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
 
       // 3. Khách truy cập vào /habit/5-phut và chuyển sang Bước 2 (Nguyên lý 1%)
       await guestPage.goto('/habit/5-phut')
-      await expect(guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
-        timeout: 15000,
-      })
-      const skipDiagnoseBtn = guestPage.getByRole('button', { name: /Bỏ qua phần khám/i })
-      if (await skipDiagnoseBtn.isVisible()) {
-        await skipDiagnoseBtn.click()
-      } else {
-        await guestPage.getByRole('button', { name: /Tiếp tục/i }).click()
-      }
+      await zip.answerDiagnose(guestPage)
       await expect(guestPage.getByText(/Nguyên lý 1%/i).first()).toBeVisible()
 
       // Khối Nguyên lý 1% hiển thị ở Bước 2
       const section = guestPage.getByTestId('one-percent-section')
       await expect(section).toBeVisible()
 
-      // Tiêu đề 2 tầng
+      // Tiêu đề và dòng phụ biểu đồ lấy từ CMS
       await expect(guestPage.getByText(titleLine1)).toBeVisible()
       await expect(guestPage.getByText(titleLine2)).toBeVisible()
 
@@ -99,7 +97,9 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
       // Thanh kéo slider
       const slider = guestPage.getByRole('slider')
       await expect(slider).toBeVisible()
-      await expect(slider).toHaveAttribute('aria-valuenow', '365')
+      // Bản zip mở ở 21 ngày, thang tối đa 365
+      await expect(slider).toHaveAttribute('aria-valuenow', '21')
+      await expect(slider).toHaveAttribute('max', '365')
 
       // Điều khiển bằng bàn phím (Home -> về 0 ngày)
       await slider.focus()
@@ -126,6 +126,7 @@ test.describe('HB-08: Nguyên lý 1% thanh kéo trên /habit/5-phut', () => {
         .post('/api/globals/habitJourneyContent', {
           data: {
             ...(previousJourneyContent || {}),
+            step2: previousJourneyContent?.step2 ?? { chartTitle: '', chartSubtitle: '' },
             onePercent: previousJourneyContent?.onePercent ?? { title: '', intro: null, facts: [] },
           },
         })

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import * as zip from './helpers/habit-zip'
 
 /**
  * E2E tests cho Habit Boarding Pass (HB-10).
@@ -75,55 +76,26 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
           timeout: 15000,
         })
 
-        // BƯỚC 1: Khám đúng bệnh -> Tiếp tục (DB trống: Tiếp tục bật sẵn; DB có câu: bấm Bỏ qua phần khám)
-        const skipDiagnoseBtn = guest.getByRole('button', { name: /Bỏ qua phần khám/i })
-        if (await skipDiagnoseBtn.isVisible()) {
-          await skipDiagnoseBtn.click()
-        } else {
-          await guest.getByRole('button', { name: /Tiếp tục/i }).click()
-        }
-
-        // BƯỚC 2: Nguyên lý 1% -> Sang giai đoạn 2
-        await expect(guest.getByText(/Nguyên lý 1%/i).first()).toBeVisible()
-        await guest.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
-
-        // BƯỚC 3: Tìm Mentor – Thêm việc mẫu, đánh dấu (+) và chọn Mentor
-        await expect(guest.getByText(/Tìm "Mentor"|Tìm Mentor/i).first()).toBeVisible()
-        await guest.getByPlaceholder(/Đánh răng|thói quen/i).fill('[MẪU] Uống nước ấm sáng')
-        await guest.getByRole('button', { name: /Thêm một việc|Thêm thói quen/i }).click()
-        await guest
-          .getByRole('button', { name: /Có ích \(\+\)|đánh giá tốt/i })
-          .first()
-          .click()
-        await guest.locator('input[type="radio"][name="anchorHabit"]').first().check()
-        await guest.getByRole('button', { name: /Tiếp tục/i }).click()
-
-        // BƯỚC 4: Gọi tên – Nhập hành động & mục tiêu định danh, tắt Chủ Nhật
-        await expect(guest.getByText(/Gọi tên thói quen/i).first()).toBeVisible()
-        await guest.getByPlaceholder(/thiền 5 phút/i).fill('[MẪU] chạy bộ 15 phút')
-        await guest.getByPlaceholder(/người điềm tĩnh/i).fill('[MẪU] người khỏe khoắn')
-
-        // Tắt Chủ nhật
-        await guest.getByRole('button', { name: 'Chọn nhịp 6 lần mỗi tuần' }).click()
-        await guest.getByRole('button', { name: 'Chủ nhật' }).click()
-        // Nhập bản tối giản
-        await guest.getByPlaceholder(/Mở sách đọc đúng 1 trang/i).fill('[MẪU] Xỏ giày thể thao')
-        await guest.getByRole('button', { name: /Tiếp tục/i }).click()
-
-        // BƯỚC 5: Vòng lặp – Chọn kỹ thuật
-        await expect(guest.getByText(/Thiết kế vòng lặp|Vòng lặp/i).first()).toBeVisible()
-        const techCheckboxes = guest.locator('label:has(button.w-5.h-5)')
-        const count = await techCheckboxes.count()
-        for (let i = 0; i < Math.min(4, count); i++) {
-          await techCheckboxes.nth(i).click()
-        }
-        await guest.getByRole('button', { name: /Tiếp tục|Xem kế hoạch/i }).click()
-
-        // BƯỚC 6: Xem trước Boarding Pass và Tải ảnh 4:5
-        await expect(guest.getByText(/Boarding Pass/i).first()).toBeVisible()
-        await expect(
-          guest.getByText(/Boarding Pass của bạn|TẤM VÉ CHUYỂN MÌNH/i).first(),
-        ).toBeVisible()
+        // Bước 1–5 theo giao diện zip (helpers/habit-zip.ts)
+        await zip.answerDiagnose(guest)
+        await zip.passPercent(guest)
+        await zip.fillMentor(guest, '[MẪU] Uống nước ấm sáng')
+        await zip.fillIdentity(guest, {
+          action: '[MẪU] chạy bộ 15 phút',
+          role: '[MẪU] người khỏe khoắn',
+          atomic: '[MẪU] Xỏ giày thể thao',
+        })
+        await zip.setRhythm(guest, 'Mỗi ngày', ['CN'])
+        await zip.nextFromIdentity(guest)
+        const techBoxes = guest.getByRole('checkbox')
+        const techNames = await techBoxes.evaluateAll((els) =>
+          els.slice(0, 4).map((e) => e.getAttribute('aria-label') ?? ''),
+        )
+        await zip.pickTechniques(
+          guest,
+          techNames.map((name) => ({ name })),
+        )
+        await zip.nextFromLoop(guest)
 
         // Bấm nút Tải ảnh đăng bài (4:5) và chờ sự kiện download
         const downloadPromise = guest.waitForEvent('download', { timeout: 30000 })

@@ -474,7 +474,10 @@ export function BoardingPassCard({
           </div>
 
           {submitError && (
-            <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2">
+            <div
+              role="alert"
+              className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2"
+            >
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{submitError}</span>
             </div>

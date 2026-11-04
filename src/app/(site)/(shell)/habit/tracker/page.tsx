@@ -169,7 +169,8 @@ export default async function HabitTrackerPage() {
     <div className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-warm-ivory/80 to-lavender-mist/20">
       <div className="w-full max-w-4xl mx-auto space-y-6">
         <HabitTrackerHeader currentStep={7} headerContent={journeyContent?.dp01Content?.header} />
-        <StepNavigation currentStep={7} hasSavedPlan={true} onStepChange={() => {}} />
+        {/* QA DP-01e: no function props from this server page (it crashed the tracker). */}
+        <StepNavigation currentStep={7} hasSavedPlan={true} />
         <Dashboard28Days
           planId={plan.id}
           identityStatement={plan.identityStatement}
