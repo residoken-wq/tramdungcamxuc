@@ -3,6 +3,8 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { ZodError } from 'zod'
+import { getPayload } from 'payload'
+import config from '@/payload.config'
 import { requestOtp, verifyOtp, OtpVerificationError } from './otp.server'
 import {
   setCustomerSessionCookie,
@@ -13,8 +15,19 @@ import {
 import { vi } from '../i18n/vi'
 import { RateLimitError } from '../forms/ratelimit.server'
 import { TurnstileError } from '../forms/turnstile.server'
-
 import { getSafeRedirectUrl } from './redirect'
+import { resolveLoginMethods } from './methods'
+
+async function isOtpLoginAllowed(): Promise<boolean> {
+  try {
+    const payload = await getPayload({ config })
+    const settings = await payload.findGlobal({ slug: 'siteSettings', overrideAccess: true })
+    const methods = resolveLoginMethods(settings)
+    return methods.otp
+  } catch {
+    return true
+  }
+}
 
 async function getClientIp(): Promise<string | undefined> {
   const headerList = await headers()
@@ -40,6 +53,11 @@ export async function requestOtpAction(
   formData: FormData,
 ): Promise<AuthActionResult> {
   try {
+    const otpAllowed = await isOtpLoginAllowed()
+    if (!otpAllowed) {
+      return { success: false, error: vi.gl01.loginDisabled }
+    }
+
     const email = String(formData.get('email') || '')
     const honeypot = String(formData.get('honeypot') || '')
     const turnstileToken = String(formData.get('turnstileToken') || '')
@@ -74,6 +92,11 @@ export async function verifyOtpAction(
   formData: FormData,
 ): Promise<AuthActionResult> {
   try {
+    const otpAllowed = await isOtpLoginAllowed()
+    if (!otpAllowed) {
+      return { success: false, error: vi.gl01.loginDisabled }
+    }
+
     const email = String(formData.get('email') || '')
     const code = String(formData.get('code') || '')
     const consentPolicy =

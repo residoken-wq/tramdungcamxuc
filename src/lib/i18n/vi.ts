@@ -4364,6 +4364,23 @@ export const vi = {
     smallActionToday: 'Hành động nhỏ hôm nay',
     storyBehindCard: 'Câu chuyện phía sau thẻ',
   },
+  gl01: {
+    loginMethodsTab: 'Đăng nhập khách hàng',
+    loginGoogleEnabled: 'Cho đăng nhập bằng Google',
+    loginOtpEnabled: 'Cho đăng nhập bằng mã OTP qua email',
+    googleMissingWarning: 'Chưa cấu hình Google, trang đăng nhập đang dùng OTP',
+    orDivider: 'hoặc',
+    continueWithGoogle: 'Tiếp tục với Google',
+    firstTimeConsentHint: 'Lần đầu đăng nhập, chị/anh vui lòng tick đồng ý ở trên',
+    loginDisabled: 'Cách đăng nhập này đang tạm tắt',
+    loginSubtitleGoogle: 'Đăng nhập nhanh bằng tài khoản Google của bạn, không cần mật khẩu.',
+    errors: {
+      canDongY: 'Vui lòng tick đồng ý Điều khoản và Chính sách bảo mật rồi bấm lại',
+      huy: 'Bạn đã huỷ đăng nhập Google',
+      lienKetKhac: 'Email này đã liên kết với một tài khoản Google khác',
+      thatBai: 'Đăng nhập bằng Google không thành công. Vui lòng thử lại.',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

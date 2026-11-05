@@ -3383,6 +3383,49 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 
 ---
 
+### 7.7. Đăng nhập khách hàng: Google và OTP email (GL-01)
+
+Website Trạm Dừng Cảm Xúc hỗ trợ 2 phương thức đăng nhập cho học viên và độc giả:
+
+1. **Đăng nhập nhanh bằng Google (Khuyên dùng)**: Khách chỉ cần bấm 1 chạm với tài khoản Gmail/Google cá nhân, không cần chờ email và không phải nhớ mật khẩu.
+2. **Đăng nhập bằng mã OTP qua email**: Khách nhập địa chỉ email và nhận mã xác thực 6 chữ số gửi về hòm thư.
+
+Chỉ tài khoản **Chủ sở hữu (Owner)** mới có quyền thay đổi cài đặt này.
+
+#### 1. Vị trí cài đặt trong CMS
+
+1. Ở cột menu bên trái, tìm nhóm **Trang web**, bấm vào **Cài đặt website** (`/admin/globals/site-settings`).
+2. Chọn tab **Đăng nhập khách hàng**.
+3. Bạn sẽ thấy 2 công tắc cài đặt (chỉ tài khoản Chủ sở hữu sửa được):
+   - **Cho đăng nhập bằng Google**: Bật/tắt nút đăng nhập bằng Google trên website.
+   - **Cho đăng nhập bằng mã OTP qua email**: Bật/tắt form nhập email và mã OTP.
+
+<!-- ẢNH GL-01: chụp tab "Đăng nhập khách hàng" sau khi anh Nhân cấu hình Google trên server thật, lưu images/huong-dan/login-methods-settings.png -->
+
+
+#### 2. Nguyên tắc vận hành an toàn (Bảng 1.1)
+
+Hệ thống được lập trình với cơ chế bảo vệ khách hàng tự động, đảm bảo khách luôn có lối vào tài khoản:
+
+| Google trong CMS & Cấu hình máy chủ   | OTP trong CMS | Giao diện trên trang `/tai-khoan/dang-nhap`                                            | Ghi chú vận hành                                                                                                                   |
+| :------------------------------------ | :------------ | :------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| **Bật** (máy chủ đã cấu hình)         | **Bật**       | Hiện cả nút **Tiếp tục với Google** và form **OTP email** (ngăn cách bằng chữ "hoặc"). | Khách chọn cách nào cũng được.                                                                                                     |
+| **Bật** (máy chủ đã cấu hình)         | **Tắt**       | **Chỉ hiện nút Google.** Form OTP được ẩn hoàn toàn.                                   | Phù hợp khi Hana muốn đơn giản hóa tối đa giao diện đăng nhập.                                                                     |
+| **Tắt** (hoặc thiếu cấu hình máy chủ) | Bất kỳ        | **Luôn hiện form OTP email.**                                                          | **Cơ chế an toàn tự động**: Nếu Google chưa cấu hình xong hoặc bị tắt, hệ thống tự động giữ lại OTP để khách không bao giờ bị kẹt. |
+
+> [!NOTE]
+> **Cảnh báo vàng**: Nếu công tắc Google đang bật nhưng máy chủ chưa có mã kết nối `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, CMS sẽ hiện một khung cảnh báo màu vàng nhắc nhở liên hệ anh IT cấu hình.
+
+#### 3. Quy trình 3 bước Hana nên làm khi muốn chuyển sang chỉ dùng Google
+
+Khi anh IT thông báo đã cấu hình Google xong, Hana thực hiện theo 3 bước sau để chuyển giao an toàn:
+
+1. **Bước 1 – Kiểm tra thử**: Mở trang `/tai-khoan/dang-nhap`, bấm nút **Tiếp tục với Google** bằng chính tài khoản Gmail của Hana xem đã vào được khu vực tài khoản chưa.
+2. **Bước 2 – Tắt OTP trong CMS**: Vào **Cài đặt Website** → tab **Đăng nhập khách hàng** → gạt tắt **Cho đăng nhập bằng mã OTP qua email** → bấm **Lưu thay đổi**.
+3. **Bước 3 – Xác nhận thực tế**: Mở một cửa sổ trình duyệt ẩn danh mới (Incognito / Khách), vào lại `/tai-khoan/dang-nhap`. Lúc này form OTP đã biến mất hoàn toàn, chỉ còn nút Google gọn gàng kèm 2 ô chọn đồng ý điều khoản. Nếu sau này cần mở lại OTP, Hana chỉ cần gạt bật lại công tắc và Lưu.
+
+---
+
 ## 8. Quản lý Khách tiềm năng (Leads) và Xuất file CSV
 
 ### 8.1. Xem và lọc danh sách khách tiềm năng
