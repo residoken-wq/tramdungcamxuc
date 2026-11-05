@@ -13,6 +13,7 @@ export interface AccordionWidgetProps {
   items?: AccordionItem[]
   expandMode?: 'single' | 'multiple'
   defaultExpanded?: 'first' | 'none' | 'all'
+  quickTitles?: unknown
 }
 
 function renderSlot(slot: unknown, className?: string): React.ReactNode {

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
 import * as zip from './helpers/habit-zip'
 import { vi } from '@/lib/i18n/vi'
+import { getVietnamYmd } from '@/lib/habit/tracker-stats'
 
 /**
  * DP-01a: E2E Habit Journey with ZIP UI & 28-Day Flow
@@ -224,7 +225,8 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
           await page.request.get(`/api/habitPlans?where[customer][equals]=${createdCustomerId}`)
         ).json()
         if (planRes.docs?.[0]) {
-          const todayYmd = new Date().toISOString().split('T')[0]
+          // Tracker counts days in Vietnam time (DP-02c): a UTC date is yesterday after 17:00 UTC.
+          const todayYmd = getVietnamYmd()
           await page.request.patch(`/api/habitPlans/${planRes.docs[0].id}`, {
             data: { startDate: todayYmd },
           })

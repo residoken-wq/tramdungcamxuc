@@ -217,12 +217,12 @@ test.describe('EB-08: Block templates and version history', () => {
       // Verify page template is listed
       await expect(templateModal.getByRole('heading', { name: pageTemplateName })).toBeVisible()
 
-      // Click "Áp dụng mẫu này" on the saved page template
-      page.once('dialog', (dialog) => dialog.accept())
+      // Click "Áp dụng mẫu này" on the saved page template, then confirm inside the card (EB-16)
       await templateModal
         .getByRole('button', { name: /Áp dụng mẫu này/ })
         .first()
         .click()
+      await templateModal.getByRole('button', { name: 'Thay toàn bộ trang', exact: true }).click()
 
       // Canvas should have received the applied template data
       await expect(canvasB.locator('[data-puck-component]')).toHaveCount(2, { timeout: 10000 })

@@ -2369,11 +2369,13 @@ Khối **Container** nằm ở đầu nhóm **Bố cục** trong bảng thư vi�
 1. **Kéo Container vào trang:** Thả vào vị trí bất kỳ trên trang hoặc thả vào bên trong một Container khác.
 2. **Kéo khối vào trong Container:** Thả các khối chữ, ảnh, nút bấm, trích dẫn... vào vùng trống bên trong Container. Các khối bên trong tự sắp xếp theo bố cục của Container. Thẻ con (thẻ gói, câu hỏi FAQ, ô số liệu…) không thả vào Container được: chúng chỉ nằm trong khối cha của mình.
 3. **Đổi hàng / cột theo thiết bị (Tab Nội dung):**
-   - **Hướng sắp xếp**: Bấm chọn giữa **Hàng ngang** (Row), **Cột dọc** (Column), hoặc đảo chiều.
+   - **Hướng sắp xếp**: Bấm chọn giữa **Hàng ngang**, **Cột dọc**, **Đảo hàng** hoặc **Đảo cột**.
    - **Chỉnh riêng cho Điện thoại / Máy tính bảng**: Chọn biểu tượng thiết bị ở đầu bảng. Ví dụ: Trên **Máy tính** để _Hàng ngang_ để các khối nằm cạnh nhau; chuyển sang **Điện thoại** bấm chọn _Cột dọc_ để các khối tự xếp chồng ngay ngắn.
-   - **Khoảng cách (Gap)**: Chọn độ giãn giữa các khối con (Nhỏ, Vừa, Lớn...).
-   - **Chiều rộng**: Chọn **Đóng khung (Boxed)** (nội dung gọn ở giữa trang, độ rộng chọn ở **Độ rộng khung nội dung**) hoặc **Tràn màn hình (Full width)**. Nền của Container luôn trải hết chiều ngang, kể cả khi đóng khung.
-   - **Chiều cao tối thiểu** và **Thẻ HTML** (chọn `section` khi Container là một phần riêng của trang, có tiêu đề).
+   - **Căn theo chiều sắp xếp**: Bắt đầu, Ở giữa, Kết thúc, Cách đều hai đầu, Cách đều xung quanh, Cách đều nhau.
+   - **Căn theo chiều còn lại**: Bắt đầu, Ở giữa, Kết thúc, Kéo giãn.
+   - **Khoảng cách giữa các khối**: Chọn độ giãn giữa các khối con (Nhỏ, Vừa, Lớn...).
+   - **Chiều rộng**: Chọn **Đóng khung** (nội dung gọn ở giữa trang, độ rộng chọn ở **Độ rộng khung nội dung**) hoặc **Tràn màn hình**. Nền của Container luôn trải hết chiều ngang, kể cả khi đóng khung.
+   - **Chiều cao tối thiểu** và **Thẻ HTML**: chọn **Khối nội dung độc lập (section)** khi Container là một phần riêng của trang có tiêu đề, hoặc **Hộp chung (div)** cho các khung chứa thông thường.
    - Hướng, căn, khoảng cách và xuống dòng chỉnh riêng được theo thiết bị. Chiều rộng, chiều cao và thẻ HTML áp cho mọi thiết bị.
 4. **Ảnh nền & Chuyển màu nâng cao (Tab Kiểu):**
    - Chuyển sang tab **Kiểu** -> nhóm **Nền nâng cao**:
@@ -2432,12 +2434,14 @@ Nhóm **Cơ bản** đứng ở vị trí đầu tiên trong thư viện khối 
 
 7. **Tabs (TabsWidget):**
    - **Danh sách tab:** Thêm/xoá không giới hạn số lượng tab. Mỗi tab có tiêu đề riêng và một vùng thả khối nội dung (slot).
+   - **Đổi tên tab nhanh:** Ở ngay đầu tab **Nội dung**, bạn có thể đổi tên trực tiếp từng tab tại các ô "Tên tab 1", "Tên tab 2"... một cách nhanh chóng mà không cần bấm mở rộng từng dòng của danh sách bên dưới.
    - **Bố cục tab:** Chọn hiển thị thẻ theo **Hàng ngang** (mặc định) hoặc **Cột dọc** (phù hợp với các trang tài liệu, lộ trình chi tiết).
    - **Thao tác trong trình dựng trang:** Trong trình dựng, mọi tab hiện **xếp chồng** từ trên xuống, mỗi phần có dòng "Tab 1: …", "Tab 2: …" để chị kéo khối vào đúng tab. Trang công khai mới hiện dạng tab bấm chuyển. Khi kéo khối vào một tab đã có nội dung, giữ chuột trên khối cuối của tab một chút rồi mới thả.
    - **Trợ năng:** Hỗ trợ đầy đủ phím mũi tên bàn phím để chuyển đổi qua lại giữa các tab theo tiêu chuẩn WAI-ARIA.
 
 8. **Hộp mở rộng (AccordionWidget):**
    - **Mục nội dung linh hoạt:** Khác với khối câu hỏi FAQ thông thường chỉ chứa chữ thuần, mỗi mục trong Accordion là một vùng thả khối tự do (bạn có thể thả tiêu đề, đoạn văn, ảnh, nút bấm hay danh sách vào bên trong).
+   - **Đổi tên mục nhanh:** Ở ngay đầu tab **Nội dung**, bạn có thể đổi tên trực tiếp từng mục tại các ô "Tên câu hỏi 1", "Tên câu hỏi 2"... một cách nhanh chóng mà không cần mở rộng từng dòng.
    - **Trong trình dựng:** mọi mục đều mở sẵn để kéo khối vào; trang công khai đóng / mở theo cài đặt bên dưới.
    - **Chế độ mở:** Chọn **Chỉ mở một mục** (khi mở một mục thì mục khác tự đóng lại) hoặc **Mở nhiều mục** (cho phép mở đồng thời nhiều mục cùng lúc).
    - **Mục mở sẵn ban đầu:** Chọn mở sẵn mục đầu tiên, đóng toàn bộ hoặc mở sẵn tất cả các mục khi tải trang.
@@ -2461,8 +2465,9 @@ Trình dựng trang cung cấp hai công cụ đắc lực giúp bạn quản l�
 - **Xem cây phân cấp:** Toàn bộ bố cục trang được hiển thị dạng cây phân cấp (Khung chứa Container, Cột, Tabs, các widget con bên trong). Mỗi dòng đều có biểu tượng nhận diện riêng giúp bạn phân biệt nhanh từng loại khối.
 - **Đặt tên gợi nhớ cho khối:**
   - Để phân biệt các khối cùng loại (ví dụ trang có 10 khối Tiêu đề hoặc 5 Container), bạn có thể đặt tên riêng cho từng khối (ví dụ: _"Khối mở đầu"_, _"Bảng so sánh 3 gói"_, _"Tiêu đề giới thiệu"_...).
-  - **Cách 1:** Nhấp đúp chuột vào tên dòng khối trong tab Cấu trúc (hoặc chuột phải chọn "Đổi tên"). Một ô nhập liệu sẽ mở ra tại chỗ: nhập tên (tối đa 60 ký tự) rồi bấm phím **Enter** để lưu (hoặc phím **Esc** để huỷ).
-  - **Cách 2:** Chọn khối, chuyển sang tab **Nâng cao** ở bảng điều khiển bên phải và nhập vào ô _"Tên khối trong Cấu trúc"_.
+  - **Cách 1 (Nhấp đúp hoặc phím F2):** Nhấp đúp chuột vào bất kỳ vị trí nào trên dòng khối trong tab Cấu trúc (kể cả mũi tên, biểu tượng hay tên), hoặc bấm chọn dòng khối đó rồi nhấn phím **F2** trên bàn phím. Ô nhập liệu sẽ mở ra tại chỗ: nhập tên (tối đa 60 ký tự) rồi bấm phím **Enter** để lưu (hoặc phím **Esc** để huỷ). Khi rê chuột vào từng dòng, hệ thống cũng hiển thị chú thích nhắc nhở _"Nhấp đúp hoặc F2 để đổi tên"_.
+  - **Cách 2:** Nhấp chuột phải vào dòng khối và chọn "Đổi tên".
+  - **Cách 3:** Chọn khối, chuyển sang tab **Nâng cao** ở bảng điều khiển bên phải và nhập vào ô _"Tên khối trong Cấu trúc"_.
   - _Lưu ý an toàn:_ Tên gợi nhớ này chỉ phục vụ cho việc quản lý nội bộ của bạn trong trình biên tập, hoàn toàn không hiển thị ra ngoài trang công khai và không ảnh hưởng đến SEO hay giao diện người xem.
 - **Nhận diện khối ẩn theo thiết bị:** Khi bạn cài đặt một khối bị ẩn trên Điện thoại hoặc Máy tính bảng (trong tab Nâng cao), dòng khối đó trong cây Cấu trúc sẽ hiển thị biểu tượng con mắt gạch chéo kèm chú thích (ví dụ: _"Ẩn trên: Điện thoại"_).
 - **Kéo thả sắp xếp:** Bạn có thể kéo thả các dòng khối trực tiếp trong cây Cấu trúc để đổi thứ tự trên trang một cách chính xác mà không sợ bị lệch vị trí chuột trên canvas.
@@ -2508,11 +2513,11 @@ Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng
 - **Lưu cả trang thành mẫu:**
   - Khi đã dựng xong một trang chiến dịch hoặc trang dịch vụ ưng ý, bấm nút **"Lưu trang thành mẫu"** trên thanh tiêu đề màu xanh đậm (Header) ở đầu màn hình.
   - Nhập tên mẫu trang (ví dụ: _"Mẫu trang sự kiện ra mắt sách"_) rồi bấm **"Lưu mẫu"**.
-- **Áp dụng mẫu đã lưu cho trang mới:**
-  - Khi tạo hoặc mở một trang mới, bấm nút **"Mẫu có sẵn"** trên thanh tiêu đề.
-  - Hộp thoại chọn mẫu mở ra: Chuyển sang tab **"Mẫu đã lưu"**.
-  - Bạn sẽ thấy tất cả các mẫu trang mà mình đã từng lưu. Bấm **"Áp dụng"** ở mẫu mong muốn.
-  - Hệ thống sẽ hiện cảnh báo xác nhận vì thao tác này sẽ thay thế nội dung hiện tại của trang bằng toàn bộ bố cục của mẫu đã chọn (mọi mã khối đều được cấp mới tự động).
+- **Áp dụng mẫu cho trang:**
+  - Khi tạo hoặc mở một trang mới, bấm nút **"Dùng mẫu..."** trên thanh công cụ.
+  - Hộp thoại chọn mẫu mở ra: Chị có thể xem các **Mẫu có sẵn** hoặc chuyển sang tab **Mẫu đã lưu**. Dưới phần mô tả của mỗi mẫu có sẵn luôn ghi rõ tóm tắt các khối chính ("Gồm: ...") để chị nắm nhanh cấu trúc trước khi áp dụng.
+  - Bấm nút **"Áp dụng mẫu này"**: Thẻ mẫu sẽ hiện ngay hộp xác nhận an toàn tại chỗ với cảnh báo nội dung trang hiện tại sẽ được thay thế bằng mẫu mới.
+  - Bấm **"Thay toàn bộ trang"** để xác nhận áp dụng, hoặc bấm **"Quay lại"** (hay nhấn phím **Esc**) nếu muốn huỷ và giữ nguyên trang đang làm. Mọi mã khối từ mẫu đều được cấp mới tự động.
 
 #### 3. Lịch sử phiên bản: Xem trước an toàn & Khôi phục
 

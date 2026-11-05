@@ -388,7 +388,30 @@ function EditorHeaderActions() {
   )
 }
 
-function TemplateModal({
+export function formatTemplateBlockSummary(
+  key: AnyTemplateKey,
+  config: Record<string, { label?: string }>,
+  pageTitle?: string,
+): string | null {
+  const data = getTemplateData(key, pageTitle)
+  if (!data || !Array.isArray(data.content) || data.content.length === 0) return null
+
+  const names = data.content.map((block) => {
+    const comp = config[block.type]
+    const label = comp?.label || block.type
+    return label.replace(/\s*\([^)]*\)$/, '').trim() || label
+  })
+
+  const maxShown = 5
+  if (names.length <= maxShown) {
+    return vi.eb16.templateIncludes(names.join(' · '))
+  }
+  const shown = names.slice(0, maxShown).join(' · ')
+  const remaining = names.length - maxShown
+  return vi.eb16.templateIncludes(`${shown} ${vi.eb16.moreBlocks(remaining)}`)
+}
+
+export function TemplateModal({
   onClose,
   pageTitle,
   pageKind,
@@ -404,7 +427,15 @@ function TemplateModal({
   const [loadingSaved, setLoadingSaved] = useState<boolean>(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string>('')
+  const [confirmingKey, setConfirmingKey] = useState<string | null>(null)
+  const backButtonRef = useRef<HTMLButtonElement>(null)
   const availableTemplates = getTemplatesForKind(pageKind)
+
+  useEffect(() => {
+    if (confirmingKey && backButtonRef.current) {
+      backButtonRef.current.focus()
+    }
+  }, [confirmingKey])
 
   useEffect(() => {
     let active = true
@@ -425,10 +456,7 @@ function TemplateModal({
     }
   }, [])
 
-  const handleSelectBuiltin = (key: AnyTemplateKey) => {
-    const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
-    if (!confirmed) return
-
+  const handleApplyBuiltin = (key: AnyTemplateKey) => {
     const data = getTemplateData(key, pageTitle)
     if (data) {
       onApplyTemplate(data)
@@ -436,10 +464,7 @@ function TemplateModal({
     }
   }
 
-  const handleSelectSaved = (template: TemplateSummary) => {
-    const confirmed = window.confirm(vi.builder.confirmApplyTemplate)
-    if (!confirmed) return
-
+  const handleApplySaved = (template: TemplateSummary) => {
     if (template.puckData && typeof template.puckData === 'object') {
       // Stored data is untrusted (any admin can write it through the REST API): same checks as on save.
       const check = validateTemplatePuckData(
@@ -449,6 +474,7 @@ function TemplateModal({
       )
       if (!check.success) {
         setErrorMsg(check.message ?? vi.eb08.invalidData)
+        setConfirmingKey(null)
         return
       }
       const remapped = remapPageBlockIds(template.puckData as Data)
@@ -483,6 +509,17 @@ function TemplateModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="template-modal-title"
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          if (confirmingKey) {
+            e.preventDefault()
+            e.stopPropagation()
+            setConfirmingKey(null)
+          } else {
+            onClose()
+          }
+        }
+      }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-deep-navy/60 backdrop-blur-sm p-4 animate-in fade-in duration-150"
     >
       <div className="bg-warm-ivory rounded-2xl border border-deep-navy/15 shadow-2xl max-w-2xl w-full p-6 text-deep-navy flex flex-col max-h-[90vh]">
@@ -512,7 +549,10 @@ function TemplateModal({
             type="button"
             role="tab"
             aria-selected={activeTab === 'builtin'}
-            onClick={() => setActiveTab('builtin')}
+            onClick={() => {
+              setActiveTab('builtin')
+              setConfirmingKey(null)
+            }}
             className={`pb-2 px-3 text-xs font-ui font-bold border-b-2 transition cursor-pointer ${
               activeTab === 'builtin'
                 ? 'border-bright-magenta text-deep-navy'
@@ -525,7 +565,10 @@ function TemplateModal({
             type="button"
             role="tab"
             aria-selected={activeTab === 'saved'}
-            onClick={() => setActiveTab('saved')}
+            onClick={() => {
+              setActiveTab('saved')
+              setConfirmingKey(null)
+            }}
             className={`pb-2 px-3 text-xs font-ui font-bold border-b-2 transition cursor-pointer ${
               activeTab === 'saved'
                 ? 'border-bright-magenta text-deep-navy'
@@ -548,26 +591,71 @@ function TemplateModal({
         {/* Tab contents */}
         {activeTab === 'builtin' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 overflow-y-auto">
-            {availableTemplates.map((tpl) => (
-              <div
-                key={tpl.key}
-                className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between"
-              >
-                <div>
-                  <h3 className="font-bold text-sm text-deep-navy mb-1.5">{tpl.label}</h3>
-                  <p className="text-xs text-deep-navy/70 leading-relaxed mb-4">
-                    {tpl.description}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleSelectBuiltin(tpl.key)}
-                  className="w-full py-2 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition cursor-pointer shadow-sm"
+            {availableTemplates.map((tpl) => {
+              const isConfirming = confirmingKey === `builtin:${tpl.key}`
+              const blockSummary = formatTemplateBlockSummary(
+                tpl.key,
+                puckConfig.components as Record<string, { label?: string }>,
+                pageTitle,
+              )
+              const confirmDescId = `confirm-desc-builtin-${tpl.key}`
+
+              return (
+                <div
+                  key={tpl.key}
+                  className="p-4 rounded-xl border border-deep-navy/15 bg-white hover:border-bright-magenta hover:shadow-md transition flex flex-col justify-between"
                 >
-                  {vi.eb08.useThisTemplate}
-                </button>
-              </div>
-            ))}
+                  <div>
+                    <h3 className="font-bold text-sm text-deep-navy mb-1.5">{tpl.label}</h3>
+                    <p className="text-xs text-deep-navy/70 leading-relaxed mb-2">
+                      {tpl.description}
+                    </p>
+                    {blockSummary && (
+                      <p className="text-[11px] font-ui text-deep-navy/80 font-medium leading-relaxed mb-4">
+                        {blockSummary}
+                      </p>
+                    )}
+                  </div>
+
+                  {isConfirming ? (
+                    <div className="flex flex-col gap-2 p-3 rounded-lg bg-soft-pink/50 border border-bright-magenta/20 animate-in fade-in duration-100">
+                      <p
+                        id={confirmDescId}
+                        className="text-xs font-semibold text-deep-navy leading-relaxed"
+                      >
+                        {vi.builder.confirmApplyTemplate}
+                      </p>
+                      <div className="flex items-center gap-2 pt-1">
+                        <button
+                          type="button"
+                          ref={backButtonRef}
+                          onClick={() => setConfirmingKey(null)}
+                          className="flex-1 py-1.5 px-3 rounded-lg border border-deep-navy/30 bg-transparent text-deep-navy text-xs font-semibold hover:bg-deep-navy/5 transition cursor-pointer text-center"
+                        >
+                          {vi.eb16.back}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleApplyBuiltin(tpl.key)}
+                          aria-describedby={confirmDescId}
+                          className="flex-1 py-1.5 px-3 rounded-lg bg-bright-magenta text-white text-xs font-bold hover:bg-bright-magenta/90 transition cursor-pointer shadow-sm text-center"
+                        >
+                          {vi.eb16.replaceEntirePage}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingKey(`builtin:${tpl.key}`)}
+                      className="w-full py-2 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition cursor-pointer shadow-sm"
+                    >
+                      {vi.eb08.useThisTemplate}
+                    </button>
+                  )}
+                </div>
+              )
+            })}
           </div>
         ) : (
           <div className="py-4 overflow-y-auto flex-1 min-h-[180px]">
@@ -587,6 +675,8 @@ function TemplateModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {savedTemplates.map((template) => {
                   const isDeleting = deletingId === template.id
+                  const isConfirming = confirmingKey === `saved:${template.id}`
+                  const confirmDescId = `confirm-desc-saved-${template.id}`
                   const dateStr = new Date(template.createdAt).toLocaleDateString('vi-VN', {
                     day: '2-digit',
                     month: '2-digit',
@@ -616,23 +706,52 @@ function TemplateModal({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 pt-2 border-t border-deep-navy/10">
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSaved(template)}
-                          disabled={isDeleting}
-                          className="px-2.5 py-1.5 rounded-lg text-xs font-ui font-semibold text-bright-magenta hover:bg-soft-pink/40 transition disabled:opacity-50 cursor-pointer"
-                        >
-                          {isDeleting ? '…' : vi.eb08.delete}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleSelectSaved(template)}
-                          className="flex-1 py-1.5 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition cursor-pointer shadow-sm text-center"
-                        >
-                          {vi.eb08.useThisTemplate}
-                        </button>
-                      </div>
+                      {isConfirming ? (
+                        <div className="flex flex-col gap-2 p-3 rounded-lg bg-soft-pink/50 border border-bright-magenta/20 animate-in fade-in duration-100">
+                          <p
+                            id={confirmDescId}
+                            className="text-xs font-semibold text-deep-navy leading-relaxed"
+                          >
+                            {vi.builder.confirmApplyTemplate}
+                          </p>
+                          <div className="flex items-center gap-2 pt-1">
+                            <button
+                              type="button"
+                              ref={backButtonRef}
+                              onClick={() => setConfirmingKey(null)}
+                              className="flex-1 py-1.5 px-3 rounded-lg border border-deep-navy/30 bg-transparent text-deep-navy text-xs font-semibold hover:bg-deep-navy/5 transition cursor-pointer text-center"
+                            >
+                              {vi.eb16.back}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleApplySaved(template)}
+                              aria-describedby={confirmDescId}
+                              className="flex-1 py-1.5 px-3 rounded-lg bg-bright-magenta text-white text-xs font-bold hover:bg-bright-magenta/90 transition cursor-pointer shadow-sm text-center"
+                            >
+                              {vi.eb16.replaceEntirePage}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 pt-2 border-t border-deep-navy/10">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteSaved(template)}
+                            disabled={isDeleting}
+                            className="px-2.5 py-1.5 rounded-lg text-xs font-ui font-semibold text-bright-magenta hover:bg-soft-pink/40 transition disabled:opacity-50 cursor-pointer"
+                          >
+                            {isDeleting ? '…' : vi.eb08.delete}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmingKey(`saved:${template.id}`)}
+                            className="flex-1 py-1.5 px-3 rounded-lg bg-deep-navy text-white text-xs font-bold hover:bg-bright-magenta transition cursor-pointer shadow-sm text-center"
+                          >
+                            {vi.eb08.useThisTemplate}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )
                 })}

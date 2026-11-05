@@ -8,6 +8,7 @@ import {
 import { CHILD_BLOCK_TYPES } from '../../constants'
 import { vi } from '@/lib/i18n/vi'
 import { renderItemSlots, SLOT_CLASS } from './slot-items'
+import { ItemTitlesField } from '@/puck/editor/ItemTitlesField'
 
 export type { AccordionWidgetProps, AccordionItem }
 
@@ -20,6 +21,11 @@ export const AccordionWidgetBlock: ComponentConfig<AccordionWidgetProps> = {
     items: [{ title: 'Mục câu hỏi 1' }, { title: 'Mục câu hỏi 2' }],
   },
   fields: {
+    quickTitles: {
+      type: 'custom',
+      label: vi.eb16.accordionTitlesLabel,
+      render: () => <ItemTitlesField type="accordion" />,
+    },
     expandMode: {
       type: 'radio',
       label: vi.eb06.accordion.expandMode,
