@@ -302,6 +302,34 @@ export const SiteSettings: GlobalConfig = {
             },
           ],
         },
+        {
+          label: vi.gl01.loginMethodsTab,
+          fields: [
+            {
+              name: 'googleConfigWarning',
+              type: 'ui',
+              admin: {
+                components: {
+                  Field: '@/components/admin/auth/GoogleConfigWarning#GoogleConfigWarning',
+                },
+              },
+            },
+            {
+              ...checkbox('loginGoogleEnabled', vi.gl01.loginGoogleEnabled, true),
+              access: { read: () => true, update: isOwner },
+              admin: {
+                description: 'Cho phép học viên và khách hàng đăng nhập nhanh bằng tài khoản Google.',
+              },
+            },
+            {
+              ...checkbox('loginOtpEnabled', vi.gl01.loginOtpEnabled, true),
+              access: { read: () => true, update: isOwner },
+              admin: {
+                description: 'Cho phép đăng nhập bằng mã xác thực 6 số gửi qua email.',
+              },
+            },
+          ],
+        },
       ],
     },
   ],
