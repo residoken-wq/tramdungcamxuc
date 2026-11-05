@@ -868,10 +868,19 @@ Hướng dẫn dành cho anh Nhân (IT) để kích hoạt tính năng đăng nh
    GOOGLE_CLIENT_ID=xxxxxxxxxxxx-xxxxxxxxxxxxxxxx.apps.googleusercontent.com
    GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx
    ```
-2. Khởi động lại container Next.js / Docker Compose:
+2. Nạp lại `.env` cho app. **Dùng đúng tên project của máy đang gõ**: server thật là `tdcx` (mặc định của `scripts/deploy.sh`), server demo riêng là `tdcx-demo`. Gõ sai tên sẽ dựng thêm một bộ container + volume trống mới (lỗi `port is already allocated`, gặp 05/11 trên server thật).
    ```bash
-   docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
+   # Server thật (tramdungcamxuc.com), trong /opt/tdcx:
+   docker compose -p tdcx -f docker-compose.prod.yml up -d --force-recreate app < /dev/null
+   # Server demo riêng:
+   docker compose -p tdcx-demo -f docker-compose.prod.yml up -d --force-recreate app < /dev/null
    ```
+   Chưa deploy bản có GL-01 thì chạy `./scripts/deploy.sh` thay cho lệnh trên (tự tạo lại container, nạp `.env` mới).
+
+   **Lỡ gõ `-p tdcx-demo` trên server thật:**
+   - project thật `tdcx` và dữ liệu không bị đụng;
+   - gỡ bộ thừa bằng `docker compose -p tdcx-demo -f docker-compose.prod.yml down < /dev/null` (không thêm `-v`);
+   - kiểm `docker volume inspect -f '{{.Name}} {{.CreatedAt}}' tdcx-demo_pgdata tdcx-demo_media tdcx-demo_private`: chỉ khi cả 3 vừa tạo lúc gõ nhầm (trống) mới `docker volume rm` chúng.
 3. Sau khi khởi động lại, cảnh báo vàng trong CMS Admin (`/admin/globals/site-settings` → Đăng nhập khách hàng) sẽ tự động biến mất và nút Google sẽ hoạt động ngay lập tức.
 
 ---
