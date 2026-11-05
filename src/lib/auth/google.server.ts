@@ -4,6 +4,7 @@ import type { Payload } from 'payload'
 import type { Customer } from '@/payload-types'
 import { getAuthSecret } from './token'
 import { e2eTestHooksEnabled } from '@/lib/auth/test-hooks'
+import { getSiteUrl } from '@/lib/site-url'
 
 export const GOOGLE_OAUTH_COOKIE_NAME = 'tdcx_google_oauth_state'
 export const GOOGLE_OAUTH_COOKIE_MAX_AGE = 600 // 10 minutes in seconds
@@ -32,7 +33,7 @@ export interface GoogleEndpoints {
  */
 export function googleEndpoints(): GoogleEndpoints {
   if (e2eTestHooksEnabled()) {
-    const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const base = getSiteUrl()
     return {
       authorize: `${base}/api/test-google/authorize`,
       token: `${base}/api/test-google/token`,

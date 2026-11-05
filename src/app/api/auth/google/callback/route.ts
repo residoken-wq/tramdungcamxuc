@@ -18,15 +18,11 @@ import {
   verifyGoogleIdToken,
   findOrCreateGoogleCustomer,
 } from '@/lib/auth/google.server'
-
-/** GL-01c: same origin as redirect_uri, so a reverse proxy never sends the visitor to an internal host. */
-function siteBase(request: NextRequest): string {
-  return process.env.NEXT_PUBLIC_SITE_URL || request.url
-}
+import { getSiteUrl } from '@/lib/site-url'
 
 function redirectWithError(request: NextRequest, nextPath: string, errorCode: string) {
   const safeNext = getSafeRedirectUrl(nextPath)
-  const loginUrl = new URL('/tai-khoan/dang-nhap', siteBase(request))
+  const loginUrl = new URL('/tai-khoan/dang-nhap', getSiteUrl())
   if (safeNext && safeNext !== '/tai-khoan') {
     loginUrl.searchParams.set('next', safeNext)
   }
@@ -73,7 +69,7 @@ export async function GET(request: NextRequest) {
   }
 
   const { clientId, clientSecret } = googleClientCredentials()
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const siteUrl = getSiteUrl()
   const redirectUri = `${siteUrl}/api/auth/google/callback`
 
   try {
@@ -117,7 +113,7 @@ export async function GET(request: NextRequest) {
     )
 
     // 8. Redirect to next destination and set session cookie
-    const destinationUrl = new URL(savedNext, siteBase(request))
+    const destinationUrl = new URL(savedNext, getSiteUrl())
     const response = NextResponse.redirect(destinationUrl.toString(), 302)
 
     response.cookies.set(CUSTOMER_TOKEN_COOKIE, sessionToken, {

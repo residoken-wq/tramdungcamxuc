@@ -868,6 +868,12 @@ Hướng dẫn dành cho anh Nhân (IT) để kích hoạt tính năng đăng nh
    GOOGLE_CLIENT_ID=xxxxxxxxxxxx-xxxxxxxxxxxxxxxx.apps.googleusercontent.com
    GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx
    ```
+   - `SITE_URL` trong `.env` phải đúng địa chỉ công khai, ví dụ `https://tramdungcamxuc.com`. App ghép `redirect_uri` từ đó (`<SITE_URL>/api/auth/google/callback`), phải trùng **từng ký tự** với redirect URI khai báo ở bước 1.3, nếu không Google báo `redirect_uri_mismatch`.
+   - Hai biến Google chỉ vào được container khi `docker-compose.prod.yml` có dòng `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (có từ GL-01d). Bản cũ hơn thì `git pull` trước (hoặc chạy `./scripts/deploy.sh`, script tự lấy file compose mới).
+   - Kiểm container đã nhận biến (chỉ in **có / không**, không in giá trị):
+     ```bash
+     docker compose -p tdcx -f docker-compose.prod.yml exec -T app sh -c 'test -n "$GOOGLE_CLIENT_ID" && echo "co GOOGLE_CLIENT_ID" || echo "THIEU GOOGLE_CLIENT_ID"' < /dev/null
+     ```
 2. Nạp lại `.env` cho app. **Dùng đúng tên project của máy đang gõ**: server thật là `tdcx` (mặc định của `scripts/deploy.sh`), server demo riêng là `tdcx-demo`. Gõ sai tên sẽ dựng thêm một bộ container + volume trống mới (lỗi `port is already allocated`, gặp 05/11 trên server thật).
    ```bash
    # Server thật (tramdungcamxuc.com), trong /opt/tdcx:
