@@ -4373,7 +4373,7 @@ export const vi = {
     continueWithGoogle: 'Tiếp tục với Google',
     firstTimeConsentHint: 'Lần đầu đăng nhập, chị/anh vui lòng tick đồng ý ở trên',
     loginDisabled: 'Cách đăng nhập này đang tạm tắt',
-    googleSignInAria: 'Tiếp tục đăng nhập bằng tài khoản Google',
+    loginSubtitleGoogle: 'Đăng nhập nhanh bằng tài khoản Google của bạn, không cần mật khẩu.',
     errors: {
       canDongY: 'Vui lòng tick đồng ý Điều khoản và Chính sách bảo mật rồi bấm lại',
       huy: 'Bạn đã huỷ đăng nhập Google',

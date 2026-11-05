@@ -196,7 +196,9 @@ export function LoginForm({
           TRẠM DỪNG CẢM XÚC
         </p>
         <h1 className="font-display text-2xl sm:text-3xl text-deep-navy">{vi.auth.loginTitle}</h1>
-        <p className="font-quote italic text-sm text-deep-navy/70 mt-1">{vi.auth.loginSubtitle}</p>
+        <p className="font-quote italic text-sm text-deep-navy/70 mt-1">
+          {methods.otp ? vi.auth.loginSubtitle : vi.gl01.loginSubtitleGoogle}
+        </p>
       </div>
 
       {/* Messages */}
@@ -273,7 +275,6 @@ export function LoginForm({
           <a
             href={googleAuthHref}
             className="w-full min-h-[44px] py-2.5 px-4 rounded-xl border border-deep-navy/20 bg-white hover:bg-warm-ivory text-deep-navy font-semibold text-sm sm:text-base flex items-center justify-center gap-3 transition shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-bright-magenta focus:ring-offset-2"
-            aria-label={vi.gl01.googleSignInAria}
           >
             <GoogleIcon className="w-5 h-5 shrink-0" />
             <span>{vi.gl01.continueWithGoogle}</span>
