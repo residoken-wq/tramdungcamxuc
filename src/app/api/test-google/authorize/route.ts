@@ -2,10 +2,11 @@ import crypto from 'node:crypto'
 import { notFound } from 'next/navigation'
 import { NextRequest, NextResponse } from 'next/server'
 import { saveMockAuthSession } from '@/lib/auth/google-mock.server'
+import { e2eTestHooksEnabled } from '@/lib/auth/test-hooks'
 
 export async function GET(request: NextRequest) {
   // Only accessible when test hooks are explicitly enabled in non-production environments
-  if (process.env.E2E_TEST_HOOKS !== '1' || process.env.NODE_ENV === 'production') {
+  if (!e2eTestHooksEnabled()) {
     notFound()
   }
 

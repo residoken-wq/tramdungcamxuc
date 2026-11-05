@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { checkAndRecordRateLimit, RateLimitError } from '@/lib/forms/ratelimit.server'
 import { getSafeRedirectUrl } from '@/lib/auth/redirect'
+import { googleClientCredentials, resolveLoginMethods } from '@/lib/auth/methods'
 import {
   googleEndpoints,
   generateRandomToken,
@@ -10,7 +11,9 @@ import {
   signOAuthCookie,
   GOOGLE_OAUTH_COOKIE_NAME,
   GOOGLE_OAUTH_COOKIE_MAX_AGE,
+  GOOGLE_OAUTH_COOKIE_PATH,
 } from '@/lib/auth/google.server'
+import { e2eTestHooksEnabled } from '@/lib/auth/test-hooks'
 
 function getClientIp(req: NextRequest): string | undefined {
   const forwardedFor = req.headers.get('x-forwarded-for')
@@ -30,6 +33,16 @@ export async function GET(request: NextRequest) {
 
     const ip = getClientIp(request)
     const payload = await getPayload({ config })
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+    // REVIEW-REQUIRED: GL-01c Google off in the CMS or not configured: never send the visitor to
+    // Google (empty client_id). The login page shows OTP in that case.
+    const settings = await payload.findGlobal({ slug: 'siteSettings', overrideAccess: true })
+    if (!resolveLoginMethods(settings).google) {
+      const loginUrl = new URL('/tai-khoan/dang-nhap', siteUrl)
+      if (safeNext !== '/tai-khoan') loginUrl.searchParams.set('next', safeNext)
+      return NextResponse.redirect(loginUrl.toString(), 302)
+    }
 
     // 1. Rate limiting by IP
     await checkAndRecordRateLimit(payload, {
@@ -60,12 +73,11 @@ export async function GET(request: NextRequest) {
 
     // 3. Build Google authorization URL
     const endpoints = googleEndpoints()
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     const redirectUri = `${siteUrl}/api/auth/google/callback`
 
     const authUrl = new URL(endpoints.authorize)
     authUrl.searchParams.set('response_type', 'code')
-    authUrl.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID || '')
+    authUrl.searchParams.set('client_id', googleClientCredentials().clientId)
     authUrl.searchParams.set('scope', 'openid email profile')
     authUrl.searchParams.set('code_challenge', codeChallenge)
     authUrl.searchParams.set('code_challenge_method', 'S256')
@@ -74,7 +86,7 @@ export async function GET(request: NextRequest) {
     authUrl.searchParams.set('nonce', nonce)
     authUrl.searchParams.set('prompt', 'select_account')
 
-    if (process.env.E2E_TEST_HOOKS === '1' && process.env.NODE_ENV !== 'production') {
+    if (e2eTestHooksEnabled()) {
       const mockParams = ['mock_email', 'mock_sub', 'mock_name', 'mock_error', 'mock_unverified']
       for (const param of mockParams) {
         const val = searchParams.get(param)
@@ -87,19 +99,25 @@ export async function GET(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/api/auth/google',
+      path: GOOGLE_OAUTH_COOKIE_PATH,
       maxAge: GOOGLE_OAUTH_COOKIE_MAX_AGE,
     })
 
     return response
   } catch (err) {
     if (err instanceof RateLimitError) {
-      const loginUrl = new URL('/tai-khoan/dang-nhap', request.url)
+      const loginUrl = new URL(
+        '/tai-khoan/dang-nhap',
+        process.env.NEXT_PUBLIC_SITE_URL || request.url,
+      )
       loginUrl.searchParams.set('loi', 'that-bai')
       return NextResponse.redirect(loginUrl.toString(), 302)
     }
     console.error('[AuthGoogle] Start error:', err)
-    const loginUrl = new URL('/tai-khoan/dang-nhap', request.url)
+    const loginUrl = new URL(
+      '/tai-khoan/dang-nhap',
+      process.env.NEXT_PUBLIC_SITE_URL || request.url,
+    )
     loginUrl.searchParams.set('loi', 'that-bai')
     return NextResponse.redirect(loginUrl.toString(), 302)
   }

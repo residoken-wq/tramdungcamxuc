@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { getMockPublicJwk } from '@/lib/auth/google-mock.server'
+import { e2eTestHooksEnabled } from '@/lib/auth/test-hooks'
 
 export async function GET() {
-  if (process.env.E2E_TEST_HOOKS !== '1' || process.env.NODE_ENV === 'production') {
+  if (!e2eTestHooksEnabled()) {
     notFound()
   }
 

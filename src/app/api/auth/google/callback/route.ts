@@ -9,24 +9,31 @@ import {
   getAuthSecret,
 } from '@/lib/auth/token'
 import { getSafeRedirectUrl } from '@/lib/auth/redirect'
+import { googleClientCredentials } from '@/lib/auth/methods'
 import {
   GOOGLE_OAUTH_COOKIE_NAME,
+  GOOGLE_OAUTH_COOKIE_PATH,
   verifyOAuthCookie,
   exchangeGoogleCodeForTokens,
   verifyGoogleIdToken,
   findOrCreateGoogleCustomer,
 } from '@/lib/auth/google.server'
 
+/** GL-01c: same origin as redirect_uri, so a reverse proxy never sends the visitor to an internal host. */
+function siteBase(request: NextRequest): string {
+  return process.env.NEXT_PUBLIC_SITE_URL || request.url
+}
+
 function redirectWithError(request: NextRequest, nextPath: string, errorCode: string) {
   const safeNext = getSafeRedirectUrl(nextPath)
-  const loginUrl = new URL('/tai-khoan/dang-nhap', request.url)
+  const loginUrl = new URL('/tai-khoan/dang-nhap', siteBase(request))
   if (safeNext && safeNext !== '/tai-khoan') {
     loginUrl.searchParams.set('next', safeNext)
   }
   loginUrl.searchParams.set('loi', errorCode)
 
   const res = NextResponse.redirect(loginUrl.toString(), 302)
-  res.cookies.delete(GOOGLE_OAUTH_COOKIE_NAME)
+  res.cookies.delete({ name: GOOGLE_OAUTH_COOKIE_NAME, path: GOOGLE_OAUTH_COOKIE_PATH })
   return res
 }
 
@@ -65,8 +72,7 @@ export async function GET(request: NextRequest) {
     return redirectWithError(request, savedNext, 'that-bai')
   }
 
-  const clientId = process.env.GOOGLE_CLIENT_ID || ''
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || ''
+  const { clientId, clientSecret } = googleClientCredentials()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
   const redirectUri = `${siteUrl}/api/auth/google/callback`
 
@@ -111,7 +117,7 @@ export async function GET(request: NextRequest) {
     )
 
     // 8. Redirect to next destination and set session cookie
-    const destinationUrl = new URL(savedNext, request.url)
+    const destinationUrl = new URL(savedNext, siteBase(request))
     const response = NextResponse.redirect(destinationUrl.toString(), 302)
 
     response.cookies.set(CUSTOMER_TOKEN_COOKIE, sessionToken, {
@@ -123,7 +129,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Clean up temporary oauth cookie immediately
-    response.cookies.delete(GOOGLE_OAUTH_COOKIE_NAME)
+    response.cookies.delete({ name: GOOGLE_OAUTH_COOKIE_NAME, path: GOOGLE_OAUTH_COOKIE_PATH })
 
     return response
   } catch (err) {

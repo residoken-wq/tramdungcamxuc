@@ -1,5 +1,6 @@
 import 'server-only'
 import crypto from 'node:crypto'
+import { googleClientCredentials } from './methods'
 
 export interface MockAuthData {
   nonce: string
@@ -78,7 +79,7 @@ export function createMockIdToken(params: {
 
   const payload = {
     iss: 'https://accounts.google.com',
-    aud: params.aud || process.env.GOOGLE_CLIENT_ID || 'mock-google-client-id',
+    aud: params.aud || googleClientCredentials().clientId,
     sub: params.sub,
     email: params.email,
     email_verified: params.email_verified !== false,

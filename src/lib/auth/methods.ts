@@ -9,6 +9,32 @@ export interface LoginEnv {
   [key: string]: string | null | undefined
 }
 
+/**
+ * Mock Google endpoints for e2e. Same gate as /api/test-otp (see test-hooks.ts): CI runs a
+ * production build, so only E2E_TEST_HOOKS=1 (set solely in the CI e2e job) can enable it.
+ */
+export const GOOGLE_MOCK_CLIENT_ID = 'mock-google-client-id'
+
+export function isGoogleMockMode(env: LoginEnv = process.env): boolean {
+  return env.E2E_TEST_HOOKS === '1'
+}
+
+/**
+ * GL-01c: one place for the client id / secret. In mock mode without real credentials the
+ * start route, the callback and the mock token all use the same fake client id.
+ */
+export function googleClientCredentials(env: LoginEnv = process.env): {
+  clientId: string
+  clientSecret: string
+} {
+  const clientId = env.GOOGLE_CLIENT_ID?.trim() ?? ''
+  const clientSecret = env.GOOGLE_CLIENT_SECRET?.trim() ?? ''
+  if ((!clientId || !clientSecret) && isGoogleMockMode(env)) {
+    return { clientId: clientId || GOOGLE_MOCK_CLIENT_ID, clientSecret: clientSecret || 'mock' }
+  }
+  return { clientId, clientSecret }
+}
+
 export interface LoginMethodsResult {
   google: boolean
   otp: boolean
@@ -33,12 +59,13 @@ export function resolveLoginMethods(
   const googleEnabled = settings?.loginGoogleEnabled !== false
   const otpEnabled = settings?.loginOtpEnabled !== false
 
-  const hasGoogleEnv = Boolean(
-    env.GOOGLE_CLIENT_ID &&
-    env.GOOGLE_CLIENT_ID.trim().length > 0 &&
-    env.GOOGLE_CLIENT_SECRET &&
-    env.GOOGLE_CLIENT_SECRET.trim().length > 0,
-  )
+  const hasGoogleEnv =
+    Boolean(
+      env.GOOGLE_CLIENT_ID &&
+      env.GOOGLE_CLIENT_ID.trim().length > 0 &&
+      env.GOOGLE_CLIENT_SECRET &&
+      env.GOOGLE_CLIENT_SECRET.trim().length > 0,
+    ) || isGoogleMockMode(env)
 
   const googleReady = googleEnabled && hasGoogleEnv
 
