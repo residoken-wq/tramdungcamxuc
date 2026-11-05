@@ -170,9 +170,12 @@ export const Customers: CollectionConfig = {
         hidden: true,
         readOnly: true,
       },
+      // REVIEW-REQUIRED: GL-01c only the Google callback (overrideAccess) links an account.
+      // An editor setting googleSub through the API could sign in as any customer.
       access: {
         read: isEditorOrOwner,
-        update: isEditorOrOwner,
+        create: () => false,
+        update: () => false,
       },
     },
     {

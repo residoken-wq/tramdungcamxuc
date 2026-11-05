@@ -3,9 +3,12 @@ import crypto from 'node:crypto'
 import type { Payload } from 'payload'
 import type { Customer } from '@/payload-types'
 import { getAuthSecret } from './token'
+import { e2eTestHooksEnabled } from '@/lib/auth/test-hooks'
 
 export const GOOGLE_OAUTH_COOKIE_NAME = 'tdcx_google_oauth_state'
 export const GOOGLE_OAUTH_COOKIE_MAX_AGE = 600 // 10 minutes in seconds
+/** The state cookie only travels to /api/auth/google/*; deleting it must use the same path. */
+export const GOOGLE_OAUTH_COOKIE_PATH = '/api/auth/google'
 
 export interface GoogleOAuthStatePayload {
   state: string
@@ -28,7 +31,7 @@ export interface GoogleEndpoints {
  * In development / E2E test mode with E2E_TEST_HOOKS=1, routes to local mock endpoints.
  */
 export function googleEndpoints(): GoogleEndpoints {
-  if (process.env.E2E_TEST_HOOKS === '1' && process.env.NODE_ENV !== 'production') {
+  if (e2eTestHooksEnabled()) {
     const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     return {
       authorize: `${base}/api/test-google/authorize`,
@@ -358,6 +361,16 @@ export async function findOrCreateGoogleCustomer(params: {
     if (existing.email && existing.email.trim().toLowerCase() !== normalizedEmail) {
       console.warn(`[AuthGoogle] Customer ID ${existing.id} logged in with different Google email`)
     }
+    if (!existing.consentAt) {
+      if (consentPolicy !== 1) return { error: 'can-dong-y' }
+      const updated = await payload.update({
+        collection: 'customers',
+        id: existing.id,
+        data: { consentAt: nowIso, ...(consentMarketing === 1 ? { consentMarketing: true } : {}) },
+        overrideAccess: true,
+      })
+      return { customer: updated as Customer }
+    }
     return { customer: existing }
   }
 
@@ -376,6 +389,11 @@ export async function findOrCreateGoogleCustomer(params: {
     // Check if customer already has a different googleSub
     if (existing.googleSub && existing.googleSub !== googleSub) {
       return { error: 'lien-ket-khac' }
+    }
+
+    // REVIEW-REQUIRED: GL-01c same rule as OTP: a customer without consentAt must tick consent now
+    if (!existing.consentAt && consentPolicy !== 1) {
+      return { error: 'can-dong-y' }
     }
 
     // Link googleSub to existing customer
