@@ -14,6 +14,7 @@ import {
   GOOGLE_OAUTH_COOKIE_PATH,
 } from '@/lib/auth/google.server'
 import { e2eTestHooksEnabled } from '@/lib/auth/test-hooks'
+import { getSiteUrl } from '@/lib/site-url'
 
 function getClientIp(req: NextRequest): string | undefined {
   const forwardedFor = req.headers.get('x-forwarded-for')
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     const ip = getClientIp(request)
     const payload = await getPayload({ config })
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const siteUrl = getSiteUrl()
 
     // REVIEW-REQUIRED: GL-01c Google off in the CMS or not configured: never send the visitor to
     // Google (empty client_id). The login page shows OTP in that case.
@@ -106,18 +107,12 @@ export async function GET(request: NextRequest) {
     return response
   } catch (err) {
     if (err instanceof RateLimitError) {
-      const loginUrl = new URL(
-        '/tai-khoan/dang-nhap',
-        process.env.NEXT_PUBLIC_SITE_URL || request.url,
-      )
+      const loginUrl = new URL('/tai-khoan/dang-nhap', getSiteUrl())
       loginUrl.searchParams.set('loi', 'that-bai')
       return NextResponse.redirect(loginUrl.toString(), 302)
     }
     console.error('[AuthGoogle] Start error:', err)
-    const loginUrl = new URL(
-      '/tai-khoan/dang-nhap',
-      process.env.NEXT_PUBLIC_SITE_URL || request.url,
-    )
+    const loginUrl = new URL('/tai-khoan/dang-nhap', getSiteUrl())
     loginUrl.searchParams.set('loi', 'that-bai')
     return NextResponse.redirect(loginUrl.toString(), 302)
   }
