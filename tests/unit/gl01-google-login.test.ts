@@ -13,10 +13,7 @@ import {
   clearJwksCache,
   type GoogleOAuthStatePayload,
 } from '@/lib/auth/google.server'
-import {
-  createMockIdToken,
-  getMockPublicJwk,
-} from '@/lib/auth/google-mock.server'
+import { createMockIdToken, getMockPublicJwk } from '@/lib/auth/google-mock.server'
 import { verifyOtpAction, requestOtpAction } from '@/lib/auth/actions'
 import { vi as i18nVi } from '@/lib/i18n/vi'
 
@@ -108,8 +105,10 @@ describe('GL-01 Google Login Unit Tests', () => {
       const tamperedSig = cookie.slice(0, -6) + 'abcdef'
       expect(verifyOAuthCookie(tamperedSig, 'test-secret')).toBeNull()
 
-      const [dataB64, sig] = cookie.split('.')
-      const tamperedData = Buffer.from(JSON.stringify({ ...validPayload, state: 'hacked-state' })).toString('base64url')
+      const [, sig] = cookie.split('.')
+      const tamperedData = Buffer.from(
+        JSON.stringify({ ...validPayload, state: 'hacked-state' }),
+      ).toString('base64url')
       expect(verifyOAuthCookie(`${tamperedData}.${sig}`, 'test-secret')).toBeNull()
     })
 
@@ -176,9 +175,9 @@ describe('GL-01 Google Login Unit Tests', () => {
         aud: clientId,
       })
 
-      await expect(
-        verifyGoogleIdToken(token, nonce, clientId, mockJwksUrl),
-      ).rejects.toThrow(/Nonce mismatch/)
+      await expect(verifyGoogleIdToken(token, nonce, clientId, mockJwksUrl)).rejects.toThrow(
+        /Nonce mismatch/,
+      )
     })
 
     it('rejects ID token with mismatched audience', async () => {
@@ -190,9 +189,9 @@ describe('GL-01 Google Login Unit Tests', () => {
         aud: 'wrong-client-id',
       })
 
-      await expect(
-        verifyGoogleIdToken(token, nonce, clientId, mockJwksUrl),
-      ).rejects.toThrow(/Audience mismatch/)
+      await expect(verifyGoogleIdToken(token, nonce, clientId, mockJwksUrl)).rejects.toThrow(
+        /Audience mismatch/,
+      )
     })
 
     it('rejects expired ID token', async () => {
@@ -205,9 +204,9 @@ describe('GL-01 Google Login Unit Tests', () => {
         expiresInSeconds: -100,
       })
 
-      await expect(
-        verifyGoogleIdToken(token, nonce, clientId, mockJwksUrl),
-      ).rejects.toThrow(/expired/)
+      await expect(verifyGoogleIdToken(token, nonce, clientId, mockJwksUrl)).rejects.toThrow(
+        /expired/,
+      )
     })
 
     it('rejects ID token when email_verified is false', async () => {
@@ -220,9 +219,9 @@ describe('GL-01 Google Login Unit Tests', () => {
         email_verified: false,
       })
 
-      await expect(
-        verifyGoogleIdToken(token, nonce, clientId, mockJwksUrl),
-      ).rejects.toThrow(/Email is not verified/)
+      await expect(verifyGoogleIdToken(token, nonce, clientId, mockJwksUrl)).rejects.toThrow(
+        /Email is not verified/,
+      )
     })
 
     it('rejects ID token with tampered signature', async () => {
@@ -237,9 +236,9 @@ describe('GL-01 Google Login Unit Tests', () => {
       const parts = token.split('.')
       const tampered = `${parts[0]}.${parts[1]}.tamperedSignature`
 
-      await expect(
-        verifyGoogleIdToken(tampered, nonce, clientId, mockJwksUrl),
-      ).rejects.toThrow(/Invalid signature/)
+      await expect(verifyGoogleIdToken(tampered, nonce, clientId, mockJwksUrl)).rejects.toThrow(
+        /Invalid signature/,
+      )
     })
   })
 

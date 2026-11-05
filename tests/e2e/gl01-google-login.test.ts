@@ -68,7 +68,7 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
       await expect(consentCheckbox).toBeChecked()
 
       // 3. Locate Google button
-      const googleBtn = page.getByRole('link', { name: vi.gl01.googleButton })
+      const googleBtn = page.getByRole('link', { name: vi.gl01.continueWithGoogle })
       await expect(googleBtn).toBeVisible()
 
       // Verify Google button has min-height 44px
@@ -86,28 +86,33 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
       await googleBtn.click()
 
       // 5. Verification: user navigated through mock auth and landed back at targetNext
-      await expect(page).toHaveURL(new RegExp(encodeURIComponent('habit-tracker').replace('%', '.*') + '|dung-thu'), {
-        timeout: 15000,
-      })
+      await expect(page).toHaveURL(
+        new RegExp(encodeURIComponent('habit-tracker').replace('%', '.*') + '|dung-thu'),
+        {
+          timeout: 15000,
+        },
+      )
 
       // Check account session is active by visiting /tai-khoan
       await page.goto('/tai-khoan')
       await expect(page).toHaveURL(/\/tai-khoan$/)
-      await expect(page.locator('button', { name: vi.account.logout })).toBeVisible()
+      await expect(page.getByRole('button', { name: vi.common.logout })).toBeVisible()
 
       await context.close()
     })
   }
 
   // Test 2: New customer clicks Google without ticking consent -> redirected with loi=can-dong-y
-  test('new customer without consent gets redirected with loi=can-dong-y and no customer created', async ({ page }) => {
+  test('new customer without consent gets redirected with loi=can-dong-y and no customer created', async ({
+    page,
+  }) => {
     await page.goto('/tai-khoan/dang-nhap')
 
     const consentCheckbox = page.locator('input[name="consentPolicy"]')
     await expect(consentCheckbox).toBeVisible()
     await expect(consentCheckbox).not.toBeChecked()
 
-    const googleBtn = page.getByRole('link', { name: vi.gl01.googleButton })
+    const googleBtn = page.getByRole('link', { name: vi.gl01.continueWithGoogle })
     await expect(googleBtn).toBeVisible()
 
     // Click without checking consent
@@ -119,11 +124,14 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
     // Error alert visible with exact message
     const errorAlert = page.locator('div[role="alert"]')
     await expect(errorAlert).toBeVisible()
-    await expect(errorAlert).toContainText(vi.gl01.errors['can-dong-y'])
+    await expect(errorAlert).toContainText(vi.gl01.errors.canDongY)
   })
 
   // Test 3: Owner disables OTP in siteSettings -> login page hides OTP form completely
-  test('owner disables OTP -> login page hides email and code inputs completely', async ({ page, browser }) => {
+  test('owner disables OTP -> login page hides email and code inputs completely', async ({
+    page,
+    browser,
+  }) => {
     let settingsBefore: Record<string, unknown> | undefined
 
     try {
@@ -147,7 +155,7 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
       await guestPage.goto('/tai-khoan/dang-nhap')
 
       // Google button should be visible
-      const googleBtn = guestPage.getByRole('link', { name: vi.gl01.googleButton })
+      const googleBtn = guestPage.getByRole('link', { name: vi.gl01.continueWithGoogle })
       await expect(googleBtn).toBeVisible()
 
       // OTP form elements must NOT exist in the DOM (not just CSS hidden)
@@ -157,19 +165,21 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
       const codeInput = guestPage.locator('input[name="code"]')
       await expect(codeInput).toHaveCount(0)
 
-      const otpDivider = guestPage.locator(`text=${vi.gl01.dividerOr}`)
+      const otpDivider = guestPage.locator(`text=${vi.gl01.orDivider}`)
       await expect(otpDivider).toHaveCount(0)
 
       await guestContext.close()
     } finally {
       // Restore settings
       if (settingsBefore) {
-        await page.request.post('/api/globals/siteSettings', {
-          data: {
-            loginOtpEnabled: settingsBefore.loginOtpEnabled ?? true,
-            loginGoogleEnabled: settingsBefore.loginGoogleEnabled ?? true,
-          },
-        }).catch(() => {})
+        await page.request
+          .post('/api/globals/siteSettings', {
+            data: {
+              loginOtpEnabled: settingsBefore.loginOtpEnabled ?? true,
+              loginGoogleEnabled: settingsBefore.loginGoogleEnabled ?? true,
+            },
+          })
+          .catch(() => {})
       }
     }
   })

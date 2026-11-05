@@ -318,7 +318,8 @@ export const SiteSettings: GlobalConfig = {
               ...checkbox('loginGoogleEnabled', vi.gl01.loginGoogleEnabled, true),
               access: { read: () => true, update: isOwner },
               admin: {
-                description: 'Cho phép học viên và khách hàng đăng nhập nhanh bằng tài khoản Google.',
+                description:
+                  'Cho phép học viên và khách hàng đăng nhập nhanh bằng tài khoản Google.',
               },
             },
             {

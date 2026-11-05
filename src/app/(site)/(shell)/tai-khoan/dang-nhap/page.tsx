@@ -37,11 +37,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-16rem)] flex items-center justify-center">
       <div className="w-full max-w-md">
-        <LoginForm
-          initialNext={safeNext}
-          methods={methods}
-          initialError={resolvedParams.loi}
-        />
+        <LoginForm initialNext={safeNext} methods={methods} initialError={resolvedParams.loi} />
       </div>
     </section>
   )

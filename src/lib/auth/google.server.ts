@@ -3,7 +3,6 @@ import crypto from 'node:crypto'
 import type { Payload } from 'payload'
 import type { Customer } from '@/payload-types'
 import { getAuthSecret } from './token'
-import { getSafeRedirectUrl } from './redirect'
 
 export const GOOGLE_OAUTH_COOKIE_NAME = 'tdcx_google_oauth_state'
 export const GOOGLE_OAUTH_COOKIE_MAX_AGE = 600 // 10 minutes in seconds
@@ -107,7 +106,10 @@ export function verifyOAuthCookie(
   }
 }
 
-let cachedJwks: { keys: Array<{ kid?: string; [key: string]: unknown }>; expiresAt: number } | null = null
+let cachedJwks: {
+  keys: Array<{ kid?: string; [key: string]: unknown }>
+  expiresAt: number
+} | null = null
 
 /**
  * Clears in-memory JWKS cache (useful for testing).
@@ -249,12 +251,7 @@ export async function verifyGoogleIdToken(
   const signingInput = `${headerB64}.${payloadB64}`
   const signatureBuf = Buffer.from(signatureB64, 'base64url')
 
-  const isSigValid = crypto.verify(
-    'RSA-SHA256',
-    Buffer.from(signingInput),
-    publicKey,
-    signatureBuf,
-  )
+  const isSigValid = crypto.verify('RSA-SHA256', Buffer.from(signingInput), publicKey, signatureBuf)
 
   if (!isSigValid) {
     throw new Error('Invalid signature on Google ID token')

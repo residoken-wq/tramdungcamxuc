@@ -35,9 +35,9 @@ export function resolveLoginMethods(
 
   const hasGoogleEnv = Boolean(
     env.GOOGLE_CLIENT_ID &&
-      env.GOOGLE_CLIENT_ID.trim().length > 0 &&
-      env.GOOGLE_CLIENT_SECRET &&
-      env.GOOGLE_CLIENT_SECRET.trim().length > 0,
+    env.GOOGLE_CLIENT_ID.trim().length > 0 &&
+    env.GOOGLE_CLIENT_SECRET &&
+    env.GOOGLE_CLIENT_SECRET.trim().length > 0,
   )
 
   const googleReady = googleEnabled && hasGoogleEnv

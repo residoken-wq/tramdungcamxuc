@@ -393,7 +393,6 @@ Còn chờ Hana: câu 3–10 trong kế hoạch (chẩn đoán 8 hay 16 câu, ng
   - **E2E chia 3 shard** (trước là 2), vẫn chạy **đủ** ở mọi PR code.
   - Không dùng `--last-failed` hay Playwright `--only-changed`: cách đầu bỏ sót test bị hỏng mới; cách sau không thấy được thay đổi code trang vì E2E gọi trang qua trình duyệt.
 
-
 ## Nút đăng nhập Google tuân thủ Google Identity Branding Guidelines (GL-01) – chốt 05/11/2026
 
 - Theo quy định của Google Identity Services ("Sign in with Google Branding Guidelines"), nút đăng nhập bằng Google bắt buộc phải sử dụng biểu tượng chữ "G" 4 màu chính thức (Đỏ #EA4335, Vàng #FBBC05, Xanh lá #34A853, Xanh dương #4285F4) trên nền trắng hoặc trung tính.

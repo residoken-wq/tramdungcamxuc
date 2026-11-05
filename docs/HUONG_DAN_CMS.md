@@ -1132,7 +1132,7 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 
 5. **Bước 4 – Gọi tên thói quen** (`step4`):
    - **Lời dẫn mở đầu bước 4** (`leadIn`).
-   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: *Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày.*).
+   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: _Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày._).
    - **Tiêu đề & Mô tả tuyên ngôn** (`statementTitle`, `statementDesc`).
    - **Gợi ý vai trò** (`suggestedRoles`): Nhập mỗi dòng 1 vai trò gợi ý (hiển thị thành các nút chip).
    - **Tiêu đề, Mô tả, Lưu ý ngày nghỉ của Nhịp điệu** (`rhythmTitle`, `rhythmDesc`, `rhythmNote`).
@@ -1165,9 +1165,10 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
    - **Placeholder ô ghi chú cảm xúc** (`notePlaceholder`).
 
 10. **Chân trang (Footer)** (`footer`):
-   - **Khẩu hiệu thương hiệu** (`slogan`).
-   - **Thông tin tác giả / Coach** (`authorInfo`).
-   - **Đoạn ghi nhận nguồn sách** (`bookCredits`).
+
+- **Khẩu hiệu thương hiệu** (`slogan`).
+- **Thông tin tác giả / Coach** (`authorInfo`).
+- **Đoạn ghi nhận nguồn sách** (`bookCredits`).
 
 **Cách chạy script nạp tự động nội dung chuẩn zip (`dp01d-habit-content.ts`)**:
 
@@ -1393,7 +1394,7 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
 2. **Tab Quyền truy cập & Bán hàng**:
    - **Chế độ truy cập EQ (`eqAccessMode`)**:
      - `trial` (Mặc định): Áp dụng luồng dùng thử chuẩn (khách vãng lai rút 1 thẻ miễn phí, từ thẻ thứ 2 yêu cầu đăng nhập/dùng thử; tab "Tất cả 26 thẻ" chỉ hiển thị thông điệp khi đã kích hoạt).
-     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. *(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này).*
+     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. _(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này)._
    - **Link Shopee bộ thẻ vật lý (`shopeeUrl`)**: Nhập đường link gian hàng Shopee của Hana để nút "Chạm vào thẻ thật ngoài đời" dẫn khách tới mua bộ thẻ in.
 3. **Tab Giới thiệu & Cẩm nang**:
    - Tự do sửa câu chữ giới thiệu 2 bước: `Tiêu đề chính`, `Mô tả ngắn`, `4 góc nhìn cảm xúc` (Tự thân, Người khác, Tình huống, Hành động), và `4 bước thực hành mỗi ngày` (Tĩnh lặng, Rút thẻ, Lắng nghe, Khám phá).
@@ -3386,6 +3387,7 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 ### 7.7. Đăng nhập khách hàng: Google và OTP email (GL-01)
 
 Website Trạm Dừng Cảm Xúc hỗ trợ 2 phương thức đăng nhập cho học viên và độc giả:
+
 1. **Đăng nhập nhanh bằng Google (Khuyên dùng)**: Khách chỉ cần bấm 1 chạm với tài khoản Gmail/Google cá nhân, không cần chờ email và không phải nhớ mật khẩu.
 2. **Đăng nhập bằng mã OTP qua email**: Khách nhập địa chỉ email và nhận mã xác thực 6 chữ số gửi về hòm thư.
 
@@ -3405,11 +3407,11 @@ Chỉ tài khoản **Chủ sở hữu (Owner)** mới có quyền thay đổi c�
 
 Hệ thống được lập trình với cơ chế bảo vệ khách hàng tự động, đảm bảo khách luôn có lối vào tài khoản:
 
-| Google trong CMS & Cấu hình máy chủ | OTP trong CMS | Giao diện trên trang `/tai-khoan/dang-nhap` | Ghi chú vận hành |
-| :--- | :--- | :--- | :--- |
-| **Bật** (máy chủ đã cấu hình) | **Bật** | Hiện cả nút **Tiếp tục với Google** và form **OTP email** (ngăn cách bằng chữ "hoặc"). | Khách chọn cách nào cũng được. |
-| **Bật** (máy chủ đã cấu hình) | **Tắt** | **Chỉ hiện nút Google.** Form OTP được ẩn hoàn toàn. | Phù hợp khi Hana muốn đơn giản hóa tối đa giao diện đăng nhập. |
-| **Tắt** (hoặc thiếu cấu hình máy chủ) | Bất kỳ | **Luôn hiện form OTP email.** | **Cơ chế an toàn tự động**: Nếu Google chưa cấu hình xong hoặc bị tắt, hệ thống tự động giữ lại OTP để khách không bao giờ bị kẹt. |
+| Google trong CMS & Cấu hình máy chủ   | OTP trong CMS | Giao diện trên trang `/tai-khoan/dang-nhap`                                            | Ghi chú vận hành                                                                                                                   |
+| :------------------------------------ | :------------ | :------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| **Bật** (máy chủ đã cấu hình)         | **Bật**       | Hiện cả nút **Tiếp tục với Google** và form **OTP email** (ngăn cách bằng chữ "hoặc"). | Khách chọn cách nào cũng được.                                                                                                     |
+| **Bật** (máy chủ đã cấu hình)         | **Tắt**       | **Chỉ hiện nút Google.** Form OTP được ẩn hoàn toàn.                                   | Phù hợp khi Hana muốn đơn giản hóa tối đa giao diện đăng nhập.                                                                     |
+| **Tắt** (hoặc thiếu cấu hình máy chủ) | Bất kỳ        | **Luôn hiện form OTP email.**                                                          | **Cơ chế an toàn tự động**: Nếu Google chưa cấu hình xong hoặc bị tắt, hệ thống tự động giữ lại OTP để khách không bao giờ bị kẹt. |
 
 > [!NOTE]
 > **Cảnh báo vàng**: Nếu công tắc Google đang bật nhưng máy chủ chưa có mã kết nối `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, CMS sẽ hiện một khung cảnh báo màu vàng nhắc nhở liên hệ anh IT cấu hình.

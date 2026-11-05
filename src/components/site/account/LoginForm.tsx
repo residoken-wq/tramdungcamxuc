@@ -36,6 +36,15 @@ const GoogleIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' })
   </svg>
 )
 
+function resolveInitialErrorMessage(error?: string | null): string | null {
+  if (!error) return null
+  if (error === 'can-dong-y') return vi.gl01.errors.canDongY
+  if (error === 'huy') return vi.gl01.errors.huy
+  if (error === 'lien-ket-khac') return vi.gl01.errors.lienKetKhac
+  if (error === 'that-bai') return vi.gl01.errors.thatBai
+  return null
+}
+
 export function LoginForm({
   initialNext,
   methods = { google: true, otp: true },
@@ -52,26 +61,13 @@ export function LoginForm({
   const [honeypot, setHoneypot] = useState('')
 
   const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(() =>
+    resolveInitialErrorMessage(initialError),
+  )
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
   const [countdown, setCountdown] = useState(0)
 
   const codeInputRef = useRef<HTMLInputElement>(null)
-
-  // Map URL error parameter to Vietnamese message
-  useEffect(() => {
-    if (initialError) {
-      if (initialError === 'can-dong-y') {
-        setErrorMessage(vi.gl01.errors.canDongY)
-      } else if (initialError === 'huy') {
-        setErrorMessage(vi.gl01.errors.huy)
-      } else if (initialError === 'lien-ket-khac') {
-        setErrorMessage(vi.gl01.errors.lienKetKhac)
-      } else if (initialError === 'that-bai') {
-        setErrorMessage(vi.gl01.errors.thatBai)
-      }
-    }
-  }, [initialError])
 
   // Countdown timer for resend OTP
   useEffect(() => {

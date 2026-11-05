@@ -9,7 +9,8 @@ export async function POST(request: NextRequest) {
 
   const formData = await request.formData()
   const code = formData.get('code') as string
-  const clientId = (formData.get('client_id') as string) || process.env.GOOGLE_CLIENT_ID || 'mock-client'
+  const clientId =
+    (formData.get('client_id') as string) || process.env.GOOGLE_CLIENT_ID || 'mock-client'
 
   if (!code) {
     return NextResponse.json({ error: 'missing_code' }, { status: 400 })
