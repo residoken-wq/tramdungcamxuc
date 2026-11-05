@@ -162,6 +162,20 @@ export const Customers: CollectionConfig = {
       },
     },
     {
+      name: 'googleSub',
+      type: 'text',
+      unique: true,
+      index: true,
+      admin: {
+        hidden: true,
+        readOnly: true,
+      },
+      access: {
+        read: isEditorOrOwner,
+        update: isEditorOrOwner,
+      },
+    },
+    {
       name: 'customerActions',
       type: 'ui',
       admin: {

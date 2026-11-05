@@ -1222,6 +1222,7 @@ export interface Customer {
    */
   deletionRequestedAt?: string | null;
   sessionVersion?: number | null;
+  googleSub?: string | null;
   updatedAt: string;
   createdAt: string;
   collection: 'customers';
@@ -3059,6 +3060,7 @@ export interface CustomersSelect<T extends boolean = true> {
   reminderEmailsOptOut?: T;
   deletionRequestedAt?: T;
   sessionVersion?: T;
+  googleSub?: T;
   updatedAt?: T;
   createdAt?: T;
 }
