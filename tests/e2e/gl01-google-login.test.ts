@@ -46,6 +46,11 @@ async function getGlobal(request: APIRequestContext, slug: string) {
 }
 
 test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
+  // Test 1 loops over 1440 / 375 itself; tests 3–4 bootstrap the first admin (once per DB).
+  test.beforeEach(({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Runs once, on desktop-1440.')
+  })
+
   // Test 1: New customer from /dung-thu -> login -> consent -> Google button -> returns authenticated (desktop & mobile)
   for (const width of [1440, 375]) {
     test(`new customer logs in with Google from trial page (${width}px)`, async ({ browser }) => {
@@ -133,10 +138,11 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
     browser,
   }) => {
     let settingsBefore: Record<string, unknown> | undefined
+    let adminId: number | undefined
 
     try {
       // Bootstrap admin and read initial settings
-      await bootstrapAdmin(page)
+      adminId = await bootstrapAdmin(page)
       settingsBefore = await getGlobal(page.request, 'siteSettings')
 
       // Update siteSettings: disable OTP, enable Google
@@ -181,79 +187,93 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
           })
           .catch(() => {})
       }
+      if (adminId) await page.request.delete(`/api/users/${adminId}`).catch(() => {})
     }
   })
 
-  // Test 4: Existing OTP customer logs in via Google with same email -> links account and views existing order
-  test('existing OTP customer logs in via Google with same email -> account linked and views order', async ({
+  // Test 4: customer created before Google (OTP / admin) logs in via Google with the same email:
+  // same account (id, orders), googleSub linked; without consent ticked it is refused first.
+  test('existing customer logs in via Google with same email -> same account, sees the old order', async ({
     page,
     browser,
   }) => {
-    const existingEmail = `existing-customer-${randomUUID().slice(0, 8)}@example.test`
-    const customerName = 'Khách Cũ Đã Dùng OTP'
-    const productName = `Khóa Học Test E2E ${randomUUID().slice(0, 6)}`
+    const existingEmail = `gl01-existing-${randomUUID().slice(0, 8)}@example.test`
+    const productName = `[MẪU] Gói GL-01 ${randomUUID().slice(0, 6)}`
+    let adminId: number | undefined
+    let productId: number | undefined
+    let customerId: number | undefined
+    let orderId: number | undefined
 
-    await bootstrapAdmin(page)
+    try {
+      adminId = await bootstrapAdmin(page)
 
-    // 1. Create product
-    const prodRes = await page.request.post('/api/products', {
-      data: {
-        name: productName,
-        slug: `khoa-hoc-test-${randomUUID().slice(0, 6)}`,
-        web: 'site',
-        type: 'course',
-        price: 250000,
-        saleStatus: 'on_sale',
-        _status: 'published',
-      },
-    })
-    expect(prodRes.ok()).toBe(true)
-    const createdProduct = await prodRes.json()
+      const prodRes = await page.request.post('/api/products', {
+        data: {
+          name: productName,
+          slug: `goi-gl01-${randomUUID().slice(0, 6)}`,
+          web: 'site',
+          type: 'package',
+          price: 1750000,
+          saleStatus: 'on_sale',
+          isSample: true,
+          _status: 'published',
+        },
+      })
+      expect(prodRes.ok()).toBe(true)
+      productId = (await prodRes.json()).doc.id
 
-    // 2. Create existing customer
-    const custRes = await page.request.post('/api/customers', {
-      data: {
-        email: existingEmail,
-        name: customerName,
-        consentPolicy: true,
-      },
-    })
-    expect(custRes.ok()).toBe(true)
-    const createdCust = await custRes.json()
+      // Created by an admin: no consentAt yet (like a customer who never accepted the terms).
+      const custRes = await page.request.post('/api/customers', {
+        data: { email: existingEmail, name: '[MẪU] Học viên Test 01' },
+      })
+      expect(custRes.ok()).toBe(true)
+      customerId = (await custRes.json()).doc.id
 
-    // 3. Create existing order for this customer
-    const orderRes = await page.request.post('/api/orders', {
-      data: {
-        customer: createdCust.doc.id,
-        items: [
-          {
-            product: createdProduct.doc.id,
-            price: 250000,
-            quantity: 1,
-          },
-        ],
-        totalAmount: 250000,
-        status: 'pending',
-        paymentMethod: 'vietqr',
-        deliveryStatus: 'pending',
-      },
-    })
-    expect(orderRes.ok()).toBe(true)
+      const orderRes = await page.request.post('/api/orders', {
+        data: {
+          customer: customerId,
+          items: [{ product: productId, price: 1750000 }],
+          subtotal: 1750000,
+          total: 1750000,
+          createdByAdmin: true,
+        },
+      })
+      expect(orderRes.ok()).toBe(true)
+      orderId = (await orderRes.json()).doc.id
 
-    // 4. Log in via Google with the mock existing email
-    const visitor = await browser.newContext()
-    const visitorPage = await visitor.newPage()
+      const visitor = await browser.newContext()
+      const visitorPage = await visitor.newPage()
+      const start = (consent: 0 | 1) =>
+        `/api/auth/google/start?next=/tai-khoan&consent=${consent}&mock_email=${encodeURIComponent(existingEmail)}`
 
-    // Start flow directly with mock_email parameter
-    const startUrl = `/api/auth/google/start?next=/tai-khoan&consent=1&mock_email=${encodeURIComponent(existingEmail)}`
-    await visitorPage.goto(startUrl)
+      // Not consented yet and no tick: refused, not linked (GL-01c B1).
+      await visitorPage.goto(start(0))
+      await expect(visitorPage).toHaveURL(/\/tai-khoan\/dang-nhap\?.*loi=can-dong-y/, {
+        timeout: 15000,
+      })
 
-    // Redirects through callback to /tai-khoan
-    await expect(visitorPage).toHaveURL(/\/tai-khoan$/, { timeout: 15000 })
+      // With the tick: logged in to the same account, the old order is there.
+      await visitorPage.goto(start(1))
+      await expect(visitorPage).toHaveURL(/\/tai-khoan\/?$/, { timeout: 15000 })
+      await expect(visitorPage.getByText(existingEmail)).toBeVisible()
+      const orderCard = visitorPage.locator('[data-testid="customer-order-item"]').first()
+      await expect(orderCard.getByText(productName)).toBeVisible()
+      await visitor.close()
 
-    // Customer is logged in and sees their account
-    await expect(visitorPage.locator('text=' + existingEmail)).toBeVisible()
-
-    await visitor.close()
+      const linked = await (await page.request.get(`/api/customers/${customerId}?depth=0`)).json()
+      expect(linked.googleSub).toBeTruthy()
+      expect(linked.consentAt).toBeTruthy()
+      const sameEmail = await (
+        await page.request.get(
+          `/api/customers?where[email][equals]=${encodeURIComponent(existingEmail)}&depth=0`,
+        )
+      ).json()
+      expect(sameEmail.totalDocs).toBe(1)
+    } finally {
+      if (orderId) await page.request.delete(`/api/orders/${orderId}`).catch(() => {})
+      if (customerId) await page.request.delete(`/api/customers/${customerId}`).catch(() => {})
+      if (productId) await page.request.delete(`/api/products/${productId}`).catch(() => {})
+      if (adminId) await page.request.delete(`/api/users/${adminId}`).catch(() => {})
+    }
   })
 })
