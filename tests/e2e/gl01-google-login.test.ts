@@ -127,9 +127,9 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
     await expect(page).toHaveURL(/\/tai-khoan\/dang-nhap\?.*loi=can-dong-y/, { timeout: 15000 })
 
     // Error alert visible with exact message
-    const errorAlert = page.locator('div[role="alert"]')
+    // Next.js adds its own empty role="alert" route announcer: pick ours by its text.
+    const errorAlert = page.getByRole('alert').filter({ hasText: vi.gl01.errors.canDongY })
     await expect(errorAlert).toBeVisible()
-    await expect(errorAlert).toContainText(vi.gl01.errors.canDongY)
   })
 
   // Test 3: Owner disables OTP in siteSettings -> login page hides OTP form completely
@@ -255,7 +255,7 @@ test.describe('GL-01: Customer Google Sign-In & OTP fallback', () => {
       // With the tick: logged in to the same account, the old order is there.
       await visitorPage.goto(start(1))
       await expect(visitorPage).toHaveURL(/\/tai-khoan\/?$/, { timeout: 15000 })
-      await expect(visitorPage.getByText(existingEmail)).toBeVisible()
+      await expect(visitorPage.getByText(existingEmail).first()).toBeVisible()
       const orderCard = visitorPage.locator('[data-testid="customer-order-item"]').first()
       await expect(orderCard.getByText(productName)).toBeVisible()
       await visitor.close()
