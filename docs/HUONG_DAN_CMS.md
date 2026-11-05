@@ -1132,7 +1132,7 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 
 5. **Bước 4 – Gọi tên thói quen** (`step4`):
    - **Lời dẫn mở đầu bước 4** (`leadIn`).
-   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: _Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày._).
+   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: *Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày.*).
    - **Tiêu đề & Mô tả tuyên ngôn** (`statementTitle`, `statementDesc`).
    - **Gợi ý vai trò** (`suggestedRoles`): Nhập mỗi dòng 1 vai trò gợi ý (hiển thị thành các nút chip).
    - **Tiêu đề, Mô tả, Lưu ý ngày nghỉ của Nhịp điệu** (`rhythmTitle`, `rhythmDesc`, `rhythmNote`).
@@ -1165,10 +1165,9 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
    - **Placeholder ô ghi chú cảm xúc** (`notePlaceholder`).
 
 10. **Chân trang (Footer)** (`footer`):
-
-- **Khẩu hiệu thương hiệu** (`slogan`).
-- **Thông tin tác giả / Coach** (`authorInfo`).
-- **Đoạn ghi nhận nguồn sách** (`bookCredits`).
+   - **Khẩu hiệu thương hiệu** (`slogan`).
+   - **Thông tin tác giả / Coach** (`authorInfo`).
+   - **Đoạn ghi nhận nguồn sách** (`bookCredits`).
 
 **Cách chạy script nạp tự động nội dung chuẩn zip (`dp01d-habit-content.ts`)**:
 
@@ -1394,7 +1393,7 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
 2. **Tab Quyền truy cập & Bán hàng**:
    - **Chế độ truy cập EQ (`eqAccessMode`)**:
      - `trial` (Mặc định): Áp dụng luồng dùng thử chuẩn (khách vãng lai rút 1 thẻ miễn phí, từ thẻ thứ 2 yêu cầu đăng nhập/dùng thử; tab "Tất cả 26 thẻ" chỉ hiển thị thông điệp khi đã kích hoạt).
-     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. _(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này)._
+     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. *(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này).*
    - **Link Shopee bộ thẻ vật lý (`shopeeUrl`)**: Nhập đường link gian hàng Shopee của Hana để nút "Chạm vào thẻ thật ngoài đời" dẫn khách tới mua bộ thẻ in.
 3. **Tab Giới thiệu & Cẩm nang**:
    - Tự do sửa câu chữ giới thiệu 2 bước: `Tiêu đề chính`, `Mô tả ngắn`, `4 góc nhìn cảm xúc` (Tự thân, Người khác, Tình huống, Hành động), và `4 bước thực hành mỗi ngày` (Tĩnh lặng, Rút thẻ, Lắng nghe, Khám phá).
@@ -3395,13 +3394,14 @@ Chỉ tài khoản **Chủ sở hữu (Owner)** mới có quyền thay đổi c�
 
 #### 1. Vị trí cài đặt trong CMS
 
-1. Ở cột menu bên trái, tìm nhóm **Cài đặt**, bấm vào **Cài đặt Website** (`/admin/globals/site-settings`).
+1. Ở cột menu bên trái, tìm nhóm **Trang web**, bấm vào **Cài đặt website** (`/admin/globals/site-settings`).
 2. Chọn tab **Đăng nhập khách hàng**.
-3. Bạn sẽ thấy 2 công tắc cài đặt:
-   - **Cho phép đăng nhập bằng Google**: Bật/tắt nút đăng nhập bằng Google trên website.
-   - **Cho phép đăng nhập bằng OTP email**: Bật/tắt form nhập email và mã OTP.
+3. Bạn sẽ thấy 2 công tắc cài đặt (chỉ tài khoản Chủ sở hữu sửa được):
+   - **Cho đăng nhập bằng Google**: Bật/tắt nút đăng nhập bằng Google trên website.
+   - **Cho đăng nhập bằng mã OTP qua email**: Bật/tắt form nhập email và mã OTP.
 
-![Cài đặt phương thức đăng nhập khách hàng](images/huong-dan/login-methods-settings.png)
+<!-- ẢNH GL-01: chụp tab "Đăng nhập khách hàng" sau khi anh Nhân cấu hình Google trên server thật, lưu images/huong-dan/login-methods-settings.png -->
+
 
 #### 2. Nguyên tắc vận hành an toàn (Bảng 1.1)
 
@@ -3421,7 +3421,7 @@ Hệ thống được lập trình với cơ chế bảo vệ khách hàng tự 
 Khi anh IT thông báo đã cấu hình Google xong, Hana thực hiện theo 3 bước sau để chuyển giao an toàn:
 
 1. **Bước 1 – Kiểm tra thử**: Mở trang `/tai-khoan/dang-nhap`, bấm nút **Tiếp tục với Google** bằng chính tài khoản Gmail của Hana xem đã vào được khu vực tài khoản chưa.
-2. **Bước 2 – Tắt OTP trong CMS**: Vào **Cài đặt Website** → tab **Đăng nhập khách hàng** → gạt tắt **Cho phép đăng nhập bằng OTP email** → bấm **Lưu thay đổi**.
+2. **Bước 2 – Tắt OTP trong CMS**: Vào **Cài đặt Website** → tab **Đăng nhập khách hàng** → gạt tắt **Cho đăng nhập bằng mã OTP qua email** → bấm **Lưu thay đổi**.
 3. **Bước 3 – Xác nhận thực tế**: Mở một cửa sổ trình duyệt ẩn danh mới (Incognito / Khách), vào lại `/tai-khoan/dang-nhap`. Lúc này form OTP đã biến mất hoàn toàn, chỉ còn nút Google gọn gàng kèm 2 ô chọn đồng ý điều khoản. Nếu sau này cần mở lại OTP, Hana chỉ cần gạt bật lại công tắc và Lưu.
 
 ---

@@ -389,38 +389,30 @@ Không dùng cờ `--apply`: `payload run` không chuyển cờ vào script, l�
 Bản cập nhật DP-01d mang toàn bộ 11 kỹ thuật Habit chuẩn, 8 câu hỏi chẩn đoán và toàn bộ nhãn copy từ ZIP vào CMS (qua 2 migration DB và script nạp an toàn không ghi đè nội dung Hana đã tùy chỉnh).
 
 #### 1. Danh sách migration database cần chạy:
-
 - `20261104_100000_dp01d_techniques_and_loop`: thêm các cột `description`, `examples`, `applyTemplate`, `order` cho collection `techniques`, thêm các cột `loop_laws`, `loop_cue_box` cho `habit_journey_content`.
 - `20261104_110000_dp01d_habit_text_fields`: thêm các trường copy CMS cho `header`, `step1`, `step2`, `step3`, `step4`, `step5`, `step6`, `checkIn`, `footer` trong `habit_journey_content`.
 
 Lệnh chạy migration:
-
 ```bash
 docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm seed \
   pnpm migrate < /dev/null
 ```
-
-_(Trên local dev: `pnpm migrate`)_
+*(Trên local dev: `pnpm migrate`)*
 
 #### 2. Nạp dữ liệu kỹ thuật & copy CMS (`scripts/dp01d-habit-content.ts`):
-
 - Luôn chạy **thử nghiệm (dry-run)** trước trên môi trường demo:
-
 ```bash
 docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm seed \
   pnpm payload run scripts/dp01d-habit-content.ts < /dev/null
 ```
-
 - Khi kiểm tra danh sách kỹ thuật và các trường cần nạp đã chuẩn, tiến hành **ghi thật (apply)** (tự động tạo backup JSON trong `./backups/`):
-
 ```bash
 mkdir -p backups
 docker compose -p tdcx-demo -f docker-compose.prod.yml --profile tools run --rm \
   -e APPLY=true -v "$PWD/backups:/app/backups" seed \
   pnpm payload run scripts/dp01d-habit-content.ts < /dev/null
 ```
-
-_(Trên local PowerShell: `$env:APPLY="true"; $null | pnpm payload run scripts/dp01d-habit-content.ts`)_
+*(Trên local PowerShell: `$env:APPLY="true"; $null | pnpm payload run scripts/dp01d-habit-content.ts`)*
 
 ### Nạp dữ liệu MẪU cho buổi demo
 
@@ -848,11 +840,11 @@ Hướng dẫn dành cho anh Nhân (IT) để kích hoạt tính năng đăng nh
 2. **Cấu hình OAuth Consent Screen**:
    - User Type: Chọn **External**.
    - Tên ứng dụng (App name): **Trạm Dừng Cảm Xúc**.
-   - User support email: Email liên hệ hỗ trợ (vd: `tramdungcamxuc@gmail.com`).
+   - User support email: email hỗ trợ khách của Trạm (Hana chọn; nên trùng email liên hệ trong **Cài đặt website**).
    - Developer contact information: Email quản trị của anh Nhân.
    - App domain:
      - Application home page: `https://tramdungcamxuc.com`
-     - Application privacy policy link: `https://tramdungcamxuc.com/chinh-sach-bao-mat` (hoặc slug tương ứng)
+     - Application privacy policy link: `https://tramdungcamxuc.com/chinh-sach-bao-mat` (trang phải có nội dung trước khi chuyển **In production**)
      - Application terms of service link: `https://tramdungcamxuc.com/dieu-khoan-su-dung`
    - Scopes: Chọn `openid`, `.../auth/userinfo.email`, `.../auth/userinfo.profile`.
    - Publishing status: Chuyển sang trạng thái **"In production"** (Publish app) để tất cả tài khoản Gmail đều đăng nhập được mà không bị giới hạn 100 tài khoản thử nghiệm.
@@ -865,7 +857,7 @@ Hướng dẫn dành cho anh Nhân (IT) để kích hoạt tính năng đăng nh
      - Dev / Local: `http://localhost:3000`
    - **Authorized redirect URIs**:
      - Production: `https://tramdungcamxuc.com/api/auth/google/callback`
-     - Server Demo: `http://IP-SERVER:3400/api/auth/google/callback` (hoặc domain demo)
+     - Server demo: chỉ khi demo có tên miền **HTTPS**, ví dụ `https://<tên-miền-demo>/api/auth/google/callback`. Google **không nhận** địa chỉ `http://IP:cổng`; demo chạy bằng IP thì không thử Google được, dùng OTP.
      - Local dev: `http://localhost:3000/api/auth/google/callback`
 4. Copy lại **Client ID** và **Client secret**. **Tuyệt đối KHÔNG commit các giá trị này vào kho mã nguồn Git.**
 
