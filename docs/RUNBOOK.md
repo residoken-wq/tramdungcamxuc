@@ -830,6 +830,52 @@ Nếu SePay gặp sự cố bảo trì, gián đoạn mạng hoặc ngân hàng 
 
 ---
 
+### Cấu hình Google OAuth (GL-01)
+
+Hướng dẫn dành cho anh Nhân (IT) để kích hoạt tính năng đăng nhập Google cho khách hàng:
+
+#### 1. Thiết lập trên Google Cloud Console
+
+1. Truy cập [Google Cloud Console](https://console.cloud.google.com/) và chọn hoặc tạo dự án cho Trạm Dừng Cảm Xúc.
+2. **Cấu hình OAuth Consent Screen**:
+   - User Type: Chọn **External**.
+   - Tên ứng dụng (App name): **Trạm Dừng Cảm Xúc**.
+   - User support email: Email liên hệ hỗ trợ (vd: `tramdungcamxuc@gmail.com`).
+   - Developer contact information: Email quản trị của anh Nhân.
+   - App domain:
+     - Application home page: `https://tramdungcamxuc.com`
+     - Application privacy policy link: `https://tramdungcamxuc.com/chinh-sach-bao-mat` (hoặc slug tương ứng)
+     - Application terms of service link: `https://tramdungcamxuc.com/dieu-khoan-su-dung`
+   - Scopes: Chọn `openid`, `.../auth/userinfo.email`, `.../auth/userinfo.profile`.
+   - Publishing status: Chuyển sang trạng thái **"In production"** (Publish app) để tất cả tài khoản Gmail đều đăng nhập được mà không bị giới hạn 100 tài khoản thử nghiệm.
+3. **Tạo OAuth Client ID**:
+   - Vào **APIs & Services** → **Credentials** → **Create Credentials** → **OAuth client ID**.
+   - Application type: Chọn **Web application**.
+   - Name: `TDCX Web Client`.
+   - **Authorized JavaScript origins**:
+     - Production: `https://tramdungcamxuc.com`
+     - Dev / Local: `http://localhost:3000`
+   - **Authorized redirect URIs**:
+     - Production: `https://tramdungcamxuc.com/api/auth/google/callback`
+     - Server Demo: `http://IP-SERVER:3400/api/auth/google/callback` (hoặc domain demo)
+     - Local dev: `http://localhost:3000/api/auth/google/callback`
+4. Copy lại **Client ID** và **Client secret**. **Tuyệt đối KHÔNG commit các giá trị này vào kho mã nguồn Git.**
+
+#### 2. Đặt biến môi trường trên Server
+
+1. Mở file `.env` trên máy chủ production hoặc demo:
+   ```env
+   GOOGLE_CLIENT_ID=xxxxxxxxxxxx-xxxxxxxxxxxxxxxx.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+2. Khởi động lại container Next.js / Docker Compose:
+   ```bash
+   docker compose -p tdcx-demo -f docker-compose.prod.yml up -d < /dev/null
+   ```
+3. Sau khi khởi động lại, cảnh báo vàng trong CMS Admin (`/admin/globals/site-settings` → Đăng nhập khách hàng) sẽ tự động biến mất và nút Google sẽ hoạt động ngay lập tức.
+
+---
+
 ## Dữ liệu demo GĐ 2 (T2-15)
 
 Dành cho Hana, anh Nhân và đội ngũ kiểm thử bấm trải nghiệm ngay các tính năng chính của Giai đoạn 2 trên server demo hoặc máy dev:

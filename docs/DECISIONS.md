@@ -392,3 +392,10 @@ Còn chờ Hana: câu 3–10 trong kế hoạch (chẩn đoán 8 hay 16 câu, ng
   - **Unit test ở PR chỉ chạy phần liên quan** (Vitest `--changed <base>`, dò theo chuỗi import), cộng các test đọc file nguồn từ đĩa (tương phản màu, font, token…) vì import không thấy được chúng. Sửa `package.json`, lockfile, `tsconfig.json`, config Vitest, `global-setup`, snapshot, migration, `payload.config.ts` hay workflow thì chạy **đủ**. Trên `main` luôn chạy đủ.
   - **E2E chia 3 shard** (trước là 2), vẫn chạy **đủ** ở mọi PR code.
   - Không dùng `--last-failed` hay Playwright `--only-changed`: cách đầu bỏ sót test bị hỏng mới; cách sau không thấy được thay đổi code trang vì E2E gọi trang qua trình duyệt.
+
+
+## Nút đăng nhập Google tuân thủ Google Identity Branding Guidelines (GL-01) – chốt 05/11/2026
+
+- Theo quy định của Google Identity Services ("Sign in with Google Branding Guidelines"), nút đăng nhập bằng Google bắt buộc phải sử dụng biểu tượng chữ "G" 4 màu chính thức (Đỏ #EA4335, Vàng #FBBC05, Xanh lá #34A853, Xanh dương #4285F4) trên nền trắng hoặc trung tính.
+- **Ngoại lệ thương hiệu được phê duyệt**: Mặc dù Brand Book 2026 của Trạm Dừng Cảm Xúc giới hạn bảng màu giao diện trong 8 màu pastel và quy định không dùng màu ngoài bảng, biểu tượng logo chữ "G" 4 màu của Google được chấp thuận là một ngoại lệ kỹ thuật & nhận diện thương hiệu đối tác (tương tự như logo Zalo xanh hoặc biểu tượng VietQR ngân hàng).
+- Nút được tạo dạng liên kết GET (`<a href="/api/auth/google/start">`) với chiều cao tối thiểu 44px, viền xám nhạt (`#DADCE0`), chữ đậm `deep-navy`, đáp ứng hoàn toàn tiêu chuẩn WCAG AA và tuân thủ chặt chẽ chính sách bảo mật CSP `form-action 'self'`.
