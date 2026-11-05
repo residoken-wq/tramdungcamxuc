@@ -74,6 +74,14 @@ export async function GET(request: NextRequest) {
     authUrl.searchParams.set('nonce', nonce)
     authUrl.searchParams.set('prompt', 'select_account')
 
+    if (process.env.E2E_TEST_HOOKS === '1' && process.env.NODE_ENV !== 'production') {
+      const mockParams = ['mock_email', 'mock_sub', 'mock_name', 'mock_error', 'mock_unverified']
+      for (const param of mockParams) {
+        const val = searchParams.get(param)
+        if (val) authUrl.searchParams.set(param, val)
+      }
+    }
+
     const response = NextResponse.redirect(authUrl.toString(), 302)
     response.cookies.set(GOOGLE_OAUTH_COOKIE_NAME, cookieValue, {
       httpOnly: true,
