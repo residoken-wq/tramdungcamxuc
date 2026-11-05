@@ -4,7 +4,11 @@ vi.mock('server-only', () => ({}))
 
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
-import { resolveLoginMethods } from '@/lib/auth/methods'
+import {
+  resolveLoginMethods,
+  googleClientCredentials,
+  GOOGLE_MOCK_CLIENT_ID,
+} from '@/lib/auth/methods'
 import {
   signOAuthCookie,
   verifyOAuthCookie,
@@ -422,6 +426,66 @@ describe('GL-01 Google Login Unit Tests', () => {
           overrideAccess: true,
         })
       }
+    })
+  })
+
+  describe('GL-01c: QA fixes', () => {
+    it('B1: existing customer without consentAt must tick consent before linking Google', async () => {
+      const email = `gl01c-noconsent-${Date.now()}@example.com`
+      const existing = await payload.create({
+        collection: 'customers',
+        data: { email, name: '[MẪU] Học viên Test 01' },
+        overrideAccess: true,
+      })
+      expect(existing.consentAt).toBeFalsy()
+
+      const sub = `sub-noconsent-${Date.now()}`
+      const refused = await findOrCreateGoogleCustomer({ payload, googleSub: sub, email })
+      expect(refused.error).toBe('can-dong-y')
+      const unchanged = await payload.findByID({
+        collection: 'customers',
+        id: existing.id,
+        overrideAccess: true,
+      })
+      expect(unchanged.googleSub).toBeFalsy()
+
+      const ok = await findOrCreateGoogleCustomer({
+        payload,
+        googleSub: sub,
+        email,
+        consentPolicy: 1,
+      })
+      expect(ok.customer?.id).toBe(existing.id)
+      expect(ok.customer?.consentAt).toBeTruthy()
+    })
+
+    it('B5: googleSub cannot be written through the API, even by an editor', () => {
+      const field = (
+        payload.collections.customers.config.fields as Array<{
+          name?: string
+          access?: { create?: () => boolean; update?: () => boolean }
+        }>
+      ).find((f) => f.name === 'googleSub')
+      expect(field?.access?.create?.()).toBe(false)
+      expect(field?.access?.update?.()).toBe(false)
+    })
+
+    it('B6: e2e mock mode counts as configured and shares one client id; real env wins', () => {
+      expect(resolveLoginMethods({}, { E2E_TEST_HOOKS: '1', NODE_ENV: 'production' })).toEqual({
+        google: true,
+        otp: true,
+      })
+      expect(googleClientCredentials({ E2E_TEST_HOOKS: '1' }).clientId).toBe(GOOGLE_MOCK_CLIENT_ID)
+      expect(
+        googleClientCredentials({
+          E2E_TEST_HOOKS: '1',
+          GOOGLE_CLIENT_ID: 'real-id',
+          GOOGLE_CLIENT_SECRET: 'real-secret',
+        }).clientId,
+      ).toBe('real-id')
+      // Without the hook and without credentials: nothing is invented.
+      expect(googleClientCredentials({}).clientId).toBe('')
+      expect(resolveLoginMethods({}, {})).toEqual({ google: false, otp: true })
     })
   })
 })
