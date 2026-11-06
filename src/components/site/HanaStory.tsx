@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
+import { buttonColorStyle } from '@/lib/brand/button-colors'
 import { HeartLine } from '@/components/brand/HeartLine'
 import { safeHref } from '@/lib/safe-href'
 import { textTarget } from '@/puck/style/text-target'
@@ -30,6 +31,9 @@ export interface HanaStoryProps {
   founderSignatureAlt?: string | null
   buttonText?: string
   buttonLink?: string
+  /** PK-15: brand colour of the CTA fill / label ('' = automatic). */
+  buttonBgColor?: string
+  buttonTextColor?: string
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -77,6 +81,8 @@ export function HanaStory({
   founderSignatureAlt: directSigAlt,
   buttonText,
   buttonLink,
+  buttonBgColor,
+  buttonTextColor,
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
@@ -296,10 +302,16 @@ export function HanaStory({
             {/* Optional CTA Button */}
             {buttonText && safeButtonHref && (
               <div className="mt-8">
+                {/* PK-15: the old dark-tone default was a navy button on a navy section (invisible). */}
                 <Button
                   href={safeButtonHref}
-                  variant={isDarkOrNavy ? 'secondary' : 'primary'}
+                  variant="primary"
                   size="lg"
+                  style={buttonColorStyle(
+                    buttonBgColor,
+                    buttonTextColor,
+                    isDarkTone ? 'deep-navy' : bgColor,
+                  )}
                 >
                   {buttonText}
                 </Button>

@@ -117,6 +117,7 @@ import {
   type FontSizeOption,
 } from './constants'
 import { allowedTextColors } from '@/lib/brand/format-classes'
+import { BUTTON_BG_OPTIONS, buttonTextOptions } from '@/lib/brand/button-colors'
 import { alignField, colorField, sizeField } from './format-fields'
 import { getLockedComponentPermissions, resolveComponentPermissions } from './locks'
 
@@ -629,6 +630,12 @@ const basePuckConfig: Config<PageComponentsProps> = {
         },
         buttonText: { type: 'text', label: vi.eb15a.buttonText },
         buttonLink: { type: 'text', label: 'Đường dẫn liên kết (tùy chọn)' },
+        buttonBgColor: { type: 'select', label: vi.pk15.buttonBgColor, options: BUTTON_BG_OPTIONS },
+        buttonTextColor: {
+          type: 'select',
+          label: vi.pk15.buttonTextColor,
+          options: buttonTextOptions(''),
+        },
         bgColor: {
           type: 'select',
           label: 'Màu nền',
@@ -643,6 +650,12 @@ const basePuckConfig: Config<PageComponentsProps> = {
       resolveFields: (data, params) => ({
         ...params.fields,
         textColor: colorField('Màu chữ nội dung', data.props?.bgColor || 'warm-ivory'),
+        // PK-15: only label colours readable on the chosen button fill.
+        buttonTextColor: {
+          type: 'select',
+          label: vi.pk15.buttonTextColor,
+          options: buttonTextOptions(data.props?.buttonBgColor),
+        },
       }),
       defaultProps: {
         version: 2,

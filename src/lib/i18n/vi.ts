@@ -3335,6 +3335,10 @@ export const vi = {
     alignLeft: 'Căn trái',
     alignCenter: 'Căn giữa',
   },
+  pk15: {
+    buttonBgColor: 'Màu nút',
+    buttonTextColor: 'Màu chữ trên nút',
+  },
   eb16: {
     replaceEntirePage: 'Thay toàn bộ trang',
     back: 'Quay lại',
