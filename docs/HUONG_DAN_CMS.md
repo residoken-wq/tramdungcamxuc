@@ -3514,6 +3514,18 @@ Khi anh IT thông báo đã cấu hình Google xong, Hana thực hiện theo 3 b
    - **Kế hoạch thói quen**: Vào **Khóa học** -> **Kế hoạch thói quen** (`habitPlans`) để xem bảng điểm thói quen, câu định danh và các kỹ thuật mà độc giả đã tự thiết kế.
    - **Khách tiềm năng**: Với những độc giả để lại email để nhận link Zalo đồng hành, hệ thống sẽ tự động lưu vào **Khách hàng** -> **Khách tiềm năng** (`leads`) với thẻ gắn nhãn `habit-loop` để Hana tiện theo dõi và chăm sóc.
 
+4. **Cổng đăng nhập và quyền truy cập sau Giai đoạn 1 (DP-03)**:
+   - **Giai đoạn 1 miễn phí, từ Giai đoạn 2 cần đăng nhập**: Độc giả được trải nghiệm hoàn toàn miễn phí Giai đoạn 1 "Khám thói quen" (Bước 1: Khám đúng bệnh, Bước 2: Nguyên lý 1%) mà không cần tài khoản.
+   - Khi bấm chuyển sang Giai đoạn 2 (từ Bước 3: Tìm Mentor trở đi, bấm thẻ giai đoạn hoặc dải bước), hệ thống tự động kiểm tra quyền truy cập:
+
+| Trạng thái cổng | Khi nào hiển thị | Giao diện hiển thị | Hành động của khách |
+| :--- | :--- | :--- | :--- |
+| **Đăng nhập (`login`)** | Khách chưa đăng nhập vào tài khoản trên website. | Tiêu đề *"Bạn đã hoàn thành Giai đoạn 1 🎉"*, tóm tắt kết quả chẩn đoán bước 1, lời mời đăng nhập để lưu kết quả. | Bấm **"Đăng nhập để tiếp tục"** → chuyển đến trang đăng nhập (Google hoặc OTP). Đăng nhập xong tự động quay lại đúng Bước 3 với đầy đủ bản nháp đã làm. Có nút phụ "Quay lại Giai đoạn 1". |
+| **Được đi tiếp (`ok`)** | Khách đã đăng nhập và: chưa từng dùng thử (còn quyền dùng thử 28 ngày), **hoặc** đang trong thời gian dùng thử, **hoặc** đã mua gói/công cụ. | Không hiện cổng, mở thẳng Bước 3 để tiếp tục hành trình. | Tiếp tục làm các bước 3, 4, 5, 6 bình thường. Đến Bước 6: email được điền sẵn từ tài khoản (chỉ đọc), bỏ qua kiểm tra bot Turnstile, bỏ ô tick điều khoản nếu khách đã đồng ý trước đó. |
+| **Mua để dùng tiếp (`buy`)** | Khách đã đăng nhập nhưng đã dùng hết thời gian dùng thử và chưa mua sản phẩm. | Tiêu đề *"Bạn đã dùng hết thời gian dùng thử"*, hiển thị giá bán / giá ưu đãi lấy trực tiếp từ sản phẩm CMS. | Bấm **"Mua để dùng tiếp"** → dẫn đến trang thanh toán `/thanh-toan?san-pham=habit-tracker-so`. Nút phụ *"Xem chi tiết gói"* dẫn tới trang giới thiệu `/habit/1-percent-better`. |
+
+   - **Giá trên màn "Mua để dùng tiếp"**: Lấy trực tiếp và tự động từ sản phẩm **Habit Tracker số** (slug: `habit-tracker-so`) trong mục **Bán hàng → Sản phẩm**. Hana sửa giá tại sản phẩm thì màn cổng tự động cập nhật ngay lập tức.
+
 ---
 
 ## 10. Xử lý sự cố và Nhận biết thông báo lỗi thường gặp

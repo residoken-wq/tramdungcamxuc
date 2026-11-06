@@ -4385,6 +4385,30 @@ export const vi = {
       thatBai: 'Đăng nhập bằng Google không thành công. Vui lòng thử lại.',
     },
   },
+  dp03: {
+    loginTitle: 'Bạn đã hoàn thành Giai đoạn 1 🎉',
+    loginPrompt: 'Đăng nhập để lưu kết quả và tiếp tục Giai đoạn 2',
+    loginButton: 'Đăng nhập để tiếp tục',
+    backToStage1: 'Quay lại Giai đoạn 1',
+    diagnoseSummary: {
+      cue: 'Điểm nghẽn cần chú ý nhất: Gợi ý (Cue) — khó nhận ra hoặc hay quên tín hiệu kích hoạt.',
+      craving:
+        'Điểm nghẽn cần chú ý nhất: Khao khát (Craving) — chưa tìm thấy sức hút hay động lực đủ lớn.',
+      response:
+        'Điểm nghẽn cần chú ý nhất: Phản hồi (Response) — hành động còn phức tạp hoặc rào cản quá cao.',
+      reward:
+        'Điểm nghẽn cần chú ý nhất: Phần thưởng (Reward) — thiếu cảm giác thoả mãn ngay sau khi thực hiện.',
+      default: 'Bạn đã hoàn thành chẩn đoán 4 giai đoạn vòng lặp thói quen.',
+    },
+    buyTitle: 'Bạn đã dùng hết thời gian dùng thử',
+    buyDescription:
+      'Để tiếp tục hành trình xây thói quen bền vững và mở khoá trọn vẹn công cụ Habit Tracker, bạn có thể mua gói để sử dụng tiếp.',
+    buyButton: 'Mua để dùng tiếp',
+    viewOfferButton: 'Xem chi tiết gói',
+    pricePrefix: 'Giá:',
+    salePricePrefix: 'Ưu đãi:',
+    currencySuffix: 'đ',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

@@ -5,6 +5,7 @@ import config from '@/payload.config'
 import { vi } from '@/lib/i18n/vi'
 import { getTechniques } from '@/lib/habit.server'
 import { getHabitJourneyContent, withDiagnoseFallback } from '@/lib/habit/journey-content.server'
+import { getHabitStageGateAction } from '@/lib/habit/actions'
 import { HabitTrackerApp } from '@/components/habit/zip/HabitTrackerApp'
 
 export const dynamic = 'force-dynamic'
@@ -18,7 +19,18 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function HabitLoopPage() {
+export default async function HabitLoopPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ buoc?: string }>
+}) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+  const rawBuoc = resolvedSearchParams?.buoc
+  let initialStepParam: number | undefined
+  if (rawBuoc && /^[1-6]$/.test(rawBuoc)) {
+    initialStepParam = parseInt(rawBuoc, 10)
+  }
+
   const payload = await getPayload({ config: await config })
 
   // Đọc cài đặt số ngày hành trình từ siteSettings (mặc định 28)
@@ -35,11 +47,18 @@ export default async function HabitLoopPage() {
     habitJourneyDays = 28
   }
 
-  const [techniques, journeyContent] = await Promise.all([
+  const [techniques, journeyContent, initialGate] = await Promise.all([
     getTechniques(payload),
     getHabitJourneyContent(payload).catch((error) => {
       console.error('[HabitLoopPage] Failed to fetch habit journey content:', error)
       return null
+    }),
+    getHabitStageGateAction().catch((error) => {
+      console.error('[HabitLoopPage] Failed to resolve stage gate status:', error)
+      return {
+        status: 'login' as const,
+        loginUrl: '/tai-khoan/dang-nhap?next=%2Fhabit%2F5-phut%3Fbuoc%3D3',
+      }
     }),
   ])
   // Step 1 falls back to the "Câu hỏi chẩn đoán" collection while its own survey is empty.
@@ -55,6 +74,8 @@ export default async function HabitLoopPage() {
         loopContent={journeyContent?.loop}
         privacyNote={journeyContent?.privacyNote}
         dp01Content={journeyContent?.dp01Content}
+        initialGate={initialGate}
+        initialStepParam={initialStepParam}
       />
     </div>
   )
