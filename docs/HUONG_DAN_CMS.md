@@ -1798,9 +1798,11 @@ Trong đợt nâng cấp Sitemap v2 (SM-04), hệ thống bổ sung **4 khối k
   - Bổ sung **Bố cục (`layout`)**: Chọn dạng kể chuyện truyền thống (`story`) hoặc dạng **Bức thư ngỏ (`letter`)**.
   - **Chữ ký người sáng lập**: Khi chọn dạng Thư ngỏ (`letter`), hệ thống sẽ tự động chèn ảnh chữ ký viết tay của Hana ở cuối thư. Hana có thể tải ảnh chữ ký lên tại: **Cài đặt website** -> tab **Nhận diện thương hiệu** -> ô **Chữ ký người sáng lập**.
   - **Huy hiệu chứng chỉ (`chips`)**: Nhập danh sách các chứng chỉ ngắn gọn (như _ICF Associate Certified Coach (ACC)_, _10+ năm kinh nghiệm_) hiển thị dưới ảnh chân dung.
+  - **Màu nút liên kết (PK-15)**: ô **Màu nút** chọn 1 trong 8 màu thương hiệu (để **Tự động** thì nút hồng nhấn, chữ trắng). Ô **Màu chữ trên nút** chỉ liệt kê các màu đọc rõ trên màu nút đã chọn; để **Tự động** thì hệ thống chọn chữ trắng nếu đọc rõ, không thì chọn màu tương phản tốt nhất. Nút trùng màu nền khối sẽ tự có viền để không bị chìm.
 - **`ImageText` (Ảnh & Đoạn văn)**:
   - Bổ sung trường **Trích dẫn nổi bật (`quote`)**: Hiển thị đoạn văn ngắn có dấu ngoặc kép và đường viền hồng sen trang trọng.
   - Bổ sung **Nhãn ảnh (`imageLabel`)**: Hiển thị chú thích nhỏ ghim ở góc dưới ảnh chụp thực tế.
+  - **Màu nút liên kết (PK-15)**: giống khối Câu chuyện Hana, chọn **Màu nút** và **Màu chữ trên nút** trong bảng màu thương hiệu.
 - **`LogoStrip` (Dải logo đối tác & Chứng nhận)**:
   - Bổ sung tính năng **Phân nhóm logo (`groups`)**: Cho phép chia logo thành các nhóm riêng biệt (như nhóm _Chứng chỉ chuyên môn_, nhóm _Doanh nghiệp đồng hành_) có tiêu đề nhóm rõ ràng.
 
