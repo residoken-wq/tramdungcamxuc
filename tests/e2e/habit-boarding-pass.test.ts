@@ -71,7 +71,7 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
       const guest = await visitor.newPage()
 
       try {
-        await guest.goto('/habit/5-phut')
+        await zip.loginHabitCustomer(guest, 'test-boarding-pass@example.test', '/habit/5-phut')
         await expect(guest.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
           timeout: 15000,
         })

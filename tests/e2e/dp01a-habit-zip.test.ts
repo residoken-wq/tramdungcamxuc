@@ -143,8 +143,8 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         cueNames.push(name)
       }
 
-      // 3. Khách đi 6 bước zip (helpers/habit-zip.ts)
-      await guestPage.goto('/habit/5-phut')
+      // 3. Khách đăng nhập và đi 6 bước zip (helpers/habit-zip.ts, DP-03)
+      await zip.loginHabitCustomer(guestPage, customerEmail, '/habit/5-phut')
 
       // Bước 1: đúng 8 câu hỏi của bản zip (mặc định hoặc từ CMS)
       const questionGroups = guestPage

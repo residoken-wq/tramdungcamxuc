@@ -161,8 +161,8 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
         createdProductId = (await prodRes.json()).doc.id
       }
 
-      // 4. Khách vãng lai truy cập /habit/5-phut
-      await guestPage.goto('/habit/5-phut')
+      // 4. Khách đăng nhập và truy cập /habit/5-phut (DP-03)
+      await zip.loginHabitCustomer(guestPage, customerEmail, '/habit/5-phut')
       await expect(guestPage.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
         timeout: 20000,
       })
