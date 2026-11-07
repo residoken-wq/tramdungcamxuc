@@ -25,6 +25,7 @@ export interface LeadMagnetItem {
 
 export interface LeadMagnetCarouselProps {
   version?: number
+  display?: 'carousel' | 'list'
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
@@ -61,6 +62,7 @@ const PADDING_CLASSES: Record<string, string> = {
 }
 
 export function LeadMagnetCarousel({
+  display = 'carousel',
   seriesLabel,
   titleLine1 = vi.sm05.carousel.emptyEditor,
   titleLine2,
@@ -164,165 +166,199 @@ export function LeadMagnetCarousel({
           />
         </div>
 
-        {/* Carousel controls header (Desktop / Tablet prev/next buttons) */}
-        <div className="relative">
-          <div
-            ref={scrollContainerRef}
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
-            role="region"
-            aria-label={titleLine1}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta focus-visible:ring-offset-2 rounded-2xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {items.map((item, idx) => {
-              const topicKey = item.topic as keyof typeof vi.sm05.topics | undefined
-              const topicLabel =
-                topicKey && topicKey in vi.sm05.topics
-                  ? vi.sm05.topics[topicKey]
-                  : item.topic || vi.sm05.topics.taiLieu
+        {/* Content: List or Carousel */}
+        {display === 'list' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                data-eb-card=""
+                className="rounded-2xl border border-deep-navy/10 bg-white p-6 shadow-soft flex flex-col justify-between transition-all duration-300 hover:shadow-card hover:-translate-y-1 h-full"
+              >
+                <div>
+                  <h3 className="font-display uppercase text-lg sm:text-xl text-bright-magenta tracking-tight !leading-snug mb-2">
+                    {item.name}
+                  </h3>
+                  {item.shortDescription && (
+                    <p className="font-body text-xs sm:text-sm text-deep-navy/80 line-clamp-3 mb-4 leading-relaxed">
+                      {item.shortDescription}
+                    </p>
+                  )}
+                </div>
+                <div className="pt-2">
+                  <a
+                    href={`/tai-nguyen/${item.slug}`}
+                    className="inline-flex items-center justify-center px-4 py-2 rounded-full font-ui text-xs font-bold text-accent-pink bg-soft-pink/50 hover:bg-soft-pink transition-colors"
+                  >
+                    Nhận tài liệu &rarr;
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="relative">
+            <div
+              ref={scrollContainerRef}
+              tabIndex={0}
+              onKeyDown={handleKeyDown}
+              role="region"
+              aria-label={titleLine1}
+              className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta focus-visible:ring-offset-2 rounded-2xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {items.map((item, idx) => {
+                const topicKey = item.topic as keyof typeof vi.sm05.topics | undefined
+                const topicLabel =
+                  topicKey && topicKey in vi.sm05.topics
+                    ? vi.sm05.topics[topicKey]
+                    : item.topic || vi.sm05.topics.taiLieu
 
-              return (
-                <article
-                  key={item.id}
-                  role="group"
-                  aria-roledescription="slide"
-                  aria-label={vi.sm05.carousel.slideNumber(idx + 1, items.length)}
-                  className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start flex flex-col"
-                >
-                  <div className="rounded-2xl border border-deep-navy/10 bg-white shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
-                    {/* Cover image or placeholder */}
-                    <div className="relative aspect-[16/10] w-full bg-lavender-mist/30 overflow-hidden">
-                      {item.coverImage?.url ? (
-                        <Image
-                          src={item.coverImage.url}
-                          alt={item.coverImage.alt || item.name}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
-                          <span className="text-3xl mb-1" aria-hidden="true">
-                            📖
-                          </span>
-                          <span className="font-ui text-xs font-semibold text-deep-navy/60">
-                            {topicLabel}
-                          </span>
-                        </div>
-                      )}
-                      <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-soft-pink/95 text-bright-magenta font-ui text-xs font-bold uppercase tracking-wider backdrop-blur-xs shadow-xs">
-                        {topicLabel}
-                      </span>
-                    </div>
-
-                    {/* Content and delivery form */}
-                    <div className="p-5 sm:p-6 flex flex-col flex-1">
-                      <h3 className="font-display uppercase text-xl sm:text-2xl text-deep-navy tracking-tight !leading-[var(--tdcx-title-lh,1.3)] line-clamp-2 mb-2">
-                        {item.name}
-                      </h3>
-                      {item.shortDescription && (
-                        <p className="font-body text-sm text-deep-navy/80 line-clamp-3 mb-4 leading-relaxed">
-                          {item.shortDescription}
-                        </p>
-                      )}
-
-                      {/* Embedded ResourceRequestForm reusing submitResourceRequest with 7-day signed link */}
-                      <div className="mt-auto pt-4 border-t border-deep-navy/10">
-                        {isDemo ? (
-                          <div className="py-2.5 px-3 rounded-xl bg-warm-ivory border border-deep-navy/10 text-center font-ui text-xs font-semibold text-deep-navy/70">
-                            [MẪU] Form nhận tài liệu qua email
-                          </div>
-                        ) : (
-                          <ResourceRequestForm
-                            slug={item.slug}
-                            productName={item.name}
-                            className="!p-0 !border-0 !shadow-none !bg-transparent !max-w-full"
+                return (
+                  <article
+                    key={item.id}
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={vi.sm05.carousel.slideNumber(idx + 1, items.length)}
+                    className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0 snap-start flex flex-col"
+                  >
+                    <div
+                      data-eb-card=""
+                      className="rounded-2xl border border-deep-navy/10 bg-white shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow"
+                    >
+                      {/* Cover image or placeholder */}
+                      <div className="relative aspect-[16/10] w-full bg-lavender-mist/30 overflow-hidden">
+                        {item.coverImage?.url ? (
+                          <Image
+                            src={item.coverImage.url}
+                            alt={item.coverImage.alt || item.name}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
+                            className="object-cover"
                           />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
+                            <span className="text-3xl mb-1" aria-hidden="true">
+                              📖
+                            </span>
+                            <span className="font-ui text-xs font-semibold text-deep-navy/60">
+                              {topicLabel}
+                            </span>
+                          </div>
                         )}
+                        <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-soft-pink/95 text-bright-magenta font-ui text-xs font-bold uppercase tracking-wider backdrop-blur-xs shadow-xs">
+                          {topicLabel}
+                        </span>
+                      </div>
+
+                      {/* Content and delivery form */}
+                      <div className="p-5 sm:p-6 flex flex-col flex-1">
+                        <h3 className="font-display uppercase text-xl sm:text-2xl text-deep-navy tracking-tight !leading-[var(--tdcx-title-lh,1.3)] line-clamp-2 mb-2">
+                          {item.name}
+                        </h3>
+                        {item.shortDescription && (
+                          <p className="font-body text-sm text-deep-navy/80 line-clamp-3 mb-4 leading-relaxed">
+                            {item.shortDescription}
+                          </p>
+                        )}
+
+                        {/* Embedded ResourceRequestForm reusing submitResourceRequest with 7-day signed link */}
+                        <div className="mt-auto pt-4 border-t border-deep-navy/10">
+                          {isDemo ? (
+                            <div className="py-2.5 px-3 rounded-xl bg-warm-ivory border border-deep-navy/10 text-center font-ui text-xs font-semibold text-deep-navy/70">
+                              [MẪU] Form nhận tài liệu qua email
+                            </div>
+                          ) : (
+                            <ResourceRequestForm
+                              slug={item.slug}
+                              productName={item.name}
+                              className="!p-0 !border-0 !shadow-none !bg-transparent !max-w-full"
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
-
-          {/* Navigation Controls: Prev / Next / Dots */}
-          {items.length > 1 && (
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-              {/* Prev / Next buttons */}
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => scrollToSlide(activeIndex - 1)}
-                  disabled={activeIndex === 0}
-                  aria-label={vi.sm05.carousel.prev}
-                  className="min-h-[44px] min-w-[44px] rounded-full border border-deep-navy/20 bg-white text-deep-navy flex items-center justify-center transition-all hover:bg-soft-pink/40 hover:border-bright-magenta disabled:opacity-30 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-bright-magenta"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => scrollToSlide(activeIndex + 1)}
-                  disabled={activeIndex === items.length - 1}
-                  aria-label={vi.sm05.carousel.next}
-                  className="min-h-[44px] min-w-[44px] rounded-full border border-deep-navy/20 bg-white text-deep-navy flex items-center justify-center transition-all hover:bg-soft-pink/40 hover:border-bright-magenta disabled:opacity-30 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-bright-magenta"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Slide Position Dots */}
-              <div className="flex items-center gap-1.5" role="tablist" aria-label="Vị trí slide">
-                {items.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeIndex === idx}
-                    aria-label={vi.sm05.carousel.slideNumber(idx + 1, items.length)}
-                    onClick={() => scrollToSlide(idx)}
-                    className={`min-h-[44px] min-w-[20px] flex items-center justify-center focus-visible:outline-2 focus-visible:outline-bright-magenta`}
-                  >
-                    <span
-                      className={`block rounded-full transition-all duration-200 ${
-                        activeIndex === idx
-                          ? 'w-7 h-2.5 bg-bright-magenta shadow-xs'
-                          : 'w-2.5 h-2.5 bg-deep-navy/20 hover:bg-deep-navy/40'
-                      }`}
-                    />
-                  </button>
-                ))}
-              </div>
+                  </article>
+                )
+              })}
             </div>
-          )}
-        </div>
+
+            {/* Navigation Controls: Prev / Next / Dots */}
+            {items.length > 1 && (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                {/* Prev / Next buttons */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => scrollToSlide(activeIndex - 1)}
+                    disabled={activeIndex === 0}
+                    aria-label={vi.sm05.carousel.prev}
+                    className="min-h-[44px] min-w-[44px] rounded-full border border-deep-navy/20 bg-white text-deep-navy flex items-center justify-center transition-all hover:bg-soft-pink/40 hover:border-bright-magenta disabled:opacity-30 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-bright-magenta"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSlide(activeIndex + 1)}
+                    disabled={activeIndex === items.length - 1}
+                    aria-label={vi.sm05.carousel.next}
+                    className="min-h-[44px] min-w-[44px] rounded-full border border-deep-navy/20 bg-white text-deep-navy flex items-center justify-center transition-all hover:bg-soft-pink/40 hover:border-bright-magenta disabled:opacity-30 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-bright-magenta"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Slide Position Dots */}
+                <div className="flex items-center gap-1.5" role="tablist" aria-label="Vị trí slide">
+                  {items.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeIndex === idx}
+                      aria-label={vi.sm05.carousel.slideNumber(idx + 1, items.length)}
+                      onClick={() => scrollToSlide(idx)}
+                      className={`min-h-[44px] min-w-[20px] flex items-center justify-center focus-visible:outline-2 focus-visible:outline-bright-magenta`}
+                    >
+                      <span
+                        className={`block rounded-full transition-all duration-200 ${
+                          activeIndex === idx
+                            ? 'w-7 h-2.5 bg-bright-magenta shadow-xs'
+                            : 'w-2.5 h-2.5 bg-deep-navy/20 hover:bg-deep-navy/40'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   )

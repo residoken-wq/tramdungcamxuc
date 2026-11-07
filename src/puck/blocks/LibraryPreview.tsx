@@ -20,6 +20,14 @@ export const LibraryPreviewBlock: ComponentConfig<LibraryPreviewBlockProps> = {
     titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
     titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
     emotionLine: { type: 'textarea', label: 'Dòng cảm xúc (Playfair Display Italic)' },
+    layout: {
+      type: 'select',
+      label: 'Bố cục hiển thị',
+      options: [
+        { label: 'Lưới thông thường (3 cột)', value: 'grid' },
+        { label: 'Nổi bật (1 bài lớn + 3 bài nhỏ)', value: 'featured' },
+      ],
+    },
     tab: {
       type: 'select',
       label: 'Tab hiển thị',
@@ -50,6 +58,7 @@ export const LibraryPreviewBlock: ComponentConfig<LibraryPreviewBlockProps> = {
   },
   defaultProps: {
     version: 1,
+    layout: 'grid',
     seriesLabel: '[MẪU] Khám phá tri thức',
     titleLine1: '[MẪU] THƯ VIỆN',
     titleLine2: '[MẪU] CẢM XÚC & BÀI HỌC',
