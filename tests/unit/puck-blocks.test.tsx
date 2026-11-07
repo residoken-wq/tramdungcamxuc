@@ -18,9 +18,11 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       const blockConfig = puckConfig.components[blockKey]
       expect(blockConfig).toBeDefined()
       expect(blockConfig.defaultProps).toBeDefined()
-      const v4Blocks = ['FAQ', 'HeroTwoEntries']
+      const v5Blocks = ['FAQ']
+      const v4Blocks = ['HeroTwoEntries']
       const v3Blocks = ['PackageComparison', 'HanaStory', 'StatsBar', 'JourneySteps', 'HeroImage']
       const v2Blocks = [
+        'SolutionEcosystem',
         'SectionHeader',
         'CTAButton',
         'QuoteBlock',
@@ -33,13 +35,15 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'TwoPathCards',
         'VisionMission',
       ]
-      const expectedVersion = v4Blocks.includes(blockKey)
-        ? 4
-        : v3Blocks.includes(blockKey)
-          ? 3
-          : v2Blocks.includes(blockKey)
-            ? 2
-            : 1
+      const expectedVersion = v5Blocks.includes(blockKey)
+        ? 5
+        : v4Blocks.includes(blockKey)
+          ? 4
+          : v3Blocks.includes(blockKey)
+            ? 3
+            : v2Blocks.includes(blockKey)
+              ? 2
+              : 1
       expect((blockConfig.defaultProps as { version?: number })?.version).toBe(expectedVersion)
 
       const markup = renderToStaticMarkup(
