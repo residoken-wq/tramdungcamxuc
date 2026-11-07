@@ -28,6 +28,9 @@ export type AnalyticsEvent =
   | 'boarding_pass_downloaded'
   | 'coffee_opened'
   | 'coffee_momo_clicked'
+  | 'habit_stage1_completed'
+  | 'habit_gate_login_clicked'
+  | 'habit_gate_buy_clicked'
 
 /**
  * Danh sách trắng (whitelist) các trường thuộc tính (props) được phép gửi cho từng sự kiện.
@@ -61,6 +64,10 @@ export const EVENT_ALLOWED_PROPS: Record<AnalyticsEvent, readonly string[]> = {
   boarding_pass_downloaded: ['format', 'method'],
   coffee_opened: [],
   coffee_momo_clicked: [],
+  // DP-03: no props (no email, no diagnosis result – AGENTS §11).
+  habit_stage1_completed: [],
+  habit_gate_login_clicked: [],
+  habit_gate_buy_clicked: [],
 }
 
 /**

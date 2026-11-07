@@ -5,7 +5,8 @@ import config from '@/payload.config'
 import { vi } from '@/lib/i18n/vi'
 import { getTechniques } from '@/lib/habit.server'
 import { getHabitJourneyContent, withDiagnoseFallback } from '@/lib/habit/journey-content.server'
-import { getHabitStageGateAction } from '@/lib/habit/actions'
+import { getHabitStageGate } from '@/lib/habit/stage-gate.server'
+import type { HabitStageGateResult } from '@/lib/habit/stage-gate'
 import { HabitTrackerApp } from '@/components/habit/zip/HabitTrackerApp'
 
 export const dynamic = 'force-dynamic'
@@ -53,12 +54,11 @@ export default async function HabitLoopPage({
       console.error('[HabitLoopPage] Failed to fetch habit journey content:', error)
       return null
     }),
-    getHabitStageGateAction().catch((error) => {
+    // QA DP-03c: on an unexpected error fall back to the pre-DP-03 behaviour (no gate, step 6
+    // asks for email + Turnstile) instead of 'login', which looped signed-in customers.
+    getHabitStageGate().catch((error): HabitStageGateResult => {
       console.error('[HabitLoopPage] Failed to resolve stage gate status:', error)
-      return {
-        status: 'login' as const,
-        loginUrl: '/tai-khoan/dang-nhap?next=%2Fhabit%2F5-phut%3Fbuoc%3D3',
-      }
+      return { status: 'ok' }
     }),
   ])
   // Step 1 falls back to the "Câu hỏi chẩn đoán" collection while its own survey is empty.
