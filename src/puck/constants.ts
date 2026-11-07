@@ -103,6 +103,7 @@ export const CONTAINER_ALLOWED_BLOCKS = [
   'VideoEmbed',
   'ContactInfo',
   'PhotoGallery',
+  'MatrixTable',
   'Container',
   'Columns',
   'Spacer',

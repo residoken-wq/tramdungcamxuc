@@ -100,6 +100,7 @@ import { NewsletterFormBlock, type NewsletterFormProps } from './blocks/Newslett
 import { ContactInfoBlock, type ContactInfoProps } from './blocks/ContactInfo'
 import { ContactFormsBlock, type ContactFormsProps } from './blocks/ContactForms'
 import { PhotoGalleryBlock, type PhotoGalleryProps } from './blocks/PhotoGallery'
+import { MatrixTableBlock, type MatrixTableProps } from './blocks/MatrixTable'
 
 // EB-10: Khối đầu trang / chân trang (Site Theme Blocks)
 import { SiteLogoBlock, type SiteLogoProps } from './blocks/site/SiteLogo'
@@ -160,6 +161,7 @@ export type {
   LeadMagnetCarouselProps,
   NewsletterFormProps,
   PhotoGalleryProps,
+  MatrixTableProps,
   ContactInfoProps,
   ContactFormsProps,
   CardProps,
@@ -230,6 +232,7 @@ export type PageComponentsProps = {
   VideoEmbed: VideoEmbedProps
   ContactInfo: ContactInfoProps
   PhotoGallery: PhotoGalleryProps
+  MatrixTable: MatrixTableProps
   // Bố cục
   Container: ContainerProps
   Columns: ColumnsProps
@@ -305,6 +308,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'FAQ',
         'ContactInfo',
         'PhotoGallery',
+        'MatrixTable',
       ],
     },
     layout: {
@@ -789,6 +793,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
     VideoEmbed: VideoEmbedBlock,
     ContactInfo: ContactInfoBlock,
     PhotoGallery: PhotoGalleryBlock,
+    MatrixTable: MatrixTableBlock,
     Container: ContainerBlock,
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,
