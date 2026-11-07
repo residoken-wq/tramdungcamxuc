@@ -8,6 +8,7 @@ import { vi } from '@/lib/i18n/vi'
 import { FaqAccordionList, type FAQItem } from './FaqAccordionList'
 import { FaqItemView } from './FaqItemView'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 
 export type { FAQItem }
 
@@ -340,8 +341,12 @@ export function FAQ({
               id={headingId}
               className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
             >
-              <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-              <span className={titleLine2ColorClass}>{titleLine2}</span>
+              <TwoToneTitle
+                line1={titleLine1}
+                line2={titleLine2}
+                line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                line2ClassName={titleLine2ColorClass}
+              />
             </h2>
 
             {description && (

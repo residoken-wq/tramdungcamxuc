@@ -111,6 +111,7 @@ export function Callout({
       <div className="mx-auto max-w-4xl">
         <div
           data-eb-card=""
+          data-eb-card-solid=""
           className={`rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 ${isLeft ? 'text-left' : 'text-center'} text-white shadow-soft`}
         >
           {title && (

@@ -103,6 +103,7 @@ export function ServiceCardItem({
   return (
     <div
       data-eb-card=""
+      data-eb-card-solid={highlight ? '' : undefined}
       className={`rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 ${
         highlight
           ? 'bg-deep-navy border-deep-navy/20 text-white'
