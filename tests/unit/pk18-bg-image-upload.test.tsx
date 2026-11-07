@@ -231,9 +231,11 @@ describe('blockStyleCss & backgroundImage (PK-18 / PK-23)', () => {
       '[data-eb-id="block-1"]::before{content:"";position:absolute;inset:0;background:rgb(var(--color-deep-navy-rgb));opacity:0.4;pointer-events:none;z-index:0}',
     )
     expect(css).toContain(
-      '[data-eb-id="block-1"]>*{position:relative;z-index:1;background-color:transparent}',
+      '[data-eb-id="block-1"][data-eb-id="block-1"]>*{position:relative;z-index:1;background-color:transparent}',
     )
-    expect(css).toContain('[data-eb-id="block-1"] [data-eb-section]{background-color:transparent}')
+    expect(css).toContain(
+      '[data-eb-id="block-1"][data-eb-id="block-1"] [data-eb-section]{background-color:transparent}',
+    )
   })
 
   test('URL bẩn (javascript:, có ") thì không sinh background-image', () => {
