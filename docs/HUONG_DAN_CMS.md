@@ -1132,7 +1132,7 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 
 5. **Bước 4 – Gọi tên thói quen** (`step4`):
    - **Lời dẫn mở đầu bước 4** (`leadIn`).
-   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: _Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày._).
+   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: *Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày.*).
    - **Tiêu đề & Mô tả tuyên ngôn** (`statementTitle`, `statementDesc`).
    - **Gợi ý vai trò** (`suggestedRoles`): Nhập mỗi dòng 1 vai trò gợi ý (hiển thị thành các nút chip).
    - **Tiêu đề, Mô tả, Lưu ý ngày nghỉ của Nhịp điệu** (`rhythmTitle`, `rhythmDesc`, `rhythmNote`).
@@ -1165,10 +1165,9 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
    - **Placeholder ô ghi chú cảm xúc** (`notePlaceholder`).
 
 10. **Chân trang (Footer)** (`footer`):
-
-- **Khẩu hiệu thương hiệu** (`slogan`).
-- **Thông tin tác giả / Coach** (`authorInfo`).
-- **Đoạn ghi nhận nguồn sách** (`bookCredits`).
+   - **Khẩu hiệu thương hiệu** (`slogan`).
+   - **Thông tin tác giả / Coach** (`authorInfo`).
+   - **Đoạn ghi nhận nguồn sách** (`bookCredits`).
 
 **Cách chạy script nạp tự động nội dung chuẩn zip (`dp01d-habit-content.ts`)**:
 
@@ -1394,7 +1393,7 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
 2. **Tab Quyền truy cập & Bán hàng**:
    - **Chế độ truy cập EQ (`eqAccessMode`)**:
      - `trial` (Mặc định): Áp dụng luồng dùng thử chuẩn (khách vãng lai rút 1 thẻ miễn phí, từ thẻ thứ 2 yêu cầu đăng nhập/dùng thử; tab "Tất cả 26 thẻ" chỉ hiển thị thông điệp khi đã kích hoạt).
-     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. _(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này)._
+     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. *(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này).*
    - **Link Shopee bộ thẻ vật lý (`shopeeUrl`)**: Nhập đường link gian hàng Shopee của Hana để nút "Chạm vào thẻ thật ngoài đời" dẫn khách tới mua bộ thẻ in.
 3. **Tab Giới thiệu & Cẩm nang**:
    - Tự do sửa câu chữ giới thiệu 2 bước: `Tiêu đề chính`, `Mô tả ngắn`, `4 góc nhìn cảm xúc` (Tự thân, Người khác, Tình huống, Hành động), và `4 bước thực hành mỗi ngày` (Tĩnh lặng, Rút thẻ, Lắng nghe, Khám phá).
@@ -1570,7 +1569,7 @@ Khối **Tiêu đề phân đoạn** (`SectionHeader`) cho phép Hana tự do đ
 
 1. **Tùy chỉnh màu sắc từng tầng chữ**:
    - **Màu tiêu đề dòng 1** (`line1Color`): Mặc định là **Xanh thẫm** (`deep-navy`), mang lại vẻ sang trọng, rõ ràng.
-   - **Màu tiêu đề dòng 2** (`line2Color`): Mặc định là **Hồng sen** (`bright-magenta`), tạo điểm nhấn ấm áp, thu hút. (Dòng 1 và Dòng 2 luôn hiện trên 2 hàng; muốn tiêu đề một hàng thì chỉ điền Dòng 1).
+   - **Màu tiêu đề dòng 2** (`line2Color`): Mặc định là **Hồng sen** (`bright-magenta`), tạo điểm nhấn ấm áp, thu hút. Dòng 1 và Dòng 2 luôn hiện trên 2 hàng; muốn tiêu đề một hàng thì chỉ điền Dòng 1.
    - **Màu nhãn series** (`eyebrowColor`): Mặc định là **Hồng sen** (`bright-magenta`).
    - **Màu dòng cảm xúc** (`emotionColor`): Mặc định là **Xanh thẫm** (`deep-navy`), thể hiện dòng suy ngẫm sâu lắng.
 
@@ -3405,6 +3404,7 @@ Chỉ tài khoản **Chủ sở hữu (Owner)** mới có quyền thay đổi c�
 
 <!-- ẢNH GL-01: chụp tab "Đăng nhập khách hàng" sau khi anh Nhân cấu hình Google trên server thật, lưu images/huong-dan/login-methods-settings.png -->
 
+
 #### 2. Nguyên tắc vận hành an toàn (Bảng 1.1)
 
 Hệ thống được lập trình với cơ chế bảo vệ khách hàng tự động, đảm bảo khách luôn có lối vào tài khoản:
@@ -3513,6 +3513,18 @@ Khi anh IT thông báo đã cấu hình Google xong, Hana thực hiện theo 3 b
 3. **Xem kết quả độc giả gửi về**:
    - **Kế hoạch thói quen**: Vào **Khóa học** -> **Kế hoạch thói quen** (`habitPlans`) để xem bảng điểm thói quen, câu định danh và các kỹ thuật mà độc giả đã tự thiết kế.
    - **Khách tiềm năng**: Với những độc giả để lại email để nhận link Zalo đồng hành, hệ thống sẽ tự động lưu vào **Khách hàng** -> **Khách tiềm năng** (`leads`) với thẻ gắn nhãn `habit-loop` để Hana tiện theo dõi và chăm sóc.
+
+4. **Cổng đăng nhập và quyền truy cập sau Giai đoạn 1 (DP-03)**:
+   - **Giai đoạn 1 miễn phí, từ Giai đoạn 2 cần đăng nhập**: Độc giả được trải nghiệm hoàn toàn miễn phí Giai đoạn 1 "Khám thói quen" (Bước 1: Khám đúng bệnh, Bước 2: Nguyên lý 1%) mà không cần tài khoản.
+   - Khi bấm chuyển sang Giai đoạn 2 (từ Bước 3: Tìm Mentor trở đi, bấm thẻ giai đoạn hoặc dải bước), hệ thống tự động kiểm tra quyền truy cập:
+
+| Trạng thái cổng | Khi nào hiển thị | Giao diện hiển thị | Hành động của khách |
+| :--- | :--- | :--- | :--- |
+| **Đăng nhập (`login`)** | Khách chưa đăng nhập vào tài khoản trên website. | Tiêu đề *"Bạn đã hoàn thành Giai đoạn 1 🎉"*, tóm tắt kết quả chẩn đoán bước 1, lời mời đăng nhập để lưu kết quả. | Bấm **"Đăng nhập để tiếp tục"** → chuyển đến trang đăng nhập (Google hoặc OTP). Đăng nhập xong tự động quay lại đúng Bước 3 với đầy đủ bản nháp đã làm. Có nút phụ "Quay lại Giai đoạn 1". |
+| **Được đi tiếp (`ok`)** | Khách đã đăng nhập và: chưa từng dùng thử (còn quyền dùng thử 28 ngày), **hoặc** đang trong thời gian dùng thử, **hoặc** đã mua gói/công cụ. | Không hiện cổng, mở thẳng Bước 3 để tiếp tục hành trình. | Tiếp tục làm các bước 3, 4, 5, 6 bình thường. Đến Bước 6: email được điền sẵn từ tài khoản (chỉ đọc), bỏ qua kiểm tra bot Turnstile, bỏ ô tick điều khoản nếu khách đã đồng ý trước đó. |
+| **Mua để dùng tiếp (`buy`)** | Khách đã đăng nhập nhưng đã dùng hết thời gian dùng thử và chưa mua sản phẩm. | Tiêu đề *"Bạn đã dùng hết thời gian dùng thử"*, hiển thị giá bán / giá ưu đãi lấy trực tiếp từ sản phẩm CMS. | Bấm **"Mua để dùng tiếp"** → dẫn đến trang thanh toán `/thanh-toan?san-pham=habit-tracker-so`. Nút phụ *"Xem chi tiết gói"* dẫn tới trang giới thiệu `/habit/1-percent-better`. |
+
+   - **Giá trên màn "Mua để dùng tiếp"**: Lấy trực tiếp và tự động từ sản phẩm **Habit Tracker số** (slug: `habit-tracker-so`) trong mục **Bán hàng → Sản phẩm**. Hana sửa giá tại sản phẩm thì màn cổng tự động cập nhật ngay lập tức.
 
 ---
 
