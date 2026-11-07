@@ -9,7 +9,7 @@ import { vi } from '@/lib/i18n/vi'
 
 export interface ContactFormsProps {
   version?: number
-  layout?: 'tabs' | 'columns'
+  layout?: 'tabs' | 'columns' | 'personal' | 'business'
   titleB2C?: string
   descriptionB2C?: string
   submitLabelB2C?: string
@@ -461,7 +461,9 @@ export function ContactForms({
                   htmlFor={`${id}-b2c-service`}
                   className="block font-ui text-sm font-bold mb-1.5"
                 >
-                  {vi.sm06.contactForms.serviceLabel}
+                  {layout === 'personal'
+                    ? vi.pk21?.contactForms?.pathwayLabel || 'Lộ trình bạn quan tâm'
+                    : vi.sm06.contactForms.serviceLabel}
                 </label>
                 <select
                   id={`${id}-b2c-service`}
@@ -470,12 +472,25 @@ export function ContactForms({
                   onChange={(e) => setB2cService(e.target.value)}
                   title={
                     services.find((s) => String(s.id) === String(b2cService))?.name ||
-                    (b2cService ? '' : vi.sm06.contactForms.serviceUncertain)
+                    (b2cService
+                      ? ''
+                      : layout === 'personal'
+                        ? vi.pk21?.contactForms?.selectPathwayPlaceholder || '-- Chọn lộ trình --'
+                        : vi.sm06.contactForms.serviceUncertain)
                   }
                   className={`w-full max-w-full px-4 py-3 rounded-xl border font-ui text-base truncate transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
                 >
-                  <option value="" title={vi.sm06.contactForms.serviceUncertain}>
-                    {vi.sm06.contactForms.serviceUncertain}
+                  <option
+                    value=""
+                    title={
+                      layout === 'personal'
+                        ? vi.pk21?.contactForms?.selectPathwayPlaceholder || '-- Chọn lộ trình --'
+                        : vi.sm06.contactForms.serviceUncertain
+                    }
+                  >
+                    {layout === 'personal'
+                      ? vi.pk21?.contactForms?.selectPathwayPlaceholder || '-- Chọn lộ trình --'
+                      : vi.sm06.contactForms.serviceUncertain}
                   </option>
                   {services.map((s) => (
                     <option key={s.id} value={s.id} title={s.name}>
@@ -517,7 +532,9 @@ export function ContactForms({
                 htmlFor={`${id}-b2c-message`}
                 className="block font-ui text-sm font-bold mb-1.5"
               >
-                {vi.sm06.contactForms.messageB2CLabel}{' '}
+                {layout === 'personal'
+                  ? vi.pk21?.contactForms?.concernsLabel || 'Điều bạn đang trăn trở'
+                  : vi.sm06.contactForms.messageB2CLabel}{' '}
                 <span className="text-bright-magenta">*</span>
               </label>
               <textarea
@@ -526,7 +543,12 @@ export function ContactForms({
                 rows={4}
                 maxLength={2000}
                 disabled={b2cStatusState === 'submitting'}
-                placeholder={vi.sm06.contactForms.messageB2CPlaceholder}
+                placeholder={
+                  layout === 'personal'
+                    ? vi.pk21?.contactForms?.concernsPlaceholder ||
+                      'Chia sẻ ngắn gọn điều bạn đang muốn tháo gỡ...'
+                    : vi.sm06.contactForms.messageB2CPlaceholder
+                }
                 value={b2cMessage}
                 onChange={(e) => {
                   setB2cMessage(e.target.value)
@@ -610,7 +632,12 @@ export function ContactForms({
                 disabled={b2cStatusState === 'submitting'}
                 className="w-full text-center"
               >
-                {b2cStatusState === 'submitting' ? vi.sm06.contactForms.submitting : submitLabelB2C}
+                {b2cStatusState === 'submitting'
+                  ? vi.sm06.contactForms.submitting
+                  : submitLabelB2C ||
+                    (layout === 'personal'
+                      ? vi.pk21?.contactForms?.submitPersonal || 'Đặt lịch Phiên Khám phá'
+                      : vi.sm06.contactForms.submitB2C)}
               </Button>
             </div>
           </form>
@@ -1011,7 +1038,11 @@ export function ContactForms({
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-6xl">
-        {layout === 'tabs' ? (
+        {layout === 'personal' ? (
+          <div className="max-w-2xl mx-auto">{renderB2CForm()}</div>
+        ) : layout === 'business' ? (
+          <div className="max-w-2xl mx-auto">{renderB2BForm()}</div>
+        ) : layout === 'tabs' ? (
           <div className="max-w-2xl mx-auto">
             {/* Tab Header List */}
             <div

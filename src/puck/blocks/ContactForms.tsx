@@ -14,6 +14,14 @@ export const ContactFormsBlock: ComponentConfig<ContactFormsProps> = {
       options: [
         { label: 'Hai cột song song (Cá nhân & Doanh nghiệp)', value: 'columns' },
         { label: 'Thẻ Tab chuyển đổi (Dành cho trang chủ / SM-07)', value: 'tabs' },
+        {
+          label: vi.pk21?.contactForms?.layoutPersonal || 'Cá nhân (1 form)',
+          value: 'personal',
+        },
+        {
+          label: vi.pk21?.contactForms?.layoutBusiness || 'Doanh nghiệp (1 form)',
+          value: 'business',
+        },
       ],
     },
     titleB2C: {
