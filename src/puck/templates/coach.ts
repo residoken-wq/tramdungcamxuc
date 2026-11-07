@@ -8,13 +8,14 @@ export const coachTemplate: Data = {
   },
   zones: {},
   content: [
-    // 2.1 Hero: HeroImage split, chip, số liệu, ảnh có thẻ chú thích (PK-20)
+    // 2.1 Hero: HeroImage side, chip, số liệu, ảnh có thẻ chú thích (PK-20, PK-25)
     {
       type: 'HeroImage',
       props: {
         id: 'coach-hero',
         version: 3,
-        layout: 'split',
+        layout: 'side',
+        imageSide: 'right',
         seriesLabel: 'Executive & Personal Coaching',
         titleLine1: 'Khai vấn chuyên sâu (1:1 Coaching)',
         titleLine2: '',

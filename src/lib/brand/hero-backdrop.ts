@@ -2,7 +2,8 @@ import type React from 'react'
 import { vi } from '@/lib/i18n/vi'
 import { CONTAINER_BG_POSITIONS, type ContainerBgPosition } from '@/puck/style/container-schema'
 
-export type HeroLayout = 'split' | 'backdrop'
+export type HeroLayout = 'side' | 'split' | 'backdrop'
+export type HeroImageSide = 'right' | 'left'
 export type HeroOverlayTone = 'dark' | 'light'
 export type HeroOverlayStrength = 'md' | 'lg' | 'xl'
 export type HeroImageBlur = 'none' | 'sm' | 'md'
@@ -102,8 +103,19 @@ export function heroImageBlurStyle(blur: HeroImageBlur = 'none'): React.CSSPrope
 }
 
 export const HERO_LAYOUT_OPTIONS = [
+  { label: vi.pk25.layoutOptions.side, value: 'side' as const },
+  { label: vi.pk25.layoutOptions.split, value: 'split' as const },
+  { label: vi.eb14a.layoutOptions.backdrop, value: 'backdrop' as const },
+]
+
+export const HERO_TWO_ENTRIES_LAYOUT_OPTIONS = [
   { label: vi.eb14a.layoutOptions.split, value: 'split' as const },
   { label: vi.eb14a.layoutOptions.backdrop, value: 'backdrop' as const },
+]
+
+export const HERO_IMAGE_SIDE_OPTIONS = [
+  { label: vi.pk25.imageSideOptions.right, value: 'right' as const },
+  { label: vi.pk25.imageSideOptions.left, value: 'left' as const },
 ]
 
 export const HERO_OVERLAY_TONE_OPTIONS = [

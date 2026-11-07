@@ -8,13 +8,14 @@ export const aboutTemplate: Data = {
   },
   zones: {},
   content: [
-    // 3.1 Hero: HeroImage split, số liệu, chú thích ảnh có avatar (PK-20)
+    // 3.1 Hero: HeroImage side, số liệu, chú thích ảnh có avatar (PK-20, PK-25)
     {
       type: 'HeroImage',
       props: {
         id: 'about-hero',
         version: 3,
-        layout: 'split',
+        layout: 'side',
+        imageSide: 'right',
         seriesLabel: 'Trạm Dừng Cảm Xúc',
         titleLine1: 'Nơi mọi sự chuyển hóa bắt đầu từ bên trong',
         titleLine2: '',
