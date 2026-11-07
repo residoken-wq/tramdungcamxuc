@@ -126,7 +126,9 @@ test.describe('EB-04: Style / Advanced tabs', () => {
         await publicPage.setViewportSize({ width, height: 900 })
         await publicPage.goto(`/${slug}`)
         await expect(wrapper).toHaveCSS('display', display)
-        // PK-24: padding-top được đặt trực tiếp lên phần tử con gốc (> *) thay vì lớp bọc
+        // PK-24: padding-top moved from the wrapper to its inner root (> *), so it replaces the
+        // block's own padding instead of adding to it. QA PK-24c: keep checking the wrapper too.
+        await expect(wrapper).toHaveCSS('padding-top', '0px')
         if (display !== 'none' && width === 375) {
           await expect(wrapper.locator('> *')).toHaveCSS('padding-top', padding)
         }

@@ -34,6 +34,7 @@ test.describe('PK-24: Tab Kiểu font khối và khoảng đệm trên / dưới
     browser,
   }, testInfo) => {
     test.setTimeout(120000)
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Runs once, checks 1440 and 375 itself.')
     const init = await (await page.request.get('/api/users/init')).json()
     test.skip(
       !process.env.CI && init.initialized === true,
@@ -44,12 +45,22 @@ test.describe('PK-24: Tab Kiểu font khối và khoảng đệm trên / dưới
     const slug = `e2e-pk24-${suffix}`
     let adminId: number | undefined
     let pageId: number | undefined
+    let originalLock: Record<string, unknown> | undefined
 
     const visitor = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
     const guest = await visitor.newPage()
 
     try {
       adminId = await bootstrapAdmin(page)
+
+      // QA PK-24c: a block font is only kept when the design system's font lock is open (owner
+      // setting; locked on a fresh DB). Open it for the test and restore it in finally.
+      const ds = await (await page.request.get('/api/globals/designSystem?depth=0')).json()
+      originalLock = ds.lock
+      const opened = await page.request.post('/api/globals/designSystem', {
+        data: { lock: { ...ds.lock, fonts: 'open' } },
+      })
+      expect(opened.ok(), await opened.text()).toBe(true)
 
       const hdrId = `hdr-${suffix}`
       const quoteId = `quote-${suffix}`
@@ -84,8 +95,8 @@ test.describe('PK-24: Tab Kiểu font khối và khoảng đệm trên / dưới
                 props: {
                   id: quoteId,
                   quote: '[MẪU] Mọi cảm xúc đều xứng đáng được lắng nghe và tôn trọng.',
-                  author: '[MẪU] Hana Lương',
-                  role: '[MẪU] Chuyên gia Khai vấn',
+                  cite: '[MẪU] Tác giả',
+                  roleOrContext: '[MẪU] Vai trò',
                   _style: {
                     fontFamily: 'Playfair Display',
                     padding: {
@@ -135,15 +146,19 @@ test.describe('PK-24: Tab Kiểu font khối và khoảng đệm trên / dưới
       // Kiểm tra QuoteBlock
       const quoteWrapper = guest.locator(`[data-eb-id="${quoteId}"]`)
       await expect(quoteWrapper).toBeVisible()
-      const quoteText = quoteWrapper.locator('p').first()
+      // QA PK-24c: the quote itself is already Playfair (font-quote); the author line uses
+      // font-ui (Montserrat), so it is the one that proves the block font reaches every text.
+      const quoteAuthor = quoteWrapper.getByText('[MẪU] Tác giả', { exact: true })
       await expect(async () => {
-        const font = await quoteText.evaluate((el) => window.getComputedStyle(el).fontFamily)
+        const font = await quoteAuthor.evaluate((el) => window.getComputedStyle(el).fontFamily)
         expect(font.toLowerCase()).toContain('playfair')
       }).toPass({ timeout: 10000 })
 
       const quoteSection = quoteWrapper.locator('> *').first()
       await expect(async () => {
-        const paddingTop = await quoteSection.evaluate((el) => window.getComputedStyle(el).paddingTop)
+        const paddingTop = await quoteSection.evaluate(
+          (el) => window.getComputedStyle(el).paddingTop,
+        )
         expect(paddingTop).toBe('0px')
       }).toPass({ timeout: 10000 })
 
@@ -162,9 +177,13 @@ test.describe('PK-24: Tab Kiểu font khối và khoảng đệm trên / dưới
       }).toPass({ timeout: 10000 })
     } finally {
       await visitor.close()
+      if (originalLock) {
+        await page.request
+          .post('/api/globals/designSystem', { data: { lock: originalLock } })
+          .catch(() => {})
+      }
       if (pageId) await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
       if (adminId) await page.request.delete(`/api/users/${adminId}`).catch(() => {})
     }
   })
 })
-
