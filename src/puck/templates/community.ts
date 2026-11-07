@@ -484,7 +484,7 @@ export const communityTemplate: Data = {
     },
   },
   zones: {
-    'community-yoga-details-cols:column-1': [
+    'community-yoga-details-cols:col1': [
       {
         type: 'Card',
         props: {
@@ -504,7 +504,7 @@ export const communityTemplate: Data = {
         },
       },
     ],
-    'community-yoga-details-cols:column-2': [
+    'community-yoga-details-cols:col2': [
       {
         type: 'Card',
         props: {

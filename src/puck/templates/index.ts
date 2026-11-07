@@ -22,15 +22,16 @@ export type PageTemplateKey =
   | 'coach'
   | 'contact'
   | 'community'
-  | 'resources'
   | 'business'
   | 'campaign'
   | 'service'
   | 'workshop'
   | 'event'
 
+export type PuckPageTemplateKey = PageTemplateKey | 'resources'
+
 export type ThemeTemplateKey = 'header-default' | 'footer-default'
-export type AnyTemplateKey = PageTemplateKey | ThemeTemplateKey
+export type AnyTemplateKey = PuckPageTemplateKey | ThemeTemplateKey
 
 export type PageTemplateItem = {
   key: AnyTemplateKey
@@ -39,7 +40,7 @@ export type PageTemplateItem = {
   data: Data
 }
 
-export const pageTemplates: Record<PageTemplateKey, PageTemplateItem> = {
+export const pageTemplates: Record<PuckPageTemplateKey, PageTemplateItem> = {
   'home-v2': {
     key: 'home-v2',
     label: 'Trang chủ v2',

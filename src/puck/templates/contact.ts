@@ -98,14 +98,32 @@ export const contactTemplate: Data = {
         seeAllLink: '/cau-hoi-thuong-gap',
         items: [
           {
-            question: 'Hướng dẫn kích hoạt khóa học/sản phẩm số tải về ở đâu?',
-            answer:
-              'Ngay sau khi thanh toán thành công, bạn sẽ nhận được email hướng dẫn chi tiết kèm đường dẫn truy cập kho tài liệu số.',
+            type: 'FaqItem',
+            props: {
+              id: 'contact-faq-item-0',
+              version: 1,
+              question: 'Hướng dẫn kích hoạt khóa học/sản phẩm số tải về ở đâu?',
+              answer:
+                'Ngay sau khi thanh toán thành công, bạn sẽ nhận được email hướng dẫn chi tiết kèm đường dẫn truy cập kho tài liệu số.',
+              questionColor: 'deep-navy',
+              questionSize: 'md',
+              answerColor: 'deep-navy',
+              answerSize: 'md',
+            },
           },
           {
-            question: 'Tôi chưa biết chọn gói Khai vấn 1:1 nào, làm sao để được tư vấn?',
-            answer:
-              'Bạn có thể liên hệ trực tiếp qua Zalo/Hotline hoặc gửi form đăng ký tư vấn ngắn để đội ngũ xếp lịch trao đổi 15 phút miễn phí.',
+            type: 'FaqItem',
+            props: {
+              id: 'contact-faq-item-1',
+              version: 1,
+              question: 'Tôi chưa biết chọn gói Khai vấn 1:1 nào, làm sao để được tư vấn?',
+              answer:
+                'Bạn có thể liên hệ trực tiếp qua Zalo/Hotline hoặc gửi form đăng ký tư vấn ngắn để đội ngũ xếp lịch trao đổi 15 phút miễn phí.',
+              questionColor: 'deep-navy',
+              questionSize: 'md',
+              answerColor: 'deep-navy',
+              answerSize: 'md',
+            },
           },
         ],
         bgColor: 'warm-ivory',
