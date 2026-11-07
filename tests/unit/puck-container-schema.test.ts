@@ -20,11 +20,22 @@ describe('EB-05: cleanImageUrl (REVIEW-REQUIRED)', () => {
     )
   })
 
-  it('rejects URLs containing injection characters: quotes, parentheses, semicolons, backslashes', () => {
+  it('rejects URLs containing injection characters: quotes, semicolons, backslashes, whitespace', () => {
     expect(cleanImageUrl('/api/media/file/img.jpg") ; body { display:none }')).toBeUndefined()
     expect(cleanImageUrl('/api/media/file/img.jpg"')).toBeUndefined()
     expect(cleanImageUrl('/api/media/file/img.jpg\n')).toBeUndefined()
     expect(cleanImageUrl('/api/media/file/img.jpg\\')).toBeUndefined()
+  })
+
+  it("QA PK-18e: percent-encodes ( ) and ' that Payload leaves in file names instead of refusing", () => {
+    expect(cleanImageUrl('/api/media/file/TDCX%20(3A).jpg')).toBe(
+      '/api/media/file/TDCX%20%283A%29.jpg',
+    )
+    expect(cleanImageUrl("/api/media/file/Hana's%20photo.png")).toBe(
+      '/api/media/file/Hana%27s%20photo.png',
+    )
+    // An injection attempt still needs a quote, semicolon or space, which stay refused.
+    expect(cleanImageUrl('/api/media/file/x.jpg);background:red')).toBeUndefined()
   })
 
   it('rejects javascript: and data: pseudo-protocols', () => {

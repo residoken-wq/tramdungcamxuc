@@ -126,8 +126,15 @@ const MEDIA_FILE_URL = /^\/api\/media\/file\/[^"'()\\;\s<>]+$/
 
 export function cleanImageUrl(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined
-  if (value.length > 500 || value.includes('..') || !MEDIA_FILE_URL.test(value)) return undefined
-  return value
+  // QA PK-18e: Payload URL-encodes file names with encodeURIComponent, which leaves ( ) ' as is,
+  // so a normal upload like "TDCX (3A).jpg" was refused and the background silently dropped.
+  // Percent-encode them (same file, still a safe CSS string) instead of refusing the URL.
+  // Quotes, backslashes, semicolons and whitespace are still refused below.
+  const encoded = value.replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/'/g, '%27')
+  if (encoded.length > 500 || encoded.includes('..') || !MEDIA_FILE_URL.test(encoded)) {
+    return undefined
+  }
+  return encoded
 }
 
 function cleanResponsive<T>(
