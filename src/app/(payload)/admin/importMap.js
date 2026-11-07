@@ -22,6 +22,7 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { CreateProductButton as CreateProductButton_524a0c2fe6867b553aa2ee9b68ac70cd } from '@/components/admin/product-wizard/CreateProductButton'
 import { OrderActions as OrderActions_bd9a3eb0969675b027902d6a22a18ee7 } from '@/components/admin/OrderActions'
 import { OrderPaymentEvents as OrderPaymentEvents_5d110d44f1eb9dcabda3b8db24c36faf } from '@/components/admin/OrderPaymentEvents'
@@ -33,6 +34,7 @@ import { CustomerActions as CustomerActions_9fd8238a1722f59df871ef58a48eb6c2 } f
 import { ExportLeadsButton as ExportLeadsButton_dfc015e147ecca7392a50b58d946480c } from '@/components/admin/ExportLeadsButton'
 import { HeaderBuilderButton as HeaderBuilderButton_c7cff7bfd58a789eaa7b7099e18ba2f0 } from '@/components/admin/NavigationBuilderButton'
 import { FooterBuilderButton as FooterBuilderButton_c7cff7bfd58a789eaa7b7099e18ba2f0 } from '@/components/admin/NavigationBuilderButton'
+import { GoogleConfigWarning as GoogleConfigWarning_9ffe26d280e439ba526d8b28cdd84fda } from '@/components/admin/auth/GoogleConfigWarning'
 import { ColorField as ColorField_cdeeed12dc1e93093c7e2b36a126a728 } from '@/components/admin/design/ColorField'
 import { ColorRowLabel as ColorRowLabel_ef0dae42b857497dbc998ccc345329a9 } from '@/components/admin/design/ColorRowLabel'
 import { FontSelectField as FontSelectField_cc4236d93faf3642f0a4ac7bffd4fa05 } from '@/components/admin/design/FontSelectField'
@@ -72,6 +74,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/admin/product-wizard/CreateProductButton#CreateProductButton": CreateProductButton_524a0c2fe6867b553aa2ee9b68ac70cd,
   "@/components/admin/OrderActions#OrderActions": OrderActions_bd9a3eb0969675b027902d6a22a18ee7,
   "@/components/admin/OrderPaymentEvents#OrderPaymentEvents": OrderPaymentEvents_5d110d44f1eb9dcabda3b8db24c36faf,
@@ -83,6 +86,7 @@ export const importMap = {
   "@/components/admin/ExportLeadsButton#ExportLeadsButton": ExportLeadsButton_dfc015e147ecca7392a50b58d946480c,
   "@/components/admin/NavigationBuilderButton#HeaderBuilderButton": HeaderBuilderButton_c7cff7bfd58a789eaa7b7099e18ba2f0,
   "@/components/admin/NavigationBuilderButton#FooterBuilderButton": FooterBuilderButton_c7cff7bfd58a789eaa7b7099e18ba2f0,
+  "@/components/admin/auth/GoogleConfigWarning#GoogleConfigWarning": GoogleConfigWarning_9ffe26d280e439ba526d8b28cdd84fda,
   "@/components/admin/design/ColorField#ColorField": ColorField_cdeeed12dc1e93093c7e2b36a126a728,
   "@/components/admin/design/ColorRowLabel#ColorRowLabel": ColorRowLabel_ef0dae42b857497dbc998ccc345329a9,
   "@/components/admin/design/FontSelectField#FontSelectField": FontSelectField_cc4236d93faf3642f0a4ac7bffd4fa05,

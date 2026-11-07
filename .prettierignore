@@ -9,3 +9,6 @@ dist/
 build/
 coverage/
 pnpm-lock.yaml
+
+# Legal texts supplied by Hana – keep verbatim
+content/legal/
