@@ -76,6 +76,7 @@
    - [5.36. Khối bị khoá và cách mở khoá (EB-14b)](#536-khối-bị-khoá-và-cách-mở-khoá)
    - [5.37. Đổi màu, cỡ chữ từng dòng chữ (EB-15a)](#537-đổi-màu-cỡ-chữ-từng-dòng-chữ)
    - [5.38. Căn lề thẻ và icon (EB-15b)](#538-căn-lề-thẻ-và-icon)
+   - [5.39. Các khối mới và biến thể giao diện v2 (PK-21)](#539-các-khối-mới-và-biến-thể-giao-diện-v2-pk-21)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -3032,6 +3033,35 @@ Thứ tự ưu tiên, từ cao xuống thấp:
 3. Field **Căn lề** của từng thẻ.
 
 Ví dụ: khung lưới để _Căn trái_ thì thẻ con vẫn căn trái, dù tab Kiểu chọn _Giữa_.
+
+---
+
+### 5.39. Các khối mới và biến thể giao diện v2 (PK-21)
+
+Hana có thể linh hoạt sử dụng các khối và biến thể mới để làm phong phú nội dung trang web:
+
+1. **Khối Bộ sưu tập ảnh (PhotoGallery)**:
+   - Trưng bày khoảnh khắc cộng đồng theo dạng **Ghép ảnh Mosaic** (4 ảnh tỉ lệ cân đối) hoặc **Lưới Grid** (3 cột).
+   - Tự động hiển thị nút mũi tên chuyển nhóm khi số lượng ảnh vượt quá khung nhìn, hỗ trợ phím mũi tên bàn phím.
+2. **Lưới thẻ trượt ngang (IconCardGrid carousel)**:
+   - Trong khối **Lưới thẻ biểu tượng / đánh số**, chọn `Số cột hiển thị` là `Carousel (Trượt ngang)` để biến lưới thẻ thành hàng trượt mượt mà.
+3. **Câu hỏi thường gặp dạng Thẻ & Nhanh (FAQ cards & quick)**:
+   - **Dạng Thẻ (`cards`)**: Các câu hỏi luôn mở sẵn dưới dạng lưới thẻ trang nhã, đánh số Anton thương hiệu, có thể chọn thẻ nổi bật nền xanh thẫm (`deep-navy`).
+   - **Dạng Nhanh (`quick`)**: Câu hỏi thu gọn 1 dòng kèm nút mở rộng ngay tại chỗ và nút dẫn tới trang câu hỏi đầy đủ.
+4. **Thẻ dịch vụ chi tiết (ServiceCards detailed)**:
+   - Chọn bố cục `Chi tiết (Detailed)` để hiển thị rõ đối tượng phù hợp, tình huống thực tế và kết quả chuyển hóa đạt được cho từng dịch vụ khai vấn.
+5. **Tiếng nói cộng đồng nổi bật (TestimonialGrid featured)**:
+   - Bố cục 1 lời chia sẻ lớn bên trái + 2 lời chia sẻ nhỏ bên phải (chỉ hiện các lời chia sẻ đã đồng ý hiển thị `consent = true`).
+6. **Ảnh tràn viền mép màn hình (ImageText imageBleed)**:
+   - Bật tuỳ chọn `Tràn mép màn hình (imageBleed)` để ảnh chạm sát mép trái hoặc phải màn hình, mang lại cảm giác hiện đại và rộng mở.
+7. **Form đặt lịch 1 cột (ContactForms personal)**:
+   - Bố cục form cá nhân hóa tối giản và tập trung, đầy đủ các ô chọn lộ trình và chia sẻ trăn trở trước phiên gặp.
+8. **Tài liệu dạng danh sách & Thư viện bài viết nổi bật (LeadMagnet list & LibraryPreview featured)**:
+   - `LeadMagnetCarousel`: Chọn kiểu `Danh sách (List)` để hiện thẻ trắng tối giản.
+   - `LibraryPreview`: Chọn bố cục `Nổi bật (Featured)` để hiển thị 1 bài viết lớn ở trên và 3 bài viết nhỏ ở dưới kèm thời gian đọc.
+9. **Dải ghi chú mảnh (Callout strip)**:
+   - Chọn kiểu `Dải ghi chú mảnh (Strip)` cho khối Callout để tạo dải lưu ý thanh lịch nền hồng nhẹ.
+   - Hỗ trợ tô màu hồng sen cho các cụm từ quan trọng bằng cú pháp `**từ cần nhấn mạnh**`.
 
 ---
 

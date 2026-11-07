@@ -21,6 +21,7 @@ import { Sm06BlocksDemo } from './Sm06BlocksDemo'
 import { Pk17Demo } from './Pk17Demo'
 import { Pk20Demo } from './Pk20Demo'
 import { Eb14Demo } from './Eb14Demo'
+import { Pk21Demo } from './Pk21Demo'
 
 export const dynamic = 'force-dynamic'
 
@@ -523,6 +524,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <Pk20Demo />
+        </section>
+
+        {/* Section 16: PK-21 New blocks and variants */}
+        <section aria-labelledby="heading-pk21-blocks">
+          <h2
+            id="heading-pk21-blocks"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            16. Khối Mới &amp; Biến Thể Giao Diện v2 (PK-21 [MẪU])
+          </h2>
+
+          <Pk21Demo />
         </section>
       </main>
 

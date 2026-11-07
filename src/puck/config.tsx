@@ -99,6 +99,7 @@ import { LeadMagnetCarouselBlock, type LeadMagnetCarouselProps } from './blocks/
 import { NewsletterFormBlock, type NewsletterFormProps } from './blocks/NewsletterForm'
 import { ContactInfoBlock, type ContactInfoProps } from './blocks/ContactInfo'
 import { ContactFormsBlock, type ContactFormsProps } from './blocks/ContactForms'
+import { PhotoGalleryBlock, type PhotoGalleryProps } from './blocks/PhotoGallery'
 
 // EB-10: Khối đầu trang / chân trang (Site Theme Blocks)
 import { SiteLogoBlock, type SiteLogoProps } from './blocks/site/SiteLogo'
@@ -158,6 +159,7 @@ export type {
   ContainerProps,
   LeadMagnetCarouselProps,
   NewsletterFormProps,
+  PhotoGalleryProps,
   ContactInfoProps,
   ContactFormsProps,
   CardProps,
@@ -227,6 +229,7 @@ export type PageComponentsProps = {
   FAQ: FAQProps
   VideoEmbed: VideoEmbedProps
   ContactInfo: ContactInfoProps
+  PhotoGallery: PhotoGalleryProps
   // Bố cục
   Container: ContainerProps
   Columns: ColumnsProps
@@ -301,6 +304,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'VisionMission',
         'FAQ',
         'ContactInfo',
+        'PhotoGallery',
       ],
     },
     layout: {
@@ -613,6 +617,14 @@ const basePuckConfig: Config<PageComponentsProps> = {
             { label: 'Ảnh bên phải, chữ bên trái', value: 'image-right' },
           ],
         },
+        imageBleed: {
+          type: 'select',
+          label: vi.pk21?.imageText?.imageBleed || 'Tràn viền mép màn hình (Bleed)',
+          options: [
+            { label: 'Không (Có lề và bo góc)', value: false },
+            { label: 'Có (Ảnh tràn tới mép màn hình)', value: true },
+          ],
+        },
         seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
         titleLine1: { type: 'text', label: vi.eb15a.titleLine1, contentEditable: true },
         titleLine2: { type: 'text', label: vi.eb15a.titleLine2, contentEditable: true },
@@ -667,6 +679,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
       defaultProps: {
         version: 2,
         layout: 'image-left',
+        imageBleed: false,
         titleSize: 'md',
         textSize: 'md',
         textColor: 'deep-navy',
@@ -775,6 +788,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
     FAQ: FAQBlock,
     VideoEmbed: VideoEmbedBlock,
     ContactInfo: ContactInfoBlock,
+    PhotoGallery: PhotoGalleryBlock,
     Container: ContainerBlock,
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,

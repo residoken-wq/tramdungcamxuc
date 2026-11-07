@@ -187,7 +187,8 @@ describe('PK-05: Puck Migration v4 (FAQ to slot FaqItem blocks)', () => {
     const normalized = normalizePuckData(rawData)
     const block = normalized.content[0] as any
 
-    expect(block.props.version).toBe(5) // PK-19: v4 slot items, then v5 contact card fields
+    expect(block.props.version).toBe(6) // PK-21: v6 adds variant: accordion
+    expect(block.props.variant).toBe('accordion')
     expect(block.props.items[0].type).toBe('FaqItem')
   })
 })

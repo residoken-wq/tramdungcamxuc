@@ -102,6 +102,7 @@ export const CONTAINER_ALLOWED_BLOCKS = [
   'FAQ',
   'VideoEmbed',
   'ContactInfo',
+  'PhotoGallery',
   'Container',
   'Columns',
   'Spacer',

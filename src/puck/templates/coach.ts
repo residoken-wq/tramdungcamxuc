@@ -211,11 +211,11 @@ export const coachTemplate: Data = {
     },
 
     // 2.3 Hai tấm gương: ServiceCards
-    // PK-21: đổi sang ServiceCards detailed khi PK-21 merge
     {
       type: 'ServiceCards',
       props: {
         id: 'coach-services',
+        layout: 'detailed',
         version: 2,
         seriesLabel: 'Our 1:1 solutions • Lộ trình khai vấn chuyên sâu',
         titleLine1: 'Chọn "tấm gương" phản chiếu phù hợp với bạn',
@@ -522,13 +522,12 @@ export const coachTemplate: Data = {
         bgColor: 'warm-ivory',
         padding: 'lg',
         col1: [
-          // PK-21: đổi sang ContactForms personal khi PK-21 merge
           {
             type: 'ContactForms',
             props: {
               id: 'coach-booking-form',
               version: 1,
-              layout: 'columns',
+              layout: 'personal',
               titleB2C: 'Bước vào không gian của riêng bạn',
               descriptionB2C: 'Thông tin của bạn được mã hóa và bảo mật tuyệt đối.',
               submitLabelB2C: 'Đặt lịch Phiên Khám phá',
@@ -571,20 +570,26 @@ export const coachTemplate: Data = {
         col3: [],
       },
     },
-    // PK-21: đổi sang Callout strip khi PK-21 merge
     {
-      type: 'QuoteBlock',
+      type: 'Callout',
       props: {
         id: 'coach-booking-callout',
-        version: 2,
-        quote:
-          'TRẠM DỪNG CẢM XÚC: Hành trình vạn dặm bắt đầu từ một quyết định dũng cảm thấu hiểu chính mình.',
-        author: '',
-        role: '',
-        variant: 'highlight',
-        quoteColor: 'warm-ivory',
-        bgColor: 'deep-navy',
-        padding: 'md',
+        version: 1,
+        variant: 'strip',
+        title: 'TRẠM DỪNG CẢM XÚC:',
+        description:
+          '**Hành trình vạn dặm** bắt đầu từ một quyết định dũng cảm thấu hiểu chính mình.',
+        titleSize: 'sm',
+        textSize: 'md',
+        align: 'center',
+        showButton: false,
+        buttonText: '',
+        buttonLinkType: 'url',
+        buttonPageId: '',
+        buttonLink: '',
+        buttonVariant: 'primary',
+        bgColor: 'warm-ivory',
+        padding: 'sm',
       },
     },
   ],

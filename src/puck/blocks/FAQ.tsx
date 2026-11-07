@@ -4,12 +4,31 @@ import { FAQ, type FAQProps } from '@/components/site/FAQ'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { faqGroupOptions } from '@/collections/Faqs'
 import { createMediaExternalField } from '../media-field'
+import { vi } from '@/lib/i18n/vi'
 
 export type { FAQProps }
 
 export const FAQBlock: ComponentConfig<FAQProps> = {
   label: 'Hỏi & Đáp thường gặp (FAQ Accordion)',
   fields: {
+    variant: {
+      type: 'select',
+      label: vi.pk21?.faq?.variant || 'Biến thể hiển thị FAQ',
+      options: [
+        {
+          label: vi.pk21?.faq?.variantAccordion || 'Hộp thu gọn (Accordion)',
+          value: 'accordion',
+        },
+        {
+          label: vi.pk21?.faq?.variantCards || 'Lưới thẻ mở sẵn (Cards)',
+          value: 'cards',
+        },
+        {
+          label: vi.pk21?.faq?.variantQuick || 'Danh sách nhanh (Quick)',
+          value: 'quick',
+        },
+      ],
+    },
     source: {
       type: 'select',
       label: 'Nguồn câu hỏi',
@@ -122,7 +141,8 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     },
   },
   defaultProps: {
-    version: 5,
+    version: 6,
+    variant: 'accordion',
     source: 'manual',
     group: 'general',
     limit: 5,

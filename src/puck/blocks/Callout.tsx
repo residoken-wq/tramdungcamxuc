@@ -10,6 +10,14 @@ export type { CalloutProps }
 export const CalloutBlock: ComponentConfig<CalloutProps> = {
   label: 'Khối Điểm Nhấn Nền Tối (Callout)',
   fields: {
+    variant: {
+      type: 'select',
+      label: 'Kiểu hiển thị',
+      options: [
+        { label: 'Hộp nổi bật nền tối (Box)', value: 'box' },
+        { label: 'Dải ghi chú mảnh (Strip)', value: 'strip' },
+      ],
+    },
     title: {
       type: 'text',
       label: 'Tiêu đề nổi bật',
@@ -73,6 +81,7 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
   },
   defaultProps: {
     version: 1,
+    variant: 'box',
     titleSize: 'md',
     textSize: 'md',
     align: 'center',

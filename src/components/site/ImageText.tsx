@@ -19,6 +19,7 @@ import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 export interface ImageTextProps {
   version?: number
   layout?: 'image-left' | 'image-right'
+  imageBleed?: boolean
   seriesLabel?: string
   titleLine1: string
   titleLine2?: string
@@ -66,6 +67,7 @@ const PADDINGS = {
 export function ImageText({
   id,
   layout = 'image-left',
+  imageBleed = false,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -137,28 +139,47 @@ export function ImageText({
     .filter(Boolean)
 
   const isImageLeft = layout === 'image-left'
+  const sectionPadding = imageBleed
+    ? PADDINGS[padding].replace(/px-\S+/g, 'px-0')
+    : PADDINGS[padding]
 
   return (
     <section
-      className={`w-full ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${PADDINGS[padding]} transition-colors`}
+      className={`w-full ${imageBleed ? 'overflow-hidden ' : ''}${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${sectionPadding} transition-colors`}
     >
-      <div className="mx-auto max-w-5xl">
+      <div className={imageBleed ? 'w-full max-w-none' : 'mx-auto max-w-5xl'}>
         <div
-          className={`grid grid-cols-1 ${hasValidImage ? 'md:grid-cols-2' : ''} gap-8 lg:gap-12 items-center`}
+          className={`grid grid-cols-1 ${hasValidImage ? 'md:grid-cols-2' : ''} ${
+            imageBleed ? 'gap-0' : 'gap-8 lg:gap-12'
+          } items-center`}
         >
           {/* Image Column - only rendered if activeUrl and activeAlt are present */}
           {hasValidImage && (
-            <div className={`${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full`}>
+            <div
+              className={`${
+                imageBleed
+                  ? `order-1 ${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full h-full flex`
+                  : `${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full`
+              }`}
+            >
               <BrandImage
                 src={activeUrl!}
                 alt={activeAlt}
                 width={800}
                 height={600}
-                className="border border-deep-navy/10 shadow-soft bg-white"
-                imageClassName="w-full h-auto object-cover max-h-[460px]"
+                className={
+                  imageBleed
+                    ? '!rounded-none border-0 shadow-none bg-transparent w-full h-full'
+                    : 'border border-deep-navy/10 shadow-soft bg-white'
+                }
+                imageClassName={
+                  imageBleed
+                    ? 'w-full h-full object-cover min-h-[280px] sm:min-h-[360px] md:min-h-[500px]'
+                    : 'w-full h-auto object-cover max-h-[460px]'
+                }
                 loading="lazy"
                 unoptimized={activeUrl?.startsWith('data:') || activeUrl?.startsWith('blob:')}
-                shape={imageShape}
+                shape={imageBleed ? undefined : imageShape}
                 badge={imageBadge}
                 caption={
                   imageCaptionTitle
@@ -185,7 +206,21 @@ export function ImageText({
 
           {/* Text Column */}
           <div
-            className={`${hasValidImage ? (isImageLeft ? 'md:order-2' : 'md:order-1') : 'max-w-3xl mx-auto'} flex flex-col justify-center`}
+            className={`${
+              imageBleed
+                ? `order-2 ${
+                    isImageLeft
+                      ? 'md:order-2 md:pl-10 lg:pl-16 md:pr-6 lg:pr-12'
+                      : 'md:order-1 md:pr-10 lg:pr-16 md:pl-6 lg:pl-12'
+                  } px-6 py-8 sm:px-8 sm:py-12 max-w-2xl mx-auto flex flex-col justify-center w-full`
+                : `${
+                    hasValidImage
+                      ? isImageLeft
+                        ? 'md:order-2'
+                        : 'md:order-1'
+                      : 'max-w-3xl mx-auto'
+                  } flex flex-col justify-center`
+            }`}
           >
             {seriesLabel && (
               <span

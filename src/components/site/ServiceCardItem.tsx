@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { useClientServices, type PublicServiceSummary } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
 import type { ResolvedService } from './ServiceCards'
+import { useServiceCardsContext } from './service-cards-context'
 import {
   type FontSizeOption,
   type TextColorOption,
@@ -24,6 +25,8 @@ export interface ServiceCardItemProps {
   textColor?: TextColorOption
   textSize?: FontSizeOption
   align?: AlignOption
+  index?: number
+  layout?: 'default' | 'detailed'
   _resolved?: {
     service?: ResolvedService | null
   }
@@ -41,12 +44,17 @@ export function ServiceCardItem({
   textColor,
   textSize = 'md',
   align = 'left',
+  index: ownIndex,
+  layout: ownLayout,
   _resolved,
   puck,
   isDeepNavy: _isDeepNavy = false,
   id: _id,
 }: ServiceCardItemProps & { id?: string }) {
   const isEditing = Boolean(puck?.isEditing)
+  const ctx = useServiceCardsContext()
+  const activeLayout = ownLayout || ctx.layout || 'default'
+  const cardIndex = ownIndex ?? 0
 
   const serviceIds = React.useMemo(() => {
     return serviceId != null && String(serviceId).trim() !== '' ? [serviceId] : []
@@ -79,10 +87,109 @@ export function ServiceCardItem({
     return null
   }
 
-  // ServiceCards v1: only the highlighted card is navy; other cards stay white on any section.
+  // Biến thể Detailed (tr. 28)
+  if (activeLayout === 'detailed') {
+    const isFirstCard = cardIndex % 2 === 0
+    const badgeColorClass = isFirstCard
+      ? 'bg-bright-magenta text-white'
+      : 'bg-deep-navy text-white'
+    const subtitle = ctx.cardTitles?.[cardIndex]?.text?.trim() || activeService.name
+    const imgUrl = ctx.cardMedia?.[cardIndex]?.imageUrl || activeService.imageUrl
+
+    return (
+      <div
+        data-eb-card=""
+        data-eb-card-solid={highlight ? '' : undefined}
+        className="rounded-2xl border border-deep-navy/10 bg-white p-6 sm:p-8 shadow-soft flex flex-col justify-between transition-all duration-300 hover:shadow-card hover:-translate-y-1 h-full"
+      >
+        <div>
+          {/* Service Name Pill: accent-pink for card 1, deep-navy for card 2 */}
+          <div className="mb-4">
+            <span
+              className={`inline-block px-4 py-1.5 rounded-full font-ui text-xs font-bold uppercase tracking-wider ${badgeColorClass}`}
+            >
+              {activeService.name}
+            </span>
+          </div>
+
+          {/* Audience Label uppercase */}
+          {(activeService.audienceLabel || activeService.audience) && (
+            <p className="font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-2">
+              {activeService.audienceLabel || activeService.audience}
+            </p>
+          )}
+
+          {/* Subtitle */}
+          <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-deep-navy mb-5 leading-tight">
+            {subtitle}
+          </h3>
+
+          {/* Image */}
+          {imgUrl && (
+            <div className="relative w-full h-48 sm:h-56 rounded-xl overflow-hidden mb-6 bg-warm-ivory/50">
+              <Image
+                src={imgUrl}
+                alt={activeService.imageAlt || activeService.name}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+          )}
+
+          {/* Box 1: Situations ("Phù hợp với") */}
+          {activeService.situations && activeService.situations.length > 0 && (
+            <div className="rounded-xl bg-lavender-mist/35 border border-deep-navy/5 p-4 sm:p-5 mb-4">
+              <p className="font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/80 mb-2.5">
+                {vi.pk21?.serviceCards?.situationsTitle || 'Phù hợp với bạn khi:'}
+              </p>
+              <ul className="space-y-2 font-ui text-sm text-deep-navy/85">
+                {activeService.situations.map((sit, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-bright-magenta shrink-0" />
+                    <span className="leading-relaxed">{sit}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Box 2: Outcomes ("Kết quả chuyển hóa") */}
+          {activeService.outcomes && activeService.outcomes.length > 0 && (
+            <div className="rounded-xl bg-mint-haze/35 border border-deep-navy/5 p-4 sm:p-5 mb-6">
+              <p className="font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/80 mb-2.5">
+                {vi.pk21?.serviceCards?.outcomesTitle || 'Kết quả chuyển hóa:'}
+              </p>
+              <ul className="space-y-2 font-ui text-sm text-deep-navy/85">
+                {activeService.outcomes.map((out, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-bright-magenta shrink-0" />
+                    <span className="leading-relaxed">{out}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* Action Button */}
+        <div className="pt-2">
+          <Button
+            href={`/coaching/${activeService.slug}`}
+            variant={isFirstCard ? 'primary' : 'secondary'}
+            size="md"
+            className="w-full text-center"
+          >
+            {activeService.ctaLabel || vi.sm04.defaultServiceCta}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Biến thể Mặc định: ServiceCards v1
   const isCardNavy = Boolean(highlight)
 
-  // "deep-navy" is the stored default: treat it as automatic so a highlighted card keeps light text
   const resolvedNameColorClass =
     nameColor && nameColor !== 'deep-navy'
       ? textColorClass(nameColor)

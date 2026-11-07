@@ -146,7 +146,8 @@ export const workshopTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'workshop-faq',
-        version: 5,
+        version: 6,
+        variant: 'accordion',
         description: '',
         seriesLabelStyle: 'text',
         iconStyle: 'chevron',

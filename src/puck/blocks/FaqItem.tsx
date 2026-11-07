@@ -40,6 +40,14 @@ export const FaqItemBlock: ComponentConfig<FaqItemViewProps> = {
       label: vi.puckFaqItem?.answerSize || 'Cỡ chữ câu trả lời',
       options: [...FONT_SIZE_OPTIONS],
     },
+    highlight: {
+      type: 'select',
+      label: 'Nổi bật thẻ (Nền xanh thẫm / Deep Navy)',
+      options: [
+        { label: 'Không (Mặc định)', value: false },
+        { label: 'Có (Nền xanh thẫm chữ trắng)', value: true },
+      ],
+    },
   },
   defaultProps: {
     version: 1,
@@ -49,6 +57,7 @@ export const FaqItemBlock: ComponentConfig<FaqItemViewProps> = {
     questionSize: 'md',
     answerColor: 'deep-navy',
     answerSize: 'md',
+    highlight: false,
   },
   resolveFields: (data, params) => {
     const cardRealBg = getChildRealBg(params?.parent)

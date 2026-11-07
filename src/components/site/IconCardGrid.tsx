@@ -2,6 +2,8 @@ import React from 'react'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { IconCard, type IconCardProps } from './IconCard'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
+import { CarouselTrack } from '@/components/ui/CarouselTrack'
+import { vi } from '@/lib/i18n/vi'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 
 export interface IconCardItem {
@@ -20,14 +22,20 @@ export interface IconCardGridProps {
   titleLine2?: string
   emotionLine?: string
   marker?: 'icon' | 'number'
-  columns?: 1 | 2 | 3 | 4
+  /** PK-21: 'carousel' = cards in one row that scrolls sideways, with arrows. */
+  columns?: 1 | 2 | 3 | 4 | 'carousel'
   cardStyle?: 'white' | 'soft' | 'outline'
   cardAlign?: 'inherit' | 'left' | 'center'
   /** Puck slot render (v2), React nodes, or raw Card blocks `{ props }` (direct use / tests). */
   cards?: CardsSlotRender | React.ReactNode | Array<{ type?: string; props?: IconCardProps }>
   items?: IconCardItem[]
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   puck?: {
     isEditing?: boolean
@@ -67,6 +75,7 @@ export function IconCardGrid({
 }: IconCardGridProps & { id?: string }) {
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
+  const isCarousel = columns === 'carousel'
   const validItems = Array.isArray(items)
     ? items.filter((item) => item && (item.title || item.text))
     : []
@@ -74,7 +83,7 @@ export function IconCardGrid({
   const hasHeader = Boolean(titleLine1 || titleLine2 || seriesLabel)
 
   // Columns: mobile always 1, tablet (md:) max 2, desktop (lg:) up to columns
-  const getGridColsClass = (colCount: number) => {
+  const getGridColsClass = (colCount: IconCardGridProps['columns']) => {
     switch (colCount) {
       case 1:
         return 'grid-cols-1 max-w-2xl'
@@ -89,10 +98,78 @@ export function IconCardGrid({
   }
 
   const gridColsClass = getGridColsClass(columns)
-  const gridClasses = `mx-auto grid ${gridColsClass} gap-6 sm:gap-8 [counter-reset:card-counter]`
+  // QA PK-21c: the carousel row is laid out here (server); CarouselTrack only scrolls it.
+  const gridClasses = isCarousel
+    ? 'flex w-max gap-6 sm:gap-8 [counter-reset:card-counter] [&>*]:w-[80vw] [&>*]:max-w-[320px] [&>*]:shrink-0 [&>*]:snap-start md:[&>*]:w-[340px]'
+    : `mx-auto grid ${gridColsClass} gap-6 sm:gap-8 [counter-reset:card-counter]`
 
   const hasCards = Boolean(cards)
   const hasItems = !hasCards && validItems.length > 0
+
+  const cardList = (
+    <>
+      {hasCards &&
+        (typeof cards === 'function' ? (
+          <>
+            {React.createElement(cards as CardsSlotRender, {
+              className: gridClasses,
+              style: { counterReset: 'card-counter' },
+            })}
+            <EmptySlotHint
+              parentId={id}
+              slotName="cards"
+              childLabel="Thẻ"
+              isEditing={isEditing}
+              isDeepNavy={isDeepNavy}
+            />
+          </>
+        ) : React.isValidElement(cards) ? (
+          <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
+            {cards}
+          </div>
+        ) : Array.isArray(cards) ? (
+          <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
+            {(cards as unknown[]).map((child, idx: number) => {
+              if (React.isValidElement(child)) {
+                return child
+              }
+              const block = child as { props?: IconCardProps & { id?: string } } | null
+              if (block && typeof block === 'object' && block.props) {
+                return (
+                  <IconCard
+                    key={block.props.id || idx}
+                    index={idx}
+                    marker={marker}
+                    cardStyle={cardStyle}
+                    isDeepNavy={isDeepNavy}
+                    {...block.props}
+                  />
+                )
+              }
+              return null
+            })}
+          </div>
+        ) : null)}
+
+      {hasItems && (
+        <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
+          {validItems.map((item, index) => (
+            <IconCard
+              key={index}
+              icon={item.icon}
+              title={item.title}
+              text={item.text}
+              highlight={item.highlight}
+              index={index}
+              marker={marker}
+              cardStyle={cardStyle}
+              isDeepNavy={isDeepNavy}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  )
 
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
@@ -123,65 +200,17 @@ export function IconCardGrid({
           data-card-theme={`${isDeepNavy ? 'navy' : 'light'}-${cardStyle}`}
           data-card-align={cardAlign || 'inherit'}
         >
-          {hasCards &&
-            (typeof cards === 'function' ? (
-              <>
-                {React.createElement(cards as CardsSlotRender, {
-                  className: gridClasses,
-                  style: { counterReset: 'card-counter' },
-                })}
-                <EmptySlotHint
-                  parentId={id}
-                  slotName="cards"
-                  childLabel="Thẻ"
-                  isEditing={isEditing}
-                  isDeepNavy={isDeepNavy}
-                />
-              </>
-            ) : React.isValidElement(cards) ? (
-              <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
-                {cards}
-              </div>
-            ) : Array.isArray(cards) ? (
-              <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
-                {(cards as unknown[]).map((child, idx: number) => {
-                  if (React.isValidElement(child)) {
-                    return child
-                  }
-                  const block = child as { props?: IconCardProps & { id?: string } } | null
-                  if (block && typeof block === 'object' && block.props) {
-                    return (
-                      <IconCard
-                        key={block.props.id || idx}
-                        index={idx}
-                        marker={marker}
-                        cardStyle={cardStyle}
-                        isDeepNavy={isDeepNavy}
-                        {...block.props}
-                      />
-                    )
-                  }
-                  return null
-                })}
-              </div>
-            ) : null)}
-
-          {hasItems && (
-            <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
-              {validItems.map((item, index) => (
-                <IconCard
-                  key={index}
-                  icon={item.icon}
-                  title={item.title}
-                  text={item.text}
-                  highlight={item.highlight}
-                  index={index}
-                  marker={marker}
-                  cardStyle={cardStyle}
-                  isDeepNavy={isDeepNavy}
-                />
-              ))}
-            </div>
+          {isCarousel ? (
+            <CarouselTrack
+              ariaLabel={titleLine1 || vi.pk21?.iconCardGrid?.region || 'Danh sách thẻ'}
+              isDeepNavy={isDeepNavy}
+              prevLabel={vi.pk21?.iconCardGrid?.prevCards || 'Thẻ trước'}
+              nextLabel={vi.pk21?.iconCardGrid?.nextCards || 'Thẻ tiếp theo'}
+            >
+              {cardList}
+            </CarouselTrack>
+          ) : (
+            cardList
           )}
         </div>
       </div>

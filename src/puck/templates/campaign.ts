@@ -116,7 +116,8 @@ export const campaignTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'campaign-faq',
-        version: 5,
+        version: 6,
+        variant: 'accordion',
         description: '',
         seriesLabelStyle: 'text',
         iconStyle: 'chevron',
