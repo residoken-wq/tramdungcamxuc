@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
+import { buttonColorStyle } from '@/lib/brand/button-colors'
 import { safeHref } from '@/lib/safe-href'
 import type { FontSizeOption, TextColorOption } from '@/lib/brand/format-classes'
 import {
@@ -12,6 +13,7 @@ import {
   sizeClass,
 } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 
 export interface ImageTextProps {
   version?: number
@@ -27,6 +29,9 @@ export interface ImageTextProps {
   imageLabel?: string
   buttonText?: string
   buttonLink?: string
+  /** PK-15: brand colour of the CTA fill / label ('' = automatic). */
+  buttonBgColor?: string
+  buttonTextColor?: string
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -65,6 +70,8 @@ export function ImageText({
   imageLabel,
   buttonText,
   buttonLink,
+  buttonBgColor,
+  buttonTextColor,
   bgColor = 'warm-ivory',
   padding = 'md',
   titleSize,
@@ -167,14 +174,13 @@ export function ImageText({
             <h2
               className={`font-display ${sizeClass(SECTION_TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-4`}
             >
-              <span {...textTarget(id, 'titleLine1')} className={textColorClass}>
-                {titleLine1}
-              </span>{' '}
-              {titleLine2 && (
-                <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
-                  {titleLine2}
-                </span>
-              )}
+              <TwoToneTitle
+                id={id}
+                line1={titleLine1}
+                line2={titleLine2}
+                line1ClassName={textColorClass}
+                line2ClassName={titleLine2ColorClass}
+              />
             </h2>
 
             <div {...textTarget(id, 'content')} className="space-y-3 mb-6">
@@ -201,10 +207,12 @@ export function ImageText({
 
             {Boolean(buttonText && safeHref(buttonLink)) && (
               <div className="pt-2">
+                {/* PK-15: the old navy default was a navy button on a navy section (invisible). */}
                 <Button
                   href={safeHref(buttonLink)!}
-                  variant={isDeepNavy ? 'secondary' : 'primary'}
+                  variant="primary"
                   size="md"
+                  style={buttonColorStyle(buttonBgColor, buttonTextColor, bgColor)}
                 >
                   <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
                 </Button>

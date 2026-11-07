@@ -2747,37 +2747,37 @@ export const vi = {
       title: 'Bố cục',
       direction: 'Hướng sắp xếp',
       directions: {
-        row: 'Hàng ngang (Row)',
-        column: 'Cột dọc (Column)',
-        'row-reverse': 'Đảo hàng (Row reverse)',
-        'column-reverse': 'Đảo cột (Column reverse)',
+        row: 'Hàng ngang',
+        column: 'Cột dọc',
+        'row-reverse': 'Đảo hàng',
+        'column-reverse': 'Đảo cột',
       },
-      justify: 'Căn theo trục chính (Justify)',
+      justify: 'Căn theo chiều sắp xếp',
       justifyOptions: {
         start: 'Bắt đầu',
         center: 'Ở giữa',
         end: 'Kết thúc',
-        between: 'Cách đều hai đầu (Between)',
-        around: 'Cách đều xung quanh (Around)',
-        evenly: 'Cách đều nhau (Evenly)',
+        between: 'Cách đều hai đầu',
+        around: 'Cách đều xung quanh',
+        evenly: 'Cách đều nhau',
       },
-      align: 'Căn theo trục phụ (Align)',
+      align: 'Căn theo chiều còn lại',
       alignOptions: {
         start: 'Bắt đầu',
         center: 'Ở giữa',
         end: 'Kết thúc',
-        stretch: 'Kéo giãn (Stretch)',
+        stretch: 'Kéo giãn',
       },
-      gap: 'Khoảng cách giữa các khối (Gap)',
-      wrap: 'Xuống dòng khi quá rộng (Wrap)',
+      gap: 'Khoảng cách giữa các khối',
+      wrap: 'Xuống dòng khi quá rộng',
       wrapOptions: {
-        nowrap: 'Không xuống dòng (Nowrap)',
-        wrap: 'Có xuống dòng (Wrap)',
+        nowrap: 'Không xuống dòng',
+        wrap: 'Có xuống dòng',
       },
       width: 'Chiều rộng',
       widthOptions: {
-        boxed: 'Đóng khung (Boxed)',
-        full: 'Tràn màn hình (Full width)',
+        boxed: 'Đóng khung',
+        full: 'Tràn màn hình',
       },
       contentWidth: 'Độ rộng khung nội dung (khi Đóng khung)',
       contentWidthOptions: {
@@ -2788,7 +2788,7 @@ export const vi = {
       },
       minHeight: 'Chiều cao tối thiểu',
       minHeightOptions: {
-        none: 'Mặc định (Tự co giãn)',
+        none: 'Tự co giãn (Mặc định)',
         sm: 'Nhỏ (200px)',
         md: 'Vừa (350px)',
         lg: 'Lớn (500px)',
@@ -2798,8 +2798,8 @@ export const vi = {
       groupSpacing: 'Khoảng cách & Xuống dòng',
       tag: 'Thẻ HTML',
       tagOptions: {
-        div: 'div (Hộp chung)',
-        section: 'section (Khối nội dung độc lập)',
+        div: 'Hộp chung (div)',
+        section: 'Khối nội dung độc lập (section)',
       },
     },
     background: {
@@ -2808,7 +2808,7 @@ export const vi = {
       types: {
         none: 'Không',
         image: 'Ảnh nền',
-        gradient: 'Chuyển màu (Gradient)',
+        gradient: 'Chuyển màu',
       },
       mediaSelect: 'Chọn ảnh từ thư viện media',
       noMediaSelected: 'Chưa chọn ảnh nền',
@@ -2822,8 +2822,8 @@ export const vi = {
       mediaId: (id: string) => `Ảnh #${id}`,
       size: 'Kích thước ảnh',
       sizes: {
-        cover: 'Bao phủ (Cover)',
-        contain: 'Vừa vặn (Contain)',
+        cover: 'Bao phủ',
+        contain: 'Vừa vặn',
       },
       position: 'Vị trí ảnh',
       positions: {
@@ -3334,6 +3334,32 @@ export const vi = {
     cardAlignFollowingGrid: 'Đang theo khung',
     alignLeft: 'Căn trái',
     alignCenter: 'Căn giữa',
+  },
+  pk15: {
+    buttonBgColor: 'Màu nút',
+    buttonTextColor: 'Màu chữ trên nút',
+  },
+  pk17: {
+    layoutSpotlight: 'Ảnh trong khung cong (Spotlight)',
+    cardFrame: {
+      groupTitle: 'Thẻ con',
+      label: 'Khung thẻ',
+      default: 'Mặc định',
+      borderless: 'Bỏ viền',
+      flat: 'Bỏ viền và bóng',
+      none: 'Không khung',
+    },
+  },
+  eb16: {
+    replaceEntirePage: 'Thay toàn bộ trang',
+    back: 'Quay lại',
+    templateIncludes: (blocks: string) => `Gồm: ${blocks}`,
+    moreBlocks: (count: number) => `+${count} khối`,
+    tabTitlesLabel: 'Tên các tab',
+    accordionTitlesLabel: 'Tên các câu hỏi',
+    tabTitleItem: (index: number) => `Tên tab ${index}`,
+    accordionTitleItem: (index: number) => `Tên câu hỏi ${index}`,
+    renameTooltip: 'Nhấp đúp hoặc F2 để đổi tên',
   },
   hb07: {
     global: {
@@ -4352,6 +4378,47 @@ export const vi = {
     acknowledgeLabel: 'Ghi nhận',
     smallActionToday: 'Hành động nhỏ hôm nay',
     storyBehindCard: 'Câu chuyện phía sau thẻ',
+  },
+  gl01: {
+    loginMethodsTab: 'Đăng nhập khách hàng',
+    loginGoogleEnabled: 'Cho đăng nhập bằng Google',
+    loginOtpEnabled: 'Cho đăng nhập bằng mã OTP qua email',
+    googleMissingWarning: 'Chưa cấu hình Google, trang đăng nhập đang dùng OTP',
+    orDivider: 'hoặc',
+    continueWithGoogle: 'Tiếp tục với Google',
+    firstTimeConsentHint: 'Lần đầu đăng nhập, chị/anh vui lòng tick đồng ý ở trên',
+    loginDisabled: 'Cách đăng nhập này đang tạm tắt',
+    loginSubtitleGoogle: 'Đăng nhập nhanh bằng tài khoản Google của bạn, không cần mật khẩu.',
+    errors: {
+      canDongY: 'Vui lòng tick đồng ý Điều khoản và Chính sách bảo mật rồi bấm lại',
+      huy: 'Bạn đã huỷ đăng nhập Google',
+      lienKetKhac: 'Email này đã liên kết với một tài khoản Google khác',
+      thatBai: 'Đăng nhập bằng Google không thành công. Vui lòng thử lại.',
+    },
+  },
+  dp03: {
+    loginTitle: 'Bạn đã hoàn thành Giai đoạn 1 🎉',
+    loginPrompt: 'Đăng nhập để lưu kết quả và tiếp tục Giai đoạn 2',
+    loginButton: 'Đăng nhập để tiếp tục',
+    backToStage1: 'Quay lại Giai đoạn 1',
+    diagnoseSummary: {
+      cue: 'Điểm nghẽn cần chú ý nhất: Gợi ý (Cue) — khó nhận ra hoặc hay quên tín hiệu kích hoạt.',
+      craving:
+        'Điểm nghẽn cần chú ý nhất: Khao khát (Craving) — chưa tìm thấy sức hút hay động lực đủ lớn.',
+      response:
+        'Điểm nghẽn cần chú ý nhất: Phản hồi (Response) — hành động còn phức tạp hoặc rào cản quá cao.',
+      reward:
+        'Điểm nghẽn cần chú ý nhất: Phần thưởng (Reward) — thiếu cảm giác thoả mãn ngay sau khi thực hiện.',
+      default: 'Bạn đã hoàn thành chẩn đoán 4 giai đoạn vòng lặp thói quen.',
+    },
+    buyTitle: 'Bạn đã dùng hết thời gian dùng thử',
+    buyDescription:
+      'Để tiếp tục hành trình xây thói quen bền vững và mở khoá trọn vẹn công cụ Habit Tracker, bạn có thể mua gói để sử dụng tiếp.',
+    buyButton: 'Mua để dùng tiếp',
+    viewOfferButton: 'Xem chi tiết gói',
+    pricePrefix: 'Giá:',
+    salePricePrefix: 'Ưu đãi:',
+    currencySuffix: 'đ',
   },
 } as const
 

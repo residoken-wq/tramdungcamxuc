@@ -7,6 +7,8 @@ import { HABIT_OFFER_PATH } from '../habit'
 import { HABIT_TRACKER_PRODUCT_SLUG } from './config'
 import { getCurrentCustomer } from '../auth/session.server'
 import { startTrialAction } from '../entitlements/actions'
+import { getHabitStageGate } from './stage-gate.server'
+import type { HabitStageGateResult } from './stage-gate'
 
 export type HabitPlanActionResponse = ActionResponse & {
   planId?: number
@@ -14,6 +16,15 @@ export type HabitPlanActionResponse = ActionResponse & {
   trackerDestination?: string
   trialDays?: number
   trialStarted?: boolean
+}
+
+/**
+ * REVIEW-REQUIRED: DP-03 Server Action lấy trạng thái cổng sau Giai đoạn 1 Habit (/habit/5-phut).
+ * Không nhận tham số: khách luôn đọc từ phiên (getCurrentCustomer) bên trong getHabitStageGate.
+ * (QA DP-03c: bản trước nhận `overrideCustomer` / `options` từ trình duyệt.)
+ */
+export async function getHabitStageGateAction(): Promise<HabitStageGateResult> {
+  return await getHabitStageGate()
 }
 
 async function getClientContext(): Promise<{ ip?: string; page?: string }> {

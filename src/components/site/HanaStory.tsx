@@ -1,9 +1,12 @@
 import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
+import { buttonColorStyle } from '@/lib/brand/button-colors'
 import { HeartLine } from '@/components/brand/HeartLine'
 import { safeHref } from '@/lib/safe-href'
 import { textTarget } from '@/puck/style/text-target'
+import { stripWrappingQuotes } from '@/lib/text/quotes'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 
 export interface HanaStoryChipItem {
   text?: string
@@ -16,7 +19,7 @@ export interface HanaStoryProps {
   greeting?: string
   signatureName?: string
   chips?: HanaStoryChipItem[]
-  layout?: 'story' | 'letter'
+  layout?: 'story' | 'letter' | 'spotlight'
   imagePosition?: 'left' | 'right'
   seriesLabel?: string
   titleLine1?: string
@@ -30,6 +33,9 @@ export interface HanaStoryProps {
   founderSignatureAlt?: string | null
   buttonText?: string
   buttonLink?: string
+  /** PK-15: brand colour of the CTA fill / label ('' = automatic). */
+  buttonBgColor?: string
+  buttonTextColor?: string
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -77,6 +83,8 @@ export function HanaStory({
   founderSignatureAlt: directSigAlt,
   buttonText,
   buttonLink,
+  buttonBgColor,
+  buttonTextColor,
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
@@ -99,6 +107,8 @@ export function HanaStory({
     : []
 
   const isImageRight = imagePosition === 'right'
+  const isSpotlight = layout === 'spotlight'
+  const cleanQuoteLine = stripWrappingQuotes(quoteLine)
 
   const sectionBgClass = isDarkTone ? 'bg-deep-navy text-white' : BG_COLORS[bgColor]
   const quoteBgClass = isDarkOrNavy
@@ -109,6 +119,133 @@ export function HanaStory({
   const chipBgClass = isDarkOrNavy
     ? 'bg-white/10 text-soft-pink border-soft-pink/30'
     : 'bg-soft-pink text-deep-navy border-bright-magenta/20'
+
+  if (isSpotlight) {
+    const jobTitleColor = isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
+    return (
+      <section className={`w-full overflow-hidden ${sectionBgClass} transition-colors`}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[500px]">
+          {/* Text Column (lg: ~55% -> 7 cols) */}
+          <div
+            className={`lg:col-span-7 flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-12 lg:py-16 ${
+              isImageRight ? 'order-2 lg:order-1' : 'order-2 lg:order-2'
+            }`}
+          >
+            {(seriesLabel || titleLine1 || titleLine2) && (
+              <header className="mb-4 flex flex-col text-left items-start">
+                {seriesLabel && (
+                  <span
+                    {...textTarget(id, 'seriesLabel')}
+                    className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${
+                      isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
+                    }`}
+                  >
+                    {seriesLabel}
+                  </span>
+                )}
+                <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
+                  {/* QA PK-17c: shared TwoToneTitle (PK-16) keeps the space between the lines. */}
+                  <TwoToneTitle
+                    id={id}
+                    line1={titleLine1}
+                    line2={titleLine2}
+                    line1ClassName={isDarkOrNavy ? 'text-white' : 'text-deep-navy'}
+                    line2ClassName={isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}
+                  />
+                </h2>
+              </header>
+            )}
+
+            {jobTitle && (
+              <p
+                {...textTarget(id, 'jobTitle')}
+                className={`font-ui text-xs sm:text-sm font-bold uppercase tracking-wider mb-5 ${jobTitleColor}`}
+              >
+                {jobTitle}
+              </p>
+            )}
+
+            {cleanQuoteLine && (
+              <div className="mb-6 pl-4 border-l-[3px] border-accent-pink">
+                <p
+                  {...textTarget(id, 'quoteLine')}
+                  className={`font-quote italic text-lg sm:text-xl leading-relaxed ${quoteTextClass}`}
+                >
+                  &ldquo;{cleanQuoteLine}&rdquo;
+                </p>
+              </div>
+            )}
+
+            {paragraphs.length > 0 && (
+              <div
+                {...textTarget(id, 'storyContent')}
+                className={`space-y-4 font-sans text-base sm:text-lg leading-relaxed ${descColorClass}`}
+              >
+                {paragraphs.map((p, idx) => (
+                  <p key={idx}>{p}</p>
+                ))}
+              </div>
+            )}
+
+            {chipList.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {chipList.map((chip, idx) => (
+                  <span
+                    key={idx}
+                    className={`font-ui text-xs font-semibold px-3 py-1 rounded-full border ${chipBgClass}`}
+                  >
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {buttonText && safeButtonHref && (
+              <div className="mt-8">
+                <Button
+                  href={safeButtonHref}
+                  variant="primary"
+                  size="lg"
+                  style={buttonColorStyle(
+                    buttonBgColor,
+                    buttonTextColor,
+                    isDarkTone ? 'deep-navy' : bgColor,
+                  )}
+                >
+                  {buttonText}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Spotlight Image Column (lg: ~45% -> 5 cols) */}
+          <div
+            className={`lg:col-span-5 flex items-center justify-center bg-lavender-mist p-8 sm:p-12 lg:p-16 ${
+              isImageRight
+                ? 'order-1 lg:order-2 rounded-b-[64px] lg:rounded-b-none lg:rounded-l-[120px]'
+                : 'order-1 lg:order-1 rounded-b-[64px] lg:rounded-b-none lg:rounded-r-[120px]'
+            }`}
+          >
+            {imageUrl ? (
+              <div className="relative w-full max-w-md aspect-square rounded-card overflow-hidden shadow-soft">
+                <Image
+                  src={imageUrl}
+                  alt={imageAlt || ''}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 500px"
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-full max-w-md aspect-square rounded-card border-2 border-dashed border-deep-navy/20 bg-white/40 flex flex-col items-center justify-center p-6 text-center text-deep-navy/60">
+                <span className="font-ui text-sm">{imageAlt || 'Chưa chọn ảnh chân dung'}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className={`w-full ${sectionBgClass} ${PADDINGS[padding]} transition-colors`}>
@@ -227,13 +364,13 @@ export function HanaStory({
             )}
 
             {/* Emotional Quote Block */}
-            {quoteLine && (
+            {cleanQuoteLine && (
               <div className={`mt-6 p-5 sm:p-6 rounded-card border shadow-sm ${quoteBgClass}`}>
                 <p
                   {...textTarget(id, 'quoteLine')}
                   className={`font-quote italic text-lg sm:text-xl leading-relaxed ${quoteTextClass}`}
                 >
-                  &ldquo;{quoteLine}&rdquo;
+                  &ldquo;{cleanQuoteLine}&rdquo;
                 </p>
               </div>
             )}
@@ -296,10 +433,16 @@ export function HanaStory({
             {/* Optional CTA Button */}
             {buttonText && safeButtonHref && (
               <div className="mt-8">
+                {/* PK-15: the old dark-tone default was a navy button on a navy section (invisible). */}
                 <Button
                   href={safeButtonHref}
-                  variant={isDarkOrNavy ? 'secondary' : 'primary'}
+                  variant="primary"
                   size="lg"
+                  style={buttonColorStyle(
+                    buttonBgColor,
+                    buttonTextColor,
+                    isDarkTone ? 'deep-navy' : bgColor,
+                  )}
                 >
                   {buttonText}
                 </Button>

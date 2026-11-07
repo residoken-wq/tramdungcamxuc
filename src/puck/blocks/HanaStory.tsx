@@ -4,6 +4,7 @@ import { HanaStory, type HanaStoryProps } from '@/components/site/HanaStory'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createMediaExternalField } from '../media-field'
 import { vi } from '@/lib/i18n/vi'
+import { BUTTON_BG_OPTIONS, buttonTextOptions } from '@/lib/brand/button-colors'
 
 export type { HanaStoryProps }
 
@@ -24,6 +25,10 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
       options: [
         { label: 'Câu chuyện kể (Story - Mặc định)', value: 'story' },
         { label: 'Thư từ nhà sáng lập (Letter)', value: 'letter' },
+        {
+          label: vi.pk17?.layoutSpotlight || 'Ảnh trong khung cong (Spotlight)',
+          value: 'spotlight',
+        },
       ],
     },
     imagePosition: {
@@ -72,6 +77,12 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     }),
     buttonText: { type: 'text', label: 'Chữ trên nút liên kết (tùy chọn)' },
     buttonLink: { type: 'text', label: 'Đường dẫn liên kết (tùy chọn)' },
+    buttonBgColor: { type: 'select', label: vi.pk15.buttonBgColor, options: BUTTON_BG_OPTIONS },
+    buttonTextColor: {
+      type: 'select',
+      label: vi.pk15.buttonTextColor,
+      options: buttonTextOptions(''),
+    },
     bgColor: {
       type: 'select',
       label: 'Màu nền',
@@ -103,9 +114,20 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     imageAlt: '',
     buttonText: '',
     buttonLink: '',
+    buttonBgColor: '',
+    buttonTextColor: '',
     bgColor: 'warm-ivory',
     padding: 'md',
   },
+  // PK-15: only label colours readable on the chosen button fill.
+  resolveFields: (data, params) => ({
+    ...params.fields,
+    buttonTextColor: {
+      type: 'select',
+      label: vi.pk15.buttonTextColor,
+      options: buttonTextOptions(data.props?.buttonBgColor),
+    },
+  }),
   resolveData: async (data) => {
     let resolvedImageUrl = ''
     let resolvedImageAlt = ''

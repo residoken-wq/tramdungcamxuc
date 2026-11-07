@@ -1222,6 +1222,7 @@ export interface Customer {
    */
   deletionRequestedAt?: string | null;
   sessionVersion?: number | null;
+  googleSub?: string | null;
   updatedAt: string;
   createdAt: string;
   collection: 'customers';
@@ -3059,6 +3060,7 @@ export interface CustomersSelect<T extends boolean = true> {
   reminderEmailsOptOut?: T;
   deletionRequestedAt?: T;
   sessionVersion?: T;
+  googleSub?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3710,6 +3712,14 @@ export interface SiteSetting {
    * Trang ủng hộ hoặc tài khoản nhận đóng góp.
    */
   habitDonationUrl?: string | null;
+  /**
+   * Cho phép học viên và khách hàng đăng nhập nhanh bằng tài khoản Google.
+   */
+  loginGoogleEnabled?: boolean | null;
+  /**
+   * Cho phép đăng nhập bằng mã xác thực 6 số gửi qua email.
+   */
+  loginOtpEnabled?: boolean | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -4708,6 +4718,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   habitCoachBookingUrl?: T;
   habitDonationEnabled?: T;
   habitDonationUrl?: T;
+  loginGoogleEnabled?: T;
+  loginOtpEnabled?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

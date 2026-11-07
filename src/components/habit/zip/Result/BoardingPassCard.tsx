@@ -39,6 +39,9 @@ interface BoardingPassCardProps {
   trackerDestination?: string
   zaloGroupUrl?: string
   privacyNote?: string | null
+  isEmailReadOnly?: boolean
+  showConsentCheckbox?: boolean
+  showTurnstile?: boolean
   onNameChange?: (val: string) => void
   onEmailChange?: (val: string) => void
   onConsentChange?: (val: boolean) => void
@@ -65,6 +68,9 @@ export function BoardingPassCard({
   trackerDestination = '/habit/tracker',
   zaloGroupUrl = '',
   privacyNote,
+  isEmailReadOnly = false,
+  showConsentCheckbox = true,
+  showTurnstile = true,
   onNameChange,
   onEmailChange,
   onConsentChange,
@@ -512,10 +518,15 @@ export function BoardingPassCard({
                 id={emailId}
                 type="email"
                 required
+                readOnly={isEmailReadOnly}
                 value={email}
                 onChange={(e) => onEmailChange && onEmailChange(e.target.value)}
                 placeholder="email@example.com"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-lavender-mist focus:border-bright-magenta outline-none text-xs sm:text-sm text-deep-navy font-ui transition-all shadow-xs"
+                className={`w-full px-3.5 py-2.5 rounded-xl border outline-none text-xs sm:text-sm text-deep-navy font-ui transition-all shadow-xs ${
+                  isEmailReadOnly
+                    ? 'bg-lavender-mist/30 border-lavender-mist/60 text-deep-navy/80 cursor-not-allowed select-all font-medium'
+                    : 'bg-white border-lavender-mist focus:border-bright-magenta'
+                }`}
               />
             </div>
           </div>
@@ -532,34 +543,36 @@ export function BoardingPassCard({
             aria-hidden="true"
           />
 
-          {/* Consent Checkbox */}
-          <div className="flex items-start gap-2.5 pt-1">
-            <input
-              id={consentId}
-              type="checkbox"
-              required
-              checked={consent}
-              onChange={(e) => onConsentChange && onConsentChange(e.target.checked)}
-              className="mt-0.5 w-4 h-4 rounded text-bright-magenta focus:ring-bright-magenta cursor-pointer"
-            />
-            <label
-              htmlFor={consentId}
-              className="text-xs text-deep-navy/75 leading-relaxed cursor-pointer select-none"
-            >
-              {step6Content.termsText}{' '}
-              <Link
-                href="/chinh-sach-bao-mat"
-                target="_blank"
-                className="text-bright-magenta underline font-semibold"
+          {/* Consent Checkbox: ẩn nếu khách đã có consentAt trước đó */}
+          {showConsentCheckbox && (
+            <div className="flex items-start gap-2.5 pt-1">
+              <input
+                id={consentId}
+                type="checkbox"
+                required
+                checked={consent}
+                onChange={(e) => onConsentChange && onConsentChange(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded text-bright-magenta focus:ring-bright-magenta cursor-pointer"
+              />
+              <label
+                htmlFor={consentId}
+                className="text-xs text-deep-navy/75 leading-relaxed cursor-pointer select-none"
               >
-                {vi.dp01.privacyPolicyLink}
-              </Link>
-              .
-            </label>
-          </div>
+                {step6Content.termsText}{' '}
+                <Link
+                  href="/chinh-sach-bao-mat"
+                  target="_blank"
+                  className="text-bright-magenta underline font-semibold"
+                >
+                  {vi.dp01.privacyPolicyLink}
+                </Link>
+                .
+              </label>
+            </div>
+          )}
 
-          {/* Turnstile Widget */}
-          {onTurnstileVerify && <TurnstileWidget onVerify={onTurnstileVerify} />}
+          {/* Turnstile Widget: bỏ qua cho khách đã đăng nhập */}
+          {showTurnstile && onTurnstileVerify && <TurnstileWidget onVerify={onTurnstileVerify} />}
 
           {/* Submit Button */}
           <button

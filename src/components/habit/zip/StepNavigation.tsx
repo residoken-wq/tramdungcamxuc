@@ -63,7 +63,7 @@ export function StepNavigation({
   useEffect(() => {
     const activeKey = isTrackerActive ? '7' : String(currentStep)
     const activeBtn = stepButtonRefs.current[activeKey]
-    if (activeBtn) {
+    if (activeBtn && typeof activeBtn.scrollIntoView === 'function') {
       activeBtn.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',

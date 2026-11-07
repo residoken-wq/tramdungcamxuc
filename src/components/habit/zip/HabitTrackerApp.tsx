@@ -5,7 +5,7 @@ import { HabitStep, DailyRoutineItem, IdentityFormData, LoopTechniques } from '.
 import { INITIAL_ROUTINES, INITIAL_IDENTITY_DATA, INITIAL_LOOP_TECHNIQUES } from './constants'
 import { HabitTrackerHeader } from './HabitTrackerHeader'
 import StepNavigation from './StepNavigation'
-import { Step1Diagnose } from './Steps/Step1Diagnose'
+import { DEFAULT_DIAGNOSE_QUESTIONS, Step1Diagnose } from './Steps/Step1Diagnose'
 import { Step2PercentPrinciple } from './Steps/Step2PercentPrinciple'
 import { Step3FindMentor } from './Steps/Step3FindMentor'
 import { Step4IdentityHabit } from './Steps/Step4IdentityHabit'
@@ -28,6 +28,8 @@ import type {
 } from '@/lib/habit/journey-content.server'
 import { withDp01Defaults, type Dp01AllContent } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
+import { StageGate } from './StageGate'
+import type { HabitStageGateResult } from '@/lib/habit/stage-gate'
 
 export interface HabitTrackerAppProps {
   techniques?: PublicTechnique[]
@@ -37,6 +39,8 @@ export interface HabitTrackerAppProps {
   loopContent?: CleanHabitLoop | null
   privacyNote?: string | null
   dp01Content?: Dp01AllContent
+  initialGate?: HabitStageGateResult
+  initialStepParam?: number
 }
 
 export function HabitTrackerApp({
@@ -46,6 +50,8 @@ export function HabitTrackerApp({
   loopContent,
   privacyNote,
   dp01Content,
+  initialGate = { status: 'ok' },
+  initialStepParam,
 }: HabitTrackerAppProps) {
   const resolvedDp01 = useMemo(() => withDp01Defaults(dp01Content), [dp01Content])
   const startTimeRef = useRef<number | null>(null)
@@ -55,6 +61,10 @@ export function HabitTrackerApp({
   // Core navigation state
   const [currentStep, setCurrentStep] = useState<HabitStep>(1)
   const [maxReachedStep, setMaxReachedStep] = useState<number>(1)
+  // The gate comes from the server on each request (page is force-dynamic); no client copy.
+  const gate = initialGate
+  const [showGate, setShowGate] = useState(false)
+  const stage1TrackedRef = useRef(false)
 
   // Form State
   const [diagnoseAnswers, setDiagnoseAnswers] = useState<Record<number, number>>({})
@@ -63,9 +73,9 @@ export function HabitTrackerApp({
   const [loopTechniques, setLoopTechniques] = useState<LoopTechniques>(INITIAL_LOOP_TECHNIQUES)
 
   // Submission Form State for Step 6
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [consent, setConsent] = useState(false)
+  const [name, setName] = useState(initialGate.customer?.name || '')
+  const [email, setEmail] = useState(initialGate.customer?.email || '')
+  const [consent, setConsent] = useState(Boolean(initialGate.customer?.hasConsent))
   const [honeypot, setHoneypot] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -97,11 +107,21 @@ export function HabitTrackerApp({
     }
     try {
       if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search)
+        const buocFromUrl = urlParams.get('buoc')
+        const parsedBuoc =
+          buocFromUrl && /^[1-6]$/.test(buocFromUrl) ? parseInt(buocFromUrl, 10) : undefined
+        const targetStep = initialStepParam ?? parsedBuoc
+
         const stored = window.localStorage.getItem(HABIT_LOOP_STORAGE_KEY)
+        let restoredStep: number | undefined
         if (stored) {
           const parsed = JSON.parse(stored)
           const knownIds = new Set((techniques || []).map((t) => t.id))
-          const migrated = migrateHabitDraft(parsed, knownIds, diagnose?.questions?.length)
+          // QA DP-03c: Step 1 here always renders the 8 zip questions (it is not given `diagnose`),
+          // so compare the stored answers with that count. Using the CMS count (0 on an empty
+          // DB, 16 when "Câu hỏi chẩn đoán" is seeded) dropped every answer on reload / after login.
+          const migrated = migrateHabitDraft(parsed, knownIds, DEFAULT_DIAGNOSE_QUESTIONS.length)
           const restoredZip = flowDraftToZipState(migrated)
 
           /* eslint-disable react-hooks/set-state-in-effect -- Safe initial hydration from localStorage on mount */
@@ -118,18 +138,37 @@ export function HabitTrackerApp({
           setLoopTechniques(restoredZip.loopTechniques)
 
           if (migrated.step && migrated.step >= 1 && migrated.step <= 6) {
-            setCurrentStep(migrated.step as HabitStep)
-            setMaxReachedStep((prev) => Math.max(prev, migrated.step))
+            restoredStep = migrated.step
           }
-          /* eslint-enable react-hooks/set-state-in-effect */
         }
+
+        const effectiveStep = targetStep ?? restoredStep
+        if (effectiveStep) {
+          // REVIEW-REQUIRED: DP-03 Kiểm tra cổng khi vào thẳng ?buoc= hoặc khôi phục nháp bước >= 3
+          if (effectiveStep >= 3) {
+            if (gate.status === 'ok') {
+              setCurrentStep(effectiveStep as HabitStep)
+              setMaxReachedStep((prev) => Math.max(prev, effectiveStep))
+              setShowGate(false)
+            } else {
+              setCurrentStep(2)
+              setMaxReachedStep((prev) => Math.max(prev, 2))
+              setShowGate(true)
+            }
+          } else {
+            setCurrentStep(effectiveStep as HabitStep)
+            setMaxReachedStep((prev) => Math.max(prev, effectiveStep))
+            setShowGate(false)
+          }
+        }
+        /* eslint-enable react-hooks/set-state-in-effect */
       }
     } catch {
       // Ignore localStorage errors
     } finally {
       setIsLoaded(true)
     }
-  }, [techniques, diagnose?.questions?.length])
+  }, [techniques, initialStepParam, gate.status])
 
   // 2. Auto-save to localStorage whenever state changes
   useEffect(() => {
@@ -213,17 +252,70 @@ export function HabitTrackerApp({
     return categories[0].score > 0 ? categories[0].id : null
   }, [diagnoseAnswers])
 
+  // REVIEW-REQUIRED: DP-03 Cổng kiểm tra quyền truy cập bước 3 trở đi
+  const requestStep = (targetStep: HabitStep) => {
+    const numeric = typeof targetStep === 'number' ? targetStep : 6
+    if (numeric >= 3 && gate.status !== 'ok') {
+      setShowGate(true)
+      if (!stage1TrackedRef.current) {
+        stage1TrackedRef.current = true
+        track('habit_stage1_completed')
+      }
+      // StageGate scrolls itself into view (on a phone the page top is the long hero).
+      return
+    }
+    if (numeric === 7) {
+      // QA DP-03c: stage-3 card ("28 ngày") has no step screen; open the tracker once a plan
+      // is saved, otherwise do nothing (same rule as the step-7 pill in StepNavigation).
+      if (hasSavedPlan && typeof window !== 'undefined') window.location.assign(trackerDestination)
+      return
+    }
+    setShowGate(false)
+    if (numeric === 6 && !completedTrackedRef.current) {
+      completedTrackedRef.current = true
+      const duration = startTimeRef.current
+        ? Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
+        : 0
+      track('habit_loop_completed' as any, { step: 6, duration })
+    }
+    goToStep(targetStep)
+  }
+
+  // Lưu nháp đảm bảo step=2 trước khi rời trang sang cổng đăng nhập
+  const handleBeforeLogin = () => {
+    try {
+      const zipState: ZipState = {
+        diagnoseAnswers,
+        routines,
+        identity,
+        loopTechniques,
+      }
+      const baseDraft = getDefaultHabitFlowDraft()
+      baseDraft.step = 2
+      const adaptedDraft = zipStateToFlowDraft(zipState, baseDraft)
+      adaptedDraft.name = name
+      adaptedDraft.email = email
+      window.localStorage.setItem(
+        HABIT_LOOP_STORAGE_KEY,
+        serializeHabitDraftForStorage(adaptedDraft),
+      )
+    } catch {
+      // Ignore storage errors
+    }
+  }
+
   // Step 6: Submit habit plan action
   const handleSubmitPlan = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitError(null)
 
-    const cleanEmail = email.trim()
+    const cleanEmail = (gate.customer?.email || email).trim()
     if (!cleanEmail) {
       setSubmitError(vi.dp01.emailRequiredError)
       return
     }
-    if (!consent) {
+    const hasConsent = Boolean(gate.customer?.hasConsent || consent)
+    if (!hasConsent) {
       setSubmitError(vi.dp01.termsRequiredError)
       return
     }
@@ -298,17 +390,6 @@ export function HabitTrackerApp({
     }
   }
 
-  const handleStepTransition = (next: number) => {
-    if (next === 6 && !completedTrackedRef.current) {
-      completedTrackedRef.current = true
-      const duration = startTimeRef.current
-        ? Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000))
-        : 0
-      track('habit_loop_completed' as any, { step: 6, duration })
-    }
-    goToStep(next as HabitStep)
-  }
-
   return (
     <div className="min-h-screen bg-warm-ivory text-deep-navy font-ui flex flex-col justify-between">
       <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
@@ -317,7 +398,8 @@ export function HabitTrackerApp({
           currentStep={currentStep}
           maxReachedStep={maxReachedStep}
           headerContent={resolvedDp01.header}
-          onStageClick={(step: HabitStep) => goToStep(step)}
+          onStageClick={(step: HabitStep) => requestStep(step)}
+          onNavigateStep={(step: HabitStep) => requestStep(step)}
         />
 
         {/* Thanh Điều hướng 6 Bước + Pill Bước 7 (28 ngày) */}
@@ -325,115 +407,132 @@ export function HabitTrackerApp({
           currentStep={currentStep}
           maxReachedStep={maxReachedStep}
           hasSavedPlan={hasSavedPlan}
-          onStepChange={(step: HabitStep) => goToStep(step)}
+          onStepChange={(step: HabitStep) => requestStep(step)}
         />
 
-        {/* Nội dung Bước Hiện Tại */}
+        {/* Nội dung Bước Hiện Tại hoặc Màn Cổng */}
         <main className="transition-all duration-300">
-          {currentStep === 1 && (
-            <Step1Diagnose
-              answers={diagnoseAnswers}
-              step1Content={resolvedDp01.step1}
-              onAnswerChange={handleDiagnoseChange}
-              onNext={() => handleStepTransition(2)}
-            />
-          )}
-
-          {currentStep === 2 && (
-            <Step2PercentPrinciple
-              step2Content={resolvedDp01.step2}
-              onNext={() => handleStepTransition(3)}
-              onPrev={() => goToStep(1)}
-            />
-          )}
-
-          {currentStep === 3 && (
-            <Step3FindMentor
-              routines={routines}
-              selectedMentor={identity.selectedMentor}
-              mentorTime={identity.mentorTime}
-              step3Content={resolvedDp01.step3}
-              onRoutinesChange={setRoutines}
-              onMentorSelect={(mentor: string) =>
-                setIdentity((prev) => ({
-                  ...prev,
-                  selectedMentor: mentor,
-                }))
-              }
-              onMentorTimeChange={(time: string) =>
-                setIdentity((prev) => ({
-                  ...prev,
-                  mentorTime: time,
-                }))
-              }
-              onNext={() => handleStepTransition(4)}
-              onPrev={() => goToStep(2)}
-            />
-          )}
-
-          {currentStep === 4 && (
-            <Step4IdentityHabit
-              draft={zipStateToFlowDraft(
-                {
-                  diagnoseAnswers,
-                  routines,
-                  identity,
-                  loopTechniques,
-                },
-                getDefaultHabitFlowDraft(),
-              )}
-              step4Content={resolvedDp01.step4}
-              onDraftChange={(newDraft) => {
-                const zState = flowDraftToZipState(newDraft)
-                setIdentity((prev) => ({
-                  ...prev,
-                  ...zState.identity,
-                }))
-              }}
-              onNext={() => handleStepTransition(5)}
-              onPrev={() => goToStep(3)}
-            />
-          )}
-
-          {currentStep === 5 && (
-            <Step5LoopDesign
-              loopTechniques={loopTechniques}
+          {showGate ? (
+            <StageGate
+              gate={gate}
               prescribedCategory={prescribedCategory}
-              identity={identity}
-              techniques={techniques}
-              loopContent={loopContent}
-              step5Content={resolvedDp01.step5}
-              onGoToStep={(step) => goToStep(step)}
-              onTechniquesChange={setLoopTechniques}
-              onNext={() => handleStepTransition(6)}
-              onPrev={() => goToStep(4)}
+              onBack={() => {
+                setShowGate(false)
+                goToStep(2)
+              }}
+              onBeforeLogin={handleBeforeLogin}
             />
-          )}
+          ) : (
+            <>
+              {currentStep === 1 && (
+                <Step1Diagnose
+                  answers={diagnoseAnswers}
+                  step1Content={resolvedDp01.step1}
+                  onAnswerChange={handleDiagnoseChange}
+                  onNext={() => requestStep(2)}
+                />
+              )}
 
-          {currentStep === 6 && (
-            <BoardingPassCard
-              journeyDays={journeyDays}
-              identity={identity}
-              loopTechniques={loopTechniques}
-              techniques={techniques}
-              step6Content={resolvedDp01.step6}
-              name={name}
-              email={email}
-              consent={consent}
-              honeypot={honeypot}
-              isSubmitting={isSubmitting}
-              submitError={submitError}
-              submitSuccess={submitSuccess}
-              trackerDestination={trackerDestination}
-              privacyNote={privacyNote}
-              onNameChange={setName}
-              onEmailChange={setEmail}
-              onConsentChange={setConsent}
-              onHoneypotChange={setHoneypot}
-              onTurnstileVerify={setTurnstileToken}
-              onSubmitPlan={handleSubmitPlan}
-              onPrev={() => goToStep(5)}
-            />
+              {currentStep === 2 && (
+                <Step2PercentPrinciple
+                  step2Content={resolvedDp01.step2}
+                  onNext={() => requestStep(3)}
+                  onPrev={() => requestStep(1)}
+                />
+              )}
+
+              {currentStep === 3 && (
+                <Step3FindMentor
+                  routines={routines}
+                  selectedMentor={identity.selectedMentor}
+                  mentorTime={identity.mentorTime}
+                  step3Content={resolvedDp01.step3}
+                  onRoutinesChange={setRoutines}
+                  onMentorSelect={(mentor: string) =>
+                    setIdentity((prev) => ({
+                      ...prev,
+                      selectedMentor: mentor,
+                    }))
+                  }
+                  onMentorTimeChange={(time: string) =>
+                    setIdentity((prev) => ({
+                      ...prev,
+                      mentorTime: time,
+                    }))
+                  }
+                  onNext={() => requestStep(4)}
+                  onPrev={() => requestStep(2)}
+                />
+              )}
+
+              {currentStep === 4 && (
+                <Step4IdentityHabit
+                  draft={zipStateToFlowDraft(
+                    {
+                      diagnoseAnswers,
+                      routines,
+                      identity,
+                      loopTechniques,
+                    },
+                    getDefaultHabitFlowDraft(),
+                  )}
+                  step4Content={resolvedDp01.step4}
+                  onDraftChange={(newDraft) => {
+                    const zState = flowDraftToZipState(newDraft)
+                    setIdentity((prev) => ({
+                      ...prev,
+                      ...zState.identity,
+                    }))
+                  }}
+                  onNext={() => requestStep(5)}
+                  onPrev={() => requestStep(3)}
+                />
+              )}
+
+              {currentStep === 5 && (
+                <Step5LoopDesign
+                  loopTechniques={loopTechniques}
+                  prescribedCategory={prescribedCategory}
+                  identity={identity}
+                  techniques={techniques}
+                  loopContent={loopContent}
+                  step5Content={resolvedDp01.step5}
+                  onGoToStep={(step) => requestStep(step)}
+                  onTechniquesChange={setLoopTechniques}
+                  onNext={() => requestStep(6)}
+                  onPrev={() => requestStep(4)}
+                />
+              )}
+
+              {currentStep === 6 && (
+                <BoardingPassCard
+                  journeyDays={journeyDays}
+                  identity={identity}
+                  loopTechniques={loopTechniques}
+                  techniques={techniques}
+                  step6Content={resolvedDp01.step6}
+                  name={name}
+                  email={email}
+                  consent={consent}
+                  honeypot={honeypot}
+                  isSubmitting={isSubmitting}
+                  submitError={submitError}
+                  submitSuccess={submitSuccess}
+                  trackerDestination={trackerDestination}
+                  privacyNote={privacyNote}
+                  isEmailReadOnly={Boolean(gate.customer?.email)}
+                  showConsentCheckbox={!gate.customer?.hasConsent}
+                  showTurnstile={!gate.customer}
+                  onNameChange={setName}
+                  onEmailChange={setEmail}
+                  onConsentChange={setConsent}
+                  onHoneypotChange={setHoneypot}
+                  onTurnstileVerify={setTurnstileToken}
+                  onSubmitPlan={handleSubmitPlan}
+                  onPrev={() => requestStep(5)}
+                />
+              )}
+            </>
           )}
         </main>
       </div>

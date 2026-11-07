@@ -6,7 +6,14 @@ import { track } from '@/lib/analytics/track'
 import { trackServer } from '@/lib/analytics/track.server'
 import { hashTrialEmail } from '@/lib/auth/token'
 import { vi } from '@/lib/i18n/vi'
-import type { AccessResult, EntitlementStatus, MarkExpiredResult, StartTrialResult } from './types'
+import type {
+  AccessResult,
+  EntitlementStatus,
+  MarkExpiredResult,
+  StartTrialErrorCode,
+  StartTrialResult,
+  TrialEligibilityResult,
+} from './types'
 
 function parseCtx(ctx?: { payload?: Payload; now?: Date } | Date): {
   payload?: Payload
@@ -84,6 +91,155 @@ async function existingTrialResult(
   }
 }
 
+interface TrialEligibilityCheck {
+  eligible: boolean
+  code?: StartTrialErrorCode
+  message?: string
+  product?: Product | null
+  trialDays?: number
+}
+
+/**
+ * REVIEW-REQUIRED: DP-03 Đánh giá điều kiện dùng thử chung giữa startTrial và getTrialEligibility.
+ * - Sản phẩm: digital_tool, published, on_sale, trialDays > 0.
+ * - Khách chưa từng có bản ghi entitlement source=trial cho sản phẩm này.
+ * - Email khách chưa từng được dùng thử (trialUsage theo hashTrialEmail).
+ */
+async function evaluateTrialEligibility(
+  customerId: number,
+  productId: number,
+  payload: Payload,
+): Promise<TrialEligibilityCheck> {
+  const product = (await payload.findByID({
+    collection: 'products',
+    id: productId,
+    depth: 0,
+    overrideAccess: true,
+  })) as Product | null
+
+  if (!product) {
+    return {
+      eligible: false,
+      message: vi.entitlement.productNotFound,
+      code: 'PRODUCT_NOT_FOUND',
+      product: null,
+    }
+  }
+
+  const isPublished = product._status === 'published'
+  const isOnSale = product.saleStatus === 'on_sale'
+  const trialDays = typeof product.trialDays === 'number' ? product.trialDays : 0
+  const isDigitalTool = product.type === 'digital_tool'
+
+  if (!isPublished || !isOnSale || !isDigitalTool || trialDays <= 0) {
+    return {
+      eligible: false,
+      message: vi.entitlement.productNotAvailableForTrial,
+      code: 'NOT_ELIGIBLE',
+      product,
+    }
+  }
+
+  const existingTrial = await payload.find({
+    collection: 'entitlements',
+    where: {
+      and: [
+        { customer: { equals: customerId } },
+        { product: { equals: productId } },
+        { source: { equals: 'trial' } },
+      ],
+    },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  if (existingTrial.totalDocs > 0) {
+    return {
+      eligible: false,
+      message: vi.entitlement.trialAlreadyUsed,
+      code: 'TRIAL_ALREADY_USED',
+      product,
+      trialDays,
+    }
+  }
+
+  const customerDoc = await payload.findByID({
+    collection: 'customers',
+    id: customerId,
+    depth: 0,
+    overrideAccess: true,
+  })
+
+  if (customerDoc?.email) {
+    const emailHash = hashTrialEmail(customerDoc.email)
+    const existingUsage = await payload.find({
+      collection: 'trialUsage',
+      where: {
+        and: [{ emailHash: { equals: emailHash } }, { product: { equals: productId } }],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+
+    if (existingUsage.totalDocs > 0) {
+      return {
+        eligible: false,
+        message: vi.entitlement.trialAlreadyUsed,
+        code: 'TRIAL_ALREADY_USED',
+        product,
+        trialDays,
+      }
+    }
+  }
+
+  return {
+    eligible: true,
+    product,
+    trialDays,
+  }
+}
+
+/**
+ * REVIEW-REQUIRED: DP-03 Kiểm tra khách còn đủ điều kiện dùng thử không (hàm chỉ đọc, không ghi gì).
+ * - Trả về eligible = true nếu khách chưa từng dùng thử, chưa có quyền active, và sản phẩm hợp lệ để dùng thử.
+ * - Không ghi vào DB hay phát sinh event analytics.
+ */
+export async function getTrialEligibility(
+  customerId: number,
+  productId: number,
+  ctx?: { payload?: Payload; now?: Date } | Date,
+): Promise<TrialEligibilityResult> {
+  const { now, payload: rawPayload } = parseCtx(ctx)
+  const payload = rawPayload ?? (await getPayload({ config: await config }))
+
+  // Nếu khách đang có quyền active còn hiệu lực -> không đủ điều kiện bắt đầu dùng thử mới
+  const currentAccess = await getAccess(customerId, productId, { payload, now })
+  if (currentAccess.status === 'active' && currentAccess.hasAccess) {
+    return {
+      eligible: false,
+      code: 'ALREADY_HAVE_ACTIVE',
+      message: vi.entitlement.alreadyHasActiveAccess,
+    }
+  }
+
+  if (currentAccess.status === 'trial' && currentAccess.hasAccess) {
+    return {
+      eligible: false,
+      code: 'TRIAL_ACTIVE',
+      message: vi.entitlement.trialAlreadyActive,
+    }
+  }
+
+  const check = await evaluateTrialEligibility(customerId, productId, payload)
+  return {
+    eligible: check.eligible,
+    code: check.code,
+    message: check.message,
+  }
+}
+
 /**
  * REVIEW-REQUIRED: Khởi tạo dùng thử cho khách hàng.
  * - Chỉ cho phép khi sản phẩm đã xuất bản, saleStatus = on_sale, trialDays > 0.
@@ -125,91 +281,23 @@ export async function startTrial(
     }
   }
 
-  // 2. Đọc thông tin sản phẩm
-  const product = (await payload.findByID({
-    collection: 'products',
-    id: productId,
-    depth: 0,
-    overrideAccess: true,
-  })) as Product | null
-
-  if (!product) {
+  // 2. Đánh giá điều kiện dùng thử bằng hàm dùng chung (DP-03)
+  const check = await evaluateTrialEligibility(customerId, productId, payload)
+  if (!check.eligible) {
+    if (check.code === 'TRIAL_ALREADY_USED') {
+      return await existingTrialResult(customerId, productId, payload, now)
+    }
     return {
       success: false,
-      message: vi.entitlement.productNotFound,
-      code: 'PRODUCT_NOT_FOUND',
+      message: check.message || vi.entitlement.productNotAvailableForTrial,
+      code: check.code || 'NOT_ELIGIBLE',
     }
   }
 
-  const isPublished = product._status === 'published'
-  const isOnSale = product.saleStatus === 'on_sale'
-  const trialDays = typeof product.trialDays === 'number' ? product.trialDays : 0
+  const product = check.product!
+  const trialDays = check.trialDays!
 
-  // Chỉ công cụ số mới có dùng thử (gói, ebook… có trialDays cũng không mở).
-  const isDigitalTool = product.type === 'digital_tool'
-
-  if (!isPublished || !isOnSale || !isDigitalTool || trialDays <= 0) {
-    return {
-      success: false,
-      message: vi.entitlement.productNotAvailableForTrial,
-      code: 'NOT_ELIGIBLE',
-    }
-  }
-
-  // 3. Kiểm tra xem khách hàng đã từng dùng thử công cụ này chưa
-  const existingTrial = await payload.find({
-    collection: 'entitlements',
-    where: {
-      and: [
-        { customer: { equals: customerId } },
-        { product: { equals: productId } },
-        { source: { equals: 'trial' } },
-      ],
-    },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  })
-
-  if (existingTrial.totalDocs > 0) {
-    // Có thể là trial vừa được một yêu cầu song song tạo ra -> đọc lại trạng thái thật.
-    return await existingTrialResult(customerId, productId, payload, now)
-  }
-
-  // REVIEW-REQUIRED: Kiểm tra dấu vết dùng thử ẩn danh (T2-16b B6, anh Nhân chốt 14/10).
-  // Nếu khách từng dùng thử, sau đó xóa tài khoản rồi tạo lại (kể cả khác hoa thường email),
-  // trialUsage khớp hash + product sẽ từ chối dùng thử lần 2.
-  const customerDoc = await payload.findByID({
-    collection: 'customers',
-    id: customerId,
-    depth: 0,
-    overrideAccess: true,
-  })
-
-  if (customerDoc?.email) {
-    const emailHash = hashTrialEmail(customerDoc.email)
-    const existingUsage = await payload.find({
-      collection: 'trialUsage',
-      where: {
-        and: [{ emailHash: { equals: emailHash } }, { product: { equals: productId } }],
-      },
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    })
-
-    if (existingUsage.totalDocs > 0) {
-      return {
-        success: false,
-        message: vi.entitlement.trialAlreadyUsed,
-        code: 'TRIAL_ALREADY_USED',
-        status: 'expired',
-        daysLeft: 0,
-      }
-    }
-  }
-
-  // 4. Tạo bản ghi trial với trialKey duy nhất
+  // 3. Tạo bản ghi trial với trialKey duy nhất
   const expiresAt = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000)
   const trialKey = `${customerId}:${productId}`
 

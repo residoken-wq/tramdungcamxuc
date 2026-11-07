@@ -20,13 +20,13 @@ exports[`SM-06: ContactInfo component > renders all contact items when fully pro
           class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]"
         >
           <span
-            class="text-deep-navy"
+            class="block text-deep-navy"
           >
             [MẪU] KẾT NỐI VỚI TRẠM
           </span>
            
           <span
-            class="text-bright-magenta"
+            class="block text-bright-magenta"
           >
             [MẪU] LẮNG NGHE VÀ ĐỒNG HÀNH
           </span>
@@ -379,13 +379,13 @@ exports[`SM-06: ContactInfo component > renders partial items when some switches
           class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]"
         >
           <span
-            class="text-deep-navy"
+            class="block text-deep-navy"
           >
             [MẪU] KẾT NỐI VỚI TRẠM
           </span>
            
           <span
-            class="text-bright-magenta"
+            class="block text-bright-magenta"
           >
             [MẪU] LẮNG NGHE VÀ ĐỒNG HÀNH
           </span>

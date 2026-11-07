@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
 import * as zip from './helpers/habit-zip'
 import { vi } from '@/lib/i18n/vi'
+import { getVietnamYmd } from '@/lib/habit/tracker-stats'
 
 /**
  * DP-01a: E2E Habit Journey with ZIP UI & 28-Day Flow
@@ -46,26 +47,6 @@ async function bootstrapAdmin(page: Page): Promise<number> {
   expect(response.ok()).toBe(true)
   await expect(page).toHaveURL(/\/admin\/?$/)
   return (await (await page.request.get('/api/users/me')).json()).user.id
-}
-
-async function getTestOtpCode(page: Page, email: string): Promise<string> {
-  const res = await page.request.get(`/api/test-otp?email=${encodeURIComponent(email)}`)
-  expect(res.status(), 'CI must run e2e with E2E_TEST_HOOKS=1').toBe(200)
-  const data = (await res.json()) as { code?: string | null }
-  if (!data.code) throw new Error(`No OTP recorded for ${email}`)
-  return data.code
-}
-
-async function expectCodeStep(page: Page) {
-  const codeInput = page.locator('input[name="code"]')
-  const alert = page
-    .locator('div[role="alert"]:not(#__next-route-announcer__)')
-    .filter({ hasText: /\S/ })
-  await expect(codeInput.or(alert).first()).toBeVisible({ timeout: 15000 })
-  if (await alert.isVisible()) {
-    throw new Error(`OTP request failed on page: ${await alert.innerText()}`)
-  }
-  return codeInput
 }
 
 test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
@@ -142,8 +123,8 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         cueNames.push(name)
       }
 
-      // 3. Khách đi 6 bước zip (helpers/habit-zip.ts)
-      await guestPage.goto('/habit/5-phut')
+      // 3. Khách đăng nhập và đi 6 bước zip (helpers/habit-zip.ts, DP-03)
+      await zip.loginHabitCustomer(guestPage, customerEmail, '/habit/5-phut')
 
       // Bước 1: đúng 8 câu hỏi của bản zip (mặc định hoặc từ CMS)
       const questionGroups = guestPage
@@ -171,35 +152,11 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       ])
       await zip.nextFromLoop(guestPage)
 
-      // Bước 6: lên chuyến (lưu kế hoạch), rồi vào tracker qua OTP
+      // Bước 6 (DP-03: đã đăng nhập ở đầu): lưu kế hoạch -> dùng thử 28 ngày bắt đầu ngay -> tracker
       await zip.fillBoarding(guestPage, { name: 'Học viên Test DP01', email: customerEmail })
       await zip.submitBoarding(guestPage)
       await guestPage.getByRole('link', { name: /Vào bảng theo dõi 28 ngày/ }).click()
-
-      // ===== OTP Login =====
-      await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap/, { timeout: 20000 })
-      const emailInput = guestPage.locator('input[name="email"]')
-      await expect(emailInput).toBeVisible()
-      await emailInput.fill(customerEmail)
-      await guestPage.locator('input[name="consentPolicy"]').check()
-      await expect(guestPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
-        timeout: 20000,
-      })
-      await guestPage.getByRole('button', { name: vi.auth.sendOtpButton }).click()
-
-      const codeInput = await expectCodeStep(guestPage)
-      const otpCode = await getTestOtpCode(page, customerEmail)
-      await codeInput.fill(otpCode)
-      await guestPage.locator('button[type="submit"]', { hasText: /Đăng nhập/i }).click()
-
-      // ===== Chuyển vào Tracker =====
       await expect(guestPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 25000 })
-
-      // Khách mới chưa có quyền dùng: tracker mời dùng thử -> /dung-thu -> kích hoạt -> quay lại tracker
-      await guestPage.getByRole('link', { name: /Bắt đầu dùng thử 28 ngày/i }).click()
-      await expect(guestPage).toHaveURL(/\/dung-thu/, { timeout: 15000 })
-      await guestPage.locator('button', { hasText: /Bắt đầu dùng thử 28 ngày/i }).click()
-      await expect(guestPage).toHaveURL(/\/habit\/hoc\/?$/, { timeout: 15000 })
       await guestPage.goto('/habit/tracker')
       await expect(guestPage.getByText('Lưới 28 ngày theo dõi')).toBeVisible({ timeout: 15000 })
       // Z1: Tiêu đề tracker là "28 NGÀY THÀNH {personText}"
@@ -224,7 +181,8 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
           await page.request.get(`/api/habitPlans?where[customer][equals]=${createdCustomerId}`)
         ).json()
         if (planRes.docs?.[0]) {
-          const todayYmd = new Date().toISOString().split('T')[0]
+          // Tracker counts days in Vietnam time (DP-02c): a UTC date is yesterday after 17:00 UTC.
+          const todayYmd = getVietnamYmd()
           await page.request.patch(`/api/habitPlans/${planRes.docs[0].id}`, {
             data: { startDate: todayYmd },
           })

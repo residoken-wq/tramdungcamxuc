@@ -8,6 +8,7 @@ import {
 import { CHILD_BLOCK_TYPES } from '../../constants'
 import { vi } from '@/lib/i18n/vi'
 import { renderItemSlots, SLOT_CLASS } from './slot-items'
+import { ItemTitlesField } from '@/puck/editor/ItemTitlesField'
 
 export type { TabsWidgetProps, TabItem }
 
@@ -19,6 +20,11 @@ export const TabsWidgetBlock: ComponentConfig<TabsWidgetProps> = {
     items: [{ title: 'Tab 1' }, { title: 'Tab 2' }],
   },
   fields: {
+    quickTitles: {
+      type: 'custom',
+      label: vi.eb16.tabTitlesLabel,
+      render: () => <ItemTitlesField type="tab" />,
+    },
     orientation: {
       type: 'radio',
       label: vi.eb06.tabs.orientation,

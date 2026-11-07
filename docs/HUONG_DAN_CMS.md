@@ -1569,7 +1569,7 @@ Khối **Tiêu đề phân đoạn** (`SectionHeader`) cho phép Hana tự do đ
 
 1. **Tùy chỉnh màu sắc từng tầng chữ**:
    - **Màu tiêu đề dòng 1** (`line1Color`): Mặc định là **Xanh thẫm** (`deep-navy`), mang lại vẻ sang trọng, rõ ràng.
-   - **Màu tiêu đề dòng 2** (`line2Color`): Mặc định là **Hồng sen** (`bright-magenta`), tạo điểm nhấn ấm áp, thu hút.
+   - **Màu tiêu đề dòng 2** (`line2Color`): Mặc định là **Hồng sen** (`bright-magenta`), tạo điểm nhấn ấm áp, thu hút. Dòng 1 và Dòng 2 luôn hiện trên 2 hàng; muốn tiêu đề một hàng thì chỉ điền Dòng 1.
    - **Màu nhãn series** (`eyebrowColor`): Mặc định là **Hồng sen** (`bright-magenta`).
    - **Màu dòng cảm xúc** (`emotionColor`): Mặc định là **Xanh thẫm** (`deep-navy`), thể hiện dòng suy ngẫm sâu lắng.
 
@@ -1795,12 +1795,15 @@ Trong đợt nâng cấp Sitemap v2 (SM-04), hệ thống bổ sung **4 khối k
   - **Phụ đề cho từng bước**: Cho phép nhập phụ đề ngắn gọn ngay dưới tên bước (ví dụ: _Tạo khoảng lặng_, _Lắng nghe cơ thể_...).
 - **`HanaStory` (Câu chuyện người sáng lập)**:
   - Bổ sung **Sắc thái (`tone`)**: Chọn `Sáng` (mặc định) hoặc `Nền tối` (`dark`) với nền xanh thẫm tạo cảm giác sâu lắng, trang trọng.
-  - Bổ sung **Bố cục (`layout`)**: Chọn dạng kể chuyện truyền thống (`story`) hoặc dạng **Bức thư ngỏ (`letter`)**.
+  - Bổ sung **Bố cục (`layout`)**: Chọn dạng kể chuyện truyền thống (`story`), **Bức thư ngỏ (`letter`)**, hoặc **Ảnh trong khung cong (`spotlight`)** (PK-17).
+    - Với bố cục **Ảnh trong khung cong**: chọn **Sắc thái Tối** + vị trí ảnh **Bên phải** để đạt chuẩn thiết kế Brand Book; tên Coach điền ở **Dòng 1** (màu trắng nổi bật trên nền tối); câu trích dẫn có vạch hồng dọc trang trọng và **không cần** gõ ngoặc kép (hệ thống tự động lọc bỏ ngoặc kép bọc ngoài).
   - **Chữ ký người sáng lập**: Khi chọn dạng Thư ngỏ (`letter`), hệ thống sẽ tự động chèn ảnh chữ ký viết tay của Hana ở cuối thư. Hana có thể tải ảnh chữ ký lên tại: **Cài đặt website** -> tab **Nhận diện thương hiệu** -> ô **Chữ ký người sáng lập**.
   - **Huy hiệu chứng chỉ (`chips`)**: Nhập danh sách các chứng chỉ ngắn gọn (như _ICF Associate Certified Coach (ACC)_, _10+ năm kinh nghiệm_) hiển thị dưới ảnh chân dung.
+  - **Màu nút liên kết (PK-15)**: ô **Màu nút** chọn 1 trong 8 màu thương hiệu (để **Tự động** thì nút hồng nhấn, chữ trắng). Ô **Màu chữ trên nút** chỉ liệt kê các màu đọc rõ trên màu nút đã chọn; để **Tự động** thì hệ thống chọn chữ trắng nếu đọc rõ, không thì chọn màu tương phản tốt nhất. Nút trùng màu nền khối sẽ tự có viền để không bị chìm.
 - **`ImageText` (Ảnh & Đoạn văn)**:
   - Bổ sung trường **Trích dẫn nổi bật (`quote`)**: Hiển thị đoạn văn ngắn có dấu ngoặc kép và đường viền hồng sen trang trọng.
   - Bổ sung **Nhãn ảnh (`imageLabel`)**: Hiển thị chú thích nhỏ ghim ở góc dưới ảnh chụp thực tế.
+  - **Màu nút liên kết (PK-15)**: giống khối Câu chuyện Hana, chọn **Màu nút** và **Màu chữ trên nút** trong bảng màu thương hiệu.
 - **`LogoStrip` (Dải logo đối tác & Chứng nhận)**:
   - Bổ sung tính năng **Phân nhóm logo (`groups`)**: Cho phép chia logo thành các nhóm riêng biệt (như nhóm _Chứng chỉ chuyên môn_, nhóm _Doanh nghiệp đồng hành_) có tiêu đề nhóm rõ ràng.
 
@@ -2170,14 +2173,17 @@ Khối **Hành trình các bước** (`JourneySteps`) thể hiện tiến trình
 
 - Ở phiên bản trước, Hana phải nhập số thứ tự bước muốn làm nổi bật ở khối cha.
 - Nay ở bản v3, Hana **chỉ cần bấm vào bước muốn làm nổi bật**, ở thanh bên phải tìm mục **Bước nổi bật (Nền xanh thẫm Deep Navy)** và chọn **Có (Bước nổi bật - Nền Navy)**.
-- Bước đó sẽ ngay lập tức khoác lên mình màu nền xanh thẫm Deep Navy cao cấp, đồng thời màu chữ tiêu đề và mô tả sẽ tự động chuyển sang màu sáng (Trắng / Hồng phấn) đạt chuẩn tương phản cao.
+- Khi hiển thị:
+  - Ở kiểu **Vòng tròn (`circles`)**: Bước nổi bật sẽ có vòng tròn số tô màu hồng sen `accent-pink`, chữ số trắng, không viền (chuẩn thiết kế Brand Book 2026).
+  - Ở kiểu **Thẻ (`cards`)**: Bước nổi bật sẽ khoác lên mình màu nền xanh thẫm Deep Navy cao cấp, đồng thời màu chữ tiêu đề và mô tả sẽ tự động chuyển sang màu sáng (Trắng / Hồng phấn) đạt chuẩn tương phản cao.
+- **Mẹo**: Thường chỉ nên làm nổi bật 1 bước trọng tâm trong hành trình (ví dụ bước 05 hoặc bước chuyển hoá chính) để tạo điểm nhấn thị giác rõ ràng.
 
 #### 5. Cài đặt khối cha (JourneySteps)
 
 Khi nhấp chọn thanh viền của khối cha **Hành trình các bước**:
 
 - **Kiểu hiển thị (variant)**:
-  - `Vòng tròn số (circles)`: Phong cách tối giản, hiện vòng tròn số lớn ở phía trên mỗi bước.
+  - `Vòng tròn số (circles)`: Phong cách tối giản đúng thiết kế, hiện vòng tròn số lớn (~80px) viền 3px ở phía trên mỗi bước, không đóng khung viền thẻ. Bước nổi bật tô hồng `accent-pink`.
   - `Thẻ hành trình (cards)`: Phong cách dạng thẻ hiện đại có viền và đường nối liền mạch.
   - `Danh sách dọc (list)`: Phong cách danh sách dọc từng hàng trang trọng, thích hợp cho trang chi tiết dịch vụ hoặc sự kiện.
     _(Các bước con sẽ tự động đổi kiểu hiển thị theo lựa chọn này)._
@@ -2340,7 +2346,12 @@ Bấm vào một khối trên trang. Cột phải hiện 3 tab:
 - **Nội dung**: chữ, ảnh, đường dẫn… của khối, như trước đây.
 - **Kiểu**:
   - các ô định dạng có sẵn của khối (màu chữ, cỡ chữ, căn lề, nền…);
-  - **Nền**, **Chữ** (màu, font, cỡ, độ đậm, giãn dòng, căn lề), **Viền & bo góc**, **Bóng**.
+  - **Nền**, **Chữ** (màu, font, cỡ, độ đậm, giãn dòng, căn lề), **Viền & bo góc**, **Bóng**;
+  - **Thẻ con → Khung thẻ (PK-17)**: khi khối đang chọn chứa các thẻ con (như gói, bước, câu hỏi FAQ, ô số liệu, thẻ dịch vụ...), tab Kiểu sẽ có thêm mục **Khung thẻ** với 4 lựa chọn:
+    - `Mặc định`: Giữ nguyên viền và bóng chuẩn theo thiết kế ban đầu của khối.
+    - `Bỏ viền`: Ẩn viền xung quanh thẻ con, giữ lại màu nền và bóng nhẹ (nếu có).
+    - `Bỏ viền và bóng`: Làm phẳng thẻ con, chỉ giữ lại màu nền của thẻ.
+    - `Không khung`: Xoá sạch toàn bộ viền, bóng và nền thẻ con (thẻ trở nên trong suốt hoà vào nền khối; kể cả thẻ nổi bật cũng chuyển sang nền trong suốt).
 - **Nâng cao**:
   - **Cách lề** trong / ngoài cho 4 cạnh; tick "Đặt cùng giá trị cho 4 cạnh" để đặt nhanh;
   - **Ẩn trên** máy tính / máy tính bảng / điện thoại;
@@ -2369,11 +2380,13 @@ Khối **Container** nằm ở đầu nhóm **Bố cục** trong bảng thư vi�
 1. **Kéo Container vào trang:** Thả vào vị trí bất kỳ trên trang hoặc thả vào bên trong một Container khác.
 2. **Kéo khối vào trong Container:** Thả các khối chữ, ảnh, nút bấm, trích dẫn... vào vùng trống bên trong Container. Các khối bên trong tự sắp xếp theo bố cục của Container. Thẻ con (thẻ gói, câu hỏi FAQ, ô số liệu…) không thả vào Container được: chúng chỉ nằm trong khối cha của mình.
 3. **Đổi hàng / cột theo thiết bị (Tab Nội dung):**
-   - **Hướng sắp xếp**: Bấm chọn giữa **Hàng ngang** (Row), **Cột dọc** (Column), hoặc đảo chiều.
+   - **Hướng sắp xếp**: Bấm chọn giữa **Hàng ngang**, **Cột dọc**, **Đảo hàng** hoặc **Đảo cột**.
    - **Chỉnh riêng cho Điện thoại / Máy tính bảng**: Chọn biểu tượng thiết bị ở đầu bảng. Ví dụ: Trên **Máy tính** để _Hàng ngang_ để các khối nằm cạnh nhau; chuyển sang **Điện thoại** bấm chọn _Cột dọc_ để các khối tự xếp chồng ngay ngắn.
-   - **Khoảng cách (Gap)**: Chọn độ giãn giữa các khối con (Nhỏ, Vừa, Lớn...).
-   - **Chiều rộng**: Chọn **Đóng khung (Boxed)** (nội dung gọn ở giữa trang, độ rộng chọn ở **Độ rộng khung nội dung**) hoặc **Tràn màn hình (Full width)**. Nền của Container luôn trải hết chiều ngang, kể cả khi đóng khung.
-   - **Chiều cao tối thiểu** và **Thẻ HTML** (chọn `section` khi Container là một phần riêng của trang, có tiêu đề).
+   - **Căn theo chiều sắp xếp**: Bắt đầu, Ở giữa, Kết thúc, Cách đều hai đầu, Cách đều xung quanh, Cách đều nhau.
+   - **Căn theo chiều còn lại**: Bắt đầu, Ở giữa, Kết thúc, Kéo giãn.
+   - **Khoảng cách giữa các khối**: Chọn độ giãn giữa các khối con (Nhỏ, Vừa, Lớn...).
+   - **Chiều rộng**: Chọn **Đóng khung** (nội dung gọn ở giữa trang, độ rộng chọn ở **Độ rộng khung nội dung**) hoặc **Tràn màn hình**. Nền của Container luôn trải hết chiều ngang, kể cả khi đóng khung.
+   - **Chiều cao tối thiểu** và **Thẻ HTML**: chọn **Khối nội dung độc lập (section)** khi Container là một phần riêng của trang có tiêu đề, hoặc **Hộp chung (div)** cho các khung chứa thông thường.
    - Hướng, căn, khoảng cách và xuống dòng chỉnh riêng được theo thiết bị. Chiều rộng, chiều cao và thẻ HTML áp cho mọi thiết bị.
 4. **Ảnh nền & Chuyển màu nâng cao (Tab Kiểu):**
    - Chuyển sang tab **Kiểu** -> nhóm **Nền nâng cao**:
@@ -2432,12 +2445,14 @@ Nhóm **Cơ bản** đứng ở vị trí đầu tiên trong thư viện khối 
 
 7. **Tabs (TabsWidget):**
    - **Danh sách tab:** Thêm/xoá không giới hạn số lượng tab. Mỗi tab có tiêu đề riêng và một vùng thả khối nội dung (slot).
+   - **Đổi tên tab nhanh:** Ở ngay đầu tab **Nội dung**, bạn có thể đổi tên trực tiếp từng tab tại các ô "Tên tab 1", "Tên tab 2"... một cách nhanh chóng mà không cần bấm mở rộng từng dòng của danh sách bên dưới.
    - **Bố cục tab:** Chọn hiển thị thẻ theo **Hàng ngang** (mặc định) hoặc **Cột dọc** (phù hợp với các trang tài liệu, lộ trình chi tiết).
    - **Thao tác trong trình dựng trang:** Trong trình dựng, mọi tab hiện **xếp chồng** từ trên xuống, mỗi phần có dòng "Tab 1: …", "Tab 2: …" để chị kéo khối vào đúng tab. Trang công khai mới hiện dạng tab bấm chuyển. Khi kéo khối vào một tab đã có nội dung, giữ chuột trên khối cuối của tab một chút rồi mới thả.
    - **Trợ năng:** Hỗ trợ đầy đủ phím mũi tên bàn phím để chuyển đổi qua lại giữa các tab theo tiêu chuẩn WAI-ARIA.
 
 8. **Hộp mở rộng (AccordionWidget):**
    - **Mục nội dung linh hoạt:** Khác với khối câu hỏi FAQ thông thường chỉ chứa chữ thuần, mỗi mục trong Accordion là một vùng thả khối tự do (bạn có thể thả tiêu đề, đoạn văn, ảnh, nút bấm hay danh sách vào bên trong).
+   - **Đổi tên mục nhanh:** Ở ngay đầu tab **Nội dung**, bạn có thể đổi tên trực tiếp từng mục tại các ô "Tên câu hỏi 1", "Tên câu hỏi 2"... một cách nhanh chóng mà không cần mở rộng từng dòng.
    - **Trong trình dựng:** mọi mục đều mở sẵn để kéo khối vào; trang công khai đóng / mở theo cài đặt bên dưới.
    - **Chế độ mở:** Chọn **Chỉ mở một mục** (khi mở một mục thì mục khác tự đóng lại) hoặc **Mở nhiều mục** (cho phép mở đồng thời nhiều mục cùng lúc).
    - **Mục mở sẵn ban đầu:** Chọn mở sẵn mục đầu tiên, đóng toàn bộ hoặc mở sẵn tất cả các mục khi tải trang.
@@ -2461,8 +2476,9 @@ Trình dựng trang cung cấp hai công cụ đắc lực giúp bạn quản l�
 - **Xem cây phân cấp:** Toàn bộ bố cục trang được hiển thị dạng cây phân cấp (Khung chứa Container, Cột, Tabs, các widget con bên trong). Mỗi dòng đều có biểu tượng nhận diện riêng giúp bạn phân biệt nhanh từng loại khối.
 - **Đặt tên gợi nhớ cho khối:**
   - Để phân biệt các khối cùng loại (ví dụ trang có 10 khối Tiêu đề hoặc 5 Container), bạn có thể đặt tên riêng cho từng khối (ví dụ: _"Khối mở đầu"_, _"Bảng so sánh 3 gói"_, _"Tiêu đề giới thiệu"_...).
-  - **Cách 1:** Nhấp đúp chuột vào tên dòng khối trong tab Cấu trúc (hoặc chuột phải chọn "Đổi tên"). Một ô nhập liệu sẽ mở ra tại chỗ: nhập tên (tối đa 60 ký tự) rồi bấm phím **Enter** để lưu (hoặc phím **Esc** để huỷ).
-  - **Cách 2:** Chọn khối, chuyển sang tab **Nâng cao** ở bảng điều khiển bên phải và nhập vào ô _"Tên khối trong Cấu trúc"_.
+  - **Cách 1 (Nhấp đúp hoặc phím F2):** Nhấp đúp chuột vào bất kỳ vị trí nào trên dòng khối trong tab Cấu trúc (kể cả mũi tên, biểu tượng hay tên), hoặc bấm chọn dòng khối đó rồi nhấn phím **F2** trên bàn phím. Ô nhập liệu sẽ mở ra tại chỗ: nhập tên (tối đa 60 ký tự) rồi bấm phím **Enter** để lưu (hoặc phím **Esc** để huỷ). Khi rê chuột vào từng dòng, hệ thống cũng hiển thị chú thích nhắc nhở _"Nhấp đúp hoặc F2 để đổi tên"_.
+  - **Cách 2:** Nhấp chuột phải vào dòng khối và chọn "Đổi tên".
+  - **Cách 3:** Chọn khối, chuyển sang tab **Nâng cao** ở bảng điều khiển bên phải và nhập vào ô _"Tên khối trong Cấu trúc"_.
   - _Lưu ý an toàn:_ Tên gợi nhớ này chỉ phục vụ cho việc quản lý nội bộ của bạn trong trình biên tập, hoàn toàn không hiển thị ra ngoài trang công khai và không ảnh hưởng đến SEO hay giao diện người xem.
 - **Nhận diện khối ẩn theo thiết bị:** Khi bạn cài đặt một khối bị ẩn trên Điện thoại hoặc Máy tính bảng (trong tab Nâng cao), dòng khối đó trong cây Cấu trúc sẽ hiển thị biểu tượng con mắt gạch chéo kèm chú thích (ví dụ: _"Ẩn trên: Điện thoại"_).
 - **Kéo thả sắp xếp:** Bạn có thể kéo thả các dòng khối trực tiếp trong cây Cấu trúc để đổi thứ tự trên trang một cách chính xác mà không sợ bị lệch vị trí chuột trên canvas.
@@ -2508,11 +2524,11 @@ Tính năng **Mẫu đã lưu (Templates)** và **Lịch sử phiên bản nâng
 - **Lưu cả trang thành mẫu:**
   - Khi đã dựng xong một trang chiến dịch hoặc trang dịch vụ ưng ý, bấm nút **"Lưu trang thành mẫu"** trên thanh tiêu đề màu xanh đậm (Header) ở đầu màn hình.
   - Nhập tên mẫu trang (ví dụ: _"Mẫu trang sự kiện ra mắt sách"_) rồi bấm **"Lưu mẫu"**.
-- **Áp dụng mẫu đã lưu cho trang mới:**
-  - Khi tạo hoặc mở một trang mới, bấm nút **"Mẫu có sẵn"** trên thanh tiêu đề.
-  - Hộp thoại chọn mẫu mở ra: Chuyển sang tab **"Mẫu đã lưu"**.
-  - Bạn sẽ thấy tất cả các mẫu trang mà mình đã từng lưu. Bấm **"Áp dụng"** ở mẫu mong muốn.
-  - Hệ thống sẽ hiện cảnh báo xác nhận vì thao tác này sẽ thay thế nội dung hiện tại của trang bằng toàn bộ bố cục của mẫu đã chọn (mọi mã khối đều được cấp mới tự động).
+- **Áp dụng mẫu cho trang:**
+  - Khi tạo hoặc mở một trang mới, bấm nút **"Dùng mẫu..."** trên thanh công cụ.
+  - Hộp thoại chọn mẫu mở ra: Chị có thể xem các **Mẫu có sẵn** hoặc chuyển sang tab **Mẫu đã lưu**. Dưới phần mô tả của mỗi mẫu có sẵn luôn ghi rõ tóm tắt các khối chính ("Gồm: ...") để chị nắm nhanh cấu trúc trước khi áp dụng.
+  - Bấm nút **"Áp dụng mẫu này"**: Thẻ mẫu sẽ hiện ngay hộp xác nhận an toàn tại chỗ với cảnh báo nội dung trang hiện tại sẽ được thay thế bằng mẫu mới.
+  - Bấm **"Thay toàn bộ trang"** để xác nhận áp dụng, hoặc bấm **"Quay lại"** (hay nhấn phím **Esc**) nếu muốn huỷ và giữ nguyên trang đang làm. Mọi mã khối từ mẫu đều được cấp mới tự động.
 
 #### 3. Lịch sử phiên bản: Xem trước an toàn & Khôi phục
 
@@ -3378,6 +3394,49 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 
 ---
 
+### 7.7. Đăng nhập khách hàng: Google và OTP email (GL-01)
+
+Website Trạm Dừng Cảm Xúc hỗ trợ 2 phương thức đăng nhập cho học viên và độc giả:
+
+1. **Đăng nhập nhanh bằng Google (Khuyên dùng)**: Khách chỉ cần bấm 1 chạm với tài khoản Gmail/Google cá nhân, không cần chờ email và không phải nhớ mật khẩu.
+2. **Đăng nhập bằng mã OTP qua email**: Khách nhập địa chỉ email và nhận mã xác thực 6 chữ số gửi về hòm thư.
+
+Chỉ tài khoản **Chủ sở hữu (Owner)** mới có quyền thay đổi cài đặt này.
+
+#### 1. Vị trí cài đặt trong CMS
+
+1. Ở cột menu bên trái, tìm nhóm **Trang web**, bấm vào **Cài đặt website** (`/admin/globals/site-settings`).
+2. Chọn tab **Đăng nhập khách hàng**.
+3. Bạn sẽ thấy 2 công tắc cài đặt (chỉ tài khoản Chủ sở hữu sửa được):
+   - **Cho đăng nhập bằng Google**: Bật/tắt nút đăng nhập bằng Google trên website.
+   - **Cho đăng nhập bằng mã OTP qua email**: Bật/tắt form nhập email và mã OTP.
+
+<!-- ẢNH GL-01: chụp tab "Đăng nhập khách hàng" sau khi anh Nhân cấu hình Google trên server thật, lưu images/huong-dan/login-methods-settings.png -->
+
+
+#### 2. Nguyên tắc vận hành an toàn (Bảng 1.1)
+
+Hệ thống được lập trình với cơ chế bảo vệ khách hàng tự động, đảm bảo khách luôn có lối vào tài khoản:
+
+| Google trong CMS & Cấu hình máy chủ   | OTP trong CMS | Giao diện trên trang `/tai-khoan/dang-nhap`                                            | Ghi chú vận hành                                                                                                                   |
+| :------------------------------------ | :------------ | :------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| **Bật** (máy chủ đã cấu hình)         | **Bật**       | Hiện cả nút **Tiếp tục với Google** và form **OTP email** (ngăn cách bằng chữ "hoặc"). | Khách chọn cách nào cũng được.                                                                                                     |
+| **Bật** (máy chủ đã cấu hình)         | **Tắt**       | **Chỉ hiện nút Google.** Form OTP được ẩn hoàn toàn.                                   | Phù hợp khi Hana muốn đơn giản hóa tối đa giao diện đăng nhập.                                                                     |
+| **Tắt** (hoặc thiếu cấu hình máy chủ) | Bất kỳ        | **Luôn hiện form OTP email.**                                                          | **Cơ chế an toàn tự động**: Nếu Google chưa cấu hình xong hoặc bị tắt, hệ thống tự động giữ lại OTP để khách không bao giờ bị kẹt. |
+
+> [!NOTE]
+> **Cảnh báo vàng**: Nếu công tắc Google đang bật nhưng máy chủ chưa có mã kết nối `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, CMS sẽ hiện một khung cảnh báo màu vàng nhắc nhở liên hệ anh IT cấu hình.
+
+#### 3. Quy trình 3 bước Hana nên làm khi muốn chuyển sang chỉ dùng Google
+
+Khi anh IT thông báo đã cấu hình Google xong, Hana thực hiện theo 3 bước sau để chuyển giao an toàn:
+
+1. **Bước 1 – Kiểm tra thử**: Mở trang `/tai-khoan/dang-nhap`, bấm nút **Tiếp tục với Google** bằng chính tài khoản Gmail của Hana xem đã vào được khu vực tài khoản chưa.
+2. **Bước 2 – Tắt OTP trong CMS**: Vào **Cài đặt Website** → tab **Đăng nhập khách hàng** → gạt tắt **Cho đăng nhập bằng mã OTP qua email** → bấm **Lưu thay đổi**.
+3. **Bước 3 – Xác nhận thực tế**: Mở một cửa sổ trình duyệt ẩn danh mới (Incognito / Khách), vào lại `/tai-khoan/dang-nhap`. Lúc này form OTP đã biến mất hoàn toàn, chỉ còn nút Google gọn gàng kèm 2 ô chọn đồng ý điều khoản. Nếu sau này cần mở lại OTP, Hana chỉ cần gạt bật lại công tắc và Lưu.
+
+---
+
 ## 8. Quản lý Khách tiềm năng (Leads) và Xuất file CSV
 
 ### 8.1. Xem và lọc danh sách khách tiềm năng
@@ -3463,6 +3522,18 @@ Hệ thống được thiết kế an toàn tối đa: khi có bất thường v
 3. **Xem kết quả độc giả gửi về**:
    - **Kế hoạch thói quen**: Vào **Khóa học** -> **Kế hoạch thói quen** (`habitPlans`) để xem bảng điểm thói quen, câu định danh và các kỹ thuật mà độc giả đã tự thiết kế.
    - **Khách tiềm năng**: Với những độc giả để lại email để nhận link Zalo đồng hành, hệ thống sẽ tự động lưu vào **Khách hàng** -> **Khách tiềm năng** (`leads`) với thẻ gắn nhãn `habit-loop` để Hana tiện theo dõi và chăm sóc.
+
+4. **Cổng đăng nhập và quyền truy cập sau Giai đoạn 1 (DP-03)**:
+   - **Giai đoạn 1 miễn phí, từ Giai đoạn 2 cần đăng nhập**: Độc giả được trải nghiệm hoàn toàn miễn phí Giai đoạn 1 "Khám thói quen" (Bước 1: Khám đúng bệnh, Bước 2: Nguyên lý 1%) mà không cần tài khoản.
+   - Khi bấm chuyển sang Giai đoạn 2 (từ Bước 3: Tìm Mentor trở đi, bấm thẻ giai đoạn hoặc dải bước), hệ thống tự động kiểm tra quyền truy cập:
+
+| Trạng thái cổng | Khi nào hiển thị | Giao diện hiển thị | Hành động của khách |
+| :--- | :--- | :--- | :--- |
+| **Đăng nhập (`login`)** | Khách chưa đăng nhập vào tài khoản trên website. | Tiêu đề *"Bạn đã hoàn thành Giai đoạn 1 🎉"*, tóm tắt kết quả chẩn đoán bước 1, lời mời đăng nhập để lưu kết quả. | Bấm **"Đăng nhập để tiếp tục"** → chuyển đến trang đăng nhập (Google hoặc OTP). Đăng nhập xong tự động quay lại đúng Bước 3 với đầy đủ bản nháp đã làm. Có nút phụ "Quay lại Giai đoạn 1". |
+| **Được đi tiếp (`ok`)** | Khách đã đăng nhập và: chưa từng dùng thử (còn quyền dùng thử 28 ngày), **hoặc** đang trong thời gian dùng thử, **hoặc** đã mua gói/công cụ. | Không hiện cổng, mở thẳng Bước 3 để tiếp tục hành trình. | Tiếp tục làm các bước 3, 4, 5, 6 bình thường. Đến Bước 6: email được điền sẵn từ tài khoản (chỉ đọc), bỏ qua kiểm tra bot Turnstile, bỏ ô tick điều khoản nếu khách đã đồng ý trước đó. |
+| **Mua để dùng tiếp (`buy`)** | Khách đã đăng nhập nhưng đã dùng hết thời gian dùng thử và chưa mua sản phẩm. | Tiêu đề *"Bạn đã dùng hết thời gian dùng thử"*, hiển thị giá bán / giá ưu đãi lấy trực tiếp từ sản phẩm CMS. | Bấm **"Mua để dùng tiếp"** → dẫn đến trang thanh toán `/thanh-toan?san-pham=habit-tracker-so`. Nút phụ *"Xem chi tiết gói"* dẫn tới trang giới thiệu `/habit/1-percent-better`. |
+
+   - **Giá trên màn "Mua để dùng tiếp"**: Lấy trực tiếp và tự động từ sản phẩm **Habit Tracker số** (slug: `habit-tracker-so`) trong mục **Bán hàng → Sản phẩm**. Hana sửa giá tại sản phẩm thì màn cổng tự động cập nhật ngay lập tức.
 
 ---
 

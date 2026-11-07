@@ -326,10 +326,26 @@ export async function submitHabitPlan(
 
   const payload = await resolvePayload(options.payload)
 
-  const cleanEmail = validated.email?.trim().toLowerCase() || null
+  let cleanEmail = validated.email?.trim().toLowerCase() || null
+
+  if (options.customerId) {
+    // REVIEW-REQUIRED: DP-03 Khi có khách trong phiên, email lấy từ phiên (customer), bỏ qua email trình duyệt gửi
+    const customerDoc = await payload.findByID({
+      collection: 'customers',
+      id: options.customerId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (customerDoc?.email) {
+      cleanEmail = customerDoc.email.trim().toLowerCase()
+    }
+  }
 
   // 4. Luôn xác minh Turnstile và kiểm tra Rate limit (ngay cả khi không có email)
-  await verifyTurnstile(validated.turnstileToken, ctx.ip)
+  // REVIEW-REQUIRED: DP-03 Bỏ qua Turnstile cho khách đã đăng nhập (đã chống bot ở đăng nhập)
+  if (!options.customerId) {
+    await verifyTurnstile(validated.turnstileToken, ctx.ip)
+  }
   await checkAndRecordRateLimit(payload, {
     form: 'habit-loop',
     ip: ctx.ip,

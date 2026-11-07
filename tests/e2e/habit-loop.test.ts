@@ -118,8 +118,8 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
       try {
         const guest = await visitor.newPage()
 
-        // ===== 1. Luồng Habit Loop 5 phút (/habit/5-phut) – 3 giai đoạn / 6 bước (HB-16) =====
-        await guest.goto('/habit/5-phut')
+        // ===== 1. Luồng Habit Loop 5 phút (/habit/5-phut) – 3 giai đoạn / 6 bước (HB-16, DP-03) =====
+        await zip.loginHabitCustomer(guest, leadEmail, '/habit/5-phut')
         await expect(guest.getByRole('heading', { level: 1 })).toBeVisible()
 
         // Bước 1–6 theo giao diện zip (DP-01, helpers/habit-zip.ts)
@@ -219,8 +219,11 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
       for (const id of createdTechniqueIds) {
         await page.request.delete(`/api/techniques/${id}`).catch(() => {})
       }
+      // DP-03: the guest signs in first, so saving the plan starts a trial on this product.
+      // Delete its entitlements before the product (NOT NULL product column), else the product
+      // stays behind and later tests fail creating `habit-tracker-so` again.
       if (createdProductId) {
-        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+        await zip.deleteTestProduct(page, createdProductId)
       }
       if (userId) {
         await page.request.delete(`/api/users/${userId}`).catch(() => {})

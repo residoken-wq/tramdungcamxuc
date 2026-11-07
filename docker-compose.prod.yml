@@ -12,6 +12,9 @@ services:
       CSP_ENFORCE: ${CSP_ENFORCE:-}
       # Forms reject every submission in production without the Turnstile secret.
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      # GL-01: Google sign-in for customers (empty = login page shows OTP only)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       # Without RESEND_API_KEY emails are only written to the app log.
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       EMAIL_FROM: ${EMAIL_FROM:-}

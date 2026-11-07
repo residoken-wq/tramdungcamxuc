@@ -95,12 +95,27 @@ export async function nextFromLoop(page: Page) {
   await expect(page.getByText('HABIT BOARDING PASS').first()).toBeVisible({ timeout: 15000 })
 }
 
-/** Step 6: fill the email form (Turnstile must have produced a token before submit). */
+/**
+ * Step 6 (DP-03: only reachable signed in): the email comes from the session and is read-only,
+ * there is no Turnstile, and no consent box once the customer accepted the terms at login.
+ */
 export async function fillBoarding(page: Page, { name, email }: { name: string; email: string }) {
   await page.getByLabel('Tên của bạn').fill(name)
-  await page.getByLabel(/Email nhận kế hoạch/).fill(email)
-  await page.getByLabel(/Tôi đồng ý lưu kế hoạch/).check()
-  await expect(page.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+  const emailInput = page.getByLabel(/Email nhận kế hoạch/)
+  await expect(emailInput).toHaveValue(email.toLowerCase())
+  await expect(emailInput).not.toBeEditable()
+  await expect(page.getByLabel(/Tôi đồng ý lưu kế hoạch/)).toHaveCount(0)
+}
+
+/**
+ * DP-03: sign a customer in through the GL-01 mock Google route (E2E_TEST_HOOKS=1, consent
+ * ticked) before stage 2 of /habit/5-phut, then wait until the page is back on `nextUrl`.
+ */
+export async function loginHabitCustomer(page: Page, email: string, nextUrl = '/habit/5-phut') {
+  await page.goto(
+    `/api/auth/google/start?next=${encodeURIComponent(nextUrl)}&consent=1&mock_email=${encodeURIComponent(email)}`,
+  )
+  await expect(page).toHaveURL((url) => `${url.pathname}${url.search}` === nextUrl, {
     timeout: 20000,
   })
 }

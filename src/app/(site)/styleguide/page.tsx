@@ -18,6 +18,7 @@ import { Sm03BlocksDemo } from './Sm03BlocksDemo'
 import { Sm04BlocksDemo } from './Sm04BlocksDemo'
 import { Sm05BlocksDemo } from './Sm05BlocksDemo'
 import { Sm06BlocksDemo } from './Sm06BlocksDemo'
+import { Pk17Demo } from './Pk17Demo'
 import { Eb14Demo } from './Eb14Demo'
 
 export const dynamic = 'force-dynamic'
@@ -497,6 +498,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <Eb14Demo />
+        </section>
+
+        {/* Section 14: PK-17 Journey circles, Hana spotlight, card frame */}
+        <section aria-labelledby="heading-pk17-blocks">
+          <h2
+            id="heading-pk17-blocks"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            14. Vòng tròn, Khung cong &amp; Khung thẻ (PK-17 [MẪU])
+          </h2>
+
+          <Pk17Demo />
         </section>
       </main>
 

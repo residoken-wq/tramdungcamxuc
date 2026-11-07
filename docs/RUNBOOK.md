@@ -830,6 +830,67 @@ Nếu SePay gặp sự cố bảo trì, gián đoạn mạng hoặc ngân hàng 
 
 ---
 
+### Cấu hình Google OAuth (GL-01)
+
+Hướng dẫn dành cho anh Nhân (IT) để kích hoạt tính năng đăng nhập Google cho khách hàng:
+
+#### 1. Thiết lập trên Google Cloud Console
+
+1. Truy cập [Google Cloud Console](https://console.cloud.google.com/) và chọn hoặc tạo dự án cho Trạm Dừng Cảm Xúc.
+2. **Cấu hình OAuth Consent Screen**:
+   - User Type: Chọn **External**.
+   - Tên ứng dụng (App name): **Trạm Dừng Cảm Xúc**.
+   - User support email: email hỗ trợ khách của Trạm (Hana chọn; nên trùng email liên hệ trong **Cài đặt website**).
+   - Developer contact information: Email quản trị của anh Nhân.
+   - App domain:
+     - Application home page: `https://tramdungcamxuc.com`
+     - Application privacy policy link: `https://tramdungcamxuc.com/chinh-sach-bao-mat` (trang phải có nội dung trước khi chuyển **In production**)
+     - Application terms of service link: `https://tramdungcamxuc.com/dieu-khoan-su-dung`
+   - Scopes: Chọn `openid`, `.../auth/userinfo.email`, `.../auth/userinfo.profile`.
+   - Publishing status: Chuyển sang trạng thái **"In production"** (Publish app) để tất cả tài khoản Gmail đều đăng nhập được mà không bị giới hạn 100 tài khoản thử nghiệm.
+3. **Tạo OAuth Client ID**:
+   - Vào **APIs & Services** → **Credentials** → **Create Credentials** → **OAuth client ID**.
+   - Application type: Chọn **Web application**.
+   - Name: `TDCX Web Client`.
+   - **Authorized JavaScript origins**:
+     - Production: `https://tramdungcamxuc.com`
+     - Dev / Local: `http://localhost:3000`
+   - **Authorized redirect URIs**:
+     - Production: `https://tramdungcamxuc.com/api/auth/google/callback`
+     - Server demo: chỉ khi demo có tên miền **HTTPS**, ví dụ `https://<tên-miền-demo>/api/auth/google/callback`. Google **không nhận** địa chỉ `http://IP:cổng`; demo chạy bằng IP thì không thử Google được, dùng OTP.
+     - Local dev: `http://localhost:3000/api/auth/google/callback`
+4. Copy lại **Client ID** và **Client secret**. **Tuyệt đối KHÔNG commit các giá trị này vào kho mã nguồn Git.**
+
+#### 2. Đặt biến môi trường trên Server
+
+1. Mở file `.env` trên máy chủ production hoặc demo:
+   ```env
+   GOOGLE_CLIENT_ID=xxxxxxxxxxxx-xxxxxxxxxxxxxxxx.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+   - `SITE_URL` trong `.env` phải đúng địa chỉ công khai, ví dụ `https://tramdungcamxuc.com`. App ghép `redirect_uri` từ đó (`<SITE_URL>/api/auth/google/callback`), phải trùng **từng ký tự** với redirect URI khai báo ở bước 1.3, nếu không Google báo `redirect_uri_mismatch`.
+   - Hai biến Google chỉ vào được container khi `docker-compose.prod.yml` có dòng `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (có từ GL-01d). Bản cũ hơn thì `git pull` trước (hoặc chạy `./scripts/deploy.sh`, script tự lấy file compose mới).
+   - Kiểm container đã nhận biến (chỉ in **có / không**, không in giá trị):
+     ```bash
+     docker compose -p tdcx -f docker-compose.prod.yml exec -T app sh -c 'test -n "$GOOGLE_CLIENT_ID" && echo "co GOOGLE_CLIENT_ID" || echo "THIEU GOOGLE_CLIENT_ID"' < /dev/null
+     ```
+2. Nạp lại `.env` cho app. **Dùng đúng tên project của máy đang gõ**: server thật là `tdcx` (mặc định của `scripts/deploy.sh`), server demo riêng là `tdcx-demo`. Gõ sai tên sẽ dựng thêm một bộ container + volume trống mới (lỗi `port is already allocated`, gặp 05/11 trên server thật).
+   ```bash
+   # Server thật (tramdungcamxuc.com), trong /opt/tdcx:
+   docker compose -p tdcx -f docker-compose.prod.yml up -d --force-recreate app < /dev/null
+   # Server demo riêng:
+   docker compose -p tdcx-demo -f docker-compose.prod.yml up -d --force-recreate app < /dev/null
+   ```
+   Chưa deploy bản có GL-01 thì chạy `./scripts/deploy.sh` thay cho lệnh trên (tự tạo lại container, nạp `.env` mới).
+
+   **Lỡ gõ `-p tdcx-demo` trên server thật:**
+   - project thật `tdcx` và dữ liệu không bị đụng;
+   - gỡ bộ thừa bằng `docker compose -p tdcx-demo -f docker-compose.prod.yml down < /dev/null` (không thêm `-v`);
+   - kiểm `docker volume inspect -f '{{.Name}} {{.CreatedAt}}' tdcx-demo_pgdata tdcx-demo_media tdcx-demo_private`: chỉ khi cả 3 vừa tạo lúc gõ nhầm (trống) mới `docker volume rm` chúng.
+3. Sau khi khởi động lại, cảnh báo vàng trong CMS Admin (`/admin/globals/site-settings` → Đăng nhập khách hàng) sẽ tự động biến mất và nút Google sẽ hoạt động ngay lập tức.
+
+---
+
 ## Dữ liệu demo GĐ 2 (T2-15)
 
 Dành cho Hana, anh Nhân và đội ngũ kiểm thử bấm trải nghiệm ngay các tính năng chính của Giai đoạn 2 trên server demo hoặc máy dev:

@@ -13,6 +13,7 @@ export interface TabsWidgetProps {
   version?: number
   items?: TabItem[]
   orientation?: 'horizontal' | 'vertical'
+  quickTitles?: unknown
 }
 
 function renderSlot(slot: unknown, className?: string): React.ReactNode {
