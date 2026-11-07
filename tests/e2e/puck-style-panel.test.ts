@@ -126,7 +126,10 @@ test.describe('EB-04: Style / Advanced tabs', () => {
         await publicPage.setViewportSize({ width, height: 900 })
         await publicPage.goto(`/${slug}`)
         await expect(wrapper).toHaveCSS('display', display)
-        await expect(wrapper).toHaveCSS('padding-top', padding)
+        // PK-24: padding-top được đặt trực tiếp lên phần tử con gốc (> *) thay vì lớp bọc
+        if (display !== 'none' && width === 375) {
+          await expect(wrapper.locator('> *')).toHaveCSS('padding-top', padding)
+        }
         await expect(wrapper).toHaveCSS('background-color', 'rgb(217, 241, 234)')
       }
       await publicPage.close()

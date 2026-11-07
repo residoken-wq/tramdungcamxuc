@@ -16,16 +16,30 @@ describe('EB-04: blockStyleCss', () => {
       textAlign: { mobile: 'center' },
       hideOn: ['desktop'],
     })
+    expect(css).toContain('[data-eb-id="Hero-1"]{background-color:rgb(var(--color-soft-pink-rgb))}')
     expect(css).toContain(
-      '[data-eb-id="Hero-1"]{background-color:rgb(var(--color-soft-pink-rgb));padding-top:var(--space-breath-lg, 32px)}',
+      '[data-eb-id="Hero-1"][data-eb-id="Hero-1"] > *{padding-top:var(--space-breath-lg, 32px)}',
     )
     expect(css).toContain(
-      '@media (max-width: 1023px){[data-eb-id="Hero-1"]{padding-top:var(--space-breath-md, 24px)}}',
+      '@media (max-width: 1023px){[data-eb-id="Hero-1"][data-eb-id="Hero-1"] > *{padding-top:var(--space-breath-md, 24px)}}',
     )
     expect(css).toContain(
-      '@media (max-width: 767px){[data-eb-id="Hero-1"]{padding-top:8px;text-align:center}[data-eb-id="Hero-1"] [data-eb-card]{text-align:center;align-items:center}',
+      '@media (max-width: 767px){[data-eb-id="Hero-1"]{text-align:center}[data-eb-id="Hero-1"][data-eb-id="Hero-1"] > *{padding-top:8px}[data-eb-id="Hero-1"] [data-eb-card]{text-align:center;align-items:center}[data-eb-id="Hero-1"] [data-eb-card-row]{justify-content:center;gap:0.5rem}}',
     )
     expect(css).toContain('@media (min-width: 1024px){[data-eb-id="Hero-1"]{display:none}}')
+
+    // Container block keeps padding on the wrapper itself
+    const containerCss = blockStyleCss(
+      'Container-1',
+      {
+        background: 'soft-pink',
+        padding: { desktop: { top: 'lg' } },
+      },
+      true,
+    )
+    expect(containerCss).toContain(
+      '[data-eb-id="Container-1"]{background-color:rgb(var(--color-soft-pink-rgb));padding-top:var(--space-breath-lg, 32px)}',
+    )
   })
 
   it('refuses unsafe block ids', () => {

@@ -2416,8 +2416,13 @@ Bấm vào một khối trên trang. Cột phải hiện 3 tab:
     - `Thẻ chú thích`: thẻ trắng nổi bo góc ở góc dưới (trái hoặc phải), gồm tiêu đề đậm, dòng phụ màu hồng sen, và tối đa 4 avatar tròn chồng nhau (chỉ chọn từ Thư viện media; avatar là ảnh trang trí, không gắn tên người để tránh thành lời chứng thực giả).
 - **Nâng cao**:
   - **Cách lề** trong / ngoài cho 4 cạnh; tick "Đặt cùng giá trị cho 4 cạnh" để đặt nhanh;
+    - **Cách lề trong trên / dưới (PK-24)**: Thay thế trực tiếp khoảng đệm có sẵn của khối (không cộng dồn ra bên ngoài như trước). Đặt `0` (hoặc `Không`) nếu muốn hai khối nằm sát rạt nhau mà không có khoảng trống thừa. Field "Khoảng đệm" S / M / L ở tab Nội dung của khối vẫn dùng bình thường khi không đặt riêng ở tab Nâng cao.
+    - **Cách lề trái / phải và lề ngoài (margin)**: Giữ nguyên đặt trên lớp bọc của khối như trước.
   - **Ẩn trên** máy tính / máy tính bảng / điện thoại;
   - **ID neo**, để làm link nhảy tới khối, ví dụ nút trỏ tới `#dang-ky`.
+
+**Đổi font cho cả khối (PK-24):**
+Tại tab **Kiểu** → nhóm **Chữ** → chọn **Font** (ví dụ: Playfair Display), font chữ này sẽ được áp dụng cho **toàn bộ chữ bên trong khối** (từ tiêu đề, đoạn văn, nhãn phụ đến trích dẫn). Chữ chỉnh riêng từng phần (EB-15a) vẫn ưu tiên giữ nguyên thiết lập riêng của phần đó.
 
 Tab đang chọn được giữ nguyên khi bấm sang khối khác.
 

@@ -32,6 +32,7 @@ import {
   type Box,
   type Device,
   type Length,
+  type Side,
   type TextTargetStyle,
 } from './style-schema'
 
@@ -96,22 +97,35 @@ function textBaseDeclarations(textStyle: TextTargetStyle): string[] {
 const length = (value: Length, presets: Record<string, string>) => presets[value] ?? value
 const color = cssColor
 
-function boxDeclarations(property: 'padding' | 'margin', box: Box | undefined): string[] {
+function boxDeclarations(
+  property: 'padding' | 'margin',
+  box: Box | undefined,
+  sides: readonly Side[] = SIDES,
+): string[] {
   if (!box) return []
-  return SIDES.flatMap((side) =>
+  return sides.flatMap((side) =>
     box[side] ? [`${property}-${side}:${length(box[side], SPACING)}`] : [],
   )
 }
 
-function deviceDeclarations(style: BlockStyle, device: Device): string[] {
+function deviceDeclarations(
+  style: BlockStyle,
+  device: Device,
+  isContainer = false,
+): string[] {
   const fontSize = style.fontSize?.[device]
   const textAlign = style.textAlign?.[device]
+  const paddingSides: readonly Side[] = isContainer ? SIDES : ['right', 'left']
   return [
-    ...boxDeclarations('padding', style.padding?.[device]),
+    ...boxDeclarations('padding', style.padding?.[device], paddingSides),
     ...boxDeclarations('margin', style.margin?.[device]),
     ...(fontSize ? [`font-size:${length(fontSize, FONT_SIZE)}`] : []),
     ...(textAlign ? [`text-align:${textAlign}`] : []),
   ]
+}
+
+function innerPaddingDeclarations(style: BlockStyle, device: Device): string[] {
+  return boxDeclarations('padding', style.padding?.[device], ['top', 'bottom'])
 }
 
 function baseDeclarations(style: BlockStyle): string[] {
@@ -237,11 +251,19 @@ function cardAlignRule(selector: string, align: string | undefined): string {
 }
 
 /** CSS for one block (already sanitized). Empty string when nothing applies. */
-export function blockStyleCss(id: string, style: BlockStyle): string {
+export function blockStyleCss(
+  id: string,
+  style: BlockStyle,
+  optionsOrIsContainer?: boolean | { isContainer?: boolean },
+): string {
   if (!isSafeBlockId(id)) return ''
+  const isContainer =
+    typeof optionsOrIsContainer === 'boolean'
+      ? optionsOrIsContainer
+      : optionsOrIsContainer?.isContainer === true
   const selector = `[${STYLE_ATTR}="${id}"]`
   const rules: string[] = []
-  const base = [...baseDeclarations(style), ...deviceDeclarations(style, 'desktop')]
+  const base = [...baseDeclarations(style), ...deviceDeclarations(style, 'desktop', isContainer)]
 
   // PK-18: Background image declarations on block wrapper
   const bgImg = style.backgroundImage
@@ -256,6 +278,22 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   }
 
   if (base.length) rules.push(`${selector}{${base.join(';')}}`)
+
+  // PK-24: Apply font family to all child elements with (0,2,0) specificity to beat Tailwind font-* classes
+  const font = style.fontFamily
+    ? DESIGN_FONT_OPTIONS.find((f) => f.value === style.fontFamily)
+    : undefined
+  if (font) {
+    rules.push(`${selector}${selector} *{font-family:'${font.value}',${GENERIC[font.category]}}`)
+  }
+
+  // PK-24: Vertical padding (top/bottom) replaces existing block padding on the inner root element (> *)
+  if (!isContainer) {
+    const desktopInnerPadding = innerPaddingDeclarations(style, 'desktop')
+    if (desktopInnerPadding.length) {
+      rules.push(`${selector}${selector} > *{${desktopInnerPadding.join(';')}}`)
+    }
+  }
 
   // PK-18 / PK-23: Mobile background image
   if (bgImg?.mobileImageUrl) {
@@ -286,11 +324,15 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   for (const device of DEVICES) {
     const media = DEVICE_MEDIA[device]
     if (!media) continue
-    const declarations = deviceDeclarations(style, device)
+    const declarations = deviceDeclarations(style, device, isContainer)
+    const innerPadding = isContainer ? [] : innerPaddingDeclarations(style, device)
     const cards = cardAlignRule(selector, style.textAlign?.[device])
-    if (declarations.length || cards) {
+    if (declarations.length || innerPadding.length || cards) {
       const own = declarations.length ? `${selector}{${declarations.join(';')}}` : ''
-      rules.push(`@media ${media}{${own}${cards}}`)
+      const inner = innerPadding.length
+        ? `${selector}${selector} > *{${innerPadding.join(';')}}`
+        : ''
+      rules.push(`@media ${media}{${own}${inner}${cards}}`)
     }
   }
   for (const device of style.hideOn ?? []) {
@@ -395,7 +437,7 @@ export function collectPageStyles(
         typeof item.type === 'string' ? item.type : undefined,
       )
       if (style) {
-        const rule = blockStyleCss(id, style)
+        const rule = blockStyleCss(id, style, item.type === 'Container')
         if (rule) css.push(rule)
         if (style.fontFamily) fonts.add(style.fontFamily)
       }
