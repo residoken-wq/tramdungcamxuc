@@ -8,7 +8,8 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import config from '../../src/payload.config'
 import type { Customer, Product } from '../../src/payload-types'
 import { getTrialEligibility } from '../../src/lib/entitlements/service.server'
-import { getHabitStageGate, getHabitStageGateAction } from '../../src/lib/habit/actions'
+import { getHabitStageGate } from '../../src/lib/habit/stage-gate.server'
+import { sampleProductData } from './helpers/product-fixture'
 import { getSafeRedirectUrl } from '../../src/lib/auth/redirect'
 import { submitHabitPlan } from '../../src/lib/habit.server'
 import { hashTrialEmail } from '../../src/lib/auth/token'
@@ -62,16 +63,13 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
         'products',
         (await payload.create({
           collection: 'products',
-          data: {
-            name: 'Habit Tracker số [MẪU]',
+          data: sampleProductData({
+            name: '[MẪU] Habit Tracker số',
             slug: HABIT_TRACKER_PRODUCT_SLUG,
-            type: 'digital_tool',
-            saleStatus: 'on_sale',
-            _status: 'published',
             price: 250000,
             salePrice: 178000,
             trialDays: 28,
-          },
+          }) as never,
           overrideAccess: true,
         })) as Product,
       )
@@ -82,16 +80,13 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
       'products',
       (await payload.create({
         collection: 'products',
-        data: {
-          name: 'Sản phẩm ngưng bán [MẪU]',
+        data: sampleProductData({
+          name: '[MẪU] Sản phẩm ngưng bán',
           slug: `inactive-${randomUUID().slice(0, 6)}`,
-          type: 'digital_tool',
-          web: 'habit',
           saleStatus: 'hidden',
-          _status: 'published',
           price: 100000,
           trialDays: 14,
-        },
+        }) as never,
         overrideAccess: true,
       })) as Product,
     )
@@ -188,7 +183,7 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
       trackedEmails.push(email)
 
       // Ghi vết vào trialUsage
-      const usageDoc = track(
+      track(
         'trialUsage',
         await payload.create({
           collection: 'trialUsage',
@@ -206,7 +201,7 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
         'customers',
         await payload.create({
           collection: 'customers',
-          data: { email, name: 'Khách Đã Xoá' },
+          data: { email, name: '[MẪU] Khách đã xoá' },
           overrideAccess: true,
         }),
       )
@@ -311,20 +306,14 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
 
       // Tạm mock tìm sản phẩm trả về rỗng
       const origFind = payload.find.bind(payload)
-      const findSpy = vi.spyOn(payload, 'find').mockImplementation(async (args: any) => {
+      const findSpy = vi.spyOn(payload, 'find').mockImplementation((async (
+        args: Parameters<Payload['find']>[0],
+      ) => {
         if (args?.collection === 'products') {
-          return {
-            docs: [],
-            totalDocs: 0,
-            limit: 1,
-            totalPages: 1,
-            page: 1,
-            hasPrevPage: false,
-            hasNextPage: false,
-          }
+          return { docs: [], totalDocs: 0, limit: 1, totalPages: 1, page: 1, pagingCounter: 1 }
         }
         return origFind(args)
-      })
+      }) as unknown as Payload['find'])
 
       const gate = await getHabitStageGate({ customer, payload })
       expect(gate.status).toBe('ok')
@@ -414,7 +403,7 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
             customer: {
               id: 999,
               email: 'test@example.com',
-              name: 'Học Viên',
+              name: 'Học viên Test 01',
               hasConsent: true,
             },
           }}
@@ -432,6 +421,72 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
     })
   })
 
+  describe('4b. QA DP-03c', () => {
+    it('server action không nhận tham số từ trình duyệt; helper nằm ngoài file use server', async () => {
+      const actions = await import('../../src/lib/habit/actions')
+      expect(actions.getHabitStageGateAction.length).toBe(0)
+      expect('getHabitStageGate' in actions).toBe(false)
+    })
+
+    it('thẻ Giai đoạn 3 khi chưa lưu kế hoạch: không mở màn trống, vẫn ở bước hiện tại', () => {
+      render(
+        <HabitTrackerApp
+          initialGate={{ status: 'ok', trialAvailable: true }}
+          initialStepParam={3}
+          techniques={[]}
+          journeyDays={28}
+        />,
+      )
+      fireEvent.click(screen.getAllByRole('button', { name: /GIAI ĐOẠN 3/i })[0])
+      expect(screen.getByPlaceholderText('Thức dậy, uống một ly nước')).toBeDefined()
+      cleanup()
+    })
+
+    it('habit_stage1_completed chỉ ghi một lần dù khách bấm cổng nhiều lần', async () => {
+      const analytics = await import('../../src/lib/analytics/track')
+      const spy = vi.spyOn(analytics, 'track').mockImplementation(() => {})
+      render(
+        <HabitTrackerApp
+          initialGate={{ status: 'login', loginUrl: '/tai-khoan/dang-nhap' }}
+          initialStepParam={2}
+          techniques={[]}
+          journeyDays={28}
+        />,
+      )
+      fireEvent.click(screen.getByRole('button', { name: /Sang giai đoạn 2/i }))
+      fireEvent.click(screen.getByText(viStrings.dp03.backToStage1))
+      fireEvent.click(screen.getByRole('button', { name: /Sang giai đoạn 2/i }))
+      expect(spy.mock.calls.filter(([e]) => e === 'habit_stage1_completed')).toHaveLength(1)
+      spy.mockRestore()
+      cleanup()
+    })
+  })
+
+  describe('4c. QA DP-03c: giữ câu trả lời bước 1 sau khi đăng nhập quay lại', () => {
+    it('nháp 8 câu vẫn khôi phục khi CMS có số câu chẩn đoán khác 8', () => {
+      window.localStorage.setItem(
+        'tdcx_habit_loop_v1',
+        JSON.stringify({ version: 2, step: 2, diagnoseAnswers: [4, 4, 4, 4, 4, 4, 4, 4] }),
+      )
+      const sixteen = Array.from({ length: 16 }, (_, i) => ({
+        statement: `[MẪU] Câu ${i + 1}`,
+        stage: 'cue',
+      }))
+      const { container } = render(
+        <HabitTrackerApp
+          initialGate={{ status: 'ok', trialAvailable: true }}
+          initialStepParam={1}
+          techniques={[]}
+          journeyDays={28}
+          diagnose={{ questions: sixteen } as never}
+        />,
+      )
+      expect(container.querySelectorAll('button[aria-pressed="true"]')).toHaveLength(8)
+      cleanup()
+      window.localStorage.clear()
+    })
+  })
+
   describe('5. submitHabitPlan bảo mật email từ phiên', () => {
     it('khi có customerId trong phiên, luôn lưu bằng email của tài khoản dù trình duyệt gửi email khác', async () => {
       const customer = await createCustomer('session-email-check')
@@ -443,7 +498,7 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
         identityStatement: 'Tôi sẽ uống nước ấm để trở thành người khỏe mạnh',
         chosenTechniques: [],
         email: spoofedEmail, // Trình duyệt cố gửi email khác
-        name: 'Học Viên Test',
+        name: 'Học viên Test 01',
         consent: true,
       }
 
@@ -468,7 +523,7 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
       expect(plan.leadEmail).not.toBe(spoofedEmail)
       const planCustomerId =
         typeof plan.customer === 'object' && plan.customer !== null
-          ? (plan.customer as any).id
+          ? (plan.customer as { id: number }).id
           : plan.customer
       expect(planCustomerId).toBe(customer.id)
     })

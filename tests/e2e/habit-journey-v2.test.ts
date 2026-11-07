@@ -66,26 +66,6 @@ async function bootstrapAdmin(page: Page): Promise<number> {
   return (await (await page.request.get('/api/users/me')).json()).user.id
 }
 
-async function getTestOtpCode(page: Page, email: string): Promise<string> {
-  const res = await page.request.get(`/api/test-otp?email=${encodeURIComponent(email)}`)
-  expect(res.status(), 'CI must run e2e with E2E_TEST_HOOKS=1').toBe(200)
-  const data = (await res.json()) as { code?: string | null }
-  if (!data.code) throw new Error(`No OTP recorded for ${email}`)
-  return data.code
-}
-
-async function expectCodeStep(page: Page) {
-  const codeInput = page.locator('input[name="code"]')
-  const alert = page
-    .locator('div[role="alert"]:not(#__next-route-announcer__)')
-    .filter({ hasText: /\S/ })
-  await expect(codeInput.or(alert).first()).toBeVisible({ timeout: 15000 })
-  if (await alert.isVisible()) {
-    throw new Error(`OTP request failed on page: ${await alert.innerText()}`)
-  }
-  return codeInput
-}
-
 test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
   test('khách mới đi 6 bước -> chọn startDate +2 -> lên chuyến OTP -> tracker lịch đúng -> check-in -> tải CSV -> suy ngẫm trạm 1 -> đồng hành sau 28 ngày', async ({
     page,
@@ -203,36 +183,9 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       await zip.fillBoarding(guestPage, { name: 'Học viên HB15', email: customerEmail })
       await zip.submitBoarding(guestPage)
 
-      // Vào tracker (chưa đăng nhập: chuyển sang /tai-khoan/dang-nhap?next=…)
+      // DP-03: khách đã đăng nhập ở đầu luồng, dùng thử 28 ngày bắt đầu khi lưu kế hoạch -> vào thẳng tracker
       await guestPage.getByRole('link', { name: /Vào bảng theo dõi 28 ngày/ }).click()
-
-      // Chuyển tới trang đăng nhập OTP
-      await expect(guestPage).toHaveURL(/\/tai-khoan\/dang-nhap/, { timeout: 15000 })
-
-      // Nhập email, đồng ý chính sách (ND 13: mặc định chưa tick), gửi mã
-      const emailInput = guestPage.locator('input[name="email"]')
-      await expect(emailInput).toBeVisible()
-      await emailInput.fill(customerEmail)
-      await guestPage.locator('input[name="consentPolicy"]').check()
-      await expect(guestPage.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
-        timeout: 20000,
-      })
-      await guestPage.getByRole('button', { name: vi.auth.sendOtpButton }).click()
-
-      // Đợi bước nhập mã OTP
-      const codeInput = await expectCodeStep(guestPage)
-      const otpCode = await getTestOtpCode(page, customerEmail)
-      await codeInput.fill(otpCode)
-      await guestPage.locator('button[type="submit"]', { hasText: /Đăng nhập/i }).click()
-
-      // Chuyển hướng tới /habit/tracker
       await expect(guestPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 25000 })
-
-      // Khách mới chưa có quyền dùng: tracker mời dùng thử -> /dung-thu -> kích hoạt -> quay lại tracker
-      await guestPage.getByRole('link', { name: /Bắt đầu dùng thử 28 ngày/i }).click()
-      await expect(guestPage).toHaveURL(/\/dung-thu\?san-pham=habit-tracker-so/, { timeout: 15000 })
-      await guestPage.locator('button', { hasText: /Bắt đầu dùng thử 28 ngày/i }).click()
-      await expect(guestPage).toHaveURL(/\/habit\/hoc\/?$/, { timeout: 15000 })
       await guestPage.goto('/habit/tracker')
       // DP-02 (Z1): tiêu đề tracker theo "con người bạn muốn trở thành"
       await expect(

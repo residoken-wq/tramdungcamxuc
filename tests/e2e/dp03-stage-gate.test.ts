@@ -1,319 +1,285 @@
-import { test, expect, type Page } from '@playwright/test'
 import { randomUUID } from 'node:crypto'
-import fs from 'node:fs'
 import path from 'node:path'
+import { expect, test, type Browser, type Page, type Response } from './fixtures'
 import * as zip from './helpers/habit-zip'
-import { vi as viStrings } from '../../src/lib/i18n/vi'
+import { vi } from '../../src/lib/i18n/vi'
 
-const SCREENSHOT_DIR = path.join(process.cwd(), 'docs/screenshots/dp03')
+/**
+ * DP-03: login gate after Habit stage 1 on /habit/5-phut.
+ * Needs E2E_TEST_HOOKS=1 (GL-01 mock Google). Runs once on desktop-1440 and loops over
+ * 1440 / 375 itself, because it bootstraps the first admin and may create `habit-tracker-so`.
+ * Screenshots only with DP03_SCREENSHOTS=1 (so a normal run never rewrites docs/).
+ * QA DP-03c: rewritten (admin was logged in with a guessed password, the product was assumed
+ * to exist, the step-1 answers were never checked, screenshots were rewritten on every run).
+ */
 
-async function getAdminToken(page: Page): Promise<string> {
-  const initRes = await page.request.get('/api/users/init')
-  const init = await initRes.json()
-  if (init.initialized === false) {
-    const password = `AdminPass-${randomUUID()}`
-    const email = `admin-dp03-${randomUUID()}@example.test`
-    await page.goto('/admin/create-first-user', { waitUntil: 'domcontentloaded' })
-    await page.locator('#field-email').fill(email)
-    await page.locator('#field-password').fill(password)
-    await page.locator('#field-confirm-password').fill(password)
-    let token = ''
-    await expect(async () => {
-      const registration = page.waitForResponse(
-        (res) =>
-          res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
-        { timeout: 5000 },
-      )
-      await page.locator('button[type="submit"]').click()
-      const response = await registration
-      if (response && response.ok()) {
-        const json = await response.json()
-        token = json.token
-      }
-    }).toPass({ timeout: 60000 })
-    return token
-  } else {
-    const loginRes = await page.request.post('/api/users/login', {
-      data: {
-        email: 'admin@tramdungcamxuc.com',
-        password: 'AdminPassword123!',
-      },
-    })
-    const json = await loginRes.json()
-    return json.token
+const SHOT_DIR = path.join(process.cwd(), 'docs/screenshots/dp03')
+const SHOTS = process.env.DP03_SCREENSHOTS === '1'
+const STEP3_PLACEHOLDER = 'Thức dậy, uống một ly nước'
+
+async function bootstrapAdmin(page: Page): Promise<number> {
+  const init = await (await page.request.get('/api/users/init')).json()
+  if (init.initialized !== false) {
+    const meRes = await page.request.get('/api/users/me')
+    if (meRes.ok() && (await meRes.json()).user) {
+      return (await meRes.json()).user.id
+    }
   }
+
+  await page.goto('/admin/create-first-user', { waitUntil: 'domcontentloaded' })
+  const password = `AdminPass-${randomUUID()}`
+  await page.locator('#field-email').fill(`admin-dp03-${randomUUID()}@example.test`)
+  await page.locator('#field-password').fill(password)
+  await page.locator('#field-confirm-password').fill(password)
+
+  let response: Response | undefined
+  await expect(async () => {
+    const registration = page.waitForResponse(
+      (res) => res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
+      { timeout: 5000 },
+    )
+    await page.locator('button[type="submit"]').click()
+    response = await registration
+  }).toPass({ timeout: 60000 })
+
+  if (!response || !response.ok()) throw new Error('First-user registration failed.')
+  await expect(page).toHaveURL(/\/admin\/?$/)
+  return (await (await page.request.get('/api/users/me')).json()).user.id
 }
 
-test.describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)', () => {
-  test.beforeAll(() => {
-    if (!fs.existsSync(SCREENSHOT_DIR)) {
-      fs.mkdirSync(SCREENSHOT_DIR, { recursive: true })
+/** Reuse `habit-tracker-so` when it exists; otherwise create a sample one (deleted afterwards). */
+async function ensureHabitProduct(
+  admin: Page,
+): Promise<{ id: number; created: boolean; salePrice: number }> {
+  const found = await (
+    await admin.request.get('/api/products?where[slug][equals]=habit-tracker-so&draft=true')
+  ).json()
+  if (found.docs?.length) {
+    const doc = found.docs[0]
+    return { id: doc.id, created: false, salePrice: doc.salePrice ?? doc.price }
+  }
+  const res = await admin.request.post('/api/products', {
+    data: {
+      name: '[MẪU] Habit Tracker số',
+      slug: 'habit-tracker-so',
+      web: 'habit',
+      type: 'digital_tool',
+      trialDays: 28,
+      price: 250000,
+      salePrice: 178000,
+      saleStatus: 'on_sale',
+      isSample: true,
+      _status: 'published',
+    },
+  })
+  expect(res.ok()).toBe(true)
+  return { id: (await res.json()).doc.id, created: true, salePrice: 178000 }
+}
+
+async function guestPage(browser: Browser, width: number) {
+  const context = await browser.newContext({
+    viewport: { width, height: width === 375 ? 667 : 900 },
+    extraHTTPHeaders: { 'x-forwarded-for': `203.0.113.${Math.floor(Math.random() * 240) + 10}` },
+  })
+  return { context, page: await context.newPage() }
+}
+
+async function deleteCustomerByEmail(admin: Page, email: string) {
+  const q = encodeURIComponent(email)
+  const res = await admin.request.get(`/api/customers?where[email][equals]=${q}&depth=0`)
+  if (!res.ok()) return
+  for (const c of ((await res.json()).docs ?? []) as Array<{ id: number }>) {
+    for (const col of ['entitlements', 'habitPlans']) {
+      const rel = await admin.request.get(`/api/${col}?where[customer][equals]=${c.id}&depth=0`)
+      if (!rel.ok()) continue
+      for (const d of ((await rel.json()).docs ?? []) as Array<{ id: number }>) {
+        await admin.request.delete(`/api/${col}/${d.id}`).catch(() => {})
+      }
     }
+    await admin.request.delete(`/api/customers/${c.id}`).catch(() => {})
+  }
+  await admin.request.delete(`/api/leads?where[email][equals]=${q}`).catch(() => {})
+}
+
+test.describe('DP-03: login gate after Habit stage 1 (/habit/5-phut)', () => {
+  test.beforeEach(({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Runs once, loops over 1440 / 375.')
   })
 
-  test('Khách mới: Làm Giai đoạn 1 -> Gặp cổng login -> Đăng nhập Google -> Bước 3 -> Bước 6 email khoá -> Vào tracker', async ({
-    browser,
-  }, testInfo) => {
-    test.setTimeout(180000)
-    const isMobile = testInfo.project.name === 'mobile-375'
-    const deviceLabel = isMobile ? 'mobile' : 'desktop'
+  for (const width of [1440, 375]) {
+    const label = width === 375 ? 'mobile' : 'desktop'
 
-    const randomIp = `203.0.113.${Math.floor(Math.random() * 240) + 10}`
-    const context = await browser.newContext({
-      viewport: { width: isMobile ? 375 : 1440, height: isMobile ? 667 : 900 },
-      extraHTTPHeaders: { 'x-forwarded-for': randomIp },
-    })
-    const page = await context.newPage()
+    test(`new guest: stage 1 free -> gate -> Google -> back on step 3 -> step 6 email locked (${width}px)`, async ({
+      browser,
+      page,
+    }) => {
+      test.setTimeout(240000)
+      let adminId: number | undefined
+      let product: { id: number; created: boolean } | undefined
+      let customerEmail = ''
+      const { context, page: guest } = await guestPage(browser, width)
 
-    const newCustomerEmail = `dp03-new-${Date.now()}-${randomUUID().slice(0, 6)}@example.test`
-
-    let adminToken = ''
-
-    try {
-      // 1. Vào /habit/5-phut làm bước 1–2
-      await page.goto('/habit/5-phut')
-      await expect(page.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
-        timeout: 20000,
-      })
-
-      // Bước 1: Trả lời chẩn đoán
-      await zip.answerDiagnose(page, 4)
-
-      // Bước 2: Xem nguyên lý 1%
-      await expect(page.getByText(/Nguyên lý 1%/i).first()).toBeVisible({ timeout: 15000 })
-
-      // Bấm Sang giai đoạn 2
-      await page.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
-
-      // Màn cổng login xuất hiện
-      await expect(page.getByText(viStrings.dp03.loginTitle)).toBeVisible({ timeout: 15000 })
-      await expect(page.getByText(viStrings.dp03.loginPrompt)).toBeVisible()
-      const loginBtn = page.getByRole('link', { name: viStrings.dp03.loginButton }).last()
-      await expect(loginBtn).toBeVisible()
-
-      // Bước 3 KHÔNG được render
-      await expect(page.getByPlaceholder('Thức dậy, uống một ly nước')).not.toBeVisible()
-
-      // Chụp ảnh màn cổng Login
-      await page.screenshot({
-        path: path.join(SCREENSHOT_DIR, `login-gate-${deviceLabel}.png`),
-        fullPage: false,
-      })
-
-      // Bấm "Đăng nhập để tiếp tục" -> dẫn tới /tai-khoan/dang-nhap?next=...
-      await loginBtn.click()
-      await expect(page).toHaveURL(/\/tai-khoan\/dang-nhap/, { timeout: 15000 })
-
-      // Tick đồng ý điều khoản
-      const consentCheckbox = page.locator('input[name="consentPolicy"]')
-      await expect(consentCheckbox).toBeVisible()
-      await consentCheckbox.check()
-      await expect(consentCheckbox).toBeChecked()
-
-      // Đăng nhập Google bằng route giả GL-01 với mock_email
-      await page.goto(
-        `/api/auth/google/start?next=${encodeURIComponent('/habit/5-phut?buoc=3')}&consent=1&mock_email=${encodeURIComponent(newCustomerEmail)}`,
-      )
-
-      // Quay lại đúng ?buoc=3
-      await expect(page).toHaveURL(/\/habit\/5-phut\?buoc=3/, { timeout: 20000 })
-
-      // Bước 3 hiển thị, câu trả lời bước 1 vẫn còn
-      await expect(page.getByPlaceholder('Thức dậy, uống một ly nước')).toBeVisible({
-        timeout: 15000,
-      })
-
-      // Đi tiếp các bước 3..5
-      await zip.fillMentor(page, '[MẪU] Uống nước ấm sáng')
-      await zip.fillIdentity(page, {
-        action: 'chạy bộ 15 phút',
-        role: 'người bền bỉ yêu sức khoẻ',
-        atomic: 'Xỏ giày thể thao',
-      })
-      await zip.setRhythm(page, 'Mỗi ngày')
-      await zip.nextFromIdentity(page)
-
-      const techBoxes = page.getByRole('checkbox')
-      const count = await techBoxes.count()
-      if (count > 0) {
-        const names = await techBoxes.evaluateAll((els) =>
-          els.slice(0, 2).map((e) => e.getAttribute('aria-label') ?? ''),
-        )
-        await zip.pickTechniques(
-          page,
-          names.map((n) => ({ name: n })),
-        )
-      }
-      await zip.nextFromLoop(page)
-
-      // Bước 6: Form lên chuyến
-      await expect(page.getByText('HABIT BOARDING PASS').first()).toBeVisible({ timeout: 15000 })
-
-      // Email đã được điền sẵn từ phiên và bị khoá chỉ đọc
-      const emailInput = page.getByLabel(/Email nhận kế hoạch/)
-      await expect(emailInput).toBeVisible()
-      await expect(emailInput).toHaveValue(newCustomerEmail.toLowerCase())
-      await expect(emailInput).not.toBeEditable()
-
-      // Chụp ảnh Bước 6 email khoá
-      await page.screenshot({
-        path: path.join(SCREENSHOT_DIR, `step6-locked-email-${deviceLabel}.png`),
-        fullPage: false,
-      })
-
-      // Điền tên và Lưu kế hoạch
-      await page.getByLabel('Tên của bạn').fill('Học Viên Mới DP03')
-      await zip.submitBoarding(page)
-
-      // Nút vào tracker hiển thị thành công
-      const trackerLink = page.getByRole('link', { name: /Vào bảng theo dõi 28 ngày/ })
-      await expect(trackerLink).toBeVisible()
-    } finally {
-      // Dọn dẹp dữ liệu test của khách mới
       try {
-        adminToken = await getAdminToken(page)
-        if (adminToken) {
-          await page.request
-            .delete(`/api/leads?where[email][equals]=${newCustomerEmail}`, {
-              headers: { Authorization: `JWT ${adminToken}` },
-            })
-            .catch(() => {})
-          await page.request
-            .delete(`/api/habitPlans?where[leadEmail][equals]=${newCustomerEmail}`, {
-              headers: { Authorization: `JWT ${adminToken}` },
-            })
-            .catch(() => {})
-          await page.request
-            .delete(`/api/customers?where[email][equals]=${newCustomerEmail}`, {
-              headers: { Authorization: `JWT ${adminToken}` },
-            })
-            .catch(() => {})
+        adminId = await bootstrapAdmin(page)
+        product = await ensureHabitProduct(page)
+
+        // Stage 1 needs no account.
+        await guest.goto('/habit/5-phut')
+        await zip.answerDiagnose(guest, 4)
+        await zip.passPercent(guest)
+
+        // Gate instead of step 3 – step 3 is not in the DOM at all.
+        // The gate scrolls into view (not left below the hero on a phone).
+        await expect(guest.getByRole('heading', { name: vi.dp03.loginTitle })).toBeInViewport()
+        await expect(guest.getByPlaceholder(STEP3_PLACEHOLDER)).toHaveCount(0)
+        const loginLink = guest.getByRole('link', { name: vi.dp03.loginButton })
+        await expect(loginLink).toHaveAttribute(
+          'href',
+          `/tai-khoan/dang-nhap?next=${encodeURIComponent('/habit/5-phut?buoc=3')}`,
+        )
+        // Header stage-2 card and the step strip lead to the same gate (no way around it).
+        await guest.getByRole('button', { name: vi.dp03.backToStage1 }).click()
+        await expect(guest.getByRole('button', { name: /Sang giai đoạn 2/ })).toBeVisible()
+        await guest.getByRole('button', { name: /GIAI ĐOẠN 2/ }).click()
+        await expect(guest.getByRole('heading', { name: vi.dp03.loginTitle })).toBeVisible()
+        await expect(guest.getByPlaceholder(STEP3_PLACEHOLDER)).toHaveCount(0)
+        if (SHOTS) await guest.screenshot({ path: path.join(SHOT_DIR, `login-gate-${label}.png`) })
+
+        // Real login page, real Google button (GL-01 mock), consent ticked.
+        await loginLink.click()
+        await expect(guest).toHaveURL(/\/tai-khoan\/dang-nhap\?next=/)
+        await guest.locator('input[name="consentPolicy"]').check()
+        await guest.getByRole('link', { name: vi.gl01.continueWithGoogle }).click()
+
+        // Back on step 3 with the stage-1 answers kept.
+        await expect(guest).toHaveURL(/\/habit\/5-phut\?buoc=3/, { timeout: 20000 })
+        await expect(guest.getByPlaceholder(STEP3_PLACEHOLDER)).toBeVisible({ timeout: 15000 })
+        await expect(guest.getByRole('heading', { name: vi.dp03.loginTitle })).toHaveCount(0)
+        await guest
+          .getByRole('button', { name: /Khám đúng bệnh/ })
+          .last()
+          .click()
+        await expect(guest.locator('button[aria-pressed="true"]')).toHaveCount(8)
+        await guest.getByRole('button', { name: /Tiếp · Nguyên lý 1% Better/ }).click()
+        await zip.passPercent(guest)
+
+        await zip.fillMentor(guest, '[MẪU] Uống nước ấm')
+        await zip.fillIdentity(guest, {
+          action: 'đi bộ 10 phút',
+          role: 'người khoẻ mạnh',
+          atomic: 'Xỏ giày',
+        })
+        await zip.setRhythm(guest, 'Mỗi ngày')
+        await zip.nextFromIdentity(guest)
+        await zip.nextFromLoop(guest)
+
+        // Step 6: email from the session, read-only; no consent box (consent given at login).
+        const email = guest.getByLabel(/Email nhận kế hoạch/)
+        await expect(email).toHaveValue(/@example\.com$/)
+        await expect(email).not.toBeEditable()
+        customerEmail = await email.inputValue()
+        await expect(guest.getByLabel(/Tôi đồng ý lưu kế hoạch/)).toHaveCount(0)
+        if (SHOTS)
+          await guest.screenshot({ path: path.join(SHOT_DIR, `step6-locked-email-${label}.png`) })
+
+        await guest.getByLabel('Tên của bạn').fill('Học viên Test 01')
+        await zip.submitBoarding(guest)
+
+        // The trial started on step 6 (not at the gate).
+        const customers = await (
+          await page.request.get(
+            `/api/customers?where[email][equals]=${encodeURIComponent(customerEmail)}&depth=0`,
+          )
+        ).json()
+        expect(customers.docs).toHaveLength(1)
+        const ents = await (
+          await page.request.get(
+            `/api/entitlements?where[customer][equals]=${customers.docs[0].id}&where[product][equals]=${product.id}&depth=0`,
+          )
+        ).json()
+        expect(ents.docs.map((d: { status: string }) => d.status)).toEqual(['trial'])
+      } finally {
+        await context.close()
+        if (adminId) {
+          if (customerEmail) await deleteCustomerByEmail(page, customerEmail)
+          if (product?.created) await zip.deleteTestProduct(page, product.id)
+          await page.request.delete(`/api/users/${adminId}`).catch(() => {})
         }
-      } catch {}
-      await context.close()
-    }
-  })
-
-  test('Khách đã hết dùng thử: Đăng nhập -> Làm Giai đoạn 1 -> Gặp cổng Mua để dùng tiếp với giá CMS', async ({
-    browser,
-  }, testInfo) => {
-    test.setTimeout(180000)
-    const isMobile = testInfo.project.name === 'mobile-375'
-    const deviceLabel = isMobile ? 'mobile' : 'desktop'
-
-    const randomIp = `203.0.113.${Math.floor(Math.random() * 240) + 10}`
-    const context = await browser.newContext({
-      viewport: { width: isMobile ? 375 : 1440, height: isMobile ? 667 : 900 },
-      extraHTTPHeaders: { 'x-forwarded-for': randomIp },
+      }
     })
-    const page = await context.newPage()
 
-    const expiredCustomerEmail = `dp03-exp-${Date.now()}-${randomUUID().slice(0, 6)}@example.test`
+    test(`trial used up: gate offers "Mua để dùng tiếp" with the CMS price (${width}px)`, async ({
+      browser,
+      page,
+    }) => {
+      test.setTimeout(180000)
+      let adminId: number | undefined
+      let product: { id: number; created: boolean; salePrice: number } | undefined
+      const customerEmail = `dp03-exp-${randomUUID().slice(0, 8)}@example.test`
+      const { context, page: guest } = await guestPage(browser, width)
 
-    let adminToken = ''
-    let createdCustomerId: number | undefined
-    let createdEntitlementId: number | undefined
+      try {
+        adminId = await bootstrapAdmin(page)
+        product = await ensureHabitProduct(page)
 
-    try {
-      adminToken = await getAdminToken(page)
+        const cust = await page.request.post('/api/customers', {
+          data: {
+            email: customerEmail,
+            name: 'Học viên Test 02',
+            consentAt: new Date().toISOString(),
+          },
+        })
+        expect(cust.ok()).toBe(true)
+        const customerId = (await cust.json()).doc.id
+        const ent = await page.request.post('/api/entitlements', {
+          data: {
+            customer: customerId,
+            product: product.id,
+            source: 'trial',
+            status: 'expired',
+            grantedAt: new Date(Date.now() - 35 * 86400000).toISOString(),
+            expiresAt: new Date(Date.now() - 7 * 86400000).toISOString(),
+          },
+        })
+        expect(ent.ok()).toBe(true)
 
-      // Đọc ID sản phẩm habit-tracker-so
-      const prodRes = await page.request.get(
-        '/api/products?where[slug][equals]=habit-tracker-so&depth=0',
-        {
-          headers: { Authorization: `JWT ${adminToken}` },
-        },
-      )
-      expect(prodRes.ok()).toBe(true)
-      const prodDocs = (await prodRes.json()).docs
-      expect(prodDocs.length).toBeGreaterThan(0)
-      const habitProductId = prodDocs[0].id
+        await guest.goto(
+          `/api/auth/google/start?next=${encodeURIComponent('/habit/5-phut')}&consent=1&mock_email=${encodeURIComponent(customerEmail)}`,
+        )
+        await expect(guest).toHaveURL(/\/habit\/5-phut/, { timeout: 20000 })
 
-      // Tạo khách hàng qua API Admin
-      const custRes = await page.request.post('/api/customers', {
-        headers: { Authorization: `JWT ${adminToken}` },
-        data: {
-          email: expiredCustomerEmail,
-          name: 'Khách Hết Dùng Thử',
-          consentAt: new Date().toISOString(),
-        },
-      })
-      if (!custRes.ok()) {
-        console.error('custRes failed:', custRes.status(), await custRes.text())
-      }
-      expect(custRes.ok()).toBe(true)
-      const custJson = await custRes.json()
-      createdCustomerId = custJson.doc.id
+        await zip.answerDiagnose(guest, 3)
+        await zip.passPercent(guest)
 
-      // Cấp entitlement trial đã hết hạn
-      const entRes = await page.request.post('/api/entitlements', {
-        headers: { Authorization: `JWT ${adminToken}` },
-        data: {
-          customer: createdCustomerId,
-          product: habitProductId,
-          source: 'trial',
-          status: 'expired',
-          grantedAt: new Date(Date.now() - 35 * 86400000).toISOString(),
-          expiresAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-        },
-      })
-      if (!entRes.ok()) {
-        console.error('entRes failed:', entRes.status(), await entRes.text())
-      }
-      expect(entRes.ok()).toBe(true)
-      createdEntitlementId = (await entRes.json()).doc.id
+        await expect(guest.getByRole('heading', { name: vi.dp03.buyTitle })).toBeInViewport()
+        await expect(guest.getByPlaceholder(STEP3_PLACEHOLDER)).toHaveCount(0)
+        // (The trial-expired banner above the page has its own "Mua để dùng tiếp" link.)
+        const gate = guest.getByRole('region', { name: vi.dp03.buyTitle })
+        await expect(gate.getByRole('link', { name: vi.dp03.buyButton })).toHaveAttribute(
+          'href',
+          '/thanh-toan?san-pham=habit-tracker-so',
+        )
+        await expect(gate.getByRole('link', { name: vi.dp03.viewOfferButton })).toHaveAttribute(
+          'href',
+          '/habit/1-percent-better',
+        )
+        await expect(
+          guest.getByText(product.salePrice.toLocaleString('vi-VN'), { exact: false }).first(),
+        ).toBeVisible()
+        if (SHOTS) await guest.screenshot({ path: path.join(SHOT_DIR, `buy-gate-${label}.png`) })
 
-      // Đăng nhập khách hết hạn dùng thử
-      await page.goto(
-        `/api/auth/google/start?next=${encodeURIComponent('/habit/5-phut')}&consent=1&mock_email=${encodeURIComponent(expiredCustomerEmail)}`,
-      )
-      await expect(page).toHaveURL(/\/habit\/5-phut/, { timeout: 15000 })
-
-      // Bước 1: Trả lời chẩn đoán
-      await zip.answerDiagnose(page, 3)
-      await expect(page.getByText(/Nguyên lý 1%/i).first()).toBeVisible({ timeout: 15000 })
-
-      // Bấm Sang giai đoạn 2
-      await page.getByRole('button', { name: /Sang giai đoạn 2/i }).click()
-
-      // Màn "Mua để dùng tiếp" xuất hiện
-      await expect(page.getByText(viStrings.dp03.buyTitle)).toBeVisible({ timeout: 15000 })
-      const buyBtn = page.getByRole('link', { name: viStrings.dp03.buyButton }).last()
-      await expect(buyBtn).toBeVisible()
-      await expect(buyBtn).toHaveAttribute('href', '/thanh-toan?san-pham=habit-tracker-so')
-
-      // Nút phụ xem chi tiết gói trỏ tới /habit/1-percent-better
-      const offerBtn = page.getByRole('link', { name: viStrings.dp03.viewOfferButton }).last()
-      await expect(offerBtn).toBeVisible()
-      await expect(offerBtn).toHaveAttribute('href', '/habit/1-percent-better')
-
-      // Giá từ CMS hiển thị trên màn hình
-      await expect(page.getByText(/178\.000/)).toBeVisible()
-
-      // Chụp ảnh màn cổng Buy
-      await page.screenshot({
-        path: path.join(SCREENSHOT_DIR, `buy-gate-${deviceLabel}.png`),
-        fullPage: false,
-      })
-    } finally {
-      // Dọn dẹp dữ liệu test của khách hết hạn
-      if (adminToken) {
-        if (createdEntitlementId) {
-          await page.request
-            .delete(`/api/entitlements/${createdEntitlementId}`, {
-              headers: { Authorization: `JWT ${adminToken}` },
-            })
-            .catch(() => {})
-        }
-        if (createdCustomerId) {
-          await page.request
-            .delete(`/api/customers/${createdCustomerId}`, {
-              headers: { Authorization: `JWT ${adminToken}` },
-            })
-            .catch(() => {})
+        // ?buoc=6 typed by hand does not get around the gate either.
+        await guest.goto('/habit/5-phut?buoc=6')
+        await expect(guest.getByRole('heading', { name: vi.dp03.buyTitle })).toBeVisible()
+        await expect(guest.getByText('HABIT BOARDING PASS')).toHaveCount(0)
+      } finally {
+        await context.close()
+        if (adminId) {
+          await deleteCustomerByEmail(page, customerEmail)
+          if (product?.created) await zip.deleteTestProduct(page, product.id)
+          await page.request.delete(`/api/users/${adminId}`).catch(() => {})
         }
       }
-      await context.close()
-    }
-  })
+    })
+  }
 })
