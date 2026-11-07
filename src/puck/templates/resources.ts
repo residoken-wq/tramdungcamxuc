@@ -3,11 +3,11 @@ import type { Data } from '@puckeditor/core'
 export const resourcesTemplate: Data = {
   content: [
     // 4.1 Hero Thư viện tri thức & công cụ
-    // PK-21: đổi sang LeadMagnetCarousel list khi PK-21 merge
     {
       type: 'LeadMagnetCarousel',
       props: {
         id: 'resources-lead-magnet-carousel',
+        display: 'list',
         version: 1,
         seriesLabel: 'Resources & knowledge hub',
         titleLine1: 'Thư viện tri thức & công cụ',
@@ -22,11 +22,11 @@ export const resourcesTemplate: Data = {
     },
 
     // 4.2 Bài viết chuyên đề
-    // PK-21: đổi sang LibraryPreview featured khi PK-21 merge
     {
       type: 'LibraryPreview',
       props: {
         id: 'resources-library-preview',
+        layout: 'featured',
         version: 1,
         seriesLabel: 'SEO articles & blog • Góc nhìn chuyên gia',
         titleLine1: 'Bài viết chuyên đề',
@@ -38,13 +38,13 @@ export const resourcesTemplate: Data = {
         padding: 'md',
       },
     },
-    // PK-21: đổi sang Callout strip khi PK-21 merge
     {
       type: 'Callout',
       props: {
         id: 'resources-callout-strip',
         version: 1,
-        title: 'TRẠM DỪNG CẢM XÚC',
+        variant: 'strip',
+        title: 'TRẠM DỪNG CẢM XÚC:',
         description:
           '**Tài nguyên miễn phí** giúp bạn xây dựng thói quen tích cực và phát triển bản thân mỗi ngày.',
         titleSize: 'sm',
@@ -56,7 +56,7 @@ export const resourcesTemplate: Data = {
         buttonPageId: '',
         buttonLink: '',
         buttonVariant: 'primary',
-        bgColor: 'soft-pink',
+        bgColor: 'warm-ivory',
         padding: 'sm',
       },
     },
@@ -72,8 +72,7 @@ export const resourcesTemplate: Data = {
         titleLine2: '',
         emotionLine: '',
         columns: 3,
-        cardAccent: 'cycle',
-        cardFrame: 'solid',
+        _style: { cardAccent: 'cycle' },
         cardStyle: 'white',
         cardAlign: 'inherit',
         marker: 'icon',
@@ -91,8 +90,7 @@ export const resourcesTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'bright-magenta',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'bright-magenta' },
             },
           },
           {
@@ -108,8 +106,7 @@ export const resourcesTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'accent-pink',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'accent-pink' },
             },
           },
           {
@@ -125,8 +122,7 @@ export const resourcesTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'deep-navy',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'deep-navy' },
             },
           },
         ],

@@ -60,7 +60,6 @@ export const communityTemplate: Data = {
     },
 
     // 5.2 Chọn không gian: IconCardGrid dạng trượt (PK-21), vạch màu (PK-20)
-    // PK-21: đổi sang IconCardGrid dạng trượt khi PK-21 merge
     {
       type: 'IconCardGrid',
       props: {
@@ -71,9 +70,8 @@ export const communityTemplate: Data = {
         titleLine2: '',
         emotionLine: 'Tự nguyện đến. Tôn trọng nhịp riêng.',
         marker: 'icon',
-        columns: 3,
-        cardAccent: 'cycle',
-        cardFrame: 'solid',
+        columns: 'carousel',
+        _style: { cardAccent: 'cycle' },
         cardStyle: 'white',
         cardAlign: 'inherit',
         cards: [
@@ -91,8 +89,7 @@ export const communityTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'bright-magenta',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'bright-magenta' },
             },
           },
           {
@@ -109,8 +106,7 @@ export const communityTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'accent-pink',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'accent-pink' },
             },
           },
           {
@@ -127,8 +123,7 @@ export const communityTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'lavender-mist',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'lavender-mist' },
             },
           },
         ],
@@ -178,8 +173,7 @@ export const communityTemplate: Data = {
         emotionLine: '',
         marker: 'icon',
         columns: 3,
-        cardAccent: 'cycle',
-        cardFrame: 'solid',
+        _style: { cardAccent: 'cycle' },
         cardStyle: 'white',
         cardAlign: 'inherit',
         cards: [
@@ -196,8 +190,7 @@ export const communityTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'bright-magenta',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'bright-magenta' },
             },
           },
           {
@@ -213,8 +206,7 @@ export const communityTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'accent-pink',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'accent-pink' },
             },
           },
           {
@@ -230,8 +222,7 @@ export const communityTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'deep-navy',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'deep-navy' },
             },
           },
         ],
@@ -241,13 +232,12 @@ export const communityTemplate: Data = {
     },
 
     // 5.5 Tiếng nói cộng đồng Me Time: TestimonialGrid featured (PK-21), nền lavender-mist
-    // PK-21: đổi sang TestimonialGrid featured khi PK-21 merge
     {
       type: 'TestimonialGrid',
       props: {
         id: 'community-testimonials-me-time',
         version: 2,
-        variant: 'quote',
+        variant: 'featured',
         mode: 'manual',
         manualTestimonials: [],
         limit: 3,
@@ -258,86 +248,28 @@ export const communityTemplate: Data = {
     },
 
     // 5.6 Khoảnh khắc Me Time: PhotoGallery mosaic (PK-21)
-    // PK-21: đổi sang PhotoGallery mosaic khi PK-21 merge
     {
-      type: 'IconCardGrid',
+      type: 'PhotoGallery',
       props: {
         id: 'community-me-time-moments',
-        version: 2,
+        version: 1,
         seriesLabel: '',
         titleLine1: 'Khoảnh khắc Me Time',
         titleLine2: '',
         emotionLine: '',
-        marker: 'icon',
-        columns: 3,
-        cardAccent: 'none',
-        cardFrame: 'solid',
-        cardStyle: 'white',
-        cardAlign: 'inherit',
-        cards: [
-          {
-            type: 'Card',
-            props: {
-              id: 'community-moment-card-0',
-              icon: 'camera',
-              title: '[MẪU]',
-              text: '',
-              titleColor: 'deep-navy',
-              textColor: 'deep-navy',
-              titleSize: 'md',
-              textSize: 'md',
-              align: 'left',
-              highlight: 'none',
-              cardAccent: 'none',
-              cardFrame: 'solid',
-            },
-          },
-          {
-            type: 'Card',
-            props: {
-              id: 'community-moment-card-1',
-              icon: 'pencil',
-              title: '[MẪU]',
-              text: '',
-              titleColor: 'deep-navy',
-              textColor: 'deep-navy',
-              titleSize: 'md',
-              textSize: 'md',
-              align: 'left',
-              highlight: 'none',
-              cardAccent: 'none',
-              cardFrame: 'solid',
-            },
-          },
-          {
-            type: 'Card',
-            props: {
-              id: 'community-moment-card-2',
-              icon: 'heart',
-              title: '[MẪU]',
-              text: '',
-              titleColor: 'deep-navy',
-              textColor: 'deep-navy',
-              titleSize: 'md',
-              textSize: 'md',
-              align: 'left',
-              highlight: 'none',
-              cardAccent: 'none',
-              cardFrame: 'solid',
-            },
-          },
-        ],
+        layout: 'mosaic',
+        items: [],
         bgColor: 'warm-ivory',
         padding: 'md',
       },
     },
 
     // 5.7 Yoga Buddy (anchorId: yoga-buddy): ImageText ảnh trái tràn mép (PK-21)
-    // PK-21: đổi sang ImageText imageBleed ảnh trái khi PK-21 merge
     {
       type: 'ImageText',
       props: {
         id: 'yoga-buddy',
+        imageBleed: true,
         version: 2,
         layout: 'image-left',
         seriesLabel: 'Cộng đồng',
@@ -387,8 +319,7 @@ export const communityTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'bright-magenta',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'bright-magenta' },
             },
           },
         ],
@@ -407,8 +338,7 @@ export const communityTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'accent-pink',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'accent-pink' },
             },
           },
         ],
@@ -417,75 +347,17 @@ export const communityTemplate: Data = {
     },
 
     // 5.9 Góc nhỏ Yoga Buddy: PhotoGallery, ảnh [MẪU]
-    // PK-21: đổi sang PhotoGallery mosaic khi PK-21 merge
     {
-      type: 'IconCardGrid',
+      type: 'PhotoGallery',
       props: {
         id: 'community-yoga-gallery',
-        version: 2,
+        version: 1,
         seriesLabel: '',
         titleLine1: 'Góc nhỏ Yoga Buddy',
         titleLine2: '',
         emotionLine: '',
-        marker: 'icon',
-        columns: 3,
-        cardAccent: 'none',
-        cardFrame: 'solid',
-        cardStyle: 'white',
-        cardAlign: 'inherit',
-        cards: [
-          {
-            type: 'Card',
-            props: {
-              id: 'community-yoga-gallery-card-0',
-              icon: 'sun',
-              title: '[MẪU]',
-              text: '',
-              titleColor: 'deep-navy',
-              textColor: 'deep-navy',
-              titleSize: 'md',
-              textSize: 'md',
-              align: 'left',
-              highlight: 'none',
-              cardAccent: 'none',
-              cardFrame: 'solid',
-            },
-          },
-          {
-            type: 'Card',
-            props: {
-              id: 'community-yoga-gallery-card-1',
-              icon: 'flower',
-              title: '[MẪU]',
-              text: '',
-              titleColor: 'deep-navy',
-              textColor: 'deep-navy',
-              titleSize: 'md',
-              textSize: 'md',
-              align: 'left',
-              highlight: 'none',
-              cardAccent: 'none',
-              cardFrame: 'solid',
-            },
-          },
-          {
-            type: 'Card',
-            props: {
-              id: 'community-yoga-gallery-card-2',
-              icon: 'heart',
-              title: '[MẪU]',
-              text: '',
-              titleColor: 'deep-navy',
-              textColor: 'deep-navy',
-              titleSize: 'md',
-              textSize: 'md',
-              align: 'left',
-              highlight: 'none',
-              cardAccent: 'none',
-              cardFrame: 'solid',
-            },
-          },
-        ],
+        layout: 'grid',
+        items: [],
         bgColor: 'warm-ivory',
         padding: 'md',
       },
