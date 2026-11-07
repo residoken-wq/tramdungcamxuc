@@ -22,6 +22,7 @@ import { computePackageValue } from '../lib/pricing'
 import { vi } from '../lib/i18n/vi'
 import {
   showFor,
+  showForTypesOrFree,
   validateCoverImageOnSale,
   validatePriceOnSale,
   validateSlugOnSale,
@@ -367,7 +368,7 @@ export const Products: CollectionConfig = {
         {
           label: vi.cms.productForm.tabs.links,
           admin: {
-            condition: showFor([
+            condition: showForTypesOrFree([
               'physical_external',
               'coaching_trial',
               'workshop',
@@ -378,7 +379,7 @@ export const Products: CollectionConfig = {
           fields: [
             internalOrExternalUrl('externalUrl', 'Liên kết của nút (ngoài web hoặc trong web)', {
               admin: {
-                condition: showFor([
+                condition: showForTypesOrFree([
                   'physical_external',
                   'coaching_trial',
                   'workshop',

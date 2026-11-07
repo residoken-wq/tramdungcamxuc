@@ -16,8 +16,8 @@ export const PRODUCT_TYPES = [
 export type ProductType = (typeof PRODUCT_TYPES)[number]
 
 export type ProductCondition = (
-  data?: Partial<{ type?: ProductType | null }>,
-  siblingData?: Partial<{ type?: ProductType | null }>,
+  data?: Partial<{ type?: ProductType | null; saleStatus?: string | null }>,
+  siblingData?: Partial<{ type?: ProductType | null; saleStatus?: string | null }>,
   context?: unknown,
 ) => boolean
 
@@ -34,6 +34,27 @@ export function showFor(
   allowedTypes: readonly ProductType[] | ProductType[],
 ): Condition & ProductCondition {
   const conditionFn: ProductCondition = (data, siblingData) => {
+    const currentType = (data?.type ?? siblingData?.type) as ProductType | undefined
+    if (!currentType) return false
+    return allowedTypes.includes(currentType)
+  }
+  return conditionFn as Condition & ProductCondition
+}
+
+/**
+ * Helper tạo `admin.condition` theo loại sản phẩm (`type`) hoặc khi sản phẩm Miễn phí (`saleStatus === 'free'`).
+ *
+ * Dùng cho các trường liên kết (externalUrl) để sản phẩm Miễn phí không có file (như công cụ số chẩn đoán)
+ * vẫn nhập được liên kết và hiển thị trong khối Tài nguyên miễn phí (PK-27).
+ */
+export function showForTypesOrFree(
+  allowedTypes: readonly ProductType[] | ProductType[],
+): Condition & ProductCondition {
+  const conditionFn: ProductCondition = (data, siblingData) => {
+    const saleStatus =
+      (data as { saleStatus?: string } | undefined)?.saleStatus ??
+      (siblingData as { saleStatus?: string } | undefined)?.saleStatus
+    if (saleStatus === 'free') return true
     const currentType = (data?.type ?? siblingData?.type) as ProductType | undefined
     if (!currentType) return false
     return allowedTypes.includes(currentType)
