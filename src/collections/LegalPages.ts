@@ -1,3 +1,4 @@
+import { EXPERIMENTAL_TableFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { contentCollection, date, number, richText, slug, text } from '../fields/content'
 import { vi } from '../lib/i18n/vi'
 import { collectionLivePreview } from '../lib/live-preview'
@@ -10,7 +11,12 @@ export const LegalPages = contentCollection(
   [
     text('title', 'Tiêu đề', true),
     slug(),
-    richText('content', 'Nội dung'),
+    // Legal texts carry tables (e.g. purposes ↔ data in the privacy policy).
+    richText('content', 'Nội dung', {
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [...defaultFeatures, EXPERIMENTAL_TableFeature()],
+      }),
+    }),
     date('lastUpdated', 'Ngày cập nhật nội dung'),
     number('order', 'Thứ tự', 0),
   ],

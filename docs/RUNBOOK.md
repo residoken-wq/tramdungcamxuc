@@ -953,3 +953,15 @@ Do email `@example.test` là email giả lập không nhận được thư thậ
 | **Học viên Test 01** | `hoc-vien-test-01@example.test` | Dùng thử đang chạy (ngày 5/21). Check-in 4 ngày đầu đã tick xanh. Kèm 1 đơn chờ thanh toán. | `/habit/tracker`<br>`/thanh-toan/don/<payToken>` | • Header hiện: _"Còn 17 ngày dùng thử"_.<br>• Ngày 1–4 có cảm xúc; ngày 5 đang chờ check-in.<br>• Mở link thanh toán thấy mã VietQR và số tiền 178.000đ.                                                                                                          |
 | **Học viên Test 02** | `hoc-vien-test-02@example.test` | Dùng thử đã hết hạn. Đã check-in 10 ngày dở dang.                                           | `/habit/tracker`                                 | • Banner: _"Thời gian dùng thử đã kết thúc – dữ liệu của bạn vẫn được giữ"_.<br>• Toàn bộ lưới tracker ở chế độ **chỉ xem** (không tick thêm được).<br>• Nút kêu gọi: _"Mua để dùng tiếp"_.                                                                       |
 | **Học viên Test 03** | `hoc-vien-test-03@example.test` | Đã mua công cụ số + hoàn thành trọn vẹn 21/21 ngày. Đủ điều kiện nhận chứng nhận.           | `/habit/tracker`<br>`/tai-khoan`                 | • Tại `/habit/tracker`: Thấy thẻ tổng kết hoàn thành 21 ngày kèm nút **"Nhận chứng nhận"**.<br>• Bấm nhận chứng nhận: sinh mã xác minh, xem trước ảnh 4:5 và 9:16.<br>• Tại `/tai-khoan`: Thấy workshop `[DEMO GĐ2] Tập thương cảm xúc` trong danh sách workshop. |
+
+### Nhập nội dung "Chính sách bảo mật" và "Điều khoản sử dụng"
+
+Nội dung do Hana cung cấp nằm ở `content/legal/chinh-sach-bao-mat.md` và `content/legal/dieu-khoan-su-dung.md`. Không sửa chữ trong 2 file này; muốn đổi thì Hana sửa trong CMS.
+
+```
+pnpm payload run scripts/legal-content-import.ts < /dev/null              # chạy thử
+APPLY=true pnpm payload run scripts/legal-content-import.ts < /dev/null   # lưu bản nháp
+```
+
+- Script lưu **bản nháp**, trang công khai chưa đổi. Trang đã có nội dung thì bỏ qua (thêm `FORCE=true` để ghi đè bản nháp).
+- Sau đó Hana vào CMS → **Trang pháp lý**, bấm xem trước, điền các chỗ `[CẦN BỔ SUNG]` / `[ĐIỀN …]`, cập nhật "Ngày cập nhật nội dung", rồi **Xuất bản**.
