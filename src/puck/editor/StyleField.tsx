@@ -25,13 +25,22 @@ import {
   SIDES,
   SPACING_PRESETS,
   TEXT_ALIGNS,
+  type BlockBackgroundImage,
   type BlockStyle,
   type Box,
   type Device,
   type LengthKind,
   type Responsive,
 } from '@/puck/style/style-schema'
+import {
+  CONTAINER_BG_POSITIONS,
+  CONTAINER_BG_SIZES,
+  type ContainerBgPosition,
+  type ContainerBgSize,
+  type ContainerOverlayOpacity,
+} from '@/puck/style/container-schema'
 import { MAX_BLOCK_CUSTOM_CSS_LENGTH } from '@/puck/style/custom-css'
+import { MediaPickerField, type MediaDoc } from './MediaPickerField'
 import { useStylePanel } from './style-context'
 import {
   ColorControl,
@@ -243,6 +252,21 @@ export function StyleField({
   const bgHex = hexOf(style.background, ds.colors)
   const ratio = textHex && bgHex ? contrastRatio(textHex, bgHex) : null
 
+  const t18 = vi.pk18.bgImage
+  const hasBgImage = Boolean(style.backgroundImage?.mediaId || style.backgroundImage?.imageUrl)
+  const bgType = hasBgImage ? 'image' : 'color'
+
+  const updateBgImage = (patch: Partial<BlockBackgroundImage>) => {
+    const current = style.backgroundImage || {}
+    const next: BlockBackgroundImage = { ...current, ...patch }
+    // If no media, clean it
+    if (!next.mediaId && !next.mobileMediaId && !next.imageUrl && !next.mobileImageUrl) {
+      update({ backgroundImage: undefined })
+    } else {
+      update({ backgroundImage: next })
+    }
+  }
+
   return (
     <div className="pt-2" data-testid={`style-field-${tab}`}>
       {deviceBar}
@@ -251,11 +275,175 @@ export function StyleField({
       {tab === 'style' ? (
         <>
           <Group title={t.groups.background}>
-            <ColorControl
-              label={t.fields.background}
-              value={style.background}
-              onChange={(v) => update({ background: v })}
-            />
+            {/* Toggle Color / Image */}
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel>{t18.bgTypeLabel}</FieldLabel>
+              <div role="group" aria-label={t18.bgTypeLabel} className="grid grid-cols-2 gap-1">
+                <button
+                  type="button"
+                  aria-pressed={bgType === 'color'}
+                  onClick={() => {
+                    if (bgType === 'image') {
+                      update({ backgroundImage: undefined })
+                    }
+                  }}
+                  className={`h-8 rounded-md border text-xs font-semibold transition-colors ${
+                    bgType === 'color'
+                      ? 'border-bright-magenta bg-soft-pink/50 text-bright-magenta'
+                      : 'border-deep-navy/15 bg-white text-deep-navy/80 hover:border-deep-navy/30'
+                  }`}
+                >
+                  {t18.bgTypeColor}
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={bgType === 'image'}
+                  onClick={() => {
+                    if (bgType === 'color') {
+                      // Tone matching block background for default overlay color
+                      const isDark = style.background === 'deep-navy'
+                      const defaultOverlay = isDark ? 'deep-navy' : 'warm-ivory'
+                      update({
+                        backgroundImage: {
+                          size: 'cover',
+                          position: 'center',
+                          overlay: defaultOverlay,
+                          overlayOpacity: 40,
+                        },
+                      })
+                    }
+                  }}
+                  className={`h-8 rounded-md border text-xs font-semibold transition-colors ${
+                    bgType === 'image'
+                      ? 'border-bright-magenta bg-soft-pink/50 text-bright-magenta'
+                      : 'border-deep-navy/15 bg-white text-deep-navy/80 hover:border-deep-navy/30'
+                  }`}
+                >
+                  {t18.bgTypeImage}
+                </button>
+              </div>
+            </div>
+
+            {bgType === 'color' ? (
+              <ColorControl
+                label={t.fields.background}
+                value={style.background}
+                onChange={(v) => update({ background: v })}
+              />
+            ) : (
+              <div className="flex flex-col gap-3 pt-1">
+                {/* Desktop & Tablet background image */}
+                <MediaPickerField
+                  label={t18.imageLabel}
+                  value={style.backgroundImage?.mediaId}
+                  onChange={(id) => {
+                    if (!id) {
+                      updateBgImage({
+                        mediaId: undefined,
+                        imageUrl: undefined,
+                        imageAlt: undefined,
+                      })
+                    } else {
+                      updateBgImage({ mediaId: id })
+                    }
+                  }}
+                  onSelectMedia={(m: MediaDoc) => {
+                    const isDark = style.background === 'deep-navy'
+                    const defaultOverlay = isDark ? 'deep-navy' : 'warm-ivory'
+                    updateBgImage({
+                      mediaId: String(m.id),
+                      imageUrl: m.url || '',
+                      imageAlt: m.alt || '',
+                      overlay: style.backgroundImage?.overlay || defaultOverlay,
+                      overlayOpacity: style.backgroundImage?.overlayOpacity ?? 40,
+                    })
+                  }}
+                />
+
+                {/* Mobile background image (optional) */}
+                <MediaPickerField
+                  label={t18.mobileImageLabel}
+                  value={style.backgroundImage?.mobileMediaId}
+                  onChange={(id) => {
+                    if (!id) {
+                      updateBgImage({
+                        mobileMediaId: undefined,
+                        mobileImageUrl: undefined,
+                      })
+                    } else {
+                      updateBgImage({ mobileMediaId: id })
+                    }
+                  }}
+                  onSelectMedia={(m: MediaDoc) => {
+                    updateBgImage({
+                      mobileMediaId: String(m.id),
+                      mobileImageUrl: m.url || '',
+                    })
+                  }}
+                />
+
+                {/* Size */}
+                <SelectControl
+                  label={t18.sizeLabel}
+                  value={style.backgroundImage?.size ?? 'cover'}
+                  options={[
+                    { value: 'cover', label: t18.sizeCover },
+                    { value: 'contain', label: t18.sizeContain },
+                  ]}
+                  onChange={(v) => updateBgImage({ size: v as ContainerBgSize })}
+                />
+
+                {/* Position */}
+                <SelectControl
+                  label={t18.positionLabel}
+                  value={style.backgroundImage?.position ?? 'center'}
+                  options={CONTAINER_BG_POSITIONS.map((pos) => ({
+                    value: pos,
+                    label: t18.positions[pos],
+                  }))}
+                  onChange={(v) => updateBgImage({ position: v as ContainerBgPosition })}
+                />
+
+                {/* Overlay color */}
+                <ColorControl
+                  label={t18.overlayLabel}
+                  value={style.backgroundImage?.overlay}
+                  onChange={(v) => updateBgImage({ overlay: v })}
+                />
+
+                {/* Overlay opacity */}
+                <SelectControl
+                  label={t18.overlayOpacityLabel}
+                  value={
+                    style.backgroundImage?.overlayOpacity !== undefined
+                      ? String(style.backgroundImage.overlayOpacity)
+                      : '40'
+                  }
+                  options={[
+                    { value: '0', label: '0%' },
+                    { value: '20', label: '20%' },
+                    { value: '40', label: '40%' },
+                    { value: '60', label: '60%' },
+                    { value: '80', label: '80%' },
+                  ]}
+                  onChange={(v) =>
+                    updateBgImage({
+                      overlayOpacity:
+                        v !== undefined ? (Number(v) as ContainerOverlayOpacity) : undefined,
+                    })
+                  }
+                />
+
+                {style.backgroundImage?.overlayOpacity === 0 && (
+                  <p
+                    role="alert"
+                    className="rounded-md bg-butter-cream px-2 py-1.5 text-[11px] text-deep-navy font-medium"
+                  >
+                    {t18.contrastWarning}
+                  </p>
+                )}
+              </div>
+            )}
           </Group>
           <Group title={t.groups.text}>
             <ColorControl
@@ -411,8 +599,7 @@ export function StyleField({
                   {
                     value: 'cycle',
                     label:
-                      vi.pk20?.cardAccent?.cycle ||
-                      'Xoay vòng (Hồng sen → Hồng nhấn → Xanh thẫm)',
+                      vi.pk20?.cardAccent?.cycle || 'Xoay vòng (Hồng sen → Hồng nhấn → Xanh thẫm)',
                   },
                   {
                     value: 'deep-navy',

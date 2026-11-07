@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useId, useState } from 'react'
+import React, { useId } from 'react'
 import { vi } from '@/lib/i18n/vi'
 import {
   CONTAINER_BG_POSITIONS,
@@ -8,20 +8,17 @@ import {
   CONTAINER_BG_TYPES,
   CONTAINER_GRADIENT_ANGLES,
   type ContainerBackground,
+  type ContainerBgPosition,
   type ContainerBgSize,
   type ContainerGradientAngle,
+  type ContainerOverlayOpacity,
 } from '@/puck/style/container-schema'
+import { MediaPickerField, type MediaDoc } from './MediaPickerField'
 import { useStylePanel } from './style-context'
-import { ColorControl, FieldLabel, Group } from './style-controls'
+import { ColorControl, FieldLabel, Group, SelectControl } from './style-controls'
 
 const t = vi.eb05.background
-
-type MediaItem = {
-  id: string | number
-  url?: string
-  alt?: string
-  filename?: string
-}
+const t18 = vi.pk18.bgImage
 
 export function ContainerBackgroundField({
   value,
@@ -33,12 +30,6 @@ export function ContainerBackgroundField({
   const { tab } = useStylePanel()
   const uid = useId()
 
-  // State for media picker modal / dropdown
-  const [mediaList, setMediaList] = useState<MediaItem[]>([])
-  const [loadingMedia, setLoadingMedia] = useState(false)
-  const [showPicker, setShowPicker] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-
   // EB-05 Lỗi 1: Custom field must self-filter and only render on Style tab
   if (tab !== 'style') return <></>
 
@@ -49,31 +40,13 @@ export function ContainerBackgroundField({
     onChange(nextBg)
   }
 
-  const fetchMedia = async (query = '') => {
-    try {
-      setLoadingMedia(true)
-      const q = query ? `&where[alt][like]=${encodeURIComponent(query)}` : ''
-      const res = await fetch(`/api/media?limit=50&depth=0${q}`, { credentials: 'include' })
-      if (res.ok) {
-        const data = await res.json()
-        // Every image needs alt text (AGENTS §5B): files without it are not offered.
-        const docs: MediaItem[] = Array.isArray(data.docs) ? data.docs : []
-        setMediaList(docs.filter((d) => typeof d.alt === 'string' && d.alt.trim().length > 0))
-      }
-    } catch {
-      setMediaList([])
-    } finally {
-      setLoadingMedia(false)
-    }
-  }
-
-  const handleSelectMedia = (m: MediaItem) => {
+  const handleSelectMedia = (m: MediaDoc) => {
     updateBg({
       mediaId: String(m.id),
       imageUrl: m.url || '',
       imageAlt: m.alt || '',
+      overlayOpacity: bg.overlayOpacity ?? 40,
     })
-    setShowPicker(false)
   }
 
   return (
@@ -107,103 +80,18 @@ export function ContainerBackgroundField({
         {/* IMAGE CONTROLS */}
         {bg.type === 'image' ? (
           <div className="flex flex-col gap-3 pt-1">
-            {/* Selected media preview */}
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel>{t.image}</FieldLabel>
-              {bg.imageUrl ? (
-                <div className="flex items-center gap-2 rounded-lg border border-deep-navy/15 bg-white p-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={bg.imageUrl}
-                    alt={bg.imageAlt || ''}
-                    className="h-12 w-12 rounded object-cover border border-deep-navy/10"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-semibold text-deep-navy">
-                      {bg.imageAlt || t.mediaId(String(bg.mediaId ?? ''))}
-                    </p>
-                    <p className="truncate text-[10px] text-deep-navy/60">{bg.imageUrl}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      updateBg({ mediaId: undefined, imageUrl: undefined, imageAlt: undefined })
-                    }}
-                    className="rounded p-1 text-xs text-bright-magenta hover:bg-soft-pink"
-                    title={t.removeMedia}
-                    aria-label={t.removeMedia}
-                  >
-                    ✕
-                  </button>
-                </div>
-              ) : (
-                <p className="text-[11px] text-deep-navy/60 italic">{t.noMediaSelected}</p>
-              )}
-
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPicker(true)
-                  fetchMedia()
-                }}
-                className="h-8 rounded-md border border-deep-navy/20 bg-lavender-mist/40 px-3 text-xs font-semibold text-deep-navy hover:bg-lavender-mist"
-              >
-                {bg.imageUrl ? t.changeMedia : t.mediaSelect}
-              </button>
-            </div>
-
-            {/* Media picker popup */}
-            {showPicker ? (
-              <div className="rounded-xl border border-deep-navy/20 bg-warm-ivory p-3 shadow-lg">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-bold text-deep-navy font-ui">{t.mediaSelect}</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowPicker(false)}
-                    aria-label={t.closePicker}
-                    title={t.closePicker}
-                    className="text-xs text-deep-navy/60 hover:text-deep-navy"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  placeholder={t.searchPlaceholder}
-                  aria-label={t.searchPlaceholder}
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value)
-                    fetchMedia(e.target.value)
-                  }}
-                  className="mb-2 h-7 w-full rounded border border-deep-navy/20 bg-white px-2 text-xs"
-                />
-                <div className="max-h-48 overflow-y-auto flex flex-col gap-1">
-                  {loadingMedia ? (
-                    <p className="p-2 text-center text-xs text-deep-navy/60">{t.loading}</p>
-                  ) : mediaList.length === 0 ? (
-                    <p className="p-2 text-center text-xs text-deep-navy/60">{t.noResults}</p>
-                  ) : (
-                    mediaList.map((m) => (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => handleSelectMedia(m)}
-                        className="flex items-center gap-2 rounded p-1.5 text-left hover:bg-soft-pink/50 transition-colors"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={m.url || ''}
-                          alt={m.alt || ''}
-                          className="h-8 w-8 rounded object-cover"
-                        />
-                        <span className="truncate text-xs text-deep-navy">{m.alt}</span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-            ) : null}
+            <MediaPickerField
+              value={bg.mediaId}
+              label={t.image}
+              onChange={(id) => {
+                if (!id) {
+                  updateBg({ mediaId: undefined, imageUrl: undefined, imageAlt: undefined })
+                } else {
+                  updateBg({ mediaId: id })
+                }
+              }}
+              onSelectMedia={handleSelectMedia}
+            />
 
             {/* Size */}
             <div className="flex flex-col gap-1">
@@ -252,6 +140,40 @@ export function ContainerBackgroundField({
                 })}
               </div>
             </div>
+
+            {/* Overlay color & opacity */}
+            <ColorControl
+              label={t18.overlayLabel}
+              value={bg.overlay}
+              onChange={(v) => updateBg({ overlay: v })}
+            />
+
+            <SelectControl
+              label={t18.overlayOpacityLabel}
+              value={bg.overlayOpacity !== undefined ? String(bg.overlayOpacity) : '40'}
+              options={[
+                { value: '0', label: '0%' },
+                { value: '20', label: '20%' },
+                { value: '40', label: '40%' },
+                { value: '60', label: '60%' },
+                { value: '80', label: '80%' },
+              ]}
+              onChange={(v) =>
+                updateBg({
+                  overlayOpacity:
+                    v !== undefined ? (Number(v) as ContainerOverlayOpacity) : undefined,
+                })
+              }
+            />
+
+            {bg.overlayOpacity === 0 && (
+              <p
+                role="alert"
+                className="rounded-md bg-butter-cream px-2 py-1.5 text-[11px] text-deep-navy font-medium"
+              >
+                {t18.contrastWarning}
+              </p>
+            )}
           </div>
         ) : null}
 

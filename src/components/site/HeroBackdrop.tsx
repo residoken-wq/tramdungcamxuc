@@ -84,6 +84,7 @@ export function HeroBackdrop({
   return (
     <section
       id={id}
+      data-eb-section=""
       className={`group/hero relative w-full overflow-hidden isolate flex flex-col justify-center ${minHClass} ${sectionBgClass} ${PADDINGS[padding]} transition-colors ${className}`}
       data-bg={dataBg}
     >

@@ -83,7 +83,10 @@ describe('RecordSummary (PK-06)', () => {
   })
 
   test('6 ô chọn đều hiện tên qua RecordSummary, ô trống giữ chữ "Chưa chọn"', () => {
-    const fields: Array<[ExternalField<string | number | undefined>, string]> = [
+    const fields: Array<[
+      { getItemSummary?: (item: any, index?: number) => React.ReactNode | string },
+      string,
+    ]> = [
       [createServiceExternalField(), 'services'],
       [createProductExternalField(), 'products'],
       [createPageExternalField(), 'pages'],

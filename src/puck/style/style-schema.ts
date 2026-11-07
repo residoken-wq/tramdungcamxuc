@@ -15,6 +15,15 @@ import {
   type EyebrowGapPreset,
   type TitleLineHeightPreset,
 } from '@/lib/design/title-spacing'
+import {
+  cleanImageUrl,
+  CONTAINER_BG_POSITIONS,
+  CONTAINER_BG_SIZES,
+  CONTAINER_OVERLAY_OPACITIES,
+  type ContainerBgPosition,
+  type ContainerBgSize,
+  type ContainerOverlayOpacity,
+} from './container-schema'
 
 export const DEVICES = ['desktop', 'tablet', 'mobile'] as const
 export type Device = (typeof DEVICES)[number]
@@ -69,9 +78,23 @@ export const CARD_ACCENTS = [
 ] as const
 export type CardAccent = (typeof CARD_ACCENTS)[number]
 
+/** PK-18 / PK-23: Block background image configuration */
+export interface BlockBackgroundImage {
+  mediaId?: string
+  mobileMediaId?: string
+  imageUrl?: string
+  mobileImageUrl?: string
+  imageAlt?: string
+  size?: ContainerBgSize
+  position?: ContainerBgPosition
+  overlay?: string
+  overlayOpacity?: ContainerOverlayOpacity
+}
+
 export interface BlockStyle {
   // Style tab
   background?: string
+  backgroundImage?: BlockBackgroundImage
   textColor?: string
   fontFamily?: string
   fontSize?: Responsive<Length>
@@ -275,6 +298,48 @@ export function cleanTexts(
   return limited.length ? Object.fromEntries(limited) : undefined
 }
 
+export function cleanBlockBackgroundImage(
+  raw: unknown,
+  ds: CleanDesignSystem,
+): BlockBackgroundImage | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined
+  const r = raw as Record<string, unknown>
+  const mediaId =
+    typeof r.mediaId === 'string' && r.mediaId.trim().length > 0
+      ? r.mediaId.trim()
+      : typeof r.mediaId === 'number'
+        ? String(r.mediaId)
+        : undefined
+  const mobileMediaId =
+    typeof r.mobileMediaId === 'string' && r.mobileMediaId.trim().length > 0
+      ? r.mobileMediaId.trim()
+      : typeof r.mobileMediaId === 'number'
+        ? String(r.mobileMediaId)
+        : undefined
+  const imageUrl = cleanImageUrl(r.imageUrl)
+  const mobileImageUrl = cleanImageUrl(r.mobileImageUrl)
+  const imageAlt = typeof r.imageAlt === 'string' ? r.imageAlt.slice(0, 200).trim() : undefined
+  const size = includes(CONTAINER_BG_SIZES, r.size) ? r.size : 'cover'
+  const position = includes(CONTAINER_BG_POSITIONS, r.position) ? r.position : 'center'
+  const overlay = cleanColor(r.overlay, ds)
+  const rawOpacity =
+    typeof r.overlayOpacity === 'string' ? Number(r.overlayOpacity) : r.overlayOpacity
+  const overlayOpacity = includes(CONTAINER_OVERLAY_OPACITIES, rawOpacity) ? rawOpacity : undefined
+
+  if (!mediaId && !mobileMediaId && !imageUrl && !mobileImageUrl) return undefined
+  return {
+    mediaId,
+    mobileMediaId,
+    imageUrl,
+    mobileImageUrl,
+    imageAlt,
+    size,
+    position,
+    overlay,
+    overlayOpacity,
+  }
+}
+
 /**
  * Keeps only valid values that the current brand locks allow. Returns null when nothing is
  * left, so blocks without a meaningful `_style` render exactly as before.
@@ -288,6 +353,7 @@ export function sanitizeBlockStyle(
   const r = raw as Record<string, unknown>
   const style: BlockStyle = {
     background: cleanColor(r.background, ds),
+    backgroundImage: cleanBlockBackgroundImage(r.backgroundImage, ds),
     textColor: cleanColor(r.textColor, ds),
     fontFamily: isOpen(ds, 'fonts') && isDesignFont(r.fontFamily) ? r.fontFamily : undefined,
     fontSize: cleanResponsive(r.fontSize, (v) => cleanLength(v, 'fontSize', FONT_SIZE_PRESETS, ds)),
