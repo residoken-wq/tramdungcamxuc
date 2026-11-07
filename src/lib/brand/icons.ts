@@ -17,6 +17,7 @@ export const BRAND_ICONS = [
   { value: 'spark', label: 'Tia sáng' },
   { value: 'shield', label: 'Khiên' },
   { value: 'mirror', label: 'Tấm gương' },
+  { value: 'certificate', label: 'Chứng nhận' },
   // EB-06a: common utility icons for IconWidget & IconListWidget
   { value: 'check', label: 'Dấu tích' },
   { value: 'arrow-right', label: 'Mũi tên phải' },

@@ -524,6 +524,7 @@ export interface Product {
         | 'spark'
         | 'shield'
         | 'mirror'
+        | 'certificate'
         | 'check'
         | 'arrow-right'
         | 'phone'
