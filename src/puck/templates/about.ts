@@ -702,8 +702,8 @@ export const aboutTemplate: Data = {
             props: {
               id: 'about-stat-clients',
               value: '[MẪU] 50+',
-              label: 'Doanh nghiệp & Tổ chức',
-              description: 'Đồng hành trong các dự án nâng cao năng lực cảm xúc và lãnh đạo.',
+              label: '[MẪU] Doanh nghiệp & Tổ chức',
+              description: '',
               icon: '',
               iconColor: 'deep-navy',
               valueColor: 'deep-navy',
@@ -718,8 +718,8 @@ export const aboutTemplate: Data = {
             props: {
               id: 'about-stat-learners',
               value: '[MẪU] 10.000+',
-              label: 'Học viên & Nhân sự',
-              description: 'Tham gia các khóa đào tạo, workshop và phiên khai vấn.',
+              label: '[MẪU] Học viên & Nhân sự',
+              description: '',
               icon: '',
               iconColor: 'deep-navy',
               valueColor: 'deep-navy',
@@ -734,8 +734,8 @@ export const aboutTemplate: Data = {
             props: {
               id: 'about-stat-satisfaction',
               value: '[MẪU] 98%',
-              label: 'Mức độ Hài lòng',
-              description: 'Phản hồi tích cực về sự chuyển biến thực tế sau chương trình.',
+              label: '[MẪU] Mức độ Hài lòng',
+              description: '',
               icon: '',
               iconColor: 'deep-navy',
               valueColor: 'deep-navy',
@@ -753,7 +753,7 @@ export const aboutTemplate: Data = {
       props: {
         id: 'about-partners-logos',
         version: 2,
-        title: 'Mạng lưới đối tác Chiến lược & Doanh nghiệp',
+        title: 'Mạng lưới đối tác Strategic & Corporate',
         groups: [
           {
             label: 'Mạng lưới đối tác Strategic & Corporate',
@@ -819,7 +819,7 @@ export const aboutTemplate: Data = {
               id: 'about-path-personal',
               version: 1,
               groupLabel: 'DÀNH CHO CÁ NHÂN',
-              title: 'Lộ trình Chuyển mình Cá nhân',
+              title: 'Dành cho Cá nhân',
               description:
                 'Khai phóng tiềm năng tự thân, thấu hiểu cảm xúc và xây dựng hệ thói quen tích cực bền vững.\n\nQuyền lợi đồng hành:\n• Khai vấn 1-1 chuyên sâu cùng Master Coach\n• Lộ trình rèn luyện thói quen thiết kế riêng\n• Tham gia cộng đồng thực hành EQ an toàn',
               buttonLabel: 'Xem các Lộ trình Cá nhân',
@@ -841,7 +841,7 @@ export const aboutTemplate: Data = {
               id: 'about-path-business',
               version: 1,
               groupLabel: 'DÀNH CHO DOANH NGHIỆP',
-              title: 'Giải pháp Đào tạo Doanh nghiệp',
+              title: 'Dành cho Doanh nghiệp',
               description:
                 'Giải pháp nâng cao trí tuệ cảm xúc lãnh đạo và tối ưu hóa hiệu suất làm việc cho đội ngũ.\n\nGiải pháp may đo:\n• Đào tạo Leadership & Corporate EQ\n• Khai vấn nhóm & Thiết kế Workshop\n• Đo lường mức độ chuyển hóa hành vi',
               buttonLabel: 'Liên hệ Tư vấn Doanh nghiệp',
