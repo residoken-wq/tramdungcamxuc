@@ -250,6 +250,24 @@ export async function resolveServerData(
       }
     }
 
+    // QA PK-21c: PhotoGallery images – URL and alt always from the media library by id.
+    if (item.type === 'PhotoGallery' && Array.isArray(item.props.items)) {
+      for (const it of item.props.items as Array<{
+        mediaId?: string | number
+        imageUrl?: string
+        alt?: string
+      }>) {
+        if (!it?.mediaId) continue
+        try {
+          const mediaDoc = await payload.findByID({ collection: 'media', id: String(it.mediaId) })
+          it.imageUrl = typeof mediaDoc?.url === 'string' ? mediaDoc.url : ''
+          it.alt = typeof mediaDoc?.alt === 'string' ? mediaDoc.alt.trim() : ''
+        } catch {
+          it.imageUrl = ''
+        }
+      }
+    }
+
     // PK-20: Resolve imageCaptionAvatars for BrandImage blocks. PK-20c: always from the media
     // library by id (a stored url may be stale, or a free URL from older data), max 4.
     if (Array.isArray(item.props.imageCaptionAvatars)) {

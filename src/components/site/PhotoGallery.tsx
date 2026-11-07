@@ -22,12 +22,7 @@ export interface PhotoGalleryProps {
   layout?: 'mosaic' | 'grid'
   items?: PhotoGalleryItem[]
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   puck?: {
     isEditing?: boolean
@@ -109,8 +104,7 @@ export function PhotoGallery({
     const el = scrollContainerRef.current
     if (!el) return
     const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     el.scrollBy({
       left: offset,
       behavior: prefersReducedMotion ? 'auto' : 'smooth',
@@ -153,7 +147,8 @@ export function PhotoGallery({
     extraCardClass = '',
     aspectRatioClass = 'aspect-[4/3]',
   ) => {
-    const imgUrl = item.imageUrl || (item.mediaId ? `/api/media/${item.mediaId}` : '')
+    // QA PK-21c: /api/media/{id} is JSON, not an image; the server resolves imageUrl from mediaId.
+    const imgUrl = item.imageUrl || ''
     const altText = item.alt || item.caption || `Ảnh khoảnh khắc ${index + 1}`
 
     return (
@@ -310,4 +305,3 @@ export function PhotoGallery({
     </section>
   )
 }
-

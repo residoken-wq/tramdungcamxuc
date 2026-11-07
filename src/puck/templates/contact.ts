@@ -34,8 +34,7 @@ export const contactTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'bright-magenta',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'bright-magenta' },
             },
           },
           {
@@ -52,8 +51,7 @@ export const contactTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'accent-pink',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'accent-pink' },
             },
           },
           {
@@ -70,8 +68,7 @@ export const contactTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'deep-navy',
-              cardFrame: 'solid',
+              _style: { cardAccent: 'deep-navy' },
             },
           },
         ],
@@ -90,8 +87,6 @@ export const contactTemplate: Data = {
               textSize: 'md',
               align: 'left',
               highlight: 'none',
-              cardAccent: 'none',
-              cardFrame: 'solid',
               mediaId: '',
               imageUrl: '',
               imageAlt: '',
@@ -153,13 +148,12 @@ export const contactTemplate: Data = {
     },
 
     // 6.4 FAQ nhanh: FAQ quick (PK-21) + nút Xem toàn bộ
-    // PK-21: đổi sang FAQ quick khi PK-21 merge
     {
       type: 'FAQ',
       props: {
         id: 'contact-faq',
         version: 6,
-        variant: 'accordion',
+        variant: 'quick',
         source: 'group',
         group: 'general',
         limit: 5,
