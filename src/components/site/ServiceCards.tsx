@@ -4,6 +4,7 @@ import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { vi } from '@/lib/i18n/vi'
 import { textTarget } from '@/puck/style/text-target'
+import { ServiceCardsProvider } from './service-cards-context'
 
 export interface ResolvedService {
   id: string | number
@@ -28,6 +29,9 @@ export interface ServiceCardsProps {
   emotionLine?: string
   columns?: 1 | 2 | 3 | '1' | '2' | '3'
   cardAlign?: 'inherit' | 'left' | 'center'
+  layout?: 'default' | 'detailed'
+  cardTitles?: Array<{ text?: string }>
+  cardMedia?: Array<{ mediaId?: string | number; imageUrl?: string }>
   cards?: React.ReactNode | React.ComponentType<{ className?: string }> | unknown[]
   // Legacy v1 props:
   services?: Array<{ serviceId?: string | number }>
@@ -68,6 +72,9 @@ export function ServiceCards({
   emotionLine,
   columns,
   cardAlign = 'inherit',
+  layout = 'default',
+  cardTitles = [],
+  cardMedia = [],
   cards,
   services,
   highlightServiceId,
@@ -158,74 +165,78 @@ export function ServiceCards({
         )}
 
         {/* Slot or fallback content */}
-        {hasCards ? (
-          typeof cards === 'function' ? (
-            <>
-              {React.createElement(
-                cards as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
-                { className: gridColsClass },
-              )}
-              <EmptySlotHint
-                parentId={id}
-                slotName="cards"
-                childLabel="Thẻ dịch vụ"
-                isEditing={_editingHint}
-                isDeepNavy={isDeepNavy}
-              />
-            </>
-          ) : React.isValidElement(cards) ? (
-            <div className={gridColsClass}>{cards}</div>
-          ) : Array.isArray(cards) ? (
-            <div className={gridColsClass}>
-              {cards.map((child: unknown, idx: number) => {
-                if (React.isValidElement(child)) return child
-                if (child && typeof child === 'object') {
-                  const item = child as { props?: Record<string, unknown> }
-                  if (item.props) {
-                    return (
-                      <ServiceCardItem
-                        key={typeof item.props.id === 'string' ? item.props.id : idx}
-                        isDeepNavy={isDeepNavy}
-                        puck={puck}
-                        {...item.props}
-                      />
-                    )
+        <ServiceCardsProvider layout={layout} cardTitles={cardTitles} cardMedia={cardMedia}>
+          {hasCards ? (
+            typeof cards === 'function' ? (
+              <>
+                {React.createElement(
+                  cards as React.ComponentType<{ className?: string; style?: React.CSSProperties }>,
+                  { className: gridColsClass },
+                )}
+                <EmptySlotHint
+                  parentId={id}
+                  slotName="cards"
+                  childLabel="Thẻ dịch vụ"
+                  isEditing={_editingHint}
+                  isDeepNavy={isDeepNavy}
+                />
+              </>
+            ) : React.isValidElement(cards) ? (
+              <div className={gridColsClass}>{cards}</div>
+            ) : Array.isArray(cards) ? (
+              <div className={gridColsClass}>
+                {cards.map((child: unknown, idx: number) => {
+                  if (React.isValidElement(child)) return child
+                  if (child && typeof child === 'object') {
+                    const item = child as { props?: Record<string, unknown> }
+                    if (item.props) {
+                      return (
+                        <ServiceCardItem
+                          key={typeof item.props.id === 'string' ? item.props.id : idx}
+                          index={idx}
+                          isDeepNavy={isDeepNavy}
+                          puck={puck}
+                          {...item.props}
+                        />
+                      )
+                    }
                   }
-                }
-                return null
+                  return null
+                })}
+              </div>
+            ) : (
+              <div className={gridColsClass}>{cards as React.ReactNode}</div>
+            )
+          ) : hasV1Services ? (
+            <div className={gridColsClass}>
+              {v1Services.map((service, idx) => {
+                const srvObj = service as ResolvedService
+                const srvId =
+                  srvObj.id || (service as { serviceId?: string | number }).serviceId || idx
+                const isHighlighted =
+                  highlightServiceId != null &&
+                  String(highlightServiceId).trim() !== '' &&
+                  String(highlightServiceId) === String(srvId)
+
+                return (
+                  <ServiceCardItem
+                    key={srvId}
+                    index={idx}
+                    serviceId={srvId}
+                    highlight={isHighlighted}
+                    isDeepNavy={isDeepNavy}
+                    _resolved={{ service: srvObj.name ? srvObj : null }}
+                    puck={puck}
+                  />
+                )
               })}
             </div>
-          ) : (
-            <div className={gridColsClass}>{cards as React.ReactNode}</div>
-          )
-        ) : hasV1Services ? (
-          <div className={gridColsClass}>
-            {v1Services.map((service, idx) => {
-              const srvObj = service as ResolvedService
-              const srvId =
-                srvObj.id || (service as { serviceId?: string | number }).serviceId || idx
-              const isHighlighted =
-                highlightServiceId != null &&
-                String(highlightServiceId).trim() !== '' &&
-                String(highlightServiceId) === String(srvId)
-
-              return (
-                <ServiceCardItem
-                  key={srvId}
-                  serviceId={srvId}
-                  highlight={isHighlighted}
-                  isDeepNavy={isDeepNavy}
-                  _resolved={{ service: srvObj.name ? srvObj : null }}
-                  puck={puck}
-                />
-              )
-            })}
-          </div>
-        ) : isEditing ? (
-          <div className="mx-auto max-w-5xl py-8 px-4 rounded-card border-2 border-dashed border-deep-navy/20 text-center font-ui text-sm text-deep-navy/70 bg-white/50">
-            {vi.sm04.emptyServicesMessage}
-          </div>
-        ) : null}
+          ) : isEditing ? (
+            <div className="mx-auto max-w-5xl py-8 px-4 rounded-card border-2 border-dashed border-deep-navy/20 text-center font-ui text-sm text-deep-navy/70 bg-white/50">
+              {vi.sm04.emptyServicesMessage}
+            </div>
+          ) : null}
+        </ServiceCardsProvider>
       </div>
     </section>
   )

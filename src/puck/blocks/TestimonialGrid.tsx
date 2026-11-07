@@ -16,6 +16,10 @@ export const TestimonialGridBlock: ComponentConfig<TestimonialGridProps> = {
         { label: 'Trích dẫn truyền thống (Quote)', value: 'quote' },
         { label: 'Câu chuyện Trước / Sau (Story)', value: 'story' },
         { label: '3 Giai đoạn chuyển hóa (Stages)', value: 'stages' },
+        {
+          label: vi.pk21?.testimonialGrid?.variantFeatured || 'Nổi bật (1 lớn + 2 nhỏ)',
+          value: 'featured',
+        },
       ],
     },
     mode: {

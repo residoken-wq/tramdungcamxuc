@@ -8,14 +8,19 @@ import { vi } from '@/lib/i18n/vi'
 
 export interface TestimonialGridProps {
   version?: number
-  variant?: 'quote' | 'story' | 'stages'
+  variant?: 'quote' | 'story' | 'stages' | 'featured'
   mode?: 'manual' | 'recent'
   manualTestimonials?: Array<{ testimonialId?: string | number }>
   testimonialIds?: Array<string | number>
   limit?: 3 | 6
   columns?: 2 | 3
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     testimonials?: PublicTestimonial[]
@@ -65,8 +70,9 @@ export function TestimonialGrid({
     initialTestimonials: _resolved?.testimonials,
   })
 
-  // Filter out testimonials that lack required variant data
+  // Filter out testimonials that lack required variant data or do not have consent
   const validTestimonials = (testimonials || []).filter((t) => {
+    if (t?.consent === false) return false
     if (variant === 'story') {
       return Boolean(t?.story?.before || t?.story?.after)
     }
@@ -96,6 +102,66 @@ export function TestimonialGrid({
               {vi.builder.noDataSelectInCms}
             </div>
           ) : null
+        ) : variant === 'featured' ? (
+          /* Biến thể Featured (tr. 51): 1 thẻ lớn bên trái, 2 thẻ nhỏ bên phải */
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+            {/* Thẻ lớn bên trái */}
+            {validTestimonials[0] && (
+              <div
+                data-eb-card=""
+                className="md:col-span-7 rounded-2xl border border-deep-navy/10 bg-white p-6 sm:p-10 shadow-soft flex flex-col justify-between h-full transition-all duration-300 hover:shadow-card"
+              >
+                <div className="mb-6">
+                  <blockquote className="font-quote text-xl sm:text-2xl lg:text-3xl italic leading-relaxed text-deep-navy/90">
+                    &ldquo;{validTestimonials[0].quote}&rdquo;
+                  </blockquote>
+                </div>
+                <div>
+                  <p className="font-ui text-sm sm:text-base font-bold uppercase tracking-wider text-bright-magenta">
+                    — {validTestimonials[0].name}
+                  </p>
+                  {(validTestimonials[0].role || validTestimonials[0].age) && (
+                    <p className="font-ui text-xs text-deep-navy/70 mt-1">
+                      {validTestimonials[0].role || ''}
+                      {validTestimonials[0].role && validTestimonials[0].age ? ', ' : ''}
+                      {validTestimonials[0].age
+                        ? `${validTestimonials[0].age} ${vi.sm03?.ageSuffix || 'tuổi'}`
+                        : ''}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Cột 2 thẻ nhỏ bên phải */}
+            <div className="md:col-span-5 flex flex-col gap-6 justify-between h-full">
+              {validTestimonials.slice(1, 3).map((sec, idx) => (
+                <div
+                  key={String(sec.id || idx)}
+                  data-eb-card=""
+                  className="rounded-2xl border border-deep-navy/10 bg-white p-6 sm:p-7 shadow-soft flex flex-col justify-between flex-1 transition-all duration-300 hover:shadow-card"
+                >
+                  <div className="mb-4">
+                    <blockquote className="font-quote text-base sm:text-lg italic leading-relaxed text-deep-navy/90">
+                      &ldquo;{sec.quote}&rdquo;
+                    </blockquote>
+                  </div>
+                  <div>
+                    <p className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-bright-magenta">
+                      — {sec.name}
+                    </p>
+                    {(sec.role || sec.age) && (
+                      <p className="font-ui text-xs text-deep-navy/70 mt-0.5">
+                        {sec.role || ''}
+                        {sec.role && sec.age ? ', ' : ''}
+                        {sec.age ? `${sec.age} ${vi.sm03?.ageSuffix || 'tuổi'}` : ''}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
           <div className={`grid grid-cols-1 ${colClass} gap-6 sm:gap-8 items-stretch`}>
             {validTestimonials.map((t) => (
