@@ -126,7 +126,12 @@ test.describe('EB-04: Style / Advanced tabs', () => {
         await publicPage.setViewportSize({ width, height: 900 })
         await publicPage.goto(`/${slug}`)
         await expect(wrapper).toHaveCSS('display', display)
-        await expect(wrapper).toHaveCSS('padding-top', padding)
+        // PK-24: padding-top moved from the wrapper to its inner root (> *), so it replaces the
+        // block's own padding instead of adding to it. QA PK-24c: keep checking the wrapper too.
+        await expect(wrapper).toHaveCSS('padding-top', '0px')
+        if (display !== 'none' && width === 375) {
+          await expect(wrapper.locator('> *')).toHaveCSS('padding-top', padding)
+        }
         await expect(wrapper).toHaveCSS('background-color', 'rgb(217, 241, 234)')
       }
       await publicPage.close()
