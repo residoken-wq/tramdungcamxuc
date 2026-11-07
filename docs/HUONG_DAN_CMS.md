@@ -2000,6 +2000,42 @@ Khi bạn muốn tạo một chiến dịch mới, một trang dịch vụ mới
 4. Bấm **Lưu bản nháp**. Hệ thống sẽ tự động điền sẵn toàn bộ bố cục, các khối và nội dung mẫu tương ứng vào trang.
 5. Bấm nút **"Chỉnh sửa trực quan"** để vào Puck Editor tinh chỉnh nội dung và hình ảnh trước khi xuất bản.
 
+#### 4. Danh sách 6 Mẫu trang Website v2 (Nâng cấp thiết kế mới nhất)
+
+Trong đợt nâng cấp thiết kế website v2, 6 mẫu trang được đồng bộ câu chữ, phong cách thẻ con và khung hình ảnh thương hiệu theo đúng bản thiết kế chi tiết:
+
+| Mẫu trang | Tên mẫu trong CMS | Mục đích sử dụng | Bố cục và điểm nhấn |
+| --- | --- | --- | --- |
+| `home-v2` | **Trang chủ v2** | Cửa vào chính của website | Hero 2 lối vào (sóng nước), 3 gói giải pháp, 4 chặng cảm xúc, Quiz thói quen, 5 bước chuyển mình, Thư Hana, Dải số liệu, Lời chia sẻ, Hệ sinh thái giải pháp, FAQ liên hệ, Form kết nối nhanh |
+| `coach` | **Trang Coach 1:1** | Giới thiệu dịch vụ khai vấn 1:1 | Hero vòm trái, 4 tình huống cần soi chiếu, Thẻ dịch vụ Growth & Thinking Mirror, Bên trong phiên khai vấn, Chuẩn mực ICF, Quy trình 5 bước, Đặt lịch hẹn |
+| `about` | **Trang Về Trạm** | Câu chuyện thương hiệu & Triết lý | Hero vòm trái, Câu chuyện Trạm Dừng, Tầm nhìn - Sứ mệnh, 4 giá trị cốt lõi, Khung 5 bước, Thư ngỏ Hana, Đội ngũ chuyên gia, Chuẩn quốc tế ICF, Đối tác đồng hành, 2 lối đi |
+| `resources` | **Trang Tài nguyên** | Thư viện tri thức & công cụ | Hero Thư viện & Lead magnet, Lưới bài viết chuyên đề (Blog/SEO), Dải thông điệp, Lợi ích nhận bản tin, Form đăng ký Newsletter, CTA chuyển tiếp |
+| `community` | **Trang Cộng đồng** | Không gian kết nối & sinh hoạt | Hero nền tối (Backdrop), Chọn không gian sinh hoạt, Me Time 5:00 AM, Lịch trình 3 chặng, Lời chia sẻ, Yoga Buddy 8:30 AM, Quy ước thực hành, CTA gia nhập |
+| `contact` | **Trang Liên hệ** | Kênh kết nối & Tiếp nhận yêu cầu | Hero 2 cột kèm ảnh Không gian kết nối, Thông tin liên hệ trực tiếp (siteSettings), Form phân luồng 2 cột (Cá nhân & Doanh nghiệp), FAQ giải đáp nhanh |
+
+> **Lưu ý về trang "Lộ trình chuyển mình không chênh vênh" (`journey`)**: Mẫu này giữ nguyên cấu trúc chuẩn, chờ Hana chốt nội dung cập nhật trước khi áp dụng đợt sau.
+
+##### Danh sách các mục `[MẪU]` Hana cần kiểm tra & thay thế:
+1. **Hình ảnh**: Các khối ảnh đều để trống (`mediaId: ''`). Khi Hana chỉnh sửa, bấm chọn ảnh chân thực từ Thư viện Media (ảnh Hana, ảnh workshop thực tế, ảnh thảm tập Yoga Buddy...).
+2. **Số liệu thành tựu**: Các số liệu tạm như `[MẪU] 50+`, `[MẪU] 10.000+`, `[MẪU] 98%` trên trang Về Trạm cần được Hana xác nhận và thay bằng số liệu thực tế trước khi xuất bản.
+3. **Mạng lưới đối tác**: Danh sách logo đối tác hiện hiển thị nhãn `[MẪU] Đối tác 1...5`. Hana chỉ tải lên logo của các đơn vị đối tác đã có thỏa thuận hợp tác chính thức.
+4. **Đội ngũ chuyên gia**: Khối Đội ngũ đọc dữ liệu thực từ danh mục `teamMembers`. Không sử dụng ảnh minh họa mẫu trong thiết kế.
+5. **Lời chia sẻ (Testimonials)**: Toàn bộ lời chia sẻ đọc từ CMS (chỉ hiển thị những lời chia sẻ có sự đồng ý của khách hàng `consent = true`).
+
+##### Danh sách dữ liệu CMS cần chuẩn bị trước khi xuất bản:
+- **Tình huống & Kết quả (`situations` / `outcomes`)**: Nhập đầy đủ cho các sản phẩm Growth Mirror, Thinking Mirror trong danh mục Sản phẩm.
+- **Câu hỏi thường gặp (FAQ)**: Soạn thảo câu hỏi theo nhóm (`general`, `habit`, `mirror`...) trong mục Câu hỏi thường gặp. Trạm chỉ nhận chuyển khoản VietQR và không áp dụng chính sách hoàn tiền. Hai câu hỏi gợi ý từ thiết kế trang Liên hệ để Hana nhập vào nhóm `general`:
+  1. *Hướng dẫn kích hoạt khóa học/sản phẩm số tải về ở đâu?* → "Ngay sau khi thanh toán thành công, bạn sẽ nhận được email hướng dẫn chi tiết kèm đường dẫn truy cập kho tài liệu số."
+  2. *Tôi chưa biết chọn gói Khai vấn 1:1 nào, làm sao để được tư vấn?* → "Bạn có thể liên hệ trực tiếp qua Zalo/Hotline hoặc gửi form đăng ký tư vấn ngắn để đội ngũ xếp lịch trao đổi 15 phút miễn phí."
+- **Tagline sản phẩm**: Bổ sung tóm tắt ngắn cho từng sản phẩm trong CMS.
+- **Đường dẫn nhóm Zalo / Cộng đồng**: Cập nhật link tham gia nhóm Me Time và Yoga Buddy trong phần Cài đặt website (`siteSettings`) trước khi gắn vào nút hành động.
+
+##### Cách áp dụng mẫu mới cho trang đang chạy mà không làm mất nội dung cũ:
+1. Vào **Website** -> **Trang nội dung** -> Bấm **Tạo mới**.
+2. Đặt tiêu đề tạm (ví dụ: *Trang chủ thử nghiệm v2*), chọn Mẫu trang tương ứng (ví dụ: *Trang chủ v2*), bấm **Lưu bản nháp**.
+3. Mở Puck Editor của trang tạm để xem trước toàn bộ cấu trúc và điều chỉnh câu chữ, ảnh.
+4. Khi đã ưng ý, Hana có thể sao chép nội dung hoặc chuyển đổi trang chính thức sang mẫu mới và bấm **Xuất bản**.
+
 ---
 
 ### 5.14. Trang Cộng đồng & Doanh nghiệp (Sitemap v2)

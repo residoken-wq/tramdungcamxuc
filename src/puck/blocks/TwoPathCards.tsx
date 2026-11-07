@@ -1,6 +1,7 @@
 import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { TwoPathCards, type TwoPathCardsProps } from '@/components/site/TwoPathCards'
+import { PATHS_GRID } from '@/components/site/two-path-cards-grid'
 import {
   BRAND_COLOR_OPTIONS,
   FONT_SIZE_OPTIONS,
@@ -112,7 +113,24 @@ export const TwoPathCardsBlock: ComponentConfig<TwoPathCardsProps> = {
     padding: 'md',
   },
   // `puck` carries functions (renderDropZone) that cannot cross into a client component.
-  render: ({ puck, ...props }) => (
-    <TwoPathCards {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
-  ),
+  // On public pages the `paths` slot is a function too: render it here (server side) and pass
+  // the result, otherwise the page fails with "Functions cannot be passed directly to Client
+  // Components" (500 on /ve-tram, 07/11). In the editor everything runs on the client.
+  render: ({ puck, paths, ...props }) => {
+    const isEditing = puck?.isEditing ?? false
+    const pathsNode =
+      !isEditing && typeof paths === 'function'
+        ? React.createElement(paths as React.ComponentType<{ className?: string }>, {
+            className: PATHS_GRID,
+          })
+        : undefined
+    return (
+      <TwoPathCards
+        {...props}
+        paths={pathsNode ? undefined : paths}
+        pathsNode={pathsNode}
+        puck={{ isEditing }}
+      />
+    )
+  },
 }

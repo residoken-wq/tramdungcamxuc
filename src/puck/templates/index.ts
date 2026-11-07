@@ -5,6 +5,7 @@ import { aboutTemplate } from './about'
 import { coachTemplate } from './coach'
 import { contactTemplate } from './contact'
 import { communityTemplate } from './community'
+import { resourcesTemplate } from './resources'
 import { businessTemplate } from './business'
 import { campaignTemplate } from './campaign'
 import { serviceTemplate } from './service'
@@ -27,8 +28,10 @@ export type PageTemplateKey =
   | 'workshop'
   | 'event'
 
+export type PuckPageTemplateKey = PageTemplateKey | 'resources'
+
 export type ThemeTemplateKey = 'header-default' | 'footer-default'
-export type AnyTemplateKey = PageTemplateKey | ThemeTemplateKey
+export type AnyTemplateKey = PuckPageTemplateKey | ThemeTemplateKey
 
 export type PageTemplateItem = {
   key: AnyTemplateKey
@@ -37,7 +40,7 @@ export type PageTemplateItem = {
   data: Data
 }
 
-export const pageTemplates: Record<PageTemplateKey, PageTemplateItem> = {
+export const pageTemplates: Record<PuckPageTemplateKey, PageTemplateItem> = {
   'home-v2': {
     key: 'home-v2',
     label: 'Trang chủ v2',
@@ -79,6 +82,13 @@ export const pageTemplates: Record<PageTemplateKey, PageTemplateItem> = {
     description:
       'Không gian kết nối & thấu cảm: Hero cộng đồng, 3 lợi ích tham gia, tinh thần nâng niu cảm xúc, lời chia sẻ, nút Zalo nhóm và giải đáp thắc mắc.',
     data: communityTemplate,
+  },
+  resources: {
+    key: 'resources',
+    label: 'Trang Tài nguyên',
+    description:
+      'Thư viện tri thức & công cụ: Hero tài nguyên, bài viết chuyên đề, bản tin tuần và giải pháp B2B.',
+    data: resourcesTemplate,
   },
   business: {
     key: 'business',
@@ -171,6 +181,7 @@ export {
   coachTemplate,
   contactTemplate,
   communityTemplate,
+  resourcesTemplate,
   businessTemplate,
   campaignTemplate,
   serviceTemplate,
