@@ -149,7 +149,12 @@ export const communityTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'community-faq',
-        version: 4,
+        version: 5,
+        description: '',
+        seriesLabelStyle: 'text',
+        iconStyle: 'chevron',
+        contactMediaId: '',
+        contactBadge: '',
         source: 'group',
         group: 'general',
         limit: 6,

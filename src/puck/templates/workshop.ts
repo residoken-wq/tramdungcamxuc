@@ -146,7 +146,12 @@ export const workshopTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'workshop-faq',
-        version: 4,
+        version: 5,
+        description: '',
+        seriesLabelStyle: 'text',
+        iconStyle: 'chevron',
+        contactMediaId: '',
+        contactBadge: '',
         seriesLabel: '[MẪU] Thắc mắc',
         titleLine1: '[MẪU] THÔNG TIN',
         titleLine2: '[MẪU] BUỔI WORKSHOP',

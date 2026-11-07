@@ -897,35 +897,49 @@ test.describe('EB-11: Chạy thử 8 việc bằng giao diện như Hana', () =>
         let actions = 0
         const hardSelectors: string[] = []
 
-        // 1. Vào Thiết kế hệ thống trong Admin
-        await page.goto('/admin/globals/designSystem')
-        actions++
-
-        // 2. Mở toàn bộ bảng màu để thấy các trường HEX
-        // EB-11ac: luôn mở đủ 8 hàng rồi mới chọn ô theo thứ tự – trước đây bước mở là tuỳ chọn, nên khi
-        // nút chưa kịp hiện thì `nth(2)` trỏ nhầm ô và test đỏ ngẫu nhiên.
+        // 1–4. Vào Thiết kế hệ thống, mở đủ 8 hàng màu, nhập #280A60 (tím đậm / deep-navy) cho token
+        // accent-pink (hàng thứ 3, index 2), bấm Lưu.
+        // PK-19c: Payload có thể dựng lại form ngay sau khi điền (form-state), làm ô HEX mất giá trị và
+        // server từ chối lưu ("Màu phải có dạng #RRGGBB"). Vì vậy kiểm giá trị sau khi điền, chờ phản hồi
+        // lưu thành công, và làm lại cả bước nếu lần lưu bị từ chối.
         const hexInputs = page.getByRole('textbox', { name: 'Màu (HEX) *' })
-        await expect(async () => {
-          const expandAllBtn = page.getByRole('button', { name: 'Hiển thị toàn bộ' })
-          if (await expandAllBtn.isVisible()) await expandAllBtn.click()
-          await expect(hexInputs).toHaveCount(8, { timeout: 1500 })
-        }).toPass({ timeout: 20000 })
-        actions++
-
-        // 3. Nhập mã HEX #280A60 (tím đậm / deep-navy) cho token accent-pink (hàng thứ 3, index 2)
-        const pinkHexInput = hexInputs.nth(2)
-        await expect(pinkHexInput).toBeVisible({ timeout: 10000 })
-        await pinkHexInput.fill('#280A60')
-        hardSelectors.push('getByRole("textbox", { name: "Màu (HEX) *" }).nth(2)')
-        actions++
-
-        await shot(page, 'docs/screenshots/eb11/viec-6-doi-mau-nut.png')
-
-        // 4. Bấm Lưu
         const saveDsBtn = page.getByRole('button', { name: 'Lưu', exact: true })
-        await expect(saveDsBtn).toBeEnabled({ timeout: 5000 })
-        await saveDsBtn.click()
-        actions++
+        hardSelectors.push('getByRole("textbox", { name: "Màu (HEX) *" }).nth(2)')
+        let saved = false
+        for (let attempt = 0; attempt < 3 && !saved; attempt++) {
+          // A rejected save leaves the form dirty; accept only the "leave page" prompt on a retry.
+          const acceptLeave = (d: import('@playwright/test').Dialog) => {
+            if (d.type() === 'beforeunload') void d.accept()
+          }
+          page.on('dialog', acceptLeave)
+          await page.goto('/admin/globals/designSystem')
+          page.off('dialog', acceptLeave)
+          // EB-11ac: luôn mở đủ 8 hàng rồi mới chọn ô theo thứ tự.
+          await expect(async () => {
+            const expandAllBtn = page.getByRole('button', { name: 'Hiển thị toàn bộ' })
+            if (await expandAllBtn.isVisible()) await expandAllBtn.click()
+            await expect(hexInputs).toHaveCount(8, { timeout: 1500 })
+          }).toPass({ timeout: 20000 })
+
+          const pinkHexInput = hexInputs.nth(2)
+          await expect(pinkHexInput).toBeVisible({ timeout: 10000 })
+          await expect(async () => {
+            await pinkHexInput.fill('#280A60')
+            await expect(pinkHexInput).toHaveValue('#280A60', { timeout: 1500 })
+          }).toPass({ timeout: 15000 })
+
+          await shot(page, 'docs/screenshots/eb11/viec-6-doi-mau-nut.png')
+
+          await expect(saveDsBtn).toBeEnabled({ timeout: 5000 })
+          const saveResponse = page.waitForResponse(
+            (r) =>
+              /\/api\/globals\/designSystem(\?|$)/.test(r.url()) && r.request().method() === 'POST',
+          )
+          await saveDsBtn.click()
+          saved = (await saveResponse).ok()
+        }
+        expect(saved, 'Lưu bảng màu phải thành công').toBe(true)
+        actions += 4
 
         // Sau khi lưu thành công, nút Lưu trở lại trạng thái disabled (không còn dirty)
         await expect(saveDsBtn).toBeDisabled({ timeout: 15000 })

@@ -24,8 +24,11 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
         ) {
           expect((block.props as { version?: number }).version).toBe(3)
         }
-        if (block.type === 'HeroTwoEntries' || block.type === 'FAQ') {
+        if (block.type === 'HeroTwoEntries') {
           expect((block.props as { version?: number }).version).toBe(4)
+        }
+        if (block.type === 'FAQ') {
+          expect((block.props as { version?: number }).version).toBe(5) // PK-19
         }
       }
     }
@@ -170,7 +173,7 @@ describe('SM-03: Puck Migrations on Seed Pages and Blocks', () => {
     expect(testimonial?.props.variant).toBe('story')
 
     const faq = migrated.content.find((b) => b.props.id === 'faq-custom')
-    expect(faq?.props.version).toBe(4)
+    expect(faq?.props.version).toBe(5) // PK-19
     expect(faq?.props.numbered).toBe(true)
     expect(faq?.props.aside).toBe('booking')
     expect(faq?.props.bookingAsideTitle).toBe('Cần hỗ trợ thêm?')

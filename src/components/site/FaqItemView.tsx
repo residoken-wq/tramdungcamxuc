@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useId } from 'react'
+import { useFaqIconStyle } from './faq-style-context'
 import {
   fontSizeClass,
   textColorClass,
@@ -18,6 +19,7 @@ export interface FaqItemViewProps {
   answerSize?: FontSizeOption
   index?: number
   isDeepNavy?: boolean
+  iconStyle?: 'chevron' | 'plusminus'
   puck?: {
     isEditing?: boolean
   }
@@ -32,8 +34,10 @@ export function FaqItemView({
   answerSize = 'md',
   index,
   isDeepNavy = false,
+  iconStyle: ownIconStyle,
   puck,
 }: FaqItemViewProps) {
+  const iconStyle = useFaqIconStyle(ownIconStyle)
   const isEditing = Boolean(puck?.isEditing)
   const [isOpen, setIsOpen] = useState(false)
   const instanceId = useId()
@@ -67,6 +71,13 @@ export function FaqItemView({
     ? 'bg-white/10 border-white/20 text-white'
     : 'bg-white border-deep-navy/10 text-deep-navy shadow-soft group-data-[bg=deep-navy]/faq:bg-white/10 group-data-[bg=deep-navy]/faq:border-white/20 group-data-[bg=deep-navy]/faq:text-white group-data-[bg=deep-navy]/faq:shadow-none'
 
+  const activeQuestionColorClass =
+    isOpen && iconStyle === 'plusminus'
+      ? isDeepNavy
+        ? 'text-soft-pink'
+        : 'text-bright-magenta group-data-[bg=deep-navy]/faq:text-soft-pink'
+      : questionColorClass
+
   return (
     <div
       className={`p-5 sm:p-6 rounded-card border ${cardBgClass} transition-colors [counter-increment:faq-counter]`}
@@ -87,32 +98,72 @@ export function FaqItemView({
               <span className="before:content-[counter(faq-counter,_decimal-leading-zero)_'.']" />
             )}
           </span>
-          <span className={`${questionSizeClass} ${questionColorClass} break-words`}>
+          <span className={`${questionSizeClass} ${activeQuestionColorClass} break-words`}>
             {question ||
               (isEditing ? <span className="italic opacity-60">[Nhập câu hỏi]</span> : '')}
           </span>
         </span>
         <span
-          className={`shrink-0 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : ''
+          className={`shrink-0 ${
+            iconStyle === 'chevron'
+              ? `transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`
+              : ''
           } text-bright-magenta group-data-[bg=deep-navy]/faq:text-soft-pink`}
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <path
-              d="M5 7.5L10 12.5L15 7.5"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {iconStyle === 'plusminus' ? (
+            isOpen ? (
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 10H16"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M10 4V16M4 10H16"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )
+          ) : (
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 7.5L10 12.5L15 7.5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </span>
       </button>
 

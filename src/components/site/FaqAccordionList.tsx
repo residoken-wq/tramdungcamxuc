@@ -18,6 +18,7 @@ export interface FaqAccordionListProps {
   isEditing?: boolean
   numbered?: boolean
   isDeepNavy?: boolean
+  iconStyle?: 'chevron' | 'plusminus'
   cardBgClass?: string
   questionColorClass?: string
   answerColorClass?: string
@@ -34,6 +35,7 @@ export function FaqAccordionList({
   isEditing = false,
   numbered = false,
   isDeepNavy = false,
+  iconStyle = 'chevron',
   cardBgClass = 'bg-white border-deep-navy/10 text-deep-navy shadow-soft',
   questionColorClass = 'text-deep-navy',
   answerColorClass = 'text-deep-navy/80',
@@ -96,6 +98,13 @@ export function FaqAccordionList({
         const questionId = `faq-q-${index}`
         const answerId = `faq-a-${index}`
 
+        const activeQuestionColor =
+          isOpen && iconStyle === 'plusminus'
+            ? isDeepNavy
+              ? 'text-soft-pink'
+              : 'text-bright-magenta'
+            : questionColorClass
+
         return (
           <div
             key={index}
@@ -115,29 +124,69 @@ export function FaqAccordionList({
                     {String(index + 1).padStart(2, '0')}.
                   </span>
                 )}
-                <span className={questionColorClass}>{item.question}</span>
+                <span className={activeQuestionColor}>{item.question}</span>
               </span>
               <span
-                className={`shrink-0 transition-transform duration-200 ${
-                  isOpen ? 'rotate-180' : ''
+                className={`shrink-0 ${
+                  iconStyle === 'chevron'
+                    ? `transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`
+                    : ''
                 } ${iconColorClass}`}
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M5 7.5L10 12.5L15 7.5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                {iconStyle === 'plusminus' ? (
+                  isOpen ? (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M4 10H16"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M10 4V16M4 10H16"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )
+                ) : (
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M5 7.5L10 12.5L15 7.5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
               </span>
             </button>
             <div
