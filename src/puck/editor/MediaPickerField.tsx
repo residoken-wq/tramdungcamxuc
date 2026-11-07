@@ -262,6 +262,9 @@ export function MediaPickerField({
             ref={triggerButtonRef}
             type="button"
             onClick={handleOpenModal}
+            // QA PK-18c: keep the accessible name the old Puck picker had ("Chọn ảnh từ thư viện
+            // media…"); it contains the visible "Chọn ảnh", so label-in-name still holds.
+            aria-label={currentId ? undefined : placeholder || undefined}
             className="px-2.5 py-1 text-xs font-medium bg-deep-navy/5 hover:bg-deep-navy/10 text-deep-navy rounded transition-colors"
           >
             {currentId ? t.changeImage : t.chooseImage}
