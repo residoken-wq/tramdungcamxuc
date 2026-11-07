@@ -28,15 +28,11 @@ export interface IconCardGridProps {
   cardStyle?: 'white' | 'soft' | 'outline'
   cardAlign?: 'inherit' | 'left' | 'center'
   /** Puck slot render (v2), React nodes, or raw Card blocks `{ props }` (direct use / tests). */
-  cards?: CardsSlotRender | React.ReactNode | Array<{ id?: string; type?: string; props?: IconCardProps }>
+  cards?:
+    CardsSlotRender | React.ReactNode | Array<{ id?: string; type?: string; props?: IconCardProps }>
   items?: IconCardItem[]
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   puck?: {
     isEditing?: boolean
@@ -145,23 +141,14 @@ export function IconCardGrid({
               const block = child as { props?: IconCardProps & { id?: string } } | null
               if (block && typeof block === 'object' && block.props) {
                 return (
-                  <div key={block.props.id || idx} className="relative w-full">
-                    <IconCard
-                      index={idx}
-                      marker={marker}
-                      cardStyle={cardStyle}
-                      isDeepNavy={isDeepNavy}
-                      {...block.props}
-                    />
-                    {connector === 'arrow' && idx < (cards as unknown[]).length - 1 && (
-                      <div
-                        aria-hidden="true"
-                        className="hidden lg:flex absolute -right-5 sm:-right-6 top-1/2 -translate-y-1/2 z-10 text-bright-magenta text-2xl font-bold select-none pointer-events-none"
-                      >
-                        →
-                      </div>
-                    )}
-                  </div>
+                  <IconCard
+                    key={block.props.id || idx}
+                    index={idx}
+                    marker={marker}
+                    cardStyle={cardStyle}
+                    isDeepNavy={isDeepNavy}
+                    {...block.props}
+                  />
                 )
               }
               return null
@@ -172,26 +159,17 @@ export function IconCardGrid({
       {hasItems && (
         <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
           {validItems.map((item, index) => (
-            <div key={index} className="relative w-full">
-              <IconCard
-                icon={item.icon}
-                title={item.title}
-                text={item.text}
-                highlight={item.highlight}
-                index={index}
-                marker={marker}
-                cardStyle={cardStyle}
-                isDeepNavy={isDeepNavy}
-              />
-              {connector === 'arrow' && index < validItems.length - 1 && (
-                <div
-                  aria-hidden="true"
-                  className="hidden lg:flex absolute -right-5 sm:-right-6 top-1/2 -translate-y-1/2 z-10 text-bright-magenta text-2xl font-bold select-none pointer-events-none"
-                >
-                  →
-                </div>
-              )}
-            </div>
+            <IconCard
+              key={index}
+              icon={item.icon}
+              title={item.title}
+              text={item.text}
+              highlight={item.highlight}
+              index={index}
+              marker={marker}
+              cardStyle={cardStyle}
+              isDeepNavy={isDeepNavy}
+            />
           ))}
         </div>
       )}
@@ -226,7 +204,7 @@ export function IconCardGrid({
           data-bg={bgColor}
           data-card-theme={`${isDeepNavy ? 'navy' : 'light'}-${cardStyle}`}
           data-card-align={cardAlign || 'inherit'}
-          data-connector={connector}
+          data-connector={connector === 'arrow' ? 'arrow' : undefined}
         >
           {isCarousel ? (
             <CarouselTrack

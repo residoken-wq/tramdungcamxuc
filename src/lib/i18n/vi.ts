@@ -3465,6 +3465,7 @@ export const vi = {
     },
   },
   pk26: {
+    noIcon: 'Không dùng biểu tượng',
     card: {
       cardBg: 'Màu nền thẻ',
       cardBgNone: 'Theo kiểu thẻ chung',

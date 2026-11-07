@@ -108,9 +108,10 @@ describe('PK-26: Chuyển mình không chênh vênh', () => {
           ]}
         />,
       )
-      const arrows = Array.from(container.querySelectorAll('[aria-hidden="true"]'))
-      const arrow = arrows.find((el) => el.textContent?.includes('→'))
-      expect(arrow).toBeDefined()
+      // The arrow is CSS (`::after` on every card but the last, lg only), so the HTML stays plain.
+      const grid = container.querySelector('[data-connector="arrow"]')
+      expect(grid).not.toBeNull()
+      expect(container.innerHTML).toContain("after:content-['→']")
     })
   })
 

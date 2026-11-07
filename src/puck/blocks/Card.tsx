@@ -20,7 +20,10 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     icon: {
       type: 'select',
       label: vi.puckCard?.icon || 'Biểu tượng thương hiệu',
-      options: BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
+      options: [
+        { label: vi.pk26?.noIcon || 'Không dùng biểu tượng', value: 'none' },
+        ...BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
+      ],
     },
     mediaId: createMediaExternalField({
       label: vi.puckCard?.media || 'Ảnh thẻ (Thư viện media - thay thế biểu tượng)',

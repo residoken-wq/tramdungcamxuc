@@ -136,14 +136,14 @@ function getNoteToneClass(
 }
 
 function renderCardText(
-  text: string,
+  text: React.ReactNode,
   id: string | undefined,
   textSizeClass: string,
   textColorStyleClass: string,
 ) {
   if (!text) return null
-  const normalized = text.replace(/\\n/g, '\n')
-  const lines = normalized.split(/\r?\n/)
+  // QA PK-26: in the builder, inline-editable fields arrive as React elements, not strings.
+  const lines = typeof text === 'string' ? text.replace(/\\n/g, '\n').split(/\r?\n/) : []
   const hasBullets = lines.some((l) => l.trimStart().startsWith('- '))
 
   if (!hasBullets) {
@@ -241,12 +241,25 @@ export function IconCard({
   const isNavyHighlight = highlight === 'navy'
   const isOutlineHighlight = highlight === 'outline'
   const isCustomBg = cardBg && cardBg !== 'none'
+  // Card painted dark by itself (highlight / cardBg), not just sitting on a navy grid.
+  const isSolidCard =
+    isNavyHighlight ||
+    cardBg === 'deep-navy' ||
+    cardBg === 'bright-magenta' ||
+    cardBg === 'accent-pink'
   const isDarkCard =
     isNavyHighlight ||
     cardBg === 'deep-navy' ||
     cardBg === 'bright-magenta' ||
     cardBg === 'accent-pink' ||
     (isDeepNavy && (!cardStyle || cardStyle === 'white'))
+
+  // QA PK-26: small magenta text fails WCAG AA on navy (2.8:1) and lavender (4.4:1) cards.
+  const eyebrowTextClass = isDarkCard
+    ? 'text-soft-pink'
+    : cardBg === 'lavender-mist'
+      ? 'text-deep-navy'
+      : 'text-bright-magenta'
 
   const titleSizeClass = fontSizeClass('card-title', titleSize)
   const textSizeClass = fontSizeClass('card-text', textSize)
@@ -283,8 +296,11 @@ export function IconCard({
       ? ' !border-2 !border-accent-pink'
       : ''
 
+  // QA PK-26: 'none' hides the icon box even inside an icon-marker grid (cards without an icon).
+  const hideIcon = icon === 'none' && !hasValidImage
   const showIconRow =
-    (icon && icon !== 'none') || hasValidImage || marker === 'number' || marker === 'icon'
+    marker === 'number' ||
+    (!hideIcon && ((icon && icon !== 'none') || hasValidImage || marker === 'icon'))
 
   return (
     <div
@@ -297,7 +313,7 @@ export function IconCard({
           {marker === 'number' && index !== undefined ? (
             <span
               className={`inline-block font-display text-3xl sm:text-4xl ${
-                isDarkCard
+                isSolidCard
                   ? '!text-accent-pink'
                   : isDeepNavy
                     ? 'text-soft-pink'
@@ -330,7 +346,7 @@ export function IconCard({
             ) : (
               <div
                 className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${
-                  isDarkCard
+                  isSolidCard
                     ? '!bg-white/10 !text-accent-pink'
                     : 'bg-soft-pink text-bright-magenta'
                 }`}
@@ -342,7 +358,7 @@ export function IconCard({
             <>
               <span
                 className={`hidden group-data-[marker=number]/grid:inline-block font-display text-3xl sm:text-4xl ${
-                  isDarkCard
+                  isSolidCard
                     ? '!text-accent-pink'
                     : 'text-bright-magenta group-data-[bg=deep-navy]/grid:text-soft-pink'
                 } before:content-[counter(card-counter,_decimal-leading-zero)]`}
@@ -371,7 +387,7 @@ export function IconCard({
                 ) : (
                   <div
                     className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
-                      isDarkCard
+                      isSolidCard
                         ? '!bg-white/10 !text-accent-pink'
                         : 'bg-soft-pink text-bright-magenta'
                     }`}
@@ -387,7 +403,7 @@ export function IconCard({
 
       {eyebrow && (
         <div
-          className={`font-ui text-xs font-bold uppercase tracking-wider text-bright-magenta mb-2 ${
+          className={`font-ui text-xs font-bold uppercase tracking-wider ${eyebrowTextClass} mb-2 ${
             eyebrowBar ? 'border-l-[3px] border-bright-magenta pl-2' : ''
           }`}
         >
