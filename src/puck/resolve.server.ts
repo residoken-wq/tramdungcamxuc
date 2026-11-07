@@ -250,6 +250,29 @@ export async function resolveServerData(
       }
     }
 
+    // PK-20: Resolve imageCaptionAvatars for BrandImage blocks. PK-20c: always from the media
+    // library by id (a stored url may be stale, or a free URL from older data), max 4.
+    if (Array.isArray(item.props.imageCaptionAvatars)) {
+      const avatars = (
+        item.props.imageCaptionAvatars as Array<{
+          mediaId?: string | number
+          url?: string
+        }>
+      ).slice(0, 4)
+      for (const av of avatars) {
+        if (!av) continue
+        av.url = undefined
+        if (!av.mediaId) continue
+        try {
+          const mediaDoc = await payload.findByID({ collection: 'media', id: String(av.mediaId) })
+          if (typeof mediaDoc?.url === 'string') av.url = mediaDoc.url
+        } catch {
+          // Missing media: the avatar is skipped by BrandImage.
+        }
+      }
+      item.props.imageCaptionAvatars = avatars
+    }
+
     if (item.type === 'FAQ' && item.props.contactMediaId) {
       try {
         const mediaDoc = await payload.findByID({

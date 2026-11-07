@@ -8,6 +8,7 @@ export interface IconCardItem {
   icon?: BrandIconKey | string
   title: string
   text: string
+  highlight?: 'none' | 'outline' | 'navy'
 }
 
 type CardsSlotRender = React.ComponentType<{ className?: string; style?: React.CSSProperties }>
@@ -173,6 +174,7 @@ export function IconCardGrid({
                   icon={item.icon}
                   title={item.title}
                   text={item.text}
+                  highlight={item.highlight}
                   index={index}
                   marker={marker}
                   cardStyle={cardStyle}

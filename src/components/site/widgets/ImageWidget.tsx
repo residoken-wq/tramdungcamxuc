@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
+import { BrandImage, type BrandImageShape, type CaptionPosition } from '@/components/ui/BrandImage'
 import { vi } from '@/lib/i18n/vi'
 import { useClientPageSlug } from '@/puck/client-preview'
 import { getSafeLink, type WidgetLinkProps } from './link-helper'
@@ -15,6 +16,12 @@ export interface ImageWidgetProps extends WidgetLinkProps {
   imageAlt?: string
   caption?: string
   imageSize?: ImageWidgetWidth
+  imageShape?: BrandImageShape
+  imageBadge?: string
+  imageCaptionTitle?: string
+  imageCaptionSubtitle?: string
+  imageCaptionAvatars?: Array<{ mediaId?: string | number; url?: string }>
+  captionPosition?: CaptionPosition
   puck?: { isEditing?: boolean }
 }
 
@@ -30,6 +37,12 @@ export function ImageWidget({
   imageAlt,
   caption,
   imageSize = '100',
+  imageShape,
+  imageBadge,
+  imageCaptionTitle,
+  imageCaptionSubtitle,
+  imageCaptionAvatars,
+  captionPosition,
   linkType = 'none',
   pageId,
   href,
@@ -57,7 +70,10 @@ export function ImageWidget({
   const widthClass = WIDTH_CLASSES[imageSize] || WIDTH_CLASSES['100']
   const linkProps = getSafeLink(linkType, href, _resolved?.pageSlug ?? clientSlug, newTab)
 
-  const imgElement = (
+  const isDefaultImage =
+    !imageBadge && !imageCaptionTitle && (!imageShape || imageShape === 'rounded')
+
+  const imgElement = isDefaultImage ? (
     <div className={`relative ${widthClass} mx-auto overflow-hidden rounded-[inherit]`}>
       <Image
         src={imageUrl}
@@ -68,6 +84,28 @@ export function ImageWidget({
         className="h-auto w-full object-contain rounded-[inherit]"
       />
     </div>
+  ) : (
+    <BrandImage
+      src={imageUrl}
+      alt={imageAlt || 'Hình ảnh'}
+      width={1200}
+      height={800}
+      sizes="(max-width: 768px) 100vw, 1200px"
+      className={`${widthClass} mx-auto rounded-[inherit]`}
+      imageClassName="h-auto w-full object-contain rounded-[inherit]"
+      shape={imageShape}
+      badge={imageBadge}
+      caption={
+        imageCaptionTitle
+          ? {
+              title: imageCaptionTitle,
+              subtitle: imageCaptionSubtitle,
+              avatars: imageCaptionAvatars,
+            }
+          : undefined
+      }
+      captionPosition={captionPosition}
+    />
   )
 
   const content = linkProps ? (

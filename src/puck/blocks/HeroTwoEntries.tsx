@@ -5,6 +5,11 @@ import { BRAND_COLOR_OPTIONS, FONT_SIZE_OPTIONS, PADDING_OPTIONS } from '../cons
 import { createMediaExternalField } from '../media-field'
 import { vi } from '@/lib/i18n/vi'
 import {
+  createBrandImageFields,
+  brandImageDefaultProps,
+  resolveBrandImageAvatars,
+} from '../brand-image-fields'
+import {
   HERO_LAYOUT_OPTIONS,
   HERO_OVERLAY_TONE_OPTIONS,
   HERO_OVERLAY_STRENGTH_OPTIONS,
@@ -106,6 +111,7 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
         { label: vi.eb14a.entriesPlacementTextColumn, value: 'textColumn' },
       ],
     },
+    ...createBrandImageFields(),
   },
   defaultProps: {
     version: 4,
@@ -129,6 +135,7 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
     bgColor: 'warm-ivory',
     padding: 'md',
     titleSize: 'md',
+    ...brandImageDefaultProps,
     entries: [
       {
         type: 'EntryCard',
@@ -183,9 +190,12 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
     return fields
   },
   resolveData: async (data) => {
+    const avatars = await resolveBrandImageAvatars(data.props.imageCaptionAvatars)
+    const baseProps = { ...data.props, imageCaptionAvatars: avatars }
+
     const { mediaId } = data.props
     if (!mediaId) {
-      return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+      return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
     }
 
     try {
@@ -198,7 +208,7 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
           if (json && json.alt && typeof json.alt === 'string' && json.alt.trim().length > 0) {
             return {
               props: {
-                ...data.props,
+                ...baseProps,
                 imageUrl: json.url || '',
                 imageAlt: json.alt.trim(),
               },
@@ -210,7 +220,7 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
       // Fallback
     }
 
-    return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+    return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
   },
   // `puck` carries functions (renderDropZone) that cannot cross into a client component.
   render: ({ puck, ...props }) => (

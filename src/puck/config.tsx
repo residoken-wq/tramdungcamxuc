@@ -72,6 +72,11 @@ import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards
 import { SolutionEcosystemBlock, type SolutionEcosystemProps } from './blocks/SolutionEcosystem'
 import { CTASectionBlock, type CTASectionProps } from './blocks/CTASection'
 import { createMediaExternalField } from './media-field'
+import {
+  createBrandImageFields,
+  brandImageDefaultProps,
+  resolveBrandImageAvatars,
+} from './brand-image-fields'
 
 // Khối Chuyển đổi (Conversion Blocks)
 import { CTAButtonBlock, type CTAButtonBlockProps } from './blocks/CTAButton'
@@ -578,6 +583,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
           label: 'Khoảng đệm (Padding)',
           options: [...PADDING_OPTIONS],
         },
+        ...createBrandImageFields(),
       },
       resolveFields: (data, params) => ({
         ...params.fields,
@@ -646,6 +652,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
           label: 'Khoảng đệm (Padding)',
           options: [...PADDING_OPTIONS],
         },
+        ...createBrandImageFields(),
       },
       resolveFields: (data, params) => ({
         ...params.fields,
@@ -677,11 +684,15 @@ const basePuckConfig: Config<PageComponentsProps> = {
         buttonLink: '#',
         bgColor: 'warm-ivory',
         padding: 'md',
+        ...brandImageDefaultProps,
       },
       resolveData: async (data) => {
+        const avatars = await resolveBrandImageAvatars(data.props.imageCaptionAvatars)
+        const baseProps = { ...data.props, imageCaptionAvatars: avatars }
+
         const { mediaId } = data.props
         if (!mediaId) {
-          return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+          return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
         }
 
         try {
@@ -694,7 +705,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
               if (json && json.alt && typeof json.alt === 'string' && json.alt.trim().length > 0) {
                 return {
                   props: {
-                    ...data.props,
+                    ...baseProps,
                     imageUrl: json.url || '',
                     imageAlt: json.alt.trim(),
                   },
@@ -706,7 +717,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
           // If media resolution fails, preserve props without throwing
         }
 
-        return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+        return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
       },
       // ImageText is a client component: never forward Puck's `puck` object (it holds functions,
       // which cannot be serialised into a client component on the public page).

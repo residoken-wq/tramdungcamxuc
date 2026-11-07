@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
+import { BrandImage, type BrandImageShape, type CaptionPosition } from '@/components/ui/BrandImage'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import {
@@ -60,6 +61,12 @@ export interface HeroImageProps {
   imagePosition?: HeroImagePosition
   contentAlign?: HeroContentAlign
   minHeight?: HeroMinHeight
+  imageShape?: BrandImageShape
+  imageBadge?: string
+  imageCaptionTitle?: string
+  imageCaptionSubtitle?: string
+  imageCaptionAvatars?: Array<{ mediaId?: string | number; url?: string }>
+  captionPosition?: CaptionPosition
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -97,6 +104,12 @@ export function HeroImage({
   emotionLine,
   imageUrl,
   imageAlt,
+  imageShape,
+  imageBadge,
+  imageCaptionTitle,
+  imageCaptionSubtitle,
+  imageCaptionAvatars,
+  captionPosition,
   buttonText,
   buttonLink,
   secondaryButtonText,
@@ -395,21 +408,30 @@ export function HeroImage({
 
         {/* Main Image Banner (Only if alt is present, no fallback without alt) */}
         {hasValidImage && (
-          <div
-            className={`mt-10 sm:mt-12 w-full overflow-hidden rounded-card border shadow-soft aspect-[16/9] max-h-[520px] relative ${
+          <BrandImage
+            src={imageUrl!}
+            alt={imageAlt!.trim()}
+            width={1200}
+            height={675}
+            priority={priority}
+            sizes="(max-width: 768px) 100vw, 1200px"
+            imageClassName="w-full h-auto object-cover max-h-[520px]"
+            className={`mt-10 sm:mt-12 w-full aspect-[16/9] max-h-[520px] border shadow-soft ${
               isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
             }`}
-          >
-            <Image
-              src={imageUrl!}
-              alt={imageAlt!.trim()}
-              width={1200}
-              height={675}
-              priority={priority}
-              sizes="(max-width: 768px) 100vw, 1200px"
-              className="w-full h-auto object-cover max-h-[520px]"
-            />
-          </div>
+            shape={imageShape}
+            badge={imageBadge}
+            caption={
+              imageCaptionTitle
+                ? {
+                    title: imageCaptionTitle,
+                    subtitle: imageCaptionSubtitle,
+                    avatars: imageCaptionAvatars,
+                  }
+                : undefined
+            }
+            captionPosition={captionPosition}
+          />
         )}
       </div>
     </section>

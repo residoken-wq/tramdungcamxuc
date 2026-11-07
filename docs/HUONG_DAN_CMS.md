@@ -2369,7 +2369,14 @@ Bấm vào một khối trên trang. Cột phải hiện 3 tab:
     - `Mặc định`: Giữ nguyên viền và bóng chuẩn theo thiết kế ban đầu của khối.
     - `Bỏ viền`: Ẩn viền xung quanh thẻ con, giữ lại màu nền và bóng nhẹ (nếu có).
     - `Bỏ viền và bóng`: Làm phẳng thẻ con, chỉ giữ lại màu nền của thẻ.
-    - `Không khung`: Xoá sạch toàn bộ viền, bóng và nền thẻ con (thẻ trở nên trong suốt hoà vào nền khối; kể cả thẻ nổi bật cũng chuyển sang nền trong suốt).
+    - `Không khung`: Xoá sạch toàn bộ viền, bóng và nền thẻ con (thẻ trở nên trong suốt hoà vào nền khối; riêng thẻ nền xanh thẫm solid được giữ lại để chữ trắng không chìm).
+    - `Kính mờ`: Thẻ con trong suốt 70% có hiệu ứng mờ hậu cảnh (`backdrop-blur`) và viền trắng mờ tinh tế, thích hợp đặt trên nền ảnh hoặc nền màu. Trên nền tối tự động chuyển sang kính mờ 12%.
+  - **Thẻ con → Vạch màu đầu thẻ**: vẽ một vạch màu 6px trên đỉnh mỗi thẻ con. Có thể chọn 1 trong 8 màu thương hiệu, hoặc chọn **Xoay vòng** để các thẻ lần lượt mang màu Hồng sen → Hồng nhấn → Xanh thẫm.
+  - **Khối Card & IconCardGrid → Thẻ nổi bật**: mỗi thẻ có thể chọn Kiểu nổi bật gồm `Mặc định`, `Viền hồng` (Accent Pink 2px) hoặc `Nền xanh thẫm` (Deep Navy, chữ trắng).
+  - **Ảnh thương hiệu (BrandImage)**: các khối ảnh (Hero Ảnh biểu tượng, Hero 2 Lối vào, Ảnh & Chữ, Thẻ, Widget Ảnh) hỗ trợ:
+    - `Hình dạng ảnh`: Bo góc thường, Vòm trái (bo lớn 120px góc trái), Vòm phải (bo lớn 120px góc phải), Mép sóng cong tự nhiên (Wave).
+    - `Nhãn trên ảnh`: viên xanh thẫm chữ trắng nổi bật ở góc trên trái (VD: "TIÊU CHUẨN KHAI VẤN"; không dùng emoji).
+    - `Thẻ chú thích`: thẻ trắng nổi bo góc ở góc dưới (trái hoặc phải), gồm tiêu đề đậm, dòng phụ màu hồng sen, và tối đa 4 avatar tròn chồng nhau (chỉ chọn từ Thư viện media; avatar là ảnh trang trí, không gắn tên người để tránh thành lời chứng thực giả).
 - **Nâng cao**:
   - **Cách lề** trong / ngoài cho 4 cạnh; tick "Đặt cùng giá trị cho 4 cạnh" để đặt nhanh;
   - **Ẩn trên** máy tính / máy tính bảng / điện thoại;

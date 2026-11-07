@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { BrandImage, type BrandImageShape, type CaptionPosition } from '@/components/ui/BrandImage'
 import { Button } from '@/components/ui/Button'
 import { buttonColorStyle } from '@/lib/brand/button-colors'
 import { safeHref } from '@/lib/safe-href'
@@ -27,6 +28,12 @@ export interface ImageTextProps {
   imageUrl?: string
   imageAlt?: string
   imageLabel?: string
+  imageShape?: BrandImageShape
+  imageBadge?: string
+  imageCaptionTitle?: string
+  imageCaptionSubtitle?: string
+  imageCaptionAvatars?: Array<{ mediaId?: string | number; url?: string }>
+  captionPosition?: CaptionPosition
   buttonText?: string
   buttonLink?: string
   /** PK-15: brand colour of the CTA fill / label ('' = automatic). */
@@ -68,6 +75,12 @@ export function ImageText({
   imageUrl,
   imageAlt,
   imageLabel,
+  imageShape,
+  imageBadge,
+  imageCaptionTitle,
+  imageCaptionSubtitle,
+  imageCaptionAvatars,
+  captionPosition,
   buttonText,
   buttonLink,
   buttonBgColor,
@@ -136,17 +149,29 @@ export function ImageText({
           {/* Image Column - only rendered if activeUrl and activeAlt are present */}
           {hasValidImage && (
             <div className={`${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full`}>
-              <div className="relative overflow-hidden rounded-card border border-deep-navy/10 shadow-soft bg-white">
-                <Image
-                  src={activeUrl!}
-                  alt={activeAlt}
-                  width={800}
-                  height={600}
-                  className="w-full h-auto object-cover max-h-[460px]"
-                  loading="lazy"
-                  unoptimized={activeUrl?.startsWith('data:') || activeUrl?.startsWith('blob:')}
-                />
-                {imageLabel && (
+              <BrandImage
+                src={activeUrl!}
+                alt={activeAlt}
+                width={800}
+                height={600}
+                className="border border-deep-navy/10 shadow-soft bg-white"
+                imageClassName="w-full h-auto object-cover max-h-[460px]"
+                loading="lazy"
+                unoptimized={activeUrl?.startsWith('data:') || activeUrl?.startsWith('blob:')}
+                shape={imageShape}
+                badge={imageBadge}
+                caption={
+                  imageCaptionTitle
+                    ? {
+                        title: imageCaptionTitle,
+                        subtitle: imageCaptionSubtitle,
+                        avatars: imageCaptionAvatars,
+                      }
+                    : undefined
+                }
+                captionPosition={captionPosition}
+              >
+                {imageLabel && !imageCaptionTitle && (
                   <span
                     {...textTarget(id, 'imageLabel')}
                     className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-deep-navy/90 px-3 py-1 font-ui text-xs font-semibold text-white shadow-soft"
@@ -154,7 +179,7 @@ export function ImageText({
                     {imageLabel}
                   </span>
                 )}
-              </div>
+              </BrandImage>
             </div>
           )}
 
