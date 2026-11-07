@@ -101,6 +101,7 @@ import { ContactInfoBlock, type ContactInfoProps } from './blocks/ContactInfo'
 import { ContactFormsBlock, type ContactFormsProps } from './blocks/ContactForms'
 import { PhotoGalleryBlock, type PhotoGalleryProps } from './blocks/PhotoGallery'
 import { MatrixTableBlock, type MatrixTableProps } from './blocks/MatrixTable'
+import { LoopDiagramBlock, type LoopDiagramProps } from './blocks/LoopDiagram'
 
 // EB-10: Khối đầu trang / chân trang (Site Theme Blocks)
 import { SiteLogoBlock, type SiteLogoProps } from './blocks/site/SiteLogo'
@@ -162,6 +163,7 @@ export type {
   NewsletterFormProps,
   PhotoGalleryProps,
   MatrixTableProps,
+  LoopDiagramProps,
   ContactInfoProps,
   ContactFormsProps,
   CardProps,
@@ -233,6 +235,7 @@ export type PageComponentsProps = {
   ContactInfo: ContactInfoProps
   PhotoGallery: PhotoGalleryProps
   MatrixTable: MatrixTableProps
+  LoopDiagram: LoopDiagramProps
   // Bố cục
   Container: ContainerProps
   Columns: ColumnsProps
@@ -309,6 +312,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'ContactInfo',
         'PhotoGallery',
         'MatrixTable',
+        'LoopDiagram',
       ],
     },
     layout: {
@@ -794,6 +798,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
     ContactInfo: ContactInfoBlock,
     PhotoGallery: PhotoGalleryBlock,
     MatrixTable: MatrixTableBlock,
+    LoopDiagram: LoopDiagramBlock,
     Container: ContainerBlock,
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,

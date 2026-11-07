@@ -104,6 +104,7 @@ export const CONTAINER_ALLOWED_BLOCKS = [
   'ContactInfo',
   'PhotoGallery',
   'MatrixTable',
+  'LoopDiagram',
   'Container',
   'Columns',
   'Spacer',
