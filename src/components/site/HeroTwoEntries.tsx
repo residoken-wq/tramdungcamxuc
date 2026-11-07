@@ -5,6 +5,7 @@ import { safeHref } from '@/lib/safe-href'
 import { fontSizeClass, type FontSizeOption } from '@/lib/brand/format-classes'
 import { HeroEntryCard, type HeroEntryCardProps } from './HeroEntryCard'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { HeroBackdrop } from './HeroBackdrop'
 import { textTarget } from '@/puck/style/text-target'
 import {
@@ -273,12 +274,13 @@ export function HeroTwoEntries({
           )}
 
           <h1 className={titleClass}>
-            <span {...textTarget(id, 'titleLine1')} className={bTitle1Color}>
-              {titleLine1}
-            </span>{' '}
-            <span {...textTarget(id, 'titleLine2')} className={bTitle2Color}>
-              {titleLine2}
-            </span>
+            <TwoToneTitle
+              id={id}
+              line1={titleLine1}
+              line2={titleLine2}
+              line1ClassName={bTitle1Color}
+              line2ClassName={bTitle2Color}
+            />
           </h1>
 
           {emotionLine && (
@@ -333,15 +335,13 @@ export function HeroTwoEntries({
                     )}
 
                     <h1 className={titleClass}>
-                      <span
-                        {...textTarget(id, 'titleLine1')}
-                        className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-                      >
-                        {titleLine1}
-                      </span>{' '}
-                      <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
-                        {titleLine2}
-                      </span>
+                      <TwoToneTitle
+                        id={id}
+                        line1={titleLine1}
+                        line2={titleLine2}
+                        line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                        line2ClassName={titleLine2ColorClass}
+                      />
                     </h1>
 
                     {emotionLine && (
@@ -409,15 +409,13 @@ export function HeroTwoEntries({
 
               {/* Signature Two-Tone Heading (Anton) */}
               <h1 className={titleClass}>
-                <span
-                  {...textTarget(id, 'titleLine1')}
-                  className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-                >
-                  {titleLine1}
-                </span>{' '}
-                <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
-                  {titleLine2}
-                </span>
+                <TwoToneTitle
+                  id={id}
+                  line1={titleLine1}
+                  line2={titleLine2}
+                  line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                  line2ClassName={titleLine2ColorClass}
+                />
               </h1>
 
               {/* Emotional Quote (Playfair Display Italic) */}

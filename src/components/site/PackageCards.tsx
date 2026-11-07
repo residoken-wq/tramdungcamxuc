@@ -2,6 +2,7 @@ import React from 'react'
 import { PackageCardItem } from './PackageCardItem'
 import { PackageCardsCTA } from './PackageCardsCTA'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import type { PublicProduct } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import { textTarget } from '@/puck/style/text-target'
@@ -137,17 +138,13 @@ export function PackageCards({
 
             {titleLine1 && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
-                <span
-                  {...textTarget(id, 'titleLine1')}
-                  className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-                >
-                  {titleLine1}
-                </span>{' '}
-                {titleLine2 && (
-                  <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
-                    {titleLine2}
-                  </span>
-                )}
+                <TwoToneTitle
+                  id={id}
+                  line1={titleLine1}
+                  line2={titleLine2}
+                  line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                  line2ClassName={titleLine2ColorClass}
+                />
               </h2>
             )}
 
