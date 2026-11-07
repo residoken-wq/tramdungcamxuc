@@ -190,7 +190,12 @@ export const journeyTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'journey-faq',
-        version: 4,
+        version: 5,
+        description: '',
+        seriesLabelStyle: 'text',
+        iconStyle: 'chevron',
+        contactMediaId: '',
+        contactBadge: 'Trạm Dừng Cảm Xúc',
         source: 'group',
         group: 'journey',
         limit: 5,

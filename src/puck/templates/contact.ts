@@ -130,7 +130,12 @@ export const contactTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'contact-faq',
-        version: 4,
+        version: 5,
+        description: '',
+        seriesLabelStyle: 'text',
+        iconStyle: 'chevron',
+        contactMediaId: '',
+        contactBadge: 'Trạm Dừng Cảm Xúc',
         source: 'group',
         group: 'general',
         limit: 5,

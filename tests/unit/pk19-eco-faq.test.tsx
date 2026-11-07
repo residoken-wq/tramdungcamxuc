@@ -501,3 +501,26 @@ describe('PK-19: SolutionEcosystem & FAQ Design Upgrades', () => {
     })
   })
 })
+
+describe('QA PK-19c', () => {
+  it('slot child questions follow the parent FAQ "+ / −" style and turn magenta when open', async () => {
+    const { FAQ } = await import('@/components/site/FAQ')
+    const { FaqItemView } = await import('@/components/site/FaqItemView')
+    const { render: r, fireEvent: fe } = await import('@testing-library/react')
+    const { getByRole } = r(
+      <FAQ titleLine1="[MẪU] FAQ" iconStyle="plusminus" aside="none">
+        <FaqItemView question="[MẪU] Câu hỏi 1" answer="[MẪU] Trả lời 1" />
+      </FAQ>,
+    )
+    const btn = getByRole('button', { name: /Câu hỏi 1/ })
+    fe.click(btn)
+    expect(btn.getAttribute('aria-expanded')).toBe('true')
+    expect(btn.innerHTML).toContain('text-bright-magenta')
+  })
+
+  it('FAQ.tsx stays a server component (no hooks); the contact image lives in FaqContactAvatar', async () => {
+    const fs = await import('node:fs')
+    const src = fs.readFileSync('src/components/site/FAQ.tsx', 'utf8')
+    expect(src).not.toMatch(/\buse(State|Effect)\b/)
+  })
+})

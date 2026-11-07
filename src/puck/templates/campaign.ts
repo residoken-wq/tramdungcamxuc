@@ -116,7 +116,12 @@ export const campaignTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'campaign-faq',
-        version: 4,
+        version: 5,
+        description: '',
+        seriesLabelStyle: 'text',
+        iconStyle: 'chevron',
+        contactMediaId: '',
+        contactBadge: '',
         seriesLabel: '[MẪU] Giải đáp',
         titleLine1: '[MẪU] CÂU HỎI',
         titleLine2: '[MẪU] THƯỜNG GẶP',
