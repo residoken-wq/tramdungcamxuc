@@ -314,6 +314,8 @@ Quy tắc chung, thứ tự 2 dây (Laptop: HB-17 → 22, PC nhà: HB-23 → 13 
 | PK-17 | Đúng thiết kế: Hành trình kiểu Vòng tròn thật, Câu chuyện Hana bố cục "Ảnh trong khung cong", tab Kiểu tắt khung viền thẻ, bỏ ngoặc kép lặp ([prompt](prompts/PK-17.md)) | PK-16, không migration | Laptop | Prompt 07/11 |
 | PK-18 | Ảnh nền cho mọi khối (tab Kiểu → Nền → Ảnh + lớp phủ) và nút "Tải ảnh lên" cạnh "Tìm kiếm" trong hộp chọn ảnh ([prompt](prompts/PK-18.md)) | PK-17 (cùng tab Kiểu), không migration | Laptop | Prompt 07/11 |
 | PK-19 | Đúng thiết kế: Hệ sinh thái giải pháp bố cục "Theo nhóm" (icon, vạch màu, nhóm Signature / Masterclass, thẻ con có tiêu đề) + FAQ có mô tả, nhãn viên, thẻ liên hệ có ảnh, biểu tượng +/− ([prompt](prompts/PK-19.md)) | PK-16, migration dữ liệu Puck | Laptop | Prompt 07/11 |
+| PK-20 | Thiết kế v2: vạch màu đầu thẻ, thẻ kính mờ, thẻ nổi bật, nhãn và thẻ chú thích trên ảnh, hình dạng ảnh (BrandImage) ([prompt](prompts/PK-20.md)) | PK-17 | PC nhà | Prompt 07/11 |
+| PK-21 | Thiết kế v2: khối PhotoGallery, lưới thẻ trượt, FAQ cards/quick, ServiceCards detailed, Testimonial featured, ảnh tràn mép, form 1 cột, lead magnet danh sách, bài viết nổi bật, dải ghi chú ([prompt](prompts/PK-21.md)) | PK-19 | Laptop | Prompt 07/11 |
 | HB-26           | **Gấp:** nội dung Habit Loop theo bản mới (`docs/content/habit-v2-ban-moi.md`), ẩn field cũ trùng (`quotes`, `onePercent.facts`), hiện câu trích bước Gọi tên / 28 ngày, lệnh nạp nội dung có dry-run ([prompt](prompts/HB-26.md), [review](reviews/HB-26.md)) | PR #276 merge – không migration             | PC nhà | QA 02/11: ĐẠT sau HB-26c, chờ merge – anh IT chạy lệnh nạp theo RUNBOOK |
 
 (Planning dùng cho mọi task)
