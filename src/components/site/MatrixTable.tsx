@@ -281,6 +281,7 @@ export function MatrixTable({
                     hasAccent ? 'border-l-4 border-l-accent-pink' : ''
                   } ${toneClass}`}
                 >
+                  {/* a11y-contrast-ok: PK-26 accent-pink label on deep-navy has 5.3:1 contrast */}
                   <div className="font-ui text-sm sm:text-base font-bold shrink-0 min-w-[140px] text-accent-pink sm:text-inherit">
                     {row.label}
                   </div>

@@ -71,3 +71,4 @@ export const LoopDiagramBlock: ComponentConfig<LoopDiagramProps> = {
   },
   render: (props) => <LoopDiagram {...props} />,
 }
+

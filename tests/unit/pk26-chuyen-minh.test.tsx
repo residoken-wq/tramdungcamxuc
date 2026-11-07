@@ -87,8 +87,8 @@ describe('PK-26: Chuyển mình không chênh vênh', () => {
           id="test-grid-5"
           columns={5}
           cards={[
-            { id: '1', type: 'Card', props: { id: 'c1', title: '1' } },
-            { id: '2', type: 'Card', props: { id: 'c2', title: '2' } },
+            { id: '1', type: 'Card', props: { title: '1' } },
+            { id: '2', type: 'Card', props: { title: '2' } },
           ]}
         />,
       )
@@ -103,8 +103,8 @@ describe('PK-26: Chuyển mình không chênh vênh', () => {
           columns={3}
           connector="arrow"
           cards={[
-            { id: '1', type: 'Card', props: { id: 'c1', title: 'Bước 1' } },
-            { id: '2', type: 'Card', props: { id: 'c2', title: 'Bước 2' } },
+            { id: '1', type: 'Card', props: { title: 'Bước 1' } },
+            { id: '2', type: 'Card', props: { title: 'Bước 2' } },
           ]}
         />,
       )

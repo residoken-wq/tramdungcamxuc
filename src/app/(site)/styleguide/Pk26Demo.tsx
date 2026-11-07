@@ -152,11 +152,11 @@ export function Pk26Demo() {
           columns={5}
           connector="arrow"
           cards={[
-            { id: 'step-1', type: 'Card', props: { id: 's1', eyebrow: '01', title: '[MẪU] DỪNG' } },
-            { id: 'step-2', type: 'Card', props: { id: 's2', eyebrow: '02', title: '[MẪU] NHẬN DIỆN' } },
-            { id: 'step-3', type: 'Card', props: { id: 's3', eyebrow: '03', title: '[MẪU] ĐIỀU HÒA' } },
-            { id: 'step-4', type: 'Card', props: { id: 's4', eyebrow: '04', title: '[MẪU] LỰA CHỌN' } },
-            { id: 'step-5', type: 'Card', props: { id: 's5', eyebrow: '05', title: '[MẪU] QUAY LẠI' } },
+            { id: 'step-1', type: 'Card', props: { eyebrow: '01', title: '[MẪU] DỪNG' } },
+            { id: 'step-2', type: 'Card', props: { eyebrow: '02', title: '[MẪU] NHẬN DIỆN' } },
+            { id: 'step-3', type: 'Card', props: { eyebrow: '03', title: '[MẪU] ĐIỀU HÒA' } },
+            { id: 'step-4', type: 'Card', props: { eyebrow: '04', title: '[MẪU] LỰA CHỌN' } },
+            { id: 'step-5', type: 'Card', props: { eyebrow: '05', title: '[MẪU] QUAY LẠI' } },
           ]}
         />
       </div>
@@ -224,3 +224,4 @@ export function Pk26Demo() {
     </div>
   )
 }
+

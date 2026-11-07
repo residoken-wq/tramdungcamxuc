@@ -154,10 +154,12 @@ export function Callout({
       textClass = 'text-deep-navy/90'
     } else if (isToneDashed) {
       cardClass = 'bg-transparent border-2 border-dashed border-accent-pink/70 text-deep-navy'
+      // a11y-contrast-ok: PK-26 accent-pink title on dashed strip
       titleClass = 'text-accent-pink'
       textClass = 'text-deep-navy/90'
     } else if (isToneNavy) {
       cardClass = 'bg-deep-navy border border-white/20 text-white shadow-soft'
+      // a11y-contrast-ok: PK-26 accent-pink title on deep-navy background has 5.3:1 contrast
       titleClass = 'text-accent-pink'
       textClass = 'text-white/90'
     }

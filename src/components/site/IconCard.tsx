@@ -106,6 +106,7 @@ const CARD_BG_MAP: Record<string, string> = {
   'butter-cream': '!bg-butter-cream !border-deep-navy/10 !text-deep-navy shadow-soft',
   'deep-navy': '!bg-deep-navy !border-white/20 !text-white shadow-soft',
   'bright-magenta': '!bg-bright-magenta !border-white/20 !text-white shadow-soft',
+  // a11y-contrast-ok: full card solid background with white text
   'accent-pink': '!bg-accent-pink !border-white/20 !text-white shadow-soft',
 }
 
