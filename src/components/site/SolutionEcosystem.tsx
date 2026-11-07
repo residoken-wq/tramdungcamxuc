@@ -12,6 +12,7 @@ import {
   type PublicProgramSummary,
 } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 
 export type { PublicServiceSummary, PublicProgramSummary }
 
@@ -35,12 +36,7 @@ export interface SolutionEcosystemProps {
   col3Description?: string
   col3Programs?: Array<{ programId?: string | number }>
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     products?: PublicProduct[]
@@ -94,14 +90,11 @@ export function SolutionEcosystem({
   const descColorClass = isDeepNavy ? 'text-white/80' : 'text-deep-navy/80'
 
   const productIds = col1Products?.map((p) => p.productId).filter(Boolean) as
-    | Array<string | number>
-    | undefined
+    Array<string | number> | undefined
   const serviceIds = col2Services?.map((s) => s.serviceId).filter(Boolean) as
-    | Array<string | number>
-    | undefined
+    Array<string | number> | undefined
   const programIds = col3Programs?.map((p) => p.programId).filter(Boolean) as
-    | Array<string | number>
-    | undefined
+    Array<string | number> | undefined
 
   const { products: loadedProducts } = useClientProducts({
     productIds,
@@ -159,8 +152,12 @@ export function SolutionEcosystem({
 
             {titleLine1 && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
-                <span className={isDeepNavy ? 'text-white' : 'text-deep-navy'}>{titleLine1}</span>{' '}
-                {titleLine2 && <span className={titleLine2ColorClass}>{titleLine2}</span>}
+                <TwoToneTitle
+                  line1={titleLine1}
+                  line2={titleLine2}
+                  line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                  line2ClassName={titleLine2ColorClass}
+                />
               </h2>
             )}
 
@@ -270,9 +267,7 @@ export function SolutionEcosystem({
                 <div className="space-y-4">
                   {services.length === 0 ? (
                     isEditing ? (
-                      <p className="text-xs italic text-white/60">
-                        {vi.sm03.noServicesSelected}
-                      </p>
+                      <p className="text-xs italic text-white/60">{vi.sm03.noServicesSelected}</p>
                     ) : null
                   ) : (
                     services.map((s) => {

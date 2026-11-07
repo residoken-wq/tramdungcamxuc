@@ -25,6 +25,10 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
       options: [
         { label: 'Câu chuyện kể (Story - Mặc định)', value: 'story' },
         { label: 'Thư từ nhà sáng lập (Letter)', value: 'letter' },
+        {
+          label: vi.pk17?.layoutSpotlight || 'Ảnh trong khung cong (Spotlight)',
+          value: 'spotlight',
+        },
       ],
     },
     imagePosition: {

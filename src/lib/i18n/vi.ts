@@ -3339,6 +3339,17 @@ export const vi = {
     buttonBgColor: 'Màu nút',
     buttonTextColor: 'Màu chữ trên nút',
   },
+  pk17: {
+    layoutSpotlight: 'Ảnh trong khung cong (Spotlight)',
+    cardFrame: {
+      groupTitle: 'Thẻ con',
+      label: 'Khung thẻ',
+      default: 'Mặc định',
+      borderless: 'Bỏ viền',
+      flat: 'Bỏ viền và bóng',
+      none: 'Không khung',
+    },
+  },
   eb16: {
     replaceEntirePage: 'Thay toàn bộ trang',
     back: 'Quay lại',

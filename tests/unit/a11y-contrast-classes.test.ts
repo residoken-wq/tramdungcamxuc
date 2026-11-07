@@ -30,7 +30,14 @@ function isLargeText(tokens: string[]): boolean {
     const match = t.match(/^text-\[(\d+)px\]$/)
     return Boolean(match && parseInt(match[1], 10) >= 19)
   })
-  return hasBold && hasLargeSize
+  // WCAG: >= 24px regular (text-2xl and up) is large text without bold (QA PK-17c: Anton has a
+  // single weight, so forcing font-bold would only fake-bold it).
+  const hasHugeSize = base.some((t) => {
+    if (/^text-(2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)$/.test(t)) return true
+    const match = t.match(/^text-\[(\d+)px\]$/)
+    return Boolean(match && parseInt(match[1], 10) >= 24)
+  })
+  return (hasBold && hasLargeSize) || hasHugeSize
 }
 
 function stripImportant(token: string): string {

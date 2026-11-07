@@ -52,6 +52,9 @@ export interface TextTargetStyle {
   align?: Responsive<'left' | 'center' | 'right'>
 }
 
+export const CARD_FRAMES = ['default', 'borderless', 'flat', 'none'] as const
+export type CardFrame = (typeof CARD_FRAMES)[number]
+
 export interface BlockStyle {
   // Style tab
   background?: string
@@ -68,6 +71,7 @@ export interface BlockStyle {
   titleLineHeight?: TitleLineHeightPreset
   eyebrowGap?: EyebrowGapPreset
   emotionGap?: EmotionGapPreset
+  cardFrame?: CardFrame
   // EB-15a: Individual text target styles
   texts?: Record<string, TextTargetStyle>
   // Advanced tab
@@ -288,6 +292,10 @@ export function sanitizeBlockStyle(
     titleLineHeight: cleanTitleLineHeight(r.titleLineHeight),
     eyebrowGap: cleanEyebrowGap(r.eyebrowGap),
     emotionGap: cleanEmotionGap(r.emotionGap),
+    cardFrame:
+      includes(CARD_FRAMES, r.cardFrame) && r.cardFrame !== 'default'
+        ? (r.cardFrame as CardFrame)
+        : undefined,
     texts: cleanTexts(r.texts, ds, blockType),
     padding: cleanResponsive(r.padding, (v) => cleanBox(v, 'spacing', ds)),
     margin: cleanResponsive(r.margin, (v) => cleanBox(v, 'margin', ds)),

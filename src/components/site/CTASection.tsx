@@ -11,6 +11,7 @@ import type { PublicTestimonial } from '@/lib/testimonials'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 
 export interface CTASectionProps {
   version?: number
@@ -145,12 +146,13 @@ export function CTASection({
           <h2
             className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
           >
-            <span {...textTarget(id, 'titleLine1')} className="text-deep-navy">
-              {titleLine1}
-            </span>{' '}
-            <span {...textTarget(id, 'titleLine2')} className="text-bright-magenta">
-              {titleLine2}
-            </span>
+            <TwoToneTitle
+              id={id}
+              line1={titleLine1}
+              line2={titleLine2}
+              line1ClassName="text-deep-navy"
+              line2ClassName="text-bright-magenta"
+            />
           </h2>
 
           {emotionLine && (
