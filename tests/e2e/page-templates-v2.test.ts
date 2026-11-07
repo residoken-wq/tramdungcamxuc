@@ -218,6 +218,11 @@ test.describe('SM-07: Sitemap v2 Page Templates (Contact Template E2E)', () => {
         timeout: 10000,
       })
 
+      // Verify final section (Quà tặng + Liên hệ in Columns slots) exists on page
+      await expect(publicPage.getByText('Bắt đầu hành trình').first()).toBeVisible({
+        timeout: 10000,
+      })
+
       if (process.env.PK22_SCREENSHOTS === '1') {
         const fs = await import('node:fs')
         const path = await import('node:path')
@@ -233,6 +238,9 @@ test.describe('SM-07: Sitemap v2 Page Templates (Contact Template E2E)', () => {
       await publicPage.setViewportSize({ width: 375, height: 667 })
       await publicPage.reload({ waitUntil: 'domcontentloaded' })
       await expect(publicPage.getByText('Hiểu mình rõ. Hành động bền bỉ.').first()).toBeVisible({
+        timeout: 10000,
+      })
+      await expect(publicPage.getByText('Bắt đầu hành trình').first()).toBeVisible({
         timeout: 10000,
       })
 

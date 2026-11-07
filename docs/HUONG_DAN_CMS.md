@@ -2023,7 +2023,9 @@ Trong đợt nâng cấp thiết kế website v2, 6 mẫu trang được đồng
 
 ##### Danh sách dữ liệu CMS cần chuẩn bị trước khi xuất bản:
 - **Tình huống & Kết quả (`situations` / `outcomes`)**: Nhập đầy đủ cho các sản phẩm Growth Mirror, Thinking Mirror trong danh mục Sản phẩm.
-- **Câu hỏi thường gặp (FAQ)**: Soạn thảo câu hỏi theo nhóm (`general`, `habit`, `mirror`...) trong mục Câu hỏi thường gặp. Trạm chỉ nhận chuyển khoản VietQR và không áp dụng chính sách hoàn tiền.
+- **Câu hỏi thường gặp (FAQ)**: Soạn thảo câu hỏi theo nhóm (`general`, `habit`, `mirror`...) trong mục Câu hỏi thường gặp. Trạm chỉ nhận chuyển khoản VietQR và không áp dụng chính sách hoàn tiền. Hai câu hỏi gợi ý từ thiết kế trang Liên hệ để Hana nhập vào nhóm `general`:
+  1. *Hướng dẫn kích hoạt khóa học/sản phẩm số tải về ở đâu?* → "Ngay sau khi thanh toán thành công, bạn sẽ nhận được email hướng dẫn chi tiết kèm đường dẫn truy cập kho tài liệu số."
+  2. *Tôi chưa biết chọn gói Khai vấn 1:1 nào, làm sao để được tư vấn?* → "Bạn có thể liên hệ trực tiếp qua Zalo/Hotline hoặc gửi form đăng ký tư vấn ngắn để đội ngũ xếp lịch trao đổi 15 phút miễn phí."
 - **Tagline sản phẩm**: Bổ sung tóm tắt ngắn cho từng sản phẩm trong CMS.
 - **Đường dẫn nhóm Zalo / Cộng đồng**: Cập nhật link tham gia nhóm Me Time và Yoga Buddy trong phần Cài đặt website (`siteSettings`) trước khi gắn vào nút hành động.
 

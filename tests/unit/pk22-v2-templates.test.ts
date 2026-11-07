@@ -17,7 +17,7 @@ describe('PK-22 Website v2 Templates', () => {
   const v2Templates = [
     {
       key: 'home-v2',
-      name: 'Trang chủ v2',
+      name: 'Trang chủ',
       data: homeV2Template,
       expectedFirstTitle: 'Hiểu mình rõ. Hành động bền bỉ.',
     },
@@ -112,6 +112,59 @@ describe('PK-22 Website v2 Templates', () => {
           jsonString.toLowerCase().includes(prohibited.toLowerCase()),
           `Template ${key} contains prohibited string: "${prohibited}"`,
         ).toBe(false)
+      }
+    }
+  })
+
+  it('all 6 v2 templates have empty zones', () => {
+    for (const { key, data } of v2Templates) {
+      expect(
+        Object.keys(data.zones || {}).length,
+        `Template ${key} should have empty zones object`,
+      ).toBe(0)
+    }
+  })
+
+  it('every Columns block defines children in props.col1 and props.col2 slot arrays', () => {
+    for (const { key, data } of v2Templates) {
+      const columnBlocks = data.content.filter((item) => item.type === 'Columns')
+      for (const colBlock of columnBlocks) {
+        expect(
+          Array.isArray(colBlock.props?.col1) && colBlock.props.col1.length > 0,
+          `Columns block ${colBlock.props?.id} in ${key} should have children in props.col1`,
+        ).toBe(true)
+        expect(
+          Array.isArray(colBlock.props?.col2) && colBlock.props.col2.length > 0,
+          `Columns block ${colBlock.props?.id} in ${key} should have children in props.col2`,
+        ).toBe(true)
+      }
+    }
+  })
+
+  it('renders HTML of each template containing expected child titles in Columns slots', () => {
+    const slotChildTitles: Record<string, string[]> = {
+      'home-v2': ['Bắt đầu hành trình'],
+      coach: ['Bạn đang đối mặt với những lựa chọn khó khăn?', 'Bước vào không gian của riêng bạn'],
+      about: ['Chuẩn mực Khai vấn ICF'],
+      community: ['Hành trình 30 Phút', 'Vài điều giữ cho nhau'],
+      contact: ['Lắng nghe để kiến tạo sự chuyển hóa'],
+    }
+
+    // Also assert that home-v2 col1 slot contains the LeadMagnetCarousel with "Quà tặng miễn phí"
+    const homeCols = homeV2Template.content.find((i) => i.props?.id === 'home-v2-footer-cols')
+    expect(
+      (homeCols?.props?.col1 as Array<{ props?: { titleLine1?: string } }>)?.[0]?.props?.titleLine1,
+    ).toBe('Quà tặng miễn phí')
+
+    for (const { key, data } of v2Templates) {
+      const titles = slotChildTitles[key]
+      if (!titles) continue
+      const { container } = render(React.createElement(Render, { config: puckConfig, data }))
+      for (const expectedTitle of titles) {
+        expect(
+          container.innerHTML.includes(expectedTitle),
+          `Template ${key} rendered HTML should contain child title "${expectedTitle}" from Columns slot`,
+        ).toBe(true)
       }
     }
   })

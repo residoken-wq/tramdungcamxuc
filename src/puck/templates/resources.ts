@@ -31,7 +31,7 @@ export const resourcesTemplate: Data = {
         seriesLabel: 'SEO articles & blog • Góc nhìn chuyên gia',
         titleLine1: 'Bài viết chuyên đề',
         titleLine2: '',
-        emotionLine: 'Những bài viết chuyên sâu đúc kết từ thực tiễn đồng hành và nghiên cứu.',
+        emotionLine: '',
         tab: 'bai-viet',
         limit: 6,
         bgColor: 'warm-ivory',
@@ -62,16 +62,15 @@ export const resourcesTemplate: Data = {
     },
 
     // 4.3 Bản tin hàng tuần
-    // PK-21: gộp 3 ý vào NewsletterForm khi PK-21 merge
     {
       type: 'IconCardGrid',
       props: {
         id: 'resources-newsletter-benefits',
         version: 2,
         seriesLabel: 'Weekly newsletter & insights',
-        titleLine1: 'Nội dung nhận được mỗi tuần',
+        titleLine1: 'Nuôi dưỡng nội lực mỗi tuần',
         titleLine2: '',
-        emotionLine: 'Những giá trị thiết thực được chọn lọc gửi thẳng đến hộp thư của bạn.',
+        emotionLine: '',
         columns: 3,
         cardAccent: 'cycle',
         cardFrame: 'solid',
@@ -143,9 +142,8 @@ export const resourcesTemplate: Data = {
         title: 'Nuôi dưỡng nội lực mỗi tuần',
         description:
           'Đăng ký nhận bản tin (Newsletter) hàng tuần từ Trạm Dừng Cảm Xúc để cập nhật những bài viết, podcast và công cụ thực hành mới nhất.',
-        submitLabel: 'Đăng ký nhận tin',
-        consentText:
-          'Tôi đồng ý nhận email chia sẻ định kỳ từ Trạm Dừng Cảm Xúc theo chính sách bảo mật.',
+        submitLabel: '',
+        consentText: '',
         bgColor: 'warm-ivory',
         padding: 'md',
       },
