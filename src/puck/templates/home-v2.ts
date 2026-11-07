@@ -529,7 +529,7 @@ export const homeV2Template: Data = {
         columns: 3,
         bgColor: 'warm-ivory',
         padding: 'md',
-        cardAccent: 'cycle',
+        _style: { cardAccent: 'cycle' },
       },
     },
 
@@ -622,7 +622,8 @@ export const homeV2Template: Data = {
       type: 'FAQ',
       props: {
         id: 'home-v2-faq',
-        version: 5,
+        version: 6,
+        variant: 'accordion',
         source: 'category',
         group: 'general',
         limit: 5,
@@ -658,11 +659,11 @@ export const homeV2Template: Data = {
         bgColor: 'warm-ivory',
         padding: 'lg',
         col1: [
-          // PK-21: đổi sang LeadMagnetCarousel list khi PK-21 merge
           {
             type: 'LeadMagnetCarousel',
             props: {
               id: 'home-v2-lead-magnet',
+              display: 'list',
               version: 1,
               seriesLabel: 'Lead magnet',
               titleLine1: 'Quà tặng miễn phí',

@@ -16,6 +16,7 @@ export interface FAQProps {
   sectionId?: string
   headingId?: string
   version?: number
+  variant?: 'accordion' | 'cards' | 'quick'
   source?: 'manual' | 'group'
   group?: string
   limit?: number
@@ -41,7 +42,12 @@ export interface FAQProps {
   email?: string
   seeAllLink?: string
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     email?: string | null
@@ -77,6 +83,7 @@ export function FAQ({
   sectionId,
   headingId,
   version: _version,
+  variant = 'accordion',
   source = 'manual',
   group = 'general',
   limit = 5,
@@ -159,7 +166,9 @@ export function FAQ({
       ? seeAllLink.trim()
       : isGroupSource
         ? `/cau-hoi-thuong-gap#${group || 'general'}`
-        : null
+        : variant === 'quick'
+          ? '/cau-hoi-thuong-gap'
+          : null
   const seeAllSafeLink = effectiveSeeAllLink ? safeHref(effectiveSeeAllLink) : null
   const bookingProductId = _resolved?.bookingProductId ?? null
 
@@ -183,10 +192,17 @@ export function FAQ({
     finalBookingHref = safeHref(bookingButtonLink)
   }
 
+  const itemContainerClass =
+    variant === 'cards'
+      ? 'grid grid-cols-1 md:grid-cols-2 gap-6'
+      : variant === 'quick'
+        ? 'space-y-3'
+        : 'space-y-4'
+
   let renderedItems: React.ReactNode = null
 
   if (hasChildren) {
-    renderedItems = <div className="space-y-4">{children}</div>
+    renderedItems = <div className={itemContainerClass}>{children}</div>
   } else if (isGroupSource) {
     renderedItems = (
       <FaqAccordionList
@@ -199,6 +215,7 @@ export function FAQ({
         numbered={numbered}
         isDeepNavy={isDeepNavy}
         iconStyle={iconStyle}
+        variant={variant}
         cardBgClass={cardBgClass}
         questionColorClass={questionColorClass}
         answerColorClass={answerColorClass}
@@ -210,7 +227,7 @@ export function FAQ({
     renderedItems = (
       <>
         {React.createElement(items as React.ComponentType<{ className?: string }>, {
-          className: 'space-y-4',
+          className: itemContainerClass,
         })}
         <EmptySlotHint
           parentId={id}
@@ -222,7 +239,7 @@ export function FAQ({
       </>
     )
   } else if (hasElement) {
-    renderedItems = <div className="space-y-4">{items as React.ReactNode}</div>
+    renderedItems = <div className={itemContainerClass}>{items as React.ReactNode}</div>
   } else if (isItemsArray && itemsArrayLen > 0) {
     const rawArray = items as unknown[]
     const isChildBlockArray =
@@ -234,7 +251,7 @@ export function FAQ({
 
     if (isChildBlockArray) {
       renderedItems = (
-        <div className="space-y-4">
+        <div className={itemContainerClass}>
           {rawArray.map((child: unknown, idx: number) => {
             if (React.isValidElement(child)) return child
             if (child && typeof child === 'object') {
@@ -243,8 +260,11 @@ export function FAQ({
               return (
                 <FaqItemView
                   key={childProps.id ? String(childProps.id) : idx}
+                  index={idx}
+                  isDeepNavy={isDeepNavy}
                   puck={puck}
                   iconStyle={iconStyle}
+                  variant={variant}
                   {...childProps}
                 />
               )
@@ -266,6 +286,7 @@ export function FAQ({
           numbered={numbered}
           isDeepNavy={isDeepNavy}
           iconStyle={iconStyle}
+          variant={variant}
           cardBgClass={cardBgClass}
           questionColorClass={questionColorClass}
           answerColorClass={answerColorClass}
@@ -278,7 +299,9 @@ export function FAQ({
 
   const accordionContent = (
     <div>
-      <FaqStyleProvider iconStyle={iconStyle}>{renderedItems}</FaqStyleProvider>
+      <FaqStyleProvider iconStyle={iconStyle} variant={variant}>
+        {renderedItems}
+      </FaqStyleProvider>
 
       {seeAllSafeLink && (
         <div className="mt-8 text-center pt-2">

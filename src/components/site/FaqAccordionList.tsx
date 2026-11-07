@@ -3,10 +3,12 @@
 import React, { useState } from 'react'
 import { useClientFaqs } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
+import type { FaqVariant } from './faq-style-context'
 
 export interface FAQItem {
   question: string
   answer: string
+  highlight?: boolean
 }
 
 export interface FaqAccordionListProps {
@@ -19,6 +21,7 @@ export interface FaqAccordionListProps {
   numbered?: boolean
   isDeepNavy?: boolean
   iconStyle?: 'chevron' | 'plusminus'
+  variant?: FaqVariant
   cardBgClass?: string
   questionColorClass?: string
   answerColorClass?: string
@@ -36,6 +39,7 @@ export function FaqAccordionList({
   numbered = false,
   isDeepNavy = false,
   iconStyle = 'chevron',
+  variant = 'accordion',
   cardBgClass = 'bg-white border-deep-navy/10 text-deep-navy shadow-soft',
   questionColorClass = 'text-deep-navy',
   answerColorClass = 'text-deep-navy/80',
@@ -50,17 +54,12 @@ export function FaqAccordionList({
     initialItems: initialGroupItems !== undefined ? (initialGroupItems ?? []) : undefined,
   })
 
-  // When source === 'group', use resolved items (from SSR) or client preview items (in Puck editor),
-  // falling back to prop items if explicitly provided.
-  // When source === 'manual', use items prop.
-  const activeItems: FAQItem[] = isGroupSource
-    ? initialGroupItems !== undefined && initialGroupItems !== null
-      ? initialGroupItems
-      : isEditing
-        ? clientItems
-        : items && items.length > 0
-          ? items
-          : clientItems
+  const activeItems = isGroupSource
+    ? clientItems && clientItems.length > 0
+      ? clientItems
+      : items && items.length > 0
+        ? items
+        : clientItems
     : items || []
 
   const validItems = Array.isArray(activeItems)
@@ -91,6 +90,139 @@ export function FaqAccordionList({
     return null
   }
 
+  // Biến thể Cards (tr. 21)
+  if (variant === 'cards') {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {validItems.map((item, index) => {
+          const isHighlight = 'highlight' in item && Boolean(item.highlight)
+          const cardClass = isHighlight
+            ? 'bg-deep-navy text-white border-white/20 shadow-soft'
+            : isDeepNavy
+              ? 'bg-white/10 text-white border-white/20'
+              : 'bg-white text-deep-navy border-deep-navy/10 shadow-soft'
+
+          return (
+            <div
+              key={index}
+              data-eb-card=""
+              data-eb-card-solid={isHighlight ? '' : undefined}
+              className={`p-6 sm:p-7 rounded-2xl border ${cardClass} transition-all flex flex-col justify-between h-full`}
+            >
+              <div>
+                <div className="mb-3 font-display text-3xl sm:text-4xl text-accent-pink leading-none select-none">
+                  {String(index + 1).padStart(2, '0')}
+                </div>
+                <h3
+                  className={`font-ui font-bold text-lg sm:text-xl leading-snug break-words ${
+                    isHighlight || isDeepNavy ? 'text-white' : 'text-deep-navy'
+                  }`}
+                >
+                  {item.question}
+                </h3>
+                <div
+                  className={`h-px w-full my-4 ${
+                    isHighlight || isDeepNavy ? 'bg-white/15' : 'bg-deep-navy/10'
+                  }`}
+                />
+                <p
+                  className={`font-ui text-sm sm:text-base leading-relaxed whitespace-pre-line ${
+                    isHighlight || isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
+                  }`}
+                >
+                  {item.answer}
+                </p>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // Biến thể Quick (tr. 61)
+  if (variant === 'quick') {
+    return (
+      <div className="space-y-3">
+        {validItems.map((item, index) => {
+          const isOpen = Boolean(openIndices[index])
+          const questionId = `faq-q-${index}`
+          const answerId = `faq-a-${index}`
+
+          return (
+            <div
+              key={index}
+              data-eb-card=""
+              className={`p-4 sm:p-5 rounded-xl border ${cardBgClass} transition-all`}
+            >
+              <button
+                type="button"
+                id={questionId}
+                aria-expanded={isOpen}
+                aria-controls={answerId}
+                onClick={() => toggleItem(index)}
+                className="w-full flex items-start justify-between gap-4 text-left font-ui focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-md transition-colors cursor-pointer"
+              >
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                  <span
+                    className="mt-1.5 h-2.5 w-2.5 rounded-sm bg-accent-pink shrink-0"
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <h3
+                      className={`font-ui font-bold text-base sm:text-lg leading-snug break-words ${questionColorClass}`}
+                    >
+                      {item.question}
+                    </h3>
+                    {!isOpen && item.answer && (
+                      <p className="mt-1 line-clamp-1 font-ui text-xs sm:text-sm text-deep-navy/70 group-data-[bg=deep-navy]/faq:text-white/70">
+                        {item.answer}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <span
+                  className={`shrink-0 mt-1 transition-transform duration-200 ${
+                    isOpen ? 'rotate-180' : ''
+                  } text-bright-magenta group-data-[bg=deep-navy]/faq:text-soft-pink`}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M5 7.5L10 12.5L15 7.5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </button>
+
+              {isOpen && (
+                <div
+                  id={answerId}
+                  role="region"
+                  aria-labelledby={questionId}
+                  className={`mt-3 pt-3 border-t border-deep-navy/10 group-data-[bg=deep-navy]/faq:border-white/10 font-ui text-sm sm:text-base leading-relaxed pl-5 sm:pl-6 ${answerColorClass}${answerWhitespaceClass}`}
+                >
+                  {item.answer}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // Biến thể Mặc định: Accordion
   return (
     <div className="space-y-4">
       {validItems.map((item, index) => {
@@ -108,6 +240,7 @@ export function FaqAccordionList({
         return (
           <div
             key={index}
+            data-eb-card=""
             className={`p-5 sm:p-6 rounded-card border ${cardBgClass} transition-colors`}
           >
             <button
@@ -189,14 +322,13 @@ export function FaqAccordionList({
                 )}
               </span>
             </button>
+
             <div
               id={answerId}
               role="region"
               aria-labelledby={questionId}
               hidden={!isOpen}
-              className={`mt-4 pt-3 border-t ${
-                isDeepNavy ? 'border-white/10' : 'border-deep-navy/10'
-              } font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}${answerWhitespaceClass}`}
+              className={`mt-4 pt-3 border-t border-deep-navy/10 font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}${answerWhitespaceClass}`}
             >
               {item.answer}
             </div>

@@ -3,6 +3,7 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { TestimonialGrid, type TestimonialGridProps } from '@/components/site/TestimonialGrid'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createTestimonialExternalField } from '../testimonial-field'
+import { vi } from '@/lib/i18n/vi'
 
 export type { TestimonialGridProps }
 
@@ -16,6 +17,10 @@ export const TestimonialGridBlock: ComponentConfig<TestimonialGridProps> = {
         { label: 'Trích dẫn truyền thống (Quote)', value: 'quote' },
         { label: 'Câu chuyện Trước / Sau (Story)', value: 'story' },
         { label: '3 Giai đoạn chuyển hóa (Stages)', value: 'stages' },
+        {
+          label: vi.pk21?.testimonialGrid?.variantFeatured || 'Nổi bật (1 lớn + 2 nhỏ)',
+          value: 'featured',
+        },
       ],
     },
     mode: {

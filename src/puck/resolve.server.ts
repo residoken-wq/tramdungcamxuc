@@ -254,6 +254,9 @@ export async function resolveServerData(
     const rawStyle = (item.props as { _style?: Record<string, unknown> })._style
     const bgImg = rawStyle?.backgroundImage as Record<string, unknown> | undefined
     if (bgImg && typeof bgImg === 'object') {
+      // QA PK-18c: URLs only ever come from the media library by id (no stale / free URL).
+      bgImg.imageUrl = ''
+      bgImg.mobileImageUrl = ''
       if (bgImg.mediaId) {
         try {
           const mediaDoc = await payload.findByID({
@@ -281,6 +284,24 @@ export async function resolveServerData(
           }
         } catch {
           // Missing media: keep empty
+        }
+      }
+    }
+
+    // QA PK-21c: PhotoGallery images – URL and alt always from the media library by id.
+    if (item.type === 'PhotoGallery' && Array.isArray(item.props.items)) {
+      for (const it of item.props.items as Array<{
+        mediaId?: string | number
+        imageUrl?: string
+        alt?: string
+      }>) {
+        if (!it?.mediaId) continue
+        try {
+          const mediaDoc = await payload.findByID({ collection: 'media', id: String(it.mediaId) })
+          it.imageUrl = typeof mediaDoc?.url === 'string' ? mediaDoc.url : ''
+          it.alt = typeof mediaDoc?.alt === 'string' ? mediaDoc.alt.trim() : ''
+        } catch {
+          it.imageUrl = ''
         }
       }
     }

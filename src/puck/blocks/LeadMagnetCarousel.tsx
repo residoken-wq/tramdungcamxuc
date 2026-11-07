@@ -7,12 +7,27 @@ import {
 } from '@/components/site/LeadMagnetCarousel'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createProductExternalField } from '../product-field'
+import { vi } from '@/lib/i18n/vi'
 
 export type { LeadMagnetCarouselProps, LeadMagnetItem }
 
 export const LeadMagnetCarouselBlock: ComponentConfig<LeadMagnetCarouselProps> = {
   label: 'Carousel Tài nguyên miễn phí (Lead Magnet Carousel)',
   fields: {
+    display: {
+      type: 'select',
+      label: 'Kiểu hiển thị',
+      options: [
+        {
+          label: vi.pk21?.leadMagnet?.displayCarousel || 'Trượt ngang (Carousel)',
+          value: 'carousel',
+        },
+        {
+          label: vi.pk21?.leadMagnet?.displayList || 'Danh sách thẻ trắng (List)',
+          value: 'list',
+        },
+      ],
+    },
     seriesLabel: {
       type: 'text',
       label: 'Nhãn series (Tùy chọn)',
@@ -58,6 +73,7 @@ export const LeadMagnetCarouselBlock: ComponentConfig<LeadMagnetCarouselProps> =
   },
   defaultProps: {
     version: 1,
+    display: 'carousel',
     seriesLabel: '[MẪU] TÀI NGUYÊN MIỄN PHÍ',
     titleLine1: '[MẪU] TÀI LIỆU CHUYỂN HÓA',
     titleLine2: '[MẪU] CẢM XÚC & THÓI QUEN',
