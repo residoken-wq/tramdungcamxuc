@@ -3389,6 +3389,66 @@ export const vi = {
       captionPositionRight: 'Góc dưới phải',
     },
   },
+  pk21: {
+    photoGallery: {
+      label: 'Thư viện ảnh khoảnh khắc (Photo Gallery)',
+      layout: 'Bố cục hiển thị',
+      mosaic: 'Ảnh ghép (Mosaic)',
+      grid: 'Lưới 3 cột (Grid)',
+      items: 'Danh sách ảnh',
+      caption: 'Chú thích ảnh (tùy chọn)',
+      empty: '[MẪU] Thư viện ảnh đang trống. Vui lòng thêm ảnh trong bảng cài đặt.',
+      prevGroup: 'Nhóm ảnh trước',
+      nextGroup: 'Nhóm ảnh tiếp theo',
+    },
+    iconCardGrid: {
+      columns: {
+        carousel: 'Trượt ngang (Carousel)',
+      },
+      prevCards: 'Thẻ trước',
+      nextCards: 'Thẻ tiếp theo',
+    },
+    faq: {
+      variant: 'Biến thể hiển thị FAQ',
+      variantAccordion: 'Hộp thu gọn (Accordion)',
+      variantCards: 'Lưới thẻ mở sẵn (Cards)',
+      variantQuick: 'Danh sách nhanh (Quick)',
+      seeAll: 'Xem toàn bộ câu hỏi',
+    },
+    serviceCards: {
+      layoutDetailed: 'Chi tiết (Detailed)',
+      cardTitles: 'Tiêu đề thẻ tùy chọn',
+      cardMedia: 'Ảnh thẻ tùy chọn',
+      situationsTitle: 'Phù hợp với bạn khi:',
+      outcomesTitle: 'Kết quả chuyển hóa:',
+    },
+    testimonialGrid: {
+      variantFeatured: 'Nổi bật (1 lớn + 2 nhỏ)',
+    },
+    imageText: {
+      imageBleed: 'Tràn viền mép màn hình (Bleed)',
+    },
+    contactForms: {
+      layoutPersonal: 'Cá nhân (1 form)',
+      layoutBusiness: 'Doanh nghiệp (1 form)',
+      pathwayLabel: 'Lộ trình bạn quan tâm',
+      concernsLabel: 'Điều bạn đang trăn trở',
+      concernsPlaceholder: 'Chia sẻ ngắn gọn điều bạn đang muốn tháo gỡ...',
+      submitPersonal: 'Đặt lịch Phiên Khám phá',
+      selectPathwayPlaceholder: '-- Chọn lộ trình --',
+    },
+    leadMagnet: {
+      displayList: 'Danh sách thẻ trắng (List)',
+      displayCarousel: 'Trượt ngang (Carousel)',
+    },
+    libraryPreview: {
+      layoutFeatured: 'Bài viết nổi bật (1 lớn trên + 3 nhỏ dưới)',
+    },
+    callout: {
+      variantBox: 'Hộp nổi bật (Box)',
+      variantStrip: 'Dải ghi chú mảnh (Strip)',
+    },
+  },
   eb16: {
     replaceEntirePage: 'Thay toàn bộ trang',
     back: 'Quay lại',

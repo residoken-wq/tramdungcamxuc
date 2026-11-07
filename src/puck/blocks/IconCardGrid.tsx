@@ -41,6 +41,10 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
         { label: '2 cột', value: 2 },
         { label: '3 cột', value: 3 },
         { label: '4 cột', value: 4 },
+        {
+          label: vi.pk21?.iconCardGrid?.columns?.carousel || 'Trượt ngang (Carousel)',
+          value: 'carousel',
+        },
       ],
     },
     cardStyle: {
