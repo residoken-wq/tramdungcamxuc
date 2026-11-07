@@ -216,7 +216,7 @@ export async function resolveServerData(
       }
     }
 
-    // Media resolution for ImageText, HeroImage, HanaStory, HeroTwoEntries & Card
+    // Media resolution for ImageText, HeroImage, HanaStory, HeroTwoEntries, Card & FAQ contact
     if (
       (item.type === 'ImageText' ||
         item.type === 'HeroImage' ||
@@ -247,6 +247,30 @@ export async function resolveServerData(
       } catch {
         item.props.imageUrl = ''
         item.props.imageAlt = ''
+      }
+    }
+
+    if (item.type === 'FAQ' && item.props.contactMediaId) {
+      try {
+        const mediaDoc = await payload.findByID({
+          collection: 'media',
+          id: String(item.props.contactMediaId),
+        })
+        if (
+          mediaDoc &&
+          mediaDoc.alt &&
+          typeof mediaDoc.alt === 'string' &&
+          mediaDoc.alt.trim().length > 0
+        ) {
+          item.props.contactImageUrl = (mediaDoc.url as string) || ''
+          item.props.contactImageAlt = mediaDoc.alt.trim()
+        } else {
+          item.props.contactImageUrl = (mediaDoc?.url as string) || ''
+          item.props.contactImageAlt = ''
+        }
+      } catch {
+        item.props.contactImageUrl = ''
+        item.props.contactImageAlt = ''
       }
     }
 
@@ -359,7 +383,7 @@ export async function resolveServerData(
     } else if (item.type === 'Callout') {
       needsBookingProduct = true
     } else if (item.type === 'FAQ') {
-      if (item.props.aside === 'booking') {
+      if (item.props.aside === 'booking' || item.props.aside === 'contact') {
         needsBookingProduct = true
       }
     } else if (item.type === 'SolutionEcosystem') {
@@ -369,16 +393,51 @@ export async function resolveServerData(
           if (p?.productId) productIdsToFetch.add(p.productId)
         }
       }
+      const col1Groups = item.props.col1Groups as
+        Array<{ items?: Array<{ productId?: string | number }> }> | undefined
+      if (Array.isArray(col1Groups)) {
+        for (const g of col1Groups) {
+          if (Array.isArray(g?.items)) {
+            for (const p of g.items) {
+              if (p?.productId) productIdsToFetch.add(p.productId)
+            }
+          }
+        }
+      }
+
       const col2 = item.props.col2Services as Array<{ serviceId?: string | number }> | undefined
       if (Array.isArray(col2)) {
         for (const s of col2) {
           if (s?.serviceId) serviceIdsToFetch.add(s.serviceId)
         }
       }
+      const col2Groups = item.props.col2Groups as
+        Array<{ items?: Array<{ serviceId?: string | number }> }> | undefined
+      if (Array.isArray(col2Groups)) {
+        for (const g of col2Groups) {
+          if (Array.isArray(g?.items)) {
+            for (const s of g.items) {
+              if (s?.serviceId) serviceIdsToFetch.add(s.serviceId)
+            }
+          }
+        }
+      }
+
       const col3 = item.props.col3Programs as Array<{ programId?: string | number }> | undefined
       if (Array.isArray(col3)) {
         for (const prog of col3) {
           if (prog?.programId) programIdsToFetch.add(prog.programId)
+        }
+      }
+      const col3Groups = item.props.col3Groups as
+        Array<{ items?: Array<{ programId?: string | number }> }> | undefined
+      if (Array.isArray(col3Groups)) {
+        for (const g of col3Groups) {
+          if (Array.isArray(g?.items)) {
+            for (const prog of g.items) {
+              if (prog?.programId) programIdsToFetch.add(prog.programId)
+            }
+          }
         }
       }
     } else if (item.type === 'ServiceCards') {
@@ -452,7 +511,10 @@ export async function resolveServerData(
     if (
       item.type === 'ShopeeButton' ||
       item.type === 'ZaloButton' ||
-      (item.type === 'FAQ' && (item.props.aside === 'booking' || item.props.showEmail)) ||
+      (item.type === 'FAQ' &&
+        (item.props.aside === 'booking' ||
+          item.props.aside === 'contact' ||
+          item.props.showEmail)) ||
       item.type === 'HanaStory' ||
       item.type === 'ContactInfo' ||
       item.type === 'ContactForms'
@@ -1100,36 +1162,75 @@ export async function resolveServerData(
       item.props._resolved = { package: pkg }
     } else if (item.type === 'SolutionEcosystem') {
       const col1 = item.props.col1Products as Array<{ productId?: string | number }> | undefined
-      const resolvedProducts: PublicProduct[] = []
+      const col1Groups = item.props.col1Groups as
+        Array<{ items?: Array<{ productId?: string | number }> }> | undefined
+      const allProductIds = new Set<string | number>()
       if (Array.isArray(col1)) {
         for (const p of col1) {
-          if (p?.productId) {
-            const prod = productMap.get(String(p.productId))
-            if (prod) resolvedProducts.push(prod)
+          if (p?.productId) allProductIds.add(p.productId)
+        }
+      }
+      if (Array.isArray(col1Groups)) {
+        for (const g of col1Groups) {
+          if (Array.isArray(g?.items)) {
+            for (const p of g.items) {
+              if (p?.productId) allProductIds.add(p.productId)
+            }
           }
         }
+      }
+      const resolvedProducts: PublicProduct[] = []
+      for (const pid of allProductIds) {
+        const prod = productMap.get(String(pid))
+        if (prod) resolvedProducts.push(prod)
       }
 
       const col2 = item.props.col2Services as Array<{ serviceId?: string | number }> | undefined
-      const resolvedServices: PublicServiceSummary[] = []
+      const col2Groups = item.props.col2Groups as
+        Array<{ items?: Array<{ serviceId?: string | number }> }> | undefined
+      const allServiceIds = new Set<string | number>()
       if (Array.isArray(col2)) {
         for (const s of col2) {
-          if (s?.serviceId) {
-            const srv = serviceMap.get(String(s.serviceId))
-            if (srv) resolvedServices.push(srv)
+          if (s?.serviceId) allServiceIds.add(s.serviceId)
+        }
+      }
+      if (Array.isArray(col2Groups)) {
+        for (const g of col2Groups) {
+          if (Array.isArray(g?.items)) {
+            for (const s of g.items) {
+              if (s?.serviceId) allServiceIds.add(s.serviceId)
+            }
           }
         }
       }
+      const resolvedServices: PublicServiceSummary[] = []
+      for (const sid of allServiceIds) {
+        const srv = serviceMap.get(String(sid))
+        if (srv) resolvedServices.push(srv)
+      }
 
       const col3 = item.props.col3Programs as Array<{ programId?: string | number }> | undefined
-      const resolvedPrograms: PublicProgramSummary[] = []
+      const col3Groups = item.props.col3Groups as
+        Array<{ items?: Array<{ programId?: string | number }> }> | undefined
+      const allProgramIds = new Set<string | number>()
       if (Array.isArray(col3)) {
         for (const prog of col3) {
-          if (prog?.programId) {
-            const prg = programMap.get(String(prog.programId))
-            if (prg) resolvedPrograms.push(prg)
+          if (prog?.programId) allProgramIds.add(prog.programId)
+        }
+      }
+      if (Array.isArray(col3Groups)) {
+        for (const g of col3Groups) {
+          if (Array.isArray(g?.items)) {
+            for (const prog of g.items) {
+              if (prog?.programId) allProgramIds.add(prog.programId)
+            }
           }
         }
+      }
+      const resolvedPrograms: PublicProgramSummary[] = []
+      for (const prid of allProgramIds) {
+        const prg = programMap.get(String(prid))
+        if (prg) resolvedPrograms.push(prg)
       }
 
       item.props._resolved = {
@@ -1470,7 +1571,12 @@ export async function resolveServerData(
 
       item.props._resolved = {
         email: item.props.showEmail ? siteContactEmail : null,
-        bookingProductId: item.props.aside === 'booking' ? defaultBookingProductId : null,
+        bookingProductId:
+          item.props.aside === 'booking' || item.props.aside === 'contact'
+            ? defaultBookingProductId
+            : null,
+        contactImageUrl: item.props.contactImageUrl || null,
+        contactImageAlt: item.props.contactImageAlt || null,
         groupItems,
         ...(visibleItemCount !== undefined ? { visibleItemCount } : {}),
       }
