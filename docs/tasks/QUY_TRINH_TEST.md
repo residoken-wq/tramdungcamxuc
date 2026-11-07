@@ -39,3 +39,27 @@ pnpm check:fast tests/unit/puck-blocks.test.tsx   # thêm file test liên quan n
 - PR chỉ sửa tài liệu: bỏ qua test.
 - Unit: chỉ chạy test bị ảnh hưởng bởi file đã đổi. Chạy hết khi sửa `package.json`, migration, cấu hình test.
 - E2E: 4 shard desktop + 1 job mobile chạy song song, khoảng 8 phút. Trước đây 3 shard bị lệch: shard 1 làm gần hết việc, mất khoảng 13 phút.
+
+## Khối dán vào tin nhắn giao task (mẫu)
+
+Thay `XX-NN`, tên nhánh, file test và biến ảnh cho đúng task.
+
+```
+Làm task XX-NN. Prompt đầy đủ: docs/tasks/prompts/XX-NN.md trên origin/main mới nhất (đọc cả khối "Cập nhật …" đầu file). Đọc AGENTS.md và skill tdcx-brand trước khi code.
+
+Chuẩn bị:
+- git fetch origin && git checkout -b task/XX-NN-ten-ngan origin/main
+- node scripts/task-time.mjs start XX-NN
+
+Test theo docs/tasks/QUY_TRINH_TEST.md:
+- Ở máy CHỈ chạy: pnpm check:fast (thêm tên file test liên quan nếu cần; sửa style-css / config / vi.ts / component dùng nhiều nơi thì chạy thêm 1 lần cuối: pnpm check:fast --affected).
+- KHÔNG cả bộ pnpm test, KHÔNG pnpm build, KHÔNG e2e ở máy. CI chạy trên PR, Planning theo dõi.
+- E2E của task: chỉ desktop-1440 (skip project mobile), tự lặp 1440/375 bên trong, dữ liệu [MẪU] / [TEST] đúng schema, dọn trong finally, ảnh fixture tự tạo (không ảnh người thật).
+- Ảnh docs/screenshots/xxnn/ chỉ chụp khi XXNN_SCREENSHOTS=1.
+- vitest -u: bỏ NEXT_PUBLIC_TURNSTILE_SITE_KEY trước, chỉ file liên quan.
+- Chạy lệnh foreground, chờ xong, cắt output (| tail -40). Không chạy nền rồi "standing by".
+- Prettier chỉ file mình sửa, KHÔNG chạy trên docs/. Sửa HUONG_DAN_CMS.md bằng tay.
+
+Nộp: commit nhỏ, push sau mỗi mục. KHÔNG merge, KHÔNG chạy lệnh lên server thật.
+Báo cáo theo mục 13 AGENTS.md: link nhánh, chỗ REVIEW-REQUIRED, vài dòng tóm tắt pnpm check:fast, file e2e đã thêm / sửa, dòng THỜI GIAN THỰC (node scripts/task-time.mjs report).
+```
