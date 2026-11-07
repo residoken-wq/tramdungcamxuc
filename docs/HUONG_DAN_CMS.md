@@ -2928,6 +2928,16 @@ Hana có thể biến khối Hero đầu trang (`Hero 2 Lối vào` hoặc `Hero
 2. **Đổi kiểu bố cục:**
    - Ở cột cài đặt bên phải, tìm mục **Kiểu bố cục**.
    - Bấm chuyển từ _Ảnh bên cạnh chữ_ sang **Ảnh làm nền, chữ nằm trên ảnh**.
+
+#### Các kiểu bố cục của khối Hero Ảnh biểu tượng (`HeroImage` - PK-25):
+
+Khối `Hero Ảnh biểu tượng` (`HeroImage`) hỗ trợ 3 kiểu bố cục:
+
+- **"Ảnh bên cạnh chữ"**: Trên máy tính (màn hình lớn), chữ nằm một bên và ảnh nằm một bên, căn giữa theo chiều dọc. Hana có thể chọn vị trí ảnh: **Bên phải chữ** (mặc định) hoặc **Bên trái chữ** tại ô cài đặt "Vị trí ảnh". Trên điện thoại và máy tính bảng, khối tự động chuyển về dạng chữ ở trên, ảnh ở dưới gọn gàng, không cuộn ngang ở 375px.
+- **"Ảnh bên dưới chữ"**: Tiêu đề và nội dung chữ căn giữa ở trên, ảnh minh họa lớn trải rộng ở phía dưới.
+- **"Ảnh làm nền"**: Ảnh phủ kín toàn bộ nền với lớp phủ mờ tinh tế, chữ và nút bấm nằm nổi bật bên trên ảnh.
+
+> **Lưu ý**: Trang đã dựng trước ngày 07/11 chọn "Ảnh bên cạnh chữ" thực ra đang là "Ảnh bên dưới chữ"; muốn ảnh nằm cạnh thì chọn lại mục "Ảnh bên cạnh chữ".
 3. **Chọn ảnh minh họa Hero:**
    - Chọn ảnh từ Thư viện media (bắt buộc ảnh phải có mô tả alt).
 4. **Tùy chỉnh lớp phủ và hiệu ứng:**
