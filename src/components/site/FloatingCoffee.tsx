@@ -14,22 +14,33 @@ interface CoffeeButtonProps {
   buttonRef: React.RefObject<HTMLButtonElement | null>
 }
 
-/** Round floating button with the coffee cup icon. */
+/**
+ * Floating coffee button (07/11): white round badge with the cup, overlapping a butter-cream
+ * pill with the label. Phones (< sm) show the badge only, so the pill does not cover content.
+ */
 export function CoffeeButton({ onOpen, buttonRef }: CoffeeButtonProps) {
+  const label = vi.cf01.floatingCoffee.ariaLabel
   return (
     <button
       ref={buttonRef}
       type="button"
       onClick={onOpen}
-      aria-label={vi.cf01.floatingCoffee.ariaLabel}
-      className="group flex items-center justify-center min-w-[48px] min-h-[48px] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white border border-lavender-mist text-deep-navy shadow-soft hover:bg-soft-pink hover:scale-105 active:scale-95 transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
+      aria-label={label}
+      className="group flex items-center rounded-full transition-transform duration-200 motion-reduce:transition-none hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy cursor-pointer"
     >
-      <CoffeeCupIcon
-        width={28}
-        height={28}
-        className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 motion-reduce:transition-none group-hover:rotate-6"
-      />
-      <span className="sr-only">{vi.cf01.floatingCoffee.ariaLabel}</span>
+      <span className="relative z-10 flex items-center justify-center min-w-[48px] min-h-[48px] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white border-[3px] border-butter-cream text-deep-navy shadow-soft">
+        <CoffeeCupIcon
+          width={28}
+          height={28}
+          className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 motion-reduce:transition-none group-hover:rotate-6"
+        />
+      </span>
+      <span
+        data-coffee-label=""
+        className="sr-only sm:not-sr-only sm:-ml-5 sm:flex sm:h-11 sm:items-center sm:whitespace-nowrap sm:rounded-full sm:border sm:border-deep-navy/20 sm:bg-butter-cream sm:pl-8 sm:pr-5 sm:font-quote sm:text-lg sm:italic sm:text-deep-navy sm:shadow-soft sm:group-hover:bg-soft-pink"
+      >
+        {label}
+      </span>
     </button>
   )
 }
