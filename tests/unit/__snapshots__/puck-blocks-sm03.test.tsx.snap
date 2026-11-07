@@ -15,13 +15,13 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]"
         >
           <span
-            class="text-deep-navy"
+            class="block text-deep-navy"
           >
             SẴN SÀNG CHO HÀNH TRÌNH
           </span>
            
           <span
-            class="text-bright-magenta"
+            class="block text-bright-magenta"
           >
             LÀM CHỦ CẢM XÚC?
           </span>
@@ -66,13 +66,13 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]"
         >
           <span
-            class="text-deep-navy"
+            class="block text-deep-navy"
           >
             KẾT NỐI NGAY HÔM NAY
           </span>
            
           <span
-            class="text-bright-magenta"
+            class="block text-bright-magenta"
           >
             [MẪU] CHUYỂN MÌNH CÙNG HANA
           </span>
@@ -426,13 +426,13 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]"
         >
           <span
-            class="text-deep-navy"
+            class="block text-deep-navy"
           >
             3 GÓI GROWTH MIRROR
           </span>
            
           <span
-            class="text-bright-magenta"
+            class="block text-bright-magenta"
           >
             ĐỒNG HÀNH TOÀN DIỆN
           </span>
@@ -562,13 +562,13 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           class="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]"
         >
           <span
-            class="text-deep-navy"
+            class="block text-deep-navy"
           >
             HỆ SINH THÁI ĐỒNG HÀNH
           </span>
            
           <span
-            class="text-bright-magenta"
+            class="block text-bright-magenta"
           >
             3 TRỤ CỘT CẢM XÚC
           </span>
