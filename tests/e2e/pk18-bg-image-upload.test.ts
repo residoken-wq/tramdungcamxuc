@@ -133,7 +133,7 @@ test.describe('PK-18: Media upload & block background image', () => {
       await modal.getByRole('button', { name: /Tải ảnh lên/i }).click()
       const fileChooser = await fileChooserPromise
       await fileChooser.setFiles({
-        name: 'test-pk18-fixture.png',
+        name: 'test-pk18-fixture (1).png',
         mimeType: 'image/png',
         buffer: SMALL_PNG_BUFFER,
       })
