@@ -372,7 +372,7 @@ export function HeroImage({
 
         {/* Action Buttons */}
         {(hasPrimaryButton || hasSecondaryButton) && (
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-start gap-4 w-full sm:w-auto">
+          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-start gap-4 w-full sm:w-auto">
             {hasPrimaryButton && (
               <Button href={buttonSafeHref!} variant="primary" size="md">
                 <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
@@ -408,6 +408,7 @@ export function HeroImage({
                   labelColor={safeStatColor(statLabelColor, false)}
                   valueSize={statValueSize}
                   labelSize={statLabelSize}
+                  align="left"
                 />
               ))}
             </div>
