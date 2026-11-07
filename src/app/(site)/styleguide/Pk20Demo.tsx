@@ -134,7 +134,7 @@ export function Pk20Demo() {
               alt="[MẪU] Ảnh bo góc thường"
               fill
               shape="rounded"
-              badge="✨ [MẪU] TIÊU CHUẨN"
+              badge="[MẪU] TIÊU CHUẨN"
               caption={{
                 title: '[MẪU] 500+ Giờ Coach',
                 subtitle: '[MẪU] ICF Certified',

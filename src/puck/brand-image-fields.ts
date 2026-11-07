@@ -44,15 +44,15 @@ export function createBrandImageFields(): Record<string, Field<any>> {
     imageCaptionAvatars: {
       type: 'array',
       label: vi.pk20?.image?.captionAvatars || 'Danh sách avatar nổi (tối đa 4)',
+      // PK-20c: images only from the media library (no free URL: next/image rejects unknown hosts).
+      max: 4,
       arrayFields: {
         mediaId: createMediaExternalField({ label: 'Ảnh avatar (Thư viện media)' }),
-        url: { type: 'text', label: 'Hoặc đường dẫn ảnh trực tiếp' },
       },
       getItemSummary: (item, index) =>
-        item?.url ||
-        (item?.mediaId
+        item?.mediaId
           ? `Media ID: ${item.mediaId}`
-          : `Avatar ${index !== undefined ? index + 1 : ''}`),
+          : `Avatar ${index !== undefined ? index + 1 : ''}`,
     },
     captionPosition: {
       type: 'select',
@@ -83,7 +83,7 @@ export async function resolveBrandImageAvatars(
   const resolved = await Promise.all(
     avatars.slice(0, 4).map(async (av) => {
       if (!av) return av
-      if (av.url || !av.mediaId) return av
+      if (!av.mediaId) return { ...av, url: undefined }
       try {
         const res = await fetch(`/api/media/${encodeURIComponent(av.mediaId)}`, {
           credentials: 'include',

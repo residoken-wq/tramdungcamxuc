@@ -196,14 +196,22 @@ const VALID_BRAND_ACCENTS = [
  */
 function cardAccentRule(selector: string, cardAccent: BlockStyle['cardAccent']): string {
   if (!cardAccent || cardAccent === 'none') return ''
+  // PK-20c: count cards among their siblings (direct grid children), or count the wrapper when a
+  // card sits alone in one. Never match an ancestor's position, or every card gets the same colour.
+  // No overflow:hidden: it would clip badges that sit above a card (e.g. "Phổ biến").
+  const stripe = (c: string) => `border-top-width:6px;border-top-style:solid;border-top-color:${c}`
   if (cardAccent === 'cycle') {
-    const c1 = cssColor('bright-magenta')
-    const c2 = cssColor('accent-pink')
-    const c3 = cssColor('deep-navy')
-    return `${selector} :nth-child(3n+1) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n+1){border-top:6px solid ${c1};overflow:hidden}${selector} :nth-child(3n+2) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n+2){border-top:6px solid ${c2};overflow:hidden}${selector} :nth-child(3n) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n){border-top:6px solid ${c3};overflow:hidden}`
+    const colors = [cssColor('bright-magenta'), cssColor('accent-pink'), cssColor('deep-navy')]
+    const nth = ['3n+1', '3n+2', '3n']
+    return colors
+      .map(
+        (c, i) =>
+          `${selector} [${CARD_ATTR}]:nth-child(${nth[i]}),${selector} :nth-child(${nth[i]}) > [${CARD_ATTR}]:only-child{${stripe(c)}}`,
+      )
+      .join('')
   }
   if ((VALID_BRAND_ACCENTS as readonly string[]).includes(cardAccent)) {
-    return `${selector} [${CARD_ATTR}]{border-top:6px solid ${cssColor(cardAccent)};overflow:hidden}`
+    return `${selector} [${CARD_ATTR}]{${stripe(cssColor(cardAccent))}}`
   }
   return ''
 }

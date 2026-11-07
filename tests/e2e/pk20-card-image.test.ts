@@ -22,6 +22,12 @@ test.describe('PK-20: cardAccent, highlight, and BrandImage on /styleguide', () 
         .first()
         .evaluate((el) => getComputedStyle(el).borderTopWidth)
       expect(borderTopWidth).toBe('6px')
+      // QA PK-20c: "Xoay vòng" really cycles magenta -> pink -> navy (it used to paint all 3 navy).
+      expect(
+        await accentCards.evaluateAll((els) =>
+          els.map((el) => getComputedStyle(el).borderTopColor),
+        ),
+      ).toEqual(['rgb(188, 3, 158)', 'rgb(239, 59, 131)', 'rgb(40, 10, 96)'])
 
       // 2. Thẻ navy nền xanh thẫm
       const highlightCards = page.locator('#demo-pk20-highlight [data-eb-card]')
@@ -61,6 +67,13 @@ test.describe('PK-20: cardAccent, highlight, and BrandImage on /styleguide', () 
       expect(captionRect!.y + captionRect!.height).toBeLessThanOrEqual(
         imgRect!.y + imgRect!.height + 1,
       )
+
+      // QA PK-20c: on the left arch the badge sits clear of the curve (it was cut off).
+      const arch = page.locator('#brand-image-arch-left')
+      const archRect = await arch.boundingBox()
+      const archBadge = await arch.locator('[data-brand-image-badge]').boundingBox()
+      expect(archRect && archBadge).toBeTruthy()
+      expect(archBadge!.x - archRect!.x).toBeGreaterThanOrEqual(width === 375 ? 28 : 60)
 
       // 4. Không cuộn ngang ở 375px
       const overflow = await page.evaluate(

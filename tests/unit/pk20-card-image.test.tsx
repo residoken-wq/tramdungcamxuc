@@ -13,18 +13,22 @@ describe('PK-20: cardAccent and glass cardFrame CSS', () => {
   it('generates border-top 6px rule for single color cardAccent', () => {
     const css = blockStyleCss('block-1', { cardAccent: 'bright-magenta' })
     expect(css).toContain(
-      '[data-eb-id="block-1"] [data-eb-card]{border-top:6px solid rgb(var(--color-bright-magenta-rgb));overflow:hidden}',
+      '[data-eb-id="block-1"] [data-eb-card]{border-top-width:6px;border-top-style:solid;border-top-color:rgb(var(--color-bright-magenta-rgb))}',
     )
+    // QA PK-20c: no overflow:hidden (it clipped badges sitting above a card).
+    expect(css).not.toContain('overflow:hidden')
   })
 
   it('generates cycling nth-child border-top 6px rules for cycle cardAccent', () => {
     const css = blockStyleCss('block-2', { cardAccent: 'cycle' })
-    expect(css).toContain(':nth-child(3n+1) > [data-eb-card]')
-    expect(css).toContain('border-top:6px solid rgb(var(--color-bright-magenta-rgb))')
-    expect(css).toContain(':nth-child(3n+2) > [data-eb-card]')
-    expect(css).toContain('border-top:6px solid rgb(var(--color-accent-pink-rgb))')
-    expect(css).toContain(':nth-child(3n) > [data-eb-card]')
-    expect(css).toContain('border-top:6px solid rgb(var(--color-deep-navy-rgb))')
+    const sel = '[data-eb-id="block-2"]'
+    expect(css).toContain(
+      `${sel} [data-eb-card]:nth-child(3n+1),${sel} :nth-child(3n+1) > [data-eb-card]:only-child{border-top-width:6px;border-top-style:solid;border-top-color:rgb(var(--color-bright-magenta-rgb))}`,
+    )
+    expect(css).toContain('border-top-color:rgb(var(--color-accent-pink-rgb))')
+    expect(css).toContain('border-top-color:rgb(var(--color-deep-navy-rgb))')
+    // QA PK-20c: an ancestor's position must never colour every card (all cards came out navy).
+    expect(css).not.toMatch(/:nth-child\([^)]*\) > \[data-eb-card\](?!:only-child)/)
   })
 
   it('generates glass cardFrame with backdrop-blur, fallback and dark theme support', () => {
@@ -155,12 +159,12 @@ describe('PK-20: BrandImage shapes, badge, caption and avatars', () => {
         alt="[MẪU] Ảnh"
         width={400}
         height={300}
-        badge="✨ [MẪU] TIÊU CHUẨN"
+        badge="[MẪU] TIÊU CHUẨN"
       />,
     )
     const badge = container.querySelector('[data-brand-image-badge]')
     expect(badge).toBeTruthy()
-    expect(badge?.textContent).toContain('✨ [MẪU] TIÊU CHUẨN')
+    expect(badge?.textContent).toContain('[MẪU] TIÊU CHUẨN')
     expect(badge?.className).toContain('bg-deep-navy')
     expect(badge?.className).toContain('text-white')
   })
@@ -215,5 +219,34 @@ describe('PK-20: ImageText compatibility when new fields are empty', () => {
     // No badge or floating caption rendered
     expect(container.querySelector('[data-brand-image-badge]')).toBeNull()
     expect(container.querySelector('[data-brand-image-caption]')).toBeNull()
+  })
+})
+
+describe('QA PK-20c: BrandImage fixes', () => {
+  it('keeps the badge and caption clear of the arch curve', () => {
+    const { container } = render(
+      <BrandImage
+        src="/test.jpg"
+        alt="[MẪU] Ảnh"
+        width={400}
+        height={300}
+        shape="arch-left"
+        badge="[MẪU] Nhãn"
+        caption={{ title: '[MẪU] Chú thích' }}
+      />,
+    )
+    const badge = container.querySelector('[data-brand-image-badge]')!
+    const caption = container.querySelector('[data-brand-image-caption]')!
+    expect(badge.className).toContain('sm:left-16')
+    expect(caption.className).toContain('sm:left-16')
+  })
+
+  it('does not stretch a fill image the caller already sized (IconCard icon stays 48px)', () => {
+    const { container } = render(
+      <BrandImage src="/test.jpg" alt="[MẪU] Ảnh" fill className="h-12 w-12 rounded-2xl" />,
+    )
+    const wrapper = container.firstElementChild as HTMLElement
+    expect(wrapper.className).not.toContain('h-full')
+    expect(wrapper.className).toContain('h-12')
   })
 })

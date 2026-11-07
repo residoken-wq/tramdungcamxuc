@@ -72,6 +72,9 @@ export function BrandImage({
   const hasCustomRounded = className.includes('rounded-')
   const shapeClass = getShapeClasses(shape, hasCustomRounded)
   const isWave = shape === 'wave'
+  // PK-20c: `fill` stretches to the parent only when the caller gives no size of its own
+  // (IconCard passes h-12 w-12; h-full would win in the generated CSS and blow the icon up).
+  const fillSize = fill && !/(^|\s)[hw]-/.test(className) ? 'w-full h-full' : ''
 
   const containerStyle = isWave ? { ...style, clipPath: 'url(#tdcx-brand-image-wave)' } : style
 
@@ -84,10 +87,16 @@ export function BrandImage({
 
   const hasCaption = Boolean(caption && caption.title && caption.title.trim().length > 0)
   const isCaptionRight = captionPosition === 'bottom-right'
+  // PK-20c: keep the badge / caption clear of the large curved side (64px phone, 120px desktop),
+  // otherwise the arch clips them.
+  const archOnLeft = shape === 'arch-left'
+  const archOnRight = shape === 'arch-right'
+  const leftInset = archOnLeft ? 'left-8 sm:left-16' : 'left-3 sm:left-4'
+  const rightInset = archOnRight ? 'right-8 sm:right-16' : 'right-3 sm:right-4'
 
   return (
     <div
-      className={`relative overflow-hidden ${shapeClass} ${fill ? 'w-full h-full' : ''} ${className}`.trim()}
+      className={`relative overflow-hidden ${shapeClass} ${fillSize} ${className}`.trim()}
       style={containerStyle}
     >
       {isWave && <WaveClipPath />}
@@ -120,7 +129,7 @@ export function BrandImage({
       {badge && badge.trim().length > 0 && (
         <div
           data-brand-image-badge=""
-          className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 inline-flex items-center rounded-full bg-deep-navy px-3.5 py-1.5 font-ui text-xs font-bold uppercase tracking-wider text-white shadow-soft"
+          className={`absolute top-3 sm:top-4 ${leftInset} z-10 inline-flex items-center rounded-full bg-deep-navy px-3.5 py-1.5 font-ui text-xs font-bold uppercase tracking-wider text-white shadow-soft`}
         >
           {badge.trim()}
         </div>
@@ -131,9 +140,9 @@ export function BrandImage({
           data-brand-image-caption=""
           className={`absolute ${
             isCaptionRight
-              ? 'bottom-3 right-3 sm:bottom-4 sm:right-4'
-              : 'bottom-3 left-3 sm:bottom-4 sm:left-4'
-          } z-10 flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 shadow-soft border border-deep-navy/5 backdrop-blur-sm max-w-[calc(100%-1.5rem)] sm:max-w-xs`}
+              ? `bottom-3 sm:bottom-4 ${rightInset}`
+              : `bottom-3 sm:bottom-4 ${leftInset}`
+          } z-10 flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3 shadow-soft border border-deep-navy/5 backdrop-blur-sm ${archOnLeft || archOnRight ? 'max-w-[calc(100%-3rem)]' : 'max-w-[calc(100%-1.5rem)]'} sm:max-w-xs`}
         >
           {validAvatars.length > 0 && (
             <div className="flex -space-x-2 shrink-0">
