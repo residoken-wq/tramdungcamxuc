@@ -148,3 +148,21 @@ describe('EB-05: collectPageStyles with Container', () => {
     expect(css).toContain('.eb-c-Container-level-3{flex-direction:row-reverse}')
   })
 })
+
+describe('QA PK-18f: cssUrl encodes exactly once', () => {
+  it('keeps an already-encoded Payload URL as is (no %2520)', async () => {
+    const { cssUrl } = await import('@/puck/style/container-css')
+    expect(cssUrl('/api/media/file/TDCX%20%283B%29.jpg')).toBe(
+      'url("/api/media/file/TDCX%20%283B%29.jpg")',
+    )
+    expect(cssUrl('/api/media/file/N%E1%BB%81n%2001.jpg')).toBe(
+      'url("/api/media/file/N%E1%BB%81n%2001.jpg")',
+    )
+  })
+
+  it('encodes raw characters once and always escapes ( ) quotes', async () => {
+    const { cssUrl } = await import('@/puck/style/container-css')
+    expect(cssUrl('/api/media/file/a b (1).jpg')).toBe('url("/api/media/file/a%20b%20%281%29.jpg")')
+    expect(cssUrl('/api/media/file/x%E0.png')).toBe('url("/api/media/file/x%E0.png")')
+  })
+})

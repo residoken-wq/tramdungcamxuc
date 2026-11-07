@@ -224,6 +224,12 @@ test.describe('PK-18: Media upload & block background image', () => {
           (el) => getComputedStyle(el).backgroundImage,
         )
         expect(bgImage).toContain('/api/media/file/test-pk18-fixture')
+        // QA PK-18f: the URL in the CSS must really load (a double-encoded name used to 500).
+        const bgUrl = (bgImage.match(/url\("?(.*?)"?\)/) || [])[1]
+        expect(bgUrl).toBeTruthy()
+        const imgRes = await publicPage.request.get(bgUrl!)
+        expect(imgRes.status()).toBe(200)
+        expect(imgRes.headers()['content-type']).toContain('image/')
 
         // Lớp phủ ::before có opacity 0.4
         const overlayOpacity = await journeySectionWrapper.evaluate((el) => {
