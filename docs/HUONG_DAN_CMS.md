@@ -1796,7 +1796,8 @@ Trong đợt nâng cấp Sitemap v2 (SM-04), hệ thống bổ sung **4 khối k
   - **Phụ đề cho từng bước**: Cho phép nhập phụ đề ngắn gọn ngay dưới tên bước (ví dụ: _Tạo khoảng lặng_, _Lắng nghe cơ thể_...).
 - **`HanaStory` (Câu chuyện người sáng lập)**:
   - Bổ sung **Sắc thái (`tone`)**: Chọn `Sáng` (mặc định) hoặc `Nền tối` (`dark`) với nền xanh thẫm tạo cảm giác sâu lắng, trang trọng.
-  - Bổ sung **Bố cục (`layout`)**: Chọn dạng kể chuyện truyền thống (`story`) hoặc dạng **Bức thư ngỏ (`letter`)**.
+  - Bổ sung **Bố cục (`layout`)**: Chọn dạng kể chuyện truyền thống (`story`), **Bức thư ngỏ (`letter`)**, hoặc **Ảnh trong khung cong (`spotlight`)** (PK-17).
+    - Với bố cục **Ảnh trong khung cong**: chọn **Sắc thái Tối** + vị trí ảnh **Bên phải** để đạt chuẩn thiết kế Brand Book; tên Coach điền ở **Dòng 1** (màu trắng nổi bật trên nền tối); câu trích dẫn có vạch hồng dọc trang trọng và **không cần** gõ ngoặc kép (hệ thống tự động lọc bỏ ngoặc kép bọc ngoài).
   - **Chữ ký người sáng lập**: Khi chọn dạng Thư ngỏ (`letter`), hệ thống sẽ tự động chèn ảnh chữ ký viết tay của Hana ở cuối thư. Hana có thể tải ảnh chữ ký lên tại: **Cài đặt website** -> tab **Nhận diện thương hiệu** -> ô **Chữ ký người sáng lập**.
   - **Huy hiệu chứng chỉ (`chips`)**: Nhập danh sách các chứng chỉ ngắn gọn (như _ICF Associate Certified Coach (ACC)_, _10+ năm kinh nghiệm_) hiển thị dưới ảnh chân dung.
   - **Màu nút liên kết (PK-15)**: ô **Màu nút** chọn 1 trong 8 màu thương hiệu (để **Tự động** thì nút hồng nhấn, chữ trắng). Ô **Màu chữ trên nút** chỉ liệt kê các màu đọc rõ trên màu nút đã chọn; để **Tự động** thì hệ thống chọn chữ trắng nếu đọc rõ, không thì chọn màu tương phản tốt nhất. Nút trùng màu nền khối sẽ tự có viền để không bị chìm.
@@ -2173,14 +2174,17 @@ Khối **Hành trình các bước** (`JourneySteps`) thể hiện tiến trình
 
 - Ở phiên bản trước, Hana phải nhập số thứ tự bước muốn làm nổi bật ở khối cha.
 - Nay ở bản v3, Hana **chỉ cần bấm vào bước muốn làm nổi bật**, ở thanh bên phải tìm mục **Bước nổi bật (Nền xanh thẫm Deep Navy)** và chọn **Có (Bước nổi bật - Nền Navy)**.
-- Bước đó sẽ ngay lập tức khoác lên mình màu nền xanh thẫm Deep Navy cao cấp, đồng thời màu chữ tiêu đề và mô tả sẽ tự động chuyển sang màu sáng (Trắng / Hồng phấn) đạt chuẩn tương phản cao.
+- Khi hiển thị:
+  - Ở kiểu **Vòng tròn (`circles`)**: Bước nổi bật sẽ có vòng tròn số tô màu hồng sen `accent-pink`, chữ số trắng, không viền (chuẩn thiết kế Brand Book 2026).
+  - Ở kiểu **Thẻ (`cards`)**: Bước nổi bật sẽ khoác lên mình màu nền xanh thẫm Deep Navy cao cấp, đồng thời màu chữ tiêu đề và mô tả sẽ tự động chuyển sang màu sáng (Trắng / Hồng phấn) đạt chuẩn tương phản cao.
+- **Mẹo**: Thường chỉ nên làm nổi bật 1 bước trọng tâm trong hành trình (ví dụ bước 05 hoặc bước chuyển hoá chính) để tạo điểm nhấn thị giác rõ ràng.
 
 #### 5. Cài đặt khối cha (JourneySteps)
 
 Khi nhấp chọn thanh viền của khối cha **Hành trình các bước**:
 
 - **Kiểu hiển thị (variant)**:
-  - `Vòng tròn số (circles)`: Phong cách tối giản, hiện vòng tròn số lớn ở phía trên mỗi bước.
+  - `Vòng tròn số (circles)`: Phong cách tối giản đúng thiết kế, hiện vòng tròn số lớn (~80px) viền 3px ở phía trên mỗi bước, không đóng khung viền thẻ. Bước nổi bật tô hồng `accent-pink`.
   - `Thẻ hành trình (cards)`: Phong cách dạng thẻ hiện đại có viền và đường nối liền mạch.
   - `Danh sách dọc (list)`: Phong cách danh sách dọc từng hàng trang trọng, thích hợp cho trang chi tiết dịch vụ hoặc sự kiện.
     _(Các bước con sẽ tự động đổi kiểu hiển thị theo lựa chọn này)._
@@ -2343,7 +2347,12 @@ Bấm vào một khối trên trang. Cột phải hiện 3 tab:
 - **Nội dung**: chữ, ảnh, đường dẫn… của khối, như trước đây.
 - **Kiểu**:
   - các ô định dạng có sẵn của khối (màu chữ, cỡ chữ, căn lề, nền…);
-  - **Nền**, **Chữ** (màu, font, cỡ, độ đậm, giãn dòng, căn lề), **Viền & bo góc**, **Bóng**.
+  - **Nền**, **Chữ** (màu, font, cỡ, độ đậm, giãn dòng, căn lề), **Viền & bo góc**, **Bóng**;
+  - **Thẻ con → Khung thẻ (PK-17)**: khi khối đang chọn chứa các thẻ con (như gói, bước, câu hỏi FAQ, ô số liệu, thẻ dịch vụ...), tab Kiểu sẽ có thêm mục **Khung thẻ** với 4 lựa chọn:
+    - `Mặc định`: Giữ nguyên viền và bóng chuẩn theo thiết kế ban đầu của khối.
+    - `Bỏ viền`: Ẩn viền xung quanh thẻ con, giữ lại màu nền và bóng nhẹ (nếu có).
+    - `Bỏ viền và bóng`: Làm phẳng thẻ con, chỉ giữ lại màu nền của thẻ.
+    - `Không khung`: Xoá sạch toàn bộ viền, bóng và nền thẻ con (thẻ trở nên trong suốt hoà vào nền khối; kể cả thẻ nổi bật cũng chuyển sang nền trong suốt).
 - **Nâng cao**:
   - **Cách lề** trong / ngoài cho 4 cạnh; tick "Đặt cùng giá trị cho 4 cạnh" để đặt nhanh;
   - **Ẩn trên** máy tính / máy tính bảng / điện thoại;
