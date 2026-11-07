@@ -17,7 +17,7 @@ import {
 import { LoopTechniques, IdentityFormData, HabitStep } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import type { PublicTechnique } from '@/lib/habit'
-import type { CleanHabitLoop } from '@/lib/habit/journey-content.server'
+import type { CleanHabitLoop, CleanStepQuote } from '@/lib/habit/journey-content.server'
 import { DEFAULT_DP01_CONTENT, type Dp01Step5Content } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
 
@@ -28,6 +28,7 @@ export interface Step5LoopDesignProps {
   techniques?: PublicTechnique[]
   loopContent?: CleanHabitLoop | null
   step5Content?: Dp01Step5Content
+  stepQuote?: CleanStepQuote | null
   onGoToStep?: (step: HabitStep) => void
   onTechniquesChange: (updated: LoopTechniques) => void
   onNext: () => void
@@ -47,6 +48,7 @@ export function Step5LoopDesign({
   techniques = [],
   loopContent,
   step5Content = DEFAULT_DP01_CONTENT.step5,
+  stepQuote,
   onGoToStep,
   onTechniquesChange,
   onNext,
@@ -159,14 +161,21 @@ export function Step5LoopDesign({
     }
   }
 
+  const quoteText = stepQuote?.text?.trim()
+    ? `“${stepQuote.text.replace(/^["“”\s]+|["“”\s]+$/g, '')}”`
+    : '“Bạn không vươn tới tầm mục tiêu của mình. Bạn rơi xuống mức các hệ thống của bạn.”'
+  const quoteAuthor = stepQuote?.author?.trim()
+    ? stepQuote.author
+    : '— James Clear, Atomic Habits —'
+
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* 1. Quote Block chuẩn hóa */}
       <StepQuoteHeader
         stage="GIAI ĐOẠN 2 · XÂY THÓI QUEN"
-        title="Thiết kế vòng lặp"
-        quote="“Bạn không vươn tới tầm mục tiêu của mình. Bạn rơi xuống mức các hệ thống của bạn.”"
-        author="— James Clear, Atomic Habits —"
+        title={step5Content.title || 'Thiết kế vòng lặp'}
+        quote={quoteText}
+        author={quoteAuthor}
       />
 
       {/* 2. Card lý thuyết: Vòng lặp thói quen · The Habit Loop */}
@@ -398,7 +407,7 @@ export function Step5LoopDesign({
                   style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                   className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#2C4A9A]"
                 >
-                  VẤN ĐỀ
+                  {vi.dp01.problemSectionLabel}
                 </span>
               </div>
 
@@ -408,8 +417,8 @@ export function Step5LoopDesign({
                     CUE
                   </span>
                   <p className="text-xs sm:text-sm text-deep-navy/90 leading-relaxed font-ui">
-                    <strong className="text-deep-navy font-bold">Tín hiệu</strong> kích hoạt khao
-                    khát
+                    <strong className="text-deep-navy font-bold">{vi.dp01.cueBold}</strong>{' '}
+                    {vi.dp01.cueDesc}
                   </p>
                 </div>
 
@@ -418,8 +427,8 @@ export function Step5LoopDesign({
                     CRAVING
                   </span>
                   <p className="text-xs sm:text-sm text-deep-navy/90 leading-relaxed font-ui">
-                    <strong className="text-deep-navy font-bold">Khao khát</strong> thúc đẩy phản
-                    hồi
+                    <strong className="text-deep-navy font-bold">{vi.dp01.cravingBold}</strong>{' '}
+                    {vi.dp01.cravingDesc}
                   </p>
                 </div>
               </div>
@@ -434,7 +443,7 @@ export function Step5LoopDesign({
                   style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                   className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#B45309]"
                 >
-                  GIẢI PHÁP
+                  {vi.dp01.solutionSectionLabel}
                 </span>
               </div>
 
@@ -444,8 +453,8 @@ export function Step5LoopDesign({
                     RESPONSE
                   </span>
                   <p className="text-xs sm:text-sm text-deep-navy/90 leading-relaxed font-ui">
-                    <strong className="text-deep-navy font-bold">Phản hồi</strong> đưa đến phần
-                    thưởng
+                    <strong className="text-deep-navy font-bold">{vi.dp01.responseBold}</strong>{' '}
+                    {vi.dp01.responseDesc}
                   </p>
                 </div>
 
@@ -454,9 +463,8 @@ export function Step5LoopDesign({
                     REWARD
                   </span>
                   <p className="text-xs sm:text-sm text-deep-navy/90 leading-relaxed font-ui">
-                    <strong className="text-deep-navy font-bold">Phần thưởng</strong> thỏa mãn khao
-                    khát — và gắn ngược lại với tín hiệu, để lần sau não tự đoán trước cách phản
-                    hồi.
+                    <strong className="text-deep-navy font-bold">{vi.dp01.rewardBold}</strong>{' '}
+                    {vi.dp01.rewardDesc}
                   </p>
                 </div>
               </div>
@@ -464,8 +472,7 @@ export function Step5LoopDesign({
 
             <div className="pt-2 border-t border-lavender-mist/70">
               <p className="text-xs sm:text-[13px] text-deep-navy/80 font-ui leading-relaxed italic">
-                Hai giai đoạn đầu là vấn đề, hai giai đoạn sau là giải pháp. Đứt đoạn ở đâu thì sửa
-                cách bạn thiết kế lại từng mắt xích.
+                {vi.dp01.twoPhasesNote}
               </p>
             </div>
           </div>
@@ -507,12 +514,13 @@ export function Step5LoopDesign({
 
                     {isPrescribed && (
                       <span className="text-[10px] sm:text-[11px] font-bold text-white bg-bright-magenta px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
-                        Toa của bạn
+                        {vi.dp01.prescribedBadge}
                       </span>
                     )}
 
                     <span className="text-xs font-semibold text-deep-navy/60 font-ui">
-                      {section.subLabel} · đã chọn {selectedCount}/{section.totalTechs}
+                      {section.subLabel} ·{' '}
+                      {vi.dp01.selectedCountLabel(selectedCount, section.totalTechs)}
                     </span>
                   </div>
 
@@ -533,7 +541,7 @@ export function Step5LoopDesign({
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-lavender-mist bg-white hover:bg-soft-pink/40 text-deep-navy font-semibold text-xs font-ui transition-all active:scale-95 shadow-xs flex-shrink-0 self-start md:self-auto cursor-pointer"
                   >
                     <PlayCircle className="w-3.5 h-3.5 text-bright-magenta flex-shrink-0" />
-                    <span>Video bài giảng</span>
+                    <span>{vi.dp01.lectureVideoLabel}</span>
                     <ExternalLink className="w-3 h-3 text-deep-navy/70" />
                   </button>
                 )}
@@ -544,17 +552,18 @@ export function Step5LoopDesign({
                 <div className="mx-5 sm:mx-6 mt-4 p-4 rounded-2xl bg-[#EBF5FB] border border-[#AED6F1] text-xs sm:text-sm text-[#1B4F72] font-ui leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <strong className="font-bold">
-                      {loopContent?.cueBox?.boldText || 'Quy tắc này cần đủ cả 3 kỹ thuật.'}
+                      {loopContent?.cueBox?.boldText || vi.dp01.cueBoxBoldDefault}
                     </strong>{' '}
-                    {loopContent?.cueBox?.text ||
-                      'Tín hiệu chỉ thật sự rõ khi có đủ thời điểm hợp năng lượng, việc cũ làm điểm tựa và lời hẹn cụ thể. Hai kỹ thuật đầu lấy từ bước Tìm Mentor:'}
+                    {loopContent?.cueBox?.text || vi.dp01.cueBoxTextDefault}
                   </div>
                   <button
                     type="button"
                     onClick={() => (onGoToStep ? onGoToStep(3) : onPrev())}
                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-[#AED6F1] text-xs font-bold text-[#1B4F72] hover:bg-[#D4E6F1] transition-all flex-shrink-0 cursor-pointer shadow-xs self-start sm:self-auto"
                   >
-                    <span>{loopContent?.cueBox?.buttonLabel || 'Xem lại bước 3 →'}</span>
+                    <span>
+                      {loopContent?.cueBox?.buttonLabel || vi.dp01.cueBoxButtonLabelDefault}
+                    </span>
                   </button>
                 </div>
               )}
@@ -616,7 +625,7 @@ export function Step5LoopDesign({
                             onClick={() => toggleTechnique(tech.id)}
                             className="text-xs font-semibold text-bright-magenta hover:text-bright-magenta font-ui flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-soft-pink/50 transition-colors cursor-pointer"
                           >
-                            <span>{isDetailsOpen ? 'Thu gọn' : 'Xem'}</span>
+                            <span>{isDetailsOpen ? vi.dp01.collapseLabel : vi.dp01.viewLabel}</span>
                             {isDetailsOpen ? (
                               <ChevronUp className="w-3.5 h-3.5" />
                             ) : (
@@ -632,7 +641,7 @@ export function Step5LoopDesign({
                           {/* Ví dụ thực tế */}
                           <div className="p-3.5 rounded-2xl bg-white border border-lavender-mist/70 space-y-1.5">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 block">
-                              Ví dụ:
+                              {vi.dp01.exampleHeading}
                             </span>
                             <ul className="space-y-1 text-xs text-deep-navy/80">
                               {tech.examples.map((ex, exIdx) => (
@@ -650,7 +659,7 @@ export function Step5LoopDesign({
                               htmlFor={`technique-note-${tech.id}`}
                               className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 block"
                             >
-                              Cách tôi áp dụng:
+                              {vi.dp01.howIApplyLabel}
                             </label>
                             <input
                               id={`technique-note-${tech.id}`}
@@ -664,10 +673,7 @@ export function Step5LoopDesign({
                             {/* Lời nhắc nếu đã nhập text nhưng chưa tick chọn ô vuông */}
                             {noteText.trim() !== '' && !isChecked && (
                               <p className="text-[11px] text-[#D97706] font-ui flex items-center gap-1 font-medium mt-1">
-                                <span>
-                                  ⚠️ Đánh dấu ô vuông bên trái để kỹ thuật này hiện trên Boarding
-                                  Pass.
-                                </span>
+                                <span>{vi.dp01.checkboxReminder}</span>
                               </p>
                             )}
                           </div>
@@ -681,7 +687,7 @@ export function Step5LoopDesign({
                                 className="inline-flex items-center gap-1.5 text-xs text-bright-magenta hover:text-bright-magenta font-semibold font-ui transition-colors group cursor-pointer"
                               >
                                 <PlayCircle className="w-3.5 h-3.5" />
-                                <span>Xem video hướng dẫn kỹ thuật này</span>
+                                <span>{vi.dp01.watchTechniqueVideoLabel}</span>
                                 <ExternalLink className="w-3 h-3 text-deep-navy/70 group-hover:text-bright-magenta transition-colors" />
                               </button>
                             </div>

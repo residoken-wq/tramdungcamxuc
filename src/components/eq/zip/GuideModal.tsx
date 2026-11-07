@@ -13,7 +13,7 @@ export interface GuideModalProps {
 export function GuideModal({
   isOpen,
   onClose,
-  quote = '“Mỗi thẻ là một tấm gương soi chiếu. Không có lá bài đúng hay sai, chỉ có khoảnh khắc bạn chân thật với chính mình.” ♡',
+  quote = vi.dp01eq.defaultGuideModalQuote,
 }: GuideModalProps) {
   useEffect(() => {
     if (!isOpen) return
@@ -76,14 +76,15 @@ export function GuideModal({
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">1. Mở đầu</h4>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {vi.dp01eq.guideStep1Title}
+                </h4>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-mint-haze text-deep-navy">
-                  Đặt ý định
+                  {vi.dp01eq.guideStep1Tag}
                 </span>
               </div>
               <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Đặt ý định cho điều gì trong cuộc sống hay công việc hôm nay? Dành 30 giây thả lỏng
-                và thở sâu.
+                {vi.dp01eq.guideStep1Desc}
               </p>
             </div>
           </div>
@@ -95,14 +96,15 @@ export function GuideModal({
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">2. Chọn thẻ</h4>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {vi.dp01eq.guideStep2Title}
+                </h4>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
-                  Gọi tên
+                  {vi.dp01eq.guideStep2Tag}
                 </span>
               </div>
               <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Chia sẻ cảm xúc bạn đang gặp — hoặc để trống và rút ngẫu nhiên thông điệp phù hợp
-                cho khoảnh khắc này.
+                {vi.dp01eq.guideStep2Desc}
               </p>
             </div>
           </div>
@@ -114,14 +116,15 @@ export function GuideModal({
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">3. Thực hiện</h4>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {vi.dp01eq.guideStep3Title}
+                </h4>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-butter-cream text-deep-navy">
-                  Mặt trước
+                  {vi.dp01eq.guideStep3Tag}
                 </span>
               </div>
               <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Đọc từ khóa kèm câu diễn giải ở mặt trước → kết nối cảm nhận và lắng nghe phản hồi
-                của cơ thể và tâm trí.
+                {vi.dp01eq.guideStep3Desc}
               </p>
             </div>
           </div>
@@ -133,14 +136,15 @@ export function GuideModal({
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">4. Khám phá</h4>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {vi.dp01eq.guideStep4Title}
+                </h4>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-lavender-mist text-deep-navy">
-                  Mặt sau
+                  {vi.dp01eq.guideStep4Tag}
                 </span>
               </div>
               <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Lật thẻ sang mặt sau, trả lời 3 câu hỏi ở mặt sau để đào sâu và kết nối, gói ghém
-                bài học và ghi nhận bản thân.
+                {vi.dp01eq.guideStep4Desc}
               </p>
             </div>
           </div>

@@ -18,51 +18,21 @@ import { appendUtmParams } from '@/lib/utm'
 import { safeHref } from '@/lib/safe-href'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
+import { withEqBuddyDefaults, type Dp01EqBuddyContent } from '@/lib/eq/eq-content'
 
 export interface EQBuddyIntroProps {
-  content?: {
-    tagline?: string | null
-    quoteTop?: string | null
-    badge?: string | null
-    mainTitle?: string | null
-    subtitle?: string | null
-    shopeeUrl?: string | null
-    intro1Heading?: string | null
-    intro1Description?: string | null
-    card1Title?: string | null
-    card1Desc?: string | null
-    card2Title?: string | null
-    card2Desc?: string | null
-    card3Title?: string | null
-    card3Desc?: string | null
-    card4Title?: string | null
-    card4Desc?: string | null
-    intro2Heading?: string | null
-    intro2Description?: string | null
-    step1Title?: string | null
-    step1Tag?: string | null
-    step1Desc?: string | null
-    step2Title?: string | null
-    step2Tag?: string | null
-    step2Desc?: string | null
-    step3Title?: string | null
-    step3Tag?: string | null
-    step3Desc?: string | null
-    step4Title?: string | null
-    step4Tag?: string | null
-    step4Desc?: string | null
-    guideModalQuote?: string | null
-  } | null
+  content?: Partial<Dp01EqBuddyContent> | null
   /** QA DP-01c: rendered by the server page (TrialBanner is an async Server Component). */
   trialBanner?: React.ReactNode
 }
 
 export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
+  const resolvedContent = withEqBuddyDefaults(content)
   const [introStep, setIntroStep] = useState<1 | 2>(1)
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
 
   const rawShopeeUrl =
-    content?.shopeeUrl ||
+    resolvedContent.shopeeUrl ||
     'https://shopee.vn/search?keyword=tr%E1%BA%A1m%20d%E1%BB%ABng%20c%E1%BA%A3m%20x%C3%BAc'
   // Same UTM + event as ShopeeButton (AGENTS §8.3, §9: Shopee link carries UTM, logs external_clicked)
   const shopeeUrl =
@@ -86,7 +56,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
           <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="w-2 h-2 rounded-full bg-bright-magenta animate-pulse" />
             <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-deep-navy/70">
-              {content?.tagline || 'EQ Buddy • Thẻ Trạm Dừng Cảm Xúc'}
+              {resolvedContent.tagline}
             </span>
           </div>
 
@@ -102,7 +72,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
             </button>
 
             <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
-              {content?.quoteTop || 'Trạm dừng để lắng nghe ♡'}
+              {resolvedContent.quoteTop}
             </span>
           </div>
         </div>
@@ -113,7 +83,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
               {/* a11y-contrast-ok: SVG icon trang trí */}
               <Sparkles className="w-3.5 h-3.5 text-accent-pink" />
-              <span>{content?.badge || 'Bộ thẻ chánh niệm & Trí tuệ cảm xúc (EQ)'}</span>
+              <span>{resolvedContent.badge}</span>
             </div>
 
             {/* Progress step badge 1/2 */}
@@ -126,13 +96,20 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
           </div>
 
           <h1 className="font-display text-2xl sm:text-3xl md:text-4xl uppercase tracking-wide text-deep-navy">
-            {content?.mainTitle || 'TRẠM DỪNG CẢM XÚC'}
+            {resolvedContent.mainTitle}
           </h1>
 
           <p className="text-sm sm:text-base text-deep-navy/80 font-medium">
-            26 thông điệp cùng bạn. <strong className="text-bright-magenta">Gọi tên</strong> -{' '}
-            <strong className="text-bright-magenta">Ghi nhận</strong> -{' '}
-            <strong className="text-deep-navy">Gợi nhớ</strong>.
+            {resolvedContent.subtitle ? (
+              resolvedContent.subtitle
+            ) : (
+              <>
+                {vi.dp01eq.introSubtitlePrefix}{' '}
+                <strong className="text-bright-magenta">{vi.dp01eq.introSubtitleName}</strong> -{' '}
+                <strong className="text-bright-magenta">{vi.dp01eq.introSubtitleRecord}</strong> -{' '}
+                <strong className="text-deep-navy">{vi.dp01eq.introSubtitleRemind}</strong>
+              </>
+            )}
           </p>
         </div>
 
@@ -143,11 +120,10 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
           <div className="space-y-6 animate-fadeIn">
             <div className="border-l-4 border-bright-magenta pl-3 text-left font-ui">
               <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase">
-                {content?.intro1Heading || 'Bộ thẻ là gì?'}
+                {resolvedContent.intro1Heading}
               </h3>
               <p className="text-xs text-deep-navy/60 font-medium">
-                {content?.intro1Description ||
-                  'Công cụ chiêm nghiệm và đối thoại cảm xúc được thiết kế cho phụ nữ hiện đại.'}
+                {resolvedContent.intro1Description}
               </p>
             </div>
 
@@ -164,11 +140,10 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                   </span>
                 </div>
                 <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                  {content?.card1Title || 'Tĩnh lặng & Lắng nghe sâu'}
+                  {resolvedContent.card1Title}
                 </h4>
                 <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                  {content?.card1Desc ||
-                    'Mỗi thẻ là một từ khóa EQ giúp bạn dừng lại, kết nối với cảm xúc, nhận diện những xao động và tái tạo nguồn năng lượng an yên bên trong.'}
+                  {resolvedContent.card1Desc}
                 </p>
               </div>
 
@@ -183,11 +158,10 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                   </span>
                 </div>
                 <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                  {content?.card2Title || 'Chiêm nghiệm cá nhân'}
+                  {resolvedContent.card2Title}
                 </h4>
                 <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                  {content?.card2Desc ||
-                    'Mở đầu ngày mới tràn đầy chánh niệm, đúc kết bài học sau mỗi trải nghiệm, hoặc tìm một từ khóa dẫn lối khi lý trí đang bối rối, mông lung.'}
+                  {resolvedContent.card2Desc}
                 </p>
               </div>
 
@@ -202,11 +176,10 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                   </span>
                 </div>
                 <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                  {content?.card3Title || 'Kết nối & Thấu hiểu nhóm'}
+                  {resolvedContent.card3Title}
                 </h4>
                 <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                  {content?.card3Desc ||
-                    'Phá băng nhóm (Icebreaker), khám phá giá trị đội ngũ, nhắn nhủ chân thành giữa bạn bè hoặc người thân trong một không gian an toàn, cởi mở.'}
+                  {resolvedContent.card3Desc}
                 </p>
               </div>
 
@@ -221,20 +194,10 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                   </span>
                 </div>
                 <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                  {content?.card4Title || '2 Mặt tương tác 3D'}
+                  {resolvedContent.card4Title}
                 </h4>
                 <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                  {content?.card4Desc ? (
-                    content.card4Desc
-                  ) : (
-                    <>
-                      <strong className="text-deep-navy font-bold">Mặt trước:</strong> Từ khóa EQ +
-                      Thông điệp cảm hứng dẫn dắt. <br />
-                      <strong className="text-deep-navy font-bold">Mặt sau:</strong> 3 câu hỏi gợi
-                      mở suy ngẫm theo cấu trúc{' '}
-                      <em className="italic">Gợi nhớ - Gói ghém - Ghi nhận</em>.
-                    </>
-                  )}
+                  {resolvedContent.card4Desc}
                 </p>
               </div>
             </div>
@@ -267,11 +230,10 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
           <div className="space-y-6 animate-fadeIn">
             <div className="border-l-4 border-bright-magenta pl-3 text-left font-ui">
               <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase">
-                {content?.intro2Heading || '4 Bước Sử Dụng Bộ Thẻ'}
+                {resolvedContent.intro2Heading}
               </h3>
               <p className="text-xs text-deep-navy/60 font-medium">
-                {content?.intro2Description ||
-                  'Hãy thả lỏng vai, hít một hơi thật sâu và làm theo 4 chỉ dẫn đơn giản sau:'}
+                {resolvedContent.intro2Description}
               </p>
             </div>
 
@@ -285,15 +247,14 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                 <div className="space-y-0.5 flex-1">
                   <div className="flex items-center gap-2">
                     <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                      {content?.step1Title || '1. Mở đầu'}
+                      {resolvedContent.step1Title}
                     </h4>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-mint-haze text-deep-navy">
-                      {content?.step1Tag || 'Đặt ý định'}
+                      {resolvedContent.step1Tag}
                     </span>
                   </div>
                   <p className="text-xs sm:text-[13px] text-deep-navy/75 leading-relaxed">
-                    {content?.step1Desc ||
-                      'Đặt ý định cho điều gì trong cuộc sống hay công việc hôm nay? Dành 30 giây tĩnh lặng, hít thở sâu để đưa tâm trí về trạng thái hiện diện trọn vẹn.'}
+                    {resolvedContent.step1Desc}
                   </p>
                 </div>
               </div>
@@ -306,15 +267,14 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                 <div className="space-y-0.5 flex-1">
                   <div className="flex items-center gap-2">
                     <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                      {content?.step2Title || '2. Chọn thẻ'}
+                      {resolvedContent.step2Title}
                     </h4>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
-                      {content?.step2Tag || 'Gọi tên cảm xúc'}
+                      {resolvedContent.step2Tag}
                     </span>
                   </div>
                   <p className="text-xs sm:text-[13px] text-deep-navy/75 leading-relaxed">
-                    {content?.step2Desc ||
-                      'Chia sẻ cảm xúc bạn đang gặp — hoặc để trống và rút ngẫu nhiên thông điệp phù hợp cho khoảnh khắc này.'}
+                    {resolvedContent.step2Desc}
                   </p>
                 </div>
               </div>
@@ -327,15 +287,14 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                 <div className="space-y-0.5 flex-1">
                   <div className="flex items-center gap-2">
                     <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                      {content?.step3Title || '3. Thực hiện'}
+                      {resolvedContent.step3Title}
                     </h4>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-butter-cream text-deep-navy">
-                      {content?.step3Tag || 'Mặt trước thẻ'}
+                      {resolvedContent.step3Tag}
                     </span>
                   </div>
                   <p className="text-xs sm:text-[13px] text-deep-navy/75 leading-relaxed">
-                    {content?.step3Desc ||
-                      'Đọc từ khóa kèm câu diễn giải ở mặt trước → kết nối cảm nhận và lắng nghe phản hồi từ cơ thể và tâm trí.'}
+                    {resolvedContent.step3Desc}
                   </p>
                 </div>
               </div>
@@ -348,15 +307,14 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
                 <div className="space-y-0.5 flex-1">
                   <div className="flex items-center gap-2">
                     <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                      {content?.step4Title || '4. Khám phá'}
+                      {resolvedContent.step4Title}
                     </h4>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-lavender-mist text-deep-navy">
-                      {content?.step4Tag || 'Mặt sau thẻ'}
+                      {resolvedContent.step4Tag}
                     </span>
                   </div>
                   <p className="text-xs sm:text-[13px] text-deep-navy/75 leading-relaxed">
-                    {content?.step4Desc ||
-                      'Lật thẻ, trả lời 3 câu hỏi ở mặt sau để đào sâu và kết nối, gói ghém bài học và ghi nhận nỗ lực của bản thân.'}
+                    {resolvedContent.step4Desc}
                   </p>
                 </div>
               </div>
@@ -403,7 +361,7 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
       <GuideModal
         isOpen={isGuideModalOpen}
         onClose={() => setIsGuideModalOpen(false)}
-        quote={content?.guideModalQuote || undefined}
+        quote={resolvedContent.guideModalQuote}
       />
     </div>
   )

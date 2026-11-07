@@ -3,7 +3,12 @@
 import React from 'react'
 import { ArrowRight } from 'lucide-react'
 import type { CleanHabitDiagnose } from '@/lib/habit/journey-content.server'
-import type { Dp01Step1Content } from '@/lib/habit/dp01-content'
+import {
+  type Dp01Step1Content,
+  DEFAULT_DIAGNOSE_QUESTIONS,
+  DEFAULT_CATEGORY_MAP,
+} from '@/lib/habit/dp01-content'
+import { vi } from '@/lib/i18n/vi'
 
 export interface Step1DiagnoseProps {
   diagnose?: CleanHabitDiagnose | null
@@ -13,88 +18,8 @@ export interface Step1DiagnoseProps {
   onNext: () => void
 }
 
-// QA DP-01e: fallback = the 8 questions of the approved zip, verbatim (constants.ts).
-export const DEFAULT_DIAGNOSE_QUESTIONS = [
-  {
-    id: 1,
-    text: 'Tôi không có giờ cố định cho thói quen mới, cứ lúc nào rảnh thì làm.',
-    category: 'cue',
-  },
-  {
-    id: 2,
-    text: 'Có hôm đến tối muộn tôi mới sực nhớ ra là hôm nay mình định làm.',
-    category: 'cue',
-  },
-  {
-    id: 3,
-    text: 'Tôi biết việc này tốt cho mình, nhưng cứ nghĩ đến là thấy ngại bắt đầu.',
-    category: 'craving',
-  },
-  {
-    id: 4,
-    text: 'Tôi lo người khác sẽ nhìn mình thế nào khi thấy mình làm việc này.',
-    category: 'craving',
-  },
-  {
-    id: 5,
-    text: 'Mỗi lần làm, tôi phải chuẩn bị quá nhiều thứ trước khi bắt đầu được.',
-    category: 'response',
-  },
-  {
-    id: 6,
-    text: 'Tôi chờ đến khi có đủ thời gian hoặc đủ hứng mới chịu làm.',
-    category: 'response',
-  },
-  { id: 7, text: 'Làm được mấy hôm mà chưa thấy kết quả là tôi mất hứng.', category: 'reward' },
-  {
-    id: 8,
-    text: 'Tôi không nhớ nổi tuần vừa rồi mình đã làm được bao nhiêu lần.',
-    category: 'reward',
-  },
-]
-
-export const CATEGORY_MAP = {
-  cue: {
-    id: 'cue',
-    name: 'Tín hiệu · Cue',
-    colorHex: '#3b4991',
-    barColor: 'bg-[#3b4991]',
-    textColor: 'text-[#3b4991]',
-    borderColor: 'border-[#3b4991]',
-    diagnosis:
-      'Thói quen của bạn chưa có tín hiệu rõ ràng. Nó đang chờ bạn tự nhớ ra — mà trí nhớ thì luôn bận.',
-  },
-  craving: {
-    id: 'craving',
-    name: 'Khao khát · Craving',
-    colorHex: '#a8325d',
-    barColor: 'bg-[#a8325d]',
-    textColor: 'text-[#a8325d]',
-    borderColor: 'border-[#a8325d]',
-    diagnosis:
-      'Việc này chưa đủ hấp dẫn với bạn, nên bạn né nó một cách rất tự nhiên — không phải vì lười.',
-  },
-  response: {
-    id: 'response',
-    name: 'Phản hồi · Response',
-    colorHex: '#b87614',
-    barColor: 'bg-[#b87614]',
-    textColor: 'text-[#b87614]',
-    borderColor: 'border-[#b87614]',
-    diagnosis:
-      'Mỗi lần bắt đầu đang tốn quá nhiều công sức. Không ai duy trì nổi một việc nặng trong 28 ngày.',
-  },
-  reward: {
-    id: 'reward',
-    name: 'Phần thưởng · Reward',
-    colorHex: '#23684a',
-    barColor: 'bg-[#23684a]',
-    textColor: 'text-[#23684a]',
-    borderColor: 'border-[#23684a]',
-    diagnosis:
-      'Bạn chưa nhận được sự ghi nhận nào ngay sau khi làm, nên não chưa thấy việc này đáng để lặp lại.',
-  },
-}
+export { DEFAULT_DIAGNOSE_QUESTIONS }
+export const CATEGORY_MAP = DEFAULT_CATEGORY_MAP
 
 export function Step1Diagnose({
   diagnose,
@@ -178,24 +103,22 @@ export function Step1Diagnose({
       <div className="p-6 sm:p-8 rounded-[20px] bg-white border border-lavender-mist shadow-soft text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-deep-navy via-bright-magenta to-accent-pink" />
         <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold uppercase tracking-wider mb-2 font-ui">
-          <span>GIAI ĐOẠN 1 · KHÁM THÓI QUEN</span>
+          <span>{vi.dp01.stage1Badge}</span>
         </div>
         <h2 className="font-display text-xl sm:text-2xl text-deep-navy uppercase tracking-wide mb-3">
-          Khám đúng “bệnh” — Kê đúng “toa”
+          {step1Content?.title || vi.dp01.stage1Title}
         </h2>
         <blockquote className="font-quote italic text-lg sm:text-xl md:text-2xl text-deep-navy max-w-2xl mx-auto leading-relaxed">
-          &ldquo;Chúng ta chỉ đang thay đổi thói quen bằng hành động đơn lẻ. Trong khi thứ chúng ta
-          cần là một hệ thống — một vòng lặp — cho thói quen.&rdquo;
+          &ldquo;{step1Content?.quoteText || vi.dp01.stage1QuoteText}&rdquo;
         </blockquote>
         <p className="mt-2 font-ui font-semibold text-xs sm:text-sm text-bright-magenta tracking-wide">
-          — James Clear, Atomic Habits.
+          {step1Content?.quoteAuthor || vi.dp01.stage1QuoteAuthor}
         </p>
       </div>
 
       {/* Lead-in Text */}
       <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        Bạn đã đọc sách, đã lập kế hoạch, đã bắt đầu vài lần. Vấn đề không nằm ở việc bạn thiếu kỷ
-        luật.
+        {step1Content?.leadIn || vi.dp01.stage1LeadIn}
       </p>
 
       {/* 2. Thẻ số liệu (chỉ hiện khi có nguồn per H4) */}
@@ -245,12 +168,11 @@ export function Step1Diagnose({
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-bright-magenta" />
                 <h2 className="font-ui font-bold text-lg text-deep-navy">
-                  Khám thói quen qua 8 câu hỏi đơn giản
+                  {step1Content?.surveyTitle || vi.dp01.stage1SurveyTitle}
                 </h2>
               </div>
               <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-                Khám thói quen của bạn thông qua khảo sát nhanh sau đây. Chọn mức độ bạn thấy đúng
-                với mình — khoảng hai phút.
+                {step1Content?.surveyDesc || vi.dp01.stage1SurveyDesc}
               </p>
             </div>
 
@@ -316,8 +238,8 @@ export function Step1Diagnose({
                 {/* Dòng chú giải 2 đầu dưới câu 1 */}
                 {q.id === 1 && (
                   <div className="flex justify-between text-xs text-deep-navy/70 mt-1.5 max-w-md px-0.5 font-ui">
-                    <span>1 · Không bao giờ</span>
-                    <span>5 · Rất thường xuyên</span>
+                    <span>{vi.dp01.scaleMin}</span>
+                    <span>{vi.dp01.scaleMax}</span>
                   </div>
                 )}
               </div>
@@ -328,8 +250,7 @@ export function Step1Diagnose({
         {/* Khi chưa trả lời đủ: dòng chữ nghiêng */}
         {!isAllAnswered && (
           <p className="text-xs sm:text-sm italic text-deep-navy/60 font-ui text-center pt-2">
-            Đã trả lời {answeredCount}/{questions.length} câu. Trả lời hết để thấy lỗ hổng trong hệ
-            thống thói quen của bạn.
+            {vi.dp01.unansweredNotice(answeredCount, questions.length)}
           </p>
         )}
       </div>
@@ -341,7 +262,7 @@ export function Step1Diagnose({
             className={`border-2 rounded-[20px] p-5 sm:p-7 bg-white shadow-soft space-y-5 ${topCategory.borderColor}`}
           >
             <p className="text-xs sm:text-sm text-deep-navy/70 font-ui">
-              Lỗ hổng trong hệ thống thói quen của bạn phần lớn đang là…
+              {vi.dp01.topCategoryNotice}
             </p>
 
             <h3
@@ -357,22 +278,22 @@ export function Step1Diagnose({
             {/* Biểu đồ 4 thanh ngang theo thang /5 */}
             <div className="space-y-3.5 pt-2 font-ui">
               {[
-                { id: 'cue', label: 'Tín hiệu · Cue', score: avgCue, color: 'bg-[#3b4991]' },
+                { id: 'cue', label: vi.dp01.cueName, score: avgCue, color: 'bg-[#3b4991]' },
                 {
                   id: 'craving',
-                  label: 'Khao khát · Craving',
+                  label: vi.dp01.cravingName,
                   score: avgCraving,
                   color: 'bg-[#a8325d]',
                 },
                 {
                   id: 'response',
-                  label: 'Phản hồi · Response',
+                  label: vi.dp01.responseName,
                   score: avgResponse,
                   color: 'bg-[#b87614]',
                 },
                 {
                   id: 'reward',
-                  label: 'Phần thưởng · Reward',
+                  label: vi.dp01.rewardName,
                   score: avgReward,
                   color: 'bg-[#23684a]',
                 },
@@ -417,15 +338,15 @@ export function Step1Diagnose({
             </div>
 
             <p className="text-xs text-deep-navy/70 font-ui italic pt-2 border-t border-lavender-mist/60">
-              Điểm càng cao, bạn càng hay vướng ở giai đoạn đó của vòng lặp.
+              {vi.dp01.scoreHint}
             </p>
           </div>
 
           {/* Hộp dẫn dắt */}
           <div className="p-5 sm:p-6 rounded-[20px] bg-soft-pink/60 border border-bright-magenta/25 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <p className="text-xs sm:text-sm text-deep-navy/85 font-ui leading-relaxed">
-              <strong className="text-deep-navy font-bold">Làm sao để lấp lỗ hổng này?</strong> Câu
-              trả lời bắt đầu từ một nguyên lý mà hầu hết mọi người đều nghĩ là mình đã hiểu.
+              <strong className="text-deep-navy font-bold">{vi.dp01.step1NextLeadInBold}</strong>{' '}
+              {vi.dp01.step1NextLeadIn}
             </p>
 
             <button
@@ -433,7 +354,7 @@ export function Step1Diagnose({
               onClick={onNext}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs sm:text-sm font-ui font-semibold shadow-soft hover:shadow-soft-md transition-all active:scale-95 flex-shrink-0 cursor-pointer"
             >
-              <span>Tiếp · Nguyên lý 1% Better</span>
+              <span>{vi.dp01.nextStep1}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

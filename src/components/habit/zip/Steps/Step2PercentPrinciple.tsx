@@ -3,14 +3,23 @@
 import React, { useState } from 'react'
 import { ArrowLeft, ArrowRight, Info } from 'lucide-react'
 import { StepQuoteHeader } from '../StepQuoteHeader'
-import type { CleanHabitOnePercent, CleanTitledText } from '@/lib/habit/journey-content.server'
-import { DEFAULT_DP01_CONTENT, type Dp01Step2Content } from '@/lib/habit/dp01-content'
+import type {
+  CleanHabitOnePercent,
+  CleanTitledText,
+  CleanStepQuote,
+} from '@/lib/habit/journey-content.server'
+import {
+  DEFAULT_DP01_CONTENT,
+  DEFAULT_ONE_PERCENT_UNKNOWNS,
+  type Dp01Step2Content,
+} from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
 
 export interface Step2PercentPrincipleProps {
   onePercent?: CleanHabitOnePercent | null
   onePercentUnknowns?: CleanTitledText[]
   step2Content?: Dp01Step2Content
+  stepQuote?: CleanStepQuote | null
   onNext: () => void
   onPrev: () => void
 }
@@ -19,6 +28,7 @@ export function Step2PercentPrinciple({
   onePercent,
   onePercentUnknowns,
   step2Content = DEFAULT_DP01_CONTENT.step2,
+  stepQuote,
   onNext,
   onPrev,
 }: Step2PercentPrincipleProps) {
@@ -28,23 +38,14 @@ export function Step2PercentPrinciple({
   const unknownItems =
     onePercentUnknowns && onePercentUnknowns.length > 0
       ? onePercentUnknowns
-      : [
-          {
-            title: '1. Giai đoạn thất vọng',
-            content:
-              'Bạn chỉ phát huy được tiềm năng của mình sau khi đi qua giai đoạn thất vọng — quãng mà kết quả thấp hơn hẳn công sức bỏ ra.',
-          },
-          {
-            title: '2. Tin vào tiến trình',
-            content:
-              'Bí quyết đi qua giai đoạn đó là tin vào tiến trình thay vì kết quả. Tiến trình là số lần bạn đã làm, không phải kết quả bạn đã thấy.',
-          },
-          {
-            title: '3. Tư duy phù hợp',
-            content:
-              'Tiến trình dễ hơn rất nhiều khi bạn có tư duy và phương pháp hợp với mình — chứ không phải phương pháp hợp với người bạn đang ngưỡng mộ.',
-          },
-        ]
+      : DEFAULT_ONE_PERCENT_UNKNOWNS
+
+  const quoteText = stepQuote?.text?.trim()
+    ? `“${stepQuote.text.replace(/^["“”\s]+|["“”\s]+$/g, '')}”`
+    : '“Thay đổi thói quen thực ra là thay đổi tư duy.”'
+  const quoteAuthor = stepQuote?.author?.trim()
+    ? stepQuote.author
+    : '— Robert Kiyosaki, Cha giàu Cha nghèo —'
 
   return (
     <div className="space-y-8" data-testid="one-percent-section">
@@ -52,8 +53,8 @@ export function Step2PercentPrinciple({
       <StepQuoteHeader
         stage="GIAI ĐOẠN 1 · KHÁM THÓI QUEN"
         title={onePercent?.title || 'Nguyên lý 1% tốt hơn mỗi ngày'}
-        quote="“Thay đổi thói quen thực ra là thay đổi tư duy.”"
-        author="— Robert Kiyosaki, Cha giàu Cha nghèo —"
+        quote={quoteText}
+        author={quoteAuthor}
       />
 
       {/* Lead-in Text */}
@@ -79,11 +80,11 @@ export function Step2PercentPrinciple({
           <div className="flex items-center gap-3 text-xs font-ui">
             <div className="flex items-center gap-1.5">
               <span className="w-3 h-0.5 bg-deep-navy/40 border-t border-dashed border-deep-navy" />
-              <span className="text-deep-navy/70">Tôi nghĩ sẽ là</span>
+              <span className="text-deep-navy/70">{vi.dp01.curveThought}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3 h-1 bg-bright-magenta rounded-full" />
-              <span className="font-bold text-bright-magenta">Thực tế diễn ra</span>
+              <span className="font-bold text-bright-magenta">{vi.dp01.curveReality}</span>
             </div>
           </div>
         </div>
@@ -231,10 +232,10 @@ export function Step2PercentPrinciple({
 
         {/* Bottom axis labels */}
         <div className="flex justify-between text-[11px] font-ui text-deep-navy/70 pt-2 border-t border-lavender-mist/40">
-          <span>Ngày 1 (Khởi hành)</span>
-          <span>Ngày 14 (Tạo đà)</span>
-          <span className="font-semibold text-bright-magenta">Ngày 28 (Vượt ngưỡng)</span>
-          <span>Sau 1 năm (Vững vàng)</span>
+          <span>{vi.dp01.timelineDay1}</span>
+          <span>{vi.dp01.timelineDay14}</span>
+          <span className="font-semibold text-bright-magenta">{vi.dp01.timelineDay28}</span>
+          <span>{vi.dp01.timelineYear1}</span>
         </div>
       </div>
 
@@ -244,15 +245,17 @@ export function Step2PercentPrinciple({
           <div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-bright-magenta" />
-              <h2 className="font-ui font-bold text-lg text-deep-navy">Kéo thử: sau {days} ngày</h2>
+              <h2 className="font-ui font-bold text-lg text-deep-navy">
+                {vi.dp01.sliderTitle(days)}
+              </h2>
             </div>
             <p className="text-xs sm:text-sm text-deep-navy/60 font-ui mt-0.5">
-              Mô phỏng sức mạnh của việc tốt hơn hoặc tệ hơn 1% mỗi ngày
+              {vi.dp01.sliderDesc}
             </p>
           </div>
 
           <div className="px-3 py-1 rounded-full bg-bright-magenta/10 text-bright-magenta font-ui font-bold text-xs">
-            {days} ngày
+            {vi.dp01.daysBadge(days)}
           </div>
         </div>
 
@@ -269,10 +272,10 @@ export function Step2PercentPrinciple({
             className="w-full h-2.5 bg-lavender-mist rounded-lg appearance-none cursor-pointer accent-bright-magenta"
           />
           <div className="flex justify-between text-[11px] font-ui text-deep-navy/70">
-            <span>7 ngày</span>
-            <span className="text-bright-magenta font-semibold">28 ngày</span>
-            <span>90 ngày</span>
-            <span>365 ngày</span>
+            <span>{vi.dp01.sliderMarks.d7}</span>
+            <span className="text-bright-magenta font-semibold">{vi.dp01.sliderMarks.d28}</span>
+            <span>{vi.dp01.sliderMarks.d90}</span>
+            <span>{vi.dp01.sliderMarks.d365}</span>
           </div>
         </div>
 
@@ -291,7 +294,9 @@ export function Step2PercentPrinciple({
                 {(1.01 ** days).toFixed(2).replace('.', ',')}
               </span>
             </div>
-            <p className="text-xs text-deep-navy/70 font-ui font-medium">tốt hơn 1% mỗi ngày</p>
+            <p className="text-xs text-deep-navy/70 font-ui font-medium">
+              {vi.dp01.betterResultLabel}
+            </p>
           </div>
 
           {/* Card Tệ hơn: 0,99^n */}
@@ -307,7 +312,9 @@ export function Step2PercentPrinciple({
                 {(0.99 ** days).toFixed(2).replace('.', ',')}
               </span>
             </div>
-            <p className="text-xs text-deep-navy/70 font-ui font-medium">tệ hơn 1% mỗi ngày</p>
+            <p className="text-xs text-deep-navy/70 font-ui font-medium">
+              {vi.dp01.worseResultLabel}
+            </p>
           </div>
         </div>
 
@@ -315,25 +322,19 @@ export function Step2PercentPrinciple({
         <div className="pt-3 border-t border-lavender-mist/50 text-xs sm:text-sm text-deep-navy/80 font-ui leading-relaxed">
           {days <= 30 && (
             <p>
-              Sau {days} ngày đều đặn, bạn mới tốt hơn{' '}
-              <strong className="text-deep-navy">{Math.round((1.01 ** days - 1) * 100)}%</strong>.
-              Gần như không cảm thấy gì — đó chính là lý do tuần thứ ba ai cũng muốn bỏ. Giờ kéo
-              tiếp tới 365.
+              {vi.dp01.dynamicTextUnder30Prefix(days)}
+              <strong className="text-deep-navy">{Math.round((1.01 ** days - 1) * 100)}%</strong>
+              {vi.dp01.dynamicTextUnder30Suffix}
             </p>
           )}
-          {days > 30 && days < 300 && (
-            <p>
-              Đường cong bắt đầu bẻ lên. Người bỏ cuộc ở tuần thứ ba không bao giờ thấy được đoạn
-              này.
-            </p>
-          )}
+          {days > 30 && days < 300 && <p>{vi.dp01.dynamicText30to300}</p>}
           {days >= 300 && (
             <p>
-              Giữ đủ một năm: tốt hơn{' '}
+              {vi.dp01.dynamicTextOver300Prefix}
               <strong className="text-deep-navy">
                 {(1.01 ** days).toFixed(2).replace('.', ',')}
               </strong>{' '}
-              lần. Cùng điểm xuất phát, chỉ khác ở việc có lặp lại hay không.
+              {vi.dp01.dynamicTextOver300Suffix}
             </p>
           )}
         </div>
@@ -343,7 +344,7 @@ export function Step2PercentPrinciple({
       <div className="p-6 rounded-[20px] bg-white border border-lavender-mist shadow-soft space-y-4">
         <h3 className="font-ui font-bold text-base text-deep-navy flex items-center gap-2">
           <Info className="w-4 h-4 text-bright-magenta" />
-          <span>Ba điều có thể bạn chưa biết về 1% Better</span>
+          <span>{vi.dp01.threeUnknownsHeading}</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm font-ui">
@@ -364,10 +365,8 @@ export function Step2PercentPrinciple({
       {/* 5. Cuối Bước 2: Hộp dẫn dắt */}
       <div className="p-5 sm:p-6 rounded-[20px] bg-soft-pink/60 border border-bright-magenta/25 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <p className="text-xs sm:text-sm text-deep-navy/85 font-ui leading-relaxed">
-          <strong className="text-deep-navy font-bold">
-            Lời giải không nằm ở cố gắng nhiều hơn, mà ở một hệ thống tốt hơn.
-          </strong>{' '}
-          Ở giai đoạn 2, bạn sẽ tự tay xây hệ thống đó cho thói quen của mình.
+          <strong className="text-deep-navy font-bold">{vi.dp01.step2NextLeadInBold}</strong>{' '}
+          {vi.dp01.step2NextLeadIn}
         </p>
 
         <div className="flex items-center gap-2.5 flex-shrink-0">
@@ -377,7 +376,7 @@ export function Step2PercentPrinciple({
             className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-deep-navy/30 hover:border-deep-navy text-deep-navy text-xs sm:text-sm font-ui font-semibold bg-white hover:bg-warm-ivory transition-all active:scale-95 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Quay lại</span>
+            <span>{vi.dp01.prevButton}</span>
           </button>
 
           <button
@@ -385,7 +384,7 @@ export function Step2PercentPrinciple({
             onClick={onNext}
             className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs sm:text-sm font-ui font-semibold shadow-soft hover:shadow-soft-md transition-all active:scale-95 group cursor-pointer"
           >
-            <span>Sang giai đoạn 2 · Xây thói quen</span>
+            <span>{vi.dp01.nextStep2}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>

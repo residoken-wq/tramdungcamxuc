@@ -6,12 +6,14 @@ import { StepQuoteHeader } from '../StepQuoteHeader'
 import type { HabitFlowDraft } from '@/components/habit/flow/draft'
 import { daysToWeekdays, weekdaysToDays } from '../draft-adapter'
 import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
+import type { CleanStepQuote } from '@/lib/habit/journey-content.server'
 import { DEFAULT_DP01_CONTENT, type Dp01Step4Content } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
 
 export interface Step4IdentityHabitProps {
   draft: HabitFlowDraft
   step4Content?: Dp01Step4Content
+  stepQuote?: CleanStepQuote | null
   onDraftChange: (draft: HabitFlowDraft) => void
   onNext: () => void
   onPrev: () => void
@@ -25,6 +27,7 @@ const DAYS_OF_WEEK = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
 export function Step4IdentityHabit({
   draft,
   step4Content = DEFAULT_DP01_CONTENT.step4,
+  stepQuote,
   onDraftChange,
   onNext,
   onPrev,
@@ -84,14 +87,21 @@ export function Step4IdentityHabit({
   const isAllSelected =
     selectedDays.length === 7 && DAYS_OF_WEEK.every((d) => selectedDays.includes(d))
 
+  const quoteText = stepQuote?.text?.trim()
+    ? `“${stepQuote.text.replace(/^["“”\s]+|["“”\s]+$/g, '')}”`
+    : '“Mỗi hành động bạn thực hiện là một lá phiếu cho con người mà bạn muốn trở thành.”'
+  const quoteAuthor = stepQuote?.author?.trim()
+    ? stepQuote.author
+    : '— James Clear, Atomic Habits —'
+
   return (
     <div className="space-y-8">
       {/* 1. Quote Block */}
       <StepQuoteHeader
         stage="GIAI ĐOẠN 2 · XÂY THÓI QUEN"
-        title="Gọi tên thói quen"
-        quote="“Mỗi hành động bạn thực hiện là một lá phiếu cho con người mà bạn muốn trở thành.”"
-        author="— James Clear, Atomic Habits —"
+        title={step4Content.title || 'Gọi tên thói quen'}
+        quote={quoteText}
+        author={quoteAuthor}
       />
 
       {/* Lead-in Text */}
@@ -122,13 +132,13 @@ export function Step4IdentityHabit({
             {/* Dòng 1: Tôi sẽ */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <span className="font-bold text-sm sm:text-base text-deep-navy sm:w-28 flex-shrink-0">
-                Tôi sẽ
+                {vi.dp01.iWill}
               </span>
               <input
                 type="text"
                 value={draft.actionText || ''}
                 onChange={(e) => onDraftChange({ ...draft, actionText: e.target.value })}
-                placeholder="đọc sách mỗi ngày"
+                placeholder={vi.dp01.actionPlaceholder}
                 className="flex-1 px-3.5 py-2.5 rounded-2xl bg-white border border-lavender-mist focus:border-bright-magenta outline-none text-xs sm:text-sm font-ui text-deep-navy transition-all"
               />
             </div>
@@ -136,13 +146,13 @@ export function Step4IdentityHabit({
             {/* Dòng 2: để trở thành */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <span className="font-bold text-sm sm:text-base text-deep-navy sm:w-28 flex-shrink-0">
-                để trở thành
+                {vi.dp01.inOrderToBecome}
               </span>
               <input
                 type="text"
                 value={draft.personText || ''}
                 onChange={(e) => onDraftChange({ ...draft, personText: e.target.value })}
-                placeholder="người luôn học hỏi"
+                placeholder={vi.dp01.personPlaceholder}
                 className="flex-1 px-3.5 py-2.5 rounded-2xl bg-white border border-lavender-mist focus:border-bright-magenta outline-none text-xs sm:text-sm font-ui text-deep-navy transition-all"
               />
             </div>
@@ -151,7 +161,7 @@ export function Step4IdentityHabit({
           {/* 4 Chip gợi ý vai trò */}
           <div className="pt-2 border-t border-lavender-mist/60">
             <span className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 font-ui mb-2">
-              Gợi ý vai trò:
+              {vi.dp01.roleSuggestionsPrompt}
             </span>
             <div className="flex flex-wrap gap-2">
               {step4Content.suggestedRoles.map((role, idx) => (
@@ -198,7 +208,7 @@ export function Step4IdentityHabit({
             }`}
           >
             <div className="font-display text-sm sm:text-base tracking-wide uppercase">
-              3 lần một tuần
+              {vi.dp01.frequency3PerWeek}
             </div>
           </button>
 
@@ -213,7 +223,7 @@ export function Step4IdentityHabit({
             }`}
           >
             <div className="font-display text-sm sm:text-base tracking-wide uppercase">
-              5 lần một tuần
+              {vi.dp01.frequency5PerWeek}
             </div>
           </button>
 
@@ -228,7 +238,7 @@ export function Step4IdentityHabit({
             }`}
           >
             <div className="font-display text-sm sm:text-base tracking-wide uppercase">
-              Mỗi ngày
+              {vi.dp01.frequencyDaily}
             </div>
           </button>
         </div>
@@ -236,7 +246,7 @@ export function Step4IdentityHabit({
         {/* Dãy 7 nút thứ */}
         <div className="pt-2 space-y-2">
           <span className="block text-xs font-bold uppercase tracking-wider text-deep-navy/60 font-ui">
-            Chọn các ngày cụ thể:
+            {vi.dp01.selectSpecificDaysPrompt}
           </span>
           <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
             {DAYS_OF_WEEK.map((day) => {
@@ -285,7 +295,7 @@ export function Step4IdentityHabit({
               type="text"
               value={draft.twoMinuteAction || ''}
               onChange={(e) => onDraftChange({ ...draft, twoMinuteAction: e.target.value })}
-              placeholder="đọc 1 trang sách"
+              placeholder={vi.dp01.atomicHabitPlaceholder}
               className="w-full px-4 py-3 rounded-2xl bg-warm-ivory border border-lavender-mist focus:border-bright-magenta outline-none text-xs sm:text-sm font-ui text-deep-navy transition-all"
             />
           </div>
@@ -293,7 +303,7 @@ export function Step4IdentityHabit({
           {/* 4 Chip gợi ý */}
           <div>
             <span className="block text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 font-ui mb-2">
-              Gợi ý thói quen:
+              {vi.dp01.atomicHabitSuggestionsPrompt}
             </span>
             <div className="flex flex-wrap gap-2">
               {step4Content.suggestedAtomicHabits.map((pill, idx) => (
@@ -318,23 +328,23 @@ export function Step4IdentityHabit({
             <div className="p-4 sm:p-5 rounded-[20px] bg-butter-cream/30 border border-deep-navy/10 text-deep-navy space-y-2 font-ui">
               <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-deep-navy/70">
                 <span>⚓</span>
-                <span>Câu xếp chồng của bạn</span>
+                <span>{vi.dp01.stackingFormulaTitle}</span>
               </div>
               <p className="text-sm sm:text-base leading-relaxed text-deep-navy">
-                <span>Sau khi </span>
+                <span>{vi.dp01.stackingAfterPrefix} </span>
                 <strong className="font-bold text-deep-navy bg-white/70 px-2 py-0.5 rounded-md border border-deep-navy/10">
                   {draft.anchorHabit}
                 </strong>
-                <span>, tôi sẽ </span>
+                <span>, {vi.dp01.stackingIWillPrefix} </span>
                 <strong className="font-bold text-deep-navy bg-white/70 px-2 py-0.5 rounded-md border border-deep-navy/10">
-                  {draft.twoMinuteAction || '[thói quen hạt nhân]'}
+                  {draft.twoMinuteAction || vi.dp01.stackingFallbackAction}
                 </strong>
                 <span>.</span>
               </p>
             </div>
           ) : (
             <div className="p-4 sm:p-5 rounded-[20px] bg-butter-cream/20 border border-deep-navy/10 text-deep-navy font-ui text-xs sm:text-sm italic text-deep-navy/70">
-              Chọn một Mentor ở bước 3 để câu xếp chồng tự hiện ra đây.
+              {vi.dp01.stackingMissingMentorHint}
             </div>
           )}
         </div>
@@ -381,7 +391,7 @@ export function Step4IdentityHabit({
                 htmlFor="field-start-date"
                 className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5"
               >
-                Ngày bắt đầu
+                {vi.dp01.startDateLabel}
               </label>
               <input
                 id="field-start-date"
@@ -391,14 +401,14 @@ export function Step4IdentityHabit({
                 className="w-full h-11 px-3.5 py-2.5 rounded-2xl bg-white border border-lavender-mist focus:border-bright-magenta text-xs sm:text-sm font-ui text-deep-navy outline-none transition-all shadow-sm"
               />
               <p className="text-xs text-deep-navy/70 font-ui mt-1.5">
-                Bạn sẽ về đích ngày {formatFinishDate(endDate)}.
+                {vi.dp01.finishDateNotice(formatFinishDate(endDate))}
               </p>
             </div>
 
             {/* Cột 2: NGÀY VỀ ĐÍCH */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-1.5">
-                Ngày về đích
+                {vi.dp01.finishDateLabel}
               </label>
               <div className="w-full h-11 px-3.5 py-2.5 rounded-2xl bg-mint-haze/40 border border-deep-navy/20 text-xs sm:text-sm font-bold text-deep-navy flex items-center shadow-sm">
                 {formatFinishDate(endDate)}
@@ -422,7 +432,7 @@ export function Step4IdentityHabit({
               type="text"
               value={draft.companionName || ''}
               onChange={(e) => onDraftChange({ ...draft, companionName: e.target.value })}
-              placeholder="Người bạn muốn chia sẻ hành trình xây thói quen hạt nhân này"
+              placeholder={vi.dp01.companionPlaceholder}
               className="w-full h-11 px-3.5 py-2.5 rounded-2xl bg-white border border-lavender-mist focus:border-bright-magenta text-xs sm:text-sm font-ui text-deep-navy outline-none transition-all shadow-sm"
             />
           </div>

@@ -4,6 +4,7 @@ import React from 'react'
 import { ArrowLeft, ArrowRight, Plus, Trash2, Check, Anchor, ArrowUp } from 'lucide-react'
 import type { DailyRoutineItem } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
+import type { CleanStepQuote } from '@/lib/habit/journey-content.server'
 import { DEFAULT_DP01_CONTENT, type Dp01Step3Content } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
 
@@ -12,6 +13,7 @@ export interface Step3FindMentorProps {
   selectedMentor: string
   mentorTime?: string
   step3Content?: Dp01Step3Content
+  stepQuote?: CleanStepQuote | null
   onRoutinesChange: (routines: DailyRoutineItem[]) => void
   onMentorSelect: (mentor: string) => void
   onMentorTimeChange?: (time: string) => void
@@ -24,6 +26,7 @@ export function Step3FindMentor({
   selectedMentor,
   mentorTime = '',
   step3Content = DEFAULT_DP01_CONTENT.step3,
+  stepQuote,
   onRoutinesChange,
   onMentorSelect,
   onMentorTimeChange,
@@ -64,14 +67,21 @@ export function Step3FindMentor({
   // Mentor chỉ hợp lệ khi nằm trong danh sách các việc [+]
   const isMentorValid = positiveRoutines.some((r) => r.activity === selectedMentor)
 
+  const quoteText = stepQuote?.text?.trim()
+    ? `“${stepQuote.text.replace(/^["“”\s]+|["“”\s]+$/g, '')}”`
+    : '“Môi trường là bàn tay vô hình định hình hành vi của con người.”'
+  const quoteAuthor = stepQuote?.author?.trim()
+    ? stepQuote.author
+    : '— James Clear, Atomic Habits —'
+
   return (
     <div className="space-y-8">
       {/* 1. Quote Block */}
       <StepQuoteHeader
         stage="GIAI ĐOẠN 2 · XÂY THÓI QUEN"
-        title="Tìm Mentor cho thói quen mới"
-        quote="“Môi trường là bàn tay vô hình định hình hành vi của con người.”"
-        author="— James Clear, Atomic Habits —"
+        title={step3Content.title || 'Tìm Mentor cho thói quen mới'}
+        quote={quoteText}
+        author={quoteAuthor}
       />
 
       {/* Lead-in Text */}
@@ -99,13 +109,13 @@ export function Step3FindMentor({
 
           <div className="flex items-center gap-2 text-xs font-ui">
             <span className="px-2 py-0.5 rounded bg-mint-haze text-deep-navy font-bold">
-              [+] Có ích
+              {vi.dp01.scorecardUseful}
             </span>
             <span className="px-2 py-0.5 rounded bg-soft-pink text-bright-magenta font-bold">
-              [-] Không có ích
+              {vi.dp01.scorecardNotUseful}
             </span>
             <span className="px-2 py-0.5 rounded bg-lavender-mist/60 text-deep-navy/70 font-bold">
-              [=] Trung tính
+              {vi.dp01.scorecardNeutral}
             </span>
           </div>
         </div>
@@ -128,12 +138,12 @@ export function Step3FindMentor({
                 onChange={(e) => handleActivityChange(item.id, e.target.value)}
                 placeholder={
                   index === 0
-                    ? 'Thức dậy, uống một ly nước'
+                    ? vi.dp01.routinePlaceholder1
                     : index === 1
-                      ? 'Đánh răng, rửa mặt'
+                      ? vi.dp01.routinePlaceholder2
                       : index === 2
-                        ? 'Ăn sáng'
-                        : 'Nhập việc bạn làm...'
+                        ? vi.dp01.routinePlaceholder3
+                        : vi.dp01.routinePlaceholderDefault
                 }
                 className="flex-1 px-3 py-2 rounded-lg bg-white border border-lavender-mist focus:border-bright-magenta focus:ring-2 focus:ring-soft-pink outline-none text-xs sm:text-sm font-ui text-deep-navy transition-all"
               />
@@ -143,7 +153,7 @@ export function Step3FindMentor({
                 <button
                   type="button"
                   onClick={() => handleScoreChange(item.id, '+')}
-                  title="Có ích (+)"
+                  title={vi.dp01.scorecardUsefulTitle}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
                     item.score === '+'
                       ? 'bg-mint-haze text-deep-navy border border-deep-navy/40'
@@ -155,7 +165,7 @@ export function Step3FindMentor({
                 <button
                   type="button"
                   onClick={() => handleScoreChange(item.id, '-')}
-                  title="Không có ích (-)"
+                  title={vi.dp01.scorecardNotUsefulTitle}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
                     item.score === '-'
                       ? 'bg-soft-pink text-bright-magenta border border-bright-magenta'
@@ -167,7 +177,7 @@ export function Step3FindMentor({
                 <button
                   type="button"
                   onClick={() => handleScoreChange(item.id, '=')}
-                  title="Trung tính (=)"
+                  title={vi.dp01.scorecardNeutralTitle}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all cursor-pointer ${
                     item.score === '='
                       ? 'bg-lavender-mist text-deep-navy border border-deep-navy/40'
@@ -183,7 +193,7 @@ export function Step3FindMentor({
                 <button
                   type="button"
                   onClick={() => handleDeleteRoutine(item.id)}
-                  title="Xoá dòng"
+                  title={vi.dp01.deleteRoutineTitle}
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-deep-navy/70 hover:text-accent-pink hover:bg-white transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -246,7 +256,7 @@ export function Step3FindMentor({
           /* Khi đã có việc [+]: Hiển thị thành các nút Chip */
           <div className="space-y-4">
             <label className="block text-xs font-bold uppercase tracking-wider text-deep-navy/60 font-ui">
-              Chọn 1 việc từ các việc có ích [+] của bạn:
+              {vi.dp01.selectMentorPrompt}
             </label>
 
             <div className="flex flex-wrap gap-2.5">
@@ -294,9 +304,13 @@ export function Step3FindMentor({
                   <div className="flex items-center gap-2">
                     <span className="text-lg">⚓</span>
                     <h4 className="text-sm sm:text-base font-bold text-deep-navy font-ui">
-                      Mentor của bạn: <span className="text-bright-magenta">{selectedMentor}</span>
+                      {vi.dp01.yourMentorLabel}:{' '}
+                      <span className="text-bright-magenta">{selectedMentor}</span>
                       {mentorTime ? (
-                        <span className="text-deep-navy/70 font-normal"> · lúc {mentorTime}</span>
+                        <span className="text-deep-navy/70 font-normal">
+                          {' '}
+                          {vi.dp01.atTimePrefix} {mentorTime}
+                        </span>
                       ) : (
                         ''
                       )}

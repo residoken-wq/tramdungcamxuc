@@ -47,6 +47,7 @@ export function HabitTrackerApp({
   techniques = [],
   journeyDays = 28,
   diagnose,
+  stepQuotes,
   loopContent,
   privacyNote,
   dp01Content,
@@ -436,6 +437,7 @@ export function HabitTrackerApp({
               {currentStep === 2 && (
                 <Step2PercentPrinciple
                   step2Content={resolvedDp01.step2}
+                  stepQuote={stepQuotes?.onePercent}
                   onNext={() => requestStep(3)}
                   onPrev={() => requestStep(1)}
                 />
@@ -447,6 +449,7 @@ export function HabitTrackerApp({
                   selectedMentor={identity.selectedMentor}
                   mentorTime={identity.mentorTime}
                   step3Content={resolvedDp01.step3}
+                  stepQuote={stepQuotes?.mentor}
                   onRoutinesChange={setRoutines}
                   onMentorSelect={(mentor: string) =>
                     setIdentity((prev) => ({
@@ -477,6 +480,7 @@ export function HabitTrackerApp({
                     getDefaultHabitFlowDraft(),
                   )}
                   step4Content={resolvedDp01.step4}
+                  stepQuote={stepQuotes?.name}
                   onDraftChange={(newDraft) => {
                     const zState = flowDraftToZipState(newDraft)
                     setIdentity((prev) => ({
@@ -497,6 +501,7 @@ export function HabitTrackerApp({
                   techniques={techniques}
                   loopContent={loopContent}
                   step5Content={resolvedDp01.step5}
+                  stepQuote={stepQuotes?.loop}
                   onGoToStep={(step) => requestStep(step)}
                   onTechniquesChange={setLoopTechniques}
                   onNext={() => requestStep(6)}
@@ -511,6 +516,7 @@ export function HabitTrackerApp({
                   loopTechniques={loopTechniques}
                   techniques={techniques}
                   step6Content={resolvedDp01.step6}
+                  stepQuote={stepQuotes?.boardingPass}
                   name={name}
                   email={email}
                   consent={consent}

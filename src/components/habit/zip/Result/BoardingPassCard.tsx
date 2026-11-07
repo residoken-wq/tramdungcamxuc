@@ -16,6 +16,7 @@ import { IdentityFormData, LoopTechniques } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 import type { PublicTechnique } from '@/lib/habit'
+import type { CleanStepQuote } from '@/lib/habit/journey-content.server'
 import { daysToWeekdays } from '../draft-adapter'
 import { DEFAULT_DP01_CONTENT, type Dp01Step6Content } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
@@ -27,6 +28,7 @@ interface BoardingPassCardProps {
   loopTechniques: LoopTechniques
   techniques?: PublicTechnique[]
   step6Content?: Dp01Step6Content
+  stepQuote?: CleanStepQuote | null
   onPrev: () => void
   // Submission fields
   name?: string
@@ -57,6 +59,7 @@ export function BoardingPassCard({
   loopTechniques,
   techniques = [],
   step6Content = DEFAULT_DP01_CONTENT.step6,
+  stepQuote,
   onPrev,
   name = '',
   email = '',
@@ -174,14 +177,19 @@ export function BoardingPassCard({
   const responseNames = resolveTechNames(loopTechniques.responses)
   const rewardNames = resolveTechNames(loopTechniques.rewards)
 
+  const quoteText = stepQuote?.text?.trim()
+    ? `“${stepQuote.text.replace(/^["“”\s]+|["“”\s]+$/g, '')}”`
+    : '“Chúng ta là kết quả của những hành động chúng ta lặp lại mỗi ngày.”'
+  const quoteAuthor = stepQuote?.author?.trim() ? stepQuote.author : '— Aristotle —'
+
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* 1. Quote Block chuẩn hóa cho HABIT BOARDING PASS */}
       <StepQuoteHeader
         stage="GIAI ĐOẠN 2 · XÂY THÓI QUEN"
         title="Habit Boarding Pass"
-        quote="“Chúng ta là kết quả của những hành động chúng ta lặp lại mỗi ngày.”"
-        author="— Aristotle —"
+        quote={quoteText}
+        author={quoteAuthor}
       />
 
       {/* Lead-in Text */}

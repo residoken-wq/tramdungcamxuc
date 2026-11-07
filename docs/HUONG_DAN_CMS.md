@@ -1116,22 +1116,30 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
    - **Tiêu đề & Mô tả cho 3 giai đoạn**: `stage1Title`, `stage1Desc`, `stage2Title`, `stage2Desc`, `stage3Title`, `stage3Desc`.
 
 2. **Bước 1 – Khám thói quen** (`step1`):
+   - **Tiêu đề khối mở đầu** (`title`): Ví dụ `Khám đúng “bệnh” — Kê đúng “toa”`.
+   - **Trích dẫn mở đầu & Tác giả** (`quoteText`, `quoteAuthor`): Mặc định trích dẫn James Clear.
    - **Lời dẫn mở đầu bước 1** (`leadIn`).
+   - **Tiêu đề & Mô tả bảng 8 câu hỏi khảo sát** (`surveyTitle`, `surveyDesc`): Ví dụ `Khám thói quen qua 8 câu hỏi đơn giản`.
    - **Bộ 8 câu hỏi khảo sát** (`diagnose.questions`): Đã được nạp chuẩn nguyên văn từ bản zip.
    - **Lời chẩn đoán 4 giai đoạn nút thắt**: `cueDiagnosis` (Tín hiệu), `cravingDiagnosis` (Khao khát), `responseDiagnosis` (Phản hồi), `rewardDiagnosis` (Phần thưởng) hiển thị khi giai đoạn tương ứng có điểm trung bình cao nhất.
 
-3. **Bước 2 – Nguyên lý 1%** (`step2`):
+3. **Bước 2 – Nguyên lý 1%** (`step2` & `stepQuotes.onePercent`):
+   - **Trích dẫn bước 2** (`stepQuotes.onePercent`): Câu trích Robert Kiyosaki (hoặc tùy biến).
    - **Lời dẫn mở đầu bước 2** (`leadIn`).
    - **Tiêu đề biểu đồ** (`chartTitle`) & **Mô tả dưới tiêu đề biểu đồ** (`chartSubtitle`).
 
-4. **Bước 3 – Tìm Mentor** (`step3`):
+4. **Bước 3 – Tìm Mentor** (`step3` & `stepQuotes.mentor`):
+   - **Tiêu đề bước 3** (`title`): Ví dụ `Tìm Mentor cho thói quen mới`.
+   - **Trích dẫn bước 3** (`stepQuotes.mentor`): Câu trích James Clear về môi trường.
    - **Lời dẫn mở đầu bước 3** (`leadIn`).
    - **Tiêu đề & Mô tả bảng soi một ngày** (`scorecardTitle`, `scorecardDesc`).
    - **Tiêu đề & Mô tả chọn Mentor** (`mentorTitle`, `mentorDesc`).
    - **Gợi ý khi chưa đánh dấu việc có ích** (`emptyMentorHint`).
    - **Nhãn câu hỏi giờ & Gợi ý xác nhận** (`mentorTimeLabel`, `mentorSuccessHint`).
 
-5. **Bước 4 – Gọi tên thói quen** (`step4`):
+5. **Bước 4 – Gọi tên thói quen** (`step4` & `stepQuotes.name`):
+   - **Tiêu đề bước 4** (`title`): Ví dụ `Gọi tên thói quen`.
+   - **Trích dẫn bước 4** (`stepQuotes.name`): Câu trích James Clear về lá phiếu cho con người bạn muốn trở thành.
    - **Lời dẫn mở đầu bước 4** (`leadIn`).
    - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: *Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày.*).
    - **Tiêu đề & Mô tả tuyên ngôn** (`statementTitle`, `statementDesc`).
@@ -1141,7 +1149,9 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
    - **Gợi ý thói quen hạt nhân** (`suggestedAtomicHabits`): Nhập mỗi dòng 1 thói quen gợi ý.
    - **Tiêu đề, Nhãn, Placeholder & Lưu ý vì sao quan trọng** (`commitmentTitle`, `whyImportantLabel`, `whyImportantPlaceholder`, `whyImportantNote`).
 
-6. **Bước 5 – Thiết kế vòng lặp** (`step5` & `loop`):
+6. **Bước 5 – Thiết kế vòng lặp** (`step5`, `loop` & `stepQuotes.loop`):
+   - **Tiêu đề bước 5** (`title`): Ví dụ `Thiết kế vòng lặp`.
+   - **Trích dẫn bước 5** (`stepQuotes.loop`): Câu trích James Clear về hệ thống mục tiêu.
    - **Lời dẫn mở đầu bước 5** (`leadIn`).
    - **Lý thuyết 4 giai đoạn**: `theoryCue`, `theoryCraving`, `theoryResponse`, `theoryReward` giải thích cơ chế tâm lý của từng góc vòng lặp.
    - **Tên 4 quy tắc vàng**: `ruleCue`, `ruleCraving`, `ruleResponse`, `ruleReward`.

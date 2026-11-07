@@ -31,16 +31,6 @@ const ALLOWLIST_RULES: AllowRule[] = [
   },
   // 3. Category 1: CMS global content fallbacks when global field is empty
   {
-    filePattern: /EQBuddyIntro\.tsx$/,
-    reason: 'Category 1: CMS global EqBuddyContent copy fallbacks for 4 cards and 4 steps',
-    matchFile: true,
-  },
-  {
-    filePattern: /GuideModal\.tsx$/,
-    reason: 'Category 1: CMS global guideModalQuote parameter & 4-step guide modal copy',
-    matchFile: true,
-  },
-  {
     filePattern: /EQDrawApp\.tsx$/,
     linePattern:
       /suggestedEmotions\s*=\s*\[|['"]Mông lung['"]|['"]Căng thẳng['"]|['"]Biết ơn['"]|['"]Bình an['"]|['"]Tò mò['"]|['"]Cần dẫn lối['"]|['"]Hơi mệt['"]|['"]Bối rối['"]|EQ Buddy • Thẻ Trạm Dừng Cảm Xúc|Trạm dừng để lắng nghe ♡|card\.keywordVi\s*\|\|\s*'Việt'/,
@@ -79,32 +69,29 @@ const ALLOWLIST_RULES: AllowRule[] = [
     reason: 'Category 3: Step wizard navigation structure and group labels',
   },
   {
-    filePattern: /Step1Diagnose\.tsx$/,
-    reason:
-      'Category 1 & 3: Step 1 8 diagnostic survey questions, category map, and visual score breakdown',
-    matchFile: true,
-  },
-  {
     filePattern: /Step2PercentPrinciple\.tsx$/,
-    reason: 'Category 3: Step 2 SVG chart axis labels, principle cards, and illustration data',
-    matchFile: true,
+    linePattern:
+      /Mức phát triển|1 năm|VÙNG NĂNG LỰC TIỀM ẨN|Giai đoạn thất vọng|Nguyên lý 1% tốt hơn mỗi ngày|“Thay đổi thói quen thực ra là thay đổi tư duy\.”|— Robert Kiyosaki, Cha giàu Cha nghèo —|Tôi nghĩ sẽ là|Thực tế là|Tệ hơn 1% mỗi ngày|Điểm bứt phá|GIAI ĐOẠN 1 · KHÁM THÓI QUEN/,
+    reason: 'Category 3: Step 2 SVG chart axis labels, principle curve, and quote default fallback',
   },
   {
     filePattern: /Step3FindMentor\.tsx$/,
-    reason: 'Category 3: Step 3 habit scorecard ratings, time slots, and mentor guidance',
-    matchFile: true,
+    linePattern:
+      /“Môi trường là bàn tay vô hình định hình hành vi của con người\.”|— James Clear, Atomic Habits —|Tìm Mentor cho thói quen mới|GIAI ĐOẠN 2 · XÂY THÓI QUEN/,
+    reason: 'Category 1 / 3: Step 3 stepQuote fallback values and default title',
   },
   {
     filePattern: /Step4IdentityHabit\.tsx$/,
-    reason:
-      'Category 1 & 3: Step 4 identity statements, suggested roles/habits, and rhythm instructions',
-    matchFile: true,
+    linePattern:
+      /“Mỗi hành động bạn thực hiện là một lá phiếu cho con người mà bạn muốn trở thành\.”|— James Clear, Atomic Habits —|Gọi tên thói quen|GIAI ĐOẠN 2 · XÂY THÓI QUEN/,
+    reason: 'Category 1 / 3: Step 4 stepQuote fallback values and default title',
   },
   {
     filePattern: /Step5LoopDesign\.tsx$/,
+    linePattern:
+      /Tín hiệu|Khao khát|Phản hồi|Phần thưởng|Vòng lặp thói quen · The Habit Loop|Thiết kế vòng lặp|“Bạn không vươn tới tầm mục tiêu của mình\. Bạn rơi xuống mức các hệ thống của bạn\.”|— James Clear, Atomic Habits —|GIAI ĐOẠN 2 · XÂY THÓI QUEN|Khoảng thời gian trong ngày tôi còn năng lượng nhất là…|Cách tôi áp dụng kỹ thuật này…|\[thói quen hạt nhân\]|Mọi thói quen, tốt hay xấu, đều chạy qua bốn giai đoạn khép kín này|Khối có nhãn|lỗ hổng bạn tìm ra ở bước 1|thuật được đánh dấu mới hiện trên Habit Boarding Pass/,
     reason:
-      'Category 1 & 3: Step 5 habit loop SVG quadrant labels, theory breakdown, and technique cards',
-    matchFile: true,
+      'Category 1 / 3: Step 5 habit loop SVG quadrant text, theory fallback, placeholder fallback, and quote fallback',
   },
   {
     filePattern: /BoardingPassCard\.tsx$/,

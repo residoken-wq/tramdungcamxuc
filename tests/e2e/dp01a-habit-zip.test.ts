@@ -76,8 +76,38 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
     })
     const guestPage = await visitor.newPage()
 
+    let originalMentorQuote: { text?: string; author?: string; source?: string } | undefined
+    let isMentorQuoteModified = false
+
     try {
       adminId = await bootstrapAdmin(page)
+
+      // DP-02d: Admin cập nhật stepQuotes.mentor qua API để kiểm tra Step 3 hiển thị đúng
+      const testMentorQuote = `[TEST] Trích dẫn Mentor tuỳ biến ${suffix}`
+      const testMentorAuthor = `[TEST] Tác giả Mentor ${suffix}`
+      try {
+        const journeyContentRes = await page.request.get('/api/globals/habitJourneyContent')
+        if (journeyContentRes.ok()) {
+          const journeyData = await journeyContentRes.json()
+          originalMentorQuote = journeyData.stepQuotes?.mentor
+          await page.request.post('/api/globals/habitJourneyContent', {
+            data: {
+              ...journeyData,
+              stepQuotes: {
+                ...journeyData.stepQuotes,
+                mentor: {
+                  text: testMentorQuote,
+                  author: testMentorAuthor,
+                  source: 'Atomic Habits',
+                },
+              },
+            },
+          })
+          isMentorQuoteModified = true
+        }
+      } catch {
+        // Bỏ qua nếu globals API chưa sẵn sàng
+      }
 
       // 1. Đảm bảo sản phẩm habit-tracker-so đã tồn tại
       const prodQuery = await (
@@ -134,6 +164,13 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(questionGroups).toHaveCount(8)
       await zip.answerDiagnose(guestPage)
       await zip.passPercent(guestPage)
+
+      // DP-02d: Kiểm tra Step 3 hiển thị đúng quote từ CMS nếu vừa cập nhật
+      if (isMentorQuoteModified) {
+        await expect(guestPage.getByText(testMentorQuote)).toBeVisible({ timeout: 10000 })
+        await expect(guestPage.getByText(testMentorAuthor)).toBeVisible({ timeout: 10000 })
+      }
+
       await zip.fillMentor(guestPage, '[TEST] Uống nước ấm sáng')
       await zip.fillIdentity(guestPage, {
         action: 'tập thể dục 15 phút',
@@ -295,6 +332,25 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(restoreModal).toBeHidden({ timeout: 10000 })
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
+      if (isMentorQuoteModified && originalMentorQuote) {
+        try {
+          const journeyRes = await page.request.get('/api/globals/habitJourneyContent')
+          if (journeyRes.ok()) {
+            const currentData = await journeyRes.json()
+            await page.request.post('/api/globals/habitJourneyContent', {
+              data: {
+                ...currentData,
+                stepQuotes: {
+                  ...currentData.stepQuotes,
+                  mentor: originalMentorQuote,
+                },
+              },
+            })
+          }
+        } catch {
+          // Bỏ qua lỗi khôi phục quote khi dọn dẹp
+        }
+      }
       for (const id of createdTechniqueIds) {
         await page.request.delete(`/api/techniques/${id}`).catch(() => {})
       }
