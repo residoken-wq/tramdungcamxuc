@@ -73,9 +73,7 @@ export function BrandImage({
   const shapeClass = getShapeClasses(shape, hasCustomRounded)
   const isWave = shape === 'wave'
 
-  const containerStyle = isWave
-    ? { ...style, clipPath: 'url(#tdcx-brand-image-wave)' }
-    : style
+  const containerStyle = isWave ? { ...style, clipPath: 'url(#tdcx-brand-image-wave)' } : style
 
   const validAvatars = Array.isArray(caption?.avatars)
     ? caption.avatars
@@ -89,7 +87,7 @@ export function BrandImage({
 
   return (
     <div
-      className={`relative overflow-hidden ${shapeClass} ${className}`.trim()}
+      className={`relative overflow-hidden ${shapeClass} ${fill ? 'w-full h-full' : ''} ${className}`.trim()}
       style={containerStyle}
     >
       {isWave && <WaveClipPath />}

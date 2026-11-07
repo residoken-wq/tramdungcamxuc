@@ -70,7 +70,21 @@ export function ImageWidget({
   const widthClass = WIDTH_CLASSES[imageSize] || WIDTH_CLASSES['100']
   const linkProps = getSafeLink(linkType, href, _resolved?.pageSlug ?? clientSlug, newTab)
 
-  const imgElement = (
+  const isDefaultImage =
+    !imageBadge && !imageCaptionTitle && (!imageShape || imageShape === 'rounded')
+
+  const imgElement = isDefaultImage ? (
+    <div className={`relative ${widthClass} mx-auto overflow-hidden rounded-[inherit]`}>
+      <Image
+        src={imageUrl}
+        alt={imageAlt || 'Hình ảnh'}
+        width={1200}
+        height={800}
+        sizes="(max-width: 768px) 100vw, 1200px"
+        className="h-auto w-full object-contain rounded-[inherit]"
+      />
+    </div>
+  ) : (
     <BrandImage
       src={imageUrl}
       alt={imageAlt || 'Hình ảnh'}

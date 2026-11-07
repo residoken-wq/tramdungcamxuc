@@ -18,8 +18,14 @@ export function createBrandImageFields(): Record<string, Field<any>> {
       label: vi.pk20?.image?.shape || 'Hình dạng ảnh',
       options: [
         { label: vi.pk20?.image?.shapeRounded || 'Bo góc thường (Mặc định)', value: 'rounded' },
-        { label: vi.pk20?.image?.shapeArchLeft || 'Vòm trái (Bo lớn góc trái)', value: 'arch-left' },
-        { label: vi.pk20?.image?.shapeArchRight || 'Vòm phải (Bo lớn góc phải)', value: 'arch-right' },
+        {
+          label: vi.pk20?.image?.shapeArchLeft || 'Vòm trái (Bo lớn góc trái)',
+          value: 'arch-left',
+        },
+        {
+          label: vi.pk20?.image?.shapeArchRight || 'Vòm phải (Bo lớn góc phải)',
+          value: 'arch-right',
+        },
         { label: vi.pk20?.image?.shapeWave || 'Mép sóng cong tự nhiên (Wave)', value: 'wave' },
       ],
     },
@@ -43,7 +49,10 @@ export function createBrandImageFields(): Record<string, Field<any>> {
         url: { type: 'text', label: 'Hoặc đường dẫn ảnh trực tiếp' },
       },
       getItemSummary: (item, index) =>
-        item?.url || (item?.mediaId ? `Media ID: ${item.mediaId}` : `Avatar ${index !== undefined ? index + 1 : ''}`),
+        item?.url ||
+        (item?.mediaId
+          ? `Media ID: ${item.mediaId}`
+          : `Avatar ${index !== undefined ? index + 1 : ''}`),
     },
     captionPosition: {
       type: 'select',

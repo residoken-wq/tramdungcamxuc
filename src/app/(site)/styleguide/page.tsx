@@ -19,6 +19,7 @@ import { Sm04BlocksDemo } from './Sm04BlocksDemo'
 import { Sm05BlocksDemo } from './Sm05BlocksDemo'
 import { Sm06BlocksDemo } from './Sm06BlocksDemo'
 import { Pk17Demo } from './Pk17Demo'
+import { Pk20Demo } from './Pk20Demo'
 import { Eb14Demo } from './Eb14Demo'
 
 export const dynamic = 'force-dynamic'
@@ -510,6 +511,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <Pk17Demo />
+        </section>
+
+        {/* Section 15: PK-20 Card accent, highlight, glass & BrandImage */}
+        <section aria-labelledby="heading-pk20-blocks">
+          <h2
+            id="heading-pk20-blocks"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            15. Vạch màu thẻ, Thẻ nổi bật &amp; Ảnh thương hiệu (PK-20 [MẪU])
+          </h2>
+
+          <Pk20Demo />
         </section>
       </main>
 
