@@ -22,7 +22,7 @@ export function CoffeeButton({ onOpen, buttonRef }: CoffeeButtonProps) {
       type="button"
       onClick={onOpen}
       aria-label={vi.cf01.floatingCoffee.ariaLabel}
-      className="group flex items-center justify-center min-w-[48px] min-h-[48px] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white border border-lavender-mist text-bright-magenta shadow-soft hover:bg-soft-pink hover:scale-105 active:scale-95 transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
+      className="group flex items-center justify-center min-w-[48px] min-h-[48px] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white border border-lavender-mist text-deep-navy shadow-soft hover:bg-soft-pink hover:scale-105 active:scale-95 transition-all duration-200 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
     >
       <CoffeeCupIcon
         width={28}

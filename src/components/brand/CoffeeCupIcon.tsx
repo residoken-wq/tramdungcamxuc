@@ -2,8 +2,9 @@ import React from 'react'
 import type { BrandSvgProps } from './HeartLine'
 
 /**
- * Biểu tượng ly cà phê nét mảnh thương hiệu Trạm Dừng Cảm Xúc.
- * Thiết kế tự vẽ: ly cà phê ấm áp kèm làn hơi bốc thanh thoát.
+ * Biểu tượng ly cà phê mang đi của Trạm Dừng Cảm Xúc (tự vẽ, 07/11): nắp, thân thuôn,
+ * phần cà phê tô màu. Viền theo `currentColor` (nút đặt `text-deep-navy`); phần cà phê
+ * `fill-butter-cream` – màu vàng trong bảng màu brand book.
  */
 export function CoffeeCupIcon({
   className = '',
@@ -23,48 +24,39 @@ export function CoffeeCupIcon({
       className={`inline-block ${className}`}
       {...props}
     >
-      {/* Làn hơi bốc mảnh mai */}
+      {/* Phần cà phê trong ly (mặt hơi gợn) */}
       <path
-        d="M8 2.5C7.2 3.5 8.8 4.5 8 5.5"
+        data-coffee-fill=""
+        d="M6.5 11.6C8.6 10.7 10.4 12.3 12.3 11.6C14.1 10.9 15.9 10.9 17.5 11.5L16.6 19.9C16.5 20.6 16 21 15.4 21H8.6C8 21 7.5 20.6 7.4 19.9L6.5 11.6Z"
+        className="fill-butter-cream"
+      />
+      <path
+        d="M6.5 11.6C8.6 10.7 10.4 12.3 12.3 11.6C14.1 10.9 15.9 10.9 17.5 11.5"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      {/* Thân ly thuôn dần xuống đáy */}
       <path
-        d="M12 1.5C11.2 2.7 12.8 3.8 12 5"
+        d="M5.9 7L7.4 20.2C7.5 21 8.1 21.6 8.9 21.6H15.1C15.9 21.6 16.5 21 16.6 20.2L18.1 7"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      {/* Vành nắp */}
       <path
-        d="M16 2.5C15.2 3.5 16.8 4.5 16 5.5"
+        d="M4.5 5.3C4.5 4.5 5.1 3.9 5.9 3.9H18.1C18.9 3.9 19.5 4.5 19.5 5.3V5.6C19.5 6.4 18.9 7 18.1 7H5.9C5.1 7 4.5 6.4 4.5 5.6V5.3Z"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth="2"
         strokeLinejoin="round"
       />
-      {/* Thân ly và quai cầm */}
+      {/* Chóp nắp */}
       <path
-        d="M4 8H17V14C17 17 14.5 19 10.5 19C6.5 19 4 17 4 14V8Z"
+        d="M7.6 3.9C7.8 2.8 8.5 2.2 9.5 2.2H14.5C15.5 2.2 16.2 2.8 16.4 3.9"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M17 10H19C20.1 10 21 10.9 21 12C21 13.1 20.1 14 19 14H17"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Đĩa lót ly */}
-      <path
-        d="M3 21H18"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
