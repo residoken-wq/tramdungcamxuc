@@ -67,3 +67,4 @@ export function migrateFAQV5ToV6(data: Data): Data {
     ...(data.zones !== undefined ? { zones: newZones } : {}),
   }
 }
+

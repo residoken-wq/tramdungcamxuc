@@ -188,7 +188,7 @@ export function LeadMagnetCarousel({
                 <div className="pt-2">
                   <a
                     href={`/tai-nguyen/${item.slug}`}
-                    className="inline-flex items-center justify-center px-4 py-2 rounded-full font-ui text-xs font-bold text-accent-pink bg-soft-pink/50 hover:bg-soft-pink transition-colors"
+                    className="inline-flex items-center justify-center px-4 py-2 rounded-full font-ui text-xs font-bold text-bright-magenta bg-soft-pink/60 hover:bg-soft-pink transition-colors"
                   >
                     Nhận tài liệu &rarr;
                   </a>

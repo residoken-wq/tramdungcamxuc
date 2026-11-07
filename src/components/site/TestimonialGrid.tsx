@@ -72,7 +72,7 @@ export function TestimonialGrid({
 
   // Filter out testimonials that lack required variant data or do not have consent
   const validTestimonials = (testimonials || []).filter((t) => {
-    if (t?.consent === false) return false
+    if ((t as { consent?: boolean })?.consent === false) return false
     if (variant === 'story') {
       return Boolean(t?.story?.before || t?.story?.after)
     }

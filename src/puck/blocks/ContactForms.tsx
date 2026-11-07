@@ -2,6 +2,7 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { ContactForms, type ContactFormsProps } from '@/components/site/ContactForms'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
+import { vi } from '@/lib/i18n/vi'
 
 export type { ContactFormsProps }
 

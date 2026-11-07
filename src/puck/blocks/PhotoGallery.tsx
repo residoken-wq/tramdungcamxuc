@@ -140,3 +140,4 @@ export const PhotoGalleryBlock: ComponentConfig<PhotoGalleryProps> = {
     <PhotoGallery {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
   ),
 }
+

@@ -173,18 +173,3 @@ export function LibraryPreview({
     </section>
   )
 }
-
-        <div className="pt-2 text-center">
-          <Button
-            href={allUrl}
-            variant="secondary"
-            size="md"
-            className="px-8 shadow-sm hover:shadow transition-all"
-          >
-            Xem tất cả
-          </Button>
-        </div>
-      </div>
-    </section>
-  )
-}

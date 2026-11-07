@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 
 export interface CarouselNavButtonsProps {
@@ -68,3 +70,4 @@ export function CarouselNavButtons({
     </div>
   )
 }
+

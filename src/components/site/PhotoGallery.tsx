@@ -82,57 +82,49 @@ export function PhotoGallery({
   const hasCarousel = validItems.length > groupSize
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [activeGroupIndex, setActiveGroupIndex] = useState(0)
+  const [canPrev, setCanPrev] = useState(false)
+  const [canNext, setCanNext] = useState(true)
 
-  const scrollToGroup = useCallback(
-    (index: number) => {
-      const el = scrollContainerRef.current
-      if (!el) return
-      const targetIndex = Math.min(Math.max(0, index), groups.length - 1)
-      const groupEl = el.children[targetIndex] as HTMLElement | undefined
-      if (groupEl) {
-        const prefersReducedMotion =
-          typeof window !== 'undefined' &&
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        groupEl.scrollIntoView({
-          behavior: prefersReducedMotion ? 'auto' : 'smooth',
-          inline: 'start',
-          block: 'nearest',
-        })
-        setActiveGroupIndex(targetIndex)
-      }
-    },
-    [groups.length],
-  )
-
-  const handleScroll = useCallback(() => {
-    const el = scrollContainerRef.current
-    if (!el || groups.length <= 1) return
-    const scrollLeft = el.scrollLeft
-    const firstChild = el.firstElementChild as HTMLElement | null
-    if (!firstChild) return
-    const childWidth = firstChild.offsetWidth + 24
-    if (childWidth > 0) {
-      const newIndex = Math.round(scrollLeft / childWidth)
-      setActiveGroupIndex(Math.min(Math.max(0, newIndex), groups.length - 1))
-    }
-  }, [groups.length])
-
-  useEffect(() => {
+  const updateScrollButtons = useCallback(() => {
     const el = scrollContainerRef.current
     if (!el) return
-    el.addEventListener('scroll', handleScroll, { passive: true })
-    return () => el.removeEventListener('scroll', handleScroll)
-  }, [handleScroll])
+    setCanPrev(el.scrollLeft > 10)
+    setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 10)
+  }, [])
+
+  useEffect(() => {
+    if (!hasCarousel) return
+    const el = scrollContainerRef.current
+    if (!el) return
+    updateScrollButtons()
+    el.addEventListener('scroll', updateScrollButtons, { passive: true })
+    window.addEventListener('resize', updateScrollButtons)
+    return () => {
+      el.removeEventListener('scroll', updateScrollButtons)
+      window.removeEventListener('resize', updateScrollButtons)
+    }
+  }, [hasCarousel, updateScrollButtons])
+
+  const scrollByOffset = (offset: number) => {
+    const el = scrollContainerRef.current
+    if (!el) return
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollBy({
+      left: offset,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    })
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!hasCarousel) return
     if (e.key === 'ArrowLeft') {
       e.preventDefault()
-      scrollToGroup(activeGroupIndex - 1)
+      scrollByOffset(-600)
     } else if (e.key === 'ArrowRight') {
       e.preventDefault()
-      scrollToGroup(activeGroupIndex + 1)
+      scrollByOffset(600)
     }
   }
 
@@ -216,10 +208,10 @@ export function PhotoGallery({
           {hasCarousel && (
             <div className="hidden sm:flex sm:shrink-0">
               <CarouselNavButtons
-                onPrev={() => scrollToGroup(activeGroupIndex - 1)}
-                onNext={() => scrollToGroup(activeGroupIndex + 1)}
-                canPrev={activeGroupIndex > 0}
-                canNext={activeGroupIndex < groups.length - 1}
+                onPrev={() => scrollByOffset(-600)}
+                onNext={() => scrollByOffset(600)}
+                canPrev={canPrev}
+                canNext={canNext}
                 isDeepNavy={isDeepNavy}
                 prevAriaLabel={vi.pk21?.photoGallery?.prevGroup || 'Nhóm ảnh trước'}
                 nextAriaLabel={vi.pk21?.photoGallery?.nextGroup || 'Nhóm ảnh tiếp theo'}
@@ -229,7 +221,12 @@ export function PhotoGallery({
         </div>
 
         {/* Mobile: 1 column horizontal scrolling snap */}
-        <div className="sm:hidden -mx-4 px-4 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div
+          tabIndex={0}
+          role="region"
+          aria-label={titleLine1 || 'Thư viện ảnh'}
+          className="sm:hidden -mx-4 px-4 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           {validItems.map((item, idx) => (
             <div key={idx} className="w-[82vw] max-w-[300px] shrink-0 snap-start">
               {renderCard(item, idx, 'w-full h-[260px]', '')}
@@ -299,10 +296,10 @@ export function PhotoGallery({
         {hasCarousel && (
           <div className="mt-4 flex justify-center sm:hidden">
             <CarouselNavButtons
-              onPrev={() => scrollToGroup(activeGroupIndex - 1)}
-              onNext={() => scrollToGroup(activeGroupIndex + 1)}
-              canPrev={activeGroupIndex > 0}
-              canNext={activeGroupIndex < groups.length - 1}
+              onPrev={() => scrollByOffset(-600)}
+              onNext={() => scrollByOffset(600)}
+              canPrev={canPrev}
+              canNext={canNext}
               isDeepNavy={isDeepNavy}
               prevAriaLabel={vi.pk21?.photoGallery?.prevGroup || 'Nhóm ảnh trước'}
               nextAriaLabel={vi.pk21?.photoGallery?.nextGroup || 'Nhóm ảnh tiếp theo'}
@@ -313,3 +310,4 @@ export function PhotoGallery({
     </section>
   )
 }
+

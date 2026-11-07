@@ -54,7 +54,7 @@ export function ContactForms({
   layout = 'columns',
   titleB2C = vi.sm06.contactForms.defaultB2CTitle,
   descriptionB2C = vi.sm06.contactForms.defaultB2CDescription,
-  submitLabelB2C = vi.sm06.contactForms.submitB2C,
+  submitLabelB2C,
   successTitleB2C = vi.sm06.contactForms.successTitle,
   successMessageB2C = vi.sm06.contactForms.defaultSuccessMessageB2C,
   titleB2B = vi.sm06.contactForms.defaultB2BTitle,

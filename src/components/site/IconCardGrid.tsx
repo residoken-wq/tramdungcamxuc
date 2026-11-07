@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { IconCard, type IconCardProps } from './IconCard'
@@ -204,10 +206,7 @@ export function IconCardGrid({
         )}
 
         <div
-          ref={isCarousel ? scrollContainerRef : undefined}
-          tabIndex={isCarousel ? 0 : undefined}
-          onKeyDown={isCarousel ? handleKeyDown : undefined}
-          className={`group/grid w-full ${isCarousel ? 'outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-2xl' : ''}`}
+          className="group/grid w-full"
           data-card-style={cardStyle}
           data-marker={marker}
           data-grid-bg={bgColor}
@@ -219,7 +218,7 @@ export function IconCardGrid({
             (typeof cards === 'function' ? (
               <>
                 {React.createElement(cards as CardsSlotRender, {
-                  className: gridClasses,
+                  className: `${gridClasses} ${isCarousel ? 'outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-2xl' : ''}`,
                   style: { counterReset: 'card-counter' },
                 })}
                 <EmptySlotHint
@@ -231,11 +230,27 @@ export function IconCardGrid({
                 />
               </>
             ) : React.isValidElement(cards) ? (
-              <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
+              <div
+                ref={isCarousel ? scrollContainerRef : undefined}
+                tabIndex={isCarousel ? 0 : undefined}
+                role={isCarousel ? 'region' : undefined}
+                aria-label={isCarousel ? titleLine1 || 'Danh sách thẻ' : undefined}
+                onKeyDown={isCarousel ? handleKeyDown : undefined}
+                className={`${gridClasses} ${isCarousel ? 'outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-2xl' : ''}`}
+                style={{ counterReset: 'card-counter' }}
+              >
                 {cards}
               </div>
             ) : Array.isArray(cards) ? (
-              <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
+              <div
+                ref={isCarousel ? scrollContainerRef : undefined}
+                tabIndex={isCarousel ? 0 : undefined}
+                role={isCarousel ? 'region' : undefined}
+                aria-label={isCarousel ? titleLine1 || 'Danh sách thẻ' : undefined}
+                onKeyDown={isCarousel ? handleKeyDown : undefined}
+                className={`${gridClasses} ${isCarousel ? 'outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-2xl' : ''}`}
+                style={{ counterReset: 'card-counter' }}
+              >
                 {(cards as unknown[]).map((child, idx: number) => {
                   if (React.isValidElement(child)) {
                     return child
@@ -259,7 +274,15 @@ export function IconCardGrid({
             ) : null)}
 
           {hasItems && (
-            <div className={gridClasses} style={{ counterReset: 'card-counter' }}>
+            <div
+              ref={isCarousel ? scrollContainerRef : undefined}
+              tabIndex={isCarousel ? 0 : undefined}
+              role={isCarousel ? 'region' : undefined}
+              aria-label={isCarousel ? titleLine1 || 'Danh sách thẻ' : undefined}
+              onKeyDown={isCarousel ? handleKeyDown : undefined}
+              className={`${gridClasses} ${isCarousel ? 'outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-2xl' : ''}`}
+              style={{ counterReset: 'card-counter' }}
+            >
               {validItems.map((item, index) => (
                 <IconCard
                   key={index}

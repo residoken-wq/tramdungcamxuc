@@ -3,6 +3,7 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { TestimonialGrid, type TestimonialGridProps } from '@/components/site/TestimonialGrid'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createTestimonialExternalField } from '../testimonial-field'
+import { vi } from '@/lib/i18n/vi'
 
 export type { TestimonialGridProps }
 

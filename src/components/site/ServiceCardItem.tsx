@@ -54,7 +54,7 @@ export function ServiceCardItem({
   const isEditing = Boolean(puck?.isEditing)
   const ctx = useServiceCardsContext()
   const activeLayout = ownLayout || ctx.layout || 'default'
-  const cardIndex = ownIndex ?? (ctx.getIndex ? ctx.getIndex() : 0)
+  const cardIndex = ownIndex ?? 0
 
   const serviceIds = React.useMemo(() => {
     return serviceId != null && String(serviceId).trim() !== '' ? [serviceId] : []
@@ -91,7 +91,7 @@ export function ServiceCardItem({
   if (activeLayout === 'detailed') {
     const isFirstCard = cardIndex % 2 === 0
     const badgeColorClass = isFirstCard
-      ? 'bg-accent-pink text-white'
+      ? 'bg-bright-magenta text-white'
       : 'bg-deep-navy text-white'
     const subtitle = ctx.cardTitles?.[cardIndex]?.text?.trim() || activeService.name
     const imgUrl = ctx.cardMedia?.[cardIndex]?.imageUrl || activeService.imageUrl
@@ -113,9 +113,9 @@ export function ServiceCardItem({
           </div>
 
           {/* Audience Label uppercase */}
-          {activeService.audienceLabel && (
+          {(activeService.audienceLabel || activeService.audience) && (
             <p className="font-ui text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-2">
-              {activeService.audienceLabel}
+              {activeService.audienceLabel || activeService.audience}
             </p>
           )}
 

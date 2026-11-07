@@ -95,7 +95,7 @@ export function FaqAccordionList({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {validItems.map((item, index) => {
-          const isHighlight = Boolean(item.highlight)
+          const isHighlight = 'highlight' in item && Boolean(item.highlight)
           const cardClass = isHighlight
             ? 'bg-deep-navy text-white border-white/20 shadow-soft'
             : isDeepNavy

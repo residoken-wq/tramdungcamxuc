@@ -57,8 +57,9 @@ const PADDINGS = {
   lg: 'py-16 px-6 sm:px-12',
 } as const
 
-export function renderHighlightedText(text: string) {
+export function renderHighlightedText(text: React.ReactNode) {
   if (!text) return null
+  if (typeof text !== 'string') return text
   const parts = text.split(/(\*\*.*?\*\*)/g)
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {

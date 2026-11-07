@@ -7,6 +7,7 @@ import {
 } from '@/components/site/LeadMagnetCarousel'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createProductExternalField } from '../product-field'
+import { vi } from '@/lib/i18n/vi'
 
 export type { LeadMagnetCarouselProps, LeadMagnetItem }
 
