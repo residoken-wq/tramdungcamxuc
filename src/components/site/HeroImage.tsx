@@ -9,6 +9,7 @@ import {
 } from '@/lib/brand/format-classes'
 import { HeroStatItem } from './HeroStatItem'
 import { HeroBackdrop } from './HeroBackdrop'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { textTarget } from '@/puck/style/text-target'
 import {
   heroBackdropColors,
@@ -213,12 +214,13 @@ export function HeroImage({
           <h1
             className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
           >
-            <span {...textTarget(id, 'titleLine1')} className={bTitle1Color}>
-              {titleLine1}
-            </span>{' '}
-            <span {...textTarget(id, 'titleLine2')} className={bTitle2Color}>
-              {titleLine2}
-            </span>
+            <TwoToneTitle
+              id={id}
+              line1={titleLine1}
+              line2={titleLine2}
+              line1ClassName={bTitle1Color}
+              line2ClassName={bTitle2Color}
+            />
           </h1>
 
           {emotionLine && (
@@ -310,15 +312,13 @@ export function HeroImage({
         <h1
           className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
         >
-          <span
-            {...textTarget(id, 'titleLine1')}
-            className={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-          >
-            {titleLine1}
-          </span>{' '}
-          <span {...textTarget(id, 'titleLine2')} className={titleLine2ColorClass}>
-            {titleLine2}
-          </span>
+          <TwoToneTitle
+            id={id}
+            line1={titleLine1}
+            line2={titleLine2}
+            line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+            line2ClassName={titleLine2ColorClass}
+          />
         </h1>
 
         {/* Emotional Quote (Playfair Display Italic) */}

@@ -1132,7 +1132,7 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 
 5. **Bước 4 – Gọi tên thói quen** (`step4`):
    - **Lời dẫn mở đầu bước 4** (`leadIn`).
-   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: *Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày.*).
+   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: _Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày._).
    - **Tiêu đề & Mô tả tuyên ngôn** (`statementTitle`, `statementDesc`).
    - **Gợi ý vai trò** (`suggestedRoles`): Nhập mỗi dòng 1 vai trò gợi ý (hiển thị thành các nút chip).
    - **Tiêu đề, Mô tả, Lưu ý ngày nghỉ của Nhịp điệu** (`rhythmTitle`, `rhythmDesc`, `rhythmNote`).
@@ -1165,9 +1165,10 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
    - **Placeholder ô ghi chú cảm xúc** (`notePlaceholder`).
 
 10. **Chân trang (Footer)** (`footer`):
-   - **Khẩu hiệu thương hiệu** (`slogan`).
-   - **Thông tin tác giả / Coach** (`authorInfo`).
-   - **Đoạn ghi nhận nguồn sách** (`bookCredits`).
+
+- **Khẩu hiệu thương hiệu** (`slogan`).
+- **Thông tin tác giả / Coach** (`authorInfo`).
+- **Đoạn ghi nhận nguồn sách** (`bookCredits`).
 
 **Cách chạy script nạp tự động nội dung chuẩn zip (`dp01d-habit-content.ts`)**:
 
@@ -1393,7 +1394,7 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
 2. **Tab Quyền truy cập & Bán hàng**:
    - **Chế độ truy cập EQ (`eqAccessMode`)**:
      - `trial` (Mặc định): Áp dụng luồng dùng thử chuẩn (khách vãng lai rút 1 thẻ miễn phí, từ thẻ thứ 2 yêu cầu đăng nhập/dùng thử; tab "Tất cả 26 thẻ" chỉ hiển thị thông điệp khi đã kích hoạt).
-     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. *(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này).*
+     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. _(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này)._
    - **Link Shopee bộ thẻ vật lý (`shopeeUrl`)**: Nhập đường link gian hàng Shopee của Hana để nút "Chạm vào thẻ thật ngoài đời" dẫn khách tới mua bộ thẻ in.
 3. **Tab Giới thiệu & Cẩm nang**:
    - Tự do sửa câu chữ giới thiệu 2 bước: `Tiêu đề chính`, `Mô tả ngắn`, `4 góc nhìn cảm xúc` (Tự thân, Người khác, Tình huống, Hành động), và `4 bước thực hành mỗi ngày` (Tĩnh lặng, Rút thẻ, Lắng nghe, Khám phá).
@@ -1569,7 +1570,7 @@ Khối **Tiêu đề phân đoạn** (`SectionHeader`) cho phép Hana tự do đ
 
 1. **Tùy chỉnh màu sắc từng tầng chữ**:
    - **Màu tiêu đề dòng 1** (`line1Color`): Mặc định là **Xanh thẫm** (`deep-navy`), mang lại vẻ sang trọng, rõ ràng.
-   - **Màu tiêu đề dòng 2** (`line2Color`): Mặc định là **Hồng sen** (`bright-magenta`), tạo điểm nhấn ấm áp, thu hút.
+   - **Màu tiêu đề dòng 2** (`line2Color`): Mặc định là **Hồng sen** (`bright-magenta`), tạo điểm nhấn ấm áp, thu hút. (Dòng 1 và Dòng 2 luôn hiện trên 2 hàng; muốn tiêu đề một hàng thì chỉ điền Dòng 1).
    - **Màu nhãn series** (`eyebrowColor`): Mặc định là **Hồng sen** (`bright-magenta`).
    - **Màu dòng cảm xúc** (`emotionColor`): Mặc định là **Xanh thẫm** (`deep-navy`), thể hiện dòng suy ngẫm sâu lắng.
 
@@ -3403,7 +3404,6 @@ Chỉ tài khoản **Chủ sở hữu (Owner)** mới có quyền thay đổi c�
    - **Cho đăng nhập bằng mã OTP qua email**: Bật/tắt form nhập email và mã OTP.
 
 <!-- ẢNH GL-01: chụp tab "Đăng nhập khách hàng" sau khi anh Nhân cấu hình Google trên server thật, lưu images/huong-dan/login-methods-settings.png -->
-
 
 #### 2. Nguyên tắc vận hành an toàn (Bảng 1.1)
 
