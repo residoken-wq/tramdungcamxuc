@@ -109,13 +109,17 @@ test.describe('PK-18: Media upload & block background image', () => {
       const pageDoc = await createdPage.json()
       pageId = pageDoc.doc?.id
 
-      // 2. Mở builder
-      await page.goto(`/admin/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
-      await expect(page.locator('#puck-portal-root')).toBeVisible({ timeout: 30000 })
-
-      // Chọn khối HanaStory
-      const hanaBlock = page.locator('[data-puck-component="HanaStory"]').first()
-      await hanaBlock.click()
+      // 2. Mở builder, chọn khối HanaStory trong canvas (iframe), thử lại tới khi đã hydrate
+      await page.goto(`/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
+      const canvas = page.frameLocator('iframe')
+      const hanaHeading = canvas.getByText('[MẪU] CÂU CHUYỆN', { exact: true }).first()
+      await expect(hanaHeading).toBeVisible({ timeout: 30000 })
+      const contentTab = page.getByRole('tab', { name: 'Nội dung', exact: true })
+      await expect(async () => {
+        await hanaHeading.click()
+        await expect(contentTab).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 30000 })
+      await contentTab.click()
 
       // Mở hộp chọn ảnh chân dung
       const chooseImgBtn = page.getByRole('button', { name: /Chọn ảnh/i }).first()
@@ -152,15 +156,18 @@ test.describe('PK-18: Media upload & block background image', () => {
       await expect(modal).not.toBeVisible()
 
       // 3. Chọn khối JourneySteps và đặt ảnh nền ở tab Kiểu -> Nền -> Ảnh
-      const journeyBlock = page.locator('[data-puck-component="JourneySteps"]').first()
-      await journeyBlock.click()
-
-      // Chuyển sang tab Kiểu
-      const styleTabBtn = page.getByRole('tab', { name: /Kiểu/i })
+      const journeyHeading = canvas.getByText('[MẪU] HÀNH TRÌNH', { exact: true }).first()
+      const styleTabBtn = page.getByRole('tab', { name: 'Kiểu', exact: true })
+      await expect(async () => {
+        await journeyHeading.click()
+        await expect(styleTabBtn).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 30000 })
       await styleTabBtn.click()
 
       // Chọn loại nền "Ảnh"
-      const bgTypeImageBtn = page.getByRole('button', { name: /^Ảnh$/i })
+      const bgTypeImageBtn = page
+        .locator('[data-testid="style-field-style"]')
+        .getByRole('button', { name: /^Ảnh$/i })
       await bgTypeImageBtn.click()
 
       // Bấm "Chọn ảnh" cho ảnh nền
@@ -185,12 +192,10 @@ test.describe('PK-18: Media upload & block background image', () => {
       }
 
       // 4. Xuất bản trang
-      const publishBtn = page.getByRole('button', { name: /Xuất bản/i })
-      const saveResponsePromise = page.waitForResponse(
-        (res) => res.url().includes(`/api/pages/${pageId}`) && res.request().method() === 'PATCH',
-      )
-      await publishBtn.click()
-      await saveResponsePromise
+      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
+      await expect(
+        page.getByRole('status').filter({ hasText: 'Đã xuất bản thành công' }),
+      ).toBeVisible({ timeout: 15000 })
 
       // 5. Kiểm tra trang công khai (ở cả 1440px và 375px)
       for (const width of [1440, 375]) {

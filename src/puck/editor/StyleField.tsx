@@ -186,6 +186,14 @@ export function StyleField({
     ].includes(String(selectedItem.type)),
   )
 
+  // QA PK-18c: "Ảnh" is a UI mode until an image is picked. Saving an empty backgroundImage did
+  // nothing (sanitize drops it without a mediaId), so the button never showed the picker.
+  // Remembered per block id, so selecting another block does not carry the mode over.
+  const selectedId = (selectedItem?.props as { id?: string } | undefined)?.id
+  const [bgImageModeFor, setBgImageModeFor] = useState<string | undefined>()
+  const bgImageMode = bgImageModeFor !== undefined && bgImageModeFor === selectedId
+  const setBgImageMode = (on: boolean) => setBgImageModeFor(on ? selectedId : undefined)
+
   if (tab === 'content') return <></>
 
   const update = (patch: Partial<BlockStyle>) => onChange(compactStyle({ ...style, ...patch }))
@@ -254,7 +262,7 @@ export function StyleField({
 
   const t18 = vi.pk18.bgImage
   const hasBgImage = Boolean(style.backgroundImage?.mediaId || style.backgroundImage?.imageUrl)
-  const bgType = hasBgImage ? 'image' : 'color'
+  const bgType = hasBgImage || bgImageMode ? 'image' : 'color'
 
   const updateBgImage = (patch: Partial<BlockBackgroundImage>) => {
     const current = style.backgroundImage || {}
@@ -284,6 +292,7 @@ export function StyleField({
                   aria-pressed={bgType === 'color'}
                   onClick={() => {
                     if (bgType === 'image') {
+                      setBgImageMode(false)
                       update({ backgroundImage: undefined })
                     }
                   }}
@@ -298,21 +307,7 @@ export function StyleField({
                 <button
                   type="button"
                   aria-pressed={bgType === 'image'}
-                  onClick={() => {
-                    if (bgType === 'color') {
-                      // Tone matching block background for default overlay color
-                      const isDark = style.background === 'deep-navy'
-                      const defaultOverlay = isDark ? 'deep-navy' : 'warm-ivory'
-                      update({
-                        backgroundImage: {
-                          size: 'cover',
-                          position: 'center',
-                          overlay: defaultOverlay,
-                          overlayOpacity: 40,
-                        },
-                      })
-                    }
-                  }}
+                  onClick={() => setBgImageMode(true)}
                   className={`h-8 rounded-md border text-xs font-semibold transition-colors ${
                     bgType === 'image'
                       ? 'border-bright-magenta bg-soft-pink/50 text-bright-magenta'
