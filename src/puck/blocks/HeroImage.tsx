@@ -11,6 +11,7 @@ import {
 } from '../brand-image-fields'
 import {
   HERO_LAYOUT_OPTIONS,
+  HERO_IMAGE_SIDE_OPTIONS,
   HERO_OVERLAY_TONE_OPTIONS,
   HERO_OVERLAY_STRENGTH_OPTIONS,
   HERO_IMAGE_BLUR_OPTIONS,
@@ -150,6 +151,11 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       label: vi.eb14a.layout,
       options: [...HERO_LAYOUT_OPTIONS],
     },
+    imageSide: {
+      type: 'select',
+      label: vi.pk25.imageSide,
+      options: [...HERO_IMAGE_SIDE_OPTIONS],
+    },
     overlayTone: {
       type: 'select',
       label: vi.eb14a.overlayTone,
@@ -203,6 +209,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     statValueSize: 'md',
     statLabelSize: 'md',
     layout: 'split',
+    imageSide: 'right',
     overlayTone: 'dark',
     overlayStrength: 'lg',
     imageBlur: 'none',
@@ -215,6 +222,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
   },
   resolveFields: (data, params) => {
     const isBackdrop = data?.props?.layout === 'backdrop'
+    const isSide = data?.props?.layout === 'side'
     const effectiveBg = isBackdrop
       ? data?.props?.overlayTone === 'light'
         ? 'warm-ivory'
@@ -233,6 +241,10 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       delete fields.imagePosition
       delete fields.contentAlign
       delete fields.minHeight
+    }
+
+    if (!isSide) {
+      delete fields.imageSide
     }
 
     return fields

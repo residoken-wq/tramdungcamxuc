@@ -10,7 +10,7 @@ import {
   resolveBrandImageAvatars,
 } from '../brand-image-fields'
 import {
-  HERO_LAYOUT_OPTIONS,
+  HERO_TWO_ENTRIES_LAYOUT_OPTIONS,
   HERO_OVERLAY_TONE_OPTIONS,
   HERO_OVERLAY_STRENGTH_OPTIONS,
   HERO_IMAGE_BLUR_OPTIONS,
@@ -63,7 +63,7 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
     layout: {
       type: 'select',
       label: vi.eb14a.layout,
-      options: [...HERO_LAYOUT_OPTIONS],
+      options: [...HERO_TWO_ENTRIES_LAYOUT_OPTIONS],
     },
     overlayTone: {
       type: 'select',

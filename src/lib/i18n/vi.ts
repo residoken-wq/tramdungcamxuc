@@ -3209,6 +3209,8 @@ export const vi = {
     layoutOptions: {
       split: 'Ảnh bên cạnh chữ',
       backdrop: 'Ảnh làm nền, chữ nằm trên ảnh',
+      side: 'Ảnh bên cạnh chữ',
+      heroImageSplit: 'Ảnh bên dưới chữ',
     },
     overlayTone: 'Tông phủ nền',
     overlayToneOptions: {
@@ -3448,6 +3450,18 @@ export const vi = {
     callout: {
       variantBox: 'Hộp nổi bật (Box)',
       variantStrip: 'Dải ghi chú mảnh (Strip)',
+    },
+  },
+  pk25: {
+    layoutOptions: {
+      side: 'Ảnh bên cạnh chữ',
+      split: 'Ảnh bên dưới chữ',
+      backdrop: 'Ảnh làm nền, chữ nằm trên ảnh',
+    },
+    imageSide: 'Vị trí ảnh',
+    imageSideOptions: {
+      right: 'Bên phải chữ',
+      left: 'Bên trái chữ',
     },
   },
   eb16: {
