@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
+import { BrandImage, type BrandImageShape, type CaptionPosition } from '@/components/ui/BrandImage'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { fontSizeClass, type FontSizeOption } from '@/lib/brand/format-classes'
@@ -46,6 +47,12 @@ export interface HeroTwoEntriesProps {
   imagePosition?: HeroImagePosition
   contentAlign?: HeroContentAlign
   minHeight?: HeroMinHeight
+  imageShape?: BrandImageShape
+  imageBadge?: string
+  imageCaptionTitle?: string
+  imageCaptionSubtitle?: string
+  imageCaptionAvatars?: Array<{ mediaId?: string | number; url?: string }>
+  captionPosition?: CaptionPosition
   entriesLayout?: 'columns' | 'rows'
   entriesPlacement?: 'below' | 'textColumn'
   /** v1/v2 data (before the PK-08 migration runs). */
@@ -89,6 +96,12 @@ export function HeroTwoEntries({
   description,
   imageUrl,
   imageAlt,
+  imageShape,
+  imageBadge,
+  imageCaptionTitle,
+  imageCaptionSubtitle,
+  imageCaptionAvatars,
+  captionPosition,
   priority,
   layout = 'split',
   overlayTone = 'dark',
@@ -368,24 +381,31 @@ export function HeroTwoEntries({
                   </div>
 
                   <div className="order-2 lg:col-span-5 w-full flex flex-col">
-                    <div
-                      className={`relative w-full ${
+                    <BrandImage
+                      src={imageUrl!}
+                      alt={imageAlt!}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      priority={priority ?? true}
+                      imageClassName="object-cover"
+                      className={`w-full ${
                         isTextColumn
                           ? 'aspect-[4/3] sm:aspect-[4/3] lg:aspect-auto lg:h-full min-h-[320px]'
                           : 'aspect-[4/3] sm:aspect-[4/3] lg:aspect-[4/5] max-h-[480px]'
-                      } rounded-card overflow-hidden border shadow-soft ${
-                        isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
-                      }`}
-                    >
-                      <Image
-                        src={imageUrl!}
-                        alt={imageAlt!}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 40vw"
-                        priority={priority ?? true}
-                        className="object-cover"
-                      />
-                    </div>
+                      } border shadow-soft ${isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'}`}
+                      shape={imageShape}
+                      badge={imageBadge}
+                      caption={
+                        imageCaptionTitle
+                          ? {
+                              title: imageCaptionTitle,
+                              subtitle: imageCaptionSubtitle,
+                              avatars: imageCaptionAvatars,
+                            }
+                          : undefined
+                      }
+                      captionPosition={captionPosition}
+                    />
                   </div>
                 </div>
 

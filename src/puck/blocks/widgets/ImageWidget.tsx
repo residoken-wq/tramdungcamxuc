@@ -8,6 +8,11 @@ import {
 import { vi } from '@/lib/i18n/vi'
 import { createMediaExternalField } from '@/puck/media-field'
 import { createPageExternalField } from '@/puck/page-field'
+import {
+  createBrandImageFields,
+  brandImageDefaultProps,
+  resolveBrandImageAvatars,
+} from '@/puck/brand-image-fields'
 
 export type { ImageWidgetProps, ImageWidgetWidth }
 
@@ -53,6 +58,7 @@ export const ImageWidgetBlock: ComponentConfig<ImageWidgetProps> = {
         { label: 'Có', value: true },
       ],
     },
+    ...createBrandImageFields(),
   },
   defaultProps: {
     version: 1,
@@ -65,20 +71,24 @@ export const ImageWidgetBlock: ComponentConfig<ImageWidgetProps> = {
     pageId: '',
     href: '',
     newTab: false,
+    ...brandImageDefaultProps,
   },
   resolveData: async (data) => {
+    const avatars = await resolveBrandImageAvatars(data.props.imageCaptionAvatars)
+    const baseProps = { ...data.props, imageCaptionAvatars: avatars }
+
     const mediaId = data.props.mediaId
     if (!mediaId) {
       if (data.props.imageUrl) {
         return {
           props: {
-            ...data.props,
+            ...baseProps,
             imageUrl: '',
             imageAlt: '',
           },
         }
       }
-      return { props: data.props }
+      return { props: baseProps }
     }
 
     try {
@@ -94,7 +104,7 @@ export const ImageWidgetBlock: ComponentConfig<ImageWidgetProps> = {
             if (!rawAlt) {
               return {
                 props: {
-                  ...data.props,
+                  ...baseProps,
                   imageUrl: '',
                   imageAlt: '',
                 },
@@ -102,7 +112,7 @@ export const ImageWidgetBlock: ComponentConfig<ImageWidgetProps> = {
             }
             return {
               props: {
-                ...data.props,
+                ...baseProps,
                 imageUrl: json.url,
                 imageAlt: rawAlt,
               },
@@ -114,7 +124,7 @@ export const ImageWidgetBlock: ComponentConfig<ImageWidgetProps> = {
       // Preserve props on network error
     }
 
-    return { props: data.props }
+    return { props: baseProps }
   },
   render: ({ puck: _puck, ...props }) => <ImageWidget {...props} puck={_puck} />,
 }

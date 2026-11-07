@@ -6,6 +6,11 @@ import { createMediaExternalField } from '../media-field'
 import { FONT_SIZE_OPTIONS, ALIGN_OPTIONS } from '../constants'
 import { allowedTextColors, getCardRealBg } from '@/lib/brand/format-classes'
 import { vi } from '@/lib/i18n/vi'
+import {
+  createBrandImageFields,
+  brandImageDefaultProps,
+  resolveBrandImageAvatars,
+} from '../brand-image-fields'
 
 export type { IconCardProps as CardProps }
 
@@ -64,6 +69,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
         { label: vi.pk20?.highlight?.navy || 'Nền xanh thẫm (Deep Navy)', value: 'navy' },
       ],
     },
+    ...createBrandImageFields(),
   },
   defaultProps: {
     version: 1,
@@ -76,6 +82,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     textSize: 'md',
     align: 'left',
     highlight: 'none',
+    ...brandImageDefaultProps,
   },
   resolveFields: (data, params) => {
     const cardRealBg = getCardRealBg(params?.parent)
@@ -108,9 +115,12 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     }
   },
   resolveData: async (data) => {
+    const avatars = await resolveBrandImageAvatars(data.props.imageCaptionAvatars)
+    const baseProps = { ...data.props, imageCaptionAvatars: avatars }
+
     const { mediaId } = data.props
     if (!mediaId) {
-      return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+      return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
     }
 
     try {
@@ -123,7 +133,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
           if (json && json.alt && typeof json.alt === 'string' && json.alt.trim().length > 0) {
             return {
               props: {
-                ...data.props,
+                ...baseProps,
                 imageUrl: json.url || '',
                 imageAlt: json.alt.trim(),
               },
@@ -135,7 +145,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
       // If resolution fails, preserve props without throwing
     }
 
-    return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+    return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
   },
   render: (props) => <IconCard {...props} />,
 }

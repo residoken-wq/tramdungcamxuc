@@ -5,6 +5,11 @@ import { BRAND_COLOR_OPTIONS, FONT_SIZE_OPTIONS, PADDING_OPTIONS } from '../cons
 import { allowedTextColors } from '@/lib/brand/format-classes'
 import { vi } from '@/lib/i18n/vi'
 import {
+  createBrandImageFields,
+  brandImageDefaultProps,
+  resolveBrandImageAvatars,
+} from '../brand-image-fields'
+import {
   HERO_LAYOUT_OPTIONS,
   HERO_OVERLAY_TONE_OPTIONS,
   HERO_OVERLAY_STRENGTH_OPTIONS,
@@ -175,6 +180,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       label: vi.eb14a.minHeight,
       options: [...HERO_MIN_HEIGHT_OPTIONS],
     },
+    ...createBrandImageFields(),
   },
   defaultProps: {
     version: 3,
@@ -205,6 +211,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     minHeight: 'lg',
     bgColor: 'warm-ivory',
     padding: 'md',
+    ...brandImageDefaultProps,
   },
   resolveFields: (data, params) => {
     const isBackdrop = data?.props?.layout === 'backdrop'
@@ -231,9 +238,12 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     return fields
   },
   resolveData: async (data) => {
+    const avatars = await resolveBrandImageAvatars(data.props.imageCaptionAvatars)
+    const baseProps = { ...data.props, imageCaptionAvatars: avatars }
+
     const { mediaId } = data.props
     if (!mediaId) {
-      return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+      return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
     }
 
     try {
@@ -246,7 +256,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
           if (json && json.alt && typeof json.alt === 'string' && json.alt.trim().length > 0) {
             return {
               props: {
-                ...data.props,
+                ...baseProps,
                 imageUrl: json.url || '',
                 imageAlt: json.alt.trim(),
               },
@@ -258,7 +268,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       // If resolution fails, preserve props without throwing
     }
 
-    return { props: { ...data.props, imageUrl: '', imageAlt: '' } }
+    return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
   },
   render: (props) => <HeroImage {...props} />,
 }

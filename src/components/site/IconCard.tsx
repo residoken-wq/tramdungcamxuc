@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
+import { BrandImage, type BrandImageShape, type CaptionPosition } from '@/components/ui/BrandImage'
 import { BrandIcon } from '@/components/brand/BrandIcon'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 import {
@@ -27,6 +28,12 @@ export interface IconCardProps {
   textSize?: FontSizeOption
   align?: AlignOption
   highlight?: CardHighlight
+  imageShape?: BrandImageShape
+  imageBadge?: string
+  imageCaptionTitle?: string
+  imageCaptionSubtitle?: string
+  imageCaptionAvatars?: Array<{ mediaId?: string | number; url?: string }>
+  captionPosition?: CaptionPosition
   // Standalone / direct render props (optional):
   index?: number
   marker?: 'icon' | 'number'
@@ -76,6 +83,13 @@ export function IconCard({
   marker,
   cardStyle,
   isDeepNavy = false,
+  highlight,
+  imageShape,
+  imageBadge,
+  imageCaptionTitle,
+  imageCaptionSubtitle,
+  imageCaptionAvatars,
+  captionPosition,
   id,
 }: IconCardProps & { id?: string }) {
   const hasValidImage = Boolean(imageUrl && imageAlt && imageAlt.trim().length > 0)
@@ -137,9 +151,25 @@ export function IconCard({
           </span>
         ) : marker === 'icon' && index !== undefined ? (
           hasValidImage ? (
-            <div className="relative inline-block h-12 w-12 rounded-2xl overflow-hidden align-middle">
-              <Image src={imageUrl!} alt={imageAlt!} fill className="object-cover" />
-            </div>
+            <BrandImage
+              src={imageUrl!}
+              alt={imageAlt!}
+              fill
+              className="inline-block h-12 w-12 rounded-2xl align-middle"
+              imageClassName="object-cover"
+              shape={imageShape}
+              badge={imageBadge}
+              caption={
+                imageCaptionTitle
+                  ? {
+                      title: imageCaptionTitle,
+                      subtitle: imageCaptionSubtitle,
+                      avatars: imageCaptionAvatars,
+                    }
+                  : undefined
+              }
+              captionPosition={captionPosition}
+            />
           ) : (
             <div
               className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${
@@ -162,9 +192,25 @@ export function IconCard({
             />
             <div className="inline-flex group-data-[marker=number]/grid:!hidden items-center justify-center">
               {hasValidImage ? (
-                <div className="relative inline-block h-12 w-12 rounded-2xl overflow-hidden align-middle">
-                  <Image src={imageUrl!} alt={imageAlt!} fill className="object-cover" />
-                </div>
+                <BrandImage
+                  src={imageUrl!}
+                  alt={imageAlt!}
+                  fill
+                  className="inline-block h-12 w-12 rounded-2xl align-middle"
+                  imageClassName="object-cover"
+                  shape={imageShape}
+                  badge={imageBadge}
+                  caption={
+                    imageCaptionTitle
+                      ? {
+                          title: imageCaptionTitle,
+                          subtitle: imageCaptionSubtitle,
+                          avatars: imageCaptionAvatars,
+                        }
+                      : undefined
+                  }
+                  captionPosition={captionPosition}
+                />
               ) : (
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-2xl ${

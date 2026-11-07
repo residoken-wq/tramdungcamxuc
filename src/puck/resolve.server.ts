@@ -250,6 +250,25 @@ export async function resolveServerData(
       }
     }
 
+    // PK-20: Resolve imageCaptionAvatars for BrandImage blocks
+    if (Array.isArray(item.props.imageCaptionAvatars)) {
+      for (const av of item.props.imageCaptionAvatars) {
+        if (av && av.mediaId && !av.url) {
+          try {
+            const mediaDoc = await payload.findByID({
+              collection: 'media',
+              id: String(av.mediaId),
+            })
+            if (mediaDoc && (mediaDoc as any).url) {
+              av.url = (mediaDoc as any).url
+            }
+          } catch {
+            // ignore
+          }
+        }
+      }
+    }
+
     // Collect logo media IDs for LogoStrip
     if (item.type === 'LogoStrip') {
       const groups = item.props.groups as
