@@ -54,8 +54,22 @@ function layoutDeclarations(layout: ContainerLayout | undefined, device: Device)
 
 /** URL inside `url("…")`: already filtered by `cleanImageUrl`, encoded again as a second guard. */
 // REVIEW-REQUIRED: the only place a user-chosen URL is written into CSS.
+/**
+ * QA PK-18f: media URLs arrive already percent-encoded by Payload ("TDCX%20%283B%29.jpg").
+ * encodeURI on that turned "%20" into "%2520" and the file 500'd, so every background whose file
+ * name had a space broke. Decode first, then encode exactly once; ( ) ' " \ always escaped.
+ */
+function encodeOnce(url: string): string {
+  try {
+    return encodeURI(decodeURI(url))
+  } catch {
+    // Malformed escape sequence: keep the sanitized value as is (cleanImageUrl already ran).
+    return url
+  }
+}
+
 export const cssUrl = (url: string) =>
-  `url("${encodeURI(url).replace(/["'()\\]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)}")`
+  `url("${encodeOnce(url).replace(/["'()\\]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)}")`
 
 function backgroundDeclarations(background: ContainerBackground | undefined): string[] {
   if (background?.type === 'image' && background.imageUrl) {
