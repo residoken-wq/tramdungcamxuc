@@ -4459,6 +4459,12 @@ export const vi = {
     salePricePrefix: 'Ưu đãi:',
     currencySuffix: 'đ',
   },
+  pk19: {
+    orEmail: 'Hoặc email:',
+    defaultContactBadge: 'Trạm Dừng Cảm Xúc',
+    defaultBookingButtonText: 'Đặt lịch ngay',
+    defaultBookNow: 'Đặt ngay',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

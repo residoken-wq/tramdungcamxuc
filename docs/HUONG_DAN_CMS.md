@@ -1726,10 +1726,16 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
 
 - **Vị trí**: Nhóm **Bán hàng**.
 - **Mục đích**: Giới thiệu toàn cảnh giải pháp của Trạm Dừng Cảm Xúc dành cho cá nhân và doanh nghiệp.
-- **Cách dùng**:
-  - Chọn **Biến thể (`variant`)**:
-    - `3 trụ cột` (`3-pillar`): Tập trung vào 3 chặng hành trình (Tự soi chiếu, Khai vấn 1:1, Chuyển mình bền bỉ).
-    - `Toàn bộ hệ sinh thái` (`full`): Hiển thị đồng thời cả dịch vụ cá nhân và các chương trình đào tạo doanh nghiệp B2B.
+- **Cách dùng (Cập nhật PK-19 - Bố cục "Theo nhóm" chuẩn thiết kế 2026)**:
+  - **Bố cục (`layout`)**:
+    - `Dạng thẻ (Mặc định cho trang cũ)`: Giữ nguyên bố cục thẻ truyền thống.
+    - `Theo nhóm (Thiết kế 2026)`: Bố cục chuẩn mới phân nhóm trực quan, mỗi cột có icon trong ô vuông bo tròn, vạch màu trên đầu thẻ, các nhóm phân cấp rõ ràng (khung viền hồng / bình thường, kiểu dòng gọn `row` hoặc thẻ con `card`, nút viền `outline` hoặc nút đặc `filled`).
+  - **Cấu hình từng cột**:
+    - Chọn **Biểu tượng (Icon)** từ bộ icon thương hiệu chuẩn (`target`, `compass`, `leaf`, `team`,...).
+    - Chọn **Vạch màu trên đầu thẻ (Accent)**: Một trong 8 màu brand book (VD: Cột 1 `accent-pink`, Cột 3 `deep-navy`).
+    - Thêm các **Nhóm giải pháp**: Điền nhãn nhóm (VD `SIGNATURE PROGRAM`), tiêu đề nhóm, chọn kiểu khung (`outlined` viền hồng hoặc `plain`), kiểu hiển thị (`row` dòng gọn hoặc `card` thẻ con), kiểu nút (`outline` hoặc `filled`), và chọn sản phẩm / dịch vụ / chương trình từ CMS.
+    - Có thể điền ghi đè **Tiêu đề dòng/thẻ** và **Chữ trên nút** cho từng mục; câu ngắn cạnh tên tự động lấy từ ô **Tagline** của sản phẩm (sửa trực tiếp ở trang quản lý Sản phẩm).
+    - Đoạn giới thiệu dưới tiêu đề lớn điền ở ô **"Mô tả"**, không nhầm lẫn với ô "Dòng cảm xúc" (Playfair nghiêng).
   - Dữ liệu được liên kết trực tiếp từ danh mục **Sản phẩm** (`products`), **Dịch vụ đồng hành** (`services`) và **Chương trình doanh nghiệp** (`programs`).
   - **Lưu ý về trạng thái bán của gói Growth Mirror**: Theo quyết định thiết kế kinh doanh (DECISIONS Q4), các gói Growth Mirror không bán trực tiếp mà đi qua phiên trải nghiệm 149.000đ. Vì vậy trong danh mục Sản phẩm, Hana nên đặt **Trạng thái mở bán** của các gói này là **`Tư vấn` (`consult`)** (thay vì `on_sale`). Khi để `consult`, nút bấm ở Cột 1 sẽ hiển thị "Đăng ký tư vấn / Đặt phiên trải nghiệm" thay vì "Mua ngay". Trang công khai sẽ tự động ẩn các cột chưa có dữ liệu; khi Hana đang ở chế độ chỉnh sửa (Puck Editor), hệ thống hiển thị dòng ghi chú nhắc nhở để Hana thuận tiện lựa chọn.
 
@@ -2282,6 +2288,18 @@ Khi chọn khối cha `FAQ` trên khung vẽ, ở thanh bên phải Hana có th�
 
 - Khối cha `FAQ` được xử lý tối ưu phía máy chủ (Server Component) giúp bài viết chuẩn SEO và trang tải nhanh như chớp.
 - Từng câu hỏi `FaqItem` là thành phần tương tác phía người dùng (Client Component) với hiệu ứng mũi tên xoay chuyển động mượt mà khi bấm mở/đóng và hỗ trợ đầy đủ công nghệ trợ năng cho người khiếm thị.
+
+#### 5. Thẻ liên hệ bên cạnh có ảnh, nhãn viên bo tròn & biểu tượng + / − (Cập nhật PK-19)
+
+- **Đoạn mô tả ngắn dưới tiêu đề**: Điền tại ô **"Mô tả"** ở khối cha, hiển thị trang nhã, căn giữa dưới tiêu đề 2 tầng màu.
+- **Kiểu nhãn series (`seriesLabelStyle`)**: Có thể chọn `Viên bo tròn có viền (Pill)` để nhãn series mang viền hồng `Accent Pink` bo tròn nổi bật, hoặc `Chữ thường` như cũ.
+- **Biểu tượng đóng/mở (`iconStyle`)**: Chọn `Cộng / Trừ (+ / −)` để hiển thị dấu `+` khi đóng và dấu `−` khi mở; khi câu hỏi đang mở, tiêu đề sẽ tự động chuyển màu hồng sen `Bright Magenta` rạng rỡ (hoặc `Soft Pink` trên nền tối Deep Navy).
+- **Khối bên cạnh (`aside`)**:
+  - Chọn **`Thẻ liên hệ có ảnh (Contact Card)`** để hiển thị thẻ tư vấn cá nhân hóa bên trái:
+    - Chọn ảnh đại diện tròn tại ô **Ảnh liên hệ** (nếu chưa chọn, hệ thống tự động hiển thị icon người đại diện trang nhã).
+    - Tùy chỉnh huy hiệu (`contactBadge`), tiêu đề (VD: `Đặt lịch gọi 15 phút`), mô tả, và nút đặt lịch bo tròn ở giữa.
+    - Bật **Hiển thị email** để xuất hiện dòng "Hoặc email: ..." gạch chân lịch sự.
+  - Chọn **`Khối đặt lịch`** (`booking`) để giữ nguyên giao diện đặt lịch nền Deep Navy trước đây.
 
 ---
 

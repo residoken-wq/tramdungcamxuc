@@ -243,7 +243,7 @@ describe('Puck Legacy Block Migrations (T1-04)', () => {
       titleLine2: 'THƯỜNG GẶP',
       bgColor: 'warm-ivory',
       padding: 'md',
-      version: 4,
+      version: 5, // PK-19: FAQ v5 is the latest
     })
     const faqItems = faq?.props.items as Array<{ type: string; props: Record<string, unknown> }>
     expect(faqItems[0].type).toBe('FaqItem')

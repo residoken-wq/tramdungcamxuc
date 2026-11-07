@@ -3,6 +3,7 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { FAQ, type FAQProps } from '@/components/site/FAQ'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { faqGroupOptions } from '@/collections/Faqs'
+import { createMediaExternalField } from '../media-field'
 
 export type { FAQProps }
 
@@ -32,8 +33,25 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
       max: 12,
     },
     seriesLabel: { type: 'text', label: 'Nhãn series (trên cùng)' },
+    seriesLabelStyle: {
+      type: 'select',
+      label: 'Kiểu nhãn series',
+      options: [
+        { label: 'Chữ thường (Mặc định)', value: 'text' },
+        { label: 'Viên bo tròn có viền (Pill)', value: 'pill' },
+      ],
+    },
     titleLine1: { type: 'text', label: 'Tiêu đề dòng 1 (Xanh thẫm / Deep Navy)' },
     titleLine2: { type: 'text', label: 'Tiêu đề dòng 2 (Hồng sen / Bright Magenta)' },
+    description: { type: 'textarea', label: 'Đoạn mô tả ngắn dưới tiêu đề' },
+    iconStyle: {
+      type: 'select',
+      label: 'Kiểu biểu tượng đóng/mở',
+      options: [
+        { label: 'Mũi tên xoay (Chevron)', value: 'chevron' },
+        { label: 'Cộng / Trừ (+ / −)', value: 'plusminus' },
+      ],
+    },
     numbered: {
       type: 'select',
       label: 'Đánh số thứ tự câu hỏi',
@@ -48,23 +66,32 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
       options: [
         { label: 'Không có (Căn giữa trang)', value: 'none' },
         { label: 'Khối đặt lịch (Booking Aside nền Deep Navy)', value: 'booking' },
+        { label: 'Thẻ liên hệ có ảnh (Contact Card)', value: 'contact' },
       ],
+    },
+    contactMediaId: createMediaExternalField({
+      label: 'Ảnh liên hệ (Aside: Thẻ liên hệ)',
+      placeholder: 'Chọn ảnh từ thư viện media...',
+    }),
+    contactBadge: {
+      type: 'text',
+      label: 'Huy hiệu khối bên cạnh (Badge)',
     },
     bookingAsideTitle: {
       type: 'text',
-      label: 'Tiêu đề khối đặt lịch (Khi bật Booking Aside)',
+      label: 'Tiêu đề khối đặt lịch / liên hệ',
     },
     bookingAsideDescription: {
       type: 'textarea',
-      label: 'Mô tả khối đặt lịch',
+      label: 'Mô tả khối đặt lịch / liên hệ',
     },
     bookingButtonText: {
       type: 'text',
-      label: 'Chữ trên nút đặt lịch',
+      label: 'Chữ trên nút đặt lịch / liên hệ',
     },
     bookingButtonLink: {
       type: 'text',
-      label: 'Đường dẫn nút đặt lịch (Để trống sẽ dẫn tới /dat-phien-trai-nghiem)',
+      label: 'Đường dẫn nút (Để trống sẽ dẫn tới /dat-phien-trai-nghiem)',
     },
     showEmail: {
       type: 'select',
@@ -95,15 +122,20 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
     },
   },
   defaultProps: {
-    version: 4,
+    version: 5,
     source: 'manual',
     group: 'general',
     limit: 5,
     seriesLabel: '[MẪU] Thắc mắc thường gặp',
+    seriesLabelStyle: 'text',
     titleLine1: '[MẪU] CÂU HỎI THƯỜNG GẶP',
     titleLine2: '[MẪU] GIẢI ĐÁP BĂN KHOĂN',
+    description: '',
+    iconStyle: 'chevron',
     numbered: false,
     aside: 'none',
+    contactMediaId: '',
+    contactBadge: '[MẪU] Trạm Dừng Cảm Xúc',
     bookingAsideTitle: '[MẪU] Đặt phiên trải nghiệm',
     bookingAsideDescription:
       '[MẪU] Trò chuyện 1:1 cùng Hana để thấu hiểu rõ lộ trình phát triển phù hợp nhất.',

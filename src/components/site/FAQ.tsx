@@ -7,6 +7,8 @@ import { FaqAccordionList, type FAQItem } from './FaqAccordionList'
 import { FaqItemView } from './FaqItemView'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { FaqContactAvatar } from './FaqContactAvatar'
+import { FaqStyleProvider } from './faq-style-context'
 
 export type { FAQItem }
 
@@ -19,15 +21,22 @@ export interface FAQProps {
   limit?: number
   preserveWhitespace?: boolean
   seriesLabel?: string
+  seriesLabelStyle?: 'text' | 'pill'
   titleLine1?: string
   titleLine2?: string
+  description?: string
   items?: React.ReactNode | React.ComponentType<{ className?: string }> | FAQItem[] | unknown[]
   numbered?: boolean
-  aside?: 'none' | 'booking'
+  aside?: 'none' | 'booking' | 'contact'
+  contactMediaId?: string | number
+  contactImageUrl?: string
+  contactImageAlt?: string
+  contactBadge?: string
   bookingAsideTitle?: string
   bookingAsideDescription?: string
   bookingButtonText?: string
   bookingButtonLink?: string
+  iconStyle?: 'chevron' | 'plusminus'
   showEmail?: boolean
   email?: string
   seeAllLink?: string
@@ -39,6 +48,8 @@ export interface FAQProps {
     bookingProductId?: number | null
     groupItems?: FAQItem[] | null
     visibleItemCount?: number
+    contactImageUrl?: string | null
+    contactImageAlt?: string | null
   }
   puck?: {
     isEditing?: boolean
@@ -71,15 +82,22 @@ export function FAQ({
   limit = 5,
   preserveWhitespace = false,
   seriesLabel,
+  seriesLabelStyle = 'text',
   titleLine1 = '[MẪU] CÂU HỎI THƯỜNG GẶP',
   titleLine2 = '[MẪU] GIẢI ĐÁP BĂN KHOĂN',
+  description,
   items = [],
   numbered = false,
   aside = 'none',
+  contactMediaId,
+  contactImageUrl: propContactImageUrl,
+  contactImageAlt: propContactImageAlt,
+  contactBadge,
   bookingAsideTitle,
   bookingAsideDescription,
   bookingButtonText,
   bookingButtonLink,
+  iconStyle = 'chevron',
   showEmail = false,
   email: propEmail,
   seeAllLink,
@@ -92,6 +110,9 @@ export function FAQ({
   const isEditing = puck?.isEditing ?? false
   const isDeepNavy = bgColor === 'deep-navy'
   const isGroupSource = source === 'group'
+
+  const resolvedContactImageUrl = _resolved?.contactImageUrl ?? propContactImageUrl
+  const resolvedContactImageAlt = _resolved?.contactImageAlt ?? propContactImageAlt
 
   // When source === 'group' and there are no questions:
   // Public page hides the entire block; editor shows a helpful placeholder note.
@@ -177,6 +198,7 @@ export function FAQ({
         isEditing={isEditing}
         numbered={numbered}
         isDeepNavy={isDeepNavy}
+        iconStyle={iconStyle}
         cardBgClass={cardBgClass}
         questionColorClass={questionColorClass}
         answerColorClass={answerColorClass}
@@ -222,6 +244,7 @@ export function FAQ({
                 <FaqItemView
                   key={childProps.id ? String(childProps.id) : idx}
                   puck={puck}
+                  iconStyle={iconStyle}
                   {...childProps}
                 />
               )
@@ -242,6 +265,7 @@ export function FAQ({
           isEditing={isEditing}
           numbered={numbered}
           isDeepNavy={isDeepNavy}
+          iconStyle={iconStyle}
           cardBgClass={cardBgClass}
           questionColorClass={questionColorClass}
           answerColorClass={answerColorClass}
@@ -254,7 +278,7 @@ export function FAQ({
 
   const accordionContent = (
     <div>
-      {renderedItems}
+      <FaqStyleProvider iconStyle={iconStyle}>{renderedItems}</FaqStyleProvider>
 
       {seeAllSafeLink && (
         <div className="mt-8 text-center pt-2">
@@ -277,13 +301,24 @@ export function FAQ({
         {/* Heading */}
         {(titleLine1 || seriesLabel) && (
           <div className="text-center mb-10 sm:mb-12 flex flex-col items-center">
-            {seriesLabel && (
-              <span
-                className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
-              >
-                {seriesLabel}
-              </span>
-            )}
+            {seriesLabel &&
+              (seriesLabelStyle === 'pill' ? (
+                <span
+                  className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] inline-flex items-center px-4 py-1 rounded-full border-[1.5px] font-ui text-xs font-bold uppercase tracking-wider ${
+                    isDeepNavy
+                      ? 'border-soft-pink text-soft-pink bg-white/5'
+                      : 'border-accent-pink text-bright-magenta bg-white/60'
+                  }`}
+                >
+                  {seriesLabel}
+                </span>
+              ) : (
+                <span
+                  className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                >
+                  {seriesLabel}
+                </span>
+              ))}
 
             <h2
               id={headingId}
@@ -296,18 +331,103 @@ export function FAQ({
                 line2ClassName={titleLine2ColorClass}
               />
             </h2>
+
+            {description && (
+              <p
+                className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-3xl ${
+                  isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
+                }`}
+              >
+                {description}
+              </p>
+            )}
           </div>
         )}
 
-        {/* Layout: With Booking Aside or Centered */}
-        {aside === 'booking' ? (
+        {/* Layout: With Aside (Booking or Contact) or Centered */}
+        {aside === 'contact' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* Contact Aside Card (Col 4 on LG) */}
+            <div className="lg:col-span-4 rounded-card bg-deep-navy text-white p-6 sm:p-8 shadow-soft flex flex-col items-center text-center justify-between border border-white/20">
+              <div className="flex flex-col items-center w-full">
+                {contactBadge && (
+                  <span className="inline-block px-3 py-1 rounded-full text-xs font-ui font-bold uppercase tracking-wider bg-white/10 text-soft-pink mb-4">
+                    {contactBadge}
+                  </span>
+                )}
+
+                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden mb-5 border-[3px] border-accent-pink bg-lavender-mist flex items-center justify-center shrink-0 shadow-sm relative">
+                  <FaqContactAvatar
+                    url={resolvedContactImageUrl}
+                    alt={resolvedContactImageAlt}
+                    mediaId={contactMediaId}
+                  />
+                </div>
+
+                <h3 className="font-ui font-bold text-2xl text-white mb-2 leading-tight">
+                  {bookingAsideTitle || vi.sm03.bookingAsideTitle}
+                </h3>
+
+                {bookingAsideDescription && (
+                  <p className="font-ui text-sm text-white/85 leading-relaxed mb-6">
+                    {bookingAsideDescription}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full pt-2 flex flex-col items-center">
+                {finalBookingHref ? (
+                  <Button
+                    href={finalBookingHref}
+                    variant="primary"
+                    size="md"
+                    className="rounded-full px-6 inline-flex"
+                  >
+                    {bookingButtonText || vi.sm03.bookingButtonText}
+                  </Button>
+                ) : isEditing && isBookingUnavailable ? (
+                  <div>
+                    <Button
+                      href="#"
+                      variant="primary"
+                      size="md"
+                      className="rounded-full px-6 inline-flex opacity-60 pointer-events-none"
+                    >
+                      {bookingButtonText || vi.sm03.bookingButtonText}
+                    </Button>
+                    <p className="text-xs text-soft-pink mt-2 text-center font-ui">
+                      {vi.sm04.noBookingProduct}
+                    </p>
+                  </div>
+                ) : null}
+
+                {showEmail && email && (
+                  <div className="text-center font-ui text-xs text-white/80 pt-4 mt-4 border-t border-white/10 w-full">
+                    <span>{vi.pk19.orEmail} </span>
+                    <a
+                      href={`mailto:${email}`}
+                      className="underline hover:text-white transition-colors"
+                    >
+                      {email}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* FAQ Accordion Items (Col 8 on LG) */}
+            <div className="lg:col-span-8">{accordionContent}</div>
+          </div>
+        ) : aside === 'booking' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Booking Aside Card (Col 4 on LG) */}
             <div className="lg:col-span-4 rounded-card bg-deep-navy text-white p-6 sm:p-8 shadow-soft flex flex-col justify-between border border-white/20">
               <div>
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-ui font-bold uppercase tracking-wider bg-white/10 text-soft-pink mb-4">
-                  Trạm Dừng Cảm Xúc
-                </span>
+                {contactBadge && (
+                  <span className="inline-block px-3 py-1 rounded-full text-xs font-ui font-bold uppercase tracking-wider bg-white/10 text-soft-pink mb-4">
+                    {contactBadge}
+                  </span>
+                )}
                 <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white mb-3">
                   {bookingAsideTitle || vi.sm03.bookingAsideTitle}
                 </h3>
