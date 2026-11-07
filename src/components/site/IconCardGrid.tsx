@@ -28,7 +28,7 @@ export interface IconCardGridProps {
   cardStyle?: 'white' | 'soft' | 'outline'
   cardAlign?: 'inherit' | 'left' | 'center'
   /** Puck slot render (v2), React nodes, or raw Card blocks `{ props }` (direct use / tests). */
-  cards?: CardsSlotRender | React.ReactNode | Array<{ type?: string; props?: IconCardProps }>
+  cards?: CardsSlotRender | React.ReactNode | Array<{ id?: string; type?: string; props?: IconCardProps }>
   items?: IconCardItem[]
   bgColor?:
     | 'warm-ivory'

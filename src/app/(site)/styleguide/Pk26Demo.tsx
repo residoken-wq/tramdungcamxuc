@@ -145,7 +145,7 @@ export function Pk26Demo() {
       {/* 4. IconCardGrid with 5 columns and connector */}
       <div>
         <h3 className="font-ui text-lg font-bold text-deep-navy mb-4">
-          4. Lưới 5 cột có mũi tên liên kết (IconCardGrid columns: 5, connector: 'arrow')
+          4. Lưới 5 cột có mũi tên liên kết (IconCardGrid columns: 5, connector: &apos;arrow&apos;)
         </h3>
         <IconCardGrid
           id="demo-grid-5"
