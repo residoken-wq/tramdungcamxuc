@@ -38,6 +38,11 @@ async function bootstrapAdmin(page: Page): Promise<number> {
 }
 
 test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () => {
+  // QA PK-19c: bootstraps the first admin, so it runs once; 375 is checked inside the test.
+  test.beforeEach(({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Runs once, checks 1440 and 375 itself.')
+  })
+
   test('renders 3-column groups layout, FAQ with contact card & plusminus, no horizontal scroll, and satisfies a11y', async ({
     page,
     browser,
@@ -54,6 +59,7 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
     let serviceId: number | undefined
     let programId: number | undefined
     let mediaId: number | undefined
+    let previousEmail: string | null | undefined
 
     const publicContext = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
     const publicPage = await publicContext.newPage()
@@ -62,13 +68,25 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
       userId = await bootstrapAdmin(page)
       expect(userId).toBeDefined()
 
+      // The contact card shows "Hoặc email:" from siteSettings; set a sample address (restored below).
+      previousEmail =
+        (await (await page.request.get('/api/globals/siteSettings?depth=0')).json()).email ?? null
+      const emailRes = await page.request.post('/api/globals/siteSettings', {
+        data: { email: 'lien-he-mau@example.test' },
+      })
+      expect(emailRes.ok()).toBe(true)
+
       // 1. Create sample product, service, program, media
       const prodRes = await page.request.post('/api/products', {
         data: {
           name: `[MẪU] CLEAR ${marker}`,
           slug: `clear-${marker}`,
+          web: 'site',
           type: 'package',
           saleStatus: 'on_sale',
+          price: 1750000,
+          isSample: true,
+          _status: 'published',
           tagline: 'Định hình góc nhìn nội tại',
           ctaLabel: 'Đặt ngay',
         },
@@ -82,6 +100,8 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
           slug: `growth-mirror-${marker}`,
           audienceLabel: 'Dành cho Chuyên gia / Cá nhân chuyển nghề',
           ctaLabel: 'Đặt lịch',
+          _status: 'published',
+          isSample: true,
         },
       })
       expect(srvRes.ok()).toBe(true)
@@ -93,6 +113,8 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
           slug: `lanh-dao-${marker}`,
           learnerGroup: 'Dành cho Quản lý / Lãnh đạo (Leadership)',
           ctaLabel: 'Gửi brief',
+          _status: 'published',
+          isSample: true,
         },
       })
       expect(progRes.ok()).toBe(true)
@@ -105,7 +127,7 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
       )
       const uploadRes = await page.request.post('/api/media', {
         multipart: {
-          _payload: JSON.stringify({ alt: 'Chân dung chuyên gia Hana Lương' }),
+          _payload: JSON.stringify({ alt: '[MẪU] Ảnh liên hệ' }),
           file: {
             name: `hana-${marker}.png`,
             mimeType: 'image/png',
@@ -203,7 +225,7 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
                   bookingAsideDescription:
                     'Trò chuyện trực tiếp cùng Hana để lắng nghe và tìm ra giải pháp phù hợp.',
                   bookingButtonText: 'Đặt lịch tư vấn',
-                  bookingButtonLink: '/dat-phien-trai-nghiem',
+                  bookingButtonLink: '/lien-he',
                   showEmail: true,
                   source: 'manual',
                   items: [
@@ -285,7 +307,7 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
       ).toBeVisible()
 
       // Contact aside card
-      const avatarImg = publicPage.locator('img[alt="Chân dung chuyên gia Hana Lương"]')
+      const avatarImg = publicPage.locator('img[alt="[MẪU] Ảnh liên hệ"]')
       await expect(avatarImg).toBeVisible()
 
       const contactBtn = publicPage.getByRole('link', { name: 'Đặt lịch tư vấn' })
@@ -307,14 +329,15 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
       // Click to open Q2
       await q2Button.click()
       await expect(q2Button).toHaveAttribute('aria-expanded', 'true')
-      const q2Text = q2Button.locator('span').filter({ hasText: 'Tôi có được chuyên gia' }).first()
+      const q2Text = q2Button.locator('span').filter({ hasText: 'Tôi có được chuyên gia' }).last()
       expect(await q2Text.getAttribute('class')).toContain('text-bright-magenta')
 
       // Capture desktop screenshot
-      await publicPage.screenshot({
-        path: path.join(SHOT_DIR, 'desktop-1440.png'),
-        fullPage: true,
-      })
+      if (process.env.PK19_SCREENSHOTS === '1')
+        await publicPage.screenshot({
+          path: path.join(SHOT_DIR, 'desktop-1440.png'),
+          fullPage: true,
+        })
 
       // Run axe a11y audit
       await expectNoSeriousA11y(publicPage, 'pk19-desktop-1440')
@@ -337,15 +360,21 @@ test.describe('PK-19: SolutionEcosystem Groups & FAQ Contact Aside (E2E)', () =>
       await expect(publicPage.getByText('[MẪU] Doanh nghiệp')).toBeVisible()
 
       // Capture mobile screenshot
-      await publicPage.screenshot({
-        path: path.join(SHOT_DIR, 'mobile-375.png'),
-        fullPage: true,
-      })
+      if (process.env.PK19_SCREENSHOTS === '1')
+        await publicPage.screenshot({
+          path: path.join(SHOT_DIR, 'mobile-375.png'),
+          fullPage: true,
+        })
 
       // Run axe a11y audit on mobile
       await expectNoSeriousA11y(publicPage, 'pk19-mobile-375')
     } finally {
       await publicContext.close().catch(() => {})
+      if (previousEmail !== undefined) {
+        await page.request
+          .post('/api/globals/siteSettings', { data: { email: previousEmail } })
+          .catch(() => {})
+      }
       if (pageId) await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
       if (productId) await page.request.delete(`/api/products/${productId}`).catch(() => {})
       if (serviceId) await page.request.delete(`/api/services/${serviceId}`).catch(() => {})
