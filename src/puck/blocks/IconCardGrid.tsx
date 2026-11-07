@@ -41,9 +41,21 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
         { label: '2 cột', value: 2 },
         { label: '3 cột', value: 3 },
         { label: '4 cột', value: 4 },
+        { label: vi.pk26?.iconCardGrid?.columns5 || '5 cột (Desktop)', value: 5 },
         {
           label: vi.pk21?.iconCardGrid?.columns?.carousel || 'Trượt ngang (Carousel)',
           value: 'carousel',
+        },
+      ],
+    },
+    connector: {
+      type: 'select',
+      label: vi.pk26?.iconCardGrid?.connector || 'Đường nối giữa các thẻ',
+      options: [
+        { label: vi.pk26?.iconCardGrid?.connectorNone || 'Không có đường nối', value: 'none' },
+        {
+          label: vi.pk26?.iconCardGrid?.connectorArrow || 'Mũi tên sang phải (Desktop)',
+          value: 'arrow',
         },
       ],
     },
@@ -85,6 +97,7 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
     emotionLine: '[MẪU] Mỗi bước đi đều là một nhịp chuyển mình đáng quý.',
     marker: 'icon',
     columns: 3,
+    connector: 'none',
     cardStyle: 'white',
     cardAlign: 'inherit',
     cards: [

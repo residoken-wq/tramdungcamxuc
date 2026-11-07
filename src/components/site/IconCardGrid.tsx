@@ -22,20 +22,17 @@ export interface IconCardGridProps {
   titleLine2?: string
   emotionLine?: string
   marker?: 'icon' | 'number'
-  /** PK-21: 'carousel' = cards in one row that scrolls sideways, with arrows. */
-  columns?: 1 | 2 | 3 | 4 | 'carousel'
+  /** PK-21: 'carousel' = cards in one row that scrolls sideways, with arrows. PK-26: 5 columns */
+  columns?: 1 | 2 | 3 | 4 | 5 | 'carousel'
+  connector?: 'none' | 'arrow'
   cardStyle?: 'white' | 'soft' | 'outline'
   cardAlign?: 'inherit' | 'left' | 'center'
   /** Puck slot render (v2), React nodes, or raw Card blocks `{ props }` (direct use / tests). */
-  cards?: CardsSlotRender | React.ReactNode | Array<{ type?: string; props?: IconCardProps }>
+  cards?:
+    CardsSlotRender | React.ReactNode | Array<{ id?: string; type?: string; props?: IconCardProps }>
   items?: IconCardItem[]
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   puck?: {
     isEditing?: boolean
@@ -65,6 +62,7 @@ export function IconCardGrid({
   emotionLine,
   marker = 'icon',
   columns = 3,
+  connector = 'none',
   cardStyle = 'white',
   cardAlign = 'inherit',
   cards,
@@ -91,6 +89,8 @@ export function IconCardGrid({
         return 'grid-cols-1 md:grid-cols-2 max-w-4xl'
       case 4:
         return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl'
+      case 5:
+        return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5 max-w-7xl'
       case 3:
       default:
         return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl'
@@ -98,10 +98,15 @@ export function IconCardGrid({
   }
 
   const gridColsClass = getGridColsClass(columns)
+  const connectorClasses =
+    connector === 'arrow'
+      ? "lg:[&>*:not(:last-child)]:relative lg:[&>*:not(:last-child)]:after:content-['→'] lg:[&>*:not(:last-child)]:after:absolute lg:[&>*:not(:last-child)]:after:-right-5 sm:lg:[&>*:not(:last-child)]:after:-right-6 lg:[&>*:not(:last-child)]:after:top-1/2 lg:[&>*:not(:last-child)]:after:-translate-y-1/2 lg:[&>*:not(:last-child)]:after:text-bright-magenta lg:[&>*:not(:last-child)]:after:text-2xl lg:[&>*:not(:last-child)]:after:font-bold lg:[&>*:not(:last-child)]:after:z-10 lg:[&>*:not(:last-child)]:after:pointer-events-none"
+      : ''
+
   // QA PK-21c: the carousel row is laid out here (server); CarouselTrack only scrolls it.
   const gridClasses = isCarousel
     ? 'flex w-max gap-6 sm:gap-8 [counter-reset:card-counter] [&>*]:w-[80vw] [&>*]:max-w-[320px] [&>*]:shrink-0 [&>*]:snap-start md:[&>*]:w-[340px]'
-    : `mx-auto grid ${gridColsClass} gap-6 sm:gap-8 [counter-reset:card-counter]`
+    : `mx-auto grid ${gridColsClass} gap-6 sm:gap-8 [counter-reset:card-counter] ${connectorClasses}`.trim()
 
   const hasCards = Boolean(cards)
   const hasItems = !hasCards && validItems.length > 0
@@ -199,6 +204,7 @@ export function IconCardGrid({
           data-bg={bgColor}
           data-card-theme={`${isDeepNavy ? 'navy' : 'light'}-${cardStyle}`}
           data-card-align={cardAlign || 'inherit'}
+          data-connector={connector === 'arrow' ? 'arrow' : undefined}
         >
           {isCarousel ? (
             <CarouselTrack

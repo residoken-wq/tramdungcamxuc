@@ -22,6 +22,7 @@ import { Pk17Demo } from './Pk17Demo'
 import { Pk20Demo } from './Pk20Demo'
 import { Eb14Demo } from './Eb14Demo'
 import { Pk21Demo } from './Pk21Demo'
+import { Pk26Demo } from './Pk26Demo'
 
 export const dynamic = 'force-dynamic'
 
@@ -536,6 +537,18 @@ export default async function StyleguidePage() {
           </h2>
 
           <Pk21Demo />
+        </section>
+
+        {/* Section 17: PK-26 Chuyen minh blocks and variants */}
+        <section aria-labelledby="heading-pk26-blocks">
+          <h2
+            id="heading-pk26-blocks"
+            className="mb-6 font-ui text-xs font-bold tracking-widest uppercase text-bright-magenta"
+          >
+            17. Khối Bảng Lưới, Sơ Đồ Vòng Lặp &amp; Chuyển Mình (PK-26 [MẪU])
+          </h2>
+
+          <Pk26Demo />
         </section>
       </main>
 

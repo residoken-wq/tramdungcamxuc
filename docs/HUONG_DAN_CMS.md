@@ -77,6 +77,7 @@
    - [5.37. Đổi màu, cỡ chữ từng dòng chữ (EB-15a)](#537-đổi-màu-cỡ-chữ-từng-dòng-chữ)
    - [5.38. Căn lề thẻ và icon (EB-15b)](#538-căn-lề-thẻ-và-icon)
    - [5.39. Các khối mới và biến thể giao diện v2 (PK-21)](#539-các-khối-mới-và-biến-thể-giao-diện-v2-pk-21)
+   - [5.40. Khối Bảng lưới, Sơ đồ vòng lặp và trang Chuyển mình (PK-26)](#540-khối-bảng-lưới-sơ-đồ-vòng-lặp-và-trang-chuyển-mình-pk-26)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -3101,6 +3102,33 @@ Hana có thể linh hoạt sử dụng các khối và biến thể mới để 
 9. **Dải ghi chú mảnh (Callout strip)**:
    - Chọn kiểu `Dải ghi chú mảnh (Strip)` cho khối Callout để tạo dải lưu ý thanh lịch nền hồng nhẹ.
    - Hỗ trợ tô màu hồng sen cho các cụm từ quan trọng bằng cú pháp `**từ cần nhấn mạnh**`.
+
+---
+
+### 5.40. Khối Bảng lưới, Sơ đồ vòng lặp và trang Chuyển mình (PK-26)
+
+Hana có thể sử dụng các khối và tính năng mới được thiết kế riêng cho trang lộ trình chương trình:
+
+1. **Khối Bảng lưới (MatrixTable)**:
+   - **Kiểu Bảng ma trận (`grid`)**: Trình bày bảng so sánh nhiều cột và hàng (như bản đồ nhịp thực hành 28 ngày). Mỗi cột có màu sắc riêng theo trụ cột thương hiệu (Vàng bơ, Hồng phấn, Xanh bạc hà, Tím sương, Trắng ngà).
+   - **Tối ưu trên di động**: Dưới màn hình điện thoại (375px), bảng tự động chuyển thành các thẻ xếp chồng dọc có nhãn cột rõ ràng, không bao giờ bị tràn thanh cuộn ngang.
+   - **Kiểu Danh sách đối sánh (`list`)**: Hiển thị các hàng có nhãn nổi bật bên trái, mô tả chi tiết, hỗ trợ vạch nhấn hồng sen và hàng chip mốc thời gian phía trên (như 4 mốc nhìn lại của Reflection).
+
+2. **Khối Sơ đồ vòng lặp (LoopDiagram)**:
+   - Cho phép xếp từ 3 đến 8 bước quanh một vòng tròn theo chiều kim đồng hồ, xen kẽ màu tím sương và viền xanh thẫm, kèm thông điệp cốt lõi in nghiêng ở tâm vòng tròn.
+   - Trên điện thoại, sơ đồ tự động chuyển thành danh sách các bước đánh số dọc kèm mũi tên chỉ dẫn mượt mà.
+
+3. **Cải tiến các khối Thẻ, Hero và Dải ghi chú**:
+   - **Khối Thẻ (`Card`)**: Chọn được 8 màu nền thương hiệu (khi chọn Xanh thẫm `deep-navy`, chữ tự động chuyển sang màu trắng). Hỗ trợ nhãn nhỏ `eyebrow` kèm vạch nhấn hồng sen, tiêu đề phụ đậm, nhãn chip, gõ `- ` để tạo danh sách gạch đầu dòng, danh sách mục chia 1 hoặc 2 cột, và hộp "Mang về" với tông màu riêng.
+   - **Lưới thẻ (`IconCardGrid`)**: Bổ sung bố cục 5 cột (`columns: 5`) và tuỳ chọn hiện mũi tên sang phải (`connector: 'arrow'`) giữa các thẻ trên máy tính.
+   - **Hero Ảnh (`HeroImage`)**: Thêm tiêu đề danh sách (`listTitle`) và danh sách các giai đoạn (`listItems`), có tuỳ chọn mờ (`muted`) cho giai đoạn tiếp theo (chấm rỗng, chữ mờ).
+   - **Dải ghi chú (`Callout` strip)**: Thêm tuỳ chọn tông màu (`stripTone`): Hồng phấn (mặc định), Tím sương, Trắng viền mảnh, Viền đứt hồng nền trong, và Xanh thẫm chữ trắng.
+
+4. **Lưu ý cho Hana khi biên tập mẫu "Trang lộ trình" (Chuyển mình không chênh vênh)**:
+   - **Nguồn số liệu ở mục 02**: Giữ nguyên con số 39% (dự báo thay đổi kỹ năng theo báo cáo WEF 2025) và 9,6% / 3X (nguy cơ việc làm của nữ theo ILO 2025). Vui lòng kiểm tra lại với nguồn chính thức trước khi xuất bản bản thương mại.
+   - **Chính tả**: Thiết kế bản in ghi "cơn giông" ở tr. 8 và "cơn dông" ở tr. 14; Hana có thể giữ nguyên hoặc đồng nhất theo mong muốn.
+   - **Kêu gọi hành động (CTA) cuối trang**: Khối kêu gọi cuối trang hiện được điền sẵn chữ `[MẪU]` dẫn đến trang `/lien-he`. Hana hãy viết lại thông điệp kêu gọi và chọn đích nút phù hợp với chiến dịch của mình.
+   - **Tải ảnh đại diện**: Tải ảnh minh họa của Hana lên thư viện Media để gắn vào khối Hero đầu trang.
 
 ---
 

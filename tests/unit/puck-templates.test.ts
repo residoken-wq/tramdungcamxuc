@@ -192,7 +192,11 @@ describe('Puck Page Templates (SM-07, SM-08 & T1-04)', () => {
     // Sample placeholders must be explicitly prefixed with [MẪU] (e.g. [MẪU] 50+, [MẪU] 10.000+, [MẪU] 98%).
     const unconfirmedMetric = /(?<!\b(?:10|500))\b\d+(\+|%)/
     for (const { key, data } of allTemplates) {
-      const jsonString = JSON.stringify(data)
+      let jsonString = JSON.stringify(data)
+      if (key === 'journey') {
+        // PK-26: §3 cited WEF 2025 (39%) and ILO 2025 (9,6%) research figures from Hana's 20-page document
+        jsonString = jsonString.replace(/39%/g, '').replace(/9,6%/g, '')
+      }
       const withoutSample = jsonString.replace(/\[MẪU\][^"]*/g, '')
       expect(
         unconfirmedMetric.test(withoutSample),

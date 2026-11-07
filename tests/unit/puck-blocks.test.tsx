@@ -309,6 +309,8 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'FAQ',
         'ContactInfo',
         'PhotoGallery',
+        'MatrixTable',
+        'LoopDiagram',
       ])
 
       expect(categories?.layout?.title).toBe('Bố cục')

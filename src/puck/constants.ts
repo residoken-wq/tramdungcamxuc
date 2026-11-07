@@ -103,6 +103,8 @@ export const CONTAINER_ALLOWED_BLOCKS = [
   'VideoEmbed',
   'ContactInfo',
   'PhotoGallery',
+  'MatrixTable',
+  'LoopDiagram',
   'Container',
   'Columns',
   'Spacer',

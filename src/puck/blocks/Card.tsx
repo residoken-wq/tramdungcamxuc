@@ -20,7 +20,10 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     icon: {
       type: 'select',
       label: vi.puckCard?.icon || 'Biểu tượng thương hiệu',
-      options: BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
+      options: [
+        { label: vi.pk26?.noIcon || 'Không dùng biểu tượng', value: 'none' },
+        ...BRAND_ICONS.map((i) => ({ label: `${i.label} (${i.value})`, value: i.value })),
+      ],
     },
     mediaId: createMediaExternalField({
       label: vi.puckCard?.media || 'Ảnh thẻ (Thư viện media - thay thế biểu tượng)',
@@ -69,6 +72,77 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
         { label: vi.pk20?.highlight?.navy || 'Nền xanh thẫm (Deep Navy)', value: 'navy' },
       ],
     },
+    cardBg: {
+      type: 'select',
+      label: vi.pk26?.card?.cardBg || 'Màu nền thẻ',
+      options: [
+        { label: vi.pk26?.card?.cardBgNone || 'Theo kiểu thẻ chung', value: 'none' },
+        { label: 'Trắng ngà (Warm Ivory)', value: 'warm-ivory' },
+        { label: 'Hồng phấn (Soft Pink)', value: 'soft-pink' },
+        { label: 'Tím nhạt (Lavender Mist)', value: 'lavender-mist' },
+        { label: 'Xanh bạc hà (Mint Haze)', value: 'mint-haze' },
+        { label: 'Vàng bơ (Butter Cream)', value: 'butter-cream' },
+        { label: 'Xanh thẫm (Deep Navy)', value: 'deep-navy' },
+        { label: 'Hồng sen (Bright Magenta)', value: 'bright-magenta' },
+        { label: 'Hồng nhấn (Accent Pink)', value: 'accent-pink' },
+      ],
+    },
+    eyebrow: {
+      type: 'text',
+      label: vi.pk26?.card?.eyebrow || 'Nhãn nhỏ trên tiêu đề (Eyebrow)',
+    },
+    eyebrowBar: {
+      type: 'radio',
+      label: vi.pk26?.card?.eyebrowBar || 'Vạch hồng bên trái nhãn',
+      options: [
+        { label: 'Không có', value: false },
+        { label: 'Có vạch hồng', value: true },
+      ],
+    },
+    subtitle: {
+      type: 'text',
+      label: vi.pk26?.card?.subtitle || 'Tiêu đề phụ đậm (Subtitle)',
+    },
+    chip: {
+      type: 'text',
+      label: vi.pk26?.card?.chip || 'Huy hiệu / Nhãn chip',
+    },
+    items: {
+      type: 'array',
+      label: vi.pk26?.card?.items || 'Danh sách mục tiêu đề & mô tả',
+      arrayFields: {
+        title: { type: 'text', label: vi.pk26?.card?.itemTitle || 'Tiêu đề mục' },
+        text: { type: 'text', label: vi.pk26?.card?.itemText || 'Mô tả mục' },
+      },
+    },
+    itemsColumns: {
+      type: 'radio',
+      label: vi.pk26?.card?.itemsColumns || 'Bố cục danh sách mục',
+      options: [
+        { label: vi.pk26?.card?.itemsColumns1 || '1 cột', value: 1 },
+        { label: vi.pk26?.card?.itemsColumns2 || '2 cột', value: 2 },
+      ],
+    },
+    note: {
+      type: 'object',
+      label: vi.pk26?.card?.note || 'Hộp ghi chú (Mang về)',
+      objectFields: {
+        title: { type: 'text', label: vi.pk26?.card?.noteTitle || 'Tiêu đề ghi chú' },
+        text: { type: 'textarea', label: vi.pk26?.card?.noteText || 'Nội dung ghi chú' },
+        tone: {
+          type: 'select',
+          label: vi.pk26?.card?.noteTone || 'Tông màu hộp ghi chú',
+          options: [
+            { label: 'Tự động theo nền thẻ', value: '' },
+            { label: 'Vàng bơ (Butter Cream)', value: 'butter-cream' },
+            { label: 'Hồng phấn (Soft Pink)', value: 'soft-pink' },
+            { label: 'Xanh bạc hà (Mint Haze)', value: 'mint-haze' },
+            { label: 'Tím nhạt (Lavender Mist)', value: 'lavender-mist' },
+            { label: 'Trắng ngà (Warm Ivory)', value: 'warm-ivory' },
+          ],
+        },
+      },
+    },
     ...createBrandImageFields(),
   },
   defaultProps: {
@@ -82,6 +156,13 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     textSize: 'md',
     align: 'left',
     highlight: 'none',
+    cardBg: 'none',
+    eyebrow: '',
+    eyebrowBar: false,
+    subtitle: '',
+    chip: '',
+    items: [],
+    itemsColumns: 1,
     ...brandImageDefaultProps,
   },
   resolveFields: (data, params) => {

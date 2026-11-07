@@ -58,6 +58,29 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       label: vi.eb15a.emotionLine,
       contentEditable: true,
     },
+    listTitle: {
+      type: 'text',
+      label: vi.pk26?.heroImage?.listTitle || 'Tiêu đề danh sách giai đoạn',
+    },
+    listItems: {
+      type: 'array',
+      label: vi.pk26?.heroImage?.listItems || 'Danh sách giai đoạn',
+      getItemSummary: (it: { text?: string }) => it?.text || 'Giai đoạn',
+      arrayFields: {
+        text: {
+          type: 'text',
+          label: vi.pk26?.heroImage?.itemText || 'Nội dung giai đoạn',
+        },
+        muted: {
+          type: 'radio',
+          label: vi.pk26?.heroImage?.itemMuted || 'Giai đoạn tiếp theo (chấm rỗng, chữ mờ)',
+          options: [
+            { label: 'Rõ (chấm đặc)', value: false },
+            { label: 'Mờ (chấm rỗng)', value: true },
+          ],
+        },
+      },
+    },
     mediaId: {
       type: 'external',
       label: 'Ảnh minh họa chính (Thư viện media)',
@@ -194,6 +217,8 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
     titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
     emotionLine: '[MẪU] Dòng cảm xúc trích dẫn chạm đến trái tim',
+    listTitle: '',
+    listItems: [],
     mediaId: '',
     imageUrl: '',
     imageAlt: '',

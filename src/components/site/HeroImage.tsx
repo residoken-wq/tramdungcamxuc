@@ -33,12 +33,19 @@ export interface HeroBadge {
   text: string
 }
 
+export interface HeroListItem {
+  text: string
+  muted?: boolean
+}
+
 export interface HeroImageProps {
   version?: number
   seriesLabel?: string
   titleLine1: string
   titleLine2: string
   emotionLine?: string
+  listTitle?: string
+  listItems?: HeroListItem[]
   mediaId?: string
   imageUrl?: string
   imageAlt?: string
@@ -98,12 +105,70 @@ const PADDINGS = {
   lg: 'py-20 px-6 sm:px-12',
 } as const
 
+function renderHeroList(
+  listTitle: string | undefined,
+  listItems: HeroListItem[] | undefined,
+  isDeepNavy: boolean,
+  alignClass: string,
+) {
+  if (!listTitle && (!listItems || listItems.length === 0)) return null
+  return (
+    <div className={`mt-6 mb-2 flex flex-col gap-2.5 w-full ${alignClass}`}>
+      {listTitle && (
+        <span
+          className={`font-ui text-xs font-bold uppercase tracking-widest ${
+            isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+          }`}
+        >
+          {listTitle}
+        </span>
+      )}
+      {listItems && listItems.length > 0 && (
+        <ul className="flex flex-col gap-2">
+          {listItems.map((item, idx) => (
+            <li key={idx} className="flex items-center gap-2.5">
+              {item.muted ? (
+                <span
+                  className={`inline-block w-2.5 h-2.5 rounded-full border border-current shrink-0 ${
+                    isDeepNavy ? 'text-white/40' : 'text-deep-navy/40'
+                  }`}
+                  aria-hidden="true"
+                />
+              ) : (
+                <span
+                  className="inline-block w-2.5 h-2.5 rounded-full bg-accent-pink shrink-0"
+                  aria-hidden="true"
+                />
+              )}
+              <span
+                className={`font-ui text-sm sm:text-base leading-relaxed ${
+                  item.muted
+                    ? isDeepNavy
+                      ? 'text-white/50 italic'
+                      : 'text-deep-navy/50 italic'
+                    : isDeepNavy
+                      ? 'text-white/95 font-medium'
+                      : 'text-deep-navy font-medium'
+                }`}
+              >
+                {item.text}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 export function HeroImage({
   id,
   seriesLabel,
   titleLine1,
   titleLine2,
   emotionLine,
+  listTitle,
+  listItems,
   imageUrl,
   imageAlt,
   imageShape,
@@ -248,6 +313,8 @@ export function HeroImage({
             </p>
           )}
 
+          {renderHeroList(listTitle, listItems, isDeepNavy, alignClass)}
+
           {normalizedBadges.length > 0 && (
             <div className={`mt-6 flex flex-wrap ${alignJustifyClass} gap-2 w-full`}>
               {normalizedBadges.map((badge, idx) => (
@@ -351,6 +418,8 @@ export function HeroImage({
             {emotionLine}
           </p>
         )}
+
+        {renderHeroList(listTitle, listItems, isDeepNavy, 'text-left items-start')}
 
         {/* Badges / Chips strip (0-3 chips) */}
         {normalizedBadges.length > 0 && (
@@ -511,6 +580,8 @@ export function HeroImage({
             {emotionLine}
           </p>
         )}
+
+        {renderHeroList(listTitle, listItems, isDeepNavy, 'text-center items-center')}
 
         {/* Badges / Chips strip (0-3 chips) */}
         {normalizedBadges.length > 0 && (
