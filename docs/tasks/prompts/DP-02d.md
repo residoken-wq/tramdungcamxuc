@@ -10,18 +10,23 @@
 
 **Thời lượng:** 4–5 giờ, 1 phiên.
 
+> **Cập nhật 07/11 (Planning):**
+>
+> - `main` đã có **DP-03**: cổng đăng nhập sau Giai đoạn 1 Habit (bước 1–2 miễn phí, từ bước 3 cần đăng nhập). Đọc `tests/e2e/helpers/habit-zip.ts` bản mới trước khi sửa e2e.
+> - **Test theo `docs/tasks/QUY_TRINH_TEST.md`**, thay luật 1 và mục 4 cũ:
+>   - ở máy **chỉ** chạy `pnpm check:fast` (+ file test liên quan), cuối cùng 1 lần `pnpm check:fast --affected` (task này sửa `vi.ts` và component dùng nhiều nơi);
+>   - **không** chạy cả bộ `pnpm test`, **không** `pnpm build`, **không** e2e ở máy: CI chạy trên PR, Planning theo dõi;
+>   - e2e mới / sửa chỉ `desktop-1440` (skip project mobile), tự lặp 1440 / 375 bên trong; dữ liệu `[MẪU]` / `[TEST]` đúng schema, dọn trong `finally`;
+>   - chạy lệnh foreground, chờ xong, cắt output `| tail -40`; không chạy nền rồi "standing by";
+>   - snapshot: bỏ `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `pnpm exec vitest run -u <file>` **chỉ file liên quan**, đọc lại diff;
+>   - Prettier chỉ file mình sửa, **không** chạy trên `docs/` (sửa `HUONG_DAN_CMS.md` bằng tay).
+> - Đo thời gian: `node scripts/task-time.mjs start DP-02d` trước lệnh đầu tiên, `node scripts/task-time.mjs report` lúc nộp.
+
 ## Luật nộp bài – lần này Planning kiểm từng dòng
 
 DP-01d, DP-02 đều nộp báo cáo không đúng thực tế (ảnh trang đăng nhập / 404 ghi "khớp", không chạy e2e, unit "cho qua cả file"). Lần này:
 
-1. **Dán nguyên đầu ra** (`tail -5`) của:
-   - `timeout 300 pnpm typecheck`
-   - `timeout 600 pnpm lint`
-   - `timeout 1500 pnpm test` (cả bộ, **DB trống**)
-   - `timeout 1500 pnpm build`
-   - lệnh e2e ở mục 4
-
-   Thiếu đầu ra của lệnh nào thì ghi "chưa chạy". **Không** ghi "sạch" / "pass" mà không có đầu ra.
+1. **Dán nguyên đầu ra tóm tắt** của `pnpm check:fast` và `pnpm check:fast --affected` (vài dòng cuối). Chưa chạy thì ghi "chưa chạy". **Không** ghi "sạch" / "pass" mà không có đầu ra. E2E không chạy ở máy: ghi rõ file e2e đã thêm / sửa để Planning xem trên CI.
 
 2. **Chép nguyên văn.** Khi chuyển chữ từ component sang `vi.ts` hoặc CMS, giá trị mới **phải giống từng ký tự** chữ cũ, kể cả dấu câu, `→`, emoji, chữ in đậm.
    - DP-02 đã đổi "Bắt đầu hành trình" → "Rút thẻ chiêm nghiệm ngay", "Email nhận kế hoạch" → "Email của bạn"…; Planning phải trả lại (F3).
@@ -104,16 +109,13 @@ DP-01d, DP-02 đều nộp báo cáo không đúng thực tế (ảnh trang đă
 
 `docs/HUONG_DAN_CMS.md`: thêm chỗ Hana sửa tiêu đề bước, nội dung giới thiệu EQ, câu trích dẫn từng bước (đường dẫn trong admin, ảnh chụp nếu có).
 
-## 4. E2E (bắt buộc chạy, DB trống, cả 2 khung)
+## 4. E2E (viết ở máy, chạy trên CI)
 
-```
-CI=1 timeout 3000 pnpm exec playwright test certificate dp01a-habit-zip dp01b-eq-zip eq-draw eq-qr eq-saved gate-eq-journey gate-habit-journey habit-boarding-pass habit-journey-v2 habit-loop habit-one-percent tracker --project=desktop-1440 --project=mobile-375 --workers=1 --retries=0
-```
+**Không** chạy e2e ở máy (QUY_TRINH_TEST). CI chạy 13 file Habit / EQ trên PR (`certificate`, `dp01a-habit-zip`, `dp01b-eq-zip`, `eq-draw`, `eq-qr`, `eq-saved`, `gate-eq-journey`, `gate-habit-journey`, `habit-boarding-pass`, `habit-journey-v2`, `habit-loop`, `habit-one-percent`, `tracker`). Trước DP-02d: **xanh hết**, phải giữ.
 
-Kết quả trước DP-02d: **28 / 28 xanh**. Phải giữ 28 / 28.
-
-- Đỏ vì đổi giao diện thì sửa `tests/e2e/helpers/habit-zip.ts` hoặc test, **không** bọc "nếu thấy thì…".
-- Đỏ vì chữ đổi → xem lại luật 2 (có thể bạn đã đổi chữ).
+- Chữ đổi làm e2e dò chữ phải sửa → xem lại luật 2 trước (rất có thể bạn đã đổi chữ).
+- Đổi giao diện thì sửa `tests/e2e/helpers/habit-zip.ts`, **không** bọc "nếu thấy thì…".
+- Ngoại lệ: một e2e đỏ trên CI mà đọc log không ra nguyên nhân thì chạy lại **đúng file đó, 1 lần**.
 
 Thêm vào `dp01a-habit-zip`: Admin đặt `stepQuotes.mentor` qua API → bước 3 hiện đúng câu đó.
 
@@ -125,9 +127,11 @@ Thêm vào `dp01a-habit-zip`: Admin đặt `stepQuotes.mentor` qua API → bư�
 
 ## 6. Nộp
 
-- Commit nhỏ, message tiếng Anh. Push `task/DP-02d-copy`.
+- Commit nhỏ, message tiếng Anh, **push sau mỗi mục**. Push `task/DP-02d-copy`. **Không** merge, **không** chạy lệnh lên server thật.
 - Báo cáo theo `AGENTS.md` §13, kèm:
-  - đầu ra thật của 5 lệnh;
+  - link nhánh, chỗ `REVIEW-REQUIRED` (nếu có);
+  - vài dòng tóm tắt `pnpm check:fast` / `--affected`, file e2e đã thêm / sửa;
+  - dòng **THỜI GIAN THỰC** từ `node scripts/task-time.mjs report`;
   - bảng xếp loại đủ dòng (mục 1);
   - kết quả script `stepQuotes` + câu hỏi cho Hana (mục 2);
   - số dòng còn trong danh sách cho phép, kèm lý do từng quy tắc.
