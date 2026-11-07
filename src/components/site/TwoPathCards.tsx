@@ -5,11 +5,14 @@ import { Button } from '@/components/ui/Button'
 import { useClientPageSlug } from '@/puck/client-preview'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { PathCard, resolveSafeLink, type PathCardProps } from './PathCard'
+import { PATHS_GRID } from './two-path-cards-grid'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { textTarget } from '@/puck/style/text-target'
 
 export interface TwoPathCardsProps {
+  /** Slot already rendered on the server (public pages); see the Puck block. */
+  pathsNode?: React.ReactNode
   version?: number
   seriesLabel?: string
   titleLine1?: string
@@ -67,8 +70,6 @@ const TITLE_SIZES: Record<FontSizeOption, string> = {
   lg: 'text-4xl sm:text-5xl',
 }
 
-const PATHS_GRID = 'grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch'
-
 const PADDINGS = {
   sm: 'py-8 px-4 sm:px-6',
   md: 'py-14 px-6 sm:px-8',
@@ -99,6 +100,7 @@ export function TwoPathCards({
   path2ButtonStyle = 'outline',
 
   paths,
+  pathsNode,
   cardAlign = 'inherit',
   titleSize = 'md',
   bgColor = 'warm-ivory',
@@ -162,7 +164,9 @@ export function TwoPathCards({
           </div>
         )}
 
-        {typeof paths === 'function' ? (
+        {pathsNode ? (
+          pathsNode
+        ) : typeof paths === 'function' ? (
           <>
             {React.createElement(paths as React.ComponentType<{ className?: string }>, {
               className: PATHS_GRID,

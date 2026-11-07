@@ -27,6 +27,7 @@
     "import:eq": "cross-env NODE_OPTIONS=--no-deprecation payload run seed/import-eq.ts",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "cross-env TZ=UTC PGTZ=UTC vitest run",
+    "check:fast": "node scripts/check-fast.mjs",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit"
   },

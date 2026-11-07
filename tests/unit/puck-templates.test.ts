@@ -15,6 +15,7 @@ import {
   coachTemplate,
   contactTemplate,
   communityTemplate,
+  resourcesTemplate,
   businessTemplate,
   campaignTemplate,
   serviceTemplate,
@@ -30,6 +31,7 @@ describe('Puck Page Templates (SM-07, SM-08 & T1-04)', () => {
     { key: 'coach', name: 'Trang Coach 1:1', data: coachTemplate },
     { key: 'contact', name: 'Trang Liên hệ', data: contactTemplate },
     { key: 'community', name: 'Trang Cộng đồng', data: communityTemplate },
+    { key: 'resources', name: 'Trang Tài nguyên', data: resourcesTemplate },
     { key: 'business', name: 'Trang Doanh nghiệp', data: businessTemplate },
     { key: 'campaign', name: 'Landing chiến dịch', data: campaignTemplate },
     { key: 'service', name: 'Trang dịch vụ', data: serviceTemplate },
@@ -39,8 +41,8 @@ describe('Puck Page Templates (SM-07, SM-08 & T1-04)', () => {
 
   const sitemapV2Templates = allTemplates.slice(0, 7)
 
-  it('exports all 11 page templates with proper metadata and Vietnamese labels', () => {
-    expect(pageTemplateList).toHaveLength(11)
+  it('exports all 12 page templates with proper metadata and Vietnamese labels', () => {
+    expect(pageTemplateList).toHaveLength(12)
     expect(Object.keys(pageTemplates)).toEqual([
       'home-v2',
       'journey',
@@ -48,6 +50,7 @@ describe('Puck Page Templates (SM-07, SM-08 & T1-04)', () => {
       'coach',
       'contact',
       'community',
+      'resources',
       'business',
       'campaign',
       'service',
@@ -171,7 +174,7 @@ describe('Puck Page Templates (SM-07, SM-08 & T1-04)', () => {
   })
 
   it('templates do not contain hardcoded currency prices or amounts', () => {
-    const pricePatterns = [/\d{2,3}\.\d{3}/, /VNĐ/i, /\b\d+\s*đ\b/i, /\bđồng\b/i]
+    const pricePatterns = [/\d{2,3}\.\d{3}(?!\+)/, /VNĐ/i, /\b\d+\s*đ\b/i, /\bđồng\b/i]
 
     for (const { key, data } of allTemplates) {
       const jsonString = JSON.stringify(data)
@@ -185,11 +188,14 @@ describe('Puck Page Templates (SM-07, SM-08 & T1-04)', () => {
   })
 
   it('templates do not contain unconfirmed metric claims (\\d+\\+ or \\d+%) in sample copy', () => {
-    const unconfirmedMetric = /\b\d+(\+|%)/
+    // Confirmed credentials per Brand Book & Bio: 10+ (years bio), 500+ (ICF hours).
+    // Sample placeholders must be explicitly prefixed with [MẪU] (e.g. [MẪU] 50+, [MẪU] 10.000+, [MẪU] 98%).
+    const unconfirmedMetric = /(?<!\b(?:10|500))\b\d+(\+|%)/
     for (const { key, data } of allTemplates) {
       const jsonString = JSON.stringify(data)
+      const withoutSample = jsonString.replace(/\[MẪU\][^"]*/g, '')
       expect(
-        unconfirmedMetric.test(jsonString),
+        unconfirmedMetric.test(withoutSample),
         `Template "${key}" contains unconfirmed metric claim matching \\d+\\+ or \\d+%`,
       ).toBe(false)
     }
