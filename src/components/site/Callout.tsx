@@ -9,6 +9,7 @@ import { textTarget } from '@/puck/style/text-target'
 
 export interface CalloutProps {
   version?: number
+  variant?: 'box' | 'strip'
   title: string
   description: string
   showButton?: boolean
@@ -56,7 +57,24 @@ const PADDINGS = {
   lg: 'py-16 px-6 sm:px-12',
 } as const
 
+export function renderHighlightedText(text: string) {
+  if (!text) return null
+  const parts = text.split(/(\*\*.*?\*\*)/g)
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+      const content = part.slice(2, -2)
+      return (
+        <strong key={index} className="font-bold text-bright-magenta">
+          {content}
+        </strong>
+      )
+    }
+    return <React.Fragment key={index}>{part}</React.Fragment>
+  })
+}
+
 export function Callout({
+  variant = 'box',
   title,
   description,
   showButton = true,
@@ -106,6 +124,59 @@ export function Callout({
     finalSafeLink = safeHref(targetHref)
   }
 
+  if (variant === 'strip') {
+    return (
+      <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+        <div className="mx-auto max-w-4xl">
+          <div
+            data-eb-card=""
+            className="rounded-xl sm:rounded-2xl bg-soft-pink/80 border border-bright-magenta/20 px-6 py-4 text-center shadow-xs"
+          >
+            <p className="font-ui text-sm sm:text-base text-deep-navy leading-relaxed inline">
+              {title && (
+                <span
+                  {...textTarget(id, 'title')}
+                  className="font-bold uppercase tracking-wide text-deep-navy mr-1.5"
+                >
+                  {renderHighlightedText(title)}
+                </span>
+              )}
+              {description && (
+                <span
+                  {...textTarget(id, 'description')}
+                  className="text-deep-navy/90"
+                >
+                  {renderHighlightedText(description)}
+                </span>
+              )}
+            </p>
+
+            {showButton &&
+              buttonText &&
+              (finalSafeLink ? (
+                <div className="mt-3 sm:mt-0 sm:inline-block sm:ml-4">
+                  <Button href={finalSafeLink} variant={buttonVariant} size="sm">
+                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                  </Button>
+                </div>
+              ) : isEditing && isBookingUnavailable ? (
+                <div className="mt-3 sm:mt-0 sm:inline-block sm:ml-4">
+                  <Button
+                    href="#"
+                    variant={buttonVariant}
+                    size="sm"
+                    className="opacity-60 pointer-events-none"
+                  >
+                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                  </Button>
+                </div>
+              ) : null)}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-4xl">
@@ -119,7 +190,7 @@ export function Callout({
               {...textTarget(id, 'title')}
               className={`font-ui ${sizeClass(TITLE_SIZES, titleSize)} font-bold tracking-tight text-white leading-snug`}
             >
-              {title}
+              {renderHighlightedText(title)}
             </h2>
           )}
 
@@ -128,7 +199,7 @@ export function Callout({
               {...textTarget(id, 'description')}
               className={`${isLeft ? '' : 'mx-auto '}mt-4 max-w-2xl font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} leading-relaxed text-white/90`}
             >
-              {description}
+              {renderHighlightedText(description)}
             </p>
           )}
 
