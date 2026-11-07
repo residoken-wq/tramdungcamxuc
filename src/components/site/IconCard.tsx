@@ -141,7 +141,8 @@ function renderCardText(
   textColorStyleClass: string,
 ) {
   if (!text) return null
-  const lines = text.split('\n')
+  const normalized = text.replace(/\\n/g, '\n')
+  const lines = normalized.split(/\r?\n/)
   const hasBullets = lines.some((l) => l.trimStart().startsWith('- '))
 
   if (!hasBullets) {
