@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
+import React from 'react'
 import { Button } from '@/components/ui/Button'
-import { BrandIcon } from '@/components/brand/BrandIcon'
 import { safeHref } from '@/lib/safe-href'
 import { BOOKING_PATH, getBookingPath } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
@@ -9,6 +7,8 @@ import { FaqAccordionList, type FAQItem } from './FaqAccordionList'
 import { FaqItemView } from './FaqItemView'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { FaqContactAvatar } from './FaqContactAvatar'
+import { FaqStyleProvider } from './faq-style-context'
 
 export type { FAQItem }
 
@@ -111,25 +111,8 @@ export function FAQ({
   const isDeepNavy = bgColor === 'deep-navy'
   const isGroupSource = source === 'group'
 
-  const [clientMedia, setClientMedia] = useState<{ url: string; alt: string } | null>(null)
-
-  const resolvedContactImageUrl =
-    _resolved?.contactImageUrl ?? propContactImageUrl ?? clientMedia?.url
-  const resolvedContactImageAlt =
-    _resolved?.contactImageAlt ?? propContactImageAlt ?? clientMedia?.alt
-
-  useEffect(() => {
-    if (!resolvedContactImageUrl && contactMediaId) {
-      fetch(`/api/media/${encodeURIComponent(contactMediaId)}`, { credentials: 'include' })
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) => {
-          if (data?.url) {
-            setClientMedia({ url: data.url, alt: data.alt || '' })
-          }
-        })
-        .catch(() => {})
-    }
-  }, [resolvedContactImageUrl, contactMediaId])
+  const resolvedContactImageUrl = _resolved?.contactImageUrl ?? propContactImageUrl
+  const resolvedContactImageAlt = _resolved?.contactImageAlt ?? propContactImageAlt
 
   // When source === 'group' and there are no questions:
   // Public page hides the entire block; editor shows a helpful placeholder note.
@@ -295,7 +278,7 @@ export function FAQ({
 
   const accordionContent = (
     <div>
-      {renderedItems}
+      <FaqStyleProvider iconStyle={iconStyle}>{renderedItems}</FaqStyleProvider>
 
       {seeAllSafeLink && (
         <div className="mt-8 text-center pt-2">
@@ -374,19 +357,14 @@ export function FAQ({
                 )}
 
                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden mb-5 border-[3px] border-accent-pink bg-lavender-mist flex items-center justify-center shrink-0 shadow-sm relative">
-                  {resolvedContactImageUrl ? (
-                    <Image
-                      src={resolvedContactImageUrl}
-                      alt={resolvedContactImageAlt || 'Chuyên gia'}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <BrandIcon name="user" size={48} className="text-deep-navy" />
-                  )}
+                  <FaqContactAvatar
+                    url={resolvedContactImageUrl}
+                    alt={resolvedContactImageAlt}
+                    mediaId={contactMediaId}
+                  />
                 </div>
 
-                <h3 className="font-ui font-bold text-2xl sm:text-[24px] uppercase tracking-tight text-white mb-2 leading-tight">
+                <h3 className="font-ui font-bold text-2xl text-white mb-2 leading-tight">
                   {bookingAsideTitle || vi.sm03.bookingAsideTitle}
                 </h3>
 

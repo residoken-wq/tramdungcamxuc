@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useId } from 'react'
+import { useFaqIconStyle } from './faq-style-context'
 import {
   fontSizeClass,
   textColorClass,
@@ -33,9 +34,10 @@ export function FaqItemView({
   answerSize = 'md',
   index,
   isDeepNavy = false,
-  iconStyle = 'chevron',
+  iconStyle: ownIconStyle,
   puck,
 }: FaqItemViewProps) {
+  const iconStyle = useFaqIconStyle(ownIconStyle)
   const isEditing = Boolean(puck?.isEditing)
   const [isOpen, setIsOpen] = useState(false)
   const instanceId = useId()
