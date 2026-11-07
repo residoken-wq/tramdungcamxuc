@@ -26,6 +26,12 @@ export interface StartTrialResult {
   daysLeft?: number | null
 }
 
+export interface TrialEligibilityResult {
+  eligible: boolean
+  code?: StartTrialErrorCode
+  message?: string
+}
+
 export interface MarkExpiredResult {
   updatedCount: number
 }

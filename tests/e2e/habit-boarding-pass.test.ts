@@ -47,6 +47,8 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
 
     let userId: number | undefined
     const createdTechniqueIds: number[] = []
+    // DP-03: a fresh customer per run (a fixed email is already linked to another mock Google sub).
+    const guestEmail = `hb10-${randomUUID().slice(0, 8)}@example.test`
 
     try {
       userId = await bootstrapAdmin(page)
@@ -71,7 +73,7 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
       const guest = await visitor.newPage()
 
       try {
-        await guest.goto('/habit/5-phut')
+        await zip.loginHabitCustomer(guest, guestEmail, '/habit/5-phut')
         await expect(guest.getByText(/Khám đúng nút thắt|Khám đúng bệnh/i).first()).toBeVisible({
           timeout: 15000,
         })
@@ -109,6 +111,14 @@ test.describe('Habit Boarding Pass Download (HB-10)', () => {
       }
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
+      const cust = await page.request
+        .get(`/api/customers?where[email][equals]=${encodeURIComponent(guestEmail)}&depth=0`)
+        .catch(() => null)
+      for (const c of ((cust?.ok() ? (await cust.json()).docs : []) ?? []) as Array<{
+        id: number
+      }>) {
+        await page.request.delete(`/api/customers/${c.id}`).catch(() => {})
+      }
       for (const id of createdTechniqueIds) {
         await page.request.delete(`/api/techniques/${id}`).catch(() => {})
       }

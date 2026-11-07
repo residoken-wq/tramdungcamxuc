@@ -99,13 +99,13 @@ describe('HB-25: Lưu kế hoạch theo tài khoản khi khách đã đăng nh�
       overrideAccess: true,
     })) as HabitPlan
 
-    // customer phải là customer.id của phiên, leadEmail là email đã gõ
+    // customer phải là customer.id của phiên. DP-03 §1.3: leadEmail lấy từ phiên, bỏ email trình duyệt gửi.
     const customerIdInPlan =
       typeof planDoc.customer === 'object' && planDoc.customer !== null
         ? (planDoc.customer as { id: number }).id
         : planDoc.customer
     expect(customerIdInPlan).toBe(customer.id)
-    expect(planDoc.leadEmail).toBe(differentEmail)
+    expect(planDoc.leadEmail).toBe(customer.email.toLowerCase())
 
     // Tracker trả về đúng kế hoạch này
     const trackerPlan = await getOrCreateTrackerPlan(customer.id, { payload })
