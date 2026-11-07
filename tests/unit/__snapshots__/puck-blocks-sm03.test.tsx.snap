@@ -108,6 +108,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
       <div
         class="rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 text-center text-white shadow-soft"
         data-eb-card=""
+        data-eb-card-solid=""
       >
         <h2
           class="font-ui text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug"
@@ -136,6 +137,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
       <div
         class="rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 text-center text-white shadow-soft"
         data-eb-card=""
+        data-eb-card-solid=""
       >
         <h2
           class="font-ui text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-snug"

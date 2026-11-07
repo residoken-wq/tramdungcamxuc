@@ -181,12 +181,49 @@ describe('PK-17: cardFrame style rules', () => {
   it('generates transparent border, no shadow and transparent background for none', () => {
     const css = blockStyleCss('test-block', { cardFrame: 'none' })
     expect(css).toContain(
-      '[data-eb-id="test-block"] [data-eb-card]{border-color:transparent;box-shadow:none;background:transparent}',
+      '[data-eb-id="test-block"] [data-eb-card]{border-color:transparent;box-shadow:none}[data-eb-id="test-block"] [data-eb-card]:not([data-eb-card-solid]){background:transparent}',
     )
   })
 
   it('sanitizes invalid cardFrame values to undefined', () => {
     const sanitized = sanitizeBlockStyle({ cardFrame: 'invalid_value' }, DEFAULT_DESIGN_SYSTEM)
     expect(sanitized?.cardFrame).toBeUndefined()
+  })
+})
+
+describe('QA PK-17c', () => {
+  it('circles: a highlighted step keeps dark texts on a light section (not white on white)', () => {
+    const { getByText } = render(
+      <JourneyStep
+        variant="circles"
+        index={4}
+        name="Practice"
+        subname="[MẪU] Thực hành bền bỉ"
+        description="[MẪU] Mô tả"
+        highlight={true}
+      />,
+    )
+    expect(getByText('[MẪU] Thực hành bền bỉ').className).toContain('text-deep-navy')
+    expect(getByText('[MẪU] Thực hành bền bỉ').className).not.toMatch(/(^|\s)text-white(\s|$)/)
+    expect(getByText('[MẪU] Mô tả').className).toContain('text-deep-navy/80')
+  })
+
+  it('cards: a highlighted step is marked solid so "Không khung" keeps its navy background', () => {
+    const { container } = render(
+      <JourneyStep variant="cards" index={1} name="Feel" highlight={true} />,
+    )
+    expect(container.querySelector('[data-eb-card]')?.hasAttribute('data-eb-card-solid')).toBe(true)
+  })
+
+  it('no dynamic Tailwind class fragments left in the slot-mode card', () => {
+    const { container } = render(<JourneyStep index={0} name="Pause" />)
+    expect(container.innerHTML).not.toContain('journey:bg-white border')
+  })
+
+  it('spotlight: heading keeps a space between the two lines', () => {
+    const { getByRole } = render(
+      <HanaStory layout="spotlight" titleLine1="[MẪU] COACH" titleLine2="[MẪU] HANA" />,
+    )
+    expect(getByRole('heading', { level: 2 }).textContent).toBe('[MẪU] COACH [MẪU] HANA')
   })
 })
