@@ -6,6 +6,7 @@ import { HeartLine } from '@/components/brand/HeartLine'
 import { safeHref } from '@/lib/safe-href'
 import { textTarget } from '@/puck/style/text-target'
 import { stripWrappingQuotes } from '@/lib/text/quotes'
+import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 
 export interface HanaStoryChipItem {
   text?: string
@@ -120,7 +121,7 @@ export function HanaStory({
     : 'bg-soft-pink text-deep-navy border-bright-magenta/20'
 
   if (isSpotlight) {
-    const jobTitleColor = isDarkOrNavy ? 'text-accent-pink' : 'text-bright-magenta'
+    const jobTitleColor = isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
     return (
       <section className={`w-full overflow-hidden ${sectionBgClass} transition-colors`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[500px]">
@@ -143,22 +144,14 @@ export function HanaStory({
                   </span>
                 )}
                 <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
-                  {titleLine1 && (
-                    <span
-                      {...textTarget(id, 'titleLine1')}
-                      className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}
-                    >
-                      {titleLine1}
-                    </span>
-                  )}
-                  {titleLine2 && (
-                    <span
-                      {...textTarget(id, 'titleLine2')}
-                      className={`block ${isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}`}
-                    >
-                      {titleLine2}
-                    </span>
-                  )}
+                  {/* QA PK-17c: shared TwoToneTitle (PK-16) keeps the space between the lines. */}
+                  <TwoToneTitle
+                    id={id}
+                    line1={titleLine1}
+                    line2={titleLine2}
+                    line1ClassName={isDarkOrNavy ? 'text-white' : 'text-deep-navy'}
+                    line2ClassName={isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}
+                  />
                 </h2>
               </header>
             )}

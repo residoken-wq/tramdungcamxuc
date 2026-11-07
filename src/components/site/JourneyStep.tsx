@@ -71,6 +71,36 @@ export function JourneyStep({
         ? 'text-white/85'
         : 'text-deep-navy/80 group-data-[bg=deep-navy]/journey:text-white/85'
 
+  // QA PK-17c: in "circles" a highlighted step only fills its circle with accent-pink; the
+  // texts keep following the section (they used to turn white on a light background).
+  const circleBoxClass = isHighlighted
+    ? 'font-display text-3xl sm:text-4xl bg-accent-pink text-white border-0'
+    : isDeepNavy
+      ? 'border-[3px] border-white text-white bg-transparent'
+      : 'border-[3px] border-deep-navy text-deep-navy bg-white group-data-[bg=deep-navy]/journey:border-white group-data-[bg=deep-navy]/journey:text-white group-data-[bg=deep-navy]/journey:bg-transparent'
+  const circleNameClass =
+    nameColor && nameColor !== 'deep-navy'
+      ? textColorClass(nameColor)
+      : isHighlighted
+        ? 'font-display text-2xl sm:text-3xl text-accent-pink'
+        : isDeepNavy
+          ? 'text-soft-pink'
+          : 'text-bright-magenta group-data-[bg=deep-navy]/journey:text-soft-pink'
+  const circleSubnameClass = isDeepNavy
+    ? 'text-white'
+    : 'text-deep-navy group-data-[bg=deep-navy]/journey:text-white'
+  const circleSubtitleClass = isDeepNavy
+    ? 'text-soft-pink'
+    : 'text-bright-magenta group-data-[bg=deep-navy]/journey:text-soft-pink'
+  const circleDescClass =
+    descColor && descColor !== 'deep-navy'
+      ? descColor === 'white'
+        ? 'text-white/85'
+        : textColorClass(descColor)
+      : isDeepNavy
+        ? 'text-white/85'
+        : 'text-deep-navy/80 group-data-[bg=deep-navy]/journey:text-white/85'
+
   const badgeClass = isNavy
     ? 'bg-white/15 text-soft-pink'
     : 'bg-soft-pink text-deep-navy group-data-[bg=deep-navy]/journey:bg-white/15 group-data-[bg=deep-navy]/journey:text-soft-pink'
@@ -146,24 +176,6 @@ export function JourneyStep({
     // Number circle: Anton ~72px mobile, ~80px desktop
     // Default: border 3px deep-navy, bg-white, text deep-navy (on dark section: border/text white, transparent bg)
     // Highlighted: bg accent-pink, no border, text white
-    const circleBoxClass = isHighlighted
-      ? 'bg-accent-pink text-white border-0'
-      : isNavy
-        ? 'border-[3px] border-white text-white bg-transparent'
-        : 'border-[3px] border-deep-navy text-deep-navy bg-white group-data-[bg=deep-navy]/journey:border-white group-data-[bg=deep-navy]/journey:text-white group-data-[bg=deep-navy]/journey:bg-transparent'
-
-    const circleNameClass =
-      nameColor && nameColor !== 'deep-navy'
-        ? textColorClass(nameColor)
-        : isHighlighted
-          ? 'text-accent-pink'
-          : isNavy
-            ? 'text-soft-pink'
-            : 'text-bright-magenta group-data-[bg=deep-navy]/journey:text-soft-pink'
-
-    const circleSubnameClass = isNavy
-      ? 'text-white'
-      : 'text-deep-navy group-data-[bg=deep-navy]/journey:text-white'
 
     return (
       <div
@@ -189,7 +201,7 @@ export function JourneyStep({
         {subname && (
           <span
             {...textTarget(id, 'subname')}
-            className={`font-ui text-sm sm:text-base font-bold uppercase tracking-wider mb-2 ${circleSubnameClass}`}
+            className={`font-ui text-sm font-bold mb-1 ${circleSubnameClass}`}
           >
             {subname}
           </span>
@@ -198,7 +210,7 @@ export function JourneyStep({
         {subtitle && (
           <p
             {...textTarget(id, 'subtitle')}
-            className={`font-ui text-xs sm:text-sm font-semibold mb-2 ${subtitleColorClass}`}
+            className={`font-ui text-xs sm:text-sm font-semibold mb-2 ${circleSubtitleClass}`}
           >
             {subtitle}
           </p>
@@ -207,7 +219,7 @@ export function JourneyStep({
         {description && (
           <p
             {...textTarget(id, 'description')}
-            className={`font-ui ${descSizeClass} leading-relaxed mt-1 ${descColorClass}`}
+            className={`font-ui ${descSizeClass} leading-relaxed mt-1 ${circleDescClass}`}
           >
             {description}
           </p>
@@ -221,6 +233,7 @@ export function JourneyStep({
     return (
       <div
         data-eb-card=""
+        data-eb-card-solid={isHighlighted ? '' : undefined}
         className={`flex flex-col p-5 sm:p-6 rounded-card border transition-transform hover:-translate-y-1 [counter-increment:step-counter] w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/journey:items-center group-data-[card-align=center]/journey:text-center group-data-[card-align=left]/journey:items-start group-data-[card-align=left]/journey:text-left ${cardBgClass}`}
       >
         <div className="w-full self-stretch mb-3 text-[inherit]">
@@ -280,29 +293,11 @@ export function JourneyStep({
       <span className="before:content-[counter(step-counter,_decimal-leading-zero)]" />
     )
 
-  const circleBoxClass = isHighlighted
-    ? 'bg-accent-pink text-white border-0'
-    : isNavy
-      ? 'border-[3px] border-white text-white bg-transparent'
-      : 'border-[3px] border-deep-navy text-deep-navy bg-white group-data-[bg=deep-navy]/journey:border-white group-data-[bg=deep-navy]/journey:text-white group-data-[bg=deep-navy]/journey:bg-transparent'
-
-  const circleNameClass =
-    nameColor && nameColor !== 'deep-navy'
-      ? textColorClass(nameColor)
-      : isHighlighted
-        ? 'text-accent-pink'
-        : isNavy
-          ? 'text-soft-pink'
-          : 'text-bright-magenta group-data-[bg=deep-navy]/journey:text-soft-pink'
-
-  const circleSubnameClass = isNavy
-    ? 'text-white'
-    : 'text-deep-navy group-data-[bg=deep-navy]/journey:text-white'
-
   return (
     <div
       data-eb-card=""
-      className={`flex flex-col [counter-increment:step-counter] w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/journey:items-center group-data-[card-align=center]/journey:text-center group-data-[card-align=left]/journey:items-start group-data-[card-align=left]/journey:text-left group-data-[variant=circles]/journey:p-2 group-data-[variant=circles]/journey:bg-transparent group-data-[variant=circles]/journey:border-0 group-data-[variant=circles]/journey:shadow-none group-data-[variant=circles]/journey:items-center group-data-[variant=circles]/journey:text-center group-data-[variant=list]/journey:sm:flex-row group-data-[variant=list]/journey:items-start group-data-[variant=list]/journey:sm:items-center group-data-[variant=list]/journey:gap-4 group-data-[variant=list]/journey:sm:gap-6 group-data-[variant=cards]/journey:p-5 group-data-[variant=cards]/journey:sm:p-6 group-data-[variant=cards]/journey:rounded-card group-data-[variant=cards]/journey:border group-data-[variant=cards]/journey:transition-transform group-data-[variant=cards]/journey:hover:-translate-y-1 group-data-[variant=cards]/journey:${cardBgClass} group-data-[variant=list]/journey:p-5 group-data-[variant=list]/journey:sm:p-6 group-data-[variant=list]/journey:rounded-card group-data-[variant=list]/journey:border group-data-[variant=list]/journey:transition-transform group-data-[variant=list]/journey:hover:-translate-y-1 group-data-[variant=list]/journey:${cardBgClass} ${cardBgClass}`}
+      data-eb-card-solid={isHighlighted ? '' : undefined}
+      className={`flex flex-col [counter-increment:step-counter] w-full ${alignClass} group-data-[card-align=center]/grid:items-center group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/grid:text-left group-data-[card-align=center]/journey:items-center group-data-[card-align=center]/journey:text-center group-data-[card-align=left]/journey:items-start group-data-[card-align=left]/journey:text-left group-data-[variant=circles]/journey:p-2 group-data-[variant=circles]/journey:bg-transparent group-data-[variant=circles]/journey:border-0 group-data-[variant=circles]/journey:shadow-none group-data-[variant=circles]/journey:items-center group-data-[variant=circles]/journey:text-center group-data-[variant=list]/journey:sm:flex-row group-data-[variant=list]/journey:items-start group-data-[variant=list]/journey:sm:items-center group-data-[variant=list]/journey:gap-4 group-data-[variant=list]/journey:sm:gap-6 group-data-[variant=cards]/journey:p-5 group-data-[variant=cards]/journey:sm:p-6 group-data-[variant=cards]/journey:rounded-card group-data-[variant=cards]/journey:border group-data-[variant=cards]/journey:transition-transform group-data-[variant=cards]/journey:hover:-translate-y-1 group-data-[variant=list]/journey:p-5 group-data-[variant=list]/journey:sm:p-6 group-data-[variant=list]/journey:rounded-card group-data-[variant=list]/journey:border group-data-[variant=list]/journey:transition-transform group-data-[variant=list]/journey:hover:-translate-y-1 ${cardBgClass}`}
     >
       {/* Circles number circle (visible on circles only) */}
       <div className="hidden group-data-[variant=circles]/journey:flex flex-col items-center mb-4 group-data-[card-align=left]/grid:items-start group-data-[card-align=left]/journey:items-start">
@@ -332,7 +327,7 @@ export function JourneyStep({
         {subname && (
           <span
             {...textTarget(id, 'subname')}
-            className={`font-ui text-sm sm:text-base font-bold uppercase tracking-wider mb-2 ${circleSubnameClass}`}
+            className={`font-ui text-sm font-bold mb-1 ${circleSubnameClass}`}
           >
             {subname}
           </span>
@@ -340,7 +335,7 @@ export function JourneyStep({
         {subtitle && (
           <p
             {...textTarget(id, 'subtitle')}
-            className={`font-ui text-xs sm:text-sm font-semibold mb-2 ${subtitleColorClass}`}
+            className={`font-ui text-xs sm:text-sm font-semibold mb-2 ${circleSubtitleClass}`}
           >
             {subtitle}
           </p>
@@ -348,7 +343,7 @@ export function JourneyStep({
         {description && (
           <p
             {...textTarget(id, 'description')}
-            className={`font-ui ${descSizeClass} leading-relaxed mt-1 ${descColorClass}`}
+            className={`font-ui ${descSizeClass} leading-relaxed mt-1 ${circleDescClass}`}
           >
             {description}
           </p>

@@ -158,7 +158,9 @@ function cardFrameRule(selector: string, cardFrame: BlockStyle['cardFrame']): st
     return `${selector} [${CARD_ATTR}]{border-color:transparent;box-shadow:none}`
   }
   if (cardFrame === 'none') {
-    return `${selector} [${CARD_ATTR}]{border-color:transparent;box-shadow:none;background:transparent}`
+    // QA PK-17c: a solid (deep-navy, white text) card keeps its background, or its text would
+    // turn invisible on a light section.
+    return `${selector} [${CARD_ATTR}]{border-color:transparent;box-shadow:none}${selector} [${CARD_ATTR}]:not([${CARD_ATTR}-solid]){background:transparent}`
   }
   return ''
 }
