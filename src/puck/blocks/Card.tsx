@@ -55,6 +55,15 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
       label: vi.puckCard?.align || 'Căn lề',
       options: [...ALIGN_OPTIONS],
     },
+    highlight: {
+      type: 'select',
+      label: vi.pk20?.highlight?.label || 'Kiểu nổi bật thẻ',
+      options: [
+        { label: vi.pk20?.highlight?.none || 'Mặc định (Không nổi bật)', value: 'none' },
+        { label: vi.pk20?.highlight?.outline || 'Viền hồng (Accent Pink)', value: 'outline' },
+        { label: vi.pk20?.highlight?.navy || 'Nền xanh thẫm (Deep Navy)', value: 'navy' },
+      ],
+    },
   },
   defaultProps: {
     version: 1,
@@ -66,6 +75,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     titleSize: 'md',
     textSize: 'md',
     align: 'left',
+    highlight: 'none',
   },
   resolveFields: (data, params) => {
     const cardRealBg = getCardRealBg(params?.parent)

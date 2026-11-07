@@ -200,10 +200,10 @@ function cardAccentRule(selector: string, cardAccent: BlockStyle['cardAccent']):
     const c1 = cssColor('bright-magenta')
     const c2 = cssColor('accent-pink')
     const c3 = cssColor('deep-navy')
-    return `${selector} :nth-child(3n+1) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n+1){border-top:6px solid ${c1}}${selector} :nth-child(3n+2) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n+2){border-top:6px solid ${c2}}${selector} :nth-child(3n) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n){border-top:6px solid ${c3}}`
+    return `${selector} :nth-child(3n+1) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n+1){border-top:6px solid ${c1};overflow:hidden}${selector} :nth-child(3n+2) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n+2){border-top:6px solid ${c2};overflow:hidden}${selector} :nth-child(3n) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n){border-top:6px solid ${c3};overflow:hidden}`
   }
   if ((VALID_BRAND_ACCENTS as readonly string[]).includes(cardAccent)) {
-    return `${selector} [${CARD_ATTR}]{border-top:6px solid ${cssColor(cardAccent)}}`
+    return `${selector} [${CARD_ATTR}]{border-top:6px solid ${cssColor(cardAccent)};overflow:hidden}`
   }
   return ''
 }
