@@ -64,6 +64,7 @@ export const STYLE_TAB_KEYS: (keyof BlockStyle)[] = [
   'eyebrowGap',
   'emotionGap',
   'cardFrame',
+  'cardAccent',
 ]
 export const ADVANCED_TAB_KEYS: (keyof BlockStyle)[] = [
   'padding',
@@ -172,6 +173,7 @@ export function StyleField({
       'HeroTwoEntries',
       'JourneySteps',
       'PackageCards',
+      'Card',
     ].includes(String(selectedItem.type)),
   )
 
@@ -390,11 +392,64 @@ export function StyleField({
                   { value: 'borderless', label: vi.pk17?.cardFrame?.borderless || 'Bỏ viền' },
                   { value: 'flat', label: vi.pk17?.cardFrame?.flat || 'Bỏ viền và bóng' },
                   { value: 'none', label: vi.pk17?.cardFrame?.none || 'Không khung' },
+                  { value: 'glass', label: vi.pk20?.cardFrame?.glass || 'Kính mờ' },
                 ]}
                 onChange={(v) =>
                   update({
                     cardFrame:
-                      v && v !== 'default' ? (v as 'borderless' | 'flat' | 'none') : undefined,
+                      v && v !== 'default'
+                        ? (v as 'borderless' | 'flat' | 'none' | 'glass')
+                        : undefined,
+                  })
+                }
+              />
+              <SelectControl
+                label={vi.pk20?.cardAccent?.label || 'Vạch màu đầu thẻ'}
+                value={style.cardAccent || 'none'}
+                options={[
+                  { value: 'none', label: vi.pk20?.cardAccent?.none || 'Không có' },
+                  {
+                    value: 'cycle',
+                    label:
+                      vi.pk20?.cardAccent?.cycle ||
+                      'Xoay vòng (Hồng sen → Hồng nhấn → Xanh thẫm)',
+                  },
+                  {
+                    value: 'deep-navy',
+                    label: vi.pk20?.cardAccent?.['deep-navy'] || 'Xanh thẫm (Deep Navy)',
+                  },
+                  {
+                    value: 'bright-magenta',
+                    label: vi.pk20?.cardAccent?.['bright-magenta'] || 'Hồng sen (Bright Magenta)',
+                  },
+                  {
+                    value: 'accent-pink',
+                    label: vi.pk20?.cardAccent?.['accent-pink'] || 'Hồng nhấn (Accent Pink)',
+                  },
+                  {
+                    value: 'soft-pink',
+                    label: vi.pk20?.cardAccent?.['soft-pink'] || 'Hồng phấn (Soft Pink)',
+                  },
+                  {
+                    value: 'lavender-mist',
+                    label: vi.pk20?.cardAccent?.['lavender-mist'] || 'Tím nhạt (Lavender Mist)',
+                  },
+                  {
+                    value: 'mint-haze',
+                    label: vi.pk20?.cardAccent?.['mint-haze'] || 'Xanh bạc hà (Mint Haze)',
+                  },
+                  {
+                    value: 'butter-cream',
+                    label: vi.pk20?.cardAccent?.['butter-cream'] || 'Vàng bơ (Butter Cream)',
+                  },
+                  {
+                    value: 'warm-ivory',
+                    label: vi.pk20?.cardAccent?.['warm-ivory'] || 'Trắng ngà (Warm Ivory)',
+                  },
+                ]}
+                onChange={(v) =>
+                  update({
+                    cardAccent: v && v !== 'none' ? (v as any) : undefined,
                   })
                 }
               />

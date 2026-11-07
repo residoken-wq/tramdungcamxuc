@@ -143,13 +143,18 @@ const CARD_ITEMS: Record<string, string> = {
 }
 
 /**
- * PK-17: card frame styling for [data-eb-card] inside the block.
+ * PK-17 / PK-20: card frame styling for [data-eb-card] inside the block.
  * default: no rule generated
  * borderless: border-color:transparent
  * flat: border-color:transparent;box-shadow:none
  * none: border-color:transparent;box-shadow:none;background:transparent
+ * glass: background:rgb(255 255 255/.7); backdrop-filter:blur(12px); border-color:rgb(255 255 255/.6)
  */
-function cardFrameRule(selector: string, cardFrame: BlockStyle['cardFrame']): string {
+function cardFrameRule(
+  selector: string,
+  cardFrame: BlockStyle['cardFrame'],
+  isDark = false,
+): string {
   if (!cardFrame || cardFrame === 'default') return ''
   if (cardFrame === 'borderless') {
     return `${selector} [${CARD_ATTR}]{border-color:transparent}`
@@ -161,6 +166,44 @@ function cardFrameRule(selector: string, cardFrame: BlockStyle['cardFrame']): st
     // QA PK-17c: a solid (deep-navy, white text) card keeps its background, or its text would
     // turn invisible on a light section.
     return `${selector} [${CARD_ATTR}]{border-color:transparent;box-shadow:none}${selector} [${CARD_ATTR}]:not([${CARD_ATTR}-solid]){background:transparent}`
+  }
+  if (cardFrame === 'glass') {
+    const lightGlass = `${selector} [${CARD_ATTR}]{background:rgb(255 255 255/.7);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-color:rgb(255 255 255/.6)}`
+    const fallback = `@supports not (backdrop-filter:blur(12px)){${selector} [${CARD_ATTR}]{background:rgb(255 255 255/.9)}}`
+    const darkSelectors = isDark
+      ? `${selector}[data-bg="deep-navy"] [${CARD_ATTR}],${selector} [data-bg="deep-navy"] [${CARD_ATTR}],${selector} [${CARD_ATTR}]`
+      : `${selector}[data-bg="deep-navy"] [${CARD_ATTR}],${selector} [data-bg="deep-navy"] [${CARD_ATTR}]`
+    const darkGlass = `${darkSelectors}{background:rgb(255 255 255/.12);border-color:rgb(255 255 255/.2)}`
+    return `${lightGlass}${fallback}${darkGlass}`
+  }
+  return ''
+}
+
+const VALID_BRAND_ACCENTS = [
+  'deep-navy',
+  'bright-magenta',
+  'accent-pink',
+  'soft-pink',
+  'lavender-mist',
+  'mint-haze',
+  'butter-cream',
+  'warm-ivory',
+] as const
+
+/**
+ * PK-20: 6px accent stripe on top of [data-eb-card].
+ * cycle: bright-magenta -> accent-pink -> deep-navy on cards 1, 2, 3...
+ */
+function cardAccentRule(selector: string, cardAccent: BlockStyle['cardAccent']): string {
+  if (!cardAccent || cardAccent === 'none') return ''
+  if (cardAccent === 'cycle') {
+    const c1 = cssColor('bright-magenta')
+    const c2 = cssColor('accent-pink')
+    const c3 = cssColor('deep-navy')
+    return `${selector} :nth-child(3n+1) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n+1){border-top:6px solid ${c1}}${selector} :nth-child(3n+2) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n+2){border-top:6px solid ${c2}}${selector} :nth-child(3n) > [${CARD_ATTR}],${selector} [${CARD_ATTR}]:nth-child(3n){border-top:6px solid ${c3}}`
+  }
+  if ((VALID_BRAND_ACCENTS as readonly string[]).includes(cardAccent)) {
+    return `${selector} [${CARD_ATTR}]{border-top:6px solid ${cssColor(cardAccent)}}`
   }
   return ''
 }
@@ -187,8 +230,11 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   if (base.length) rules.push(`${selector}{${base.join(';')}}`)
   const desktopCards = cardAlignRule(selector, style.textAlign?.desktop)
   if (desktopCards) rules.push(desktopCards)
-  const cardFrame = cardFrameRule(selector, style.cardFrame)
+  const isDark = style.background === 'deep-navy'
+  const cardFrame = cardFrameRule(selector, style.cardFrame, isDark)
   if (cardFrame) rules.push(cardFrame)
+  const cardAccent = cardAccentRule(selector, style.cardAccent)
+  if (cardAccent) rules.push(cardAccent)
   for (const device of DEVICES) {
     const media = DEVICE_MEDIA[device]
     if (!media) continue
