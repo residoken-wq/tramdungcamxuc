@@ -154,13 +154,13 @@ export function Callout({
       textClass = 'text-deep-navy/90'
     } else if (isToneDashed) {
       cardClass = 'bg-transparent border-2 border-dashed border-accent-pink/70 text-deep-navy'
-      // a11y-contrast-ok: PK-26 accent-pink title on dashed strip
-      titleClass = 'text-accent-pink'
+      // QA PK-26: accent-pink is 3.5:1 on ivory; bright-magenta is 5.4:1 (AA).
+      titleClass = 'text-bright-magenta'
       textClass = 'text-deep-navy/90'
     } else if (isToneNavy) {
       cardClass = 'bg-deep-navy border border-white/20 text-white shadow-soft'
-      // a11y-contrast-ok: PK-26 accent-pink title on deep-navy background has 5.3:1 contrast
-      titleClass = 'text-accent-pink'
+      // QA PK-26: accent-pink is only 4.3:1 on deep-navy; soft-pink is 13.7:1.
+      titleClass = 'text-soft-pink'
       textClass = 'text-white/90'
     }
 

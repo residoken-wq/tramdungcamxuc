@@ -141,7 +141,7 @@ export function MatrixTable({
             {chipsTitle && (
               <span
                 className={`font-ui text-xs sm:text-sm font-bold uppercase tracking-wider mr-1 ${
-                  isDeepNavy ? 'text-accent-pink' : 'text-bright-magenta'
+                  isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
                 }`}
               >
                 {chipsTitle}
@@ -281,8 +281,8 @@ export function MatrixTable({
                     hasAccent ? 'border-l-4 border-l-accent-pink' : ''
                   } ${toneClass}`}
                 >
-                  {/* a11y-contrast-ok: PK-26 accent-pink label on deep-navy has 5.3:1 contrast */}
-                  <div className="font-ui text-sm sm:text-base font-bold shrink-0 min-w-[140px] text-accent-pink sm:text-inherit">
+                  {/* QA PK-26: accent-pink failed AA on the navy rows (3.5:1); inherit the row text colour. */}
+                  <div className="font-ui text-sm sm:text-base font-bold shrink-0 min-w-[140px]">
                     {row.label}
                   </div>
                   {row.text && (
