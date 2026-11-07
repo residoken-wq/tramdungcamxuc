@@ -224,6 +224,27 @@ const ICON_RENDERERS: Record<string, IconRenderer> = {
       />
     </>
   ),
+  // Certificate: document with a rosette seal and ribbons (line style like the other icons)
+  certificate: () => (
+    <>
+      <path
+        d="M14 19H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M7 8h10M7 12h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="18" cy="15" r="3" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M16.5 17.6L16 22l2-1.2 2 1.2-.5-4.4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>
+  ),
   check: () => (
     <path
       d="M20 6L9 17L4 12"

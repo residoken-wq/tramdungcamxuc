@@ -38,6 +38,7 @@ import * as migration_20261104_100000_dp01d_techniques_and_loop from './20261104
 import * as migration_20261104_110000_dp01d_habit_text_fields from './20261104_110000_dp01d_habit_text_fields'
 import * as migration_20261104_180000_dp02_polish_fields from './20261104_180000_dp02_polish_fields'
 import * as migration_20261105_084356_gl01_customers_google_sub from './20261105_084356_gl01_customers_google_sub'
+import * as migration_20261107_090000_icon_certificate from './20261107_090000_icon_certificate'
 
 export const migrations = [
   {
@@ -239,5 +240,10 @@ export const migrations = [
     up: migration_20261105_084356_gl01_customers_google_sub.up,
     down: migration_20261105_084356_gl01_customers_google_sub.down,
     name: '20261105_084356_gl01_customers_google_sub',
+  },
+  {
+    up: migration_20261107_090000_icon_certificate.up,
+    down: migration_20261107_090000_icon_certificate.down,
+    name: '20261107_090000_icon_certificate',
   },
 ]
