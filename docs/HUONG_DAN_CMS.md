@@ -1132,7 +1132,7 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
 
 5. **Bước 4 – Gọi tên thói quen** (`step4`):
    - **Lời dẫn mở đầu bước 4** (`leadIn`).
-   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: *Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày.*).
+   - **Lời dẫn in đậm** (`leadInEmphasis`): Dòng chữ in đậm nhấn mạnh ở đầu bước 4 (ví dụ: _Thương hiệu cá nhân không phải việc làm thêm — nó là cách bạn xuất hiện mỗi ngày._).
    - **Tiêu đề & Mô tả tuyên ngôn** (`statementTitle`, `statementDesc`).
    - **Gợi ý vai trò** (`suggestedRoles`): Nhập mỗi dòng 1 vai trò gợi ý (hiển thị thành các nút chip).
    - **Tiêu đề, Mô tả, Lưu ý ngày nghỉ của Nhịp điệu** (`rhythmTitle`, `rhythmDesc`, `rhythmNote`).
@@ -1165,9 +1165,10 @@ Màn hình Tracker là không gian rèn luyện hàng ngày của học viên, �
    - **Placeholder ô ghi chú cảm xúc** (`notePlaceholder`).
 
 10. **Chân trang (Footer)** (`footer`):
-   - **Khẩu hiệu thương hiệu** (`slogan`).
-   - **Thông tin tác giả / Coach** (`authorInfo`).
-   - **Đoạn ghi nhận nguồn sách** (`bookCredits`).
+
+- **Khẩu hiệu thương hiệu** (`slogan`).
+- **Thông tin tác giả / Coach** (`authorInfo`).
+- **Đoạn ghi nhận nguồn sách** (`bookCredits`).
 
 **Cách chạy script nạp tự động nội dung chuẩn zip (`dp01d-habit-content.ts`)**:
 
@@ -1393,7 +1394,7 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
 2. **Tab Quyền truy cập & Bán hàng**:
    - **Chế độ truy cập EQ (`eqAccessMode`)**:
      - `trial` (Mặc định): Áp dụng luồng dùng thử chuẩn (khách vãng lai rút 1 thẻ miễn phí, từ thẻ thứ 2 yêu cầu đăng nhập/dùng thử; tab "Tất cả 26 thẻ" chỉ hiển thị thông điệp khi đã kích hoạt).
-     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. *(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này).*
+     - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. _(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này)._
    - **Link Shopee bộ thẻ vật lý (`shopeeUrl`)**: Nhập đường link gian hàng Shopee của Hana để nút "Chạm vào thẻ thật ngoài đời" dẫn khách tới mua bộ thẻ in.
 3. **Tab Giới thiệu & Cẩm nang**:
    - Tự do sửa câu chữ giới thiệu 2 bước: `Tiêu đề chính`, `Mô tả ngắn`, `4 góc nhìn cảm xúc` (Tự thân, Người khác, Tình huống, Hành động), và `4 bước thực hành mỗi ngày` (Tĩnh lặng, Rút thẻ, Lắng nghe, Khám phá).
@@ -1726,10 +1727,16 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
 
 - **Vị trí**: Nhóm **Bán hàng**.
 - **Mục đích**: Giới thiệu toàn cảnh giải pháp của Trạm Dừng Cảm Xúc dành cho cá nhân và doanh nghiệp.
-- **Cách dùng**:
-  - Chọn **Biến thể (`variant`)**:
-    - `3 trụ cột` (`3-pillar`): Tập trung vào 3 chặng hành trình (Tự soi chiếu, Khai vấn 1:1, Chuyển mình bền bỉ).
-    - `Toàn bộ hệ sinh thái` (`full`): Hiển thị đồng thời cả dịch vụ cá nhân và các chương trình đào tạo doanh nghiệp B2B.
+- **Cách dùng (Cập nhật PK-19 - Bố cục "Theo nhóm" chuẩn thiết kế 2026)**:
+  - **Bố cục (`layout`)**:
+    - `Dạng thẻ (Mặc định cho trang cũ)`: Giữ nguyên bố cục thẻ truyền thống.
+    - `Theo nhóm (Thiết kế 2026)`: Bố cục chuẩn mới phân nhóm trực quan, mỗi cột có icon trong ô vuông bo tròn, vạch màu trên đầu thẻ, các nhóm phân cấp rõ ràng (khung viền hồng / bình thường, kiểu dòng gọn `row` hoặc thẻ con `card`, nút viền `outline` hoặc nút đặc `filled`).
+  - **Cấu hình từng cột**:
+    - Chọn **Biểu tượng (Icon)** từ bộ icon thương hiệu chuẩn (`target`, `compass`, `leaf`, `team`,...).
+    - Chọn **Vạch màu trên đầu thẻ (Accent)**: Một trong 8 màu brand book (VD: Cột 1 `accent-pink`, Cột 3 `deep-navy`).
+    - Thêm các **Nhóm giải pháp**: Điền nhãn nhóm (VD `SIGNATURE PROGRAM`), tiêu đề nhóm, chọn kiểu khung (`outlined` viền hồng hoặc `plain`), kiểu hiển thị (`row` dòng gọn hoặc `card` thẻ con), kiểu nút (`outline` hoặc `filled`), và chọn sản phẩm / dịch vụ / chương trình từ CMS.
+    - Có thể điền ghi đè **Tiêu đề dòng/thẻ** và **Chữ trên nút** cho từng mục; câu ngắn cạnh tên tự động lấy từ ô **Tagline** của sản phẩm (sửa trực tiếp ở trang quản lý Sản phẩm).
+    - Đoạn giới thiệu dưới tiêu đề lớn điền ở ô **"Mô tả"**, không nhầm lẫn với ô "Dòng cảm xúc" (Playfair nghiêng).
   - Dữ liệu được liên kết trực tiếp từ danh mục **Sản phẩm** (`products`), **Dịch vụ đồng hành** (`services`) và **Chương trình doanh nghiệp** (`programs`).
   - **Lưu ý về trạng thái bán của gói Growth Mirror**: Theo quyết định thiết kế kinh doanh (DECISIONS Q4), các gói Growth Mirror không bán trực tiếp mà đi qua phiên trải nghiệm 149.000đ. Vì vậy trong danh mục Sản phẩm, Hana nên đặt **Trạng thái mở bán** của các gói này là **`Tư vấn` (`consult`)** (thay vì `on_sale`). Khi để `consult`, nút bấm ở Cột 1 sẽ hiển thị "Đăng ký tư vấn / Đặt phiên trải nghiệm" thay vì "Mua ngay". Trang công khai sẽ tự động ẩn các cột chưa có dữ liệu; khi Hana đang ở chế độ chỉnh sửa (Puck Editor), hệ thống hiển thị dòng ghi chú nhắc nhở để Hana thuận tiện lựa chọn.
 
@@ -2278,6 +2285,18 @@ Khi chọn khối cha `FAQ` trên khung vẽ, ở thanh bên phải Hana có th�
 
 - Khối cha `FAQ` được xử lý tối ưu phía máy chủ (Server Component) giúp bài viết chuẩn SEO và trang tải nhanh như chớp.
 - Từng câu hỏi `FaqItem` là thành phần tương tác phía người dùng (Client Component) với hiệu ứng mũi tên xoay chuyển động mượt mà khi bấm mở/đóng và hỗ trợ đầy đủ công nghệ trợ năng cho người khiếm thị.
+
+#### 5. Thẻ liên hệ bên cạnh có ảnh, nhãn viên bo tròn & biểu tượng + / − (Cập nhật PK-19)
+
+- **Đoạn mô tả ngắn dưới tiêu đề**: Điền tại ô **"Mô tả"** ở khối cha, hiển thị trang nhã, căn giữa dưới tiêu đề 2 tầng màu.
+- **Kiểu nhãn series (`seriesLabelStyle`)**: Có thể chọn `Viên bo tròn có viền (Pill)` để nhãn series mang viền hồng `Accent Pink` bo tròn nổi bật, hoặc `Chữ thường` như cũ.
+- **Biểu tượng đóng/mở (`iconStyle`)**: Chọn `Cộng / Trừ (+ / −)` để hiển thị dấu `+` khi đóng và dấu `−` khi mở; khi câu hỏi đang mở, tiêu đề sẽ tự động chuyển màu hồng sen `Bright Magenta` rạng rỡ (hoặc `Soft Pink` trên nền tối Deep Navy).
+- **Khối bên cạnh (`aside`)**:
+  - Chọn **`Thẻ liên hệ có ảnh (Contact Card)`** để hiển thị thẻ tư vấn cá nhân hóa bên trái:
+    - Chọn ảnh đại diện tròn tại ô **Ảnh liên hệ** (nếu chưa chọn, hệ thống tự động hiển thị icon người đại diện trang nhã).
+    - Tùy chỉnh huy hiệu (`contactBadge`), tiêu đề (VD: `Đặt lịch gọi 15 phút`), mô tả, và nút đặt lịch bo tròn ở giữa.
+    - Bật **Hiển thị email** để xuất hiện dòng "Hoặc email: ..." gạch chân lịch sự.
+  - Chọn **`Khối đặt lịch`** (`booking`) để giữ nguyên giao diện đặt lịch nền Deep Navy trước đây.
 
 ---
 
@@ -3404,7 +3423,6 @@ Chỉ tài khoản **Chủ sở hữu (Owner)** mới có quyền thay đổi c�
 
 <!-- ẢNH GL-01: chụp tab "Đăng nhập khách hàng" sau khi anh Nhân cấu hình Google trên server thật, lưu images/huong-dan/login-methods-settings.png -->
 
-
 #### 2. Nguyên tắc vận hành an toàn (Bảng 1.1)
 
 Hệ thống được lập trình với cơ chế bảo vệ khách hàng tự động, đảm bảo khách luôn có lối vào tài khoản:
@@ -3518,13 +3536,13 @@ Khi anh IT thông báo đã cấu hình Google xong, Hana thực hiện theo 3 b
    - **Giai đoạn 1 miễn phí, từ Giai đoạn 2 cần đăng nhập**: Độc giả được trải nghiệm hoàn toàn miễn phí Giai đoạn 1 "Khám thói quen" (Bước 1: Khám đúng bệnh, Bước 2: Nguyên lý 1%) mà không cần tài khoản.
    - Khi bấm chuyển sang Giai đoạn 2 (từ Bước 3: Tìm Mentor trở đi, bấm thẻ giai đoạn hoặc dải bước), hệ thống tự động kiểm tra quyền truy cập:
 
-| Trạng thái cổng | Khi nào hiển thị | Giao diện hiển thị | Hành động của khách |
-| :--- | :--- | :--- | :--- |
-| **Đăng nhập (`login`)** | Khách chưa đăng nhập vào tài khoản trên website. | Tiêu đề *"Bạn đã hoàn thành Giai đoạn 1 🎉"*, tóm tắt kết quả chẩn đoán bước 1, lời mời đăng nhập để lưu kết quả. | Bấm **"Đăng nhập để tiếp tục"** → chuyển đến trang đăng nhập (Google hoặc OTP). Đăng nhập xong tự động quay lại đúng Bước 3 với đầy đủ bản nháp đã làm. Có nút phụ "Quay lại Giai đoạn 1". |
-| **Được đi tiếp (`ok`)** | Khách đã đăng nhập và: chưa từng dùng thử (còn quyền dùng thử 28 ngày), **hoặc** đang trong thời gian dùng thử, **hoặc** đã mua gói/công cụ. | Không hiện cổng, mở thẳng Bước 3 để tiếp tục hành trình. | Tiếp tục làm các bước 3, 4, 5, 6 bình thường. Đến Bước 6: email được điền sẵn từ tài khoản (chỉ đọc), bỏ qua kiểm tra bot Turnstile, bỏ ô tick điều khoản nếu khách đã đồng ý trước đó. |
-| **Mua để dùng tiếp (`buy`)** | Khách đã đăng nhập nhưng đã dùng hết thời gian dùng thử và chưa mua sản phẩm. | Tiêu đề *"Bạn đã dùng hết thời gian dùng thử"*, hiển thị giá bán / giá ưu đãi lấy trực tiếp từ sản phẩm CMS. | Bấm **"Mua để dùng tiếp"** → dẫn đến trang thanh toán `/thanh-toan?san-pham=habit-tracker-so`. Nút phụ *"Xem chi tiết gói"* dẫn tới trang giới thiệu `/habit/1-percent-better`. |
+| Trạng thái cổng              | Khi nào hiển thị                                                                                                                             | Giao diện hiển thị                                                                                                | Hành động của khách                                                                                                                                                                        |
+| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Đăng nhập (`login`)**      | Khách chưa đăng nhập vào tài khoản trên website.                                                                                             | Tiêu đề _"Bạn đã hoàn thành Giai đoạn 1 🎉"_, tóm tắt kết quả chẩn đoán bước 1, lời mời đăng nhập để lưu kết quả. | Bấm **"Đăng nhập để tiếp tục"** → chuyển đến trang đăng nhập (Google hoặc OTP). Đăng nhập xong tự động quay lại đúng Bước 3 với đầy đủ bản nháp đã làm. Có nút phụ "Quay lại Giai đoạn 1". |
+| **Được đi tiếp (`ok`)**      | Khách đã đăng nhập và: chưa từng dùng thử (còn quyền dùng thử 28 ngày), **hoặc** đang trong thời gian dùng thử, **hoặc** đã mua gói/công cụ. | Không hiện cổng, mở thẳng Bước 3 để tiếp tục hành trình.                                                          | Tiếp tục làm các bước 3, 4, 5, 6 bình thường. Đến Bước 6: email được điền sẵn từ tài khoản (chỉ đọc), bỏ qua kiểm tra bot Turnstile, bỏ ô tick điều khoản nếu khách đã đồng ý trước đó.    |
+| **Mua để dùng tiếp (`buy`)** | Khách đã đăng nhập nhưng đã dùng hết thời gian dùng thử và chưa mua sản phẩm.                                                                | Tiêu đề _"Bạn đã dùng hết thời gian dùng thử"_, hiển thị giá bán / giá ưu đãi lấy trực tiếp từ sản phẩm CMS.      | Bấm **"Mua để dùng tiếp"** → dẫn đến trang thanh toán `/thanh-toan?san-pham=habit-tracker-so`. Nút phụ _"Xem chi tiết gói"_ dẫn tới trang giới thiệu `/habit/1-percent-better`.            |
 
-   - **Giá trên màn "Mua để dùng tiếp"**: Lấy trực tiếp và tự động từ sản phẩm **Habit Tracker số** (slug: `habit-tracker-so`) trong mục **Bán hàng → Sản phẩm**. Hana sửa giá tại sản phẩm thì màn cổng tự động cập nhật ngay lập tức.
+- **Giá trên màn "Mua để dùng tiếp"**: Lấy trực tiếp và tự động từ sản phẩm **Habit Tracker số** (slug: `habit-tracker-so`) trong mục **Bán hàng → Sản phẩm**. Hana sửa giá tại sản phẩm thì màn cổng tự động cập nhật ngay lập tức.
 
 ---
 
