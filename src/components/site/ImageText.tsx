@@ -145,7 +145,7 @@ export function ImageText({
 
   return (
     <section
-      className={`w-full overflow-hidden ${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${sectionPadding} transition-colors`}
+      className={`w-full ${imageBleed ? 'overflow-hidden ' : ''}${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${sectionPadding} transition-colors`}
     >
       <div className={imageBleed ? 'w-full max-w-none' : 'mx-auto max-w-5xl'}>
         <div

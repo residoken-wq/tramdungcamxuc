@@ -3407,6 +3407,7 @@ export const vi = {
       },
       prevCards: 'Thẻ trước',
       nextCards: 'Thẻ tiếp theo',
+      region: 'Danh sách thẻ',
     },
     faq: {
       variant: 'Biến thể hiển thị FAQ',
