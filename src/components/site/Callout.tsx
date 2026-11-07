@@ -7,9 +7,17 @@ import type { AlignOption, FontSizeOption } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
 
+export type CalloutStripTone =
+  | 'soft-pink'
+  | 'lavender-mist'
+  | 'white'
+  | 'dashed'
+  | 'deep-navy'
+
 export interface CalloutProps {
   version?: number
   variant?: 'box' | 'strip'
+  stripTone?: CalloutStripTone
   title: string
   description: string
   showButton?: boolean
@@ -76,6 +84,7 @@ export function renderHighlightedText(text: React.ReactNode) {
 
 export function Callout({
   variant = 'box',
+  stripTone = 'soft-pink',
   title,
   description,
   showButton = true,
@@ -126,18 +135,46 @@ export function Callout({
   }
 
   if (variant === 'strip') {
+    const isToneNavy = stripTone === 'deep-navy'
+    const isToneDashed = stripTone === 'dashed'
+    const isToneWhite = stripTone === 'white'
+    const isToneLavender = stripTone === 'lavender-mist'
+
+    let cardClass = 'bg-soft-pink/80 border border-bright-magenta/20 text-deep-navy shadow-xs'
+    let titleClass = 'text-deep-navy'
+    let textClass = 'text-deep-navy/90'
+
+    if (isToneLavender) {
+      cardClass = 'bg-lavender-mist border border-deep-navy/15 text-deep-navy shadow-xs'
+      titleClass = 'text-deep-navy'
+      textClass = 'text-deep-navy/90'
+    } else if (isToneWhite) {
+      cardClass = 'bg-white border border-deep-navy/15 text-deep-navy shadow-soft'
+      titleClass = 'text-deep-navy'
+      textClass = 'text-deep-navy/90'
+    } else if (isToneDashed) {
+      cardClass = 'bg-transparent border-2 border-dashed border-accent-pink/70 text-deep-navy'
+      titleClass = 'text-accent-pink'
+      textClass = 'text-deep-navy/90'
+    } else if (isToneNavy) {
+      cardClass = 'bg-deep-navy border border-white/20 text-white shadow-soft'
+      titleClass = 'text-accent-pink'
+      textClass = 'text-white/90'
+    }
+
     return (
       <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
         <div className="mx-auto max-w-4xl">
           <div
             data-eb-card=""
-            className="rounded-xl sm:rounded-2xl bg-soft-pink/80 border border-bright-magenta/20 px-6 py-4 text-center shadow-xs"
+            data-eb-card-solid={isToneNavy ? '' : undefined}
+            className={`rounded-xl sm:rounded-2xl px-6 py-4 text-center ${cardClass}`}
           >
-            <p className="font-ui text-sm sm:text-base text-deep-navy leading-relaxed inline">
+            <p className="font-ui text-sm sm:text-base leading-relaxed inline">
               {title && (
                 <span
                   {...textTarget(id, 'title')}
-                  className="font-bold uppercase tracking-wide text-deep-navy mr-1.5"
+                  className={`font-bold uppercase tracking-wide mr-1.5 ${titleClass}`}
                 >
                   {renderHighlightedText(title)}
                 </span>
@@ -145,7 +182,7 @@ export function Callout({
               {description && (
                 <span
                   {...textTarget(id, 'description')}
-                  className="text-deep-navy/90"
+                  className={textClass}
                 >
                   {renderHighlightedText(description)}
                 </span>

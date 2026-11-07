@@ -4,6 +4,7 @@ import { Callout, type CalloutProps } from '@/components/site/Callout'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createPageExternalField } from '../page-field'
 import { alignField, sizeField } from '../format-fields'
+import { vi } from '@/lib/i18n/vi'
 
 export type { CalloutProps }
 
@@ -16,6 +17,29 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
       options: [
         { label: 'Hộp nổi bật nền tối (Box)', value: 'box' },
         { label: 'Dải ghi chú mảnh (Strip)', value: 'strip' },
+      ],
+    },
+    stripTone: {
+      type: 'select',
+      label: vi.pk26?.callout?.stripTone || 'Tông màu dải ghi chú',
+      options: [
+        {
+          label: vi.pk26?.callout?.tones?.['soft-pink'] || 'Hồng phấn (Mặc định)',
+          value: 'soft-pink',
+        },
+        {
+          label: vi.pk26?.callout?.tones?.['lavender-mist'] || 'Tím sương (Lavender Mist)',
+          value: 'lavender-mist',
+        },
+        { label: vi.pk26?.callout?.tones?.white || 'Trắng viền mảnh', value: 'white' },
+        {
+          label: vi.pk26?.callout?.tones?.dashed || 'Viền đứt hồng (Nền trong)',
+          value: 'dashed',
+        },
+        {
+          label: vi.pk26?.callout?.tones?.['deep-navy'] || 'Xanh thẫm (Deep Navy, chữ trắng)',
+          value: 'deep-navy',
+        },
       ],
     },
     title: {
@@ -82,6 +106,7 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
   defaultProps: {
     version: 1,
     variant: 'box',
+    stripTone: 'soft-pink',
     titleSize: 'md',
     textSize: 'md',
     align: 'center',
