@@ -297,7 +297,9 @@ export function blockStyleCss(
 
   // PK-18 / PK-23: Mobile background image
   if (bgImg?.mobileImageUrl) {
-    rules.push(`@media (max-width: 639px){${selector}{background-image:${cssUrl(bgImg.mobileImageUrl)}}}`)
+    rules.push(
+      `@media (max-width: 639px){${selector}{background-image:${cssUrl(bgImg.mobileImageUrl)}}}`,
+    )
   }
 
   // PK-18: Overlay via ::before
@@ -310,8 +312,12 @@ export function blockStyleCss(
 
   // PK-18: When block has background image, direct children and [data-eb-section] elements have transparent background
   if (bgImg?.imageUrl) {
-    rules.push(`${selector}>*{position:relative;z-index:1;background-color:transparent}`)
-    rules.push(`${selector} [${SECTION_ATTR}]{background-color:transparent}`)
+    // QA PK-18d: doubled attribute selector (0,2,0) beats Tailwind `bg-*` (0,1,0) whatever the
+    // CSS order. In the builder iframe Tailwind loads after the page styles, so a single
+    // selector lost and the block's own background hid the image.
+    const strong = `${selector}${selector}`
+    rules.push(`${strong}>*{position:relative;z-index:1;background-color:transparent}`)
+    rules.push(`${strong} [${SECTION_ATTR}]{background-color:transparent}`)
   }
 
   const desktopCards = cardAlignRule(selector, style.textAlign?.desktop)

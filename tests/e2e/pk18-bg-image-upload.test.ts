@@ -186,6 +186,20 @@ test.describe('PK-18: Media upload & block background image', () => {
       await mediaRow.click()
       await expect(bgModal).not.toBeVisible()
 
+      // QA PK-18d: in the builder preview too, the block's own section background must not hide
+      // the image (Tailwind loads after the page styles in the canvas iframe).
+      const editorWrapper = canvas.locator('[data-eb-id="journey-steps-1"]')
+      await expect
+        .poll(() => editorWrapper.evaluate((el) => getComputedStyle(el).backgroundImage))
+        .toContain('/api/media/file/test-pk18-fixture')
+      await expect
+        .poll(() =>
+          editorWrapper.evaluate(
+            (el) => getComputedStyle(el.firstElementChild as HTMLElement).backgroundColor,
+          ),
+        )
+        .toBe('rgba(0, 0, 0, 0)')
+
       // Chụp ảnh màn hình builder nếu bật flag
       if (SHOTS) {
         await page.screenshot({ path: path.join(SHOT_DIR, 'builder-bg-image-1440.png') })
