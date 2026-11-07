@@ -169,11 +169,13 @@ describe('PK-22 Website v2 Templates', () => {
     }
   })
 
-  it('journey.ts template remains unchanged and preserved', () => {
+  // PK-26 rebuilt journey.ts from Hana's 20-page design; only the anchors below stay fixed.
+  it('journey.ts template keeps its title and hero', () => {
     expect(journeyTemplate.root.props?.title).toBe('Trang lộ trình')
     expect(journeyTemplate.content.length).toBeGreaterThan(0)
     expect(journeyTemplate.content[0].type).toBe('HeroImage')
     const jsonString = JSON.stringify(journeyTemplate)
-    expect(jsonString).toContain('CHUYỂN MÌNH KHÔNG CHÊNH VÊNH')
+    expect(jsonString).toContain('Chuyển mình')
+    expect(jsonString).toContain('không chênh vênh')
   })
 })

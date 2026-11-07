@@ -17,9 +17,7 @@ async function bootstrapAdmin(page: Page): Promise<number> {
   let response: Response | undefined
   await expect(async () => {
     const registration = page.waitForResponse(
-      (res) =>
-        res.url().includes('/api/users/first-register') &&
-        res.request().method() === 'POST',
+      (res) => res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
       { timeout: 5000 },
     )
     await page.locator('button[type="submit"]').click()
@@ -80,16 +78,15 @@ test.describe('PK-26: Chuyển mình không chênh vênh (journey template)', ()
       await expect(guest.getByText('không chênh vênh').first()).toBeVisible()
 
       // LoopDiagram: 6 nodes are visible in desktop view
-      const loopDiagram = guest.locator('section').filter({ hasText: 'Một vòng lặp cho mọi kỹ năng' })
-      await expect(loopDiagram).toBeVisible()
-      await expect(loopDiagram.getByText('01 · Nhận diện vấn đề').first()).toBeVisible()
-      await expect(loopDiagram.getByText('06 · Đúc kết').first()).toBeVisible()
+      // (the section title lives in a separate SectionHeader block, so match the nodes themselves)
+      await expect(guest.getByText('01 · Nhận diện vấn đề').first()).toBeVisible()
+      await expect(guest.getByText('06 · Đúc kết').first()).toBeVisible()
 
       // MatrixTable 28-day grid: 4 rows × 3 columns
-      const matrixTable = guest.locator('section').filter({ hasText: 'NHỊP THỰC HÀNH' })
-      await expect(matrixTable).toBeVisible()
+      const desktopTable = guest.locator('table').filter({ hasText: '01 · Thói quen' })
+      const matrixTable = guest.locator('section').filter({ has: desktopTable })
+      await expect(matrixTable).toHaveCount(1)
       // Desktop table is visible
-      const desktopTable = matrixTable.locator('table')
       await expect(desktopTable).toBeVisible()
       // 3 column headers
       await expect(desktopTable.locator('th[scope="col"]')).toHaveCount(4) // 1 corner + 3 cols
@@ -97,10 +94,16 @@ test.describe('PK-26: Chuyển mình không chênh vênh (journey template)', ()
       await expect(desktopTable.locator('th[scope="row"]')).toHaveCount(4)
 
       // Arrow connectors in 5-step regulation toolkit
-      const regulationSection = guest.locator('section').filter({ hasText: 'Năm bước đi qua một cơn dông cảm xúc' })
-      await expect(regulationSection).toBeVisible()
-      const arrows = regulationSection.locator('span[aria-hidden="true"]').filter({ hasText: '→' })
-      await expect(arrows.first()).toBeVisible()
+      // Slot grids draw the arrow with CSS (`::after` on every card but the last), so read it there.
+      const arrowContent = () =>
+        guest.evaluate(() => {
+          const grid = [...document.querySelectorAll('[class]')].find((el) =>
+            el.getAttribute('class')?.includes("after:content-['→']"),
+          )
+          const first = grid?.firstElementChild
+          return first ? getComputedStyle(first, '::after').content : 'missing'
+        })
+      expect(await arrowContent()).toBe('"→"')
 
       // 2. Kiểm tra trên màn hình Mobile (375px)
       await guest.setViewportSize({ width: 375, height: 812 })
@@ -118,7 +121,7 @@ test.describe('PK-26: Chuyển mình không chênh vênh (journey template)', ()
       expect(await mobileStackedCards.count()).toBeGreaterThanOrEqual(4)
 
       // Arrows hidden on mobile (hidden lg:flex)
-      await expect(arrows.first()).toBeHidden()
+      expect(await arrowContent()).toBe('none')
 
       // 3. Accessibility check (axe clean)
       await expectNoSeriousA11y(guest, 'journey-chuyen-minh-e2e')
@@ -134,4 +137,3 @@ test.describe('PK-26: Chuyển mình không chênh vênh (journey template)', ()
     }
   })
 })
-
