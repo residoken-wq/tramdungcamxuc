@@ -100,21 +100,39 @@ export const journeyTemplate: Data = {
             props: {
               id: 'journey-context-stats',
               version: 3,
-              seriesLabel: '',
-              titleLine1: '',
-              titleLine2: '',
-              emotionLine: '',
+              columns: 2,
               stats: [
                 {
-                  id: 'stat-wef',
-                  value: '39%',
-                  label: 'kỹ năng cốt lõi của người lao động được dự báo sẽ **thay đổi đến năm 2030**.',
+                  type: 'Stat',
+                  props: {
+                    id: 'stat-wef',
+                    value: '39%',
+                    label:
+                      'kỹ năng cốt lõi của người lao động được dự báo sẽ thay đổi đến năm 2030.',
+                    description: '',
+                    icon: '',
+                    valueColor: 'bright-magenta',
+                    valueSize: 'md',
+                    labelColor: 'deep-navy',
+                    labelSize: 'md',
+                    align: 'left',
+                  },
                 },
                 {
-                  id: 'stat-ilo',
-                  value: '3X',
-                  label:
-                    'Ở các nước thu nhập cao, việc làm của nữ có nguy cơ bị AI tự động hóa cao nhất chiếm **9,6% — gần gấp ba nam giới**.',
+                  type: 'Stat',
+                  props: {
+                    id: 'stat-ilo',
+                    value: '3X',
+                    label:
+                      'Ở các nước thu nhập cao, việc làm của nữ có nguy cơ bị AI tự động hóa cao nhất chiếm 9,6% — gần gấp ba nam giới.',
+                    description: '',
+                    icon: '',
+                    valueColor: 'bright-magenta',
+                    valueSize: 'md',
+                    labelColor: 'deep-navy',
+                    labelSize: 'md',
+                    align: 'left',
+                  },
                 },
               ],
               bgColor: 'warm-ivory',
@@ -140,14 +158,14 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'journey-persona-card',
               version: 1,
               cardBg: 'lavender-mist',
               eyebrow: 'CÔ ẤY LÀ AI',
               title:
                 '“Mình có năng lực, có kinh nghiệm — nhưng chưa đủ tự tin để thể hiện mình và luôn sợ bị đào thải.”',
-              text:
-                '- Giỏi chuyên môn, nhưng nhiều việc quen tay giờ AI làm nhanh hơn\n- Biết mình cần đổi, chưa rõ đổi theo hướng nào\n- Vừa giữ việc, vừa lo gia đình, vừa phải học lại\n- Luôn trong trạng thái "overthinking"',
+              text: '- Giỏi chuyên môn, nhưng nhiều việc quen tay giờ AI làm nhanh hơn\n- Biết mình cần đổi, chưa rõ đổi theo hướng nào\n- Vừa giữ việc, vừa lo gia đình, vừa phải học lại\n- Luôn trong trạng thái "overthinking"',
               bgColor: 'lavender-mist',
               padding: 'md',
             },
@@ -187,6 +205,7 @@ export const journeyTemplate: Data = {
             id: 'pain-action',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'pain-card-action',
               version: 1,
               cardBg: 'butter-cream',
@@ -211,6 +230,7 @@ export const journeyTemplate: Data = {
             id: 'pain-emotion',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'pain-card-emotion',
               version: 1,
               cardBg: 'soft-pink',
@@ -235,6 +255,7 @@ export const journeyTemplate: Data = {
             id: 'pain-comm',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'pain-card-comm',
               version: 1,
               cardBg: 'mint-haze',
@@ -292,7 +313,7 @@ export const journeyTemplate: Data = {
       props: {
         id: 'journey-desire-quote',
         version: 2,
-        quote: '“Mình muốn thay đổi — nhưng không muốn đánh mất sự bình an và chính mình.”',
+        quote: 'Mình muốn thay đổi — nhưng không muốn đánh mất sự bình an và chính mình.',
         author: '',
         role: '',
         variant: 'minimal',
@@ -314,6 +335,7 @@ export const journeyTemplate: Data = {
             id: 'desire-p1',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'desire-card-p1',
               version: 1,
               cardBg: 'butter-cream',
@@ -326,6 +348,7 @@ export const journeyTemplate: Data = {
             id: 'desire-p2',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'desire-card-p2',
               version: 1,
               cardBg: 'soft-pink',
@@ -338,6 +361,7 @@ export const journeyTemplate: Data = {
             id: 'desire-p3',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'desire-card-p3',
               version: 1,
               cardBg: 'mint-haze',
@@ -350,6 +374,7 @@ export const journeyTemplate: Data = {
             id: 'desire-p4',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'desire-card-p4',
               version: 1,
               cardBg: 'deep-navy',
@@ -402,6 +427,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'arch-phase1-card',
               version: 1,
               cardBg: 'warm-ivory',
@@ -428,6 +454,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'arch-phase2-card',
               version: 1,
               cardBg: 'deep-navy',
@@ -506,6 +533,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'journey-loop-details',
               version: 1,
               cardBg: 'warm-ivory',
@@ -607,7 +635,7 @@ export const journeyTemplate: Data = {
               id: 'method-c4',
               version: 1,
               cardBg: 'lavender-mist',
-              icon: 'search',
+              icon: 'mirror',
               eyebrow: 'SỢI CHỈ XUYÊN SUỐT',
               eyebrowBar: true,
               title: 'Trưởng thành từ nhìn lại',
@@ -672,6 +700,7 @@ export const journeyTemplate: Data = {
             id: 'pillar-1',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'pillar-c1',
               version: 1,
               cardBg: 'butter-cream',
@@ -685,6 +714,7 @@ export const journeyTemplate: Data = {
             id: 'pillar-2',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'pillar-c2',
               version: 1,
               cardBg: 'soft-pink',
@@ -698,6 +728,7 @@ export const journeyTemplate: Data = {
             id: 'pillar-3',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'pillar-c3',
               version: 1,
               cardBg: 'mint-haze',
@@ -718,8 +749,7 @@ export const journeyTemplate: Data = {
         variant: 'strip',
         stripTone: 'dashed',
         title: 'NHỊP ĐIỆU TRIỂN KHAI',
-        description:
-          '2 workshop · 28 ngày · 4 lần nhìn lại — giữ thay đổi ở lại sau buổi học',
+        description: '2 workshop · 28 ngày · 4 lần nhìn lại — giữ thay đổi ở lại sau buổi học',
         bgColor: 'warm-ivory',
         padding: 'sm',
       },
@@ -757,25 +787,52 @@ export const journeyTemplate: Data = {
       props: {
         id: 'journey-delivery-numbers',
         version: 3,
-        seriesLabel: '',
-        titleLine1: '',
-        titleLine2: '',
-        emotionLine: '',
+        columns: 3,
         stats: [
           {
-            id: 'deliv-s1',
-            value: '2',
-            label: 'Workshop online · 90 phút/buổi, diễn ra trước ngày 1',
+            type: 'Stat',
+            props: {
+              id: 'deliv-s1',
+              value: '2',
+              label: 'Workshop online · 90 phút/buổi, diễn ra trước ngày 1',
+              description: '',
+              icon: '',
+              valueColor: 'bright-magenta',
+              valueSize: 'md',
+              labelColor: 'deep-navy',
+              labelSize: 'md',
+              align: 'center',
+            },
           },
           {
-            id: 'deliv-s2',
-            value: '28',
-            label: 'Ngày thực hành · Theo kế hoạch cá nhân, nhịp của riêng mình',
+            type: 'Stat',
+            props: {
+              id: 'deliv-s2',
+              value: '28',
+              label: 'Ngày thực hành · Theo kế hoạch cá nhân, nhịp của riêng mình',
+              description: '',
+              icon: '',
+              valueColor: 'bright-magenta',
+              valueSize: 'md',
+              labelColor: 'deep-navy',
+              labelSize: 'md',
+              align: 'center',
+            },
           },
           {
-            id: 'deliv-s3',
-            value: '4',
-            label: 'Lần reflection · Hằng tuần, đề xuất 60 phút/buổi',
+            type: 'Stat',
+            props: {
+              id: 'deliv-s3',
+              value: '4',
+              label: 'Lần reflection · Hằng tuần, đề xuất 60 phút/buổi',
+              description: '',
+              icon: '',
+              valueColor: 'bright-magenta',
+              valueSize: 'md',
+              labelColor: 'deep-navy',
+              labelSize: 'md',
+              align: 'center',
+            },
           },
         ],
         bgColor: 'warm-ivory',
@@ -795,6 +852,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'timeline-pre-card',
               version: 1,
               cardBg: 'lavender-mist',
@@ -810,6 +868,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'timeline-practice-card',
               version: 1,
               cardBg: 'warm-ivory',
@@ -854,14 +913,14 @@ export const journeyTemplate: Data = {
             id: 'habit-c1',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'habit-card-1',
               version: 1,
               cardBg: 'warm-ivory',
               eyebrow: 'CHẶNG 1 · HIỂU',
               title: 'Workshop 1 · 90 phút',
               subtitle: 'Habit Loop & bốn quy luật',
-              text:
-                '- Tín hiệu → làm cho rõ ràng\n- Khao khát → làm cho hấp dẫn\n- Hành động → làm cho dễ dàng\n- Phần thưởng → làm cho thỏa mãn',
+              text: '- Tín hiệu → làm cho rõ ràng\n- Khao khát → làm cho hấp dẫn\n- Hành động → làm cho dễ dàng\n- Phần thưởng → làm cho thỏa mãn',
               note: {
                 title: 'Mang về',
                 text: 'Hiểu cách thói quen vận hành và hướng dẫn tự trải nghiệm xây dựng thói quen',
@@ -873,14 +932,14 @@ export const journeyTemplate: Data = {
             id: 'habit-c2',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'habit-card-2',
               version: 1,
               cardBg: 'warm-ivory',
               eyebrow: 'CHẶNG 2 · THỬ',
               title: 'Workshop 2 · 90 phút',
               subtitle: 'NAME – MATCH – ACT – REFINE',
-              text:
-                '- Gọi tên hành vi, mức tối thiểu\n- Chọn công cụ hợp điểm kẹt\n- Điền Habit Plan, làm thử\n- Chỉnh khi bận hoặc mệt',
+              text: '- Gọi tên hành vi, mức tối thiểu\n- Chọn công cụ hợp điểm kẹt\n- Điền Habit Plan, làm thử\n- Chỉnh khi bận hoặc mệt',
               note: {
                 title: 'Mang về',
                 text: 'Bản Habit Plan và công cụ theo dõi trong 28 ngày',
@@ -892,14 +951,14 @@ export const journeyTemplate: Data = {
             id: 'habit-c3',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'habit-card-3',
               version: 1,
               cardBg: 'warm-ivory',
               eyebrow: 'CHẶNG 3 · SỐNG',
               title: '28 ngày + 4 reflection',
               subtitle: 'Thực hành có đồng hành',
-              text:
-                '- Tuần 1: bắt đầu, quan sát\n- Tuần 2: chỉnh cho hợp mình\n- Tuần 3: giữ nhịp, quay lại\n- Tuần 4: nhận diện giá trị',
+              text: '- Tuần 1: bắt đầu, quan sát\n- Tuần 2: chỉnh cho hợp mình\n- Tuần 3: giữ nhịp, quay lại\n- Tuần 4: nhận diện giá trị',
               note: {
                 title: 'Mang về',
                 text: 'Một thói quen của riêng mình và cách tiếp nối',
@@ -937,6 +996,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'brand-three-points',
               version: 1,
               cardBg: 'warm-ivory',
@@ -966,6 +1026,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'brand-habit-sample',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1016,14 +1077,14 @@ export const journeyTemplate: Data = {
             id: 'eq-c1',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'eq-card-1',
               version: 1,
               cardBg: 'warm-ivory',
               eyebrow: 'BƯỚC 1 · HIỂU',
               title: 'Emotional Literacy',
               chip: 'Workshop 1',
-              text:
-                'Tách bạch tình huống, cách diễn giải, tín hiệu cơ thể, cảm xúc, nhu cầu và phản ứng.',
+              text: 'Tách bạch tình huống, cách diễn giải, tín hiệu cơ thể, cảm xúc, nhu cầu và phản ứng.',
               note: {
                 title: 'Mang về',
                 text: 'Hiểu tín hiệu cảm xúc của chính mình',
@@ -1035,14 +1096,14 @@ export const journeyTemplate: Data = {
             id: 'eq-c2',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'eq-card-2',
               version: 1,
               cardBg: 'warm-ivory',
               eyebrow: 'BƯỚC 2 · GỌI TÊN',
               title: 'Visual EQ',
               chip: 'Workshop 1',
-              text:
-                '- Chọn một màu, hình, biểu tượng\n- Gắn tên cụ thể hơn “ổn”\n- Kết nối với thời điểm, cơ thể\n- Tự chọn giữ riêng hay chia sẻ',
+              text: '- Chọn một màu, hình, biểu tượng\n- Gắn tên cụ thể hơn “ổn”\n- Kết nối với thời điểm, cơ thể\n- Tự chọn giữ riêng hay chia sẻ',
               note: {
                 title: 'Mang về',
                 text: 'Visual Emotion Map của riêng mình',
@@ -1054,14 +1115,14 @@ export const journeyTemplate: Data = {
             id: 'eq-c3',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'eq-card-3',
               version: 1,
               cardBg: 'warm-ivory',
               eyebrow: 'BƯỚC 3 · ĐÓN NHẬN & ĐIỀU HÒA',
               title: 'Regulation Toolkit',
               chip: 'Workshop 2',
-              text:
-                'Phân biệt đón nhận với kìm nén, né tránh hay bốc đồng; thử vài cách làm dịu vừa sức.',
+              text: 'Phân biệt đón nhận với kìm nén, né tránh hay bốc đồng; thử vài cách làm dịu vừa sức.',
               note: {
                 title: 'Mang về',
                 text: 'Emotional First-Aid Plan cá nhân',
@@ -1092,7 +1153,7 @@ export const journeyTemplate: Data = {
         version: 1,
         variant: 'strip',
         stripTone: 'dashed',
-        title: 'LƯU Ý',
+        title: '',
         description: 'Giáo dục năng lực cảm xúc, không thay thế trị liệu tâm lý',
         bgColor: 'soft-pink',
         padding: 'sm',
@@ -1126,6 +1187,7 @@ export const journeyTemplate: Data = {
             id: 'reg-c1',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'reg-card-1',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1138,6 +1200,7 @@ export const journeyTemplate: Data = {
             id: 'reg-c2',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'reg-card-2',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1150,6 +1213,7 @@ export const journeyTemplate: Data = {
             id: 'reg-c3',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'reg-card-3',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1162,6 +1226,7 @@ export const journeyTemplate: Data = {
             id: 'reg-c4',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'reg-card-4',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1174,6 +1239,7 @@ export const journeyTemplate: Data = {
             id: 'reg-c5',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'reg-card-5',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1241,6 +1307,7 @@ export const journeyTemplate: Data = {
             id: 'comm-c1',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'comm-card-1',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1269,14 +1336,14 @@ export const journeyTemplate: Data = {
             id: 'comm-c2',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'comm-card-2',
               version: 1,
               cardBg: 'warm-ivory',
               eyebrow: 'BƯỚC 2 · CÂN BẰNG',
               title: 'Chọn theo ngữ cảnh',
               chip: 'Workshop 1',
-              text:
-                '- Khi cần rõ: nêu ý, đặt ranh giới\n- Khi cần mềm: hỏi, nghe, ghi nhận\n- Quá cứng hay quá mềm đều là tín hiệu\n- Dừng và điều hòa trước khi đáp',
+              text: '- Khi cần rõ: nêu ý, đặt ranh giới\n- Khi cần mềm: hỏi, nghe, ghi nhận\n- Quá cứng hay quá mềm đều là tín hiệu\n- Dừng và điều hòa trước khi đáp',
               note: {
                 title: 'Mang về',
                 text: 'Bản đồ giao tiếp cá nhân',
@@ -1288,14 +1355,14 @@ export const journeyTemplate: Data = {
             id: 'comm-c3',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'comm-card-3',
               version: 1,
               cardBg: 'warm-ivory',
               eyebrow: 'BƯỚC 3 · THỂ HIỆN',
               title: '5 module giao tiếp',
               chip: 'Workshop 2',
-              text:
-                'Trình bày quan điểm · Lắng nghe · Nói · Thuyết trình · Viết — luyện qua tình huống công sở thật.',
+              text: 'Trình bày quan điểm · Lắng nghe · Nói · Thuyết trình · Viết — luyện qua tình huống công sở thật.',
               note: {
                 title: 'Mang về',
                 text: 'Một cuộc trò chuyện thật được chuẩn bị kỹ',
@@ -1326,7 +1393,7 @@ export const journeyTemplate: Data = {
         version: 1,
         variant: 'strip',
         stripTone: 'dashed',
-        title: 'LƯU Ý',
+        title: '',
         description: 'Hai năng lượng có trong mỗi người, không phải chuyện giới tính',
         bgColor: 'mint-haze',
         padding: 'sm',
@@ -1359,6 +1426,7 @@ export const journeyTemplate: Data = {
             id: 'mod-c1',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'mod-card-1',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1374,6 +1442,7 @@ export const journeyTemplate: Data = {
             id: 'mod-c2',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'mod-card-2',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1389,6 +1458,7 @@ export const journeyTemplate: Data = {
             id: 'mod-c3',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'mod-card-3',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1404,6 +1474,7 @@ export const journeyTemplate: Data = {
             id: 'mod-c4',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'mod-card-4',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1419,6 +1490,7 @@ export const journeyTemplate: Data = {
             id: 'mod-c5',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'mod-card-5',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1587,6 +1659,7 @@ export const journeyTemplate: Data = {
             id: 'takeaway-c1',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'takeaway-card-1',
               version: 1,
               cardBg: 'butter-cream',
@@ -1612,6 +1685,7 @@ export const journeyTemplate: Data = {
             id: 'takeaway-c2',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'takeaway-card-2',
               version: 1,
               cardBg: 'soft-pink',
@@ -1637,6 +1711,7 @@ export const journeyTemplate: Data = {
             id: 'takeaway-c3',
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'takeaway-card-3',
               version: 1,
               cardBg: 'mint-haze',
@@ -1703,6 +1778,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'p2-transfer-card',
               version: 1,
               cardBg: 'warm-ivory',
@@ -1728,6 +1804,7 @@ export const journeyTemplate: Data = {
           {
             type: 'Card',
             props: {
+              icon: 'none',
               id: 'p2-career-clarity-card',
               version: 1,
               cardBg: 'deep-navy',
@@ -1763,11 +1840,10 @@ export const journeyTemplate: Data = {
       props: {
         id: 'journey-final-cta',
         version: 1,
-        seriesLabel: '[MẪU] BẮT ĐẦU HÀNH TRÌNH',
-        titleLine1: '[MẪU] Sẵn sàng cho bước chuyển mình',
-        titleLine2: '[MẪU] vững vàng từ bên trong?',
-        description:
-          '[MẪU] Hãy để lại thông tin để nhận tư vấn về lộ trình phù hợp nhất với bạn.',
+        seriesLabel: '',
+        titleLine1: '[MẪU] Tiêu đề kêu gọi',
+        titleLine2: '',
+        description: '',
         buttonText: '[MẪU] Đăng ký tư vấn',
         buttonLink: '/lien-he',
         bgColor: 'deep-navy',
