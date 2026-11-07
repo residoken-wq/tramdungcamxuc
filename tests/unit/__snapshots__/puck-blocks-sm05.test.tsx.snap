@@ -59,6 +59,7 @@ exports[`SM-05: Puck Blocks Unit & Snapshot Tests > LeadMagnetCarousel Block > r
           >
             <div
               class="rounded-2xl border border-deep-navy/10 bg-white shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow"
+              data-eb-card=""
             >
               <div
                 class="relative aspect-[16/10] w-full bg-lavender-mist/30 overflow-hidden"
@@ -117,6 +118,7 @@ exports[`SM-05: Puck Blocks Unit & Snapshot Tests > LeadMagnetCarousel Block > r
           >
             <div
               class="rounded-2xl border border-deep-navy/10 bg-white shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow"
+              data-eb-card=""
             >
               <div
                 class="relative aspect-[16/10] w-full bg-lavender-mist/30 overflow-hidden"

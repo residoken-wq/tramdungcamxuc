@@ -26,7 +26,10 @@ const ANSI = /\u001b\[[0-9;]*m/g
 
 function run(label, cmd, cmdArgs, opts = {}) {
   const t0 = Date.now()
-  const res = spawnSync(cmd, cmdArgs, {
+  const safeArgs = isWin
+    ? cmdArgs.map((a) => (typeof a === 'string' && /[\s()^&|<>]/.test(a) ? `"${a}"` : a))
+    : cmdArgs
+  const res = spawnSync(cmd, safeArgs, {
     encoding: 'utf8',
     shell: isWin,
     maxBuffer: 256 * 1024 * 1024,
