@@ -1,5 +1,5 @@
 /**
- * DP-01d: Central defaults and helper for habit journey copy from DIGITAL PRODUCT.zip.
+ * DP-01d / DP-02d: Central defaults and helper for habit journey copy from DIGITAL PRODUCT.zip.
  * All default text strings live here in one place and can be overridden by CMS content.
  */
 
@@ -19,7 +19,12 @@ export interface Dp01HeaderContent {
 }
 
 export interface Dp01Step1Content {
+  title: string
+  quoteText: string
+  quoteAuthor: string
   leadIn: string
+  surveyTitle: string
+  surveyDesc: string
   cueDiagnosis: string
   cravingDiagnosis: string
   responseDiagnosis: string
@@ -33,6 +38,7 @@ export interface Dp01Step2Content {
 }
 
 export interface Dp01Step3Content {
+  title: string
   leadIn: string
   scorecardTitle: string
   scorecardDesc: string
@@ -44,6 +50,7 @@ export interface Dp01Step3Content {
 }
 
 export interface Dp01Step4Content {
+  title: string
   leadIn: string
   leadInEmphasis: string
   statementTitle: string
@@ -62,6 +69,7 @@ export interface Dp01Step4Content {
 }
 
 export interface Dp01Step5Content {
+  title: string
   leadIn: string
   theoryTitle: string
   theoryDesc: string
@@ -122,7 +130,15 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     stage3Desc: '28 ngày theo dõi cùng thói quen',
   },
   step1: {
-    leadIn: '',
+    title: 'Khám đúng “bệnh” — Kê đúng “toa”',
+    quoteText:
+      '“Chúng ta chỉ đang thay đổi thói quen bằng hành động đơn lẻ. Trong khi thứ chúng ta cần là một hệ thống — một vòng lặp — cho thói quen.”',
+    quoteAuthor: '— James Clear, Atomic Habits.',
+    leadIn:
+      'Bạn đã đọc sách, đã lập kế hoạch, đã bắt đầu vài lần. Vấn đề không nằm ở việc bạn thiếu kỷ luật.',
+    surveyTitle: 'Khám thói quen qua 8 câu hỏi đơn giản',
+    surveyDesc:
+      'Khám thói quen của bạn thông qua khảo sát nhanh sau đây. Chọn mức độ bạn thấy đúng với mình — khoảng hai phút.',
     cueDiagnosis:
       'Thói quen của bạn chưa có tín hiệu rõ ràng. Nó đang chờ bạn tự nhớ ra — mà trí nhớ thì luôn bận.',
     cravingDiagnosis:
@@ -139,6 +155,7 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     chartSubtitle: 'Đường cong bứt phá (Thực tế vs Tôi nghĩ sẽ là)',
   },
   step3: {
+    title: 'Tìm Mentor cho thói quen mới',
     leadIn:
       'Một thói quen mới không tự đứng được. Nó cần một thói quen cũ đã vững dìu đi — và thói quen cũ đó đã nằm sẵn trong ngày của bạn. Việc của bạn chỉ là tìm ra nó.',
     scorecardTitle: 'Soi lại một ngày của bạn',
@@ -152,6 +169,7 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     mentorSuccessHint: 'Thói quen mới sẽ đi ngay sau việc này.',
   },
   step4: {
+    title: 'Gọi tên thói quen',
     leadIn: 'Bắt đầu từ con người bạn muốn trở thành, rồi mới đến hành động.',
     leadInEmphasis:
       'Thương hiệu cá nhân không phải việc làm thêm — nó là kết quả của hành động bạn lặp lại mỗi ngày.',
@@ -181,8 +199,9 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
     whyImportantNote: 'Câu này chỉ mình bạn đọc. Nó sẽ hiện lại vào đúng ngày bạn muốn bỏ cuộc.',
   },
   step5: {
-    // Empty: Step5LoopDesign falls back to the zip lead-in (with its inline emphasis).
-    leadIn: '',
+    title: 'Thiết kế vòng lặp',
+    leadIn:
+      'Khối có nhãn Toa của bạn là lỗ hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ thuật được đánh dấu mới hiện trên Habit Boarding Pass.',
     theoryTitle: 'Vòng lặp thói quen · The Habit Loop',
     theoryDesc:
       'Mọi thói quen, tốt hay xấu, đều chạy qua bốn giai đoạn khép kín này — lặp đi lặp lại thành một vòng tròn.',
@@ -215,6 +234,107 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
       'Nội dung chia sẻ có vay mượn chất xám từ bốn cuốn sách nổi tiếng về thói quen — Atomic Habits, The Power of Habit, The 7 Habits of Highly Effective People, Hooked — kết hợp với hành trình “đập đi, xây lại” nhiều lần của chính mình.',
   },
 }
+
+// Fallback questions for Step 1 Diagnose
+export const DEFAULT_DIAGNOSE_QUESTIONS = [
+  {
+    id: 1,
+    text: 'Tôi không có giờ cố định cho thói quen mới, cứ lúc nào rảnh thì làm.',
+    category: 'cue',
+  },
+  {
+    id: 2,
+    text: 'Có hôm đến tối muộn tôi mới sực nhớ ra là hôm nay mình định làm.',
+    category: 'cue',
+  },
+  {
+    id: 3,
+    text: 'Tôi biết việc này tốt cho mình, nhưng cứ nghĩ đến là thấy ngại bắt đầu.',
+    category: 'craving',
+  },
+  {
+    id: 4,
+    text: 'Tôi lo người khác sẽ nhìn mình thế nào khi thấy mình làm việc này.',
+    category: 'craving',
+  },
+  {
+    id: 5,
+    text: 'Mỗi lần làm, tôi phải chuẩn bị quá nhiều thứ trước khi bắt đầu được.',
+    category: 'response',
+  },
+  {
+    id: 6,
+    text: 'Tôi chờ đến khi có đủ thời gian hoặc đủ hứng mới chịu làm.',
+    category: 'response',
+  },
+  { id: 7, text: 'Làm được mấy hôm mà chưa thấy kết quả là tôi mất hứng.', category: 'reward' },
+  {
+    id: 8,
+    text: 'Tôi không nhớ nổi tuần vừa rồi mình đã làm được bao nhiêu lần.',
+    category: 'reward',
+  },
+]
+
+export const DEFAULT_CATEGORY_MAP = {
+  cue: {
+    id: 'cue',
+    name: 'Tín hiệu · Cue',
+    colorHex: '#3b4991',
+    barColor: 'bg-[#3b4991]',
+    textColor: 'text-[#3b4991]',
+    borderColor: 'border-[#3b4991]',
+    diagnosis:
+      'Thói quen của bạn chưa có tín hiệu rõ ràng. Nó đang chờ bạn tự nhớ ra — mà trí nhớ thì luôn bận.',
+  },
+  craving: {
+    id: 'craving',
+    name: 'Khao khát · Craving',
+    colorHex: '#a8325d',
+    barColor: 'bg-[#a8325d]',
+    textColor: 'text-[#a8325d]',
+    borderColor: 'border-[#a8325d]',
+    diagnosis:
+      'Việc này chưa đủ hấp dẫn với bạn, nên bạn né nó một cách rất tự nhiên — không phải vì lười.',
+  },
+  response: {
+    id: 'response',
+    name: 'Phản hồi · Response',
+    colorHex: '#b87614',
+    barColor: 'bg-[#b87614]',
+    textColor: 'text-[#b87614]',
+    borderColor: 'border-[#b87614]',
+    diagnosis:
+      'Mỗi lần bắt đầu đang tốn quá nhiều công sức. Không ai duy trì nổi một việc nặng trong 28 ngày.',
+  },
+  reward: {
+    id: 'reward',
+    name: 'Phần thưởng · Reward',
+    colorHex: '#23684a',
+    barColor: 'bg-[#23684a]',
+    textColor: 'text-[#23684a]',
+    borderColor: 'border-[#23684a]',
+    diagnosis:
+      'Bạn chưa nhận được sự ghi nhận nào ngay sau khi làm, nên não chưa thấy việc này đáng để lặp lại.',
+  },
+}
+
+export const DEFAULT_ONE_PERCENT_UNKNOWNS = [
+  {
+    title: '1. Giai đoạn thất vọng',
+    content:
+      'Bạn chỉ phát huy được tiềm năng của mình sau khi đi qua giai đoạn thất vọng — quãng mà kết quả thấp hơn hẳn công sức bỏ ra.',
+  },
+  {
+    title: '2. Tin vào tiến trình',
+    content:
+      'Bí quyết đi qua giai đoạn đó là tin vào tiến trình thay vì kết quả. Tiến trình là số lần bạn đã làm, không phải kết quả bạn đã thấy.',
+  },
+  {
+    title: '3. Tư duy phù hợp',
+    content:
+      'Tiến trình dễ hơn rất nhiều khi bạn có tư duy và phương pháp hợp với mình — chứ không phải phương pháp hợp với người bạn đang ngưỡng mộ.',
+  },
+]
 
 function parseLines(val: unknown, fallback: string[]): string[] {
   if (Array.isArray(val)) {
@@ -280,7 +400,12 @@ export function withDp01Defaults(
       stage3Desc: pickString(header.stage3Desc, DEFAULT_DP01_CONTENT.header.stage3Desc),
     },
     step1: {
+      title: pickString(step1.title, DEFAULT_DP01_CONTENT.step1.title),
+      quoteText: pickString(step1.quoteText, DEFAULT_DP01_CONTENT.step1.quoteText),
+      quoteAuthor: pickString(step1.quoteAuthor, DEFAULT_DP01_CONTENT.step1.quoteAuthor),
       leadIn: pickString(step1.leadIn, DEFAULT_DP01_CONTENT.step1.leadIn),
+      surveyTitle: pickString(step1.surveyTitle, DEFAULT_DP01_CONTENT.step1.surveyTitle),
+      surveyDesc: pickString(step1.surveyDesc, DEFAULT_DP01_CONTENT.step1.surveyDesc),
       cueDiagnosis: pickString(step1.cueDiagnosis, DEFAULT_DP01_CONTENT.step1.cueDiagnosis),
       cravingDiagnosis: pickString(
         step1.cravingDiagnosis,
@@ -301,6 +426,7 @@ export function withDp01Defaults(
       chartSubtitle: pickString(step2.chartSubtitle, DEFAULT_DP01_CONTENT.step2.chartSubtitle),
     },
     step3: {
+      title: pickString(step3.title, DEFAULT_DP01_CONTENT.step3.title),
       leadIn: pickString(step3.leadIn, DEFAULT_DP01_CONTENT.step3.leadIn),
       scorecardTitle: pickString(step3.scorecardTitle, DEFAULT_DP01_CONTENT.step3.scorecardTitle),
       scorecardDesc: pickString(step3.scorecardDesc, DEFAULT_DP01_CONTENT.step3.scorecardDesc),
@@ -320,6 +446,7 @@ export function withDp01Defaults(
       ),
     },
     step4: {
+      title: pickString(step4.title, DEFAULT_DP01_CONTENT.step4.title),
       leadIn: pickString(step4.leadIn, DEFAULT_DP01_CONTENT.step4.leadIn),
       leadInEmphasis: pickString(step4.leadInEmphasis, DEFAULT_DP01_CONTENT.step4.leadInEmphasis),
       statementTitle: pickString(step4.statementTitle, DEFAULT_DP01_CONTENT.step4.statementTitle),
@@ -358,6 +485,7 @@ export function withDp01Defaults(
       ),
     },
     step5: {
+      title: pickString(step5.title, DEFAULT_DP01_CONTENT.step5.title),
       leadIn: pickString(step5.leadIn, DEFAULT_DP01_CONTENT.step5.leadIn),
       theoryTitle: pickString(step5.theoryTitle, DEFAULT_DP01_CONTENT.step5.theoryTitle),
       theoryDesc: pickString(step5.theoryDesc, DEFAULT_DP01_CONTENT.step5.theoryDesc),

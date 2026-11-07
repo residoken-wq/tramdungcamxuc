@@ -4361,9 +4361,29 @@ export interface HabitJourneyContent {
   };
   step1?: {
     /**
+     * Nhập tiêu đề bước 1.
+     */
+    title?: string | null;
+    /**
+     * Nhập câu trích mở đầu bước 1.
+     */
+    quoteText?: string | null;
+    /**
+     * Nhập tác giả câu trích bước 1.
+     */
+    quoteAuthor?: string | null;
+    /**
      * Nhập lời dẫn mở đầu bước 1.
      */
     leadIn?: string | null;
+    /**
+     * Nhập tiêu đề phần khảo sát.
+     */
+    surveyTitle?: string | null;
+    /**
+     * Nhập mô tả phần khảo sát.
+     */
+    surveyDesc?: string | null;
     /**
      * Nhập chẩn đoán mắt xích hở: tín hiệu (cue).
      */
@@ -4396,6 +4416,10 @@ export interface HabitJourneyContent {
     chartSubtitle?: string | null;
   };
   step3?: {
+    /**
+     * Nhập tiêu đề bước 3.
+     */
+    title?: string | null;
     /**
      * Nhập lời dẫn mở đầu bước 3.
      */
@@ -4430,6 +4454,10 @@ export interface HabitJourneyContent {
     mentorSuccessHint?: string | null;
   };
   step4?: {
+    /**
+     * Nhập tiêu đề bước 4.
+     */
+    title?: string | null;
     /**
      * Nhập lời dẫn mở đầu bước 4.
      */
@@ -4492,6 +4520,10 @@ export interface HabitJourneyContent {
     whyImportantNote?: string | null;
   };
   step5?: {
+    /**
+     * Nhập tiêu đề bước 5.
+     */
+    title?: string | null;
     /**
      * Nhập lời dẫn mở đầu bước 5.
      */
@@ -4991,7 +5023,12 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step1?:
     | T
     | {
+        title?: T;
+        quoteText?: T;
+        quoteAuthor?: T;
         leadIn?: T;
+        surveyTitle?: T;
+        surveyDesc?: T;
         cueDiagnosis?: T;
         cravingDiagnosis?: T;
         responseDiagnosis?: T;
@@ -5007,6 +5044,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step3?:
     | T
     | {
+        title?: T;
         leadIn?: T;
         scorecardTitle?: T;
         scorecardDesc?: T;
@@ -5019,6 +5057,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step4?:
     | T
     | {
+        title?: T;
         leadIn?: T;
         leadInEmphasis?: T;
         statementTitle?: T;
@@ -5038,6 +5077,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step5?:
     | T
     | {
+        title?: T;
         leadIn?: T;
         theoryTitle?: T;
         theoryDesc?: T;
