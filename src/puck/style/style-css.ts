@@ -143,6 +143,27 @@ const CARD_ITEMS: Record<string, string> = {
 }
 
 /**
+ * PK-17: card frame styling for [data-eb-card] inside the block.
+ * default: no rule generated
+ * borderless: border-color:transparent
+ * flat: border-color:transparent;box-shadow:none
+ * none: border-color:transparent;box-shadow:none;background:transparent
+ */
+function cardFrameRule(selector: string, cardFrame: BlockStyle['cardFrame']): string {
+  if (!cardFrame || cardFrame === 'default') return ''
+  if (cardFrame === 'borderless') {
+    return `${selector} [${CARD_ATTR}]{border-color:transparent}`
+  }
+  if (cardFrame === 'flat') {
+    return `${selector} [${CARD_ATTR}]{border-color:transparent;box-shadow:none}`
+  }
+  if (cardFrame === 'none') {
+    return `${selector} [${CARD_ATTR}]{border-color:transparent;box-shadow:none;background:transparent}`
+  }
+  return ''
+}
+
+/**
  * EB-15bc: cards inside the block follow its "Căn chữ" (text and decorative row). Specificity
  * 0,2,0: beats the card's own align classes, loses to the grid's "Căn lề tất cả thẻ" variants.
  */
@@ -164,6 +185,8 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   if (base.length) rules.push(`${selector}{${base.join(';')}}`)
   const desktopCards = cardAlignRule(selector, style.textAlign?.desktop)
   if (desktopCards) rules.push(desktopCards)
+  const cardFrame = cardFrameRule(selector, style.cardFrame)
+  if (cardFrame) rules.push(cardFrame)
   for (const device of DEVICES) {
     const media = DEVICE_MEDIA[device]
     if (!media) continue

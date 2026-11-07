@@ -63,6 +63,7 @@ export const STYLE_TAB_KEYS: (keyof BlockStyle)[] = [
   'titleLineHeight',
   'eyebrowGap',
   'emotionGap',
+  'cardFrame',
 ]
 export const ADVANCED_TAB_KEYS: (keyof BlockStyle)[] = [
   'padding',
@@ -153,10 +154,26 @@ export function StyleField({
 }) {
   const { ds, tab, isOwner } = useStylePanel()
   const width = usePuckSelector((s) => s.appState.ui.viewports.current.width)
+  const selectedItem = usePuckSelector((s) => s.selectedItem)
   const dispatch = usePuckSelector((s) => s.dispatch)
   const device = deviceForWidth(typeof width === 'number' ? width : undefined)
   const style: BlockStyle =
     value && typeof value === 'object' && !Array.isArray(value) ? (value as BlockStyle) : {}
+
+  const hasChildCards = Boolean(
+    selectedItem &&
+    [
+      'IconCardGrid',
+      'VisionMission',
+      'StatsBar',
+      'ServiceCards',
+      'TwoPathCards',
+      'Callout',
+      'HeroTwoEntries',
+      'JourneySteps',
+      'PackageCards',
+    ].includes(String(selectedItem.type)),
+  )
 
   if (tab === 'content') return <></>
 
@@ -363,6 +380,26 @@ export function StyleField({
               onChange={(v) => update({ shadow: v })}
             />
           </Group>
+          {hasChildCards && (
+            <Group title={vi.pk17?.cardFrame?.groupTitle || 'Thẻ con'}>
+              <SelectControl
+                label={vi.pk17?.cardFrame?.label || 'Khung thẻ'}
+                value={style.cardFrame || 'default'}
+                options={[
+                  { value: 'default', label: vi.pk17?.cardFrame?.default || 'Mặc định' },
+                  { value: 'borderless', label: vi.pk17?.cardFrame?.borderless || 'Bỏ viền' },
+                  { value: 'flat', label: vi.pk17?.cardFrame?.flat || 'Bỏ viền và bóng' },
+                  { value: 'none', label: vi.pk17?.cardFrame?.none || 'Không khung' },
+                ]}
+                onChange={(v) =>
+                  update({
+                    cardFrame:
+                      v && v !== 'default' ? (v as 'borderless' | 'flat' | 'none') : undefined,
+                  })
+                }
+              />
+            </Group>
+          )}
         </>
       ) : (
         <>
