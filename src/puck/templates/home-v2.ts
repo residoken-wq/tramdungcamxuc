@@ -421,7 +421,8 @@ export const homeV2Template: Data = {
       type: 'FAQ',
       props: {
         id: 'home-v2-faq',
-        version: 5,
+        version: 6,
+        variant: 'accordion',
         description: '',
         seriesLabelStyle: 'text',
         iconStyle: 'chevron',

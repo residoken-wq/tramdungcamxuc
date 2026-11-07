@@ -190,7 +190,8 @@ export const journeyTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'journey-faq',
-        version: 5,
+        version: 6,
+        variant: 'accordion',
         description: '',
         seriesLabelStyle: 'text',
         iconStyle: 'chevron',

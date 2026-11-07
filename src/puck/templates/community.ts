@@ -149,7 +149,8 @@ export const communityTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'community-faq',
-        version: 5,
+        version: 6,
+        variant: 'accordion',
         description: '',
         seriesLabelStyle: 'text',
         iconStyle: 'chevron',

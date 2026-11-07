@@ -62,7 +62,8 @@ describe('PK-19: SolutionEcosystem & FAQ Design Upgrades', () => {
       const migrated = applyPuckMigrations(legacyData)
       const faq = migrated.content[0]
 
-      expect(faq.props.version).toBe(5)
+      expect(faq.props.version).toBe(6)
+      expect(faq.props.variant).toBe('accordion')
       expect(faq.props.contactBadge).toBe('Trạm Dừng Cảm Xúc')
       expect(faq.props.description).toBe('')
       expect(faq.props.seriesLabelStyle).toBe('text')
@@ -88,7 +89,8 @@ describe('PK-19: SolutionEcosystem & FAQ Design Upgrades', () => {
       const migrated = applyPuckMigrations(legacyData)
       const faq = migrated.content[0]
 
-      expect(faq.props.version).toBe(5)
+      expect(faq.props.version).toBe(6)
+      expect(faq.props.variant).toBe('accordion')
       expect(faq.props.contactBadge).toBe('')
     })
   })

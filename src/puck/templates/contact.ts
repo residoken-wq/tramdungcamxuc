@@ -130,7 +130,8 @@ export const contactTemplate: Data = {
       type: 'FAQ',
       props: {
         id: 'contact-faq',
-        version: 5,
+        version: 6,
+        variant: 'accordion',
         description: '',
         seriesLabelStyle: 'text',
         iconStyle: 'chevron',
