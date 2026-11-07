@@ -5,7 +5,7 @@ import { HabitStep, DailyRoutineItem, IdentityFormData, LoopTechniques } from '.
 import { INITIAL_ROUTINES, INITIAL_IDENTITY_DATA, INITIAL_LOOP_TECHNIQUES } from './constants'
 import { HabitTrackerHeader } from './HabitTrackerHeader'
 import StepNavigation from './StepNavigation'
-import { Step1Diagnose } from './Steps/Step1Diagnose'
+import { DEFAULT_DIAGNOSE_QUESTIONS, Step1Diagnose } from './Steps/Step1Diagnose'
 import { Step2PercentPrinciple } from './Steps/Step2PercentPrinciple'
 import { Step3FindMentor } from './Steps/Step3FindMentor'
 import { Step4IdentityHabit } from './Steps/Step4IdentityHabit'
@@ -29,7 +29,7 @@ import type {
 import { withDp01Defaults, type Dp01AllContent } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
 import { StageGate } from './StageGate'
-import type { HabitStageGateResult } from '@/lib/habit/actions'
+import type { HabitStageGateResult } from '@/lib/habit/stage-gate'
 
 export interface HabitTrackerAppProps {
   techniques?: PublicTechnique[]
@@ -61,8 +61,10 @@ export function HabitTrackerApp({
   // Core navigation state
   const [currentStep, setCurrentStep] = useState<HabitStep>(1)
   const [maxReachedStep, setMaxReachedStep] = useState<number>(1)
-  const [gate, setGate] = useState<HabitStageGateResult>(initialGate)
+  // The gate comes from the server on each request (page is force-dynamic); no client copy.
+  const gate = initialGate
   const [showGate, setShowGate] = useState(false)
+  const stage1TrackedRef = useRef(false)
 
   // Form State
   const [diagnoseAnswers, setDiagnoseAnswers] = useState<Record<number, number>>({})
@@ -81,20 +83,6 @@ export function HabitTrackerApp({
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [trackerDestination, setTrackerDestination] = useState<string>('/habit/tracker')
   const [hasSavedPlan, setHasSavedPlan] = useState(false)
-
-  // Đồng bộ thông tin gate / khách hàng khi initialGate thay đổi
-  useEffect(() => {
-    setGate(initialGate)
-    if (initialGate.customer?.email) {
-      setEmail(initialGate.customer.email)
-    }
-    if (initialGate.customer?.name) {
-      setName((prev) => prev || initialGate.customer?.name || '')
-    }
-    if (initialGate.customer?.hasConsent) {
-      setConsent(true)
-    }
-  }, [initialGate])
 
   // Calculate current date in Vietnam time for Step 4 defaults if empty
   // QA DP-01c: the end date always follows the start date (a restored draft had none, so the
@@ -130,7 +118,10 @@ export function HabitTrackerApp({
         if (stored) {
           const parsed = JSON.parse(stored)
           const knownIds = new Set((techniques || []).map((t) => t.id))
-          const migrated = migrateHabitDraft(parsed, knownIds, diagnose?.questions?.length)
+          // QA DP-03c: Step 1 here always renders the 8 zip questions (it is not given `diagnose`),
+          // so compare the stored answers with that count. Using the CMS count (0 on an empty
+          // DB, 16 when "Câu hỏi chẩn đoán" is seeded) dropped every answer on reload / after login.
+          const migrated = migrateHabitDraft(parsed, knownIds, DEFAULT_DIAGNOSE_QUESTIONS.length)
           const restoredZip = flowDraftToZipState(migrated)
 
           /* eslint-disable react-hooks/set-state-in-effect -- Safe initial hydration from localStorage on mount */
@@ -177,7 +168,7 @@ export function HabitTrackerApp({
     } finally {
       setIsLoaded(true)
     }
-  }, [techniques, diagnose?.questions?.length, initialStepParam, gate.status])
+  }, [techniques, initialStepParam, gate.status])
 
   // 2. Auto-save to localStorage whenever state changes
   useEffect(() => {
@@ -266,10 +257,17 @@ export function HabitTrackerApp({
     const numeric = typeof targetStep === 'number' ? targetStep : 6
     if (numeric >= 3 && gate.status !== 'ok') {
       setShowGate(true)
-      track('habit_stage1_completed')
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+      if (!stage1TrackedRef.current) {
+        stage1TrackedRef.current = true
+        track('habit_stage1_completed')
       }
+      // StageGate scrolls itself into view (on a phone the page top is the long hero).
+      return
+    }
+    if (numeric === 7) {
+      // QA DP-03c: stage-3 card ("28 ngày") has no step screen; open the tracker once a plan
+      // is saved, otherwise do nothing (same rule as the step-7 pill in StepNavigation).
+      if (hasSavedPlan && typeof window !== 'undefined') window.location.assign(trackerDestination)
       return
     }
     setShowGate(false)

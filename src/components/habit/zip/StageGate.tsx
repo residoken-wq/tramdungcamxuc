@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useId, useRef } from 'react'
 import Link from 'next/link'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
-import type { HabitStageGateResult } from '@/lib/habit/actions'
+import type { HabitStageGateResult } from '@/lib/habit/stage-gate'
 
 export interface StageGateProps {
   gate: HabitStageGateResult
@@ -20,6 +20,17 @@ export interface StageGateProps {
  */
 export function StageGate({ gate, prescribedCategory, onBack, onBeforeLogin }: StageGateProps) {
   const isBuy = gate.status === 'buy'
+  const headingId = useId()
+  const sectionRef = useRef<HTMLElement>(null)
+
+  // QA DP-03c: bring the gate itself into view (scrolling to the page top left it below the
+  // hero on a 375px screen). Respect reduced motion.
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el || typeof el.scrollIntoView !== 'function') return
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+  }, [gate.status])
 
   const handleLoginClick = () => {
     track('habit_gate_login_clicked')
@@ -44,7 +55,11 @@ export function StageGate({ gate, prescribedCategory, onBack, onBeforeLogin }: S
   const hasPrice = typeof gate.price === 'number' && gate.price > 0
 
   return (
-    <div className="w-full max-w-xl mx-auto py-6 sm:py-10 px-4 animate-fadeIn">
+    <section
+      ref={sectionRef}
+      aria-labelledby={headingId}
+      className="w-full max-w-xl mx-auto py-6 sm:py-10 px-4 scroll-mt-20 animate-fadeIn"
+    >
       <div className="bg-warm-ivory rounded-2xl sm:rounded-3xl border border-deep-navy/15 p-6 sm:p-8 shadow-soft text-center space-y-6">
         {/* Badge nhận diện */}
         <div className="flex justify-center">
@@ -56,7 +71,10 @@ export function StageGate({ gate, prescribedCategory, onBack, onBeforeLogin }: S
 
         {/* Tiêu đề & Lời mời */}
         <div className="space-y-3">
-          <h2 className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy leading-tight">
+          <h2
+            id={headingId}
+            className="font-ui font-bold text-2xl sm:text-3xl text-deep-navy leading-tight"
+          >
             {isBuy ? vi.dp03.buyTitle : vi.dp03.loginTitle}
           </h2>
 
@@ -88,7 +106,7 @@ export function StageGate({ gate, prescribedCategory, onBack, onBeforeLogin }: S
                         {formatVnd(gate.salePrice!)}
                       </span>
                       {hasPrice && (
-                        <span className="text-xs text-deep-navy/50 line-through">
+                        <span className="text-xs text-deep-navy/70 line-through">
                           {formatVnd(gate.price!)}
                         </span>
                       )}
@@ -155,6 +173,6 @@ export function StageGate({ gate, prescribedCategory, onBack, onBeforeLogin }: S
           )}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
