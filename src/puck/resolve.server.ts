@@ -250,6 +250,44 @@ export async function resolveServerData(
       }
     }
 
+    // PK-18: Resolve block _style.backgroundImage media IDs (desktop and mobile)
+    const rawStyle = (item.props as { _style?: Record<string, unknown> })._style
+    const bgImg = rawStyle?.backgroundImage as Record<string, unknown> | undefined
+    if (bgImg && typeof bgImg === 'object') {
+      // QA PK-18c: URLs only ever come from the media library by id (no stale / free URL).
+      bgImg.imageUrl = ''
+      bgImg.mobileImageUrl = ''
+      if (bgImg.mediaId) {
+        try {
+          const mediaDoc = await payload.findByID({
+            collection: 'media',
+            id: String(bgImg.mediaId),
+          })
+          if (typeof mediaDoc?.url === 'string') {
+            bgImg.imageUrl = mediaDoc.url
+            if (mediaDoc.alt && typeof mediaDoc.alt === 'string') {
+              bgImg.imageAlt = mediaDoc.alt.trim()
+            }
+          }
+        } catch {
+          // Missing media: keep empty
+        }
+      }
+      if (bgImg.mobileMediaId) {
+        try {
+          const mobileDoc = await payload.findByID({
+            collection: 'media',
+            id: String(bgImg.mobileMediaId),
+          })
+          if (typeof mobileDoc?.url === 'string') {
+            bgImg.mobileImageUrl = mobileDoc.url
+          }
+        } catch {
+          // Missing media: keep empty
+        }
+      }
+    }
+
     // QA PK-21c: PhotoGallery images – URL and alt always from the media library by id.
     if (item.type === 'PhotoGallery' && Array.isArray(item.props.items)) {
       for (const it of item.props.items as Array<{

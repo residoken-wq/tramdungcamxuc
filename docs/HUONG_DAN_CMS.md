@@ -2433,6 +2433,30 @@ Tab đang chọn được giữ nguyên khi bấm sang khối khác.
 - **Đặt lại kiểu** xoá mọi chỉnh sửa ở tab đang mở, khối quay về như mặc định.
 - Khối chưa chỉnh kiểu nào thì trang công khai giữ y hệt như trước.
 
+#### 5.24.1. Ảnh nền cho từng khối và Lớp phủ màu (PK-18)
+
+Mọi khối nội dung trong trình dựng trang đều có thể cài đặt **ảnh nền** thay vì chỉ dùng một màu đơn sắc:
+
+1. **Chọn loại nền**: Tại **tab Kiểu** -> mục **Nền**, bấm chọn giữa **Màu** hoặc **Ảnh**.
+2. **Chọn ảnh nền**: Bấm **Chọn ảnh** để mở thư viện media. Hana có thể chọn ảnh có sẵn hoặc bấm ngay nút **"Tải ảnh lên"** ở cạnh ô tìm kiếm để tải ảnh mới từ máy tính.
+   - **Ảnh nền cho điện thoại (tùy chọn)**: Nếu muốn màn hình điện thoại hiển thị một ảnh dọc vừa vặn hơn, Hana có thể chọn thêm ảnh ở ô _"Ảnh nền cho điện thoại"_.
+3. **Vừa khung & Vị trí**:
+   - **Vừa khung**: Chọn _Phủ kín (Cover)_ để ảnh trải đều toàn bộ khối, hoặc _Vừa vặn (Contain)_.
+   - **Vị trí**: Chọn 1 trong 9 vị trí căn ảnh (Chính giữa, Trên cùng ở giữa, Dưới cùng bên phải...).
+4. **Lớp phủ màu (Overlay) & Độ đậm**:
+   - Khi chọn ảnh, hệ thống tự động bật một **lớp phủ màu mặc định 40%** (nền tối phủ màu _Xanh thẫm_, nền sáng phủ màu _Trắng ngà_) để chữ hiển thị trên ảnh luôn rõ ràng, dễ đọc chuẩn WCAG.
+   - Hana có thể đổi màu lớp phủ sang 8 màu thương hiệu và chỉnh độ đậm: `0%`, `20%`, `40%`, `60%`, `80%`.
+   - Khi chọn `0%` (không phủ), hệ thống sẽ hiển thị lời nhắc màu vàng: _"Kiểm tra chữ còn đọc rõ trên ảnh"_.
+   - _Lưu ý_: Ảnh nền nên là ảnh ngang, độ phân giải từ 1920px trở lên và dung lượng nhẹ (< 500 KB) để trang tải thật nhanh.
+
+#### 5.24.2. Nút "Tải ảnh lên" ngay trong hộp chọn ảnh (PK-18)
+
+Ở mọi nơi có ô chọn ảnh (ảnh chân dung trong Câu chuyện Hana, ảnh thẻ, ảnh đại diện, ảnh nền...):
+- Hộp chọn ảnh hiện đã có thêm nút **"Tải ảnh lên"** màu hồng nổi bật đặt ngay cạnh nút **"Tìm kiếm"**.
+- Hana chỉ cần bấm nút để chọn ảnh từ máy tính (chấp nhận file `.jpg`, `.png`, `.webp`, `.avif`, dung lượng tối đa 10 MB).
+- **Mô tả ảnh (alt) là bắt buộc**: Giúp người khiếm thị nghe được nội dung ảnh qua phần mềm đọc màn hình. Hệ thống sẽ gợi ý sẵn tên file, Hana có thể sửa lại cho rõ nghĩa hơn trước khi bấm _"Tải lên & chọn"_.
+- Sau khi tải lên thành công, ảnh sẽ tự động được chọn và xuất hiện ngay ở đầu danh sách trong những lần mở tiếp theo.
+
 ### 5.25. Khung chứa linh hoạt (Container): hộp flexbox lồng nhau kiểu Elementor (EB-05)
 
 Khối **Container** nằm ở đầu nhóm **Bố cục** trong bảng thư viện khối bên trái (có thể tìm nhanh bằng từ khoá: `container`, `hop`, `khung`).

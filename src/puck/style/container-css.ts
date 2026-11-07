@@ -10,11 +10,12 @@
  */
 import { cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
 import { DEVICE_MEDIA, resolveDevice, type Device } from './style-schema'
-import type {
-  ContainerAlign,
-  ContainerBackground,
-  ContainerJustify,
-  ContainerLayout,
+import {
+  cleanImageUrl,
+  type ContainerAlign,
+  type ContainerBackground,
+  type ContainerJustify,
+  type ContainerLayout,
 } from './container-schema'
 
 const JUSTIFY_CSS: Record<ContainerJustify, string> = {
@@ -53,12 +54,15 @@ function layoutDeclarations(layout: ContainerLayout | undefined, device: Device)
 
 /** URL inside `url("…")`: already filtered by `cleanImageUrl`, encoded again as a second guard. */
 // REVIEW-REQUIRED: the only place a user-chosen URL is written into CSS.
-const cssUrl = (url: string) =>
+export const cssUrl = (url: string) =>
   `url("${encodeURI(url).replace(/["'()\\]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)}")`
 
 function backgroundDeclarations(background: ContainerBackground | undefined): string[] {
   if (background?.type === 'image' && background.imageUrl) {
+    const hasOverlay =
+      background.overlay && background.overlayOpacity && background.overlayOpacity > 0
     return [
+      ...(hasOverlay ? ['position:relative'] : []),
       `background-image:${cssUrl(background.imageUrl)}`,
       `background-size:${background.size ?? 'cover'}`,
       `background-position:${background.position ?? 'center'}`,
@@ -85,6 +89,20 @@ export function containerCss(
 
   const bg = backgroundDeclarations(background)
   if (bg.length) rules.push(`[${STYLE_ATTR}="${id}"]{${bg.join(';')}}`)
+
+  // PK-18: Container overlay support
+  if (
+    background?.type === 'image' &&
+    background.imageUrl &&
+    background.overlay &&
+    background.overlayOpacity &&
+    background.overlayOpacity > 0
+  ) {
+    const opacityVal = (background.overlayOpacity / 100).toFixed(2).replace(/\.?0+$/, '')
+    rules.push(
+      `[${STYLE_ATTR}="${id}"]::before{content:"";position:absolute;inset:0;background:${cssColor(background.overlay)};opacity:${opacityVal};pointer-events:none;z-index:0}`,
+    )
+  }
 
   const items = `.${containerItemsClass(id)}`
   const desktop = layoutDeclarations(layout, 'desktop')

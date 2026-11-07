@@ -82,6 +82,9 @@ export interface ContainerLayout {
   wrap?: Responsive<ContainerWrap>
 }
 
+export const CONTAINER_OVERLAY_OPACITIES = [0, 20, 40, 60, 80] as const
+export type ContainerOverlayOpacity = (typeof CONTAINER_OVERLAY_OPACITIES)[number]
+
 export interface ContainerBackground {
   type: ContainerBgType
   // Image mode
@@ -90,6 +93,8 @@ export interface ContainerBackground {
   imageAlt?: string
   size?: ContainerBgSize
   position?: ContainerBgPosition
+  overlay?: string
+  overlayOpacity?: ContainerOverlayOpacity
   // Gradient mode
   from?: string
   to?: string
@@ -209,6 +214,12 @@ export function sanitizeContainer(
     background.position = includes(CONTAINER_BG_POSITIONS, rawBg.position)
       ? rawBg.position
       : 'center'
+    background.overlay = cleanColor(rawBg.overlay, ds)
+    const rawOpacity =
+      typeof rawBg.overlayOpacity === 'string' ? Number(rawBg.overlayOpacity) : rawBg.overlayOpacity
+    background.overlayOpacity = includes(CONTAINER_OVERLAY_OPACITIES, rawOpacity)
+      ? rawOpacity
+      : undefined
   } else if (bgType === 'gradient') {
     background.from = cleanColor(rawBg.from, ds)
     background.to = cleanColor(rawBg.to, ds)

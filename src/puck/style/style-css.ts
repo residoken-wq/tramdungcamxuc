@@ -12,9 +12,16 @@ import {
 } from '@/lib/design/title-spacing'
 import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
 import { sanitizeBlockCustomCss, sanitizePageCustomCss, PAGE_ATTR } from './custom-css'
-import { containerCss } from './container-css'
-import { CARD_ATTR, cssColor, isSafeBlockId, SPACING_CSS, STYLE_ATTR } from './css-shared'
-import { sanitizeContainer } from './container-schema'
+import { containerCss, cssUrl } from './container-css'
+import {
+  CARD_ATTR,
+  SECTION_ATTR,
+  cssColor,
+  isSafeBlockId,
+  SPACING_CSS,
+  STYLE_ATTR,
+} from './css-shared'
+import { cleanImageUrl, sanitizeContainer } from './container-schema'
 import { TEXT_TARGET_ATTR } from './text-target'
 import {
   DEVICE_MEDIA,
@@ -235,7 +242,40 @@ export function blockStyleCss(id: string, style: BlockStyle): string {
   const selector = `[${STYLE_ATTR}="${id}"]`
   const rules: string[] = []
   const base = [...baseDeclarations(style), ...deviceDeclarations(style, 'desktop')]
+
+  // PK-18: Background image declarations on block wrapper
+  const bgImg = style.backgroundImage
+  if (bgImg?.imageUrl) {
+    base.push(
+      'position:relative',
+      `background-image:${cssUrl(bgImg.imageUrl)}`,
+      `background-size:${bgImg.size ?? 'cover'}`,
+      `background-position:${bgImg.position ?? 'center'}`,
+      'background-repeat:no-repeat',
+    )
+  }
+
   if (base.length) rules.push(`${selector}{${base.join(';')}}`)
+
+  // PK-18 / PK-23: Mobile background image
+  if (bgImg?.mobileImageUrl) {
+    rules.push(`@media (max-width: 639px){${selector}{background-image:${cssUrl(bgImg.mobileImageUrl)}}}`)
+  }
+
+  // PK-18: Overlay via ::before
+  if (bgImg?.imageUrl && bgImg.overlay && bgImg.overlayOpacity && bgImg.overlayOpacity > 0) {
+    const opacityVal = (bgImg.overlayOpacity / 100).toFixed(2).replace(/\.?0+$/, '')
+    rules.push(
+      `${selector}::before{content:"";position:absolute;inset:0;background:${cssColor(bgImg.overlay)};opacity:${opacityVal};pointer-events:none;z-index:0}`,
+    )
+  }
+
+  // PK-18: When block has background image, direct children and [data-eb-section] elements have transparent background
+  if (bgImg?.imageUrl) {
+    rules.push(`${selector}>*{position:relative;z-index:1;background-color:transparent}`)
+    rules.push(`${selector} [${SECTION_ATTR}]{background-color:transparent}`)
+  }
+
   const desktopCards = cardAlignRule(selector, style.textAlign?.desktop)
   if (desktopCards) rules.push(desktopCards)
   const isDark = style.background === 'deep-navy'

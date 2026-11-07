@@ -11,6 +11,8 @@ export const STYLE_ATTR = 'data-eb-id'
  * `text-left` / `items-start` and would otherwise ignore the inherited value.
  */
 export const CARD_ATTR = 'data-eb-card'
+/** PK-18: marks inner section elements whose background should be cleared when parent has a background image */
+export const SECTION_ATTR = 'data-eb-section'
 const SAFE_ID = /^[A-Za-z0-9_-]{1,100}$/
 
 export const isSafeBlockId = (id: unknown): id is string =>
