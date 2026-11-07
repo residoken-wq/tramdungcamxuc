@@ -2,6 +2,8 @@
 
 > **Quy trình 3 máy – đọc trước: [`WORKFLOW.md`](WORKFLOW.md)** (luật vàng, lane A/B, hồ sơ máy, vòng đời task, chống xung đột file). Chỉ ghế Planning sửa bảng này; khi lệch, danh sách PR trên GitHub là đúng.
 
+> **Test: đọc [`QUY_TRINH_TEST.md`](QUY_TRINH_TEST.md)** (từ 07/11: `pnpm check:fast` ở máy, cả bộ unit + e2e để CI chạy). Thay mục "Cách test" trong mọi prompt.
+
 > Planning Manager giao từng task theo thứ tự trong bảng. Antigravity chỉ nhận task có trạng thái **Sẵn sàng**.
 > Kế hoạch tổng: `docs/plan/MASTER_PLAN.md` · Lỗ hổng & mặc định: `docs/plan/GAPS_AND_QUESTIONS.md`
 
@@ -25,7 +27,7 @@ Quy trình:
 - Task có giao diện: dùng skill `tdcx-brand` trước, sau đó mới đến frontend-design / ui-ux-pro-max / vercel-react-best-practices. Khi xung đột, `tdcx-brand` thắng.
 - Chỉ làm trong phạm vi task. Ý tưởng ngoài phạm vi → docs/BACKLOG.md.
 - Spec thiếu hoặc mâu thuẫn → dừng và hỏi, không đoán.
-- Chạy `pnpm lint && pnpm typecheck && pnpm test` trước khi báo xong.
+- Chạy `git fetch origin main && pnpm check:fast` trước khi báo xong (xem docs/tasks/QUY_TRINH_TEST.md), không chạy cả bộ test / build / e2e ở máy.
 - Kết thúc bằng báo cáo theo mẫu mục 13 AGENTS.md, kèm checklist "Tiêu chí nghiệm thu" của task đã tick.
 ```
 
