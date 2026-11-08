@@ -2,21 +2,21 @@ import type { Data } from '@puckeditor/core'
 
 /**
  * Mẫu trang Cộng đồng của Trạm (Website v2) – template: 'community'
- * Thiết kế v2 mục §5 (tr. 48–56):
- * 5.1 Hero (backdrop tối, ảnh nền [MẪU])
- * 5.2 Chọn không gian (IconCardGrid dạng trượt, vạch màu)
- * 5.3 Me Time (ImageText ảnh phải, nền soft-pink, anchorId: me-time)
- * 5.4 Lịch trình 5:00 AM (IconCardGrid 3 cột, vạch màu cycle)
- * 5.5 Tiếng nói cộng đồng Me Time (TestimonialGrid featured, nền lavender-mist)
- * 5.6 Khoảnh khắc Me Time (PhotoGallery mosaic fallback)
- * 5.7 Yoga Buddy (ImageText ảnh trái tràn mép, anchorId: yoga-buddy)
- * 5.8 Cuộc hẹn 8:30 sáng thứ 3 & 5 (Columns 2 Card có vạch màu, nền soft-pink)
- * 5.9 Góc nhỏ Yoga Buddy (PhotoGallery fallback)
- * 5.10 CTA (CTASection nền xanh thẫm)
+ * Thiết kế đúng 100% theo slide 48–57 của Hana (docs/design/website-v2-noi-dung.md §5):
+ * 5.1 Hero (slide 48): Backdrop tối, chữ căn trái, tiêu đề trắng, vạch hồng ngắn
+ * 5.2 Chọn không gian (slide 49): Tiêu đề giữa, 3 thẻ vạch màu đỉnh + thẻ Coming Soon
+ * 5.3 Me Time (slide 50): Chữ trái, ảnh phải bo góc, nền soft-pink, anchorId: me-time
+ * 5.4 Lịch trình 5:00 AM (slide 51): 3 thẻ trắng vạch màu xoay vòng, căn giữa
+ * 5.5 Tiếng nói cộng đồng Me Time (slide 52): TestimonialGrid featured, nền lavender-mist (lời chia sẻ từ CMS)
+ * 5.6 Khoảnh khắc Me Time (slide 53): PhotoGallery mosaic, nền warm-ivory
+ * 5.7 Yoga Buddy (slide 54): Ảnh trái tràn mép, chữ phải, anchorId: yoga-buddy
+ * 5.8 Cuộc hẹn 8:30 sáng thứ 3 & 5 (slide 55): 2 thẻ trắng vạch trên (hồng nhấn / navy), nền soft-pink
+ * 5.9 Góc nhỏ Yoga Buddy (slide 56): PhotoGallery mosaic, nền lavender-mist
+ * 5.10 CTA (slide 57): CTASection solid nền deep-navy, tiêu đề Anton trắng 2 dòng, 2 nút tròn
  */
 export const communityTemplate: Data = {
   content: [
-    // 5.1 Hero: HeroImage backdrop tối, ảnh nền [MẪU]
+    // 5.1 Hero (Slide 48): HeroImage backdrop tối, chữ căn trái, vạch hồng ngắn
     {
       type: 'HeroImage',
       props: {
@@ -27,13 +27,17 @@ export const communityTemplate: Data = {
         overlayStrength: 'lg',
         imageBlur: 'none',
         imagePosition: 'center',
-        contentAlign: 'center',
+        contentAlign: 'left',
         minHeight: 'lg',
         seriesLabel: 'Không gian an toàn để thuộc về',
+        seriesLabelFont: 'quote',
         titleLine1: 'Cộng đồng của Trạm',
         titleLine2: '',
+        titleCase: 'upper',
+        showAccentBar: true,
         emotionLine:
           'Những điểm chạm nhỏ giúp bạn chăm sóc Thân - Tâm và bắt đầu ngày mới nhất quán.',
+        emotionFont: 'body',
         mediaId: '',
         imageUrl: '',
         imageAlt: '',
@@ -43,7 +47,7 @@ export const communityTemplate: Data = {
         secondaryButtonLink: '',
         badges: [],
         stats: [],
-        titleSize: 'md',
+        titleSize: 'lg',
         statValueColor: 'deep-navy',
         statLabelColor: 'deep-navy',
         statValueSize: 'md',
@@ -59,18 +63,20 @@ export const communityTemplate: Data = {
       },
     },
 
-    // 5.2 Chọn không gian: IconCardGrid dạng trượt (PK-21), vạch màu (PK-20)
+    // 5.2 Chọn không gian (Slide 49): IconCardGrid dạng trượt, vạch màu, thẻ Coming Soon
     {
       type: 'IconCardGrid',
       props: {
         id: 'community-spaces',
         version: 2,
         seriesLabel: '',
-        titleLine1: 'Chọn không gian của bạn',
+        titleLine1: 'CHỌN KHÔNG GIAN CỦA BẠN',
         titleLine2: '',
         emotionLine: 'Tự nguyện đến. Tôn trọng nhịp riêng.',
         marker: 'icon',
         columns: 'carousel',
+        titleCase: 'upper',
+        headerAlign: 'center',
         _style: { cardAccent: 'cycle' },
         cardStyle: 'white',
         cardAlign: 'inherit',
@@ -79,13 +85,19 @@ export const communityTemplate: Data = {
             type: 'Card',
             props: {
               id: 'community-space-card-0',
-              icon: 'sun',
-              badge: 'Cộng đồng',
-              title: 'Me Time',
-              text: '',
+              icon: 'none',
+              eyebrow: 'CỘNG ĐỒNG',
+              title: 'ME TIME',
+              titleFont: 'display',
+              titleSize: 'lg',
+              subtitle: '“THƯƠNG MÌNH THEO CÁCH RIÊNG”.',
+              subtitleColor: 'bright-magenta',
+              text: 'Khởi đầu ngày mới lúc 5:00 AM mỗi ngày.',
+              linkText: 'Khám phá →',
+              linkHref: '#me-time',
+              linkVariant: 'magenta',
               titleColor: 'deep-navy',
               textColor: 'deep-navy',
-              titleSize: 'md',
               textSize: 'md',
               align: 'left',
               highlight: 'none',
@@ -96,13 +108,19 @@ export const communityTemplate: Data = {
             type: 'Card',
             props: {
               id: 'community-space-card-1',
-              icon: 'flower',
-              badge: 'Cộng đồng',
-              title: 'Yoga Buddy',
-              text: '',
+              icon: 'none',
+              eyebrow: 'CỘNG ĐỒNG',
+              title: 'YOGA BUDDY',
+              titleFont: 'display',
+              titleSize: 'lg',
+              subtitle: 'CHĂM SÓC THÂN TÂM THÔNG QUA YOGA',
+              subtitleColor: 'accent-pink',
+              text: 'Trải thảm 8:30 AM Thứ 3 & Thứ 5.',
+              linkText: 'Khám phá →',
+              linkHref: '#yoga-buddy',
+              linkVariant: 'pink',
               titleColor: 'deep-navy',
               textColor: 'deep-navy',
-              titleSize: 'md',
               textSize: 'md',
               align: 'left',
               highlight: 'none',
@@ -113,37 +131,50 @@ export const communityTemplate: Data = {
             type: 'Card',
             props: {
               id: 'community-space-card-2',
-              icon: 'heart',
-              badge: 'Coming soon',
-              title: 'Không gian mới',
+              icon: 'none',
+              eyebrow: 'COMING SOON',
+              title: 'KHÔNG GIAN MỚI',
+              titleFont: 'display',
+              titleSize: 'lg',
               text: 'Những trạm dừng mới đang được ấp ủ để đồng hành cùng bạn.',
               titleColor: 'deep-navy',
               textColor: 'deep-navy',
-              titleSize: 'md',
               textSize: 'md',
               align: 'left',
-              highlight: 'none',
-              _style: { cardAccent: 'lavender-mist' },
+              highlight: 'coming-soon',
             },
           },
         ],
         bgColor: 'warm-ivory',
-        padding: 'md',
+        padding: 'lg',
       },
     },
 
-    // 5.3 Me Time (anchorId: me-time): ImageText ảnh phải, nền soft-pink
+    // 5.3 Me Time (Slide 50): ImageText ảnh phải bo góc, nền soft-pink, anchorId: me-time
     {
       type: 'ImageText',
       props: {
         id: 'me-time',
         version: 2,
         layout: 'image-right',
-        seriesLabel: 'Cộng đồng',
-        titleLine1: 'Me Time',
+        seriesLabel: 'CỘNG ĐỒNG',
+        titleLine1: 'ME TIME',
         titleLine2: '',
-        quote: '"Thương mình theo cách riêng."',
+        quote: 'Thương mình theo cách riêng.',
+        quotePosition: 'below-title',
+        quoteStyle: 'clean',
         content: '',
+        items: [
+          {
+            title: 'Tôn Chỉ "Me" First',
+            text: 'Chưa đủ sẵn sàng thì không cần bắt mình vào link. Tự do rời đi khi cần.',
+          },
+          {
+            title: 'You Always Can Miss ONE',
+            text: 'Cho phép mình làm biếng 1 ngày. Mai chúng mình sẽ lại ở đây.',
+          },
+        ],
+        showPlaceholderImage: true,
         mediaId: '',
         imageUrl: '',
         imageAlt: '',
@@ -152,7 +183,7 @@ export const communityTemplate: Data = {
         buttonLink: '',
         bgColor: 'soft-pink',
         padding: 'lg',
-        imageShape: 'arch-right',
+        imageShape: 'rounded',
         imageBadge: '',
         imageCaptionTitle: '',
         imageCaptionSubtitle: '',
@@ -161,34 +192,38 @@ export const communityTemplate: Data = {
       },
     },
 
-    // 5.4 Lịch trình 5:00 AM: IconCardGrid 3 cột, vạch màu cycle
+    // 5.4 Lịch trình 5:00 AM (Slide 51): IconCardGrid 3 cột, vạch màu xoay vòng, căn giữa
     {
       type: 'IconCardGrid',
       props: {
         id: 'community-me-time-schedule',
         version: 2,
         seriesLabel: '',
-        titleLine1: 'Lịch trình 5:00 AM',
+        titleLine1: 'LỊCH TRÌNH 5:00 AM',
         titleLine2: '',
         emotionLine: '',
+        titleCase: 'upper',
+        headerAlign: 'center',
         marker: 'icon',
         columns: 3,
         _style: { cardAccent: 'cycle' },
         cardStyle: 'white',
-        cardAlign: 'inherit',
+        cardAlign: 'center',
         cards: [
           {
             type: 'Card',
             props: {
               id: 'community-schedule-card-0',
-              icon: 'sun',
-              title: '5:00 - 5:10 · We Time',
+              icon: 'none',
+              eyebrow: '5:00 - 5:10',
+              title: 'WE TIME',
+              titleFont: 'display',
+              titleColor: 'bright-magenta',
               text: 'Check-in đầu ngày. Cùng nghe một đoạn nhạc tĩnh tâm.',
-              titleColor: 'deep-navy',
               textColor: 'deep-navy',
               titleSize: 'md',
               textSize: 'md',
-              align: 'left',
+              align: 'center',
               highlight: 'none',
               _style: { cardAccent: 'bright-magenta' },
             },
@@ -197,14 +232,16 @@ export const communityTemplate: Data = {
             type: 'Card',
             props: {
               id: 'community-schedule-card-1',
-              icon: 'heart',
-              title: '5:10 - 5:50 · Me Time của tui',
+              icon: 'none',
+              eyebrow: '5:10 - 5:50',
+              title: 'ME TIME CỦA TUI',
+              titleFont: 'display',
+              titleColor: 'accent-pink',
               text: 'Làm điều mình thích. Cho mình, vì mình. Viết lách hoặc thiền định.',
-              titleColor: 'deep-navy',
               textColor: 'deep-navy',
               titleSize: 'md',
               textSize: 'md',
-              align: 'left',
+              align: 'center',
               highlight: 'none',
               _style: { cardAccent: 'accent-pink' },
             },
@@ -213,58 +250,69 @@ export const communityTemplate: Data = {
             type: 'Card',
             props: {
               id: 'community-schedule-card-2',
-              icon: 'spark',
-              title: '5:50 - 6:00 · You & Me',
-              text: 'Check-out. Cùng bốc thẻ và chọn thông điệp thương mình.',
+              icon: 'none',
+              eyebrow: '5:50 - 6:00',
+              title: 'YOU & ME',
+              titleFont: 'display',
               titleColor: 'deep-navy',
+              text: 'Check-out. Cùng bốc thẻ và chọn thông điệp thương mình.',
               textColor: 'deep-navy',
               titleSize: 'md',
               textSize: 'md',
-              align: 'left',
+              align: 'center',
               highlight: 'none',
               _style: { cardAccent: 'deep-navy' },
             },
           },
         ],
         bgColor: 'warm-ivory',
-        padding: 'md',
+        padding: 'lg',
       },
     },
 
-    // 5.5 Tiếng nói cộng đồng Me Time: TestimonialGrid featured (PK-21), nền lavender-mist
+    // 5.5 Tiếng nói cộng đồng Me Time (Slide 52): TestimonialGrid featured, nền lavender-mist
     {
       type: 'TestimonialGrid',
       props: {
         id: 'community-testimonials-me-time',
         version: 2,
+        titleLine1: 'TIẾNG NÓI CỘNG ĐỒNG ME TIME',
+        titleLine2: '',
+        headerAlign: 'center',
         variant: 'featured',
         mode: 'manual',
         manualTestimonials: [],
         limit: 3,
         columns: 3,
         bgColor: 'lavender-mist',
-        padding: 'md',
+        padding: 'lg',
       },
     },
 
-    // 5.6 Khoảnh khắc Me Time: PhotoGallery mosaic (PK-21)
+    // 5.6 Khoảnh khắc Me Time (Slide 53): PhotoGallery mosaic, nền warm-ivory
     {
       type: 'PhotoGallery',
       props: {
         id: 'community-me-time-moments',
         version: 1,
         seriesLabel: '',
-        titleLine1: 'Khoảnh khắc Me Time',
+        titleLine1: 'KHOẢNH KHẮC ME TIME',
         titleLine2: '',
         emotionLine: '',
+        headerAlign: 'center',
         layout: 'mosaic',
-        items: [],
+        items: [
+          { alt: '[MẪU] Khoảnh khắc Me Time 1' },
+          { alt: '[MẪU] Khoảnh khắc Me Time 2' },
+          { alt: '[MẪU] Khoảnh khắc Me Time 3' },
+          { alt: '[MẪU] Khoảnh khắc Me Time 4' },
+        ],
         bgColor: 'warm-ivory',
-        padding: 'md',
+        padding: 'lg',
       },
     },
 
-    // 5.7 Yoga Buddy (anchorId: yoga-buddy): ImageText ảnh trái tràn mép (PK-21)
+    // 5.7 Yoga Buddy (Slide 54): ImageText ảnh trái tràn mép (bleed), anchorId: yoga-buddy
     {
       type: 'ImageText',
       props: {
@@ -272,12 +320,15 @@ export const communityTemplate: Data = {
         imageBleed: true,
         version: 2,
         layout: 'image-left',
-        seriesLabel: 'Cộng đồng',
-        titleLine1: 'Yoga Buddy',
+        seriesLabel: 'CỘNG ĐỒNG',
+        titleLine1: 'YOGA BUDDY',
         titleLine2: '',
         quote: 'Mỗi lần trải thảm là một lần chăm sóc Thân - Tâm.',
+        quotePosition: 'below-title',
+        quoteStyle: 'clean',
         content:
           'Duyên đã hội tụ đủ để tụi mình có mặt ở đây. Một cuộc hẹn nhỏ để trải thảm, có người cùng tập, cùng nhắc nhau dành thời gian cho bản thân giữa những bận rộn.\n\nNếu bạn từng tập rồi bỏ dở, Yoga Buddy sẽ giúp bạn dễ quay lại hơn.',
+        showPlaceholderImage: true,
         mediaId: '',
         imageUrl: '',
         imageAlt: '',
@@ -295,31 +346,50 @@ export const communityTemplate: Data = {
       },
     },
 
-    // 5.8 Cuộc hẹn 8:30 sáng thứ 3 & 5: Columns 2 Card có vạch màu, nền soft-pink
+    // 5.8 Cuộc hẹn 8:30 sáng thứ 3 & 5 (Slide 55): Columns 2 Card có vạch màu, nền soft-pink
     {
       type: 'Columns',
       props: {
         id: 'community-yoga-details-cols',
+        titleLine1: 'CUỘC HẸN 8:30 SÁNG THỨ 3 & 5',
+        titleLine2: '',
+        headerAlign: 'center',
         numColumns: '2',
-        gap: 'md',
+        gap: 'lg',
         bgColor: 'soft-pink',
-        padding: 'md',
+        padding: 'lg',
         col1: [
           {
             type: 'Card',
             props: {
               id: 'community-yoga-journey-card',
               version: 1,
-              icon: 'sun',
+              icon: 'none',
               title: 'Hành trình 30 Phút',
-              text: '',
               titleColor: 'deep-navy',
               textColor: 'deep-navy',
-              titleSize: 'md',
+              titleSize: 'lg',
               textSize: 'md',
               align: 'left',
+              showDivider: true,
+              itemsTitleCase: 'upper',
+              itemsTitleColor: 'accent-pink',
+              items: [
+                {
+                  title: '05 PHÚT KẾT NỐI',
+                  text: 'Ngồi thoải mái, nghe nhạc, cảm nhận cơ thể và năng lượng sáng nay.',
+                },
+                {
+                  title: '20 PHÚT CHUYỂN ĐỘNG',
+                  text: 'Khởi động nhẹ. Tập 6 vòng Chào Mặt Trời. Thư giãn cùng sự hướng dẫn.',
+                },
+                {
+                  title: '05 PHÚT LẮNG NGHE',
+                  text: 'Check-in cảm xúc. Bốc một thẻ thông điệp gửi vào ngày mới.',
+                },
+              ],
               highlight: 'none',
-              _style: { cardAccent: 'bright-magenta' },
+              _style: { cardAccent: 'accent-pink' },
             },
           },
         ],
@@ -329,16 +399,32 @@ export const communityTemplate: Data = {
             props: {
               id: 'community-yoga-agreements-card',
               version: 1,
-              icon: 'heart',
+              icon: 'none',
               title: 'Vài điều giữ cho nhau',
-              text: '',
               titleColor: 'deep-navy',
               textColor: 'deep-navy',
-              titleSize: 'md',
+              titleSize: 'lg',
               textSize: 'md',
               align: 'left',
+              showDivider: true,
+              itemsTitleCase: 'none',
+              itemsTitleColor: 'deep-navy',
+              items: [
+                {
+                  title: 'Tôn trọng nhịp riêng',
+                  text: 'Tập chậm hơn, giảm số vòng hoặc nghỉ giữa chừng. Tập theo trạng thái hôm ấy.',
+                },
+                {
+                  title: 'Lỡ một buổi, hẹn buổi sau',
+                  text: 'Không áy náy hay tập bù. Điểm đến là nuôi dưỡng cơ thể và thói quen.',
+                },
+                {
+                  title: 'Trân trọng cuộc hẹn',
+                  text: 'Cố gắng đúng giờ. Chuẩn bị sẵn thảm. Tắt micro khi cùng tập.',
+                },
+              ],
               highlight: 'none',
-              _style: { cardAccent: 'accent-pink' },
+              _style: { cardAccent: 'deep-navy' },
             },
           },
         ],
@@ -346,39 +432,51 @@ export const communityTemplate: Data = {
       },
     },
 
-    // 5.9 Góc nhỏ Yoga Buddy: PhotoGallery, ảnh [MẪU]
+    // 5.9 Góc nhỏ Yoga Buddy (Slide 56): PhotoGallery mosaic, nền lavender-mist
     {
       type: 'PhotoGallery',
       props: {
         id: 'community-yoga-gallery',
         version: 1,
         seriesLabel: '',
-        titleLine1: 'Góc nhỏ Yoga Buddy',
+        titleLine1: 'GÓC NHỎ YOGA BUDDY',
         titleLine2: '',
         emotionLine: '',
-        layout: 'grid',
-        items: [],
-        bgColor: 'warm-ivory',
-        padding: 'md',
+        headerAlign: 'center',
+        layout: 'mosaic',
+        items: [
+          { alt: '[MẪU] Góc nhỏ Yoga Buddy 1' },
+          { alt: '[MẪU] Góc nhỏ Yoga Buddy 2' },
+          { alt: '[MẪU] Góc nhỏ Yoga Buddy 3' },
+          { alt: '[MẪU] Góc nhỏ Yoga Buddy 4' },
+        ],
+        bgColor: 'lavender-mist',
+        padding: 'lg',
       },
     },
 
-    // 5.10 CTA: CTASection nền xanh thẫm (thiết kế dùng đen, ngoài brand book)
+    // 5.10 CTA (Slide 57): CTASection solid nền deep-navy, tiêu đề Anton trắng 2 dòng, 2 nút tròn
     {
       type: 'CTASection',
       props: {
         id: 'community-cta',
         version: 1,
-        titleSize: 'md',
+        variant: 'solid',
+        titleSize: 'lg',
         textSize: 'md',
         seriesLabel: '',
-        titleLine1: 'Trở thành một phần của bộ lạc',
-        titleLine2: '',
+        titleLine1: 'TRỞ THÀNH MỘT PHẦN',
+        titleLine2: 'CỦA BỘ LẠC',
         emotionLine: 'Nuôi dưỡng một tâm trí vững vàng từ những thói quen nhỏ nhất.',
         description: '',
+        buttonShape: 'pill',
         buttonText: 'Tham gia Me Time',
         buttonLinkType: 'url',
         buttonLink: '#',
+        buttonVariant: 'magenta',
+        secondaryButtonText: 'Tham gia Yoga Buddy',
+        secondaryButtonLink: '#',
+        secondaryButtonVariant: 'pink',
         buttonPageId: '',
         proofText: '',
         testimonials: [],
