@@ -13,6 +13,7 @@ import type { PublicTeamMember } from '@/puck/client-preview'
 import type { Service, Program } from '@/payload-types'
 import type { PublicContactInfo } from '@/components/site/ContactInfo'
 import { buildSiteShellFromPayloadData, type SiteShellData } from '@/lib/site-shell.server'
+import { safeHref } from '@/lib/safe-href'
 
 import { walkPuckItems } from './walk'
 import { normalizePuckData } from './migrations'
@@ -1703,16 +1704,26 @@ export async function resolveServerData(
               depth: 1,
               limit: 12,
             })
-            const eligible = (docs.docs || []).filter(
-              (doc) =>
-                Array.isArray(doc.files) && doc.files.length > 0 && doc.saleStatus === 'free',
-            )
+            const eligible = (docs.docs || []).filter((doc) => {
+              if (doc.saleStatus !== 'free') return false
+              const hasFiles = Array.isArray(doc.files) && doc.files.length > 0
+              const safeExternal = doc.externalUrl ? safeHref(doc.externalUrl) : null
+              return hasFiles || safeExternal !== null
+            })
             const docMap = new Map(eligible.map((d) => [String(d.id), d]))
             const ordered = ids
               .map((id) => docMap.get(String(id)))
               .filter(Boolean)
               .slice(0, 12)
               .map((doc) => {
+                const hasFiles = Array.isArray(doc!.files) && doc!.files.length > 0
+                const safeExternal = doc!.externalUrl ? safeHref(doc!.externalUrl) : null
+                const href = hasFiles ? `/tai-nguyen/${doc!.slug}` : safeExternal!
+                const isExternal = !hasFiles && /^https?:\/\//i.test(href)
+                const ctaLabel =
+                  typeof doc!.ctaLabel === 'string' && doc!.ctaLabel.trim()
+                    ? doc!.ctaLabel.trim()
+                    : null
                 const img = doc!.coverImage as { url?: string; alt?: string } | undefined
                 return {
                   id: doc!.id,
@@ -1721,6 +1732,9 @@ export async function resolveServerData(
                   shortDescription: doc!.shortDescription || null,
                   topic: doc!.topic || null,
                   coverImage: img?.url ? { url: img.url, alt: img.alt || doc!.name } : null,
+                  href,
+                  isExternal,
+                  ctaLabel,
                 }
               })
             item.props._resolved = { items: ordered }
@@ -1742,12 +1756,20 @@ export async function resolveServerData(
             limit: 24,
           })
           const eligible = (docs.docs || [])
-            .filter(
-              (doc) =>
-                Array.isArray(doc.files) && doc.files.length > 0 && doc.saleStatus === 'free',
-            )
+            .filter((doc) => {
+              if (doc.saleStatus !== 'free') return false
+              const hasFiles = Array.isArray(doc.files) && doc.files.length > 0
+              const safeExternal = doc.externalUrl ? safeHref(doc.externalUrl) : null
+              return hasFiles || safeExternal !== null
+            })
             .slice(0, 12)
             .map((doc) => {
+              const hasFiles = Array.isArray(doc.files) && doc.files.length > 0
+              const safeExternal = doc.externalUrl ? safeHref(doc.externalUrl) : null
+              const href = hasFiles ? `/tai-nguyen/${doc.slug}` : safeExternal!
+              const isExternal = !hasFiles && /^https?:\/\//i.test(href)
+              const ctaLabel =
+                typeof doc.ctaLabel === 'string' && doc.ctaLabel.trim() ? doc.ctaLabel.trim() : null
               const img = doc.coverImage as { url?: string; alt?: string } | undefined
               return {
                 id: doc.id,
@@ -1756,6 +1778,9 @@ export async function resolveServerData(
                 shortDescription: doc.shortDescription || null,
                 topic: doc.topic || null,
                 coverImage: img?.url ? { url: img.url, alt: img.alt || doc.name } : null,
+                href,
+                isExternal,
+                ctaLabel,
               }
             })
           item.props._resolved = { items: eligible }

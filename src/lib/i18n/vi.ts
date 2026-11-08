@@ -172,7 +172,7 @@ export const vi = {
         files:
           'Tệp PDF/tài liệu đính kèm. Khách nhận được link tải an toàn trong email xác nhận sau khi đăng ký hoặc thanh toán.',
         externalUrl:
-          'Đường dẫn gian hàng Shopee, link đặt lịch Cal.com hoặc trang nội bộ (bắt đầu bằng https:// hoặc /).',
+          'Đường dẫn gian hàng Shopee, link đặt lịch Cal.com hoặc trang nội bộ (bắt đầu bằng https:// hoặc /). Sản phẩm Miễn phí không có file: nhập link công cụ (VD /habit/chan-doan) để hiện trong khối Tài nguyên miễn phí.',
         externalLabel:
           'Chữ hiển thị trên nút liên kết ngoài (vd "Mua bộ thẻ trên Shopee", "Đặt lịch tư vấn").',
       },
@@ -2385,7 +2385,10 @@ export const vi = {
       retry: 'Thử lại',
     },
     carousel: {
-      emptyEditor: 'Chưa có tài nguyên miễn phí – tạo sản phẩm "Miễn phí" trong CMS',
+      emptyEditor:
+        'Chưa có tài nguyên miễn phí – tạo sản phẩm "Miễn phí" có file hoặc có link trong CMS',
+      ctaFile: 'Nhận tài liệu',
+      ctaLink: 'Dùng miễn phí',
       prev: 'Xem tài nguyên trước',
       next: 'Xem tài nguyên tiếp theo',
       slideNumber: (current: number, total: number) => `Tài nguyên ${current} trên ${total}`,

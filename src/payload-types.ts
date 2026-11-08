@@ -690,7 +690,7 @@ export interface Product {
       }[]
     | null;
   /**
-   * Đường dẫn gian hàng Shopee, link đặt lịch Cal.com hoặc trang nội bộ (bắt đầu bằng https:// hoặc /).
+   * Đường dẫn gian hàng Shopee, link đặt lịch Cal.com hoặc trang nội bộ (bắt đầu bằng https:// hoặc /). Sản phẩm Miễn phí không có file: nhập link công cụ (VD /habit/chan-doan) để hiện trong khối Tài nguyên miễn phí.
    */
   externalUrl?: string | null;
   /**

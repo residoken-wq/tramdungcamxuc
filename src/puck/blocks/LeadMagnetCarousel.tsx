@@ -54,7 +54,7 @@ export const LeadMagnetCarouselBlock: ComponentConfig<LeadMagnetCarouselProps> =
     },
     manualProducts: {
       type: 'array',
-      label: 'Danh sách sản phẩm chọn tay (saleStatus = free & có files)',
+      label: 'Danh sách sản phẩm chọn tay (Miễn phí & có file hoặc có link)',
       arrayFields: {
         productId: createProductExternalField({ label: 'Chọn tài nguyên' }),
       },

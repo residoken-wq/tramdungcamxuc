@@ -1848,14 +1848,22 @@ Trong đợt nâng cấp Sitemap v2 (SM-05), trang **Tài nguyên** (`/tai-nguye
 #### 3. Khối Trượt tài nguyên miễn phí (`LeadMagnetCarousel`)
 
 - **Vị trí**: Nhóm **Chuyển đổi**.
-- **Mục đích**: Trình bày danh sách tài nguyên miễn phí (Ebook, Toolkit, tài liệu hướng dẫn) dạng slide trượt mượt mà kèm biểu mẫu đăng ký nhận nhanh qua email (link ký hạn 7 ngày an toàn).
-- **Cách dùng**:
-  - Chọn **Chế độ hiển thị (`mode`)**:
-    - `Tự động (`auto`)`: Tự động tải tất cả các sản phẩm có trạng thái **Miễn phí** (`saleStatus = free`), đã xuất bản và có đính kèm tệp tải về (tối đa 12 tài nguyên, sắp xếp theo thứ tự).
-    - `Thủ công (`manual`)`: Tự tay lựa chọn từ 1 đến 12 sản phẩm tài nguyên cụ thể từ danh mục Sản phẩm.
-  - Trên trang công khai, độc giả có thể bấm nút chuyển slide trước/sau, bấm các chấm tròn vị trí hoặc vuốt cảm ứng trên điện thoại.
-  - Độc giả chỉ cần điền tên, email và tích chọn đồng ý là hệ thống tự động gửi email chứa link tải tệp bảo mật có thời hạn 7 ngày.
-  - _Lưu ý_: Nếu chưa có tài nguyên miễn phí nào đủ điều kiện, khối sẽ tự ẩn trên trang công khai.
+- **Mục đích**: Trình bày danh sách tài nguyên và công cụ miễn phí (Ebook, Toolkit, công cụ số có link) dạng slide trượt hoặc dạng danh sách lưới.
+- **Điều kiện hiển thị thẻ**: Thẻ hiện khi sản phẩm thỏa mãn đồng thời:
+  - Trạng thái **Miễn phí** (`saleStatus = free`);
+  - **Đã xuất bản** (`_status = published`);
+  - **Có tệp đính kèm** HOẶC **Có liên kết của nút (`externalUrl`)**:
+    - **Có file đính kèm**: Khách nhập tên và email để nhận link tải tài liệu qua email (link ký hạn 7 ngày an toàn).
+    - **Chỉ có link (không file)**: Khách bấm nút sẽ đi thẳng tới công cụ (VD: `/habit/chan-doan`).
+    - *Trường hợp sản phẩm có cả hai*: Hệ thống luôn ưu tiên biểu mẫu nhận file để giữ luồng thu lead.
+- **Cách dùng trong Puck**:
+  - Chọn **Kiểu hiển thị (`display`)**: Dạng trượt ngang (`carousel`) hoặc Dạng danh sách lưới (`list`).
+  - Chọn **Chế độ lấy tài nguyên (`mode`)**:
+    - `Tự động (`auto`)`: Tự động tải tất cả các sản phẩm Miễn phí, đã xuất bản và có file hoặc có link (tối đa 12 sản phẩm, sắp xếp theo thứ tự `order`).
+    - `Thủ công (`manual`)`: Chọn tay từ 1 đến 12 sản phẩm từ danh sách `(Miễn phí & có file hoặc có link)`.
+  - Nhãn nút: Tự động dùng nhãn nhập ở ô **Nhãn nút** (`ctaLabel`) của sản phẩm nếu có. Nếu để trống, hệ thống tự hiển thị `"Nhận tài liệu"` (nếu có file) hoặc `"Dùng miễn phí"` (nếu chỉ có link).
+  - Liên kết ngoài (bắt đầu bằng `https://`): Mở trong tab mới và tự động đo lường sự kiện `external_clicked`. Liên kết trong web (bắt đầu bằng `/`): Mở ngay trên trang.
+  - _Lưu ý_: Nếu chưa có tài nguyên miễn phí nào đủ điều kiện, khối sẽ tự ẩn trên trang công khai (trong trình dựng Puck sẽ hiện khung nhắc Hana tạo sản phẩm).
 
 #### 4. Đánh dấu Bài viết nổi bật (Featured Post)
 
@@ -1864,13 +1872,18 @@ Trong đợt nâng cấp Sitemap v2 (SM-05), trang **Tài nguyên** (`/tai-nguye
 - Tích chọn ô **Đánh dấu là bài viết nổi bật** (`featured`).
 - Trên trang `/tai-nguyen`, bài viết nổi bật mới nhất sẽ được hiển thị thành một thẻ lớn trang trọng ở đầu danh sách (kèm ảnh bìa lớn, huy hiệu chủ đề, tiêu đề, tóm tắt và thời gian đọc dự kiến). Thẻ này sẽ không bị lặp lại trong lưới bài viết bên dưới.
 
-#### 5. Tạo tài nguyên miễn phí trong CMS
+#### 5. Tạo tài nguyên hoặc công cụ miễn phí trong CMS
 
 - Vào danh mục **Sản phẩm** (`products`) -> **Tạo mới**.
-- **Tab 1: Cơ bản**: Nhập tên tài nguyên, đường dẫn slug, mô tả ngắn, chọn chủ đề và tải lên ảnh bìa.
+- **Tab 1: Cơ bản**:
+  - Nhập tên tài nguyên / công cụ, đường dẫn slug, mô tả ngắn, chọn chủ đề và tải lên ảnh bìa.
+  - Nhập **Nhãn nút** (`ctaLabel`) nếu muốn đổi chữ trên nút (VD: `"Nhận công cụ miễn phí"`).
 - **Tab 2: Giá & bán**: Ở mục **Trạng thái mở bán**, chọn **`Miễn phí` (`free`)**. (Giá bán để `0`).
-- **Tab 5: Tệp đính kèm**: Bấm tải lên tài liệu PDF hoặc bộ công cụ mà bạn muốn tặng độc giả.
-- Bấm **Lưu** hoặc **Xuất bản**. Tài nguyên sẽ tự động xuất hiện trong khối `LeadMagnetCarousel` và trong bộ lọc chủ đề "Tài liệu" trên trang Tài nguyên.
+- **Chọn 1 trong 2 hình thức (hoặc cả hai)**:
+  - **Trường hợp 1 – Tài nguyên tải về (Ebook, Toolkit)**: Vào **Tab Tệp đính kèm**, tải lên tài liệu PDF để gửi qua email cho độc giả.
+  - **Trường hợp 2 – Công cụ trực tuyến không có file (VD: Bài test, Quiz chẩn đoán)**: Vào **Tab Liên kết**, nhập đường dẫn tại ô **Liên kết của nút** (VD: `/habit/chan-doan`).
+- Bấm **Lưu** hoặc **Xuất bản**. Sản phẩm sẽ tự động xuất hiện trong khối `LeadMagnetCarousel` và trong bộ lọc chủ đề "Tài liệu" trên trang Tài nguyên.
+- **Lưu ý quan trọng cho Hana**: Các công cụ số **bán sau dùng thử** (như EQ Buddy số, Habit Tracker 28 ngày) phải để trạng thái **`Đang mở bán` (`on_sale`)** và nhập số ngày dùng thử (21 hoặc 28 ngày), **không** để trạng thái "Miễn phí".
 
 #### 6. Khối Đăng ký nhận bản tin (`NewsletterForm`) & Quản lý Leads
 
