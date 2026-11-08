@@ -54,13 +54,30 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
     try {
       await bootstrapAdmin(page)
 
-      // Create page with communityTemplate via REST
+      // Create page with communityTemplate via REST (Hero with image for overlay test)
+      const testTemplate = {
+        ...communityTemplate,
+        content: communityTemplate.content.map((item) => {
+          if (item.type === 'HeroImage') {
+            return {
+              ...item,
+              props: {
+                ...item.props,
+                imageUrl: '/brand/sample-cover.svg',
+                imageAlt: 'Ảnh bìa mẫu',
+              },
+            }
+          }
+          return item
+        }),
+      }
+
       const res = await page.request.post('/api/pages', {
         data: {
           title: `[MẪU] Cộng đồng CD-01 ${suffix}`,
           slug,
           _status: 'published',
-          puckData: communityTemplate,
+          puckData: testTemplate,
         },
       })
 
@@ -80,6 +97,13 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
         // Center of hero title should be in left half (< 720px)
         expect(heroBox.x + heroBox.width / 2).toBeLessThan(720)
       }
+
+      // CD-02: Hero overlay has dark background color, not transparent
+      const overlayEl = guest.locator('section[data-eb-hero] [aria-hidden="true"]').first()
+      await expect(overlayEl).toBeVisible()
+      const overlayBg = await overlayEl.evaluate((el) => window.getComputedStyle(el).backgroundColor)
+      expect(overlayBg).not.toBe('rgba(0, 0, 0, 0)')
+      expect(overlayBg).toMatch(/rgba?\(40,\s*10,\s*96/)
 
       // Slide 49: 3 cards in space section, card 3 has no link, check top stripes
       const spaceHeading = guest.getByRole('heading', { name: /chọn không gian của bạn/i })
@@ -105,6 +129,11 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       await expect(meTimeCard.locator('a[href="#me-time"]')).toBeVisible()
       await expect(yogaCard.locator('a[href="#yoga-buddy"]')).toBeVisible()
 
+      // CD-02: Slide 49 subtitle has text-transform: uppercase
+      const meTimeSubtitle = meTimeCard.locator('div').filter({ hasText: /thương mình theo cách riêng/i }).first()
+      const subtitleTransform = await meTimeSubtitle.evaluate((el) => window.getComputedStyle(el).textTransform)
+      expect(subtitleTransform).toBe('uppercase')
+
       // Card 2 (coming soon) has NO link
       expect(await comingSoonCard.locator('a').count()).toBe(0)
 
@@ -117,6 +146,14 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       // Anchor scroll targets exist on page
       await expect(guest.locator('#me-time')).toBeVisible()
       await expect(guest.locator('#yoga-buddy')).toBeVisible()
+
+      // CD-02: Slide 51 center card "Me Time của tui" title color accent-pink and font-size >= 24px
+      const centerCardHeading = guest.getByRole('heading', { name: /me time của tui/i }).first()
+      await expect(centerCardHeading).toBeVisible()
+      const centerTitleColor = await centerCardHeading.evaluate((el) => window.getComputedStyle(el).color)
+      expect(centerTitleColor).toMatch(/rgb\(239,\s*59,\s*131\)/)
+      const centerTitleSizeDesktop = await centerCardHeading.evaluate((el) => parseFloat(window.getComputedStyle(el).fontSize))
+      expect(centerTitleSizeDesktop).toBeGreaterThanOrEqual(24)
 
       // Slide 55: 2 cards in one row on desktop 1440
       const routineLeft = guest.getByRole('heading', { name: /hành trình 30 phút/i })
@@ -144,6 +181,10 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       // 2. Mobile 375px: responsive check & no horizontal scroll
       await guest.setViewportSize({ width: 375, height: 812 })
       await guest.waitForTimeout(300)
+
+      // CD-02: Slide 51 center card title size >= 24px on mobile
+      const centerTitleSizeMobile = await centerCardHeading.evaluate((el) => parseFloat(window.getComputedStyle(el).fontSize))
+      expect(centerTitleSizeMobile).toBeGreaterThanOrEqual(24)
 
       const scrollWidth = await guest.evaluate(() => document.documentElement.scrollWidth)
       const clientWidth = await guest.evaluate(() => document.documentElement.clientWidth)
