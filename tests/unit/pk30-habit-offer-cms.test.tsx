@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi as vitest } from 'vitest'
+
+vitest.mock('server-only', () => ({}))
 import { HabitOfferClient } from '@/components/habit/HabitOfferClient'
 import { getHabitProduct, type HabitProductData } from '@/lib/habit.server'
 import { Products } from '@/collections/Products'
@@ -28,9 +30,7 @@ describe('PK-30: Habit Offer CMS & Field Customization', () => {
 
   describe('HabitOfferClient rendering & fallbacks', () => {
     it('khi không có field mới: rơi về chữ mặc định trong vi.habit.offer (HTML giống trước)', () => {
-      const { container } = render(
-        <HabitOfferClient product={baseProduct} journeyDays={28} />,
-      )
+      const { container } = render(<HabitOfferClient product={baseProduct} journeyDays={28} />)
 
       // Hero header mặc định
       expect(screen.getByText(vi.habit.offer.badge)).toBeDefined()
@@ -89,9 +89,7 @@ describe('PK-30: Habit Offer CMS & Field Customization', () => {
         bottomDescription: 'Đăng ký ngay hôm nay để nhận trọn vẹn đặc quyền.',
       }
 
-      const { container } = render(
-        <HabitOfferClient product={customProduct} journeyDays={30} />,
-      )
+      const { container } = render(<HabitOfferClient product={customProduct} journeyDays={30} />)
 
       // Chữ tùy biến xuất hiện
       expect(screen.getByText('Khóa học chuyển hóa đặc biệt')).toBeDefined()
@@ -262,4 +260,3 @@ describe('PK-30: Habit Offer CMS & Field Customization', () => {
     })
   })
 })
-
