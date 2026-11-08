@@ -34,7 +34,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
         class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
       >
         <div
-          class="rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 bg-deep-navy border-deep-navy/20 text-white text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
+          class="rounded-card border overflow-hidden shadow-soft flex flex-col justify-between eb-card-interactive bg-deep-navy border-deep-navy/20 text-white text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
           data-eb-card=""
           data-eb-card-solid=""
         >
@@ -122,7 +122,7 @@ exports[`SM-04: Puck Blocks Unit & Snapshot Tests > ServiceCards Block > matches
           </div>
         </div>
         <div
-          class="rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 bg-white border-deep-navy/10 text-deep-navy text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
+          class="rounded-card border overflow-hidden shadow-soft flex flex-col justify-between eb-card-interactive bg-white border-deep-navy/10 text-deep-navy text-left group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left"
           data-eb-card=""
         >
           <div>

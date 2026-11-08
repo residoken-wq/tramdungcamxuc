@@ -52,6 +52,7 @@ test.describe('PK-29: Motion & Animation (Public Pages)', () => {
         {
           type: 'HeroTwoEntries',
           props: {
+            version: 4,
             id: `hero-${suffix}`,
             titleLine1: '[MẪU] TRẠM DỪNG',
             titleLine2: '[MẪU] CẢM XÚC',
@@ -68,6 +69,7 @@ test.describe('PK-29: Motion & Animation (Public Pages)', () => {
         {
           type: 'IconCardGrid',
           props: {
+            version: 2,
             id: `grid-${suffix}`,
             _style: {
               entrance: 'stagger',
@@ -95,6 +97,7 @@ test.describe('PK-29: Motion & Animation (Public Pages)', () => {
         {
           type: 'StatsBar',
           props: {
+            version: 3,
             id: `stats-${suffix}`,
             stats: [
               {
@@ -111,6 +114,7 @@ test.describe('PK-29: Motion & Animation (Public Pages)', () => {
         {
           type: 'JourneySteps',
           props: {
+            version: 3,
             id: `journey-${suffix}`,
             variant: 'cards',
           },
@@ -118,11 +122,18 @@ test.describe('PK-29: Motion & Animation (Public Pages)', () => {
         {
           type: 'FAQ',
           props: {
+            version: 6,
+            source: 'manual',
+            variant: 'accordion',
             id: `faq-${suffix}`,
             items: [
               {
-                question: '[MẪU] Khóa học có hoàn tiền không?',
-                answer: '[MẪU] Không có chính sách hoàn tiền sau khi đăng ký.',
+                type: 'FaqItem',
+                props: {
+                  id: `faq-item-1-${suffix}`,
+                  question: '[MẪU] Câu hỏi thử số 1?',
+                  answer: '[MẪU] Câu trả lời thử số 1.',
+                },
               },
             ],
           },
@@ -183,20 +194,25 @@ test.describe('PK-29: Motion & Animation (Public Pages)', () => {
       await expect(cardGrid).toHaveClass(/eb-in-view/, { timeout: 5000 })
       const cardLocators = cardGrid.locator('[data-eb-card]')
       await expect(cardLocators.first()).toBeVisible({ timeout: 2000 })
-      const firstCardOpacity = await cardLocators
-        .first()
-        .evaluate((el) => window.getComputedStyle(el).opacity)
-      expect(firstCardOpacity).toBe('1')
+      // QA PK-29: the stagger animation runs ≤ ~0.9s, so poll instead of reading mid-animation.
+      const cardCount = await cardLocators.count()
+      for (let i = 0; i < cardCount; i++) {
+        await expect
+          .poll(() => cardLocators.nth(i).evaluate((el) => window.getComputedStyle(el).opacity), {
+            timeout: 2000,
+          })
+          .toBe('1')
+      }
 
       // Mở FAQ bằng bàn phím (Enter) -> nội dung hiện, aria-expanded = true
-      const faqBtn = guest.getByRole('button', { name: /Khóa học có hoàn tiền không/i })
+      const faqBtn = guest.getByRole('button', { name: /Câu hỏi thử số 1/i })
       await faqBtn.scrollIntoViewIfNeeded()
       expect(await faqBtn.getAttribute('aria-expanded')).toBe('false')
 
       await faqBtn.focus()
       await guest.keyboard.press('Enter')
       await expect(faqBtn).toHaveAttribute('aria-expanded', 'true')
-      await expect(guest.getByText('Không có chính sách hoàn tiền sau khi đăng ký.')).toBeVisible()
+      await expect(guest.getByText('[MẪU] Câu trả lời thử số 1.')).toBeVisible()
 
       // -------------------------------------------------------------
       // 2. Kiểm tra chế độ Reduced Motion: nội dung hiện ngay, số cuối ngay
@@ -238,4 +254,3 @@ test.describe('PK-29: Motion & Animation (Public Pages)', () => {
     }
   })
 })
-
