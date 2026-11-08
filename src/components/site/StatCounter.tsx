@@ -21,8 +21,10 @@ export function StatCounter({ value, className = '', isEditing = false }: StatCo
 
   useEffect(() => {
     if (!parsed || isEditing || typeof window === 'undefined') return
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (media.matches) return
+    // QA PK-29: matchMedia / IntersectionObserver may be missing (old browsers, tests): stay static.
+    if (typeof window.matchMedia !== 'function') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (typeof IntersectionObserver === 'undefined') return
 
     const node = elementRef.current
     if (!node) return
@@ -94,4 +96,3 @@ export function StatCounter({ value, className = '', isEditing = false }: StatCo
     </span>
   )
 }
-

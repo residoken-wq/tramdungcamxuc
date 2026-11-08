@@ -22,8 +22,9 @@ export function JourneyStepsMotion({
 
   useEffect(() => {
     if (isEditing || typeof window === 'undefined') return
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (media.matches) return
+    // QA PK-29: matchMedia / IntersectionObserver may be missing (old browsers, tests): stay static.
+    if (typeof window.matchMedia !== 'function') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const container = containerRef.current
     if (!container) return
@@ -75,8 +76,7 @@ export function JourneyStepsMotion({
     }
   }, [isEditing])
 
-  const progressRatio =
-    activeStepIndex !== null ? Math.min(Math.max(activeStepIndex / 4, 0), 1) : 0
+  const progressRatio = activeStepIndex !== null ? Math.min(Math.max(activeStepIndex / 4, 0), 1) : 0
 
   return (
     <div ref={containerRef} className="relative w-full eb-journey-motion">
@@ -95,4 +95,3 @@ export function JourneyStepsMotion({
     </div>
   )
 }
-
