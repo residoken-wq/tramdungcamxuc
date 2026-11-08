@@ -39,16 +39,52 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
   const faqList = product?.faq && product.faq.length > 0 ? product.faq : []
   const isLifetime = !product?.accessDurationDays || product.accessDurationDays <= 0
 
+  // PK-30: Các trường nội dung linh hoạt từ CMS (fallback về vi.habit.offer)
+  const seriesLabel = product?.offerSeriesLabel?.trim() || vi.habit.offer.badge
+  const titleLine1 = product?.offerTitleLine1?.trim() || vi.habit.offer.titleLine1
+  const titleLine2 = product?.offerTitleLine2?.trim() || vi.habit.offer.titleLine2
+  const emotionLine = product?.offerEmotionLine?.trim() || vi.habit.offer.emotionalLine
+
+  const curriculumHeading = product?.curriculumHeading?.trim() || vi.habit.offer.curriculum.heading
+  const curriculumSubheading =
+    product?.curriculumSubheading?.trim() || vi.habit.offer.curriculum.subheading
+  const curriculumModules =
+    product?.curriculumModules && product.curriculumModules.length > 0
+      ? product.curriculumModules.map((m) => ({
+          title: m.title,
+          desc: m.description || '',
+        }))
+      : vi.habit.offer.curriculum.modules
+  const modulesCount = curriculumModules.length
+
+  const featuresHeading = product?.featuresHeading?.trim() || vi.habit.offer.features.heading
+  const featuresSubheading =
+    product?.featuresSubheading?.trim() || vi.habit.offer.features.subheading
+  const featureItems =
+    product?.featureItems && product.featureItems.length > 0
+      ? product.featureItems.map((f) => ({
+          title: f.title,
+          desc: f.description || '',
+        }))
+      : vi.habit.offer.features.items
+
+  const bottomTitle = product?.bottomTitle?.trim()
+    ? product.bottomTitle.replace(/{ngay}/g, String(journeyDays))
+    : vi.habit.offer.bottomTitle(journeyDays)
+  const bottomDescription = product?.bottomDescription?.trim()
+    ? product.bottomDescription
+    : vi.habit.offer.bottomDesc(videoCount, techniqueCount)
+
   return (
     <div className="w-full">
       {/* 1. HERO SECTION */}
       <section className="py-12 sm:py-20 bg-warm-ivory border-b border-lavender-mist/40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <SectionHeader
-            seriesLabel={vi.habit.offer.badge}
-            titleLine1={vi.habit.offer.titleLine1}
-            titleLine2={vi.habit.offer.titleLine2}
-            emotionLine={vi.habit.offer.emotionalLine}
+            seriesLabel={seriesLabel}
+            titleLine1={titleLine1}
+            titleLine2={titleLine2}
+            emotionLine={emotionLine}
             as="h1"
             className="mb-8"
           />
@@ -168,7 +204,7 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
             </div>
             <div className="p-4 rounded-xl bg-warm-ivory">
               <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                {vi.habit.offer.stats.modulesValue}
+                {modulesCount}
               </span>
               <span className="text-xs sm:text-sm font-semibold text-deep-navy">
                 {vi.habit.offer.stats.modules}
@@ -183,27 +219,27 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">
-              {vi.habit.offer.curriculum.heading}
+              {curriculumHeading}
             </h2>
             <p className="text-sm sm:text-base text-deep-navy/70">
-              {vi.habit.offer.curriculum.subheading}
+              {curriculumSubheading}
             </p>
           </div>
 
           <div className="space-y-4">
-            {vi.habit.offer.curriculum.modules.map((mod, index) => (
+            {curriculumModules.map((mod, index) => (
               <div
                 key={index}
                 className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft flex items-start gap-4"
               >
                 <div className="w-10 h-10 rounded-full bg-soft-pink text-deep-navy font-bold flex items-center justify-center shrink-0 text-sm">
-                  0{index + 1}
+                  {index + 1 < 10 ? `0${index + 1}` : index + 1}
                 </div>
                 <div>
                   <h3 className="font-semibold text-base sm:text-lg text-deep-navy mb-1">
                     {mod.title}
                   </h3>
-                  <p className="text-sm text-deep-navy/70 leading-relaxed">{mod.desc}</p>
+                  {mod.desc && <p className="text-sm text-deep-navy/70 leading-relaxed">{mod.desc}</p>}
                 </div>
               </div>
             ))}
@@ -216,15 +252,15 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">
-              {vi.habit.offer.features.heading}
+              {featuresHeading}
             </h2>
             <p className="text-sm sm:text-base text-deep-navy/70">
-              {vi.habit.offer.features.subheading}
+              {featuresSubheading}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {vi.habit.offer.features.items.map((feat, index) => (
+            {featureItems.map((feat, index) => (
               <div
                 key={index}
                 className="p-6 rounded-card bg-warm-ivory border border-lavender-mist text-left"
@@ -233,7 +269,7 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
                   ✓
                 </span>
                 <h3 className="font-semibold text-deep-navy text-base mb-2">{feat.title}</h3>
-                <p className="text-sm text-deep-navy/70 leading-relaxed">{feat.desc}</p>
+                {feat.desc && <p className="text-sm text-deep-navy/70 leading-relaxed">{feat.desc}</p>}
               </div>
             ))}
           </div>
@@ -269,10 +305,10 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
       <section className="py-16 bg-brand-gradient border-t border-lavender-mist">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h2 className="font-display text-3xl sm:text-4xl text-deep-navy mb-4">
-            {vi.habit.offer.bottomTitle(journeyDays)}
+            {bottomTitle}
           </h2>
           <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">
-            {vi.habit.offer.bottomDesc(videoCount, techniqueCount)}
+            {bottomDescription}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             {cta &&

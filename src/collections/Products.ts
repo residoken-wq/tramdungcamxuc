@@ -290,6 +290,90 @@ export const Products: CollectionConfig = {
           ],
         },
         {
+          label: vi.pk30.tabIntro,
+          admin: {
+            condition: showFor(['digital_tool']),
+          },
+          fields: [
+            text('offerSeriesLabel', vi.pk30.offerSeriesLabel, false, {
+              admin: {
+                description: vi.pk30.descriptions.offerSeriesLabel,
+              },
+            }),
+            text('offerTitleLine1', vi.pk30.offerTitleLine1, false, {
+              admin: {
+                description: vi.pk30.descriptions.offerTitleLine1,
+              },
+            }),
+            text('offerTitleLine2', vi.pk30.offerTitleLine2, false, {
+              admin: {
+                description: vi.pk30.descriptions.offerTitleLine2,
+              },
+            }),
+            text('offerEmotionLine', vi.pk30.offerEmotionLine, false, {
+              admin: {
+                description: vi.pk30.descriptions.offerEmotionLine,
+              },
+            }),
+            text('curriculumHeading', vi.pk30.curriculumHeading, false, {
+              admin: {
+                description: vi.pk30.descriptions.curriculumHeading,
+              },
+            }),
+            textarea('curriculumSubheading', vi.pk30.curriculumSubheading, {
+              admin: {
+                description: vi.pk30.descriptions.curriculumSubheading,
+              },
+            }),
+            {
+              name: 'curriculumModules',
+              label: vi.pk30.curriculumModules,
+              type: 'array',
+              maxRows: 8,
+              admin: {
+                description: vi.pk30.descriptions.curriculumModules,
+              },
+              fields: [
+                text('title', vi.pk30.moduleTitle, true),
+                textarea('description', vi.pk30.moduleDescription),
+              ],
+            },
+            text('featuresHeading', vi.pk30.featuresHeading, false, {
+              admin: {
+                description: vi.pk30.descriptions.featuresHeading,
+              },
+            }),
+            textarea('featuresSubheading', vi.pk30.featuresSubheading, {
+              admin: {
+                description: vi.pk30.descriptions.featuresSubheading,
+              },
+            }),
+            {
+              name: 'featureItems',
+              label: vi.pk30.featureItems,
+              type: 'array',
+              maxRows: 6,
+              admin: {
+                description: vi.pk30.descriptions.featureItems,
+              },
+              fields: [
+                text('title', vi.pk30.featureTitle, true),
+                textarea('description', vi.pk30.featureDescription),
+              ],
+            },
+            text('bottomTitle', vi.pk30.bottomTitle, false, {
+              admin: {
+                description: vi.pk30.descriptions.bottomTitle,
+              },
+            }),
+            textarea('bottomDescription', vi.pk30.bottomDescription, {
+              admin: {
+                description: vi.pk30.descriptions.bottomDescription,
+              },
+            }),
+          ],
+        },
+        {
           label: vi.cms.productForm.tabs.package,
           admin: {
             condition: showFor(['package']),

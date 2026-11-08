@@ -642,6 +642,78 @@ export interface Product {
    */
   relatedProducts?: (number | Product)[] | null;
   /**
+   * Để trống = dùng chữ mặc định
+   */
+  offerSeriesLabel?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  offerTitleLine1?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  offerTitleLine2?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  offerEmotionLine?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  curriculumHeading?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  curriculumSubheading?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  curriculumModules?:
+    | {
+        /**
+         * Nhập tiêu đề module.
+         */
+        title: string;
+        /**
+         * Nhập mô tả module.
+         */
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  featuresHeading?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  featuresSubheading?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  featureItems?:
+    | {
+        /**
+         * Nhập tiêu đề điểm khác biệt.
+         */
+        title: string;
+        /**
+         * Nhập mô tả điểm khác biệt.
+         */
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  bottomTitle?: string | null;
+  /**
+   * Để trống = dùng chữ mặc định
+   */
+  bottomDescription?: string | null;
+  /**
    * Danh sách cấu phần tạo nên gói (workshop, coaching, công cụ số). Dùng để tính tổng giá trị gói.
    */
   components?:
@@ -2755,6 +2827,30 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   relatedProducts?: T;
+  offerSeriesLabel?: T;
+  offerTitleLine1?: T;
+  offerTitleLine2?: T;
+  offerEmotionLine?: T;
+  curriculumHeading?: T;
+  curriculumSubheading?: T;
+  curriculumModules?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  featuresHeading?: T;
+  featuresSubheading?: T;
+  featureItems?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  bottomTitle?: T;
+  bottomDescription?: T;
   components?:
     | T
     | {
