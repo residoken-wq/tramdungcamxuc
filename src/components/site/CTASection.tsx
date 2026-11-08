@@ -146,7 +146,7 @@ export function CTASection({
   if (variant === 'solid') {
     const isDeepNavy = bgColor === 'deep-navy'
     return (
-      <section id={id} data-cta-solid="" className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+      <section data-cta-solid="" className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
         <div className="mx-auto max-w-4xl text-center flex flex-col items-center">
           {seriesLabel && (
             <span
@@ -163,7 +163,7 @@ export function CTASection({
             <p
               {...textTarget(id, 'emotionLine')}
               className={`mb-4 font-quote text-lg sm:text-xl italic ${
-                isDeepNavy ? 'text-accent-pink' : 'text-deep-navy/85'
+                isDeepNavy ? 'text-soft-pink' : 'text-deep-navy/85'
               } max-w-2xl`}
             >
               {emotionLine}
@@ -199,7 +199,7 @@ export function CTASection({
             {buttonText && (
               <Link
                 href={safeHref(finalButtonHref) || '#'}
-                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-base sm:text-lg font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
+                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
                   buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                 } ${
                   buttonVariant === 'magenta'
@@ -216,7 +216,7 @@ export function CTASection({
             {secondaryButtonText && (
               <Link
                 href={safeHref(secondaryButtonLink) || '#'}
-                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-base sm:text-lg font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
+                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
                   buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                 } ${
                   secondaryButtonVariant === 'magenta'
