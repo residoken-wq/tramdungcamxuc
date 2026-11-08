@@ -121,6 +121,7 @@ export function HeroTwoEntries({
   puck,
 }: HeroTwoEntriesProps & { id?: string }) {
   const isEditing = Boolean(puck?.isEditing)
+  const isFirstHero = Boolean(priority) && !isEditing
   const titleClass = `font-display ${fontSizeClass('title', titleSize, 'h1')} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`
   const isRows = entriesLayout === 'rows'
   const entriesLayoutClass = isRows
@@ -280,13 +281,13 @@ export function HeroTwoEntries({
           {seriesLabel && (
             <span
               {...textTarget(id, 'seriesLabel')}
-              className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
+              className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
             >
               {seriesLabel}
             </span>
           )}
 
-          <h1 className={titleClass}>
+          <h1 className={`eb-hero-title ${titleClass}`}>
             <TwoToneTitle
               id={id}
               line1={titleLine1}
@@ -299,7 +300,7 @@ export function HeroTwoEntries({
           {emotionLine && (
             <p
               {...textTarget(id, 'emotionLine')}
-              className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
+              className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
             >
               {emotionLine}
             </p>
@@ -315,7 +316,7 @@ export function HeroTwoEntries({
           )}
         </div>
 
-        <div className="w-full mt-10 sm:mt-14">{entryCards}</div>
+        <div className="eb-hero-cta w-full mt-10 sm:mt-14">{entryCards}</div>
       </HeroBackdrop>
     )
   }
@@ -324,6 +325,7 @@ export function HeroTwoEntries({
     <section
       className={`group/hero w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
       data-bg={bgColor}
+      data-eb-hero={isFirstHero ? 'first' : undefined}
     >
       <div className="mx-auto max-w-5xl">
         {hasValidImage ? (
@@ -341,13 +343,13 @@ export function HeroTwoEntries({
                     {seriesLabel && (
                       <span
                         {...textTarget(id, 'seriesLabel')}
-                        className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                        className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                       >
                         {seriesLabel}
                       </span>
                     )}
 
-                    <h1 className={titleClass}>
+                    <h1 className={`eb-hero-title ${titleClass}`}>
                       <TwoToneTitle
                         id={id}
                         line1={titleLine1}
@@ -360,7 +362,7 @@ export function HeroTwoEntries({
                     {emotionLine && (
                       <p
                         {...textTarget(id, 'emotionLine')}
-                        className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
+                        className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                           isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                         }`}
                       >
@@ -377,10 +379,10 @@ export function HeroTwoEntries({
                       </p>
                     )}
 
-                    {isTextColumn && <div className="w-full mt-6 sm:mt-8">{entryCards}</div>}
+                    {isTextColumn && <div className="eb-hero-cta w-full mt-6 sm:mt-8">{entryCards}</div>}
                   </div>
 
-                  <div className="order-2 lg:col-span-5 w-full flex flex-col">
+                  <div className="eb-hero-image order-2 lg:col-span-5 w-full flex flex-col">
                     <BrandImage
                       src={imageUrl!}
                       alt={imageAlt!}
@@ -410,7 +412,7 @@ export function HeroTwoEntries({
                 </div>
 
                 {/* Entry cards: only below if not in text column */}
-                {!isTextColumn && entryCards}
+                {!isTextColumn && <div className="eb-hero-cta">{entryCards}</div>}
               </div>
             )
           })()
@@ -421,14 +423,14 @@ export function HeroTwoEntries({
               {seriesLabel && (
                 <span
                   {...textTarget(id, 'seriesLabel')}
-                  className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                  className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                 >
                   {seriesLabel}
                 </span>
               )}
 
               {/* Signature Two-Tone Heading (Anton) */}
-              <h1 className={titleClass}>
+              <h1 className={`eb-hero-title ${titleClass}`}>
                 <TwoToneTitle
                   id={id}
                   line1={titleLine1}
@@ -442,7 +444,7 @@ export function HeroTwoEntries({
               {emotionLine && (
                 <p
                   {...textTarget(id, 'emotionLine')}
-                  className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
+                  className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                     isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                   }`}
                 >
@@ -461,7 +463,7 @@ export function HeroTwoEntries({
             </div>
 
             {/* Entry cards */}
-            {entryCards}
+            <div className="eb-hero-cta">{entryCards}</div>
           </div>
         )}
       </div>

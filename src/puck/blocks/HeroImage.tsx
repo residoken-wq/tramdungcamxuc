@@ -307,5 +307,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
 
     return { props: { ...baseProps, imageUrl: '', imageAlt: '' } }
   },
-  render: (props) => <HeroImage {...props} />,
+  render: ({ puck, ...props }) => (
+    <HeroImage {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }
