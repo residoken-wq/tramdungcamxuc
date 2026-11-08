@@ -98,3 +98,10 @@
   - FX-14: Thanh tiến độ đọc trang.
   - FX-15: Nền chuyển động nhẹ.
   - FX-16: Chuyển trang mượt.
+
+## Từ QA 08/11 (PK-30 → PK-34)
+
+- **Khoá tài liệu mồ côi làm trắng trang admin.** Xoá 1 user admin đang mở 1 trang / global → bản ghi `payload_locked_documents` còn lại mà không có user → trang đó trong admin render trắng (`extractID(undefined)`). Gặp ở máy QA (Menu điều hướng). Cân nhắc hook `afterDelete` của `users` xoá khoá của user đó.
+- **CI `eb11-rehearsal` chập chờn** (gặp ở PR #339, chạy lại thì xanh): tìm nguyên nhân, không chỉ chạy lại.
+- **Khối `NavMenu`:** ô "Căn lề" dùng chung cho máy tính và nút ☰ trên điện thoại; tách riêng để ☰ luôn sát phải.
+- **Footer dựng bằng builder:** chưa có khối dòng bản quyền "© <năm> Trạm Dừng Cảm Xúc" tự cập nhật năm như footer code.
