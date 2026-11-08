@@ -2766,15 +2766,21 @@ Tính năng **CSS tuỳ chỉnh, widget HTML, class / z-index và hiệu ứng v
   - **Class CSS:** Nhập tên class tùy biến (tối đa 5 class, viết chữ thường và cách nhau bởi dấu cách, ví dụ: `my-card highlight-box`). Class được lưu khi bạn rời ô hoặc bấm Enter.
   - **Thứ tự hiển thị (z-index):** Nhập số nguyên từ `-10` đến `100` để điều chỉnh lớp hiển thị trên/dưới khi các khối xếp đè lên nhau (hệ thống tự động thiết lập thuộc tính định vị tương đối `position: relative`).
 
-#### 5. Hiệu ứng vào khung hình (Entrance Animations)
+#### 5. Hiệu ứng vào khung hình (Entrance Animations & Chuyển động nhẹ PK-29)
 
 - Trong tab **Nâng cao**, tìm nhóm **Hiệu ứng vào khung hình**:
-  - **Hiệu ứng:** Lựa chọn giữa _Hiện dần (Fade in)_, _Hiện dần trượt lên (Fade up)_, hoặc _Phóng to nhẹ (Zoom in)_.
+  - **Hiệu ứng:** Lựa chọn giữa _Hiện dần (Fade in)_, _Hiện dần trượt lên (Fade up)_, _Phóng to nhẹ (Zoom in)_, hoặc **Hiện lần lượt từng thẻ** (dùng cho các khối lưới thẻ: Thẻ biểu tượng, Cột, Gói Growth Mirror, Lưới cảm nhận, Hệ sinh thái giải pháp, Danh sách tài liệu).
   - **Độ trễ:** Chọn thời gian chờ trước khi chạy hiệu ứng (0ms, 150ms, 300ms, 500ms).
+- **Các hiệu ứng chuyển động tinh tế tự động (không cần chỉnh):**
+  - **Hero đầu trang hiện êm:** Nhãn, tiêu đề 2 tầng, dòng cảm xúc và nút CTA lần lượt trượt lên êm dịu, hình ảnh biểu tượng xuất hiện nhẹ nhàng.
+  - **Số liệu tự đếm:** Các con số chỉ số tại thanh số liệu (ví dụ: `10+`, `500+`, `1.000+`, `39%`) tự động đếm tăng dần từ 0 khi khách hàng cuộn tới.
+  - **Thanh điều hướng (Header) thu gọn nhẹ:** Khi cuộn trang quá 64px, thanh điều hướng tự động thu gọn padding và logo nhỏ lại nhẹ nhàng mà không gây giật bố cục.
+  - **Hành trình 5 bước sáng dần:** Bước đang nằm ở giữa khung nhìn sẽ tự động làm nổi bật marker và đường nối sáng dần.
+  - **Câu hỏi thường gặp FAQ mở mượt mà:** Khung trả lời mở rộng và thu gọn êm ái với hiệu ứng trượt mượt.
 - **Thân thiện và Tinh tế:**
   - Trang web áp dụng kỹ thuật tăng cường lũy tiến: Nếu người đọc tắt JavaScript, toàn bộ nội dung vẫn hiển thị bình thường 100%, không bao giờ bị ẩn mất chữ.
-  - Tự động nhận diện cài đặt giảm chuyển động (_Reduce Motion_) của thiết bị người dùng để tắt hiệu ứng, đảm bảo khả năng tiếp cận (Accessibility WCAG).
-  - Trong màn hình chỉnh sửa trực quan của bạn (Canvas editor), hiệu ứng được tắt để bạn thao tác nhấp chọn và kéo thả dễ dàng nhất.
+  - Tự động nhận diện cài đặt giảm chuyển động (_Reduce Motion_) của thiết bị người dùng để tắt hiệu ứng, đảm bảo khả năng tiếp cận (Accessibility WCAG). Người dùng bật tính năng giảm chuyển động trên máy tính hoặc điện thoại sẽ thấy trang tĩnh bình thường – đây là hành vi hoàn toàn đúng chuẩn.
+  - Trong màn hình chỉnh sửa trực quan của bạn (Canvas editor), mọi hiệu ứng được tắt để bạn thao tác nhấp chọn và kéo thả dễ dàng nhất.
 
 ---
 
