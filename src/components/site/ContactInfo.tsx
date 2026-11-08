@@ -4,6 +4,7 @@ import React from 'react'
 import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { SocialIcon } from '@/components/brand'
 
 export interface PublicContactInfo {
   email?: string | null
@@ -11,6 +12,7 @@ export interface PublicContactInfo {
   officeAddress?: string | null
   linkedInUrl?: string | null
   facebookUrl?: string | null
+  tiktokUrl?: string | null
   youtubeUrl?: string | null
   zaloChatUrl?: string | null
 }
@@ -85,6 +87,10 @@ export function ContactInfo({
     typeof contact?.facebookUrl === 'string' && contact.facebookUrl.trim()
       ? contact.facebookUrl.trim()
       : null
+  const tiktokUrl =
+    typeof contact?.tiktokUrl === 'string' && contact.tiktokUrl.trim()
+      ? contact.tiktokUrl.trim()
+      : null
   const youtubeUrl =
     typeof contact?.youtubeUrl === 'string' && contact.youtubeUrl.trim()
       ? contact.youtubeUrl.trim()
@@ -97,7 +103,9 @@ export function ContactInfo({
   const hasEmail = Boolean(showEmail && email)
   const hasHotline = Boolean(showHotline && hotline)
   const hasOfficeAddress = Boolean(showOfficeAddress && officeAddress)
-  const hasSocial = Boolean(showSocial && (linkedInUrl || facebookUrl || youtubeUrl || zaloChatUrl))
+  const hasSocial = Boolean(
+    showSocial && (linkedInUrl || facebookUrl || tiktokUrl || youtubeUrl || zaloChatUrl),
+  )
 
   const activeCount = [hasEmail, hasHotline, hasOfficeAddress, hasSocial].filter(Boolean).length
 
@@ -125,6 +133,7 @@ export function ContactInfo({
   const zaloHref = zaloChatUrl ? safeHref(zaloChatUrl) : null
   const linkedInHref = linkedInUrl ? safeHref(linkedInUrl) : null
   const facebookHref = facebookUrl ? safeHref(facebookUrl) : null
+  const tiktokHref = tiktokUrl ? safeHref(tiktokUrl) : null
   const youtubeHref = youtubeUrl ? safeHref(youtubeUrl) : null
 
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -403,6 +412,18 @@ export function ContactInfo({
                     >
                       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                     </svg>
+                  </a>
+                )}
+
+                {tiktokHref && (
+                  <a
+                    href={tiktokHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={vi.sm06.contactInfo.tiktokLabel}
+                    className="w-11 h-11 rounded-full flex items-center justify-center bg-lavender-mist/50 text-deep-navy hover:bg-bright-magenta hover:text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-pink"
+                  >
+                    <SocialIcon name="tiktok" size={18} />
                   </a>
                 )}
 

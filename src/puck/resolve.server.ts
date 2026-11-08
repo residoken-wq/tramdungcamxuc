@@ -881,6 +881,7 @@ export async function resolveServerData(
     officeAddress: null,
     linkedInUrl: null,
     facebookUrl: null,
+    tiktokUrl: null,
     youtubeUrl: null,
     zaloChatUrl: null,
   }
@@ -922,6 +923,10 @@ export async function resolveServerData(
         facebookUrl:
           typeof rawDoc?.facebookUrl === 'string' && rawDoc.facebookUrl.trim()
             ? rawDoc.facebookUrl.trim()
+            : null,
+        tiktokUrl:
+          typeof rawDoc?.tiktokUrl === 'string' && rawDoc.tiktokUrl.trim()
+            ? rawDoc.tiktokUrl.trim()
             : null,
         youtubeUrl:
           typeof rawDoc?.youtubeUrl === 'string' && rawDoc.youtubeUrl.trim()
