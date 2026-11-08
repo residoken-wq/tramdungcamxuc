@@ -13,6 +13,8 @@
  * Output: only a summary per step; on failure the failing part (max ~150 lines).
  */
 import { spawnSync } from 'node:child_process'
+
+const STEP_TIMEOUT_MS = Number(process.env.CHECK_FAST_STEP_TIMEOUT_MS) || 10 * 60 * 1000
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -34,10 +36,21 @@ function run(label, cmd, cmdArgs, opts = {}) {
   const res = spawnSync(cmd, safeArgs, {
     encoding: 'utf8',
     shell: isWin,
+    // 08/11: a step that waits for keyboard input (e.g. Payload's "you've run Payload in dev mode"
+    // migration prompt) hung for an hour with no output. No stdin, and a hard stop after 10 min.
+    stdio: ['ignore', 'pipe', 'pipe'],
+    timeout: STEP_TIMEOUT_MS,
+    killSignal: 'SIGKILL',
     maxBuffer: 256 * 1024 * 1024,
     env: { ...process.env, TZ: 'UTC', PGTZ: 'UTC', NO_COLOR: '1', FORCE_COLOR: '0', ...opts.env },
   })
   const s = ((Date.now() - t0) / 1000).toFixed(0)
+  if (res.error?.code === 'ETIMEDOUT' || res.signal === 'SIGKILL') {
+    console.log(
+      `✘ ${label} (${s}s) – DỪNG sau ${STEP_TIMEOUT_MS / 60000} phút: có test đang treo (thường là chờ nhập phím, VD migration Payload hỏi "dev mode"). Chạy riêng: pnpm exec vitest run <file> --reporter=verbose để xem test nào.`,
+    )
+    return false
+  }
   const ok = res.status === 0
   const lines = `${res.stdout ?? ''}\n${res.stderr ?? ''}`.replace(ANSI, '').split('\n')
   const keep = opts.summary ? lines.filter((l) => opts.summary.test(l)) : []
