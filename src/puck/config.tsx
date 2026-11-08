@@ -1150,8 +1150,11 @@ export function getPuckConfig(options?: {
         const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
         return (
           <div
-            className={`w-full group/footer ${
-              isDeepNavy ? 'bg-deep-navy text-white' : 'bg-warm-ivory text-deep-navy'
+            // QA PK-31: side padding so the footer keeps the 24px outer margin on phones (brand book).
+            className={`w-full px-6 sm:px-8 group/footer ${
+              // QA PK-31: Container has no padding prop (only the Style tab), so the default footer
+              // touched the top edge; visible on navy. Ivory keeps its old spacing.
+              isDeepNavy ? 'bg-deep-navy text-white py-10 sm:py-12' : 'bg-warm-ivory text-deep-navy'
             } transition-colors`}
             data-footer-bg={footerBg}
           >
@@ -1162,9 +1165,15 @@ export function getPuckConfig(options?: {
                   isDeepNavy ? 'border-white/20' : 'border-gray-300'
                 } mb-6`}
               >
-                <div className={`h-8 ${isDeepNavy ? 'bg-white/20' : 'bg-gray-200'} rounded w-1/3`} />
-                <div className={`h-4 ${isDeepNavy ? 'bg-white/15' : 'bg-gray-200'} rounded w-2/3`} />
-                <div className={`h-4 ${isDeepNavy ? 'bg-white/10' : 'bg-gray-200'} rounded w-1/2`} />
+                <div
+                  className={`h-8 ${isDeepNavy ? 'bg-white/20' : 'bg-gray-200'} rounded w-1/3`}
+                />
+                <div
+                  className={`h-4 ${isDeepNavy ? 'bg-white/15' : 'bg-gray-200'} rounded w-2/3`}
+                />
+                <div
+                  className={`h-4 ${isDeepNavy ? 'bg-white/10' : 'bg-gray-200'} rounded w-1/2`}
+                />
                 <div
                   className={`h-32 ${
                     isDeepNavy
