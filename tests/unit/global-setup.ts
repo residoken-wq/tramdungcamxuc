@@ -14,6 +14,20 @@ import { migrations } from '../../src/migrations'
 export async function setup() {
   const payload = await getPayload({ config })
   try {
+    // 08/11: a database once run with `pnpm dev` (schema push) has a payload-migrations row with
+    // batch -1. Payload then asks "you've run Payload in dev mode … proceed?" and waits for a key
+    // press forever (check:fast hung for an hour on PK-30). Fail fast with a clear message.
+    const devPushed = await payload
+      .find({ collection: 'payload-migrations', where: { batch: { equals: -1 } }, limit: 1 })
+      .then((r) => r.totalDocs > 0)
+      .catch(() => false) // no migrations table yet: a fresh database
+    if (devPushed) {
+      throw new Error(
+        'DB unit test đã từng chạy `pnpm dev` (dev mode push), migration sẽ dừng chờ hỏi. ' +
+          'Dùng DB riêng cho test: tạo DB trống rồi chạy với DATABASE_URI trỏ vào DB đó ' +
+          '(xem docs/tasks/QUY_TRINH_TEST.md, mục DB test riêng).',
+      )
+    }
     await payload.db.migrate({
       migrations: migrations.map((migration) => ({
         name: migration.name,

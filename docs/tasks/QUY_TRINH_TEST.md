@@ -17,6 +17,17 @@ pnpm check:fast tests/unit/puck-blocks.test.tsx   # thêm file test liên quan n
 - Snapshot: `pnpm exec vitest run -u <file>` **chỉ file liên quan**, sau khi bỏ `NEXT_PUBLIC_TURNSTILE_SITE_KEY` khỏi môi trường. Đọc lại diff snapshot.
 - Prettier chỉ file mình sửa, không chạy trên `docs/`.
 
+## DB test riêng (bắt buộc từ 08/11)
+
+- Unit test tự chạy migration lên DB trong `DATABASE_URI`. **Không** dùng DB đã từng chạy `pnpm dev`: Payload sẽ dừng lại hỏi "dev mode … proceed?" và chờ mãi (PC nhà treo 60 phút ở PK-30).
+- Tạo 1 DB trống chỉ để test (1 lần):
+  `createdb tdcx_test` (hoặc `CREATE DATABASE tdcx_test;` trong psql / pgAdmin).
+- Chạy test trỏ vào DB đó:
+  - PowerShell: `$env:DATABASE_URI="postgres://<user>@localhost:5432/tdcx_test"; pnpm check:fast <file>`
+  - bash: `DATABASE_URI=postgres://<user>@localhost:5432/tdcx_test pnpm check:fast <file>`
+  - Dùng đúng user / mật khẩu Postgres trên máy mình. **Không** dán mật khẩu vào báo cáo hay commit.
+- DB đã dính dev mode: `global-setup` báo lỗi rõ ngay. `check:fast` cũng tự dừng mỗi bước sau 10 phút (đổi bằng `CHECK_FAST_STEP_TIMEOUT_MS`).
+
 ## Cách chạy lệnh (tiết kiệm token)
 
 - Chạy lệnh **ở foreground, chờ xong**, đừng chạy nền rồi hỏi lại liên tục ("standing by…"). Mỗi lần hỏi lại là một lượt tốn token.
