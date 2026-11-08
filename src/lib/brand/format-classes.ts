@@ -86,9 +86,9 @@ export function getCardRealBg(
  */
 export function allowedTextColors(
   bg: string = 'warm-ivory',
-  size: FontSizeOption | 'normal' | 'large' | boolean = 'md',
+  size: FontSizeOption | 'xl' | 'normal' | 'large' | boolean = 'md',
 ): Array<{ label: string; value: TextColorOption }> {
-  const isLarge = size === 'lg' || size === 'large' || size === true
+  const isLarge = size === 'lg' || size === 'xl' || size === 'large' || size === true
 
   if (bg === 'deep-navy') {
     return TEXT_COLOR_OPTIONS.filter((opt) => opt.value === 'white' || opt.value === 'soft-pink')
@@ -183,7 +183,7 @@ export function textAlignClass(align?: AlignOption): string {
  */
 export function fontSizeClass(
   role: BrandRole,
-  size: FontSizeOption = 'md',
+  size: FontSizeOption | 'xl' = 'md',
   as: SectionHeadingLevel = 'h2',
 ): string {
   if (role === 'title') {
@@ -291,6 +291,8 @@ export function fontSizeClass(
         return 'text-base sm:text-lg'
       case 'lg':
         return 'text-xl sm:text-2xl'
+      case 'xl':
+        return 'text-2xl sm:text-3xl lg:text-4xl'
       case 'md':
       default:
         return 'text-lg sm:text-xl'

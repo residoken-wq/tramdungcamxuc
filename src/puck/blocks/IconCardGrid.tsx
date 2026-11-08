@@ -101,6 +101,14 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
       label: vi.eb15b?.gridCardAlign || 'Căn lề tất cả thẻ',
       options: [...GRID_CARD_ALIGN_OPTIONS],
     },
+    equalHeight: {
+      type: 'radio',
+      label: vi.cd02?.iconCardGrid?.equalHeight || 'Chiều cao các thẻ bằng nhau',
+      options: [
+        { label: 'Tự động theo nội dung (Mặc định)', value: false },
+        { label: 'Bằng nhau (Đầy đủ hàng)', value: true },
+      ],
+    },
     cards: {
       type: 'slot',
       label: 'Danh sách thẻ',
@@ -128,6 +136,7 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
     connector: 'none',
     cardStyle: 'white',
     cardAlign: 'inherit',
+    equalHeight: false,
     cards: [
       {
         type: 'Card',

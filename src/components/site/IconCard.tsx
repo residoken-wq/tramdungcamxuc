@@ -49,7 +49,7 @@ export interface IconCardProps {
   text?: string
   titleColor?: TextColorOption
   textColor?: TextColorOption
-  titleSize?: FontSizeOption
+  titleSize?: FontSizeOption | 'xl'
   textSize?: FontSizeOption
   align?: AlignOption
   highlight?: CardHighlight

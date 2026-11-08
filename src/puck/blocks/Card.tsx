@@ -67,7 +67,10 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     titleSize: {
       type: 'select',
       label: vi.puckCard?.titleSize || 'Cỡ chữ tiêu đề',
-      options: [...FONT_SIZE_OPTIONS],
+      options: [
+        ...FONT_SIZE_OPTIONS,
+        { label: vi.cd02?.card?.titleSizeXl || 'Rất lớn (XL)', value: 'xl' },
+      ],
     },
     textSize: {
       type: 'select',
@@ -233,7 +236,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
   },
   resolveFields: (data, params) => {
     const cardRealBg = getCardRealBg(params?.parent)
-    const isTitleLarge = data?.props?.titleSize === 'lg'
+    const isTitleLarge = data?.props?.titleSize === 'lg' || data?.props?.titleSize === 'xl'
     const titleColors = allowedTextColors(cardRealBg, isTitleLarge)
     const subtitleColors = allowedTextColors(cardRealBg, false)
     const textColors = allowedTextColors(cardRealBg, false)
