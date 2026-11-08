@@ -191,6 +191,20 @@ html.eb-anim-ready [data-eb-hero='first'] .eb-hero-image {
   animation: eb-hero-image var(--motion-slow) var(--motion-ease-out) both;
 }
 
+/* PK-29 FX-05: Journey step active glow */
+html.eb-anim-ready [data-eb-card].eb-step-active [data-eb-card-row] {
+  border-color: rgb(var(--color-bright-magenta-rgb)) !important;
+  color: rgb(var(--color-bright-magenta-rgb)) !important;
+  box-shadow: 0 0 12px -2px rgb(var(--color-bright-magenta-rgb) / 0.35);
+  transition: border-color var(--motion-base) var(--motion-ease-out),
+              color var(--motion-base) var(--motion-ease-out),
+              box-shadow var(--motion-base) var(--motion-ease-out);
+}
+html.eb-anim-ready [data-eb-card].eb-step-active h3 {
+  color: rgb(var(--color-bright-magenta-rgb)) !important;
+  transition: color var(--motion-base) var(--motion-ease-out);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html.eb-anim-ready [data-eb-entrance],
   html.eb-anim-ready [data-eb-entrance] [data-eb-card] {
