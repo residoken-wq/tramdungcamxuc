@@ -311,6 +311,17 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
         'PhotoGallery',
         'MatrixTable',
         'LoopDiagram',
+        // PK-28: section blocks of the "Chuyển mình" design
+        'StoryLead',
+        'ContextProfile',
+        'PillarCardGrid',
+        'ProgramWishes',
+        'PhaseArchitecture',
+        'ProgramOverview',
+        'JourneyMilestones',
+        'ProgramStepFlow',
+        'BrandFormula',
+        'NumberedStepsStrip',
       ])
 
       expect(categories?.layout?.title).toBe('Bố cục')

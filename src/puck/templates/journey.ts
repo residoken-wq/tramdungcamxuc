@@ -266,7 +266,7 @@ export const journeyTemplate: Data = {
       type: 'LoopDiagram',
       props: {
         id: 'journey-loop',
-        version: 2,
+        version: 1,
         seriesLabel: '06 · NGUYÊN LÝ THIẾT KẾ',
         titleLine1: 'Một vòng lặp cho mọi kỹ năng',
         titleLine2: '',
