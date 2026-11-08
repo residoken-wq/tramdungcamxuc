@@ -91,5 +91,8 @@ export const PackageCardBlock: ComponentConfig<PackageCardItemProps> = {
       },
     }
   },
-  render: (props) => <PackageCardItem {...props} />,
+  // QA 08/11: `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <PackageCardItem {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }

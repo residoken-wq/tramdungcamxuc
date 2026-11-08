@@ -10,6 +10,8 @@ import { Modal } from '@/components/ui/Modal'
 import type { FloatingCoffeeData } from '@/lib/site-shell.server'
 
 interface CoffeeButtonProps {
+  /** CMS "Tiêu đề" (Cài đặt site → Ủng hộ cà phê); empty → the default label. */
+  label?: string | null
   onOpen: () => void
   buttonRef: React.RefObject<HTMLButtonElement | null>
 }
@@ -18,8 +20,8 @@ interface CoffeeButtonProps {
  * Floating coffee button (07/11): white round badge with the cup, overlapping a butter-cream
  * pill with the label. Phones (< sm) show the badge only, so the pill does not cover content.
  */
-export function CoffeeButton({ onOpen, buttonRef }: CoffeeButtonProps) {
-  const label = vi.cf01.floatingCoffee.ariaLabel
+export function CoffeeButton({ label: cmsLabel, onOpen, buttonRef }: CoffeeButtonProps) {
+  const label = cmsLabel?.trim() || vi.cf01.floatingCoffee.ariaLabel
   return (
     <button
       ref={buttonRef}
@@ -152,7 +154,11 @@ export function FloatingCoffee({ coffeeDonation, className = '' }: FloatingCoffe
         className={`fixed right-4 sm:right-6 z-30 ${className}`}
         style={{ bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}
       >
-        <CoffeeButton onOpen={modal.open} buttonRef={modal.buttonRef} />
+        <CoffeeButton
+          label={coffeeDonation.title}
+          onOpen={modal.open}
+          buttonRef={modal.buttonRef}
+        />
       </aside>
       <CoffeeDonationModal
         coffeeDonation={coffeeDonation}

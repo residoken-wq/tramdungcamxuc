@@ -3254,14 +3254,14 @@ Hana có thể sử dụng các khối và tính năng mới được thiết k�
 2. Cuộn xuống phần **Ly cà phê ủng hộ (MoMo)** ở cuối tab:
    - **Hiện nút ly cà phê**: Tick chọn để bật widget nổi trên website (bỏ tick để tắt).
    - **Mã QR MoMo**: Bấm chọn/tải lên ảnh mã QR vừa lưu. Khi tải lên, bắt buộc điền mô tả ảnh (Alt) như `Mã QR MoMo ủng hộ Trạm Dừng Cảm Xúc`. _Lưu ý: Nếu bật nút mà chưa chọn ảnh, hệ thống sẽ báo lỗi và không cho lưu._
-   - **Tiêu đề**: Nhập tiêu đề hiện trong khung ủng hộ (tối đa 80 ký tự, ví dụ: _Mời Trạm một ly cà phê_). Nếu để trống, hệ thống tự lấy tiêu đề mặc định.
+   - **Tiêu đề**: Chữ hiện **trên thanh vàng cạnh icon ly cà phê** (máy tính) **và** làm tiêu đề khung mã QR khi bấm vào (tối đa 80 ký tự, ví dụ: _Mời Trạm một ly cà phê_). Nên ngắn, khoảng 3–7 chữ, để thanh không quá dài. Nếu để trống, hệ thống dùng câu mặc định "Mời Trạm một ly cà phê". Trên điện thoại chỉ hiện icon tròn, không hiện chữ.
    - **Lời nhắn**: Lời nhắn gửi tới bạn đọc (tối đa 300 ký tự).
    - **Liên kết MoMo (không bắt buộc)**: Nếu có đường link nhận tiền MoMo trực tiếp dạng `https://me.momo.vn/...`, hãy dán vào đây để hiện thêm nút "Mở MoMo". Bắt buộc phải bắt đầu bằng `https://`.
 3. Bấm **Lưu thay đổi** (hoặc Save).
 
 **Xem thử & tự kiểm tra**:
 
-- Mở trang chủ hoặc các trang giới thiệu, bạn sẽ thấy icon ly cà phê nổi màu trắng, viền tím nhạt, icon tím hoa cà xinh xắn nằm ngay phía trên nút Zalo.
+- Mở trang chủ hoặc các trang giới thiệu, bạn sẽ thấy nút ly cà phê nổi ở góc phải dưới, ngay phía trên nút Zalo: huy hiệu tròn trắng viền vàng có icon ly mang đi, bên cạnh là thanh vàng ghi chữ ở ô **Tiêu đề** (chỉ trên máy tính).
 - Khi tắt nút Zalo, nút ly cà phê sẽ tự động hạ sát đáy màn hình.
 - Bấm vào ly cà phê: khung hiển thị mã QR cùng lời nhắn sẽ hiện lên. Người dùng trên điện thoại có thể chụp màn hình để quét trong MoMo; người dùng trên máy tính quét trực tiếp bằng camera điện thoại.
 - Mã QR hiện to tối đa 340 px, giữ nguyên độ nét của ảnh gốc (CF-03). Dưới mã có link **"Mở ảnh QR cỡ lớn"** để khách phóng to hoặc lưu ảnh.
