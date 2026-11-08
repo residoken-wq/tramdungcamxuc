@@ -83,15 +83,45 @@ test.describe('PK-27: LeadMagnetCarousel free digital tool with externalUrl', ()
           slug: pageSlug,
           _status: 'published',
           puckData: {
+            // QA PK-27b: same layout as the home page (half-width column next to the forms)
             content: [
               {
-                type: 'LeadMagnetCarousel',
+                type: 'Columns',
                 props: {
-                  id: `carousel-${suffix}`,
-                  display: 'list',
-                  mode: 'auto',
-                  titleLine1: '[MẪU] QUÀ TẶNG MIỄN PHÍ',
-                  titleLine2: '[MẪU] DÀNH CHO BẠN',
+                  id: `cols-${suffix}`,
+                  numColumns: '2',
+                  gap: 'lg',
+                  bgColor: 'warm-ivory',
+                  padding: 'lg',
+                  col1: [
+                    {
+                      type: 'LeadMagnetCarousel',
+                      props: {
+                        id: `carousel-${suffix}`,
+                        display: 'list',
+                        mode: 'auto',
+                        seriesLabel: '[MẪU] Lead magnet',
+                        titleLine1: '[MẪU] QUÀ TẶNG MIỄN PHÍ',
+                        titleLine2: '',
+                        bgColor: 'warm-ivory',
+                        padding: 'none',
+                      },
+                    },
+                  ],
+                  col2: [
+                    {
+                      type: 'ContactForms',
+                      props: {
+                        id: `forms-${suffix}`,
+                        layout: 'tabs',
+                        titleB2C: '[MẪU] Bắt đầu hành trình',
+                        titleB2B: '[MẪU] Bắt đầu hành trình',
+                        bgColor: 'warm-ivory',
+                        padding: 'none',
+                      },
+                    },
+                  ],
+                  col3: [],
                 },
               },
             ],
@@ -117,6 +147,13 @@ test.describe('PK-27: LeadMagnetCarousel free digital tool with externalUrl', ()
       await expect(ctaBtn).toBeVisible()
       expect(await ctaBtn.getAttribute('href')).toBe('/habit/chan-doan')
 
+      // QA PK-27b: the card is not squeezed – the title fits on a readable width
+      const cardBox = await guest
+        .locator('[data-eb-card]')
+        .filter({ hasText: productName })
+        .boundingBox()
+      expect(cardBox?.width ?? 0).toBeGreaterThan(300)
+
       // Bấm nút -> điều hướng tới /habit/chan-doan
       await ctaBtn.click()
       await expect(guest).toHaveURL(/\/habit\/chan-doan/)
@@ -133,6 +170,12 @@ test.describe('PK-27: LeadMagnetCarousel free digital tool with externalUrl', ()
 
       // Axe không có lỗi nghiêm trọng
       await expectNoSeriousA11y(guest)
+
+      // QA PK-27b: the builder preview shows the same card (it used to stay empty)
+      await page.goto(`/builder/${pageId}`, { waitUntil: 'domcontentloaded' })
+      await expect(page.frameLocator('iframe').getByText(productName).first()).toBeVisible({
+        timeout: 60000,
+      })
     } finally {
       if (pageId) {
         await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
