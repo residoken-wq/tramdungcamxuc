@@ -12,6 +12,17 @@ export type { CTASectionProps }
 export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
   label: 'Khối kêu gọi chuyển đổi lớn (CTA Section)',
   fields: {
+    variant: {
+      type: 'select',
+      label: vi.cd01?.cta?.variant || 'Bố cục phần kêu gọi hành động',
+      options: [
+        { label: vi.cd01?.cta?.variantCard || 'Dạng hộp thẻ trắng (Mặc định)', value: 'card' },
+        {
+          label: vi.cd01?.cta?.variantSolid || 'Dạng nền tràn khối màu (Không đóng hộp)',
+          value: 'solid',
+        },
+      ],
+    },
     seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
     titleLine1: {
       type: 'text',
@@ -47,6 +58,40 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
       type: 'text',
       label: 'Đường dẫn liên kết (khi chọn Tự nhập URL)',
     },
+    buttonVariant: {
+      type: 'select',
+      label: vi.cd01?.cta?.buttonVariant || 'Kiểu nút chính',
+      options: [
+        { label: 'Mặc định (Hồng nhấn)', value: 'primary' },
+        { label: 'Hồng sen (Bright Magenta)', value: 'magenta' },
+        { label: 'Hồng nhấn (Accent Pink)', value: 'pink' },
+      ],
+    },
+    buttonShape: {
+      type: 'radio',
+      label: 'Hình dạng nút',
+      options: [
+        { label: 'Bo tròn nhẹ (Mặc định)', value: 'normal' },
+        { label: 'Viên thuốc (Pill bo tròn hoàn toàn)', value: 'pill' },
+      ],
+    },
+    secondaryButtonText: {
+      type: 'text',
+      label: vi.cd01?.cta?.secondaryButtonText || 'Chữ nút phụ',
+    },
+    secondaryButtonLink: {
+      type: 'text',
+      label: vi.cd01?.cta?.secondaryButtonLink || 'Đường dẫn nút phụ',
+    },
+    secondaryButtonVariant: {
+      type: 'select',
+      label: vi.cd01?.cta?.secondaryButtonVariant || 'Kiểu nút phụ',
+      options: [
+        { label: 'Mặc định (Hồng nhấn)', value: 'primary' },
+        { label: 'Hồng sen (Bright Magenta)', value: 'magenta' },
+        { label: 'Hồng nhấn (Accent Pink)', value: 'pink' },
+      ],
+    },
     proofText: {
       type: 'text',
       label: vi.eb15a.proofText,
@@ -76,6 +121,12 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
   },
   defaultProps: {
     version: 1,
+    variant: 'card',
+    buttonShape: 'normal',
+    buttonVariant: 'primary',
+    secondaryButtonText: '',
+    secondaryButtonLink: '',
+    secondaryButtonVariant: 'primary',
     titleSize: 'md',
     textSize: 'md',
     seriesLabel: '[MẪU] Sẵn sàng cho bước tiếp theo',

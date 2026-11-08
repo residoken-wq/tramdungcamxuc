@@ -19,6 +19,7 @@ export interface PhotoGalleryProps {
   titleLine1?: string
   titleLine2?: string
   emotionLine?: string
+  headerAlign?: 'left' | 'center'
   layout?: 'mosaic' | 'grid'
   items?: PhotoGalleryItem[]
   bgColor?:
@@ -58,6 +59,7 @@ export function PhotoGallery({
   titleLine1,
   titleLine2,
   emotionLine,
+  headerAlign = 'left',
   layout = 'mosaic',
   items = [],
   bgColor = 'warm-ivory',
@@ -67,9 +69,9 @@ export function PhotoGallery({
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
 
-  // Filter valid items having an image URL or mediaId
+  // Filter valid items having an image URL, mediaId or alt placeholder in editor
   const validItems = Array.isArray(items)
-    ? items.filter((item) => Boolean(item && (item.imageUrl || item.mediaId)))
+    ? items.filter((item) => Boolean(item && (item.imageUrl || item.mediaId || (isEditing && item.alt))))
     : []
 
   const groupSize = layout === 'mosaic' ? 4 : 6
@@ -157,7 +159,7 @@ export function PhotoGallery({
         data-eb-card=""
         className={`group relative overflow-hidden rounded-2xl border border-deep-navy/10 bg-white shadow-soft transition-all duration-300 hover:shadow-card ${aspectRatioClass} ${extraCardClass}`.trim()}
       >
-        {imgUrl && (
+        {imgUrl ? (
           <Image
             src={imgUrl}
             alt={altText}
@@ -167,6 +169,10 @@ export function PhotoGallery({
             loading="lazy"
             unoptimized={imgUrl.startsWith('data:') || imgUrl.startsWith('blob:')}
           />
+        ) : (
+          <div className="w-full h-full bg-deep-navy/5 flex items-center justify-center p-4 text-center text-xs font-ui text-deep-navy/60 font-semibold">
+            {altText || '[MẪU]'}
+          </div>
         )}
         {item.caption && (
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-deep-navy/85 via-deep-navy/40 to-transparent p-3 pt-6 text-white transition-opacity">
@@ -183,8 +189,14 @@ export function PhotoGallery({
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-6xl">
         {/* Header & Navigation Row */}
-        <div className="mb-6 flex flex-col items-center justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end">
-          <div className="w-full text-center sm:text-left">
+        <div
+          className={
+            headerAlign === 'center'
+              ? 'mb-6 flex flex-col items-center text-center gap-4 sm:mb-8'
+              : 'mb-6 flex flex-col items-center justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end'
+          }
+        >
+          <div className={headerAlign === 'center' ? 'w-full text-center' : 'w-full text-center sm:text-left'}>
             {hasHeader && (
               <SectionHeader
                 id={id}
@@ -192,7 +204,7 @@ export function PhotoGallery({
                 titleLine1={titleLine1 || ''}
                 titleLine2={titleLine2}
                 emotionLine={emotionLine}
-                align="left"
+                align={headerAlign}
                 line1Color={isDeepNavy ? 'white' : 'deep-navy'}
                 line2Color={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
                 eyebrowColor={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
@@ -256,19 +268,37 @@ export function PhotoGallery({
                   )}
                   {/* Photo 2: Center top */}
                   {group[1] && (
-                    <div className="col-span-1 row-span-1 h-full">
+                    <div
+                      className={
+                        headerAlign === 'center'
+                          ? 'col-start-3 row-start-1 col-span-1 row-span-1 h-full'
+                          : 'col-span-1 row-span-1 h-full'
+                      }
+                    >
                       {renderCard(group[1], groupIdx * 4 + 1, 'h-full w-full', '')}
                     </div>
                   )}
                   {/* Photo 3: Center bottom */}
                   {group[2] && (
-                    <div className="col-span-1 row-span-1 h-full">
+                    <div
+                      className={
+                        headerAlign === 'center'
+                          ? 'col-start-3 row-start-2 col-span-1 row-span-1 h-full'
+                          : 'col-span-1 row-span-1 h-full'
+                      }
+                    >
                       {renderCard(group[2], groupIdx * 4 + 2, 'h-full w-full', '')}
                     </div>
                   )}
                   {/* Photo 4: Vertical right */}
                   {group[3] && (
-                    <div className="col-span-1 row-span-2 h-full">
+                    <div
+                      className={
+                        headerAlign === 'center'
+                          ? 'col-start-4 row-start-1 col-span-1 row-span-2 h-full'
+                          : 'col-span-1 row-span-2 h-full'
+                      }
+                    >
                       {renderCard(group[3], groupIdx * 4 + 3, 'h-full w-full', '')}
                     </div>
                   )}

@@ -64,7 +64,10 @@ export interface HeroImageProps {
   titleSize?: FontSizeOption
   priority?: boolean
   titleCase?: 'upper' | 'none'
+  seriesLabelFont?: 'ui' | 'quote'
+  emotionFont?: 'quote' | 'body'
   showAccentBar?: boolean
+  contentWidth?: 'full' | 'half'
   titleLine1Color?: TextColorOption
   titleLine2Color?: TextColorOption
   showArchGraphic?: boolean
@@ -260,7 +263,10 @@ export function HeroImage({
   titleSize = 'md',
   priority,
   titleCase = 'upper',
+  seriesLabelFont = 'ui',
+  emotionFont = 'quote',
   showAccentBar = false,
+  contentWidth = 'full',
   titleLine1Color,
   titleLine2Color,
   showArchGraphic = false,
@@ -360,11 +366,17 @@ export function HeroImage({
         padding={padding}
         priority={priority}
       >
-        <div className={`flex flex-col ${alignClass} w-full`}>
+        <div className={`flex flex-col ${alignClass} w-full ${contentWidth === 'half' ? 'max-w-xl' : ''}`}>
           {seriesLabel && (
             <span
               {...textTarget(id, 'seriesLabel')}
-              className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
+              className={
+                seriesLabelFont === 'quote'
+                  ? `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-quote text-lg sm:text-xl italic ${
+                      bSeriesLabelColor || 'text-accent-pink'
+                    }`
+                  : `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`
+              }
             >
               {seriesLabel}
             </span>
@@ -385,10 +397,21 @@ export function HeroImage({
           {emotionLine && (
             <p
               {...textTarget(id, 'emotionLine')}
-              className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
+              className={
+                emotionFont === 'body'
+                  ? `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-body text-base sm:text-lg max-w-2xl ${bEmotionColor}`
+                  : `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`
+              }
             >
               {emotionLine}
             </p>
+          )}
+
+          {showAccentBar && (
+            <span
+              className="inline-block w-14 h-1 rounded bg-accent-pink mt-4 mb-2"
+              aria-hidden="true"
+            />
           )}
 
           {renderHeroList(listTitle, listItems, isDeepNavy, alignClass)}
@@ -480,7 +503,11 @@ export function HeroImage({
         {seriesLabel && (
           <span
             {...textTarget(id, 'seriesLabel')}
-            className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+            className={
+              seriesLabelFont === 'quote'
+                ? `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-quote text-lg sm:text-xl italic ${seriesLabelColorClass}`
+                : `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`
+            }
           >
             {seriesLabel}
           </span>
@@ -508,13 +535,19 @@ export function HeroImage({
           />
         )}
 
-        {/* Emotional Quote (Playfair Display Italic) */}
+        {/* Emotional Quote / Description */}
         {emotionLine && (
           <p
             {...textTarget(id, 'emotionLine')}
-            className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
-              isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
-            }`}
+            className={
+              emotionFont === 'body'
+                ? `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-body text-base sm:text-lg max-w-2xl ${
+                    isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
+                  }`
+                : `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
+                    isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
+                  }`
+            }
           >
             {emotionLine}
           </p>
@@ -659,7 +692,11 @@ export function HeroImage({
         {seriesLabel && (
           <span
             {...textTarget(id, 'seriesLabel')}
-            className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+            className={
+              seriesLabelFont === 'quote'
+                ? `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-quote text-lg sm:text-xl italic ${seriesLabelColorClass}`
+                : `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`
+            }
           >
             {seriesLabel}
           </span>
@@ -687,11 +724,19 @@ export function HeroImage({
           />
         )}
 
-        {/* Emotional Quote (Playfair Display Italic) */}
+        {/* Emotional Quote / Description */}
         {emotionLine && (
           <p
             {...textTarget(id, 'emotionLine')}
-            className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}
+            className={
+              emotionFont === 'body'
+                ? `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-body text-base sm:text-lg max-w-2xl ${
+                    isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
+                  }`
+                : `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
+                    isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
+                  }`
+            }
           >
             {emotionLine}
           </p>
