@@ -205,16 +205,23 @@ export function FaqAccordionList({
                 </span>
               </button>
 
-              {isOpen && (
-                <div
-                  id={answerId}
-                  role="region"
-                  aria-labelledby={questionId}
-                  className={`mt-3 pt-3 border-t border-deep-navy/10 group-data-[bg=deep-navy]/faq:border-white/10 font-ui text-sm sm:text-base leading-relaxed pl-5 sm:pl-6 ${answerColorClass}${answerWhitespaceClass}`}
-                >
-                  {item.answer}
+              <div
+                id={answerId}
+                role="region"
+                aria-labelledby={questionId}
+                inert={!isOpen ? '' : undefined}
+                className={`grid transition-[grid-template-rows] duration-[240ms] ease-out motion-reduce:transition-none ${
+                  isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div
+                    className={`mt-3 pt-3 border-t border-deep-navy/10 group-data-[bg=deep-navy]/faq:border-white/10 font-ui text-sm sm:text-base leading-relaxed pl-5 sm:pl-6 ${answerColorClass}${answerWhitespaceClass}`}
+                  >
+                    {item.answer}
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           )
         })}
@@ -327,10 +334,18 @@ export function FaqAccordionList({
               id={answerId}
               role="region"
               aria-labelledby={questionId}
-              hidden={!isOpen}
-              className={`mt-4 pt-3 border-t border-deep-navy/10 font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}${answerWhitespaceClass}`}
+              inert={!isOpen ? '' : undefined}
+              className={`grid transition-[grid-template-rows] duration-[240ms] ease-out motion-reduce:transition-none ${
+                isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+              }`}
             >
-              {item.answer}
+              <div className="overflow-hidden">
+                <div
+                  className={`mt-4 pt-3 border-t border-deep-navy/10 font-ui text-sm sm:text-base leading-relaxed ${answerColorClass}${answerWhitespaceClass}`}
+                >
+                  {item.answer}
+                </div>
+              </div>
             </div>
           </div>
         )
