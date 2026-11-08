@@ -52,7 +52,7 @@ export const SocialLinksBlock: ComponentConfig<SocialLinksProps> = {
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-deep-navy/15 text-xs font-ui font-semibold text-deep-navy hover:bg-lavender-mist/40 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-deep-navy/15 text-xs font-ui font-semibold text-deep-navy hover:bg-lavender-mist/40 hover:text-bright-magenta group-data-[footer-bg=deep-navy]/footer:border-white/20 group-data-[footer-bg=deep-navy]/footer:text-soft-pink group-data-[footer-bg=deep-navy]/footer:hover:text-white group-data-[footer-bg=deep-navy]/footer:hover:bg-white/10 transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy group-data-[footer-bg=deep-navy]/footer:focus-visible:outline-white"
           >
             {link.label}
           </a>

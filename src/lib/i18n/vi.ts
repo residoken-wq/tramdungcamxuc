@@ -4734,6 +4734,24 @@ export const vi = {
       bottomDescription: 'Để trống = dùng chữ mặc định',
     },
   },
+  pk31: {
+    card: {
+      subtitleColor: 'Màu tiêu đề phụ',
+    },
+    hanaStory: {
+      quoteStyle: 'Kiểu trích dẫn',
+      quoteStyleLine: 'Đường kẻ dọc (Mặc định)',
+      quoteStyleBox: 'Hộp nổi bật (Đặt trên đoạn văn)',
+      highlights: 'Các điểm nhấn (thẻ nhỏ đánh số)',
+      highlightTitle: 'Tiêu đề thẻ',
+      highlightText: 'Nội dung mô tả',
+    },
+    footer: {
+      footerBgLabel: 'Nền footer',
+      footerBgWarmIvory: 'Trắng ngà (Warm Ivory - Mặc định)',
+      footerBgDeepNavy: 'Xanh thẫm (Deep Navy)',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

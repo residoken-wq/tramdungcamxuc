@@ -24,7 +24,7 @@ const SIZE: Record<HeadingLevel, string> = {
 }
 
 const defaultsFor = (level: HeadingLevel): TypographyDefaults => ({
-  textColor: 'text-deep-navy',
+  textColor: 'text-deep-navy group-data-[footer-bg=deep-navy]/footer:text-white',
   fontSize: SIZE[level],
   fontFamily: 'font-display',
   fontWeight: 'font-bold',

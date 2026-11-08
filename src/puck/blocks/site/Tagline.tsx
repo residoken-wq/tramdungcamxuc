@@ -55,13 +55,13 @@ export const TaglineBlock: ComponentConfig<TaglineProps> = {
 
     return (
       <div className={`flex flex-col space-y-2 ${alignClass} w-full`}>
-        <p className="font-quote italic text-base text-deep-navy/90 leading-relaxed max-w-md">
+        <p className="font-quote italic text-base text-deep-navy/90 group-data-[footer-bg=deep-navy]/footer:text-white/90 leading-relaxed max-w-md">
           &ldquo;{text}&rdquo;
         </p>
         {showHeartLine && (
           <div className="pt-1">
             {/* a11y-contrast-ok: SVG trang trí HeartLine ở footer */}
-            <HeartLine className="w-20 h-3 text-accent-pink/40" />
+            <HeartLine className="w-20 h-3 text-accent-pink/40 group-data-[footer-bg=deep-navy]/footer:text-soft-pink/50" />
           </div>
         )}
       </div>

@@ -155,7 +155,7 @@ export function JourneyStep({
           )}
 
           {description && (
-            <p className={`font-ui ${descSizeClass} leading-relaxed ${descColorClass}`}>
+            <p className={`font-ui ${descSizeClass} leading-relaxed whitespace-pre-line ${descColorClass}`}>
               {description}
             </p>
           )}
@@ -219,7 +219,7 @@ export function JourneyStep({
         {description && (
           <p
             {...textTarget(id, 'description')}
-            className={`font-ui ${descSizeClass} leading-relaxed mt-1 ${circleDescClass}`}
+            className={`font-ui ${descSizeClass} leading-relaxed mt-1 whitespace-pre-line ${circleDescClass}`}
           >
             {description}
           </p>
@@ -276,7 +276,7 @@ export function JourneyStep({
         {description && (
           <p
             {...textTarget(id, 'description')}
-            className={`font-ui ${descSizeClass} leading-relaxed mt-auto ${descColorClass}`}
+            className={`font-ui ${descSizeClass} leading-relaxed mt-auto whitespace-pre-line ${descColorClass}`}
           >
             {description}
           </p>
@@ -343,7 +343,7 @@ export function JourneyStep({
         {description && (
           <p
             {...textTarget(id, 'description')}
-            className={`font-ui ${descSizeClass} leading-relaxed mt-1 ${circleDescClass}`}
+            className={`font-ui ${descSizeClass} leading-relaxed mt-1 whitespace-pre-line ${circleDescClass}`}
           >
             {description}
           </p>
@@ -417,7 +417,7 @@ export function JourneyStep({
         {description && (
           <p
             {...textTarget(id, 'description')}
-            className={`font-ui ${descSizeClass} leading-relaxed group-data-[variant=list]/journey:mt-0 mt-auto ${descColorClass}`}
+            className={`font-ui ${descSizeClass} leading-relaxed group-data-[variant=list]/journey:mt-0 mt-auto whitespace-pre-line ${descColorClass}`}
           >
             {description}
           </p>

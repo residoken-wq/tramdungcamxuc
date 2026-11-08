@@ -79,6 +79,8 @@
    - [5.38. Căn lề thẻ và icon (EB-15b)](#538-căn-lề-thẻ-và-icon)
    - [5.39. Các khối mới và biến thể giao diện v2 (PK-21)](#539-các-khối-mới-và-biến-thể-giao-diện-v2-pk-21)
    - [5.40. Khối Bảng lưới, Sơ đồ vòng lặp và trang Chuyển mình (PK-26)](#540-khối-bảng-lưới-sơ-đồ-vòng-lặp-và-trang-chuyển-mình-pk-26)
+   - [5.41. Bộ khối chuyên biệt và mẫu Trang lộ trình Chuyển mình 100% bản thiết kế (PK-28)](#541-bộ-khối-chuyên-biệt-và-mẫu-trang-lộ-trình-chuyển-mình-100-bản-thiết-kế-pk-28)
+   - [5.42. Cải tiến trang "Về Trạm": Xuống dòng trong thẻ, Brand Story 3 cột, Footer nền deep-navy (PK-31)](#542-cải-tiến-trang-về-trạm-xuống-dòng-trong-thẻ-brand-story-3-cột-footer-nền-deep-navy-pk-31)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -3208,6 +3210,38 @@ Hana có thể sử dụng các khối và tính năng mới được thiết k�
 
 **Cách áp dụng nhanh**:
 Khi tạo trang mới, chỉ cần chọn mẫu **Trang lộ trình (`journey`)**; hệ thống sẽ tải sẵn đầy đủ 20 section chuẩn theo đúng slide của Hana. Hana có thể dễ dàng bấm vào từng chữ để sửa, thay đổi hình minh họa hoặc đổi màu sắc theo mong muốn.
+
+---
+
+### 5.42. Cải tiến trang "Về Trạm": Xuống dòng trong thẻ, Brand Story 3 cột, Footer nền deep-navy (PK-31)
+
+Dành riêng cho trang Về Trạm và các trang thương hiệu cần trình bày tinh tế:
+
+1. **Quy tắc xuống dòng trong các ô văn bản (Thẻ, Tầm nhìn, Trích dẫn, Lời kêu gọi, Hana Story...)**:
+   - **Enter 1 lần**: Chữ sẽ ngắt xuống dòng ngay lập tức mà không tạo khoảng cách đoạn quá lớn (ví dụ: dòng chữ hoa `"VỚI CÁ NHÂN"` xuống dòng ngay là câu mô tả `"Trở thành..."`, hay `"Dịu dàng & Tinh tế"` xuống dòng là `"Đồng hành an toàn..."`).
+   - **Enter 2 lần (dòng trống)**: Hệ thống sẽ tách thành một đoạn văn mới với khoảng cách đệm chuẩn thương hiệu.
+   - Áp dụng trên toàn bộ các khối: `VisionCard` (Tầm nhìn & Sứ mệnh), `Card` trong `IconCardGrid`, `Callout`, `QuoteBlock`, `Stat` (mô tả số liệu), `JourneyStep` (mô tả bước hành trình), và `HanaStory`.
+
+2. **Đổi màu Tiêu đề phụ (Subtitle) trong Thẻ (`Card`)**:
+   - Thẻ trong `IconCardGrid` có trường **"Tiêu đề phụ đậm (Subtitle)"** và trường mới **"Màu tiêu đề phụ"**.
+   - **Cách dùng cho Giá trị cốt lõi**:
+     - *Tiêu đề thẻ*: Gõ từ tiếng Anh (ví dụ: `Gentle`).
+     - *Tiêu đề phụ đậm*: Gõ cụm tiếng Việt (ví dụ: `Dịu dàng & Tinh tế`), chọn màu **Hồng sen (Bright Magenta)**.
+     - *Nội dung mô tả*: Gõ câu diễn giải ý nghĩa giá trị.
+   - Nhờ vậy, cụm tiếng Việt nằm riêng 1 dòng dưới tiêu đề và nổi bật đúng theo thiết kế Brand Book 2026.
+
+3. **Khối Câu chuyện Hana (`HanaStory`): 3 thẻ đánh số và Trích dẫn dạng hộp**:
+   - **Trích dẫn dạng hộp (`quoteStyle: 'box'`)**: Trích dẫn cảm xúc sẽ được đặt trong hộp nền Hồng phấn (`soft-pink`), chữ Hồng sen (`bright-magenta`) nghiêng và nằm **ngay phía trên** các đoạn văn tự sự, thu hút ánh nhìn đầu tiên của người đọc.
+   - **Các điểm nhấn (Thẻ nhỏ đánh số - `highlights`)**: Bổ sung danh sách tối đa 4 điểm nhấn (như `01 Quan sát / 02 Thấu hiểu / 03 Vững bước`). Mỗi thẻ có số to màu hồng sen, tiêu đề đậm và mô tả nhỏ. Trên màn hình máy tính (1440px) hiển thị thành 3 cột ngang gọn gàng; trên điện thoại (375px) tự động xếp dọc dễ đọc.
+
+4. **Chân trang (Footer) nền xanh thẫm (Deep Navy)**:
+   - Khi chỉnh sửa Chân trang trong trình dựng (`/admin/builder/[footerId]`): bấm vào phần viền ngoài cùng hoặc chọn cài đặt chân trang, tại mục **"Nền footer"**, chọn **"Xanh thẫm (Deep Navy)"**.
+   - Toàn bộ chân trang sẽ tự động chuyển sang phong cách tối sang trọng:
+     - Nền xanh thẫm `deep-navy`, toàn bộ chữ đổi sang trắng hoặc `white/80`.
+     - Các liên kết và mạng xã hội mang màu `soft-pink`, khi di chuột chuyển sang màu trắng tinh tế.
+     - Đường kẻ phân cách đổi sang trắng mờ (`white/15`).
+     - **Logo thương hiệu**: Logo chính thức được tự động đặt trong khung nền sáng bo góc cong mềm mại (`bg-warm-ivory rounded-2xl px-3 py-2`), đảm bảo logo luôn rõ nét, không bị chìm trên nền tối mà vẫn giữ nguyên màu sắc gốc theo quy định Brand Book. *(Nếu Hana có bản logo màu sáng do thiết kế cung cấp riêng, có thể gửi để gắn trực tiếp)*.
+   - *Lưu ý*: Tuân thủ độ tương phản WCAG AA, đảm bảo đọc rõ trên mọi thiết bị.
 
 ---
 
