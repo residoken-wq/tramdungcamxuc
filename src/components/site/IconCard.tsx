@@ -275,7 +275,7 @@ export function IconCard({
 
   // QA PK-26: small magenta text fails WCAG AA on navy (2.8:1) and lavender (4.4:1) cards.
   const eyebrowTextClass = isComingSoon
-    ? '!text-[#4A5568]'
+    ? '!text-deep-navy/70'
     : isDarkCard
       ? 'text-soft-pink'
       : cardBg === 'lavender-mist'
@@ -287,7 +287,7 @@ export function IconCard({
 
   // Title color: custom color if specified; if default deep-navy, adapt on deep-navy parent / dark card
   const titleColorClass = isComingSoon
-    ? '!text-[#718096]'
+    ? '!text-deep-navy/60'
     : isDarkCard
       ? '!text-white'
       : titleColor && titleColor !== 'deep-navy'
@@ -323,7 +323,7 @@ export function IconCard({
       : getExplicitCardClasses('white', isDeepNavy)
 
   const highlightClass = isComingSoon
-    ? ' !bg-[#F5F3EF] !border-gray-300 !border-t-gray-300 !border-t shadow-none'
+    ? ' !bg-warm-ivory !border-deep-navy/15 !border-t-deep-navy/15 !border-t shadow-none'
     : isNavyHighlight
       ? ' !bg-deep-navy !text-white !border-deep-navy/40 shadow-soft overflow-hidden'
       : isOutlineHighlight
@@ -448,9 +448,11 @@ export function IconCard({
       {title && (
         <h3
           {...textTarget(id, 'title')}
-          className={`${
-            titleFont === 'display' ? 'font-display uppercase tracking-tight' : 'font-ui font-bold'
-          } ${titleSizeClass} leading-snug ${titleColorClass}`}
+          className={
+            titleFont === 'display'
+              ? `font-display ${titleSizeClass} uppercase tracking-tight leading-snug ${titleColorClass}`
+              : `font-ui ${titleSizeClass} font-bold leading-snug ${titleColorClass}`
+          }
         >
           {title}
         </h3>
@@ -494,13 +496,11 @@ export function IconCard({
         >
           {items.map((item, i) => {
             const itemTitleColorClass =
-              itemsTitleColor === 'accent-pink'
-                ? '!text-accent-pink' // a11y-contrast-ok: slide 55 step uppercase titles on white card
-                : itemsTitleColor === 'bright-magenta'
-                  ? '!text-bright-magenta'
-                  : isDarkCard
-                    ? 'text-white'
-                    : 'text-deep-navy'
+              itemsTitleColor === 'accent-pink' || itemsTitleColor === 'bright-magenta'
+                ? '!text-bright-magenta'
+                : isDarkCard
+                  ? 'text-white'
+                  : 'text-deep-navy'
             const itemTitleCaseClass = itemsTitleCase === 'upper' ? 'uppercase' : ''
 
             return (
@@ -546,11 +546,7 @@ export function IconCard({
         <div className="mt-auto pt-6 w-full">
           <Link
             href={safeHref(linkHref) || '#'}
-            className={`inline-flex items-center gap-1 font-ui text-sm sm:text-base font-bold transition-colors ${
-              linkVariant === 'pink'
-                ? 'text-accent-pink hover:text-accent-pink/80'
-                : 'text-bright-magenta hover:text-bright-magenta/80'
-            }`}
+            className="inline-flex items-center gap-1 font-ui text-sm sm:text-base font-bold transition-colors text-bright-magenta hover:text-bright-magenta/80"
           >
             {linkText}
           </Link>

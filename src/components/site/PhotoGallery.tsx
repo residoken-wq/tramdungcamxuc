@@ -69,9 +69,9 @@ export function PhotoGallery({
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
 
-  // Filter valid items having an image URL, mediaId or alt placeholder
+  // Filter valid items having an image URL, mediaId or alt placeholder in editor
   const validItems = Array.isArray(items)
-    ? items.filter((item) => Boolean(item && (item.imageUrl || item.mediaId || item.alt)))
+    ? items.filter((item) => Boolean(item && (item.imageUrl || item.mediaId || (isEditing && item.alt))))
     : []
 
   const groupSize = layout === 'mosaic' ? 4 : 6
@@ -190,13 +190,13 @@ export function PhotoGallery({
       <div className="mx-auto max-w-6xl">
         {/* Header & Navigation Row */}
         <div
-          className={`mb-6 flex flex-col ${
+          className={
             headerAlign === 'center'
-              ? 'items-center text-center'
-              : 'items-center sm:flex-row sm:items-end justify-between'
-          } gap-4 sm:mb-8`}
+              ? 'mb-6 flex flex-col items-center text-center gap-4 sm:mb-8'
+              : 'mb-6 flex flex-col items-center justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end'
+          }
         >
-          <div className={`w-full ${headerAlign === 'center' ? 'text-center' : 'text-center sm:text-left'}`}>
+          <div className={headerAlign === 'center' ? 'w-full text-center' : 'w-full text-center sm:text-left'}>
             {hasHeader && (
               <SectionHeader
                 id={id}
@@ -268,19 +268,37 @@ export function PhotoGallery({
                   )}
                   {/* Photo 2: Center top */}
                   {group[1] && (
-                    <div className="col-span-1 row-span-1 h-full">
+                    <div
+                      className={
+                        headerAlign === 'center'
+                          ? 'col-start-3 row-start-1 col-span-1 row-span-1 h-full'
+                          : 'col-span-1 row-span-1 h-full'
+                      }
+                    >
                       {renderCard(group[1], groupIdx * 4 + 1, 'h-full w-full', '')}
                     </div>
                   )}
                   {/* Photo 3: Center bottom */}
                   {group[2] && (
-                    <div className="col-span-1 row-span-1 h-full">
+                    <div
+                      className={
+                        headerAlign === 'center'
+                          ? 'col-start-3 row-start-2 col-span-1 row-span-1 h-full'
+                          : 'col-span-1 row-span-1 h-full'
+                      }
+                    >
                       {renderCard(group[2], groupIdx * 4 + 2, 'h-full w-full', '')}
                     </div>
                   )}
                   {/* Photo 4: Vertical right */}
                   {group[3] && (
-                    <div className="col-span-1 row-span-2 h-full">
+                    <div
+                      className={
+                        headerAlign === 'center'
+                          ? 'col-start-4 row-start-1 col-span-1 row-span-2 h-full'
+                          : 'col-span-1 row-span-2 h-full'
+                      }
+                    >
                       {renderCard(group[3], groupIdx * 4 + 3, 'h-full w-full', '')}
                     </div>
                   )}
