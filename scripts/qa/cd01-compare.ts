@@ -96,8 +96,6 @@ async function main() {
       data: {
         name: 'Học viên Test 01',
         quote: '[MẪU] Một không gian an lành để bắt đầu ngày mới với sự tĩnh tại và kết nối sâu sắc.',
-        rating: 5,
-        type: 'general',
         consent: true,
         isSample: true,
         _status: 'published',
@@ -110,8 +108,6 @@ async function main() {
       data: {
         name: 'Học viên Test 02',
         quote: '[MẪU] Thói quen dậy sớm 5:00 AM giúp mình có thêm thời gian lắng nghe và chăm sóc bản thân trọn vẹn hơn.',
-        rating: 5,
-        type: 'general',
         consent: true,
         isSample: true,
         _status: 'published',
@@ -124,8 +120,6 @@ async function main() {
       data: {
         name: 'Học viên Test 03',
         quote: '[MẪU] Cảm giác ấm áp khi biết luôn có một trạm dừng dịu êm đón chờ mình mỗi buổi sáng thức giấc.',
-        rating: 5,
-        type: 'general',
         consent: true,
         isSample: true,
         _status: 'published',
