@@ -699,6 +699,27 @@ const basePuckConfig: Config<PageComponentsProps> = {
           type: 'textarea',
           label: 'Câu trích dẫn (Playfair Display Italic, tùy chọn)',
         },
+        quoteStyle: {
+          type: 'radio',
+          label: vi.pk31?.hanaStory?.quoteStyle || 'Kiểu trích dẫn',
+          options: [
+            { label: vi.pk31?.hanaStory?.quoteStyleLine || 'Đường kẻ dọc (Mặc định)', value: 'line' },
+            {
+              label: vi.pk31?.hanaStory?.quoteStyleBox || 'Hộp nổi bật (Đặt trên đoạn văn)',
+              value: 'box',
+            },
+          ],
+        },
+        highlights: {
+          type: 'array',
+          label: vi.pk31?.hanaStory?.highlights || 'Các điểm nhấn (thẻ nhỏ đánh số)',
+          max: 4,
+          arrayFields: {
+            title: { type: 'text', label: vi.pk31?.hanaStory?.highlightTitle || 'Tiêu đề thẻ' },
+            text: { type: 'textarea', label: vi.pk31?.hanaStory?.highlightText || 'Nội dung mô tả' },
+          },
+          getItemSummary: (item) => item?.title || 'Điểm nhấn',
+        },
         mediaId: createMediaExternalField({
           label: 'Ảnh minh họa (Thư viện media)',
         }),
@@ -749,6 +770,8 @@ const basePuckConfig: Config<PageComponentsProps> = {
         content:
           '[MẪU] Nội dung đoạn thứ nhất kể về hành trình và cảm xúc.\n\n[MẪU] Nội dung đoạn thứ hai làm rõ hơn giá trị mang lại.',
         quote: '',
+        quoteStyle: 'line',
+        highlights: [],
         mediaId: '',
         imageUrl: '',
         imageAlt: '',

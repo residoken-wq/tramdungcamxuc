@@ -15,6 +15,9 @@ import {
 } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { StoryHighlights, type StoryHighlightItem } from './StoryHighlights'
+
+export type ImageTextHighlightItem = StoryHighlightItem
 
 export interface ImageTextProps {
   version?: number
@@ -25,6 +28,8 @@ export interface ImageTextProps {
   titleLine2?: string
   content: string
   quote?: string
+  quoteStyle?: 'line' | 'box'
+  highlights?: StoryHighlightItem[]
   mediaId?: string
   imageUrl?: string
   imageAlt?: string
@@ -73,6 +78,8 @@ export function ImageText({
   titleLine2,
   content,
   quote,
+  quoteStyle = 'line',
+  highlights = [],
   mediaId,
   imageUrl,
   imageAlt,
@@ -243,6 +250,23 @@ export function ImageText({
               />
             </h2>
 
+            {quote && quoteStyle === 'box' && (
+              <div
+                className={`mb-6 p-5 sm:p-6 rounded-card border shadow-sm ${
+                  isDeepNavy
+                    ? 'bg-white/10 border-white/20 text-soft-pink'
+                    : 'bg-soft-pink border-accent-pink/20 text-bright-magenta'
+                }`}
+              >
+                <blockquote
+                  {...textTarget(id, 'quote')}
+                  className="font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line"
+                >
+                  &ldquo;{quote}&rdquo;
+                </blockquote>
+              </div>
+            )}
+
             <div {...textTarget(id, 'content')} className="space-y-3 mb-6">
               {paragraphs.map((p, idx) => (
                 <p
@@ -254,7 +278,7 @@ export function ImageText({
               ))}
             </div>
 
-            {quote && (
+            {quote && quoteStyle !== 'box' && (
               <blockquote
                 {...textTarget(id, 'quote')}
                 className={`mb-6 border-l-2 border-accent-pink pl-4 font-quote text-lg sm:text-xl italic leading-relaxed ${
@@ -263,6 +287,10 @@ export function ImageText({
               >
                 &ldquo;{quote}&rdquo;
               </blockquote>
+            )}
+
+            {highlights && highlights.length > 0 && (
+              <StoryHighlights items={highlights} isDark={isDeepNavy} />
             )}
 
             {Boolean(buttonText && safeHref(buttonLink)) && (

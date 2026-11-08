@@ -3246,9 +3246,16 @@ Dành riêng cho trang Về Trạm và các trang thương hiệu cần trình b
      - *Nội dung mô tả*: Gõ câu diễn giải ý nghĩa giá trị.
    - Nhờ vậy, cụm tiếng Việt nằm riêng 1 dòng dưới tiêu đề và nổi bật đúng theo thiết kế Brand Book 2026.
 
-3. **Khối Câu chuyện Hana (`HanaStory`): 3 thẻ đánh số và Trích dẫn dạng hộp**:
-   - **Trích dẫn dạng hộp (`quoteStyle: 'box'`)**: Trích dẫn cảm xúc sẽ được đặt trong hộp nền Hồng phấn (`soft-pink`), chữ Hồng sen (`bright-magenta`) nghiêng và nằm **ngay phía trên** các đoạn văn tự sự, thu hút ánh nhìn đầu tiên của người đọc.
-   - **Các điểm nhấn (Thẻ nhỏ đánh số - `highlights`)**: Bổ sung danh sách tối đa 4 điểm nhấn (như `01 Quan sát / 02 Thấu hiểu / 03 Vững bước`). Mỗi thẻ có số to màu hồng sen, tiêu đề đậm và mô tả nhỏ. Trên màn hình máy tính (1440px) hiển thị thành 3 cột ngang gọn gàng; trên điện thoại (375px) tự động xếp dọc dễ đọc.
+3. **Khối "Ảnh & Chữ" (`ImageText`) và "Câu chuyện Hana" (`HanaStory`): 3 thẻ đánh số và Trích dẫn dạng hộp**:
+   - Cả 2 khối **"Ảnh & Chữ"** (dùng cho phần Brand Story "Tại sao lại là Trạm Dừng?") và **"Câu chuyện Hana"** đều có thêm 2 tùy chọn thiết kế mới:
+   - **Trích dẫn dạng hộp (`quoteStyle: 'box'`)**: Trích dẫn cảm xúc sẽ được đặt trong hộp nền Hồng phấn (`soft-pink`), chữ Hồng sen (`bright-magenta`) Playfair Display nghiêng và nằm **ngay phía trên** các đoạn văn, thu hút ánh nhìn đầu tiên của người đọc.
+   - **Các điểm nhấn (Thẻ nhỏ đánh số - `highlights`)**: Bổ sung danh sách tối đa 4 điểm nhấn (như `01 / 02 / 03`). Mỗi thẻ có số to màu hồng sen, tiêu đề đậm và mô tả nhỏ (`whitespace-pre-line`). Trên màn hình máy tính (1440px) hiển thị thành 3 cột ngang gọn gàng; trên điện thoại (375px) tự động xếp dọc dễ đọc.
+   - **Các bước cập nhật phần Brand Story trên trang Về Trạm**:
+     1. Mở trang Về Trạm trong Puck builder (`/admin/builder/[pageId]`).
+     2. Nhấp vào khối Brand Story (**"Ảnh & Chữ (Song hành)"**).
+     3. Ở cột thuộc tính bên phải: chọn **Kiểu trích dẫn** = *Hộp nổi bật (Đặt trên đoạn văn)*.
+     4. Tại mục **Các điểm nhấn (thẻ nhỏ đánh số)**, bấm Thêm và điền 3 thẻ điểm nhấn.
+     5. Bấm **Xuất bản** ở góc trên bên phải.
 
 4. **Chân trang (Footer) nền xanh thẫm (Deep Navy)**:
    - Khi chỉnh sửa Chân trang trong trình dựng (`/admin/builder/[footerId]`): bấm vào phần viền ngoài cùng hoặc chọn cài đặt chân trang, tại mục **"Nền footer"**, chọn **"Xanh thẫm (Deep Navy)"**.

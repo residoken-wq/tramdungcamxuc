@@ -248,7 +248,7 @@ export const Pages = {
   endpoints: [
     {
       path: '/create-from-template',
-      method: 'post',
+      method: 'post' as const,
       // REVIEW-REQUIRED: Chỉ chủ sở hữu (Owner) mới có quyền tạo đầu trang / chân trang từ mẫu
       handler: async (req: PayloadRequest) => {
         if (!isOwnerUser(req.user)) {

@@ -7,6 +7,7 @@ import { safeHref } from '@/lib/safe-href'
 import { textTarget } from '@/puck/style/text-target'
 import { stripWrappingQuotes } from '@/lib/text/quotes'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { StoryHighlights } from './StoryHighlights'
 
 export interface HanaStoryChipItem {
   text?: string
@@ -213,38 +214,7 @@ export function HanaStory({
             )}
 
             {highlights && highlights.length > 0 && (
-              <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
-                {highlights.slice(0, 4).map((hl, idx) => (
-                  <div
-                    key={idx}
-                    className={`p-4 rounded-card border ${
-                      isDarkOrNavy
-                        ? 'bg-white/10 border-white/20 text-white'
-                        : 'bg-white border-deep-navy/10 text-deep-navy shadow-soft'
-                    }`}
-                  >
-                    <span
-                      className={`block font-display text-2xl sm:text-3xl ${
-                        isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
-                      }`}
-                    >
-                      {String(idx + 1).padStart(2, '0')}
-                    </span>
-                    <h4 className="mt-1 font-ui font-bold text-sm sm:text-base leading-snug">
-                      {hl.title}
-                    </h4>
-                    {hl.text && (
-                      <p
-                        className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
-                          isDarkOrNavy ? 'text-white/80' : 'text-deep-navy/75'
-                        }`}
-                      >
-                        {hl.text}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <StoryHighlights items={highlights} isDark={isDarkOrNavy} />
             )}
 
             {chipList.length > 0 && (
@@ -455,38 +425,7 @@ export function HanaStory({
 
             {/* Highlights (3 numbered small cards) */}
             {highlights && highlights.length > 0 && (
-              <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
-                {highlights.slice(0, 4).map((hl, idx) => (
-                  <div
-                    key={idx}
-                    className={`p-4 rounded-card border ${
-                      isDarkOrNavy
-                        ? 'bg-white/10 border-white/20 text-white'
-                        : 'bg-white border-deep-navy/10 text-deep-navy shadow-soft'
-                    }`}
-                  >
-                    <span
-                      className={`block font-display text-2xl sm:text-3xl ${
-                        isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
-                      }`}
-                    >
-                      {String(idx + 1).padStart(2, '0')}
-                    </span>
-                    <h4 className="mt-1 font-ui font-bold text-sm sm:text-base leading-snug">
-                      {hl.title}
-                    </h4>
-                    {hl.text && (
-                      <p
-                        className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
-                          isDarkOrNavy ? 'text-white/80' : 'text-deep-navy/75'
-                        }`}
-                      >
-                        {hl.text}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <StoryHighlights items={highlights} isDark={isDarkOrNavy} />
             )}
 
             {/* Value Chips (0-6 pills) */}
