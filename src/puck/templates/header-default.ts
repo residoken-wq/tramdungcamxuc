@@ -12,6 +12,10 @@ export const headerDefaultTemplate: Data = {
       type: 'Container',
       props: {
         id: 'header-container',
+        // QA PK-33: Container has no padding prop; spacing goes through _style (16px / 24px sides).
+        _style: {
+          padding: { desktop: { top: 'sm', bottom: 'sm', left: 'md', right: 'md' } },
+        },
         width: 'boxed',
         contentWidth: 'xl',
         layout: {

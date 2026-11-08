@@ -12,6 +12,13 @@ export const footerDefaultTemplate: Data<any, any> = {
       type: 'Container',
       props: {
         id: 'footer-container',
+        // QA PK-33: top/bottom breathing room (the footer root already pads the sides).
+        _style: {
+          padding: {
+            desktop: { top: 'xl', bottom: 'lg' },
+            mobile: { top: 'lg', bottom: 'lg' },
+          },
+        },
         width: 'boxed',
         contentWidth: 'xl',
         layout: {

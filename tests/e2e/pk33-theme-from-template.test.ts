@@ -54,10 +54,14 @@ test.describe('PK-33: One-click header and footer creation from template in Navi
 
       // 2. Verify drawer for footerPage does not have "Create new" (+) button
       // Relationship field drawer button / allowCreate check
-      const footerPageSection = page.locator('.field-type.relationship', { hasText: 'Trang chân trang' }).first()
+      const footerPageSection = page
+        .locator('.field-type.relationship', { hasText: 'Trang chân trang' })
+        .first()
       await expect(footerPageSection).toBeVisible()
       // With allowCreate: false, there should be no "create new" / plus button inside the relation field
-      const createNewBtn = footerPageSection.locator('button[aria-label*="Create"], button.relationship__add-new')
+      const createNewBtn = footerPageSection.locator(
+        'button[aria-label*="Create"], button.relationship__add-new',
+      )
       await expect(createNewBtn).toHaveCount(0)
 
       // 3. Find "Tạo chân trang từ mẫu" button
@@ -66,7 +70,9 @@ test.describe('PK-33: One-click header and footer creation from template in Navi
 
       // 4. Listen for new tab (window.open to builder) & response from create-from-template
       const createPromise = page.waitForResponse(
-        (res) => res.url().includes('/api/pages/create-from-template') && res.request().method() === 'POST',
+        (res) =>
+          res.url().includes('/api/pages/create-from-template') &&
+          res.request().method() === 'POST',
       )
       const popupPromise = context.waitForEvent('page')
 
@@ -85,7 +91,14 @@ test.describe('PK-33: One-click header and footer creation from template in Navi
 
       // In builder, verify CHÂN TRANG root label and Nền footer field
       await expect(builderPage.getByText(/CHÂN TRANG/i).first()).toBeVisible({ timeout: 30000 })
-      await expect(builderPage.getByText(/Nền footer/i).first()).toBeVisible()
+      // QA PK-33: the top bar badge renders before Puck has loaded the fields panel.
+      // (the label is rendered twice, the first copy hidden)
+      await expect(
+        builderPage
+          .getByText(/Nền footer/i)
+          .filter({ visible: true })
+          .first(),
+      ).toBeVisible({ timeout: 30000 })
 
       await builderPage.close()
 
