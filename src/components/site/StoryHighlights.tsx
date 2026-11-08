@@ -48,3 +48,4 @@ export function StoryHighlights({ items, isDark = false }: StoryHighlightsProps)
     </div>
   )
 }
+
