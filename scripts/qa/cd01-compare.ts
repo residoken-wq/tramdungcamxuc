@@ -167,7 +167,8 @@ async function main() {
           ...item,
           props: {
             ...item.props,
-            manualTestimonialIds: createdTestimonialIds,
+            mode: 'manual',
+            manualTestimonials: createdTestimonialIds.map((id) => ({ testimonialId: String(id) })),
           },
         }
       }
