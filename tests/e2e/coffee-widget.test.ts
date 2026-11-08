@@ -107,7 +107,7 @@ test.describe('CF-01: Floating coffee widget with MoMo QR modal', () => {
 
           // Locate floating coffee button
           const coffeeBtn = pub.getByRole('button', {
-            name: vi.cf01.floatingCoffee.ariaLabel,
+            name: '[MẪU] Mời Trạm một ly cà phê',
           })
           await expect(coffeeBtn, `coffee button visible at ${width}px`).toBeVisible()
 
@@ -136,7 +136,7 @@ test.describe('CF-01: Floating coffee widget with MoMo QR modal', () => {
           // CF-02: widget shows on every page, including the card-draw flow
           await pub.goto('/eq-buddy/rut-the')
           await expect(
-            pub.getByRole('button', { name: vi.cf01.floatingCoffee.ariaLabel }),
+            pub.getByRole('button', { name: '[MẪU] Mời Trạm một ly cà phê' }),
           ).toBeVisible()
         } finally {
           await ctx.close()

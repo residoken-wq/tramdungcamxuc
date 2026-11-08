@@ -53,10 +53,7 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
           zaloChatUrl="https://zalo.me/0900000000"
         />,
       )
-      expect(
-        screen.getByRole('button', { name: vi.cf01.floatingCoffee.ariaLabel }),
-        path,
-      ).toBeDefined()
+      expect(screen.getByRole('button', { name: sampleCoffee.title }), path).toBeDefined()
       const zaloHidden = ['/habit/hoc', '/habit/tracker', '/eq-buddy/the/abc', '/eq-buddy/rut-the']
       expect(
         screen.queryByRole('link', { name: vi.site.floatingChat.ariaLabel }) === null,
@@ -72,7 +69,7 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
     render(<FloatingCoffee coffeeDonation={sampleCoffee} />)
 
     const button = screen.getByRole('button', {
-      name: vi.cf01.floatingCoffee.ariaLabel,
+      name: sampleCoffee.title,
     })
     expect(button).toBeDefined()
 
@@ -82,7 +79,7 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
     expect(trackSpy).toHaveBeenCalledTimes(1)
 
     // Tiêu đề modal
-    expect(screen.getByText(sampleCoffee.title)).toBeDefined()
+    expect(screen.getByRole('dialog').textContent).toContain(sampleCoffee.title)
     // Lời nhắn
     expect(screen.getByText(sampleCoffee.message)).toBeDefined()
     // Ảnh QR có alt
@@ -104,7 +101,7 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
 
     render(<FloatingCoffee coffeeDonation={sampleCoffee} />)
     const button = screen.getByRole('button', {
-      name: vi.cf01.floatingCoffee.ariaLabel,
+      name: sampleCoffee.title,
     })
     fireEvent.click(button)
 
@@ -130,7 +127,7 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
       />,
     )
     const button = screen.getByRole('button', {
-      name: vi.cf01.floatingCoffee.ariaLabel,
+      name: sampleCoffee.title,
     })
     fireEvent.click(button)
 
@@ -147,7 +144,7 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
       />,
     )
     const button = screen.getByRole('button', {
-      name: vi.cf01.floatingCoffee.ariaLabel,
+      name: sampleCoffee.title,
     })
     fireEvent.click(button)
 
@@ -174,7 +171,7 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
     // Nút cà phê ở trên (con thứ nhất)
     const coffeeBtn = aside?.querySelector('button')
     expect(coffeeBtn).not.toBeNull()
-    expect(coffeeBtn?.getAttribute('aria-label')).toBe(vi.cf01.floatingCoffee.ariaLabel)
+    expect(coffeeBtn?.getAttribute('aria-label')).toBe(sampleCoffee.title)
 
     // Nút Zalo ở dưới (con thứ hai)
     const zaloLink = aside?.querySelector('a')
@@ -224,9 +221,21 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
         zaloChatUrl="https://zalo.me/0900000000"
       />,
     )
-    fireEvent.click(screen.getByRole('button', { name: vi.cf01.floatingCoffee.ariaLabel }))
+    fireEvent.click(screen.getByRole('button', { name: sampleCoffee.title }))
     const dialog = screen.getByRole('dialog')
     const aside = container.querySelector('aside')
     expect(aside?.contains(dialog)).toBe(false)
+  })
+})
+
+describe('Coffee button label comes from the CMS "Tiêu đề" (08/11)', () => {
+  it('shows the CMS title next to the cup, and the default label when the title is empty', () => {
+    currentPathname = '/'
+    const { unmount } = render(<FloatingCoffee coffeeDonation={sampleCoffee} />)
+    const btn = screen.getByRole('button', { name: sampleCoffee.title })
+    expect(btn.querySelector('[data-coffee-label]')?.textContent).toBe(sampleCoffee.title)
+    unmount()
+    render(<FloatingCoffee coffeeDonation={{ ...sampleCoffee, title: '  ' }} />)
+    expect(screen.getByRole('button', { name: vi.cf01.floatingCoffee.ariaLabel })).toBeTruthy()
   })
 })
