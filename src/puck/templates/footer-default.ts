@@ -1,9 +1,10 @@
 import type { Data } from '@puckeditor/core'
 
-export const footerDefaultTemplate: Data = {
+export const footerDefaultTemplate: Data<any, any> = {
   root: {
     props: {
       title: 'Chân trang mặc định',
+      footerBg: 'warm-ivory',
     },
   },
   content: [

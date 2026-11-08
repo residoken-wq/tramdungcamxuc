@@ -39,7 +39,7 @@ export function QuoteBlock({
     >
       <blockquote
         {...textTarget(id, 'quote')}
-        className={`font-quote ${sizeClass(QUOTE_TEXT_SIZES, size)} italic leading-relaxed ${quoteTextClass}`}
+        className={`font-quote ${sizeClass(QUOTE_TEXT_SIZES, size)} italic leading-relaxed whitespace-pre-line ${quoteTextClass}`}
       >
         &ldquo;{quote}&rdquo;
       </blockquote>

@@ -37,13 +37,13 @@ export const LegalFooterView: React.FC<LegalFooterProps & { isEditing?: boolean 
   )
 
   return (
-    <div className="w-full space-y-6 pt-4 border-t border-deep-navy/10 text-sm font-sans">
+    <div className="w-full space-y-6 pt-4 border-t border-deep-navy/10 group-data-[footer-bg=deep-navy]/footer:border-white/15 text-sm font-sans">
       {showLegalLinks && sortedLegalLinks.length === 0 && isEditing && (
-        <p className="italic text-deep-navy/70">{vi.eb10.legalFooterEditorEmpty}</p>
+        <p className="italic text-deep-navy/70 group-data-[footer-bg=deep-navy]/footer:text-white/70">{vi.eb10.legalFooterEditorEmpty}</p>
       )}
       {showLegalLinks && sortedLegalLinks.length > 0 && (
         <div className="space-y-3">
-          <h2 className="font-ui font-bold text-xs uppercase tracking-wider text-deep-navy/70">
+          <h2 className="font-ui font-bold text-xs uppercase tracking-wider text-deep-navy/70 group-data-[footer-bg=deep-navy]/footer:text-white/70">
             {vi.footer.legalHeading}
           </h2>
           <ul className="flex flex-wrap gap-x-6 gap-y-2">
@@ -51,7 +51,7 @@ export const LegalFooterView: React.FC<LegalFooterProps & { isEditing?: boolean 
               <li key={item.slug}>
                 <Link
                   href={item.slug.startsWith('/') ? item.slug : `/${item.slug}`}
-                  className="text-deep-navy/80 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm"
+                  className="text-deep-navy/80 hover:text-bright-magenta group-data-[footer-bg=deep-navy]/footer:text-soft-pink group-data-[footer-bg=deep-navy]/footer:hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy group-data-[footer-bg=deep-navy]/footer:focus-visible:outline-white rounded-sm"
                 >
                   {item.title}
                 </Link>
@@ -62,29 +62,29 @@ export const LegalFooterView: React.FC<LegalFooterProps & { isEditing?: boolean 
       )}
 
       {showSellerInfo && (hasSellerDetails || isEditing) && (
-        <div className="space-y-2 pt-2 text-xs text-deep-navy/70 border-t border-deep-navy/5">
+        <div className="space-y-2 pt-2 text-xs text-deep-navy/70 group-data-[footer-bg=deep-navy]/footer:text-white/80 border-t border-deep-navy/5 group-data-[footer-bg=deep-navy]/footer:border-white/10">
           {sellerInfo?.name?.trim() && (
-            <p className="font-ui font-semibold text-deep-navy">{sellerInfo.name.trim()}</p>
+            <p className="font-ui font-semibold text-deep-navy group-data-[footer-bg=deep-navy]/footer:text-white">{sellerInfo.name.trim()}</p>
           )}
           <div className="flex flex-wrap gap-x-4 gap-y-1">
             {sellerInfo?.taxCode?.trim() && (
               <p>
-                <span className="font-medium text-deep-navy/60">{vi.footer.seller.taxCode}:</span>{' '}
+                <span className="font-medium text-deep-navy/60 group-data-[footer-bg=deep-navy]/footer:text-white/70">{vi.footer.seller.taxCode}:</span>{' '}
                 {sellerInfo.taxCode.trim()}
               </p>
             )}
             {sellerInfo?.address?.trim() && (
               <p>
-                <span className="font-medium text-deep-navy/60">{vi.footer.seller.address}:</span>{' '}
+                <span className="font-medium text-deep-navy/60 group-data-[footer-bg=deep-navy]/footer:text-white/70">{vi.footer.seller.address}:</span>{' '}
                 {sellerInfo.address.trim()}
               </p>
             )}
             {sellerInfo?.phone?.trim() && (
               <p>
-                <span className="font-medium text-deep-navy/60">{vi.footer.seller.phone}:</span>{' '}
+                <span className="font-medium text-deep-navy/60 group-data-[footer-bg=deep-navy]/footer:text-white/70">{vi.footer.seller.phone}:</span>{' '}
                 <a
                   href={`tel:${sellerInfo.phone.trim()}`}
-                  className="hover:text-bright-magenta underline transition-colors"
+                  className="hover:text-bright-magenta group-data-[footer-bg=deep-navy]/footer:text-soft-pink group-data-[footer-bg=deep-navy]/footer:hover:text-white underline transition-colors"
                 >
                   {sellerInfo.phone.trim()}
                 </a>
@@ -92,17 +92,17 @@ export const LegalFooterView: React.FC<LegalFooterProps & { isEditing?: boolean 
             )}
             {sellerInfo?.email?.trim() && (
               <p>
-                <span className="font-medium text-deep-navy/60">{vi.footer.seller.email}:</span>{' '}
+                <span className="font-medium text-deep-navy/60 group-data-[footer-bg=deep-navy]/footer:text-white/70">{vi.footer.seller.email}:</span>{' '}
                 <a
                   href={`mailto:${sellerInfo.email.trim()}`}
-                  className="hover:text-bright-magenta underline transition-colors"
+                  className="hover:text-bright-magenta group-data-[footer-bg=deep-navy]/footer:text-soft-pink group-data-[footer-bg=deep-navy]/footer:hover:text-white underline transition-colors"
                 >
                   {sellerInfo.email.trim()}
                 </a>
               </p>
             )}
             {!hasSellerDetails && isEditing && (
-              <p className="italic text-deep-navy/70">{vi.eb10.sellerInfoEditorEmpty}</p>
+              <p className="italic text-deep-navy/70 group-data-[footer-bg=deep-navy]/footer:text-white/70">{vi.eb10.sellerInfoEditorEmpty}</p>
             )}
           </div>
         </div>

@@ -184,7 +184,7 @@ export function Callout({
               {description && (
                 <span
                   {...textTarget(id, 'description')}
-                  className={textClass}
+                  className={`whitespace-pre-line ${textClass}`}
                 >
                   {renderHighlightedText(description)}
                 </span>
@@ -237,7 +237,7 @@ export function Callout({
           {description && (
             <p
               {...textTarget(id, 'description')}
-              className={`${isLeft ? '' : 'mx-auto '}mt-4 max-w-2xl font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} leading-relaxed text-white/90`}
+              className={`${isLeft ? '' : 'mx-auto '}mt-4 max-w-2xl font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} leading-relaxed whitespace-pre-line text-white/90`}
             >
               {renderHighlightedText(description)}
             </p>

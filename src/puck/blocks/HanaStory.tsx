@@ -62,6 +62,27 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
       type: 'textarea',
       label: vi.eb15a.quoteLine,
     },
+    quoteStyle: {
+      type: 'radio',
+      label: vi.pk31?.hanaStory?.quoteStyle || 'Kiểu trích dẫn',
+      options: [
+        { label: vi.pk31?.hanaStory?.quoteStyleLine || 'Đường kẻ dọc (Mặc định)', value: 'line' },
+        {
+          label: vi.pk31?.hanaStory?.quoteStyleBox || 'Hộp nổi bật (Đặt trên đoạn văn)',
+          value: 'box',
+        },
+      ],
+    },
+    highlights: {
+      type: 'array',
+      label: vi.pk31?.hanaStory?.highlights || 'Các điểm nhấn (thẻ nhỏ đánh số)',
+      max: 4,
+      arrayFields: {
+        title: { type: 'text', label: vi.pk31?.hanaStory?.highlightTitle || 'Tiêu đề thẻ' },
+        text: { type: 'textarea', label: vi.pk31?.hanaStory?.highlightText || 'Nội dung mô tả' },
+      },
+      getItemSummary: (item) => item?.title || 'Điểm nhấn',
+    },
     chips: {
       type: 'array',
       label: 'Nhãn giá trị / từ khóa (tối đa 6 từ)',
@@ -106,6 +127,8 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     greeting: '',
     signatureName: '',
     chips: [],
+    highlights: [],
+    quoteStyle: 'line',
     storyContent:
       '[MẪU] Đoạn văn bản thứ nhất kể về hành trình và chiêm nghiệm.\n\n[MẪU] Đoạn văn bản thứ hai làm rõ hơn giá trị và sự đồng hành.',
     quoteLine: '[MẪU] Dòng cảm xúc trích dẫn chạm đến trái tim người đọc.',

@@ -98,9 +98,9 @@ export function NavMenuView({
                 'font-ui text-sm font-semibold transition-colors duration-150 py-1 border-b-2',
                 current ? 'border-bright-magenta/60' : 'border-transparent',
                 isFeatured
-                  ? 'text-bright-magenta hover:text-deep-navy font-bold'
-                  : 'text-deep-navy hover:text-bright-magenta hover:border-bright-magenta/40',
-                'focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm',
+                  ? 'text-bright-magenta hover:text-deep-navy group-data-[footer-bg=deep-navy]/footer:text-accent-pink group-data-[footer-bg=deep-navy]/footer:hover:text-white font-bold'
+                  : 'text-deep-navy hover:text-bright-magenta hover:border-bright-magenta/40 group-data-[footer-bg=deep-navy]/footer:text-soft-pink group-data-[footer-bg=deep-navy]/footer:hover:text-white',
+                'focus-visible:outline-2 focus-visible:outline-deep-navy group-data-[footer-bg=deep-navy]/footer:focus-visible:outline-white rounded-sm',
               ].join(' ')}
             >
               {item.label}

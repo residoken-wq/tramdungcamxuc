@@ -54,6 +54,7 @@ export interface IconCardProps {
   eyebrow?: string
   eyebrowBar?: boolean
   subtitle?: string
+  subtitleColor?: TextColorOption
   chip?: string
   items?: CardItem[]
   itemsColumns?: 1 | 2
@@ -150,7 +151,7 @@ function renderCardText(
     return (
       <p
         {...textTarget(id, 'text')}
-        className={`mt-2 font-ui ${textSizeClass} leading-relaxed ${textColorStyleClass}`}
+        className={`mt-2 font-ui ${textSizeClass} leading-relaxed whitespace-pre-line ${textColorStyleClass}`}
       >
         {text}
       </p>
@@ -184,7 +185,7 @@ function renderCardText(
       {chunks.map((chunk, idx) => {
         if (chunk.type === 'p') {
           return (
-            <p key={idx} className={idx > 0 ? 'mt-2' : ''}>
+            <p key={idx} className={`whitespace-pre-line ${idx > 0 ? 'mt-2' : ''}`}>
               {chunk.content}
             </p>
           )
@@ -194,7 +195,7 @@ function renderCardText(
             {chunk.items.map((it, i) => (
               <li key={i} className="flex items-start gap-2">
                 <span className="text-bright-magenta mt-1 shrink-0 text-xs select-none">•</span>
-                <span className="flex-1">{it}</span>
+                <span className="flex-1 whitespace-pre-line">{it}</span>
               </li>
             ))}
           </ul>
@@ -224,6 +225,7 @@ export function IconCard({
   eyebrow,
   eyebrowBar,
   subtitle,
+  subtitleColor,
   chip,
   items,
   itemsColumns = 1,
@@ -272,6 +274,15 @@ export function IconCard({
       : isDeepNavy
         ? 'text-white'
         : 'text-deep-navy group-data-[bg=deep-navy]/grid:text-white'
+
+  // Subtitle color: custom color if specified; if default deep-navy, adapt on dark card / deep-navy parent
+  const subtitleColorClass = isDarkCard
+    ? '!text-white/95'
+    : subtitleColor && subtitleColor !== 'deep-navy'
+      ? textColorClass(subtitleColor)
+      : isDeepNavy
+        ? 'text-white/95'
+        : 'text-deep-navy/90'
 
   // Text color: custom color if specified; if default deep-navy, adapt on deep-navy parent / dark card
   const textColorStyleClass = isDarkCard
@@ -422,9 +433,7 @@ export function IconCard({
 
       {subtitle && (
         <div
-          className={`mt-1 font-ui text-sm sm:text-base font-bold leading-snug ${
-            isDarkCard ? 'text-white/95' : 'text-deep-navy/90'
-          }`}
+          className={`mt-1 font-ui text-sm sm:text-base font-bold leading-snug ${subtitleColorClass}`}
         >
           {subtitle}
         </div>
@@ -465,7 +474,7 @@ export function IconCard({
               </span>
               {item.text && (
                 <span
-                  className={`font-ui text-xs sm:text-sm leading-relaxed mt-0.5 ${
+                  className={`font-ui text-xs sm:text-sm leading-relaxed mt-0.5 whitespace-pre-line ${
                     isDarkCard ? 'text-white/80' : 'text-deep-navy/75'
                   }`}
                 >
@@ -490,7 +499,7 @@ export function IconCard({
               {note.title}
             </div>
           )}
-          <div className="font-ui leading-relaxed opacity-95">{note.text}</div>
+          <div className="font-ui leading-relaxed opacity-95 whitespace-pre-line">{note.text}</div>
         </div>
       )}
     </div>
