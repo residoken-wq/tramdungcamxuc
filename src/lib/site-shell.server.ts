@@ -8,7 +8,7 @@ import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
 import type { NavGroup, NavItem, NavbarCta } from '@/components/site/Navbar'
 import { PATHS } from '@/lib/paths'
-import type { LegalLink, SellerInfo, SocialLink } from '@/components/site/Footer'
+import type { LegalLink, SellerInfo, SocialLink, SocialKey } from '@/components/site/Footer'
 import type { SiteLogo } from '@/components/brand/Logo'
 import type { Data } from '@puckeditor/core'
 import { walkPuckItems } from '@/puck/walk'
@@ -119,6 +119,43 @@ function mapSubmenu(item: RawMenuItem): NavGroup[] | undefined {
   return groups.length > 0 ? groups : undefined
 }
 
+export function buildSocialLinks(
+  siteSettings?: Partial<SiteSetting> | Record<string, unknown> | null,
+): SocialLink[] {
+  const configs: Array<{
+    key: SocialKey
+    rawUrl?: unknown
+    label: string
+  }> = [
+    { key: 'facebook', rawUrl: siteSettings?.facebookUrl, label: vi.pk32.socialLabels.facebook },
+    {
+      key: 'tiktok',
+      rawUrl: (siteSettings as Record<string, unknown> | undefined)?.tiktokUrl,
+      label: vi.pk32.socialLabels.tiktok,
+    },
+    { key: 'youtube', rawUrl: siteSettings?.youtubeUrl, label: vi.pk32.socialLabels.youtube },
+    { key: 'linkedin', rawUrl: siteSettings?.linkedInUrl, label: vi.pk32.socialLabels.linkedin },
+    { key: 'zalo', rawUrl: siteSettings?.zaloGroupUrl, label: vi.pk32.socialLabels.zalo },
+    { key: 'shopee', rawUrl: siteSettings?.shopeeStoreUrl, label: vi.pk32.socialLabels.shopee },
+  ]
+
+  const links: SocialLink[] = []
+  for (const cfg of configs) {
+    if (!cfg.rawUrl || typeof cfg.rawUrl !== 'string') continue
+    const trimmed = cfg.rawUrl.trim()
+    if (!trimmed) continue
+    const safe = safeHref(trimmed)
+    if (safe) {
+      links.push({
+        key: cfg.key,
+        label: cfg.label,
+        href: safe,
+      })
+    }
+  }
+  return links
+}
+
 export function buildSiteShellFromPayloadData(args: {
   navigation?: Navigation | null
   siteSettings?: SiteSetting | null
@@ -208,16 +245,7 @@ export function buildSiteShellFromPayloadData(args: {
         }
       : undefined
 
-  const socialLinks: SocialLink[] = []
-  if (siteSettings?.linkedInUrl?.trim()) {
-    socialLinks.push({ label: 'LinkedIn', href: siteSettings.linkedInUrl.trim() })
-  }
-  if (siteSettings?.zaloGroupUrl?.trim()) {
-    socialLinks.push({ label: 'Zalo Group', href: siteSettings.zaloGroupUrl.trim() })
-  }
-  if (siteSettings?.shopeeStoreUrl?.trim()) {
-    socialLinks.push({ label: 'Shopee', href: siteSettings.shopeeStoreUrl.trim() })
-  }
+  const socialLinks: SocialLink[] = buildSocialLinks(siteSettings)
 
   const tagline = siteSettings?.tagline?.trim() || undefined
 
