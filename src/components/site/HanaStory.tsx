@@ -12,6 +12,11 @@ export interface HanaStoryChipItem {
   text?: string
 }
 
+export interface HanaStoryHighlightItem {
+  title: string
+  text?: string
+}
+
 export interface HanaStoryProps {
   version?: number
   tone?: 'light' | 'dark'
@@ -19,6 +24,8 @@ export interface HanaStoryProps {
   greeting?: string
   signatureName?: string
   chips?: HanaStoryChipItem[]
+  highlights?: HanaStoryHighlightItem[]
+  quoteStyle?: 'line' | 'box'
   layout?: 'story' | 'letter' | 'spotlight'
   imagePosition?: 'left' | 'right'
   seriesLabel?: string
@@ -70,6 +77,8 @@ export function HanaStory({
   greeting,
   signatureName,
   chips = [],
+  highlights = [],
+  quoteStyle = 'line',
   layout = 'story',
   imagePosition = 'left',
   seriesLabel,
@@ -165,16 +174,32 @@ export function HanaStory({
               </p>
             )}
 
-            {cleanQuoteLine && (
-              <div className="mb-6 pl-4 border-l-[3px] border-accent-pink">
-                <p
-                  {...textTarget(id, 'quoteLine')}
-                  className={`font-quote italic text-lg sm:text-xl leading-relaxed ${quoteTextClass}`}
+            {cleanQuoteLine &&
+              (quoteStyle === 'box' ? (
+                <div
+                  className={`mb-6 p-5 sm:p-6 rounded-card border shadow-sm ${
+                    isDarkOrNavy
+                      ? 'bg-white/10 border-white/20 text-soft-pink'
+                      : 'bg-soft-pink border-accent-pink/20 text-bright-magenta'
+                  }`}
                 >
-                  &ldquo;{cleanQuoteLine}&rdquo;
-                </p>
-              </div>
-            )}
+                  <p
+                    {...textTarget(id, 'quoteLine')}
+                    className="font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line"
+                  >
+                    &ldquo;{cleanQuoteLine}&rdquo;
+                  </p>
+                </div>
+              ) : (
+                <div className="mb-6 pl-4 border-l-[3px] border-accent-pink">
+                  <p
+                    {...textTarget(id, 'quoteLine')}
+                    className={`font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line ${quoteTextClass}`}
+                  >
+                    &ldquo;{cleanQuoteLine}&rdquo;
+                  </p>
+                </div>
+              ))}
 
             {paragraphs.length > 0 && (
               <div
@@ -182,7 +207,42 @@ export function HanaStory({
                 className={`space-y-4 font-sans text-base sm:text-lg leading-relaxed ${descColorClass}`}
               >
                 {paragraphs.map((p, idx) => (
-                  <p key={idx}>{p}</p>
+                  <p key={idx} className="whitespace-pre-line">{p}</p>
+                ))}
+              </div>
+            )}
+
+            {highlights && highlights.length > 0 && (
+              <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+                {highlights.slice(0, 4).map((hl, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-card border ${
+                      isDarkOrNavy
+                        ? 'bg-white/10 border-white/20 text-white'
+                        : 'bg-white border-deep-navy/10 text-deep-navy shadow-soft'
+                    }`}
+                  >
+                    <span
+                      className={`block font-display text-2xl sm:text-3xl ${
+                        isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
+                      }`}
+                    >
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <h4 className="mt-1 font-ui font-bold text-sm sm:text-base leading-snug">
+                      {hl.title}
+                    </h4>
+                    {hl.text && (
+                      <p
+                        className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
+                          isDarkOrNavy ? 'text-white/80' : 'text-deep-navy/75'
+                        }`}
+                      >
+                        {hl.text}
+                      </p>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -351,6 +411,24 @@ export function HanaStory({
               </p>
             )}
 
+            {/* Box Quote (when quoteStyle === 'box', placed above paragraphs) */}
+            {quoteStyle === 'box' && cleanQuoteLine && (
+              <div
+                className={`mb-6 p-5 sm:p-6 rounded-card border shadow-sm ${
+                  isDarkOrNavy
+                    ? 'bg-white/10 border-white/20 text-soft-pink'
+                    : 'bg-soft-pink border-accent-pink/20 text-bright-magenta'
+                }`}
+              >
+                <p
+                  {...textTarget(id, 'quoteLine')}
+                  className="font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line"
+                >
+                  &ldquo;{cleanQuoteLine}&rdquo;
+                </p>
+              </div>
+            )}
+
             {/* Story Paragraphs */}
             {paragraphs.length > 0 && (
               <div
@@ -358,20 +436,56 @@ export function HanaStory({
                 className={`space-y-4 font-sans text-base sm:text-lg leading-relaxed ${descColorClass}`}
               >
                 {paragraphs.map((p, idx) => (
-                  <p key={idx}>{p}</p>
+                  <p key={idx} className="whitespace-pre-line">{p}</p>
                 ))}
               </div>
             )}
 
             {/* Emotional Quote Block */}
-            {cleanQuoteLine && (
+            {quoteStyle !== 'box' && cleanQuoteLine && (
               <div className={`mt-6 p-5 sm:p-6 rounded-card border shadow-sm ${quoteBgClass}`}>
                 <p
                   {...textTarget(id, 'quoteLine')}
-                  className={`font-quote italic text-lg sm:text-xl leading-relaxed ${quoteTextClass}`}
+                  className={`font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line ${quoteTextClass}`}
                 >
                   &ldquo;{cleanQuoteLine}&rdquo;
                 </p>
+              </div>
+            )}
+
+            {/* Highlights (3 numbered small cards) */}
+            {highlights && highlights.length > 0 && (
+              <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+                {highlights.slice(0, 4).map((hl, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-card border ${
+                      isDarkOrNavy
+                        ? 'bg-white/10 border-white/20 text-white'
+                        : 'bg-white border-deep-navy/10 text-deep-navy shadow-soft'
+                    }`}
+                  >
+                    <span
+                      className={`block font-display text-2xl sm:text-3xl ${
+                        isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
+                      }`}
+                    >
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <h4 className="mt-1 font-ui font-bold text-sm sm:text-base leading-snug">
+                      {hl.title}
+                    </h4>
+                    {hl.text && (
+                      <p
+                        className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
+                          isDarkOrNavy ? 'text-white/80' : 'text-deep-navy/75'
+                        }`}
+                      >
+                        {hl.text}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
 

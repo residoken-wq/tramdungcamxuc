@@ -103,6 +103,11 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
       type: 'text',
       label: vi.pk26?.card?.subtitle || 'Tiêu đề phụ đậm (Subtitle)',
     },
+    subtitleColor: {
+      type: 'select',
+      label: vi.pk31?.card?.subtitleColor || 'Màu tiêu đề phụ',
+      options: allowedTextColors('warm-ivory', false),
+    },
     chip: {
       type: 'text',
       label: vi.pk26?.card?.chip || 'Huy hiệu / Nhãn chip',
@@ -160,6 +165,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     eyebrow: '',
     eyebrowBar: false,
     subtitle: '',
+    subtitleColor: 'deep-navy',
     chip: '',
     items: [],
     itemsColumns: 1,
@@ -169,6 +175,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     const cardRealBg = getCardRealBg(params?.parent)
     const isTitleLarge = data?.props?.titleSize === 'lg'
     const titleColors = allowedTextColors(cardRealBg, isTitleLarge)
+    const subtitleColors = allowedTextColors(cardRealBg, false)
     const textColors = allowedTextColors(cardRealBg, false)
     const isFollowingGrid =
       params?.parent?.props?.cardAlign === 'left' || params?.parent?.props?.cardAlign === 'center'
@@ -187,6 +194,11 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
         type: 'select',
         label: vi.puckCard?.titleColor || 'Màu tiêu đề',
         options: titleColors,
+      },
+      subtitleColor: {
+        type: 'select',
+        label: vi.pk31?.card?.subtitleColor || 'Màu tiêu đề phụ',
+        options: subtitleColors,
       },
       textColor: {
         type: 'select',
