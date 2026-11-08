@@ -63,6 +63,7 @@ test.describe('PK-31: Trang "Về Trạm" – Xuống dòng, Subtitle color, Han
           {
             type: 'VisionMission',
             props: {
+              version: 2,
               id: 'vm-1',
               titleLine1: 'TẦM NHÌN & SỨ MỆNH',
               cards: [
@@ -80,6 +81,7 @@ test.describe('PK-31: Trang "Về Trạm" – Xuống dòng, Subtitle color, Han
           {
             type: 'IconCardGrid',
             props: {
+              version: 2,
               id: 'grid-1',
               titleLine1: 'GIÁ TRỊ CỐT LÕI',
               cards: [
@@ -99,13 +101,15 @@ test.describe('PK-31: Trang "Về Trạm" – Xuống dòng, Subtitle color, Han
           {
             type: 'HanaStory',
             props: {
+              version: 3,
               id: 'story-1',
               seriesLabel: 'VỀ NGƯỜI ĐỒNG HÀNH',
               titleLine1: 'HÀNH TRÌNH',
               titleLine2: 'THẤU CẢM & CHUYỂN HÓA',
               quoteStyle: 'box',
               quoteLine: 'Cảm xúc là la bàn dẫn đường.',
-              storyContent: 'Hành trình bắt đầu từ những chiêm nghiệm sâu sắc.\n\nĐoạn văn tiếp nối giữ nhịp chuyển mình.',
+              storyContent:
+                'Hành trình bắt đầu từ những chiêm nghiệm sâu sắc.\n\nĐoạn văn tiếp nối giữ nhịp chuyển mình.',
               highlights: [
                 { title: 'Quan sát', text: 'Lắng nghe cơ thể và nhịp thở.' },
                 { title: 'Thấu hiểu', text: 'Nhận diện cảm xúc thật bên dưới.' },
@@ -135,7 +139,9 @@ test.describe('PK-31: Trang "Về Trạm" – Xuống dòng, Subtitle color, Han
       expect(navRes?.status()).toBe(200)
 
       // Test 1: VisionCard has whitespace-pre-line and text with newline
-      const visionParagraph = guest.locator('p.whitespace-pre-line').filter({ hasText: 'VỚI CÁ NHÂN' })
+      const visionParagraph = guest
+        .locator('p.whitespace-pre-line')
+        .filter({ hasText: 'VỚI CÁ NHÂN' })
       await expect(visionParagraph).toBeVisible()
       const visionText = await visionParagraph.innerText()
       expect(visionText).toContain('VỚI CÁ NHÂN\nTrở thành')
@@ -152,9 +158,10 @@ test.describe('PK-31: Trang "Về Trạm" – Xuống dòng, Subtitle color, Han
       await expect(quoteBox).toHaveClass(/bg-soft-pink/)
 
       // Test 4: 3 Highlights on desktop 1440px (1 row)
-      const hl1 = guest.getByText('01')
-      const hl2 = guest.getByText('02')
-      const hl3 = guest.getByText('03')
+      // QA PK-31: numbers like '02' also appear elsewhere on the page; anchor on the card titles.
+      const hl1 = guest.getByText('Quan sát', { exact: true })
+      const hl2 = guest.getByText('Thấu hiểu', { exact: true })
+      const hl3 = guest.getByText('Vững bước', { exact: true })
       await expect(hl1).toBeVisible()
       await expect(hl2).toBeVisible()
       await expect(hl3).toBeVisible()
@@ -169,7 +176,10 @@ test.describe('PK-31: Trang "Về Trạm" – Xuống dòng, Subtitle color, Han
       expect(Math.abs((box1?.y ?? 0) - (box3?.y ?? 0))).toBeLessThan(15)
 
       if (captureScreenshots) {
-        await guest.screenshot({ path: path.join(screenshotsDir, '01-about-page-1440.png'), fullPage: true })
+        await guest.screenshot({
+          path: path.join(screenshotsDir, '01-about-page-1440.png'),
+          fullPage: true,
+        })
       }
 
       // 2. Mobile 375px
@@ -182,11 +192,14 @@ test.describe('PK-31: Trang "Về Trạm" – Xuống dòng, Subtitle color, Han
       expect(mbox1).not.toBeNull()
       expect(mbox2).not.toBeNull()
       expect(mbox3).not.toBeNull()
-      expect((mbox2?.y ?? 0)).toBeGreaterThan((mbox1?.y ?? 0) + 20)
-      expect((mbox3?.y ?? 0)).toBeGreaterThan((mbox2?.y ?? 0) + 20)
+      expect(mbox2?.y ?? 0).toBeGreaterThan((mbox1?.y ?? 0) + 20)
+      expect(mbox3?.y ?? 0).toBeGreaterThan((mbox2?.y ?? 0) + 20)
 
       if (captureScreenshots) {
-        await guest.screenshot({ path: path.join(screenshotsDir, '01-about-page-375.png'), fullPage: true })
+        await guest.screenshot({
+          path: path.join(screenshotsDir, '01-about-page-375.png'),
+          fullPage: true,
+        })
       }
 
       // 3. Accessibility check
@@ -200,4 +213,3 @@ test.describe('PK-31: Trang "Về Trạm" – Xuống dòng, Subtitle color, Han
     }
   })
 })
-
