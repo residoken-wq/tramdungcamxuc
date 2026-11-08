@@ -151,7 +151,7 @@ export function PhaseArchitecture({
             className="w-full lg:flex-1 bg-deep-navy text-white rounded-2xl p-6 sm:p-8 border border-white/20 shadow-soft text-left flex flex-col justify-between gap-5"
           >
             <div>
-              <span className="font-ui text-xs font-bold uppercase tracking-wider text-accent-pink block mb-2">
+              <span className="font-ui text-xs font-bold uppercase tracking-wider text-soft-pink block mb-2">
                 {phase2Label}
               </span>
               <h3 className="font-ui font-bold text-2xl sm:text-3xl text-white mb-2 leading-snug">

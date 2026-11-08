@@ -169,7 +169,7 @@ export function ProgramOverview({
             className="bg-deep-navy text-white rounded-xl p-4 sm:p-5 border border-white/20 shadow-xs flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-left"
           >
             {bottomStripLabel && (
-              <span className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-accent-pink shrink-0">
+              <span className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-soft-pink shrink-0">
                 {bottomStripLabel}
               </span>
             )}
