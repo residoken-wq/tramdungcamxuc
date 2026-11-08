@@ -2893,17 +2893,23 @@ Khi bạn bấm chọn một khối cha:
 
 Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang (Header)** và **Chân trang (Footer)** toàn website bằng trình soạn thảo trực quan Puck mà không cần nhờ can thiệp vào code:
 
-#### 1. Cách tạo Đầu trang hoặc Chân trang mới
+#### 1. Cách tạo và bật Chân trang hoặc Đầu trang mới từ mẫu
 
-1. Vào mục **Trang web** -> **Trang nội dung** -> bấm **Tạo mới**.
-2. Đặt tiêu đề (ví dụ: `Đầu trang chiến dịch hè` hoặc `Chân trang chính`).
-3. Ở cột bên phải (Sidebar), tìm ô **Loại trang**:
-   - Chọn **Đầu trang** nếu muốn tạo thanh menu trên cùng.
-   - Chọn **Chân trang** nếu muốn tạo phần chân trang dưới cùng.
-   - _Lưu ý:_ Loại trang chỉ được chọn lúc tạo mới và không thể đổi sau khi đã lưu để đảm bảo an toàn cấu trúc.
-4. Bấm **Lưu nháp** hoặc **Xuất bản**:
-   - Hệ thống sẽ **tự động nạp mẫu chuẩn**: Mẫu Đầu trang sẽ có sẵn Logo, Menu chính, Nút tài khoản và Nút CTA; mẫu Chân trang sẽ có Logo, Câu khẩu hiệu, Mạng xã hội và Chân trang pháp lý.
-5. Bấm nút **Chỉnh sửa trực quan** để mở trình kéo thả.
+Hana tạo và kích hoạt Đầu trang / Chân trang chỉ bằng một cú nhấp chuột trực tiếp trong **Menu điều hướng**:
+
+1. Vào menu bên trái: **Hệ thống** -> **Menu điều hướng**.
+2. Cuộn xuống nhóm **Đầu trang / chân trang**:
+   - Khi ô `Trang chân trang (Builder)` đang trống, bấm nút **"Tạo chân trang từ mẫu"**.
+   - Hệ thống sẽ tự động tạo trang bản nháp có sẵn đầy đủ khối chuẩn (Logo, Câu khẩu hiệu, Mạng xã hội, Chân trang pháp lý) và tự điền vào ô liên kết.
+3. Trình soạn thảo Puck tự động mở ở tab mới:
+   - Hana chỉnh sửa bố cục hoặc màu sắc (ví dụ: chọn mục "Nền footer" = _Xanh thẫm (Deep Navy)_).
+   - Chỉnh xong, bấm **Xuất bản** ở góc trên bên phải.
+4. Quay lại trang **Menu điều hướng**:
+   - Chuyển **Nguồn chân trang** = _Dựng bằng Builder_.
+   - Bấm **Lưu thay đổi**. Ngay lập tức toàn bộ website sẽ áp dụng chân trang mới!
+5. **Muốn quay về footer cũ:** Trong **Menu điều hướng**, chọn lại **Nguồn chân trang** = _Giao diện mặc định (Code)_ và bấm **Lưu thay đổi**.
+
+Đầu trang làm tương tự bằng nút **"Tạo đầu trang từ mẫu"**.
 
 #### 2. Chỉnh sửa trong trình soạn thảo trực quan
 

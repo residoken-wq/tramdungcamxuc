@@ -8,6 +8,13 @@ import { Pages } from '@/collections/Pages'
 vitest.mock('server-only', () => ({}))
 
 describe('EB-10 Step 6: Default Header & Footer Templates', () => {
+  const collectTypes = (items: any[]): string[] =>
+    items.flatMap((i) =>
+      i.type === 'Container' && i.props?.items
+        ? [i.type, ...collectTypes(i.props.items)]
+        : [i.type],
+    )
+
   it('headerDefaultTemplate is valid and passes kind verification', () => {
     const kindValidation = validatePageKindBlocks('header', headerDefaultTemplate)
     expect(kindValidation.valid).toBe(true)
@@ -38,7 +45,7 @@ describe('EB-10 Step 6: Default Header & Footer Templates', () => {
     expect(container).toBeDefined()
     const containerItems = (container?.props as any)?.items as any[]
     expect(containerItems).toBeDefined()
-    const itemTypes = containerItems.map((i) => i.type)
+    const itemTypes = collectTypes(containerItems)
     expect(itemTypes).toContain('SiteLogo')
     expect(itemTypes).toContain('Tagline')
     expect(itemTypes).toContain('SocialLinks')
@@ -80,9 +87,7 @@ describe('EB-10 Step 6: Default Header & Footer Templates', () => {
       operation: 'create',
     })
     expect(footerResult.puckData).toBeDefined()
-    const footerTypes = footerResult.puckData.content[0].props.items.map(
-      (item: { type: string }) => item.type,
-    )
+    const footerTypes = collectTypes(footerResult.puckData.content[0].props.items)
     expect(footerTypes).toContain('LegalFooter')
 
     // Preserves existing puckData if provided

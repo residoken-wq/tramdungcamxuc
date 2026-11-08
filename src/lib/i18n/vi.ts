@@ -3127,7 +3127,7 @@ export const vi = {
       header: 'Đầu trang',
       footer: 'Chân trang',
     },
-    kindDesc: 'Chỉ chọn khi tạo mới. Đầu trang và chân trang được dùng trong Menu điều hướng.',
+    kindDesc: 'Đầu trang / chân trang: tạo bằng nút "Tạo … từ mẫu" trong Menu điều hướng.',
     headerBadge: 'Đầu trang',
     footerBadge: 'Chân trang',
     pageBadge: 'Trang',
@@ -4766,6 +4766,17 @@ export const vi = {
     emptyHint:
       'Icon mạng xã hội lấy từ Cài đặt Website → Liên hệ & Zalo (ô trống = không hiện). Xem ở trang công khai.',
     newTab: 'mở tab mới',
+  },
+  pk33: {
+    headerTitle: 'Đầu trang chính',
+    footerTitle: 'Chân trang chính',
+    createHeaderFromTemplate: 'Tạo đầu trang từ mẫu',
+    createFooterFromTemplate: 'Tạo chân trang từ mẫu',
+    creating: 'Đang tạo...',
+    builderHint:
+      'Dựng xong, bấm Xuất bản trong builder, rồi chọn Nguồn = Dựng bằng Builder và bấm Lưu.',
+    errorOnlyOwner: 'Chỉ chủ sở hữu (Owner) mới có quyền tạo đầu trang / chân trang từ mẫu.',
+    errorCreateFailed: 'Không thể tạo trang từ mẫu. Vui lòng thử lại.',
   },
 } as const
 

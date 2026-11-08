@@ -147,7 +147,7 @@ export const Navigation: GlobalConfig = {
             kind: { equals: 'header' },
           },
           admin: {
-            condition: (_, siblingData) => siblingData?.headerSource === 'builder',
+            allowCreate: false,
           },
           access: { update: isOwner },
         },
@@ -155,7 +155,6 @@ export const Navigation: GlobalConfig = {
           name: 'headerBuilderUi',
           type: 'ui',
           admin: {
-            condition: (_, siblingData) => siblingData?.headerSource === 'builder',
             components: {
               Field: '@/components/admin/NavigationBuilderButton#HeaderBuilderButton',
             },
@@ -183,7 +182,7 @@ export const Navigation: GlobalConfig = {
             kind: { equals: 'footer' },
           },
           admin: {
-            condition: (_, siblingData) => siblingData?.footerSource === 'builder',
+            allowCreate: false,
           },
           access: { update: isOwner },
         },
@@ -191,7 +190,6 @@ export const Navigation: GlobalConfig = {
           name: 'footerBuilderUi',
           type: 'ui',
           admin: {
-            condition: (_, siblingData) => siblingData?.footerSource === 'builder',
             components: {
               Field: '@/components/admin/NavigationBuilderButton#FooterBuilderButton',
             },

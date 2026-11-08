@@ -235,7 +235,7 @@ export interface Page {
    */
   title: string;
   /**
-   * Chỉ chọn khi tạo mới. Đầu trang và chân trang được dùng trong Menu điều hướng.
+   * Đầu trang / chân trang: tạo bằng nút "Tạo … từ mẫu" trong Menu điều hướng.
    */
   kind?: ('page' | 'header' | 'footer') | null;
   /**
