@@ -13,7 +13,7 @@ import type { PublicTeamMember } from '@/puck/client-preview'
 import type { Service, Program } from '@/payload-types'
 import type { PublicContactInfo } from '@/components/site/ContactInfo'
 import { buildSiteShellFromPayloadData, type SiteShellData } from '@/lib/site-shell.server'
-import { safeHref } from '@/lib/safe-href'
+import { loadLeadMagnetItems } from '@/lib/lead-magnets.server'
 
 import { walkPuckItems } from './walk'
 import { normalizePuckData } from './migrations'
@@ -1676,118 +1676,14 @@ export async function resolveServerData(
         leadStatusOptions: publicLeadStatusOptions,
       }
     } else if (item.type === 'LeadMagnetCarousel') {
-      const mode = item.props.mode || 'auto'
-      if (mode === 'manual') {
-        const manuals = item.props.manualProducts as
-          Array<{ productId?: string | number }> | undefined
-        const ids: Array<string | number> = []
-        if (Array.isArray(manuals)) {
-          for (const m of manuals) {
-            if (m?.productId) ids.push(m.productId)
-          }
-        }
-        if (ids.length === 0) {
-          item.props._resolved = { items: [] }
-        } else {
-          const numericOrStrIds = ids.map((id) => (isNaN(Number(id)) ? id : Number(id)))
-          try {
-            const docs = await payload.find({
-              collection: 'products',
-              where: {
-                and: [
-                  { id: { in: numericOrStrIds } },
-                  { _status: { equals: 'published' } },
-                  { saleStatus: { equals: 'free' } },
-                ],
-              },
-              overrideAccess: true,
-              depth: 1,
-              limit: 12,
-            })
-            const eligible = (docs.docs || []).filter((doc) => {
-              if (doc.saleStatus !== 'free') return false
-              const hasFiles = Array.isArray(doc.files) && doc.files.length > 0
-              const safeExternal = doc.externalUrl ? safeHref(doc.externalUrl) : null
-              return hasFiles || safeExternal !== null
-            })
-            const docMap = new Map(eligible.map((d) => [String(d.id), d]))
-            const ordered = ids
-              .map((id) => docMap.get(String(id)))
-              .filter(Boolean)
-              .slice(0, 12)
-              .map((doc) => {
-                const hasFiles = Array.isArray(doc!.files) && doc!.files.length > 0
-                const safeExternal = doc!.externalUrl ? safeHref(doc!.externalUrl) : null
-                const href = hasFiles ? `/tai-nguyen/${doc!.slug}` : safeExternal!
-                const isExternal = !hasFiles && /^https?:\/\//i.test(href)
-                const ctaLabel =
-                  typeof doc!.ctaLabel === 'string' && doc!.ctaLabel.trim()
-                    ? doc!.ctaLabel.trim()
-                    : null
-                const img = doc!.coverImage as { url?: string; alt?: string } | undefined
-                return {
-                  id: doc!.id,
-                  name: doc!.name,
-                  slug: doc!.slug,
-                  shortDescription: doc!.shortDescription || null,
-                  topic: doc!.topic || null,
-                  coverImage: img?.url ? { url: img.url, alt: img.alt || doc!.name } : null,
-                  href,
-                  isExternal,
-                  ctaLabel,
-                }
-              })
-            item.props._resolved = { items: ordered }
-          } catch {
-            item.props._resolved = { items: [] }
-          }
-        }
-      } else {
-        // mode === 'auto'
-        try {
-          const docs = await payload.find({
-            collection: 'products',
-            where: {
-              and: [{ _status: { equals: 'published' } }, { saleStatus: { equals: 'free' } }],
-            },
-            overrideAccess: true,
-            sort: 'order',
-            depth: 1,
-            limit: 24,
-          })
-          const eligible = (docs.docs || [])
-            .filter((doc) => {
-              if (doc.saleStatus !== 'free') return false
-              const hasFiles = Array.isArray(doc.files) && doc.files.length > 0
-              const safeExternal = doc.externalUrl ? safeHref(doc.externalUrl) : null
-              return hasFiles || safeExternal !== null
-            })
-            .slice(0, 12)
-            .map((doc) => {
-              const hasFiles = Array.isArray(doc.files) && doc.files.length > 0
-              const safeExternal = doc.externalUrl ? safeHref(doc.externalUrl) : null
-              const href = hasFiles ? `/tai-nguyen/${doc.slug}` : safeExternal!
-              const isExternal = !hasFiles && /^https?:\/\//i.test(href)
-              const ctaLabel =
-                typeof doc.ctaLabel === 'string' && doc.ctaLabel.trim() ? doc.ctaLabel.trim() : null
-              const img = doc.coverImage as { url?: string; alt?: string } | undefined
-              return {
-                id: doc.id,
-                name: doc.name,
-                slug: doc.slug,
-                shortDescription: doc.shortDescription || null,
-                topic: doc.topic || null,
-                coverImage: img?.url ? { url: img.url, alt: img.alt || doc.name } : null,
-                href,
-                isExternal,
-                ctaLabel,
-              }
-            })
-          item.props._resolved = { items: eligible }
-        } catch {
-          item.props._resolved = { items: [] }
-        }
-      }
+      // QA PK-27b: same loader as the builder preview (src/lib/lead-magnets.server.ts).
+      const mode = item.props.mode === 'manual' ? 'manual' : 'auto'
+      const manuals = item.props.manualProducts as
+        Array<{ productId?: string | number }> | undefined
+      const ids = Array.isArray(manuals)
+        ? manuals.map((m) => m?.productId).filter((id): id is string | number => Boolean(id))
+        : []
+      item.props._resolved = { items: await loadLeadMagnetItems(payload, mode, ids) }
     }
 
     // Gắn slug trang đã chuẩn hóa vào props của các khối chuyển đổi (khóa tạm, không lưu DB)
