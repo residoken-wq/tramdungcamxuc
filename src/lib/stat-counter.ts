@@ -49,3 +49,4 @@ export function formatStatNumber(num: number, separator: '.' | ',' | ''): string
   if (!separator) return String(rounded)
   return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator)
 }
+

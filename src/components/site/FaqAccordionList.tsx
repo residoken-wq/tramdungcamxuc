@@ -209,7 +209,7 @@ export function FaqAccordionList({
                 id={answerId}
                 role="region"
                 aria-labelledby={questionId}
-                inert={!isOpen ? '' : undefined}
+                inert={!isOpen ? true : undefined}
                 className={`grid transition-[grid-template-rows] duration-[240ms] ease-out motion-reduce:transition-none ${
                   isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
                 }`}
@@ -334,7 +334,7 @@ export function FaqAccordionList({
               id={answerId}
               role="region"
               aria-labelledby={questionId}
-              inert={!isOpen ? '' : undefined}
+              inert={!isOpen ? true : undefined}
               className={`grid transition-[grid-template-rows] duration-[240ms] ease-out motion-reduce:transition-none ${
                 isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
               }`}

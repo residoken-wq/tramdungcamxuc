@@ -94,3 +94,4 @@ export function StatCounter({ value, className = '', isEditing = false }: StatCo
     </span>
   )
 }
+
