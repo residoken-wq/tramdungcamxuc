@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { SectionHeader } from '@/components/ui/SectionHeader'
 import { TestimonialCard } from './TestimonialCard'
 import type { PublicTestimonial } from '@/lib/testimonials'
 import { useClientTestimonials } from '@/puck/client-preview'
@@ -8,6 +9,10 @@ import { vi } from '@/lib/i18n/vi'
 
 export interface TestimonialGridProps {
   version?: number
+  seriesLabel?: string
+  titleLine1?: string
+  titleLine2?: string
+  emotionLine?: string
   variant?: 'quote' | 'story' | 'stages' | 'featured'
   mode?: 'manual' | 'recent'
   manualTestimonials?: Array<{ testimonialId?: string | number }>
@@ -46,6 +51,11 @@ const PADDINGS = {
 } as const
 
 export function TestimonialGrid({
+  id,
+  seriesLabel,
+  titleLine1,
+  titleLine2,
+  emotionLine,
   variant = 'quote',
   mode = 'manual',
   manualTestimonials,
@@ -56,8 +66,10 @@ export function TestimonialGrid({
   padding = 'md',
   _resolved,
   puck,
-}: TestimonialGridProps) {
+}: TestimonialGridProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
+  const isDeepNavy = bgColor === 'deep-navy'
+  const hasHeader = Boolean(titleLine1 || titleLine2 || seriesLabel)
 
   const resolvedIds = (manualTestimonials?.map((m) => m?.testimonialId).filter(Boolean) ??
     testimonialIds ??
@@ -90,8 +102,24 @@ export function TestimonialGrid({
   const colClass = columns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'
 
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section id={id} className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-6xl">
+        {hasHeader && (
+          <div className="mb-8 sm:mb-12">
+            <SectionHeader
+              id={id}
+              seriesLabel={seriesLabel}
+              titleLine1={titleLine1 || ''}
+              titleLine2={titleLine2}
+              emotionLine={emotionLine}
+              align="center"
+              line1Color={isDeepNavy ? 'white' : 'deep-navy'}
+              line2Color={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
+              eyebrowColor={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
+              emotionColor={isDeepNavy ? 'white' : 'deep-navy'}
+            />
+          </div>
+        )}
         {loading && validTestimonials.length === 0 ? (
           <div className="py-12 text-center text-sm font-ui text-deep-navy/60">
             Đang tải lời chia sẻ...

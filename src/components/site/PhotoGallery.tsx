@@ -19,6 +19,7 @@ export interface PhotoGalleryProps {
   titleLine1?: string
   titleLine2?: string
   emotionLine?: string
+  headerAlign?: 'left' | 'center'
   layout?: 'mosaic' | 'grid'
   items?: PhotoGalleryItem[]
   bgColor?:
@@ -58,6 +59,7 @@ export function PhotoGallery({
   titleLine1,
   titleLine2,
   emotionLine,
+  headerAlign = 'left',
   layout = 'mosaic',
   items = [],
   bgColor = 'warm-ivory',
@@ -67,9 +69,9 @@ export function PhotoGallery({
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
 
-  // Filter valid items having an image URL or mediaId
+  // Filter valid items having an image URL, mediaId or alt placeholder
   const validItems = Array.isArray(items)
-    ? items.filter((item) => Boolean(item && (item.imageUrl || item.mediaId)))
+    ? items.filter((item) => Boolean(item && (item.imageUrl || item.mediaId || item.alt)))
     : []
 
   const groupSize = layout === 'mosaic' ? 4 : 6
@@ -157,7 +159,7 @@ export function PhotoGallery({
         data-eb-card=""
         className={`group relative overflow-hidden rounded-2xl border border-deep-navy/10 bg-white shadow-soft transition-all duration-300 hover:shadow-card ${aspectRatioClass} ${extraCardClass}`.trim()}
       >
-        {imgUrl && (
+        {imgUrl ? (
           <Image
             src={imgUrl}
             alt={altText}
@@ -167,6 +169,10 @@ export function PhotoGallery({
             loading="lazy"
             unoptimized={imgUrl.startsWith('data:') || imgUrl.startsWith('blob:')}
           />
+        ) : (
+          <div className="w-full h-full bg-deep-navy/5 flex items-center justify-center p-4 text-center text-xs font-ui text-deep-navy/60 font-semibold">
+            {altText || '[MẪU]'}
+          </div>
         )}
         {item.caption && (
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-deep-navy/85 via-deep-navy/40 to-transparent p-3 pt-6 text-white transition-opacity">
@@ -183,8 +189,14 @@ export function PhotoGallery({
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-6xl">
         {/* Header & Navigation Row */}
-        <div className="mb-6 flex flex-col items-center justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end">
-          <div className="w-full text-center sm:text-left">
+        <div
+          className={`mb-6 flex flex-col ${
+            headerAlign === 'center'
+              ? 'items-center text-center'
+              : 'items-center sm:flex-row sm:items-end justify-between'
+          } gap-4 sm:mb-8`}
+        >
+          <div className={`w-full ${headerAlign === 'center' ? 'text-center' : 'text-center sm:text-left'}`}>
             {hasHeader && (
               <SectionHeader
                 id={id}
@@ -192,7 +204,7 @@ export function PhotoGallery({
                 titleLine1={titleLine1 || ''}
                 titleLine2={titleLine2}
                 emotionLine={emotionLine}
-                align="left"
+                align={headerAlign}
                 line1Color={isDeepNavy ? 'white' : 'deep-navy'}
                 line2Color={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
                 eyebrowColor={isDeepNavy ? 'soft-pink' : 'bright-magenta'}

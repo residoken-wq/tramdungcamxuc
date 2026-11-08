@@ -16,6 +16,12 @@ import {
 import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 
+export interface ImageTextItem {
+  [key: string]: any
+  title: string
+  text?: string
+}
+
 export interface ImageTextProps {
   version?: number
   layout?: 'image-left' | 'image-right'
@@ -25,6 +31,10 @@ export interface ImageTextProps {
   titleLine2?: string
   content: string
   quote?: string
+  quotePosition?: 'bottom' | 'below-title'
+  quoteStyle?: 'callout' | 'clean'
+  showPlaceholderImage?: boolean
+  items?: ImageTextItem[]
   mediaId?: string
   imageUrl?: string
   imageAlt?: string
@@ -73,6 +83,10 @@ export function ImageText({
   titleLine2,
   content,
   quote,
+  quotePosition = 'bottom',
+  quoteStyle = 'callout',
+  showPlaceholderImage = false,
+  items,
   mediaId,
   imageUrl,
   imageAlt,
@@ -132,6 +146,7 @@ export function ImageText({
   const activeUrl = imageUrl || clientImage?.url
   const activeAlt = (imageAlt || clientImage?.alt || '').trim()
   const hasValidImage = Boolean(activeUrl && activeAlt)
+  const shouldRenderImage = hasValidImage || showPlaceholderImage
 
   const paragraphs = (content || '')
     .split(/\n\s*\n/)
@@ -145,16 +160,17 @@ export function ImageText({
 
   return (
     <section
+      id={id}
       className={`w-full ${imageBleed ? 'overflow-hidden ' : ''}${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${sectionPadding} transition-colors`}
     >
       <div className={imageBleed ? 'w-full max-w-none' : 'mx-auto max-w-5xl'}>
         <div
-          className={`grid grid-cols-1 ${hasValidImage ? 'md:grid-cols-2' : ''} ${
+          className={`grid grid-cols-1 ${shouldRenderImage ? 'md:grid-cols-2' : ''} ${
             imageBleed ? 'gap-0' : 'gap-8 lg:gap-12'
           } items-center`}
         >
-          {/* Image Column - only rendered if activeUrl and activeAlt are present */}
-          {hasValidImage && (
+          {/* Image Column */}
+          {shouldRenderImage && (
             <div
               className={`${
                 imageBleed
@@ -162,45 +178,57 @@ export function ImageText({
                   : `${isImageLeft ? 'md:order-1' : 'md:order-2'} w-full`
               }`}
             >
-              <BrandImage
-                src={activeUrl!}
-                alt={activeAlt}
-                width={800}
-                height={600}
-                className={
-                  imageBleed
-                    ? '!rounded-none border-0 shadow-none bg-transparent w-full h-full'
-                    : 'border border-deep-navy/10 shadow-soft bg-white'
-                }
-                imageClassName={
-                  imageBleed
-                    ? 'w-full h-full object-cover min-h-[280px] sm:min-h-[360px] md:min-h-[500px]'
-                    : 'w-full h-auto object-cover max-h-[460px]'
-                }
-                loading="lazy"
-                unoptimized={activeUrl?.startsWith('data:') || activeUrl?.startsWith('blob:')}
-                shape={imageBleed ? undefined : imageShape}
-                badge={imageBadge}
-                caption={
-                  imageCaptionTitle
-                    ? {
-                        title: imageCaptionTitle,
-                        subtitle: imageCaptionSubtitle,
-                        avatars: imageCaptionAvatars,
-                      }
-                    : undefined
-                }
-                captionPosition={captionPosition}
-              >
-                {imageLabel && !imageCaptionTitle && (
-                  <span
-                    {...textTarget(id, 'imageLabel')}
-                    className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-deep-navy/90 px-3 py-1 font-ui text-xs font-semibold text-white shadow-soft"
-                  >
-                    {imageLabel}
-                  </span>
-                )}
-              </BrandImage>
+              {hasValidImage ? (
+                <BrandImage
+                  src={activeUrl!}
+                  alt={activeAlt}
+                  width={800}
+                  height={600}
+                  className={
+                    imageBleed
+                      ? '!rounded-none border-0 shadow-none bg-transparent w-full h-full'
+                      : 'border border-deep-navy/10 shadow-soft bg-white'
+                  }
+                  imageClassName={
+                    imageBleed
+                      ? 'w-full h-full object-cover min-h-[280px] sm:min-h-[360px] md:min-h-[500px]'
+                      : 'w-full h-auto object-cover max-h-[460px]'
+                  }
+                  loading="lazy"
+                  unoptimized={activeUrl?.startsWith('data:') || activeUrl?.startsWith('blob:')}
+                  shape={imageBleed ? undefined : imageShape}
+                  badge={imageBadge}
+                  caption={
+                    imageCaptionTitle
+                      ? {
+                          title: imageCaptionTitle,
+                          subtitle: imageCaptionSubtitle,
+                          avatars: imageCaptionAvatars,
+                        }
+                      : undefined
+                  }
+                  captionPosition={captionPosition}
+                >
+                  {imageLabel && !imageCaptionTitle && (
+                    <span
+                      {...textTarget(id, 'imageLabel')}
+                      className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-deep-navy/90 px-3 py-1 font-ui text-xs font-semibold text-white shadow-soft"
+                    >
+                      {imageLabel}
+                    </span>
+                  )}
+                </BrandImage>
+              ) : (
+                <div
+                  className={`w-full flex items-center justify-center border border-deep-navy/10 bg-soft-pink/30 text-deep-navy/60 font-ui text-sm font-semibold ${
+                    imageBleed
+                      ? '!rounded-none min-h-[280px] sm:min-h-[360px] md:min-h-[500px] h-full'
+                      : 'rounded-card min-h-[320px] sm:min-h-[420px] shadow-soft'
+                  }`}
+                >
+                  [MẪU] Ảnh {titleLine1}
+                </div>
+              )}
             </div>
           )}
 
@@ -214,7 +242,7 @@ export function ImageText({
                       : 'md:order-1 md:pr-10 lg:pr-16 md:pl-6 lg:pl-12'
                   } px-6 py-8 sm:px-8 sm:py-12 max-w-2xl mx-auto flex flex-col justify-center w-full`
                 : `${
-                    hasValidImage
+                    shouldRenderImage
                       ? isImageLeft
                         ? 'md:order-2'
                         : 'md:order-1'
@@ -243,18 +271,54 @@ export function ImageText({
               />
             </h2>
 
-            <div {...textTarget(id, 'content')} className="space-y-3 mb-6">
-              {paragraphs.map((p, idx) => (
-                <p
-                  key={idx}
-                  className={`font-ui ${sizeClass(BODY_TEXT_SIZES, textSize)} leading-relaxed ${descColorClass}`}
-                >
-                  {p}
-                </p>
-              ))}
-            </div>
+            {quote && quotePosition === 'below-title' && (
+              <p
+                {...textTarget(id, 'quote')}
+                className={
+                  quoteStyle === 'clean'
+                    ? 'mt-1 mb-6 font-quote text-xl sm:text-2xl italic leading-relaxed text-bright-magenta'
+                    : `mb-6 border-l-2 border-accent-pink pl-4 font-quote text-lg sm:text-xl italic leading-relaxed ${
+                        isDeepNavy ? 'text-soft-pink' : 'text-deep-navy'
+                      }`
+                }
+              >
+                {quoteStyle === 'clean' ? quote : `\u201C${quote}\u201D`}
+              </p>
+            )}
 
-            {quote && (
+            {items && items.length > 0 && (
+              <div className="space-y-4 mb-6">
+                {items.map((item, idx) => (
+                  <div key={idx} className="flex flex-col gap-1">
+                    <h3 className="font-ui text-base sm:text-lg font-bold text-deep-navy">
+                      {item.title}
+                    </h3>
+                    {item.text && (
+                      <p
+                        className={`font-ui ${sizeClass(BODY_TEXT_SIZES, textSize)} leading-relaxed ${descColorClass}`}
+                      >
+                        {item.text}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {paragraphs.length > 0 && (
+              <div {...textTarget(id, 'content')} className="space-y-3 mb-6">
+                {paragraphs.map((p, idx) => (
+                  <p
+                    key={idx}
+                    className={`font-ui ${sizeClass(BODY_TEXT_SIZES, textSize)} leading-relaxed ${descColorClass}`}
+                  >
+                    {p}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            {quote && quotePosition === 'bottom' && (
               <blockquote
                 {...textTarget(id, 'quote')}
                 className={`mb-6 border-l-2 border-accent-pink pl-4 font-quote text-lg sm:text-xl italic leading-relaxed ${

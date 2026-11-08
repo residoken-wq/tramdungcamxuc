@@ -699,6 +699,50 @@ const basePuckConfig: Config<PageComponentsProps> = {
           type: 'textarea',
           label: 'Câu trích dẫn (Playfair Display Italic, tùy chọn)',
         },
+        quotePosition: {
+          type: 'select',
+          label: vi.cd01?.imageText?.quotePosition || 'Vị trí trích dẫn',
+          options: [
+            {
+              label: vi.cd01?.imageText?.quotePositionBottom || 'Dưới đoạn văn (Mặc định)',
+              value: 'bottom',
+            },
+            {
+              label: vi.cd01?.imageText?.quotePositionBelowTitle || 'Ngay dưới tiêu đề',
+              value: 'below-title',
+            },
+          ],
+        },
+        quoteStyle: {
+          type: 'select',
+          label: vi.cd01?.imageText?.quoteStyle || 'Kiểu trích dẫn',
+          options: [
+            {
+              label: vi.cd01?.imageText?.quoteStyleCallout || 'Có vạch hồng bên trái (Mặc định)',
+              value: 'callout',
+            },
+            {
+              label: vi.cd01?.imageText?.quoteStyleClean || 'Thuần chữ nghiêng (Không vạch viền)',
+              value: 'clean',
+            },
+          ],
+        },
+        items: {
+          type: 'array',
+          label: vi.cd01?.imageText?.items || 'Danh sách nguyên tắc / tôn chỉ',
+          arrayFields: {
+            title: { type: 'text', label: vi.cd01?.imageText?.itemTitle || 'Tiêu đề nguyên tắc' },
+            text: { type: 'textarea', label: vi.cd01?.imageText?.itemText || 'Nội dung nguyên tắc' },
+          },
+        },
+        showPlaceholderImage: {
+          type: 'radio',
+          label: 'Hiện khung ảnh mẫu khi chưa có ảnh',
+          options: [
+            { label: 'Không', value: false },
+            { label: 'Có', value: true },
+          ],
+        },
         mediaId: createMediaExternalField({
           label: 'Ảnh minh họa (Thư viện media)',
         }),
@@ -749,6 +793,10 @@ const basePuckConfig: Config<PageComponentsProps> = {
         content:
           '[MẪU] Nội dung đoạn thứ nhất kể về hành trình và cảm xúc.\n\n[MẪU] Nội dung đoạn thứ hai làm rõ hơn giá trị mang lại.',
         quote: '',
+        quotePosition: 'bottom',
+        quoteStyle: 'callout',
+        showPlaceholderImage: false,
+        items: [],
         mediaId: '',
         imageUrl: '',
         imageAlt: '',

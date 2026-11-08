@@ -24,6 +24,10 @@ export type { ColumnsProps }
 export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
   label: 'Bố cục Cột (2 hoặc 3 Cột)',
   fields: {
+    seriesLabel: { type: 'text', label: 'Nhãn phụ phía trên tiêu đề' },
+    titleLine1: { type: 'text', label: 'Dòng tiêu đề chính 1' },
+    titleLine2: { type: 'text', label: 'Dòng tiêu đề chính 2' },
+    emotionLine: { type: 'textarea', label: 'Dòng cảm xúc' },
     numColumns: {
       type: 'select',
       label: 'Số lượng cột',
@@ -69,6 +73,10 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
   },
   defaultProps: {
     version: 1,
+    seriesLabel: '',
+    titleLine1: '',
+    titleLine2: '',
+    emotionLine: '',
     numColumns: '2',
     gap: 'md',
     bgColor: 'warm-ivory',
