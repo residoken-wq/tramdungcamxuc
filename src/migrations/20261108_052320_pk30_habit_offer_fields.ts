@@ -2,7 +2,7 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 import { vi } from '../lib/i18n/vi'
 import type { Product } from '../payload-types'
 
-export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
+export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
   CREATE TABLE IF NOT EXISTS "products_curriculum_modules" (
   	"_order" integer NOT NULL,
@@ -111,6 +111,10 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         draft: true,
         limit: 1,
         depth: 0,
+        // QA PK-30: must run inside the migration transaction. Without `req` Payload opens a
+        // second connection, which waits forever on the lock the ALTER TABLE above holds
+        // (the app hung at start-up / check:fast hung 60 min).
+        req,
       })
 
       if (found.docs.length > 0) {
@@ -139,8 +143,8 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
               description: item.desc,
             })),
             bottomTitle: 'Bắt đầu hành trình {ngay} ngày của bạn',
-            bottomDescription:
-              'Khám phá 28 video bài giảng, bộ theo dõi 10 cảm xúc để bỏ phiếu cho con người bạn muốn trở thành.',
+            // QA PK-30: left empty so the page keeps counting videos / techniques from the CMS
+            // (a fixed "28 video" would go stale).
           }
 
           await payload.update({
@@ -148,6 +152,7 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
             id: doc.id,
             data: defaultData,
             draft: false,
+            req,
           })
         }
       }
