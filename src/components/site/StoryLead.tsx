@@ -8,12 +8,7 @@ export interface StoryLeadProps {
   emotionLine?: string
   content: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -42,6 +37,8 @@ export function StoryLead({
   padding = 'lg',
 }: StoryLeadProps) {
   const isDeepNavy = bgColor === 'deep-navy'
+  // QA PK-28b: small bright-magenta text is 4.4:1 on lavender-mist (AA needs 4.5).
+  const isLavender = bgColor === 'lavender-mist'
 
   return (
     <section
@@ -51,7 +48,7 @@ export function StoryLead({
         {seriesLabel && (
           <span
             className={`mb-4 font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
-              isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+              isDeepNavy ? 'text-soft-pink' : isLavender ? 'text-deep-navy' : 'text-bright-magenta'
             }`}
           >
             {seriesLabel}
@@ -64,7 +61,7 @@ export function StoryLead({
         </h2>
 
         {emotionLine && (
-          <p className="mt-4 font-quote text-xl sm:text-2xl lg:text-3xl italic text-bright-magenta leading-relaxed">
+          <p className="mt-4 font-quote text-2xl lg:text-3xl italic text-bright-magenta leading-relaxed">
             {emotionLine}
           </p>
         )}

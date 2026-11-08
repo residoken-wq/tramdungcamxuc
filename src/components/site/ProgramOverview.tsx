@@ -92,14 +92,14 @@ export function ProgramOverview({
           )}
         </div>
 
-        {/* Top Strip: Nền tảng chung */}
+        {/* Top Strip: Nền tảng chung. QA PK-28b: label deep-navy, bright-magenta is 4.4:1 on lavender-mist. */}
         {(topStripLabel || topStripText) && (
           <div
             data-eb-card=""
             className="bg-lavender-mist rounded-xl p-4 sm:p-5 border border-deep-navy/10 shadow-xs flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-left"
           >
             {topStripLabel && (
-              <span className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-bright-magenta shrink-0">
+              <span className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-deep-navy shrink-0">
                 {topStripLabel}
               </span>
             )}

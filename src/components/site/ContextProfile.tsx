@@ -21,12 +21,7 @@ export interface ContextProfileProps {
   profileCard?: ProfileCardData
   sourceNote?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -135,7 +130,7 @@ export function ContextProfile({
               >
                 <div>
                   {profileCard.eyebrow && (
-                    <span className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-bright-magenta block mb-3">
+                    <span className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-deep-navy block mb-3">
                       {profileCard.eyebrow}
                     </span>
                   )}

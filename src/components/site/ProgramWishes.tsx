@@ -17,12 +17,7 @@ export interface ProgramWishesProps {
   calloutTitle?: string
   calloutText?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -107,7 +102,7 @@ export function ProgramWishes({
                 <div>
                   <span
                     className={`font-ui text-xs font-bold uppercase tracking-wider block mb-3 ${
-                      isNavyCard ? 'text-accent-pink' : 'text-bright-magenta'
+                      isNavyCard ? 'text-soft-pink' : 'text-bright-magenta'
                     }`}
                   >
                     {card.label}
