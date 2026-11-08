@@ -40,6 +40,7 @@ import * as migration_20261104_180000_dp02_polish_fields from './20261104_180000
 import * as migration_20261105_084356_gl01_customers_google_sub from './20261105_084356_gl01_customers_google_sub';
 import * as migration_20261107_090000_icon_certificate from './20261107_090000_icon_certificate';
 import * as migration_20261108_052320_pk30_habit_offer_fields from './20261108_052320_pk30_habit_offer_fields';
+import * as migration_20261108_092111_pk32_site_settings_tiktok from './20261108_092111_pk32_site_settings_tiktok';
 
 export const migrations = [
   {
@@ -250,6 +251,11 @@ export const migrations = [
   {
     up: migration_20261108_052320_pk30_habit_offer_fields.up,
     down: migration_20261108_052320_pk30_habit_offer_fields.down,
-    name: '20261108_052320_pk30_habit_offer_fields'
+    name: '20261108_052320_pk30_habit_offer_fields',
+  },
+  {
+    up: migration_20261108_092111_pk32_site_settings_tiktok.up,
+    down: migration_20261108_092111_pk32_site_settings_tiktok.down,
+    name: '20261108_092111_pk32_site_settings_tiktok'
   },
 ];

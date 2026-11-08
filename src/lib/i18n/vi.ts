@@ -2427,6 +2427,7 @@ export const vi = {
       zaloChatButton: 'Nhắn tin Zalo',
       linkedInLabel: 'LinkedIn của Trạm Dừng Cảm Xúc',
       facebookLabel: 'Facebook Fanpage của Trạm Dừng Cảm Xúc',
+      tiktokLabel: 'Kênh TikTok của Trạm Dừng Cảm Xúc',
       youtubeLabel: 'Kênh YouTube của Trạm Dừng Cảm Xúc',
     },
     contactForms: {
@@ -4751,6 +4752,18 @@ export const vi = {
       footerBgWarmIvory: 'Trắng ngà (Warm Ivory - Mặc định)',
       footerBgDeepNavy: 'Xanh thẫm (Deep Navy)',
     },
+  },
+  pk32: {
+    socialLabels: {
+      facebook: 'Facebook',
+      tiktok: 'TikTok',
+      youtube: 'YouTube',
+      linkedin: 'LinkedIn',
+      zalo: 'Nhóm Zalo',
+      shopee: 'Shopee',
+    },
+    emptyHint: 'Chưa có link mạng xã hội. Nhập tại Cài đặt Website → Liên hệ & Zalo.',
+    newTab: 'mở tab mới',
   },
 } as const
 
