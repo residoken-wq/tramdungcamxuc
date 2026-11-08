@@ -130,6 +130,8 @@ export function textColorClass(color: TextColorOption | string = 'deep-navy'): s
       return 'text-accent-pink'
     case 'white':
       return 'text-white'
+    case 'warm-ivory':
+      return 'text-warm-ivory'
     case 'soft-pink':
       return 'text-soft-pink'
     default:

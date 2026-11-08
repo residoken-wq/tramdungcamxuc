@@ -462,7 +462,9 @@ export function HeroImage({
       : 'text-deep-navy'
   const resolvedLine2Color = titleLine2Color
     ? textColorClass(titleLine2Color)
-    : titleLine2ColorClass
+    : isDeepNavy
+      ? 'text-white'
+      : titleLine2ColorClass
 
   const shouldRenderArch = !hasValidImage && (showArchGraphic || imageShape === 'arch-right')
 
