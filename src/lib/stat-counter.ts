@@ -20,6 +20,8 @@ export function parseStatValue(raw?: string): ParsedStatValue | null {
   if (!match) return null
 
   const [, prefix, numPart, suffix] = match
+  // QA PK-29: decimals like '9,6%' would count as '9' + ',6%' (shows '5,6%' mid-way): keep static.
+  if (/^[.,]\d/.test(suffix)) return null
   // If prefix is long words (e.g. "Hàng ngàn 10"), it's not a stat counter
   if (prefix.length > 3) return null
 
@@ -49,4 +51,3 @@ export function formatStatNumber(num: number, separator: '.' | ',' | ''): string
   if (!separator) return String(rounded)
   return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator)
 }
-
