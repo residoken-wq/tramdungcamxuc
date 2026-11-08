@@ -102,5 +102,7 @@ export const StatBlock: ComponentConfig<StatItemProps> = {
       },
     }
   },
-  render: (props) => <StatItem {...props} />,
+  render: ({ puck, ...props }) => (
+    <StatItem {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }
