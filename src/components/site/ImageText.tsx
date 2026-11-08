@@ -15,6 +15,7 @@ import {
 } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { stripWrappingQuotes } from '@/lib/text/quotes'
 import { StoryHighlights, type StoryHighlightItem } from './StoryHighlights'
 
 export type ImageTextHighlightItem = StoryHighlightItem
@@ -101,6 +102,8 @@ export function ImageText({
   textColor,
 }: ImageTextProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
+  // QA PK-34: Hana often types the quote marks herself; avoid “"…"” (same as HanaStory).
+  const cleanQuote = stripWrappingQuotes(quote)
   const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -250,7 +253,7 @@ export function ImageText({
               />
             </h2>
 
-            {quote && quoteStyle === 'box' && (
+            {cleanQuote && quoteStyle === 'box' && (
               <div
                 className={`mb-6 p-5 sm:p-6 rounded-card border shadow-sm ${
                   isDeepNavy
@@ -262,7 +265,7 @@ export function ImageText({
                   {...textTarget(id, 'quote')}
                   className="font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line"
                 >
-                  &ldquo;{quote}&rdquo;
+                  &ldquo;{cleanQuote}&rdquo;
                 </blockquote>
               </div>
             )}
@@ -278,14 +281,14 @@ export function ImageText({
               ))}
             </div>
 
-            {quote && quoteStyle !== 'box' && (
+            {cleanQuote && quoteStyle !== 'box' && (
               <blockquote
                 {...textTarget(id, 'quote')}
                 className={`mb-6 border-l-2 border-accent-pink pl-4 font-quote text-lg sm:text-xl italic leading-relaxed ${
                   isDeepNavy ? 'text-soft-pink' : 'text-deep-navy'
                 }`}
               >
-                &ldquo;{quote}&rdquo;
+                &ldquo;{cleanQuote}&rdquo;
               </blockquote>
             )}
 

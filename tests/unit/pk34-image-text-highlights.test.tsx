@@ -84,11 +84,7 @@ describe('PK-34: ImageText highlights and box quote style', () => {
         { title: 'Thẻ thứ 5 (vượt quá)', text: 'Mô tả thẻ 5' },
       ]
       const html = renderToStaticMarkup(
-        <ImageText
-          titleLine1="Test"
-          content="Content"
-          highlights={fourPlus}
-        />,
+        <ImageText titleLine1="Test" content="Content" highlights={fourPlus} />,
       )
       expect(html).toContain('04')
       expect(html).toContain('Thẻ thứ 4')
@@ -135,6 +131,21 @@ describe('PK-34: ImageText highlights and box quote style', () => {
     })
   })
 
+  describe('3b. QA PK-34: quote typed with its own quote marks', () => {
+    it.each(['line', 'box'] as const)('does not double the quote marks (%s)', (style) => {
+      const html = renderToStaticMarkup(
+        <ImageText
+          titleLine1="Tại sao lại là"
+          content="Đoạn văn."
+          quote={'"Những điều đẹp đẽ luôn bắt đầu khi bạn cho phép mình dừng lại."'}
+          quoteStyle={style}
+        />,
+      )
+      expect(html).toContain('“Những điều đẹp đẽ luôn bắt đầu khi bạn cho phép mình dừng lại.”')
+      expect(html).not.toContain('“&quot;')
+    })
+  })
+
   describe('4. Dark theme (deep-navy background) contrast & styling', () => {
     it('uses soft-pink text and white/10 card backgrounds on deep-navy', () => {
       const html = renderToStaticMarkup(
@@ -160,9 +171,7 @@ describe('PK-34: ImageText highlights and box quote style', () => {
 
   describe('5. StoryHighlights shared component and HanaStory integration', () => {
     it('renders standalone StoryHighlights correctly', () => {
-      const html = renderToStaticMarkup(
-        <StoryHighlights items={sampleHighlights} isDark={false} />,
-      )
+      const html = renderToStaticMarkup(<StoryHighlights items={sampleHighlights} isDark={false} />)
       expect(html).toContain('grid grid-cols-1 lg:grid-cols-3')
       expect(html).toContain('01')
       expect(html).toContain('Điểm chạm đầu tiên')

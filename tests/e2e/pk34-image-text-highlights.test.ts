@@ -60,17 +60,15 @@ test.describe('PK-34: ImageText – Thẻ đánh số + Trích dẫn dạng hộ
               seriesLabel: 'VỀ TRẠM DỪNG',
               titleLine1: 'TẠI SAO LẠI LÀ',
               titleLine2: 'TRẠM DỪNG CẢM XÚC?',
-              image: '/brand/hana-portrait-transparent.png',
-              imageAlt: 'Hana Lương tại Trạm Dừng Cảm Xúc',
+              // QA PK-34: real ImageText props (layout / content / buttonLink), no real person's photo.
+              layout: 'image-left',
+              imageAlt: '[MẪU] Ảnh minh họa',
               imageBadge: 'Không gian an toàn',
-              imagePosition: 'left',
               bgColor: 'warm-ivory',
               quote: 'Trạm dừng không phải để bỏ cuộc, mà để bạn gom góp lại sức mạnh.',
               quoteStyle: 'box',
-              paragraphs: [
-                'Cuộc sống bận rộn cuốn chúng ta vào những guồng quay không ngừng nghỉ.',
-                'Tại Trạm, bạn được thả lỏng và tìm lại sự cân bằng từ sâu bên trong.',
-              ],
+              content:
+                'Cuộc sống bận rộn cuốn chúng ta vào những guồng quay không ngừng nghỉ.\n\nTại Trạm, bạn được thả lỏng và tìm lại sự cân bằng từ sâu bên trong.',
               highlights: [
                 {
                   title: 'Điểm dừng an toàn',
@@ -86,7 +84,7 @@ test.describe('PK-34: ImageText – Thẻ đánh số + Trích dẫn dạng hộ
                 },
               ],
               buttonText: 'Khám phá hành trình',
-              buttonHref: '/habit',
+              buttonLink: '/habit',
             },
           },
         ],
@@ -123,7 +121,7 @@ test.describe('PK-34: ImageText – Thẻ đánh số + Trích dẫn dạng hộ
       const pBox = await paragraphEl.boundingBox()
       expect(qBox).not.toBeNull()
       expect(pBox).not.toBeNull()
-      expect((qBox?.y ?? 0)).toBeLessThan((pBox?.y ?? 0))
+      expect(qBox?.y ?? 0).toBeLessThan(pBox?.y ?? 0)
 
       // Test 2: 3 Highlights on desktop 1440px (1 row)
       const hl1 = guest.getByText('Điểm dừng an toàn', { exact: true })
