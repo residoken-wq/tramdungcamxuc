@@ -718,6 +718,7 @@ export function StyleField({
                 <option value="fade-in">{vi.eb09.entranceFadeIn}</option>
                 <option value="fade-up">{vi.eb09.entranceFadeUp}</option>
                 <option value="zoom-in">{vi.eb09.entranceZoomIn}</option>
+                <option value="stagger">{vi.pk29?.entranceStagger || 'Hiện lần lượt từng thẻ'}</option>
               </select>
             </div>
             <div className="flex flex-col gap-1">

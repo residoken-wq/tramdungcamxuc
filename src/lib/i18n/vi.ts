@@ -4665,6 +4665,9 @@ export const vi = {
       },
     },
   },
+  pk29: {
+    entranceStagger: 'Hiện lần lượt từng thẻ',
+  },
 } as const
 
 export type LocaleStrings = typeof vi
