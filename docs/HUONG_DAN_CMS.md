@@ -3151,6 +3151,26 @@ Hana có thể sử dụng các khối và tính năng mới được thiết k�
 
 ---
 
+### 5.41. Bộ khối chuyên biệt và mẫu Trang lộ trình Chuyển mình 100% bản thiết kế (PK-28)
+
+Để tái hiện trọn vẹn 20 slide bài thuyết trình "Chuyển mình không chênh vênh" của Hana sang giao diện web một cách trung thực nhất, hệ thống bổ sung 10 khối kéo thả chuyên biệt trong nhóm **Nội dung** của Puck:
+
+1. **Câu chuyện mở đầu (`StoryLead`)**: Dành cho Trang 02 (01 · Câu chuyện không của riêng ai), kết hợp tiêu đề 2 dòng, vạch hồng, dòng cảm xúc và đoạn dẫn nhập trang trọng trên nền tím sương (`lavender-mist`).
+2. **Bối cảnh & Chân dung (`ContextProfile`)**: Dành cho Trang 03, gồm 2 thẻ số liệu lớn bên trái (hỗ trợ in đậm từ khóa `**từ khóa**`) và thẻ hồ sơ chân dung khách hàng mục tiêu bên phải (`CÔ ẤY LÀ AI`).
+3. **Lưới trụ cột nỗi đau & thành tựu (`PillarCardGrid`)**: Dành cho Trang 04 và Trang 19, lưới 3 cột với màu nền pastel (`butter-cream`, `soft-pink`, `mint-haze`), mỗi thẻ có các tiêu đề phụ và nội dung chi tiết.
+4. **Mong muốn thật sự (`ProgramWishes`)**: Dành cho Trang 05, bố cục 4 thẻ (3 thẻ pastel và 1 thẻ xanh thẫm `deep-navy`) kèm dải callout nhấn mạnh điểm chạm bên dưới.
+5. **Kiến trúc hai giai đoạn (`PhaseArchitecture`)**: Dành cho Trang 06 và Trang 20, khối Phase 1 bên trái (3 dải màu) kết nối mũi tên sang khối Phase 2 bên phải (nền xanh thẫm, chip viền đứt hồng) và dải lưu ý lộ trình.
+6. **Mô hình tổng thể Phase 1 (`ProgramOverview`)**: Dành cho Trang 09, gồm dải khung nền tảng trên cùng, 3 trụ cột (Hành động - Cảm xúc - Giao tiếp), dải sợi chỉ xuyên suốt và dải đích đến.
+7. **Cách triển khai & Mốc hành trình (`JourneyMilestones`)**: Dành cho Trang 10, hiển thị hàng 3 số lớn (2 tuần - 28 ngày - 4 buổi) và 2 nhóm thẻ trước ngày 1 cùng 28 ngày thực hành.
+8. **Tiến trình bước chương trình (`ProgramStepFlow`)**: Dành cho Trang 11, 13, 15, kết nối 3 bước workshop bằng mũi tên chuyển tiếp, mỗi bước có ô 'Mang về' màu pastel tương ứng; hỗ trợ 2 cột Nam tính / Nữ tính và dải thông điệp dưới chân.
+9. **Công thức chuyển hóa thương hiệu (`BrandFormula`)**: Dành cho Trang 12, số lớn 1-2-3 bên trái và thẻ Habit Plan minh họa thực chiến bên phải.
+10. **Năm bước điều hòa & Module (`NumberedStepsStrip`)**: Dành cho Trang 14 và Trang 16, hiển thị 5 thẻ ngang số 01-05 (hỗ trợ các dòng đối sánh Nam tính / Nữ tính) và dải đầu ra kết quả.
+
+**Cách áp dụng nhanh**:
+Khi tạo trang mới, chỉ cần chọn mẫu **Trang lộ trình (`journey`)**; hệ thống sẽ tải sẵn đầy đủ 20 section chuẩn theo đúng slide của Hana. Hana có thể dễ dàng bấm vào từng chữ để sửa, thay đổi hình minh họa hoặc đổi màu sắc theo mong muốn.
+
+---
+
 ## 6. Quản lý Trang pháp lý và Thông tin người bán
 
 ### 6.1. Chỉnh sửa nội dung một trang pháp lý

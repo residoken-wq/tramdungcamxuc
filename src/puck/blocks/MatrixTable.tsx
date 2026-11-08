@@ -33,6 +33,22 @@ export const MatrixTableBlock: ComponentConfig<MatrixTableProps> = {
       type: 'textarea',
       label: vi.eb15a?.emotionLine || 'Dòng cảm xúc',
     },
+    titleCase: {
+      type: 'select',
+      label: 'Kiểu chữ tiêu đề',
+      options: [
+        { label: 'Chữ in hoa (UPPERCASE)', value: 'upper' },
+        { label: 'Giữ nguyên chữ thường (Title case)', value: 'none' },
+      ],
+    },
+    showAccentBar: {
+      type: 'radio',
+      label: 'Vạch hồng gạch dưới tiêu đề',
+      options: [
+        { label: 'Không', value: false },
+        { label: 'Có', value: true },
+      ],
+    },
     chipsTitle: {
       type: 'text',
       label: 'Tiêu đề hàng mốc / chip',
@@ -107,6 +123,10 @@ export const MatrixTableBlock: ComponentConfig<MatrixTableProps> = {
       type: 'select',
       label: 'Màu nền',
       options: [...BRAND_COLOR_OPTIONS],
+    },
+    footerNote: {
+      type: 'textarea',
+      label: 'Dòng ghi chú chân trang (nhỏ)',
     },
     padding: {
       type: 'select',

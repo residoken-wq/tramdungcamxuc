@@ -25,6 +25,34 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
       type: 'textarea',
       label: vi.eb15a?.emotionLine || 'Dòng cảm xúc',
     },
+    titleCase: {
+      type: 'select',
+      label: 'Kiểu chữ tiêu đề',
+      options: [
+        { label: 'Chữ in hoa (UPPERCASE)', value: 'upper' },
+        { label: 'Giữ nguyên chữ thường (Title case)', value: 'none' },
+      ],
+    },
+    showAccentBar: {
+      type: 'radio',
+      label: 'Vạch hồng gạch dưới tiêu đề',
+      options: [
+        { label: 'Không', value: false },
+        { label: 'Có', value: true },
+      ],
+    },
+    headerAlign: {
+      type: 'select',
+      label: 'Căn lề tiêu đề',
+      options: [
+        { label: 'Căn giữa (Center)', value: 'center' },
+        { label: 'Căn trái (Left)', value: 'left' },
+      ],
+    },
+    bottomQuote: {
+      type: 'textarea',
+      label: 'Dòng đúc kết nghiêng cuối (Playfair Display)',
+    },
     marker: {
       type: 'select',
       label: 'Kiểu đánh dấu thẻ',
