@@ -103,7 +103,7 @@ export function StatItem({
       {description && (
         <p
           {...textTarget(id, 'description')}
-          className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed ${descriptionColorClass}`}
+          className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed whitespace-pre-line ${descriptionColorClass}`}
         >
           {description}
         </p>

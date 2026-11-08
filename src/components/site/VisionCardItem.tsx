@@ -101,7 +101,7 @@ export function VisionCardItem({
           {paragraphs.map((p, idx) => (
             <p
               key={idx}
-              className={`font-ui ${TEXT_SIZES[textSize] ?? TEXT_SIZES.md} leading-relaxed ${descClass}`}
+              className={`font-ui ${TEXT_SIZES[textSize] ?? TEXT_SIZES.md} leading-relaxed whitespace-pre-line ${descClass}`}
             >
               {p}
             </p>
