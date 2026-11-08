@@ -4762,7 +4762,9 @@ export const vi = {
       zalo: 'Nhóm Zalo',
       shopee: 'Shopee',
     },
-    emptyHint: 'Chưa có link mạng xã hội. Nhập tại Cài đặt Website → Liên hệ & Zalo.',
+    // QA PK-32: the builder does not load site settings, so this shows even when links exist.
+    emptyHint:
+      'Icon mạng xã hội lấy từ Cài đặt Website → Liên hệ & Zalo (ô trống = không hiện). Xem ở trang công khai.',
     newTab: 'mở tab mới',
   },
 } as const
