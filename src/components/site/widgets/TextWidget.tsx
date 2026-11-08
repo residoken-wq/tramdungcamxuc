@@ -14,7 +14,7 @@ export interface TextWidgetProps {
 }
 
 const PROSE =
-  'max-w-none [&_p]:my-3 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-bright-magenta [&_a]:underline'
+  'max-w-none [&_p]:my-3 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-bright-magenta group-data-[footer-bg=deep-navy]/footer:[&_a]:text-soft-pink group-data-[footer-bg=deep-navy]/footer:[&_a]:hover:text-white [&_a]:underline'
 
 export function TextWidget({
   id,
@@ -22,7 +22,7 @@ export function TextWidget({
   _style,
 }: TextWidgetProps & { id?: string; _style?: unknown }) {
   const className = `${PROSE} ${typographyClasses(
-    { textColor: 'text-deep-navy', fontFamily: 'font-body', lineHeight: 'leading-relaxed' },
+    { textColor: 'text-deep-navy group-data-[footer-bg=deep-navy]/footer:text-white/80', fontFamily: 'font-body', lineHeight: 'leading-relaxed' },
     _style,
   )}`
   if (content == null || content === '') return null

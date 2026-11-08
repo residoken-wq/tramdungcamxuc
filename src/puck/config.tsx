@@ -1102,6 +1102,20 @@ export function getPuckConfig(options?: {
     const rootConfig = {
       label: vi.eb10.footerRootLabel,
       fields: {
+        footerBg: {
+          type: 'select' as const,
+          label: vi.pk31?.footer?.footerBgLabel || 'Nền footer',
+          options: [
+            {
+              label: vi.pk31?.footer?.footerBgWarmIvory || 'Trắng ngà (Warm Ivory - Mặc định)',
+              value: 'warm-ivory',
+            },
+            {
+              label: vi.pk31?.footer?.footerBgDeepNavy || 'Xanh thẫm (Deep Navy)',
+              value: 'deep-navy',
+            },
+          ],
+        },
         ...(canEditCustomCss
           ? {
               customCss: {
@@ -1114,9 +1128,13 @@ export function getPuckConfig(options?: {
             }
           : {}),
       },
+      defaultProps: {
+        footerBg: 'warm-ivory',
+      },
       render: ({
         children,
         puck,
+        footerBg = 'warm-ivory',
       }: {
         children: React.ReactNode
         puck?: {
@@ -1126,24 +1144,39 @@ export function getPuckConfig(options?: {
             disallow?: readonly string[] | string[]
           }>
         }
+        footerBg?: 'warm-ivory' | 'deep-navy'
       }) => {
+        const isDeepNavy = footerBg === 'deep-navy'
         const RootZone = puck?.isEditing ? puck.renderDropZone : undefined
         return (
-          <div className="w-full">
+          <div
+            className={`w-full group/footer ${
+              isDeepNavy ? 'bg-deep-navy text-white' : 'bg-warm-ivory text-deep-navy'
+            } transition-colors`}
+            data-footer-bg={footerBg}
+          >
             {puck?.isEditing && (
               <div
                 aria-hidden="true"
-                className="pointer-events-none select-none opacity-40 p-8 space-y-4 max-w-5xl mx-auto border-b border-dashed border-gray-300 mb-6"
+                className={`pointer-events-none select-none opacity-40 p-8 space-y-4 max-w-5xl mx-auto border-b border-dashed ${
+                  isDeepNavy ? 'border-white/20' : 'border-gray-300'
+                } mb-6`}
               >
-                <div className="h-8 bg-gray-200 rounded w-1/3" />
-                <div className="h-4 bg-gray-200 rounded w-2/3" />
-                <div className="h-4 bg-gray-200 rounded w-1/2" />
-                <div className="h-32 bg-gray-100 rounded border border-gray-200 flex items-center justify-center text-xs text-gray-400">
+                <div className={`h-8 ${isDeepNavy ? 'bg-white/20' : 'bg-gray-200'} rounded w-1/3`} />
+                <div className={`h-4 ${isDeepNavy ? 'bg-white/15' : 'bg-gray-200'} rounded w-2/3`} />
+                <div className={`h-4 ${isDeepNavy ? 'bg-white/10' : 'bg-gray-200'} rounded w-1/2`} />
+                <div
+                  className={`h-32 ${
+                    isDeepNavy
+                      ? 'bg-white/5 border-white/15 text-white/50'
+                      : 'bg-gray-100 border-gray-200 text-gray-400'
+                  } rounded border flex items-center justify-center text-xs`}
+                >
                   {vi.eb10.dummyPageCanvas}
                 </div>
               </div>
             )}
-            <footer data-eb-footer="">
+            <footer data-eb-footer="" data-footer-bg={footerBg}>
               {RootZone ? <RootZone zone={ROOT_DROP_ZONE} disallow={ROOT_DISALLOW} /> : children}
             </footer>
           </div>

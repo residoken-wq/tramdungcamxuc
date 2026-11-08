@@ -44,9 +44,9 @@ export function Divider({
   const containerBgClass = bgColor ? BG_COLORS[bgColor] : ''
 
   // a11y-contrast-ok: SVG đường kẻ và SVG trái tim trang trí
-  const thinLineColor = isDeepNavy ? 'text-white/25' : 'text-deep-navy/15'
+  const thinLineColor = isDeepNavy ? 'text-white/25' : 'text-deep-navy/15 group-data-[footer-bg=deep-navy]/footer:text-white/15'
   // a11y-contrast-ok: SVG đường kẻ và SVG trái tim trang trí
-  const heartLineColor = isDeepNavy ? 'text-soft-pink' : 'text-accent-pink'
+  const heartLineColor = isDeepNavy ? 'text-soft-pink' : 'text-accent-pink group-data-[footer-bg=deep-navy]/footer:text-soft-pink'
 
   return (
     <div

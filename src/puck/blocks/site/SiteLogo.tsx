@@ -57,7 +57,7 @@ export const SiteLogoBlock: ComponentConfig<SiteLogoProps> = {
       <div className={`flex items-center ${alignClass} w-full`}>
         <Link
           href="/"
-          className="inline-block flex-shrink-0 focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm"
+          className="inline-block flex-shrink-0 focus-visible:outline-2 focus-visible:outline-deep-navy group-data-[footer-bg=deep-navy]/footer:focus-visible:outline-white rounded-sm group-data-[footer-bg=deep-navy]/footer:bg-warm-ivory group-data-[footer-bg=deep-navy]/footer:rounded-2xl group-data-[footer-bg=deep-navy]/footer:px-3 group-data-[footer-bg=deep-navy]/footer:py-2 transition-colors"
         >
           <Logo width={dimensions.width} height={dimensions.height} src={src} alt={alt} />
         </Link>
