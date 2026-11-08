@@ -116,7 +116,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           Dành 5 phút mỗi ngày cho chính mình
         </h2>
         <p
-          class="mx-auto mt-4 max-w-2xl font-ui text-base sm:text-lg leading-relaxed text-white/90"
+          class="mx-auto mt-4 max-w-2xl font-ui text-base sm:text-lg leading-relaxed whitespace-pre-line text-white/90"
         >
           Hạnh phúc bắt đầu từ những khoảnh khắc tĩnh lặng.
         </p>
@@ -145,7 +145,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
           Không gian an toàn tuyệt đối cho cảm xúc của bạn
         </h2>
         <p
-          class="mx-auto mt-4 max-w-2xl font-ui text-base sm:text-lg leading-relaxed text-white/90"
+          class="mx-auto mt-4 max-w-2xl font-ui text-base sm:text-lg leading-relaxed whitespace-pre-line text-white/90"
         >
           Mọi chia sẻ của bạn đều được lắng nghe trung tính và bảo mật hoàn toàn.
         </p>
@@ -243,7 +243,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               Thấu hiểu bản thân
             </h3>
             <p
-              class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
+              class="mt-2 font-ui text-sm sm:text-base leading-relaxed whitespace-pre-line text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
             >
               Nhận diện các tầng cảm xúc và nhu cầu cốt lõi.
             </p>
@@ -290,7 +290,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               Định hướng sự nghiệp
             </h3>
             <p
-              class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
+              class="mt-2 font-ui text-sm sm:text-base leading-relaxed whitespace-pre-line text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
             >
               Lựa chọn hướng đi phù hợp với giá trị cá nhân.
             </p>
@@ -369,7 +369,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               Lắng nghe & Khám phá
             </h3>
             <p
-              class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
+              class="mt-2 font-ui text-sm sm:text-base leading-relaxed whitespace-pre-line text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
             >
               Nhìn nhận bức tranh hiện tại.
             </p>
@@ -393,7 +393,7 @@ exports[`SM-03: Puck Blocks Unit & Snapshot Tests > Snapshots of 5 New Blocks & 
               Tháo gỡ & Chuyển hóa
             </h3>
             <p
-              class="mt-2 font-ui text-sm sm:text-base leading-relaxed text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
+              class="mt-2 font-ui text-sm sm:text-base leading-relaxed whitespace-pre-line text-deep-navy/75 group-data-[bg=deep-navy]/grid:text-white/80"
             >
               Thực hành các kỹ thuật điều hòa cảm xúc.
             </p>
