@@ -42,7 +42,11 @@ export function FloatingActions({
         style={{ bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}
       >
         {isCoffeeVisible && (
-          <CoffeeButton onOpen={coffeeModal.open} buttonRef={coffeeModal.buttonRef} />
+          <CoffeeButton
+            label={floatingCoffee?.title}
+            onOpen={coffeeModal.open}
+            buttonRef={coffeeModal.buttonRef}
+          />
         )}
         {isChatVisible && (
           <FloatingChat

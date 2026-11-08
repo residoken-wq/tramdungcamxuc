@@ -126,5 +126,8 @@ export const ImageWidgetBlock: ComponentConfig<ImageWidgetProps> = {
 
     return { props: baseProps }
   },
-  render: ({ puck: _puck, ...props }) => <ImageWidget {...props} puck={_puck} />,
+  // QA 08/11: `puck` carries functions (renderDropZone) that cannot cross into a client component.
+  render: ({ puck, ...props }) => (
+    <ImageWidget {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
+  ),
 }
