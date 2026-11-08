@@ -58,6 +58,7 @@ export interface IconCardProps {
   eyebrowBar?: boolean
   subtitle?: string
   subtitleColor?: TextColorOption
+  subtitleCase?: 'none' | 'upper'
   chip?: string
   showDivider?: boolean
   linkText?: string
@@ -236,6 +237,7 @@ export function IconCard({
   eyebrowBar,
   subtitle,
   subtitleColor,
+  subtitleCase = 'none',
   chip,
   showDivider = false,
   linkText,
@@ -464,7 +466,9 @@ export function IconCard({
 
       {subtitle && (
         <div
-          className={`mt-1 font-ui text-sm sm:text-base font-bold leading-snug ${subtitleColorClass}`}
+          className={`mt-1 font-ui text-sm sm:text-base font-bold leading-snug ${subtitleColorClass}${
+            subtitleCase === 'upper' ? ' uppercase' : ''
+          }`}
         >
           {subtitle}
         </div>

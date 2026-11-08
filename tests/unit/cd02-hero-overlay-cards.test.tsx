@@ -122,3 +122,32 @@ describe('CD-02 §2: Slide 51 – Card titleSize xl and color sanitization', () 
     expect(cards[1].props.titleColor).toBe('deep-navy')
   })
 })
+
+describe('CD-02 §3: Slide 49 – Card subtitleCase', () => {
+  it('renders IconCard subtitle with uppercase when subtitleCase is upper', () => {
+    const { getByText } = render(
+      <IconCard
+        title="Me Time"
+        subtitle="Thương mình theo cách riêng"
+        subtitleCase="upper"
+      />,
+    )
+
+    const subtitleEl = getByText('Thương mình theo cách riêng')
+    expect(subtitleEl).toBeTruthy()
+    expect(subtitleEl.className).toContain('uppercase')
+  })
+
+  it('renders IconCard subtitle without uppercase by default (subtitleCase none)', () => {
+    const { getByText } = render(
+      <IconCard
+        title="Me Time"
+        subtitle="Thương mình theo cách riêng"
+      />,
+    )
+
+    const subtitleEl = getByText('Thương mình theo cách riêng')
+    expect(subtitleEl).toBeTruthy()
+    expect(subtitleEl.className).not.toContain('uppercase')
+  })
+})

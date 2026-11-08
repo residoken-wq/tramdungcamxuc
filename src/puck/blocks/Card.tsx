@@ -131,6 +131,14 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
       label: vi.pk31?.card?.subtitleColor || 'Màu tiêu đề phụ',
       options: allowedTextColors('warm-ivory', false),
     },
+    subtitleCase: {
+      type: 'select',
+      label: vi.cd02?.card?.subtitleCase || 'Kiểu chữ tiêu đề phụ',
+      options: [
+        { label: vi.cd02?.card?.subtitleCaseNone || 'Giữ nguyên chữ thường (Mặc định)', value: 'none' },
+        { label: vi.cd02?.card?.subtitleCaseUpper || 'IN HOA ĐẬM (UPPERCASE)', value: 'upper' },
+      ],
+    },
     chip: {
       type: 'text',
       label: vi.pk26?.card?.chip || 'Huy hiệu / Nhãn chip',
@@ -223,6 +231,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     eyebrowBar: false,
     subtitle: '',
     subtitleColor: 'deep-navy',
+    subtitleCase: 'none',
     chip: '',
     showDivider: false,
     linkText: '',
