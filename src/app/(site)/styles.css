@@ -171,24 +171,25 @@ html.eb-anim-ready [data-eb-entrance-delay='500'] {
   }
 }
 
-html.eb-anim-ready [data-eb-hero='first'] .eb-hero-label {
-  animation: eb-fade-up var(--motion-base) var(--motion-ease-out) both;
-  animation-delay: 0ms;
-}
-html.eb-anim-ready [data-eb-hero='first'] .eb-hero-title {
-  animation: eb-fade-up var(--motion-base) var(--motion-ease-out) both;
-  animation-delay: 120ms;
-}
-html.eb-anim-ready [data-eb-hero='first'] .eb-hero-emotion {
-  animation: eb-fade-up var(--motion-base) var(--motion-ease-out) both;
-  animation-delay: 240ms;
-}
-html.eb-anim-ready [data-eb-hero='first'] .eb-hero-cta {
-  animation: eb-fade-up var(--motion-base) var(--motion-ease-out) both;
-  animation-delay: 360ms;
-}
-html.eb-anim-ready [data-eb-hero='first'] .eb-hero-image {
-  animation: eb-hero-image var(--motion-slow) var(--motion-ease-out) both;
+/* QA PK-29: pure CSS, not gated by `eb-anim-ready`. That class lands after hydration, so a gated
+   hero would paint, vanish, then fade back in (a flash on the LCP text). CSS animations run from
+   the first paint, finish even without JS, and are skipped for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-eb-hero='first'] .eb-hero-label {
+    animation: eb-fade-up var(--motion-base) var(--motion-ease-out) both;
+  }
+  [data-eb-hero='first'] .eb-hero-title {
+    animation: eb-fade-up var(--motion-base) var(--motion-ease-out) 120ms both;
+  }
+  [data-eb-hero='first'] .eb-hero-emotion {
+    animation: eb-fade-up var(--motion-base) var(--motion-ease-out) 240ms both;
+  }
+  [data-eb-hero='first'] .eb-hero-cta {
+    animation: eb-fade-up var(--motion-base) var(--motion-ease-out) 360ms both;
+  }
+  [data-eb-hero='first'] .eb-hero-image {
+    animation: eb-hero-image var(--motion-slow) var(--motion-ease-out) both;
+  }
 }
 
 /* PK-29 FX-05: Journey step active glow */
@@ -229,11 +230,6 @@ html.eb-anim-ready [data-eb-card].eb-step-active h3 {
 @media (prefers-reduced-motion: reduce) {
   html.eb-anim-ready [data-eb-entrance],
   html.eb-anim-ready [data-eb-entrance] [data-eb-card] {
-    opacity: 1 !important;
-    transform: none !important;
-    animation: none !important;
-  }
-  html.eb-anim-ready [data-eb-hero='first'] * {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
