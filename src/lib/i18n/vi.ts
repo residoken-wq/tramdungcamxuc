@@ -3534,6 +3534,38 @@ export const vi = {
       },
     },
   },
+  pk28: {
+    storyLead: {
+      label: 'Khối câu chuyện dẫn dắt (Story Lead)',
+    },
+    contextProfile: {
+      label: 'Khối bối cảnh & chân dung (Context & Profile)',
+    },
+    pillarCardGrid: {
+      label: 'Lưới thẻ trụ cột pastel (Pillar Cards Grid)',
+    },
+    programWishes: {
+      label: 'Khối mong muốn & xu hướng (Program Wishes & Callout)',
+    },
+    phaseArchitecture: {
+      label: 'Kiến trúc hai giai đoạn (Phase 1 → Phase 2)',
+    },
+    programOverview: {
+      label: 'Mô hình tổng thể 3 trụ cột (Program Overview)',
+    },
+    journeyMilestones: {
+      label: 'Hành trình chuyển hóa & Các mốc (Journey Milestones)',
+    },
+    programStepFlow: {
+      label: 'Lộ trình chặng có mũi tên & Mang về (Program Step Flow)',
+    },
+    brandFormula: {
+      label: 'Công thức thương hiệu cá nhân (Brand Formula)',
+    },
+    numberedStepsStrip: {
+      label: 'Chuỗi 5 bước số lớn & Đầu ra (Numbered Steps Strip)',
+    },
+  },
   eb16: {
     replaceEntirePage: 'Thay toàn bộ trang',
     back: 'Quay lại',

@@ -61,7 +61,27 @@ test.describe('PK-26: Chuyển mình không chênh vênh (journey template)', ()
           title: `[MẪU] Chuyển mình E2E ${suffix}`,
           slug,
           _status: 'published',
-          puckData: journeyTemplate,
+          // PK-28 rebuilt journey.ts with its own step-flow blocks, so the IconCardGrid arrow
+          // connector (PK-26 A2) is checked on an extra test grid appended to the page.
+          puckData: {
+            ...journeyTemplate,
+            content: [
+              ...journeyTemplate.content,
+              {
+                type: 'IconCardGrid',
+                props: {
+                  id: `arrow-grid-${suffix}`,
+                  version: 2,
+                  columns: 3,
+                  connector: 'arrow',
+                  cards: [1, 2, 3].map((n) => ({
+                    type: 'Card',
+                    props: { id: `arrow-card-${n}-${suffix}`, title: `[MẪU] Bước ${n}`, text: '' },
+                  })),
+                },
+              },
+            ],
+          },
         },
       })
 

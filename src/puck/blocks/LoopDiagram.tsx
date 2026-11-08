@@ -25,9 +25,50 @@ export const LoopDiagramBlock: ComponentConfig<LoopDiagramProps> = {
       type: 'textarea',
       label: vi.eb15a?.emotionLine || 'Dòng cảm xúc',
     },
+    titleCase: {
+      type: 'select',
+      label: 'Kiểu chữ tiêu đề',
+      options: [
+        { label: 'Chữ in hoa (UPPERCASE)', value: 'upper' },
+        { label: 'Giữ nguyên chữ thường (Title case)', value: 'none' },
+      ],
+    },
+    showAccentBar: {
+      type: 'radio',
+      label: 'Vạch hồng gạch dưới tiêu đề',
+      options: [
+        { label: 'Không', value: false },
+        { label: 'Có', value: true },
+      ],
+    },
     centerText: {
       type: 'textarea',
       label: vi.pk26?.loopDiagram?.centerText || 'Thông điệp trung tâm (chữ nghiêng)',
+    },
+    rightTitle: {
+      type: 'text',
+      label: 'Tiêu đề cột phải',
+    },
+    rightItems: {
+      type: 'array',
+      label: 'Danh sách mục cột phải (có huy hiệu / pill)',
+      getItemSummary: (item: { pill?: string }) => item?.pill || 'Mục',
+      arrayFields: {
+        pill: { type: 'text', label: 'Tên huy hiệu (VD: Workshop, 28 ngày)' },
+        pillStyle: {
+          type: 'select',
+          label: 'Kiểu huy hiệu',
+          options: [
+            { label: 'Nền tím sương (Lavender)', value: 'solid' },
+            { label: 'Viền đen nét mảnh (Outline)', value: 'outline' },
+          ],
+        },
+        text: { type: 'textarea', label: 'Mô tả nội dung' },
+      },
+    },
+    bottomQuote: {
+      type: 'textarea',
+      label: 'Dòng đúc kết nghiêng cuối (Playfair Display)',
     },
     nodes: {
       type: 'array',

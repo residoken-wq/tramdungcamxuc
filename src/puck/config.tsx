@@ -103,6 +103,18 @@ import { PhotoGalleryBlock, type PhotoGalleryProps } from './blocks/PhotoGallery
 import { MatrixTableBlock, type MatrixTableProps } from './blocks/MatrixTable'
 import { LoopDiagramBlock, type LoopDiagramProps } from './blocks/LoopDiagram'
 
+// PK-28: Khối Chuyển mình không chênh vênh (PDF 20 trang)
+import { StoryLeadBlock, type StoryLeadProps } from './blocks/StoryLead'
+import { ContextProfileBlock, type ContextProfileProps } from './blocks/ContextProfile'
+import { PillarCardGridBlock, type PillarCardGridProps } from './blocks/PillarCardGrid'
+import { ProgramWishesBlock, type ProgramWishesProps } from './blocks/ProgramWishes'
+import { PhaseArchitectureBlock, type PhaseArchitectureProps } from './blocks/PhaseArchitecture'
+import { ProgramOverviewBlock, type ProgramOverviewProps } from './blocks/ProgramOverview'
+import { JourneyMilestonesBlock, type JourneyMilestonesProps } from './blocks/JourneyMilestones'
+import { ProgramStepFlowBlock, type ProgramStepFlowProps } from './blocks/ProgramStepFlow'
+import { BrandFormulaBlock, type BrandFormulaProps } from './blocks/BrandFormula'
+import { NumberedStepsStripBlock, type NumberedStepsStripProps } from './blocks/NumberedStepsStrip'
+
 // EB-10: Khối đầu trang / chân trang (Site Theme Blocks)
 import { SiteLogoBlock, type SiteLogoProps } from './blocks/site/SiteLogo'
 import { NavMenuBlock, type NavMenuProps } from './blocks/site/NavMenu'
@@ -236,6 +248,16 @@ export type PageComponentsProps = {
   PhotoGallery: PhotoGalleryProps
   MatrixTable: MatrixTableProps
   LoopDiagram: LoopDiagramProps
+  StoryLead: StoryLeadProps
+  ContextProfile: ContextProfileProps
+  PillarCardGrid: PillarCardGridProps
+  ProgramWishes: ProgramWishesProps
+  PhaseArchitecture: PhaseArchitectureProps
+  ProgramOverview: ProgramOverviewProps
+  JourneyMilestones: JourneyMilestonesProps
+  ProgramStepFlow: ProgramStepFlowProps
+  BrandFormula: BrandFormulaProps
+  NumberedStepsStrip: NumberedStepsStripProps
   // Bố cục
   Container: ContainerProps
   Columns: ColumnsProps
@@ -313,6 +335,16 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'PhotoGallery',
         'MatrixTable',
         'LoopDiagram',
+        'StoryLead',
+        'ContextProfile',
+        'PillarCardGrid',
+        'ProgramWishes',
+        'PhaseArchitecture',
+        'ProgramOverview',
+        'JourneyMilestones',
+        'ProgramStepFlow',
+        'BrandFormula',
+        'NumberedStepsStrip',
       ],
     },
     layout: {
@@ -421,6 +453,22 @@ const basePuckConfig: Config<PageComponentsProps> = {
           type: 'select',
           label: 'Cỡ chữ tiêu đề',
           options: FONT_SIZE_OPTIONS,
+        },
+        titleCase: {
+          type: 'select',
+          label: 'Kiểu chữ tiêu đề',
+          options: [
+            { label: 'Chữ in hoa (UPPERCASE)', value: 'upper' },
+            { label: 'Giữ nguyên chữ thường (Title case)', value: 'none' },
+          ],
+        },
+        showAccentBar: {
+          type: 'radio',
+          label: 'Vạch hồng gạch dưới tiêu đề',
+          options: [
+            { label: 'Không', value: false },
+            { label: 'Có', value: true },
+          ],
         },
         emotionLine: {
           type: 'textarea',
@@ -552,6 +600,8 @@ const basePuckConfig: Config<PageComponentsProps> = {
         emotionColor,
         titleSize,
         emotionSize,
+        titleCase,
+        showAccentBar,
       }) => (
         <div className="py-6 px-4">
           <div className="mx-auto max-w-5xl">
@@ -569,6 +619,8 @@ const basePuckConfig: Config<PageComponentsProps> = {
               emotionColor={emotionColor}
               titleSize={titleSize}
               emotionSize={emotionSize}
+              titleCase={titleCase}
+              showAccentBar={showAccentBar}
             />
           </div>
         </div>
@@ -799,6 +851,16 @@ const basePuckConfig: Config<PageComponentsProps> = {
     PhotoGallery: PhotoGalleryBlock,
     MatrixTable: MatrixTableBlock,
     LoopDiagram: LoopDiagramBlock,
+    StoryLead: StoryLeadBlock,
+    ContextProfile: ContextProfileBlock,
+    PillarCardGrid: PillarCardGridBlock,
+    ProgramWishes: ProgramWishesBlock,
+    PhaseArchitecture: PhaseArchitectureBlock,
+    ProgramOverview: ProgramOverviewBlock,
+    JourneyMilestones: JourneyMilestonesBlock,
+    ProgramStepFlow: ProgramStepFlowBlock,
+    BrandFormula: BrandFormulaBlock,
+    NumberedStepsStrip: NumberedStepsStripBlock,
     Container: ContainerBlock,
     Columns: ColumnsBlock,
     Spacer: SpacerBlock,

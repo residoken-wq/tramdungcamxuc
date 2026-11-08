@@ -52,7 +52,7 @@ export const pageTemplates: Record<PuckPageTemplateKey, PageTemplateItem> = {
     key: 'journey',
     label: 'Trang lộ trình',
     description:
-      'Lộ trình "Chuyển mình không chênh vênh": 4 nỗi đau, 3 cột mốc CLEAR/BUILD/SHINE, bảng so sánh quyền lợi, câu chuyện khách hàng và đăng ký trải nghiệm.',
+      'Lộ trình "Chuyển mình không chênh vênh" 20 trang: 3 năng lực cốt lõi (Hành động – Cảm xúc – Giao tiếp), bản đồ 28 ngày thực hành, 4 mốc Reflection và Phase 2 Career Clarity.',
     data: journeyTemplate,
   },
   about: {

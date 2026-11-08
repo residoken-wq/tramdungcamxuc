@@ -32,17 +32,15 @@ export interface MatrixTableProps {
   titleLine1?: string
   titleLine2?: string
   emotionLine?: string
+  titleCase?: 'upper' | 'none'
+  showAccentBar?: boolean
   chipsTitle?: string
   chips?: MatrixChip[]
   columns?: MatrixColumn[]
   rows?: MatrixRow[]
+  footerNote?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -71,12 +69,9 @@ const TONE_BG: Record<string, string> = {
 }
 
 function getToneClass(tone: string | undefined, isDeepNavy: boolean): string {
-  if (isDeepNavy) {
-    if (tone && TONE_BG[tone]) {
-      return TONE_BG[tone]
-    }
-    return 'bg-white/[0.08] text-white border-white/15'
-  }
+  // QA PK-28b: on deep-navy the rows stay dark (design p. 17). A pastel row under white text
+  // failed WCAG AA (2.1:1), so the row colour is ignored there.
+  if (isDeepNavy) return 'bg-white/[0.08] text-white border-white/15'
   if (tone && TONE_BG[tone]) {
     return TONE_BG[tone]
   }
@@ -89,14 +84,18 @@ export function MatrixTable({
   titleLine1,
   titleLine2,
   emotionLine,
+  titleCase = 'upper',
+  showAccentBar = false,
   chipsTitle,
   chips = [],
   columns = [],
   rows = [],
+  footerNote,
   bgColor = 'warm-ivory',
   padding = 'md',
 }: MatrixTableProps) {
   const isDeepNavy = bgColor === 'deep-navy'
+  const isUpper = titleCase !== 'none'
   const hasHeader = Boolean(titleLine1 || titleLine2 || seriesLabel)
   const hasChips = Boolean(chipsTitle || (chips && chips.length > 0))
 
@@ -116,11 +115,23 @@ export function MatrixTable({
                 </span>
               )}
               {titleLine1 && (
-                <TwoToneTitle
-                  line1={titleLine1}
-                  line2={titleLine2}
-                  line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-                  line2ClassName={isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'}
+                <h2
+                  className={`font-display text-3xl sm:text-4xl lg:text-5xl ${
+                    isUpper ? 'uppercase' : ''
+                  } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+                >
+                  <TwoToneTitle
+                    line1={titleLine1}
+                    line2={titleLine2}
+                    line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                    line2ClassName={isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'}
+                  />
+                </h2>
+              )}
+              {showAccentBar && (
+                <span
+                  className="inline-block w-14 h-1 rounded bg-accent-pink mt-3 mb-1"
+                  aria-hidden="true"
                 />
               )}
               {emotionLine && (
@@ -172,7 +183,10 @@ export function MatrixTable({
               <table className="w-full border-collapse text-left">
                 <thead>
                   <tr className="border-b border-deep-navy/10">
-                    <th scope="col" className="p-4 sm:p-5 font-ui text-sm sm:text-base font-bold bg-lavender-mist/60 text-deep-navy w-36">
+                    <th
+                      scope="col"
+                      className="p-4 sm:p-5 font-ui text-sm sm:text-base font-bold bg-lavender-mist/60 text-deep-navy w-36"
+                    >
                       &nbsp;
                     </th>
                     {columns.map((col, idx) => (
@@ -277,18 +291,28 @@ export function MatrixTable({
                   key={idx}
                   data-eb-card=""
                   data-eb-card-solid={isDeepNavy ? '' : undefined}
-                  className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 p-4 sm:p-5 rounded-2xl border shadow-soft transition-transform ${
+                  className={`flex flex-col sm:flex-row sm:items-center ${
+                    isDeepNavy ? 'justify-start' : 'justify-between'
+                  } gap-2 sm:gap-4 p-4 sm:p-5 rounded-2xl border shadow-soft transition-transform ${
                     hasAccent ? 'border-l-4 border-l-accent-pink' : ''
                   } ${toneClass}`}
                 >
                   {/* QA PK-26: accent-pink failed AA on the navy rows (3.5:1); inherit the row text colour. */}
-                  <div className="font-ui text-sm sm:text-base font-bold shrink-0 min-w-[140px]">
+                  <div
+                    className={`font-ui font-bold shrink-0 min-w-[140px] ${
+                      isDeepNavy
+                        ? 'text-xs sm:text-sm uppercase tracking-wider text-soft-pink'
+                        : 'text-sm sm:text-base'
+                    }`}
+                  >
                     {row.label}
                   </div>
                   {row.text && (
                     <div
-                      className={`font-ui text-xs sm:text-sm sm:text-right leading-relaxed flex-1 ${
-                        isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
+                      className={`font-ui leading-relaxed flex-1 ${
+                        isDeepNavy
+                          ? 'text-sm sm:text-base text-white/90'
+                          : 'text-xs sm:text-sm sm:text-right text-deep-navy/85'
                       }`}
                     >
                       {row.text}
@@ -298,6 +322,16 @@ export function MatrixTable({
               )
             })}
           </div>
+        )}
+
+        {footerNote && (
+          <p
+            className={`mt-6 font-ui text-xs sm:text-sm leading-relaxed ${
+              isDeepNavy ? 'text-white/60' : 'text-deep-navy/60'
+            }`}
+          >
+            {footerNote}
+          </p>
         )}
       </div>
     </section>

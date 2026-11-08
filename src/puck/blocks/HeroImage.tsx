@@ -52,6 +52,30 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       label: vi.eb15a.titleLine2,
       contentEditable: true,
     },
+    titleCase: {
+      type: 'select',
+      label: 'Kiểu chữ tiêu đề',
+      options: [
+        { label: 'Chữ in hoa (UPPERCASE)', value: 'upper' },
+        { label: 'Giữ nguyên chữ thường (Title case)', value: 'none' },
+      ],
+    },
+    showAccentBar: {
+      type: 'radio',
+      label: 'Vạch hồng gạch dưới tiêu đề',
+      options: [
+        { label: 'Không', value: false },
+        { label: 'Có', value: true },
+      ],
+    },
+    showArchGraphic: {
+      type: 'radio',
+      label: 'Hiện đồ họa vòm 3 vòng tròn khi chưa có ảnh',
+      options: [
+        { label: 'Không', value: false },
+        { label: 'Có', value: true },
+      ],
+    },
     titleSize: { type: 'select', label: 'Cỡ chữ tiêu đề', options: [...FONT_SIZE_OPTIONS] },
     emotionLine: {
       type: 'textarea',
