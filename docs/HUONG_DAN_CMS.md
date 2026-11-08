@@ -1953,7 +1953,17 @@ Trong đợt nâng cấp Sitemap v2 (SM-06), website được bổ sung trang **
      - **Hotline / Số điện thoại**: Số hotline hỗ trợ (có thể nhập `0901 234 567` hoặc `0901.234.567`, hệ thống tự chuẩn hóa link gọi điện thoại thông minh).
      - **Địa chỉ văn phòng**: Địa điểm gặp gỡ, làm việc trực tiếp.
      - **Link chat Zalo**: Đường dẫn kết nối nhanh qua Zalo Official Account hoặc Zalo cá nhân.
-     - **Mạng xã hội**: Đường dẫn LinkedIn, Facebook Fanpage và kênh YouTube chính thức của Trạm.
+     - **Mạng xã hội**: Hệ thống hỗ trợ 6 ô mạng xã hội và kênh bán hàng chính thức:
+       1. **Facebook / Fanpage**
+       2. **TikTok**: Nhập link trang TikTok cá nhân hoặc thương hiệu (VD: `https://www.tiktok.com/@ten-trang`).
+       3. **YouTube**: Kênh YouTube chính thức.
+       4. **LinkedIn**: Trang cá nhân hoặc doanh nghiệp.
+       5. **Nhóm Zalo**: Đường dẫn tham gia cộng đồng Zalo của Trạm.
+       6. **Gian hàng Shopee**: Đường dẫn gian hàng Shopee của Hana.
+     - **Thứ tự hiển thị icon ở Chân trang (Footer)**: Các biểu tượng mạng xã hội dạng nút tròn 40×40px xuất hiện theo đúng thứ tự: **Facebook → TikTok → YouTube → LinkedIn → Nhóm Zalo → Shopee**.
+     - **Nguyên tắc hiển thị**:
+       - Ô nào để trống = tự động không hiện biểu tượng đó ở chân trang và trang Liên hệ.
+       - Với chân trang dựng bằng kéo thả (Builder Puck), trang chân trang phải chứa khối **"Mạng xã hội"** (`SocialLinks`) thì các biểu tượng mới hiển thị. Nếu chân trang chưa có khối này, Hana chỉ cần kéo khối "Mạng xã hội" vào vị trí mong muốn trong giao diện dựng chân trang rồi bấm **Xuất bản**. Trong lúc chỉnh sửa trong builder, nếu chưa nhập link nào, khối sẽ hiện dòng hướng dẫn màu xám nhắc nhở thay vì hiện link mẫu gây hiểu nhầm.
   4. Bấm **Lưu thay đổi**. Tất cả các trang đang nhúng khối `ContactInfo` (như trang `/lien-he`) sẽ tự động cập nhật ngay lập tức.
   5. _Lưu ý_: Nếu mục nào để trống, thẻ tương ứng sẽ tự động ẩn trên website ngoài đời.
 
