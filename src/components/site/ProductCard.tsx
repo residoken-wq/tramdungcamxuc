@@ -56,7 +56,7 @@ export function ProductCard({
     <Card
       as="article"
       variant="white"
-      className={`flex flex-col h-full overflow-hidden p-0 transition-all duration-300 hover:shadow-md ${className}`}
+      className={`flex flex-col h-full overflow-hidden p-0 eb-card-interactive ${className}`}
     >
       {/* Cover Image Container */}
       <div className="relative w-full aspect-[16/10] bg-lavender-mist overflow-hidden border-b border-deep-navy/10 flex items-center justify-center">
@@ -66,7 +66,7 @@ export function ProductCard({
             alt={coverImage.alt || name}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 hover:scale-105 motion-reduce:hover:scale-100"
+            className="object-cover transition-transform duration-200"
           />
         ) : (
           <div

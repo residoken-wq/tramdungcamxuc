@@ -205,6 +205,27 @@ html.eb-anim-ready [data-eb-card].eb-step-active h3 {
   transition: color var(--motion-base) var(--motion-ease-out);
 }
 
+/* PK-29 FX-11: Unified Card Hover & Focus Lift */
+@media (hover: hover) and (pointer: fine) {
+  .eb-card-interactive {
+    transition: transform 240ms var(--motion-ease-out), box-shadow 240ms var(--motion-ease-out);
+  }
+  .eb-card-interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -4px rgb(var(--color-deep-navy-rgb) / 0.12);
+  }
+  .eb-card-interactive:hover img {
+    transform: scale(1.03);
+    transition: transform 240ms var(--motion-ease-out);
+  }
+}
+
+.eb-card-interactive:focus-within,
+.eb-card-interactive:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -4px rgb(var(--color-deep-navy-rgb) / 0.12);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html.eb-anim-ready [data-eb-entrance],
   html.eb-anim-ready [data-eb-entrance] [data-eb-card] {
@@ -216,6 +237,14 @@ html.eb-anim-ready [data-eb-card].eb-step-active h3 {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
+  }
+  .eb-card-interactive,
+  .eb-card-interactive:hover,
+  .eb-card-interactive:focus-within,
+  .eb-card-interactive:focus-visible,
+  .eb-card-interactive:hover img {
+    transform: none !important;
+    transition: none !important;
   }
 }
 

@@ -100,7 +100,7 @@ export function ServiceCardItem({
       <div
         data-eb-card=""
         data-eb-card-solid={highlight ? '' : undefined}
-        className="rounded-2xl border border-deep-navy/10 bg-white p-6 sm:p-8 shadow-soft flex flex-col justify-between transition-all duration-300 hover:shadow-card hover:-translate-y-1 h-full"
+        className="rounded-2xl border border-deep-navy/10 bg-white p-6 sm:p-8 shadow-soft flex flex-col justify-between eb-card-interactive h-full"
       >
         <div>
           {/* Service Name Pill: accent-pink for card 1, deep-navy for card 2 */}
@@ -132,7 +132,7 @@ export function ServiceCardItem({
                 alt={activeService.imageAlt || activeService.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover transition-transform duration-300 hover:scale-105"
+                className="object-cover transition-transform duration-200"
               />
             </div>
           )}
@@ -211,7 +211,7 @@ export function ServiceCardItem({
     <div
       data-eb-card=""
       data-eb-card-solid={highlight ? '' : undefined}
-      className={`rounded-card border overflow-hidden shadow-soft flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 ${
+      className={`rounded-card border overflow-hidden shadow-soft flex flex-col justify-between eb-card-interactive ${
         highlight
           ? 'bg-deep-navy border-deep-navy/20 text-white'
           : 'bg-white border-deep-navy/10 text-deep-navy'
@@ -225,7 +225,7 @@ export function ServiceCardItem({
               alt={activeService.imageAlt || activeService.name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transition-transform duration-300 hover:scale-105"
+              className="object-cover transition-transform duration-200"
             />
             {activeService.badge && (
               <span className="absolute top-3 left-3 rounded-full bg-deep-navy/90 px-3 py-1 font-ui text-xs font-bold text-white shadow-soft">
