@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
+import { previewLeadMagnetsAction } from '@/puck/lead-magnet-actions'
 
 const ResourceRequestForm = dynamic(
   () => import('@/components/site/ResourceRequestForm').then((mod) => mod.ResourceRequestForm),
@@ -74,12 +75,41 @@ export function LeadMagnetCarousel({
   bgColor = 'warm-ivory',
   padding = 'md',
   isDemo = false,
+  mode = 'auto',
+  manualProducts,
   items: propsItems,
   _resolved,
   puck,
 }: LeadMagnetCarouselProps) {
   const isEditing = puck?.isEditing ?? false
-  const items = propsItems || _resolved?.items || []
+
+  // QA PK-27b: the builder has no server resolve, so fetch the same cards for the preview.
+  const needsPreview = isEditing && !propsItems && !_resolved
+  const manualKey = (manualProducts || [])
+    .map((m) => m?.productId)
+    .filter((id): id is string | number => Boolean(id))
+    .join(',')
+  const previewKey = `${mode}:${manualKey}`
+  const [preview, setPreview] = useState<{ key: string; items: LeadMagnetItem[] } | null>(null)
+  useEffect(() => {
+    if (!needsPreview) return
+    let active = true
+    const ids = manualKey ? manualKey.split(',') : []
+    previewLeadMagnetsAction(mode === 'manual' ? 'manual' : 'auto', ids)
+      .then((loaded) => {
+        if (active) setPreview({ key: previewKey, items: loaded })
+      })
+      .catch(() => {
+        if (active) setPreview({ key: previewKey, items: [] })
+      })
+    return () => {
+      active = false
+    }
+  }, [needsPreview, mode, manualKey, previewKey])
+
+  const items =
+    propsItems || _resolved?.items || (preview && preview.key === previewKey ? preview.items : [])
+  const isList = display === 'list'
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -160,19 +190,24 @@ export function LeadMagnetCarousel({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="mb-8 sm:mb-12 text-center max-w-3xl mx-auto">
+        <div
+          className={
+            isList ? 'mb-6 sm:mb-8 text-left' : 'mb-8 sm:mb-12 text-center max-w-3xl mx-auto'
+          }
+        >
           <SectionHeader
             seriesLabel={seriesLabel}
             titleLine1={titleLine1}
             titleLine2={titleLine2}
             emotionLine={emotionLine}
-            align="center"
+            align={isList ? 'left' : 'center'}
           />
         </div>
 
         {/* Content: List or Carousel */}
         {display === 'list' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          // QA PK-27b: a vertical list of white cards (design 08/11) – fits a half-width column.
+          <div className="flex flex-col gap-4 sm:gap-5">
             {items.map((item) => {
               const href = item.href || `/tai-nguyen/${item.slug}`
               const isFile = !item.href || item.href === `/tai-nguyen/${item.slug}`
@@ -184,19 +219,17 @@ export function LeadMagnetCarousel({
                 <div
                   key={item.id}
                   data-eb-card=""
-                  className="rounded-2xl border border-deep-navy/10 bg-white p-6 shadow-soft flex flex-col justify-between transition-all duration-300 hover:shadow-card hover:-translate-y-1 h-full"
+                  className="rounded-2xl border border-deep-navy/10 bg-white p-5 sm:p-6 shadow-soft flex flex-col items-start transition-shadow duration-300 hover:shadow-card"
                 >
-                  <div>
-                    <h3 className="font-display uppercase text-lg sm:text-xl text-bright-magenta tracking-tight !leading-snug mb-2">
-                      {item.name}
-                    </h3>
-                    {item.shortDescription && (
-                      <p className="font-body text-xs sm:text-sm text-deep-navy/80 line-clamp-3 mb-4 leading-relaxed">
-                        {item.shortDescription}
-                      </p>
-                    )}
-                  </div>
-                  <div className="pt-2">
+                  <h3 className="font-ui font-bold text-base sm:text-lg leading-snug text-bright-magenta">
+                    {item.name}
+                  </h3>
+                  {item.shortDescription && (
+                    <p className="mt-1.5 font-body text-sm text-deep-navy/80 line-clamp-3 leading-relaxed">
+                      {item.shortDescription}
+                    </p>
+                  )}
+                  <div className="mt-4">
                     <a
                       href={href}
                       target={item.isExternal ? '_blank' : undefined}
@@ -209,9 +242,13 @@ export function LeadMagnetCarousel({
                           })
                         }
                       }}
-                      className="inline-flex items-center justify-center px-4 py-2 rounded-full font-ui text-xs font-bold text-bright-magenta bg-soft-pink/60 hover:bg-soft-pink transition-colors"
+                      className={`inline-flex items-center justify-center min-h-[40px] px-5 py-2 rounded-full font-ui text-xs font-bold uppercase tracking-wide whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy ${
+                        isFile
+                          ? 'border-2 border-deep-navy text-deep-navy hover:bg-lavender-mist'
+                          : 'bg-bright-magenta text-white hover:bg-deep-navy'
+                      }`}
                     >
-                      {buttonLabel} &rarr;
+                      {buttonLabel}
                     </a>
                   </div>
                 </div>
