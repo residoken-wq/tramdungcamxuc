@@ -20,6 +20,7 @@
    - [3.1. Tạo và chỉnh sửa sản phẩm: Giao diện 6 tab theo loại](#31-tạo-và-chỉnh-sửa-sản-phẩm-giao-diện-6-tab-theo-loại)
    - [3.1b. Tạo sản phẩm bằng trình hướng dẫn (5 bước)](#31b-tạo-sản-phẩm-bằng-trình-hướng-dẫn-5-bước)
    - [3.1c. Đổi tên gói, tagline và tên sản phẩm số](#31c-đổi-tên-gói-tagline-và-tên-sản-phẩm-số-clear--build--shine-habit-hack-eq-buddy)
+   - [3.1d. Sửa trang Habit Hack (/habit/1-percent-better)](#31d-sửa-trang-habit-hack-habit1-percent-better)
    - [3.7. Xem trước trước khi xuất bản (Live Preview)](#37-xem-trước-trước-khi-xuất-bản-live-preview)
    - [3.8. Quản lý Lịch workshop và quyền tham gia (Workshops)](#38-quản-lý-lịch-workshop-và-quyền-tham-gia-workshops)
      - [3.8b. Lên lịch workshop bằng Trình hướng dẫn (3 bước)](#38b-lên-lịch-workshop-bằng-trình-hướng-dẫn-3-bước)
@@ -539,6 +540,45 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
    - Sửa **Tên sản phẩm**: Đổi tên hiển thị mà khách hàng sẽ nhìn thấy trên toàn hệ thống.
    - Sửa **Mô tả ngắn**: Cập nhật câu giới thiệu ngắn gọn.
 3. Bấm **Lưu thay đổi**. Tên mới sẽ tự động cập nhật trên toàn bộ các thanh điều hướng, thẻ sản phẩm và trang thanh toán.
+
+---
+
+### 3.1d. Sửa trang Habit Hack (/habit/1-percent-better)
+
+**Mục đích**: Trang giới thiệu Habit Hack (`/habit/1-percent-better`) là trang giới thiệu và bán công cụ số chính. Mọi câu chữ, lộ trình và điểm khác biệt trên trang này Hana đều có thể tự sửa dễ dàng thông qua form Sản phẩm của **Habit Tracker số**, hoàn toàn không cần đụng vào code hay trình kéo thả.
+
+#### 1. Vị trí chỉnh sửa trong CMS
+- Vào **Sản phẩm & bán hàng** → **Sản phẩm** (`products`).
+- Tìm và mở sản phẩm có slug `habit-tracker-so` (tên: **Habit Tracker số**).
+- Chuyển sang tab **"Trang giới thiệu"** (chỉ hiển thị với loại Công cụ số).
+
+#### 2. Các ô nhập liệu tương ứng với từng phần trên trang
+- **Đầu trang (Hero Header)**:
+  - **Nhãn nhỏ trên tiêu đề (`offerSeriesLabel`)**: Nhãn series phía trên tiêu đề chính (mặc định: `Khóa học & Công cụ số`).
+  - **Tiêu đề dòng 1 (`offerTitleLine1`)**: Dòng chữ màu xanh thẫm `deep-navy` (mặc định: `Habit Hack`).
+  - **Tiêu đề dòng 2 (`offerTitleLine2`)**: Dòng chữ màu hồng sen `bright-magenta` (mặc định: `1% Better Mỗi Ngày`).
+  - **Dòng cảm xúc (`offerEmotionLine`)**: Dòng triết lý in nghiêng bên dưới tiêu đề (mặc định: `Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.`).
+- **Phần Lộ trình Module**:
+  - **Tiêu đề phần lộ trình (`curriculumHeading`)**: Tiêu đề lớn (mặc định: `Lộ trình 4 Module chuyển hóa`).
+  - **Mô tả phần lộ trình (`curriculumSubheading`)**: Đoạn mô tả dẫn nhập (mặc định: `Được thiết kế tinh gọn, thực tế, học đến đâu ứng dụng ngay đến đó.`).
+  - **Các module (`curriculumModules`)**: Danh sách tối đa 8 module. Mỗi module gồm **Tiêu đề** và **Mô tả**. Ô số liệu "Module lộ trình" trên thanh thống kê sẽ tự động đếm theo số lượng module bạn nhập ở đây (mặc định là 4).
+- **Phần "Tại sao Habit Tracker số khác biệt?"**:
+  - **Tiêu đề phần "khác biệt" (`featuresHeading`)**: Mặc định: `Tại sao Habit Tracker số khác biệt?`.
+  - **Mô tả phần "khác biệt" (`featuresSubheading`)**: Mặc định: `Xây dựng thói quen từ sự tử tế với chính mình, không phải kỷ luật trừng phạt.`.
+  - **Các điểm khác biệt (`featureItems`)**: Danh sách tối đa 6 thẻ điểm nhấn, mỗi thẻ gồm **Tiêu đề** và **Mô tả**.
+- **Kêu gọi hành động cuối trang (Bottom CTA)**:
+  - **Tiêu đề kêu gọi cuối trang (`bottomTitle`)**: Nhập chữ `{ngay}` tại vị trí bạn muốn hệ thống tự động điền số ngày hành trình (ví dụ: `Bắt đầu hành trình {ngay} ngày của bạn`).
+  - **Mô tả kêu gọi cuối trang (`bottomDescription`)**: Đoạn giới thiệu ngắn phía dưới (để trống sẽ tự ghép số lượng video và kỹ thuật từ hệ thống).
+
+#### 3. Các nội dung khác trên trang lấy từ đâu?
+- **Giá bán, Giá ưu đãi, Số ngày dùng thử**: Nằm ở tab **Giá & bán** của chính sản phẩm này.
+- **Danh sách "Bao gồm" & Câu hỏi thường gặp (FAQ)**: Nằm ở tab **Nội dung trang** của sản phẩm này.
+- **Số lượng video & kỹ thuật**: Hệ thống tự động đếm trực tiếp từ danh mục **Bài học** (`lessons`) và **Kỹ thuật thực hành** (`techniques`) đã xuất bản.
+- **Số ngày hành trình (mặc định 28 ngày)**: Cài đặt tại **Hệ thống** → **Cài đặt website** (`siteSettings` → `habitJourneyDays`).
+
+#### 4. Lưu và xem trước
+- Bấm **Lưu bản nháp** để xem trước thay đổi trực tiếp (Live Preview).
+- Bấm **Xuất bản** để đưa nội dung mới lên trang chính thức `/habit/1-percent-better`.
 
 ---
 

@@ -55,6 +55,18 @@ export interface HabitProductData {
   cta: ProductCta | null
   videoCount: number
   techniqueCount: number
+  offerSeriesLabel?: string | null
+  offerTitleLine1?: string | null
+  offerTitleLine2?: string | null
+  offerEmotionLine?: string | null
+  curriculumHeading?: string | null
+  curriculumSubheading?: string | null
+  curriculumModules?: Array<{ title: string; description?: string | null }> | null
+  featuresHeading?: string | null
+  featuresSubheading?: string | null
+  featureItems?: Array<{ title: string; description?: string | null }> | null
+  bottomTitle?: string | null
+  bottomDescription?: string | null
 }
 
 /** Lỗi kỹ thuật dạng ZodError để action trả câu tiếng Việt cho người dùng (không thành lỗi máy chủ). */
@@ -237,6 +249,32 @@ export async function getHabitProduct(
   // Nút CTA động
   const cta = resolveProductCta(doc)
 
+  // Trích xuất curriculumModules (PK-30)
+  const curriculumModules: Array<{ title: string; description?: string | null }> = []
+  if (Array.isArray(doc.curriculumModules)) {
+    for (const m of doc.curriculumModules) {
+      if (m && typeof m.title === 'string' && m.title.trim().length > 0) {
+        curriculumModules.push({
+          title: m.title.trim(),
+          description: typeof m.description === 'string' ? m.description.trim() : null,
+        })
+      }
+    }
+  }
+
+  // Trích xuất featureItems (PK-30)
+  const featureItems: Array<{ title: string; description?: string | null }> = []
+  if (Array.isArray(doc.featureItems)) {
+    for (const item of doc.featureItems) {
+      if (item && typeof item.title === 'string' && item.title.trim().length > 0) {
+        featureItems.push({
+          title: item.title.trim(),
+          description: typeof item.description === 'string' ? item.description.trim() : null,
+        })
+      }
+    }
+  }
+
   return {
     id: doc.id,
     name: doc.name,
@@ -254,6 +292,18 @@ export async function getHabitProduct(
     cta,
     videoCount: lessonCountRes.totalDocs,
     techniqueCount: techniqueCountRes.totalDocs,
+    offerSeriesLabel: doc.offerSeriesLabel?.trim() || null,
+    offerTitleLine1: doc.offerTitleLine1?.trim() || null,
+    offerTitleLine2: doc.offerTitleLine2?.trim() || null,
+    offerEmotionLine: doc.offerEmotionLine?.trim() || null,
+    curriculumHeading: doc.curriculumHeading?.trim() || null,
+    curriculumSubheading: doc.curriculumSubheading?.trim() || null,
+    curriculumModules: curriculumModules.length > 0 ? curriculumModules : null,
+    featuresHeading: doc.featuresHeading?.trim() || null,
+    featuresSubheading: doc.featuresSubheading?.trim() || null,
+    featureItems: featureItems.length > 0 ? featureItems : null,
+    bottomTitle: doc.bottomTitle?.trim() || null,
+    bottomDescription: doc.bottomDescription?.trim() || null,
   }
 }
 
