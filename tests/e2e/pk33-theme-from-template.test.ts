@@ -112,4 +112,3 @@ test.describe('PK-33: One-click header and footer creation from template in Navi
     }
   })
 })
-

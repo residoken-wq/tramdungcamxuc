@@ -31,9 +31,7 @@ export function StoryHighlights({ items, isDark = false }: StoryHighlightsProps)
           >
             {String(idx + 1).padStart(2, '0')}
           </span>
-          <h4 className="mt-1 font-ui font-bold text-sm sm:text-base leading-snug">
-            {hl.title}
-          </h4>
+          <h4 className="mt-1 font-ui font-bold text-sm sm:text-base leading-snug">{hl.title}</h4>
           {hl.text && (
             <p
               className={`mt-1 font-ui text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
@@ -48,4 +46,3 @@ export function StoryHighlights({ items, isDark = false }: StoryHighlightsProps)
     </div>
   )
 }
-

@@ -699,12 +699,34 @@ const basePuckConfig: Config<PageComponentsProps> = {
           type: 'textarea',
           label: 'Câu trích dẫn (Playfair Display Italic, tùy chọn)',
         },
-        quoteStyle: {
-          type: 'radio',
-          label: vi.pk31?.hanaStory?.quoteStyle || 'Kiểu trích dẫn',
+        quotePosition: {
+          type: 'select',
+          label: vi.cd01?.imageText?.quotePosition || 'Vị trí trích dẫn',
           options: [
-            { label: vi.pk31?.hanaStory?.quoteStyleLine || 'Đường kẻ dọc (Mặc định)', value: 'line' },
             {
+              label: vi.cd01?.imageText?.quotePositionBottom || 'Dưới đoạn văn (Mặc định)',
+              value: 'bottom',
+            },
+            {
+              label: vi.cd01?.imageText?.quotePositionBelowTitle || 'Ngay dưới tiêu đề',
+              value: 'below-title',
+            },
+          ],
+        },
+        quoteStyle: {
+          type: 'select',
+          label: vi.cd01?.imageText?.quoteStyle || 'Kiểu trích dẫn',
+          options: [
+            {
+              label: vi.cd01?.imageText?.quoteStyleCallout || 'Có vạch hồng bên trái (Mặc định)',
+              value: 'callout',
+            },
+            {
+              label: vi.cd01?.imageText?.quoteStyleClean || 'Thuần chữ nghiêng (Không vạch viền)',
+              value: 'clean',
+            },
+            {
+              // PK-34: soft-pink box, always right under the title (position is ignored).
               label: vi.pk31?.hanaStory?.quoteStyleBox || 'Hộp nổi bật (Đặt trên đoạn văn)',
               value: 'box',
             },
@@ -716,9 +738,31 @@ const basePuckConfig: Config<PageComponentsProps> = {
           max: 4,
           arrayFields: {
             title: { type: 'text', label: vi.pk31?.hanaStory?.highlightTitle || 'Tiêu đề thẻ' },
-            text: { type: 'textarea', label: vi.pk31?.hanaStory?.highlightText || 'Nội dung mô tả' },
+            text: {
+              type: 'textarea',
+              label: vi.pk31?.hanaStory?.highlightText || 'Nội dung mô tả',
+            },
           },
           getItemSummary: (item) => item?.title || 'Điểm nhấn',
+        },
+        items: {
+          type: 'array',
+          label: vi.cd01?.imageText?.items || 'Danh sách nguyên tắc / tôn chỉ',
+          arrayFields: {
+            title: { type: 'text', label: vi.cd01?.imageText?.itemTitle || 'Tiêu đề nguyên tắc' },
+            text: {
+              type: 'textarea',
+              label: vi.cd01?.imageText?.itemText || 'Nội dung nguyên tắc',
+            },
+          },
+        },
+        showPlaceholderImage: {
+          type: 'radio',
+          label: 'Hiện khung ảnh mẫu khi chưa có ảnh',
+          options: [
+            { label: 'Không', value: false },
+            { label: 'Có', value: true },
+          ],
         },
         mediaId: createMediaExternalField({
           label: 'Ảnh minh họa (Thư viện media)',
@@ -770,7 +814,10 @@ const basePuckConfig: Config<PageComponentsProps> = {
         content:
           '[MẪU] Nội dung đoạn thứ nhất kể về hành trình và cảm xúc.\n\n[MẪU] Nội dung đoạn thứ hai làm rõ hơn giá trị mang lại.',
         quote: '',
-        quoteStyle: 'line',
+        quotePosition: 'bottom',
+        quoteStyle: 'callout',
+        showPlaceholderImage: false,
+        items: [],
         highlights: [],
         mediaId: '',
         imageUrl: '',
@@ -817,7 +864,9 @@ const basePuckConfig: Config<PageComponentsProps> = {
       },
       // ImageText is a client component: never forward Puck's `puck` object (it holds functions,
       // which cannot be serialised into a client component on the public page).
-      render: ({ puck: _puck, ...props }) => <ImageText {...props} />,
+      render: ({ puck: _puck, ...props }) => (
+        <ImageText {...props} puck={{ isEditing: Boolean(_puck?.isEditing) }} />
+      ),
     },
 
     // Chuyển đổi

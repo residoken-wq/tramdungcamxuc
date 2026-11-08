@@ -1,5 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { safeHref } from '@/lib/safe-href'
 import { BrandImage, type BrandImageShape, type CaptionPosition } from '@/components/ui/BrandImage'
 import { BrandIcon } from '@/components/brand/BrandIcon'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
@@ -12,7 +14,7 @@ import {
 } from '@/lib/brand/format-classes'
 import { textTarget } from '@/puck/style/text-target'
 
-export type CardHighlight = 'none' | 'outline' | 'navy'
+export type CardHighlight = 'none' | 'outline' | 'navy' | 'coming-soon'
 
 export type CardBgColor =
   | 'none'
@@ -43,6 +45,7 @@ export interface IconCardProps {
   imageUrl?: string
   imageAlt?: string
   title?: string
+  titleFont?: 'ui' | 'display'
   text?: string
   titleColor?: TextColorOption
   textColor?: TextColorOption
@@ -56,8 +59,14 @@ export interface IconCardProps {
   subtitle?: string
   subtitleColor?: TextColorOption
   chip?: string
+  showDivider?: boolean
+  linkText?: string
+  linkHref?: string
+  linkVariant?: 'magenta' | 'pink'
   items?: CardItem[]
   itemsColumns?: 1 | 2
+  itemsTitleCase?: 'none' | 'upper'
+  itemsTitleColor?: 'deep-navy' | 'accent-pink' | 'bright-magenta'
   note?: CardNote
   imageShape?: BrandImageShape
   imageBadge?: string
@@ -210,6 +219,7 @@ export function IconCard({
   imageUrl,
   imageAlt,
   title = '',
+  titleFont = 'ui',
   text = '',
   titleColor = 'deep-navy',
   textColor = 'deep-navy',
@@ -227,8 +237,14 @@ export function IconCard({
   subtitle,
   subtitleColor,
   chip,
+  showDivider = false,
+  linkText,
+  linkHref,
+  linkVariant = 'magenta',
   items,
   itemsColumns = 1,
+  itemsTitleCase = 'none',
+  itemsTitleColor = 'deep-navy',
   note,
   imageShape,
   imageBadge,
@@ -240,6 +256,7 @@ export function IconCard({
 }: IconCardProps & { id?: string }) {
   const hasValidImage = Boolean(imageUrl && imageAlt && imageAlt.trim().length > 0)
   const alignClass = align === 'center' ? 'text-center items-center' : 'text-left items-start'
+  const isComingSoon = highlight === 'coming-soon'
   const isNavyHighlight = highlight === 'navy'
   const isOutlineHighlight = highlight === 'outline'
   const isCustomBg = cardBg && cardBg !== 'none'
@@ -257,23 +274,27 @@ export function IconCard({
     (isDeepNavy && (!cardStyle || cardStyle === 'white'))
 
   // QA PK-26: small magenta text fails WCAG AA on navy (2.8:1) and lavender (4.4:1) cards.
-  const eyebrowTextClass = isDarkCard
-    ? 'text-soft-pink'
-    : cardBg === 'lavender-mist'
-      ? 'text-deep-navy'
-      : 'text-bright-magenta'
+  const eyebrowTextClass = isComingSoon
+    ? '!text-deep-navy/70'
+    : isDarkCard
+      ? 'text-soft-pink'
+      : cardBg === 'lavender-mist'
+        ? 'text-deep-navy'
+        : 'text-bright-magenta'
 
   const titleSizeClass = fontSizeClass('card-title', titleSize)
   const textSizeClass = fontSizeClass('card-text', textSize)
 
   // Title color: custom color if specified; if default deep-navy, adapt on deep-navy parent / dark card
-  const titleColorClass = isDarkCard
-    ? '!text-white'
-    : titleColor && titleColor !== 'deep-navy'
-      ? textColorClass(titleColor)
-      : isDeepNavy
-        ? 'text-white'
-        : 'text-deep-navy group-data-[bg=deep-navy]/grid:text-white'
+  const titleColorClass = isComingSoon
+    ? '!text-deep-navy/60'
+    : isDarkCard
+      ? '!text-white'
+      : titleColor && titleColor !== 'deep-navy'
+        ? textColorClass(titleColor)
+        : isDeepNavy
+          ? 'text-white'
+          : 'text-deep-navy group-data-[bg=deep-navy]/grid:text-white'
 
   // Subtitle color: custom color if specified; if default deep-navy, adapt on dark card / deep-navy parent
   const subtitleColorClass = isDarkCard
@@ -301,11 +322,13 @@ export function IconCard({
       ? getExplicitCardClasses(cardStyle, isDeepNavy)
       : getExplicitCardClasses('white', isDeepNavy)
 
-  const highlightClass = isNavyHighlight
-    ? ' !bg-deep-navy !text-white !border-deep-navy/40 shadow-soft overflow-hidden'
-    : isOutlineHighlight
-      ? ' !border-2 !border-accent-pink'
-      : ''
+  const highlightClass = isComingSoon
+    ? ' !bg-warm-ivory !border-deep-navy/15 !border-t-deep-navy/15 !border-t shadow-none'
+    : isNavyHighlight
+      ? ' !bg-deep-navy !text-white !border-deep-navy/40 shadow-soft overflow-hidden'
+      : isOutlineHighlight
+        ? ' !border-2 !border-accent-pink'
+        : ''
 
   // QA PK-26: 'none' hides the icon box even inside an icon-marker grid (cards without an icon).
   const hideIcon = icon === 'none' && !hasValidImage
@@ -425,10 +448,18 @@ export function IconCard({
       {title && (
         <h3
           {...textTarget(id, 'title')}
-          className={`font-ui ${titleSizeClass} font-bold leading-snug ${titleColorClass}`}
+          className={
+            titleFont === 'display'
+              ? `font-display ${titleSizeClass} uppercase tracking-tight leading-snug ${titleColorClass}`
+              : `font-ui ${titleSizeClass} font-bold leading-snug ${titleColorClass}`
+          }
         >
           {title}
         </h3>
+      )}
+
+      {showDivider && (
+        <div className="w-full my-3 border-b border-deep-navy/10" aria-hidden="true" />
       )}
 
       {subtitle && (
@@ -463,26 +494,34 @@ export function IconCard({
               : 'flex flex-col gap-2.5'
           }`}
         >
-          {items.map((item, i) => (
-            <div key={i} className="flex flex-col text-left items-start">
-              <span
-                className={`font-ui text-sm sm:text-base font-bold ${
-                  isDarkCard ? 'text-white' : 'text-deep-navy'
-                }`}
-              >
-                {item.title}
-              </span>
-              {item.text && (
+          {items.map((item, i) => {
+            const itemTitleColorClass =
+              itemsTitleColor === 'accent-pink' || itemsTitleColor === 'bright-magenta'
+                ? '!text-bright-magenta'
+                : isDarkCard
+                  ? 'text-white'
+                  : 'text-deep-navy'
+            const itemTitleCaseClass = itemsTitleCase === 'upper' ? 'uppercase' : ''
+
+            return (
+              <div key={i} className="flex flex-col text-left items-start">
                 <span
-                  className={`font-ui text-xs sm:text-sm leading-relaxed mt-0.5 whitespace-pre-line ${
-                    isDarkCard ? 'text-white/80' : 'text-deep-navy/75'
-                  }`}
+                  className={`font-ui text-sm sm:text-base font-bold ${itemTitleCaseClass} ${itemTitleColorClass}`}
                 >
-                  {item.text}
+                  {item.title}
                 </span>
-              )}
-            </div>
-          ))}
+                {item.text && (
+                  <span
+                    className={`font-ui text-xs sm:text-sm leading-relaxed mt-0.5 whitespace-pre-line ${
+                      isDarkCard ? 'text-white/80' : 'text-deep-navy/75'
+                    }`}
+                  >
+                    {item.text}
+                  </span>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
 
@@ -500,6 +539,17 @@ export function IconCard({
             </div>
           )}
           <div className="font-ui leading-relaxed opacity-95 whitespace-pre-line">{note.text}</div>
+        </div>
+      )}
+
+      {!isComingSoon && linkText && linkHref && (
+        <div className="mt-auto pt-6 w-full">
+          <Link
+            href={safeHref(linkHref) || '#'}
+            className="inline-flex items-center gap-1 font-ui text-sm sm:text-base font-bold transition-colors text-bright-magenta hover:text-bright-magenta/80"
+          >
+            {linkText}
+          </Link>
         </div>
       )}
     </div>

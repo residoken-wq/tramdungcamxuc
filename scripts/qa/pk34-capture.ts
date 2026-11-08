@@ -55,7 +55,8 @@ async function main() {
               imageBadge: 'Không gian an toàn',
               imagePosition: 'left',
               bgColor: 'warm-ivory',
-              quote: 'Trạm dừng không phải để bỏ cuộc, mà để bạn gom góp lại sức mạnh trước khi tiếp tục hành trình.',
+              quote:
+                'Trạm dừng không phải để bỏ cuộc, mà để bạn gom góp lại sức mạnh trước khi tiếp tục hành trình.',
               quoteStyle: 'box',
               paragraphs: [
                 'Cuộc sống bận rộn cuốn chúng ta vào những guồng quay không ngừng nghỉ. Đôi khi, điều chúng ta cần nhất không phải là đi nhanh hơn, mà là một khoảng dừng thật sự chất lượng.',
@@ -86,7 +87,8 @@ async function main() {
               imageBadge: 'Không gian an toàn',
               imagePosition: 'left',
               bgColor: 'deep-navy',
-              quote: 'Trạm dừng không phải để bỏ cuộc, mà để bạn gom góp lại sức mạnh trước khi tiếp tục hành trình.',
+              quote:
+                'Trạm dừng không phải để bỏ cuộc, mà để bạn gom góp lại sức mạnh trước khi tiếp tục hành trình.',
               quoteStyle: 'box',
               paragraphs: [
                 'Cuộc sống bận rộn cuốn chúng ta vào những guồng quay không ngừng nghỉ. Đôi khi, điều chúng ta cần nhất không phải là đi nhanh hơn, mà là một khoảng dừng thật sự chất lượng.',
@@ -108,7 +110,9 @@ async function main() {
   ]
 
   for (const part of parts) {
-    const renderedMarkup = renderToString(React.createElement(Render, { config: puckConfig, data: part.data as any }))
+    const renderedMarkup = renderToString(
+      React.createElement(Render, { config: puckConfig, data: part.data as any }),
+    )
     const fullHtml = `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -155,4 +159,3 @@ main().catch((err) => {
   console.error(err)
   process.exit(1)
 })
-

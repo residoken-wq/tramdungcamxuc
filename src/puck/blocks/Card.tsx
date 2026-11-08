@@ -33,6 +33,22 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
       label: vi.puckCard?.title || 'Tiêu đề thẻ',
       contentEditable: true,
     },
+    titleFont: {
+      type: 'select',
+      label: vi.cd01?.card?.titleFont || 'Font chữ tiêu đề thẻ',
+      options: [
+        { label: vi.cd01?.card?.titleFontUi || 'Chữ không chân (Montserrat)', value: 'ui' },
+        { label: vi.cd01?.card?.titleFontDisplay || 'Tiêu đề lớn (Anton)', value: 'display' },
+      ],
+    },
+    showDivider: {
+      type: 'radio',
+      label: vi.cd01?.card?.showDivider || 'Đường kẻ mảnh dưới tiêu đề thẻ',
+      options: [
+        { label: 'Không có', value: false },
+        { label: 'Có đường kẻ', value: true },
+      ],
+    },
     text: {
       type: 'textarea',
       label: vi.puckCard?.text || 'Nội dung mô tả',
@@ -70,6 +86,10 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
         { label: vi.pk20?.highlight?.none || 'Mặc định (Không nổi bật)', value: 'none' },
         { label: vi.pk20?.highlight?.outline || 'Viền hồng (Accent Pink)', value: 'outline' },
         { label: vi.pk20?.highlight?.navy || 'Nền xanh thẫm (Deep Navy)', value: 'navy' },
+        {
+          label: vi.cd01?.card?.highlightComingSoon || 'Sắp ra mắt (Coming Soon - Viền xám, không vạch màu)',
+          value: 'coming-soon',
+        },
       ],
     },
     cardBg: {
@@ -128,6 +148,39 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
         { label: vi.pk26?.card?.itemsColumns2 || '2 cột', value: 2 },
       ],
     },
+    itemsTitleCase: {
+      type: 'select',
+      label: vi.cd01?.card?.itemsTitleCase || 'Kiểu chữ mục con',
+      options: [
+        { label: vi.cd01?.card?.itemsTitleCaseNone || 'Chữ thường đậm (Mặc định)', value: 'none' },
+        { label: vi.cd01?.card?.itemsTitleCaseUpper || 'IN HOA ĐẬM', value: 'upper' },
+      ],
+    },
+    itemsTitleColor: {
+      type: 'select',
+      label: vi.cd01?.card?.itemsTitleColor || 'Màu tiêu đề mục con',
+      options: [
+        { label: 'Xanh thẫm (Deep Navy)', value: 'deep-navy' },
+        { label: 'Hồng nhấn (Accent Pink)', value: 'accent-pink' },
+        { label: 'Hồng sen (Bright Magenta)', value: 'bright-magenta' },
+      ],
+    },
+    linkText: {
+      type: 'text',
+      label: vi.cd01?.card?.linkText || 'Chữ liên kết thẻ (VD: Khám phá →)',
+    },
+    linkHref: {
+      type: 'text',
+      label: vi.cd01?.card?.linkHref || 'Đường dẫn liên kết (VD: #me-time)',
+    },
+    linkVariant: {
+      type: 'select',
+      label: vi.cd01?.card?.linkVariant || 'Màu liên kết',
+      options: [
+        { label: 'Hồng sen (Bright Magenta)', value: 'magenta' },
+        { label: 'Hồng nhấn (Accent Pink)', value: 'pink' },
+      ],
+    },
     note: {
       type: 'object',
       label: vi.pk26?.card?.note || 'Hộp ghi chú (Mang về)',
@@ -154,6 +207,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     version: 1,
     icon: 'star',
     title: '[MẪU] Tiêu đề thẻ',
+    titleFont: 'ui',
     text: '[MẪU] Nội dung mô tả chi tiết của thẻ giúp người học thấu hiểu rõ hơn.',
     titleColor: 'deep-navy',
     textColor: 'deep-navy',
@@ -167,8 +221,14 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     subtitle: '',
     subtitleColor: 'deep-navy',
     chip: '',
+    showDivider: false,
+    linkText: '',
+    linkHref: '',
+    linkVariant: 'magenta',
     items: [],
     itemsColumns: 1,
+    itemsTitleCase: 'none',
+    itemsTitleColor: 'deep-navy',
     ...brandImageDefaultProps,
   },
   resolveFields: (data, params) => {

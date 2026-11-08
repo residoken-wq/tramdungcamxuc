@@ -9,7 +9,13 @@ import { Pages } from '@/collections/Pages'
 import { Navigation } from '@/globals/Navigation'
 import { footerDefaultTemplate, headerDefaultTemplate } from '@/puck/templates'
 import { footerPuckConfig, headerPuckConfig } from '@/puck/config'
-import { validatePageKindBlocks, isLegalFooterHidden, SITE_FOOTER_BLOCKS, SITE_HEADER_BLOCKS, COMMON_THEME_BLOCKS } from '@/puck/locks'
+import {
+  validatePageKindBlocks,
+  isLegalFooterHidden,
+  SITE_FOOTER_BLOCKS,
+  SITE_HEADER_BLOCKS,
+  COMMON_THEME_BLOCKS,
+} from '@/puck/locks'
 import { vi } from '@/lib/i18n/vi'
 
 describe('PK-33: Create Header / Footer from Template', () => {
@@ -255,14 +261,17 @@ describe('PK-33: Create Header / Footer from Template', () => {
 
   describe('5. Snapshot rendering of header & footer templates', () => {
     it('renders footerDefaultTemplate markup consistently', () => {
-      const markup = renderToStaticMarkup(<Render config={footerPuckConfig} data={footerDefaultTemplate} />)
+      const markup = renderToStaticMarkup(
+        <Render config={footerPuckConfig} data={footerDefaultTemplate} />,
+      )
       expect(markup).toMatchSnapshot()
     })
 
     it('renders headerDefaultTemplate markup consistently', () => {
-      const markup = renderToStaticMarkup(<Render config={headerPuckConfig} data={headerDefaultTemplate} />)
+      const markup = renderToStaticMarkup(
+        <Render config={headerPuckConfig} data={headerDefaultTemplate} />,
+      )
       expect(markup).toMatchSnapshot()
     })
   })
 })
-

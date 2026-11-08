@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { useClientTestimonials } from '@/puck/client-preview'
@@ -15,6 +16,7 @@ import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 
 export interface CTASectionProps {
   version?: number
+  variant?: 'card' | 'solid'
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
@@ -24,6 +26,11 @@ export interface CTASectionProps {
   buttonLinkType?: 'url' | 'page'
   buttonLink?: string
   buttonPageId?: string | number
+  buttonVariant?: 'primary' | 'magenta' | 'pink'
+  buttonShape?: 'normal' | 'pill'
+  secondaryButtonText?: string
+  secondaryButtonLink?: string
+  secondaryButtonVariant?: 'primary' | 'magenta' | 'pink'
   proofText?: string
   testimonials?: Array<{ testimonialId?: string | number }>
   bgColor?:
@@ -66,6 +73,7 @@ const PADDINGS = {
 
 export function CTASection({
   id,
+  variant = 'card',
   seriesLabel,
   titleLine1 = '[MẪU] BẮT ĐẦU HÀNH TRÌNH',
   titleLine2 = '[MẪU] CHUYỂN MÌNH CÙNG HANA',
@@ -75,6 +83,11 @@ export function CTASection({
   buttonLinkType = 'url',
   buttonLink,
   buttonPageId: _buttonPageId,
+  buttonVariant = 'primary',
+  buttonShape = 'normal',
+  secondaryButtonText,
+  secondaryButtonLink,
+  secondaryButtonVariant = 'primary',
   proofText,
   testimonials,
   bgColor = 'soft-pink',
@@ -130,8 +143,100 @@ export function CTASection({
   const hasProofText = Boolean(proofText && proofText.trim().length > 0)
   const showProofStrip = hasPhotos || hasProofText
 
+  if (variant === 'solid') {
+    const isDeepNavy = bgColor === 'deep-navy'
+    return (
+      <section data-cta-solid="" className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+        <div className="mx-auto max-w-4xl text-center flex flex-col items-center">
+          {seriesLabel && (
+            <span
+              {...textTarget(id, 'seriesLabel')}
+              className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${
+                isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+              }`}
+            >
+              {seriesLabel}
+            </span>
+          )}
+
+          {emotionLine && (
+            <p
+              {...textTarget(id, 'emotionLine')}
+              className={`mb-4 font-quote text-lg sm:text-xl italic ${
+                isDeepNavy ? 'text-soft-pink' : 'text-deep-navy/85'
+              } max-w-2xl`}
+            >
+              {emotionLine}
+            </p>
+          )}
+
+          <h2
+            className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${
+              isDeepNavy ? 'text-white' : 'text-deep-navy'
+            }`}
+          >
+            <TwoToneTitle
+              id={id}
+              line1={titleLine1}
+              line2={titleLine2}
+              line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+              line2ClassName={isDeepNavy ? 'text-white' : 'text-bright-magenta'}
+            />
+          </h2>
+
+          {description && (
+            <p
+              {...textTarget(id, 'description')}
+              className={`mt-4 font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} ${
+                isDeepNavy ? 'text-white/80' : 'text-deep-navy/80'
+              } max-w-2xl leading-relaxed`}
+            >
+              {description}
+            </p>
+          )}
+
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+            {buttonText && (
+              <Link
+                href={safeHref(finalButtonHref) || '#'}
+                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
+                  buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                } ${
+                  buttonVariant === 'magenta'
+                    ? 'bg-bright-magenta'
+                    : buttonVariant === 'pink'
+                      ? 'bg-accent-pink'
+                      : 'bg-accent-pink'
+                }`}
+              >
+                <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+              </Link>
+            )}
+
+            {secondaryButtonText && (
+              <Link
+                href={safeHref(secondaryButtonLink) || '#'}
+                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
+                  buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                } ${
+                  secondaryButtonVariant === 'magenta'
+                    ? 'bg-bright-magenta'
+                    : secondaryButtonVariant === 'pink'
+                      ? 'bg-accent-pink'
+                      : 'bg-accent-pink'
+                }`}
+              >
+                {secondaryButtonText}
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
-    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section id={id} className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-4xl">
         <div className="rounded-card bg-white border border-deep-navy/10 p-8 sm:p-12 lg:p-16 shadow-soft text-center flex flex-col items-center">
           {seriesLabel && (

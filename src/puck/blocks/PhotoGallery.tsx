@@ -26,6 +26,14 @@ export const PhotoGalleryBlock: ComponentConfig<PhotoGalleryProps> = {
       type: 'textarea',
       label: vi.eb15a?.emotionLine || 'Dòng cảm xúc',
     },
+    headerAlign: {
+      type: 'radio',
+      label: 'Căn lề tiêu đề',
+      options: [
+        { label: 'Căn trái', value: 'left' },
+        { label: 'Căn giữa', value: 'center' },
+      ],
+    },
     layout: {
       type: 'select',
       label: vi.pk21?.photoGallery?.layout || 'Bố cục hiển thị',
@@ -71,6 +79,7 @@ export const PhotoGalleryBlock: ComponentConfig<PhotoGalleryProps> = {
     titleLine1: '[MẪU] NHỮNG KHOẢNH KHẮC',
     titleLine2: '[MẪU] CHẠM ĐẾN BÌNH YÊN',
     emotionLine: '[MẪU] Nơi mỗi cảm xúc đều tìm thấy điểm dừng dịu êm.',
+    headerAlign: 'left',
     layout: 'mosaic',
     items: [
       {

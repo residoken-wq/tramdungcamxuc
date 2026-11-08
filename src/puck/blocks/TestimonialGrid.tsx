@@ -10,6 +10,10 @@ export type { TestimonialGridProps }
 export const TestimonialGridBlock: ComponentConfig<TestimonialGridProps> = {
   label: 'Lưới lời chia sẻ (Testimonial Grid)',
   fields: {
+    seriesLabel: { type: 'text', label: 'Nhãn phụ phía trên tiêu đề' },
+    titleLine1: { type: 'text', label: 'Dòng tiêu đề chính 1' },
+    titleLine2: { type: 'text', label: 'Dòng tiêu đề chính 2' },
+    emotionLine: { type: 'textarea', label: 'Dòng cảm xúc' },
     variant: {
       type: 'select',
       label: 'Kiểu hiển thị',
@@ -69,6 +73,10 @@ export const TestimonialGridBlock: ComponentConfig<TestimonialGridProps> = {
   },
   defaultProps: {
     version: 2,
+    seriesLabel: '',
+    titleLine1: '',
+    titleLine2: '',
+    emotionLine: '',
     variant: 'quote',
     mode: 'manual',
     manualTestimonials: [],

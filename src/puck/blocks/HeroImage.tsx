@@ -42,6 +42,17 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
   label: 'Hero Ảnh biểu tượng (Hero Image)',
   fields: {
     seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel },
+    seriesLabelFont: {
+      type: 'select',
+      label: vi.cd01?.hero?.seriesLabelFont || 'Kiểu font nhãn phụ',
+      options: [
+        { label: vi.cd01?.hero?.seriesLabelFontUi || 'Chữ không chân (Montserrat)', value: 'ui' },
+        {
+          label: vi.cd01?.hero?.seriesLabelFontQuote || 'Chữ có chân nghiêng (Playfair Display)',
+          value: 'quote',
+        },
+      ],
+    },
     titleLine1: {
       type: 'text',
       label: vi.eb15a.titleLine1,
@@ -68,6 +79,14 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
         { label: 'Có', value: true },
       ],
     },
+    contentWidth: {
+      type: 'radio',
+      label: vi.cd01?.hero?.contentWidth || 'Độ rộng nội dung',
+      options: [
+        { label: vi.cd01?.hero?.contentWidthFull || 'Đầy đủ (Toàn khung)', value: 'full' },
+        { label: vi.cd01?.hero?.contentWidthHalf || 'Thu gọn (Nửa khung ~45%)', value: 'half' },
+      ],
+    },
     showArchGraphic: {
       type: 'radio',
       label: 'Hiện đồ họa vòm 3 vòng tròn khi chưa có ảnh',
@@ -81,6 +100,20 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       type: 'textarea',
       label: vi.eb15a.emotionLine,
       contentEditable: true,
+    },
+    emotionFont: {
+      type: 'select',
+      label: vi.cd01?.hero?.emotionFont || 'Kiểu font dòng cảm xúc / mô tả',
+      options: [
+        {
+          label: vi.cd01?.hero?.emotionFontQuote || 'Chữ nghiêng cảm xúc (Playfair Display)',
+          value: 'quote',
+        },
+        {
+          label: vi.cd01?.hero?.emotionFontBody || 'Chữ thường đoạn văn (Montserrat)',
+          value: 'body',
+        },
+      ],
     },
     listTitle: {
       type: 'text',
@@ -238,9 +271,11 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
   defaultProps: {
     version: 3,
     seriesLabel: '[MẪU] Khởi đầu hành trình',
+    seriesLabelFont: 'ui',
     titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
     titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
     emotionLine: '[MẪU] Dòng cảm xúc trích dẫn chạm đến trái tim',
+    emotionFont: 'quote',
     listTitle: '',
     listItems: [],
     mediaId: '',

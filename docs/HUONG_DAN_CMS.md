@@ -81,6 +81,7 @@
    - [5.40. Khối Bảng lưới, Sơ đồ vòng lặp và trang Chuyển mình (PK-26)](#540-khối-bảng-lưới-sơ-đồ-vòng-lặp-và-trang-chuyển-mình-pk-26)
    - [5.41. Bộ khối chuyên biệt và mẫu Trang lộ trình Chuyển mình 100% bản thiết kế (PK-28)](#541-bộ-khối-chuyên-biệt-và-mẫu-trang-lộ-trình-chuyển-mình-100-bản-thiết-kế-pk-28)
    - [5.42. Cải tiến trang "Về Trạm": Xuống dòng trong thẻ, Brand Story 3 cột, Footer nền deep-navy (PK-31)](#542-cải-tiến-trang-về-trạm-xuống-dòng-trong-thẻ-brand-story-3-cột-footer-nền-deep-navy-pk-31)
+   - [5.43. Mẫu trang Cộng đồng 100% bản thiết kế slide 48–57 (CD-01)](#543-mẫu-trang-cộng-đồng-100-bản-thiết-kế-slide-4857-cd-01)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -3254,6 +3255,7 @@ Dành riêng cho trang Về Trạm và các trang thương hiệu cần trình b
      1. Mở trang Về Trạm trong Puck builder (`/admin/builder/[pageId]`).
      2. Nhấp vào khối Brand Story (**"Ảnh & Chữ (Song hành)"**).
      3. Ở cột thuộc tính bên phải: chọn **Kiểu trích dẫn** = *Hộp nổi bật (Đặt trên đoạn văn)*.
+        Hộp luôn nằm ngay dưới tiêu đề, ô **Vị trí trích dẫn** không áp dụng cho kiểu này. Hai kiểu còn lại (vạch hồng / thuần chữ nghiêng) giữ như cũ.
      4. Tại mục **Các điểm nhấn (thẻ nhỏ đánh số)**, bấm Thêm và điền 3 thẻ điểm nhấn.
      5. Bấm **Xuất bản** ở góc trên bên phải.
 
@@ -3265,6 +3267,57 @@ Dành riêng cho trang Về Trạm và các trang thương hiệu cần trình b
      - Đường kẻ phân cách đổi sang trắng mờ (`white/15`).
      - **Logo thương hiệu**: Logo chính thức được tự động đặt trong khung nền sáng bo góc cong mềm mại (`bg-warm-ivory rounded-2xl px-3 py-2`), đảm bảo logo luôn rõ nét, không bị chìm trên nền tối mà vẫn giữ nguyên màu sắc gốc theo quy định Brand Book. *(Nếu Hana có bản logo màu sáng do thiết kế cung cấp riêng, có thể gửi để gắn trực tiếp)*.
    - *Lưu ý*: Tuân thủ độ tương phản WCAG AA, đảm bảo đọc rõ trên mọi thiết bị.
+
+---
+
+### 5.43. Mẫu trang Cộng đồng 100% bản thiết kế slide 48–57 (CD-01)
+
+Dành cho trang **Cộng đồng của Trạm** (`/cong-dong`), được tái hiện trung thực 100% theo bản thiết kế bài thuyết trình của Hana (slide 48 đến 57).
+
+#### 1. Cấu trúc 10 khu vực (sections) chuẩn hóa:
+
+1. **Hero Không gian an toàn (Slide 48)**:
+   - Nền xanh thẫm `deep-navy`, nhãn series `font-quote` nghiêng màu hồng phấn `soft-pink`: *"Không gian an toàn để thuộc về"*.
+   - Tiêu đề Anton lớn trắng: **CỘNG ĐỒNG CỦA TRẠM**, vạch nhấn hồng sen `accent-pink`.
+   - Dòng cảm xúc: *"Những điểm chạm nhỏ giúp bạn chăm sóc Thân - Tâm và bắt đầu ngày mới nhất quán."*
+2. **Chọn không gian của bạn (Slide 49)**:
+   - Khối `IconCardGrid` dạng trượt gồm 3 thẻ trên nền trắng ngà `warm-ivory`: Thẻ Me Time (vạch sen, phụ đề hồng sen, link `#me-time`), Thẻ Yoga Buddy (vạch sen, phụ đề hồng sen, link `#yoga-buddy`), và Thẻ Không gian mới nhãn chip `Coming soon` (nền ngà `bg-warm-ivory`, viền mảnh `border-deep-navy/15`, không vạch màu, không liên kết).
+3. **Giới thiệu Me Time (Slide 50)**:
+   - Khối `ImageText` bố cục ảnh phải (`image-right`), nhãn `Cộng đồng`, trích dẫn `font-quote` nổi bật ngay dưới tiêu đề: *""Thương mình theo cách riêng.""*, anchor `#me-time`.
+   - Hai tôn chỉ thực hành: *Tôn Chỉ "Me" First* và *You Always Can Miss ONE*.
+4. **Lịch trình 5:00 AM mỗi ngày (Slide 51)**:
+   - Khối `IconCardGrid` 3 thẻ thời gian trên nền trắng ngà `warm-ivory`, các thẻ kéo cao bằng nhau:
+     - `5:00 - 5:10 | We Time` (vạch sen `bright-magenta`): Check-in đầu ngày.
+     - `5:10 - 5:50 | Me Time của tui` (vạch hồng `accent-pink`): Làm điều mình thích.
+     - `5:50 - 6:00 | You & Me` (vạch navy `deep-navy`): Check-out và bốc thẻ.
+5. **Tiếng nói cộng đồng Me Time (Slide 52)**:
+   - Khối `TestimonialGrid` biến thể `featured` trên nền tím sương `lavender-mist`: 1 thẻ lớn bên trái và 2 thẻ nhỏ bên phải.
+   - **Quy tắc an toàn**: Chỉ hiển thị các lời chia sẻ có sự đồng ý (`consent = true`) từ mục *Lời chia sẻ* của CMS. Khi chưa chọn lời chia sẻ, khối tự động ẩn trên trang công khai để không hiện khung trống.
+6. **Khoảnh khắc Me Time (Slide 53)**:
+   - Khối `PhotoGallery` dạng mosaic trên nền trắng ngà `warm-ivory`, tiêu đề Anton căn giữa.
+7. **Giới thiệu Yoga Buddy (Slide 54)**:
+   - Khối `ImageText` bố cục ảnh trái tràn sát mép (`imageBleed`), anchor `#yoga-buddy`.
+   - Trích dẫn: *"Mỗi lần trải thảm là một lần chăm sóc Thân - Tâm."*
+8. **Cuộc hẹn 8:30 sáng thứ 3 & 5 (Slide 55)**:
+   - Khối `Columns` 2 thẻ viền màu nổi bật trên nền hồng phấn `soft-pink`:
+     - Thẻ 1: *Hành trình 30 Phút* (vạch hồng nhấn `accent-pink`), gồm 3 bước: 05 phút kết nối, 20 phút chuyển động, 05 phút lắng nghe.
+     - Thẻ 2: *Vài điều giữ cho nhau* (vạch navy `deep-navy`), gồm 3 nguyên tắc: Tôn trọng nhịp riêng, Lỡ một buổi hẹn buổi sau, Trân trọng cuộc hẹn.
+9. **Góc nhỏ Yoga Buddy (Slide 56)**:
+   - Khối `PhotoGallery` dạng mosaic trên nền tím sương `lavender-mist`.
+10. **Kêu gọi hành động CTA (Slide 57)**:
+    - Khối `CTASection` biến thể nền phẳng `solid` màu xanh thẫm `deep-navy`.
+    - Tiêu đề 2 dòng: **TRỞ THÀNH MỘT PHẦN / CỦA BỘ LẠC**.
+    - Dòng cảm xúc màu hồng phấn `soft-pink`: *"Nuôi dưỡng một tâm trí vững vàng từ những thói quen nhỏ nhất."*
+    - Hai nút bo tròn mềm mại (`pill`): Nút chính màu hồng sen (Tham gia Me Time) và Nút phụ màu hồng đào chữ 19px đậm (Tham gia Yoga Buddy).
+
+#### 2. Thao tác dành cho Hana:
+
+- **Áp dụng mẫu**: Trong danh sách Trang (`pages`), bấm Tạo mới hoặc chọn trang `cong-dong` -> chọn mẫu **Trang Cộng đồng (`community`)**.
+- **Cập nhật và chọn lời chia sẻ**:
+  1. Vào nhóm **Nội dung** -> **Lời chia sẻ (Testimonials)** -> Thêm lời chia sẻ của các thành viên Me Time đã đồng ý và **bắt buộc gạt công tắc Đồng ý hiển thị (`consent: true`)**.
+  2. Mở trình dựng trang (Puck Editor) của trang Cộng đồng, bấm vào khối **"Tiếng nói cộng đồng"**, tại mục chọn lời chia sẻ, tích chọn các lời chia sẻ vừa tạo để đưa lên giao diện.
+- **Thay ảnh thật**: Trong Puck Editor, bấm vào từng khối ảnh (`PhotoGallery` hoặc `ImageText`), chọn ảnh thật đã tải lên Thư viện Media để thay thế các khung `[MẪU]`.
+- **Cài đặt liên kết tham gia**: Bấm vào khối CTA cuối trang hoặc các thẻ liên kết để đổi đường dẫn `#` thành link nhóm Zalo/Telegram hoặc form đăng ký Me Time / Yoga Buddy thực tế.
 
 ---
 

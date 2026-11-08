@@ -24,7 +24,7 @@ describe('PK-34: ImageText highlights and box quote style', () => {
           titleLine2="Trạm Dừng?"
           content={'Đoạn văn thứ nhất.\n\nĐoạn văn thứ hai.'}
           quote="Một nơi để bạn dừng lại và thấu hiểu chính mình."
-          quoteStyle="line"
+          quoteStyle="callout"
           highlights={[]}
         />,
       )
@@ -46,7 +46,7 @@ describe('PK-34: ImageText highlights and box quote style', () => {
       const comp = puckConfig.components.ImageText
       expect(comp).toBeDefined()
       expect(comp?.defaultProps?.version).toBe(2) // Prop version not bumped
-      expect(comp?.defaultProps?.quoteStyle).toBe('line')
+      expect(comp?.defaultProps?.quoteStyle).toBe('callout') // CD-01 default kept
       expect(comp?.defaultProps?.highlights).toEqual([])
       expect(comp?.fields?.quoteStyle).toBeDefined()
       expect(comp?.fields?.highlights).toBeDefined()
@@ -92,7 +92,7 @@ describe('PK-34: ImageText highlights and box quote style', () => {
     })
   })
 
-  describe('3. Quote style: box vs line', () => {
+  describe('3. Quote style: box vs callout', () => {
     it('renders box quote placed before the content paragraphs', () => {
       const html = renderToStaticMarkup(
         <ImageText
@@ -119,7 +119,7 @@ describe('PK-34: ImageText highlights and box quote style', () => {
           titleLine1="Brand Story"
           content="Nội dung tự sự đặt bên trên trích dẫn."
           quote="Trích dẫn kẻ dọc nằm ở cuối văn bản."
-          quoteStyle="line"
+          quoteStyle="callout"
         />,
       )
 
@@ -132,7 +132,7 @@ describe('PK-34: ImageText highlights and box quote style', () => {
   })
 
   describe('3b. QA PK-34: quote typed with its own quote marks', () => {
-    it.each(['line', 'box'] as const)('does not double the quote marks (%s)', (style) => {
+    it.each(['callout', 'box'] as const)('does not double the quote marks (%s)', (style) => {
       const html = renderToStaticMarkup(
         <ImageText
           titleLine1="Tại sao lại là"

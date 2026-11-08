@@ -80,7 +80,7 @@ export const pageTemplates: Record<PuckPageTemplateKey, PageTemplateItem> = {
     key: 'community',
     label: 'Trang Cộng đồng',
     description:
-      'Không gian kết nối & thấu cảm: Hero cộng đồng, 3 lợi ích tham gia, tinh thần nâng niu cảm xúc, lời chia sẻ, nút Zalo nhóm và giải đáp thắc mắc.',
+      'Không gian thuộc về & chăm sóc Thân - Tâm: Hero cộng đồng, chọn không gian Me Time & Yoga Buddy, lịch trình 5:00 AM, tiếng nói cộng đồng, khoảnh khắc mosaic và lời mời tham gia bộ lạc.',
     data: communityTemplate,
   },
   resources: {
