@@ -331,21 +331,25 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
       const firstQuestionBtn = screen.getByRole('button', {
         name: /Khóa học kéo dài trong bao lâu\?/i,
       })
-      const answerElement = screen.getByText('Khóa học kéo dài trong 4 tuần liên tục.')
+      // PK-29 FX-13: the answer stays in the DOM (for the open / close animation); a closed panel
+      // is `inert` (hidden from screen readers, not focusable) instead of `hidden`.
+      const answerElement = screen
+        .getByText('Khóa học kéo dài trong 4 tuần liên tục.')
+        .closest('[role="region"]') as HTMLElement
 
       // Initially closed
       expect(firstQuestionBtn.getAttribute('aria-expanded')).toBe('false')
-      expect(answerElement.hasAttribute('hidden')).toBe(true)
+      expect(answerElement.hasAttribute('inert')).toBe(true)
 
       // Click to open
       fireEvent.click(firstQuestionBtn)
       expect(firstQuestionBtn.getAttribute('aria-expanded')).toBe('true')
-      expect(answerElement.hasAttribute('hidden')).toBe(false)
+      expect(answerElement.hasAttribute('inert')).toBe(false)
 
       // Click again to close
       fireEvent.click(firstQuestionBtn)
       expect(firstQuestionBtn.getAttribute('aria-expanded')).toBe('false')
-      expect(answerElement.hasAttribute('hidden')).toBe(true)
+      expect(answerElement.hasAttribute('inert')).toBe(true)
 
       // Check aria-controls matches answer element id
       const ariaControls = firstQuestionBtn.getAttribute('aria-controls')
@@ -406,4 +410,3 @@ describe('SM-03: Puck Blocks Unit & Snapshot Tests', () => {
     })
   })
 })
-

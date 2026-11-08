@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrandIcon } from '@/components/brand/BrandIcon'
+import { StatCounter } from './StatCounter'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
 import {
   textColorClass,
@@ -22,6 +23,9 @@ export interface StatItemProps {
   labelSize?: FontSizeOption
   align?: AlignOption
   isDeepNavy?: boolean
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 export function StatItem({
@@ -35,6 +39,7 @@ export function StatItem({
   labelSize = 'md',
   align = 'center',
   isDeepNavy = false,
+  puck,
   id,
 }: StatItemProps & { id?: string }) {
   const alignClass = align === 'left' ? 'items-start text-left' : 'items-center text-center'
@@ -81,7 +86,7 @@ export function StatItem({
             {...textTarget(id, 'value')}
             className={`font-display ${valueSizeClass} tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${valueColorClass}`}
           >
-            {value}
+            <StatCounter value={value} isEditing={Boolean(puck?.isEditing)} />
           </div>
         )
       )}

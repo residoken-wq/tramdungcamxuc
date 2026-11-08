@@ -85,12 +85,13 @@ export function HeroBackdrop({
     <section
       id={id}
       data-eb-section=""
+      data-eb-hero={priority ? 'first' : undefined}
       className={`group/hero relative w-full overflow-hidden isolate flex flex-col justify-center ${minHClass} ${sectionBgClass} ${PADDINGS[padding]} transition-colors ${className}`}
       data-bg={dataBg}
     >
       {hasValidImage ? (
         <>
-          <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="eb-hero-image absolute inset-0 -z-10 overflow-hidden pointer-events-none">
             <Image
               src={imageUrl!}
               alt={imageAlt!.trim()}

@@ -79,6 +79,9 @@ export interface HeroImageProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 const BG_COLORS = {
@@ -199,7 +202,10 @@ export function HeroImage({
   minHeight = 'lg',
   bgColor = 'warm-ivory',
   padding = 'md',
+  puck,
 }: HeroImageProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
+  const isFirstHero = Boolean(priority) && !isEditing
   const isBackdrop = layout === 'backdrop'
   const isDeepNavy = bgColor === 'deep-navy'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -286,14 +292,14 @@ export function HeroImage({
           {seriesLabel && (
             <span
               {...textTarget(id, 'seriesLabel')}
-              className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
+              className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
             >
               {seriesLabel}
             </span>
           )}
 
           <h1
-            className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+            className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
           >
             <TwoToneTitle
               id={id}
@@ -307,7 +313,7 @@ export function HeroImage({
           {emotionLine && (
             <p
               {...textTarget(id, 'emotionLine')}
-              className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
+              className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
             >
               {emotionLine}
             </p>
@@ -316,7 +322,7 @@ export function HeroImage({
           {renderHeroList(listTitle, listItems, isDeepNavy, alignClass)}
 
           {normalizedBadges.length > 0 && (
-            <div className={`mt-6 flex flex-wrap ${alignJustifyClass} gap-2 w-full`}>
+            <div className={`eb-hero-cta mt-6 flex flex-wrap ${alignJustifyClass} gap-2 w-full`}>
               {normalizedBadges.map((badge, idx) => (
                 <span
                   key={idx}
@@ -330,7 +336,7 @@ export function HeroImage({
 
           {(hasPrimaryButton || hasSecondaryButton) && (
             <div
-              className={`mt-8 flex flex-col sm:flex-row items-center ${alignJustifyClass} gap-4 w-full sm:w-auto`}
+              className={`eb-hero-cta mt-8 flex flex-col sm:flex-row items-center ${alignJustifyClass} gap-4 w-full sm:w-auto`}
             >
               {hasPrimaryButton && (
                 <Button href={buttonSafeHref!} variant="primary" size="md">
@@ -388,7 +394,7 @@ export function HeroImage({
         {seriesLabel && (
           <span
             {...textTarget(id, 'seriesLabel')}
-            className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+            className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
           >
             {seriesLabel}
           </span>
@@ -396,7 +402,7 @@ export function HeroImage({
 
         {/* Signature Two-Tone Heading (Anton) */}
         <h1
-          className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+          className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
         >
           <TwoToneTitle
             id={id}
@@ -411,7 +417,7 @@ export function HeroImage({
         {emotionLine && (
           <p
             {...textTarget(id, 'emotionLine')}
-            className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
+            className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
               isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
             }`}
           >
@@ -423,7 +429,7 @@ export function HeroImage({
 
         {/* Badges / Chips strip (0-3 chips) */}
         {normalizedBadges.length > 0 && (
-          <div className="mt-6 flex flex-wrap justify-start gap-2">
+          <div className="eb-hero-cta mt-6 flex flex-wrap justify-start gap-2">
             {normalizedBadges.map((badge, idx) => (
               <span
                 key={idx}
@@ -441,7 +447,7 @@ export function HeroImage({
 
         {/* Action Buttons */}
         {(hasPrimaryButton || hasSecondaryButton) && (
-          <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-start gap-4 w-full sm:w-auto">
+          <div className="eb-hero-cta mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-start gap-4 w-full sm:w-auto">
             {hasPrimaryButton && (
               <Button href={buttonSafeHref!} variant="primary" size="md">
                 <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
@@ -488,7 +494,7 @@ export function HeroImage({
 
     const imageColumn = (
       <div
-        className={`w-full flex flex-col lg:col-span-5 order-2 ${
+        className={`eb-hero-image w-full flex flex-col lg:col-span-5 order-2 ${
           isImageLeft ? 'lg:order-1' : 'lg:order-2'
         }`}
       >
@@ -523,6 +529,7 @@ export function HeroImage({
       <section
         className={`group/heroimg w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
         data-bg={bgColor}
+        data-eb-hero={isFirstHero ? 'first' : undefined}
       >
         <div className="mx-auto max-w-5xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -547,12 +554,13 @@ export function HeroImage({
     <section
       className={`group/heroimg w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}
       data-bg={bgColor}
+      data-eb-hero={isFirstHero ? 'first' : undefined}
     >
       <div className="mx-auto max-w-5xl flex flex-col items-center text-center">
         {seriesLabel && (
           <span
             {...textTarget(id, 'seriesLabel')}
-            className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+            className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
           >
             {seriesLabel}
           </span>
@@ -560,7 +568,7 @@ export function HeroImage({
 
         {/* Signature Two-Tone Heading (Anton) */}
         <h1
-          className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+          className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
         >
           <TwoToneTitle
             id={id}
@@ -575,7 +583,7 @@ export function HeroImage({
         {emotionLine && (
           <p
             {...textTarget(id, 'emotionLine')}
-            className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}
+            className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'}`}
           >
             {emotionLine}
           </p>
@@ -585,7 +593,7 @@ export function HeroImage({
 
         {/* Badges / Chips strip (0-3 chips) */}
         {normalizedBadges.length > 0 && (
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <div className="eb-hero-cta mt-6 flex flex-wrap justify-center gap-2">
             {normalizedBadges.map((badge, idx) => (
               <span
                 key={idx}
@@ -603,7 +611,7 @@ export function HeroImage({
 
         {/* Action Buttons */}
         {(hasPrimaryButton || hasSecondaryButton) && (
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+          <div className="eb-hero-cta mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
             {hasPrimaryButton && (
               <Button href={buttonSafeHref!} variant="primary" size="md">
                 <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
@@ -655,7 +663,7 @@ export function HeroImage({
             priority={priority}
             sizes="(max-width: 768px) 100vw, 1200px"
             imageClassName="w-full h-auto object-cover max-h-[520px]"
-            className={`mt-10 sm:mt-12 w-full aspect-[16/9] max-h-[520px] border shadow-soft ${
+            className={`eb-hero-image mt-10 sm:mt-12 w-full aspect-[16/9] max-h-[520px] border shadow-soft ${
               isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
             }`}
             shape={imageShape}

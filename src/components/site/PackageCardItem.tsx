@@ -107,7 +107,7 @@ export function PackageCardItem({
   return (
     <div
       data-eb-card=""
-      className={`relative flex flex-col justify-between p-6 sm:p-8 rounded-card border transition-all ${cardBg} ${textAlignClass(align)} group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left`}
+      className={`relative flex flex-col justify-between p-6 sm:p-8 rounded-card border eb-card-interactive ${cardBg} ${textAlignClass(align)} group-data-[card-align=center]/grid:text-center group-data-[card-align=left]/grid:text-left`}
     >
       <div>
         {/* Style: Icon or Numbered (CSS counter controlled via parent [counter-reset:card-counter] and data-style) */}

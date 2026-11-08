@@ -124,7 +124,7 @@ export interface BlockStyle {
   customCss?: string
 }
 
-export const ENTRANCE_PRESETS = ['none', 'fade-in', 'fade-up', 'zoom-in'] as const
+export const ENTRANCE_PRESETS = ['none', 'fade-in', 'fade-up', 'zoom-in', 'stagger'] as const
 export type EntrancePreset = (typeof ENTRANCE_PRESETS)[number]
 
 export const ENTRANCE_DELAYS = [0, 150, 300, 500] as const

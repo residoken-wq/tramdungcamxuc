@@ -50,13 +50,33 @@ export interface NavbarProps {
   customer?: NavbarCustomer | null
   logo?: SiteLogo
   className?: string
+  isEditing?: boolean
 }
 
-export function Navbar({ items, cta, customer, logo, className = '' }: NavbarProps) {
+export function Navbar({ items, cta, customer, logo, className = '', isEditing = false }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [openGroup, setOpenGroup] = useState<number | null>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
   const toggleButtonRef = useRef<HTMLButtonElement>(null)
   const pathname = usePathname() ?? '/'
+
+  // PK-29 FX-12: Header shrinks slightly after scrolling 64px
+  useEffect(() => {
+    if (isEditing || typeof window === 'undefined') return
+    let ticking = false
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 64)
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [isEditing])
 
   // Find the featured item (e.g. 5-min habit test lead magnet) to highlight – also inside submenus
   const featuredItem: NavLink | undefined =
@@ -90,16 +110,29 @@ export function Navbar({ items, cta, customer, logo, className = '' }: NavbarPro
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full bg-warm-ivory/95 backdrop-blur-md border-b border-deep-navy/10 ${className}`}
+      data-eb-scrolled={isScrolled ? 'true' : 'false'}
+      className={`sticky top-0 z-40 w-full bg-warm-ivory/95 backdrop-blur-md border-b transition-[box-shadow,border-color,background-color] duration-200 ${
+        isScrolled ? 'border-deep-navy/20 shadow-sm' : 'border-deep-navy/10 shadow-none'
+      } ${className}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+        <div
+          className={`flex items-center justify-between h-16 sm:h-20 transition-[padding] duration-200 ${
+            isScrolled ? 'py-1 sm:py-2' : 'py-2 sm:py-3'
+          }`}
+        >
           {/* Brand Logo */}
           <Link
             href="/"
             className="flex-shrink-0 focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm"
           >
-            <Logo width={130} height={38} src={logo?.src} alt={logo?.alt} />
+            <div
+              className={`transition-transform duration-200 origin-left ${
+                isScrolled ? 'scale-[0.93]' : 'scale-100'
+              }`}
+            >
+              <Logo width={130} height={38} src={logo?.src} alt={logo?.alt} />
+            </div>
           </Link>
 
           {/* Desktop Navigation Links */}

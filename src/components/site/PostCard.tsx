@@ -63,7 +63,7 @@ export function PostCard({
       <Card
         as="article"
         variant="white"
-        className={`overflow-hidden p-0 transition-all duration-300 hover:shadow-lg border border-deep-navy/10 ${className}`}
+        className={`overflow-hidden p-0 eb-card-interactive border border-deep-navy/10 ${className}`}
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
           {/* Large Thumbnail */}
@@ -74,7 +74,7 @@ export function PostCard({
                 alt={thumbnail.alt || title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover transition-transform duration-300 hover:scale-105 motion-reduce:hover:scale-100"
+                className="object-cover transition-transform duration-200"
                 priority
               />
             ) : (
@@ -163,7 +163,7 @@ export function PostCard({
     <Card
       as="article"
       variant="white"
-      className={`flex flex-col h-full overflow-hidden p-0 transition-all duration-300 hover:shadow-md ${className}`}
+      className={`flex flex-col h-full overflow-hidden p-0 eb-card-interactive ${className}`}
     >
       {/* Thumbnail or Fallback */}
       <div className="relative w-full aspect-[16/10] bg-lavender-mist/30 overflow-hidden border-b border-deep-navy/10">
@@ -173,7 +173,7 @@ export function PostCard({
             alt={thumbnail.alt || title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 hover:scale-105 motion-reduce:hover:scale-100"
+            className="object-cover transition-transform duration-200"
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-lavender-mist/40 via-soft-pink/30 to-warm-ivory p-4 text-center">

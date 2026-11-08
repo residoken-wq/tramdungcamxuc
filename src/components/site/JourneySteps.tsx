@@ -1,5 +1,6 @@
 import React from 'react'
 import { JourneyStep } from './JourneyStep'
+import { JourneyStepsMotion } from './JourneyStepsMotion'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { textTarget } from '@/puck/style/text-target'
@@ -207,77 +208,79 @@ export function JourneySteps({
           )}
 
           <div className="relative z-10">
-            {hasSteps ? (
-              typeof steps === 'function' ? (
-                <>
-                  {React.createElement(
-                    steps as React.ComponentType<{
-                      className?: string
-                      style?: React.CSSProperties
-                    }>,
-                    {
-                      className: containerClasses,
-                      style: { counterReset: 'step-counter' },
-                    },
-                  )}
-                  <EmptySlotHint
-                    parentId={id}
-                    slotName="steps"
-                    childLabel="Bước hành trình"
-                    isEditing={isEditing}
-                    isDeepNavy={isDeepNavy}
-                  />
-                </>
-              ) : React.isValidElement(steps) ? (
-                <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
-                  {steps}
-                </div>
-              ) : Array.isArray(steps) ? (
-                <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
-                  {steps.map((child: unknown, idx: number) => {
-                    if (React.isValidElement(child)) return child
-                    if (child && typeof child === 'object') {
-                      const item = child as { props?: Record<string, unknown> }
-                      if (item.props) {
-                        return (
-                          <JourneyStep
-                            key={typeof item.props.id === 'string' ? item.props.id : idx}
-                            index={idx}
-                            variant={variant}
-                            isDeepNavy={isDeepNavy}
-                            {...item.props}
-                          />
-                        )
-                      }
-                    }
-                    return null
-                  })}
-                </div>
-              ) : null
-            ) : (
-              // Legacy v1/v2 rendering fallback
-              <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
-                {FIXED_JOURNEY_STEPS.map((fixed, idx) => {
-                  const isHighlighted = numericHighlight === idx + 1
-                  const subtitle = subtitles[idx]
-                  const description = descriptions[idx]
-
-                  return (
-                    <JourneyStep
-                      key={fixed.key}
-                      index={idx}
-                      name={fixed.name}
-                      subname={fixed.subname}
-                      subtitle={subtitle}
-                      description={description}
-                      highlight={isHighlighted}
-                      variant={variant}
+            <JourneyStepsMotion isEditing={isEditing} variant={variant}>
+              {hasSteps ? (
+                typeof steps === 'function' ? (
+                  <>
+                    {React.createElement(
+                      steps as React.ComponentType<{
+                        className?: string
+                        style?: React.CSSProperties
+                      }>,
+                      {
+                        className: containerClasses,
+                        style: { counterReset: 'step-counter' },
+                      },
+                    )}
+                    <EmptySlotHint
+                      parentId={id}
+                      slotName="steps"
+                      childLabel="Bước hành trình"
+                      isEditing={isEditing}
                       isDeepNavy={isDeepNavy}
                     />
-                  )
-                })}
-              </div>
-            )}
+                  </>
+                ) : React.isValidElement(steps) ? (
+                  <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
+                    {steps}
+                  </div>
+                ) : Array.isArray(steps) ? (
+                  <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
+                    {steps.map((child: unknown, idx: number) => {
+                      if (React.isValidElement(child)) return child
+                      if (child && typeof child === 'object') {
+                        const item = child as { props?: Record<string, unknown> }
+                        if (item.props) {
+                          return (
+                            <JourneyStep
+                              key={typeof item.props.id === 'string' ? item.props.id : idx}
+                              index={idx}
+                              variant={variant}
+                              isDeepNavy={isDeepNavy}
+                              {...item.props}
+                            />
+                          )
+                        }
+                      }
+                      return null
+                    })}
+                  </div>
+                ) : null
+              ) : (
+                // Legacy v1/v2 rendering fallback
+                <div className={containerClasses} style={{ counterReset: 'step-counter' }}>
+                  {FIXED_JOURNEY_STEPS.map((fixed, idx) => {
+                    const isHighlighted = numericHighlight === idx + 1
+                    const subtitle = subtitles[idx]
+                    const description = descriptions[idx]
+
+                    return (
+                      <JourneyStep
+                        key={fixed.key}
+                        index={idx}
+                        name={fixed.name}
+                        subname={fixed.subname}
+                        subtitle={subtitle}
+                        description={description}
+                        highlight={isHighlighted}
+                        variant={variant}
+                        isDeepNavy={isDeepNavy}
+                      />
+                    )
+                  })}
+                </div>
+              )}
+            </JourneyStepsMotion>
           </div>
         </div>
       </div>

@@ -109,12 +109,13 @@ export function StatsBar({
                       <StatItem
                         key={typeof item.props.id === 'string' ? item.props.id : idx}
                         isDeepNavy={isDeepNavy}
+                        puck={{ isEditing }}
                         {...item.props}
                       />
                     )
                   }
                   if (item.value || item.label || item.icon) {
-                    return <StatItem key={idx} isDeepNavy={isDeepNavy} {...item} />
+                    return <StatItem key={idx} isDeepNavy={isDeepNavy} puck={{ isEditing }} {...item} />
                   }
                 }
                 return null

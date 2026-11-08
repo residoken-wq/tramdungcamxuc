@@ -31,6 +31,15 @@
   /* Border Radius & Shadow */
   --radius-card: 20px;
   --shadow-soft: 0 4px 20px -2px rgb(var(--color-deep-navy-rgb) / 0.06);
+
+  /* PK-29 Motion Tokens */
+  --motion-fast: 160ms;
+  --motion-base: 320ms;
+  --motion-medium: 520ms;
+  --motion-slow: 800ms;
+  --motion-stagger: 90ms;
+  --motion-ease-out: cubic-bezier(.22, 1, .36, 1);
+  --motion-ease-soft: cubic-bezier(.4, 0, .2, 1);
 }
 
 @layer base {
@@ -89,7 +98,7 @@
 
 /* Progressive enhancement: elements are fully visible by default */
 /* Only when client animator activates on <html>: */
-html.eb-anim-ready [data-eb-entrance]:not([data-eb-entrance='none']):not(.eb-in-view) {
+html.eb-anim-ready [data-eb-entrance]:not([data-eb-entrance='none']):not([data-eb-entrance='stagger']):not(.eb-in-view) {
   opacity: 0;
 }
 html.eb-anim-ready [data-eb-entrance='fade-up']:not(.eb-in-view) {
@@ -101,14 +110,43 @@ html.eb-anim-ready [data-eb-entrance='zoom-in']:not(.eb-in-view) {
   transform: scale(0.95);
 }
 
+/* PK-29 FX-04: Stagger cards entrance */
+html.eb-anim-ready [data-eb-entrance='stagger']:not(.eb-in-view) [data-eb-card] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view [data-eb-card] {
+  animation: eb-fade-up var(--motion-medium) var(--motion-ease-out) both;
+}
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view [data-eb-card]:nth-child(1),
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view :nth-child(1) > [data-eb-card]:only-child {
+  animation-delay: 0ms;
+}
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view [data-eb-card]:nth-child(2),
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view :nth-child(2) > [data-eb-card]:only-child {
+  animation-delay: var(--motion-stagger);
+}
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view [data-eb-card]:nth-child(3),
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view :nth-child(3) > [data-eb-card]:only-child {
+  animation-delay: calc(var(--motion-stagger) * 2);
+}
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view [data-eb-card]:nth-child(4),
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view :nth-child(4) > [data-eb-card]:only-child {
+  animation-delay: calc(var(--motion-stagger) * 3);
+}
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view [data-eb-card]:nth-child(n + 5),
+html.eb-anim-ready [data-eb-entrance='stagger'].eb-in-view :nth-child(n + 5) > [data-eb-card]:only-child {
+  animation-delay: calc(var(--motion-stagger) * 4);
+}
+
 html.eb-anim-ready [data-eb-entrance='fade-in'].eb-in-view {
-  animation: eb-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: eb-fade-in var(--motion-medium) var(--motion-ease-out) both;
 }
 html.eb-anim-ready [data-eb-entrance='fade-up'].eb-in-view {
-  animation: eb-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: eb-fade-up var(--motion-medium) var(--motion-ease-out) both;
 }
 html.eb-anim-ready [data-eb-entrance='zoom-in'].eb-in-view {
-  animation: eb-zoom-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: eb-zoom-in var(--motion-medium) var(--motion-ease-out) both;
 }
 
 html.eb-anim-ready [data-eb-entrance-delay='150'] {
@@ -121,11 +159,88 @@ html.eb-anim-ready [data-eb-entrance-delay='500'] {
   animation-delay: 500ms;
 }
 
+/* PK-29 FX-01: Hero smooth entrance (first hero block) */
+@keyframes eb-hero-image {
+  from {
+    opacity: 0;
+    transform: scale(1.025);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* QA PK-29: pure CSS, not gated by `eb-anim-ready`. That class lands after hydration, so a gated
+   hero would paint, vanish, then fade back in (a flash on the LCP text). CSS animations run from
+   the first paint, finish even without JS, and are skipped for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-eb-hero='first'] .eb-hero-label {
+    animation: eb-fade-up var(--motion-base) var(--motion-ease-out) both;
+  }
+  [data-eb-hero='first'] .eb-hero-title {
+    animation: eb-fade-up var(--motion-base) var(--motion-ease-out) 120ms both;
+  }
+  [data-eb-hero='first'] .eb-hero-emotion {
+    animation: eb-fade-up var(--motion-base) var(--motion-ease-out) 240ms both;
+  }
+  [data-eb-hero='first'] .eb-hero-cta {
+    animation: eb-fade-up var(--motion-base) var(--motion-ease-out) 360ms both;
+  }
+  [data-eb-hero='first'] .eb-hero-image {
+    animation: eb-hero-image var(--motion-slow) var(--motion-ease-out) both;
+  }
+}
+
+/* PK-29 FX-05: Journey step active glow */
+html.eb-anim-ready [data-eb-card].eb-step-active [data-eb-card-row] {
+  border-color: rgb(var(--color-bright-magenta-rgb)) !important;
+  color: rgb(var(--color-bright-magenta-rgb)) !important;
+  box-shadow: 0 0 12px -2px rgb(var(--color-bright-magenta-rgb) / 0.35);
+  transition: border-color var(--motion-base) var(--motion-ease-out),
+              color var(--motion-base) var(--motion-ease-out),
+              box-shadow var(--motion-base) var(--motion-ease-out);
+}
+html.eb-anim-ready [data-eb-card].eb-step-active h3 {
+  color: rgb(var(--color-bright-magenta-rgb)) !important;
+  transition: color var(--motion-base) var(--motion-ease-out);
+}
+
+/* PK-29 FX-11: Unified Card Hover & Focus Lift */
+@media (hover: hover) and (pointer: fine) {
+  .eb-card-interactive {
+    transition: transform 240ms var(--motion-ease-out), box-shadow 240ms var(--motion-ease-out);
+  }
+  .eb-card-interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -4px rgb(var(--color-deep-navy-rgb) / 0.12);
+  }
+  .eb-card-interactive:hover img {
+    transform: scale(1.03);
+    transition: transform 240ms var(--motion-ease-out);
+  }
+}
+
+.eb-card-interactive:focus-within,
+.eb-card-interactive:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -4px rgb(var(--color-deep-navy-rgb) / 0.12);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  html.eb-anim-ready [data-eb-entrance] {
+  html.eb-anim-ready [data-eb-entrance],
+  html.eb-anim-ready [data-eb-entrance] [data-eb-card] {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
+  }
+  .eb-card-interactive,
+  .eb-card-interactive:hover,
+  .eb-card-interactive:focus-within,
+  .eb-card-interactive:focus-visible,
+  .eb-card-interactive:hover img {
+    transform: none !important;
+    transition: none !important;
   }
 }
 

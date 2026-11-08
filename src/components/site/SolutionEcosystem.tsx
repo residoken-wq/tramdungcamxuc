@@ -363,6 +363,7 @@ export function SolutionEcosystem({
 
     return (
       <div
+        data-eb-card=""
         className={`flex flex-col justify-between rounded-card border shadow-soft overflow-hidden ${
           isDark
             ? 'border-white/20 bg-deep-navy text-white relative ring-2 ring-deep-navy'
@@ -672,7 +673,10 @@ export function SolutionEcosystem({
             <>
               {/* Column 1: Products (Đào tạo cá nhân) */}
               {showCol1 && (
-                <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft">
+                <div
+                  data-eb-card=""
+                  className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft"
+                >
                   <div>
                     <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
                       {col1Title}
@@ -742,7 +746,10 @@ export function SolutionEcosystem({
 
               {/* Column 2: Services (Khai vấn 1:1) - NỀN DEEP-NAVY */}
               {showCol2 && (
-                <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-white/20 bg-deep-navy text-white shadow-soft relative ring-2 ring-deep-navy">
+                <div
+                  data-eb-card=""
+                  className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-white/20 bg-deep-navy text-white shadow-soft relative ring-2 ring-deep-navy"
+                >
                   <div>
                     <h3 className="font-display text-2xl uppercase tracking-tight text-white mb-2">
                       {col2Title}
@@ -802,7 +809,10 @@ export function SolutionEcosystem({
 
               {/* Column 3: Programs (Giải pháp doanh nghiệp) */}
               {showCol3 && (
-                <div className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft">
+                <div
+                  data-eb-card=""
+                  className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft"
+                >
                   <div>
                     <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
                       {col3Title}

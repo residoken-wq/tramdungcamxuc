@@ -89,3 +89,12 @@
 - (EB-02 31/10) **EB-02b**: email (`src/emails/**`) và ảnh chia sẻ `next/og` (Boarding Pass, chứng nhận, thẻ EQ) đọc màu / font từ `designSystem`. `next/og` cần file font thật: tải font Google lúc tạo ảnh hoặc giữ font tự host cho ảnh.
 - (EB-03 QA 31/10) Builder phụ thuộc class băm nội bộ của Puck (`[class*="_PuckCanvas_"]` trong `PuckLayoutOverride` + `setInterval`, và các `[class*='_…_']` trong `builder.css`). Nâng Puck có thể gãy: chuyển sang `overrides.preview` / `plugins` khi Puck có API, giữ e2e `puck-editor-frame` để bắt lỗi.
 - (PK-26 QA 07/11) Mẫu `community.ts` có trích dẫn tự gõ ngoặc kép (`"Thương mình theo cách riêng."`), trong khi `QuoteBlock` đã tự thêm ngoặc → hiện ngoặc đôi. Bỏ ngoặc trong mẫu; cân nhắc `QuoteBlock` tự bỏ ngoặc thừa ở đầu / cuối.
+- (PK-29 08/11) Motion đợt 2 (các hiệu ứng chưa làm theo prompt PK-29):
+  - FX-02: Tách chữ tiêu đề từng dòng / từ (cân nhắc khả năng tương thích trình đọc màn hình và font Anton tiếng Việt).
+  - FX-06: Tiến trình CLEAR → BUILD → SHINE (chờ Hana chốt thiết kế khối mới thay thế 3 thẻ IconCardGrid).
+  - FX-07: Nút hút theo chuột (mang tính trò chơi, không hợp giọng thương hiệu).
+  - FX-08: Parallax ảnh (rủi ro CLS / LCP, lợi ích nhỏ).
+  - FX-10: Testimonial slider (đã đúng yêu cầu – không tự động chạy).
+  - FX-14: Thanh tiến độ đọc trang.
+  - FX-15: Nền chuyển động nhẹ.
+  - FX-16: Chuyển trang mượt.
