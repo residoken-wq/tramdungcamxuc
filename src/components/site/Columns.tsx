@@ -68,7 +68,6 @@ export function Columns({
 
   return (
     <section
-      id={id}
       data-block="columns"
       data-bg={bgColor}
       // Cards dropped in a column read their theme like in IconCardGrid (white card style)

@@ -842,7 +842,9 @@ const basePuckConfig: Config<PageComponentsProps> = {
       },
       // ImageText is a client component: never forward Puck's `puck` object (it holds functions,
       // which cannot be serialised into a client component on the public page).
-      render: ({ puck: _puck, ...props }) => <ImageText {...props} />,
+      render: ({ puck: _puck, ...props }) => (
+        <ImageText {...props} puck={{ isEditing: Boolean(_puck?.isEditing) }} />
+      ),
     },
 
     // Chuyển đổi

@@ -67,6 +67,7 @@ export interface HeroImageProps {
   seriesLabelFont?: 'ui' | 'quote'
   emotionFont?: 'quote' | 'body'
   showAccentBar?: boolean
+  contentWidth?: 'full' | 'half'
   titleLine1Color?: TextColorOption
   titleLine2Color?: TextColorOption
   showArchGraphic?: boolean
@@ -265,6 +266,7 @@ export function HeroImage({
   seriesLabelFont = 'ui',
   emotionFont = 'quote',
   showAccentBar = false,
+  contentWidth = 'full',
   titleLine1Color,
   titleLine2Color,
   showArchGraphic = false,
@@ -364,7 +366,7 @@ export function HeroImage({
         padding={padding}
         priority={priority}
       >
-        <div className={`flex flex-col ${alignClass} w-full ${contentAlign === 'left' ? 'max-w-xl' : ''}`}>
+        <div className={`flex flex-col ${alignClass} w-full ${contentWidth === 'half' ? 'max-w-xl' : ''}`}>
           {seriesLabel && (
             <span
               {...textTarget(id, 'seriesLabel')}
@@ -397,7 +399,7 @@ export function HeroImage({
               {...textTarget(id, 'emotionLine')}
               className={
                 emotionFont === 'body'
-                  ? `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-body text-base sm:text-lg max-w-2xl text-white/90`
+                  ? `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-body text-base sm:text-lg max-w-2xl ${bEmotionColor}`
                   : `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`
               }
             >

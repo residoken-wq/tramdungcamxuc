@@ -79,6 +79,14 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
         { label: 'Có', value: true },
       ],
     },
+    contentWidth: {
+      type: 'radio',
+      label: vi.cd01?.hero?.contentWidth || 'Độ rộng nội dung',
+      options: [
+        { label: vi.cd01?.hero?.contentWidthFull || 'Đầy đủ (Toàn khung)', value: 'full' },
+        { label: vi.cd01?.hero?.contentWidthHalf || 'Thu gọn (Nửa khung ~45%)', value: 'half' },
+      ],
+    },
     showArchGraphic: {
       type: 'radio',
       label: 'Hiện đồ họa vòm 3 vòng tròn khi chưa có ảnh',

@@ -57,6 +57,9 @@ export interface ImageTextProps {
   titleSize?: FontSizeOption
   textSize?: FontSizeOption
   textColor?: TextColorOption
+  puck?: {
+    isEditing?: boolean
+  }
 }
 
 const BG_COLORS = {
@@ -106,7 +109,9 @@ export function ImageText({
   titleSize,
   textSize,
   textColor,
+  puck,
 }: ImageTextProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
   const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -146,7 +151,7 @@ export function ImageText({
   const activeUrl = imageUrl || clientImage?.url
   const activeAlt = (imageAlt || clientImage?.alt || '').trim()
   const hasValidImage = Boolean(activeUrl && activeAlt)
-  const shouldRenderImage = hasValidImage || showPlaceholderImage
+  const shouldRenderImage = hasValidImage || (isEditing && showPlaceholderImage)
 
   const paragraphs = (content || '')
     .split(/\n\s*\n/)
@@ -160,7 +165,6 @@ export function ImageText({
 
   return (
     <section
-      id={id}
       className={`w-full ${imageBleed ? 'overflow-hidden ' : ''}${BG_COLORS[bgColor] || BG_COLORS['warm-ivory']} ${sectionPadding} transition-colors`}
     >
       <div className={imageBleed ? 'w-full max-w-none' : 'mx-auto max-w-5xl'}>
@@ -218,7 +222,7 @@ export function ImageText({
                     </span>
                   )}
                 </BrandImage>
-              ) : (
+              ) : isEditing ? (
                 <div
                   className={`w-full flex items-center justify-center border border-deep-navy/10 bg-soft-pink/30 text-deep-navy/60 font-ui text-sm font-semibold ${
                     imageBleed
@@ -228,7 +232,7 @@ export function ImageText({
                 >
                   [MẪU] Ảnh {titleLine1}
                 </div>
-              )}
+              ) : null}
             </div>
           )}
 

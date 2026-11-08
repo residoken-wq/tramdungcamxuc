@@ -102,7 +102,7 @@ export function TestimonialGrid({
   const colClass = columns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'
 
   return (
-    <section id={id} className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+    <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-6xl">
         {hasHeader && (
           <div className="mb-8 sm:mb-12">
