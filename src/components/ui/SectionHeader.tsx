@@ -25,6 +25,9 @@ export interface SectionHeaderProps {
   emotionColor?: TextColorOption
   titleSize?: FontSizeOption
   emotionSize?: FontSizeOption
+  titleCase?: 'upper' | 'none'
+  accentBar?: boolean
+  showAccentBar?: boolean
 }
 
 export function SectionHeader({
@@ -42,6 +45,9 @@ export function SectionHeader({
   emotionColor = 'deep-navy',
   titleSize = 'md',
   emotionSize = 'md',
+  titleCase = 'upper',
+  accentBar = false,
+  showAccentBar = false,
 }: SectionHeaderProps & { id?: string }) {
   const alignClass = align === 'center' ? 'text-center items-center' : 'text-left items-start'
 
@@ -66,7 +72,7 @@ export function SectionHeader({
 
       {/* Signature Two-Tone Heading (Anton: line 1 deep-navy, line 2 bright-magenta by default) */}
       <HeadingTag
-        className={`font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
+        className={`font-display ${titleCase === 'none' ? '' : 'uppercase'} tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
       >
         <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
           {titleLine1}
@@ -77,6 +83,13 @@ export function SectionHeader({
           </span>
         )}
       </HeadingTag>
+
+      {(accentBar || showAccentBar) && (
+        <span
+          className="inline-block w-14 h-1 rounded bg-accent-pink mt-3 mb-1"
+          aria-hidden="true"
+        />
+      )}
 
       {/* Emotion Line (Playfair Display Italic) */}
       {emotionLine && (

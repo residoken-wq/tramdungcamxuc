@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import {
   allowedTextColors,
+  textColorClass,
   type FontSizeOption,
   type TextColorOption,
 } from '@/lib/brand/format-classes'
@@ -62,6 +63,11 @@ export interface HeroImageProps {
   statLabelSize?: FontSizeOption
   titleSize?: FontSizeOption
   priority?: boolean
+  titleCase?: 'upper' | 'none'
+  showAccentBar?: boolean
+  titleLine1Color?: TextColorOption
+  titleLine2Color?: TextColorOption
+  showArchGraphic?: boolean
   layout?: HeroLayout
   imageSide?: HeroImageSide
   overlayTone?: HeroOverlayTone
@@ -107,6 +113,67 @@ const PADDINGS = {
   md: 'py-14 px-6 sm:px-8',
   lg: 'py-20 px-6 sm:px-12',
 } as const
+
+function ArchGraphic({ isDeepNavy }: { isDeepNavy: boolean }) {
+  return (
+    <div
+      data-testid="hero-arch-graphic"
+      className="relative w-full max-w-[340px] aspect-[3/4] mx-auto flex items-center justify-center select-none py-6"
+    >
+      {/* Outer arch frame */}
+      <div
+        className={`relative w-[280px] h-[390px] rounded-t-full border-2 ${
+          isDeepNavy ? 'border-white/40 shadow-[0_0_30px_rgba(239,59,131,0.2)]' : 'border-deep-navy/20'
+        } overflow-hidden flex flex-col items-center`}
+      >
+        {/* Inner subtle pink stroke */}
+        <div className="absolute inset-1.5 rounded-t-full border border-accent-pink/30 pointer-events-none" />
+
+        {/* 3 intersecting pastel circles with blend mode */}
+        <div className="relative w-full h-[260px] mt-10 flex items-center justify-center">
+          <div className="relative w-44 h-44">
+            {/* Circle 1: butter-cream */}
+            <div
+              className="absolute -top-1 -left-1 w-28 h-28 rounded-full bg-butter-cream/80 mix-blend-screen shadow-xs"
+              style={{ filter: 'blur(0.5px)' }}
+            />
+            {/* Circle 2: soft-pink */}
+            <div
+              className="absolute -top-1 -right-1 w-28 h-28 rounded-full bg-soft-pink/80 mix-blend-screen shadow-xs"
+              style={{ filter: 'blur(0.5px)' }}
+            />
+            {/* Circle 3: mint-haze */}
+            <div
+              className="absolute bottom-0 left-8 w-28 h-28 rounded-full bg-mint-haze/80 mix-blend-screen shadow-xs"
+              style={{ filter: 'blur(0.5px)' }}
+            />
+          </div>
+        </div>
+
+        {/* Horizontal base line */}
+        <div
+          className={`absolute bottom-16 inset-x-0 h-[1.5px] ${
+            isDeepNavy ? 'bg-white/40' : 'bg-deep-navy/20'
+          }`}
+        />
+
+        {/* Dark pedestal curve */}
+        <div
+          className={`absolute bottom-0 inset-x-10 h-16 rounded-t-full ${
+            isDeepNavy ? 'bg-white/10' : 'bg-deep-navy/10'
+          }`}
+        />
+      </div>
+
+      {/* Ground baseline */}
+      <div
+        className={`absolute bottom-5 w-[310px] h-[2px] rounded-full ${
+          isDeepNavy ? 'bg-white/60' : 'bg-deep-navy/30'
+        }`}
+      />
+    </div>
+  )
+}
 
 function renderHeroList(
   listTitle: string | undefined,
@@ -192,6 +259,11 @@ export function HeroImage({
   statLabelSize,
   titleSize = 'md',
   priority,
+  titleCase = 'upper',
+  showAccentBar = false,
+  titleLine1Color,
+  titleLine2Color,
+  showArchGraphic = false,
   layout = 'split',
   imageSide = 'right',
   overlayTone = 'dark',
@@ -382,7 +454,19 @@ export function HeroImage({
     )
   }
 
-  if (layout === 'side' && hasValidImage) {
+  const isUpper = titleCase !== 'none'
+  const resolvedLine1Color = titleLine1Color
+    ? textColorClass(titleLine1Color)
+    : isDeepNavy
+      ? 'text-white'
+      : 'text-deep-navy'
+  const resolvedLine2Color = titleLine2Color
+    ? textColorClass(titleLine2Color)
+    : titleLine2ColorClass
+
+  const shouldRenderArch = !hasValidImage && (showArchGraphic || imageShape === 'arch-right')
+
+  if (layout === 'side' && (hasValidImage || shouldRenderArch)) {
     const isImageLeft = imageSide === 'left'
 
     const textColumn = (
@@ -402,16 +486,25 @@ export function HeroImage({
 
         {/* Signature Two-Tone Heading (Anton) */}
         <h1
-          className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+          className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} ${
+            isUpper ? 'uppercase' : ''
+          } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
         >
           <TwoToneTitle
             id={id}
             line1={titleLine1}
             line2={titleLine2}
-            line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-            line2ClassName={titleLine2ColorClass}
+            line1ClassName={resolvedLine1Color}
+            line2ClassName={resolvedLine2Color}
           />
         </h1>
+
+        {showAccentBar && (
+          <span
+            className="inline-block w-14 h-1 rounded bg-accent-pink mt-4 mb-2"
+            aria-hidden="true"
+          />
+        )}
 
         {/* Emotional Quote (Playfair Display Italic) */}
         {emotionLine && (
@@ -498,30 +591,34 @@ export function HeroImage({
           isImageLeft ? 'lg:order-1' : 'lg:order-2'
         }`}
       >
-        <BrandImage
-          src={imageUrl!}
-          alt={imageAlt!.trim()}
-          width={800}
-          height={1000}
-          priority={priority}
-          sizes="(max-width: 1024px) 100vw, 500px"
-          imageClassName="w-full h-full object-cover"
-          className={`w-full aspect-[4/5] max-h-[580px] border shadow-soft ${
-            isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
-          }`}
-          shape={imageShape}
-          badge={imageBadge}
-          caption={
-            imageCaptionTitle
-              ? {
-                  title: imageCaptionTitle,
-                  subtitle: imageCaptionSubtitle,
-                  avatars: imageCaptionAvatars,
-                }
-              : undefined
-          }
-          captionPosition={captionPosition}
-        />
+        {hasValidImage ? (
+          <BrandImage
+            src={imageUrl!}
+            alt={imageAlt!.trim()}
+            width={800}
+            height={1000}
+            priority={priority}
+            sizes="(max-width: 1024px) 100vw, 500px"
+            imageClassName="w-full h-full object-cover"
+            className={`w-full aspect-[4/5] max-h-[580px] border shadow-soft ${
+              isDeepNavy ? 'border-white/20' : 'border-deep-navy/10'
+            }`}
+            shape={imageShape}
+            badge={imageBadge}
+            caption={
+              imageCaptionTitle
+                ? {
+                    title: imageCaptionTitle,
+                    subtitle: imageCaptionSubtitle,
+                    avatars: imageCaptionAvatars,
+                  }
+                : undefined
+            }
+            captionPosition={captionPosition}
+          />
+        ) : (
+          <ArchGraphic isDeepNavy={isDeepNavy} />
+        )}
       </div>
     )
 
@@ -568,16 +665,25 @@ export function HeroImage({
 
         {/* Signature Two-Tone Heading (Anton) */}
         <h1
-          className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+          className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} ${
+            isUpper ? 'uppercase' : ''
+          } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
         >
           <TwoToneTitle
             id={id}
             line1={titleLine1}
             line2={titleLine2}
-            line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-            line2ClassName={titleLine2ColorClass}
+            line1ClassName={resolvedLine1Color}
+            line2ClassName={resolvedLine2Color}
           />
         </h1>
+
+        {showAccentBar && (
+          <span
+            className="inline-block w-14 h-1 rounded bg-accent-pink mt-4 mb-2"
+            aria-hidden="true"
+          />
+        )}
 
         {/* Emotional Quote (Playfair Display Italic) */}
         {emotionLine && (

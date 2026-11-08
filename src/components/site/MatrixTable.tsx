@@ -32,10 +32,13 @@ export interface MatrixTableProps {
   titleLine1?: string
   titleLine2?: string
   emotionLine?: string
+  titleCase?: 'upper' | 'none'
+  showAccentBar?: boolean
   chipsTitle?: string
   chips?: MatrixChip[]
   columns?: MatrixColumn[]
   rows?: MatrixRow[]
+  footerNote?: string
   bgColor?:
     | 'warm-ivory'
     | 'soft-pink'
@@ -89,14 +92,18 @@ export function MatrixTable({
   titleLine1,
   titleLine2,
   emotionLine,
+  titleCase = 'upper',
+  showAccentBar = false,
   chipsTitle,
   chips = [],
   columns = [],
   rows = [],
+  footerNote,
   bgColor = 'warm-ivory',
   padding = 'md',
 }: MatrixTableProps) {
   const isDeepNavy = bgColor === 'deep-navy'
+  const isUpper = titleCase !== 'none'
   const hasHeader = Boolean(titleLine1 || titleLine2 || seriesLabel)
   const hasChips = Boolean(chipsTitle || (chips && chips.length > 0))
 
@@ -116,11 +123,23 @@ export function MatrixTable({
                 </span>
               )}
               {titleLine1 && (
-                <TwoToneTitle
-                  line1={titleLine1}
-                  line2={titleLine2}
-                  line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-                  line2ClassName={isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'}
+                <h2
+                  className={`font-display text-3xl sm:text-4xl lg:text-5xl ${
+                    isUpper ? 'uppercase' : ''
+                  } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+                >
+                  <TwoToneTitle
+                    line1={titleLine1}
+                    line2={titleLine2}
+                    line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                    line2ClassName={isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'}
+                  />
+                </h2>
+              )}
+              {showAccentBar && (
+                <span
+                  className="inline-block w-14 h-1 rounded bg-accent-pink mt-3 mb-1"
+                  aria-hidden="true"
                 />
               )}
               {emotionLine && (
@@ -298,6 +317,16 @@ export function MatrixTable({
               )
             })}
           </div>
+        )}
+
+        {footerNote && (
+          <p
+            className={`mt-6 font-ui text-xs sm:text-sm leading-relaxed ${
+              isDeepNavy ? 'text-white/60' : 'text-deep-navy/60'
+            }`}
+          >
+            {footerNote}
+          </p>
         )}
       </div>
     </section>

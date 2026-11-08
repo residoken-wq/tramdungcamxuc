@@ -25,6 +25,10 @@ export interface IconCardGridProps {
   /** PK-21: 'carousel' = cards in one row that scrolls sideways, with arrows. PK-26: 5 columns */
   columns?: 1 | 2 | 3 | 4 | 5 | 'carousel'
   connector?: 'none' | 'arrow'
+  titleCase?: 'upper' | 'none'
+  showAccentBar?: boolean
+  headerAlign?: 'left' | 'center'
+  bottomQuote?: string
   cardStyle?: 'white' | 'soft' | 'outline'
   cardAlign?: 'inherit' | 'left' | 'center'
   /** Puck slot render (v2), React nodes, or raw Card blocks `{ props }` (direct use / tests). */
@@ -60,6 +64,10 @@ export function IconCardGrid({
   titleLine1,
   titleLine2,
   emotionLine,
+  titleCase = 'upper',
+  showAccentBar = false,
+  headerAlign = 'center',
+  bottomQuote,
   marker = 'icon',
   columns = 3,
   connector = 'none',
@@ -187,7 +195,9 @@ export function IconCardGrid({
               titleLine1={titleLine1 || ''}
               titleLine2={titleLine2}
               emotionLine={emotionLine}
-              align="center"
+              align={headerAlign}
+              titleCase={titleCase}
+              showAccentBar={showAccentBar}
               line1Color={isDeepNavy ? 'white' : 'deep-navy'}
               line2Color={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
               eyebrowColor={isDeepNavy ? 'soft-pink' : 'bright-magenta'}
@@ -219,6 +229,12 @@ export function IconCardGrid({
             cardList
           )}
         </div>
+
+        {bottomQuote && (
+          <p className="mt-8 font-quote text-base sm:text-lg italic text-bright-magenta text-center leading-relaxed max-w-3xl mx-auto">
+            {bottomQuote}
+          </p>
+        )}
       </div>
     </section>
   )
