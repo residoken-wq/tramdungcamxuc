@@ -53,8 +53,8 @@ describe('PK-28: Chuyển mình không chênh vênh 100% precision', () => {
           title="Bối cảnh chuyển mình"
           showAccentBar={true}
           statCards={[
-            { stat: '1/3', text: 'kỹ năng **thay đổi**' },
-            { stat: '2.5×', text: 'nguy cơ cao hơn' },
+            { stat: '39%', text: 'kỹ năng **thay đổi**' },
+            { stat: '3X', text: 'nguy cơ cao hơn' },
           ]}
           italicQuoteLeft="Luật chơi đang đổi"
           profileCard={{
@@ -67,7 +67,7 @@ describe('PK-28: Chuyển mình không chênh vênh 100% precision', () => {
       )
       expect(screen.getByText('02 · BỐI CẢNH')).toBeDefined()
       expect(screen.getByText('Bối cảnh chuyển mình')).toBeDefined()
-      expect(screen.getByText('1/3')).toBeDefined()
+      expect(screen.getByText('39%')).toBeDefined()
       expect(screen.getByText('thay đổi')).toBeDefined()
       expect(screen.getByText('Luật chơi đang đổi')).toBeDefined()
       expect(screen.getByText('CÔ ẤY LÀ AI')).toBeDefined()

@@ -86,7 +86,7 @@ test.describe('PK-28: Chuyển mình không chênh vênh 100% precision', () => 
       ).toBeVisible()
 
       // Slide 6: PhaseArchitecture - Phase 1 to left of Phase 2
-      const phase1 = guest.getByText('PHASE 1 · NỀN TẢNG CHUYỂN MÌNH').first()
+      const phase1 = guest.getByText('PHASE 1 · HÔM NAY').first()
       const phase2 = guest.getByText('Career Clarity').first()
       await expect(phase1).toBeVisible()
       await expect(phase2).toBeVisible()
@@ -98,11 +98,11 @@ test.describe('PK-28: Chuyển mình không chênh vênh 100% precision', () => 
       }
 
       // Slide 7: LoopDiagram
-      await expect(guest.getByText('3 TẦNG TRẢI NGHIỆM').first()).toBeVisible()
+      await expect(guest.getByText('VÒNG LẶP TRONG CÁCH TRIỂN KHAI').first()).toBeVisible()
 
       // Slide 11: ProgramStepFlow 3 steps
-      await expect(guest.getByText('CHẶNG 1').first()).toBeVisible()
-      await expect(guest.getByText('CHẶNG 2').first()).toBeVisible()
+      await expect(guest.getByText('CHẶNG 1 · HIỂU').first()).toBeVisible()
+      await expect(guest.getByText('CHẶNG 2 · THỬ').first()).toBeVisible()
       await expect(guest.getByText('CHẶNG 3').first()).toBeVisible()
 
       // Slide 18: MatrixTable
