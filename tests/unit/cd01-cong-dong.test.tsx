@@ -95,7 +95,7 @@ describe('CD-01: Trang Cộng đồng của Trạm (Slide 47–57)', () => {
         />,
       )
       const csCard = csContainer.querySelector('[data-eb-card]')
-      expect(csCard?.className).toContain('#F5F3EF')
+      expect(csCard?.className).toContain('!bg-warm-ivory')
       expect(csContainer.querySelector('a')).toBeNull()
     })
 
@@ -176,39 +176,45 @@ describe('CD-01: Trang Cộng đồng của Trạm (Slide 47–57)', () => {
       expect(screen.getAllByText(/Không gian an toàn để thuộc về/i).length).toBeGreaterThan(0)
 
       // Slide 49: Chọn không gian
-      expect(screen.getByText('CHỌN KHÔNG GIAN CỦA BẠN')).toBeDefined()
-      expect(screen.getByText('Tự nguyện đến. Tôn trọng nhịp riêng.')).toBeDefined()
-      expect(screen.getAllByText('ME TIME').length).toBeGreaterThan(0)
-      expect(screen.getAllByText('YOGA BUDDY').length).toBeGreaterThan(0)
-      expect(screen.getByText('COMING SOON')).toBeDefined()
+      expect(screen.getByText(/Chọn không gian của bạn/i)).toBeDefined()
+      expect(screen.getByText(/Tự nguyện đến. Tôn trọng nhịp riêng./i)).toBeDefined()
+      expect(screen.getAllByText(/Me Time/i).length).toBeGreaterThan(0)
+      expect(screen.getAllByText(/Yoga Buddy/i).length).toBeGreaterThan(0)
+      expect(screen.getByText(/Coming soon/i)).toBeDefined()
 
       // Slide 50: Me Time
       expect(screen.getAllByText(/Thương mình theo cách riêng/i).length).toBeGreaterThan(0)
 
       // Slide 51: Lịch trình 5:00 AM
-      expect(screen.getByText('LỊCH TRÌNH 5:00 AM')).toBeDefined()
+      expect(screen.getByText(/Lịch trình 5:00 AM/i)).toBeDefined()
 
       // Slide 52: Tiếng nói từ Me Time (trong template prop vì public page ẩn grid khi CMS chưa có testimonial)
       const testimonialBlock = communityTemplate.content.find(
         (b) => b.props.id === 'community-testimonials-me-time',
       )
-      expect(testimonialBlock?.props.titleLine1).toBe('TIẾNG NÓI CỘNG ĐỒNG ME TIME')
+      expect(testimonialBlock?.props.titleLine1).toBe('Tiếng nói cộng đồng Me Time')
 
-      // Slide 53: Khoảnh khắc Me Time
-      expect(screen.getAllByText(/KHOẢNH KHẮC ME TIME/i).length).toBeGreaterThan(0)
+      // Slide 53: Khoảnh khắc Me Time (trong template prop vì public page ẩn gallery khi chưa có ảnh thật)
+      const meTimeGallery = communityTemplate.content.find(
+        (b) => b.props.id === 'community-me-time-moments',
+      )
+      expect(meTimeGallery?.props.titleLine1).toBe('Khoảnh khắc Me Time')
 
       // Slide 54: Yoga Buddy
       expect(screen.getAllByText(/Mỗi lần trải thảm là một lần chăm sóc Thân - Tâm/i).length).toBeGreaterThan(0)
 
       // Slide 55: Cuộc hẹn 8:30 sáng
-      expect(screen.getAllByText(/CUỘC HẸN 8:30 SÁNG THỨ 3 & 5/i).length).toBeGreaterThan(0)
+      expect(screen.getAllByText(/Cuộc hẹn 8:30 sáng thứ 3 & 5/i).length).toBeGreaterThan(0)
 
-      // Slide 56: Góc nhỏ Yoga Buddy
-      expect(screen.getAllByText(/GÓC NHỎ YOGA BUDDY/i).length).toBeGreaterThan(0)
+      // Slide 56: Góc nhỏ Yoga Buddy (trong template prop vì public page ẩn gallery khi chưa có ảnh thật)
+      const yogaGallery = communityTemplate.content.find(
+        (b) => b.props.id === 'community-yoga-gallery',
+      )
+      expect(yogaGallery?.props.titleLine1).toBe('Góc nhỏ Yoga Buddy')
 
       // Slide 57: CTA
-      expect(screen.getByText(/TRỞ THÀNH MỘT PHẦN/i)).toBeDefined()
-      expect(screen.getByText(/CỦA BỘ LẠC/i)).toBeDefined()
+      expect(screen.getByText(/Trở thành một phần/i)).toBeDefined()
+      expect(screen.getByText(/của bộ lạc/i)).toBeDefined()
       expect(screen.getByText(/Tham gia Me Time/i)).toBeDefined()
       expect(screen.getByText(/Tham gia Yoga Buddy/i)).toBeDefined()
     })

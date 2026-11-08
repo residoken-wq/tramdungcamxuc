@@ -81,13 +81,21 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
         expect(heroBox.x + heroBox.width / 2).toBeLessThan(720)
       }
 
-      // Slide 49: 3 cards in space section, card 3 has no link
-      const spaceGrid = guest.locator('#community-spaces')
-      await expect(spaceGrid).toBeVisible()
+      // Slide 49: 3 cards in space section, card 3 has no link, check top stripes
+      const spaceHeading = guest.getByRole('heading', { name: /chọn không gian của bạn/i })
+      await expect(spaceHeading).toBeVisible()
 
-      const meTimeCard = guest.locator('#community-space-card-0')
-      const yogaCard = guest.locator('#community-space-card-1')
-      const comingSoonCard = guest.locator('#community-space-card-2')
+      const meTimeHeading = guest.getByRole('heading', { name: /^me time$/i }).first()
+      const yogaHeading = guest.getByRole('heading', { name: /^yoga buddy$/i }).first()
+      const comingSoonHeading = guest.getByRole('heading', { name: /không gian mới/i }).first()
+
+      await expect(meTimeHeading).toBeVisible()
+      await expect(yogaHeading).toBeVisible()
+      await expect(comingSoonHeading).toBeVisible()
+
+      const meTimeCard = meTimeHeading.locator('xpath=ancestor::*[@data-eb-card][1]')
+      const yogaCard = yogaHeading.locator('xpath=ancestor::*[@data-eb-card][1]')
+      const comingSoonCard = comingSoonHeading.locator('xpath=ancestor::*[@data-eb-card][1]')
 
       await expect(meTimeCard).toBeVisible()
       await expect(yogaCard).toBeVisible()
@@ -100,13 +108,19 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       // Card 2 (coming soon) has NO link
       expect(await comingSoonCard.locator('a').count()).toBe(0)
 
+      // Prompt check: Top color stripes on card 1 and 2, but NOT on coming-soon card
+      const meTimeBorderTop = await meTimeCard.evaluate((el) => window.getComputedStyle(el).borderTopWidth)
+      expect(meTimeBorderTop).toBe('6px')
+      const comingSoonBorderTop = await comingSoonCard.evaluate((el) => window.getComputedStyle(el).borderTopWidth)
+      expect(comingSoonBorderTop).not.toBe('6px')
+
       // Anchor scroll targets exist on page
       await expect(guest.locator('#me-time')).toBeVisible()
       await expect(guest.locator('#yoga-buddy')).toBeVisible()
 
       // Slide 55: 2 cards in one row on desktop 1440
-      const routineLeft = guest.getByText('05 PHÚT KẾT NỐI').first()
-      const routineRight = guest.getByText('Tôn trọng nhịp riêng').first()
+      const routineLeft = guest.getByRole('heading', { name: /hành trình 30 phút/i })
+      const routineRight = guest.getByRole('heading', { name: /vài điều giữ cho nhau/i })
       await expect(routineLeft).toBeVisible()
       await expect(routineRight).toBeVisible()
 
@@ -119,10 +133,13 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       }
 
       // Slide 57: CTASection solid with deep-navy bg and 2 buttons
-      const ctaSection = guest.locator('#community-cta')
+      const ctaSection = guest.locator('[data-cta-solid]').first()
       await expect(ctaSection).toBeVisible()
-      await expect(guest.getByRole('link', { name: 'THAM GIA ME TIME' })).toBeVisible()
-      await expect(guest.getByRole('link', { name: 'THAM GIA YOGA BUDDY' })).toBeVisible()
+      const ctaBgColor = await ctaSection.evaluate((el) => window.getComputedStyle(el).backgroundColor)
+      expect(ctaBgColor).toMatch(/rgb\(40,\s*10,\s*96\)/)
+
+      await expect(guest.getByRole('link', { name: /tham gia me time/i })).toBeVisible()
+      await expect(guest.getByRole('link', { name: /tham gia yoga buddy/i })).toBeVisible()
 
       // 2. Mobile 375px: responsive check & no horizontal scroll
       await guest.setViewportSize({ width: 375, height: 812 })
