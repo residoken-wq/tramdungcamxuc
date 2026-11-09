@@ -326,6 +326,7 @@ export const communityTemplate: Data = {
       props: {
         id: 'community-yoga-buddy',
         imageBleed: true,
+        imageBleedFullHeight: true,
         version: 2,
         layout: 'image-left',
         seriesLabel: 'Cộng đồng',
