@@ -113,7 +113,9 @@ export function IconCardGrid({
       ? "lg:[&>*:not(:last-child)]:relative lg:[&>*:not(:last-child)]:after:content-['→'] lg:[&>*:not(:last-child)]:after:absolute lg:[&>*:not(:last-child)]:after:-right-5 sm:lg:[&>*:not(:last-child)]:after:-right-6 lg:[&>*:not(:last-child)]:after:top-1/2 lg:[&>*:not(:last-child)]:after:-translate-y-1/2 lg:[&>*:not(:last-child)]:after:text-bright-magenta lg:[&>*:not(:last-child)]:after:text-2xl lg:[&>*:not(:last-child)]:after:font-bold lg:[&>*:not(:last-child)]:after:z-10 lg:[&>*:not(:last-child)]:after:pointer-events-none"
       : ''
 
-  const equalHeightClasses = equalHeight ? '[&_[data-eb-card]]:h-full' : ''
+  const equalHeightClasses = equalHeight
+    ? '[&>[data-eb-card]]:self-stretch [&>*:not([data-eb-card])]:flex [&>*:not([data-eb-card])]:flex-col [&>*>[data-eb-card]]:flex-1'
+    : ''
 
   // QA PK-21c: the carousel row is laid out here (server); CarouselTrack only scrolls it.
   const gridClasses = isCarousel

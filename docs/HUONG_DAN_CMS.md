@@ -2215,7 +2215,7 @@ Khi nhấp chọn một chiếc thẻ, cột bên phải sẽ hiển thị các 
 - **Cỡ chữ nội dung**: `Nhỏ` (`sm`), `Vừa` (`md`), `Lớn` (`lg`).
 - **Kiểu chữ tiêu đề phụ**: Tùy chọn `Bình thường` hoặc `IN HOA ĐẬM` (`uppercase`), giúp hiển thị dòng tiêu đề phụ dạng chữ in hoa đậm theo chuẩn thiết kế (như ở trang Cộng đồng).
 - **Căn lề**: `Căn trái` (mặc định) hoặc `Căn giữa` (phù hợp với các thẻ ngắn, trang trọng).
-- **Chiều cao các thẻ bằng nhau trong Lưới thẻ**: Trong cài đặt của khối Lưới thẻ (`IconCardGrid`), Hana có thể bật tùy chọn này để tất cả các thẻ trong cùng hàng tự động kéo giãn cao bằng nhau, giúp hàng thẻ luôn thẳng tắp và cân đối.
+- **Chiều cao các thẻ bằng nhau trong Lưới thẻ**: Trong cài đặt của khối Lưới thẻ (`IconCardGrid`), Hana có thể bật tùy chọn này để tất cả các thẻ trong cùng hàng tự động kéo giãn cao bằng nhau (hoạt động cho cả dạng lưới thường lẫn dạng hàng trượt ngang / carousel), giúp hàng thẻ luôn thẳng tắp và cân đối.
 
 ---
 
