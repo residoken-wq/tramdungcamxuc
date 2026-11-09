@@ -101,7 +101,9 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       // CD-02: Hero overlay has dark background color, not transparent
       const overlayEl = guest.locator('section[data-eb-hero] [aria-hidden="true"]').first()
       await expect(overlayEl).toBeVisible()
-      const overlayBg = await overlayEl.evaluate((el) => window.getComputedStyle(el).backgroundColor)
+      const overlayBg = await overlayEl.evaluate(
+        (el) => window.getComputedStyle(el).backgroundColor,
+      )
       expect(overlayBg).not.toBe('rgba(0, 0, 0, 0)')
       expect(overlayBg).toMatch(/rgba?\(40,\s*10,\s*96/)
 
@@ -130,18 +132,44 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       await expect(yogaCard.locator('a[href="#yoga-buddy"]')).toBeVisible()
 
       // CD-02: Slide 49 subtitle has text-transform: uppercase
-      const meTimeSubtitle = meTimeCard.locator('div').filter({ hasText: /thương mình theo cách riêng/i }).first()
-      const subtitleTransform = await meTimeSubtitle.evaluate((el) => window.getComputedStyle(el).textTransform)
+      const meTimeSubtitle = meTimeCard
+        .locator('div')
+        .filter({ hasText: /thương mình theo cách riêng/i })
+        .first()
+      const subtitleTransform = await meTimeSubtitle.evaluate(
+        (el) => window.getComputedStyle(el).textTransform,
+      )
       expect(subtitleTransform).toBe('uppercase')
 
       // Card 2 (coming soon) has NO link
       expect(await comingSoonCard.locator('a').count()).toBe(0)
 
       // Prompt check: Top color stripes on card 1 and 2, but NOT on coming-soon card
-      const meTimeBorderTop = await meTimeCard.evaluate((el) => window.getComputedStyle(el).borderTopWidth)
+      const meTimeBorderTop = await meTimeCard.evaluate(
+        (el) => window.getComputedStyle(el).borderTopWidth,
+      )
       expect(meTimeBorderTop).toBe('6px')
-      const comingSoonBorderTop = await comingSoonCard.evaluate((el) => window.getComputedStyle(el).borderTopWidth)
+      const comingSoonBorderTop = await comingSoonCard.evaluate(
+        (el) => window.getComputedStyle(el).borderTopWidth,
+      )
       expect(comingSoonBorderTop).not.toBe('6px')
+
+      // CD-03: Slide 49 (carousel equalHeight) – all 3 cards equal height (diff <= 1px), including "Coming soon"
+      const meTimeBox = await meTimeCard.boundingBox()
+      const yogaBox = await yogaCard.boundingBox()
+      const comingSoonBox = await comingSoonCard.boundingBox()
+      expect(meTimeBox).toBeTruthy()
+      expect(yogaBox).toBeTruthy()
+      expect(comingSoonBox).toBeTruthy()
+      if (meTimeBox && yogaBox && comingSoonBox) {
+        expect(Math.abs(meTimeBox.height - yogaBox.height)).toBeLessThanOrEqual(1)
+        expect(Math.abs(meTimeBox.height - comingSoonBox.height)).toBeLessThanOrEqual(1)
+      }
+
+      if (process.env.CD03_SCREENSHOT) {
+        const spaceSection = spaceHeading.locator('xpath=ancestor::section[1]')
+        await spaceSection.screenshot({ path: process.env.CD03_SCREENSHOT })
+      }
 
       // Anchor scroll targets exist on page
       await expect(guest.locator('#me-time')).toBeVisible()
@@ -150,10 +178,33 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       // CD-02: Slide 51 center card "Me Time của tui" title color accent-pink and font-size >= 24px
       const centerCardHeading = guest.getByRole('heading', { name: /me time của tui/i }).first()
       await expect(centerCardHeading).toBeVisible()
-      const centerTitleColor = await centerCardHeading.evaluate((el) => window.getComputedStyle(el).color)
+      const centerTitleColor = await centerCardHeading.evaluate(
+        (el) => window.getComputedStyle(el).color,
+      )
       expect(centerTitleColor).toMatch(/rgb\(239,\s*59,\s*131\)/)
-      const centerTitleSizeDesktop = await centerCardHeading.evaluate((el) => parseFloat(window.getComputedStyle(el).fontSize))
+      const centerTitleSizeDesktop = await centerCardHeading.evaluate((el) =>
+        parseFloat(window.getComputedStyle(el).fontSize),
+      )
       expect(centerTitleSizeDesktop).toBeGreaterThanOrEqual(24)
+
+      // CD-03: Slide 51 (grid equalHeight) – all 3 cards equal height (diff <= 1px)
+      const weTimeHeading = guest.getByRole('heading', { name: /^we time$/i }).first()
+      const youMeHeading = guest.getByRole('heading', { name: /^you & me$/i }).first()
+      await expect(weTimeHeading).toBeVisible()
+      await expect(youMeHeading).toBeVisible()
+      const weTimeCard = weTimeHeading.locator('xpath=ancestor::*[@data-eb-card][1]')
+      const centerCard = centerCardHeading.locator('xpath=ancestor::*[@data-eb-card][1]')
+      const youMeCard = youMeHeading.locator('xpath=ancestor::*[@data-eb-card][1]')
+      const weTimeBox = await weTimeCard.boundingBox()
+      const centerBox = await centerCard.boundingBox()
+      const youMeBox = await youMeCard.boundingBox()
+      expect(weTimeBox).toBeTruthy()
+      expect(centerBox).toBeTruthy()
+      expect(youMeBox).toBeTruthy()
+      if (weTimeBox && centerBox && youMeBox) {
+        expect(Math.abs(weTimeBox.height - centerBox.height)).toBeLessThanOrEqual(1)
+        expect(Math.abs(weTimeBox.height - youMeBox.height)).toBeLessThanOrEqual(1)
+      }
 
       // Slide 55: 2 cards in one row on desktop 1440
       const routineLeft = guest.getByRole('heading', { name: /hành trình 30 phút/i })
@@ -172,7 +223,9 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       // Slide 57: CTASection solid with deep-navy bg and 2 buttons
       const ctaSection = guest.locator('[data-cta-solid]').first()
       await expect(ctaSection).toBeVisible()
-      const ctaBgColor = await ctaSection.evaluate((el) => window.getComputedStyle(el).backgroundColor)
+      const ctaBgColor = await ctaSection.evaluate(
+        (el) => window.getComputedStyle(el).backgroundColor,
+      )
       expect(ctaBgColor).toMatch(/rgb\(40,\s*10,\s*96\)/)
 
       await expect(guest.getByRole('link', { name: /tham gia me time/i })).toBeVisible()
@@ -183,7 +236,9 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       await guest.waitForTimeout(300)
 
       // CD-02: Slide 51 center card title size >= 24px on mobile
-      const centerTitleSizeMobile = await centerCardHeading.evaluate((el) => parseFloat(window.getComputedStyle(el).fontSize))
+      const centerTitleSizeMobile = await centerCardHeading.evaluate((el) =>
+        parseFloat(window.getComputedStyle(el).fontSize),
+      )
       expect(centerTitleSizeMobile).toBeGreaterThanOrEqual(24)
 
       const scrollWidth = await guest.evaluate(() => document.documentElement.scrollWidth)
@@ -200,4 +255,3 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
     }
   })
 })
-
