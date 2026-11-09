@@ -2,6 +2,7 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { Columns, type ColumnsProps } from '@/components/site/Columns'
 import { BRAND_COLOR_OPTIONS, ELEMENT_BLOCK_TYPES, PADDING_OPTIONS } from '../constants'
+import { vi } from '@/lib/i18n/vi'
 
 // No nested Columns or heroes. Card, Stat, ServiceCard and PackageCard may sit in a column
 // (PK-05); the other child blocks only make sense inside their own parent.

@@ -636,7 +636,7 @@ export function StyleField({
                   })
                 }
               />
-              <SelectRow
+              <SelectControl
                 label={vi.cd04?.cardAccentShape?.label || 'Dáng vạch'}
                 value={style.cardAccentShape || 'rounded'}
                 options={[
@@ -649,7 +649,7 @@ export function StyleField({
                     label: vi.cd04?.cardAccentShape?.flat || 'Thẳng (Vuông 2 góc trên)',
                   },
                 ]}
-                onChange={(v) =>
+                onChange={(v?: string) =>
                   update({
                     cardAccentShape: v === 'flat' ? 'flat' : undefined,
                   })

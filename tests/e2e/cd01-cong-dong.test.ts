@@ -68,6 +68,29 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
               },
             }
           }
+          if (item.type === 'ImageText' && item.props?.id === 'community-yoga-buddy') {
+            return {
+              ...item,
+              props: {
+                ...item.props,
+                imageUrl: '/brand/sample-cover.svg',
+                imageAlt: 'Ảnh Yoga Buddy mẫu',
+              },
+            }
+          }
+          if (item.type === 'PhotoGallery' && Array.isArray(item.props?.items)) {
+            return {
+              ...item,
+              props: {
+                ...item.props,
+                items: item.props.items.map((pi: any, idx: number) => ({
+                  ...pi,
+                  imageUrl: '/brand/sample-cover.svg',
+                  alt: pi.alt || `Ảnh khoảnh khắc ${idx + 1}`,
+                })),
+              },
+            }
+          }
           return item
         }),
       }
@@ -166,6 +189,22 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
         expect(Math.abs(meTimeBox.height - comingSoonBox.height)).toBeLessThanOrEqual(1)
       }
 
+      // CD-04: Slide 49 – side arrows are located to the left of the first card and right of the last card
+      const spacePrevBtn = spaceHeading
+        .locator('xpath=ancestor::section[1]//button[@aria-label="Thẻ trước"]')
+        .first()
+      const spaceNextBtn = spaceHeading
+        .locator('xpath=ancestor::section[1]//button[@aria-label="Thẻ tiếp theo"]')
+        .first()
+      await expect(spacePrevBtn).toBeVisible()
+      await expect(spaceNextBtn).toBeVisible()
+      const spacePrevBox = await spacePrevBtn.boundingBox()
+      const spaceNextBox = await spaceNextBtn.boundingBox()
+      if (spacePrevBox && spaceNextBox && meTimeBox && comingSoonBox) {
+        expect(spacePrevBox.x + spacePrevBox.width).toBeLessThanOrEqual(meTimeBox.x + 1)
+        expect(spaceNextBox.x).toBeGreaterThanOrEqual(comingSoonBox.x + comingSoonBox.width - 1)
+      }
+
       if (process.env.CD03_SCREENSHOT) {
         const spaceSection = spaceHeading.locator('xpath=ancestor::section[1]')
         await spaceSection.screenshot({ path: process.env.CD03_SCREENSHOT })
@@ -174,6 +213,26 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       // Anchor scroll targets exist on page
       await expect(guest.locator('#me-time')).toBeVisible()
       await expect(guest.locator('#yoga-buddy')).toBeVisible()
+
+      // CD-04: Slide 54 – Yoga Buddy image touches top and bottom of section (diff <= 1px)
+      const yogaContainer = guest.locator('#yoga-buddy')
+      const yogaSection =
+        (await yogaContainer.locator('section').count()) > 0
+          ? yogaContainer.locator('section').first()
+          : yogaContainer
+      await expect(yogaSection).toBeVisible()
+      const yogaImg = yogaSection.locator('img').first()
+      await expect(yogaImg).toBeVisible()
+      const yogaSecBox = await yogaSection.boundingBox()
+      const yogaImgBox = await yogaImg.boundingBox()
+      expect(yogaSecBox).toBeTruthy()
+      expect(yogaImgBox).toBeTruthy()
+      if (yogaSecBox && yogaImgBox) {
+        expect(Math.abs(yogaImgBox.y - yogaSecBox.y)).toBeLessThanOrEqual(1)
+        expect(
+          Math.abs(yogaImgBox.y + yogaImgBox.height - (yogaSecBox.y + yogaSecBox.height)),
+        ).toBeLessThanOrEqual(1)
+      }
 
       // CD-02: Slide 51 center card "Me Time của tui" title color accent-pink and font-size >= 24px
       const centerCardHeading = guest.getByRole('heading', { name: /me time của tui/i }).first()
@@ -186,6 +245,20 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
         parseFloat(window.getComputedStyle(el).fontSize),
       )
       expect(centerTitleSizeDesktop).toBeGreaterThanOrEqual(24)
+
+      // CD-04: Slide 51 – cards have flat top corners (border-top-left-radius = 0px) and muted eyebrow (deep-navy 70%)
+      const centerCardBorderRadius = await centerCardHeading
+        .locator('xpath=ancestor::*[@data-eb-card][1]')
+        .evaluate((el) => window.getComputedStyle(el).borderTopLeftRadius)
+      expect(centerCardBorderRadius).toBe('0px')
+
+      const centerEyebrow = centerCardHeading
+        .locator('xpath=ancestor::*[@data-eb-card][1]')
+        .locator('.tracking-wider')
+        .first()
+      await expect(centerEyebrow).toBeVisible()
+      const eyebrowColor = await centerEyebrow.evaluate((el) => window.getComputedStyle(el).color)
+      expect(eyebrowColor).toMatch(/rgba?\(40,\s*10,\s*96,\s*(0\.7|0\.69\d*)\)/)
 
       // CD-03: Slide 51 (grid equalHeight) – all 3 cards equal height (diff <= 1px)
       const weTimeHeading = guest.getByRole('heading', { name: /^we time$/i }).first()
@@ -218,6 +291,45 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
         expect(leftBox.x).toBeLessThan(rightBox.x)
         // Check they are horizontally aligned (same row, y difference small)
         expect(Math.abs(leftBox.y - rightBox.y)).toBeLessThan(150)
+      }
+
+      // CD-04: Slide 55 – 2 cards equal height (diff <= 1px)
+      const routineLeftCard = routineLeft.locator('xpath=ancestor::*[@data-eb-card][1]')
+      const routineRightCard = routineRight.locator('xpath=ancestor::*[@data-eb-card][1]')
+      await expect(routineLeftCard).toBeVisible()
+      await expect(routineRightCard).toBeVisible()
+      const routineLeftBox = await routineLeftCard.boundingBox()
+      const routineRightBox = await routineRightCard.boundingBox()
+      expect(routineLeftBox).toBeTruthy()
+      expect(routineRightBox).toBeTruthy()
+      if (routineLeftBox && routineRightBox) {
+        expect(Math.abs(routineLeftBox.height - routineRightBox.height)).toBeLessThanOrEqual(1)
+      }
+
+      if (process.env.CD04_SCREENSHOT_DIR) {
+        const dir = process.env.CD04_SCREENSHOT_DIR
+        const spaceSection = spaceHeading.locator('xpath=ancestor::section[1]')
+        await spaceSection.screenshot({ path: `${dir}/slide-49-1440.png` })
+
+        const scheduleSection = guest
+          .getByRole('heading', { name: /lịch trình 5:00 AM/i })
+          .locator('xpath=ancestor::section[1]')
+        await scheduleSection.screenshot({ path: `${dir}/slide-51-1440.png` })
+
+        const meTimeMoments = guest
+          .getByRole('heading', { name: /khoảnh khắc me time/i })
+          .locator('xpath=ancestor::section[1]')
+        await meTimeMoments.screenshot({ path: `${dir}/slide-53-1440.png` })
+
+        await yogaSection.screenshot({ path: `${dir}/slide-54-1440.png` })
+
+        const yogaSchedule = routineLeft.locator('xpath=ancestor::section[1]')
+        await yogaSchedule.screenshot({ path: `${dir}/slide-55-1440.png` })
+
+        const yogaMoments = guest
+          .getByRole('heading', { name: /góc nhỏ yoga buddy/i })
+          .locator('xpath=ancestor::section[1]')
+        await yogaMoments.screenshot({ path: `${dir}/slide-56-1440.png` })
       }
 
       // Slide 57: CTASection solid with deep-navy bg and 2 buttons
