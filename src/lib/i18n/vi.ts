@@ -3631,6 +3631,17 @@ export const vi = {
       secondaryButtonVariant: 'Kiểu nút phụ',
     },
   },
+  cd02: {
+    card: {
+      titleSizeXl: 'Rất lớn (XL)',
+      subtitleCase: 'Kiểu chữ tiêu đề phụ',
+      subtitleCaseNone: 'Giữ nguyên chữ thường (Mặc định)',
+      subtitleCaseUpper: 'IN HOA ĐẬM (UPPERCASE)',
+    },
+    iconCardGrid: {
+      equalHeight: 'Chiều cao các thẻ bằng nhau',
+    },
+  },
   eb16: {
     replaceEntirePage: 'Thay toàn bộ trang',
     back: 'Quay lại',

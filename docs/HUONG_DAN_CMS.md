@@ -2211,8 +2211,11 @@ Khi nhấp chọn một chiếc thẻ, cột bên phải sẽ hiển thị các 
 - **Màu tiêu đề & Màu nội dung**: Hệ thống tự động lọc danh sách màu an toàn (đạt chuẩn tương phản WCAG AA dựa trên màu nền của thẻ):
   - Khi thẻ ở nền sáng: Hệ thống gợi ý `Xanh thẫm (Deep Navy)` và `Hồng sen (Bright Magenta)`.
   - Khi thẻ ở nền tối: Hệ thống gợi ý `Trắng` và `Hồng phấn (Soft Pink)`.
-- **Cỡ chữ tiêu đề & Cỡ chữ nội dung**: Lựa chọn linh hoạt `Nhỏ` (`sm`), `Vừa` (`md`), `Lớn` (`lg`).
+- **Cỡ chữ tiêu đề**: Lựa chọn linh hoạt `Nhỏ` (`sm`), `Vừa` (`md`), `Lớn` (`lg`), và `Rất lớn (XL)`. Khi chọn cỡ `Rất lớn (XL)` (tiêu đề hiển thị từ 24px trở lên trên mọi màn hình), thẻ nền sáng có thể dùng màu **Hồng nhấn (Accent Pink)** cho tiêu đề mà vẫn đảm bảo độ tương phản chuẩn WCAG AA.
+- **Cỡ chữ nội dung**: `Nhỏ` (`sm`), `Vừa` (`md`), `Lớn` (`lg`).
+- **Kiểu chữ tiêu đề phụ**: Tùy chọn `Bình thường` hoặc `IN HOA ĐẬM` (`uppercase`), giúp hiển thị dòng tiêu đề phụ dạng chữ in hoa đậm theo chuẩn thiết kế (như ở trang Cộng đồng).
 - **Căn lề**: `Căn trái` (mặc định) hoặc `Căn giữa` (phù hợp với các thẻ ngắn, trang trọng).
+- **Chiều cao các thẻ bằng nhau trong Lưới thẻ**: Trong cài đặt của khối Lưới thẻ (`IconCardGrid`), Hana có thể bật tùy chọn này để tất cả các thẻ trong cùng hàng tự động kéo giãn cao bằng nhau, giúp hàng thẻ luôn thẳng tắp và cân đối.
 
 ---
 
@@ -3026,7 +3029,7 @@ Khối `Hero Ảnh biểu tượng` (`HeroImage`) hỗ trợ 3 kiểu bố cục
    - Chọn ảnh từ Thư viện media (bắt buộc ảnh phải có mô tả alt).
 4. **Tùy chỉnh lớp phủ và hiệu ứng:**
    - **Tông phủ nền:** Chọn _Phủ tối (chữ trắng)_ (màu xanh thẫm `deep-navy`) hoặc _Phủ sáng (chữ tím than)_ (màu ngà ấm `warm-ivory`). Chữ và các nút sẽ tự động đổi màu tương phản chuẩn WCAG AA để luôn dễ đọc.
-   - **Độ đậm lớp phủ:** Chọn _Vừa (60%)_, _Đậm (75%)_ hoặc _Rất đậm (85%)_. Muốn chữ đọc rõ hơn thì tăng độ đậm lớp phủ; hệ thống không có lựa chọn nhạt hơn 60% để đảm bảo luôn đọc được chữ trên mọi loại ảnh nền.
+   - **Độ đậm lớp phủ:** Chọn _Vừa (60%)_, _Đậm (75%)_ hoặc _Rất đậm (85%)_. Muốn chữ đọc rõ hơn thì tăng độ đậm lớp phủ; hệ thống không có lựa chọn nhạt hơn 60% để đảm bảo luôn đọc được chữ trên mọi loại ảnh nền. *(Bản cập nhật CD-02: Toàn bộ 3 mức phủ 60%, 75% và 85% cho cả tông sáng và tông tối nay hoạt động chuẩn xác 100% trên cả bản dựng thử và trang công khai, loại bỏ triệt để hiện tượng lớp phủ bị trong suốt do trình quét kiểu trước đây).*
    - **Độ mờ ảnh:** Chọn _Không mờ_, _Mờ nhẹ (4px)_ hoặc _Mờ vừa (8px)_ để tạo chiều sâu dịu mắt cho hậu cảnh.
    - **Vị trí trọng tâm ảnh:** Chọn 1 trong 9 vị trí căn chỉnh ảnh (Chính giữa, Trên – giữa, Dưới – giữa...).
    - **Căn lề nội dung:** Chọn _Căn giữa_ hoặc _Căn trái_.

@@ -69,7 +69,7 @@ async function main() {
 
   try {
     const controller = new AbortController()
-    const checkTimeout = setTimeout(() => controller.abort(), 5000)
+    const checkTimeout = setTimeout(() => controller.abort(), 15000)
     const probe = await fetch(`${baseURL}/api/users/init`, { signal: controller.signal })
     clearTimeout(checkTimeout)
     if (!probe.ok && probe.status !== 200) {

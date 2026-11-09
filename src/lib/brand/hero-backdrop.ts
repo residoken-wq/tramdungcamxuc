@@ -56,6 +56,11 @@ export function heroBackdropColors(tone: HeroOverlayTone = 'dark'): HeroBackdrop
   }
 }
 
+export const OVERLAY_CLASSES = {
+  dark: { md: 'bg-deep-navy/60', lg: 'bg-deep-navy/75', xl: 'bg-deep-navy/85' },
+  light: { md: 'bg-warm-ivory/60', lg: 'bg-warm-ivory/75', xl: 'bg-warm-ivory/85' },
+} as const
+
 /**
  * Returns Tailwind background + opacity class for the backdrop overlay.
  */
@@ -63,13 +68,8 @@ export function heroOverlayClass(
   tone: HeroOverlayTone = 'dark',
   strength: HeroOverlayStrength = 'lg',
 ): string {
-  const opacities: Record<HeroOverlayStrength, string> = {
-    md: '60',
-    lg: '75',
-    xl: '85',
-  }
-  const op = opacities[strength] ?? '75'
-  return tone === 'dark' ? `bg-deep-navy/${op}` : `bg-warm-ivory/${op}`
+  const toneMap = OVERLAY_CLASSES[tone] ?? OVERLAY_CLASSES.dark
+  return toneMap[strength] ?? toneMap.lg
 }
 
 /**

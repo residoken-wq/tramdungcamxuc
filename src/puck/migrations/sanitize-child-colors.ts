@@ -45,7 +45,7 @@ function sanitizeChildItem(child: PuckItem, parent: PuckItem): void {
 
   if (childType === 'Card') {
     const cardRealBg = getCardRealBg(parent)
-    const isTitleLarge = childProps.titleSize === 'lg'
+    const isTitleLarge = childProps.titleSize === 'lg' || childProps.titleSize === 'xl'
     sanitizeColorProp(childProps, 'titleColor', cardRealBg, isTitleLarge, 'title')
     sanitizeColorProp(childProps, 'textColor', cardRealBg, false, 'text')
   } else if (childType === 'Stat') {
