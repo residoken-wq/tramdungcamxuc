@@ -36,6 +36,14 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
         { label: '3 cột', value: '3' },
       ],
     },
+    equalHeight: {
+      type: 'radio',
+      label: vi.cd04?.columns?.equalHeight || 'Chiều cao các thẻ bằng nhau',
+      options: [
+        { label: vi.cd04?.columns?.auto || 'Tự động theo nội dung (Mặc định)', value: false },
+        { label: vi.cd04?.columns?.equal || 'Bằng nhau (Đầy đủ hàng)', value: true },
+      ],
+    },
     col1: {
       type: 'slot',
       label: 'Nội dung Cột 1',
@@ -78,6 +86,7 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
     titleLine2: '',
     emotionLine: '',
     numColumns: '2',
+    equalHeight: false,
     gap: 'md',
     bgColor: 'warm-ivory',
     padding: 'md',

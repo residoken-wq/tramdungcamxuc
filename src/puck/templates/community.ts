@@ -368,6 +368,7 @@ export const communityTemplate: Data = {
         titleLine2: '',
         headerAlign: 'center',
         numColumns: '2',
+        equalHeight: true,
         gap: 'lg',
         bgColor: 'soft-pink',
         padding: 'lg',

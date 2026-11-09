@@ -8,6 +8,7 @@ export interface ColumnsProps {
   titleLine2?: string
   emotionLine?: string
   numColumns?: '2' | '3' | 2 | 3
+  equalHeight?: boolean
   col1?: ReactNode | React.ComponentType
   col2?: ReactNode | React.ComponentType
   col3?: ReactNode | React.ComponentType
@@ -54,6 +55,7 @@ export function Columns({
   titleLine2,
   emotionLine,
   numColumns = '2',
+  equalHeight = false,
   col1,
   col2,
   col3,
@@ -65,6 +67,9 @@ export function Columns({
   const hasHeader = Boolean(titleLine1 || titleLine2 || seriesLabel)
   const is3Cols = String(numColumns) === '3'
   const gridColsClass = is3Cols ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'
+  const colEqualHeightClasses = equalHeight
+    ? '[&>[data-eb-card]]:self-stretch [&>[data-eb-card]]:flex-1 [&>*:not([data-eb-card])]:flex [&>*:not([data-eb-card])]:flex-col [&>*:not([data-eb-card])]:flex-1 [&>*>[data-eb-card]]:flex-1'
+    : ''
 
   return (
     <section
@@ -91,10 +96,22 @@ export function Columns({
             />
           </div>
         )}
-        <div className={`grid ${gridColsClass} ${GAPS[gap]} items-start`}>
-          <div className="min-w-0 w-full flex flex-col">{renderSlotContent(col1)}</div>
-          <div className="min-w-0 w-full flex flex-col">{renderSlotContent(col2)}</div>
-          {is3Cols && <div className="min-w-0 w-full flex flex-col">{renderSlotContent(col3)}</div>}
+        <div
+          className={`grid ${gridColsClass} ${GAPS[gap]} ${
+            equalHeight ? 'items-stretch' : 'items-start'
+          }`}
+        >
+          <div className={`min-w-0 w-full flex flex-col ${colEqualHeightClasses}`.trim()}>
+            {renderSlotContent(col1)}
+          </div>
+          <div className={`min-w-0 w-full flex flex-col ${colEqualHeightClasses}`.trim()}>
+            {renderSlotContent(col2)}
+          </div>
+          {is3Cols && (
+            <div className={`min-w-0 w-full flex flex-col ${colEqualHeightClasses}`.trim()}>
+              {renderSlotContent(col3)}
+            </div>
+          )}
         </div>
       </div>
     </section>
