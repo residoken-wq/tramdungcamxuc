@@ -725,14 +725,35 @@ const basePuckConfig: Config<PageComponentsProps> = {
               label: vi.cd01?.imageText?.quoteStyleClean || 'Thuần chữ nghiêng (Không vạch viền)',
               value: 'clean',
             },
+            {
+              // PK-34: soft-pink box, always right under the title (position is ignored).
+              label: vi.pk31?.hanaStory?.quoteStyleBox || 'Hộp nổi bật (Đặt trên đoạn văn)',
+              value: 'box',
+            },
           ],
+        },
+        highlights: {
+          type: 'array',
+          label: vi.pk31?.hanaStory?.highlights || 'Các điểm nhấn (thẻ nhỏ đánh số)',
+          max: 4,
+          arrayFields: {
+            title: { type: 'text', label: vi.pk31?.hanaStory?.highlightTitle || 'Tiêu đề thẻ' },
+            text: {
+              type: 'textarea',
+              label: vi.pk31?.hanaStory?.highlightText || 'Nội dung mô tả',
+            },
+          },
+          getItemSummary: (item) => item?.title || 'Điểm nhấn',
         },
         items: {
           type: 'array',
           label: vi.cd01?.imageText?.items || 'Danh sách nguyên tắc / tôn chỉ',
           arrayFields: {
             title: { type: 'text', label: vi.cd01?.imageText?.itemTitle || 'Tiêu đề nguyên tắc' },
-            text: { type: 'textarea', label: vi.cd01?.imageText?.itemText || 'Nội dung nguyên tắc' },
+            text: {
+              type: 'textarea',
+              label: vi.cd01?.imageText?.itemText || 'Nội dung nguyên tắc',
+            },
           },
         },
         showPlaceholderImage: {
@@ -797,6 +818,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         quoteStyle: 'callout',
         showPlaceholderImage: false,
         items: [],
+        highlights: [],
         mediaId: '',
         imageUrl: '',
         imageAlt: '',

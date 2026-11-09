@@ -2427,6 +2427,7 @@ export const vi = {
       zaloChatButton: 'Nhắn tin Zalo',
       linkedInLabel: 'LinkedIn của Trạm Dừng Cảm Xúc',
       facebookLabel: 'Facebook Fanpage của Trạm Dừng Cảm Xúc',
+      tiktokLabel: 'Kênh TikTok của Trạm Dừng Cảm Xúc',
       youtubeLabel: 'Kênh YouTube của Trạm Dừng Cảm Xúc',
     },
     contactForms: {
@@ -3126,7 +3127,7 @@ export const vi = {
       header: 'Đầu trang',
       footer: 'Chân trang',
     },
-    kindDesc: 'Chỉ chọn khi tạo mới. Đầu trang và chân trang được dùng trong Menu điều hướng.',
+    kindDesc: 'Đầu trang / chân trang: tạo bằng nút "Tạo … từ mẫu" trong Menu điều hướng.',
     headerBadge: 'Đầu trang',
     footerBadge: 'Chân trang',
     pageBadge: 'Trang',
@@ -4814,6 +4815,31 @@ export const vi = {
       footerBgWarmIvory: 'Trắng ngà (Warm Ivory - Mặc định)',
       footerBgDeepNavy: 'Xanh thẫm (Deep Navy)',
     },
+  },
+  pk32: {
+    socialLabels: {
+      facebook: 'Facebook',
+      tiktok: 'TikTok',
+      youtube: 'YouTube',
+      linkedin: 'LinkedIn',
+      zalo: 'Nhóm Zalo',
+      shopee: 'Shopee',
+    },
+    // QA PK-32: the builder does not load site settings, so this shows even when links exist.
+    emptyHint:
+      'Icon mạng xã hội lấy từ Cài đặt Website → Liên hệ & Zalo (ô trống = không hiện). Xem ở trang công khai.',
+    newTab: 'mở tab mới',
+  },
+  pk33: {
+    headerTitle: 'Đầu trang chính',
+    footerTitle: 'Chân trang chính',
+    createHeaderFromTemplate: 'Tạo đầu trang từ mẫu',
+    createFooterFromTemplate: 'Tạo chân trang từ mẫu',
+    creating: 'Đang tạo...',
+    builderHint:
+      'Dựng xong, bấm Xuất bản trong builder, rồi chọn Nguồn = Dựng bằng Builder và bấm Lưu.',
+    errorOnlyOwner: 'Chỉ chủ sở hữu (Owner) mới có quyền tạo đầu trang / chân trang từ mẫu.',
+    errorCreateFailed: 'Không thể tạo trang từ mẫu. Vui lòng thử lại.',
   },
 } as const
 

@@ -15,6 +15,10 @@ import {
 } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { stripWrappingQuotes } from '@/lib/text/quotes'
+import { StoryHighlights, type StoryHighlightItem } from './StoryHighlights'
+
+export type ImageTextHighlightItem = StoryHighlightItem
 
 export interface ImageTextItem {
   [key: string]: any
@@ -32,7 +36,10 @@ export interface ImageTextProps {
   content: string
   quote?: string
   quotePosition?: 'bottom' | 'below-title'
-  quoteStyle?: 'callout' | 'clean'
+  /** CD-01: callout | clean. PK-34: box = soft-pink box, always right under the title. */
+  quoteStyle?: 'callout' | 'clean' | 'box'
+  /** PK-34: numbered cards (max 4) after the text. */
+  highlights?: StoryHighlightItem[]
   showPlaceholderImage?: boolean
   items?: ImageTextItem[]
   mediaId?: string
@@ -90,6 +97,7 @@ export function ImageText({
   quoteStyle = 'callout',
   showPlaceholderImage = false,
   items,
+  highlights = [],
   mediaId,
   imageUrl,
   imageAlt,
@@ -113,6 +121,9 @@ export function ImageText({
 }: ImageTextProps & { id?: string }) {
   const isEditing = Boolean(puck?.isEditing)
   const isDeepNavy = bgColor === 'deep-navy'
+  // QA PK-34: Hana often types the quote marks herself; avoid “"…"” (same as HanaStory).
+  const cleanQuote = stripWrappingQuotes(quote)
+  const isBoxQuote = quoteStyle === 'box'
   const textColorClass = isDeepNavy ? 'text-white' : 'text-deep-navy'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -275,7 +286,24 @@ export function ImageText({
               />
             </h2>
 
-            {quote && quotePosition === 'below-title' && (
+            {cleanQuote && isBoxQuote && (
+              <div
+                className={`mb-6 p-5 sm:p-6 rounded-card border shadow-sm ${
+                  isDeepNavy
+                    ? 'bg-white/10 border-white/20 text-soft-pink'
+                    : 'bg-soft-pink border-accent-pink/20 text-bright-magenta'
+                }`}
+              >
+                <blockquote
+                  {...textTarget(id, 'quote')}
+                  className="font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line"
+                >
+                  &ldquo;{cleanQuote}&rdquo;
+                </blockquote>
+              </div>
+            )}
+
+            {cleanQuote && !isBoxQuote && quotePosition === 'below-title' && (
               <p
                 {...textTarget(id, 'quote')}
                 className={
@@ -286,7 +314,8 @@ export function ImageText({
                       }`
                 }
               >
-                {quoteStyle === 'clean' ? quote : `\u201C${quote}\u201D`}
+                {/* CD-01 'clean' prints exactly what was typed */}
+                {quoteStyle === 'clean' ? quote : `\u201C${cleanQuote}\u201D`}
               </p>
             )}
 
@@ -322,15 +351,19 @@ export function ImageText({
               </div>
             )}
 
-            {quote && quotePosition === 'bottom' && (
+            {cleanQuote && !isBoxQuote && quotePosition === 'bottom' && (
               <blockquote
                 {...textTarget(id, 'quote')}
                 className={`mb-6 border-l-2 border-accent-pink pl-4 font-quote text-lg sm:text-xl italic leading-relaxed ${
                   isDeepNavy ? 'text-soft-pink' : 'text-deep-navy'
                 }`}
               >
-                &ldquo;{quote}&rdquo;
+                &ldquo;{cleanQuote}&rdquo;
               </blockquote>
+            )}
+
+            {highlights && highlights.length > 0 && (
+              <StoryHighlights items={highlights} isDark={isDeepNavy} />
             )}
 
             {Boolean(buttonText && safeHref(buttonLink)) && (

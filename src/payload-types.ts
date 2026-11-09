@@ -235,7 +235,7 @@ export interface Page {
    */
   title: string;
   /**
-   * Chỉ chọn khi tạo mới. Đầu trang và chân trang được dùng trong Menu điều hướng.
+   * Đầu trang / chân trang: tạo bằng nút "Tạo … từ mẫu" trong Menu điều hướng.
    */
   kind?: ('page' | 'header' | 'footer') | null;
   /**
@@ -3732,6 +3732,10 @@ export interface SiteSetting {
    */
   youtubeUrl?: string | null;
   /**
+   * Dán link trang TikTok, VD: https://www.tiktok.com/@ten-trang. Để trống = không hiện.
+   */
+  tiktokUrl?: string | null;
+  /**
    * Nhập liên kết bắt đầu bằng https:// hoặc http://.
    */
   zaloGroupUrl?: string | null;
@@ -4789,6 +4793,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   linkedInUrl?: T;
   facebookUrl?: T;
   youtubeUrl?: T;
+  tiktokUrl?: T;
   zaloGroupUrl?: T;
   zaloChatUrl?: T;
   showFloatingChat?: T;

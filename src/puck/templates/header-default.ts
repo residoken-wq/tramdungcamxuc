@@ -12,15 +12,18 @@ export const headerDefaultTemplate: Data = {
       type: 'Container',
       props: {
         id: 'header-container',
+        // QA PK-33: Container has no padding prop; spacing goes through _style (16px / 24px sides).
+        _style: {
+          padding: { desktop: { top: 'sm', bottom: 'sm', left: 'md', right: 'md' } },
+        },
         width: 'boxed',
         contentWidth: 'xl',
-        padding: 'sm',
         layout: {
-          direction: 'row',
-          justify: 'between',
-          align: 'center',
-          wrap: 'nowrap',
-          gap: 'md',
+          direction: { desktop: 'row', mobile: 'row' },
+          justify: { desktop: 'between', mobile: 'between' },
+          align: { desktop: 'center', mobile: 'center' },
+          wrap: { desktop: 'nowrap', mobile: 'nowrap' },
+          gap: { desktop: 'md', mobile: 'sm' },
         },
         items: [
           {
@@ -28,6 +31,7 @@ export const headerDefaultTemplate: Data = {
             props: {
               id: 'header-logo',
               size: 'md',
+              align: 'left',
             },
           },
           {
@@ -43,6 +47,9 @@ export const headerDefaultTemplate: Data = {
             props: {
               id: 'header-account',
               showIcon: true,
+              _style: {
+                hideOn: ['tablet', 'mobile'],
+              },
             },
           },
           {
@@ -50,6 +57,10 @@ export const headerDefaultTemplate: Data = {
             props: {
               id: 'header-cta',
               variant: 'primary',
+              size: 'md',
+              _style: {
+                hideOn: ['tablet', 'mobile'],
+              },
             },
           },
         ],

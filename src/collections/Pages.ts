@@ -11,6 +11,7 @@ import { getTemplateData } from '@/puck/templates'
 import { validatePageLockedBlocks, validatePageKindBlocks } from '@/puck/locks'
 import { guardCustomCodeHook } from '@/puck/custom-code-guard'
 import { vi } from '../lib/i18n/vi'
+import { isOwnerUser } from '../lib/auth/access'
 
 export function normalizePageSlug(value: string, req?: Partial<PayloadRequest>): string {
   const trimmed = value.trim()
@@ -244,6 +245,41 @@ export const Pages = {
     beforeChange: [applyTemplateOnCreate, guardCustomCodeHook],
     afterChange: [revalidatePage],
   },
+  endpoints: [
+    {
+      path: '/create-from-template',
+      method: 'post' as const,
+      // REVIEW-REQUIRED: Chỉ chủ sở hữu (Owner) mới có quyền tạo đầu trang / chân trang từ mẫu
+      handler: async (req: PayloadRequest) => {
+        if (!isOwnerUser(req.user)) {
+          return Response.json({ message: vi.pk33.errorOnlyOwner }, { status: 403 })
+        }
+        let body: any = {}
+        try {
+          if (typeof req.json === 'function') {
+            body = await req.json()
+          }
+        } catch {
+          // empty body
+        }
+        const kind = body?.kind
+        if (kind !== 'header' && kind !== 'footer') {
+          return Response.json({ message: 'Invalid kind' }, { status: 400 })
+        }
+        const title = kind === 'header' ? vi.pk33.headerTitle : vi.pk33.footerTitle
+        const newPage = await req.payload.create({
+          collection: 'pages',
+          data: {
+            title,
+            kind,
+          },
+          draft: true,
+          req,
+        })
+        return Response.json({ id: newPage.id })
+      },
+    },
+  ],
   versions: { drafts: { autosave: { interval: 30000 } } },
 }
 

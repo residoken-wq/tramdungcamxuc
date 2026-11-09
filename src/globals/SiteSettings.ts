@@ -208,6 +208,13 @@ export const SiteSettings: GlobalConfig = {
             url('linkedInUrl', 'LinkedIn'),
             url('facebookUrl', 'Facebook / Fanpage'),
             url('youtubeUrl', 'YouTube'),
+            {
+              ...url('tiktokUrl', 'TikTok'),
+              admin: {
+                description:
+                  'Dán link trang TikTok, VD: https://www.tiktok.com/@ten-trang. Để trống = không hiện.',
+              },
+            },
             url('zaloGroupUrl', 'Nhóm Zalo'),
             url('zaloChatUrl', 'Liên kết trò chuyện Zalo'),
             checkbox('showFloatingChat', 'Hiện nút trò chuyện Zalo'),

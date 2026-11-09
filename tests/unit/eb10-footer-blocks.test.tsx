@@ -71,7 +71,7 @@ describe('EB-10: Footer blocks and kind block validation rules', () => {
         puck: {} as any,
       }),
     )
-    const shopeeLink = screen.getByRole('link', { name: 'Shopee' })
+    const shopeeLink = screen.getByRole('link', { name: /Shopee/ })
     expect(shopeeLink).toBeTruthy()
     expect(shopeeLink.getAttribute('href')).toBe('https://shopee.vn/tramdung')
   })

@@ -1954,7 +1954,17 @@ Trong đợt nâng cấp Sitemap v2 (SM-06), website được bổ sung trang **
      - **Hotline / Số điện thoại**: Số hotline hỗ trợ (có thể nhập `0901 234 567` hoặc `0901.234.567`, hệ thống tự chuẩn hóa link gọi điện thoại thông minh).
      - **Địa chỉ văn phòng**: Địa điểm gặp gỡ, làm việc trực tiếp.
      - **Link chat Zalo**: Đường dẫn kết nối nhanh qua Zalo Official Account hoặc Zalo cá nhân.
-     - **Mạng xã hội**: Đường dẫn LinkedIn, Facebook Fanpage và kênh YouTube chính thức của Trạm.
+     - **Mạng xã hội**: Hệ thống hỗ trợ 6 ô mạng xã hội và kênh bán hàng chính thức:
+       1. **Facebook / Fanpage**
+       2. **TikTok**: Nhập link trang TikTok cá nhân hoặc thương hiệu (VD: `https://www.tiktok.com/@ten-trang`).
+       3. **YouTube**: Kênh YouTube chính thức.
+       4. **LinkedIn**: Trang cá nhân hoặc doanh nghiệp.
+       5. **Nhóm Zalo**: Đường dẫn tham gia cộng đồng Zalo của Trạm.
+       6. **Gian hàng Shopee**: Đường dẫn gian hàng Shopee của Hana.
+     - **Thứ tự hiển thị icon ở Chân trang (Footer)**: Các biểu tượng mạng xã hội dạng nút tròn 40×40px xuất hiện theo đúng thứ tự: **Facebook → TikTok → YouTube → LinkedIn → Nhóm Zalo → Shopee**.
+     - **Nguyên tắc hiển thị**:
+       - Ô nào để trống = tự động không hiện biểu tượng đó ở chân trang và trang Liên hệ.
+       - Với chân trang dựng bằng kéo thả (Builder Puck), trang chân trang phải chứa khối **"Mạng xã hội"** (`SocialLinks`) thì các biểu tượng mới hiển thị. Nếu chân trang chưa có khối này, Hana chỉ cần kéo khối "Mạng xã hội" vào vị trí mong muốn trong giao diện dựng chân trang rồi bấm **Xuất bản**. Trong lúc chỉnh sửa trong builder, nếu chưa nhập link nào, khối sẽ hiện dòng hướng dẫn màu xám nhắc nhở thay vì hiện link mẫu gây hiểu nhầm.
   4. Bấm **Lưu thay đổi**. Tất cả các trang đang nhúng khối `ContactInfo` (như trang `/lien-he`) sẽ tự động cập nhật ngay lập tức.
   5. _Lưu ý_: Nếu mục nào để trống, thẻ tương ứng sẽ tự động ẩn trên website ngoài đời.
 
@@ -2884,17 +2894,23 @@ Khi bạn bấm chọn một khối cha:
 
 Hana có thể tự thiết kế và thay đổi bố cục của **Đầu trang (Header)** và **Chân trang (Footer)** toàn website bằng trình soạn thảo trực quan Puck mà không cần nhờ can thiệp vào code:
 
-#### 1. Cách tạo Đầu trang hoặc Chân trang mới
+#### 1. Cách tạo và bật Chân trang hoặc Đầu trang mới từ mẫu
 
-1. Vào mục **Trang web** -> **Trang nội dung** -> bấm **Tạo mới**.
-2. Đặt tiêu đề (ví dụ: `Đầu trang chiến dịch hè` hoặc `Chân trang chính`).
-3. Ở cột bên phải (Sidebar), tìm ô **Loại trang**:
-   - Chọn **Đầu trang** nếu muốn tạo thanh menu trên cùng.
-   - Chọn **Chân trang** nếu muốn tạo phần chân trang dưới cùng.
-   - _Lưu ý:_ Loại trang chỉ được chọn lúc tạo mới và không thể đổi sau khi đã lưu để đảm bảo an toàn cấu trúc.
-4. Bấm **Lưu nháp** hoặc **Xuất bản**:
-   - Hệ thống sẽ **tự động nạp mẫu chuẩn**: Mẫu Đầu trang sẽ có sẵn Logo, Menu chính, Nút tài khoản và Nút CTA; mẫu Chân trang sẽ có Logo, Câu khẩu hiệu, Mạng xã hội và Chân trang pháp lý.
-5. Bấm nút **Chỉnh sửa trực quan** để mở trình kéo thả.
+Hana tạo và kích hoạt Đầu trang / Chân trang chỉ bằng một cú nhấp chuột trực tiếp trong **Menu điều hướng**:
+
+1. Vào menu bên trái: **Hệ thống** -> **Menu điều hướng**.
+2. Cuộn xuống nhóm **Đầu trang / chân trang**:
+   - Khi ô `Trang chân trang (Builder)` đang trống, bấm nút **"Tạo chân trang từ mẫu"**.
+   - Hệ thống sẽ tự động tạo trang bản nháp có sẵn đầy đủ khối chuẩn (Logo, Câu khẩu hiệu, Mạng xã hội, Chân trang pháp lý) và tự điền vào ô liên kết.
+3. Trình soạn thảo Puck tự động mở ở tab mới:
+   - Hana chỉnh sửa bố cục hoặc màu sắc (ví dụ: chọn mục "Nền footer" = _Xanh thẫm (Deep Navy)_).
+   - Chỉnh xong, bấm **Xuất bản** ở góc trên bên phải.
+4. Quay lại trang **Menu điều hướng**:
+   - Chuyển **Nguồn chân trang** = _Dựng bằng Builder_.
+   - Bấm **Lưu thay đổi**. Ngay lập tức toàn bộ website sẽ áp dụng chân trang mới!
+5. **Muốn quay về footer cũ:** Trong **Menu điều hướng**, chọn lại **Nguồn chân trang** = _Giao diện mặc định (Code)_ và bấm **Lưu thay đổi**.
+
+Đầu trang làm tương tự bằng nút **"Tạo đầu trang từ mẫu"**.
 
 #### 2. Chỉnh sửa trong trình soạn thảo trực quan
 
@@ -3231,9 +3247,17 @@ Dành riêng cho trang Về Trạm và các trang thương hiệu cần trình b
      - *Nội dung mô tả*: Gõ câu diễn giải ý nghĩa giá trị.
    - Nhờ vậy, cụm tiếng Việt nằm riêng 1 dòng dưới tiêu đề và nổi bật đúng theo thiết kế Brand Book 2026.
 
-3. **Khối Câu chuyện Hana (`HanaStory`): 3 thẻ đánh số và Trích dẫn dạng hộp**:
-   - **Trích dẫn dạng hộp (`quoteStyle: 'box'`)**: Trích dẫn cảm xúc sẽ được đặt trong hộp nền Hồng phấn (`soft-pink`), chữ Hồng sen (`bright-magenta`) nghiêng và nằm **ngay phía trên** các đoạn văn tự sự, thu hút ánh nhìn đầu tiên của người đọc.
-   - **Các điểm nhấn (Thẻ nhỏ đánh số - `highlights`)**: Bổ sung danh sách tối đa 4 điểm nhấn (như `01 Quan sát / 02 Thấu hiểu / 03 Vững bước`). Mỗi thẻ có số to màu hồng sen, tiêu đề đậm và mô tả nhỏ. Trên màn hình máy tính (1440px) hiển thị thành 3 cột ngang gọn gàng; trên điện thoại (375px) tự động xếp dọc dễ đọc.
+3. **Khối "Ảnh & Chữ" (`ImageText`) và "Câu chuyện Hana" (`HanaStory`): 3 thẻ đánh số và Trích dẫn dạng hộp**:
+   - Cả 2 khối **"Ảnh & Chữ"** (dùng cho phần Brand Story "Tại sao lại là Trạm Dừng?") và **"Câu chuyện Hana"** đều có thêm 2 tùy chọn thiết kế mới:
+   - **Trích dẫn dạng hộp (`quoteStyle: 'box'`)**: Trích dẫn cảm xúc sẽ được đặt trong hộp nền Hồng phấn (`soft-pink`), chữ Hồng sen (`bright-magenta`) Playfair Display nghiêng và nằm **ngay phía trên** các đoạn văn, thu hút ánh nhìn đầu tiên của người đọc.
+   - **Các điểm nhấn (Thẻ nhỏ đánh số - `highlights`)**: Bổ sung danh sách tối đa 4 điểm nhấn (như `01 / 02 / 03`). Mỗi thẻ có số to màu hồng sen, tiêu đề đậm và mô tả nhỏ (`whitespace-pre-line`). Trên màn hình máy tính (1440px) hiển thị thành 3 cột ngang gọn gàng; trên điện thoại (375px) tự động xếp dọc dễ đọc.
+   - **Các bước cập nhật phần Brand Story trên trang Về Trạm**:
+     1. Mở trang Về Trạm trong Puck builder (`/admin/builder/[pageId]`).
+     2. Nhấp vào khối Brand Story (**"Ảnh & Chữ (Song hành)"**).
+     3. Ở cột thuộc tính bên phải: chọn **Kiểu trích dẫn** = *Hộp nổi bật (Đặt trên đoạn văn)*.
+        Hộp luôn nằm ngay dưới tiêu đề, ô **Vị trí trích dẫn** không áp dụng cho kiểu này. Hai kiểu còn lại (vạch hồng / thuần chữ nghiêng) giữ như cũ.
+     4. Tại mục **Các điểm nhấn (thẻ nhỏ đánh số)**, bấm Thêm và điền 3 thẻ điểm nhấn.
+     5. Bấm **Xuất bản** ở góc trên bên phải.
 
 4. **Chân trang (Footer) nền xanh thẫm (Deep Navy)**:
    - Khi chỉnh sửa Chân trang trong trình dựng (`/admin/builder/[footerId]`): bấm vào phần viền ngoài cùng hoặc chọn cài đặt chân trang, tại mục **"Nền footer"**, chọn **"Xanh thẫm (Deep Navy)"**.

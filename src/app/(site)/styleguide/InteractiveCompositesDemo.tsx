@@ -84,9 +84,9 @@ export function InteractiveCompositesDemo() {
   }
 
   const sampleSocialLinks: SocialLink[] = [
-    { label: '[MẪU] LinkedIn', href: 'https://linkedin.com' },
-    { label: '[MẪU] Facebook', href: 'https://facebook.com' },
-    { label: '[MẪU] Zalo Community', href: 'https://zalo.me' },
+    { key: 'linkedin', label: '[MẪU] LinkedIn', href: 'https://linkedin.com' },
+    { key: 'facebook', label: '[MẪU] Facebook', href: 'https://facebook.com' },
+    { key: 'zalo', label: '[MẪU] Zalo Community', href: 'https://zalo.me' },
   ]
 
   const sampleProgressDays: ProgressDayItem[] = [

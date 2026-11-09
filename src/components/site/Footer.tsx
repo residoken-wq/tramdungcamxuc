@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Logo, type SiteLogo } from '@/components/brand/Logo'
 import { HeartLine } from '@/components/brand/HeartLine'
+import { SocialIcon } from '@/components/brand'
 import { vi } from '@/lib/i18n/vi'
 
 export interface LegalLink {
@@ -18,7 +19,10 @@ export interface SellerInfo {
   email?: string
 }
 
+export type SocialKey = 'facebook' | 'tiktok' | 'youtube' | 'linkedin' | 'zalo' | 'shopee'
+
 export interface SocialLink {
+  key?: SocialKey
   label: string
   href: string
 }
@@ -170,17 +174,36 @@ export function Footer({
               {hasSocialLinks && socialLinks && (
                 <div className="pt-2">
                   <div className="flex flex-wrap gap-3">
-                    {socialLinks.map((social) => (
-                      <a
-                        key={social.href}
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-ui font-bold px-2.5 py-1 rounded-md bg-lavender-mist/40 text-deep-navy hover:bg-bright-magenta hover:text-white transition-all focus-visible:outline-2 focus-visible:outline-deep-navy"
-                      >
-                        {social.label}
-                      </a>
-                    ))}
+                    {socialLinks.map((social) => {
+                      const key: SocialKey =
+                        social.key ||
+                        ((social.label || '').toLowerCase().includes('facebook')
+                          ? 'facebook'
+                          : (social.label || '').toLowerCase().includes('tiktok')
+                            ? 'tiktok'
+                            : (social.label || '').toLowerCase().includes('youtube')
+                              ? 'youtube'
+                              : (social.label || '').toLowerCase().includes('linkedin')
+                                ? 'linkedin'
+                                : (social.label || '').toLowerCase().includes('zalo')
+                                  ? 'zalo'
+                                  : (social.label || '').toLowerCase().includes('shopee')
+                                    ? 'shopee'
+                                    : 'facebook')
+                      return (
+                        <a
+                          key={social.key || social.label || social.href}
+                          href={social.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${social.label} (${vi.pk32.newTab})`}
+                          title={social.label}
+                          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border border-deep-navy/15 text-deep-navy hover:text-bright-magenta hover:bg-lavender-mist/40 hover:border-bright-magenta/30 group-data-[footer-bg=deep-navy]/footer:border-white/20 group-data-[footer-bg=deep-navy]/footer:text-soft-pink group-data-[footer-bg=deep-navy]/footer:hover:text-white group-data-[footer-bg=deep-navy]/footer:hover:bg-white/10 group-data-[footer-bg=deep-navy]/footer:hover:border-white/40 transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy group-data-[footer-bg=deep-navy]/footer:focus-visible:outline-white"
+                        >
+                          <SocialIcon name={key} className="w-5 h-5" />
+                        </a>
+                      )
+                    })}
                   </div>
                 </div>
               )}
