@@ -90,7 +90,9 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
         { label: vi.pk20?.highlight?.outline || 'Viền hồng (Accent Pink)', value: 'outline' },
         { label: vi.pk20?.highlight?.navy || 'Nền xanh thẫm (Deep Navy)', value: 'navy' },
         {
-          label: vi.cd01?.card?.highlightComingSoon || 'Sắp ra mắt (Coming Soon - Viền xám, không vạch màu)',
+          label:
+            vi.cd01?.card?.highlightComingSoon ||
+            'Sắp ra mắt (Coming Soon - Viền xám, không vạch màu)',
           value: 'coming-soon',
         },
       ],
@@ -122,6 +124,17 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
         { label: 'Có vạch hồng', value: true },
       ],
     },
+    eyebrowColor: {
+      type: 'select',
+      label: vi.cd04?.eyebrowColor?.label || 'Màu nhãn',
+      options: [
+        {
+          label: vi.cd04?.eyebrowColor?.accent || 'Màu nổi bật (Mặc định - Hồng sen)',
+          value: 'accent',
+        },
+        { label: vi.cd04?.eyebrowColor?.muted || 'Màu xám thẫm (Deep Navy 70%)', value: 'muted' },
+      ],
+    },
     subtitle: {
       type: 'text',
       label: vi.pk26?.card?.subtitle || 'Tiêu đề phụ đậm (Subtitle)',
@@ -135,7 +148,10 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
       type: 'select',
       label: vi.cd02?.card?.subtitleCase || 'Kiểu chữ tiêu đề phụ',
       options: [
-        { label: vi.cd02?.card?.subtitleCaseNone || 'Giữ nguyên chữ thường (Mặc định)', value: 'none' },
+        {
+          label: vi.cd02?.card?.subtitleCaseNone || 'Giữ nguyên chữ thường (Mặc định)',
+          value: 'none',
+        },
         { label: vi.cd02?.card?.subtitleCaseUpper || 'IN HOA ĐẬM (UPPERCASE)', value: 'upper' },
       ],
     },
@@ -229,6 +245,7 @@ export const CardBlock: ComponentConfig<IconCardProps> = {
     cardBg: 'none',
     eyebrow: '',
     eyebrowBar: false,
+    eyebrowColor: 'accent',
     subtitle: '',
     subtitleColor: 'deep-navy',
     subtitleCase: 'none',

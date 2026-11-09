@@ -56,6 +56,7 @@ export interface IconCardProps {
   cardBg?: CardBgColor
   eyebrow?: string
   eyebrowBar?: boolean
+  eyebrowColor?: 'accent' | 'muted'
   subtitle?: string
   subtitleColor?: TextColorOption
   subtitleCase?: 'none' | 'upper'
@@ -235,6 +236,7 @@ export function IconCard({
   cardBg,
   eyebrow,
   eyebrowBar,
+  eyebrowColor = 'accent',
   subtitle,
   subtitleColor,
   subtitleCase = 'none',
@@ -278,11 +280,15 @@ export function IconCard({
   // QA PK-26: small magenta text fails WCAG AA on navy (2.8:1) and lavender (4.4:1) cards.
   const eyebrowTextClass = isComingSoon
     ? '!text-deep-navy/70'
-    : isDarkCard
-      ? 'text-soft-pink'
-      : cardBg === 'lavender-mist'
-        ? 'text-deep-navy'
-        : 'text-bright-magenta'
+    : eyebrowColor === 'muted'
+      ? isDarkCard
+        ? 'text-white/70'
+        : 'text-deep-navy/70'
+      : isDarkCard
+        ? 'text-soft-pink'
+        : cardBg === 'lavender-mist'
+          ? 'text-deep-navy'
+          : 'text-bright-magenta'
 
   const titleSizeClass = fontSizeClass('card-title', titleSize)
   const textSizeClass = fontSizeClass('card-text', textSize)
