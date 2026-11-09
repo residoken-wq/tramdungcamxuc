@@ -74,6 +74,7 @@ export const STYLE_TAB_KEYS: (keyof BlockStyle)[] = [
   'emotionGap',
   'cardFrame',
   'cardAccent',
+  'cardAccentShape',
 ]
 export const ADVANCED_TAB_KEYS: (keyof BlockStyle)[] = [
   'padding',
@@ -635,6 +636,25 @@ export function StyleField({
                   })
                 }
               />
+              <SelectRow
+                label={vi.cd04?.cardAccentShape?.label || 'Dáng vạch'}
+                value={style.cardAccentShape || 'rounded'}
+                options={[
+                  {
+                    value: 'rounded',
+                    label: vi.cd04?.cardAccentShape?.rounded || 'Bo góc theo thẻ (Mặc định)',
+                  },
+                  {
+                    value: 'flat',
+                    label: vi.cd04?.cardAccentShape?.flat || 'Thẳng (Vuông 2 góc trên)',
+                  },
+                ]}
+                onChange={(v) =>
+                  update({
+                    cardAccentShape: v === 'flat' ? 'flat' : undefined,
+                  })
+                }
+              />
             </Group>
           )}
         </>
@@ -718,7 +738,9 @@ export function StyleField({
                 <option value="fade-in">{vi.eb09.entranceFadeIn}</option>
                 <option value="fade-up">{vi.eb09.entranceFadeUp}</option>
                 <option value="zoom-in">{vi.eb09.entranceZoomIn}</option>
-                <option value="stagger">{vi.pk29?.entranceStagger || 'Hiện lần lượt từng thẻ'}</option>
+                <option value="stagger">
+                  {vi.pk29?.entranceStagger || 'Hiện lần lượt từng thẻ'}
+                </option>
               </select>
             </div>
             <div className="flex flex-col gap-1">

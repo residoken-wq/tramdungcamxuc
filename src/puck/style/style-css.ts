@@ -108,11 +108,7 @@ function boxDeclarations(
   )
 }
 
-function deviceDeclarations(
-  style: BlockStyle,
-  device: Device,
-  isContainer = false,
-): string[] {
+function deviceDeclarations(style: BlockStyle, device: Device, isContainer = false): string[] {
   const fontSize = style.fontSize?.[device]
   const textAlign = style.textAlign?.[device]
   const paddingSides: readonly Side[] = isContainer ? SIDES : ['right', 'left']
@@ -215,25 +211,36 @@ const VALID_BRAND_ACCENTS = [
  * PK-20: 6px accent stripe on top of [data-eb-card].
  * cycle: bright-magenta -> accent-pink -> deep-navy on cards 1, 2, 3...
  */
-function cardAccentRule(selector: string, cardAccent: BlockStyle['cardAccent']): string {
-  if (!cardAccent || cardAccent === 'none') return ''
-  // PK-20c: count cards among their siblings (direct grid children), or count the wrapper when a
-  // card sits alone in one. Never match an ancestor's position, or every card gets the same colour.
-  // No overflow:hidden: it would clip badges that sit above a card (e.g. "Phổ biến").
-  const stripe = (c: string) => `border-top-width:6px;border-top-style:solid;border-top-color:${c}`
-  if (cardAccent === 'cycle') {
-    const colors = [cssColor('bright-magenta'), cssColor('accent-pink'), cssColor('deep-navy')]
-    const nth = ['3n+1', '3n+2', '3n']
-    return colors
-      .map(
-        (c, i) =>
-          `${selector} [${CARD_ATTR}]:nth-child(${nth[i]}),${selector} :nth-child(${nth[i]}) > [${CARD_ATTR}]:only-child{${stripe(c)}}`,
-      )
-      .join('')
+function cardAccentRule(
+  selector: string,
+  cardAccent: BlockStyle['cardAccent'],
+  cardAccentShape?: BlockStyle['cardAccentShape'],
+): string {
+  const flatRadius =
+    cardAccentShape === 'flat' ? ';border-top-left-radius:0;border-top-right-radius:0' : ''
+  const stripe = (c: string) =>
+    `border-top-width:6px;border-top-style:solid;border-top-color:${c}${flatRadius}`
+
+  if (cardAccent && cardAccent !== 'none') {
+    if (cardAccent === 'cycle') {
+      const colors = [cssColor('bright-magenta'), cssColor('accent-pink'), cssColor('deep-navy')]
+      const nth = ['3n+1', '3n+2', '3n']
+      return colors
+        .map(
+          (c, i) =>
+            `${selector} [${CARD_ATTR}]:nth-child(${nth[i]}),${selector} :nth-child(${nth[i]}) > [${CARD_ATTR}]:only-child{${stripe(c)}}`,
+        )
+        .join('')
+    }
+    if ((VALID_BRAND_ACCENTS as readonly string[]).includes(cardAccent)) {
+      return `${selector} [${CARD_ATTR}]{${stripe(cssColor(cardAccent))}}`
+    }
   }
-  if ((VALID_BRAND_ACCENTS as readonly string[]).includes(cardAccent)) {
-    return `${selector} [${CARD_ATTR}]{${stripe(cssColor(cardAccent))}}`
+
+  if (cardAccentShape === 'flat') {
+    return `${selector} [${CARD_ATTR}]{border-top-left-radius:0;border-top-right-radius:0}`
   }
+
   return ''
 }
 
@@ -325,7 +332,7 @@ export function blockStyleCss(
   const isDark = style.background === 'deep-navy'
   const cardFrame = cardFrameRule(selector, style.cardFrame, isDark)
   if (cardFrame) rules.push(cardFrame)
-  const cardAccent = cardAccentRule(selector, style.cardAccent)
+  const cardAccent = cardAccentRule(selector, style.cardAccent, style.cardAccentShape)
   if (cardAccent) rules.push(cardAccent)
   for (const device of DEVICES) {
     const media = DEVICE_MEDIA[device]
