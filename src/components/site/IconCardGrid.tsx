@@ -32,6 +32,7 @@ export interface IconCardGridProps {
   cardStyle?: 'white' | 'soft' | 'outline'
   cardAlign?: 'inherit' | 'left' | 'center'
   equalHeight?: boolean
+  arrowPosition?: 'top' | 'sides'
   /** Puck slot render (v2), React nodes, or raw Card blocks `{ props }` (direct use / tests). */
   cards?:
     CardsSlotRender | React.ReactNode | Array<{ id?: string; type?: string; props?: IconCardProps }>
@@ -75,6 +76,7 @@ export function IconCardGrid({
   cardStyle = 'white',
   cardAlign = 'inherit',
   equalHeight = false,
+  arrowPosition = 'top',
   cards,
   items = [],
   bgColor = 'warm-ivory',
@@ -228,6 +230,7 @@ export function IconCardGrid({
               isDeepNavy={isDeepNavy}
               prevLabel={vi.pk21?.iconCardGrid?.prevCards || 'Thẻ trước'}
               nextLabel={vi.pk21?.iconCardGrid?.nextCards || 'Thẻ tiếp theo'}
+              arrowPosition={arrowPosition}
             >
               {cardList}
             </CarouselTrack>

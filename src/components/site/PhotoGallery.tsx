@@ -21,6 +21,7 @@ export interface PhotoGalleryProps {
   emotionLine?: string
   headerAlign?: 'left' | 'center'
   layout?: 'mosaic' | 'grid'
+  arrowPosition?: 'top' | 'sides'
   items?: PhotoGalleryItem[]
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
@@ -61,6 +62,7 @@ export function PhotoGallery({
   emotionLine,
   headerAlign = 'left',
   layout = 'mosaic',
+  arrowPosition = 'top',
   items = [],
   bgColor = 'warm-ivory',
   padding = 'md',
@@ -71,7 +73,9 @@ export function PhotoGallery({
 
   // Filter valid items having an image URL, mediaId or alt placeholder in editor
   const validItems = Array.isArray(items)
-    ? items.filter((item) => Boolean(item && (item.imageUrl || item.mediaId || (isEditing && item.alt))))
+    ? items.filter((item) =>
+        Boolean(item && (item.imageUrl || item.mediaId || (isEditing && item.alt))),
+      )
     : []
 
   const groupSize = layout === 'mosaic' ? 4 : 6
@@ -196,7 +200,11 @@ export function PhotoGallery({
               : 'mb-6 flex flex-col items-center justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end'
           }
         >
-          <div className={headerAlign === 'center' ? 'w-full text-center' : 'w-full text-center sm:text-left'}>
+          <div
+            className={
+              headerAlign === 'center' ? 'w-full text-center' : 'w-full text-center sm:text-left'
+            }
+          >
             {hasHeader && (
               <SectionHeader
                 id={id}
@@ -212,7 +220,7 @@ export function PhotoGallery({
               />
             )}
           </div>
-          {hasCarousel && (
+          {hasCarousel && arrowPosition !== 'sides' && (
             <div className="hidden sm:flex sm:shrink-0">
               <CarouselNavButtons
                 onPrev={() => scrollByOffset(-600)}
@@ -242,83 +250,135 @@ export function PhotoGallery({
         </div>
 
         {/* Desktop / Tablet: Grouped layout with scroll-snap */}
-        <div
-          ref={scrollContainerRef}
-          tabIndex={hasCarousel ? 0 : undefined}
-          onKeyDown={handleKeyDown}
-          role="region"
-          aria-label={titleLine1 || 'Thư viện ảnh'}
-          className="hidden sm:flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 outline-none focus-visible:ring-2 focus-visible:ring-accent-pink focus-visible:ring-offset-2 rounded-2xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {groups.map((group, groupIdx) => (
-            <div
-              key={groupIdx}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`Nhóm ảnh ${groupIdx + 1}/${groups.length}`}
-              className="w-full shrink-0 snap-start"
+        <div className="relative">
+          {hasCarousel && arrowPosition === 'sides' && (
+            <button
+              type="button"
+              onClick={() => scrollByOffset(-600)}
+              disabled={!canPrev}
+              aria-label={vi.pk21?.photoGallery?.prevGroup || 'Nhóm ảnh trước'}
+              className={`hidden sm:inline-flex absolute -left-4 md:-left-6 lg:-left-10 xl:-left-14 top-1/2 -translate-y-1/2 z-20 min-h-[44px] min-w-[44px] h-11 w-11 items-center justify-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-accent-pink disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none shadow-sm ${
+                isDeepNavy
+                  ? 'border border-white/20 bg-deep-navy/80 text-white/70 hover:text-white hover:bg-white/10'
+                  : 'border border-deep-navy/20 bg-white text-deep-navy/60 hover:text-deep-navy hover:bg-soft-pink/30 hover:border-deep-navy/40'
+              }`}
             >
-              {layout === 'mosaic' ? (
-                <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[440px]">
-                  {/* Photo 1: Large left: 2 cols, 2 rows */}
-                  {group[0] && (
-                    <div className="col-span-2 row-span-2 h-full">
-                      {renderCard(group[0], groupIdx * 4 + 0, 'h-full w-full', '')}
-                    </div>
-                  )}
-                  {/* Photo 2: Center top */}
-                  {group[1] && (
-                    <div
-                      className={
-                        headerAlign === 'center'
-                          ? 'col-start-3 row-start-1 col-span-1 row-span-1 h-full'
-                          : 'col-span-1 row-span-1 h-full'
-                      }
-                    >
-                      {renderCard(group[1], groupIdx * 4 + 1, 'h-full w-full', '')}
-                    </div>
-                  )}
-                  {/* Photo 3: Center bottom */}
-                  {group[2] && (
-                    <div
-                      className={
-                        headerAlign === 'center'
-                          ? 'col-start-3 row-start-2 col-span-1 row-span-1 h-full'
-                          : 'col-span-1 row-span-1 h-full'
-                      }
-                    >
-                      {renderCard(group[2], groupIdx * 4 + 2, 'h-full w-full', '')}
-                    </div>
-                  )}
-                  {/* Photo 4: Vertical right */}
-                  {group[3] && (
-                    <div
-                      className={
-                        headerAlign === 'center'
-                          ? 'col-start-4 row-start-1 col-span-1 row-span-2 h-full'
-                          : 'col-span-1 row-span-2 h-full'
-                      }
-                    >
-                      {renderCard(group[3], groupIdx * 4 + 3, 'h-full w-full', '')}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* Grid 3 columns layout */
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                  {group.map((item, itemIdx) => (
-                    <div key={itemIdx}>
-                      {renderCard(item, groupIdx * 6 + itemIdx, 'w-full', 'aspect-[4/3]')}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+
+          <div
+            ref={scrollContainerRef}
+            tabIndex={hasCarousel ? 0 : undefined}
+            onKeyDown={handleKeyDown}
+            role="region"
+            aria-label={titleLine1 || 'Thư viện ảnh'}
+            className="hidden sm:flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 outline-none focus-visible:ring-2 focus-visible:ring-accent-pink focus-visible:ring-offset-2 rounded-2xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {groups.map((group, groupIdx) => (
+              <div
+                key={groupIdx}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`Nhóm ảnh ${groupIdx + 1}/${groups.length}`}
+                className="w-full shrink-0 snap-start"
+              >
+                {layout === 'mosaic' ? (
+                  <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[440px]">
+                    {/* Photo 1: Large left: 2 cols, 2 rows */}
+                    {group[0] && (
+                      <div className="col-span-2 row-span-2 h-full">
+                        {renderCard(group[0], groupIdx * 4 + 0, 'h-full w-full', '')}
+                      </div>
+                    )}
+                    {/* Photo 2: Center top */}
+                    {group[1] && (
+                      <div
+                        className={
+                          headerAlign === 'center'
+                            ? 'col-start-3 row-start-1 col-span-1 row-span-1 h-full'
+                            : 'col-span-1 row-span-1 h-full'
+                        }
+                      >
+                        {renderCard(group[1], groupIdx * 4 + 1, 'h-full w-full', '')}
+                      </div>
+                    )}
+                    {/* Photo 3: Center bottom */}
+                    {group[2] && (
+                      <div
+                        className={
+                          headerAlign === 'center'
+                            ? 'col-start-3 row-start-2 col-span-1 row-span-1 h-full'
+                            : 'col-span-1 row-span-1 h-full'
+                        }
+                      >
+                        {renderCard(group[2], groupIdx * 4 + 2, 'h-full w-full', '')}
+                      </div>
+                    )}
+                    {/* Photo 4: Vertical right */}
+                    {group[3] && (
+                      <div
+                        className={
+                          headerAlign === 'center'
+                            ? 'col-start-4 row-start-1 col-span-1 row-span-2 h-full'
+                            : 'col-span-1 row-span-2 h-full'
+                        }
+                      >
+                        {renderCard(group[3], groupIdx * 4 + 3, 'h-full w-full', '')}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Grid 3 columns layout */
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                    {group.map((item, itemIdx) => (
+                      <div key={itemIdx}>
+                        {renderCard(item, groupIdx * 6 + itemIdx, 'w-full', 'aspect-[4/3]')}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {hasCarousel && arrowPosition === 'sides' && (
+            <button
+              type="button"
+              onClick={() => scrollByOffset(600)}
+              disabled={!canNext}
+              aria-label={vi.pk21?.photoGallery?.nextGroup || 'Nhóm ảnh tiếp theo'}
+              className={`hidden sm:inline-flex absolute -right-4 md:-right-6 lg:-right-10 xl:-right-14 top-1/2 -translate-y-1/2 z-20 min-h-[44px] min-w-[44px] h-11 w-11 items-center justify-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-accent-pink disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none shadow-sm ${
+                isDeepNavy
+                  ? 'border border-white/20 bg-deep-navy/80 text-white/70 hover:text-white hover:bg-white/10'
+                  : 'border border-deep-navy/20 bg-white text-deep-navy/60 hover:text-deep-navy hover:bg-soft-pink/30 hover:border-deep-navy/40'
+              }`}
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Mobile Nav Buttons at bottom */}
-        {hasCarousel && (
+        {hasCarousel && arrowPosition !== 'sides' && (
           <div className="mt-4 flex justify-center sm:hidden">
             <CarouselNavButtons
               onPrev={() => scrollByOffset(-600)}

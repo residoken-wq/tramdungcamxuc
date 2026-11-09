@@ -109,6 +109,14 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
         { label: 'Bằng nhau (Đầy đủ hàng)', value: true },
       ],
     },
+    arrowPosition: {
+      type: 'radio',
+      label: vi.cd04?.arrowPosition?.label || 'Vị trí mũi tên',
+      options: [
+        { label: vi.cd04?.arrowPosition?.top || 'Góc trên (Mặc định)', value: 'top' },
+        { label: vi.cd04?.arrowPosition?.sides || 'Hai bên (Giữa hàng)', value: 'sides' },
+      ],
+    },
     cards: {
       type: 'slot',
       label: 'Danh sách thẻ',
@@ -137,6 +145,7 @@ export const IconCardGridBlock: ComponentConfig<IconCardGridProps> = {
     cardStyle: 'white',
     cardAlign: 'inherit',
     equalHeight: false,
+    arrowPosition: 'top',
     cards: [
       {
         type: 'Card',

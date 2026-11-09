@@ -77,6 +77,7 @@ export const communityTemplate: Data = {
         marker: 'icon',
         columns: 'carousel',
         equalHeight: true,
+        arrowPosition: 'sides',
         titleCase: 'upper',
         headerAlign: 'center',
         _style: { cardAccent: 'cycle' },
@@ -307,6 +308,7 @@ export const communityTemplate: Data = {
         emotionLine: '',
         headerAlign: 'center',
         layout: 'mosaic',
+        arrowPosition: 'sides',
         items: [
           { alt: '[MẪU] Khoảnh khắc Me Time 1' },
           { alt: '[MẪU] Khoảnh khắc Me Time 2' },
@@ -451,6 +453,7 @@ export const communityTemplate: Data = {
         emotionLine: '',
         headerAlign: 'center',
         layout: 'mosaic',
+        arrowPosition: 'sides',
         items: [
           { alt: '[MẪU] Góc nhỏ Yoga Buddy 1' },
           { alt: '[MẪU] Góc nhỏ Yoga Buddy 2' },
