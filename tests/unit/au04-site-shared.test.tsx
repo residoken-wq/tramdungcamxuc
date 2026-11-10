@@ -16,6 +16,9 @@ import {
 } from '@/components/ui/TwoToneTitle'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { NavBadge } from '@/components/site/nav/NavBadge'
+import { Navbar } from '@/components/site/Navbar'
+import * as navBadgeMigration from '@/migrations/20261110_150000_au04_navigation_badge'
 import * as analyticsModule from '@/lib/analytics/track'
 import type { PublicProduct } from '@/lib/products'
 
@@ -229,6 +232,42 @@ describe('AU-04: Nút đặt lịch dùng chung (Mục 4)', () => {
       )
       expect(withoutAsterisks).not.toContain('<span class="text-bright-magenta">')
       expect(withoutAsterisks).toContain('<span class="block text-deep-navy">Chuyển mình</span>')
+    })
+  })
+
+  describe('AU-04: Nhãn "Free" ở menu & submenu (Mục 2)', () => {
+    it('renders chip with soft-pink background and bright-magenta text', () => {
+      const markup = renderToStaticMarkup(<NavBadge badge="Free" />)
+      expect(markup).toContain('Free')
+      expect(markup).toContain('bg-soft-pink')
+      expect(markup).toContain('text-bright-magenta')
+      expect(markup).toContain('aria-label="Nhãn: Free"')
+    })
+
+    it('returns null when badge is undefined or whitespace', () => {
+      expect(renderToStaticMarkup(<NavBadge />)).toBe('')
+      expect(renderToStaticMarkup(<NavBadge badge="" />)).toBe('')
+      expect(renderToStaticMarkup(<NavBadge badge="   " />)).toBe('')
+    })
+
+    it('renders badge in Navbar items', () => {
+      render(
+        <Navbar
+          cta={{ label: 'Trải nghiệm', href: '/trai-nghiem' }}
+          items={[
+            { label: 'Check-in cảm xúc', href: '/habit', badge: 'Free' },
+            { label: 'Về Hana', href: '/ve-hana' },
+          ]}
+        />,
+      )
+      const badge = screen.getAllByLabelText('Nhãn: Free')
+      expect(badge.length).toBeGreaterThanOrEqual(1)
+      expect(badge[0].textContent).toBe('Free')
+    })
+
+    it('exports up and down functions in migration', () => {
+      expect(typeof navBadgeMigration.up).toBe('function')
+      expect(typeof navBadgeMigration.down).toBe('function')
     })
   })
 })

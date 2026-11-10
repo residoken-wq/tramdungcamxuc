@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
 import { DesktopSubmenu } from './nav/DesktopSubmenu'
 import { MobileSubmenu } from './nav/MobileSubmenu'
+import { NavBadge } from './nav/NavBadge'
 import { isCurrentPath } from './nav/current'
 
 export interface NavLink {
@@ -18,6 +19,7 @@ export interface NavLink {
   description?: string
   featured?: boolean
   shortLabel?: string
+  badge?: string
 }
 
 export interface NavGroup {
@@ -31,6 +33,7 @@ export interface NavItem {
   href: string
   featured?: boolean
   shortLabel?: string
+  badge?: string
   groups?: NavGroup[]
 }
 
@@ -154,7 +157,7 @@ export function Navbar({ items, cta, customer, logo, className = '', isEditing =
                   href={item.href}
                   aria-current={current ? 'page' : undefined}
                   className={[
-                    'font-ui text-sm font-semibold transition-colors duration-150 py-1 border-b-2',
+                    'font-ui text-sm font-semibold transition-colors duration-150 py-1 border-b-2 inline-flex items-center',
                     current ? 'border-bright-magenta/60' : 'border-transparent',
                     isFeatured
                       ? 'text-bright-magenta hover:text-deep-navy font-bold'
@@ -162,7 +165,8 @@ export function Navbar({ items, cta, customer, logo, className = '', isEditing =
                     'focus-visible:outline-2 focus-visible:outline-deep-navy rounded-sm',
                   ].join(' ')}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  {item.badge && <NavBadge badge={item.badge} />}
                 </Link>
               )
             })}
@@ -277,9 +281,10 @@ export function Navbar({ items, cta, customer, logo, className = '', isEditing =
                   href={item.href}
                   onClick={closeDrawer}
                   aria-current={isCurrentPath(pathname, item.href) ? 'page' : undefined}
-                  className="block min-h-[44px] py-2.5 px-3 rounded-lg text-base font-ui font-semibold text-deep-navy hover:bg-lavender-mist/40 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy"
+                  className="flex items-center min-h-[44px] py-2.5 px-3 rounded-lg text-base font-ui font-semibold text-deep-navy hover:bg-lavender-mist/40 hover:text-bright-magenta transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy"
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  {item.badge && <NavBadge badge={item.badge} />}
                 </Link>
               ),
             )}

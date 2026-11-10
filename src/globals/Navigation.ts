@@ -83,6 +83,10 @@ const submenu: Field = {
       minRows: 1,
       fields: [
         text('label', 'Tên mục', true),
+        text('badge', 'Nhãn nhỏ', false, {
+          maxLength: 12,
+          admin: { description: 'Không bắt buộc, tối đa 12 ký tự. VD: Free.' },
+        }),
         text('description', 'Mô tả ngắn', false, {
           maxLength: 60,
           admin: { description: 'Không bắt buộc, tối đa 60 ký tự. VD: Công cụ hỗ trợ cảm xúc.' },
@@ -101,6 +105,10 @@ function menu(name: string, label: string, withSubmenu: boolean): Field {
     admin: { description: 'Thêm mục và kéo để đổi thứ tự. Chọn trang hoặc liên kết ngoài.' },
     fields: [
       text('label', 'Tên mục', true),
+      text('badge', 'Nhãn nhỏ', false, {
+        maxLength: 12,
+        admin: { description: 'Không bắt buộc, tối đa 12 ký tự. VD: Free.' },
+      }),
       ...linkFields(withSubmenu),
       checkbox('highlight', 'Hiển thị nổi bật'),
       ...(withSubmenu ? [submenu] : []),
