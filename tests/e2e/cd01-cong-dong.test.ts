@@ -306,6 +306,18 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
         expect(Math.abs(routineLeftBox.height - routineRightBox.height)).toBeLessThanOrEqual(1)
       }
 
+      // CD-04 Item 2: Slide 55 – Top accent stripe colors on both cards
+      // Left card "Hành trình 30 Phút": accent-pink rgb(239, 59, 131)
+      // Right card "Vài điều giữ cho nhau": deep-navy rgb(40, 10, 96)
+      const leftBorderTopColor = await routineLeftCard.evaluate(
+        (el) => window.getComputedStyle(el).borderTopColor,
+      )
+      const rightBorderTopColor = await routineRightCard.evaluate(
+        (el) => window.getComputedStyle(el).borderTopColor,
+      )
+      expect(leftBorderTopColor).toMatch(/rgb\(239,\s*59,\s*131\)/)
+      expect(rightBorderTopColor).toMatch(/rgb\(40,\s*10,\s*96\)/)
+
       if (process.env.CD04_SCREENSHOT_DIR) {
         const dir = process.env.CD04_SCREENSHOT_DIR
         const spaceSection = spaceHeading.locator('xpath=ancestor::section[1]')

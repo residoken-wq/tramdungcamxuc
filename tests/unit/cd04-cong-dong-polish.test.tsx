@@ -147,6 +147,15 @@ describe('CD-04 §2: Ảnh Yoga Buddy tràn hết chiều cao section (imageBlee
 })
 
 describe('CD-04 §3: Vạch màu đỉnh thẻ dạng thẳng (cardAccentShape: flat)', () => {
+  it('generates high specificity (>= 0,4,0) selector for single color cardAccent to beat column/grid theme classes', () => {
+    const css = blockStyleCss('accent-card', { cardAccent: 'accent-pink' })
+    expect(css).toContain(
+      '[data-eb-id="accent-card"][data-eb-id="accent-card"][data-eb-id="accent-card"] [data-eb-card]',
+    )
+    expect(css).toContain('border-top-color:rgb(var(--color-accent-pink-rgb))')
+    expect(css).toContain('border-top-width:6px')
+  })
+
   it('default (cardAccentShape: rounded or omitted): generates standard CSS without border-radius override', () => {
     const css = blockStyleCss('block-test', { cardAccent: 'bright-magenta' })
     expect(css).toContain('border-top-width:6px')
@@ -168,10 +177,7 @@ describe('CD-04 §3: Vạch màu đỉnh thẻ dạng thẳng (cardAccentShape: 
   })
 
   it('sanitizeBlockStyle preserves flat and strips invalid values or default rounded', () => {
-    const sanitizedFlat = sanitizeBlockStyle(
-      { cardAccentShape: 'flat' },
-      DEFAULT_DESIGN_SYSTEM,
-    )
+    const sanitizedFlat = sanitizeBlockStyle({ cardAccentShape: 'flat' }, DEFAULT_DESIGN_SYSTEM)
     expect(sanitizedFlat?.cardAccentShape).toBe('flat')
 
     const sanitizedRounded = sanitizeBlockStyle(

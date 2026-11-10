@@ -233,12 +233,14 @@ function cardAccentRule(
         .join('')
     }
     if ((VALID_BRAND_ACCENTS as readonly string[]).includes(cardAccent)) {
-      return `${selector} [${CARD_ATTR}]{${stripe(cssColor(cardAccent))}}`
+      // CD-04 QA: Specificity >= 0,4,0 (repeated selector like PK-18d) so single-accent stripe beats
+      // group-data-[card-theme=light-white]/grid:border-deep-navy/10 (0,3,0) in Columns and Grids.
+      return `${selector}${selector}${selector} [${CARD_ATTR}],${selector} [${CARD_ATTR}]{${stripe(cssColor(cardAccent))}}`
     }
   }
 
   if (cardAccentShape === 'flat') {
-    return `${selector} [${CARD_ATTR}]{border-top-left-radius:0;border-top-right-radius:0}`
+    return `${selector}${selector}${selector} [${CARD_ATTR}],${selector} [${CARD_ATTR}]{border-top-left-radius:0;border-top-right-radius:0}`
   }
 
   return ''
