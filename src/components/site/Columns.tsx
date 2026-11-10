@@ -68,7 +68,7 @@ export function Columns({
   const is3Cols = String(numColumns) === '3'
   const gridColsClass = is3Cols ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'
   const colEqualHeightClasses = equalHeight
-    ? 'h-full [&>[data-eb-card]]:self-stretch [&>[data-eb-card]]:flex-1 [&>*:not([data-eb-card])]:flex [&>*:not([data-eb-card])]:flex-col [&>*:not([data-eb-card])]:flex-1 [&>*>[data-eb-card]]:flex-1 [&>div]:h-full [&>div]:flex [&>div]:flex-col [&>div]:flex-1 [&>div>div]:h-full [&>div>div]:flex [&>div>div]:flex-col [&>div>div]:flex-1 [&_[data-eb-card]]:flex-1 [&_[data-eb-card]]:self-stretch'
+    ? '[&>[data-eb-card]]:self-stretch [&>[data-eb-card]]:flex-1 [&>*:not([data-eb-card])]:flex [&>*:not([data-eb-card])]:flex-col [&>*:not([data-eb-card])]:flex-1 [&>*>[data-eb-card]]:flex-1 [&>*>*:not([data-eb-card])]:flex [&>*>*:not([data-eb-card])]:flex-col [&>*>*:not([data-eb-card])]:flex-1 [&>*>*>[data-eb-card]]:flex-1'
     : ''
 
   return (
