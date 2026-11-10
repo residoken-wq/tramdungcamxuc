@@ -8,6 +8,14 @@ import {
 import { BookingCTA } from '@/components/site/BookingCTA'
 import { ButtonWidget } from '@/components/site/widgets/ButtonWidget'
 import { CTASection } from '@/components/site/CTASection'
+import {
+  TwoToneTitle,
+  renderHighlightedTitle,
+  TITLE_HIGHLIGHT_COLOR,
+  TITLE_HIGHLIGHT_DARK_COLOR,
+} from '@/components/ui/TwoToneTitle'
+import { SectionHeader } from '@/components/ui/SectionHeader'
+import { renderToStaticMarkup } from 'react-dom/server'
 import * as analyticsModule from '@/lib/analytics/track'
 import type { PublicProduct } from '@/lib/products'
 
@@ -151,6 +159,76 @@ describe('AU-04: Nút đặt lịch dùng chung (Mục 4)', () => {
       const link = screen.getByRole('link', { name: /149\.000đ/ })
       expect(link.getAttribute('href')).toBe('/dat-phien-trai-nghiem?san-pham=7')
       expect(link.textContent).toContain('149.000đ')
+    })
+  })
+
+  describe('AU-04: Tô màu từng chữ trong tiêu đề (Mục 1)', () => {
+    it('returns original string when text contains no asterisks', () => {
+      const raw = 'CHUYỂN MÌNH KHÔNG CHÊNH VÊNH'
+      const res = renderHighlightedTitle(raw)
+      expect(res).toBe(raw)
+    })
+
+    it('highlights words wrapped in *...* with bright-magenta on light background', () => {
+      const markup = renderToStaticMarkup(
+        <div>{renderHighlightedTitle('*Chuyển* mình không *Chênh* vênh')}</div>,
+      )
+      expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_COLOR}">Chuyển</span>`)
+      expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_COLOR}">Chênh</span>`)
+      expect(markup).toContain(' mình không ')
+    })
+
+    it('highlights words with soft-pink on dark background', () => {
+      const markup = renderToStaticMarkup(
+        <div>
+          {renderHighlightedTitle('*Chuyển* mình không *Chênh* vênh', { isDark: true })}
+        </div>,
+      )
+      expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_DARK_COLOR}">Chuyển</span>`)
+      expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_DARK_COLOR}">Chênh</span>`)
+    })
+
+    it('leaves single or unmatched asterisks as literal text', () => {
+      const single = 'Chuyển * mình không'
+      const res = renderHighlightedTitle(single)
+      expect(res).toBe(single)
+
+      const odd = '*Chuyển* mình không *chênh'
+      const markup = renderToStaticMarkup(<div>{renderHighlightedTitle(odd)}</div>)
+      expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_COLOR}">Chuyển</span>`)
+      expect(markup).toContain(' mình không *chênh')
+    })
+
+    it('integrates with TwoToneTitle seamlessly', () => {
+      const markup = renderToStaticMarkup(
+        <TwoToneTitle
+          line1="*Chuyển* mình"
+          line2="không *chênh* vênh"
+          line1ClassName="text-deep-navy"
+          line2ClassName="text-bright-magenta"
+        />,
+      )
+      expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_COLOR}">Chuyển</span>`)
+      expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_COLOR}">chênh</span>`)
+    })
+
+    it('integrates with SectionHeader seamlessly and preserves HTML when no asterisks', () => {
+      const withAsterisks = renderToStaticMarkup(
+        <SectionHeader
+          titleLine1="*Chuyển* mình"
+          titleLine2="không *chênh* vênh"
+        />,
+      )
+      expect(withAsterisks).toContain(`<span class="${TITLE_HIGHLIGHT_COLOR}">Chuyển</span>`)
+
+      const withoutAsterisks = renderToStaticMarkup(
+        <SectionHeader
+          titleLine1="Chuyển mình"
+          titleLine2="không chênh vênh"
+        />,
+      )
+      expect(withoutAsterisks).not.toContain('<span class="text-bright-magenta">')
+      expect(withoutAsterisks).toContain('<span class="block text-deep-navy">Chuyển mình</span>')
     })
   })
 })
