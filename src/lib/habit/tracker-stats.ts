@@ -87,6 +87,36 @@ export interface PlanDayDate {
 }
 
 /**
+ * Định dạng ngày theo giờ Việt Nam (dd/MM/yyyy).
+ * Nhận Date, chuỗi ISO, chuỗi YYYY-MM-DD. Trả về '' nếu null/undefined/không hợp lệ.
+ */
+export function formatVietnamDate(date?: Date | string | null): string {
+  if (!date) return ''
+  try {
+    const d = typeof date === 'string' ? new Date(date) : date
+    if (isNaN(d.getTime())) return ''
+    return new Intl.DateTimeFormat('vi-VN', {
+      timeZone: 'Asia/Ho_Chi_Minh',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(d)
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * Định dạng ngày theo giờ Việt Nam dạng rút gọn (dd/MM).
+ * Trả về '' nếu null/undefined/không hợp lệ.
+ */
+export function formatVietnamShortDate(date?: Date | string | null): string {
+  const full = formatVietnamDate(date)
+  if (!full) return ''
+  return full.slice(0, 5)
+}
+
+/**
  * Tính ngày lịch theo giờ Việt Nam cho ngày thứ N của kế hoạch (HB-23).
  * Ngày 1 = startDate.
  * Trả về { short: 'dd/MM', full: 'dd/MM/yyyy' }.
