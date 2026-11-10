@@ -3,6 +3,7 @@
 import React from 'react'
 import { BrandIcon } from '@/components/brand/BrandIcon'
 import { Button, type ButtonSize, type ButtonVariant } from '@/components/ui/Button'
+import { ExperienceBookingButton, formatBookingButtonLabel } from '@/components/site/ExperienceBookingButton'
 import { useClientPageSlug } from '@/puck/client-preview'
 import { getSafeLink, type WidgetLinkProps } from './link-helper'
 import { textTarget } from '@/puck/style/text-target'
@@ -44,9 +45,9 @@ export function ButtonWidget({
 
   if (!text) return null
 
-  const linkProps = getSafeLink(linkType, href, _resolved?.pageSlug ?? clientSlug, newTab)
   const wrapperClass = ALIGN_WRAPPER[align] || ALIGN_WRAPPER.left
   const isFull = align === 'justify'
+  const buttonClass = isFull ? 'w-full justify-center text-center' : ''
 
   const iconElement =
     icon && icon !== 'none' ? (
@@ -58,6 +59,39 @@ export function ButtonWidget({
       />
     ) : null
 
+  if (linkType === 'booking') {
+    const rawLabel = typeof text === 'string' ? text : 'Đặt phiên trải nghiệm'
+    const productPrice =
+      _resolved?.bookingProduct?.salePrice ?? _resolved?.bookingProduct?.price
+    return (
+      <div className={`w-full ${wrapperClass}`}>
+        <ExperienceBookingButton
+          product={_resolved?.bookingProduct}
+          productId={_resolved?.bookingProductId}
+          buttonText={rawLabel}
+          variant={variant}
+          size={buttonSize}
+          showPrice={true}
+          className={buttonClass}
+        >
+          {icon && icon !== 'none' ? (
+            <span className="inline-flex items-center justify-center">
+              {iconPosition === 'before' ? iconElement : null}
+              <span {...textTarget(id, 'text')}>
+                {typeof text === 'string'
+                  ? formatBookingButtonLabel(text, productPrice, true)
+                  : text}
+              </span>
+              {iconPosition === 'after' ? iconElement : null}
+            </span>
+          ) : undefined}
+        </ExperienceBookingButton>
+      </div>
+    )
+  }
+
+  const linkProps = getSafeLink(linkType, href, _resolved?.pageSlug ?? clientSlug, newTab)
+
   const innerContent = (
     <span className="inline-flex items-center justify-center">
       {iconPosition === 'before' ? iconElement : null}
@@ -65,8 +99,6 @@ export function ButtonWidget({
       {iconPosition === 'after' ? iconElement : null}
     </span>
   )
-
-  const buttonClass = isFull ? 'w-full justify-center text-center' : ''
 
   return (
     <div className={`w-full ${wrapperClass}`}>

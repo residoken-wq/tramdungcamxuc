@@ -43,12 +43,22 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     description: { type: 'textarea', label: vi.eb15a.description, contentEditable: true },
     textSize: sizeField('Cỡ chữ mô tả'),
     buttonText: { type: 'text', label: vi.eb15a.buttonText, contentEditable: true },
+    buttonAction: {
+      type: 'select',
+      label: 'Hành động của nút chính',
+      options: [
+        { label: 'Chuyển hướng liên kết (Mặc định)', value: 'link' },
+        { label: 'Đặt lịch phiên trải nghiệm', value: 'booking' },
+        { label: 'Mở form tham gia / nhận brochure (Modal)', value: 'form' },
+      ],
+    },
     buttonLinkType: {
       type: 'select',
       label: 'Loại liên kết nút',
       options: [
         { label: 'Liên kết ngoài / Tự nhập URL', value: 'url' },
         { label: 'Trang trong website', value: 'page' },
+        { label: 'Đặt lịch phiên trải nghiệm', value: 'booking' },
       ],
     },
     buttonPageId: createPageExternalField({
