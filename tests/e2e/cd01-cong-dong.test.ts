@@ -191,10 +191,14 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
 
       // CD-04: Slide 49 – side arrows are located to the left of the first card and right of the last card
       const spacePrevBtn = spaceHeading
-        .locator('xpath=ancestor::section[1]//button[@aria-label="Thẻ trước"]')
+        .locator(
+          'xpath=ancestor::section[1]//button[contains(@class, "absolute") and @aria-label="Thẻ trước"]',
+        )
         .first()
       const spaceNextBtn = spaceHeading
-        .locator('xpath=ancestor::section[1]//button[@aria-label="Thẻ tiếp theo"]')
+        .locator(
+          'xpath=ancestor::section[1]//button[contains(@class, "absolute") and @aria-label="Thẻ tiếp theo"]',
+        )
         .first()
       await expect(spacePrevBtn).toBeVisible()
       await expect(spaceNextBtn).toBeVisible()
@@ -355,7 +359,16 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       await expect(guest.getByRole('link', { name: /tham gia me time/i })).toBeVisible()
       await expect(guest.getByRole('link', { name: /tham gia yoga buddy/i })).toBeVisible()
 
-      // 2. Mobile 375px: responsive check & no horizontal scroll
+      // 2. Mobile & Tablet: responsive check & screenshots
+      if (process.env.CD04_SCREENSHOT_DIR) {
+        await guest.setViewportSize({ width: 768, height: 1024 })
+        await guest.waitForTimeout(300)
+        const spaceSection768 = spaceHeading.locator('xpath=ancestor::section[1]')
+        await spaceSection768.screenshot({
+          path: `${process.env.CD04_SCREENSHOT_DIR}/slide-49-768.png`,
+        })
+      }
+
       await guest.setViewportSize({ width: 375, height: 812 })
       await guest.waitForTimeout(300)
 
@@ -367,7 +380,7 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
 
       // CD-04 Item 3: On mobile (375px), bottom nav buttons exist for carousel track
       const mobileNavPrev = guest
-        .locator('[data-carousel-track] button[aria-label="Thẻ trước"]')
+        .locator('[data-carousel-track] .sm\\:hidden button[aria-label="Thẻ trước"]')
         .first()
       await expect(mobileNavPrev).toBeVisible()
 
