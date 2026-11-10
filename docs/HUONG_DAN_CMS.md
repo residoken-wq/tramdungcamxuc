@@ -83,6 +83,7 @@
    - [5.42. Cải tiến trang "Về Trạm": Xuống dòng trong thẻ, Brand Story 3 cột, Footer nền deep-navy (PK-31)](#542-cải-tiến-trang-về-trạm-xuống-dòng-trong-thẻ-brand-story-3-cột-footer-nền-deep-navy-pk-31)
    - [5.43. Mẫu trang Cộng đồng 100% bản thiết kế slide 48–57 (CD-01)](#543-mẫu-trang-cộng-đồng-100-bản-thiết-kế-slide-4857-cd-01)
    - [5.44. Các tùy chọn tinh chỉnh chi tiết giao diện theo bản thiết kế (CD-04)](#544-các-tùy-chọn-tinh-chỉnh-chi-tiết-giao-diện-theo-bản-thiết-kế-cd-04)
+   - [5.45. Tính năng dùng chung mới (AU-04): Tô màu chữ nổi bật, Nút đặt lịch dùng chung và Form Modal](#545-tính-năng-dùng-chung-mới-au-04-tô-màu-chữ-nổi-bật-nút-đặt-lịch-dùng-chung-và-form-modal)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -3353,6 +3354,43 @@ Bản cập nhật CD-04 bổ sung 5 tùy chọn tinh chỉnh giao diện trực
    - **Áp dụng cho**: Khối **Cột** (`Columns`).
    - **Tùy chọn**: Công tắc `Tắt` (mặc định) hoặc `Bật`.
    - **Dùng khi nào**: Dùng khi Hana đặt 2 hoặc 3 khối Thẻ nội dung (`Card`) cạnh nhau trong các cột và muốn tất cả các thẻ tự động kéo giãn cao bằng nhau (như 2 thẻ *Hành trình 30 Phút* và *Vài điều giữ cho nhau* ở slide 55), giúp bố cục trang luôn vuông vắn, đều đặn dù lượng chữ bên trong mỗi thẻ dài ngắn khác nhau.
+
+---
+
+### 5.45. Tính năng dùng chung mới (AU-04): Tô màu chữ nổi bật, Nút đặt lịch dùng chung và Form Modal
+
+Bản cập nhật AU-04 hoàn thiện các tiện ích cốt lõi dùng chung trên toàn hệ thống trang web:
+
+1. **Tô màu chữ nổi bật bằng cú pháp `*từ cần nổi bật*`**:
+   - **Áp dụng cho**: Mọi tiêu đề 2 tầng trong hệ thống (khối `HeroTwoEntries`, `HeroImage`, `CTASection`, `SectionHeader`...).
+   - **Cách dùng**: Chỉ cần bao quanh từ hoặc cụm từ bằng cặp dấu sao `*...*` (ví dụ: `*Chuyển* mình không *chênh* vênh`).
+   - **Hiển thị**: Từ trong dấu sao sẽ tự động mang màu hồng sen nổi bật `bright-magenta` khi nằm trên nền sáng, hoặc màu hồng phấn dịu `soft-pink` khi nằm trên nền tối `deep-navy`.
+   - **An toàn**: Nếu nhập dấu sao lẻ hoặc không đủ cặp, hệ thống giữ nguyên văn bản thông thường và không bao giờ gây lỗi giao diện.
+
+2. **Nút đặt lịch phiên trải nghiệm 149.000đ dùng chung**:
+   - **Áp dụng cho**: Khối `BookingCTA`, khối `CTASection` (chọn `Hành động của nút chính` = *Đặt lịch phiên trải nghiệm*), hoặc widget nút `ButtonWidget` (chọn `Loại liên kết` = *Đặt lịch phiên trải nghiệm*).
+   - **Hoạt động**: Nút tự động chuyển tiếp tới trang thanh toán `/dat-phien-trai-nghiem?san-pham=[id]` và tự động lấy giá mới nhất từ sản phẩm phiên trải nghiệm trong CMS (không ghi cứng 149.000đ).
+   - **Thống kê**: Tự động ghi nhận lượt bấm `booking_clicked` mà không làm chậm trải nghiệm của khách.
+   - **Cài đặt link Google Calendar sau thanh toán**: Hana nhập link Calendar (VD `https://calendar.app.google/gLuPgDnqAbFnjDPQ8`) vào ô `experienceBookingUrl` trong **Cài đặt Website** (`siteSettings`). Khách thanh toán xong sẽ nhận email tự động kèm nút dẫn tới link này để hẹn giờ.
+
+3. **Gắn form "Tham gia" (Me Time / Yoga Buddy) và "Nhận brochure chi tiết" vào nút (Modal)**:
+   - **Áp dụng cho**: Khối `CTASection` (cả nút chính và nút phụ).
+   - **Cách cài đặt**:
+     - Chọn `Hành động của nút chính` (hoặc nút phụ) = **Mở form tham gia / nhận brochure (Modal)**.
+     - Chọn `Loại form`: *Tham gia ME TIME*, *Tham gia YOGA BUDDY*, hoặc *Đăng ký nhận brochure chi tiết*.
+     - Có thể nhập tiêu đề và câu cảm ơn riêng (hoặc để trống để dùng câu cảm ơn chuẩn của Trạm).
+   - **Trải nghiệm khách hàng**: Khi bấm vào nút, cửa sổ form modal nhỏ gọn (đạt chuẩn tương phản AA, hỗ trợ đầy đủ phím Esc và bộ đọc màn hình) sẽ mở ra ngay tại chỗ. Khách điền Họ tên, SĐT Zalo, Email, tick đồng ý bảo mật và gửi.
+   - **Bảo mật và thông báo**: Dữ liệu lưu an toàn vào mục Khách tiềm năng (`leads`) và gửi email thông báo tự động tới địa chỉ liên hệ của Hana.
+
+4. **Nhãn nhỏ cho mục menu (Free, Hot, Mới)**:
+   - **Vị trí cài đặt**: Vào menu bên trái -> **Trang web** -> **Menu điều hướng** (`navigation`).
+   - Mọi mục menu chính và mục con đều có ô **Nhãn nhỏ** (`badge`, tối đa 12 ký tự, VD: `Free`, `Hot`, `Mới`).
+   - **Hiển thị**: Chip nhỏ xinh nền hồng phấn `soft-pink` chữ hồng sen đậm `bright-magenta` nằm cạnh tên mục ở cả menu máy tính và điện thoại.
+
+5. **Xem danh sách người đăng ký và lọc theo form**:
+   - Vào menu bên trái -> **Khách hàng** -> **Khách tiềm năng** (`leads`).
+   - Cột **Nguồn (Source)** hiển thị rõ ràng từng loại form: `community-me-time`, `community-yoga-buddy`, hoặc `brochure-chuyen-minh`.
+   - Hana có thể bấm nút **Xuất CSV** ở đầu danh sách để tải file Excel về chăm sóc khách qua Zalo.
 
 ---
 
