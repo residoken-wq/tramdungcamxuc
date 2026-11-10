@@ -76,6 +76,23 @@ Thứ tự đề xuất: AU-01 ngay (lỗi đang thấy) → AU-04 (dùng chung 
 | C8 | Mục 06 "dùng lại testi phiên bản trước": là những lời chia sẻ nào? Các lời đó đã có đồng ý hiển thị (`consent`) chưa? | Hana (builder) |
 | C9 | Mục 18 "bỏ cái thước chi tiết 3 giai đoạn, chỉ cần click vào Khám thì hiện ra flow khám": bỏ cả thanh 4 bước nhỏ phía dưới (Khám đúng bệnh – Nguyên lý 1% – Tìm Mentor – Gọi tên thói quen) hay chỉ bỏ 3 thẻ giai đoạn lớn? | AU-03 |
 
+### Kết quả trả lời 10/11 (Hana, qua anh Nhân)
+
+| # | Trả lời | Hệ quả |
+| --- | --- | --- |
+| C1 | VIP Member là mua **từng công cụ**. 99.000đ là **khuyến mãi có hạn** | Hana nhập `salePrice` = 99.000, `saleEndsAt` trong CMS từng sản phẩm. Code đã hỗ trợ `saleEndsAt` (`src/lib/products.ts`): hết hạn thì tự về giá gốc. Nút hiện giá theo `saleEndsAt` |
+| C1b | 28 ngày dùng thử còn hay bỏ: **chưa trả lời** | Giữ nguyên dùng thử như hiện tại |
+| C2 | **Thanh toán VietQR trên web trước**, sau đó gửi link Calendar | Nút đặt lịch / coach 1:1 dẫn tới trang thanh toán phiên trải nghiệm (`getBookingPath`). Hana nhập link Calendar vào `siteSettings.experienceBookingUrl` (gửi qua email sau khi xác nhận thanh toán). AU-04 mục 4 rút gọn |
+| C3 | **Cuộn xuống** như hiện tại | AU-04 bỏ mục 5 |
+| C4 | Chưa trả lời | AU-04 mục 3 (form Tham gia): tạm hỏi tên + SĐT Zalo + **email** (vì `leads.email` bắt buộc), câu cảm ơn là field CMS, báo Hana qua email liên hệ trong `siteSettings` |
+| C5 | Chưa trả lời | Tạm dùng **hồng sen** cho chữ nổi bật |
+| C6 | Chỉ thu **email + SĐT** để Hana liên hệ | AU-04: form brochure chỉ tạo `leads`, không gửi file |
+| C7 | "Tất cả free" | Nhãn "Free" hiện cho cả 2 công cụ. **Cần làm rõ:** nếu công cụ miễn phí hết thì VIP Member 99.000đ mở thêm gì? Tới khi rõ, giữ nguyên dùng thử / quyền truy cập như hiện tại |
+| C8 | Hana tự làm trong CMS | – |
+| C9 | Bỏ 3 thẻ giai đoạn lớn, phần "Khám" làm thành **wizard từng bước** | AU-03 mục 2 |
+
+**Còn cần Hana trả lời:** C1b (dùng thử 28 ngày), C4 (form Tham gia), C5 (màu chữ nổi bật), C7 (VIP mở thêm gì khi công cụ "tất cả free").
+
 ## D. Chữ của Hana (nguyên văn, để các task dùng đúng chữ)
 
 > Chép từ cột "Đề xuất chỉnh sửa". Giữ nguyên lỗi gõ của file gốc ở chỗ không chắc; chỗ đã sửa chính tả ghi trong ngoặc vuông.
