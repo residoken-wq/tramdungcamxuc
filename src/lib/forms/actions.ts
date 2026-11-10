@@ -184,3 +184,24 @@ export async function submitNewsletterAction(
     return handleActionError(err)
   }
 }
+
+export async function submitRegistrationAction(
+  data: Record<string, unknown>,
+  extra?: { utm?: string; page?: string },
+): Promise<ActionResponse> {
+  try {
+    const ctx = await getClientContext()
+    const { submitRegistrationLead } = await import('./submit.server')
+    const res: SubmissionResult = await submitRegistrationLead(data, {
+      ...ctx,
+      page: pickPage(extra?.page ?? data.page) || ctx.page,
+      utm: extra?.utm || (typeof data.utm === 'string' ? data.utm : undefined),
+    })
+    return {
+      success: res.success,
+      message: res.message,
+    }
+  } catch (err) {
+    return handleActionError(err)
+  }
+}

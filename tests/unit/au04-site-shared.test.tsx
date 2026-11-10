@@ -19,9 +19,15 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { NavBadge } from '@/components/site/nav/NavBadge'
 import { Navbar } from '@/components/site/Navbar'
 import * as navBadgeMigration from '@/migrations/20261110_150000_au04_navigation_badge'
+import { registrationFormSchema } from '@/lib/forms/schemas'
+import { submitRegistrationLead } from '@/lib/forms/submit.server'
+import { RegistrationModal } from '@/components/site/RegistrationModal'
+import { vi as viStrings } from '@/lib/i18n/vi'
+import type { Payload } from 'payload'
 import * as analyticsModule from '@/lib/analytics/track'
 import type { PublicProduct } from '@/lib/products'
 
+vi.mock('server-only', () => ({}))
 vi.mock('@/lib/analytics/track', () => ({
   track: vi.fn(),
 }))
@@ -268,6 +274,172 @@ describe('AU-04: Nút đặt lịch dùng chung (Mục 4)', () => {
     it('exports up and down functions in migration', () => {
       expect(typeof navBadgeMigration.up).toBe('function')
       expect(typeof navBadgeMigration.down).toBe('function')
+    })
+  })
+
+  describe('AU-04: Form Tham gia & Nhận brochure (Mục 3)', () => {
+    describe('registrationFormSchema validation', () => {
+      it('validates correct community registration data', () => {
+        const result = registrationFormSchema.safeParse({
+          name: 'Học viên Test 01',
+          email: 'test@example.com',
+          phone: '0901234567',
+          formType: 'community-me-time',
+          consent: true,
+        })
+        expect(result.success).toBe(true)
+      })
+
+      it('rejects missing phone with Vietnamese error', () => {
+        const result = registrationFormSchema.safeParse({
+          name: 'Học viên Test 01',
+          email: 'test@example.com',
+          phone: '',
+          formType: 'community-me-time',
+          consent: true,
+        })
+        expect(result.success).toBe(false)
+        if (!result.success) {
+          const phoneError = result.error.errors.find((e) => e.path.includes('phone'))
+          expect(phoneError?.message).toBe(viStrings.forms.validation.phoneRequired)
+        }
+      })
+
+      it('rejects invalid phone with Vietnamese error', () => {
+        const result = registrationFormSchema.safeParse({
+          name: 'Học viên Test 01',
+          email: 'test@example.com',
+          phone: '12345',
+          formType: 'community-me-time',
+          consent: true,
+        })
+        expect(result.success).toBe(false)
+        if (!result.success) {
+          const phoneError = result.error.errors.find((e) => e.path.includes('phone'))
+          expect(phoneError?.message).toBe(viStrings.forms.validation.phoneInvalid)
+        }
+      })
+
+      it('accepts various valid Vietnamese phone formats', () => {
+        const formats = ['0901234567', '+84901234567', '0912 345 678', '098-765-4321']
+        for (const phone of formats) {
+          const result = registrationFormSchema.safeParse({
+            name: 'Học viên Test 01',
+            email: 'test@example.com',
+            phone,
+            formType: 'community-me-time',
+            consent: true,
+          })
+          expect(result.success).toBe(true)
+        }
+      })
+
+      it('rejects unconsented submission with Vietnamese error', () => {
+        const result = registrationFormSchema.safeParse({
+          name: 'Học viên Test 01',
+          email: 'test@example.com',
+          phone: '0901234567',
+          formType: 'community-me-time',
+          consent: false,
+        })
+        expect(result.success).toBe(false)
+        if (!result.success) {
+          const consentError = result.error.errors.find((e) => e.path.includes('consent'))
+          expect(consentError?.message).toBe(viStrings.forms.validation.consentRequired)
+        }
+      })
+
+      it('requires name for community forms but allows optional for brochure', () => {
+        const communityResult = registrationFormSchema.safeParse({
+          name: '',
+          email: 'test@example.com',
+          phone: '0901234567',
+          formType: 'community-me-time',
+          consent: true,
+        })
+        expect(communityResult.success).toBe(false)
+        if (!communityResult.success) {
+          const nameError = communityResult.error.errors.find((e) => e.path.includes('name'))
+          expect(nameError?.message).toBe(viStrings.forms.validation.nameRequired)
+        }
+
+        const brochureResult = registrationFormSchema.safeParse({
+          email: 'test@example.com',
+          phone: '0901234567',
+          formType: 'brochure-chuyen-minh',
+          consent: true,
+        })
+        expect(brochureResult.success).toBe(true)
+      })
+    })
+
+    describe('submitRegistrationLead server logic', () => {
+      it('creates lead with correct source, interestTags, and consent info', async () => {
+        const mockCreate = vi.fn().mockResolvedValue({ id: 99 })
+        const mockPayload = {
+          create: mockCreate,
+          count: vi.fn().mockResolvedValue({ totalDocs: 0 }),
+          delete: vi.fn().mockResolvedValue({}),
+          findGlobal: vi.fn().mockResolvedValue({ email: 'hana@tramdungcamxuc.com' }),
+        } as unknown as Payload
+
+        const mockSender = { send: vi.fn().mockResolvedValue({ success: true }) }
+
+        const result = await submitRegistrationLead(
+          {
+            name: 'Học viên Test 01',
+            email: 'test@example.com',
+            phone: '0901234567',
+            formType: 'community-me-time',
+            consent: true,
+          },
+          { ip: '127.0.0.1', page: '/cong-dong' },
+          { payload: mockPayload, emailSender: mockSender },
+        )
+
+        expect(result.success).toBe(true)
+        expect(result.id).toBe(99)
+        expect(mockCreate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            collection: 'leads',
+            data: expect.objectContaining({
+              name: 'Học viên Test 01',
+              email: 'test@example.com',
+              phone: '0901234567',
+              consent: true,
+              source: expect.objectContaining({
+                form: 'community-me-time',
+                page: '/cong-dong',
+              }),
+              interestTags: [{ text: 'community' }, { text: 'me-time' }],
+            }),
+            overrideAccess: true,
+          }),
+        )
+      })
+    })
+
+    describe('CTASection integration with RegistrationModal', () => {
+      it('opens modal when button with buttonAction=form is clicked in solid variant', () => {
+        render(
+          <CTASection
+            variant="solid"
+            buttonText="Tham gia Me Time"
+            buttonAction="form"
+            formType="community-me-time"
+            formSuccessMessage="[MẪU] Cảm ơn bạn, Trạm sẽ liên hệ qua Zalo sớm."
+          />,
+        )
+
+        const button = screen.getByRole('button', { name: 'Tham gia Me Time' })
+        fireEvent.click(button)
+
+        expect(screen.getByRole('dialog')).toBeDefined()
+        expect(screen.getByRole('heading', { name: 'Tham gia ME TIME' })).toBeDefined()
+        expect(screen.getByLabelText(/Họ và tên/)).toBeDefined()
+        expect(screen.getByLabelText(/Số điện thoại/)).toBeDefined()
+        expect(screen.getByLabelText(/Email/)).toBeDefined()
+      })
     })
   })
 })

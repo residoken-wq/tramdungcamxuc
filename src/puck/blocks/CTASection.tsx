@@ -52,6 +52,23 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
         { label: 'Mở form tham gia / nhận brochure (Modal)', value: 'form' },
       ],
     },
+    formType: {
+      type: 'select',
+      label: 'Loại form mở khi bấm nút chính',
+      options: [
+        { label: 'Tham gia ME TIME', value: 'community-me-time' },
+        { label: 'Tham gia YOGA BUDDY', value: 'community-yoga-buddy' },
+        { label: 'Đăng ký nhận brochure chi tiết', value: 'brochure-chuyen-minh' },
+      ],
+    },
+    formTitle: {
+      type: 'text',
+      label: 'Tiêu đề form modal (nút chính - để trống dùng mặc định)',
+    },
+    formSuccessMessage: {
+      type: 'text',
+      label: 'Câu cảm ơn sau khi gửi (nút chính - để trống dùng mặc định)',
+    },
     buttonLinkType: {
       type: 'select',
       label: 'Loại liên kết nút',
@@ -88,6 +105,31 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     secondaryButtonText: {
       type: 'text',
       label: vi.cd01?.cta?.secondaryButtonText || 'Chữ nút phụ',
+    },
+    secondaryButtonAction: {
+      type: 'select',
+      label: 'Hành động của nút phụ',
+      options: [
+        { label: 'Chuyển hướng liên kết (Mặc định)', value: 'link' },
+        { label: 'Mở form tham gia / nhận brochure (Modal)', value: 'form' },
+      ],
+    },
+    secondaryFormType: {
+      type: 'select',
+      label: 'Loại form mở khi bấm nút phụ',
+      options: [
+        { label: 'Tham gia YOGA BUDDY', value: 'community-yoga-buddy' },
+        { label: 'Tham gia ME TIME', value: 'community-me-time' },
+        { label: 'Đăng ký nhận brochure chi tiết', value: 'brochure-chuyen-minh' },
+      ],
+    },
+    secondaryFormTitle: {
+      type: 'text',
+      label: 'Tiêu đề form modal (nút phụ - để trống dùng mặc định)',
+    },
+    secondaryFormSuccessMessage: {
+      type: 'text',
+      label: 'Câu cảm ơn sau khi gửi (nút phụ - để trống dùng mặc định)',
     },
     secondaryButtonLink: {
       type: 'text',

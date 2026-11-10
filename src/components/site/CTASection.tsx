@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
@@ -14,6 +14,10 @@ import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import {
+  RegistrationModal,
+  type RegistrationFormType,
+} from '@/components/site/RegistrationModal'
 
 export interface CTASectionProps {
   version?: number
@@ -25,12 +29,19 @@ export interface CTASectionProps {
   description?: string
   buttonText?: string
   buttonAction?: 'link' | 'booking' | 'form'
+  formType?: RegistrationFormType
+  formTitle?: string
+  formSuccessMessage?: string
   buttonLinkType?: 'url' | 'page' | 'booking'
   buttonLink?: string
   buttonPageId?: string | number
   buttonVariant?: 'primary' | 'magenta' | 'pink'
   buttonShape?: 'normal' | 'pill'
   secondaryButtonText?: string
+  secondaryButtonAction?: 'link' | 'booking' | 'form'
+  secondaryFormType?: RegistrationFormType
+  secondaryFormTitle?: string
+  secondaryFormSuccessMessage?: string
   secondaryButtonLink?: string
   secondaryButtonVariant?: 'primary' | 'magenta' | 'pink'
   proofText?: string
@@ -85,12 +96,19 @@ export function CTASection({
   description,
   buttonText = '[MẪU] Đặt phiên trải nghiệm 149.000đ',
   buttonAction = 'link',
+  formType = 'community-me-time',
+  formTitle,
+  formSuccessMessage,
   buttonLinkType = 'url',
   buttonLink,
   buttonPageId: _buttonPageId,
   buttonVariant = 'primary',
   buttonShape = 'normal',
   secondaryButtonText,
+  secondaryButtonAction = 'link',
+  secondaryFormType = 'community-yoga-buddy',
+  secondaryFormTitle,
+  secondaryFormSuccessMessage,
   secondaryButtonLink,
   secondaryButtonVariant = 'primary',
   proofText,
@@ -104,6 +122,11 @@ export function CTASection({
 }: CTASectionProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
   const bookingProductId = _resolved?.bookingProductId ?? null
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [activeFormType, setActiveFormType] = useState<RegistrationFormType>('community-me-time')
+  const [activeModalTitle, setActiveModalTitle] = useState<string | undefined>(undefined)
+  const [activeSuccessMessage, setActiveSuccessMessage] = useState<string | undefined>(undefined)
 
   let resolvedButtonHref: string | null = null
   if (buttonLinkType === 'page') {
@@ -222,6 +245,27 @@ export function CTASection({
                     pageSlug={_resolved?.pageSlug ?? undefined}
                   />
                 ) : null
+              ) : buttonAction === 'form' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveFormType(formType || 'community-me-time')
+                    setActiveModalTitle(formTitle)
+                    setActiveSuccessMessage(formSuccessMessage)
+                    setIsModalOpen(true)
+                  }}
+                  className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 cursor-pointer ${
+                    buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                  } ${
+                    buttonVariant === 'magenta'
+                      ? 'bg-bright-magenta'
+                      : buttonVariant === 'pink'
+                        ? 'bg-accent-pink'
+                        : 'bg-accent-pink'
+                  }`}
+                >
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                </button>
               ) : (
                 <Link
                   href={safeHref(finalButtonHref) || '#'}
@@ -239,24 +283,54 @@ export function CTASection({
                 </Link>
               ))}
 
-            {secondaryButtonText && (
-              <Link
-                href={safeHref(secondaryButtonLink) || '#'}
-                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
-                  buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
-                } ${
-                  secondaryButtonVariant === 'magenta'
-                    ? 'bg-bright-magenta'
-                    : secondaryButtonVariant === 'pink'
-                      ? 'bg-accent-pink'
-                      : 'bg-accent-pink'
-                }`}
-              >
-                {secondaryButtonText}
-              </Link>
-            )}
+            {secondaryButtonText &&
+              (secondaryButtonAction === 'form' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveFormType(secondaryFormType || 'community-yoga-buddy')
+                    setActiveModalTitle(secondaryFormTitle)
+                    setActiveSuccessMessage(secondaryFormSuccessMessage)
+                    setIsModalOpen(true)
+                  }}
+                  className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 cursor-pointer ${
+                    buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                  } ${
+                    secondaryButtonVariant === 'magenta'
+                      ? 'bg-bright-magenta'
+                      : secondaryButtonVariant === 'pink'
+                        ? 'bg-accent-pink'
+                        : 'bg-accent-pink'
+                  }`}
+                >
+                  {secondaryButtonText}
+                </button>
+              ) : (
+                <Link
+                  href={safeHref(secondaryButtonLink) || '#'}
+                  className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
+                    buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                  } ${
+                    secondaryButtonVariant === 'magenta'
+                      ? 'bg-bright-magenta'
+                      : secondaryButtonVariant === 'pink'
+                        ? 'bg-accent-pink'
+                        : 'bg-accent-pink'
+                  }`}
+                >
+                  {secondaryButtonText}
+                </Link>
+              ))}
           </div>
         </div>
+        <RegistrationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          formType={activeFormType}
+          title={activeModalTitle}
+          successMessage={activeSuccessMessage}
+          pageSlug={_resolved?.pageSlug ?? undefined}
+        />
       </section>
     )
   }
@@ -343,6 +417,22 @@ export function CTASection({
                   </p>
                 </div>
               ) : null
+            ) : buttonAction === 'form' ? (
+              <div className="mt-8">
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="lg"
+                  onClick={() => {
+                    setActiveFormType(formType || 'brochure-chuyen-minh')
+                    setActiveModalTitle(formTitle)
+                    setActiveSuccessMessage(formSuccessMessage)
+                    setIsModalOpen(true)
+                  }}
+                >
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                </Button>
+              </div>
             ) : finalButtonHref ? (
               <div className="mt-8">
                 <Button href={finalButtonHref} variant="primary" size="lg">
@@ -398,6 +488,14 @@ export function CTASection({
           )}
         </div>
       </div>
+      <RegistrationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        formType={activeFormType}
+        title={activeModalTitle}
+        successMessage={activeSuccessMessage}
+        pageSlug={_resolved?.pageSlug ?? undefined}
+      />
     </section>
   )
 }

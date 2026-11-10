@@ -8,11 +8,13 @@ import {
   leadFormSchema,
   newsletterSchema,
   resourceRequestSchema,
+  registrationFormSchema,
   type B2BBriefInput,
   type CoachingFormInput,
   type LeadFormInput,
   type NewsletterInput,
   type ResourceRequestInput,
+  type RegistrationFormInput,
 } from './schemas'
 import { checkAndRecordRateLimit } from './ratelimit.server'
 import { verifyTurnstile } from './turnstile.server'
@@ -21,6 +23,7 @@ import {
   sendCoachingEmails,
   sendLeadEmails,
   sendResourceDeliveryEmail,
+  notifyAdmin,
 } from '../email/service.server'
 import { signDownloadToken } from '../downloads/token'
 import { getSiteUrl } from '../site-url'
@@ -637,5 +640,100 @@ export async function submitNewsletter(
     success: true,
     id: lead.id,
     message: vi.sm05.newsletter.successMessage,
+  }
+}
+
+/**
+ * Handles Community (Me Time / Yoga Buddy) and Brochure registration form submissions.
+ * Creates a Lead in collection 'leads' with source.form = 'community-me-time' | 'community-yoga-buddy' | 'brochure-chuyen-minh'
+ * and notifies admin at siteSettings.email.
+ */
+export async function submitRegistrationLead(
+  input: RegistrationFormInput | Record<string, unknown>,
+  ctx: SubmissionContext = {},
+  options: SubmissionOptions = {},
+): Promise<SubmissionResult> {
+  // 1. Honeypot check
+  if (typeof input === 'object' && input !== null && 'honeypot' in input) {
+    const rawHp = String(input.honeypot || '').trim()
+    if (rawHp.length > 0) {
+      return {
+        success: true,
+        message: vi.forms.success.lead,
+        fake: true,
+      }
+    }
+  }
+
+  // 2. Zod validation
+  const validated = registrationFormSchema.parse(input)
+
+  if (validated.honeypot && validated.honeypot.trim().length > 0) {
+    return {
+      success: true,
+      message: vi.forms.success.lead,
+      fake: true,
+    }
+  }
+
+  // 3. Turnstile verification
+  await verifyTurnstile(validated.turnstileToken, ctx.ip)
+
+  // 4. Rate limiting check & record
+  const payload = await resolvePayload(options.payload)
+  await checkAndRecordRateLimit(payload, {
+    form: validated.formType,
+    ip: ctx.ip,
+    email: validated.email,
+  })
+
+  const interestTagMap: Record<string, string[]> = {
+    'community-me-time': ['community', 'me-time'],
+    'community-yoga-buddy': ['community', 'yoga-buddy'],
+    'brochure-chuyen-minh': ['coaching', 'brochure', 'chuyen-minh'],
+  }
+  const tags = interestTagMap[validated.formType] || [validated.formType]
+
+  // 5. REVIEW-REQUIRED: Personal data (NĐ 13/2023). Public forms create leads through server code
+  // with overrideAccess after server validation.
+  const lead = await payload.create({
+    collection: 'leads',
+    data: {
+      name: validated.name || undefined,
+      email: validated.email.toLowerCase().trim(),
+      phone: validated.phone,
+      need: 'personal',
+      interestTags: tags.map((text) => ({ text })),
+      consent: true,
+      consentAt: new Date().toISOString(),
+      source: {
+        form: validated.formType,
+        page: validated.page || ctx.page || undefined,
+        utm: ctx.utm || undefined,
+      },
+      followUpStatus: 'new',
+    },
+    overrideAccess: true,
+  })
+
+  // 6. Notify admin (Hana) via siteSettings.email
+  await notifyAdmin(
+    payload,
+    {
+      formType: validated.formType.startsWith('community') ? 'community' : 'brochure',
+      name: validated.name || 'Khách đăng ký',
+      email: validated.email.toLowerCase().trim(),
+      phone: validated.phone,
+      interestTags: tags,
+      page: validated.page || ctx.page,
+      utm: ctx.utm,
+    },
+    options.emailSender,
+  )
+
+  return {
+    success: true,
+    id: lead.id,
+    message: vi.forms.success.lead,
   }
 }

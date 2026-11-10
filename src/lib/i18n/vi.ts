@@ -639,6 +639,7 @@ export const vi = {
       nameMin: 'Họ và tên phải có ít nhất 2 ký tự',
       emailRequired: 'Vui lòng nhập địa chỉ email',
       emailInvalid: 'Địa chỉ email không hợp lệ (ví dụ: ban@example.com)',
+      phoneRequired: 'Vui lòng nhập số điện thoại',
       phoneInvalid: 'Số điện thoại không hợp lệ',
       consentRequired: 'Vui lòng đồng ý với chính sách bảo mật để tiếp tục',
       companyRequired: 'Vui lòng nhập tên công ty hoặc tổ chức',
