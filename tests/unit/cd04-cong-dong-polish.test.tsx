@@ -31,7 +31,7 @@ describe('CD-04 §1: Mũi tên trượt nằm 2 bên (sides)', () => {
     expect(sideButtons.length).toBe(0)
   })
 
-  it('CarouselTrack sides: does not render top nav, renders side buttons with aria-label', () => {
+  it('CarouselTrack sides: renders top nav with lg:hidden, bottom nav for mobile, and side buttons from lg up', () => {
     const { container } = render(
       <CarouselTrack
         ariaLabel="Danh sách thử nghiệm"
@@ -43,17 +43,25 @@ describe('CD-04 §1: Mũi tên trượt nằm 2 bên (sides)', () => {
       </CarouselTrack>,
     )
 
-    // Top nav is hidden/not rendered
+    // Top nav has lg:hidden (visible on tablet, hidden on desktop >= 1024px)
     const topNav = container.querySelector('.mb-4.hidden.justify-end')
-    expect(topNav).toBeNull()
+    expect(topNav).toBeTruthy()
+    expect(topNav?.className).toContain('lg:hidden')
 
-    // Side buttons exist with aria-labels
-    const prevBtn = container.querySelector('button[aria-label="Thẻ trước"]')
-    const nextBtn = container.querySelector('button[aria-label="Thẻ tiếp theo"]')
+    // Bottom nav for mobile exists
+    const bottomNav = container.querySelector('.mt-4.flex.justify-center')
+    expect(bottomNav).toBeTruthy()
+    expect(bottomNav?.className).toContain('sm:hidden')
+
+    // Side buttons exist from lg up with aria-labels
+    const prevBtn = container.querySelector('button.absolute[aria-label="Thẻ trước"]')
+    const nextBtn = container.querySelector('button.absolute[aria-label="Thẻ tiếp theo"]')
     expect(prevBtn).toBeTruthy()
     expect(nextBtn).toBeTruthy()
+    expect(prevBtn?.className).toContain('hidden lg:inline-flex')
     expect(prevBtn?.className).toContain('absolute')
     expect(prevBtn?.className).toContain('-left-')
+    expect(nextBtn?.className).toContain('hidden lg:inline-flex')
     expect(nextBtn?.className).toContain('absolute')
     expect(nextBtn?.className).toContain('-right-')
   })

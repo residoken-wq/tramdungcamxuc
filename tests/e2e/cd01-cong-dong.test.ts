@@ -365,6 +365,12 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       )
       expect(centerTitleSizeMobile).toBeGreaterThanOrEqual(24)
 
+      // CD-04 Item 3: On mobile (375px), bottom nav buttons exist for carousel track
+      const mobileNavPrev = guest
+        .locator('[data-carousel-track] button[aria-label="Thẻ trước"]')
+        .first()
+      await expect(mobileNavPrev).toBeVisible()
+
       const scrollWidth = await guest.evaluate(() => document.documentElement.scrollWidth)
       const clientWidth = await guest.evaluate(() => document.documentElement.clientWidth)
       expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 5) // max 5px subpixel margin

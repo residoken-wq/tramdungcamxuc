@@ -58,7 +58,7 @@ export function CarouselTrack({
 
   const isSides = arrowPosition === 'sides'
   const sideBtnClass =
-    'hidden sm:inline-flex min-h-[44px] min-w-[44px] h-11 w-11 items-center justify-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-accent-pink disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none shadow-sm ' +
+    'hidden lg:inline-flex min-h-[44px] min-w-[44px] h-11 w-11 items-center justify-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-accent-pink disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none shadow-sm ' +
     (isDeepNavy
       ? 'border border-white/20 bg-deep-navy/80 text-white/70 hover:text-white hover:bg-white/10'
       : 'border border-deep-navy/20 bg-white text-deep-navy/60 hover:text-deep-navy hover:bg-soft-pink/30 hover:border-deep-navy/40')
@@ -78,7 +78,7 @@ export function CarouselTrack({
 
   return (
     <div data-carousel-track="" className="relative">
-      {!isSides && nav('mb-4 hidden justify-end sm:flex')}
+      {nav('mb-4 hidden justify-end sm:flex' + (isSides ? ' lg:hidden' : ''))}
       {isSides && (
         <button
           type="button"
@@ -134,7 +134,7 @@ export function CarouselTrack({
           </svg>
         </button>
       )}
-      {!isSides && nav('mt-4 flex justify-center sm:hidden')}
+      {nav('mt-4 flex justify-center sm:hidden')}
     </div>
   )
 }
