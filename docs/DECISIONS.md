@@ -398,3 +398,15 @@ Còn chờ Hana: câu 3–10 trong kế hoạch (chẩn đoán 8 hay 16 câu, ng
 - Theo quy định của Google Identity Services ("Sign in with Google Branding Guidelines"), nút đăng nhập bằng Google bắt buộc phải sử dụng biểu tượng chữ "G" 4 màu chính thức (Đỏ #EA4335, Vàng #FBBC05, Xanh lá #34A853, Xanh dương #4285F4) trên nền trắng hoặc trung tính.
 - **Ngoại lệ thương hiệu được phê duyệt**: Mặc dù Brand Book 2026 của Trạm Dừng Cảm Xúc giới hạn bảng màu giao diện trong 8 màu pastel và quy định không dùng màu ngoài bảng, biểu tượng logo chữ "G" 4 màu của Google được chấp thuận là một ngoại lệ kỹ thuật & nhận diện thương hiệu đối tác (tương tự như logo Zalo xanh hoặc biểu tượng VietQR ngân hàng).
 - Nút được tạo dạng liên kết GET (`<a href="/api/auth/google/start">`) với chiều cao tối thiểu 44px, viền xám nhạt (`#DADCE0`), chữ đậm `deep-navy`, đáp ứng hoàn toàn tiêu chuẩn WCAG AA và tuân thủ chặt chẽ chính sách bảo mật CSP `form-action 'self'`.
+
+## Rà soát website của Hana – chốt 10/11/2026 (Hana, qua anh Nhân)
+
+Chi tiết: `docs/plan/AUDIT-HANA-2026-11-09.md` mục "Kết quả trả lời 10/11".
+
+- **VIP Member** là mua **từng công cụ** (EQ Buddy số, Habit Tracker số), mỗi cái riêng. Giá gốc 250.000đ, giá ưu đãi 99.000đ là **khuyến mãi có hạn**: Hana nhập `salePrice` + `saleEndsAt` trong CMS sản phẩm (thay quyết định 10/10 "178.000đ cố định"). Giá không ghi cứng trong code.
+- **Phiên trải nghiệm 149.000đ** vẫn **thanh toán VietQR trên web trước**, sau đó khách nhận link Google Calendar qua email (`siteSettings.experienceBookingUrl`). Mọi nút "Đặt lịch / Cần coach 1:1" dẫn tới trang thanh toán phiên trải nghiệm (`getBookingPath`), không mở thẳng Calendar.
+- **Trang Cộng đồng:** "Khám phá" giữ cuộn xuống phần tương ứng như hiện tại.
+- **Brochure Chuyển mình:** chỉ thu email + SĐT để Hana liên hệ, không gửi file tự động.
+- Lời chia sẻ trang chủ: Hana tự chọn trong CMS (chỉ lời có `consent = true`).
+- Công cụ Habit: bỏ 3 thẻ giai đoạn lớn ở đầu, phần "Khám" làm thành **wizard từng bước**.
+- **Còn mở:** màu 2 chữ nổi bật ở hero (tạm dùng hồng sen); nhãn "Free" = "tất cả free" (cần làm rõ với VIP trả phí); 28 ngày dùng thử còn hay bỏ; form Tham gia Me Time / Yoga Buddy (email báo Hana, câu cảm ơn, có hỏi email không).
