@@ -82,6 +82,7 @@
    - [5.41. Bộ khối chuyên biệt và mẫu Trang lộ trình Chuyển mình 100% bản thiết kế (PK-28)](#541-bộ-khối-chuyên-biệt-và-mẫu-trang-lộ-trình-chuyển-mình-100-bản-thiết-kế-pk-28)
    - [5.42. Cải tiến trang "Về Trạm": Xuống dòng trong thẻ, Brand Story 3 cột, Footer nền deep-navy (PK-31)](#542-cải-tiến-trang-về-trạm-xuống-dòng-trong-thẻ-brand-story-3-cột-footer-nền-deep-navy-pk-31)
    - [5.43. Mẫu trang Cộng đồng 100% bản thiết kế slide 48–57 (CD-01)](#543-mẫu-trang-cộng-đồng-100-bản-thiết-kế-slide-4857-cd-01)
+   - [5.44. Các tùy chọn tinh chỉnh chi tiết giao diện theo bản thiết kế (CD-04)](#544-các-tùy-chọn-tinh-chỉnh-chi-tiết-giao-diện-theo-bản-thiết-kế-cd-04)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -3321,6 +3322,37 @@ Dành cho trang **Cộng đồng của Trạm** (`/cong-dong`), được tái hi
   2. Mở trình dựng trang (Puck Editor) của trang Cộng đồng, bấm vào khối **"Tiếng nói cộng đồng"**, tại mục chọn lời chia sẻ, tích chọn các lời chia sẻ vừa tạo để đưa lên giao diện.
 - **Thay ảnh thật**: Trong Puck Editor, bấm vào từng khối ảnh (`PhotoGallery` hoặc `ImageText`), chọn ảnh thật đã tải lên Thư viện Media để thay thế các khung `[MẪU]`.
 - **Cài đặt liên kết tham gia**: Bấm vào khối CTA cuối trang hoặc các thẻ liên kết để đổi đường dẫn `#` thành link nhóm Zalo/Telegram hoặc form đăng ký Me Time / Yoga Buddy thực tế.
+
+---
+
+### 5.44. Các tùy chọn tinh chỉnh chi tiết giao diện theo bản thiết kế (CD-04)
+
+Bản cập nhật CD-04 bổ sung 5 tùy chọn tinh chỉnh giao diện trực quan trong Puck Editor để Hana dễ dàng căn chỉnh các trang (đặc biệt là trang Cộng đồng) giống 100% bản slide thiết kế:
+
+1. **Vị trí nút mũi tên trượt (`arrowPosition`)**:
+   - **Áp dụng cho**: Khối **Lưới thẻ biểu tượng / đánh số** (`IconCardGrid` dạng trượt ngang) và Khối **Bộ sưu tập ảnh** (`PhotoGallery`).
+   - **Tùy chọn**: `Trên đầu (top)` (mặc định) hoặc `Hai bên (sides)`.
+   - **Dùng khi nào**: Dùng khi muốn đặt 2 nút mũi tên chuyển trang lơ lửng ở hai bên mép hàng trượt (như ở hàng thẻ chọn không gian sinh hoạt slide 49) thay vì gom gọn ở góc trên bên phải. Trên màn hình máy tính (từ 1440px), hai nút sẽ nổi ra ngoài lề trang để không che nội dung thẻ; trên điện thoại, nút tự động ẩn để nhường trọn không gian cho thao tác vuốt cảm ứng mượt mà.
+
+2. **Ảnh tràn hết chiều cao section (`imageBleedFullHeight`)**:
+   - **Áp dụng cho**: Khối **Ảnh & Đoạn văn** (`ImageText`).
+   - **Tùy chọn**: Công tắc `Tắt` (mặc định) hoặc `Bật`.
+   - **Dùng khi nào**: Dùng khi Hana muốn ảnh chạm sát cả mép trên và mép dưới của section mà không bị khoảng trống/đệm trắng nào (như bức ảnh Yoga Buddy ở slide 54). Tùy chọn này đi cùng với `Tràn mép màn hình (imageBleed)` để ảnh phủ kín trọn vẹn từ viền này sang viền kia.
+
+3. **Dáng vạch màu đầu thẻ (`cardAccentShape`)**:
+   - **Áp dụng cho**: Tab **Kiểu** của khối **Thẻ nội dung** (`Card`) và khối **Lưới thẻ** (`IconCardGrid`).
+   - **Tùy chọn**: `Bo góc theo thẻ (rounded)` (mặc định) hoặc `Thẳng viền (flat)`.
+   - **Dùng khi nào**: Dùng khi Hana muốn vạch màu ở đầu thẻ thẳng tắp sắc nét sát mép trên thẻ (như các thẻ khung giờ 5:00 AM ở slide 51), thay vì vạch màu bo tròn viên thuốc nhẹ ở hai đầu.
+
+4. **Màu nhãn phụ (`eyebrowColor`)**:
+   - **Áp dụng cho**: Khối **Thẻ nội dung** (`Card`).
+   - **Tùy chọn**: `Màu nhấn (accent)` (mặc định - hồng sen `bright-magenta`) hoặc `Màu xám (muted)` (navy dịu 70% `deep-navy/70`).
+   - **Dùng khi nào**: Dùng khi thẻ có dòng nhãn phụ (ví dụ khung giờ `5:00 - 5:10 | We Time` ở slide 51) mà Hana muốn hiển thị tông màu xám dịu mắt, trang nhã, tránh việc có quá nhiều chi tiết màu hồng sen cạnh tranh sự chú ý với tiêu đề chính. Màu xám này đạt độ tương phản chuẩn WCAG AA (6.49:1) trên nền trắng.
+
+5. **Chiều cao các thẻ bằng nhau trong Khối Cột (`equalHeight`)**:
+   - **Áp dụng cho**: Khối **Cột** (`Columns`).
+   - **Tùy chọn**: Công tắc `Tắt` (mặc định) hoặc `Bật`.
+   - **Dùng khi nào**: Dùng khi Hana đặt 2 hoặc 3 khối Thẻ nội dung (`Card`) cạnh nhau trong các cột và muốn tất cả các thẻ tự động kéo giãn cao bằng nhau (như 2 thẻ *Hành trình 30 Phút* và *Vài điều giữ cho nhau* ở slide 55), giúp bố cục trang luôn vuông vắn, đều đặn dù lượng chữ bên trong mỗi thẻ dài ngắn khác nhau.
 
 ---
 

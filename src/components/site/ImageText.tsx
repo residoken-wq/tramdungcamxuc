@@ -30,6 +30,7 @@ export interface ImageTextProps {
   version?: number
   layout?: 'image-left' | 'image-right'
   imageBleed?: boolean
+  imageBleedFullHeight?: boolean
   seriesLabel?: string
   titleLine1: string
   titleLine2?: string
@@ -88,6 +89,7 @@ export function ImageText({
   id,
   layout = 'image-left',
   imageBleed = false,
+  imageBleedFullHeight = false,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -170,9 +172,12 @@ export function ImageText({
     .filter(Boolean)
 
   const isImageLeft = layout === 'image-left'
-  const sectionPadding = imageBleed
-    ? PADDINGS[padding].replace(/px-\S+/g, 'px-0')
-    : PADDINGS[padding]
+  const isBleedFullHeight = Boolean(imageBleed && imageBleedFullHeight)
+  const sectionPadding = isBleedFullHeight
+    ? 'p-0'
+    : imageBleed
+      ? PADDINGS[padding].replace(/px-\S+/g, 'px-0')
+      : PADDINGS[padding]
 
   return (
     <section
@@ -182,7 +187,7 @@ export function ImageText({
         <div
           className={`grid grid-cols-1 ${shouldRenderImage ? 'md:grid-cols-2' : ''} ${
             imageBleed ? 'gap-0' : 'gap-8 lg:gap-12'
-          } items-center`}
+          } ${isBleedFullHeight ? 'items-stretch' : 'items-center'}`}
         >
           {/* Image Column */}
           {shouldRenderImage && (
@@ -197,11 +202,12 @@ export function ImageText({
                 <BrandImage
                   src={activeUrl!}
                   alt={activeAlt}
-                  width={800}
-                  height={600}
+                  fill={isBleedFullHeight}
+                  width={isBleedFullHeight ? undefined : 800}
+                  height={isBleedFullHeight ? undefined : 600}
                   className={
                     imageBleed
-                      ? '!rounded-none border-0 shadow-none bg-transparent w-full h-full'
+                      ? '!rounded-none border-0 shadow-none bg-transparent w-full h-full min-h-[280px] sm:min-h-[360px] md:min-h-[500px]'
                       : 'border border-deep-navy/10 shadow-soft bg-white'
                   }
                   imageClassName={

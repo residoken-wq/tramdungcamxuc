@@ -3642,6 +3642,33 @@ export const vi = {
       equalHeight: 'Chiều cao các thẻ bằng nhau',
     },
   },
+  cd04: {
+    arrowPosition: {
+      label: 'Vị trí mũi tên',
+      top: 'Góc trên / cạnh tiêu đề (Mặc định)',
+      sides: 'Hai bên (Giữa hàng)',
+    },
+    imageBleedFullHeight: {
+      label: 'Ảnh tràn hết chiều cao',
+      false: 'Không (Mặc định)',
+      true: 'Có (Tràn trên & dưới)',
+    },
+    cardAccentShape: {
+      label: 'Dáng vạch',
+      rounded: 'Bo góc theo thẻ (Mặc định)',
+      flat: 'Thẳng (Vuông 2 góc trên)',
+    },
+    eyebrowColor: {
+      label: 'Màu nhãn',
+      accent: 'Màu nổi bật (Mặc định - Hồng sen)',
+      muted: 'Màu xám thẫm (Deep Navy 70%)',
+    },
+    columns: {
+      equalHeight: 'Chiều cao các thẻ bằng nhau',
+      auto: 'Tự động theo nội dung (Mặc định)',
+      equal: 'Bằng nhau (Đầy đủ hàng)',
+    },
+  },
   eb16: {
     replaceEntirePage: 'Thay toàn bộ trang',
     back: 'Quay lại',

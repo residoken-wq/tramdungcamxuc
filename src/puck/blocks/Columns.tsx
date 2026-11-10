@@ -2,6 +2,7 @@ import React from 'react'
 import type { ComponentConfig } from '@puckeditor/core'
 import { Columns, type ColumnsProps } from '@/components/site/Columns'
 import { BRAND_COLOR_OPTIONS, ELEMENT_BLOCK_TYPES, PADDING_OPTIONS } from '../constants'
+import { vi } from '@/lib/i18n/vi'
 
 // No nested Columns or heroes. Card, Stat, ServiceCard and PackageCard may sit in a column
 // (PK-05); the other child blocks only make sense inside their own parent.
@@ -34,6 +35,14 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
       options: [
         { label: '2 cột', value: '2' },
         { label: '3 cột', value: '3' },
+      ],
+    },
+    equalHeight: {
+      type: 'radio',
+      label: vi.cd04?.columns?.equalHeight || 'Chiều cao các thẻ bằng nhau',
+      options: [
+        { label: vi.cd04?.columns?.auto || 'Tự động theo nội dung (Mặc định)', value: false },
+        { label: vi.cd04?.columns?.equal || 'Bằng nhau (Đầy đủ hàng)', value: true },
       ],
     },
     col1: {
@@ -78,6 +87,7 @@ export const ColumnsBlock: ComponentConfig<ColumnsProps> = {
     titleLine2: '',
     emotionLine: '',
     numColumns: '2',
+    equalHeight: false,
     gap: 'md',
     bgColor: 'warm-ivory',
     padding: 'md',

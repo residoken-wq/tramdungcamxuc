@@ -16,6 +16,7 @@ export function CarouselTrack({
   prevLabel,
   nextLabel,
   step = 360,
+  arrowPosition = 'top',
 }: {
   children: React.ReactNode
   ariaLabel: string
@@ -23,6 +24,7 @@ export function CarouselTrack({
   prevLabel: string
   nextLabel: string
   step?: number
+  arrowPosition?: 'top' | 'sides'
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [canPrev, setCanPrev] = useState(false)
@@ -54,6 +56,13 @@ export function CarouselTrack({
     el.scrollBy({ left: dir * step, behavior: reduce ? 'auto' : 'smooth' })
   }
 
+  const isSides = arrowPosition === 'sides'
+  const sideBtnClass =
+    'hidden lg:inline-flex min-h-[44px] min-w-[44px] h-11 w-11 items-center justify-center rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-accent-pink disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none shadow-sm ' +
+    (isDeepNavy
+      ? 'border border-white/20 bg-deep-navy/80 text-white/70 hover:text-white hover:bg-white/10'
+      : 'border border-deep-navy/20 bg-white text-deep-navy/60 hover:text-deep-navy hover:bg-soft-pink/30 hover:border-deep-navy/40')
+
   const nav = (className: string) => (
     <CarouselNavButtons
       className={className}
@@ -68,8 +77,28 @@ export function CarouselTrack({
   )
 
   return (
-    <div data-carousel-track="">
-      {nav('mb-4 hidden justify-end sm:flex')}
+    <div data-carousel-track="" className="relative">
+      {nav('mb-4 hidden justify-end sm:flex' + (isSides ? ' lg:hidden' : ''))}
+      {isSides && (
+        <button
+          type="button"
+          onClick={() => scrollBy(-1)}
+          disabled={!canPrev}
+          aria-label={prevLabel}
+          className={`absolute -left-4 md:-left-6 lg:-left-10 xl:-left-14 top-1/2 -translate-y-1/2 z-20 ${sideBtnClass}`}
+        >
+          <svg
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+      )}
       <div
         ref={ref}
         role="region"
@@ -85,6 +114,26 @@ export function CarouselTrack({
       >
         {children}
       </div>
+      {isSides && (
+        <button
+          type="button"
+          onClick={() => scrollBy(1)}
+          disabled={!canNext}
+          aria-label={nextLabel}
+          className={`absolute -right-4 md:-right-6 lg:-right-10 xl:-right-14 top-1/2 -translate-y-1/2 z-20 ${sideBtnClass}`}
+        >
+          <svg
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      )}
       {nav('mt-4 flex justify-center sm:hidden')}
     </div>
   )

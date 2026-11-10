@@ -48,6 +48,14 @@ export const PhotoGalleryBlock: ComponentConfig<PhotoGalleryProps> = {
         },
       ],
     },
+    arrowPosition: {
+      type: 'radio',
+      label: vi.cd04?.arrowPosition?.label || 'Vị trí mũi tên',
+      options: [
+        { label: vi.cd04?.arrowPosition?.top || 'Cạnh tiêu đề (Mặc định)', value: 'top' },
+        { label: vi.cd04?.arrowPosition?.sides || 'Hai bên (Giữa hàng)', value: 'sides' },
+      ],
+    },
     items: {
       type: 'array',
       label: vi.pk21?.photoGallery?.items || 'Danh sách ảnh',
@@ -81,6 +89,7 @@ export const PhotoGalleryBlock: ComponentConfig<PhotoGalleryProps> = {
     emotionLine: '[MẪU] Nơi mỗi cảm xúc đều tìm thấy điểm dừng dịu êm.',
     headerAlign: 'left',
     layout: 'mosaic',
+    arrowPosition: 'top',
     items: [
       {
         imageUrl: '/brand/logo.png',
@@ -149,4 +158,3 @@ export const PhotoGalleryBlock: ComponentConfig<PhotoGalleryProps> = {
     <PhotoGallery {...props} puck={{ isEditing: puck?.isEditing ?? false }} />
   ),
 }
-

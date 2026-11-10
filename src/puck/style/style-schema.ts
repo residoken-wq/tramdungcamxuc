@@ -78,6 +78,9 @@ export const CARD_ACCENTS = [
 ] as const
 export type CardAccent = (typeof CARD_ACCENTS)[number]
 
+export const CARD_ACCENT_SHAPES = ['rounded', 'flat'] as const
+export type CardAccentShape = (typeof CARD_ACCENT_SHAPES)[number]
+
 /** PK-18 / PK-23: Block background image configuration */
 export interface BlockBackgroundImage {
   mediaId?: string
@@ -110,6 +113,7 @@ export interface BlockStyle {
   emotionGap?: EmotionGapPreset
   cardFrame?: CardFrame
   cardAccent?: CardAccent
+  cardAccentShape?: CardAccentShape
   // EB-15a: Individual text target styles
   texts?: Record<string, TextTargetStyle>
   // Advanced tab
@@ -380,6 +384,10 @@ export function sanitizeBlockStyle(
     cardAccent:
       includes(CARD_ACCENTS, r.cardAccent) && r.cardAccent !== 'none'
         ? (r.cardAccent as CardAccent)
+        : undefined,
+    cardAccentShape:
+      includes(CARD_ACCENT_SHAPES, r.cardAccentShape) && r.cardAccentShape !== 'rounded'
+        ? (r.cardAccentShape as CardAccentShape)
         : undefined,
     texts: cleanTexts(r.texts, ds, blockType),
     padding: cleanResponsive(r.padding, (v) => cleanBox(v, 'spacing', ds)),

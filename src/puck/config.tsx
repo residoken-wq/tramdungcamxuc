@@ -685,6 +685,14 @@ const basePuckConfig: Config<PageComponentsProps> = {
             { label: 'Có (Ảnh tràn tới mép màn hình)', value: true },
           ],
         },
+        imageBleedFullHeight: {
+          type: 'radio',
+          label: vi.cd04?.imageBleedFullHeight?.label || 'Ảnh tràn hết chiều cao',
+          options: [
+            { label: vi.cd04?.imageBleedFullHeight?.false || 'Không (Mặc định)', value: false },
+            { label: vi.cd04?.imageBleedFullHeight?.true || 'Có (Tràn trên & dưới)', value: true },
+          ],
+        },
         seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
         titleLine1: { type: 'text', label: vi.eb15a.titleLine1, contentEditable: true },
         titleLine2: { type: 'text', label: vi.eb15a.titleLine2, contentEditable: true },
@@ -805,6 +813,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
         version: 2,
         layout: 'image-left',
         imageBleed: false,
+        imageBleedFullHeight: false,
         titleSize: 'md',
         textSize: 'md',
         textColor: 'deep-navy',
