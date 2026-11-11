@@ -1,16 +1,22 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import { expectNoSeriousA11y } from './helpers/a11y'
 
 /**
- * DP-01b: E2E EQ Buddy Flow & Access Mode Switch
+ * DP-01b / AU-02: E2E EQ Buddy Flow & Access Mode Switch
  *
- * Scenarios per DP-01 section 7:
+ * Scenarios per DP-01 section 7 & AU-02:
  * 1. Bootstrap admin if CI/dev DB is fresh.
- * 2. Ensure product eq-buddy-so exists.
+ * 2. Ensure product eq-buddy-so and growth-mirror-phien-trai-nghiem exist.
  * 3. Seed/ensure 3 published sample EQ cards with prompts and stories.
  * 4. Part 1 (Trial mode - default):
- *    - Guest opens /eq-buddy/rut-the.
+ *    - Guest opens /eq-buddy -> clicks "Rút thẻ ngay" -> navigates directly to /eq-buddy/rut-the.
+ *    - Enters status and selects quick emotion.
  *    - Draws card 1 -> 3D card flips front and back -> answers prompts.
+ *    - Verifies "Tôi đang:" and "Tôi cảm thấy:" show up.
+ *    - Verifies NO string "TDCX-" and NO "#0..." on page.
+ *    - Verifies 3 action buttons (VIP Member, Shopee, Đặt lịch coaching 1-1).
+ *    - Verifies 375 responsive layout has no horizontal scroll and passes axe clean.
  *    - Tries to draw card 2 -> paywall blocks guest.
  *    - Visits QR page of card directly -> card message & story load publicly.
  * 5. Part 2 (Free mode - "Miễn phí hoàn toàn"):
@@ -18,7 +24,7 @@ import { expect, test, type Page, type Response } from './fixtures'
  *    - Guest opens /eq-buddy/rut-the with fresh context.
  *    - Draws multiple cards without getting blocked.
  *    - "Tất cả thẻ" displays unlocked cards.
- * 6. Admin restores eqAccessMode = 'trial'.
+ * 6. Admin restores eqAccessMode and cleans sample test entities.
  */
 
 async function bootstrapAdmin(page: Page): Promise<number> {
@@ -44,8 +50,8 @@ async function bootstrapAdmin(page: Page): Promise<number> {
   return (await (await page.request.get('/api/users/me')).json()).user.id
 }
 
-test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
-  test('luồng rút thẻ -> lật 3D -> chặn ở thẻ 2 khi trial -> xem QR công khai -> owner bật Miễn phí hoàn toàn -> rút tự do', async ({
+test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch (AU-02)', () => {
+  test('luồng rút thẻ -> lật 3D -> kiểm 3 nút & không mã số -> chặn ở thẻ 2 khi trial -> xem QR -> owner bật Miễn phí hoàn toàn -> rút tự do', async ({
     page,
     browser,
   }, testInfo) => {
@@ -59,6 +65,8 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
 
     let adminId: number | undefined
     let createdProductId: number | undefined
+    let createdCoachingId: number | undefined
+    let initialGlobalData: any = null
     const createdCardIds: (number | string)[] = []
     const suffix = randomUUID().slice(0, 8)
     const cardCode1 = `EQ-B1-${suffix}`
@@ -77,6 +85,12 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
     try {
       adminId = await bootstrapAdmin(page)
 
+      // Lưu lại global EQ content ban đầu
+      const initialGlobalRes = await page.request.get('/api/globals/eqBuddyContent')
+      if (initialGlobalRes.ok()) {
+        initialGlobalData = await initialGlobalRes.json()
+      }
+
       // 1. Đảm bảo sản phẩm eq-buddy-so đã tồn tại
       const existingProduct = await (
         await page.request.get('/api/products?where[slug][equals]=eq-buddy-so&draft=true')
@@ -92,6 +106,7 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
             type: 'digital_tool',
             trialDays: 21,
             price: 250000,
+            salePrice: 99000,
             saleStatus: 'on_sale',
             isSample: true,
             _status: 'published',
@@ -99,6 +114,31 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
         })
         expect(prodRes.ok()).toBe(true)
         createdProductId = (await prodRes.json()).doc?.id
+      }
+
+      // 1b. Đảm bảo sản phẩm coaching trải nghiệm tồn tại cho nút đặt lịch AU-04
+      const existingCoaching = await (
+        await page.request.get(
+          '/api/products?where[slug][equals]=growth-mirror-phien-trai-nghiem&draft=true',
+        )
+      ).json()
+      if (existingCoaching.docs?.length) {
+        createdCoachingId = existingCoaching.docs[0].id
+      } else {
+        const cProdRes = await page.request.post('/api/products', {
+          data: {
+            name: 'Growth Mirror – phiên trải nghiệm',
+            slug: 'growth-mirror-phien-trai-nghiem',
+            web: 'site',
+            type: 'coaching_trial',
+            price: 149000,
+            saleStatus: 'on_sale',
+            isSample: true,
+            _status: 'published',
+          },
+        })
+        expect(cProdRes.ok()).toBe(true)
+        createdCoachingId = (await cProdRes.json()).doc?.id
       }
 
       // 2. Tạo 3 thẻ EQ Buddy test
@@ -161,9 +201,29 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
         data: { eqAccessMode: 'trial' },
       })
 
-      // ===== PHẦN 1: Luồng Trial (chế độ mặc định) =====
-      await guestPage1.goto('/eq-buddy/rut-the')
+      // ===== PHẦN 1: Luồng Giới thiệu -> Rút thẻ -> Trial =====
+      // 1.1 Khách mở /eq-buddy
+      await guestPage1.goto('/eq-buddy')
+      await expect(guestPage1).toHaveURL(/\/eq-buddy$/)
+      await expect(guestPage1.getByRole('heading', { level: 1, name: 'BỘ THẺ EQ BUDDY' })).toBeVisible({
+        timeout: 15000,
+      })
+
+      // Nút chính đi thẳng vào rút thẻ
+      const drawNowLink = guestPage1.getByRole('link', { name: /Rút thẻ ngay/i })
+      await expect(drawNowLink).toBeVisible()
+      await drawNowLink.click()
       await expect(guestPage1).toHaveURL(/\/eq-buddy\/rut-the$/)
+
+      // 1.2 Nhập trạng thái + chọn cảm xúc (AU-02)
+      const inputEl = guestPage1.locator('#emotion-input')
+      await expect(inputEl).toBeVisible({ timeout: 15000 })
+      await inputEl.fill('đang tìm hướng đi mới')
+
+      const emotionButton = guestPage1.getByRole('button', { name: /\+ Bình an/i })
+      if (await emotionButton.isVisible()) {
+        await emotionButton.click()
+      }
 
       // Rút ngẫu nhiên thẻ 1
       await expect(async () => {
@@ -172,16 +232,39 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
         await drawBtn.click()
       }).toPass({ timeout: 15000 })
 
-      // Kết quả: thẻ lật 3D hiện ra (DB có thể có thẻ của test khác nên không ép đúng thẻ nào)
-      await expect(guestPage1.getByRole('button', { name: /^Thẻ số .*Bấm để lật\.$/ })).toBeVisible(
-        {
-          timeout: 15000,
-        },
-      )
+      // 1.3 Màn hình kết quả: Thẻ lật 3D hiện ra với aria-label không chứa số thẻ
+      await expect(guestPage1.getByRole('button', { name: /^Thẻ EQ: .*Bấm để lật\.$/ })).toBeVisible({
+        timeout: 15000,
+      })
 
-      // Lật thẻ sang mặt sau rồi lật về
+      // Nhắc lại Tôi đang / Tôi cảm thấy (AU-02)
+      await expect(guestPage1.getByText('Tôi đang:').first()).toBeVisible()
+      await expect(guestPage1.getByText('đang tìm hướng đi mới').first()).toBeVisible()
+
+      // Kiểm tra KHÔNG còn chuỗi "TDCX-" và "#0..." trên trang (AU-02)
+      const pageText = await guestPage1.innerText('body')
+      expect(pageText).not.toContain('TDCX-')
+      expect(pageText).not.toMatch(/#[0-9]/)
+
+      // Kiểm tra có đủ 3 nút: VIP Member, Shopee, Đặt lịch coaching 1-1
+      await expect(guestPage1.getByRole('link', { name: /Trở thành VIP Member/i })).toBeVisible()
+      await expect(guestPage1.getByRole('link', { name: /Mua bộ thẻ trên Shopee/i })).toBeVisible()
+      await expect(guestPage1.getByRole('link', { name: /Đặt lịch coaching 1-1/i })).toBeVisible()
+
+      // Kiểm tra 375px responsive: không cuộn ngang và axe sạch
+      await guestPage1.setViewportSize({ width: 375, height: 667 })
+      const hasHorizontalOverflow = await guestPage1.evaluate(
+        () => document.documentElement.scrollWidth > window.innerWidth,
+      )
+      expect(hasHorizontalOverflow).toBe(false)
+      await expectNoSeriousA11y(guestPage1, 'eq-buddy-rut-the-result-375')
+      await guestPage1.setViewportSize({ width: 1440, height: 900 })
+
+      // Lật thẻ sang mặt sau rồi lật về: kiểm tra 3 câu hỏi kết nối nội tâm
       await guestPage1.getByRole('button', { name: /Lật thẻ sang mặt sau/i }).click()
       await expect(guestPage1.getByRole('button', { name: /Lật về mặt trước/i })).toBeVisible()
+      await expect(guestPage1.getByText('3 câu hỏi kết nối nội tâm')).toBeVisible()
+      await expect(guestPage1.getByText('Dừng để vững vàng bước tới.')).toBeVisible()
 
       // Thẻ thứ 2 ở chế độ dùng thử -> màn dùng thử 21 ngày
       await guestPage1.getByRole('button', { name: /Rút thẻ khác/i }).click()
@@ -235,8 +318,8 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
       }
       await expect(guestPage2.getByText('Dùng thử hoặc mua để mở trọn vẹn')).toHaveCount(0)
 
-      // Z4: Mỗi thẻ trong "Tất cả thẻ" là button có aria-label, có thể focus và bấm bằng bàn phím (DP-02)
-      const firstCardBtn = guestPage2.getByRole('button', { name: new RegExp(cardCode1) })
+      // Z4: Mỗi thẻ trong "Tất cả thẻ" là button có aria-label, có thể focus và bấm bằng bàn phím
+      const firstCardBtn = guestPage2.getByRole('button', { name: new RegExp(`Clarity-${suffix}`) })
       await expect(firstCardBtn).toBeVisible()
       await firstCardBtn.focus()
       await guestPage2.keyboard.press('Enter')
@@ -247,15 +330,24 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch', () => {
       await visitor2.close()
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
-      // Khôi phục lại chế độ trial (kể cả khi test đỏ giữa chừng)
-      await page.request
-        .post('/api/globals/eqBuddyContent', { data: { eqAccessMode: 'trial' } })
-        .catch(() => {})
+      // Khôi phục lại bản global cũ
+      if (initialGlobalData) {
+        await page.request
+          .post('/api/globals/eqBuddyContent', { data: initialGlobalData })
+          .catch(() => {})
+      } else {
+        await page.request
+          .post('/api/globals/eqBuddyContent', { data: { eqAccessMode: 'trial' } })
+          .catch(() => {})
+      }
       for (const id of createdCardIds) {
         await page.request.delete(`/api/eqCards/${id}`).catch(() => {})
       }
       if (createdProductId) {
         await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+      }
+      if (createdCoachingId) {
+        await page.request.delete(`/api/products/${createdCoachingId}`).catch(() => {})
       }
       if (adminId) {
         await page.request.delete(`/api/users/${adminId}`).catch(() => {})
