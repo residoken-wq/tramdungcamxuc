@@ -4624,6 +4624,8 @@ export const vi = {
     coach1on1Button: 'Cần coach đồng hành 1:1',
     defaultApplyLabel: 'Cách tôi áp dụng:',
     defaultApplyPlaceholder: 'Cách tôi áp dụng kỹ thuật này…',
+    bioClockApplyLabel: 'Thói quen tốt tôi nhận ra:',
+    bioClockApplyPlaceholder: 'Ngồi thiền',
     checkinEmotions: {
       insecure: 'Tự ti',
       unconfident: 'Chưa tự tin',

@@ -362,7 +362,7 @@ export function Step2PercentPrinciple({
       </div>
 
       {/* 5. Cuối Bước 2: Hộp dẫn dắt */}
-      <div className="p-5 sm:p-6 rounded-[20px] bg-soft-pink/60 border border-bright-magenta/25 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="sticky bottom-2 z-20 sm:static p-4 sm:p-6 rounded-[20px] bg-soft-pink/95 sm:bg-soft-pink/60 backdrop-blur-sm sm:backdrop-blur-none border border-bright-magenta/25 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <p className="text-xs sm:text-sm text-deep-navy/85 font-ui leading-relaxed">
           <strong className="text-deep-navy font-bold">
             Lời giải không nằm ở cố gắng nhiều hơn, mà ở một hệ thống tốt hơn.

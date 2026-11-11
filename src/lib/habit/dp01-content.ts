@@ -107,7 +107,7 @@ export interface Dp01AllContent {
 
 export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
   header: {
-    badgeText: 'CONTENT CREATOR HUB • TRẠM DỪNG CẢM XÚC',
+    badgeText: '',
     titleLine1: 'Xây Thói Quen',
     titleLine2: 'Dựng Thương Hiệu',
     seriesBadge: 'FORM HABIT · BUILD IDENTITY',

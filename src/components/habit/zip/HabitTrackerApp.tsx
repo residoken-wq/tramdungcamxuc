@@ -65,6 +65,9 @@ export function HabitTrackerApp({
   const gate = initialGate
   const [showGate, setShowGate] = useState(false)
   const stage1TrackedRef = useRef(false)
+  const mainRef = useRef<HTMLElement | null>(null)
+  const prevStepRef = useRef<HabitStep | null>(null)
+  const shouldMoveFocusRef = useRef(false)
 
   // Form State
   const [diagnoseAnswers, setDiagnoseAnswers] = useState<Record<number, number>>({})
@@ -205,16 +208,43 @@ export function HabitTrackerApp({
     email,
   ])
 
-  // Track max step reached and scroll to top on step change
+  // Track max step reached and scroll to top on user step change
   const goToStep = (step: HabitStep) => {
+    shouldMoveFocusRef.current = true
     setCurrentStep(step)
     if (typeof step === 'number') {
       setMaxReachedStep((prev) => Math.max(prev, step))
     }
     if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      const reducedMotion =
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })
     }
   }
+
+  // Move keyboard focus to new step heading after user-initiated transitions (never on initial mount)
+  useEffect(() => {
+    if (prevStepRef.current === null) {
+      prevStepRef.current = currentStep
+      return
+    }
+    if (prevStepRef.current === currentStep) return
+    prevStepRef.current = currentStep
+    if (!shouldMoveFocusRef.current) return
+    shouldMoveFocusRef.current = false
+
+    const raf = requestAnimationFrame(() => {
+      const heading = mainRef.current?.querySelector('h2')
+      if (heading instanceof HTMLElement) {
+        if (!heading.hasAttribute('tabindex')) {
+          heading.setAttribute('tabindex', '-1')
+        }
+        heading.focus({ preventScroll: true })
+      }
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [currentStep, showGate])
 
   // Step 1: diagnose answer change (toggle on/off)
   const handleDiagnoseChange = (id: number, score: number) => {
@@ -411,7 +441,10 @@ export function HabitTrackerApp({
         />
 
         {/* Nội dung Bước Hiện Tại hoặc Màn Cổng */}
-        <main className="transition-all duration-300">
+        <main
+          ref={mainRef}
+          className="transition-all motion-reduce:transition-none duration-300 pb-6 sm:pb-0"
+        >
           {showGate ? (
             <StageGate
               gate={gate}
