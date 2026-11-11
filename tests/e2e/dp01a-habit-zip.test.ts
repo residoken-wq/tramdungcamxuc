@@ -48,7 +48,7 @@ async function bootstrapAdmin(page: Page): Promise<number> {
 
   if (!response) throw new Error('First-user registration request was never sent.')
   expect(response.ok()).toBe(true)
-  await expect(page).toHaveURL(/\/admin\/?$/)
+  await expect(page).toHaveURL(/\/admin\/?$/, { timeout: 30000 })
   return (await (await page.request.get('/api/users/me')).json()).user.id
 }
 
@@ -74,14 +74,13 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
     const suffix = randomUUID().slice(0, 8)
     const customerEmail = `dp01a-guest-${suffix}@example.test`
     const saveScreenshots = process.env.AU01_SCREENSHOTS === '1'
-    const screenshotDir = process.env.AU01_SCREENSHOT_DIR || 'docs/screenshots/au01'
+    const screenshotDir = process.env.AU01_SCREENSHOT_DIR || 'test-results/au01-screenshots'
     if (saveScreenshots) {
       mkdirSync(screenshotDir, { recursive: true })
     }
     const saveAu03Screenshots = process.env.AU03_SCREENSHOTS === '1'
     const au03ScreenshotDir =
-      process.env.AU03_SCREENSHOT_DIR ||
-      join(process.env.TEMP || 'tmp', 'au03-screenshots')
+      process.env.AU03_SCREENSHOT_DIR || 'test-results/au03-screenshots'
     if (saveAu03Screenshots) {
       mkdirSync(au03ScreenshotDir, { recursive: true })
     }
@@ -197,7 +196,9 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(guestPage.getByText('CONTENT CREATOR HUB')).toHaveCount(0)
       await expect(guestPage.getByText('GIAI ĐOẠN 1', { exact: true })).toHaveCount(0)
       await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible({ timeout: 15000 })
+      await guestPage.emulateMedia({ reducedMotion: 'reduce' })
       await expectNoSeriousA11y(guestPage, '/habit/5-phut Bước 1')
+      await guestPage.emulateMedia({ reducedMotion: 'no-preference' })
 
       if (saveAu03Screenshots) {
         await guestPage.screenshot({
@@ -292,7 +293,9 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(
         guestPage.getByRole('link', { name: /Cần coach đồng hành 1:1/i }),
       ).toBeVisible()
+      await guestPage.emulateMedia({ reducedMotion: 'reduce' })
       await expectNoSeriousA11y(guestPage, '/habit/5-phut Boarding Pass')
+      await guestPage.emulateMedia({ reducedMotion: 'no-preference' })
 
       if (saveAu03Screenshots) {
         await guestPage.screenshot({

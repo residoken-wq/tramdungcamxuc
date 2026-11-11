@@ -12,6 +12,7 @@ import type { PublicProduct } from '@/lib/products'
 import { DEFAULT_DP01_CONTENT, withDp01Defaults } from '@/lib/habit/dp01-content'
 import { HabitTrackerHeader } from '@/components/habit/zip/HabitTrackerHeader'
 import { StepNavigation } from '@/components/habit/zip/StepNavigation'
+import { Step3FindMentor } from '@/components/habit/zip/Steps/Step3FindMentor'
 import { Step5LoopDesign } from '@/components/habit/zip/Steps/Step5LoopDesign'
 import { BoardingPassCard } from '@/components/habit/zip/Result/BoardingPassCard'
 import { Dashboard28Days } from '@/components/habit/zip/Result/Dashboard28Days'
@@ -343,6 +344,67 @@ describe('AU-03: Habit updates across offer, 5-minute tool, boarding pass & 28-d
 
       expect(screen.getByText(/Sau khi Đọc 1 trang · lúc 6:00 PM/)).toBeDefined()
       expect(screen.queryByText(/18:00/)).toBeNull()
+    })
+  })
+
+  describe('AU-03 QA 11/11 fixes', () => {
+    it('bỏ phần tự viết CTA Boarding Pass, bỏ "qua 3 giai đoạn:" và dùng line-clamp-2 cho Mentor', () => {
+      expect(DEFAULT_DP01_CONTENT.header.introText).not.toContain('qua 3 giai đoạn:')
+      expect(vi.habit.wizard.intro(28)).not.toContain('qua 3 giai đoạn:')
+
+      const { container } = render(
+        <BoardingPassCard
+          journeyDays={28}
+          identity={{
+            creatorName: '',
+            selectedMentor: 'Đi làm về cất giày và uống nước ấm mỗi ngày thật đều đặn',
+            mentorTime: '18:00',
+            atomicHabit: 'đọc 1 trang',
+            identityAction: 'đọc sách',
+            identityRole: 'người ham học',
+            postsPerWeek: 3,
+            selectedDays: ['T2', 'T4', 'T6'],
+            whyImportant: '',
+            startDate: '2026-11-01',
+            endDate: '2026-11-28',
+            partnerName: '',
+            companionName: '',
+          }}
+          loopTechniques={{ cues: [], cravings: [], responses: [], rewards: [], appliedNotes: {} }}
+          onPrev={() => {}}
+        />,
+      )
+
+      expect(screen.queryByText('Đồng hành sâu hơn cùng Trạm')).toBeNull()
+      expect(container.querySelector('.line-clamp-2')?.textContent).toContain('6:00 PM')
+    })
+
+    it('StepNavigation không dùng transition màu gây chập chờn tương phản và Step3 có min-w-0', () => {
+      render(
+        <StepNavigation
+          currentStep={6}
+          maxReachedStep={6}
+          hasSavedPlan={true}
+          onStepChange={() => {}}
+        />,
+      )
+      const loopBtn = screen.getByRole('button', { name: /Vòng lặp/i })
+      expect(loopBtn.className).not.toContain('transition-all')
+
+      render(
+        <Step3FindMentor
+          routines={[{ id: '1', activity: 'Dọn bàn làm việc dài thật dài trên 375px', score: '+' }]}
+          selectedMentor=""
+          mentorTime=""
+          step3Content={DEFAULT_DP01_CONTENT.step3}
+          onRoutinesChange={() => {}}
+          onMentorSelect={() => {}}
+          onPrev={() => {}}
+          onNext={() => {}}
+        />,
+      )
+      const input = screen.getByDisplayValue(/Dọn bàn làm việc/)
+      expect(input.className).toContain('min-w-0')
     })
   })
 })
