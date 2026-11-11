@@ -4,8 +4,8 @@ import React from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatVnd } from '@/lib/format'
-import { getEffectivePrice, getBookingPath, type PublicProduct } from '@/lib/products'
-import { track } from '@/lib/analytics/track'
+import { getEffectivePrice, type PublicProduct } from '@/lib/products'
+import { ExperienceBookingButton } from '@/components/site/ExperienceBookingButton'
 
 export interface BookingCTAProps {
   version?: number
@@ -51,13 +51,6 @@ export function BookingCTA({
   const currentPrice = hasSale ? pricing.salePrice : pricing.price
   const originalPrice = hasSale && pricing.price != null ? pricing.price : null
 
-  const handleBookingClick = () => {
-    track('booking_clicked', {
-      productId: product?.id,
-      slug: product?.slug,
-      pageSlug,
-    })
-  }
 
   return (
     <section className={`w-full bg-${bgColor} ${paddingClasses}`}>
@@ -91,15 +84,15 @@ export function BookingCTA({
           )}
 
           <div className="pt-2">
-            <Button
-              href={getBookingPath(product?.id)}
+            <ExperienceBookingButton
+              product={product}
+              buttonText={displayButtonLabel}
               variant={variant}
               size="lg"
-              onClick={handleBookingClick}
+              showPrice={false}
+              pageSlug={pageSlug}
               className="px-8 py-3.5 shadow-md hover:shadow-lg transition-all"
-            >
-              {displayButtonLabel}
-            </Button>
+            />
           </div>
         </Card>
       </div>

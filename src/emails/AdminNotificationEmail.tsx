@@ -12,7 +12,7 @@ import {
 } from '@react-email/components'
 
 interface AdminNotificationEmailProps {
-  formType: 'lead' | 'coaching' | 'b2b'
+  formType: 'lead' | 'coaching' | 'b2b' | 'community' | 'brochure'
   name: string
   email: string
   phone?: string
@@ -35,6 +35,8 @@ const formTypeLabels: Record<string, string> = {
   lead: 'Đăng ký tài nguyên (Lead)',
   coaching: 'Tư vấn Coaching 1:1',
   b2b: 'Yêu cầu Doanh nghiệp (B2B)',
+  community: 'Tham gia Cộng đồng (Me Time / Yoga Buddy)',
+  brochure: 'Đăng ký nhận Brochure Chuyển mình',
 }
 
 export const AdminNotificationEmail: React.FC<AdminNotificationEmailProps> = ({

@@ -4,11 +4,15 @@ import { resolveSafeLink } from '@/components/site/PathCard'
 import { safeHref } from '@/lib/safe-href'
 
 export interface WidgetLinkProps {
-  linkType?: 'none' | 'url' | 'page'
+  linkType?: 'none' | 'url' | 'page' | 'booking'
   pageId?: string | number
   href?: string
   newTab?: boolean
-  _resolved?: { pageSlug?: string | null }
+  _resolved?: {
+    pageSlug?: string | null
+    bookingProduct?: import('@/lib/products').PublicProduct | null
+    bookingProductId?: number | null
+  }
 }
 
 /**
@@ -17,12 +21,12 @@ export interface WidgetLinkProps {
  * Enforces `rel="noopener noreferrer"` when `newTab` is true.
  */
 export function getSafeLink(
-  linkType: 'none' | 'url' | 'page' | undefined,
+  linkType: 'none' | 'url' | 'page' | 'booking' | undefined,
   href: string | undefined,
   slug: string | null | undefined,
   newTab?: boolean,
 ): { href: string; target?: string; rel?: string } | null {
-  if (!linkType || linkType === 'none') return null
+  if (!linkType || linkType === 'none' || linkType === 'booking') return null
 
   // Immediately reject dangerous pseudo-protocols or empty URLs
   if (linkType === 'url') {

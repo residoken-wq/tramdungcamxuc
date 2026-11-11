@@ -4,6 +4,7 @@ import React, { useId } from 'react'
 import Link from 'next/link'
 import type { NavItem } from '../Navbar'
 import { isCurrentPath } from './current'
+import { NavBadge } from './NavBadge'
 
 /**
  * Accordion entry of the mobile drawer. Only one entry is open at a time (the drawer owns the
@@ -35,7 +36,10 @@ export function MobileSubmenu({
         onClick={onToggle}
         className="flex w-full min-h-[44px] items-center justify-between rounded-lg px-3 py-2.5 text-left font-ui text-base font-semibold text-deep-navy hover:bg-lavender-mist/40 transition-colors focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer"
       >
-        <span>{item.label}</span>
+        <span className="inline-flex items-center">
+          <span>{item.label}</span>
+          {item.badge && <NavBadge badge={item.badge} />}
+        </span>
         <svg
           className={`h-4 w-4 flex-shrink-0 transition-transform duration-150 motion-reduce:transition-none ${open ? 'rotate-180' : ''}`}
           fill="none"
@@ -54,9 +58,10 @@ export function MobileSubmenu({
             href={item.href}
             onClick={onNavigate}
             aria-current={isCurrentPath(pathname, item.href) ? 'page' : undefined}
-            className="block min-h-[44px] rounded-lg px-3 py-2.5 font-ui text-sm font-semibold text-deep-navy hover:bg-lavender-mist/40 focus-visible:outline-2 focus-visible:outline-deep-navy"
+            className="flex items-center min-h-[44px] rounded-lg px-3 py-2.5 font-ui text-sm font-semibold text-deep-navy hover:bg-lavender-mist/40 focus-visible:outline-2 focus-visible:outline-deep-navy"
           >
-            {item.label}
+            <span>{item.label}</span>
+            {item.badge && <NavBadge badge={item.badge} />}
           </Link>
         )}
         {groups.map((group, groupIndex) => (
@@ -81,9 +86,10 @@ export function MobileSubmenu({
                       ].join(' ')}
                     >
                       <span
-                        className={`block font-ui text-sm font-semibold ${child.featured ? 'text-bright-magenta' : 'text-deep-navy'}`}
+                        className={`inline-flex items-center font-ui text-sm font-semibold ${child.featured ? 'text-bright-magenta' : 'text-deep-navy'}`}
                       >
-                        {child.label}
+                        <span>{child.label}</span>
+                        {child.badge && <NavBadge badge={child.badge} />}
                       </span>
                       {child.description && (
                         <span className="block font-ui text-xs text-deep-navy/75">

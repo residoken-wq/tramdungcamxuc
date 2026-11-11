@@ -112,6 +112,7 @@ function mapSubmenu(item: RawMenuItem): NavGroup[] | undefined {
       items: (group.items ?? []).map((child) => ({
         label: child.label,
         href: resolveMenuHref(child),
+        badge: (child as { badge?: string | null })?.badge?.trim() || undefined,
         description: child.description?.trim() || undefined,
       })),
     }))
@@ -213,6 +214,7 @@ export function buildSiteShellFromPayloadData(args: {
     return {
       label: item.label,
       href,
+      badge: (item as { badge?: string | null })?.badge?.trim() || undefined,
       ...quizMark(href),
       ...(groups
         ? {

@@ -43,6 +43,56 @@ export const leadFormSchema = z.object({
 
 export type LeadFormInput = z.infer<typeof leadFormSchema>
 
+// REVIEW-REQUIRED: Personal data (NĐ 13/2023). Quy tắc xác thực form tham gia Me Time / Yoga Buddy và nhận Brochure:
+// - Họ tên bắt buộc với cộng đồng (tối đa 100 ký tự)
+// - Email bắt buộc hợp lệ
+// - SĐT bắt buộc (9-11 chữ số, định dạng VN)
+// - Đồng ý chính sách bảo mật bắt buộc
+export const registrationFormSchema = z
+  .object({
+    name: z.string().trim().max(100, vi.forms.validation.nameMax).optional(),
+    email: z
+      .string()
+      .trim()
+      .min(1, vi.forms.validation.emailRequired)
+      .max(254, vi.forms.validation.emailMax)
+      .email(vi.forms.validation.emailInvalid),
+    phone: z
+      .string()
+      .trim()
+      .min(1, vi.forms.validation.phoneRequired)
+      .max(20, vi.forms.validation.phoneMax)
+      .refine(
+        (val) => {
+          const cleaned = val.replace(/[\s.-]/g, '')
+          return /^(?:\+?84|0)[0-9]{9,10}$/.test(cleaned)
+        },
+        {
+          message: vi.forms.validation.phoneInvalid,
+        },
+      ),
+    formType: z.enum(['community-me-time', 'community-yoga-buddy', 'brochure-chuyen-minh']),
+    consent: z.boolean().refine((val) => val === true, {
+      message: vi.forms.validation.consentRequired,
+    }),
+    honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+    turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+    page: z.string().max(300).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.formType !== 'brochure-chuyen-minh') {
+      if (!data.name || data.name.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['name'],
+          message: vi.forms.validation.nameRequired,
+        })
+      }
+    }
+  })
+
+export type RegistrationFormInput = z.infer<typeof registrationFormSchema>
+
 export const coachingFormSchema = z.object({
   name: createNameSchema(vi.forms.validation.nameRequired),
   email: z

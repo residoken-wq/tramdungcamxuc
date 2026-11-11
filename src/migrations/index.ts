@@ -41,6 +41,7 @@ import * as migration_20261105_084356_gl01_customers_google_sub from './20261105
 import * as migration_20261107_090000_icon_certificate from './20261107_090000_icon_certificate';
 import * as migration_20261108_052320_pk30_habit_offer_fields from './20261108_052320_pk30_habit_offer_fields';
 import * as migration_20261108_092111_pk32_site_settings_tiktok from './20261108_092111_pk32_site_settings_tiktok';
+import * as migration_20261110_150000_au04_navigation_badge from './20261110_150000_au04_navigation_badge';
 
 export const migrations = [
   {
@@ -257,5 +258,10 @@ export const migrations = [
     up: migration_20261108_092111_pk32_site_settings_tiktok.up,
     down: migration_20261108_092111_pk32_site_settings_tiktok.down,
     name: '20261108_092111_pk32_site_settings_tiktok'
+  },
+  {
+    up: migration_20261110_150000_au04_navigation_badge.up,
+    down: migration_20261110_150000_au04_navigation_badge.down,
+    name: '20261110_150000_au04_navigation_badge'
   },
 ];

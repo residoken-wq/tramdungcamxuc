@@ -1,5 +1,6 @@
 import React from 'react'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import { stripTitleHighlight } from '@/components/ui/TwoToneTitle'
 import { IconCard, type IconCardProps } from './IconCard'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { CarouselTrack } from '@/components/ui/CarouselTrack'
@@ -226,7 +227,9 @@ export function IconCardGrid({
         >
           {isCarousel ? (
             <CarouselTrack
-              ariaLabel={titleLine1 || vi.pk21?.iconCardGrid?.region || 'Danh sách thẻ'}
+              ariaLabel={
+                stripTitleHighlight(titleLine1) || vi.pk21?.iconCardGrid?.region || 'Danh sách thẻ'
+              }
               isDeepNavy={isDeepNavy}
               prevLabel={vi.pk21?.iconCardGrid?.prevCards || 'Thẻ trước'}
               nextLabel={vi.pk21?.iconCardGrid?.nextCards || 'Thẻ tiếp theo'}
