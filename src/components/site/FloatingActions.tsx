@@ -4,7 +4,12 @@ import React from 'react'
 import { usePathname } from 'next/navigation'
 import { vi } from '@/lib/i18n/vi'
 import type { FloatingCoffeeData } from '@/lib/site-shell.server'
-import { CoffeeButton, CoffeeDonationModal, useCoffeeModal } from './FloatingCoffee'
+import {
+  CoffeeButton,
+  CoffeeDonationModal,
+  shouldHideFloatingCoffee,
+  useCoffeeModal,
+} from './FloatingCoffee'
 import { FloatingChat, shouldHideFloatingChat } from './FloatingChat'
 
 export interface FloatingActionsProps {
@@ -23,8 +28,10 @@ export function FloatingActions({
   const pathname = usePathname()
   const coffeeModal = useCoffeeModal()
 
-  // CF-02: coffee shows on every page (Hana 02/11); Zalo keeps its hide list
-  const isCoffeeVisible = Boolean(floatingCoffee && floatingCoffee.qrSrc)
+  // AU-01: ẩn ly cà phê trên trang bảng Habit (/habit/tracker) vì đã có nút nổi riêng; các trang khác vẫn hiện
+  const isCoffeeVisible = Boolean(
+    floatingCoffee && floatingCoffee.qrSrc && !shouldHideFloatingCoffee(pathname),
+  )
 
   const isChatVisible = Boolean(
     showFloatingChat && zaloChatUrl && !shouldHideFloatingChat(pathname),

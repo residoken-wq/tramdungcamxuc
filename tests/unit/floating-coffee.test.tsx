@@ -35,7 +35,9 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
     expect(c2.firstChild).toBeNull()
   })
 
-  it('CF-02: ly cà phê hiện ở mọi trang (kể cả học, tracker, rút thẻ, thanh toán, dùng thử); Zalo vẫn ẩn theo danh sách cũ', () => {
+  it('CF-02 + AU-01: ly cà phê hiện ở các trang thông thường và ẩn trên /habit/tracker (có nút riêng); Zalo giữ danh sách ẩn', () => {
+    const coffeeHidden = ['/habit/tracker']
+    const zaloHidden = ['/habit/hoc', '/habit/tracker', '/eq-buddy/the/abc', '/eq-buddy/rut-the']
     for (const path of [
       '/',
       '/habit/hoc',
@@ -53,8 +55,10 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
           zaloChatUrl="https://zalo.me/0900000000"
         />,
       )
-      expect(screen.getByRole('button', { name: sampleCoffee.title }), path).toBeDefined()
-      const zaloHidden = ['/habit/hoc', '/habit/tracker', '/eq-buddy/the/abc', '/eq-buddy/rut-the']
+      expect(
+        screen.queryByRole('button', { name: sampleCoffee.title }) === null,
+        path,
+      ).toBe(coffeeHidden.includes(path))
       expect(
         screen.queryByRole('link', { name: vi.site.floatingChat.ariaLabel }) === null,
         path,

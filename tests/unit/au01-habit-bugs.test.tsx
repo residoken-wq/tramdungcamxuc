@@ -10,6 +10,10 @@ import {
   to24hTime,
 } from '@/lib/habit/tracker-stats'
 import { TimePickerAmPm } from '@/components/habit/TimePickerAmPm'
+import {
+  HIDE_FLOATING_COFFEE_PREFIXES,
+  shouldHideFloatingCoffee,
+} from '@/components/site/FloatingCoffee'
 
 afterEach(cleanup)
 
@@ -136,6 +140,22 @@ describe('AU-01 Mục 2: Ô chọn giờ AM/PM', () => {
     expect(hourSelect.value).toBe('6')
     expect(minuteSelect.value).toBe('30')
     expect(periodSelect.value).toBe('PM')
+  })
+})
+
+describe('AU-01 Mục 3: Ẩn nút ly cà phê toàn site trên bảng Habit 28 ngày', () => {
+  it('danh sách tiền tố ẩn nút cà phê có đường dẫn bảng Habit (/habit/tracker)', () => {
+    expect(HIDE_FLOATING_COFFEE_PREFIXES).toContain('/habit/tracker')
+    expect(shouldHideFloatingCoffee('/habit/tracker')).toBe(true)
+    expect(shouldHideFloatingCoffee('/habit/tracker/chi-tiet')).toBe(true)
+  })
+
+  it('các trang khác không nằm trong danh sách ẩn vẫn giữ nút cà phê', () => {
+    expect(shouldHideFloatingCoffee('/')).toBe(false)
+    expect(shouldHideFloatingCoffee('/habit/5-phut')).toBe(false)
+    expect(shouldHideFloatingCoffee('/habit/hoc')).toBe(false)
+    expect(shouldHideFloatingCoffee(null)).toBe(false)
+    expect(shouldHideFloatingCoffee(undefined)).toBe(false)
   })
 })
 
