@@ -60,6 +60,7 @@ export interface HabitProductData {
   offerTitleLine2?: string | null
   offerEmotionLine?: string | null
   curriculumHeading?: string | null
+  curriculumUnitLabel?: string | null
   curriculumSubheading?: string | null
   curriculumModules?: Array<{ title: string; description?: string | null }> | null
   featuresHeading?: string | null
@@ -133,6 +134,14 @@ export async function getTechniques(payloadInstance?: Payload): Promise<PublicTe
           applyTemplate:
             typeof docRecord.applyTemplate === 'string'
               ? (docRecord.applyTemplate as string)
+              : null,
+          applyLabel:
+            typeof docRecord.applyLabel === 'string'
+              ? (docRecord.applyLabel as string).trim() || null
+              : null,
+          applyPlaceholder:
+            typeof docRecord.applyPlaceholder === 'string'
+              ? (docRecord.applyPlaceholder as string).trim() || null
               : null,
           order: typeof docRecord.order === 'number' ? (docRecord.order as number) : null,
           howTo: doc.howTo,
@@ -297,6 +306,7 @@ export async function getHabitProduct(
     offerTitleLine2: doc.offerTitleLine2?.trim() || null,
     offerEmotionLine: doc.offerEmotionLine?.trim() || null,
     curriculumHeading: doc.curriculumHeading?.trim() || null,
+    curriculumUnitLabel: doc.curriculumUnitLabel?.trim() || null,
     curriculumSubheading: doc.curriculumSubheading?.trim() || null,
     curriculumModules: curriculumModules.length > 0 ? curriculumModules : null,
     featuresHeading: doc.featuresHeading?.trim() || null,
