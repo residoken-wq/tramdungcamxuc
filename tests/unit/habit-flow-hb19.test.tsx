@@ -1,6 +1,6 @@
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { StepMentor } from '@/components/habit/flow/StepMentor'
 import { HabitFlow } from '@/components/habit/flow/HabitFlow'
 import { migrateHabitDraft } from '@/components/habit/flow/draft'
@@ -143,15 +143,20 @@ describe('HB-19: Step 3 "Tìm Mentor" unit tests', () => {
       />,
     )
 
-    // Ô time xuất hiện cho Mentor được chọn
-    const timeInput = screen.getByLabelText(
-      viStrings.hb19.part2.timeAriaLabel('Thức dậy'),
-    ) as HTMLInputElement
-    expect(timeInput).toBeDefined()
-    expect(timeInput.value).toBe('06:00')
+    // Ô chọn giờ AM/PM xuất hiện cho Mentor được chọn (06:00 -> 6:00 AM)
+    const timeGroup = screen.getByRole('group', {
+      name: viStrings.hb19.part2.timeAriaLabel('Thức dậy'),
+    })
+    expect(timeGroup).toBeDefined()
+    const hourSelect = within(timeGroup).getByLabelText('Giờ') as HTMLSelectElement
+    const minuteSelect = within(timeGroup).getByLabelText('Phút') as HTMLSelectElement
+    const periodSelect = within(timeGroup).getByLabelText('Buổi (AM hoặc PM)') as HTMLSelectElement
+    expect(hourSelect.value).toBe('6')
+    expect(minuteSelect.value).toBe('00')
+    expect(periodSelect.value).toBe('AM')
 
-    // Nhập giờ mới
-    fireEvent.change(timeInput, { target: { value: '06:15' } })
+    // Đổi phút sang 15 -> '06:15'
+    fireEvent.change(minuteSelect, { target: { value: '15' } })
     expect(onUpdateTime).toHaveBeenCalledWith(0, '06:15')
   })
 
