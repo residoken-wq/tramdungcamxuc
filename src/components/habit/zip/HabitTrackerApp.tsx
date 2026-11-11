@@ -10,9 +10,10 @@ import { Step2PercentPrinciple } from './Steps/Step2PercentPrinciple'
 import { Step3FindMentor } from './Steps/Step3FindMentor'
 import { Step4IdentityHabit } from './Steps/Step4IdentityHabit'
 import { Step5LoopDesign } from './Steps/Step5LoopDesign'
-import { BoardingPassCard } from './Result/BoardingPassCard'
+import { BoardingPassCard, type HabitVipProductInput } from './Result/BoardingPassCard'
 import { HabitTrackerFooter } from './HabitTrackerFooter'
 import { HABIT_LOOP_STORAGE_KEY, flattenChosenTechniques, type PublicTechnique } from '@/lib/habit'
+import type { PublicProduct } from '@/lib/products'
 import {
   getDefaultHabitFlowDraft,
   migrateHabitDraft,
@@ -41,17 +42,22 @@ export interface HabitTrackerAppProps {
   dp01Content?: Dp01AllContent
   initialGate?: HabitStageGateResult
   initialStepParam?: number
+  habitProduct?: HabitVipProductInput | null
+  coachingProduct?: PublicProduct | null
 }
 
 export function HabitTrackerApp({
   techniques = [],
   journeyDays = 28,
   diagnose,
+  stepQuotes,
   loopContent,
   privacyNote,
   dp01Content,
   initialGate = { status: 'ok' },
   initialStepParam,
+  habitProduct = null,
+  coachingProduct = null,
 }: HabitTrackerAppProps) {
   const resolvedDp01 = useMemo(() => withDp01Defaults(dp01Content), [dp01Content])
   const startTimeRef = useRef<number | null>(null)
@@ -544,6 +550,9 @@ export function HabitTrackerApp({
                   loopTechniques={loopTechniques}
                   techniques={techniques}
                   step6Content={resolvedDp01.step6}
+                  stepQuote={stepQuotes?.boardingPass}
+                  habitProduct={habitProduct}
+                  coachingProduct={coachingProduct}
                   name={name}
                   email={email}
                   consent={consent}

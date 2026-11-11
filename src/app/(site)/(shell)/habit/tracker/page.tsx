@@ -89,6 +89,7 @@ export default async function HabitTrackerPage() {
         access={access}
         badge={vi.tracker.paywall.title}
         fallbackDescription={vi.tracker.paywall.description}
+        buyButtonLabel={vi.dp01.vipMemberButton}
       />
     )
   }

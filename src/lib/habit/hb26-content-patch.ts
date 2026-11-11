@@ -110,7 +110,7 @@ export const TARGET_HABIT_CONTENT = {
       sourceUrl: null as string | null,
     },
     tracker: {
-      text: 'Thói quen là lãi kép của sự tự hoàn thiện.',
+      text: 'Mỗi hành động bạn thực hiện là một lá phiếu cho con người bạn muốn trở thành.',
       author: 'James Clear',
       source: 'Atomic Habits',
       sourceUrl: null as string | null,

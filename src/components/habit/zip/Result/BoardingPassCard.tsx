@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useId } from 'react'
+import React, { useState, useId, useMemo } from 'react'
 import Link from 'next/link'
 import {
   Copy,
@@ -15,11 +15,25 @@ import {
 import { IdentityFormData, LoopTechniques } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
+import { ExperienceBookingButton } from '@/components/site/ExperienceBookingButton'
 import type { PublicTechnique } from '@/lib/habit'
+import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
+import { DEFAULT_LAW_SECTIONS } from '@/lib/habit/dp01-loop-constants'
+import type { CleanStepQuote } from '@/lib/habit/journey-content.server'
+import {
+  getEffectivePrice,
+  type ProductPricingInput,
+  type PublicProduct,
+} from '@/lib/products'
+import { formatVnd } from '@/lib/format'
 import { daysToWeekdays } from '../draft-adapter'
 import { DEFAULT_DP01_CONTENT, type Dp01Step6Content } from '@/lib/habit/dp01-content'
-import { formatVietnamShortDate } from '@/lib/habit/tracker-stats'
+import { formatTimeAmPm, formatVietnamShortDate } from '@/lib/habit/tracker-stats'
 import { vi } from '@/lib/i18n/vi'
+
+export type HabitVipProductInput = ProductPricingInput & {
+  slug?: string | null
+}
 
 interface BoardingPassCardProps {
   /** Journey length stored in site settings (default 28). */
@@ -28,6 +42,9 @@ interface BoardingPassCardProps {
   loopTechniques: LoopTechniques
   techniques?: PublicTechnique[]
   step6Content?: Dp01Step6Content
+  stepQuote?: CleanStepQuote | null
+  habitProduct?: HabitVipProductInput | null
+  coachingProduct?: PublicProduct | null
   onPrev: () => void
   // Submission fields
   name?: string
@@ -58,6 +75,9 @@ export function BoardingPassCard({
   loopTechniques,
   techniques = [],
   step6Content = DEFAULT_DP01_CONTENT.step6,
+  stepQuote = null,
+  habitProduct = null,
+  coachingProduct = null,
   onPrev,
   name = '',
   email = '',
@@ -156,19 +176,51 @@ export function BoardingPassCard({
     }
   }
 
-  const resolveTechNames = (ids: string[]) => {
+  const fallbackTechNames = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const section of DEFAULT_LAW_SECTIONS) {
+      for (const tech of section.techniques) {
+        map.set(tech.id, tech.title)
+      }
+    }
+    return map
+  }, [])
+
+  const resolveLawItems = (ids: string[]) => {
     return ids
-      .map((id) => {
-        const match = techniques?.find((t) => String(t.id) === String(id) || t.name === id)
-        return match ? match.name : id
+      .map((rawId) => {
+        const key = String(rawId)
+        const match = techniques?.find((t) => String(t.id) === key || t.name === key)
+        const name = match ? match.name : fallbackTechNames.get(key) || key
+        const note = (loopTechniques.appliedNotes?.[key] || '').trim()
+        return { id: key, name, note }
       })
-      .filter(Boolean)
+      .filter((item) => Boolean(item.name))
   }
 
-  const cueNames = resolveTechNames(loopTechniques.cues)
-  const cravingNames = resolveTechNames(loopTechniques.cravings)
-  const responseNames = resolveTechNames(loopTechniques.responses)
-  const rewardNames = resolveTechNames(loopTechniques.rewards)
+  const cueItems = resolveLawItems(loopTechniques.cues)
+  const cravingItems = resolveLawItems(loopTechniques.cravings)
+  const responseItems = resolveLawItems(loopTechniques.responses)
+  const rewardItems = resolveLawItems(loopTechniques.rewards)
+
+  const formattedMentorTime = identity.mentorTime
+    ? formatTimeAmPm(identity.mentorTime) || identity.mentorTime
+    : ''
+
+  const vipProductSlug = habitProduct?.slug || HABIT_TRACKER_PRODUCT_SLUG
+  const vipBuyHref = `/thanh-toan?san-pham=${encodeURIComponent(vipProductSlug)}`
+  const vipPricing = habitProduct
+    ? getEffectivePrice(habitProduct, new Date())
+    : { price: null, salePrice: null }
+  const hasVipSale =
+    vipPricing.salePrice != null &&
+    vipPricing.price != null &&
+    vipPricing.salePrice < vipPricing.price
+
+  const resolvedQuoteText = stepQuote?.text?.trim() || vi.dp01.defaultQuoteText
+  const resolvedQuoteAuthor = stepQuote?.text?.trim()
+    ? stepQuote.author?.trim() || undefined
+    : vi.dp01.defaultQuoteAuthor
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -176,8 +228,8 @@ export function BoardingPassCard({
       <StepQuoteHeader
         stage="GIAI ĐOẠN 2 · XÂY THÓI QUEN"
         title="Habit Boarding Pass"
-        quote="“Chúng ta là kết quả của những hành động chúng ta lặp lại mỗi ngày.”"
-        author="— Aristotle —"
+        quote={resolvedQuoteText}
+        author={resolvedQuoteAuthor}
       />
 
       {/* Lead-in Text */}
@@ -280,7 +332,7 @@ export function BoardingPassCard({
               </span>
               <div className="font-ui font-bold text-sm sm:text-base text-deep-navy truncate">
                 {identity.selectedMentor
-                  ? `Sau khi ${identity.selectedMentor}${identity.mentorTime ? ` · ${identity.mentorTime}` : ''}`
+                  ? `Sau khi ${identity.selectedMentor}${formattedMentorTime ? ` · ${formattedMentorTime}` : ''}`
                   : '—'}
               </div>
               <p className="text-xs text-deep-navy/60 font-ui">Thói quen neo đã vững</p>
@@ -298,67 +350,95 @@ export function BoardingPassCard({
             </div>
           </div>
 
-          {/* Row 3: 4 Khối bên dưới: 1 · CUE · TÍN HIỆU, 2 · CRAVING · KHAO KHÁT, 3 · RESPONSE · PHẢN HỒI, 4 · REWARD · PHẦN THƯỞNG */}
-          <div className="space-y-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/70 font-ui block">
-              4 Quy luật đã chọn:
+          {/* Row 3: Vòng tròn Habit Loop 4 quy luật với nội dung người dùng đã nhập */}
+          <div className="space-y-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/75 font-ui block">
+              {vi.dp01.chosenLawsTitle}
             </span>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-ui">
-              {/* Cue */}
-              <div className="p-2.5 rounded-xl bg-white/75 backdrop-blur-sm border border-lavender-mist shadow-xs">
-                <span className="text-bright-magenta font-bold block text-[10px] uppercase">
-                  1 · CUE · TÍN HIỆU
-                </span>
-                <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {cueNames.length > 0 ? (
-                    cueNames.join(', ')
-                  ) : (
-                    <span className="opacity-40 italic">chưa chọn</span>
-                  )}
-                </span>
+            <div className="relative">
+              {/* Vòng tròn trung tâm trên tablet/desktop gợi ý vòng lặp khép kín 1 → 2 → 3 → 4 → 1 */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none hidden md:flex items-center justify-center absolute inset-0 z-10"
+              >
+                <div className="w-24 h-24 rounded-full bg-warm-ivory/95 border-2 border-bright-magenta/30 shadow-soft flex items-center justify-center text-center px-2">
+                  <span className="text-[10px] font-ui font-bold uppercase tracking-wider text-deep-navy leading-tight">
+                    {vi.dp01.habitLoopCenterLabel}
+                  </span>
+                </div>
               </div>
 
-              {/* Craving */}
-              <div className="p-2.5 rounded-xl bg-white/75 backdrop-blur-sm border border-lavender-mist shadow-xs">
-                <span className="text-bright-magenta font-bold block text-[10px] uppercase">
-                  2 · CRAVING · KHAO KHÁT
-                </span>
-                <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {cravingNames.length > 0 ? (
-                    cravingNames.join(', ')
-                  ) : (
-                    <span className="opacity-40 italic">chưa chọn</span>
-                  )}
-                </span>
-              </div>
-
-              {/* Response */}
-              <div className="p-2.5 rounded-xl bg-white/75 backdrop-blur-sm border border-lavender-mist shadow-xs">
-                <span className="text-[#065F46] font-bold block text-[10px] uppercase">
-                  3 · RESPONSE · PHẢN HỒI
-                </span>
-                <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {responseNames.length > 0 ? (
-                    responseNames.join(', ')
-                  ) : (
-                    <span className="opacity-40 italic">chưa chọn</span>
-                  )}
-                </span>
-              </div>
-
-              {/* Reward */}
-              <div className="p-2.5 rounded-xl bg-white/75 backdrop-blur-sm border border-lavender-mist shadow-xs">
-                <span className="text-[#9C7A14] font-bold block text-[10px] uppercase">
-                  4 · REWARD · PHẦN THƯỞNG
-                </span>
-                <span className="text-deep-navy text-[11px] line-clamp-2 font-medium">
-                  {rewardNames.length > 0 ? (
-                    rewardNames.join(', ')
-                  ) : (
-                    <span className="opacity-40 italic">chưa chọn</span>
-                  )}
-                </span>
-              </div>
+              <ol className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 text-xs font-ui">
+                {[
+                  {
+                    key: 'cue',
+                    orderClass: 'md:order-1',
+                    label: vi.dp01.lawLoopCue,
+                    badgeClass: 'bg-lavender-mist/70 text-deep-navy',
+                    borderClass: 'border-lavender-mist',
+                    items: cueItems,
+                  },
+                  {
+                    key: 'craving',
+                    orderClass: 'md:order-2',
+                    label: vi.dp01.lawLoopCraving,
+                    badgeClass: 'bg-soft-pink text-deep-navy',
+                    borderClass: 'border-soft-pink',
+                    items: cravingItems,
+                  },
+                  {
+                    key: 'response',
+                    orderClass: 'md:order-4',
+                    label: vi.dp01.lawLoopResponse,
+                    badgeClass: 'bg-mint-haze text-deep-navy',
+                    borderClass: 'border-mint-haze',
+                    items: responseItems,
+                  },
+                  {
+                    key: 'reward',
+                    orderClass: 'md:order-3',
+                    label: vi.dp01.lawLoopReward,
+                    badgeClass: 'bg-butter-cream text-deep-navy',
+                    borderClass: 'border-butter-cream',
+                    items: rewardItems,
+                  },
+                ].map((stage) => (
+                  <li
+                    key={stage.key}
+                    className={`p-3.5 rounded-2xl bg-white/90 backdrop-blur-sm border ${stage.borderClass} shadow-xs space-y-1.5 ${stage.orderClass}`}
+                  >
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded-full font-bold text-[10px] uppercase tracking-wider ${stage.badgeClass}`}
+                    >
+                      {stage.label}
+                    </span>
+                    {stage.items.length > 0 ? (
+                      <ul className="space-y-1 text-xs">
+                        {stage.items.map((item) => (
+                          <li key={item.id} className="leading-snug">
+                            {item.note ? (
+                              <>
+                                <span className="font-semibold text-deep-navy block">
+                                  {item.note}
+                                </span>
+                                <span className="text-[11px] text-deep-navy/70 block">
+                                  {item.name}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-deep-navy/60 italic block">{item.name}</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-deep-navy/70 italic text-xs block">
+                        {vi.dp01.lawLoopUnchosen}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
 
@@ -596,6 +676,47 @@ export function BoardingPassCard({
           </button>
         </div>
       ) : null}
+
+      {/* 4b. Hai nút hành động tiếp theo: VIP Member & Coach đồng hành 1:1 */}
+      <section
+        aria-label={vi.dp01.boardingCtaSectionTitle}
+        className="p-5 sm:p-6 rounded-[20px] bg-white border border-lavender-mist shadow-soft text-center space-y-4 font-ui"
+      >
+        <div className="space-y-1">
+          <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase tracking-wide">
+            {vi.dp01.boardingCtaSectionTitle}
+          </h3>
+          <p className="text-xs sm:text-sm text-deep-navy/75 max-w-xl mx-auto leading-relaxed">
+            {vi.dp01.boardingCtaSectionDesc}
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href={vipBuyHref}
+            className="w-full sm:w-auto inline-flex flex-wrap items-center justify-center gap-2 px-6 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-ui font-bold text-sm shadow-soft hover:shadow-soft-md transition-all active:scale-95"
+          >
+            <span>{vi.dp01.vipMemberButton}</span>
+            {hasVipSale && vipPricing.price != null && vipPricing.salePrice != null ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold">
+                <span className="line-through opacity-80">{formatVnd(vipPricing.price)}</span>
+                <span>{formatVnd(vipPricing.salePrice)}</span>
+              </span>
+            ) : vipPricing.price != null ? (
+              <span className="text-xs font-semibold">({formatVnd(vipPricing.price)})</span>
+            ) : null}
+          </Link>
+
+          <ExperienceBookingButton
+            product={coachingProduct}
+            buttonText={vi.dp01.coach1on1Button}
+            variant="secondary"
+            size="md"
+            shape="pill"
+            className="w-full sm:w-auto"
+          />
+        </div>
+      </section>
 
       {/* 5. Navigation Bar */}
       <div className="flex items-center justify-between pt-4">
