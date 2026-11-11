@@ -18,6 +18,7 @@ import { TurnstileWidget } from '@/components/site/forms/TurnstileWidget'
 import type { PublicTechnique } from '@/lib/habit'
 import { daysToWeekdays } from '../draft-adapter'
 import { DEFAULT_DP01_CONTENT, type Dp01Step6Content } from '@/lib/habit/dp01-content'
+import { formatVietnamShortDate } from '@/lib/habit/tracker-stats'
 import { vi } from '@/lib/i18n/vi'
 
 interface BoardingPassCardProps {
@@ -133,12 +134,7 @@ export function BoardingPassCard({
   }
 
   const formatShortDate = (dateStr: string) => {
-    if (!dateStr) return ''
-    const parts = dateStr.split('-')
-    if (parts.length === 3) {
-      return `${parts[2]}/${parts[1]}`
-    }
-    return dateStr
+    return formatVietnamShortDate(dateStr)
   }
 
   // Tính chuỗi hiển thị nhịp điệu

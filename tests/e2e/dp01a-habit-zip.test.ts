@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto'
+import { mkdirSync } from 'node:fs'
+import { join } from 'node:path'
 import { expect, test, type Page, type Response } from './fixtures'
 import * as zip from './helpers/habit-zip'
 import { vi } from '@/lib/i18n/vi'
@@ -65,9 +67,16 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
     let adminId: number | undefined
     let createdProductId: number | undefined
     let createdCustomerId: number | undefined
+    let coffeeMediaId: number | string | undefined
+    let settingsBefore: Record<string, unknown> | undefined
     const createdTechniqueIds: number[] = []
     const suffix = randomUUID().slice(0, 8)
     const customerEmail = `dp01a-guest-${suffix}@example.test`
+    const saveScreenshots = process.env.AU01_SCREENSHOTS === '1'
+    const screenshotDir = process.env.AU01_SCREENSHOT_DIR || 'docs/screenshots/au01'
+    if (saveScreenshots) {
+      mkdirSync(screenshotDir, { recursive: true })
+    }
 
     const visitor = await browser.newContext({
       baseURL: testInfo.project.use.baseURL,
@@ -78,6 +87,39 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
 
     try {
       adminId = await bootstrapAdmin(page)
+
+      // 0. Bật coffeeDonation tạm thời để kiểm chứng AU-01 (nút cà phê hiện ở /habit/5-phut nhưng ẩn ở /habit/tracker)
+      const settingsRes = await page.request.get('/api/globals/siteSettings?depth=0')
+      if (settingsRes.ok()) {
+        settingsBefore = await settingsRes.json()
+        const pngBuffer = Buffer.from(
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lN8AAAAASUVORK5CYII=',
+          'base64',
+        )
+        const uploadRes = await page.request.post('/api/media', {
+          multipart: {
+            _payload: JSON.stringify({ alt: `[TEST] QR MoMo AU01 - ${suffix}` }),
+            file: {
+              name: `au01-qr-${suffix}.png`,
+              mimeType: 'image/png',
+              buffer: pngBuffer,
+            },
+          },
+        })
+        if (uploadRes.ok()) {
+          const uploadData = await uploadRes.json()
+          coffeeMediaId = uploadData.doc?.id || uploadData.id
+          await page.request.post('/api/globals/siteSettings', {
+            data: {
+              coffeeDonation: {
+                enabled: true,
+                title: 'Mời Trạm một ly cà phê',
+                qrImage: coffeeMediaId,
+              },
+            },
+          })
+        }
+      }
 
       // 1. Đảm bảo sản phẩm habit-tracker-so đã tồn tại
       const prodQuery = await (
@@ -134,13 +176,40 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(questionGroups).toHaveCount(8)
       await zip.answerDiagnose(guestPage)
       await zip.passPercent(guestPage)
-      await zip.fillMentor(guestPage, '[TEST] Uống nước ấm sáng')
+
+      // Bước 3: Kiểm tra ô giờ AM/PM thay thế input[type="time"] (AU-01 Mục 2)
+      const firstRoutine = guestPage.getByPlaceholder('Thức dậy, uống một ly nước')
+      await expect(firstRoutine).toBeVisible({ timeout: 15000 })
+      await firstRoutine.fill('[TEST] Uống nước ấm sáng')
+      await guestPage.getByTitle('Có ích (+)').first().click()
+      await guestPage.getByRole('button', { name: '[TEST] Uống nước ấm sáng', exact: true }).click()
+      await expect(guestPage.getByText(/Mentor của bạn:/)).toBeVisible()
+      await expect(guestPage.locator('input[type="time"]')).toHaveCount(0)
+      await guestPage.getByLabel('Giờ', { exact: true }).selectOption('6')
+      await guestPage.getByLabel('Buổi (AM hoặc PM)', { exact: true }).selectOption('AM')
+      await expect(guestPage.getByText(/lúc 6:00 AM/)).toBeVisible()
+      if (saveScreenshots) {
+        await guestPage.screenshot({ path: join(screenshotDir, 'after-step3-ampm.png') })
+      }
+      await guestPage.getByRole('button', { name: /Tiếp • Gọi tên thói quen/ }).click()
+
       await zip.fillIdentity(guestPage, {
         action: 'tập thể dục 15 phút',
         role: 'người khỏe mạnh và kỷ luật',
         atomic: 'Xỏ giày thể thao',
       })
       await zip.setRhythm(guestPage, '5 lần một tuần')
+
+      // Bước 4: Kiểm tra câu Ngày về đích định dạng dd/MM/yyyy, không chứa T00:00 (AU-01 Mục 1)
+      const finishSentence = guestPage.getByText(/Bạn sẽ về đích ngày/)
+      await expect(finishSentence).toBeVisible()
+      const finishText = (await finishSentence.textContent()) ?? ''
+      expect(finishText).not.toContain('T00:00')
+      expect(finishText).toMatch(/Bạn sẽ về đích ngày \d{2}\/\d{2}\/\d{4}\./)
+      if (saveScreenshots) {
+        await guestPage.screenshot({ path: join(screenshotDir, 'after-step4-finish-date.png') })
+      }
+
       await zip.nextFromIdentity(guestPage)
 
       // Bước 5: 3 kỹ thuật Cue (không còn giới hạn 2 / giai đoạn), 1 kỹ thuật để trống ghi chú
@@ -166,6 +235,29 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
           name: /28 ngày thành người khỏe mạnh và kỷ luật/i,
         }),
       ).toBeVisible({ timeout: 15000 })
+
+      // AU-01 Mục 3: Trên bảng 28 ngày chỉ có 1 nút nổi góc phải dưới ("Thấy công cụ này hữu ích"), nút cà phê toàn site bị ẩn
+      const helpfulFab = guestPage.getByRole('button', { name: /Thấy công cụ này hữu ích/i })
+      await expect(helpfulFab).toBeVisible()
+      await expect(
+        guestPage.locator(`aside[aria-label="${vi.cf01.floatingActions.ariaLabel}"]`),
+      ).toHaveCount(0)
+      await expect(guestPage.getByRole('button', { name: /Mời Trạm một ly cà phê/i })).toHaveCount(
+        0,
+      )
+      if (saveScreenshots) {
+        await guestPage.screenshot({ path: join(screenshotDir, 'after-tracker-fab-1440.png') })
+      }
+      // Kiểm tra viewport mobile 375px: chỉ 1 nút nổi, không tràn cạnh phải
+      await guestPage.setViewportSize({ width: 375, height: 812 })
+      await expect(helpfulFab).toBeVisible()
+      const fabBoxMobile = await helpfulFab.boundingBox()
+      expect(fabBoxMobile).not.toBeNull()
+      expect(fabBoxMobile!.x + fabBoxMobile!.width).toBeLessThanOrEqual(375)
+      if (saveScreenshots) {
+        await guestPage.screenshot({ path: join(screenshotDir, 'after-tracker-fab-375.png') })
+      }
+      await guestPage.setViewportSize({ width: 1440, height: 900 })
 
       // Ghi nhận customer ID
       const custQuery = await (
@@ -295,6 +387,16 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(restoreModal).toBeHidden({ timeout: 10000 })
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
+      if (settingsBefore) {
+        await page.request
+          .post('/api/globals/siteSettings', {
+            data: { coffeeDonation: settingsBefore.coffeeDonation ?? { enabled: false } },
+          })
+          .catch(() => {})
+      }
+      if (coffeeMediaId) {
+        await page.request.delete(`/api/media/${coffeeMediaId}`).catch(() => {})
+      }
       for (const id of createdTechniqueIds) {
         await page.request.delete(`/api/techniques/${id}`).catch(() => {})
       }

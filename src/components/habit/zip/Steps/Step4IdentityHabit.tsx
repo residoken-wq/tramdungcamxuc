@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { StepQuoteHeader } from '../StepQuoteHeader'
 import type { HabitFlowDraft } from '@/components/habit/flow/draft'
 import { daysToWeekdays, weekdaysToDays } from '../draft-adapter'
-import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
+import { addVietnamDays, formatVietnamDate, getVietnamYmd } from '@/lib/habit/tracker-stats'
 import { DEFAULT_DP01_CONTENT, type Dp01Step4Content } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
 
@@ -30,8 +30,9 @@ export function Step4IdentityHabit({
   onPrev,
 }: Step4IdentityHabitProps) {
   const selectedDays = weekdaysToDays(draft.rhythmDays)
-  const startDate = draft.startDate || getVietnamYmd()
-  const endDate = addVietnamDays(startDate, 27)
+  const startDate = draft.startDate !== undefined ? draft.startDate : getVietnamYmd()
+  const endDate = startDate ? addVietnamDays(startDate, 27) : ''
+  const finishDateFormatted = formatVietnamDate(endDate)
 
   // Toggle day of week (giữ ít nhất 1 ngày)
   const handleToggleDay = (day: string) => {
@@ -64,16 +65,6 @@ export function Step4IdentityHabit({
       rhythmDays: daysToWeekdays(nextDays),
       rhythmFrequency: freq,
     })
-  }
-
-  // Helper format YYYY-MM-DD to DD/MM/YYYY
-  const formatFinishDate = (dateStr?: string) => {
-    if (!dateStr) return '06/11/2026'
-    const parts = dateStr.split('-')
-    if (parts.length === 3) {
-      return `${parts[2]}/${parts[1]}/${parts[0]}`
-    }
-    return dateStr
   }
 
   const is3Selected =
@@ -390,9 +381,11 @@ export function Step4IdentityHabit({
                 onChange={(e) => onDraftChange({ ...draft, startDate: e.target.value })}
                 className="w-full h-11 px-3.5 py-2.5 rounded-2xl bg-white border border-lavender-mist focus:border-bright-magenta text-xs sm:text-sm font-ui text-deep-navy outline-none transition-all shadow-sm"
               />
-              <p className="text-xs text-deep-navy/70 font-ui mt-1.5">
-                Bạn sẽ về đích ngày {formatFinishDate(endDate)}.
-              </p>
+              {finishDateFormatted && (
+                <p className="text-xs text-deep-navy/70 font-ui mt-1.5">
+                  Bạn sẽ về đích ngày {finishDateFormatted}.
+                </p>
+              )}
             </div>
 
             {/* Cột 2: NGÀY VỀ ĐÍCH */}
@@ -401,7 +394,7 @@ export function Step4IdentityHabit({
                 Ngày về đích
               </label>
               <div className="w-full h-11 px-3.5 py-2.5 rounded-2xl bg-mint-haze/40 border border-deep-navy/20 text-xs sm:text-sm font-bold text-deep-navy flex items-center shadow-sm">
-                {formatFinishDate(endDate)}
+                {finishDateFormatted || '—'}
               </div>
             </div>
           </div>

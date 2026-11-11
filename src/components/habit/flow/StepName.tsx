@@ -4,7 +4,7 @@ import React, { useId } from 'react'
 import { vi } from '@/lib/i18n/vi'
 import { DEFAULT_RHYTHM_DAYS } from '@/lib/habit'
 import type { Weekday } from '@/lib/habit/rhythm'
-import { addVietnamDays, getVietnamYmd } from '@/lib/habit/tracker-stats'
+import { addVietnamDays, formatVietnamDate, getVietnamYmd } from '@/lib/habit/tracker-stats'
 import { safeHref } from '@/lib/safe-href'
 import type { CleanStepQuote } from '@/lib/habit/journey-content.server'
 
@@ -63,9 +63,9 @@ export function StepName({
   const effectiveStartDate = startDate && startDate.trim() ? startDate.trim() : todayYmd
 
   // Tính ngày kết thúc = startDate + journeyDays - 1 (theo giờ VN)
-  const endDateYmd = getVietnamYmd(new Date(addVietnamDays(effectiveStartDate, journeyDays - 1)))
-  const [ey, em, ed] = endDateYmd.split('-')
-  const endDateFormatted = `${ed}/${em}/${ey}`
+  const endDateFormatted = formatVietnamDate(
+    addVietnamDays(effectiveStartDate, journeyDays - 1),
+  )
 
   // Target frequency: ưu tiên rhythmFrequency, fallback độ dài rhythmDays, mặc định 7
   const targetFreq =

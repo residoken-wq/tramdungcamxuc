@@ -1,6 +1,6 @@
 import React from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { HabitLoopWizard } from '@/components/habit/HabitLoopWizard'
 import { HABIT_LOOP_STORAGE_KEY } from '@/lib/habit'
 import { vi as viStrings } from '@/lib/i18n/vi'
@@ -55,14 +55,20 @@ describe('HB-09: Component tests for HabitLoopWizard B3-B4 interaction', () => {
     expect(anchorRadio.checked).toBe(true)
     expect(screen.getAllByText(viStrings.hb19.part2.selectedBadge).length).toBeGreaterThan(0)
 
-    // Nhập giờ tùy chọn
-    const timeInput = screen.getByLabelText(
-      viStrings.hb19.part2.timeAriaLabel('Uống 1 cốc nước ấm'),
-    ) as HTMLInputElement
-    await act(async () => {
-      fireEvent.change(timeInput, { target: { value: '06:30' } })
+    // Nhập giờ tùy chọn qua ô AM/PM -> 06:30 (6 + 30 + AM)
+    const timeGroup = screen.getByRole('group', {
+      name: viStrings.hb19.part2.timeAriaLabel('Uống 1 cốc nước ấm'),
     })
-    expect(timeInput.value).toBe('06:30')
+    const hourSelect = within(timeGroup).getByLabelText('Giờ') as HTMLSelectElement
+    const minuteSelect = within(timeGroup).getByLabelText('Phút') as HTMLSelectElement
+    const periodSelect = within(timeGroup).getByLabelText('Buổi (AM hoặc PM)') as HTMLSelectElement
+    await act(async () => {
+      fireEvent.change(hourSelect, { target: { value: '6' } })
+      fireEvent.change(minuteSelect, { target: { value: '30' } })
+    })
+    expect(hourSelect.value).toBe('6')
+    expect(minuteSelect.value).toBe('30')
+    expect(periodSelect.value).toBe('AM')
 
     // Bấm Tiếp tục -> bước 2
     const nextBtn = screen.getByRole('button', { name: /Tiếp tục/i })
