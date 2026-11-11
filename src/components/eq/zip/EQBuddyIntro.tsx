@@ -63,18 +63,17 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
   const router = useRouter()
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
 
-  const rawShopeeUrl =
-    content?.shopeeUrl?.trim() ||
-    'https://tinyurl.com/yc43suhc'
+  const rawShopeeUrl = content?.shopeeUrl?.trim() || ''
   // Same UTM + event as ShopeeButton (AGENTS §8.3, §9: Shopee link carries UTM, logs external_clicked)
-  const shopeeUrl =
-    safeHref(
-      appendUtmParams(rawShopeeUrl, {
-        source: 'tramdungcamxuc',
-        medium: 'website',
-        campaign: 'eq-buddy',
-      }),
-    ) || rawShopeeUrl
+  const shopeeUrl = rawShopeeUrl
+    ? safeHref(
+        appendUtmParams(rawShopeeUrl, {
+          source: 'tramdungcamxuc',
+          medium: 'website',
+          campaign: 'eq-buddy',
+        }),
+      ) || rawShopeeUrl
+    : ''
 
   // Hana rà soát: Bỏ phần "Bộ thẻ là gì" và 4 ô mục đích -> để trống thì ẩn
   const hasIntro1 = Boolean(
@@ -266,19 +265,21 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
         )}
       </div>
 
-      {/* Nút Shopee mua bộ thẻ vật lý */}
-      <div className="max-w-3xl mx-auto text-center font-ui">
-        <a
-          href={shopeeUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => track('external_clicked', { url: shopeeUrl, type: 'shopee' })}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta text-xs sm:text-sm font-semibold shadow-soft-md transition-all cursor-pointer"
-        >
-          <ShoppingBag className="w-4 h-4 text-bright-magenta" />
-          <span>{vi.au02.buyDeckShopee} →</span>
-        </a>
-      </div>
+      {/* Nút Shopee mua bộ thẻ vật lý (chỉ hiện khi có link Shopee) */}
+      {shopeeUrl && (
+        <div className="max-w-3xl mx-auto text-center font-ui">
+          <a
+            href={shopeeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track('external_clicked', { url: shopeeUrl, type: 'shopee' })}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta text-xs sm:text-sm font-semibold shadow-soft-md transition-all cursor-pointer"
+          >
+            <ShoppingBag className="w-4 h-4 text-bright-magenta" />
+            <span>{vi.au02.buyDeckShopee} →</span>
+          </a>
+        </div>
+      )}
 
       {/* Global Guide Modal */}
       <GuideModal

@@ -4900,6 +4900,9 @@ export const vi = {
     },
   },
   au02: {
+    introTitle: 'BỘ THẺ EQ BUDDY',
+    introSubtitle:
+      'Dành cho những ngày chông chênh, mất kết nối với chính mình, hoặc đơn giản là muốn lắng nghe tiếng lòng một cách chân thật nhất.',
     guideModalTitle: 'Hướng dẫn: 3 bước để "dừng" và kết nối nội tâm mỗi ngày',
     guideModalSubtitle: '3 bước tĩnh lặng để lắng nghe và kết nối nội tâm',
     guideModalQuote:

@@ -76,9 +76,6 @@ export function GuideModal({
               >
                 {title}
               </h3>
-              <p className="text-[11px] text-deep-navy/60 font-medium font-ui">
-                {vi.au02.guideModalSubtitle}
-              </p>
             </div>
           </div>
 

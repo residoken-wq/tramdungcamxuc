@@ -66,17 +66,15 @@ export default async function EqBuddyIntroPage() {
   const rawContent = (eqContent || {}) as any
   const isFreeMode = rawContent?.eqAccessMode === 'free'
   const shopeeUrl =
-    rawContent?.shopeeUrl ||
-    physicalProduct?.externalUrl ||
-    'https://tinyurl.com/yc43suhc'
+    rawContent?.shopeeUrl?.trim() ||
+    physicalProduct?.externalUrl?.trim() ||
+    ''
 
   const contentProps = {
     ...rawContent,
     badge: rawContent?.badge ?? '',
-    mainTitle: rawContent?.mainTitle || 'BỘ THẺ EQ BUDDY',
-    subtitle:
-      rawContent?.subtitle ||
-      '26 thông điệp cùng bạn Gói ghém cảm xúc - Ghi nhận nỗ lực - Gợi nhớ bài học ý nghĩa mỗi ngày.',
+    mainTitle: rawContent?.mainTitle?.trim() || vi.au02.introTitle,
+    subtitle: rawContent?.subtitle?.trim() || vi.au02.introSubtitle,
     shopeeUrl,
   }
 
