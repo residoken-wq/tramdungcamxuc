@@ -116,6 +116,58 @@ export function formatVietnamShortDate(date?: Date | string | null): string {
   return full.slice(0, 5)
 }
 
+export interface ParsedTime12 {
+  hour12: number
+  minute: string
+  period: 'AM' | 'PM'
+}
+
+/**
+ * Chuyển chuỗi giờ 24h (HH:mm) sang { hour12, minute, period }.
+ * Trả null nếu chuỗi không hợp lệ.
+ */
+export function parse24hTime(time24?: string | null): ParsedTime12 | null {
+  if (!time24 || typeof time24 !== 'string') return null
+  const trimmed = time24.trim()
+  const match = /^([01]?\d|2[0-3]):([0-5]\d)$/.exec(trimmed)
+  if (!match) return null
+  const h24 = Number(match[1])
+  const minute = match[2]
+  const period: 'AM' | 'PM' = h24 >= 12 ? 'PM' : 'AM'
+  const hour12 = h24 % 12 === 0 ? 12 : h24 % 12
+  return { hour12, minute, period }
+}
+
+/**
+ * Chuyển giờ 12h + AM/PM sang chuỗi 24h (HH:mm).
+ */
+export function to24hTime(
+  hour12: number | string,
+  minute: number | string = '00',
+  period: 'AM' | 'PM' = 'AM',
+): string {
+  const h = Number(hour12)
+  if (isNaN(h) || h < 1 || h > 12) return ''
+  let h24: number
+  if (period === 'AM') {
+    h24 = h === 12 ? 0 : h
+  } else {
+    h24 = h === 12 ? 12 : h + 12
+  }
+  const m = String(minute).padStart(2, '0')
+  return `${String(h24).padStart(2, '0')}:${m}`
+}
+
+/**
+ * Định dạng giờ 24h (HH:mm) sang dạng hiển thị "6:00 AM".
+ * Trả chuỗi rỗng nếu không hợp lệ.
+ */
+export function formatTimeAmPm(time24?: string | null): string {
+  const parsed = parse24hTime(time24)
+  if (!parsed) return ''
+  return `${parsed.hour12}:${parsed.minute} ${parsed.period}`
+}
+
 /**
  * Tính ngày lịch theo giờ Việt Nam cho ngày thứ N của kế hoạch (HB-23).
  * Ngày 1 = startDate.

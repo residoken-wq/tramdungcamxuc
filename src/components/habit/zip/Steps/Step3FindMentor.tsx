@@ -4,6 +4,7 @@ import React from 'react'
 import { ArrowLeft, ArrowRight, Plus, Trash2, Check, Anchor, ArrowUp } from 'lucide-react'
 import type { DailyRoutineItem } from '../types'
 import { StepQuoteHeader } from '../StepQuoteHeader'
+import { TimePickerAmPm, formatTimeAmPm } from '@/components/habit/TimePickerAmPm'
 import { DEFAULT_DP01_CONTENT, type Dp01Step3Content } from '@/lib/habit/dp01-content'
 import { vi } from '@/lib/i18n/vi'
 
@@ -280,12 +281,11 @@ export function Step3FindMentor({
                   >
                     {step3Content.mentorTimeLabel}
                   </label>
-                  <input
+                  <TimePickerAmPm
                     id="mentor-time-input"
-                    type="time"
                     value={mentorTime}
-                    onChange={(e) => onMentorTimeChange?.(e.target.value)}
-                    className="px-3 py-2 text-xs sm:text-sm font-ui font-semibold text-deep-navy bg-white border border-lavender-mist rounded-xl focus:border-bright-magenta focus:ring-1 focus:ring-bright-magenta outline-none cursor-pointer shadow-sm"
+                    onChange={(nextTime) => onMentorTimeChange?.(nextTime)}
+                    ariaLabel={step3Content.mentorTimeLabel}
                   />
                 </div>
 
@@ -296,7 +296,10 @@ export function Step3FindMentor({
                     <h4 className="text-sm sm:text-base font-bold text-deep-navy font-ui">
                       Mentor của bạn: <span className="text-bright-magenta">{selectedMentor}</span>
                       {mentorTime ? (
-                        <span className="text-deep-navy/70 font-normal"> · lúc {mentorTime}</span>
+                        <span className="text-deep-navy/70 font-normal">
+                          {' '}
+                          · lúc {formatTimeAmPm(mentorTime)}
+                        </span>
                       ) : (
                         ''
                       )}

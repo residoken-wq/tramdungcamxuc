@@ -2,6 +2,7 @@
 
 import React, { useId, useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { TimePickerAmPm } from '@/components/habit/TimePickerAmPm'
 import { vi } from '@/lib/i18n/vi'
 import type { HabitScorecardItem, HabitScorecardRating } from '@/lib/habit'
 import type { CleanStepQuote } from '@/lib/habit/journey-content.server'
@@ -400,13 +401,11 @@ export function StepMentor({
                           {vi.hb19.part2.timeLabel}
                         </label>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <input
+                          <TimePickerAmPm
                             id={`mentor-time-${originalIndex}`}
-                            type="time"
                             value={item.time || ''}
-                            onChange={(e) => onUpdateTime(originalIndex, e.target.value)}
-                            className="px-3 py-1.5 text-xs sm:text-sm rounded-lg border border-lavender-mist bg-white text-deep-navy focus:outline-none focus:ring-2 focus:ring-bright-magenta w-28"
-                            aria-label={vi.hb19.part2.timeAriaLabel(item.habit)}
+                            onChange={(nextTime) => onUpdateTime(originalIndex, nextTime)}
+                            ariaLabel={vi.hb19.part2.timeAriaLabel(item.habit)}
                           />
                           <span className="text-[11px] text-deep-navy/70 italic">
                             {vi.hb19.part2.timeHint}
