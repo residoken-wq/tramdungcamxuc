@@ -49,19 +49,28 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
 
     const suffix = randomUUID().slice(0, 8)
     const slug = `e2e-au04-${suffix}`
+    let userId: number | undefined
     let pageId: number | undefined
     let productId: number | undefined
+    let createdProductId: number | undefined
     let leadId: number | undefined
+    let navBefore: { mainMenu?: unknown[] } | undefined
 
     const testEmail = `hocvien-${suffix}@example.com`
     const visitor = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
     const guest = await visitor.newPage()
 
     try {
-      await bootstrapAdmin(page)
+      userId = await bootstrapAdmin(page)
+
+      // Lưu menu cũ để khôi phục trong finally
+      const navBeforeRes = await page.request.get('/api/globals/navigation?depth=0')
+      if (navBeforeRes.ok()) {
+        navBefore = await navBeforeRes.json()
+      }
 
       // 1. Cấu hình menu điều hướng với nhãn Free
-      await page.request.post('/api/globals/navigation', {
+      const navRes = await page.request.post('/api/globals/navigation', {
         data: {
           mainMenu: [
             {
@@ -78,10 +87,13 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
           ],
         },
       })
+      expect(navRes.ok()).toBe(true)
 
       // 2. Tạo sản phẩm coaching trial nếu chưa có
       const existingProducts = await (
-        await page.request.get('/api/products?where[type][equals]=coaching_trial&limit=1')
+        await page.request.get(
+          '/api/products?where[type][equals]=coaching_trial&where[_status][equals]=published&where[saleStatus][equals]=on_sale&limit=1',
+        )
       ).json()
 
       if (existingProducts.docs && existingProducts.docs.length > 0) {
@@ -95,21 +107,25 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
             type: 'coaching_trial',
             price: 149000,
             saleStatus: 'on_sale',
+            isSample: true,
+            _status: 'published',
           },
         })
+        expect(createProductRes.status(), await createProductRes.text()).toBe(201)
         const productData = await createProductRes.json()
         productId = productData.doc.id
+        createdProductId = productId
       }
 
-      // 3. Tạo trang kiểm thử từ communityTemplate kèm khối SectionHeader có cú pháp *...*
+      // 3. Tạo trang kiểm thử từ communityTemplate kèm khối SectionHeader có cú pháp *...* ở dòng 1
       const testContent = [
         {
           type: 'SectionHeader',
           props: {
             id: 'au04-header',
             seriesLabel: 'AU-04 · TIÊU ĐỀ NỔI BẬT',
-            titleLine1: '*Chuyển* mình',
-            titleLine2: 'không *chênh* vênh',
+            titleLine1: '*Chuyển* mình không *chênh* vênh',
+            titleLine2: 'từng bước nhỏ',
             emotionLine: 'Kiểm tra hiển thị chữ nổi bật bằng dấu sao',
           },
         },
@@ -148,22 +164,28 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
       await expect(highlightedChenh).toBeVisible()
 
       // Test 2: Kiểm tra nhãn Free trên thanh điều hướng
-      const freeBadge = guest.locator('nav a:has-text("Check-in cảm xúc") [aria-label="Nhãn: Free"]')
+      const freeBadge = guest.locator(
+        'nav a:has-text("Check-in cảm xúc") [aria-label="Nhãn: Free"]',
+      )
       await expect(freeBadge).toBeVisible()
       expect(await freeBadge.textContent()).toBe('Free')
 
-      // Test 3: Bấm nút "Tham gia Me Time" -> mở modal -> gửi dữ liệu test
+      // Test 3: Bấm nút "Tham gia Me Time" (chờ hydrate) -> mở modal -> gửi dữ liệu test
       const meTimeButton = guest
         .getByRole('button', { name: /tham gia me time/i })
         .or(guest.getByRole('link', { name: /tham gia me time/i }))
         .first()
 
       await expect(meTimeButton).toBeVisible()
-      await meTimeButton.click()
+      const modalDialog = guest.getByRole('dialog')
+      await expect(async () => {
+        if (!(await modalDialog.isVisible())) {
+          await meTimeButton.click()
+        }
+        await expect(modalDialog).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 15000 })
 
       // Cửa sổ modal mở lên
-      const modalDialog = guest.getByRole('dialog')
-      await expect(modalDialog).toBeVisible()
       await expect(guest.getByRole('heading', { name: /tham gia me time/i })).toBeVisible()
 
       // Điền thông tin vào form modal
@@ -194,7 +216,7 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
       expect(createdLead.source?.form).toBe('community-me-time')
 
       // Đóng modal
-      await modalDialog.getByRole('button', { name: /đóng/i }).click()
+      await modalDialog.getByLabel('Đóng').click()
       await expect(modalDialog).not.toBeVisible()
 
       // Test 4: Kiểm tra nút đặt lịch phiên trải nghiệm dẫn tới trang trả về mã 200
@@ -217,6 +239,8 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
       // Kiểm tra axe accessibility
       await expectNoSeriousA11y(guest)
     } finally {
+      test.setTimeout(testInfo.timeout + 30000)
+      await visitor.close()
       // Dọn dẹp dữ liệu test
       if (leadId) {
         await page.request.delete(`/api/leads/${leadId}`).catch(() => {})
@@ -224,8 +248,20 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
       if (pageId) {
         await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
       }
-      await visitor.close()
+      if (createdProductId) {
+        await page.request.delete(`/api/products/${createdProductId}`).catch(() => {})
+      }
+      if (navBefore) {
+        await page.request
+          .post('/api/globals/navigation', {
+            data: { mainMenu: navBefore.mainMenu ?? [] },
+          })
+          .catch(() => {})
+      }
+      if (userId) {
+        const deleted = await page.request.delete(`/api/users/${userId}`)
+        expect(deleted.ok(), 'Temporary admin user must be deleted.').toBe(true)
+      }
     }
   })
 })
-
