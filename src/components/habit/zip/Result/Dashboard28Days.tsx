@@ -22,7 +22,7 @@ import { TimelineProgress } from '../Timeline/TimelineProgress'
 import { checkInDay, deleteCheckInDay } from '@/lib/habit/tracker-actions'
 import { saveStationReflection } from '@/lib/habit/reflection-actions'
 import { exportBackup, exportCsv, restoreBackup, restartJourney } from '@/lib/habit/my-data-actions'
-import { planDayDate } from '@/lib/habit/tracker-stats'
+import { formatTimeAmPm, planDayDate } from '@/lib/habit/tracker-stats'
 import { weekdayOfDay, type Weekday } from '@/lib/habit/rhythm'
 import { weekdaysToDays } from '../draft-adapter'
 import { TrackerSummaryCard } from '@/components/habit/TrackerSummaryCard'
@@ -592,7 +592,7 @@ Nhịp điệu: ${rateText}
             </span>
             <span className="text-deep-navy font-semibold">
               {propMentor
-                ? `Sau khi ${propMentor}${propMentorTime ? ` · lúc ${propMentorTime}` : ''}`
+                ? `Sau khi ${propMentor}${propMentorTime ? ` · lúc ${formatTimeAmPm(propMentorTime) || propMentorTime}` : ''}`
                 : '—'}
             </span>
           </div>
@@ -703,23 +703,23 @@ Nhịp điệu: ${rateText}
             </p>
           </div>
 
-          {/* Chú giải */}
+          {/* Chú giải 4 trạng thái chuẩn bảng màu Brand Book */}
           <div className="flex-1 lg:pl-6 space-y-2 font-ui">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-              <div className="flex items-center gap-2 text-deep-navy/80 font-medium">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#2E7D32] shrink-0" />
+              <div className="flex items-center gap-2 text-deep-navy font-medium">
+                <span className="w-3 h-3 rounded-full bg-mint-haze border-2 border-deep-navy shrink-0" />
                 <span>{vi.dp01.legendVoted}</span>
               </div>
-              <div className="flex items-center gap-2 text-deep-navy/80 font-medium">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FBC02D] shrink-0" />
+              <div className="flex items-center gap-2 text-deep-navy font-medium">
+                <span className="w-3 h-3 rounded-full bg-butter-cream border-2 border-deep-navy shrink-0" />
                 <span>{vi.dp01.legendMinimal}</span>
               </div>
-              <div className="flex items-center gap-2 text-deep-navy/80 font-medium">
-                <span className="w-2.5 h-2.5 rounded-full bg-warm-ivory border border-accent-pink shrink-0" />
+              <div className="flex items-center gap-2 text-deep-navy font-medium">
+                <span className="w-3 h-3 rounded-full bg-soft-pink border-2 border-accent-pink shrink-0" />
                 <span>{vi.dp01.legendMissed}</span>
               </div>
-              <div className="flex items-center gap-2 text-deep-navy/80 font-medium">
-                <span className="w-2.5 h-2.5 rounded-full bg-deep-navy/20 shrink-0" />
+              <div className="flex items-center gap-2 text-deep-navy font-medium">
+                <span className="w-3 h-3 rounded-full bg-lavender-mist border border-deep-navy/40 shrink-0" />
                 <span>{vi.dp01.legendRestDay}</span>
               </div>
             </div>
@@ -830,23 +830,23 @@ Nhịp điệu: ${rateText}
                         } ${
                           isDone
                             ? isMinimal
-                              ? 'bg-[#FFF8E1] border-[#FBC02D] text-[#F57F17]'
-                              : 'bg-[#E8F5E9] border-[#2E7D32] text-[#2E7D32]'
+                              ? 'bg-butter-cream border-deep-navy/70 text-deep-navy'
+                              : 'bg-mint-haze border-deep-navy text-deep-navy'
                             : isMissed
-                              ? 'bg-warm-ivory border-accent-pink text-deep-navy/70'
-                              : 'bg-white border-deep-navy/10 hover:border-bright-magenta/60 hover:bg-soft-pink/20 text-deep-navy/70'
+                              ? 'bg-soft-pink/80 border-accent-pink text-deep-navy'
+                              : isRestDay
+                                ? 'bg-lavender-mist/45 border-lavender-mist text-deep-navy/80'
+                                : 'bg-white border-deep-navy/10 hover:border-bright-magenta/60 hover:bg-soft-pink/20 text-deep-navy/70'
                         }`}
                       >
                         {/* Day indicator */}
                         <div
                           className={`w-full flex items-center justify-between text-[10px] sm:text-xs font-ui font-bold ${
-                            isDone && !isMinimal
-                              ? 'text-[#2E7D32]'
-                              : isDone && isMinimal
-                                ? 'text-[#F57F17]'
-                                : isMissed
-                                  ? 'text-accent-pink'
-                                  : 'text-deep-navy/70'
+                            isDone
+                              ? 'text-deep-navy'
+                              : isMissed
+                                ? 'text-bright-magenta'
+                                : 'text-deep-navy/70'
                           }`}
                         >
                           <span>N{day.dayNumber}</span>

@@ -564,13 +564,13 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
   - **Tiêu đề dòng 2 (`offerTitleLine2`)**: Dòng chữ màu hồng sen `bright-magenta` (mặc định: `1% Better Mỗi Ngày`).
   - **Dòng cảm xúc (`offerEmotionLine`)**: Dòng triết lý in nghiêng bên dưới tiêu đề (mặc định: `Hiểu mình rõ. Hành động bền bỉ. Tỏa sáng bằng thế mạnh riêng.`).
 - **Phần Lộ trình Module**:
-  - **Tiêu đề phần lộ trình (`curriculumHeading`)**: Tiêu đề lớn (mặc định: `Lộ trình 4 Module chuyển hóa`).
+  - **Tiêu đề phần lộ trình (`curriculumHeading`)**: Tiêu đề lớn (mặc định tự ghép số đếm + đơn vị bên dưới, ví dụ: `Lộ trình 4 giai đoạn chuyển hóa`).
+  - **Đơn vị đếm lộ trình (`curriculumUnitLabel`)** *(mới)*: Đơn vị hiển thị cạnh số module (mặc định `Module`, có thể đổi thành `giai đoạn`, `chặng`, v.v. — số lượng tự đếm theo danh sách bên dưới).
   - **Mô tả phần lộ trình (`curriculumSubheading`)**: Đoạn mô tả dẫn nhập (mặc định: `Được thiết kế tinh gọn, thực tế, học đến đâu ứng dụng ngay đến đó.`).
-  - **Các module (`curriculumModules`)**: Danh sách tối đa 8 module. Mỗi module gồm **Tiêu đề** và **Mô tả**. Ô số liệu "Module lộ trình" trên thanh thống kê sẽ tự động đếm theo số lượng module bạn nhập ở đây (mặc định là 4).
-- **Phần "Tại sao Habit Tracker số khác biệt?"**:
-  - **Tiêu đề phần "khác biệt" (`featuresHeading`)**: Mặc định: `Tại sao Habit Tracker số khác biệt?`.
-  - **Mô tả phần "khác biệt" (`featuresSubheading`)**: Mặc định: `Xây dựng thói quen từ sự tử tế với chính mình, không phải kỷ luật trừng phạt.`.
-  - **Các điểm khác biệt (`featureItems`)**: Danh sách tối đa 6 thẻ điểm nhấn, mỗi thẻ gồm **Tiêu đề** và **Mô tả**.
+  - **Các module (`curriculumModules`)**: Danh sách tối đa 8 module. Mỗi module gồm **Tiêu đề** và **Mô tả**. Ô số liệu trên thanh thống kê sẽ tự động đếm theo số lượng module bạn nhập ở đây.
+- **Phần "Tại sao Habit Hack khác biệt?" (để trống = ẩn cả phần)**:
+  - **Tiêu đề phần "khác biệt" (`featuresHeading`)** và **Mô tả phần "khác biệt" (`featuresSubheading`)**.
+  - **Các điểm khác biệt (`featureItems`)**: Danh sách tối đa 6 thẻ điểm nhấn, mỗi thẻ gồm **Tiêu đề** và **Mô tả**. **Lưu ý**: Nếu để trống hoàn toàn danh sách `featureItems`, cả phần "khác biệt" sẽ **tự ẩn** ngoài web (không tự rơi về chữ mặc định). Tương tự với **FAQ**: không có câu hỏi nào thì khối FAQ cũng ẩn.
 - **Kêu gọi hành động cuối trang (Bottom CTA)**:
   - **Tiêu đề kêu gọi cuối trang (`bottomTitle`)**: Nhập chữ `{ngay}` tại vị trí bạn muốn hệ thống tự động điền số ngày hành trình (ví dụ: `Bắt đầu hành trình {ngay} ngày của bạn`).
   - **Mô tả kêu gọi cuối trang (`bottomDescription`)**: Đoạn giới thiệu ngắn phía dưới (để trống sẽ tự ghép số lượng video và kỹ thuật từ hệ thống).
@@ -3932,7 +3932,9 @@ Khi anh IT thông báo đã cấu hình Google xong, Hana thực hiện theo 3 b
 
 1. **Quản lý danh sách kỹ thuật thực chiến (`techniques`)**:
    - Ở cột menu bên trái, tìm nhóm **Khóa Habit**, bấm vào **Kỹ thuật thực hành**.
-   - Hana có thể thêm mới hoặc sửa tên, cách thực hiện, ví dụ và gán vào 1 trong 4 giai đoạn (_Cue - Gợi ý_, _Craving - Khao khát_, _Response - Phản hồi_, _Reward - Phần thưởng_). Các kỹ thuật đã xuất bản sẽ tự động hiển thị trong **Bước 5 (Vòng lặp)** của công cụ Habit Loop 5 phút (6 bước: _1. Khám đúng bệnh → 2. Nguyên lý 1% → 3. Tìm Mentor → 4. Gọi tên thói quen → 5. Vòng lặp → 6. Boarding Pass_).
+   - Hana có thể thêm mới hoặc sửa tên, cách thực hiện, ví dụ và gán vào 1 trong 4 giai đoạn (_Cue - Gợi ý_, _Craving - Khao khát_, _Response - Phản hồi_, _Reward - Phần thưởng_). Các kỹ thuật đã xuất bản sẽ tự động hiển thị trong **Bước 5 (Vòng lặp)** của công cụ Habit Loop 5 phút (giao diện từng bước kèm thanh tiến độ `Bước x / 6`: _1. Khám đúng bệnh → 2. Nguyên lý 1% → 3. Tìm Mentor → 4. Gọi tên thói quen → 5. Vòng lặp → 6. Boarding Pass_).
+   - **Nhãn câu hỏi áp dụng (`applyLabel`) & Chữ gợi ý ô nhập (`applyPlaceholder`)** *(mới)*: Mỗi kỹ thuật có thể đặt nhãn câu hỏi riêng (mặc định `"Cách tôi áp dụng:"`, riêng `"Soi lại nhịp sinh học"` là `"Thói quen tốt tôi nhận ra:"` với gợi ý `"Ngồi thiền"`) và chữ gợi ý (placeholder) riêng. Có thể chèn `{gio}` trong mẫu gợi ý và hệ thống tự hiển thị dạng AM/PM (ví dụ `6:00 PM`).
+   - **Huy hiệu đầu công cụ (`badgeText`)**: Trong **Nội dung hành trình thói quen → Header (`dp01Content.header`)**, nếu **để trống** ô `badgeText`, thanh nhãn nhỏ trên cùng sẽ tự ẩn gọn (không hiện dòng mặc định).
    - **Video ví dụ** (`exampleVideoUrl`): Dán liên kết video chia sẻ trực quan / minh họa cho kỹ thuật. Chỉ chấp nhận các liên kết video công khai, miễn phí từ YouTube (ví dụ: `https://www.youtube.com/watch?v=...`), Vimeo (ví dụ: `https://vimeo.com/...`) hoặc Bunny Stream (link nhúng dạng `https://iframe.mediadelivery.net/embed/<mã thư viện>/<mã video>`, lấy ở nút "Embed" trong Bunny). Nếu video thuộc bài giảng trả phí trong lộ trình khóa học, vui lòng gắn qua ô **Bài học liên quan** (`lesson`).
 
 2. **Cập nhật giá và câu hỏi thường gặp (FAQ) cho Habit Tracker số**:
