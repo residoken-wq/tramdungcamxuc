@@ -123,23 +123,24 @@ export function EQDrawApp({
     return () => clearTimeout(timer)
   }, [toastMessage])
 
-  // Giá EQ Buddy số cho nút Trở thành VIP Member
-  const eqPricing = eqProduct
-    ? getEffectivePrice(eqProduct, new Date())
-    : { price: 250000, salePrice: null }
-  const hasSale = eqPricing.salePrice !== null && eqPricing.salePrice !== undefined
-  const currentVipPrice = hasSale ? eqPricing.salePrice : eqPricing.price
+  // Giá EQ Buddy số cho nút Trở thành VIP Member (không có sản phẩm thì không hiện giá)
+  const eqPricing = eqProduct ? getEffectivePrice(eqProduct, new Date()) : null
+  const hasSale = Boolean(
+    eqPricing && eqPricing.salePrice !== null && eqPricing.salePrice !== undefined,
+  )
+  const currentVipPrice = eqPricing ? (hasSale ? eqPricing.salePrice : eqPricing.price) : null
 
-  // Link Shopee có UTM
-  const rawShopeeUrl = shopeeUrl?.trim() || 'https://tinyurl.com/yc43suhc'
-  const resolvedShopeeUrl =
-    safeHref(
-      appendUtmParams(rawShopeeUrl, {
-        source: 'tramdungcamxuc',
-        medium: 'website',
-        campaign: 'eq-buddy',
-      }),
-    ) || rawShopeeUrl
+  // Link Shopee có UTM (chỉ lấy từ shopeeUrl CMS -> sản phẩm, trống thì ẩn nút)
+  const rawShopeeUrl = shopeeUrl?.trim() || ''
+  const resolvedShopeeUrl = rawShopeeUrl
+    ? safeHref(
+        appendUtmParams(rawShopeeUrl, {
+          source: 'tramdungcamxuc',
+          medium: 'website',
+          campaign: 'eq-buddy',
+        }),
+      ) || rawShopeeUrl
+    : ''
 
   // Rút thẻ
   const triggerConfetti = () => {
@@ -277,7 +278,7 @@ export function EQDrawApp({
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink hover:bg-bright-magenta hover:text-white text-bright-magenta text-xs font-semibold border border-bright-magenta/30 shadow-soft-md transition-all active:scale-95 group cursor-pointer"
             >
               <BookOpen className="w-3.5 h-3.5 text-bright-magenta group-hover:text-white transition-colors" />
-              <span>📖 {vi.dp01eq.guide}</span>
+              <span>{vi.dp01eq.guide}</span>
             </button>
 
             <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
@@ -594,37 +595,43 @@ export function EQDrawApp({
                 className="w-full py-3 px-5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-soft-md hover:shadow-lg transition-all active:scale-95"
               >
                 <span>{vi.au02.vipMember}</span>
-                {hasSale ? (
-                  <span className="flex items-center gap-1.5 text-xs">
-                    <span className="line-through opacity-75">{formatVnd(eqPricing.price)}</span>
+                {hasSale && eqPricing ? (
+                  <span className="flex items-center gap-1.5 text-xs text-white">
+                    <span className="line-through">{formatVnd(eqPricing.price)}</span>
                     <span className="font-bold">{formatVnd(eqPricing.salePrice)}</span>
                   </span>
                 ) : currentVipPrice != null ? (
-                  <span className="text-xs opacity-90">({formatVnd(currentVipPrice)})</span>
+                  <span className="text-xs text-white">({formatVnd(currentVipPrice)})</span>
                 ) : null}
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
 
-              <div className="flex flex-col sm:flex-row items-center gap-2.5">
-                {/* 2. Nút Mua bộ thẻ trên Shopee */}
-                <a
-                  href={resolvedShopeeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() =>
-                    track('external_clicked', { url: resolvedShopeeUrl, type: 'shopee' })
-                  }
-                  className="w-full sm:w-1/2 py-2.5 px-4 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta font-semibold text-xs flex items-center justify-center gap-1.5 shadow-soft transition-all cursor-pointer"
-                >
-                  <ShoppingBag className="w-3.5 h-3.5 text-bright-magenta" />
-                  <span>{vi.au02.buyDeckShopee}</span>
-                </a>
+              <div
+                className={`flex items-center gap-2.5 ${
+                  resolvedShopeeUrl ? 'flex-col sm:flex-row' : 'flex-col'
+                }`}
+              >
+                {/* 2. Nút Mua bộ thẻ trên Shopee (chỉ hiện khi có link Shopee) */}
+                {resolvedShopeeUrl && (
+                  <a
+                    href={resolvedShopeeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() =>
+                      track('external_clicked', { url: resolvedShopeeUrl, type: 'shopee' })
+                    }
+                    className="w-full sm:w-1/2 py-2.5 px-4 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta font-semibold text-xs flex items-center justify-center gap-1.5 shadow-soft transition-all cursor-pointer"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5 text-bright-magenta" />
+                    <span>{vi.au02.buyDeckShopee}</span>
+                  </a>
+                )}
 
                 {/* 3. Nút Đặt lịch coaching 1-1 (phiên trải nghiệm 149k, AU-04) */}
-                <div className="w-full sm:w-1/2">
+                <div className={resolvedShopeeUrl ? 'w-full sm:w-1/2' : 'w-full'}>
                   <ExperienceBookingButton
                     product={coachingProduct}
-                    productSlug="growth-mirror-phien-trai-nghiem"
+                    productSlug={coachingProduct?.slug}
                     buttonText={vi.au02.bookCoaching}
                     variant="secondary"
                     size="md"
