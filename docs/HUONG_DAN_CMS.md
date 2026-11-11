@@ -1430,21 +1430,40 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
   - Khách hàng đã đăng nhập và kích hoạt dùng thử 21 ngày (hoặc đã mua gói số) sẽ được rút thẻ không giới hạn.
   - _Lưu ý quan trọng_: Giới hạn dùng thử này chỉ áp dụng cho công cụ số trên website, **không ảnh hưởng** đến các trang xem thẻ quét từ mã QR (`/eq-buddy/the/[qrSlug]`) – các trang QR luôn mở tự do cho mọi người mua bộ thẻ in vật lý theo đúng thiết kế.
 
-#### 3.16.3. Cài đặt toàn cục EQ Buddy (`eq-buddy-content`) và Công tắc chế độ truy cập (Quyết định E3)
+#### 3.16.3. Cài đặt toàn cục EQ Buddy (`eq-buddy-content`) và Công tắc chế độ truy cập (Quyết định E3, AU-02)
 
-**Mục đích**: Tự do điều chỉnh toàn bộ câu chữ của ứng dụng EQ Buddy số trên giao diện kéo thả/zip và linh hoạt chuyển đổi giữa **Chế độ dùng thử có Paywall** (`trial`) và **Chế độ mở tự do hoàn toàn** (`free`).
+**Mục đích**: Tự do điều chỉnh toàn bộ câu chữ của ứng dụng EQ Buddy số trên giao diện giới thiệu, pop-up hướng dẫn 3 bước, bước nhập trạng thái và mặt sau thẻ; linh hoạt chuyển đổi giữa **Chế độ dùng thử có Paywall** (`trial`) và **Chế độ mở tự do hoàn toàn** (`free`).
 
-**Cách thực hiện trong CMS**:
+**Nguyên tắc quan trọng (AU-02)**: **Để trống thì ẩn**, không tự động rơi về chữ mặc định code. Đặc biệt:
+- Nếu để trống **Huy hiệu đầu trang (`badge`)** -> huy hiệu sẽ ẩn hoàn toàn.
+- Nếu để trống **Tiêu đề giới thiệu (`intro1Heading`)** và các tiêu đề thẻ mục đích (`card1Title`..`card4Title`) -> toàn bộ khối "Bộ thẻ là gì" cùng 4 ô mục đích sẽ ẩn hoàn toàn trên trang giới thiệu.
+
+**Các trường nội dung trong CMS (`eq-buddy-content`)**:
 
 1. Ở menu bên trái, tìm nhóm **Cài đặt toàn cục** -> chọn **Nội dung EQ Buddy** (`eq-buddy-content`).
 2. **Tab Quyền truy cập & Bán hàng**:
    - **Chế độ truy cập EQ (`eqAccessMode`)**:
      - `trial` (Mặc định): Áp dụng luồng dùng thử chuẩn (khách vãng lai rút 1 thẻ miễn phí, từ thẻ thứ 2 yêu cầu đăng nhập/dùng thử; tab "Tất cả 26 thẻ" chỉ hiển thị thông điệp khi đã kích hoạt).
      - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. *(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này).*
-   - **Link Shopee bộ thẻ vật lý (`shopeeUrl`)**: Nhập đường link gian hàng Shopee của Hana để nút "Chạm vào thẻ thật ngoài đời" dẫn khách tới mua bộ thẻ in.
+   - **Link Shopee bộ thẻ vật lý (`shopeeUrl`)**: Nhập đường link gian hàng Shopee của Hana (mặc định: `https://tinyurl.com/yc43suhc`). Nút "Chạm vào thẻ thật ngoài đời" sẽ mở tab mới có gắn mã UTM và ghi nhận sự kiện click.
 3. **Tab Giới thiệu & Cẩm nang**:
-   - Tự do sửa câu chữ giới thiệu 2 bước: `Tiêu đề chính`, `Mô tả ngắn`, `4 góc nhìn cảm xúc` (Tự thân, Người khác, Tình huống, Hành động), và `4 bước thực hành mỗi ngày` (Tĩnh lặng, Rút thẻ, Lắng nghe, Khám phá).
-   - `Lời dặn trong cẩm nang`: Câu châm ngôn ấm áp hiển thị ở cuối cửa sổ hướng dẫn pop-up.
+   - **Huy hiệu (`badge`)**: Nhãn nhỏ trên đầu trang giới thiệu `/eq-buddy`. *Để trống để ẩn.*
+   - **Phần "Bộ thẻ là gì" (`intro1Heading`, `intro1Description`)**: Tiêu đề và mô tả giải thích về bộ thẻ. *Để trống để ẩn.*
+   - **4 thẻ mục đích / góc nhìn (`card1Title`..`card4Title`, `card1Description`..`card4Description`)**: Tự thân, Người khác, Tình huống, Hành động. *Để trống để ẩn.*
+   - **Cửa sổ hướng dẫn 3 bước (Pop-up)**:
+     - `Tiêu đề pop-up hướng dẫn` (`guideModalTitle`): Mặc định: *3 bước kết nối cảm xúc*.
+     - `Nút bấm pop-up` (`guideModalButton`): Mặc định: *Trải nghiệm* (bấm để vào thẳng màn hình rút thẻ).
+     - `Bước 1` (`guideStep1Title`, `guideStep1Desc`): Mặc định: *Tĩnh lặng* – *Hít thở sâu 3 hơi để thả lỏng và hiện diện trọn vẹn ở giây phút này.*
+     - `Bước 2` (`guideStep2Title`, `guideStep2Desc`): Mặc định: *Lắng nghe* – *Nghĩ về điều bạn mong muốn cho hôm nay, hoặc gọi tên một cảm xúc đang có mặt.*
+     - `Bước 3` (`guideStep3Title`, `guideStep3Desc`): Mặc định: *Rút thẻ* – *Bấm rút 1 lá thẻ ngẫu nhiên và dành 1–2 phút chiêm nghiệm thông điệp.*
+     - `Lời dặn cẩm nang` (`guideModalQuote`): Châm ngôn ấm áp hiển thị ở cuối cửa sổ hướng dẫn (mặc định: *Mỗi lá thẻ là một lời nhắn nhủ nhẹ nhàng, giúp bạn chậm lại và thấu hiểu chính mình.*).
+   - **Bước nhập trạng thái & 3 biểu tượng trước khi rút thẻ**:
+     - `Nhãn biểu tượng 1` (`stateIcon1Label`): Mặc định: *Hít thở 3 hơi*.
+     - `Nhãn biểu tượng 2` (`stateIcon2Label`): Mặc định: *Nghĩ về mong muốn hôm nay*.
+     - `Nhãn biểu tượng 3` (`stateIcon3Label`): Mặc định: *Gọi tên cảm xúc hiện tại*.
+   - **Mặt sau thẻ**:
+     - `Tiêu đề câu hỏi mặt sau` (`cardBackPromptTitle`): Mặc định: *3 câu hỏi kết nối nội tâm*.
+     - `Châm ngôn mặt sau thẻ` (`cardBackQuote`): Mặc định: *Dừng để vững vàng bước tới.*.
 4. Bấm **Lưu thay đổi** để áp dụng ngay lên trang `/eq-buddy` và `/eq-buddy/rut-the`.
 
 ---
