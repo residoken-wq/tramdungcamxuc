@@ -361,16 +361,16 @@ export function Step2PercentPrinciple({
         </div>
       </div>
 
-      {/* 5. Cuối Bước 2: Hộp dẫn dắt */}
-      <div className="sticky bottom-2 z-20 sm:static p-4 sm:p-6 rounded-[20px] bg-soft-pink/95 sm:bg-soft-pink/60 backdrop-blur-sm sm:backdrop-blur-none border border-bright-magenta/25 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        <p className="text-xs sm:text-sm text-deep-navy/85 font-ui leading-relaxed">
+      {/* 5. Cuối Bước 2: Hộp dẫn dắt (sticky chỉ giữ thanh nút trên mobile để không che nội dung) */}
+      <div className="space-y-3 sm:space-y-0 sm:p-6 sm:rounded-[20px] sm:bg-soft-pink/60 sm:border sm:border-bright-magenta/25 sm:shadow-soft flex flex-col sm:flex-row sm:items-center justify-between sm:gap-4">
+        <p className="p-4 sm:p-0 rounded-[20px] sm:rounded-none bg-soft-pink/60 sm:bg-transparent border border-bright-magenta/25 sm:border-0 text-xs sm:text-sm text-deep-navy/85 font-ui leading-relaxed">
           <strong className="text-deep-navy font-bold">
             Lời giải không nằm ở cố gắng nhiều hơn, mà ở một hệ thống tốt hơn.
           </strong>{' '}
           Ở giai đoạn 2, bạn sẽ tự tay xây hệ thống đó cho thói quen của mình.
         </p>
 
-        <div className="flex items-center gap-2.5 flex-shrink-0">
+        <div className="sticky bottom-2 z-20 sm:static bg-warm-ivory/95 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none py-2.5 sm:py-0 px-2 sm:px-0 rounded-2xl border border-lavender-mist sm:border-0 shadow-soft sm:shadow-none flex items-center justify-between sm:justify-end gap-2.5 flex-shrink-0">
           <button
             type="button"
             onClick={onPrev}

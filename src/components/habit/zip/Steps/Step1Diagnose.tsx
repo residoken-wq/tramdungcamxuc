@@ -301,7 +301,7 @@ export function Step1Diagnose({
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => onAnswerChange(q.id, isSelected ? 0 : score)}
-                        className={`flex items-center justify-center py-2 rounded-lg border text-center transition-all cursor-pointer ${
+                        className={`scroll-mb-28 sm:scroll-mb-0 flex items-center justify-center py-2 rounded-lg border text-center transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-bright-magenta text-white border-bright-magenta shadow-sm font-bold'
                             : 'bg-white text-deep-navy/70 border-lavender-mist/80 hover:border-bright-magenta/50 hover:bg-soft-pink/30'

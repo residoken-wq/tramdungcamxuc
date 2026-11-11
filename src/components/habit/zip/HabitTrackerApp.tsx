@@ -449,7 +449,7 @@ export function HabitTrackerApp({
         {/* Nội dung Bước Hiện Tại hoặc Màn Cổng */}
         <main
           ref={mainRef}
-          className="transition-all motion-reduce:transition-none duration-300 pb-6 sm:pb-0"
+          className="transition-all motion-reduce:transition-none duration-300 pb-24 sm:pb-0"
         >
           {showGate ? (
             <StageGate

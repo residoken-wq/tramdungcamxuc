@@ -116,9 +116,9 @@ export function Step3FindMentor({
           {routines.map((item, index) => (
             <div
               key={item.id}
-              className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-2xl bg-warm-ivory/60 border border-lavender-mist/70 transition-all hover:border-bright-magenta/30"
+              className="scroll-mb-28 sm:scroll-mb-0 flex items-center gap-1.5 sm:gap-3 p-2 sm:p-3 rounded-2xl bg-warm-ivory/60 border border-lavender-mist/70 transition-all hover:border-bright-magenta/30"
             >
-              <span className="w-6 text-center text-xs font-bold text-deep-navy/70 font-ui">
+              <span className="w-5 sm:w-6 shrink-0 text-center text-xs font-bold text-deep-navy/70 font-ui">
                 #{index + 1}
               </span>
 
@@ -136,11 +136,11 @@ export function Step3FindMentor({
                         ? 'Ăn sáng'
                         : 'Nhập việc bạn làm...'
                 }
-                className="flex-1 px-3 py-2 rounded-lg bg-white border border-lavender-mist focus:border-bright-magenta focus:ring-2 focus:ring-soft-pink outline-none text-xs sm:text-sm font-ui text-deep-navy transition-all"
+                className="min-w-0 flex-1 px-2.5 sm:px-3 py-2 rounded-lg bg-white border border-lavender-mist focus:border-bright-magenta focus:ring-2 focus:ring-soft-pink outline-none text-xs sm:text-sm font-ui text-deep-navy transition-all"
               />
 
               {/* Score selector [+ / - / =] */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <button
                   type="button"
                   onClick={() => handleScoreChange(item.id, '+')}
@@ -185,7 +185,7 @@ export function Step3FindMentor({
                   type="button"
                   onClick={() => handleDeleteRoutine(item.id)}
                   title="Xoá dòng"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-deep-navy/70 hover:text-accent-pink hover:bg-white transition-colors cursor-pointer"
+                  className="w-8 h-8 shrink-0 rounded-lg flex items-center justify-center text-deep-navy/70 hover:text-accent-pink hover:bg-white transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -258,14 +258,14 @@ export function Step3FindMentor({
                     key={routine.id}
                     type="button"
                     onClick={() => onMentorSelect(routine.activity)}
-                    className={`px-4 py-2 rounded-full font-ui text-xs sm:text-sm font-semibold border transition-all active:scale-95 flex items-center gap-2 cursor-pointer ${
+                    className={`scroll-mb-28 sm:scroll-mb-0 max-w-full px-4 py-2 rounded-full font-ui text-xs sm:text-sm font-semibold border transition-all active:scale-95 flex items-center gap-2 cursor-pointer ${
                       isSelected
                         ? 'bg-bright-magenta text-white border-bright-magenta shadow-sm'
                         : 'bg-white text-deep-navy/80 border-lavender-mist hover:border-bright-magenta/40 hover:bg-soft-pink/30'
                     }`}
                   >
-                    <span>{routine.activity}</span>
-                    {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                    <span className="truncate">{routine.activity}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5 stroke-[3] shrink-0" />}
                   </button>
                 )
               })}
