@@ -3363,7 +3363,7 @@ Bản cập nhật AU-04 hoàn thiện các tiện ích cốt lõi dùng chung t
 
 1. **Tô màu chữ nổi bật bằng cú pháp `*từ cần nổi bật*`**:
    - **Áp dụng cho**: Mọi tiêu đề 2 tầng trong hệ thống (khối `HeroTwoEntries`, `HeroImage`, `CTASection`, `SectionHeader`...).
-   - **Cách dùng**: Chỉ cần bao quanh từ hoặc cụm từ bằng cặp dấu sao `*...*` (ví dụ: `*Chuyển* mình không *chênh* vênh`).
+   - **Cách dùng**: Bao quanh từ hoặc cụm từ bằng cặp dấu sao `*...*` **ở dòng 1** (dòng chữ xanh thẫm `deep-navy`, hoặc dòng chữ trắng trên nền tối `deep-navy`), ví dụ: `*Chuyển* mình không *chênh* vênh`. Không nên dùng `*...*` ở dòng 2 vì dòng 2 mặc định vốn đã mang màu hồng sen `bright-magenta` nên sẽ không thấy sự khác biệt màu.
    - **Hiển thị**: Từ trong dấu sao sẽ tự động mang màu hồng sen nổi bật `bright-magenta` khi nằm trên nền sáng, hoặc màu hồng phấn dịu `soft-pink` khi nằm trên nền tối `deep-navy`.
    - **An toàn**: Nếu nhập dấu sao lẻ hoặc không đủ cặp, hệ thống giữ nguyên văn bản thông thường và không bao giờ gây lỗi giao diện.
 
