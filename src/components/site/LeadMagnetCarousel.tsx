@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import { stripTitleHighlight } from '@/components/ui/TwoToneTitle'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
 import { previewLeadMagnetsAction } from '@/puck/lead-magnet-actions'
@@ -185,7 +186,7 @@ export function LeadMagnetCarousel({
   return (
     <section
       aria-roledescription="carousel"
-      aria-label={titleLine1}
+      aria-label={stripTitleHighlight(titleLine1) || vi.sm05.carousel.emptyEditor}
       className={`w-full ${bgClass} ${paddingClass} overflow-hidden`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -262,7 +263,7 @@ export function LeadMagnetCarousel({
               tabIndex={0}
               onKeyDown={handleKeyDown}
               role="region"
-              aria-label={titleLine1}
+              aria-label={stripTitleHighlight(titleLine1) || vi.sm05.carousel.emptyEditor}
               className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta focus-visible:ring-offset-2 rounded-2xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {items.map((item, idx) => {

@@ -10,16 +10,27 @@ export interface RenderHighlightedTitleOptions {
 }
 
 /**
+ * Bỏ cặp dấu sao *...* để lấy văn bản thuần cho nhãn trình đọc màn hình (aria-label).
+ * Nếu đầu vào không phải chuỗi (VD: React element khi sửa trực tiếp trên Puck) -> trả về undefined.
+ */
+export function stripTitleHighlight(text: unknown): string | undefined {
+  if (typeof text !== 'string') return undefined
+  return text.replace(/\*([^*]+)\*/g, '$1')
+}
+
+/**
  * Tách chuỗi tiêu đề thành các thẻ <span> cho phần được đánh dấu *...*.
+ * - Không phải chuỗi (VD: React element khi sửa trực tiếp trên Puck) -> trả về nguyên gốc.
  * - Không có '*' -> trả về chuỗi gốc (giữ nguyên HTML snapshot cũ).
  * - Dấu '*' lẻ -> giữ nguyên ký tự.
  * - Render an toàn bằng React Node, KHÔNG dùng dangerouslySetInnerHTML.
  */
 export function renderHighlightedTitle(
-  text: string | null | undefined,
+  text: React.ReactNode,
   options?: RenderHighlightedTitleOptions,
 ): React.ReactNode {
   if (!text) return text
+  if (typeof text !== 'string') return text
   if (!text.includes('*')) return text
 
   const isDark = options?.isDark ?? false
@@ -83,15 +94,15 @@ export function TwoToneTitle({
     isDark ??
     Boolean(
       line1ClassName?.includes('text-white') ||
-        line1ClassName?.includes('white') ||
-        line1ClassName?.includes('text-soft-pink'),
+      line1ClassName?.includes('white') ||
+      line1ClassName?.includes('text-soft-pink'),
     )
   const l2Dark =
     isDark ??
     Boolean(
       line2ClassName?.includes('text-white') ||
-        line2ClassName?.includes('white') ||
-        line2ClassName?.includes('text-soft-pink'),
+      line2ClassName?.includes('white') ||
+      line2ClassName?.includes('text-soft-pink'),
     )
 
   return (

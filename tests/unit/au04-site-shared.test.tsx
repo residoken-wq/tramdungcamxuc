@@ -11,6 +11,7 @@ import { CTASection } from '@/components/site/CTASection'
 import {
   TwoToneTitle,
   renderHighlightedTitle,
+  stripTitleHighlight,
   TITLE_HIGHLIGHT_COLOR,
   TITLE_HIGHLIGHT_DARK_COLOR,
 } from '@/components/ui/TwoToneTitle'
@@ -86,12 +87,7 @@ describe('AU-04: Nút đặt lịch dùng chung (Mục 4)', () => {
     })
 
     it('tracks booking_clicked on click', () => {
-      render(
-        <ExperienceBookingButton
-          product={mockCoachingProduct}
-          pageSlug="trang-chu"
-        />,
-      )
+      render(<ExperienceBookingButton product={mockCoachingProduct} pageSlug="trang-chu" />)
       const link = screen.getByRole('link', { name: /149\.000đ/ })
       fireEvent.click(link)
       expect(analyticsModule.track).toHaveBeenCalledWith('booking_clicked', {
@@ -189,9 +185,7 @@ describe('AU-04: Nút đặt lịch dùng chung (Mục 4)', () => {
 
     it('highlights words with soft-pink on dark background', () => {
       const markup = renderToStaticMarkup(
-        <div>
-          {renderHighlightedTitle('*Chuyển* mình không *Chênh* vênh', { isDark: true })}
-        </div>,
+        <div>{renderHighlightedTitle('*Chuyển* mình không *Chênh* vênh', { isDark: true })}</div>,
       )
       expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_DARK_COLOR}">Chuyển</span>`)
       expect(markup).toContain(`<span class="${TITLE_HIGHLIGHT_DARK_COLOR}">Chênh</span>`)
@@ -223,21 +217,28 @@ describe('AU-04: Nút đặt lịch dùng chung (Mục 4)', () => {
 
     it('integrates with SectionHeader seamlessly and preserves HTML when no asterisks', () => {
       const withAsterisks = renderToStaticMarkup(
-        <SectionHeader
-          titleLine1="*Chuyển* mình"
-          titleLine2="không *chênh* vênh"
-        />,
+        <SectionHeader titleLine1="*Chuyển* mình" titleLine2="không *chênh* vênh" />,
       )
       expect(withAsterisks).toContain(`<span class="${TITLE_HIGHLIGHT_COLOR}">Chuyển</span>`)
 
       const withoutAsterisks = renderToStaticMarkup(
-        <SectionHeader
-          titleLine1="Chuyển mình"
-          titleLine2="không chênh vênh"
-        />,
+        <SectionHeader titleLine1="Chuyển mình" titleLine2="không chênh vênh" />,
       )
       expect(withoutAsterisks).not.toContain('<span class="text-bright-magenta">')
       expect(withoutAsterisks).toContain('<span class="block text-deep-navy">Chuyển mình</span>')
+    })
+
+    it('returns non-string inputs (e.g. inline-edited React elements) untouched', () => {
+      const el = <span>*Chuyển* mình</span>
+      expect(renderHighlightedTitle(el)).toBe(el)
+      expect(renderHighlightedTitle(null)).toBeNull()
+      expect(renderHighlightedTitle(undefined)).toBeUndefined()
+    })
+
+    it('strips *...* markers for accessible labels and returns undefined for React elements', () => {
+      expect(stripTitleHighlight('*Khoảnh khắc* Me *Time*')).toBe('Khoảnh khắc Me Time')
+      expect(stripTitleHighlight('Tiêu đề thường')).toBe('Tiêu đề thường')
+      expect(stripTitleHighlight(<span>Inline</span>)).toBeUndefined()
     })
   })
 
