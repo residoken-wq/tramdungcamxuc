@@ -26,14 +26,31 @@ export async function passPercent(page: Page) {
   await page.getByRole('button', { name: /Sang giai đoạn 2/ }).click()
 }
 
-/** Step 3: type one routine, mark it useful (+), pick it as Mentor. */
-export async function fillMentor(page: Page, activity: string) {
+/** Step 3: type one routine, mark it useful (+), pick it as Mentor, optionally set AM/PM time. */
+export async function fillMentor(
+  page: Page,
+  activity: string,
+  time?: { hour: string; minute?: string; period: 'AM' | 'PM' },
+) {
   const first = page.getByPlaceholder('Thức dậy, uống một ly nước')
   await expect(first).toBeVisible({ timeout: 15000 })
   await first.fill(activity)
   await page.getByTitle('Có ích (+)').first().click()
   await page.getByRole('button', { name: activity, exact: true }).click()
   await expect(page.getByText(/Mentor của bạn:/)).toBeVisible()
+  if (time) {
+    // AU-01 Mục 2: dùng ô chọn giờ AM/PM, không dùng <input type="time">
+    await expect(page.locator('input[type="time"]')).toHaveCount(0)
+    await page.getByLabel('Giờ', { exact: true }).selectOption(time.hour)
+    if (time.minute) {
+      await page.getByLabel('Phút', { exact: true }).selectOption(time.minute)
+    }
+    await page.getByLabel('Buổi (AM hoặc PM)', { exact: true }).selectOption(time.period)
+    const displayMin = time.minute ?? '00'
+    await expect(
+      page.getByText(new RegExp(`lúc ${time.hour}:${displayMin} ${time.period}`)),
+    ).toBeVisible()
+  }
   await page.getByRole('button', { name: /Tiếp • Gọi tên thói quen/ }).click()
 }
 

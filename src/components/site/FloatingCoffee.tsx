@@ -2,12 +2,30 @@
 
 import React, { useRef, useState } from 'react'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
 import { safeHref } from '@/lib/safe-href'
 import { CoffeeCupIcon } from '@/components/brand/CoffeeCupIcon'
 import { Modal } from '@/components/ui/Modal'
 import type { FloatingCoffeeData } from '@/lib/site-shell.server'
+import { shouldHidePathWithPrefixes } from './FloatingChat'
+
+/**
+ * Tiền tố đường dẫn ẩn nút ly cà phê toàn site vì trang đó đã có nút nổi riêng
+ * (bảng Habit 28 ngày /habit/tracker có nút "♡ Thấy công cụ này hữu ích").
+ */
+export const HIDE_FLOATING_COFFEE_PREFIXES = ['/habit/tracker'] as const
+
+/**
+ * Kiểm tra pathname có thuộc danh sách ẩn nút ly cà phê không.
+ */
+export function shouldHideFloatingCoffee(
+  pathname: string | null | undefined,
+  prefixes: readonly string[] = HIDE_FLOATING_COFFEE_PREFIXES,
+): boolean {
+  return shouldHidePathWithPrefixes(pathname, prefixes)
+}
 
 interface CoffeeButtonProps {
   /** CMS "Tiêu đề" (Cài đặt site → Ủng hộ cà phê); empty → the default label. */
@@ -140,10 +158,11 @@ export interface FloatingCoffeeProps {
 
 /** Standalone coffee widget (own fixed column). The site shell uses FloatingActions instead. */
 export function FloatingCoffee({ coffeeDonation, className = '' }: FloatingCoffeeProps) {
+  const pathname = usePathname()
   const modal = useCoffeeModal()
 
-  // CF-02: hiện ở mọi trang (Hana 02/11); chỉ ẩn khi chưa bật hoặc thiếu ảnh QR
-  if (!coffeeDonation || !coffeeDonation.qrSrc) {
+  // Ẩn khi chưa bật, thiếu ảnh QR hoặc trang đã có nút nổi riêng (/habit/tracker)
+  if (!coffeeDonation || !coffeeDonation.qrSrc || shouldHideFloatingCoffee(pathname)) {
     return null
   }
 

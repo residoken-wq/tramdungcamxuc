@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { vi } from '../i18n/vi'
 import type { Weekday } from './rhythm'
+import { formatVietnamDate } from './tracker-stats'
 
 export const ALL_WEEKDAYS: readonly Weekday[] = [
   'mon',
@@ -111,20 +112,7 @@ export function truncateText(str: string, maxLength: number): string {
   return trimmed.slice(0, maxLength - 1).trimEnd() + '…'
 }
 
-export function formatStartDateVN(date: string | Date | null | undefined): string {
-  if (!date) return ''
-  try {
-    const d = typeof date === 'string' ? new Date(date) : date
-    return new Intl.DateTimeFormat('vi-VN', {
-      timeZone: 'Asia/Ho_Chi_Minh',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(d)
-  } catch {
-    return ''
-  }
-}
+export const formatStartDateVN = formatVietnamDate
 
 export interface BuildBoardingPassOptions {
   journeyDays?: number | null
