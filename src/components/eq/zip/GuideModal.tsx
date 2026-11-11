@@ -1,19 +1,37 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { BookOpen, X } from 'lucide-react'
+import { BookOpen, X, Wind, Sparkles, Compass } from 'lucide-react'
 import { vi } from '@/lib/i18n/vi'
 
 export interface GuideModalProps {
   isOpen: boolean
   onClose: () => void
+  title?: string
   quote?: string
+  buttonText?: string
+  step1Title?: string
+  step1Desc?: string
+  step2Title?: string
+  step2Desc?: string
+  step3Title?: string
+  step3Desc?: string
+  onConfirm?: () => void
 }
 
 export function GuideModal({
   isOpen,
   onClose,
-  quote = '“Mỗi thẻ là một tấm gương soi chiếu. Không có lá bài đúng hay sai, chỉ có khoảnh khắc bạn chân thật với chính mình.” ♡',
+  title = vi.au02.guideModalTitle,
+  quote = vi.au02.guideModalQuote,
+  buttonText = vi.au02.guideModalButton,
+  step1Title = vi.au02.step1Title,
+  step1Desc = vi.au02.step1Desc,
+  step2Title = vi.au02.step2Title,
+  step2Desc = vi.au02.step2Desc,
+  step3Title = vi.au02.step3Title,
+  step3Desc = vi.au02.step3Desc,
+  onConfirm,
 }: GuideModalProps) {
   useEffect(() => {
     if (!isOpen) return
@@ -25,6 +43,13 @@ export function GuideModal({
   }, [isOpen, onClose])
 
   if (!isOpen) return null
+
+  const handleAction = () => {
+    if (onConfirm) {
+      onConfirm()
+    }
+    onClose()
+  }
 
   return (
     <div
@@ -47,12 +72,12 @@ export function GuideModal({
             <div>
               <h3
                 id="guide-modal-title"
-                className="font-display text-lg sm:text-xl text-deep-navy uppercase"
+                className="font-display text-base sm:text-lg text-deep-navy uppercase"
               >
-                {vi.dp01eq.guideModalTitle}
+                {title}
               </h3>
               <p className="text-[11px] text-deep-navy/60 font-medium font-ui">
-                {vi.dp01eq.guideModalSubtitle}
+                {vi.au02.guideModalSubtitle}
               </p>
             </div>
           </div>
@@ -67,98 +92,84 @@ export function GuideModal({
           </button>
         </div>
 
-        {/* Modal Body: 4 Bước rõ ràng */}
+        {/* Modal Body: 3 Bước theo rà soát của Hana */}
         <div className="space-y-3 text-left font-ui">
-          {/* 1. Mở đầu */}
+          {/* Bước 1: Gọi tên mong muốn và cảm xúc */}
           <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
-            <div className="w-7 h-7 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-              1
+            <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+              <Wind className="w-4 h-4 text-deep-navy" />
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">1. Mở đầu</h4>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-mint-haze text-deep-navy">
-                  Đặt ý định
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-mint-haze text-deep-navy">
+                  1
                 </span>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {step1Title}
+                </h4>
               </div>
-              <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Đặt ý định cho điều gì trong cuộc sống hay công việc hôm nay? Dành 30 giây thả lỏng
-                và thở sâu.
+              <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">
+                {step1Desc}
               </p>
             </div>
           </div>
 
-          {/* 2. Chọn thẻ */}
+          {/* Bước 2: Chọn thông điệp */}
           <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
-            <div className="w-7 h-7 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-              2
+            <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+              <Sparkles className="w-4 h-4 text-bright-magenta" />
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">2. Chọn thẻ</h4>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
-                  Gọi tên
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
+                  2
                 </span>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {step2Title}
+                </h4>
               </div>
-              <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Chia sẻ cảm xúc bạn đang gặp — hoặc để trống và rút ngẫu nhiên thông điệp phù hợp
-                cho khoảnh khắc này.
+              <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">
+                {step2Desc}
               </p>
             </div>
           </div>
 
-          {/* 3. Thực hiện */}
+          {/* Bước 3: Khám phá */}
           <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
-            <div className="w-7 h-7 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-              3
+            <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+              <Compass className="w-4 h-4 text-deep-navy" />
             </div>
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">3. Thực hiện</h4>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-butter-cream text-deep-navy">
-                  Mặt trước
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-butter-cream text-deep-navy">
+                  3
                 </span>
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {step3Title}
+                </h4>
               </div>
-              <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Đọc từ khóa kèm câu diễn giải ở mặt trước → kết nối cảm nhận và lắng nghe phản hồi
-                của cơ thể và tâm trí.
-              </p>
-            </div>
-          </div>
-
-          {/* 4. Khám phá */}
-          <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
-            <div className="w-7 h-7 rounded-xl bg-lavender-mist text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-              4
-            </div>
-            <div className="space-y-0.5 flex-1">
-              <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">4. Khám phá</h4>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-lavender-mist text-deep-navy">
-                  Mặt sau
-                </span>
-              </div>
-              <p className="text-xs text-deep-navy/70 leading-relaxed">
-                Lật thẻ sang mặt sau, trả lời 3 câu hỏi ở mặt sau để đào sâu và kết nối, gói ghém
-                bài học và ghi nhận bản thân.
+              <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">
+                {step3Desc}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Note châm ngôn vỗ về */}
-        <div className="p-3 rounded-2xl bg-soft-pink/50 border border-soft-pink text-center">
-          <p className="font-quote italic text-xs text-bright-magenta">{quote}</p>
+        {/* Câu nghiêng truyền cảm hứng */}
+        <div className="p-3.5 rounded-2xl bg-soft-pink/40 border border-soft-pink text-center">
+          <p className="font-quote italic text-xs sm:text-sm text-bright-magenta leading-relaxed">
+            &ldquo;{quote}&rdquo;
+          </p>
         </div>
 
-        {/* Modal Footer */}
+        {/* Modal Footer: Nút Trải nghiệm */}
         <div className="pt-2 flex justify-end">
           <button
             type="button"
-            onClick={onClose}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs sm:text-sm font-semibold shadow-soft-md transition-all active:scale-95 cursor-pointer font-ui"
+            onClick={handleAction}
+            className="w-full sm:w-auto px-7 py-2.5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white text-xs sm:text-sm font-semibold shadow-soft-md transition-all active:scale-95 cursor-pointer font-ui"
           >
-            {vi.dp01eq.guideModalUnderstood}
+            {buttonText}
           </button>
         </div>
       </div>

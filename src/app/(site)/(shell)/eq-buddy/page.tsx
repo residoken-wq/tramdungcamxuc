@@ -68,14 +68,15 @@ export default async function EqBuddyIntroPage() {
   const shopeeUrl =
     rawContent?.shopeeUrl ||
     physicalProduct?.externalUrl ||
-    'https://shopee.vn/search?keyword=tr%E1%BA%A1m%20d%E1%BB%ABng%20c%E1%BA%A3m%20x%C3%BAc'
+    'https://tinyurl.com/yc43suhc'
 
   const contentProps = {
     ...rawContent,
-    badge: rawContent.badge || vi.eqBuddy.intro.badge,
-    mainTitle: rawContent.mainTitle || product?.name || vi.eqBuddy.intro.defaultTitle,
+    badge: rawContent?.badge ?? '',
+    mainTitle: rawContent?.mainTitle || 'BỘ THẺ EQ BUDDY',
     subtitle:
-      rawContent.subtitle || product?.shortDescription || vi.eqBuddy.intro.defaultDescription,
+      rawContent?.subtitle ||
+      '26 thông điệp cùng bạn Gói ghém cảm xúc - Ghi nhận nỗ lực - Gợi nhớ bài học ý nghĩa mỗi ngày.',
     shopeeUrl,
   }
 
