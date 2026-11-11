@@ -356,8 +356,16 @@ test.describe('CD-01: Trang Cộng đồng của Trạm (100% precision)', () =>
       )
       expect(ctaBgColor).toMatch(/rgb\(40,\s*10,\s*96\)/)
 
-      await expect(guest.getByRole('link', { name: /tham gia me time/i })).toBeVisible()
-      await expect(guest.getByRole('link', { name: /tham gia yoga buddy/i })).toBeVisible()
+      await expect(
+        guest
+          .getByRole('button', { name: /tham gia me time/i })
+          .or(guest.getByRole('link', { name: /tham gia me time/i })),
+      ).toBeVisible()
+      await expect(
+        guest
+          .getByRole('button', { name: /tham gia yoga buddy/i })
+          .or(guest.getByRole('link', { name: /tham gia yoga buddy/i })),
+      ).toBeVisible()
 
       // 2. Mobile & Tablet: responsive check & screenshots
       if (process.env.CD04_SCREENSHOT_DIR) {

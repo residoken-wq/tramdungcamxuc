@@ -258,10 +258,10 @@ export async function sendResourceDeliveryEmail(
   }
 }
 
-async function notifyAdmin(
+export async function notifyAdmin(
   payload: Payload,
   data: {
-    formType: 'lead' | 'coaching' | 'b2b'
+    formType: 'lead' | 'coaching' | 'b2b' | 'community' | 'brochure'
     name: string
     email: string
     phone?: string
@@ -279,9 +279,10 @@ async function notifyAdmin(
     contactRole?: string
     interestedProgram?: string
   },
-  sender: EmailSender,
+  sender?: EmailSender,
 ): Promise<void> {
   try {
+    const actualSender = sender || getDefaultEmailSender()
     const siteSettings = await payload.findGlobal({
       slug: 'siteSettings',
     })
@@ -301,9 +302,11 @@ async function notifyAdmin(
       lead: 'Lead',
       coaching: 'Coaching',
       b2b: 'B2B',
+      community: 'Cộng đồng',
+      brochure: 'Brochure',
     }
 
-    await sender.send({
+    await actualSender.send({
       to: adminEmail,
       subject: `[TDCX] Khách tiềm năng mới: ${formLabels[data.formType]} - ${data.name || data.email}`,
       html: adminHtml,

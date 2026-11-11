@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import { stripTitleHighlight } from '@/components/ui/TwoToneTitle'
 import { CarouselNavButtons } from '@/components/ui/CarouselNavButtons'
 import { vi } from '@/lib/i18n/vi'
 
@@ -245,7 +246,7 @@ export function PhotoGallery({
         <div
           tabIndex={0}
           role="region"
-          aria-label={titleLine1 || 'Thư viện ảnh'}
+          aria-label={stripTitleHighlight(titleLine1) || 'Thư viện ảnh'}
           className="sm:hidden -mx-4 px-4 flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 outline-none focus-visible:ring-2 focus-visible:ring-accent-pink rounded-xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {validItems.map((item, idx) => (
@@ -263,7 +264,7 @@ export function PhotoGallery({
               tabIndex={hasCarousel ? 0 : undefined}
               onKeyDown={handleKeyDown}
               role="region"
-              aria-label={titleLine1 || 'Thư viện ảnh'}
+              aria-label={stripTitleHighlight(titleLine1) || 'Thư viện ảnh'}
               className="hidden sm:flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 outline-none focus-visible:ring-2 focus-visible:ring-accent-pink focus-visible:ring-offset-2 rounded-2xl [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {groups.map((group, groupIdx) => (

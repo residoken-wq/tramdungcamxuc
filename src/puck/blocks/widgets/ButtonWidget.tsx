@@ -28,6 +28,7 @@ export const ButtonWidgetBlock: ComponentConfig<ButtonWidgetProps> = {
       options: [
         { label: t.linkUrl, value: 'url' },
         { label: t.linkPage, value: 'page' },
+        { label: 'Đặt lịch phiên trải nghiệm', value: 'booking' },
       ],
     },
     pageId: createPageExternalField({ label: t.pageId }),

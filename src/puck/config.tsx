@@ -437,13 +437,21 @@ const basePuckConfig: Config<PageComponentsProps> = {
           label: 'Màu nhãn series',
           options: allowedTextColors('warm-ivory', 'sm'),
         },
-        titleLine1: { type: 'text', label: vi.eb15a.titleLine1, contentEditable: true },
+        titleLine1: {
+          type: 'text',
+          label: `${vi.eb15a.titleLine1} (dùng *từ* để tô màu nổi bật)`,
+          contentEditable: true,
+        },
         line1Color: {
           type: 'select',
           label: 'Màu tiêu đề dòng 1',
           options: allowedTextColors('warm-ivory', 'md'),
         },
-        titleLine2: { type: 'text', label: vi.eb15a.titleLine2, contentEditable: true },
+        titleLine2: {
+          type: 'text',
+          label: `${vi.eb15a.titleLine2} (dùng *từ* để tô màu nổi bật)`,
+          contentEditable: true,
+        },
         line2Color: {
           type: 'select',
           label: 'Màu tiêu đề dòng 2',

@@ -27,12 +27,12 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
     seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel },
     titleLine1: {
       type: 'text',
-      label: vi.eb15a.titleLine1,
+      label: `${vi.eb15a.titleLine1} (dùng *từ* để tô màu nổi bật)`,
       contentEditable: true,
     },
     titleLine2: {
       type: 'text',
-      label: vi.eb15a.titleLine2,
+      label: `${vi.eb15a.titleLine2} (dùng *từ* để tô màu nổi bật)`,
       contentEditable: true,
     },
     emotionLine: { type: 'textarea', label: vi.eb15a.emotionLine },

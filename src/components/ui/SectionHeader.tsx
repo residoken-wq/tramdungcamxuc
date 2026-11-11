@@ -7,6 +7,7 @@ import {
   type FontSizeOption,
 } from '@/lib/brand/format-classes'
 import { textTarget } from '@/puck/style/text-target'
+import { renderHighlightedTitle } from '@/components/ui/TwoToneTitle'
 
 export type SectionHeadingLevel = 'h1' | 'h2' | 'h3'
 
@@ -75,11 +76,15 @@ export function SectionHeader({
         className={`font-display ${titleCase === 'none' ? '' : 'uppercase'} tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
       >
         <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
-          {titleLine1}
+          {renderHighlightedTitle(titleLine1, {
+            isDark: line1Color === 'soft-pink',
+          })}
         </span>
         {titleLine2 && (
           <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>
-            {titleLine2}
+            {renderHighlightedTitle(titleLine2, {
+              isDark: line2Color === 'soft-pink',
+            })}
           </span>
         )}
       </HeadingTag>

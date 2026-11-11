@@ -115,7 +115,7 @@ export function selectDefaultBookingProduct<
   return eligible[0] ?? null
 }
 
-export async function resolveDefaultBookingProductId(payload: Payload): Promise<number | null> {
+export async function resolveDefaultBookingProduct(payload: Payload): Promise<PublicProduct | null> {
   try {
     const res = await payload.find({
       collection: 'products',
@@ -142,10 +142,15 @@ export async function resolveDefaultBookingProductId(payload: Payload): Promise<
         saleEndsAt?: string | null
       }>,
     )
-    return product ? product.id : null
+    return product ? toPublicProduct(product) : null
   } catch {
     return null
   }
+}
+
+export async function resolveDefaultBookingProductId(payload: Payload): Promise<number | null> {
+  const prod = await resolveDefaultBookingProduct(payload)
+  return prod ? Number(prod.id) : null
 }
 
 /**
@@ -457,6 +462,15 @@ export async function resolveServerData(
     } else if (item.type === 'PackageCard') {
       if (item.props.packageId) {
         productIdsToFetch.add(item.props.packageId as string | number)
+      }
+    } else if (item.type === 'BookingCTA') {
+      needsBookingProduct = true
+      if (item.props.productId) {
+        productIdsToFetch.add(item.props.productId as string | number)
+      }
+    } else if (item.type === 'ButtonWidget') {
+      if (item.props.linkType === 'booking') {
+        needsBookingProduct = true
       }
     } else if (item.type === 'CTASection') {
       needsBookingProduct = true
@@ -1031,8 +1045,10 @@ export async function resolveServerData(
   }
 
   let defaultBookingProductId: number | null = null
+  let defaultBookingProduct: PublicProduct | null = null
   if (needsBookingProduct) {
-    defaultBookingProductId = await resolveDefaultBookingProductId(payload)
+    defaultBookingProduct = await resolveDefaultBookingProduct(payload)
+    defaultBookingProductId = defaultBookingProduct ? Number(defaultBookingProduct.id) : null
   }
 
   const resolvedFaqGroups = new Map<string, Array<{ question: string; answer: string }>>()
@@ -1474,7 +1490,11 @@ export async function resolveServerData(
       item.type === 'IconWidget'
     ) {
       const pId = item.props.pageId ? String(item.props.pageId) : ''
-      item.props._resolved = { pageSlug: pId ? pageMap.get(pId) || null : null }
+      item.props._resolved = {
+        pageSlug: pId ? pageMap.get(pId) || null : null,
+        bookingProduct: defaultBookingProduct,
+        bookingProductId: defaultBookingProductId,
+      }
     } else if (item.type === 'IconListWidget') {
       if (Array.isArray(item.props.items)) {
         item.props.items = item.props.items.map((it: Record<string, unknown>) => {
@@ -1524,6 +1544,7 @@ export async function resolveServerData(
         testimonials: resolvedList,
         buttonUrl: resolvedButtonUrl,
         bookingProductId: defaultBookingProductId,
+        bookingProduct: defaultBookingProduct,
       }
     } else if (item.type === 'LeadForm') {
       const rId = item.props.resourceProductId ? String(item.props.resourceProductId) : ''
@@ -1534,7 +1555,7 @@ export async function resolveServerData(
     } else if (item.type === 'BookingCTA') {
       const bId = item.props.productId ? String(item.props.productId) : ''
       const bProd = bId ? productMap.get(bId) || null : null
-      item.props._resolved = { product: bProd }
+      item.props._resolved = { product: bProd || defaultBookingProduct }
     } else if (item.type === 'ShopeeButton') {
       const pId = item.props.productId ? String(item.props.productId) : ''
       const sProd = pId ? productMap.get(pId) : null

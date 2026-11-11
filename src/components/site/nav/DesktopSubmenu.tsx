@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { vi } from '@/lib/i18n/vi'
 import type { NavItem } from '../Navbar'
 import { isCurrentPath } from './current'
+import { NavBadge } from './NavBadge'
 
 const CLOSE_DELAY_MS = 150
 
@@ -101,7 +102,8 @@ export function DesktopSubmenu({ item, pathname }: { item: NavItem; pathname: st
             aria-current={isCurrentPath(pathname, item.href) ? 'page' : undefined}
             className={itemClass(active, Boolean(item.featured))}
           >
-            {item.label}
+            <span>{item.label}</span>
+            {item.badge && <NavBadge badge={item.badge} />}
           </Link>
         )}
         <button
@@ -117,7 +119,12 @@ export function DesktopSubmenu({ item, pathname }: { item: NavItem; pathname: st
             hasOwnLink ? 'min-h-[32px] px-1' : '',
           ].join(' ')}
         >
-          {!hasOwnLink && item.label}
+          {!hasOwnLink && (
+            <>
+              <span>{item.label}</span>
+              {item.badge && <NavBadge badge={item.badge} />}
+            </>
+          )}
           <Chevron open={open} />
         </button>
       </div>
@@ -156,9 +163,10 @@ export function DesktopSubmenu({ item, pathname }: { item: NavItem; pathname: st
                         ].join(' ')}
                       >
                         <span
-                          className={`block font-ui text-sm font-semibold ${child.featured ? 'text-bright-magenta' : 'text-deep-navy'}`}
+                          className={`inline-flex items-center font-ui text-sm font-semibold ${child.featured ? 'text-bright-magenta' : 'text-deep-navy'}`}
                         >
-                          {child.label}
+                          <span>{child.label}</span>
+                          {child.badge && <NavBadge badge={child.badge} />}
                         </span>
                         {child.description && (
                           <span className="mt-0.5 block font-ui font-normal text-xs text-deep-navy/75">

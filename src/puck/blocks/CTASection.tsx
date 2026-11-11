@@ -43,12 +43,39 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     description: { type: 'textarea', label: vi.eb15a.description, contentEditable: true },
     textSize: sizeField('Cỡ chữ mô tả'),
     buttonText: { type: 'text', label: vi.eb15a.buttonText, contentEditable: true },
+    buttonAction: {
+      type: 'select',
+      label: vi.au04.cta.buttonAction,
+      options: [
+        { label: vi.au04.cta.actionLink, value: 'link' },
+        { label: vi.au04.cta.actionBooking, value: 'booking' },
+        { label: vi.au04.cta.actionForm, value: 'form' },
+      ],
+    },
+    formType: {
+      type: 'select',
+      label: vi.au04.cta.formType,
+      options: [
+        { label: vi.au04.cta.formMeTime, value: 'community-me-time' },
+        { label: vi.au04.cta.formYogaBuddy, value: 'community-yoga-buddy' },
+        { label: vi.au04.cta.formBrochure, value: 'brochure-chuyen-minh' },
+      ],
+    },
+    formTitle: {
+      type: 'text',
+      label: vi.au04.cta.formTitle,
+    },
+    formSuccessMessage: {
+      type: 'text',
+      label: vi.au04.cta.formSuccessMessage,
+    },
     buttonLinkType: {
       type: 'select',
       label: 'Loại liên kết nút',
       options: [
         { label: 'Liên kết ngoài / Tự nhập URL', value: 'url' },
         { label: 'Trang trong website', value: 'page' },
+        { label: vi.au04.cta.actionBooking, value: 'booking' },
       ],
     },
     buttonPageId: createPageExternalField({
@@ -78,6 +105,31 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     secondaryButtonText: {
       type: 'text',
       label: vi.cd01?.cta?.secondaryButtonText || 'Chữ nút phụ',
+    },
+    secondaryButtonAction: {
+      type: 'select',
+      label: vi.au04.cta.secondaryButtonAction,
+      options: [
+        { label: vi.au04.cta.actionLink, value: 'link' },
+        { label: vi.au04.cta.actionForm, value: 'form' },
+      ],
+    },
+    secondaryFormType: {
+      type: 'select',
+      label: vi.au04.cta.secondaryFormType,
+      options: [
+        { label: vi.au04.cta.formYogaBuddy, value: 'community-yoga-buddy' },
+        { label: vi.au04.cta.formMeTime, value: 'community-me-time' },
+        { label: vi.au04.cta.formBrochure, value: 'brochure-chuyen-minh' },
+      ],
+    },
+    secondaryFormTitle: {
+      type: 'text',
+      label: vi.au04.cta.secondaryFormTitle,
+    },
+    secondaryFormSuccessMessage: {
+      type: 'text',
+      label: vi.au04.cta.secondaryFormSuccessMessage,
     },
     secondaryButtonLink: {
       type: 'text',

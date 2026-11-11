@@ -639,6 +639,7 @@ export const vi = {
       nameMin: 'Họ và tên phải có ít nhất 2 ký tự',
       emailRequired: 'Vui lòng nhập địa chỉ email',
       emailInvalid: 'Địa chỉ email không hợp lệ (ví dụ: ban@example.com)',
+      phoneRequired: 'Vui lòng nhập số điện thoại',
       phoneInvalid: 'Số điện thoại không hợp lệ',
       consentRequired: 'Vui lòng đồng ý với chính sách bảo mật để tiếp tục',
       companyRequired: 'Vui lòng nhập tên công ty hoặc tổ chức',
@@ -4878,6 +4879,25 @@ export const vi = {
       'Dựng xong, bấm Xuất bản trong builder, rồi chọn Nguồn = Dựng bằng Builder và bấm Lưu.',
     errorOnlyOwner: 'Chỉ chủ sở hữu (Owner) mới có quyền tạo đầu trang / chân trang từ mẫu.',
     errorCreateFailed: 'Không thể tạo trang từ mẫu. Vui lòng thử lại.',
+  },
+  au04: {
+    defaultBookingButtonText: 'Đặt phiên trải nghiệm',
+    cta: {
+      buttonAction: 'Hành động của nút chính',
+      secondaryButtonAction: 'Hành động của nút phụ',
+      actionLink: 'Chuyển hướng liên kết (Mặc định)',
+      actionBooking: 'Đặt lịch phiên trải nghiệm',
+      actionForm: 'Mở form tham gia / nhận brochure (Modal)',
+      formType: 'Loại form mở khi bấm nút chính',
+      secondaryFormType: 'Loại form mở khi bấm nút phụ',
+      formMeTime: 'Tham gia ME TIME',
+      formYogaBuddy: 'Tham gia YOGA BUDDY',
+      formBrochure: 'Đăng ký nhận brochure chi tiết',
+      formTitle: 'Tiêu đề form modal (nút chính - để trống dùng mặc định)',
+      formSuccessMessage: 'Câu cảm ơn sau khi gửi (nút chính - để trống dùng mặc định)',
+      secondaryFormTitle: 'Tiêu đề form modal (nút phụ - để trống dùng mặc định)',
+      secondaryFormSuccessMessage: 'Câu cảm ơn sau khi gửi (nút phụ - để trống dùng mặc định)',
+    },
   },
 } as const
 

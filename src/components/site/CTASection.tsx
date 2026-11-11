@@ -1,18 +1,23 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { useClientTestimonials } from '@/puck/client-preview'
-import { getBookingPath, BOOKING_PATH } from '@/lib/products'
+import { getBookingPath, BOOKING_PATH, type PublicProduct } from '@/lib/products'
+import { ExperienceBookingButton, formatBookingButtonLabel } from '@/components/site/ExperienceBookingButton'
 import { vi } from '@/lib/i18n/vi'
 import type { PublicTestimonial } from '@/lib/testimonials'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import {
+  RegistrationModal,
+  type RegistrationFormType,
+} from '@/components/site/RegistrationModal'
 
 export interface CTASectionProps {
   version?: number
@@ -23,12 +28,20 @@ export interface CTASectionProps {
   emotionLine?: string
   description?: string
   buttonText?: string
-  buttonLinkType?: 'url' | 'page'
+  buttonAction?: 'link' | 'booking' | 'form'
+  formType?: RegistrationFormType
+  formTitle?: string
+  formSuccessMessage?: string
+  buttonLinkType?: 'url' | 'page' | 'booking'
   buttonLink?: string
   buttonPageId?: string | number
   buttonVariant?: 'primary' | 'magenta' | 'pink'
   buttonShape?: 'normal' | 'pill'
   secondaryButtonText?: string
+  secondaryButtonAction?: 'link' | 'booking' | 'form'
+  secondaryFormType?: RegistrationFormType
+  secondaryFormTitle?: string
+  secondaryFormSuccessMessage?: string
   secondaryButtonLink?: string
   secondaryButtonVariant?: 'primary' | 'magenta' | 'pink'
   proofText?: string
@@ -43,6 +56,8 @@ export interface CTASectionProps {
     testimonials?: PublicTestimonial[]
     buttonUrl?: string | null
     bookingProductId?: number | null
+    bookingProduct?: PublicProduct | null
+    pageSlug?: string | null
   }
   puck?: {
     isEditing?: boolean
@@ -80,12 +95,20 @@ export function CTASection({
   emotionLine,
   description,
   buttonText = '[MẪU] Đặt phiên trải nghiệm 149.000đ',
+  buttonAction = 'link',
+  formType = 'community-me-time',
+  formTitle,
+  formSuccessMessage,
   buttonLinkType = 'url',
   buttonLink,
   buttonPageId: _buttonPageId,
   buttonVariant = 'primary',
   buttonShape = 'normal',
   secondaryButtonText,
+  secondaryButtonAction = 'link',
+  secondaryFormType = 'community-yoga-buddy',
+  secondaryFormTitle,
+  secondaryFormSuccessMessage,
   secondaryButtonLink,
   secondaryButtonVariant = 'primary',
   proofText,
@@ -100,6 +123,11 @@ export function CTASection({
   const isEditing = puck?.isEditing ?? false
   const bookingProductId = _resolved?.bookingProductId ?? null
 
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [activeFormType, setActiveFormType] = useState<RegistrationFormType>('community-me-time')
+  const [activeModalTitle, setActiveModalTitle] = useState<string | undefined>(undefined)
+  const [activeSuccessMessage, setActiveSuccessMessage] = useState<string | undefined>(undefined)
+
   let resolvedButtonHref: string | null = null
   if (buttonLinkType === 'page') {
     resolvedButtonHref = _resolved?.buttonUrl || null
@@ -107,14 +135,16 @@ export function CTASection({
     resolvedButtonHref = _resolved?.buttonUrl || buttonLink || null
   }
 
-  const isBookingLink =
+  const isBookingMode =
+    buttonAction === 'booking' ||
+    buttonLinkType === 'booking' ||
     resolvedButtonHref?.trim() === BOOKING_PATH ||
     resolvedButtonHref?.trim() === '/dat-phien-trai-nghiem'
 
   let finalButtonHref: string | null = null
   let isBookingUnavailable = false
 
-  if (isBookingLink) {
+  if (isBookingMode) {
     if (bookingProductId != null) {
       finalButtonHref = safeHref(getBookingPath(bookingProductId))
     } else {
@@ -196,41 +226,111 @@ export function CTASection({
           )}
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-            {buttonText && (
-              <Link
-                href={safeHref(finalButtonHref) || '#'}
-                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
-                  buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
-                } ${
-                  buttonVariant === 'magenta'
-                    ? 'bg-bright-magenta'
-                    : buttonVariant === 'pink'
-                      ? 'bg-accent-pink'
-                      : 'bg-accent-pink'
-                }`}
-              >
-                <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
-              </Link>
-            )}
+            {buttonText &&
+              (isBookingMode ? (
+                finalButtonHref ? (
+                  <ExperienceBookingButton
+                    product={_resolved?.bookingProduct}
+                    productId={bookingProductId}
+                    buttonText={buttonText}
+                    shape={buttonShape}
+                    showPrice={true}
+                    className={`min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white shadow-md hover:shadow-lg transition-all ${
+                      buttonVariant === 'magenta'
+                        ? '!bg-bright-magenta'
+                        : buttonVariant === 'pink'
+                          ? '!bg-accent-pink'
+                          : '!bg-accent-pink'
+                    }`}
+                    pageSlug={_resolved?.pageSlug ?? undefined}
+                  />
+                ) : null
+              ) : buttonAction === 'form' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveFormType(formType || 'community-me-time')
+                    setActiveModalTitle(formTitle)
+                    setActiveSuccessMessage(formSuccessMessage)
+                    setIsModalOpen(true)
+                  }}
+                  className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 cursor-pointer ${
+                    buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                  } ${
+                    buttonVariant === 'magenta'
+                      ? 'bg-bright-magenta'
+                      : buttonVariant === 'pink'
+                        ? 'bg-accent-pink'
+                        : 'bg-accent-pink'
+                  }`}
+                >
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                </button>
+              ) : (
+                <Link
+                  href={safeHref(finalButtonHref) || '#'}
+                  className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
+                    buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                  } ${
+                    buttonVariant === 'magenta'
+                      ? 'bg-bright-magenta'
+                      : buttonVariant === 'pink'
+                        ? 'bg-accent-pink'
+                        : 'bg-accent-pink'
+                  }`}
+                >
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                </Link>
+              ))}
 
-            {secondaryButtonText && (
-              <Link
-                href={safeHref(secondaryButtonLink) || '#'}
-                className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
-                  buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
-                } ${
-                  secondaryButtonVariant === 'magenta'
-                    ? 'bg-bright-magenta'
-                    : secondaryButtonVariant === 'pink'
-                      ? 'bg-accent-pink'
-                      : 'bg-accent-pink'
-                }`}
-              >
-                {secondaryButtonText}
-              </Link>
-            )}
+            {secondaryButtonText &&
+              (secondaryButtonAction === 'form' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveFormType(secondaryFormType || 'community-yoga-buddy')
+                    setActiveModalTitle(secondaryFormTitle)
+                    setActiveSuccessMessage(secondaryFormSuccessMessage)
+                    setIsModalOpen(true)
+                  }}
+                  className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 cursor-pointer ${
+                    buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                  } ${
+                    secondaryButtonVariant === 'magenta'
+                      ? 'bg-bright-magenta'
+                      : secondaryButtonVariant === 'pink'
+                        ? 'bg-accent-pink'
+                        : 'bg-accent-pink'
+                  }`}
+                >
+                  {secondaryButtonText}
+                </button>
+              ) : (
+                <Link
+                  href={safeHref(secondaryButtonLink) || '#'}
+                  className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
+                    buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
+                  } ${
+                    secondaryButtonVariant === 'magenta'
+                      ? 'bg-bright-magenta'
+                      : secondaryButtonVariant === 'pink'
+                        ? 'bg-accent-pink'
+                        : 'bg-accent-pink'
+                  }`}
+                >
+                  {secondaryButtonText}
+                </Link>
+              ))}
           </div>
         </div>
+        <RegistrationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          formType={activeFormType}
+          title={activeModalTitle}
+          successMessage={activeSuccessMessage}
+          pageSlug={_resolved?.pageSlug ?? undefined}
+        />
       </section>
     )
   }
@@ -279,7 +379,61 @@ export function CTASection({
           )}
 
           {buttonText &&
-            (finalButtonHref ? (
+            (isBookingMode ? (
+              finalButtonHref ? (
+                <div className="mt-8">
+                  <ExperienceBookingButton
+                    product={_resolved?.bookingProduct}
+                    productId={bookingProductId}
+                    buttonText={buttonText}
+                    variant={buttonVariant === 'magenta' ? 'primary' : 'primary'}
+                    shape={buttonShape}
+                    size="lg"
+                    showPrice={true}
+                    pageSlug={_resolved?.pageSlug ?? undefined}
+                  >
+                    <span {...textTarget(id, 'buttonText')}>
+                      {formatBookingButtonLabel(
+                        buttonText,
+                        _resolved?.bookingProduct?.salePrice ??
+                          _resolved?.bookingProduct?.price,
+                        true,
+                      )}
+                    </span>
+                  </ExperienceBookingButton>
+                </div>
+              ) : isEditing && isBookingUnavailable ? (
+                <div className="mt-8">
+                  <Button
+                    href="#"
+                    variant="primary"
+                    size="lg"
+                    className="opacity-60 pointer-events-none"
+                  >
+                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                  </Button>
+                  <p className="text-xs text-bright-magenta mt-2 font-ui">
+                    {vi.sm04.noBookingProduct}
+                  </p>
+                </div>
+              ) : null
+            ) : buttonAction === 'form' ? (
+              <div className="mt-8">
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="lg"
+                  onClick={() => {
+                    setActiveFormType(formType || 'brochure-chuyen-minh')
+                    setActiveModalTitle(formTitle)
+                    setActiveSuccessMessage(formSuccessMessage)
+                    setIsModalOpen(true)
+                  }}
+                >
+                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                </Button>
+              </div>
+            ) : finalButtonHref ? (
               <div className="mt-8">
                 <Button href={finalButtonHref} variant="primary" size="lg">
                   <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
@@ -334,6 +488,14 @@ export function CTASection({
           )}
         </div>
       </div>
+      <RegistrationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        formType={activeFormType}
+        title={activeModalTitle}
+        successMessage={activeSuccessMessage}
+        pageSlug={_resolved?.pageSlug ?? undefined}
+      />
     </section>
   )
 }

@@ -3535,6 +3535,10 @@ export interface Navigation {
          */
         label: string;
         /**
+         * Không bắt buộc, tối đa 12 ký tự. VD: Free.
+         */
+        badge?: string | null;
+        /**
          * Chọn một mục phù hợp.
          */
         linkType: 'page' | 'url' | 'none';
@@ -3562,6 +3566,10 @@ export interface Navigation {
                      * Nhập tên mục.
                      */
                     label: string;
+                    /**
+                     * Không bắt buộc, tối đa 12 ký tự. VD: Free.
+                     */
+                    badge?: string | null;
                     /**
                      * Không bắt buộc, tối đa 60 ký tự. VD: Công cụ hỗ trợ cảm xúc.
                      */
@@ -3593,6 +3601,10 @@ export interface Navigation {
          * Nhập tên mục.
          */
         label: string;
+        /**
+         * Không bắt buộc, tối đa 12 ký tự. VD: Free.
+         */
+        badge?: string | null;
         /**
          * Chọn một mục phù hợp.
          */
@@ -4718,6 +4730,7 @@ export interface NavigationSelect<T extends boolean = true> {
     | T
     | {
         label?: T;
+        badge?: T;
         linkType?: T;
         page?: T;
         url?: T;
@@ -4730,6 +4743,7 @@ export interface NavigationSelect<T extends boolean = true> {
                 | T
                 | {
                     label?: T;
+                    badge?: T;
                     description?: T;
                     linkType?: T;
                     page?: T;
@@ -4744,6 +4758,7 @@ export interface NavigationSelect<T extends boolean = true> {
     | T
     | {
         label?: T;
+        badge?: T;
         linkType?: T;
         page?: T;
         url?: T;
