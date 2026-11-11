@@ -323,6 +323,7 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(guestPage.getByText('Thực hiện tối thiểu', { exact: true })).toBeVisible()
       await expect(guestPage.getByText('Lỡ nhịp', { exact: true })).toBeVisible()
       await expect(guestPage.getByText('Ngày nghỉ theo nhịp', { exact: true })).toBeVisible()
+      await guestPage.getByText('Thói quen bạn đang xây').click()
       await expect(guestPage.getByText(/lúc 6:00 AM/)).toBeVisible()
       await expectNoSeriousA11y(guestPage, '/habit/tracker')
 

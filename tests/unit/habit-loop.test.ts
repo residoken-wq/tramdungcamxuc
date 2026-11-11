@@ -360,6 +360,8 @@ describe('getTechniques() and getHabitProduct() (T2-03)', () => {
       stage: 'cue',
       description: null,
       examples: [],
+      applyLabel: null,
+      applyPlaceholder: null,
       applyTemplate: null,
       order: null,
       howTo: undefined,

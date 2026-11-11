@@ -748,7 +748,7 @@ Nhịp điệu: ${rateText}
                 key={station.id}
                 className={`p-4 sm:p-5 rounded-2xl border space-y-3.5 transition-all ${
                   isLocked
-                    ? 'bg-warm-ivory/40 border-lavender-mist/60 opacity-60'
+                    ? 'bg-warm-ivory/40 border-lavender-mist/60'
                     : 'bg-warm-ivory/60 border-lavender-mist/80'
                 }`}
               >
@@ -760,12 +760,12 @@ Nhịp điệu: ${rateText}
                     </span>
                     <h3 className="font-ui font-bold text-sm sm:text-base text-deep-navy flex items-center gap-1.5">
                       <span>{station.name}</span>
-                      {isLocked && <Lock className="w-3.5 h-3.5 text-deep-navy/70" />}
+                      {isLocked && <Lock className="w-3.5 h-3.5 text-deep-navy/80" />}
                     </h3>
                   </div>
 
                   {isLocked ? (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-deep-navy/70 bg-white/90 border border-lavender-mist px-3 py-1 rounded-full font-ui shadow-soft-md">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-deep-navy/80 bg-white/90 border border-lavender-mist px-3 py-1 rounded-full font-ui shadow-soft-md">
                       <Lock className="w-3 h-3 text-bright-magenta" />
                       <span>{vi.dp01.stationOpenOnDay(openDateFormatted)}</span>
                     </span>
@@ -777,7 +777,7 @@ Nhịp điệu: ${rateText}
                 </div>
 
                 {isLocked && (
-                  <div className="py-2 px-3.5 rounded-2xl bg-white/80 border border-lavender-mist/70 flex items-center gap-2 text-xs font-ui text-deep-navy/70">
+                  <div className="py-2 px-3.5 rounded-2xl bg-white/90 border border-lavender-mist/70 flex items-center gap-2 text-xs font-ui text-deep-navy/80">
                     <Lock className="w-3.5 h-3.5 text-bright-magenta shrink-0" />
                     <span>
                       {vi.dp01.stationFutureNotice}{' '}
@@ -846,11 +846,11 @@ Nhịp điệu: ${rateText}
                               ? 'text-deep-navy'
                               : isMissed
                                 ? 'text-bright-magenta'
-                                : 'text-deep-navy/70'
+                                : 'text-deep-navy/80'
                           }`}
                         >
                           <span>N{day.dayNumber}</span>
-                          <span className="hidden sm:inline font-normal opacity-70">
+                          <span className="hidden sm:inline font-normal text-deep-navy/75">
                             {day.dayOfWeek}
                           </span>
                         </div>

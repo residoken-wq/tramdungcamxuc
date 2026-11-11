@@ -102,62 +102,111 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "_products_v_version_feature_items_parent_id_idx" ON "_products_v_version_feature_items" USING btree ("_parent_id");
   `)
 
-  // REVIEW-REQUIRED: Điền sẵn chữ mặc định từ vi.habit.offer cho sản phẩm habit-tracker-so qua Payload Local API (PK-30)
+  // REVIEW-REQUIRED: Điền sẵn chữ mặc định từ vi.habit.offer cho sản phẩm habit-tracker-so nếu đã tồn tại (PK-30).
+  // Dùng SQL trực tiếp trên DB thật để không phụ thuộc các cột schema thêm ở migration sau (vd: curriculum_unit_label).
+  const existingCheck = (await db.execute(sql`
+    SELECT "id", "offer_title_line1", "curriculum_heading"
+    FROM "products"
+    WHERE "slug" = 'habit-tracker-so'
+    LIMIT 1
+  `)) as { rows?: Array<{ id: number; offer_title_line1: string | null; curriculum_heading: string | null }> } | undefined
+
+  if (existingCheck && Array.isArray(existingCheck.rows)) {
+    const existing = existingCheck.rows[0]
+    if (!existing) {
+      return
+    }
+    const modsCountRes = (await db.execute(sql`
+      SELECT count(*)::int AS "cnt"
+      FROM "products_curriculum_modules"
+      WHERE "_parent_id" = ${existing.id}
+    `)) as { rows?: Array<{ cnt: number }> } | undefined
+    const modsCount = modsCountRes?.rows?.[0]?.cnt ?? 0
+    const isEmpty = !existing.offer_title_line1 && !existing.curriculum_heading && modsCount === 0
+    if (!isEmpty) {
+      return
+    }
+
+    await db.execute(sql`
+      UPDATE "products"
+      SET
+        "offer_series_label" = ${vi.habit.offer.badge},
+        "offer_title_line1" = ${vi.habit.offer.titleLine1},
+        "offer_title_line2" = ${vi.habit.offer.titleLine2},
+        "offer_emotion_line" = ${vi.habit.offer.emotionalLine},
+        "curriculum_heading" = ${vi.habit.offer.curriculum.heading},
+        "curriculum_subheading" = ${vi.habit.offer.curriculum.subheading},
+        "features_heading" = ${vi.habit.offer.features.heading},
+        "features_subheading" = ${vi.habit.offer.features.subheading},
+        "bottom_title" = ${'Bắt đầu hành trình {ngay} ngày của bạn'}
+      WHERE "id" = ${existing.id}
+    `)
+    for (let idx = 0; idx < vi.habit.offer.curriculum.modules.length; idx++) {
+      const m = vi.habit.offer.curriculum.modules[idx]
+      await db.execute(sql`
+        INSERT INTO "products_curriculum_modules" ("_order", "_parent_id", "id", "title", "description")
+        VALUES (${idx + 1}, ${existing.id}, ${`pk30-mod-${existing.id}-${idx + 1}`}, ${m.title}, ${m.desc})
+        ON CONFLICT ("id") DO NOTHING
+      `)
+    }
+    for (let idx = 0; idx < vi.habit.offer.features.items.length; idx++) {
+      const item = vi.habit.offer.features.items[idx]
+      await db.execute(sql`
+        INSERT INTO "products_feature_items" ("_order", "_parent_id", "id", "title", "description")
+        VALUES (${idx + 1}, ${existing.id}, ${`pk30-feat-${existing.id}-${idx + 1}`}, ${item.title}, ${item.desc})
+        ON CONFLICT ("id") DO NOTHING
+      `)
+    }
+    return
+  }
+
+  // Fallback cho mockPayload trong unit test
   if (payload) {
-    try {
-      const found = await payload.find({
-        collection: 'products',
-        where: { slug: { equals: 'habit-tracker-so' } },
-        draft: true,
-        limit: 1,
-        depth: 0,
-        // QA PK-30: must run inside the migration transaction. Without `req` Payload opens a
-        // second connection, which waits forever on the lock the ALTER TABLE above holds
-        // (the app hung at start-up / check:fast hung 60 min).
-        req,
-      })
+    const found = await payload.find({
+      collection: 'products',
+      where: { slug: { equals: 'habit-tracker-so' } },
+      draft: true,
+      limit: 1,
+      depth: 0,
+      req,
+    })
 
-      if (found.docs.length > 0) {
-        const doc = found.docs[0] as Product
-        const isEmpty =
-          !doc.offerTitleLine1 &&
-          !doc.curriculumHeading &&
-          (!doc.curriculumModules || doc.curriculumModules.length === 0)
+    if (found.docs.length > 0) {
+      const doc = found.docs[0] as Product
+      const isEmpty =
+        !doc.offerTitleLine1 &&
+        !doc.curriculumHeading &&
+        (!doc.curriculumModules || doc.curriculumModules.length === 0)
 
-        if (isEmpty) {
-          const defaultData = {
-            offerSeriesLabel: vi.habit.offer.badge,
-            offerTitleLine1: vi.habit.offer.titleLine1,
-            offerTitleLine2: vi.habit.offer.titleLine2,
-            offerEmotionLine: vi.habit.offer.emotionalLine,
-            curriculumHeading: vi.habit.offer.curriculum.heading,
-            curriculumSubheading: vi.habit.offer.curriculum.subheading,
-            curriculumModules: vi.habit.offer.curriculum.modules.map((m) => ({
-              title: m.title,
-              description: m.desc,
-            })),
-            featuresHeading: vi.habit.offer.features.heading,
-            featuresSubheading: vi.habit.offer.features.subheading,
-            featureItems: vi.habit.offer.features.items.map((item) => ({
-              title: item.title,
-              description: item.desc,
-            })),
-            bottomTitle: 'Bắt đầu hành trình {ngay} ngày của bạn',
-            // QA PK-30: left empty so the page keeps counting videos / techniques from the CMS
-            // (a fixed "28 video" would go stale).
-          }
-
-          await payload.update({
-            collection: 'products',
-            id: doc.id,
-            data: defaultData,
-            draft: false,
-            req,
-          })
+      if (isEmpty) {
+        const defaultData = {
+          offerSeriesLabel: vi.habit.offer.badge,
+          offerTitleLine1: vi.habit.offer.titleLine1,
+          offerTitleLine2: vi.habit.offer.titleLine2,
+          offerEmotionLine: vi.habit.offer.emotionalLine,
+          curriculumHeading: vi.habit.offer.curriculum.heading,
+          curriculumSubheading: vi.habit.offer.curriculum.subheading,
+          curriculumModules: vi.habit.offer.curriculum.modules.map((m) => ({
+            title: m.title,
+            description: m.desc,
+          })),
+          featuresHeading: vi.habit.offer.features.heading,
+          featuresSubheading: vi.habit.offer.features.subheading,
+          featureItems: vi.habit.offer.features.items.map((item) => ({
+            title: item.title,
+            description: item.desc,
+          })),
+          bottomTitle: 'Bắt đầu hành trình {ngay} ngày của bạn',
         }
+
+        await payload.update({
+          collection: 'products',
+          id: doc.id,
+          data: defaultData,
+          draft: false,
+          req,
+        })
       }
-    } catch (err) {
-      console.warn('[pk30_habit_offer_fields] Warning during seed:', err)
     }
   }
 }

@@ -368,7 +368,10 @@ export function BoardingPassCard({
                 </div>
               </div>
 
-              <ol className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 text-xs font-ui">
+              <ol
+                aria-label={vi.dp01.chosenLawsTitle}
+                className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 text-xs font-ui"
+              >
                 {[
                   {
                     key: 'cue',
@@ -699,7 +702,7 @@ export function BoardingPassCard({
             <span>{vi.dp01.vipMemberButton}</span>
             {hasVipSale && vipPricing.price != null && vipPricing.salePrice != null ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold">
-                <span className="line-through opacity-80">{formatVnd(vipPricing.price)}</span>
+                <span className="line-through">{formatVnd(vipPricing.price)}</span>
                 <span>{formatVnd(vipPricing.salePrice)}</span>
               </span>
             ) : vipPricing.price != null ? (
