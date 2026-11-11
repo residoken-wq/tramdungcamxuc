@@ -1435,36 +1435,58 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
 **Mục đích**: Tự do điều chỉnh toàn bộ câu chữ của ứng dụng EQ Buddy số trên giao diện giới thiệu, pop-up hướng dẫn 3 bước, bước nhập trạng thái và mặt sau thẻ; linh hoạt chuyển đổi giữa **Chế độ dùng thử có Paywall** (`trial`) và **Chế độ mở tự do hoàn toàn** (`free`).
 
 **Nguyên tắc quan trọng (AU-02)**: **Để trống thì ẩn**, không tự động rơi về chữ mặc định code. Đặc biệt:
-- Nếu để trống **Huy hiệu đầu trang (`badge`)** -> huy hiệu sẽ ẩn hoàn toàn.
-- Nếu để trống **Tiêu đề giới thiệu (`intro1Heading`)** và các tiêu đề thẻ mục đích (`card1Title`..`card4Title`) -> toàn bộ khối "Bộ thẻ là gì" cùng 4 ô mục đích sẽ ẩn hoàn toàn trên trang giới thiệu.
+- Nếu để trống **Huy hiệu mở đầu (`badge`)** -> huy hiệu sẽ ẩn hoàn toàn.
+- Nếu để trống **Tiêu đề khối (`intro1Heading`)** và các tiêu đề thẻ mục đích (`card1Title`..`card4Title`) -> toàn bộ khối "Bộ thẻ là gì" cùng 4 ô mục đích sẽ ẩn hoàn toàn trên trang giới thiệu.
+- Nếu để trống **Đường dẫn mua bộ thẻ vật lý (Shopee)** (`shopeeUrl`) trên cả CMS và sản phẩm bộ thẻ in -> nút Shopee sẽ tự động ẩn trên màn hình kết quả và trang giới thiệu.
 
 **Các trường nội dung trong CMS (`eq-buddy-content`)**:
 
 1. Ở menu bên trái, tìm nhóm **Cài đặt toàn cục** -> chọn **Nội dung EQ Buddy** (`eq-buddy-content`).
 2. **Tab Quyền truy cập & Bán hàng**:
-   - **Chế độ truy cập EQ (`eqAccessMode`)**:
+   - **Chế độ truy cập EQ Buddy (`eqAccessMode`)**:
      - `trial` (Mặc định): Áp dụng luồng dùng thử chuẩn (khách vãng lai rút 1 thẻ miễn phí, từ thẻ thứ 2 yêu cầu đăng nhập/dùng thử; tab "Tất cả 26 thẻ" chỉ hiển thị thông điệp khi đã kích hoạt).
      - `free`: Mở tự do 100% cho cộng đồng. Khách rút bao nhiêu thẻ tùy thích, không hiện Paywall chặn và tab "Tất cả 26 thẻ" mở toàn bộ câu hỏi gợi nhớ/gói ghém/ghi nhận. *(Lưu ý: Chỉ tài khoản `owner` của Hana mới được phép thay đổi trường này).*
-   - **Link Shopee bộ thẻ vật lý (`shopeeUrl`)**: Nhập đường link gian hàng Shopee của Hana (mặc định: `https://tinyurl.com/yc43suhc`). Nút "Chạm vào thẻ thật ngoài đời" sẽ mở tab mới có gắn mã UTM và ghi nhận sự kiện click.
-3. **Tab Giới thiệu & Cẩm nang**:
-   - **Huy hiệu (`badge`)**: Nhãn nhỏ trên đầu trang giới thiệu `/eq-buddy`. *Để trống để ẩn.*
-   - **Phần "Bộ thẻ là gì" (`intro1Heading`, `intro1Description`)**: Tiêu đề và mô tả giải thích về bộ thẻ. *Để trống để ẩn.*
-   - **4 thẻ mục đích / góc nhìn (`card1Title`..`card4Title`, `card1Description`..`card4Description`)**: Tự thân, Người khác, Tình huống, Hành động. *Để trống để ẩn.*
-   - **Cửa sổ hướng dẫn 3 bước (Pop-up)**:
-     - `Tiêu đề pop-up hướng dẫn` (`guideModalTitle`): Mặc định: *3 bước kết nối cảm xúc*.
-     - `Nút bấm pop-up` (`guideModalButton`): Mặc định: *Trải nghiệm* (bấm để vào thẳng màn hình rút thẻ).
-     - `Bước 1` (`guideStep1Title`, `guideStep1Desc`): Mặc định: *Tĩnh lặng* – *Hít thở sâu 3 hơi để thả lỏng và hiện diện trọn vẹn ở giây phút này.*
-     - `Bước 2` (`guideStep2Title`, `guideStep2Desc`): Mặc định: *Lắng nghe* – *Nghĩ về điều bạn mong muốn cho hôm nay, hoặc gọi tên một cảm xúc đang có mặt.*
-     - `Bước 3` (`guideStep3Title`, `guideStep3Desc`): Mặc định: *Rút thẻ* – *Bấm rút 1 lá thẻ ngẫu nhiên và dành 1–2 phút chiêm nghiệm thông điệp.*
-     - `Lời dặn cẩm nang` (`guideModalQuote`): Châm ngôn ấm áp hiển thị ở cuối cửa sổ hướng dẫn (mặc định: *Mỗi lá thẻ là một lời nhắn nhủ nhẹ nhàng, giúp bạn chậm lại và thấu hiểu chính mình.*).
-   - **Bước nhập trạng thái & 3 biểu tượng trước khi rút thẻ**:
-     - `Nhãn biểu tượng 1` (`stateIcon1Label`): Mặc định: *Hít thở 3 hơi*.
-     - `Nhãn biểu tượng 2` (`stateIcon2Label`): Mặc định: *Nghĩ về mong muốn hôm nay*.
-     - `Nhãn biểu tượng 3` (`stateIcon3Label`): Mặc định: *Gọi tên cảm xúc hiện tại*.
-   - **Mặt sau thẻ**:
-     - `Tiêu đề câu hỏi mặt sau` (`cardBackPromptTitle`): Mặc định: *3 câu hỏi kết nối nội tâm*.
-     - `Châm ngôn mặt sau thẻ` (`cardBackQuote`): Mặc định: *Dừng để vững vàng bước tới.*.
-4. Bấm **Lưu thay đổi** để áp dụng ngay lên trang `/eq-buddy` và `/eq-buddy/rut-the`.
+3. **Tab Giao diện chung**:
+   - `Dòng tiêu đề phụ (Series bar)` (`tagline`): Mặc định: *EQ Buddy • Thẻ Trạm Dừng Cảm Xúc*.
+   - `Câu châm ngôn góc trên` (`quoteTop`): Mặc định: *Dừng để vững vàng bước tới.*.
+   - `Huy hiệu mở đầu (để trống sẽ ẩn)` (`badge`): Mặc định trống (`''`). *Để trống để ẩn.*
+   - `Tiêu đề chính` (`mainTitle`): Mặc định: *BỘ THẺ EQ BUDDY*.
+   - `Tiêu đề phụ` (`subtitle`): Mặc định: *Dành cho những ngày chông chênh, mất kết nối với chính mình, hoặc đơn giản là muốn lắng nghe tiếng lòng một cách chân thật nhất.*.
+   - `Gợi ý tâm trạng (phân cách bởi dấu phẩy)` (`suggestedEmotions`): Danh sách cảm xúc mẫu cho khách chọn.
+   - `Đường dẫn mua bộ thẻ vật lý (Shopee)` (`shopeeUrl`): Mặc định: `https://tinyurl.com/yc43suhc`. Nút Shopee sẽ mở tab mới có gắn mã UTM và ghi nhận sự kiện click (để trống sẽ ẩn nút).
+   - `Nhãn biểu tượng 1 (Nhập trạng thái)` (`stateIcon1Label`): Mặc định: *Hít thở 3 hơi*.
+   - `Nhãn biểu tượng 2 (Nhập trạng thái)` (`stateIcon2Label`): Mặc định: *Nghĩ về mong muốn hôm nay*.
+   - `Nhãn biểu tượng 3 (Nhập trạng thái)` (`stateIcon3Label`): Mặc định: *Gọi tên cảm xúc hiện tại*.
+   - `Tiêu đề 3 câu hỏi mặt sau thẻ` (`cardBackPromptTitle`): Mặc định: *3 câu hỏi kết nối nội tâm*.
+   - `Câu châm ngôn mặt sau thẻ` (`cardBackQuote`): Mặc định: *Dừng để vững vàng bước tới.*.
+4. **Tab Bộ thẻ là gì? (Bước 1)**:
+   - `Tiêu đề khối (để trống sẽ ẩn toàn bộ phần Bộ thẻ là gì)` (`intro1Heading`): Mặc định trống (`''`). *Để trống để ẩn.*
+   - `Mô tả ngắn` (`intro1Description`): Mặc định trống (`''`).
+   - `Thẻ 1: Tiêu đề` (`card1Title`) / `Thẻ 1: Nội dung` (`card1Desc`): Mặc định trống (`''`). *Để trống để ẩn.*
+   - `Thẻ 2: Tiêu đề` (`card2Title`) / `Thẻ 2: Nội dung` (`card2Desc`): Mặc định trống (`''`). *Để trống để ẩn.*
+   - `Thẻ 3: Tiêu đề` (`card3Title`) / `Thẻ 3: Nội dung` (`card3Desc`): Mặc định trống (`''`). *Để trống để ẩn.*
+   - `Thẻ 4: Tiêu đề` (`card4Title`) / `Thẻ 4: Nội dung` (`card4Desc`): Mặc định trống (`''`). *Để trống để ẩn.*
+5. **Tab Hướng dẫn 3 bước**:
+   - `Tiêu đề khối` (`intro2Heading`): Mặc định: *3 bước kết nối cảm xúc*.
+   - `Mô tả ngắn` (`intro2Description`): Mặc định trống (`''`).
+   - `Bước 1: Tên` (`step1Title`): Mặc định: *Gọi tên mong muốn và cảm xúc*.
+   - `Bước 1: Nhãn` (`step1Tag`): Mặc định trống (`''`).
+   - `Bước 1: Mô tả` (`step1Desc`): Mặc định: *Dành 3 hơi thở để thả lỏng và gọi tên mong muốn cho hôm nay. Chia sẻ cảm xúc bạn đang có ngay lúc này.*.
+   - `Bước 2: Tên` (`step2Title`): Mặc định: *Chọn thông điệp*.
+   - `Bước 2: Nhãn` (`step2Tag`): Mặc định trống (`''`).
+   - `Bước 2: Mô tả` (`step2Desc`): Mặc định: *Rút ngẫu nhiên thông điệp phù hợp với mình, đọc và cảm nhận*.
+   - `Bước 3: Tên` (`step3Title`): Mặc định: *Khám phá*.
+   - `Bước 3: Nhãn` (`step3Tag`): Mặc định trống (`''`).
+   - `Bước 3: Mô tả` (`step3Desc`): Mặc định: *Lật thẻ sang mặt sau để được gợi mở bằng những câu hỏi đào sâu - kết nối. Khuyến khích đào sâu với coach, người thương hoặc có thời gian chất lượng cho bản thân.*.
+   - `Bước 4: Tên (để trống nếu chỉ dùng 3 bước)` (`step4Title`) / `step4Tag` / `step4Desc`: Mặc định trống (`''`).
+6. **Tab Hộp hướng dẫn toàn cục**:
+   - `Tiêu đề hộp hướng dẫn` (`guideModalTitle`): Mặc định: *Hướng dẫn: 3 bước để "dừng" và kết nối nội tâm mỗi ngày*.
+   - `Câu châm ngôn trong hộp hướng dẫn` (`guideModalQuote`): Mặc định: *Đằng sau mỗi cảm xúc đều là một thông điệp đang chờ đợi bạn khám phá bằng sự chân thành và đón nhận trọn vẹn.*.
+   - `Nút bấm trong hộp hướng dẫn` (`guideModalButton`): Mặc định: *Trải nghiệm*.
+7. Bấm **Lưu thay đổi** để áp dụng ngay lên trang `/eq-buddy` và `/eq-buddy/rut-the`.
+
+> [!IMPORTANT]
+> **Lưu ý sau khi Deploy cho Hana**: Sau khi phiên bản mới được deploy lên máy chủ, Hana vui lòng vào **Cài đặt toàn cục** -> **Nội dung EQ Buddy** (`eq-buddy-content`) để kiểm tra lại các ô nội dung, cập nhật đường dẫn Shopee chính thức và đảm bảo sản phẩm **EQ Buddy số** (`eq-buddy-so`) có giá khuyến mãi (`salePrice`) và thời hạn (`saleEndsAt`) hợp lệ nếu muốn hiển thị mức giá ưu đãi trên nút VIP Member.
 
 ---
 
