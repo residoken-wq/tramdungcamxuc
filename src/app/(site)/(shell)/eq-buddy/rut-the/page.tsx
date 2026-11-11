@@ -7,6 +7,7 @@ import { checkEqDrawAccess } from '@/lib/eq/draw.server'
 import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
 import { ToolPaywall } from '@/components/site/trial/ToolPaywall'
 import { EQDrawApp } from '@/components/eq/zip/EQDrawApp'
+import { toPublicProduct } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
@@ -20,9 +21,30 @@ export default async function EqRutThePage() {
   const payload = await getPayload({ config: await config })
 
   // 1. Kiểm tra quyền truy cập (free mode / khách rút 1 thẻ / thành viên có trial hoặc active)
-  const [access, eqContent] = await Promise.all([
+  const [access, eqContent, eqProductRes, coachingProductRes] = await Promise.all([
     checkEqDrawAccess(),
     payload.findGlobal({ slug: 'eqBuddyContent', overrideAccess: true }).catch(() => null),
+    payload
+      .find({
+        collection: 'products',
+        where: { slug: { equals: EQ_BUDDY_PRODUCT_SLUG } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      .catch(() => null),
+    payload
+      .find({
+        collection: 'products',
+        where: {
+          or: [
+            { slug: { equals: 'growth-mirror-phien-trai-nghiem' } },
+            { type: { equals: 'coaching_trial' } },
+          ],
+        },
+        limit: 1,
+        overrideAccess: true,
+      })
+      .catch(() => null),
   ])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,6 +56,11 @@ export default async function EqRutThePage() {
   // 2. Lấy danh sách toàn bộ thẻ đã xuất bản (server-side redaction nếu chưa unlock)
   const allCards = await getAllPublishedCards(isUnlockedAll)
 
+  const eqProduct = eqProductRes?.docs?.[0] ? toPublicProduct(eqProductRes.docs[0]) : null
+  const coachingProduct = coachingProductRes?.docs?.[0]
+    ? toPublicProduct(coachingProductRes.docs[0])
+    : null
+
   return (
     <div className="w-full py-6 sm:py-10 px-4 sm:px-6">
       <EQDrawApp
@@ -43,6 +70,10 @@ export default async function EqRutThePage() {
         isUnlockedAll={isUnlockedAll}
         isFreeMode={isFreeMode}
         guideModalQuote={rawContent?.guideModalQuote}
+        eqProduct={eqProduct}
+        coachingProduct={coachingProduct}
+        shopeeUrl={rawContent?.shopeeUrl || 'https://tinyurl.com/yc43suhc'}
+        content={rawContent}
         paywall={
           <ToolPaywall
             productSlug={EQ_BUDDY_PRODUCT_SLUG}

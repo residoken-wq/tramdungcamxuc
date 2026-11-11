@@ -10,17 +10,21 @@ export interface EQCardFlipProps {
   isFlipped: boolean
   onToggleFlip: () => void
   totalPublishedCards?: number
+  reflectionHeading?: string
+  cardBackQuote?: string
 }
 
 export function EQCardFlip({
   card,
   isFlipped,
   onToggleFlip,
-  totalPublishedCards = 26,
+  totalPublishedCards: _totalPublishedCards = 26,
+  reflectionHeading = vi.au02.reflectionHeading,
+  cardBackQuote = vi.au02.cardBackQuote,
 }: EQCardFlipProps) {
   const gradientTheme = card.gradientTheme || 'from-[#FDE6F6] via-[#FAF7F4] to-[#E9DDF9]'
-  const cardNum = String(card.code || card.order || card.id).padStart(2, '0')
   const keywordVi = card.keywordVi || 'Việt'
+  const displayKeyword = card.keywordEn || card.keywordVi || ''
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -39,7 +43,7 @@ export function EQCardFlip({
     <div
       role="button"
       tabIndex={0}
-      aria-label={`${vi.dp01eq.cardIndexAria} ${cardNum}: ${card.keywordEn || ''}. ${isFlipped ? 'Đang ở mặt sau' : 'Đang ở mặt trước'}. Bấm để lật.`}
+      aria-label={vi.au02.cardAriaLabel(displayKeyword, isFlipped)}
       onClick={onToggleFlip}
       onKeyDown={handleKeyDown}
       className="perspective-1000 w-[290px] h-[400px] sm:w-[330px] sm:h-[450px] cursor-pointer group outline-none focus-visible:ring-2 focus-visible:ring-bright-magenta rounded-3xl"
@@ -56,13 +60,11 @@ export function EQCardFlip({
           {/* Viền chỉ đôi sang trọng */}
           <div className="absolute inset-2.5 rounded-2xl border border-deep-navy/10 pointer-events-none" />
 
-          {/* Top thẻ */}
+          {/* Top thẻ - Bỏ số thẻ / mã thẻ theo AU-02 */}
           <div className="flex items-center justify-between text-deep-navy/60 text-[10px] uppercase font-bold tracking-widest relative z-10 font-ui">
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1.5 text-bright-magenta font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-bright-magenta" />
-              <span>
-                {vi.dp01eq.cardIndexPrefix} {cardNum} / {totalPublishedCards}
-              </span>
+              <span>EQ BUDDY</span>
             </span>
             {card.category && (
               <span className="font-semibold text-bright-magenta bg-soft-pink px-2 py-0.5 rounded-full">
@@ -75,7 +77,7 @@ export function EQCardFlip({
           <div className="space-y-4 my-auto relative z-10 text-center">
             <div className="space-y-1">
               <h2 className="font-display text-3xl sm:text-4xl text-deep-navy uppercase tracking-wider">
-                {card.keywordEn || card.code}
+                {card.keywordEn || card.keywordVi || ''}
               </h2>
               <span className="text-xs uppercase tracking-widest text-bright-magenta font-semibold block font-ui">
                 • {keywordVi} •
@@ -108,21 +110,21 @@ export function EQCardFlip({
           {/* Viền mảnh */}
           <div className="absolute inset-2.5 rounded-2xl border border-bright-magenta/15 pointer-events-none" />
 
-          {/* Top mặt sau */}
+          {/* Top mặt sau - Bỏ số thẻ / mã thẻ theo AU-02 */}
           <div className="flex items-center justify-between text-deep-navy/70 text-[10px] uppercase font-bold tracking-widest relative z-10 font-ui">
             <span className="text-bright-magenta flex items-center gap-1">
               <RotateCw className="w-3 h-3" />
               <span>{vi.dp01eq.reflectionPromptHeading}</span>
             </span>
             <span className="text-deep-navy/70 font-bold">
-              #{cardNum} • {card.keywordEn || card.code}
+              {displayKeyword}
             </span>
           </div>
 
           {/* Danh sách 3 câu hỏi Reflection */}
           <div className="space-y-2 my-auto relative z-10 overflow-y-auto max-h-[290px] pr-0.5 font-ui">
             <span className="text-[10px] sm:text-[11px] text-deep-navy/60 font-semibold uppercase tracking-wider block">
-              {vi.dp01eq.gentleReflectionIntro}
+              {reflectionHeading}
             </span>
 
             <div className="space-y-1.5 sm:space-y-2">
@@ -145,10 +147,10 @@ export function EQCardFlip({
             </div>
           </div>
 
-          {/* Bottom mặt sau */}
+          {/* Bottom mặt sau - Câu nghiêng cuối thẻ */}
           <div className="text-[11px] text-deep-navy/70 text-center relative z-10 border-t border-deep-navy/5 pt-2">
             <span className="font-quote italic text-bright-magenta font-semibold block">
-              {vi.dp01eq.pauseReturnQuote}
+              {cardBackQuote}
             </span>
           </div>
         </div>
