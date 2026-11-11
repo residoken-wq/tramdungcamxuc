@@ -163,23 +163,23 @@ export function StepNavigation({
                     }
                   }}
                   disabled={!isAccessible}
-                  className={`shrink-0 whitespace-nowrap flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-ui font-semibold transition-all duration-200 border ${
+                  className={`shrink-0 whitespace-nowrap flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-ui font-semibold transition-shadow border ${
                     isActive
                       ? 'bg-bright-magenta text-white border-bright-magenta shadow-soft cursor-pointer'
                       : isPassed
                         ? 'bg-soft-pink/50 text-deep-navy border-lavender-mist hover:bg-soft-pink hover:border-bright-magenta/30 cursor-pointer'
                         : isAccessible
-                          ? 'bg-white text-deep-navy/80 border-lavender-mist hover:bg-warm-ivory hover:text-deep-navy cursor-pointer'
-                          : 'bg-white/40 text-deep-navy/70 border-lavender-mist/40 cursor-not-allowed opacity-60'
+                          ? 'bg-white text-deep-navy border-lavender-mist hover:bg-warm-ivory cursor-pointer'
+                          : 'bg-warm-ivory text-deep-navy/80 border-lavender-mist/70 cursor-not-allowed'
                   }`}
                 >
                   <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-bold transition-colors shrink-0 ${
+                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0 ${
                       isActive
                         ? 'bg-white text-bright-magenta'
                         : isPassed
                           ? 'bg-mint-haze text-deep-navy'
-                          : 'bg-lavender-mist/60 text-deep-navy/60'
+                          : 'bg-lavender-mist/70 text-deep-navy/80'
                     }`}
                   >
                     {isPassed && !isActive ? (
