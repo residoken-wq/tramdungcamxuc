@@ -45,29 +45,29 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     buttonText: { type: 'text', label: vi.eb15a.buttonText, contentEditable: true },
     buttonAction: {
       type: 'select',
-      label: 'Hành động của nút chính',
+      label: vi.au04.cta.buttonAction,
       options: [
-        { label: 'Chuyển hướng liên kết (Mặc định)', value: 'link' },
-        { label: 'Đặt lịch phiên trải nghiệm', value: 'booking' },
-        { label: 'Mở form tham gia / nhận brochure (Modal)', value: 'form' },
+        { label: vi.au04.cta.actionLink, value: 'link' },
+        { label: vi.au04.cta.actionBooking, value: 'booking' },
+        { label: vi.au04.cta.actionForm, value: 'form' },
       ],
     },
     formType: {
       type: 'select',
-      label: 'Loại form mở khi bấm nút chính',
+      label: vi.au04.cta.formType,
       options: [
-        { label: 'Tham gia ME TIME', value: 'community-me-time' },
-        { label: 'Tham gia YOGA BUDDY', value: 'community-yoga-buddy' },
-        { label: 'Đăng ký nhận brochure chi tiết', value: 'brochure-chuyen-minh' },
+        { label: vi.au04.cta.formMeTime, value: 'community-me-time' },
+        { label: vi.au04.cta.formYogaBuddy, value: 'community-yoga-buddy' },
+        { label: vi.au04.cta.formBrochure, value: 'brochure-chuyen-minh' },
       ],
     },
     formTitle: {
       type: 'text',
-      label: 'Tiêu đề form modal (nút chính - để trống dùng mặc định)',
+      label: vi.au04.cta.formTitle,
     },
     formSuccessMessage: {
       type: 'text',
-      label: 'Câu cảm ơn sau khi gửi (nút chính - để trống dùng mặc định)',
+      label: vi.au04.cta.formSuccessMessage,
     },
     buttonLinkType: {
       type: 'select',
@@ -75,7 +75,7 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
       options: [
         { label: 'Liên kết ngoài / Tự nhập URL', value: 'url' },
         { label: 'Trang trong website', value: 'page' },
-        { label: 'Đặt lịch phiên trải nghiệm', value: 'booking' },
+        { label: vi.au04.cta.actionBooking, value: 'booking' },
       ],
     },
     buttonPageId: createPageExternalField({
@@ -108,28 +108,28 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     },
     secondaryButtonAction: {
       type: 'select',
-      label: 'Hành động của nút phụ',
+      label: vi.au04.cta.secondaryButtonAction,
       options: [
-        { label: 'Chuyển hướng liên kết (Mặc định)', value: 'link' },
-        { label: 'Mở form tham gia / nhận brochure (Modal)', value: 'form' },
+        { label: vi.au04.cta.actionLink, value: 'link' },
+        { label: vi.au04.cta.actionForm, value: 'form' },
       ],
     },
     secondaryFormType: {
       type: 'select',
-      label: 'Loại form mở khi bấm nút phụ',
+      label: vi.au04.cta.secondaryFormType,
       options: [
-        { label: 'Tham gia YOGA BUDDY', value: 'community-yoga-buddy' },
-        { label: 'Tham gia ME TIME', value: 'community-me-time' },
-        { label: 'Đăng ký nhận brochure chi tiết', value: 'brochure-chuyen-minh' },
+        { label: vi.au04.cta.formYogaBuddy, value: 'community-yoga-buddy' },
+        { label: vi.au04.cta.formMeTime, value: 'community-me-time' },
+        { label: vi.au04.cta.formBrochure, value: 'brochure-chuyen-minh' },
       ],
     },
     secondaryFormTitle: {
       type: 'text',
-      label: 'Tiêu đề form modal (nút phụ - để trống dùng mặc định)',
+      label: vi.au04.cta.secondaryFormTitle,
     },
     secondaryFormSuccessMessage: {
       type: 'text',
-      label: 'Câu cảm ơn sau khi gửi (nút phụ - để trống dùng mặc định)',
+      label: vi.au04.cta.secondaryFormSuccessMessage,
     },
     secondaryButtonLink: {
       type: 'text',

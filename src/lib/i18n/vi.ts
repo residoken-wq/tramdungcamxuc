@@ -4880,6 +4880,25 @@ export const vi = {
     errorOnlyOwner: 'Chỉ chủ sở hữu (Owner) mới có quyền tạo đầu trang / chân trang từ mẫu.',
     errorCreateFailed: 'Không thể tạo trang từ mẫu. Vui lòng thử lại.',
   },
+  au04: {
+    defaultBookingButtonText: 'Đặt phiên trải nghiệm',
+    cta: {
+      buttonAction: 'Hành động của nút chính',
+      secondaryButtonAction: 'Hành động của nút phụ',
+      actionLink: 'Chuyển hướng liên kết (Mặc định)',
+      actionBooking: 'Đặt lịch phiên trải nghiệm',
+      actionForm: 'Mở form tham gia / nhận brochure (Modal)',
+      formType: 'Loại form mở khi bấm nút chính',
+      secondaryFormType: 'Loại form mở khi bấm nút phụ',
+      formMeTime: 'Tham gia ME TIME',
+      formYogaBuddy: 'Tham gia YOGA BUDDY',
+      formBrochure: 'Đăng ký nhận brochure chi tiết',
+      formTitle: 'Tiêu đề form modal (nút chính - để trống dùng mặc định)',
+      formSuccessMessage: 'Câu cảm ơn sau khi gửi (nút chính - để trống dùng mặc định)',
+      secondaryFormTitle: 'Tiêu đề form modal (nút phụ - để trống dùng mặc định)',
+      secondaryFormSuccessMessage: 'Câu cảm ơn sau khi gửi (nút phụ - để trống dùng mặc định)',
+    },
+  },
 } as const
 
 export type LocaleStrings = typeof vi

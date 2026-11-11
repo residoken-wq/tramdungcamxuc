@@ -5,6 +5,7 @@ import { Button, type ButtonSize, type ButtonVariant } from '@/components/ui/But
 import { getEffectivePrice, getBookingPath, type PublicProduct } from '@/lib/products'
 import { formatVnd } from '@/lib/format'
 import { track } from '@/lib/analytics/track'
+import { vi } from '@/lib/i18n/vi'
 
 export interface ExperienceBookingButtonProps {
   product?: PublicProduct | null
@@ -42,7 +43,7 @@ export function ExperienceBookingButton({
   product,
   productId,
   productSlug,
-  buttonText = 'Đặt phiên trải nghiệm',
+  buttonText = vi.au04.defaultBookingButtonText,
   variant = 'primary',
   size = 'lg',
   shape = 'normal',
