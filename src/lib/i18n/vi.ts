@@ -716,7 +716,7 @@ export const vi = {
       titleLine2: 'Dựng Thương Hiệu',
       emotionalLine: 'Đều đặn một điều — mọi điều đều đặn',
       intro: (days: number = 28) =>
-        `Đây không phải một hành động giúp bạn thành công chỉ sau một đêm, nhưng nó cũng không kéo dài từ năm này qua năm khác. Bạn chỉ cần đi theo từng hướng dẫn sau đây trong ${days} ngày để có một bước chuyển rõ nét cho thói quen của mình, qua 3 giai đoạn:`,
+        `Đây không phải một hành động giúp bạn thành công chỉ sau một đêm, nhưng nó cũng không kéo dài từ năm này qua năm khác. Bạn chỉ cần đi theo từng hướng dẫn sau đây trong ${days} ngày để có một bước chuyển rõ nét cho thói quen của mình.`,
       stagesPills: ['Khám', 'Xây', 'Chuyển mình'] as const,
       stepIndicator: (current: number, total: number) => `Bước ${current} / ${total}`,
       step1: {
@@ -4617,9 +4617,7 @@ export const vi = {
     lawLoopResponse: '3 · HÀNH ĐỘNG (RESPONSE)',
     lawLoopReward: '4 · PHẦN THƯỞNG (REWARD)',
     lawLoopUnchosen: 'chưa chọn',
-    boardingCtaSectionTitle: 'Đồng hành sâu hơn cùng Trạm',
-    boardingCtaSectionDesc:
-      'Mở khóa trọn vẹn video & bảng theo dõi, hoặc hẹn một phiên khai vấn 1:1 cùng coach.',
+    boardingCtaSectionAria: 'Lựa chọn đồng hành tiếp theo',
     vipMemberButton: 'Trở thành VIP Member',
     coach1on1Button: 'Cần coach đồng hành 1:1',
     defaultApplyLabel: 'Cách tôi áp dụng:',

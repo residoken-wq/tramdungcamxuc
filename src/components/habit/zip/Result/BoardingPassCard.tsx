@@ -330,7 +330,7 @@ export function BoardingPassCard({
               <span className="text-[10px] uppercase font-bold tracking-wider text-bright-magenta font-ui block">
                 MENTOR
               </span>
-              <div className="font-ui font-bold text-sm sm:text-base text-deep-navy truncate">
+              <div className="font-ui font-bold text-sm sm:text-base text-deep-navy line-clamp-2">
                 {identity.selectedMentor
                   ? `Sau khi ${identity.selectedMentor}${formattedMentorTime ? ` · ${formattedMentorTime}` : ''}`
                   : '—'}
@@ -682,18 +682,9 @@ export function BoardingPassCard({
 
       {/* 4b. Hai nút hành động tiếp theo: VIP Member & Coach đồng hành 1:1 */}
       <section
-        aria-label={vi.dp01.boardingCtaSectionTitle}
-        className="p-5 sm:p-6 rounded-[20px] bg-white border border-lavender-mist shadow-soft text-center space-y-4 font-ui"
+        aria-label={vi.dp01.boardingCtaSectionAria}
+        className="p-5 sm:p-6 rounded-[20px] bg-white border border-lavender-mist shadow-soft text-center font-ui"
       >
-        <div className="space-y-1">
-          <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase tracking-wide">
-            {vi.dp01.boardingCtaSectionTitle}
-          </h3>
-          <p className="text-xs sm:text-sm text-deep-navy/75 max-w-xl mx-auto leading-relaxed">
-            {vi.dp01.boardingCtaSectionDesc}
-          </p>
-        </div>
-
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href={vipBuyHref}

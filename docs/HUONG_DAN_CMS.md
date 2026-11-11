@@ -3597,6 +3597,8 @@ Vào nhóm **Habit** → **Nội dung hành trình thói quen** (`Habit Journey 
 4. **Đồng hành sau 28 ngày (`tracker.afterJourneyTitle`, `tracker.afterJourneyText`)**:
    - **Tiêu đề** (`afterJourneyTitle`): Tiêu đề của khối (mặc định: `Đồng hành sau 28 ngày`).
    - **Lời nhắn gửi** (`afterJourneyText`): Lời khích lệ, chia sẻ từ Coach Hana về chặng đường tiếp theo. Nếu để trống, hệ thống sử dụng lời nhắn mặc định truyền cảm hứng từ Trạm.
+5. **Đoạn văn dẫn nhập đầu trang (`/habit/5-phut`)** (`wizardHeader.introText` – nhãn *"Đoạn văn dẫn nhập 3 giai đoạn"*):
+   - Vì giao diện mới đã bỏ 3 thẻ giai đoạn lớn bên dưới, nếu ô này trong CMS vẫn còn đuôi `", qua 3 giai đoạn:"`, Hana xóa phần đuôi đó để kết bằng dấu chấm `.` cho tự nhiên.
 
 ### 7.3d. Menu con (menu "Sản phẩm", "Tài nguyên"…)
 
