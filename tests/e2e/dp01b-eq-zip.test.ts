@@ -264,7 +264,9 @@ test.describe('DP-01b: EQ Buddy Zip Flow & Free Access Mode Switch (AU-02)', () 
       await guestPage1.getByRole('button', { name: /Lật thẻ sang mặt sau/i }).click()
       await expect(guestPage1.getByRole('button', { name: /Lật về mặt trước/i })).toBeVisible()
       await expect(guestPage1.getByText('3 câu hỏi kết nối nội tâm')).toBeVisible()
-      await expect(guestPage1.getByText('Dừng để vững vàng bước tới.')).toBeVisible()
+      await expect(
+        guestPage1.getByRole('button', { name: /Thẻ EQ/ }).getByText('Dừng để vững vàng bước tới.'),
+      ).toBeVisible()
 
       // Thẻ thứ 2 ở chế độ dùng thử -> màn dùng thử 21 ngày
       await guestPage1.getByRole('button', { name: /Rút thẻ khác/i }).click()

@@ -384,36 +384,85 @@ describe('AU-02: EQ Buddy Flow theo rà soát của Hana', () => {
           ...row,
           badge: row.badge === 'Bộ thẻ chánh niệm & Trí tuệ cảm xúc (EQ)' ? '' : row.badge,
           main_title: row.main_title === 'TRẠM DỪNG CẢM XÚC' ? 'BỘ THẺ EQ BUDDY' : row.main_title,
+          subtitle:
+            row.subtitle ===
+              '26 Thẻ Đánh Thức Trí Tuệ Cảm Xúc - Công Cụ Rèn Luyện Tâm Trí & Thấu Cảm Mỗi Ngày' ||
+            row.subtitle ===
+              'Dành cho những ngày chông chênh, những khoảnh khắc cần một khoảng lặng để lắng nghe và kết nối sâu sắc với chính mình.'
+              ? '26 thông điệp cùng bạn Gói ghém cảm xúc - Ghi nhận nỗ lực - Gợi nhớ bài học ý nghĩa mỗi ngày.'
+              : row.subtitle,
           shopee_url: row.shopee_url === 'https://shopee.vn' ? 'https://tinyurl.com/yc43suhc' : row.shopee_url,
-          intro2_heading: row.intro2_heading === '4 Bước Sử Dụng Bộ Thẻ' ? '3 bước kết nối cảm xúc' : row.intro2_heading,
+          intro2_heading:
+            row.intro2_heading === '4 Bước Sử Dụng Bộ Thẻ' ||
+            row.intro2_heading === '3 bước kết nối cảm xúc'
+              ? 'Hướng dẫn: 3 bước để "dừng" và kết nối nội tâm mỗi ngày'
+              : row.intro2_heading,
+          card2_desc:
+            row.card2_desc ===
+              'Mở đầu ngày mới tràn đầy chánh niệm, đúc kết bài học sau mỗi trải nghiệm, hoặc tìm một từ khóa dẫn lối khi lý trí đang bối rối, mông lung.' ||
+            row.card2_desc === 'Mở đầu ngày mới tràn đầy chánh niệm...'
+              ? ''
+              : row.card2_desc,
+          step1_tag:
+            row.step1_tag === '30 giây' || row.step1_tag === 'Dành 3 hơi thở' ? '' : row.step1_tag,
+          step2_tag:
+            row.step2_tag === 'Lắng nghe' || row.step2_tag === 'Rút thẻ' ? '' : row.step2_tag,
+          step3_tag:
+            row.step3_tag === 'Chiêm nghiệm' || row.step3_tag === 'Lật thẻ' ? '' : row.step3_tag,
         }
       }
 
-      // Trường hợp 1: Dữ liệu còn chữ mặc định cũ -> cập nhật sang chữ mới
+      // Trường hợp 1: Dữ liệu còn chữ mặc định cũ -> cập nhật sang chữ mới theo mục 12 & 13
       const defaultRow = {
         badge: 'Bộ thẻ chánh niệm & Trí tuệ cảm xúc (EQ)',
         main_title: 'TRẠM DỪNG CẢM XÚC',
+        subtitle:
+          '26 Thẻ Đánh Thức Trí Tuệ Cảm Xúc - Công Cụ Rèn Luyện Tâm Trí & Thấu Cảm Mỗi Ngày',
         shopee_url: 'https://shopee.vn',
         intro2_heading: '4 Bước Sử Dụng Bộ Thẻ',
+        card2_desc:
+          'Mở đầu ngày mới tràn đầy chánh niệm, đúc kết bài học sau mỗi trải nghiệm, hoặc tìm một từ khóa dẫn lối khi lý trí đang bối rối, mông lung.',
+        step1_tag: '30 giây',
+        step2_tag: 'Lắng nghe',
+        step3_tag: 'Chiêm nghiệm',
       }
       const updatedDefault = applyMigrationUpdate(defaultRow)
       expect(updatedDefault.badge).toBe('')
       expect(updatedDefault.main_title).toBe('BỘ THẺ EQ BUDDY')
+      expect(updatedDefault.subtitle).toBe(
+        '26 thông điệp cùng bạn Gói ghém cảm xúc - Ghi nhận nỗ lực - Gợi nhớ bài học ý nghĩa mỗi ngày.',
+      )
       expect(updatedDefault.shopee_url).toBe('https://tinyurl.com/yc43suhc')
-      expect(updatedDefault.intro2_heading).toBe('3 bước kết nối cảm xúc')
+      expect(updatedDefault.intro2_heading).toBe(
+        'Hướng dẫn: 3 bước để "dừng" và kết nối nội tâm mỗi ngày',
+      )
+      expect(updatedDefault.card2_desc).toBe('')
+      expect(updatedDefault.step1_tag).toBe('')
+      expect(updatedDefault.step2_tag).toBe('')
+      expect(updatedDefault.step3_tag).toBe('')
 
       // Trường hợp 2: Hana đã sửa tay dữ liệu -> giữ nguyên 100%, không bị đè
       const customRow = {
         badge: 'Huy hiệu riêng của Hana',
         main_title: 'Góc Nhỏ Cảm Xúc',
+        subtitle: 'Dòng phụ tuỳ biến của Hana',
         shopee_url: 'https://shopee.vn/hana-custom',
         intro2_heading: '3 Bước Của Riêng Tôi',
+        card2_desc: 'Mô tả card riêng của Hana',
+        step1_tag: 'Thở sâu',
+        step2_tag: 'Chọn thẻ',
+        step3_tag: 'Suy ngẫm',
       }
       const preservedCustom = applyMigrationUpdate(customRow)
       expect(preservedCustom.badge).toBe('Huy hiệu riêng của Hana')
       expect(preservedCustom.main_title).toBe('Góc Nhỏ Cảm Xúc')
+      expect(preservedCustom.subtitle).toBe('Dòng phụ tuỳ biến của Hana')
       expect(preservedCustom.shopee_url).toBe('https://shopee.vn/hana-custom')
       expect(preservedCustom.intro2_heading).toBe('3 Bước Của Riêng Tôi')
+      expect(preservedCustom.card2_desc).toBe('Mô tả card riêng của Hana')
+      expect(preservedCustom.step1_tag).toBe('Thở sâu')
+      expect(preservedCustom.step2_tag).toBe('Chọn thẻ')
+      expect(preservedCustom.step3_tag).toBe('Suy ngẫm')
     })
   })
 })

@@ -1451,7 +1451,7 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
    - `Câu châm ngôn góc trên` (`quoteTop`): Mặc định: *Dừng để vững vàng bước tới.*.
    - `Huy hiệu mở đầu (để trống sẽ ẩn)` (`badge`): Mặc định trống (`''`). *Để trống để ẩn.*
    - `Tiêu đề chính` (`mainTitle`): Mặc định: *BỘ THẺ EQ BUDDY*.
-   - `Tiêu đề phụ` (`subtitle`): Mặc định: *Dành cho những ngày chông chênh, mất kết nối với chính mình, hoặc đơn giản là muốn lắng nghe tiếng lòng một cách chân thật nhất.*.
+   - `Tiêu đề phụ` (`subtitle`): Mặc định: *26 thông điệp cùng bạn Gói ghém cảm xúc - Ghi nhận nỗ lực - Gợi nhớ bài học ý nghĩa mỗi ngày.*.
    - `Gợi ý tâm trạng (phân cách bởi dấu phẩy)` (`suggestedEmotions`): Danh sách cảm xúc mẫu cho khách chọn.
    - `Đường dẫn mua bộ thẻ vật lý (Shopee)` (`shopeeUrl`): Mặc định: `https://tinyurl.com/yc43suhc`. Nút Shopee sẽ mở tab mới có gắn mã UTM và ghi nhận sự kiện click (để trống sẽ ẩn nút).
    - `Nhãn biểu tượng 1 (Nhập trạng thái)` (`stateIcon1Label`): Mặc định: *Hít thở 3 hơi*.
@@ -1467,7 +1467,7 @@ Trong **Cài đặt** -> **Cài đặt Website** (`siteSettings`), Hana có th�
    - `Thẻ 3: Tiêu đề` (`card3Title`) / `Thẻ 3: Nội dung` (`card3Desc`): Mặc định trống (`''`). *Để trống để ẩn.*
    - `Thẻ 4: Tiêu đề` (`card4Title`) / `Thẻ 4: Nội dung` (`card4Desc`): Mặc định trống (`''`). *Để trống để ẩn.*
 5. **Tab Hướng dẫn 3 bước**:
-   - `Tiêu đề khối` (`intro2Heading`): Mặc định: *3 bước kết nối cảm xúc*.
+   - `Tiêu đề khối` (`intro2Heading`): Mặc định: *Hướng dẫn: 3 bước để "dừng" và kết nối nội tâm mỗi ngày*.
    - `Mô tả ngắn` (`intro2Description`): Mặc định trống (`''`).
    - `Bước 1: Tên` (`step1Title`): Mặc định: *Gọi tên mong muốn và cảm xúc*.
    - `Bước 1: Nhãn` (`step1Tag`): Mặc định trống (`''`).

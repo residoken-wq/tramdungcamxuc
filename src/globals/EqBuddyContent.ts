@@ -218,7 +218,7 @@ export const EqBuddyContent: GlobalConfig = {
               name: 'step1Tag',
               label: 'Bước 1: Nhãn',
               type: 'text',
-              defaultValue: 'Dành 3 hơi thở',
+              defaultValue: '',
             },
             {
               name: 'step1Desc',
@@ -237,7 +237,7 @@ export const EqBuddyContent: GlobalConfig = {
               name: 'step2Tag',
               label: 'Bước 2: Nhãn',
               type: 'text',
-              defaultValue: 'Rút thẻ',
+              defaultValue: '',
             },
             {
               name: 'step2Desc',
@@ -256,7 +256,7 @@ export const EqBuddyContent: GlobalConfig = {
               name: 'step3Tag',
               label: 'Bước 3: Nhãn',
               type: 'text',
-              defaultValue: 'Lật thẻ',
+              defaultValue: '',
             },
             {
               name: 'step3Desc',
