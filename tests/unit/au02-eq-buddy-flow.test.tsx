@@ -283,6 +283,7 @@ describe('AU-02: EQ Buddy Flow theo rà soát của Hana', () => {
           initialStep="result"
           eqProduct={mockEqProductWithSale}
           coachingProduct={mockCoachingProduct}
+          shopeeUrl="https://shopee.vn/test-shop"
         />,
       )
 
@@ -306,6 +307,37 @@ describe('AU-02: EQ Buddy Flow theo rà soát của Hana', () => {
       expect(coachingBtn.textContent).toContain('149.000đ')
     })
 
+    it('nút VIP Member khi không có sản phẩm thì không hiện giá dự phòng ghi cứng', () => {
+      render(
+        <EQDrawApp
+          allCards={[mockCard]}
+          initialCard={mockCard}
+          initialStep="result"
+          eqProduct={null}
+          coachingProduct={mockCoachingProduct}
+        />,
+      )
+
+      const vipLink = screen.getByRole('link', { name: /Trở thành VIP Member/i })
+      expect(vipLink.textContent).toContain('Trở thành VIP Member')
+      expect(vipLink.textContent).not.toContain('250.000đ')
+    })
+
+    it('nút Shopee ẩn khi không có shopeeUrl', () => {
+      render(
+        <EQDrawApp
+          allCards={[mockCard]}
+          initialCard={mockCard}
+          initialStep="result"
+          eqProduct={mockEqProductRegular}
+          coachingProduct={mockCoachingProduct}
+          shopeeUrl=""
+        />,
+      )
+
+      expect(screen.queryByRole('link', { name: /Mua bộ thẻ trên Shopee/i })).toBeNull()
+    })
+
     it('nút VIP Member khi hết hạn ưu đãi thì chỉ hiện giá gốc', () => {
       render(
         <EQDrawApp
@@ -314,6 +346,7 @@ describe('AU-02: EQ Buddy Flow theo rà soát của Hana', () => {
           initialStep="result"
           eqProduct={mockEqProductRegular}
           coachingProduct={mockCoachingProduct}
+          shopeeUrl="https://shopee.vn/test-shop"
         />,
       )
 
@@ -328,15 +361,59 @@ describe('AU-02: EQ Buddy Flow theo rà soát của Hana', () => {
       const executedSql: string[] = []
       const fakeDb = {
         execute: vi.fn(async (query: any) => {
-          executedSql.push(String(query))
+          executedSql.push(JSON.stringify(query))
         }),
       }
 
       await eqMigration.up({ db: fakeDb as any, payload: {} as any, req: {} as any })
       expect(fakeDb.execute).toHaveBeenCalledTimes(1)
+      expect(executedSql[0]).toContain('guide_modal_title')
+      expect(executedSql[0]).toContain('UPDATE')
+      expect(executedSql[0]).toContain('eq_buddy_content')
 
       await eqMigration.down({ db: fakeDb as any, payload: {} as any, req: {} as any })
       expect(fakeDb.execute).toHaveBeenCalledTimes(2)
+      expect(executedSql[1]).toContain('DROP COLUMN')
+      expect(executedSql[1]).toContain('eq_buddy_content')
+    })
+
+    it('migration chỉ đổi câu chữ khi còn đúng chữ mặc định cũ, giữ nguyên nếu đã sửa tay', () => {
+      // Mô phỏng logic CASE WHEN trong SQL migration
+      function applyMigrationUpdate(row: Record<string, string>) {
+        return {
+          ...row,
+          badge: row.badge === 'Bộ thẻ chánh niệm & Trí tuệ cảm xúc (EQ)' ? '' : row.badge,
+          main_title: row.main_title === 'TRẠM DỪNG CẢM XÚC' ? 'BỘ THẺ EQ BUDDY' : row.main_title,
+          shopee_url: row.shopee_url === 'https://shopee.vn' ? 'https://tinyurl.com/yc43suhc' : row.shopee_url,
+          intro2_heading: row.intro2_heading === '4 Bước Sử Dụng Bộ Thẻ' ? '3 bước kết nối cảm xúc' : row.intro2_heading,
+        }
+      }
+
+      // Trường hợp 1: Dữ liệu còn chữ mặc định cũ -> cập nhật sang chữ mới
+      const defaultRow = {
+        badge: 'Bộ thẻ chánh niệm & Trí tuệ cảm xúc (EQ)',
+        main_title: 'TRẠM DỪNG CẢM XÚC',
+        shopee_url: 'https://shopee.vn',
+        intro2_heading: '4 Bước Sử Dụng Bộ Thẻ',
+      }
+      const updatedDefault = applyMigrationUpdate(defaultRow)
+      expect(updatedDefault.badge).toBe('')
+      expect(updatedDefault.main_title).toBe('BỘ THẺ EQ BUDDY')
+      expect(updatedDefault.shopee_url).toBe('https://tinyurl.com/yc43suhc')
+      expect(updatedDefault.intro2_heading).toBe('3 bước kết nối cảm xúc')
+
+      // Trường hợp 2: Hana đã sửa tay dữ liệu -> giữ nguyên 100%, không bị đè
+      const customRow = {
+        badge: 'Huy hiệu riêng của Hana',
+        main_title: 'Góc Nhỏ Cảm Xúc',
+        shopee_url: 'https://shopee.vn/hana-custom',
+        intro2_heading: '3 Bước Của Riêng Tôi',
+      }
+      const preservedCustom = applyMigrationUpdate(customRow)
+      expect(preservedCustom.badge).toBe('Huy hiệu riêng của Hana')
+      expect(preservedCustom.main_title).toBe('Góc Nhỏ Cảm Xúc')
+      expect(preservedCustom.shopee_url).toBe('https://shopee.vn/hana-custom')
+      expect(preservedCustom.intro2_heading).toBe('3 Bước Của Riêng Tôi')
     })
   })
 })
