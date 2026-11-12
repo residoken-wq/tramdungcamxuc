@@ -678,7 +678,9 @@ export function EQDrawApp({
               {allCards.map((card) => {
                 const isCurrent = selectedCard?.id === card.id
                 const isCardUnlocked = isUnlockedAll || isFreeMode || Boolean(card.message)
-                const cardLabel = `${card.keywordVi || card.keywordEn || ''} - ${isCardUnlocked ? vi.dp01eq.cardUnlocked : vi.dp01eq.cardLocked}`
+                const cardLabelName = [card.keywordEn, card.keywordVi].filter(Boolean).join(' · ')
+                const cardLabelStatus = isCardUnlocked ? vi.dp01eq.cardUnlocked : vi.dp01eq.cardLocked
+                const cardLabel = cardLabelName ? `${cardLabelName} – ${cardLabelStatus}` : cardLabelStatus
 
                 return (
                   <button
