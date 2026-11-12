@@ -428,7 +428,7 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
       expect('getHabitStageGate' in actions).toBe(false)
     })
 
-    it('thẻ Giai đoạn 3 khi chưa lưu kế hoạch: không mở màn trống, vẫn ở bước hiện tại', () => {
+    it('nút bước 28 ngày khi chưa lưu kế hoạch bị khóa: không mở màn trống, vẫn ở bước hiện tại', () => {
       render(
         <HabitTrackerApp
           initialGate={{ status: 'ok', trialAvailable: true }}
@@ -437,7 +437,9 @@ describe('DP-03: Cổng đăng nhập sau Giai đoạn 1 Habit (/habit/5-phut)',
           journeyDays={28}
         />,
       )
-      fireEvent.click(screen.getAllByRole('button', { name: /GIAI ĐOẠN 3/i })[0])
+      const trackerBtn = screen.getByRole('button', { name: /28 ngày/i })
+      expect((trackerBtn as HTMLButtonElement).disabled).toBe(true)
+      fireEvent.click(trackerBtn)
       expect(screen.getByPlaceholderText('Thức dậy, uống một ly nước')).toBeDefined()
       cleanup()
     })

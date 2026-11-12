@@ -662,6 +662,10 @@ export interface Product {
    */
   curriculumHeading?: string | null;
   /**
+   * Để trống = "Module lộ trình tinh gọn" (VD nhập "giai đoạn")
+   */
+  curriculumUnitLabel?: string | null;
+  /**
    * Để trống = dùng chữ mặc định
    */
   curriculumSubheading?: string | null;
@@ -690,7 +694,7 @@ export interface Product {
    */
   featuresSubheading?: string | null;
   /**
-   * Để trống = dùng chữ mặc định
+   * Để trống = ẩn cả phần "Habit Hack khác biệt"
    */
   featureItems?:
     | {
@@ -1451,6 +1455,14 @@ export interface Technique {
    * Nhập mẫu gợi ý áp dụng ({mentor}, {thoi_quen}, {gio}).
    */
   applyTemplate?: string | null;
+  /**
+   * Nhập nhãn ô nhập áp dụng (mặc định: cách tôi áp dụng:).
+   */
+  applyLabel?: string | null;
+  /**
+   * Nhập gợi ý (placeholder) ô nhập áp dụng.
+   */
+  applyPlaceholder?: string | null;
   /**
    * Nhập số không âm. Giá tiền tính bằng đồng.
    */
@@ -2832,6 +2844,7 @@ export interface ProductsSelect<T extends boolean = true> {
   offerTitleLine2?: T;
   offerEmotionLine?: T;
   curriculumHeading?: T;
+  curriculumUnitLabel?: T;
   curriculumSubheading?: T;
   curriculumModules?:
     | T
@@ -3073,6 +3086,8 @@ export interface TechniquesSelect<T extends boolean = true> {
         id?: T;
       };
   applyTemplate?: T;
+  applyLabel?: T;
+  applyPlaceholder?: T;
   order?: T;
   howTo?: T;
   example?: T;

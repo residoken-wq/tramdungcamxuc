@@ -301,7 +301,7 @@ export function Step1Diagnose({
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => onAnswerChange(q.id, isSelected ? 0 : score)}
-                        className={`flex items-center justify-center py-2 rounded-lg border text-center transition-all cursor-pointer ${
+                        className={`scroll-mb-28 sm:scroll-mb-0 flex items-center justify-center py-2 rounded-lg border text-center transition-all cursor-pointer ${
                           isSelected
                             ? 'bg-bright-magenta text-white border-bright-magenta shadow-sm font-bold'
                             : 'bg-white text-deep-navy/70 border-lavender-mist/80 hover:border-bright-magenta/50 hover:bg-soft-pink/30'
@@ -422,7 +422,7 @@ export function Step1Diagnose({
           </div>
 
           {/* Hộp dẫn dắt */}
-          <div className="p-5 sm:p-6 rounded-[20px] bg-soft-pink/60 border border-bright-magenta/25 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="sticky bottom-2 z-20 sm:static p-4 sm:p-6 rounded-[20px] bg-soft-pink/95 sm:bg-soft-pink/60 backdrop-blur-sm sm:backdrop-blur-none border border-bright-magenta/25 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <p className="text-xs sm:text-sm text-deep-navy/85 font-ui leading-relaxed">
               <strong className="text-deep-navy font-bold">Làm sao để lấp lỗ hổng này?</strong> Câu
               trả lời bắt đầu từ một nguyên lý mà hầu hết mọi người đều nghĩ là mình đã hiểu.

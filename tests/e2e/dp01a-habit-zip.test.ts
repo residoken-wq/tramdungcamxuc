@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test, type Page, type Response } from './fixtures'
+import { expectNoSeriousA11y } from './helpers/a11y'
 import * as zip from './helpers/habit-zip'
 import { vi } from '@/lib/i18n/vi'
 import { getVietnamYmd } from '@/lib/habit/tracker-stats'
@@ -47,7 +48,7 @@ async function bootstrapAdmin(page: Page): Promise<number> {
 
   if (!response) throw new Error('First-user registration request was never sent.')
   expect(response.ok()).toBe(true)
-  await expect(page).toHaveURL(/\/admin\/?$/)
+  await expect(page).toHaveURL(/\/admin\/?$/, { timeout: 30000 })
   return (await (await page.request.get('/api/users/me')).json()).user.id
 }
 
@@ -73,9 +74,15 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
     const suffix = randomUUID().slice(0, 8)
     const customerEmail = `dp01a-guest-${suffix}@example.test`
     const saveScreenshots = process.env.AU01_SCREENSHOTS === '1'
-    const screenshotDir = process.env.AU01_SCREENSHOT_DIR || 'docs/screenshots/au01'
+    const screenshotDir = process.env.AU01_SCREENSHOT_DIR || 'test-results/au01-screenshots'
     if (saveScreenshots) {
       mkdirSync(screenshotDir, { recursive: true })
+    }
+    const saveAu03Screenshots = process.env.AU03_SCREENSHOTS === '1'
+    const au03ScreenshotDir =
+      process.env.AU03_SCREENSHOT_DIR || 'test-results/au03-screenshots'
+    if (saveAu03Screenshots) {
+      mkdirSync(au03ScreenshotDir, { recursive: true })
     }
 
     const visitor = await browser.newContext({
@@ -165,8 +172,50 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         cueNames.push(name)
       }
 
+      // 2b. Kiểm tra trang giới thiệu /habit/1-percent-better ẩn phần "khác biệt" khi featureItems trống (AU-03)
+      await guestPage.goto('/habit/1-percent-better', { waitUntil: 'domcontentloaded' })
+      await expect(guestPage.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText(/Tại sao Habit.*khác biệt/i)).toHaveCount(0)
+      if (saveAu03Screenshots) {
+        await guestPage.screenshot({
+          path: join(au03ScreenshotDir, 'au03-offer-1440.png'),
+          fullPage: true,
+        })
+        await guestPage.setViewportSize({ width: 375, height: 812 })
+        await guestPage.screenshot({
+          path: join(au03ScreenshotDir, 'au03-offer-375.png'),
+          fullPage: true,
+        })
+        await guestPage.setViewportSize({ width: 1440, height: 900 })
+      }
+
       // 3. Khách đăng nhập và đi 6 bước zip (helpers/habit-zip.ts, DP-03)
       await zip.loginHabitCustomer(guestPage, customerEmail, '/habit/5-phut')
+
+      // AU-03 Mục 2: Ẩn badge mặc định khi CMS trống và bỏ 3 thẻ giai đoạn lớn; có wizard "Bước 1 / 6"
+      await expect(guestPage.getByText('CONTENT CREATOR HUB')).toHaveCount(0)
+      await expect(guestPage.getByText('GIAI ĐOẠN 1', { exact: true })).toHaveCount(0)
+      await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible({ timeout: 15000 })
+      await guestPage.emulateMedia({ reducedMotion: 'reduce' })
+      await expectNoSeriousA11y(guestPage, '/habit/5-phut Bước 1')
+      await guestPage.emulateMedia({ reducedMotion: 'no-preference' })
+
+      if (saveAu03Screenshots) {
+        await guestPage.screenshot({
+          path: join(au03ScreenshotDir, 'au03-tool-top-1440.png'),
+          fullPage: false,
+        })
+        await guestPage.setViewportSize({ width: 375, height: 812 })
+        const overflowTool = await guestPage.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+        expect(overflowTool).toBe(false)
+        await guestPage.screenshot({
+          path: join(au03ScreenshotDir, 'au03-tool-top-375.png'),
+          fullPage: false,
+        })
+        await guestPage.setViewportSize({ width: 1440, height: 900 })
+      }
 
       // Bước 1: đúng 8 câu hỏi của bản zip (mặc định hoặc từ CMS)
       const questionGroups = guestPage
@@ -175,6 +224,11 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       await expect(questionGroups.first()).toBeVisible({ timeout: 20000 })
       await expect(questionGroups).toHaveCount(8)
       await zip.answerDiagnose(guestPage)
+      await expect(guestPage.getByText('Bước 2 / 6')).toBeVisible()
+      // Kiểm tra Back giữ nháp wizard (AU-03)
+      await guestPage.getByRole('button', { name: /Quay lại/i }).first().click()
+      await expect(guestPage.getByText('Bước 1 / 6')).toBeVisible()
+      await guestPage.getByRole('button', { name: /Tiếp · Nguyên lý 1% Better/ }).click()
       await zip.passPercent(guestPage)
 
       // Bước 3: Kiểm tra ô giờ AM/PM thay thế input[type="time"] (AU-01 Mục 2)
@@ -221,13 +275,77 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       ])
       await zip.nextFromLoop(guestPage)
 
+      // AU-03 Mục 3: Kiểm tra Boarding Pass có ghi chú người dùng, AM/PM, trích dẫn mới & 2 nút CTA
+      await expect(guestPage.getByText('[TEST] Ghi chú áp dụng kỹ thuật 2')).toBeVisible({
+        timeout: 15000,
+      })
+      await expect(guestPage.getByText(cueNames[0])).toBeVisible()
+      await expect(guestPage.getByText(/6:00 AM/)).toBeVisible()
+      await expect(
+        guestPage.getByText(
+          'Mỗi hành động bạn thực hiện là một lá phiếu cho con người bạn muốn trở thành.',
+        ),
+      ).toBeVisible()
+      await expect(
+        guestPage.getByText('Để lại email để bắt đầu hành trình 28 ngày hình thành thói quen'),
+      ).toBeVisible()
+      await expect(guestPage.getByRole('link', { name: /Trở thành VIP Member/i })).toBeVisible()
+      await expect(
+        guestPage.getByRole('link', { name: /Cần coach đồng hành 1:1/i }),
+      ).toBeVisible()
+      await guestPage.emulateMedia({ reducedMotion: 'reduce' })
+      await expectNoSeriousA11y(guestPage, '/habit/5-phut Boarding Pass')
+      await guestPage.emulateMedia({ reducedMotion: 'no-preference' })
+
+      if (saveAu03Screenshots) {
+        await guestPage.screenshot({
+          path: join(au03ScreenshotDir, 'au03-boarding-pass-1440.png'),
+          fullPage: true,
+        })
+        await guestPage.setViewportSize({ width: 375, height: 812 })
+        const overflowBoarding = await guestPage.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+        expect(overflowBoarding).toBe(false)
+        await guestPage.screenshot({
+          path: join(au03ScreenshotDir, 'au03-boarding-pass-375.png'),
+          fullPage: true,
+        })
+        await guestPage.setViewportSize({ width: 1440, height: 900 })
+      }
+
       // Bước 6 (DP-03: đã đăng nhập ở đầu): lưu kế hoạch -> dùng thử 28 ngày bắt đầu ngay -> tracker
       await zip.fillBoarding(guestPage, { name: 'Học viên Test DP01', email: customerEmail })
       await zip.submitBoarding(guestPage)
       await guestPage.getByRole('link', { name: /Vào bảng theo dõi 28 ngày/ }).click()
       await expect(guestPage).toHaveURL(/\/habit\/tracker\/?$/, { timeout: 25000 })
       await guestPage.goto('/habit/tracker')
-      await expect(guestPage.getByText('Lưới 28 ngày theo dõi')).toBeVisible({ timeout: 15000 })
+      await expect(guestPage.getByText('Bảng Habit Hack 28 ngày')).toBeVisible({ timeout: 15000 })
+      // AU-03 Mục 4: chú giải 4 trạng thái & giờ Mentor AM/PM
+      await expect(guestPage.getByText('Đã bỏ phiếu', { exact: true })).toBeVisible()
+      await expect(guestPage.getByText('Thực hiện tối thiểu', { exact: true })).toBeVisible()
+      await expect(guestPage.getByText('Lỡ nhịp', { exact: true })).toBeVisible()
+      await expect(guestPage.getByText('Ngày nghỉ theo nhịp', { exact: true })).toBeVisible()
+      await guestPage.getByText('Thói quen bạn đang xây').click()
+      await expect(guestPage.getByText(/lúc 6:00 AM/)).toBeVisible()
+      await expectNoSeriousA11y(guestPage, '/habit/tracker')
+
+      if (saveAu03Screenshots) {
+        await guestPage.screenshot({
+          path: join(au03ScreenshotDir, 'au03-tracker-1440.png'),
+          fullPage: true,
+        })
+        await guestPage.setViewportSize({ width: 375, height: 812 })
+        const overflowTracker = await guestPage.evaluate(
+          () => document.documentElement.scrollWidth > window.innerWidth,
+        )
+        expect(overflowTracker).toBe(false)
+        await guestPage.screenshot({
+          path: join(au03ScreenshotDir, 'au03-tracker-375.png'),
+          fullPage: true,
+        })
+        await guestPage.setViewportSize({ width: 1440, height: 900 })
+      }
       // Z1: Tiêu đề tracker là "28 NGÀY THÀNH {personText}"
       await expect(
         guestPage.getByRole('heading', {

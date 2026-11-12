@@ -64,16 +64,47 @@ export function StepNavigation({
     const activeKey = isTrackerActive ? '7' : String(currentStep)
     const activeBtn = stepButtonRefs.current[activeKey]
     if (activeBtn && typeof activeBtn.scrollIntoView === 'function') {
+      const reducedMotion =
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
       activeBtn.scrollIntoView({
-        behavior: 'smooth',
+        behavior: reducedMotion ? 'auto' : 'smooth',
         block: 'nearest',
         inline: 'center',
       })
     }
   }, [currentStep, isTrackerActive])
 
+  const wizardStepNumber =
+    typeof currentStep === 'number' && currentStep >= 1 && currentStep <= 6 ? currentStep : null
+  const wizardTotalSteps = 6
+  const wizardPercent = wizardStepNumber ? Math.round((wizardStepNumber / wizardTotalSteps) * 100) : 0
+
   return (
-    <div className="w-full mb-6">
+    <div className="w-full mb-6 space-y-2.5">
+      {/* Thanh tiến độ wizard gọn cho luồng 6 bước */}
+      {wizardStepNumber !== null && (
+        <div className="w-full max-w-4xl mx-auto px-1 flex items-center gap-3">
+          <span className="text-xs font-bold font-ui text-deep-navy whitespace-nowrap">
+            {vi.dp01.wizardProgressLabel(wizardStepNumber, wizardTotalSteps)}
+          </span>
+          <div
+            role="progressbar"
+            aria-label={vi.dp01.wizardProgressAria}
+            aria-valuemin={1}
+            aria-valuemax={wizardTotalSteps}
+            aria-valuenow={wizardStepNumber}
+            className="flex-1 h-2 bg-lavender-mist/70 rounded-full overflow-hidden"
+          >
+            <div
+              className="h-full bg-bright-magenta rounded-full transition-all motion-reduce:transition-none duration-300"
+              style={{ width: `${wizardPercent}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Container cuộn ngang mượt mà */}
       <div
         ref={navContainerRef}
@@ -132,23 +163,23 @@ export function StepNavigation({
                     }
                   }}
                   disabled={!isAccessible}
-                  className={`shrink-0 whitespace-nowrap flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-ui font-semibold transition-all duration-200 border ${
+                  className={`shrink-0 whitespace-nowrap flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-ui font-semibold transition-shadow border ${
                     isActive
                       ? 'bg-bright-magenta text-white border-bright-magenta shadow-soft cursor-pointer'
                       : isPassed
                         ? 'bg-soft-pink/50 text-deep-navy border-lavender-mist hover:bg-soft-pink hover:border-bright-magenta/30 cursor-pointer'
                         : isAccessible
-                          ? 'bg-white text-deep-navy/80 border-lavender-mist hover:bg-warm-ivory hover:text-deep-navy cursor-pointer'
-                          : 'bg-white/40 text-deep-navy/70 border-lavender-mist/40 cursor-not-allowed opacity-60'
+                          ? 'bg-white text-deep-navy border-lavender-mist hover:bg-warm-ivory cursor-pointer'
+                          : 'bg-warm-ivory text-deep-navy/80 border-lavender-mist/70 cursor-not-allowed'
                   }`}
                 >
                   <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-bold transition-colors shrink-0 ${
+                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-bold shrink-0 ${
                       isActive
                         ? 'bg-white text-bright-magenta'
                         : isPassed
                           ? 'bg-mint-haze text-deep-navy'
-                          : 'bg-lavender-mist/60 text-deep-navy/60'
+                          : 'bg-lavender-mist/70 text-deep-navy/80'
                     }`}
                   >
                     {isPassed && !isActive ? (

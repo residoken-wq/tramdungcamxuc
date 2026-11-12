@@ -21,7 +21,7 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
     const res = withDp01Defaults(null)
     expect(res.header.titleLine1).toBe('Xây Thói Quen')
     expect(res.header.titleLine2).toBe('Dựng Thương Hiệu')
-    expect(res.header.badgeText).toContain('CONTENT CREATOR HUB')
+    expect(res.header.badgeText).toBe('')
     expect(res.step4.suggestedRoles).toEqual(DEFAULT_DP01_CONTENT.step4.suggestedRoles)
     expect(res.footer.slogan).toBe('Dừng lại • Lắng nghe • Sống trọn vẹn hơn')
   })

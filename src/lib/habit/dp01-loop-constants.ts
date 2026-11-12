@@ -1,12 +1,14 @@
 import { Zap, Flame, CheckCircle2, Gift } from 'lucide-react'
 import type React from 'react'
 import type { IdentityFormData } from '@/components/habit/zip/types'
+import { formatTimeAmPm } from '@/lib/habit/tracker-stats'
 
 export interface TechniqueItem {
   id: string
   title: string
   description: string
   examples: string[]
+  applyLabel?: string
   placeholderGenerator: (identity?: IdentityFormData) => string
   videoUrl: string
 }
@@ -62,10 +64,13 @@ export const DEFAULT_LAW_SECTIONS: LawSection[] = [
           'Nhận ra mình tỉnh táo nhất lúc 6h30, đặt việc quan trọng vào đó thay vì 10h tối khi đã cạn',
           'Thấy mình hay trống 15 phút lúc chờ cơm trưa, dùng đúng khoảng đó cho thói quen mới',
         ],
-        placeholderGenerator: (id) =>
-          id?.mentorTime
-            ? `Thói quen của tôi sẽ rơi vào khoảng ${id.mentorTime}, lúc tôi còn năng lượng.`
-            : 'Khoảng thời gian trong ngày tôi còn năng lượng nhất là…',
+        applyLabel: 'Thói quen tốt tôi nhận ra:',
+        placeholderGenerator: (id) => {
+          const formatted = id?.mentorTime ? formatTimeAmPm(id.mentorTime) || id.mentorTime : ''
+          return formatted
+            ? `Thói quen của tôi sẽ rơi vào khoảng ${formatted}, lúc tôi còn năng lượng.`
+            : 'Ngồi thiền'
+        },
         videoUrl: 'https://www.facebook.com/reel/1346424584229031',
       },
       {

@@ -320,6 +320,11 @@ export const Products: CollectionConfig = {
                 description: vi.pk30.descriptions.curriculumHeading,
               },
             }),
+            text('curriculumUnitLabel', vi.pk30.curriculumUnitLabel, false, {
+              admin: {
+                description: vi.pk30.descriptions.curriculumUnitLabel,
+              },
+            }),
             textarea('curriculumSubheading', vi.pk30.curriculumSubheading, {
               admin: {
                 description: vi.pk30.descriptions.curriculumSubheading,
