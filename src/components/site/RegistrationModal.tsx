@@ -124,6 +124,11 @@ export function RegistrationModal({
       nextErrors.consent = vi.forms.validation.consentRequired
     }
 
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
+      setServerError(vi.forms.turnstileRequired || 'Vui lòng xác minh bạn không phải là robot')
+      return false
+    }
+
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
   }
@@ -162,7 +167,7 @@ export function RegistrationModal({
         // REVIEW-REQUIRED: Never pass PII (name, phone, email) to analytics
         track('lead_submitted', { form: formType })
       } else {
-        setServerError(res.error || vi.leadForm.errorMessage)
+        setServerError(res.error || res.message || vi.leadForm.errorMessage)
         if (res.fieldErrors) {
           setErrors(res.fieldErrors)
         }
@@ -337,7 +342,11 @@ export function RegistrationModal({
           </div>
 
           <TurnstileWidget
-            onVerify={(token) => setTurnstileToken(token)}
+            onVerify={(token) => {
+              setTurnstileToken(token)
+              setServerError(null)
+            }}
+            onError={() => setTurnstileToken(undefined)}
             onExpire={() => setTurnstileToken(undefined)}
           />
 

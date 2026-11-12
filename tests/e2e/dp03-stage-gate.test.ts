@@ -137,10 +137,11 @@ test.describe('DP-03: login gate after Habit stage 1 (/habit/5-phut)', () => {
           'href',
           `/tai-khoan/dang-nhap?next=${encodeURIComponent('/habit/5-phut?buoc=3')}`,
         )
-        // Header stage-2 card and the step strip lead to the same gate (no way around it).
+        // Back to step 2 then navigate to stage 2 again via "Sang giai đoạn 2" button (AU-03 removed large stage cards).
         await guest.getByRole('button', { name: vi.dp03.backToStage1 }).click()
-        await expect(guest.getByRole('button', { name: /Sang giai đoạn 2/ })).toBeVisible()
-        await guest.getByRole('button', { name: /GIAI ĐOẠN 2/ }).click()
+        const nextStageBtn = guest.getByRole('button', { name: /Sang giai đoạn 2/ })
+        await expect(nextStageBtn).toBeVisible()
+        await nextStageBtn.click()
         await expect(guest.getByRole('heading', { name: vi.dp03.loginTitle })).toBeVisible()
         await expect(guest.getByPlaceholder(STEP3_PLACEHOLDER)).toHaveCount(0)
         if (SHOTS) await guest.screenshot({ path: path.join(SHOT_DIR, `login-gate-${label}.png`) })

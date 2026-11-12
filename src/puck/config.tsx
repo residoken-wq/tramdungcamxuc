@@ -439,7 +439,8 @@ const basePuckConfig: Config<PageComponentsProps> = {
         },
         titleLine1: {
           type: 'text',
-          label: `${vi.eb15a.titleLine1} (dùng *từ* để tô màu nổi bật)`,
+          label: vi.eb15a.titleLine1,
+          placeholder: 'Dùng *từ* để tô màu nổi bật',
           contentEditable: true,
         },
         line1Color: {
@@ -449,7 +450,8 @@ const basePuckConfig: Config<PageComponentsProps> = {
         },
         titleLine2: {
           type: 'text',
-          label: `${vi.eb15a.titleLine2} (dùng *từ* để tô màu nổi bật)`,
+          label: vi.eb15a.titleLine2,
+          placeholder: 'Dùng *từ* để tô màu nổi bật',
           contentEditable: true,
         },
         line2Color: {

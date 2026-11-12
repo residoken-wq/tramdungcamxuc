@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
 import { expectNoSeriousA11y } from './helpers/a11y'
+import { vi } from '../../src/lib/i18n/vi'
 
 /**
  * T3-06a: GĐ 3 EQ Buddy Gate Test – Single Connected E2E Journey
@@ -90,6 +91,7 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
     let createdDigitalProductId: number | undefined
     let createdPhysicalProductId: number | undefined
     let createdCustomerId: number | undefined
+    let initialGlobalData: unknown = null
 
     const suffix = randomUUID().slice(0, 8)
     const cardCode1 = `EQ-GATE-1-${suffix}`
@@ -116,9 +118,17 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
     try {
       // 1. Bootstrap admin
       adminId = await bootstrapAdmin(page)
-      // DP-01: luồng này kiểm chế độ "dùng thử"; trả công tắc về mặc định phòng khi test khác để "free"
+      // Lưu lại global EQ content ban đầu
+      const initialGlobalRes = await page.request.get('/api/globals/eqBuddyContent')
+      if (initialGlobalRes.ok()) {
+        initialGlobalData = await initialGlobalRes.json()
+      }
+      // DP-01: luồng này kiểm chế độ "dùng thử" và liên kết Shopee mẫu
       const modeRes = await page.request.post('/api/globals/eqBuddyContent', {
-        data: { eqAccessMode: 'trial' },
+        data: {
+          eqAccessMode: 'trial',
+          shopeeUrl: 'https://shopee.vn/product/12345678/98765432',
+        },
       })
       expect(modeRes.ok()).toBe(true)
 
@@ -355,13 +365,16 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
       const contentType916 = shareRes916.headers()['content-type'] || ''
       expect(contentType916.startsWith('image/')).toBe(true)
 
-      // 11. Bấm nút Mua bộ thẻ vật lý trên /eq-buddy
+      // 11. Bấm nút Mua bộ thẻ vật lý trên /eq-buddy (AU-02)
       await guestPage.goto('/eq-buddy', { waitUntil: 'load' })
 
       // Chạy a11y audit tại landing /eq-buddy
       await expectNoSeriousA11y(guestPage, 'eq-journey-landing')
 
-      const shopeeLink = guestPage.locator('a[href*="shopee.vn"]').first()
+      const shopeeLink = guestPage
+        .getByRole('link', { name: new RegExp(vi.au02.buyDeckShopee) })
+        .or(guestPage.locator('a[href*="shopee.vn"]'))
+        .first()
       await expect(shopeeLink).toBeVisible({ timeout: 15000 })
       await expect(shopeeLink).toHaveAttribute('target', '_blank')
       const relAttr = await shopeeLink.getAttribute('rel')
@@ -414,6 +427,15 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
       }
 
       if (adminId) {
+        if (initialGlobalData) {
+          await page.request
+            .post('/api/globals/eqBuddyContent', { data: initialGlobalData })
+            .catch(() => {})
+        } else {
+          await page.request
+            .post('/api/globals/eqBuddyContent', { data: { eqAccessMode: 'trial' } })
+            .catch(() => {})
+        }
         await page.request.delete(`/api/users/${adminId}`).catch(() => {})
       }
     }
