@@ -194,6 +194,14 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
       await modalDialog.locator('input[type="email"]').fill(testEmail)
       await modalDialog.locator('input[type="checkbox"]').check()
 
+      // Chờ token Turnstile khi Turnstile được kích hoạt (như experience-booking.test.ts)
+      if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.CI) {
+        await expect(modalDialog.locator('input[name="cf-turnstile-response"]')).not.toHaveValue(
+          '',
+          { timeout: 20000 },
+        )
+      }
+
       // Bấm gửi form
       await modalDialog.locator('button[type="submit"]').click()
 
