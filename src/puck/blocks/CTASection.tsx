@@ -163,13 +163,80 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     bgColor: {
       type: 'select',
       label: 'Màu nền section ngoài',
-      options: [...BRAND_COLOR_OPTIONS],
+      options: [
+        ...BRAND_COLOR_OPTIONS,
+        { label: 'Hồng sen (Bright Magenta)', value: 'bright-magenta' },
+      ],
     },
     padding: {
       type: 'select',
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
+  },
+  resolveFields: (data, params) => {
+    const fields = { ...params.fields }
+    const props = data?.props || {}
+
+    // Dạng "hộp thẻ trắng" và "nền tràn" chỉ hiện ô áp dụng cho dạng đó
+    if (props.variant === 'solid') {
+      delete fields.proofText
+      delete fields.testimonials
+    }
+
+    // Hành động của nút chính
+    const buttonAction = props.buttonAction || 'link'
+    if (buttonAction === 'booking') {
+      delete fields.buttonLinkType
+      delete fields.buttonPageId
+      delete fields.buttonLink
+      delete fields.formType
+      delete fields.formTitle
+      delete fields.formSuccessMessage
+    } else if (buttonAction === 'form') {
+      delete fields.buttonLinkType
+      delete fields.buttonPageId
+      delete fields.buttonLink
+    } else {
+      // buttonAction === 'link'
+      delete fields.formType
+      delete fields.formTitle
+      delete fields.formSuccessMessage
+      const linkType = props.buttonLinkType || 'url'
+      if (linkType === 'page') {
+        delete fields.buttonLink
+      } else if (linkType === 'url') {
+        delete fields.buttonPageId
+      } else if (linkType === 'booking') {
+        delete fields.buttonPageId
+        delete fields.buttonLink
+      }
+    }
+
+    // Nút phụ: Chữ nút phụ trống -> ẩn mọi ô nút phụ còn lại
+    const hasSecondaryText = Boolean(
+      props.secondaryButtonText && props.secondaryButtonText.trim().length > 0,
+    )
+    if (!hasSecondaryText) {
+      delete fields.secondaryButtonAction
+      delete fields.secondaryButtonLink
+      delete fields.secondaryButtonVariant
+      delete fields.secondaryFormType
+      delete fields.secondaryFormTitle
+      delete fields.secondaryFormSuccessMessage
+    } else {
+      const secondaryAction = props.secondaryButtonAction || 'link'
+      if (secondaryAction === 'form') {
+        delete fields.secondaryButtonLink
+      } else {
+        // secondaryAction === 'link'
+        delete fields.secondaryFormType
+        delete fields.secondaryFormTitle
+        delete fields.secondaryFormSuccessMessage
+      }
+    }
+
+    return fields
   },
   defaultProps: {
     version: 1,
