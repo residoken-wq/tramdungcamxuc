@@ -295,32 +295,30 @@ export const homeV2Template: Data = {
       },
     },
     {
-      type: 'QuoteBlock',
+      type: 'QuestionButtons',
       props: {
-        id: 'home-v2-quote',
-        version: 2,
-        quote:
-          'Bạn thực sự muốn bước ra, nhưng chưa biết cần nhìn lại điều gì, chuẩn bị thế nào hoặc duy trì hành động ra sao.',
-        author: '',
-        role: '',
-        variant: 'highlight',
-        quoteColor: 'warm-ivory',
-        bgColor: 'deep-navy',
+        id: 'home-v2-question-buttons',
+        version: 1,
+        question:
+          '[MẪU] Bạn thực sự muốn tìm được lối ra nhưng chưa biết bắt đầu từ đâu?',
+        bgColor: 'bright-magenta',
         padding: 'md',
-      },
-    },
-    {
-      type: 'CTAButton',
-      props: {
-        id: 'home-v2-diagnostic-cta',
-        version: 2,
-        label: 'Công cụ chẩn đoán - Miễn phí',
-        linkType: 'url',
-        pageId: '',
-        href: '/habit/chan-doan',
-        variant: 'primary',
-        size: 'md',
-        align: 'center',
+        buttons: [
+          {
+            text: '[MẪU] Điểm nghẽn Thói quen',
+            action: 'link',
+            linkType: 'url',
+            url: '/habit/chan-doan',
+            variant: 'solid',
+          },
+          {
+            text: '[MẪU] Điểm nghẽn Cảm xúc',
+            action: 'link',
+            linkType: 'url',
+            url: '/eq-buddy',
+            variant: 'outline',
+          },
+        ],
       },
     },
 

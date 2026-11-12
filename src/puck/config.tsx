@@ -71,6 +71,10 @@ import { CalloutBlock, type CalloutProps } from './blocks/Callout'
 import { PackageCardsBlock, type PackageCardsProps } from './blocks/PackageCards'
 import { SolutionEcosystemBlock, type SolutionEcosystemProps } from './blocks/SolutionEcosystem'
 import { CTASectionBlock, type CTASectionProps } from './blocks/CTASection'
+import {
+  QuestionButtonsBlock,
+  type QuestionButtonsProps,
+} from './blocks/QuestionButtons'
 import { createMediaExternalField } from './media-field'
 import {
   createBrandImageFields,
@@ -281,6 +285,7 @@ export type PageComponentsProps = {
   TeamGrid: TeamGridProps
   // Chuyển đổi
   CTAButton: CTAButtonBlockProps
+  QuestionButtons: QuestionButtonsProps
   CTASection: CTASectionProps
   TwoPathCards: TwoPathCardsProps
   LeadForm: LeadFormBlockProps
@@ -372,6 +377,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
       title: 'Chuyển đổi',
       components: [
         'CTAButton',
+        'QuestionButtons',
         'CTASection',
         'TwoPathCards',
         'LeadForm',
@@ -890,6 +896,7 @@ const basePuckConfig: Config<PageComponentsProps> = {
 
     // Chuyển đổi
     CTAButton: CTAButtonBlock,
+    QuestionButtons: QuestionButtonsBlock,
     CTASection: CTASectionBlock,
     LeadForm: LeadFormBlock,
     BookingCTA: BookingCTABlock,

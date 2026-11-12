@@ -330,6 +330,7 @@ describe('T1-01: Puck Blocks – Mở đầu, Nội dung, Bố cục', () => {
       expect(categories?.conversion?.title).toBe('Chuyển đổi')
       expect(categories?.conversion?.components).toEqual([
         'CTAButton',
+        'QuestionButtons',
         'CTASection',
         'TwoPathCards',
         'LeadForm',
