@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   Sparkles,
   ArrowRight,
-  ArrowLeft,
   Heart,
   Compass,
   Users,
@@ -51,28 +51,40 @@ export interface EQBuddyIntroProps {
     step4Title?: string | null
     step4Tag?: string | null
     step4Desc?: string | null
+    guideModalTitle?: string | null
     guideModalQuote?: string | null
+    guideModalButton?: string | null
   } | null
   /** QA DP-01c: rendered by the server page (TrialBanner is an async Server Component). */
   trialBanner?: React.ReactNode
 }
 
 export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
-  const [introStep, setIntroStep] = useState<1 | 2>(1)
+  const router = useRouter()
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
 
-  const rawShopeeUrl =
-    content?.shopeeUrl ||
-    'https://shopee.vn/search?keyword=tr%E1%BA%A1m%20d%E1%BB%ABng%20c%E1%BA%A3m%20x%C3%BAc'
+  const rawShopeeUrl = content?.shopeeUrl?.trim() || ''
   // Same UTM + event as ShopeeButton (AGENTS §8.3, §9: Shopee link carries UTM, logs external_clicked)
-  const shopeeUrl =
-    safeHref(
-      appendUtmParams(rawShopeeUrl, {
-        source: 'tramdungcamxuc',
-        medium: 'website',
-        campaign: 'eq-buddy',
-      }),
-    ) || rawShopeeUrl
+  const shopeeUrl = rawShopeeUrl
+    ? safeHref(
+        appendUtmParams(rawShopeeUrl, {
+          source: 'tramdungcamxuc',
+          medium: 'website',
+          campaign: 'eq-buddy',
+        }),
+      ) || rawShopeeUrl
+    : ''
+
+  // Hana rà soát: Bỏ phần "Bộ thẻ là gì" và 4 ô mục đích -> để trống thì ẩn
+  const hasIntro1 = Boolean(
+    content?.intro1Heading?.trim() ||
+    content?.card1Title?.trim() ||
+    content?.card2Title?.trim() ||
+    content?.card3Title?.trim() ||
+    content?.card4Title?.trim()
+  )
+
+  const hasBadge = Boolean(content?.badge && content.badge.trim().length > 0)
 
   return (
     <div className="w-full space-y-8">
@@ -102,308 +114,187 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
             </button>
 
             <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
-              {content?.quoteTop || 'Trạm dừng để lắng nghe ♡'}
+              {content?.quoteTop || 'Dừng để vững vàng bước tới.'}
             </span>
           </div>
         </div>
 
         {/* Header Intro chung */}
-        <div className="space-y-2 mb-6 text-center sm:text-left font-ui">
-          <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="space-y-3 mb-6 text-center sm:text-left font-ui">
+          {hasBadge && (
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
-              {/* a11y-contrast-ok: SVG icon trang trí */}
-              <Sparkles className="w-3.5 h-3.5 text-accent-pink" />
-              <span>{content?.badge || 'Bộ thẻ chánh niệm & Trí tuệ cảm xúc (EQ)'}</span>
+              <Sparkles className="w-3.5 h-3.5 text-bright-magenta" />
+              <span>{content!.badge}</span>
             </div>
-
-            {/* Progress step badge 1/2 */}
-            <div className="flex items-center gap-1.5 text-xs text-deep-navy/60 font-medium">
-              <span className="px-2 py-0.5 rounded-full bg-lavender-mist/60 text-deep-navy font-semibold text-[11px]">
-                {vi.dp01eq.stepPrefix} {introStep}/2
-              </span>
-              <span>{introStep === 1 ? vi.dp01eq.introCard1Title : vi.dp01eq.introCard2Title}</span>
-            </div>
-          </div>
+          )}
 
           <h1 className="font-display text-2xl sm:text-3xl md:text-4xl uppercase tracking-wide text-deep-navy">
-            {content?.mainTitle || 'TRẠM DỪNG CẢM XÚC'}
+            {content?.mainTitle || 'BỘ THẺ EQ BUDDY'}
           </h1>
 
-          <p className="text-sm sm:text-base text-deep-navy/80 font-medium">
-            26 thông điệp cùng bạn. <strong className="text-bright-magenta">Gọi tên</strong> -{' '}
-            <strong className="text-bright-magenta">Ghi nhận</strong> -{' '}
-            <strong className="text-deep-navy">Gợi nhớ</strong>.
+          <p className="text-sm sm:text-base text-deep-navy/80 font-medium leading-relaxed">
+            {content?.subtitle ||
+              '26 thông điệp cùng bạn Gói ghém cảm xúc - Ghi nhận nỗ lực - Gợi nhớ bài học ý nghĩa mỗi ngày.'}
           </p>
         </div>
 
         {/* ==================================================== */}
-        {/* MÀN HÌNH INTRO 1: "BỘ THẺ LÀ GÌ?" (Lưới 4 thẻ thông tin) */}
+        {/* NỘI DUNG TÙY CHỌN: "BỘ THẺ LÀ GÌ?" (NẾU CMS CÓ NHẬP LIỆU) */}
         {/* ==================================================== */}
-        {introStep === 1 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-l-4 border-bright-magenta pl-3 text-left font-ui">
-              <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase">
-                {content?.intro1Heading || 'Bộ thẻ là gì?'}
-              </h3>
-              <p className="text-xs text-deep-navy/60 font-medium">
-                {content?.intro1Description ||
-                  'Công cụ chiêm nghiệm và đối thoại cảm xúc được thiết kế cho phụ nữ hiện đại.'}
-              </p>
-            </div>
+        {hasIntro1 ? (
+          <div className="space-y-6 animate-fadeIn font-ui">
+            {content?.intro1Heading?.trim() && (
+              <div className="border-l-4 border-bright-magenta pl-3 text-left">
+                <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase">
+                  {content.intro1Heading}
+                </h3>
+                {content.intro1Description?.trim() && (
+                  <p className="text-xs text-deep-navy/60 font-medium">
+                    {content.intro1Description}
+                  </p>
+                )}
+              </div>
+            )}
 
-            {/* LƯỚI 4 THẺ THÔNG TIN */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 text-left font-ui">
-              {/* 1. Mục đích */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5 hover:border-bright-magenta/40 transition-all group">
-                <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
+            {/* LƯỚI THẺ THÔNG TIN NẾU CÓ */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 text-left">
+              {content?.card1Title?.trim() && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center font-bold">
                     <Heart className="w-4 h-4 text-bright-magenta" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
-                    {vi.dp01eq.purpose}
-                  </span>
+                  <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
+                    {content.card1Title}
+                  </h4>
+                  {content.card1Desc?.trim() && (
+                    <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
+                      {content.card1Desc}
+                    </p>
+                  )}
                 </div>
-                <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                  {content?.card1Title || 'Tĩnh lặng & Lắng nghe sâu'}
-                </h4>
-                <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                  {content?.card1Desc ||
-                    'Mỗi thẻ là một từ khóa EQ giúp bạn dừng lại, kết nối với cảm xúc, nhận diện những xao động và tái tạo nguồn năng lượng an yên bên trong.'}
-                </p>
-              </div>
+              )}
 
-              {/* 2. Dùng một mình */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5 hover:border-mint-haze transition-all group">
-                <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
+              {content?.card2Title?.trim() && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center font-bold">
                     <Compass className="w-4 h-4 text-deep-navy" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-mint-haze text-deep-navy">
-                    {vi.dp01eq.useAlone}
-                  </span>
+                  <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
+                    {content.card2Title}
+                  </h4>
+                  {content.card2Desc?.trim() && (
+                    <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
+                      {content.card2Desc}
+                    </p>
+                  )}
                 </div>
-                <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                  {content?.card2Title || 'Chiêm nghiệm cá nhân'}
-                </h4>
-                <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                  {content?.card2Desc ||
-                    'Mở đầu ngày mới tràn đầy chánh niệm, đúc kết bài học sau mỗi trải nghiệm, hoặc tìm một từ khóa dẫn lối khi lý trí đang bối rối, mông lung.'}
-                </p>
-              </div>
+              )}
 
-              {/* 3. Dùng nhiều người */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5 hover:border-butter-cream transition-all group">
-                <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
+              {content?.card3Title?.trim() && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center font-bold">
                     <Users className="w-4 h-4 text-deep-navy" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-butter-cream text-deep-navy">
-                    {vi.dp01eq.useGroup}
-                  </span>
+                  <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
+                    {content.card3Title}
+                  </h4>
+                  {content.card3Desc?.trim() && (
+                    <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
+                      {content.card3Desc}
+                    </p>
+                  )}
                 </div>
-                <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                  {content?.card3Title || 'Kết nối & Thấu hiểu nhóm'}
-                </h4>
-                <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                  {content?.card3Desc ||
-                    'Phá băng nhóm (Icebreaker), khám phá giá trị đội ngũ, nhắn nhủ chân thành giữa bạn bè hoặc người thân trong một không gian an toàn, cởi mở.'}
-                </p>
-              </div>
+              )}
 
-              {/* 4. Cấu trúc mỗi thẻ */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5 hover:border-lavender-mist transition-all group">
-                <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-xl bg-lavender-mist text-deep-navy flex items-center justify-center font-bold group-hover:scale-105 transition-transform">
+              {content?.card4Title?.trim() && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-lavender-mist text-deep-navy flex items-center justify-center font-bold">
                     <Layers className="w-4 h-4 text-deep-navy" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-lavender-mist text-deep-navy">
-                    {vi.dp01eq.cardStructure}
-                  </span>
-                </div>
-                <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                  {content?.card4Title || '2 Mặt tương tác 3D'}
-                </h4>
-                <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                  {content?.card4Desc ? (
-                    content.card4Desc
-                  ) : (
-                    <>
-                      <strong className="text-deep-navy font-bold">Mặt trước:</strong> Từ khóa EQ +
-                      Thông điệp cảm hứng dẫn dắt. <br />
-                      <strong className="text-deep-navy font-bold">Mặt sau:</strong> 3 câu hỏi gợi
-                      mở suy ngẫm theo cấu trúc{' '}
-                      <em className="italic">Gợi nhớ - Gói ghém - Ghi nhận</em>.
-                    </>
+                  <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
+                    {content.card4Title}
+                  </h4>
+                  {content.card4Desc?.trim() && (
+                    <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
+                      {content.card4Desc}
+                    </p>
                   )}
-                </p>
-              </div>
+                </div>
+              )}
             </div>
 
-            {/* Nút thao tác Intro 1 */}
-            <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-lavender-mist font-ui">
-              <Link
-                href="/eq-buddy/rut-the"
-                className="text-xs text-deep-navy/70 hover:text-deep-navy underline underline-offset-4 transition-colors order-2 sm:order-1"
-              >
-                {vi.dp01eq.skipToDraw}
-              </Link>
-
+            {/* Nút thao tác đi thẳng vào rút thẻ */}
+            <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-lavender-mist">
               <button
                 type="button"
-                onClick={() => setIntroStep(2)}
-                className="w-full sm:w-auto px-7 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-semibold text-sm shadow-soft-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 group order-1 sm:order-2 cursor-pointer"
+                onClick={() => setIsGuideModalOpen(true)}
+                className="text-xs text-deep-navy/70 hover:text-deep-navy underline underline-offset-4 transition-colors cursor-pointer"
               >
-                <span>{vi.dp01.continue}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================== */}
-        {/* MÀN HÌNH INTRO 2: "4 BƯỚC SỬ DỤNG" */}
-        {/* ==================================================== */}
-        {introStep === 2 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-l-4 border-bright-magenta pl-3 text-left font-ui">
-              <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase">
-                {content?.intro2Heading || '4 Bước Sử Dụng Bộ Thẻ'}
-              </h3>
-              <p className="text-xs text-deep-navy/60 font-medium">
-                {content?.intro2Description ||
-                  'Hãy thả lỏng vai, hít một hơi thật sâu và làm theo 4 chỉ dẫn đơn giản sau:'}
-              </p>
-            </div>
-
-            {/* Danh sách 4 bước */}
-            <div className="grid grid-cols-1 gap-3 text-left font-ui">
-              {/* Bước 1: Mở đầu */}
-              <div className="p-4 rounded-2xl bg-white border border-lavender-mist shadow-soft-md flex items-start gap-3.5 hover:border-bright-magenta/30 transition-all">
-                <div className="w-9 h-9 rounded-2xl bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
-                  1
-                </div>
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                      {content?.step1Title || '1. Mở đầu'}
-                    </h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-mint-haze text-deep-navy">
-                      {content?.step1Tag || 'Đặt ý định'}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-[13px] text-deep-navy/75 leading-relaxed">
-                    {content?.step1Desc ||
-                      'Đặt ý định cho điều gì trong cuộc sống hay công việc hôm nay? Dành 30 giây tĩnh lặng, hít thở sâu để đưa tâm trí về trạng thái hiện diện trọn vẹn.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Bước 2: Chọn thẻ */}
-              <div className="p-4 rounded-2xl bg-white border border-lavender-mist shadow-soft-md flex items-start gap-3.5 hover:border-bright-magenta/30 transition-all">
-                <div className="w-9 h-9 rounded-2xl bg-soft-pink text-bright-magenta flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
-                  2
-                </div>
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                      {content?.step2Title || '2. Chọn thẻ'}
-                    </h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
-                      {content?.step2Tag || 'Gọi tên cảm xúc'}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-[13px] text-deep-navy/75 leading-relaxed">
-                    {content?.step2Desc ||
-                      'Chia sẻ cảm xúc bạn đang gặp — hoặc để trống và rút ngẫu nhiên thông điệp phù hợp cho khoảnh khắc này.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Bước 3: Thực hiện */}
-              <div className="p-4 rounded-2xl bg-white border border-lavender-mist shadow-soft-md flex items-start gap-3.5 hover:border-bright-magenta/30 transition-all">
-                <div className="w-9 h-9 rounded-2xl bg-butter-cream text-deep-navy flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
-                  3
-                </div>
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                      {content?.step3Title || '3. Thực hiện'}
-                    </h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-butter-cream text-deep-navy">
-                      {content?.step3Tag || 'Mặt trước thẻ'}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-[13px] text-deep-navy/75 leading-relaxed">
-                    {content?.step3Desc ||
-                      'Đọc từ khóa kèm câu diễn giải ở mặt trước → kết nối cảm nhận và lắng nghe phản hồi từ cơ thể và tâm trí.'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Bước 4: Khám phá */}
-              <div className="p-4 rounded-2xl bg-white border border-lavender-mist shadow-soft-md flex items-start gap-3.5 hover:border-bright-magenta/30 transition-all">
-                <div className="w-9 h-9 rounded-2xl bg-lavender-mist text-deep-navy flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
-                  4
-                </div>
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                      {content?.step4Title || '4. Khám phá'}
-                    </h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-lavender-mist text-deep-navy">
-                      {content?.step4Tag || 'Mặt sau thẻ'}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-[13px] text-deep-navy/75 leading-relaxed">
-                    {content?.step4Desc ||
-                      'Lật thẻ, trả lời 3 câu hỏi ở mặt sau để đào sâu và kết nối, gói ghém bài học và ghi nhận nỗ lực của bản thân.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Nút thao tác Intro 2 */}
-            <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-lavender-mist font-ui">
-              <button
-                type="button"
-                onClick={() => setIntroStep(1)}
-                className="px-5 py-2.5 rounded-full bg-white hover:bg-soft-pink/40 border border-lavender-mist text-deep-navy text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-soft-md cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>{vi.dp01eq.backToStep1}</span>
+                📖 {vi.dp01eq.guide}
               </button>
 
               <Link
                 href="/eq-buddy/rut-the"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-semibold text-sm sm:text-base shadow-soft-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 group"
+                className="w-full sm:w-auto px-7 py-3 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-semibold text-sm shadow-soft-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 group"
               >
-                <span>✨ {vi.dp01eq.drawNow}</span>
+                <span>✨ {vi.au02.drawNow}</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>
+        ) : (
+          /* MẶC ĐỊNH THEO RÀ SOÁT CỦA HANA: ĐI THẲNG VÀO RÚT THẺ */
+          <div className="pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-lavender-mist font-ui">
+            <button
+              type="button"
+              onClick={() => setIsGuideModalOpen(true)}
+              className="w-full sm:w-auto px-5 py-3 rounded-full bg-white hover:bg-soft-pink/40 border border-lavender-mist hover:border-bright-magenta text-deep-navy text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-soft-md cursor-pointer order-2 sm:order-1"
+            >
+              <BookOpen className="w-4 h-4 text-bright-magenta" />
+              <span>📖 {vi.dp01eq.guide}</span>
+            </button>
+
+            <Link
+              href="/eq-buddy/rut-the"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-semibold text-sm sm:text-base shadow-soft-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 group order-1 sm:order-2"
+            >
+              <span>✨ {vi.au02.drawNow}</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
         )}
       </div>
 
-      {/* Nút Shopee mua bộ thẻ vật lý */}
-      <div className="max-w-3xl mx-auto text-center font-ui">
-        <a
-          href={shopeeUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => track('external_clicked', { url: shopeeUrl, type: 'shopee' })}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta text-xs sm:text-sm font-semibold shadow-soft-md transition-all"
-        >
-          <ShoppingBag className="w-4 h-4 text-bright-magenta" />
-          <span>{vi.dp01eq.buyPhysicalDeck} →</span>
-        </a>
-      </div>
+      {/* Nút Shopee mua bộ thẻ vật lý (chỉ hiện khi có link Shopee) */}
+      {shopeeUrl && (
+        <div className="max-w-3xl mx-auto text-center font-ui">
+          <a
+            href={shopeeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track('external_clicked', { url: shopeeUrl, type: 'shopee' })}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta text-xs sm:text-sm font-semibold shadow-soft-md transition-all cursor-pointer"
+          >
+            <ShoppingBag className="w-4 h-4 text-bright-magenta" />
+            <span>{vi.au02.buyDeckShopee} →</span>
+          </a>
+        </div>
+      )}
 
       {/* Global Guide Modal */}
       <GuideModal
         isOpen={isGuideModalOpen}
         onClose={() => setIsGuideModalOpen(false)}
+        title={content?.guideModalTitle || undefined}
         quote={content?.guideModalQuote || undefined}
+        buttonText={content?.guideModalButton || undefined}
+        step1Title={content?.step1Title || undefined}
+        step1Desc={content?.step1Desc || undefined}
+        step2Title={content?.step2Title || undefined}
+        step2Desc={content?.step2Desc || undefined}
+        step3Title={content?.step3Title || undefined}
+        step3Desc={content?.step3Desc || undefined}
+        onConfirm={() => router.push('/eq-buddy/rut-the')}
       />
     </div>
   )

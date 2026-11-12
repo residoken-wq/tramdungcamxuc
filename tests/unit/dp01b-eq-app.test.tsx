@@ -16,6 +16,16 @@ vi.mock('next/link', () => ({
   ),
 }))
 
+// Mock next/navigation
+const mockPush = vi.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    back: vi.fn(),
+  }),
+}))
+
 // Mock TrialBanner
 vi.mock('@/components/habit/TrialBanner', () => ({
   TrialBanner: ({ productSlug }: { productSlug: string }) => (
@@ -81,11 +91,12 @@ describe('DP-01b: EQ Buddy Zip UI & Components', () => {
         />
       )
 
-      expect(screen.getByText('ACCEPTANCE')).toBeDefined()
+      expect(screen.getAllByText('ACCEPTANCE').length).toBeGreaterThanOrEqual(1)
       expect(screen.getByText('• Chấp nhận •')).toBeDefined()
       expect(screen.getByText('Tự thân')).toBeDefined()
       expect(screen.getByText(/Mọi cảm xúc đến đều có lý do của nó/)).toBeDefined()
-      expect(screen.getByText(/THẺ SỐ 01 \/ 26/)).toBeDefined()
+      expect(screen.queryByText(/THẺ SỐ/i)).toBeNull()
+      expect(screen.getByText('EQ BUDDY')).toBeDefined()
     })
 
     it('renders back card with 3 reflection prompts', () => {
@@ -132,14 +143,13 @@ describe('DP-01b: EQ Buddy Zip UI & Components', () => {
         <GuideModal isOpen={false} onClose={closeMock} />
       )
 
-      expect(screen.queryByText(/Hướng Dẫn Sử Dụng Bộ Thẻ/i)).toBeNull()
+      expect(screen.queryByText(/3 bước để "dừng"/i)).toBeNull()
 
       rerender(<GuideModal isOpen={true} onClose={closeMock} />)
-      expect(screen.getByText(/Hướng Dẫn Sử Dụng Bộ Thẻ/i)).toBeDefined()
-      expect(screen.getByText(/1\. Mở đầu/i)).toBeDefined()
-      expect(screen.getByText(/2\. Chọn thẻ/i)).toBeDefined()
-      expect(screen.getByText(/3\. Thực hiện/i)).toBeDefined()
-      expect(screen.getByText(/4\. Khám phá/i)).toBeDefined()
+      expect(screen.getByText(/3 bước để "dừng"/i)).toBeDefined()
+      expect(screen.getByText(/Gọi tên mong muốn và cảm xúc/i)).toBeDefined()
+      expect(screen.getByText(/Chọn thông điệp/i)).toBeDefined()
+      expect(screen.getAllByText(/Khám phá/i).length).toBeGreaterThanOrEqual(1)
 
       const closeBtn = screen.getByRole('button', { name: /Đóng hướng dẫn/i })
       fireEvent.click(closeBtn)
@@ -148,34 +158,30 @@ describe('DP-01b: EQ Buddy Zip UI & Components', () => {
   })
 
   describe('EQBuddyIntro Onboarding Component', () => {
+    beforeEach(() => {
+      mockPush.mockClear()
+    })
+
     it('switches between step 1 (Bộ thẻ là gì?) and step 2 (4 Bước Sử Dụng)', () => {
       render(
         <EQBuddyIntro
           content={{
             mainTitle: 'Trạm EQ Buddy',
+            intro1Heading: 'Bộ thẻ là gì?',
             shopeeUrl: 'https://shopee.vn/test-shop',
           }}
           trialBanner={<div data-testid="trial-banner" />}
         />
       )
 
-      // Step 1 check
+      // Content check
       expect(screen.getByText('Trạm EQ Buddy')).toBeDefined()
       expect(screen.getByText(/Bộ thẻ là gì\?/i)).toBeDefined()
       expect(screen.getByTestId('trial-banner')).toBeDefined()
 
-      // Click Tiếp tục -> Go to Step 2
-      const nextBtn = screen.getByRole('button', { name: /Tiếp tục/i })
-      fireEvent.click(nextBtn)
-
-      // Step 2 check
-      expect(screen.getByText(/4 Bước Sử Dụng Bộ Thẻ/i)).toBeDefined()
-      expect(screen.getByText(/Bắt đầu hành trình/i)).toBeDefined()
-
-      // Back to step 1
-      const backBtn = screen.getByRole('button', { name: /Quay lại bước 1/i })
-      fireEvent.click(backBtn)
-      expect(screen.getByText(/Bộ thẻ là gì\?/i)).toBeDefined()
+      // Link Rút thẻ ngay leads to /eq-buddy/rut-the
+      const drawLink = screen.getByRole('link', { name: /Rút thẻ ngay/i })
+      expect(drawLink.getAttribute('href')).toBe('/eq-buddy/rut-the')
     })
 
     it('renders no trial banner when the page passes none (free mode)', () => {

@@ -66,16 +66,15 @@ export default async function EqBuddyIntroPage() {
   const rawContent = (eqContent || {}) as any
   const isFreeMode = rawContent?.eqAccessMode === 'free'
   const shopeeUrl =
-    rawContent?.shopeeUrl ||
-    physicalProduct?.externalUrl ||
-    'https://shopee.vn/search?keyword=tr%E1%BA%A1m%20d%E1%BB%ABng%20c%E1%BA%A3m%20x%C3%BAc'
+    rawContent?.shopeeUrl?.trim() ||
+    physicalProduct?.externalUrl?.trim() ||
+    ''
 
   const contentProps = {
     ...rawContent,
-    badge: rawContent.badge || vi.eqBuddy.intro.badge,
-    mainTitle: rawContent.mainTitle || product?.name || vi.eqBuddy.intro.defaultTitle,
-    subtitle:
-      rawContent.subtitle || product?.shortDescription || vi.eqBuddy.intro.defaultDescription,
+    badge: rawContent?.badge ?? '',
+    mainTitle: rawContent?.mainTitle?.trim() || vi.au02.introTitle,
+    subtitle: rawContent?.subtitle?.trim() || vi.au02.introSubtitle,
     shopeeUrl,
   }
 

@@ -6,6 +6,7 @@ import type { Product } from '@/payload-types'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
+import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
 import { vi } from '@/lib/i18n/vi'
 
 export interface TrialBannerProps {
@@ -15,7 +16,7 @@ export interface TrialBannerProps {
 
 export async function TrialBanner({
   productSlug = HABIT_TRACKER_PRODUCT_SLUG,
-  buyButtonLabel = vi.trial.banner.buyButton,
+  buyButtonLabel,
 }: TrialBannerProps = {}) {
   const customer = await getCurrentCustomer()
   if (!customer) return null
@@ -40,6 +41,10 @@ export async function TrialBanner({
 
   const buyUrl = `/thanh-toan?san-pham=${encodeURIComponent(product.slug)}`
 
+  const isEq = productSlug === EQ_BUDDY_PRODUCT_SLUG || product.web === 'eq'
+  const finalBuyButtonText =
+    buyButtonLabel || (isEq ? vi.au02.vipMember : vi.trial.banner.buyButton)
+
   if (access.status === 'trial') {
     const daysLeft = access.daysLeft ?? product.trialDays ?? 0
     return (
@@ -58,7 +63,7 @@ export async function TrialBanner({
             href={buyUrl}
             className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-xs hover:bg-bright-magenta/90 transition-colors shadow-sm"
           >
-            {buyButtonLabel}
+            {finalBuyButtonText}
           </Link>
         </div>
       </aside>
@@ -90,7 +95,7 @@ export async function TrialBanner({
             href={buyUrl}
             className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-xs hover:bg-bright-magenta/90 transition-colors shadow-sm"
           >
-            {buyButtonLabel}
+            {finalBuyButtonText}
           </Link>
         </div>
       </aside>

@@ -5,7 +5,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import confetti from 'canvas-confetti'
 import {
-  Flower2,
+  Wind,
+  Heart,
+  Sparkles,
   ArrowRight,
   ArrowLeft,
   RotateCw,
@@ -16,13 +18,40 @@ import {
   Share2,
   Download,
   Check,
+  ShoppingBag,
 } from 'lucide-react'
 import { GuideModal } from './GuideModal'
 import { EQCardFlip } from './EQCardFlip'
+import { ExperienceBookingButton } from '@/components/site/ExperienceBookingButton'
 import type { PublicEqCard } from '@/lib/eq/cards.server'
+import type { PublicProduct } from '@/lib/products'
+import { getEffectivePrice } from '@/lib/products'
+import { formatVnd } from '@/lib/format'
+import { appendUtmParams } from '@/lib/utm'
+import { safeHref } from '@/lib/safe-href'
+import { track } from '@/lib/analytics/track'
 import { drawEqCardAction } from '@/lib/eq/actions'
 import { saveEqCardAction } from '@/lib/eq/saved-actions'
+import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
 import { vi } from '@/lib/i18n/vi'
+
+export interface EQDrawAppContentProps {
+  quoteTop?: string | null
+  stateIcon1Label?: string | null
+  stateIcon2Label?: string | null
+  stateIcon3Label?: string | null
+  cardBackPromptTitle?: string | null
+  cardBackQuote?: string | null
+  guideModalTitle?: string | null
+  guideModalQuote?: string | null
+  guideModalButton?: string | null
+  step1Title?: string | null
+  step1Desc?: string | null
+  step2Title?: string | null
+  step2Desc?: string | null
+  step3Title?: string | null
+  step3Desc?: string | null
+}
 
 export interface EQDrawAppProps {
   allCards: PublicEqCard[]
@@ -34,6 +63,10 @@ export interface EQDrawAppProps {
   suggestedEmotions?: string[]
   guideModalQuote?: string
   paywall?: React.ReactNode
+  eqProduct?: PublicProduct | null
+  coachingProduct?: PublicProduct | null
+  shopeeUrl?: string | null
+  content?: EQDrawAppContentProps | null
 }
 
 export function EQDrawApp({
@@ -55,12 +88,20 @@ export function EQDrawApp({
   ],
   guideModalQuote,
   paywall,
+  eqProduct,
+  coachingProduct,
+  shopeeUrl,
+  content,
 }: EQDrawAppProps) {
   const router = useRouter()
   const [step, setStep] = useState<'draw' | 'result' | 'all-cards' | 'paywall'>(initialStep)
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
   const [isFlipped, setIsFlipped] = useState(false)
-  const [emotionInput, setEmotionInput] = useState('')
+
+  // AU-02: Phân biệt chữ khách gõ và cảm xúc đã chọn
+  const [userNote, setUserNote] = useState('')
+  const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null)
+
   const [selectedCard, setSelectedCard] = useState<PublicEqCard | null>(
     initialCard || allCards[0] || null,
   )
@@ -81,6 +122,25 @@ export function EQDrawApp({
     }, 4000)
     return () => clearTimeout(timer)
   }, [toastMessage])
+
+  // Giá EQ Buddy số cho nút Trở thành VIP Member (không có sản phẩm thì không hiện giá)
+  const eqPricing = eqProduct ? getEffectivePrice(eqProduct, new Date()) : null
+  const hasSale = Boolean(
+    eqPricing && eqPricing.salePrice !== null && eqPricing.salePrice !== undefined,
+  )
+  const currentVipPrice = eqPricing ? (hasSale ? eqPricing.salePrice : eqPricing.price) : null
+
+  // Link Shopee có UTM (chỉ lấy từ shopeeUrl CMS -> sản phẩm, trống thì ẩn nút)
+  const rawShopeeUrl = shopeeUrl?.trim() || ''
+  const resolvedShopeeUrl = rawShopeeUrl
+    ? safeHref(
+        appendUtmParams(rawShopeeUrl, {
+          source: 'tramdungcamxuc',
+          medium: 'website',
+          campaign: 'eq-buddy',
+        }),
+      ) || rawShopeeUrl
+    : ''
 
   // Rút thẻ
   const triggerConfetti = () => {
@@ -138,9 +198,7 @@ export function EQDrawApp({
 
   // Chọn thẻ cụ thể từ danh sách tất cả thẻ
   const handleSelectSpecificCard = async (card: PublicEqCard) => {
-    // Nếu thẻ chưa mở nội dung và không ở freeMode
     if (!isUnlockedAll && !isFreeMode && !card.message) {
-      // Thử gọi server action để rút/xem theo slug
       const res = await drawEqCardAction({
         mode: 'keyword',
         qrSlug: card.qrSlug,
@@ -220,11 +278,11 @@ export function EQDrawApp({
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink hover:bg-bright-magenta hover:text-white text-bright-magenta text-xs font-semibold border border-bright-magenta/30 shadow-soft-md transition-all active:scale-95 group cursor-pointer"
             >
               <BookOpen className="w-3.5 h-3.5 text-bright-magenta group-hover:text-white transition-colors" />
-              <span>📖 {vi.dp01eq.guide}</span>
+              <span>{vi.dp01eq.guide}</span>
             </button>
 
             <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
-              Trạm dừng để lắng nghe ♡
+              {content?.quoteTop || vi.dp01eq.pauseReturnQuote}
             </span>
           </div>
         </div>
@@ -253,44 +311,65 @@ export function EQDrawApp({
         )}
 
         {/* ==================================================== */}
-        {/* BƯỚC 1: MÀN HÌNH NHẬP CẢM XÚC (DRAW) */}
+        {/* BƯỚC 1: MÀN HÌNH NHẬP TRẠNG THÁI (DRAW) - AU-02 */}
         {/* ==================================================== */}
         {step === 'draw' && (
           <div className="space-y-6 animate-fadeIn font-ui">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-5 text-center sm:text-left">
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
-                  {/* a11y-contrast-ok: SVG icon trang trí */}
-                  <Flower2 className="w-3.5 h-3.5 text-accent-pink" />
-                  <span>{vi.dp01eq.listenHeart}</span>
+            <div className="p-5 sm:p-8 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-5 text-center sm:text-left">
+              {/* 3 Biểu tượng trạng thái theo Hana rà soát */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+                <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
+                  <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center">
+                    <Wind className="w-4 h-4 text-deep-navy" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
+                    {content?.stateIcon1Label || vi.au02.stateIcon1}
+                  </span>
                 </div>
 
-                <h2 className="font-semibold text-lg sm:text-xl md:text-2xl text-deep-navy">
-                  {vi.dp01eq.howAreYouToday}
-                </h2>
+                <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
+                  <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-bright-magenta" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
+                    {content?.stateIcon2Label || vi.au02.stateIcon2}
+                  </span>
+                </div>
 
-                <p className="text-xs sm:text-sm text-deep-navy/70 leading-relaxed">
-                  {vi.dp01eq.tellMePrompt}{' '}
-                  <strong className="text-deep-navy">{vi.dp01eq.tellMePromptStrong}</strong>.
-                </p>
+                <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
+                  <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center">
+                    <Heart className="w-4 h-4 text-deep-navy" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
+                    {content?.stateIcon3Label || vi.au02.stateIcon3}
+                  </span>
+                </div>
               </div>
 
-              {/* Gợi ý cảm xúc nhanh */}
-              <div className="space-y-1.5 text-left">
+              {/* Gợi ý chọn nhanh cảm xúc */}
+              <div className="space-y-1.5 text-left pt-1">
                 <span className="text-[11px] text-deep-navy/60 font-medium">
                   {vi.dp01eq.quickMoodSuggestions}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
-                  {suggestedEmotions.map((em, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setEmotionInput(em)}
-                      className="text-[11px] px-2.5 py-1 rounded-xl bg-warm-ivory hover:bg-soft-pink text-deep-navy/80 border border-lavender-mist transition-colors cursor-pointer"
-                    >
-                      + {em}
-                    </button>
-                  ))}
+                  {suggestedEmotions.map((em, idx) => {
+                    const isSelected = selectedEmotion === em
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setSelectedEmotion((prev) => (prev === em ? null : em))}
+                        className={`text-[11px] px-2.5 py-1 rounded-xl border transition-all cursor-pointer font-medium ${
+                          isSelected
+                            ? 'bg-bright-magenta text-white border-bright-magenta shadow-sm'
+                            : 'bg-warm-ivory hover:bg-soft-pink text-deep-navy/80 border-lavender-mist'
+                        }`}
+                      >
+                        {isSelected ? '✓ ' : '+ '}
+                        {em}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
@@ -302,8 +381,8 @@ export function EQDrawApp({
                 <input
                   id="emotion-input"
                   type="text"
-                  value={emotionInput}
-                  onChange={(e) => setEmotionInput(e.target.value)}
+                  value={userNote}
+                  onChange={(e) => setUserNote(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleDrawCard()
                   }}
@@ -341,42 +420,46 @@ export function EQDrawApp({
         )}
 
         {/* ==================================================== */}
-        {/* BƯỚC 2: MÀN HÌNH KẾT QUẢ (CARD FLIP 3D + KHỐI E2) */}
+        {/* BƯỚC 2: MÀN HÌNH KẾT QUẢ (CARD FLIP 3D + 3 NÚT) - AU-02 */}
         {/* ==================================================== */}
         {step === 'result' && selectedCard && (
           <div className="space-y-6 sm:space-y-8 animate-fadeIn flex flex-col items-center text-center font-ui">
-            {/* Header Kết quả: Lời lắng nghe vỗ về */}
-            <div className="space-y-1.5 max-w-lg">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-butter-cream/60 text-deep-navy text-xs font-semibold">
-                <span>{vi.dp01eq.listenedToYou}</span>
-              </div>
-
-              <p className="text-xs sm:text-sm text-deep-navy/80 font-medium leading-relaxed">
-                {emotionInput.trim() ? (
-                  <>
-                    {vi.dp01eq.sharingAbout}{' '}
-                    <strong className="text-bright-magenta">&ldquo;{emotionInput}&rdquo;</strong>
-                  </>
-                ) : (
-                  vi.dp01eq.quietMomentMessage
-                )}
-              </p>
-
-              <span className="text-[11px] text-deep-navy/70 block">{vi.dp01eq.flipCardTip}</span>
+            {/* Header Kết quả: Nhắc lại Tôi đang / Tôi cảm thấy (ẩn dòng trống) */}
+            <div className="space-y-1 max-w-lg">
+              {userNote.trim() && (
+                <p className="text-xs sm:text-sm text-deep-navy/80 font-medium leading-relaxed">
+                  <strong className="text-deep-navy">{vi.au02.iAm}</strong> &ldquo;{userNote.trim()}&rdquo;
+                </p>
+              )}
+              {selectedEmotion && (
+                <p className="text-xs sm:text-sm text-deep-navy/80 font-medium leading-relaxed">
+                  <strong className="text-deep-navy">{vi.au02.iFeel}</strong>{' '}
+                  <span className="text-bright-magenta font-semibold">&ldquo;{selectedEmotion}&rdquo;</span>
+                </p>
+              )}
+              {!userNote.trim() && !selectedEmotion && (
+                <p className="text-xs sm:text-sm text-deep-navy/80 font-medium leading-relaxed">
+                  {vi.dp01eq.quietMomentMessage}
+                </p>
+              )}
+              <span className="text-[11px] text-deep-navy/70 block pt-0.5">
+                {vi.dp01eq.flipCardTip}
+              </span>
             </div>
 
-            {/* Thẻ lật 3D */}
+            {/* Thẻ lật 3D (Đã bỏ toàn bộ số thẻ / mã thẻ) */}
             <EQCardFlip
               card={selectedCard}
               isFlipped={isFlipped}
               onToggleFlip={() => setIsFlipped((prev) => !prev)}
               totalPublishedCards={allCards.length || 26}
+              reflectionHeading={content?.cardBackPromptTitle || undefined}
+              cardBackQuote={content?.cardBackQuote || undefined}
             />
 
-            {/* Thao tác dưới thẻ */}
+            {/* Thao tác lật thẻ & rút thẻ khác */}
             <div className="space-y-3 pt-2 w-full max-w-sm">
               <div className="flex items-center justify-center gap-3">
-                {/* Nút Lật thẻ */}
                 <button
                   type="button"
                   onClick={() => setIsFlipped((prev) => !prev)}
@@ -387,7 +470,6 @@ export function EQDrawApp({
                   <span>{isFlipped ? vi.dp01eq.seeFront : vi.dp01eq.flipCard}</span>
                 </button>
 
-                {/* Nút Rút thẻ khác */}
                 <button
                   type="button"
                   disabled={isDrawing}
@@ -420,10 +502,8 @@ export function EQDrawApp({
               </div>
             </div>
 
-            {/* ================================================== */}
-            {/* KHỐI MỚI E2: GHI SUY NGẪM · LƯU THẺ · CHIA SẺ */}
-            {/* ================================================== */}
-            <div className="w-full max-w-md p-5 sm:p-6 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-4 text-left font-ui mt-4">
+            {/* Khối Ghi suy ngẫm · Lưu thẻ · Chia sẻ */}
+            <div className="w-full max-w-md p-5 sm:p-6 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-4 text-left font-ui">
               <div className="border-b border-lavender-mist pb-2">
                 <h4 className="font-semibold text-sm text-deep-navy flex items-center gap-1.5">
                   <Bookmark className="w-4 h-4 text-bright-magenta" />
@@ -504,6 +584,64 @@ export function EQDrawApp({
                 </div>
               </div>
             </div>
+
+            {/* ================================================== */}
+            {/* 3 NÚT HÀNH ĐỘNG THEO RÀ SOÁT CỦA HANA (AU-02) */}
+            {/* ================================================== */}
+            <div className="w-full max-w-md space-y-3 font-ui pt-2">
+              {/* 1. Nút Trở thành VIP Member (giá từ sản phẩm CMS, có xử lý khuyến mãi) */}
+              <Link
+                href={`/thanh-toan?san-pham=${eqProduct?.slug || EQ_BUDDY_PRODUCT_SLUG}`}
+                className="w-full py-3 px-5 rounded-full bg-bright-magenta hover:bg-bright-magenta/90 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-soft-md hover:shadow-lg transition-all active:scale-95"
+              >
+                <span>{vi.au02.vipMember}</span>
+                {hasSale && eqPricing ? (
+                  <span className="flex items-center gap-1.5 text-xs text-white">
+                    <span className="line-through">{formatVnd(eqPricing.price)}</span>
+                    <span className="font-bold">{formatVnd(eqPricing.salePrice)}</span>
+                  </span>
+                ) : currentVipPrice != null ? (
+                  <span className="text-xs text-white">({formatVnd(currentVipPrice)})</span>
+                ) : null}
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+
+              <div
+                className={`flex items-center gap-2.5 ${
+                  resolvedShopeeUrl ? 'flex-col sm:flex-row' : 'flex-col'
+                }`}
+              >
+                {/* 2. Nút Mua bộ thẻ trên Shopee (chỉ hiện khi có link Shopee) */}
+                {resolvedShopeeUrl && (
+                  <a
+                    href={resolvedShopeeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() =>
+                      track('external_clicked', { url: resolvedShopeeUrl, type: 'shopee' })
+                    }
+                    className="w-full sm:w-1/2 py-2.5 px-4 rounded-full bg-white border border-lavender-mist hover:border-bright-magenta text-deep-navy hover:text-bright-magenta font-semibold text-xs flex items-center justify-center gap-1.5 shadow-soft transition-all cursor-pointer"
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5 text-bright-magenta" />
+                    <span>{vi.au02.buyDeckShopee}</span>
+                  </a>
+                )}
+
+                {/* 3. Nút Đặt lịch coaching 1-1 (phiên trải nghiệm 149k, AU-04) */}
+                <div className={resolvedShopeeUrl ? 'w-full sm:w-1/2' : 'w-full'}>
+                  <ExperienceBookingButton
+                    product={coachingProduct}
+                    productSlug={coachingProduct?.slug}
+                    buttonText={vi.au02.bookCoaching}
+                    variant="secondary"
+                    size="md"
+                    shape="pill"
+                    showPrice={true}
+                    className="w-full !py-2.5 !text-xs justify-center shadow-soft"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -515,8 +653,7 @@ export function EQDrawApp({
             <div className="flex items-center justify-between">
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold mb-1">
-                  {/* a11y-contrast-ok: SVG icon trang trí */}
-                  <BookOpen className="w-3.5 h-3.5 text-accent-pink" />
+                  <BookOpen className="w-3.5 h-3.5 text-bright-magenta" />
                   <span>{vi.dp01eq.collectionBadge}</span>
                 </div>
                 <h3 className="font-display text-xl sm:text-2xl text-deep-navy uppercase">
@@ -536,13 +673,14 @@ export function EQDrawApp({
 
             <p className="text-xs text-deep-navy/70">{vi.dp01eq.allCardsSubtitle}</p>
 
-            {/* Grid thẻ */}
+            {/* Grid thẻ - Đã bỏ card code / mã thẻ theo AU-02 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 max-h-[480px] overflow-y-auto pr-1">
               {allCards.map((card) => {
                 const isCurrent = selectedCard?.id === card.id
                 const isCardUnlocked = isUnlockedAll || isFreeMode || Boolean(card.message)
-                const cardCodeStr = String(card.code || card.order || card.id).padStart(2, '0')
-                const cardLabel = `${vi.dp01eq.cardPrefix} #${cardCodeStr} - ${card.keywordVi || card.keywordEn || card.code || ''} - ${isCardUnlocked ? vi.dp01eq.cardUnlocked : vi.dp01eq.cardLocked}`
+                const cardLabelName = [card.keywordEn, card.keywordVi].filter(Boolean).join(' · ')
+                const cardLabelStatus = isCardUnlocked ? vi.dp01eq.cardUnlocked : vi.dp01eq.cardLocked
+                const cardLabel = cardLabelName ? `${cardLabelName} – ${cardLabelStatus}` : cardLabelStatus
 
                 return (
                   <button
@@ -557,16 +695,16 @@ export function EQDrawApp({
                     }`}
                   >
                     <div className="flex items-center justify-between text-[10px] text-deep-navy/70 mb-2">
-                      <span className="font-bold">
-                        {vi.dp01eq.cardPrefix} #{cardCodeStr}
+                      <span className="font-semibold text-bright-magenta bg-soft-pink px-2 py-0.5 rounded-full">
+                        {card.category || 'EQ BUDDY'}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta font-semibold">
+                      <span className="font-bold text-deep-navy/70">
                         {card.keywordVi || 'Việt'}
                       </span>
                     </div>
 
                     <h4 className="font-display text-xl text-deep-navy group-hover:text-bright-magenta transition-colors">
-                      {card.keywordEn || card.code}
+                      {card.keywordEn || card.keywordVi || ''}
                     </h4>
 
                     {isCardUnlocked && card.message ? (
@@ -616,7 +754,15 @@ export function EQDrawApp({
       <GuideModal
         isOpen={isGuideModalOpen}
         onClose={() => setIsGuideModalOpen(false)}
-        quote={guideModalQuote}
+        title={content?.guideModalTitle || undefined}
+        quote={guideModalQuote || content?.guideModalQuote || undefined}
+        buttonText={content?.guideModalButton || undefined}
+        step1Title={content?.step1Title || undefined}
+        step1Desc={content?.step1Desc || undefined}
+        step2Title={content?.step2Title || undefined}
+        step2Desc={content?.step2Desc || undefined}
+        step3Title={content?.step3Title || undefined}
+        step3Desc={content?.step3Desc || undefined}
       />
     </div>
   )

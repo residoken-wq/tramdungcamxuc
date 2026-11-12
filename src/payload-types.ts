@@ -4704,6 +4704,11 @@ export interface EqBuddyContent {
   subtitle?: string | null;
   suggestedEmotions?: string | null;
   shopeeUrl?: string | null;
+  stateIcon1Label?: string | null;
+  stateIcon2Label?: string | null;
+  stateIcon3Label?: string | null;
+  cardBackPromptTitle?: string | null;
+  cardBackQuote?: string | null;
   intro1Heading?: string | null;
   intro1Description?: string | null;
   card1Title?: string | null;
@@ -4728,7 +4733,9 @@ export interface EqBuddyContent {
   step4Title?: string | null;
   step4Tag?: string | null;
   step4Desc?: string | null;
+  guideModalTitle?: string | null;
   guideModalQuote?: string | null;
+  guideModalButton?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -5213,6 +5220,11 @@ export interface EqBuddyContentSelect<T extends boolean = true> {
   subtitle?: T;
   suggestedEmotions?: T;
   shopeeUrl?: T;
+  stateIcon1Label?: T;
+  stateIcon2Label?: T;
+  stateIcon3Label?: T;
+  cardBackPromptTitle?: T;
+  cardBackQuote?: T;
   intro1Heading?: T;
   intro1Description?: T;
   card1Title?: T;
@@ -5237,7 +5249,9 @@ export interface EqBuddyContentSelect<T extends boolean = true> {
   step4Title?: T;
   step4Tag?: T;
   step4Desc?: T;
+  guideModalTitle?: T;
   guideModalQuote?: T;
+  guideModalButton?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
