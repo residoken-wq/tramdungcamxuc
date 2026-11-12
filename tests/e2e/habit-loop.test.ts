@@ -126,15 +126,17 @@ test.describe('Habit Loop 5 phút & Offer Page (T2-03)', () => {
         await zip.answerDiagnose(guest)
         await zip.passPercent(guest)
 
-        // BƯỚC 3: Tìm Mentor – việc có ích (+), chọn Mentor, giờ tùy chọn (HB-19)
+        // BƯỚC 3: Tìm Mentor – việc có ích (+), chọn Mentor, giờ tùy chọn (HB-19, AU-01)
         const mentorActivity = 'Uống 1 cốc nước ấm'
         const firstRoutine = guest.getByPlaceholder('Thức dậy, uống một ly nước')
         await expect(firstRoutine).toBeVisible({ timeout: 15000 })
         await firstRoutine.fill(mentorActivity)
         await guest.getByTitle('Có ích (+)').first().click()
         await guest.getByRole('button', { name: mentorActivity, exact: true }).click()
-        await guest.getByLabel(/lúc mấy giờ/).fill('06:30')
-        await expect(guest.getByText(/· lúc 06:30/)).toBeVisible()
+        await guest.getByLabel('Giờ', { exact: true }).selectOption('6')
+        await guest.getByLabel('Phút', { exact: true }).selectOption('30')
+        await guest.getByLabel('Buổi (AM hoặc PM)', { exact: true }).selectOption('AM')
+        await expect(guest.getByText(/· lúc 6:30 AM/)).toBeVisible()
         await guest.getByRole('button', { name: /Tiếp • Gọi tên thói quen/ }).click()
 
         // BƯỚC 4: Gọi tên, nhịp tuần (HB-09: bỏ Chủ nhật), bản tối giản; nháp còn sau khi tải lại
