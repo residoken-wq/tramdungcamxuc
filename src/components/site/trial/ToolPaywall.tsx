@@ -6,6 +6,7 @@ import type { Product } from '@/payload-types'
 import { getCurrentCustomer } from '@/lib/auth/session.server'
 import { getAccess, type AccessResult } from '@/lib/entitlements'
 import { vi } from '@/lib/i18n/vi'
+import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
 
 export interface ToolPaywallProps {
   productSlug: string
@@ -96,7 +97,12 @@ export async function ToolPaywall({
                 : 'border border-deep-navy/20 text-deep-navy bg-warm-ivory hover:bg-lavender-mist/40'
             }`}
           >
-            {buyButtonLabel || (isExpired ? vi.trial.buyToContinueButton : vi.tracker.paywall.buyButton)}
+            {buyButtonLabel ||
+              ((product.slug === EQ_BUDDY_PRODUCT_SLUG || product.web === 'eq')
+                ? vi.au02.vipMember
+                : isExpired
+                  ? vi.trial.buyToContinueButton
+                  : vi.tracker.paywall.buyButton)}
           </Link>
         </div>
       </div>

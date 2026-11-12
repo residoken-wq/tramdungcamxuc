@@ -33,8 +33,9 @@ export async function generateMetadata({ params }: CardPageProps): Promise<Metad
 
   const snippet = card.message?.trim().slice(0, 60) || ''
 
+  const keyword = card.keywordEn || card.keywordVi || ''
   return {
-    title: vi.eqBuddy.cardPage.metaTitle(card.code, snippet),
+    title: vi.eqBuddy.cardPage.metaTitle(keyword, snippet),
     description: snippet || vi.eqBuddy.cardPage.defaultMetaDescription,
   }
 }
@@ -88,8 +89,8 @@ export default async function EqCardQrPage({ params, searchParams }: CardPagePro
       <div className="max-w-2xl mx-auto">
         {/* Z5: h1 trợ năng cho trang thẻ QR */}
         <h1 className="sr-only">
-          {card.code
-            ? `Thẻ EQ ${card.code}: ${card.keywordVi || card.keywordEn || ''}`
+          {card.keywordVi || card.keywordEn
+            ? `Thẻ EQ: ${card.keywordVi || card.keywordEn || ''}`
             : vi.eqBuddy.cardPage.defaultMetaTitle}
         </h1>
 
