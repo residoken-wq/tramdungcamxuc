@@ -23,6 +23,8 @@ export interface PublicTechnique {
   description?: string | null
   examples?: string[]
   applyTemplate?: string | null
+  applyLabel?: string | null
+  applyPlaceholder?: string | null
   order?: number | null
   howTo?: unknown
   example?: unknown

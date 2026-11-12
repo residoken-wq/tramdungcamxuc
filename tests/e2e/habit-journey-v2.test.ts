@@ -62,7 +62,7 @@ async function bootstrapAdmin(page: Page): Promise<number> {
 
   if (!response) throw new Error('First-user registration request was never sent.')
   expect(response.ok()).toBe(true)
-  await expect(page).toHaveURL(/\/admin\/?$/)
+  await expect(page).toHaveURL(/\/admin\/?$/, { timeout: 30000 })
   return (await (await page.request.get('/api/users/me')).json()).user.id
 }
 

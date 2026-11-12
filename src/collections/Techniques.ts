@@ -70,6 +70,8 @@ export const Techniques = contentCollection(
     textarea('description', 'Mô tả ngắn'),
     lines('examples', 'Ví dụ', { maxRows: 2 }),
     text('applyTemplate', 'Mẫu gợi ý áp dụng ({mentor}, {thoi_quen}, {gio})'),
+    text('applyLabel', 'Nhãn ô nhập áp dụng (mặc định: Cách tôi áp dụng:)'),
+    text('applyPlaceholder', 'Gợi ý (placeholder) ô nhập áp dụng'),
     number('order', 'Thứ tự hiển thị', 0),
     richText('howTo', 'Cách thực hiện'),
     richText('example', 'Ví dụ'),

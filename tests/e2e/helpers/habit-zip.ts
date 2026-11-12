@@ -98,7 +98,7 @@ export async function pickTechniques(page: Page, picks: Array<{ name: string; no
     await expect(box).toHaveAttribute('aria-checked', 'true')
     if (note) {
       const row = box.locator('xpath=ancestor::div[contains(@class,"justify-between")][1]/..')
-      const noteInput = row.getByLabel('Cách tôi áp dụng:')
+      const noteInput = row.locator('input[id^="technique-note-"]')
       if (!(await noteInput.isVisible())) {
         await row.getByRole('button', { name: 'Xem', exact: true }).click()
       }
@@ -108,7 +108,7 @@ export async function pickTechniques(page: Page, picks: Array<{ name: string; no
 }
 
 export async function nextFromLoop(page: Page) {
-  await page.getByRole('button', { name: /Tiếp • Nhận thẻ lên tàu/ }).click()
+  await page.getByRole('button', { name: /Tiếp • Nhận Habit Boarding Pass/ }).click()
   await expect(page.getByText('HABIT BOARDING PASS').first()).toBeVisible({ timeout: 15000 })
 }
 

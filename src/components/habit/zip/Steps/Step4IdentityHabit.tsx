@@ -423,7 +423,7 @@ export function Step4IdentityHabit({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="sticky bottom-2 z-20 sm:static bg-warm-ivory/95 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none py-2.5 sm:py-0 sm:pt-2 px-2 sm:px-0 rounded-2xl border border-lavender-mist sm:border-0 shadow-soft sm:shadow-none flex items-center justify-between gap-2">
         <button
           type="button"
           onClick={onPrev}

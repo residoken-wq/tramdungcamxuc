@@ -51,12 +51,10 @@ describe('PK-30: Habit Offer CMS & Field Customization', () => {
       const statValues = Array.from(statsElements).map((el) => el.textContent?.trim())
       expect(statValues).toContain('4')
 
-      // 3 Điểm khác biệt mặc định
-      expect(screen.getByText(vi.habit.offer.features.heading)).toBeDefined()
-      expect(screen.getByText(vi.habit.offer.features.subheading)).toBeDefined()
-      expect(screen.getByText(vi.habit.offer.features.items[0].title)).toBeDefined()
-      expect(screen.getByText(vi.habit.offer.features.items[1].title)).toBeDefined()
-      expect(screen.getByText(vi.habit.offer.features.items[2].title)).toBeDefined()
+      // AU-03 Mục 17: Điểm khác biệt trống trong CMS -> ẩn hoàn toàn phần "khác biệt"
+      expect(screen.queryByText(vi.habit.offer.features.heading)).toBeNull()
+      expect(screen.queryByText(vi.habit.offer.features.subheading)).toBeNull()
+      expect(screen.queryByText(vi.habit.offer.features.items[0].title)).toBeNull()
 
       // Bottom CTA mặc định
       expect(screen.getByText(vi.habit.offer.bottomTitle(28))).toBeDefined()
