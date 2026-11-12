@@ -91,7 +91,9 @@ describe('HB-26: buildHabitContentPatch unit tests', () => {
       author: 'Tác giả',
       source: 'Nguồn',
     })
-    expect(sq.tracker.text).toBe('Thói quen là lãi kép của sự tự hoàn thiện.')
+    expect(sq.tracker.text).toBe(
+      'Mỗi hành động bạn thực hiện là một lá phiếu cho con người bạn muốn trở thành.',
+    )
 
     // 4. loop
     expect(patch.loop).toBeDefined()

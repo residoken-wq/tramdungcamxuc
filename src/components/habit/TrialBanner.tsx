@@ -10,10 +10,12 @@ import { vi } from '@/lib/i18n/vi'
 
 export interface TrialBannerProps {
   productSlug?: string
+  buyButtonLabel?: string
 }
 
 export async function TrialBanner({
   productSlug = HABIT_TRACKER_PRODUCT_SLUG,
+  buyButtonLabel = vi.trial.banner.buyButton,
 }: TrialBannerProps = {}) {
   const customer = await getCurrentCustomer()
   if (!customer) return null
@@ -56,7 +58,7 @@ export async function TrialBanner({
             href={buyUrl}
             className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-xs hover:bg-bright-magenta/90 transition-colors shadow-sm"
           >
-            {vi.trial.banner.buyButton}
+            {buyButtonLabel}
           </Link>
         </div>
       </aside>
@@ -88,7 +90,7 @@ export async function TrialBanner({
             href={buyUrl}
             className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-bright-magenta text-white font-ui font-semibold text-xs hover:bg-bright-magenta/90 transition-colors shadow-sm"
           >
-            {vi.trial.banner.buyButton}
+            {buyButtonLabel}
           </Link>
         </div>
       </aside>

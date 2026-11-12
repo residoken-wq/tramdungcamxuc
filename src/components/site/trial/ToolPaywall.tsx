@@ -15,6 +15,7 @@ export interface ToolPaywallProps {
   badge?: string
   /** Used when the product has no short description in the CMS. */
   fallbackDescription?: string
+  buyButtonLabel?: string
   className?: string
 }
 
@@ -24,6 +25,7 @@ export async function ToolPaywall({
   access: initialAccess,
   badge = vi.trial.paywallBadge,
   fallbackDescription = vi.trial.paywallDescription,
+  buyButtonLabel,
   className = '',
 }: ToolPaywallProps) {
   let product = initialProduct
@@ -94,7 +96,7 @@ export async function ToolPaywall({
                 : 'border border-deep-navy/20 text-deep-navy bg-warm-ivory hover:bg-lavender-mist/40'
             }`}
           >
-            {isExpired ? vi.trial.buyToContinueButton : vi.tracker.paywall.buyButton}
+            {buyButtonLabel || (isExpired ? vi.trial.buyToContinueButton : vi.tracker.paywall.buyButton)}
           </Link>
         </div>
       </div>

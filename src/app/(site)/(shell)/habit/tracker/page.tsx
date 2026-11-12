@@ -89,6 +89,7 @@ export default async function HabitTrackerPage() {
         access={access}
         badge={vi.tracker.paywall.title}
         fallbackDescription={vi.tracker.paywall.description}
+        buyButtonLabel={vi.dp01.vipMemberButton}
       />
     )
   }
@@ -178,6 +179,13 @@ export default async function HabitTrackerPage() {
     extracted.actionText ||
     null
 
+  const anchorHabit = (plan.anchorHabit || '').trim()
+  const mentorTime =
+    (Array.isArray(plan.scorecard)
+      ? plan.scorecard.find((item) => (item?.habit || '').trim() === anchorHabit && item?.time)
+          ?.time
+      : null) || null
+
   return (
     <div className="w-full min-h-[calc(100vh-160px)] py-8 sm:py-12 px-4 bg-linear-to-b from-warm-ivory via-warm-ivory/80 to-lavender-mist/20">
       <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -191,6 +199,7 @@ export default async function HabitTrackerPage() {
           identityAction={identityAction}
           atomicHabit={plan.twoMinuteAction || plan.anchorHabit || null}
           selectedMentor={plan.anchorHabit || null}
+          mentorTime={mentorTime}
           selectedDays={plan.rhythmDays ?? null}
           startDate={plan.startDate ?? null}
           stationNames={stationNames}

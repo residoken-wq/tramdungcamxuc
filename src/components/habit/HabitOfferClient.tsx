@@ -45,9 +45,6 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
   const titleLine2 = product?.offerTitleLine2?.trim() || vi.habit.offer.titleLine2
   const emotionLine = product?.offerEmotionLine?.trim() || vi.habit.offer.emotionalLine
 
-  const curriculumHeading = product?.curriculumHeading?.trim() || vi.habit.offer.curriculum.heading
-  const curriculumSubheading =
-    product?.curriculumSubheading?.trim() || vi.habit.offer.curriculum.subheading
   const curriculumModules =
     product?.curriculumModules && product.curriculumModules.length > 0
       ? product.curriculumModules.map((m) => ({
@@ -56,6 +53,15 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
         }))
       : vi.habit.offer.curriculum.modules
   const modulesCount = curriculumModules.length
+  const curriculumUnitLabel = product?.curriculumUnitLabel?.trim() || ''
+  const curriculumHeading =
+    product?.curriculumHeading?.trim() ||
+    (curriculumUnitLabel
+      ? vi.habit.offer.curriculum.headingWithUnit(modulesCount, curriculumUnitLabel)
+      : vi.habit.offer.curriculum.heading)
+  const curriculumSubheading =
+    product?.curriculumSubheading?.trim() || vi.habit.offer.curriculum.subheading
+  const curriculumUnitStatLabel = curriculumUnitLabel || vi.habit.offer.stats.modules
 
   const featuresHeading = product?.featuresHeading?.trim() || vi.habit.offer.features.heading
   const featuresSubheading =
@@ -66,7 +72,8 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
           title: f.title,
           desc: f.description || '',
         }))
-      : vi.habit.offer.features.items
+      : []
+  const includesHeadingText = product?.shortDescription?.trim() || vi.habit.offer.includesHeading
 
   const bottomTitle = product?.bottomTitle?.trim()
     ? product.bottomTitle.replace(/{ngay}/g, String(journeyDays))
@@ -125,7 +132,7 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
             {includesList.length > 0 && (
               <div className="mb-6 text-left border-t border-b border-lavender-mist/40 py-4">
                 <p className="text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-2 font-ui">
-                  {vi.habit.offer.includesHeading}
+                  {includesHeadingText}
                 </p>
                 <ul className="space-y-2">
                   {includesList.map((item, idx) => (
@@ -207,7 +214,7 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
                 {modulesCount}
               </span>
               <span className="text-xs sm:text-sm font-semibold text-deep-navy">
-                {vi.habit.offer.stats.modules}
+                {curriculumUnitStatLabel}
               </span>
             </div>
           </div>
@@ -247,34 +254,36 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
         </div>
       </section>
 
-      {/* 4. WHY DIFFERENT */}
-      <section className="py-12 sm:py-16 bg-white border-t border-lavender-mist/40">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10">
-            <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">
-              {featuresHeading}
-            </h2>
-            <p className="text-sm sm:text-base text-deep-navy/70">
-              {featuresSubheading}
-            </p>
-          </div>
+      {/* 4. WHY DIFFERENT – ẩn hoàn toàn nếu CMS để trống danh sách */}
+      {featureItems.length > 0 && (
+        <section className="py-12 sm:py-16 bg-white border-t border-lavender-mist/40">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-10">
+              <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">
+                {featuresHeading}
+              </h2>
+              <p className="text-sm sm:text-base text-deep-navy/70">{featuresSubheading}</p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featureItems.map((feat, index) => (
-              <div
-                key={index}
-                className="p-6 rounded-card bg-warm-ivory border border-lavender-mist text-left"
-              >
-                <span className="w-8 h-8 rounded-full bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-sm mb-4">
-                  ✓
-                </span>
-                <h3 className="font-semibold text-deep-navy text-base mb-2">{feat.title}</h3>
-                {feat.desc && <p className="text-sm text-deep-navy/70 leading-relaxed">{feat.desc}</p>}
-              </div>
-            ))}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featureItems.map((feat, index) => (
+                <div
+                  key={index}
+                  className="p-6 rounded-card bg-warm-ivory border border-lavender-mist text-left"
+                >
+                  <span className="w-8 h-8 rounded-full bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-sm mb-4">
+                    ✓
+                  </span>
+                  <h3 className="font-semibold text-deep-navy text-base mb-2">{feat.title}</h3>
+                  {feat.desc && (
+                    <p className="text-sm text-deep-navy/70 leading-relaxed">{feat.desc}</p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 5. FAQ – chỉ hiện khi CMS có câu hỏi (không hiện FAQ mẫu ra trang công khai) */}
       {faqList.length > 0 && (

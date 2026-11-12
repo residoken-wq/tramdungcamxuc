@@ -19,6 +19,7 @@ import { StepQuoteHeader } from '../StepQuoteHeader'
 import type { PublicTechnique } from '@/lib/habit'
 import type { CleanHabitLoop } from '@/lib/habit/journey-content.server'
 import { DEFAULT_DP01_CONTENT, type Dp01Step5Content } from '@/lib/habit/dp01-content'
+import { formatTimeAmPm } from '@/lib/habit/tracker-stats'
 import { vi } from '@/lib/i18n/vi'
 
 export interface Step5LoopDesignProps {
@@ -66,33 +67,48 @@ export function Step5LoopDesign({
       const stageTechniques = techniques.filter((t) => t.stage === section.id)
       const techniqueItems: TechniqueItem[] =
         stageTechniques.length > 0
-          ? stageTechniques.map((tech) => ({
-              id: String(tech.id),
-              title: tech.name,
-              description: tech.description || '',
-              examples: tech.examples || [],
-              placeholderGenerator: (id?: IdentityFormData) => {
-                if (tech.applyTemplate) {
-                  let tpl = tech.applyTemplate
-                  if (tpl.includes('{mentor}')) {
-                    tpl = tpl.replace('{mentor}', id?.selectedMentor || '[Mentor]')
-                  }
-                  if (tpl.includes('{thoi_quen}')) {
-                    tpl = tpl.replace('{thoi_quen}', id?.atomicHabit || '[thói quen hạt nhân]')
-                  }
-                  if (tpl.includes('{gio}')) {
-                    if (id?.mentorTime) {
-                      tpl = tpl.replace('{gio}', id.mentorTime)
-                    } else {
-                      return 'Khoảng thời gian trong ngày tôi còn năng lượng nhất là…'
+          ? stageTechniques.map((tech) => {
+              const isBioClock = tech.name.trim().toLowerCase() === 'soi lại nhịp sinh học'
+              return {
+                id: String(tech.id),
+                title: tech.name,
+                description: tech.description || '',
+                examples: tech.examples || [],
+                applyLabel:
+                  tech.applyLabel?.trim() ||
+                  (isBioClock ? vi.dp01.bioClockApplyLabel : vi.dp01.defaultApplyLabel),
+                placeholderGenerator: (id?: IdentityFormData) => {
+                  const formattedTime = id?.mentorTime
+                    ? formatTimeAmPm(id.mentorTime) || id.mentorTime
+                    : ''
+                  const interpolate = (raw: string): string => {
+                    let out = raw
+                    if (out.includes('{mentor}')) {
+                      out = out.replace('{mentor}', id?.selectedMentor || '[Mentor]')
                     }
+                    if (out.includes('{thoi_quen}')) {
+                      out = out.replace('{thoi_quen}', id?.atomicHabit || '[thói quen hạt nhân]')
+                    }
+                    if (out.includes('{gio}')) {
+                      out = formattedTime
+                        ? out.replace('{gio}', formattedTime)
+                        : vi.dp01.bioClockApplyPlaceholder
+                    }
+                    return out
                   }
-                  return tpl
-                }
-                return 'Cách tôi áp dụng kỹ thuật này…'
-              },
-              videoUrl: tech.exampleVideoUrl || '',
-            }))
+                  if (tech.applyPlaceholder?.trim()) {
+                    return interpolate(tech.applyPlaceholder.trim())
+                  }
+                  if (tech.applyTemplate?.trim()) {
+                    return interpolate(tech.applyTemplate.trim())
+                  }
+                  return isBioClock
+                    ? vi.dp01.bioClockApplyPlaceholder
+                    : vi.dp01.defaultApplyPlaceholder
+                },
+                videoUrl: tech.exampleVideoUrl || '',
+              }
+            })
           : section.techniques
 
       return {
@@ -644,13 +660,13 @@ export function Step5LoopDesign({
                             </ul>
                           </div>
 
-                          {/* Ô nhập "Cách tôi áp dụng" */}
+                          {/* Ô nhập nhãn + placeholder theo kỹ thuật từ CMS */}
                           <div className="space-y-1">
                             <label
                               htmlFor={`technique-note-${tech.id}`}
                               className="text-[11px] font-bold uppercase tracking-wider text-deep-navy/60 block"
                             >
-                              Cách tôi áp dụng:
+                              {tech.applyLabel || vi.dp01.defaultApplyLabel}
                             </label>
                             <input
                               id={`technique-note-${tech.id}`}
@@ -698,7 +714,7 @@ export function Step5LoopDesign({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="sticky bottom-2 z-20 sm:static bg-warm-ivory/95 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none py-2.5 sm:py-0 sm:pt-2 px-2 sm:px-0 rounded-2xl border border-lavender-mist sm:border-0 shadow-soft sm:shadow-none flex items-center justify-between gap-2">
         <button
           type="button"
           onClick={onPrev}

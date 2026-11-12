@@ -3,10 +3,11 @@ import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { vi } from '@/lib/i18n/vi'
-import { getTechniques } from '@/lib/habit.server'
+import { getHabitProduct, getTechniques } from '@/lib/habit.server'
 import { getHabitJourneyContent, withDiagnoseFallback } from '@/lib/habit/journey-content.server'
 import { getHabitStageGate } from '@/lib/habit/stage-gate.server'
 import type { HabitStageGateResult } from '@/lib/habit/stage-gate'
+import { resolveDefaultBookingProduct } from '@/puck/resolve.server'
 import { HabitTrackerApp } from '@/components/habit/zip/HabitTrackerApp'
 
 export const dynamic = 'force-dynamic'
@@ -48,7 +49,7 @@ export default async function HabitLoopPage({
     habitJourneyDays = 28
   }
 
-  const [techniques, journeyContent, initialGate] = await Promise.all([
+  const [techniques, journeyContent, initialGate, habitProduct, coachingProduct] = await Promise.all([
     getTechniques(payload),
     getHabitJourneyContent(payload).catch((error) => {
       console.error('[HabitLoopPage] Failed to fetch habit journey content:', error)
@@ -60,6 +61,8 @@ export default async function HabitLoopPage({
       console.error('[HabitLoopPage] Failed to resolve stage gate status:', error)
       return { status: 'ok' }
     }),
+    getHabitProduct(payload).catch(() => null),
+    resolveDefaultBookingProduct(payload).catch(() => null),
   ])
   // Step 1 falls back to the "Câu hỏi chẩn đoán" collection while its own survey is empty.
   const diagnose = await withDiagnoseFallback(journeyContent?.diagnose, payload)
@@ -76,6 +79,17 @@ export default async function HabitLoopPage({
         dp01Content={journeyContent?.dp01Content}
         initialGate={initialGate}
         initialStepParam={initialStepParam}
+        habitProduct={
+          habitProduct
+            ? {
+                slug: habitProduct.slug,
+                price: habitProduct.price,
+                salePrice: habitProduct.salePrice,
+                saleEndsAt: habitProduct.saleEndsAt,
+              }
+            : null
+        }
+        coachingProduct={coachingProduct}
       />
     </div>
   )

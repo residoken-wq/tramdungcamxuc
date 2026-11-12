@@ -107,13 +107,13 @@ export interface Dp01AllContent {
 
 export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
   header: {
-    badgeText: 'CONTENT CREATOR HUB • TRẠM DỪNG CẢM XÚC',
+    badgeText: '',
     titleLine1: 'Xây Thói Quen',
     titleLine2: 'Dựng Thương Hiệu',
     seriesBadge: 'FORM HABIT · BUILD IDENTITY',
     tagline: 'Đều đặn một điều — mọi điều đều đặn',
     introText:
-      'Đây không phải một hành động giúp bạn thành công chỉ sau một đêm, nhưng nó cũng không kéo dài từ năm này qua năm khác. Bạn chỉ cần đi theo từng hướng dẫn sau đây trong 28 ngày để có một bước chuyển rõ nét cho thói quen của mình, qua 3 giai đoạn:',
+      'Đây không phải một hành động giúp bạn thành công chỉ sau một đêm, nhưng nó cũng không kéo dài từ năm này qua năm khác. Bạn chỉ cần đi theo từng hướng dẫn sau đây trong 28 ngày để có một bước chuyển rõ nét cho thói quen của mình.',
     stage1Title: 'Khám thói quen',
     stage1Desc: 'Khám đúng nút thắt · Hiểu nguyên lý',
     stage2Title: 'Xây thói quen',
