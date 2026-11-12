@@ -91,6 +91,7 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
     let createdDigitalProductId: number | undefined
     let createdPhysicalProductId: number | undefined
     let createdCustomerId: number | undefined
+    let initialGlobalData: unknown = null
 
     const suffix = randomUUID().slice(0, 8)
     const cardCode1 = `EQ-GATE-1-${suffix}`
@@ -119,7 +120,6 @@ test.describe('GD3 EQ Buddy Journey Gate (T3-06a)', () => {
       adminId = await bootstrapAdmin(page)
       // Lưu lại global EQ content ban đầu
       const initialGlobalRes = await page.request.get('/api/globals/eqBuddyContent')
-      let initialGlobalData: unknown = null
       if (initialGlobalRes.ok()) {
         initialGlobalData = await initialGlobalRes.json()
       }

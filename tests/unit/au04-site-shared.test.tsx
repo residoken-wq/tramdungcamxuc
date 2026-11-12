@@ -1,5 +1,5 @@
 import React from 'react'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it, vi, beforeEach, beforeAll, afterAll } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import {
   ExperienceBookingButton,
@@ -375,6 +375,19 @@ describe('AU-04: Nút đặt lịch dùng chung (Mục 4)', () => {
     })
 
     describe('submitRegistrationLead server logic', () => {
+      let savedTurnstileSecret: string | undefined
+
+      beforeAll(() => {
+        savedTurnstileSecret = process.env.TURNSTILE_SECRET_KEY
+        delete process.env.TURNSTILE_SECRET_KEY
+      })
+
+      afterAll(() => {
+        if (savedTurnstileSecret !== undefined) {
+          process.env.TURNSTILE_SECRET_KEY = savedTurnstileSecret
+        }
+      })
+
       it('creates lead with correct source, interestTags, and consent info', async () => {
         const mockCreate = vi.fn().mockResolvedValue({ id: 99 })
         const mockPayload = {
