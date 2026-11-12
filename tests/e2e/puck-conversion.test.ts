@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { test, expect, type Response } from './fixtures'
+import { expectNoSeriousA11y } from './helpers/a11y'
 
 test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & ShopeeButton UTM', () => {
   test('creates product with externalUrl, creates page with B2BBriefForm and ShopeeButton, publishes page, visitor submits brief, verifies lead in REST API, and verifies ShopeeButton UTM params', async ({
@@ -201,6 +202,197 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
       }
       if (productId) {
         await page.request.delete(`/api/products/${productId}`).catch(() => {})
+      }
+      if (userId) {
+        await page.request.delete(`/api/users/${userId}`).catch(() => {})
+      }
+      await publicPage.close().catch(() => {})
+      await publicContext.close().catch(() => {})
+    }
+  })
+
+  test('BX-01: QuestionButtons block and CTASection resolveFields in builder', async ({
+    page,
+    browser,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Runs once, verifies 1440 and 375 responsive.')
+    test.setTimeout(180000)
+    page.setDefaultTimeout(20000)
+
+    const email = `bx01-${randomUUID()}@example.test`
+    const password = randomUUID()
+    const pageSlug = `e2e-bx01-${randomUUID().slice(0, 8)}`
+
+    let userId: number | undefined
+    let pageId: number | undefined
+
+    const publicContext = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+    const publicPage = await publicContext.newPage()
+
+    try {
+      // 1. Authenticate or create first admin user if needed
+      const init = await page.request.get('/api/users/init')
+      expect(init.ok()).toBe(true)
+      const initData = await init.json()
+
+      test.skip(
+        !process.env.CI && initData.initialized === true,
+        'DB dev đã có quản trị viên; bỏ qua luồng tạo tài khoản đầu tiên.',
+      )
+
+      if (!initData.initialized) {
+        await page.goto('/admin/create-first-user', { waitUntil: 'networkidle' })
+        await page.locator('#field-email').fill(email)
+        await page.locator('#field-password').fill(password)
+        await page.locator('#field-confirm-password').fill(password)
+
+        let response: Response | undefined
+        await expect(async () => {
+          const registration = page.waitForResponse(
+            (res) =>
+              res.url().includes('/api/users/first-register') && res.request().method() === 'POST',
+            { timeout: 5000 },
+          )
+          await page.locator('button[type="submit"]').click()
+          response = await registration
+        }).toPass({ timeout: 60000 })
+
+        if (!response) throw new Error('First-user registration request was never sent.')
+        expect(response.ok()).toBe(true)
+        const registered = await response.json()
+        userId = registered.user?.id || registered.doc?.id
+        await expect(page).toHaveURL(/\/admin\/?$/)
+        if (!userId) userId = (await (await page.request.get('/api/users/me')).json()).user.id
+      }
+
+      // 2. Create empty draft page via REST
+      const created = await page.request.post('/api/pages?draft=true', {
+        data: {
+          title: '[MẪU] BX-01 Builder Friendly',
+          slug: pageSlug,
+          _status: 'draft',
+          puckData: { content: [], root: {} },
+        },
+      })
+      expect(created.ok()).toBe(true)
+      pageId = (await created.json()).doc.id
+      expect(pageId).toEqual(expect.any(Number))
+
+      // 3. Open Puck editor
+      await page.goto(`/builder/${pageId}`, { waitUntil: 'networkidle' })
+      const canvas = page.frameLocator('iframe')
+      const dropzone = canvas.locator('[data-puck-dropzone]').first()
+      await expect(dropzone).toBeVisible()
+
+      // 4. Test CTASection resolveFields: drag CTASection into canvas
+      const ctaDrawer = page.getByRole('button', {
+        name: 'Kêu gọi hành động (CTA Section)',
+        exact: true,
+      })
+      await ctaDrawer.scrollIntoViewIfNeeded()
+      const ctaSource = await ctaDrawer.boundingBox()
+      const rootTarget = await dropzone.boundingBox()
+      if (!ctaSource || !rootTarget) throw new Error('CTASection drawer or root dropzone not visible')
+
+      await page.mouse.move(ctaSource.x + ctaSource.width / 2, ctaSource.y + ctaSource.height / 2)
+      await page.mouse.down()
+      await page.mouse.move(ctaSource.x + ctaSource.width / 2 + 12, ctaSource.y + ctaSource.height / 2, {
+        steps: 5,
+      })
+      await page.mouse.move(rootTarget.x + rootTarget.width / 2, rootTarget.y + 60, { steps: 30 })
+      await page.mouse.up()
+
+      // Click CTASection on canvas to open field inspector
+      await canvas.locator('[data-puck-component]').first().click()
+
+      // Switch to Content tab if tab bar is visible
+      const contentTab = page.getByRole('tab', { name: 'Nội dung', exact: true })
+      if (await contentTab.isVisible()) {
+        await contentTab.click()
+      }
+
+      // Default buttonAction='link': URL input is visible, Form type is hidden
+      const actionSelect = page.getByRole('combobox', { name: 'Hành động khi bấm nút', exact: true })
+      await expect(actionSelect).toBeVisible()
+      const urlInput = page.getByRole('textbox', { name: 'Liên kết URL ngoài' })
+      const formSelect = page.getByRole('combobox', { name: 'Loại form' })
+      await expect(urlInput).toBeVisible()
+      await expect(formSelect).toHaveCount(0)
+
+      // Change buttonAction to 'form' ('Mở form')
+      await actionSelect.selectOption({ label: 'Mở form' })
+      await expect(urlInput).toHaveCount(0)
+      await expect(formSelect).toBeVisible()
+
+      // 5. Drag QuestionButtons into canvas dropzone below CTASection
+      const qbDrawer = page.getByRole('button', {
+        name: 'Câu hỏi + nút (nền màu)',
+        exact: true,
+      })
+      await qbDrawer.scrollIntoViewIfNeeded()
+      const qbSource = await qbDrawer.boundingBox()
+      const lastDropzone = canvas.locator('[data-puck-dropzone]').last()
+      const qbTarget = await lastDropzone.boundingBox()
+      if (!qbSource || !qbTarget) throw new Error('QuestionButtons drawer or target dropzone not visible')
+
+      await page.mouse.move(qbSource.x + qbSource.width / 2, qbSource.y + qbSource.height / 2)
+      await page.mouse.down()
+      await page.mouse.move(qbSource.x + qbSource.width / 2 + 12, qbSource.y + qbSource.height / 2, {
+        steps: 5,
+      })
+      await page.mouse.move(qbTarget.x + qbTarget.width / 2, qbTarget.y + 60, { steps: 30 })
+      await page.mouse.up()
+
+      // Click QuestionButtons component
+      const qbComponent = canvas.locator('[data-puck-component]').last()
+      await qbComponent.click()
+
+      // Verify question and default buttons are rendered in canvas
+      await expect(qbComponent.locator('p')).toContainText('Bạn muốn bắt đầu từ đâu?')
+      await expect(qbComponent.locator('a[href="/habit/chan-doan"]')).toBeVisible()
+      await expect(qbComponent.locator('a[href="/eq-buddy"]')).toBeVisible()
+
+      // 6. Publish page
+      await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
+      await expect(page.getByText(/Đã xuất bản thành công/)).toBeVisible()
+
+      // 7. Verify public page at desktop 1440px
+      await publicPage.setViewportSize({ width: 1440, height: 900 })
+      await publicPage.goto(`/${pageSlug}`, { waitUntil: 'domcontentloaded' })
+
+      const habitBtn = publicPage.locator('a[href="/habit/chan-doan"]').first()
+      const eqBtn = publicPage.locator('a[href="/eq-buddy"]').first()
+      await expect(habitBtn).toBeVisible()
+      await expect(eqBtn).toBeVisible()
+
+      // Verify horizontal arrangement at 1440px
+      const b1 = await habitBtn.boundingBox()
+      const b2 = await eqBtn.boundingBox()
+      expect(b1).toBeTruthy()
+      expect(b2).toBeTruthy()
+      expect(Math.abs((b1?.y ?? 0) - (b2?.y ?? 0))).toBeLessThan(15)
+
+      // 8. Verify public page at mobile 375px
+      await publicPage.setViewportSize({ width: 375, height: 667 })
+      await publicPage.reload({ waitUntil: 'domcontentloaded' })
+
+      const mb1 = await habitBtn.boundingBox()
+      const mb2 = await eqBtn.boundingBox()
+      expect(mb1).toBeTruthy()
+      expect(mb2).toBeTruthy()
+      // Stacked vertically: button 2 starts below button 1
+      expect(mb2?.y).toBeGreaterThan((mb1?.y ?? 0) + (mb1?.height ?? 0) - 2)
+
+      // Check no horizontal scroll
+      const scrollWidth = await publicPage.evaluate(() => document.documentElement.scrollWidth)
+      const clientWidth = await publicPage.evaluate(() => document.documentElement.clientWidth)
+      expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
+
+      // 9. Axe clean
+      await expectNoSeriousA11y(publicPage)
+    } finally {
+      if (pageId) {
+        await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
       }
       if (userId) {
         await page.request.delete(`/api/users/${userId}`).catch(() => {})
