@@ -4959,6 +4959,17 @@ export const vi = {
     cardAriaLabel: (keyword: string, isFlipped: boolean) =>
       `Thẻ EQ: ${keyword}. ${isFlipped ? 'Đang ở mặt sau' : 'Đang ở mặt trước'}. Bấm để lật.`,
   },
+  bx04: {
+    titleHighlightStyle: 'Kiểu nhấn chữ',
+    styleColor: 'Tô màu (mặc định)',
+    styleUnderline: 'Gạch chân',
+    stylePill: 'Nền',
+    titleHighlightAnimation: 'Hiệu ứng nhấn chữ',
+    animNone: 'Không (mặc định)',
+    animDraw: 'Vẽ dần',
+    animPop: 'Nổi lên',
+    chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

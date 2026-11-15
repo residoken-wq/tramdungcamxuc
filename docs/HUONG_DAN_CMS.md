@@ -3436,11 +3436,24 @@ Bản cập nhật CD-04 bổ sung 5 tùy chọn tinh chỉnh giao diện trực
 
 Bản cập nhật AU-04 hoàn thiện các tiện ích cốt lõi dùng chung trên toàn hệ thống trang web:
 
-1. **Tô màu chữ nổi bật bằng cú pháp `*từ cần nổi bật*`**:
-   - **Áp dụng cho**: Mọi tiêu đề 2 tầng trong hệ thống (khối `HeroTwoEntries`, `HeroImage`, `CTASection`, `SectionHeader`...).
-   - **Cách dùng**: Bao quanh từ hoặc cụm từ bằng cặp dấu sao `*...*` **ở dòng 1** (dòng chữ xanh thẫm `deep-navy`, hoặc dòng chữ trắng trên nền tối `deep-navy`), ví dụ: `*Chuyển* mình không *chênh* vênh`. Không nên dùng `*...*` ở dòng 2 vì dòng 2 mặc định vốn đã mang màu hồng sen `bright-magenta` nên sẽ không thấy sự khác biệt màu.
-   - **Hiển thị**: Từ trong dấu sao sẽ tự động mang màu hồng sen nổi bật `bright-magenta` khi nằm trên nền sáng, hoặc màu hồng phấn dịu `soft-pink` khi nằm trên nền tối `deep-navy`.
-   - **An toàn**: Nếu nhập dấu sao lẻ hoặc không đủ cặp, hệ thống giữ nguyên văn bản thông thường và không bao giờ gây lỗi giao diện.
+1. **Tô màu, gạch chân, tạo nền và gạch ngang chữ trong tiêu đề (BX-04)**:
+   - **Áp dụng cho**: Các khối có tiêu đề 2 tầng (`HeroTwoEntries`, `HeroImage`, `CTASection`, `SectionHeader`...).
+   - **Bấm chip để chọn chữ nhanh**: Dưới ô nhập tiêu đề có sẵn một dãy chip từng chữ. Hana không cần gõ dấu tay:
+     - **Bấm 1 lần**: Nhấn chữ (`*từ*`) – chip chuyển sang màu hồng sen.
+     - **Bấm lần 2**: Gạch ngang tương phản (`~từ~`) – chip chuyển sang gạch ngang.
+     - **Bấm lần 3**: Bỏ chọn – trở về chữ bình thường.
+     - Vẫn có thể gõ tay `*từ*` hoặc `~từ~` trực tiếp trong ô chữ nếu muốn, các chip bên dưới sẽ tự động đồng bộ theo.
+   - **3 kiểu nhấn chữ** (chọn ở ô *Kiểu nhấn chữ* xuất hiện ngay dưới tiêu đề):
+     - **Tô màu** (`color` - mặc định): Chữ mang màu hồng sen `bright-magenta` (trên nền tối tự động đổi sang hồng phấn `soft-pink`).
+     - **Gạch chân** (`underline`): Chữ đổi màu hồng kèm vạch gạch chân dày, cách đáy chữ một khoảng vừa phải.
+     - **Nền** (`pill`): Chữ trắng nổi bật trên ô nền hồng bo góc xinh xắn (trên nền tối tự động đổi thành nền hồng phấn chữ xanh thẫm `deep-navy`).
+   - **Gạch ngang tương phản (`~từ~`)**: Dùng cho những từ mang ý nghĩa cần buông bỏ hoặc chuyển biến, ví dụ: `*CHUYỂN* MÌNH KHÔNG ~CHÊNH~ VÊNH` ("CHUYỂN" được làm nổi bật, còn "CHÊNH" bị gạch ngang với sắc độ mờ đạt chuẩn tương phản dễ đọc AA ≥ 3:1).
+   - **2 hiệu ứng chuyển động** (chọn ở ô *Hiệu ứng nhấn chữ*):
+     - **Vẽ dần** (`draw`): Vạch gạch chân hoặc đường gạch ngang chạy mượt mà từ trái sang phải khi lướt tới tiêu đề; với kiểu Tô màu, màu sắc sẽ chuyển dần vào.
+     - **Nổi lên** (`pop`): Ô nền hoặc chữ nhấn phóng nhẹ (từ 0.95 lên 1) kết hợp hiệu ứng mờ dần vào, tạo điểm chạm thị giác tinh tế.
+     - *Lưu ý*: Hiệu ứng chỉ chạy 1 lần khi cuộn tới và tự động tắt nếu máy tính/điện thoại bật chế độ Giảm chuyển động (*prefers-reduced-motion*). Trong màn hình dựng trang (builder), hiệu ứng sẽ chạy lại mỗi khi Hana đổi tùy chọn để Hana xem trước trực tiếp.
+   - **Lưu ý thương hiệu**: Chỉ nên nhấn chữ ở Dòng 1 nếu Dòng 2 đã mang màu hồng sen mặc định, tránh việc cả hai dòng đều nhấn làm rối mắt người đọc.
+   - **An toàn**: Nếu nhập dấu lẻ hoặc sửa trực tiếp trên trang, hệ thống giữ nguyên văn bản thông thường và không bao giờ gây lỗi giao diện. Các bộ đọc màn hình vẫn đọc rõ ràng nội dung câu mà không bị mất chữ.
 
 2. **Nút đặt lịch phiên trải nghiệm 149.000đ dùng chung**:
    - **Áp dụng cho**: Khối `BookingCTA`, khối `CTASection` (chọn `Hành động của nút chính` = *Đặt lịch phiên trải nghiệm*), hoặc widget nút `ButtonWidget` (chọn `Loại liên kết` = *Đặt lịch phiên trải nghiệm*).
